@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>Echo: Unit Tests Page</title>
+	<link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen" />
+	<style>
+		body { margin: 0px; padding: 0px; }
+		#container { padding: 10px; width: 80%; background: #FFFFFF; border: 1px solid #FFFFFF; box-shadow: 0 4px 15px #666666; margin: 10px auto 0px auto; }
+		#echo-tests { background: #FFFFFF; }
+		#qunit-header, #qunit-tests > li:last-child { border-radius:0; }
+	</style>
+	<script type="text/javascript" src="../third-party/jquery.js"></script>
+	<script type="text/javascript" src="../utils.js"></script>
+	<script type="text/javascript" src="../localization.js"></script>
+	<script type="text/javascript" src="qunit/qunit.js"></script>
+	<script type="text/javascript" src="testlib.js"></script>
+	<script type="text/javascript" src="unit/localization.js"></script>
+	<script>
+		$(document).ready(function() {
+			Echo.Tests.runTests();
+		});
+	</script>
+</head>
+<body>
+	<div id="container">
+		<div id="echo-tests">
+			<h1 id="qunit-header">Echo QUnit tests</h1>
+			<h2 id="qunit-banner"></h2>
+			<div id="qunit-testrunner-toolbar"></div>
+			<h2 id="qunit-userAgent"></h2>
+			<ol id="qunit-tests"></ol>
+			<div id="qunit-fixture"></div>
+		</div>
+	</div>
+</body>
+</html>
