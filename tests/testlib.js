@@ -201,7 +201,8 @@ Echo.Tests.Stats = {
 		$.each([namespace, namespace.prototype], function(i, parentObject) {
 			if (!parentObject) return;
 			$.each(parentObject, function(name, value) {
-				if (prefix + name == "Echo.Tests") return;
+				//TODO: move an array of not tested namespaces in other place
+				if ($.inArray(prefix + name, ["Echo.Tests", "Echo.Vars", "Echo.Global"])) return;
 				if (parentObject.hasOwnProperty(name) && typeof value != "string") {
 					// wrap all functions except constructors
 					if (typeof value == "function" && name.charAt(0).toUpperCase() != name.charAt(0)) {
@@ -226,7 +227,7 @@ Echo.Tests.Stats = {
 			'<div class="echo-tests-stats">' +
 				'<h3>Code coverage analysis</h3> ' +
 				'<p>Total functions count: <b>' + all + '</b></p> ' +
-				$.foldl([], {
+				Echo.Utils.foldl([], {
 					"tested": "Covered by tests",
 					"notTested": "Not covered",
 					"executed": "Executed during the tests",
@@ -266,7 +267,7 @@ Echo.Tests.Stats = {
 	}
 };
 
-$.addCss(
+Echo.Utils.addCss(
 	'.echo-tests-stats p { margin: 5px 0px 5px 20px; }' +
 	'.echo-tests-stats p .green { color: green; }' +
 	'.echo-tests-stats p .red { color: red; }' +
