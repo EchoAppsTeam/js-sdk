@@ -17,7 +17,7 @@ suite.prototype.tests.TestLocalizationMethods = {
 			"key": "{content}"
 		}, "Namespace");
 		
-		QUnit.equal(Echo.Localization.key("field", "Namespace"), "Namespace.field", "Checking static key() method");
+		QUnit.equal(Echo.Localization._key("field", "Namespace"), "Namespace.field", "Checking static _key() method");
 		QUnit.equal(Echo.Localization.label("field", "Namespace"), "value", "Checking static label() method");
 		QUnit.equal(Echo.Localization.label("wrong_field", "Namespace"), "wrong_field", "Checking static label() method with wrong name param");
 		QUnit.equal(Echo.Localization.label("key", "Namespace", {"content": "test"}), "test", "Checking static label() method with data param");
