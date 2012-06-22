@@ -16,7 +16,7 @@ Echo.Localization.prototype.label = function(name, data) {
 	return this.labels[key]
 		? Echo.Localization.substitute(this.labels[key], data)
 		: Echo.Localization.label(name, this.namespace, data);
-}
+};
 
 Echo.Localization.prototype.extend = function(labels) {
 	var self = this;
@@ -24,7 +24,7 @@ Echo.Localization.prototype.extend = function(labels) {
 		var key = Echo.Localization.key(name, self.namespace);
 		self.labels[key] = value;
 	});
-}
+};
 
 // static interface
 
@@ -52,6 +52,6 @@ Echo.Localization.substitute = function(label, data) {
 		label = label.replace(new RegExp("{" + key + "}", "g"), value);
 	});
 	return label;
-}
+};
 
 })();
