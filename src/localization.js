@@ -7,7 +7,7 @@ if (Echo.Localization) return;
 /**
  * Constructor of class encapsulating language variable mechanics.
  *
- * The class should be instanciated to override language variables within the scope of a particular component instance.
+ * The class should be instantiated to override language variables within the scope of a particular component instance.
  * Language variables overriden with the instance of this class will have the highest priority.
  * Static methods should be used for general language variable definition and localization purposes.
  *
