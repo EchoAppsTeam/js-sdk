@@ -193,7 +193,6 @@ Echo.Tests.Stats = {
 		var fullName = prefix + name;
 		var funcs = Echo.Tests.Stats.functions;
 		funcs.all[fullName] = true;
-console.log(Echo.Tests.Stats.functions);
 		parentObject[name] = function() {
 			if (!funcs.executed[fullName]) {
 				funcs.executed[fullName] = 0;
