@@ -4,33 +4,45 @@ var suite = Echo.Tests.Unit.Configuration = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.Configuration",
-	"functions": ["get", "set", "remove", "extend", "getAsHash"]
+	"functions": [
+		"get",
+		"set",
+		"remove",
+		"extend",
+		"getAsHash",
+		"_clearCacheByPrefix"
+	]
+};
+
+suite.prototype.data = {
+	"original": {
+		"key1": 1,
+		"key2": {
+			"key2-1": "key2-1 value",
+			"key2-2": {
+				"key2-2-1": "key2-2-1 value"
+			}
+		},
+		"key3": true,
+		"key6": [1,2,3,4,5]
+	},
+	"overrides": {
+		"key2": {
+			"key2-1": "NEW key2-1 value"
+		},
+		"key3": false,
+		"key4": "Value from overrides object",
+		"key5": 10,
+		"key6": [1,2,3]
+	}
 };
 
 suite.prototype.tests = {};
 
-suite.prototype.tests.TestConfigurationMethods = {
+suite.prototype.tests.PublicInterfaceTests = {
 	"check": function() {
-		var original = {
-			"key1": 1,
-			"key2": {
-				"key2-1": "key2-1 value",
-				"key2-2": {
-					"key2-2-1": "key2-2-1 value"
-				}
-			},
-			"key3": true,
-			"key6": [1,2,3,4,5]
-		};
-		var overrides = {
-			"key2": {
-				"key2-1": "NEW key2-1 value"
-			},
-			"key3": false,
-			"key4": "Value from overrides object",
-			"key5": 10,
-			"key6": [1,2,3]
-		};
+		var original = this.data.original;
+		var overrides = this.data.overrides;
 
 		var config = new Echo.Configuration(overrides, original);
 
@@ -123,6 +135,22 @@ suite.prototype.tests.TestConfigurationMethods = {
 		QUnit.equal(config.get("key1.key2-2.key2-2-1"), undefined,
 			"Check the remove() method with objects defined as values");
 	}
-}
+};
+
+suite.prototype.tests.PrivateFunctionsTests = {
+	"check": function() {
+		var original = this.data.original;
+		var overrides = this.data.overrides;
+
+		var config = new Echo.Configuration(overrides, original);
+
+		config._clearCacheByPrefix("key2");
+		QUnit.equal(config.cache["key2"], undefined,
+			"Checking if internal cache was cleared");
+
+		QUnit.equal(config.cache["key2.key2-2"], undefined,
+			"Checking if nested structure was cleared after the root key was removed");
+	}
+};
 
 })(jQuery);
