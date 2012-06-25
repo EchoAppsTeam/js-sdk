@@ -4,6 +4,10 @@ if (!window.Echo) window.Echo = {};
 if (!Echo.Tests) Echo.Tests = {"Unit": {}, "Common": {}};
 
 Echo.Tests.runTests = function() {
+	Backplane.init({
+		"serverBaseURL" : "http://api.echoenabled.com/v1",
+		"busName": "jskit"		
+	});
 	$.each(this.Unit, function(name, suiteClass) {
 		$.extend(suiteClass.prototype, new Echo.Tests.Common());
 		suiteClass.prototype.tests = suiteClass.prototype.tests || {};
@@ -41,7 +45,7 @@ Echo.Tests.Common.prototype.run = function() {
 		if (test.instance && !$.isFunction(test.instance)) {
 			test.config.async = true;
 		}
-		test.config.user = test.config.user || {};
+		test.config.user = test.config.user || {"status": "anonymous"};
 		var check = function(instance) {
 			if (!test.config.async) {
 				test.check.call(self, instance);
@@ -135,28 +139,29 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 	this.tests.TestRenderers = data;
 };
 
-//TODO: update with real login procedure
 Echo.Tests.Common.prototype.loginTestUser = function(config, callback) {
-	callback();
+	$.get("http://echosandbox.com/js-sdk/auth", {
+		"action": "login",
+		"channel": Backplane.getChannelID(),
+		"identityUrl": "http://somedomain.com/users/fake_user"
+	}, function() {
+		Echo.UserSession._onInit(callback);
+		Backplane.expectMessages("identity/ack");
+	}, "jsonp");
 };
 
-//TODO: update with real logout procedure
 Echo.Tests.Common.prototype.logoutTestUser = function(callback) {
-	callback();
+	Echo.UserSession({"appkey": "test.aboutecho.com"}).logout(callback);
 };
 
 Echo.Tests.Common.prototype.prepareEnvironment = function(test, callback) {
 	var self = this;
 	this.cleanupEnvironment(function() {
-		//TODO: update with real user object
-		/*
 		if (test.config.user.status == "anonymous") {
 			callback();
 			return;
 		}
-		*/
 		self.loginTestUser(test.config.user, callback);
-		
 	});
 };
 
@@ -188,6 +193,7 @@ Echo.Tests.Stats = {
 		var fullName = prefix + name;
 		var funcs = Echo.Tests.Stats.functions;
 		funcs.all[fullName] = true;
+console.log(Echo.Tests.Stats.functions);
 		parentObject[name] = function() {
 			if (!funcs.executed[fullName]) {
 				funcs.executed[fullName] = 0;
@@ -202,7 +208,7 @@ Echo.Tests.Stats = {
 			if (!parentObject) return;
 			$.each(parentObject, function(name, value) {
 				//TODO: move an array of not tested namespaces in other place
-				if ($.inArray(prefix + name, ["Echo.Tests", "Echo.Vars", "Echo.Global"])) return;
+				if ($.inArray(prefix + name, ["Echo.Tests", "Echo.Vars", "Echo.Global"]) >= 0) return;
 				if (parentObject.hasOwnProperty(name) && typeof value != "string") {
 					// wrap all functions except constructors
 					if (typeof value == "function" && name.charAt(0).toUpperCase() != name.charAt(0)) {

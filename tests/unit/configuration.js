@@ -5,11 +5,15 @@ var suite = Echo.Tests.Unit.Configuration = function() {};
 suite.prototype.info = {
 	"className": "Echo.Configuration",
 	"functions": [
+
+		// public interface
 		"get",
 		"set",
 		"remove",
 		"extend",
 		"getAsHash",
+
+		// private methods
 		"_clearCacheByPrefix"
 	]
 };
