@@ -2,7 +2,7 @@
 
 "use strict";
 
-if (Echo.Localization) return;
+if (Echo.Labels) return;
 
 /**
  * Constructor of class encapsulating language variable mechanics.
@@ -16,12 +16,12 @@ if (Echo.Localization) return;
  * @api public
  */
 
-Echo.Localization = function(labels, namespace) {
+Echo.Labels = function(labels, namespace) {
 	var self = this;
-	this.labels = {};
+	this.storage = {};
 	this.namespace = namespace;
 	$.each(labels, function(name, value) {
-		self.labels[Echo.Localization._key(name, self.namespace)] = value;
+		self.storage[Echo.Labels._key(name, self.namespace)] = value;
 	});
 };
 
@@ -37,11 +37,11 @@ Echo.Localization = function(labels, namespace) {
  * @api public
  */
 
-Echo.Localization.prototype.label = function(name, data) {
-	var key = Echo.Localization._key(name, this.namespace);
-	return this.labels[key]
-		? Echo.Localization._substitute(this.labels[key], data)
-		: Echo.Localization.label(name, this.namespace, data);
+Echo.Labels.prototype.get = function(name, data) {
+	var key = Echo.Labels._key(name, this.namespace);
+	return this.storage[key]
+		? Echo.Labels._substitute(this.storage[key], data)
+		: Echo.Labels.get(name, this.namespace, data);
 };
 
 /**
@@ -51,11 +51,11 @@ Echo.Localization.prototype.label = function(name, data) {
  * @api public
  */
 
-Echo.Localization.prototype.extend = function(labels) {
+Echo.Labels.prototype.set = function(labels) {
 	var self = this;
 	$.each(labels, function(name, value) {
-		var key = Echo.Localization._key(name, self.namespace);
-		self.labels[key] = value;
+		var key = Echo.Labels._key(name, self.namespace);
+		self.storage[key] = value;
 	});
 };
 
@@ -75,10 +75,10 @@ Echo.Localization.prototype.extend = function(labels) {
  * @api public
  */
 
-Echo.Localization.extend = function(labels, namespace, isDefault) {
+Echo.Labels.set = function(labels, namespace, isDefault) {
 	$.each(labels, function(name, value) {
-		var key = Echo.Localization._key(name, namespace);
-		Echo.Localization._labels[isDefault ? "general" : "custom"][key] = value;
+		var key = Echo.Labels._key(name, namespace);
+		Echo.Labels._storage[isDefault ? "general" : "custom"][key] = value;
 	});
 };
 
@@ -96,19 +96,19 @@ Echo.Localization.extend = function(labels, namespace, isDefault) {
  * @api public
  */
 
-Echo.Localization.label = function(name, namespace, data) {
-	var key = Echo.Localization._key(name, namespace);
-	var label = Echo.Localization._labels["custom"][key] || Echo.Localization._labels["general"][key] || name;
-	return Echo.Localization._substitute(label, data);
+Echo.Labels.get = function(name, namespace, data) {
+	var key = Echo.Labels._key(name, namespace);
+	var label = Echo.Labels._storage["custom"][key] || Echo.Labels._storage["general"][key] || name;
+	return Echo.Labels._substitute(label, data);
 };
 
-Echo.Localization._labels = { "general": {}, "custom": {} };
+Echo.Labels._storage = { "general": {}, "custom": {} };
 
-Echo.Localization._key = function(name, namespace) {
+Echo.Labels._key = function(name, namespace) {
 	return (namespace ? namespace + "." : "") + name;
 };
 
-Echo.Localization._substitute = function(label, data) {
+Echo.Labels._substitute = function(label, data) {
 	$.each(data || {}, function(key, value) {
 		label = label.replace(new RegExp("{" + key + "}", "g"), value);
 	});
