@@ -53,6 +53,7 @@ Echo.Utils.addCss = function(cssCode, id) {
 		}
 	}
 	Echo.Vars.css.anchor = newStyle;
+	return 1;
 };
 
 Echo.Utils.foldl = function(acc, object, callback) {
@@ -67,6 +68,7 @@ Echo.Utils.foldl = function(acc, object, callback) {
 };
 
 Echo.Utils.getNestedValue = function(key, data, defaults, callback) {
+	if (!key) return data;
 	if (typeof key == "string") {
 		key = key.split(/\./);
 	}
@@ -106,6 +108,9 @@ Echo.Utils.htmlize = function(text) {
 };
 
 Echo.Utils.object2JSON = function(obj) {
+	if (JSON && JSON.stringify) {
+		return JSON.stringify(obj);
+	}
 	var encodeJSONLiteral = function(string) {
 		var replacements = {
 			'\b': '\\b',
@@ -128,10 +133,10 @@ Echo.Utils.object2JSON = function(obj) {
 	switch (typeof obj) {
 		case "number"  : out = isFinite(obj) ? obj : 'null'; break;
 		case "string"  : out = '"' + encodeJSONLiteral(obj) + '"'; break;
-		case "boolean" : out = '"' + obj.toString() + '"'; break;
+		case "boolean" : out = obj.toString(); break;
 		default :
 			if (obj instanceof Array) {
-				var container = Echo.Utils.map(obj, function(element) { return Echo.Utils.object2JSON(element); });
+				var container = $.map(obj, function(element) { return Echo.Utils.object2JSON(element); });
 				out = '[' + container.join(",") + ']';
 			} else if (obj instanceof Object) {
 				var source = obj.exportProperties || obj;
@@ -284,7 +289,7 @@ Echo.Utils.getVisibleColor = function(elem) {
 		if (color != '' && color != 'transparent' && !/rgba\(0, 0, 0, 0\)/.test(color) || $.nodeName(elem.get(0), 'body')) {
 			break;
 		}
-	} while (elem === elem.parent());
+	} while (elem = elem.parent());
 	return color || 'transparent';
 };
 
@@ -292,6 +297,7 @@ Echo.Utils.timestampFromW3CDTF = function(t) {
 	var parts = ['year', 'month', 'day', 'hours', 'minutes', 'seconds'];
 	var dt = {};
 	var matches = t.match(Echo.Vars.regexps.w3cdtf);
+	if (!matches) return;
 	$.each(parts, function(i, p) {
 		dt[p] = matches[i + 1];
 	});
