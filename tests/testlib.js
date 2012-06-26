@@ -171,8 +171,9 @@ Echo.Tests.Common.prototype.prepareEnvironment = function(test, callback) {
 };
 
 Echo.Tests.Common.prototype.cleanupEnvironment = function(callback) {
-
-	//TODO: delete all event handlers in all contexts
+	//delete all event handlers in all contexts
+	Echo.Events._subscriptions = {};
+	Echo.Events._dataByHandlerId = {};
 
 	// clear qunit-fixture
 	$("#qunit-fixture").empty();

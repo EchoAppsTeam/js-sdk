@@ -309,4 +309,8 @@ Echo.Utils.isMobileDevice = function() {
 	return Echo.Vars.regexps.mobileUA.test(navigator.userAgent);
 };
 
+Echo.Utils.getUniqueString = function() {
+	return (new Date()).valueOf() + Math.random().toString().substr(2);
+};
+
 })();

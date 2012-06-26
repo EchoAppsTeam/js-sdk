@@ -137,9 +137,15 @@ suite.prototype.checkBasicOperations = function() {
 		"Checking delegation using user.has(\"identity\", \"...\") function");
 
 	var topic = "Echo.UserSession.onInit";
-	var handlerId = Echo.Events.subscribe(topic, function() {
-		Echo.Events.unsubscribe(topic, handlerId);
-		QUnit.ok(true, "Check if \"onInit\" callback is executed after class init");
+	var handlerId = Echo.Events.subscribe({
+		"topic": topic,
+		"handler": function() {
+			Echo.Events.unsubscribe({
+				"topic": topic,
+				"handlerId": handlerId
+			});
+			QUnit.ok(true, "Check if \"onInit\" callback is executed after class init");
+		}
 	});
 
 	Echo.UserSession({"appkey": "test.aboutecho.com", "ready": function() {

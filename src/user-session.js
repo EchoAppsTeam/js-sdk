@@ -152,10 +152,10 @@ Echo.UserSession._listenEvents = function() {
 	user.backplaneSubscriptionID = Backplane.subscribe(function(message) {
 		if (message.type != "identity/ack") return;
 		user._init(function() {
-			Echo.Events.publish(
-				"Echo.UserSession.onInvalidate",
-				{"data": user.data}
-			);
+			Echo.Events.publish({
+				"topic": "Echo.UserSession.onInvalidate",
+				"data": user.data
+			});
 		});
 	});
 };
@@ -181,7 +181,10 @@ Echo.UserSession._init = function(callback) {
 		}
 		user.state = "ready";
 		user._reset(data);
-		Echo.Events.publish("Echo.UserSession.onInit", {"data": data});
+		Echo.Events.publish({
+			"topic": "Echo.UserSession.onInit",
+			"data": data
+		});
 		(callback || function(){})();
 	});
 };
@@ -202,9 +205,15 @@ Echo.UserSession._normalize = function(data) {
 Echo.UserSession._onInit = function(callback) {
 	if (!callback) return;
 	var topic = "Echo.UserSession.onInit";
-	var handlerId = Echo.Events.subscribe(topic, function() {
-		Echo.Events.unsubscribe(topic, handlerId);
-		callback();
+	var handlerId = Echo.Events.subscribe({
+		"topic": topic,
+		"handler": function() {
+			Echo.Events.unsubscribe({
+				"topic": topic,
+				"handlerId": handlerId
+			});
+			callback();
+		}
 	});
 };
 
