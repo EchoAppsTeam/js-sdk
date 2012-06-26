@@ -39,14 +39,12 @@ suite.prototype.tests.LoggedInUserChecks = {
 	},
 	"check": function() {
 		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+		var identity = "http://somedomain.com/users/fake_user";
 
 		QUnit.ok(user.is("logged"),
 			"Check that user is logged in via user.is(\"logged\") function");
 		QUnit.equal(user.is("logged"), user._isLogged(),
 			"Check \"is\" function delegation using \"logged\" property");
-
-		QUnit.equal(user.is("some-random-value"), undefined,
-			"Check if we received expected result when calling 'is' function with unexpected argument");
 
 		QUnit.equal(user.get("name"), "john.doe",
 			"Checking user.get() method, requesting user name");
@@ -59,22 +57,43 @@ suite.prototype.tests.LoggedInUserChecks = {
 		QUnit.equal(user.get("activeIdentities").length, user._getActiveIdentities().length,
 			"Checking active identities calculation via user.get(\"activeIdentities\") and via private user._getActiveIdentities() function");
 
+		QUnit.ok(user.has("identity", identity),
+			"Checking user.has(\"identity\", \"...\") function if condition is true");
+		QUnit.ok(!user.has("identity", identity + "/other"),
+			"Checking user.has(\"identity\", \"...\") function if condition is false");
+
 		this.checkBasicOperations();
 	
 		QUnit.start();
-/*
-		user.logout(function() {
-			QUnit.equal(user.is("logged"), false,
-				"Checking logout operation (including callback)");
-			QUnit.start();
-		});
-*/
+	}
+};
+
+suite.prototype.tests.AnonymousUserChecks = {
+	"config": {
+		"async": true,
+		"user": {"status": "anonymous"},
+		"testTimeout": 20000 // 20 secs
+	},
+	"check": function() {
+		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+
+		QUnit.ok(!user.is("logged"),
+			"Check if the user is not logged in using user.is(\"logged\") function");
+		QUnit.equal(user.is("logged"), user._isLogged(),
+			"Check \"is\" function delegation using \"logged\" property");
+
+		this.checkBasicOperations();
+
+		QUnit.start();
 	}
 };
 
 suite.prototype.checkBasicOperations = function() {
 	var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
 	var identity = "http://somedomain.com/users/fake_user";
+
+	QUnit.equal(user.is("some-random-value"), undefined,
+		"Check if we received expected result when calling 'is' function with unexpected argument");
 
 	user.set("state", "ModeratorBanned");
 	QUnit.equal(user.get("state"), "ModeratorBanned",
@@ -114,17 +133,18 @@ suite.prototype.checkBasicOperations = function() {
 	QUnit.ok(!user.has("marker", "non-existing-marker"),
 		"Checking user.has() function for non-existing marker");
 
-	QUnit.ok(user.has("identity", identity),
-		"Checking user.has(\"identity\", \"...\") function if condition is true");
-	QUnit.ok(!user.has("identity", identity + "/other"),
-		"Checking user.has(\"identity\", \"...\") function if condition is false");
-
 	QUnit.equal(user.has("identity", identity), user._hasIdentity(identity),
 		"Checking delegation using user.has(\"identity\", \"...\") function");
-	
-	// TODO: check onInit function subscription...
-	// TODO: check if "ready" callback is executed after class init call
 
+	var topic = "Echo.UserSession.onInit";
+	var handlerId = Echo.Events.subscribe(topic, function() {
+		Echo.Events.unsubscribe(topic, handlerId);
+		QUnit.ok(true, "Check if \"onInit\" callback is executed after class init");
+	});
+
+	Echo.UserSession({"appkey": "test.aboutecho.com", "ready": function() {
+		QUnit.ok(true, "Checking if the \"ready\" callback is executed after class init");
+	}});
 };
 
 })(jQuery);

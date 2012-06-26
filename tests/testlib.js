@@ -140,6 +140,11 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 };
 
 Echo.Tests.Common.prototype.loginTestUser = function(config, callback) {
+	var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+	if (user.is("logged")) {
+		callback && callback();
+		return;
+	}
 	$.get("http://echosandbox.com/js-sdk/auth", {
 		"action": "login",
 		"channel": Backplane.getChannelID(),
@@ -282,7 +287,7 @@ Echo.Utils.addCss(
 
 QUnit.begin(function() {
 	Echo.Tests.Stats.getFunctionNames(Echo, "Echo.");
-	
+
 	//TODO: check if we need it later
 	// Override function so that test suite couldn't execute next test
 	// before all data for the current one was not loaded yet

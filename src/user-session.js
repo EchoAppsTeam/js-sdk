@@ -163,8 +163,9 @@ Echo.UserSession._listenEvents = function() {
 Echo.UserSession._reset = function(data) {
 	var user = this;
 	user.data = user._normalize($.extend({}, data));
+	user.identity = {};
 	var identities = user.get("activeIdentities");
-	user.identity = identities ? identities[0] : {};
+	user.identity = identities && identities.length ? identities[0] : {};
 };
 
 Echo.UserSession._init = function(callback) {
