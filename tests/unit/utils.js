@@ -140,11 +140,11 @@ suite.prototype.tests.TestDomMethods = {
 	"check": function() {
 		
 		QUnit.ok(Echo.Utils.addCss(".echo-utils-tests {}", "utils-tests"),
-			"Checking that addCss() returns success");
+			"Checking that addCss() method returns true if CSS-class was added");
 		QUnit.ok(/echo-utils-tests {}$/.test(Echo.Vars.css.anchor.html()),
 			"Checking that addCss() method adds CSS-class to style");
-		QUnit.equal(Echo.Utils.addCss(".echo-utils-tests {}", "utils-tests"), undefined,
-			"Checking that addCss() method returns undefined if previously added Id is used");
+		QUnit.ok(!Echo.Utils.addCss(".echo-utils-tests {}", "utils-tests"),
+			"Checking that addCss() method returns false if previously added Id is used");
 		// delete previously added css class
 		Echo.Vars.css.anchor.html(Echo.Vars.css.anchor.html().replace(/.echo-utils-tests {}$/, ""));
 		

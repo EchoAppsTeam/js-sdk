@@ -24,7 +24,7 @@ Echo.Utils.addCss = function(cssCode, id) {
 		"processed": {}
 	};
 	if (id) {
-		if (Echo.Vars.css.processed[id]) return;
+		if (Echo.Vars.css.processed[id]) return false;
 		Echo.Vars.css.processed[id] = true;
 	}
 	var currentCssCode = "";
@@ -53,7 +53,7 @@ Echo.Utils.addCss = function(cssCode, id) {
 		}
 	}
 	Echo.Vars.css.anchor = newStyle;
-	return 1;
+	return true;
 };
 
 Echo.Utils.foldl = function(acc, object, callback) {
