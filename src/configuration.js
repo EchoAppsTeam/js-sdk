@@ -44,7 +44,7 @@ Echo.Configuration = function(master, slave, normalizer) {
  * 
  * @param {String} key Defines the key for data extraction.
  * @param {Object} defaults (optional) Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
- * @return {Object} Returns the corresponding value found in the config.
+ * @return {Mixed} Returns the corresponding value found in the config.
  * @method
  */
 Echo.Configuration.prototype.get = function(key, defaults) {
@@ -66,7 +66,7 @@ Echo.Configuration.prototype.get = function(key, defaults) {
  * in case the config contains JS objects as values for some keys.
  * 
  * @param {String} key Defines the key where the given data should be stored.
- * @param {Object} value The corresponding value which should be defined for the key.
+ * @param {Mixed} value The corresponding value which should be defined for the key.
  * @method
  */
 Echo.Configuration.prototype.set = function(key, value) {

@@ -32,7 +32,7 @@ Echo.UserSession = function(config) {
  * This function allows to define the value for the corresponding field in the user object.
  * 
  * @param {String} key Defines the key where the given data should be stored.
- * @param {Object} value The corresponding value which should be defined for the key.
+ * @param {Mixed} value The corresponding value which should be defined for the key.
  * @method
  */
 Echo.UserSession.set = function(key, value) {
@@ -54,8 +54,8 @@ Echo.UserSession.set = function(key, value) {
  * if specified in the second argument.
  * 
  * @param {String} key Defines the key for which the value needs to be retrieved.
- * @param {Object} defaults (optional) Default value if no corresponding key was found in the user object. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
- * @return {Object} Returns the corresponding value found in the user object.
+ * @param {Mixed} defaults (optional) Default value if no corresponding key was found in the user object. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ * @return {Mixed} Returns the corresponding value found in the user object.
  * @method
  */
 Echo.UserSession.get = function(key, defaults) {
@@ -144,7 +144,7 @@ Echo.UserSession.any = function(key, values) {
  *
  * This function is async, so you should pass the callback if you want to perform any additional operations after the logout event.
  *
- * @param {Function} callback The callback executed as soon as the logout action was completed.
+ * @param {Function} callback The callback executed as soon as the logout action was completed. The callback is executed without arguments.
  * @method
  */
 Echo.UserSession.logout = function(callback) {
