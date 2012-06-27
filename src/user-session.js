@@ -4,10 +4,37 @@
 
 if (Echo.UserSession) return;
 
+/**
+ * @class
+ *
+ * Class implements the interface to work with the user object.
+ * The Echo.UserSession class is used in pretty much all applications built in top of Echo JS SDK.
+ *
+ * @constructor
+ *
+ * Class constructor which accepts the object which represents the configuration as the argument.
+ * The class is a singleton, i.e. one user instance is shared across the different apps on the page. 
+ * 
+ * @param {Object} config Class configuration, which is an object with the following fields:
+ * @param {Object} config.appkey Echo application key to make user initialization request.
+ * @param {Object} config.defaultAvatar (optional) Default avatar URL which will be used for the user in case there is no avatar information defined in the user profile. Also used for the anonymous users.
+ * @return {Object} Returns the reference to the Echo.UserSession class.
+ *
+ * @singleton
+ */
 Echo.UserSession = function(config) {
 	return Echo.UserSession._construct(config);
 };
 
+/**
+ * Method to define specific user object field value.
+ *
+ * This function allows to define the value for the corresponding field in the user object.
+ * 
+ * @param {String} key Defines the key where the given data should be stored.
+ * @param {Object} value The corresponding value which should be defined for the key.
+ * @method
+ */
 Echo.UserSession.set = function(key, value) {
 	var user = this;
 	user._maybeDelegate({
@@ -20,6 +47,17 @@ Echo.UserSession.set = function(key, value) {
 	});
 };
 
+/**
+ * Method to access specific user object field.
+ *
+ * This function returns the corresponding value of the given key or the default value
+ * if specified in the second argument.
+ * 
+ * @param {String} key Defines the key for which the value needs to be retrieved.
+ * @param {Object} defaults (optional) Default value if no corresponding key was found in the user object. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ * @return {Object} Returns the corresponding value found in the user object.
+ * @method
+ */
 Echo.UserSession.get = function(key, defaults) {
 	var user = this;
 	return user._maybeDelegate({
@@ -32,6 +70,15 @@ Echo.UserSession.get = function(key, defaults) {
 	});
 };
 
+/**
+ * Method for checking if the user object conforms a certain condition.
+ *      
+ * The argument of the function defines the condition which should be checked. The list of built-in conditions is pre-defined. For instance, you can check if the used is logged in or not by passing the "logged" string as the function value.
+ *              
+ * @param {String} key Defines the name of the condition to check.
+ * @return (Boolean) Returns true or false if condition was met or not respectively.
+ * @method
+ */
 Echo.UserSession.is = function(key) {
 	var user = this;
 	return user._maybeDelegate({
@@ -40,6 +87,14 @@ Echo.UserSession.is = function(key) {
 	});
 };
 
+/**
+ * Method to check if the user object has a given value defined for a certain field.
+ *      
+ * @param {String} key Defines the name of the user object field.
+ * @param {String|Integer} value Defines the desired value.
+ * @return (Boolean) Returns true or false if condition was met or not respectively.
+ * @method
+ */
 Echo.UserSession.has = function(key, value) {
 	var user = this;
 	return user._maybeDelegate({
@@ -52,6 +107,16 @@ Echo.UserSession.has = function(key, value) {
 	});
 };
 
+/**
+ * Method to check if the value of a certain user object field belongs to the array of values.
+ *
+ * This function is very similar to the Echo.UserSession.has with the difference that the value of the second argument should be Array.
+ *
+ * @param {String} key Defines the name of the user object field.
+ * @param {Array} values Defines the set of values.
+ * @return (Boolean) Returns true or false if condition was met or not respectively.
+ * @method
+ */
 Echo.UserSession.any = function(key, values) {
 	var user = this;
 	return user._maybeDelegate({
@@ -74,6 +139,14 @@ Echo.UserSession.any = function(key, values) {
 	});
 };
 
+/**
+ * Method to log the user out.
+ *
+ * This function is async, so you should pass the callback if you want to perform any additional operations after the logout event.
+ *
+ * @param {Function} callback The callback executed as soon as the logout action was completed.
+ * @method
+ */
 Echo.UserSession.logout = function(callback) {
 	var user = this;
 	if (!user.is("logged")) {
