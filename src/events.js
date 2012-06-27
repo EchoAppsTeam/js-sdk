@@ -73,14 +73,14 @@ Echo.Events.publish = function(params) {
 			return false;
 		}
 		return type === "bubble"
-			? ~$.inArray("propagate", result.stop)
-			: ~$.inArray("propagate", result.stop) || ~$.inArray(type, result.stop);
+			? ~$.inArray("propagation", result.stop)
+			: ~$.inArray("propagation", result.stop) || ~$.inArray(type, result.stop);
 	};
 	var callHandlers = function(obj, restContexts) {
 		var lastHandlerResult;
 		$.each(obj.handlers || [], function(i, data) {
 			lastHandlerResult = data.handler(params.topic, params.data);
-			if (needStop(lastHandlerResult, "propagate.siblings")) {
+			if (needStop(lastHandlerResult, "propagation.siblings")) {
 				return false;
 			}
 		});
@@ -90,7 +90,7 @@ Echo.Events.publish = function(params) {
 			}
 			params.context = restContexts.join("/");
 			Echo.Events.publish(params);
-		} else if (!needStop("propagate.children")) {
+		} else if (!needStop(lastHandlerResult, "propagation.children")) {
 			$.each(obj.contexts, function(id, context) {
 				callHandlers(context);
 			});

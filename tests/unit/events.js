@@ -136,13 +136,6 @@ suite.prototype.tests.PublicMethods = {
 		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", empty context)");
 		publish({"topic": "X", "context": "a2"});
 		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", context \"a2\")");
-
-		publish({"topic": "W"});
-		QUnit.deepEqual(published, [], "Publish: handlers order (nonexistant topic)");
-		publish({"topic": "A", "context": "a3"});
-		QUnit.deepEqual(published, [], "Publish: handlers order (topic \"A\", nonexistant context)");
-		publish({"topic": "A", "context": "a1/b3"});
-		QUnit.deepEqual(published, [], "Publish: handlers order (topic \"A\", nonexistant deep context)");
 	}
 };
 
@@ -164,13 +157,20 @@ suite.prototype.tests.AdvancedPublishing = {
 		publish({"topic": "A", "context": "a1/b2/c2", "bubble": true});
 		QUnit.deepEqual(published, [5, 7, 2], "Publish: handlers order (topic \"A\", context \"a1/b2/c2\", bubble)");
 		publish({"topic": "A", "context": "a1/b1/c1", "bubble": true});
-		QUnit.deepEqual(published, [1, 6, 2], "Publish: handlers order (topic \"A\", context \"a1/b1/c1\", bubble, propagation.siblings)");
+		QUnit.deepEqual(published, [1, 2], "Publish: handlers order (topic \"A\", context \"a1/b1/c1\", bubble, propagation.siblings)");
 		publish({"topic": "A", "context": "a1"});
-		QUnit.deepEqual(published, [2, 1, 6, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\", propagation.siblings)");
+		QUnit.deepEqual(published, [2, 1, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\", propagation.siblings)");
 		publish({"topic": "A", "context": "a2"});
-		QUnit.deepEqual(published, [3, 4], "Publish: handlers order (topic \"A\", context \"a2\", propagation.children)");
+		QUnit.deepEqual(published, [3], "Publish: handlers order (topic \"A\", context \"a2\", propagation.children)");
 		publish({"topic": "A", "context": "a3"});
-		QUnit.deepEqual(published, [9, 8, 10, 11], "Publish: handlers order (topic \"A\", context \"a3\", propagation)");
+		QUnit.deepEqual(published, [9, 8], "Publish: handlers order (topic \"A\", context \"a3\", propagation)");
+
+		publish({"topic": "W"});
+		QUnit.deepEqual(published, [], "Publish: handlers order (nonexistent topic)");
+		publish({"topic": "A", "context": "a4"});
+		QUnit.deepEqual(published, [], "Publish: handlers order (topic \"A\", nonexistent context)");
+		publish({"topic": "A", "context": "a1/b3"});
+		QUnit.deepEqual(published, [], "Publish: handlers order (topic \"A\", nonexistent deep context)");
 	}
 };
 
