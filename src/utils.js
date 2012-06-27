@@ -313,4 +313,22 @@ Echo.Utils.getUniqueString = function() {
 	return (new Date()).valueOf() + Math.random().toString().substr(2);
 };
 
+Echo.Utils.inherit = function(child, parent) {
+	var F = function() {};
+	F.prototype = parent.prototype;
+	child.prototype = new F;
+	child.prototype.constructor = child;
+	child.prototype.parentProto = parent.prototype;
+	return child;
+};
+
+Echo.Utils.objectToQuery = function(obj) {
+	var i = 0;
+	return Echo.Utils.foldl("", obj, function(value, acc, key) {
+		return acc += (
+			(i++ ? "&" : "?") + key + "=" + value
+		);
+	});
+};
+
 })();
