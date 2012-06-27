@@ -16,8 +16,26 @@ if (!Echo.Vars) Echo.Vars = {
 	}
 };
 
+
+/**
+ * Static class implements common methods of data processing.
+ * The Echo.Utils class is used in various places of Echo JS SDK components.
+ */
+
 Echo.Utils = {};
 
+/**
+ * Method to add css styles on the page.
+ *
+ * This function adds css styles to the style tag which is placed in the head of the document.
+ * The first argument is a string that contains css styles, the second one is the unique identity string of css styles to be added. 
+ * If corresponding css styles is already placed in the document then method returns false. 
+ *
+ * @static
+ * @param {String} cssCode Contains css styles to be added.
+ * @param {String} id Unique identity string of css styles.
+ * @return {Boolean} Returns true if css styles was successfully added, false - if css styles is already in the document.
+ */
 Echo.Utils.addCss = function(cssCode, id) {
 	Echo.Vars.css = Echo.Vars.css || {
 		"index": 1,
@@ -56,6 +74,30 @@ Echo.Utils.addCss = function(cssCode, id) {
 	return true;
 };
 
+/**
+ * Method implementing folding mechanism.
+ *
+ * This function iterates over each value of the object passing them to callback function.
+ * The first argument is the object that is available in callback function to accumulate items.
+ *
+ *     var array = Echo.Utils.foldl([], [1, 2, 3], function(item, acc) {
+ *     		acc.push(item);
+ *     }); // array will [1, 2, 3];
+ *     
+ *     var hash = Echo.Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
+ *              if (key === "key2") return;
+ *              acc[key] = item;
+ *     }); // hash will {"key1": "value1"};
+ * 
+ * @static
+ * @param {Object} acc Defines the initial accumulator.
+ * @param {Mixed} object The object to be folded.
+ * @param {Function} callback The callback function executed for each item of the object to be folded.
+ * @param {Object} callback.item The item of the object to iterate over.
+ * @param {Object} callback.acc The object that accumulates items.
+ * @param {String} [callback.key] Defines the key of iterated items.
+ * @return {Object} The resulting object
+ */
 Echo.Utils.foldl = function(acc, object, callback) {
 	var result;
 	$.each(object, function(key, item) {
@@ -67,6 +109,32 @@ Echo.Utils.foldl = function(acc, object, callback) {
 	return acc;
 };
 
+/**
+ * Method to access specific nested field value in the object.
+ *
+ * This function returns the corresponding value of the given key or the default value
+ * if specified in the third argument. Use the dot as a delimeter of key parts to get nested field value.
+ *
+ *     var data = {
+ *         "key1": "value1",
+ *         "key2": {
+ *             "key2-1": "value2-1"
+ *         }
+ *     };
+ *
+ *     Echo.Utils.getNestedValue("key1", data); // will return "value1"
+ *     Echo.Utils.getNestedValue("key2", data); // will return object {"key2-1": "value2-1"}
+ *     Echo.Utils.getNestedValue("key2.key2-1", data); // will return "value2-1"
+ *
+ * @static
+ * @param {String} key Defines the key for value extraction.
+ * @param {Object} data The object for which the value is set.
+ * @param {Object} [defauts]  Default value if no corresponding key was found in the object.
+ * @param {Function} [callback] The callback function executed for each object of corresponding part of the key.
+ * @param {Object} callback.data The object of corresponding part of the key.
+ * @param {String} callback.key Defines corresponding part of the key.
+ * @return {Mixed} Returns the corresponding nested value found in the object.
+*/
 Echo.Utils.getNestedValue = function(key, data, defaults, callback) {
 	if (!key) return data;
 	if (typeof key == "string") {
@@ -91,6 +159,27 @@ Echo.Utils.getNestedValue = function(key, data, defaults, callback) {
 	return found ? value : defaults;
 };
 
+/**
+ * Method to define specific nested field value in the object.
+ *
+ * This function allows to define the value for the corresponding field in the object.
+ * Use the dot as a delimeter of key parts to set nested field value.
+ *
+ *     var data = {
+ *         "key1": "value1",
+ *         "key2": {
+ *             "key2-1": "value2-1"
+ *         }
+ *     };
+ *
+ *     Echo.Utils.setNestedValue(data, "key1", "new value"); // data["key1"] will "new value"
+ *     Echo.Utils.setNestedValue(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will {"key1-1": "value1-1"}
+ * 
+ * @static
+ * @param {Object} obj The object data from which the value is taken.
+ * @param {String} key Defines the key where the given value should be stored.
+ * @param {Mixed} value The object data that should be inserted for the key.
+ */
 Echo.Utils.setNestedValue = function(obj, key, value) {
 	var keys = key.split(/\./);
 	var field = keys.pop();
@@ -102,11 +191,41 @@ Echo.Utils.setNestedValue = function(obj, key, value) {
 	data[field] = value;
 };
 
+/**
+ * Method to convert special characters to HTML entities.
+ * 
+ * Some characters have special significance in HTML and should be represented by HTML entities if they are to preserve their meanings.
+ * This function returns a string with these conversions made.
+ *
+ *     Echo.Utils.htmlize("special characters: &<>"); // will return "special characters: &amp;&lt;&gt;"
+ *
+ * @static
+ * @param {String} text The string to be converted.
+ * @return {String} Returns the converted string.
+ */
 Echo.Utils.htmlize = function(text) {
 	if (!text) return '';
 	return $('<div>').text(text).html();
 };
 
+/**
+ * Method to convert JavaScript value to JavaScript Object Notation (JSON) string.
+ *
+ * Methods converts JavaScript object to JSON string.
+ * This function uses JSON.stringify() method if it is available in the browser.
+ *
+ *     Echo.Utils.object2JSON(null); // will return 'null'
+ *     Echo.Utils.object2JSON(123); // will return '123'
+ *     Echo.Utils.object2JSON(Number.POSITIVE_INFINITY); // will return 'null'
+ *     Echo.Utils.object2JSON("string\n"); // will return '"string\n"'
+ *     Echo.Utils.object2JSON(true) // will return true
+ *     Echo.Utils.object2JSON(["value1", "value2"]) // will return '["value1","value2"]'
+ *     Echo.Utils.object2JSON({"k1": "v1", "k2": "v2"}) // will return '{"k1":"v1","k2":"v2"}'
+ *
+ * @static
+ * @param {Mixed} obj The value to be converted.
+ * @return {String} Returns the string that contains JSON.
+ */
 Echo.Utils.object2JSON = function(obj) {
 	if (JSON && JSON.stringify) {
 		return JSON.stringify(obj);
@@ -155,6 +274,25 @@ Echo.Utils.object2JSON = function(obj) {
 	return out;
 };
 
+/**
+ * Method to truncate HTML text.
+ *
+ * This function truncates HTML contents preserving the right HTML structure and without truncate tags.
+ *
+ *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5); // will return "<div>123456</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5, "12345"); // will return "<div>1234512345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "12345", true); // will return "<div>12345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "12345", false); // will return "<div>12345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "12345", true); // will return "<div>12345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "12345", false); // will return "<div>12345"
+ * 
+ * @static
+ * @param {String} text The string to be truncated.
+ * @param {Number} limit The length of returned string without HTML tags.
+ * @param {String} postfix] The string to be added to truncated string.
+ * @param {Boolean} forceClosingTags This parameter takes affect only when no truncation was performed. Otherwise (when the content was truncated) the function restores HTML structure regardless the forseClosingTags parameter value.
+ * @return {String} Returns the truncated string.
+ */
 Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	
 	if (!limit || text.length < limit) return text;
@@ -205,9 +343,27 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	return text;
 };
 
-Echo.Utils.mapClass2Object = function(e, ctl) {
+/**
+ * Method to map css classes to objects.
+ *
+ *    // HTML template
+ *    var template =  '<div class="echo-class-container">' +
+ *                        '<div class="echo-class-header">header</div>' +
+ *                        '<div class="echo-class-content">content</div>' +
+ *                    '</div>';
+ *
+ *    var hash = Echo.Utils.mapClass2Object($(template));
+ *    
+ *    // hash['echo-class-header'].innerHTML will "header"
+ *
+ * @static
+ * @param {HTMLElement} element HTML element
+ * @param {Object} [ctl] The object in which class to object map is stored
+ * @return {Object} Returns the object 
+ */
+Echo.Utils.mapClass2Object = function(element, ctl) {
 	ctl = ctl || {};
-	e.find("*").andSelf().each(function(i, el) {
+	element.find("*").andSelf().each(function(i, el) {
 		if (el.className) {
 			var arr = el.className.split(/[ ]+/);
 			$.each(arr, function(i, c) {
@@ -218,10 +374,40 @@ Echo.Utils.mapClass2Object = function(e, ctl) {
 	return ctl;
 };
 
+/**
+ * Method to strip HTML tags from the string.
+ *
+ * This function returns a string with all HTML tags stripped from the given string.
+ *
+ *     Echo.Utils.stripTags("<div>Content</div>"); // will return "Content"
+ *
+ * @static
+ * @param {String} text The string to be stripped.
+ * @return {String} The stripped string.
+ */
 Echo.Utils.stripTags = function(text) {
 	return $('<div>').html(text).text();
 };
 
+/**
+ * Method to parse the URL and return its parts.
+ *
+ * This function parses a URL and returns a hash containing parts of the URL which are presented.
+ * This function is not meant to validate the given URL, it only breaks it up into the parts.
+ *
+ *     var url = "http://domain.com/some/path/?query_string#hash_value";
+ *     Echo.Utils.parseUrl(url); // will return {
+ *                               //     "scheme": "http",
+ *                               //     "domain": "domain.com",
+ *                               //     "path": "some/path"
+ *                               //     "query": "query_string",
+ *                               //     "fragment": "hash_value"
+ *                               // };
+ *
+ * @static
+ * @param {String} url The URL to be parsed.
+ * @return {Object} Returns the object containing the following parts of the URL as fields: scheme, domain, path, query, fragment.
+ */
 Echo.Utils.parseUrl = function(url) {
 	var parts = url.match(Echo.Vars.regexps.parseUrl);
 	return parts ? {
@@ -233,6 +419,48 @@ Echo.Utils.parseUrl = function(url) {
 	} : undefined;
 };
 
+/**
+ * Method to convert from HTML template to DOM element
+ *
+ * The first argument is HTML template to be converted to DOM element.
+ * All descendents of root HTML element should have the same css prefix which is the second argument of this function.
+ * Third argument can be either the object with rendering functions or simple rendering function.
+ * The function returns the object with the following methods: set, get, remove, content.
+ *
+ *    // HTML template
+ *    var template =  '<div class="echo-class-container">' +
+ *                        '<div class="echo-class-header"></div>' +
+ *                        '<div class="echo-class-content"></div>' +
+ *                    '</div>';
+ *    
+ *    // the object containing renderering functions for descendents of root element
+ *    var handlers = {
+ *        'header': function(element) {
+ *            element.val("some header");
+ *        },
+ *        'content': function(element) {
+ *            element.val("some content");
+ *        }
+ *    };
+ *
+ *    var container = Echo.Utils.toDOM(template, 'echo-class-', handlers);
+ *    container.get("header").html(); // will return "some header"
+ *    container.get("content").html(); // will return "some content"
+ * 
+ *    var footer_template = '<div class="echo-class-footer">some footer</div>';
+ *    
+ *    container.set("footer");
+ *    container.get("footer").html(); // will return "some footer"
+ *
+ *    container.remove("content");
+ *    container.get("content"); // will return undefined
+ *                
+ * @static
+ * @param {String} template Defines HTML template of the element.
+ * @param {String} prefix Defines prefix of css classes of root element and its descendents.
+ * @param {Mixed} renderer Defines rendering function or the object that contains rendering functions for root element and its descendents.
+ * @return {Object} Returns the instance of class that is described above
+ */
 Echo.Utils.toDOM = function(template, prefix, renderer) {
 	var content = $(template);
 	var elements = Echo.Utils.mapClass2Object(content);
@@ -244,6 +472,7 @@ Echo.Utils.toDOM = function(template, prefix, renderer) {
 			var element = elements[(ignorePrefix ? "" : prefix) + name];
 			return element && $(element);
 		},
+		
 		"remove": function(element) {
 			var name;
 			if (typeof element == "string") {
@@ -281,22 +510,41 @@ Echo.Utils.toDOM = function(template, prefix, renderer) {
 	return dom;
 };
 
-Echo.Utils.getVisibleColor = function(elem) {
+/**
+ * Method returning visible color of the element.
+ *
+ * This function determines visible color of the element.
+ * This function returns 'transparent' string if visible color is transparent.
+ * 
+ * @static
+ * @param {HTMLElement} element HTML element.
+ * @return {String} Returns visible color.
+ */
+Echo.Utils.getVisibleColor = function(element) {
 	// calculate visible color of element (transparent is not visible)
 	var color;
 	do {
-		color = elem.css('backgroundColor');
-		if (color != '' && color != 'transparent' && !/rgba\(0, 0, 0, 0\)/.test(color) || $.nodeName(elem.get(0), 'body')) {
+		color = element.css('backgroundColor');
+		if (color != '' && color != 'transparent' && !/rgba\(0, 0, 0, 0\)/.test(color) || $.nodeName(element.get(0), 'body')) {
 			break;
 		}
-	} while (elem = elem.parent());
+	} while (element = element.parent());
 	return color || 'transparent';
 };
 
-Echo.Utils.timestampFromW3CDTF = function(t) {
+/**
+ * Method to convert datetime value from W3C datetime format to timestamp.
+ *
+ *     Echo.Utils.timestampFromW3CDTF(""); // will return 886930050
+ *
+ * @static
+ * @param {String} datetime the string which contains datetime value to be converted.
+ * @return {Integer} Returns the timestamp divided by 1000.
+ */
+Echo.Utils.timestampFromW3CDTF = function(datetime) {
 	var parts = ['year', 'month', 'day', 'hours', 'minutes', 'seconds'];
 	var dt = {};
-	var matches = t.match(Echo.Vars.regexps.w3cdtf);
+	var matches = datetime.match(Echo.Vars.regexps.w3cdtf);
 	if (!matches) return;
 	$.each(parts, function(i, p) {
 		dt[p] = matches[i + 1];
@@ -305,10 +553,27 @@ Echo.Utils.timestampFromW3CDTF = function(t) {
 			dt['hours'], dt['minutes'], dt['seconds']) / 1000;
 };
 
+/**
+ * Method to determine that mobile device is used.
+ *
+ * The function determines that mobile devices is used by navigator.userAgent.
+ *
+ * @static
+ * @return {Boolean} Returns true if mobile device is used, false if not.
+ */
 Echo.Utils.isMobileDevice = function() {
 	return Echo.Vars.regexps.mobileUA.test(navigator.userAgent);
 };
 
+/**
+ * Method returning unique random string.
+ *
+ * This function returns unique string is the number of milliseconds between midnight January 1, 1970 (GMT)
+ * to current time plus random number.
+ *
+ * @static
+ * @return {String} Returns the unique random string
+ */
 Echo.Utils.getUniqueString = function() {
 	return (new Date()).valueOf() + Math.random().toString().substr(2);
 };
