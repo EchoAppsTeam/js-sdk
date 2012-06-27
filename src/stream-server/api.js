@@ -9,9 +9,8 @@ if (!Echo.StreamServer) Echo.StreamServer = {};
 Echo.StreamServer.API = {};
 
 Echo.StreamServer.API.Request = function(config) {
-	this.config = new Echo.Configuration(config, {
-		"apiBaseURL": "api.echoenabled.com/v1/"
-	});
+	var parentConfig = (new this.parentProto.constructor(config)).config;
+	this.config = new Echo.Configuration(config, parentConfig.getAsHash());
 };
 
 Echo.Utils.inherit(Echo.StreamServer.API.Request, Echo.API.Request);

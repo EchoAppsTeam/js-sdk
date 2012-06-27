@@ -12,7 +12,7 @@ Echo.API.Request = function(config) {
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
 		"method": "GET",
-		"apiBaseURL": "//api.echoenabled.com/v1/"
+		"apiBaseURL": "api.echoenabled.com/v1/"
 	});
 };
 
@@ -43,13 +43,19 @@ Echo.API.Request.prototype.transports.ajax = function(config) {
 		};
 		xdr.send();
 	} else {
-		$.ajax({
+		var ajaxSettings = {
 			url: this._prepareURL(),
-			method: this.config.get("method"),
+			type: this.config.get("method"),
+			crossDomain: true,
 			data: this.config.get("data"),
 			error: this.config.get("onError"),
-			success:this.config.get("onData")
-		});
+			success: this.config.get("onData"),
+			dataType: "json"
+		};
+		if (!$.support.cors) {
+			ajaxSettings.dataType = "jsonp";
+		}
+		$.ajax(ajaxSettings);
 	}
 };
 
