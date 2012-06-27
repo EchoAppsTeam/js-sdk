@@ -6,14 +6,11 @@ if (Echo.Configuration) return;
 
 /**
  * @class
- *
  * Class implements the interface for convenient work with different configurations.
  * The Echo.Configuration class is used in various places of Echo JS SDK components.
  *
  * @constructor
- *
- * Class constructor, which accepts user defined and default configuration and applies the
- * normalization function to the necessary (defined in normalization function) fields.
+ * Class constructor, which accepts user defined and default configuration and applies the normalization function to the necessary (defined in normalization function) fields.
  * 
  * @param {Object} master Defines the primary source of configuration. Usually the configuration defined in component config.
  * @param {Object} slave (optional) The set of default values which will be applied if no corresponding value found in the primary (master) config.

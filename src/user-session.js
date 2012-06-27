@@ -91,7 +91,7 @@ Echo.UserSession.is = function(key) {
  * Method to check if the user object has a given value defined for a certain field.
  *      
  * @param {String} key Defines the name of the user object field.
- * @param {String|Integer} value Defines the desired value.
+ * @param {Mixed} value Defines the desired string or integer value.
  * @return (Boolean) Returns true or false if condition was met or not respectively.
  * @method
  */

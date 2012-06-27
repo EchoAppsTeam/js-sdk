@@ -5,15 +5,19 @@
 if (Echo.Labels) return;
 
 /**
- * Constructor of class encapsulating language variable mechanics.
+ * @class
+ * Class implements the language variables mechanics across the components.
  *
- * The class should be instantiated to override language variables within the scope of a particular component instance.
+ * It should be instantiated to override language variables within the scope of a particular component instance.
  * Language variables overriden with the instance of this class will have the highest priority.
  * Static methods should be used for general language variable definition and localization purposes.
  *
- * @param {Object} labels flat object containing the list of language variables to be initialized
- * @param {String} namespace string representing the component namespace
- * @api public
+ * @constructor
+ * Constructor of class encapsulating language variable mechanics.
+ *
+ * @param {Object} labels Flat object containing the list of language variables to be initialized.
+ * @param {String} namespace String representing the component namespace.
+ * @return {Object} Returns the reference to the given Echo.Labels class instance.
  */
 
 Echo.Labels = function(labels, namespace) {
@@ -26,15 +30,15 @@ Echo.Labels = function(labels, namespace) {
 };
 
 /**
- * Method returning the language variable value by its name within the scope of a particular component instance.
+ * Method to access specific language variable within the scope of a particular component instance.
  *
  * Function will return the language variable value corresponding to this instance.
  * If current instance doesn't contain this particular language variable, it will fall back to the global language variable list.
- *
- * @param {String} name language variable name
- * @param {Object} data flat object data that should be inserted instead of a placeholder in the language variable
- * @return {String}
- * @api public
+ * 
+ * @method
+ * @param {String} name Language variable name.
+ * @param {Object} data Flat object data that should be inserted instead of a placeholder in the language variable.
+ * @return {String} Returns the string value of the language variable.
  */
 
 Echo.Labels.prototype.get = function(name, data) {
@@ -47,8 +51,11 @@ Echo.Labels.prototype.get = function(name, data) {
 /**
  * Method to add/override the language variable list within the scope of a particular component instance.
  *
- * @param {Object} labels flat object containing the list of language variables to be added/overriden 
- * @api public
+ * Function should be used to customize the text part of the UI within the particular component instance.
+ * For global text definitions and localization purposes the static method should be used.
+ *
+ * @method
+ * @param {Object} labels Flat object containing the list of language variables to be added/overriden. 
  */
 
 Echo.Labels.prototype.set = function(labels) {
@@ -69,10 +76,10 @@ Echo.Labels.prototype.set = function(labels) {
  * In this case the `isDefault` param can be omitted or set to `false`.
  * The values overriden with the function will be available globally.
  *
- * @param {Object} labels object containing the list of language variables
- * @param {String} namespace string representing the namespace
- * @param {Boolean} isDefault flag switching the localization mode to setting defaults one
- * @api public
+ * @static
+ * @param {Object} labels Object containing the list of language variables.
+ * @param {String} namespace String representing the namespace.
+ * @param {Boolean} isDefault Flag switching the localization mode to setting defaults one.
  */
 
 Echo.Labels.set = function(labels, namespace, isDefault) {
@@ -87,13 +94,13 @@ Echo.Labels.set = function(labels, namespace, isDefault) {
  *
  * Function will return the language variable value from the global language variable list.
  * It also takes into consideration the localized values.
- * If value of the particular language varibale is not found in the localization list it will fall back to the default language variable value.
+ * If value of the particular language variable is not found in the localization list it will fall back to the default language variable value.
  *
- * @param {String} name language variable name
- * @param {String} namespace string representing the namespace
- * @param {Object} data flat object data that should be inserted instead of a placeholder in the language variable 
- * @return {String}
- * @api public
+ * @static
+ * @param {String} name Language variable name.
+ * @param {String} namespace String representing the namespace.
+ * @param {Object} data Flat object data that should be inserted instead of a placeholder in the language variable.
+ * @return {String} Returns the string value of the language variable.
  */
 
 Echo.Labels.get = function(name, namespace, data) {
