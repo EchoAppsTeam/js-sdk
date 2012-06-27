@@ -52,8 +52,7 @@ suites.StreamServerAPI.prototype.cases.simpleSearchRequest = function(callback) 
 				"Checking if the \"onData\" callback was executed after the regular request.");
 			callback();
 		}
-	});
-	request.send();
+	}).send();
 };
 
 suites.StreamServerAPI.prototype.cases.searchRequestWithError = function(callback) {
