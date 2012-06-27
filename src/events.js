@@ -73,18 +73,21 @@ Echo.Events.publish = function(params) {
 			return false;
 		}
 		return type === "bubble"
-			? ~$.inArray("propagation", result.stop)
+			? ~$.inArray("bubble", result.stop)
 			: ~$.inArray("propagation", result.stop) || ~$.inArray(type, result.stop);
 	};
+	var lastHandlerResult;
 	var callHandlers = function(obj, restContexts) {
-		var lastHandlerResult;
 		$.each(obj.handlers || [], function(i, data) {
 			lastHandlerResult = data.handler(params.topic, params.data);
 			if (needStop(lastHandlerResult, "propagation.siblings")) {
 				return false;
 			}
 		});
-		if (params.bubble && !needStop(lastHandlerResult, "bubble")) {
+		if (params.bubble && needStop(lastHandlerResult, "bubble")) {
+			return;
+		}
+		if (params.bubble) {
 			if (!restContexts.length) {
 				return;
 			}
@@ -93,6 +96,9 @@ Echo.Events.publish = function(params) {
 		} else if (!needStop(lastHandlerResult, "propagation.children")) {
 			$.each(obj.contexts, function(id, context) {
 				callHandlers(context);
+				if (needStop(lastHandlerResult, "propagation.siblings")) {
+					return false;
+				}
 			});
 		}
 	};

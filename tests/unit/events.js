@@ -38,7 +38,7 @@ var suite = Echo.Tests.Unit.Events = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.Events",
-	"functions": ["subscribe", "unsubscribe"]
+	"functions": ["subscribe", "unsubscribe", "publish"]
 };
 
 suite.prototype.tests = {};
@@ -86,7 +86,9 @@ suite.prototype.tests.PublicMethods = {
 				"a2": {"contexts": {}, "handlers": [{"id": s10.id, "handler": s10.handler}]}
 			}
 		};
-		QUnit.deepEqual(Echo.Events._subscriptions, subscriptions, "Checking full structure of subscribers");
+		QUnit.deepEqual(Echo.Events._subscriptions.A, subscriptions.A, "Checking full structure of subscribers");
+		QUnit.deepEqual(Echo.Events._subscriptions.X, subscriptions.X, "Checking full structure of subscribers");
+		QUnit.deepEqual(Echo.Events._subscriptions.Z, subscriptions.Z, "Checking full structure of subscribers");
 
 		publish({"topic": "A", "context": "a1"});
 		QUnit.deepEqual(published, [2, 1, 6, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\")");
@@ -128,7 +130,9 @@ suite.prototype.tests.PublicMethods = {
 				"empty": {"contexts": {}, "handlers": [{"id": s8.id, "handler": s8.handler}, {"id": s9.id, "handler": s9.handler}]}
 			}
 		};
-		QUnit.deepEqual(Echo.Events._subscriptions, subscriptions2, "Checking full structure of subscribers after several unsubscriptions");
+		QUnit.deepEqual(Echo.Events._subscriptions.A, subscriptions2.A, "Checking full structure of subscribers after several unsubscriptions");
+		QUnit.deepEqual(Echo.Events._subscriptions.X, subscriptions2.X, "Checking full structure of subscribers after several unsubscriptions");
+		QUnit.deepEqual(Echo.Events._subscriptions.Z, subscriptions2.Z, "Checking full structure of subscribers after several unsubscriptions");
 
 		publish({"topic": "A", "context": "a1"});
 		QUnit.deepEqual(published, [6, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\")");
@@ -153,13 +157,15 @@ suite.prototype.tests.AdvancedPublishing = {
 		var s9 = subscribe("A", "a3");
 		var s10 = subscribe("A", "a3/b2");
 		var s11 = subscribe("A", "a3/b2/c2");
+		var s12 = subscribe("A", "a1/b1/c1/d1");
+		var s13 = subscribe("A", "a1/b1", ["bubble"]);
 
 		publish({"topic": "A", "context": "a1/b2/c2", "bubble": true});
 		QUnit.deepEqual(published, [5, 7, 2], "Publish: handlers order (topic \"A\", context \"a1/b2/c2\", bubble)");
-		publish({"topic": "A", "context": "a1/b1/c1", "bubble": true});
-		QUnit.deepEqual(published, [1, 2], "Publish: handlers order (topic \"A\", context \"a1/b1/c1\", bubble, propagation.siblings)");
+		publish({"topic": "A", "context": "a1/b1/c1/d1", "bubble": true});
+		QUnit.deepEqual(published, [12, 1, 13], "Publish: handlers order (topic \"A\", context \"a1/b1/c1/d1\", bubble, propagation.siblings)");
 		publish({"topic": "A", "context": "a1"});
-		QUnit.deepEqual(published, [2, 1, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\", propagation.siblings)");
+		QUnit.deepEqual(published, [2, 13, 1, 12, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\", propagation.siblings)");
 		publish({"topic": "A", "context": "a2"});
 		QUnit.deepEqual(published, [3], "Publish: handlers order (topic \"A\", context \"a2\", propagation.children)");
 		publish({"topic": "A", "context": "a3"});
