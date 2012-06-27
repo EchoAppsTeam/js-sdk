@@ -78,7 +78,9 @@ Echo.Events.publish = function(params) {
 	};
 	var lastHandlerResult;
 	var callHandlers = function(obj, restContexts) {
-		$.each(obj.handlers || [], function(i, data) {
+		// use copy of handler list so that inner unsubscribe actions couldn't mess it up
+		var handlers = (obj.handlers || []).slice(0);
+		$.each(handlers, function(i, data) {
 			lastHandlerResult = data.handler(params.topic, params.data);
 			if (needStop(lastHandlerResult, "propagation.siblings")) {
 				return false;
