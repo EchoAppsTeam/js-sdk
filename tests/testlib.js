@@ -215,7 +215,7 @@ Echo.Tests.Stats = {
 				//TODO: move an array of not tested namespaces in other place
 				if ($.inArray(prefix + name, ["Echo.Tests", "Echo.Vars", "Echo.Global"]) >= 0) return;
 				if (parentObject.hasOwnProperty(name) && typeof value != "string") {
-					// wrap all functions except constructors
+					// wrap all functions except constructors and "private" functions (they start with "_" symbol)
 					if (typeof value == "function" && name.charAt(0).toUpperCase() != name.charAt(0)) {
 						Echo.Tests.Stats.wrapFunction(parentObject, value, name, prefix);
 					}
