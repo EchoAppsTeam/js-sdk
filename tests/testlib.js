@@ -12,7 +12,7 @@ Echo.Tests.runTests = function() {
 		$.extend(suiteClass.prototype, new Echo.Tests.Common());
 		suiteClass.prototype.tests = suiteClass.prototype.tests || {};
 		var suite = new suiteClass();
-		var normalizedName = suite.normalizeName(name, true);
+		var normalizedName = suite.info.suiteName || suite.normalizeName(name, true);
 		QUnit.module(normalizedName);
 		// TODO: register single callback for all test framework
 		// (now one callback for each suite so they are called all after each test is finished)
@@ -55,7 +55,7 @@ Echo.Tests.Common.prototype.run = function() {
 				}, test.config.asyncTimeout || self.config.asyncTimeout);
 			}
 		};
-		name = self.normalizeName(name);
+		name = test.config.name || self.normalizeName(name);
 		if (test.config.description) {
 			name = name + " (" + test.config.description + ")";
 		}
@@ -87,6 +87,20 @@ Echo.Tests.Common.prototype.run = function() {
 			});
 		});
 	});
+};
+
+Echo.Tests.Common.prototype.sequentialAsyncTests = function(names, namespace) {
+	var self = this;
+	var recursive = function(list) {
+		// stop recursion and resume QUnit
+		if (!list.length) {
+			QUnit.start();
+			return;
+		}
+		var source = namespace ? self[namespace] : self;
+		source[list.shift()].call(self, function() { recursive(list); });
+	};
+	recursive(names);
 };
 
 Echo.Tests.Common.prototype.normalizeName = function(name, capitalize) {
