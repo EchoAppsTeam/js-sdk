@@ -8,7 +8,7 @@ suite.prototype.info = {
 	"className": "Echo.Utils",
 	"functions": ["htmlize", "foldl", "getNestedValue", "setNestedValue", "stripTags", "object2JSON",
 		      "parseUrl", "mapClass2Object", "timestampFromW3CDTF", "addCss", "htmlTextTruncate",
-		      "getVisibleColor", "toDOM", "isMobileDevice"]
+		      "getVisibleColor", "toDOM", "isMobileDevice", "getUniqueString"]
 };
 
 suite.prototype.tests = {};
@@ -133,6 +133,16 @@ suite.prototype.tests.TestDataMethods = {
 			"Checking htmlTextTruncate() method with special character");
 		QUnit.equal(Echo.Utils.htmlTextTruncate("<div><span>1234&nbsp;", 5, "", 1), "<div><span>1234&nbsp;</span></div>",
 			"Checking htmlTextTruncate() method with forceClosingTags param");
+
+		QUnit.ok(typeof Echo.Utils.getUniqueString() == "string", "getUniqueString() really returns string");
+		var strings = [];
+		for (var i = 0; i < 5; i++) {
+			strings.push(Echo.Utils.getUniqueString());
+		}
+		for (var i = 0; i < 4; i++) {
+			var str = strings.shift();
+			QUnit.ok(!~$.inArray(str, strings), "getUniqueString(): string \"" + str + "\" differs from others");
+		}
 	}
 };
 
