@@ -6,7 +6,7 @@ sdk:
 
 doc:
 	@echo "Removing old docs..."
-	rm -rf docs
+	rm -rf web/sdk/docs
 	@echo "Making docs..."
-	jsduck src --output docs
+	jsduck src --output web/sdk/docs
 	@echo "Done!"
