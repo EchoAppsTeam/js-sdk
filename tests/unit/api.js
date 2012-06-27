@@ -47,7 +47,6 @@ suites.StreamServerAPI.prototype.cases.simpleSearchRequest = function(callback) 
 		"endpoint": "search",
 		"data": $.extend({}, this.params),
 		"onData": function(data) {
-			data = $.parseJSON(data);
 			QUnit.ok(data && data.entries,
 				"Checking if the \"onData\" callback was executed after the regular request.");
 			callback();
@@ -60,7 +59,6 @@ suites.StreamServerAPI.prototype.cases.searchRequestWithError = function(callbac
 		"endpoint": "search",
 		"data": $.extend({}, this.params, {"q": "unknown:predicate"}),
 		"onData": function(data) {
-			data = $.parseJSON(data);
 			QUnit.ok(data && !!data.error,
 				"Checking if the \"onError\" callback was executed when the search query was defined incorrectly.");
 			callback();
@@ -74,7 +72,6 @@ suites.StreamServerAPI.prototype.cases.simpleLiveUpdatesRequest = function(callb
 		"data": this.params,
 		"recurring": true,
 		"onData": function(data) {
-			data = $.parseJSON(data);
 			QUnit.ok(data && data.entries,
 				"Checking if the \"onData\" callback was executed after the live update request.");
 			callback();
