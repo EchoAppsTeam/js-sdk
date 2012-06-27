@@ -6,10 +6,6 @@ if (Echo.Events) return;
 
 Echo.Events = {};
 
-Echo.Events._subscriptions = {};
-
-Echo.Events._dataByHandlerId = {};
-
 Echo.Events.subscribe = function(params) {
 	var handlerId = Echo.Utils.getUniqueString();
 	var context = Echo.Events._initContext(params.topic, params.context);
@@ -68,45 +64,9 @@ Echo.Events.unsubscribe = function(params) {
 };
 
 Echo.Events.publish = function(params) {
-	var needStop = function(result, type) {
-		if (!result || !result.stop) {
-			return false;
-		}
-		return type === "bubble"
-			? ~$.inArray("bubble", result.stop)
-			: ~$.inArray("propagation", result.stop) || ~$.inArray(type, result.stop);
-	};
-	var lastHandlerResult;
-	var callHandlers = function(obj, restContexts) {
-		// use copy of handler list so that inner unsubscribe actions couldn't mess it up
-		var handlers = (obj.handlers || []).slice(0);
-		$.each(handlers, function(i, data) {
-			lastHandlerResult = data.handler(params.topic, params.data);
-			if (needStop(lastHandlerResult, "propagation.siblings")) {
-				return false;
-			}
-		});
-		if (params.bubble && needStop(lastHandlerResult, "bubble")) {
-			return;
-		}
-		if (params.bubble) {
-			if (!restContexts.length) {
-				return;
-			}
-			params.context = restContexts.join("/");
-			Echo.Events.publish(params);
-		} else if (!needStop(lastHandlerResult, "propagation.children")) {
-			$.each(obj.contexts, function(id, context) {
-				callHandlers(context);
-				if (needStop(lastHandlerResult, "propagation.siblings")) {
-					return false;
-				}
-			});
-		}
-	};
 	params.context = Echo.Events._initContext(params.topic, params.context);
 	Echo.Events._executeForDeepestContext(params.topic, params.context, function(obj, lastContext, restContexts) {
-		callHandlers(obj[lastContext], restContexts);
+		Echo.Events._callHandlers(obj[lastContext], params, restContexts);
 	});
 	if (!params.bubble && params.context !== "empty") {
 		params.context = "empty";
@@ -114,7 +74,13 @@ Echo.Events.publish = function(params) {
 	}
 };
 
-// private functions
+// private stuff
+
+Echo.Events._subscriptions = {};
+
+Echo.Events._dataByHandlerId = {};
+
+Echo.Events._lastHandlerResult;
 
 Echo.Events._initContext = function(topic, context) {
 	context = context || "empty";
@@ -142,6 +108,44 @@ Echo.Events._executeForDeepestContext = function(topic, context, callback) {
 	});
 	if (obj[lastContext]) {
 		callback(obj, lastContext, parts);
+	}
+};
+
+Echo.Events._shouldStopEvent = function(stopperType) {
+	var stoppers = Echo.Events._lastHandlerResult && Echo.Events._lastHandlerResult.stop;
+	if (!stoppers) {
+		return false;
+	}
+	return stopperType === "bubble"
+		? ~$.inArray("bubble", stoppers)
+		: ~$.inArray("propagation", stoppers) || ~$.inArray(stopperType, stoppers);
+};
+
+Echo.Events._callHandlers = function(obj, params, restContexts) {
+	// use copy of handler list so that inner unsubscribe actions couldn't mess it up
+	var handlers = (obj.handlers || []).slice(0);
+	$.each(handlers, function(i, data) {
+		Echo.Events._lastHandlerResult = data.handler(params.topic, params.data);
+		if (Echo.Events._shouldStopEvent("propagation.siblings")) {
+			return false;
+		}
+	});
+	if (params.bubble && Echo.Events._shouldStopEvent("bubble")) {
+		return;
+	}
+	if (params.bubble) {
+		if (!restContexts.length) {
+			return;
+		}
+		params.context = restContexts.join("/");
+		Echo.Events.publish(params);
+	} else if (!Echo.Events._shouldStopEvent("propagation.children")) {
+		$.each(obj.contexts, function(id, context) {
+			Echo.Events._callHandlers(context, params);
+			if (Echo.Events._shouldStopEvent("propagation.siblings")) {
+				return false;
+			}
+		});
 	}
 };
 
