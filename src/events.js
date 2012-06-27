@@ -4,8 +4,28 @@
 
 if (Echo.Events) return;
 
+/**
+ * Library for exchanging messages between components on the page. It also provides external interface for users to subscribe to a certain events (like "app was rendered", "user logged in", etc).
+ *
+ * Contexts used in this library are complex identifiers constructed using the following rules:
+ *     <contextId> :: "<id>" or "<parentContextID>/<id>", where
+ *     <id> :: some unique identifier assigned to component
+ *     <parentContextID> :: "<contextID>"
+ */
 Echo.Events = {};
 
+/**
+ * Function allowing to subscribe to an event with a specific callback function and topic.
+ *
+ * @static
+ * @param {Object} params Configuration parameters object with the following fields:
+ * @param {String} params.topic Event name.
+ * @param {String} params.context (optional) Unique identifier for inter-component communication.
+ * @param {Function} params.handler Callback function which will be called when event is published
+ * @param {String} params.handler.topic Event name (same as params.topic)
+ * @param {Object} params.handler.data Arbitrary data object passed to the {@link #publish} function
+ * @return {String} Unique identifier for the current subscription which can be used for unsubscribing.
+ */
 Echo.Events.subscribe = function(params) {
 	var handlerId = Echo.Utils.getUniqueString();
 	var context = Echo.Events._initContext(params.topic, params.context);
@@ -22,6 +42,16 @@ Echo.Events.subscribe = function(params) {
 	return handlerId;
 };
 
+/**
+ * Function allowing to unsubscribe from an event.
+ *
+ * @static
+ * @param {Object} params Configuration parameters object with the following fields:
+ * @param {String} params.topic Event name.
+ * @param {String} params.context (optional) Unique identifier for inter-component communication.
+ * @param {String} params.handlerId Unique identifier from the {@link #subscribe} function.
+ * @return {Boolean} Unsubscription status.
+ */
 Echo.Events.unsubscribe = function(params) {
 	var unsubscribed = false;
 	if (params.handlerId && Echo.Events._dataByHandlerId[params.handlerId]) {
@@ -63,6 +93,15 @@ Echo.Events.unsubscribe = function(params) {
 	return unsubscribed;
 };
 
+/**
+ * Function allowing to publish an event providing arbitrary data.
+ *
+ * @static
+ * @param {Object} params Configuration parameters object with the following fields:
+ * @param {String} params.topic Event name.
+ * @param {String} params.context (optional) Unique identifier for inter-component communication.
+ * @param {String} params.data Arbitrary data object.
+ */
 Echo.Events.publish = function(params) {
 	params.context = Echo.Events._initContext(params.topic, params.context);
 	Echo.Events._executeForDeepestContext(params.topic, params.context, function(obj, lastContext, restContexts) {
