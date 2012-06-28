@@ -346,15 +346,15 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 /**
  * Method to map css classes to objects.
  *
- *    // HTML template
- *    var template =  '<div class="echo-class-container">' +
+ *     // HTML template
+ *     var template =  '<div class="echo-class-container">' +
  *                        '<div class="echo-class-header">header</div>' +
  *                        '<div class="echo-class-content">content</div>' +
  *                    '</div>';
  *
- *    var hash = Echo.Utils.mapClass2Object($(template));
+ *     var hash = Echo.Utils.mapClass2Object(template);
  *    
- *    // hash['echo-class-header'].innerHTML will "header"
+ *     // hash['echo-class-header'].innerHTML will "header"
  *
  * @static
  * @param {HTMLElement} element HTML element
@@ -427,34 +427,34 @@ Echo.Utils.parseUrl = function(url) {
  * Third argument can be either the object with rendering functions or simple rendering function.
  * The function returns the object with the following methods: set, get, remove, content.
  *
- *    // HTML template
- *    var template =  '<div class="echo-class-container">' +
+ *     // HTML template
+ *     var template =  '<div class="echo-class-container">' +
  *                        '<div class="echo-class-header"></div>' +
  *                        '<div class="echo-class-content"></div>' +
  *                    '</div>';
- *    
- *    // the object containing renderering functions for descendents of root element
- *    var handlers = {
- *        'header': function(element) {
- *            element.val("some header");
- *        },
- *        'content': function(element) {
- *            element.val("some content");
- *        }
- *    };
+ *     
+ *     // the object containing renderering functions for descendents of root element
+ *     var handlers = {
+ *         'header': function(element) {
+ *             element.val("some header");
+ *         },
+ *         'content': function(element) {
+ *             element.val("some content");
+ *         }
+ *     };
+ *     
+ *     var container = Echo.Utils.toDOM(template, 'echo-class-', handlers);
+ *     container.get("header").html(); // will return "some header"
+ *     container.get("content").html(); // will return "some content"
+ *     
+ *     var footer_template = '<div class="echo-class-footer">some footer</div>';
+ *     
+ *     container.set("footer");
+ *     container.get("footer").html(); // will return "some footer"
  *
- *    var container = Echo.Utils.toDOM(template, 'echo-class-', handlers);
- *    container.get("header").html(); // will return "some header"
- *    container.get("content").html(); // will return "some content"
- * 
- *    var footer_template = '<div class="echo-class-footer">some footer</div>';
- *    
- *    container.set("footer");
- *    container.get("footer").html(); // will return "some footer"
+ *     container.remove("content");
+ *     container.get("content"); // will return undefined
  *
- *    container.remove("content");
- *    container.get("content"); // will return undefined
- *                
  * @static
  * @param {String} template Defines HTML template of the element.
  * @param {String} prefix Defines prefix of css classes of root element and its descendents.
@@ -535,7 +535,7 @@ Echo.Utils.getVisibleColor = function(element) {
 /**
  * Method to convert datetime value from W3C datetime format to timestamp.
  *
- *     Echo.Utils.timestampFromW3CDTF(""); // will return 886930050
+ *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // will return 886930050
  *
  * @static
  * @param {String} datetime the string which contains datetime value to be converted.
