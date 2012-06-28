@@ -34,7 +34,7 @@ Echo.API.Request.prototype.transports.ajax = function(config) {
 	if ("XDomainRequest" in window && window.XDomainRequest != null) {
 		var xdr = new XDomainRequest();
 		var self = this;
-		xdr.open(this.config.get("method"), this._prepareURL() + utils.objectToQuery(this.config.get("data")));
+		xdr.open(this.config.get("method"), this._prepareURL() + "?" + utils.objectToQuery(this.config.get("data")));
 		xdr.onload = function() {
 			self.config.get("onData") && self.config.get("onData")($.parseJSON(xdr.responseText));
 		};

@@ -578,6 +578,16 @@ Echo.Utils.getUniqueString = function() {
 	return (new Date()).valueOf() + Math.random().toString().substr(2);
 };
 
+/**
+ * Method which allows to inherit the object from another object.
+ *
+ * This function performs prototype inheritance of the JS objects.
+ *
+ * @static
+ * @param {Class} child Class which should be entended.
+ * @param {Class} parent Class which should be used as a parent for the first class.
+ * @return {Class} Returns the result class.
+ */
 Echo.Utils.inherit = function(child, parent) {
 	var F = function() {};
 	F.prototype = parent.prototype;
@@ -587,13 +597,19 @@ Echo.Utils.inherit = function(child, parent) {
 	return child;
 };
 
-Echo.Utils.objectToQuery = function(obj) {
-	var i = 0;
-	return Echo.Utils.foldl("", obj, function(value, acc, key) {
-		return acc += (
-			(i++ ? "&" : "?") + key + "=" + value
-		);
-	});
+/**
+ * Method which transforms a given object to the GET string.
+ *
+ * This function returns the GET string which can be used for further URL constructions. The values of the corresponding keys are URL encoded.
+ *
+ * @static
+ * @param {Object} data Object which should be transformed into the GET string.
+ * @return {String} Returns the GET string.
+ */
+Echo.Utils.objectToQuery = function(data) {
+	return $.map(data || {}, function(value, key) {
+		return key + "=" + encodeURIComponent(Echo.Utils.object2JSON(value));
+	}).join("&");
 };
 
 })();
