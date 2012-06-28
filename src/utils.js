@@ -29,7 +29,25 @@ Echo.Utils = {};
  *
  * This function adds css styles to the style tag which is placed in the head of the document.
  * The first argument is a string that contains css styles, the second one is the unique identity string of css styles to be added. 
- * If corresponding css styles is already placed in the document then method returns false. 
+ * If css styles with corresponding id were added before then this function returns false.
+ *
+ *     // style tag in the head of HTML document
+ *     // <style>
+ *     //     .example-class { font-size: 12px; }
+ *     // </style>
+ *
+ *     Echo.Utils.addCss(
+ *         '.echo-class { font-size: 14px; } '
+ *     , 'echo-class-id'); // will return true
+ *     // and new css style will be added to style tag
+ *     // <style>
+ *     //     .example-class { font-size: 12px; }
+ *     //     .echo-class { font-size: 14px; }
+ *     // </style>
+ *
+ *     Echo.Utils.addCss(
+ *         '.echo-new-class { font-size: 16px; } '
+ *     , 'echo-class-id'); // will return false because styles with id = 'echo-class-id' were added before
  *
  * @static
  * @param {String} cssCode Contains css styles to be added.
@@ -113,7 +131,7 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * Method to access specific nested field value in the object.
  *
  * This function returns the corresponding value of the given key or the default value
- * if specified in the third argument. Use the dot as a delimeter of key parts to get nested field value.
+ * if specified in the third argument. Use the dot as a delimiter of key parts to get nested field value.
  *
  *     var data = {
  *         "key1": "value1",
@@ -128,7 +146,7 @@ Echo.Utils.foldl = function(acc, object, callback) {
  *
  * @static
  * @param {String} key Defines the key for value extraction.
- * @param {Object} data The object for which the value is set.
+ * @param {Object} data The object from which the value is taken.
  * @param {Object} [defauts]  Default value if no corresponding key was found in the object.
  * @param {Function} [callback] The callback function executed for each object of corresponding part of the key.
  * @param {Object} callback.data The object of corresponding part of the key.
@@ -163,7 +181,7 @@ Echo.Utils.getNestedValue = function(key, data, defaults, callback) {
  * Method to define specific nested field value in the object.
  *
  * This function allows to define the value for the corresponding field in the object.
- * Use the dot as a delimeter of key parts to set nested field value.
+ * Use the dot as a delimiter of key parts to set nested field value.
  *
  *     var data = {
  *         "key1": "value1",
@@ -173,10 +191,10 @@ Echo.Utils.getNestedValue = function(key, data, defaults, callback) {
  *     };
  *
  *     Echo.Utils.setNestedValue(data, "key1", "new value"); // data["key1"] will be "new value"
- *     Echo.Utils.setNestedValue(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1": "value1-1"}
+ *     Echo.Utils.setNestedValue(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
  * 
  * @static
- * @param {Object} obj The object data from which the value is taken.
+ * @param {Object} obj The object for which the value is set.
  * @param {String} key Defines the key where the given value should be stored.
  * @param {Mixed} value The object data that should be inserted for the key.
  */
@@ -218,9 +236,9 @@ Echo.Utils.htmlize = function(text) {
  *     Echo.Utils.object2JSON(123); // will return '123'
  *     Echo.Utils.object2JSON(Number.POSITIVE_INFINITY); // will return 'null'
  *     Echo.Utils.object2JSON("string\n"); // will return '"string\n"'
- *     Echo.Utils.object2JSON(true) // will return true
- *     Echo.Utils.object2JSON(["value1", "value2"]) // will return '["value1","value2"]'
- *     Echo.Utils.object2JSON({"k1": "v1", "k2": "v2"}) // will return '{"k1":"v1","k2":"v2"}'
+ *     Echo.Utils.object2JSON(true); // will return true
+ *     Echo.Utils.object2JSON(["value1", "value2"]); // will return '["value1","value2"]'
+ *     Echo.Utils.object2JSON({"k1": "v1", "k2": "v2"}); // will return '{"k1":"v1","k2":"v2"}'
  *
  * @static
  * @param {Mixed} obj The value to be converted.
@@ -279,7 +297,7 @@ Echo.Utils.object2JSON = function(obj) {
  *
  * This function truncates HTML contents preserving the right HTML structure and without truncate tags.
  *
- *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5); // will return "<div>123456</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5); // will return "<div>12345</div>"
  *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5, "12345"); // will return "<div>1234512345</div>"
  *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "12345", true); // will return "<div>12345</div>"
  *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "12345", false); // will return "<div>12345</div>"
@@ -347,12 +365,12 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  * Method to map css classes to objects.
  *
  *     // HTML template
- *     var template =  '<div class="echo-class-container">' +
+ *     var template = '<div class="echo-class-container">' +
  *                        '<div class="echo-class-header">header</div>' +
  *                        '<div class="echo-class-content">content</div>' +
- *                     '</div>';
+ *                    '</div>';
  *
- *     var hash = Echo.Utils.mapClass2Object(template);
+ *     var hash = Echo.Utils.mapClass2Object($(template));
  *    
  *     // hash['echo-class-header'].innerHTML will be "header"
  *
@@ -383,7 +401,7 @@ Echo.Utils.mapClass2Object = function(element, ctl) {
  *
  * @static
  * @param {String} text The string to be stripped.
- * @return {String} The stripped string.
+ * @return {String} Returns the stripped string.
  */
 Echo.Utils.stripTags = function(text) {
 	return $('<div>').html(text).text();
@@ -420,7 +438,7 @@ Echo.Utils.parseUrl = function(url) {
 };
 
 /**
- * Method to convert from HTML template to DOM element
+ * Method to convert from HTML template to DOM element.
  *
  * The first argument is HTML template to be converted to DOM element.
  * All descendants of root HTML element should have the same css prefix which is the second argument of this function.
@@ -459,7 +477,16 @@ Echo.Utils.parseUrl = function(url) {
  * @param {String} template Defines HTML template of the element.
  * @param {String} prefix Defines prefix of css classes of root element and its descendants.
  * @param {Mixed} renderer Defines rendering function or the object that contains rendering functions for root element and its descendants.
- * @return {Object} Returns the instance of class that is described above
+ * @return {Object} Returns the instance of class with the following fields:
+ * @return {Function} return.set The function to set nested element
+ * @return {String} return.set.name The name of the element which is set
+ * @return {HTML Element} return.set.element The function to set nested element
+ * @return {Function} return.get The function to set nested element
+ * @return {String} return.get.name The name of the element which is taken
+ * @return {Boolean} return.get.ignorePrefix If it is true then prefix is not added to element name
+ * @return {Function} return.remove The function to remove nested element
+ * @return {HTML Element} return.remove.element The element to be removed
+ * @return {HTML Element} return.content DOM element of input HTML template
  */
 Echo.Utils.toDOM = function(template, prefix, renderer) {
 	var content = $(template);
@@ -511,13 +538,27 @@ Echo.Utils.toDOM = function(template, prefix, renderer) {
 };
 
 /**
- * Method returning visible color of the element.
+ * Method returning original visible color of the element.
  *
- * This function determines visible color of the element.
- * This function returns 'transparent' string if visible color is transparent.
+ * This function traverses the element parents recoursively to determine original visible color of the element.
+ * This function returns 'transparent' string if background-color of the element and its parents is not specified.
+ *
+ *     // HTML template
+ *     var template = "<div class='container'>" +
+ *                        "<div class='header' style='background-color: green;'>header</div>" +
+ *                        "<div class='content' style='background-color: red;'>" +
+ *                            "<div class='section1'></div>" +
+ *                            "<div class='section2'></div>" +
+ *                        "</div>" +
+ *                        "<div class='footer'>footer</div>" +
+ *                    "</div>";
+ *
+ *     Echo.Utils.getVisibleColor( $(".header", template) ); // will return "rgb(0, 128, 0)"
+ *     Echo.Utils.getVisibleColor( $(".section1", template) ); // will return "rgb(255, 0, 0)"
+ *     Echo.Utils.getVisibleColor( $(".footer", template) ); // will return "transparent"
  * 
  * @static
- * @param {HTMLElement} element HTML element.
+ * @param {HTMLElement} element HTML element whose visible color is determined.
  * @return {String} Returns visible color.
  */
 Echo.Utils.getVisibleColor = function(element) {
@@ -571,8 +612,10 @@ Echo.Utils.isMobileDevice = function() {
  * This function returns unique string is the number of milliseconds between midnight January 1, 1970 (GMT)
  * to current time plus random number.
  *
+ *     Echo.Utils.getUniqueString(); // will return something like "134086853327622290480640764643"
+ *
  * @static
- * @return {String} Returns the unique random string
+ * @return {String} Returns the unique random string.
  */
 Echo.Utils.getUniqueString = function() {
 	return (new Date()).valueOf() + Math.random().toString().substr(2);
