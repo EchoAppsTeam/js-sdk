@@ -81,13 +81,13 @@ Echo.Utils.addCss = function(cssCode, id) {
  * The first argument is the object that is available in callback function to accumulate items.
  *
  *     var array = Echo.Utils.foldl([], [1, 2, 3], function(item, acc) {
- *     		acc.push(item);
- *     }); // array will [1, 2, 3];
+ *         acc.push(item);
+ *     }); // array will be [1, 2, 3];
  *     
  *     var hash = Echo.Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
- *              if (key === "key2") return;
- *              acc[key] = item;
- *     }); // hash will {"key1": "value1"};
+ *         if (key === "key2") return;
+ *         acc[key] = item;
+ *     }); // hash will be {"key1": "value1"};
  * 
  * @static
  * @param {Object} acc Defines the initial accumulator.
@@ -172,8 +172,8 @@ Echo.Utils.getNestedValue = function(key, data, defaults, callback) {
  *         }
  *     };
  *
- *     Echo.Utils.setNestedValue(data, "key1", "new value"); // data["key1"] will "new value"
- *     Echo.Utils.setNestedValue(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will {"key1-1": "value1-1"}
+ *     Echo.Utils.setNestedValue(data, "key1", "new value"); // data["key1"] will be "new value"
+ *     Echo.Utils.setNestedValue(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1": "value1-1"}
  * 
  * @static
  * @param {Object} obj The object data from which the value is taken.
@@ -289,7 +289,7 @@ Echo.Utils.object2JSON = function(obj) {
  * @static
  * @param {String} text The string to be truncated.
  * @param {Number} limit The length of returned string without HTML tags.
- * @param {String} postfix] The string to be added to truncated string.
+ * @param {String} postfix The string to be added to truncated string.
  * @param {Boolean} forceClosingTags This parameter takes affect only when no truncation was performed. Otherwise (when the content was truncated) the function restores HTML structure regardless the forseClosingTags parameter value.
  * @return {String} Returns the truncated string.
  */
@@ -350,11 +350,11 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  *     var template =  '<div class="echo-class-container">' +
  *                        '<div class="echo-class-header">header</div>' +
  *                        '<div class="echo-class-content">content</div>' +
- *                    '</div>';
+ *                     '</div>';
  *
  *     var hash = Echo.Utils.mapClass2Object(template);
  *    
- *     // hash['echo-class-header'].innerHTML will "header"
+ *     // hash['echo-class-header'].innerHTML will be "header"
  *
  * @static
  * @param {HTMLElement} element HTML element
@@ -423,7 +423,7 @@ Echo.Utils.parseUrl = function(url) {
  * Method to convert from HTML template to DOM element
  *
  * The first argument is HTML template to be converted to DOM element.
- * All descendents of root HTML element should have the same css prefix which is the second argument of this function.
+ * All descendants of root HTML element should have the same css prefix which is the second argument of this function.
  * Third argument can be either the object with rendering functions or simple rendering function.
  * The function returns the object with the following methods: set, get, remove, content.
  *
@@ -433,7 +433,7 @@ Echo.Utils.parseUrl = function(url) {
  *                        '<div class="echo-class-content"></div>' +
  *                    '</div>';
  *     
- *     // the object containing renderering functions for descendents of root element
+ *     // the object containing rendering functions for descendants of root element
  *     var handlers = {
  *         'header': function(element) {
  *             element.val("some header");
@@ -457,8 +457,8 @@ Echo.Utils.parseUrl = function(url) {
  *
  * @static
  * @param {String} template Defines HTML template of the element.
- * @param {String} prefix Defines prefix of css classes of root element and its descendents.
- * @param {Mixed} renderer Defines rendering function or the object that contains rendering functions for root element and its descendents.
+ * @param {String} prefix Defines prefix of css classes of root element and its descendants.
+ * @param {Mixed} renderer Defines rendering function or the object that contains rendering functions for root element and its descendants.
  * @return {Object} Returns the instance of class that is described above
  */
 Echo.Utils.toDOM = function(template, prefix, renderer) {
@@ -556,7 +556,7 @@ Echo.Utils.timestampFromW3CDTF = function(datetime) {
 /**
  * Method to determine that mobile device is used.
  *
- * The function determines that mobile devices is used by navigator.userAgent.
+ * The function determines by navigator.userAgent that mobile device is used.
  *
  * @static
  * @return {Boolean} Returns true if mobile device is used, false if not.
