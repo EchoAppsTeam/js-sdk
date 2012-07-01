@@ -2,7 +2,7 @@
  
 "use strict";
 
-if (Echo.Utils.isComponentDefined("Echo.API")) return;
+if (Echo.Utils.isComponentDefined("Echo.API.Request")) return;
 
 Echo.API = {};
 
