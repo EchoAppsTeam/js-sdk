@@ -2,7 +2,7 @@
 
 "use strict";
 
-if (Echo.UserSession) return;
+if (Echo.Utils.isComponentDefined("Echo.UserSession")) return;
 
 /**
  * @class

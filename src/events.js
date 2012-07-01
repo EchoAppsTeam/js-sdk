@@ -2,7 +2,7 @@
 
 "use strict";
 
-if (Echo.Events) return;
+if (Echo.Utils.isComponentDefined("Echo.Events")) return;
 
 /**
  * Library for exchanging messages between components on the page. It also provides external interface for users to subscribe to a certain events (like "app was rendered", "user logged in", etc).

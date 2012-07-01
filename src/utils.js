@@ -3,6 +3,9 @@
 "use strict";
 
 if (!window.Echo) window.Echo = {};
+
+if (Echo.Utils) return;
+
 if (!Echo.Global) Echo.Global = {};
 
 if (!Echo.Vars) Echo.Vars = {
@@ -610,6 +613,19 @@ Echo.Utils.objectToQuery = function(data) {
 	return $.map(data || {}, function(value, key) {
 		return key + "=" + encodeURIComponent(Echo.Utils.object2JSON(value));
 	}).join("&");
+};
+
+/**
+ * Method which allows to check whether a given component was defined on the page.
+ *
+ * This function returns the boolean value which represents whether a given component is defined on the page.
+ *
+ * @static
+ * @param {String} name Component name which needs to be checked.
+ * @return {Boolean} Returns the true/false if the component was or wasn't found respectively.
+ */
+Echo.Utils.isComponentDefined = function(name) {
+	return !!Echo.Utils.getNestedValue(name, window);
 };
 
 })();

@@ -171,6 +171,15 @@ suite.prototype.tests.TestDataMethods = {
 			"Checking that there is no methods added to the parent object after the Echo.Utils.inherit function call");
 		QUnit.ok(!!classB.prototype.functionA,
 			"Checking if the child object has all methods from the parent class");
+
+		QUnit.ok(Echo.Utils.isComponentDefined("Echo"),
+			"Checking if Echo namespace was defined (via isComponentDefined function)");
+		QUnit.ok(Echo.Utils.isComponentDefined("Echo.Utils"),
+			"Checking if Echo.Utils lib was defined (via isComponentDefined function)");
+		QUnit.ok(!Echo.Utils.isComponentDefined("Echo.SomeRandomLib"),
+			"Checking if the isComponentDefined function triggers negative value for the random name");
+		QUnit.ok(!Echo.Utils.isComponentDefined("SomeNameSpace.SomeRandomLib"),
+			"Checking if the isComponentDefined function triggers negative value for the random name and namespace");
 	}
 };
 

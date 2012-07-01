@@ -2,7 +2,7 @@
 
 "use strict";
 
-if (Echo.Configuration) return;
+if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
 
 /**
  * @class

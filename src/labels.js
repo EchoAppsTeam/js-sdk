@@ -2,7 +2,7 @@
 
 "use strict";
 
-if (Echo.Labels) return;
+if (Echo.Utils.isComponentDefined("Echo.Labels")) return;
 
 /**
  * @class

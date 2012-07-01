@@ -2,7 +2,7 @@
 
 "use strict";
 
-if (Echo.StreamServer && Echo.StreamServer.API) return;
+if (Echo.Utils.isComponentDefined("Echo.StreamServer.API")) return;
 
 if (!Echo.StreamServer) Echo.StreamServer = {};
 
