@@ -4,47 +4,34 @@
 
 if (Echo.Utils.isComponentDefined("Echo.API.Request")) return;
 
-Echo.API = {};
+Echo.API = {"Transports": {}, "Request": {}};
 
 var utils = Echo.Utils;
 
-Echo.API.Request = function(config) {
-	if (!config || !config.endpoint) return;
+Echo.API.Transports.AJAX = function(config) {
 	this.config = new Echo.Configuration(config, {
-		"method": "GET",
-		"apiBaseURL": "api.echoenabled.com/v1/"
+		"method": "get",
+		"onData": function() {},
+		"onError": function() {}
 	});
+	this.instance = this._getInstance();
 };
 
-Echo.API.Request.prototype.send = function() {
-	var method = this["_" + this.config.get("endpoint")];
-	method && method.call(this);
-};
-
-Echo.API.Request.prototype.request = function(config) {
-	var transport = this._getTransport();
-	transport();
-};
-
-Echo.API.Request.prototype.abort = function() { };
-
-Echo.API.Request.prototype.transports = {};
-
-Echo.API.Request.prototype.transports.ajax = function(config) {
+Echo.API.Transports.AJAX.prototype._getInstance = function() {
+	var self = this;
 	if ("XDomainRequest" in window && window.XDomainRequest != null) {
 		var xdr = new XDomainRequest();
-		var self = this;
-		xdr.open(this.config.get("method"), this._prepareURL() + "?" + utils.objectToQuery(this.config.get("data")));
+		xdr.open(this.config.get("method"), this.config.get("url"));
 		xdr.onload = function() {
-			self.config.get("onData") && self.config.get("onData")($.parseJSON(xdr.responseText));
+			self.config.get("onData")($.parseJSON(xdr.responseText));
 		};
 		xdr.onerror = function() {
-			self.config.get("onError") && self.config.get("onError")(xdr);
+			self.config.get("onError")(xdr);
 		};
-		xdr.send();
+		return xdr;
 	} else {
 		var ajaxSettings = {
-			url: this._prepareURL(),
+			url: this.config.get("url"),
 			type: this.config.get("method"),
 			crossDomain: true,
 			data: this.config.get("data"),
@@ -55,36 +42,101 @@ Echo.API.Request.prototype.transports.ajax = function(config) {
 		if (!$.support.cors) {
 			ajaxSettings.dataType = "jsonp";
 		}
-		$.ajax(ajaxSettings);
+		$.ajaxSetup(ajaxSettings);
+		return $.ajax;
 	}
 };
 
-Echo.API.Request.prototype.transports.ws = function(url, config) {
+Echo.API.Transports.AJAX.prototype.send = function(params) {
+	if ($.support.cors) {
+		this.instance();
+	} else {
+		this.instance.send(params);
+	}
+};
+
+Echo.API.Transports.AJAX.prototype.abort = function() {
+	this.instance.abort();
+};
+
+Echo.API.Transports.WS = function(config) {
+	this.config = new Echo.Configurstion(config, {
+		"onData": function() {},
+		"onOpen": function() {},
+		"onClose": function() {},
+		"onError": function() {}
+	});
+	this.instance = this._getInstance();
+};
+
+Echo.API.Transports.WS.prototype._getInstance = function() {
+	var self = this;
 	var Socket = window.MozWebSocket || window.WebSocket;
 	var socket = new Socket(url);
 	socket.onmessage = function(event) {
-		config.success(utils.parseJSON(event.data));
+		self.config.get("onData")(utils.parseJSON(event.data));
 	};
 	socket.onopen = function() {
-		config.open();
+		self.config.get("onOpen");
+	};
+	socket.onclose = function() {
+		self.config.get("onClose");
 	};
 	socket.onerror = function(event) {
-		config.success(event.data);
+		self.config.get("onError")(event.data);
 	};
-	socket.send(utils.object2JSON(config.data));
+	return socket;
+};
+
+Echo.API.Transports.WS.prototype.send = function(params) {
+	this.instance.send(utils.object2JSON(params));
+};
+
+Echo.API.Request = function(config) {
+	if (!config || !config.endpoint) return;
+	this.config = new Echo.Configuration(config, {
+		"apiBaseURL": "api.echoenabled.com/v1/",
+		"transport": "ajax"
+	});
+	this.transport = this._getTransport();
+};
+
+Echo.API.Request.prototype.send = function() {
+	var method = this["_" + this.config.get("endpoint")];
+	method && method.call(this);
+};
+
+Echo.API.Request.prototype.request = function() {
+	this.transport && this.transport.send();
+};
+
+Echo.API.Request.prototype.abort = function() {
+	this.transport && this.transport.abort();
 };
 
 Echo.API.Request.prototype._getTransport = function() {
-	var self = this;
-	return function() {
-		// FIXME: enable when web socket support is available
-		//this.transports[window.WebSocket || window.MozWebSocket ? "ws" : "ajax"].apply(this, arguments);
-		self.transports["ajax"].apply(self, arguments);
-	};
+	var transport = this.config.get("transport");
+	if (Echo.API.Transports[transport.toUpperCase()]) {
+		return new Echo.API.Transports[transport.toUpperCase()](
+			$.extend(this._getHandlersByConfig(), {
+				"url": this._prepareURL(),
+				"data": this.config.get("data")
+			})
+		);
+	}
+};
+
+Echo.API.Request.prototype._getHandlersByConfig = function() {
+	return utils.foldl({}, this.config.getAsHash(), function(value, acc, key) {
+		if (/^on[A-Z]/.test(key)) {
+			acc[key] = value;
+		}
+	});
 };
 
 Echo.API.Request.prototype._prepareURL = function(config) {
-	return "http://" + this.config.get("apiBaseURL") + this.config.get("endpoint");
+	var scheme = this.config.get("secure") ? "https:" : window.location.protocol;
+	return scheme + "//" + this.config.get("apiBaseURL") + this.config.get("endpoint");
 };
 
- })(jQuery);
+})(jQuery);
