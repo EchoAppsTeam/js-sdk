@@ -483,13 +483,13 @@ Echo.Utils.parseUrl = function(url) {
  * @return {Object} Returns the instance of class with the following fields:
  * @return {Function} return.set The function to set nested element
  * @return {String} return.set.name The name of the element which is set
- * @return {HTML Element} return.set.element The function to set nested element
+ * @return {HTMLElement} return.set.element The function to set nested element
  * @return {Function} return.get The function to set nested element
  * @return {String} return.get.name The name of the element which is taken
  * @return {Boolean} return.get.ignorePrefix If it is true then prefix is not added to element name
  * @return {Function} return.remove The function to remove nested element
- * @return {HTML Element} return.remove.element The element to be removed
- * @return {HTML Element} return.content DOM element of input HTML template
+ * @return {HTMLElement} return.remove.element The element to be removed
+ * @return {HTMLElement} return.content DOM element of input HTML template
  */
 Echo.Utils.toDOM = function(template, prefix, renderer) {
 	var content = $(template);
@@ -583,7 +583,7 @@ Echo.Utils.getVisibleColor = function(element) {
  *
  * @static
  * @param {String} datetime the string which contains datetime value to be converted.
- * @return {Integer} Returns the timestamp divided by 1000.
+ * @return {Number} Returns the timestamp in seconds.
  */
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
 	var parts = ['year', 'month', 'day', 'hours', 'minutes', 'seconds'];
