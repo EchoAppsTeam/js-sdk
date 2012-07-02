@@ -583,7 +583,7 @@ Echo.Utils.getVisibleColor = function(element) {
  *
  * @static
  * @param {String} datetime the string which contains datetime value to be converted.
- * @return {Number} Returns the timestamp in seconds.
+ * @return {Number} Returns UNIX timestamp.
  */
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
 	var parts = ['year', 'month', 'day', 'hours', 'minutes', 'seconds'];
