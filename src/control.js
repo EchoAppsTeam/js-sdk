@@ -18,6 +18,7 @@ Echo.Control.create = function(manifest) {
 		this.init([
 			"vars",
 			["config", [config]],
+			"dom",
 			"events",
 			"labels",
 			"css",
@@ -94,6 +95,8 @@ Echo.Control.prototype.render = function(config) {
 
 Echo.Control.prototype.rerender = function() {};
 
+Echo.Control.prototype.refresh = function() {};
+
 Echo.Control.prototype.extend = function(what, arg) {
 	if (!what) return;
 	var control = this;
@@ -156,6 +159,10 @@ Echo.Control.prototype.init.config = function(data) {
 		var handler = normalizer && normalizer[key] || _normalizer && _normalizer[key];
 		return handler ? handler.call(this, value) : value;
 	});
+};
+
+Echo.Control.prototype.init.dom = function() {
+	return this.config.get("target");
 };
 
 Echo.Control.prototype.init.events = function() {
