@@ -40,14 +40,15 @@ Echo.Labels = function(labels, namespace) {
  *
  * Function will return the language variable value corresponding to this instance.
  * If current instance doesn't contain this particular language variable, it will fall back to the global language variable list.
- * 
+ *
  *     var labels = new Echo.Labels({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream");
+ *
  *     labels.get("live"); // will return "Live"
- *     labels.get("paused"); //will return "Paused"
- * 
+ *     labels.get("paused"); // will return "Paused"
+ *
  * @param {String} name Language variable name.
  * @param {Object} data Flat object data that should be inserted instead of a placeholder in the language variable.
  * @return {String} Returns the string value of the language variable.
@@ -66,6 +67,22 @@ Echo.Labels.prototype.get = function(name, data) {
  *
  * Function should be used to customize the text part of the UI within the particular component instance.
  * For global text definitions and localization purposes the static method should be used.
+ *
+ *     var labels = new Echo.Labels({
+ *         "live": "Live",
+ *         "paused": "Paused"
+ *     }, "Stream");
+ *
+ *     labels.get("live"); // will return "Live"
+ *     labels.get("paused"); // will return "Paused"
+ *
+ *     labels.set({
+ *         "live": "Live...",
+ *         "paused": "Paused..."
+ *     });
+ *
+ *     labels.get("live"); // will return "Live..."
+ *     labels.get("paused"); // will return "Paused..."
  *
  * @param {Object} labels Flat object containing the list of language variables to be added/overriden. 
  */
@@ -89,6 +106,30 @@ Echo.Labels.prototype.set = function(labels) {
  * In this case the `isDefault` param can be omitted or set to `false`.
  * The values overriden with the function will be available globally.
  *
+ *     Echo.Labels.set({
+ *         "live": "Live",
+ *         "paused": "Paused"
+ *     }, "Stream"); // setting custom labels
+ *
+ *     Echo.Labels.get("live", "Stream"); // will return "Live"
+ *     Echo.Labels.get("paused", "Stream"); // will return "Paused"
+ *
+ *     Echo.Labels.set({
+ *         "live": "Live...",
+ *         "paused": "Paused..."
+ *     }, "Stream", true); // setting default labels
+ *
+ *     Echo.Labels.get("live", "Stream"); // will return "Live" (custom label is not overridden by default)
+ *     Echo.Labels.get("paused", "Stream"); // will return "Paused" (custom label is not overridden by default)
+ *
+ *     Echo.Labels.set({
+ *         "live": "Live label",
+ *         "paused": "Paused label"
+ *     }, "Stream"); // overriding custom labels
+ *
+ *     Echo.Labels.get("live", "Stream"); // will return "Live label"
+ *     Echo.Labels.get("paused", "Stream"); // will return "Paused label"
+ *
  * @param {Object} labels Object containing the list of language variables.
  * @param {String} namespace String representing the namespace.
  * @param {Boolean} isDefault Flag switching the localization mode to setting defaults one.
@@ -109,6 +150,14 @@ Echo.Labels.set = function(labels, namespace, isDefault) {
  * It also takes into consideration the localized values.
  * If value of the particular language variable is not found in the localization list it will fall back to the default language variable value.
  *
+ *     Echo.Labels.set({
+ *         "live": "Live",
+ *         "paused": "Paused"
+ *     }, "Stream");
+ *
+ *     Echo.Labels.get("live", "Stream"); // will return "Live"
+ *     Echo.Labels.get("Stream.paused"); // will return "Paused"
+ *
  * @param {String} name Language variable name.
  * @param {String} namespace String representing the namespace.
  * @param {Object} data Flat object data that should be inserted instead of a placeholder in the language variable.
@@ -120,6 +169,8 @@ Echo.Labels.get = function(name, namespace, data) {
 	var label = Echo.Labels._storage["custom"][key] || Echo.Labels._storage["general"][key] || name;
 	return Echo.Labels._substitute(label, data);
 };
+
+// internal functions
 
 Echo.Labels._storage = { "general": {}, "custom": {} };
 
