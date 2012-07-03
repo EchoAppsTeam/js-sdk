@@ -145,8 +145,14 @@ suite.prototype.tests.TestDataMethods = {
 			"Checking htmlTextTruncate() method with postfix param");
 		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>some&nbsp;content</div>", 10), "<div>some&nbsp;conten</div>",
 			"Checking htmlTextTruncate() method with special character");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div><span>1234&nbsp;", 5, "", 1), "<div><span>1234&nbsp;</span></div>",
-			"Checking htmlTextTruncate() method with forceClosingTags param");
+		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>123456", 5, "", true), "<div>12345</div>",
+			"Checking htmlTextTruncate() method with forceClosingTabs = true");
+		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>123456", 5, "", false), "<div>12345</div>",
+			"Checking htmlTextTruncate() method with forceClosingTabs = false");
+		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>12345", 5, "", true), "<div>12345</div>",
+			"Checking htmlTextTruncate() method with forceClosingTabs = true and no truncation");
+		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>12345", 5, "", false), "<div>12345",
+			"Checking htmlTextTruncate() method with forceClosingTabs = false and no truncation");
 
 		QUnit.ok(typeof Echo.Utils.getUniqueString() == "string", "getUniqueString() really returns string");
 		var strings = [];
@@ -234,7 +240,7 @@ suite.prototype.tests.TestDomMethods = {
 		container.get("content").css("background-color", "rgb(0, 255, 0)");
 		QUnit.equal(Echo.Utils.getVisibleColor(container.get("section3")), "rgb(0, 255, 0)",
 			"Checking that getVisibleColor() method returns parent element color if element color is undefined");
-		container.get("footer").css("background-color", "rgba(0, 0, 0, 0");
+		container.get("footer").css("background-color", "rgba(0, 0, 0, 0)");
 		QUnit.equal(Echo.Utils.getVisibleColor(container.get("footer")), "transparent",
 			"Checking getVisibleColor() method with transparent element color");
 		

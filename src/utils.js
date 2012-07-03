@@ -302,10 +302,10 @@ Echo.Utils.object2JSON = function(obj) {
  *
  *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5); // will return "<div>12345</div>"
  *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5, "12345"); // will return "<div>1234512345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "12345", true); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "12345", false); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "12345", true); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "12345", false); // will return "<div>12345"
+ *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "", true); // will return "<div>12345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "", false); // will return "<div>12345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "", true); // will return "<div>12345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "", false); // will return "<div>12345"
  * 
  * @static
  * @param {String} text The string to be truncated.
@@ -420,7 +420,7 @@ Echo.Utils.stripTags = function(text) {
  *     Echo.Utils.parseUrl(url); // will return {
  *                               //     "scheme": "http",
  *                               //     "domain": "domain.com",
- *                               //     "path": "some/path"
+ *                               //     "path": "/some/path/"
  *                               //     "query": "query_string",
  *                               //     "fragment": "hash_value"
  *                               // };
@@ -457,10 +457,10 @@ Echo.Utils.parseUrl = function(url) {
  *     // the object containing rendering functions for descendants of root element
  *     var handlers = {
  *         'header': function(element) {
- *             element.val("some header");
+ *             element.html("some header");
  *         },
  *         'content': function(element) {
- *             element.val("some content");
+ *             element.html("some content");
  *         }
  *     };
  *     
@@ -470,7 +470,7 @@ Echo.Utils.parseUrl = function(url) {
  *     
  *     var footer_template = '<div class="echo-class-footer">some footer</div>';
  *     
- *     container.set("footer");
+ *     container.set("footer", footer_template);
  *     container.get("footer").html(); // will return "some footer"
  *
  *     container.remove("content");
