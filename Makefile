@@ -1,6 +1,5 @@
 SRC_DIR = src
 WEB_SDK_DIR = web/sdk
-PACK_DIRS = $(WEB_SDK_DIR)/stream-server
 PACK_NAMES = \
 	environment.pack \
 	stream-server.pack \
@@ -39,14 +38,12 @@ PACK_FILES_identity-server/controls = $(SRC_DIR)/identity-server/controls/*.js
 PACK_FILES_identity-server/plugins = $(SRC_DIR)/identity-server/plugins/*.js
 PACK_FILES_identity-server/api = $(SRC_DIR)/api.js $(SRC_DIR)/identity-server/api.js
 
-all: clean sdk assemble docs
+all: clean sdk packs docs
 
-assemble: prepare_dirs $(PACK_NAMES)
-
-prepare_dirs:
-	@mkdir -p $(PACK_DIRS)
+packs: $(PACK_NAMES)
 
 stream-server.pack: stream-server/controls.pack stream-server/plugins.pack stream-server/api.pack
+identity-server.pack: identity-server/controls.pack identity-server/plugins.pack identity-server/api.pack
 
 %.pack:
 	@echo "Assembling $@.js..."
