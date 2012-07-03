@@ -64,25 +64,42 @@ Echo.Control.prototype.substitute = function(template, data) {
 	return template;
 };
 
-Echo.Control.prototype.render = function() {
-	// TODO: provide the ability to render 1 specific element
+Echo.Control.prototype.render = function(config) {
 	var control = this;
-	var templates = {};
-	var target = $(this.config.get("target"));
-	target.addClass(this._cssClassFromControlName());
-	templates.raw = $.isFunction(this.template) ? this.template() : this.template;
-	templates.processed = $(this.substitute(templates.raw, this.data || {}));
-	templates.processed.find("*").andSelf().each(function(i, element) {
-		element = $(element);
-		var renderer = element.data("renderer");
-		if (renderer && control.renderers[renderer]) {
-			control.renderers[renderer][0].apply(control, [element]);
-		}
-	});
-	target.empty().append(templates.processed);
+	config = config || {};
+	// render template
+	if (config.template) {
+		var templates = {};
+		templates.raw = $.isFunction(config.template)
+			? config.template.call(control)
+			: config.template;
+		templates.processed = $(control.substitute(templates.raw, config.data || {}));
+		templates.processed.find("*").andSelf().each(function(i, element) {
+			element = $(element);
+			var renderer = element.data("renderer");
+			if (renderer && control.renderers[renderer]) {
+				control.renderers[renderer][0].apply(control, [element]);
+			}
+		});
+		return templates.processed;
+	}
+	// render the whole control
+	var output = this.render({"template": this.template});
+	this.config.get("target")
+		.addClass(this._cssClassFromControlName())
+		.empty()
+		.append(output);
+	return output;
 };
 
 Echo.Control.prototype.rerender = function() {};
+
+Echo.Control.prototype.extend = function(what, arg) {
+	if (!what) return;
+	var control = this;
+	var handler = control["_" + what.charAt(0).toUpperCase() + what.slice(1)];
+	return handler && handler.call(control, arg || []);
+};
 
 Echo.Control.prototype.template = function() {
 	return this.templates.main;
@@ -195,5 +212,9 @@ Echo.Control.prototype.init.user = function(callback) {
 Echo.Control.prototype._cssClassFromControlName = function() {
 	return this.manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 };
+
+Echo.Control.prototype._extendTemplate = function(config) {};
+
+Echo.Control.prototype._extendRenderer = function(config) {};
 
 })(jQuery);
