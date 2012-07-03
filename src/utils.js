@@ -641,11 +641,7 @@ Echo.Utils.inherit = function(child, parent) {
 	child.prototype.constructor = child;
 	child.prototype.parentProto = parent.prototype;
 	child.prototype.parent = function() {
-		var self = this;
-		var args = arguments;
-		return new function() {
-			return parent.apply(self, args);
-		};
+		return parent.apply(this, arguments);
 	};
 	return child;
 };
