@@ -21,7 +21,6 @@ auth.labels = {
 
 auth.events = {
 	"internal.User.onInvalidate": function() {
-		// TODO: pass control ref as "this"
 		$.fancybox.close();
 		this.rerender();
 	}
@@ -45,7 +44,7 @@ auth.templates.logged =
 		'<div class="edit echo-linkColor echo-clickable" data-renderer="edit">' +
 			'{Label:edit}' +
 		'</div>' +
-		'<div class="logout echo-linkColor echo-clickable">' +
+		'<div class="logout echo-linkColor echo-clickable" data-renderer="logout">' +
 			"{Label:logout}" +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
@@ -54,7 +53,7 @@ auth.templates.logged =
 auth.renderers.logout = function(element) { 
 	var self = this;
 	return element.click(function() {
-		element.empty().append(self.label("loggingOut"));
+		element.empty().append(self.labels.get("loggingOut"));
 		self.user.logout();
 	});
 };
@@ -103,10 +102,10 @@ auth.methods.template = function() {
 auth.methods.assembleIdentityControl = function(type, element) {
 	var self = this;
 	var data = this.config.get("identityManager." + type);
-	if (!data || !Backplane.getChannelID()) return element.hide();
+	if (!data || !this.user.get("sessionID")) return element.hide();
 
 	var appendSessionID = function(url) {
-		var id = encodeURIComponent(Backplane.getChannelID());
+		var id = encodeURIComponent(this.user.get("sessionID"));
 		var parts = Echo.Utils.parseURL(url);
 		var session = parts["query"]
 			? parts["query"].match(/=$/) ? id : "&sessionID=" + id
@@ -169,7 +168,8 @@ auth.css =
 	"{prefix} .avatar { float: left; }" +
 	"{prefix} .avatar img { width: 24px; height: 24px; }" +
 	"{prefix} .name { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
-	"{prefix} .edit { float: left; margin: 6px 0px 0px 12px; }";
+	"{prefix} .edit { float: left; margin: 6px 0px 0px 12px; }" +
+	".echo-clear { clear: both; }";
 
 Echo.Control.create(auth);
 

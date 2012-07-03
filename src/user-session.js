@@ -155,7 +155,7 @@ Echo.UserSession.logout = function(callback) {
 		return;
 	}
 	user._apiRequest(user.config.get("endpoints.logout"), {
-		"sessionID": Backplane.getChannelID()
+		"sessionID": user.get("sessionID")
 	}, function(data) {
 		user._onInit(callback);
 		Backplane.expectMessages("identity/ack");
@@ -246,7 +246,7 @@ Echo.UserSession._init = function(callback) {
 	user.state = "waiting";
 	user._apiRequest(user.config.get("endpoints.whoami"), {
 		"appkey": user.config.get("appkey"),
-		"sessionID": Backplane.getChannelID()
+		"sessionID": user.get("sessionID")
 	}, function(data) {
 		// user is not logged in
 		if (data.result && data.result == "session_not_found") {
@@ -270,7 +270,6 @@ Echo.UserSession._normalize = function(data) {
 	data.echo.roles = data.echo.roles || [];
 	data.echo.markers = data.echo.markers || [];
 	data.poco = data.poco || {"entry": {}};
-	data.sessionID = window.Backplane && Backplane.getChannelID() || undefined;
 	data.identities = data.poco.entry.accounts || [];
 	return data;
 };
@@ -347,6 +346,10 @@ Echo.UserSession._getAvatar = function() {
 Echo.UserSession._getName = function() {
 	var user = this, identity = user.identity;
 	return identity ? (identity.displayName || identity.username) : undefined;
+};
+
+Echo.UserSession._getSessionID = function() {
+	return Backplane.getChannelID();
 };
 
 // functions delegated by the user.has(..) call

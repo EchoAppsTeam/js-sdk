@@ -106,12 +106,39 @@ Echo.Control.prototype.init.vars = function() {
 	return {"cache": {}};
 };
 
-Echo.Control.prototype.init.config = function(config) {
-	// TODO: copy init config function from Echo.Application
-	// TODO: need to assign proper events context for the instance via getUniqueString!
-	//       get parent context and add extra value!
-	//this.config.set("context", Echo.Utils.getUniqueString());
-	return new Echo.Configuration(config, this.manifest.config);
+Echo.Control.prototype.init.config = function(data) {
+	var _normalizer = {};
+	_normalizer.target = $;
+	_normalizer.plugins = function(list) {
+		var data = Echo.Utils.foldl({"hash": {}, "order": []}, list || [],
+			function(plugin, acc) {
+				var pos = $.inArray(plugin.name, acc.order);
+				if (pos >= 0) {
+					acc.order.splice(pos, 1);
+				}
+				acc.order.push(plugin.name);
+				acc.hash[plugin.name] = plugin;
+			});
+		this.set("pluginsOrder", data.order);
+		return data.hash;
+	};
+	data = $.extend({"plugins": []}, data || {});
+	var protocol = window.location.protocol == "http:" ? "http:" : "https:";
+	var defaults = $.extend({
+		"appkey": "",
+		"apiBaseURL": protocol + "//api.echoenabled.com",
+		"debug": false,
+		// TODO: need to handle the situation when the app
+		//       was initialized from another app, the context should
+		//       be constructed in a special way in this case
+		"context": Echo.Utils.getUniqueString()
+	}, this.manifest.config || {});
+	// TODO: find better home for normalizer...
+	var normalizer = this.manifest.config.normalizer;
+	return new Echo.Configuration(data, defaults, function(key, value) {
+		var handler = normalizer && normalizer[key] || _normalizer && _normalizer[key];
+		return handler ? handler.call(this, value) : value;
+	});
 };
 
 Echo.Control.prototype.init.events = function() {
