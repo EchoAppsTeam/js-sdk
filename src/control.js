@@ -49,18 +49,23 @@ Echo.Control.skeleton = function(name) {
 
 // TODO: revisit function location and contract...
 Echo.Control.prototype.substitute = function(template, data) {
-	var self = this;
-	template = template.replace(Echo.Vars.regexps.matchSelf, function($0, $1) {
-		// FIXME: incorrect condition if 0, "", false or [] passed on purpose
-		return Echo.Utils.getNestedValue(self, $1) ||
-			Echo.Utils.getNestedValue(self.data || {}, $1) ||
-			self.config.get($1, "");
+	var control = this;
+	template = template.replace(Echo.Vars.regexps.matchSelf, function(match, key) {
+		var value = Echo.Utils.getNestedValue(control, key);
+		if (typeof value == "undefined") {
+			value = Echo.Utils.getNestedValue(control.data, key);
+			if (typeof value == "undefined") {
+				return control.config.get(key, "");
+			}
+			return value;
+		}
+		return value;
 	});
-	template = template.replace(Echo.Vars.regexps.matchLabel, function($0, $1) {
-		return self.labels.get($1, "");
+	template = template.replace(Echo.Vars.regexps.matchLabel, function(match, key) {
+		return control.labels.get(key, "");
 	});
-	template = template.replace(Echo.Vars.regexps.matchData, function($0, $1) {
-		return Echo.Utils.getNestedValue(data, $1, "");
+	template = template.replace(Echo.Vars.regexps.matchData, function(match, key) {
+		return Echo.Utils.getNestedValue(data, key, "");
 	});
 	return template;
 };
@@ -90,12 +95,17 @@ Echo.Control.prototype.render = function(config) {
 		.addClass(this._cssClassFromControlName())
 		.empty()
 		.append(output);
+	this.events.publish({"topic": "onRender"});
 	return output;
 };
 
-Echo.Control.prototype.rerender = function() {};
+Echo.Control.prototype.rerender = function() {
+	this.events.publish({"topic": "onRerender"});
+};
 
-Echo.Control.prototype.refresh = function() {};
+Echo.Control.prototype.refresh = function() {
+	this.events.publish({"topic": "onRefresh"});
+};
 
 Echo.Control.prototype.extend = function(what, arg) {
 	if (!what) return;
@@ -169,6 +179,7 @@ Echo.Control.prototype.init.events = function() {
 	var control = this;
 	var events = {
 		"prepare": function(params) {
+			params.topic = control.manifest.name + "." + params.topic;
 			params.context = control.config.get("context");
 			params.callback = $.proxy(params.callback, control);
 			return params;
