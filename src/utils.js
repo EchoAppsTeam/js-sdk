@@ -143,20 +143,20 @@ Echo.Utils.foldl = function(acc, object, callback) {
  *         }
  *     };
  *
- *     Echo.Utils.getNestedValue("key1", data); // will return "value1"
- *     Echo.Utils.getNestedValue("key2", data); // will return object {"key2-1": "value2-1"}
- *     Echo.Utils.getNestedValue("key2.key2-1", data); // will return "value2-1"
+ *     Echo.Utils.getNestedValue(data, "key1"); // will return "value1"
+ *     Echo.Utils.getNestedValue(data, "key2"); // will return object {"key2-1": "value2-1"}
+ *     Echo.Utils.getNestedValue(data, "key2.key2-1"); // will return "value2-1"
  *
  * @static
- * @param {String} key Defines the key for value extraction.
  * @param {Object} obj The object from which the value is taken.
+ * @param {String} key Defines the key for value extraction.
  * @param {Object} [defauts]  Default value if no corresponding key was found in the object.
  * @param {Function} [callback] The callback function executed for each object of corresponding part of the key.
  * @param {Object} callback.data The object of corresponding part of the key.
  * @param {String} callback.key Defines corresponding part of the key.
  * @return {Mixed} Returns the corresponding nested value found in the object.
 */
-Echo.Utils.getNestedValue = function(key, obj, defaults, callback) {
+Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
 	if (!key) return obj;
 	if (typeof key == "string") {
 		key = key.split(/\./);
@@ -193,18 +193,18 @@ Echo.Utils.getNestedValue = function(key, obj, defaults, callback) {
  *         }
  *     };
  *
- *     Echo.Utils.setNestedValue("key1", data, "new value"); // data["key1"] will be "new value"
- *     Echo.Utils.setNestedValue("key1", data, {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
+ *     Echo.Utils.setNestedValue(data, "key1", "new value"); // data["key1"] will be "new value"
+ *     Echo.Utils.setNestedValue(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
  * 
  * @static
- * @param {String} key Defines the key where the given value should be stored.
  * @param {Object} obj The object for which the value is set.
+ * @param {String} key Defines the key where the given value should be stored.
  * @param {Mixed} value The object data that should be inserted for the key.
  */
-Echo.Utils.setNestedValue = function(key, obj, value) {
+Echo.Utils.setNestedValue = function(obj, key, value) {
 	var keys = key.split(/\./);
 	var field = keys.pop();
-	var data = Echo.Utils.getNestedValue(keys, obj, undefined, function(acc, v) {
+	var data = Echo.Utils.getNestedValue(obj, keys, undefined, function(acc, v) {
 		if (typeof acc[v] == "undefined") {
 			acc[v] = {};
 		}
@@ -671,7 +671,7 @@ Echo.Utils.objectToQuery = function(data) {
  * @return {Boolean} Returns the true/false if the component was or wasn't found respectively.
  */
 Echo.Utils.isComponentDefined = function(name) {
-	return !!Echo.Utils.getNestedValue(name, window);
+	return !!Echo.Utils.getNestedValue(window, name);
 };
 
 })();

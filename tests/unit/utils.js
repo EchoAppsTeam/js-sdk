@@ -41,21 +41,21 @@ suite.prototype.tests.TestDataMethods = {
 			}
 		};
 		
-		QUnit.equal(Echo.Utils.getNestedValue("key1", data), "value1",
+		QUnit.equal(Echo.Utils.getNestedValue(data, "key1"), "value1",
 			"Checking getNestedValue() method with simple key");
-		QUnit.deepEqual(Echo.Utils.getNestedValue("", data), data,
+		QUnit.deepEqual(Echo.Utils.getNestedValue(data, ""), data,
 			"Checking getNestedValue() method with empty key");
-		QUnit.deepEqual(Echo.Utils.getNestedValue("key2", data), {"key2-1": "value2-1"},
+		QUnit.deepEqual(Echo.Utils.getNestedValue(data, "key2"), {"key2-1": "value2-1"},
 			"Checking getNestedValue() method")
-		QUnit.equal(Echo.Utils.getNestedValue("key2.key2-1", data), "value2-1",
+		QUnit.equal(Echo.Utils.getNestedValue(data, "key2.key2-1"), "value2-1",
 			"Checking getNestedValue() method with complex key")
-		QUnit.equal(Echo.Utils.getNestedValue("key1.fakekey", data, "default value"), "default value",
+		QUnit.equal(Echo.Utils.getNestedValue(data, "key1.fakekey", "default value"), "default value",
 			"Checking getNestedValue() method with fake key and default value");
 		
-		Echo.Utils.setNestedValue("key1", data, { "key1-1": "value1-1"});
+		Echo.Utils.setNestedValue(data, "key1", { "key1-1": "value1-1"});
 		QUnit.deepEqual(data["key1"], {"key1-1": "value1-1"},
 			"Checking setNestedValue() method with object param");
-		Echo.Utils.setNestedValue("key3", data, "value3");
+		Echo.Utils.setNestedValue(data, "key3", "value3");
 		QUnit.equal(data["key3"], "value3",
 			"Checking setNestedValue() method with plain param");
 		

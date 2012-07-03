@@ -9,7 +9,7 @@ Echo.Control = function() {};
 // static interface
 
 Echo.Control.create = function(manifest) {
-	var control = Echo.Utils.getNestedValue(manifest.name, window);
+	var control = Echo.Utils.getNestedValue(window, manifest.name);
 	// prevent multiple re-definitions
 	if (control) return control;
 	var _constructor = function(config) {
@@ -30,7 +30,7 @@ Echo.Control.create = function(manifest) {
 		$.extend(_constructor.prototype, manifest.methods);
 	}
 	_constructor.prototype.templates = manifest.templates;
-	Echo.Utils.setNestedValue(manifest.name, window, _constructor);
+	Echo.Utils.setNestedValue(window, manifest.name, _constructor);
 	return _constructor;
 };
 
@@ -51,15 +51,15 @@ Echo.Control.prototype.substitute = function(template, data) {
 	var self = this;
 	template = template.replace(Echo.Vars.regexps.matchSelf, function($0, $1) {
 		// FIXME: incorrect condition if 0, "", false or [] passed on purpose
-		return Echo.Utils.getNestedValue($1, self) ||
-			Echo.Utils.getNestedValue($1, self.data || {}) ||
+		return Echo.Utils.getNestedValue(self, $1) ||
+			Echo.Utils.getNestedValue(self.data || {}, $1) ||
 			self.config.get($1, "");
 	});
 	template = template.replace(Echo.Vars.regexps.matchLabel, function($0, $1) {
 		return self.labels.get($1, "");
 	});
 	template = template.replace(Echo.Vars.regexps.matchData, function($0, $1) {
-		return Echo.Utils.getNestedValue($1, data, "");
+		return Echo.Utils.getNestedValue(data, $1, "");
 	});
 	return template;
 };
