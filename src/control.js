@@ -30,7 +30,7 @@ Echo.Control.create = function(manifest) {
 		$.extend(_constructor.prototype, manifest.methods);
 	}
 	_constructor.prototype.templates = manifest.templates;
-	Echo.Utils.setNestedValue(window, manifest.name, _constructor);
+	Echo.Utils.setNestedValue(manifest.name, window, _constructor);
 	return _constructor;
 };
 
@@ -143,7 +143,7 @@ Echo.Control.prototype.init.labels = function() {
 
 Echo.Control.prototype.init.css = function() {
 	if (!this.manifest.css) return;
-	Echo.Utils.addCss(this.manifest.css, this.manifest.name);
+	Echo.Utils.addCSS(this.manifest.css, this.manifest.name);
 };
 
 Echo.Control.prototype.init.renderers = function() {

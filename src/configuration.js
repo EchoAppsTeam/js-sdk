@@ -72,7 +72,7 @@ Echo.Configuration.prototype.set = function(key, value) {
 	if (typeof value == "object") {
 		this._clearCacheByPrefix(key);
 	}
-	Echo.Utils.setNestedValue(this.data, key, this.normalize(keys.pop(), value));
+	Echo.Utils.setNestedValue(key, this.data, this.normalize(keys.pop(), value));
 };
 
 /**
@@ -88,7 +88,7 @@ Echo.Configuration.prototype.remove = function(key) {
 	var keys = key.split(/\./);
 	var field = keys.pop();
 	var data = Echo.Utils.getNestedValue(keys, this.data);
-	Echo.Utils.setNestedValue(this.cache, key, undefined);
+	Echo.Utils.setNestedValue(key, this.cache, undefined);
 	delete data[field];
 };
 

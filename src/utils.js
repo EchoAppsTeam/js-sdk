@@ -14,7 +14,7 @@ if (!Echo.Vars) Echo.Vars = {
 		"matchData": /{Data:(([a-z]+\.)*[a-z]+)}/ig,
 		"matchSelf": /{Self:(([a-z_]+\.)*[a-z_]+)}/ig,
 		"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
-		"parseUrl": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/,
+		"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/,
 		"w3cdtf": /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/
 	}
 };
@@ -28,36 +28,36 @@ if (!Echo.Vars) Echo.Vars = {
 Echo.Utils = {};
 
 /**
- * Method to add css styles on the page.
+ * Method to add CSS styles on the page.
  *
- * This function adds css styles to the style tag which is placed in the head of the document.
- * The first argument is a string that contains css styles, the second one is the unique identity string of css styles to be added. 
- * If css styles with corresponding id were added before then this function returns false.
+ * This function adds CSS styles to the style tag which is placed in the head of the document.
+ * The first argument is a string that contains CSS styles, the second one is the unique identity string of CSS styles to be added. 
+ * If CSS styles with corresponding id were added before then this function returns false.
  *
  *     // style tag in the head of HTML document
  *     // <style>
  *     //     .example-class { font-size: 12px; }
  *     // </style>
  *
- *     Echo.Utils.addCss(
+ *     Echo.Utils.addCSS(
  *         '.echo-class { font-size: 14px; } '
  *     , 'echo-class-id'); // will return true
- *     // and new css style will be added to style tag
+ *     // and new CSS style will be added to style tag
  *     // <style>
  *     //     .example-class { font-size: 12px; }
  *     //     .echo-class { font-size: 14px; }
  *     // </style>
  *
- *     Echo.Utils.addCss(
+ *     Echo.Utils.addCSS(
  *         '.echo-new-class { font-size: 16px; } '
  *     , 'echo-class-id'); // will return false because styles with id = 'echo-class-id' were added before
  *
  * @static
- * @param {String} cssCode Contains css styles to be added.
- * @param {String} id Unique identity string of css styles.
- * @return {Boolean} Returns true if css styles was successfully added, false - if css styles is already in the document.
+ * @param {String} cssCode Contains CSS styles to be added.
+ * @param {String} id Unique identity string of CSS styles.
+ * @return {Boolean} Returns true if CSS styles was successfully added, false - if CSS styles is already in the document.
  */
-Echo.Utils.addCss = function(cssCode, id) {
+Echo.Utils.addCSS = function(cssCode, id) {
 	Echo.Vars.css = Echo.Vars.css || {
 		"index": 1,
 		"processed": {}
@@ -149,19 +149,19 @@ Echo.Utils.foldl = function(acc, object, callback) {
  *
  * @static
  * @param {String} key Defines the key for value extraction.
- * @param {Object} data The object from which the value is taken.
+ * @param {Object} obj The object from which the value is taken.
  * @param {Object} [defauts]  Default value if no corresponding key was found in the object.
  * @param {Function} [callback] The callback function executed for each object of corresponding part of the key.
  * @param {Object} callback.data The object of corresponding part of the key.
  * @param {String} callback.key Defines corresponding part of the key.
  * @return {Mixed} Returns the corresponding nested value found in the object.
 */
-Echo.Utils.getNestedValue = function(key, data, defaults, callback) {
-	if (!key) return data;
+Echo.Utils.getNestedValue = function(key, obj, defaults, callback) {
+	if (!key) return obj;
 	if (typeof key == "string") {
 		key = key.split(/\./);
 	}
-	if (!key.length) return data;
+	if (!key.length) return obj;
 	var found = true;
 	var iteration = function(_key, _data) {
 		if (callback) {
@@ -175,8 +175,8 @@ Echo.Utils.getNestedValue = function(key, data, defaults, callback) {
 	};
 	// avoid foldl usage for plain keys
 	var value = key.length == 1
-		? iteration(key.pop(), data)
-		: Echo.Utils.foldl(data, key, iteration);
+		? iteration(key.pop(), obj)
+		: Echo.Utils.foldl(obj, key, iteration);
 	return found ? value : defaults;
 };
 
@@ -193,15 +193,15 @@ Echo.Utils.getNestedValue = function(key, data, defaults, callback) {
  *         }
  *     };
  *
- *     Echo.Utils.setNestedValue(data, "key1", "new value"); // data["key1"] will be "new value"
- *     Echo.Utils.setNestedValue(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
+ *     Echo.Utils.setNestedValue("key1", data, "new value"); // data["key1"] will be "new value"
+ *     Echo.Utils.setNestedValue("key1", data, {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
  * 
  * @static
- * @param {Object} obj The object for which the value is set.
  * @param {String} key Defines the key where the given value should be stored.
+ * @param {Object} obj The object for which the value is set.
  * @param {Mixed} value The object data that should be inserted for the key.
  */
-Echo.Utils.setNestedValue = function(obj, key, value) {
+Echo.Utils.setNestedValue = function(key, obj, value) {
 	var keys = key.split(/\./);
 	var field = keys.pop();
 	var data = Echo.Utils.getNestedValue(keys, obj, undefined, function(acc, v) {
@@ -365,7 +365,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 };
 
 /**
- * Method to map css classes to objects.
+ * Method to map CSS classes to objects.
  *
  *     // HTML template
  *     var template = '<div class="echo-class-container">' +
@@ -417,7 +417,7 @@ Echo.Utils.stripTags = function(text) {
  * This function is not meant to validate the given URL, it only breaks it up into the parts.
  *
  *     var url = "http://domain.com/some/path/?query_string#hash_value";
- *     Echo.Utils.parseUrl(url); // will return {
+ *     Echo.Utils.parseURL(url); // will return {
  *                               //     "scheme": "http",
  *                               //     "domain": "domain.com",
  *                               //     "path": "/some/path/"
@@ -429,8 +429,8 @@ Echo.Utils.stripTags = function(text) {
  * @param {String} url The URL to be parsed.
  * @return {Object} Returns the object containing the following parts of the URL as fields: scheme, domain, path, query, fragment.
  */
-Echo.Utils.parseUrl = function(url) {
-	var parts = url.match(Echo.Vars.regexps.parseUrl);
+Echo.Utils.parseURL = function(url) {
+	var parts = url.match(Echo.Vars.regexps.parseURL);
 	return parts ? {
 		"scheme": parts[3],
 		"domain": parts[4],
@@ -444,7 +444,7 @@ Echo.Utils.parseUrl = function(url) {
  * Method to convert from HTML template to DOM element.
  *
  * The first argument is HTML template to be converted to DOM element.
- * All descendants of root HTML element should have the same css prefix which is the second argument of this function.
+ * All descendants of root HTML element should have the same CSS prefix which is the second argument of this function.
  * Third argument can be either the object with rendering functions or simple rendering function.
  * The function returns the object with the following methods: set, get, remove, content.
  *
@@ -478,7 +478,7 @@ Echo.Utils.parseUrl = function(url) {
  *
  * @static
  * @param {String} template Defines HTML template of the element.
- * @param {String} prefix Defines prefix of css classes of root element and its descendants.
+ * @param {String} prefix Defines prefix of CSS classes of root element and its descendants.
  * @param {Mixed} renderer Defines rendering function or the object that contains rendering functions for root element and its descendants.
  * @return {Object} Returns the instance of class with the following fields:
  * @return {Function} return.set The function to set nested element

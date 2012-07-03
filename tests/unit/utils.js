@@ -7,7 +7,7 @@ var suite = Echo.Tests.Unit.Utils = function() {};
 suite.prototype.info = {
 	"className": "Echo.Utils",
 	"functions": ["htmlize", "foldl", "getNestedValue", "setNestedValue", "stripTags", "object2JSON",
-		      "parseUrl", "mapClass2Object", "timestampFromW3CDTF", "addCss", "htmlTextTruncate",
+		      "parseURL", "mapClass2Object", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate",
 		      "getVisibleColor", "toDOM", "isMobileDevice", "getUniqueString"]
 };
 
@@ -52,10 +52,10 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.equal(Echo.Utils.getNestedValue("key1.fakekey", data, "default value"), "default value",
 			"Checking getNestedValue() method with fake key and default value");
 		
-		Echo.Utils.setNestedValue(data, "key1", { "key1-1": "value1-1"});
+		Echo.Utils.setNestedValue("key1", data, { "key1-1": "value1-1"});
 		QUnit.deepEqual(data["key1"], {"key1-1": "value1-1"},
 			"Checking setNestedValue() method with object param");
-		Echo.Utils.setNestedValue(data, "key3", "value3");
+		Echo.Utils.setNestedValue("key3", data, "value3");
 		QUnit.equal(data["key3"], "value3",
 			"Checking setNestedValue() method with plain param");
 		
@@ -114,21 +114,21 @@ suite.prototype.tests.TestDataMethods = {
 			"k1=%5B%22v1.1%22%2Cnull%2Cfalse%5D&k2=%7B%22k2.1%22%3A21%2C%22k2.2%22%3A22%7D",
 			"Checking complex object transformation to the query string via  objectToQuery() function");
 
-		QUnit.deepEqual(Echo.Utils.parseUrl("http://domain.com/some/path/1?query_string#hash_value"), {
+		QUnit.deepEqual(Echo.Utils.parseURL("http://domain.com/some/path/1?query_string#hash_value"), {
 			"scheme": "http",
 			"domain": "domain.com",
 			"path": "/some/path/1",
 			"query": "query_string",
 			"fragment": "hash_value"
-		}, "Checking parseUrl() method");
+		}, "Checking parseURL() method");
 		
-		QUnit.deepEqual(Echo.Utils.parseUrl("https://www.domain.com"), {
+		QUnit.deepEqual(Echo.Utils.parseURL("https://www.domain.com"), {
 			"scheme": "https",
 			"domain": "www.domain.com",
 			"path": "",
 			"query": undefined,
 			"fragment": undefined
-		}, "Checking parseUrl() method with some undefined fields");
+		}, "Checking parseURL() method with some undefined fields");
 		
 		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-05T08:15:30Z"), 784023330,
 			"Checking timestampFromW3CDTF() method");
@@ -192,12 +192,12 @@ suite.prototype.tests.TestDataMethods = {
 suite.prototype.tests.TestDomMethods = {
 	"check": function() {
 		
-		QUnit.ok(Echo.Utils.addCss(".echo-utils-tests {}", "utils-tests"),
-			"Checking that addCss() method returns true if CSS-class was added");
+		QUnit.ok(Echo.Utils.addCSS(".echo-utils-tests {}", "utils-tests"),
+			"Checking that addCSS() method returns true if CSS-class was added");
 		QUnit.ok(/echo-utils-tests {}$/.test(Echo.Vars.css.anchor.html()),
-			"Checking that addCss() method adds CSS-class to style");
-		QUnit.ok(!Echo.Utils.addCss(".echo-utils-tests {}", "utils-tests"),
-			"Checking that addCss() method returns false if previously added Id is used");
+			"Checking that addCSS() method adds CSS-class to style");
+		QUnit.ok(!Echo.Utils.addCSS(".echo-utils-tests {}", "utils-tests"),
+			"Checking that addCSS() method returns false if previously added Id is used");
 		// delete previously added css class
 		Echo.Vars.css.anchor.html(Echo.Vars.css.anchor.html().replace(/.echo-utils-tests {}$/, ""));
 		

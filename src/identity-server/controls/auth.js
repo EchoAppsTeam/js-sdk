@@ -107,7 +107,7 @@ auth.methods.assembleIdentityControl = function(type, element) {
 
 	var appendSessionID = function(url) {
 		var id = encodeURIComponent(Backplane.getChannelID());
-		var parts = Echo.Utils.parseUrl(url);
+		var parts = Echo.Utils.parseURL(url);
 		var session = parts["query"]
 			? parts["query"].match(/=$/) ? id : "&sessionID=" + id
 			: "sessionID=" + id;

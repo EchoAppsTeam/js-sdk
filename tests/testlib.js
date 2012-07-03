@@ -292,7 +292,7 @@ Echo.Tests.Stats = {
 	}
 };
 
-Echo.Utils.addCss(
+Echo.Utils.addCSS(
 	'.echo-tests-stats p { margin: 5px 0px 5px 20px; }' +
 	'.echo-tests-stats p .green { color: green; }' +
 	'.echo-tests-stats p .red { color: red; }' +
