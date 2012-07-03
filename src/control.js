@@ -67,9 +67,9 @@ Echo.Control.prototype.substitute = function(template, data) {
 Echo.Control.prototype.render = function() {
 	// TODO: provide the ability to render 1 specific element
 	var control = this;
-	var target = $(this.config.get("target"));
-	// TODO: set specific CSS class...
 	var templates = {};
+	var target = $(this.config.get("target"));
+	target.addClass(this._cssClassFromControlName());
 	templates.raw = $.isFunction(this.template) ? this.template() : this.template;
 	templates.processed = $(this.substitute(templates.raw, this.data || {}));
 	templates.processed.find("*").andSelf().each(function(i, element) {
@@ -99,6 +99,8 @@ Echo.Control.prototype.init = function(subsystems) {
 		}
 	});
 };
+
+// internal functions
 
 Echo.Control.prototype.init.vars = function() {
 	return {"cache": {}};
@@ -143,7 +145,10 @@ Echo.Control.prototype.init.labels = function() {
 
 Echo.Control.prototype.init.css = function() {
 	if (!this.manifest.css) return;
-	Echo.Utils.addCSS(this.manifest.css, this.manifest.name);
+	Echo.Utils.addCSS(
+		this.manifest.css.replace(/{prefix}/g, "." + this._cssClassFromControlName()),
+		this.manifest.name
+	);
 };
 
 Echo.Control.prototype.init.renderers = function() {
@@ -158,6 +163,10 @@ Echo.Control.prototype.init.user = function(callback) {
 		"appkey": this.config.get("appkey"),
 		"ready": $.proxy(callback, control)
 	});
+};
+
+Echo.Control.prototype._cssClassFromControlName = function() {
+	return this.manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 };
 
 })(jQuery);

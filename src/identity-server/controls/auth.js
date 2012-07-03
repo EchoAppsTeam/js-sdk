@@ -28,24 +28,24 @@ auth.events = {
 };
 
 auth.templates.anonymous =
-	'<div class="echo-auth-anonymous echo-primaryFont">' +
-		'<span class="echo-auth-login echo-linkColor echo-clickable" data-renderer="login">' +
-			"{Label:login}" +
+	'<div class="user-anonymous">' +
+		'<span class="login echo-linkColor echo-clickable" data-renderer="login">' +
+			'{Label:login}' +
 		'</span>' +
-		'<span class="echo-auth-or echo-secondaryColor"> {Label:or} </span>' +
-		'<span class="echo-auth-signup echo-linkColor echo-clickable" data-renderer="signup">' +
-			"{Label:signup}" +
+		'<span class="or"> {Label:or} </span>' +
+		'<span class="signup echo-linkColor echo-clickable" data-renderer="signup">' +
+			'{Label:signup}' +
 		'</span>' +
 	'</div>';
 
 auth.templates.logged =
-	'<div class="echo-auth-logged echo-primaryFont echo-primaryColor">' +
-		'<div class="echo-auth-avatar" data-renderer="avatar"></div>' +
-		'<div class="echo-auth-name"></div>' +
-		'<div class="echo-auth-edit echo-linkColor echo-clickable">' +
-			"{Label:edit}" +
+	'<div class="user-logged">' +
+		'<div class="avatar" data-renderer="avatar"></div>' +
+		'<div class="name" data-renderer="name"></div>' +
+		'<div class="edit echo-linkColor echo-clickable" data-renderer="edit">' +
+			'{Label:edit}' +
 		'</div>' +
-		'<div class="echo-auth-logout echo-linkColor echo-clickable">' +
+		'<div class="logout echo-linkColor echo-clickable">' +
 			"{Label:logout}" +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
@@ -164,12 +164,12 @@ auth.methods.assembleIdentityControl = function(type, element) {
 };
 
 auth.css =
-	".echo-auth-logout { float: right; }" +
-	".echo-auth-anonymous { text-align: right; }" +
-	".echo-auth-avatar { float: left; }" +
-	".echo-auth-avatar img { width: 24px; height: 24px; }" +
-	".echo-auth-name { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
-	".echo-auth-edit { float: left; margin: 6px 0px 0px 12px; }";
+	"{prefix} .logout { float: right; }" +
+	"{prefix} .user-anonymous { text-align: right; }" +
+	"{prefix} .avatar { float: left; }" +
+	"{prefix} .avatar img { width: 24px; height: 24px; }" +
+	"{prefix} .name { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
+	"{prefix} .edit { float: left; margin: 6px 0px 0px 12px; }";
 
 Echo.Control.create(auth);
 
