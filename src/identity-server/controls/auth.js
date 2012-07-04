@@ -45,7 +45,7 @@ auth.templates.logged =
 			'{label:edit}' +
 		'</div>' +
 		'<div class="{class:logout} echo-linkColor echo-clickable">' +
-			"{label:logout}" +
+			'{label:logout}' +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
@@ -163,12 +163,12 @@ auth.methods.assembleIdentityControl = function(type, element) {
 };
 
 auth.css =
-	"{class:logout} { float: right; }" +
-	"{class:userAnonymous} { text-align: right; }" +
-	"{class:avatar} { float: left; }" +
-	"{class:avatar} img { width: 24px; height: 24px; }" +
-	"{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
-	"{class:edit} { float: left; margin: 6px 0px 0px 12px; }" +
+	".{class:logout} { float: right; }" +
+	".{class:userAnonymous} { text-align: right; }" +
+	".{class:avatar} { float: left; }" +
+	".{class:avatar} img { width: 24px; height: 24px; }" +
+	".{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
+	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }" +
 	".echo-clear { clear: both; }";
 
 Echo.Control.create(auth);

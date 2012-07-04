@@ -38,6 +38,9 @@ Echo.Control.create = function(manifest) {
 Echo.Control.skeleton = function(name) {
 	return {
 		"name": name,
+		"config": {},
+		"labels": {},
+		"events": {},
 		"methods": {},
 		"renderers": {},
 		"templates": {},
@@ -61,7 +64,7 @@ Echo.Control.prototype.substitute = function(template, data) {
 			return Echo.Utils.getNestedValue(data, key, "");
 		},
 		"label": function(key) {
-			return control.labels.get(key, "");;
+			return control.labels.get(key, "");
 		},
 		"self": function(key) {
 			var value = Echo.Utils.getNestedValue(control, key, function() {
@@ -222,15 +225,8 @@ Echo.Control.prototype.init.labels = function() {
 };
 
 Echo.Control.prototype.init.css = function() {
-	var control = this;
-	if (!control.manifest.css) return;
-	var name = control._cssClassFromControlName();
-	// TODO: check how we can use "subsitute" function here
-	var css = control.manifest.css.replace(
-		/{class:(([a-z_]+\.)*[a-z_]+)}/ig,
-		function(match, key) { return " ." + name + "-" + key; }
-	);
-	Echo.Utils.addCSS(css, control.manifest.name);
+	if (!this.manifest.css) return;
+	Echo.Utils.addCSS(this.substitute(this.manifest.css), this.manifest.name);
 };
 
 Echo.Control.prototype.init.renderers = function() {
