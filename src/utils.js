@@ -639,10 +639,7 @@ Echo.Utils.inherit = function(child, parent) {
 	F.prototype = parent.prototype;
 	child.prototype = new F;
 	child.prototype.constructor = child;
-	child.prototype.parentProto = parent.prototype;
-	child.prototype.parent = function() {
-		return parent.apply(this, arguments);
-	};
+	child.parent = parent.prototype;
 	return child;
 };
 

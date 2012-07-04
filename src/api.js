@@ -20,10 +20,6 @@ Echo.API.Transport = function(config) {
 	this.instance = this._getInstance();
 };
 
-Echo.API.Transport.prototype.testMethod = function() {
-	return "b";
-};
-
 Echo.API.Transport.prototype.send = function(data) {
 	this.instance.send(data);
 };
@@ -32,21 +28,30 @@ Echo.API.Transport.prototype.abort = function() {
 	this.instance.abort();
 };
 
+Echo.API.Transport.prototype.onError = Echo.API.Transport.prototype.onData = function() {};
+
 Echo.API.Transports.AJAX = function(config) {
 	config = $.extend({
 		"method": "get"
 	}, config || {});
-	this.parent(config);
+	Echo.API.Transports.AJAX.parent.constructor.call(this, config);
 };
 
 utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transport);
 
 Echo.API.Transports.AJAX.prototype._getInstance = function() {
+	var self = this;
 	var ajaxSettings = {
 		url: this.config.get("url"),
 		type: this.config.get("method"),
-		error: this.config.get("onError"),
-		success: this.config.get("onData"),
+		error: function(text) {
+			self.onError(text);
+			self.config.get("onError")(text);
+		},
+		success: function(response) {
+			self.onData(response);
+			self.config.get("onData")(response);
+		},
 		beforeSend: this.config.get("onOpen"),
 		dataType: "json"
 	};
@@ -72,35 +77,35 @@ Echo.API.Transports.AJAX.prototype.abort = function() {
 	}
 };
 
-Echo.API.Transports.AJAX.check = function() {
+Echo.API.Transports.AJAX.available = function() {
 	return (!$.browser.msie || $.browser.msie && $.browser.version > 7);
 };
 
 Echo.API.Transports.JSONP = function(config) {
-	this.parentProto.parent(config);
+	Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
 };
 
 utils.inherit(Echo.API.Transports.JSONP, Echo.API.Transports.AJAX);
 
 Echo.API.Transports.JSONP.prototype._getInstance = function() {
-	var settings = this.parentProto._getInstance();
+	var settings = this.constructor.parent._getInstance.call(this);
 	settings.dataType = "jsonp";
 	return settings;
 };
 
-Echo.API.Transports.JSONP.check = function() {
+Echo.API.Transports.JSONP.available = function() {
 	return true;
 };
 
 Echo.API.Transports.WS = function(config) {
-	this.parent(config);
+	Echo.API.Transports.WS.parent.constructor.apply(this, arguments);
 };
 
 utils.inherit(Echo.API.Transports.WS, Echo.API.Transport);
 
 Echo.API.Transports.WS.prototype._getInstance = function() {
 	var self = this;
-	var Socket = window.MozWebSocket || window.WebSocket;
+	var Socket = window.WebSocket || window.MozWebSocket;
 	var socket = new Socket(this.config.get("url"));
 	socket.onmessage = function(event) {
 		self.config.get("onData")(utils.parseJSON(event.data));
@@ -125,7 +130,7 @@ Echo.API.Transports.WS.prototype.abort = function() {
 	throw new Error("Reference Error: Web Sockets don't support this method");
 };
 
-Echo.API.Transports.WS.check = function() {
+Echo.API.Transports.WS.available = function() {
 	// FIXME: fix when server will support Web Sockets
 	return false;
 	//return ("WebSocket" in window || "MozWebSocket" in window);
@@ -135,7 +140,7 @@ Echo.API.Request = function(config) {
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
 		"apiBaseURL": "api.echoenabled.com/v1/",
-		"transport": "jsonp"
+		"transport": "ajax"
 	});
 	this.transport = this._getTransport();
 };
@@ -156,10 +161,10 @@ Echo.API.Request.prototype.abort = function() {
 Echo.API.Request.prototype._getTransport = function() {
 	var userDefinedTransport = this.config.get("transport");
 	var transport = utils.foldl("", Echo.API.Transports, function(constructor, acc, name) {
-		var checked = Echo.API.Transports[name].check();
-		if ((userDefinedTransport === name.toLowerCase()) && checked) {
+		var available = Echo.API.Transports[name].available();
+		if (userDefinedTransport === name.toLowerCase() && available) {
 			return name;
-		} else if (checked) {
+		} else if (available) {
 			acc = name;
 		}
 	});
