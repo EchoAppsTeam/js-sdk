@@ -10,9 +10,7 @@ if (!Echo.Global) Echo.Global = {};
 
 if (!Echo.Vars) Echo.Vars = {
 	"regexps": {
-		"matchLabel": /{Label:([^:}]+[^}]*)}/g,
-		"matchData": /{Data:(([a-z]+\.)*[a-z]+)}/ig,
-		"matchSelf": /{Self:(([a-z_]+\.)*[a-z_]+)}/ig,
+		"templateSubstitution": /{([a-z]+):(([a-z_]+\.)*[a-z_]+)}/ig,
 		"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
 		"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/,
 		"w3cdtf": /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/
