@@ -9,7 +9,8 @@ PACK_NAMES = \
 	identity-server.pack \
 	identity-server/controls.pack \
 	identity-server/plugins.pack \
-	identity-server/api.pack
+	identity-server/api.pack \
+	third-party/jquery.pack
 
 PACK_FILES_environment = \
 	$(SRC_DIR)/utils.js \
@@ -37,6 +38,13 @@ PACK_FILES_identity-server = \
 PACK_FILES_identity-server/controls = $(SRC_DIR)/identity-server/controls/*.js
 PACK_FILES_identity-server/plugins = $(SRC_DIR)/identity-server/plugins/*.js
 PACK_FILES_identity-server/api = $(SRC_DIR)/api.js $(SRC_DIR)/identity-server/api.js
+
+PACK_FILES_third-party/jquery = \
+	$(SRC_DIR)/third-party/jquery.js \
+	$(SRC_DIR)/third-party/jquery.ihint.js \
+	$(SRC_DIR)/third-party/jquery.easing-1.3.min.js \
+	$(SRC_DIR)/third-party/jquery.fancybox-1.3.4.min.js \
+	$(SRC_DIR)/third-party/jquery.ui-1.8.21.min.js
 
 all: clean sdk packs docs
 
