@@ -27,25 +27,25 @@ auth.events = {
 };
 
 auth.templates.anonymous =
-	'<div class="user-anonymous">' +
-		'<span class="login echo-linkColor echo-clickable" data-renderer="login">' +
-			'{Label:login}' +
+	'<div class="{class:userAnonymous}">' +
+		'<span class="{class:login} echo-linkColor echo-clickable">' +
+			'{label:login}' +
 		'</span>' +
-		'<span class="or"> {Label:or} </span>' +
-		'<span class="signup echo-linkColor echo-clickable" data-renderer="signup">' +
-			'{Label:signup}' +
+		'<span class="{class:or}"> {label:or} </span>' +
+		'<span class="{class:signup} echo-linkColor echo-clickable">' +
+			'{label:signup}' +
 		'</span>' +
 	'</div>';
 
 auth.templates.logged =
-	'<div class="user-logged">' +
-		'<div class="avatar" data-renderer="avatar"></div>' +
-		'<div class="name" data-renderer="name"></div>' +
-		'<div class="edit echo-linkColor echo-clickable" data-renderer="edit">' +
-			'{Label:edit}' +
+	'<div class="{class:userLogged}">' +
+		'<div class="{class:avatar}"></div>' +
+		'<div class="{class:name}"></div>' +
+		'<div class="{class:edit} echo-linkColor echo-clickable">' +
+			'{label:edit}' +
 		'</div>' +
-		'<div class="logout echo-linkColor echo-clickable" data-renderer="logout">' +
-			"{Label:logout}" +
+		'<div class="{class:logout} echo-linkColor echo-clickable">' +
+			"{label:logout}" +
 		'</div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
@@ -163,12 +163,12 @@ auth.methods.assembleIdentityControl = function(type, element) {
 };
 
 auth.css =
-	"{prefix} .logout { float: right; }" +
-	"{prefix} .user-anonymous { text-align: right; }" +
-	"{prefix} .avatar { float: left; }" +
-	"{prefix} .avatar img { width: 24px; height: 24px; }" +
-	"{prefix} .name { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
-	"{prefix} .edit { float: left; margin: 6px 0px 0px 12px; }" +
+	"{class:logout} { float: right; }" +
+	"{class:userAnonymous} { text-align: right; }" +
+	"{class:avatar} { float: left; }" +
+	"{class:avatar} img { width: 24px; height: 24px; }" +
+	"{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
+	"{class:edit} { float: left; margin: 6px 0px 0px 12px; }" +
 	".echo-clear { clear: both; }";
 
 Echo.Control.create(auth);

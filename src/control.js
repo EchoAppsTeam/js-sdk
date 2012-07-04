@@ -47,31 +47,40 @@ Echo.Control.skeleton = function(name) {
 
 // dynamic interface (available for class instances)
 
-// TODO: revisit function location and contract...
 Echo.Control.prototype.substitute = function(template, data) {
 	var control = this;
-	template = template.replace(Echo.Vars.regexps.matchSelf, function(match, key) {
-		var value = Echo.Utils.getNestedValue(control, key);
-		if (typeof value == "undefined") {
-			value = Echo.Utils.getNestedValue(control.data, key);
-			if (typeof value == "undefined") {
-				return control.config.get(key, "");
-			}
-			return value;
+	var name = control._cssClassFromControlName();
+	var extract = function(value) {
+		return $.isFunction(value) ? value() : value;
+	};
+	var instructions = {
+		"class": function(value) {
+			return name + "-" + value;
+		},
+		"data": function(key) {
+			return Echo.Utils.getNestedValue(data, key, "");
+		},
+		"label": function(key) {
+			return control.labels.get(key, "");;
+		},
+		"self": function(key) {
+			var value = Echo.Utils.getNestedValue(control, key, function() {
+				var _value = Echo.Utils.getNestedValue(control.data, key,
+					function() { return control.config.get(key, ""); });
+				return extract(_value);
+			});
+			return extract(value);
 		}
-		return value;
-	});
-	template = template.replace(Echo.Vars.regexps.matchLabel, function(match, key) {
-		return control.labels.get(key, "");
-	});
-	template = template.replace(Echo.Vars.regexps.matchData, function(match, key) {
-		return Echo.Utils.getNestedValue(data, key, "");
-	});
-	return template;
+	};
+	var processor = function(match, key, value) {
+		return instructions[key] ? instructions[key](value) : match;
+	};
+	return template.replace(Echo.Vars.regexps.templateSubstitution, processor);
 };
 
 Echo.Control.prototype.render = function(config) {
 	var control = this;
+	var cssClass = this._cssClassFromControlName();
 	config = config || {};
 	// render template
 	if (config.template) {
@@ -79,24 +88,31 @@ Echo.Control.prototype.render = function(config) {
 		templates.raw = $.isFunction(config.template)
 			? config.template.call(control)
 			: config.template;
-		templates.processed = $(control.substitute(templates.raw, config.data || {}));
-		templates.processed.find("*").andSelf().each(function(i, element) {
-			element = $(element);
-			var renderer = element.data("renderer");
-			if (renderer && control.renderers[renderer]) {
-				control.renderers[renderer][0].apply(control, [element]);
+		templates.processed = control.substitute(templates.raw, config.data || {});
+		return Echo.Utils.toDOM(templates.processed, cssClass + "-",
+			function(renderer, element, dom, extra) {
+				control.render.apply(control, [{
+					"renderer": arguments[0],
+					"args": [element, dom, extra]
+				}]);
 			}
-		});
-		return templates.processed;
+		);
+	}
+	// call specific renderer
+	if (config.renderer) {
+		if (config.renderer && control.renderers[config.renderer]) {
+			control.renderers[config.renderer][0].apply(control, config.args);
+		}
+		return;
 	}
 	// render the whole control
-	var output = this.render({"template": this.template});
+	this.dom = this.render({"template": this.template, "data": config.data || {}});
 	this.config.get("target")
-		.addClass(this._cssClassFromControlName())
+		.addClass(cssClass)
 		.empty()
-		.append(output);
+		.append(this.dom.content);
 	this.events.publish({"topic": "onRender"});
-	return output;
+	return this.dom.content;
 };
 
 Echo.Control.prototype.rerender = function() {
@@ -206,11 +222,15 @@ Echo.Control.prototype.init.labels = function() {
 };
 
 Echo.Control.prototype.init.css = function() {
-	if (!this.manifest.css) return;
-	Echo.Utils.addCSS(
-		this.manifest.css.replace(/{prefix}/g, "." + this._cssClassFromControlName()),
-		this.manifest.name
+	var control = this;
+	if (!control.manifest.css) return;
+	var name = control._cssClassFromControlName();
+	// TODO: check how we can use "subsitute" function here
+	var css = control.manifest.css.replace(
+		/{class:(([a-z_]+\.)*[a-z_]+)}/ig,
+		function(match, key) { return " ." + name + "-" + key; }
 	);
+	Echo.Utils.addCSS(css, control.manifest.name);
 };
 
 Echo.Control.prototype.init.renderers = function() {
