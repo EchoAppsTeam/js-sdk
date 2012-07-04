@@ -21,6 +21,13 @@ Echo.StreamServer.API.Request.prototype._search = function() {
 	this.request();
 };
 
+Echo.StreamServer.API.Request.prototype._count = function() {
+	// TODO:
+	//  - check "recurring" flag (live updates)
+	//  - handle timeout errors
+	this.request();
+};
+
 Echo.StreamServer.API.Request.prototype._submit = function() {
 	// TODO:
 	//  - AS JSON -> KV GET
