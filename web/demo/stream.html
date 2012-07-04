@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>Echo</title>
+	<script type="text/javascript" src="../sdk/backplane.js"></script>
+	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="../sdk/environment.pack.js"></script>
+	<script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
+</head>
+<body>
+	<div id="stream"></div>
+	<script>
+		Backplane.init({
+			"serverBaseURL": "http://api.echoenabled.com/v1",
+			"busName": "jskit"
+		});
+
+		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
+
+		var stream = new Echo.StreamServer.Controls.Stream({
+			"target": document.getElementById("stream"),
+            "query": "childrenof:http://example.com/lizard -state:ModeratorDeleted itemsPerPage:5 children:2 childrenItemsPerPage:2 -state:ModeratorDeleted",
+			"appkey": "test.js-kit.com",
+			"identityManager": {
+				"login": identityManager,
+				"signup": identityManager
+			}
+		});
+	</script>
+</body>
+</html>
