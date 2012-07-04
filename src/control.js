@@ -90,7 +90,7 @@ Echo.Control.prototype.render = function(config) {
 		return templates.processed;
 	}
 	// render the whole control
-	var output = this.render({"template": this.template});
+	var output = this.render({"template": this.template, "data": config.data || {}});
 	this.config.get("target")
 		.addClass(this._cssClassFromControlName())
 		.empty()
