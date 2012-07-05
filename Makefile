@@ -19,7 +19,8 @@ PACK_FILES_environment = \
 	$(SRC_DIR)/configuration.js \
 	$(SRC_DIR)/user-session.js \
 	$(SRC_DIR)/api.js \
-	$(SRC_DIR)/control.js
+	$(SRC_DIR)/control.js \
+	$(SRC_DIR)/plugin.js
 
 PACK_FILES_stream-server = \
 	$(WEB_SDK_DIR)/stream-server/controls.pack.js \

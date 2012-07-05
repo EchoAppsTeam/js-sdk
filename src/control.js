@@ -4,6 +4,9 @@
 
 if (Echo.Utils.isComponentDefined("Echo.Control")) return;
 
+// TODO: replace "Plugins" with different name to avoid conflict with e2 scripts
+if (!Echo.Plugins) Echo.Plugins = {};
+
 Echo.Control = function() {};
 
 // static interface
@@ -13,6 +16,7 @@ Echo.Control.create = function(manifest) {
 	// prevent multiple re-definitions
 	if (control) return control;
 	var _constructor = function(config) {
+		var self = this;
 		if (!config || !config.target) return;
 		this.manifest = manifest;
 		this.init([
@@ -23,7 +27,9 @@ Echo.Control.create = function(manifest) {
 			"labels",
 			"css",
 			"renderers",
-			["user", [manifest.constructor]]
+			["user", [function() {
+				self.init([["plugins", [manifest.constructor]]]);
+			}]]
 		]);
 	};
 	Echo.Utils.inherit(_constructor, manifest.inherits || Echo.Control);
@@ -118,7 +124,7 @@ Echo.Control.prototype.render = function(config) {
 		.empty()
 		.append(this.dom.content);
 	this.events.publish({"topic": "onRender"});
-	return this.dom.content;
+	return this.dom;
 };
 
 Echo.Control.prototype.rerender = function(config) {
@@ -171,13 +177,14 @@ Echo.Control.prototype.rerender = function(config) {
 };
 
 Echo.Control.prototype.refresh = function() {
+	// TODO: develop unified refresh mechanism
 	this.events.publish({"topic": "onRefresh"});
 };
 
 Echo.Control.prototype.extend = function(what, arg) {
 	if (!what) return;
 	var control = this;
-	var handler = control["_" + what.charAt(0).toUpperCase() + what.slice(1)];
+	var handler = control["_extend" + what.charAt(0).toUpperCase() + what.slice(1)];
 	return handler && handler.call(control, arg || []);
 };
 
@@ -196,6 +203,34 @@ Echo.Control.prototype.init = function(subsystems) {
 		}
 	});
 };
+
+// plugins-related functions
+
+Echo.Control.prototype.enablePlugin = function(name) {
+	this.config.set("plugins." + name + ".enabled", true);
+};
+
+Echo.Control.prototype.disablePlugin = function(name) {
+	this.config.set("plugins." + name + ".enabled", false);
+};
+
+Echo.Control.prototype.isPluginEnabled = function(name) {
+	return this.config.get("plugins." + name + ".enabled", true);
+};
+
+Echo.Control.prototype.isPluginApplicable = function(plugin) {
+	var self = this, applicable = false;
+	$.each(plugin.manifest.applications || [], function(i, application) {
+		var component = Echo.Utils.getNestedValue(window, application);
+		if (component && self instanceof component) {
+			applicable = true;
+			return false; // break
+		}
+	});
+	return applicable;
+};
+
+Echo.Control.prototype.destroy = function() {};
 
 // internal functions
 
@@ -291,12 +326,45 @@ Echo.Control.prototype.init.user = function(callback) {
 	});
 };
 
+Echo.Control.prototype.init.plugins = function(callback) {
+	var control = this;
+	control.plugins = {};
+	this._loadPluginsDependencies(function() {
+		$.map(control.config.get("pluginsOrder"), function(name) {
+			var plugin = Echo.Plugins[name];
+			if (plugin && control.isPluginApplicable(plugin)) {
+				control.plugins[name] = new plugin({
+					"component": control
+				});
+			}
+		});		
+		callback && callback.call(this);
+	});
+};
+
+// TODO: define this function later, need to select loader first
+Echo.Control.prototype._loadPluginsDependencies = function(callback) {
+	var plugins = this.config.get("pluginsOrder");
+	var scripts = Echo.Utils.foldl([], plugins, function(name, acc) {
+		var plugin = Echo.Plugins[name];
+		if (plugin && plugin.dependencies && plugin.dependencies.length) {
+			return acc.concat(plugin.dependencies);
+		}
+	});
+	// TODO: need to load "scripts" and execute callback after that
+	callback && callback.call(this);
+};
+
 Echo.Control.prototype._cssClassFromControlName = function() {
 	return this.manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 };
 
 Echo.Control.prototype._extendTemplate = function(config) {};
 
-Echo.Control.prototype._extendRenderer = function(config) {};
+Echo.Control.prototype._extendRenderer = function(config) {
+	if (!config || !config.name || !config.extension) return;
+	this.renderers[config.name] = this.renderers[config.name] || [];
+	this.renderers[config.name].unshift(config.extension);
+};
 
 })(jQuery);
