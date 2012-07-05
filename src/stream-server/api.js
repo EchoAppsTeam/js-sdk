@@ -33,7 +33,7 @@ Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.
 Echo.StreamServer.API.Request.prototype.onData = function(response) {
 	response = response || {};
 	if (response.result === "error") {
-		this.handleErrorResponse(response);
+		this._handleErrorResponse(response);
 	}
 	this.nextSince = response.nextSince;
 };
