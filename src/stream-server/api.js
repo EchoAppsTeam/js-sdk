@@ -11,7 +11,8 @@ Echo.StreamServer.API = {};
 Echo.StreamServer.API.Request = function(config) {
 	var self = this;
 	config = $.extend({
-		"liveUpdatesTimeout": 5000
+		"liveUpdatesTimeout": 5,
+		"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity"
 	}, config);
 	Echo.StreamServer.API.Request.parent.constructor.call(this, config);
 	this.transport.onData = function() {
@@ -33,18 +34,27 @@ Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.
 Echo.StreamServer.API.Request.prototype.onData = function(response) {
 	response = response || {};
 	if (response.result === "error") {
-		this.handleErrorResponse(response);
+		this._handleErrorResponse(response, {
+			"callback": this.config.get("onError")
+		});
+		return;
 	}
 	this.nextSince = response.nextSince;
+	if (this.liveUpdates && this.liveUpdates.responseHandler) {
+		this.liveUpdates.responseHandler(response);
+	}
 };
 
-Echo.StreamServer.API.Request.prototype._submit = function(data) {
+Echo.StreamServer.API.Request.prototype._submit = function() {
+	this.transport.config.set("url", this.config.get("submissionProxyURL"));
 	this.request(
-		this._AS2KVL(data)
+		$.extend(this.config.get("data"), {
+			"content": this._AS2KVL(this.config.get("data.content"))
+		})
 	);
 };
 
-Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(requestParamsGetter, responseHandler) {
+Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {
 	var self = this;
 	this.liveUpdates = {
 		"originalTimeout": this.config.get("liveUpdatesTimeout"),
@@ -55,9 +65,7 @@ Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(requestParam
 				clearTimeout(self.liveUpdates.timers.watchdog);
 			}
 			self._changeLiveUpdatesTimeout(data);
-			responseHandler(data);
-		},
-		"requestParamsGetter": requestParamsGetter
+		}
 	};
 };
 
@@ -193,9 +201,8 @@ Echo.StreamServer.API.Request.prototype._cleanupErrorHandlers = function(success
 };
 
 Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
-	var self = true;
+	var self = this;
 	entries = $.isArray(entries) ? entries : [entries];
-	config = config || {};
 	var strip = function(value) {
 		return value
 			.replace("http://activitystrea.ms/schema/1.0/", "")
@@ -212,7 +219,7 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 			"target": activity.targets[0].id,
 			"verb": verb(activity),
 			"type": type(activity),
-			"itemURIPattern": self.config.get("itemURIPattern")
+			"itemURIPattern": self.config.get("itemURIPattern", "")
 		};
 	};
 	var verb = function(entry) { return strip(entry.verbs[0]); };
