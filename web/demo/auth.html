@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Echo</title>
+	<script type="text/javascript" src="../sdk/backplane.js"></script>
+        <script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
+        <script type="text/javascript" src="../sdk/environment.pack.js"></script>
+        <script type="text/javascript" src="../sdk/identity-server.pack.js"></script>
+</head>
+<body>
+	<div id="container"></div>
+	<script type="text/javascript">
+
+(function($) {
+
+var plugin = Echo.Plugin.skeleton("AuthTestPlugin");
+
+plugin.applications = ["Echo.IdentityServer.Controls.Auth"];
+
+plugin.init = function() {
+	this.extendRenderer("name", function(element, extra) {
+		element.append("Test name from Plugin!");
+		return element;
+	});
+};
+
+Echo.Plugin.create(plugin);
+
+})(jQuery);
+
+	window.onload = function() {
+		Backplane.init({
+			"serverBaseURL": "http://api.echoenabled.com/v1",
+			"busName": "jskit"
+		});
+
+                var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
+
+                var control = new Echo.IdentityServer.Controls.Auth({
+                        "target": document.getElementById("container"),
+                        "appkey": "test.aboutecho.com",
+                        "plugins": [{
+                                "name": "AuthTestPlugin"
+                        }],
+                        "param": "test",
+                        "identityManager": {
+                                "login": identityManager,
+                                "signup": identityManager
+                        }
+                });
+
+		if (console) console.log(control);
+	}
+	</script>
+</body>
+</html>
