@@ -8,12 +8,11 @@ var submit = Echo.Control.skeleton("Echo.StreamServer.Controls.Submit");
 
 submit.config = {
 	"targetURL": document.location.href,
-	"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity",
+	"submissionProxyURL": "//apps.echoenabled.com/v2/esp/activity/",
 	"markers": [],
 	"source": {},
 	"tags": [],
 	"requestMethod": "GET",
-	"mode": "standard",
 	"data": {},
 	"inReplyTo": {},
 	"itemURIPattern": undefined,
@@ -48,68 +47,60 @@ submit.events = {
 
 // templates
 
-submit.templates.standard = submit.templates.edit =
-	'<div class="container">' +
-		'<div class="header" data-renderer="header"></div>' +
-		'<div class="body">' +
-			'<div class="content border">' +
-				'<textarea class="text text-area echo-primaryFont echo-primaryColor" data-renderer="text"></textarea>' +
-			'</div>' +
-			'<div class="markersContainer metadata-container echo-primaryFont echo-primaryColor" data-renderer="markersContainer">' +
-				'<div class="metadata-label">{Label:markers}</div>' +
-				'<div class="metadata-wrapper">' +
-					'<div class="metadata-subwrapper border ">' +
-						'<input class="markers echo-primaryFont" data-renderer="markers">' +
-					'</div>' +
-				'</div>' +
-				'<div class="echo-clear"></div>' +
-			'</div>' +
-			'<div class="tagsContainer metadata-container echo-primaryFont echo-primaryColor" data-renderer="tagsContainer">' +
-				'<div class="metadata-label">{Label:tags}</div>' +
-				'<div class="metadata-wrapper">' +
-					'<div class="metadata-subwrapper border ">' +
-						'<input class="tags border echo-primaryFont" data-renderer="tags">' +
+submit.templates.main =
+	'<div class="{class:container}">' +
+		'<div class="{class:header}">' +
+			'<div class="{class:userInfoWrapper}">' +
+				'<div class="{class:avatar}"></div>' +
+				'<div class="{class:fields}">' +
+					'<div class="{class:fieldsWrapper}">' +
+						'<div class="{class:nameContainer} {class:border}">' +
+							'<input class="{class:name} echo-primaryFont echo-primaryColor">' +
+						'</div>' +
+						'<div class="{class:urlContainer} {class:border}">' +
+							'<input class="{class:url} echo-primaryFont echo-primaryColor">' +
+						'</div>' +
 					'</div>' +
 				'</div>' +
 				'<div class="echo-clear"></div>' +
 			'</div>' +
 		'</div>' +
-		'<div class="controls">' +
-			'<div class="post-container echo-ui">' +
-				'<button type="button" class="postButton echo-primaryFont"></button>' +
+		'<div class="{class:body}">' +
+			'<div class="{class:content} {class:border}">' +
+				'<textarea class="{class:text} {class:textArea} echo-primaryFont echo-primaryColor"></textarea>' +
+			'</div>' +
+			'<div class="{class:markersContainer} {class:metadataContainer} echo-primaryFont echo-primaryColor">' +
+				'<div class="{class:metadataLabel}">{label:markers}</div>' +
+				'<div class="{class:metadataWrapper}">' +
+					'<div class="{class:metadataSubwrapper} {class:border} ">' +
+						'<input class="{class:markers} echo-primaryFont" data-renderer="markers">' +
+					'</div>' +
+				'</div>' +
+				'<div class="echo-clear"></div>' +
+			'</div>' +
+			'<div class="{class:tagsContainer} {class:metadataContainer} echo-primaryFont echo-primaryColor">' +
+				'<div class="{class:metadataLabel}">{label:tags}</div>' +
+				'<div class="{class:metadataWrapper}">' +
+					'<div class="{class:metadataSubwrapper} {class:border} ">' +
+						'<input class="{class:tags} {class:border} echo-primaryFont">' +
+					'</div>' +
+				'</div>' +
+				'<div class="echo-clear"></div>' +
+			'</div>' +
+		'</div>' +
+		'<div class="{class:controls}">' +
+			'<div class="{class:postContainer} echo-ui">' +
+				'<button class="{class:postButton} echo-primaryFont"></button>' +
 			'</div>' +
 			'<div class="echo-clear"></div>' +
 		'</div>' +
-	'</div>';
-
-submit.templates.editModeUserInfo =
-	'<div class="userInfoWrapper echo-primaryFont echo-primaryFont echo-primaryColor">' +
-		'{Label:createdBy} ' +
-		'<span class="author">{Data:author}</span> ' +
-		'{Label:on} {Data:date}' +
-	'</div>';
-
-submit.templates.anonymousModeUserInfo = 
-	'<div class="anonymousUserInfoWrapper">' +
-		'<div class="anonymousUserInfoAvatar" data-renderer="avatar"></div>' +
-		'<div class="anonymousUserInfoFields">' +
-			'<div class="anonymousUserInfoFieldsWrapper">' +
-				'<div class="anonymousUserInfoNameContainer border">' +
-					'<input class="anonymousUserInfoName echo-primaryFont echo-primaryColor" data-renderer="name">' +
-				'</div>' +
-				'<div class="anonymousUserInfoUrlContainer border">' +
-					'<input class="anonymousUserInfoUrl echo-primaryFont echo-primaryColor" data-renderer="url">' +
-				'</div>' +
-			'</div>' +
-		'</div>' +
-		'<div class="echo-clear"></div>' +
 	'</div>';
 
 // renderers
 	
 submit.renderers.tagsContainer = 
 submit.renderers.markersContainer = function(element) {
-	(this.user.any("roles", ["administrator"])) ? element.show() : element.hide();
+	return (this.user.any("roles", ["administrator"])) ? element.show() : element.hide();
 };
 
 submit.renderers.markers = function(element) {
@@ -118,25 +109,6 @@ submit.renderers.markers = function(element) {
 
 submit.renderers.tags = function(element) {
 	this.metaFields(element, {"type": "tags"});
-};
-
-submit.renderers.header = function(element) {
-	var data = {};
-	var template = this.templates.anonymousModeUserInfo;
-	if (this.config.get("mode") === "edit") {
-		template = this.templates.editModeUserInfo;
-		var published = this.config.get("data.object.published");
-		var date = new Date(Echo.Utils.timestampFromW3CDTF(published) * 1000);
-		data = {
-			"date": date.toLocaleDateString() + ', ' + date.toLocaleTimeString(),
-			"author": this.config.get("data.actor.title", this.labels.get("guest"))
-		};
-	}
-	var object = {
-		"template": template,
-		"data": data
-	};
-	return element.append(this.render(object));
 };
 
 submit.renderers.text = function(element) {
@@ -148,39 +120,172 @@ submit.renderers.text = function(element) {
 		"text": this.config.get("actionString"),
 		"className": "echo-secondaryColor"
 	});
+	return element;
 };
 
 submit.renderers.avatar = function(element) {
 	var avatar = this.user.get("avatar") || this.user.config.get("defaultAvatar");
-	element.append('<img src="' + avatar + '">');
+	return element.append('<img src="' + avatar + '">');
 };
 
 submit.renderers.name = function(element) {
-	element.val(this.user.get("name", "")).iHint({
+	return element.val(this.user.get("name", "")).iHint({
 		"text": this.labels.get("yourName"),
 		"className": "echo-secondaryColor"
 	});
 };
 
 submit.renderers.url = function(element) {
-	element.val(this.user.get("domain", "")).iHint({
+	return element.val(this.user.get("domain", "")).iHint({
 		"text": this.labels.get("yourWebsiteOptional"),
 		"className": "echo-secondaryColor"
 	});
 };
 
 submit.renderers.postButton = function(element) {
-	// TODO: ...
-}
+	var self = this;
+	var states = {
+		"normal": {
+			"icon": false,
+			"disabled": false,
+			"label": self.labels.get("post")
+		},
+		"posting": {
+			"icon": "icon-waiting",
+			"disabled": true,
+			"label": self.labels.get("posting")
+		}
+	};
+	var button = new Echo.Button(element, states['normal']);
+	this.posting = this.posting || {};
+	this.posting.subscriptions = this.posting.subscriptions || [];
+	var subscribe = function(phase, state, callback) {
+		var topic = "Submit.onPost" + phase;
+		var sub = self.posting.subscriptions;
+		if (sub[topic]) {
+			self.events.unsubscribe({
+				"topic": topic,
+				"handlerId": sub[topic]
+			});
+		}
+		var handler = function(eventTopic, eventParams) {
+			if (self.config.get("target").get(0) != eventParams.target) return;
+			button.set(state);
+			if (callback) {
+				callback();
+			}
+		};	
+		sub[topic] = self.events.subscribe({
+			"topic": topic,
+			"handler": handler
+		});
+	};
+	
+	subscribe("Init", states['posting']);
+	subscribe("Complete", states['normal'], function() {
+		self.dom.get("text").val("").trigger("blur");
+		self.rerender();
+	});
+	subscribe("Error", states['normal']);
+	
+	this.posting.action = this.posting.action || function() {
+		var highlighted = false;
+		$.each(["userInfo", "text"], function (i, v) {
+			highlighted = self.highlightMandatory(self.dom.get(v));
+			return !highlighted;
+		});
+		if (highlighted) return;
+		self.post();
+	};
+	element.unbind("click", this.posting.action).bind("click", this.posting.action);
+	return element;
+};
 
 // methods
 
 submit.methods.post = function() {
-	// TODO: ...
-};
-
-submit.methods.template = function() {
-	return this.templates[this.config.get("mode")];
+	var self = this;
+	var get = function(name) {
+		return self.dom.get(name);
+	};
+	var publish = function(phase, data) {
+		var params = {
+			"topic": "Submit.onPost" + phase,
+			"data": self.prepareBroadcastParams({
+				"postData": data
+			})
+		};
+		self.events.publish(params);
+	};
+	var content = [].concat(this.getActivity('post', 'comment', this.dom.get('text').val()),
+				this.getActivity('tag', "marker", this.dom.get("markers").val()),
+				this.getActivity('tag', 'tag', this.dom.get("tags").val()));
+	
+	var entry= {
+		"content": content,
+		"appkey": self.config.get("appkey"),
+		"sessionID": self.user.get("sessionID", "")
+	};
+	
+	if (self.config.get("targetQuery")) {
+		entry["target-query"] = self.config.get("targetQuery");
+	}
+	
+	var timer;
+	var hasPreviousTimeout = false;
+	var callback = function(data) {
+		if (timer) clearTimeout(timer);
+		data = data || {};
+		if (data.result == "error") {
+			// we have previous timeout on the client side so we just ignore errors from server side
+			if (hasPreviousTimeout) return;
+			var isNetworkTimeout = hasPreviousTimeout = (data.errorCode == "network_timeout");
+			var message = isNetworkTimeout
+				? self.labels.get("postingTimeout")
+				: self.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
+			$.fancybox({
+				"content": '<div class="echo-submit-error">' + message + '</div>',
+				"height": 70,
+				"width": isNetworkTimeout ? 320 : 390,
+				"padding": 15,
+				"orig": get("text"),
+				"autoDimensions": false,
+				"transitionIn": "elastic",
+				"transitionOut": "elastic",
+				"onComplete": function() {
+					// set fixed dimensions of the fancybox-wrap (for IE in quirks mode it should be bigger)
+					if ($.browser.msie && document.compatMode != "CSS1Compat") {
+						var options = arguments[2];
+						var delta = 2 * options.padding + 40;
+						$("#fancybox-wrap").css({
+							"width": options.width + delta,
+							"height": options.height + delta
+						});
+					}
+				}
+			});
+			publish("Error", data);
+		} else {
+			publish("Complete", content);
+		}
+	};
+	
+	publish("Init", content);
+	
+	Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"apiBaseURL": this.config.get("submissionProxyURL"),
+		"data": entry,
+		"onData": callback,
+		"onError": function() {}
+	}).send();
+	
+	var postingTimeout = this.config.get("postingTimeout");
+	if (postingTimeout) {
+		timer = setTimeout(function() {
+			callback({"result": "error", "errorCode": "network_timeout"});
+		}, postingTimeout * 1000);
+	}
 };
 
 submit.methods.metaFields = function(element, extra) {
@@ -189,10 +294,29 @@ submit.methods.metaFields = function(element, extra) {
 	
 	if (this.dom.get(type)) {
 		this.dom.get(type).iHint({
-				"text": this.labels.get(type + "Hint"),
-				"className": "echo-secondaryColor"
-		}).val($.trim($.stripTags(data.join(", ")))).blur();
+			"text": this.labels.get(type + "Hint"),
+			"className": "echo-secondaryColor"
+		}).val($.trim(Echo.Utils.stripTags(data.join(", ")))).blur();
 	}
+};
+
+submit.methods.getActivity = function(verb, type, data) {
+	return {
+		"actor": {
+			"objectTypes": [ "http://activitystrea.ms/schema/1.0/person" ],
+			"name": this.user.get("name", ( this.user.is("logged") ? "" : this.dom.get("name").val() )),
+			"avatar": this.user.get("avatar", "")
+		},
+		"object": {
+			"objectTypes": [ "http://activitystrea.ms/schema/1.0/" + type ],
+			"content": data,
+		},
+		"source": this.config.get("source"),
+		"verbs": [ "http://activitystrea.ms/schema/1.0/" + verb ],
+		"targets": [{
+			"id": this.config.get("targetURL")
+		}]
+	};
 };
 
 submit.methods.highlightMandatory = function(element) {
@@ -211,75 +335,40 @@ submit.methods.prepareBroadcastParams = function(params) {
 	params.data = this.config.get("data");
 	params.target = this.config.get("target").get(0);
 	params.targetURL = this.config.get("targetURL");
-	params.inReplyTo = this.config.get("inReplyTo");
 	return params;
 };
 
-submit.methods.getContentUpdate = function(content) {
-	if (this.config.get("data.object.content", "") === content) {
-		return [];
-	}
-	return [{
-		"verb": "update",
-		"field": "content",
-		"value": content,
-		"target": this.config.get("data.object.id")
-	}];
-};
-
-submit.methods.getMetaDataUpdates = function(verb, type, data) {
-	var self = this;
-	var extract = function(value) {
-		return $.map(value || [], function(item) { return $.trim(item); });
-	};
-	var items = {
-		"modified": extract(data.split(",")),
-		"current": extract(this.config.get("data.object." + type, ""))
-	};
-	var updates = [];
-	var diff = function(a, b, verb) {
-		$.map(a, function(item) {
-			if (item && $.inArray(item, b) == -1) {
-				var update = {
-					"verb": verb,
-					"target": self.config.get("data.object.id")
-				};
-				update[type] = item
-				updates.push(update);
-			}
-		});
-	};
-	diff(items.current, items.modified, "un" + verb);
-	diff(items.modified, items.current, verb);
-	return updates;
-};
-
 submit.css = 
-	'{prefix} .header { margin-bottom: 3px; }' +
-	'{prefix} .anonymousUserInfoAvatar { float: left; margin-right: -48px; }' +
-	'{prefix} .anonymousUserInfoAvatar img { width: 48px; height: 48px; }' +
-	'{prefix} .anonymousUserInfoFields { width: 100%; float: left; }' +
-	'{prefix} .anonymousUserInfoFields input { width: 100%; }' +
-	'{prefix} .anonymousUserInfoFieldsWrapper { margin-left: 53px; }' +
-	'{prefix} .anonymousUserInfoNameContainer { margin: 1px 0px 4px 0px; padding: 0px 2px 1px 3px; background-color: #fff; }' +
-	'{prefix} .anonymousUserInfoName { font-size: 14px; font-weight: bold; border: none; }' +
-	'{prefix} .anonymousUserInfoUrlContainer { padding: 0px 2px 1px 3px; background-color: #fff; }' +
-	'{prefix} .anonymousUserInfoUrl { height: 19px; border: none; }' +
-	'{prefix} .author { font-weight: bold; }' +
-	'{prefix} .content { padding: 5px 5px 5px 6px; background-color: #fff; }' +
-	'{prefix} .text-area { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none ; }' +
-	'{prefix} .text-input { width: 100%; border: none; }' +
-	'{prefix} .metadata-container { margin-top: 6px; }' +
-	'{prefix} .metadata-label { float: left; width: 50px; margin-right: -50px; text-align: right; line-height: 22px; }' +
-	'{prefix} .metadata-wrapper { float: left; width: 100%; }' +
-	'{prefix} .metadata-subwrapper { margin-left: 55px; padding: 2px 2px 2px 3px; background-color: #fff; }' +
-	'{prefix} .metadata-subwrapper input { width: 100%; border: none; }' +
-	'{prefix} .controls { margin-top: 5px; }' +
-	'{prefix} .post-container { float: right; }' +
-	'{prefix} .border { border: 1px solid #d2d2d2; }' +
-	'{prefix} .mandatory { border: 1px solid red; }' +
-	'{prefix} .queries-view-option { padding-right: 5px; }' +
-	'{prefix} .error { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(//cdn.echoenabled.com/images/info70.png); height: 70px; }';
+	'.{class:header} { margin-bottom: 3px; }' +
+	'.{class:avatar} { float: left; margin-right: -48px; }' +
+	'.{class:avatar} img { width: 48px; height: 48px; }' +
+	'.{class:fields} { width: 100%; float: left; }' +
+	'.{class:fields} input { width: 100%; }' +
+	'.{class:fieldsWrapper} { margin-left: 53px; }' +
+	'.{class:nameContainer} { margin: 1px 0px 4px 0px; padding: 0px 2px 1px 3px; background-color: #fff; }' +
+	'.{class:name} { font-size: 14px; font-weight: bold; border: none; }' +
+	'.{class:urlContainer} { padding: 0px 2px 1px 3px; background-color: #fff; }' +
+	'.{class:url} { height: 19px; border: none; }' +
+	'.{class:author} { font-weight: bold; }' +
+	'.{class:content} { padding: 5px 5px 5px 6px; background-color: #fff; }' +
+	'.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none ; }' +
+	'.{class:text} input { width: 100%; border: none; }' +
+	'.{class:metadataContainer} { margin-top: 6px; }' +
+	'.{class:metadataLabel} { float: left; width: 50px; margin-right: -50px; text-align: right; line-height: 22px; }' +
+	'.{class:metadataWrapper} { float: left; width: 100%; }' +
+	'.{class:metadataSubwrapper} { margin-left: 55px; padding: 2px 2px 2px 3px; background-color: #fff; }' +
+	'.{class:metadataSubwrapper} input { width: 100%; border: none; }' +
+	'.{class:controls} { margin-top: 5px; }' +
+	'.{class:postContainer} { float: right; }' +
+	'.{class:border} { border: 1px solid #d2d2d2; }' +
+	'.{class:mandatory} { border: 1px solid red; }' +
+	'.{class:queriesViewOption} { padding-right: 5px; }' +
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(//cdn.echoenabled.com/images/info70.png); height: 70px; }' +
+//TODO: move it to class Control
+	'.echo-clear { clear: both; }' +
+	'.echo-submit-mandatory { border: 1px solid red; }' +
+	'.echo-submit-error {  background: url("//cdn.echoenabled.com/images/info70.png") no-repeat scroll 0 0 transparent; color: #444444; font: 14px/150% Arial; height: 70px; padding-left: 85px;} ';
+	
 
 Echo.Control.create(submit);
 
