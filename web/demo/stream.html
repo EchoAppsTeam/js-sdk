@@ -8,7 +8,7 @@
 	<script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
 </head>
 <body>
-	<div id="submit"></div>
+	<div id="stream"></div>
 	<script>
 		Backplane.init({
 			"serverBaseURL": "http://api.echoenabled.com/v1",
@@ -17,16 +17,15 @@
 
 		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
 
-		var submit = new Echo.StreamServer.Controls.Submit({
-			"target": document.getElementById("submit"),
+		var stream = new Echo.StreamServer.Controls.Stream({
+			"target": document.getElementById("stream"),
+            "query": "childrenof:http://example.com/lizard -state:ModeratorDeleted itemsPerPage:5 children:2 childrenItemsPerPage:2 -state:ModeratorDeleted",
 			"appkey": "test.js-kit.com",
 			"identityManager": {
 				"login": identityManager,
 				"signup": identityManager
 			}
 		});
-		
-		console.log(submit);
 	</script>
 </body>
 </html>

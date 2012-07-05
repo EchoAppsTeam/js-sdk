@@ -38,6 +38,9 @@ Echo.Control.create = function(manifest) {
 Echo.Control.skeleton = function(name) {
 	return {
 		"name": name,
+		"config": {},
+		"labels": {},
+		"events": {},
 		"methods": {},
 		"renderers": {},
 		"templates": {},
@@ -61,7 +64,7 @@ Echo.Control.prototype.substitute = function(template, data) {
 			return Echo.Utils.getNestedValue(data, key, "");
 		},
 		"label": function(key) {
-			return control.labels.get(key, "");;
+			return control.labels.get(key, "");
 		},
 		"self": function(key) {
 			var value = Echo.Utils.getNestedValue(control, key, function() {
@@ -82,6 +85,7 @@ Echo.Control.prototype.render = function(config) {
 	var control = this;
 	var cssClass = this._cssClassFromControlName();
 	config = config || {};
+
 	// render template
 	if (config.template) {
 		var templates = {};
@@ -92,19 +96,21 @@ Echo.Control.prototype.render = function(config) {
 		return Echo.Utils.toDOM(templates.processed, cssClass + "-",
 			function(renderer, element, dom, extra) {
 				control.render.apply(control, [{
-					"renderer": arguments[0],
+					"element": arguments[0],
 					"args": [element, dom, extra]
 				}]);
 			}
 		);
 	}
-	// call specific renderer
-	if (config.renderer) {
-		if (config.renderer && control.renderers[config.renderer]) {
-			control.renderers[config.renderer][0].apply(control, config.args);
+
+	// render specific element
+	if (config.element) {
+		if (control.renderers[config.element]) {
+			control.renderers[config.element][0].apply(control, config.args);
 		}
 		return;
 	}
+
 	// render the whole control
 	this.dom = this.render({"template": this.template, "data": config.data || {}});
 	this.config.get("target")
@@ -115,8 +121,53 @@ Echo.Control.prototype.render = function(config) {
 	return this.dom.content;
 };
 
-Echo.Control.prototype.rerender = function() {
-	this.events.publish({"topic": "onRerender"});
+Echo.Control.prototype.rerender = function(config) {
+	var control = this;
+	config = config || {};
+
+	// no DOM available yet, nothing to rerender -> exit
+	if (!this.dom) return;
+
+	// rerender the whole control
+	if ($.isEmptyObject(config)) {
+		if (this.dom) {
+			this.dom.content.replaceWith(this.render());
+			this.events.publish({"topic": "onRerender"});
+		}
+		return;
+	}
+
+	// if the list of elements passed, call rerender for each element
+	if (config.elements) {
+		$.map(config.elements, function(element) {
+			var _config = $.extend({}, config, {"element": element, "elements": null});
+			control.rerender(_config);
+		});
+		return;
+	}
+
+	// exit if no element found or we have unexpected type of argument
+	if (!config.element || !this.dom.get(config.element)) return;
+
+	if (config.recursive) {
+		var cssPrefix = this._cssClassFromControlName() + "-";
+		var template = $.isFunction(this.template) ? this.template() : this.template;
+		var html = this.substitute(template, this.data || {});
+		var newNode = $("." + cssPrefix + config.element, $(html));
+		var oldNode = this.dom.get(config.element);
+		newNode = Echo.Utils.toDOM(newNode, cssPrefix, function(name, element, dom) {
+			control.render.apply(control, [{
+				"element": name,
+				"args": [element, dom]
+			}]);
+		}).content;
+		oldNode.replaceWith(newNode);
+	} else {
+		this.render.apply(control, [{
+			"element": name,
+			"args": [this.dom.get(name), this.dom]
+		}]);
+	}
 };
 
 Echo.Control.prototype.refresh = function() {
@@ -222,15 +273,8 @@ Echo.Control.prototype.init.labels = function() {
 };
 
 Echo.Control.prototype.init.css = function() {
-	var control = this;
-	if (!control.manifest.css) return;
-	var name = control._cssClassFromControlName();
-	// TODO: check how we can use "subsitute" function here
-	var css = control.manifest.css.replace(
-		/{class:(([a-z_]+\.)*[a-z_]+)}/ig,
-		function(match, key) { return " ." + name + "-" + key; }
-	);
-	Echo.Utils.addCSS(css, control.manifest.name);
+	if (!this.manifest.css) return;
+	Echo.Utils.addCSS(this.substitute(this.manifest.css), this.manifest.name);
 };
 
 Echo.Control.prototype.init.renderers = function() {

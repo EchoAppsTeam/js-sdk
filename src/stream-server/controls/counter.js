@@ -6,15 +6,7 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
 
 var counter = Echo.Control.skeleton("Echo.StreamServer.Controls.Counter");
 
-counter.config = {};
-
-counter.labels = {};
-
-counter.events = {};
-
-counter.methods = {};
-
-counter.templates.main = "<span>{Data:count}</span>";
+counter.templates.main = "<span>{data:count}</span>";
 
 counter.constructor = function() {
 	var self = this;
