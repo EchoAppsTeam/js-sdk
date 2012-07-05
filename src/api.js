@@ -90,9 +90,9 @@ Echo.API.Transports.AJAX.prototype._getInstance = function() {
 			};
 			xdr.onerror = xdr.ontimeout = function () {
 				if ($.isFunction(xdr.onreadystatechange)) {
-					 xdr.readyState = 4;
-					 xdr.status = 500;
-					 xdr.onreadystatechange.call(xdr, null, false);
+					xdr.readyState = 4;
+					xdr.status = 500;
+					xdr.onreadystatechange.call(xdr, null, false);
 				}
 			};
 			return xdr;
