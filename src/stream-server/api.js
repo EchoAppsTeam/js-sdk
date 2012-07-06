@@ -74,11 +74,11 @@ Echo.StreamServer.API.Request.prototype._submit = function() {
 	);
 };
 
-Echo.StreamServer.API.Request.prototype._prepareURL = function() {
+Echo.StreamServer.API.Request.prototype._prepareURI = function() {
 	if (this.config.get("endpoint") === "submit") {
-		return this.transport._getScheme() + this.config.get("submissionProxyURL");
+		return this.config.get("submissionProxyURL");
 	}
-	return this.constructor.parent._prepareURL.call(this);
+	return this.constructor.parent._prepareURI.call(this);
 };
 
 Echo.StreamServer.API.Request.prototype._getTransport = function() {
