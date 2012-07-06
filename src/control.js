@@ -90,13 +90,16 @@ Echo.Control.prototype.substitute = function(template, data) {
 Echo.Control.prototype.compileTemplate = function(template, data, transformations) {
 	var control = this, templates = {};
 	var cssPrefix = this._cssClassFromControlName() + "-";
-	templates.raw = $.isFunction(template) ? template.call(control) : template;
-	templates.processed = control.substitute(templates.raw, data || {});
+	templates.raw = $.isFunction(template) ? template.call(this) : template;
+	templates.processed = this.substitute(templates.raw, data || {});
 	if (transformations) {
 		templates.dom = $("<div/>").html(templates.processed);
-		$.map(transformations, function(transform) {
-			transform.unshift(templates.dom);
-			templates.dom = control._templateTransformator.apply(control, transform);
+		$.map(transformations, function(transformation) {
+			templates.dom = control._templateTransformer.call(control, {
+				"data": data || {},
+				"template": templates.dom,
+				"transformation": transformation
+			});
 		});
 		templates.processed = templates.dom.html();
 	}
@@ -190,7 +193,7 @@ Echo.Control.prototype.refresh = function() {
 };
 
 Echo.Control.prototype.extendTemplate = function(html, action, anchor) {
-	this.extension.template.push([html, action, anchor]);
+	this.extension.template.push({"html": html, "action": action, "anchor": anchor});
 };
 
 Echo.Control.prototype.extendRenderer = function() {
@@ -378,7 +381,7 @@ Echo.Control.prototype._cssClassFromControlName = function() {
 	return this.manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 };
 
-Echo.Control.prototype._templateTransformator = function(template, html, action, anchor) {
+Echo.Control.prototype._templateTransformer = function(args) {
 	var classify = {
 		"insertBefore": "before",
 		"insertAfter": "after",
@@ -386,10 +389,13 @@ Echo.Control.prototype._templateTransformator = function(template, html, action,
 		"insertAsLastChild": "append",
 		"replace": "replaceWith"
 	};
-	if (!classify[action]) return template;
+	var action = classify[args.transformation.action];
+	if (!action) return args.template;
+	var html = args.transformation.html;
+	var anchor = args.transformation.anchor;
 	var content = $.isFunction(html) ? html() : html;
-	$("." + anchor, template)[classify[action]](content);
-	return template;
+	$("." + anchor, args.template)[action](this.substitute(content, args.data));
+	return args.template;
 };
 
 Echo.Control.prototype.baseCSS =
