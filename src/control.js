@@ -310,6 +310,7 @@ Echo.Control.prototype.init.labels = function() {
 };
 
 Echo.Control.prototype.init.css = function() {
+	Echo.Utils.addCSS(this.baseCSS, 'control');
 	if (!this.manifest.css) return;
 	Echo.Utils.addCSS(this.substitute(this.manifest.css), this.manifest.name);
 };
@@ -368,5 +369,18 @@ Echo.Control.prototype._extendRenderer = function(config) {
 	this.renderers[config.name] = this.renderers[config.name] || [];
 	this.renderers[config.name].unshift(config.extension);
 };
+
+Echo.Control.prototype.baseCSS =
+	'.echo-primaryBackgroundColor {  }' +
+	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
+	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
+	'.echo-primaryColor { color: #3A3A3A; }' +
+	'.echo-secondaryColor { color: #C6C6C6; }' +
+	'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
+	'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
+	'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
+	'.echo-clickable { cursor: pointer; }' +
+	'.echo-relative { position: relative; }' +
+	'.echo-clear { clear: both; }';
 
 })(jQuery);
