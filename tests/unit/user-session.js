@@ -107,6 +107,12 @@ suite.prototype.checkBasicOperations = function() {
 	QUnit.equal(user.get("avatar"), "http://example.com/my-avatar.png",
 		"Checking basic get/set operations with simple values (user avatar: string)");
 
+	user.set("some_attr", undefined);
+	QUnit.equal(user.get("some_attr", "default value"), "default value",
+		"Checking get operation with undefined attribute and default value");
+	QUnit.equal(user.get("fake_attr", "default value"), "default value",
+		"Checking get operation with fake attribute and default value");
+
 	var roles = ["role1", "role2", "role3"];	
 	user.set("roles", roles);
 	QUnit.equal(user.get("roles").length, roles.length,
