@@ -21,15 +21,15 @@ Echo.Control.create = function(manifest) {
 		this.manifest = manifest;
 		this.init([
 			"vars",
-			["config", [config]],
+			["config", config],
 			"dom",
 			"events",
 			"labels",
 			"css",
 			"renderers",
-			["user", [function() {
-				self.init([["plugins", [manifest.constructor]]]);
-			}]]
+			["user", function() {
+				self.init([["plugins", manifest.constructor]]);
+			}]
 		]);
 	};
 	Echo.Utils.inherit(_constructor, manifest.inherits || Echo.Control);
@@ -194,9 +194,11 @@ Echo.Control.prototype.template = function() {
 
 Echo.Control.prototype.init = function(subsystems) {
 	var control = this;
-	$.map(subsystems, function(arg) {
-		var name = $.isArray(arg) ? arg.shift() : arg;
-		var args = $.isArray(arg) ? arg.shift() : [];
+	$.map(subsystems, function(args) {
+		if (!$.isArray(args)) {
+			args = [args];
+		}
+		var name = args.shift();
 		var result = control.init[name].apply(control, args);
 		if (typeof result != "undefined") {
 			control[name] = result;
