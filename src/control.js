@@ -21,8 +21,8 @@ Echo.Control.create = function(manifest) {
 		this.manifest = manifest;
 		this.init([
 			"vars",
+			"extension",
 			["config", config],
-			"dom",
 			"events",
 			"labels",
 			"css",
@@ -87,49 +87,46 @@ Echo.Control.prototype.substitute = function(template, data) {
 	return template.replace(Echo.Vars.regexps.templateSubstitution, processor);
 };
 
-Echo.Control.prototype.render = function(config) {
-	var control = this;
-	var cssClass = this._cssClassFromControlName();
-	config = config || {};
-
-	// render template
-	if (config.template) {
-		var templates = {};
-		templates.raw = $.isFunction(config.template)
-			? config.template.call(control)
-			: config.template;
-		templates.processed = control.substitute(templates.raw, config.data || {});
-		return Echo.Utils.toDOM(templates.processed, cssClass + "-",
-			function(renderer, element, dom, extra) {
-				control.render.apply(control, [{
-					"element": arguments[0],
-					"args": [element, dom, extra]
-				}]);
-			}
-		);
+Echo.Control.prototype.compileTemplate = function(template, data, transformations) {
+	var control = this, templates = {};
+	var cssPrefix = this._cssClassFromControlName() + "-";
+	templates.raw = $.isFunction(template) ? template.call(control) : template;
+	templates.processed = control.substitute(templates.raw, data || {});
+	if (transformations) {
+		templates.dom = $("<div/>").html(templates.processed);
+		$.map(transformations, function(transform) {
+			transform.unshift(templates.dom);
+			templates.dom = control._templateTransformator.apply(control, transform);
+		});
+		templates.processed = templates.dom.html();
 	}
+	return Echo.Utils.toDOM(templates.processed, cssPrefix, function() {
+		control.render.apply(control, arguments);
+	});
+};
 
+Echo.Control.prototype.render = function(name, element, dom, extra) {
 	// render specific element
-	if (config.element) {
-		var renderer = control.renderers[config.element];
+	if (name) {
+		var renderer = this.extension.renderers[name];
 		if (renderer) {
-			var iteration = -1;
+			var iteration = 0;
 			renderer.next = function() {
-				renderer.functions[++iteration].apply(control, config.args);
+				renderer.functions[++iteration].apply(this, arguments);
 			};
-			renderer.next();
+			renderer.functions[iteration].apply(this, [element, dom, extra]);
 		}
 		return;
 	}
 
 	// render the whole control
-	this.dom = this.render({"template": this.template, "data": config.data || {}});
+	this.dom = this.compileTemplate(this.template, this.data || {}, this.extension.template);
 	this.config.get("target")
-		.addClass(cssClass)
+		.addClass(this._cssClassFromControlName())
 		.empty()
 		.append(this.dom.content);
 	this.events.publish({"topic": "onRender"});
-	return this.dom;
+	return this.dom.content;
 };
 
 Echo.Control.prototype.rerender = function(config) {
@@ -182,9 +179,9 @@ Echo.Control.prototype.rerender = function(config) {
 };
 
 Echo.Control.prototype.parentRenderer = function(name, args) {
-	var renderer = this.renderers[name];
+	var renderer = this.extension.renderers[name];
 	if (!renderer || !renderer.next) return args[0]; // return DOM element
-	renderer.next.call(this, args);
+	renderer.next.apply(this, args);
 };
 
 Echo.Control.prototype.refresh = function() {
@@ -192,8 +189,8 @@ Echo.Control.prototype.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
 };
 
-Echo.Control.prototype.extendTemplate = function(config) {
-	// TODO: develop template extension mechanism
+Echo.Control.prototype.extendTemplate = function(html, action, anchor) {
+	this.extension.template.push([html, action, anchor]);
 };
 
 Echo.Control.prototype.extendRenderer = function() {
@@ -252,6 +249,10 @@ Echo.Control.prototype.init.vars = function() {
 	return {"cache": {}};
 };
 
+Echo.Control.prototype.init.extension = function() {
+	return {"renderers": {}, "template": []};
+};
+
 Echo.Control.prototype.init.config = function(data) {
 	var _normalizer = {};
 	_normalizer.target = $;
@@ -285,10 +286,6 @@ Echo.Control.prototype.init.config = function(data) {
 		var handler = normalizer && normalizer[key] || _normalizer && _normalizer[key];
 		return handler ? handler.call(this, value) : value;
 	});
-};
-
-Echo.Control.prototype.init.dom = function() {
-	return this.config.get("target");
 };
 
 Echo.Control.prototype.init.events = function() {
@@ -328,9 +325,9 @@ Echo.Control.prototype.init.css = function() {
 };
 
 Echo.Control.prototype.init.renderer = function(name, renderer) {
-	this.renderers = this.renderers || {};
-	this.renderers[name] = this.renderers[name] || {"functions": []};
-	this.renderers[name].functions.unshift(renderer);
+	var renderers = this.extension.renderers;
+	renderers[name] = renderers[name] || {"functions": []};
+	renderers[name].functions.unshift(renderer);
 };
 
 Echo.Control.prototype.init.renderers = function() {
@@ -379,6 +376,20 @@ Echo.Control.prototype._loadPluginsDependencies = function(callback) {
 
 Echo.Control.prototype._cssClassFromControlName = function() {
 	return this.manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
+};
+
+Echo.Control.prototype._templateTransformator = function(template, html, action, anchor) {
+	var classify = {
+		"insertBefore": "before",
+		"insertAfter": "after",
+		"insertAsFirstChild": "prepend",
+		"insertAsLastChild": "append",
+		"replace": "replaceWith"
+	};
+	if (!classify[action]) return template;
+	var content = $.isFunction(html) ? html() : html;
+	$("." + anchor, template)[classify[action]](content);
+	return template;
 };
 
 Echo.Control.prototype.baseCSS =
