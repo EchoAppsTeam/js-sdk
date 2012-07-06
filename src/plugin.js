@@ -66,8 +66,12 @@ Echo.Plugin.prototype.enabled = function(name) {
 	return this.config.get("enabled");
 };
 
-Echo.Plugin.prototype.extendRenderer = function(name, extension) {
-	this.component.extend("renderer", {"name": name, "extension": extension});
+Echo.Plugin.prototype.extendRenderer = function() {
+	this.component.extendRenderer.apply(this.component, arguments);
+};
+
+Echo.Plugin.prototype.extendTemplate = function() {
+	this.component.extendTemplate.apply(this.component, arguments);
 };
 
 Echo.Plugin.prototype.destroy = function() {};
@@ -143,9 +147,5 @@ Echo.Plugin.prototype.init.events = function() {
 		}
 	};
 };
-
-Echo.Plugin.prototype._extendTemplate = function(config) {};
-
-Echo.Plugin.prototype._extendRenderer = function(config) {};
 
 })(jQuery);

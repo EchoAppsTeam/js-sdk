@@ -21,8 +21,8 @@ Echo.Control.create = function(manifest) {
 		this.manifest = manifest;
 		this.init([
 			"vars",
+			"extension",
 			["config", config],
-			"dom",
 			"events",
 			"labels",
 			"css",
@@ -87,44 +87,49 @@ Echo.Control.prototype.substitute = function(template, data) {
 	return template.replace(Echo.Vars.regexps.templateSubstitution, processor);
 };
 
-Echo.Control.prototype.render = function(config) {
-	var control = this;
-	var cssClass = this._cssClassFromControlName();
-	config = config || {};
-
-	// render template
-	if (config.template) {
-		var templates = {};
-		templates.raw = $.isFunction(config.template)
-			? config.template.call(control)
-			: config.template;
-		templates.processed = control.substitute(templates.raw, config.data || {});
-		return Echo.Utils.toDOM(templates.processed, cssClass + "-",
-			function(renderer, element, dom, extra) {
-				control.render.apply(control, [{
-					"element": arguments[0],
-					"args": [element, dom, extra]
-				}]);
-			}
-		);
+Echo.Control.prototype.compileTemplate = function(template, data, transformations) {
+	var control = this, templates = {};
+	var cssPrefix = this._cssClassFromControlName() + "-";
+	templates.raw = $.isFunction(template) ? template.call(this) : template;
+	templates.processed = this.substitute(templates.raw, data || {});
+	if (transformations) {
+		templates.dom = $("<div/>").html(templates.processed);
+		$.map(transformations, function(transformation) {
+			templates.dom = control._templateTransformer.call(control, {
+				"data": data || {},
+				"template": templates.dom,
+				"transformation": transformation
+			});
+		});
+		templates.processed = templates.dom.html();
 	}
+	return Echo.Utils.toDOM(templates.processed, cssPrefix, function() {
+		control.render.apply(control, arguments);
+	});
+};
 
+Echo.Control.prototype.render = function(name, element, dom, extra) {
 	// render specific element
-	if (config.element) {
-		if (control.renderers[config.element]) {
-			control.renderers[config.element][0].apply(control, config.args);
+	if (name) {
+		var renderer = this.extension.renderers[name];
+		if (renderer) {
+			var iteration = 0;
+			renderer.next = function() {
+				renderer.functions[++iteration].apply(this, arguments);
+			};
+			renderer.functions[iteration].apply(this, [element, dom, extra]);
 		}
 		return;
 	}
 
 	// render the whole control
-	this.dom = this.render({"template": this.template, "data": config.data || {}});
+	this.dom = this.compileTemplate(this.template, this.data || {}, this.extension.template);
 	this.config.get("target")
-		.addClass(cssClass)
+		.addClass(this._cssClassFromControlName())
 		.empty()
 		.append(this.dom.content);
 	this.events.publish({"topic": "onRender"});
-	return this.dom;
+	return this.dom.content;
 };
 
 Echo.Control.prototype.rerender = function(config) {
@@ -176,16 +181,23 @@ Echo.Control.prototype.rerender = function(config) {
 	}
 };
 
+Echo.Control.prototype.parentRenderer = function(name, args) {
+	var renderer = this.extension.renderers[name];
+	if (!renderer || !renderer.next) return args[0]; // return DOM element
+	renderer.next.apply(this, args);
+};
+
 Echo.Control.prototype.refresh = function() {
 	// TODO: develop unified refresh mechanism
 	this.events.publish({"topic": "onRefresh"});
 };
 
-Echo.Control.prototype.extend = function(what, arg) {
-	if (!what) return;
-	var control = this;
-	var handler = control["_extend" + what.charAt(0).toUpperCase() + what.slice(1)];
-	return handler && handler.call(control, arg || []);
+Echo.Control.prototype.extendTemplate = function(html, action, anchor) {
+	this.extension.template.push({"html": html, "action": action, "anchor": anchor});
+};
+
+Echo.Control.prototype.extendRenderer = function() {
+	this.init.renderer.apply(this, arguments);
 };
 
 Echo.Control.prototype.template = function() {
@@ -240,6 +252,10 @@ Echo.Control.prototype.init.vars = function() {
 	return {"cache": {}};
 };
 
+Echo.Control.prototype.init.extension = function() {
+	return {"renderers": {}, "template": []};
+};
+
 Echo.Control.prototype.init.config = function(data) {
 	var _normalizer = {};
 	_normalizer.target = $;
@@ -275,10 +291,6 @@ Echo.Control.prototype.init.config = function(data) {
 	});
 };
 
-Echo.Control.prototype.init.dom = function() {
-	return this.config.get("target");
-};
-
 Echo.Control.prototype.init.events = function() {
 	var control = this;
 	var events = {
@@ -310,13 +322,21 @@ Echo.Control.prototype.init.labels = function() {
 };
 
 Echo.Control.prototype.init.css = function() {
+	Echo.Utils.addCSS(this.baseCSS, 'control');
 	if (!this.manifest.css) return;
 	Echo.Utils.addCSS(this.substitute(this.manifest.css), this.manifest.name);
 };
 
+Echo.Control.prototype.init.renderer = function(name, renderer) {
+	var renderers = this.extension.renderers;
+	renderers[name] = renderers[name] || {"functions": []};
+	renderers[name].functions.unshift(renderer);
+};
+
 Echo.Control.prototype.init.renderers = function() {
-	return Echo.Utils.foldl({}, this.manifest.renderers, function(renderer, acc, name) {
-		acc[name] = [renderer];
+	var control = this;
+	$.each(this.manifest.renderers, function() {
+		control.init.renderer.apply(control, arguments);
 	});
 };
 
@@ -361,12 +381,34 @@ Echo.Control.prototype._cssClassFromControlName = function() {
 	return this.manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 };
 
-Echo.Control.prototype._extendTemplate = function(config) {};
-
-Echo.Control.prototype._extendRenderer = function(config) {
-	if (!config || !config.name || !config.extension) return;
-	this.renderers[config.name] = this.renderers[config.name] || [];
-	this.renderers[config.name].unshift(config.extension);
+Echo.Control.prototype._templateTransformer = function(args) {
+	var classify = {
+		"insertBefore": "before",
+		"insertAfter": "after",
+		"insertAsFirstChild": "prepend",
+		"insertAsLastChild": "append",
+		"replace": "replaceWith"
+	};
+	var action = classify[args.transformation.action];
+	if (!action) return args.template;
+	var html = args.transformation.html;
+	var anchor = args.transformation.anchor;
+	var content = $.isFunction(html) ? html() : html;
+	$("." + anchor, args.template)[action](this.substitute(content, args.data));
+	return args.template;
 };
+
+Echo.Control.prototype.baseCSS =
+	'.echo-primaryBackgroundColor {  }' +
+	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
+	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
+	'.echo-primaryColor { color: #3A3A3A; }' +
+	'.echo-secondaryColor { color: #C6C6C6; }' +
+	'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
+	'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
+	'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
+	'.echo-clickable { cursor: pointer; }' +
+	'.echo-relative { position: relative; }' +
+	'.echo-clear { clear: both; }';
 
 })(jQuery);
