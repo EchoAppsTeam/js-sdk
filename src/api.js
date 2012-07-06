@@ -11,7 +11,8 @@ var utils = Echo.Utils;
 Echo.API.Transport = function(config) {
 	this.config = new Echo.Configuration(config, {
 		"data": {},
-		"url": "",
+		"uri": "",
+		"secure": false,
 		"onData": function() {},
 		"onOpen": function() {},
 		"onClose": function() {},
@@ -37,7 +38,9 @@ Echo.API.Transport.prototype._wrapErrorResponse = function(responseError) {
 	};
 };
 
-Echo.API.Transport.prototype.onError = Echo.API.Transport.prototype.onData = function() {};
+Echo.API.Transport.prototype._prepareURL = function() {
+	return this._getScheme() + "//" + this.config.get("uri");
+};
 
 Echo.API.Transports.AJAX = function(config) {
 	config = $.extend({
@@ -48,20 +51,20 @@ Echo.API.Transports.AJAX = function(config) {
 
 utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transport);
 
+Echo.API.Transports.AJAX.prototype._getScheme = function() {
+	return this.config.get("secure") ? "https:" : window.location.protocol;
+};
+
 Echo.API.Transports.AJAX.prototype._getInstance = function() {
 	var self = this;
 	var ajaxSettings = {
-		url: this.config.get("url"),
+		url: this._prepareURL(),
 		type: this.config.get("method"),
 		error: function(errorResponse) {
 			errorResponse = self._wrapErrorResponse(errorResponse);
-			self.onError(errorResponse);
 			self.config.get("onError")(errorResponse);
 		},
-		success: function(response) {
-			self.onData(response);
-			self.config.get("onData")(response);
-		},
+		success: this.config.get("onData"),
 		beforeSend: this.config.get("onOpen"),
 		dataType: "json"
 	};
@@ -102,13 +105,13 @@ Echo.API.Transports.AJAX.prototype._getInstance = function() {
 };
 
 Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) {
-	var originalWrapped = this.constructor.parent._wrapErrorResponse(responseError);
+	var originalWrapped = this.constructor.parent._wrapErrorResponse.apply(this, arguments);
 	if (responseError && responseError.responseText) {
 		var errorObject;
 		try {
 			errorObject = $.parseJSON(responseError.responseText);
 		} catch(e) {}
-		return errorObject || originWrapped;
+		return errorObject || originalWrapped;
 	}
 	return originalWrapped;
 };
@@ -151,9 +154,13 @@ Echo.API.Transports.WebSocket = function(config) {
 
 utils.inherit(Echo.API.Transports.WebSocket, Echo.API.Transport);
 
+Echo.API.Transports.WebSocket.prototype._getScheme = function() {
+	return this.confug.get("secure") ? "wss:" : "ws:";
+};
+
 Echo.API.Transports.WebSocket.prototype._getInstance = function() {
 	var self = this;
-	var socket = new (window.WebSocket || window.MozWebSocket)(this.config.get("url"));
+	var socket = new (window.WebSocket || window.MozWebSocket)(this._prepareURL());
 	socket.onmessage = function(event) {
 		self.config.get("onData")(utils.parseJSON(event.data));
 	};
@@ -161,7 +168,6 @@ Echo.API.Transports.WebSocket.prototype._getInstance = function() {
 	socket.onclose = this.config.get("onClose");
 	socket.onerror = function(errorResponse) {
 		errorResponse = self._wrapErrorResponse(errorResponse);
-		self.onError(errorResponse);
 		self.config.get("onError")(errorResponse);
 	};
 	return socket;
@@ -185,7 +191,8 @@ Echo.API.Request = function(config) {
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
 		"apiBaseURL": "api.echoenabled.com/v1/",
-		"transport": "ajax"
+		"transport": "ajax",
+		"secure": false
 	});
 	this.transport = this._getTransport();
 };
@@ -215,8 +222,9 @@ Echo.API.Request.prototype._getTransport = function() {
 		});
 	return new Echo.API.Transports[transport](
 		$.extend(this._getHandlersByConfig(), {
-			"url": this._prepareURL(),
-			"data": this.config.get("data")
+			"uri": this._prepareURI(),
+			"data": this.config.get("data"),
+			"secure": this.config.get("secure")
 		})
 	);
 };
@@ -229,9 +237,8 @@ Echo.API.Request.prototype._getHandlersByConfig = function() {
 	});
 };
 
-Echo.API.Request.prototype._prepareURL = function(config) {
-	var scheme = this.config.get("secure") ? "https:" : window.location.protocol;
-	return scheme + "//" + this.config.get("apiBaseURL") + this.config.get("endpoint");
+Echo.API.Request.prototype._prepareURI = function() {
+	return this.config.get("apiBaseURL") + this.config.get("endpoint");
 };
 
 })(jQuery);
