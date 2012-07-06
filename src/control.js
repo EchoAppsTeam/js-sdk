@@ -111,8 +111,13 @@ Echo.Control.prototype.render = function(config) {
 
 	// render specific element
 	if (config.element) {
-		if (control.renderers[config.element]) {
-			control.renderers[config.element][0].apply(control, config.args);
+		var renderer = control.renderers[config.element];
+		if (renderer) {
+			var iteration = -1;
+			renderer.next = function() {
+				renderer.functions[++iteration].apply(control, config.args);
+			};
+			renderer.next();
 		}
 		return;
 	}
@@ -176,16 +181,23 @@ Echo.Control.prototype.rerender = function(config) {
 	}
 };
 
+Echo.Control.prototype.parentRenderer = function(name, args) {
+	var renderer = this.renderers[name];
+	if (!renderer || !renderer.next) return args[0]; // return DOM element
+	renderer.next.call(this, args);
+};
+
 Echo.Control.prototype.refresh = function() {
 	// TODO: develop unified refresh mechanism
 	this.events.publish({"topic": "onRefresh"});
 };
 
-Echo.Control.prototype.extend = function(what, arg) {
-	if (!what) return;
-	var control = this;
-	var handler = control["_extend" + what.charAt(0).toUpperCase() + what.slice(1)];
-	return handler && handler.call(control, arg || []);
+Echo.Control.prototype.extendTemplate = function(config) {
+	// TODO: develop template extension mechanism
+};
+
+Echo.Control.prototype.extendRenderer = function() {
+	this.init.renderer.apply(this, arguments);
 };
 
 Echo.Control.prototype.template = function() {
@@ -315,9 +327,16 @@ Echo.Control.prototype.init.css = function() {
 	Echo.Utils.addCSS(this.substitute(this.manifest.css), this.manifest.name);
 };
 
+Echo.Control.prototype.init.renderer = function(name, renderer) {
+	this.renderers = this.renderers || {};
+	this.renderers[name] = this.renderers[name] || {"functions": []};
+	this.renderers[name].functions.unshift(renderer);
+};
+
 Echo.Control.prototype.init.renderers = function() {
-	return Echo.Utils.foldl({}, this.manifest.renderers, function(renderer, acc, name) {
-		acc[name] = [renderer];
+	var control = this;
+	$.each(this.manifest.renderers, function() {
+		control.init.renderer.apply(control, arguments);
 	});
 };
 
@@ -360,14 +379,6 @@ Echo.Control.prototype._loadPluginsDependencies = function(callback) {
 
 Echo.Control.prototype._cssClassFromControlName = function() {
 	return this.manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
-};
-
-Echo.Control.prototype._extendTemplate = function(config) {};
-
-Echo.Control.prototype._extendRenderer = function(config) {
-	if (!config || !config.name || !config.extension) return;
-	this.renderers[config.name] = this.renderers[config.name] || [];
-	this.renderers[config.name].unshift(config.extension);
 };
 
 Echo.Control.prototype.baseCSS =
