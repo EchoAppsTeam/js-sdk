@@ -28,12 +28,12 @@ Echo.API.Transport.prototype.abort = function() {
 	this.instance.abort();
 };
 
-Echo.API.Transport.prototype._wrapErrorResponse = function(transportError) {
+Echo.API.Transport.prototype._wrapErrorResponse = function(responseError) {
 	return {
 		"result": "error",
 		"errorCode": "connection_failure",
 		"errorMessage": "",
-		"transportError": transportError
+		"transportError": responseError || ""
 	};
 };
 
@@ -99,6 +99,18 @@ Echo.API.Transports.AJAX.prototype._getInstance = function() {
 		};
 	}
 	return ajaxSettings;
+};
+
+Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) {
+	var originalWrapped = this.constructor.parent._wrapErrorResponse(responseError);
+	if (responseError && responseError.responseText) {
+		var errorObject;
+		try {
+			errorObject = $.parseJSON(responseError.responseText);
+		} catch(e) {}
+		return errorObject || originWrapped;
+	}
+	return originalWrapped;
 };
 
 Echo.API.Transports.AJAX.prototype.send = function(data) {
