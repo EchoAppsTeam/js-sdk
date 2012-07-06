@@ -12,12 +12,12 @@ Echo.StreamServer.API.Request = function(config) {
 	var self = this;
 	config = $.extend({
 		"liveUpdatesTimeout": 5,
-		"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity"
+		"onData": function() {},
+		"onError": function() {},
+		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity"
 	}, config);
+	config = this._wrapTransportEventHandlers(config);
 	Echo.StreamServer.API.Request.parent.constructor.call(this, config);
-	this.transport.onData = function() {
-		return self.onData.apply(self, arguments);
-	};
 };
 
 Echo.Utils.inherit(Echo.StreamServer.API.Request, Echo.API.Request);
@@ -31,27 +31,58 @@ Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.
 	this.request(data);
 };
 
-Echo.StreamServer.API.Request.prototype.onData = function(response) {
+Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
+	var self = this;
+	var _config = $.extend({}, config);
+	return $.extend(config, {
+		"onData": function(response) {
+			self._onData(response, _config);
+		},
+		"onError": function(responseError) {
+			self._onError(responseError, _config);
+		}
+	});
+};
+
+Echo.StreamServer.API.Request.prototype._onData = function(response, config) {
 	response = response || {};
 	if (response.result === "error") {
 		this._handleErrorResponse(response, {
-			"callback": this.config.get("onError")
+			"callback": config.onError
 		});
 		return;
 	}
+	config.onData(response);
 	this.nextSince = response.nextSince;
 	if (this.liveUpdates && this.liveUpdates.responseHandler) {
 		this.liveUpdates.responseHandler(response);
+		this._startLiveUpdates();
 	}
 };
 
+Echo.StreamServer.API.Request.prototype._onError = function(responseError, config) {
+	this._handleErrorResponse(responseError, {
+		"callback": config.onError
+	});
+};
+
 Echo.StreamServer.API.Request.prototype._submit = function() {
-	this.transport.config.set("url", this.config.get("submissionProxyURL"));
 	this.request(
 		$.extend(this.config.get("data"), {
 			"content": Echo.Utils.object2JSON(this._AS2KVL(this.config.get("data.content")))
 		})
 	);
+};
+
+Echo.StreamServer.API.Request.prototype._prepareURL = function() {
+	if (this.config.get("endpoint") === "submit") {
+		return this.transport._getScheme() + this.config.get("submissionProxyURL");
+	}
+	return this.constructor.parent._prepareURL.call(this);
+};
+
+Echo.StreamServer.API.Request.prototype._getTransport = function() {
+	return this.constructor.parent._getTransport.call(this);
 };
 
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {
