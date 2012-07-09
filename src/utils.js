@@ -25,6 +25,12 @@ if (!Echo.Vars) Echo.Vars = {
 
 Echo.Utils = {};
 
+var _cssStyles = {
+	"anchor": undefined,
+	"index": 1,
+	"processed": {}
+};
+
 /**
  * Method to add CSS styles on the page.
  *
@@ -56,16 +62,12 @@ Echo.Utils = {};
  * @return {Boolean} Returns true if CSS styles was successfully added, false - if CSS styles is already in the document.
  */
 Echo.Utils.addCSS = function(cssCode, id) {
-	Echo.Vars.css = Echo.Vars.css || {
-		"index": 1,
-		"processed": {}
-	};
 	if (id) {
-		if (Echo.Vars.css.processed[id]) return false;
-		Echo.Vars.css.processed[id] = true;
+		if (_cssStyles.processed[id]) return false;
+		_cssStyles.processed[id] = true;
 	}
 	var currentCssCode = "";
-	var oldStyle = Echo.Vars.css.anchor;
+	var oldStyle = _cssStyles.anchor;
 	if (oldStyle && oldStyle.length) {
 		currentCssCode = oldStyle.html();
 	}
@@ -73,23 +75,23 @@ Echo.Utils.addCSS = function(cssCode, id) {
 	// so we limit it to 100000 characters
 	// (2000 rules x 50 characters per rule)
 	if (currentCssCode.length + cssCode.length > 100000) {
-		Echo.Vars.css.index++;
+		_cssStyles.index++;
 		oldStyle = null;
 		currentCssCode = "";
 	}
-	var newStyle = $('<style id="echo-css-' + Echo.Vars.css.index + '" type="text/css">' + currentCssCode + cssCode + '</style>');
+	var newStyle = $('<style id="echo-css-' + _cssStyles.index + '" type="text/css">' + currentCssCode + cssCode + '</style>');
 	if (oldStyle && oldStyle.length) {
 		// use replacing instead of adding css to existing element
 		// because IE doesn't allow it
 		oldStyle.replaceWith(newStyle);
 	} else {
-		if (Echo.Vars.css.anchor) {
-			Echo.Vars.css.anchor.after(newStyle);
+		if (_cssStyles.anchor) {
+			_cssStyles.anchor.after(newStyle);
 		} else {
 			$(document.getElementsByTagName("head")[0] || document.documentElement).prepend(newStyle);
 		}
 	}
-	Echo.Vars.css.anchor = newStyle;
+	_cssStyles.anchor = newStyle;
 	return true;
 };
 
