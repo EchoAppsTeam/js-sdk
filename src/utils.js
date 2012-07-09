@@ -547,14 +547,14 @@ Echo.Utils.toDOM = function(template, prefix, renderer) {
  * This function returns 'transparent' string if background-color of the element and its parents is not specified.
  *
  *     // HTML template
- *     var template = "<div class='container'>" +
- *                        "<div class='header' style='background-color: green;'>header</div>" +
- *                        "<div class='content' style='background-color: red;'>" +
- *                            "<div class='section1'></div>" +
- *                            "<div class='section2'></div>" +
- *                        "</div>" +
- *                        "<div class='footer'>footer</div>" +
- *                    "</div>";
+ *     var template = '<div class="container">' +
+ *                        '<div class="header" style="background-color: green;">header</div>' +
+ *                        '<div class="content" style="background-color: red;">' +
+ *                            '<div class="section1"></div>' +
+ *                            '<div class="section2"></div>' +
+ *                        '</div>' +
+ *                        '<div class="footer">footer</div>' +
+ *                    '</div>';
  *
  *     Echo.Utils.getVisibleColor( $(".header", template) ); // will return "rgb(0, 128, 0)"
  *     Echo.Utils.getVisibleColor( $(".section1", template) ); // will return "rgb(255, 0, 0)"
