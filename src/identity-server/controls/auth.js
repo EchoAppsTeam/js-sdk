@@ -22,7 +22,6 @@ auth.labels = {
 auth.events = {
 	"Echo.UserSession.onInvalidate": {
 		"context": "empty",
-		"external": true,
 		"handler": function() {
 			$.fancybox.close();
 			this.rerender();
