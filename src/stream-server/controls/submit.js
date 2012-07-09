@@ -37,12 +37,6 @@ submit.labels = {
 	"yourWebsiteOptional": "Your website (optional)"
 };
 
-submit.events = {
-	"Echo.UserSession.onInvalidate": function() {
-		this.rerender();
-	}
-};
-
 // templates
 
 submit.templates.main =
@@ -71,7 +65,7 @@ submit.templates.main =
 				'<div class="{class:metadataLabel}">{label:markers}</div>' +
 				'<div class="{class:metadataWrapper}">' +
 					'<div class="{class:metadataSubwrapper} {class:border} ">' +
-						'<input class="{class:markers} echo-primaryFont" data-renderer="markers">' +
+						'<input class="{class:markers} echo-primaryFont">' +
 					'</div>' +
 				'</div>' +
 				'<div class="echo-clear"></div>' +
@@ -102,18 +96,18 @@ submit.renderers.markersContainer = function(element) {
 };
 
 submit.renderers.markers = function(element, dom) {
-	this.render("metaFields", element, dom, {"type": "markers"});
+	return this.render("metaFields", element, dom, {"type": "markers"});
 };
 
 submit.renderers.tags = function(element, dom) {
-	this.render("metaFields", element, dom, {"type": "tags"});
+	return this.render("metaFields", element, dom, {"type": "tags"});
 };
 
 submit.renderers.metaFields = function(element, dom, extra) {
 	var type = extra.type;
 	var data = this.config.get("data.object." + type, this.config.get(type, []));
 	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
-	dom.get(type).iHint({
+	return dom.get(type).iHint({
 		"text": this.labels.get(type + "Hint"),
 		"className": "echo-secondaryColor"
 	}).val(value).blur();
@@ -163,36 +157,33 @@ submit.renderers.postButton = function(element) {
 			"label": self.labels.get("posting")
 		}
 	};
-	var button = new Echo.Button(element, states["normal"]);
+	var button = new Echo.Button(element, states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
 		var topic = "onPost" + phase;
-		var sub = self.posting.subscriptions;
-		if (sub[topic]) {
+		var subscriptions = self.posting.subscriptions;
+		if (subscriptions[topic]) {
 			self.events.unsubscribe({
 				"topic": topic,
-				"handlerId": sub[topic]
+				"handlerId": subscriptions[topic]
 			});
 		}
-		var handler = function(eventTopic, eventParams) {
-			button.set(state);
-			if (callback) {
-				callback();
-			}
-		};	
-		sub[topic] = self.events.subscribe({
+		subscriptions[topic] = self.events.subscribe({
 			"topic": topic,
-			"handler": handler
+			"handler": function(topic, params) {
+				button.set(state);
+				if (callback) callback();
+			}
 		});
 	};
 	
-	subscribe("Init", states["posting"]);
-	subscribe("Complete", states["normal"], function() {
+	subscribe("Init", states.posting);
+	subscribe("Complete", states.normal, function() {
 		self.dom.get("text").val("").trigger("blur");
-		self.rerender();
+		self.rerender(["tagsContainer", "markersContainer"]);
 	});
-	subscribe("Error", states["normal"]);
+	subscribe("Error", states.normal);
 	
 	this.posting.action = this.posting.action || function() {
 		var highlighted = false;
@@ -283,7 +274,7 @@ submit.methods.post = function() {
 
 
 submit.methods.getActivity = function(verb, type, data) {
-	return {
+	return (!data) ? [] : {
 		"actor": {
 			"objectTypes": [ "http://activitystrea.ms/schema/1.0/person" ],
 			"name": this.user.get("name", ( this.user.is("logged") ? "" : this.dom.get("name").val() )),
@@ -319,6 +310,11 @@ submit.methods.prepareBroadcastParams = function(params) {
 	params.target = this.config.get("target").get(0);
 	params.targetURL = this.config.get("targetURL");
 	return params;
+};
+
+submit.methods.refresh = function() {
+	this.config.set("data.object.content", this.dom.get("text").val());
+	this.rerender();
 };
 
 submit.css =

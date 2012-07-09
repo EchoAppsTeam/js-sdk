@@ -8,25 +8,32 @@ Echo.Button = function(element, state) {
 	this.element = element;
 	this.element.addClass("echo-button");
 	$("<div>").appendTo(element).addClass("label");
-	this.set(state);
+	this.set({
+		"label": state.label || this.element.text(),
+		"icon": state.icon || false,
+		"disabled": state.disabled || !!this.element.attr('disabled')
+	});
 	Echo.Utils.addCSS(this._css);
 };
 
 Echo.Button.prototype.set = function(state) {
-	this.label = state.label || this.element.text();
+	this.label = state.label || "";
 	this.icon = state.icon || false;
-	this.disabled = state.disabled || !!this.element.attr("disabled");
+	this.disabled = state.disabled || false;
 	this._refresh();
 };
 
 Echo.Button.prototype._refresh = function() {
 	$(".label", this.element).text(this.label);
+	var iconElement = $(".icon", this.element);
 	if (this.icon) {
-		if ($('.icon', this.element).length) {
-			$('.icon', this.element).removeClass().addClass(this.icon + " icon");
+		if (iconElement.length) {
+			iconElement.removeClass().addClass(this.icon + " icon");
 		} else {
 			$("<div>").addClass(this.icon + " icon").prependTo(this.element);
 		}
+	} else {
+		iconElement.remove();
 	}
 	this.element.attr("disabled", this.disabled);
 }
