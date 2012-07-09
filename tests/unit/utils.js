@@ -7,15 +7,14 @@ var suite = Echo.Tests.Unit.Utils = function() {};
 suite.prototype.info = {
 	"className": "Echo.Utils",
 	"functions": ["htmlize", "foldl", "getNestedValue", "setNestedValue", "stripTags", "object2JSON",
-		      "parseURL", "mapClass2Object", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate",
-		      "getVisibleColor", "toDOM", "isMobileDevice", "getUniqueString"]
+		"parseURL", "mapClass2Object", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate",
+		"getVisibleColor", "toDOM", "isMobileDevice", "getUniqueString"]
 };
 
 suite.prototype.tests = {};
 
 suite.prototype.tests.TestDataMethods = {
 	"check": function() {
-		
 		var hash = Echo.Utils.foldl({}, ["value1", "value2"], function(value, acc) {
 			acc[value] = value;
 		});
@@ -26,21 +25,21 @@ suite.prototype.tests.TestDataMethods = {
 			if (key === "key2") return;
 			acc[key] = value;
 		});
-		
+
 		QUnit.deepEqual(hash, { "value1": "value1", "value2": "value2" },
 			"Checking foldl() method with hash as accumulator");
 		QUnit.deepEqual(values, ["value1", "value2"],
 			"Checking foldl() method with with array as accumulator");
 		QUnit.deepEqual(truncated_hash, { "key1": "value1" },
 			"Checking foldl() method with undefined return in callback");
-		
+
 		var data = {
 			"key1": "value1",
 			"key2": {
 				"key2-1": "value2-1"
 			}
 		};
-		
+
 		QUnit.equal(Echo.Utils.getNestedValue(data, "key1"), "value1",
 			"Checking getNestedValue() method with simple key");
 		QUnit.deepEqual(Echo.Utils.getNestedValue(data, ""), data,
@@ -51,26 +50,26 @@ suite.prototype.tests.TestDataMethods = {
 			"Checking getNestedValue() method with complex key")
 		QUnit.equal(Echo.Utils.getNestedValue(data, "key1.fakekey", "default value"), "default value",
 			"Checking getNestedValue() method with fake key and default value");
-		
+
 		Echo.Utils.setNestedValue(data, "key1", { "key1-1": "value1-1"});
 		QUnit.deepEqual(data["key1"], {"key1-1": "value1-1"},
 			"Checking setNestedValue() method with object param");
 		Echo.Utils.setNestedValue(data, "key3", "value3");
 		QUnit.equal(data["key3"], "value3",
 			"Checking setNestedValue() method with plain param");
-		
+
 		QUnit.equal(Echo.Utils.htmlize(), "",
 			"Checking htmlize() method with empty param");
 		QUnit.equal(Echo.Utils.htmlize("text1 < & > text2"), "text1 &lt; &amp; &gt; text2",
 			"Checking htmlize() method with special characters");
-		
+
 		QUnit.equal(Echo.Utils.stripTags(""), "",
 			"Checking stripTags() method with empty param");
 		QUnit.equal(Echo.Utils.stripTags("<div>Content</div>"), "Content",
 			"Checking stripTags() method with simple HTML");
 		QUnit.equal(Echo.Utils.stripTags("<div>Outer<div><!-- Comment -->Inner</div></div>"), "OuterInner",
 			"Checking stripTags() method with complex HTML");
-		
+
 		QUnit.equal(Echo.Utils.object2JSON(null), "null",
 			"Checking object2JSON() method for null object ");
 		QUnit.equal(Echo.Utils.object2JSON(123), "123",
@@ -89,7 +88,7 @@ suite.prototype.tests.TestDataMethods = {
 			"Checking object2JSON() method for complex array");
 		QUnit.equal(Echo.Utils.object2JSON({"k1": "v1", "k2": "v2"}), '{"k1":"v1","k2":"v2"}',
 			"Checking object2JSON() method for simple object");
-		
+
 		var complex_object = {
 			"k1": ["v1.1", null, false],
 			"k2": {
@@ -121,7 +120,7 @@ suite.prototype.tests.TestDataMethods = {
 			"query": "query_string",
 			"fragment": "hash_value"
 		}, "Checking parseURL() method");
-		
+
 		QUnit.deepEqual(Echo.Utils.parseURL("https://www.domain.com"), {
 			"scheme": "https",
 			"domain": "www.domain.com",
@@ -129,12 +128,12 @@ suite.prototype.tests.TestDataMethods = {
 			"query": undefined,
 			"fragment": undefined
 		}, "Checking parseURL() method with some undefined fields");
-		
+
 		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-05T08:15:30Z"), 784023330,
 			"Checking timestampFromW3CDTF() method");
 		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-0508-15:30"), undefined,
 			"Checking timestampFromW3CDTF() method with incorrect input value");
-		
+
 		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>some_content</div>", 10), "<div>some_conte</div>",
 			"Checking htmlTextTruncate() method");
 		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>content</div>", 10), "<div>content</div>",
@@ -191,16 +190,15 @@ suite.prototype.tests.TestDataMethods = {
 
 suite.prototype.tests.TestDomMethods = {
 	"check": function() {
-		
-		QUnit.ok(Echo.Utils.addCSS(".echo-utils-tests {}", "utils-tests"),
+		QUnit.ok(Echo.Utils.addCSS(".echo-utils-tests { background-color: rgb(12, 34, 56); }", "utils-tests"),
 			"Checking that addCSS() method returns true if CSS-class was added");
-		QUnit.ok(/echo-utils-tests {}$/.test(Echo.Vars.css.anchor.html()),
-			"Checking that addCSS() method adds CSS-class to style");
+		var testElement = $('<div class="echo-utils-tests"></div>');
+		$("#qunit-fixture").append(testElement);
+		QUnit.equal(Echo.Utils.getVisibleColor(testElement), "rgb(12, 34, 56)",
+			"Test element has correct background color added via addCss() function");
 		QUnit.ok(!Echo.Utils.addCSS(".echo-utils-tests {}", "utils-tests"),
 			"Checking that addCSS() method returns false if previously added Id is used");
-		// delete previously added css class
-		Echo.Vars.css.anchor.html(Echo.Vars.css.anchor.html().replace(/.echo-utils-tests {}$/, ""));
-		
+
 		var template =  '<div class="echo-utils-tests-container">' +
 					'<div class="echo-utils-tests-header">header</div>' +
 					'<div class="echo-utils-tests-content">' +
@@ -209,9 +207,9 @@ suite.prototype.tests.TestDomMethods = {
 						'<div class="echo-utils-tests-section3"></div>' +
 					'</div>' +
 				'</div>';
-		
+
 		var footer_template = '<div class="echo-utils-tests-footer">footer content</div>';
-		
+
 		var handlers = {
 			"section1": function(element) {
 				element.text("content1");
@@ -223,7 +221,7 @@ suite.prototype.tests.TestDomMethods = {
 				element.text("content3");
 			}
 		};
-		
+
 		var container = Echo.Utils.toDOM(template, 'echo-utils-tests-', handlers);
 		QUnit.equal(container.get("section1").html(), "content1",
 			"Checking toDOM.get() method");
@@ -233,7 +231,7 @@ suite.prototype.tests.TestDomMethods = {
 		container.remove("section2");
 		QUnit.equal(container.get("section2"), undefined,
 			"Checking toDOM.remove() method");
-		
+
 		container.get("section1").css("background-color", "rgb(255, 0, 0)");
 		QUnit.equal(Echo.Utils.getVisibleColor(container.get("section1")), "rgb(255, 0, 0)",
 			"Checking getVisibleColor() method with element color");
@@ -243,11 +241,11 @@ suite.prototype.tests.TestDomMethods = {
 		container.get("footer").css("background-color", "rgba(0, 0, 0, 0)");
 		QUnit.equal(Echo.Utils.getVisibleColor(container.get("footer")), "transparent",
 			"Checking getVisibleColor() method with transparent element color");
-		
+
 		var elements = Echo.Utils.mapClass2Object(container.content);
 		QUnit.equal(elements['echo-utils-tests-section3'].innerHTML, "content3",
 			"Checking mapClass2Object() method");
-		
+
 		var user_agents = {
 			"android": "Android-x86-1.6-r2 - Mozilla/5.0 (Linux; U; Android 1.6; en-us; eeepc Build/Donut)" +
 					"AppleWebKit/528.5+ (KHTML, like Gecko) Version/3.1.2 Mobile Safari/525.20.1",
