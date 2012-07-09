@@ -38,7 +38,7 @@ submit.labels = {
 };
 
 submit.events = {
-	"internal.User.onInvalidate": function() {
+	"Echo.UserSession.onInvalidate": function() {
 		this.rerender();
 	}
 };
@@ -87,7 +87,7 @@ submit.templates.main =
 			'</div>' +
 		'</div>' +
 		'<div class="{class:controls}">' +
-			'<div class="{class:postContainer} echo-ui">' +
+			'<div class="{class:postContainer}">' +
 				'<button class="{class:postButton} echo-primaryFont"></button>' +
 			'</div>' +
 			'<div class="echo-clear"></div>' +
@@ -101,12 +101,22 @@ submit.renderers.markersContainer = function(element) {
 	return (this.user.any("roles", ["administrator", "moderator"])) ? element.show() : element.hide();
 };
 
-submit.renderers.markers = function(element) {
-	return this.metaFields(element, "markers");
+submit.renderers.markers = function(element, dom) {
+	this.render("metaFields", element, dom, {"type": "markers"});
 };
 
-submit.renderers.tags = function(element) {
-	return this.metaFields(element, "tags");
+submit.renderers.tags = function(element, dom) {
+	this.render("metaFields", element, dom, {"type": "tags"});
+};
+
+submit.renderers.metaFields = function(element, dom, extra) {
+	var type = extra.type;
+	var data = this.config.get("data.object." + type, this.config.get(type, []));
+	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
+	dom.get(type).iHint({
+		"text": this.labels.get(type + "Hint"),
+		"className": "echo-secondaryColor"
+	}).val(value).blur();
 };
 
 submit.renderers.text = function(element) {
@@ -114,16 +124,15 @@ submit.renderers.text = function(element) {
 	if (content) {
 		element.val(content);
 	}
-	element.iHint({
+	return element.iHint({
 		"text": this.config.get("actionString"),
 		"className": "echo-secondaryColor"
 	});
-	return element;
 };
 
 submit.renderers.avatar = function(element) {
-	var avatar = this.user.get("avatar", this.user.config.get("defaultAvatar"));
-	return element.append('<img src="' + avatar + '">');
+	var avatar = Echo.Utils.loadImage(this.user.get("avatar"), this.user.config.get("defaultAvatar"));
+	return element.append(avatar);
 };
 
 submit.renderers.name = function(element) {
@@ -154,11 +163,11 @@ submit.renderers.postButton = function(element) {
 			"label": self.labels.get("posting")
 		}
 	};
-	var button = new Echo.Button(element, states['normal']);
+	var button = new Echo.Button(element, states["normal"]);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
-		var topic = "Submit.onPost" + phase;
+		var topic = "onPost" + phase;
 		var sub = self.posting.subscriptions;
 		if (sub[topic]) {
 			self.events.unsubscribe({
@@ -167,7 +176,6 @@ submit.renderers.postButton = function(element) {
 			});
 		}
 		var handler = function(eventTopic, eventParams) {
-			if (self.config.get("target").get(0) != eventParams.target) return;
 			button.set(state);
 			if (callback) {
 				callback();
@@ -179,18 +187,17 @@ submit.renderers.postButton = function(element) {
 		});
 	};
 	
-	subscribe("Init", states['posting']);
-	subscribe("Complete", states['normal'], function() {
+	subscribe("Init", states["posting"]);
+	subscribe("Complete", states["normal"], function() {
 		self.dom.get("text").val("").trigger("blur");
 		self.rerender();
 	});
-	subscribe("Error", states['normal']);
+	subscribe("Error", states["normal"]);
 	
 	this.posting.action = this.posting.action || function() {
 		var highlighted = false;
 		$.each(["name", "text"], function (i, v) {
-			var e = self.dom.get(v);
-			highlighted = self.highlightMandatory(e);
+			highlighted = self.highlightMandatory(self.dom.get(v));
 			return !highlighted;
 		});
 		if (highlighted) return;
@@ -206,16 +213,16 @@ submit.methods.post = function() {
 	var self = this;
 	var publish = function(phase, data) {
 		var params = {
-			"topic": "Submit.onPost" + phase,
+			"topic": "onPost" + phase,
 			"data": self.prepareBroadcastParams({
 				"postData": data
 			})
 		};
 		self.events.publish(params);
 	};
-	var content = [].concat(this.getActivity('post', 'comment', this.dom.get('text').val()),
-				this.getActivity('tag', "marker", this.dom.get("markers").val()),
-				this.getActivity('tag', 'tag', this.dom.get("tags").val()));
+	var content = [].concat(this.getActivity("post", "comment", this.dom.get("text").val()),
+				this.getActivity("tag", "marker", this.dom.get("markers").val()),
+				this.getActivity("tag", "tag", this.dom.get("tags").val()));
 	var entry= {
 		"content": content,
 		"appkey": this.config.get("appkey"),
@@ -267,26 +274,13 @@ submit.methods.post = function() {
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"apiBaseURL": this.config.get("submissionProxyURL"),
+		"timeout": this.config.get("postingTimeout"), //TODO: test it
 		"data": entry,
 		"onData": callbacks['onData'],
 		"onError": callbacks['onError']
 	}).send();
-	var postingTimeout = this.config.get("postingTimeout");
-	if (postingTimeout) {
-		timer = setTimeout(function() {
-			callback({"result": "error", "errorCode": "network_timeout"});
-		}, postingTimeout * 1000);
-	}
 };
 
-submit.methods.metaFields = function(element, type) {
-	var data = this.config.get("data.object." + type, this.config.get(type, []));
-	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
-	return element.iHint({
-		"text": this.labels.get(type + "Hint"),
-		"className": "echo-secondaryColor"
-	}).val(value).blur();
-};
 
 submit.methods.getActivity = function(verb, type, data) {
 	return {
@@ -299,7 +293,7 @@ submit.methods.getActivity = function(verb, type, data) {
 			"objectTypes": [ "http://activitystrea.ms/schema/1.0/" + type ],
 			"content": data,
 		},
-		"source": this.config.get("source"),
+		"source": [ this.config.get("source") ],
 		"verbs": [ "http://activitystrea.ms/schema/1.0/" + verb ],
 		"targets": [{
 			"id": this.config.get("targetURL")
