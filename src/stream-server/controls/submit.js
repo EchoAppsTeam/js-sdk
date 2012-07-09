@@ -276,8 +276,8 @@ submit.methods.post = function() {
 		"apiBaseURL": this.config.get("submissionProxyURL"),
 		"timeout": this.config.get("postingTimeout"), //TODO: test it
 		"data": entry,
-		"onData": callbacks['onData'],
-		"onError": callbacks['onError']
+		"onData": callbacks.onData,
+		"onError": callbacks.onError
 	}).send();
 };
 
@@ -293,7 +293,7 @@ submit.methods.getActivity = function(verb, type, data) {
 			"objectTypes": [ "http://activitystrea.ms/schema/1.0/" + type ],
 			"content": data,
 		},
-		"source": [ this.config.get("source") ],
+		"source": this.config.get("source"),
 		"verbs": [ "http://activitystrea.ms/schema/1.0/" + verb ],
 		"targets": [{
 			"id": this.config.get("targetURL")
