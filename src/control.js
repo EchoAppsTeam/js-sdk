@@ -391,6 +391,26 @@ Echo.Control.prototype._templateTransformer = function(args) {
 	return args.template;
 };
 
+Echo.Control.prototype.messageTemplates = {
+//TODO: rename CSS classes
+	'compact':
+		'<span class="echo-application-message-icon echo-application-message-{data:type}" title="{data:message}">' +
+		'</span>',
+	'default':
+		'<div class="echo-application-message">' +
+			'<span class="echo-application-message-icon echo-application-message-{data:type} echo-primaryFont">' +
+				'{data:message}' +
+			'</span>' +
+		'</div>'
+};
+
+Echo.Control.prototype.showMessage = function(data, target) {
+//TODO: consider opportunity to implement showmessage as a predefined template and use render method for it
+	if (!this.config.get("debug") && data.type == "error") return;
+	var template = this.messageTemplates[data.layout || this.messageLayout || "default"];
+	(target || this.config.get("target")).empty().append(this.substitute(template, data));
+};
+
 Echo.Control.prototype.baseCSS =
 	'.echo-primaryBackgroundColor {  }' +
 	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
@@ -402,6 +422,14 @@ Echo.Control.prototype.baseCSS =
 	'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
 	'.echo-clickable { cursor: pointer; }' +
 	'.echo-relative { position: relative; }' +
-	'.echo-clear { clear: both; }';
+	'.echo-clear { clear: both; }' +
+
+//TODO: rename CSS classes
+	'.echo-application-message { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }' +
+	'.echo-application-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
+	'.echo-application-message .echo-application-message-icon { padding-left: 21px; height: auto; }' +
+	'.echo-application-message-empty { background-image: url(//cdn.echoenabled.com/images/information.png); }' +
+	'.echo-application-message-loading { background-image: url(//cdn.echoenabled.com/images/loading.gif); }' +
+	'.echo-application-message-error { background-image: url(//cdn.echoenabled.com/images/warning.gif); }';
 
 })(jQuery);
