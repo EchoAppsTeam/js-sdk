@@ -82,7 +82,7 @@ suite.prototype.tests.PublicMethods = {
 				"a2": {"contexts": {}, "handlers": [{"id": s3.id, "handler": s3.handler}]}
 			},
 			"X": {
-				"empty": {"contexts": {}, "handlers": [{"id": s8.id, "handler": s8.handler}, {"id": s9.id, "handler": s9.handler}]},
+				"global": {"contexts": {}, "handlers": [{"id": s8.id, "handler": s8.handler}, {"id": s9.id, "handler": s9.handler}]},
 				"a2": {"contexts": {}, "handlers": [{"id": s10.id, "handler": s10.handler}]}
 			}
 		};
@@ -93,7 +93,7 @@ suite.prototype.tests.PublicMethods = {
 		publish({"topic": "A", "context": "a1"});
 		QUnit.deepEqual(published, [2, 1, 6, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\")");
 		publish({"topic": "X"});
-		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", empty context)");
+		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", global context)");
 		publish({"topic": "X", "context": "a2"});
 		QUnit.deepEqual(published, [10, 8, 9], "Publish: handlers order (topic \"X\", context \"a2\")");
 
@@ -120,14 +120,14 @@ suite.prototype.tests.PublicMethods = {
 					},
 					"handlers": []
 				},
-				"empty": {
+				"global": {
 					"contexts": {},
 					"handlers": []
 				}
 			},
 			"Z": {},
 			"X": {
-				"empty": {"contexts": {}, "handlers": [{"id": s8.id, "handler": s8.handler}, {"id": s9.id, "handler": s9.handler}]}
+				"global": {"contexts": {}, "handlers": [{"id": s8.id, "handler": s8.handler}, {"id": s9.id, "handler": s9.handler}]}
 			}
 		};
 		QUnit.deepEqual(Echo.Events._subscriptions.A, subscriptions2.A, "Checking full structure of subscribers after several unsubscriptions");
@@ -137,7 +137,7 @@ suite.prototype.tests.PublicMethods = {
 		publish({"topic": "A", "context": "a1"});
 		QUnit.deepEqual(published, [6, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\")");
 		publish({"topic": "X"});
-		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", empty context)");
+		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", global context)");
 		publish({"topic": "X", "context": "a2"});
 		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", context \"a2\")");
 	}

@@ -8,6 +8,11 @@ if (Echo.Utils) return;
 
 if (!Echo.Global) Echo.Global = {};
 
+// TODO: revisit when Echo.Loader is available
+if (!Echo.Loader) Echo.Loader = {
+	"cdnBaseURL": "http://cdn.echoenabled.com/"
+};
+
 if (!Echo.Vars) Echo.Vars = {
 	"regexps": {
 		"templateSubstitution": /{([a-z]+):(([a-z_]+\.)*[a-z_]+)}/ig,
@@ -669,6 +674,30 @@ Echo.Utils.objectToQuery = function(data) {
  */
 Echo.Utils.isComponentDefined = function(name) {
 	return !!Echo.Utils.getNestedValue(window, name);
+};
+
+/**
+ * Method which loads image.
+ *
+ * This function returns image HTML element with source attribute that equals first argument.
+ * If the image is not available then this function loads the default image that is passed as a second argument.
+ *
+ * @static
+ * @param {String} image Defines the URL of the image to be loaded
+ * @param {String} defaultImage Defines the URL of the default image
+ * @return {HTMLElement} Returns image HTML element
+ */
+Echo.Utils.loadImage = function(image, defaultImage) {
+	var url = image || defaultImage;
+	var img = $("<img>", { "src": url });
+	if (url !== defaultImage) {
+		img.one({
+			"error" : function(){
+				$(this).attr("src", defaultImage);
+			}
+		});
+	}
+	return img;
 };
 
 })();

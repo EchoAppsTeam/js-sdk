@@ -22,17 +22,17 @@ PACK_FILES_environment = \
 	$(SRC_DIR)/button.js
 
 PACK_FILES_stream-server = \
+	$(SRC_DIR)/stream-server/api.js \
 	$(WEB_SDK_DIR)/stream-server/controls.pack.js \
-	$(WEB_SDK_DIR)/stream-server/plugins.pack.js \
-	$(SRC_DIR)/stream-server/api.js
+	$(WEB_SDK_DIR)/stream-server/plugins.pack.js
 
 PACK_FILES_stream-server/controls = $(SRC_DIR)/stream-server/controls/*.js
 PACK_FILES_stream-server/plugins = $(SRC_DIR)/stream-server/plugins/*.js
 
 PACK_FILES_identity-server = \
+	$(SRC_DIR)/identity-server/api.js \
 	$(WEB_SDK_DIR)/identity-server/controls.pack.js \
-	$(WEB_SDK_DIR)/identity-server/plugins.pack.js \
-	$(SRC_DIR)/identity-server/api.js
+	$(WEB_SDK_DIR)/identity-server/plugins.pack.js
 
 PACK_FILES_identity-server/controls = $(SRC_DIR)/identity-server/controls/*.js
 PACK_FILES_identity-server/plugins = $(SRC_DIR)/identity-server/plugins/*.js
