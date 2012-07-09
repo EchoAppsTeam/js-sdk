@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Echo</title>
+	<script type="text/javascript" src="../sdk/backplane.js"></script>
+        <script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
+        <script type="text/javascript" src="../sdk/environment.pack.js"></script>
+        <script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
+</head>
+<body>
+	<div id="container" style="width: 100px;"></div>
+	<script type="text/javascript">
+	window.onload = function() {
+		Backplane.init({
+			"serverBaseURL": "http://api.echoenabled.com/v1",
+			"busName": "jskit"
+		});
+
+		var control = new Echo.StreamServer.Controls.UserList{
+			"target": document.getElementById("container"),
+			"appkey": "test.aboutecho.com",
+			"query" : "childrenof:http://example.com/leon/*"
+		});
+
+		if (console) console.log(control);
+	}
+	</script>
+</body>
+</html>
