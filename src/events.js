@@ -107,8 +107,8 @@ Echo.Events.publish = function(params) {
 	Echo.Events._executeForDeepestContext(params.topic, params.context, function(obj, lastContext, restContexts) {
 		Echo.Events._callHandlers(obj[lastContext], params, restContexts);
 	});
-	if (!params.bubble && params.context !== "empty") {
-		params.context = "empty";
+	if (!params.bubble && params.context !== "global") {
+		params.context = "global";
 		Echo.Events.publish(params);
 	}
 };
@@ -122,7 +122,7 @@ Echo.Events._dataByHandlerId = {};
 Echo.Events._lastHandlerResult;
 
 Echo.Events._initContext = function(topic, context) {
-	context = context || "empty";
+	context = context || "global";
 	if (topic) {
 		var obj = Echo.Events._subscriptions[topic] = Echo.Events._subscriptions[topic] || {};
 		$.each(context.split("/"), function(i, part) {

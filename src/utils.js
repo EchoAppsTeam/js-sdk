@@ -8,6 +8,11 @@ if (Echo.Utils) return;
 
 if (!Echo.Global) Echo.Global = {};
 
+// TODO: revisit when Echo.Loader is available
+if (!Echo.Loader) Echo.Loader = {
+	"cdnBaseURL": "http://cdn.echoenabled.com/"
+};
+
 if (!Echo.Vars) Echo.Vars = {
 	"regexps": {
 		"templateSubstitution": /{([a-z]+):(([a-z_]+\.)*[a-z_]+)}/ig,
