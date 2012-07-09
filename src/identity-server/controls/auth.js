@@ -174,8 +174,7 @@ auth.css =
 	".{class:avatar} { float: left; }" +
 	".{class:avatar} img { width: 24px; height: 24px; }" +
 	".{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
-	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }" +
-	".echo-clear { clear: both; }";
+	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }";
 
 Echo.Control.create(auth);
 
