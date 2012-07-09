@@ -288,9 +288,11 @@ Echo.Control.prototype.init.events = function() {
 	var control = this;
 	var events = {
 		"prepare": function(params) {
-			params.topic = control.manifest.name + "." + params.topic;
-			params.context = control.config.get("context");
-			params.callback = $.proxy(params.callback, control);
+			params.topic = params.external
+				? params.topic
+				: control.manifest.name + "." + params.topic;
+			params.context = params.context || control.config.get("context");
+			params.handler = $.proxy(params.handler, control);
 			return params;
 		},
 		"publish": function(params) {
@@ -301,11 +303,9 @@ Echo.Control.prototype.init.events = function() {
 		},
 		"unsubscribe": Echo.Events.unsubscribe
 	};
-	$.each(control.manifest.events, function(topic, callback) {
-		events.subscribe({
-			"topic": topic,
-			"handler": $.proxy(callback, control)
-		});
+	$.each(control.manifest.events, function(topic, data) {
+		data = $.isFunction(data) ? {"handler": data} : data;
+		events.subscribe($.extend({"topic": topic}, data));
 	});
 	return events;
 };
