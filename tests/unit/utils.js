@@ -8,7 +8,7 @@ suite.prototype.info = {
 	"className": "Echo.Utils",
 	"functions": ["htmlize", "foldl", "getNestedValue", "setNestedValue", "stripTags", "object2JSON",
 		"parseURL", "mapClass2Object", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate",
-		"getVisibleColor", "toDOM", "isMobileDevice", "getUniqueString"]
+		"getVisibleColor", "toDOM", "isMobileDevice", "getUniqueString", "loadImage"]
 };
 
 suite.prototype.tests = {};
@@ -281,6 +281,33 @@ suite.prototype.tests.TestDomMethods = {
 		// change it if tests is running on mobile devices
 		QUnit.equal(Echo.Utils.isMobileDevice(), false,
 			"Checking isMobileDevice() method for real userAgent");
+	}
+};
+
+suite.prototype.tests.TestAsyncMethods = {
+	"config": {
+		"async": true,
+		"user": {"status": "anonymous"},
+		"testTimeout": 2000
+	},
+	"check": function() {
+		var img = Echo.Utils.loadImage("http://cdn.echoenabled.com/extra/jquery/plugins/fancybox/fancybox.png");
+		img.one({
+			"load": function() {
+				QUnit.equal($(this).attr("src"), "http://cdn.echoenabled.com/extra/jquery/plugins/fancybox/fancybox.png",
+						"Checking loadImage() method");
+				QUnit.start();
+			}
+		});
+		$("#qunit-fixture").append(img);
+		var fakeImage = Echo.Utils.loadImage("http://example.com/fake.jpg", "http://cdn.echoenabled.com/images/avatar-default.png");
+		fakeImage.one({
+			"load": function() {
+				QUnit.equal($(this).attr("src"), "http://cdn.echoenabled.com/images/avatar-default.png",
+						"Checking loadImage() method with fake image");
+			}
+		});
+		$("#qunit-fixture").append(fakeImage);
 	}
 };
 
