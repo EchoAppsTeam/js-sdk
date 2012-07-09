@@ -69,7 +69,7 @@ stream.events = {
 		this.queueActivity({
 			"action": "animation",
 			"actorID": data.item.data.actor.id,
-			"itemUnique": data.item.data.unique,
+			"itemUnique": data.item.unique(),
 			"priority": "highest",
 			"handler": function() {
 				delete data.item.added;
@@ -81,7 +81,7 @@ stream.events = {
 		var self = this;
 		this.queueActivity({
 			"action": "animation",
-			"itemUnique": data.item.data.unique,
+			"itemUnique": data.item.unique(),
 			"actorID": data.item.data.actor.id,
 			"priority": "highest",
 			"handler": function() {
@@ -109,7 +109,7 @@ stream.events = {
 		});
 	},
 	"internal.Item.onChildrenExpand": function(topic, args) {
-		this.childrenRequestItems(args.data.unique);
+		this.childrenRequestItems(args.unique());
 	},
 	"Submit.onPostComplete": function(topic) {
 		var self = this;
@@ -145,16 +145,16 @@ stream.renderers.body = function(element) {
 	var self = this;
 	element = element || this.dom.get("body");
 	if (!this.lastRequest) {
-		/*this.showMessage({
+		this.showMessage({
 			"type": "loading",
 			"message": this.labels.get(
-				this.isErrorWithTimer(this.error)
+				0 && this.isErrorWithTimer(this.error)
 					? "retrying"
-					: this.isWaitingForData(this.error)
+					: 0 && this.isWaitingForData(this.error)
 						? "error_" + this.error.errorCode
 						: "loading"
 			)
-		}, element);*/
+		}, element);
 		return;
 	}
 
@@ -162,10 +162,10 @@ stream.renderers.body = function(element) {
 		if (this.lastRequest.initial) element.empty();
 		this.appendRootItems(this.lastRequest.data, element);
 	} else {
-		/*this.showMessage({
+		this.showMessage({
 			"type": "empty",
 			"message": this.labels.get("emptyStream")
-		}, element);*/
+		}, element);
 	}
 	if (this.lastRequest.initial && this.config.get("streamStateToggleBy") == "mouseover" && this.config.get("liveUpdates")) {
 		element.bind({
@@ -270,7 +270,7 @@ stream.methods.actualizeChildrenList = function(parent, entries) {
 		// we should change entry conversationID in accordance with
 		// conversationID of the root item
 		entry.targets = $.map(entry.targets, function(target) {
-			target.conversationID = parent.conversation;
+			target.conversationID = parent.target.conversationID;
 			return target;
 		});
 		entry = self.normalizeEntry(entry);
@@ -337,7 +337,7 @@ stream.methods.childrenRequestItems = function(unique) {
 		$.each(data.entries, function(i, entry) {
 			var _item = self.initItem(entry);
 			self.applyStructureUpdates("add", _item);
-			if (entry.parentUnique == item.data.unique) children.push(_item);
+			if (entry.parentUnique == item.unique()) children.push(_item);
 		});
 		self.placeChildrenItems(item, children, data.entries);
 	});	
@@ -540,14 +540,14 @@ stream.methods.requestItems = function(extra, visualizer) {
 	var self = this;
 	Echo.StreamServer.API.request({
 		"endpoint": "search",
-		"liveUpdatesTimeout": 3000,
+		//"recurring": true,
 		"method": "GET",
 		"data": {
 			"q": this.constructSearchQuery(extra),
 			"appkey": self.config.get("appkey")
 		},
 		"onError": function(response) {
-			console.log("error", response);
+			console.log(["error", response]);
 		},
 		"onData": function(response) {
 			self.handleInitialResponse(response, visualizer);
@@ -590,9 +590,6 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 	var sortOrder = this.config.get("sortOrder");
 	data.entries = data.entries || [];
 
-// XXX: temporarily clear items list
-data.entries = [];
-
 	this.events.publish({
 		"topic": "Stream.onDataReceive",
 		"data": self.prepareBroadcastParams({
@@ -605,7 +602,7 @@ data.entries = [];
 		var item = self.initItem(entry);
 		// avoiding problem when children can go before parents
 		self.applyStructureUpdates("add", item);
-		if (self.isRootItem(item)) {
+		if (item.isRoot()) {
 			self.addItemToList(roots, item, sortOrder);
 		}
 	});
@@ -659,12 +656,12 @@ stream.methods.applyLiveUpdates = function(entries) {
 					self.applySpotUpdates("replace", self.updateItem(entry));
 				} else {
 					item = self.initItem(entry, true);
-					var satisfies = self.isRootItem(item)
+					var satisfies = item.isRoot()
 						? self.withinVisibleFrame(item)
 						: self.withinVisibleChildrenFrame(item);
 					// do not filter out items from the current user
 					// they should be displayed in a special container
-					if (!satisfies && !self.isRootItem(item) &&
+					if (!satisfies && !item.isRoot() &&
 						self.user.hasIdentity(item.data.actor.id)) {
 							item.byCurrentUser = true;
 					};
@@ -739,14 +736,14 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 			case "add":
 				// if we trying to add already existing item
 				// and it was not due to item moving we should replace it
-				var _item = self.items[item.data.unique];
+				var _item = self.items[item.unique()];
 				if (_item && _item.dom && options.priority != "high") {
 					self.applySpotUpdates("replace", item, {"priority": "highest"});
 					return;
 				}
 				self.applyStructureUpdates(operation, item);
 				item.added = true;
-				if (self.isRootItem(item)) {
+				if (item.isRoot()) {
 					self.placeRootItem(item);
 				} else {
 					var parent = self.getParentItem(item);
@@ -793,7 +790,7 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 			case "delete":
 				item.deleted = true;
 				// keepChildren flag is required to detect the case when item is being moved
-				if (self.isRootItem(item)) {
+				if (item.isRoot()) {
 					self.events.publish({
 						"topic": "internal.Item.onDelete",
 						"data": {"item": item, "config": options}
@@ -803,9 +800,7 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 					var parent = self.getParentItem(item);
 					if (parent) {
 						parent.render("children", parent.dom.get("children"), parent.dom, options);
-						if (self.isChildrenPaginationEnabled()) {
-							parent.render("childrenByCurrentActorLive", parent.dom.get("childrenByCurrentActorLive"), parent.dom, options);
-						}
+						parent.render("childrenByCurrentActorLive", parent.dom.get("childrenByCurrentActorLive"), parent.dom, options);
 						self.applyStructureUpdates(operation, item, options);
 						parent.rerender("container");
 					}
@@ -816,7 +811,7 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 	};
 	this.queueActivity({
 		"action": action,
-		"itemUnique": item.data.unique,
+		"itemUnique": item.unique(),
 		"actorID": item.data.actor.id,
 		"priority": options.priority,
 		"handler": function() { handler(action); }
@@ -956,10 +951,10 @@ stream.methods.deleteItemSpotUpdate = function(item, config) {
 			return acc + 1;
 		});
 		if (!itemsCount) {
-			/*self.showMessage({
+			self.showMessage({
 				"type": "empty",
 				"message": self.labels.get("emptyStream")
-			}, self.dom.get('body'));*/
+			}, self.dom.get('body'));
 		}
 		self.activities.animations--;
 		self.executeNextActivity();
@@ -973,10 +968,6 @@ stream.methods.deleteItemSpotUpdate = function(item, config) {
 
 stream.methods.classifyAction = function(entry) {
 	return (entry.verbs[0] == "http://activitystrea.ms/schema/1.0/delete") ? "delete" : "post";
-};
-
-stream.methods.isRootItem = function(item) {
-	return !this.config.get("children.maxDepth") || item.id == item.conversation;
 };
 
 stream.methods.hasParentItem = function(item) {
@@ -1002,13 +993,13 @@ stream.methods.withinVisibleFrame = function(item, items, isViewComplete, sortOr
 
 stream.methods.withinVisibleChildrenFrame = function(item) {
 	var parent = this.getParentItem(item);
-	if (!this.isChildrenPaginationEnabled() || !parent) return this.hasParentItem(item);
+	if (!parent) return this.hasParentItem(item);
 	return this.withinVisibleFrame(item, parent.children,
 			!parent.hasMoreChildren(), this.config.get("children.sortOrder"));
 };
 
 stream.methods.getParentItem = function(item) {
-	return this.isRootItem(item) ? undefined : this.items[item.data.parentUnique];
+	return item.isRoot() ? undefined : this.items[item.parentUnique()];
 };
 
 stream.methods.compareItems = function(a, b, sort) {
@@ -1109,23 +1100,18 @@ stream.methods.isItemInList = function(item, items) {
 	return this.getItemListIndex(item, items) >= 0;
 };
 
-stream.methods.isChildrenPaginationEnabled = function() {
-	return !!this.config.get("children.itemsPerPage");
-};
-
 stream.methods.initItem = function(entry, isLive) {
 	var self = this;
-	var item = new Echo.Item({
+	var item = new Echo.StreamServer.Controls.Stream.Item({
+		"target": $("<div>"),
+		"parent": new Echo.Configuration(this.config.getAsHash()),
 		"children": [],
-		"config": new Echo.Config(this.config.getAsHash()),
-		"conversation": entry.target.conversationID, // short cut for "conversationID" field
 		"data": entry,
 		"depth": 0,
-		"id": entry.object.id, // short cut for "id" item field
+		//"id": entry.object.id, // short cut for "id" item field
 		"live": isLive,
-		"threading": false,
-		"timestamp": $.timestampFromW3CDTF(entry.object.published),
-		"user": this.user
+		"threading": false
+		//"timestamp": Echo.Utils.timestampFromW3CDTF(entry.object.published)
 	});
 	// caching item template to avoid unnecessary work
 	var template = item.template;
@@ -1137,18 +1123,18 @@ stream.methods.initItem = function(entry, isLive) {
 		}
 		return self.vars.cache.itemTemplate;
 	};
-	this.items[item.data.unique] = item;
+	this.items[entry.unique] = item;
 	return item;
 };
 
 stream.methods.updateItem = function(entry) {
 	var item = this.items[entry.unique];
 	// forcing item re-injection if the published date or the respective accumulator was changed
-	var sortOrder = this.config.get(this.isRootItem(item) ? "sortOrder" : "children.sortOrder");
+	var sortOrder = this.config.get(item.isRoot() ? "sortOrder" : "children.sortOrder");
 	var accRelatedSortOrder = sortOrder.match(/replies|likes|flags/);
 	var acc = accRelatedSortOrder && this.getRespectiveAccumulator(item, sortOrder);
 	if (item.data.object.published != entry.object.published) {
-		item.timestamp = $.timestampFromW3CDTF(entry.object.published);
+		item.timestamp = Echo.Utils.timestampFromW3CDTF(entry.object.published);
 		item.forceInject = true;
 	}
 	$.extend(item.data, entry);
@@ -1171,13 +1157,13 @@ stream.methods.getItemProjectedIndex = function(item, items, sort) {
 			}
 		});
 	}
-	return typeof index != "undefined" ? index : items.length;
+	return typeof index !== "undefined" ? index : items.length;
 };
 
 stream.methods.addItemToList = function(items, item, sort) {
 	items.splice(this.getItemProjectedIndex(item, items, sort), 0, item);
 	delete item.forceInject;
-	this.items[item.data.unique] = item;
+	this.items[item.unique()] = item;
 };
 
 
@@ -1186,32 +1172,20 @@ stream.methods.applyStructureUpdates = function(action, item, options) {
 	options = options || {};
 	switch (action) {
 		case "add":
-			if (!this.isRootItem(item)) {
+			if (!item.isRoot()) {
 				var parent = this.getParentItem(item);
 				// avoiding problem with missing parent
 				if (!parent) {
-					delete this.items[item.data.unique];
+					delete this.items[item.unique()];
 					return;
 				}
-				item.depth = parent.depth + 1;
-				// backwards compatibility in case children pagination is off
-				if (!this.isChildrenPaginationEnabled() && item.depth > 1) {
-					item.depth = 1;
-					// replace parent of the item
-					item.data.parentUnique = parent.data.parentUnique;
-					item.data.target.id = parent.data.target.id;
-					item.forceInject = true;
-					this.applyStructureUpdates("add", item);
-					return;
-				}
+				item.config.set("depth", parent.depth + 1);
 				parent.threading = true;
 				item.forceInject = true;
 				this.addItemToList(
 					parent.children,
 					item,
-					this.isChildrenPaginationEnabled()
-						? this.config.get("children.displaySortOrder")
-						: this.config.get("children.sortOrder")
+					this.config.get("children.displaySortOrder")
 				);
 			} else {
 				this.addItemToList(this.threads, item, this.config.get("sortOrder"));
@@ -1219,23 +1193,23 @@ stream.methods.applyStructureUpdates = function(action, item, options) {
 			break;
 		case "delete":
 			var container = null;
-			if (this.isRootItem(item)) {
+			if (item.isRoot()) {
 				container = this.threads;
 			} else {
-				container = this.items[item.data.parentUnique].children;
-				if (container.length == 1) {
+				container = this.items[item.parentUnique()].children;
+				if (container.length === 1) {
 					var parent = this.getParentItem(item);
-					if (parent) parent.threading = false;
+					if (parent) parent.config.set("threading", false);
 				}
 			}
 			container.splice(this.getItemListIndex(item, container), 1);
 			if (!options.keepChildren) {
 				item.traverse(item.children, function(child) {
-					delete self.items[child.data.unique];
+					delete self.items[child.unique()];
 				});
 				delete item.children;
 			}
-			delete this.items[item.data.unique];
+			delete this.items[item.unique()];
 			break;
 	};
 };
@@ -1315,8 +1289,145 @@ stream.css =
 	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
 	'.{class:more-hover} { background-color: #E4E4E4; }' +
 	'.{class:more} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
-	'.{class:more} .echo-application-message { padding: 0; border: none; border-radius: 0; }';
+	'.{class:more} .echo-application-message { padding: 0; border: none; border-radius: 0; }' +
+	($.browser.msie ? '.echo-stream-state-picture { vertical-align: middle; }' : '');
 
 Echo.Control.create(stream);
+
+var item = Echo.Control.skeleton("Echo.StreamServer.Controls.Stream.Item");
+
+item.methods.template = function() {
+	return '<div class="echo-item-content">' +
+		'<div class="echo-item-container">' +
+			'<div class="echo-item-avatar-wrapper">' +
+				'<div class="echo-item-avatar"></div>' +
+			'</div>' +
+			'<div class="echo-item-wrapper">' +
+				'<div class="echo-item-subwrapper">' +
+					'<div class="echo-item-subcontainer">' +
+						'<div class="echo-item-frame">' +
+							'<div class="echo-item-modeSwitch echo-clickable"></div>' +
+							'<div class="echo-item-authorName echo-linkColor"></div>' +
+							'<div class="echo-clear"></div>' +
+							'<div class="echo-item-data">' +
+								'<div class="echo-item-re"></div>' +
+								'<div class="echo-item-body echo-primaryColor"> ' +
+									'<span class="echo-item-text"></span>' +
+									'<span class="echo-item-textEllipses">...</span>' +
+									'<span class="echo-item-textToggleTruncated echo-linkColor echo-clickable"></span>' +
+								'</div>' +
+								'<div class="echo-item-markers echo-secondaryFont echo-secondaryColor"></div>' +
+								'<div class="echo-item-tags echo-secondaryFont echo-secondaryColor"></div>' +
+							'</div>' +
+							'<div class="echo-item-metadata">' +
+								'<div class="echo-item-metadata-userID">' +
+									'<span class="echo-item-metadata-title echo-item-metadata-icon echo-item-metadata-userID">' +
+										'{Label:userID}' +
+									'</span>' +
+									'<span class="echo-item-metadata-value">{Data:actor.id}</span>' +
+								'</div>' +
+							'</div>' +
+							'<div class="echo-item-footer echo-secondaryColor echo-secondaryFont">' +
+								'<img class="echo-item-sourceIcon echo-clickable">' +
+								'<div class="echo-item-date"></div>' +
+								'<div class="echo-item-from"></div>' +
+								'<div class="echo-item-via"></div>' +
+								'<div class="echo-item-controls"></div>' +
+								'<div class="echo-clear"></div>' +
+							'</div>' +
+						'</div>' +
+					'</div>' +
+					'<div class="echo-clear"></div>' +
+				'</div>' +
+			'</div>' +
+			'<div class="echo-clear"></div>' +
+			'<div class="echo-item-childrenMarker"></div>' +
+		'</div>' +
+		(this.config.get("children.sortOrder") == "chronological"
+			? '<div class="echo-item-children"></div>' +
+			'<div class="echo-item-expandChildren echo-item-container-child echo-trinaryBackgroundColor echo-clickable">' +
+				'<span class="echo-item-expandChildrenLabel echo-message-icon"></span>' +
+			'</div>'
+			: '<div class="echo-item-expandChildren echo-item-container-child echo-trinaryBackgroundColor echo-clickable">' +
+				'<span class="echo-item-expandChildrenLabel echo-message-icon"></span>' +
+			'</div>' +
+			'<div class="echo-item-children"></div>'
+		) +
+		'<div class="echo-item-childrenByCurrentActorLive"></div>' +
+	'</div>';
+};
+
+item.methods.isRoot = function() {
+	return this.config.get("data.object.id") == this.config.get("data.target.conversationID");
+};
+
+item.methods.unique = function() {
+	return this.config.get("data.unique");
+};
+
+item.methods.parentUnique = function() {
+	return this.config.get("data.parentUnique");
+};
+
+var itemDepthRules = [];
+// 100 is a maximum level of children in query, but we can apply styles for ~20
+for (var i = 0; i <= 20; i++) {
+	itemDepthRules.push('.echo-item-depth-' + i + ' { margin-left: ' + (i ? 68 + (i - 1) * 44 : 0) + 'px; }');
+}
+
+item.css =
+	'.echo-item-content { word-wrap: break-word; }' +
+	'.echo-item-container-root { padding: 10px 0px; }' +
+	'.echo-item-container-root-thread { padding: 10px 0px 0px 0px; }' +
+	'.echo-item-container-child { padding: 10px; margin: 0px 20px 2px 0px; }' +
+	'.echo-item-container-child-thread { padding: 10px; margin: 0px 20px 2px 0px; }' +
+	'.echo-item-avatar-wrapper { margin-right: -58px; float: left; position: relative; }' +
+	'.echo-item-children .echo-item-avatar-wrapper, .echo-item-childrenByCurrentActorLive .echo-item-avatar-wrapper { margin-right: -34px; }' +
+	'.echo-item-children .echo-item-subwrapper, .echo-item-childrenByCurrentActorLive .echo-item-subwrapper { margin-left: 34px; }' +
+	'.echo-item-wrapper { float: left; width: 100%; }' +
+	'.echo-item-subwrapper { margin-left: 58px; }' +
+	'.echo-item-subcontainer { float: left; width: 100%; }' +
+	'.echo-item-markers { line-height: 16px; background: url(//cdn.echoenabled.com/images/curation/metadata/marker.png) no-repeat; padding: 0px 0px 4px 21px; margin-top: 7px; }' +
+	'.echo-item-tags { line-height: 16px; background: url(//cdn.echoenabled.com/images/tag_blue.png) no-repeat; padding: 0px 0px 4px 21px; }' +
+	'.echo-item-metadata { display: none; }' +
+	'.echo-item-metadata-title { font-weight: bold; line-height: 25px; height: 25px; margin-right: 5px; }' +
+	'.echo-item-metadata-icon { display: inline-block; padding-left: 26px; }' +
+	'div.echo-item-metadata-userID { border-bottom: 1px solid #e1e1e1; border-top: 1px solid #e1e1e1;}' +
+	'span.echo-item-metadata-userID { background: url("//cdn.echoenabled.com/images/curation/metadata/user.png") no-repeat left center; }' +
+	'.echo-item-modeSwitch { float: right; width: 16px; height: 16px; background:url("//cdn.echoenabled.com/images/curation/metadata/flip.png") no-repeat 0px 3px; }' +
+	'.echo-item-childrenMarker { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }' + // This is magic "arrow up". Only color and margins could be changed
+	'.echo-item-container-root-thread .echo-item-childrenMarker { display: block; }' +
+	'.echo-item-avatar { width: 48px; height: 48px; }' +
+	'.echo-item-children .echo-item-avatar, .echo-item-childrenByCurrentActorLive .echo-item-avatar { width: 24px; height: 24px; }' +
+	'.echo-item-authorName { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }' +
+	'.echo-item-re { font-weight: bold; }' +
+	'.echo-item-re a:link, .echo-item-re a:visited, .echo-item-re a:active { text-decoration: none; }' +
+	'.echo-item-re a:hover { text-decoration: underline; }' +
+	'.echo-item-body { padding-top: 4px; }' +
+	'.echo-item-controls { float: left; margin-left: 3px; }' +
+	'.echo-item-sourceIcon { float: left; height: 16px; width: 16px; margin-right: 5px; border: 0px; }' +
+	'.echo-item-date, .echo-item-from, .echo-item-via { float: left; }' +
+	'.echo-item-from a, .echo-item-via a { text-decoration: none; color: #C6C6C6; }' +
+	'.echo-item-from a:hover, .echo-item-via a:hover { color: #476CB8; }' +
+	'.echo-item-tag { display: inline-block; height: 16px; background: url("//cdn.echoenabled.com/images/tag_blue.png") no-repeat; padding-left: 18px; }' +
+	'.echo-item-smiley-icon { border: 0px; }' +
+	'.echo-item-textToggleTruncated { margin-left: 5px; }' +
+	'.echo-item-blocker-backdrop { position: absolute; left: 0px; top: 0px; background: #FFFFFF; opacity: 0.7; z-index: 100; }' +
+	'.echo-item-blocker-message { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }' +
+	'.echo-item-expandChildren { display:none; text-align: center; padding:4px; }' +
+	'.echo-item-expandChildren .echo-item-expandChildrenLabel { display: inline-block; padding-left: 22px; }' +
+	'.echo-item-expandChildren .echo-message-icon { background: url("//cdn.echoenabled.com/images/whirlpool.png") no-repeat 5px 4px; }' +
+	'.echo-item-expandChildren .echo-item-message-loading { background: no-repeat left top url(//cdn.echoenabled.com/images/loading.gif); }' +
+	'.echo-item-expandChildren .echo-application-message { padding: 0; border:none; border-radius: 0; }' +
+	itemDepthRules.join("\n") +
+	($.browser.msie ?
+		'.echo-item-childrenMarker { font-size: 1px; line-height: 1px; }' +
+		'.echo-item-blocker-backdrop, .echo-item-blocker-message { filter:alpha(opacity=70); }' +
+		'.echo-stream-container, .echo-item-content, .echo-item-container, .echo-item-subwrapper { zoom: 1; }' +
+		'.echo-item-avatar-wrapper { position: static; }'
+		: ''
+	);
+
+Echo.Control.create(item);
 
 })(jQuery);
