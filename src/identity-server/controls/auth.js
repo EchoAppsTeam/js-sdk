@@ -90,7 +90,7 @@ auth.methods.template = function() {
 auth.methods.refresh = function() {
 	$.fancybox.close();
 	var component = Echo.Utils.getComponent("Echo.IdentityServer.Controls.Auth");
-	component.parent.refresh.call(this, arguments);
+	component.parent.refresh.call(this);
 };
 
 auth.methods.assembleIdentityControl = function(type, element) {
