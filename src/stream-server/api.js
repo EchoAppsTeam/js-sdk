@@ -22,6 +22,13 @@ Echo.StreamServer.API.Request = function(config) {
 
 Echo.Utils.inherit(Echo.StreamServer.API.Request, Echo.API.Request);
 
+Echo.StreamServer.API.Request.prototype.abort = function() {
+	this.transport && this.transport.abort();
+	if (this.liveUpdates) {
+		this._stopLiveUpdates();
+	}
+};
+
 Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.prototype._count = function(data) {
 	if (this.config.get("recurring")) {
 		this._initLiveUpdates();
