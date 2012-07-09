@@ -44,7 +44,7 @@ PACK_FILES_third-party/jquery = \
 	$(SRC_DIR)/third-party/jquery.fancybox-1.3.4.min.js \
 	$(SRC_DIR)/third-party/jquery.ui-1.8.21.min.js
 
-all: clean sdk packs docs
+all: clean sdk packs
 
 packs: $(PACK_NAMES)
 
