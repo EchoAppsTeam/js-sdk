@@ -177,6 +177,15 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.ok(!!classB.prototype.functionA,
 			"Checking if the child object has all methods from the parent class");
 
+		QUnit.ok(!!Echo.Utils.getComponent("Echo"),
+			"Checking if Echo namespace was defined (via getComponent function)");
+		QUnit.ok(!!Echo.Utils.getComponent("Echo.Utils"),
+			"Checking if Echo.Utils lib was defined (via getComponent function)");
+		QUnit.deepEqual(Echo.Utils.getComponent("Echo.Utils"), window.Echo.Utils,
+			"Checking if we receive a proper link back from the getComponent function");
+		QUnit.equal(Echo.Utils.getComponent("Fake.Echo.Utils"), undefined,
+			"Checking if we receive 'undefined' as a value in case the given component doesn't exist on the page");
+
 		QUnit.ok(Echo.Utils.isComponentDefined("Echo"),
 			"Checking if Echo namespace was defined (via isComponentDefined function)");
 		QUnit.ok(Echo.Utils.isComponentDefined("Echo.Utils"),

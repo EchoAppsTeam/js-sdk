@@ -664,6 +664,19 @@ Echo.Utils.objectToQuery = function(data) {
 };
 
 /**
+ * Method to acquire a class reference by the JS class name.
+ *
+ * This function returns the reference to the corresponding JS class defined on the page.
+ *
+ * @static
+ * @param {String} name Name of the component which we need to access.
+ * @return {Boolean} Returns the reference to the necessary JS class.
+ */
+Echo.Utils.getComponent = function(name) {
+	return Echo.Utils.getNestedValue(window, name);
+};
+
+/**
  * Method which allows to check whether a given component was defined on the page.
  *
  * This function returns the boolean value which represents whether a given component is defined on the page.
@@ -673,7 +686,7 @@ Echo.Utils.objectToQuery = function(data) {
  * @return {Boolean} Returns the true/false if the component was or wasn't found respectively.
  */
 Echo.Utils.isComponentDefined = function(name) {
-	return !!Echo.Utils.getNestedValue(window, name);
+	return !!Echo.Utils.getComponent(name);
 };
 
 /**

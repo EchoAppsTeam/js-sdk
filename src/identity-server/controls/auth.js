@@ -19,16 +19,6 @@ auth.labels = {
 	"signup": "signup"
 };
 
-auth.events = {
-	"Echo.UserSession.onInvalidate": {
-		"context": "global",
-		"handler": function() {
-			$.fancybox.close();
-			this.rerender();
-		}
-	}
-};
-
 auth.templates.anonymous =
 	'<div class="{class:userAnonymous}">' +
 		'<span class="{class:login} echo-linkColor echo-clickable">' +
@@ -83,15 +73,10 @@ auth.renderers.or = function(element) {
 };
 
 auth.renderers.avatar = function(element) {
-	var self = this;
-	var url = this.user.get("avatar", this.user.config.get("defaultAvatar"));
-	return element.append(
-		$("<img>", { "src": url }).bind({
-			"error" : function(){
-				$(this).attr("src", self.user.get("defaultAvatar"));
-			}
-		})
-	);
+	return element.append(Echo.Utils.loadImage(
+		this.user.get("avatar"),
+		this.user.config.get("defaultAvatar")
+	));
 };
 
 auth.renderers.name = function(element) {
@@ -100,6 +85,12 @@ auth.renderers.name = function(element) {
 
 auth.methods.template = function() {
 	return this.templates[this.user.is("logged") ? "logged" : "anonymous"];
+};
+
+auth.methods.refresh = function() {
+	$.fancybox.close();
+	var component = Echo.Utils.getComponent("Echo.IdentityServer.Controls.Auth");
+	component.parent.refresh.call(this, arguments);
 };
 
 auth.methods.assembleIdentityControl = function(type, element) {

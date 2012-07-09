@@ -182,7 +182,12 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
 
 Echo.Control.prototype.refresh = function() {
 	// TODO: develop unified refresh mechanism
+	this.rerender();
 	this.events.publish({"topic": "onRefresh"});
+};
+
+Echo.Control.prototype.dependant = function() {
+	return !!this.config.get("parent");
 };
 
 Echo.Control.prototype.extendTemplate = function(html, action, anchor) {
@@ -271,10 +276,7 @@ Echo.Control.prototype.init.config = function(data) {
 		"appkey": "",
 		"apiBaseURL": protocol + "//api.echoenabled.com",
 		"debug": false,
-		// TODO: need to handle the situation when the app
-		//       was initialized from another app, the context should
-		//       be constructed in a special way in this case
-		"context": Echo.Utils.getUniqueString()
+		"context": (data.parent ? data.parent + "/" : "") + Echo.Utils.getUniqueString()
 	}, this.manifest.config || {});
 	// TODO: find better home for normalizer...
 	var normalizer = this.manifest.config.normalizer;
@@ -304,6 +306,15 @@ Echo.Control.prototype.init.events = function() {
 		data = $.isFunction(data) ? {"handler": data} : data;
 		events.subscribe($.extend({"topic": topic}, data));
 	});
+	// subscribe all root level controls to the user login/logout event
+	// and call "refresh" control method
+	if (!this.dependant()) {
+		events.subscribe({
+			"topic": "Echo.UserSession.onInvalidate",
+			"context": "global",
+			"handler": control.refresh
+		});
+	}
 	return events;
 };
 
