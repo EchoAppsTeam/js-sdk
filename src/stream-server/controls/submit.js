@@ -314,7 +314,8 @@ submit.methods.prepareBroadcastParams = function(params) {
 
 submit.methods.refresh = function() {
 	this.config.set("data.object.content", this.dom.get("text").val());
-	this.rerender();
+	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Submit");
+	component.parent.refresh.call(this, arguments);
 };
 
 submit.css =
