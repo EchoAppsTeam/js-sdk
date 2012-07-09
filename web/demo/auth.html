@@ -3,9 +3,9 @@
 <head>
 	<title>Echo</title>
 	<script type="text/javascript" src="../sdk/backplane.js"></script>
-        <script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
-        <script type="text/javascript" src="../sdk/environment.pack.js"></script>
-        <script type="text/javascript" src="../sdk/identity-server.pack.js"></script>
+	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="../sdk/environment.pack.js"></script>
+	<script type="text/javascript" src="../sdk/identity-server.pack.js"></script>
 </head>
 <body>
 	<div id="container"></div>
@@ -34,20 +34,20 @@ Echo.Plugin.create(plugin);
 			"busName": "jskit"
 		});
 
-                var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
+		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
 
-                var control = new Echo.IdentityServer.Controls.Auth({
-                        "target": document.getElementById("container"),
-                        "appkey": "test.aboutecho.com",
-                        "plugins": [{
-                                "name": "AuthTestPlugin"
-                        }],
-                        "param": "test",
-                        "identityManager": {
-                                "login": identityManager,
-                                "signup": identityManager
-                        }
-                });
+		var control = new Echo.IdentityServer.Controls.Auth({
+			"target": document.getElementById("container"),
+			"appkey": "test.aboutecho.com",
+			"plugins": [{
+				"name": "AuthTestPlugin"
+			}],
+			"param": "test",
+			"identityManager": {
+				"login": identityManager,
+				"signup": identityManager
+			}
+		});
 
 		if (console) console.log(control);
 	}
