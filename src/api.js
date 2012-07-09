@@ -155,7 +155,7 @@ Echo.API.Transports.WebSocket = function(config) {
 utils.inherit(Echo.API.Transports.WebSocket, Echo.API.Transport);
 
 Echo.API.Transports.WebSocket.prototype._getScheme = function() {
-	return this.confug.get("secure") ? "wss:" : "ws:";
+	return this.config.get("secure") ? "wss:" : "ws:";
 };
 
 Echo.API.Transports.WebSocket.prototype._getInstance = function() {
