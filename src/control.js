@@ -132,15 +132,15 @@ Echo.Control.prototype.render = function(name, element, dom, extra) {
 	return this.dom.content;
 };
 
-Echo.Control.prototype.rerender = function(config) {
+Echo.Control.prototype.rerender = function(name, extra) {
 	var control = this;
-	config = config || {};
+	extra = extra || {};
 
 	// no DOM available yet, nothing to rerender -> exit
 	if (!this.dom) return;
 
 	// rerender the whole control
-	if ($.isEmptyObject(config)) {
+	if (!name) {
 		if (this.dom) {
 			this.dom.content.replaceWith(this.render());
 			this.events.publish({"topic": "onRerender"});
@@ -149,35 +149,28 @@ Echo.Control.prototype.rerender = function(config) {
 	}
 
 	// if the list of elements passed, call rerender for each element
-	if (config.elements) {
-		$.map(config.elements, function(element) {
-			var _config = $.extend({}, config, {"element": element, "elements": null});
-			control.rerender(_config);
+	if ($.isArray(name)) {
+		$.map(name, function(element) {
+			control.rerender(element, extra);
 		});
 		return;
 	}
 
-	// exit if no element found or we have unexpected type of argument
-	if (!config.element || !this.dom.get(config.element)) return;
+	// exit if no element found
+	if (!name || !this.dom.get(name)) return;
 
-	if (config.recursive) {
+	if (extra.recursive) {
 		var cssPrefix = this._cssClassFromControlName() + "-";
 		var template = $.isFunction(this.template) ? this.template() : this.template;
 		var html = this.substitute(template, this.data || {});
-		var newNode = $("." + cssPrefix + config.element, $(html));
-		var oldNode = this.dom.get(config.element);
+		var newNode = $("." + cssPrefix + name, $(html));
+		var oldNode = this.dom.get(name);
 		newNode = Echo.Utils.toDOM(newNode, cssPrefix, function(name, element, dom) {
-			control.render.apply(control, [{
-				"element": name,
-				"args": [element, dom]
-			}]);
+			control.render.call(control, name, element, dom, extra);
 		}).content;
 		oldNode.replaceWith(newNode);
 	} else {
-		this.render.apply(control, [{
-			"element": name,
-			"args": [this.dom.get(name), this.dom]
-		}]);
+		this.render(name, this.dom.get(name), this.dom, extra);
 	}
 };
 
@@ -295,9 +288,11 @@ Echo.Control.prototype.init.events = function() {
 	var control = this;
 	var events = {
 		"prepare": function(params) {
-			params.topic = control.manifest.name + "." + params.topic;
-			params.context = control.config.get("context");
-			params.callback = $.proxy(params.callback, control);
+			params.topic = params.external
+				? params.topic
+				: control.manifest.name + "." + params.topic;
+			params.context = params.context || control.config.get("context");
+			params.handler = $.proxy(params.handler, control);
 			return params;
 		},
 		"publish": function(params) {
@@ -308,11 +303,9 @@ Echo.Control.prototype.init.events = function() {
 		},
 		"unsubscribe": Echo.Events.unsubscribe
 	};
-	$.each(control.manifest.events, function(topic, callback) {
-		events.subscribe({
-			"topic": topic,
-			"handler": $.proxy(callback, control)
-		});
+	$.each(control.manifest.events, function(topic, data) {
+		data = $.isFunction(data) ? {"handler": data} : data;
+		events.subscribe($.extend({"topic": topic}, data));
 	});
 	return events;
 };
@@ -398,6 +391,26 @@ Echo.Control.prototype._templateTransformer = function(args) {
 	return args.template;
 };
 
+Echo.Control.prototype.messageTemplates = {
+//TODO: rename CSS classes
+	'compact':
+		'<span class="echo-application-message-icon echo-application-message-{data:type}" title="{data:message}">' +
+		'</span>',
+	'default':
+		'<div class="echo-application-message">' +
+			'<span class="echo-application-message-icon echo-application-message-{data:type} echo-primaryFont">' +
+				'{data:message}' +
+			'</span>' +
+		'</div>'
+};
+
+Echo.Control.prototype.showMessage = function(data, target) {
+//TODO: consider opportunity to implement showmessage as a predefined template and use render method for it
+	if (!this.config.get("debug") && data.type == "error") return;
+	var template = this.messageTemplates[data.layout || this.messageLayout || "default"];
+	(target || this.config.get("target")).empty().append(this.substitute(template, data));
+};
+
 Echo.Control.prototype.baseCSS =
 	'.echo-primaryBackgroundColor {  }' +
 	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
@@ -409,6 +422,14 @@ Echo.Control.prototype.baseCSS =
 	'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
 	'.echo-clickable { cursor: pointer; }' +
 	'.echo-relative { position: relative; }' +
-	'.echo-clear { clear: both; }';
+	'.echo-clear { clear: both; }' +
+
+//TODO: rename CSS classes
+	'.echo-application-message { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }' +
+	'.echo-application-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
+	'.echo-application-message .echo-application-message-icon { padding-left: 21px; height: auto; }' +
+	'.echo-application-message-empty { background-image: url(//cdn.echoenabled.com/images/information.png); }' +
+	'.echo-application-message-loading { background-image: url(//cdn.echoenabled.com/images/loading.gif); }' +
+	'.echo-application-message-error { background-image: url(//cdn.echoenabled.com/images/warning.gif); }';
 
 })(jQuery);

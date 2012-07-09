@@ -8,13 +8,12 @@ var submit = Echo.Control.skeleton("Echo.StreamServer.Controls.Submit");
 
 submit.config = {
 	"targetURL": document.location.href,
-	"submissionProxyURL": "//apps.echoenabled.com/v2/esp/activity/",
+	"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
 	"markers": [],
 	"source": {},
 	"tags": [],
 	"requestMethod": "GET",
 	"data": {},
-	"inReplyTo": {},
 	"itemURIPattern": undefined,
 	"actionString": "Type your comment here...",
 	"postingTimeout": 30,
@@ -40,7 +39,6 @@ submit.labels = {
 
 submit.events = {
 	"internal.User.onInvalidate": function() {
-		// TODO: pass control ref as "this"
 		this.rerender();
 	}
 };
@@ -100,15 +98,15 @@ submit.templates.main =
 	
 submit.renderers.tagsContainer = 
 submit.renderers.markersContainer = function(element) {
-	return (this.user.any("roles", ["administrator"])) ? element.show() : element.hide();
+	return (this.user.any("roles", ["administrator", "moderator"])) ? element.show() : element.hide();
 };
 
 submit.renderers.markers = function(element) {
-	this.metaFields(element, {"type": "markers"});
+	return this.metaFields(element, "markers");
 };
 
 submit.renderers.tags = function(element) {
-	this.metaFields(element, {"type": "tags"});
+	return this.metaFields(element, "tags");
 };
 
 submit.renderers.text = function(element) {
@@ -124,7 +122,7 @@ submit.renderers.text = function(element) {
 };
 
 submit.renderers.avatar = function(element) {
-	var avatar = this.user.get("avatar") || this.user.config.get("defaultAvatar");
+	var avatar = this.user.get("avatar", this.user.config.get("defaultAvatar"));
 	return element.append('<img src="' + avatar + '">');
 };
 
@@ -190,8 +188,9 @@ submit.renderers.postButton = function(element) {
 	
 	this.posting.action = this.posting.action || function() {
 		var highlighted = false;
-		$.each(["userInfo", "text"], function (i, v) {
-			highlighted = self.highlightMandatory(self.dom.get(v));
+		$.each(["name", "text"], function (i, v) {
+			var e = self.dom.get(v);
+			highlighted = self.highlightMandatory(e);
 			return !highlighted;
 		});
 		if (highlighted) return;
@@ -205,9 +204,6 @@ submit.renderers.postButton = function(element) {
 
 submit.methods.post = function() {
 	var self = this;
-	var get = function(name) {
-		return self.dom.get(name);
-	};
 	var publish = function(phase, data) {
 		var params = {
 			"topic": "Submit.onPost" + phase,
@@ -220,23 +216,23 @@ submit.methods.post = function() {
 	var content = [].concat(this.getActivity('post', 'comment', this.dom.get('text').val()),
 				this.getActivity('tag', "marker", this.dom.get("markers").val()),
 				this.getActivity('tag', 'tag', this.dom.get("tags").val()));
-	
 	var entry= {
 		"content": content,
-		"appkey": self.config.get("appkey"),
-		"sessionID": self.user.get("sessionID", "")
+		"appkey": this.config.get("appkey"),
+		"sessionID": this.user.get("sessionID", "")
 	};
-	
-	if (self.config.get("targetQuery")) {
-		entry["target-query"] = self.config.get("targetQuery");
+	if (this.config.get("targetQuery")) {
+		entry["target-query"] = this.config.get("targetQuery");
 	}
-	
 	var timer;
 	var hasPreviousTimeout = false;
-	var callback = function(data) {
-		if (timer) clearTimeout(timer);
-		data = data || {};
-		if (data.result == "error") {
+	var callbacks = {
+		"onData": function(data) {
+			publish("Complete", content);
+		},
+		"onError": function(data) {
+			data = data || {};
+			if (timer) clearTimeout(timer);
 			// we have previous timeout on the client side so we just ignore errors from server side
 			if (hasPreviousTimeout) return;
 			var isNetworkTimeout = hasPreviousTimeout = (data.errorCode == "network_timeout");
@@ -244,7 +240,7 @@ submit.methods.post = function() {
 				? self.labels.get("postingTimeout")
 				: self.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
 			$.fancybox({
-				"content": '<div class="echo-submit-error">' + message + '</div>',
+				"content": '<div class="' + this._cssClassFromControlName() + '-error">' + message + '</div>',
 				"height": 70,
 				"width": isNetworkTimeout ? 320 : 390,
 				"padding": 15,
@@ -265,21 +261,16 @@ submit.methods.post = function() {
 				}
 			});
 			publish("Error", data);
-		} else {
-			publish("Complete", content);
 		}
 	};
-	
 	publish("Init", content);
-	
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"apiBaseURL": this.config.get("submissionProxyURL"),
 		"data": entry,
-		"onData": callback,
-		"onError": function() {}
+		"onData": callbacks['onData'],
+		"onError": callbacks['onError']
 	}).send();
-	
 	var postingTimeout = this.config.get("postingTimeout");
 	if (postingTimeout) {
 		timer = setTimeout(function() {
@@ -288,16 +279,13 @@ submit.methods.post = function() {
 	}
 };
 
-submit.methods.metaFields = function(element, extra) {
-	var type = extra.type;
+submit.methods.metaFields = function(element, type) {
 	var data = this.config.get("data.object." + type, this.config.get(type, []));
-	
-	if (this.dom.get(type)) {
-		this.dom.get(type).iHint({
-			"text": this.labels.get(type + "Hint"),
-			"className": "echo-secondaryColor"
-		}).val($.trim(Echo.Utils.stripTags(data.join(", ")))).blur();
-	}
+	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
+	return element.iHint({
+		"text": this.labels.get(type + "Hint"),
+		"className": "echo-secondaryColor"
+	}).val(value).blur();
 };
 
 submit.methods.getActivity = function(verb, type, data) {
@@ -321,9 +309,10 @@ submit.methods.getActivity = function(verb, type, data) {
 
 submit.methods.highlightMandatory = function(element) {
 	if (element && !$.trim(element.val())) {
-		element.parent().addClass("echo-submit-mandatory");
+		var css = this._cssClassFromControlName() + "-mandatory";
+		element.parent().addClass(css);
 		element.focus(function() {
-			$(this).parent().removeClass("echo-submit-mandatory");
+			$(this).parent().removeClass(css);
 		});
 		return true;
 	}
@@ -338,7 +327,7 @@ submit.methods.prepareBroadcastParams = function(params) {
 	return params;
 };
 
-submit.css = 
+submit.css =
 	'.{class:header} { margin-bottom: 3px; }' +
 	'.{class:avatar} { float: left; margin-right: -48px; }' +
 	'.{class:avatar} img { width: 48px; height: 48px; }' +
@@ -363,12 +352,22 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(//cdn.echoenabled.com/images/info70.png); height: 70px; }' +
-//TODO: move it to class Control
-	'.echo-clear { clear: both; }' +
-	'.echo-submit-mandatory { border: 1px solid red; }' +
-	'.echo-submit-error {  background: url("//cdn.echoenabled.com/images/info70.png") no-repeat scroll 0 0 transparent; color: #444444; font: 14px/150% Arial; height: 70px; padding-left: 85px;} ';
-	
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url("' + cdnBaseURL + 'images/info70.png"); height: 70px; }' +
+	(($.browser.msie) ?
+		'.{class:container} { zoom: 1; }' +
+		'.{class:body} { zoom: 1; }' +
+		'.{class:header} { zoom: 1; }' +
+		'.{class:content} { zoom: 1; }' +
+		'.{class:markersContainer} { zoom: 1; }' +
+		'.{class:tagsContainer} { zoom: 1; }' : '') +
+	(($.browser.webkit) ?
+		// get rid of extra gray line inside input elements on iOS
+		'.{class:container } input { background-position: 0px; }' +
+		'.{class:container } textarea { background-position: 0px; }' +
+		'.{class:textArea} { outline: none; }' +
+		'.{class:name} { outline: none; }' +
+		'.{class:url} { outline: none; }' +
+		'.{class:metadataSubwrapper} input { outline: none; }' : '');
 
 Echo.Control.create(submit);
 

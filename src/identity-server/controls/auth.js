@@ -20,9 +20,13 @@ auth.labels = {
 };
 
 auth.events = {
-	"internal.User.onInvalidate": function() {
-		$.fancybox.close();
-		this.rerender();
+	"Echo.UserSession.onInvalidate": {
+		"context": "empty",
+		"external": true,
+		"handler": function() {
+			$.fancybox.close();
+			this.rerender();
+		}
 	}
 };
 
@@ -104,29 +108,15 @@ auth.methods.assembleIdentityControl = function(type, element) {
 	var data = this.config.get("identityManager." + type);
 	if (!data || !this.user.get("sessionID")) return element.hide();
 
-	var appendSessionID = function(url) {
-		var id = encodeURIComponent(this.user.get("sessionID"));
-		var parts = Echo.Utils.parseURL(url);
-		var session = parts["query"]
-			? parts["query"].match(/=$/) ? id : "&sessionID=" + id
-			: "sessionID=" + id;
-		return self.substitute("{Data:scheme}://{Data:domain}{Data:path}?{Data:query}{Data:fragment}", {
-			"scheme": parts["scheme"] || "http",
-			"domain": parts["domain"],
-			"path": parts["path"],
-			"query": (parts["query"] || "") + session,
-			"fragment": parts["fragment"] ? ("#" + parts["fragment"]) : ""
-		});
-	};
 	if (data.type == "script") {
 		return element.click(function() {
-			$.getScript(appendSessionID(data.url));
+			$.getScript(self._appendSessionID(data.url));
 		});
 	} else {
 		return element.fancybox({
 			"autoScale": false,
 			"height": data.height,
-			"href": appendSessionID(data.url),
+			"href": self._appendSessionID(data.url),
 			"onClosed": function() {
 				// remove dynamic height/width calculations for overlay
 				if ($.browser.msie && document.compatMode != "CSS1Compat") {
@@ -160,6 +150,22 @@ auth.methods.assembleIdentityControl = function(type, element) {
 			"width": data.width
 		});
 	}
+};
+
+auth.methods._appendSessionID = function(url) {
+	var id = encodeURIComponent(this.user.get("sessionID"));
+	var parts = Echo.Utils.parseURL(url);
+	var session = parts["query"]
+		? parts["query"].match(/=$/) ? id : "&sessionID=" + id
+		: "sessionID=" + id;
+	var url = "{data:scheme}://{data:domain}{data:path}?{data:query}{data:fragment}";
+	return this.substitute(url, {
+		"scheme": parts["scheme"] || "http",
+		"domain": parts["domain"],
+		"path": parts["path"],
+		"query": (parts["query"] || "") + session,
+		"fragment": parts["fragment"] ? ("#" + parts["fragment"]) : ""
+	});
 };
 
 auth.css =

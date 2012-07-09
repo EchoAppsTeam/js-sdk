@@ -60,14 +60,14 @@ Echo.UserSession.set = function(key, value) {
  */
 Echo.UserSession.get = function(key, defaults) {
 	var user = this;
-	return user._maybeDelegate({
+	var value = user._maybeDelegate({
 		"action": "get",
 		"key": key,
 		"fallback": function() {
-			var value = user._attrLocation(key)[key];
-			return value == undefined ? defaults : value;
+			return user._attrLocation(key)[key];
 		}
 	});
+	return value == undefined ? defaults : value;
 };
 
 /**

@@ -7,25 +7,14 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
 var counter = Echo.Control.skeleton("Echo.StreamServer.Controls.Counter");
 
 counter.config = {
-	"liveUpdatesTimeout": 1 
-};
-
-counter.labels = {
-	"loading": "Loading..."
+	"liveUpdatesTimeout": 1
 };
 
 counter.templates.main = "<span>{data:count}</span>";
 
-counter.templates.loading = "<span>{label:loading}</span>";
-
-counter.methods.template = function() {
-	return this.templates[this.loading ? "loading" : "main"] 
-};
-
 counter.constructor = function() {
 	var self = this;
-	this.loading = true;
-	this.render();
+	this.showMessage({"type": "loading"});
 	Echo.StreamServer.API.request({
 		"endpoint": "count",
 		"liveUpdatesTimeout": self.config.get("liveUpdatesTimeout"),
@@ -36,12 +25,14 @@ counter.constructor = function() {
 			"appkey": self.config.get("appkey")
 		},
 		"onError": function(response) {
-			console.log(response);
-			
+			console.log("error");
+			self.data = response;
+			self.render();
 		},
 		"onData": function(response) {
-			self.loading = false;
-			self.render({"data": response});
+			console.log("success");
+			self.data = response;
+			self.render();
 		}
 	}).send();
 };
