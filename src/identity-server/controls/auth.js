@@ -1,7 +1,5 @@
 (function($) {
 
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth")) return;
 
 var auth = Echo.Control.skeleton("Echo.IdentityServer.Controls.Auth");

@@ -1,7 +1,5 @@
 (function() {
 
-"use strict";
-
 if (!window.Echo) window.Echo = {};
 
 if (Echo.Utils) return;

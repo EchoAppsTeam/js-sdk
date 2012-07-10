@@ -1,10 +1,8 @@
 (function($) {
 
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.UserListItem")) return;
 
-var userListitem = Echo.Control.skeleton("Echo.StreamServer.Controls.UserListItem");
+var userListItem = Echo.Control.skeleton("Echo.StreamServer.Controls.UserListItem");
 
 userListItem.labels = {
 	"you": "You"

@@ -1,7 +1,5 @@
 (function($) {
 
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.API")) return;
 
 if (!Echo.StreamServer) Echo.StreamServer = {};

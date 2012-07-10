@@ -1,7 +1,5 @@
 (function($) {
  
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.API.Request")) return;
 
 Echo.API = {"Transports": {}, "Request": {}};

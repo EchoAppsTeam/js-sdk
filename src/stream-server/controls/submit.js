@@ -1,7 +1,5 @@
 (function($) {
 
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit")) return;
 
 var submit = Echo.Control.skeleton("Echo.StreamServer.Controls.Submit");

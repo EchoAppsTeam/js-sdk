@@ -1,7 +1,5 @@
 (function($) {
 
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.Plugin")) return;
 
 // TODO: replace "Plugins" with different name to avoid conflict with e2 scripts
