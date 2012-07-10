@@ -24,6 +24,7 @@ Echo.StreamServer.API.Request.prototype.abort = function() {
 	this.transport && this.transport.abort();
 	if (this.liveUpdates) {
 		this._stopLiveUpdates();
+		delete this.liveUpdates;
 	}
 };
 
@@ -274,7 +275,7 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 		return prepareActivity(post, meta);
 	}
 	return $.map(entries, function(entry) {
-		return prepareActivity(enry);
+		return prepareActivity(entry);
 	});
 };
 
