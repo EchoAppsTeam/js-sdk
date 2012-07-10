@@ -27,13 +27,16 @@ Echo.StreamServer.API.Request.prototype.abort = function() {
 	}
 };
 
-Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.prototype._count = function(data) {
+Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.prototype._count = function(args) {
+	args = args || {};
 	if (this.config.get("recurring")) {
-		this._initLiveUpdates();
-		this._startLiveUpdates();
+		if (!this.liveUpdates) {
+			this._initLiveUpdates();
+		}
+		this._startLiveUpdates(args.force);
 		return;
 	}
-	this.request(data);
+	this.request(args.data);
 };
 
 Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
@@ -51,24 +54,32 @@ Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(c
 
 Echo.StreamServer.API.Request.prototype._onData = function(response, config) {
 	response = response || {};
+	if (this.liveUpdates && this.liveUpdates.responseHandler) {
+		this.liveUpdates.responseHandler(response);
+	}
+	this.constructor.parent._onData.apply(this, arguments);
 	if (response.result === "error") {
 		this._handleErrorResponse(response, {
 			"callback": config.onError
 		});
+		if (this.liveUpdates) {
+			this._startLiveUpdates();
+		}
 		return;
 	}
 	config.onData(response);
 	this.nextSince = response.nextSince;
-	if (this.liveUpdates && this.liveUpdates.responseHandler) {
-		this.liveUpdates.responseHandler(response);
-		this._startLiveUpdates();
-	}
+	this._startLiveUpdates();
 };
 
 Echo.StreamServer.API.Request.prototype._onError = function(responseError, config) {
+	this.constructor.parent._onData.apply(this, arguments);
 	this._handleErrorResponse(responseError, {
 		"callback": config.onError
 	});
+	if (this.liveUpdates) {
+		this._startLiveUpdates();
+	}
 };
 
 Echo.StreamServer.API.Request.prototype._submit = function() {
@@ -97,9 +108,6 @@ Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {
 		"timers": {},
 		"timeouts": [],
 		"responseHandler": function(data) {
-			if (self.liveUpdates.timers.watchdog) {
-				clearTimeout(self.liveUpdates.timers.watchdog);
-			}
 			self._changeLiveUpdatesTimeout(data);
 		}
 	};
@@ -120,7 +128,7 @@ Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(dat
 		}
 	};
 	var hasNewData = function(data) {
-		// for "v1/search" endpoint at the moment
+		// for "v1/search" endpoint at the momen.t
 		return !!(data.entries && data.entries.length);
 	};
 	if (!this.nextSince) {
@@ -153,9 +161,6 @@ Echo.StreamServer.API.Request.prototype._stopLiveUpdates = function() {
 	if (this.liveUpdates.timers.regular) {
 		clearTimeout(this.liveUpdates.timers.regular);
 	}
-	if (this.liveUpdates.timers.watchdog) {
-		clearTimeout(this.liveUpdates.timers.watchdog);
-	}
 };
 
 Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
@@ -172,10 +177,6 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 		? this.liveUpdates.timeouts.shift()
 		: this.config.get("liveUpdatesTimeout");
 	this.liveUpdates.timers.regular = setTimeout(function() {
-		// if no response in the reasonable time just restart live updates
-		self.liveUpdates.timers.watchdog = setTimeout(function() {
-			self._startLiveUpdates();
-		}, 5000);
 		self.request({
 			"nextSince": self.nextSince 
 		});
