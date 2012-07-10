@@ -7,23 +7,39 @@ var plugin = Echo.Plugin.skeleton("FormAuth");
 plugin.applications = ["Echo.StreamServer.Controls.Submit"];
 
 plugin.init = function() {
-	if (!this.component.user.get("sessionID")) return;
-	this.extendTemplate(plugin.templates.submit,
-		"insertBefore", "echo-streamserver-controls-submit-header");
+
+	// checking if it makes sense to init the plugin
+	if (!this.component.user.get("sessionID") ||
+		!this.config.get("identityManager.login") ||
+		!this.config.get("identityManager.signup")) return;
+
+	if (this._userStatus() == "forcedLogin") {
+		this.extendTemplate(plugin.templates.forcedLogin, "replace", "header");
+	}
+	this.extendTemplate(plugin.templates.auth, "insertBefore", "header");
 	this.extendRenderer("auth", plugin.renderers.Submit.auth);
 	this.extendRenderer("header", plugin.renderers.Submit.header);
-/* TODO: to be developed...
 	this.extendRenderer("container", plugin.renderers.Submit.container);
 	this.extendRenderer("postButton", plugin.renderers.Submit.postButton);
-	this.extendRenderer("forcedLoginUserInfo", plugin.renderers.Submit.forcedLoginUserInfo);
-*/
+};
+
+plugin.config = {
+	"identityManager": {},
+	"submitPermissions": "allowGuest"
 };
 
 plugin.labels = {
 	"youMustBeLoggedIn": "You must be logged in to comment"
 };
 
-plugin.templates.submit = '<div class="{class:auth}">TEST</div>';
+plugin.templates.auth = '<div class="{class:auth}"></div>';
+
+plugin.templates.forcedLogin =
+	'<div class="{class:userInfoWrapper} echo-primaryFont">' +
+		'<span class="{class:forcedLoginMessage} echo-secondaryColor">' +
+			'{plugin.label:youMustBeLoggedIn}' +
+		'</span>' +
+	'</div>';
 
 plugin.renderers.Submit = {};
 
@@ -38,25 +54,41 @@ plugin.renderers.Submit.auth = function(element) {
 
 plugin.renderers.Submit.header = function(element) {
 	var plugin = this;
-	if (plugin.component.user.is("logged")) {
+	if (this._userStatus() == "logged") {
 		return element.empty();
 	}
 	return plugin.parentRenderer("header", arguments);
 };
 
 plugin.renderers.Submit.container = function(element) {
-	return element;
+	var plugin = this;
+	plugin.parentRenderer("container", arguments);
+	var _class = function(postfix) {
+		return plugin.cssPrefix + "-" + postfix;
+	};
+	return element
+		.removeClass($.map(["logged", "anonymous", "forcedLogin"], _class).join(" "))
+		.addClass(_class(plugin._userStatus()));
 };
 
 plugin.renderers.Submit.postButton = function(element) {
-	return element;
+	// TODO: check permissions
+	return this.parentRenderer("postButton", arguments);
 };
 
-plugin.renderers.Submit.forcedLoginUserInfo = function(element) {
-	return element;
+plugin.methods._permissions = function() {
+	return this.config.get("submitPermissions");
 };
 
-plugin.css = '.echo-submit-forcedLoginUserInfoMessage { font-size: 14px; font-weight: bold; }';
+plugin.methods._userStatus = function(application) {
+	return this.component.user.is("logged")
+		? "logged"
+		: this._permissions() == "forceLogin"
+			? "forcedLogin"
+			: "anonymous";
+};
+
+plugin.css = '.{class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }';
 
 Echo.Plugin.create(plugin);
 

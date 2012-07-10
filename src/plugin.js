@@ -15,14 +15,20 @@ Echo.Plugin.create = function(manifest) {
 	if (plugin) return plugin;
 	var _constructor = function(config) {
 		if (!config || !config.component) return;
-		this.name = config.name;
+		this.name = manifest.name;
 		this.manifest = manifest; // TODO: avoid this, pass via param to "renderer"...
 		this.component = config.component;
+		this.cssPrefix = this.component.cssPrefix + "-plugin-" + manifest.name;
+		// define extra css class for the control target
+		this.component.config.get("target").addClass(this.cssPrefix);
 		this.init(["renderers", "events", "labels", "config"]);
 		manifest.init.call(this);
 	};
 	_constructor.manifest = manifest;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
+	if (manifest.methods) {
+		$.extend(_constructor.prototype, manifest.methods);
+	}
 	Echo.Utils.setNestedValue(Echo.Plugins, manifest.name, _constructor);
 	return _constructor;
 };
@@ -115,7 +121,10 @@ Echo.Plugin.prototype.init.config = function() {
 			component.config.set(normalize(key), value);
 		},
 		"get": function(key, defaults, askParent) {
-			var value = component.config.get(normalize(key));
+			var value = component.config.get(
+				normalize(key),
+				plugin.manifest.config[key]
+			);
 			return typeof value == undefined
 				? askParent
 					? component.config.get(key, defaults)

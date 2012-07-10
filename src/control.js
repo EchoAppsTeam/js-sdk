@@ -408,9 +408,9 @@ Echo.Control.prototype._templateTransformer = function(args) {
 	var action = classify[args.transformation.action];
 	if (!action) return args.template;
 	var html = args.transformation.html;
-	var anchor = args.transformation.anchor;
+	var anchor = "." + this.cssPrefix + "-" + args.transformation.anchor;
 	var content = $.isFunction(html) ? html() : html;
-	$("." + anchor, args.template)[action](this.substitute(content, args.data));
+	$(anchor, args.template)[action](this.substitute(content, args.data));
 	return args.template;
 };
 
