@@ -298,6 +298,10 @@ Echo.UserSession._isLogged = function() {
 	return !!(activeIdentities && activeIdentities.length);
 };
 
+Echo.UserSession._isAdmin = function() {
+	return this.any("roles", ["administrator", "moderator"]);
+};
+
 // functions delegated by the user.set(..) call
 
 Echo.UserSession._setName = function(value) {
