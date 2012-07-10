@@ -190,7 +190,7 @@ Echo.API.Request = function(config) {
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
 		"apiBaseURL": "api.echoenabled.com/v1/",
-		"transport": "jsonp",
+		"transport": "ajax",
 		"secure": false
 	});
 	this.transport = this._getTransport();
