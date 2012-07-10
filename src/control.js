@@ -55,6 +55,15 @@ Echo.Control.skeleton = function(name) {
 
 // dynamic interface (available for class instances)
 
+Echo.Control.prototype.getDefaultConfig = function() {
+	return {
+		"appkey": "",
+		"apiBaseURL": "api.echoenabled.com",
+		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
+		"debug": false
+	};
+};
+
 Echo.Control.prototype.substitute = function(template, data) {
 	var control = this;
 	var extract = function(value) {
@@ -187,7 +196,7 @@ Echo.Control.prototype.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
 };
 
-Echo.Control.prototype.dependant = function() {
+Echo.Control.prototype.dependent = function() {
 	return !!this.config.get("parent");
 };
 
@@ -272,11 +281,7 @@ Echo.Control.prototype.init.config = function(data) {
 		return data.hash;
 	};
 	data = $.extend({"plugins": []}, data || {});
-	var protocol = window.location.protocol == "http:" ? "http:" : "https:";
-	var defaults = $.extend({
-		"appkey": "",
-		"apiBaseURL": protocol + "//api.echoenabled.com",
-		"debug": false,
+	var defaults = $.extend(this.getDefaultConfig(), {
 		"context": (data.parent ? data.parent + "/" : "") + Echo.Utils.getUniqueString()
 	}, this.manifest.config || {});
 	// TODO: find better home for normalizer...
@@ -289,17 +294,17 @@ Echo.Control.prototype.init.config = function(data) {
 
 Echo.Control.prototype.init.events = function() {
 	var control = this;
+	var prepare = function(params) {
+		params.context = params.context || control.config.get("context");
+		params.handler = $.proxy(params.handler, control);
+		return params;
+	};
 	var events = {
-		"prepare": function(params) {
-			params.context = params.context || control.config.get("context");
-			params.handler = $.proxy(params.handler, control);
-			return params;
-		},
 		"publish": function(params) {
-			Echo.Events.publish(events.prepare(params));
+			Echo.Events.publish(prepare(params));
 		},
 		"subscribe": function(params) {
-			Echo.Events.subscribe(events.prepare(params));
+			Echo.Events.subscribe(prepare(params));
 		},
 		"unsubscribe": Echo.Events.unsubscribe
 	};
@@ -309,7 +314,7 @@ Echo.Control.prototype.init.events = function() {
 	});
 	// subscribe all root level controls to the user login/logout event
 	// and call "refresh" control method
-	if (!this.dependant()) {
+	if (!this.dependent()) {
 		events.subscribe({
 			"topic": "Echo.UserSession.onInvalidate",
 			"context": "global",

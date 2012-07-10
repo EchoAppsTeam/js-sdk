@@ -6,7 +6,6 @@ var submit = Echo.Control.skeleton("Echo.StreamServer.Controls.Submit");
 
 submit.config = {
 	"targetURL": document.location.href,
-	"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
 	"markers": [],
 	"source": {},
 	"tags": [],

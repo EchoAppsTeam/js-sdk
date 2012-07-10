@@ -1,7 +1,5 @@
 (function($) {
 
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.Plugins.FormAuth")) return;
 
 var plugin = Echo.Plugin.skeleton("FormAuth");
