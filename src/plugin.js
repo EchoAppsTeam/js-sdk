@@ -18,10 +18,18 @@ Echo.Plugin.create = function(manifest) {
 		this.name = manifest.name;
 		this.manifest = manifest; // TODO: avoid this, pass via param to "renderer"...
 		this.component = config.component;
+		// TODO: check if we can store plugin-specific data in a plugin instance
+		this.component.vars[this.name] = {};
 		this.cssPrefix = this.component.cssPrefix + "-plugin-" + manifest.name;
 		// define extra css class for the control target
 		this.component.config.get("target").addClass(this.cssPrefix);
-		this.init(["renderers", "events", "labels", "config"]);
+		this.init([
+			"css",
+			"renderers",
+			"events",
+			"labels",
+			"config"
+		]);
 		manifest.init.call(this);
 	};
 	_constructor.manifest = manifest;
@@ -52,10 +60,6 @@ Echo.Plugin.prototype.set = function(key, value) {
 
 Echo.Plugin.prototype.get = function(key, defaults) {
 	Echo.Utils.getNestedValue(this.component.vars[this.name], key, defaults);
-};
-
-Echo.Plugin.prototype.addCSS = function(text) {
-	Echo.Utils.addCSS(this.substitute(text), "plugins-" + this.name);
 };
 		
 Echo.Plugin.prototype.enable = function() {
@@ -111,6 +115,12 @@ Echo.Plugin.prototype.init = function(subsystems) {
 		if (plugin[system]) return;
 		plugin.constructor.prototype[system] = plugin.init[system].call(plugin);
 	});
+};
+
+Echo.Plugin.prototype.init.css = function() {
+	var manifest = this.manifest;
+	if (!manifest.css) return;
+	Echo.Utils.addCSS(this.substitute(manifest.css), "plugins-" + manifest.name);
 };
 
 Echo.Plugin.prototype.init.renderers = function() {

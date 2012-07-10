@@ -338,7 +338,7 @@ Echo.Control.prototype.init.labels = function() {
 };
 
 Echo.Control.prototype.init.css = function() {
-	Echo.Utils.addCSS(this.baseCSS, 'control');
+	Echo.Utils.addCSS(this.baseCSS, "control");
 	if (!this.manifest.css) return;
 	Echo.Utils.addCSS(this.substitute(this.manifest.css), this.manifest.name);
 };

@@ -35,7 +35,7 @@ plugin.labels = {
 plugin.templates.auth = '<div class="{class:auth}"></div>';
 
 plugin.templates.forcedLogin =
-	'<div class="{class:userInfoWrapper} echo-primaryFont">' +
+	'<div class="{class:header} echo-primaryFont">' +
 		'<span class="{class:forcedLoginMessage} echo-secondaryColor">' +
 			'{plugin.label:youMustBeLoggedIn}' +
 		'</span>' +
@@ -72,7 +72,24 @@ plugin.renderers.Submit.container = function(element) {
 };
 
 plugin.renderers.Submit.postButton = function(element) {
-	// TODO: check permissions
+	var plugin = this, submit = this.component;
+	var handler = plugin.get("postButtonHandler");
+	if (!handler) {
+		handler = function(event) {
+			if (submit.user.is("logged")) {
+				event.stopImmediatePropagation();
+				if (!submit.highlightMandatory(submit.dom.get("text"))) {
+					submit.post();
+				}
+			} else if (plugin._permissions() == "forceLogin") {
+				event.stopImmediatePropagation();
+				submit.dom.get("forcedLoginMessage")
+					.addClass(plugin.cssPrefix + "-error");
+			}
+		};
+		plugin.set("postButtonHandler", handler);
+	}
+	element.unbind("click", handler).bind("click", handler);
 	return this.parentRenderer("postButton", arguments);
 };
 
@@ -88,7 +105,9 @@ plugin.methods._userStatus = function(application) {
 			: "anonymous";
 };
 
-plugin.css = '.{class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }';
+plugin.css =
+	'.{class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }' +
+	'.{plugin.class:error} { color: red; }';
 
 Echo.Plugin.create(plugin);
 
