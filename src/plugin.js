@@ -64,12 +64,16 @@ Echo.Plugin.prototype.enabled = function(name) {
 	return this.config.get("enabled");
 };
 
-Echo.Plugin.prototype.extendRenderer = function() {
-	this.component.extendRenderer.apply(this.component, arguments);
+Echo.Plugin.prototype.extendRenderer = function(name, renderer) {
+	this.component.extendRenderer.call(this.component, name, $.proxy(renderer, this));
 };
 
 Echo.Plugin.prototype.extendTemplate = function() {
 	this.component.extendTemplate.apply(this.component, arguments);
+};
+
+Echo.Plugin.prototype.parentRenderer = function() {
+	return this.component.parentRenderer.apply(this.component, arguments);
 };
 
 Echo.Plugin.prototype.destroy = function() {};
@@ -104,7 +108,7 @@ Echo.Plugin.prototype.init.labels = function() {
 Echo.Plugin.prototype.init.config = function() {
 	var plugin = this, component = plugin.component;
 	var normalize = function(key) {
-		return ["plugins", this.name, key].join(".");
+		return (["plugins", plugin.manifest.name].concat(key ? key : [])).join(".");
 	};
 	return {
 		"set": function(key, value) {
@@ -120,6 +124,14 @@ Echo.Plugin.prototype.init.config = function() {
 		},
 		"remove": function(key) {
 			component.config.remove(normalize(key));
+		},
+		"assemble": function(data) {
+			var config = plugin.component.config;
+			data.appkey = config.get("appkey", "");
+			data.plugins = config.get("nestedPlugins", []);
+			data.parent = config.getAsHash();
+			data.apiBaseURL = config.get("apiBaseURL");
+			return (new Echo.Configuration(data, plugin.config.get())).getAsHash();
 		}
 	};
 };

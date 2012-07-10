@@ -35,6 +35,7 @@ Echo.Control.create = function(manifest) {
 		$.extend(_constructor.prototype, manifest.methods);
 	}
 	_constructor.prototype.templates = manifest.templates;
+	_constructor.prototype.cssPrefix = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 	Echo.Utils.setNestedValue(window, manifest.name, _constructor);
 	return _constructor;
 };
@@ -56,13 +57,12 @@ Echo.Control.skeleton = function(name) {
 
 Echo.Control.prototype.substitute = function(template, data) {
 	var control = this;
-	var name = control._cssClassFromControlName();
 	var extract = function(value) {
 		return $.isFunction(value) ? value() : value;
 	};
 	var instructions = {
 		"class": function(value) {
-			return name + "-" + value;
+			return control.cssPrefix + "-" + value;
 		},
 		"data": function(key) {
 			return Echo.Utils.getNestedValue(data, key, "");
@@ -87,7 +87,6 @@ Echo.Control.prototype.substitute = function(template, data) {
 
 Echo.Control.prototype.compileTemplate = function(template, data, transformations) {
 	var control = this, templates = {};
-	var cssPrefix = this._cssClassFromControlName() + "-";
 	templates.raw = $.isFunction(template) ? template.call(this) : template;
 	templates.processed = this.substitute(templates.raw, data || {});
 	if (transformations) {
@@ -101,7 +100,7 @@ Echo.Control.prototype.compileTemplate = function(template, data, transformation
 		});
 		templates.processed = templates.dom.html();
 	}
-	return Echo.Utils.toDOM(templates.processed, cssPrefix, function() {
+	return Echo.Utils.toDOM(templates.processed, this.cssPrefix + "-", function() {
 		control.render.apply(control, arguments);
 	});
 };
@@ -113,17 +112,20 @@ Echo.Control.prototype.render = function(name, element, dom, extra) {
 		if (renderer) {
 			var iteration = 0;
 			renderer.next = function() {
-				renderer.functions[++iteration].apply(this, arguments);
+				iteration++;
+				return renderer.functions.length > iteration
+					? renderer.functions[iteration].apply(this, arguments)
+					: element;
 			};
-			renderer.functions[iteration].apply(this, [element, dom, extra]);
+			return renderer.functions[iteration].apply(this, [element, dom, extra]);
 		}
-		return;
+		return element;
 	}
 
 	// render the whole control
 	this.dom = this.compileTemplate(this.template, this.data || {}, this.extension.template);
 	this.config.get("target")
-		.addClass(this._cssClassFromControlName())
+		.addClass(this.cssPrefix)
 		.empty()
 		.append(this.dom.content);
 	this.events.publish({"topic": "onRender"});
@@ -158,14 +160,15 @@ Echo.Control.prototype.rerender = function(name, extra) {
 	if (!name || !this.dom.get(name)) return;
 
 	if (extra.recursive) {
-		var cssPrefix = this._cssClassFromControlName() + "-";
 		var template = $.isFunction(this.template) ? this.template() : this.template;
 		var html = this.substitute(template, this.data || {});
 		var newNode = $("." + cssPrefix + name, $(html));
 		var oldNode = this.dom.get(name);
-		newNode = Echo.Utils.toDOM(newNode, cssPrefix, function(name, element, dom) {
-			control.render.call(control, name, element, dom, extra);
-		}).content;
+		newNode = Echo.Utils.toDOM(newNode, this.cssPrefix + "-",
+			function(name, element, dom) {
+				control.render.call(control, name, element, dom, extra);
+			}
+		).content;
 		oldNode.replaceWith(newNode);
 	} else {
 		this.render(name, this.dom.get(name), this.dom, extra);
@@ -175,7 +178,7 @@ Echo.Control.prototype.rerender = function(name, extra) {
 Echo.Control.prototype.parentRenderer = function(name, args) {
 	var renderer = this.extension.renderers[name];
 	if (!renderer || !renderer.next) return args[0]; // return DOM element
-	renderer.next.apply(this, args);
+	return renderer.next.apply(this, args);
 };
 
 Echo.Control.prototype.refresh = function() {
@@ -341,9 +344,12 @@ Echo.Control.prototype.init.renderers = function() {
 
 Echo.Control.prototype.init.user = function(callback) {
 	var control = this;
-	return Echo.UserSession({
+	Echo.UserSession({
 		"appkey": this.config.get("appkey"),
-		"ready": $.proxy(callback, control)
+		"ready": function() {
+			control.user = this;
+			callback.call(control);
+		}
 	});
 };
 
@@ -374,10 +380,6 @@ Echo.Control.prototype._loadPluginsDependencies = function(callback) {
 	});
 	// TODO: need to load "scripts" and execute callback after that
 	callback && callback.call(this);
-};
-
-Echo.Control.prototype._cssClassFromControlName = function() {
-	return this.manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 };
 
 Echo.Control.prototype._templateTransformer = function(args) {

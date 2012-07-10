@@ -5,6 +5,7 @@
 	<script type="text/javascript" src="../sdk/backplane.js"></script>
 	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
 	<script type="text/javascript" src="../sdk/environment.pack.js"></script>
+	<script type="text/javascript" src="../sdk/identity-server.pack.js"></script>
 	<script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
 </head>
 <body>
@@ -20,10 +21,13 @@
 		var submit = new Echo.StreamServer.Controls.Submit({
 			"target": document.getElementById("submit"),
 			"appkey": "test.js-kit.com",
-			"identityManager": {
-				"login": identityManager,
-				"signup": identityManager
-			}
+			"plugins": [{
+				"name": "FormAuth",
+				"identityManager": {
+					"login": identityManager,
+					"signup": identityManager
+				}
+			}]
 		});
 		
 		console.log(submit);
