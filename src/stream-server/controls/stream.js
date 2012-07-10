@@ -1,7 +1,5 @@
 (function($) {
 
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream")) return;
 
 var stream = Echo.Control.skeleton("Echo.StreamServer.Controls.Stream");
@@ -206,11 +204,11 @@ stream.renderers.state = function(element) {
 		});
 	}
 	var templates = {
-		"picture" : '<span class="echo-stream-state-picture echo-stream-state-picture-' + this.activities.state +'"></span>',
-		"message" : this.config.get("streamStateToggleBy") == "button"
-			? '<a href="javascript:void(0)" class="echo-stream-state-message">{Label:' + this.activities.state + '}</a>'
-			: '<span class="echo-stream-state-message">{Label:' + this.activities.state + '}</span>',
-		"count" : ' <span class="echo-stream-state-count">({Data:count} {Label:new})</span>'
+		"picture": '<span class="{class:state-picture} {class:state-picture}-{self:activities.state}"></span>',
+		"message": this.config.get("streamStateToggleBy") == "button"
+			? '<a href="javascript:void(0)" class="{class:state-message}">{label:' + this.activities.state + '}</a>'
+			: '<span class="{class:state-message}">{label:' + this.activities.state + '}</span>',
+		"count": ' <span class="{class:state-count}">({data:count} {label:new})</span>'
 	};
 	if (label.icon) {
 		element.append(templates.picture);
@@ -288,7 +286,7 @@ stream.methods.actualizeChildrenList = function(parent, entries) {
 stream.methods.createChildrenItemsDomWrapper = function(children, parent) {
 	var self = this;
 	var wrapper = $("<div class='echo-item-children-wrapper'></div>");
-	var getIdx = function(item) { return self.getItemListIndex(item, parent.children); };
+	var getIdx = function(item) { return self.getItemListIndex(item, parent.get("children")); };
 	$.each(children, function(i, item) {
 		item.render();
 		var insertion = i > 0 && getIdx(children[i-1]) < getIdx(item)
@@ -428,7 +426,6 @@ stream.methods.extractTimeframeConfig = function(data) {
 };
 
 stream.methods.assembleConfigNormalizer = function() {
-	var self = this;
 	var ensurePositiveValue = function(v) { return v < 0 ? 0 : v; };
 	var normalizer = {
 		"contentTransformations" : function(object) {
@@ -444,7 +441,7 @@ stream.methods.assembleConfigNormalizer = function() {
 			return "off" != value;
 		},
 		"streamStateToggleBy": function(value) {
-			if (value == "mouseover" && $.isMobileDevice()) {
+			if (value == "mouseover" && Echo.Utils.isMobileDevice()) {
 				return "button";
 			}
 			return value;
@@ -515,7 +512,7 @@ stream.methods.constructSearchQuery = function(extra) {
 
 stream.methods.constructChildrenSearchQuery = function(item) {
 	// depth for item children request
-	var depth = this.config.get("children.maxDepth") - item.depth - 1;
+	var depth = this.config.get("children.maxDepth") - item.get("depth") - 1;
 	var additionalItems = parseInt(this.config.get("children.additionalItemsPerPage"));
 	var pageAfter = item.getNextPageAfter();
 	var filter = this.config.get("children.filter");
@@ -618,7 +615,7 @@ stream.methods.checkTimeframeSatisfy = function() {
 	var timeframe = this.config.get("timeframe");
 	var unsatisfying = Echo.Utils.foldl([], this.threads, function(thread, acc) {
 		var satisfy = Echo.Utils.foldl(true, timeframe, function(p, a) {
-			return a ? p(thread.timestamp) : false;
+			return a ? p(thread.get("timestamp")) : false;
 		});
 		if (!satisfy) acc.push(thread);
 	});
@@ -762,7 +759,7 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 				if (self.maybeMoveItem(item)) {
 					var parent = self.getParentItem(item);
 					var sort = self.config.get(parent ? "children.sortOrder" : "sortOrder");
-					var items = parent ? parent.children : self.threads;
+					var items = parent ? parent.get("children") : self.threads;
 					var oldIdx = self.getItemListIndex(item, items);
 					// We need to calculate the projected index of the item
 					// after the "replace" action and compare it with the current one
@@ -994,7 +991,7 @@ stream.methods.withinVisibleFrame = function(item, items, isViewComplete, sortOr
 stream.methods.withinVisibleChildrenFrame = function(item) {
 	var parent = this.getParentItem(item);
 	if (!parent) return this.hasParentItem(item);
-	return this.withinVisibleFrame(item, parent.children,
+	return this.withinVisibleFrame(item, parent.get("children"),
 			!parent.hasMoreChildren(), this.config.get("children.sortOrder"));
 };
 
@@ -1006,9 +1003,9 @@ stream.methods.compareItems = function(a, b, sort) {
 	var self = this;
 	switch (sort) {
 		case "chronological":
-			return a.timestamp > b.timestamp;
+			return a.get("timestamp") > b.get("timestamp");
 		case "reverseChronological":
-			return a.timestamp <= b.timestamp;
+			return a.get("timestamp") <= b.get("timestamp");
 		case "likesDescending":
 		case "repliesDescending":
 		case "flagsDescending":
@@ -1045,14 +1042,14 @@ stream.methods.placeChildrenItems = function(parent, children, entries) {
 	var itemsWrapper = this.createChildrenItemsDomWrapper(children, parent);
 	// we should calculate index of the sibling item for the responsed items
 	var targetItemIdx = -1;
-	$.each(parent.children, function(i,_item) {
+	$.each(parent.get("children"), function(i,_item) {
 		if (self.isItemInList(_item.data, entries)) {
 			targetItemIdx = i - 1;
 			return false;
 		}
 	});
 	var targetItemDom = targetItemIdx >= 0
-		? parent.children[targetItemIdx].dom.content
+		? parent.get("children")[targetItemIdx].dom.content
 		: parent.dom.get("children");
 	var action = targetItemIdx >= 0
 		? "insertAfter"
@@ -1104,14 +1101,11 @@ stream.methods.initItem = function(entry, isLive) {
 	var self = this;
 	var item = new Echo.StreamServer.Controls.Stream.Item({
 		"target": $("<div>"),
-		"parent": new Echo.Configuration(this.config.getAsHash()),
-		"children": [],
+		"appkey": this.config.get("appkey"),
+		"parent": this.config.getAsHash(),
+		"plugins": this.config.get("plugins"),
 		"data": entry,
-		"depth": 0,
-		//"id": entry.object.id, // short cut for "id" item field
-		"live": isLive,
-		"threading": false
-		//"timestamp": Echo.Utils.timestampFromW3CDTF(entry.object.published)
+		"live": isLive
 	});
 	// caching item template to avoid unnecessary work
 	var template = item.template;
@@ -1134,7 +1128,7 @@ stream.methods.updateItem = function(entry) {
 	var accRelatedSortOrder = sortOrder.match(/replies|likes|flags/);
 	var acc = accRelatedSortOrder && this.getRespectiveAccumulator(item, sortOrder);
 	if (item.data.object.published != entry.object.published) {
-		item.timestamp = Echo.Utils.timestampFromW3CDTF(entry.object.published);
+		item.set("timestamp", Echo.Utils.timestampFromW3CDTF(entry.object.published));
 		item.forceInject = true;
 	}
 	$.extend(item.data, entry);
@@ -1166,7 +1160,6 @@ stream.methods.addItemToList = function(items, item, sort) {
 	this.items[item.unique()] = item;
 };
 
-
 stream.methods.applyStructureUpdates = function(action, item, options) {
 	var self = this;
 	options = options || {};
@@ -1179,11 +1172,11 @@ stream.methods.applyStructureUpdates = function(action, item, options) {
 					delete this.items[item.unique()];
 					return;
 				}
-				item.config.set("depth", parent.depth + 1);
-				parent.threading = true;
+				item.set("depth", parent.get("depth") + 1);
+				parent.set("threading", true);
 				item.forceInject = true;
 				this.addItemToList(
-					parent.children,
+					parent.get("children"),
 					item,
 					this.config.get("children.displaySortOrder")
 				);
@@ -1196,18 +1189,18 @@ stream.methods.applyStructureUpdates = function(action, item, options) {
 			if (item.isRoot()) {
 				container = this.threads;
 			} else {
-				container = this.items[item.parentUnique()].children;
+				container = this.items[item.parentUnique()].get("children");
 				if (container.length === 1) {
 					var parent = this.getParentItem(item);
-					if (parent) parent.config.set("threading", false);
+					if (parent) parent.set("threading", false);
 				}
 			}
 			container.splice(this.getItemListIndex(item, container), 1);
 			if (!options.keepChildren) {
-				item.traverse(item.children, function(child) {
+				item.traverse(item.get("children"), function(child) {
 					delete self.items[child.unique()];
 				});
-				delete item.children;
+				item.set("children", []);
 			}
 			delete this.items[item.unique()];
 			break;
@@ -1242,6 +1235,8 @@ stream.methods.normalizeEntry = function(entry) {
 	entry.parentUnique = entry.target.id + entry.target.conversationID;
 	return entry;
 };
+
+stream.config.normalizer = stream.methods.assembleConfigNormalizer();
 
 stream.constructor = function() {
 	var self = this;
@@ -1290,49 +1285,615 @@ stream.css =
 	'.{class:more-hover} { background-color: #E4E4E4; }' +
 	'.{class:more} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
 	'.{class:more} .echo-application-message { padding: 0; border: none; border-radius: 0; }' +
-	($.browser.msie ? '.echo-stream-state-picture { vertical-align: middle; }' : '');
+	($.browser.msie
+		? '.{class:state-picture} { vertical-align: middle; }' +
+		'.{class:container} { zoom: 1; }'
+		: ''
+	);
 
 Echo.Control.create(stream);
 
 var item = Echo.Control.skeleton("Echo.StreamServer.Controls.Stream.Item");
 
+item.labels = {
+	"defaultModeSwitchTitle": "Switch to metadata view",
+	"guest": "Guest",
+	"today": "Today",
+	"yesterday": "Yesterday",
+	"lastWeek": "Last Week",
+	"lastMonth": "Last Month",
+	"secondAgo": "Second Ago",
+	"secondsAgo": "Seconds Ago",
+	"minuteAgo": "Minute Ago",
+	"minutesAgo": "Minutes Ago",
+	"hourAgo": "Hour Ago",
+	"hoursAgo": "Hours Ago",
+	"dayAgo": "Day Ago",
+	"daysAgo": "Days Ago",
+	"weekAgo": "Week Ago",
+	"weeksAgo": "Weeks Ago",
+	"metadataModeSwitchTitle": "Return to default view",
+	"monthAgo": "Month Ago",
+	"monthsAgo": "Months Ago",
+	"sharedThisOn": "I shared this on {service}...",
+	"userID": "User ID:",
+	"userIP": "User IP:",
+	"textToggleTruncatedMore": "more",
+	"textToggleTruncatedLess": "less",
+	"fromLabel": "from",
+	"viaLabel": "via",
+	"childrenMoreItems": "View more items"
+};
+
+item.renderers.authorName = function(element) {
+	return this.data.actor.title || this.labels.get("guest");
+};
+
+item.renderers.markers = function(element, dom) {
+	this.render("extraField", element, dom, {"type": "markers"});
+};
+
+item.renderers.tags = function(element, dom) {
+	this.render("extraField", element, dom, {"type": "tags"});
+};
+
+item.renderers.extraField = function(element, dom, extra) {
+	var self = this;
+	var type = (extra || {}).type;
+	if (!this.data.object[type] || !this.user.is("admin")) {
+		dom.remove(element);
+		return;
+	}
+	var limit = this.config.get("parent.limits." + type);
+	var items = $.foldl([], this.data.object[type], function(item, acc){
+		var template = (item.length > limit)
+			? '<span title="{data:item}">{data:truncatedItem}</span>'
+			: '<span>{data:item}</span>';
+		var truncatedItem = $.htmlTextTruncate(item, limit, "...");
+		acc.push(self.substitute(template, {"item": item, "truncatedItem": truncatedItem}));
+	});
+	element.prepend(items.sort().join(", "));
+};
+
+item.renderers.container = function(element, dom) {
+	var self = this;
+	element.removeClass($.map(["child", "root", "child-thread", "root-thread"],
+		function(suffix) { return "echo-item-container-" + suffix; }).join(" "));
+	var threadSuffix = this.threading ? '-thread' : '';
+	if (this.depth) {
+		element.addClass('echo-item-container-child' + threadSuffix);
+		element.addClass('echo-trinaryBackgroundColor');
+	} else {
+		element.addClass('echo-item-container-root' + threadSuffix);
+	}
+	element.addClass('echo-item-depth-' + this.depth);
+	var switchClasses = function(action) {
+		$.map(self.controlsOrder, function(name) {
+			if (!self.controls[name].element) return;
+			self.controls[name].clickableElements[action + "Class"]("echo-linkColor");
+		});
+	};
+	if (!Echo.Utils.isMobileDevice()) {
+		element.unbind(["mouseleave", "mouseenter"]).hover(function() {
+			if (self.user.is("admin")) dom.get("modeSwitch").show();
+			switchClasses("add");
+		}, function() {
+			if (self.user.is("admin")) dom.get("modeSwitch").hide();
+			switchClasses("remove");
+		});
+	}
+};
+
+item.renderers.metadataUserIP = function(element) {
+	if (!this.data.ip) element.hide();
+	return element;
+};
+
+item.renderers.modeSwitch = function(element) {
+	var self = this;
+	element.hide();
+	if (!this.user.is("admin")) return;
+	var mode = "default";
+	var setTitle = function(el) {
+		el.attr("title", self.labels.get(mode + "ModeSwitchTitle"));
+	};
+	setTitle(element);
+	element.click(function() {
+		mode = (mode == "default" ? "metadata" : "default");
+		setTitle(element);
+		self.dom.get("data").toggle();
+		self.dom.get("metadata").toggle();
+	});
+	if (Echo.Utils.isMobileDevice()) element.show();
+};
+
+item.renderers.wrapper = function(element) {
+	element.addClass('echo-item-wrapper' + (this.depth ? '-child' : '-root'));
+};
+
+item.renderers.avatar = function() {
+	var self = this;
+	var size = (!this.depth ? 48 : 24);
+	var url = this.data.actor.avatar || this.user.get("defaultAvatar");
+	var img = $("<img>", { "src": url }).css({ "width": size, "height": size });
+	if (url != this.user.get("defaultAvatar")) {
+		img.one({
+			"error" : function() {
+				$(this).attr("src", self.user.get("defaultAvatar"));
+			}
+		});
+	}
+	return img;
+};
+
+item.renderers.childrenContainer = function(element, dom, config) {
+	var self = this;
+	// we cannot use element.empty() because it will remove children's event handlers
+	$.each(element.children(), function(i, child) {
+		$(child).detach();
+	});
+	$.map(this.children, function(child) {
+		if (config && config.filter && !config.filter(child)) return;
+		var initialRendering = !child.dom;
+		element.append(initialRendering ? child.render() : child.dom.content);
+		if (child.deleted) {
+			self.publish("internal.Item.onDelete", {"item": child, "config": config});
+		} else if (child.added) {
+			self.publish("internal.Item.onAdd", {"item": child});
+		// don't publish events while rerendering or for Whirlpools
+		} else if (initialRendering && child instanceof Echo.Item) {
+			self.publish("internal.Item.onRender", {"item": child});
+		}
+	});
+};
+
+item.renderers.children = function(element, dom, config) {
+	this.render("childrenContainer", element, dom, {
+		"filter": function(item) { return !item.byCurrentUser; },
+		"keepChildren": config && config.keepChildren
+	});
+};
+
+item.renderers.childrenByCurrentActorLive = function(element, dom, config) {
+	this.render("childrenContainer", element, dom, {
+		"filter": function(item) { return item.byCurrentUser; },
+		"keepChildren": config && config.keepChildren
+	});
+};
+
+item.renderers.control = function(element, dom, extra) {
+	if (!extra || !extra.name) return;
+	var template = extra.template ||
+		'<a class="{class:control} {class:control}-{data:name}">{data:label}</a>';
+	var data = {
+		"label": extra.label || "",
+		"name": extra.name
+	};
+	var control = $(this.substitute(template, data));
+	var clickables = $('.echo-clickable', control);
+	if (!clickables.length) {
+		clickables = control;
+		control.addClass('echo-clickable');
+	}
+	clickables[extra.onetime ? "one" : "bind"]({
+		"click": function(event) {
+			event.stopPropagation();
+			if (extra.callback) extra.callback();
+		}
+	});
+	if (Echo.Utils.isMobileDevice()) clickables.addClass("echo-linkColor");
+	return control;
+};
+
+item.renderers.controlsDelimiter = function() {
+	return $('<span class="echo-item-control-delim"> \u00b7 </span>');
+};
+
+item.renderers.controls = function(element) {
+	var self = this;
+	this.assembleControls();
+	this.sortControls();
+	var container = element.empty();
+	var delimiter = this.render("controlsDelimiter");
+	$.map(this.controlsOrder, function(name) {
+		var data = self.controls[name];
+		if (!data || !data.visible()) return;
+		var control = data.dom || self.render("control", undefined, undefined, data);
+		if (control) {
+			self.controls[name].element = control;
+			self.controls[name].clickableElements = $('.echo-clickable', control);
+			if (!self.controls[name].clickableElements.length) {
+				self.controls[name].clickableElements = control;
+			}
+			container.append(delimiter.clone(true)).append(control);
+		}
+	});
+};
+
+item.renderers.re = function() {
+	if (!this.config.get("reTag")) return;
+	var self = this;
+	var context = this.data.object.context;
+	var re = "";
+	//XXX use normalized permalink and location instead
+	var permalink = this.data.object.permalink;
+	var limits = this.config.get("parent.limits");
+	var openLinksInNewWindow = this.config.get("openLinksInNewWindow");
+
+	var getDomain = function(url) {
+		var parts = $.parseUrl(url);
+		return (parts && parts.domain) ? parts.domain : url;
+	};
+
+	var reOfContext = function(c) {
+		var maxLength = limits.reTitle;
+		if (!c.title) {
+			maxLength = limits.reLink;
+			c.title = c.uri.replace(/^https?:\/\/(.*)/ig, '$1');
+		}
+		if (c.title.length > maxLength) {
+			c.title = c.title.substring(0, maxLength) + "...";
+		}
+		return "<div>" + Echo.Utils.hyperlink({
+			"class": "echo-primaryColor",
+			"href": c.uri,
+			"caption": "Re: " + $.stripTags(c.title)
+		}, {
+			"openInNewWindow": openLinksInNewWindow
+		}) + "</div>";
+	};
+
+	var pageHref = document.location.href;
+	var pageDomain = getDomain(pageHref);
+
+	if (permalink == pageHref || this.depth || !context || !context.length) {
+		return;
+	}
+	var mustSkipContext = false;
+	$.each(context, function(i, c) {
+		//XXX use normalized uri
+		if (c.uri == pageHref) {
+			mustSkipContext = true;
+			return false; //break
+		}
+	});
+
+	if (mustSkipContext) return;
+
+	if (this.config.get("optimizedContext")) {
+		var primaryContext = context[0];
+		$.each(context, function(i, c) {
+			if (getDomain(c.uri) == pageDomain) {
+				primaryContext = c;
+				return false; //break
+			}
+		});
+		if (primaryContext) re = reOfContext(primaryContext);
+	} else {
+		$.each(context, function(i, c) {
+			re += reOfContext(c);
+		});
+	}
+
+	return $(re);
+};
+
+item.renderers.sourceIcon = function(element, dom) {
+	if (!this.config.get("viaLabel.icon") ||
+		this.data.source.name == "jskit" ||
+		this.data.source.name == "echo") {
+			dom.remove(element);
+	}
+	element.hide().attr("src", Echo.Utils.htmlize(
+		this.data.source.icon ||
+		this.config.get("providerIcon")
+	))
+	.show()
+	.one("error", function() {
+		dom.remove(element);
+	})
+	.wrap(Echo.Utils.hyperlink({
+		"href": this.data.source.uri || this.data.object.permalink
+	}, {
+		"openInNewWindow": this.config.get("openLinksInNewWindow")
+	}));
+};
+
+item.renderers.via = function(element, dom) {
+	var self = this;
+	var get = function(field) {
+		return (self.data[field].name || "").toLowerCase();
+	};
+	if (get("source") == get("provider")) return;
+	this.render("viaText", element, dom, {
+		"label": "via",
+		"field": "provider"
+	});
+};
+
+item.renderers.from = function(element, dom) {
+	this.render("viaText", element, dom, {
+		"label": "from",
+		"field": "source"
+	});
+};
+
+item.renderers.viaText = function(element, dom, extra) {
+	extra = extra || {};
+	var data = this.data[extra.field];
+	if (!this.config.get("viaLabel.text") || !data.name || data.name == "jskit"  || data.name == "echo") return;
+	var a = Echo.Utils.hyperlink({
+		"class": "echo-secondaryColor",
+		"href": data.uri || this.data.object.permalink,
+		"caption": data.name
+	}, {
+		"openInNewWindow": this.config.get("openLinksInNewWindow")
+	});
+	element.html('&nbsp;' + this.labels.get(extra.label + 'Label') + '&nbsp;').append(a);
+};
+
+item.renderers.textToggleTruncated = function(element) {
+	var self = this;
+	element.unbind("click").click(function() {
+		self.textExpanded = !self.textExpanded;
+		self.rerender(["body", "textToggleTruncated"]);
+	});
+	return this.labels.get("textToggleTruncated" + (this.textExpanded ? "Less" : "More"));
+};
+
+item.renderers.body = function(element, dom) {
+	var self = this;
+	var output = function(text, truncated) {
+		dom.get("text").empty().append(text);
+		dom.get("textEllipses")[!truncated || self.textExpanded ? "hide" : "show"]();
+		dom.get("textToggleTruncated")[truncated || self.textExpanded ? "show" : "hide"]();
+	};
+	// temporary fix because Firefox hides CDATA content
+	var text = this.data.object.content.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1');
+	var source = this.data.source.name;
+	var openLinksInNewWindow = this.config.get("openLinksInNewWindow");
+	var contentTransformations = this.config.get("contentTransformations." +
+							this.data.object.content_type, {});
+	if (source && source == "Twitter" && this.config.get("aggressiveSanitization")) {
+		output(this.labels.get("sharedThisOn", {"service": source}));
+		return;
+	}
+
+	var limits = this.config.get("parent.limits");
+	var wrap = function(tag) {
+		var template = 
+			(tag.length > limits.tags)
+			? '<span class="{class:tag}" title="{data:tag}">{data:truncatedTag}</span>'
+			: '<span class="{class:tag}">{data:tag}</span>';
+		var truncatedTag = tag.substring(0, limits.tags) + "...";
+		return (self.substitute(template, {"tag": tag, "truncatedTag": truncatedTag}));	
+	};
+
+	if (contentTransformations.hashtags) {
+		text = text.replace(/(#|\uff03)(<a[^>]*>[^<]*<\/a>)/ig, function($0, $1, $2){
+			return wrap($2);
+		});
+	}
+
+	var insertHashTags = function(t) {
+		if (!contentTransformations.hashtags) return t;
+		return t.replace(/(^|[^\w&\/])(?:#|\uff03)([^\s\.,;:'"#@\$%<>!\?\(\)\[\]]+)/ig, function($0, $1, $2) {
+			return $1 + wrap($2);
+		});
+	};
+	var tags2meta = function(text) {
+		var tags = [];
+		text = text.replace(/((<a\s+[^>]*>)(.*?)(<\/a>))|<.*?>/ig, function($0, $1, $2, $3, $4) {
+			//we are cutting and pushing <a> tags to acc to avoid potential html issues after autolinking
+			if ($1) {
+				var content = tags2meta($3);
+				content.text = insertHashTags(content.text);
+				$0 = $2 + meta2tags(content) + $4;
+			}
+			tags.push($0);
+			return ' %%HTML_TAG%% ';
+		});
+		return {"text" : text, "tags": tags};
+	};
+	var meta2tags = function(content) {
+		$.each(content.tags, function(i, v) {
+			content.text = content.text.replace(' %%HTML_TAG%% ', v);
+		});
+		return content.text;
+	};
+	var urlMatcher = "((?:http|ftp|https):\\/\\/(?:[a-z0-9#:\\/\\;\\?\\-\\.\\+,@&=%!\\*\\'(){}\\[\\]$_|^~`](?!gt;|lt;))+)";
+	var normalizeLinks = function(content) {
+		return content.replace(/(<a\s+[^>]*>)(.*?)(<\/a>)/ig, function($0, $1, $2, $3) {
+			if (new RegExp("^" + urlMatcher + "$").test($2)) {
+				$2 = $2.length > limits.bodyLink ? $2.substring(0, limits.bodyLink) + "..." : $2;
+			}
+			if (openLinksInNewWindow && !/\s+target=("[^<>"]*"|'[^<>']*'|\w+)/.test($1)) {
+				$1 = $1.replace(/(^<a\s+[^>]*)(>$)/, '$1 target="_blank"$2');
+			}
+			return $1 + $2 + $3;
+		});
+	};
+	var content = tags2meta(text);
+	if (source && source != 'jskit' && source != 'echo') {
+		var url = this.depth
+			? this.data.target.id
+			: this.config.get("reTag")
+				? this.data.object.permalink || this.data.target.id
+				: undefined;
+		if (url) {
+			content.text = content.text.replace(new RegExp(url, "g"), "");
+			if (!/\S/.test(content.text)) {
+				output(this.labels.get("sharedThisOn", {"service": source}));
+				return;
+			}
+		}
+	}
+	var textBeforeAutoLinking = content.text = insertHashTags(content.text);
+	if (contentTransformations.urls) {
+		content.text = content.text.replace(new RegExp(urlMatcher, 'ig'), function($0, $1) {
+			return Echo.Utils.hyperlink({
+				"href": $1,
+				"caption": $1
+			}, {
+				"skipEscaping": true,
+				"openInNewWindow": openLinksInNewWindow
+			});
+		})
+	}
+	if (contentTransformations.smileys) {
+		if (content.text != textBeforeAutoLinking) {
+			content = tags2meta(meta2tags(content));
+		}
+		var smileys = this.initSmileysConfig();
+		if (content.text.match(smileys.regexps.test)) {
+			$.each(smileys.codes, function(i, code) {
+				content.text = content.text.replace(smileys.regexps[code], smileys.tag(smileys.hash[code]));
+			});
+		}
+	}
+
+	if (contentTransformations.newlines) {
+		content.text = content.text.replace(/\n\n+/g, '\n\n');
+		content.text = content.text.replace(/\n/g, '&nbsp;<br>');
+	}
+	var result = normalizeLinks(meta2tags(content));
+	var truncated = false;
+	if ((limits.body || limits.lines) && !self.textExpanded) {
+		if (limits.lines) {
+			var splitter = contentTransformations.newlines ? "<br>" : "\n";
+			var chunks = result.split(splitter);
+			if (chunks.length > limits.lines) {
+				result = chunks.splice(0, limits.lines).join(splitter);
+				truncated = true;
+			}
+		}
+		var limit = limits.body && result.length > limits.body
+			? limits.body
+			: truncated
+				? result.length
+				: undefined;
+		// we should call $.htmlTextTruncate to close
+		// all tags which might remain unclosed after lines truncation
+		var truncatedText = $.htmlTextTruncate(result, limit, "", true);
+		if (truncatedText.length != result.length) {
+			truncated = true;
+		}
+		result = truncatedText;
+	}
+	output(result, truncated);
+};
+
+item.renderers.date = function(element) {
+	var container = element || this.dom && this.dom.get("date");
+	this.calcAge();
+	if (container) {
+		container.html(this.age);
+	}
+};
+
+item.renderers.expandChildrenLabel = function(element, dom, extra) {
+	if (!this.children.length || !this.hasMoreChildren()) return;
+	extra = extra || {};
+	extra.state = extra.state || "regular";
+	var states = {
+		"loading": {
+			"css": "echo-item-message-loading",
+			"label": "loading"
+		},
+		"regular": {
+			"css": "echo-linkColor echo-message-icon",
+			"label": "childrenMoreItems"
+		}
+	};
+	element
+		.removeClass(states[extra.state == "loading" ? "regular" : "loading"].css)
+		.addClass(states[extra.state].css)
+		.html(this.labels.get(states[extra.state].label));
+};
+
+item.renderers.expandChildren = function(element, dom, extra) {
+	if (!this.children.length) return;
+	if (!this.hasMoreChildren()) {
+		// IE in Quirks mode can't operate with elements with "height: 0px" correctly, 
+		// element with "height: 0px" is renderered as though it doesn't have height property at all.
+		// Thus we set "height: 1px" as the final value for animate function and simply hide element
+		// after the animation is done.
+		if ($.browser.msie && document.compatMode != "CSS1Compat") {
+			element.animate(
+				{
+					"height": "1px",
+					"marginTop": "hide",
+					"marginBottom": "hide",
+					"paddingTop": "hide",
+					"paddingBottom": "hide"
+				},
+				{
+					"duration": this.config.get("children.moreButtonSlideTimeout"),
+					"complete": function() {
+						element.hide();
+					}
+				}
+			);
+		} else {
+			element.slideUp(this.config.get("children.moreButtonSlideTimeout"));
+		}
+		return;
+	}
+	var self = this;
+	// extra.element is sibling element for more children button
+	extra = extra || {};
+	// the "show()" jQuery method doesn't work for some reason in Chrome (A:5755)
+	element.css("display", "block");
+	element.addClass("echo-item-depth-" + (this.depth + 1));
+	element.unbind("click").one("click", function() {
+		self.render("expandChildrenLabel", dom.get("expandChildrenLabel"), dom, {"state": "loading"});
+		self.publish("internal.Item.onChildrenExpand", {"data": self.data});
+	});
+};
+
 item.methods.template = function() {
-	return '<div class="echo-item-content">' +
-		'<div class="echo-item-container">' +
-			'<div class="echo-item-avatar-wrapper">' +
-				'<div class="echo-item-avatar"></div>' +
+	return '<div class="{class:content}">' +
+		'<div class="{class:container}">' +
+			'<div class="{class:avatar-wrapper}">' +
+				'<div class="{class:avatar}"></div>' +
 			'</div>' +
-			'<div class="echo-item-wrapper">' +
-				'<div class="echo-item-subwrapper">' +
-					'<div class="echo-item-subcontainer">' +
-						'<div class="echo-item-frame">' +
-							'<div class="echo-item-modeSwitch echo-clickable"></div>' +
-							'<div class="echo-item-authorName echo-linkColor"></div>' +
+			'<div class="{class:wrapper}">' +
+				'<div class="{class:subwrapper}">' +
+					'<div class="{class:subcontainer}">' +
+						'<div class="{class:frame}">' +
+							'<div class="{class:modeSwitch} echo-clickable"></div>' +
+							'<div class="{class:authorName} echo-linkColor"></div>' +
 							'<div class="echo-clear"></div>' +
-							'<div class="echo-item-data">' +
-								'<div class="echo-item-re"></div>' +
-								'<div class="echo-item-body echo-primaryColor"> ' +
-									'<span class="echo-item-text"></span>' +
-									'<span class="echo-item-textEllipses">...</span>' +
-									'<span class="echo-item-textToggleTruncated echo-linkColor echo-clickable"></span>' +
+							'<div class="{class:data}">' +
+								'<div class="{class:re}"></div>' +
+								'<div class="{class:body} echo-primaryColor"> ' +
+									'<span class="{class:text}"></span>' +
+									'<span class="{class:textEllipses}">...</span>' +
+									'<span class="{class:textToggleTruncated} echo-linkColor echo-clickable"></span>' +
 								'</div>' +
-								'<div class="echo-item-markers echo-secondaryFont echo-secondaryColor"></div>' +
-								'<div class="echo-item-tags echo-secondaryFont echo-secondaryColor"></div>' +
+								'<div class="{class:markers} echo-secondaryFont echo-secondaryColor"></div>' +
+								'<div class="{class:tags} echo-secondaryFont echo-secondaryColor"></div>' +
 							'</div>' +
-							'<div class="echo-item-metadata">' +
-								'<div class="echo-item-metadata-userID">' +
-									'<span class="echo-item-metadata-title echo-item-metadata-icon echo-item-metadata-userID">' +
-										'{Label:userID}' +
+							'<div class="{class:metadata}">' +
+								'<div class="{class:metadata-userID}">' +
+									'<span class="{class:metadata-title} {class:metadata-icon}">' +
+										'{label:userID}' +
 									'</span>' +
-									'<span class="echo-item-metadata-value">{Data:actor.id}</span>' +
+									'<span class="{class:metadata-value}">{data:actor.id}</span>' +
+								'</div>' +
+								'<div class="{class:metadata-userIP} {class:metadataUserIP}">' +
+									'<span class="{class:metadata-title} {class:metadata-icon}">' +
+										'{label:userIP}' +
+									'</span>' +
+									'<span class="{class:metadata-value}">{data:ip}</span>' +
 								'</div>' +
 							'</div>' +
-							'<div class="echo-item-footer echo-secondaryColor echo-secondaryFont">' +
-								'<img class="echo-item-sourceIcon echo-clickable">' +
-								'<div class="echo-item-date"></div>' +
-								'<div class="echo-item-from"></div>' +
-								'<div class="echo-item-via"></div>' +
-								'<div class="echo-item-controls"></div>' +
+							'<div class="{class:footer} echo-secondaryColor echo-secondaryFont">' +
+								'<img class="{class:sourceIcon} echo-clickable">' +
+								'<div class="{class:date}"></div>' +
+								'<div class="{class:from}"></div>' +
+								'<div class="{class:via}"></div>' +
+								'<div class="{class:controls}"></div>' +
 								'<div class="echo-clear"></div>' +
 							'</div>' +
 						'</div>' +
@@ -1341,20 +1902,234 @@ item.methods.template = function() {
 				'</div>' +
 			'</div>' +
 			'<div class="echo-clear"></div>' +
-			'<div class="echo-item-childrenMarker"></div>' +
+			'<div class="{class:childrenMarker}"></div>' +
 		'</div>' +
 		(this.config.get("children.sortOrder") == "chronological"
-			? '<div class="echo-item-children"></div>' +
-			'<div class="echo-item-expandChildren echo-item-container-child echo-trinaryBackgroundColor echo-clickable">' +
-				'<span class="echo-item-expandChildrenLabel echo-message-icon"></span>' +
+			? '<div class="{class:children}"></div>' +
+			'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
+				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
 			'</div>'
-			: '<div class="echo-item-expandChildren echo-item-container-child echo-trinaryBackgroundColor echo-clickable">' +
-				'<span class="echo-item-expandChildrenLabel echo-message-icon"></span>' +
+			: '<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
+				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
 			'</div>' +
-			'<div class="echo-item-children"></div>'
+			'<div class="{class:children}"></div>'
 		) +
-		'<div class="echo-item-childrenByCurrentActorLive"></div>' +
+		'<div class="{class:childrenByCurrentActorLive}"></div>' +
 	'</div>';
+};
+
+item.methods.hasMoreChildren = function() {
+	return this.data.hasMoreChildren == "true";
+};
+
+item.methods.getNextPageAfter = function() {
+	var children = $.grep(this.children, function(child) {
+		return !child.live;
+	});
+	var index = this.config.get("children.sortOrder") == "chronological"
+		? children.length - 1
+		: 0;
+	return children.length
+		? children[index].data.pageAfter
+		: undefined;
+};
+
+item.methods.initSmileysConfig = function() {
+	if (Echo.Vars.smileys) return Echo.Vars.smileys;
+	var esc = function(v) { return v.replace(/([\W])/g, "\\$1"); };
+	var smileys = Echo.Vars.smileys = {"codes": [], "regexps": []};
+	smileys.hash = {
+		':)':		{file: 'smile.png', title: 'Smile'},
+		':-)':		{file: 'smile.png', title: 'Smile'},
+		';)':		{file: 'wink.png', title: 'Wink'},
+		';-)':		{file: 'wink.png', title: 'Wink'},
+		':(':		{file: 'unhappy.png', title: 'Frown'},
+		':-(':		{file: 'unhappy.png', title: 'Frown'},
+		'=-O':		{file: 'surprised.png', title: 'Surprised'},
+		':-D':		{file: 'grin.png', title: 'Laughing'},
+		':-P':		{file: 'tongue.png', title: 'Tongue out'},
+		'=)':		{file: 'happy.png', title: 'Happy'},
+		'B-)':		{file: 'evilgrin.png', title: 'Evil grin'}
+	};
+	var escapedCodes = [];
+	$.each(smileys.hash, function(code) {
+		var escaped = esc(code);
+		escapedCodes.push(escaped);
+		smileys.codes.push(code);
+		smileys.regexps[code] = new RegExp(escaped, "g");
+	});
+	smileys.regexps.test = new RegExp(escapedCodes.join("|"));
+	smileys.tag = function(smiley) {
+		return '<img class="echo-item-smiley-icon" src="//cdn.echoenabled.com/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '" />';
+	};
+	return smileys;
+};
+
+item.methods.assembleControls = function() {
+	var self = this;
+	var controlsOrder = [];
+	$.each(this.config.get("itemControls", {}), function(plugin, controls) {
+		$.map(controls, function(control) {
+			var data = $.isFunction(control)
+				? control.call(self)
+				: $.extend({}, control);
+			if (!data.name) return;
+			var callback = data.callback || function() {};
+			data.callback = function() {
+				callback.call(self);
+				self.publish("internal.Item.onControlClick", {
+					"name": data.name,
+					"plugin": plugin,
+					"item": {
+						"data": self.data,
+						"target": self.dom.content
+					}
+				});
+			};
+			data.label = data.label || data.name;
+			data.plugin = plugin;
+			if (typeof data.visible == "undefined") {
+				data.visible = true;
+			}
+			var visible = data.visible;
+			data.visible = function() {
+				return visible && self.config.get("plugins." + plugin + ".enabled");
+			}
+			var name = plugin + '.' + data.name;
+			self.controls[name] = data;
+			if ($.inArray(name, self.controlsOrder) < 0) {
+				controlsOrder.push(name);
+			}
+		});
+	});
+	// keep correct order of plugins and controls
+	self.controlsOrder = controlsOrder.concat(self.controlsOrder);
+};
+
+item.methods.sortControls = function() {
+	var self = this;
+	var defaultOrder = this.controlsOrder;
+	var requiredOrder = this.config.get("itemControlsOrder");
+	// if controls order is not specified in application config, use default order
+	if (!requiredOrder) {
+		this.config.set("itemControlsOrder", defaultOrder);
+	} else if (requiredOrder != defaultOrder) {
+		var push = function(name, acc, pos) {
+			if (!self.controls[name]) return;
+			acc.push(name);
+			pos = pos || $.inArray(name, defaultOrder);
+			if (pos >= 0) {
+				delete defaultOrder[pos];
+			}
+		};
+		var order = $.foldl([], requiredOrder, function(name, acc) {
+			if (/^(.*)\./.test(name)) {
+				push(name, acc);
+			} else {
+				var re = new RegExp("^" + name + "\.");
+				$.map(defaultOrder, function(n, i) {
+					if (n && n.match(re)) {
+						push(n, acc, i);
+					}
+				});
+			}
+		});
+		this.controlsOrder = order;
+		this.config.set("itemControlsOrder", order);
+	// if application config tells not to use controls
+	} else if (!requiredOrder.length) {
+		this.controlsOrder = [];
+	}
+};
+
+item.methods.traverse = function(tree, callback, acc) {
+	var self = this;
+	$.each(tree || [], function(i, item) {
+		acc = self.traverse(item.children, callback, callback(item, acc));
+	});
+	return acc;
+};
+
+item.methods.refreshDate = function() {
+	this.rerender("date");
+	$.map(this.children || [], function(child) {
+		child.refreshDate();
+	});
+};
+
+item.methods.calcAge = function() {
+	if (!this.timestamp) return;
+	var self = this;
+	var d = new Date(this.timestamp * 1000);
+	var now = (new Date()).getTime();
+	var when;
+	var diff = Math.floor((now - d.getTime()) / 1000);
+	var dayDiff = Math.floor(diff / 86400);
+	var getAgo = function(ago, period) {
+		return ago + " " + self.labels.get(period + (ago == 1 ? "" : "s") + "Ago");
+	};
+
+	if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 365) {
+		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+	} else if (diff < 60) {
+		when = getAgo(diff, 'second');
+	} else if (diff < 60 * 60) {
+		diff = Math.floor(diff / 60);
+		when = getAgo(diff, 'minute');
+	} else if (diff < 60 * 60 * 24) {
+		diff = Math.floor(diff / (60 * 60));
+		when = getAgo(diff, 'hour');
+	} else if (diff < 60 * 60 * 48) {
+		when = this.labels.get("yesterday");
+	} else if (dayDiff < 7) {
+		when = getAgo(dayDiff, 'day');
+	} else if (dayDiff < 14) {
+		when = this.labels.get("lastWeek");
+	} else if (dayDiff < 30) {
+		diff =  Math.floor(dayDiff / 7);
+		when = getAgo(diff, 'week');
+	} else if (dayDiff < 60) {
+		when = this.labels.get("lastMonth");
+	} else if (dayDiff < 365) {
+		diff =  Math.floor(dayDiff / 31);
+		when = getAgo(diff, 'month');
+	}
+	if (this.age != when) {
+		this.age = when;
+	}
+};
+
+item.methods.block = function(label) {
+	if (this.blocked) return;
+	this.blocked = true;
+	var content = this.dom.get("container");
+	var width = content.width();
+	//We should take into account that container has a 10px 0px padding value
+	var height = content.outerHeight();
+	this.blockers = {
+		"backdrop": $('<div class="echo-item-blocker-backdrop"></div>').css({
+			"width": width, "height": height
+		}),
+		"message": $(this.substitute('<div class="echo-item-blocker-message">{data:label}</div>', {"label": label})).css({
+			"left": ((parseInt(width) - 200)/2) + 'px',
+			"top": ((parseInt(height) - 20)/2) + 'px'
+		})
+	};
+	content.addClass("echo-relative")
+		.prepend(this.blockers.backdrop)
+		.prepend(this.blockers.message);
+};
+
+item.methods.unblock = function() {
+	if (!this.blocked) return;
+	this.blocked = false;
+	this.blockers.backdrop.remove();
+	this.blockers.message.remove();
+	this.dom.get("container").removeClass("echo-relative");
+};
+
+item.methods.getAccumulator = function(type) {
+	return this.data.object.accumulators[type];
 };
 
 item.methods.isRoot = function() {
@@ -1369,62 +2144,71 @@ item.methods.parentUnique = function() {
 	return this.config.get("data.parentUnique");
 };
 
+item.constructor = function(config) {
+	this.children = [];
+	this.depth = 0;
+	this.threading = false;
+	//"id": entry.object.id, // short cut for "id" item field
+	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
+};
+
 var itemDepthRules = [];
 // 100 is a maximum level of children in query, but we can apply styles for ~20
 for (var i = 0; i <= 20; i++) {
-	itemDepthRules.push('.echo-item-depth-' + i + ' { margin-left: ' + (i ? 68 + (i - 1) * 44 : 0) + 'px; }');
+	itemDepthRules.push('.{class:depth}-' + i + ' { margin-left: ' + (i ? 68 + (i - 1) * 44 : 0) + 'px; }');
 }
-
 item.css =
-	'.echo-item-content { word-wrap: break-word; }' +
-	'.echo-item-container-root { padding: 10px 0px; }' +
-	'.echo-item-container-root-thread { padding: 10px 0px 0px 0px; }' +
-	'.echo-item-container-child { padding: 10px; margin: 0px 20px 2px 0px; }' +
-	'.echo-item-container-child-thread { padding: 10px; margin: 0px 20px 2px 0px; }' +
-	'.echo-item-avatar-wrapper { margin-right: -58px; float: left; position: relative; }' +
-	'.echo-item-children .echo-item-avatar-wrapper, .echo-item-childrenByCurrentActorLive .echo-item-avatar-wrapper { margin-right: -34px; }' +
-	'.echo-item-children .echo-item-subwrapper, .echo-item-childrenByCurrentActorLive .echo-item-subwrapper { margin-left: 34px; }' +
-	'.echo-item-wrapper { float: left; width: 100%; }' +
-	'.echo-item-subwrapper { margin-left: 58px; }' +
-	'.echo-item-subcontainer { float: left; width: 100%; }' +
-	'.echo-item-markers { line-height: 16px; background: url(//cdn.echoenabled.com/images/curation/metadata/marker.png) no-repeat; padding: 0px 0px 4px 21px; margin-top: 7px; }' +
-	'.echo-item-tags { line-height: 16px; background: url(//cdn.echoenabled.com/images/tag_blue.png) no-repeat; padding: 0px 0px 4px 21px; }' +
-	'.echo-item-metadata { display: none; }' +
-	'.echo-item-metadata-title { font-weight: bold; line-height: 25px; height: 25px; margin-right: 5px; }' +
-	'.echo-item-metadata-icon { display: inline-block; padding-left: 26px; }' +
-	'div.echo-item-metadata-userID { border-bottom: 1px solid #e1e1e1; border-top: 1px solid #e1e1e1;}' +
-	'span.echo-item-metadata-userID { background: url("//cdn.echoenabled.com/images/curation/metadata/user.png") no-repeat left center; }' +
-	'.echo-item-modeSwitch { float: right; width: 16px; height: 16px; background:url("//cdn.echoenabled.com/images/curation/metadata/flip.png") no-repeat 0px 3px; }' +
-	'.echo-item-childrenMarker { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }' + // This is magic "arrow up". Only color and margins could be changed
-	'.echo-item-container-root-thread .echo-item-childrenMarker { display: block; }' +
-	'.echo-item-avatar { width: 48px; height: 48px; }' +
-	'.echo-item-children .echo-item-avatar, .echo-item-childrenByCurrentActorLive .echo-item-avatar { width: 24px; height: 24px; }' +
-	'.echo-item-authorName { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }' +
-	'.echo-item-re { font-weight: bold; }' +
-	'.echo-item-re a:link, .echo-item-re a:visited, .echo-item-re a:active { text-decoration: none; }' +
-	'.echo-item-re a:hover { text-decoration: underline; }' +
-	'.echo-item-body { padding-top: 4px; }' +
-	'.echo-item-controls { float: left; margin-left: 3px; }' +
-	'.echo-item-sourceIcon { float: left; height: 16px; width: 16px; margin-right: 5px; border: 0px; }' +
-	'.echo-item-date, .echo-item-from, .echo-item-via { float: left; }' +
-	'.echo-item-from a, .echo-item-via a { text-decoration: none; color: #C6C6C6; }' +
-	'.echo-item-from a:hover, .echo-item-via a:hover { color: #476CB8; }' +
-	'.echo-item-tag { display: inline-block; height: 16px; background: url("//cdn.echoenabled.com/images/tag_blue.png") no-repeat; padding-left: 18px; }' +
-	'.echo-item-smiley-icon { border: 0px; }' +
-	'.echo-item-textToggleTruncated { margin-left: 5px; }' +
-	'.echo-item-blocker-backdrop { position: absolute; left: 0px; top: 0px; background: #FFFFFF; opacity: 0.7; z-index: 100; }' +
-	'.echo-item-blocker-message { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }' +
-	'.echo-item-expandChildren { display:none; text-align: center; padding:4px; }' +
-	'.echo-item-expandChildren .echo-item-expandChildrenLabel { display: inline-block; padding-left: 22px; }' +
-	'.echo-item-expandChildren .echo-message-icon { background: url("//cdn.echoenabled.com/images/whirlpool.png") no-repeat 5px 4px; }' +
-	'.echo-item-expandChildren .echo-item-message-loading { background: no-repeat left top url(//cdn.echoenabled.com/images/loading.gif); }' +
-	'.echo-item-expandChildren .echo-application-message { padding: 0; border:none; border-radius: 0; }' +
+	'.{class:content} { word-wrap: break-word; }' +
+	'.{class:container-root} { padding: 10px 0px; }' +
+	'.{class:container-root-thread} { padding: 10px 0px 0px 0px; }' +
+	'.{class:container-child} { padding: 10px; margin: 0px 20px 2px 0px; }' +
+	'.{class:container-child-thread} { padding: 10px; margin: 0px 20px 2px 0px; }' +
+	'.{class:avatar-wrapper} { margin-right: -58px; float: left; position: relative; }' +
+	'.{class:children} .{class:avatar-wrapper, .{class:childrenByCurrentActorLive .{class:avatar-wrapper { margin-right: -34px; }' +
+	'.{class:children} .{class:subwrapper}, .{class:childrenByCurrentActorLive} .{class:subwrapper} { margin-left: 34px; }' +
+	'.{class:wrapper} { float: left; width: 100%; }' +
+	'.{class:subwrapper} { margin-left: 58px; }' +
+	'.{class:subcontainer} { float: left; width: 100%; }' +
+	'.{class:markers} { line-height: 16px; background: url(//cdn.echoenabled.com/images/curation/metadata/marker.png) no-repeat; padding: 0px 0px 4px 21px; margin-top: 7px; }' +
+	'.{class:tags} { line-height: 16px; background: url(//cdn.echoenabled.com/images/tag_blue.png) no-repeat; padding: 0px 0px 4px 21px; }' +
+	'.{class:metadata} { display: none; }' +
+	'.{class:metadata-title} { font-weight: bold; line-height: 25px; height: 25px; margin-right: 5px; }' +
+	'.{class:metadata-icon} { display: inline-block; padding-left: 26px; }' +
+	'.{class:metadata-userID} { border-bottom: 1px solid #e1e1e1; border-top: 1px solid #e1e1e1;}' +
+	'.{class:metadata-userID} .{class:metadata-icon} { background: url("//cdn.echoenabled.com/images/curation/metadata/user.png") no-repeat left center; }' +
+	'.{class:metadata-userIP} { border-bottom: 1px solid #e1e1e1; }' +
+	'.{class:metadata-userIP} .{class:metadata-icon} { background: url("//cdn.echoenabled.com/images/curation/metadata/computer.png") no-repeat left center; }' +
+	'.{class:modeSwitch} { float: right; width: 16px; height: 16px; background:url("//cdn.echoenabled.com/images/curation/metadata/flip.png") no-repeat 0px 3px; }' +
+	'.{class:childrenMarker} { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }' + // This is magic "arrow up". Only color and margins could be changed
+	'.{class:container-root-thread} .{class:childrenMarker} { display: block; }' +
+	'.{class:avatar} { width: 48px; height: 48px; }' +
+	'.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; height: 24px; }' +
+	'.{class:authorName} { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }' +
+	'.{class:re} { font-weight: bold; }' +
+	'.{class:re} a:link, .{class:re} a:visited, .{class:re} a:active { text-decoration: none; }' +
+	'.{class:re} a:hover { text-decoration: underline; }' +
+	'.{class:body} { padding-top: 4px; }' +
+	'.{class:controls} { float: left; margin-left: 3px; }' +
+	'.{class:sourceIcon} { float: left; height: 16px; width: 16px; margin-right: 5px; border: 0px; }' +
+	'.{class:date}, .{class:from}, .{class:via} { float: left; }' +
+	'.{class:from} a, .{class:via} a { text-decoration: none; color: #C6C6C6; }' +
+	'.{class:from} a:hover, .{class:via} a:hover { color: #476CB8; }' +
+	'.{class:tag} { display: inline-block; height: 16px; background: url("//cdn.echoenabled.com/images/tag_blue.png") no-repeat; padding-left: 18px; }' +
+	'.{class:smiley-icon} { border: 0px; }' +
+	'.{class:textToggleTruncated} { margin-left: 5px; }' +
+	'.{class:blocker-backdrop} { position: absolute; left: 0px; top: 0px; background: #FFFFFF; opacity: 0.7; z-index: 100; }' +
+	'.{class:blocker-message} { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }' +
+	'.{class:expandChildren} { display:none; text-align: center; padding:4px; }' +
+	'.{class:expandChildren} .{class:expandChildrenLabel} { display: inline-block; padding-left: 22px; }' +
+	'.{class:expandChildren} .echo-message-icon { background: url("//cdn.echoenabled.com/images/whirlpool.png") no-repeat 5px 4px; }' +
+	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url(//cdn.echoenabled.com/images/loading.gif); }' +
+	'.{class:expandChildren} .echo-application-message { padding: 0; border:none; border-radius: 0; }' +
 	itemDepthRules.join("\n") +
-	($.browser.msie ?
-		'.echo-item-childrenMarker { font-size: 1px; line-height: 1px; }' +
-		'.echo-item-blocker-backdrop, .echo-item-blocker-message { filter:alpha(opacity=70); }' +
-		'.echo-stream-container, .echo-item-content, .echo-item-container, .echo-item-subwrapper { zoom: 1; }' +
-		'.echo-item-avatar-wrapper { position: static; }'
+	($.browser.msie
+		? '.{class:childrenMarker} { font-size: 1px; line-height: 1px; }' +
+		'.{class:blocker-backdrop}, .{class:blocker-message} { filter:alpha(opacity=70); }' +
+		'.{class:content}, .{class:container}, .{class:subwrapper} { zoom: 1; }' +
+		'.{class:avatar-wrapper} { position: static; }'
 		: ''
 	);
 

@@ -78,8 +78,7 @@ Echo.UserSession.get = function(key, defaults) {
  * @return (Boolean) Returns true or false if condition was met or not respectively.
  */
 Echo.UserSession.is = function(key) {
-	var user = this;
-	return user._maybeDelegate({
+	return this._maybeDelegate({
 		"action": "is",
 		"key": key
 	});
@@ -261,7 +260,6 @@ Echo.UserSession._init = function(callback) {
 };
 
 Echo.UserSession._normalize = function(data) {
-	var user = this;
 	data = data || {};
 	data.echo = data.echo || {};
 	data.echo.state = data.echo.state || "Untouched";
@@ -288,25 +286,26 @@ Echo.UserSession._onInit = function(callback) {
 };
 
 Echo.UserSession._attrLocation = function(key) {
-	var user = this;
 	return $.inArray(key, ["roles", "state", "markers"]) >= 0
-		? user.data.echo
-		: user.identity;
+		? this.data.echo
+		: this.identity;
 };
 
 // functions delegated by the user.is(..) call
 
 Echo.UserSession._isLogged = function() {
-	var user = this;
-	var activeIdentities = user.get("activeIdentities");
+	var activeIdentities = this.get("activeIdentities");
 	return !!(activeIdentities && activeIdentities.length);
+};
+
+Echo.UserSession._isAdmin = function() {
+	return this.any("roles", ["administrator", "moderator"]);
 };
 
 // functions delegated by the user.set(..) call
 
 Echo.UserSession._setName = function(value) {
-	var user = this;
-	user.identity.displayName = value;
+	this.identity.displayName = value;
 };
 
 // functions delegated by the user.get(..) call
@@ -366,13 +365,11 @@ Echo.UserSession._hasIdentity = function(identityUrl) {
 // functions delegated by the user.any(..) call
 
 Echo.UserSession._anyMarker = function(value) {
-	var user = this;
-	return user.any("markers", value);
+	return this.any("markers", value);
 };
 
 Echo.UserSession._anyRole = function(value) {
-	var user = this;
-	return user.any("roles", value);
+	return this.any("roles", value);
 };
 
 })(jQuery);

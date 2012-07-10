@@ -6,7 +6,6 @@ var submit = Echo.Control.skeleton("Echo.StreamServer.Controls.Submit");
 
 submit.config = {
 	"targetURL": document.location.href,
-	"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
 	"markers": [],
 	"source": {},
 	"tags": [],
@@ -19,7 +18,6 @@ submit.config = {
 };
 
 submit.labels = {
-	"createdBy": "Created by",
 	"markers": "Markers:",
 	"markersHint": "Marker1, marker2, marker3, ...",
 	"on": "on",
@@ -29,8 +27,6 @@ submit.labels = {
 	"postingTimeout": "There was a network issue while trying to submit your item. Please try again in a few minutes.",
 	"tagsHint": "Tag1, tag2, tag3, ...",
 	"tags": "Tags:",
-	"update": "Update",
-	"updating": "Updating...",
 	"yourName": "Your Name (required)",
 	"yourWebsiteOptional": "Your website (optional)"
 };
@@ -231,16 +227,16 @@ submit.methods.post = function() {
 			if (timer) clearTimeout(timer);
 			// we have previous timeout on the client side so we just ignore errors from server side
 			if (hasPreviousTimeout) return;
-			var isNetworkTimeout = hasPreviousTimeout = (data.errorCode == "network_timeout");
+			var isNetworkTimeout = hasPreviousTimeout = ($.inArray(data.errorCode, ["network_timeout", "connection_failure"]) >= 0);
 			var message = isNetworkTimeout
 				? self.labels.get("postingTimeout")
 				: self.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
 			$.fancybox({
-				"content": '<div class="' + this._cssClassFromControlName() + '-error">' + message + '</div>',
+				"content": '<div class="' + self.cssPrefix + '-error">' + message + '</div>',
 				"height": 70,
 				"width": isNetworkTimeout ? 320 : 390,
 				"padding": 15,
-				"orig": get("text"),
+				"orig": self.dom.get("text"),
 				"autoDimensions": false,
 				"transitionIn": "elastic",
 				"transitionOut": "elastic",
@@ -263,7 +259,7 @@ submit.methods.post = function() {
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"apiBaseURL": this.config.get("submissionProxyURL"),
-		"timeout": this.config.get("postingTimeout"), //TODO: test it
+		"timeout": this.config.get("postingTimeout"),
 		"data": entry,
 		"onData": callbacks.onData,
 		"onError": callbacks.onError
@@ -292,7 +288,7 @@ submit.methods.getActivity = function(verb, type, data) {
 
 submit.methods.highlightMandatory = function(element) {
 	if (element && !$.trim(element.val())) {
-		var css = this._cssClassFromControlName() + "-mandatory";
+		var css = this.cssPrefix + "-mandatory";
 		element.parent().addClass(css);
 		element.focus(function() {
 			$(this).parent().removeClass(css);

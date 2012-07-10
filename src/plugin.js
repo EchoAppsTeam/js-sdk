@@ -15,14 +15,28 @@ Echo.Plugin.create = function(manifest) {
 	if (plugin) return plugin;
 	var _constructor = function(config) {
 		if (!config || !config.component) return;
-		this.name = config.name;
+		this.name = manifest.name;
 		this.manifest = manifest; // TODO: avoid this, pass via param to "renderer"...
 		this.component = config.component;
-		this.init(["renderers", "events", "labels", "config"]);
+		// TODO: check if we can store plugin-specific data in a plugin instance
+		this.component.vars[this.name] = {};
+		this.cssPrefix = this.component.cssPrefix + "-plugin-" + manifest.name;
+		// define extra css class for the control target
+		this.component.config.get("target").addClass(this.cssPrefix);
+		this.init([
+			"css",
+			"renderers",
+			"events",
+			"labels",
+			"config"
+		]);
 		manifest.init.call(this);
 	};
 	_constructor.manifest = manifest;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
+	if (manifest.methods) {
+		$.extend(_constructor.prototype, manifest.methods);
+	}
 	Echo.Utils.setNestedValue(Echo.Plugins, manifest.name, _constructor);
 	return _constructor;
 };
@@ -47,10 +61,6 @@ Echo.Plugin.prototype.set = function(key, value) {
 Echo.Plugin.prototype.get = function(key, defaults) {
 	Echo.Utils.getNestedValue(this.component.vars[this.name], key, defaults);
 };
-
-Echo.Plugin.prototype.addCSS = function(text) {
-	Echo.Utils.addCSS(text, "plugins-" + this.name);
-};
 		
 Echo.Plugin.prototype.enable = function() {
 	this.config.set("enabled", true);
@@ -64,12 +74,35 @@ Echo.Plugin.prototype.enabled = function(name) {
 	return this.config.get("enabled");
 };
 
-Echo.Plugin.prototype.extendRenderer = function() {
-	this.component.extendRenderer.apply(this.component, arguments);
+Echo.Plugin.prototype.extendRenderer = function(name, renderer) {
+	this.component.extendRenderer.call(this.component, name, $.proxy(renderer, this));
 };
 
-Echo.Plugin.prototype.extendTemplate = function() {
-	this.component.extendTemplate.apply(this.component, arguments);
+Echo.Plugin.prototype.extendTemplate = function(html, action, anchor) {
+	html = this.substitute($.isFunction(html) ? html() : html);
+	this.component.extendTemplate.call(this.component, html, action, anchor);
+};
+
+Echo.Plugin.prototype.parentRenderer = function() {
+	return this.component.parentRenderer.apply(this.component, arguments);
+};
+
+Echo.Plugin.prototype.substitute = function(template) {
+	var plugin = this;
+	return plugin.component.substitute(template, {}, {
+		"plugin.label": function(key) {
+			return plugin.labels.get(key, "");
+		},
+		"plugin.class": function(value) {
+			return plugin.cssPrefix + "-" + value;
+		},
+		"plugin.data": function(key) {
+			// TODO: to be developed...
+		},
+		"plugin.self": function(key) {
+			// TODO: to be developed...
+		}
+	});
 };
 
 Echo.Plugin.prototype.destroy = function() {};
@@ -84,34 +117,46 @@ Echo.Plugin.prototype.init = function(subsystems) {
 	});
 };
 
+Echo.Plugin.prototype.init.css = function() {
+	var manifest = this.manifest;
+	if (!manifest.css) return;
+	Echo.Utils.addCSS(this.substitute(manifest.css), "plugins-" + manifest.name);
+};
+
 Echo.Plugin.prototype.init.renderers = function() {
 	var plugin = this;
 };
 
 Echo.Plugin.prototype.init.labels = function() {
-	// TODO: append all labels...
 	var plugin = this;
-	return {
+	var labels = {
 		"set": function(labels) {
-			Echo.Lables.set(labels, "Plugins." + plugin.name, true);
+			Echo.Labels.set(labels, "Plugins." + plugin.name, true);
 		},
 		"get": function(label) {
-			return Echo.Lables.get(label, "Plugins." + plugin.name);
+			return Echo.Labels.get(label, "Plugins." + plugin.name);
 		}
 	};
+	if (plugin.manifest.labels) {
+		labels.set(plugin.manifest.labels);
+	}
+	return labels;
 };
 
 Echo.Plugin.prototype.init.config = function() {
 	var plugin = this, component = plugin.component;
 	var normalize = function(key) {
-		return ["plugins", this.name, key].join(".");
+		return (["plugins", plugin.manifest.name].concat(key ? key : [])).join(".");
 	};
 	return {
 		"set": function(key, value) {
 			component.config.set(normalize(key), value);
 		},
 		"get": function(key, defaults, askParent) {
-			var value = component.config.get(normalize(key));
+			var value = component.config.get(
+				normalize(key),
+				plugin.manifest.config[key]
+			);
 			return typeof value == undefined
 				? askParent
 					? component.config.get(key, defaults)
@@ -120,6 +165,19 @@ Echo.Plugin.prototype.init.config = function() {
 		},
 		"remove": function(key) {
 			component.config.remove(normalize(key));
+		},
+		"assemble": function(data) {
+			var config = plugin.component.config;
+			data.plugins = config.get("nestedPlugins", []);
+			data.parent = config.getAsHash();
+
+			// copy default field values from parent control
+			Echo.Utils.foldl(data, plugin.component.getDefaultConfig(),
+				function(value, acc, key) {
+					acc[key] = config.get(key);
+				}
+			);
+			return (new Echo.Configuration(data, plugin.config.get())).getAsHash();
 		}
 	};
 };

@@ -13,7 +13,7 @@ if (!Echo.Loader) Echo.Loader = {
 
 if (!Echo.Vars) Echo.Vars = {
 	"regexps": {
-		"templateSubstitution": /{([a-z]+):(([a-z_]+\.)*[a-z_]+)}/ig,
+		"templateSubstitution": /{([a-z\.]+):(([a-z_]+\.)*[a-z_]+)}/ig,
 		"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
 		"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/,
 		"w3cdtf": /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/
@@ -703,12 +703,42 @@ Echo.Utils.loadImage = function(image, defaultImage) {
 	var img = $("<img>", { "src": url });
 	if (url !== defaultImage) {
 		img.one({
-			"error" : function(){
+			"error" : function() {
 				$(this).attr("src", defaultImage);
 			}
 		});
 	}
 	return img;
+};
+
+/**
+ * Creates the HTML <a> tag with the provided attribute names/values
+ *
+ * @static
+ * @param {Object} data Hyperlink tag attribute key/value pairs, some of them are:
+ * @param {String} [data.caption] Visible text for the hyperlink
+ * @param {String} [data.href="javascript:void(0)"] Hyperlink URL
+ * @param {String} [data.target] Target window
+ * @param {Object} options Configurable options affecting hyperlink behaviour
+ * @param {Boolean} [options.openInNewWindow=false] Specifies whether this should be opened in a separate window or not
+ * @param {Boolean} [options.skipEscaping=false] Specifies whether href value should be htmlized or not
+ * @return {String} HTML string for <a> tag
+ */
+Echo.Utils.hyperlink = function(data, options) {
+	options = options || {};
+	if (options.openInNewWindow && !data.target) {
+		data.target = "_blank";
+	}
+	var caption = data.caption || "";
+	delete data.caption;
+	if (!options.skipEscaping) {
+		data.href = Echo.Utils.htmlize(data.href);
+	}
+	data.href = data.href || "javascript:void(0)";
+	var attributes = Echo.Utils.foldl([], data, function(value, acc, key) {
+		acc.push(key + '="' + value + '"');
+	});
+	return "<a " + attributes.join(" ") + ">" + caption + "</a>";
 };
 
 })();
