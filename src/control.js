@@ -74,12 +74,12 @@ Echo.Control.prototype.set = function(field, value) {
 	Echo.Utils.setNestedValue(this, field, value);
 };
 
-Echo.Control.prototype.substitute = function(template, data) {
+Echo.Control.prototype.substitute = function(template, data, instructions) {
 	var control = this;
 	var extract = function(value) {
 		return $.isFunction(value) ? value() : value;
 	};
-	var instructions = {
+	instructions = $.extend({
 		"class": function(value) {
 			return control.cssPrefix + "-" + value;
 		},
@@ -97,7 +97,7 @@ Echo.Control.prototype.substitute = function(template, data) {
 			});
 			return extract(value);
 		}
-	};
+	}, instructions || {});
 	var processor = function(match, key, value) {
 		return instructions[key] ? instructions[key](value) : match;
 	};
@@ -201,7 +201,6 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
 };
 
 Echo.Control.prototype.refresh = function() {
-	// TODO: develop unified refresh mechanism
 	this.rerender();
 	this.events.publish({"topic": "onRefresh"});
 };

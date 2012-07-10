@@ -52,11 +52,11 @@ userListItem.methods.isYou = function() {
 };
 
 userListItem.css =
-		'.{class:avatar} { width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }' +
-		//TODO only-avatars class complies to item not to the list as it was originally
-		'.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }' +
-		'.{class:container}, .{class:container} span { white-space: nowrap; }' +
-		'.{class:only-avatars} .{class:container} { white-space: normal; }';
+	'.{class:avatar} { width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }' +
+	//TODO only-avatars class complies to item not to the list as it was originally
+	'.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }' +
+	'.{class:container}, .{class:container} span { white-space: nowrap; }' +
+	'.{class:only-avatars} .{class:container} { white-space: normal; }';
 
 Echo.Control.create(userListItem);
 
@@ -65,15 +65,15 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.UserList")) return
 var userList = Echo.Control.skeleton("Echo.StreamServer.Controls.UserList");
 
 userList.config = { 
-		"initialUsersCount": undefined,
-		"totalUsersCount": undefined,
-		"query": "",
-		"suffixText": "",
-		"userLabel": {
-			"avatar": true,
-			"text": true
-		}
-	});
+	"initialUsersCount": undefined,
+	"totalUsersCount": undefined,
+	"query": "",
+	"suffixText": "",
+	"userLabel": {
+		"avatar": true,
+		"text": true
+	}
+};
 
 userList.labels = {
 	"and": "and",
@@ -161,12 +161,10 @@ userList.methods.getVisibleUsersCount = function() {
 };
 
 userList.css = 
-		'.{class:container} { line-height: 20px; vertical-align: middle; }' +
-		'.{class:more} { white-space: nowrap; }' +
-		//TODO profiling error messages should be moved to low lovel control base class
-		'.{class:more} .echo-application-message-icon { display: inline; margin: 0px 5px; }'
-	, 'user-list');
-};
+	'.{class:container} { line-height: 20px; vertical-align: middle; }' +
+	'.{class:more} { white-space: nowrap; }' +
+	//TODO profiling error messages should be moved to low lovel control base class
+	'.{class:more} .echo-application-message-icon { display: inline; margin: 0px 5px; }';
 
 Echo.Control.create(userList);
 

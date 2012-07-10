@@ -55,7 +55,7 @@ Echo.Plugin.prototype.get = function(key, defaults) {
 };
 
 Echo.Plugin.prototype.addCSS = function(text) {
-	Echo.Utils.addCSS(text, "plugins-" + this.name);
+	Echo.Utils.addCSS(this.substitute(text), "plugins-" + this.name);
 };
 		
 Echo.Plugin.prototype.enable = function() {
@@ -74,12 +74,31 @@ Echo.Plugin.prototype.extendRenderer = function(name, renderer) {
 	this.component.extendRenderer.call(this.component, name, $.proxy(renderer, this));
 };
 
-Echo.Plugin.prototype.extendTemplate = function() {
-	this.component.extendTemplate.apply(this.component, arguments);
+Echo.Plugin.prototype.extendTemplate = function(html, action, anchor) {
+	html = this.substitute($.isFunction(html) ? html() : html);
+	this.component.extendTemplate.call(this.component, html, action, anchor);
 };
 
 Echo.Plugin.prototype.parentRenderer = function() {
 	return this.component.parentRenderer.apply(this.component, arguments);
+};
+
+Echo.Plugin.prototype.substitute = function(template) {
+	var plugin = this;
+	return plugin.component.substitute(template, {}, {
+		"plugin.label": function(key) {
+			return plugin.labels.get(key, "");
+		},
+		"plugin.class": function(value) {
+			return plugin.cssPrefix + "-" + value;
+		},
+		"plugin.data": function(key) {
+			// TODO: to be developed...
+		},
+		"plugin.self": function(key) {
+			// TODO: to be developed...
+		}
+	});
 };
 
 Echo.Plugin.prototype.destroy = function() {};
@@ -99,16 +118,19 @@ Echo.Plugin.prototype.init.renderers = function() {
 };
 
 Echo.Plugin.prototype.init.labels = function() {
-	// TODO: append all labels...
 	var plugin = this;
-	return {
+	var labels = {
 		"set": function(labels) {
-			Echo.Lables.set(labels, "Plugins." + plugin.name, true);
+			Echo.Labels.set(labels, "Plugins." + plugin.name, true);
 		},
 		"get": function(label) {
-			return Echo.Lables.get(label, "Plugins." + plugin.name);
+			return Echo.Labels.get(label, "Plugins." + plugin.name);
 		}
 	};
+	if (plugin.manifest.labels) {
+		labels.set(plugin.manifest.labels);
+	}
+	return labels;
 };
 
 Echo.Plugin.prototype.init.config = function() {
