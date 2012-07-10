@@ -1,7 +1,5 @@
 (function($) {
  
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.API.Request")) return;
 
 Echo.API = {"Transports": {}, "Request": {}};
@@ -105,7 +103,7 @@ Echo.API.Transports.AJAX.prototype._getInstance = function() {
 };
 
 Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) {
-	var originalWrapped = this.constructor.parent._wrapErrorResponse.apply(this, arguments);
+	var originalWrapped = Echo.API.Transports.AJAX.parent._wrapErrorResponse.apply(this, arguments);
 	if (responseError && responseError.responseText) {
 		var errorObject;
 		try {
@@ -140,6 +138,7 @@ utils.inherit(Echo.API.Transports.JSONP, Echo.API.Transports.AJAX);
 
 Echo.API.Transports.JSONP.prototype._getInstance = function() {
 	var settings = this.constructor.parent._getInstance.call(this);
+	delete settings.xhr;
 	settings.dataType = "jsonp";
 	return settings;
 };
@@ -199,11 +198,28 @@ Echo.API.Request = function(config) {
 
 Echo.API.Request.prototype.send = function() {
 	var method = this["_" + this.config.get("endpoint")];
-	method && method.call(this);
+	method && method.apply(this, arguments);
 };
 
 Echo.API.Request.prototype.request = function(params) {
-	this.transport && this.transport.send(params);
+	var self = this;
+	var timeout = this.config.get("timeout");
+	if (this.transport) {
+		this.transport.send(params);
+		if (timeout) {
+			this._timeoutId = setTimeout(function() {
+				self.config.get("onError")({
+					"result": "error",
+					"errorCode": "network_timeout"
+				});
+				self.transport.abort();
+			}, timeout * 1000);
+		}
+	}
+};
+
+Echo.API.Request.prototype._onData = Echo.API.Request.prototype._onError = function(response) {
+	clearTimeout(this._timeoutId);
 };
 
 Echo.API.Request.prototype.abort = function() {

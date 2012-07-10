@@ -1,13 +1,11 @@
 (function($) {
 
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth")) return;
 
 var auth = Echo.Control.skeleton("Echo.IdentityServer.Controls.Auth");
 
 auth.config = {
-	"param": "test value"
+	"identityManager": {}
 };
 
 auth.labels = {
@@ -42,6 +40,15 @@ auth.templates.logged =
 		'</div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
+
+auth.events = {
+	"Echo.UserSession.onInvalidate": {
+		"context": "global",
+		"handler": function() {
+			$.fancybox.close();
+		}
+	}
+};
 
 auth.renderers.logout = function(element) { 
 	var self = this;
@@ -85,12 +92,6 @@ auth.renderers.name = function(element) {
 
 auth.methods.template = function() {
 	return this.templates[this.user.is("logged") ? "logged" : "anonymous"];
-};
-
-auth.methods.refresh = function() {
-	$.fancybox.close();
-	var component = Echo.Utils.getComponent("Echo.IdentityServer.Controls.Auth");
-	component.parent.refresh.call(this);
 };
 
 auth.methods.assembleIdentityControl = function(type, element) {

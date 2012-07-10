@@ -1,7 +1,5 @@
 (function($) {
 
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.Plugin")) return;
 
 // TODO: replace "Plugins" with different name to avoid conflict with e2 scripts
@@ -66,12 +64,16 @@ Echo.Plugin.prototype.enabled = function(name) {
 	return this.config.get("enabled");
 };
 
-Echo.Plugin.prototype.extendRenderer = function() {
-	this.component.extendRenderer.apply(this.component, arguments);
+Echo.Plugin.prototype.extendRenderer = function(name, renderer) {
+	this.component.extendRenderer.call(this.component, name, $.proxy(renderer, this));
 };
 
 Echo.Plugin.prototype.extendTemplate = function() {
 	this.component.extendTemplate.apply(this.component, arguments);
+};
+
+Echo.Plugin.prototype.parentRenderer = function() {
+	return this.component.parentRenderer.apply(this.component, arguments);
 };
 
 Echo.Plugin.prototype.destroy = function() {};
@@ -106,7 +108,7 @@ Echo.Plugin.prototype.init.labels = function() {
 Echo.Plugin.prototype.init.config = function() {
 	var plugin = this, component = plugin.component;
 	var normalize = function(key) {
-		return ["plugins", this.name, key].join(".");
+		return (["plugins", plugin.manifest.name].concat(key ? key : [])).join(".");
 	};
 	return {
 		"set": function(key, value) {
@@ -122,6 +124,19 @@ Echo.Plugin.prototype.init.config = function() {
 		},
 		"remove": function(key) {
 			component.config.remove(normalize(key));
+		},
+		"assemble": function(data) {
+			var config = plugin.component.config;
+			data.plugins = config.get("nestedPlugins", []);
+			data.parent = config.getAsHash();
+
+			// copy default field values from parent control
+			Echo.Utils.foldl(data, plugin.component.getDefaultConfig(),
+				function(value, acc, key) {
+					acc[key] = config.get(key);
+				}
+			);
+			return (new Echo.Configuration(data, plugin.config.get())).getAsHash();
 		}
 	};
 };

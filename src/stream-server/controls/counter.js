@@ -1,7 +1,5 @@
 (function($) {
 
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
 
 var counter = Echo.Control.skeleton("Echo.StreamServer.Controls.Counter");

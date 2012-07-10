@@ -1,5 +1,7 @@
 (function($) {
 
+"use strict";
+
 if (!window.Echo) window.Echo = {};
 if (!Echo.Tests) Echo.Tests = {"Unit": {}, "Common": {}};
 

@@ -1,7 +1,5 @@
 (function($) {
  
-"use strict";
-
 if (Echo.Utils.isComponentDefined("Echo.Button")) return;
 
 Echo.Button = function(element, state) {
