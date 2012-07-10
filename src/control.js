@@ -16,6 +16,8 @@ Echo.Control.create = function(manifest) {
 	var _constructor = function(config) {
 		var self = this;
 		if (!config || !config.target) return;
+		this.data = config.data || {};
+		delete config.data;
 		this.manifest = manifest;
 		this.init([
 			"vars",
@@ -62,6 +64,14 @@ Echo.Control.prototype.getDefaultConfig = function() {
 		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
 		"debug": false
 	};
+};
+
+Echo.Control.prototype.get = function(field) {
+	return Echo.Utils.getNestedValue(this, field);
+};
+
+Echo.Control.prototype.set = function(field, value) {
+	Echo.Utils.setNestedValue(this, field, value);
 };
 
 Echo.Control.prototype.substitute = function(template, data) {
@@ -126,7 +136,7 @@ Echo.Control.prototype.render = function(name, element, dom, extra) {
 					? renderer.functions[iteration].apply(this, arguments)
 					: element;
 			};
-			return renderer.functions[iteration].apply(this, [element, dom, extra]);
+			return renderer.functions[iteration].call(this, element, dom, extra);
 		}
 		return element;
 	}
