@@ -129,7 +129,7 @@ Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(dat
 		}
 	};
 	var hasNewData = function(data) {
-		// for "v1/search" endpoint at the momen.t
+		// for "v1/search" endpoint at the moment
 		return !!(data.entries && data.entries.length);
 	};
 	if (!this.nextSince) {
@@ -275,7 +275,7 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 		return prepareActivity(post, meta);
 	}
 	return $.map(entries, function(entry) {
-		return prepareActivity(entry);
+		return prepareActivity(entry, meta);
 	});
 };
 
