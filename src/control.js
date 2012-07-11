@@ -36,7 +36,10 @@ Echo.Control.create = function(manifest) {
 	if (manifest.methods) {
 		$.extend(_constructor.prototype, manifest.methods);
 	}
-	_constructor.prototype.templates = manifest.templates;
+	if (manifest.templates) {
+		_constructor.prototype.templates =
+			$.extend({}, _constructor.prototype.templates, manifest.templates);
+	}
 	_constructor.prototype.cssPrefix = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 	Echo.Utils.setNestedValue(window, manifest.name, _constructor);
 	return _constructor;
@@ -57,6 +60,18 @@ Echo.Control.skeleton = function(name) {
 
 // dynamic interface (available for class instances)
 
+Echo.Control.prototype.templates = {"message": {}};
+
+Echo.Control.prototype.templates.message.compact =
+	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}"></span>';
+
+Echo.Control.prototype.templates.message.full =
+	'<div class="echo-control-message {class:messageText}">' +
+		'<span class="echo-control-message-icon echo-control-message-{data:type} {class:messageIcon}">' +
+			'{data:message}' +
+		'</span>' +
+	'</div>';
+
 Echo.Control.prototype.getDefaultConfig = function() {
 	return {
 		"appkey": "",
@@ -66,8 +81,8 @@ Echo.Control.prototype.getDefaultConfig = function() {
 	};
 };
 
-Echo.Control.prototype.get = function(field) {
-	return Echo.Utils.getNestedValue(this, field);
+Echo.Control.prototype.get = function(field, defaults) {
+	return Echo.Utils.getNestedValue(this, field, defaults);
 };
 
 Echo.Control.prototype.set = function(field, value) {
@@ -412,24 +427,11 @@ Echo.Control.prototype._templateTransformer = function(args) {
 	return args.template;
 };
 
-Echo.Control.prototype.messageTemplates = {
-//TODO: rename CSS classes
-	'compact':
-		'<span class="echo-application-message-icon echo-application-message-{data:type}" title="{data:message}">' +
-		'</span>',
-	'default':
-		'<div class="echo-application-message">' +
-			'<span class="echo-application-message-icon echo-application-message-{data:type} echo-primaryFont">' +
-				'{data:message}' +
-			'</span>' +
-		'</div>'
-};
-
-Echo.Control.prototype.showMessage = function(data, target) {
-//TODO: consider opportunity to implement showmessage as a predefined template and use render method for it
+Echo.Control.prototype.showMessage = function(data) {
 	if (!this.config.get("debug") && data.type == "error") return;
-	var template = this.messageTemplates[data.layout || this.messageLayout || "default"];
-	(target || this.config.get("target")).empty().append(this.substitute(template, data));
+	var template = this.templates.message[data.layout || this.messageLayout || "full"];
+	var target = data.target || this.config.get("target");
+	target.empty().append(this.compileTemplate(template, data).content);
 };
 
 Echo.Control.prototype.baseCSS =
@@ -445,12 +447,12 @@ Echo.Control.prototype.baseCSS =
 	'.echo-relative { position: relative; }' +
 	'.echo-clear { clear: both; }' +
 
-//TODO: rename CSS classes
-	'.echo-application-message { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }' +
-	'.echo-application-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
-	'.echo-application-message .echo-application-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-application-message-empty { background-image: url(//cdn.echoenabled.com/images/information.png); }' +
-	'.echo-application-message-loading { background-image: url(//cdn.echoenabled.com/images/loading.gif); }' +
-	'.echo-application-message-error { background-image: url(//cdn.echoenabled.com/images/warning.gif); }';
+	// message classes
+	'.echo-control-message { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }' +
+	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
+	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
+	'.echo-control-message-empty { background-image: url(//cdn.echoenabled.com/images/information.png); }' +
+	'.echo-control-message-loading { background-image: url(//cdn.echoenabled.com/images/loading.gif); }' +
+	'.echo-control-message-error { background-image: url(//cdn.echoenabled.com/images/warning.gif); }';
 
 })(jQuery);
