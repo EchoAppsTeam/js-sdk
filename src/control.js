@@ -291,7 +291,7 @@ Echo.Control.prototype.init.config = function(data) {
 	};
 	data = $.extend({"plugins": []}, data || {});
 	var defaults = $.extend(this.getDefaultConfig(), {
-		"context": (data.parent ? data.parent + "/" : "") + Echo.Utils.getUniqueString()
+		"context": (data.parent ? data.parent.context + "/" : "") + Echo.Utils.getUniqueString()
 	}, this.manifest.config || {});
 	// TODO: find better home for normalizer...
 	var normalizer = this.manifest.config.normalizer;
