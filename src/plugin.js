@@ -184,25 +184,26 @@ Echo.Plugin.prototype.init.config = function() {
 };
 
 Echo.Plugin.prototype.init.events = function() {
-	// TODO: subscribe to all events...
 	var plugin = this, component = plugin.component;
-	var normalize = function(prefix, action) {
-		var name = [this.component.name, this.name, action];
-		return (prefix ? [prefix] : []).concat(name).join(".");
-	};
-	return {
+	var events = {
 		"publish": function(params) {
-			params.topic = normalize(params.topic);
+			var parts = ["Plugins", plugin.name, params.topic];
+			params.topic = (params.prefix ? [params.prefix] : []).concat(parts).join(".");
 			return component.events.publish(params);
 		},
 		"subscribe": function(params) {
-			params.topic = normalize(params.topic);
+			params.handler = $.proxy(params.handler, plugin);
 			return component.events.subscribe(params);
 		},
 		"unsubscribe": function(params) {
 			component.events.unsubscribe(params);
 		}
 	};
+	$.each(this.manifest.events, function(topic, data) {
+		data = $.isFunction(data) ? {"handler": data} : data;
+		events.subscribe($.extend({"topic": topic}, data));
+	});
+	return events;
 };
 
 })(jQuery);

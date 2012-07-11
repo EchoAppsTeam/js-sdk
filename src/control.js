@@ -308,6 +308,7 @@ Echo.Control.prototype.init.events = function() {
 	};
 	var events = {
 		"publish": function(params) {
+			params.topic = control.manifest.name + "." + params.topic;
 			Echo.Events.publish(prepare(params));
 		},
 		"subscribe": function(params) {
