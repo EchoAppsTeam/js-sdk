@@ -20,7 +20,6 @@ submit.config = {
 submit.labels = {
 	"markers": "Markers:",
 	"markersHint": "Marker1, marker2, marker3, ...",
-	"on": "on",
 	"post": "Post",
 	"posting": "Posting...",
 	"postingFailed": "There was a server error while trying to submit your item. Please try again in a few minutes. <b>Error: \"{error}\"</b>.",
@@ -155,7 +154,7 @@ submit.renderers.postButton = function(element) {
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
-		var topic = "onPost" + phase;
+		var topic = submit.name + ".onPost" + phase;
 		var subscriptions = self.posting.subscriptions;
 		if (subscriptions[topic]) {
 			self.events.unsubscribe({
