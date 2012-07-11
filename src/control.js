@@ -76,26 +76,24 @@ Echo.Control.prototype.set = function(field, value) {
 
 Echo.Control.prototype.substitute = function(template, data, instructions) {
 	var control = this;
-	var extract = function(value) {
-		return $.isFunction(value) ? value() : value;
-	};
 	instructions = $.extend({
 		"class": function(value) {
 			return control.cssPrefix + "-" + value;
 		},
 		"data": function(key) {
-			return Echo.Utils.getNestedValue(data, key, "");
+			return Echo.Utils.getNestedValue(data || control.data, key, "");
 		},
 		"label": function(key) {
 			return control.labels.get(key, "");
 		},
 		"self": function(key) {
-			var value = Echo.Utils.getNestedValue(control, key, function() {
-				var _value = Echo.Utils.getNestedValue(control.data, key,
-					function() { return control.config.get(key, ""); });
-				return extract(_value);
-			});
-			return extract(value);
+			var value = Echo.Utils.getNestedValue(control, key);
+			return typeof value == "undefined"
+				? Echo.Utils.getNestedValue(control.data, key, "")
+				: value;
+		},
+		"config": function(key) {
+			return control.config.get(key, "");
 		}
 	}, instructions || {});
 	var processor = function(match, key, value) {

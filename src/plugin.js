@@ -18,8 +18,6 @@ Echo.Plugin.create = function(manifest) {
 		this.name = manifest.name;
 		this.manifest = manifest; // TODO: avoid this, pass via param to "renderer"...
 		this.component = config.component;
-		// TODO: check if we can store plugin-specific data in a plugin instance
-		this.component.vars[this.name] = {};
 		this.cssPrefix = this.component.cssPrefix + "-plugin-" + manifest.name;
 		// define extra css class for the control target
 		this.component.config.get("target").addClass(this.cssPrefix);
@@ -55,11 +53,11 @@ Echo.Plugin.skeleton = function(name) {
 };
 
 Echo.Plugin.prototype.set = function(key, value) {
-	Echo.Utils.setNestedValue(this.component.vars[this.name], key, value);
+	Echo.Utils.setNestedValue(this, key, value);
 };
 
 Echo.Plugin.prototype.get = function(key, defaults) {
-	Echo.Utils.getNestedValue(this.component.vars[this.name], key, defaults);
+	return Echo.Utils.getNestedValue(this, key, defaults);
 };
 		
 Echo.Plugin.prototype.enable = function() {
@@ -97,10 +95,13 @@ Echo.Plugin.prototype.substitute = function(template) {
 			return plugin.cssPrefix + "-" + value;
 		},
 		"plugin.data": function(key) {
-			// TODO: to be developed...
+			return "{self:plugins." + plugin.name + ".data." + key + "}";
 		},
 		"plugin.self": function(key) {
-			// TODO: to be developed...
+			return "{self:plugins." + plugin.name + "." + key + "}";
+		},
+		"plugin.config": function(key) {
+			return "{config:plugins." + plugin.name + "." + key + "}";
 		}
 	});
 };
