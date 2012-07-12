@@ -139,8 +139,8 @@ Echo.Plugin.prototype.init.labels = function() {
 		"set": function(labels) {
 			Echo.Labels.set(labels, "Plugins." + plugin.name, true);
 		},
-		"get": function(label) {
-			return Echo.Labels.get(label, "Plugins." + plugin.name);
+		"get": function(label, data) {
+			return Echo.Labels.get(label, "Plugins." + plugin.name, data);
 		}
 	};
 	if (plugin.manifest.labels) {
@@ -163,7 +163,7 @@ Echo.Plugin.prototype.init.config = function() {
 				normalize(key),
 				plugin.manifest.config[key]
 			);
-			return typeof value == undefined
+			return typeof value == "undefined"
 				? askParent
 					? component.config.get(key, defaults)
 					: defaults
