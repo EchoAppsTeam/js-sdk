@@ -5,7 +5,6 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream")) return;
 var stream = Echo.Control.skeleton("Echo.StreamServer.Controls.Stream");
 
 stream.config = {
-	"aggressiveSanitization": false,
 	"children": {
 		"additionalItemsPerPage": 5,
 		"displaySortOrder": "chronological",
@@ -14,26 +13,12 @@ stream.config = {
 		"itemsSlideTimeout": 600,
 		"maxDepth": 1
 	},
-	"contentTransformations": {
-		"text": ["smileys", "hashtags", "urls", "newlines"],
-		"html": ["smileys", "hashtags", "urls", "newlines"],
-		"xhtml": ["smileys", "hashtags", "urls"]
-	},
 	"fadeTimeout": 2800,
 	"flashColor": "#ffff99",
-	"itemControlsOrder": undefined,
+	"item": {},
 	"itemsPerPage": 15,
-	"maxBodyCharacters": undefined,
-	"maxBodyLines": undefined,
-	"maxBodyLinkLength": 50,
-	"maxMarkerLength": 16,
-	"maxReLinkLength": 30,
-	"maxReTitleLength": 143,
-	"maxTagLength": 16,
 	"openLinksInNewWindow": false,
-	"optimizedContext": true,
 	"providerIcon": "//cdn.echoenabled.com/images/favicons/comments.png",
-	"reTag": true,
 	"slideTimeout": 700,
 	"sortOrder": "reverseChronological",
 	"streamStateLabel": {
@@ -41,11 +26,22 @@ stream.config = {
 		"text": true
 	},
 	"streamStateToggleBy": "mouseover", // mouseover | button | none
-	"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity",
-	"viaLabel": {
-		"icon": false,
-		"text": false
-	}
+	"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity"
+};
+
+var _ensurePositiveValue = function(v) { return v < 0 ? 0 : v; };
+stream.config.normalizer = {
+	"safeHTML": function(value) {
+		return "off" !== value;
+	},
+	"streamStateToggleBy": function(value) {
+		if (value === "mouseover" && Echo.Utils.isMobileDevice()) {
+			return "button";
+		}
+		return value;
+	},
+	"fadeTimeout": _ensurePositiveValue,
+	"slideTimeout": _ensurePositiveValue
 };
 
 stream.labels = {
@@ -430,48 +426,6 @@ stream.methods.extractTimeframeConfig = function(data) {
 	return {"timeframe": timeframe};
 };
 
-stream.methods.assembleConfigNormalizer = function() {
-	var ensurePositiveValue = function(v) { return v < 0 ? 0 : v; };
-	var normalizer = {
-		"contentTransformations" : function(object) {
-			$.each(object, function(contentType, options) {
-				object[contentType] = Echo.Utils.foldl({}, options || [],
-					function(option, acc) {
-						acc[option] = true;
-					});
-			});
-			return object;
-		},
-		"safeHTML" : function(value) {
-			return "off" != value;
-		},
-		"streamStateToggleBy": function(value) {
-			if (value == "mouseover" && Echo.Utils.isMobileDevice()) {
-				return "button";
-			}
-			return value;
-		},
-		"fadeTimeout": ensurePositiveValue,
-		"slideTimeout": ensurePositiveValue
-	};
-	var limits = {
-		"body": "maxBodyCharacters",
-		"lines": "maxBodyLines",
-		"reLink": "maxReLinkLength",
-		"reTitle": "maxReTitleLength",
-		"bodyLink": "maxBodyLinkLength",
-		"tags": "maxTagLength",
-		"markers": "maxMarkerLength"
-	};
-	$.each(limits, function(configKey, streamKey) {
-		normalizer[streamKey] = function(value) {
-			this.set("limits." + configKey, value);
-			return value;
-		};
-	});
-	return normalizer;
-};
-
 stream.methods.getRespectiveAccumulator = function(item, sort) {
 	var accBySort = {
 		"likesDescending": "likesCount",
@@ -725,8 +679,14 @@ stream.methods.refreshItemsDate = function() {
 
 stream.methods.executeNextActivity = function() {
 	var acts = this.activities;
-	if (acts.animations > 0 || !acts.queue.length ||
-		this.config.get("liveUpdates") && acts.state == "paused" && acts.queue[0].action != "replace" && !acts.queue[0].byCurrentUser) return;
+	if (acts.animations > 0 ||
+			!acts.queue.length ||
+			this.config.get("liveUpdates") &&
+			acts.state === "paused" &&
+			acts.queue[0].action !== "replace" &&
+			!acts.queue[0].byCurrentUser) {
+		return;
+	}
 	acts.queue.shift().handler();
 };
 
@@ -1104,15 +1064,17 @@ stream.methods.isItemInList = function(item, items) {
 
 stream.methods.initItem = function(entry, isLive) {
 	var self = this;
-	var item = new Echo.StreamServer.Controls.Stream.Item({
+	var parentConfig = this.config.getAsHash();
+	var config = $.extend({
 		"target": $("<div>"),
 		"appkey": this.config.get("appkey"),
-		"parent": this.config.getAsHash(),
+		"parent": parentConfig,
 		"plugins": this.config.get("plugins"),
 		"data": entry,
-		"controlsOrder": this.config.get("itemControlsOrder"),
 		"live": isLive
-	});
+	}, parentConfig.item);
+	delete parentConfig.item;
+	var item = new Echo.StreamServer.Controls.Stream.Item(config);
 	// caching item template to avoid unnecessary work
 	var template = item.template;
 	item.template = function() {
@@ -1242,8 +1204,6 @@ stream.methods.normalizeEntry = function(entry) {
 	return entry;
 };
 
-stream.config.normalizer = stream.methods.assembleConfigNormalizer();
-
 stream.constructor = function() {
 	var self = this;
 	this.initVars();
@@ -1301,6 +1261,44 @@ Echo.Control.create(stream);
 
 var item = Echo.Control.skeleton("Echo.StreamServer.Controls.Stream.Item");
 
+item.config = {
+	"aggressiveSanitization": false,
+	"buttonsOrder": undefined,
+	"contentTransformations": {
+		"text": ["smileys", "hashtags", "urls", "newlines"],
+		"html": ["smileys", "hashtags", "urls", "newlines"],
+		"xhtml": ["smileys", "hashtags", "urls"]
+	},
+	"limits": {
+		"maxBodyCharacters": undefined,
+		"maxBodyLines": undefined,
+		"maxBodyLinkLength": 50,
+		"maxMarkerLength": 16,
+		"maxReLinkLength": 30,
+		"maxReTitleLength": 143,
+		"maxTagLength": 16
+	},
+	"optimizedContext": true,
+	"reTag": true,
+	"viaLabel": {
+		"icon": false,
+		"text": false
+	}
+};
+
+item.config.normalizer = {
+	"contentTransformations": function(object) {
+		$.each(object, function(contentType, options) {
+			object[contentType] = Echo.Utils.foldl({}, options || [],
+				function(option, acc) {
+					acc[option] = true;
+				}
+			);
+		});
+		return object;
+	}
+};
+
 item.labels = {
 	"defaultModeSwitchTitle": "Switch to metadata view",
 	"guest": "Guest",
@@ -1350,7 +1348,12 @@ item.renderers.extraField = function(element, dom, extra) {
 		dom.remove(element);
 		return element;
 	}
-	var limit = this.config.get("parent.limits." + type);
+	var name = type === "markers"
+		? "maxMarkerLength"
+		: type === "tags"
+			? "maxTagsLength"
+			: "";
+	var limit = this.config.get("limits." + name);
 	var items = $.foldl([], this.data.object[type], function(item, acc) {
 		var template = item.length > limit
 			? '<span title="{data:item}">{data:truncatedItem}</span>'
@@ -1552,18 +1555,18 @@ item.renderers.re = function(element) {
 	var re = "";
 	//XXX use normalized permalink and location instead
 	var permalink = this.data.object.permalink;
-	var limits = this.config.get("parent.limits");
+	var limits = this.config.get("limits");
 	var openLinksInNewWindow = this.config.get("openLinksInNewWindow");
 
 	var getDomain = function(url) {
-		var parts = $.parseUrl(url);
-		return (parts && parts.domain) ? parts.domain : url;
+		var parts = Echo.Utils.parseURL(url);
+		return parts && parts.domain ? parts.domain : url;
 	};
 
 	var reOfContext = function(c) {
-		var maxLength = limits.reTitle;
+		var maxLength = limits.maxReTitleLength;
 		if (!c.title) {
-			maxLength = limits.reLink;
+			maxLength = limits.maxReLinkLength;
 			c.title = c.uri.replace(/^https?:\/\/(.*)/ig, '$1');
 		}
 		if (c.title.length > maxLength) {
@@ -1703,12 +1706,12 @@ item.renderers.body = function(element, dom) {
 		return element;
 	}
 
-	var limits = this.config.get("parent.limits");
+	var limits = this.config.get("limits");
 	var wrap = function(tag) {
-		var template = tag.length > limits.tags
+		var template = tag.length > limits.maxTagLength
 			? '<span class="{class:tag}" title="{data:tag}">{data:truncatedTag}</span>'
 			: '<span class="{class:tag}">{data:tag}</span>';
-		var truncatedTag = tag.substring(0, limits.tags) + "...";
+		var truncatedTag = tag.substring(0, limits.maxTagLength) + "...";
 		return self.substitute(template, {"tag": tag, "truncatedTag": truncatedTag});
 	};
 
@@ -1748,7 +1751,7 @@ item.renderers.body = function(element, dom) {
 	var normalizeLinks = function(content) {
 		return content.replace(/(<a\s+[^>]*>)(.*?)(<\/a>)/ig, function($0, $1, $2, $3) {
 			if (new RegExp("^" + urlMatcher + "$").test($2)) {
-				$2 = $2.length > limits.bodyLink ? $2.substring(0, limits.bodyLink) + "..." : $2;
+				$2 = $2.length > limits.maxBodyLinkLength ? $2.substring(0, limits.maxBodyLinkLength) + "..." : $2;
 			}
 			if (openLinksInNewWindow && !/\s+target=("[^<>"]*"|'[^<>']*'|\w+)/.test($1)) {
 				$1 = $1.replace(/(^<a\s+[^>]*)(>$)/, '$1 target="_blank"$2');
@@ -1802,17 +1805,17 @@ item.renderers.body = function(element, dom) {
 	}
 	var result = normalizeLinks(meta2tags(content));
 	var truncated = false;
-	if ((limits.body || limits.lines) && !self.textExpanded) {
-		if (limits.lines) {
+	if ((limits.maxBodyCharacters || limits.maxBodyLines) && !self.textExpanded) {
+		if (limits.maxBodyLines) {
 			var splitter = contentTransformations.newlines ? "<br>" : "\n";
 			var chunks = result.split(splitter);
-			if (chunks.length > limits.lines) {
-				result = chunks.splice(0, limits.lines).join(splitter);
+			if (chunks.length > limits.maxBodyLines) {
+				result = chunks.splice(0, limits.maxBodyLines).join(splitter);
 				truncated = true;
 			}
 		}
-		var limit = limits.body && result.length > limits.body
-			? limits.body
+		var limit = limits.maxBodyCharacters && result.length > limits.maxBodyCharacters
+			? limits.maxBodyCharacters
 			: truncated
 				? result.length
 				: undefined;
