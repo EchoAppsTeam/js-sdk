@@ -16,18 +16,7 @@ counter.events["Submit.onEditComplete"] = {
 	}
 };
 
-//TODO REMOVE INPUT
-counter.templates.main = '<span>{data:count}<input type="submit" class="{class:submit}"></span>';
-
-
-//TODO REMOVE ME
-counter.renderers.submit = function(element) {
-	var self = this;
-	element.click(function() {
-		self.config.set("query", "childrenof:http://example.com/*");
-		self.refresh();
-	});
-};
+counter.templates.main = '<span>{data:count}</span>';
 
 counter.constructor = function() {
 	var self = this;
@@ -55,11 +44,11 @@ counter.methods.request = function() {
 		"onError": function(response) {
 			//TODO add error handling
 			// including more_than error
-			console.log("error");
+			self.error(response);
 		},
 		"onData": function(response) {
-			self.data = response;
-			self.render();
+			//self.data = response;
+			self.update(response);
 			self.listen();
 		}
 	}).send();
@@ -80,18 +69,57 @@ counter.methods.listen = function() {
 			//TODO add error handling
 			// including more_than error
 			console.log("error");
+			self.error(response);
 			self.APIRequest.abort();
 		},
 		"onData": function(response) {
 			//TODO check if counter was updated
 			self.data = response;
-			self.rerender();
+			self.update(response);
 		}
 	});
 	this.APIRequest.send();
 };
 
+counter.methods.update = function(data) {
+	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
+		this.data = data;
+		this.render();
+		console.log("Counter.onUpdate");
+		this.events.publish({
+			"topic": "Counter.onUpdate",
+			"data": {
+				"data": data,
+				"query": this.config.get("query"),
+				"target": this.config.get("target").get(0)
+			}
+		});
+	}
+};
+
+counter.methods.error = function(data) {
+	if (data.errorCode === "more_than") {
+		this.data.count = data.errorMessage + "+";
+		this.rerender();
+	} else {
+		//TODO update showMessage function
+		this.showMessage({"type": "error"});
+	}
+};
+
+/*
+ target.html(data.errorCode == "more_than" ? (data.errorMessage + "+") : data.count);
+        if ($.isEmptyObject(this.data) || this.data.count != data.count) {
+                this.publish("Counter.onUpdate", {
+                        "data": data,
+                        "query": this.config.get("query", ""),
+                        "target": this.config.get("target").get(0)
+                });
+        }
+*/
+
 counter.methods.refresh = function() {
+	//TODO we should consider moving refresh logic to the parent method
 	this.APIRequest.abort();
 	this.data = {};
 	//TODO showmessage should be refactored
