@@ -306,7 +306,7 @@ Echo.Control.prototype.init.config = function(data) {
 		return data.hash;
 	};
 	data = $.extend({"plugins": []}, data || {});
-	var defaults = $.extend({}, this.get("defaults.config"), {
+	var defaults = $.extend(true, {}, this.get("defaults.config"), {
 		"context": (data.parent ? data.parent.context + "/" : "") + Echo.Utils.getUniqueString()
 	}, this.manifest.config || {});
 	// TODO: find better home for normalizer...
