@@ -20,7 +20,7 @@ plugin.labels = {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
-		this.component.rerender("counterLabel");
+		this.component.render({"element": "counterLabel"});
 	}
 };
 
@@ -42,7 +42,7 @@ plugin.renderers.Submit.text = function(element, dom) {
 				return;
 			}
 		}
-		plugin.component.rerender("counterLabel");
+		plugin.component.render({"element": "counterLabel"});
 	};
 	return element.bind("blur focus keyup keypress", handler);
 };

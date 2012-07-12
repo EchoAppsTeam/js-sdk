@@ -5,7 +5,8 @@ if (Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth")) return;
 var auth = Echo.Control.skeleton("Echo.IdentityServer.Controls.Auth");
 
 auth.config = {
-	"identityManager": {}
+	"identityManager": {},
+	"infoMessages": {"enabled": false}
 };
 
 auth.labels = {

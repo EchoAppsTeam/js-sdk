@@ -27,6 +27,7 @@ Echo.Control.create = function(manifest) {
 			"labels",
 			"css",
 			"renderers",
+			"loading",
 			["user", function() {
 				self.init([["plugins", manifest.constructor]]);
 			}]
@@ -72,13 +73,20 @@ Echo.Control.prototype.templates.message.full =
 		'</span>' +
 	'</div>';
 
-Echo.Control.prototype.getDefaultConfig = function() {
-	return {
-		"appkey": "",
-		"apiBaseURL": "api.echoenabled.com",
-		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
-		"debug": false
-	};
+Echo.Control.prototype.defaults = {};
+
+Echo.Control.prototype.defaults.config = {
+	"appkey": "",
+	"apiBaseURL": "api.echoenabled.com",
+	"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
+	"infoMessages": {
+		"enabled": true,
+		"layout": "full"
+	}
+};
+
+Echo.Control.prototype.defaults.labels = {
+	"loading": "Loading..."
 };
 
 Echo.Control.prototype.get = function(field, defaults) {
@@ -91,6 +99,7 @@ Echo.Control.prototype.set = function(field, value) {
 
 Echo.Control.prototype.substitute = function(template, data, instructions) {
 	var control = this;
+	data = data || {};
 	instructions = $.extend({
 		"class": function(value) {
 			return control.cssPrefix + "-" + value;
@@ -132,79 +141,74 @@ Echo.Control.prototype.compileTemplate = function(template, data, transformation
 		});
 		templates.processed = templates.dom.html();
 	}
-	return Echo.Utils.toDOM(templates.processed, this.cssPrefix + "-", function() {
-		control.render.apply(control, arguments);
-	});
+	return Echo.Utils.toDOM(templates.processed, this.cssPrefix + "-",
+		function(element, target, dom) {
+			control.render.call(control, {
+				"element": element,
+				"target": target,
+				"dom": dom
+			});
+		}
+	);
 };
 
-Echo.Control.prototype.render = function(name, element, dom, extra) {
+Echo.Control.prototype.render = function(args) {
+	args = args || {};
+	var dom = args.dom || this.dom;
+	var data = args.data || this.data;
+	var target = args.target ||
+			(args.element && dom.get(args.element)) ||
+			this.config.get("target");
+
 	// render specific element
-	if (name) {
-		var renderer = this.extension.renderers[name];
+	if (args.element && !args.recursive) {
+		var renderer = this.extension.renderers[args.element];
 		if (renderer) {
 			var iteration = 0;
 			renderer.next = function() {
 				iteration++;
 				return renderer.functions.length > iteration
 					? renderer.functions[iteration].apply(this, arguments)
-					: element;
+					: target;
 			};
-			return renderer.functions[iteration].call(this, element, dom, extra);
+			return renderer.functions[iteration].call(this, target, dom, args.extra);
 		}
-		return element;
+		return target;
 	}
 
-	// render the whole control
-	this.dom = this.compileTemplate(this.template, this.data || {}, this.extension.template);
-	this.config.get("target")
-		.addClass(this.cssPrefix)
-		.empty()
-		.append(this.dom.content);
-	this.events.publish({"topic": "onRender"});
-	return this.dom.content;
-};
-
-Echo.Control.prototype.rerender = function(name, extra) {
-	var control = this;
-	extra = extra || {};
-
-	// no DOM available yet, nothing to rerender -> exit
-	if (!this.dom) return;
-
-	// rerender the whole control
-	if (!name) {
-		if (this.dom) {
-			this.dom.content.replaceWith(this.render());
-			this.events.publish({"topic": "onRerender"});
-		}
-		return;
-	}
-
-	// if the list of elements passed, call rerender for each element
-	if ($.isArray(name)) {
-		$.map(name, function(element) {
-			control.rerender(element, extra);
-		});
-		return;
-	}
-
-	// exit if no element found
-	if (!name || !this.dom.get(name)) return;
-
-	if (extra.recursive) {
+	// render element including its content recursively
+	if (args.element && args.recursive) {
 		var template = $.isFunction(this.template) ? this.template() : this.template;
-		var html = this.substitute(template, this.data || {});
+		var html = this.substitute(template, data);
 		var newNode = $("." + cssPrefix + name, $(html));
 		var oldNode = this.dom.get(name);
 		newNode = Echo.Utils.toDOM(newNode, this.cssPrefix + "-",
-			function(name, element, dom) {
-				control.render.call(control, name, element, dom, extra);
+			function(element, target, dom) {
+				control.render.call(control, {
+					"element": element,
+					"target": target,
+					"dom": dom,
+					"extra": extra
+				});
 			}
 		).content;
 		oldNode.replaceWith(newNode);
-	} else {
-		this.render(name, this.dom.get(name), this.dom, extra);
+		return newNode;
 	}
+
+	// render template
+	if (args.template) {
+		var dom = this.compileTemplate(args.template, args.data);
+		target.empty().append(dom.content);
+		return dom.content;
+	}
+
+	// render the whole control
+	var topic = this.dom ? "onRerender" : "onRender";
+	this.dom = this.compileTemplate(this.template, this.data, this.extension.template);
+	target.empty().append(this.dom.content);
+	this.events.publish({"topic": topic});
+	return this.dom.content;
 };
 
 Echo.Control.prototype.parentRenderer = function(name, args) {
@@ -302,7 +306,7 @@ Echo.Control.prototype.init.config = function(data) {
 		return data.hash;
 	};
 	data = $.extend({"plugins": []}, data || {});
-	var defaults = $.extend(this.getDefaultConfig(), {
+	var defaults = $.extend(this.get("defaults.config"), {
 		"context": (data.parent ? data.parent.context + "/" : "") + Echo.Utils.getUniqueString()
 	}, this.manifest.config || {});
 	// TODO: find better home for normalizer...
@@ -347,11 +351,13 @@ Echo.Control.prototype.init.events = function() {
 };
 
 Echo.Control.prototype.init.labels = function() {
-	return new Echo.Labels(this.manifest.labels, this.name);
+	var labels = $.extend(this.get("defaults.labels"), this.manifest.labels);
+	return new Echo.Labels(labels, this.name);
 };
 
 Echo.Control.prototype.init.css = function() {
 	Echo.Utils.addCSS(this.baseCSS, "control");
+	this.config.get("target").addClass(this.cssPrefix);
 	if (!this.manifest.css) return;
 	Echo.Utils.addCSS(this.substitute(this.manifest.css), this.manifest.name);
 };
@@ -366,6 +372,13 @@ Echo.Control.prototype.init.renderers = function() {
 	var control = this;
 	$.each(this.manifest.renderers, function() {
 		control.init.renderer.apply(control, arguments);
+	});
+};
+
+Echo.Control.prototype.init.loading = function() {
+	this.showMessage({
+		"type": "loading",
+		"message": this.labels.get("loading")
 	});
 };
 
@@ -427,10 +440,11 @@ Echo.Control.prototype._templateTransformer = function(args) {
 };
 
 Echo.Control.prototype.showMessage = function(data) {
-	if (!this.config.get("debug") && data.type == "error") return;
-	var template = this.templates.message[data.layout || this.messageLayout || "full"];
-	var target = data.target || this.config.get("target");
-	target.empty().append(this.compileTemplate(template, data).content);
+	if (!this.config.get("infoMessages.enabled")) return;
+	// TODO: check if we need a parameter to hide error, but show loading messages
+	//       (if data.type == "error")
+	var layout = data.layout || this.config.get("infoMessages.layout");
+	this.render({"template": this.templates.message[layout], "data": data});
 };
 
 Echo.Control.prototype.baseCSS =
@@ -447,7 +461,7 @@ Echo.Control.prototype.baseCSS =
 	'.echo-clear { clear: both; }' +
 
 	// message classes
-	'.echo-control-message { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }' +
+	'.echo-control-message { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; }' +
 	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
 	'.echo-control-message-empty { background-image: url(//cdn.echoenabled.com/images/information.png); }' +

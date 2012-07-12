@@ -534,10 +534,7 @@ Echo.Utils.toDOM = function(template, prefix, renderer) {
 			element = $(element);
 			element.echo = element.echo || {};
 			element.echo.name = id;
-			var node = rendererFunction(name, element, dom);
-			if (typeof node != "undefined") {
-				element.empty().append(node);
-			}
+			rendererFunction(name, element, dom);
 		}
 	});
 	return dom;

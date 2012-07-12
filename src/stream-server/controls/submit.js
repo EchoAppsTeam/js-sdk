@@ -89,11 +89,21 @@ submit.renderers.markersContainer = function(element) {
 };
 
 submit.renderers.markers = function(element, dom) {
-	return this.render("metaFields", element, dom, {"type": "markers"});
+	return this.render({
+		"element": "metaFields",
+		"target": element,
+		"dom": dom,
+		"extra": {"type": "markers"}
+	});
 };
 
 submit.renderers.tags = function(element, dom) {
-	return this.render("metaFields", element, dom, {"type": "tags"});
+	return this.render({
+		"element": "metaFields",
+		"target": element,
+		"dom": dom,
+		"extra": {"type": "tags"}
+	});
 };
 
 submit.renderers.metaFields = function(element, dom, extra) {
@@ -174,7 +184,8 @@ submit.renderers.postButton = function(element) {
 	subscribe("Init", states.posting);
 	subscribe("Complete", states.normal, function() {
 		self.dom.get("text").val("").trigger("blur");
-		self.rerender(["tagsContainer", "markersContainer"]);
+		self.render("tags");
+		self.render("markers");
 	});
 	subscribe("Error", states.normal);
 	

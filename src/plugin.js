@@ -178,7 +178,7 @@ Echo.Plugin.prototype.init.config = function() {
 			data.parent = config.getAsHash();
 
 			// copy default field values from parent control
-			Echo.Utils.foldl(data, plugin.component.getDefaultConfig(),
+			Echo.Utils.foldl(data, plugin.component.get("defaults.config"),
 				function(value, acc, key) {
 					acc[key] = config.get(key);
 				}
