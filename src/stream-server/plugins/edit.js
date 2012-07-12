@@ -35,34 +35,21 @@ plugin.labels = {
 	"cancel": "cancel"
 };
 
-plugin.events = {
-	"Echo.StreamServer.Controls.Submit.onPostInit": function(topic, args) {
+$.map(["Init", "Complete", "Error"], function(action) {
+	plugin.events["Echo.StreamServer.Controls.Submit.onPost" + action] = function(topic, args) {
 		this.events.publish({
-			"topic": "onEditInit",
+			"topic": "onEdit" + action,
 			"data": args
 		});
-	},
-	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
-		this.events.publish({
-			"topic": "onEditComplete",
-			"data": args
-		});
-	},
-	"Echo.StreamServer.Controls.Submit.onPostError": function(topic, args) {
-		this.events.publish({
-			"topic": "onEditError",
-			"data": args
-		});
-	},
-	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete": function(topic, args) {
-		//TODO: item rerendering
-		//this.component.items[args.data.unique].rerender();
-	},
-	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError": function(topic, args) {
+	}
+});
+
+$.map(["Complete", "Error"], function(action) {
+	plugin.events["Echo.StreamServer.Controls.Submit.Plugins.Edit.onEdit" + action] = function(topic, args) {
 		//TODO: item rerendering
 		//this.component.items[args.data.unique].rerender();
 	}
-};
+});
 
 plugin.templates.header =
 	'<div class="{class:header} echo-primaryFont echo-primaryFont echo-primaryColor">' +
