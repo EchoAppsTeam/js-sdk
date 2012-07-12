@@ -349,7 +349,7 @@ stream.methods.initialItemsRequest = function() {
 			"initial": true,
 			"data": data
 		};
-		self.render("body");
+		self.render({"element": "body"});
 	});
 };
 
@@ -364,7 +364,7 @@ stream.methods.moreRequestItems = function(element) {
 	}, function(items) {
 		if (items.length) {
 			self.lastRequest.data = items;
-			self.render("body");
+			self.render({"element": "body"});
 		} else {
 			element.html(self.labels.get("emptyStream")).delay(1000).fadeOut(1000);
 		}
@@ -373,8 +373,10 @@ stream.methods.moreRequestItems = function(element) {
 
 stream.methods.setStreamState = function(state) {
 	this.activities.state = state;
-	if (state == "live") this.executeNextActivity();
-	this.rerender("state");
+	if (state === "live") {
+		this.executeNextActivity();
+	}
+	this.render({"element": "state"});
 };
 
 stream.methods.refresh = function() {
@@ -382,7 +384,7 @@ stream.methods.refresh = function() {
 	this.initVars();
 	delete this.lastRequest;
 	this.clearCache();
-	this.rerender();
+	this.render();
 	this.initialItemsRequest();
 	this.events.publish({
 		"topic": "Stream.onRerender",
@@ -451,7 +453,7 @@ stream.methods.appendRootItems = function(items, container) {
 		});
 	});
 	container.append(fragment);
-	this.rerender("more");
+	this.render({"element": "more"});
 };
 
 stream.methods.prepareBroadcastParams = function(params) {
@@ -594,7 +596,7 @@ stream.methods.handleLiveUpdatesResponse = function(data) {
 	this.refreshItemsDate();
 	this.checkTimeframeSatisfy();
 	this.applyLiveUpdates(data.entries);
-	this.render("state");
+	this.render({"element": "state"});
 	this.executeNextActivity();
 	this.startLiveUpdates();
 };
@@ -710,11 +712,9 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 				} else {
 					var parent = self.getParentItem(item);
 					if (parent && parent.dom) {
-						parent.rerender([
-							"container",
-							"children",
-							"childrenByCurrentActorLive"
-						]);
+						parent.render({"element": "container"});
+						parent.render({"element": "children"});
+						parent.render({"element": "childrenByCurrentActorLive"});
 					}
 				}
 				self.executeNextActivity();
@@ -745,7 +745,7 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 					}
 				}
 				if (item && item.dom) {
-					item.rerender("container", true);
+					item.render({"element": "container", "recursive": true});
 				}
 				self.executeNextActivity();
 				break;
@@ -761,10 +761,20 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 				} else {
 					var parent = self.getParentItem(item);
 					if (parent) {
-						parent.render("children", parent.dom.get("children"), parent.dom, options);
-						parent.render("childrenByCurrentActorLive", parent.dom.get("childrenByCurrentActorLive"), parent.dom, options);
+						parent.render({
+							"element": "children",
+							"target": parent.dom.get("children"),
+							"dom": parent.dom,
+							"extra": options
+						});
+						parent.render({
+							"element": "childrenByCurrentActorLive",
+							"target": parent.dom.get("childrenByCurrentActorLive"),
+							"dom": parent.dom,
+							"extra": options
+						});
 						self.applyStructureUpdates(operation, item, options);
-						parent.rerender("container");
+						parent.render({"element": "container"});
 					}
 				}
 				self.executeNextActivity();
@@ -1022,7 +1032,7 @@ stream.methods.placeChildrenItems = function(parent, children, entries) {
 			? "prependTo"
 			: "appendTo";
 	itemsWrapper[action]($(targetItemDom));
-	parent.rerender("childrenByCurrentActorLive");
+	parent.render({"element": "childrenByCurrentActorLive"});
 	// we should specify the element height explicitly
 	// to avoid element jumping during the animation effect
 	itemsWrapper
@@ -1040,7 +1050,8 @@ stream.methods.placeChildrenItems = function(parent, children, entries) {
 				"duration": this.config.get("children.itemsSlideTimeout"),
 				"complete": function() {
 					itemsWrapper.css("height", "");
-					parent.rerender(["expandChildren", "expandChildrenLabel"]);
+					parent.render({"element": "expandChildren"});
+					parent.render({"element": "expandChildrenLabel"});
 					itemsWrapper.children().unwrap();
 				}
 			}
@@ -1095,7 +1106,7 @@ stream.methods.updateItem = function(entry) {
 	var sortOrder = this.config.get(item.isRoot() ? "sortOrder" : "children.sortOrder");
 	var accRelatedSortOrder = sortOrder.match(/replies|likes|flags/);
 	var acc = accRelatedSortOrder && this.getRespectiveAccumulator(item, sortOrder);
-	if (item.data.object.published != entry.object.published) {
+	if (item.data.object.published !== entry.object.published) {
 		item.set("timestamp", Echo.Utils.timestampFromW3CDTF(entry.object.published));
 		item.forceInject = true;
 	}
@@ -1224,7 +1235,7 @@ stream.constructor = function() {
 				"initial": true,
 				"data": data
 			};
-			self.render("body");
+			self.render({"element": "body"});
 		});
 	} else {
 		self.initialItemsRequest();
@@ -1334,14 +1345,24 @@ item.renderers.authorName = function(element) {
 };
 
 item.renderers.markers = function(element, dom) {
-	return this.render("extraField", element, dom, {"type": "markers"});
+	return this.render({
+		"element": "_extraField",
+		"target": element,
+		"dom": dom,
+		"extra": {"type": "markers"}
+	});
 };
 
 item.renderers.tags = function(element, dom) {
-	return this.render("extraField", element, dom, {"type": "tags"});
+	return this.render({
+		"element": "_extraField",
+		"target": element,
+		"dom": dom,
+		"extra": {"type": "tags"}
+	});
 };
 
-item.renderers.extraField = function(element, dom, extra) {
+item.renderers._extraField = function(element, dom, extra) {
 	var self = this;
 	var type = (extra || {}).type;
 	if (!this.data.object[type] || !this.user.is("admin")) {
@@ -1380,9 +1401,9 @@ item.renderers.container = function(element, dom) {
 	}
 	element.addClass(this.cssPrefix + "-depth-" + this.depth);
 	var switchClasses = function(action) {
-		$.map(self.controlsOrder, function(name) {
-			if (!self.controls[name].element) return;
-			self.controls[name].clickableElements[action + "Class"]("echo-linkColor");
+		$.map(self.buttonsOrder, function(name) {
+			if (!self.buttons[name].element) return;
+			self.buttons[name].clickableElements[action + "Class"]("echo-linkColor");
 		});
 	};
 	if (!Echo.Utils.isMobileDevice()) {
@@ -1443,7 +1464,7 @@ item.renderers.avatar = function(element) {
 	return element.append(avatar);
 };
 
-item.renderers.childrenContainer = function(element, dom, config) {
+item.renderers._childrenContainer = function(element, dom, config) {
 	var self = this;
 	// we cannot use element.empty() because it will remove children's event handlers
 	$.each(element.children(), function(i, child) {
@@ -1478,34 +1499,39 @@ item.renderers.childrenContainer = function(element, dom, config) {
 };
 
 item.renderers.children = function(element, dom, config) {
-	return this.render("childrenContainer", element, dom, {
-		"filter": function(item) { return !item.byCurrentUser; },
-		"keepChildren": config && config.keepChildren
+	return this.render({
+		"element": "_childrenContainer",
+		"target": element,
+		"extra": {
+			"filter": function(item) { return !item.byCurrentUser; },
+			"keepChildren": config && config.keepChildren
+		}
 	});
 };
 
 item.renderers.childrenByCurrentActorLive = function(element, dom, config) {
-	return this.render("childrenContainer", element, dom, {
-		"filter": function(item) { return item.byCurrentUser; },
-		"keepChildren": config && config.keepChildren
+	return this.render({
+		"element": "_childrenContainer",
+		"target": element,
+		"extra": {
+			"filter": function(item) { return item.byCurrentUser; },
+			"keepChildren": config && config.keepChildren
+		}
 	});
 };
 
-item.renderers.control = function(element, dom, extra) {
-	if (!extra || !extra.name) {
-		return element;
-	}
+item.renderers._button = function(element, dom, extra) {
 	var template = extra.template ||
-		'<a class="{class:control} {class:control}-{data:name}">{data:label}</a>';
+		'<a class="{class:button} {class:button}-{data:name}">{data:label}</a>';
 	var data = {
 		"label": extra.label || "",
 		"name": extra.name
 	};
-	var control = $(this.substitute(template, data));
-	var clickables = $(".echo-clickable", control);
+	var button = $(this.substitute(template, data));
+	var clickables = $(".echo-clickable", button);
 	if (!clickables.length) {
-		clickables = control;
-		control.addClass("echo-clickable");
+		clickables = button;
+		button.addClass("echo-clickable");
 	}
 	clickables[extra.onetime ? "one" : "bind"]({
 		"click": function(event) {
@@ -1513,35 +1539,38 @@ item.renderers.control = function(element, dom, extra) {
 			if (extra.callback) extra.callback();
 		}
 	});
+	var data = this.buttons[extra.plugin + "." + extra.name];
+	data.element = button;
+	data.clickableElements = clickables;
 	if (Echo.Utils.isMobileDevice()) {
 		clickables.addClass("echo-linkColor");
 	}
-	return element.append(control);
+	return element.append(button);
 };
 
-item.renderers.controlsDelimiter = function(element) {
-	return element.append('<span class="' + this.cssPrefix + '-control-delim"> \u00b7 </span>');
+item.renderers._buttonsDelimiter = function(element) {
+	return element.append('<span class="' + this.cssPrefix + '-button-delim"> \u00b7 </span>');
 };
 
-item.renderers.controls = function(element) {
-	return;
+item.renderers.buttons = function(element) {
 	var self = this;
-	this.assembleControls();
-	this.sortControls();
+	this.assembleButtons();
+	this.sortButtons();
 	element = element.empty();
-	var delimiter = this.render("controlsDelimiter", element);
-	$.map(this.controlsOrder, function(name) {
-		var data = self.controls[name];
-		if (!data || !data.visible()) return;
-		var control = data.dom || self.render("control", undefined, undefined, data);
-		if (control) {
-			self.controls[name].element = control;
-			self.controls[name].clickableElements = $('.echo-clickable', control);
-			if (!self.controls[name].clickableElements.length) {
-				self.controls[name].clickableElements = control;
-			}
-			element.append(delimiter.clone(true)).append(control);
+	$.map(this.buttonsOrder, function(name) {
+		var data = self.buttons[name];
+		if (!data || !data.name || !data.visible()) {
+			return;
 		}
+		self.render({
+			"element": "_buttonsDelimiter",
+			"target": element
+		});
+		self.render({
+			"element": "_button",
+			"target": element,
+			"extra": data
+		});
 	});
 	return element;
 };
@@ -1639,7 +1668,7 @@ item.renderers.sourceIcon = function(element, dom) {
 	}));
 };
 
-item.renderers.via = function(element, dom) {
+item.renderers.via = function(element) {
 	var self = this;
 	var get = function(field) {
 		return (self.data[field].name || "").toLowerCase();
@@ -1647,20 +1676,28 @@ item.renderers.via = function(element, dom) {
 	if (get("source") === get("provider")) {
 		return element;
 	}
-	return this.render("viaText", element, dom, {
-		"label": "via",
-		"field": "provider"
+	return this.render({
+		"element": "_viaText",
+		"target": element,
+		"extra": {
+			"label": "via",
+			"field": "provider"
+		}
 	});
 };
 
-item.renderers.from = function(element, dom) {
-	return this.render("viaText", element, dom, {
-		"label": "from",
-		"field": "source"
+item.renderers.from = function(element) {
+	return this.render({
+		"element": "_viaText",
+		"target": element,
+		"extra": {
+			"label": "from",
+			"field": "source"
+		}
 	});
 };
 
-item.renderers.viaText = function(element, dom, extra) {
+item.renderers._viaText = function(element, dom, extra) {
 	extra = extra || {};
 	var data = this.data[extra.field];
 	if (!this.config.get("viaLabel.text") ||
@@ -1683,7 +1720,8 @@ item.renderers.textToggleTruncated = function(element) {
 	var self = this;
 	element.unbind("click").click(function() {
 		self.textExpanded = !self.textExpanded;
-		self.rerender(["body", "textToggleTruncated"]);
+		self.render({"element": "body"});
+		self.render({"element": "textToggleTruncated"});
 	});
 	return element.append(
 		this.labels.get("textToggleTruncated" + (this.textExpanded ? "Less" : "More"))
@@ -1897,8 +1935,16 @@ item.renderers.expandChildren = function(element, dom, extra) {
 		.addClass(this.cssPrefix + "-depth-" + (this.depth + 1))
 		.unbind("click")
 		.one("click", function() {
-			self.render("expandChildrenLabel", dom.get("expandChildrenLabel"), dom, {"state": "loading"});
-			self.publish("internal.Item.onChildrenExpand", {"data": self.data});
+			self.render({
+				"element": "expandChildrenLabel",
+				"target": dom.get("expandChildrenLabel"),
+				"dom": dom,
+				"extra": {"state": "loading"}
+			});
+			self.events.publish({
+				"topic": "internal.Item.onChildrenExpand",
+				"data": {"data": self.data}
+			});
 		});
 };
 
@@ -1944,7 +1990,7 @@ item.methods.template = function() {
 								'<div class="{class:date}"></div>' +
 								'<div class="{class:from}"></div>' +
 								'<div class="{class:via}"></div>' +
-								'<div class="{class:controls}"></div>' +
+								'<div class="{class:buttons}"></div>' +
 								'<div class="echo-clear"></div>' +
 							'</div>' +
 						'</div>' +
@@ -2016,57 +2062,60 @@ item.methods.initSmileysConfig = function() {
 	return smileys;
 };
 
-item.methods.assembleControls = function() {
+item.methods.assembleButtons = function() {
 	var self = this;
-	var controlsOrder = [];
-	$.each(this.config.get("itemControls", {}), function(plugin, controls) {
-		$.map(controls, function(control) {
-			var data = $.isFunction(control)
-				? control.call(self)
-				: $.extend({}, control);
+	var buttonsOrder = [];
+	$.each(this.buttonSpecs, function(plugin, specs) {
+		$.map(specs, function(spec) {
+			var data = $.isFunction(spec)
+				? spec.call(self)
+				: $.extend({}, spec);
 			if (!data.name) return;
 			var callback = data.callback || function() {};
 			data.callback = function() {
 				callback.call(self);
-				self.publish("internal.Item.onControlClick", {
-					"name": data.name,
-					"plugin": plugin,
-					"item": {
-						"data": self.data,
-						"target": self.dom.content
+				self.events.publish({
+					"topic": "internal.Item.onButtonClick",
+					"data": {
+						"name": data.name,
+						"plugin": plugin,
+						"item": {
+							"data": self.data,
+							"target": self.dom.content
+						}
 					}
 				});
 			};
 			data.label = data.label || data.name;
 			data.plugin = plugin;
-			if (typeof data.visible == "undefined") {
+			if (typeof data.visible === "undefined") {
 				data.visible = true;
 			}
 			var visible = data.visible;
 			data.visible = function() {
 				return visible && self.config.get("plugins." + plugin + ".enabled");
 			}
-			var name = plugin + '.' + data.name;
-			self.controls[name] = data;
-			if ($.inArray(name, self.controlsOrder) < 0) {
-				controlsOrder.push(name);
+			var name = plugin + "." + data.name;
+			self.buttons[name] = data;
+			if ($.inArray(name, self.buttonsOrder) < 0) {
+				buttonsOrder.push(name);
 			}
 		});
 	});
-	// keep correct order of plugins and controls
-	self.controlsOrder = controlsOrder.concat(self.controlsOrder);
+	// keep correct order of plugins and buttons
+	self.buttonsOrder = buttonsOrder.concat(self.buttonsOrder);
 };
 
-item.methods.sortControls = function() {
+item.methods.sortButtons = function() {
 	var self = this;
-	var defaultOrder = this.controlsOrder;
-	var requiredOrder = this.config.get("itemControlsOrder");
-	// if controls order is not specified in application config, use default order
+	var defaultOrder = this.buttonsOrder;
+	var requiredOrder = this.config.get("buttonsOrder");
+	// if buttons order is not specified in application config, use default order
 	if (!requiredOrder) {
-		this.config.set("itemControlsOrder", defaultOrder);
+		this.config.set("buttonsOrder", defaultOrder);
 	} else if (requiredOrder != defaultOrder) {
 		var push = function(name, acc, pos) {
-			if (!self.controls[name]) return;
+			if (!self.buttons[name]) return;
 			acc.push(name);
 			pos = pos || $.inArray(name, defaultOrder);
 			if (pos >= 0) {
@@ -2085,11 +2134,11 @@ item.methods.sortControls = function() {
 				});
 			}
 		});
-		this.controlsOrder = order;
-		this.config.set("itemControlsOrder", order);
-	// if application config tells not to use controls
+		this.buttonsOrder = order;
+		this.config.set("buttonsOrder", order);
+	// if application config tells not to use buttons
 	} else if (!requiredOrder.length) {
-		this.controlsOrder = [];
+		this.buttonsOrder = [];
 	}
 };
 
@@ -2102,7 +2151,7 @@ item.methods.traverse = function(tree, callback, acc) {
 };
 
 item.methods.refreshDate = function() {
-	this.rerender("date");
+	this.render({"element": "date"});
 	$.map(this.children || [], function(child) {
 		child.refreshDate();
 	});
@@ -2201,6 +2250,11 @@ item.constructor = function(config) {
 	this.threading = false;
 	//"id": entry.object.id, // short cut for "id" item field
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
+	this.textExpanded = false;
+	this.blocked = false;
+	this.buttonsOrder = [];
+	this.buttonSpecs = {};
+	this.buttons = {}; 
 };
 
 var itemDepthRules = [];
@@ -2239,7 +2293,7 @@ item.css =
 	'.{class:re} a:link, .{class:re} a:visited, .{class:re} a:active { text-decoration: none; }' +
 	'.{class:re} a:hover { text-decoration: underline; }' +
 	'.{class:body} { padding-top: 4px; }' +
-	'.{class:controls} { float: left; margin-left: 3px; }' +
+	'.{class:buttons} { float: left; margin-left: 3px; }' +
 	'.{class:sourceIcon} { float: left; height: 16px; width: 16px; margin-right: 5px; border: 0px; }' +
 	'.{class:date}, .{class:from}, .{class:via} { float: left; }' +
 	'.{class:from} a, .{class:via} a { text-decoration: none; color: #C6C6C6; }' +
