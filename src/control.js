@@ -214,7 +214,6 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
 };
 
 Echo.Control.prototype.refresh = function() {
-	this.rerender();
 	this.events.publish({"topic": "onRefresh"});
 };
 

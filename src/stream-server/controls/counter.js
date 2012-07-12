@@ -97,6 +97,8 @@ counter.methods.refresh = function() {
 	//TODO showmessage should be refactored
 	this.showMessage({"type": "loading"});
 	this.request();
+	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Counter");
+	component.parent.refresh.call(this);
 };
 
 Echo.Control.create(counter);
