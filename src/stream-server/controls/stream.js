@@ -153,11 +153,13 @@ stream.renderers.body = function(element) {
 						: "loading"
 			)
 		}, element);
-		return;
+		return element;
 	}
 
 	if (this.lastRequest.data.length) {
-		if (this.lastRequest.initial) element.empty();
+		if (this.lastRequest.initial) {
+			element.empty();
+		}
 		this.appendRootItems(this.lastRequest.data, element);
 	} else {
 		this.showMessage({
@@ -165,47 +167,49 @@ stream.renderers.body = function(element) {
 			"message": this.labels.get("emptyStream")
 		}, element);
 	}
-	if (this.lastRequest.initial && this.config.get("streamStateToggleBy") == "mouseover" && this.config.get("liveUpdates")) {
-		element.bind({
-			"mouseleave": function() {
-				self.setStreamState("live");
-			},
-			"mouseenter": function() {
-				self.setStreamState("paused");
-			}
+	if (this.lastRequest.initial && this.config.get("streamStateToggleBy") === "mouseover" && this.config.get("liveUpdates")) {
+		element.hover(function() {
+			self.setStreamState("paused");
+		}, function() {
+			self.setStreamState("live");
 		});
 	}
 	this.events.publish({
 		"topic": "Stream.onReady",
 		"data": this.prepareBroadcastParams({"initial": this.lastRequest.initial})
 	});
+	return element;
 };
 
 stream.renderers.state = function(element) {
 	var self = this;
 	var label = this.config.get("streamStateLabel");
-	if ((!label.icon && !label.text) || !this.config.get("liveUpdates")) return;
+	if ((!label.icon && !label.text) || !this.config.get("liveUpdates")) {
+		return element;
+	}
 
 	var activitiesCount = 0;
-	if (this.activities.state == "paused") {
-		activitiesCount = Echo.Utils.foldl(0, self.activities.queue, function(entry, acc) {
+	if (this.activities.state === "paused") {
+		activitiesCount = Echo.Utils.foldl(0, this.activities.queue, function(entry, acc) {
 			if (entry.affectCounter) {
 				return ++acc;
 			}
 		});
 	}
 	var currentState = this.activities.state + activitiesCount;
-	if (currentState == this.activities.lastState) return;
+	if (currentState === this.activities.lastState) {
+		return element;
+	}
 
 	element = (element || this.dom.get("state")).empty();
-	if (!this.activities.lastState && this.config.get("streamStateToggleBy") == "button") {
-		element.addClass("echo-linkColor echo-clickable").click(function(e) {
-			self.setStreamState(self.activities.state == "paused" ? "live" : "paused");
+	if (!this.activities.lastState && this.config.get("streamStateToggleBy") === "button") {
+		element.addClass("echo-linkColor echo-clickable").click(function() {
+			self.setStreamState(self.activities.state === "paused" ? "live" : "paused");
 		});
 	}
 	var templates = {
-		"picture": '<span class="{class:state-picture} {class:state-picture}-{self:activities.state}"></span>',
-		"message": this.config.get("streamStateToggleBy") == "button"
+		"picture": '<span class="{class:state-picture} {class:state-picture}-' + this.activities.state + '"></span>',
+		"message": this.config.get("streamStateToggleBy") === "button"
 			? '<a href="javascript:void(0)" class="{class:state-message}">{label:' + this.activities.state + '}</a>'
 			: '<span class="{class:state-message}">{label:' + this.activities.state + '}</span>',
 		"count": ' <span class="{class:state-count}">({data:count} {label:new})</span>'
@@ -223,6 +227,7 @@ stream.renderers.state = function(element) {
 		}
 	}
 	this.activities.lastState = currentState;
+	return element;
 };
 
 stream.renderers.more = function(element) {
@@ -233,9 +238,9 @@ stream.renderers.more = function(element) {
 	return element.empty()
 		.append(this.labels.get("more"))
 		.hover(function() {
-			element.addClass("echo-stream-more-hover");
+			element.addClass(self.cssPrefix + "-more-hover");
 		}, function() {
-			element.removeClass("echo-stream-more-hover");
+			element.removeClass(self.cssPrefix + "-more-hover");
 		})
 		.show()
 		.unbind("click")
@@ -285,7 +290,7 @@ stream.methods.actualizeChildrenList = function(parent, entries) {
 
 stream.methods.createChildrenItemsDomWrapper = function(children, parent) {
 	var self = this;
-	var wrapper = $("<div class='echo-item-children-wrapper'></div>");
+	var wrapper = $('<div class="' + this.cssPrefix + '-children-wrapper"></div>');
 	var getIdx = function(item) { return self.getItemListIndex(item, parent.get("children")); };
 	$.each(children, function(i, item) {
 		item.render();
@@ -556,7 +561,7 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 	var self = this, items = [], roots = [];
 	var isMoreRequest = this.lastRequest && !this.lastRequest.initial;
 	data = data || {};
-	if (data.result == 'error') {
+	if (data.result === "error") {
 		this.handleErrorResponse(data, {
 			"messageTarget": isMoreRequest ? self.dom.get("more") : self.dom.get("body"),
 			"waitingHandler": function() {
@@ -605,7 +610,7 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 	});
 
 	this.hasInitialData = true;
-	this.isViewComplete = roots.length != this.config.get("itemsPerPage");
+	this.isViewComplete = roots.length !== this.config.get("itemsPerPage");
 	visualizer(roots);
 	//this.startLiveUpdates();
 };
@@ -627,7 +632,7 @@ stream.methods.checkTimeframeSatisfy = function() {
 stream.methods.handleLiveUpdatesResponse = function(data) {
 	var self = this;
 	data = data || {};
-	if (data.result == "error") {
+	if (data.result === "error") {
 		this.startLiveUpdates();
 		return;
 	}
@@ -1105,6 +1110,7 @@ stream.methods.initItem = function(entry, isLive) {
 		"parent": this.config.getAsHash(),
 		"plugins": this.config.get("plugins"),
 		"data": entry,
+		"controlsOrder": this.config.get("itemControlsOrder"),
 		"live": isLive
 	});
 	// caching item template to avoid unnecessary work
@@ -1326,15 +1332,15 @@ item.labels = {
 };
 
 item.renderers.authorName = function(element) {
-	return this.data.actor.title || this.labels.get("guest");
+	return element.append(this.data.actor.title || this.labels.get("guest"));
 };
 
 item.renderers.markers = function(element, dom) {
-	this.render("extraField", element, dom, {"type": "markers"});
+	return this.render("extraField", element, dom, {"type": "markers"});
 };
 
 item.renderers.tags = function(element, dom) {
-	this.render("extraField", element, dom, {"type": "tags"});
+	return this.render("extraField", element, dom, {"type": "tags"});
 };
 
 item.renderers.extraField = function(element, dom, extra) {
@@ -1342,31 +1348,34 @@ item.renderers.extraField = function(element, dom, extra) {
 	var type = (extra || {}).type;
 	if (!this.data.object[type] || !this.user.is("admin")) {
 		dom.remove(element);
-		return;
+		return element;
 	}
 	var limit = this.config.get("parent.limits." + type);
-	var items = $.foldl([], this.data.object[type], function(item, acc){
-		var template = (item.length > limit)
+	var items = $.foldl([], this.data.object[type], function(item, acc) {
+		var template = item.length > limit
 			? '<span title="{data:item}">{data:truncatedItem}</span>'
 			: '<span>{data:item}</span>';
 		var truncatedItem = $.htmlTextTruncate(item, limit, "...");
 		acc.push(self.substitute(template, {"item": item, "truncatedItem": truncatedItem}));
 	});
-	element.prepend(items.sort().join(", "));
+	return element.prepend(items.sort().join(", "));
 };
 
 item.renderers.container = function(element, dom) {
 	var self = this;
-	element.removeClass($.map(["child", "root", "child-thread", "root-thread"],
-		function(suffix) { return "echo-item-container-" + suffix; }).join(" "));
-	var threadSuffix = this.threading ? '-thread' : '';
+	element.removeClass(
+		$.map(["child", "root", "child-thread", "root-thread"],	function(suffix) {
+			return self.cssPrefix + "-container-" + suffix;
+		}).join(" ")
+	);
+	var threadSuffix = this.threading ? "-thread" : "";
 	if (this.depth) {
-		element.addClass('echo-item-container-child' + threadSuffix);
-		element.addClass('echo-trinaryBackgroundColor');
+		element.addClass(this.cssPrefix + "-container-child" + threadSuffix);
+		element.addClass("echo-trinaryBackgroundColor");
 	} else {
-		element.addClass('echo-item-container-root' + threadSuffix);
+		element.addClass(this.cssPrefix + "-container-root" + threadSuffix);
 	}
-	element.addClass('echo-item-depth-' + this.depth);
+	element.addClass(this.cssPrefix + "-depth-" + this.depth);
 	var switchClasses = function(action) {
 		$.map(self.controlsOrder, function(name) {
 			if (!self.controls[name].element) return;
@@ -1375,55 +1384,60 @@ item.renderers.container = function(element, dom) {
 	};
 	if (!Echo.Utils.isMobileDevice()) {
 		element.unbind(["mouseleave", "mouseenter"]).hover(function() {
-			if (self.user.is("admin")) dom.get("modeSwitch").show();
+			if (self.user.is("admin")) {
+				dom.get("modeSwitch").show();
+			}
 			switchClasses("add");
 		}, function() {
-			if (self.user.is("admin")) dom.get("modeSwitch").hide();
+			if (self.user.is("admin")) {
+				dom.get("modeSwitch").hide();
+			}
 			switchClasses("remove");
 		});
 	}
+	return element;
 };
 
 item.renderers.metadataUserIP = function(element) {
-	if (!this.data.ip) element.hide();
+	if (!this.data.ip) {
+		element.hide();
+	}
 	return element;
 };
 
 item.renderers.modeSwitch = function(element) {
 	var self = this;
 	element.hide();
-	if (!this.user.is("admin")) return;
+	if (!this.user.is("admin")) {
+		return element;
+	}
 	var mode = "default";
 	var setTitle = function(el) {
-		el.attr("title", self.labels.get(mode + "ModeSwitchTitle"));
+		element.attr("title", self.labels.get(mode + "ModeSwitchTitle"));
 	};
-	setTitle(element);
+	setTitle();
 	element.click(function() {
-		mode = (mode == "default" ? "metadata" : "default");
-		setTitle(element);
+		mode = (mode === "default" ? "metadata" : "default");
+		setTitle();
 		self.dom.get("data").toggle();
 		self.dom.get("metadata").toggle();
 	});
-	if (Echo.Utils.isMobileDevice()) element.show();
+	if (Echo.Utils.isMobileDevice()) {
+		element.show();
+	}
+	return element;
 };
 
 item.renderers.wrapper = function(element) {
-	element.addClass('echo-item-wrapper' + (this.depth ? '-child' : '-root'));
+	return element.addClass(this.cssPrefix + "-wrapper" + (this.depth ? "-child" : "-root"));
 };
 
-item.renderers.avatar = function() {
+item.renderers.avatar = function(element) {
 	var self = this;
 	var size = (!this.depth ? 48 : 24);
-	var url = this.data.actor.avatar || this.user.get("defaultAvatar");
-	var img = $("<img>", { "src": url }).css({ "width": size, "height": size });
-	if (url != this.user.get("defaultAvatar")) {
-		img.one({
-			"error" : function() {
-				$(this).attr("src", self.user.get("defaultAvatar"));
-			}
-		});
-	}
-	return img;
+	var avatar = Echo.Utils.loadImage(this.data.actor.avatar, this.user.get("defaultAvatar"));
+	avatar.css({"width": size, "height": size});
+	return element.append(avatar);
 };
 
 item.renderers.childrenContainer = function(element, dom, config) {
@@ -1437,32 +1451,47 @@ item.renderers.childrenContainer = function(element, dom, config) {
 		var initialRendering = !child.dom;
 		element.append(initialRendering ? child.render() : child.dom.content);
 		if (child.deleted) {
-			self.publish("internal.Item.onDelete", {"item": child, "config": config});
+			self.events.publish({
+				"topic": "internal.Item.onDelete",
+				"data": {
+					"item": child,
+					"config": config
+				}
+			});
 		} else if (child.added) {
-			self.publish("internal.Item.onAdd", {"item": child});
-		// don't publish events while rerendering or for Whirlpools
-		} else if (initialRendering && child instanceof Echo.Item) {
-			self.publish("internal.Item.onRender", {"item": child});
+			self.events.publish({
+				"topic": "internal.Item.onAdd",
+				"data": {"item": child}
+			});
+		// don't publish events while rerendering
+		} else if (initialRendering) {
+			self.events.publish({
+				"topic": "internal.Item.onRender",
+				"data": {"item": child}
+			});
 		}
 	});
+	return element;
 };
 
 item.renderers.children = function(element, dom, config) {
-	this.render("childrenContainer", element, dom, {
+	return this.render("childrenContainer", element, dom, {
 		"filter": function(item) { return !item.byCurrentUser; },
 		"keepChildren": config && config.keepChildren
 	});
 };
 
 item.renderers.childrenByCurrentActorLive = function(element, dom, config) {
-	this.render("childrenContainer", element, dom, {
+	return this.render("childrenContainer", element, dom, {
 		"filter": function(item) { return item.byCurrentUser; },
 		"keepChildren": config && config.keepChildren
 	});
 };
 
 item.renderers.control = function(element, dom, extra) {
-	if (!extra || !extra.name) return;
+	if (!extra || !extra.name) {
+		return element;
+	}
 	var template = extra.template ||
 		'<a class="{class:control} {class:control}-{data:name}">{data:label}</a>';
 	var data = {
@@ -1470,10 +1499,10 @@ item.renderers.control = function(element, dom, extra) {
 		"name": extra.name
 	};
 	var control = $(this.substitute(template, data));
-	var clickables = $('.echo-clickable', control);
+	var clickables = $(".echo-clickable", control);
 	if (!clickables.length) {
 		clickables = control;
-		control.addClass('echo-clickable');
+		control.addClass("echo-clickable");
 	}
 	clickables[extra.onetime ? "one" : "bind"]({
 		"click": function(event) {
@@ -1481,20 +1510,23 @@ item.renderers.control = function(element, dom, extra) {
 			if (extra.callback) extra.callback();
 		}
 	});
-	if (Echo.Utils.isMobileDevice()) clickables.addClass("echo-linkColor");
-	return control;
+	if (Echo.Utils.isMobileDevice()) {
+		clickables.addClass("echo-linkColor");
+	}
+	return element.append(control);
 };
 
-item.renderers.controlsDelimiter = function() {
-	return $('<span class="echo-item-control-delim"> \u00b7 </span>');
+item.renderers.controlsDelimiter = function(element) {
+	return element.append('<span class="' + this.cssPrefix + '-control-delim"> \u00b7 </span>');
 };
 
 item.renderers.controls = function(element) {
+	return;
 	var self = this;
 	this.assembleControls();
 	this.sortControls();
-	var container = element.empty();
-	var delimiter = this.render("controlsDelimiter");
+	element = element.empty();
+	var delimiter = this.render("controlsDelimiter", element);
 	$.map(this.controlsOrder, function(name) {
 		var data = self.controls[name];
 		if (!data || !data.visible()) return;
@@ -1505,13 +1537,16 @@ item.renderers.controls = function(element) {
 			if (!self.controls[name].clickableElements.length) {
 				self.controls[name].clickableElements = control;
 			}
-			container.append(delimiter.clone(true)).append(control);
+			element.append(delimiter.clone(true)).append(control);
 		}
 	});
+	return element;
 };
 
-item.renderers.re = function() {
-	if (!this.config.get("reTag")) return;
+item.renderers.re = function(element) {
+	if (!this.config.get("reTag")) {
+		return element;
+	}
 	var self = this;
 	var context = this.data.object.context;
 	var re = "";
@@ -1537,7 +1572,7 @@ item.renderers.re = function() {
 		return "<div>" + Echo.Utils.hyperlink({
 			"class": "echo-primaryColor",
 			"href": c.uri,
-			"caption": "Re: " + $.stripTags(c.title)
+			"caption": "Re: " + Echo.Utils.stripTags(c.title)
 		}, {
 			"openInNewWindow": openLinksInNewWindow
 		}) + "</div>";
@@ -1546,47 +1581,49 @@ item.renderers.re = function() {
 	var pageHref = document.location.href;
 	var pageDomain = getDomain(pageHref);
 
-	if (permalink == pageHref || this.depth || !context || !context.length) {
-		return;
+	if (permalink === pageHref || this.depth || !context || !context.length) {
+		return element;
 	}
 	var mustSkipContext = false;
 	$.each(context, function(i, c) {
 		//XXX use normalized uri
-		if (c.uri == pageHref) {
+		if (c.uri === pageHref) {
 			mustSkipContext = true;
 			return false; //break
 		}
 	});
 
-	if (mustSkipContext) return;
+	if (mustSkipContext) {
+		return element;
+	}
 
 	if (this.config.get("optimizedContext")) {
 		var primaryContext = context[0];
 		$.each(context, function(i, c) {
-			if (getDomain(c.uri) == pageDomain) {
+			if (getDomain(c.uri) === pageDomain) {
 				primaryContext = c;
 				return false; //break
 			}
 		});
-		if (primaryContext) re = reOfContext(primaryContext);
+		if (primaryContext) {
+			re = reOfContext(primaryContext);
+		}
 	} else {
 		$.each(context, function(i, c) {
 			re += reOfContext(c);
 		});
 	}
-
-	return $(re);
+	return element.append(re);
 };
 
 item.renderers.sourceIcon = function(element, dom) {
 	if (!this.config.get("viaLabel.icon") ||
-		this.data.source.name == "jskit" ||
-		this.data.source.name == "echo") {
-			dom.remove(element);
+			this.data.source.name == "jskit" ||
+			this.data.source.name == "echo") {
+		dom.remove(element);
 	}
 	element.hide().attr("src", Echo.Utils.htmlize(
-		this.data.source.icon ||
-		this.config.get("providerIcon")
+		this.data.source.icon || this.config.get("providerIcon")
 	))
 	.show()
 	.one("error", function() {
@@ -1604,15 +1641,17 @@ item.renderers.via = function(element, dom) {
 	var get = function(field) {
 		return (self.data[field].name || "").toLowerCase();
 	};
-	if (get("source") == get("provider")) return;
-	this.render("viaText", element, dom, {
+	if (get("source") === get("provider")) {
+		return element;
+	}
+	return this.render("viaText", element, dom, {
 		"label": "via",
 		"field": "provider"
 	});
 };
 
 item.renderers.from = function(element, dom) {
-	this.render("viaText", element, dom, {
+	return this.render("viaText", element, dom, {
 		"label": "from",
 		"field": "source"
 	});
@@ -1621,7 +1660,12 @@ item.renderers.from = function(element, dom) {
 item.renderers.viaText = function(element, dom, extra) {
 	extra = extra || {};
 	var data = this.data[extra.field];
-	if (!this.config.get("viaLabel.text") || !data.name || data.name == "jskit"  || data.name == "echo") return;
+	if (!this.config.get("viaLabel.text") ||
+			!data.name ||
+			data.name === "jskit" ||
+			data.name === "echo") {
+		return element;
+	}
 	var a = Echo.Utils.hyperlink({
 		"class": "echo-secondaryColor",
 		"href": data.uri || this.data.object.permalink,
@@ -1629,7 +1673,7 @@ item.renderers.viaText = function(element, dom, extra) {
 	}, {
 		"openInNewWindow": this.config.get("openLinksInNewWindow")
 	});
-	element.html('&nbsp;' + this.labels.get(extra.label + 'Label') + '&nbsp;').append(a);
+	return element.html("&nbsp;" + this.labels.get(extra.label + "Label") + "&nbsp;").append(a);
 };
 
 item.renderers.textToggleTruncated = function(element) {
@@ -1638,7 +1682,9 @@ item.renderers.textToggleTruncated = function(element) {
 		self.textExpanded = !self.textExpanded;
 		self.rerender(["body", "textToggleTruncated"]);
 	});
-	return this.labels.get("textToggleTruncated" + (this.textExpanded ? "Less" : "More"));
+	return element.append(
+		this.labels.get("textToggleTruncated" + (this.textExpanded ? "Less" : "More"))
+	);
 };
 
 item.renderers.body = function(element, dom) {
@@ -1648,25 +1694,22 @@ item.renderers.body = function(element, dom) {
 		dom.get("textEllipses")[!truncated || self.textExpanded ? "hide" : "show"]();
 		dom.get("textToggleTruncated")[truncated || self.textExpanded ? "show" : "hide"]();
 	};
-	// temporary fix because Firefox hides CDATA content
-	var text = this.data.object.content.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1');
+	var text = this.data.object.content;
 	var source = this.data.source.name;
 	var openLinksInNewWindow = this.config.get("openLinksInNewWindow");
-	var contentTransformations = this.config.get("contentTransformations." +
-							this.data.object.content_type, {});
-	if (source && source == "Twitter" && this.config.get("aggressiveSanitization")) {
+	var contentTransformations = this.config.get("contentTransformations." + this.data.object.content_type, {});
+	if (source && source === "Twitter" && this.config.get("aggressiveSanitization")) {
 		output(this.labels.get("sharedThisOn", {"service": source}));
-		return;
+		return element;
 	}
 
 	var limits = this.config.get("parent.limits");
 	var wrap = function(tag) {
-		var template = 
-			(tag.length > limits.tags)
+		var template = tag.length > limits.tags
 			? '<span class="{class:tag}" title="{data:tag}">{data:truncatedTag}</span>'
 			: '<span class="{class:tag}">{data:tag}</span>';
 		var truncatedTag = tag.substring(0, limits.tags) + "...";
-		return (self.substitute(template, {"tag": tag, "truncatedTag": truncatedTag}));	
+		return self.substitute(template, {"tag": tag, "truncatedTag": truncatedTag});
 	};
 
 	if (contentTransformations.hashtags) {
@@ -1691,13 +1734,13 @@ item.renderers.body = function(element, dom) {
 				$0 = $2 + meta2tags(content) + $4;
 			}
 			tags.push($0);
-			return ' %%HTML_TAG%% ';
+			return " %%HTML_TAG%% ";
 		});
 		return {"text" : text, "tags": tags};
 	};
 	var meta2tags = function(content) {
 		$.each(content.tags, function(i, v) {
-			content.text = content.text.replace(' %%HTML_TAG%% ', v);
+			content.text = content.text.replace(" %%HTML_TAG%% ", v);
 		});
 		return content.text;
 	};
@@ -1714,7 +1757,7 @@ item.renderers.body = function(element, dom) {
 		});
 	};
 	var content = tags2meta(text);
-	if (source && source != 'jskit' && source != 'echo') {
+	if (source && source !== "jskit" && source !== "echo") {
 		var url = this.depth
 			? this.data.target.id
 			: this.config.get("reTag")
@@ -1724,13 +1767,14 @@ item.renderers.body = function(element, dom) {
 			content.text = content.text.replace(new RegExp(url, "g"), "");
 			if (!/\S/.test(content.text)) {
 				output(this.labels.get("sharedThisOn", {"service": source}));
-				return;
+				return element;
 			}
 		}
 	}
+
 	var textBeforeAutoLinking = content.text = insertHashTags(content.text);
 	if (contentTransformations.urls) {
-		content.text = content.text.replace(new RegExp(urlMatcher, 'ig'), function($0, $1) {
+		content.text = content.text.replace(new RegExp(urlMatcher, "ig"), function($0, $1) {
 			return Echo.Utils.hyperlink({
 				"href": $1,
 				"caption": $1
@@ -1741,7 +1785,7 @@ item.renderers.body = function(element, dom) {
 		})
 	}
 	if (contentTransformations.smileys) {
-		if (content.text != textBeforeAutoLinking) {
+		if (content.text !== textBeforeAutoLinking) {
 			content = tags2meta(meta2tags(content));
 		}
 		var smileys = this.initSmileysConfig();
@@ -1753,8 +1797,8 @@ item.renderers.body = function(element, dom) {
 	}
 
 	if (contentTransformations.newlines) {
-		content.text = content.text.replace(/\n\n+/g, '\n\n');
-		content.text = content.text.replace(/\n/g, '&nbsp;<br>');
+		content.text = content.text.replace(/\n\n+/g, "\n\n");
+		content.text = content.text.replace(/\n/g, "&nbsp;<br>");
 	}
 	var result = normalizeLinks(meta2tags(content));
 	var truncated = false;
@@ -1772,15 +1816,16 @@ item.renderers.body = function(element, dom) {
 			: truncated
 				? result.length
 				: undefined;
-		// we should call $.htmlTextTruncate to close
-		// all tags which might remain unclosed after lines truncation
-		var truncatedText = $.htmlTextTruncate(result, limit, "", true);
-		if (truncatedText.length != result.length) {
+		// we should call Echo.Utils.htmlTextTruncate to close all tags
+		// which might remain unclosed after lines truncation
+		var truncatedText = Echo.Utils.htmlTextTruncate(result, limit, "", true);
+		if (truncatedText.length !== result.length) {
 			truncated = true;
 		}
 		result = truncatedText;
 	}
 	output(result, truncated);
+	return element;
 };
 
 item.renderers.date = function(element) {
@@ -1789,15 +1834,18 @@ item.renderers.date = function(element) {
 	if (container) {
 		container.html(this.age);
 	}
+	return element;
 };
 
 item.renderers.expandChildrenLabel = function(element, dom, extra) {
-	if (!this.children.length || !this.hasMoreChildren()) return;
+	if (!this.children.length || !this.hasMoreChildren()) {
+		return element;
+	}
 	extra = extra || {};
 	extra.state = extra.state || "regular";
 	var states = {
 		"loading": {
-			"css": "echo-item-message-loading",
+			"css": this.cssPrefix + "-message-loading",
 			"label": "loading"
 		},
 		"regular": {
@@ -1805,50 +1853,50 @@ item.renderers.expandChildrenLabel = function(element, dom, extra) {
 			"label": "childrenMoreItems"
 		}
 	};
-	element
-		.removeClass(states[extra.state == "loading" ? "regular" : "loading"].css)
+	return element
+		.removeClass(states[extra.state === "loading" ? "regular" : "loading"].css)
 		.addClass(states[extra.state].css)
 		.html(this.labels.get(states[extra.state].label));
 };
 
 item.renderers.expandChildren = function(element, dom, extra) {
-	if (!this.children.length) return;
+	if (!this.children.length) {
+		return element;
+	}
 	if (!this.hasMoreChildren()) {
-		// IE in Quirks mode can't operate with elements with "height: 0px" correctly, 
+		// IE in Quirks mode can't operate with elements with "height: 0px" correctly,
 		// element with "height: 0px" is renderered as though it doesn't have height property at all.
 		// Thus we set "height: 1px" as the final value for animate function and simply hide element
 		// after the animation is done.
-		if ($.browser.msie && document.compatMode != "CSS1Compat") {
-			element.animate(
-				{
-					"height": "1px",
-					"marginTop": "hide",
-					"marginBottom": "hide",
-					"paddingTop": "hide",
-					"paddingBottom": "hide"
-				},
-				{
-					"duration": this.config.get("children.moreButtonSlideTimeout"),
-					"complete": function() {
-						element.hide();
-					}
+		if ($.browser.msie && document.compatMode !== "CSS1Compat") {
+			element.animate({
+				"height": "1px",
+				"marginTop": "hide",
+				"marginBottom": "hide",
+				"paddingTop": "hide",
+				"paddingBottom": "hide"
+			}, {
+				"duration": this.config.get("children.moreButtonSlideTimeout"),
+				"complete": function() {
+					element.hide();
 				}
-			);
+			});
 		} else {
 			element.slideUp(this.config.get("children.moreButtonSlideTimeout"));
 		}
-		return;
+		return element;
 	}
 	var self = this;
 	// extra.element is sibling element for more children button
 	extra = extra || {};
 	// the "show()" jQuery method doesn't work for some reason in Chrome (A:5755)
-	element.css("display", "block");
-	element.addClass("echo-item-depth-" + (this.depth + 1));
-	element.unbind("click").one("click", function() {
-		self.render("expandChildrenLabel", dom.get("expandChildrenLabel"), dom, {"state": "loading"});
-		self.publish("internal.Item.onChildrenExpand", {"data": self.data});
-	});
+	return element.css("display", "block")
+		.addClass(this.cssPrefix + "-depth-" + (this.depth + 1))
+		.unbind("click")
+		.one("click", function() {
+			self.render("expandChildrenLabel", dom.get("expandChildrenLabel"), dom, {"state": "loading"});
+			self.publish("internal.Item.onChildrenExpand", {"data": self.data});
+		});
 };
 
 item.methods.template = function() {
@@ -1960,7 +2008,7 @@ item.methods.initSmileysConfig = function() {
 	});
 	smileys.regexps.test = new RegExp(escapedCodes.join("|"));
 	smileys.tag = function(smiley) {
-		return '<img class="echo-item-smiley-icon" src="//cdn.echoenabled.com/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '" />';
+		return '<img class="' + this.cssPrefix + '-smiley-icon" src="//cdn.echoenabled.com/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '" />';
 	};
 	return smileys;
 };
@@ -2094,7 +2142,7 @@ item.methods.calcAge = function() {
 		diff =  Math.floor(dayDiff / 31);
 		when = getAgo(diff, 'month');
 	}
-	if (this.age != when) {
+	if (this.age !== when) {
 		this.age = when;
 	}
 };
@@ -2107,10 +2155,10 @@ item.methods.block = function(label) {
 	//We should take into account that container has a 10px 0px padding value
 	var height = content.outerHeight();
 	this.blockers = {
-		"backdrop": $('<div class="echo-item-blocker-backdrop"></div>').css({
+		"backdrop": $('<div class="' + this.cssPrefix + '-blocker-backdrop"></div>').css({
 			"width": width, "height": height
 		}),
-		"message": $(this.substitute('<div class="echo-item-blocker-message">{data:label}</div>', {"label": label})).css({
+		"message": $(this.substitute('<div class="{class:blocker-message}">{data:label}</div>', {"label": label})).css({
 			"left": ((parseInt(width) - 200)/2) + 'px',
 			"top": ((parseInt(height) - 20)/2) + 'px'
 		})
@@ -2164,7 +2212,7 @@ item.css =
 	'.{class:container-child} { padding: 10px; margin: 0px 20px 2px 0px; }' +
 	'.{class:container-child-thread} { padding: 10px; margin: 0px 20px 2px 0px; }' +
 	'.{class:avatar-wrapper} { margin-right: -58px; float: left; position: relative; }' +
-	'.{class:children} .{class:avatar-wrapper, .{class:childrenByCurrentActorLive .{class:avatar-wrapper { margin-right: -34px; }' +
+	'.{class:children} .{class:avatar-wrapper}, .{class:childrenByCurrentActorLive} .{class:avatar-wrapper} { margin-right: -34px; }' +
 	'.{class:children} .{class:subwrapper}, .{class:childrenByCurrentActorLive} .{class:subwrapper} { margin-left: 34px; }' +
 	'.{class:wrapper} { float: left; width: 100%; }' +
 	'.{class:subwrapper} { margin-left: 58px; }' +
