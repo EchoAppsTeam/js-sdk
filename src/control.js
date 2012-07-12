@@ -306,7 +306,7 @@ Echo.Control.prototype.init.config = function(data) {
 		return data.hash;
 	};
 	data = $.extend({"plugins": []}, data || {});
-	var defaults = $.extend(this.get("defaults.config"), {
+	var defaults = $.extend({}, this.get("defaults.config"), {
 		"context": (data.parent ? data.parent.context + "/" : "") + Echo.Utils.getUniqueString()
 	}, this.manifest.config || {});
 	// TODO: find better home for normalizer...
@@ -351,7 +351,7 @@ Echo.Control.prototype.init.events = function() {
 };
 
 Echo.Control.prototype.init.labels = function() {
-	var labels = $.extend(this.get("defaults.labels"), this.manifest.labels);
+	var labels = $.extend({}, this.get("defaults.labels"), this.manifest.labels);
 	return new Echo.Labels(labels, this.name);
 };
 
@@ -461,7 +461,7 @@ Echo.Control.prototype.baseCSS =
 	'.echo-clear { clear: both; }' +
 
 	// message classes
-	'.echo-control-message { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; }' +
+	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
 	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
 	'.echo-control-message-empty { background-image: url(//cdn.echoenabled.com/images/information.png); }' +
