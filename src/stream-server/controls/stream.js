@@ -394,7 +394,7 @@ stream.methods.refresh = function() {
 
 stream.methods.extractPresentationConfig = function(data) {
 	return Echo.Utils.foldl({}, ["sortOrder", "itemsPerPage", "safeHTML"], function(key, acc) {
-		if (typeof data[key] != "undefined") {
+		if (typeof data[key] !== "undefined") {
 			acc[key] = data[key];
 		}
 	});
@@ -535,7 +535,9 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 	//this.changeLiveUpdatesTimeout(data);
 	this.nextSince = data.nextSince || 0;
 	this.nextPageAfter = data.nextPageAfter;
-	this.config.extend(this.extractPresentationConfig(data));
+	var presentation = this.extractPresentationConfig(data);
+	presentation.itemsPerPage = +presentation.itemsPerPage;
+	this.config.extend(presentation);
 	data.children.itemsPerPage = +data.children.itemsPerPage;
 	this.config.set(
 		"children",
@@ -1556,7 +1558,7 @@ item.renderers.buttons = function(element) {
 	var self = this;
 	this.assembleButtons();
 	this.sortButtons();
-	element = element.empty();
+	element.empty();
 	$.map(this.buttonsOrder, function(name) {
 		var data = self.buttons[name];
 		if (!data || !data.name || !data.visible()) {
