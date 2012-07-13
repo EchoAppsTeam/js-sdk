@@ -28,7 +28,12 @@ Echo.Plugin.create = function(manifest) {
 			"labels",
 			"config"
 		]);
-		manifest.init.call(this);
+		// we treat "false" as an indication that the plugin was not initialized
+		if (manifest.init.call(this) === false) {
+			this.disable();
+		} else {
+			this.enable();
+		}
 	};
 	_constructor.manifest = manifest;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
@@ -197,7 +202,11 @@ Echo.Plugin.prototype.init.events = function() {
 			return component.events.publish(params);
 		},
 		"subscribe": function(params) {
-			params.handler = $.proxy(params.handler, plugin);
+			var handler = params.handler;
+			params.handler = function() {
+				if (!plugin.enabled()) return;
+				return handler.apply(plugin, arguments);
+			}
 			return component.events.subscribe(params);
 		},
 		"unsubscribe": function(params) {
