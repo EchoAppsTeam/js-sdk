@@ -7,11 +7,17 @@ var plugin = Echo.Plugin.skeleton("JanrainSharing");
 plugin.applications = ["Echo.StreamServer.Controls.Submit"];
 
 plugin.init = function() {
-	if (!this.config.get("appId") || !this.config.get("xdReceiver")) return;
+	if (!this.config.get("appId") || !this.config.get("xdReceiver")) return false;
 };
 
 plugin.labels = {
 	"sharePrompt": "Share your comment:"
+};
+
+plugin.config = {
+	"maxLength": 120, // actual limit is 140, reserving some space for ellipses and shortened link to the page
+	"reducedLength": 30,
+	"maxImagesCount": 5
 };
 
 plugin.events = {
@@ -33,8 +39,9 @@ plugin.events = {
 	}
 };
 
-plugin.methods.prepareActivity = function(activity) {
+plugin.methods.prepareActivity = function(act) {
 	var plugin = this;
+	var activity = act;
 	var handlers = {
 		"activity.pageDescription": function(content) {
 			activity.setDescription(content);
@@ -44,9 +51,10 @@ plugin.methods.prepareActivity = function(activity) {
 		},
 		"activity.pageImages": function(content) {
 			var count = 0;
+			var maxCount = plugin.config.get("maxImagesCount");
 			var collection = new RPXNOW.Social.ImageMediaCollection();
 			$.each(content, function(key, image) {
-				if (count == 5) return false;
+				if (count === maxCount) return false;
 				if (image.src && image.href) {
 					collection.addImage(image.src, image.href);
 					count++;
@@ -66,23 +74,24 @@ plugin.methods.prepareActivity = function(activity) {
 plugin.methods.prepareContent = function(args) {
 	var plugin = this;
 	var text = Echo.Utils.stripTags(args.postData[0].object.content);
-	var customShareMessagePattern = plugin.config.get("activity.shareContent");
-	if (customShareMessagePattern) {
-		return plugin.labels.get(customShareMessagePattern, {
+	var messagePattern = plugin.config.get("activity.shareContent");
+	if (messagePattern) {
+		return plugin.labels.get(messagePattern, {
 			"domain": window.location.host,
-			"content": plugin.truncate(text, 30)
+			"content": plugin.truncate(text, plugin.config.get("reducedLength"))
 		});
 	}
 	//TODO: fix it when plugin Reply is ready
 	//if a reply to a tweet was posted
+	var maxLength = plugin.config.get("maxLength");
 	if (plugin.isReplyToTweet(args.inReplyTo)) {
 		var author = plugin.getTweetAuthor(args.inReplyTo);
 		return plugin.labels.get("@{author} {content}", {
 			"author": author,
-			"content": plugin.truncate(text, plugin.contentMaxLength - author.length - 2)
+			"content": plugin.truncate(text, maxLength - author.length - 2)
 		});
 	}
-	return plugin.truncate(text, plugin.contentMaxLength);
+	return plugin.truncate(text, maxLength);
 };
 
 plugin.methods.truncate = function(text, limit) {
