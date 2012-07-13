@@ -19,11 +19,7 @@
 		var control = new Echo.StreamServer.Controls.Counter({
 			"target": document.getElementById("container"),
 			"appkey": "test.aboutecho.com",
-			"query" : "childrenof:http://example.com/leon/*", 
-			"plugins": [{
-				"name": "CounterTestPlugin"
-			}],
-			"param": "test"
+			"query" : "childrenof:http://example.com/leon/*"
 		});
 
 		if (console) console.log(control);
