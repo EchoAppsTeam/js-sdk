@@ -16,15 +16,15 @@ Echo.API.Transport = function(config) {
 		"onClose": function() {},
 		"onError": function() {}
 	});
-	this.instance = this._getInstance();
+	this.transportObject = this._getTransportObject();
 };
 
 Echo.API.Transport.prototype.send = function(data) {
-	this.instance.send(data);
+	this.transportObject.send(data);
 };
 
 Echo.API.Transport.prototype.abort = function() {
-	this.instance.abort();
+	this.transportObject.abort();
 };
 
 Echo.API.Transport.prototype._wrapErrorResponse = function(responseError) {
@@ -44,7 +44,7 @@ Echo.API.Transports.AJAX = function(config) {
 	config = $.extend({
 		"method": "get"
 	}, config || {});
-	Echo.API.Transports.AJAX.parent.constructor.call(this, config);
+	return Echo.API.Transports.AJAX.parent.constructor.call(this, config);
 };
 
 utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transport);
@@ -53,7 +53,7 @@ Echo.API.Transports.AJAX.prototype._getScheme = function() {
 	return this.config.get("secure") ? "https:" : window.location.protocol;
 };
 
-Echo.API.Transports.AJAX.prototype._getInstance = function() {
+Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 	var self = this;
 	var ajaxSettings = {
 		url: this._prepareURL(),
@@ -115,13 +115,13 @@ Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) 
 };
 
 Echo.API.Transports.AJAX.prototype.send = function(data) {
-	this.instance.data = $.extend(this.config.get("data"), data || {});
-	this.jxhrInstance = $.ajax(this.instance);
+	this.transportObject.data = $.extend(this.config.get("data"), data || {});
+	this.jxhrTransportObject = $.ajax(this.transportObject);
 };
 
 Echo.API.Transports.AJAX.prototype.abort = function() {
-	if (this.jxhrInstance) {
-		this.jxhrInstance.abort();
+	if (this.jxhrTransportObject) {
+		this.jxhrTransportObject.abort();
 	}
 	this.config.get("onClose")();
 };
@@ -131,13 +131,13 @@ Echo.API.Transports.AJAX.available = function() {
 };
 
 Echo.API.Transports.JSONP = function(config) {
-	Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
+	return Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
 };
 
 utils.inherit(Echo.API.Transports.JSONP, Echo.API.Transports.AJAX);
 
-Echo.API.Transports.JSONP.prototype._getInstance = function() {
-	var settings = this.constructor.parent._getInstance.call(this);
+Echo.API.Transports.JSONP.prototype._getTransportObject = function() {
+	var settings = this.constructor.parent._getTransportObject.call(this);
 	delete settings.xhr;
 	settings.dataType = "jsonp";
 	return settings;
@@ -148,7 +148,7 @@ Echo.API.Transports.JSONP.available = function() {
 };
 
 Echo.API.Transports.WebSocket = function(config) {
-	Echo.API.Transports.WebSocket.parent.constructor.apply(this, arguments);
+	return Echo.API.Transports.WebSocket.parent.constructor.apply(this, arguments);
 };
 
 utils.inherit(Echo.API.Transports.WebSocket, Echo.API.Transport);
@@ -157,7 +157,7 @@ Echo.API.Transports.WebSocket.prototype._getScheme = function() {
 	return this.config.get("secure") ? "wss:" : "ws:";
 };
 
-Echo.API.Transports.WebSocket.prototype._getInstance = function() {
+Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 	var self = this;
 	var socket = new (window.WebSocket || window.MozWebSocket)(this._prepareURL());
 	socket.onmessage = function(event) {
@@ -173,7 +173,7 @@ Echo.API.Transports.WebSocket.prototype._getInstance = function() {
 };
 
 Echo.API.Transports.WebSocket.prototype.send = function(params) {
-	this.instance.send(utils.object2JSON(params));
+	this.transportObject.send(utils.object2JSON(params));
 };
 
 Echo.API.Transports.WebSocket.prototype.abort = function() {
@@ -193,7 +193,6 @@ Echo.API.Request = function(config) {
 		"transport": "ajax",
 		"secure": false
 	});
-	this.transport = this._getTransport();
 };
 
 Echo.API.Request.prototype.send = function() {
@@ -204,6 +203,7 @@ Echo.API.Request.prototype.send = function() {
 Echo.API.Request.prototype.request = function(params) {
 	var self = this;
 	var timeout = this.config.get("timeout");
+	this.transport = this._getTransport();
 	if (this.transport) {
 		this.transport.send(params);
 		if (timeout) {
