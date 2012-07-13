@@ -2246,6 +2246,13 @@ item.methods.parentUnique = function() {
 	return this.config.get("data.parentUnique");
 };
 
+item.methods.addButtonSpec = function(plugin, spec) {
+	if (!this.buttonSpecs[plugin]) {
+		this.buttonSpecs[plugin] = [];
+	}
+	this.buttonSpecs[plugin].push(spec);
+};
+
 item.constructor = function(config) {
 	this.children = [];
 	this.depth = 0;
