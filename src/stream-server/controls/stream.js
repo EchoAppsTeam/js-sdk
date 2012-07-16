@@ -17,6 +17,9 @@ stream.config = {
 	"flashColor": "#ffff99",
 	"item": {},
 	"itemsPerPage": 15,
+	"liveUpdates": true,
+	"liveUpdatesTimeout": 10,
+	"liveUpdatesTimeoutMin": 3,
 	"openLinksInNewWindow": false,
 	"providerIcon": "//cdn.echoenabled.com/images/favicons/comments.png",
 	"slideTimeout": 700,
@@ -62,7 +65,7 @@ stream.events = {
 		data.item.dom.content.hide();
 		this.queueActivity({
 			"action": "animation",
-			"actorID": data.item.data.actor.id,
+			"actorID": data.item.get("data.actor.id"),
 			"itemUnique": data.item.unique(),
 			"priority": "highest",
 			"handler": function() {
@@ -211,7 +214,7 @@ stream.renderers.state = function(element) {
 		"count": ' <span class="{class:state-count}">({data:count} {label:new})</span>'
 	};
 	if (label.icon) {
-		element.append(templates.picture);
+		element.append(this.substitute(templates.picture));
 	}
 	if (label.text) {
 		element.append(this.substitute(templates.message));
@@ -260,7 +263,6 @@ stream.methods.initVars = function() {
 	this.hasInitialData = false;
 	this.items = {};   // items by unique key hash
 	this.threads = []; // items tree
-	//this.cleanupErrorHandlers();
 };
 
 stream.methods.actualizeChildrenList = function(parent, entries) {
@@ -380,7 +382,7 @@ stream.methods.setStreamState = function(state) {
 };
 
 stream.methods.refresh = function() {
-	this.stopLiveUpdates();
+	this.request.abort();
 	this.initVars();
 	delete this.lastRequest;
 	this.clearCache();
@@ -496,7 +498,7 @@ stream.methods.constructChildrenSearchQuery = function(item) {
 
 stream.methods.requestItems = function(extra, visualizer) {
 	var self = this;
-	Echo.StreamServer.API.request({
+	this.request = Echo.StreamServer.API.request({
 		"endpoint": "search",
 		//"recurring": true,
 		"method": "GET",
@@ -530,9 +532,7 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 		});
 		return;
 	}
-	//this.cleanupErrorHandlers(true);
 	this.config.get("target").show();
-	//this.changeLiveUpdatesTimeout(data);
 	this.nextSince = data.nextSince || 0;
 	this.nextPageAfter = data.nextPageAfter;
 	var presentation = this.extractPresentationConfig(data);
@@ -949,7 +949,7 @@ stream.methods.hasParentItem = function(item) {
 };
 
 stream.methods.maybeMoveItem = function(item) {
-	return item.forceInject;
+	return item.get("forceInject");
 };
 
 stream.methods.withinVisibleFrame = function(item, items, isViewComplete, sortOrder) {
@@ -1110,12 +1110,12 @@ stream.methods.updateItem = function(entry) {
 	var acc = accRelatedSortOrder && this.getRespectiveAccumulator(item, sortOrder);
 	if (item.data.object.published !== entry.object.published) {
 		item.set("timestamp", Echo.Utils.timestampFromW3CDTF(entry.object.published));
-		item.forceInject = true;
+		item.set("forceInject", true);
 	}
 	$.extend(item.data, entry);
 	if (accRelatedSortOrder) {
 		if (this.getRespectiveAccumulator(item, sortOrder) != acc) {
-			item.forceInject = true;
+			item.set("forceInject", true);
 		}
 	}
 	return item;
@@ -1124,7 +1124,7 @@ stream.methods.updateItem = function(entry) {
 stream.methods.getItemProjectedIndex = function(item, items, sort) {
 	var self = this;
 	var index;
-	if (item.live || item.forceInject) {
+	if (item.config.get("live") || item.get("forceInject")) {
 		$.each(items || [], function(i, entry) {
 			if (self.compareItems(entry, item, sort)) {
 				index = i;
@@ -1137,7 +1137,7 @@ stream.methods.getItemProjectedIndex = function(item, items, sort) {
 
 stream.methods.addItemToList = function(items, item, sort) {
 	items.splice(this.getItemProjectedIndex(item, items, sort), 0, item);
-	delete item.forceInject;
+	item.set("forceInject", false);
 	this.items[item.unique()] = item;
 };
 
@@ -1155,7 +1155,7 @@ stream.methods.applyStructureUpdates = function(action, item, options) {
 				}
 				item.set("depth", parent.get("depth") + 1);
 				parent.set("threading", true);
-				item.forceInject = true;
+				item.set("forceInject", true);
 				this.addItemToList(
 					parent.get("children"),
 					item,
@@ -2023,7 +2023,7 @@ item.methods.hasMoreChildren = function() {
 
 item.methods.getNextPageAfter = function() {
 	var children = $.grep(this.children, function(child) {
-		return !child.live;
+		return !child.config.get("live");
 	});
 	var index = this.config.get("children.sortOrder") == "chronological"
 		? children.length - 1
