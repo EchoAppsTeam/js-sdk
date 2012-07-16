@@ -46,7 +46,6 @@ counter.methods._request = function() {
 	if (!request) {
 		request = Echo.StreamServer.API.request({
 			"endpoint": "count",
-			"method": "GET",
 			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
 			"recurring": true,
 			"onError": $.proxy(this._error, this),
