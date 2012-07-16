@@ -1083,7 +1083,9 @@ stream.methods.initItem = function(entry, isLive) {
 	// caching item template to avoid unnecessary work
 	var template = item.template;
 	item.template = function() {
-		if (!self.vars.cache.itemTemplate) {
+		if (!self.vars || !self.vars.cache || !self.vars.cache.itemTemplate) {
+			self.vars = {};
+			self.vars.cache = {};
 			self.vars.cache.itemTemplate = $.isFunction(template)
 				? template.apply(this, arguments)
 				: template;
@@ -2121,7 +2123,7 @@ item.methods.sortButtons = function() {
 				delete defaultOrder[pos];
 			}
 		};
-		var order = $.foldl([], requiredOrder, function(name, acc) {
+		var order = Echo.Utils.foldl([], requiredOrder, function(name, acc) {
 			if (/^(.*)\./.test(name)) {
 				push(name, acc);
 			} else {
@@ -2246,21 +2248,26 @@ item.methods.parentUnique = function() {
 item.methods.addButtonSpec = function(plugin, spec) {
 	if (!this.buttonSpecs[plugin]) {
 		this.buttonSpecs[plugin] = [];
+	} else {
+		return;
 	}
 	this.buttonSpecs[plugin].push(spec);
 };
 
+item.vars = {
+	"children": [],
+	"depth": 0,
+	"threading": false,
+	"textExpanded": false,
+	"blocked": false,
+	"buttonsOrder": [],
+	"buttonSpecs": {},
+	"buttons": {}
+}
+
 item.constructor = function(config) {
-	this.children = [];
-	this.depth = 0;
-	this.threading = false;
 	//"id": entry.object.id, // short cut for "id" item field
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
-	this.textExpanded = false;
-	this.blocked = false;
-	this.buttonsOrder = [];
-	this.buttonSpecs = {};
-	this.buttons = {}; 
 };
 
 var itemDepthRules = [];

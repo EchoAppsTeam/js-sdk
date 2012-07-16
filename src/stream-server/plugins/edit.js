@@ -4,31 +4,85 @@ if (Echo.Utils.isComponentDefined("Echo.Plugins.Edit")) return;
 
 var plugin = Echo.Plugin.skeleton("Edit");
 
-plugin.applications = ["Echo.StreamServer.Controls.Submit", "Echo.StreamServer.Controls.Stream"];
+plugin.applications = ["Echo.StreamServer.Controls.Stream.Item"];
 
 plugin.init = function() {
 	var component = this.component;
-	if (component instanceof Echo.StreamServer.Controls.Stream) {
-		this.addItemButton(this.assembleButton(this.component));
-	} else if (component instanceof Echo.StreamServer.Controls.Submit) {
-		this.extendTemplate(plugin.templates.cancel,"insertAfter", "postContainer");
-		this.extendTemplate(plugin.templates.header, "replace", "header");
-		
-		this.extendRenderer("cancelButton", plugin.renderers.Submit.cancelButton);
-		this.extendRenderer("author", plugin.renderers.Submit.author);
-		this.extendRenderer("editedDate", plugin.renderers.Submit.editedDate);
-		
-		component.labels.set({
-			"post": this.labels.get("post"),
-			"posting": this.labels.get("posting")
-		});
+	var button = this.assembleButton();
+	component.addButtonSpec("Edit", button);
+};
+
+$.map(["Complete", "Error"], function(action) {
+	plugin.events["Echo.StreamServer.Controls.Submit.onEdit" + action] = function(topic, args) {
+		// item rerendering
+		console.log("args: ");
+		console.log(args);
 	}
+});
+
+plugin.labels = {
+	"editControl": "Edit"
+};
+
+plugin.methods.submitConfig = function(item, target) {
+	return this.config.assemble({
+		"target": target,
+		"data": item.data,
+		"targetURL": item.id
+	});
+};
+
+plugin.methods.assembleButton = function() {
+	var plugin = this;
+	return function() {
+		var item = this;
+		return {
+			"name": "Edit",
+			"label": plugin.labels.get("editControl"),
+			"visible":  item.user.is("admin") || item.user.has("identity", item.data.actor.id),
+			"callback": function() {
+				var config = plugin.submitConfig(item, item.dom.get("subcontainer"));
+				config["targetQuery"] = plugin.config.get("query", "");
+				config.plugins.push({"name": "EditSubmit"});
+				new Echo.StreamServer.Controls.Submit(config);
+				item.dom.content.get(0).scrollIntoView(true);
+			}
+		};
+	};
+};
+
+Echo.Plugin.create(plugin);
+
+})(jQuery);
+
+(function($) {
+
+if (Echo.Utils.isComponentDefined("Echo.Plugins.EditSubmit")) return;
+
+var plugin = Echo.Plugin.skeleton("EditSubmit");
+
+plugin.applications = ["Echo.StreamServer.Controls.Submit"];
+
+plugin.init = function() {
+	var component = this.component;
+	
+	this.extendTemplate(plugin.templates.cancel,"insertAfter", "postContainer");
+	this.extendTemplate(plugin.templates.header, "replace", "header");
+		
+	this.extendRenderer("text", plugin.renderers.Submit.text);
+	this.extendRenderer("author", plugin.renderers.Submit.author);
+	this.extendRenderer("editedDate", plugin.renderers.Submit.editedDate);
+	this.extendRenderer("cancelButton", plugin.renderers.Submit.cancelButton);
+		
+	component.labels.set({
+		"post": this.labels.get("post"),
+		"posting": this.labels.get("posting")
+	});
 };
 
 plugin.labels = {
 	"createdBy": "Created by",
 	"edit": "Edit",
-	"editControl": "Edit",
 	"on": "on",
 	"post": "Update",
 	"posting": "Updating...",
@@ -44,13 +98,6 @@ $.map(["Init", "Complete", "Error"], function(action) {
 	}
 });
 
-$.map(["Complete", "Error"], function(action) {
-	plugin.events["Echo.StreamServer.Controls.Submit.Plugins.Edit.onEdit" + action] = function(topic, args) {
-		//TODO: item rerendering
-		//this.component.items[args.data.unique].rerender();
-	}
-});
-
 plugin.templates.header =
 	'<div class="{class:header} echo-primaryFont echo-primaryFont echo-primaryColor">' +
 		'{plugin.label:createdBy} ' +
@@ -59,68 +106,44 @@ plugin.templates.header =
 	'</div>';
 
 plugin.templates.cancel =
-	'<div class="{plugin.class:cancelButtonContainer}">' +
-		'<a href="javascript:void(0);" class="{plugin.class:cancelButton} echo-primaryFont echo-clickable echo-linkColor">{plugin.label:cancel}</a>' +
+	'<div class="{class:cancelButtonContainer}">' +
+		'<a href="javascript:void(0);" class="{class:cancelButton} echo-primaryFont echo-clickable echo-linkColor">{plugin.label:cancel}</a>' +
 	'</div>';
 
 plugin.renderers.Submit ={};
-	
-plugin.renderers.Submit.cancelButton = function(element) {
-	var component = this.component;
-	element.click(function() {
-		component.events.publish({
-			"topic": "onEditError",
-			"data": component.prepareBroadcastParams()
-		});
-	});
+
+plugin.renderers.Submit.text = function(element) {
+	var content = this.component.data.object.content;
+	if (content) element.val(content);
+	return this.parentRenderer("text", arguments);
 };
 
 plugin.renderers.Submit.author = function(element) {
 	var component = this.component;
-	return element.text(this.config.get("data.actor.title") || component.labels.get("guest"));
+	return element.text(component.data.actor.title || component.labels.get("guest"));
 };
 
 plugin.renderers.Submit.editedDate = function(element) {
 	var component = this.component;
-	//TODO: get published from item's config
-	//var published = this.config.get("data.object.published");
-	var published = "1994-11-05T08:15:30Z";
+	var published = component.data.object.published;
 	var date = new Date(Echo.Utils.timestampFromW3CDTF(published) * 1000);
 	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
 };
 
-plugin.methods.submitConfig = function(item, target) {
-	return plugin.config.assemble({
-		"target": target,
-		"data": item.data,
-		"targetURL": item.id
+plugin.renderers.Submit.cancelButton = function(element) {
+	var self = this;
+	var component = self.component;
+	element.click(function() {
+		component.events.publish({
+			"topic": "onEditError",
+			"data": component.prepareBroadcastParams(),
+			"context": component.config.get("parent.context")
+		});
 	});
 };
 
-plugin.methods.assembleButton = function(component) {
-	var self = this;
-	return function() {
-		var item = this;
-		return {
-			"name": "Edit",
-			"label": self.labels.get("editControl"),
-			"visible": item.user.any("roles", ["administrator", "moderator"]) || user.has("identity", item.data.actor.id),
-			"callback": function() {
-				var config = component.submitConfig(item, item.dom.get("subcontainer"));
-				//TODO: uncomment this if necessary
-				//config.plugins.push({"name": "Edit"});
-				plugin.config.set("targetQuery", component.config.get("query", ""));
-				new Echo.StreamServer.Controls.Submit(config);
-				//TODO: fix it when item is ready
-				//item.dom.content.get(0).scrollIntoView(true);
-			}
-		};
-	};
-};
-
 plugin.css = 
-	//'.echo-edit-item-container .echo-submit-container { margin: 10px; }' +
-	'.{plugin.class:cancelButton} { float: right; margin: 6px 15px 0px 0px; }';
+	'.{class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }';
 
 Echo.Plugin.create(plugin);
 

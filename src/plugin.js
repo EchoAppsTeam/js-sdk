@@ -90,11 +90,6 @@ Echo.Plugin.prototype.parentRenderer = function() {
 	return this.component.parentRenderer.apply(this.component, arguments);
 };
 
-Echo.Plugin.prototype.addItemButton = function(button) {
-	var buttons = this.component.config.get("itemButtons." + name, []);
-	this.component.config.set("itemButtons." + name, buttons.concat(button));
-};
-
 Echo.Plugin.prototype.substitute = function(template) {
 	var plugin = this;
 	return plugin.component.substitute(template, {}, {
@@ -131,7 +126,8 @@ Echo.Plugin.prototype.init = function(subsystems) {
 Echo.Plugin.prototype.init.css = function() {
 	var manifest = this.manifest;
 	if (!manifest.css) return;
-	Echo.Utils.addCSS(this.substitute(manifest.css), "plugins-" + manifest.name);
+	var parts = [this.component.manifest.name, "Plugins", manifest.name];
+	Echo.Utils.addCSS(this.substitute(manifest.css), parts.join("."));
 };
 
 Echo.Plugin.prototype.init.renderers = function() {
