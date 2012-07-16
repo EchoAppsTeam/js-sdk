@@ -57,7 +57,7 @@ counter.methods._request = function() {
 			"onError": $.proxy(this._error, this),
 			"onData": $.proxy(this._update, this)
 		});
-		this.set("requst", request);
+		this.set("request", request);
 	}
 	request.send();
 };
