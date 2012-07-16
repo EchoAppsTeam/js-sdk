@@ -156,9 +156,8 @@ pile.methods._request = function() {
 			"onError": function(data) {
 				pile.showMessage({"type": "error", "data": data});
 			},
-			"onData": function(data) {
-				// TODO: handle request type correctly!
-				pile["_" + request.requestType + "ResponseHandler"](data);
+			"onData": function(data, extra) {
+				pile["_" + extra.requestType + "ResponseHandler"](data);
 			}
 		});
 		this.set("request", request);
