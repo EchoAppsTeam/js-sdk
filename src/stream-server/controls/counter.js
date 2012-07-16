@@ -34,6 +34,8 @@ counter.constructor = function() {
 counter.methods.refresh = function() {
 	this.showMessage({"type": "loading"});
 	this.set("data", {});
+	this.get("request").abort();
+	this.remove("request");
 	this._request();
 	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Counter");
 	component.parent.refresh.call(this);
@@ -46,6 +48,10 @@ counter.methods._request = function() {
 	if (!request) {
 		request = Echo.StreamServer.API.request({
 			"endpoint": "count",
+			"data": {
+				"q": this.config.get("query"),
+				"appkey": this.config.get("appkey")
+			},
 			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
 			"recurring": true,
 			"onError": $.proxy(this._error, this),
@@ -53,10 +59,6 @@ counter.methods._request = function() {
 		});
 		this.set("requst", request);
 	}
-	request.config.set("data", {
-		"q": this.config.get("query"),
-		"appkey": this.config.get("appkey")
-	});
 	request.send();
 };
 
