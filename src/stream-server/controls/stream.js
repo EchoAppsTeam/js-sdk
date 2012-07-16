@@ -57,10 +57,7 @@ stream.labels = {
 };
 
 stream.events = {
-	"internal.User.onInvalidate": function() {
-		this.refresh();
-	},
-	"internal.Item.onAdd": function(topic, data) {
+	"Echo.StreamServer.Controls.Stream.Item.internal.onAdd": function(topic, data) {
 		var self = this;
 		data.item.dom.content.hide();
 		this.queueActivity({
@@ -73,8 +70,9 @@ stream.events = {
 				self.addItemSpotUpdate(data.item);
 			}
 		});
+		return {"stop": "bubble"};
 	},
-	"internal.Item.onDelete": function(topic, data) {
+	"Echo.StreamServer.Controls.Stream.Item.internal.onDelete": function(topic, data) {
 		var self = this;
 		this.queueActivity({
 			"action": "animation",
@@ -86,10 +84,11 @@ stream.events = {
 				self.deleteItemSpotUpdate(data.item, data.config);
 			}
 		});
+		return {"stop": "bubble"};
 	},
-	"internal.Item.onRender": function(topic, data) {
+	"Echo.StreamServer.Controls.Stream.Item.internal.onRender": function(topic, data) {
 		this.events.publish({
-			"topic": "Stream.Item.onRender",
+			"topic": "Item.onRender",
 			"data": this.prepareBroadcastParams({
 				"item": {
 					"data": data.item.data,
@@ -97,36 +96,28 @@ stream.events = {
 				}
 			})
 		});
+		return {"stop": "bubble"};
 	},
-	"internal.Item.onControlClick": function(topic, data) {
-		topic = this.namespace + ".Item.onControlClick";
+	"Echo.StreamServer.Controls.Stream.Item.internal.onButtonClick": function(topic, data) {
 		this.events.publish({
-			"topic": topic,
+			"topic": "Item.onButtonClick",
 			"data": this.prepareBroadcastParams(data)
 		});
+		return {"stop": "bubble"};
 	},
-	"internal.Item.onChildrenExpand": function(topic, args) {
+	"Echo.StreamServer.Controls.Stream.Item.internal.onChildrenExpand": function(topic, args) {
 		this.childrenRequestItems(args.unique());
-	},
-	"Submit.onPostComplete": function(topic) {
-		var self = this;
-		Echo.Broadcast.subscribe({
-			"topic": topic,
-			"handler": function() {
-				self.startLiveUpdates(true);
-			}
-		});
-	},
-	"Submit.onEditComplete": function(topic) {
-		var self = this;
-		Echo.Broadcast.subscribe({
-			"topic": topic,
-			"handler": function() {
-				self.startLiveUpdates(true);
-			}
-		});
+		return {"stop": "bubble"};
 	}
 };
+$.map(["onPostComplete", "Plugins.Edit.onEditComplete"], function(name) {
+	stream.events["Echo.StreamServer.Controls.Submit." + name] = {
+		"context": "global",
+		"handler": function() {
+			this.request.send({"force": true});
+		}
+	};
+});
 
 stream.templates.main =
 	'<div class="{class:container} echo-primaryFont echo-primaryBackgroundColor">' +
@@ -174,7 +165,7 @@ stream.renderers.body = function(element) {
 		});
 	}
 	this.events.publish({
-		"topic": "Stream.onReady",
+		"topic": "onReady",
 		"data": this.prepareBroadcastParams({"initial": this.lastRequest.initial})
 	});
 	return element;
@@ -183,7 +174,7 @@ stream.renderers.body = function(element) {
 stream.renderers.state = function(element) {
 	var self = this;
 	var label = this.config.get("streamStateLabel");
-	if ((!label.icon && !label.text) || !this.config.get("liveUpdates")) {
+	if (!label.icon && !label.text || !this.config.get("liveUpdates")) {
 		return element;
 	}
 
@@ -200,7 +191,7 @@ stream.renderers.state = function(element) {
 		return element;
 	}
 
-	element = (element || this.dom.get("state")).empty();
+	element.empty();
 	if (!this.activities.lastState && this.config.get("streamStateToggleBy") === "button") {
 		element.addClass("echo-linkColor echo-clickable").click(function() {
 			self.setStreamState(self.activities.state === "paused" ? "live" : "paused");
@@ -245,7 +236,7 @@ stream.renderers.more = function(element) {
 		.unbind("click")
 		.one("click", function() {
 			self.events.publish({
-				"topic": "Stream.onMoreButtonPress",
+				"topic": "onMoreButtonPress",
 				"data": self.prepareBroadcastParams()
 			});
 			element.html(self.labels.get("loading"));
@@ -328,7 +319,7 @@ stream.methods.childrenRequestItems = function(unique) {
 		item.data.nextPageAfter = data.nextPageAfter;
 		data.entries = self.actualizeChildrenList(item, data.entries);
 		self.events.publish({
-			"topic": "Stream.onDataReceive",
+			"topic": "onDataReceive",
 			"data": self.prepareBroadcastParams({
 				"entries": data.entries,
 				"initial": false
@@ -389,7 +380,7 @@ stream.methods.refresh = function() {
 	this.render();
 	this.initialItemsRequest();
 	this.events.publish({
-		"topic": "Stream.onRerender",
+		"topic": "onRerender",
 		"data": this.prepareBroadcastParams()
 	});
 };
@@ -445,7 +436,7 @@ stream.methods.appendRootItems = function(items, container) {
 	$.each(items || [], function(i, item) {
 		fragment.appendChild(item.render().get(0));
 		self.events.publish({
-			"topic": "Stream.Item.onRender",
+			"topic": "Item.onRender",
 			"data": self.prepareBroadcastParams({
 				"item": {
 					"data": item.data,
@@ -551,7 +542,7 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 	data.entries = data.entries || [];
 
 	this.events.publish({
-		"topic": "Stream.onDataReceive",
+		"topic": "onDataReceive",
 		"data": self.prepareBroadcastParams({
 			"entries": data.entries,
 			"initial": !this.hasInitialData
@@ -570,7 +561,6 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 	this.hasInitialData = true;
 	this.isViewComplete = roots.length !== this.config.get("itemsPerPage");
 	visualizer(roots);
-	//this.startLiveUpdates();
 };
 
 stream.methods.checkTimeframeSatisfy = function() {
@@ -627,7 +617,7 @@ stream.methods.applyLiveUpdates = function(entries) {
 					};
 					if (satisfies || item.byCurrentUser) {
 						self.events.publish({
-							"topic": "Stream.Item.onReceive",
+							"topic": "Item.onReceive",
 							"data": self.prepareBroadcastParams({
 								"item": {"data": item.data}
 							})
@@ -755,9 +745,10 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 				item.deleted = true;
 				// keepChildren flag is required to detect the case when item is being moved
 				if (item.isRoot()) {
-					self.events.publish({
-						"topic": "internal.Item.onDelete",
-						"data": {"item": item, "config": options}
+					item.events.publish({
+						"topic": "internal.onDelete",
+						"data": {"item": item, "config": options},
+						"bubble": true
 					});
 					self.applyStructureUpdates(operation, item, options);
 				} else {
@@ -875,7 +866,7 @@ stream.methods.addItemSpotUpdate = function(item) {
 	var publish = function() {
 		if (!item.dom || !item.dom.content) return;
 		self.events.publish({
-			"topic": "Stream.Item.onRender",
+			"topic": "Item.onRender",
 			"data": self.prepareBroadcastParams({
 				"item": {
 					"data": item.data,
@@ -1008,9 +999,10 @@ stream.methods.placeRootItem = function(item) {
 	} else {
 		this.dom.get("body").empty().append(content);
 	}
-	this.events.publish({
-		"topic": "internal.Item.onAdd",
-		"data": {"item": item}
+	item.events.publish({
+		"topic": "internal.onAdd",
+		"data": {"item": item},
+		"bubble": true
 	});
 };
 
@@ -1220,8 +1212,8 @@ stream.methods.normalizeEntry = function(entry) {
 stream.constructor = function() {
 	var self = this;
 	this.initVars();
-	self.config.get("target").empty().append(self.render());
-	self.recalcEffectsTimeouts();
+	this.config.get("target").empty().append(this.render());
+	this.recalcEffectsTimeouts();
 	//self.initLiveUpdates(function() {
 	//	return {
 	//		"endpoint": "search",
@@ -1231,8 +1223,8 @@ stream.constructor = function() {
 	//		}
 	//	};
 	//}, function(data) { self.handleLiveUpdatesResponse(data); });
-	if (self.config.get("data")) {
-		self.handleInitialResponse(self.config.get("data"), function(data) {
+	if (this.config.get("data")) {
+		this.handleInitialResponse(this.config.get("data"), function(data) {
 			self.lastRequest = {
 				"initial": true,
 				"data": data
@@ -1240,11 +1232,11 @@ stream.constructor = function() {
 			self.render({"element": "body"});
 		});
 	} else {
-		self.initialItemsRequest();
+		this.initialItemsRequest();
 	}
-	self.events.publish({
-		"topic": "Stream.onRender",
-		"data": self.prepareBroadcastParams()
+	this.events.publish({
+		"topic": "onRender",
+		"data": this.prepareBroadcastParams()
 	});
 };
 
@@ -1478,22 +1470,25 @@ item.renderers._childrenContainer = function(element, dom, config) {
 		element.append(initialRendering ? child.render() : child.dom.content);
 		if (child.deleted) {
 			self.events.publish({
-				"topic": "internal.Item.onDelete",
+				"topic": "internal.onDelete",
 				"data": {
 					"item": child,
 					"config": config
-				}
+				},
+				"bubble": true
 			});
 		} else if (child.added) {
 			self.events.publish({
-				"topic": "internal.Item.onAdd",
-				"data": {"item": child}
+				"topic": "internal.onAdd",
+				"data": {"item": child},
+				"bubble": true
 			});
 		// don't publish events while rerendering
 		} else if (initialRendering) {
 			self.events.publish({
-				"topic": "internal.Item.onRender",
-				"data": {"item": child}
+				"topic": "internal.onRender",
+				"data": {"item": child},
+				"bubble": true
 			});
 		}
 	});
@@ -1944,8 +1939,9 @@ item.renderers.expandChildren = function(element, dom, extra) {
 				"extra": {"state": "loading"}
 			});
 			self.events.publish({
-				"topic": "internal.Item.onChildrenExpand",
-				"data": {"data": self.data}
+				"topic": "internal.onChildrenExpand",
+				"data": {"data": self.data},
+				"bubble": true
 			});
 		});
 };
@@ -2077,7 +2073,7 @@ item.methods.assembleButtons = function() {
 			data.callback = function() {
 				callback.call(self);
 				self.events.publish({
-					"topic": "internal.Item.onButtonClick",
+					"topic": "internal.onButtonClick",
 					"data": {
 						"name": data.name,
 						"plugin": plugin,
@@ -2085,7 +2081,8 @@ item.methods.assembleButtons = function() {
 							"data": self.data,
 							"target": self.dom.content
 						}
-					}
+					},
+					"bubble": true
 				});
 			};
 			data.label = data.label || data.name;
