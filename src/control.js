@@ -300,7 +300,7 @@ Echo.Control.prototype.destroy = function() {};
 
 Echo.Control.prototype.init.vars = function() {
 	if (this.manifest.vars) {
-		$.extend(this, {"cache": {}}, this.manifest.vars);
+		$.extend(true, this, {"cache": {}}, this.manifest.vars);
 	}
 };
 
