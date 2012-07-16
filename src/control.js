@@ -97,6 +97,10 @@ Echo.Control.prototype.set = function(field, value) {
 	Echo.Utils.setNestedValue(this, field, value);
 };
 
+Echo.Control.prototype.remove = function(field) {
+	this.set(field, undefined);
+};
+
 Echo.Control.prototype.substitute = function(template, data, instructions) {
 	var control = this;
 	data = data || {};
@@ -251,6 +255,19 @@ Echo.Control.prototype.init = function(subsystems) {
 	});
 };
 
+Echo.Control.prototype.showMessage = function(data) {
+	if (!this.config.get("infoMessages.enabled")) return;
+	// TODO: check if we need a parameter to hide error, but show loading messages
+	//       (if data.type == "error")
+	var layout = data.layout || this.config.get("infoMessages.layout");
+	this.render({
+		"template": this.templates.message[layout],
+		"data": data,
+		"target": data.target
+	});
+};
+
+
 // plugins-related functions
 
 Echo.Control.prototype.enablePlugin = function(name) {
@@ -282,7 +299,9 @@ Echo.Control.prototype.destroy = function() {};
 // internal functions
 
 Echo.Control.prototype.init.vars = function() {
-	return {"cache": {}};
+	if (this.manifest.vars) {
+		$.extend(true, this, {"cache": {}}, this.manifest.vars);
+	}
 };
 
 Echo.Control.prototype.init.extension = function() {
@@ -384,13 +403,18 @@ Echo.Control.prototype.init.loading = function() {
 
 Echo.Control.prototype.init.user = function(callback) {
 	var control = this;
-	Echo.UserSession({
-		"appkey": this.config.get("appkey"),
-		"ready": function() {
-			control.user = this;
-			callback.call(control);
-		}
-	});
+	if (this.config.get("user")) {
+		this.user = this.config.get("user");
+		callback.call(control);
+	} else {
+		Echo.UserSession({
+			"appkey": this.config.get("appkey"),
+			"ready": function() {
+				control.user = this;
+				callback.call(control);
+			}
+		});
+	}
 };
 
 Echo.Control.prototype.init.plugins = function(callback) {
@@ -410,6 +434,7 @@ Echo.Control.prototype.init.plugins = function(callback) {
 };
 
 // TODO: define this function later, need to select loader first
+// TODO: load dependencies for the nested controls, ex: Stream.Item, i.e. Stream.*
 Echo.Control.prototype._loadPluginsDependencies = function(callback) {
 	var plugins = this.config.get("pluginsOrder");
 	var scripts = Echo.Utils.foldl([], plugins, function(name, acc) {
@@ -437,14 +462,6 @@ Echo.Control.prototype._templateTransformer = function(args) {
 	var content = $.isFunction(html) ? html() : html;
 	$(anchor, args.template)[action](this.substitute(content, args.data));
 	return args.template;
-};
-
-Echo.Control.prototype.showMessage = function(data) {
-	if (!this.config.get("infoMessages.enabled")) return;
-	// TODO: check if we need a parameter to hide error, but show loading messages
-	//       (if data.type == "error")
-	var layout = data.layout || this.config.get("infoMessages.layout");
-	this.render({"template": this.templates.message[layout], "data": data});
 };
 
 Echo.Control.prototype.baseCSS =

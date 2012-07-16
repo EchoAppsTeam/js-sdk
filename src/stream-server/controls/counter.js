@@ -34,6 +34,8 @@ counter.constructor = function() {
 counter.methods.refresh = function() {
 	this.showMessage({"type": "loading"});
 	this.set("data", {});
+	this.get("request").abort();
+	this.remove("request");
 	this._request();
 	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Counter");
 	component.parent.refresh.call(this);
@@ -41,44 +43,21 @@ counter.methods.refresh = function() {
 
 // internal functions
 
-/* TODO: enable this function instead of the current one when:
-         - Echo.API supports first and next requests in a single instance
-         - when Transport will be able to handle config updates
 counter.methods._request = function() {
 	var request = this.get("request");
 	if (!request) {
 		request = Echo.StreamServer.API.request({
 			"endpoint": "count",
-			"method": "GET",
+			"data": {
+				"q": this.config.get("query"),
+				"appkey": this.config.get("appkey")
+			},
 			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
 			"recurring": true,
 			"onError": $.proxy(this._error, this),
 			"onData": $.proxy(this._update, this)
 		});
-		this.set("requst", request);
-	}
-	request.config.set("data", {
-		"q": this.config.get("query"),
-		"appkey": this.config.get("appkey")
-	});
-	request.send();
-};
-*/
-
-counter.methods._request = function() {
-	var request = this.get("request");
-	if (!request) {
-		request = Echo.StreamServer.API.request({
-			"endpoint": "count",
-			"method": "GET",
-			"data": {
-				"q": this.config.get("query"),
-				"appkey": this.config.get("appkey")
-			},
-			"onError": $.proxy(this._error, this),
-			"onData": $.proxy(this._update, this)
-		});
-		this.set("requst", request);
+		this.set("request", request);
 	}
 	request.send();
 };

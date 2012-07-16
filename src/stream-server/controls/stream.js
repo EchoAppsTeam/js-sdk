@@ -17,6 +17,9 @@ stream.config = {
 	"flashColor": "#ffff99",
 	"item": {},
 	"itemsPerPage": 15,
+	"liveUpdates": true,
+	"liveUpdatesTimeout": 10,
+	"liveUpdatesTimeoutMin": 3,
 	"openLinksInNewWindow": false,
 	"providerIcon": "//cdn.echoenabled.com/images/favicons/comments.png",
 	"slideTimeout": 700,
@@ -54,15 +57,12 @@ stream.labels = {
 };
 
 stream.events = {
-	"internal.User.onInvalidate": function() {
-		this.refresh();
-	},
-	"internal.Item.onAdd": function(topic, data) {
+	"Echo.StreamServer.Controls.Stream.Item.internal.onAdd": function(topic, data) {
 		var self = this;
 		data.item.dom.content.hide();
 		this.queueActivity({
 			"action": "animation",
-			"actorID": data.item.data.actor.id,
+			"actorID": data.item.get("data.actor.id"),
 			"itemUnique": data.item.unique(),
 			"priority": "highest",
 			"handler": function() {
@@ -70,8 +70,9 @@ stream.events = {
 				self.addItemSpotUpdate(data.item);
 			}
 		});
+		return {"stop": "bubble"};
 	},
-	"internal.Item.onDelete": function(topic, data) {
+	"Echo.StreamServer.Controls.Stream.Item.internal.onDelete": function(topic, data) {
 		var self = this;
 		this.queueActivity({
 			"action": "animation",
@@ -83,10 +84,11 @@ stream.events = {
 				self.deleteItemSpotUpdate(data.item, data.config);
 			}
 		});
+		return {"stop": "bubble"};
 	},
-	"internal.Item.onRender": function(topic, data) {
+	"Echo.StreamServer.Controls.Stream.Item.internal.onRender": function(topic, data) {
 		this.events.publish({
-			"topic": "Stream.Item.onRender",
+			"topic": "Item.onRender",
 			"data": this.prepareBroadcastParams({
 				"item": {
 					"data": data.item.data,
@@ -94,36 +96,28 @@ stream.events = {
 				}
 			})
 		});
+		return {"stop": "bubble"};
 	},
-	"internal.Item.onControlClick": function(topic, data) {
-		topic = this.namespace + ".Item.onControlClick";
+	"Echo.StreamServer.Controls.Stream.Item.internal.onButtonClick": function(topic, data) {
 		this.events.publish({
-			"topic": topic,
+			"topic": "Item.onButtonClick",
 			"data": this.prepareBroadcastParams(data)
 		});
+		return {"stop": "bubble"};
 	},
-	"internal.Item.onChildrenExpand": function(topic, args) {
+	"Echo.StreamServer.Controls.Stream.Item.internal.onChildrenExpand": function(topic, args) {
 		this.childrenRequestItems(args.unique());
-	},
-	"Submit.onPostComplete": function(topic) {
-		var self = this;
-		Echo.Broadcast.subscribe({
-			"topic": topic,
-			"handler": function() {
-				self.startLiveUpdates(true);
-			}
-		});
-	},
-	"Submit.onEditComplete": function(topic) {
-		var self = this;
-		Echo.Broadcast.subscribe({
-			"topic": topic,
-			"handler": function() {
-				self.startLiveUpdates(true);
-			}
-		});
+		return {"stop": "bubble"};
 	}
 };
+$.map(["onPostComplete", "Plugins.Edit.onEditComplete"], function(name) {
+	stream.events["Echo.StreamServer.Controls.Submit." + name] = {
+		"context": "global",
+		"handler": function() {
+			this.request.send({"force": true});
+		}
+	};
+});
 
 stream.templates.main =
 	'<div class="{class:container} echo-primaryFont echo-primaryBackgroundColor">' +
@@ -171,7 +165,7 @@ stream.renderers.body = function(element) {
 		});
 	}
 	this.events.publish({
-		"topic": "Stream.onReady",
+		"topic": "onReady",
 		"data": this.prepareBroadcastParams({"initial": this.lastRequest.initial})
 	});
 	return element;
@@ -180,7 +174,7 @@ stream.renderers.body = function(element) {
 stream.renderers.state = function(element) {
 	var self = this;
 	var label = this.config.get("streamStateLabel");
-	if ((!label.icon && !label.text) || !this.config.get("liveUpdates")) {
+	if (!label.icon && !label.text || !this.config.get("liveUpdates")) {
 		return element;
 	}
 
@@ -197,7 +191,7 @@ stream.renderers.state = function(element) {
 		return element;
 	}
 
-	element = (element || this.dom.get("state")).empty();
+	element.empty();
 	if (!this.activities.lastState && this.config.get("streamStateToggleBy") === "button") {
 		element.addClass("echo-linkColor echo-clickable").click(function() {
 			self.setStreamState(self.activities.state === "paused" ? "live" : "paused");
@@ -211,7 +205,7 @@ stream.renderers.state = function(element) {
 		"count": ' <span class="{class:state-count}">({data:count} {label:new})</span>'
 	};
 	if (label.icon) {
-		element.append(templates.picture);
+		element.append(this.substitute(templates.picture));
 	}
 	if (label.text) {
 		element.append(this.substitute(templates.message));
@@ -242,7 +236,7 @@ stream.renderers.more = function(element) {
 		.unbind("click")
 		.one("click", function() {
 			self.events.publish({
-				"topic": "Stream.onMoreButtonPress",
+				"topic": "onMoreButtonPress",
 				"data": self.prepareBroadcastParams()
 			});
 			element.html(self.labels.get("loading"));
@@ -260,7 +254,6 @@ stream.methods.initVars = function() {
 	this.hasInitialData = false;
 	this.items = {};   // items by unique key hash
 	this.threads = []; // items tree
-	//this.cleanupErrorHandlers();
 };
 
 stream.methods.actualizeChildrenList = function(parent, entries) {
@@ -326,7 +319,7 @@ stream.methods.childrenRequestItems = function(unique) {
 		item.data.nextPageAfter = data.nextPageAfter;
 		data.entries = self.actualizeChildrenList(item, data.entries);
 		self.events.publish({
-			"topic": "Stream.onDataReceive",
+			"topic": "onDataReceive",
 			"data": self.prepareBroadcastParams({
 				"entries": data.entries,
 				"initial": false
@@ -380,14 +373,14 @@ stream.methods.setStreamState = function(state) {
 };
 
 stream.methods.refresh = function() {
-	this.stopLiveUpdates();
+	this.request.abort();
 	this.initVars();
 	delete this.lastRequest;
 	this.clearCache();
 	this.render();
 	this.initialItemsRequest();
 	this.events.publish({
-		"topic": "Stream.onRerender",
+		"topic": "onRerender",
 		"data": this.prepareBroadcastParams()
 	});
 };
@@ -443,7 +436,7 @@ stream.methods.appendRootItems = function(items, container) {
 	$.each(items || [], function(i, item) {
 		fragment.appendChild(item.render().get(0));
 		self.events.publish({
-			"topic": "Stream.Item.onRender",
+			"topic": "Item.onRender",
 			"data": self.prepareBroadcastParams({
 				"item": {
 					"data": item.data,
@@ -496,7 +489,7 @@ stream.methods.constructChildrenSearchQuery = function(item) {
 
 stream.methods.requestItems = function(extra, visualizer) {
 	var self = this;
-	Echo.StreamServer.API.request({
+	this.request = Echo.StreamServer.API.request({
 		"endpoint": "search",
 		//"recurring": true,
 		"method": "GET",
@@ -530,9 +523,7 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 		});
 		return;
 	}
-	//this.cleanupErrorHandlers(true);
 	this.config.get("target").show();
-	//this.changeLiveUpdatesTimeout(data);
 	this.nextSince = data.nextSince || 0;
 	this.nextPageAfter = data.nextPageAfter;
 	var presentation = this.extractPresentationConfig(data);
@@ -551,7 +542,7 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 	data.entries = data.entries || [];
 
 	this.events.publish({
-		"topic": "Stream.onDataReceive",
+		"topic": "onDataReceive",
 		"data": self.prepareBroadcastParams({
 			"entries": data.entries,
 			"initial": !this.hasInitialData
@@ -570,7 +561,6 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 	this.hasInitialData = true;
 	this.isViewComplete = roots.length !== this.config.get("itemsPerPage");
 	visualizer(roots);
-	//this.startLiveUpdates();
 };
 
 stream.methods.checkTimeframeSatisfy = function() {
@@ -627,7 +617,7 @@ stream.methods.applyLiveUpdates = function(entries) {
 					};
 					if (satisfies || item.byCurrentUser) {
 						self.events.publish({
-							"topic": "Stream.Item.onReceive",
+							"topic": "Item.onReceive",
 							"data": self.prepareBroadcastParams({
 								"item": {"data": item.data}
 							})
@@ -755,9 +745,10 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 				item.deleted = true;
 				// keepChildren flag is required to detect the case when item is being moved
 				if (item.isRoot()) {
-					self.events.publish({
-						"topic": "internal.Item.onDelete",
-						"data": {"item": item, "config": options}
+					item.events.publish({
+						"topic": "internal.onDelete",
+						"data": {"item": item, "config": options},
+						"bubble": true
 					});
 					self.applyStructureUpdates(operation, item, options);
 				} else {
@@ -875,7 +866,7 @@ stream.methods.addItemSpotUpdate = function(item) {
 	var publish = function() {
 		if (!item.dom || !item.dom.content) return;
 		self.events.publish({
-			"topic": "Stream.Item.onRender",
+			"topic": "Item.onRender",
 			"data": self.prepareBroadcastParams({
 				"item": {
 					"data": item.data,
@@ -949,7 +940,7 @@ stream.methods.hasParentItem = function(item) {
 };
 
 stream.methods.maybeMoveItem = function(item) {
-	return item.forceInject;
+	return item.get("forceInject");
 };
 
 stream.methods.withinVisibleFrame = function(item, items, isViewComplete, sortOrder) {
@@ -1008,9 +999,10 @@ stream.methods.placeRootItem = function(item) {
 	} else {
 		this.dom.get("body").empty().append(content);
 	}
-	this.events.publish({
-		"topic": "internal.Item.onAdd",
-		"data": {"item": item}
+	item.events.publish({
+		"topic": "internal.onAdd",
+		"data": {"item": item},
+		"bubble": true
 	});
 };
 
@@ -1091,7 +1083,9 @@ stream.methods.initItem = function(entry, isLive) {
 	// caching item template to avoid unnecessary work
 	var template = item.template;
 	item.template = function() {
-		if (!self.vars.cache.itemTemplate) {
+		if (!self.vars || !self.vars.cache || !self.vars.cache.itemTemplate) {
+			self.vars = {};
+			self.vars.cache = {};
 			self.vars.cache.itemTemplate = $.isFunction(template)
 				? template.apply(this, arguments)
 				: template;
@@ -1110,12 +1104,12 @@ stream.methods.updateItem = function(entry) {
 	var acc = accRelatedSortOrder && this.getRespectiveAccumulator(item, sortOrder);
 	if (item.data.object.published !== entry.object.published) {
 		item.set("timestamp", Echo.Utils.timestampFromW3CDTF(entry.object.published));
-		item.forceInject = true;
+		item.set("forceInject", true);
 	}
 	$.extend(item.data, entry);
 	if (accRelatedSortOrder) {
 		if (this.getRespectiveAccumulator(item, sortOrder) != acc) {
-			item.forceInject = true;
+			item.set("forceInject", true);
 		}
 	}
 	return item;
@@ -1124,7 +1118,7 @@ stream.methods.updateItem = function(entry) {
 stream.methods.getItemProjectedIndex = function(item, items, sort) {
 	var self = this;
 	var index;
-	if (item.live || item.forceInject) {
+	if (item.config.get("live") || item.get("forceInject")) {
 		$.each(items || [], function(i, entry) {
 			if (self.compareItems(entry, item, sort)) {
 				index = i;
@@ -1137,7 +1131,7 @@ stream.methods.getItemProjectedIndex = function(item, items, sort) {
 
 stream.methods.addItemToList = function(items, item, sort) {
 	items.splice(this.getItemProjectedIndex(item, items, sort), 0, item);
-	delete item.forceInject;
+	item.set("forceInject", false);
 	this.items[item.unique()] = item;
 };
 
@@ -1155,7 +1149,7 @@ stream.methods.applyStructureUpdates = function(action, item, options) {
 				}
 				item.set("depth", parent.get("depth") + 1);
 				parent.set("threading", true);
-				item.forceInject = true;
+				item.set("forceInject", true);
 				this.addItemToList(
 					parent.get("children"),
 					item,
@@ -1220,8 +1214,8 @@ stream.methods.normalizeEntry = function(entry) {
 stream.constructor = function() {
 	var self = this;
 	this.initVars();
-	self.config.get("target").empty().append(self.render());
-	self.recalcEffectsTimeouts();
+	this.config.get("target").empty().append(this.render());
+	this.recalcEffectsTimeouts();
 	//self.initLiveUpdates(function() {
 	//	return {
 	//		"endpoint": "search",
@@ -1231,8 +1225,8 @@ stream.constructor = function() {
 	//		}
 	//	};
 	//}, function(data) { self.handleLiveUpdatesResponse(data); });
-	if (self.config.get("data")) {
-		self.handleInitialResponse(self.config.get("data"), function(data) {
+	if (this.config.get("data")) {
+		this.handleInitialResponse(this.config.get("data"), function(data) {
 			self.lastRequest = {
 				"initial": true,
 				"data": data
@@ -1240,11 +1234,11 @@ stream.constructor = function() {
 			self.render({"element": "body"});
 		});
 	} else {
-		self.initialItemsRequest();
+		this.initialItemsRequest();
 	}
-	self.events.publish({
-		"topic": "Stream.onRender",
-		"data": self.prepareBroadcastParams()
+	this.events.publish({
+		"topic": "onRender",
+		"data": this.prepareBroadcastParams()
 	});
 };
 
@@ -1478,22 +1472,25 @@ item.renderers._childrenContainer = function(element, dom, config) {
 		element.append(initialRendering ? child.render() : child.dom.content);
 		if (child.deleted) {
 			self.events.publish({
-				"topic": "internal.Item.onDelete",
+				"topic": "internal.onDelete",
 				"data": {
 					"item": child,
 					"config": config
-				}
+				},
+				"bubble": true
 			});
 		} else if (child.added) {
 			self.events.publish({
-				"topic": "internal.Item.onAdd",
-				"data": {"item": child}
+				"topic": "internal.onAdd",
+				"data": {"item": child},
+				"bubble": true
 			});
 		// don't publish events while rerendering
 		} else if (initialRendering) {
 			self.events.publish({
-				"topic": "internal.Item.onRender",
-				"data": {"item": child}
+				"topic": "internal.onRender",
+				"data": {"item": child},
+				"bubble": true
 			});
 		}
 	});
@@ -1944,8 +1941,9 @@ item.renderers.expandChildren = function(element, dom, extra) {
 				"extra": {"state": "loading"}
 			});
 			self.events.publish({
-				"topic": "internal.Item.onChildrenExpand",
-				"data": {"data": self.data}
+				"topic": "internal.onChildrenExpand",
+				"data": {"data": self.data},
+				"bubble": true
 			});
 		});
 };
@@ -2023,7 +2021,7 @@ item.methods.hasMoreChildren = function() {
 
 item.methods.getNextPageAfter = function() {
 	var children = $.grep(this.children, function(child) {
-		return !child.live;
+		return !child.config.get("live");
 	});
 	var index = this.config.get("children.sortOrder") == "chronological"
 		? children.length - 1
@@ -2077,7 +2075,7 @@ item.methods.assembleButtons = function() {
 			data.callback = function() {
 				callback.call(self);
 				self.events.publish({
-					"topic": "internal.Item.onButtonClick",
+					"topic": "internal.onButtonClick",
 					"data": {
 						"name": data.name,
 						"plugin": plugin,
@@ -2085,7 +2083,8 @@ item.methods.assembleButtons = function() {
 							"data": self.data,
 							"target": self.dom.content
 						}
-					}
+					},
+					"bubble": true
 				});
 			};
 			data.label = data.label || data.name;
@@ -2124,7 +2123,7 @@ item.methods.sortButtons = function() {
 				delete defaultOrder[pos];
 			}
 		};
-		var order = $.foldl([], requiredOrder, function(name, acc) {
+		var order = Echo.Utils.foldl([], requiredOrder, function(name, acc) {
 			if (/^(.*)\./.test(name)) {
 				push(name, acc);
 			} else {
@@ -2249,21 +2248,26 @@ item.methods.parentUnique = function() {
 item.methods.addButtonSpec = function(plugin, spec) {
 	if (!this.buttonSpecs[plugin]) {
 		this.buttonSpecs[plugin] = [];
+	} else {
+		return;
 	}
 	this.buttonSpecs[plugin].push(spec);
 };
 
+item.vars = {
+	"children": [],
+	"depth": 0,
+	"threading": false,
+	"textExpanded": false,
+	"blocked": false,
+	"buttonsOrder": [],
+	"buttonSpecs": {},
+	"buttons": {}
+}
+
 item.constructor = function(config) {
-	this.children = [];
-	this.depth = 0;
-	this.threading = false;
 	//"id": entry.object.id, // short cut for "id" item field
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
-	this.textExpanded = false;
-	this.blocked = false;
-	this.buttonsOrder = [];
-	this.buttonSpecs = {};
-	this.buttons = {}; 
 };
 
 var itemDepthRules = [];

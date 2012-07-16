@@ -81,8 +81,12 @@ submit.templates.main =
 		'</div>' +
 	'</div>';
 
+submit.constructor = function() {
+	this.render();
+}
+
 // renderers
-	
+
 submit.renderers.tagsContainer = 
 submit.renderers.markersContainer = function(element) {
 	return (this.user.any("roles", ["administrator", "moderator"])) ? element.show() : element.hide();
@@ -117,10 +121,6 @@ submit.renderers.metaFields = function(element, dom, extra) {
 };
 
 submit.renderers.text = function(element) {
-	var content = this.config.get("data.object.content");
-	if (content) {
-		element.val(content);
-	}
 	return element.iHint({
 		"text": this.config.get("actionString"),
 		"className": "echo-secondaryColor"
