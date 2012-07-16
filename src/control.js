@@ -349,7 +349,7 @@ Echo.Control.prototype.init.events = function() {
 			Echo.Events.publish(prepare(params));
 		},
 		"subscribe": function(params) {
-			Echo.Events.subscribe(prepare(params));
+			return Echo.Events.subscribe(prepare(params));
 		},
 		"unsubscribe": Echo.Events.unsubscribe
 	};
