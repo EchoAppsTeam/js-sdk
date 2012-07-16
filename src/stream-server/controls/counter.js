@@ -82,8 +82,16 @@ counter.methods._error = function(data) {
 		this.set("data.count", data.errorMessage + "+");
 		this.render();
 	} else {
-		this.showMessage({"type": "error", "data": data});
+		this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
 	}
+	this.events.publish({
+		"topic": "onError",
+		"data": {
+			"data": data,
+			"query": this.config.get("query"),
+			"target": this.config.get("target").get(0)
+		}
+	});
 };
 
 Echo.Control.create(counter);

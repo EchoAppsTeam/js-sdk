@@ -223,6 +223,11 @@ Echo.Tests.Stats = {
 			var r = func.apply(this, arguments);
 			if (typeof r != "undefined") return r;
 		};
+		$.each(func, function(key, value) {
+			if (func.hasOwnProperty(key)) {
+				parentObject[name][key] = value;
+			}
+		});
 	},
 	"getFunctionNames": function(namespace, prefix) {
 		$.each([namespace, namespace.prototype], function(i, parentObject) {
