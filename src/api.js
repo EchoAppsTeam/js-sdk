@@ -58,9 +58,9 @@ Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 	var ajaxSettings = {
 		url: this._prepareURL(),
 		type: this.config.get("method"),
-		error: function(errorResponse) {
+		error: function(errorResponse, requestParams) {
 			errorResponse = self._wrapErrorResponse(errorResponse);
-			self.config.get("onError")(errorResponse);
+			self.config.get("onError")(errorResponse, requestParams);
 		},
 		success: this.config.get("onData"),
 		beforeSend: this.config.get("onOpen"),
@@ -165,9 +165,9 @@ Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 	};
 	socket.onopen = this.config.get("onOpen");
 	socket.onclose = this.config.get("onClose");
-	socket.onerror = function(errorResponse) {
+	socket.onerror = function(errorResponse, requestParams) {
 		errorResponse = self._wrapErrorResponse(errorResponse);
-		self.config.get("onError")(errorResponse);
+		self.config.get("onError")(errorResponse, requestParams);
 	};
 	return socket;
 };
@@ -211,6 +211,9 @@ Echo.API.Request.prototype.request = function(params) {
 				self.config.get("onError")({
 					"result": "error",
 					"errorCode": "network_timeout"
+				}, {
+					"requestType": self.requestType,
+					"critical": true
 				});
 				self.transport.abort();
 			}, timeout * 1000);

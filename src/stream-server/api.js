@@ -11,6 +11,7 @@ Echo.StreamServer.API.Request = function(config) {
 	config = $.extend({
 		"liveUpdatesTimeout": 5,
 		"onData": function() {},
+		"skipInitialRequest": false,
 		"onError": function() {},
 		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity"
 	}, config);
@@ -45,16 +46,18 @@ Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(c
 	var self = this;
 	var _config = $.extend({}, config);
 	return $.extend(config, {
-		"onData": function(response) {
-			self._onData(response, _config);
+		"onData": function(response, requestParams) {
+			self._onData(response, {
+				"requestType": self.requestType
+			}, _config);
 		},
-		"onError": function(responseError) {
-			self._onError(responseError, _config);
+		"onError": function(responseError, requestParams) {
+			self._onError(responseError, requestParams, _config);
 		}
 	});
 };
 
-Echo.StreamServer.API.Request.prototype._onData = function(response, config) {
+Echo.StreamServer.API.Request.prototype._onData = function(response, requestParams, config) {
 	response = response || {};
 	if (this.liveUpdates && this.liveUpdates.responseHandler) {
 		this.liveUpdates.responseHandler(response);
@@ -66,7 +69,7 @@ Echo.StreamServer.API.Request.prototype._onData = function(response, config) {
 		});
 		return;
 	}
-	config.onData(response);
+	config.onData(response, requestParams);
 	if (!this.error && this.requestType === "initial") {
 		this.requestType = "secondary";
 	}
@@ -79,7 +82,7 @@ Echo.StreamServer.API.Request.prototype._onData = function(response, config) {
 	this._startLiveUpdates();
 };
 
-Echo.StreamServer.API.Request.prototype._onError = function(responseError, config) {
+Echo.StreamServer.API.Request.prototype._onError = function(responseError, requestParams, config) {
 	this.constructor.parent._onError.apply(this, arguments);
 	this._handleErrorResponse(responseError, {
 		"callback": config.onError
@@ -183,8 +186,17 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 	var timeout = this.liveUpdates.timeouts.length
 		? this.liveUpdates.timeouts.shift()
 		: this.config.get("liveUpdatesTimeout");
-	if (this.requestType === "initial" && !this.error) {
-		this.request();
+	if (this.requestType === "initial" && !this.error && !this.config.get("skipInitialRequest")) {
+		this.request({
+			"nextSince": self.nextSince 
+		});
+		return;
+	} else if (this.requestType === "initial") {
+		this.config.get("onData")({}, {
+			"requestType": this.requestType
+		});
+		this.requestType = "secondary";
+		return;
 	}
 	this.liveUpdates.timers.regular = setTimeout(function() {
 		self.request({
@@ -228,24 +240,20 @@ Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, co
 				if (!self.liveUpdates && self.requestType === "initial") {
 					self._initLiveUpdates();
 				}
-				errorCallback(
-					$.extend(data, {
-						"requestType": self.requestType,
-						"retryTimeout": timeout,
-						"critical": false
-					})
-				);
+				errorCallback(data, {
+					"requestType": self.requestType,
+					"retryTimeout": timeout,
+					"critical": false
+				});
 				self._startLiveUpdates();
 			}
 		}, timeout);
 	} else {
 		this.waitingTimeoutStep = 0;
-		errorCallback(
-			$.extend(data, {
-				"requestType": self.requestType,
-				"critical": true
-			})
-		);
+		errorCallback(data, {
+			"requestType": self.requestType,
+			"critical": true
+		});
 	}
 	this.error = data;
 };
