@@ -18,6 +18,7 @@ Echo.Control.create = function(manifest) {
 		if (!config || !config.target) return;
 		this.data = config.data || {};
 		delete config.data;
+		this.name = manifest.name;
 		this.manifest = manifest;
 		this.init([
 			"vars",
@@ -267,31 +268,8 @@ Echo.Control.prototype.showMessage = function(data) {
 	});
 };
 
-
-// plugins-related functions
-
-Echo.Control.prototype.enablePlugin = function(name) {
-	this.config.set("plugins." + name + ".enabled", true);
-};
-
-Echo.Control.prototype.disablePlugin = function(name) {
-	this.config.set("plugins." + name + ".enabled", false);
-};
-
-Echo.Control.prototype.isPluginEnabled = function(name) {
-	return this.config.get("plugins." + name + ".enabled", true);
-};
-
-Echo.Control.prototype.isPluginApplicable = function(plugin) {
-	var self = this, applicable = false;
-	$.each(plugin.manifest.applications || [], function(i, application) {
-		var component = Echo.Utils.getNestedValue(window, application);
-		if (component && self instanceof component) {
-			applicable = true;
-			return false; // break
-		}
-	});
-	return applicable;
+Echo.Control.prototype.getPlugin = function(name) {
+	return this.plugins[name];
 };
 
 Echo.Control.prototype.destroy = function() {};
@@ -300,7 +278,7 @@ Echo.Control.prototype.destroy = function() {};
 
 Echo.Control.prototype.init.vars = function() {
 	if (this.manifest.vars) {
-		$.extend(true, this, {"cache": {}}, this.manifest.vars);
+		$.extend(true, this, {"cache": {}, "plugins": {}}, this.manifest.vars);
 	}
 };
 
@@ -440,11 +418,11 @@ Echo.Control.prototype.init.user = function(callback) {
 
 Echo.Control.prototype.init.plugins = function(callback) {
 	var control = this;
-	control.plugins = {};
 	this._loadPluginsDependencies(function() {
 		$.map(control.config.get("pluginsOrder"), function(name) {
-			var plugin = Echo.Plugins[name];
-			if (plugin && control.isPluginApplicable(plugin)) {
+			var plugin = Echo.Plugin.getClass(name, control.name);
+			// TODO: check if plugin is enabled in config
+			if (plugin) {
 				control.plugins[name] = new plugin({
 					"component": control
 				});

@@ -1,10 +1,8 @@
 (function($) {
 
-if (Echo.Utils.isComponentDefined("Echo.Plugins.SubmitTextCounter")) return;
+var plugin = Echo.Plugin.skeleton("SubmitTextCounter", "Echo.StreamServer.Controls.Submit");
 
-var plugin = Echo.Plugin.skeleton("SubmitTextCounter");
-
-plugin.applications = ["Echo.StreamServer.Controls.Submit"];
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var component = this.component;

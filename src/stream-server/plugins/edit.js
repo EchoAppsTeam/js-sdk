@@ -1,10 +1,8 @@
 (function($) {
 
-if (Echo.Utils.isComponentDefined("Echo.Plugins.Edit")) return;
+var plugin = Echo.Plugin.skeleton("Edit", "Echo.StreamServer.Controls.Stream.Item");
 
-var plugin = Echo.Plugin.skeleton("Edit");
-
-plugin.applications = ["Echo.StreamServer.Controls.Stream.Item"];
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var component = this.component;
@@ -39,7 +37,7 @@ plugin.methods.assembleButton = function() {
 		return {
 			"name": "Edit",
 			"label": plugin.labels.get("editControl"),
-			"visible":  item.user.is("admin") || item.user.has("identity", item.data.actor.id),
+			"visible":  true, //item.user.is("admin") || item.user.has("identity", item.data.actor.id),
 			"callback": function() {
 				var config = plugin.submitConfig(item, item.dom.get("subcontainer"));
 				config["targetQuery"] = plugin.config.get("query", "");
@@ -57,11 +55,9 @@ Echo.Plugin.create(plugin);
 
 (function($) {
 
-if (Echo.Utils.isComponentDefined("Echo.Plugins.EditSubmit")) return;
+var plugin = Echo.Plugin.skeleton("Edit", "Echo.StreamServer.Controls.Submit");
 
-var plugin = Echo.Plugin.skeleton("EditSubmit");
-
-plugin.applications = ["Echo.StreamServer.Controls.Submit"];
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var component = this.component;
@@ -133,7 +129,7 @@ plugin.renderers.Submit.editedDate = function(element) {
 plugin.renderers.Submit.cancelButton = function(element) {
 	var self = this;
 	var component = self.component;
-	element.click(function() {
+	return element.click(function() {
 		component.events.publish({
 			"topic": "onEditError",
 			"context": component.config.get("parent.context")

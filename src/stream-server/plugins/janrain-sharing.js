@@ -1,10 +1,8 @@
 (function($) {
 
-if (Echo.Utils.isComponentDefined("Echo.Plugins.JanrainSharing")) return;
+var plugin = Echo.Plugin.skeleton("JanrainSharing", "Echo.StreamServer.Controls.Submit");
 
-var plugin = Echo.Plugin.skeleton("JanrainSharing");
-
-plugin.applications = ["Echo.StreamServer.Controls.Submit"];
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	if (!this.config.get("appId") || !this.config.get("xdReceiver")) return false;

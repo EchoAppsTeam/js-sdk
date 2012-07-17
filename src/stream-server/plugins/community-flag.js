@@ -1,10 +1,8 @@
 (function($) {
 
-if (Echo.Utils.isComponentDefined("Echo.Plugins.CommunityFlag")) return;
+var plugin = Echo.Plugin.skeleton("CommunityFlag", "Echo.StreamServer.Controls.Stream.Item");
 
-var plugin = Echo.Plugin.skeleton("CommunityFlag");
-
-plugin.applications = ["Echo.StreamServer.Controls.Stream.Item"];
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 	"showUsers": true

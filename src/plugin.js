@@ -2,15 +2,12 @@
 
 if (Echo.Utils.isComponentDefined("Echo.Plugin")) return;
 
-// TODO: replace "Plugins" with different name to avoid conflict with e2 scripts
-if (!Echo.Plugins) Echo.Plugins = {};
-
 Echo.Plugin = function() {};
 
 // static interface
 
 Echo.Plugin.create = function(manifest) {
-	var plugin = Echo.Utils.getNestedValue(window, manifest.name);
+	var plugin = Echo.Plugin.getClass(manifest.name, manifest.component);
 	// prevent multiple re-definitions
 	if (plugin) return plugin;
 	var _constructor = function(config) {
@@ -38,13 +35,18 @@ Echo.Plugin.create = function(manifest) {
 	if (manifest.methods) {
 		$.extend(_constructor.prototype, manifest.methods);
 	}
-	Echo.Utils.setNestedValue(Echo.Plugins, manifest.name, _constructor);
+	Echo.Utils.setNestedValue(
+		window,
+		Echo.Plugin.getClassName(manifest.name, manifest.component),
+		_constructor
+	);
 	return _constructor;
 };
 
-Echo.Plugin.skeleton = function(name) {
+Echo.Plugin.skeleton = function(name, component) {
 	return {
 		"name": name,
+		"component": component,
 		"config": {},
 		"labels": {},
 		"events": {},
@@ -53,6 +55,18 @@ Echo.Plugin.skeleton = function(name) {
 		"templates": {},
 		"init": function(){}
 	};
+};
+
+Echo.Plugin.isDefined = function(manifest) {
+	return !!Echo.Plugin.getClass(manifest.name, manifest.component);
+};
+
+Echo.Plugin.getClass = function(name, component) {
+	return Echo.Utils.getNestedValue(window, Echo.Plugin.getClassName(name, component));
+};
+
+Echo.Plugin.getClassName = function(name, component) {
+	return component + ".Plugins." + name;
 };
 
 Echo.Plugin.prototype.set = function(key, value) {
