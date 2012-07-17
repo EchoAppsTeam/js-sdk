@@ -346,6 +346,11 @@ Echo.Control.prototype.init.events = function() {
 	var events = {
 		"publish": function(params) {
 			params.topic = control.manifest.name + "." + params.topic;
+			params.data = params.data || {};
+			// process data through the normalization function if defined
+			if (control.prepareBroadcastParams) {
+				params.data = control.prepareBroadcastParams(params.data);
+			}
 			Echo.Events.publish(prepare(params));
 		},
 		"subscribe": function(params) {
@@ -364,6 +369,22 @@ Echo.Control.prototype.init.events = function() {
 			"topic": "Echo.UserSession.onInvalidate",
 			"context": "global",
 			"handler": control.refresh
+		});
+		var requestUpdates = function() {
+			if (control.get("request")) {
+				control.get("request").send({"force": true});
+			}
+		};
+		// subscribe to inner data invalidation events
+		events.subscribe({
+			"topic": "local.Echo.Control.onDataInvalidate",
+			"handler": requestUpdates
+		});
+		// subscribe to outer data invalidation events
+		events.subscribe({
+			"topic": "Echo.Control.onDataInvalidate",
+			"context": "global",
+			"handler": requestUpdates
 		});
 	}
 	return events;

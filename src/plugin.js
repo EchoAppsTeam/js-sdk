@@ -31,7 +31,7 @@ Echo.Plugin.create = function(manifest) {
 		// we treat "false" as an indication that the plugin was not initialized
 		if (manifest.init.call(this) === false) {
 			this.disable();
-		}	
+		}
 	};
 	_constructor.manifest = manifest;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
@@ -106,6 +106,14 @@ Echo.Plugin.prototype.substitute = function(template) {
 		"plugin.config": function(key) {
 			return "{config:plugins." + plugin.name + "." + key + "}";
 		}
+	});
+};
+
+Echo.Plugin.prototype.requestDataRefresh = function() {
+	Echo.Events.publish({
+		"topic": "local.Echo.Control.onDataInvalidate",
+		"bubble": true,
+		"context": this.component.config.get("context")
 	});
 };
 

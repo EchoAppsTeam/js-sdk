@@ -146,10 +146,10 @@ pile.methods._request = function() {
 	if (!request) {
 		request = Echo.StreamServer.API.request({
 			"endpoint": "search",
-			"data": $.extend({}, {
+			"data": {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")
-			}),
+			},
 			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
 			"recurring": true,
 			"onError": function(data) {

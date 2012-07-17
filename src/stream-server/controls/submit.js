@@ -209,9 +209,7 @@ submit.methods.post = function() {
 	var publish = function(phase, data) {
 		var params = {
 			"topic": "onPost" + phase,
-			"data": self.prepareBroadcastParams({
-				"postData": data
-			})
+			"data": {"postData": data}
 		};
 		self.events.publish(params);
 	};

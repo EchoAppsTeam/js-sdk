@@ -11,7 +11,7 @@ plugin.init = function() {
 	// checking if it makes sense to init the plugin
 	if (!this.component.user.get("sessionID") ||
 		!this.config.get("identityManager.login") ||
-		!this.config.get("identityManager.signup")) return;
+		!this.config.get("identityManager.signup")) return false;
 
 	if (this._userStatus() == "forcedLogin") {
 		this.extendTemplate(plugin.templates.forcedLogin, "replace", "header");

@@ -98,6 +98,7 @@ Echo.Events.unsubscribe = function(params) {
  * @param {Object} params Configuration parameters object with the following fields:
  * @param {String} params.topic Event name.
  * @param {String} params.context (optional) Unique identifier for inter-component communication.
+ * @param {Boolean} params.bubble (optional) Indicates whether a given event should be propagated into the parent contexts. Default value is false.
  * @param {String} params.data Arbitrary data object.
  */
 Echo.Events.publish = function(params) {

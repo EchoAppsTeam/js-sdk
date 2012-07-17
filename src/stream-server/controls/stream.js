@@ -89,19 +89,19 @@ stream.events = {
 	"Echo.StreamServer.Controls.Stream.Item.internal.onRender": function(topic, data) {
 		this.events.publish({
 			"topic": "Item.onRender",
-			"data": this.prepareBroadcastParams({
+			"data": {
 				"item": {
 					"data": data.item.data,
 					"target": data.item.dom.content
 				}
-			})
+			}
 		});
 		return {"stop": "bubble"};
 	},
 	"Echo.StreamServer.Controls.Stream.Item.internal.onButtonClick": function(topic, data) {
 		this.events.publish({
 			"topic": "Item.onButtonClick",
-			"data": this.prepareBroadcastParams(data)
+			"data": data
 		});
 		return {"stop": "bubble"};
 	},
@@ -166,7 +166,7 @@ stream.renderers.body = function(element) {
 	}
 	this.events.publish({
 		"topic": "onReady",
-		"data": this.prepareBroadcastParams({"initial": this.lastRequest.initial})
+		"data": {"initial": this.lastRequest.initial}
 	});
 	return element;
 };
@@ -235,10 +235,7 @@ stream.renderers.more = function(element) {
 		.show()
 		.unbind("click")
 		.one("click", function() {
-			self.events.publish({
-				"topic": "onMoreButtonPress",
-				"data": self.prepareBroadcastParams()
-			});
+			self.events.publish({"topic": "onMoreButtonPress"});
 			element.html(self.labels.get("loading"));
 			self.moreRequestItems(element);
 		});
@@ -320,10 +317,10 @@ stream.methods.childrenRequestItems = function(unique) {
 		data.entries = self.actualizeChildrenList(item, data.entries);
 		self.events.publish({
 			"topic": "onDataReceive",
-			"data": self.prepareBroadcastParams({
+			"data": {
 				"entries": data.entries,
 				"initial": false
-			})
+			}
 		});
 		var children = [];
 		$.each(data.entries, function(i, entry) {
@@ -379,10 +376,7 @@ stream.methods.refresh = function() {
 	this.clearCache();
 	this.render();
 	this.initialItemsRequest();
-	this.events.publish({
-		"topic": "onRerender",
-		"data": this.prepareBroadcastParams()
-	});
+	this.events.publish({"topic": "onRerender"});
 };
 
 stream.methods.extractPresentationConfig = function(data) {
@@ -437,12 +431,12 @@ stream.methods.appendRootItems = function(items, container) {
 		fragment.appendChild(item.render().get(0));
 		self.events.publish({
 			"topic": "Item.onRender",
-			"data": self.prepareBroadcastParams({
+			"data": {
 				"item": {
 					"data": item.data,
 					"target": item.dom.content
 				}
-			})
+			}
 		});
 	});
 	container.append(fragment);
@@ -454,7 +448,7 @@ stream.methods.prepareBroadcastParams = function(params) {
 	params.target = this.config.get("target").get(0);
 	params.query = this.config.get("query");
 	if (params.item && params.item.target) {
-		params.item.target = params.item.target.get(0);
+		params.item.target = $(params.item.target).get(0);
 	}
 	return params;
 };
@@ -489,10 +483,10 @@ stream.methods.constructChildrenSearchQuery = function(item) {
 
 stream.methods.requestItems = function(extra, visualizer) {
 	var self = this;
+	// TODO: set "request" via this.set
 	this.request = Echo.StreamServer.API.request({
 		"endpoint": "search",
 		//"recurring": true,
-		"method": "GET",
 		"data": {
 			"q": this.constructSearchQuery(extra),
 			"appkey": self.config.get("appkey")
@@ -503,7 +497,8 @@ stream.methods.requestItems = function(extra, visualizer) {
 		"onData": function(response) {
 			self.handleInitialResponse(response, visualizer);
 		}
-	}).send();
+	});
+	this.request.send();
 };
 
 stream.methods.handleInitialResponse = function(data, visualizer) {
@@ -543,10 +538,10 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 
 	this.events.publish({
 		"topic": "onDataReceive",
-		"data": self.prepareBroadcastParams({
+		"data": {
 			"entries": data.entries,
 			"initial": !this.hasInitialData
-		})
+		}
 	});
 	$.each(data.entries, function(i, entry) {
 		entry = self.normalizeEntry(entry);
@@ -618,9 +613,7 @@ stream.methods.applyLiveUpdates = function(entries) {
 					if (satisfies || item.byCurrentUser) {
 						self.events.publish({
 							"topic": "Item.onReceive",
-							"data": self.prepareBroadcastParams({
-								"item": {"data": item.data}
-							})
+							"data": {"item": {"data": item.data}}
 						});
 						self.applySpotUpdates("add", item);
 					} else {
@@ -867,12 +860,12 @@ stream.methods.addItemSpotUpdate = function(item) {
 		if (!item.dom || !item.dom.content) return;
 		self.events.publish({
 			"topic": "Item.onRender",
-			"data": self.prepareBroadcastParams({
+			"data": {
 				"item": {
 					"data": item.data,
 					"target": item.dom.content
 				}
-			})
+			}
 		});
 	};
 	if (this.timeouts.fade) {
@@ -1235,10 +1228,7 @@ stream.constructor = function() {
 	} else {
 		this.initialItemsRequest();
 	}
-	this.events.publish({
-		"topic": "onRender",
-		"data": this.prepareBroadcastParams()
-	});
+	this.events.publish({"topic": "onRender"});
 };
 
 stream.css =
@@ -2092,9 +2082,9 @@ item.methods.assembleButtons = function() {
 				data.visible = true;
 			}
 			var visible = data.visible;
-			data.visible = function() {
-				return visible && self.config.get("plugins." + plugin + ".enabled");
-			}
+			data.visible = $.isFunction(visible)
+				? visible
+				: function() { return visible; };
 			var name = plugin + "." + data.name;
 			self.buttons[name] = data;
 			if ($.inArray(name, self.buttonsOrder) < 0) {
@@ -2140,6 +2130,18 @@ item.methods.sortButtons = function() {
 	} else if (!requiredOrder.length) {
 		this.buttonsOrder = [];
 	}
+};
+
+// TODO: this function is a copy of the "prepareBroadcastParams" one from the stream
+//       check if/how we can unify this logic
+item.methods.prepareBroadcastParams = function(params) {
+	params = params || {};
+	params.target = this.config.get("parent.target").get(0);
+	params.query = this.config.get("parent.query");
+	if (params.item && params.item.target) {
+		params.item.target = $(params.item.target).get(0);
+	}
+	return params;
 };
 
 item.methods.traverse = function(tree, callback, acc) {

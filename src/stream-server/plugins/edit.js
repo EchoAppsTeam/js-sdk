@@ -136,7 +136,6 @@ plugin.renderers.Submit.cancelButton = function(element) {
 	element.click(function() {
 		component.events.publish({
 			"topic": "onEditError",
-			"data": component.prepareBroadcastParams(),
 			"context": component.config.get("parent.context")
 		});
 	});
