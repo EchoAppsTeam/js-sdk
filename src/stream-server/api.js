@@ -59,7 +59,7 @@ Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(c
 
 Echo.StreamServer.API.Request.prototype._onData = function(response, requestParams, config) {
 	response = response || {};
-	if (this.liveUpdates && this.liveUpdates.responseHandler) {
+	if (this.liveUpdates && this.liveUpdates.responseHandler && this.requestType === "secondary") {
 		this.liveUpdates.responseHandler(response);
 	}
 	this.constructor.parent._onData.apply(this, arguments);
