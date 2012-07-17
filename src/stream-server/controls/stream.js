@@ -66,7 +66,7 @@ stream.events = {
 			"itemUnique": data.item.unique(),
 			"priority": "highest",
 			"handler": function() {
-				delete data.item.added;
+				data.item.set("added", false);
 				self.addItemSpotUpdate(data.item);
 			}
 		});
@@ -80,7 +80,7 @@ stream.events = {
 			"actorID": data.item.data.actor.id,
 			"priority": "highest",
 			"handler": function() {
-				delete data.item.deleted;
+				data.item.set("deleted", false);
 				self.deleteItemSpotUpdate(data.item, data.config);
 			}
 		});
@@ -259,7 +259,7 @@ stream.methods.actualizeChildrenList = function(parent, entries) {
 		// drop item from items list if the item already exists
 		// in the tree, which means that it was posted by the current user
 		// and arrived as a live update
-		if (item && item.byCurrentUser) {
+		if (item && item.get("byCurrentUser")) {
 			self.applyStructureUpdates("delete", item);
 		}
 		return entry;
@@ -283,12 +283,13 @@ stream.methods.createChildrenItemsDomWrapper = function(children, parent) {
 stream.methods.childrenRequestItems = function(unique) {
 	var self = this;
 	var item = this.items[unique];
+	// XXXXXXXXXXXXXX
 	this.sendAPIRequest({
 		"endpoint": "search",
 		"query": {"q": this.constructChildrenSearchQuery(item)}
 	}, function(data) {
 		var element = item.dom.get("expandChildren");
-		if (data.result == "error") {
+		if (data.result === "error") {
 			self.handleErrorResponse(data, {
 				"messageTarget": element,
 				"waitingHandler": function() {
@@ -302,7 +303,7 @@ stream.methods.childrenRequestItems = function(unique) {
 			}
 			return;
 		}
-		if (!data.hasMoreChildren || data.hasMoreChildren == "false") {
+		if (!data.hasMoreChildren || data.hasMoreChildren === "false") {
 			item.data.hasMoreChildren = false;
 		}
 		item.data.nextPageAfter = data.nextPageAfter;
@@ -318,7 +319,9 @@ stream.methods.childrenRequestItems = function(unique) {
 		$.each(data.entries, function(i, entry) {
 			var _item = self.initItem(entry);
 			self.applyStructureUpdates("add", _item);
-			if (entry.parentUnique == item.unique()) children.push(_item);
+			if (entry.parentUnique === item.unique()) {
+				children.push(_item);
+			}
 		});
 		self.placeChildrenItems(item, children, data.entries);
 	});	
@@ -326,13 +329,35 @@ stream.methods.childrenRequestItems = function(unique) {
 
 stream.methods.initialItemsRequest = function() {
 	var self = this;
-	this.requestItems({}, function(data) {
-		self.lastRequest = {
-			"initial": true,
-			"data": data
-		};
-		self.render({"element": "body"});
-	});
+	if (!this.request) {
+		this.request = Echo.StreamServer.API.request({
+			"endpoint": "search",
+			"apiBaseURL": this.config.get("apiBaseURL"),
+			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
+			"recurring": true,
+			"data": {
+				"q": this.config.get("query"),
+				"appkey": self.config.get("appkey")
+			},
+			"onError": function(data) {
+				self.showMessage({"type": "error", "data": data});
+			},
+			"onData": function(data, options) {
+				if (options.requestType === "initial") {
+					self.handleInitialResponse(data, function(data) {
+						self.lastRequest = {
+							"initial": true,
+							"data": data
+						};
+						self.render({"element": "body"});
+					});
+				} else {
+					self.handleLiveUpdatesResponse(data);
+				}
+			}
+		});
+	}
+	this.request.send();
 };
 
 stream.methods.moreRequestItems = function(element) {
@@ -341,16 +366,30 @@ stream.methods.moreRequestItems = function(element) {
 	this.lastRequest = {
 		"initial": false
 	};
-	this.requestItems({
-		"pageAfter": '"' + (self.nextPageAfter || "0") + '"'
-	}, function(items) {
-		if (items.length) {
-			self.lastRequest.data = items;
-			self.render({"element": "body"});
-		} else {
-			element.html(self.labels.get("emptyStream")).delay(1000).fadeOut(1000);
-		}
-	});
+	if (!this.moreRequest) {
+		this.moreRequest = Echo.StreamServer.API.request({
+			"endpoint": "search",
+			"apiBaseURL": this.config.get("apiBaseURL"),
+			"data": {
+				"q": this.config.get("query") + " pageAfter:\"" + (this.nextPageAfter || "0") + "\"",
+				"appkey": self.config.get("appkey")
+			},
+			"onError": function(data) {
+				self.showMessage({"type": "error", "data": data});
+			},
+			"onData": function(data) {
+				self.handleInitialResponse(data, function(data) {
+					if (data.length) {
+						self.lastRequest.data = data;
+						self.render({"element": "body"});
+					} else {
+						element.html(self.labels.get("emptyStream")).delay(1000).fadeOut(1000);
+					}
+				});
+			}
+		});
+	}
+	this.moreRequest.send();
 };
 
 stream.methods.setStreamState = function(state) {
@@ -365,10 +404,11 @@ stream.methods.refresh = function() {
 	this.request.abort();
 	this.initVars();
 	delete this.lastRequest;
-	this.clearCache();
+	//this.clearCache();
 	this.render();
 	this.initialItemsRequest();
 	this.events.publish({"topic": "onRerender"});
+	Echo.StreamServer.Controls.Stream.parent.refresh.call(this);
 };
 
 stream.methods.extractPresentationConfig = function(data) {
@@ -388,11 +428,11 @@ stream.methods.extractTimeframeConfig = function(data) {
 			? function() { return Math.floor((new Date()).getTime() / 1000) - v[1]; }
 			: function() { return m[2]; };
 		var f;
-		if (op == '<') {
+		if (op === '<') {
 			f = function(ts) {
 				return ts < getTS()
 			}
-		} else if (op == '>') {
+		} else if (op === '>') {
 			f = function(ts) {
 				return ts > getTS()
 			}
@@ -453,44 +493,23 @@ stream.methods.constructSearchQuery = function(extra) {
 stream.methods.constructChildrenSearchQuery = function(item) {
 	// depth for item children request
 	var depth = this.config.get("children.maxDepth") - item.get("depth") - 1;
-	var additionalItems = parseInt(this.config.get("children.additionalItemsPerPage"));
 	var pageAfter = item.getNextPageAfter();
 	var filter = this.config.get("children.filter");
-	var filterQuery = !filter || filter == "()" ? "" : filter + " ";
+	var filterQuery = !filter || filter === "()" ? "" : filter + " ";
 	return filterQuery + Echo.Utils.foldl("", {
 		"childrenof": item.data.object.id,
 		"children": depth,
 		"childrenItemsPerPage": depth ? parseInt(this.config.get("children.itemsPerPage")) : 0,
-		"itemsPerPage": additionalItems,
+		"itemsPerPage": parseInt(this.config.get("children.additionalItemsPerPage")),
 		"sortOrder": this.config.get("children.sortOrder"),
 		"childrenSortOrder": this.config.get("children.sortOrder"),
-		"pageAfter": pageAfter ? '"' + (pageAfter || 0) + '"' : undefined
+		"pageAfter": pageAfter ? '"' + pageAfter + '"' : undefined
 	}, function(value, acc, predicate) {
-		return acc += (typeof value != "undefined"
-			? predicate + ":" + value + " " 
+		return acc += (typeof value !== "undefined"
+			? predicate + ":" + value + " "
 			: ""
 		); 
 	}) + filterQuery;
-};
-
-stream.methods.requestItems = function(extra, visualizer) {
-	var self = this;
-	// TODO: set "request" via this.set
-	this.request = Echo.StreamServer.API.request({
-		"endpoint": "search",
-		//"recurring": true,
-		"data": {
-			"q": this.constructSearchQuery(extra),
-			"appkey": self.config.get("appkey")
-		},
-		"onError": function(response) {
-			console.log(["error", response]);
-		},
-		"onData": function(response) {
-			self.handleInitialResponse(response, visualizer);
-		}
-	});
-	this.request.send();
 };
 
 stream.methods.handleInitialResponse = function(data, visualizer) {
@@ -511,7 +530,6 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 		return;
 	}
 	this.config.get("target").show();
-	this.nextSince = data.nextSince || 0;
 	this.nextPageAfter = data.nextPageAfter;
 	var presentation = this.extractPresentationConfig(data);
 	presentation.itemsPerPage = +presentation.itemsPerPage;
@@ -525,9 +543,7 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 		)
 	);
 	this.config.extend(this.extractTimeframeConfig(data));
-	var sortOrder = this.config.get("sortOrder");
 	data.entries = data.entries || [];
-
 	this.events.publish({
 		"topic": "onDataReceive",
 		"data": {
@@ -535,6 +551,7 @@ stream.methods.handleInitialResponse = function(data, visualizer) {
 			"initial": !this.hasInitialData
 		}
 	});
+	var sortOrder = this.config.get("sortOrder");
 	$.each(data.entries, function(i, entry) {
 		entry = self.normalizeEntry(entry);
 		var item = self.initItem(entry);
@@ -568,16 +585,13 @@ stream.methods.handleLiveUpdatesResponse = function(data) {
 	var self = this;
 	data = data || {};
 	if (data.result === "error") {
-		this.startLiveUpdates();
 		return;
 	}
-	this.nextSince = data.nextSince || 0;
 	this.refreshItemsDate();
 	this.checkTimeframeSatisfy();
 	this.applyLiveUpdates(data.entries);
 	this.render({"element": "state"});
 	this.executeNextActivity();
-	this.startLiveUpdates();
 };
 
 stream.methods.applyLiveUpdates = function(entries) {
@@ -599,10 +613,10 @@ stream.methods.applyLiveUpdates = function(entries) {
 					// do not filter out items from the current user
 					// they should be displayed in a special container
 					if (!satisfies && !item.isRoot() &&
-						self.user.hasIdentity(item.data.actor.id)) {
-							item.byCurrentUser = true;
+						self.user.has("identity", item.data.actor.id)) {
+							item.set("byCurrentUser", true);
 					};
-					if (satisfies || item.byCurrentUser) {
+					if (satisfies || item.get("byCurrentUser")) {
 						self.events.publish({
 							"topic": "Item.onReceive",
 							"data": {"item": {"data": item.data}}
@@ -683,7 +697,7 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 					return;
 				}
 				self.applyStructureUpdates(operation, item);
-				item.added = true;
+				item.set("added", true);
 				if (item.isRoot()) {
 					self.placeRootItem(item);
 				} else {
@@ -727,7 +741,7 @@ stream.methods.applySpotUpdates = function(action, item, options) {
 				self.executeNextActivity();
 				break;
 			case "delete":
-				item.deleted = true;
+				item.set("deleted", true);
 				// keepChildren flag is required to detect the case when item is being moved
 				if (item.isRoot()) {
 					item.events.publish({
@@ -774,7 +788,7 @@ stream.methods.queueActivity = function(params) {
 	// we consider activity related to the current user if:
 	//  - the corresponding item is blocked (moderation action in progress)
 	//  - or the activity was performed by the current user
-	var byCurrentUser = item.blocked || params.actorID && this.user.hasIdentity(params.actorID);
+	var byCurrentUser = item.blocked || params.actorID && this.user.has("identity", params.actorID);
 	var index = this.getActivityProjectedIndex(byCurrentUser, params);
 	var data = {
 		"action": params.action,
@@ -1068,7 +1082,6 @@ stream.methods.initItem = function(entry, isLive) {
 	// caching item template to avoid unnecessary work
 	var template = item.template;
 	item.template = function() {
-		if (!self.cache) self.cache = {};
 		if (!self.cache.itemTemplate) {
 			self.cache.itemTemplate = $.isFunction(template)
 				? template.apply(this, arguments)
@@ -1200,15 +1213,6 @@ stream.constructor = function() {
 	this.initVars();
 	this.config.get("target").empty().append(this.render());
 	this.recalcEffectsTimeouts();
-	//self.initLiveUpdates(function() {
-	//	return {
-	//		"endpoint": "search",
-	//		"query": {
-	//			"q": self.constructSearchQuery(),
-	//			"since": self.nextSince || 0
-	//		}
-	//	};
-	//}, function(data) { self.handleLiveUpdatesResponse(data); });
 	if (this.config.get("data")) {
 		this.handleInitialResponse(this.config.get("data"), function(data) {
 			self.lastRequest = {
@@ -1436,7 +1440,7 @@ item.renderers.wrapper = function(element) {
 item.renderers.avatar = function(element) {
 	var self = this;
 	var size = (!this.depth ? 48 : 24);
-	var avatar = Echo.Utils.loadImage(this.data.actor.avatar, this.user.get("defaultAvatar"));
+	var avatar = Echo.Utils.loadImage(this.data.actor.avatar, this.user.config.get("defaultAvatar"));
 	avatar.css({"width": size, "height": size});
 	return element.append(avatar);
 };
@@ -1451,7 +1455,7 @@ item.renderers._childrenContainer = function(element, dom, config) {
 		if (config && config.filter && !config.filter(child)) return;
 		var initialRendering = !child.dom;
 		element.append(initialRendering ? child.render() : child.dom.content);
-		if (child.deleted) {
+		if (child.get("deleted")) {
 			self.events.publish({
 				"topic": "internal.onDelete",
 				"data": {
@@ -1460,7 +1464,7 @@ item.renderers._childrenContainer = function(element, dom, config) {
 				},
 				"bubble": true
 			});
-		} else if (child.added) {
+		} else if (child.get("added")) {
 			self.events.publish({
 				"topic": "internal.onAdd",
 				"data": {"item": child},
@@ -1483,7 +1487,7 @@ item.renderers.children = function(element, dom, config) {
 		"element": "_childrenContainer",
 		"target": element,
 		"extra": {
-			"filter": function(item) { return !item.byCurrentUser; },
+			"filter": function(item) { return !item.get("byCurrentUser"); },
 			"keepChildren": config && config.keepChildren
 		}
 	});
@@ -1494,7 +1498,7 @@ item.renderers.childrenByCurrentActorLive = function(element, dom, config) {
 		"element": "_childrenContainer",
 		"target": element,
 		"extra": {
-			"filter": function(item) { return item.byCurrentUser; },
+			"filter": function(item) { return item.get("byCurrentUser"); },
 			"keepChildren": config && config.keepChildren
 		}
 	});
