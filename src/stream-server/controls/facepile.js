@@ -122,7 +122,6 @@ pile.renderers.suffixText = function(element) {
 };
 
 pile.methods.refresh = function() {
-	this._initVars();
 	this.get("request").abort();
 	this.remove("request");
 	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.FacePile");
