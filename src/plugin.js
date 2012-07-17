@@ -31,9 +31,7 @@ Echo.Plugin.create = function(manifest) {
 		// we treat "false" as an indication that the plugin was not initialized
 		if (manifest.init.call(this) === false) {
 			this.disable();
-		} else {
-			this.enable();
-		}
+		}	
 	};
 	_constructor.manifest = manifest;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
@@ -74,7 +72,7 @@ Echo.Plugin.prototype.disable = function() {
 };
 
 Echo.Plugin.prototype.enabled = function(name) {
-	return this.config.get("enabled");
+	return this.config.get("enabled", true);
 };
 
 Echo.Plugin.prototype.extendRenderer = function(name, renderer) {
