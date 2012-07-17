@@ -278,20 +278,24 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 	};
 	var prepareActivity = function(activity, meta) {
 		return {
-			"avatar": activity.actor.avatar,
-			"content": activity.object.content,
+			"avatar": activity.actor && activity.actor.avatar,
+			"content": activity.object && activity.object.content,
 			"markers": meta.markers ? $.trim(meta.markers) : undefined,
-			"name": activity.actor.name || activity.actor.title,
+			"name": activity.actor && (activity.actor.name || activity.actor.title),
 			"source": activity.source,
 			"tags": meta.tags ? $.trim(meta.tags) : undefined,
 			"target": activity.targets[0].id,
 			"verb": verb(activity),
 			"type": type(activity),
-			"itemURIPattern": self.config.get("itemURIPattern", "")
+			"itemURIPattern": self.config.get("itemURIPattern")
 		};
 	};
-	var verb = function(entry) { return strip(entry.verbs[0]); };
-	var type = function(entry) { return strip(entry.object.objectTypes[0]); };
+	var verb = function(entry) {
+		return strip(entry.verbs[0]);
+	};
+	var type = function(entry) {
+		return entry.object ? strip(entry.object.objectTypes[0]) : undefined;
+	};
 	var post, meta = {"markers": "", "tags": ""};
 	$.map(entries, function(entry) {
 		if (verb(entry) == "tag" && /tag|marker/.test(type(entry))) {
