@@ -54,7 +54,7 @@ counter.templates.main = "<span>{data:count}</span>";
 *             "layout" : "full"
 *         }
 *     });
-* @return {Object} Returns the reference to the corresponding Echo.StreamServer.Controls.Counter instance.
+* @return {Object} the reference to the corresponding Echo.StreamServer.Controls.Counter instance.
 */
 
 counter.constructor = function() {
