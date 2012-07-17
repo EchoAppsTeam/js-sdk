@@ -20,6 +20,16 @@
 * @param {Number} [config.identityManager.edit.width] Specifies the width of the visible auth area
 * @param {Number} [config.identityManager.edit.height] Specifies the height of the visible auth area
 * @param {String} [config.identityManager.edit.url] Specifies the URL to be opened as an auth handler
+*     var identityManager = {"width": 400, "height": 240, "url": "http://example.com/auth"};
+*
+*     new Echo.IdentityServer.Controls.Auth({
+*         "target": document.getElementById("container"),
+*         "appkey": "test.aboutecho.com",
+*         "identityManager": {
+*             "login": identityManager,
+*             "signup": identityManager
+*         }
+*     });
 * @return {Object} the reference to the corresponding Echo.StreamServer.Controls.Auth instance.
 */
 (function($) {
