@@ -37,7 +37,7 @@ plugin.methods.assembleButton = function() {
 		return {
 			"name": "Edit",
 			"label": plugin.labels.get("editControl"),
-			"visible":  true, //item.user.is("admin") || item.user.has("identity", item.data.actor.id),
+			"visible": item.user.is("admin") || item.user.has("identity", item.data.actor.id),
 			"callback": function() {
 				var config = plugin.submitConfig(item, item.dom.get("subcontainer"));
 				config["targetQuery"] = plugin.config.get("query", "");
