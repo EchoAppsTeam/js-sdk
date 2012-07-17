@@ -20,6 +20,24 @@ $.map(["onPostComplete", "Plugins.Edit.onEditComplete"], function(name) {
 
 counter.templates.main = "<span>{data:count}</span>";
 
+/**
+* @class Echo.StreamServer.Controls.Counter
+* Echo Counter class which encapsulates interaction with the
+* <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
+*
+* @constructor
+* Counter constructor initializing Echo.StreamServer.Controls.Counter class
+* @param {Object} config
+* @param {String} config.target Specifies the DOM element where the control will be displayed.
+* @param {String} config.appkey Specifies the customer application key. You can use the "test.echoenabled.com" appkey for testing purposes.
+* @param {String} config.query Specifies the search query to generate the necessary data set. It must be constructed according to the <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a> method specification.
+* @param {Number} [config.liveUpdatesTimeout=10] Specifies the timeout between the live updates requests (in seconds).
+* @param {Object} [config.infoMessages] Customizes the look and feel of info messages, for example "loading" and "error".
+* @param {String} [config.infoMessages.layout="compact"] Specifies the layout of the info message. By default can be set to "compact" or "full".
+* @param {Boolean} [config.infoMessages.enabled=true] Specifies if info messages should be rendered.
+* @return {Object} Returns the reference to the corresponding Echo.StreamServer.Controls.Counter instance.
+*/
+
 counter.constructor = function() {
 	// data can be defined explicitly
 	// in this case we do not make API requests
@@ -30,6 +48,12 @@ counter.constructor = function() {
 		this.render();
 	}
 };
+
+/**
+* @method refresh
+* Method implements the refresh logic for the Counter control.
+* It should be used for example after some config params were changed.
+*/
 
 counter.methods.refresh = function() {
 	this.showMessage({"type": "loading"});
