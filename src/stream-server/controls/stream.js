@@ -1083,14 +1083,13 @@ stream.methods.initItem = function(entry, isLive) {
 	// caching item template to avoid unnecessary work
 	var template = item.template;
 	item.template = function() {
-		if (!self.vars || !self.vars.cache || !self.vars.cache.itemTemplate) {
-			self.vars = {};
-			self.vars.cache = {};
-			self.vars.cache.itemTemplate = $.isFunction(template)
+		if (!self.cache) self.cache = {};
+		if (!self.cache.itemTemplate) {
+			self.cache.itemTemplate = $.isFunction(template)
 				? template.apply(this, arguments)
 				: template;
 		}
-		return self.vars.cache.itemTemplate;
+		return self.cache.itemTemplate;
 	};
 	this.items[entry.unique] = item;
 	return item;
@@ -2248,8 +2247,6 @@ item.methods.parentUnique = function() {
 item.methods.addButtonSpec = function(plugin, spec) {
 	if (!this.buttonSpecs[plugin]) {
 		this.buttonSpecs[plugin] = [];
-	} else {
-		return;
 	}
 	this.buttonSpecs[plugin].push(spec);
 };
