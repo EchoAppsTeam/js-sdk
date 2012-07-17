@@ -12,6 +12,7 @@ Echo.Plugin.create = function(manifest) {
 	if (plugin) return plugin;
 	var _constructor = function(config) {
 		if (!config || !config.component) return;
+		var self = this;
 		this.name = manifest.name;
 		this.manifest = manifest; // TODO: avoid this, pass via param to "renderer"...
 		this.component = config.component;
@@ -29,6 +30,10 @@ Echo.Plugin.create = function(manifest) {
 		if (manifest.init.call(this) === false) {
 			this.disable();
 		}
+		$.each(manifest.events, function(topic, data) {
+			data = $.isFunction(data) ? {"handler": data} : data;
+			self.events.subscribe.call(self, $.extend({"topic": topic}, data));
+		});
 	};
 	_constructor.manifest = manifest;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
@@ -210,30 +215,25 @@ Echo.Plugin.prototype.init.config = function() {
 };
 
 Echo.Plugin.prototype.init.events = function() {
-	var plugin = this, component = plugin.component;
-	var events = {
+	return  {
 		"publish": function(params) {
-			var parts = ["Plugins", plugin.name, params.topic];
+			var parts = ["Plugins", this.name, params.topic];
 			params.topic = (params.prefix ? [params.prefix] : []).concat(parts).join(".");
-			return component.events.publish(params);
+			return this.component.events.publish(params);
 		},
 		"subscribe": function(params) {
+			var self = this;
 			var handler = params.handler;
 			params.handler = function() {
-				if (!plugin.enabled()) return;
-				return handler.apply(plugin, arguments);
+				if (!self.enabled()) return;
+				return handler.apply(self, arguments);
 			}
-			return component.events.subscribe(params);
+			return this.component.events.subscribe(params);
 		},
 		"unsubscribe": function(params) {
-			component.events.unsubscribe(params);
+			this.component.events.unsubscribe(params);
 		}
 	};
-	$.each(this.manifest.events, function(topic, data) {
-		data = $.isFunction(data) ? {"handler": data} : data;
-		events.subscribe($.extend({"topic": topic}, data));
-	});
-	return events;
 };
 
 })(jQuery);

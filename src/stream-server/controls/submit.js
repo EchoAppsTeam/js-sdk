@@ -112,12 +112,10 @@ submit.renderers.tags = function(element, dom) {
 
 submit.renderers.metaFields = function(element, dom, extra) {
 	var type = extra.type;
-	var data = this.config.get("data.object." + type, this.config.get(type, []));
-	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
 	return dom.get(type).iHint({
 		"text": this.labels.get(type + "Hint"),
 		"className": "echo-secondaryColor"
-	}).val(value).blur();
+	}).blur();
 };
 
 submit.renderers.text = function(element) {
@@ -204,7 +202,13 @@ submit.renderers.postButton = function(element) {
 
 // methods
 
-submit.methods.post = function() {
+submit.methods.prepareContent = function() {
+	return [].concat(this.getActivity("post", "comment", this.dom.get("text").val()),
+			 this.getActivity("tag", "marker", this.dom.get("markers").val()),
+			 this.getActivity("tag", "tag", this.dom.get("tags").val()));
+};
+
+submit.methods.post = function(content) {
 	var self = this;
 	var publish = function(phase, data) {
 		var params = {
@@ -213,11 +217,8 @@ submit.methods.post = function() {
 		};
 		self.events.publish(params);
 	};
-	var content = [].concat(this.getActivity("post", "comment", this.dom.get("text").val()),
-				this.getActivity("tag", "marker", this.dom.get("markers").val()),
-				this.getActivity("tag", "tag", this.dom.get("tags").val()));
 	var entry = {
-		"content": content,
+		"content": this.prepareContent(),
 		"appkey": this.config.get("appkey"),
 		"sessionID": this.user.get("sessionID", "")
 	};

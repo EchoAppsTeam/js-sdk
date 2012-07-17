@@ -78,7 +78,7 @@ Echo.Control.prototype.defaults = {};
 
 Echo.Control.prototype.defaults.config = {
 	"appkey": "",
-	"apiBaseURL": "api.echoenabled.com",
+	"apiBaseURL": "api.echoenabled.com/v1/",
 	"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
 	"infoMessages": {
 		"enabled": true,

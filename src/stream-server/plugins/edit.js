@@ -12,9 +12,7 @@ plugin.init = function() {
 
 $.map(["Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.onEdit" + action] = function(topic, args) {
-		// item rerendering
-		console.log("args: ");
-		console.log(args);
+		this.component.render();
 	}
 });
 
@@ -40,8 +38,9 @@ plugin.methods.assembleButton = function() {
 			"visible": item.user.is("admin") || item.user.has("identity", item.data.actor.id),
 			"callback": function() {
 				var config = plugin.submitConfig(item, item.dom.get("subcontainer"));
+				config["parent"] = plugin.component.config.getAsHash(),
 				config["targetQuery"] = plugin.config.get("query", "");
-				config.plugins.push({"name": "EditSubmit"});
+				config.plugins.push({"name": "Edit"});
 				new Echo.StreamServer.Controls.Submit(config);
 				item.dom.content.get(0).scrollIntoView(true);
 			}
@@ -60,20 +59,21 @@ var plugin = Echo.Plugin.skeleton("Edit", "Echo.StreamServer.Controls.Submit");
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	var component = this.component;
-	
+	var self = this;
 	this.extendTemplate(plugin.templates.cancel,"insertAfter", "postContainer");
 	this.extendTemplate(plugin.templates.header, "replace", "header");
-		
 	this.extendRenderer("text", plugin.renderers.Submit.text);
 	this.extendRenderer("author", plugin.renderers.Submit.author);
+	this.extendRenderer("metaFields", plugin.renderers.Submit.metaFields);
 	this.extendRenderer("editedDate", plugin.renderers.Submit.editedDate);
 	this.extendRenderer("cancelButton", plugin.renderers.Submit.cancelButton);
-		
-	component.labels.set({
+	this.component.labels.set({
 		"post": this.labels.get("post"),
 		"posting": this.labels.get("posting")
 	});
+	this.component.prepareContent = function() {
+		return plugin.methods.prepareContent.call(self);
+	};
 };
 
 plugin.labels = {
@@ -87,11 +87,12 @@ plugin.labels = {
 
 $.map(["Init", "Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.onPost" + action] = function(topic, args) {
-		this.events.publish({
+		var component = this.component;
+		component.events.publish({
 			"topic": "onEdit" + action,
-			"data": args
+			"context": component.config.get("parent.context")
 		});
-	}
+	};
 });
 
 plugin.templates.header =
@@ -109,32 +110,82 @@ plugin.templates.cancel =
 plugin.renderers.Submit ={};
 
 plugin.renderers.Submit.text = function(element) {
-	var content = this.component.data.object.content;
+	var content = this.component.get("data.object.content");
 	if (content) element.val(content);
 	return this.parentRenderer("text", arguments);
 };
 
+plugin.renderers.Submit.metaFields = function(element, dom, extra) {
+	var data = this.component.get("data.object." + extra.type) || [];
+	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
+	element.val(value);
+	return this.parentRenderer("metaFields", arguments);
+};
+
 plugin.renderers.Submit.author = function(element) {
 	var component = this.component;
-	return element.text(component.data.actor.title || component.labels.get("guest"));
+	return element.text(component.get("data.actor.title") || component.labels.get("guest"));
 };
 
 plugin.renderers.Submit.editedDate = function(element) {
-	var component = this.component;
-	var published = component.data.object.published;
+	var published = this.component.get("data.object.published");
 	var date = new Date(Echo.Utils.timestampFromW3CDTF(published) * 1000);
 	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
 };
 
 plugin.renderers.Submit.cancelButton = function(element) {
-	var self = this;
-	var component = self.component;
-	return element.click(function() {
+	var plugin = this;
+	var component = plugin.component;
+	element.click(function() {
 		component.events.publish({
 			"topic": "onEditError",
 			"context": component.config.get("parent.context")
 		});
 	});
+};
+
+plugin.methods.prepareContent = function() {
+	var component = this.component;
+	return [].concat(this.getMetaDataUpdates("tag", "tag", component.dom.get("tags").val()),
+			 this.getMetaDataUpdates("mark", "marker", component.dom.get("markers").val()),
+			 this.prepareActivity("update", "comment", component.dom.get("text").val()));
+};
+
+plugin.methods.prepareActivity = function(verb, type, data) {
+	return (!data) ? [] : {
+		"object": {
+			"objectTypes": [ "http://activitystrea.ms/schema/1.0/" + type ],
+			"content": data
+		},
+		"source": this.component.config.get("source"),
+		"verbs": [ "http://activitystrea.ms/schema/1.0/" + verb ],
+		"targets": [{
+			"id": this.component.get("data.object.id")
+		}]
+	};
+};
+
+plugin.methods.getMetaDataUpdates = function(verb, type, data) {
+	var plugin = this;
+	var component = this.component;
+	var extract = function(value) {
+		return $.map(value || [], function(item) { return $.trim(item); });
+	};
+	var items = {
+		"modified": extract(data.split(",")),
+		"current": extract(component.get("data.object." + type + "s"))
+	};
+	var updates = [];
+	var diff = function(a, b, verb) {
+		$.map(a, function(item) {
+			if (item && $.inArray(item, b) == -1) {
+				updates.push(plugin.prepareActivity(verb, type, item));
+		}
+		});
+	};
+	diff(items.current, items.modified, "un" + verb);
+	diff(items.modified, items.current, verb);
+	return updates;
 };
 
 plugin.css = 

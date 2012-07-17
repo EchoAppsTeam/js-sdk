@@ -420,7 +420,8 @@ stream.methods.appendRootItems = function(items, container) {
 	var self = this;
 	var fragment = document.createDocumentFragment();
 	$.each(items || [], function(i, item) {
-		fragment.appendChild(item.render().get(0));
+		item.render();
+		fragment.appendChild(item.config.get("target").get(0));
 		self.events.publish({
 			"topic": "Item.onRender",
 			"data": {
@@ -1352,11 +1353,11 @@ item.renderers._extraField = function(element, dom, extra) {
 			? "maxTagsLength"
 			: "";
 	var limit = this.config.get("limits." + name);
-	var items = $.foldl([], this.data.object[type], function(item, acc) {
+	var items = Echo.Utils.foldl([], this.data.object[type], function(item, acc) {
 		var template = item.length > limit
 			? '<span title="{data:item}">{data:truncatedItem}</span>'
 			: '<span>{data:item}</span>';
-		var truncatedItem = $.htmlTextTruncate(item, limit, "...");
+		var truncatedItem = Echo.Utils.htmlTextTruncate(item, limit, "...");
 		acc.push(self.substitute(template, {"item": item, "truncatedItem": truncatedItem}));
 	});
 	return element.prepend(items.sort().join(", "));

@@ -277,7 +277,7 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 			.replace("http://js-kit.com/spec/e2/v1/", "");
 	};
 	var prepareActivity = function(activity, meta) {
-		return {
+		var data = {
 			"avatar": activity.actor && activity.actor.avatar,
 			"content": activity.object && activity.object.content,
 			"markers": meta.markers ? $.trim(meta.markers) : undefined,
@@ -289,16 +289,38 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 			"type": type(activity),
 			"itemURIPattern": self.config.get("itemURIPattern")
 		};
+		if (verb(activity) === "update") {
+			$.each(activity.object, function(key, value) {
+				if (key !== "objectTypes") {
+					data["field"] = key;
+					data["value"] = value;
+					return false;
+				}
+			});
+		} else if (/tag/.test(verb(activity))) {
+			data = {
+				"tags": activity.object && activity.object.content,
+				"verb": verb(activity),
+				"target": activity.targets[0].id
+			};
+		} else if (/mark/.test(verb(activity))) {
+			data = {
+				"markers": activity.object && activity.object.content,
+				"verb": verb(activity),
+				"target": activity.targets[0].id
+			};
+		}
+		return data;
 	};
 	var verb = function(entry) {
 		return strip(entry.verbs[0]);
 	};
 	var type = function(entry) {
-		return entry.object ? strip(entry.object.objectTypes[0]) : undefined;
+		return entry.object && entry.object.objectTypes ? strip(entry.object.objectTypes[0]) : undefined;
 	};
 	var post, meta = {"markers": "", "tags": ""};
 	$.map(entries, function(entry) {
-		if (verb(entry) == "tag" && /tag|marker/.test(type(entry))) {
+		if (/tag|mark/.test(verb(entry)) && /tag|marker/.test(type(entry))) {
 			meta[type(entry) + "s"] = entry.object.content;
 		}
 		if (verb(entry) == "post") {
