@@ -184,8 +184,8 @@ Echo.Control.prototype.render = function(args) {
 	if (args.element && args.recursive) {
 		var template = $.isFunction(this.template) ? this.template() : this.template;
 		var html = this.substitute(template, data);
-		var newNode = $("." + this.cssPrefix + name, $(html));
-		var oldNode = this.dom.get(name);
+		var newNode = $("." + this.cssPrefix + args.element, $(html));
+		var oldNode = this.dom.get(args.element);
 		newNode = Echo.Utils.toDOM(newNode, this.cssPrefix + "-",
 			function(element, target, dom) {
 				control.render.call(control, {
