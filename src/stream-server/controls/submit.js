@@ -218,7 +218,7 @@ submit.methods.post = function() {
 	var content = [].concat(this.getActivity("post", "comment", this.dom.get("text").val()),
 				this.getActivity("tag", "marker", this.dom.get("markers").val()),
 				this.getActivity("tag", "tag", this.dom.get("tags").val()));
-	var entry= {
+	var entry = {
 		"content": content,
 		"appkey": this.config.get("appkey"),
 		"sessionID": this.user.get("sessionID", "")
@@ -268,7 +268,7 @@ submit.methods.post = function() {
 	publish("Init", content);
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
-		"apiBaseURL": this.config.get("submissionProxyURL"),
+		"submissionProxyURL": this.config.get("submissionProxyURL"),
 		"timeout": this.config.get("postingTimeout"),
 		"data": entry,
 		"onData": callbacks.onData,
