@@ -184,7 +184,7 @@ Echo.Control.prototype.render = function(args) {
 	if (args.element && args.recursive) {
 		var template = $.isFunction(this.template) ? this.template() : this.template;
 		var html = this.substitute(template, data);
-		var newNode = $("." + cssPrefix + name, $(html));
+		var newNode = $("." + this.cssPrefix + name, $(html));
 		var oldNode = this.dom.get(name);
 		newNode = Echo.Utils.toDOM(newNode, this.cssPrefix + "-",
 			function(element, target, dom) {
@@ -299,8 +299,9 @@ Echo.Control.prototype.destroy = function() {};
 // internal functions
 
 Echo.Control.prototype.init.vars = function() {
+	this.cache = {};
 	if (this.manifest.vars) {
-		$.extend(true, this, {"cache": {}}, this.manifest.vars);
+		$.extend(true, this, this.manifest.vars);
 	}
 };
 
