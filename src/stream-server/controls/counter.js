@@ -9,15 +9,6 @@ counter.config = {
 	"infoMessages": {"layout": "compact"}
 };
 
-$.map(["onPostComplete", "Plugins.Edit.onEditComplete"], function(name) {
-	counter.events["Echo.StreamServer.Controls.Submit." + name] = {
-		"context" : "global",
-		"handler" : function() {
-			this.get("request").send({"force": true});
-		}
-	};
-});
-
 counter.templates.main = "<span>{data:count}</span>";
 
 /**

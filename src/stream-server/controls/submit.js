@@ -229,6 +229,11 @@ submit.methods.post = function() {
 	var callbacks = {
 		"onData": function(data) {
 			publish("Complete", content);
+			// notify all widgets on the page about a new item posted
+			Echo.Events.publish({
+				"topic": "Echo.Control.onDataInvalidate",
+				"context": "global"
+			});
 		},
 		"onError": function(data) {
 			data = data || {};

@@ -110,14 +110,6 @@ stream.events = {
 		return {"stop": "bubble"};
 	}
 };
-$.map(["onPostComplete", "Plugins.Edit.onEditComplete"], function(name) {
-	stream.events["Echo.StreamServer.Controls.Submit." + name] = {
-		"context": "global",
-		"handler": function() {
-			this.request.send({"force": true});
-		}
-	};
-});
 
 stream.templates.main =
 	'<div class="{class:container} echo-primaryFont echo-primaryBackgroundColor">' +
