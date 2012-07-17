@@ -60,15 +60,15 @@ auth.renderers.logout = function(element) {
 };
 
 auth.renderers.login = function(element) {
-	return this.assembleIdentityControl("login", element);
+	return this._assembleIdentityControl("login", element);
 };
 
 auth.renderers.edit = function(element) {
-	return this.assembleIdentityControl("edit", element);
+	return this._assembleIdentityControl("edit", element);
 };
 
 auth.renderers.signup = function(element) {
-	return this.assembleIdentityControl("signup", element);
+	return this._assembleIdentityControl("signup", element);
 };
 
 auth.renderers.or = function(element) {
@@ -95,7 +95,7 @@ auth.methods.template = function() {
 	return this.templates[this.user.is("logged") ? "logged" : "anonymous"];
 };
 
-auth.methods.assembleIdentityControl = function(type, element) {
+auth.methods._assembleIdentityControl = function(type, element) {
 	var self = this;
 	var data = this.config.get("identityManager." + type);
 	if (!data || !this.user.get("sessionID")) return element.hide();
