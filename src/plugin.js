@@ -146,9 +146,7 @@ Echo.Plugin.prototype.destroy = function() {};
 Echo.Plugin.prototype.init = function(subsystems) {
 	var plugin = this;
 	$.map(subsystems, function(system) {
-		//TODO: uncomment it if it's necessary
-		//if (plugin[system]) return;
-		plugin.constructor.prototype[system] = plugin.init[system].call(plugin);
+		plugin[system] = plugin.init[system].call(plugin);
 	});
 };
 
@@ -175,6 +173,7 @@ Echo.Plugin.prototype.init.labels = function() {
 	};
 };
 
+//TODO: rework this function in Events style
 Echo.Plugin.prototype.init.config = function() {
 	var plugin = this, component = plugin.component;
 	var normalize = function(key) {
@@ -215,25 +214,31 @@ Echo.Plugin.prototype.init.config = function() {
 };
 
 Echo.Plugin.prototype.init.events = function() {
-	var plugin = this, component = plugin.component;
-	return {
-		"publish": function(params) {
-			var parts = ["Plugins", plugin.name, params.topic];
-			params.topic = (params.prefix ? [params.prefix] : []).concat(parts).join(".");
-			return component.events.publish(params);
-		},
-		"subscribe": function(params) {
-			var handler = params.handler;
-			params.handler = function() {
-				if (!plugin.enabled()) return;
-				return handler.apply(plugin, arguments);
-			}
-			return component.events.subscribe(params);
-		},
-		"unsubscribe": function(params) {
-			component.events.unsubscribe(params);
-		}
+        return new Echo.Plugin.Events({"plugin": this});
+};
+
+Echo.Plugin.Events = function(config) {
+        this.plugin = config.plugin;
+};
+
+Echo.Plugin.Events.prototype.publish = function(params) {
+        var parts = ["Plugins", this.plugin.name, params.topic];
+        params.topic = (params.prefix ? [params.prefix] : []).concat(parts).join(".");
+        return this.plugin.component.events.publish(params);
+};
+
+Echo.Plugin.Events.prototype.subscribe = function(params) {
+	var self = this;
+        var handler = params.handler;
+	params.handler = function() {
+		if (!self.plugin.enabled()) return;
+		return handler.apply(self.plugin, arguments);
 	};
+	return this.plugin.component.events.subscribe(params);
+};
+
+Echo.Plugin.Events.prototype.unsubscribe = function(params) {
+	this.plugin.component.events.unsubscribe(params);
 };
 
 })(jQuery);
