@@ -26,13 +26,16 @@ Echo.Plugin.create = function(manifest) {
 			"labels",
 			"config"
 		]);
+		if (manifest.labels) {
+			self.labels.set(manifest.labels);
+		}
 		// we treat "false" as an indication that the plugin was not initialized
 		if (manifest.init.call(this) === false) {
 			this.disable();
 		}
 		$.each(manifest.events, function(topic, data) {
 			data = $.isFunction(data) ? {"handler": data} : data;
-			self.events.subscribe.call(self, $.extend({"topic": topic}, data));
+			self.events.subscribe($.extend({"topic": topic}, data));
 		});
 	};
 	_constructor.manifest = manifest;
@@ -143,7 +146,8 @@ Echo.Plugin.prototype.destroy = function() {};
 Echo.Plugin.prototype.init = function(subsystems) {
 	var plugin = this;
 	$.map(subsystems, function(system) {
-		if (plugin[system]) return;
+		//TODO: uncomment it if it's necessary
+		//if (plugin[system]) return;
 		plugin.constructor.prototype[system] = plugin.init[system].call(plugin);
 	});
 };
@@ -161,7 +165,7 @@ Echo.Plugin.prototype.init.renderers = function() {
 
 Echo.Plugin.prototype.init.labels = function() {
 	var plugin = this;
-	var labels = {
+	return {
 		"set": function(labels) {
 			Echo.Labels.set(labels, "Plugins." + plugin.name, true);
 		},
@@ -169,10 +173,6 @@ Echo.Plugin.prototype.init.labels = function() {
 			return Echo.Labels.get(label, "Plugins." + plugin.name, data);
 		}
 	};
-	if (plugin.manifest.labels) {
-		labels.set(plugin.manifest.labels);
-	}
-	return labels;
 };
 
 Echo.Plugin.prototype.init.config = function() {
@@ -215,23 +215,23 @@ Echo.Plugin.prototype.init.config = function() {
 };
 
 Echo.Plugin.prototype.init.events = function() {
-	return  {
+	var plugin = this, component = plugin.component;
+	return {
 		"publish": function(params) {
-			var parts = ["Plugins", this.name, params.topic];
+			var parts = ["Plugins", plugin.name, params.topic];
 			params.topic = (params.prefix ? [params.prefix] : []).concat(parts).join(".");
-			return this.component.events.publish(params);
+			return component.events.publish(params);
 		},
 		"subscribe": function(params) {
-			var self = this;
 			var handler = params.handler;
 			params.handler = function() {
-				if (!self.enabled()) return;
-				return handler.apply(self, arguments);
+				if (!plugin.enabled()) return;
+				return handler.apply(plugin, arguments);
 			}
-			return this.component.events.subscribe(params);
+			return component.events.subscribe(params);
 		},
 		"unsubscribe": function(params) {
-			this.component.events.unsubscribe(params);
+			component.events.unsubscribe(params);
 		}
 	};
 };

@@ -1,45 +1,49 @@
-/**
-* @class Echo.StreamServer.Controls.Auth
-* Echo Auth control displays user login status and allows to sign in using different social identities.
-*
-* @constructor
-* Auth constructor initializing Echo.StreamServer.Controls.Auth class
-* @param {Object} config
-* @param {String} config.target Specifies the DOM element where the control will be displayed.
-* @param {String} config.appkey Specifies the customer application key. You can use the "test.echoenabled.com" appkey for testing purposes.
-* @param {Object} config.identityManager The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.
-* @param {Object} [config.identityManager.login] Encapsulates data for login workflow
-* @param {Number} [config.identityManager.login.width] Specifies the width of the visible auth area
-* @param {Number} [config.identityManager.login.height] Specifies the height of the visible auth area
-* @param {String} [config.identityManager.login.url] Specifies the URL to be opened as an auth handler
-* @param {Object} [config.identityManager.signup] Encapsulates data for signup workflow
-* @param {Number} [config.identityManager.signup.width] Specifies the width of the visible auth area
-* @param {Number} [config.identityManager.signup.height] Specifies the height of the visible auth area
-* @param {String} [config.identityManager.signup.url] Specifies the URL to be opened as an auth handler
-* @param {Object} [config.identityManager.edit] Encapsulates data for edit workflow
-* @param {Number} [config.identityManager.edit.width] Specifies the width of the visible auth area
-* @param {Number} [config.identityManager.edit.height] Specifies the height of the visible auth area
-* @param {String} [config.identityManager.edit.url] Specifies the URL to be opened as an auth handler
-*     var identityManager = {"width": 400, "height": 240, "url": "http://example.com/auth"};
-*
-*     new Echo.IdentityServer.Controls.Auth({
-*         "target": document.getElementById("container"),
-*         "appkey": "test.aboutecho.com",
-*         "identityManager": {
-*             "login": identityManager,
-*             "signup": identityManager
-*         }
-*     });
-* @return {Object} the reference to the corresponding Echo.StreamServer.Controls.Auth instance.
-*/
 (function($) {
 
 if (Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth")) return;
 
+/**
+ * @class Echo.StreamServer.Controls.Auth
+ * Echo Auth control displays user login status and allows to sign in using different social identities.
+ * @extends Echo.Control
+ * @inheritdoc Echo.Control
+ *
+ * @constructor
+ * Auth constructor initializing Echo.StreamServer.Controls.Auth class
+ * @param {Object} config Configuration options
+ */
 var auth = Echo.Control.skeleton("Echo.IdentityServer.Controls.Auth");
 
 auth.config = {
+/**
+ * @cfg {Object} identityManager The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.
+ * @cfg {Object} [identityManager.login] Encapsulates data for login workflow
+ * @cfg {Number} [identityManager.login.width] Specifies the width of the visible auth area
+ * @cfg {Number} [identityManager.login.height] Specifies the height of the visible auth area
+ * @cfg {String} [identityManager.login.url] Specifies the URL to be opened as an auth handler
+ * @cfg {Object} [identityManager.signup] Encapsulates data for signup workflow
+ * @cfg {Number} [identityManager.signup.width] Specifies the width of the visible auth area
+ * @cfg {Number} [identityManager.signup.height] Specifies the height of the visible auth area
+ * @cfg {String} [identityManager.signup.url] Specifies the URL to be opened as an auth handler
+ * @cfg {Object} [identityManager.edit] Encapsulates data for edit workflow
+ * @cfg {Number} [identityManager.edit.width] Specifies the width of the visible auth area
+ * @cfg {Number} [identityManager.edit.height] Specifies the height of the visible auth area
+ * @cfg {String} [identityManager.edit.url] Specifies the URL to be opened as an auth handler
+ *     var identityManager = {"width": 400, "height": 240, "url": "http://example.com/auth"};
+ *
+ *     new Echo.IdentityServer.Controls.Auth({
+ *         "target": document.getElementById("container"),
+ *         "appkey": "test.aboutecho.com",
+ *         "identityManager": {
+ *             "login": identityManager,
+ *             "signup": identityManager
+ *         }
+ *     });
+ */
 	"identityManager": {},
+/**
+ * @cfg {String} infoMessages Customizes the look and feel of info messages, for example "loading" and "error".
+ */
 	"infoMessages": {"enabled": false}
 };
 
@@ -77,6 +81,9 @@ auth.templates.logged =
 	'</div>';
 
 auth.events = {
+/**
+ * @event
+ */
 	"Echo.UserSession.onInvalidate": {
 		"context": "global",
 		"handler": function() {

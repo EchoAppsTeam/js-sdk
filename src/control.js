@@ -2,6 +2,9 @@
 
 if (Echo.Utils.isComponentDefined("Echo.Control")) return;
 
+/**
+ * @class Echo.Control
+ */
 Echo.Control = function() {};
 
 // static interface
@@ -74,9 +77,42 @@ Echo.Control.prototype.templates.message.full =
 Echo.Control.prototype.defaults = {};
 
 Echo.Control.prototype.defaults.config = {
+/**
+ * @cfg {String} target (required) Specifies the DOM element where the control will be displayed.
+ */
+/**
+ * @cfg {String} appkey (required) Specifies the customer application key. You can use the "test.echoenabled.com" appkey for testing purposes.
+ */
 	"appkey": "",
+/**
+ * @cfg {String} query (required) Specifies the search query to generate the necessary data set. It must be constructed according to the <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a> method specification.
+ *     new Echo.StreamServer.Controls.Counter({
+ *         "target": document.getElementById("container"),
+ *         "appkey": "test.aboutecho.com",
+ *         "query" : "childrenof:http://example.com/test/*"
+ *     });
+ */
+	"query": "",
+/**
+ * @cfg {String} [apiBaseURL="api.echoenabled.com/v1/"] URL prefix for all API requests
+ */
 	"apiBaseURL": "api.echoenabled.com/v1/",
+/**
+ * @cfg {String} [submissionProxyURL="apps.echoenabled.com/v2/esp/activity/"] URL prefix for requests to Echo Submission Proxy
+ */
 	"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
+/**
+ * @cfg {Object} [infoMessages] Customizes the look and feel of info messages, for example "loading" and "error".
+ * @cfg {Boolean} [infoMessages.enabled=true] Specifies if info messages should be rendered.
+ * @cfg {String} [infoMessages.layout="full"] Specifies the layout of the info message. By default can be set to "compact" or "full".
+ *     new Echo.StreamServer.Controls.Counter({
+ *         ...
+ *         "infoMessages" : {
+ *             "enabled" : true,
+ *             "layout" : "full"
+ *         }
+ *     });
+ */
 	"infoMessages": {
 		"enabled": true,
 		"layout": "full"
