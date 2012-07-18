@@ -214,22 +214,22 @@ Echo.Plugin.prototype.init.config = function() {
 };
 
 Echo.Plugin.prototype.init.events = function() {
-        return new Echo.Plugin.Events({"plugin": this});
+	return new Echo.Plugin.Events({"plugin": this});
 };
 
 Echo.Plugin.Events = function(config) {
-        this.plugin = config.plugin;
+	this.plugin = config.plugin;
 };
 
 Echo.Plugin.Events.prototype.publish = function(params) {
-        var parts = ["Plugins", this.plugin.name, params.topic];
-        params.topic = (params.prefix ? [params.prefix] : []).concat(parts).join(".");
-        return this.plugin.component.events.publish(params);
+	var parts = ["Plugins", this.plugin.name, params.topic];
+	params.topic = (params.prefix ? [params.prefix] : []).concat(parts).join(".");
+	return this.plugin.component.events.publish(params);
 };
 
 Echo.Plugin.Events.prototype.subscribe = function(params) {
 	var self = this;
-        var handler = params.handler;
+	var handler = params.handler;
 	params.handler = function() {
 		if (!self.plugin.enabled()) return;
 		return handler.apply(self.plugin, arguments);
