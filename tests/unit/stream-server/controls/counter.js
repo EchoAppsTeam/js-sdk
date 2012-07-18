@@ -79,8 +79,7 @@ suite.prototype.cases.onError_more_than = function(callback) {
 				{
 					"result" : "error",
 					"errorCode" : "more_than",
-					"errorMessage" : 5000,
-					"liveUpdatesTimeout" : NaN
+					"errorMessage" : 5000
 				},
 				'Checking the restrictions of the count API. Error: "more_than"');
 			QUnit.ok($(params.target).html() === "<span>5000+</span>",
