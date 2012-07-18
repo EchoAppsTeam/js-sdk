@@ -188,7 +188,7 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 		: this.config.get("liveUpdatesTimeout");
 	if (this.requestType === "initial" && !this.error && !this.config.get("skipInitialRequest")) {
 		this.request({
-			"nextSince": self.nextSince 
+			"since": self.nextSince 
 		});
 		return;
 	} else if (this.requestType === "initial") {
@@ -200,7 +200,7 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 	}
 	this.liveUpdates.timers.regular = setTimeout(function() {
 		self.request({
-			"nextSince": self.nextSince 
+			"since": self.nextSince 
 		});
 	}, timeout * 1000);
 };
