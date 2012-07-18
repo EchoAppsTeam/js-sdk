@@ -189,7 +189,7 @@ Echo.Control.prototype.render = function(args) {
 		var newNode = $("." + this.cssPrefix + "-" + args.element, $(html));
 		var oldNode = this.dom.get(args.element);
 		newNode = Echo.Utils.toDOM(newNode, this.cssPrefix + "-",
-			function(element, target, dom) {
+			function(element, target, dom, extra) {
 				self.render({
 					"element": element,
 					"target": target,
