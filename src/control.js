@@ -158,6 +158,7 @@ Echo.Control.prototype.compileTemplate = function(template, data, transformation
 };
 
 Echo.Control.prototype.render = function(args) {
+	var self = this;
 	args = args || {};
 	var dom = args.dom || this.dom;
 	var data = args.data || this.data;
@@ -185,11 +186,11 @@ Echo.Control.prototype.render = function(args) {
 	if (args.element && args.recursive) {
 		var template = $.isFunction(this.template) ? this.template() : this.template;
 		var html = this.substitute(template, data);
-		var newNode = $("." + this.cssPrefix + args.element, $(html));
+		var newNode = $("." + this.cssPrefix + "-" + args.element, $(html));
 		var oldNode = this.dom.get(args.element);
 		newNode = Echo.Utils.toDOM(newNode, this.cssPrefix + "-",
 			function(element, target, dom) {
-				control.render.call(control, {
+				self.render({
 					"element": element,
 					"target": target,
 					"dom": dom,

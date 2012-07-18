@@ -63,7 +63,7 @@ stream.events = {
 		this._queueActivity({
 			"action": "animation",
 			"actorID": data.item.get("data.actor.id"),
-			"itemUnique": data.item.unique(),
+			"itemUnique": data.item.get("data.unique"),
 			"priority": "highest",
 			"handler": function() {
 				data.item.set("added", false);
@@ -76,7 +76,7 @@ stream.events = {
 		var self = this;
 		this._queueActivity({
 			"action": "animation",
-			"itemUnique": data.item.unique(),
+			"itemUnique": data.item.get("data.unique"),
 			"actorID": data.item.data.actor.id,
 			"priority": "highest",
 			"handler": function() {
@@ -106,7 +106,7 @@ stream.events = {
 		return {"stop": "bubble"};
 	},
 	"Echo.StreamServer.Controls.Stream.Item.internal.onChildrenExpand": function(topic, args) {
-		this.requestChildrenItems(args.unique());
+		this.requestChildrenItems(args.unique);
 		return {"stop": "bubble"};
 	}
 };
@@ -271,7 +271,7 @@ stream.methods.requestChildrenItems = function(unique) {
 		$.each(data.entries, function(i, entry) {
 			var _item = self._initItem(entry);
 			self._applyStructureUpdates("add", _item);
-			if (entry.parentUnique === item.unique()) {
+			if (entry.parentUnique === item.get("data.unique")) {
 				children.push(_item);
 			}
 		});
@@ -689,7 +689,7 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 			case "add":
 				// if we trying to add already existing item
 				// and it was not due to item moving we should replace it
-				var _item = self.items[item.unique()];
+				var _item = self.items[item.get("data.unique")];
 				if (_item && _item.dom && options.priority != "high") {
 					self._applySpotUpdates("replace", item, {"priority": "highest"});
 					return;
@@ -773,7 +773,7 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 	};
 	this._queueActivity({
 		"action": action,
-		"itemUnique": item.unique(),
+		"itemUnique": item.get("data.unique"),
 		"actorID": item.data.actor.id,
 		"priority": options.priority,
 		"handler": function() { handler(action); }
@@ -962,7 +962,7 @@ stream.methods._withinVisibleChildrenFrame = function(item) {
 };
 
 stream.methods._getParentItem = function(item) {
-	return item.isRoot() ? undefined : this.items[item.parentUnique()];
+	return item.isRoot() ? undefined : this.items[item.get("data.parentUnique")];
 };
 
 stream.methods._compareItems = function(a, b, sort) {
@@ -1053,7 +1053,7 @@ stream.methods._placeChildrenItems = function(parent, children, entries) {
 stream.methods._getItemListIndex = function(item, items) {
 	var idx = -1;
 	$.each(items || [], function(i, entry) {
-		if (entry == item || entry.unique() === item.unique()) {
+		if (entry == item || entry.get("data.unique") === item.get("data.unique")) {
 			idx = i;
 			return false;
 		}
@@ -1129,7 +1129,7 @@ stream.methods._getItemProjectedIndex = function(item, items, sort) {
 stream.methods._addItemToList = function(items, item, sort) {
 	items.splice(this._getItemProjectedIndex(item, items, sort), 0, item);
 	item.set("forceInject", false);
-	this.items[item.unique()] = item;
+	this.items[item.get("data.unique")] = item;
 };
 
 stream.methods._applyStructureUpdates = function(action, item, options) {
@@ -1141,7 +1141,7 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 				var parent = this._getParentItem(item);
 				// avoiding problem with missing parent
 				if (!parent) {
-					delete this.items[item.unique()];
+					delete this.items[item.get("data.unique")];
 					return;
 				}
 				item.set("depth", parent.get("depth") + 1);
@@ -1161,7 +1161,7 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 			if (item.isRoot()) {
 				container = this.threads;
 			} else {
-				container = this.items[item.parentUnique()].get("children");
+				container = this.items[item.get("data.parentUnique")].get("children");
 				if (container.length === 1) {
 					var parent = this._getParentItem(item);
 					if (parent) parent.set("threading", false);
@@ -1170,11 +1170,11 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 			container.splice(this._getItemListIndex(item, container), 1);
 			if (!options.keepChildren) {
 				item.traverse(item.get("children"), function(child) {
-					delete self.items[child.unique()];
+					delete self.items[child.get("data.unique")];
 				});
 				item.set("children", []);
 			}
-			delete this.items[item.unique()];
+			delete this.items[item.get("data.unique")];
 			break;
 	};
 };
@@ -2232,14 +2232,6 @@ item.methods.getAccumulator = function(type) {
 
 item.methods.isRoot = function() {
 	return this.config.get("data.object.id") == this.config.get("data.target.conversationID");
-};
-
-item.methods.unique = function() {
-	return this.config.get("data.unique");
-};
-
-item.methods.parentUnique = function() {
-	return this.config.get("data.parentUnique");
 };
 
 item.methods.addButtonSpec = function(plugin, spec) {
