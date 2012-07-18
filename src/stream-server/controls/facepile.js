@@ -41,7 +41,7 @@ pile.templates.main =
 		'<span class="{class:suffixText}"></span>' +
 	'</span>';
 
-pile.constructor = function() {
+pile.init = function() {
 	// data can be defined explicitly
 	// in this case we do not make API requests
 	if ($.isEmptyObject(this.data)) {
