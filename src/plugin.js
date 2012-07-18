@@ -26,6 +26,9 @@ Echo.Plugin.create = function(manifest) {
 			"labels",
 			"config"
 		]);
+		if (manifest.labels) {
+			self.labels.set(manifest.labels);
+		}
 		// we treat "false" as an indication that the plugin was not initialized
 		if (manifest.init.call(this) === false) {
 			this.disable();
@@ -34,9 +37,6 @@ Echo.Plugin.create = function(manifest) {
 			data = $.isFunction(data) ? {"handler": data} : data;
 			self.events.subscribe($.extend({"topic": topic}, data));
 		});
-		if (manifest.labels) {
-			self.labels.set(manifest.labels);
-		}
 	};
 	_constructor.manifest = manifest;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
