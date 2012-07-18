@@ -38,7 +38,7 @@ counter.templates.main = "<span>{data:count}</span>";
  * Counter constructor initializing Echo.StreamServer.Controls.Counter class
  * @param {Object} config Configuration options
  */
-counter.constructor = function() {
+counter.init = function() {
 	// data can be defined explicitly
 	// in this case we do not make API requests
 	// TODO: no live updates for now if data is passed as a config value

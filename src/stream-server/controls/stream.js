@@ -1208,7 +1208,7 @@ stream.methods._normalizeEntry = function(entry) {
 	return entry;
 };
 
-stream.constructor = function() {
+stream.init = function() {
 	var self = this;
 	this._initVars();
 	this.config.get("target").empty().append(this.render());
@@ -2252,7 +2252,7 @@ item.vars = {
 	"buttons": {}
 }
 
-item.constructor = function(config) {
+item.init = function(config) {
 	//"id": entry.object.id, // short cut for "id" item field
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
 };

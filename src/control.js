@@ -2,9 +2,6 @@
 
 if (Echo.Utils.isComponentDefined("Echo.Control")) return;
 
-// TODO: replace "Plugins" with different name to avoid conflict with e2 scripts
-if (!Echo.Plugins) Echo.Plugins = {};
-
 /**
  * @class Echo.Control
  */
@@ -33,7 +30,7 @@ Echo.Control.create = function(manifest) {
 			"renderers",
 			"loading",
 			["user", function() {
-				self.init([["plugins", manifest.constructor]]);
+				self.init([["plugins", manifest.init]]);
 			}]
 		]);
 	};
@@ -59,7 +56,7 @@ Echo.Control.skeleton = function(name) {
 		"methods": {},
 		"renderers": {},
 		"templates": {},
-		"constructor": function(){ this.render(); }
+		"init": function(){ this.render(); }
 	};
 };
 
@@ -470,9 +467,10 @@ Echo.Control.prototype.init.plugins = function(callback) {
 // TODO: define this function later, need to select loader first
 // TODO: load dependencies for the nested controls, ex: Stream.Item, i.e. Stream.*
 Echo.Control.prototype._loadPluginsDependencies = function(callback) {
+	var control = this;
 	var plugins = this.config.get("pluginsOrder");
 	var scripts = Echo.Utils.foldl([], plugins, function(name, acc) {
-		var plugin = Echo.Plugins[name];
+		var plugin = Echo.Plugin.getClass(name, control.name);
 		if (plugin && plugin.dependencies && plugin.dependencies.length) {
 			return acc.concat(plugin.dependencies);
 		}
