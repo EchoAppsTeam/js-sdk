@@ -8,6 +8,10 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
  * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
  * @extends Echo.Control
  * @inheritdoc Echo.Control
+ *
+ * @constructor
+ * Counter constructor initializing Echo.StreamServer.Controls.Counter class
+ * @param {Object} config Configuration options
  */
 var counter = Echo.Control.skeleton("Echo.StreamServer.Controls.Counter");
 
@@ -33,11 +37,6 @@ counter.config = {
 
 counter.templates.main = "<span>{data:count}</span>";
 
-/**
- * @constructor
- * Counter constructor initializing Echo.StreamServer.Controls.Counter class
- * @param {Object} config Configuration options
- */
 counter.init = function() {
 	// data can be defined explicitly
 	// in this case we do not make API requests
