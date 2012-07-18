@@ -322,10 +322,6 @@ stream.methods.requestMoreItems = function(element) {
 		this.moreRequest = Echo.StreamServer.API.request({
 			"endpoint": "search",
 			"apiBaseURL": this.config.get("apiBaseURL"),
-			"data": {
-				"q": this.config.get("query") + " pageAfter:\"" + (this.nextPageAfter || "0") + "\"",
-				"appkey": self.config.get("appkey")
-			},
 			"onError": function(data) {
 				self.showMessage({"type": "error", "data": data});
 			},
@@ -341,7 +337,12 @@ stream.methods.requestMoreItems = function(element) {
 			}
 		});
 	}
-	this.moreRequest.send();
+	this.moreRequest.send({
+		"data": {
+			"q": this.config.get("query") + " pageAfter:\"" + (this.nextPageAfter || "0") + "\"",
+			"appkey": self.config.get("appkey")
+		}
+	});
 };
 
 stream.methods.setStreamState = function(state) {
