@@ -1,7 +1,5 @@
 (function($) {
 
-"use strict";
-
 var suite = Echo.Tests.Unit.Auth = function() {};
 
 suite.prototype.info = {
@@ -38,6 +36,7 @@ suite.prototype.tests.anonymousUser = {
 				});
 				QUnit.ok($(target).html().match(/echo-identityserver-controls-auth-userAnonymous/),
 					'Checking the anonymous mode rendering');
+				QUnit.start();
 			}
 		});
 	}
@@ -70,6 +69,7 @@ suite.prototype.tests.loggedInUser = {
 				});
 				QUnit.ok($(target).html().match(/echo-identityserver-controls-auth-userLogged/),
 					'Checking the anonymous mode rendering');
+				QUnit.start();
 			}
 		});
 	}

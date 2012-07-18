@@ -1,7 +1,5 @@
 (function($) {
 
-"use strict";
-
 var suite = Echo.Tests.Unit.UserSession = function() {};
 
 suite.prototype.info = {

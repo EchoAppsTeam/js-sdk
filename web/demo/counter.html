@@ -18,8 +18,12 @@
 
 		var control = new Echo.StreamServer.Controls.Counter({
 			"target": document.getElementById("container"),
-			"appkey": "test.aboutecho.com",
-			"query" : "childrenof:http://example.com/test/*"
+			"appkey": "faketest.aboutecho.com",
+			"query" : "childrenof:http://example.com/test/*",
+			"infoMessages" : {
+				"enabled" : true,
+				"layout" : "full"
+			}
 		});
 
 		if (console) console.log(control);
