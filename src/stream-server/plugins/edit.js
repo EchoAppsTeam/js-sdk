@@ -71,9 +71,6 @@ plugin.init = function() {
 		"post": this.labels.get("post"),
 		"posting": this.labels.get("posting")
 	});
-	this.component.prepareContent = function() {
-		return plugin.methods.prepareContent.call(self);
-	};
 };
 
 plugin.labels = {
@@ -88,6 +85,9 @@ plugin.labels = {
 $.map(["Init", "Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.onPost" + action] = function(topic, args) {
 		var component = this.component;
+		if (action === "Init") {
+			args.postData.content = this.prepareContent();
+		}
 		component.events.publish({
 			"topic": "onEdit" + action,
 			"context": component.config.get("parent.context")
@@ -180,7 +180,7 @@ plugin.methods.getMetaDataUpdates = function(verb, type, data) {
 		$.map(a, function(item) {
 			if (item && $.inArray(item, b) == -1) {
 				updates.push(plugin.prepareActivity(verb, type, item));
-		}
+			}
 		});
 	};
 	diff(items.current, items.modified, "un" + verb);

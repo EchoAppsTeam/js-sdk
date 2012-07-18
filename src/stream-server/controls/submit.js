@@ -30,6 +30,10 @@ submit.labels = {
 	"yourWebsiteOptional": "Your website (optional)"
 };
 
+submit.constructor = function() {
+	this.render();
+}
+
 // templates
 
 submit.templates.main =
@@ -80,10 +84,6 @@ submit.templates.main =
 			'<div class="echo-clear"></div>' +
 		'</div>' +
 	'</div>';
-
-submit.constructor = function() {
-	this.render();
-}
 
 // renderers
 
@@ -202,13 +202,7 @@ submit.renderers.postButton = function(element) {
 
 // methods
 
-submit.methods.prepareContent = function() {
-	return [].concat(this.getActivity("post", "comment", this.dom.get("text").val()),
-			 this.getActivity("tag", "marker", this.dom.get("markers").val()),
-			 this.getActivity("tag", "tag", this.dom.get("tags").val()));
-};
-
-submit.methods.post = function(content) {
+submit.methods.post = function() {
 	var self = this;
 	var publish = function(phase, data) {
 		var params = {
@@ -217,8 +211,11 @@ submit.methods.post = function(content) {
 		};
 		self.events.publish(params);
 	};
+	var content = [].concat(self.getActivity("post", "comment", self.dom.get("text").val()),
+				 self.getActivity("tag", "marker", self.dom.get("markers").val()),
+				 self.getActivity("tag", "tag", self.dom.get("tags").val()));
 	var entry = {
-		"content": this.prepareContent(),
+		"content": content,
 		"appkey": this.config.get("appkey"),
 		"sessionID": this.user.get("sessionID", "")
 	};
@@ -229,7 +226,7 @@ submit.methods.post = function(content) {
 	var hasPreviousTimeout = false;
 	var callbacks = {
 		"onData": function(data) {
-			publish("Complete", content);
+			publish("Complete", entry);
 			// notify all widgets on the page about a new item posted
 			Echo.Events.publish({
 				"topic": "Echo.Control.onDataInvalidate",
@@ -269,7 +266,7 @@ submit.methods.post = function(content) {
 			publish("Error", data);
 		}
 	};
-	publish("Init", content);
+	publish("Init", entry);
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"submissionProxyURL": this.config.get("submissionProxyURL"),
@@ -279,7 +276,6 @@ submit.methods.post = function(content) {
 		"onError": callbacks.onError
 	}).send();
 };
-
 
 submit.methods.getActivity = function(verb, type, data) {
 	return (!data) ? [] : {
