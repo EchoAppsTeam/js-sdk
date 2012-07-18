@@ -290,6 +290,10 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 			"itemURIPattern": self.config.get("itemURIPattern")
 		};
 		if (verb(activity) === "update") {
+			data = {
+				"verb": verb(activity),
+				"target": activity.targets[0].id
+			};
 			$.each(activity.object, function(key, value) {
 				if (key !== "objectTypes") {
 					data["field"] = key;
