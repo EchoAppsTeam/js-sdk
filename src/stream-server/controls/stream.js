@@ -2231,7 +2231,7 @@ item.methods.getAccumulator = function(type) {
 };
 
 item.methods.isRoot = function() {
-	return this.config.get("data.object.id") == this.config.get("data.target.conversationID");
+	return this.data.object.id === this.data.target.conversationID;
 };
 
 item.methods.addButtonSpec = function(plugin, spec) {
