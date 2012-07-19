@@ -62,10 +62,9 @@ submit.config = {
 	"tags": [],
 /**
  * @cfg {String} requestMethod This parameter is used to specify the request method. Possible values are "GET" and "POST".
- * Setting parameter to "POST" has some restrictions, such as:
+ * Setting parameter to "POST" has some restrictions.
+ * We can't handle server response, UI won't show any waiting for the server responses actions
  *
- * - we can't handle server response
- * - UI won't show any waiting for the server responses actions.
  *     new Echo.StreamServer.Controls.Submit({
  *         ...
  *         "requestMethod": "POST",
@@ -320,8 +319,18 @@ submit.methods.post = function() {
 	var hasPreviousTimeout = false;
 	var callbacks = {
 		"onData": function(data) {
+			/**
+			 * @event onPostComplete
+			 * Echo.StreamServer.Controls.Submit.onPostComplete
+			 * is triggered when the submit operation is complete
+			 */
 			publish("Complete", entry);
 			// notify all widgets on the page about a new item posted
+			/**
+			 * @event onDataInvalidate
+			 * Echo.Control.onDataInvalidate
+			 * is triggered if dataset is changed
+			 */
 			Echo.Events.publish({
 				"topic": "Echo.Control.onDataInvalidate",
 				"context": "global"
@@ -357,9 +366,19 @@ submit.methods.post = function() {
 					}
 				}
 			});
+			/**
+			 * @event onPostError
+			 * Echo.StreamServer.Controls.Submit.onPostError
+			 * is triggered if submit operation failed
+			 */
 			publish("Error", data);
 		}
 	};
+	/**
+	 * @event onPostInit
+	 * Echo.StreamServer.Controls.Submit.onPostInit
+	 * is triggered if submit operation was started
+	 */
 	publish("Init", entry);
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
