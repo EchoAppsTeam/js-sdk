@@ -1539,7 +1539,7 @@ item.renderers._buttonsDelimiter = function(element) {
 item.renderers.buttons = function(element) {
 	var self = this;
 	this._assembleButtons();
-	this.sortButtons();
+	this._sortButtons();
 	element.empty();
 	$.map(this.buttonsOrder, function(name) {
 		var data = self.buttons[name];
