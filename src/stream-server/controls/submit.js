@@ -292,7 +292,10 @@ submit.renderers.postButton = function(element) {
 };
 
 // methods
-
+/**
+ * @method post
+ * Method used for posting user provided content to the <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank"> Echo Submit</a> endpoint through <a href="http://wiki.aboutecho.com/w/page/53021402/Echo%20Submission%20Proxy" target="_blank"> Echo Submission Proxy</a>.
+ */
 submit.methods.post = function() {
 	var self = this;
 	var publish = function(phase, data) {
@@ -387,6 +390,10 @@ submit.methods._getActivity = function(verb, type, data) {
 	};
 };
 
+/**
+ * @method highlightMandatory
+ * Method highlighting the mandatory input data fields if they are empty
+ */
 submit.methods.highlightMandatory = function(element) {
 	if (element && !$.trim(element.val())) {
 		var css = this.cssPrefix + "-mandatory";
@@ -399,6 +406,11 @@ submit.methods.highlightMandatory = function(element) {
 	return false;
 };
 
+/**
+ * @method prepareBroadcastParams
+ * Prepares data for further broadcasting through Echo.Events
+ * @return {Object} preformatted data for publishing through Echo.Events mechanics
+ */
 submit.methods.prepareBroadcastParams = function(params) {
 	params = params || {};
 	params.data = this.get("data");
@@ -407,6 +419,10 @@ submit.methods.prepareBroadcastParams = function(params) {
 	return params;
 };
 
+/**
+ * @method refresh
+ * Method implements the refresh logic for the Submit control.
+ */
 submit.methods.refresh = function() {
 	this.set("data.object.content", this.dom.get("text").val());
 	this.render();
