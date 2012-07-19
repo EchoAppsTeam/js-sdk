@@ -237,10 +237,13 @@ Echo.Tests.Stats = {
 				if ($.inArray(prefix + name, ["Echo.Tests", "Echo.Vars", "Echo.Global"]) >= 0) return;
 				if (parentObject.hasOwnProperty(name) && typeof value != "string" && name != "constructor" && name != "parent") {
 					// wrap all functions except constructors and "private" functions (they start with "_" symbol)
-					if (typeof value == "function" && name.charAt(0).toUpperCase() != name.charAt(0)) {
+					var isInternal = name.charAt(0) == "_";
+					if (typeof value == "function" && name.charAt(0).toUpperCase() != name.charAt(0) && !isInternal) {
 						Echo.Tests.Stats.wrapFunction(parentObject, value, name, prefix);
 					}
-					Echo.Tests.Stats.getFunctionNames(value, prefix + name + ".");
+					if (!isInternal) {
+						Echo.Tests.Stats.getFunctionNames(value, prefix + name + ".");
+					}
 				}
 			});
 		});
