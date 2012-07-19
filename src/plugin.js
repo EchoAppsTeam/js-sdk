@@ -222,8 +222,7 @@ Echo.Plugin.Events = function(config) {
 };
 
 Echo.Plugin.Events.prototype.publish = function(params) {
-	var parts = ["Plugins", this.plugin.name, params.topic];
-	params.topic = (params.prefix ? [params.prefix] : []).concat(parts).join(".");
+	params.topic = ["Plugins", this.plugin.name, params.topic].join(".");
 	return this.plugin.component.events.publish(params);
 };
 

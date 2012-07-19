@@ -355,7 +355,8 @@ Echo.Control.prototype._init.events = function() {
 	};
 	var events = {
 		"publish": function(params) {
-			params.topic = control.manifest.name + "." + params.topic;
+			var prefix = params.prefix ? params.prefix + "." : "";
+			params.topic = prefix + control.manifest.name + "." + params.topic;
 			params.data = params.data || {};
 			// process data through the normalization function if defined
 			if (control.prepareBroadcastParams) {

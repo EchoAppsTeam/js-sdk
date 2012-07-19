@@ -258,6 +258,7 @@ pile.methods._initItem = function(entry) {
 		"target": $("<div>"),
 		"appkey": this.config.get("appkey"),
 		"parent": $.extend({}, this.config.getAsHash()),
+		"plugins": this.config.get("plugins"),
 		"data": entry.actor,
 		"user": this.user
 	}, this.config.get("item"));
