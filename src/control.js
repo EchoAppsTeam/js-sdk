@@ -269,7 +269,7 @@ Echo.Control.prototype.extendTemplate = function(html, action, anchor) {
 };
 
 Echo.Control.prototype.extendRenderer = function() {
-	this.init.renderer.apply(this, arguments);
+	this._init.renderer.apply(this, arguments);
 };
 
 Echo.Control.prototype.template = function() {
@@ -303,7 +303,7 @@ Echo.Control.prototype._init = function(subsystems) {
 			args = [args];
 		}
 		var name = args.shift();
-		var result = control.init[name].apply(control, args);
+		var result = control._init[name].apply(control, args);
 		if (typeof result != "undefined") {
 			control[name] = result;
 		}
@@ -421,7 +421,7 @@ Echo.Control.prototype._init.renderer = function(name, renderer) {
 Echo.Control.prototype._init.renderers = function() {
 	var control = this;
 	$.each(this.manifest.renderers, function() {
-		control.init.renderer.apply(control, arguments);
+		control._init.renderer.apply(control, arguments);
 	});
 };
 
