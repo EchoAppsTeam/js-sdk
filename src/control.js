@@ -223,12 +223,15 @@ Echo.Control.prototype.render = function(args) {
 		var oldNode = this.dom.get(args.element);
 		newNode = Echo.Utils.toDOM(newNode, this.cssPrefix + "-",
 			function(element, target, dom, extra) {
-				self.render({
-					"element": element,
-					"target": target,
-					"dom": dom,
-					"extra": extra
-				});
+				self.dom.set(
+					element,
+					self.render({
+						"element": element,
+						"target": target,
+						"dom": dom,
+						"extra": extra
+					})
+				);
 			}
 		).content;
 		oldNode.replaceWith(newNode);
