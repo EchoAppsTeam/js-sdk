@@ -971,8 +971,10 @@ stream.methods._compareItems = function(a, b, sort) {
 	switch (sort) {
 		case "chronological":
 			result = a.get("timestamp") > b.get("timestamp");
+			break;
 		case "reverseChronological":
 			result = a.get("timestamp") <= b.get("timestamp");
+			break;
 		case "likesDescending":
 		case "repliesDescending":
 		case "flagsDescending":
@@ -982,6 +984,7 @@ stream.methods._compareItems = function(a, b, sort) {
 			result = (getCount(a) < getCount(b) ||
 					(getCount(a) === getCount(b) &&
 						this._compareItems(a, b, "reverseChronological")));
+			break;
 	};
 	return result;
 };
