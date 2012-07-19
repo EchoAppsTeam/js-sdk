@@ -1,6 +1,6 @@
 (function($) {
 
-suite = Echo.Tests.Unit.StreamServerAPI = function() {};
+var suite = Echo.Tests.Unit.StreamServerAPI = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.StreamServer.API.Request",
