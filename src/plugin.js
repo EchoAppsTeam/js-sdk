@@ -19,24 +19,25 @@ Echo.Plugin.create = function(manifest) {
 		this.cssPrefix = this.component.cssPrefix + "-plugin-" + manifest.name;
 		// define extra css class for the control target
 		this.component.config.get("target").addClass(this.cssPrefix);
-		this.init([
+		this._init([
 			"css",
-			"renderers",
 			"events",
 			"labels",
 			"config"
 		]);
+		// define plugin labels
 		if (manifest.labels) {
 			self.labels.set(manifest.labels);
 		}
-		// we treat "false" as an indication that the plugin was not initialized
-		if (manifest.init.call(this) === false) {
-			this.disable();
-		}
+		// subscribe to the events defined in the plugin
 		$.each(manifest.events, function(topic, data) {
 			data = $.isFunction(data) ? {"handler": data} : data;
 			self.events.subscribe($.extend({"topic": topic}, data));
 		});
+		// we treat "false" as an indication that the plugin was not initialized
+		if (manifest.init.call(this) === false) {
+			this.disable();
+		}
 	};
 	_constructor.manifest = manifest;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
@@ -143,83 +144,89 @@ Echo.Plugin.prototype.destroy = function() {};
 
 // internal functions
 
-Echo.Plugin.prototype.init = function(subsystems) {
-	var plugin = this;
-	$.map(subsystems, function(system) {
-		plugin[system] = plugin.init[system].call(plugin);
-	});
+Echo.Plugin._defineNestedClass = function(name) {
+	Echo.Plugin[name] = function(config) {
+		this.plugin = config.plugin;
+	};
 };
 
-Echo.Plugin.prototype.init.css = function() {
+Echo.Plugin.prototype._init = function() {
+	Echo.Control.prototype._init.apply(this, arguments);
+};
+
+Echo.Plugin.prototype._init.css = function() {
 	var manifest = this.manifest;
 	if (!manifest.css) return;
 	var parts = [this.component.manifest.name, "Plugins", manifest.name];
 	Echo.Utils.addCSS(this.substitute(manifest.css), parts.join("."));
 };
 
-Echo.Plugin.prototype.init.renderers = function() {
-	var plugin = this;
+Echo.Plugin.prototype._init.labels = function() {
+	return new Echo.Plugin.Labels({"plugin": this});
 };
 
-Echo.Plugin.prototype.init.labels = function() {
-	var plugin = this;
-	return {
-		"set": function(labels) {
-			Echo.Labels.set(labels, "Plugins." + plugin.name, true);
-		},
-		"get": function(label, data) {
-			return Echo.Labels.get(label, "Plugins." + plugin.name, data);
-		}
-	};
+Echo.Plugin.prototype._init.config = function() {
+	return new Echo.Plugin.Config({"plugin": this});
 };
 
-//TODO: rework this function in Events style
-Echo.Plugin.prototype.init.config = function() {
-	var plugin = this, component = plugin.component;
-	var normalize = function(key) {
-		return (["plugins", plugin.manifest.name].concat(key ? key : [])).join(".");
-	};
-	return {
-		"set": function(key, value) {
-			component.config.set(normalize(key), value);
-		},
-		"get": function(key, defaults, askParent) {
-			var value = component.config.get(
-				normalize(key),
-				plugin.manifest.config[key]
-			);
-			return typeof value == "undefined"
-				? askParent
-					? component.config.get(key, defaults)
-					: defaults
-				: value;
-		},
-		"remove": function(key) {
-			component.config.remove(normalize(key));
-		},
-		"assemble": function(data) {
-			var config = plugin.component.config;
-			data.plugins = config.get("nestedPlugins", []);
-			data.parent = config.getAsHash();
-
-			// copy default field values from parent control
-			Echo.Utils.foldl(data, plugin.component.get("defaults.config"),
-				function(value, acc, key) {
-					acc[key] = config.get(key);
-				}
-			);
-			return (new Echo.Configuration(data, plugin.config.get())).getAsHash();
-		}
-	};
-};
-
-Echo.Plugin.prototype.init.events = function() {
+Echo.Plugin.prototype._init.events = function() {
 	return new Echo.Plugin.Events({"plugin": this});
 };
 
-Echo.Plugin.Events = function(config) {
-	this.plugin = config.plugin;
+// Plugin Labels class
+
+Echo.Plugin._defineNestedClass("Labels");
+
+Echo.Plugin.Labels.prototype.set = function(labels) {
+	Echo.Labels.set(labels, "Plugins." + this.plugin.name, true);
 };
+
+Echo.Plugin.Labels.prototype.get = function(label, data) {
+	return Echo.Labels.get(label, "Plugins." + this.plugin.name, data);
+};
+
+// Plugin Config class
+
+Echo.Plugin._defineNestedClass("Config");
+
+Echo.Plugin.Config.prototype.normalize = function(key) {
+	return (["plugins", this.plugin.manifest.name].concat(key ? key : [])).join(".");
+};
+
+Echo.Plugin.Config.prototype.set = function(key, value) {
+	this.plugin.component.config.set(this.normalize(key), value);
+};
+
+Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
+	var component = this.plugin.component;
+	var value = component.config.get(this.normalize(key), this.plugin.manifest.config[key]);
+	return typeof value == "undefined"
+		? askParent
+			? component.config.get(key, defaults)
+			: defaults
+		: value;
+};
+
+Echo.Plugin.Config.prototype.remove = function(key) {
+	this.plugin.component.config.remove(this.normalize(key));
+};
+
+Echo.Plugin.Config.prototype.assemble = function(data) {
+	var config = this.plugin.component.config;
+	var defaults = this.plugin.component.get("defaults.config");
+	data.plugins = config.get("nestedPlugins", []);
+	data.parent = config.getAsHash();
+
+	// copy default field values from parent control
+	Echo.Utils.foldl(data, defaults, function(value, acc, key) {
+		acc[key] = config.get(key);
+	});
+	return (new Echo.Configuration(data, this.plugin.config.get())).getAsHash();
+};
+
+// Plugin Events class
+
+Echo.Plugin._defineNestedClass("Events");
 
 Echo.Plugin.Events.prototype.publish = function(params) {
 	params.topic = ["Plugins", this.plugin.name, params.topic].join(".");
