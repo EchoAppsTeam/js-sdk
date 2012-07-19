@@ -388,7 +388,7 @@ Echo.Control.prototype._init.events = function() {
 		};
 		// subscribe to inner data invalidation events
 		events.subscribe({
-			"topic": "local.Echo.Control.onDataInvalidate",
+			"topic": "internal.Echo.Control.onDataInvalidate",
 			"handler": requestUpdates
 		});
 		// subscribe to outer data invalidation events

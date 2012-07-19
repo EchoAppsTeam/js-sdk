@@ -134,7 +134,7 @@ Echo.Plugin.prototype.substitute = function(template) {
 
 Echo.Plugin.prototype.requestDataRefresh = function() {
 	Echo.Events.publish({
-		"topic": "local.Echo.Control.onDataInvalidate",
+		"topic": "internal.Echo.Control.onDataInvalidate",
 		"bubble": true,
 		"context": this.component.config.get("context")
 	});
