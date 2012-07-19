@@ -1,5 +1,18 @@
 (function($) {
 
+/**
+ * @class Echo.StreamServer.Controls.Stream.Plugins.itemsAutorequest
+ * Echo Stream plugin automatically loads the next page full of items when the end of the stream is displayed on the browser screen. This produces an 'Infinite Scroll' Effect.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "ItemsAutoRequest"
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ * @inheritdoc Echo.Plugin
+ */
 var plugin = Echo.Plugin.skeleton("ItemsAutoRequest", "Echo.StreamServer.Controls.Stream");
 
 if (Echo.Plugin.isDefined(plugin)) return;

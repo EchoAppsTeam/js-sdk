@@ -2,6 +2,9 @@
 
 if (Echo.Utils.isComponentDefined("Echo.Plugin")) return;
 
+/**
+ * @class Echo.Plugin
+ */
 Echo.Plugin = function() {};
 
 // static interface
