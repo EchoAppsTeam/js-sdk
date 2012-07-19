@@ -30,7 +30,7 @@ suite.prototype.tests.loggedInUser = {
 					"handlerId" : handlerId
 				});
 				QUnit.ok($(target).html().match(/echo-identityserver-controls-auth-userLogged/),
-					'Checking the anonymous mode rendering');
+					'Checking the logged user mode rendering');
 				QUnit.start();
 			}
 		});
