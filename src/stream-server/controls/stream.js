@@ -1538,7 +1538,7 @@ item.renderers._buttonsDelimiter = function(element) {
 
 item.renderers.buttons = function(element) {
 	var self = this;
-	this.assembleButtons();
+	this._assembleButtons();
 	this.sortButtons();
 	element.empty();
 	$.map(this.buttonsOrder, function(name) {
@@ -1813,7 +1813,7 @@ item.renderers.body = function(element, dom) {
 		if (content.text !== textBeforeAutoLinking) {
 			content = tags2meta(meta2tags(content));
 		}
-		var smileys = this.initSmileysConfig();
+		var smileys = this._initSmileysConfig();
 		if (content.text.match(smileys.regexps.test)) {
 			$.each(smileys.codes, function(i, code) {
 				content.text = content.text.replace(smileys.regexps[code], smileys.tag(smileys.hash[code]));
@@ -1855,7 +1855,7 @@ item.renderers.body = function(element, dom) {
 
 item.renderers.date = function(element) {
 	var container = element || this.dom && this.dom.get("date");
-	this.calcAge();
+	this._calcAge();
 	if (container) {
 		container.html(this.age);
 	}
@@ -1986,7 +1986,7 @@ item.methods.template = function() {
 			'<div class="echo-clear"></div>' +
 			'<div class="{class:childrenMarker}"></div>' +
 		'</div>' +
-		(this.config.get("children.sortOrder") == "chronological"
+		(this.config.get("children.sortOrder") === "chronological"
 			? '<div class="{class:children}"></div>' +
 			'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
 				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
@@ -2001,131 +2001,19 @@ item.methods.template = function() {
 };
 
 item.methods.hasMoreChildren = function() {
-	return this.data.hasMoreChildren == "true";
+	return this.data.hasMoreChildren === "true";
 };
 
 item.methods.getNextPageAfter = function() {
 	var children = $.grep(this.children, function(child) {
 		return !child.config.get("live");
 	});
-	var index = this.config.get("children.sortOrder") == "chronological"
+	var index = this.config.get("children.sortOrder") === "chronological"
 		? children.length - 1
 		: 0;
 	return children.length
 		? children[index].data.pageAfter
 		: undefined;
-};
-
-item.methods.initSmileysConfig = function() {
-	if (Echo.Vars.smileys) return Echo.Vars.smileys;
-	var esc = function(v) { return v.replace(/([\W])/g, "\\$1"); };
-	var smileys = Echo.Vars.smileys = {"codes": [], "regexps": []};
-	smileys.hash = {
-		':)':		{file: 'smile.png', title: 'Smile'},
-		':-)':		{file: 'smile.png', title: 'Smile'},
-		';)':		{file: 'wink.png', title: 'Wink'},
-		';-)':		{file: 'wink.png', title: 'Wink'},
-		':(':		{file: 'unhappy.png', title: 'Frown'},
-		':-(':		{file: 'unhappy.png', title: 'Frown'},
-		'=-O':		{file: 'surprised.png', title: 'Surprised'},
-		':-D':		{file: 'grin.png', title: 'Laughing'},
-		':-P':		{file: 'tongue.png', title: 'Tongue out'},
-		'=)':		{file: 'happy.png', title: 'Happy'},
-		'B-)':		{file: 'evilgrin.png', title: 'Evil grin'}
-	};
-	var escapedCodes = [];
-	$.each(smileys.hash, function(code) {
-		var escaped = esc(code);
-		escapedCodes.push(escaped);
-		smileys.codes.push(code);
-		smileys.regexps[code] = new RegExp(escaped, "g");
-	});
-	smileys.regexps.test = new RegExp(escapedCodes.join("|"));
-	smileys.tag = function(smiley) {
-		return '<img class="' + this.cssPrefix + '-smiley-icon" src="//cdn.echoenabled.com/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '" />';
-	};
-	return smileys;
-};
-
-item.methods.assembleButtons = function() {
-	var self = this;
-	var buttonsOrder = [];
-	$.each(this.buttonSpecs, function(plugin, specs) {
-		$.map(specs, function(spec) {
-			var data = $.isFunction(spec)
-				? spec.call(self)
-				: $.extend({}, spec);
-			if (!data.name) return;
-			var callback = data.callback || function() {};
-			data.callback = function() {
-				callback.call(self);
-				self.events.publish({
-					"topic": "internal.onButtonClick",
-					"data": {
-						"name": data.name,
-						"plugin": plugin,
-						"item": {
-							"data": self.data,
-							"target": self.dom.content
-						}
-					},
-					"bubble": true
-				});
-			};
-			data.label = data.label || data.name;
-			data.plugin = plugin;
-			if (typeof data.visible === "undefined") {
-				data.visible = true;
-			}
-			var visible = data.visible;
-			data.visible = $.isFunction(visible)
-				? visible
-				: function() { return visible; };
-			var name = plugin + "." + data.name;
-			self.buttons[name] = data;
-			if ($.inArray(name, self.buttonsOrder) < 0) {
-				buttonsOrder.push(name);
-			}
-		});
-	});
-	// keep correct order of plugins and buttons
-	self.buttonsOrder = buttonsOrder.concat(self.buttonsOrder);
-};
-
-item.methods.sortButtons = function() {
-	var self = this;
-	var defaultOrder = this.buttonsOrder;
-	var requiredOrder = this.config.get("buttonsOrder");
-	// if buttons order is not specified in application config, use default order
-	if (!requiredOrder) {
-		this.config.set("buttonsOrder", defaultOrder);
-	} else if (requiredOrder != defaultOrder) {
-		var push = function(name, acc, pos) {
-			if (!self.buttons[name]) return;
-			acc.push(name);
-			pos = pos || $.inArray(name, defaultOrder);
-			if (pos >= 0) {
-				delete defaultOrder[pos];
-			}
-		};
-		var order = Echo.Utils.foldl([], requiredOrder, function(name, acc) {
-			if (/^(.*)\./.test(name)) {
-				push(name, acc);
-			} else {
-				var re = new RegExp("^" + name + "\.");
-				$.map(defaultOrder, function(n, i) {
-					if (n && n.match(re)) {
-						push(n, acc, i);
-					}
-				});
-			}
-		});
-		this.buttonsOrder = order;
-		this.config.set("buttonsOrder", order);
-	// if application config tells not to use buttons
-	} else if (!requiredOrder.length) {
-		this.buttonsOrder = [];
-	}
 };
 
 // TODO: this function is a copy of the "prepareBroadcastParams" one from the stream
@@ -2153,48 +2041,6 @@ item.methods.refreshDate = function() {
 	$.map(this.children || [], function(child) {
 		child.refreshDate();
 	});
-};
-
-item.methods.calcAge = function() {
-	if (!this.timestamp) return;
-	var self = this;
-	var d = new Date(this.timestamp * 1000);
-	var now = (new Date()).getTime();
-	var when;
-	var diff = Math.floor((now - d.getTime()) / 1000);
-	var dayDiff = Math.floor(diff / 86400);
-	var getAgo = function(ago, period) {
-		return ago + " " + self.labels.get(period + (ago == 1 ? "" : "s") + "Ago");
-	};
-
-	if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 365) {
-		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
-	} else if (diff < 60) {
-		when = getAgo(diff, 'second');
-	} else if (diff < 60 * 60) {
-		diff = Math.floor(diff / 60);
-		when = getAgo(diff, 'minute');
-	} else if (diff < 60 * 60 * 24) {
-		diff = Math.floor(diff / (60 * 60));
-		when = getAgo(diff, 'hour');
-	} else if (diff < 60 * 60 * 48) {
-		when = this.labels.get("yesterday");
-	} else if (dayDiff < 7) {
-		when = getAgo(dayDiff, 'day');
-	} else if (dayDiff < 14) {
-		when = this.labels.get("lastWeek");
-	} else if (dayDiff < 30) {
-		diff =  Math.floor(dayDiff / 7);
-		when = getAgo(diff, 'week');
-	} else if (dayDiff < 60) {
-		when = this.labels.get("lastMonth");
-	} else if (dayDiff < 365) {
-		diff =  Math.floor(dayDiff / 31);
-		when = getAgo(diff, 'month');
-	}
-	if (this.age !== when) {
-		this.age = when;
-	}
 };
 
 item.methods.block = function(label) {
@@ -2239,6 +2085,165 @@ item.methods.addButtonSpec = function(plugin, spec) {
 		this.buttonSpecs[plugin] = [];
 	}
 	this.buttonSpecs[plugin].push(spec);
+};
+
+item.methods._calcAge = function() {
+	if (!this.timestamp) return;
+	var self = this;
+	var d = new Date(this.timestamp * 1000);
+	var now = (new Date()).getTime();
+	var when;
+	var diff = Math.floor((now - d.getTime()) / 1000);
+	var dayDiff = Math.floor(diff / 86400);
+	var getAgo = function(ago, period) {
+		return ago + " " + self.labels.get(period + (ago == 1 ? "" : "s") + "Ago");
+	};
+
+	if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 365) {
+		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+	} else if (diff < 60) {
+		when = getAgo(diff, 'second');
+	} else if (diff < 60 * 60) {
+		diff = Math.floor(diff / 60);
+		when = getAgo(diff, 'minute');
+	} else if (diff < 60 * 60 * 24) {
+		diff = Math.floor(diff / (60 * 60));
+		when = getAgo(diff, 'hour');
+	} else if (diff < 60 * 60 * 48) {
+		when = this.labels.get("yesterday");
+	} else if (dayDiff < 7) {
+		when = getAgo(dayDiff, 'day');
+	} else if (dayDiff < 14) {
+		when = this.labels.get("lastWeek");
+	} else if (dayDiff < 30) {
+		diff =  Math.floor(dayDiff / 7);
+		when = getAgo(diff, 'week');
+	} else if (dayDiff < 60) {
+		when = this.labels.get("lastMonth");
+	} else if (dayDiff < 365) {
+		diff =  Math.floor(dayDiff / 31);
+		when = getAgo(diff, 'month');
+	}
+	if (this.age !== when) {
+		this.age = when;
+	}
+};
+
+var _smileys = {
+	"codes": [],
+	"regexps": [],
+	"hash": {
+		":)": {file: "smile.png", title: "Smile"},
+		":-)": {file: "smile.png", title: "Smile"},
+		";)": {file: "wink.png", title: "Wink"},
+		";-)": {file: "wink.png", title: "Wink"},
+		":(": {file: "unhappy.png", title: "Frown"},
+		":-(": {file: "unhappy.png", title: "Frown"},
+		"=-O": {file: "surprised.png", title: "Surprised"},
+		":-D": {file: "grin.png", title: "Laughing"},
+		":-P": {file: "tongue.png", title: "Tongue out"},
+		"=)": {file: "happy.png", title: "Happy"},
+		"B-)": {file: "evilgrin.png", title: "Evil grin"}
+	}
+};
+item.methods._initSmileysConfig = function() {
+	if (_smileys.codes.length) {
+		return _smileys;
+	}
+	var esc = function(v) { return v.replace(/([\W])/g, "\\$1"); };
+	var escapedCodes = [];
+	$.each(_smileys.hash, function(code) {
+		var escaped = esc(code);
+		escapedCodes.push(escaped);
+		_smileys.codes.push(code);
+		_smileys.regexps[code] = new RegExp(escaped, "g");
+	});
+	_smileys.regexps.test = new RegExp(escapedCodes.join("|"));
+	_smileys.tag = function(smiley) {
+		return '<img class="' + self.cssPrefix + '-smiley-icon" src="//cdn.echoenabled.com/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '" />';
+	};
+	return _smileys;
+};
+
+item.methods._assembleButtons = function() {
+	var self = this;
+	var buttonsOrder = [];
+	$.each(this.buttonSpecs, function(plugin, specs) {
+		$.map(specs, function(spec) {
+			var data = $.isFunction(spec)
+				? spec.call(self)
+				: $.extend({}, spec);
+			if (!data.name) return;
+			var callback = data.callback || function() {};
+			data.callback = function() {
+				callback.call(self);
+				self.events.publish({
+					"topic": "internal.onButtonClick",
+					"data": {
+						"name": data.name,
+						"plugin": plugin,
+						"item": {
+							"data": self.data,
+							"target": self.dom.content
+						}
+					},
+					"bubble": true
+				});
+			};
+			data.label = data.label || data.name;
+			data.plugin = plugin;
+			if (typeof data.visible === "undefined") {
+				data.visible = true;
+			}
+			var visible = data.visible;
+			data.visible = $.isFunction(visible)
+				? visible
+				: function() { return visible; };
+			var name = plugin + "." + data.name;
+			self.buttons[name] = data;
+			if ($.inArray(name, self.buttonsOrder) < 0) {
+				buttonsOrder.push(name);
+			}
+		});
+	});
+	// keep correct order of plugins and buttons
+	self.buttonsOrder = buttonsOrder.concat(self.buttonsOrder);
+};
+
+item.methods._sortButtons = function() {
+	var self = this;
+	var defaultOrder = this.buttonsOrder;
+	var requiredOrder = this.config.get("buttonsOrder");
+	// if buttons order is not specified in application config, use default order
+	if (!requiredOrder) {
+		this.config.set("buttonsOrder", defaultOrder);
+	} else if (requiredOrder != defaultOrder) {
+		var push = function(name, acc, pos) {
+			if (!self.buttons[name]) return;
+			acc.push(name);
+			pos = pos || $.inArray(name, defaultOrder);
+			if (pos >= 0) {
+				delete defaultOrder[pos];
+			}
+		};
+		var order = Echo.Utils.foldl([], requiredOrder, function(name, acc) {
+			if (/^(.*)\./.test(name)) {
+				push(name, acc);
+			} else {
+				var re = new RegExp("^" + name + "\.");
+				$.map(defaultOrder, function(n, i) {
+					if (n && n.match(re)) {
+						push(n, acc, i);
+					}
+				});
+			}
+		});
+		this.buttonsOrder = order;
+		this.config.set("buttonsOrder", order);
+	// if application config tells not to use buttons
+	} else if (!requiredOrder.length) {
+		this.buttonsOrder = [];
+	}
 };
 
 item.vars = {
