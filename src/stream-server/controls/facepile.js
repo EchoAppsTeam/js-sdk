@@ -2,6 +2,17 @@
 
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile")) return;
 
+/**
+ * @class Echo.StreamServer.Controls.FacePile
+ * Echo FacePile control displays users (actors) returned in any activity stream. 
+ * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
+ * @extends Echo.Control
+ * @inheritdoc Echo.Control
+ *
+ * @constructor
+ * FacePile constructor initializing Echo.StreamServer.Controls.FacePile class
+ * @param {Object} config Configuration options
+ */
 var pile = Echo.Control.skeleton("Echo.StreamServer.Controls.FacePile");
 
 pile.vars = {
@@ -16,14 +27,31 @@ pile.vars = {
 };
 
 pile.config = {
+/**
+ * @cfg {String} initialUsersCount The number of users which will be shown when the FacePile is displayed for the first time. Default value is the value of data.itemsPerPage parameter. Note that the parameter is actual only for the list created using data.
+ */
 	"initialUsersCount": undefined,
+/**
+ * @cfg {String} totalUsersCount The total number of users for the FacePile. If it's not defined it defaults to the length of the provided data.entries field. Note that the parameter is actual only for the list created using data.
+ */
 	"totalUsersCount": undefined,
 	"query": "",
+/**
+ * @cfg {String} suffixText Specifies the text being appended to the end of Face Pile user's list.
+ */
 	"suffixText": "",
+/**
+ * @cfg {Object} item Customizes the FacePile item
+ * @cfg {Boolean} item.avatar Specifies if user avatar should be rendered within the FacePile item.
+ * @cfg {Boolean} item.text Specifies if user name should be rendered within the FacePile item.
+ */
 	"item": {
 		"avatar": true,
 		"text": true
 	},
+/**
+ * @cfg {String} infoMessages Customizes the look and feel of info messages, for example "loading" and "error".
+ */
 	"infoMessages": {
 		"layout": "compact"
 	}
