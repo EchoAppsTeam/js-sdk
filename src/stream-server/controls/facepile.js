@@ -28,6 +28,10 @@ pile.vars = {
 
 pile.config = {
 /**
+ * @cfg {Object} data Specifies static data for the list. It has the same format as returned by the search API endpoint. If the data parameter is provided then the query parameter should be omitted. If data and query parameters are both provided query takes precedence over data.
+ */
+	"data": undefined,
+/**
  * @cfg {String} initialUsersCount The number of users which will be shown when the FacePile is displayed for the first time. Default value is the value of data.itemsPerPage parameter. Note that the parameter is actual only for the list created using data.
  */
 	"initialUsersCount": undefined,
@@ -149,6 +153,11 @@ pile.renderers.suffixText = function(element) {
 	return element.empty().append(this.config.get("suffixText", ""));
 };
 
+/**
+ * @method refresh
+ * Method implements the refresh logic for the FacePile control.
+ * It should be used for example after some config params were changed.
+ */
 pile.methods.refresh = function() {
 	this.get("request").abort();
 	this.remove("request");
@@ -156,6 +165,11 @@ pile.methods.refresh = function() {
 	component.parent.refresh.call(this);
 };
 
+/**
+ * @method getVisibleUsersCount
+ * Method to get the visible users count
+ * @return {Number} visible users count
+ */
 pile.methods.getVisibleUsersCount = function() {
 	return this.count.visible;
 };
