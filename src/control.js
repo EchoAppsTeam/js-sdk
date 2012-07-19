@@ -17,7 +17,7 @@ Echo.Control.create = function(manifest) {
 		delete config.data;
 		this.name = manifest.name;
 		this.manifest = manifest;
-		this.init([
+		this._init([
 			"vars",
 			"extension",
 			["config", config],
@@ -27,7 +27,7 @@ Echo.Control.create = function(manifest) {
 			"renderers",
 			"loading",
 			["user", function() {
-				self.init([["plugins", manifest.init]]);
+				self._init([["plugins", manifest.init]]);
 			}]
 		]);
 	};
@@ -240,20 +240,6 @@ Echo.Control.prototype.template = function() {
 	return this.templates.main;
 };
 
-Echo.Control.prototype.init = function(subsystems) {
-	var control = this;
-	$.map(subsystems, function(args) {
-		if (!$.isArray(args)) {
-			args = [args];
-		}
-		var name = args.shift();
-		var result = control.init[name].apply(control, args);
-		if (typeof result != "undefined") {
-			control[name] = result;
-		}
-	});
-};
-
 Echo.Control.prototype.showMessage = function(data) {
 	if (!this.config.get("infoMessages.enabled")) return;
 	// TODO: check if we need a parameter to hide error, but show loading messages
@@ -274,15 +260,29 @@ Echo.Control.prototype.destroy = function() {};
 
 // internal functions
 
-Echo.Control.prototype.init.vars = function() {
+Echo.Control.prototype._init = function(subsystems) {
+	var control = this;
+	$.map(subsystems, function(args) {
+		if (!$.isArray(args)) {
+			args = [args];
+		}
+		var name = args.shift();
+		var result = control.init[name].apply(control, args);
+		if (typeof result != "undefined") {
+			control[name] = result;
+		}
+	});
+};
+
+Echo.Control.prototype._init.vars = function() {
 	$.extend(true, this, {"cache": {}, "plugins": {}}, this.manifest.vars || {});
 };
 
-Echo.Control.prototype.init.extension = function() {
+Echo.Control.prototype._init.extension = function() {
 	return {"renderers": {}, "template": []};
 };
 
-Echo.Control.prototype.init.config = function(data) {
+Echo.Control.prototype._init.config = function(data) {
 	var _normalizer = {};
 	_normalizer.target = $;
 	_normalizer.plugins = function(list) {
@@ -310,7 +310,7 @@ Echo.Control.prototype.init.config = function(data) {
 	});
 };
 
-Echo.Control.prototype.init.events = function() {
+Echo.Control.prototype._init.events = function() {
 	var control = this;
 	var prepare = function(params) {
 		params.context = params.context || control.config.get("context");
@@ -364,39 +364,39 @@ Echo.Control.prototype.init.events = function() {
 	return events;
 };
 
-Echo.Control.prototype.init.labels = function() {
+Echo.Control.prototype._init.labels = function() {
 	var labels = $.extend({}, this.get("defaults.labels"), this.manifest.labels);
 	return new Echo.Labels(labels, this.name);
 };
 
-Echo.Control.prototype.init.css = function() {
+Echo.Control.prototype._init.css = function() {
 	Echo.Utils.addCSS(this.baseCSS, "control");
 	this.config.get("target").addClass(this.cssPrefix);
 	if (!this.manifest.css) return;
 	Echo.Utils.addCSS(this.substitute(this.manifest.css), this.manifest.name);
 };
 
-Echo.Control.prototype.init.renderer = function(name, renderer) {
+Echo.Control.prototype._init.renderer = function(name, renderer) {
 	var renderers = this.extension.renderers;
 	renderers[name] = renderers[name] || {"functions": []};
 	renderers[name].functions.unshift(renderer);
 };
 
-Echo.Control.prototype.init.renderers = function() {
+Echo.Control.prototype._init.renderers = function() {
 	var control = this;
 	$.each(this.manifest.renderers, function() {
 		control.init.renderer.apply(control, arguments);
 	});
 };
 
-Echo.Control.prototype.init.loading = function() {
+Echo.Control.prototype._init.loading = function() {
 	this.showMessage({
 		"type": "loading",
 		"message": this.labels.get("loading")
 	});
 };
 
-Echo.Control.prototype.init.user = function(callback) {
+Echo.Control.prototype._init.user = function(callback) {
 	var control = this;
 	if (this.config.get("user")) {
 		this.user = this.config.get("user");
@@ -412,7 +412,7 @@ Echo.Control.prototype.init.user = function(callback) {
 	}
 };
 
-Echo.Control.prototype.init.plugins = function(callback) {
+Echo.Control.prototype._init.plugins = function(callback) {
 	var control = this;
 	this._loadPluginsDependencies(function() {
 		$.map(control.config.get("pluginsOrder"), function(name) {
