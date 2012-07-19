@@ -15,7 +15,8 @@ Echo.Control.create = function(manifest) {
 	if (control) return control;
 	var _constructor = function(config) {
 		var self = this;
-		if (!config || !config.target) return;
+		// perform basic validation of incoming params
+		if (!config || !config.target || !config.appkey) return {};
 		this.data = config.data || {};
 		delete config.data;
 		this.name = manifest.name;
@@ -25,6 +26,7 @@ Echo.Control.create = function(manifest) {
 			"extension",
 			["config", config],
 			"events",
+			"subscriptions",
 			"labels",
 			"css",
 			"renderers",
@@ -356,7 +358,7 @@ Echo.Control.prototype._init.events = function() {
 		params.handler = $.proxy(params.handler, control);
 		return params;
 	};
-	var events = {
+	return {
 		"publish": function(params) {
 			var prefix = params.prefix ? params.prefix + "." : "";
 			params.topic = prefix + control.manifest.name + "." + params.topic;
@@ -372,36 +374,49 @@ Echo.Control.prototype._init.events = function() {
 		},
 		"unsubscribe": Echo.Events.unsubscribe
 	};
+};
+
+Echo.Control.prototype._init.subscriptions = function() {
+	var control = this;
 	$.each(control.manifest.events, function(topic, data) {
 		data = $.isFunction(data) ? {"handler": data} : data;
-		events.subscribe($.extend({"topic": topic}, data));
+		control.events.subscribe($.extend({"topic": topic}, data));
 	});
+
+	if (this.dependent()) return;
+
 	// subscribe all root level controls to the user login/logout event
 	// and call "refresh" control method
-	if (!this.dependent()) {
-		events.subscribe({
-			"topic": "Echo.UserSession.onInvalidate",
-			"context": "global",
-			"handler": control.refresh
-		});
-		var requestUpdates = function() {
-			if (control.get("request")) {
-				control.get("request").send({"force": true});
+	control.events.subscribe({
+		"topic": "Echo.UserSession.onInvalidate",
+		"context": "global",
+		"handler": control.refresh
+	});
+	var requestUpdates = function() {
+		if (control.get("request")) {
+			control.get("request").send({"force": true});
+		}
+	};
+	// subscribe to inner data invalidation events
+	control.events.subscribe({
+		"topic": "internal.Echo.Control.onDataInvalidate",
+		"handler": requestUpdates
+	});
+	// subscribe to outer data invalidation events
+	control.events.subscribe({
+		"topic": "Echo.Control.onDataInvalidate",
+		"context": "global",
+		"handler": requestUpdates
+	});
+	// call "ready" callback after the control was rendered
+	if (control.config.get("ready")) {
+		control.events.subscribe({
+			"topic": control.name + ".onRender",
+			"handler": function() {
+				control.config.get("ready").call(control);
 			}
-		};
-		// subscribe to inner data invalidation events
-		events.subscribe({
-			"topic": "internal.Echo.Control.onDataInvalidate",
-			"handler": requestUpdates
-		});
-		// subscribe to outer data invalidation events
-		events.subscribe({
-			"topic": "Echo.Control.onDataInvalidate",
-			"context": "global",
-			"handler": requestUpdates
 		});
 	}
-	return events;
 };
 
 Echo.Control.prototype._init.labels = function() {
