@@ -269,8 +269,12 @@ submit.renderers.postButton = function(element) {
 	subscribe("Init", states.posting);
 	subscribe("Complete", states.normal, function() {
 		self.dom.get("text").val("").trigger("blur");
-		self.render("tags");
-		self.render("markers");
+		self.render({
+			"element": "tags"
+		});
+		self.render({
+			"element": "markers"
+		});
 	});
 	subscribe("Error", states.normal);
 	
@@ -298,9 +302,9 @@ submit.methods.post = function() {
 		};
 		self.events.publish(params);
 	};
-	var content = [].concat(self.getActivity("post", "comment", self.dom.get("text").val()),
-				 self.getActivity("tag", "marker", self.dom.get("markers").val()),
-				 self.getActivity("tag", "tag", self.dom.get("tags").val()));
+	var content = [].concat(self._getActivity("post", "comment", self.dom.get("text").val()),
+				 self._getActivity("tag", "marker", self.dom.get("markers").val()),
+				 self._getActivity("tag", "tag", self.dom.get("tags").val()));
 	var entry = {
 		"content": content,
 		"appkey": this.config.get("appkey"),
@@ -364,7 +368,7 @@ submit.methods.post = function() {
 	}).send();
 };
 
-submit.methods.getActivity = function(verb, type, data) {
+submit.methods._getActivity = function(verb, type, data) {
 	return (!data) ? [] : {
 		"actor": {
 			"objectTypes": [ "http://activitystrea.ms/schema/1.0/person" ],
@@ -397,15 +401,15 @@ submit.methods.highlightMandatory = function(element) {
 
 submit.methods.prepareBroadcastParams = function(params) {
 	params = params || {};
-	params.data = this.config.get("data");
+	params.data = this.get("data");
 	params.target = this.config.get("target").get(0);
 	params.targetURL = this.config.get("targetURL");
 	return params;
 };
 
 submit.methods.refresh = function() {
-	this.config.set("data.object.content", this.dom.get("text").val());
-	this.rerender();
+	this.set("data.object.content", this.dom.get("text").val());
+	this.render();
 	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Submit");
 	component.parent.refresh.call(this);
 };
