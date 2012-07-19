@@ -2,51 +2,40 @@
 
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
 
+/**
+ * @class Echo.StreamServer.Controls.Counter
+ * Echo Counter class which encapsulates interaction with the
+ * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
+ * @extends Echo.Control
+ * @inheritdoc Echo.Control
+ *
+ * @constructor
+ * Counter constructor initializing Echo.StreamServer.Controls.Counter class
+ * @param {Object} config Configuration options
+ */
 var counter = Echo.Control.skeleton("Echo.StreamServer.Controls.Counter");
 
 counter.config = {
+/**
+ * @cfg {Object} data Specifies predefined items count which should be displayed by the application.
+ *     new Echo.Counter({
+ *         ...
+ *         "data": {"count": 100},
+ *         ...
+ *     });
+ */
+	"data": undefined,
+/**
+ * @cfg {Number} [liveUpdatesTimeout=10] Specifies the timeout between the live updates requests (in seconds).
+ */
 	"liveUpdatesTimeout": 10,
+/**
+ * @cfg {String} infoMessages Customizes the look and feel of info messages, for example "loading" and "error".
+ */
 	"infoMessages": {"layout": "compact"}
 };
 
 counter.templates.main = "<span>{data:count}</span>";
-
-/**
-* @class Echo.StreamServer.Controls.Counter
-* Echo Counter class which encapsulates interaction with the
-* <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
-*
-* @constructor
-* Counter constructor initializing Echo.StreamServer.Controls.Counter class
-* @param {Object} config
-* @param {String} config.target Specifies the DOM element where the control will be displayed.
-* @param {String} config.appkey Specifies the customer application key. You can use the "test.echoenabled.com" appkey for testing purposes.
-* @param {String} config.query Specifies the search query to generate the necessary data set. It must be constructed according to the <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a> method specification.
-*
-*     new Echo.StreamServer.Controls.Counter({
-*         "target": document.getElementById("container"),
-*         "appkey": "test.aboutecho.com",
-*         "query" : "childrenof:http://example.com/test/*"
-*     });
-* @param {Object} config.data Specifies predefined items count which should be displayed by the application.
-*     new Echo.Counter({
-*         ...
-*         "data": {"count": 100},
-*         ...
-*     });
-* @param {Number} [config.liveUpdatesTimeout=10] Specifies the timeout between the live updates requests (in seconds).
-* @param {Object} [config.infoMessages] Customizes the look and feel of info messages, for example "loading" and "error".
-* @param {String} [config.infoMessages.layout="compact"] Specifies the layout of the info message. By default can be set to "compact" or "full".
-* @param {Boolean} [config.infoMessages.enabled=true] Specifies if info messages should be rendered.
-*     new Echo.StreamServer.Controls.Counter({
-*         ...
-*         "infoMessages" : {
-*             "enabled" : true,
-*             "layout" : "full"
-*         }
-*     });
-* @return {Object} the reference to the corresponding Echo.StreamServer.Controls.Counter instance.
-*/
 
 counter.init = function() {
 	// data can be defined explicitly
@@ -60,11 +49,10 @@ counter.init = function() {
 };
 
 /**
-* @method refresh
-* Method implements the refresh logic for the Counter control.
-* It should be used for example after some config params were changed.
-*/
-
+ * @method refresh
+ * Method implements the refresh logic for the Counter control.
+ * It should be used for example after some config params were changed.
+ */
 counter.methods.refresh = function() {
 	this.showMessage({"type": "loading"});
 	this.set("data", {});
