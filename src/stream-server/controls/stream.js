@@ -887,7 +887,7 @@ stream.methods._addItemSpotUpdate = function(item) {
 	};
 	if (this.timeouts.fade) {
 		var container = item.dom.get("container");
-		var originalBGColor = $.getVisibleColor(container);
+		var originalBGColor = Echo.Utils.getVisibleColor(container);
 		container
 		// delay fading out until content sliding is finished
 		.delay(this.timeouts.slide)
