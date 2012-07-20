@@ -16,6 +16,8 @@ suite.prototype.info = {
 		"dependent",
 		"template",
 		"getPlugin",
+		"render",
+		"showMessage",
 
 		// functions below are covered
 		// within the Plugin component test
