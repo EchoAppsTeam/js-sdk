@@ -587,7 +587,7 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	presentation.itemsPerPage = +presentation.itemsPerPage;
 	this.config.extend(presentation);
 	data.children.itemsPerPage = +data.children.itemsPerPage;
-	data.children.maxDepth += data.children.maxDepth;
+	data.children.maxDepth = +data.children.maxDepth;
 	this.config.set(
 		"children",
 		$.extend(
