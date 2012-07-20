@@ -1,5 +1,18 @@
 (function($) {
 
+/**
+ * @class Echo.StreamServer.Controls.Stream.Plugins.Edit
+ * Adds extra Button Edit to each item in the Echo Stream control which allows to edit the content and some metadata of the item. This button will appear either for the users with the administrative privileges or for editing personal comments.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "Edit"
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ * @inheritdoc Echo.Plugin
+ */
 var plugin = Echo.Plugin.skeleton("Edit", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
@@ -81,6 +94,24 @@ plugin.labels = {
 	"posting": "Updating...",
 	"cancel": "cancel"
 };
+
+/**
+ * @event onEditInit
+ * Echo.StreamServer.Controls.Submit.onEdit
+ * is triggered if edit operation was started
+ */
+
+/**
+ * @event onEditComplete
+ * Echo.StreamServer.Controls.Submit.onEditComplete
+ * is triggered when the submit operation is finished
+ */
+
+/**
+ * @event onEditError
+ * Echo.StreamServer.Controls.Submit.onPostError
+ * is triggered if edit operation failed
+ */
 
 $.map(["Init", "Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.onPost" + action] = function(topic, args) {

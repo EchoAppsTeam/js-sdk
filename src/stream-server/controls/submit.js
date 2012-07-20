@@ -322,7 +322,7 @@ submit.methods.post = function() {
 			/**
 			 * @event onPostComplete
 			 * Echo.StreamServer.Controls.Submit.onPostComplete
-			 * is triggered when the submit operation is complete
+			 * is triggered when the submit operation is finished
 			 */
 			publish("Complete", entry);
 			// notify all widgets on the page about a new item posted
