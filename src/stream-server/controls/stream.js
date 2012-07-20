@@ -1081,8 +1081,9 @@ stream.methods._initItem = function(entry, isLive) {
 	}, parentConfig.item);
 	delete parentConfig.item;
 	var item = new Echo.StreamServer.Controls.Stream.Item(config);
+	// TODO: return cache (disabled because it was being cached in the wrong moment with incorrect data)
 	// caching item template to avoid unnecessary work
-	var template = item.template;
+	/*var template = item.template;
 	item.template = function() {
 		if (!self.cache) self.cache = {};
 		if (!self.cache.itemTemplate) {
@@ -1091,7 +1092,7 @@ stream.methods._initItem = function(entry, isLive) {
 				: template;
 		}
 		return self.cache.itemTemplate;
-	};
+	};*/
 	this.items[entry.unique] = item;
 	return item;
 };
