@@ -26,14 +26,14 @@ Echo.Events = {};
  */
 Echo.Events.subscribe = function(params) {
 	var handlerId = Echo.Utils.getUniqueString();
-	var context = Echo.Events._initContext(params.topic, params.context);
-	Echo.Events._executeForDeepestContext(params.topic, context, function(obj, lastContext) {
+	var context = _initContext(params.topic, params.context);
+	_executeForDeepestContext(params.topic, context, function(obj, lastContext) {
 		obj[lastContext].handlers.push({
 			"id": handlerId,
 			"handler": params.handler
 		});
 	});
-	Echo.Events._dataByHandlerId[handlerId] = {
+	_dataByHandlerId[handlerId] = {
 		"context": context,
 		"topic": params.topic
 	};
@@ -52,26 +52,26 @@ Echo.Events.subscribe = function(params) {
  */
 Echo.Events.unsubscribe = function(params) {
 	var unsubscribed = false;
-	if (params.handlerId && Echo.Events._dataByHandlerId[params.handlerId]) {
-		params.topic = Echo.Events._dataByHandlerId[params.handlerId].topic;
-		params.context = Echo.Events._dataByHandlerId[params.handlerId].context;
+	if (params.handlerId && _dataByHandlerId[params.handlerId]) {
+		params.topic = _dataByHandlerId[params.handlerId].topic;
+		params.context = _dataByHandlerId[params.handlerId].context;
 	} else {
-		params.context = Echo.Events._initContext(params.topic, params.context);
+		params.context = _initContext(params.topic, params.context);
 	}
 	if (params.handlerId || params.topic) {
-		var obj = Echo.Events._executeForDeepestContext(params.topic, params.context, function(obj, lastContext) {
+		var obj = _executeForDeepestContext(params.topic, params.context, function(obj, lastContext) {
 			if (params.handlerId) {
 				$.each(obj[lastContext].handlers, function(i, data) {
 					if (data.id === params.handlerId) {
 						obj[lastContext].handlers.splice(i, 1);
-						delete Echo.Events._dataByHandlerId[data.id];
+						delete _dataByHandlerId[data.id];
 						unsubscribed = true;
 						return false;
 					}
 				});
 			} else {
 				$.each(obj[lastContext].handlers, function(i, data) {
-					delete Echo.Events._dataByHandlerId[data.id];
+					delete _dataByHandlerId[data.id];
 				});
 				delete obj[lastContext];
 				unsubscribed = true;
@@ -79,9 +79,9 @@ Echo.Events.unsubscribe = function(params) {
 		});
 	} else {
 		$.each(Echo.Events._subscriptions, function(topic, data) {
-			Echo.Events._executeForDeepestContext(topic, params.context, function(obj, lastContext) {
+			_executeForDeepestContext(topic, params.context, function(obj, lastContext) {
 				$.each(obj[lastContext].handlers, function(i, data) {
-					delete Echo.Events._dataByHandlerId[data.id];
+					delete _dataByHandlerId[data.id];
 				});
 				delete obj[lastContext];
 				unsubscribed = true;
@@ -103,9 +103,9 @@ Echo.Events.unsubscribe = function(params) {
  */
 Echo.Events.publish = function(params) {
 	delete _lastHandlerResult[params.topic];
-	params.context = Echo.Events._initContext(params.topic, params.context);
-	Echo.Events._executeForDeepestContext(params.topic, params.context, function(obj, lastContext, restContexts) {
-		Echo.Events._callHandlers(obj[lastContext], params, restContexts);
+	params.context = _initContext(params.topic, params.context);
+	_executeForDeepestContext(params.topic, params.context, function(obj, lastContext, restContexts) {
+		_callHandlers(obj[lastContext], params, restContexts);
 	});
 	if (!params.bubble && params.context !== "global") {
 		params.context = "global";
@@ -115,13 +115,10 @@ Echo.Events.publish = function(params) {
 
 // private stuff
 
-var _lastHandlerResult = {};
+var _lastHandlerResult = {}, _dataByHandlerId = {};
+var _subscriptions = Echo.Events._subscriptions = {};
 
-Echo.Events._subscriptions = {};
-
-Echo.Events._dataByHandlerId = {};
-
-Echo.Events._initContext = function(topic, context) {
+var _initContext = function(topic, context) {
 	context = context || "global";
 	if (topic) {
 		var obj = Echo.Events._subscriptions[topic] = Echo.Events._subscriptions[topic] || {};
@@ -138,7 +135,7 @@ Echo.Events._initContext = function(topic, context) {
 	return context;
 };
 
-Echo.Events._executeForDeepestContext = function(topic, context, callback) {
+var _executeForDeepestContext = function(topic, context, callback) {
 	var parts = context.split("/");
 	var lastContext = parts.pop();
 	var obj = Echo.Events._subscriptions[topic];
@@ -150,7 +147,7 @@ Echo.Events._executeForDeepestContext = function(topic, context, callback) {
 	}
 };
 
-Echo.Events._shouldStopEvent = function(stopperType, topic) {
+var _shouldStopEvent = function(stopperType, topic) {
 	var stoppers = _lastHandlerResult[topic] && _lastHandlerResult[topic].stop;
 	if (!stoppers) {
 		return false;
@@ -160,16 +157,16 @@ Echo.Events._shouldStopEvent = function(stopperType, topic) {
 		: ~$.inArray("propagation", stoppers) || ~$.inArray(stopperType, stoppers);
 };
 
-Echo.Events._callHandlers = function(obj, params, restContexts) {
+var _callHandlers = function(obj, params, restContexts) {
 	// use copy of handler list so that inner unsubscribe actions couldn't mess it up
 	var handlers = (obj.handlers || []).slice(0);
 	$.each(handlers, function(i, data) {
 		_lastHandlerResult[params.topic] = data.handler(params.topic, params.data);
-		if (Echo.Events._shouldStopEvent("propagation.siblings", params.topic)) {
+		if (_shouldStopEvent("propagation.siblings", params.topic)) {
 			return false;
 		}
 	});
-	if (params.bubble && Echo.Events._shouldStopEvent("bubble", params.topic)) {
+	if (params.bubble && _shouldStopEvent("bubble", params.topic)) {
 		return;
 	}
 	if (params.bubble) {
@@ -178,10 +175,10 @@ Echo.Events._callHandlers = function(obj, params, restContexts) {
 		}
 		params.context = restContexts.join("/");
 		Echo.Events.publish(params);
-	} else if (!Echo.Events._shouldStopEvent("propagation.children", params.topic)) {
+	} else if (!_shouldStopEvent("propagation.children", params.topic)) {
 		$.each(obj.contexts, function(id, context) {
-			Echo.Events._callHandlers(context, params);
-			if (Echo.Events._shouldStopEvent("propagation.siblings", params.topic)) {
+			_callHandlers(context, params);
+			if (_shouldStopEvent("propagation.siblings", params.topic)) {
 				return false;
 			}
 		});
