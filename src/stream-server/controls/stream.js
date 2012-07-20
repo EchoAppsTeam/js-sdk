@@ -587,7 +587,7 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	presentation.itemsPerPage = +presentation.itemsPerPage;
 	this.config.extend(presentation);
 	data.children.itemsPerPage = +data.children.itemsPerPage;
-	data.children.maxDepth += data.children.maxDepth;
+	data.children.maxDepth = +data.children.maxDepth;
 	this.config.set(
 		"children",
 		$.extend(
@@ -887,7 +887,7 @@ stream.methods._addItemSpotUpdate = function(item) {
 	};
 	if (this.timeouts.fade) {
 		var container = item.dom.get("container");
-		var originalBGColor = $.getVisibleColor(container);
+		var originalBGColor = Echo.Utils.getVisibleColor(container);
 		container
 		// delay fading out until content sliding is finished
 		.delay(this.timeouts.slide)
