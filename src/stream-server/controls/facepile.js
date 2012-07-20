@@ -407,7 +407,7 @@ item.renderers.title = function(element) {
 };
 
 item.methods.isYou = function() {
-	return this.data.id && this.data.id == this.user.get("sessionID");
+	return this.data.id && this.data.id === this.user.get("identityUrl");
 };
 
 item.css =
