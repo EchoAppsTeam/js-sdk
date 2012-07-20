@@ -166,34 +166,9 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 	return template.replace(Echo.Vars.regexps.templateSubstitution, processor);
 };
 
-Echo.Control.prototype.compileTemplate = function(template, data, transformations) {
-	var control = this, templates = {};
-	templates.raw = $.isFunction(template) ? template.call(this) : template;
-	templates.processed = this.substitute(templates.raw, data || {});
-	if (transformations) {
-		templates.dom = $("<div/>").html(templates.processed);
-		$.map(transformations, function(transformation) {
-			templates.dom = control._templateTransformer.call(control, {
-				"data": data || {},
-				"template": templates.dom,
-				"transformation": transformation
-			});
-		});
-		templates.processed = templates.dom.html();
-	}
-	return Echo.Utils.toDOM(templates.processed, this.cssPrefix + "-",
-		function(element, target, dom) {
-			control.render.call(control, {
-				"element": element,
-				"target": target,
-				"dom": dom
-			});
-		}
-	);
-};
-
 Echo.Control.prototype.render = function(args) {
 	var self = this;
+	var template;
 	args = args || {};
 	var dom = args.dom || this.dom;
 	var data = args.data || this.data;
@@ -219,37 +194,27 @@ Echo.Control.prototype.render = function(args) {
 
 	// render element including its content recursively
 	if (args.element && args.recursive) {
-		var template = $.isFunction(this.template) ? this.template() : this.template;
-		var html = this.substitute(template, data);
-		var newNode = $("." + this.cssPrefix + "-" + args.element, $(html));
 		var oldNode = this.dom.get(args.element);
-		newNode = Echo.Utils.toDOM(newNode, this.cssPrefix + "-",
-			function(element, target, dom, extra) {
-				self.dom.set(
-					element,
-					self.render({
-						"element": element,
-						"target": target,
-						"dom": dom,
-						"extra": extra
-					})
-				);
-			}
-		).content;
+		template = this._compileTemplate(this.template, this.data, this.extension.template);
+		template = $("." + this.cssPrefix + "-" + args.element, $(template));
+		var _dom = this._applyRenderers(template, true);
+		var newNode = _dom.get(args.element);
 		oldNode.replaceWith(newNode);
 		return newNode;
 	}
 
 	// render template
 	if (args.template) {
-		var dom = this.compileTemplate(args.template, args.data);
-		target.empty().append(dom.content);
-		return dom.content;
+		template = this._compileTemplate(args.template, args.data);
+		var _dom = this._applyRenderers(template);
+		target.empty().append(_dom.content);
+		return _dom.content;
 	}
 
 	// render the whole control
 	var topic = this.dom ? "onRerender" : "onRender";
-	this.dom = this.compileTemplate(this.template, this.data, this.extension.template);
+	template = this._compileTemplate(this.template, this.data, this.extension.template);
+	this.dom = this._applyRenderers(template);
 	target.empty().append(this.dom.content);
 	this.events.publish({"topic": topic});
 	return this.dom.content;
@@ -498,7 +463,39 @@ Echo.Control.prototype._loadPluginsDependencies = function(callback) {
 	callback && callback.call(this);
 };
 
-Echo.Control.prototype._templateTransformer = function(args) {
+Echo.Control.prototype._compileTemplate = function(template, data, transformations) {
+	var control = this;
+	var raw = $.isFunction(template) ? template.call(this) : template;
+	var processed = this.substitute(raw, data || {});
+	if (transformations && transformations.length) {
+		var dom = $("<div/>").html(processed);
+		$.map(transformations, function(transformation) {
+			dom = control._domTransformer({
+				"data": data || {},
+				"dom": dom,
+				"transformation": transformation
+			});
+		});
+		processed = dom.html();
+	}
+	return processed;
+};
+
+Echo.Control.prototype._applyRenderers = function(template, updateDOM) {
+	var control = this;
+	return Echo.Utils.toDOM(template, this.cssPrefix + "-", function(element, target, dom) {
+		if (updateDOM) {
+			control.dom.set(element, target);
+		}
+		return control.render({
+			"element": element,
+			"target": target,
+			"dom": dom
+		});
+	});
+};
+
+Echo.Control.prototype._domTransformer = function(args) {
 	var classify = {
 		"insertBefore": "before",
 		"insertAfter": "after",
@@ -507,12 +504,14 @@ Echo.Control.prototype._templateTransformer = function(args) {
 		"replace": "replaceWith"
 	};
 	var action = classify[args.transformation.action];
-	if (!action) return args.template;
+	if (!action) {
+		return args.dom;
+	}
 	var html = args.transformation.html;
 	var anchor = "." + this.cssPrefix + "-" + args.transformation.anchor;
 	var content = $.isFunction(html) ? html() : html;
-	$(anchor, args.template)[action](this.substitute(content, args.data));
-	return args.template;
+	$(anchor, args.dom)[action](this.substitute(content, args.data));
+	return args.dom;
 };
 
 Echo.Control.prototype.baseCSS =
