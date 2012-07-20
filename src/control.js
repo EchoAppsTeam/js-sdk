@@ -161,7 +161,10 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 		}
 	}, instructions || {});
 	var processor = function(match, key, value) {
-		return instructions[key] ? instructions[key](value) : match;
+		if (!instructions[key]) return;
+		var result = instructions[key](value);
+		var allowedTypes = ["number", "string", "boolean"];
+		return ~$.inArray(typeof result, allowedTypes) ? result.toString() : "";
 	};
 	return template.replace(Echo.Vars.regexps.templateSubstitution, processor);
 };
@@ -220,30 +223,12 @@ Echo.Control.prototype.render = function(args) {
 	return this.dom.content;
 };
 
-Echo.Control.prototype.parentRenderer = function(name, args) {
-	var renderer = this.extension.renderers[name];
-	if (!renderer || !renderer.next) return args[0]; // return DOM element
-	return renderer.next.apply(this, args);
-};
-
 Echo.Control.prototype.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
 };
 
 Echo.Control.prototype.dependent = function() {
 	return !!this.config.get("parent");
-};
-
-Echo.Control.prototype.extendTemplate = function(html, action, anchor) {
-	this.extension.template.push({"html": html, "action": action, "anchor": anchor});
-};
-
-Echo.Control.prototype.extendRenderer = function() {
-	this._init.renderer.apply(this, arguments);
-};
-
-Echo.Control.prototype.template = function() {
-	return this.templates.main;
 };
 
 Echo.Control.prototype.showMessage = function(data) {
@@ -262,7 +247,26 @@ Echo.Control.prototype.getPlugin = function(name) {
 	return this.plugins[name];
 };
 
-Echo.Control.prototype.destroy = function() {};
+// TODO: do not expose this function in documentation
+Echo.Control.prototype.template = function() {
+	return this.templates.main;
+};
+
+// plugin-specific interface
+
+Echo.Control.prototype.parentRenderer = function(name, args) {
+	var renderer = this.extension.renderers[name];
+	if (!renderer || !renderer.next) return args[0]; // return DOM element
+	return renderer.next.apply(this, args);
+};
+
+Echo.Control.prototype.extendTemplate = function(html, action, anchor) {
+	this.extension.template.push({"html": html, "action": action, "anchor": anchor});
+};
+
+Echo.Control.prototype.extendRenderer = function() {
+	this._init.renderer.apply(this, arguments);
+};
 
 // internal functions
 

@@ -15,7 +15,14 @@ suite.prototype.info = {
 		"substitute",
 		"dependent",
 		"template",
-		"getPlugin"
+		"getPlugin",
+
+		// functions below are covered
+		// within the Plugin component test
+		"template",
+		"parentRenderer",
+		"extendTemplate",
+		"extendRenderer"
 	]
 };
 
@@ -55,7 +62,9 @@ suite.prototype.tests.PublicInterfaceTests = {
 		this.sequentialAsyncTests([
 			"basicOperations",
 			"initializationWithInvalidParams",
-			"incomingConfigHandling"
+			"incomingConfigHandling",
+			"controlRendering",
+			"eventsMechanism"
 		], "cases");
 
 	}
@@ -65,8 +74,6 @@ suite.prototype.cases = {};
 
 suite.prototype.cases.basicOperations = function(callback) {
 	var test = this;
-	var manifest = this.getControlManifest();
-	var definition = this.getTestControlClass();
 	var check = function() {
 		var self = this;
 
@@ -79,9 +86,17 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking if we have \"labels\" interface available");
 		QUnit.ok(!!this.user,
 			"Checking if we have \"user\" interface available");
+		QUnit.ok(!!this.dom,
+			"Checking if we have \"dom\" interface available");
+
+		// checking if all functions defined in "methods" namespace are available
+		QUnit.ok(this.myMethod(true),
+			"Checking if public methods are available and executable");
+		QUnit.ok(this._myPrivateMethod(true),
+			"Checking if private methods are available and executable");
 
 		// checking "get" operation
-		var data = manifest.config.data;
+		var data = test.data.config.data;
 		QUnit.equal(this.get("data.key1"), data.key1,
 			"Checking if we can extract data passed via config using the \"get\" function");
 		QUnit.equal(this.get("data.key3.key3nested"), data.key3.key3nested,
@@ -110,7 +125,9 @@ suite.prototype.cases.basicOperations = function(callback) {
 
 		// checking "substitute" method
 		$.each(test.data.substitutions, function(id, substitution) {
-			QUnit.equal(self.substitute(substitution[0]), substitution[1],
+			QUnit.equal(
+				self.substitute(substitution[0], undefined, substitution[2]),
+				substitution[1],
 				"Checking \"substitute\" method, pattern #" + (id + 1));
 		});
 
@@ -130,10 +147,8 @@ suite.prototype.cases.basicOperations = function(callback) {
 
 		callback && callback();
 	};
-	new definition({
-		"target": $("<div></div>"),
-		"appkey": "test.echoenabled.com",
-		"data": manifest.config.data,
+	this.initTestControl({
+		"data": this.data.config.data,
 		"plugins": [{
 			"name": "MyPlugin"
 		}],
@@ -160,7 +175,6 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 };
 
 suite.prototype.cases.incomingConfigHandling = function(callback) {
-	var definition = this.getTestControlClass();
 	var check = function() {
 		QUnit.equal(this.config.get("nullParam"), "nullParam replacement",
 			"Checking if null parameter was overridden during control init");
@@ -174,13 +188,194 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 			"Checking if object parameter was overridden (checking existing key)");
 		callback && callback();
 	};
-	new definition({
-		"target": $("<div></div>"),
-		"appkey": "test.echoenabled.com",
+	this.initTestControl({
 		"objectParam": {"param1": "param1.override"},
 		"myTestParam": "test value",
 		"undefinedParam": "undefinedParam replacement",
 		"nullParam": "nullParam replacement",
+		"ready": check
+	});
+};
+
+suite.prototype.cases.controlRendering = function(callback) {
+	var check = function() {
+		var self = this;
+		QUnit.ok(this.config.get("target") instanceof jQuery,
+			"Checking if the target if a jQuery element");
+		QUnit.ok(!!this.config.get("target").children().length,
+			"Checking if target is not empty after rendering");
+
+		// checking if we have expected results in several elements
+		var assertions = [
+			["data", "key1 value"],
+			["configString", "Some test value"],
+			["configInteger", "15"],
+			["configUndefined", ""],
+			["configBooleanFalse", "false"],
+			["configObject", ""],
+			["configArray", ""],
+			["dataNonExisting", ""],
+			["label", "label1 value"],
+			["labelNonExisting", "nonexistinglabel"]
+		];
+
+		$.map(assertions, function(assertion) {
+			QUnit.equal(
+				self.dom.get(assertion[0]).get(0).innerHTML,
+				assertion[1],
+				"Checking rendering output of the \"" + assertion[0] + "\" element"
+			);
+		});
+
+		QUnit.ok(!!this.dom.get("testRenderer").children().length,
+			"Checking if initially empty element became non-empty after applying renderer")
+
+		// template rendering
+		var cssClass = ".echo-streamserver-controls-mycontrol-testRenderer";
+		var template =
+			'<div class="{class:container}">' +
+				'<div class="k1">{data:k1}</div>' +
+				'<div class="k2">{data:k2}</div>' +
+				'<div class="{class:testRenderer}"></div>' +
+				'<div class="c1">{config:integerParam}</div>' +
+			'</div>';
+		var result = this.render({
+			"template": template,
+			"target": $("<div></div>"),
+			"data": {"k1": "myvalue1", "k2": {}}
+		});
+		QUnit.ok(!!result.find(cssClass).children().length,
+			"Checking if control renderers were applied when we render template (by passing \"template\" key into the \"render\" function)");
+		QUnit.equal(result.find(".k1").get(0).innerHTML, "myvalue1",
+			"Checking data substitution into template (string value)");
+		QUnit.equal(result.find(".k2").get(0).innerHTML, "",
+			"Checking data substitution into template (object value)");
+		QUnit.equal(result.find(".c1").get(0).innerHTML, "15",
+			"Checking config values substitution into template");
+
+		// element rendering, specific renderer application
+		var target = this.dom.get("testRenderer");
+		this.render({
+			"target": target,
+			"element": "testRendererWithExtra",
+			"extra": {"value": "my-value"}
+		});
+		QUnit.equal(target.get(0).innerHTML, "<span>my-value</span>",
+			"Checking if element content was updated after renderer application");
+
+		this.render({
+			"target": target,
+			"element": "testRendererWithExtra",
+			"extra": {"value": "another-value"}
+		});
+		QUnit.equal(target.get(0).innerHTML, "<span>another-value</span>",
+			"Checking if element content was updated as a result of renderer application");
+
+		this.render({
+			"element": "testRenderer"
+		});
+		QUnit.equal(target.get(0).innerHTML, "<div>Some vlaue</div>",
+			"Checking if element content was updated as a result of the native renderer application");
+
+		// recursive element rendering
+		this.dom.get("nestedSubcontainer").append('<div class="extra-div">Extra DIV appended</div>');
+		this.render({
+			"element": "testRendererRecursive",
+			"recursive": true
+		});
+		QUnit.equal(this.dom.get("testRendererRecursive").get(0).innerHTML, "<div class=\"echo-streamserver-controls-mycontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mycontrol-nestedSubcontainer\"></div></div>",
+			"Checking if element content was updated after recursive rendering");
+
+		// checking re-rendering
+		target.append('<div class="extra-div">Extra DIV appended</div>');
+		this.dom.content.append('<div class="extra-div-1">Another DIV appended</div>');
+		this.config.get("target").append('<div class="extra-div-2">DIV appended</div>');
+		this.render();
+		QUnit.equal(this.dom.get("testRenderer").get(0).innerHTML, "<div>Some vlaue</div>",
+			"Checking if component was re-rendered and appended elements were wiped out");
+
+		// checking "showMessage" method
+		var target = $('<div></div>');
+		var data = {
+			"type": "error",
+			"message": "An error occured during the request...",
+			"layout": "compact",
+			"target": target
+		};
+		this.showMessage(data);
+		QUnit.equal(
+			target.find(".echo-control-message-icon").attr("title"),
+			data.message,
+			"Checking \"showMessage\" in compact mode");
+
+		data.layout = "full";
+		this.showMessage(data);
+		QUnit.equal(
+			target.find(".echo-control-message-icon").get(0).innerHTML,
+			data.message,
+			"Checking \"showMessage\" in full mode");
+
+		callback && callback();
+	};
+	this.initTestControl({
+		"data": this.data.config.data,
+		"ready": check
+	});
+};
+
+suite.prototype.cases.eventsMechanism = function(callback) {
+	var count = 0, increment = function() { count++; };
+	var _topic = "myTestTopic";
+	var context = Echo.Utils.getUniqueString();
+	var publish = function(topic) {
+		Echo.Events.publish({
+			"topic": topic || _topic,
+			"context": context
+		});
+	};
+	var subscribe = function(topic) {
+		Echo.Events.subscribe({
+			"topic": topic || _topic,
+			"context": context,
+			"handler": increment
+		});
+	};
+	subscribe("Echo.StreamServer.Controls.MyControl.onRender");
+	subscribe("Echo.StreamServer.Controls.MyControl.outgoing.event");
+	subscribe("internal.Echo.StreamServer.Controls.MyControl.outgoing.event");
+	var check = function() {
+
+		// subscribing to incoming events
+		this.events.subscribe({
+			"topic": "incoming.event",
+			"handler": increment
+		});
+		publish("incoming.event");
+		publish("incoming.event");
+		publish("incoming.event");
+
+		// publishing outgoing event
+		this.events.publish({"topic": "outgoing.event"});
+		this.events.publish({"topic": "outgoing.event"});
+		this.events.publish({"topic": "outgoing.event", "prefix": "internal"});
+
+		// checking events defined in manifest
+		this.set("_eventHandler", increment);
+
+		publish("incoming.event.global");
+		publish("incoming.event.local");
+
+		QUnit.ok(count == 9,
+			"Checking if expected amount of events were executed and handled");
+
+		var e = this.events;
+		QUnit.ok(!!e.subscribe && !!e.publish && !!e.unsubscribe,
+			"Checking control \"events\" interface contract");
+
+		callback && callback();
+	};
+	this.initTestControl({
+		"context": context,
 		"ready": check
 	});
 };
@@ -228,7 +423,67 @@ suite.prototype.data.substitutions = [[
 ], [
 	"{config:stringParam}-{config:nonexistingkey}-{config:integerParam}-{config:objectParam.param1}",
 	"Some test value--15-param1.value"
+], [
+	"<div>{mysubs:key}</div><span>{mysubs:key.key1.key2}</span><div>{mysub.sub.nested.sub:key.key1}</div>",
+	"<div>mysubs key, key value</div><span>mysubs key, key.key1.key2 value</span><div>mysub.sub.nested.sub key, key.key1 value</div>",
+	{
+	 "mysubs": function(value) { return "mysubs key, " + value + " value"; },
+	 "mysub.sub.nested.sub": function(value) { return "mysub.sub.nested.sub key, " + value + " value"; }
+	}
+], [
+	// non-supported types of values, we should process them as ""
+	"{d:arrayVal}{d:objectVal}{d:functionVal}{d:undefinedVal}",
+	"",
+	{"d": function(key) {
+		var data = {
+			"arrayVal": [1,2,3,4,5],
+			"objectVal": {"key1": "value1", "key2": "value2"},
+			"functionVal": function() { return "test"; },
+			"undefinedVal": undefined
+		};
+		return data[key];
+	}}
 ]];
+
+suite.prototype.data.template =
+	'<div class="{class:container}">' +
+		'<div class="{class:testRenderer}"></div>' +
+		'<div class="{class:testRendererRecursive}">' +
+			'<div class="{class:nestedContainer}">' +
+				'<div class="{class:nestedSubcontainer}">' +
+				'</div>' +
+			'</div>' +
+		'</div>' +
+		// checking {data:...} substitution
+		'<div class="{class:data} echo-primaryFont echo-primaryColor">{data:key1}</div>' +
+		'<div class="{class:dataNested} echo-primaryColor">{data:key3.key3nested}</div>' +
+		'<div class="{class:dataNonExisting}">{data:nonexistingkey}</div>' +
+		// checking {label:...} substitution
+		'<div class="{class:label} echo-primaryFont">{label:label1}</div>' +
+		'<div class="{class:labelNonExisting}">{label:nonexistinglabel}</div>' +
+		'<div class="{class:class}">{class:myclass}</div>' +
+		// checking {config:...} substitution
+		'<div class="{class:configNonExisting}">{config:nonexistingkey}</div>' +
+		'<div class="{class:configString} echo-primaryFont">{config:stringParam}</div>' +
+		'<div class="{class:configArray}">{config:arrayParam}</div>' +
+		'<div class="{class:configInteger} echo-primaryFont">{config:integerParam}</div>' +
+		'<div class="{class:configUndefined}">{config:undefinedParam}</div>' +
+		'<div class="{class:configNull} echo-primaryFont">{config:null}</div>' +
+		'<div class="{class:configBooleanFalse}">{config:booleanFalseParam}</div>' +
+		'<div class="{class:configBooleanTrue}">{config:booleanTrueParam}</div>' +
+		'<div class="{class:configZero} echo-primaryFont">{config:zeroParam}</div>' +
+		'<div class="{class:configObject} echo-primaryFont">{config:objectParam}</div>' +
+		// checking {self:...} substitution
+		'<div class="{class:selfData} echo-primaryFont">{self:data}</div>' +
+		'<div class="{class:selfDataKey} echo-primaryFont">{self:data.key1}</div>' +
+		'<div class="{class:selfDataKeyNested}">{self:data.key3.key3nested}</div>' +
+		'<div class="{class:selfNonExistingKey}">{self:nonExistingKey}</div>' +
+		'<div class="{class:selfFunction}">{self:render}</div>' +
+		// checking custom substitution rules
+		'<div class="{class:customSubstitution}">{mysubs:key}</div>' +
+		'<div class="{class:customSubstitutionNestedKey}">{mysubs:key.key1.key2}</div>' +
+		'<div class="{class:customSubstitutionNestedName}">{mysub.sub1.sub2:key.key1}</div>' +
+	'</div>';
 
 // TODO: apply such pattern for the Echo.Configuration lib tests...
 suite.prototype.data.config = {
@@ -269,6 +524,14 @@ suite.prototype.getTestControlClass = function() {
 	return Echo.Utils.getComponent(this.getTestControlClassName());
 };
 
+suite.prototype.initTestControl = function(config) {
+	var definition = this.getTestControlClass();
+	new definition($.extend({
+		"target": $("<div></div>"),
+		"appkey": "test.echoenabled.com",
+	}, config));
+};
+
 suite.prototype.createTestPlugin = function(pluginName, controlName) {
 	var plugin = Echo.Plugin.skeleton(pluginName, controlName);
 	if (!Echo.Plugin.isDefined(plugin)) {
@@ -299,39 +562,7 @@ manifest.init = function() {
         this.render();
 }
 
-manifest.templates.main =
-	'<div class="{class:container}">' +
-		'<div class="{class:testRenderer}"></div>' +
-		// checking {data:...} substitution
-		'<div class="{class:data} echo-primaryFont echo-primaryColor">{data:key1}</div>' +
-		'<div class="{class:dataNested} echo-primaryColor">{data:key3.key3nested}</div>' +
-		'<div class="{class:dataNonExisting}">{data:nonexistingkey}</div>' +
-		// checking {label:...} substitution
-		'<div class="{class:label} echo-primaryFont">{label:label1}</div>' +
-		'<div class="{class:labelNonExisting}">{label:nonexistinglabel}</div>' +
-		'<div class="{class:class}">{class:myclass}</div>' +
-		// checking {config:...} substitution
-		'<div class="{class:configNonExisting}">{config:nonexistingkey}</div>' +
-		'<div class="{class:configString} echo-primaryFont">{config:stringParam}</div>' +
-		'<div class="{class:configArray}">{config:arrayParam}</div>' +
-		'<div class="{class:configInteger} echo-primaryFont">{config:integerParam}</div>' +
-		'<div class="{class:configUndefined}">{config:undefinedParam}</div>' +
-		'<div class="{class:configNull} echo-primaryFont">{config:null}</div>' +
-		'<div class="{class:configBooleanFalse}">{config:booleanFalse}</div>' +
-		'<div class="{class:configBooleanTrue}">{config:booleanTrue}</div>' +
-		'<div class="{class:configZero} echo-primaryFont">{config:zeroParam}</div>' +
-		'<div class="{class:configObject} echo-primaryFont">{config:objectParam}</div>' +
-		// checking {self:...} substitution
-		'<div class="{class:selfData} echo-primaryFont">{self:data}</div>' +
-		'<div class="{class:selfDataKey} echo-primaryFont">{self:data.key1}</div>' +
-		'<div class="{class:selfDataKeyNested}">{self:data.key3.key3nested}</div>' +
-		'<div class="{class:selfNonExistingKey}">{self:nonExistingKey}</div>' +
-		'<div class="{class:selfFuntion} echo-primaryFont">{self:render}</div>' +
-		// checking custom substitution rules
-		'<div class="{class:customSubstitution}">{mysubs:key}</div>' +
-		'<div class="{class:customSubstitutionNestedKey}">{mysubs:key.key1.key2}</div>' +
-		'<div class="{class:customSubstitutionNestedName}">{mysub.sub1.sub2:key.key1}</div>' +
-	'</div>';
+manifest.templates.main = this.data.template;
 
 manifest.templates.custom =
 	'<div class="{class:container}">' +
@@ -339,13 +570,31 @@ manifest.templates.custom =
 		'<div class="{class:testRenderer1}"></div>' +
 	'</div>';
 
-// TODO: add "events"!
+manifest.events = {
+	"incoming.event.global": {
+		"context": "global",
+		"handler": function() {
+			this.get("_eventHandler") && this.get("_eventHandler")();
+		}
+	},
+	"incoming.event.local": function() {
+		this.get("_eventHandler") && this.get("_eventHandler")();
+	}
+};
 
 manifest.renderers.testRenderer = function(element, dom) {
-	return element.append('<div>Some vlaue</div>');
+	return element.empty().append('<div>Some vlaue</div>');
+};
+
+manifest.renderers.testRendererWithExtra = function(element, dom, extra) {
+	return element.empty().append('<span>' + extra.value + '</span>');
 };
 
 manifest.methods.myMethod = function(arg) {
+	return arg;
+};
+
+manifest.methods._myPrivateMethod = function(arg) {
 	return arg;
 };
 
