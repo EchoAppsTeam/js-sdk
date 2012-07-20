@@ -1,5 +1,23 @@
 (function($) {
 
+/**
+ * @class Echo.StreamServer.Controls.Submit.Plugins.FormAuth
+ * Adds the authentication section to the Echo Submit control
+ *     var identityManager = {"width": 400, "height": 240, "url": "http://example.com/auth"};
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "Edit",
+ *             "identityManager": {
+ *                 "login": identityManager,
+ *                 "signup": identityManager
+ *             }
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ * @inheritdoc Echo.Plugin
+ */
 var plugin = Echo.Plugin.skeleton("FormAuth", "Echo.StreamServer.Controls.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
@@ -22,7 +40,37 @@ plugin.init = function() {
 };
 
 plugin.config = {
+/**
+ * @cfg {Object} identityManager The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.
+ * @cfg {Object} [identityManager.login] Encapsulates data for login workflow
+ * @cfg {Number} [identityManager.login.width] Specifies the width of the visible auth area
+ * @cfg {Number} [identityManager.login.height] Specifies the height of the visible auth area
+ * @cfg {String} [identityManager.login.url] Specifies the URL to be opened as an auth handler
+ * @cfg {Object} [identityManager.signup] Encapsulates data for signup workflow
+ * @cfg {Number} [identityManager.signup.width] Specifies the width of the visible auth area
+ * @cfg {Number} [identityManager.signup.height] Specifies the height of the visible auth area
+ * @cfg {String} [identityManager.signup.url] Specifies the URL to be opened as an auth handler
+ * @cfg {Object} [identityManager.edit] Encapsulates data for edit workflow
+ * @cfg {Number} [identityManager.edit.width] Specifies the width of the visible auth area
+ * @cfg {Number} [identityManager.edit.height] Specifies the height of the visible auth area
+ * @cfg {String} [identityManager.edit.url] Specifies the URL to be opened as an auth handler
+ */
 	"identityManager": {},
+/**
+ * @cfg {String} submitPermissions Specifies the permitted commenting modes. The two options are: "allowGuest" and "forceLogin".
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "Edit",
+ *             "identityManager": {
+ *                 "login": identityManager,
+ *                 "signup": identityManager
+ *             },
+ *             "submitPermissions": "forceLogin"
+ *         }]
+ *     });
+ */
 	"submitPermissions": "allowGuest"
 };
 

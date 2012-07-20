@@ -3,13 +3,13 @@
 if (Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth")) return;
 
 /**
- * @class Echo.StreamServer.Controls.Auth
+ * @class Echo.IdentityServer.Controls.Auth
  * Echo Auth control displays user login status and allows to sign in using different social identities.
  * @extends Echo.Control
  * @inheritdoc Echo.Control
  *
  * @constructor
- * Auth constructor initializing Echo.StreamServer.Controls.Auth class
+ * Auth constructor initializing Echo.IdentityServer.Controls.Auth class
  * @param {Object} config Configuration options
  */
 var auth = Echo.Control.skeleton("Echo.IdentityServer.Controls.Auth");
