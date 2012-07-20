@@ -1,8 +1,35 @@
 (function($) {
 
+/**
+ * @class Echo.StreamServer.Controls.Submit.Plugins.SubmitTextCounter
+ * Adds the character counter under the text field in the Echo Submit control. Allows to set the maximum length of the text to enter.
+ *     new Echo.StreamServer.Controls.Submit({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "SubmitTextCounter"
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ * @inheritdoc Echo.Plugin
+ */
 var plugin = Echo.Plugin.skeleton("SubmitTextCounter", "Echo.StreamServer.Controls.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
+
+/**
+ * @cfg {Number} limit Specifies the maximum length of the text. There is no limit if it is not defined.
+ * @cfg {String} label Specifies the custom label for the counter. Parameter string is a template that has several placeholders. Placeholder is some word wrapped with the curly brackets. It supports the following list of placeholder words:
+ *
+ * + limit - The number from the limit parameter. 
+ * + typed - The number of characters currently typed in the text field.
+ * + left - The number of characters left (limit - typed).
+ *
+ * Default parameter value is:
+ *
+ * + "{typed}/{limit} characters" if limit parameter is provided
+ * + "{typed} characters" if limit parameter is not provided
+ */
 
 plugin.init = function() {
 	var component = this.component;
