@@ -70,7 +70,7 @@ stream.events = {
 				self._addItemSpotUpdate(data.item);
 			}
 		});
-		return {"stop": "bubble"};
+		return {"stop": ["bubble"]};
 	},
 	"Echo.StreamServer.Controls.Stream.Item.internal.onDelete": function(topic, data) {
 		var self = this;
@@ -84,7 +84,7 @@ stream.events = {
 				self._deleteItemSpotUpdate(data.item, data.config);
 			}
 		});
-		return {"stop": "bubble"};
+		return {"stop": ["bubble"]};
 	},
 	"Echo.StreamServer.Controls.Stream.Item.internal.onRender": function(topic, data) {
 		this.events.publish({
@@ -96,18 +96,18 @@ stream.events = {
 				}
 			}
 		});
-		return {"stop": "bubble"};
+		return {"stop": ["bubble"]};
 	},
 	"Echo.StreamServer.Controls.Stream.Item.internal.onButtonClick": function(topic, data) {
 		this.events.publish({
 			"topic": "Item.onButtonClick",
 			"data": data
 		});
-		return {"stop": "bubble"};
+		return {"stop": ["bubble"]};
 	},
 	"Echo.StreamServer.Controls.Stream.Item.internal.onChildrenExpand": function(topic, args) {
 		this.requestChildrenItems(args.unique);
-		return {"stop": "bubble"};
+		return {"stop": ["bubble"]};
 	}
 };
 
