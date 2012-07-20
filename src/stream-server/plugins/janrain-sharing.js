@@ -1,5 +1,32 @@
 (function($) {
 
+/**
+ * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing
+ * Plugin provides the ability to load JanRain sharing dialog after the item has been posted using the Echo Submit control.
+ * Installation procedure also includes actions on Janrain side.
+ *
+ * Download the "rpx_xdcomm.html" file from the JanRain application dashboard (the "Deployment" -> "Social Sharing" section) and place it in the root directory of your website.
+ *
+ * Configure the list of the necessary social sharing providers in the JanRain application dashboard (the "Deployment" -> "Social Sharing" -> "Choose providers" section).
+ *
+ * 	var identityManager = {"width": 400, "height": 240, "url": "http://example.com/auth"};
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "JanrainSharing",
+ * 			"appId": "yourJanRainAppId",
+ * 			"xdReceiver": "http://your-domain.com/rpx_xdcomm.html",
+ * 			"activity": {
+ * 				"sharePrompt": "Share your comment:",
+ * 				"shareContent": "I just commented '{content}' on {domain}",
+ * 				"itemURL": "http://your-domain.com/this-page.html"
+ * 			}
+ * 		}]
+ * 	});
+ * @extends Echo.Plugin
+ * @inheritdoc Echo.Plugin
+ */
 var plugin = Echo.Plugin.skeleton("JanrainSharing", "Echo.StreamServer.Controls.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
