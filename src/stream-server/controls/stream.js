@@ -106,7 +106,7 @@ stream.events = {
 		return {"stop": ["bubble"]};
 	},
 	"Echo.StreamServer.Controls.Stream.Item.internal.onChildrenExpand": function(topic, args) {
-		this.requestChildrenItems(args.unique);
+		this.requestChildrenItems(args.data.unique);
 		return {"stop": ["bubble"]};
 	}
 };
@@ -235,48 +235,60 @@ stream.renderers.more = function(element) {
 
 stream.methods.requestChildrenItems = function(unique) {
 	var self = this;
-	var item = this.items[unique];
-	this.sendAPIRequest({
-		"endpoint": "search",
-		"query": {"q": this._constructChildrenSearchQuery(item)}
-	}, function(data) {
-		var element = item.dom.get("expandChildren");
-		if (data.result == "error") {
-			self.handleErrorResponse(data, {
-				"messageTarget": element,
-				"waitingHandler": function() {
-					self.requestChildrenItems(unique);
+	if (!this.childrenRequest) {
+		this.childrenRequest = Echo.StreamServer.API.request({
+			"endpoint": "search",
+			"apiBaseURL": this.config.get("apiBaseURL"),
+			"onError": function(data) {
+				self.showMessage({"type": "error", "data": data});
+			},
+			"onData": function(data) {
+				var item = self.items[unique];
+				var element = item.dom.get("expandChildren");
+				/*if (data.result == "error") {
+					self.handleErrorResponse(data, {
+						"messageTarget": element,
+						"waitingHandler": function() {
+							self.requestChildrenItems(unique);
+						}
+					});
+					if (!self.isWaitingForData(data))  {
+						element.removeClass("echo-clickable")
+							.delay(3000)
+							.slideUp(self.config.get("children.moreButtonSlideTimeout"));
+					}
+					return;
+				}*/
+				if (!data.hasMoreChildren || data.hasMoreChildren === "false") {
+					item.data.hasMoreChildren = false;
 				}
-			});
-			if (!self.isWaitingForData(data))  {
-				element.removeClass("echo-clickable")
-					.delay(3000)
-					.slideUp(self.config.get("children.moreButtonSlideTimeout"));
-			}
-			return;
-		}
-		if (!data.hasMoreChildren || data.hasMoreChildren == "false") {
-			item.data.hasMoreChildren = false;
-		}
-		item.data.nextPageAfter = data.nextPageAfter;
-		data.entries = self._actualizeChildrenList(item, data.entries);
-		self.events.publish({
-			"topic": "onDataReceive",
-			"data": {
-				"entries": data.entries,
-				"initial": false
-			}
-		});
-		var children = [];
-		$.each(data.entries, function(i, entry) {
-			var _item = self._initItem(entry);
-			self._applyStructureUpdates("add", _item);
-			if (entry.parentUnique === item.get("data.unique")) {
-				children.push(_item);
+				item.data.nextPageAfter = data.nextPageAfter;
+				data.entries = self._actualizeChildrenList(item, data.entries);
+				self.events.publish({
+					"topic": "onDataReceive",
+					"data": {
+						"entries": data.entries,
+						"initial": false
+					}
+				});
+				var children = [];
+				$.each(data.entries, function(i, entry) {
+					var _item = self._initItem(entry);
+					self._applyStructureUpdates("add", _item);
+					if (entry.parentUnique === item.get("data.unique")) {
+						children.push(_item);
+					}
+				});
+				self._placeChildrenItems(item, children);
 			}
 		});
-		self._placeChildrenItems(item, children, data.entries);
-	});	
+	}
+	this.childrenRequest.send({
+		"data": {
+			"q": this._constructChildrenSearchQuery(this.items[unique]),
+			"appkey": this.config.get("appkey")
+		}
+	});
 };
 
 stream.methods.requestInitialItems = function() {
@@ -434,7 +446,7 @@ stream.methods._actualizeChildrenList = function(parent, entries) {
 		// we should change entry conversationID in accordance with
 		// conversationID of the root item
 		entry.targets = $.map(entry.targets, function(target) {
-			target.conversationID = parent.target.conversationID;
+			target.conversationID = parent.get("data.target.conversationID");
 			return target;
 		});
 		entry = self._normalizeEntry(entry);
@@ -575,11 +587,12 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	presentation.itemsPerPage = +presentation.itemsPerPage;
 	this.config.extend(presentation);
 	data.children.itemsPerPage = +data.children.itemsPerPage;
+	data.children.maxDepth += data.children.maxDepth;
 	this.config.set(
 		"children",
 		$.extend(
-			data.children,
-			this.config.get("children")
+			this.config.get("children"),
+			data.children
 		)
 	);
 	this.config.extend(this._extractTimeframeConfig(data));
@@ -1010,13 +1023,13 @@ stream.methods._placeRootItem = function(item) {
 	});
 };
 
-stream.methods._placeChildrenItems = function(parent, children, entries) {
+stream.methods._placeChildrenItems = function(parent, children) {
 	var self = this;
 	var itemsWrapper = this._createChildrenItemsDomWrapper(children, parent);
 	// we should calculate index of the sibling item for the responsed items
 	var targetItemIdx = -1;
 	$.each(parent.get("children"), function(i,_item) {
-		if (self._isItemInList(_item.data, entries)) {
+		if (self._isItemInList(_item, children)) {
 			targetItemIdx = i - 1;
 			return false;
 		}
@@ -2081,7 +2094,7 @@ item.methods.getAccumulator = function(type) {
 };
 
 item.methods.isRoot = function() {
-	return this.data.object.id === this.data.target.conversationID;
+	return !this.config.get("parent.children.maxDepth") || this.data.object.id === this.data.target.conversationID;
 };
 
 item.methods.addButtonSpec = function(plugin, spec) {
