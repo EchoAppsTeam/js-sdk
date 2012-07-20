@@ -102,6 +102,7 @@ Echo.Events.unsubscribe = function(params) {
  * @param {String} params.data Arbitrary data object.
  */
 Echo.Events.publish = function(params) {
+	delete _lastHandlerResult[params.topic];
 	params.context = Echo.Events._initContext(params.topic, params.context);
 	Echo.Events._executeForDeepestContext(params.topic, params.context, function(obj, lastContext, restContexts) {
 		Echo.Events._callHandlers(obj[lastContext], params, restContexts);
@@ -114,11 +115,11 @@ Echo.Events.publish = function(params) {
 
 // private stuff
 
+var _lastHandlerResult = {};
+
 Echo.Events._subscriptions = {};
 
 Echo.Events._dataByHandlerId = {};
-
-Echo.Events._lastHandlerResult;
 
 Echo.Events._initContext = function(topic, context) {
 	context = context || "global";
@@ -149,8 +150,8 @@ Echo.Events._executeForDeepestContext = function(topic, context, callback) {
 	}
 };
 
-Echo.Events._shouldStopEvent = function(stopperType) {
-	var stoppers = Echo.Events._lastHandlerResult && Echo.Events._lastHandlerResult.stop;
+Echo.Events._shouldStopEvent = function(stopperType, topic) {
+	var stoppers = _lastHandlerResult[topic] && _lastHandlerResult[topic].stop;
 	if (!stoppers) {
 		return false;
 	}
@@ -163,12 +164,12 @@ Echo.Events._callHandlers = function(obj, params, restContexts) {
 	// use copy of handler list so that inner unsubscribe actions couldn't mess it up
 	var handlers = (obj.handlers || []).slice(0);
 	$.each(handlers, function(i, data) {
-		Echo.Events._lastHandlerResult = data.handler(params.topic, params.data);
-		if (Echo.Events._shouldStopEvent("propagation.siblings")) {
+		_lastHandlerResult[params.topic] = data.handler(params.topic, params.data);
+		if (Echo.Events._shouldStopEvent("propagation.siblings", params.topic)) {
 			return false;
 		}
 	});
-	if (params.bubble && Echo.Events._shouldStopEvent("bubble")) {
+	if (params.bubble && Echo.Events._shouldStopEvent("bubble", params.topic)) {
 		return;
 	}
 	if (params.bubble) {
@@ -177,10 +178,10 @@ Echo.Events._callHandlers = function(obj, params, restContexts) {
 		}
 		params.context = restContexts.join("/");
 		Echo.Events.publish(params);
-	} else if (!Echo.Events._shouldStopEvent("propagation.children")) {
+	} else if (!Echo.Events._shouldStopEvent("propagation.children", params.topic)) {
 		$.each(obj.contexts, function(id, context) {
 			Echo.Events._callHandlers(context, params);
-			if (Echo.Events._shouldStopEvent("propagation.siblings")) {
+			if (Echo.Events._shouldStopEvent("propagation.siblings", params.topic)) {
 				return false;
 			}
 		});

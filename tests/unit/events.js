@@ -147,7 +147,7 @@ suite.prototype.tests.AdvancedPublishing = {
 	"check": function() {
 		order = 0;
 		var s1 = subscribe("A", "a1/b1/c1", ["propagation.siblings"]);
-		var s2 = subscribe("A", "a1");
+		var s2 = subscribe("A", "a1", ["bubble"]);
 		var s3 = subscribe("A", "a2", ["propagation.children"]);
 		var s4 = subscribe("A", "a2/b1");
 		var s5 = subscribe("A", "a1/b2/c2");
@@ -159,11 +159,15 @@ suite.prototype.tests.AdvancedPublishing = {
 		var s11 = subscribe("A", "a3/b2/c2");
 		var s12 = subscribe("A", "a1/b1/c1/d1");
 		var s13 = subscribe("A", "a1/b1", ["bubble"]);
+		// We need to create context but shouldn't have any handlers for it so we unsubscribe right after subscription
+		var s14 = subscribe("A", "a1/b1/c1/d1/e1");
+		unsubscribe("A", s14.id, "a1/b1/c1/d1/e1");
 
 		publish({"topic": "A", "context": "a1/b2/c2", "bubble": true});
 		QUnit.deepEqual(published, [5, 7, 2], "Publish: handlers order (topic \"A\", context \"a1/b2/c2\", bubble)");
-		publish({"topic": "A", "context": "a1/b1/c1/d1", "bubble": true});
-		QUnit.deepEqual(published, [12, 1, 13], "Publish: handlers order (topic \"A\", context \"a1/b1/c1/d1\", bubble, propagation.siblings)");
+		// We publish bubbling event in th context which doesn't have its own handlers
+		publish({"topic": "A", "context": "a1/b1/c1/d1/e1", "bubble": true});
+		QUnit.deepEqual(published, [12, 1, 13], "Publish: handlers order (topic \"A\", context \"a1/b1/c1/d1/e1\", bubble, propagation.siblings)");
 		publish({"topic": "A", "context": "a1"});
 		QUnit.deepEqual(published, [2, 13, 1, 12, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\", propagation.siblings)");
 		publish({"topic": "A", "context": "a2"});
