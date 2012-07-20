@@ -40,6 +40,7 @@ PACK_FILES_identity-server/plugins = $(SRC_DIR)/identity-server/plugins/*.js
 PACK_FILES_third-party/jquery = \
 	$(SRC_DIR)/third-party/jquery.js \
 	$(SRC_DIR)/third-party/jquery.ihint.js \
+	$(SRC_DIR)/third-party/jquery.viewport.mini.js \
 	$(SRC_DIR)/third-party/jquery.easing-1.3.min.js \
 	$(SRC_DIR)/third-party/jquery.fancybox-1.3.4.min.js \
 	$(SRC_DIR)/third-party/jquery.ui-1.8.21.min.js
