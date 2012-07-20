@@ -15,6 +15,7 @@ plugin.init = function() {
 		"topic": "internal.Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlike",
 		"handler": function(topic, args) {
 			self._sendActivity("unlike", args.item);
+			return {"stop": ["bubble"]};
 		}
 	});
 };
@@ -34,11 +35,8 @@ plugin.methods._sendRequest = function(data, callback) {
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
-		"appkey": this.component.config.get("appkey"),
 		"onData": callback,
 		"data": data,
-		"target-query": this.component.config.get("query", ""),
-		"sessionID": this.component.user.get("sessionID", "")
 	}).send();
 };
 
@@ -134,15 +132,17 @@ plugin.renderers.Item.likes = function(element) {
 	this.events.subscribe({
 		"topic": "internal.Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike",
 		"handler": function(topic, data) {
-			if (data.target !== element.get(0)) return;
+			if (data.target !== element.get(0)) return {"stop": ["bubble"]};
 			plugin.events.publish({
 				"topic": "onUnlike",
 				"prefix": "internal",
+				"bubble": true,
 				"data": {
 					"actor": data.actor,
 					"item": item
 				}
 			});
+			return {"stop": ["bubble"]};
 		}
 	});
 	return element.show();

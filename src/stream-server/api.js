@@ -7,7 +7,6 @@ if (!Echo.StreamServer) Echo.StreamServer = {};
 Echo.StreamServer.API = {};
 
 Echo.StreamServer.API.Request = function(config) {
-	var self = this;
 	config = $.extend({
 		"liveUpdatesTimeout": 5,
 		"onData": function() {},
