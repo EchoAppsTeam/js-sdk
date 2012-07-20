@@ -139,10 +139,13 @@ plugin.renderers.Item.statusIcon = function(element) {
 plugin.methods._changeItemStatus = function(item, status) {
 	this.set("selected", false);
 	item.data.object.status = status;
-	item.render("controls");
+	item.render({"element": "controls"});
 	// rerender status recursive
 	// since it contains other renderers
-	item.render("status", true);
+	item.render({
+		"element": "status",
+		"recursive": true
+	});
 };
 
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
