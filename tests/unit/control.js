@@ -39,7 +39,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 	"check": function() {
 		var self = this;
 		var skeleton = {
-			"name": this.getTestControlClassName(),
+			"name": suite.getTestControlClassName(),
 			"config": {},
 			"labels": {},
 			"events": {},
@@ -56,10 +56,10 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"Checking the \"skeleton\" function output");
 
 		// create class out of manifest
-		Echo.Control.create(this.getControlManifest(skeleton.name));
+		Echo.Control.create(suite.getControlManifest(skeleton.name));
 
 		// create test plugin
-		this.createTestPlugin("MyPlugin", skeleton.name);
+		suite.createTestPlugin("MyPlugin", skeleton.name);
 
 		this.sequentialAsyncTests([
 			"basicOperations",
@@ -98,7 +98,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking if private methods are available and executable");
 
 		// checking "get" operation
-		var data = test.data.config.data;
+		var data = suite.data.config.data;
 		QUnit.equal(this.get("data.key1"), data.key1,
 			"Checking if we can extract data passed via config using the \"get\" function");
 		QUnit.equal(this.get("data.key3.key3nested"), data.key3.key3nested,
@@ -126,7 +126,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking field remove operation");
 
 		// checking "substitute" method
-		$.each(test.data.substitutions, function(id, substitution) {
+		$.each(suite.data.substitutions, function(id, substitution) {
 			QUnit.equal(
 				self.substitute(substitution[0], undefined, substitution[2]),
 				substitution[1],
@@ -149,8 +149,8 @@ suite.prototype.cases.basicOperations = function(callback) {
 
 		callback && callback();
 	};
-	this.initTestControl({
-		"data": this.data.config.data,
+	suite.initTestControl({
+		"data": suite.data.config.data,
 		"plugins": [{
 			"name": "MyPlugin"
 		}],
@@ -159,7 +159,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 };
 
 suite.prototype.cases.initializationWithInvalidParams = function(callback) {
-	var result, definition = this.getTestControlClass();
+	var result, definition = suite.getTestControlClass();
 
 	result = new definition();
 	QUnit.ok($.isEmptyObject(result),
@@ -190,7 +190,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 			"Checking if object parameter was overridden (checking existing key)");
 		callback && callback();
 	};
-	this.initTestControl({
+	suite.initTestControl({
 		"objectParam": {"param1": "param1.override"},
 		"myTestParam": "test value",
 		"undefinedParam": "undefinedParam replacement",
@@ -319,8 +319,8 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		callback && callback();
 	};
-	this.initTestControl({
-		"data": this.data.config.data,
+	suite.initTestControl({
+		"data": suite.data.config.data,
 		"ready": check
 	});
 };
@@ -376,7 +376,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 
 		callback && callback();
 	};
-	this.initTestControl({
+	suite.initTestControl({
 		"context": context,
 		"ready": check
 	});
@@ -384,9 +384,9 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 
 // data required to perform tests
 
-suite.prototype.data = {};
+suite.data = {};
 
-suite.prototype.data.substitutions = [[
+suite.data.substitutions = [[
 	"",
 	""
 ], [
@@ -447,7 +447,7 @@ suite.prototype.data.substitutions = [[
 	}}
 ]];
 
-suite.prototype.data.template =
+suite.data.template =
 	'<div class="{class:container}">' +
 		'<div class="{class:testRenderer}"></div>' +
 		'<div class="{class:testRendererRecursive}">' +
@@ -488,7 +488,7 @@ suite.prototype.data.template =
 	'</div>';
 
 // TODO: apply such pattern for the Echo.Configuration lib tests...
-suite.prototype.data.config = {
+suite.data.config = {
 	"data": {
 		"key1": "key1 value",
 		"key2": "key2 value",
@@ -518,34 +518,34 @@ suite.prototype.data.config = {
 
 // test helper functions 
 
-suite.prototype.getTestControlClassName = function() {
+suite.getTestControlClassName = function() {
 	return "Echo.StreamServer.Controls.MyControl";
 };
 
-suite.prototype.getTestControlClass = function() {
-	return Echo.Utils.getComponent(this.getTestControlClassName());
+suite.getTestControlClass = function() {
+	return Echo.Utils.getComponent(suite.getTestControlClassName());
 };
 
-suite.prototype.initTestControl = function(config) {
-	var definition = this.getTestControlClass();
+suite.initTestControl = function(config) {
+	var definition = suite.getTestControlClass();
 	new definition($.extend({
 		"target": $("<div></div>"),
 		"appkey": "test.echoenabled.com",
 	}, config));
 };
 
-suite.prototype.createTestPlugin = function(pluginName, controlName) {
+suite.createTestPlugin = function(pluginName, controlName) {
 	var plugin = Echo.Plugin.skeleton(pluginName, controlName);
 	if (!Echo.Plugin.isDefined(plugin)) {
 		Echo.Plugin.create(plugin);
 	}
 };
 
-suite.prototype.getControlManifest = function(name) {
+suite.getControlManifest = function(name) {
 
-var manifest = Echo.Control.skeleton(name || this.getTestControlClassName());
+var manifest = Echo.Control.skeleton(name || suite.getTestControlClassName());
 
-manifest.config = $.extend(true, {}, this.data.config);
+manifest.config = $.extend(true, {}, suite.data.config);
 
 // copy vars from config
 manifest.vars = $.extend(true, {}, manifest.config);
@@ -564,7 +564,7 @@ manifest.init = function() {
         this.render();
 }
 
-manifest.templates.main = this.data.template;
+manifest.templates.main = suite.data.template;
 
 manifest.templates.custom =
 	'<div class="{class:container}">' +
