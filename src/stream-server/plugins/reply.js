@@ -14,7 +14,7 @@ plugin.init = function() {
 	item.addButtonSpec("Reply", this._assembleButton());
 	$(document).click(function() {
 		var submit = self.get("submit");
-		if (self.get("expanded") && submit && !submit.dom.get("text").val()) {
+		if (submit && !submit.dom.get("text").val()) {
 			 self.events.publish({
 				"topic": "onCollapse"
 			});
@@ -32,11 +32,9 @@ plugin.config = {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
-		this.set("expanded", true);
 		this._showSubmit();
 	},
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse": function(topic, args) {
-		this.set("expanded", false);
 		this._hideSubmit();
 	},
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
@@ -68,7 +66,7 @@ plugin.renderers.Item.children = function(element) {
 	if (item.children.length == 1) {
 		var child = item.children[0];
 		if (child.get("added") || child.get("deleted")) {
-			plugin._removeCSS(item, item.dom.get("replyForm"));
+			plugin._itemCSS("remove", item, item.dom.get("replyForm"));
 			item.render({"element": "compactForm"});
 		}
 	}
@@ -78,12 +76,9 @@ plugin.renderers.Item.children = function(element) {
 plugin.renderers.Item.compactForm = function(element) {
 	var plugin = this, item = plugin.component;
 	var hasChildren = !!item.children.length;
-	if (!item.depth && hasChildren) {
-		if (!plugin.get("expanded") && !item.children[0].get("deleted")) {
-			plugin._addCSS(item, element.parent());
-			return element.show();
-		}
-		return element.hide();
+	if (!item.get("depth") && hasChildren && !plugin.get("submit") && !item.children[0].get("deleted")) {
+		plugin._itemCSS("add", item, element.parent());
+		return element.show();
 	}
 	return element.hide();
 };
@@ -91,7 +86,7 @@ plugin.renderers.Item.compactForm = function(element) {
 plugin.renderers.Item.container = function(element) {
 	var plugin = this, item = plugin.component;
 	var threading = item.threading;
-	if (plugin.get("expanded")) {
+	if (plugin.get("submit")) {
 		item.threading = true;
 	}
 	item.parentRenderer("container", arguments);
@@ -113,7 +108,7 @@ plugin.methods._showSubmit = function() {
 	
 	var target = item.dom.get("submitForm");
 	target.empty();
-	plugin._addCSS(item, item.dom.get("replyForm"));
+	plugin._itemCSS("add", item, item.dom.get("replyForm"));
 	
 	var config = plugin.config.assemble({
 		"target": target,
@@ -136,7 +131,8 @@ plugin.methods._showSubmit = function() {
 plugin.methods._hideSubmit = function() {
 	var plugin = this, item = plugin.component;
 	item.dom.get("submitForm").empty();
-	plugin._removeCSS(item, item.dom.get("replyForm"));
+	plugin.set("submit", false);
+	plugin._itemCSS("remove", item, item.dom.get("replyForm"));
 	item.render({"element": "compactForm"});
 	item.render({"element": "container"});
 };
@@ -159,22 +155,11 @@ plugin.methods._assembleButton = function() {
 	};
 };
 
-plugin.methods._addCSS = function(item, element) {
-	if (!element.hasClass(item.cssPrefix + "-container")) {
-	    $.each(["container", "container-child", "depth-" + (item.depth + 1)], function(i, css) {
-		    element.addClass(item.cssPrefix + "-" + css);
-	    });
-	    element.addClass('echo-trinaryBackgroundColor');
-	}
-};
-
-plugin.methods._removeCSS = function(item, element) {
-	if (element.hasClass(item.cssPrefix + "-container")) {
-	    $.each(["container", "container-child", "depth-" + (item.depth + 1)], function(i, css) {
-		    element.removeClass(item.cssPrefix + "-" + css);
-	    });
-	    element.removeClass('echo-trinaryBackgroundColor');
-	}
+plugin.methods._itemCSS = function(action, item, element) {
+	$.each(["container", "container-child", "depth-" + (item.get("depth") + 1)], function(i, css) {
+		element[action + "Class"](item.cssPrefix + "-" + css);
+	});
+	element[action + "Class"]('echo-trinaryBackgroundColor');
 };
 
 plugin.css = 
