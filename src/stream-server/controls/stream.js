@@ -470,7 +470,7 @@ stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 		var insertion = i > 0 && getIdx(children[i-1]) < getIdx(item)
 			? "append"
 			: "prepend";
-		wrapper[insertion](item.dom.content);
+		wrapper[insertion](item.config.get("target"));
 	});
 	return wrapper;
 };
@@ -1471,7 +1471,8 @@ item.renderers._childrenContainer = function(element, dom, config) {
 	$.map(this.children, function(child) {
 		if (config && config.filter && !config.filter(child)) return;
 		var initialRendering = !child.dom;
-		element.append(initialRendering ? child.render() : child.dom.content);
+		if (initialRendering) child.render();
+		element.append(child.config.get("target"));
 		if (child.deleted) {
 			self.events.publish({
 				"topic": "internal.onDelete",
