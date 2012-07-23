@@ -115,7 +115,7 @@ Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) 
 };
 
 Echo.API.Transports.AJAX.prototype.send = function(data) {
-	this.transportObject.data = $.extend(this.config.get("data"), data || {});
+	this.transportObject.data = $.extend({}, this.config.get("data"), data || {});
 	this.jxhrTransportObject = $.ajax(this.transportObject);
 };
 
