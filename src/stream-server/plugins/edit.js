@@ -75,7 +75,6 @@ plugin.init = function() {
 	var self = this;
 	this.extendTemplate(plugin.templates.cancel,"insertAfter", "postContainer");
 	this.extendTemplate(plugin.templates.header, "replace", "header");
-	this.extendRenderer("text", plugin.renderers.Submit.text);
 	this.extendRenderer("author", plugin.renderers.Submit.author);
 	this.extendRenderer("metaFields", plugin.renderers.Submit.metaFields);
 	this.extendRenderer("editedDate", plugin.renderers.Submit.editedDate);
@@ -139,12 +138,6 @@ plugin.templates.cancel =
 	'</div>';
 
 plugin.renderers.Submit ={};
-
-plugin.renderers.Submit.text = function(element) {
-	var content = this.component.get("data.object.content");
-	if (content) element.val(content);
-	return this.parentRenderer("text", arguments);
-};
 
 plugin.renderers.Submit.metaFields = function(element, dom, extra) {
 	var data = this.component.get("data.object." + extra.type) || [];

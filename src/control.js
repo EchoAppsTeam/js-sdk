@@ -333,8 +333,8 @@ Echo.Control.prototype._init.events = function() {
 			params.topic = prefix + control.manifest.name + "." + params.topic;
 			params.data = params.data || {};
 			// process data through the normalization function if defined
-			if (control.prepareBroadcastParams) {
-				params.data = control.prepareBroadcastParams(params.data);
+			if (control._prepareEventParams) {
+				params.data = control._prepareEventParams(params.data);
 			}
 			Echo.Events.publish(prepare(params));
 		},

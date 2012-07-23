@@ -375,7 +375,7 @@ stream.methods.refresh = function() {
 	this.events.publish({"topic": "onRerender"});
 };
 
-stream.methods.prepareBroadcastParams = function(params) {
+stream.methods._prepareEventParams = function(params) {
 	params = params || {};
 	params.target = this.config.get("target").get(0);
 	params.query = this.config.get("query");
@@ -2034,9 +2034,9 @@ item.methods.getNextPageAfter = function() {
 		: undefined;
 };
 
-// TODO: this function is a copy of the "prepareBroadcastParams" one from the stream
+// TODO: this function is a copy of the "_prepareEventParams" one from the stream
 //       check if/how we can unify this logic
-item.methods.prepareBroadcastParams = function(params) {
+item.methods._prepareEventParams = function(params) {
 	params = params || {};
 	params.target = this.config.get("parent.target").get(0);
 	params.query = this.config.get("parent.query");

@@ -115,10 +115,6 @@ submit.labels = {
 	"yourWebsiteOptional": "Your website (optional)"
 };
 
-submit.constructor = function() {
-	this.render();
-}
-
 // templates
 
 submit.templates.main =
@@ -204,6 +200,8 @@ submit.renderers.metaFields = function(element, dom, extra) {
 };
 
 submit.renderers.text = function(element) {
+	var content = this.get("data.object.content");
+	if (content) element.val(content);
 	return element.iHint({
 		"text": this.config.get("actionString"),
 		"className": "echo-secondaryColor"
@@ -425,11 +423,11 @@ submit.methods.highlightMandatory = function(element) {
 };
 
 /**
- * @method prepareBroadcastParams
+ * @method _prepareEventParams
  * Prepares data for further broadcasting through Echo.Events
  * @return {Object} preformatted data for publishing through Echo.Events mechanics
  */
-submit.methods.prepareBroadcastParams = function(params) {
+submit.methods._prepareEventParams = function(params) {
 	params = params || {};
 	params.data = this.get("data");
 	params.target = this.config.get("target").get(0);

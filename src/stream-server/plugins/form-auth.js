@@ -34,7 +34,6 @@ plugin.init = function() {
 	}
 	this.extendTemplate(plugin.templates.auth, "insertBefore", "header");
 	this.extendRenderer("auth", plugin.renderers.Submit.auth);
-	this.extendRenderer("text", plugin.renderers.Submit.text);
 	this.extendRenderer("header", plugin.renderers.Submit.header);
 	this.extendRenderer("container", plugin.renderers.Submit.container);
 	this.extendRenderer("postButton", plugin.renderers.Submit.postButton);
@@ -106,12 +105,6 @@ plugin.renderers.Submit.header = function(element) {
 	}
 	return plugin.parentRenderer("header", arguments);
 };
-
-plugin.renderers.Submit.text = function(element) {
-	var content = this.component.get("data.object.content");
-	if (content) element.val(content);
-	return this.parentRenderer("text", arguments);
-}
 
 plugin.renderers.Submit.container = function(element) {
 	var plugin = this;
