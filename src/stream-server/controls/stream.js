@@ -86,18 +86,6 @@ stream.events = {
 		});
 		return {"stop": ["bubble"]};
 	},
-	"Echo.StreamServer.Controls.Stream.Item.internal.onRender": function(topic, data) {
-		this.events.publish({
-			"topic": "Item.onRender",
-			"data": {
-				"item": {
-					"data": data.item.data,
-					"target": data.item.dom.content
-				}
-			}
-		});
-		return {"stop": ["bubble"]};
-	},
 	"Echo.StreamServer.Controls.Stream.Item.internal.onButtonClick": function(topic, data) {
 		this.events.publish({
 			"topic": "Item.onButtonClick",
@@ -526,15 +514,6 @@ stream.methods._appendRootItems = function(items, container) {
 	$.each(items || [], function(i, item) {
 		item.render();
 		fragment.appendChild(item.config.get("target").get(0));
-		self.events.publish({
-			"topic": "Item.onRender",
-			"data": {
-				"item": {
-					"data": item.data,
-					"target": item.dom.content
-				}
-			}
-		});
 	});
 	container.append(fragment);
 	this.render({"element": "more"});
