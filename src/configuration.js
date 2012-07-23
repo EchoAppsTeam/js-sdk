@@ -87,6 +87,7 @@ Echo.Configuration.prototype.remove = function(key) {
 	var field = keys.pop();
 	var data = Echo.Utils.getNestedValue(this.data, keys);
 	Echo.Utils.setNestedValue(this.cache, key, undefined);
+	delete this.cache[key];
 	delete data[field];
 };
 

@@ -136,8 +136,10 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"Check the remove() method with simple values");
 
 		config.remove("key2.key2-2");
-		QUnit.equal(config.get("key1.key2-2.key2-2-1"), undefined,
+		QUnit.equal(config.get("key2.key2-2"), undefined,
 			"Check the remove() method with objects defined as values");
+		QUnit.equal(config.get("key2.key2-2.key2-2-1"), undefined,
+			"Check the remove() method with objects defined as values, checking if nested structure was cleared");
 	}
 };
 
