@@ -10,17 +10,8 @@ plugin.config = {
 };
 
 plugin.init = function() {
-	var self = this;
 	this.extendRenderer("accumulatorContainer", plugin.renderers.Item.accumulatorContainer);
 	this.extendTemplate(plugin.template, "insertBefore", "modeSwitch");
-};
-
-plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.onRender": function(topic, args) {
-			this.set("originalBGColor", 
-				Echo.Utils.getVisibleColor(this.component.dom.get("container"))
-			);
-		}
 };
 
 plugin.renderers = {"Item": {}};
@@ -30,18 +21,16 @@ plugin.template = '<div class="{class:accumulatorContainer}"></div>';
 plugin.renderers.Item.accumulatorContainer = function(element) {
 	var item = this.component;
 	var accName = this.config.get("accumulator");
-	var accumulator = item.data.object.accumulators[accName];
+	var accumulator = item.get("data.object.accumulators")[accName];
 	var count = this.get("count") || {};
-	if (typeof count.current == "undefined") {
+	if (typeof count.current === "undefined") {
 		// first-time rendering actions
-		var countTickTimeout = this.config.get("countTickTimeout");
 		this.set("count", {
 			"actual": accumulator,
 			"current": accumulator
 		});
 		return element.append(accumulator);
 	}
-
 	this._stopTimer();
 	var container = item.dom.get("container");
 	container.stop(true, true);
@@ -75,7 +64,7 @@ plugin.methods._animateCounter = function(bgColor) {
 	var plugin = this;
 	var count = this.get("count");
 	var item = this.component;
-	if (typeof count.current != "undefined" && count.current == count.actual &&
+	if (typeof count.current !== "undefined" && count.current === count.actual &&
 			!this.get("animationInProgress")) {
 		// fading out
 		var container = item.dom.get("container");
@@ -93,13 +82,13 @@ plugin.methods._animateCounter = function(bgColor) {
 	}
 	this.set("timer", setTimeout(function() {
 		var count = plugin.get("count");
-		if (count.current != count.actual) {
+		if (count.current !== count.actual) {
 			count.current < count.actual ? count.current++ : count.current--;
 			plugin.set("count.current", count.current);
 			item.dom.get("accumulatorContainer").html(count.current);
 			plugin._animateCounter(bgColor);
 		}
-	}, this.get("countTickTimeout")));
+	}, this.config.get("countTickTimeout") * 1000));
 };
 
 plugin.css = '.{class:accumulatorContainer} { float: right; margin-right: 7px; }';
