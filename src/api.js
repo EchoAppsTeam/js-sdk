@@ -195,9 +195,15 @@ Echo.API.Request = function(config) {
 	});
 };
 
-Echo.API.Request.prototype.send = function() {
+Echo.API.Request.prototype.send = function(args) {
+	var force = false;
+	if (args) {
+		force = args.force;
+		delete args.force;
+		this.config.extend(args);
+	}
 	var method = this["_" + this.config.get("endpoint")];
-	method && method.apply(this, arguments);
+	method && method.call(this, force);
 };
 
 Echo.API.Request.prototype.request = function(params) {

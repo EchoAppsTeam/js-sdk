@@ -122,7 +122,20 @@ Echo.Control.prototype.defaults.config = {
 };
 
 Echo.Control.prototype.defaults.labels = {
-	"loading": "Loading..."
+	"loading": "Loading...",
+	"retrying": "Retrying...",
+	"error_busy": "Loading. Please wait...",
+	"error_timeout": "Loading. Please wait...",
+	"error_waiting": "Loading. Please wait...",
+	"error_view_limit": "View creation rate limit has been exceeded. Retrying in {seconds} seconds...",
+	"error_view_update_capacity_exceeded": "This stream is momentarily unavailable due to unusually high activity. Retrying in {seconds} seconds...",
+	"error_result_too_large": "(result_too_large) The search result is too large.",
+	"error_wrong_query": "(wrong_query) Incorrect or missing query parameter.",
+	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
+	"error_internal_error": "(internal_error) Unknown server error.",
+	"error_quota_exceeded": "(quota_exceeded) Required more quota than is available.",
+	"error_incorrect_user_id": "(incorrect_user_id) Incorrect user specified in User ID predicate.",
+	"error_unknown": "(unknown) Unknown error."
 };
 
 Echo.Control.prototype.get = function(field, defaults) {
@@ -241,6 +254,42 @@ Echo.Control.prototype.showMessage = function(data) {
 		"data": data,
 		"target": data.target
 	});
+};
+
+Echo.Control.prototype.showError = function(data, options) {
+	var self = this;
+	if (typeof options.retryIn === "undefined") {
+		var label = this.labels.get("error_" + data.errorCode);
+		var message = label == "error_" + data.errorCode
+			? "(" + data.errorCode + ") " + (data.errorMessage || "")
+			: label;
+		this.showMessage({
+			"type": options.critical ? "error" : "loading",
+			"message": message,
+			"target": options.target
+		});
+	} else if (!options.retryIn && options.request.retryTimer) {
+		this.showMessage({
+			"type": "loading",
+			"message": this.labels.get("retrying"),
+			"target": options.target
+		});
+	} else {
+		var secondsLeft = options.retryIn / 1000;
+		var ticker = function() {
+			if (!secondsLeft) {
+				return;
+			}
+			var label = self.labels.get("error_" + data.errorCode, {"seconds": secondsLeft--});
+			self.showMessage({
+				"type": "loading",
+				"message": label,
+				"target": options.target
+			});
+		};
+		options.request.retryTimer = setInterval(ticker, 1000);
+		ticker();
+	}
 };
 
 Echo.Control.prototype.getPlugin = function(name) {

@@ -111,21 +111,9 @@ stream.templates.main =
 
 stream.renderers.body = function(element) {
 	var self = this;
-	element = element || this.dom.get("body");
 	if (!this.lastRequest) {
-		this.showMessage({
-			"type": "loading",
-			"message": this.labels.get(
-				0 && this.isErrorWithTimer(this.error)
-					? "retrying"
-					: 0 && this.isWaitingForData(this.error)
-						? "error_" + this.error.errorCode
-						: "loading"
-			)
-		}, element);
 		return element;
 	}
-
 	if (this.lastRequest.data.length) {
 		if (this.lastRequest.initial) {
 			element.empty();
@@ -223,60 +211,53 @@ stream.renderers.more = function(element) {
 
 stream.methods.requestChildrenItems = function(unique) {
 	var self = this;
-	if (!this.childrenRequest) {
-		this.childrenRequest = Echo.StreamServer.API.request({
-			"endpoint": "search",
-			"apiBaseURL": this.config.get("apiBaseURL"),
-			"onError": function(data) {
-				self.showMessage({"type": "error", "data": data});
-			},
-			"onData": function(data) {
-				var item = self.items[unique];
-				var element = item.dom.get("expandChildren");
-				/*if (data.result == "error") {
-					self.handleErrorResponse(data, {
-						"messageTarget": element,
-						"waitingHandler": function() {
-							self.requestChildrenItems(unique);
-						}
-					});
-					if (!self.isWaitingForData(data))  {
-						element.removeClass("echo-clickable")
-							.delay(3000)
-							.slideUp(self.config.get("children.moreButtonSlideTimeout"));
-					}
-					return;
-				}*/
-				if (!data.hasMoreChildren || data.hasMoreChildren === "false") {
-					item.data.hasMoreChildren = false;
-				}
-				item.data.nextPageAfter = data.nextPageAfter;
-				data.entries = self._actualizeChildrenList(item, data.entries);
-				self.events.publish({
-					"topic": "onDataReceive",
-					"data": {
-						"entries": data.entries,
-						"initial": false
-					}
-				});
-				var children = [];
-				$.each(data.entries, function(i, entry) {
-					var _item = self._initItem(entry);
-					self._applyStructureUpdates("add", _item);
-					if (entry.parentUnique === item.get("data.unique")) {
-						children.push(_item);
-					}
-				});
-				self._placeChildrenItems(item, children);
-			}
-		});
-	}
-	this.childrenRequest.send({
+	var childrenRequest = Echo.StreamServer.API.request({
+		"endpoint": "search",
+		"apiBaseURL": this.config.get("apiBaseURL"),
 		"data": {
 			"q": this._constructChildrenSearchQuery(this.items[unique]),
 			"appkey": this.config.get("appkey")
+		},
+		"onOpen": function() {
+			var target = self.items[unique].dom.get("expandChildren");
+			self.showError({}, {
+				"retryIn": 0,
+				"target": target,
+				"request": childrenRequest
+			});
+		},
+		"onError": function(data, options) {
+			options.target = self.items[unique].dom.get("expandChildren");
+			options.request = childrenRequest;
+			self.showError(data, options);
+		},
+		"onData": function(data) {
+			var item = self.items[unique];
+			var element = item.dom.get("expandChildren");
+			if (!data.hasMoreChildren || data.hasMoreChildren === "false") {
+				item.set("data.hasMoreChildren", false);
+			}
+			item.set("data.nextPageAfter", data.nextPageAfter);
+			data.entries = self._actualizeChildrenList(item, data.entries);
+			self.events.publish({
+				"topic": "onDataReceive",
+				"data": {
+					"entries": data.entries,
+					"initial": false
+				}
+			});
+			var children = [];
+			$.each(data.entries, function(i, entry) {
+				var _item = self._initItem(entry);
+				self._applyStructureUpdates("add", _item);
+				if (entry.parentUnique === item.get("data.unique")) {
+					children.push(_item);
+				}
+			});
+			self._placeChildrenItems(item, children);
 		}
 	});
+	childrenRequest.send();
 };
 
 stream.methods.requestInitialItems = function() {
@@ -291,8 +272,17 @@ stream.methods.requestInitialItems = function() {
 				"q": this.config.get("query"),
 				"appkey": self.config.get("appkey")
 			},
-			"onError": function(data) {
-				self.showMessage({"type": "error", "data": data});
+			"onOpen": function(data, options) {
+				if (options.requestType === "initial") {
+					self.showError({}, {
+						"retryIn": 0,
+						"request": self.request
+					});
+				}
+			},
+			"onError": function(data, options) {
+				options.request = self.request;
+				self.showError(data, options);
 			},
 			"onData": function(data, options) {
 				if (options.requestType === "initial") {
@@ -301,7 +291,7 @@ stream.methods.requestInitialItems = function() {
 							"initial": true,
 							"data": data
 						};
-						self.render({"element": "body"});
+						self.render();
 					});
 				} else {
 					self._handleLiveUpdatesResponse(data);
@@ -322,8 +312,17 @@ stream.methods.requestMoreItems = function(element) {
 		this.moreRequest = Echo.StreamServer.API.request({
 			"endpoint": "search",
 			"apiBaseURL": this.config.get("apiBaseURL"),
-			"onError": function(data) {
-				self.showMessage({"type": "error", "data": data});
+			"onOpen": function() {
+				self.showError({}, {
+					"retryIn": 0,
+					"target": element,
+					"request": self.moreRequest
+				});
+			},
+			"onError": function(data, options) {
+				options.target = element;
+				options.request = self.moreRequest;
+				self.showError(data, options);
 			},
 			"onData": function(data) {
 				self._handleInitialResponse(data, function(data) {
@@ -544,21 +543,6 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 
 stream.methods._handleInitialResponse = function(data, visualizer) {
 	var self = this, items = [], roots = [];
-	var isMoreRequest = this.lastRequest && !this.lastRequest.initial;
-	data = data || {};
-	if (data.result === "error") {
-		this.handleErrorResponse(data, {
-			"messageTarget": isMoreRequest ? self.dom.get("more") : self.dom.get("body"),
-			"waitingHandler": function() {
-				if (isMoreRequest) {
-					self.requestMoreItems();
-				} else {
-					self.refresh();
-				}
-			}
-		});
-		return;
-	}
 	this.config.get("target").show();
 	this.nextSince = data.nextSince || 0;
 	this.nextPageAfter = data.nextPageAfter;
@@ -636,7 +620,9 @@ stream.methods._recalcEffectsTimeouts = function() {
 		"fade": maxTimeouts.fade,
 		"slide": maxTimeouts.slide
 	};
-	if (maxTimeouts.fade == 0 && maxTimeouts.slide == 0) return;
+	if (!maxTimeouts.fade && !maxTimeouts.slide) {
+		return;
+	}
 	s.timeouts.coeff = s.timeouts.coeff || {
 		"fade": s.timeouts.fade / (maxTimeouts.fade + maxTimeouts.slide),
 		"slide": s.timeouts.slide / (maxTimeouts.fade + maxTimeouts.slide)
@@ -1215,7 +1201,7 @@ stream.init = function() {
 				"initial": true,
 				"data": data
 			};
-			self.render({"element": "body"});
+			self.render();
 		});
 	} else {
 		this.requestInitialItems();
