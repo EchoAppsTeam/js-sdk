@@ -122,7 +122,7 @@ auth.renderers.or = function(element) {
 };
 
 auth.renderers.avatar = function(element) {
-	return element.append(Echo.Utils.loadImage(
+	return element.empty().append(Echo.Utils.loadImage(
 		this.user.get("avatar"),
 		this.user.config.get("defaultAvatar")
 	));

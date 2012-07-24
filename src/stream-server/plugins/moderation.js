@@ -1,5 +1,18 @@
 (function($) {
 
+/**
+ * @class Echo.StreamServer.Controls.Stream.Plugins.Moderation
+ * Adds several moderation controls to change item status. Besides it provides the opportunity to ban specific user or change his privileges.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "Moderation"
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ * @inheritdoc Echo.Plugin
+ */
 var plugin = Echo.Plugin.skeleton("Moderation", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
@@ -11,7 +24,29 @@ var capitalize = function(string) {
 };
 
 plugin.config = {
+/**
+ * @cfg {Array} userActions Defines the list of user specific actions to be added to the Echo Stream Item.
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "Moderation"
+ * 			"userActions": ["ban", "permissions"],
+ * 		}]
+ * 	});
+ */
 	"userActions": ["ban", "permissions"],
+/**
+ * @cfg {Array} itemActions Defines the list of item specific actions to be added to the Echo Stream Item.
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "Moderation"
+ * 			"itemActions": ["approve", "spam", "delete", "untouch"]
+ * 		}]
+ * 	});
+ */
 	"itemActions": ["approve", "spam", "delete"]
 };
 

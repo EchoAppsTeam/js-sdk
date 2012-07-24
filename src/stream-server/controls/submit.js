@@ -170,7 +170,7 @@ submit.templates.main =
 
 submit.renderers.tagsContainer = 
 submit.renderers.markersContainer = function(element) {
-	return (this.user.any("roles", ["administrator", "moderator"])) ? element.show() : element.hide();
+	return (this.user.is("admin")) ? element.show() : element.hide();
 };
 
 submit.renderers.markers = function(element, dom) {
@@ -210,7 +210,7 @@ submit.renderers.text = function(element) {
 
 submit.renderers.avatar = function(element) {
 	var avatar = Echo.Utils.loadImage(this.user.get("avatar"), this.user.config.get("defaultAvatar"));
-	return element.append(avatar);
+	return element.empty().append(avatar);
 };
 
 submit.renderers.name = function(element) {
@@ -241,7 +241,7 @@ submit.renderers.postButton = function(element) {
 			"label": self.labels.get("posting")
 		}
 	};
-	var button = new Echo.Button(element, states.normal);
+	var button = new Echo.Button(element.empty(), states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {

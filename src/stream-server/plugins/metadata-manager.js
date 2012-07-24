@@ -1,9 +1,99 @@
 (function($) {
 
+/**
+ * @class Echo.StreamServer.Controls.Stream.Plugins.MetadataManager
+ * Provides the ability to add buttons to the Echo Stream control items adding/removing markers/tags. By default those buttons will be available for moderators and administrators, though the visibility of tag controls can be configured via special param.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "MetadataManager"
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ * @inheritdoc Echo.Plugin
+ */
 var plugin = Echo.Plugin.skeleton("MetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
-
+/**
+ * @cfg {Array} controls Specifies the list of buttons which should be added to the Echo Stream item.
+ * @cfg {String} controls.marker Specifies the value of marker to be set.
+ * @cfg {String} controls.tag Specifies the value of tag to be set.
+ * @cfg {String} controls.labelMark Specifies the button label to perform the corresponding action.
+ * @cfg {String} controls.labelUnmark Specifies the button label to undo the corresponding action
+ * @cfg {Object|Function} controls.visible Specifies the condition of visibility. Applicable only for tags. Can be either an object or a function.
+ *
+ * Example: simple marker control
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "MetadataManager"
+ *             "controls": [{
+ *                 "marker": "sticky",
+ *                 "labelMark": "Pin",
+ *                 "labelUnmark": "Unpin"
+ *             }]
+ *         }]
+ *     });
+ *
+ * Example: simple tag control
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "MetadataManager"
+ *             "controls": [{
+ *                 "tag": "football",
+ *                 "labelMark": "Set Football tag",
+ *                 "labelUnmark": "Unset Football tag"
+ *             }]
+ *         }]
+ *     });
+ *
+ * Example: tag control with visibility condition defined as an object
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "MetadataManager"
+ *             "controls": [{
+ *                 "tag": "football",
+ *                 "labelMark": "Set Football tag",
+ *                 "labelUnmark": "Unset Football tag",
+ *                 "visible": {
+ *                     "user.markers": ["top_commenter", "top_visitor"],
+ *                     "user.state": ["Untouched", "ModeratorApproved"]
+ *                     "user.roles": ["Moderator"]
+ *                 }
+ *             }]
+ *         }]
+ *     });
+ *
+ * Example: tag control with visibility condition defined as a function 
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "MetadataManager"
+ *             "controls": [{
+ *                 "tag": "football",
+ *                 "labelMark": "Set Football tag",
+ *                 "labelUnmark": "Unset Football tag",
+ *                 "visible": function(application, item) {
+ *                     var user = application.user;
+ *                     if (user.get("state") == "Untouched") return true;
+ *                     return false;
+ *                 }
+ *             }]
+ *         }]
+ *     });
+ */
 plugin.init = function() {
 	var self = this;
 	var item = this.component;
