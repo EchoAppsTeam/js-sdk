@@ -490,8 +490,7 @@ Echo.Control.prototype._init.plugins = function(callback) {
 	this._loadPluginsDependencies(function() {
 		$.map(control.config.get("pluginsOrder"), function(name) {
 			var plugin = Echo.Plugin.getClass(name, control.name);
-			// TODO: check if plugin is enabled in config
-			if (plugin) {
+			if (plugin && control._isPluginEnabled(name)) {
 				control.plugins[name] = new plugin({
 					"component": control
 				});
@@ -499,6 +498,11 @@ Echo.Control.prototype._init.plugins = function(callback) {
 		});		
 		callback && callback.call(this);
 	});
+};
+
+Echo.Control.prototype._isPluginEnabled = function(plugin) {
+	var enabled = this.config.get("plugins." + name + ".enabled", true);
+	return $.isFunction(enabled) ? enabled.call(control) : enabled;
 };
 
 // TODO: define this function later, need to select loader first

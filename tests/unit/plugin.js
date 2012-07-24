@@ -107,6 +107,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 		this.sequentialAsyncTests([
 			"basicOperations",
 			"initializationWithInvalidParams",
+			"enabledConfigParamCheck",
 			"configInterfaceCheck",
 			"pluginRenderingMechanism",
 			"eventsMechanism"
@@ -222,6 +223,56 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	this.sequentialCall([
 		initWithMissingParams,
 		initWithMandatoryParamsDefined,
+		callback
+	]);
+};
+
+suite.prototype.cases.enabledConfigParamCheck = function(callback) {
+	var plugin = {
+		"name": "MyPlugin",
+		"requiredParam1": true,
+		"requiredParam2": true
+	};
+	var checker = function(label, enabled, cb) {
+		return function(_callback) {
+			var plugin = this.getPlugin("MyPlugin");
+			QUnit.ok(!!plugin.enabled() == enabled, label);
+			cb();
+		};
+	};
+	var initWithEnabledAsFunction = function(_callback) {
+		plugin.enabled = function() { return true; };
+		suite.control().initTestControl({
+			"plugins": [plugin],
+			"ready": checker("Checking if the plugin is active if the \"enabled\" field is defined as a function", true, _callback)
+		});
+	};
+	var initWithEnabledAsBooleanTrue = function(_callback) {
+		plugin.enabled = true;
+		suite.control().initTestControl({
+			"plugins": [plugin],
+			"ready": checker("Checking if the plugin is active if the \"enabled\" field is defined as a boolean (true)", true, _callback)
+		});
+	};
+	var initWithEnabledAsBooleanFalse = function(_callback) {
+		plugin.enabled = false;
+		suite.control().initTestControl({
+			"plugins": [plugin],
+			"ready": checker("Checking if the plugin is inactive if the \"enabled\" field is defined as a boolean (false)", false, _callback)
+		});
+	};
+	var initWithoutEnabledParam = function(_callback) {
+		delete plugin.enabled;
+		suite.control().initTestControl({
+			"plugins": [plugin],
+			"ready": checker("Checking if the plugin is active if the \"enabled\" field is omitted", true, _callback)
+		});
+	};
+	this.sequentialCall([
+		initWithEnabledAsFunction,
+		initWithEnabledAsBooleanTrue,
+		initWithEnabledAsBooleanFalse,
+		initWithoutEnabledParam,
 		callback
 	]);
 };
