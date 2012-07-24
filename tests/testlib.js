@@ -76,15 +76,13 @@ Echo.Tests.Common.prototype.run = function() {
 					check(test.instance());
 					QUnit.start();
 				} else {
-					var config = $.extend({}, test.instance);
-					if (!config.target) {
-						config.target = $("#qunit-fixture");
-					}
-					config.ready = function() {
-						check(this);
-					};
-					//TODO: init component ?
-					//new Echo(config);
+					var config = $.extend({
+						"appkey": "test.aboutecho.com",
+						"target": $("#qunit-fixture")
+					}, test.instance.config || {});
+					var component = Echo.Utils.getComponent(test.instance.name);
+					var instance = new component(config);
+					check(instance);
 				}
 			});
 		});
@@ -133,7 +131,7 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 		if (!instance.dom) {
 			instance.render();
 		};
-		$.each(instance.renderers, function(name, renderer) {
+		$.each(instance.extension.renderers, function(name, renderer) {
 			// renderer routes shouldn't be checked here, it's Router thing
 			if (name == "routes") return;
 			self.info.functions.push("renderers." + name);
@@ -143,7 +141,10 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 				return;
 			};
 			var oldElement = element.clone();
-			var renderedElement = instance.render(name, element, instance.dom);
+			var renderedElement = instance.render({
+				"element": name,
+				"dom": instance.dom
+			});
 			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
 			QUnit.ok(renderedElement.jquery == oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
 			QUnit.deepEqual(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element");

@@ -1,6 +1,18 @@
 (function($) {
 
-var suite = Echo.Tests.Unit.Submit = function() {};
+var data = {
+	"instance": {
+		"name": "Echo.StreamServer.Controls.Submit"
+	},
+	"config": {
+		"async": true,
+		"testTimeout": 10000
+	}
+};
+
+var suite = Echo.Tests.Unit.Submit = function() {
+	this.constructRenderersTest(data);
+};
 
 suite.prototype.info = {
         "className" : "Echo.Submit",

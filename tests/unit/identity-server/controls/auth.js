@@ -1,6 +1,18 @@
 (function($) {
 
-var suite = Echo.Tests.Unit.Auth = function() {};
+var data = {
+	"instance": {
+		"name": "Echo.IdentityServer.Controls.Auth"
+	},
+	"config": {
+		"async": true,
+		"testTimeout": 10000
+	}
+};
+
+var suite = Echo.Tests.Unit.Auth = function() {
+	this.constructRenderersTest(data);
+};
 
 suite.prototype.info = {
         "className" : "Echo.Auth",
