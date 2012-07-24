@@ -91,16 +91,24 @@ Echo.Tests.Common.prototype.run = function() {
 	});
 };
 
-Echo.Tests.Common.prototype.sequentialAsyncTests = function(names, namespace) {
+Echo.Tests.Common.prototype.sequentialAsyncTests = function(funcs, namespace) {
+	funcs.push(function() {
+		QUnit.start();
+	});
+	this.sequentialCall(funcs, namespace);
+};
+
+Echo.Tests.Common.prototype.sequentialCall = function(names, namespace) {
 	var self = this;
 	var recursive = function(list) {
-		// stop recursion and resume QUnit
 		if (!list.length) {
-			QUnit.start();
 			return;
 		}
-		var source = namespace ? self[namespace] : self;
-		source[list.shift()].call(self, function() { recursive(list); });
+		var func = list.shift();
+		if (!$.isFunction(func)) {
+			func = (namespace ? self[namespace] : self)[func];
+		}
+		func.call(self, function() { recursive(list); });
 	};
 	recursive(names);
 };

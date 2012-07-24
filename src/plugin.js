@@ -78,7 +78,7 @@ Echo.Plugin.getClass = function(name, component) {
 };
 
 Echo.Plugin.getClassName = function(name, component) {
-	return component + ".Plugins." + name;
+	return name && component ? component + ".Plugins." + name : undefined;
 };
 
 Echo.Plugin.prototype.set = function(key, value) {
@@ -88,7 +88,15 @@ Echo.Plugin.prototype.set = function(key, value) {
 Echo.Plugin.prototype.get = function(key, defaults) {
 	return Echo.Utils.getNestedValue(this, key, defaults);
 };
-		
+
+Echo.Plugin.prototype.remove = function(key) {
+	Echo.Utils.setNestedValue(this, key, undefined);
+};
+
+Echo.Plugin.prototype.get = function(key, defaults) {
+	return Echo.Utils.getNestedValue(this, key, defaults);
+};
+
 Echo.Plugin.prototype.enable = function() {
 	this.config.set("enabled", true);
 };
@@ -130,7 +138,7 @@ Echo.Plugin.prototype.substitute = function(template) {
 			return "{self:plugins." + plugin.name + "." + key + "}";
 		},
 		"plugin.config": function(key) {
-			return "{config:plugins." + plugin.name + "." + key + "}";
+			return plugin.config.get(key, "");
 		}
 	});
 };
@@ -142,8 +150,6 @@ Echo.Plugin.prototype.requestDataRefresh = function() {
 		"context": this.component.config.get("context")
 	});
 };
-
-Echo.Plugin.prototype.destroy = function() {};
 
 // internal functions
 
@@ -192,17 +198,17 @@ Echo.Plugin.Labels.prototype.get = function(label, data) {
 
 Echo.Plugin._defineNestedClass("Config");
 
-Echo.Plugin.Config.prototype.normalize = function(key) {
+Echo.Plugin.Config.prototype._normalize = function(key) {
 	return (["plugins", this.plugin.manifest.name].concat(key ? key : [])).join(".");
 };
 
 Echo.Plugin.Config.prototype.set = function(key, value) {
-	this.plugin.component.config.set(this.normalize(key), value);
+	this.plugin.component.config.set(this._normalize(key), value);
 };
 
 Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
 	var component = this.plugin.component;
-	var value = component.config.get(this.normalize(key), this.plugin.manifest.config[key]);
+	var value = component.config.get(this._normalize(key), this.plugin.manifest.config[key]);
 	return typeof value == "undefined"
 		? askParent
 			? component.config.get(key, defaults)
@@ -211,13 +217,14 @@ Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
 };
 
 Echo.Plugin.Config.prototype.remove = function(key) {
-	this.plugin.component.config.remove(this.normalize(key));
+	this.plugin.component.config.remove(this._normalize(key));
 };
 
 Echo.Plugin.Config.prototype.assemble = function(data) {
 	var config = this.plugin.component.config;
 	var defaults = this.plugin.component.get("defaults.config");
-	data.plugins = config.get("nestedPlugins", []);
+	data = data || {};
+	data.plugins = this.plugin.config.get("nestedPlugins", []);
 	data.parent = config.getAsHash();
 
 	// copy default field values from parent control

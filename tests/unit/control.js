@@ -56,10 +56,10 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"Checking the \"skeleton\" function output");
 
 		// create class out of manifest
-		Echo.Control.create(suite.getControlManifest(skeleton.name));
+		suite.createTestControl(skeleton.name);
 
 		// create test plugin
-		suite.createTestPlugin("MyPlugin", skeleton.name);
+		suite.plugin().createTestPlugin("MyPlugin", skeleton.name);
 
 		this.sequentialAsyncTests([
 			"basicOperations",
@@ -518,6 +518,10 @@ suite.data.config = {
 
 // test helper functions 
 
+suite.plugin = function() {
+	return Echo.Tests.Unit.Plugin;
+};
+
 suite.getTestControlClassName = function() {
 	return "Echo.StreamServer.Controls.MyControl";
 };
@@ -534,80 +538,77 @@ suite.initTestControl = function(config) {
 	}, config));
 };
 
-suite.createTestPlugin = function(pluginName, controlName) {
-	var plugin = Echo.Plugin.skeleton(pluginName, controlName);
-	if (!Echo.Plugin.isDefined(plugin)) {
-		Echo.Plugin.create(plugin);
-	}
+suite.createTestControl = function(name) {
+	Echo.Control.create(suite.getControlManifest(name));
 };
 
 suite.getControlManifest = function(name) {
 
-var manifest = Echo.Control.skeleton(name || suite.getTestControlClassName());
+	var manifest = Echo.Control.skeleton(name || suite.getTestControlClassName());
 
-manifest.config = $.extend(true, {}, suite.data.config);
+	manifest.config = $.extend(true, {}, suite.data.config);
 
-// copy vars from config
-manifest.vars = $.extend(true, {}, manifest.config);
+	// copy vars from config
+	manifest.vars = $.extend(true, {}, manifest.config);
 
-// removing data from vars to avoid intersection
-// because the "data" will be copied over from config
-delete manifest.vars.data;
+	// removing data from vars to avoid intersection
+	// because the "data" will be copied over from config
+	delete manifest.vars.data;
 
-manifest.labels = {
-	"label1": "label1 value",
-	"label2": "label2 value",
-	"label3": "label3 value"
-};
+	manifest.labels = {
+		"label1": "label1 value",
+		"label2": "label2 value",
+		"label3": "label3 value"
+	};
 
-manifest.init = function() {
-        this.render();
-}
+	manifest.init = function() {
+		this.render();
+	}
 
-manifest.templates.main = suite.data.template;
+	manifest.templates.main = suite.data.template;
 
-manifest.templates.custom =
-	'<div class="{class:container}">' +
-		'<div class="{class:testRenderer}"></div>' +
-		'<div class="{class:testRenderer1}"></div>' +
-	'</div>';
+	manifest.templates.custom =
+		'<div class="{class:container}">' +
+			'<div class="{class:testRenderer}"></div>' +
+			'<div class="{class:testRenderer1}"></div>' +
+		'</div>';
 
-manifest.events = {
-	"incoming.event.global": {
-		"context": "global",
-		"handler": function() {
+	manifest.events = {
+		"incoming.event.global": {
+			"context": "global",
+			"handler": function() {
+				this.get("_eventHandler") && this.get("_eventHandler")();
+			}
+		},
+		"incoming.event.local": function() {
 			this.get("_eventHandler") && this.get("_eventHandler")();
 		}
-	},
-	"incoming.event.local": function() {
-		this.get("_eventHandler") && this.get("_eventHandler")();
-	}
-};
+	};
 
-manifest.renderers.testRenderer = function(element, dom) {
-	return element.empty().append('<div>Some vlaue</div>');
-};
+	manifest.renderers.testRenderer = function(element, dom) {
+		return element.empty().append('<div>Some vlaue</div>');
+	};
 
-manifest.renderers.testRendererWithExtra = function(element, dom, extra) {
-	return element.empty().append('<span>' + extra.value + '</span>');
-};
+	manifest.renderers.testRendererWithExtra = function(element, dom, extra) {
+		return element.empty().append('<span>' + extra.value + '</span>');
+	};
 
-manifest.methods.myMethod = function(arg) {
-	return arg;
-};
+	manifest.methods.myMethod = function(arg) {
+		return arg;
+	};
 
-manifest.methods._myPrivateMethod = function(arg) {
-	return arg;
-};
+	manifest.methods._myPrivateMethod = function(arg) {
+		return arg;
+	};
 
-manifest.css =
-	'.{class:header} { margin-bottom: 3px; }' +
-        '.{class:avatar} .{class:image} { float: left; margin-right: -48px; }' +
-        '.{class:avatar} img { width: 48px; height: 48px; }' +
-        '.{class:fields} { width: 100%; float: left; }' +
-        '.{class:fields} input { width: 100%; }';
+	manifest.css =
+		'.{class:header} { margin-bottom: 3px; }' +
+		'.{class:avatar} .{class:image} { float: left; margin-right: -48px; }' +
+		'.{class:avatar} img { width: 48px; height: 48px; }' +
+		'.{class:fields} { width: 100%; float: left; }' +
+		'.{class:fields} input { width: 100%; }';
 
-return manifest;
+	return manifest;
 
 };
 

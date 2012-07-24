@@ -1,0 +1,615 @@
+(function($) {
+
+"use strict";
+
+var suite = Echo.Tests.Unit.Plugin = function() {};
+
+suite.prototype.info = {
+        "className": "Echo.Plugin",
+        "functions": [
+
+		// static interface
+		"skeleton",
+		"create",
+		"isDefined",
+		"getClass",
+		"getClassName",
+
+		// dynamic interface
+		"set",
+		"get",
+		"remove",
+		"substitute",
+		"enable",
+		"disable",
+		"enabled",
+		"extendRenderer",
+		"extendTemplate",
+		"parentRenderer",
+		"requestDataRefresh",
+
+		// internal classes to define public interface
+		"Labels.set",
+		"Labels.get",
+		"Config.set",
+		"Config.get",
+		"Config.remove",
+		"Config.assemble",
+		"Events.publish",
+		"Events.subscribe",
+		"Events.unsubscribe"
+	]
+};
+
+suite.prototype.tests = {};
+
+suite.prototype.tests.PublicInterfaceTests = {
+	"config": {
+		"async": true,
+		"user": {"status": "anonymous"},
+		"testTimeout": 20000 // 20 secs
+	},
+	"check": function() {
+		var self = this;
+		var skeleton = {
+			"name": "MyTestPlugin",
+			"component": suite.control().getTestControlClassName(),
+			"config": {},
+			"labels": {},
+			"events": {},
+			"methods": {},
+			"renderers": {},
+			"templates": {}
+		};
+
+		var _skeleton = Echo.Plugin.skeleton(skeleton.name, skeleton.component);
+		QUnit.ok(!!_skeleton.init,
+			"Checking if we have a default initialization function in the \"skeleton\" function return");
+		delete _skeleton.init;
+		QUnit.deepEqual(skeleton, _skeleton,
+			"Checking the \"skeleton\" function output");
+
+		// create test control
+		suite.control().createTestControl();
+
+		// checking if we have class before it was defined
+		QUnit.ok(!Echo.Plugin.isDefined(skeleton),
+			"Checking if the plugin class was defined (via isDefined static method), before actual plugin definition");
+		QUnit.ok(!Echo.Plugin.getClass(skeleton.name, skeleton.component),
+			"Checking if we have a reference to the plugin class (via getClass static method), before actual plugin definition");
+
+		// create plugin class out of manifest
+		suite.createTestPlugin(skeleton.name, skeleton.component);
+
+		// checking if we have class after class definition
+		QUnit.ok(Echo.Plugin.isDefined(skeleton),
+			"Checking if the plugin class was defined (via isDefined static method), after class definition");
+		QUnit.ok(!!Echo.Plugin.getClass(skeleton.name, skeleton.component),
+			"Checking if we have a reference to the plugin class (via getClass static method), before actual plugin definition");
+
+		// checking plugin class name definition
+		QUnit.equal(
+			Echo.Plugin.getClassName(skeleton.name, skeleton.component),
+			"Echo.StreamServer.Controls.MyControl.Plugins.MyTestPlugin",
+			"Checking if the \"getClassName\" returns full plugin class name");
+		QUnit.equal(
+			Echo.Plugin.getClassName(undefined, skeleton.component),
+			undefined,
+			"Checking if the \"getClassName\" returns undefined if the plugin name is undefined");
+		QUnit.equal(
+			Echo.Plugin.getClassName(skeleton.name, undefined),
+			undefined,
+			"Checking if the \"getClassName\" returns undefined if the component name is undefined");
+
+		// create separate plugin to use later in tests
+		suite.createTestPlugin(suite.getTestPluginName(), skeleton.component);
+
+		this.sequentialAsyncTests([
+			"basicOperations",
+			"initializationWithInvalidParams",
+			"configInterfaceCheck",
+			"pluginRenderingMechanism",
+			"eventsMechanism"
+		], "cases");
+	}
+};
+
+suite.prototype.cases = {};
+
+suite.prototype.cases.basicOperations = function(callback) {
+	var test = this;
+	var check = function() {
+		var control = this;
+		var plugin = control.getPlugin(suite.getTestPluginName());
+
+		// checking basic interface availability
+		QUnit.ok(!!plugin.events,
+			"Checking if we have \"events\" interface available");
+		QUnit.ok(!!plugin.config,
+			"Checking if we have \"config\" interface available");
+		QUnit.ok(!!plugin.labels,
+			"Checking if we have \"labels\" interface available");
+
+		// checking if we have component reference
+		QUnit.ok(plugin.component && plugin.component.name == control.name,
+			"Checking if we have valid \"component\" reference");
+
+		// checking if all functions defined in "methods" namespace are available
+		QUnit.ok(plugin.myMethod(true),
+			"Checking if public methods are available and executable");
+		QUnit.ok(plugin._myPrivateMethod(true),
+			"Checking if private methods are available and executable");
+
+		// checking "get" operation
+		var data = suite.data.config.data;
+		QUnit.equal(plugin.get("non-existing-key"), undefined,
+			"Trying to fetch the value using non-existing key via \"get\" function");
+		QUnit.equal(plugin.get("non-existing-key", "default"), "default",
+			"Trying to fetch the value using non-existing key via \"get\" function and passing default value");
+		QUnit.equal(plugin.get("non-existing-key", false), false,
+			"Trying to fetch the value using non-existing key via \"get\" function and passing 'false' as a default value");
+
+		// checking "set"/"get"/"remove" scenario
+		plugin.set("myField", "myValue");
+		QUnit.equal(plugin.get("myField"), "myValue",
+			"Checking basic value set/get scenario (value of type string)");
+		plugin.set("myField", {"key1": "value1"});
+		QUnit.equal(plugin.get("myField.key1"), "value1",
+			"Checking basic value set/get scenario (value of type object)");
+		plugin.remove("myField", "myValue");
+		QUnit.equal(plugin.get("myField"), undefined,
+			"Checking field remove operation");
+
+		// checking "substitute" method
+		$.each(suite.data.substitutions, function(id, substitution) {
+			QUnit.equal(
+				plugin.substitute(substitution[0], undefined, substitution[2]),
+				substitution[1],
+				"Checking \"substitute\" method, pattern #" + (id + 1));
+		});
+
+		// checking "enable"/"disabled"/"enabled" methods
+		QUnit.ok(plugin.enabled(),
+			"Checking if a plugin is enabled (via \"enabled\" function)");
+		plugin.disable();
+		QUnit.ok(!plugin.enabled(),
+			"Checking if a plugin was disabled after \"disable\" function call");
+		plugin.enable();
+		QUnit.ok(plugin.enabled(),
+			"Checking if a plugin was enabled back after \"enable\" function call");
+
+		callback && callback();
+	};
+	suite.control().initTestControl({
+		"plugins": [{
+			"name": "MyPlugin",
+			"requiredParam1": true,
+			"requiredParam2": true
+		}],
+		"ready": check
+	});
+};
+
+suite.prototype.cases.initializationWithInvalidParams = function(callback) {
+	var initWithMissingParams = function(_callback) {
+		suite.control().initTestControl({
+			"plugins": [{
+				"name": "MyPlugin"
+			}],
+			"ready": function() {
+				var plugin = this.getPlugin("MyPlugin");
+				QUnit.ok(!plugin.enabled(),
+					"Checking if the plugin was disabled if invalid config params were passed and \"init\" function returned \"false\"");
+				_callback();
+			}
+		});
+	};
+	var initWithMandatoryParamsDefined = function(_callback) {
+		suite.control().initTestControl({
+			"plugins": [{
+				"name": "MyPlugin",
+				"requiredParam1": true,
+				"requiredParam2": true
+			}],
+			"ready": function() {
+				var plugin = this.getPlugin("MyPlugin");
+				QUnit.ok(plugin.enabled(),
+					"Checking if the plugin was initialize successfully if valid config params were defined");
+				_callback();
+			}
+		});
+	};
+	this.sequentialCall([
+		initWithMissingParams,
+		initWithMandatoryParamsDefined,
+		callback
+	]);
+};
+
+suite.prototype.cases.configInterfaceCheck = function(callback) {
+	var check = function() {
+		var plugin = this.getPlugin("MyPlugin");
+
+		QUnit.equal(plugin.config.get("nullParam"), "nullParam replacement",
+			"Checking if null parameter was overridden during control init");
+		QUnit.equal(plugin.config.get("undefinedParam"), "undefinedParam replacement",
+			"Checking if null parameter was overridden during control init");
+
+		// checking if the config is available inside the plugin
+		plugin.proxy(function() {
+			QUnit.equal(this.config.get("objectParam.param1"), "param1.override",
+				"Checking if object parameter was overridden (checking new key)");
+			QUnit.equal(this.config.get("objectParam.param2"), undefined,
+				"Checking if object parameter was overridden (checking existing key)");
+			QUnit.equal(this.config.get("myParam"), undefined,
+				"Trying to extract undefined key value");
+
+			this.config.set("myParam", "my value");
+			QUnit.equal(this.config.get("myParam"), "my value",
+				"Extracting value after config value definition");
+
+			this.config.remove("myParam");
+			QUnit.equal(this.config.get("myParam"), undefined,
+				"Checking if the value was wiped out of config");
+
+			var nested = this.config.assemble();
+			QUnit.ok(nested.plugins[0].name == "MyNestedPlugin",
+				"Checking if the \"nestedPlugins\" were copied over to \"plugins\" section in the \"assemble\" function call result");
+			QUnit.ok(!!nested.parent,
+				"Checking if we have parent config in the \"assemble\" function call result");
+			QUnit.ok(!!nested.appkey && !!nested.apiBaseURL && !!nested.submissionProxyURL,
+				"Checking if basic params defined in the \"assemble\" function call result");
+		});
+		callback && callback();
+	};
+	suite.control().initTestControl({
+		"plugins": [{
+			"name": "MyPlugin",
+			"requiredParam1": true,
+			"requiredParam2": true,
+			"objectParam": {"param1": "param1.override"},
+			"myTestParam": "test value",
+			"undefinedParam": "undefinedParam replacement",
+			"nullParam": "nullParam replacement",
+			"nestedPlugins": [{
+				"name": "MyNestedPlugin"
+			}]
+		}],
+		"ready": check
+	});
+};
+
+suite.prototype.cases.pluginRenderingMechanism = function(callback) {
+	var check = function() {
+		var self = this;
+		QUnit.ok(this.config.get("target") instanceof jQuery,
+			"Checking if the target if a jQuery element");
+		QUnit.ok(!!this.config.get("target").children().length,
+			"Checking if target is not empty after rendering");
+
+		// checking if we have expected results in several elements
+		var assertions = [
+			["data", "key1 value"],
+			["configString", "Some plugin test value"],
+			["configInteger", "150"],
+			["configUndefined", ""],
+			["configObject", ""],
+			["configArray", ""],
+			["label", "plugin label1 value"],
+			["labelNonExisting", "nonexistinglabel"]
+		];
+
+		$.map(assertions, function(assertion) {
+			QUnit.equal(
+				self.dom.get("plugin_" + assertion[0]).get(0).innerHTML,
+				assertion[1],
+				"Checking rendering output of the \"" + assertion[0] + "\" element"
+			);
+		});
+
+		QUnit.ok(!!this.dom.get("testRenderer").children().length,
+			"Checking if initially empty element became non-empty after applying renderer")
+
+		// checking extendRenderer & parentRenderer functions
+		QUnit.ok(this.dom.get("plugin_testRenderer").children().length == 10,
+			"Checking multiple extension of the same renderer, checking if \"parentRenderer\" function is called");
+
+		// checking extendTemplate function
+		var actions = ["insertAsLastChild", "insertBefore", "insertAfter", "insertAsFirstChild", "replace"];
+		$.map(actions, function(action) {
+			var element = self.dom.get("ext_" + action);
+			QUnit.ok(element.get(0).innerHTML == action,
+				"Checking \"" + action + "\" extendTemplate method");
+		});
+
+		callback && callback();
+	};
+	suite.control().initTestControl({
+		"data": suite.data.config.data,
+		"plugins": [{
+			"name": "MyPlugin",
+			"requiredParam1": true,
+			"requiredParam2": true,
+			"undefinedParam": "undefinedParam replacement",
+			"nullParam": "nullParam replacement",
+			"nestedPlugins": [{
+				"name": "MyNestedPlugin"
+			}]
+		}],
+		"ready": check
+	});
+};
+
+suite.prototype.cases.eventsMechanism = function(callback) {
+	var count = 0, increment = function() { count++; };
+	var _topic = "myTestTopic";
+	var context = Echo.Utils.getUniqueString();
+	var publish = function(topic) {
+		Echo.Events.publish({
+			"topic": topic || _topic,
+			"context": context
+		});
+	};
+	var subscribe = function(topic) {
+		return Echo.Events.subscribe({
+			"topic": topic || _topic,
+			"context": context,
+			"handler": increment
+		});
+	};
+	subscribe("internal.Echo.Control.onDataInvalidate");
+	subscribe("Echo.StreamServer.Controls.MyControl.Plugins.MyPlugin.outgoing.event");
+	subscribe("internal.Echo.StreamServer.Controls.MyControl.Plugins.MyPlugin.outgoing.event");
+	var check = function() {
+		var plugin = this.getPlugin("MyPlugin");
+
+		// subscribing to incoming events
+		var id = plugin.events.subscribe({
+			"topic": "incoming.event",
+			"handler": increment
+		});
+		publish("incoming.event");
+		publish("incoming.event");
+		publish("incoming.event");
+
+		// publishing outgoing event
+		plugin.events.publish({"topic": "outgoing.event"});
+		plugin.events.publish({"topic": "outgoing.event"});
+		plugin.events.publish({"topic": "outgoing.event", "prefix": "internal"});
+
+		// checking events defined in manifest
+		plugin.set("_eventHandler", increment);
+
+		publish("incoming.event.global");
+		publish("incoming.event.local");
+
+		// check if no events received after unsubscribing
+		plugin.events.unsubscribe({"handlerId": id});
+		publish("incoming.event");
+		publish("incoming.event");
+		publish("incoming.event");
+
+		// check "requestDataRefresh" method,
+		// we expect that the "internal.Echo.Control.onDataInvalidate" is fired
+		plugin.requestDataRefresh();
+
+		QUnit.ok(count == 9,
+			"Checking if expected amount of events were executed and handled");
+
+		var e = plugin.events;
+		QUnit.ok(!!e.subscribe && !!e.publish && !!e.unsubscribe,
+			"Checking control \"events\" interface contract");
+
+		callback && callback();
+	};
+	suite.control().initTestControl({
+		"context": context,
+		"plugins": [{
+			"name": "MyPlugin",
+			"requiredParam1": true,
+			"requiredParam2": true
+		}],
+		"ready": check
+	});
+};
+
+// data required to perform tests
+
+suite.data = {};
+
+suite.data.substitutions = [[
+	"",
+	""
+], [
+	"test string with no substitutions",
+	"test string with no substitutions"
+], [
+	"<div>HTML text with no <b>substitutions</b></div>",
+	"<div>HTML text with no <b>substitutions</b></div>"
+], [
+	".css-classes-with-no-subs { text-align: right; color: red; }",
+	".css-classes-with-no-subs { text-align: right; color: red; }"
+], [
+	"test string with substitutions {plugin.label:label1}",
+	"test string with substitutions plugin label1 value"
+], [
+	"bad pattern should not break the string {plugin.label:} {plugin.config:} {plugin.self:}",
+	"bad pattern should not break the string {plugin.label:} {plugin.config:} {plugin.self:}"
+], [
+	"non existing label extraction {label:nonexisting}, shoud return key",
+	"non existing label extraction nonexisting, shoud return key"
+], [
+	"<div class=\"{plugin.class:test}\">div with css class name defined</div>",
+	"<div class=\"echo-streamserver-controls-mycontrol-plugin-MyPlugin-test\">div with css class name defined</div>"
+], [
+	"<div class=\"{plugin.class:test} {plugin.class:test1} {plugin.class:test2}\">div with multiple css class names defined</div>",
+	"<div class=\"echo-streamserver-controls-mycontrol-plugin-MyPlugin-test echo-streamserver-controls-mycontrol-plugin-MyPlugin-test1 echo-streamserver-controls-mycontrol-plugin-MyPlugin-test2\">div with multiple css class names defined</div>"
+], [
+	"<div class=\"{plugin.class:test}\">Checking transformation of the {plugin.data:} -> {self:} {plugin.data:key3.key3nested}</div>",
+	"<div class=\"echo-streamserver-controls-mycontrol-plugin-MyPlugin-test\">Checking transformation of the {plugin.data:} -> {self:} {self:plugins.MyPlugin.data.key3.key3nested}</div>"
+], [
+	"<div class=\"{plugin.class:test}\">{plugin.label:label1}{plugin.label:label2}{plugin.self:data.key3.key3nested}{plugin.class:example} - mix of multiple patterns</div>",
+	"<div class=\"echo-streamserver-controls-mycontrol-plugin-MyPlugin-test\">plugin label1 valueplugin label2 value{self:plugins.MyPlugin.data.key3.key3nested}echo-streamserver-controls-mycontrol-plugin-MyPlugin-example - mix of multiple patterns</div>"
+]];
+
+suite.data.template =
+	'<div class="{class:plugin_container}">' +
+		'<div class="{class:testRenderer} {plugin.class:testRenderer}"></div>' +
+		'<div class="{class:plugin_testRenderer} {plugin.class:testRenderer}"></div>' +
+		'<div class="{class:plugin_templateExtensionCheck}"></div>' +
+		'<div class="{class:plugin_templateReplaceCheck}"></div>' +
+		// checking {plugin.data:...} substitution
+		'<div class="{class:plugin_data} echo-primaryFont echo-primaryColor">{plugin.data:key1}</div>' +
+		'<div class="{class:plugin_dataNested} echo-primaryColor">{plugin.data:key3.key3nested}</div>' +
+		'<div class="{class:plugin_dataNonExisting}">{plugin.data:nonexistingkey}</div>' +
+		// checking {plugin.label:...} substitution
+		'<div class="{class:plugin_label} echo-primaryFont">{plugin.label:label1}</div>' +
+		'<div class="{class:plugin_labelNonExisting}">{plugin.label:nonexistinglabel}</div>' +
+		// checking {plugin.class:...} substitution
+		'<div class="{class:plugin_class}">{plugin.class:myclass}</div>' +
+		// checking {plugin.config:...} substitution
+		'<div class="{class:plugin_configNonExisting}">{plugin.config:nonexistingkey}</div>' +
+		'<div class="{class:plugin_configString} echo-primaryFont">{plugin.config:stringPluginParam}</div>' +
+		'<div class="{class:plugin_configArray}">{plugin.config:arrayPluginParam}</div>' +
+		'<div class="{class:plugin_configInteger} echo-primaryFont">{plugin.config:integerPluginParam}</div>' +
+		'<div class="{class:plugin_configUndefined}">{plugin.config:undefinedPluginParam}</div>' +
+		'<div class="{class:plugin_configObject} echo-primaryFont">{plugin.config:objectPluginParam}</div>' +
+		'<div class="{class:plugin_configObjectNested} echo-primaryFont">{plugin.config:objectPluginParam.param1}</div>' +
+		// checking {plugin.self:...} substitution
+		'<div class="{class:plugin_selfData} echo-primaryFont">{plugin.self:data}</div>' +
+		'<div class="{class:plugin_selfDataKey} echo-primaryFont">{plugin.self:data.key1}</div>' +
+		'<div class="{class:plugin_selfDataKeyNested}">{plugin.self:data.key3.key3nested}</div>' +
+		'<div class="{class:plugin_selfNonExistingKey}">{plugin.self:nonExistingKey}</div>' +
+		'<div class="{class:plugin_selfFunction}">{plugin.self:render}</div>' +
+	'</div>';
+
+suite.data.config = {
+	"stringPluginParam": "Some plugin test value",
+	"arrayPluginParam": [100, 200, 300, 400, 500],
+	"integerPluginParam": 150,
+	"undefinedPluginParam": undefined,
+	"objectPluginParam": {
+		"param1": "param1.value",
+		"param2": "param2.value",
+		"param3": {
+			"nestedParam": {
+				"nested1": 1,
+				"nested2": 2
+			}
+		}
+	}
+};
+
+// test helper functions 
+
+suite.control = function() {
+        return Echo.Tests.Unit.Control;
+};
+
+suite.getTestPluginName = function(name) {
+	return "MyPlugin";
+};
+
+suite.createTestPlugin = function(name, component) {
+	Echo.Plugin.create(suite.getPluginManifest(name, component));
+};
+
+suite.getPluginManifest = function(name, component) {
+
+	var manifest = Echo.Plugin.skeleton(name, component);
+
+	manifest.config = $.extend(true, {}, suite.data.config);
+
+	manifest.labels = {
+		"label1": "plugin label1 value",
+		"label2": "plugin label2 value",
+		"label3": "plugin label3 value"
+	};
+
+	manifest.init = function() {
+		var plugin = this;
+
+		if (!this.config.get("requiredParam1") || !this.config.get("requiredParam2")) {
+			return false;
+		}
+		this.data = {
+			"key1": "key1 value",
+			"key2": "key2 value",
+			"key3": {
+				"key3nested": "nested value for key 3"
+			}
+		};
+
+		// appending main template
+		this.extendTemplate(manifest.templates.main, "insertAsLastChild", "container");
+
+		// extending template using different constructions
+		var actions = ["insertAsLastChild", "insertBefore", "insertAfter", "insertAsFirstChild"];
+		$.map(actions, function(action) {
+			plugin.extendTemplate(
+				'<div class="{class:ext_' + action + '}">' + action + '</div>',
+				action,
+				"plugin_templateExtensionCheck"
+			);
+		});
+		plugin.extendTemplate(
+			'<div class="{class:ext_replace}">replace</div>',
+			"replace",
+			"plugin_templateReplaceCheck"
+		);
+
+		// multiple extension of the same renderer
+		for (var i = 1; i <= 10; i++) {
+			var renderer = function(id) {
+				return function(element) {
+					element.append('<div class="appended-within-renderer-extension-' + id + '">TEST ' + id + '</div>');
+					this.parentRenderer("plugin_testRenderer", arguments);
+					return element;
+				};
+			};
+			plugin.extendRenderer("plugin_testRenderer", renderer(i));
+		}
+	};
+
+	manifest.templates.main = suite.data.template;
+
+	manifest.events = {
+		"incoming.event.global": {
+			"context": "global",
+			"handler": function() {
+				this.get("_eventHandler") && this.get("_eventHandler")();
+			}
+		},
+		"incoming.event.local": function() {
+			this.get("_eventHandler") && this.get("_eventHandler")();
+		}
+	};
+
+	manifest.renderers.testRendererWithExtra = function(element, dom, extra) {
+		return element.empty().append('<span>' + extra.value + '</span>');
+	};
+
+	manifest.methods.myMethod = function(arg) {
+		return arg;
+	};
+
+	manifest.methods.proxy = function(func) {
+		return func.call(this);
+	};
+
+	manifest.methods._myPrivateMethod = function(arg) {
+		return arg;
+	};
+
+	manifest.css =
+		'.{plugin.class:header} { margin-bottom: 3px; }' +
+		'.{plugin.class:avatar} .{class:image} { float: left; margin-right: -48px; }' +
+		'.{plugin.class:avatar} img { width: 48px; height: 48px; }' +
+		'.{plugin.class:fields} { width: 100%; float: left; }' +
+		'.{plugin.class:fields} input { width: 100%; }';
+
+	return manifest;
+
+};
+
+})(jQuery);
