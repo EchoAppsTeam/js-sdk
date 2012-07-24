@@ -1,11 +1,39 @@
 (function($) {
 
+/**
+ * @class Echo.StreamServer.Controls.Stream.Plugins.ItemAccumulatorDisplay
+ * Shows one of the item accumulators in the top right corner of each item in the Echo Stream control.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "ItemAccumulatorDisplay"
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ * @inheritdoc Echo.Plugin
+ */
 var plugin = Echo.Plugin.skeleton("ItemAccumulatorDisplay", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
+/**
+ * @cfg {Number} countTickTimeout Specifies the timeout in seconds for sequential changes of the item accumulator during the update.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "ItemAccumulatorDisplay"
+ *             "countTickTimeout": 1,
+ *             "accumulator": "likesCount" 
+ *         }]
+ *     });
+ */
 	"countTickTimeout": 1,
+/**
+ * @cfg {String} accumulator Specifies which item accumulator should be displayed. Supported values are "repliesCount" and "likesCount".
+ */
 	"accumulator": "repliesCount"
 };
 
