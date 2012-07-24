@@ -1,5 +1,18 @@
 (function($) {
 
+/**
+ * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
+ * Adds extra button Reply to each root item in the Echo Stream control. Integrates Echo Submit control and provides the ability to submit replies to the posted items.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("echo-stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "Reply"
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ * @inheritdoc Echo.Plugin
+ */
 var plugin = Echo.Plugin.skeleton("Reply", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
@@ -15,6 +28,11 @@ plugin.init = function() {
 	$(document).click(function() {
 		var submit = self.get("submit");
 		if (submit && !submit.dom.get("text").val()) {
+			/**
+			 * @event onCollapse
+			 * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
+			 * is triggered when the reply form is closed 
+			 */
 			 self.events.publish({
 				"topic": "onCollapse"
 			});
@@ -27,6 +45,17 @@ plugin.labels = {
 };
 
 plugin.config = {
+/**
+ * @cfg {String} actionString Is used to define the default call to action phrase.
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "Reply"
+ * 			"actionString": "Type your comment here...",
+ * 		}]
+ * 	});
+ */
 	"actionString": "Write reply here..."
 };
 
@@ -97,6 +126,11 @@ plugin.renderers.Item.container = function(element) {
 plugin.renderers.Item.compactField = function(element) {
 	var plugin = this, item = plugin.component;
 	return element.focus(function() {
+		/**
+		 * @event onExpand
+		 * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
+		 * is triggered when the reply form is opened
+		 */
 		plugin.events.publish({
 			"topic": "onExpand"
 		});
