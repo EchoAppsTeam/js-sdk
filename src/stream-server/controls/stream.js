@@ -122,8 +122,9 @@ stream.renderers.body = function(element) {
 	} else {
 		this.showMessage({
 			"type": "empty",
-			"message": this.labels.get("emptyStream")
-		}, element);
+			"message": this.labels.get("emptyStream"),
+			"target": element
+		});
 	}
 	if (this.lastRequest.initial && this.config.get("streamStateToggleBy") === "mouseover" && this.config.get("liveUpdates")) {
 		element.hover(function() {
@@ -291,7 +292,7 @@ stream.methods.requestInitialItems = function() {
 							"initial": true,
 							"data": data
 						};
-						self.render();
+						self.render({"element": "body"});
 					});
 				} else {
 					self._handleLiveUpdatesResponse(data);
@@ -893,8 +894,9 @@ stream.methods._deleteItemSpotUpdate = function(item, config) {
 		if (!itemsCount) {
 			self.showMessage({
 				"type": "empty",
-				"message": self.labels.get("emptyStream")
-			}, self.dom.get('body'));
+				"message": self.labels.get("emptyStream"),
+				"target": self.dom.get("body")
+			});
 		}
 		self.activities.animations--;
 		self._executeNextActivity();
