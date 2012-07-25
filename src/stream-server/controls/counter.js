@@ -17,6 +17,14 @@ var counter = Echo.Control.manifest("Echo.StreamServer.Controls.Counter");
 
 counter.config = {
 /**
+ * @cfg {String} query Specifies the search query to generate the necessary data set. It must be constructed according to the <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a> method specification.
+ *     new Echo.StreamServer.Controls.Counter({
+ *         "target": document.getElementById("container"),
+ *         "appkey": "test.aboutecho.com",
+ *         "query" : "childrenof:http://example.com/test/*"
+ *     });
+ */
+/**
  * @cfg {Object} data Specifies predefined items count which should be displayed by the application.
  *     new Echo.Counter({
  *         ...

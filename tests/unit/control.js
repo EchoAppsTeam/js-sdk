@@ -40,6 +40,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 		var self = this;
 		var manifest = {
 			"name": suite.getTestControlClassName(),
+			"vars": {},
 			"config": {},
 			"labels": {},
 			"events": {},

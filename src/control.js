@@ -4,11 +4,28 @@ if (Echo.Utils.isComponentDefined("Echo.Control")) return;
 
 /**
  * @class Echo.Control
+ * Foundation class implementing core logic to create controls and manipulate with them.
  */
 Echo.Control = function() {};
 
 // static interface
 
+/**
+ * @static
+ * Function which creates a control object using it manifest declaration.
+ * 
+ * @param {Object} manifest (required) Specifies the control interface in the predefined way.
+ * @param {String} manifest.name (required) Specifies the control name including namespace (ex. "Echo.StreamServer.Controls.Submit")
+ * @param {Object} manifest.vars Specifies internal control variables.
+ * @param {Object} manifest.config Specifies the configuration data with the ability to define default values.
+ * @param {Object} manifest.labels Specifies the list of language labels used in the particular control UI.
+ * @param {Object} manifest.events Specifies the list of external events used by control.
+ * @param {Object} manifest.methods Specifies the list of control methods.
+ * @param {Object} manifest.renderers Specifies the list of control renderers.
+ * @param {Object} manifest.templates Specifies the list of control templates
+ * @param {Function} manifest.init Function called during control initialization.
+ * @return {Object} generated control class
+ */
 Echo.Control.create = function(manifest) {
 	var control = Echo.Utils.getNestedValue(window, manifest.name);
 	// prevent multiple re-definitions
@@ -49,9 +66,16 @@ Echo.Control.create = function(manifest) {
 	return _constructor;
 };
 
+/**
+ * @static
+ * Method returning common manifest structure.
+ * @param {String} name (required) Specifies control name.
+ * @return {Object} Basic control manifest declaration.
+ */
 Echo.Control.manifest = function(name) {
 	return {
 		"name": name,
+		"vars": {},
 		"config": {},
 		"labels": {},
 		"events": {},
@@ -82,18 +106,11 @@ Echo.Control.prototype.defaults.config = {
 /**
  * @cfg {String} target (required) Specifies the DOM element where the control will be displayed.
  */
+	"target": undefined,
 /**
  * @cfg {String} appkey (required) Specifies the customer application key. You can use the "test.echoenabled.com" appkey for testing purposes.
  */
 	"appkey": "",
-/**
- * @cfg {String} query (required) Specifies the search query to generate the necessary data set. It must be constructed according to the <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a> method specification.
- *     new Echo.StreamServer.Controls.Counter({
- *         "target": document.getElementById("container"),
- *         "appkey": "test.aboutecho.com",
- *         "query" : "childrenof:http://example.com/test/*"
- *     });
- */
 	"query": "",
 /**
  * @cfg {String} [apiBaseURL="api.echoenabled.com/v1/"] URL prefix for all API requests
@@ -138,18 +155,56 @@ Echo.Control.prototype.defaults.labels = {
 	"error_unknown": "(unknown) Unknown error."
 };
 
-Echo.Control.prototype.get = function(field, defaults) {
-	return Echo.Utils.getNestedValue(this, field, defaults);
+/**
+ * @method
+ * Accessor method to get specific config field.
+ *
+ * This function returns the corresponding value of the given key or the default value if specified in the second argument.
+ * 
+ * @param {String} key Defines the key for data extraction.
+ * @param {Object} defaults (optional) Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ * @return {Mixed} Returns the corresponding value found in the object.
+ */
+Echo.Control.prototype.get = function(key, defaults) {
+	return Echo.Utils.getNestedValue(this, key, defaults);
 };
 
-Echo.Control.prototype.set = function(field, value) {
-	Echo.Utils.setNestedValue(this, field, value);
+/**
+ * @method
+ * Setter method to define specific object value.
+ *
+ * This function allows to define the value for the corresponding object field.
+ * 
+ * @param {String} key Defines the key where the given data should be stored.
+ * @param {Mixed} value The corresponding value which should be defined for the key.
+ */
+Echo.Control.prototype.set = function(key, value) {
+	Echo.Utils.setNestedValue(this, key, value);
 };
 
-Echo.Control.prototype.remove = function(field) {
-	this.set(field, undefined);
+/**
+ * @method
+ * Method to remove specific object field.
+ *
+ * This function allows to remove the value associated with the given key.
+ * If the key contains a complex structure (such as objects or arrays), it will be removed as well.
+ * 
+ * @param {String} key Defines the key which should be removed from the object.
+ */
+Echo.Control.prototype.remove = function(key) {
+	this.set(key, undefined);
 };
 
+/**
+ * @method
+ * Templater function which compiles given template using the provided data.
+ *
+ * Function can be used widely for html templates processing or any other action requiring string interspersion.
+ * @param {String} template (required) Template containing placeholders used for data interspersion.
+ * @param {Object} [data] Data used in the template compilation.
+ * @param {Object} [instructions]
+ * @return {String} Compiled string value.
+ */
 Echo.Control.prototype.substitute = function(template, data, instructions) {
 	var control = this;
 	data = data || {};
@@ -182,6 +237,10 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 	return template.replace(Echo.Vars.regexps.templateSubstitution, processor);
 };
 
+/**
+ * @method
+ *
+ */
 Echo.Control.prototype.render = function(args) {
 	var self = this;
 	var template;
@@ -236,14 +295,23 @@ Echo.Control.prototype.render = function(args) {
 	return this.dom.content;
 };
 
+/**
+ * @method
+ */
 Echo.Control.prototype.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
 };
 
+/**
+ * @method
+ */
 Echo.Control.prototype.dependent = function() {
 	return !!this.config.get("parent");
 };
 
+/**
+ * @method
+ */
 Echo.Control.prototype.showMessage = function(data) {
 	if (!this.config.get("infoMessages.enabled")) return;
 	// TODO: check if we need a parameter to hide error, but show loading messages
@@ -256,6 +324,9 @@ Echo.Control.prototype.showMessage = function(data) {
 	});
 };
 
+/**
+ * @method
+ */
 Echo.Control.prototype.showError = function(data, options) {
 	var self = this;
 	if (typeof options.retryIn === "undefined") {
@@ -292,6 +363,9 @@ Echo.Control.prototype.showError = function(data, options) {
 	}
 };
 
+/**
+ * @method
+ */
 Echo.Control.prototype.getPlugin = function(name) {
 	return this.plugins[name];
 };
