@@ -221,7 +221,7 @@ Echo.Control.prototype.render = function(args) {
 
 	// render template
 	if (args.template) {
-		template = this._compileTemplate(args.template, args.data);
+		template = this._compileTemplate(args.template, data);
 		var _dom = this._applyRenderers(template);
 		target.empty().append(_dom.content);
 		return _dom.content;
