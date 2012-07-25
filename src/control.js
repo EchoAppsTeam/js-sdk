@@ -202,15 +202,15 @@ Echo.Control.prototype.remove = function(key) {
  * Function can be used widely for html templates processing or any other action requiring string interspersion.
  * @param {String} template (required) Template containing placeholders used for data interspersion.
  * @param {Object} [data] Data used in the template compilation.
- * @param {Object} [instructions]
+ * @param {Object} [instructions] Object containing the list of extra instructions to be applied during template compilation.
  * @return {String} Compiled string value.
  */
 Echo.Control.prototype.substitute = function(template, data, instructions) {
 	var control = this;
 	data = data || {};
 	instructions = $.extend({
-		"class": function(value) {
-			return control.cssPrefix + "-" + value;
+		"class": function(key) {
+			return control.cssPrefix + "-" + key;
 		},
 		"data": function(key) {
 			return Echo.Utils.getNestedValue(data || control.data, key, "");
@@ -230,7 +230,7 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 	}, instructions || {});
 	var processor = function(match, key, value) {
 		if (!instructions[key]) return;
-		var result = instructions[key](value);
+		var result = instructions[key].call(control, value);
 		var allowedTypes = ["number", "string", "boolean"];
 		return ~$.inArray(typeof result, allowedTypes) ? result.toString() : "";
 	};
@@ -297,6 +297,9 @@ Echo.Control.prototype.render = function(args) {
 
 /**
  * @method
+ * Basic method to reinitialize control.
+ * 
+ * Function can be overriden by class descendants implying specific logic.
  */
 Echo.Control.prototype.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
@@ -304,6 +307,8 @@ Echo.Control.prototype.refresh = function() {
 
 /**
  * @method
+ * Checks if control was initialized from another control.
+ * return {Boolean}
  */
 Echo.Control.prototype.dependent = function() {
 	return !!this.config.get("parent");
@@ -311,6 +316,11 @@ Echo.Control.prototype.dependent = function() {
 
 /**
  * @method
+ * Renders info message in the target container.
+ *
+ * @param {Object} data (required) Object containing info message information.
+ * @param {String} [data.layout] Specifies the type of message layout. Can be set to "compact" or "full".
+ * @param {HTMLElement} [data.target] Specifies the target container.
  */
 Echo.Control.prototype.showMessage = function(data) {
 	if (!this.config.get("infoMessages.enabled")) return;
@@ -326,6 +336,10 @@ Echo.Control.prototype.showMessage = function(data) {
 
 /**
  * @method
+ * Renders error message in the target container.
+ *
+ * @param {Object} data (required) Object containing error message information.
+ * @param {Object} options (required) Object containing display options.
  */
 Echo.Control.prototype.showError = function(data, options) {
 	var self = this;
