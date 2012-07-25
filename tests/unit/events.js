@@ -43,7 +43,6 @@ suite.prototype.info = {
 
 suite.prototype.tests = {};
 
-suite.prototype.tests = {};
 suite.prototype.tests.PublicMethods = {
 	"check": function() {
 		order = 0;
