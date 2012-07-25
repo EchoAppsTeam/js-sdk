@@ -210,10 +210,12 @@ submit.renderers.tags = function(element, dom) {
 
 submit.renderers.metaFields = function(element, dom, extra) {
 	var type = extra.type;
+	var data = this.get("data.object." + type) || [];
+	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
 	return dom.get(type).iHint({
 		"text": this.labels.get(type + "Hint"),
 		"className": "echo-secondaryColor"
-	}).blur();
+	}).val(value).blur();
 };
 
 submit.renderers.text = function(element) {
@@ -366,6 +368,46 @@ submit.methods.post = function() {
 	}).send();
 };
 
+/**
+ * @method highlightMandatory
+ * Method highlighting the mandatory input data fields if they are empty
+ */
+submit.methods.highlightMandatory = function(element) {
+	if (element && !$.trim(element.val())) {
+		var css = this.cssPrefix + "-mandatory";
+		element.parent().addClass(css);
+		element.focus(function() {
+			$(this).parent().removeClass(css);
+		});
+		return true;
+	}
+	return false;
+};
+
+/**
+ * @method addPostValidator
+ * Method adds custom validator to check posting possibility
+ */
+submit.methods.addPostValidator = function(validator, priority) {
+	this.validators[priority === "low" ? "push" : "unshift"](validator);
+};
+
+/**
+ * @method refresh
+ * Method implements the refresh logic for the Submit control.
+ */
+submit.methods.refresh = function() {
+	var self = this;
+	this.set("data.object.content", this.dom.get("text").val());
+	$.map(["tags", "markers"], function(field) {
+		var elements = self.dom.get(field).val().split(", ");
+		self.set("data.object." + field, elements || []);
+	});
+	this.render();
+	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Submit");
+	component.parent.refresh.call(this);
+};
+
 submit.methods._getActivity = function(verb, type, data) {
 	return (!data) ? [] : {
 		"actor": {
@@ -414,10 +456,6 @@ submit.methods._showError = function(data) {
 	});
 };
 
-submit.methods.addPostValidator = function(validator, priority) {
-	this.validators[priority === "low" ? "push" : "unshift"](validator);
-};
-
 submit.methods._isPostValid = function() {
 	var self = this, valid = true;
 	$.each(this.validators, function(i, handler) {
@@ -425,22 +463,6 @@ submit.methods._isPostValid = function() {
 		return valid;
 	});
 	return valid;
-};
-
-/**
- * @method highlightMandatory
- * Method highlighting the mandatory input data fields if they are empty
- */
-submit.methods.highlightMandatory = function(element) {
-	if (element && !$.trim(element.val())) {
-		var css = this.cssPrefix + "-mandatory";
-		element.parent().addClass(css);
-		element.focus(function() {
-			$(this).parent().removeClass(css);
-		});
-		return true;
-	}
-	return false;
 };
 
 /**
@@ -454,17 +476,6 @@ submit.methods._prepareEventParams = function(params) {
 	params.target = this.config.get("target").get(0);
 	params.targetURL = this.config.get("targetURL");
 	return params;
-};
-
-/**
- * @method refresh
- * Method implements the refresh logic for the Submit control.
- */
-submit.methods.refresh = function() {
-	this.set("data.object.content", this.dom.get("text").val());
-	this.render();
-	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Submit");
-	component.parent.refresh.call(this);
 };
 
 submit.css =

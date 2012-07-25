@@ -76,7 +76,6 @@ plugin.init = function() {
 	this.extendTemplate("insertAfter", "postContainer", plugin.templates.cancel);
 	this.extendTemplate("replace", "header", plugin.templates.header);
 	this.extendRenderer("author", plugin.renderers.Submit.author);
-	this.extendRenderer("metaFields", plugin.renderers.Submit.metaFields);
 	this.extendRenderer("editedDate", plugin.renderers.Submit.editedDate);
 	this.extendRenderer("cancelButton", plugin.renderers.Submit.cancelButton);
 	this.component.labels.set({
@@ -138,13 +137,6 @@ plugin.templates.cancel =
 	'</div>';
 
 plugin.renderers.Submit ={};
-
-plugin.renderers.Submit.metaFields = function(element, dom, extra) {
-	var data = this.component.get("data.object." + extra.type) || [];
-	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
-	element.val(value);
-	return this.parentRenderer("metaFields", arguments);
-};
 
 plugin.renderers.Submit.author = function(element) {
 	var component = this.component;
