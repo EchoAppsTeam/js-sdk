@@ -309,8 +309,8 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
 	return renderer.next.apply(this, args);
 };
 
-Echo.Control.prototype.extendTemplate = function(html, action, anchor) {
-	this.extension.template.push({"html": html, "action": action, "anchor": anchor});
+Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
+	this.extension.template.push({"action": action, "anchor": anchor, "html": html});
 };
 
 Echo.Control.prototype.extendRenderer = function() {
@@ -558,7 +558,8 @@ Echo.Control.prototype._domTransformer = function(args) {
 		"insertAfter": "after",
 		"insertAsFirstChild": "prepend",
 		"insertAsLastChild": "append",
-		"replace": "replaceWith"
+		"replace": "replaceWith",
+		"remove": "remove"
 	};
 	var action = classify[args.transformation.action];
 	if (!action) {
@@ -566,8 +567,11 @@ Echo.Control.prototype._domTransformer = function(args) {
 	}
 	var html = args.transformation.html;
 	var anchor = "." + this.cssPrefix + "-" + args.transformation.anchor;
-	var content = $.isFunction(html) ? html() : html;
-	$(anchor, args.dom)[action](this.substitute(content, args.data));
+	var content;
+	if (html) {
+		content = this.substitute($.isFunction(html) ? html() : html, args.data)
+	}
+	$(anchor, args.dom)[action](content);
 	return args.dom;
 };
 

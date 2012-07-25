@@ -61,8 +61,7 @@ plugin.init = function() {
 	var actions = this.config.get("itemActions").concat(this.config.get("userActions"));
 	this.extendRenderer("status", plugin.renderers.Item.status);
 	this.extendRenderer("statusIcon", plugin.renderers.Item.statusIcon);
-	this.extendTemplate(plugin.statusItemTemplate,
-		"insertAfter", "avatar");
+	this.extendTemplate("insertAfter", "avatar", plugin.statusItemTemplate);
 	$.each(actions, function(i, action) {
 		var buttons = plugin.actionButtons[action];
 		if (buttons && $.isArray(buttons)) {

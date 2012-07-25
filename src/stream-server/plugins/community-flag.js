@@ -34,7 +34,7 @@ plugin.labels = {
 
 plugin.init = function() {
 	this.extendRenderer("flags", plugin.renderers.Item.users);
-	this.extendTemplate(plugin.template, "insertAsLastChild", "data");
+	this.extendTemplate("insertAsLastChild", "data", plugin.template);
 	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Flag"));
 	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Unflag"));
 };

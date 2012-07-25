@@ -73,8 +73,8 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this;
-	this.extendTemplate(plugin.templates.cancel,"insertAfter", "postContainer");
-	this.extendTemplate(plugin.templates.header, "replace", "header");
+	this.extendTemplate("insertAfter", "postContainer", plugin.templates.cancel);
+	this.extendTemplate("replace", "header", plugin.templates.header);
 	this.extendRenderer("author", plugin.renderers.Submit.author);
 	this.extendRenderer("metaFields", plugin.renderers.Submit.metaFields);
 	this.extendRenderer("editedDate", plugin.renderers.Submit.editedDate);

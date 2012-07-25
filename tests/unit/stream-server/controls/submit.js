@@ -35,7 +35,6 @@ suite.prototype.tests.anonymousWorkflow = {
 			"target": suite.target,
 			"appkey": "test.aboutecho.com",
 		});
-		this.prepareParams(suite.target, suite.submit);
 		this.sequentialAsyncTests([
 			"name",
 			"content",
@@ -47,9 +46,8 @@ suite.prototype.tests.anonymousWorkflow = {
 suite.prototype.cases = {};
 
 suite.prototype.cases.name = function(callback) {
-	var target = suite.target;
-	var button = suite.control.postButton();
-	button.unbind('click', suite.postHandler);
+	var target = suite.target, submit = suite.submit;
+	var button = submit.dom.get("postButton");
 	suite.postHandler = function() {
 		var name = $(".echo-streamserver-controls-submit-nameContainer", target);
 		QUnit.ok(name.hasClass('echo-streamserver-controls-submit-mandatory'),
@@ -60,11 +58,12 @@ suite.prototype.cases.name = function(callback) {
 };
 
 suite.prototype.cases.content = function(callback) {
-	var button = suite.control.postButton();
-	suite.control.name().val("TestName");
+	var target = suite.target, submit = suite.submit;
+	var button = submit.dom.get("postButton");
+	submit.dom.get("name").val("TestName");
 	button.unbind('click', suite.postHandler);
 	suite.postHandler = function() {
-		var content = suite.control.content();
+		var content = submit.dom.get("content");
 		QUnit.ok(content.hasClass('echo-streamserver-controls-submit-mandatory'),
 			"Checking that content is mandatory field for anonymous");
 		callback();
@@ -73,14 +72,14 @@ suite.prototype.cases.content = function(callback) {
 };
 
 suite.prototype.cases.post = function(callback) {
-	var target = suite.target;
-	var button = suite.control.postButton();
-	var name = suite.control.name().val("TestName");
-	var url = suite.control.url().val("TestURL");
-	var text = suite.control.text().val("TestContent");
+	var target = suite.target, submit = suite.submit;
+	var button = submit.dom.get("postButton");
+	var name = submit.dom.get("name").val("TestName");
+	var url = submit.dom.get("url").val("TestURL");
+	var text = submit.dom.get("text").val("TestContent");
 	var handlerId = Echo.Events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Submit.onPostComplete",
-		"context" : suite.submit.config.get("context"),
+		"context" : submit.config.get("context"),
 		"handler" : function(topic, params) {
 			Echo.Events.unsubscribe({
 				"handlerId" : handlerId
@@ -109,31 +108,64 @@ suite.prototype.tests.loggedUserWorkflow = {
 			"appkey": "test.aboutecho.com",
 			"targetURL": "http://example.com/"
 		});
-		this.prepareParams(suite.target, suite.submit);
 		this.sequentialAsyncTests([
-			"username",
-			"onInit",
-			"onComplete"
+			"user",
+			"content",
+			"post"
 		], "cases");
 	}
 };
 
-suite.prototype.cases.username = function(callback) {
-	var target = suite.target;
-	QUnit.equal(suite.control.name().val(), "john.doe", "Checking name of logged user");
+suite.prototype.cases.user = function(callback) {
+	var target = suite.target, submit = suite.submit;
+	QUnit.equal(submit.dom.get("name").val(), "john.doe", "Checking name of logged user");
+	QUnit.equal(submit.dom.get("avatar").html(), "<img src=\"http://c0.echoenabled.com/images/avatar-default.png\">",
+		"Checking avatar of logged user");
 	callback();
 };
 
+suite.prototype.tests.eventSubscriptions = {
+	"config": {
+		"async" : true,
+		"testTimeout" : 20000, // 20 secs
+		"user": {"status": "logged"}
+	},
+	"check": function() {
+		var self = this;
+		suite.target = document.getElementById("qunit-fixture");
+		$(suite.target).empty();
+		var handlerId = Echo.Events.subscribe({
+			"topic": "Echo.StreamServer.Controls.Submit.onRender",
+			"handler": function(topic, params) {
+				Echo.Events.unsubscribe({
+					"handlerId" : handlerId
+				});
+				QUnit.ok($(suite.target).html().match(/echo-streamserver-controls-submit/), 'Checking rendering');
+			}
+		})
+		suite.submit = new Echo.StreamServer.Controls.Submit({
+			"target": suite.target,
+			"appkey": "test.aboutecho.com",
+			"targetURL": "http://example.com/"
+		});
+		this.sequentialAsyncTests([
+			"onInit",
+			"onComplete",
+			"onError"
+		], "cases");
+	}
+};
+
 suite.prototype.cases.onInit = function(callback) {
-	var target = suite.target;
-	var button = suite.control.postButton();
-	var text = suite.control.text().val("UserContent");
-	var handlerId = Echo.Events.subscribe({
+	var target = suite.target, submit = suite.submit;
+	var button = submit.dom.get("postButton");
+	var text = submit.dom.get("text").val("UserContent");
+	var initHandlerId = Echo.Events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Submit.onPostInit",
-		"context" : suite.submit.config.get("context"),
+		"context" : submit.config.get("context"),
 		"handler" : function(topic, params) {
 			Echo.Events.unsubscribe({
-				"handlerId" : handlerId
+				"handlerId" : initHandlerId
 			});
 			var activity = params.postData.content[0];
 			var data = {
@@ -153,19 +185,28 @@ suite.prototype.cases.onInit = function(callback) {
 				}]
 			};
 			QUnit.deepEqual(activity, data, "Checking post data in onPostInit handler");
+		}
+	});
+	var completeHandlerId = Echo.Events.subscribe({
+		"topic"   : "Echo.StreamServer.Controls.Submit.onPostComplete",
+		"context" : submit.config.get("context"),
+		"handler" : function(topic, params) {
+			Echo.Events.unsubscribe({
+				"handlerId" : completeHandlerId
+			});
 			callback();
 		}
 	});
-	suite.submit.post();
+	submit.post();
 };
 
 suite.prototype.cases.onComplete = function(callback) {
-	var target = suite.target;
-	var button = suite.control.postButton();
-	var text = suite.control.text().val("UserContent");
+	var target = suite.target, submit = suite.submit;
+	var button = submit.dom.get("postButton");
+	var text = submit.dom.get("text").val("UserContent");
 	var initHandlerId = Echo.Events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Submit.onPostInit",
-		"context" : suite.submit.config.get("context"),
+		"context" : submit.config.get("context"),
 		"handler" : function(topic, params) {
 			Echo.Events.unsubscribe({
 				"handlerId" : initHandlerId
@@ -175,18 +216,53 @@ suite.prototype.cases.onComplete = function(callback) {
 	});
 	var completeHandlerId = Echo.Events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Submit.onPostComplete",
-		"context" : suite.submit.config.get("context"),
+		"context" : submit.config.get("context"),
 		"handler" : function(topic, params) {
 			Echo.Events.unsubscribe({
 				"handlerId" : completeHandlerId
 			});
 			var activity = params.postData.content[0];
 			QUnit.equal(activity.object.content, "OverridingContent",
-				"Checking overriding post data in OnPostComplete handler")
+				"Checking overriding post data in onPostComplete handler");
 			callback();
 		}
 	});
-	suite.submit.post();
+	submit.post();
+};
+
+suite.prototype.cases.onError = function(callback) {
+	var target = suite.target, submit = suite.submit;
+	var button = submit.dom.get("postButton");
+	var text = submit.dom.get("text").val("UserContent");
+	var initHandlerId = Echo.Events.subscribe({
+		"topic"   : "Echo.StreamServer.Controls.Submit.onPostInit",
+		"context" : submit.config.get("context"),
+		"handler" : function(topic, params) {
+			Echo.Events.unsubscribe({
+				"handlerId" : initHandlerId
+			});
+			// override content with fake value
+			params.postData.content[0].object.content = {};
+		}
+	});
+	// unsubscribe all onPostError handlers to hide fancybox error message
+	Echo.Events.unsubscribe({
+		"topic": "Echo.StreamServer.Controls.Submit.onPostError",
+		"context": submit.config.get("context")
+	});
+	var errorHandlerId = Echo.Events.subscribe({
+		"topic"   : "Echo.StreamServer.Controls.Submit.onPostError",
+		"context" : submit.config.get("context"),
+		"handler" : function(topic, params) {
+			Echo.Events.unsubscribe({
+				"handlerId" : errorHandlerId
+			});
+			QUnit.equal(params.postData.result, "error",
+				"Checking that postData.result is 'error' in onPostError handler");
+			callback();
+		}
+	});
+	submit.post();
 };
 
 suite.prototype.tests.testMethods = {
@@ -199,7 +275,6 @@ suite.prototype.tests.testMethods = {
 			"appkey": "test.aboutecho.com",
 			"targetURL": "http://example.com/"
 		});
-		this.prepareParams(suite.target, suite.submit);
 		var content = suite.submit.dom.get("text");
 		var mandatoryCSS = 'echo-streamserver-controls-submit-mandatory';
 		QUnit.ok(suite.submit.highlightMandatory(content),
@@ -211,31 +286,16 @@ suite.prototype.tests.testMethods = {
 			"Checking that highlightMandatory() removes css class from element parent after focus event");
 		content.val("TestContent");
 		QUnit.ok(!suite.submit.highlightMandatory(content),
-			 "Checking that highlightMandatory() returns false if element is not empty");
+			"Checking that highlightMandatory() returns false if element is not empty");
+		suite.submit.refresh();
+		QUnit.equal(suite.submit.dom.get("text").val(), "TestContent",
+			"Checking that comment field is saved after refresh() method");
 	}
-};
-
-suite.prototype.prepareParams = function(target, submit) {
-	suite.control = {};
-	$.each(["postButton", "name", "url", "text", "content"], function(key, value) {
-			suite.control[value] = function() {
-				return $("." + suite.submit.cssPrefix + "-" + value, suite.target);
-			};
-	});
-	suite.postHandler = function() { };
 };
 
 //TODO: added admin specific test cases when admin role will be supported in testlib.js
-/*suite.prototype.tests.adminWorkflow = {
-	"config": { },
-	"check": function() {
-		suite.target = document.getElementById("qunit-fixture");
-		$(suite.target).empty();
-		suite.submit = new Echo.StreamServer.Controls.Submit({
-			"target": suite.target,
-			"appkey": "test.aboutecho.com",
-		});
-	}
-};*/
+//suite.prototype.tests.adminWorkflow = {
+//
+//};
 
 })(jQuery);

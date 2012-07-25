@@ -113,9 +113,11 @@ Echo.Plugin.prototype.extendRenderer = function(name, renderer) {
 	this.component.extendRenderer.call(this.component, name, $.proxy(renderer, this));
 };
 
-Echo.Plugin.prototype.extendTemplate = function(html, action, anchor) {
-	html = this.substitute($.isFunction(html) ? html() : html);
-	this.component.extendTemplate.call(this.component, html, action, anchor);
+Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
+	if (html) {
+		html = this.substitute($.isFunction(html) ? html() : html);
+	}
+	this.component.extendTemplate.call(this.component, action, anchor, html);
 };
 
 Echo.Plugin.prototype.parentRenderer = function() {
