@@ -256,20 +256,37 @@ Echo.Tests.Stats = {
 		});
 	},
 	"getFunctionNames": function(namespace, prefix) {
+		var stats = Echo.Tests.Stats;
+		var ignoreList = ["Echo.Tests", "Echo.Vars", "Echo.Global"];
 		$.each([namespace, namespace.prototype], function(i, parentObject) {
 			if (!parentObject) return;
 			$.each(parentObject, function(name, value) {
-				//TODO: move an array of not tested namespaces in other place
-				if ($.inArray(prefix + name, ["Echo.Tests", "Echo.Vars", "Echo.Global"]) >= 0) return;
-				if (parentObject.hasOwnProperty(name) && typeof value != "string" && name != "constructor" && name != "parent") {
-					// wrap all functions except constructors and "private" functions (they start with "_" symbol)
-					var isInternal = name.charAt(0) == "_";
-					if (typeof value == "function" && name.charAt(0).toUpperCase() != name.charAt(0) && !isInternal) {
-						Echo.Tests.Stats.wrapFunction(parentObject, value, name, prefix);
-					}
-					if (!isInternal) {
-						Echo.Tests.Stats.getFunctionNames(value, prefix + name + ".");
-					}
+				var isValidForTesting =
+					$.inArray(prefix + name, ignoreList) < 0 &&
+					parentObject.hasOwnProperty(name) &&
+					typeof value != "string" &&
+					typeof value != "undefined" &&
+					name != "constructor" &&
+					name != "parent";
+
+				if (!isValidForTesting) return;
+
+				// check if function is "private" (they start with "_" symbol)
+				var isInternal = name.charAt(0) == "_";
+
+				// wrap all functions except constructors and "private" functions
+				var isFunctionValidForTesting =
+					typeof value == "function" &&
+					name.charAt(0).toUpperCase() != name.charAt(0) &&
+					!isInternal;
+
+				if (isFunctionValidForTesting) {
+					stats.wrapFunction(parentObject, value, name, prefix);
+				}
+
+				// traverse recursively within the valid for testing objects
+				if (!isInternal) {
+					stats.getFunctionNames(value, prefix + name + ".");
 				}
 			});
 		});
