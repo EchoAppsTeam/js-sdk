@@ -4,9 +4,11 @@ var suite = Echo.Tests.Unit.Utils = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.Utils",
-	"functions": ["htmlize", "foldl", "getNestedValue", "setNestedValue", "stripTags", "object2JSON",
+	"functions": [
+		"htmlize", "foldl", "getNestedValue", "setNestedValue", "stripTags", "object2JSON",
 		"parseURL", "mapClass2Object", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate",
-		"getVisibleColor", "toDOM", "isMobileDevice", "getUniqueString", "loadImage"]
+		"getVisibleColor", "toDOM", "isMobileDevice", "getUniqueString", "loadImage",
+		"getComponent", "isComponentDefined", "objectToQuery", "inherit"]
 };
 
 suite.prototype.tests = {};

@@ -277,7 +277,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		this.render({
 			"element": "testRenderer"
 		});
-		QUnit.equal(target.get(0).innerHTML, "<div>Some vlaue</div>",
+		QUnit.equal(target.get(0).innerHTML, "<div>Some value</div>",
 			"Checking if element content was updated as a result of the native renderer application");
 
 		// recursive element rendering
@@ -294,7 +294,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		this.dom.content.append('<div class="extra-div-1">Another DIV appended</div>');
 		this.config.get("target").append('<div class="extra-div-2">DIV appended</div>');
 		this.render();
-		QUnit.equal(this.dom.get("testRenderer").get(0).innerHTML, "<div>Some vlaue</div>",
+		QUnit.equal(this.dom.get("testRenderer").get(0).innerHTML, "<div>Some value</div>",
 			"Checking if component was re-rendered and appended elements were wiped out");
 
 		// checking "showMessage" method
@@ -457,6 +457,7 @@ suite.data.template =
 				'</div>' +
 			'</div>' +
 		'</div>' +
+		'<div class="{class:testPluginRenderer}"></div>' +
 		// checking {data:...} substitution
 		'<div class="{class:data} echo-primaryFont echo-primaryColor">{data:key1}</div>' +
 		'<div class="{class:dataNested} echo-primaryColor">{data:key3.key3nested}</div>' +
@@ -586,8 +587,12 @@ suite.getControlManifest = function(name) {
 		}
 	};
 
-	manifest.renderers.testRenderer = function(element, dom) {
-		return element.empty().append('<div>Some vlaue</div>');
+	manifest.renderers.testRenderer = function(element) {
+		return element.empty().append('<div>Some value</div>');
+	};
+
+	manifest.renderers.testPluginRenderer = function(element) {
+		return element.append('<div>Some value from testPluginRenderer</div>');
 	};
 
 	manifest.renderers.testRendererWithExtra = function(element, dom, extra) {

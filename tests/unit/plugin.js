@@ -23,7 +23,6 @@ suite.prototype.info = {
 		"enable",
 		"disable",
 		"enabled",
-		"extendRenderer",
 		"extendTemplate",
 		"parentRenderer",
 		"requestDataRefresh",
@@ -362,7 +361,7 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 			"Checking if initially empty element became non-empty after applying renderer")
 
 		// checking extendRenderer & parentRenderer functions
-		QUnit.ok(this.dom.get("plugin_testRenderer").children().length == 10,
+		QUnit.ok(this.dom.get("testPluginRenderer").children().length == 2,
 			"Checking multiple extension of the same renderer, checking if \"parentRenderer\" function is called");
 
 		// checking extendTemplate function
@@ -616,18 +615,6 @@ suite.getPluginManifest = function(name, component) {
 			"remove",
 			"plugin_templateRemoveCheck"
 		);
-
-		// multiple extension of the same renderer
-		for (var i = 1; i <= 10; i++) {
-			var renderer = function(id) {
-				return function(element) {
-					element.append('<div class="appended-within-renderer-extension-' + id + '">TEST ' + id + '</div>');
-					this.parentRenderer("plugin_testRenderer", arguments);
-					return element;
-				};
-			};
-			plugin.extendRenderer("plugin_testRenderer", renderer(i));
-		}
 	};
 
 	manifest.templates.main = suite.data.template;
@@ -642,6 +629,11 @@ suite.getPluginManifest = function(name, component) {
 		"incoming.event.local": function() {
 			this.get("_eventHandler") && this.get("_eventHandler")();
 		}
+	};
+
+	manifest.renderers.testPluginRenderer = function(element) {
+		this.parentRenderer("testPluginRenderer", arguments);
+		return element.append('<div>Test value from plugin extension</div>');
 	};
 
 	manifest.renderers.testRendererWithExtra = function(element, dom, extra) {

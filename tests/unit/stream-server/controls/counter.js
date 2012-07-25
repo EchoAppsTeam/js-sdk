@@ -3,8 +3,8 @@
 var suite = Echo.Tests.Unit.Counter = function() {};
 
 suite.prototype.info = {
-        "className" : "Echo.Counter",
-        "functions": []
+        "className" : "Echo.StreamServer.Controls.Counter",
+        "functions": ["refresh"]
 };
 
 suite.prototype.tests = {};

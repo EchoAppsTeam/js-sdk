@@ -15,8 +15,13 @@ var suite = Echo.Tests.Unit.Submit = function() {
 };
 
 suite.prototype.info = {
-        "className" : "Echo.Submit",
-        "functions": []
+	"className" : "Echo.StreamServer.Controls.Submit",
+        "functions": [
+		"post",
+		"refresh",
+		"addPostValidator",
+		"highlightMandatory"
+	]
 };
 
 suite.prototype.tests = {};

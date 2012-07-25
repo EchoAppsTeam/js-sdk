@@ -266,6 +266,7 @@ Echo.Tests.Stats = {
 					parentObject.hasOwnProperty(name) &&
 					typeof value != "string" &&
 					typeof value != "undefined" &&
+					name != "manifest" &&
 					name != "constructor" &&
 					name != "parent";
 
