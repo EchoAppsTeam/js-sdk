@@ -133,6 +133,23 @@ Echo.Tests.Common.prototype.constructUserTest = function(data) {
 	this.tests.TestUserInstance = { "config": { "user": {} }};
 };
 
+Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
+	var self = this;
+	var renderers = plugin.manifest.renderers;
+	if (!plugin.component.dom) {
+		plugin.component.render();
+	}
+	$.each(renderers, function(name, renderer) {
+		self.info.functions.push("manifest.renderers." + name);
+		var element = plugin.component.dom.get(name);
+		var oldElement = element.clone();
+		var renderedElement = renderer.call(plugin, element, plugin.component.dom);
+		QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
+		QUnit.ok(renderedElement.jquery == oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
+		QUnit.equal(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element");
+	});
+};
+
 Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 	var self = this;
 	data.check = function(instance) {
