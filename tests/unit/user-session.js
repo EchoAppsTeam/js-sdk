@@ -60,6 +60,11 @@ suite.prototype.tests.LoggedInUserChecks = {
 		QUnit.ok(!user.has("identity", identity + "/other"),
 			"Checking user.has(\"identity\", \"...\") function if condition is false");
 
+		QUnit.ok(!!user.get("emails").length,
+			"Checking email list extraction");
+		QUnit.equal(user.get("email"), "john.doe@test.com",
+			"Checking primary email extraction from user object");
+
 		this.checkBasicOperations();
 	
 		QUnit.start();
@@ -84,6 +89,11 @@ suite.prototype.tests.AnonymousUserChecks = {
 		var defaultAvatar = "http://example.com/default-avatar.png";
 		QUnit.equal(user.get("avatar", defaultAvatar), defaultAvatar,
 			"Checking get operation with existing attribute and default value via function call delegation (avatar field)");
+
+		QUnit.ok(!user.get("emails"),
+			"Checking email list extraction for anonymous user");
+		QUnit.ok(!user.get("email"),
+			"Checking primary email extraction for anonymous user");
 
 		this.checkBasicOperations();
 

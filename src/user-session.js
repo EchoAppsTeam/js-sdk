@@ -291,6 +291,13 @@ Echo.UserSession._attrLocation = function(key) {
 		: this.identity;
 };
 
+Echo.UserSession._extract = function(field, container, filter) {
+	var user = this;
+	user.identity[field] = user.identity[field] ||
+		Echo.Utils.foldl(undefined, user.identity[container] || [], filter);
+	return user.identity[field];
+};
+
 // functions delegated by the user.is(..) call
 
 Echo.UserSession._isLogged = function() {
@@ -332,17 +339,20 @@ Echo.UserSession._getActiveIdentities = function() {
 };
 
 Echo.UserSession._getAvatar = function() {
-	var user = this;
-	user.identity.avatar = user.identity.avatar ||
-		Echo.Utils.foldl(undefined, user.identity.photos || [], function(img) {
-			if (img.type == "avatar") return img.value;
-		});
-	return user.identity.avatar;
+	return this._extract("avatar", "photos", function(img) {
+		if (img.type == "avatar") return img.value;
+	});
 };
 
 Echo.UserSession._getName = function() {
-	var user = this, identity = user.identity;
+	var identity = this.identity;
 	return identity ? (identity.displayName || identity.username) : undefined;
+};
+
+Echo.UserSession._getEmail = function() {
+	return this._extract("email", "emails", function(email) {
+		if (email.primary == "true") return email.value;
+	});
 };
 
 Echo.UserSession._getSessionID = function() {
