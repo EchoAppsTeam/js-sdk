@@ -38,15 +38,12 @@ plugin.config = {
 };
 
 plugin.init = function() {
-	this.extendRenderer("accumulatorContainer", plugin.renderers.Item.accumulatorContainer);
 	this.extendTemplate("insertBefore", "modeSwitch", plugin.template);
 };
 
-plugin.renderers = {"Item": {}};
-
 plugin.template = '<div class="{class:accumulatorContainer}"></div>';
 
-plugin.renderers.Item.accumulatorContainer = function(element) {
+plugin.renderers.accumulatorContainer = function(element) {
 	var item = this.component;
 	var accName = this.config.get("accumulator");
 	var accumulator = item.get("data.object.accumulators")[accName];

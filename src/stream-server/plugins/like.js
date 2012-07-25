@@ -19,7 +19,6 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this;
-	this.extendRenderer("likes", plugin.renderers.Item.likes);
 	this.extendTemplate("insertAsLastChild", "data", plugin.template);
 	this.component.addButtonSpec("Like", this._assembleButton("Like"));
 	this.component.addButtonSpec("Like", this._assembleButton("Unlike"));
@@ -41,7 +40,7 @@ plugin.labels = {
 	"unlikeProcessing": "Unliking..."
 };
 
-plugin.template = '<div class="{class:likes}"></div>';
+plugin.template = '<div class="{class:likedBy}"></div>';
 
 plugin.methods._sendRequest = function(data, callback) {
 	Echo.StreamServer.API.request({
@@ -103,9 +102,7 @@ plugin.methods._assembleButton = function(name) {
 	};
 };
 
-plugin.renderers = {"Item": {}};
-
-plugin.renderers.Item.likes = function(element) {
+plugin.renderers.likedBy = function(element) {
 	var plugin = this;
 	var item = this.component;
 	if (!item.data.object.likes.length) {
@@ -175,16 +172,12 @@ plugin.labels = {
 };
 
 plugin.init = function() {
-	this.extendRenderer("adminUnlike",
-		plugin.renderers.FacePileItem.adminUnlike);
 	this.extendTemplate("insertAsLastChild", "container", plugin.template);
 };
 
-plugin.renderers = {"FacePileItem": {}};
-
 plugin.template = '<img class="{class:adminUnlike}" src="//cdn.echoenabled.com/images/container/closeWindow.png" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
 
-plugin.renderers.FacePileItem.adminUnlike = function(element) {
+plugin.renderers.adminUnlike = function(element) {
 	var plugin = this;
 	var item = this.component;
 	if (!item.user.is("admin")) {
@@ -206,14 +199,14 @@ plugin.renderers.FacePileItem.adminUnlike = function(element) {
 	});
 };
 
-plugin.css = '.echo-streamserver-controls-stream-item-likes { background: url(//cdn.echoenabled.com/images/likes.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
-	'.echo-streamserver-controls-stream-item-likes .echo-streamserver-controls-stream-item-highlight { line-height: 23px; }' +
+plugin.css = '.echo-streamserver-controls-stream-item-likedBy { background: url(//cdn.echoenabled.com/images/likes.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
+	'.echo-streamserver-controls-stream-item-likedBy .echo-streamserver-controls-stream-item-highlight { line-height: 23px; }' +
 	'.echo-streamserver-controls-stream-item-highlight .{class:container} { display: inline-block; line-height: 16px; background-color: #EEEEEE; padding: 1px 3px; border: 1px solid #D2D2D2; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; margin: 0px 2px; }' +
 	'.echo-streamserver-controls-stream-item-highlight .echo-streamserver-controls-stream-item-delimiter { display: none; }' +
-	'.echo-streamserver-controls-stream-item-likes .{class:adminUnlike} { cursor: pointer; margin-left: 3px; }' +
+	'.echo-streamserver-controls-stream-item-likedBy .{class:adminUnlike} { cursor: pointer; margin-left: 3px; }' +
 	($.browser.msie ?
-		'.echo-streamserver-controls-stream-item-likes .echo-streamserver-controls-stream-item-highlight span { vertical-align: middle; }' +
-		'.echo-streamserver-controls-stream-item-likes { background-position: 0px 2px; }'
+		'.echo-streamserver-controls-stream-item-likedBy .echo-streamserver-controls-stream-item-highlight span { vertical-align: middle; }' +
+		'.echo-streamserver-controls-stream-item-likedBy { background-position: 0px 2px; }'
 		: ''
 	);
 

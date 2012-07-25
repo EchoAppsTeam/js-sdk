@@ -20,10 +20,6 @@ if (Echo.Plugin.isDefined(plugin)) return;
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate("insertAsLastChild", "content", plugin.templates.form);
-	this.extendRenderer("children", plugin.renderers.Item.children);
-	this.extendRenderer("container", plugin.renderers.Item.container);
-	this.extendRenderer("compactForm", plugin.renderers.Item.compactForm);
-	this.extendRenderer("compactField", plugin.renderers.Item.compactField);
 	item.addButtonSpec("Reply", this._assembleButton());
 	$(document).click(function() {
 		var submit = self.get("submit");
@@ -86,9 +82,7 @@ plugin.templates.form =
 		'</div>' +
 	'</div>';
 
-plugin.renderers.Item = {};
-
-plugin.renderers.Item.children = function(element) {
+plugin.renderers.children = function(element) {
 	var plugin = this, item = plugin.component;
 	// perform reply form rerendering *only* when we have exactly 1 item
 	// (the first item is being added or the last one is being deleted)
@@ -102,7 +96,7 @@ plugin.renderers.Item.children = function(element) {
 	return item.parentRenderer("children", arguments);
 };
 
-plugin.renderers.Item.compactForm = function(element) {
+plugin.renderers.compactForm = function(element) {
 	var plugin = this, item = plugin.component;
 	var hasChildren = !!item.children.length;
 	if (!item.get("depth") && hasChildren && !plugin.get("submit") && !item.children[0].get("deleted")) {
@@ -112,7 +106,7 @@ plugin.renderers.Item.compactForm = function(element) {
 	return element.hide();
 };
 
-plugin.renderers.Item.container = function(element) {
+plugin.renderers.container = function(element) {
 	var plugin = this, item = plugin.component;
 	var threading = item.threading;
 	if (plugin.get("submit")) {
@@ -123,7 +117,7 @@ plugin.renderers.Item.container = function(element) {
 	return element;
 };
 
-plugin.renderers.Item.compactField = function(element) {
+plugin.renderers.compactField = function(element) {
 	var plugin = this, item = plugin.component;
 	return element.focus(function() {
 		/**

@@ -33,9 +33,6 @@ plugin.init = function() {
 		this.extendTemplate("replace", "header", plugin.templates.forcedLogin);
 	}
 	this.extendTemplate("insertBefore", "header", plugin.templates.auth);
-	this.extendRenderer("auth", plugin.renderers.Submit.auth);
-	this.extendRenderer("header", plugin.renderers.Submit.header);
-	this.extendRenderer("container", plugin.renderers.Submit.container);
 	this.component.addPostValidator(this._validator());
 };
 
@@ -87,9 +84,7 @@ plugin.templates.forcedLogin =
 		'</span>' +
 	'</div>';
 
-plugin.renderers.Submit = {};
-
-plugin.renderers.Submit.auth = function(element) {
+plugin.renderers.auth = function(element) {
 	var plugin = this;
 	new Echo.IdentityServer.Controls.Auth(plugin.config.assemble({
 		"target": element,
@@ -98,7 +93,7 @@ plugin.renderers.Submit.auth = function(element) {
 	return element;
 };
 
-plugin.renderers.Submit.header = function(element) {
+plugin.renderers.header = function(element) {
 	var plugin = this;
 	if (this._userStatus() == "logged") {
 		return element.empty();
@@ -106,7 +101,7 @@ plugin.renderers.Submit.header = function(element) {
 	return plugin.parentRenderer("header", arguments);
 };
 
-plugin.renderers.Submit.container = function(element) {
+plugin.renderers.container = function(element) {
 	var plugin = this;
 	plugin.parentRenderer("container", arguments);
 	var _class = function(postfix) {

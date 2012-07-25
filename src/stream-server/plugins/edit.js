@@ -75,9 +75,6 @@ plugin.init = function() {
 	var self = this;
 	this.extendTemplate("insertAfter", "postContainer", plugin.templates.cancel);
 	this.extendTemplate("replace", "header", plugin.templates.header);
-	this.extendRenderer("author", plugin.renderers.Submit.author);
-	this.extendRenderer("editedDate", plugin.renderers.Submit.editedDate);
-	this.extendRenderer("cancelButton", plugin.renderers.Submit.cancelButton);
 	this.component.labels.set({
 		"post": this.labels.get("post"),
 		"posting": this.labels.get("posting")
@@ -136,20 +133,18 @@ plugin.templates.cancel =
 		'<a href="javascript:void(0);" class="{class:cancelButton} echo-primaryFont echo-clickable echo-linkColor">{plugin.label:cancel}</a>' +
 	'</div>';
 
-plugin.renderers.Submit ={};
-
-plugin.renderers.Submit.author = function(element) {
+plugin.renderers.author = function(element) {
 	var component = this.component;
 	return element.text(component.get("data.actor.title") || component.labels.get("guest"));
 };
 
-plugin.renderers.Submit.editedDate = function(element) {
+plugin.renderers.editedDate = function(element) {
 	var published = this.component.get("data.object.published");
 	var date = new Date(Echo.Utils.timestampFromW3CDTF(published) * 1000);
 	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
 };
 
-plugin.renderers.Submit.cancelButton = function(element) {
+plugin.renderers.cancelButton = function(element) {
 	var plugin = this;
 	var component = plugin.component;
 	element.click(function() {

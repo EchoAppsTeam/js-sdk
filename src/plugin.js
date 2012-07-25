@@ -26,7 +26,8 @@ Echo.Plugin.create = function(manifest) {
 			"css",
 			"events",
 			"labels",
-			"config"
+			"config",
+			"renderers"
 		]);
 		// define plugin labels
 		if (manifest.labels) {
@@ -109,10 +110,6 @@ Echo.Plugin.prototype.enabled = function(name) {
 	return this.config.get("enabled", true);
 };
 
-Echo.Plugin.prototype.extendRenderer = function(name, renderer) {
-	this.component.extendRenderer.call(this.component, name, $.proxy(renderer, this));
-};
-
 Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 	if (html) {
 		html = this.substitute($.isFunction(html) ? html() : html);
@@ -182,6 +179,13 @@ Echo.Plugin.prototype._init.config = function() {
 
 Echo.Plugin.prototype._init.events = function() {
 	return new Echo.Plugin.Events({"plugin": this});
+};
+
+Echo.Plugin.prototype._init.renderers = function() {
+	var self = this;
+	$.each(this.manifest.renderers || {}, function(name, renderer) {
+		self.component.extendRenderer.call(self.component, name, $.proxy(renderer, self));
+	});
 };
 
 // Plugin Labels class

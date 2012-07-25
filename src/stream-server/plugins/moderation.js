@@ -59,8 +59,6 @@ plugin.init = function() {
 	var self = this;
 	var item = this.component;
 	var actions = this.config.get("itemActions").concat(this.config.get("userActions"));
-	this.extendRenderer("status", plugin.renderers.Item.status);
-	this.extendRenderer("statusIcon", plugin.renderers.Item.statusIcon);
 	this.extendTemplate("insertAfter", "avatar", plugin.statusItemTemplate);
 	$.each(actions, function(i, action) {
 		var buttons = plugin.actionButtons[action];
@@ -147,9 +145,7 @@ plugin.control2status = {
 	"Untouch": "Untouched"
 };
 
-plugin.renderers = {"Item": {}};
-
-plugin.renderers.Item.status = function(element) {
+plugin.renderers.status = function(element) {
 	var item = this.component;
 	if (!item.user.is("admin")) {
 		element.hide();
@@ -162,7 +158,7 @@ plugin.renderers.Item.status = function(element) {
 	return element.addClass(item.cssPrefix + "-status-" + status);
 };
 
-plugin.renderers.Item.statusIcon = function(element) {
+plugin.renderers.statusIcon = function(element) {
 	var item = this.component;
 	if (!item.user.is("admin")) return element;
 	var status = item.data.object.status || "Untouched";

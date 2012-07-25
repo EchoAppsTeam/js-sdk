@@ -34,8 +34,6 @@ if (Echo.Plugin.isDefined(plugin)) return;
 plugin.init = function() {
 	var component = this.component;
 	this.extendTemplate("insertAfter", "content", plugin.templates.counter);
-	this.extendRenderer("text", plugin.renderers.Submit.text);
-	this.extendRenderer("counterLabel", plugin.renderers.Submit.counterLabel);
 };
 
 plugin.labels = {
@@ -51,9 +49,7 @@ plugin.events = {
 
 plugin.templates.counter = '<div class="{class:counterLabel} echo-primaryFont echo-primaryColor"></div>';
 
-plugin.renderers.Submit = {};
-
-plugin.renderers.Submit.text = function(element, dom) {
+plugin.renderers.text = function(element, dom) {
 	var plugin = this;
 	plugin.parentRenderer("text", arguments);
 	var limit = plugin.config.get("limit", 0);
@@ -72,7 +68,7 @@ plugin.renderers.Submit.text = function(element, dom) {
 	return element.bind("blur focus keyup keypress", handler);
 };
 
-plugin.renderers.Submit.counterLabel = function(element, dom) {
+plugin.renderers.counterLabel = function(element, dom) {
 	var plugin = this;
 	var limit = plugin.config.get("limit", 0);
 	var typed = dom.get("text").val().length;
