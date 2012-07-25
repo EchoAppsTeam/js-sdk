@@ -1,2 +1,5 @@
 web/sdk/*
 web/products/*
+
+*.swp
+*.swo
