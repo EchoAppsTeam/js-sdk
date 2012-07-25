@@ -1169,8 +1169,8 @@ stream.methods._normalizeEntry = function(entry) {
 	entry.normalized = true;
 	// detecting actual target
 	$.each(entry.targets || [], function(i, target) {
-		if ((target.id == target.conversationID) ||
-			(target.id == entry.object.id) ||
+		if ((target.id === target.conversationID) ||
+			(target.id === entry.object.id) ||
 			(self.items[target.id + target.conversationID])) {
 				entry.target = target;
 		}
@@ -1554,7 +1554,7 @@ item.renderers.re = function(element) {
 	//XXX use normalized permalink and location instead
 	var permalink = this.data.object.permalink;
 	var limits = this.config.get("limits");
-	var openLinksInNewWindow = this.config.get("openLinksInNewWindow");
+	var openLinksInNewWindow = this.config.get("parent.openLinksInNewWindow");
 
 	var getDomain = function(url) {
 		var parts = Echo.Utils.parseURL(url);
@@ -1633,7 +1633,7 @@ item.renderers.sourceIcon = function(element, dom) {
 	.wrap(Echo.Utils.hyperlink({
 		"href": this.data.source.uri || this.data.object.permalink
 	}, {
-		"openInNewWindow": this.config.get("openLinksInNewWindow")
+		"openInNewWindow": this.config.get("parent.openLinksInNewWindow")
 	}));
 };
 
@@ -1680,7 +1680,7 @@ item.renderers._viaText = function(element, dom, extra) {
 		"href": data.uri || this.data.object.permalink,
 		"caption": data.name
 	}, {
-		"openInNewWindow": this.config.get("openLinksInNewWindow")
+		"openInNewWindow": this.config.get("parent.openLinksInNewWindow")
 	});
 	return element.html("&nbsp;" + this.labels.get(extra.label + "Label") + "&nbsp;").append(a);
 };
@@ -1706,7 +1706,7 @@ item.renderers.body = function(element, dom) {
 	};
 	var text = this.data.object.content;
 	var source = this.data.source.name;
-	var openLinksInNewWindow = this.config.get("openLinksInNewWindow");
+	var openLinksInNewWindow = this.config.get("parent.openLinksInNewWindow");
 	var contentTransformations = this.config.get("contentTransformations." + this.data.object.content_type, {});
 	if (source && source === "Twitter" && this.config.get("aggressiveSanitization")) {
 		output(this.labels.get("sharedThisOn", {"service": source}));
@@ -2132,6 +2132,7 @@ var _smileys = {
 	}
 };
 item.methods._initSmileysConfig = function() {
+	var self = this;
 	if (_smileys.codes.length) {
 		return _smileys;
 	}
