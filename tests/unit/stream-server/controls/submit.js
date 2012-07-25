@@ -38,6 +38,7 @@ suite.prototype.tests.anonymousWorkflow = {
 		this.sequentialAsyncTests([
 			"name",
 			"content",
+			"validator",
 			"post"],
 		"cases");
 	}
@@ -59,6 +60,7 @@ suite.prototype.cases.name = function(callback) {
 
 suite.prototype.cases.content = function(callback) {
 	var target = suite.target, submit = suite.submit;
+	submit.refresh();
 	var button = submit.dom.get("postButton");
 	submit.dom.get("name").val("TestName");
 	button.unbind('click', suite.postHandler);
@@ -71,8 +73,34 @@ suite.prototype.cases.content = function(callback) {
 	button.bind('click', suite.postHandler).click();
 };
 
+
+suite.prototype.cases.validator = function(callback) {
+	var target = suite.target, submit = suite.submit;
+	var validator = function() {
+		var text = submit.dom.get("text");
+		if (text.val() === "Content") {
+			submit.highlightMandatory(text.val(""));
+			return false;
+		}
+		return true;
+	};
+	submit.addPostValidator(validator);
+	submit.refresh();
+	var button = submit.dom.get("postButton");
+	button.unbind('click', suite.postHandler);
+	var content = submit.dom.get("content");
+	var text = submit.dom.get("text").val("Content");
+	suite.postHandler = function() {
+		QUnit.ok(content.hasClass('echo-streamserver-controls-submit-mandatory'),
+			"Checking custom validator");
+		callback();
+	};
+	button.bind('click', suite.postHandler).click();
+};
+
 suite.prototype.cases.post = function(callback) {
 	var target = suite.target, submit = suite.submit;
+	submit.refresh();
 	var button = submit.dom.get("postButton");
 	var name = submit.dom.get("name").val("TestName");
 	var url = submit.dom.get("url").val("TestURL");
@@ -267,17 +295,16 @@ suite.prototype.cases.onError = function(callback) {
 
 suite.prototype.tests.testMethods = {
 	"check": function() {
-		var self = this;
-		suite.target = document.getElementById("qunit-fixture");
-		$(suite.target).empty();
-		suite.submit = new Echo.StreamServer.Controls.Submit({
-			"target": suite.target,
+		target = document.getElementById("qunit-fixture");
+		$(target).empty();
+		var submit = new Echo.StreamServer.Controls.Submit({
+			"target": target,
 			"appkey": "test.aboutecho.com",
 			"targetURL": "http://example.com/"
 		});
-		var content = suite.submit.dom.get("text");
+		var content = submit.dom.get("text");
 		var mandatoryCSS = 'echo-streamserver-controls-submit-mandatory';
-		QUnit.ok(suite.submit.highlightMandatory(content),
+		QUnit.ok(submit.highlightMandatory(content),
 			"Checking that highlightMandatory() returns true if element is empty");
 		QUnit.ok(content.parent().hasClass(mandatoryCSS),
 			"Checking that highlightMandatory() adds css class to element parent");
@@ -285,10 +312,10 @@ suite.prototype.tests.testMethods = {
 		QUnit.ok(!content.parent().hasClass(mandatoryCSS),
 			"Checking that highlightMandatory() removes css class from element parent after focus event");
 		content.val("TestContent");
-		QUnit.ok(!suite.submit.highlightMandatory(content),
+		QUnit.ok(!submit.highlightMandatory(content),
 			"Checking that highlightMandatory() returns false if element is not empty");
-		suite.submit.refresh();
-		QUnit.equal(suite.submit.dom.get("text").val(), "TestContent",
+		submit.refresh();
+		QUnit.equal(submit.dom.get("text").val(), "TestContent",
 			"Checking that comment field is saved after refresh() method");
 	}
 };
