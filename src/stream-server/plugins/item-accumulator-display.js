@@ -39,7 +39,7 @@ plugin.config = {
 
 plugin.init = function() {
 	this.extendRenderer("accumulatorContainer", plugin.renderers.Item.accumulatorContainer);
-	this.extendTemplate(plugin.template, "insertBefore", "modeSwitch");
+	this.extendTemplate("insertBefore", "modeSwitch", plugin.template);
 };
 
 plugin.renderers = {"Item": {}};

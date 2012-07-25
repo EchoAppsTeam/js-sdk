@@ -20,8 +20,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 plugin.init = function() {
 	var self = this;
 	this.extendRenderer("likes", plugin.renderers.Item.likes);
-	this.extendTemplate(plugin.templates.likeList,
-		"insertAsLastChild", "data");
+	this.extendTemplate("insertAsLastChild", "data", plugin.template);
 	this.component.addButtonSpec("Like", this._assembleButton("Like"));
 	this.component.addButtonSpec("Like", this._assembleButton("Unlike"));
 	this.events.subscribe({
@@ -42,7 +41,7 @@ plugin.labels = {
 	"unlikeProcessing": "Unliking..."
 };
 
-plugin.templates.likeList = '<div class="{class:likes}"></div>';
+plugin.template = '<div class="{class:likes}"></div>';
 
 plugin.methods._sendRequest = function(data, callback) {
 	Echo.StreamServer.API.request({
@@ -178,8 +177,7 @@ plugin.labels = {
 plugin.init = function() {
 	this.extendRenderer("adminUnlike",
 		plugin.renderers.FacePileItem.adminUnlike);
-	this.extendTemplate(plugin.template,
-		"insertAsLastChild", "container");
+	this.extendTemplate("insertAsLastChild", "container", plugin.template);
 };
 
 plugin.renderers = {"FacePileItem": {}};

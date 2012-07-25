@@ -33,7 +33,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var component = this.component;
-	this.extendTemplate(plugin.templates.counter, "insertAfter", "content");
+	this.extendTemplate("insertAfter", "content", plugin.templates.counter);
 	this.extendRenderer("text", plugin.renderers.Submit.text);
 	this.extendRenderer("counterLabel", plugin.renderers.Submit.counterLabel);
 };

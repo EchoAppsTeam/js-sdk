@@ -30,9 +30,9 @@ plugin.init = function() {
 		!this.config.get("identityManager.signup")) return false;
 
 	if (this._userStatus() == "forcedLogin") {
-		this.extendTemplate(plugin.templates.forcedLogin, "replace", "header");
+		this.extendTemplate("replace", "header", plugin.templates.forcedLogin);
 	}
-	this.extendTemplate(plugin.templates.auth, "insertBefore", "header");
+	this.extendTemplate("insertBefore", "header", plugin.templates.auth);
 	this.extendRenderer("auth", plugin.renderers.Submit.auth);
 	this.extendRenderer("header", plugin.renderers.Submit.header);
 	this.extendRenderer("container", plugin.renderers.Submit.container);

@@ -19,7 +19,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this, item = this.component;
-	this.extendTemplate(plugin.templates.form, "insertAsLastChild", "content");
+	this.extendTemplate("insertAsLastChild", "content", plugin.templates.form);
 	this.extendRenderer("children", plugin.renderers.Item.children);
 	this.extendRenderer("container", plugin.renderers.Item.container);
 	this.extendRenderer("compactForm", plugin.renderers.Item.compactForm);

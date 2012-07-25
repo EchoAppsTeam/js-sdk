@@ -373,6 +373,9 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 				"Checking \"" + action + "\" extendTemplate method");
 		});
 
+		QUnit.ok(!self.dom.get("plugin_templateRemoveCheck"),
+			"Checking \"remove\" extendTemplate method")
+
 		callback && callback();
 	};
 	suite.control().initTestControl({
@@ -509,6 +512,7 @@ suite.data.template =
 		'<div class="{class:plugin_testRenderer} {plugin.class:testRenderer}"></div>' +
 		'<div class="{class:plugin_templateExtensionCheck}"></div>' +
 		'<div class="{class:plugin_templateReplaceCheck}"></div>' +
+		'<div class="{class:plugin_templateRemoveCheck}"></div>' +
 		// checking {plugin.data:...} substitution
 		'<div class="{class:plugin_data} echo-primaryFont echo-primaryColor">{plugin.data:key1}</div>' +
 		'<div class="{class:plugin_dataNested} echo-primaryColor">{plugin.data:key3.key3nested}</div>' +
@@ -592,21 +596,25 @@ suite.getPluginManifest = function(name, component) {
 		};
 
 		// appending main template
-		this.extendTemplate(manifest.templates.main, "insertAsLastChild", "container");
+		this.extendTemplate("insertAsLastChild", "container", manifest.templates.main);
 
 		// extending template using different constructions
 		var actions = ["insertAsLastChild", "insertBefore", "insertAfter", "insertAsFirstChild"];
 		$.map(actions, function(action) {
 			plugin.extendTemplate(
-				'<div class="{class:ext_' + action + '}">' + action + '</div>',
 				action,
-				"plugin_templateExtensionCheck"
+				"plugin_templateExtensionCheck",
+				'<div class="{class:ext_' + action + '}">' + action + '</div>'
 			);
 		});
 		plugin.extendTemplate(
-			'<div class="{class:ext_replace}">replace</div>',
 			"replace",
-			"plugin_templateReplaceCheck"
+			"plugin_templateReplaceCheck",
+			'<div class="{class:ext_replace}">replace</div>'
+		);
+		plugin.extendTemplate(
+			"remove",
+			"plugin_templateRemoveCheck"
 		);
 
 		// multiple extension of the same renderer
