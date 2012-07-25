@@ -15,6 +15,23 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit")) return;
  */
 var submit = Echo.Control.skeleton("Echo.StreamServer.Controls.Submit");
 
+submit.vars = {
+	"validators": []
+};
+
+submit.init = function() {
+	var self = this;
+	this.addPostValidator(function() {
+		var valid = true;
+		$.each(["name", "text"], function (i, field) {
+			valid = !self.highlightMandatory(self.dom.get(field));
+			return valid;
+		});
+		return valid;
+	}, "low");
+	this.render();
+};
+
 submit.config = {
 /**
  * @cfg {String} [targetURL=document.location.href] Specifies the URI to which the submitted Echo item is related. This parameter will be used as a activity target value for the item.
@@ -265,24 +282,16 @@ submit.renderers.postButton = function(element) {
 	subscribe("Init", states.posting);
 	subscribe("Complete", states.normal, function() {
 		self.dom.get("text").val("").trigger("blur");
-		self.render({
-			"element": "tags"
-		});
-		self.render({
-			"element": "markers"
-		});
+		self.render({ "element": "tags" });
+		self.render({ "element": "markers" });
 	});
 	subscribe("Error", states.normal, function(params) {
 		self._showError(params.postData);
 	});
 	this.posting.action = this.posting.action || function() {
-		var highlighted = false;
-		$.each(["name", "text"], function (i, v) {
-			highlighted = self.highlightMandatory(self.dom.get(v));
-			return !highlighted;
-		});
-		if (highlighted) return;
-		self.post();
+		if (self._isPostValid()) {
+			self.post();
+		}
 	};
 	element.unbind("click", this.posting.action).bind("click", this.posting.action);
 	return element;
@@ -403,6 +412,19 @@ submit.methods._showError = function(data) {
 			}
 		}
 	});
+};
+
+submit.methods.addPostValidator = function(validator, priority) {
+	this.validators[priority === "low" ? "push" : "unshift"](validator);
+};
+
+submit.methods._isPostValid = function() {
+	var self = this, valid = true;
+	$.each(this.validators, function(i, handler) {
+		valid = handler();
+		return valid;
+	});
+	return valid;
 };
 
 /**

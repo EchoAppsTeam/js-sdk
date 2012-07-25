@@ -36,7 +36,7 @@ plugin.init = function() {
 	this.extendRenderer("auth", plugin.renderers.Submit.auth);
 	this.extendRenderer("header", plugin.renderers.Submit.header);
 	this.extendRenderer("container", plugin.renderers.Submit.container);
-	this.extendRenderer("postButton", plugin.renderers.Submit.postButton);
+	this.component.addPostValidator(this._validator());
 };
 
 plugin.config = {
@@ -117,26 +117,15 @@ plugin.renderers.Submit.container = function(element) {
 		.addClass(_class(plugin._userStatus()));
 };
 
-plugin.renderers.Submit.postButton = function(element) {
+plugin.methods._validator = function() {
 	var plugin = this, submit = this.component;
-	var handler = plugin.get("postButtonHandler");
-	if (!handler) {
-		handler = function(event) {
-			if (submit.user.is("logged")) {
-				event.stopImmediatePropagation();
-				if (!submit.highlightMandatory(submit.dom.get("text"))) {
-					submit.post();
-				}
-			} else if (plugin._permissions() == "forceLogin") {
-				event.stopImmediatePropagation();
-				submit.dom.get("forcedLoginMessage")
-					.addClass(plugin.cssPrefix + "-error");
-			}
-		};
-		plugin.set("postButtonHandler", handler);
+	return function() {
+		if (!submit.user.is("logged") && plugin._permissions() == "forceLogin") {
+			submit.dom.get("forcedLoginMessage").addClass(plugin.cssPrefix + "-error");
+			return false;
+		}
+		return true;
 	}
-	element.unbind("click", handler).bind("click", handler);
-	return this.parentRenderer("postButton", arguments);
 };
 
 plugin.methods._permissions = function() {
