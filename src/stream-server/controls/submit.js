@@ -257,7 +257,7 @@ submit.renderers.postButton = function(element) {
 			"topic": topic,
 			"handler": function(topic, params) {
 				button.set(state);
-				if (callback) callback();
+				if (callback) callback(params);
 			}
 		});
 	};
@@ -272,8 +272,9 @@ submit.renderers.postButton = function(element) {
 			"element": "markers"
 		});
 	});
-	subscribe("Error", states.normal);
-	
+	subscribe("Error", states.normal, function(params) {
+		self._showError(params.postData);
+	});
 	this.posting.action = this.posting.action || function() {
 		var highlighted = false;
 		$.each(["name", "text"], function (i, v) {
@@ -312,8 +313,6 @@ submit.methods.post = function() {
 	if (this.config.get("targetQuery")) {
 		entry["target-query"] = this.config.get("targetQuery");
 	}
-	var timer;
-	var hasPreviousTimeout = false;
 	var callbacks = {
 		"onData": function(data) {
 			/**
@@ -334,35 +333,6 @@ submit.methods.post = function() {
 			});
 		},
 		"onError": function(data) {
-			data = data || {};
-			if (timer) clearTimeout(timer);
-			// we have previous timeout on the client side so we just ignore errors from server side
-			if (hasPreviousTimeout) return;
-			var isNetworkTimeout = hasPreviousTimeout = ($.inArray(data.errorCode, ["network_timeout", "connection_failure"]) >= 0);
-			var message = isNetworkTimeout
-				? self.labels.get("postingTimeout")
-				: self.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
-			$.fancybox({
-				"content": '<div class="' + self.cssPrefix + '-error">' + message + '</div>',
-				"height": 70,
-				"width": isNetworkTimeout ? 320 : 390,
-				"padding": 15,
-				"orig": self.dom.get("text"),
-				"autoDimensions": false,
-				"transitionIn": "elastic",
-				"transitionOut": "elastic",
-				"onComplete": function() {
-					// set fixed dimensions of the fancybox-wrap (for IE in quirks mode it should be bigger)
-					if ($.browser.msie && document.compatMode != "CSS1Compat") {
-						var options = arguments[2];
-						var delta = 2 * options.padding + 40;
-						$("#fancybox-wrap").css({
-							"width": options.width + delta,
-							"height": options.height + delta
-						});
-					}
-				}
-			});
 			/**
 			 * @event onPostError
 			 * Echo.StreamServer.Controls.Submit.onPostError
@@ -404,6 +374,35 @@ submit.methods._getActivity = function(verb, type, data) {
 			"id": this.config.get("targetURL")
 		}]
 	};
+};
+
+submit.methods._showError = function(data) {
+	data = data || {};
+	var isNetworkTimeout = ($.inArray(data.errorCode, ["network_timeout", "connection_failure"]) >= 0);
+	var message = isNetworkTimeout
+		? this.labels.get("postingTimeout")
+		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
+	$.fancybox({
+		"content": '<div class="' + this.cssPrefix + '-error">' + message + '</div>',
+		"height": 70,
+		"width": isNetworkTimeout ? 320 : 390,
+		"padding": 15,
+		"orig": this.dom.get("text"),
+		"autoDimensions": false,
+		"transitionIn": "elastic",
+		"transitionOut": "elastic",
+		"onComplete": function() {
+			// set fixed dimensions of the fancybox-wrap (for IE in quirks mode it should be bigger)
+			if ($.browser.msie && document.compatMode != "CSS1Compat") {
+				var options = arguments[2];
+				var delta = 2 * options.padding + 40;
+				$("#fancybox-wrap").css({
+					"width": options.width + delta,
+					"height": options.height + delta
+				});
+			}
+		}
+	});
 };
 
 /**
