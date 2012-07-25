@@ -2,7 +2,7 @@
 
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream")) return;
 
-var stream = Echo.Control.skeleton("Echo.StreamServer.Controls.Stream");
+var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 
 stream.config = {
 	"children": {
@@ -1235,7 +1235,7 @@ stream.css =
 
 Echo.Control.create(stream);
 
-var item = Echo.Control.skeleton("Echo.StreamServer.Controls.Stream.Item");
+var item = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item");
 
 item.config = {
 	"aggressiveSanitization": false,

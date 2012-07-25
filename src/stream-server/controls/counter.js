@@ -13,7 +13,7 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
  * Counter constructor initializing Echo.StreamServer.Controls.Counter class
  * @param {Object} config Configuration options
  */
-var counter = Echo.Control.skeleton("Echo.StreamServer.Controls.Counter");
+var counter = Echo.Control.manifest("Echo.StreamServer.Controls.Counter");
 
 counter.config = {
 /**

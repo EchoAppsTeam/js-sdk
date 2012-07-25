@@ -49,7 +49,7 @@ Echo.Control.create = function(manifest) {
 	return _constructor;
 };
 
-Echo.Control.skeleton = function(name) {
+Echo.Control.manifest = function(name) {
 	return {
 		"name": name,
 		"config": {},

@@ -7,7 +7,7 @@ var suite = Echo.Tests.Unit.Control = function() {};
 suite.prototype.info = {
         "className": "Echo.Control",
         "functions": [
-		"skeleton",
+		"manifest",
 		"create",
 		"get",
 		"set",
@@ -38,7 +38,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 	},
 	"check": function() {
 		var self = this;
-		var skeleton = {
+		var manifest = {
 			"name": suite.getTestControlClassName(),
 			"config": {},
 			"labels": {},
@@ -48,18 +48,18 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"templates": {}
 		};
 
-		var _skeleton = Echo.Control.skeleton(skeleton.name);
-		QUnit.ok(!!_skeleton.init,
-			"Checking if we have a default initialization function in the \"skeleton\" function return");
-		delete _skeleton.init;
-		QUnit.deepEqual(skeleton, _skeleton,
-			"Checking the \"skeleton\" function output");
+		var _manifest = Echo.Control.manifest(manifest.name);
+		QUnit.ok(!!_manifest.init,
+			"Checking if we have a default initialization function in the \"manifest\" function return");
+		delete _manifest.init;
+		QUnit.deepEqual(manifest, _manifest,
+			"Checking the \"manifest\" function output");
 
 		// create class out of manifest
-		suite.createTestControl(skeleton.name);
+		suite.createTestControl(manifest.name);
 
 		// create test plugin
-		suite.plugin().createTestPlugin("MyPlugin", skeleton.name);
+		suite.plugin().createTestPlugin("MyPlugin", manifest.name);
 
 		this.sequentialAsyncTests([
 			"basicOperations",
@@ -544,7 +544,7 @@ suite.createTestControl = function(name) {
 
 suite.getControlManifest = function(name) {
 
-	var manifest = Echo.Control.skeleton(name || suite.getTestControlClassName());
+	var manifest = Echo.Control.manifest(name || suite.getTestControlClassName());
 
 	manifest.config = $.extend(true, {}, suite.data.config);
 

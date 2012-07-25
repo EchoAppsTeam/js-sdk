@@ -12,7 +12,7 @@ if (Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth")) return;
  * Auth constructor initializing Echo.IdentityServer.Controls.Auth class
  * @param {Object} config Configuration options
  */
-var auth = Echo.Control.skeleton("Echo.IdentityServer.Controls.Auth");
+var auth = Echo.Control.manifest("Echo.IdentityServer.Controls.Auth");
 
 auth.config = {
 /**

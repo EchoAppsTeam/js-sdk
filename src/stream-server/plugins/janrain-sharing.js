@@ -27,7 +27,7 @@
  * @extends Echo.Plugin
  * @inheritdoc Echo.Plugin
  */
-var plugin = Echo.Plugin.skeleton("JanrainSharing", "Echo.StreamServer.Controls.Submit");
+var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 

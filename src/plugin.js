@@ -55,7 +55,7 @@ Echo.Plugin.create = function(manifest) {
 	return _constructor;
 };
 
-Echo.Plugin.skeleton = function(name, component) {
+Echo.Plugin.manifest = function(name, component) {
 	return {
 		"name": name,
 		"component": component,

@@ -13,7 +13,7 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile")) return
  * FacePile constructor initializing Echo.StreamServer.Controls.FacePile class
  * @param {Object} config Configuration options
  */
-var pile = Echo.Control.skeleton("Echo.StreamServer.Controls.FacePile");
+var pile = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile");
 
 pile.vars = {
 	"users": [],
@@ -368,7 +368,7 @@ Echo.Control.create(pile);
 
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile.Item")) return;
 
-var item = Echo.Control.skeleton("Echo.StreamServer.Controls.FacePile.Item");
+var item = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile.Item");
 
 item.labels = {
 	"you": "You"

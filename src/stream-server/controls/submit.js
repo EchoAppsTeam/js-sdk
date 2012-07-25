@@ -13,7 +13,7 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit")) return;
  * Counter constructor initializing Echo.StreamServer.Controls.Submit class
  * @param {Object} config Configuration options
  */
-var submit = Echo.Control.skeleton("Echo.StreamServer.Controls.Submit");
+var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
 
 submit.vars = {
 	"validators": []

@@ -9,7 +9,7 @@ suite.prototype.info = {
         "functions": [
 
 		// static interface
-		"skeleton",
+		"manifest",
 		"create",
 		"isDefined",
 		"getClass",
@@ -51,7 +51,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 	},
 	"check": function() {
 		var self = this;
-		var skeleton = {
+		var manifest = {
 			"name": "MyTestPlugin",
 			"component": suite.control().getTestControlClassName(),
 			"config": {},
@@ -62,47 +62,47 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"templates": {}
 		};
 
-		var _skeleton = Echo.Plugin.skeleton(skeleton.name, skeleton.component);
-		QUnit.ok(!!_skeleton.init,
-			"Checking if we have a default initialization function in the \"skeleton\" function return");
-		delete _skeleton.init;
-		QUnit.deepEqual(skeleton, _skeleton,
-			"Checking the \"skeleton\" function output");
+		var _manifest = Echo.Plugin.manifest(manifest.name, manifest.component);
+		QUnit.ok(!!_manifest.init,
+			"Checking if we have a default initialization function in the \"manifest\" function return");
+		delete _manifest.init;
+		QUnit.deepEqual(manifest, _manifest,
+			"Checking the \"manifest\" function output");
 
 		// create test control
 		suite.control().createTestControl();
 
 		// checking if we have class before it was defined
-		QUnit.ok(!Echo.Plugin.isDefined(skeleton),
+		QUnit.ok(!Echo.Plugin.isDefined(manifest),
 			"Checking if the plugin class was defined (via isDefined static method), before actual plugin definition");
-		QUnit.ok(!Echo.Plugin.getClass(skeleton.name, skeleton.component),
+		QUnit.ok(!Echo.Plugin.getClass(manifest.name, manifest.component),
 			"Checking if we have a reference to the plugin class (via getClass static method), before actual plugin definition");
 
 		// create plugin class out of manifest
-		suite.createTestPlugin(skeleton.name, skeleton.component);
+		suite.createTestPlugin(manifest.name, manifest.component);
 
 		// checking if we have class after class definition
-		QUnit.ok(Echo.Plugin.isDefined(skeleton),
+		QUnit.ok(Echo.Plugin.isDefined(manifest),
 			"Checking if the plugin class was defined (via isDefined static method), after class definition");
-		QUnit.ok(!!Echo.Plugin.getClass(skeleton.name, skeleton.component),
+		QUnit.ok(!!Echo.Plugin.getClass(manifest.name, manifest.component),
 			"Checking if we have a reference to the plugin class (via getClass static method), before actual plugin definition");
 
 		// checking plugin class name definition
 		QUnit.equal(
-			Echo.Plugin.getClassName(skeleton.name, skeleton.component),
+			Echo.Plugin.getClassName(manifest.name, manifest.component),
 			"Echo.StreamServer.Controls.MyControl.Plugins.MyTestPlugin",
 			"Checking if the \"getClassName\" returns full plugin class name");
 		QUnit.equal(
-			Echo.Plugin.getClassName(undefined, skeleton.component),
+			Echo.Plugin.getClassName(undefined, manifest.component),
 			undefined,
 			"Checking if the \"getClassName\" returns undefined if the plugin name is undefined");
 		QUnit.equal(
-			Echo.Plugin.getClassName(skeleton.name, undefined),
+			Echo.Plugin.getClassName(manifest.name, undefined),
 			undefined,
 			"Checking if the \"getClassName\" returns undefined if the component name is undefined");
 
 		// create separate plugin to use later in tests
-		suite.createTestPlugin(suite.getTestPluginName(), skeleton.component);
+		suite.createTestPlugin(suite.getTestPluginName(), manifest.component);
 
 		this.sequentialAsyncTests([
 			"basicOperations",
@@ -571,7 +571,7 @@ suite.createTestPlugin = function(name, component) {
 
 suite.getPluginManifest = function(name, component) {
 
-	var manifest = Echo.Plugin.skeleton(name, component);
+	var manifest = Echo.Plugin.manifest(name, component);
 
 	manifest.config = $.extend(true, {}, suite.data.config);
 

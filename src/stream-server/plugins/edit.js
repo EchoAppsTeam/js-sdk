@@ -13,7 +13,7 @@
  * @extends Echo.Plugin
  * @inheritdoc Echo.Plugin
  */
-var plugin = Echo.Plugin.skeleton("Edit", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -67,7 +67,7 @@ Echo.Plugin.create(plugin);
 
 (function($) {
 
-var plugin = Echo.Plugin.skeleton("Edit", "Echo.StreamServer.Controls.Submit");
+var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 

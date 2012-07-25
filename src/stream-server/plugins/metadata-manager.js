@@ -13,7 +13,7 @@
  * @extends Echo.Plugin
  * @inheritdoc Echo.Plugin
  */
-var plugin = Echo.Plugin.skeleton("MetadataManager", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Echo.Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 /**

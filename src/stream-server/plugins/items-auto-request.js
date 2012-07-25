@@ -13,7 +13,7 @@
  * @extends Echo.Plugin
  * @inheritdoc Echo.Plugin
  */
-var plugin = Echo.Plugin.skeleton("ItemsAutoRequest", "Echo.StreamServer.Controls.Stream");
+var plugin = Echo.Plugin.manifest("ItemsAutoRequest", "Echo.StreamServer.Controls.Stream");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
