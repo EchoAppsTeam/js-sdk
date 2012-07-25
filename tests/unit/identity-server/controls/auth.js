@@ -15,8 +15,8 @@ var suite = Echo.Tests.Unit.Auth = function() {
 };
 
 suite.prototype.info = {
-        "className" : "Echo.Auth",
-        "functions": []
+        "className" : "Echo.IdentityServer.Controls.Auth",
+        "functions": ["template"]
 };
 
 suite.prototype.tests = {};

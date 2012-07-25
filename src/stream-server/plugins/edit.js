@@ -112,7 +112,7 @@ $.map(["Init", "Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.onPost" + action] = function(topic, args) {
 		var component = this.component;
 		if (action === "Init") {
-			args.postData.content = this.prepareContent();
+			args.postData.content = this._prepareContent();
 		}
 		component.events.publish({
 			"topic": "onEdit" + action,
@@ -155,14 +155,14 @@ plugin.renderers.cancelButton = function(element) {
 	});
 };
 
-plugin.methods.prepareContent = function() {
+plugin.methods._prepareContent = function() {
 	var component = this.component;
-	return [].concat(this.getMetaDataUpdates("tag", "tag", component.dom.get("tags").val()),
-			 this.getMetaDataUpdates("mark", "marker", component.dom.get("markers").val()),
-			 this.prepareActivity("update", "comment", component.dom.get("text").val()));
+	return [].concat(this._getMetaDataUpdates("tag", "tag", component.dom.get("tags").val()),
+			 this._getMetaDataUpdates("mark", "marker", component.dom.get("markers").val()),
+			 this._prepareActivity("update", "comment", component.dom.get("text").val()));
 };
 
-plugin.methods.prepareActivity = function(verb, type, data) {
+plugin.methods._prepareActivity = function(verb, type, data) {
 	return (!data) ? [] : {
 		"object": {
 			"objectTypes": [ "http://activitystrea.ms/schema/1.0/" + type ],
@@ -176,7 +176,7 @@ plugin.methods.prepareActivity = function(verb, type, data) {
 	};
 };
 
-plugin.methods.getMetaDataUpdates = function(verb, type, data) {
+plugin.methods._getMetaDataUpdates = function(verb, type, data) {
 	var plugin = this;
 	var component = this.component;
 	var extract = function(value) {
@@ -190,7 +190,7 @@ plugin.methods.getMetaDataUpdates = function(verb, type, data) {
 	var diff = function(a, b, verb) {
 		$.map(a, function(item) {
 			if (item && $.inArray(item, b) == -1) {
-				updates.push(plugin.prepareActivity(verb, type, item));
+				updates.push(plugin._prepareActivity(verb, type, item));
 			}
 		});
 	};

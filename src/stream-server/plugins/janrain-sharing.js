@@ -40,7 +40,8 @@ plugin.labels = {
 };
 
 plugin.config = {
-	"maxLength": 120, // actual limit is 140, reserving some space for ellipses and shortened link to the page
+	"maxLength": 120, // actual limit is 140, reserving some space
+			  // for ellipses and shortened link to the page
 	"reducedLength": 30,
 	"maxImagesCount": 5
 };
@@ -56,15 +57,15 @@ plugin.events = {
 		RPXNOW.loadAndRun(["Social"], function () {
 			var activity = new RPXNOW.Social.Activity(
 				plugin.config.get("activity.sharePrompt", plugin.labels.get("sharePrompt")),
-				plugin.prepareContent(args),
+				plugin._prepareContent(args),
 				plugin.config.get("activity.itemURL", args.targetURL)
 			);
-			RPXNOW.Social.publishActivity(plugin.prepareActivity(activity));
+			RPXNOW.Social.publishActivity(plugin._prepareActivity(activity));
 		});
 	}
 };
 
-plugin.methods.prepareActivity = function(act) {
+plugin.methods._prepareActivity = function(act) {
 	var plugin = this;
 	var activity = act;
 	var handlers = {
@@ -96,38 +97,38 @@ plugin.methods.prepareActivity = function(act) {
 	return activity;
 };
 
-plugin.methods.prepareContent = function(args) {
+plugin.methods._prepareContent = function(args) {
 	var plugin = this;
 	var text = Echo.Utils.stripTags(args.postData[0].object.content);
 	var messagePattern = plugin.config.get("activity.shareContent");
 	if (messagePattern) {
 		return plugin.labels.get(messagePattern, {
 			"domain": window.location.host,
-			"content": plugin.truncate(text, plugin.config.get("reducedLength"))
+			"content": plugin._truncate(text, plugin.config.get("reducedLength"))
 		});
 	}
 	//TODO: fix it when plugin Reply is ready
 	//if a reply to a tweet was posted
 	var maxLength = plugin.config.get("maxLength");
-	if (plugin.isReplyToTweet(args.inReplyTo)) {
-		var author = plugin.getTweetAuthor(args.inReplyTo);
+	if (plugin._isReplyToTweet(args.inReplyTo)) {
+		var author = plugin._getTweetAuthor(args.inReplyTo);
 		return plugin.labels.get("@{author} {content}", {
 			"author": author,
-			"content": plugin.truncate(text, maxLength - author.length - 2)
+			"content": plugin._truncate(text, maxLength - author.length - 2)
 		});
 	}
-	return plugin.truncate(text, maxLength);
+	return plugin._truncate(text, maxLength);
 };
 
-plugin.methods.truncate = function(text, limit) {
+plugin.methods._truncate = function(text, limit) {
 	return (limit > 0 && text.length > limit) ? text.substring(0, limit) + "..." : text;
 };
 
-plugin.methods.isReplyToTweet = function(item) {
+plugin.methods._isReplyToTweet = function(item) {
 	return !!(item && item.source && item.source.name == "Twitter");
 };
 
-plugin.methods.getTweetAuthor = function(item) {
+plugin.methods._getTweetAuthor = function(item) {
 	return item.actor.id.replace(/https?\:\/\/twitter\.com\//, "");
 };
 
