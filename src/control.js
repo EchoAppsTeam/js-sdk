@@ -16,14 +16,15 @@ Echo.Control = function() {};
  * 
  * @param {Object} manifest (required) Specifies the control interface in the predefined way.
  * @param {String} manifest.name (required) Specifies the control name including namespace (ex. "Echo.StreamServer.Controls.Submit")
- * @param {Object} manifest.vars Specifies internal control variables.
- * @param {Object} manifest.config Specifies the configuration data with the ability to define default values.
- * @param {Object} manifest.labels Specifies the list of language labels used in the particular control UI.
- * @param {Object} manifest.events Specifies the list of external events used by control.
- * @param {Object} manifest.methods Specifies the list of control methods.
- * @param {Object} manifest.renderers Specifies the list of control renderers.
- * @param {Object} manifest.templates Specifies the list of control templates
- * @param {Function} manifest.init Function called during control initialization.
+ * @param {Object} [manifest.vars] Specifies internal control variables.
+ * @param {Object} [manifest.config] Specifies the configuration data with the ability to define default values.
+ * @param {Object} [manifest.labels] Specifies the list of language labels used in the particular control UI.
+ * @param {Object} [manifest.events] Specifies the list of external events used by control.
+ * @param {Object} [manifest.methods] Specifies the list of control methods.
+ * @param {Object} [manifest.renderers] Specifies the list of control renderers.
+ * @param {Object} [manifest.templates] Specifies the list of control templates
+ * @param {Function} [manifest.init] Function called during control initialization.
+ * @param {String} [manifest.css] Specifies the CSS rules for the control.
  * @return {Object} generated control class
  */
 Echo.Control.create = function(manifest) {
@@ -154,7 +155,7 @@ Echo.Control.prototype.defaults.labels = {
 
 /**
  * @method
- * Accessor method to get specific config field.
+ * Accessor method to get specific field.
  *
  * This function returns the corresponding value of the given key or the default value if specified in the second argument.
  * 
@@ -428,7 +429,7 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
  * + "replace"
  * + "remove"
  * @param {String} anchor (required) Element name which is a subject of a transformation application.
- * @param {String|Function} [html] The content of a transformation to be applied. Can be defined as a HTML string or a transformer function. This param is required for all actions except "remove".
+ * @param {String} [html] The content of a transformation to be applied. This param is required for all actions except "remove".
  */
 Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
 	this.extension.template.push({"action": action, "anchor": anchor, "html": html});
