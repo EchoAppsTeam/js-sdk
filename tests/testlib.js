@@ -33,7 +33,9 @@ Echo.Tests.runTests = function() {
 Echo.Tests.Common = function() {
 	this.config = {
 		"asyncTimeout": 500,
-		"testTimeout": 5000
+		"testTimeout": 5000,
+		"appkey": "test.aboutecho.com",
+		"dataBaseLocation": "http://example.com/js-sdk/"
 	};
 };
 
