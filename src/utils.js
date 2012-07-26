@@ -645,12 +645,15 @@ Echo.Utils.inherit = function(child, parent) {
 		child.prototype[name] = $.isFunction(parent.prototype[name]) && $.isFunction(value)
 			? function () {
 				var self = this;
+				var tmp = this.base;
 				var args = arguments;
 				this.base = function() {
 					var _args = arguments.length ? arguments : args;
 					return parent.prototype[name].apply(self, _args);
 				};
-				return value.apply(this, arguments);
+				var returnValue = value.apply(this, arguments);
+				this.base = tmp;
+				return returnValue;
 			}
 			: value;
 	});
