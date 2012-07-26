@@ -3,9 +3,22 @@
 var suite = Echo.Tests.Unit.API = function() {};
 
 suite.prototype.info = {
-	"className": "Echo.API.Request",
+	"className": "Echo.API",
 	"suiteName": "API",
-	"functions": []
+	"functions": [
+		"Request.send",
+		"Request.request",
+		"Request.abort",
+		"Transports.AJAX.available",
+		"Transports.AJAX.send",
+		"Transports.AJAX.abort",
+		"Transports.JSONP.available",
+		"Transports.WebSocket.available",
+		"Transports.WebSocket.send",
+		"Transports.WebSocket.abort",
+		"Transport.send",
+		"Transport.abort"
+	]
 };
 
 suite.prototype.tests = {};

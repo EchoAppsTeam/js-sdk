@@ -19,7 +19,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var component = this.component;
-	var button = this.assembleButton();
+	var button = this._assembleButton();
 	component.addButtonSpec("Edit", button);
 };
 
@@ -33,7 +33,7 @@ plugin.labels = {
 	"editControl": "Edit"
 };
 
-plugin.methods.submitConfig = function(item, target) {
+plugin.methods._submitConfig = function(item, target) {
 	return this.config.assemble({
 		"target": target,
 		"data": item.data,
@@ -41,7 +41,7 @@ plugin.methods.submitConfig = function(item, target) {
 	});
 };
 
-plugin.methods.assembleButton = function() {
+plugin.methods._assembleButton = function() {
 	var plugin = this;
 	return function() {
 		var item = this;
@@ -50,7 +50,7 @@ plugin.methods.assembleButton = function() {
 			"label": plugin.labels.get("editControl"),
 			"visible": item.user.is("admin") || item.user.has("identity", item.data.actor.id),
 			"callback": function() {
-				var config = plugin.submitConfig(item, item.dom.get("subcontainer"));
+				var config = plugin._submitConfig(item, item.dom.get("subcontainer"));
 				config["parent"] = plugin.component.config.getAsHash(),
 				config["targetQuery"] = plugin.config.get("query", "");
 				config.plugins.push({"name": "Edit"});

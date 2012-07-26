@@ -40,8 +40,9 @@ plugin.labels = {
 };
 
 plugin.config = {
-	"maxLength": 120, // actual limit is 140, reserving some space
-			  // for ellipses and shortened link to the page
+	// actual limit is 140, reserving some space
+	// for ellipses and shortened link to the page
+	"maxLength": 120,
 	"reducedLength": 30,
 	"maxImagesCount": 5
 };

@@ -3,9 +3,18 @@
 var suite = Echo.Tests.Unit.StreamServerAPI = function() {};
 
 suite.prototype.info = {
-	"className": "Echo.StreamServer.API.Request",
+	"className": "Echo.StreamServer.API",
 	"suiteName": "StreamServer.API",
-	"functions": ["_AS2KVL", "_changeLiveUpdatesTimeout", "abort", "_search", "_submit", "_count", "send"]
+	"functions": [
+		"Request._AS2KVL",
+		"Request._changeLiveUpdatesTimeout",
+		"Request._search",
+		"Request._submit",
+		"Request._count",
+		"Request.abort",
+		"Request.send",
+		"request"
+	]
 };
 
 suite.prototype.params = {
