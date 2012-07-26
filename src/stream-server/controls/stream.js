@@ -287,13 +287,7 @@ stream.methods.requestInitialItems = function() {
 			},
 			"onData": function(data, options) {
 				if (options.requestType === "initial") {
-					self._handleInitialResponse(data, function(data) {
-						self.lastRequest = {
-							"initial": true,
-							"data": data
-						};
-						self.render({"element": "body"});
-					});
+					self._handleInitialResponse(data);
 				} else {
 					self._handleLiveUpdatesResponse(data);
 				}
@@ -330,7 +324,9 @@ stream.methods.requestMoreItems = function(element) {
 					if (data.length) {
 						self.lastRequest.data = data;
 						self.render({"element": "body"});
+						self.render({"element": "more"});
 					} else {
+						// TODO: employ showMessage function here
 						element.html(self.labels.get("emptyStream")).delay(1000).fadeOut(1000);
 					}
 				});
@@ -516,7 +512,6 @@ stream.methods._appendRootItems = function(items, container) {
 		fragment.appendChild(item.config.get("target").get(0));
 	});
 	container.append(fragment);
-	this.render({"element": "more"});
 };
 
 stream.methods._constructChildrenSearchQuery = function(item) {
@@ -581,6 +576,13 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 
 	this.hasInitialData = true;
 	this.isViewComplete = roots.length !== this.config.get("itemsPerPage");
+	visualizer = visualizer || function(data) {
+		self.lastRequest = {
+			"initial": true,
+			"data": data
+		};
+		self.render();
+	});
 	visualizer(roots);
 };
 
@@ -1195,20 +1197,12 @@ stream.methods._normalizeEntry = function(entry) {
 stream.init = function() {
 	var self = this;
 	this._initVars();
-	this.config.get("target").empty().append(this.render());
 	this._recalcEffectsTimeouts();
 	if (this.config.get("data")) {
-		this._handleInitialResponse(this.config.get("data"), function(data) {
-			self.lastRequest = {
-				"initial": true,
-				"data": data
-			};
-			self.render();
-		});
+		this._handleInitialResponse(this.config.get("data"));
 	} else {
 		this.requestInitialItems();
 	}
-	this.events.publish({"topic": "onRender"});
 };
 
 stream.css =
