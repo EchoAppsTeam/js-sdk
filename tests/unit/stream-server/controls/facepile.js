@@ -43,11 +43,10 @@ suite.prototype.tests.staticWorkflow = {
 		}
 		suite.pile = new Echo.StreamServer.Controls.FacePile({
 			"target": suite.target,
-			"appkey": "test.aboutecho.com",
+			"appkey": this.config.appkey,
 			"data"  : data,
 			"initialUsersCount": 5,
-			"suffixText": " commented on aboutecho.com",
-			"item": {"avatar": true, "text": true}
+			"suffixText": " commented on aboutecho.com"
 		});
 		this.sequentialAsyncTests([
 			"common",
@@ -71,6 +70,10 @@ suite.prototype.staticCases.common = function(callback) {
 				"Checking the common container rendering");
 			QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-container/g).length, 5,
 				"Checking initial users count");
+			QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-avatar/g).length, 5,
+				"Checking that user avatars are displayed by default");
+			QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-title/g).length, 5,
+				"Checking that user names are displayed by default");
 			QUnit.equal(pile.dom.get("suffixText").html(), " commented on aboutecho.com", "Checking suffix text");
 			callback();
 		}
@@ -106,9 +109,9 @@ suite.prototype.tests.dynamicWorkflow = {
 		$(suite.target).empty();
 		suite.pile = new Echo.StreamServer.Controls.FacePile({
 			"target": suite.target,
-			"appkey": "test.js-kit.com",
-			"query": "scope:http://example.com/jssdk/tests/facepile itemsPerPage: 1 " +
-				 "-user.id:http://js-kit.com/ECHO/user/fake_user",
+			"appkey": this.config.appkey,
+			"query": "scope:" + this.config.dataBaseLocation + "tests/facepile sortOrder:chronological " +
+				 "itemsPerPage: 1 -user.id:http://js-kit.com/ECHO/user/fake_user",
 			"suffixText": " commented on facepile test page",
 			"item": {"avatar": true, "text": true}
 		});
@@ -133,7 +136,7 @@ suite.prototype.dynamicCases.common = function(callback) {
 			var html = $(target).html();
 			QUnit.ok(html.match(/echo-streamserver-controls-facepile-container/),
 				"Checking the common container rendering");
-			QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-container/g).length, 1,
+			QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-container/g).length, 2,
 				"Checking initial users count");
 			QUnit.equal(pile.dom.get("suffixText").html(), " commented on facepile test page", "Checking suffix text");
 			callback();
@@ -149,7 +152,7 @@ suite.prototype.dynamicCases.more = function(callback) {
 			pile.events.unsubscribe({
 				"handlerId" : handlerId
 			});
-			QUnit.equal($(target).html().match(/echo-streamserver-controls-facepile-item-container/g).length, 2,
+			QUnit.equal($(target).html().match(/echo-streamserver-controls-facepile-item-container/g).length, 3,
 				"Checking users count after more button click");
 			callback();
 		}
@@ -174,7 +177,7 @@ suite.prototype.dynamicCases.isYou = function(callback) {
 			"source": {},
 			"verbs": [ "http://activitystrea.ms/schema/1.0/post" ],
 			"targets": [{
-				"id": "http://example.com/jssdk/tests/facepile"
+				"id": this.config.dataBaseLocation + "/tests/facepile"
 			}]
 		}]
 	};
@@ -192,8 +195,60 @@ suite.prototype.dynamicCases.isYou = function(callback) {
 			callback();
 		}
 	});
-	pile.config.set("query", "scope:http://example.com/jssdk/tests/facepile itemsPerPage: 1");
+	pile.config.set("query", "scope:" + this.config.dataBaseLocation + "tests/facepile itemsPerPage:1");
 	pile.refresh();
+};
+
+suite.prototype.tests.actorsView = {
+	"config" : {
+		"async" : true,
+		"testTimeout" : 20000, // 20 secs
+	},
+	"check" : function() {
+		this.sequentialAsyncTests([
+			"onlyAvatars",
+			"onlyNames"
+		], "viewCases");
+	}
+};
+
+suite.prototype.viewCases = {};
+
+suite.prototype.viewCases.onlyAvatars = function(callback) {
+	this._checkActorsView({"avatar": true, "text": false}, callback);
+};
+
+suite.prototype.viewCases.onlyNames = function(callback) {
+	this._checkActorsView({"avatar": false, "text": true}, callback);
+};
+
+suite.prototype._checkActorsView = function(item, callback) {
+	var target = document.getElementById("qunit-fixture");
+	$(target).empty();
+	var handler = function(topic, params) {
+		Echo.Events.unsubscribe({
+			"handlerId" : handlerId
+		});
+		$.each(item, function(key, value) {
+			var postfix = (key === "text") ? "title" : key;
+			var element = $(".echo-streamserver-controls-facepile-item-" + postfix, target).get(0);
+			QUnit.ok(value ? $(element).is(":visible") : $(element).is(":hidden"),
+				"Checking the visibility of " + postfix + "s depending on the config");
+		});
+		callback();
+	};
+	var handlerId = Echo.Events.subscribe({
+		"topic"  : "Echo.StreamServer.Controls.FacePile.onRender",
+		"handler": handler
+	});
+	var pile = new Echo.StreamServer.Controls.FacePile({
+		"target": target,
+		"appkey": this.config.appkey,
+		"query": "scope:" + this.config.dataBaseLocation + "tests/facepile",
+		"initialUsersCount": 5,
+		"suffixText": " commented on aboutecho.com",
+		"item": item
+	});
 };
 
 })(jQuery);
