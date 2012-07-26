@@ -4,11 +4,27 @@ if (Echo.Utils.isComponentDefined("Echo.Plugin")) return;
 
 /**
  * @class Echo.Plugin
+ * Foundation class implementing core logic to create plugins and manipulate with them.
  */
 Echo.Plugin = function() {};
 
 // static interface
-
+/**
+ * @static
+ * Function which creates a plugin object using it manifest declaration.
+ * 
+ * @param {Object} manifest (required) Specifies the plugin interface in the predefined way.
+ * @param {String} manifest.name (required) Specifies the Plugin name.
+ * @param {Object} [manifest.config] Specifies the configuration data with the ability to define default values.
+ * @param {Object} [manifest.labels] Specifies the list of language labels used in the particular plugin UI.
+ * @param {Object} [manifest.events] Specifies the list of external events used by plugin.
+ * @param {Object} [manifest.methods] Specifies the list of plugin methods.
+ * @param {Object} [manifest.renderers] Specifies the list of plugin renderers.
+ * @param {Object} [manifest.templates] Specifies the list of plugin templates
+ * @param {Function} [manifest.init] Function called during plugin initialization.
+ * @param {String} [manifest.css] Specifies the CSS rules for the plugin.
+ * @return {Object} generated plugin class
+ */
 Echo.Plugin.create = function(manifest) {
 	var plugin = Echo.Plugin.getClass(manifest.name, manifest.component);
 	// prevent multiple re-definitions
@@ -50,12 +66,19 @@ Echo.Plugin.create = function(manifest) {
 	}
 	Echo.Utils.setNestedValue(
 		window,
-		Echo.Plugin.getClassName(manifest.name, manifest.component),
+		Echo.Plugin._getClassName(manifest.name, manifest.component),
 		_constructor
 	);
 	return _constructor;
 };
 
+/**
+ * @static
+ * Method returning common manifest structure.
+ * @param {String} name (required) Specifies plugin name.
+ * @param {String} component (required) Specifies component name to be extended.
+ * @return {Object} Basic plugin manifest declaration.
+ */
 Echo.Plugin.manifest = function(name, component) {
 	return {
 		"name": name,
@@ -70,46 +93,84 @@ Echo.Plugin.manifest = function(name, component) {
 	};
 };
 
+/**
+ * @static
+ * Checks if plugin is already defined.
+ */
 Echo.Plugin.isDefined = function(manifest) {
 	return !!Echo.Plugin.getClass(manifest.name, manifest.component);
 };
 
+/**
+ * @static
+ */
 Echo.Plugin.getClass = function(name, component) {
-	return Echo.Utils.getNestedValue(window, Echo.Plugin.getClassName(name, component));
+	return Echo.Utils.getNestedValue(window, Echo.Plugin._getClassName(name, component));
 };
 
-Echo.Plugin.getClassName = function(name, component) {
-	return name && component ? component + ".Plugins." + name : undefined;
-};
-
+/**
+ * @method
+ * @inheritdoc Echo.Control@set
+ */
 Echo.Plugin.prototype.set = function(key, value) {
 	Echo.Utils.setNestedValue(this, key, value);
 };
 
+/**
+ * @method
+ * @inheritdoc Echo.Control@get
+ */
 Echo.Plugin.prototype.get = function(key, defaults) {
 	return Echo.Utils.getNestedValue(this, key, defaults);
 };
 
+/**
+ * @method
+ * @inheritdoc Echo.Control@remove
+ */
 Echo.Plugin.prototype.remove = function(key) {
 	Echo.Utils.setNestedValue(this, key, undefined);
 };
 
-Echo.Plugin.prototype.get = function(key, defaults) {
-	return Echo.Utils.getNestedValue(this, key, defaults);
-};
-
+/**
+ * @method
+ * Enables the plugin.
+ */
 Echo.Plugin.prototype.enable = function() {
 	this.config.set("enabled", true);
 };
 
+/**
+ * @method
+ * Disables the plugin.
+ */
 Echo.Plugin.prototype.disable = function() {
 	this.config.set("enabled", false);
 };
 
+/**
+ * @method
+ * Checks if plugin is enabled.
+ * @return {Boolean}
+ */
 Echo.Plugin.prototype.enabled = function(name) {
 	return this.config.get("enabled", true);
 };
 
+/**
+ * @method
+ * Method to extend the template of particular component.
+ * @param {String} action (required) One of the following actions:
+ *  
+ * + "insertBefore"
+ * + "insertAfter"
+ * + "insertAsFirstChild"
+ * + "insertAsLastChild"
+ * + "replace"
+ * + "remove"
+ * @param {String} anchor (required) Element name which is a subject of a transformation application.
+ * @param {String|Function} [html] The content of a transformation to be applied. Can be defined as a HTML string or a transformer function. This param is required for all actions except "remove".
+ */
 Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 	if (html) {
 		html = this.substitute($.isFunction(html) ? html() : html);
@@ -117,10 +178,21 @@ Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 	this.component.extendTemplate.call(this.component, action, anchor, html);
 };
 
+/**
+ * @method
+ * @inheritdoc Echo.Control#parentRenderer
+ */
 Echo.Plugin.prototype.parentRenderer = function() {
 	return this.component.parentRenderer.apply(this.component, arguments);
 };
 
+/**
+ * @method
+ * Templater function which compiles given template using the plugin internal data.
+ *
+ * @param {String} template (required) Template containing placeholders used for data interspersion.
+ * @return {String} Compiled string value.
+ */
 Echo.Plugin.prototype.substitute = function(template) {
 	var plugin = this;
 	return plugin.component.substitute(template, {}, {
@@ -142,6 +214,9 @@ Echo.Plugin.prototype.substitute = function(template) {
 	});
 };
 
+/**
+ * @method
+ */
 Echo.Plugin.prototype.requestDataRefresh = function() {
 	Echo.Events.publish({
 		"topic": "internal.Echo.Control.onDataInvalidate",
@@ -186,6 +261,10 @@ Echo.Plugin.prototype._init.renderers = function() {
 	$.each(this.manifest.renderers || {}, function(name, renderer) {
 		self.component.extendRenderer.call(self.component, name, $.proxy(renderer, self));
 	});
+};
+
+Echo.Plugin._getClassName = function(name, component) {
+	return name && component ? component + ".Plugins." + name : undefined;
 };
 
 // Plugin Labels class

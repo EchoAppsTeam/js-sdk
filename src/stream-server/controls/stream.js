@@ -1693,142 +1693,24 @@ item.renderers.textToggleTruncated = function(element) {
 
 item.renderers.body = function(element, dom) {
 	var self = this;
-	var output = function(text, truncated) {
-		dom.get("text").empty().append(text);
-		dom.get("textEllipses")[!truncated || self.textExpanded ? "hide" : "show"]();
-		dom.get("textToggleTruncated")[truncated || self.textExpanded ? "show" : "hide"]();
-	};
-	var text = this.data.object.content;
-	var source = this.data.source.name;
-	var openLinksInNewWindow = this.config.get("parent.openLinksInNewWindow");
-	var contentTransformations = this.config.get("contentTransformations." + this.data.object.content_type, {});
-	if (source && source === "Twitter" && this.config.get("aggressiveSanitization")) {
-		output(this.labels.get("sharedThisOn", {"service": source}));
-		return element;
-	}
-
-	var limits = this.config.get("limits");
-	var wrap = function(tag) {
-		var template = tag.length > limits.maxTagLength
-			? '<span class="{class:tag}" title="{data:tag}">{data:truncatedTag}</span>'
-			: '<span class="{class:tag}">{data:tag}</span>';
-		var truncatedTag = tag.substring(0, limits.maxTagLength) + "...";
-		return self.substitute(template, {"tag": tag, "truncatedTag": truncatedTag});
-	};
-
-	if (contentTransformations.hashtags) {
-		text = text.replace(/(#|\uff03)(<a[^>]*>[^<]*<\/a>)/ig, function($0, $1, $2){
-			return wrap($2);
-		});
-	}
-
-	var insertHashTags = function(t) {
-		if (!contentTransformations.hashtags) return t;
-		return t.replace(/(^|[^\w&\/])(?:#|\uff03)([^\s\.,;:'"#@\$%<>!\?\(\)\[\]]+)/ig, function($0, $1, $2) {
-			return $1 + wrap($2);
-		});
-	};
-	var tags2meta = function(text) {
-		var tags = [];
-		text = text.replace(/((<a\s+[^>]*>)(.*?)(<\/a>))|<.*?>/ig, function($0, $1, $2, $3, $4) {
-			//we are cutting and pushing <a> tags to acc to avoid potential html issues after autolinking
-			if ($1) {
-				var content = tags2meta($3);
-				content.text = insertHashTags(content.text);
-				$0 = $2 + meta2tags(content) + $4;
-			}
-			tags.push($0);
-			return " %%HTML_TAG%% ";
-		});
-		return {"text" : text, "tags": tags};
-	};
-	var meta2tags = function(content) {
-		$.each(content.tags, function(i, v) {
-			content.text = content.text.replace(" %%HTML_TAG%% ", v);
-		});
-		return content.text;
-	};
-	var urlMatcher = "((?:http|ftp|https):\\/\\/(?:[a-z0-9#:\\/\\;\\?\\-\\.\\+,@&=%!\\*\\'(){}\\[\\]$_|^~`](?!gt;|lt;))+)";
-	var normalizeLinks = function(content) {
-		return content.replace(/(<a\s+[^>]*>)(.*?)(<\/a>)/ig, function($0, $1, $2, $3) {
-			if (new RegExp("^" + urlMatcher + "$").test($2)) {
-				$2 = $2.length > limits.maxBodyLinkLength ? $2.substring(0, limits.maxBodyLinkLength) + "..." : $2;
-			}
-			if (openLinksInNewWindow && !/\s+target=("[^<>"]*"|'[^<>']*'|\w+)/.test($1)) {
-				$1 = $1.replace(/(^<a\s+[^>]*)(>$)/, '$1 target="_blank"$2');
-			}
-			return $1 + $2 + $3;
-		});
-	};
-	var content = tags2meta(text);
-	if (source && source !== "jskit" && source !== "echo") {
-		var url = this.depth
-			? this.data.target.id
-			: this.config.get("reTag")
-				? this.data.object.permalink || this.data.target.id
-				: undefined;
-		if (url) {
-			content.text = content.text.replace(new RegExp(url, "g"), "");
-			if (!/\S/.test(content.text)) {
-				output(this.labels.get("sharedThisOn", {"service": source}));
-				return element;
-			}
+	var data = [this.data.object.content, {
+		"source": this.data.source.name,
+		"limits": this.config.get("limits"),
+		"contentTransformations": this.config.get("contentTransformations." + this.data.object.content_type, {}),
+		"openLinksInNewWindow": this.config.get("parent.openLinksInNewWindow")
+	}];
+	$.each(this._getBodyTransformations(), function(i, trasformation) {
+		data = trasformation.apply(self, data);
+		if (!/\S/.test(data[0])) {
+			data[0] = self.labels.get("sharedThisOn", {"service": data[1].source});
+			return false;
 		}
-	}
-
-	var textBeforeAutoLinking = content.text = insertHashTags(content.text);
-	if (contentTransformations.urls) {
-		content.text = content.text.replace(new RegExp(urlMatcher, "ig"), function($0, $1) {
-			return Echo.Utils.hyperlink({
-				"href": $1,
-				"caption": $1
-			}, {
-				"skipEscaping": true,
-				"openInNewWindow": openLinksInNewWindow
-			});
-		})
-	}
-	if (contentTransformations.smileys) {
-		if (content.text !== textBeforeAutoLinking) {
-			content = tags2meta(meta2tags(content));
-		}
-		var smileys = this._initSmileysConfig();
-		if (content.text.match(smileys.regexps.test)) {
-			$.each(smileys.codes, function(i, code) {
-				content.text = content.text.replace(smileys.regexps[code], smileys.tag(smileys.hash[code]));
-			});
-		}
-	}
-
-	if (contentTransformations.newlines) {
-		content.text = content.text.replace(/\n\n+/g, "\n\n");
-		content.text = content.text.replace(/\n/g, "&nbsp;<br>");
-	}
-	var result = normalizeLinks(meta2tags(content));
-	var truncated = false;
-	if ((limits.maxBodyCharacters || limits.maxBodyLines) && !self.textExpanded) {
-		if (limits.maxBodyLines) {
-			var splitter = contentTransformations.newlines ? "<br>" : "\n";
-			var chunks = result.split(splitter);
-			if (chunks.length > limits.maxBodyLines) {
-				result = chunks.splice(0, limits.maxBodyLines).join(splitter);
-				truncated = true;
-			}
-		}
-		var limit = limits.maxBodyCharacters && result.length > limits.maxBodyCharacters
-			? limits.maxBodyCharacters
-			: truncated
-				? result.length
-				: undefined;
-		// we should call Echo.Utils.htmlTextTruncate to close all tags
-		// which might remain unclosed after lines truncation
-		var truncatedText = Echo.Utils.htmlTextTruncate(result, limit, "", true);
-		if (truncatedText.length !== result.length) {
-			truncated = true;
-		}
-		result = truncatedText;
-	}
-	output(result, truncated);
+	});
+	var text = data[0];
+	var truncated = data[1].truncated;
+	dom.get("text").empty().append(text);
+	dom.get("textEllipses")[!truncated || this.textExpanded ? "hide" : "show"]();
+	dom.get("textToggleTruncated")[truncated || this.textExpanded ? "show" : "hide"]();
 	return element;
 };
 
@@ -2225,6 +2107,183 @@ item.methods._sortButtons = function() {
 		this.buttonsOrder = [];
 	}
 };
+
+(function() {
+	item.methods._getBodyTransformations = function() {
+		return [
+			_aggressiveSanitization,
+			_replaceLinkedHashtags,
+			_tags2meta,
+			_removeLinksToSelf,
+			_replacePlainHashtags,
+			_autoLinking,
+			_replaceSmileys,
+			_replaceNewLines,
+			_meta2tags,
+			_normalizeLinks,
+			_applyLimits
+		];
+	};
+
+	var _urlMatcher = "((?:http|ftp|https):\\/\\/(?:[a-z0-9#:\\/\\;\\?\\-\\.\\+,@&=%!\\*\\'(){}\\[\\]$_|^~`](?!gt;|lt;))+)";
+
+	var _wrapTag = function(tag, limits) {
+		var template = tag.length > limits.maxTagLength
+			? '<span class="{class:tag}" title="{data:tag}">{data:truncatedTag}</span>'
+			: '<span class="{class:tag}">{data:tag}</span>';
+		var truncatedTag = tag.substring(0, limits.maxTagLength) + "...";
+		return this.substitute(template, {"tag": tag, "truncatedTag": truncatedTag});
+	};
+
+	var _aggressiveSanitization = function(text, extra) {
+		if (extra.source && extra.source === "Twitter" && this.config.get("aggressiveSanitization")) {
+			text = "";
+		}
+		return [text, extra];
+	};
+
+	var _removeLinksToSelf = function(text, extra) {
+		if (extra.source && extra.source !== "jskit" && extra.source !== "echo") {
+			var url = this.depth
+				? this.data.target.id
+				: this.config.get("reTag")
+					? this.data.object.permalink || this.data.target.id
+					: undefined;
+			if (url) {
+				text = text.replace(new RegExp(url, "g"), "");
+			}
+		}
+		return [text, extra];
+	};
+
+	var _replaceLinkedHashtags = function(text, extra) {
+		var self = this;
+		if (extra.contentTransformations.hashtags) {
+			text = text.replace(/(?:#|\uff03)(<a[^>]*>[^<]*<\/a>)/ig, function($0, $1, $2){
+				return _wrapTag.call(self, $1, extra.limits);
+			});
+		}
+		return [text, extra];
+	};
+
+	var _replacePlainHashtags = function(text, extra) {
+		var self = this;
+		if (extra.contentTransformations.hashtags) {
+			text = text.replace(/(^|[^\w&\/])(?:#|\uff03)([^\s\.,;:'"#@\$%<>!\?\(\)\[\]]+)/ig, function($0, $1, $2) {
+				return $1 + _wrapTag.call(self, $2, extra.limits);
+			});
+		}
+		return [text, extra];
+	};
+
+	var _tags2meta = function(text, extra) {
+		var self = this, tags = [];
+		text = text.replace(/((<a\s+[^>]*>)(.*?)(<\/a>))|<.*?>/ig, function($0, $1, $2, $3, $4) {
+			//we are cutting and pushing <a> tags to acc to avoid potential html issues after autolinking
+			if ($1) {
+				var data = _tags2meta.call(self, $3, extra);
+				data = _replacePlainHashtags.apply(self, data);
+				data = _meta2tags.apply(self, data);
+				$0 = $2 + data[0] + $4;
+			}
+			tags.push($0);
+			return " %%HTML_TAG%% ";
+		});
+		extra.tags = tags;
+		return [text, extra];
+	};
+
+	var _meta2tags = function(text, extra) {
+		$.each(extra.tags, function(i, v) {
+			text = text.replace(" %%HTML_TAG%% ", v);
+		});
+		return [text, extra];
+	};
+
+	var _normalizeLinks = function(text, extra) {
+		text = text.replace(/(<a\s+[^>]*>)(.*?)(<\/a>)/ig, function($0, $1, $2, $3) {
+			if (new RegExp("^" + _urlMatcher + "$").test($2)) {
+				$2 = $2.length > extra.limits.maxBodyLinkLength ? $2.substring(0, extra.limits.maxBodyLinkLength) + "..." : $2;
+			}
+			if (extra.openLinksInNewWindow && !/\s+target=("[^<>"]*"|'[^<>']*'|\w+)/.test($1)) {
+				$1 = $1.replace(/(^<a\s+[^>]*)(>$)/, '$1 target="_blank"$2');
+			}
+			return $1 + $2 + $3;
+		});
+		return [text, extra];
+	};
+
+	var _autoLinking = function(text, extra) {
+		extra.textBeforeAutoLinking = text;
+		var self = this;
+		if (extra.contentTransformations.urls) {
+			text = text.replace(new RegExp(_urlMatcher, "ig"), function($0, $1) {
+				return Echo.Utils.hyperlink({
+					"href": $1,
+					"caption": $1
+				}, {
+					"skipEscaping": true,
+					"openInNewWindow": extra.openLinksInNewWindow
+				});
+			});
+		}
+		return [text, extra];
+	};
+
+	var _replaceSmileys = function(text, extra) {
+		if (extra.contentTransformations.smileys) {
+			if (text !== extra.textBeforeAutoLinking) {
+				var data = _meta2tags.call(this, text, extra);
+				data = _tags2meta.apply(this, data);
+				text = data[0];
+				extra = data[1];
+			}
+			var smileys = this._initSmileysConfig();
+			if (text.match(smileys.regexps.test)) {
+				$.each(smileys.codes, function(i, code) {
+					text = text.replace(smileys.regexps[code], smileys.tag(smileys.hash[code]));
+				});
+			}
+		}
+		return [text, extra];
+	};
+
+	var _replaceNewLines = function(text, extra) {
+		if (extra.contentTransformations.newlines) {
+			text = text.replace(/\n\n+/g, "\n\n");
+			text = text.replace(/\n/g, "&nbsp;<br>");
+		}
+		return [text, extra];
+	};
+
+	var _applyLimits = function(text, extra) {
+		var truncated = false;
+		if ((extra.limits.maxBodyCharacters || extra.limits.maxBodyLines) && !this.textExpanded) {
+			if (extra.limits.maxBodyLines) {
+				var splitter = extra.contentTransformations.newlines ? "<br>" : "\n";
+				var chunks = result.split(splitter);
+				if (chunks.length > extra.limits.maxBodyLines) {
+					text = chunks.splice(0, extra.limits.maxBodyLines).join(splitter);
+					truncated = true;
+				}
+			}
+			var limit = extra.limits.maxBodyCharacters && text.length > extra.limits.maxBodyCharacters
+				? extra.limits.maxBodyCharacters
+				: truncated
+					? text.length
+					: undefined;
+			// we should call Echo.Utils.htmlTextTruncate to close all tags
+			// which might remain unclosed after lines truncation
+			var truncatedText = Echo.Utils.htmlTextTruncate(text, limit, "", true);
+			if (truncatedText.length !== text.length) {
+				truncated = true;
+			}
+			text = truncatedText;
+		}
+		extra.truncated = truncated;
+		return [text, extra];
+	};
+})();
 
 item.vars = {
 	"children": [],

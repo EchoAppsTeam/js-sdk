@@ -13,7 +13,6 @@ suite.prototype.info = {
 		"create",
 		"isDefined",
 		"getClass",
-		"getClassName",
 
 		// dynamic interface
 		"set",
@@ -88,17 +87,17 @@ suite.prototype.tests.PublicInterfaceTests = {
 
 		// checking plugin class name definition
 		QUnit.equal(
-			Echo.Plugin.getClassName(manifest.name, manifest.component),
+			Echo.Plugin._getClassName(manifest.name, manifest.component),
 			"Echo.StreamServer.Controls.MyControl.Plugins.MyTestPlugin",
-			"Checking if the \"getClassName\" returns full plugin class name");
+			"Checking if the \"_getClassName\" returns full plugin class name");
 		QUnit.equal(
-			Echo.Plugin.getClassName(undefined, manifest.component),
+			Echo.Plugin._getClassName(undefined, manifest.component),
 			undefined,
-			"Checking if the \"getClassName\" returns undefined if the plugin name is undefined");
+			"Checking if the \"_getClassName\" returns undefined if the plugin name is undefined");
 		QUnit.equal(
-			Echo.Plugin.getClassName(manifest.name, undefined),
+			Echo.Plugin._getClassName(manifest.name, undefined),
 			undefined,
-			"Checking if the \"getClassName\" returns undefined if the component name is undefined");
+			"Checking if the \"_getClassName\" returns undefined if the component name is undefined");
 
 		// create separate plugin to use later in tests
 		suite.createTestPlugin(suite.getTestPluginName(), manifest.component);
