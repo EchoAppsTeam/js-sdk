@@ -124,13 +124,10 @@ Echo.Control.prototype.defaults.config = {
  * @cfg {Object} [infoMessages] Customizes the look and feel of info messages, for example "loading" and "error".
  * @cfg {Boolean} [infoMessages.enabled=true] Specifies if info messages should be rendered.
  * @cfg {String} [infoMessages.layout="full"] Specifies the layout of the info message. By default can be set to "compact" or "full".
- *     new Echo.StreamServer.Controls.Counter({
- *         ...
- *         "infoMessages" : {
- *             "enabled" : true,
- *             "layout" : "full"
- *         }
- *     });
+ *     "infoMessages" : {
+ *         "enabled" : true,
+ *         "layout" : "full"
+ *     }
  */
 	"infoMessages": {
 		"enabled": true,
@@ -162,7 +159,7 @@ Echo.Control.prototype.defaults.labels = {
  * This function returns the corresponding value of the given key or the default value if specified in the second argument.
  * 
  * @param {String} key Defines the key for data extraction.
- * @param {Object} defaults (optional) Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ * @param {Object} [defaults] Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
  * @return {Mixed} Returns the corresponding value found in the object.
  */
 Echo.Control.prototype.get = function(key, defaults) {
@@ -239,7 +236,20 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 
 /**
  * @method
+ * Function used to render elements using renderes functions and templates
  *
+ * Called without params the function will start render process for the control.
+ * It will sequentially run the corresponding renderer functions and build the DOM structure.
+ * Function can also be used for rerendering particular elements (recursively if needed).
+ * It can also render templates defined explicitly.
+ * @param {Object} [args] Specifies extra rendering params.
+ * @param {HTMLElement} [args.target=this.config.get("target")] Specifies the target to append the rendered DOM structure. Defaults to the value defined in the control config.
+ * @param {String} [args.template=this.template] Specifies the particular template to be rendered. If defined function will render only the elements from the defined template. Defaults to the main control template.
+ * @param {Object} [args.dom=this.dom] Specifies the set of compiled dom elements used in the rendering process. Defaults to the internal structure.
+ * @param {String} [args.element] Specifies the name of the particular element to be rendered.
+ * @param {Object} [args.extra] Specifes extra params to be passed to renderer function.
+ * @param {Boolean} [args.recursive] Flag to enable recursive rerendering for the given anchor element.
+ * @return {HTMLElement} Rendered element.
  */
 Echo.Control.prototype.render = function(args) {
 	var self = this;
@@ -379,28 +389,58 @@ Echo.Control.prototype.showError = function(data, options) {
 
 /**
  * @method
+ * Accessor function allowing to obtain the plugin by its name.
+ * 
+ * @param {String} name (required) Specifies plugin name.
+ * @return {Object} Instance of the corresponding plugin.
  */
 Echo.Control.prototype.getPlugin = function(name) {
 	return this.plugins[name];
 };
 
-// TODO: do not expose this function in documentation
 Echo.Control.prototype.template = function() {
 	return this.templates.main;
 };
 
 // plugin-specific interface
-
+/**
+ * @method
+ * Method to call parent renderer function, which was extended using Echo.Control.extendRenderer function.
+ * @param {String} name (required) Renderer name.
+ * @param {Object} args (required) Arguments to be proxied to the parent renderer from the overriden one.
+ * @return {HTMLElement} Result of parent renderer function call.
+ */
 Echo.Control.prototype.parentRenderer = function(name, args) {
 	var renderer = this.extension.renderers[name];
 	if (!renderer || !renderer.next) return args[0]; // return DOM element
 	return renderer.next.apply(this, args);
 };
 
+/**
+ * @method
+ * Method to extend the template of particular control.
+ * @param {String} action (required) One of the following actions:
+ *  
+ * + "insertBefore"
+ * + "insertAfter"
+ * + "insertAsFirstChild"
+ * + "insertAsLastChild"
+ * + "replace"
+ * + "remove"
+ * @param {String} anchor (required) Element name which is a subject of a transformation application.
+ * @param {String|Function} [html] The content of a transformation to be applied. Can be defined as a HTML string or a transformer function. This param is required for all actions except "remove".
+ */
 Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
 	this.extension.template.push({"action": action, "anchor": anchor, "html": html});
 };
 
+/*
+ * @method
+ * Method extending the paticular renderer with defined function.
+ *
+ * @param {String} name (required) Renderer name to be extended.
+ * @param {Function} renderer (required) Renderer function to apply.
+ */
 Echo.Control.prototype.extendRenderer = function() {
 	this._init.renderer.apply(this, arguments);
 };
