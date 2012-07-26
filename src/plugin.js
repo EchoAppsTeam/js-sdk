@@ -96,6 +96,8 @@ Echo.Plugin.manifest = function(name, component) {
 /**
  * @static
  * Checks if plugin is already defined.
+ * @param {Object} manifest (required) Plugin manifest.
+ * @return {Boolean}
  */
 Echo.Plugin.isDefined = function(manifest) {
 	return !!Echo.Plugin.getClass(manifest.name, manifest.component);
@@ -103,6 +105,10 @@ Echo.Plugin.isDefined = function(manifest) {
 
 /**
  * @static
+ * Returns the corresponding plugin by its name and parent component name.
+ * @param {String} name {required} Plugin name.
+ * @param {String} component {required} Extended component name.
+ * @return {Object} Plugin class.
  */
 Echo.Plugin.getClass = function(name, component) {
 	return Echo.Utils.getNestedValue(window, Echo.Plugin._getClassName(name, component));
@@ -216,6 +222,8 @@ Echo.Plugin.prototype.substitute = function(template) {
 
 /**
  * @method
+ * Method publishes the internal event to make current state invalid.
+ * It triggers data refresh.
  */
 Echo.Plugin.prototype.requestDataRefresh = function() {
 	Echo.Events.publish({
@@ -267,30 +275,60 @@ Echo.Plugin._getClassName = function(name, component) {
 	return name && component ? component + ".Plugins." + name : undefined;
 };
 
-// Plugin Labels class
-
+/**
+ * @class Echo.Plugin.labels
+ * Echo Plugin interlayer for Echo.Labels utilization.
+ */
 Echo.Plugin._defineNestedClass("Labels");
 
+/**
+ * @method
+ * Function to add/override the language variable list.
+ * @param {Object} labels Object containing the list of language variables.
+ */
 Echo.Plugin.Labels.prototype.set = function(labels) {
 	Echo.Labels.set(labels, "Plugins." + this.plugin.name, true);
 };
 
-Echo.Plugin.Labels.prototype.get = function(label, data) {
-	return Echo.Labels.get(label, "Plugins." + this.plugin.name, data);
+/**
+ * @method
+ * Function returning the language variable value by its name.
+ * @param {String} name Language variable name.
+ * @param {Object} data Flat object data that should be inserted instead of a placeholder in the language variable.
+ * @return {String} Returns the string value of the language variable.
+ */
+Echo.Plugin.Labels.prototype.get = function(name, data) {
+	return Echo.Labels.get(name, "Plugins." + this.plugin.name, data);
 };
 
-// Plugin Config class
-
+/**
+ * @class Echo.Plugin.config
+ * Echo Plugin interlayer for Echo.Configuration utilization.
+ */
 Echo.Plugin._defineNestedClass("Config");
 
 Echo.Plugin.Config.prototype._normalize = function(key) {
 	return (["plugins", this.plugin.manifest.name].concat(key ? key : [])).join(".");
 };
 
+/**
+ * @method
+ * Setter method to define specific config field value.
+ * @param {String} key Defines the key where the given data should be stored.
+ * @param {Mixed} value The corresponding value which should be defined for the key.
+ */
 Echo.Plugin.Config.prototype.set = function(key, value) {
 	this.plugin.component.config.set(this._normalize(key), value);
 };
 
+/**
+ * @method
+ * Accessor method to get specific config field.
+ * @param {String} key Defines the key for data extraction.
+ * @param {Object} [defaults] Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ * @param {Boolean} [askParent] Flag to call parent config if the value was not found in the particular instance.
+ * @return {Mixed} Returns the corresponding value found in the config.
+ */
 Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
 	var component = this.plugin.component;
 	var value = component.config.get(this._normalize(key), this.plugin.manifest.config[key]);
@@ -301,10 +339,21 @@ Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
 		: value;
 };
 
+/**
+ * @method
+ * Method to remove specific config field.
+ * @param {String} key Defines the key which should be removed from the configuration.
+ */
 Echo.Plugin.Config.prototype.remove = function(key) {
 	this.plugin.component.config.remove(this._normalize(key));
 };
 
+/**
+ * @method
+ * Assembles config for nested control based on the parent control config.
+ * @param {Object} data (required) Configuration data to be merged with the parent config.
+ * @return {Object} Echo.Configuration instance.
+ */
 Echo.Plugin.Config.prototype.assemble = function(data) {
 	var config = this.plugin.component.config;
 	var defaults = this.plugin.component.get("defaults.config");
@@ -319,15 +368,25 @@ Echo.Plugin.Config.prototype.assemble = function(data) {
 	return (new Echo.Configuration(data, this.plugin.config.get())).getAsHash();
 };
 
-// Plugin Events class
-
+/**
+ * @class Echo.Plugin.events
+ * Echo Plugin interlayer for Echo.Events utilization
+ */
 Echo.Plugin._defineNestedClass("Events");
 
+/**
+ * @method
+ * @inheritdoc Echo.Events#publish
+*/
 Echo.Plugin.Events.prototype.publish = function(params) {
 	params.topic = ["Plugins", this.plugin.name, params.topic].join(".");
 	return this.plugin.component.events.publish(params);
 };
 
+/**
+ * @method
+ * @inheritdoc Echo.Events#subscribe
+*/
 Echo.Plugin.Events.prototype.subscribe = function(params) {
 	var self = this;
 	var handler = params.handler;
@@ -338,6 +397,10 @@ Echo.Plugin.Events.prototype.subscribe = function(params) {
 	return this.plugin.component.events.subscribe(params);
 };
 
+/**
+ * @method
+ * @inheritdoc Echo.Events#unsubscribe
+*/
 Echo.Plugin.Events.prototype.unsubscribe = function(params) {
 	this.plugin.component.events.unsubscribe(params);
 };
