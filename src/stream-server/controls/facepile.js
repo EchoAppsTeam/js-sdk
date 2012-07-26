@@ -114,7 +114,9 @@ pile.renderers.actors = function(element) {
 	var item = this.config.get("item");
 	var cssPrefix = this.cssPrefix + "-";
 
-	if (!this.users.length || !item.avatar && !item.text) return;
+	if (!this.users.length || !item.avatar && !item.text) {
+		return element.empty();
+	}
 
 	var action = (item.avatar && !item.text ? "addClass" : "removeClass");
 	element[action](cssPrefix + "only-avatars");
@@ -159,10 +161,14 @@ pile.renderers.suffixText = function(element) {
  * It should be used for example after some config params were changed.
  */
 pile.methods.refresh = function() {
-	this.get("request").abort();
-	this.remove("request");
+	if (this.get("request")) {
+		this.get("request").abort();
+		this.remove("request");
+		this._request();
+	}
 	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.FacePile");
 	component.parent.refresh.call(this);
+	this.render();
 };
 
 /**
