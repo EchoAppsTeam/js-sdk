@@ -582,7 +582,7 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 			"data": data
 		};
 		self.render();
-	});
+	};
 	visualizer(roots);
 };
 
