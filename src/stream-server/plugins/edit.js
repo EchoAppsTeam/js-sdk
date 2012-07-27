@@ -140,6 +140,7 @@ plugin.renderers.author = function(element) {
 
 plugin.renderers.editedDate = function(element) {
 	var published = this.component.get("data.object.published");
+	if (!published) return element.empty();
 	var date = new Date(Echo.Utils.timestampFromW3CDTF(published) * 1000);
 	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
 };
@@ -147,12 +148,13 @@ plugin.renderers.editedDate = function(element) {
 plugin.renderers.cancelButton = function(element) {
 	var plugin = this;
 	var component = plugin.component;
-	element.click(function() {
+	var handler = function() {
 		component.events.publish({
 			"topic": "onEditError",
 			"context": component.config.get("parent.context")
 		});
-	});
+	};
+	return element.click(handler);
 };
 
 plugin.methods._prepareContent = function() {
