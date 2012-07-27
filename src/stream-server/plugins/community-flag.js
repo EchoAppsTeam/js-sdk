@@ -89,7 +89,7 @@ plugin.methods._assembleButton = function(name) {
 					"data": {
 						"item": {
 							"data": item.data,
-							"target": item.dom.content
+							"target": item.dom.get()
 						}
 					}
 				});

@@ -68,7 +68,7 @@ plugin.methods._sendActivity = function(name, item) {
 			"data": {
 				"item": {
 					"data": item.data,
-					"target": item.dom.content
+					"target": item.dom.get()
 				}
 			}
 		});

@@ -502,6 +502,10 @@ Echo.Utils.toDOM = function(template, prefix, renderer) {
 			elements[prefix + name] = element;
 		},
 		"get": function(name, ignorePrefix) {
+			// return the whole content if no specific name was defined
+			if (!name) {
+				return content;
+			}
 			var element = elements[(ignorePrefix ? "" : prefix) + name];
 			return element && $(element);
 		},
@@ -515,8 +519,7 @@ Echo.Utils.toDOM = function(template, prefix, renderer) {
 			}
 			$(elements[name]).remove();
 			delete elements[name];
-		},
-		"content": content
+		}
 	};
 	var rendererFunction;
 	if (typeof renderer == 'object') {

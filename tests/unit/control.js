@@ -291,7 +291,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		// checking re-rendering
 		target.append('<div class="extra-div">Extra DIV appended</div>');
-		this.dom.content.append('<div class="extra-div-1">Another DIV appended</div>');
+		this.dom.get().append('<div class="extra-div-1">Another DIV appended</div>');
 		this.config.get("target").append('<div class="extra-div-2">DIV appended</div>');
 		this.render();
 		QUnit.equal(this.dom.get("testRenderer").get(0).innerHTML, "<div>Some value</div>",

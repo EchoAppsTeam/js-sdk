@@ -251,7 +251,7 @@ suite.prototype.tests.TestDomMethods = {
 		QUnit.equal(Echo.Utils.getVisibleColor(container.get("footer")), "transparent",
 			"Checking getVisibleColor() method with transparent element color");
 
-		var elements = Echo.Utils.mapClass2Object(container.content);
+		var elements = Echo.Utils.mapClass2Object(container.get());
 		QUnit.equal(elements['echo-utils-tests-section3'].innerHTML, "content3",
 			"Checking mapClass2Object() method");
 

@@ -59,7 +59,7 @@ stream.labels = {
 stream.events = {
 	"Echo.StreamServer.Controls.Stream.Item.internal.onAdd": function(topic, data) {
 		var self = this;
-		data.item.dom.content.hide();
+		data.item.dom.get().hide();
 		this._queueActivity({
 			"action": "animation",
 			"actorID": data.item.get("data.actor.id"),
@@ -824,8 +824,8 @@ stream.methods._addItemSpotUpdate = function(item) {
 	this.activities.animations++;
 	if (this.timeouts.slide) {
 		//We should specify the element height explicitly to avoid element jumping during the animation effect
-		var currentHeight = item.dom.content.show().css("height");
-		item.dom.content.css("height", currentHeight).hide().animate({
+		var currentHeight = item.dom.get().show().css("height");
+		item.dom.get().css("height", currentHeight).hide().animate({
 			"height": "show", 
 			"marginTop": "show", 
 			"marginBottom": "show", 
@@ -835,20 +835,20 @@ stream.methods._addItemSpotUpdate = function(item) {
 		this.timeouts.slide,
 		function(){
 			//After the animation effect we should remove explicitly set height
-			if (!item.dom || !item.dom.content) return;
-			item.dom.content.css("height", "");
+			if (!item.dom || !item.dom.get()) return;
+			item.dom.get().css("height", "");
 		});
 	} else {
-		item.dom.content.show();
+		item.dom.get().show();
 	}
 	var publish = function() {
-		if (!item.dom || !item.dom.content) return;
+		if (!item.dom || !item.dom.get()) return;
 		self.events.publish({
 			"topic": "Item.onRender",
 			"data": {
 				"item": {
 					"data": item.data,
-					"target": item.dom.content
+					"target": item.dom.get()
 				}
 			}
 		});
@@ -884,10 +884,10 @@ stream.methods._deleteItemSpotUpdate = function(item, config) {
 	this.activities.animations++;
 	config = config || {};
 	var callback = $.isFunction(config) ? config : config.callback || function() {
-		if (!item.dom || !item.dom.content) return;
+		if (!item.dom || !item.dom.get()) return;
 		// if the item is being moved, we should keep all jQuery handlers
 		// for the nested elements (children), thus we use "detach" instead of "remove"
-		config.keepChildren ? item.dom.content.detach() : item.dom.remove("content");
+		config.keepChildren ? item.dom.get().detach() : item.dom.remove("content");
 		delete item.dom;
 		item.vars = {};
 		var itemsCount = Echo.Utils.foldl(0, self.items, function(_item, acc) {
@@ -904,7 +904,7 @@ stream.methods._deleteItemSpotUpdate = function(item, config) {
 		self._executeNextActivity();
 	};
 	if (this.timeouts.slide) {
-		item.dom.content.slideUp(this.timeouts.slide, callback);
+		item.dom.get().slideUp(this.timeouts.slide, callback);
 	} else {
 		callback();
 	}
@@ -978,9 +978,9 @@ stream.methods._placeRootItem = function(item) {
 		var id = this._getItemListIndex(item, this.threads);
 		var next = this.threads[id + 1], prev = this.threads[id - 1];
 		if (next) {
-			next.dom.content.before(content);
+			next.dom.get().before(content);
 		} else {
-			prev.dom.content.after(content);
+			prev.dom.get().after(content);
 		}
 	} else {
 		this.dom.get("body").empty().append(content);
@@ -1004,7 +1004,7 @@ stream.methods._placeChildrenItems = function(parent, children) {
 		}
 	});
 	var targetItemDom = targetItemIdx >= 0
-		? parent.get("children")[targetItemIdx].dom.content
+		? parent.get("children")[targetItemIdx].dom.get()
 		: parent.dom.get("children");
 	var action = targetItemIdx >= 0
 		? "insertAfter"
@@ -2046,7 +2046,7 @@ item.methods._assembleButtons = function() {
 						"plugin": plugin,
 						"item": {
 							"data": self.data,
-							"target": self.dom.content
+							"target": self.dom.get()
 						}
 					},
 					"bubble": true

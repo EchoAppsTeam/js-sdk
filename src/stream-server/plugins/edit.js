@@ -55,7 +55,7 @@ plugin.methods._assembleButton = function() {
 				config["targetQuery"] = plugin.config.get("query", "");
 				config.plugins.push({"name": "Edit"});
 				new Echo.StreamServer.Controls.Submit(config);
-				item.dom.content.get(0).scrollIntoView(true);
+				item.dom.get().get(0).scrollIntoView(true);
 			}
 		};
 	};

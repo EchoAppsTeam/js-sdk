@@ -293,17 +293,17 @@ Echo.Control.prototype.render = function(args) {
 	if (args.template) {
 		template = this._compileTemplate(args.template, data);
 		var _dom = this._applyRenderers(template);
-		target.empty().append(_dom.content);
-		return _dom.content;
+		target.empty().append(_dom.get());
+		return _dom.get();
 	}
 
 	// render the whole control
 	var topic = this.dom ? "onRerender" : "onRender";
 	template = this._compileTemplate(this.template, this.data, this.extension.template);
 	this.dom = this._applyRenderers(template);
-	target.empty().append(this.dom.content);
+	target.empty().append(this.dom.get());
 	this.events.publish({"topic": topic});
-	return this.dom.content;
+	return this.dom.get();
 };
 
 /**
