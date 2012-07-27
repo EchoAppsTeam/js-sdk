@@ -148,6 +148,7 @@ Echo.Tests.Common.prototype.constructPluginRenderersTest = function(config) {
 		var defaults = {
 			"appkey": this.config.appkey,
 			"dataBaseLocation": this.config.dataBaseLocation,
+			"plugin": {"name": plugin},
 			"plugins": [],
 			"ready": function() {
 				test.executePluginRenderersTest(this.getPlugin(plugin));
@@ -155,7 +156,7 @@ Echo.Tests.Common.prototype.constructPluginRenderersTest = function(config) {
 			}
 		};
 		var _config = new Echo.Configuration(config, defaults).getAsHash();
-		_config.plugins.push(config.plugin || {"name": plugin});
+		_config.plugins.push(_config.plugin);
 		init(_config);
 	}
 	this.tests.TestPluginRenderers = data;
