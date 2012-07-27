@@ -155,7 +155,7 @@ Echo.Tests.Common.prototype.constructPluginRenderersTest = function(config) {
 			}
 		};
 		var _config = new Echo.Configuration(config, defaults).getAsHash();
-		_config.plugins.push({"name": plugin});
+		_config.plugins.push(config.plugin || {"name": plugin});
 		init(_config);
 	}
 	this.tests.TestPluginRenderers = data;

@@ -325,6 +325,14 @@ suite.prototype.tests.testMethods = {
 	}
 };
 
+Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Submit", function(config) {
+	return new Echo.StreamServer.Controls.Submit($.extend({
+		"target": $(document.getElementById("qunit-fixture")).empty(),
+		"appkey": config.appkey,
+		"targetURL": config.dataBaseLocation
+	}, config));
+});
+
 //TODO: added admin specific test cases when admin role will be supported in testlib.js
 //suite.prototype.tests.adminWorkflow = {
 //
