@@ -22,15 +22,8 @@ suite.prototype.tests.staticWorkflow = {
 		var counter = new Echo.StreamServer.Controls.Counter({
 			"target" : target,
 			"appkey" : "test.aboutecho.com",
-			"data"   : {"count": count}
-		});
-		var handlerId = counter.events.subscribe({
-			"topic"   : "Echo.StreamServer.Controls.Counter.onRender",
-			"handler" : function(topic, params) {
-				// unsubscribe to avoid multiple test cases execution
-				counter.events.unsubscribe({
-					"handlerId" : handlerId
-				});
+			"data"   : {"count": count},
+			"ready"  : function() {
 				QUnit.ok($(target).html().match(count),
 					'Checking the common usecase rendering');
 				QUnit.start();

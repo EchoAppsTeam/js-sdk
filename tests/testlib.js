@@ -5,6 +5,9 @@
 if (!window.Echo) window.Echo = {};
 if (!Echo.Tests) Echo.Tests = {"Unit": {}, "Common": {}};
 
+// collection of component initializers
+var _initializers = {};
+
 Echo.Tests.runTests = function() {
 	Backplane.init({
 		"serverBaseURL" : "http://api.echoenabled.com/v1",
@@ -31,12 +34,11 @@ Echo.Tests.runTests = function() {
 };
 
 Echo.Tests.getComponentInitializer = function(name) {
-	return Echo.Tests._initializers[name];
+	return _initializers[name];
 };
 
 Echo.Tests.defineComponentInitializer = function(name, initializer) {
-	Echo.Tests._initializers = Echo.Tests._initializers || {};
-	Echo.Tests._initializers[name] = initializer;
+	_initializers[name] = initializer;
 };
 
 Echo.Tests.Common = function() {

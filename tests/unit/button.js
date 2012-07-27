@@ -4,7 +4,10 @@ var suite = Echo.Tests.Unit.Button = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.Button",
-	"functions": ["set"]
+	"functions": [
+		"update",
+		"render"
+	]
 };
 
 suite.prototype.tests = {};
