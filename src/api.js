@@ -186,15 +186,37 @@ Echo.API.Transports.WebSocket.available = function() {
 	//return ("WebSocket" in window || "MozWebSocket" in window);
 };
 
+/**
+ * @class
+ * Class implementing API requests logic on the transport layer.
+ */
+/*
+ * @constructor
+ * @param {Object} config (required) Configuration data.
+ */
 Echo.API.Request = function(config) {
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
+		/**
+		 * @cfg {String} [apiBaseUrl] Specifies the base URL for API requests
+		 */
 		"apiBaseURL": "api.echoenabled.com/v1/",
+		/**
+		 * @cfg {String} [transport] Specifies the transport name.
+		 */
 		"transport": "ajax",
+		/**
+		 * @cfg {Boolean} [secure] Flag enabling requests.
+		 */
 		"secure": false
 	});
 };
 
+/**
+ * @method
+ * Method performing api request using given parameters.
+ * @param {Object} [args] Request parameters.
+ */
 Echo.API.Request.prototype.send = function(args) {
 	var force = false;
 	if (args) {
@@ -205,7 +227,7 @@ Echo.API.Request.prototype.send = function(args) {
 	var method = this["_" + this.config.get("endpoint")];
 	method && method.call(this, force);
 };
-
+//TODO: probably we should replace request with _request or simply not documenting it
 Echo.API.Request.prototype.request = function(params) {
 	var self = this;
 	var timeout = this.config.get("timeout");
