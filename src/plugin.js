@@ -363,7 +363,10 @@ Echo.Plugin.Config.prototype.assemble = function(data) {
 
 	// copy default field values from parent control
 	Echo.Utils.foldl(data, defaults, function(value, acc, key) {
-		acc[key] = config.get(key);
+		// do not override existing values in data
+		if (typeof data[key] === "undefined") {
+			acc[key] = config.get(key);
+		}
 	});
 	return (new Echo.Configuration(data, this.plugin.config.get())).getAsHash();
 };
