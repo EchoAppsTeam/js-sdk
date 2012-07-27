@@ -48,7 +48,7 @@ plugin.methods._assembleButton = function() {
 		return {
 			"name": "Edit",
 			"label": plugin.labels.get("editControl"),
-			"visible": item.user.is("admin") || item.user.has("identity", item.data.actor.id),
+			"visible": item.user.is("admin") || item.user.has("identity", item.get("data.actor.id")),
 			"callback": function() {
 				var config = plugin._submitConfig(item, item.dom.get("subcontainer"));
 				config["parent"] = plugin.component.config.getAsHash(),

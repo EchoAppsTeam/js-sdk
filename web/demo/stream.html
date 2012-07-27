@@ -19,12 +19,26 @@
 
 		var stream = new Echo.StreamServer.Controls.Stream({
 			"target": document.getElementById("stream"),
-			"query": "childrenof:http://example.com/lizard -state:ModeratorDeleted itemsPerPage:2 children:2 childrenItemsPerPage:2 -state:ModeratorDeleted",
+			"query": "childrenof:http://example.com/js-sdk -state:ModeratorDeleted itemsPerPage:2 children:2 childrenItemsPerPage:2 -state:ModeratorDeleted",
 			"appkey": "test.js-kit.com",
 			"identityManager": {
 				"login": identityManager,
 				"signup": identityManager
-			}
+			},
+			"plugins": [{
+				"name": "MetadataManager",
+				"controls": [{
+					"marker": "sticky",
+					"labelMark": "Pin",
+					"labelUnmark": "Unpin"
+				}, {
+					"tag": "football",
+					"labelMark": "Set Football tag",
+					"labelUnmark": "Unset Football tag"
+				}]
+			}, {
+				"name": "Like"
+			}]
 		});
 	</script>
 </body>

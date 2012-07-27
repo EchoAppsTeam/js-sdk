@@ -78,8 +78,8 @@ plugin.init = function() {
 	this.events.subscribe({
 		"topic": "internal.Echo.StreamServer.Controls.Stream.Item.Plugin.Moderation.onUserUpdate",
 		"handler": function(topic, args) {
-			if (args.item.data.actor.id !== item.data.actor.id) return;
-			item.data.actor[args.data.field] = args.data.value;
+			if (args.item.data.actor.id !== item.get("data.actor.id")) return;
+			item.set("data.actor." + args.data.field, args.data.value);
 			item.render();
 			return {"stop": ["bubble"]};
 		}
@@ -151,24 +151,25 @@ plugin.renderers.status = function(element) {
 		element.hide();
 		return element;
 	}
-	if (item.depth) {
-		element.addClass(item.cssPrefix + '-status-child');
+	if (item.get("depth")) {
+		element.addClass(item.get("cssPrefix") + '-status-child');
 	}
-	var status = item.data.object.status || "Untouched";
-	return element.addClass(item.cssPrefix + "-status-" + status);
+	var status = item.get("data.object.status") || "Untouched";
+	return element.addClass(item.get("cssPrefix") + "-status-" + status);
 };
 
 plugin.renderers.statusIcon = function(element) {
 	var item = this.component;
 	if (!item.user.is("admin")) return element;
-	var status = item.data.object.status || "Untouched";
+	var status = item.get("data.object.status") || "Untouched";
 	var title = this.labels.get("status" + status);
-	return element.addClass(item.cssPrefix + "-status-icon-" + status).attr("title", title);
+	return element.addClass(item.get("cssPrefix") + "-status-icon-" + status).attr("title", title);
 };
 
-plugin.methods._changeItemStatus = function(item, status) {
+plugin.methods._changeItemStatus = function(status) {
+	var item = this.component;
 	this.set("selected", false);
-	item.data.object.status = status;
+	item.set("data.object.status", status);
 	item.render({"element": "controls"});
 	// rerender status recursive
 	// since it contains other renderers
@@ -188,6 +189,19 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 	}).send();
 };
 
+plugin.methods._publishCompleteActionEvent = function(name) {
+	this.events.publish({
+		"topic": "on" + name + "Complete",
+		"data": {
+			"item": {
+				"data": this.component.get("data"),
+				"target": this.component.get("dom.content")
+			}
+		},
+		"bubble": true
+	});
+};
+
 plugin.methods._assembleButton = function(name) {
 	var self = this;
 	var callback = function() {
@@ -197,7 +211,7 @@ plugin.methods._assembleButton = function(name) {
 		var activity = {
 			"verbs": ["http://activitystrea.ms/schema/1.0/update"],
 			"targets": [{"id": item.get("data.object.id")}],
-			"actor": {"title": item.data.actor.id},
+			"actor": {"title": item.get("data.actor.id")},
 			"object": {
 				"state": status
 			}
@@ -208,7 +222,8 @@ plugin.methods._assembleButton = function(name) {
 			"sessionID": item.user.get("sessionID"),
 			"target-query": item.config.get("parent.query")
 		}, function(data) {
-			self._changeItemStatus(item, status);
+			self._publishCompleteActionEvent(name);
+			self._changeItemStatus(status);
 			self.requestDataRefresh();
 		}, function() {
 			item.unblock();
@@ -220,21 +235,22 @@ plugin.methods._assembleButton = function(name) {
 			"name": name,
 			"label": self.labels.get(name.toLowerCase() + "Control"),
 			"visible": item.user.is("admin") &&
-					item.data.object.status !== plugin.control2status[name],
+					item.get("data.object.status") !== plugin.control2status[name],
 			"callback": callback
 		};
 	};
 };
 
-plugin.methods._sendUserUpdate = function(config, item) {
+plugin.methods._sendUserUpdate = function(config) {
+	var item = this.component;
 	Echo.IdentityServer.API.request({
 		"endpoint": "update",
 		"data": {
 			"content": {
 				"field": config.field,
 				"value": config.value,
-				"identityURL": item.data.actor.id,
-				"username": item.data.actor.title
+				"identityURL": item.get("data.actor.id"),
+				"username": item.get("data.actor.title")
 			},
 			"appkey": item.config.get("appkey"),
 			"sessionID": item.user.get("sessionID", ""),
@@ -247,30 +263,31 @@ plugin.methods._sendUserUpdate = function(config, item) {
 	}).send();
 };
 
-plugin.methods._assembleBanButton = function(action, application) {
+plugin.methods._assembleBanButton = function(action) {
 	var self = this;
 	var callback = function() {
 		var item = this;
 		var newState = action == "Ban" ? "ModeratorBanned" : "Untouched";
-		item.buttons[plugin.name + "." + action].element
+		item.get("buttons." + plugin.name + "." + action + ".element")
 			.empty()
 			.append(self.labels.get("processingAction", {"state": newState}));
 		self._sendUserUpdate({
 			"field": "state",
 			"value": newState,
 			"onData": function(data) {
+				self.publishCompleteActionEvent(action);
 				self._publishUserUpdateEvent({
 					"item": item,
 					"field": "state",
 					"value": newState
 				});
 			}
-		}, item);
+		});
 	};
 	return function() {
 		var item = this;
-		var isBanned = self._isUserBanned(item);
-		var visible = item.data.actor.id != item.user.get("fakeIdentityURL") &&
+		var isBanned = self._isUserBanned();
+		var visible = item.get("data.actor.id") != item.user.get("fakeIdentityURL") &&
 			isBanned ^ (action == "Ban");
 		return {
 			"name": action,
@@ -286,32 +303,33 @@ plugin.methods._assemblePermissionsButton = function(action) {
 	var self = this;
 	var callback = function() {
 		var item = this;
-		var role = self._getRole(item);
+		var role = self._getRole();
 		var next = self._getNextRole(role);
 		var roles = next != ""
-			? (item.data.actor.roles || []).concat(next)
-			: Echo.Utils.foldl([], item.data.actor.roles || [], function(_role, acc) {
+			? (item.get("data.actor.roles") || []).concat(next)
+			: Echo.Utils.foldl([], item.get("data.actor.roles") || [], function(_role, acc) {
 				if ($.inArray(_role, plugin.roles) < 0) acc.push(_role);
 			});
 		var label = next == "" ? "unset" : "set";
-		item.buttons[plugin.name + "." + action].element
+		item.get("buttons." + plugin.name + "." + action + ".element")
 			.empty()
 			.append(self.labels.get(label + "RoleAction", {"role": next || role}));
 		self._sendUserUpdate({
 			"field": "roles",
 			"value": roles.length ? roles.join(",") : "-",
 			"onData": function(data) {
+				self._publishCompleteActionEvent(action);
 				self._publishUserUpdateEvent({
 					"item": item,
 					"field": "roles",
 					"value": roles
 				});
 			}
-		}, item);
+		});
 	};
 	return function() {
 		var item = this;
-		var role = self._getRole(item);
+		var role = self._getRole();
 		var template = (role
 			? '<span class="{class:control-role} {class:control-role}-{data:role}">{data:label}</span>' +
 				'(<span class="echo-clickable">{data:button}</span>)'
@@ -325,7 +343,7 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		return {
 			"name": action,
 			"label": label,
-			"visible": item.data.actor.id != item.user.get("fakeIdentityURL") &&
+			"visible": item.get("data.actor.id") != item.user.get("fakeIdentityURL") &&
 				item.user.any("roles", ["administrator"]),
 			"callback": callback,
 			"onetime": true
@@ -347,13 +365,13 @@ plugin.methods._publishUserUpdateEvent = function(data) {
 	this.requestDataRefresh();
 };
 
-plugin.methods._isUserBanned = function(item) {
-	return item.data.actor.status == "ModeratorBanned";
+plugin.methods._isUserBanned = function() {
+	return this.component.get("data.actor.status") === "ModeratorBanned";
 };
 
-plugin.methods._getRole = function(item) {
+plugin.methods._getRole = function() {
 	var result = "";
-	$.each(item.data.actor.roles || [], function(id, role) {
+	$.each(this.component.get("data.actor.roles") || [], function(id, role) {
 		if ($.inArray(role, plugin.roles) > 0) {
 			result = role;
 			if (role == "administrator") {

@@ -126,11 +126,11 @@ plugin.methods._truncate = function(text, limit) {
 };
 
 plugin.methods._isReplyToTweet = function(item) {
-	return !!(item && item.source && item.source.name == "Twitter");
+	return !!(item && item.get("source") && item.get("source.name") === "Twitter");
 };
 
 plugin.methods._getTweetAuthor = function(item) {
-	return item.actor.id.replace(/https?\:\/\/twitter\.com\//, "");
+	return item.get("actor.id").replace(/https?\:\/\/twitter\.com\//, "");
 };
 
 Echo.Plugin.create(plugin);

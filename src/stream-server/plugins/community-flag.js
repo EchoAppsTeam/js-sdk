@@ -67,7 +67,7 @@ plugin.methods._assembleButton = function(name) {
 	var plugin = this, item = this.component;
 	var callback = function() {
 		var item = this;
-		item.buttons[plugin.manifest.name + "." + name].element
+		item.get("buttons." + plugin.manifest.name + "." + name + ".element")
 			.empty()
 			.append(plugin.labels.get(name.toLowerCase() + "Processing"));
 		var activity = {
@@ -88,7 +88,7 @@ plugin.methods._assembleButton = function(name) {
 					"topic": "on" + name + "Complete",
 					"data": {
 						"item": {
-							"data": item.data,
+							"data": item.get("data"),
 							"target": item.dom.get()
 						}
 					}
