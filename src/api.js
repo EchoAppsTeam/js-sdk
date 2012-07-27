@@ -50,7 +50,7 @@ Echo.API.Transports.AJAX = function(config) {
 utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transport);
 
 Echo.API.Transports.AJAX.prototype._getScheme = function() {
-	return this.config.get("secure") ? "https:" : window.location.protocol;
+	return this.config.get("secure") ? "https:" : "http:";
 };
 
 Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
@@ -200,6 +200,7 @@ Echo.API.Request = function(config) {
 	 */
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
+<<<<<<< Updated upstream
 		/**
 		 * @cfg {Function} [onData] Callback called after API request succeded.
 		 */
@@ -219,12 +220,14 @@ Echo.API.Request = function(config) {
 		/**
 		 * @cfg {String} [transport] Specifies the transport name.
 		 */
-		"transport": "ajax",
-		/**
-		 * @cfg {Boolean} [secure] Flag enabling requests.
-		 */
-		"secure": false
+		"transport": "ajax"
 	});
+};
+
+Echo.API.Request.prototype._isSecureRequest = function() {
+	var parts = utils.parseURL(this.config.get("apiBaseURL"));
+	if (!parts.scheme) return false;
+	return /https|wss/.test(parts.scheme);
 };
 
 /**
@@ -243,6 +246,7 @@ Echo.API.Request.prototype.send = function(args) {
 	var method = this["_" + this.config.get("endpoint")];
 	method && method.call(this, force);
 };
+
 //TODO: probably we should replace request with _request or simply not documenting it
 Echo.API.Request.prototype.request = function(params) {
 	var self = this;
@@ -287,7 +291,7 @@ Echo.API.Request.prototype._getTransport = function() {
 		$.extend(this._getHandlersByConfig(), {
 			"uri": this._prepareURI(),
 			"data": this.config.get("data"),
-			"secure": this.config.get("secure")
+			"secure": this._isSecureRequest()
 		})
 	);
 };
@@ -301,7 +305,7 @@ Echo.API.Request.prototype._getHandlersByConfig = function() {
 };
 
 Echo.API.Request.prototype._prepareURI = function() {
-	return this.config.get("apiBaseURL") + this.config.get("endpoint");
+	return this.config.get("apiBaseURL").replace(/^(http|ws)s?:\/\//, "") + this.config.get("endpoint");
 };
 
 })(jQuery);

@@ -21,7 +21,7 @@ stream.config = {
 	"liveUpdatesTimeout": 10,
 	"liveUpdatesTimeoutMin": 3,
 	"openLinksInNewWindow": false,
-	"providerIcon": "//cdn.echoenabled.com/images/favicons/comments.png",
+	"providerIcon": "http://cdn.echoenabled.com/images/favicons/comments.png",
 	"slideTimeout": 700,
 	"sortOrder": "reverseChronological",
 	"streamStateLabel": {
@@ -29,7 +29,7 @@ stream.config = {
 		"text": true
 	},
 	"streamStateToggleBy": "mouseover", // mouseover | button | none
-	"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity"
+	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
 };
 
 var _ensurePositiveValue = function(v) { return v < 0 ? 0 : v; };
