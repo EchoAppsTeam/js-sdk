@@ -200,7 +200,6 @@ Echo.API.Request = function(config) {
 	 */
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
-<<<<<<< Updated upstream
 		/**
 		 * @cfg {Function} [onData] Callback called after API request succeded.
 		 */
