@@ -1,6 +1,6 @@
 (function($) {
 
-var suite = Echo.Tests.Unit.StreamItemBodyRenderer = function() {};
+var suite = Echo.Tests.Unit.Stream = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.StreamServer.Controls.Stream.Item",
@@ -9,8 +9,10 @@ suite.prototype.info = {
 
 suite.prototype.tests = {};
 
-suite.prototype.tests["source, aggressiveSanitization, cut links to the current page"] = {
+suite.prototype.tests.bodyRendererTest = {
 	"check": function() {
+		var contentTransform = '1 :) <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty';
+		var contentLimits = '1234567890 <span>qwertyuiop</span> https://encrypted.google.com/#sclient=psy&hl=en&source=hp&q=something&pbx=1&oq=something&aq=f&aqi=g5&aql=1&gs_sm=e&gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&bav=on.2,or.r_gc.r_pw.&fp=d31248080af7dd23&biw=1440&bih=788 #12345678901234567890';
 		_runTestCases([{
 			"description": "source: Twitter, aggressiveSanitization: true",
 			"config": {
@@ -63,14 +65,7 @@ suite.prototype.tests["source, aggressiveSanitization, cut links to the current 
 				}
 			},
 			"expect": '<a href="http://example.com">http://example.com</a> <a href="http://google.com">http://google.com</a> 2'
-		}]);
-	}
-};
-
-suite.prototype.tests["various contentTransformations"] = {
-	"check": function() {
-		var contentTransform = '1 :) <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty';
-		_runTestCases([{
+		}, {
 			"description": "[newlines]",
 			"config": {
 				"contentTransformations": {
@@ -160,14 +155,7 @@ suite.prototype.tests["various contentTransformations"] = {
 				}
 			},
 			"expect": '1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="//cdn.echoenabled.com/images/smileys/emoticon_smile.png" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#&nbsp;<br><a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>&nbsp;<br><a href="http://ya.ru">http://ya.ru</a>&nbsp;<br>&nbsp;<br><a href="http://google.com/#qwerty">http://google.com/#qwerty</a>'
-		}]);
-	}
-};
-
-suite.prototype.tests["limits handling"] = {
-	"check": function() {
-		var contentLimits = '1234567890 <span>qwertyuiop</span> https://encrypted.google.com/#sclient=psy&hl=en&source=hp&q=something&pbx=1&oq=something&aq=f&aqi=g5&aql=1&gs_sm=e&gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&bav=on.2,or.r_gc.r_pw.&fp=d31248080af7dd23&biw=1440&bih=788 #12345678901234567890';
-		_runTestCases([{
+		}, {
 			"description": "very high limits",
 			"config": {
 				"contentTransformations": {
