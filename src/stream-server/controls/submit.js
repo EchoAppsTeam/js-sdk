@@ -275,7 +275,7 @@ submit.renderers.postButton = function(element) {
 		subscriptions[topic] = self.events.subscribe({
 			"topic": topic,
 			"handler": function(topic, params) {
-				button.set(state);
+				button.update(state);
 				if (callback) callback(params);
 			}
 		});

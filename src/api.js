@@ -50,7 +50,7 @@ Echo.API.Transports.AJAX = function(config) {
 utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transport);
 
 Echo.API.Transports.AJAX.prototype._getScheme = function() {
-	return this.config.get("secure") ? "https:" : window.location.protocol;
+	return this.config.get("secure") ? "https:" : "http:";
 };
 
 Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
@@ -186,15 +186,56 @@ Echo.API.Transports.WebSocket.available = function() {
 	//return ("WebSocket" in window || "MozWebSocket" in window);
 };
 
+/**
+ * @class
+ * Class implementing API requests logic on the transport layer.
+ */
+/*
+ * @constructor
+ * @param {Object} config (required) Configuration data.
+ */
 Echo.API.Request = function(config) {
+	/**
+	 * @cfg {String} endpoint (required) Specifes the API endpoint.
+	 */
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
+<<<<<<< Updated upstream
+		/**
+		 * @cfg {Function} [onData] Callback called after API request succeded.
+		 */
+		/**
+		 * @cfg {Function} [onError] Callback called after API request failed. 
+		 */
+		/**
+		 * @cfg {Function} [onOpen] Callback called before sending an API request.
+		 */
+		/**
+		 * @cfg {Function} [onClose] Callback called after API request aborting.
+		 */
+		/**
+		 * @cfg {String} [apiBaseUrl] Specifies the base URL for API requests
+		 */
 		"apiBaseURL": "api.echoenabled.com/v1/",
-		"transport": "ajax",
-		"secure": false
+		/**
+		 * @cfg {String} [transport] Specifies the transport name.
+		 */
+		"transport": "ajax"
 	});
 };
 
+Echo.API.Request.prototype._isSecureRequest = function() {
+	var parts = utils.parseURL(this.config.get("apiBaseURL"));
+	if (!parts.scheme) return false;
+	return /https|wss/.test(parts.scheme);
+};
+
+/**
+ * @method
+ * Method performing api request using given parameters.
+ * @param {Object} [args] Request parameters.
+ * @param {Boolean} [args.force] Flag to initiate aggressive polling.
+ */
 Echo.API.Request.prototype.send = function(args) {
 	var force = false;
 	if (args) {
@@ -206,6 +247,7 @@ Echo.API.Request.prototype.send = function(args) {
 	method && method.call(this, force);
 };
 
+//TODO: probably we should replace request with _request or simply not documenting it
 Echo.API.Request.prototype.request = function(params) {
 	var self = this;
 	var timeout = this.config.get("timeout");
@@ -249,7 +291,7 @@ Echo.API.Request.prototype._getTransport = function() {
 		$.extend(this._getHandlersByConfig(), {
 			"uri": this._prepareURI(),
 			"data": this.config.get("data"),
-			"secure": this.config.get("secure")
+			"secure": this._isSecureRequest()
 		})
 	);
 };
@@ -263,7 +305,7 @@ Echo.API.Request.prototype._getHandlersByConfig = function() {
 };
 
 Echo.API.Request.prototype._prepareURI = function() {
-	return this.config.get("apiBaseURL") + this.config.get("endpoint");
+	return this.config.get("apiBaseURL").replace(/^(http|ws)s?:\/\//, "") + this.config.get("endpoint");
 };
 
 })(jQuery);

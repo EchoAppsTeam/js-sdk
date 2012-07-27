@@ -4,7 +4,9 @@ if (Echo.Utils.isComponentDefined("Echo.Button")) return;
 
 /**
  * @class
- * Class implements standard form element button.
+ * Class implements form element button.
+ *
+ * This class enhances standard form element button by adding the ability to define and update button properties like label, disabled and icon.
  *
  * @constructor
  * Constructor of class encapsulating form element button.
@@ -13,51 +15,81 @@ if (Echo.Utils.isComponentDefined("Echo.Button")) return;
  *
  *     new Echo.Button(element, {
  *         "label": "MyButton",
- *         "icon": false,
  *         "disabled": false
- *     }); // will adds simple button with label 'MyButton' and without icon
+ *     }); // will add simple button with label 'MyButton' and without icon
  *
  * @param {HTMLElement} element HTML element which is container for the button.
- * @param {Object} state Object representing the button state.
- * @param {String} state.label String representing text to show on the button.
- * @param {String} state.icon String representing CSS class which containes background icon of the button.
- * @param {Boolean} state.disabled Disables(true) or enables(false) the button.
+ * @param {Object} params Object representing button properties.
+ * @param {String} params.label String representing text to show on the button.
+ * @param {String} params.icon String representing CSS class which containes background icon of the button.
+ * @param {Boolean} params.disabled Disables(true) or enables(false) the button.
  */
 
-Echo.Button = function(element, state) {
-	this.element = element || $("<button>");
+Echo.Button = function(element, params) {
+	if (!element) return;
+	params = params || {};
+	this.element = element;
 	this.element.addClass("echo-button");
 	$("<div>").appendTo(element).addClass("label");
-	this.set({
-		"label": state.label || this.element.text(),
-		"icon": state.icon || "",
-		"disabled": state.disabled || !!this.element.attr('disabled')
+	this.update({
+		"label": params.label || this.element.text(),
+		"icon": params.icon || "",
+		"disabled": params.disabled || !!this.element.attr('disabled')
 	});
 	Echo.Utils.addCSS(this._css, "echo-button");
 };
 
 /**
- * Method transfers the button to new state and redraws the button.
+ * @method update
+ * Method updates button properties and rerenders the button.
  *
- * @method set
- * @param {Object} state Object representing the button state.
- * @param {String} state.label String representing text to show on the button.
- * @param {String} state.icon String representing CSS class which containes background icon of the button.
- * @param {Boolean} state.disabled Disables(true) or enables(false) the button.
+ *     // style tag in the head of HTML document
+ *     // <style>
+ *     //     .ui-button-icon { background-image: url(http://example.com/image.jpg); }
+ *     // </style>
+ *
+ *     var element = $("<button></button>");
+ *
+ *     var button = new Echo.Button(element, {
+ *         "label": "MyButton"
+ *     });
+ *
+ *     button.update({
+ *         "icon": "ui-button-icon",
+ *         "disabled": true
+ *     }); // will disables the button and set "http://example.com/image.jpg" as a background icon of the button
+ *
+ * @param {Object} params Object representing button properties.
+ * @param {String} params.label String representing text to show on the button.
+ * @param {String} params.icon String representing CSS class which containes background icon of the button.
+ * @param {Boolean} params.disabled Disables(true) or enables(false) the button.
  */
 
-Echo.Button.prototype.set = function(state) {
-	if (state) {
-		this.label = state.label || "";
-		this.icon = state.icon || "";
-		this.disabled = state.disabled || false;
-	}
-	this._refresh();
+Echo.Button.prototype.update = function(params) {
+	params = params || {};
+	this.label = params.label || "";
+	this.icon = params.icon || "";
+	this.disabled = params.disabled || false;
+	this.render();
 };
 
-// internal methods
+/**
+ * @method render
+ * Method used to render the button.
+ *
+ *     var element = $("<button></button>");
+ *
+ *     var button = new Echo.Button(element, {
+ *         "label": "MyButton",
+ *         "icon": false,
+ *         "disabled": false
+ *     });
+ *
+ *     button.label = "NewButton";
+ *     button.render(); // button's label will be changed from "MyButton" to "NewButton"
+ */
 
-Echo.Button.prototype._refresh = function() {
+Echo.Button.prototype.render = function() {
 	$(".label", this.element).text(this.label);
 	var iconElement = $(".icon", this.element);
 	if (this.icon) {

@@ -86,8 +86,8 @@ plugin.renderers.children = function(element) {
 	var plugin = this, item = plugin.component;
 	// perform reply form rerendering *only* when we have exactly 1 item
 	// (the first item is being added or the last one is being deleted)
-	if (item.children.length == 1) {
-		var child = item.children[0];
+	if (item.get("children").length == 1) {
+		var child = item.get("children")[0];
 		if (child.get("added") || child.get("deleted")) {
 			plugin._itemCSS("remove", item, item.dom.get("replyForm"));
 			item.render({"element": "compactForm"});
@@ -99,7 +99,7 @@ plugin.renderers.children = function(element) {
 plugin.renderers.compactForm = function(element) {
 	var plugin = this, item = plugin.component;
 	var hasChildren = !!item.children.length;
-	if (!item.get("depth") && hasChildren && !plugin.get("submit") && !item.children[0].get("deleted")) {
+	if (!item.get("depth") && hasChildren && !plugin.get("submit") && !item.get("children")[0].get("deleted")) {
 		plugin._itemCSS("add", item, element.parent());
 		return element.show();
 	}
@@ -185,7 +185,7 @@ plugin.methods._assembleButton = function() {
 
 plugin.methods._itemCSS = function(action, item, element) {
 	$.each(["container", "container-child", "depth-" + (item.get("depth") + 1)], function(i, css) {
-		element[action + "Class"](item.cssPrefix + "-" + css);
+		element[action + "Class"](item.get("cssPrefix") + "-" + css);
 	});
 	element[action + "Class"]('echo-trinaryBackgroundColor');
 };

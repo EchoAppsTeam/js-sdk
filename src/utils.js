@@ -161,7 +161,7 @@ Echo.Utils.foldl = function(acc, object, callback) {
 */
 Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
 	if (!key) return obj;
-	if (typeof key == "string") {
+	if (typeof key === "string") {
 		key = key.split(/\./);
 	}
 	if (!key.length) return obj;
@@ -170,7 +170,7 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
 		if (callback) {
 			callback(_data, _key);
 		}
-		if (typeof _data[_key] == "undefined") {
+		if (typeof _data[_key] === "undefined") {
 			found = false;
 		} else {
 			return _data[_key];

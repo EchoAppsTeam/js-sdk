@@ -116,7 +116,7 @@ plugin.methods._assembleButton = function(action, control) {
 	var callback = function() {
 		var item = this;
 		var operation = action.toLowerCase();
-		item.buttons[plugin.name + "." + name].element
+		item.get("buttons." + plugin.name + "." + name + ".element")
 			.empty()
 			.append(self.labels.get(operation + "Processing", {"type": type, "marker": marker}));
 		var verb = type == "tag" ? operation.replace(/mark/g, "tag") : operation;
@@ -134,6 +134,16 @@ plugin.methods._assembleButton = function(action, control) {
 			"endpoint": "submit",
 			"submissionProxyURL": item.config.get("submissionProxyURL"),
 			"onData": function() {
+				self.events.publish({
+					"topic": "on" + name + "Complete",
+					"data": {
+						"item": {
+							"data": item.get("data"),
+							"target": item.get("dom.content")
+						}
+					},
+					"bubble": true
+				});
 				self.requestDataRefresh();
 			},
 			"data": {
@@ -149,19 +159,19 @@ plugin.methods._assembleButton = function(action, control) {
 		return {
 			"name": name,
 			"label": control["label" + action],
-			"visible": self._isButtonVisible(item, control, marker, action, type),
+			"visible": self._isButtonVisible(control, marker, action, type),
 			"onetime": true,
 			"callback": callback
 		};
 	};
 };
 
-plugin.methods._isButtonVisible = function(item, control, marker, action, type) {
-	var component = this.component;
-	var visible = ($.inArray(marker, item.data.object[type + "s"] || []) == -1) ^ (action == "Unmark");
+plugin.methods._isButtonVisible = function(control, marker, action, type) {
+	var item = this.component;
+	var visible = ($.inArray(marker, item.get("data.object." + type + "s") || []) == -1) ^ (action == "Unmark");
 	if (!visible || !item.user.is("logged")) return false;
 	if (item.user.is("admin")) return true;
-	var customProxyURL = component.config.get("submissionProxyURL");
+	var customProxyURL = item.config.get("submissionProxyURL");
 	if (type == "marker" && !customProxyURL) return false;
 	control.visible = control.visible || function() { return false; };
 	if ($.isFunction(control.visible)) {

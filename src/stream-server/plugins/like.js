@@ -67,7 +67,7 @@ plugin.methods._sendActivity = function(name, item) {
 			"topic": "on" + name + "Complete",
 			"data": {
 				"item": {
-					"data": item.data,
+					"data": item.get("data"),
 					"target": item.dom.get()
 				}
 			}
@@ -81,7 +81,7 @@ plugin.methods._assembleButton = function(name) {
 	var component = this.component;
 	var callback = function() {
 		var item = this;
-		item.buttons[plugin.manifest.name + "." + name].element
+		item.get("buttons." + plugin.manifest.name + "." + name + ".element")
 			.empty()
 			.append(plugin.labels.get(name.toLowerCase() + "Processing"));
 		plugin._sendActivity(name, item);
@@ -89,7 +89,7 @@ plugin.methods._assembleButton = function(name) {
 	return function() {
 		var item = this;
 		var action =
-			($.map(item.data.object.likes, function(entry) {
+			($.map(item.get("data.object.likes"), function(entry) {
 				if (item.user.has("identity", entry.actor.id)) return entry;
 			})).length > 0 ? "Unlike" : "Like";
 		return {
@@ -105,9 +105,8 @@ plugin.methods._assembleButton = function(name) {
 plugin.renderers.likedBy = function(element) {
 	var plugin = this;
 	var item = this.component;
-	if (!item.data.object.likes.length) {
-		element.hide();
-		return;
+	if (!item.get("data.object.likes").length) {
+		return element.hide();
 	}
 	var likesPerPage = 5;
 	var visibleUsersCount = plugin.get("facePile")
@@ -115,7 +114,7 @@ plugin.renderers.likedBy = function(element) {
 		: likesPerPage;
 	var youLike = false;
 	var userId = item.user.get("id");
-	var users = item.data.object.likes;
+	var users = item.get("data.object.likes");
 	$.each(users, function(i, like) {
 		if (like.actor.id === userId) {
 			youLike = true;
@@ -129,12 +128,12 @@ plugin.renderers.likedBy = function(element) {
 			"entries": users
 		},
 		"initialUsersCount": visibleUsersCount,
-		"totalUsersCount": item.data.object.accumulators.likesCount,
+		"totalUsersCount": item.get("data.object.accumulators.likesCount"),
 		"suffixText": plugin.labels.get(users.length > 1 || youLike ? "likeThis" : "likesThis")
 	});
 	config.plugins.push({"name": "Like"});
 	if (item.user.is("admin")) {
-		element.addClass(item.cssPrefix + "-highlight");
+		element.addClass(item.get("cssPrefix") + "-highlight");
 	}
 	var facePile = new Echo.StreamServer.Controls.FacePile(config);
 	plugin.set("facePile", facePile);
@@ -181,18 +180,17 @@ plugin.renderers.adminUnlike = function(element) {
 	var plugin = this;
 	var item = this.component;
 	if (!item.user.is("admin")) {
-		element.remove();
-		return;
+		return element.remove();
 	}
-	element.one("click", function() {
+	return element.one("click", function() {
 		item.dom.get("container").css("opacity", 0.3);
 		plugin.events.publish({
 			"topic": "onUnlike",
 			"prefix": "internal",
 			"bubble": true,
-			"actor": item.data,
+			"actor": item.get("data"),
 			"data": {
-				"actor": item.data,
+				"actor": item.get("data"),
 				"target": item.config.get("parent.target").get(0)
 			}
 		});

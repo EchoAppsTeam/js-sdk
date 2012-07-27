@@ -48,7 +48,7 @@ plugin.methods._assembleButton = function() {
 		return {
 			"name": "Edit",
 			"label": plugin.labels.get("editControl"),
-			"visible": item.user.is("admin") || item.user.has("identity", item.data.actor.id),
+			"visible": item.user.is("admin") || item.user.has("identity", item.get("data.actor.id")),
 			"callback": function() {
 				var config = plugin._submitConfig(item, item.dom.get("subcontainer"));
 				config["parent"] = plugin.component.config.getAsHash(),
@@ -140,6 +140,7 @@ plugin.renderers.author = function(element) {
 
 plugin.renderers.editedDate = function(element) {
 	var published = this.component.get("data.object.published");
+	if (!published) return element.empty();
 	var date = new Date(Echo.Utils.timestampFromW3CDTF(published) * 1000);
 	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
 };
@@ -147,12 +148,13 @@ plugin.renderers.editedDate = function(element) {
 plugin.renderers.cancelButton = function(element) {
 	var plugin = this;
 	var component = plugin.component;
-	element.click(function() {
+	var handler = function() {
 		component.events.publish({
 			"topic": "onEditError",
 			"context": component.config.get("parent.context")
 		});
-	});
+	};
+	return element.click(handler);
 };
 
 plugin.methods._prepareContent = function() {

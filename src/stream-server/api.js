@@ -13,7 +13,7 @@ Echo.StreamServer.API.Request = function(config) {
 		"onData": function() {},
 		"onError": function() {},
 		"onOpen": function() {},
-		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity"
+		"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = "initial"; // initial | secondary

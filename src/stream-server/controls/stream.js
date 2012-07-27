@@ -21,7 +21,7 @@ stream.config = {
 	"liveUpdatesTimeout": 10,
 	"liveUpdatesTimeoutMin": 3,
 	"openLinksInNewWindow": false,
-	"providerIcon": "//cdn.echoenabled.com/images/favicons/comments.png",
+	"providerIcon": "http://cdn.echoenabled.com/images/favicons/comments.png",
 	"slideTimeout": 700,
 	"sortOrder": "reverseChronological",
 	"streamStateLabel": {
@@ -29,7 +29,7 @@ stream.config = {
 		"text": true
 	},
 	"streamStateToggleBy": "mouseover", // mouseover | button | none
-	"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity"
+	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
 };
 
 var _ensurePositiveValue = function(v) { return v < 0 ? 0 : v; };
@@ -1360,8 +1360,8 @@ item.renderers.container = function(element, dom) {
 	element.addClass(this.cssPrefix + "-depth-" + this.depth);
 	var switchClasses = function(action) {
 		$.map(self.buttonsOrder, function(name) {
-			if (!self.buttons[name].element) return;
-			self.buttons[name].clickableElements[action + "Class"]("echo-linkColor");
+			if (!self.get("buttons." + name + ".element")) return;
+			self.get("buttons." + name + ".clickableElements")[action + "Class"]("echo-linkColor");
 		});
 	};
 	if (!Echo.Utils.isMobileDevice()) {
@@ -1501,7 +1501,7 @@ item.renderers._button = function(element, dom, extra) {
 			if (extra.callback) extra.callback();
 		}
 	});
-	var data = this.buttons[extra.plugin + "." + extra.name];
+	var data = this.get("buttons." + extra.plugin + "." + extra.name);
 	data.element = button;
 	data.clickableElements = clickables;
 	if (Echo.Utils.isMobileDevice()) {
@@ -1520,7 +1520,7 @@ item.renderers.buttons = function(element) {
 	this._sortButtons();
 	element.empty();
 	$.map(this.buttonsOrder, function(name) {
-		var data = self.buttons[name];
+		var data = self.get("buttons." + name);
 		if (!data || !data.name || !data.visible()) {
 			return;
 		}
@@ -2061,7 +2061,7 @@ item.methods._assembleButtons = function() {
 				? visible
 				: function() { return visible; };
 			var name = plugin + "." + data.name;
-			self.buttons[name] = data;
+			self.set("buttons." + name, data);
 			if ($.inArray(name, self.buttonsOrder) < 0) {
 				buttonsOrder.push(name);
 			}
@@ -2080,7 +2080,7 @@ item.methods._sortButtons = function() {
 		this.config.set("buttonsOrder", defaultOrder);
 	} else if (requiredOrder != defaultOrder) {
 		var push = function(name, acc, pos) {
-			if (!self.buttons[name]) return;
+			if (!self.get("buttons." + name)) return;
 			acc.push(name);
 			pos = pos || $.inArray(name, defaultOrder);
 			if (pos >= 0) {
