@@ -30,6 +30,15 @@ Echo.Tests.runTests = function() {
 	});
 };
 
+Echo.Tests.getComponentInitializer = function(name) {
+	return Echo.Tests._initializers[name];
+};
+
+Echo.Tests.defineComponentInitializer = function(name, initializer) {
+	Echo.Tests._initializers = Echo.Tests._initializers || {};
+	Echo.Tests._initializers[name] = initializer;
+};
+
 Echo.Tests.Common = function() {
 	this.config = {
 		"asyncTimeout": 500,
@@ -125,14 +134,29 @@ Echo.Tests.Common.prototype.normalizeName = function(name, capitalize) {
 		: name);
 };
 
-
-Echo.Tests.Common.prototype.constructUserTest = function(data) {
-	//TODO: add extra validation of the user object
-	data.check = function(instance) {
-		QUnit.ok(!!instance.user, "Check whether the given instance has the user object attached");
-		QUnit.start();
+Echo.Tests.Common.prototype.constructPluginRenderersTest = function(config) {
+	var data = {
+		"config": {"async": true}
 	};
-	this.tests.TestUserInstance = { "config": { "user": {} }};
+	data.check = function(instance) {
+		var test = this;
+		var parts = this.info.className.split(".Plugins.");
+		var component = parts[0], plugin = parts[1];
+		var init = Echo.Tests.getComponentInitializer(component);
+		var defaults = {
+			"appkey": this.config.appkey,
+			"dataBaseLocation": this.config.dataBaseLocation,
+			"plugins": [],
+			"ready": function() {
+				test.executePluginRenderersTest(this.getPlugin(plugin));
+				QUnit.start();
+			}
+		};
+		var _config = new Echo.Configuration(config, defaults).getAsHash();
+		_config.plugins.push({"name": plugin});
+		init(_config);
+	}
+	this.tests.TestPluginRenderers = data;
 };
 
 Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
@@ -159,8 +183,6 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 			instance.render();
 		};
 		$.each(instance.extension.renderers, function(name, renderer) {
-			// renderer routes shouldn't be checked here, it's Router thing
-			if (name == "routes") return;
 			self.info.functions.push("renderers." + name);
 			var element = instance.dom.get(name);
 			if (!element) {

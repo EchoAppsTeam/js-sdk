@@ -392,4 +392,25 @@ var _itemConfigData = {
 	}
 };
 
+Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Stream", function(config) {
+	return new Echo.StreamServer.Controls.Stream($.extend({
+		"target": $(document.getElementById("qunit-fixture")).empty(),
+		"appkey": config.appkey,
+		"query": "childrenof:" + config.dataBaseLocation + " sortOrder:repliesDescending"
+	}, config));
+});
+
+Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Stream.Item", function(config) {
+	var stream = Echo.Tests.getComponentInitializer("Echo.StreamServer.Controls.Stream");
+	var ready = config.ready || function() {};
+	// remove ready from the config, because we override it below
+	delete config.ready;
+	stream($.extend({"ready": function() {
+		var item = this.threads[0];
+		if (!item) return;
+		ready.call(item);
+	}}, config));
+	return stream;
+});
+
 })(jQuery);
