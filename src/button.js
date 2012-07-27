@@ -2,24 +2,60 @@
  
 if (Echo.Utils.isComponentDefined("Echo.Button")) return;
 
+/**
+ * @class
+ * Class implements standard form element button.
+ *
+ * @constructor
+ * Constructor of class encapsulating form element button.
+ *
+ *     var element = $("<button></button>");
+ *
+ *     new Echo.Button(element, {
+ *         "label": "MyButton",
+ *         "icon": false,
+ *         "disabled": false
+ *     }); // will adds simple button with label 'MyButton' and without icon
+ *
+ * @param {HTMLElement} element HTML element which is container for the button.
+ * @param {Object} state Object representing the button state.
+ * @param {String} state.label String representing text to show on the button.
+ * @param {String} state.icon String representing CSS class which containes background icon of the button.
+ * @param {Boolean} state.disabled Disables(true) or enables(false) the button.
+ */
+
 Echo.Button = function(element, state) {
-	this.element = element;
+	this.element = element || $("<button>");
 	this.element.addClass("echo-button");
 	$("<div>").appendTo(element).addClass("label");
 	this.set({
 		"label": state.label || this.element.text(),
-		"icon": state.icon || false,
+		"icon": state.icon || "",
 		"disabled": state.disabled || !!this.element.attr('disabled')
 	});
-	Echo.Utils.addCSS(this._css);
+	Echo.Utils.addCSS(this._css, "echo-button");
 };
 
+/**
+ * Method transfers the button to new state and redraws the button.
+ *
+ * @method set
+ * @param {Object} state Object representing the button state.
+ * @param {String} state.label String representing text to show on the button.
+ * @param {String} state.icon String representing CSS class which containes background icon of the button.
+ * @param {Boolean} state.disabled Disables(true) or enables(false) the button.
+ */
+
 Echo.Button.prototype.set = function(state) {
-	this.label = state.label || "";
-	this.icon = state.icon || false;
-	this.disabled = state.disabled || false;
+	if (state) {
+		this.label = state.label || "";
+		this.icon = state.icon || "";
+		this.disabled = state.disabled || false;
+	}
 	this._refresh();
 };
+
+// internal methods
 
 Echo.Button.prototype._refresh = function() {
 	$(".label", this.element).text(this.label);
