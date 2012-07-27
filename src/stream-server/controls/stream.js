@@ -353,7 +353,6 @@ stream.methods.refresh = function() {
 	this.request.abort();
 	this._initVars();
 	delete this.lastRequest;
-	this.clearCache();
 	this.render();
 	this.requestInitialItems();
 	this.events.publish({"topic": "onRerender"});
