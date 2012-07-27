@@ -195,8 +195,23 @@ Echo.API.Transports.WebSocket.available = function() {
  * @param {Object} config (required) Configuration data.
  */
 Echo.API.Request = function(config) {
+	/**
+	 * @cfg {String} endpoint (required) Specifes the API endpoint.
+	 */
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
+		/**
+		 * @cfg {Function} [onData] Callback called after API request succeded.
+		 */
+		/**
+		 * @cfg {Function} [onError] Callback called after API request failed. 
+		 */
+		/**
+		 * @cfg {Function} [onOpen] Callback called before sending an API request.
+		 */
+		/**
+		 * @cfg {Function} [onClose] Callback called after API request aborting.
+		 */
 		/**
 		 * @cfg {String} [apiBaseUrl] Specifies the base URL for API requests
 		 */
@@ -216,6 +231,7 @@ Echo.API.Request = function(config) {
  * @method
  * Method performing api request using given parameters.
  * @param {Object} [args] Request parameters.
+ * @param {Boolean} [args.force] Flag to initiate aggressive polling.
  */
 Echo.API.Request.prototype.send = function(args) {
 	var force = false;
