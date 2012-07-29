@@ -112,7 +112,10 @@ Echo.Control.prototype.defaults.config = {
  * @cfg {String} appkey (required) Specifies the customer application key. You can use the "test.echoenabled.com" appkey for testing purposes.
  */
 	"appkey": "",
-	"query": "",
+/**
+ * @cfg {Object} labels Specifies the set of language variables defined for this particular control.
+ */
+	"labels": {},
 /**
  * @cfg {String} [apiBaseURL="api.echoenabled.com/v1/"] URL prefix for all API requests
  */
@@ -133,7 +136,8 @@ Echo.Control.prototype.defaults.config = {
 	"infoMessages": {
 		"enabled": true,
 		"layout": "full"
-	}
+	},
+	"query": ""
 };
 
 Echo.Control.prototype.defaults.labels = {
@@ -568,7 +572,12 @@ Echo.Control.prototype._init.subscriptions = function() {
 
 Echo.Control.prototype._init.labels = function() {
 	var labels = $.extend({}, this.get("defaults.labels"), this.manifest.labels);
-	return new Echo.Labels(labels, this.name);
+
+	// define default language var values with the lowest priority available
+	Echo.Labels.set(labels, this.name, true);
+
+	// define language var values passed within the config with the highest priority
+	return new Echo.Labels(this.config.get("labels"), this.name);
 };
 
 Echo.Control.prototype._init.css = function() {

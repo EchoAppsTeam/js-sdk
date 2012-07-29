@@ -67,7 +67,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"initializationWithInvalidParams",
 			"incomingConfigHandling",
 			"controlRendering",
-			"eventsMechanism"
+			"eventsMechanism",
+			"labelsOverriding"
 		], "cases");
 
 	}
@@ -379,6 +380,29 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 	};
 	suite.initTestControl({
 		"context": context,
+		"ready": check
+	});
+};
+
+suite.prototype.cases.labelsOverriding = function(callback) {
+	Echo.Labels.set({
+		"label1": "label1 global override",
+		"label2": "label2 global override"
+	}, "Echo.StreamServer.Controls.MyControl");
+	var check = function() {
+		QUnit.equal(this.labels.get("label1"), "label1 override via config",
+			"Checking labels override via control config");
+		QUnit.equal(this.labels.get("label2"), "label2 global override",
+			"Checking labels override via control config");
+		QUnit.equal(this.labels.get("label3"), "label3 value",
+			"Checking extraction from the control defined labels set");
+
+		callback && callback();
+	};
+	suite.initTestControl({
+		"labels": {
+			"label1": "label1 override via config"
+		},
 		"ready": check
 	});
 };

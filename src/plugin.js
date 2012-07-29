@@ -39,16 +39,12 @@ Echo.Plugin.create = function(manifest) {
 		// define extra css class for the control target
 		this.component.config.get("target").addClass(this.cssPrefix);
 		this._init([
+			"config",
 			"css",
 			"events",
 			"labels",
-			"config",
 			"renderers"
 		]);
-		// define plugin labels
-		if (manifest.labels) {
-			self.labels.set(manifest.labels);
-		}
 		// subscribe to the events defined in the plugin
 		$.each(manifest.events, function(topic, data) {
 			data = $.isFunction(data) ? {"handler": data} : data;
@@ -253,7 +249,13 @@ Echo.Plugin.prototype._init.css = function() {
 };
 
 Echo.Plugin.prototype._init.labels = function() {
-	return new Echo.Plugin.Labels({"plugin": this});
+	var namespace = this.component.name + ".Plugins." + this.name;
+
+	// define default language var values with the lowest priority available
+	Echo.Labels.set($.extend({}, this.manifest.labels), namespace, true);
+
+	// define language var values passed within the config with the highest priority
+	return new Echo.Labels(this.config.get("labels", {}), namespace);
 };
 
 Echo.Plugin.prototype._init.config = function() {
@@ -276,39 +278,13 @@ Echo.Plugin._getClassName = function(name, component) {
 };
 
 /**
- * @class Echo.Plugin.labels
- * Echo Plugin interlayer for Echo.Labels utilization.
- */
-Echo.Plugin._defineNestedClass("Labels");
-
-/**
- * @method
- * Function to add/override the language variable list.
- * @param {Object} labels Object containing the list of language variables.
- */
-Echo.Plugin.Labels.prototype.set = function(labels) {
-	Echo.Labels.set(labels, "Plugins." + this.plugin.name, true);
-};
-
-/**
- * @method
- * Function returning the language variable value by its name.
- * @param {String} name Language variable name.
- * @param {Object} data Flat object data that should be inserted instead of a placeholder in the language variable.
- * @return {String} Returns the string value of the language variable.
- */
-Echo.Plugin.Labels.prototype.get = function(name, data) {
-	return Echo.Labels.get(name, "Plugins." + this.plugin.name, data);
-};
-
-/**
  * @class Echo.Plugin.config
  * Echo Plugin interlayer for Echo.Configuration utilization.
  */
 Echo.Plugin._defineNestedClass("Config");
 
 Echo.Plugin.Config.prototype._normalize = function(key) {
-	return (["plugins", this.plugin.manifest.name].concat(key ? key : [])).join(".");
+	return (["plugins", this.plugin.name].concat(key ? key : [])).join(".");
 };
 
 /**

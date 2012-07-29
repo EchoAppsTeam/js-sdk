@@ -108,7 +108,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"enabledConfigParamCheck",
 			"configInterfaceCheck",
 			"pluginRenderingMechanism",
-			"eventsMechanism"
+			"eventsMechanism",
+			"labelsOverriding"
 		], "cases");
 	}
 };
@@ -460,6 +461,36 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 			"name": "MyPlugin",
 			"requiredParam1": true,
 			"requiredParam2": true
+		}],
+		"ready": check
+	});
+};
+
+suite.prototype.cases.labelsOverriding = function(callback) {
+	Echo.Labels.set({
+		"label1": "label1 global override",
+		"label2": "label2 global override"
+	}, "Echo.StreamServer.Controls.MyControl.Plugins.MyPlugin");
+	var check = function() {
+		var plugin = this.getPlugin("MyPlugin");
+
+		QUnit.equal(plugin.labels.get("label1"), "label1 override via config",
+			"Checking labels override via plugin config");
+		QUnit.equal(plugin.labels.get("label2"), "label2 global override",
+			"Checking labels override via plugin config");
+		QUnit.equal(plugin.labels.get("label3"), "plugin label3 value",
+			"Checking extraction from the plugin defined labels set");
+
+		callback && callback();
+	};
+	suite.control().initTestControl({
+		"plugins": [{
+			"name": "MyPlugin",
+			"requiredParam1": true,
+			"requiredParam2": true,
+			"labels": {
+				"label1": "label1 override via config"
+			}
 		}],
 		"ready": check
 	});
