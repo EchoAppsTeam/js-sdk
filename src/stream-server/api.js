@@ -316,7 +316,7 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 		return strip(entry.verbs[0]);
 	};
 	var type = function(entry) {
-		return entry.object && entry.object.objectTypes ? strip(entry.object.objectTypes[0]) : undefined;
+		return entry.object && entry.object.objectTypes ? entry.object.objectTypes[0] : undefined;
 	};
 	var post, meta = {"markers": "", "tags": ""};
 	$.map(entries, function(entry) {

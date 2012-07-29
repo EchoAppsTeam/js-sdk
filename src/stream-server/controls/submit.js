@@ -116,6 +116,15 @@ submit.config = {
  *     });
  */
 	"postingTimeout": 30,
+/**
+ * @cfg {String} type Allows to define item type. The value of this parameter should be a valid URI.
+ *     new Echo.StreamServer.Controls.Submit({
+ *         ...
+ *         "type": "http://echoenabled.com/activitystreams/schema/1.0/category",
+ *         ...
+ *     });
+ */
+	"type": undefined,
 	"targetQuery": undefined
 };
 
@@ -313,9 +322,10 @@ submit.methods.post = function() {
 		};
 		self.events.publish(params);
 	};
-	var content = [].concat(self._getActivity("post", "comment", self.dom.get("text").val()),
-				 self._getActivity("tag", "marker", self.dom.get("markers").val()),
-				 self._getActivity("tag", "tag", self.dom.get("tags").val()));
+	var postType = this.config.get("type", this._getURL("comment"));
+	var content = [].concat(self._getActivity("post", postType, self.dom.get("text").val()),
+				 self._getActivity("tag", this._getURL("marker"), self.dom.get("markers").val()),
+				 self._getActivity("tag", this._getURL("tag"), self.dom.get("tags").val()));
 	var entry = {
 		"content": content,
 		"appkey": this.config.get("appkey"),
@@ -411,21 +421,25 @@ submit.methods.refresh = function() {
 submit.methods._getActivity = function(verb, type, data) {
 	return (!data) ? [] : {
 		"actor": {
-			"objectTypes": [ "http://activitystrea.ms/schema/1.0/person" ],
+			"objectTypes": [ this._getURL("person") ],
 			"name": this.user.get("name", ( this.user.is("logged") ? "" : this.dom.get("name").val() )),
 			"avatar": this.user.get("avatar", "")
 		},
 		"object": {
-			"objectTypes": [ "http://activitystrea.ms/schema/1.0/" + type ],
+			"objectTypes": [ type ],
 			"content": data,
 		},
 		"source": this.config.get("source"),
-		"verbs": [ "http://activitystrea.ms/schema/1.0/" + verb ],
+		"verbs": [ this._getURL(verb) ],
 		"targets": [{
 			"id": this.config.get("targetURL")
 		}]
 	};
 };
+
+submit.methods._getURL = function(postfix) {
+	return "http://activitystrea.ms/schema/1.0/" + postfix;
+}
 
 submit.methods._showError = function(data) {
 	data = data || {};
