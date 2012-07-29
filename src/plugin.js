@@ -42,14 +42,10 @@ Echo.Plugin.create = function(manifest) {
 			"config",
 			"css",
 			"events",
+			"subscriptions",
 			"labels",
 			"renderers"
 		]);
-		// subscribe to the events defined in the plugin
-		$.each(manifest.events, function(topic, data) {
-			data = $.isFunction(data) ? {"handler": data} : data;
-			self.events.subscribe($.extend({"topic": topic}, data));
-		});
 		// we treat "false" as an indication that the plugin was not initialized
 		if (manifest.init.call(this) === false) {
 			this.disable();
@@ -264,6 +260,14 @@ Echo.Plugin.prototype._init.config = function() {
 
 Echo.Plugin.prototype._init.events = function() {
 	return new Echo.Plugin.Events({"plugin": this});
+};
+
+Echo.Plugin.prototype._init.subscriptions = function() {
+	var self = this;
+	$.each(this.manifest.events, function(topic, data) {
+		data = $.isFunction(data) ? {"handler": data} : data;
+		self.events.subscribe($.extend({"topic": topic}, data));
+	});
 };
 
 Echo.Plugin.prototype._init.renderers = function() {
