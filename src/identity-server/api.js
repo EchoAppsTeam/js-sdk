@@ -2,14 +2,32 @@
 
 if (Echo.Utils.isComponentDefined("Echo.IdentityServer.API")) return;
 
+/**
+ * @class
+ * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/35104702/API-section-users" target="_blank">Echo Users API</a> 
+ */
 if (!Echo.IdentityServer) Echo.IdentityServer = {};
 
 Echo.IdentityServer.API = {};
 
+/**
+ * @constructor
+ * Constructor initializing class using configuration data.
+ * @param {Object} config Configuration data.
+ */
 Echo.IdentityServer.API.Request = function(config) {
 	config = $.extend({
+		/**
+		 * @cfg {Function} [onData] Callback called after API request succeded.
+		 */
 		"onData": function() {},
+		/**
+		 * @cfg {Function} [onError] Callback called after API request failed. 
+		 */
 		"onError": function() {},
+		/**
+		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
+		 */
 		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity"
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
@@ -52,6 +70,12 @@ Echo.IdentityServer.API.Request.prototype._update = function(args) {
 	);
 };
 
+/**
+ * @static
+ * Alias for the class constructor.
+ * @param {Object} Configuration data.
+ * @return {Class} New class instance.
+ */
 Echo.IdentityServer.API.request = function(config) {
 	return (new Echo.IdentityServer.API.Request(config));
 };
