@@ -244,6 +244,7 @@ suite.prototype.cases.onComplete = function(callback) {
 			Echo.Events.unsubscribe({
 				"handlerId" : initHandlerId
 			});
+			params.postData.content[0].object.title = "Title";
 			params.postData.content[0].object.content = "OverridingContent";
 		}
 	});
@@ -257,6 +258,8 @@ suite.prototype.cases.onComplete = function(callback) {
 			var activity = params.postData.content[0];
 			QUnit.equal(activity.object.content, "OverridingContent",
 				"Checking overriding post data in onPostComplete handler");
+			QUnit.equal(activity.object.title, "Title",
+				"Checking adding title field in onPostComplete handler");
 			callback();
 		}
 	});
