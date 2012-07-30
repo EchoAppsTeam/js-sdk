@@ -366,6 +366,12 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 	});
 };
 
+/**
+ * @static
+ * Alias for the class constructor.
+ * @param {Object} Configuration data.
+ * @return {Class} New class instance.
+ */
 Echo.StreamServer.API.request = function(config) {
 	return (new Echo.StreamServer.API.Request(config));
 };
