@@ -109,8 +109,8 @@ suite.prototype.tests.checkUserEvents = {
 		var self = this;
 		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
 
-		var subscribe = function() {
-			$.map(["onInit", "onInvalidate"], function(topic) {
+		var subscribe = function(events) {
+			$.map(events, function(topic) {
 				topic = "Echo.UserSession." + topic;
 				var id = Echo.Events.subscribe({
 					"topic": topic,
@@ -130,10 +130,11 @@ suite.prototype.tests.checkUserEvents = {
 			});
 		};
 
-		subscribe();
+		subscribe(["onInit", "onInvalidate"]);
 		self.loginTestUser({}, function() {
-			subscribe();
+			subscribe(["onInit"]);
 			self.logoutTestUser(function() {
+				subscribe(["onInvalidate"]);
 				QUnit.start();
 			});
 		});
