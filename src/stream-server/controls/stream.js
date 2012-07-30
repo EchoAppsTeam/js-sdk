@@ -4,6 +4,19 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream")) return;
 
 var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 
+stream.vars = {
+	"activities": {
+		"queue": [],
+		"state": undefined,
+		"lastState": "", // live0 | pausedN
+		"animations": 0
+	},
+	"hasInitialData": false,
+	"items": {},   // items by unique key hash
+	"threads": [], // items tree
+	"lastRequest": undefined
+};
+
 stream.config = {
 	"children": {
 		"additionalItemsPerPage": 5,
@@ -148,14 +161,14 @@ stream.renderers.state = function(element) {
 	}
 
 	var activitiesCount = 0;
-	if (this.activities.state === "paused") {
+	if (this.getStreamState() === "paused") {
 		activitiesCount = Echo.Utils.foldl(0, this.activities.queue, function(entry, acc) {
 			if (entry.affectCounter) {
 				return ++acc;
 			}
 		});
 	}
-	var currentState = this.activities.state + activitiesCount;
+	var currentState = this.getStreamState() + activitiesCount;
 	if (currentState === this.activities.lastState) {
 		return element;
 	}
@@ -163,14 +176,14 @@ stream.renderers.state = function(element) {
 	element.empty();
 	if (!this.activities.lastState && this.config.get("streamStateToggleBy") === "button") {
 		element.addClass("echo-linkColor echo-clickable").click(function() {
-			self.setStreamState(self.activities.state === "paused" ? "live" : "paused");
+			self.setStreamState(self.getStreamState() === "paused" ? "live" : "paused");
 		});
 	}
 	var templates = {
-		"picture": '<span class="{class:state-picture} {class:state-picture}-' + this.activities.state + '"></span>',
+		"picture": '<span class="{class:state-picture} {class:state-picture}-' + this.getStreamState() + '"></span>',
 		"message": this.config.get("streamStateToggleBy") === "button"
-			? '<a href="javascript:void(0)" class="{class:state-message}">{label:' + this.activities.state + '}</a>'
-			: '<span class="{class:state-message}">{label:' + this.activities.state + '}</span>',
+			? '<a href="javascript:void(0)" class="{class:state-message}">{label:' + this.getStreamState() + '}</a>'
+			: '<span class="{class:state-message}">{label:' + this.getStreamState() + '}</span>',
 		"count": ' <span class="{class:state-count}">({data:count} {label:new})</span>'
 	};
 	if (label.icon) {
@@ -178,7 +191,7 @@ stream.renderers.state = function(element) {
 	}
 	if (label.text) {
 		element.append(this.substitute(templates.message));
-		if (activitiesCount && this.activities.state == "paused") {
+		if (activitiesCount && this.getStreamState() === "paused") {
 			element.append(this.substitute(
 				templates.count,
 				{"count": activitiesCount}
@@ -341,6 +354,12 @@ stream.methods.requestMoreItems = function(element) {
 	});
 };
 
+stream.methods.getStreamState = function() {
+	return this.activities.state === undefined
+		? this.config.get("liveUpdates") ? "live" : "paused"
+		: this.activities.state;
+};
+
 stream.methods.setStreamState = function(state) {
 	this.activities.state = state;
 	if (state === "live") {
@@ -351,8 +370,6 @@ stream.methods.setStreamState = function(state) {
 
 stream.methods.refresh = function() {
 	this.request.abort();
-	this._initVars();
-	delete this.lastRequest;
 	this.render();
 	this.requestInitialItems();
 	this.events.publish({"topic": "onRerender"});
@@ -409,18 +426,6 @@ stream.methods.applyLiveUpdates = function(entries) {
 		}
 	});
 	this._recalcEffectsTimeouts();
-};
-
-stream.methods._initVars = function() {
-	this.activities = {
-		"queue": [],
-		"state": this.config.get("liveUpdates") ? "live" : "paused", // live | paused
-		"lastState": "", // live0 | pausedN
-		"animations": 0
-	};
-	this.hasInitialData = false;
-	this.items = {};   // items by unique key hash
-	this.threads = []; // items tree
 };
 
 stream.methods._actualizeChildrenList = function(parent, entries) {
@@ -1195,7 +1200,6 @@ stream.methods._normalizeEntry = function(entry) {
 
 stream.init = function() {
 	var self = this;
-	this._initVars();
 	this._recalcEffectsTimeouts();
 	if (this.config.get("data")) {
 		this._handleInitialResponse(this.config.get("data"));
