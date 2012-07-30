@@ -66,11 +66,7 @@ suite.prototype.tests.LoggedInUserChecks = {
 			"Checking primary email extraction from user object");
 
 		this.checkBasicOperations(user);
-
-		this.checkLoginEvents("anonymous");
-		this.logoutTestUser(function() {
-			QUnit.start();
-		});
+		QUnit.start();
 	}
 };
 
@@ -99,10 +95,59 @@ suite.prototype.tests.AnonymousUserChecks = {
 			"Checking primary email extraction for anonymous user");
 
 		this.checkBasicOperations(user);
+		QUnit.start();
+	}
+};
 
-		this.checkLoginEvents("logged");
-		this.loginTestUser({}, function() {
-			QUnit.start();
+suite.prototype.tests.checkUserEvents = {
+	"config": {
+		"async": true,
+			"user": {"status": "anonymous"},
+		"testTimeout": 20000 // 20 secs
+	},
+	"check": function() {
+		var self = this;
+		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+		var unsubscribe = false;
+		var getUserState = function() {
+			return user.is("logged") ? "logged" : "anonymous";
+		}
+
+		var topicOnInit = "Echo.UserSession.onInit";
+		var handlerIdOnInit = Echo.Events.subscribe({
+			"topic": topicOnInit,
+			"handler": function() {
+				if( unsubscribe )
+					Echo.Events.unsubscribe({
+						"topic": topicOnInit,
+						"handlerId": handlerIdOnInit
+					});
+
+				var state = getUserState();
+				QUnit.ok(self._checkParams(arguments, state), "Checking \"onInit\" params of events callback for " + state + " user");
+			}
+		});
+
+		var topic1OnInvalidate = "Echo.UserSession.onInvalidate";
+		var handlerIdOnInvalidate = Echo.Events.subscribe({
+			"topic": topic1OnInvalidate,
+			"handler": function() {
+				if( unsubscribe )
+					Echo.Events.unsubscribe({
+						"topic": topic1OnInvalidate,
+						"handlerId": handlerIdOnInvalidate
+					});
+
+				var state = getUserState();
+				QUnit.ok(self._checkParams(arguments, state), "Checking \"onInvalidate\" params of events callback for " + state + " user");
+			}
+		});
+
+		self.loginTestUser({}, function() {
+			self.logoutTestUser(function() {
+				unsubscribe = true;
+				QUnit.start();
+			});
 		});
 	}
 };
@@ -165,21 +210,6 @@ suite.prototype.checkBasicOperations = function(user) {
 	}});
 };
 
-suite.prototype.checkLoginEvents = function(state) {
-	var self = this;
-	var topic = "Echo.UserSession.onInit";
-	var handlerId = Echo.Events.subscribe({
-		"topic": topic,
-		"handler": function() {
-			Echo.Events.unsubscribe({
-				"topic": topic,
-				"handlerId": handlerId
-			});
-			QUnit.ok(self._checkParams(arguments, state), "Checking \"onInit\" params of events callback");
-		}
-	});
-};
-
 // internal functions
 
 suite.prototype._checkParams = function(eventArgs, userStatus) {
@@ -187,11 +217,18 @@ suite.prototype._checkParams = function(eventArgs, userStatus) {
 	switch( userStatus ) {
 		case "logged":
 			template = {
-				"echo": {},
+				"echo": {
+					"roles": [],
+					"state": "",
+					"markers": []
+				},
 				"poco": {
 					"entry": {
 						"accounts": []
-					}
+					},
+					"startIndex": 0,
+					"itemsPerPage": 0,
+					"totalResults": 0
 				}
 			};
 			return this._checkDiff(eventArgs[1], template);
