@@ -108,44 +108,32 @@ suite.prototype.tests.checkUserEvents = {
 	"check": function() {
 		var self = this;
 		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
-		var unsubscribe = false;
-		var getUserState = function() {
-			return user.is("logged") ? "logged" : "anonymous";
-		}
 
-		var topicOnInit = "Echo.UserSession.onInit";
-		var handlerIdOnInit = Echo.Events.subscribe({
-			"topic": topicOnInit,
-			"handler": function() {
-				if( unsubscribe )
-					Echo.Events.unsubscribe({
-						"topic": topicOnInit,
-						"handlerId": handlerIdOnInit
-					});
+		var subscribe = function() {
+			$.map(["onInit", "onInvalidate"], function(topic) {
+				topic = "Echo.UserSession." + topic;
+				var id = Echo.Events.subscribe({
+					"topic": topic,
+					"handler": function(_topic, data) {
+						Echo.Events.unsubscribe({
+							"topic": topic,
+							"handlerId": id
+						});
 
-				var state = getUserState();
-				QUnit.ok(self._checkParams(arguments, state), "Checking \"onInit\" params of events callback for " + state + " user");
-			}
-		});
+						var state = user.is("logged")
+							? "logged" : "anonymous";
 
-		var topic1OnInvalidate = "Echo.UserSession.onInvalidate";
-		var handlerIdOnInvalidate = Echo.Events.subscribe({
-			"topic": topic1OnInvalidate,
-			"handler": function() {
-				if( unsubscribe )
-					Echo.Events.unsubscribe({
-						"topic": topic1OnInvalidate,
-						"handlerId": handlerIdOnInvalidate
-					});
+						QUnit.ok(self._checkParams(data, state),
+							"Checking \"" + topic + "\" params of events callback for " + state + " user");
+					}
+				});
+			});
+		};
 
-				var state = getUserState();
-				QUnit.ok(self._checkParams(arguments, state), "Checking \"onInvalidate\" params of events callback for " + state + " user");
-			}
-		});
-
+		subscribe();
 		self.loginTestUser({}, function() {
+			subscribe();
 			self.logoutTestUser(function() {
-				unsubscribe = true;
 				QUnit.start();
 			});
 		});
@@ -212,7 +200,7 @@ suite.prototype.checkBasicOperations = function(user) {
 
 // internal functions
 
-suite.prototype._checkParams = function(eventArgs, userStatus) {
+suite.prototype._checkParams = function(data, userStatus) {
 	var template = {};
 	switch( userStatus ) {
 		case "logged":
@@ -231,11 +219,11 @@ suite.prototype._checkParams = function(eventArgs, userStatus) {
 					"totalResults": 0
 				}
 			};
-			return this._checkDiff(eventArgs[1], template);
+			return this._checkDiff(data, template);
 			break;
 
 		case "anonymous":
-			return this._checkDiff(eventArgs[1], template);
+			return this._checkDiff(data, template);
 			break;
 	}
 
