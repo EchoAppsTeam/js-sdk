@@ -136,11 +136,56 @@ Echo.API.Transports.JSONP = function(config) {
 
 utils.inherit(Echo.API.Transports.JSONP, Echo.API.Transports.AJAX);
 
+Echo.API.Transports.JSONP.prototype.send = function(data) {
+	if (this.config.get("method").toLowerCase() === "get") {
+		return Echo.API.Transports.JSONP.parent.send.apply(this, arguments);
+	}
+	this._pushPostParameters($.extend({}, this.config.get("data"), data));
+	this.transportObject.submit();
+	this.config.get("onData")();
+};
+
 Echo.API.Transports.JSONP.prototype._getTransportObject = function() {
 	var settings = this.constructor.parent._getTransportObject.call(this);
+	if (this.config.get("method").toLowerCase() === "post") {
+		return this._getPostTransportObject({
+			"url": settings.url
+		});
+	}
 	delete settings.xhr;
 	settings.dataType = "jsonp";
 	return settings;
+};
+
+Echo.API.Transports.JSONP.prototype._getPostTransportObject = function(settings) {
+	var id = "echo-post-" + Math.random();
+	var container =
+		$("#echo-post-request").length
+			? $("#echo-post-request").empty()
+			: $('<div id="echo-post-request"/>').css({"height": 0}).prependTo("body");
+	// it won't work if the attributes are specified as a hash in the second parameter
+	this.iframe = this.iframe || $('<iframe id="' + id + '" name="' + id + '" width="0" height="0" frameborder="0" border="0"></iframe>').appendTo(container);
+	var form = $("<form/>", {
+		"target" : id,
+		"method" : "POST",
+		"enctype" : "application/x-www-form-urlencoded",
+		"acceptCharset" : "UTF-8",
+		"action" : settings.url
+	}).appendTo(container);
+	this._pushPostParameters(settings.data);
+	return form;
+};
+
+Echo.API.Transports.JSONP.prototype._pushPostParameters = function(data) {
+	var self = this;
+	$.each(data || {}, function(key, value) {
+		$("<input/>", {
+			"type" : "hidden",
+			"name" : key,
+			"value" : value
+		}).appendTo(self.transportObject);
+	});
+	return self.transportObject;
 };
 
 Echo.API.Transports.JSONP.available = function() {
@@ -290,6 +335,7 @@ Echo.API.Request.prototype._getTransport = function() {
 		$.extend(this._getHandlersByConfig(), {
 			"uri": this._prepareURI(),
 			"data": this.config.get("data"),
+			"method": this.config.get("method"),
 			"secure": this._isSecureRequest()
 		})
 	);
