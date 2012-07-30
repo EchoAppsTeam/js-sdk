@@ -209,7 +209,7 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 };
 
 Echo.Tests.Common.prototype.loginTestUser = function(config, callback) {
-	var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+	var user = Echo.UserSession($.extend({"appkey": "test.aboutecho.com"}, config || {}));
 	if (user.is("logged")) {
 		callback && callback();
 		return;

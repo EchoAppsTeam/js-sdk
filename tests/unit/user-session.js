@@ -65,9 +65,12 @@ suite.prototype.tests.LoggedInUserChecks = {
 		QUnit.equal(user.get("email"), "john.doe@test.com",
 			"Checking primary email extraction from user object");
 
-		this.checkBasicOperations();
-	
-		QUnit.start();
+		this.checkBasicOperations(user);
+
+		this.checkLoginEvents("anonymous");
+		this.logoutTestUser(function() {
+			QUnit.start();
+		});
 	}
 };
 
@@ -95,14 +98,16 @@ suite.prototype.tests.AnonymousUserChecks = {
 		QUnit.ok(!user.get("email"),
 			"Checking primary email extraction for anonymous user");
 
-		this.checkBasicOperations();
+		this.checkBasicOperations(user);
 
-		QUnit.start();
+		this.checkLoginEvents("logged");
+		this.loginTestUser({}, function() {
+			QUnit.start();
+		});
 	}
 };
 
-suite.prototype.checkBasicOperations = function() {
-	var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+suite.prototype.checkBasicOperations = function(user) {
 	var identity = "http://somedomain.com/users/fake_user";
 
 	QUnit.equal(user.is("some-random-value"), undefined,
@@ -155,6 +160,13 @@ suite.prototype.checkBasicOperations = function() {
 	QUnit.equal(user.has("identity", identity), user._hasIdentity(identity),
 		"Checking delegation using user.has(\"identity\", \"...\") function");
 
+	Echo.UserSession({"appkey": "test.aboutecho.com", "ready": function() {
+		QUnit.ok(true, "Checking if the \"ready\" callback is executed after class init");
+	}});
+};
+
+suite.prototype.checkLoginEvents = function(state) {
+	var self = this;
 	var topic = "Echo.UserSession.onInit";
 	var handlerId = Echo.Events.subscribe({
 		"topic": topic,
@@ -163,13 +175,51 @@ suite.prototype.checkBasicOperations = function() {
 				"topic": topic,
 				"handlerId": handlerId
 			});
-			QUnit.ok(true, "Check if \"onInit\" callback is executed after class init");
+			QUnit.ok(self._checkParams(arguments, state), "Checking \"onInit\" params of events callback");
 		}
 	});
-
-	Echo.UserSession({"appkey": "test.aboutecho.com", "ready": function() {
-		QUnit.ok(true, "Checking if the \"ready\" callback is executed after class init");
-	}});
 };
+
+// internal functions
+
+suite.prototype._checkParams = function(eventArgs, userStatus) {
+	var template = {};
+	switch( userStatus ) {
+		case "logged":
+			template = {
+				"echo": {},
+				"poco": {
+					"entry": {
+						"accounts": []
+					}
+				}
+			};
+			return this._checkDiff(eventArgs[1], template);
+			break;
+
+		case "anonymous":
+			return this._checkDiff(eventArgs[1], template);
+			break;
+	}
+
+	return false;
+};
+
+
+suite.prototype._checkDiff = function(origin, template) {
+	var result = true;
+	if( typeof template == "object" ) {
+		for( var i in template )
+			if( template.hasOwnProperty(i) && origin.hasOwnProperty(i) && typeof template[i] == typeof origin[i] ) {
+				if( typeof template[i] == "object" )
+					result =  this._checkDiff(origin[i], template[i]);
+				} else {
+					result = false;
+				}
+			} else if( typeof template != typeof origin ) {
+				result = false;
+			}
+		return result;
+	};
 
 })(jQuery);
