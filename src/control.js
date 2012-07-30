@@ -48,6 +48,7 @@ Echo.Control.create = function(manifest) {
 			"labels",
 			"css",
 			"renderers",
+			"dom",
 			"loading",
 			["user", function() {
 				self._init([["plugins", manifest.init]]);
@@ -62,7 +63,7 @@ Echo.Control.create = function(manifest) {
 		_constructor.prototype.templates =
 			$.extend({}, _constructor.prototype.templates, manifest.templates);
 	}
-	_constructor.prototype.cssPrefix = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
+	_constructor.prototype.cssPrefix = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-") + "-";
 	Echo.Utils.setNestedValue(window, manifest.name, _constructor);
 	return _constructor;
 };
@@ -83,7 +84,7 @@ Echo.Control.manifest = function(name) {
 		"methods": {},
 		"renderers": {},
 		"templates": {},
-		"init": function(){ this.render(); }
+		"init": function(){ this.dom.render(); }
 	};
 };
 
@@ -212,7 +213,7 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 	data = data || {};
 	instructions = $.extend({
 		"class": function(key) {
-			return control.cssPrefix + "-" + key;
+			return control.cssPrefix + key;
 		},
 		"data": function(key) {
 			return Echo.Utils.getNestedValue(data || control.data, key, "");
@@ -237,77 +238,6 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 		return ~$.inArray(typeof result, allowedTypes) ? result.toString() : "";
 	};
 	return template.replace(Echo.Vars.regexps.templateSubstitution, processor);
-};
-
-/**
- * @method
- * Function used to render elements using renderes functions and templates
- *
- * Called without params the function will start render process for the control.
- * It will sequentially run the corresponding renderer functions and build the DOM structure.
- * Function can also be used for rerendering particular elements (recursively if needed).
- * It can also render templates defined explicitly.
- * @param {Object} [args] Specifies extra rendering params.
- * @param {HTMLElement} [args.target=this.config.get("target")] Specifies the target to append the rendered DOM structure. Defaults to the value defined in the control config.
- * @param {String} [args.template=this.template] Specifies the particular template to be rendered. If defined function will render only the elements from the defined template. Defaults to the main control template.
- * @param {Object} [args.dom=this.dom] Specifies the set of compiled dom elements used in the rendering process. Defaults to the internal structure.
- * @param {String} [args.element] Specifies the name of the particular element to be rendered.
- * @param {Object} [args.extra] Specifes extra params to be passed to renderer function.
- * @param {Boolean} [args.recursive] Flag to enable recursive rerendering for the given anchor element.
- * @return {HTMLElement} Rendered element.
- */
-Echo.Control.prototype.render = function(args) {
-	var self = this;
-	var template;
-	args = args || {};
-	var dom = args.dom || this.dom;
-	var data = args.data || this.data;
-	var target = args.target ||
-			(args.element && dom.get(args.element)) ||
-			this.config.get("target");
-
-	// render specific element
-	if (args.element && !args.recursive) {
-		var renderer = this.extension.renderers[args.element];
-		if (renderer) {
-			var iteration = 0;
-			renderer.next = function() {
-				iteration++;
-				return renderer.functions.length > iteration
-					? renderer.functions[iteration].apply(this, arguments)
-					: target;
-			};
-			return renderer.functions[iteration].call(this, target, dom, args.extra);
-		}
-		return target;
-	}
-
-	// render element including its content recursively
-	if (args.element && args.recursive) {
-		var oldNode = this.dom.get(args.element);
-		template = this._compileTemplate(this.template, this.data, this.extension.template);
-		template = $("." + this.cssPrefix + "-" + args.element, $(template));
-		var _dom = this._applyRenderers(template, true);
-		var newNode = _dom.get(args.element);
-		oldNode.replaceWith(newNode);
-		return newNode;
-	}
-
-	// render template
-	if (args.template) {
-		template = this._compileTemplate(args.template, data);
-		var _dom = this._applyRenderers(template);
-		target.empty().append(_dom.get());
-		return _dom.get();
-	}
-
-	// render the whole control
-	var topic = this.dom ? "onRerender" : "onRender";
-	template = this._compileTemplate(this.template, this.data, this.extension.template);
-	this.dom = this._applyRenderers(template);
-	target.empty().append(this.dom.get());
-	this.events.publish({"topic": topic});
-	return this.dom.get();
 };
 
 /**
@@ -342,7 +272,7 @@ Echo.Control.prototype.showMessage = function(data) {
 	// TODO: check if we need a parameter to hide error, but show loading messages
 	//       (if data.type == "error")
 	var layout = data.layout || this.config.get("infoMessages.layout");
-	this.render({
+	this.dom.render({
 		"template": this.templates.message[layout],
 		"data": data,
 		"target": data.target
@@ -446,8 +376,10 @@ Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
  * @param {String} name (required) Renderer name to be extended.
  * @param {Function} renderer (required) Renderer function to apply.
  */
-Echo.Control.prototype.extendRenderer = function() {
-	this._init.renderer.apply(this, arguments);
+Echo.Control.prototype.extendRenderer = function(name, renderer) {
+	var renderers = this.extension.renderers;
+	renderers[name] = renderers[name] || {"functions": []};
+	renderers[name].functions.unshift(renderer);
 };
 
 // internal functions
@@ -534,15 +466,6 @@ Echo.Control.prototype._init.subscriptions = function() {
 		control.events.subscribe($.extend({"topic": topic}, data));
 	});
 
-	if (this.dependent()) return;
-
-	// subscribe all root level controls to the user login/logout event
-	// and call "refresh" control method
-	control.events.subscribe({
-		"topic": "Echo.UserSession.onInvalidate",
-		"context": "global",
-		"handler": control.refresh
-	});
 	var requestUpdates = function() {
 		if (control.get("request")) {
 			control.get("request").send({"force": true});
@@ -559,6 +482,7 @@ Echo.Control.prototype._init.subscriptions = function() {
 		"context": "global",
 		"handler": requestUpdates
 	});
+
 	// call "ready" callback after the control was rendered
 	if (control.config.get("ready")) {
 		control.events.subscribe({
@@ -568,6 +492,16 @@ Echo.Control.prototype._init.subscriptions = function() {
 			}
 		});
 	}
+
+	if (this.dependent()) return;
+
+	// subscribe all root level controls to the user login/logout event
+	// and call "refresh" control method
+	control.events.subscribe({
+		"topic": "Echo.UserSession.onInvalidate",
+		"context": "global",
+		"handler": control.refresh
+	});
 };
 
 Echo.Control.prototype._init.labels = function() {
@@ -582,22 +516,47 @@ Echo.Control.prototype._init.labels = function() {
 
 Echo.Control.prototype._init.css = function() {
 	Echo.Utils.addCSS(this.baseCSS, "control");
-	this.config.get("target").addClass(this.cssPrefix);
+	this.config.get("target").addClass(this.cssPrefix.substr(0, this.cssPrefix.length - 1));
 	if (!this.manifest.css) return;
 	Echo.Utils.addCSS(this.substitute(this.manifest.css), this.manifest.name);
-};
-
-Echo.Control.prototype._init.renderer = function(name, renderer) {
-	var renderers = this.extension.renderers;
-	renderers[name] = renderers[name] || {"functions": []};
-	renderers[name].functions.unshift(renderer);
 };
 
 Echo.Control.prototype._init.renderers = function() {
 	var control = this;
 	$.each(this.manifest.renderers, function() {
-		control._init.renderer.apply(control, arguments);
+		control.extendRenderer.apply(control, arguments);
 	});
+};
+
+Echo.Control.prototype._init.dom = function() {
+	var self = this;
+	this.dom = {
+		"root": undefined,
+		"elements": {},
+		"clear": function() {
+			this.elements = {};
+			delete this.root;
+		},
+		"set": function(name, element) {
+			this.elements[self.cssPrefix + name] = $(element);
+		},
+		"get": function(name, ignorePrefix) {
+			return this.elements[(ignorePrefix ? "" : self.cssPrefix) + name];
+		},
+		"remove": function(element) {
+			var name;
+			if (typeof element === "string") {
+				name = self.cssPrefix + element;
+			} else {
+				name = element.echo.name;
+			}
+			this.elements[name].remove();
+			delete this.elements[name];
+		},
+		"render": function(args) {
+			return self._render(args);
+		}
+	};
 };
 
 Echo.Control.prototype._init.loading = function() {
@@ -658,6 +617,77 @@ Echo.Control.prototype._loadPluginsDependencies = function(callback) {
 	callback && callback.call(this);
 };
 
+/**
+ * @method
+ * Function used to render elements using renderes functions and templates
+ *
+ * Called without params the function will start render process for the control.
+ * It will sequentially run the corresponding renderer functions and build the DOM structure.
+ * Function can also be used for rerendering particular elements (recursively if needed).
+ * It can also render templates defined explicitly.
+ * @param {Object} [args] Specifies extra rendering params.
+ * @param {HTMLElement} [args.target=this.config.get("target")] Specifies the target to append the rendered DOM structure. Defaults to the value defined in the control config.
+ * @param {String} [args.template=this.template] Specifies the particular template to be rendered. If defined function will render only the elements from the defined template. Defaults to the main control template.
+ * @param {String} [args.name] Specifies the name of the particular element to be rendered.
+ * @param {Object} [args.extra] Specifes extra params to be passed to renderer function.
+ * @param {Boolean} [args.recursive] Flag to enable recursive rerendering for the given anchor element.
+ * @return {HTMLElement} Rendered element.
+ */
+Echo.Control.prototype._render = function(args) {
+	var self = this;
+	var template;
+	args = args || {};
+	var data = args.data || this.data;
+	var target = args.target ||
+		(args.name && this.dom.get(args.name)) ||
+		this.config.get("target");
+
+	// render specific element
+	if (args.name && !args.recursive) {
+		var renderer = this.extension.renderers[args.name];
+		if (renderer) {
+			var iteration = 0;
+			renderer.next = function() {
+				iteration++;
+				return renderer.functions.length > iteration
+					? renderer.functions[iteration].apply(this, arguments)
+					: target;
+			};
+			return renderer.functions[iteration].call(this, target, args.extra);
+		}
+		return target;
+	}
+
+	// render element including its content recursively
+	if (args.name && args.recursive) {
+		var oldNode = this.dom.get(args.name);
+		template = this._compileTemplate(this.template, this.data, this.extension.template);
+		template = $("." + this.cssPrefix + args.name, $(template));
+		this._applyRenderers(template);
+		var newNode = this.dom.get(args.name);
+		oldNode.replaceWith(newNode);
+		return newNode;
+	}
+
+	// render template
+	if (args.template) {
+		template = this._compileTemplate(args.template, data);
+		this._applyRenderers(template);
+		target.empty().append(this.dom.root);
+		return this.dom.root;
+	}
+
+	// render the whole control
+	// TODO: find criteria to identify if it's first rendering or not
+	var topic = 0 && !$.isEmptyObject(this.dom.elements) ? "onRerender" : "onRender";
+	this.dom.clear();
+	template = this._compileTemplate(this.template, this.data, this.extension.template);
+	this._applyRenderers(template);
+	target.empty().append(this.dom.root);
+	this.events.publish({"topic": topic});
+	return this.dom.root;
+};
+
 Echo.Control.prototype._compileTemplate = function(template, data, transformations) {
 	var control = this;
 	var raw = $.isFunction(template) ? template.call(this) : template;
@@ -676,16 +706,14 @@ Echo.Control.prototype._compileTemplate = function(template, data, transformatio
 	return processed;
 };
 
-Echo.Control.prototype._applyRenderers = function(template, updateDOM) {
-	var control = this;
-	return Echo.Utils.toDOM(template, this.cssPrefix + "-", function(element, target, dom) {
-		if (updateDOM) {
-			control.dom.set(element, target);
-		}
-		return control.render({
-			"element": element,
-			"target": target,
-			"dom": dom
+Echo.Control.prototype._applyRenderers = function(template) {
+	var self = this;
+	this.dom.root = $(template);
+	var elements = this._getRenderableElements();
+	$.each(elements, function(name, element) {
+		self.dom.render({
+			"name": name,
+			"target": element
 		});
 	});
 };
@@ -704,13 +732,36 @@ Echo.Control.prototype._domTransformer = function(args) {
 		return args.dom;
 	}
 	var html = args.transformation.html;
-	var anchor = "." + this.cssPrefix + "-" + args.transformation.anchor;
+	var anchor = "." + this.cssPrefix + args.transformation.anchor;
 	var content;
 	if (html) {
 		content = this.substitute($.isFunction(html) ? html() : html, args.data)
 	}
 	$(anchor, args.dom)[action](content);
 	return args.dom;
+};
+
+Echo.Control.prototype._getRenderableElements = function() {
+	var self = this, elements = {};
+	var isRenderer = new RegExp(this.cssPrefix + "(.*)$");
+	this.dom.root.find("*").andSelf().each(function(i, element) {
+		if (!element.className) {
+			return;
+		}
+		var classes = element.className.split(/[ ]+/);
+		$.each(classes, function(j, className) {
+			var pattern = className.match(isRenderer);
+			var name = pattern ? pattern[1] : undefined;
+			if (name) {
+				self.dom.set(name, element);
+				element = $(element);
+				element.echo = element.echo || {};
+				element.echo.name = className;
+				elements[name] = element;
+			}
+		});
+	});
+	return elements;
 };
 
 Echo.Control.prototype.baseCSS =

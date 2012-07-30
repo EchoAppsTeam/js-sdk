@@ -90,7 +90,7 @@ plugin.renderers.children = function(element) {
 		var child = item.get("children")[0];
 		if (child.get("added") || child.get("deleted")) {
 			plugin._itemCSS("remove", item, item.dom.get("replyForm"));
-			item.render({"element": "compactForm"});
+			item.render({"name": "compactForm"});
 		}
 	}
 	return item.parentRenderer("children", arguments);
@@ -152,8 +152,8 @@ plugin.methods._showSubmit = function() {
 	target.click(function(event) {
 		event.stopPropagation();
 	});
-	item.render({"element": "compactForm"});
-	item.render({"element": "container"});
+	item.render({"name": "compactForm"});
+	item.render({"name": "container"});
 };
 
 plugin.methods._hideSubmit = function() {
@@ -161,8 +161,8 @@ plugin.methods._hideSubmit = function() {
 	item.dom.get("submitForm").empty();
 	plugin.set("submit", false);
 	plugin._itemCSS("remove", item, item.dom.get("replyForm"));
-	item.render({"element": "compactForm"});
-	item.render({"element": "container"});
+	item.render({"name": "compactForm"});
+	item.render({"name": "container"});
 };
 
 plugin.methods._assembleButton = function() {

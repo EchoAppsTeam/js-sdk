@@ -41,7 +41,7 @@ plugin.init = function() {
 	this.extendTemplate("insertBefore", "modeSwitch", plugin.template);
 };
 
-plugin.template = '<div class="{class:accumulatorContainer}"></div>';
+plugin.template = '<div class="{plugin.class:accumulatorContainer}"></div>';
 
 plugin.renderers.accumulatorContainer = function(element) {
 	var item = this.component;
@@ -116,7 +116,7 @@ plugin.methods._animateCounter = function(bgColor) {
 	}, this.config.get("countTickTimeout") * 1000));
 };
 
-plugin.css = '.{class:accumulatorContainer} { float: right; margin-right: 7px; }';
+plugin.css = '.{plugin.class:accumulatorContainer} { float: right; margin-right: 7px; }';
 
 Echo.Plugin.create(plugin);
 

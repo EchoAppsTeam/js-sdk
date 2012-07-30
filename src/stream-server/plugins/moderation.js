@@ -70,17 +70,12 @@ plugin.init = function() {
 			item.addButtonSpec("Moderation", self._assembleButton(capitalize(action)));
 		}
 	});
-	this.component.labels.set({
-		"userBanned": this.labels.get("userBanned"),
-		"unbanUser": this.labels.get("unbanUser"),
-		"banUser": this.labels.get("banUser")
-	});
 	this.events.subscribe({
 		"topic": "internal.Echo.StreamServer.Controls.Stream.Item.Plugin.Moderation.onUserUpdate",
 		"handler": function(topic, args) {
 			if (args.item.data.actor.id !== item.get("data.actor.id")) return;
 			item.set("data.actor." + args.data.field, args.data.value);
-			item.render();
+			item.dom.render();
 			return {"stop": ["bubble"]};
 		}
 	});
@@ -89,16 +84,16 @@ plugin.init = function() {
 plugin.roles = ["", "moderator", "administrator"];
 
 plugin.statusItemTemplate = 
-	'<div class="{class:status}">' +
-		'<div class="{class:statusIcon}"></div>' +
+	'<div class="{plugin.class:status}">' +
+		'<div class="{plugin.class:statusIcon}"></div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
 
 plugin.labels = {
-	"approveControl": "Approve",
-	"deleteControl": "Delete",
-	"spamControl": "Spam",
-	"untouchControl": "Untouch",
+	"approveButton": "Approve",
+	"deleteButton": "Delete",
+	"spamButton": "Spam",
+	"untouchButton": "Untouch",
 	"changingStatusToCommunityFlagged": "Flagging...",
 	"changingStatusToModeratorApproved": "Approving...",
 	"changingStatusToModeratorDeleted": "Deleting...",
@@ -115,18 +110,18 @@ plugin.labels = {
 	"processingAction": "Setting up '{state}' user state...",
 	"moderatorRole": "Moderator",
 	"administratorRole": "Administrator",
-	"userControl": "Demote to User",
-	"moderatorControl": "Promote to Moderator",
-	"administratorControl": "Promote to Admin",
+	"userButton": "Demote to User",
+	"moderatorButton": "Promote to Moderator",
+	"administratorButton": "Promote to Admin",
 	"setRoleAction": "Setting up '{role}' role...",
 	"unsetRoleAction": "Removing '{role}' role...",
 	"statusUntouched": "New"
 };
 
-plugin.controlLabels = {
-	"banned": '<span class="{class:control-state} {class:control-state-banned}">{label:userBanned}</span>' +
-		'(<span class="echo-clickable">{label:unbanUser}</span>)',
-	"unbanned": '<span class="echo-clickable">{label:banUser}</span>'
+plugin.buttonLabels = {
+	"banned": '<span class="{plugin.class:button-state} {plugin.class:button-state-banned}">{plugin.label:userBanned}</span>' +
+		'(<span class="echo-clickable">{plugin.label:unbanUser}</span>)',
+	"unbanned": '<span class="echo-clickable">{plugin.label:banUser}</span>'
 };
 
 plugin.statuses = [
@@ -138,7 +133,7 @@ plugin.statuses = [
 	"SystemFlagged"
 ];
 
-plugin.control2status = {
+plugin.button2status = {
 	"Spam": "ModeratorFlagged",
 	"Delete": "ModeratorDeleted",
 	"Approve": "ModeratorApproved",
@@ -152,10 +147,10 @@ plugin.renderers.status = function(element) {
 		return element;
 	}
 	if (item.get("depth")) {
-		element.addClass(item.get("cssPrefix") + '-status-child');
+		element.addClass(this.cssPrefix + 'status-child');
 	}
 	var status = item.get("data.object.status") || "Untouched";
-	return element.addClass(item.get("cssPrefix") + "-status-" + status);
+	return element.addClass(this.cssPrefix + "status-" + status);
 };
 
 plugin.renderers.statusIcon = function(element) {
@@ -163,18 +158,18 @@ plugin.renderers.statusIcon = function(element) {
 	if (!item.user.is("admin")) return element;
 	var status = item.get("data.object.status") || "Untouched";
 	var title = this.labels.get("status" + status);
-	return element.addClass(item.get("cssPrefix") + "-status-icon-" + status).attr("title", title);
+	return element.addClass(this.cssPrefix + "status-icon-" + status).attr("title", title);
 };
 
 plugin.methods._changeItemStatus = function(status) {
 	var item = this.component;
 	this.set("selected", false);
 	item.set("data.object.status", status);
-	item.render({"element": "controls"});
+	item.dom.render({"name": "buttons"});
 	// rerender status recursive
 	// since it contains other renderers
-	item.render({
-		"element": "status",
+	this.dom.render({
+		"name": "status",
 		"recursive": true
 	});
 };
@@ -206,7 +201,7 @@ plugin.methods._assembleButton = function(name) {
 	var self = this;
 	var callback = function() {
 		var item = this;
-		var status = plugin.control2status[name];
+		var status = plugin.button2status[name];
 		item.block(self.labels.get("changingStatusTo" + status));
 		var activity = {
 			"verbs": ["http://activitystrea.ms/schema/1.0/update"],
@@ -233,9 +228,9 @@ plugin.methods._assembleButton = function(name) {
 		var item = this;
 		return {
 			"name": name,
-			"label": self.labels.get(name.toLowerCase() + "Control"),
+			"label": self.labels.get(name.toLowerCase() + "Button"),
 			"visible": item.user.is("admin") &&
-					item.get("data.object.status") !== plugin.control2status[name],
+					item.get("data.object.status") !== plugin.button2status[name],
 			"callback": callback
 		};
 	};
@@ -258,7 +253,7 @@ plugin.methods._sendUserUpdate = function(config) {
 		},
 		"onData": config.onData,
 		"onError": function() {
-			item.render();
+			item.dom.render();
 		}
 	}).send();
 };
@@ -267,7 +262,7 @@ plugin.methods._assembleBanButton = function(action) {
 	var self = this;
 	var callback = function() {
 		var item = this;
-		var newState = action == "Ban" ? "ModeratorBanned" : "Untouched";
+		var newState = action === "Ban" ? "ModeratorBanned" : "Untouched";
 		item.get("buttons." + plugin.name + "." + action + ".element")
 			.empty()
 			.append(self.labels.get("processingAction", {"state": newState}));
@@ -275,7 +270,7 @@ plugin.methods._assembleBanButton = function(action) {
 			"field": "state",
 			"value": newState,
 			"onData": function(data) {
-				self.publishCompleteActionEvent(action);
+				self._publishCompleteActionEvent(action);
 				self._publishUserUpdateEvent({
 					"item": item,
 					"field": "state",
@@ -288,10 +283,10 @@ plugin.methods._assembleBanButton = function(action) {
 		var item = this;
 		var isBanned = self._isUserBanned();
 		var visible = item.get("data.actor.id") != item.user.get("fakeIdentityURL") &&
-			isBanned ^ (action == "Ban");
+			isBanned ^ (action === "Ban");
 		return {
 			"name": action,
-			"label": item.substitute(plugin.controlLabels[isBanned ? "banned" : "unbanned"]),
+			"label": self.substitute(plugin.buttonLabels[isBanned ? "banned" : "unbanned"]),
 			"visible": visible && item.user.is("admin"),
 			"callback": callback,
 			"onetime": true
@@ -331,14 +326,14 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		var item = this;
 		var role = self._getRole();
 		var template = (role
-			? '<span class="{class:control-role} {class:control-role}-{data:role}">{data:label}</span>' +
+			? '<span class="{plugin.class:button-role} {plugin.class:button-role}-{data:role}">{data:label}</span>' +
 				'(<span class="echo-clickable">{data:button}</span>)'
 			: '<span class="echo-clickable">{data:button}</span>'
 		);
-		var label = item.substitute(template, {
+		var label = self.substitute(template, {
 			"role": role,
 			"label": role ? self.labels.get(role + "Role") : "",
-			"button": self.labels.get((self._getNextRole(role) || "user") + "Control")
+			"button": self.labels.get((self._getNextRole(role) || "user") + "Button")
 		});
 		return {
 			"name": action,
@@ -374,7 +369,7 @@ plugin.methods._getRole = function() {
 	$.each(this.component.get("data.actor.roles") || [], function(id, role) {
 		if ($.inArray(role, plugin.roles) > 0) {
 			result = role;
-			if (role == "administrator") {
+			if (role === "administrator") {
 				return false; // break;
 			}
 		}
@@ -390,26 +385,25 @@ plugin.css = function() {
 	var msieCss = "";
 	if ($.browser.msie) {
 		msieCss =
-			'.{class:status} { zoom: 1; }';
+			'.{plugin.class:status} { zoom: 1; }';
 	};
-	return '.{class:status} { width: 48px; height: 24px; }' +
-		'.{class:status-child} { width: 24px; height: 24px; }' +
-		'.{class:status-child} .{class:statusCheckbox} { display: block; }' +
-		'.{class:statusIcon} { float: right; margin: 4px; width: 16px; height: 16px; }' +
+	return '.{plugin.class:status} { width: 48px; height: 24px; }' +
+		'.{plugin.class:status-child} { width: 24px; height: 24px; }' +
+		'.{plugin.class:statusIcon} { float: right; margin: 4px; width: 16px; height: 16px; }' +
 		// statuses
-		'.{class:status-Untouched} { background: #00aaff; }' +
-		'.{class:status-ModeratorApproved} { background: #bdfb6d; }' +
-		'.{class:status-ModeratorDeleted} { background: #f20202; }' +
-		'.{class:status-SystemFlagged}, .{class:status-CommunityFlagged}, .{class:status-ModeratorFlagged} { background: #ff9e00; }' +
-		// controls
-		'.{class:control-state} { margin-right: 3px; }' +
-		'.{class:control-state-banned} { color: #FF0000; }' +
-		'.{class:control-role} { margin-right: 3px; }' +
-		'.{class:control-role-moderator} { color: #0000FF; }' +
-		'.{class:control-role-administrator} { color: #008000; }' +
+		'.{plugin.class:status-Untouched} { background: #00aaff; }' +
+		'.{plugin.class:status-ModeratorApproved} { background: #bdfb6d; }' +
+		'.{plugin.class:status-ModeratorDeleted} { background: #f20202; }' +
+		'.{plugin.class:status-SystemFlagged}, .{plugin.class:status-CommunityFlagged}, .{plugin.class:status-ModeratorFlagged} { background: #ff9e00; }' +
+		// buttons
+		'.{plugin.class:button-state} { margin-right: 3px; }' +
+		'.{plugin.class:button-state-banned} { color: #FF0000; }' +
+		'.{plugin.class:button-role} { margin-right: 3px; }' +
+		'.{plugin.class:button-role-moderator} { color: #0000FF; }' +
+		'.{plugin.class:button-role-administrator} { color: #008000; }' +
 		// status icons
 		$.map(plugin.statuses, function(name) {
-			return '.{class:status-icon-' + name + '} { background: url("//cdn.echoenabled.com/images/curation/status/' + name.toLowerCase() + '.png") no-repeat; }';
+			return '.{plugin.class:status-icon-' + name + '} { background: url("//cdn.echoenabled.com/images/curation/status/' + name.toLowerCase() + '.png") no-repeat; }';
 		}).join("") + msieCss;
 }();
 

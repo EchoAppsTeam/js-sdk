@@ -165,6 +165,7 @@ Echo.Tests.Common.prototype.constructPluginRenderersTest = function(config) {
 Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
 	var self = this;
 	var renderers = plugin.manifest.renderers;
+	// TODO: dom does always exist now so we need another check
 	if (!plugin.component.dom) {
 		plugin.component.render();
 	}
@@ -193,10 +194,7 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 				return;
 			};
 			var oldElement = element.clone();
-			var renderedElement = instance.render({
-				"element": name,
-				"dom": instance.dom
-			});
+			var renderedElement = instance.render({"name": name});
 			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
 			QUnit.ok(renderedElement.jquery == oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
 			QUnit.deepEqual(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element");

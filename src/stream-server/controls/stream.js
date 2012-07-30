@@ -72,7 +72,7 @@ stream.labels = {
 stream.events = {
 	"Echo.StreamServer.Controls.Stream.Item.internal.onAdd": function(topic, data) {
 		var self = this;
-		data.item.dom.get().hide();
+		data.item.config.get("target").hide();
 		this._queueActivity({
 			"action": "animation",
 			"actorID": data.item.get("data.actor.id"),
@@ -210,9 +210,9 @@ stream.renderers.more = function(element) {
 	return element.empty()
 		.append(this.labels.get("more"))
 		.hover(function() {
-			element.addClass(self.cssPrefix + "-more-hover");
+			element.addClass(self.cssPrefix + "more-hover");
 		}, function() {
-			element.removeClass(self.cssPrefix + "-more-hover");
+			element.removeClass(self.cssPrefix + "more-hover");
 		})
 		.show()
 		.unbind("click")
@@ -312,7 +312,6 @@ stream.methods.requestInitialItems = function() {
 
 stream.methods.requestMoreItems = function(element) {
 	var self = this;
-	element = element || this.dom.get("more");
 	this.lastRequest = {
 		"initial": false
 	};
@@ -336,8 +335,8 @@ stream.methods.requestMoreItems = function(element) {
 				self._handleInitialResponse(data, function(data) {
 					if (data.length) {
 						self.lastRequest.data = data;
-						self.render({"element": "body"});
-						self.render({"element": "more"});
+						self.dom.render({"name": "body"});
+						self.dom.render({"name": "more"});
 					} else {
 						// TODO: employ showMessage function here
 						element.html(self.labels.get("emptyStream")).delay(1000).fadeOut(1000);
@@ -365,12 +364,12 @@ stream.methods.setStreamState = function(state) {
 	if (state === "live") {
 		this._executeNextActivity();
 	}
-	this.render({"element": "state"});
+	this.dom.render({"name": "state"});
 };
 
 stream.methods.refresh = function() {
 	this.request.abort();
-	this.render();
+	this.dom.render();
 	this.requestInitialItems();
 	this.events.publish({"topic": "onRerender"});
 };
@@ -451,10 +450,10 @@ stream.methods._actualizeChildrenList = function(parent, entries) {
 
 stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 	var self = this;
-	var wrapper = $('<div class="' + this.cssPrefix + '-children-wrapper"></div>');
+	var wrapper = $('<div class="' + this.cssPrefix + 'children-wrapper"></div>');
 	var getIdx = function(item) { return self._getItemListIndex(item, parent.get("children")); };
 	$.each(children, function(i, item) {
-		item.render();
+		item.dom.render();
 		var insertion = i > 0 && getIdx(children[i-1]) < getIdx(item)
 			? "append"
 			: "prepend";
@@ -512,7 +511,7 @@ stream.methods._appendRootItems = function(items, container) {
 	var self = this;
 	var fragment = document.createDocumentFragment();
 	$.each(items || [], function(i, item) {
-		item.render();
+		item.dom.render();
 		fragment.appendChild(item.config.get("target").get(0));
 	});
 	container.append(fragment);
@@ -585,7 +584,7 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 			"initial": true,
 			"data": data
 		};
-		self.render();
+		self.dom.render();
 	};
 	visualizer(roots);
 };
@@ -612,7 +611,7 @@ stream.methods._handleLiveUpdatesResponse = function(data) {
 		return;
 	}
 	this.applyLiveUpdates(data.entries);
-	this.render({"element": "state"});
+	this.dom.render({"name": "state"});
 	this._executeNextActivity();
 };
 
@@ -675,7 +674,7 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 				// if we trying to add already existing item
 				// and it was not due to item moving we should replace it
 				var _item = self.items[item.get("data.unique")];
-				if (_item && _item.dom && options.priority != "high") {
+				if (_item && options.priority != "high") {
 					self._applySpotUpdates("replace", item, {"priority": "highest"});
 					return;
 				}
@@ -685,10 +684,10 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 					self._placeRootItem(item);
 				} else {
 					var parent = self._getParentItem(item);
-					if (parent && parent.dom) {
-						parent.render({"element": "container"});
-						parent.render({"element": "children"});
-						parent.render({"element": "childrenByCurrentActorLive"});
+					if (parent) {
+						parent.dom.render({"name": "container"});
+						parent.dom.render({"name": "children"});
+						parent.dom.render({"name": "childrenByCurrentActorLive"});
 					}
 				}
 				self._executeNextActivity();
@@ -718,8 +717,8 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 						self._applySpotUpdates("add", item, {"priority": "high"});
 					}
 				}
-				if (item && item.dom) {
-					item.render({"element": "container", "recursive": true});
+				if (item) {
+					item.dom.render({"name": "container", "recursive": true});
 				}
 				self._executeNextActivity();
 				break;
@@ -736,20 +735,18 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 				} else {
 					var parent = self._getParentItem(item);
 					if (parent) {
-						parent.render({
-							"element": "children",
+						parent.dom.render({
+							"name": "children",
 							"target": parent.dom.get("children"),
-							"dom": parent.dom,
 							"extra": options
 						});
-						parent.render({
-							"element": "childrenByCurrentActorLive",
+						parent.dom.render({
+							"name": "childrenByCurrentActorLive",
 							"target": parent.dom.get("childrenByCurrentActorLive"),
-							"dom": parent.dom,
 							"extra": options
 						});
 						self._applyStructureUpdates(operation, item, options);
-						parent.render({"element": "container"});
+						parent.dom.render({"name": "container"});
 					}
 				}
 				self._executeNextActivity();
@@ -828,8 +825,8 @@ stream.methods._addItemSpotUpdate = function(item) {
 	this.activities.animations++;
 	if (this.timeouts.slide) {
 		//We should specify the element height explicitly to avoid element jumping during the animation effect
-		var currentHeight = item.dom.get().show().css("height");
-		item.dom.get().css("height", currentHeight).hide().animate({
+		var currentHeight = item.config.get("target").show().css("height");
+		item.config.get("target").css("height", currentHeight).hide().animate({
 			"height": "show", 
 			"marginTop": "show", 
 			"marginBottom": "show", 
@@ -839,20 +836,21 @@ stream.methods._addItemSpotUpdate = function(item) {
 		this.timeouts.slide,
 		function(){
 			//After the animation effect we should remove explicitly set height
-			if (!item.dom || !item.dom.get()) return;
-			item.dom.get().css("height", "");
+			// TODO: check if it's still needed
+			//if (!item.dom.root || !item.dom.root.length) return;
+			item.config.get("target").css("height", "");
 		});
 	} else {
-		item.dom.get().show();
+		item.config.get("target").show();
 	}
 	var publish = function() {
-		if (!item.dom || !item.dom.get()) return;
+		//if (!item.dom.root || !item.dom.root.length) return;
 		self.events.publish({
 			"topic": "Item.onRender",
 			"data": {
 				"item": {
 					"data": item.data,
-					"target": item.dom.get()
+					"target": item.config.get("target")
 				}
 			}
 		});
@@ -888,12 +886,12 @@ stream.methods._deleteItemSpotUpdate = function(item, config) {
 	this.activities.animations++;
 	config = config || {};
 	var callback = $.isFunction(config) ? config : config.callback || function() {
-		if (!item.dom || !item.dom.get()) return;
+		if (!item.config.get("target").length) return;
 		// if the item is being moved, we should keep all jQuery handlers
 		// for the nested elements (children), thus we use "detach" instead of "remove"
-		config.keepChildren ? item.dom.get().detach() : item.dom.remove("content");
-		delete item.dom;
-		item.vars = {};
+		item.config.get("target")[config.keepChildren ? "detach" : "remove"]();
+		item.dom.clear();
+		item.set("vars", {});
 		var itemsCount = Echo.Utils.foldl(0, self.items, function(_item, acc) {
 			return acc + 1;
 		});
@@ -908,7 +906,7 @@ stream.methods._deleteItemSpotUpdate = function(item, config) {
 		self._executeNextActivity();
 	};
 	if (this.timeouts.slide) {
-		item.dom.get().slideUp(this.timeouts.slide, callback);
+		item.config.get("target").slideUp(this.timeouts.slide, callback);
 	} else {
 		callback();
 	}
@@ -976,15 +974,15 @@ stream.methods._compareItems = function(a, b, sort) {
 };
 
 stream.methods._placeRootItem = function(item) {
-	item.render();
+	item.dom.render();
 	var content = item.config.get("target");
 	if (this.threads.length > 1) {
 		var id = this._getItemListIndex(item, this.threads);
 		var next = this.threads[id + 1], prev = this.threads[id - 1];
 		if (next) {
-			next.dom.get().before(content);
+			next.config.get("target").before(content);
 		} else {
-			prev.dom.get().after(content);
+			prev.config.get("target").after(content);
 		}
 	} else {
 		this.dom.get("body").empty().append(content);
@@ -1008,7 +1006,7 @@ stream.methods._placeChildrenItems = function(parent, children) {
 		}
 	});
 	var targetItemDom = targetItemIdx >= 0
-		? parent.get("children")[targetItemIdx].dom.get()
+		? parent.get("children")[targetItemIdx].config.get("target")
 		: parent.dom.get("children");
 	var action = targetItemIdx >= 0
 		? "insertAfter"
@@ -1016,7 +1014,7 @@ stream.methods._placeChildrenItems = function(parent, children) {
 			? "prependTo"
 			: "appendTo";
 	itemsWrapper[action]($(targetItemDom));
-	parent.render({"element": "childrenByCurrentActorLive"});
+	parent.dom.render({"name": "childrenByCurrentActorLive"});
 	// we should specify the element height explicitly
 	// to avoid element jumping during the animation effect
 	itemsWrapper
@@ -1032,8 +1030,8 @@ stream.methods._placeChildrenItems = function(parent, children) {
 			"duration": this.config.get("children.itemsSlideTimeout"),
 			"complete": function() {
 				itemsWrapper.css("height", "");
-				parent.render({"element": "expandChildren"});
-				parent.render({"element": "expandChildrenLabel"});
+				parent.dom.render({"name": "expandChildren"});
+				parent.dom.render({"name": "expandChildrenLabel"});
 				itemsWrapper.children().unwrap();
 			}
 		});
@@ -1306,29 +1304,27 @@ item.renderers.authorName = function(element) {
 	return element.append(this.data.actor.title || this.labels.get("guest"));
 };
 
-item.renderers.markers = function(element, dom) {
-	return this.render({
-		"element": "_extraField",
+item.renderers.markers = function(element) {
+	return this.dom.render({
+		"name": "_extraField",
 		"target": element,
-		"dom": dom,
 		"extra": {"type": "markers"}
 	});
 };
 
-item.renderers.tags = function(element, dom) {
-	return this.render({
-		"element": "_extraField",
+item.renderers.tags = function(element) {
+	return this.dom.render({
+		"name": "_extraField",
 		"target": element,
-		"dom": dom,
 		"extra": {"type": "tags"}
 	});
 };
 
-item.renderers._extraField = function(element, dom, extra) {
+item.renderers._extraField = function(element, extra) {
 	var self = this;
 	var type = (extra || {}).type;
 	if (!this.data.object[type] || !this.user.is("admin")) {
-		dom.remove(element);
+		this.dom.remove(element);
 		return element;
 	}
 	var name = type === "markers"
@@ -1347,21 +1343,21 @@ item.renderers._extraField = function(element, dom, extra) {
 	return element.prepend(items.sort().join(", "));
 };
 
-item.renderers.container = function(element, dom) {
+item.renderers.container = function(element) {
 	var self = this;
 	element.removeClass(
 		$.map(["child", "root", "child-thread", "root-thread"],	function(suffix) {
-			return self.cssPrefix + "-container-" + suffix;
+			return self.cssPrefix + "container-" + suffix;
 		}).join(" ")
 	);
 	var threadSuffix = this.threading ? "-thread" : "";
 	if (this.depth) {
-		element.addClass(this.cssPrefix + "-container-child" + threadSuffix);
+		element.addClass(this.cssPrefix + "container-child" + threadSuffix);
 		element.addClass("echo-trinaryBackgroundColor");
 	} else {
-		element.addClass(this.cssPrefix + "-container-root" + threadSuffix);
+		element.addClass(this.cssPrefix + "container-root" + threadSuffix);
 	}
-	element.addClass(this.cssPrefix + "-depth-" + this.depth);
+	element.addClass(this.cssPrefix + "depth-" + this.depth);
 	var switchClasses = function(action) {
 		$.map(self.buttonsOrder, function(name) {
 			if (!self.get("buttons." + name + ".element")) return;
@@ -1371,12 +1367,12 @@ item.renderers.container = function(element, dom) {
 	if (!Echo.Utils.isMobileDevice()) {
 		element.unbind(["mouseleave", "mouseenter"]).hover(function() {
 			if (self.user.is("admin")) {
-				dom.get("modeSwitch").show();
+				self.dom.get("modeSwitch").show();
 			}
 			switchClasses("add");
 		}, function() {
 			if (self.user.is("admin")) {
-				dom.get("modeSwitch").hide();
+				self.dom.get("modeSwitch").hide();
 			}
 			switchClasses("remove");
 		});
@@ -1415,7 +1411,7 @@ item.renderers.modeSwitch = function(element) {
 };
 
 item.renderers.wrapper = function(element) {
-	return element.addClass(this.cssPrefix + "-wrapper" + (this.depth ? "-child" : "-root"));
+	return element.addClass(this.cssPrefix + "wrapper" + (this.depth ? "-child" : "-root"));
 };
 
 item.renderers.avatar = function(element) {
@@ -1426,7 +1422,7 @@ item.renderers.avatar = function(element) {
 	return element.append(avatar);
 };
 
-item.renderers._childrenContainer = function(element, dom, config) {
+item.renderers._childrenContainer = function(element, config) {
 	var self = this;
 	// we cannot use element.empty() because it will remove children's event handlers
 	$.each(element.children(), function(i, child) {
@@ -1434,8 +1430,9 @@ item.renderers._childrenContainer = function(element, dom, config) {
 	});
 	$.map(this.children, function(child) {
 		if (config && config.filter && !config.filter(child)) return;
-		var initialRendering = !child.dom;
-		if (initialRendering) child.render();
+		// FIXME: temporarily disabled, we need to check rendered state in the other way
+		var initialRendering = true;//!child.dom;
+		if (initialRendering) child.dom.render();
 		element.append(child.config.get("target"));
 		if (child.deleted) {
 			self.events.publish({
@@ -1464,9 +1461,9 @@ item.renderers._childrenContainer = function(element, dom, config) {
 	return element;
 };
 
-item.renderers.children = function(element, dom, config) {
-	return this.render({
-		"element": "_childrenContainer",
+item.renderers.children = function(element, config) {
+	return this.dom.render({
+		"name": "_childrenContainer",
 		"target": element,
 		"extra": {
 			"filter": function(item) { return !item.byCurrentUser; },
@@ -1475,9 +1472,9 @@ item.renderers.children = function(element, dom, config) {
 	});
 };
 
-item.renderers.childrenByCurrentActorLive = function(element, dom, config) {
-	return this.render({
-		"element": "_childrenContainer",
+item.renderers.childrenByCurrentActorLive = function(element, config) {
+	return this.dom.render({
+		"name": "_childrenContainer",
 		"target": element,
 		"extra": {
 			"filter": function(item) { return item.byCurrentUser; },
@@ -1486,7 +1483,7 @@ item.renderers.childrenByCurrentActorLive = function(element, dom, config) {
 	});
 };
 
-item.renderers._button = function(element, dom, extra) {
+item.renderers._button = function(element, extra) {
 	var template = extra.template ||
 		'<a class="{class:button} {class:button}-{data:name}">{data:label}</a>';
 	var data = {
@@ -1515,7 +1512,7 @@ item.renderers._button = function(element, dom, extra) {
 };
 
 item.renderers._buttonsDelimiter = function(element) {
-	return element.append('<span class="' + this.cssPrefix + '-button-delim"> \u00b7 </span>');
+	return element.append('<span class="' + this.cssPrefix + 'button-delim"> \u00b7 </span>');
 };
 
 item.renderers.buttons = function(element) {
@@ -1528,12 +1525,12 @@ item.renderers.buttons = function(element) {
 		if (!data || !data.name || !data.visible()) {
 			return;
 		}
-		self.render({
-			"element": "_buttonsDelimiter",
+		self.dom.render({
+			"name": "_buttonsDelimiter",
 			"target": element
 		});
-		self.render({
-			"element": "_button",
+		self.dom.render({
+			"name": "_button",
 			"target": element,
 			"extra": data
 		});
@@ -1614,18 +1611,19 @@ item.renderers.re = function(element) {
 	return element.append(re);
 };
 
-item.renderers.sourceIcon = function(element, dom) {
+item.renderers.sourceIcon = function(element) {
+	var self = this;
 	if (!this.config.get("viaLabel.icon") ||
 			this.data.source.name == "jskit" ||
 			this.data.source.name == "echo") {
-		dom.remove(element);
+		this.dom.remove(element);
 	}
 	element.hide().attr("src", Echo.Utils.htmlize(
 		this.data.source.icon || this.config.get("providerIcon")
 	))
 	.show()
 	.one("error", function() {
-		dom.remove(element);
+		self.dom.remove(element);
 	})
 	.wrap(Echo.Utils.hyperlink({
 		"href": this.data.source.uri || this.data.object.permalink
@@ -1642,8 +1640,8 @@ item.renderers.via = function(element) {
 	if (get("source") === get("provider")) {
 		return element;
 	}
-	return this.render({
-		"element": "_viaText",
+	return this.dom.render({
+		"name": "_viaText",
 		"target": element,
 		"extra": {
 			"label": "via",
@@ -1653,8 +1651,8 @@ item.renderers.via = function(element) {
 };
 
 item.renderers.from = function(element) {
-	return this.render({
-		"element": "_viaText",
+	return this.dom.render({
+		"name": "_viaText",
 		"target": element,
 		"extra": {
 			"label": "from",
@@ -1663,7 +1661,7 @@ item.renderers.from = function(element) {
 	});
 };
 
-item.renderers._viaText = function(element, dom, extra) {
+item.renderers._viaText = function(element, extra) {
 	extra = extra || {};
 	var data = this.data[extra.field];
 	if (!this.config.get("viaLabel.text") ||
@@ -1686,15 +1684,15 @@ item.renderers.textToggleTruncated = function(element) {
 	var self = this;
 	element.unbind("click").click(function() {
 		self.textExpanded = !self.textExpanded;
-		self.render({"element": "body"});
-		self.render({"element": "textToggleTruncated"});
+		self.dom.render({"name": "body"});
+		self.dom.render({"name": "textToggleTruncated"});
 	});
 	return element.append(
 		this.labels.get("textToggleTruncated" + (this.textExpanded ? "Less" : "More"))
 	);
 };
 
-item.renderers.body = function(element, dom) {
+item.renderers.body = function(element) {
 	var self = this;
 	var data = [this.data.object.content, {
 		"source": this.data.source.name,
@@ -1711,22 +1709,18 @@ item.renderers.body = function(element, dom) {
 	});
 	var text = data[0];
 	var truncated = data[1].truncated;
-	dom.get("text").empty().append(text);
-	dom.get("textEllipses")[!truncated || this.textExpanded ? "hide" : "show"]();
-	dom.get("textToggleTruncated")[truncated || this.textExpanded ? "show" : "hide"]();
+	this.dom.get("text").empty().append(text);
+	this.dom.get("textEllipses")[!truncated || this.textExpanded ? "hide" : "show"]();
+	this.dom.get("textToggleTruncated")[truncated || this.textExpanded ? "show" : "hide"]();
 	return element;
 };
 
 item.renderers.date = function(element) {
-	var container = element || this.dom && this.dom.get("date");
 	this._calcAge();
-	if (container) {
-		container.html(this.age);
-	}
-	return element;
+	return element.html(this.age);
 };
 
-item.renderers.expandChildrenLabel = function(element, dom, extra) {
+item.renderers.expandChildrenLabel = function(element, extra) {
 	if (!this.children.length || !this.hasMoreChildren()) {
 		return element;
 	}
@@ -1734,7 +1728,7 @@ item.renderers.expandChildrenLabel = function(element, dom, extra) {
 	extra.state = extra.state || "regular";
 	var states = {
 		"loading": {
-			"css": this.cssPrefix + "-message-loading",
+			"css": this.cssPrefix + "message-loading",
 			"label": "loading"
 		},
 		"regular": {
@@ -1748,7 +1742,7 @@ item.renderers.expandChildrenLabel = function(element, dom, extra) {
 		.html(this.labels.get(states[extra.state].label));
 };
 
-item.renderers.expandChildren = function(element, dom, extra) {
+item.renderers.expandChildren = function(element, extra) {
 	if (!this.children.length) {
 		return element;
 	}
@@ -1780,13 +1774,12 @@ item.renderers.expandChildren = function(element, dom, extra) {
 	extra = extra || {};
 	// the "show()" jQuery method doesn't work for some reason in Chrome (A:5755)
 	return element.css("display", "block")
-		.addClass(this.cssPrefix + "-depth-" + (this.depth + 1))
+		.addClass(this.cssPrefix + "depth-" + (this.depth + 1))
 		.unbind("click")
 		.one("click", function() {
-			self.render({
-				"element": "expandChildrenLabel",
-				"target": dom.get("expandChildrenLabel"),
-				"dom": dom,
+			self.dom.render({
+				"name": "expandChildrenLabel",
+				"target": self.dom.get("expandChildrenLabel"),
 				"extra": {"state": "loading"}
 			});
 			self.events.publish({
@@ -1901,7 +1894,7 @@ item.methods.traverse = function(tree, callback, acc) {
 };
 
 item.methods.refreshDate = function() {
-	this.render({"element": "date"});
+	this.dom.render({"name": "date"});
 	$.map(this.children || [], function(child) {
 		child.refreshDate();
 	});
@@ -1915,7 +1908,7 @@ item.methods.block = function(label) {
 	//We should take into account that container has a 10px 0px padding value
 	var height = content.outerHeight();
 	this.blockers = {
-		"backdrop": $('<div class="' + this.cssPrefix + '-blocker-backdrop"></div>').css({
+		"backdrop": $('<div class="' + this.cssPrefix + 'blocker-backdrop"></div>').css({
 			"width": width, "height": height
 		}),
 		"message": $(this.substitute('<div class="{class:blocker-message}">{data:label}</div>', {"label": label})).css({
@@ -2025,7 +2018,7 @@ item.methods._initSmileysConfig = function() {
 	});
 	_smileys.regexps.test = new RegExp(escapedCodes.join("|"));
 	_smileys.tag = function(smiley) {
-		return '<img class="' + self.cssPrefix + '-smiley-icon" src="//cdn.echoenabled.com/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '" />';
+		return '<img class="' + self.cssPrefix + 'smiley-icon" src="//cdn.echoenabled.com/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '" />';
 	};
 	return _smileys;
 };
@@ -2049,7 +2042,7 @@ item.methods._assembleButtons = function() {
 						"plugin": plugin,
 						"item": {
 							"data": self.data,
-							"target": self.dom.get()
+							"target": self.config.get("target")
 						}
 					},
 					"bubble": true

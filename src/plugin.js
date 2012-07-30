@@ -26,7 +26,7 @@ Echo.Plugin = function() {};
  * @return {Object} generated plugin class
  */
 Echo.Plugin.create = function(manifest) {
-	var plugin = Echo.Plugin.getClass(manifest.name, manifest.component);
+	var plugin = Echo.Plugin.getClass(manifest.name, manifest.component.name);
 	// prevent multiple re-definitions
 	if (plugin) return plugin;
 	var _constructor = function(config) {
@@ -35,16 +35,17 @@ Echo.Plugin.create = function(manifest) {
 		this.name = manifest.name;
 		this.manifest = manifest; // TODO: avoid this, pass via param to "renderer"...
 		this.component = config.component;
-		this.cssPrefix = this.component.cssPrefix + "-plugin-" + manifest.name;
+		this.cssPrefix = this.component.cssPrefix + "plugin-" + manifest.name + "-";
 		// define extra css class for the control target
-		this.component.config.get("target").addClass(this.cssPrefix);
+		this.component.config.get("target").addClass(this.cssPrefix.substr(0, this.cssPrefix.length - 1));
 		this._init([
 			"config",
 			"css",
 			"events",
 			"subscriptions",
 			"labels",
-			"renderers"
+			"renderers",
+			"dom"
 		]);
 		// we treat "false" as an indication that the plugin was not initialized
 		if (manifest.init.call(this) === false) {
@@ -58,7 +59,7 @@ Echo.Plugin.create = function(manifest) {
 	}
 	Echo.Utils.setNestedValue(
 		window,
-		Echo.Plugin._getClassName(manifest.name, manifest.component),
+		Echo.Plugin._getClassName(manifest.name, manifest.component.name),
 		_constructor
 	);
 	return _constructor;
@@ -74,7 +75,10 @@ Echo.Plugin.create = function(manifest) {
 Echo.Plugin.manifest = function(name, component) {
 	return {
 		"name": name,
-		"component": component,
+		"component": {
+			"name": component,
+			"renderers": {}
+		},
 		"config": {},
 		"labels": {},
 		"events": {},
@@ -92,7 +96,7 @@ Echo.Plugin.manifest = function(name, component) {
  * @return {Boolean}
  */
 Echo.Plugin.isDefined = function(manifest) {
-	return !!Echo.Plugin.getClass(manifest.name, manifest.component);
+	return !!Echo.Plugin.getClass(manifest.name, manifest.component.name);
 };
 
 /**
@@ -108,7 +112,7 @@ Echo.Plugin.getClass = function(name, component) {
 
 /**
  * @method
- * @inheritdoc Echo.Control@set
+ * @inheritdoc Echo.Control#set
  */
 Echo.Plugin.prototype.set = function(key, value) {
 	Echo.Utils.setNestedValue(this, key, value);
@@ -116,7 +120,7 @@ Echo.Plugin.prototype.set = function(key, value) {
 
 /**
  * @method
- * @inheritdoc Echo.Control@get
+ * @inheritdoc Echo.Control#get
  */
 Echo.Plugin.prototype.get = function(key, defaults) {
 	return Echo.Utils.getNestedValue(this, key, defaults);
@@ -124,7 +128,7 @@ Echo.Plugin.prototype.get = function(key, defaults) {
 
 /**
  * @method
- * @inheritdoc Echo.Control@remove
+ * @inheritdoc Echo.Control#remove
  */
 Echo.Plugin.prototype.remove = function(key) {
 	Echo.Utils.setNestedValue(this, key, undefined);
@@ -191,14 +195,14 @@ Echo.Plugin.prototype.parentRenderer = function() {
  * @param {String} template (required) Template containing placeholders used for data interspersion.
  * @return {String} Compiled string value.
  */
-Echo.Plugin.prototype.substitute = function(template) {
+Echo.Plugin.prototype.substitute = function(template, data) {
 	var plugin = this;
-	return plugin.component.substitute(template, {}, {
+	return plugin.component.substitute(template, data || {}, {
 		"plugin.label": function(key) {
 			return plugin.labels.get(key, "");
 		},
 		"plugin.class": function(value) {
-			return plugin.cssPrefix + "-" + value;
+			return plugin.cssPrefix + value;
 		},
 		"plugin.data": function(key) {
 			return "{self:plugins." + plugin.name + ".data." + key + "}";
@@ -272,9 +276,40 @@ Echo.Plugin.prototype._init.subscriptions = function() {
 
 Echo.Plugin.prototype._init.renderers = function() {
 	var self = this;
-	$.each(this.manifest.renderers || {}, function(name, renderer) {
+	$.each(this.manifest.renderers, function(name, renderer) {
+		self.component.extendRenderer.call(self.component, "plugin-" + self.manifest.name + "-" + name, $.proxy(renderer, self));
+	});
+	$.each(this.manifest.component.renderers, function(name, renderer) {
 		self.component.extendRenderer.call(self.component, name, $.proxy(renderer, self));
 	});
+};
+
+Echo.Plugin.prototype._init.dom = function() {
+	var parentDOM = this.component.dom;
+	var prefix = "plugin-" + this.manifest.name + "-";
+	this.dom = {
+		"clear": function() {
+			parentDOM.clear();
+		},
+		"set": function(name, element) {
+			parentDOM.set(prefix + name, element);
+		},
+		"get": function(name, ignorePrefix) {
+			return parentDOM.get(prefix + name, ignorePrefix);
+		},
+		"remove": function(element) {
+			if (typeof element === "string") {
+				element = prefix + element;
+			}
+			parentDOM.remove(prefix + element);
+		},
+		"render": function(args) {
+			if (args.name) {
+				args.name = prefix + args.name;
+			}
+			parentDOM.render(args);
+		}
+	};
 };
 
 Echo.Plugin._getClassName = function(name, component) {

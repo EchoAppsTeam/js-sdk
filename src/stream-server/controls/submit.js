@@ -29,7 +29,7 @@ submit.init = function() {
 		});
 		return valid;
 	}, "low");
-	this.render();
+	this.dom.render();
 };
 
 submit.config = {
@@ -199,29 +199,27 @@ submit.renderers.markersContainer = function(element) {
 	return (this.user.is("admin")) ? element.show() : element.hide();
 };
 
-submit.renderers.markers = function(element, dom) {
-	return this.render({
-		"element": "metaFields",
+submit.renderers.markers = function(element) {
+	return this.dom.render({
+		"name": "_metaFields",
 		"target": element,
-		"dom": dom,
 		"extra": {"type": "markers"}
 	});
 };
 
-submit.renderers.tags = function(element, dom) {
-	return this.render({
-		"element": "metaFields",
+submit.renderers.tags = function(element) {
+	return this.dom.render({
+		"name": "_metaFields",
 		"target": element,
-		"dom": dom,
 		"extra": {"type": "tags"}
 	});
 };
 
-submit.renderers.metaFields = function(element, dom, extra) {
+submit.renderers._metaFields = function(element, extra) {
 	var type = extra.type;
 	var data = this.get("data.object." + type) || [];
 	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
-	return dom.get(type).iHint({
+	return this.dom.get(type).iHint({
 		"text": this.labels.get(type + "Hint"),
 		"className": "echo-secondaryColor"
 	}).val(value).blur();
@@ -293,8 +291,8 @@ submit.renderers.postButton = function(element) {
 	subscribe("Init", states.posting);
 	subscribe("Complete", states.normal, function() {
 		self.dom.get("text").val("").trigger("blur");
-		self.render({ "element": "tags" });
-		self.render({ "element": "markers" });
+		self.dom.render({"name": "tags"});
+		self.dom.render({"name": "markers"});
 	});
 	subscribe("Error", states.normal, function(params) {
 		self._showError(params.postData);
@@ -384,7 +382,7 @@ submit.methods.post = function() {
  */
 submit.methods.highlightMandatory = function(element) {
 	if (element && !$.trim(element.val())) {
-		var css = this.cssPrefix + "-mandatory";
+		var css = this.cssPrefix + "mandatory";
 		element.parent().addClass(css);
 		element.focus(function() {
 			$(this).parent().removeClass(css);
@@ -413,7 +411,7 @@ submit.methods.refresh = function() {
 		var elements = self.dom.get(field).val().split(", ");
 		self.set("data.object." + field, elements || []);
 	});
-	this.render();
+	this.dom.render();
 	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Submit");
 	component.parent.refresh.call(this);
 };
@@ -448,7 +446,7 @@ submit.methods._showError = function(data) {
 		? this.labels.get("postingTimeout")
 		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
 	$.fancybox({
-		"content": '<div class="' + this.cssPrefix + '-error">' + message + '</div>',
+		"content": '<div class="' + this.cssPrefix + 'error">' + message + '</div>',
 		"height": 70,
 		"width": isNetworkTimeout ? 320 : 390,
 		"padding": 15,

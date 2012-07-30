@@ -261,7 +261,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		var target = this.dom.get("testRenderer");
 		this.render({
 			"target": target,
-			"element": "testRendererWithExtra",
+			"name": "testRendererWithExtra",
 			"extra": {"value": "my-value"}
 		});
 		QUnit.equal(target.get(0).innerHTML, "<span>my-value</span>",
@@ -269,14 +269,14 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		this.render({
 			"target": target,
-			"element": "testRendererWithExtra",
+			"name": "testRendererWithExtra",
 			"extra": {"value": "another-value"}
 		});
 		QUnit.equal(target.get(0).innerHTML, "<span>another-value</span>",
 			"Checking if element content was updated as a result of renderer application");
 
 		this.render({
-			"element": "testRenderer"
+			"name": "testRenderer"
 		});
 		QUnit.equal(target.get(0).innerHTML, "<div>Some value</div>",
 			"Checking if element content was updated as a result of the native renderer application");
@@ -284,7 +284,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		// recursive element rendering
 		this.dom.get("nestedSubcontainer").append('<div class="extra-div">Extra DIV appended</div>');
 		this.render({
-			"element": "testRendererRecursive",
+			"name": "testRendererRecursive",
 			"recursive": true
 		});
 		QUnit.equal(this.dom.get("testRendererRecursive").get(0).innerHTML, "<div class=\"echo-streamserver-controls-mycontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mycontrol-nestedSubcontainer\"></div></div>",
@@ -619,7 +619,7 @@ suite.getControlManifest = function(name) {
 		return element.append('<div>Some value from testPluginRenderer</div>');
 	};
 
-	manifest.renderers.testRendererWithExtra = function(element, dom, extra) {
+	manifest.renderers.testRendererWithExtra = function(element, extra) {
 		return element.empty().append('<span>' + extra.value + '</span>');
 	};
 

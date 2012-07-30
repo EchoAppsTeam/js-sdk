@@ -43,13 +43,13 @@ plugin.labels = {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
-		this.component.render({"element": "counterLabel"});
+		this.dom.render({"name": "counterLabel"});
 	}
 };
 
-plugin.templates.counter = '<div class="{class:counterLabel} echo-primaryFont echo-primaryColor"></div>';
+plugin.templates.counter = '<div class="{plugin.class:counterLabel} echo-primaryFont echo-primaryColor"></div>';
 
-plugin.renderers.text = function(element, dom) {
+plugin.component.renderers.text = function(element) {
 	var plugin = this;
 	plugin.parentRenderer("text", arguments);
 	var limit = plugin.config.get("limit", 0);
@@ -63,15 +63,15 @@ plugin.renderers.text = function(element, dom) {
 				return;
 			}
 		}
-		plugin.component.render({"element": "counterLabel"});
+		plugin.dom.render({"name": "counterLabel"});
 	};
 	return element.bind("blur focus keyup keypress", handler);
 };
 
-plugin.renderers.counterLabel = function(element, dom) {
+plugin.renderers.counterLabel = function(element) {
 	var plugin = this;
 	var limit = plugin.config.get("limit", 0);
-	var typed = dom.get("text").val().length;
+	var typed = this.component.dom.get("text").val().length;
 	var label = this.labels.get(
 		plugin.config.get("label", limit ? "limited" : "unlimited"),
 		{"typed": typed, "left": Math.max(limit - typed, 0), "limit": limit}

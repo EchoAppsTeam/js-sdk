@@ -38,9 +38,9 @@ plugin.init = function() {
 	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Unflag"));
 };
 
-plugin.template = '<div class="{class:flaggedBy}"></div>';
+plugin.template = '<div class="{plugin.class:flaggedBy}"></div>';
 
-plugin.renderers.flaggedBy = function(element, dom) {
+plugin.renderers.flaggedBy = function(element) {
 	var plugin = this, item = this.component;
 	var flags = item.get("data.object.flags", []);
 	if (!flags.length || !item.user.is("admin") || !plugin.config.get("showUserList")) {
@@ -89,7 +89,7 @@ plugin.methods._assembleButton = function(name) {
 					"data": {
 						"item": {
 							"data": item.get("data"),
-							"target": item.dom.get()
+							"target": item.config.get("target")
 						}
 					}
 				});
@@ -121,7 +121,7 @@ plugin.methods._myFlags = function(flags) {
 	});
 };
 
-plugin.css = '.{class:flaggedBy} { background: url(//cdn.echoenabled.com/images/curation/status/communityflagged.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
+plugin.css = '.{plugin.class:flaggedBy} { background: url(//cdn.echoenabled.com/images/curation/status/communityflagged.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
 
 Echo.Plugin.create(plugin);
 

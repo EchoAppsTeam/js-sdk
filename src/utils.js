@@ -368,37 +368,6 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 };
 
 /**
- * Method to map CSS classes to objects.
- *
- *     // HTML template
- *     var template = '<div class="echo-class-container">' +
- *                        '<div class="echo-class-header">header</div>' +
- *                        '<div class="echo-class-content">content</div>' +
- *                    '</div>';
- *
- *     var hash = Echo.Utils.mapClass2Object($(template));
- *    
- *     // hash['echo-class-header'].innerHTML will be "header"
- *
- * @static
- * @param {HTMLElement} element HTML element
- * @param {Object} [ctl] The object in which class to object map is stored
- * @return {Object} Returns the object 
- */
-Echo.Utils.mapClass2Object = function(element, ctl) {
-	ctl = ctl || {};
-	element.find("*").andSelf().each(function(i, el) {
-		if (el.className) {
-			var arr = el.className.split(/[ ]+/);
-			$.each(arr, function(i, c) {
-				ctl[c] = el;
-			});
-		}
-	});
-	return ctl;
-};
-
-/**
  * Method to strip HTML tags from the string.
  *
  * This function returns a string with all HTML tags stripped from the given string.

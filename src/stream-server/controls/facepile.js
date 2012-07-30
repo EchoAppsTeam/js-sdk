@@ -112,22 +112,21 @@ pile.renderers.more = function(element) {
 pile.renderers.actors = function(element) {
 	var self = this, usersDOM = [];
 	var item = this.config.get("item");
-	var cssPrefix = this.cssPrefix + "-";
 
 	if (!this.users.length || !item.avatar && !item.text) {
 		return element.empty();
 	}
 
 	var action = (item.avatar && !item.text ? "addClass" : "removeClass");
-	element[action](cssPrefix + "only-avatars");
+	element[action](this.cssPrefix + "only-avatars");
 	var wrap = function(text, name) {
 		return self.substitute("<span {data:classAttr}>{data:text}</span>", {
-			"classAttr": name ? 'class="' + cssPrefix + name + '"' : '',
+			"classAttr": name ? 'class="' + self.cssPrefix + name + '"' : '',
 			"text": text
 		});
 	};
 	$.map(this.users.slice(0, this.count.visible), function(user) {
-		usersDOM.push(user.instance.render());
+		usersDOM.push(user.instance.dom.render());
 	});
 	var last;
 	var delimiter = this.config.get("item.text") ? ", " : "";
@@ -168,7 +167,7 @@ pile.methods.refresh = function() {
 	}
 	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.FacePile");
 	component.parent.refresh.call(this);
-	this.render();
+	this.dom.render();
 };
 
 /**
@@ -244,7 +243,7 @@ pile.methods._initialResponseHandler = function(data) {
 	if (!data.entries.length) {
 		if (!this.isViewComplete) {
 			this.isViewComplete = true;
-			this.render();
+			this.dom.render();
 		}
 		return;
 	}
@@ -287,7 +286,7 @@ pile.methods._processResponse = function(data, isLive) {
 	if (!isLive && fetchMoreUsers) {
 		this._getMoreUsers();
 	} else {
-		this.render();
+		this.dom.render();
 	}
 };
 
@@ -339,7 +338,7 @@ pile.methods._getMoreUsers = function() {
 		if (this.count.visible > this.users.length) {
 			this.count.visible = this.users.length;
 		}
-		this.render();
+		this.dom.render();
 	} else {
 		if (!this.moreRequestInProgress) {
 			this.showMessage({

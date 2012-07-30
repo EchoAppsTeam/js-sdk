@@ -52,7 +52,7 @@ counter.init = function() {
 	if ($.isEmptyObject(this.get("data"))) {
 		this._request();
 	} else {
-		this.render();
+		this.dom.render();
 	}
 };
 
@@ -95,7 +95,7 @@ counter.methods._request = function() {
 counter.methods._update = function(data) {
 	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
 		this.set("data", data);
-		this.render();
+		this.dom.render();
 		this.events.publish({
 			"topic": "onUpdate",
 			"data": {
@@ -110,7 +110,7 @@ counter.methods._update = function(data) {
 counter.methods._error = function(data) {
 	if (data.errorCode === "more_than") {
 		this.set("data.count", data.errorMessage + "+");
-		this.render();
+		this.dom.render();
 	} else {
 		this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
 	}

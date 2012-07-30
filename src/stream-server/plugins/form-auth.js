@@ -29,7 +29,7 @@ plugin.init = function() {
 		!this.config.get("identityManager.login") ||
 		!this.config.get("identityManager.signup")) return false;
 
-	if (this._userStatus() == "forcedLogin") {
+	if (this._userStatus() === "forcedLogin") {
 		this.extendTemplate("replace", "header", plugin.templates.forcedLogin);
 	}
 	this.extendTemplate("insertBefore", "header", plugin.templates.auth);
@@ -75,14 +75,33 @@ plugin.labels = {
 	"youMustBeLoggedIn": "You must be logged in to comment"
 };
 
-plugin.templates.auth = '<div class="{class:auth}"></div>';
+plugin.templates.auth = '<div class="{plugin.class:auth}"></div>';
 
 plugin.templates.forcedLogin =
 	'<div class="{class:header} echo-primaryFont">' +
-		'<span class="{class:forcedLoginMessage} echo-secondaryColor">' +
+		'<span class="{plugin.class:forcedLoginMessage} echo-secondaryColor">' +
 			'{plugin.label:youMustBeLoggedIn}' +
 		'</span>' +
 	'</div>';
+
+plugin.component.renderers.header = function(element) {
+	var plugin = this;
+	if (this._userStatus() === "logged") {
+		return element.empty();
+	}
+	return plugin.parentRenderer("header", arguments);
+};
+
+plugin.component.renderers.container = function(element) {
+	var plugin = this;
+	plugin.parentRenderer("container", arguments);
+	var _class = function(postfix) {
+		return plugin.cssPrefix + postfix;
+	};
+	return element
+		.removeClass($.map(["logged", "anonymous", "forcedLogin"], _class).join(" "))
+		.addClass(_class(plugin._userStatus()));
+};
 
 plugin.renderers.auth = function(element) {
 	var plugin = this;
@@ -93,30 +112,11 @@ plugin.renderers.auth = function(element) {
 	return element;
 };
 
-plugin.renderers.header = function(element) {
-	var plugin = this;
-	if (this._userStatus() == "logged") {
-		return element.empty();
-	}
-	return plugin.parentRenderer("header", arguments);
-};
-
-plugin.renderers.container = function(element) {
-	var plugin = this;
-	plugin.parentRenderer("container", arguments);
-	var _class = function(postfix) {
-		return plugin.cssPrefix + "-" + postfix;
-	};
-	return element
-		.removeClass($.map(["logged", "anonymous", "forcedLogin"], _class).join(" "))
-		.addClass(_class(plugin._userStatus()));
-};
-
 plugin.methods._validator = function() {
 	var plugin = this, submit = this.component;
 	return function() {
-		if (!submit.user.is("logged") && plugin._permissions() == "forceLogin") {
-			submit.dom.get("forcedLoginMessage").addClass(plugin.cssPrefix + "-error");
+		if (!submit.user.is("logged") && plugin._permissions() === "forceLogin") {
+			plugin.dom.get("forcedLoginMessage").addClass(plugin.cssPrefix + "error");
 			return false;
 		}
 		return true;
@@ -136,7 +136,7 @@ plugin.methods._userStatus = function(application) {
 };
 
 plugin.css =
-	'.{class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }' +
+	'.{plugin.class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }' +
 	'.{plugin.class:error} { color: red; }';
 
 Echo.Plugin.create(plugin);

@@ -666,7 +666,7 @@ suite.getPluginManifest = function(name, component) {
 		return element.append('<div>Test value from plugin extension</div>');
 	};
 
-	manifest.renderers.testRendererWithExtra = function(element, dom, extra) {
+	manifest.renderers.testRendererWithExtra = function(element, extra) {
 		return element.empty().append('<span>' + extra.value + '</span>');
 	};
 
