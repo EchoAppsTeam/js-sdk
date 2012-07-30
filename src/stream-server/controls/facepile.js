@@ -155,22 +155,6 @@ pile.renderers.suffixText = function(element) {
 };
 
 /**
- * @method refresh
- * Method implements the refresh logic for the FacePile control.
- * It should be used for example after some config params were changed.
- */
-pile.methods.refresh = function() {
-	if (this.get("request")) {
-		this.get("request").abort();
-		this.remove("request");
-		this._request();
-	}
-	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.FacePile");
-	component.parent.refresh.call(this);
-	this.dom.render();
-};
-
-/**
  * @method getVisibleUsersCount
  * Method to get the visible users count
  * @return {Number} visible users count

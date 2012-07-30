@@ -36,7 +36,6 @@ Echo.Control.create = function(manifest) {
 		// perform basic validation of incoming params
 		if (!config || !config.target || !config.appkey) return {};
 		this.data = config.data || {};
-		delete config.data;
 		this.name = manifest.name;
 		this.manifest = manifest;
 		this._init([
@@ -247,7 +246,33 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
  * Function can be overriden by class descendants implying specific logic.
  */
 Echo.Control.prototype.refresh = function() {
-	this.events.publish({"topic": "onRefresh"});
+	var self = this;
+
+	// override "ready" callback
+	this.config.set("ready", function() {
+		self.events.publish({"topic": "onRefresh"});
+		self.config.set("ready", undefined);
+	});
+
+	// restore originally defined data
+	this.set("data", this.config.get("data", {}));
+
+	// abort and cleanup data request machinery
+	var request = this.get("request");
+	if (request) {
+		request.abort();
+		this.remove("request");
+	}
+
+	this._init([
+		"vars",
+		"extension",
+		"renderers",
+		"loading",
+		["user", function() {
+			self._init([["plugins", self.manifest.init]]);
+		}]
+	]);
 };
 
 /**

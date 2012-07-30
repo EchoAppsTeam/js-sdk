@@ -411,7 +411,6 @@ submit.methods.refresh = function() {
 		var elements = self.dom.get(field).val().split(", ");
 		self.set("data.object." + field, elements || []);
 	});
-	this.dom.render();
 	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Submit");
 	component.parent.refresh.call(this);
 };

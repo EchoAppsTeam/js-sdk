@@ -56,21 +56,6 @@ counter.init = function() {
 	}
 };
 
-/**
- * @method refresh
- * Method implements the refresh logic for the Counter control.
- * It should be used for example after some config params were changed.
- */
-counter.methods.refresh = function() {
-	this.showMessage({"type": "loading"});
-	this.set("data", {});
-	this.get("request").abort();
-	this.remove("request");
-	this._request();
-	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Counter");
-	component.parent.refresh.call(this);
-};
-
 // internal functions
 
 counter.methods._request = function() {

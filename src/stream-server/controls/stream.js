@@ -367,13 +367,6 @@ stream.methods.setStreamState = function(state) {
 	this.dom.render({"name": "state"});
 };
 
-stream.methods.refresh = function() {
-	this.request.abort();
-	this.dom.render();
-	this.requestInitialItems();
-	this.events.publish({"topic": "onRerender"});
-};
-
 stream.methods._prepareEventParams = function(params) {
 	params = params || {};
 	params.target = this.config.get("target").get(0);
