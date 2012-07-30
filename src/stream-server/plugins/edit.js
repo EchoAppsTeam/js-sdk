@@ -115,6 +115,7 @@ $.map(["Init", "Complete", "Error"], function(action) {
 			args.postData.content = this._prepareContent();
 		}
 		component.events.publish({
+			"data": args,
 			"topic": "onEdit" + action,
 			"context": component.config.get("parent.context")
 		});

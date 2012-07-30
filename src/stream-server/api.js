@@ -311,6 +311,7 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 			"name": activity.actor && (activity.actor.name || activity.actor.title),
 			"source": activity.source,
 			"tags": meta.tags ? $.trim(meta.tags) : undefined,
+			"title": activity.object && activity.object.title,
 			"target": activity.targets[0].id,
 			"verb": verb(activity),
 			"type": type(activity),

@@ -322,10 +322,10 @@ submit.methods.post = function() {
 		};
 		self.events.publish(params);
 	};
-	var postType = this.config.get("type", this._getURL("comment"));
+	var postType = this.config.get("type", this._getASURL("comment"));
 	var content = [].concat(self._getActivity("post", postType, self.dom.get("text").val()),
-				 self._getActivity("tag", this._getURL("marker"), self.dom.get("markers").val()),
-				 self._getActivity("tag", this._getURL("tag"), self.dom.get("tags").val()));
+				 self._getActivity("tag", this._getASURL("marker"), self.dom.get("markers").val()),
+				 self._getActivity("tag", this._getASURL("tag"), self.dom.get("tags").val()));
 	var entry = {
 		"content": content,
 		"appkey": this.config.get("appkey"),
@@ -421,7 +421,7 @@ submit.methods.refresh = function() {
 submit.methods._getActivity = function(verb, type, data) {
 	return (!data) ? [] : {
 		"actor": {
-			"objectTypes": [ this._getURL("person") ],
+			"objectTypes": [ this._getASURL("person") ],
 			"name": this.user.get("name", ( this.user.is("logged") ? "" : this.dom.get("name").val() )),
 			"avatar": this.user.get("avatar", "")
 		},
@@ -430,14 +430,14 @@ submit.methods._getActivity = function(verb, type, data) {
 			"content": data,
 		},
 		"source": this.config.get("source"),
-		"verbs": [ this._getURL(verb) ],
+		"verbs": [ this._getASURL(verb) ],
 		"targets": [{
 			"id": this.config.get("targetURL")
 		}]
 	};
 };
 
-submit.methods._getURL = function(postfix) {
+submit.methods._getASURL = function(postfix) {
 	return "http://activitystrea.ms/schema/1.0/" + postfix;
 }
 
