@@ -23,7 +23,7 @@ plugin.init = function() {
 	item.addButtonSpec("Reply", this._assembleButton());
 	$(document).click(function() {
 		var submit = self.get("submit");
-		if (submit && !submit.dom.get("text").val()) {
+		if (self.get("expanded") && submit && !submit.dom.get("text").val()) {
 			/**
 			 * @event onCollapse
 			 * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
@@ -57,9 +57,11 @@ plugin.config = {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
+		this.set("expanded", true);
 		this._showSubmit();
 	},
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse": function(topic, args) {
+		this.set("expanded", false);
 		this._hideSubmit();
 	},
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
@@ -73,40 +75,16 @@ plugin.events = {
 };
 
 plugin.templates.form =
-	'<div class="{class:replyForm}">' +
-		'<div class="{class:submitForm}"></div>' +
-		'<div class="{class:compactForm}">' +
-			'<div class="{class:compactContent} {class:compactBorder}">' +
-				'<input class="{class:compactField} echo-primaryFont echo-secondaryColor">' +
+	'<div class="{plugin.class:replyForm}">' +
+		'<div class="{plugin.class:submitForm}"></div>' +
+		'<div class="{plugin.class:compactForm}">' +
+			'<div class="{plugin.class:compactContent} {plugin.class:compactBorder}">' +
+				'<input class="{plugin.class:compactField} echo-primaryFont echo-secondaryColor">' +
 			'</div>' +
 		'</div>' +
 	'</div>';
 
-plugin.renderers.children = function(element) {
-	var plugin = this, item = plugin.component;
-	// perform reply form rerendering *only* when we have exactly 1 item
-	// (the first item is being added or the last one is being deleted)
-	if (item.get("children").length == 1) {
-		var child = item.get("children")[0];
-		if (child.get("added") || child.get("deleted")) {
-			plugin._itemCSS("remove", item, item.dom.get("replyForm"));
-			item.render({"name": "compactForm"});
-		}
-	}
-	return item.parentRenderer("children", arguments);
-};
-
-plugin.renderers.compactForm = function(element) {
-	var plugin = this, item = plugin.component;
-	var hasChildren = !!item.children.length;
-	if (!item.get("depth") && hasChildren && !plugin.get("submit") && !item.get("children")[0].get("deleted")) {
-		plugin._itemCSS("add", item, element.parent());
-		return element.show();
-	}
-	return element.hide();
-};
-
-plugin.renderers.container = function(element) {
+plugin.component.renderers.container = function(element) {
 	var plugin = this, item = plugin.component;
 	var threading = item.threading;
 	if (plugin.get("submit")) {
@@ -115,6 +93,38 @@ plugin.renderers.container = function(element) {
 	item.parentRenderer("container", arguments);
 	item.threading = threading;
 	return element;
+};
+
+plugin.component.renderers.children = function(element) {
+	var plugin = this, item = plugin.component;
+	// perform reply form rerendering *only* when we have exactly 1 item
+	// (the first item is being added or the last one is being deleted)
+	if (item.get("children").length == 1) {
+		var child = item.get("children")[0];
+		if (child.get("added") || child.get("deleted")) {
+			plugin._itemCSS("remove", item, plugin.dom.get("replyForm"));
+			plugin.dom.render({"name": "compactForm"});
+		}
+	}
+	return item.parentRenderer("children", arguments);
+};
+
+plugin.renderers.submitForm = function(element) {
+	var plugin = this;
+	if (plugin.get("expanded")) {
+		return plugin._showSubmit();
+	}
+	return element;
+};
+
+plugin.renderers.compactForm = function(element) {
+	var plugin = this, item = plugin.component;
+	var hasChildren = !!item.children.length;
+	if (!item.get("depth") && hasChildren && !plugin.get("expanded") && !item.get("children")[0].get("deleted")) {
+		plugin._itemCSS("add", item, element.parent());
+		return element.show();
+	}
+	return element.hide();
 };
 
 plugin.renderers.compactField = function(element) {
@@ -133,36 +143,43 @@ plugin.renderers.compactField = function(element) {
 
 plugin.methods._showSubmit = function() {
 	var plugin = this, item = plugin.component;
-	
-	var target = item.dom.get("submitForm");
-	target.empty();
-	plugin._itemCSS("add", item, item.dom.get("replyForm"));
-	
-	var config = plugin.config.assemble({
-		"target": target,
-		"data": { "unique": item.get("data.unique") },
-		"targetURL": item.get("data.object.id"),
-		"parent": item.config.getAsHash(),
-		"targetQuery": item.config.get("query", ""),
-		"context": item.config.get("context")
-	});
-	var submit = new Echo.StreamServer.Controls.Submit(config);
-	plugin.set("submit", submit);
+	var submit;
+	var target = plugin.dom.get("submitForm").empty();
+	if (!plugin.get("submit")) {
+		var config = plugin.config.assemble({
+			"target": target,
+			"data": { "unique": item.get("data.unique") },
+			"targetURL": item.get("data.object.id"),
+			"parent": item.config.getAsHash(),
+			"targetQuery": item.config.get("query", ""),
+			"context": item.config.get("context")
+		});
+		submit = new Echo.StreamServer.Controls.Submit(config);
+		plugin.set("submit", submit);
+	} else {
+		submit = plugin.get("submit");
+		var text = submit.dom.get("text").val();
+		target.append(submit.dom.render());
+		if (text) {
+			submit.dom.get("text").val(text);
+		}
+	}
+	plugin._itemCSS("add", item, plugin.dom.get("replyForm"));
 	submit.dom.get("text").focus();
 	target.click(function(event) {
 		event.stopPropagation();
 	});
-	item.render({"name": "compactForm"});
-	item.render({"name": "container"});
+	plugin.dom.render({"name": "compactForm"});
+	item.dom.render({"name": "container"});
+	return target;
 };
 
 plugin.methods._hideSubmit = function() {
 	var plugin = this, item = plugin.component;
-	item.dom.get("submitForm").empty();
-	plugin.set("submit", false);
-	plugin._itemCSS("remove", item, item.dom.get("replyForm"));
-	item.render({"name": "compactForm"});
-	item.render({"name": "container"});
+	plugin.dom.get("submitForm").empty();
+	plugin._itemCSS("remove", item, plugin.dom.get("replyForm"));
+	plugin.dom.render({"name": "compactForm"});
+	item.dom.render({"name": "container"});
 };
 
 plugin.methods._assembleButton = function() {
@@ -185,15 +202,15 @@ plugin.methods._assembleButton = function() {
 
 plugin.methods._itemCSS = function(action, item, element) {
 	$.each(["container", "container-child", "depth-" + (item.get("depth") + 1)], function(i, css) {
-		element[action + "Class"](item.get("cssPrefix") + "-" + css);
+		element[action + "Class"](item.get("cssPrefix") + css);
 	});
 	element[action + "Class"]('echo-trinaryBackgroundColor');
 };
 
 plugin.css = 
-	".{class:compactContent} { padding: 5px 5px 5px 6px; background-color: #fff; }" +
-	".{class:compactBorder} { border: 1px solid #d2d2d2; }" +
-	".{class:compactField} { width: 100%; border: none; }";
+	".{plugin.class:compactContent} { padding: 5px 5px 5px 6px; background-color: #fff; }" +
+	".{plugin.class:compactBorder} { border: 1px solid #d2d2d2; }" +
+	".{plugin.class:compactField} { width: 100%; border: none; }";
 
 Echo.Plugin.create(plugin);
 
