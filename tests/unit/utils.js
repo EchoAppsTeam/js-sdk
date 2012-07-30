@@ -6,8 +6,8 @@ suite.prototype.info = {
 	"className": "Echo.Utils",
 	"functions": [
 		"htmlize", "foldl", "getNestedValue", "setNestedValue", "stripTags", "object2JSON",
-		"parseURL", "mapClass2Object", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate",
-		"getVisibleColor", "toDOM", "isMobileDevice", "getUniqueString", "loadImage",
+		"parseURL", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate",
+		"getVisibleColor", "isMobileDevice", "getUniqueString", "loadImage",
 		"getComponent", "isComponentDefined", "objectToQuery", "inherit"]
 };
 
@@ -208,52 +208,29 @@ suite.prototype.tests.TestDomMethods = {
 		QUnit.ok(!Echo.Utils.addCSS(".echo-utils-tests {}", "utils-tests"),
 			"Checking that addCSS() method returns false if previously added Id is used");
 
-		var template =  '<div class="echo-utils-tests-container">' +
-					'<div class="echo-utils-tests-header">header</div>' +
-					'<div class="echo-utils-tests-content">' +
-						'<div class="echo-utils-tests-section1"></div>' +
-						'<div class="echo-utils-tests-section2"></div>' +
-						'<div class="echo-utils-tests-section3"></div>' +
-					'</div>' +
-				'</div>';
+		var template =
+			'<div class="echo-utils-tests-container">' +
+				'<div class="echo-utils-tests-header">header</div>' +
+				'<div class="echo-utils-tests-content">' +
+					'<div class="echo-utils-tests-section1">content1</div>' +
+					'<div class="echo-utils-tests-section2">content2</div>' +
+					'<div class="echo-utils-tests-section3">content3</div>' +
+				'</div>' +
+			'</div>';
 
-		var footer_template = '<div class="echo-utils-tests-footer">footer content</div>';
-
-		var handlers = {
-			"section1": function(element) {
-				element.text("content1");
-			},
-			"section2": function(element) {
-				element.text("content2");
-			},
-			"section3": function(element) {
-				element.text("content3");
-			}
+		var container = $(template);
+		var get = function(name) {
+			return $(".echo-utils-tests-" + name, container);
 		};
-
-		var container = Echo.Utils.toDOM(template, 'echo-utils-tests-', handlers);
-		QUnit.equal(container.get("section1").html(), "content1",
-			"Checking toDOM.get() method");
-		container.set("footer", $(footer_template));
-		QUnit.equal(container.get("footer").html(), "footer content",
-			"Checking toDOM.set() method");
-		container.remove("section2");
-		QUnit.equal(container.get("section2"), undefined,
-			"Checking toDOM.remove() method");
-
-		container.get("section1").css("background-color", "rgb(255, 0, 0)");
-		QUnit.equal(Echo.Utils.getVisibleColor(container.get("section1")), "rgb(255, 0, 0)",
+		get("section1").css("background-color", "rgb(255, 0, 0)");
+		QUnit.equal(Echo.Utils.getVisibleColor(get("section1")), "rgb(255, 0, 0)",
 			"Checking getVisibleColor() method with element color");
-		container.get("content").css("background-color", "rgb(0, 255, 0)");
-		QUnit.equal(Echo.Utils.getVisibleColor(container.get("section3")), "rgb(0, 255, 0)",
+		get("content").css("background-color", "rgb(0, 255, 0)");
+		QUnit.equal(Echo.Utils.getVisibleColor(get("section3")), "rgb(0, 255, 0)",
 			"Checking that getVisibleColor() method returns parent element color if element color is undefined");
-		container.get("footer").css("background-color", "rgba(0, 0, 0, 0)");
-		QUnit.equal(Echo.Utils.getVisibleColor(container.get("footer")), "transparent",
+		get("footer").css("background-color", "rgba(0, 0, 0, 0)");
+		QUnit.equal(Echo.Utils.getVisibleColor(get("footer")), "transparent",
 			"Checking getVisibleColor() method with transparent element color");
-
-		var elements = Echo.Utils.mapClass2Object(container.get());
-		QUnit.equal(elements['echo-utils-tests-section3'].innerHTML, "content3",
-			"Checking mapClass2Object() method");
 
 		var user_agents = {
 			"android": "Android-x86-1.6-r2 - Mozilla/5.0 (Linux; U; Android 1.6; en-us; eeepc Build/Donut)" +

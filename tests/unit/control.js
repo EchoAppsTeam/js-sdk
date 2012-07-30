@@ -202,7 +202,14 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 };
 
 suite.prototype.cases.controlRendering = function(callback) {
+	var checked = false;
 	var check = function() {
+
+		// TODO: remove when "onRerender" event will be fixed
+		//       right now the "ready" callback is called infinitely
+		if (checked) return;
+		checked = true;
+
 		var self = this;
 		QUnit.ok(this.config.get("target") instanceof jQuery,
 			"Checking if the target if a jQuery element");
@@ -232,7 +239,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		});
 
 		QUnit.ok(!!this.dom.get("testRenderer").children().length,
-			"Checking if initially empty element became non-empty after applying renderer")
+			"Checking if initially empty element became non-empty after applying renderer");
 
 		// template rendering
 		var cssClass = ".echo-streamserver-controls-mycontrol-testRenderer";
@@ -243,7 +250,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 				'<div class="{class:testRenderer}"></div>' +
 				'<div class="c1">{config:integerParam}</div>' +
 			'</div>';
-		var result = this.render({
+		var result = this.dom.render({
 			"template": template,
 			"target": $("<div></div>"),
 			"data": {"k1": "myvalue1", "k2": {}}
@@ -259,7 +266,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		// element rendering, specific renderer application
 		var target = this.dom.get("testRenderer");
-		this.render({
+		this.dom.render({
 			"target": target,
 			"name": "testRendererWithExtra",
 			"extra": {"value": "my-value"}
@@ -267,7 +274,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		QUnit.equal(target.get(0).innerHTML, "<span>my-value</span>",
 			"Checking if element content was updated after renderer application");
 
-		this.render({
+		this.dom.render({
 			"target": target,
 			"name": "testRendererWithExtra",
 			"extra": {"value": "another-value"}
@@ -275,7 +282,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		QUnit.equal(target.get(0).innerHTML, "<span>another-value</span>",
 			"Checking if element content was updated as a result of renderer application");
 
-		this.render({
+		this.dom.render({
 			"name": "testRenderer"
 		});
 		QUnit.equal(target.get(0).innerHTML, "<div>Some value</div>",
@@ -283,7 +290,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		// recursive element rendering
 		this.dom.get("nestedSubcontainer").append('<div class="extra-div">Extra DIV appended</div>');
-		this.render({
+		this.dom.render({
 			"name": "testRendererRecursive",
 			"recursive": true
 		});
@@ -292,9 +299,9 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		// checking re-rendering
 		target.append('<div class="extra-div">Extra DIV appended</div>');
-		this.dom.get().append('<div class="extra-div-1">Another DIV appended</div>');
+		this.config.get("target").append('<div class="extra-div-1">Another DIV appended</div>');
 		this.config.get("target").append('<div class="extra-div-2">DIV appended</div>');
-		this.render();
+		this.dom.render();
 		QUnit.equal(this.dom.get("testRenderer").get(0).innerHTML, "<div>Some value</div>",
 			"Checking if component was re-rendered and appended elements were wiped out");
 
@@ -588,7 +595,7 @@ suite.getControlManifest = function(name) {
 	};
 
 	manifest.init = function() {
-		this.render();
+		this.dom.render();
 	}
 
 	manifest.templates.main = suite.data.template;
