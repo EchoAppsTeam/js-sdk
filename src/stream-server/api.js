@@ -2,18 +2,45 @@
 
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.API")) return;
 
+/**
+ * @class
+ * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/19987923/FrontPage" target="_blank">Echo StreamServer API</a> 
+ */
 if (!Echo.StreamServer) Echo.StreamServer = {};
 
 Echo.StreamServer.API = {};
 
+/**
+ * @constructor
+ * Constructor initializing class using configuration data.
+ * @param {Object} config Configuration data.
+ */
 Echo.StreamServer.API.Request = function(config) {
 	config = $.extend({
+		/**
+		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
+		 */
 		"liveUpdatesTimeout": 5,
+		/**
+		 * @cfg {Boolean} [skipInitialRequests] Flag allowing to skip the initial request but continue performing live updates requests.
+		 */
 		"skipInitialRequest": false,
+		/**
+		 * @cfg {Function} [onData] Callback called after API request succeded.
+		 */
 		"onData": function() {},
+		/**
+		 * @cfg {Function} [onError] Callback called after API request failed. 
+		 */
 		"onError": function() {},
+		/**
+		 * @cfg {Function} [onOpen] Callback called before sending an API request.
+		 */
 		"onOpen": function() {},
-		"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+		/**
+		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
+		 */
+		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity"
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = "initial"; // initial | secondary
@@ -22,6 +49,10 @@ Echo.StreamServer.API.Request = function(config) {
 
 Echo.Utils.inherit(Echo.StreamServer.API.Request, Echo.API.Request);
 
+/**
+ * @method
+ * Method to stop live updates requests.
+ */
 Echo.StreamServer.API.Request.prototype.abort = function() {
 	this.transport && this.transport.abort();
 	if (this.liveUpdates) {
