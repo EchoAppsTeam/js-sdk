@@ -102,39 +102,56 @@ suite.prototype.tests.AnonymousUserChecks = {
 suite.prototype.tests.checkUserEvents = {
 	"config": {
 		"async": true,
-			"user": {"status": "anonymous"},
+		"user": {"status": "anonymous"},
 		"testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
 		var self = this;
 		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
-
-		var subscribe = function(events) {
-			$.map(events, function(topic) {
+		var subscribe = function(checkState) {
+			$.map(["onInit", "onInvalidate"], function(topic) {
 				topic = "Echo.UserSession." + topic;
 				var id = Echo.Events.subscribe({
 					"topic": topic,
 					"handler": function(_topic, data) {
-						Echo.Events.unsubscribe({
-							"topic": topic,
-							"handlerId": id
-						});
+						var state = user.is("logged") ? "logged" : "anonymous";
+						if (checkState == state) {
+							Echo.Events.unsubscribe({
+								"topic": topic,
+								"handlerId": id
+							});
+							var template;
+							if (state == "logged") {
+								template = {
+									"echo": {
+										"roles": [],
+										"state": "",
+										"markers": []
+									},
+									"poco": {
+										"entry": {
+											"accounts": []
+										},
+										"startIndex": 0,
+										"itemsPerPage": 0,
+										"totalResults": 0
+									}
+								};
+							} else if ("anonymous") {
+								template = {}
+							}
 
-						var state = user.is("logged")
-							? "logged" : "anonymous";
-
-						QUnit.ok(self._checkParams(data, state),
-							"Checking \"" + topic + "\" params of events callback for " + state + " user");
+							QUnit.checkContract(data, template,
+								"Checking \"" + topic + "\" params of events callback for " + state + " user");
+						}
 					}
 				});
 			});
 		};
-
-		subscribe(["onInit", "onInvalidate"]);
+		subscribe("logged");
 		self.loginTestUser({}, function() {
-			subscribe(["onInit"]);
+			subscribe("anonymous");
 			self.logoutTestUser(function() {
-				subscribe(["onInvalidate"]);
 				QUnit.start();
 			});
 		});
@@ -198,54 +215,5 @@ suite.prototype.checkBasicOperations = function(user) {
 		QUnit.ok(true, "Checking if the \"ready\" callback is executed after class init");
 	}});
 };
-
-// internal functions
-
-suite.prototype._checkParams = function(data, userStatus) {
-	var template = {};
-	switch( userStatus ) {
-		case "logged":
-			template = {
-				"echo": {
-					"roles": [],
-					"state": "",
-					"markers": []
-				},
-				"poco": {
-					"entry": {
-						"accounts": []
-					},
-					"startIndex": 0,
-					"itemsPerPage": 0,
-					"totalResults": 0
-				}
-			};
-			return this._checkDiff(data, template);
-			break;
-
-		case "anonymous":
-			return this._checkDiff(data, template);
-			break;
-	}
-
-	return false;
-};
-
-
-suite.prototype._checkDiff = function(origin, template) {
-	var result = true;
-	if( typeof template == "object" ) {
-		for( var i in template )
-			if( template.hasOwnProperty(i) && origin.hasOwnProperty(i) && typeof template[i] == typeof origin[i] ) {
-				if( typeof template[i] == "object" )
-					result =  this._checkDiff(origin[i], template[i]);
-				} else {
-					result = false;
-				}
-			} else if( typeof template != typeof origin ) {
-				result = false;
-			}
-		return result;
-	};
 
 })(jQuery);
