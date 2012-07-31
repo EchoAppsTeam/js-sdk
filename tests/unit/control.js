@@ -16,7 +16,6 @@ suite.prototype.info = {
 		"dependent",
 		"template",
 		"getPlugin",
-		"render",
 		"showMessage",
 
 		// functions below are covered
@@ -183,7 +182,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		QUnit.equal(this.config.get("nullParam"), "nullParam replacement",
 			"Checking if null parameter was overridden during control init");
 		QUnit.equal(this.config.get("undefinedParam"), "undefinedParam replacement",
-			"Checking if null parameter was overridden during control init");
+			"Checking if undefined parameter was overridden during control init");
 		QUnit.equal(this.config.get("integerParam"), 15,
 			"Checking if non-changed keys remains the same");
 		QUnit.equal(this.config.get("objectParam.param1"), "param1.override",
@@ -318,6 +317,19 @@ suite.prototype.cases.controlRendering = function(callback) {
 			target.find(".echo-control-message-icon").get(0).innerHTML,
 			data.message,
 			"Checking \"showMessage\" in full mode");
+
+		var template = '<div class="echo-utils-tests-footer">footer content</div>';
+		this.dom.render();
+		QUnit.equal(this.dom.get("testRenderer").html(), "<div>Some value</div>",
+			"Checking control.dom.get() function");
+		this.dom.set("testRenderer", $(template));
+		QUnit.equal(this.dom.get("testRenderer").html(), "footer content",
+			"Checking control.dom.set() function");
+		this.dom.remove("testRenderer");
+		QUnit.equal(this.dom.get("testRenderer"), undefined,
+			"Checking control.dom.remove() function");
+		this.dom.clear();
+		QUnit.ok($.isEmptyObject(this.dom.elements), "Checking control.dom.clear() function");
 
 		callback && callback();
 	};
