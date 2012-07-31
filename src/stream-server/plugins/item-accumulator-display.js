@@ -110,7 +110,7 @@ plugin.methods._animateCounter = function(bgColor) {
 		if (count.current !== count.actual) {
 			count.current < count.actual ? count.current++ : count.current--;
 			plugin.set("count.current", count.current);
-			item.dom.get("accumulatorContainer").html(count.current);
+			plugin.dom.get("accumulatorContainer").html(count.current);
 			plugin._animateCounter(bgColor);
 		}
 	}, this.config.get("countTickTimeout") * 1000));
