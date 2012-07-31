@@ -16,7 +16,7 @@ var suite = Echo.Tests.Unit.Submit = function() {
 
 suite.prototype.info = {
 	"className" : "Echo.StreamServer.Controls.Submit",
-        "functions": [
+	"functions": [
 		"post",
 		"refresh",
 		"addPostValidator",
