@@ -3,12 +3,12 @@ WEB_SDK_DIR = web/sdk
 PACK_NAMES = \
 	api.pack \
 	environment.pack \
-	stream-server.pack \
 	stream-server/controls.pack \
 	stream-server/plugins.pack \
-	identity-server.pack \
+	stream-server.pack \
 	identity-server/controls.pack \
 	identity-server/plugins.pack \
+	identity-server.pack \
 	third-party/jquery.pack
 
 PACK_FILES_api = \
@@ -52,9 +52,6 @@ PACK_FILES_third-party/jquery = \
 all: clean sdk packs
 
 packs: $(PACK_NAMES)
-
-stream-server.pack: stream-server/controls.pack stream-server/plugins.pack
-identity-server.pack: identity-server/controls.pack identity-server/plugins.pack
 
 %.pack:
 	@echo "Assembling $@.js..."
