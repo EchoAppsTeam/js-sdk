@@ -34,10 +34,11 @@ suite.prototype.tests.anonymousWorkflow = {
 	},
 	"check": function() {
 		var self = this;
-		suite.submit = new Echo.StreamServer.Controls.Submit({
+		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
 			"appkey": "test.aboutecho.com",
 			"ready" : function() {
+				suite.submit = this;
 				self.sequentialAsyncTests([
 					"name",
 					"content",
@@ -342,7 +343,7 @@ suite.prototype.tests.testMethods = {
 
 Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Submit", function(config) {
 	return new Echo.StreamServer.Controls.Submit($.extend({
-		"target": this.config.target,
+		"target": config.target,
 		"appkey": config.appkey,
 		"targetURL": config.dataBaseLocation
 	}, config));

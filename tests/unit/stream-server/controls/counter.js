@@ -19,11 +19,12 @@ suite.prototype.tests.staticWorkflow = {
 		var self = this;
 		var target = this.config.target;
 		var count = 99;
-		suite.counter = new Echo.StreamServer.Controls.Counter({
+		new Echo.StreamServer.Controls.Counter({
 			"target" : target,
 			"appkey" : "test.aboutecho.com",
 			"data"   : {"count": count},
 			"ready"  : function() {
+				suite.counter = this;
 				QUnit.ok(target.html().match(count),
 				'Checking the static usecase rendering');
 				self.sequentialAsyncTests([
@@ -44,11 +45,12 @@ suite.prototype.tests.dynamicWorkflow = {
 	},
 	"check" : function() {
 		var self = this;
-		suite.counter = new Echo.StreamServer.Controls.Counter({
+		new Echo.StreamServer.Controls.Counter({
 			"target" : this.config.target,
 			"appkey" : "test.aboutecho.com",
 			"query"  : "childrenof:http://example.com/*",
 			"ready"  : function() {
+				suite.counter = this;
 				QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
 				'Checking the dynamic usecase rendering');
 				self.sequentialAsyncTests([
