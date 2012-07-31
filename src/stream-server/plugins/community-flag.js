@@ -67,7 +67,7 @@ plugin.methods._assembleButton = function(name) {
 	var plugin = this, item = this.component;
 	var callback = function() {
 		var item = this;
-		item.get("buttons." + plugin.manifest.name + "." + name + ".element")
+		item.get("buttons." + plugin.name + "." + name + ".element")
 			.empty()
 			.append(plugin.labels.get(name.toLowerCase() + "Processing"));
 		var activity = {
