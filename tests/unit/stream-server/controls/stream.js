@@ -260,7 +260,7 @@ var _runTestCases = function(cases) {
 		+ '</div>';
 	$.each(cases, function(i, params) {
 		var item = _createItem(params.data, params.config);
-		var element = item.render({"template": template});
+		var element = item.dom.render({"template": template});
 		QUnit.equal(element.find(".echo-streamserver-controls-stream-item-text").html(), params.expect, params.description);
 	});
 };
