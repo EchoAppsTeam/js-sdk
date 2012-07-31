@@ -556,6 +556,7 @@ Echo.Control.prototype._init.renderers = function() {
 Echo.Control.prototype._init.dom = function() {
 	var self = this;
 	this.dom = {
+		"rendered": false,
 		"root": undefined,
 		"elements": {},
 		"clear": function() {
@@ -579,7 +580,9 @@ Echo.Control.prototype._init.dom = function() {
 			delete this.elements[name];
 		},
 		"render": function(args) {
-			return self._render(args);
+			var result = self._render(args);
+			this.rendered = true;
+			return result;
 		}
 	};
 };
@@ -704,7 +707,7 @@ Echo.Control.prototype._render = function(args) {
 
 	// render the whole control
 	// TODO: find criteria to identify if it's first rendering or not
-	var topic = 0 && !$.isEmptyObject(this.dom.elements) ? "onRerender" : "onRender";
+	var topic = this.dom.rendered ? "onRerender" : "onRender";
 	this.dom.clear();
 	template = this._compileTemplate(this.template, this.data, this.extension.template);
 	this._applyRenderers(template);

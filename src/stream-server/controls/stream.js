@@ -667,7 +667,7 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 				// if we trying to add already existing item
 				// and it was not due to item moving we should replace it
 				var _item = self.items[item.get("data.unique")];
-				if (_item && options.priority != "high") {
+				if (_item && _item.dom.rendered && options.priority != "high") {
 					self._applySpotUpdates("replace", item, {"priority": "highest"});
 					return;
 				}
@@ -677,7 +677,7 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 					self._placeRootItem(item);
 				} else {
 					var parent = self._getParentItem(item);
-					if (parent) {
+					if (parent && parent.dom.rendered) {
 						parent.dom.render({"name": "container"});
 						parent.dom.render({"name": "children"});
 						parent.dom.render({"name": "childrenByCurrentActorLive"});
@@ -710,7 +710,7 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 						self._applySpotUpdates("add", item, {"priority": "high"});
 					}
 				}
-				if (item) {
+				if (item && item.dom.rendered) {
 					item.dom.render({"name": "container", "recursive": true});
 				}
 				self._executeNextActivity();
@@ -766,13 +766,13 @@ stream.methods._queueActivity = function(params) {
 	var data = {
 		"action": params.action,
 		"type": params.type || "",
-		"affectCounter": params.action == "add",
+		"affectCounter": params.action === "add",
 		"itemUnique": params.itemUnique,
 		"priority": params.priority,
 		"byCurrentUser": byCurrentUser,
 		"handler": function() { params.handler(); }
 	};
-	if (typeof index != "undefined") {
+	if (typeof index !== "undefined") {
 		this.activities.queue.splice(index, 0, data);
 	} else {
 		this.activities.queue.push(data);
@@ -787,18 +787,18 @@ stream.methods._getActivityProjectedIndex = function(byCurrentUser, params) {
 		"low": 30,
 		"lowest": 40
 	};
-	params.priority = params.priority == "highest" && "highest"
+	params.priority = params.priority === "highest" && "highest"
 		|| byCurrentUser && "high"
 		|| params.action == "replace" && "medium"
 		|| params.priority
 		|| "lowest";
 	var index;
-	if (params.action == "replace") {
+	if (params.action === "replace") {
 		// in case we have "replace" activity for the item which was not added
 		// to the stream yet but queued only we should set its priority the same
 		// as that "add" activity so that to queue them in the right order
 		$.each(this.activities.queue, function(i, activity) {
-			if (activity.action == "add" && activity.itemUnique == params.itemUnique) {
+			if (activity.action === "add" && activity.itemUnique === params.itemUnique) {
 				params.priority = activity.priority;
 				return false; // break
 			}
