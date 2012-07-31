@@ -511,11 +511,11 @@ Echo.Control.prototype._init.subscriptions = function() {
 	// call "ready" callback after the control was rendered
 	// note: "ready" callback is executed only once!
 	if (control.config.get("ready")) {
-		control.events.subscribe({
+		var handlerId = control.events.subscribe({
 			"topic": control.name + ".onRender",
 			"handler": function() {
+				control.events.unsubscribe({"handlerId": handlerId});
 				control.config.get("ready").call(control);
-				control.config.remove("ready");
 			}
 		});
 	}

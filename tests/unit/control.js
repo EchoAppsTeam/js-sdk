@@ -202,14 +202,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 };
 
 suite.prototype.cases.controlRendering = function(callback) {
-	var checked = false;
 	var check = function() {
-
-		// TODO: remove when "onRerender" event will be fixed
-		//       right now the "ready" callback is called infinitely
-		if (checked) return;
-		checked = true;
-
 		var self = this;
 		QUnit.ok(this.config.get("target") instanceof jQuery,
 			"Checking if the target if a jQuery element");
