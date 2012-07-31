@@ -165,27 +165,30 @@ Echo.Tests.Common.prototype.constructPluginRenderersTest = function(config) {
 
 Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
 	var self = this;
-	var renderers = plugin.manifest.renderers;
-	// TODO: dom does always exist now so we need another check
-	if (!plugin.component.dom) {
-		plugin.component.render();
+	if (!plugin.component.dom.rendered) {
+		plugin.component.dom.render();
 	}
-	$.each(renderers, function(name, renderer) {
-		self.info.functions.push("manifest.renderers." + name);
-		var element = plugin.component.dom.get(name);
-		var oldElement = element.clone();
-		var renderedElement = renderer.call(plugin, element, plugin.component.dom);
-		QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
-		QUnit.ok(renderedElement.jquery == oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
-		QUnit.equal(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element");
-	});
+	var _check = function(forComponent) {
+		var renderers = forComponent ? plugin.manifest.component.renderers : plugin.manifest.renderers;
+		$.each(renderers, function(name, renderer) {
+			self.info.functions.push((forComponent ? "component." : "") + "renderers." + name);
+			var element = forComponent ? plugin.component.dom.get(name) : plugin.dom.get(name);
+			var oldElement = element.clone();
+			var renderedElement = renderer.call(plugin, element);
+			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
+			QUnit.ok(renderedElement.jquery == oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
+			QUnit.equal(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element");
+		});
+	};
+	_check(false);
+	_check(true);
 };
 
 Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 	var self = this;
 	data.check = function(instance) {
-		if (!instance.dom) {
-			instance.render();
+		if (!instance.dom.rendered) {
+			instance.dom.render();
 		};
 		$.each(instance.extension.renderers, function(name, renderer) {
 			self.info.functions.push("renderers." + name);
@@ -195,7 +198,7 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 				return;
 			};
 			var oldElement = element.clone();
-			var renderedElement = instance.render({"name": name});
+			var renderedElement = instance.dom.render({"name": name});
 			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
 			QUnit.ok(renderedElement.jquery == oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
 			QUnit.deepEqual(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element");
