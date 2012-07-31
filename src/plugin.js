@@ -33,7 +33,7 @@ Echo.Plugin.create = function(manifest) {
 		if (!config || !config.component) return;
 		var self = this;
 		this.name = manifest.name;
-		this.manifest = manifest; // TODO: avoid this, pass via param to "renderer"...
+		this.manifest = manifest;
 		this.component = config.component;
 		this.cssPrefix = this.component.cssPrefix + "plugin-" + manifest.name + "-";
 		// define extra css class for the control target
@@ -54,6 +54,10 @@ Echo.Plugin.create = function(manifest) {
 	};
 	_constructor.manifest = manifest;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
+	// copy destroy method to the list of methods
+	if (manifest.destroy) {
+		manifest.methods.destroy = manifest.destroy;
+	}
 	if (manifest.methods) {
 		$.extend(_constructor.prototype, manifest.methods);
 	}
@@ -85,7 +89,8 @@ Echo.Plugin.manifest = function(name, component) {
 		"methods": {},
 		"renderers": {},
 		"templates": {},
-		"init": function(){}
+		"init": function(){},
+		"destroy": undefined
 	};
 };
 

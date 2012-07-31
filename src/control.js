@@ -83,7 +83,8 @@ Echo.Control.manifest = function(name) {
 		"methods": {},
 		"renderers": {},
 		"templates": {},
-		"init": function(){ this.dom.render(); }
+		"init": function(){ this.dom.render(); },
+		"destroy": undefined
 	};
 };
 
@@ -102,6 +103,12 @@ Echo.Control.prototype.templates.message.full =
 	'</div>';
 
 Echo.Control.prototype.defaults = {};
+
+Echo.Control.prototype.defaults.vars = {
+	"cache": {},
+	"plugins": {},
+	"subscriptionIDs": {}
+};
 
 Echo.Control.prototype.defaults.config = {
 /**
@@ -248,31 +255,42 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 Echo.Control.prototype.refresh = function() {
 	var self = this;
 
-	// override "ready" callback
-	this.config.set("ready", function() {
-		self.events.publish({"topic": "onRefresh"});
-		self.config.remove("ready");
+	this.destroy();
+
+	// execute "onRefresh" callback
+	var handlerId = this.events.subscribe({
+		"topic": this.name + ".onRerender",
+		"handler": function() {
+			self.events.unsubscribe({"handlerId": handlerId});
+			self.events.publish({"topic": "onRefresh"});
+		}
 	});
 
 	// restore originally defined data
 	this.set("data", this.config.get("data", {}));
 
-	// abort and cleanup data request machinery
-	var request = this.get("request");
-	if (request) {
-		request.abort();
-		this.remove("request");
-	}
-
 	this._init([
 		"vars",
 		"extension",
+		"subscriptions",
 		"renderers",
 		"loading",
 		["user", function() {
 			self._init([["plugins", self.manifest.init]]);
 		}]
 	]);
+};
+
+/**
+ * @method
+ * Unified method to destroy control.
+ */
+Echo.Control.prototype.destroy = function() {
+	Echo.Events.publish({
+		"topic": "Echo.Control.onDestroy",
+		"context": this.config.get("context"),
+		"data": {"producer": this}
+	});
 };
 
 /**
@@ -424,7 +442,7 @@ Echo.Control.prototype._init = function(subsystems) {
 };
 
 Echo.Control.prototype._init.vars = function() {
-	$.extend(true, this, {"cache": {}, "plugins": {}}, this.manifest.vars || {});
+	$.extend(true, this, this.defaults.vars, this.manifest.vars || {});
 };
 
 Echo.Control.prototype._init.extension = function() {
@@ -469,7 +487,7 @@ Echo.Control.prototype._init.events = function() {
 	return {
 		"publish": function(params) {
 			var prefix = params.prefix ? params.prefix + "." : "";
-			params.topic = prefix + control.manifest.name + "." + params.topic;
+			params.topic = prefix + control.name + "." + params.topic;
 			params.data = params.data || {};
 			// process data through the normalization function if defined
 			if (control._prepareEventParams) {
@@ -478,9 +496,16 @@ Echo.Control.prototype._init.events = function() {
 			Echo.Events.publish(prepare(params));
 		},
 		"subscribe": function(params) {
-			return Echo.Events.subscribe(prepare(params));
+			var handlerId = Echo.Events.subscribe(prepare(params));
+			control.subscriptionIDs[handlerId] = true;
+			return handlerId;
 		},
-		"unsubscribe": Echo.Events.unsubscribe
+		"unsubscribe": function(params) {
+			if (params && params.handlerId) {
+				delete control.subscriptionIDs[params.handlerId];
+			}
+			Echo.Events.unsubscribe(params);
+		}
 	};
 };
 
@@ -519,6 +544,44 @@ Echo.Control.prototype._init.subscriptions = function() {
 			}
 		});
 	}
+
+	// register destroy handlers
+	var handlerId = control.events.subscribe({
+		"topic": "Echo.Control.onDestroy",
+		"handler": function(topic, data) {
+			control.events.unsubscribe({"handlerId": handlerId});
+
+			// destroy plugins
+			$.map(control.config.get("pluginsOrder"), function(name) {
+				var plugin = control.plugins[name];
+				if (plugin && plugin.destroy) {
+					plugin.destroy();
+				}
+			});
+
+			// apply control-specific logic
+			if (control.manifest.destroy) {
+				control.manifest.destroy.call(control, data.producer);
+			}
+
+			// abort and cleanup data request machinery
+			var request = control.get("request");
+			if (request) {
+				request.abort();
+				control.remove("request");
+			}
+
+			// unsubscribe from all events
+			$.each(control.subscriptionIDs, function(handlerId) {
+				control.events.unsubscribe({"handlerId": handlerId});
+			});
+
+			// cleanuo target element for top level control
+			if (!control.dependent()) {
+				control.config.get("target").empty();
+			}
+		}
+	});
 
 	if (this.dependent()) return;
 
@@ -620,7 +683,7 @@ Echo.Control.prototype._init.plugins = function(callback) {
 					"component": control
 				});
 			}
-		});		
+		});
 		callback && callback.call(this);
 	});
 };
