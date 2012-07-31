@@ -25,7 +25,7 @@ plugin.init = function() {
 
 $.map(["Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.onEdit" + action] = function(topic, args) {
-		this.component.render();
+		this.dom.render();
 	}
 });
 
@@ -123,15 +123,15 @@ $.map(["Init", "Complete", "Error"], function(action) {
 });
 
 plugin.templates.header =
-	'<div class="{class:header} echo-primaryFont echo-primaryFont echo-primaryColor">' +
+	'<div class="{plugin.class:header} echo-primaryFont echo-primaryFont echo-primaryColor">' +
 		'{plugin.label:createdBy} ' +
-		'<span class="{class:author}"></span> ' +
-		'{plugin.label:on} <span class="{class:editedDate}"></span>' +
+		'<span class="{plugin.class:author}"></span> ' +
+		'{plugin.label:on} <span class="{plugin.class:editedDate}"></span>' +
 	'</div>';
 
 plugin.templates.cancel =
-	'<div class="{class:cancelButtonContainer}">' +
-		'<a href="javascript:void(0);" class="{class:cancelButton} echo-primaryFont echo-clickable echo-linkColor">{plugin.label:cancel}</a>' +
+	'<div class="{plugin.class:cancelButtonContainer}">' +
+		'<a href="javascript:void(0);" class="{plugin.class:cancelButton} echo-primaryFont echo-clickable echo-linkColor">{plugin.label:cancel}</a>' +
 	'</div>';
 
 plugin.renderers.author = function(element) {
@@ -203,7 +203,7 @@ plugin.methods._getMetaDataUpdates = function(verb, type, data) {
 };
 
 plugin.css = 
-	'.{class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }';
+	'.{plugin.class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }';
 
 Echo.Plugin.create(plugin);
 
