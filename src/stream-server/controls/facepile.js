@@ -79,6 +79,7 @@ pile.init = function() {
 	if ($.isEmptyObject(this.data)) {
 		this._request();
 	} else {
+		this.uniqueUsers = [];
 		this.data.itemsPerPage = this.data.itemsPerPage || 2;
 		this.config.set("liveUpdates", false);
 		this._initialResponseHandler(this.data);
