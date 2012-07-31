@@ -406,10 +406,10 @@ submit.methods.addPostValidator = function(validator, priority) {
  */
 submit.methods.refresh = function() {
 	var self = this;
-	this.set("data.object.content", this.dom.get("text").val());
+	this.config.set("data.object.content", this.dom.get("text").val());
 	$.map(["tags", "markers"], function(field) {
 		var elements = self.dom.get(field).val().split(", ");
-		self.set("data.object." + field, elements || []);
+		self.config.set("data.object." + field, elements || []);
 	});
 	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Submit");
 	component.parent.refresh.call(this);

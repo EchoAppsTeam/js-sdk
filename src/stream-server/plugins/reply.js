@@ -87,7 +87,7 @@ plugin.templates.form =
 plugin.component.renderers.container = function(element) {
 	var plugin = this, item = plugin.component;
 	var threading = item.threading;
-	if (plugin.get("submit")) {
+	if (plugin.get("expanded")) {
 		item.threading = true;
 	}
 	item.parentRenderer("container", arguments);
