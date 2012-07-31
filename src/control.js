@@ -251,7 +251,7 @@ Echo.Control.prototype.refresh = function() {
 	// override "ready" callback
 	this.config.set("ready", function() {
 		self.events.publish({"topic": "onRefresh"});
-		self.config.set("ready", undefined);
+		self.config.remove("ready");
 	});
 
 	// restore originally defined data
@@ -509,11 +509,13 @@ Echo.Control.prototype._init.subscriptions = function() {
 	});
 
 	// call "ready" callback after the control was rendered
+	// note: "ready" callback is executed only once!
 	if (control.config.get("ready")) {
 		control.events.subscribe({
 			"topic": control.name + ".onRender",
 			"handler": function() {
 				control.config.get("ready").call(control);
+				control.config.remove("ready");
 			}
 		});
 	}
@@ -581,7 +583,12 @@ Echo.Control.prototype._init.dom = function() {
 		},
 		"render": function(args) {
 			var result = self._render(args);
-			this.rendered = true;
+
+			// define "rendered" flag when executed without arguments only
+			if (typeof args === "undefined") {
+				this.rendered = true;
+			}
+
 			return result;
 		}
 	};
@@ -706,7 +713,6 @@ Echo.Control.prototype._render = function(args) {
 	}
 
 	// render the whole control
-	// TODO: find criteria to identify if it's first rendering or not
 	var topic = this.dom.rendered ? "onRerender" : "onRender";
 	this.dom.clear();
 	template = this._compileTemplate(this.template, this.data, this.extension.template);
