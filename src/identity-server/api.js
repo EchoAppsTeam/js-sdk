@@ -28,7 +28,7 @@ Echo.IdentityServer.API.Request = function(config) {
 		/**
 		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
 		 */
-		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity"
+		"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	Echo.IdentityServer.API.Request.parent.constructor.call(this, config);
@@ -37,7 +37,9 @@ Echo.IdentityServer.API.Request = function(config) {
 Echo.Utils.inherit(Echo.IdentityServer.API.Request, Echo.API.Request);
 
 Echo.IdentityServer.API.Request.prototype._prepareURI = function() {
-	return this.config.get("submissionProxyURL");
+	return this.config.get("endpoint") === "whoami"
+		? Echo.IdentityServer.API.Request.parent._prepareURI.call(this)
+		: this.config.get("submissionProxyURL");
 };
 
 Echo.IdentityServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
@@ -62,12 +64,15 @@ Echo.IdentityServer.API.Request.prototype._update = function(args) {
 	var content = $.extend(this.config.get("data.content"), {
 		"endpoint": "users/update"
 	});
-	console.log(content);
 	this.request(
 		$.extend(this.config.get("data"), {
 			"content": Echo.Utils.object2JSON(content)
 		})
 	);
+};
+
+Echo.IdentityServer.API.Request.prototype._whoami = function(args) {
+	this.request(args);
 };
 
 /**

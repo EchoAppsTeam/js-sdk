@@ -1,6 +1,7 @@
 SRC_DIR = src
 WEB_SDK_DIR = web/sdk
 PACK_NAMES = \
+	api.pack \
 	environment.pack \
 	stream-server.pack \
 	stream-server/controls.pack \
@@ -10,19 +11,23 @@ PACK_NAMES = \
 	identity-server/plugins.pack \
 	third-party/jquery.pack
 
+PACK_FILES_api = \
+	$(SRC_DIR)/api.js \
+	$(SRC_DIR)/stream-server/api.js \
+	$(SRC_DIR)/identity-server/api.js
+
 PACK_FILES_environment = \
 	$(SRC_DIR)/utils.js \
 	$(SRC_DIR)/events.js \
 	$(SRC_DIR)/labels.js \
 	$(SRC_DIR)/configuration.js \
+	$(WEB_SDK_DIR)/api.pack.js \
 	$(SRC_DIR)/user-session.js \
-	$(SRC_DIR)/api.js \
 	$(SRC_DIR)/control.js \
 	$(SRC_DIR)/plugin.js \
 	$(SRC_DIR)/button.js
 
 PACK_FILES_stream-server = \
-	$(SRC_DIR)/stream-server/api.js \
 	$(WEB_SDK_DIR)/stream-server/controls.pack.js \
 	$(WEB_SDK_DIR)/stream-server/plugins.pack.js
 
@@ -30,7 +35,6 @@ PACK_FILES_stream-server/controls = $(SRC_DIR)/stream-server/controls/*.js
 PACK_FILES_stream-server/plugins = $(SRC_DIR)/stream-server/plugins/*.js
 
 PACK_FILES_identity-server = \
-	$(SRC_DIR)/identity-server/api.js \
 	$(WEB_SDK_DIR)/identity-server/controls.pack.js \
 	$(WEB_SDK_DIR)/identity-server/plugins.pack.js
 

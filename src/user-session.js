@@ -151,7 +151,7 @@ Echo.UserSession.logout = function(callback) {
 		(callback || function(){})();
 		return;
 	}
-	user._apiRequest(user.config.get("endpoints.logout"), {
+	user._logoutRequest({
 		"sessionID": user.get("sessionID")
 	}, function(data) {
 		user._onInit(callback);
@@ -200,20 +200,35 @@ Echo.UserSession._maybeDelegate = function(config) {
 };
 
 Echo.UserSession._getDefaultConfig = function() {
-	var protocol = window.location.protocol == "https:" ? "https:" : "http:";
 	return {
 		"appkey": "",
 		"endpoints": {
-			"logout": protocol + "//apps.echoenabled.com/v2/logout",
-			"whoami": protocol + "//api.echoenabled.com/v1/users/whoami"
+			"logout": "http://apps.echoenabled.com/v2/",
+			"whoami": "http://api.echoenabled.com/v1/users/"
 		},
-		"defaultAvatar": protocol + "//cdn.echoenabled.com/images/avatar-default.png",
+		"defaultAvatar": "http://cdn.echoenabled.com/images/avatar-default.png",
 		"fakeIdentityURL": "http://js-kit.com/ECHO/user/fake_user"
 	};
 };
 
-Echo.UserSession._apiRequest = function(endpoint, data, callback) {
-	$.get(endpoint, data || {}, callback || function() {}, "jsonp");
+Echo.UserSession._logoutRequest = function(data, callback) {
+	(new Echo.API.Request({
+		"apiBaseURL": this.config.get("endpoints.logout"),
+		"endpoint": "logout",
+		// FIXME: esp do not support request through pure AJAX request (needs a mandatory parameter 'callback').
+		"transport": "jsonp",
+		"onData": callback,
+		"data": data
+	})).request();
+};
+
+Echo.UserSession._whoamiRequest = function(data, callback) {
+	Echo.IdentityServer.API.request({
+		"apiBaseURL": this.config.get("endpoints.whoami"),
+		"endpoint": "whoami",
+		"onData": callback,
+		"data": data
+	}).send();
 };
 
 Echo.UserSession._listenEvents = function() {
@@ -241,7 +256,7 @@ Echo.UserSession._reset = function(data) {
 Echo.UserSession._init = function(callback) {
 	var user = this;
 	user.state = "waiting";
-	user._apiRequest(user.config.get("endpoints.whoami"), {
+	user._whoamiRequest({
 		"appkey": user.config.get("appkey"),
 		"sessionID": user.get("sessionID")
 	}, function(data) {
