@@ -392,4 +392,36 @@ QUnit.done(function() {
 	Echo.Tests.Stats.show();
 });
 
+// Extending QUnit lib to have an ability to verify function contract
+QUnit.checkContract = function(actual, expected, message) {
+
+	var _checkDiff = function(origin, template) {
+		var result = true;
+		if ($.type(template) == $.type(origin)) {
+			if ($.isPlainObject(template)) {
+				$.each(template, function(i) {
+					if (origin.hasOwnProperty(i) && $.type(template[i]) == $.type(origin[i])) {
+						if ($.isPlainObject(template[i])) {
+							result =  _checkDiff(origin[i], template[i]);
+						}
+					} else {
+						result = false;
+					}
+
+					if (!result)
+						return result;
+				});
+			}
+			if ($.isEmptyObject(expected) && !$.isEmptyObject(actual)) {
+				result = false;
+			}
+		} else {
+			result = false;
+		}
+		return result;
+	};
+
+	QUnit.push(_checkDiff(actual, expected), actual, expected, message);
+};
+
 })(jQuery);
