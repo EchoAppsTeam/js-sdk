@@ -1,19 +1,19 @@
 (function($) {
 
 /**
- * @class Echo.StreamServer.Controls.Submit.Plugins.SubmitTextCounter
+ * @class Echo.StreamServer.Controls.Submit.Plugins.TextCounter
  * Adds the character counter under the text field in the Echo Submit control. Allows to set the maximum length of the text to enter.
  *     new Echo.StreamServer.Controls.Submit({
  *         "target": document.getElementById("echo-stream"),
  *         "appkey": "test.echoenabled.com",
  *         "plugins": [{
- *             "name": "SubmitTextCounter"
+ *             "name": "TextCounter"
  *         }]
  *     });
  * @extends Echo.Plugin
  * @inheritdoc Echo.Plugin
  */
-var plugin = Echo.Plugin.manifest("SubmitTextCounter", "Echo.StreamServer.Controls.Submit");
+var plugin = Echo.Plugin.manifest("TextCounter", "Echo.StreamServer.Controls.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
