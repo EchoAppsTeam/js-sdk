@@ -28,7 +28,8 @@ suite.prototype.tests.staticWorkflow = {
 				'Checking the static usecase rendering');
 				self.sequentialAsyncTests([
 					"staticInit",
-					"staticRefresh"
+					"staticRefresh",
+					"destroy"
 				], "cases");
 			}
 		});
@@ -54,7 +55,8 @@ suite.prototype.tests.dynamicWorkflow = {
 					"onError_more_than",
 					"onError_wrong_query",
 					"onError_incorrect_appkey",
-					"onUpdate"
+					"onUpdate",
+					"destroy"
 				], "cases");
 			}
 		});
@@ -187,7 +189,6 @@ suite.prototype.cases.onUpdate = function(callback) {
 				"handlerId" : handlerId
 			});
 			// stop live updates requests
-			suite.counter.get("request").abort();
 			QUnit.ok(typeof(params.data.count) === "number",
 				'Checking if data.count contains valid value');
 			QUnit.ok($(params.target).html().match(params.data.count),
@@ -196,6 +197,11 @@ suite.prototype.cases.onUpdate = function(callback) {
 		}
 	});
 	suite.counter.refresh();
+};
+
+suite.prototype.cases.destroy = function(callback) {
+	suite.counter.destroy();
+	callback();
 };
 
 })(jQuery);
