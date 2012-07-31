@@ -100,7 +100,7 @@ plugin.methods._prepareActivity = function(act) {
 
 plugin.methods._prepareContent = function(args) {
 	var plugin = this;
-	var text = Echo.Utils.stripTags(args.postData[0].object.content);
+	var text = Echo.Utils.stripTags(args.postData.content[0].object.content);
 	var messagePattern = plugin.config.get("activity.shareContent");
 	if (messagePattern) {
 		return plugin.labels.get(messagePattern, {
@@ -108,11 +108,11 @@ plugin.methods._prepareContent = function(args) {
 			"content": plugin._truncate(text, plugin.config.get("reducedLength"))
 		});
 	}
-	//TODO: fix it when plugin Reply is ready
 	//if a reply to a tweet was posted
+	var data = args.postData.inReplyTo;
 	var maxLength = plugin.config.get("maxLength");
-	if (plugin._isReplyToTweet(args.inReplyTo)) {
-		var author = plugin._getTweetAuthor(args.inReplyTo);
+	if (plugin._isReplyToTweet(data)) {
+		var author = plugin._getTweetAuthor(data);
 		return plugin.labels.get("@{author} {content}", {
 			"author": author,
 			"content": plugin._truncate(text, maxLength - author.length - 2)
@@ -125,12 +125,12 @@ plugin.methods._truncate = function(text, limit) {
 	return (limit > 0 && text.length > limit) ? text.substring(0, limit) + "..." : text;
 };
 
-plugin.methods._isReplyToTweet = function(item) {
-	return !!(item && item.get("source") && item.get("source.name") === "Twitter");
+plugin.methods._isReplyToTweet = function(data) {
+	return !!(data && data.source && data.source.name === "Twitter");
 };
 
-plugin.methods._getTweetAuthor = function(item) {
-	return item.get("actor.id").replace(/https?\:\/\/twitter\.com\//, "");
+plugin.methods._getTweetAuthor = function(data) {
+	return data.actor.id.replace(/https?\:\/\/twitter\.com\//, "");
 };
 
 Echo.Plugin.create(plugin);
