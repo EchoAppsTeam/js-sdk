@@ -353,7 +353,7 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 	var post, meta = {"markers": "", "tags": ""};
 	$.map(entries, function(entry) {
 		if (/tag|mark/.test(verb(entry)) && /tag|marker/.test(type(entry))) {
-			meta[type(entry) + "s"] = entry.object.content;
+			meta[strip(type(entry)) + "s"] = entry.object.content;
 		}
 		if (verb(entry) == "post") {
 			post = entry;

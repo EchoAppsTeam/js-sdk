@@ -174,9 +174,10 @@ suite.prototype.tests.PrivateFunctionsTests = {
 				"uri": "http://aboutecho.com/"
 			},
 			"tags": undefined,
+			"title": undefined,
 			"target": "http://nymag.com/daily/intel/2012/06/nora-ephron-1941-2012.html",
 			"verb": "post",
-			"type": "comment",
+			"type": "http://activitystrea.ms/schema/1.0/comment",
 			"itemURIPattern": undefined
 		}, "Check decompiler from AS to KVL");
 		QUnit.deepEqual(req._AS2KVL(this.items.postWithMetadata), {
@@ -189,9 +190,10 @@ suite.prototype.tests.PrivateFunctionsTests = {
 				"uri": "http://aboutecho.com/"
 			},
 			"tags": "tag1,tag2,tag3",
+			"title": undefined,
 			"target": "http://nymag.com/daily/intel/2012/06/nora-ephron-1941-2012.html",
 			"verb": "post",
-			"type": "comment",
+			"type": "http://activitystrea.ms/schema/1.0/comment",
 			"itemURIPattern": undefined
 		}, "Check decompiler from AS to KVL with post and metadata");
 		QUnit.deepEqual(req._AS2KVL(this.items.postWithMetadata.slice(1)), [
