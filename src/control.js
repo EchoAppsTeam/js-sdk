@@ -582,14 +582,7 @@ Echo.Control.prototype._init.dom = function() {
 			delete this.elements[name];
 		},
 		"render": function(args) {
-			var result = self._render(args);
-
-			// define "rendered" flag when executed without arguments only
-			if (typeof args === "undefined") {
-				this.rendered = true;
-			}
-
-			return result;
+			return self._render(args);
 		}
 	};
 };
@@ -718,6 +711,7 @@ Echo.Control.prototype._render = function(args) {
 	template = this._compileTemplate(this.template, this.data, this.extension.template);
 	this._applyRenderers(template);
 	target.empty().append(this.dom.root);
+	this.dom.rendered = true;
 	this.events.publish({"topic": topic});
 	return this.dom.root;
 };

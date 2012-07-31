@@ -16,17 +16,20 @@ suite.prototype.tests.staticWorkflow = {
 		"description" : "data defined explicitly"
 	},
 	"check" : function() {
-		var target = document.getElementById("qunit-fixture");	
-		$(target).empty();
+		var self = this;
+		var target = this.config.target;
 		var count = 99;
-		var counter = new Echo.StreamServer.Controls.Counter({
+		suite.counter = new Echo.StreamServer.Controls.Counter({
 			"target" : target,
 			"appkey" : "test.aboutecho.com",
 			"data"   : {"count": count},
 			"ready"  : function() {
 				QUnit.ok($(target).html().match(count),
-					'Checking the common usecase rendering');
-				QUnit.start();
+				'Checking the static usecase rendering');
+				self.sequentialAsyncTests([
+					"staticInit",
+					"staticRefresh"
+				], "cases");
 			}
 		});
 	}
@@ -39,23 +42,62 @@ suite.prototype.tests.dynamicWorkflow = {
 		"description" : "data taken from API endpoint" 
 	},
 	"check" : function() {
-		var target = document.getElementById("qunit-fixture");	
-		$(target).empty();
+		var self = this;
 		suite.counter = new Echo.StreamServer.Controls.Counter({
-			"target" : target,
+			"target" : this.config.target,
 			"appkey" : "test.aboutecho.com",
-			"query"  : "childrenof:http://example.com/*"
+			"query"  : "childrenof:http://example.com/*",
+			"ready"  : function() {
+				QUnit.ok($(self.config.target).html().match(suite.counter.get("data.count")),
+				'Checking the dynamic usecase rendering');
+				self.sequentialAsyncTests([
+					"onError_more_than",
+					"onError_wrong_query",
+					"onError_incorrect_appkey",
+					"onUpdate"
+				], "cases");
+			}
 		});
-		this.sequentialAsyncTests([
-			"onError_more_than",
-			"onError_wrong_query",
-			"onError_incorrect_appkey",
-			"onUpdate"],
-		"cases");
 	}
 };
 
 suite.prototype.cases = {};
+
+suite.prototype.cases.staticInit = function(callback) {
+	var self = this;
+	var handlerId = suite.counter.events.subscribe({
+		"topic"   : "Echo.StreamServer.Controls.Counter.onRerender",
+		"handler" : function(topic, params) {
+			// unsubscribe to avoid multiple test cases execution
+			suite.counter.events.unsubscribe({
+				"handlerId" : handlerId
+			});
+			QUnit.ok($(self.config.target).html().match(suite.counter.get("data.count")),
+		'Checking the static usecase rendering and refresh() idempotence');
+			callback();
+		}
+	});
+	suite.counter.refresh();
+};
+
+suite.prototype.cases.staticRefresh = function(callback) {
+	var self = this;
+	var count = 101;
+	suite.counter.set("data", {"count": count});
+	var handlerId = suite.counter.events.subscribe({
+		"topic"   : "Echo.StreamServer.Controls.Counter.onRerender",
+		"handler" : function(topic, params) {
+			// unsubscribe to avoid multiple test cases execution
+			suite.counter.events.unsubscribe({
+				"handlerId" : handlerId
+			});
+			QUnit.ok($(self.config.target).html().match(suite.counter.get("data.count")),
+		'Checking the static usecase rerendering');
+			callback();
+		}
+	});
+	suite.counter.refresh();
+};
 
 suite.prototype.cases.onError_more_than = function(callback) {
 	var handlerId = suite.counter.events.subscribe({

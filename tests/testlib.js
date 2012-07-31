@@ -45,6 +45,7 @@ Echo.Tests.Common = function() {
 	this.config = {
 		"asyncTimeout": 500,
 		"testTimeout": 5000,
+		"target": document.getElementById("qunit-fixture"),
 		"appkey": "test.aboutecho.com",
 		"dataBaseLocation": "http://example.com/js-sdk/"
 	};
