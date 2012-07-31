@@ -22,11 +22,16 @@
 			"target": document.getElementById("stream"),
 			"query": "childrenof:http://example.com/js-sdk -state:ModeratorDeleted itemsPerPage:2 sortOrder:likesDescending children:2 childrenItemsPerPage:2 -state:ModeratorDeleted",
 			"appkey": "test.js-kit.com",
-			"identityManager": {
-				"login": identityManager,
-				"signup": identityManager
-			},
 			"plugins": [{
+				"name": "Reply",
+				"nestedPlugins": [{
+					"name": "FormAuth",
+					"identityManager": {
+						"login": identityManager,
+						"signup": identityManager
+					}
+				}]
+			}, {
 				"name": "MetadataManager",
 				"controls": [{
 					"marker": "sticky",
