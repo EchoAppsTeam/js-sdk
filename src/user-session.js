@@ -237,9 +237,34 @@ Echo.UserSession._listenEvents = function() {
 	user.backplaneSubscriptionID = Backplane.subscribe(function(message) {
 		if (message.type != "identity/ack") return;
 		user._init(function() {
+			/**
+			 * @event onInvalidate
+			 * Echo.UserSession.onInvalidate
+			 * is triggered after user has logged in or logged out.
+			 * 	@example
+			 * 	var id = Echo.Events.subscribe({
+			 * 		"topic": "Echo.UserSession.onInvalidate",
+			 * 		"handler": function(topic, data) {
+			 * 			// action with data..
+			 * 		}
+			 * 	});
+			 * @param {String} topic Name of the event to subscribe (ex: "Echo.UserSession.onInvalidate").
+			 * @param {Object} data Object which is returned by the users/whoami API endpoint or empty object for logout events.
+			 * @param {Object} data.echo Echo section contains three elements.
+			 * @param {Array} data.echo.roles Array of roles.
+			 * @param {String} data.echo.state State of user.
+			 * @param {Array} data.echo.marker Markers act as hidden metadata for a user.
+			 * @param {Object} data.poco Contains user record representation in Portable Contacts format.
+			 * @param {Object} data.poco.entry Portable contacts object.
+			 * @param {Array} data.poco.entry.accounts Array of user identities held in this contact.
+			 * @param {String} data.poco.entry.id Unique user identifier automatically assigned by the platform.
+			 * @param {Number} data.poco.entry.startIndex The index of the first result returned in this response.
+			 * @param {Number} data.poco.entry.itemsPerPage The number of results returned per page in this response.
+			 * @param {Number} data.poco.entry.totalResults The total number of contacts found.
+			 */
 			Echo.Events.publish({
 				"topic": "Echo.UserSession.onInvalidate",
-				"data": user.data
+				"data": user.is("logged") ? user.data : {}
 			});
 		});
 	});
@@ -266,6 +291,31 @@ Echo.UserSession._init = function(callback) {
 		}
 		user.state = "ready";
 		user._reset(data);
+		/**
+		 * @event onInit
+		 * Echo.UserSession.onInit
+		 * is triggered when the user is initialized on the page.
+		 * 	@example
+		 * 	var id = Echo.Events.subscribe({
+		 * 		"topic": "Echo.UserSession.onInit",
+		 * 		"handler": function(topic, data) {
+		 * 			// action with data..
+		 * 		}
+		 * 	});
+		 * @param {String} topic Name of the event to subscribe (ex: "Echo.UserSession.onInit").
+		 * @param {Object} data Object which is returned by the users/whoami API endpoint or empty object for logout events.
+		 * @param {Object} data.echo Echo section contains three elements.
+		 * @param {Array} data.echo.roles Array of roles.
+		 * @param {String} data.echo.state State of user.
+		 * @param {Array} data.echo.marker Markers act as hidden metadata for a user.
+		 * @param {Object} data.poco Contains user record representation in Portable Contacts format.
+		 * @param {Object} data.poco.entry Portable contacts object.
+		 * @param {Array} data.poco.entry.accounts Array of user identities held in this contact.
+		 * @param {String} data.poco.entry.id Unique user identifier automatically assigned by the platform.
+		 * @param {Number} data.poco.entry.startIndex The index of the first result returned in this response.
+		 * @param {Number} data.poco.entry.itemsPerPage The number of results returned per page in this response.
+		 * @param {Number} data.poco.entry.totalResults The total number of contacts found.
+		 */
 		Echo.Events.publish({
 			"topic": "Echo.UserSession.onInit",
 			"data": data
