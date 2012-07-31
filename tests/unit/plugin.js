@@ -60,7 +60,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"events": {},
 			"methods": {},
 			"renderers": {},
-			"templates": {}
+			"templates": {},
+			"destroy": undefined
 		};
 
 		var _manifest = Echo.Plugin.manifest(manifest.name, manifest.component.name);

@@ -45,7 +45,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"events": {},
 			"methods": {},
 			"renderers": {},
-			"templates": {}
+			"templates": {},
+			"destroy": undefined
 		};
 
 		var _manifest = Echo.Control.manifest(manifest.name);
