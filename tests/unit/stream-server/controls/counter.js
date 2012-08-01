@@ -124,6 +124,7 @@ suite.prototype.cases.onError_more_than = function(callback) {
 			callback();
 		}
 	});
+	suite.counter.refresh();
 };
 
 suite.prototype.cases.onError_wrong_query = function(callback) {

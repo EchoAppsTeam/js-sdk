@@ -93,12 +93,6 @@ counter.methods._update = function(data) {
 };
 
 counter.methods._error = function(data) {
-	if (data.errorCode === "more_than") {
-		this.set("data.count", data.errorMessage + "+");
-		this.dom.render();
-	} else {
-		this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
-	}
 	this.events.publish({
 		"topic": "onError",
 		"data": {
@@ -107,6 +101,12 @@ counter.methods._error = function(data) {
 			"target": this.config.get("target").get(0)
 		}
 	});
+	if (data.errorCode === "more_than") {
+		this.set("data.count", data.errorMessage + "+");
+		this.dom.render();
+	} else {
+		this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
+	}
 };
 
 Echo.Control.create(counter);
