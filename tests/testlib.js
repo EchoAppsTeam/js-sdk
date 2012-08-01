@@ -148,6 +148,7 @@ Echo.Tests.Common.prototype.constructPluginRenderersTest = function(config) {
 		var init = Echo.Tests.getComponentInitializer(component);
 		var defaults = {
 			"appkey": this.config.appkey,
+			"target": this.config.target,
 			"dataBaseLocation": this.config.dataBaseLocation,
 			"plugin": {"name": plugin},
 			"plugins": [],
