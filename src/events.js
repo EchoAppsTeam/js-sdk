@@ -98,18 +98,26 @@ Echo.Events.unsubscribe = function(params) {
  * @param {Object} params Configuration parameters object with the following fields:
  * @param {String} params.topic Event name.
  * @param {String} params.context (optional) Unique identifier for inter-component communication.
- * @param {Boolean} params.bubble (optional) Indicates whether a given event should be propagated into the parent contexts. Default value is false.
- * @param {String} params.data Arbitrary data object.
+ * @param {String} params.data (optional) Some data object.
+ * @param {Boolean} [params.bubble=true] Indicates whether a given event should be propagated into the parent contexts.
+ * @param {Boolean} [params.propagation=true] Indicates whether a given event should be propagated into the child contexts AND executed for the current context.
+ * @param {Boolean} [params.internal=false] Specifies whether the event should be also published to "global" context (=false) or not (=true)
  */
 Echo.Events.publish = function(params) {
-	delete _lastHandlerResult[params.topic];
-	params.context = _initContext(params.topic, params.context);
-	_executeForDeepestContext(params.topic, params.context, function(obj, lastContext, restContexts) {
-		_callHandlers(obj[lastContext], params, restContexts);
+	var config = params;
+	delete _lastHandlerResult[config.topic];
+	config = $.extend({
+		"bubble": true,
+		"propagation": true,
+		"internal": false
+	}, config);
+	config.context = _initContext(config.topic, config.context);
+	_executeForDeepestContext(config.topic, config.context, function(obj, lastContext, restContexts) {
+		_callHandlers(obj[lastContext], config, restContexts);
 	});
-	if (!params.bubble && params.context !== "global") {
-		params.context = "global";
-		Echo.Events.publish(params);
+	if (!config.internal && config.context !== "global") {
+		config.context = "global";
+		Echo.Events.publish(config);
 	}
 };
 
@@ -166,19 +174,22 @@ var _callHandlers = function(obj, params, restContexts) {
 			return false;
 		}
 	});
-	if (params.bubble && _shouldStopEvent("bubble", params.topic)) {
-		return;
+	if (params.bubble && !_shouldStopEvent("bubble", params.topic) && restContexts.length) {
+		// copy incoming parameters object so that we can manipulate it freely
+		var _params = $.extend({}, params);
+		_params.context = restContexts.join("/");
+		_params.internal = true;
+		_params.propagation = false;
+		Echo.Events.publish(_params);
 	}
-	if (params.bubble) {
-		if (!restContexts.length) {
-			return;
-		}
-		params.context = restContexts.join("/");
-		Echo.Events.publish(params);
-	} else if (!_shouldStopEvent("propagation.children", params.topic)) {
+	if (params.propagation && !_shouldStopEvent("propagation.children", params.topic)) {
+		// copy incoming parameters object so that we can manipulate it freely
+		var _params = $.extend({}, params);
+		_params.internal = true;
+		_params.bubble = false;
 		$.each(obj.contexts, function(id, context) {
-			_callHandlers(context, params);
-			if (_shouldStopEvent("propagation.siblings", params.topic)) {
+			_callHandlers(context, _params, []);
+			if (_shouldStopEvent("propagation.siblings", _params.topic)) {
 				return false;
 			}
 		});
