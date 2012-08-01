@@ -306,7 +306,7 @@ Echo.Plugin.prototype._init.dom = function() {
 			if (typeof element === "string") {
 				element = prefix + element;
 			}
-			parentDOM.remove(prefix + element);
+			parentDOM.remove(element);
 		},
 		"render": function(args) {
 			if (args && args.name) {

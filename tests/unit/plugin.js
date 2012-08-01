@@ -336,6 +336,7 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 	var check = function() {
 		var self = this;
+		var plugin = this.getPlugin("MyPlugin");
 		QUnit.ok(this.config.get("target") instanceof jQuery,
 			"Checking if the target if a jQuery element");
 		QUnit.ok(!!this.config.get("target").children().length,
@@ -362,10 +363,10 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 		});
 
 		QUnit.ok(!!this.dom.get("testRenderer").children().length,
-			"Checking if initially empty element became non-empty after applying renderer")
+			"Checking if initially empty element became non-empty after applying renderer");
 
 		// checking extendRenderer & parentRenderer functions
-		QUnit.ok(this.dom.get("testPluginRenderer").children().length == 2,
+		QUnit.ok(this.dom.get("testComponentRenderer").children().length == 2,
 			"Checking multiple extension of the same renderer, checking if \"parentRenderer\" function is called");
 
 		// checking extendTemplate function
@@ -375,9 +376,19 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 			QUnit.ok(element.get(0).innerHTML == action,
 				"Checking \"" + action + "\" extendTemplate method");
 		});
-
 		QUnit.ok(!self.dom.get("plugin_templateRemoveCheck"),
 			"Checking \"remove\" extendTemplate method")
+
+		// checking plugin.dom.* methods
+		QUnit.ok(!!plugin.dom.get("testPluginRenderer"),
+			"Checking if we have a proper element as a result of the plugin.dom.get(name) call");
+		QUnit.equal(plugin.dom.get("testPluginRenderer").get(0).innerHTML,
+			"<div>Plugin extension (testPluginRenderer)</div>",
+			"Checking if a renderer was applied to the element added within the plugin");
+
+		plugin.dom.remove("testPluginRenderer");
+		QUnit.equal(!plugin.dom.get("testPluginRenderer"),
+			"Checking if an element is not available after dom.remove call");
 
 		callback && callback();
 	};
@@ -546,6 +557,7 @@ suite.data.template =
 		'<div class="{class:plugin_templateExtensionCheck}"></div>' +
 		'<div class="{class:plugin_templateReplaceCheck}"></div>' +
 		'<div class="{class:plugin_templateRemoveCheck}"></div>' +
+		'<div class="{plugin.class:testPluginRenderer}"></div>' +
 		// checking {plugin.data:...} substitution
 		'<div class="{class:plugin_data} echo-primaryFont echo-primaryColor">{plugin.data:key1}</div>' +
 		'<div class="{class:plugin_dataNested} echo-primaryColor">{plugin.data:key3.key3nested}</div>' +
@@ -665,9 +677,14 @@ suite.getPluginManifest = function(name, component) {
 		}
 	};
 
-	manifest.component.renderers.testPluginRenderer = function(element) {
+	manifest.renderers.testPluginRenderer = function(element) {
 		this.parentRenderer("testPluginRenderer", arguments);
-		return element.append('<div>Test value from plugin extension</div>');
+		return element.append('<div>Plugin extension (testPluginRenderer)</div>');
+	};
+
+	manifest.component.renderers.testComponentRenderer = function(element) {
+		this.parentRenderer("testComponentRenderer", arguments);
+		return element.append('<div>Plugin extension (testComponentRenderer)</div>');
 	};
 
 	manifest.component.renderers.testRendererWithExtra = function(element, extra) {
