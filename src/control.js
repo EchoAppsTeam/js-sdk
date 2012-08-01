@@ -537,10 +537,10 @@ Echo.Control.prototype._init.subscriptions = function() {
 	}
 
 	// register destroy handlers
-	var handlerId = control.events.subscribe({
+	var destroyHandlerId = control.events.subscribe({
 		"topic": "Echo.Control.onDestroy",
 		"handler": function(topic, data) {
-			control.events.unsubscribe({"handlerId": handlerId});
+			control.events.unsubscribe({"handlerId": destroyHandlerId});
 
 			// destroy plugins
 			$.map(control.config.get("pluginsOrder"), function(name) {
