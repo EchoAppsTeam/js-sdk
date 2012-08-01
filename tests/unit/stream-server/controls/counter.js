@@ -26,7 +26,7 @@ suite.prototype.tests.staticWorkflow = {
 			"ready"  : function() {
 				suite.counter = this;
 				QUnit.ok(target.html().match(count),
-				'Checking the static usecase rendering');
+					'Checking the static usecase rendering');
 				self.sequentialAsyncTests([
 					"staticInit",
 					"staticRefresh",
@@ -70,14 +70,14 @@ suite.prototype.cases = {};
 suite.prototype.cases.staticInit = function(callback) {
 	var self = this;
 	var handlerId = suite.counter.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.Counter.onRerender",
+		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
 		"handler" : function(topic, params) {
 			// unsubscribe to avoid multiple test cases execution
 			suite.counter.events.unsubscribe({
 				"handlerId" : handlerId
 			});
 			QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
-		'Checking the static usecase rendering and refresh() idempotence');
+				'Checking the static usecase rendering and refresh() idempotence');
 			callback();
 		}
 	});
@@ -89,14 +89,14 @@ suite.prototype.cases.staticRefresh = function(callback) {
 	var count = 101;
 	suite.counter.set("data", {"count": count});
 	var handlerId = suite.counter.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.Counter.onRerender",
+		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
 		"handler" : function(topic, params) {
 			// unsubscribe to avoid multiple test cases execution
 			suite.counter.events.unsubscribe({
 				"handlerId" : handlerId
 			});
 			QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
-		'Checking the static usecase rerendering');
+				'Checking the static usecase rerendering');
 			callback();
 		}
 	});
