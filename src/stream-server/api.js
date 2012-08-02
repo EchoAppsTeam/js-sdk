@@ -137,6 +137,7 @@ Echo.StreamServer.API.Request.prototype._submit = function() {
 
 Echo.StreamServer.API.Request.prototype._prepareURI = function() {
 	if (this.config.get("endpoint") === "submit") {
+		// FIXME: move replace to API.Request lib
 		return this.config.get("submissionProxyURL").replace(/^(http|ws)s?:\/\//, "");
 	}
 	return this.constructor.parent._prepareURI.call(this);
