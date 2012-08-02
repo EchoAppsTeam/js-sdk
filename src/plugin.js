@@ -219,9 +219,10 @@ Echo.Plugin.prototype.substitute = function(template, data) {
  */
 Echo.Plugin.prototype.requestDataRefresh = function() {
 	Echo.Events.publish({
-		"topic": "internal.Echo.Control.onDataInvalidate",
-		"bubble": true,
-		"context": this.component.config.get("context")
+		"topic": "Echo.Control.onDataInvalidate",
+		"context": this.component.config.get("context"),
+		"global": false,
+		"propagation": false
 	});
 };
 

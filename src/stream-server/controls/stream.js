@@ -70,7 +70,7 @@ stream.labels = {
 };
 
 stream.events = {
-	"Echo.StreamServer.Controls.Stream.Item.internal.onAdd": function(topic, data) {
+	"Echo.StreamServer.Controls.Stream.Item.onAdd": function(topic, data) {
 		var self = this;
 		data.item.config.get("target").hide();
 		this._queueActivity({
@@ -85,7 +85,7 @@ stream.events = {
 		});
 		return {"stop": ["bubble"]};
 	},
-	"Echo.StreamServer.Controls.Stream.Item.internal.onDelete": function(topic, data) {
+	"Echo.StreamServer.Controls.Stream.Item.onDelete": function(topic, data) {
 		var self = this;
 		this._queueActivity({
 			"action": "animation",
@@ -99,14 +99,7 @@ stream.events = {
 		});
 		return {"stop": ["bubble"]};
 	},
-	"Echo.StreamServer.Controls.Stream.Item.internal.onButtonClick": function(topic, data) {
-		this.events.publish({
-			"topic": "Item.onButtonClick",
-			"data": data
-		});
-		return {"stop": ["bubble"]};
-	},
-	"Echo.StreamServer.Controls.Stream.Item.internal.onChildrenExpand": function(topic, args) {
+	"Echo.StreamServer.Controls.Stream.Item.onChildrenExpand": function(topic, args) {
 		this.requestChildrenItems(args.data.unique);
 		return {"stop": ["bubble"]};
 	}
@@ -720,9 +713,10 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 				// keepChildren flag is required to detect the case when item is being moved
 				if (item.isRoot()) {
 					item.events.publish({
-						"topic": "internal.onDelete",
+						"topic": "onDelete",
 						"data": {"item": item, "config": options},
-						"bubble": true
+						"global": false,
+						"propagation": false
 					});
 					self._applyStructureUpdates(operation, item, options);
 				} else {
@@ -981,9 +975,10 @@ stream.methods._placeRootItem = function(item) {
 		this.dom.get("body").empty().append(content);
 	}
 	item.events.publish({
-		"topic": "internal.onAdd",
+		"topic": "onAdd",
 		"data": {"item": item},
-		"bubble": true
+		"global": false,
+		"propagation": false
 	});
 };
 
@@ -1429,25 +1424,26 @@ item.renderers._childrenContainer = function(element, config) {
 		element.append(child.config.get("target"));
 		if (child.deleted) {
 			self.events.publish({
-				"topic": "internal.onDelete",
+				"topic": "onDelete",
 				"data": {
 					"item": child,
 					"config": config
 				},
-				"bubble": true
+				"global": false,
+				"propagation": false
 			});
 		} else if (child.added) {
 			self.events.publish({
-				"topic": "internal.onAdd",
+				"topic": "onAdd",
 				"data": {"item": child},
-				"bubble": true
+				"global": false,
+				"propagation": false
 			});
 		// don't publish events while rerendering
 		} else if (initialRendering) {
-			self.events.publish({
-				"topic": "internal.onRender",
-				"data": {"item": child},
-				"bubble": true
+			child.events.publish({
+				"topic": "onRender",
+				"data": {"item": child}
 			});
 		}
 	});
@@ -1776,9 +1772,10 @@ item.renderers.expandChildren = function(element, extra) {
 				"extra": {"state": "loading"}
 			});
 			self.events.publish({
-				"topic": "internal.onChildrenExpand",
+				"topic": "onChildrenExpand",
 				"data": {"data": self.data},
-				"bubble": true
+				"global": false,
+				"propagation": false
 			});
 		});
 };
@@ -2029,7 +2026,7 @@ item.methods._assembleButtons = function() {
 			data.callback = function() {
 				callback.call(self);
 				self.events.publish({
-					"topic": "internal.onButtonClick",
+					"topic": "onButtonClick",
 					"data": {
 						"name": data.name,
 						"plugin": plugin,
@@ -2037,8 +2034,7 @@ item.methods._assembleButtons = function() {
 							"data": self.data,
 							"target": self.config.get("target")
 						}
-					},
-					"bubble": true
+					}
 				});
 			};
 			data.label = data.label || data.name;
