@@ -117,20 +117,19 @@ Echo.Events.unsubscribe = function(params) {
  * @param {Boolean} [params.global=true] Specifies whether the event should be also published to "global" context or not
  */
 Echo.Events.publish = function(params) {
-	var config = params;
-	delete _lastHandlerResult[config.topic];
-	config = $.extend({
+	params = $.extend({
 		"bubble": true,
 		"propagation": true,
 		"global": true
-	}, config);
-	config.context = _initContext(config.topic, config.context);
-	_executeForDeepestContext(config.topic, config.context, function(obj, lastContext, restContexts) {
-		_callHandlers(obj[lastContext], config, restContexts);
+	}, params);
+	delete _lastHandlerResult[params.topic];
+	params.context = _initContext(params.topic, params.context);
+	_executeForDeepestContext(params.topic, params.context, function(obj, lastContext, restContexts) {
+		_callHandlers(obj[lastContext], params, restContexts);
 	});
-	if (config.global && config.context !== "global") {
-		config.context = "global";
-		Echo.Events.publish(config);
+	if (params.global && params.context !== "global") {
+		params.context = "global";
+		Echo.Events.publish(params);
 	}
 };
 
