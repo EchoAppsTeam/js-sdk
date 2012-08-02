@@ -482,8 +482,7 @@ Echo.Control.prototype._init.events = function() {
 	};
 	return {
 		"publish": function(params) {
-			var prefix = params.prefix ? params.prefix + "." : "";
-			params.topic = prefix + control.name + "." + params.topic;
+			params.topic = control.name + "." + params.topic;
 			params.data = params.data || {};
 			// process data through the normalization function if defined
 			if (control._prepareEventParams) {
