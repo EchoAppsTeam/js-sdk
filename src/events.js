@@ -60,9 +60,14 @@ Echo.Events.subscribe = function(params) {
  */
 Echo.Events.unsubscribe = function(params) {
 	var unsubscribed = false;
-	if (params.handlerId && _dataByHandlerId[params.handlerId]) {
-		params.topic = _dataByHandlerId[params.handlerId].topic;
-		params.context = _dataByHandlerId[params.handlerId].context;
+	if (params.handlerId) {
+		if (_dataByHandlerId[params.handlerId]) {
+			params.topic = _dataByHandlerId[params.handlerId].topic;
+			params.context = _dataByHandlerId[params.handlerId].context;
+		} else {
+			// trying to unsubsribe from previously unsubscribed handler
+			return false;
+		}
 	} else {
 		params.context = _initContext(params.topic, params.context);
 	}
