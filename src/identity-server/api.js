@@ -39,7 +39,7 @@ Echo.Utils.inherit(Echo.IdentityServer.API.Request, Echo.API.Request);
 Echo.IdentityServer.API.Request.prototype._prepareURI = function() {
 	return this.config.get("endpoint") === "whoami"
 		? Echo.IdentityServer.API.Request.parent._prepareURI.call(this)
-		: this.config.get("submissionProxyURL");
+		: this.config.get("submissionProxyURL").replace(/^(http|ws)s?:\/\//, "");
 };
 
 Echo.IdentityServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
