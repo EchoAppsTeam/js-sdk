@@ -231,7 +231,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		$.map(assertions, function(assertion) {
 			QUnit.equal(
-				self.dom.get(assertion[0]).get(0).innerHTML,
+				self.dom.get(assertion[0]).html(),
 				assertion[1],
 				"Checking rendering output of the \"" + assertion[0] + "\" element"
 			);
@@ -256,11 +256,11 @@ suite.prototype.cases.controlRendering = function(callback) {
 		});
 		QUnit.ok(!!result.find(cssClass).children().length,
 			"Checking if control renderers were applied when we render template (by passing \"template\" key into the \"render\" function)");
-		QUnit.equal(result.find(".k1").get(0).innerHTML, "myvalue1",
+		QUnit.equal(result.find(".k1").html(), "myvalue1",
 			"Checking data substitution into template (string value)");
-		QUnit.equal(result.find(".k2").get(0).innerHTML, "",
+		QUnit.equal(result.find(".k2").html(), "",
 			"Checking data substitution into template (object value)");
-		QUnit.equal(result.find(".c1").get(0).innerHTML, "15",
+		QUnit.equal(result.find(".c1").html(), "15",
 			"Checking config values substitution into template");
 
 		// element rendering, specific renderer application
@@ -270,7 +270,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"name": "testRendererWithExtra",
 			"extra": {"value": "my-value"}
 		});
-		QUnit.equal(target.get(0).innerHTML, "<span>my-value</span>",
+		QUnit.equal(target.html(), "<span>my-value</span>",
 			"Checking if element content was updated after renderer application");
 
 		this.dom.render({
@@ -278,13 +278,13 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"name": "testRendererWithExtra",
 			"extra": {"value": "another-value"}
 		});
-		QUnit.equal(target.get(0).innerHTML, "<span>another-value</span>",
+		QUnit.equal(target.html(), "<span>another-value</span>",
 			"Checking if element content was updated as a result of renderer application");
 
 		this.dom.render({
 			"name": "testRenderer"
 		});
-		QUnit.equal(target.get(0).innerHTML, "<div>Some value</div>",
+		QUnit.equal(target.html(), "<div>Some value</div>",
 			"Checking if element content was updated as a result of the native renderer application");
 
 		// recursive element rendering
@@ -293,7 +293,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"name": "testRendererRecursive",
 			"recursive": true
 		});
-		QUnit.equal(this.dom.get("testRendererRecursive").get(0).innerHTML, "<div class=\"echo-streamserver-controls-mycontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mycontrol-nestedSubcontainer\"></div></div>",
+		QUnit.equal(this.dom.get("testRendererRecursive").html(), "<div class=\"echo-streamserver-controls-mycontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mycontrol-nestedSubcontainer\"></div></div>",
 			"Checking if element content was updated after recursive rendering");
 
 		// checking re-rendering
@@ -301,7 +301,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		this.config.get("target").append('<div class="extra-div-1">Another DIV appended</div>');
 		this.config.get("target").append('<div class="extra-div-2">DIV appended</div>');
 		this.dom.render();
-		QUnit.equal(this.dom.get("testRenderer").get(0).innerHTML, "<div>Some value</div>",
+		QUnit.equal(this.dom.get("testRenderer").html(), "<div>Some value</div>",
 			"Checking if component was re-rendered and appended elements were wiped out");
 
 		// checking "showMessage" method
@@ -321,7 +321,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		data.layout = "full";
 		this.showMessage(data);
 		QUnit.equal(
-			target.find(".echo-control-message-icon").get(0).innerHTML,
+			target.find(".echo-control-message-icon").html(),
 			data.message,
 			"Checking \"showMessage\" in full mode");
 
@@ -436,7 +436,7 @@ suite.prototype.cases.refresh = function(callback) {
 					"Check if the control was rerendered after \"refresh\" function call (non-empty target)");
 				QUnit.ok(!control.getPlugin("MyPlugin"),
 					"Checking if the plugin keeps the state within \"refresh\" function call");
-				QUnit.equal(control.dom.get("configString").get(0).innerHTML,
+				QUnit.equal(control.dom.get("configString").html(),
 					"updated string value1",
 					"Checking if the control was rerendered after \"refresh\" function call (validate template re-rendering)");
 				QUnit.ok(!control.dom.get("plugin_testRenderer"),
@@ -483,7 +483,7 @@ suite.prototype.cases.destroy = function(callback) {
 		this.destroy();
 
 		// checking control target
-		QUnit.ok(!this.config.get("target").get(0).innerHTML,
+		QUnit.ok(!this.config.get("target").html(),
 			"Check if the target was cleared after the \"destroy\" function call");
 
 		// checking if no event subscriptions after destroy call

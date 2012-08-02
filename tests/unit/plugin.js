@@ -355,7 +355,7 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 
 		$.map(assertions, function(assertion) {
 			QUnit.equal(
-				self.dom.get("plugin_" + assertion[0]).get(0).innerHTML,
+				self.dom.get("plugin_" + assertion[0]).html(),
 				assertion[1],
 				"Checking rendering output of the \"" + assertion[0] + "\" element"
 			);
@@ -372,7 +372,7 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 		var actions = ["insertAsLastChild", "insertBefore", "insertAfter", "insertAsFirstChild", "replace"];
 		$.map(actions, function(action) {
 			var element = self.dom.get("ext_" + action);
-			QUnit.ok(element.get(0).innerHTML == action,
+			QUnit.ok(element.html() == action,
 				"Checking \"" + action + "\" extendTemplate method");
 		});
 		QUnit.ok(!self.dom.get("plugin_templateRemoveCheck"),
@@ -381,7 +381,7 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 		// checking plugin.dom.* methods
 		QUnit.ok(!!plugin.dom.get("testPluginRenderer"),
 			"Checking if we have a proper element as a result of the plugin.dom.get(name) call");
-		QUnit.equal(plugin.dom.get("testPluginRenderer").get(0).innerHTML,
+		QUnit.equal(plugin.dom.get("testPluginRenderer").html(),
 			"<div>Plugin extension (testPluginRenderer)</div>",
 			"Checking if a renderer was applied to the element added within the plugin");
 
