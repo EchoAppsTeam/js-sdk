@@ -111,7 +111,8 @@ suite.prototype.tests.PublicMethods = {
 		QUnit.ok(unsubscribe("A", s1.id, "a1/b1/c1"), "Unsubscribe: event \"A\", handlerId: \"" + s1.id + "\", context \"a1/b1/c1\"");
 		QUnit.ok(unsubscribe("A", s2.id), "Unsubscribe: event \"A\", handlerId: \"" + s2.id + "\", unknown context");
 		QUnit.ok(unsubscribe(undefined, undefined, "a2"), "Unsubscribe: all events, all handlers, context \"a2\"");
-		QUnit.ok(!unsubscribe("A", s1.id, "a1/b1/c1"), "Unsubscribe from previously unsubscribed handler: nothing to do");
+		QUnit.ok(!unsubscribe("A", s1.id, "a1/b1/c1"), "Unsubscribe from previously unsubscribed handler using all available data: nothing to do");
+		QUnit.ok(!unsubscribe(undefined, s1.id), "Unsubscribe from previously unsubscribed handler using only handlerId: nothing to do");
 		var subscriptions2 = {
 			"A": {
 				"a1": {
