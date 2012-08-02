@@ -244,8 +244,7 @@ suite.prototype.cases.onUpdate = function(callback) {
 };
 
 suite.prototype.cases.destroy = function(callback) {
-// TODO uncomment when control.destroy will be implemented
-//	suite.counter.destroy();
+	suite.counter.destroy();
 	callback();
 };
 
