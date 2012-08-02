@@ -103,9 +103,9 @@ suite.prototype.tests.PublicMethods = {
 		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", global context)");
 		publish({"topic": "X", "context": "a2"});
 		QUnit.deepEqual(published, [10, 8, 9], "Publish: handlers order (topic \"X\", context \"a2\")");
-		publish({"topic": "B", "context": "b1", "internal": true});
+		publish({"topic": "B", "context": "b1", "global": false});
 		QUnit.deepEqual(published, [11], "Publish: handlers order (topic \"B\", context \"b1\", one-time subscription)");
-		publish({"topic": "B", "context": "b1", "internal": true});
+		publish({"topic": "B", "context": "b1", "global": false});
 		QUnit.deepEqual(published, [], "Publish: handlers order (topic \"B\", context \"b1\" again)");
 
 		QUnit.ok(unsubscribe("A", s1.id, "a1/b1/c1"), "Unsubscribe: event \"A\", handlerId: \"" + s1.id + "\", context \"a1/b1/c1\"");
@@ -154,7 +154,7 @@ suite.prototype.tests.PublicMethods = {
 		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", global context)");
 		publish({"topic": "X", "context": "a2"});
 		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", context \"a2\")");
-		publish({"topic": "X", "context": "a2", "internal": true});
+		publish({"topic": "X", "context": "a2", "global": false});
 		QUnit.deepEqual(published, [], "Publish: handlers order (topic \"X\", context \"a2\", not global event)");
 	}
 };

@@ -109,7 +109,7 @@ Echo.Events.unsubscribe = function(params) {
  * @param {String} params.data (optional) Some data object.
  * @param {Boolean} [params.bubble=true] Indicates whether a given event should be propagated into the parent contexts.
  * @param {Boolean} [params.propagation=true] Indicates whether a given event should be propagated into the child contexts AND executed for the current context.
- * @param {Boolean} [params.internal=false] Specifies whether the event should be also published to "global" context (=false) or not (=true)
+ * @param {Boolean} [params.global=true] Specifies whether the event should be also published to "global" context or not
  */
 Echo.Events.publish = function(params) {
 	var config = params;
@@ -117,13 +117,13 @@ Echo.Events.publish = function(params) {
 	config = $.extend({
 		"bubble": true,
 		"propagation": true,
-		"internal": false
+		"global": true
 	}, config);
 	config.context = _initContext(config.topic, config.context);
 	_executeForDeepestContext(config.topic, config.context, function(obj, lastContext, restContexts) {
 		_callHandlers(obj[lastContext], config, restContexts);
 	});
-	if (!config.internal && config.context !== "global") {
+	if (config.global && config.context !== "global") {
 		config.context = "global";
 		Echo.Events.publish(config);
 	}
@@ -186,14 +186,14 @@ var _callHandlers = function(obj, params, restContexts) {
 		// copy incoming parameters object so that we can manipulate it freely
 		var _params = $.extend({}, params);
 		_params.context = restContexts.join("/");
-		_params.internal = true;
+		_params.global = false;
 		_params.propagation = false;
 		Echo.Events.publish(_params);
 	}
 	if (params.propagation && !_shouldStopEvent("propagation.children", params.topic)) {
 		// copy incoming parameters object so that we can manipulate it freely
 		var _params = $.extend({}, params);
-		_params.internal = true;
+		_params.global = false;
 		_params.bubble = false;
 		$.each(obj.contexts, function(id, context) {
 			_callHandlers(context, _params, []);
