@@ -17,6 +17,8 @@ suite.prototype.info = {
 		"template",
 		"getPlugin",
 		"showMessage",
+		"destroy",
+		"refresh",
 
 		// functions below are covered
 		// within the Plugin component test
@@ -460,10 +462,37 @@ suite.prototype.cases.refresh = function(callback) {
 };
 
 suite.prototype.cases.destroy = function(callback) {
+	var publish = function(topic, control) {
+		Echo.Events.publish({
+			"topic": topic,
+			"context": control.config.get("context")
+		});
+	};
 	var check = function() {
+		var count = 0;
+		this.set("_eventHandler", function() { count++; });
+		this.set("_destroyHandler", function() {
+			QUnit.ok(true,
+				"Checking if the \"destroy\" method was called from the manifest");
+		});
+
+		// checking if we receive events before destroy
+		publish("incoming.event.global", this);
+		publish("incoming.event.local", this);
+
 		this.destroy();
-		// check if the target was cleared
-		// check if publish doesn't produce event calls
+
+		// checking control target
+		QUnit.ok(!this.config.get("target").get(0).innerHTML,
+			"Check if the target was cleared after the \"destroy\" function call");
+
+		// checking if no event subscriptions after destroy call
+		publish("incoming.event.global", this);
+		publish("incoming.event.local", this);
+
+		QUnit.ok(count == 2,
+			"Checking if expected amount of events were executed and handled (checking \"destroy\" function call)");
+
 		// check plugin events
 		callback && callback();
 	};
@@ -659,7 +688,11 @@ suite.getControlManifest = function(name) {
 
 	manifest.init = function() {
 		this.dom.render();
-	}
+	};
+
+	manifest.destroy = function() {
+		this.get("_destroyHandler") && this.get("_destroyHandler")();
+	};
 
 	manifest.templates.main = suite.data.template;
 

@@ -21,7 +21,6 @@ suite.prototype.info = {
 		"substitute",
 		"enable",
 		"disable",
-		"enabled",
 		"extendTemplate",
 		"parentRenderer",
 		"requestDataRefresh",
@@ -113,7 +112,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"configInterfaceCheck",
 			"pluginRenderingMechanism",
 			"eventsMechanism",
-			"labelsOverriding"
+			"labelsOverriding",
+			"destroy"
 		], "cases");
 	}
 };
@@ -514,6 +514,25 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 	});
 };
 
+suite.prototype.cases.destroy = function(callback) {
+	suite.control().initTestControl({
+		"plugins": [{
+			"name": "MyPlugin",
+			"requiredParam1": true,
+			"requiredParam2": true
+		}],
+		"ready": function() {
+			var plugin = this.getPlugin("MyPlugin");
+			plugin.set("_destroyHandler", function() {
+				QUnit.ok(true,
+					"Checking if the plugin \"destroy\" method was called after the \"destroy\" control function was called");
+			});
+			this.destroy();
+			callback && callback();
+		}
+	});
+};
+
 // data required to perform tests
 
 suite.data = {};
@@ -664,6 +683,10 @@ suite.getPluginManifest = function(name, component) {
 			"remove",
 			"plugin_templateRemoveCheck"
 		);
+	};
+
+	manifest.destroy = function() {
+		this.get("_destroyHandler") && this.get("_destroyHandler")();
 	};
 
 	manifest.templates.main = suite.data.template;
