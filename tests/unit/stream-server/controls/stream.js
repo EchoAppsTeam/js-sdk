@@ -329,6 +329,7 @@ var _itemData = {
 };
 
 var _streamConfigData = {
+	"target": $(document.getElementById("qunit-fixture")).empty(),
 	"children": {
 		"additionalItemsPerPage": 5,
 		"displaySortOrder": "chronological",
