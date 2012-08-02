@@ -69,13 +69,10 @@ suite.prototype.cases = {};
 
 suite.prototype.cases.staticInit = function(callback) {
 	var self = this;
-	var handlerId = suite.counter.events.subscribe({
+	suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"once"    : true,
 		"handler" : function(topic, params) {
-			// unsubscribe to avoid multiple test cases execution
-			suite.counter.events.unsubscribe({
-				"handlerId" : handlerId
-			});
 			QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
 				'Checking the static usecase rendering and refresh() idempotence');
 			callback();
@@ -88,13 +85,10 @@ suite.prototype.cases.staticRefresh = function(callback) {
 	var self = this;
 	var count = 101;
 	suite.counter.set("data", {"count": count});
-	var handlerId = suite.counter.events.subscribe({
+	suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"once"    : true,
 		"handler" : function(topic, params) {
-			// unsubscribe to avoid multiple test cases execution
-			suite.counter.events.unsubscribe({
-				"handlerId" : handlerId
-			});
 			QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
 				'Checking the static usecase rerendering');
 			callback();
@@ -105,13 +99,10 @@ suite.prototype.cases.staticRefresh = function(callback) {
 
 suite.prototype.cases.onError_more_than = function(callback) {
 	var self = this;
-	var errorHID = suite.counter.events.subscribe({
+	suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
+		"once"    : true,
 		"handler" : function(topic, params) {
-			// unsubscribe to avoid multiple test cases execution
-			suite.counter.events.unsubscribe({
-				"handlerId" : errorHID
-			});
 			QUnit.deepEqual(
 				params.data,
 				{
@@ -122,13 +113,10 @@ suite.prototype.cases.onError_more_than = function(callback) {
 				'Checking the restrictions of the count API. Error: "more_than"');
 		}
 	});
-	var refreshHID = suite.counter.events.subscribe({
+	suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"once"    : true,
 		"handler" : function(topic, params) {
-			// unsubscribe to avoid multiple test cases execution
-			suite.counter.events.unsubscribe({
-				"handlerId" : refreshHID
-			});
 			QUnit.ok(self.config.target.html() === "<span>5000+</span>",
 				'Checking the Error: "more_than" usecase rendering');
 			callback();
@@ -140,13 +128,10 @@ suite.prototype.cases.onError_more_than = function(callback) {
 suite.prototype.cases.onError_wrong_query = function(callback) {
 	var self = this;
 	suite.counter.config.set("query", "children1of:http://example.com/*");
-	var errorHID = suite.counter.events.subscribe({
+	suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
+		"once"    : true,
 		"handler" : function(topic, params) {
-			// unsubscribe to avoid multiple test cases execution
-			suite.counter.events.unsubscribe({
-				"handlerId": errorHID
-			});
 			QUnit.deepEqual(
 				params.data,
 				{
@@ -157,13 +142,10 @@ suite.prototype.cases.onError_wrong_query = function(callback) {
 				'Checking the restrictions of the count API. Error: "wrong_query"');
 		}
 	});
-	var refreshHID = suite.counter.events.subscribe({
+	suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"once"    : true,
 		"handler" : function(topic, params) {
-			// unsubscribe to avoid multiple test cases execution
-			suite.counter.events.unsubscribe({
-				"handlerId": refreshHID 
-			});
 			QUnit.ok(self.config.target.html().match(/Unrecognized query/),
 				'Checking the Error: "wrong_query" usecase rendering');
 			callback();
@@ -176,13 +158,10 @@ suite.prototype.cases.onError_incorrect_appkey = function(callback) {
 	var self = this;
 	suite.counter.config.set("query", "childrenof:http://example.com/test/*");
 	suite.counter.config.set("appkey", "faketest.aboutecho.com");
-	var errorHID = suite.counter.events.subscribe({
+	suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
+		"once"    : true,
 		"handler" : function(topic, params) {
-			// unsubscribe to avoid multiple test cases execution
-			suite.counter.events.unsubscribe({
-				"handlerId": errorHID
-			});
 			//TODO fix test when the API is fixed
 			// it should return incorrect_appkey instead of wrong_query 
 			QUnit.deepEqual(
@@ -195,13 +174,10 @@ suite.prototype.cases.onError_incorrect_appkey = function(callback) {
 				'Checking the restrictions of the count API. Error: "incorrect_appkey"');
 		}
 	});
-	var refreshHID = suite.counter.events.subscribe({
+	suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"once"    : true,
 		"handler" : function(topic, params) {
-			// unsubscribe to avoid multiple test cases execution
-			suite.counter.events.unsubscribe({
-				"handlerId": refreshHID
-			});
 			//TODO fix test when the API is fixed
 			// it should return incorrect_appkey instead of wrong_query 
 			QUnit.ok(self.config.target.html().match(/Unrecognized query/),
@@ -217,24 +193,18 @@ suite.prototype.cases.onError_incorrect_appkey = function(callback) {
 suite.prototype.cases.onUpdate = function(callback) {
 	var self = this;
 	suite.counter.config.set("appkey", "test.aboutecho.com");
-	var updateHID = suite.counter.events.subscribe({
+	suite.counter.events.subscribe({
 		"topic" : "Echo.StreamServer.Controls.Counter.onUpdate",
+		"once"  : true,
 		"handler" : function(topic, params) {
-			// unsubscribe to avoid multiple test cases execution
-			suite.counter.events.unsubscribe({
-				"handlerId" : updateHID
-			});
 			QUnit.ok(typeof(params.data.count) === "number",
 				'Checking if data.count contains valid value');
 		}
 	});
-	var refreshHID= suite.counter.events.subscribe({
+	suite.counter.events.subscribe({
 		"topic" : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"once"  : true,
 		"handler" : function(topic, params) {
-			// unsubscribe to avoid multiple test cases execution
-			suite.counter.events.unsubscribe({
-				"handlerId" : refreshHID
-			});
 			QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
 				'Checking the common usecase rendering');
 			callback();
@@ -244,8 +214,7 @@ suite.prototype.cases.onUpdate = function(callback) {
 };
 
 suite.prototype.cases.destroy = function(callback) {
-// TODO uncomment when control.destroy will be implemented
-//	suite.counter.destroy();
+	suite.counter.destroy();
 	callback();
 };
 
