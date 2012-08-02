@@ -337,16 +337,10 @@ Echo.UserSession._normalize = function(data) {
 
 Echo.UserSession._onInit = function(callback) {
 	if (!callback) return;
-	var topic = "Echo.UserSession.onInit";
-	var handlerId = Echo.Events.subscribe({
-		"topic": topic,
-		"handler": function() {
-			Echo.Events.unsubscribe({
-				"topic": topic,
-				"handlerId": handlerId
-			});
-			callback();
-		}
+	Echo.Events.subscribe({
+		"topic": "Echo.UserSession.onInit",
+		"once": true,
+		"handler": callback
 	});
 };
 

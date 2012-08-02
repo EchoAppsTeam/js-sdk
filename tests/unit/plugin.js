@@ -182,6 +182,8 @@ suite.prototype.cases.basicOperations = function(callback) {
 		QUnit.ok(control._isPluginEnabled("MyPlugin"),
 			"Checking if a plugin was enabled back after \"enable\" function call");
 
+		this.destroy();
+
 		callback && callback();
 	};
 	suite.control().initTestControl({
@@ -204,6 +206,9 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 				var plugin = this.getPlugin("MyPlugin");
 				QUnit.ok(!plugin,
 					"Checking if the plugin was disabled if invalid config params were passed and \"init\" function returned \"false\"");
+
+				this.destroy();
+
 				_callback();
 			}
 		});
@@ -219,6 +224,9 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 				var plugin = this.getPlugin("MyPlugin");
 				QUnit.ok(!!plugin,
 					"Checking if the plugin was initialize successfully if valid config params were defined");
+
+				this.destroy();
+
 				_callback();
 			}
 		});
@@ -239,6 +247,7 @@ suite.prototype.cases.enabledConfigParamCheck = function(callback) {
 	var checker = function(label, active, cb) {
 		return function(_callback) {
 			QUnit.ok(!!this.getPlugin("MyPlugin") == active, label);
+			this.destroy();
 			cb();
 		};
 	};
@@ -313,6 +322,9 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 			QUnit.ok(!!nested.appkey && !!nested.apiBaseURL && !!nested.submissionProxyURL,
 				"Checking if basic params defined in the \"assemble\" function call result");
 		});
+
+		this.destroy();
+
 		callback && callback();
 	};
 	suite.control().initTestControl({
@@ -393,6 +405,8 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 		QUnit.ok($.isEmptyObject(plugin.dom.elements),
 			"Checking plugin.dom.clear() function");
 
+		this.destroy();
+
 		callback && callback();
 	};
 	suite.control().initTestControl({
@@ -471,6 +485,8 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 		QUnit.ok(!!e.subscribe && !!e.publish && !!e.unsubscribe,
 			"Checking control \"events\" interface contract");
 
+		this.destroy();
+
 		callback && callback();
 	};
 	suite.control().initTestControl({
@@ -498,6 +514,8 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 			"Checking labels override via plugin config");
 		QUnit.equal(plugin.labels.get("label3"), "plugin label3 value",
 			"Checking extraction from the plugin defined labels set");
+
+		this.destroy();
 
 		callback && callback();
 	};
@@ -527,7 +545,9 @@ suite.prototype.cases.destroy = function(callback) {
 				QUnit.ok(true,
 					"Checking if the plugin \"destroy\" method was called after the \"destroy\" control function was called");
 			});
+
 			this.destroy();
+
 			callback && callback();
 		}
 	});

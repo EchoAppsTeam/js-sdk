@@ -153,6 +153,8 @@ suite.prototype.cases.basicOperations = function(callback) {
 		QUnit.ok(!this.getPlugin("FakePlugin"),
 			"Checking if dummy plugin ref is NOT available");
 
+		this.destroy();
+
 		callback && callback();
 	};
 	suite.initTestControl({
@@ -196,6 +198,9 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 			"Checking if object parameter was overridden (checking new key)");
 		QUnit.equal(this.config.get("objectParam.param2"), undefined,
 			"Checking if object parameter was overridden (checking existing key)");
+
+		this.destroy();
+
 		callback && callback();
 	};
 	suite.initTestControl({
@@ -338,6 +343,8 @@ suite.prototype.cases.controlRendering = function(callback) {
 		this.dom.clear();
 		QUnit.ok($.isEmptyObject(this.dom.elements), "Checking control.dom.clear() function");
 
+		this.destroy();
+
 		callback && callback();
 	};
 	suite.initTestControl({
@@ -395,6 +402,8 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 		QUnit.ok(!!e.subscribe && !!e.publish && !!e.unsubscribe,
 			"Checking control \"events\" interface contract");
 
+		this.destroy();
+
 		callback && callback();
 	};
 	suite.initTestControl({
@@ -415,6 +424,8 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 			"Checking labels override via control config");
 		QUnit.equal(this.labels.get("label3"), "label3 value",
 			"Checking extraction from the control defined labels set");
+
+		this.destroy();
 
 		callback && callback();
 	};
@@ -492,6 +503,8 @@ suite.prototype.cases.destroy = function(callback) {
 
 		QUnit.ok(count == 2,
 			"Checking if expected amount of events were executed and handled (checking \"destroy\" function call)");
+
+		this.destroy();
 
 		// check plugin events
 		callback && callback();

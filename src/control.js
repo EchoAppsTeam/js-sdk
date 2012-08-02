@@ -525,20 +525,20 @@ Echo.Control.prototype._init.subscriptions = function() {
 	// call "ready" callback after the control was rendered
 	// note: "ready" callback is executed only once!
 	if (control.config.get("ready")) {
-		var handlerId = control.events.subscribe({
+		control.events.subscribe({
 			"topic": control.name + ".onReady",
+			"once": true,
 			"handler": function() {
-				control.events.unsubscribe({"handlerId": handlerId});
 				control.config.get("ready").call(control);
 			}
 		});
 	}
 
 	// register destroy handlers
-	var destroyHandlerId = control.events.subscribe({
+	control.events.subscribe({
 		"topic": "Echo.Control.onDestroy",
+		"once": true,
 		"handler": function(topic, data) {
-			control.events.unsubscribe({"handlerId": destroyHandlerId});
 
 			// destroy plugins
 			$.map(control.config.get("pluginsOrder"), function(name) {
