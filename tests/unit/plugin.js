@@ -442,9 +442,8 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 			"handler": increment
 		});
 	};
-	subscribe("internal.Echo.Control.onDataInvalidate");
+	subscribe("Echo.Control.onDataInvalidate");
 	subscribe("Echo.StreamServer.Controls.MyControl.Plugins.MyPlugin.outgoing.event");
-	subscribe("internal.Echo.StreamServer.Controls.MyControl.Plugins.MyPlugin.outgoing.event");
 	var check = function() {
 		var plugin = this.getPlugin("MyPlugin");
 
@@ -460,7 +459,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 		// publishing outgoing event
 		plugin.events.publish({"topic": "outgoing.event"});
 		plugin.events.publish({"topic": "outgoing.event"});
-		plugin.events.publish({"topic": "outgoing.event", "prefix": "internal"});
+		plugin.events.publish({"topic": "outgoing.event"});
 
 		// checking events defined in manifest
 		plugin.set("_eventHandler", increment);

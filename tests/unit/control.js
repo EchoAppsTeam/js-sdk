@@ -372,7 +372,6 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 	};
 	subscribe("Echo.StreamServer.Controls.MyControl.onRender");
 	subscribe("Echo.StreamServer.Controls.MyControl.outgoing.event");
-	subscribe("internal.Echo.StreamServer.Controls.MyControl.outgoing.event");
 	var check = function() {
 
 		// subscribing to incoming events
@@ -387,7 +386,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 		// publishing outgoing event
 		this.events.publish({"topic": "outgoing.event"});
 		this.events.publish({"topic": "outgoing.event"});
-		this.events.publish({"topic": "outgoing.event", "prefix": "internal"});
+		this.events.publish({"topic": "outgoing.event"});
 
 		// checking events defined in manifest
 		this.set("_eventHandler", increment);
