@@ -516,15 +516,8 @@ Echo.Control.prototype._init.subscriptions = function() {
 			control.get("request").send({"force": true});
 		}
 	};
-	// subscribe to inner data invalidation events
-	control.events.subscribe({
-		"topic": "internal.Echo.Control.onDataInvalidate",
-		"handler": requestUpdates
-	});
-	// subscribe to outer data invalidation events
 	control.events.subscribe({
 		"topic": "Echo.Control.onDataInvalidate",
-		"context": "global",
 		"handler": requestUpdates
 	});
 
