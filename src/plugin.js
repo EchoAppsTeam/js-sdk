@@ -157,15 +157,6 @@ Echo.Plugin.prototype.disable = function() {
 
 /**
  * @method
- * Checks if plugin is enabled.
- * @return {Boolean}
- */
-Echo.Plugin.prototype.enabled = function(name) {
-	return this.config.get("enabled", true);
-};
-
-/**
- * @method
  * Method to extend the template of particular component.
  * @param {String} action (required) One of the following actions:
  *  
@@ -411,12 +402,7 @@ Echo.Plugin.Events.prototype.publish = function(params) {
  * @inheritdoc Echo.Events#subscribe
 */
 Echo.Plugin.Events.prototype.subscribe = function(params) {
-	var self = this;
-	var handler = params.handler;
-	params.handler = function() {
-		if (!self.plugin.enabled()) return;
-		return handler.apply(self.plugin, arguments);
-	};
+	params.handler = $.proxy(params.handler, this.plugin);
 	return this.plugin.component.events.subscribe(params);
 };
 

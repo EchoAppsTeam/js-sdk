@@ -433,7 +433,11 @@ Echo.Control.prototype._init = function(subsystems) {
 };
 
 Echo.Control.prototype._init.vars = function() {
-	$.extend(true, this, this.defaults.vars, this.manifest.vars || {});
+	// we need to apply default field values to the control,
+	// but we need to avoid any references to the default var objects,
+	// thus we copy and recursively merge default values separately
+	// and apply default values to the given instance non-recursively
+	$.extend(this, $.extend(true, {}, this.defaults.vars, this.manifest.vars));
 };
 
 Echo.Control.prototype._init.extension = function() {
@@ -682,9 +686,12 @@ Echo.Control.prototype._init.plugins = function(callback) {
 		$.map(control.config.get("pluginsOrder"), function(name) {
 			var plugin = Echo.Plugin.getClass(name, control.name);
 			if (plugin && control._isPluginEnabled(name)) {
-				control.plugins[name] = new plugin({
-					"component": control
-				});
+				var instance = new plugin({"component": control});
+				// plugin might be disabled in the plugin init function,
+				// we need to double check the "enabled" config setting
+				if (control._isPluginEnabled(name)) {
+					control.plugins[name] = instance;
+				}
 			}
 		});
 		callback && callback.call(this);
@@ -692,8 +699,8 @@ Echo.Control.prototype._init.plugins = function(callback) {
 };
 
 Echo.Control.prototype._isPluginEnabled = function(plugin) {
-	var enabled = this.config.get("plugins." + name + ".enabled", true);
-	return $.isFunction(enabled) ? enabled.call(control) : enabled;
+	var enabled = this.config.get("plugins." + plugin + ".enabled", true);
+	return $.isFunction(enabled) ? enabled.call(this) : enabled;
 };
 
 // TODO: define this function later, need to select loader first

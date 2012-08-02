@@ -68,7 +68,9 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"incomingConfigHandling",
 			"controlRendering",
 			"eventsMechanism",
-			"labelsOverriding"
+			"labelsOverriding",
+			"refresh",
+			"destroy"
 		], "cases");
 
 	}
@@ -154,7 +156,9 @@ suite.prototype.cases.basicOperations = function(callback) {
 	suite.initTestControl({
 		"data": suite.data.config.data,
 		"plugins": [{
-			"name": "MyPlugin"
+			"name": "MyPlugin",
+			"requiredParam1": true,
+			"requiredParam2": true
 		}],
 		"ready": check
 	});
@@ -420,6 +424,59 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 	});
 };
 
+suite.prototype.cases.refresh = function(callback) {
+	var check = function() {
+		var control = this;
+		this.events.subscribe({
+			"topic": "Echo.StreamServer.Controls.MyControl.onRefresh",
+			"handler": function() {
+				QUnit.ok(control.config.get("target").length,
+					"Check if the control was rerendered after \"refresh\" function call (non-empty target)");
+				QUnit.ok(!control.getPlugin("MyPlugin"),
+					"Checking if the plugin keeps the state within \"refresh\" function call");
+				QUnit.equal(control.dom.get("configString").get(0).innerHTML,
+					"updated string value1",
+					"Checking if the control was rerendered after \"refresh\" function call (validate template re-rendering)");
+				QUnit.ok(!control.dom.get("plugin_testRenderer"),
+					"Check if there is no disabled plugin elements in dom after \"refresh\" function call");
+
+				control.destroy();
+
+				callback && callback();
+			}
+		});
+		this.config.set("stringParam", "updated string value1");
+		this.getPlugin("MyPlugin").disable();
+		this.refresh();
+	};
+	suite.initTestControl({
+		"plugins": [{
+			"name": "MyPlugin",
+			"requiredParam1": true,
+			"requiredParam2": true
+		}],
+		"ready": check
+	});
+};
+
+suite.prototype.cases.destroy = function(callback) {
+	var check = function() {
+		this.destroy();
+		// check if the target was cleared
+		// check if publish doesn't produce event calls
+		// check plugin events
+		callback && callback();
+	};
+	suite.initTestControl({
+		"plugins": [{
+			"name": "MyPlugin",
+			"requiredParam1": true,
+			"requiredParam2": true
+		}],
+		"ready": check
+	});
+};
+
 // data required to perform tests
 
 suite.data = {};
@@ -494,7 +551,7 @@ suite.data.template =
 				'</div>' +
 			'</div>' +
 		'</div>' +
-		'<div class="{class:testPluginRenderer}"></div>' +
+		'<div class="{class:testComponentRenderer}"></div>' +
 		// checking {data:...} substitution
 		'<div class="{class:data} echo-primaryFont echo-primaryColor">{data:key1}</div>' +
 		'<div class="{class:dataNested} echo-primaryColor">{data:key3.key3nested}</div>' +
@@ -628,8 +685,8 @@ suite.getControlManifest = function(name) {
 		return element.empty().append('<div>Some value</div>');
 	};
 
-	manifest.renderers.testPluginRenderer = function(element) {
-		return element.append('<div>Some value from testPluginRenderer</div>');
+	manifest.renderers.testComponentRenderer = function(element) {
+		return element.append('<div>Some value from testComponentRenderer</div>');
 	};
 
 	manifest.renderers.testRendererWithExtra = function(element, extra) {

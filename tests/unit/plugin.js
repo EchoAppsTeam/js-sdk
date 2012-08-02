@@ -172,14 +172,14 @@ suite.prototype.cases.basicOperations = function(callback) {
 				"Checking \"substitute\" method, pattern #" + (id + 1));
 		});
 
-		// checking "enable"/"disabled"/"enabled" methods
-		QUnit.ok(plugin.enabled(),
-			"Checking if a plugin is enabled (via \"enabled\" function)");
+		// checking "enable"/"disable" methods
+		QUnit.ok(control._isPluginEnabled("MyPlugin"),
+			"Checking if a plugin is enabled (via \"_isPluginEnabled\" function)");
 		plugin.disable();
-		QUnit.ok(!plugin.enabled(),
+		QUnit.ok(!control._isPluginEnabled("MyPlugin"),
 			"Checking if a plugin was disabled after \"disable\" function call");
 		plugin.enable();
-		QUnit.ok(plugin.enabled(),
+		QUnit.ok(control._isPluginEnabled("MyPlugin"),
 			"Checking if a plugin was enabled back after \"enable\" function call");
 
 		callback && callback();
@@ -202,7 +202,7 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 			}],
 			"ready": function() {
 				var plugin = this.getPlugin("MyPlugin");
-				QUnit.ok(!plugin.enabled(),
+				QUnit.ok(!plugin,
 					"Checking if the plugin was disabled if invalid config params were passed and \"init\" function returned \"false\"");
 				_callback();
 			}
@@ -217,7 +217,7 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 			}],
 			"ready": function() {
 				var plugin = this.getPlugin("MyPlugin");
-				QUnit.ok(plugin.enabled(),
+				QUnit.ok(!!plugin,
 					"Checking if the plugin was initialize successfully if valid config params were defined");
 				_callback();
 			}
@@ -236,10 +236,9 @@ suite.prototype.cases.enabledConfigParamCheck = function(callback) {
 		"requiredParam1": true,
 		"requiredParam2": true
 	};
-	var checker = function(label, enabled, cb) {
+	var checker = function(label, active, cb) {
 		return function(_callback) {
-			var plugin = this.getPlugin("MyPlugin");
-			QUnit.ok(!!plugin.enabled() == enabled, label);
+			QUnit.ok(!!this.getPlugin("MyPlugin") == active, label);
 			cb();
 		};
 	};
@@ -387,8 +386,12 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 			"Checking if a renderer was applied to the element added within the plugin");
 
 		plugin.dom.remove("testPluginRenderer");
-		QUnit.equal(!plugin.dom.get("testPluginRenderer"),
+		QUnit.equal(plugin.dom.get("testPluginRenderer"), undefined,
 			"Checking if an element is not available after dom.remove call");
+
+		plugin.dom.clear();
+		QUnit.ok($.isEmptyObject(plugin.dom.elements),
+			"Checking plugin.dom.clear() function");
 
 		callback && callback();
 	};
