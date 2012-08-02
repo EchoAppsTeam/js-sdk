@@ -50,6 +50,14 @@ plugin.config = {
 	"itemActions": ["approve", "spam", "delete"]
 };
 
+plugin.events = {
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserUpdate": function(topic, args) {
+		args.item.set("data.actor." + args.field, args.value);
+		args.item.dom.render();
+		return {"stop": ["bubble"]};
+	}
+};
+
 plugin.actionButtons = {
 	"ban": ["Ban", "UnBan"],
 	"permissions": ["UserPermissions"]
@@ -68,15 +76,6 @@ plugin.init = function() {
 			});
 		} else {
 			item.addButtonSpec("Moderation", self._assembleButton(capitalize(action)));
-		}
-	});
-	this.events.subscribe({
-		"topic": "internal.Echo.StreamServer.Controls.Stream.Item.Plugin.Moderation.onUserUpdate",
-		"handler": function(topic, args) {
-			if (args.item.data.actor.id !== item.get("data.actor.id")) return;
-			item.set("data.actor." + args.data.field, args.data.value);
-			item.dom.render();
-			return {"stop": ["bubble"]};
 		}
 	});
 };
@@ -338,6 +337,7 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		return {
 			"name": action,
 			"label": label,
+			// FIXME: add fakeIdentityURL to UserSession
 			"visible": item.get("data.actor.id") != item.user.get("fakeIdentityURL") &&
 				item.user.any("roles", ["administrator"]),
 			"callback": callback,
@@ -349,13 +349,13 @@ plugin.methods._assemblePermissionsButton = function(action) {
 plugin.methods._publishUserUpdateEvent = function(data) {
 	this.events.publish({
 		"topic": "onUserUpdate",
-		"prefix": "internal",
-		"bubble": true,
 		"data": {
 			"item": data.item,
 			"field": data.field,
 			"value": data.value
-		}
+		},
+		"global": false,
+		"propagation": false
 	});
 	this.requestDataRefresh();
 };
