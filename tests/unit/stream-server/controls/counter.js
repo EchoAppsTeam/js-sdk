@@ -104,12 +104,13 @@ suite.prototype.cases.staticRefresh = function(callback) {
 };
 
 suite.prototype.cases.onError_more_than = function(callback) {
-	var handlerId = suite.counter.events.subscribe({
+	var self = this;
+	var errorHID = suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
 		"handler" : function(topic, params) {
 			// unsubscribe to avoid multiple test cases execution
 			suite.counter.events.unsubscribe({
-				"handlerId" : handlerId
+				"handlerId" : errorHID
 			});
 			QUnit.deepEqual(
 				params.data,
@@ -119,7 +120,16 @@ suite.prototype.cases.onError_more_than = function(callback) {
 					"errorMessage" : 5000
 				},
 				'Checking the restrictions of the count API. Error: "more_than"');
-			QUnit.ok($(params.target).html() === "<span>5000+</span>",
+		}
+	});
+	var refreshHID = suite.counter.events.subscribe({
+		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"handler" : function(topic, params) {
+			// unsubscribe to avoid multiple test cases execution
+			suite.counter.events.unsubscribe({
+				"handlerId" : refreshHID
+			});
+			QUnit.ok(self.config.target.html() === "<span>5000+</span>",
 				'Checking the Error: "more_than" usecase rendering');
 			callback();
 		}
@@ -128,13 +138,14 @@ suite.prototype.cases.onError_more_than = function(callback) {
 };
 
 suite.prototype.cases.onError_wrong_query = function(callback) {
+	var self = this;
 	suite.counter.config.set("query", "children1of:http://example.com/*");
-	var handlerId = suite.counter.events.subscribe({
+	var errorHID = suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
 		"handler" : function(topic, params) {
 			// unsubscribe to avoid multiple test cases execution
 			suite.counter.events.unsubscribe({
-				"handlerId": handlerId
+				"handlerId": errorHID
 			});
 			QUnit.deepEqual(
 				params.data,
@@ -144,7 +155,16 @@ suite.prototype.cases.onError_wrong_query = function(callback) {
 					"errorMessage" : "Unrecognized query"
 				},
 				'Checking the restrictions of the count API. Error: "wrong_query"');
-			QUnit.ok($(params.target).html().match(/Unrecognized query/),
+		}
+	});
+	var refreshHID = suite.counter.events.subscribe({
+		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"handler" : function(topic, params) {
+			// unsubscribe to avoid multiple test cases execution
+			suite.counter.events.unsubscribe({
+				"handlerId": refreshHID 
+			});
+			QUnit.ok(self.config.target.html().match(/Unrecognized query/),
 				'Checking the Error: "wrong_query" usecase rendering');
 			callback();
 		}
@@ -153,14 +173,15 @@ suite.prototype.cases.onError_wrong_query = function(callback) {
 };
 
 suite.prototype.cases.onError_incorrect_appkey = function(callback) {
+	var self = this;
 	suite.counter.config.set("query", "childrenof:http://example.com/test/*");
 	suite.counter.config.set("appkey", "faketest.aboutecho.com");
-	var handlerId = suite.counter.events.subscribe({
+	var errorHID = suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
 		"handler" : function(topic, params) {
 			// unsubscribe to avoid multiple test cases execution
 			suite.counter.events.unsubscribe({
-				"handlerId": handlerId
+				"handlerId": errorHID
 			});
 			//TODO fix test when the API is fixed
 			// it should return incorrect_appkey instead of wrong_query 
@@ -172,7 +193,18 @@ suite.prototype.cases.onError_incorrect_appkey = function(callback) {
 					"errorMessage" : "Unrecognized query"
 				},
 				'Checking the restrictions of the count API. Error: "incorrect_appkey"');
-			QUnit.ok($(params.target).html().match(/Unrecognized query/),
+		}
+	});
+	var refreshHID = suite.counter.events.subscribe({
+		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"handler" : function(topic, params) {
+			// unsubscribe to avoid multiple test cases execution
+			suite.counter.events.unsubscribe({
+				"handlerId": refreshHID
+			});
+			//TODO fix test when the API is fixed
+			// it should return incorrect_appkey instead of wrong_query 
+			QUnit.ok(self.config.target.html().match(/Unrecognized query/),
 				'Checking the Error: "incorrect_appkey" usecase rendering');
 			//QUnit.ok($(params.target).html().match(/Incorrect application key was specified in the query/),
 			//	'Checking the Error: "incorrect_appkey" usecase rendering');
@@ -183,18 +215,27 @@ suite.prototype.cases.onError_incorrect_appkey = function(callback) {
 };
 
 suite.prototype.cases.onUpdate = function(callback) {
+	var self = this;
 	suite.counter.config.set("appkey", "test.aboutecho.com");
-	var handlerId = suite.counter.events.subscribe({
+	var updateHID = suite.counter.events.subscribe({
 		"topic" : "Echo.StreamServer.Controls.Counter.onUpdate",
 		"handler" : function(topic, params) {
 			// unsubscribe to avoid multiple test cases execution
 			suite.counter.events.unsubscribe({
-				"handlerId" : handlerId
+				"handlerId" : updateHID
 			});
-			// stop live updates requests
 			QUnit.ok(typeof(params.data.count) === "number",
 				'Checking if data.count contains valid value');
-			QUnit.ok($(params.target).html().match(params.data.count),
+		}
+	});
+	var refreshHID= suite.counter.events.subscribe({
+		"topic" : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"handler" : function(topic, params) {
+			// unsubscribe to avoid multiple test cases execution
+			suite.counter.events.unsubscribe({
+				"handlerId" : refreshHID
+			});
+			QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
 				'Checking the common usecase rendering');
 			callback();
 		}

@@ -79,8 +79,6 @@ counter.methods._request = function() {
 
 counter.methods._update = function(data) {
 	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
-		this.set("data", data);
-		this.dom.render();
 		this.events.publish({
 			"topic": "onUpdate",
 			"data": {
@@ -89,6 +87,8 @@ counter.methods._update = function(data) {
 				"target": this.config.get("target").get(0)
 			}
 		});
+		this.set("data", data);
+		this.dom.render();
 	}
 };
 

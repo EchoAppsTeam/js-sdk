@@ -309,6 +309,7 @@ Echo.Control.prototype.showMessage = function(data) {
 	this.dom.render({
 		"template": this.templates.message[layout],
 		"data": data,
+		"stealth": data.type === "loading",
 		"target": data.target
 	});
 };
@@ -638,14 +639,7 @@ Echo.Control.prototype._init.dom = function() {
 			delete this.elements[name];
 		},
 		"render": function(args) {
-			var topic = typeof args === "undefined"
-				? this.rendered ? "onRefresh" : "onReady"
-				: undefined;
-			var content = self._render(args);
-			if (topic) {
-				self.events.publish({"topic": topic});
-			}
-			return content;
+			return self._render(args);
 		}
 	};
 };
@@ -728,10 +722,11 @@ Echo.Control.prototype._loadPluginsDependencies = function(callback) {
  * @return {HTMLElement} Rendered element.
  */
 Echo.Control.prototype._render = function(args) {
-	var self = this;
-	var template;
 	args = args || {};
+	var self = this, rendered;
 	var data = args.data || this.data;
+	var stealth = args.stealth || args.target;
+	var template = args.template || this.template;
 	var target = args.target ||
 		(args.name && this.dom.get(args.name)) ||
 		this.config.get("target");
@@ -755,7 +750,7 @@ Echo.Control.prototype._render = function(args) {
 	// render element including its content recursively
 	if (args.name && args.recursive) {
 		var oldNode = this.dom.get(args.name);
-		template = this._compileTemplate(this.template, this.data, this.extension.template);
+		template = this._compileTemplate(template, data, this.extension.template);
 		template = $("." + this.cssPrefix + args.name, $(template));
 		this._applyRenderers(template);
 		var newNode = this.dom.get(args.name);
@@ -763,22 +758,25 @@ Echo.Control.prototype._render = function(args) {
 		return newNode;
 	}
 
-	// render template
-	if (args.template) {
-		template = this._compileTemplate(args.template, data);
-		this._applyRenderers(template);
-		target.empty().append(this.dom.root);
-		return this.dom.root;
+	// cleanup dom if we render the whole control
+	if (!stealth) {
+		rendered = this.dom.rendered;
+		this.dom.clear();
 	}
 
-	// render the whole control
-	var topic = this.dom.rendered ? "onRerender" : "onRender";
-	this.dom.clear();
-	template = this._compileTemplate(this.template, this.data, this.extension.template);
+	template = this._compileTemplate(template, data, stealth ? {} : this.extension.template);
 	this._applyRenderers(template);
 	target.empty().append(this.dom.root);
-	this.dom.rendered = true;
-	this.events.publish({"topic": topic});
+
+	if (!stealth) {
+		this.dom.rendered = true;
+		var topics = rendered
+			? ["onRerender", "onRefresh"]
+			: ["onRender", "onReady"];
+		$.map(topics, function(topic) {
+			self.events.publish({"topic": topic});
+		});
+	}
 	return this.dom.root;
 };
 
