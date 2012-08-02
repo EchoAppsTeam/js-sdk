@@ -22,13 +22,6 @@ plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "data", plugin.template);
 	this.component.addButtonSpec("Like", this._assembleButton("Like"));
 	this.component.addButtonSpec("Like", this._assembleButton("Unlike"));
-	this.events.subscribe({
-		"topic": "internal.Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlike",
-		"handler": function(topic, args) {
-			self._sendActivity("unlike", args.item);
-			return {"stop": ["bubble"]};
-		}
-	});
 };
 
 plugin.labels = {
@@ -40,6 +33,24 @@ plugin.labels = {
 	"unlikeProcessing": "Unliking..."
 };
 
+plugin.events = {
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlike": function(topic, args) {
+		this._sendActivity("Unlike", args.item);
+		return {"stop": ["bubble"]};
+	},
+	"Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike": function(topic, args) {
+		this.events.publish({
+			"topic": "onUnlike",
+			"data": {
+				"item": this.component
+			},
+			"global": false,
+			"propagation": false
+		});
+		return {"stop": ["bubble"]};
+	}
+};
+
 plugin.template = '<div class="{plugin.class:likedBy}"></div>';
 
 plugin.methods._sendRequest = function(data, callback) {
@@ -47,7 +58,7 @@ plugin.methods._sendRequest = function(data, callback) {
 		"endpoint": "submit",
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
 		"onData": callback,
-		"data": data,
+		"data": data
 	}).send();
 };
 
@@ -137,22 +148,6 @@ plugin.renderers.likedBy = function(element) {
 	}
 	var facePile = new Echo.StreamServer.Controls.FacePile(config);
 	plugin.set("facePile", facePile);
-	this.events.subscribe({
-		"topic": "internal.Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike",
-		"handler": function(topic, data) {
-			if (data.target !== element.get(0)) return {"stop": ["bubble"]};
-			plugin.events.publish({
-				"topic": "onUnlike",
-				"prefix": "internal",
-				"bubble": true,
-				"data": {
-					"actor": data.actor,
-					"item": item
-				}
-			});
-			return {"stop": ["bubble"]};
-		}
-	});
 	return element.show();
 };
 
@@ -202,13 +197,13 @@ plugin.renderers.adminUnlike = function(element) {
 		item.dom.get("container").css("opacity", 0.3);
 		plugin.events.publish({
 			"topic": "onUnlike",
-			"prefix": "internal",
-			"bubble": true,
 			"actor": item.get("data"),
 			"data": {
 				"actor": item.get("data"),
 				"target": item.config.get("parent.target").get(0)
-			}
+			},
+			"global": false,
+			"propagation": false
 		});
 	});
 };
