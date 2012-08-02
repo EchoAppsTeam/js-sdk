@@ -19,14 +19,22 @@ Echo.Events = {};
  * @param {Object} params Configuration parameters object with the following fields:
  * @param {String} params.topic Event name.
  * @param {String} params.context (optional) Unique identifier for inter-component communication.
+ * @param {Boolean} [params.once=false] Specifies that provided handler should be executed exactly once (handler will be unsubscribed right before its execution).
  * @param {Function} params.handler Callback function which will be called when event is published
- * @param {String} params.handler.topic Event name (same as params.topic)
- * @param {Object} params.handler.data Arbitrary data object passed to the {@link #publish} function
+ * @param {String} params.handler.topic Event name (same as params.topic).
+ * @param {Object} params.handler.data Arbitrary data object passed to the {@link #publish} function.
  * @return {String} Unique identifier for the current subscription which can be used for unsubscribing.
  */
 Echo.Events.subscribe = function(params) {
 	var handlerId = Echo.Utils.getUniqueString();
 	var context = _initContext(params.topic, params.context);
+	if (params.once) {
+		var handler = params.handler;
+		params.handler = function() {
+			Echo.Events.unsubscribe({"handlerId": handlerId});
+			handler.apply(this, arguments);
+		};
+	}
 	_executeForDeepestContext(params.topic, context, function(obj, lastContext) {
 		obj[lastContext].handlers.push({
 			"id": handlerId,

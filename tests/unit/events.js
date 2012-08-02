@@ -10,16 +10,18 @@ var getHandler = function(n, stoppers) {
 		}
 	};
 };
-var subscribe = function(topic, context, stoppers) {
+var subscribe = function(topic, context, stoppers, once) {
 	var handler = getHandler(++order, stoppers);
-	var id = Echo.Events.subscribe({
+	var params = {
 		"topic": topic,
 		"handler": handler,
-		"context": context
-	});
+		"context": context,
+		"once": once
+	};
+	var id = Echo.Events.subscribe(params);
 	return {
 		"id": id,
-		"handler": handler
+		"handler": params.handler
 	};
 };
 var unsubscribe = function(topic, handlerId, context) {
@@ -56,6 +58,7 @@ suite.prototype.tests.PublicMethods = {
 		var s8 = subscribe("X");
 		var s9 = subscribe("X");
 		var s10 = subscribe("X", "a2");
+		var s11 = subscribe("B", "b1", undefined, true);
 		var subscriptions = {
 			"A": {
 				"a1": {
@@ -83,11 +86,14 @@ suite.prototype.tests.PublicMethods = {
 			"X": {
 				"global": {"contexts": {}, "handlers": [{"id": s8.id, "handler": s8.handler}, {"id": s9.id, "handler": s9.handler}]},
 				"a2": {"contexts": {}, "handlers": [{"id": s10.id, "handler": s10.handler}]}
+			},
+			"B": {
+				"b1": {"contexts": {}, "handlers": [{"id": s11.id, "handler": s11.handler}]}
 			}
 		};
-		QUnit.deepEqual(Echo.Events._subscriptions.A, subscriptions.A, "Checking full structure of subscribers");
-		QUnit.deepEqual(Echo.Events._subscriptions.X, subscriptions.X, "Checking full structure of subscribers");
-		QUnit.deepEqual(Echo.Events._subscriptions.Z, subscriptions.Z, "Checking full structure of subscribers");
+		$.each(["B", "A", "X", "Z"], function(i, topic) {
+			QUnit.deepEqual(Echo.Events._subscriptions[topic], subscriptions[topic], "Checking full structure of subscribers for topic \"" + topic + "\"");
+		});
 
 		publish({"topic": "A", "context": "a1"});
 		QUnit.deepEqual(published, [2, 1, 6, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\", with propagation)");
@@ -97,6 +103,10 @@ suite.prototype.tests.PublicMethods = {
 		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", global context)");
 		publish({"topic": "X", "context": "a2"});
 		QUnit.deepEqual(published, [10, 8, 9], "Publish: handlers order (topic \"X\", context \"a2\")");
+		publish({"topic": "B", "context": "b1", "internal": true});
+		QUnit.deepEqual(published, [11], "Publish: handlers order (topic \"B\", context \"b1\", one-time subscription)");
+		publish({"topic": "B", "context": "b1", "internal": true});
+		QUnit.deepEqual(published, [], "Publish: handlers order (topic \"B\", context \"b1\" again)");
 
 		QUnit.ok(unsubscribe("A", s1.id, "a1/b1/c1"), "Unsubscribe: event \"A\", handlerId: \"" + s1.id + "\", context \"a1/b1/c1\"");
 		QUnit.ok(unsubscribe("A", s2.id), "Unsubscribe: event \"A\", handlerId: \"" + s2.id + "\", unknown context");
@@ -129,11 +139,14 @@ suite.prototype.tests.PublicMethods = {
 			"Z": {},
 			"X": {
 				"global": {"contexts": {}, "handlers": [{"id": s8.id, "handler": s8.handler}, {"id": s9.id, "handler": s9.handler}]}
+			},
+			"B": {
+				"b1": {"contexts": {}, "handlers": []}
 			}
 		};
-		QUnit.deepEqual(Echo.Events._subscriptions.A, subscriptions2.A, "Checking full structure of subscribers after several unsubscriptions");
-		QUnit.deepEqual(Echo.Events._subscriptions.X, subscriptions2.X, "Checking full structure of subscribers after several unsubscriptions");
-		QUnit.deepEqual(Echo.Events._subscriptions.Z, subscriptions2.Z, "Checking full structure of subscribers after several unsubscriptions");
+		$.each(["A", "B", "X", "Z"], function(i, topic) {
+			QUnit.deepEqual(Echo.Events._subscriptions[topic], subscriptions2[topic], "Checking full structure of subscribers for topic \"" + topic + "\" after several unsubscriptions");
+		});
 
 		publish({"topic": "A", "context": "a1"});
 		QUnit.deepEqual(published, [6, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\")");
@@ -141,6 +154,8 @@ suite.prototype.tests.PublicMethods = {
 		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", global context)");
 		publish({"topic": "X", "context": "a2"});
 		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", context \"a2\")");
+		publish({"topic": "X", "context": "a2", "internal": true});
+		QUnit.deepEqual(published, [], "Publish: handlers order (topic \"X\", context \"a2\", not global event)");
 	}
 };
 
