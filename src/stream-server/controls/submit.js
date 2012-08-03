@@ -302,7 +302,7 @@ submit.renderers.postButton = function(element) {
 			self.post();
 		}
 	};
-	element.unbind("click", this.posting.action).bind("click", this.posting.action);
+	element.off("click", this.posting.action).on("click", this.posting.action);
 	return element;
 };
 

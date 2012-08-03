@@ -65,7 +65,7 @@ plugin.component.renderers.text = function(element) {
 		}
 		plugin.dom.render({"name": "counterLabel"});
 	};
-	return element.bind("blur focus keyup keypress", handler);
+	return element.on("blur focus keyup keypress", handler);
 };
 
 plugin.renderers.counterLabel = function(element) {

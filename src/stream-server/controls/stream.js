@@ -208,7 +208,7 @@ stream.renderers.more = function(element) {
 			element.removeClass(self.cssPrefix + "more-hover");
 		})
 		.show()
-		.unbind("click")
+		.off("click")
 		.one("click", function() {
 			self.events.publish({"topic": "onMoreButtonPress"});
 			element.html(self.labels.get("loading"));
@@ -1353,7 +1353,7 @@ item.renderers.container = function(element) {
 		});
 	};
 	if (!Echo.Utils.isMobileDevice()) {
-		element.unbind(["mouseleave", "mouseenter"]).hover(function() {
+		element.off(["mouseleave", "mouseenter"]).hover(function() {
 			if (self.user.is("admin")) {
 				self.dom.get("modeSwitch").show();
 			}
@@ -1485,7 +1485,7 @@ item.renderers._button = function(element, extra) {
 		clickables = button;
 		button.addClass("echo-clickable");
 	}
-	clickables[extra.onetime ? "one" : "bind"]({
+	clickables[extra.onetime ? "one" : "off"]({
 		"click": function(event) {
 			event.stopPropagation();
 			if (extra.callback) extra.callback();
@@ -1671,7 +1671,7 @@ item.renderers._viaText = function(element, extra) {
 
 item.renderers.textToggleTruncated = function(element) {
 	var self = this;
-	element.unbind("click").click(function() {
+	element.off("click").click(function() {
 		self.textExpanded = !self.textExpanded;
 		self.dom.render({"name": "body"});
 		self.dom.render({"name": "textToggleTruncated"});
@@ -1764,7 +1764,7 @@ item.renderers.expandChildren = function(element, extra) {
 	// the "show()" jQuery method doesn't work for some reason in Chrome (A:5755)
 	return element.css("display", "block")
 		.addClass(this.cssPrefix + "depth-" + (this.depth + 1))
-		.unbind("click")
+		.off("click")
 		.one("click", function() {
 			self.dom.render({
 				"name": "expandChildrenLabel",
