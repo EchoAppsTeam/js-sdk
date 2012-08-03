@@ -148,21 +148,21 @@ suite.prototype.cases.name = function(callback) {
 			"Checking that name is mandatory field for anonymous");
 		callback();
 	};
-	button.bind('click', suite.postHandler).click();
+	button.on('click', suite.postHandler).click();
 };
 
 suite.prototype.cases.content = function(callback) {
 	var submit = suite.submit;
 	var button = submit.dom.get("postButton");
 	submit.dom.get("name").val("TestName");
-	button.unbind('click', suite.postHandler);
+	button.off('click', suite.postHandler);
 	suite.postHandler = function() {
 		var content = submit.dom.get("content");
 		QUnit.ok(content.hasClass('echo-streamserver-controls-submit-mandatory'),
 			"Checking that content is mandatory field for anonymous");
 		callback();
 	};
-	button.bind('click', suite.postHandler).click();
+	button.on('click', suite.postHandler).click();
 };
 
 
@@ -178,7 +178,7 @@ suite.prototype.cases.validator = function(callback) {
 	};
 	submit.addPostValidator(validator);
 	var button = submit.dom.get("postButton");
-	button.unbind('click', suite.postHandler);
+	button.off('click', suite.postHandler);
 	var content = submit.dom.get("content");
 	var text = submit.dom.get("text").val("Content");
 	suite.postHandler = function() {
@@ -186,7 +186,7 @@ suite.prototype.cases.validator = function(callback) {
 			"Checking custom validator");
 		callback();
 	};
-	button.bind('click', suite.postHandler).click();
+	button.on('click', suite.postHandler).click();
 };
 
 suite.prototype.cases.post = function(callback) {
@@ -205,7 +205,7 @@ suite.prototype.cases.post = function(callback) {
 			callback();
 		}
 	});
-	button.unbind('click', suite.postHandler).click();
+	button.off('click', suite.postHandler).click();
 };
 
 suite.prototype.cases.user = function(callback) {
