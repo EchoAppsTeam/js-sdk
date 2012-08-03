@@ -34,19 +34,8 @@ plugin.labels = {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlike": function(topic, args) {
-		this._sendActivity("Unlike", args.item);
-		return {"stop": ["bubble"]};
-	},
 	"Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike": function(topic, args) {
-		this.events.publish({
-			"topic": "onUnlike",
-			"data": {
-				"item": this.component
-			},
-			"global": false,
-			"propagation": false
-		});
+		this._sendActivity("Unlike", this.component);
 		return {"stop": ["bubble"]};
 	}
 };
