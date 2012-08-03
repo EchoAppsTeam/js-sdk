@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Echo</title>
+	
+	<script type="text/javascript" src="../sdk/backplane.js"></script>
+	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="../sdk/environment.pack.js"></script>
+	<script type="text/javascript" src="../sdk/identity-server.pack.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/clientapps/v2/plugins/pinboard-visualization/jquery.isotope.min.js"></script>
+	<script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
+</head>
+<body>
+	<div id="stream"></div>
+	<script>
+		Backplane.init({
+			"serverBaseURL": "http://api.echoenabled.com/v1",
+			"busName": "jskit",
+			"channelName": "espuptest4"
+		});
+
+		var identityManager = {
+			"width": 400,
+			"height": 240,
+			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+		};
+
+		var stream = new Echo.StreamServer.Controls.Stream({
+			"target": document.getElementById("stream"),
+			"query": "childrenof:http://example.com/dbragin -state:ModeratorDeleted  children:1 childrenItemsPerPage:2",
+			"appkey": "test.js-kit.com",
+			"reTag": false,
+			"maxBodyLines": 5,
+			"fadeTimeout": 0,
+			"slideTimeout": 0,
+			"children" : {
+				"additionalItemsPerPage": 2,
+				"itemsSlideTimeout": 50
+			},
+			"plugins": [{
+				"name": "PinboardVisualization"
+			}, {
+				"name": "Reply"
+			}, {
+				"name": "Edit"
+			}]
+		});
+	</script>
+</body>
+</html>

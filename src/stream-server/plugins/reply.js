@@ -24,6 +24,8 @@ plugin.init = function() {
 	$(document).click(function() {
 		var submit = self.get("submit");
 		if (self.get("expanded") && submit && !submit.dom.get("text").val()) {
+			self.set("expanded", false);
+			self._hideSubmit();
 			/**
 			 * @event onCollapse
 			 * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
@@ -56,15 +58,9 @@ plugin.config = {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
-		this.set("expanded", true);
-		this._showSubmit();
-	},
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse": function(topic, args) {
+	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		this.set("expanded", false);
 		this._hideSubmit();
-	},
-	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		this.events.publish({
 			"topic": "onCollapse"
 		});
@@ -75,7 +71,7 @@ plugin.events = {
 };
 
 plugin.templates.form =
-	'<div class="{plugin.class:replyForm}">' +
+	'<div class="{class:replyForm}">' +
 		'<div class="{plugin.class:submitForm}"></div>' +
 		'<div class="{plugin.class:compactForm}">' +
 			'<div class="{plugin.class:compactContent} {plugin.class:compactBorder}">' +
@@ -102,7 +98,7 @@ plugin.component.renderers.children = function(element) {
 	if (item.get("children").length == 1) {
 		var child = item.get("children")[0];
 		if (child.get("added") || child.get("deleted")) {
-			plugin._itemCSS("remove", item, plugin.dom.get("replyForm"));
+			plugin._itemCSS("remove", item, item.dom.get("replyForm"));
 			plugin.dom.render({"name": "compactForm"});
 		}
 	}
@@ -130,6 +126,8 @@ plugin.renderers.compactForm = function(element) {
 plugin.renderers.compactField = function(element) {
 	var plugin = this, item = plugin.component;
 	return element.focus(function() {
+		plugin.set("expanded", true);
+		plugin._showSubmit();
 		/**
 		 * @event onExpand
 		 * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
@@ -164,7 +162,7 @@ plugin.methods._showSubmit = function() {
 			submit.dom.get("text").val(text);
 		}
 	}
-	plugin._itemCSS("add", item, plugin.dom.get("replyForm"));
+	plugin._itemCSS("add", item, item.dom.get("replyForm"));
 	submit.dom.get("text").focus();
 	target.click(function(event) {
 		event.stopPropagation();
@@ -177,7 +175,7 @@ plugin.methods._showSubmit = function() {
 plugin.methods._hideSubmit = function() {
 	var plugin = this, item = plugin.component;
 	plugin.dom.get("submitForm").empty();
-	plugin._itemCSS("remove", item, plugin.dom.get("replyForm"));
+	plugin._itemCSS("remove", item, item.dom.get("replyForm"));
 	plugin.dom.render({"name": "compactForm"});
 	item.dom.render({"name": "container"});
 };
@@ -185,6 +183,8 @@ plugin.methods._hideSubmit = function() {
 plugin.methods._assembleButton = function() {
 	var plugin = this;
 	var callback = function() {
+		plugin.set("expanded", true);
+		plugin._showSubmit();
 		plugin.events.publish({
 			"topic": "onExpand"
 		});

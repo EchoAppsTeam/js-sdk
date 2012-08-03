@@ -198,6 +198,9 @@ Echo.Plugin.prototype.substitute = function(template, data) {
 			return plugin.labels.get(key, "");
 		},
 		"plugin.class": function(value) {
+			if (!value) {
+				return plugin.cssPrefix.substr(0, plugin.cssPrefix.length - 1);
+			}
 			return plugin.cssPrefix + value;
 		},
 		"plugin.data": function(key) {
