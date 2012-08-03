@@ -262,10 +262,40 @@ Echo.Tests.Stats = {
 	},
 	"allCount": 0,
 	"lists": {
-		"executed": [],
-		"tested": [],
-		"notTested": [],
-		"notExecuted": []
+		"coverage": {
+			"executed": [],
+			"tested": [],
+			"notTested": [],
+			"notExecuted": []
+		},
+		"events": {
+			"subscribed": {},
+			"published": {}
+		},
+		"eventGroups": {
+			"published": [],
+			"subscribed": [],
+			"succeed": [],
+			"failed": [],
+			"notcovered": [],
+			"notexecuted": []
+		}
+	},
+	"labels": {
+		"event": {
+			"published": "Published events",
+			"subscribed": "Subscribed on events",
+			"succeed": "Contract check succeeded",
+			"failed": "Contract check failed",
+			"notcovered": "Published but not defined",
+			"notexecuted": "Defined but not published"
+		},
+		"coverage": {
+			"tested": "Covered by tests",
+			"notTested": "Not covered",
+			"executed": "Executed during the tests",
+			"notExecuted": "Not executed"
+		}
 	},
 	"wrapFunction": function(parentObject, func, name, prefix) {
 		var fullName = prefix + name;
@@ -322,26 +352,92 @@ Echo.Tests.Stats = {
 			});
 		});
 	},
+	"prepare": function() {
+
+		Echo.Tests.Stats.getFunctionNames(Echo, "Echo.");
+
+		var eventPublish = Echo.Events.publish;
+		var eventSubscribe = Echo.Events.subscribe;
+
+		Echo.Events.subscribe = function(params) {
+			if ($.type(Echo.Tests.Stats.lists.events.subscribed[params.topic]) == "undefined") {
+				Echo.Tests.Stats.lists.events.subscribed[params.topic] = {
+					"count": 0
+				};
+			}
+
+			Echo.Tests.Stats.lists.events.subscribed[params.topic].count++;
+
+			return eventSubscribe(params);
+		};
+
+		Echo.Events.publish = function(params) {
+
+			if ($.type(Echo.Tests.Stats.lists.events.published[params.topic]) == "undefined") {
+				Echo.Tests.Stats.lists.events.published[params.topic] = {
+					"count": 0,
+					"status": "succeed",
+					"data": []
+				};
+			}
+
+			Echo.Tests.Stats.lists.events.published[params.topic].count++;
+
+			if (Echo.Tests.Events.contracts[params.topic]) {
+				if (_checkContract(params.data, Echo.Tests.Events.contracts[params.topic]) !== true) {
+					Echo.Tests.Stats.lists.events.published[params.topic].status = "failed";
+					Echo.Tests.Stats.lists.events.published[params.topic].data.push(params.data);
+				}
+			} else {
+				Echo.Tests.Stats.lists.events.published[params.topic].status = "notcovered";
+				Echo.Tests.Stats.lists.events.published[params.topic].data.push(params.data);
+			}
+
+			return eventPublish(params);
+		}
+	},
 	"show": function() {
 		var all = 0;
 		var funcs = Echo.Tests.Stats.functions;
-		var lists = Echo.Tests.Stats.lists;
+		var lists = Echo.Tests.Stats.lists.coverage;
 		$.each(funcs.all, function(name) {
 			all++;
 			lists[funcs.tested[name] ? "tested" : "notTested"].push(name);
 			lists[funcs.executed[name] ? "executed" : "notExecuted"].push(name);
 		});
 		Echo.Tests.Stats.allCount = all;
+
+		$.each(Echo.Tests.Stats.lists.events.published, function(i, val) {
+			Echo.Tests.Stats.lists.eventGroups[val.status].push(i);
+			Echo.Tests.Stats.lists.eventGroups["published"].push(i);
+		});
+
+		$.each(Echo.Tests.Stats.lists.events.subscribed, function(i, val) {
+			Echo.Tests.Stats.lists.eventGroups["subscribed"].push(i);
+		});
+
+		var totalContract = 0;
+		Echo.Tests.Stats.lists.eventGroups["notexecuted"] = $.map(Echo.Tests.Events.contracts, function(_val, topic) {
+			totalContract++;
+			if ($.inArray(topic, Echo.Tests.Stats.lists.eventGroups["published"]) == -1) {
+				return topic;
+			}
+		});
+
+		var getCountEvents = function(type, expectedValue) {
+			expectedValue = expectedValue || 0;
+			if ($.type(expectedValue) == "string") {
+				expectedValue = Echo.Tests.Stats.lists.eventGroups[expectedValue].length;
+			}
+			return '<b class="' + (Echo.Tests.Stats.lists.eventGroups[type].length == expectedValue ? 'green' : 'red') + '">' + Echo.Tests.Stats.lists.eventGroups[type].length + '</b> [<a class="echo-clickable" data-type="' + type +'">view list</a>]';
+		};
+
 		$("#qunit-testresult").append(
 			'<div class="echo-tests-stats">' +
+				'<div class="echo-tests-coverage">' +
 				'<h3>Code coverage analysis</h3> ' +
 				'<p>Total functions count: <b>' + all + '</b></p> ' +
-				Echo.Utils.foldl([], {
-					"tested": "Covered by tests",
-					"notTested": "Not covered",
-					"executed": "Executed during the tests",
-					"notExecuted": "Not executed"
-				}, function(label, acc, type) {
+				Echo.Utils.foldl([], Echo.Tests.Stats.labels.coverage, function(label, acc, type) {
 					var css = "red";
 					var isBadType = /^not/.test(type);
 					if (isBadType && !lists[type].length || !isBadType && lists[type].length == all) {
@@ -349,27 +445,81 @@ Echo.Tests.Stats = {
 					}
 					acc.push('<p>' + label + ': <b class="' + css + '">' + lists[type].length + ' (' + (Math.round(1000 * lists[type].length / all) / 10) + '%)</b> [<a class="echo-clickable" data-type="' + type + '">view list</a>]</p> ');
 				}).join("") +
-				'<div class="echo-tests-stats-functions"></div>' +
+				'</div><div class="echo-tests-events">' +
+					'<h3>Events analysis</h3> ' +
+					'<p>Total contract defined: <b>' + totalContract + '</b></p> ' +
+					'<p>Published / Subscribed: ' + getCountEvents("published", totalContract) + ' / ' + getCountEvents("subscribed", totalContract) + '</p>' +
+					'<p>Contract check succeeded / failed: ' + getCountEvents("succeed", "published") + ' / ' + getCountEvents("failed", "published") + '</p>' +
+					'<p>Published but not defined: ' + getCountEvents("notcovered") + '</p>' +
+					'<p>Defined but not published: ' + getCountEvents("notexecuted") + '</p>' +
+				'</div><div class="echo-clear"></div>' +
+				'<div class="echo-tests-stats-info"></div>' +
 			'</div>'
 		);
-		$(".echo-tests-stats a").click(function() {
-			Echo.Tests.Stats.showFunctionList($(this).attr("data-type"));
+
+		$(".echo-tests-events a").click(function() {
+			Echo.Tests.Stats.showInfoList($(this).attr("data-type"), "event");
+		});
+
+		$(".echo-tests-coverage a").click(function() {
+			Echo.Tests.Stats.showInfoList($(this).attr("data-type"), "coverage");
 		});
 	},
-	"showFunctionList": function(type) {
-		// FIXME: unify lists with previous one
-		var label = {
-			"tested": "Covered by tests",
-			"notTested": "Not covered",
-			"executed": "Executed during the tests",
-			"notExecuted": "Not executed"
-		};
-		var el = $(".echo-tests-stats-functions");
-		this.isListVisible = !(this.isListVisible && this.lastListType == type);
+	"showInfoList": function(type, prefix) {
+		var el = $(".echo-tests-stats-info");
+		this.isListVisible = !(this.isListVisible && this.lastListType == prefix + "-" + type);
 		if (this.isListVisible) {
-			var html = Echo.Tests.Stats.lists[type].length && "<ul><li>" + (Echo.Tests.Stats.lists[type].join("</li><li>")) + "</li></ul>" || "Empty list";
-			el.show().html("<b>" + label[type] + "</b><br>" + html);
-			this.lastListType = type;
+			var html,data = [];
+			switch(prefix) {
+				case "event":
+					html = "<ul>";
+					$.map(Echo.Tests.Stats.lists.eventGroups[type], function(topic) {
+						if (type == "subscribed") {
+							html += '<li>' + topic + ': <b>' + Echo.Tests.Stats.lists.events.subscribed[topic].count + '</b>';
+						} else {
+							if ($.type(Echo.Tests.Stats.lists.events.published[topic]) == "undefined") {
+								html += '<li>' + topic + '</li>';
+							} else {
+								html += '<li>' + topic;
+								if (type == "failed") {
+									html += ' <span>( failed <b>' + Echo.Tests.Stats.lists.events.published[topic].data.length + '</b> out of <b>' + Echo.Tests.Stats.lists.events.published[topic].count + '</b> times )</span>';
+								} else {
+									html += ' <span>( executed <b>' + Echo.Tests.Stats.lists.events.published[topic].count + '</b> times )</span>';
+								}
+
+								if( type == "notcovered" || type == "failed") {
+									html +=	' [<a class="echo-clickable" data-type="' + topic + '">view data</a>] <div class="echo-event-data">' + '</div>';
+								}
+								html +=	'</li>';
+							}
+						}
+					});
+					html += "</ul>";
+					break;
+				case "coverage":
+					html = Echo.Tests.Stats.lists[prefix][type].length && "<ul><li>" + ($.unique(Echo.Tests.Stats.lists[prefix][type]).join("</li><li>")) + "</li></ul>" || "Empty list";
+					break;
+			}
+
+			el.show().html("<b>" + Echo.Tests.Stats.labels[prefix][type] + "</b><br>" + html);
+
+			el.find(".echo-clickable").click(function() {
+				var dataTag = $(this).parent().find(".echo-event-data");
+				if (dataTag.html() == "") {
+					var data = $.map(Echo.Tests.Stats.lists.events.published[$(this).attr("data-type")].data, function(val) {
+						return '<pre>' + QUnit.jsDump.parse(_prepareEventData(val)) + '</pre>';
+					});
+					dataTag.html(data.join(""));
+				}
+
+				if (dataTag.is(':hidden')) {
+					dataTag.show();
+				} else {
+					dataTag.hide();
+				}
+			});
+
+			this.lastListType = prefix + "-" + type;
 		} else {
 			el.hide();
 		}
@@ -380,13 +530,17 @@ Echo.Utils.addCSS(
 	'.echo-tests-stats p { margin: 5px 0px 5px 20px; }' +
 	'.echo-tests-stats p .green { color: green; }' +
 	'.echo-tests-stats p .red { color: red; }' +
-	'.echo-tests-stats .echo-clickable { text-decoration: underline; }' +
-	'.echo-tests-stats-functions { display: none; background: #b9d9dd; margin-top: 10px; padding: 5px 10px; }'
+	'.echo-tests-stats .echo-clickable { text-decoration: underline; cursor: pointer; }' +
+	'.echo-tests-stats-info { display: none; background: #b9d9dd; margin-top: 10px; padding: 5px 10px; }' +
+	'.echo-event-data { display: none; }' +
+	'.echo-event-data pre { border: 1px dashed #999999;	padding: 10px; background: #B0D0D0; }' +
+	'.echo-tests-stats-info span { color: #555555; }' +
+	'.echo-tests-coverage, .echo-tests-events { float: left; width: 350px; }' +
+	'.echo-clear { clear: both; }'
 , "echo-tests");
 
 QUnit.begin(function() {
-	Echo.Tests.Stats.getFunctionNames(Echo, "Echo.");
-
+	Echo.Tests.Stats.prepare();
 	//TODO: check if we need it later
 	// Override function so that test suite couldn't execute next test
 	// before all data for the current one was not loaded yet
@@ -398,35 +552,49 @@ QUnit.done(function() {
 });
 
 // Extending QUnit lib to have an ability to verify function contract
-QUnit.checkContract = function(actual, expected, message) {
-
-	var _checkDiff = function(origin, template) {
-		var result = true;
-		if ($.type(template) == $.type(origin)) {
-			if ($.isPlainObject(template)) {
-				$.each(template, function(i) {
-					if (origin.hasOwnProperty(i) && $.type(template[i]) == $.type(origin[i])) {
-						if ($.isPlainObject(template[i])) {
-							result =  _checkDiff(origin[i], template[i]);
-						}
-					} else {
-						result = false;
+var _checkContract = function(origin, template) {
+	var result = true;
+	if ($.type(template) == $.type(origin)) {
+		if ($.isPlainObject(template)) {
+			$.each(template, function(i) {
+				if (origin.hasOwnProperty(i) && $.type(template[i]) == $.type(origin[i])) {
+					if ($.isPlainObject(template[i])) {
+						result =  _checkContract(origin[i], template[i]);
 					}
-
-					if (!result)
-						return result;
-				});
-			}
-			if ($.isEmptyObject(expected) && !$.isEmptyObject(actual)) {
+				} else {
+					result = false;
+				}
+				if (!result)
+					return result;
+			});
+			if ($.isEmptyObject(template) && !$.isEmptyObject(origin)) {
 				result = false;
 			}
-		} else {
-			result = false;
 		}
-		return result;
-	};
+	} else {
+		result = false;
+	}
+	return result;
+};
 
-	QUnit.push(_checkDiff(actual, expected), actual, expected, message);
+var _prepareEventData = function(obj, level) {
+	level = level || 0;
+	if (($.type(obj) == "object" || $.type(obj) == "array")) {
+		if (obj.tagName || obj.jquery) {
+			obj = "[object DOM]";
+		} else if (level <= 2) {
+			$.each(obj, function(key) {
+				obj[key] = _prepareEventData(obj[key], level+1);
+			});
+		} else {
+			obj = obj.toString();
+		}
+	}
+	return obj;
+};
+
+QUnit.checkContract = function(actual, expected, message) {
+	QUnit.push(_checkContract(actual, expected), _prepareEventData(actual), _prepareEventData(expected), message);
 };
 
 })(jQuery);
