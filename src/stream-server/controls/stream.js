@@ -141,7 +141,8 @@ stream.renderers.body = function(element) {
 	}
 	this.events.publish({
 		"topic": "onReady",
-		"data": {"initial": this.lastRequest.initial}
+		"data": {"initial": this.lastRequest.initial},
+		"propagate": false
 	});
 	return element;
 };
@@ -251,7 +252,8 @@ stream.methods.requestChildrenItems = function(unique) {
 				"data": {
 					"entries": data.entries,
 					"initial": false
-				}
+				},
+				"propagate": false
 			});
 			var children = [];
 			$.each(data.entries, function(i, entry) {
@@ -397,7 +399,8 @@ stream.methods.applyLiveUpdates = function(entries) {
 					if (satisfies || item.get("byCurrentUser")) {
 						self.events.publish({
 							"topic": "Item.onReceive",
-							"data": {"item": {"data": item.data}}
+							"data": {"item": {"data": item.data}},
+							"propagate": false
 						});
 						self._applySpotUpdates("add", item);
 					} else {
@@ -550,7 +553,8 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 		"data": {
 			"entries": data.entries,
 			"initial": !this.hasInitialData
-		}
+		},
+		"propagate": false
 	});
 	var sortOrder = this.config.get("sortOrder");
 	$.each(data.entries, function(i, entry) {
