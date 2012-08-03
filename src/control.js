@@ -477,7 +477,9 @@ Echo.Control.prototype._init.events = function() {
 	var control = this;
 	var prepare = function(params) {
 		params.context = params.context || control.config.get("context");
-		params.handler = $.proxy(params.handler, control);
+		if (params.handler) {
+			params.handler = $.proxy(params.handler, control);
+		}
 		return params;
 	};
 	return {
@@ -499,7 +501,7 @@ Echo.Control.prototype._init.events = function() {
 			if (params && params.handlerId) {
 				delete control.subscriptionIDs[params.handlerId];
 			}
-			Echo.Events.unsubscribe(params);
+			Echo.Events.unsubscribe(prepare(params));
 		}
 	};
 };
