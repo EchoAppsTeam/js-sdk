@@ -29,7 +29,7 @@ plugin.init = function() {
 			 * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
 			 * is triggered when the reply form is closed 
 			 */
-			 self.events.publish({
+			self.events.publish({
 				"topic": "onCollapse"
 			});
 		}
