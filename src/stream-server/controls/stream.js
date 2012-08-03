@@ -142,7 +142,7 @@ stream.renderers.body = function(element) {
 	this.events.publish({
 		"topic": "onReady",
 		"data": {"initial": this.lastRequest.initial},
-		"propagate": false
+		"propagation": false
 	});
 	return element;
 };
@@ -253,7 +253,7 @@ stream.methods.requestChildrenItems = function(unique) {
 					"entries": data.entries,
 					"initial": false
 				},
-				"propagate": false
+				"propagation": false
 			});
 			var children = [];
 			$.each(data.entries, function(i, entry) {
@@ -400,7 +400,7 @@ stream.methods.applyLiveUpdates = function(entries) {
 						self.events.publish({
 							"topic": "Item.onReceive",
 							"data": {"item": {"data": item.data}},
-							"propagate": false
+							"propagation": false
 						});
 						self._applySpotUpdates("add", item);
 					} else {
@@ -554,7 +554,7 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 			"entries": data.entries,
 			"initial": !this.hasInitialData
 		},
-		"propagate": false
+		"propagation": false
 	});
 	var sortOrder = this.config.get("sortOrder");
 	$.each(data.entries, function(i, entry) {
