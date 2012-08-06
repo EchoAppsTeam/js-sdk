@@ -16,7 +16,10 @@ var suite = Echo.Tests.Unit.FacePile = function() {
 
 suite.prototype.info = {
 	"className" : data.instance.name,
-	"functions" : []
+	"functions" : [
+		"getVisibleUsersCount",
+		"Item.isYou"
+	]
 };
 
 suite.prototype.tests = {};
