@@ -154,6 +154,7 @@ Echo.Tests.Common.prototype.constructPluginRenderersTest = function(config) {
 			"plugins": [],
 			"ready": function() {
 				test.executePluginRenderersTest(this.getPlugin(plugin));
+				this.destroy();
 				QUnit.start();
 			}
 		};
@@ -548,6 +549,10 @@ QUnit.begin(function() {
 });
 
 QUnit.done(function() {
+
+	// stop Backplane requests
+	Backplane.initialized = false;
+
 	Echo.Tests.Stats.show();
 });
 
