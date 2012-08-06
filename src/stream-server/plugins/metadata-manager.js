@@ -160,7 +160,7 @@ plugin.methods._assembleButton = function(action, control) {
 			"name": name,
 			"label": control["label" + action],
 			"visible": self._isButtonVisible(control, marker, action, type),
-			"onetime": true,
+			"once": true,
 			"callback": callback
 		};
 	};

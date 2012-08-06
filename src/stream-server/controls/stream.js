@@ -1489,7 +1489,7 @@ item.renderers._button = function(element, extra) {
 		clickables = button;
 		button.addClass("echo-clickable");
 	}
-	clickables[extra.onetime ? "one" : "on"]({
+	clickables[extra.once ? "one" : "on"]({
 		"click": function(event) {
 			event.stopPropagation();
 			if (extra.callback) extra.callback();

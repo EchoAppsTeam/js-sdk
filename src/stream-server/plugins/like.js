@@ -96,7 +96,7 @@ plugin.methods._assembleButton = function(name) {
 			"name": name,
 			"label": plugin.labels.get(name.toLowerCase() + "Control"),
 			"visible": item.user.is("logged") && action === name,
-			"onetime": true,
+			"once": true,
 			"callback": callback
 		};
 	};

@@ -288,7 +288,7 @@ plugin.methods._assembleBanButton = function(action) {
 			"label": self.substitute(plugin.buttonLabels[isBanned ? "banned" : "unbanned"]),
 			"visible": visible && item.user.is("admin"),
 			"callback": callback,
-			"onetime": true
+			"once": true
 		};
 	};
 };
@@ -341,7 +341,7 @@ plugin.methods._assemblePermissionsButton = function(action) {
 			"visible": item.get("data.actor.id") != item.user.get("fakeIdentityURL") &&
 				item.user.any("roles", ["administrator"]),
 			"callback": callback,
-			"onetime": true
+			"once": true
 		};
 	};
 };
