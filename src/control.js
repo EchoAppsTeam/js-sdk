@@ -49,9 +49,10 @@ Echo.Control.create = function(manifest) {
 			"renderers",
 			"dom",
 			"loading",
-			["user", function() {
-				self._init([["plugins", manifest.init]]);
-			}]
+			"dependencies:async",
+			"user:async",
+			"plugins:async",
+			manifest.init
 		]);
 	};
 	Echo.Utils.inherit(_constructor, manifest.inherits || Echo.Control);
@@ -253,8 +254,8 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
  * Function can be overriden by class descendants implying specific logic.
  */
 Echo.Control.prototype.refresh = function() {
-	var self = this;
 
+	// destroy all nested controls, but preserve self
 	this.destroy({"self": false});
 
 	// restore originally defined data
@@ -266,9 +267,9 @@ Echo.Control.prototype.refresh = function() {
 		"subscriptions",
 		"renderers",
 		"loading",
-		["user", function() {
-			self._init([["plugins", self.manifest.init]]);
-		}]
+		"user:async",
+		"plugins:async",
+		this.manifest.init
 	]);
 };
 
@@ -420,17 +421,36 @@ Echo.Control.prototype.extendRenderer = function(name, renderer) {
 // internal functions
 
 Echo.Control.prototype._init = function(subsystems) {
-	var control = this;
-	$.map(subsystems, function(args) {
-		if (!$.isArray(args)) {
-			args = [args];
-		}
-		var name = args.shift();
-		var result = control._init[name].apply(control, args);
+	var control = this, subsystem;
+	if (!subsystems || !subsystems.length) return;
+	var data = subsystems.shift();
+	data = $.isArray(data) ? data : [data];
+	var func = data.shift();
+	if ($.isFunction(func)) {
+		subsystem = {
+			"init": func,
+			"type": "async"
+		};
+	} else {
+		var parts = func.split(":");
+		subsystem = {
+			"name": parts[0],
+			"init": control._init[parts[0]],
+			"type": parts[1] || "sync"
+		};
+	}
+	if (subsystem.type == "sync") {
+		var result = subsystem.init.apply(control, data);
 		if (typeof result != "undefined") {
-			control[name] = result;
+			control[subsystem.name] = result;
 		}
-	});
+		control._init(subsystems);
+	} else {
+		var callback = function() {
+			control._init(subsystems);
+		};
+		subsystem.init.apply(control, (data || []).concat(callback));
+	}
 };
 
 Echo.Control.prototype._init.vars = function() {
@@ -650,6 +670,11 @@ Echo.Control.prototype._init.loading = function() {
 		"type": "loading",
 		"message": this.labels.get("loading")
 	});
+};
+
+Echo.Control.prototype._init.dependencies = function(callback) {
+	// TODO: check if a control has any dependencies, load them and continue execution
+	callback.call(this);
 };
 
 Echo.Control.prototype._init.user = function(callback) {
