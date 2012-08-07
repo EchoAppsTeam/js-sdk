@@ -99,65 +99,6 @@ suite.prototype.tests.AnonymousUserChecks = {
 	}
 };
 
-suite.prototype.tests.checkUserEvents = {
-	"config": {
-		"async": true,
-		"user": {"status": "anonymous"},
-		"testTimeout": 20000 // 20 secs
-	},
-	"check": function() {
-		var self = this;
-		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
-		var subscribe = function(checkState) {
-			$.map(["onInit", "onInvalidate"], function(topic) {
-				topic = "Echo.UserSession." + topic;
-				var id = Echo.Events.subscribe({
-					"topic": topic,
-					"handler": function(_topic, data) {
-						var state = user.is("logged") ? "logged" : "anonymous";
-						if (checkState == state) {
-							Echo.Events.unsubscribe({
-								"topic": topic,
-								"handlerId": id
-							});
-							var template;
-							if (state == "logged") {
-								template = {
-									"echo": {
-										"roles": [],
-										"state": "",
-										"markers": []
-									},
-									"poco": {
-										"entry": {
-											"accounts": []
-										},
-										"startIndex": 0,
-										"itemsPerPage": 0,
-										"totalResults": 0
-									}
-								};
-							} else if ("anonymous") {
-								template = {}
-							}
-
-							QUnit.checkContract(data, template,
-								"Checking \"" + topic + "\" params of events callback for " + state + " user");
-						}
-					}
-				});
-			});
-		};
-		subscribe("logged");
-		self.loginTestUser({}, function() {
-			subscribe("anonymous");
-			self.logoutTestUser(function() {
-				QUnit.start();
-			});
-		});
-	}
-};
-
 suite.prototype.checkBasicOperations = function(user) {
 	var identity = "http://somedomain.com/users/fake_user";
 

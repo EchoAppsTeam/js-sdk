@@ -247,7 +247,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"Checking if initially empty element became non-empty after applying renderer");
 
 		// template rendering
-		var cssClass = ".echo-streamserver-controls-mycontrol-testRenderer";
+		var cssClass = ".echo-streamserver-controls-mytestcontrol-testRenderer";
 		var template =
 			'<div class="{class:container}">' +
 				'<div class="k1">{data:k1}</div>' +
@@ -299,7 +299,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"name": "testRendererRecursive",
 			"recursive": true
 		});
-		QUnit.equal(this.dom.get("testRendererRecursive").html(), "<div class=\"echo-streamserver-controls-mycontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mycontrol-nestedSubcontainer\"></div></div>",
+		QUnit.equal(this.dom.get("testRendererRecursive").html(), "<div class=\"echo-streamserver-controls-mytestcontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mytestcontrol-nestedSubcontainer\"></div></div>",
 			"Checking if element content was updated after recursive rendering");
 
 		// checking re-rendering
@@ -371,29 +371,29 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 			"handler": increment
 		});
 	};
-	subscribe("Echo.StreamServer.Controls.MyControl.onRender");
-	subscribe("Echo.StreamServer.Controls.MyControl.outgoing.event");
+	subscribe("Echo.StreamServer.Controls.MyTestControl.onRender");
+	subscribe("Echo.StreamServer.Controls.MyTestControl.outgoing.event.test");
 	var check = function() {
 
 		// subscribing to incoming events
 		this.events.subscribe({
-			"topic": "incoming.event",
+			"topic": "incoming.event.test",
 			"handler": increment
 		});
-		publish("incoming.event");
-		publish("incoming.event");
-		publish("incoming.event");
+		publish("incoming.event.test");
+		publish("incoming.event.test");
+		publish("incoming.event.test");
 
 		// publishing outgoing event
-		this.events.publish({"topic": "outgoing.event"});
-		this.events.publish({"topic": "outgoing.event"});
-		this.events.publish({"topic": "outgoing.event"});
+		this.events.publish({"topic": "outgoing.event.test"});
+		this.events.publish({"topic": "outgoing.event.test"});
+		this.events.publish({"topic": "outgoing.event.test"});
 
 		// checking events defined in manifest
 		this.set("_eventHandler", increment);
 
-		publish("incoming.event.global");
-		publish("incoming.event.local");
+		publish("incoming.event.global.test");
+		publish("incoming.event.local.test");
 
 		QUnit.ok(count == 9,
 			"Checking if expected amount of events were executed and handled");
@@ -416,7 +416,7 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 	Echo.Labels.set({
 		"label1": "label1 global override",
 		"label2": "label2 global override"
-	}, "Echo.StreamServer.Controls.MyControl");
+	}, "Echo.StreamServer.Controls.MyTestControl");
 	var check = function() {
 		QUnit.equal(this.labels.get("label1"), "label1 override via config",
 			"Checking labels override via control config");
@@ -441,7 +441,7 @@ suite.prototype.cases.refresh = function(callback) {
 	var check = function() {
 		var control = this;
 		this.events.subscribe({
-			"topic": "Echo.StreamServer.Controls.MyControl.onRefresh",
+			"topic": "Echo.StreamServer.Controls.MyTestControl.onRefresh",
 			"handler": function() {
 				QUnit.ok(control.config.get("target").length,
 					"Check if the control was rerendered after \"refresh\" function call (non-empty target)");
@@ -488,8 +488,8 @@ suite.prototype.cases.destroy = function(callback) {
 		});
 
 		// checking if we receive events before destroy
-		publish("incoming.event.global", this);
-		publish("incoming.event.local", this);
+		publish("incoming.event.global.test", this);
+		publish("incoming.event.local.test", this);
 
 		this.destroy();
 
@@ -498,8 +498,8 @@ suite.prototype.cases.destroy = function(callback) {
 			"Check if the target was cleared after the \"destroy\" function call");
 
 		// checking if no event subscriptions after destroy call
-		publish("incoming.event.global", this);
-		publish("incoming.event.local", this);
+		publish("incoming.event.global.test", this);
+		publish("incoming.event.local.test", this);
 
 		QUnit.ok(count == 2,
 			"Checking if expected amount of events were executed and handled (checking \"destroy\" function call)");
@@ -546,19 +546,19 @@ suite.data.substitutions = [[
 	"non existing label extraction nonexisting, shoud return key"
 ], [
 	"<div class=\"{class:test}\">div with css class name defined</div>",
-	"<div class=\"echo-streamserver-controls-mycontrol-test\">div with css class name defined</div>"
+	"<div class=\"echo-streamserver-controls-mytestcontrol-test\">div with css class name defined</div>"
 ], [
 	"<div class=\"{class:test} {class:test1} {class:test2}\">div with multiple css class names defined</div>",
-	"<div class=\"echo-streamserver-controls-mycontrol-test echo-streamserver-controls-mycontrol-test1 echo-streamserver-controls-mycontrol-test2\">div with multiple css class names defined</div>"
+	"<div class=\"echo-streamserver-controls-mytestcontrol-test echo-streamserver-controls-mytestcontrol-test1 echo-streamserver-controls-mytestcontrol-test2\">div with multiple css class names defined</div>"
 ], [
 	"<div class=\"{class:test}\">{data:key3.key3nested}</div>",
-	"<div class=\"echo-streamserver-controls-mycontrol-test\"></div>"
+	"<div class=\"echo-streamserver-controls-mytestcontrol-test\"></div>"
 ], [
 	"<div class=\"{class:test}\">{self:data.key3.key3nested}</div>",
-	"<div class=\"echo-streamserver-controls-mycontrol-test\">nested value for key 3</div>"
+	"<div class=\"echo-streamserver-controls-mytestcontrol-test\">nested value for key 3</div>"
 ], [
 	"<div class=\"{class:test}\">{label:label1}{label:label2}{self:data.key3.key3nested}{class:example} - mix of multiple patterns</div>",
-	"<div class=\"echo-streamserver-controls-mycontrol-test\">label1 valuelabel2 valuenested value for key 3echo-streamserver-controls-mycontrol-example - mix of multiple patterns</div>"
+	"<div class=\"echo-streamserver-controls-mytestcontrol-test\">label1 valuelabel2 valuenested value for key 3echo-streamserver-controls-mytestcontrol-example - mix of multiple patterns</div>"
 ], [
 	"{config:stringParam}-{config:nonexistingkey}-{config:integerParam}-{config:objectParam.param1}",
 	"Some test value--15-param1.value"
@@ -661,7 +661,7 @@ suite.plugin = function() {
 };
 
 suite.getTestControlClassName = function() {
-	return "Echo.StreamServer.Controls.MyControl";
+	return "Echo.StreamServer.Controls.MyTestControl";
 };
 
 suite.getTestControlClass = function() {
@@ -716,13 +716,13 @@ suite.getControlManifest = function(name) {
 		'</div>';
 
 	manifest.events = {
-		"incoming.event.global": {
+		"incoming.event.global.test": {
 			"context": "global",
 			"handler": function() {
 				this.get("_eventHandler") && this.get("_eventHandler")();
 			}
 		},
-		"incoming.event.local": function() {
+		"incoming.event.local.test": function() {
 			this.get("_eventHandler") && this.get("_eventHandler")();
 		}
 	};

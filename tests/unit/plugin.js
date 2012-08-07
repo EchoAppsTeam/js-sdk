@@ -92,7 +92,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 		// checking plugin class name definition
 		QUnit.equal(
 			Echo.Plugin._getClassName(manifest.name, manifest.component.name),
-			"Echo.StreamServer.Controls.MyControl.Plugins.MyTestPlugin",
+			"Echo.StreamServer.Controls.MyTestControl.Plugins.MyTestPlugin",
 			"Checking if the \"_getClassName\" returns full plugin class name");
 		QUnit.equal(
 			Echo.Plugin._getClassName(undefined, manifest.component.name),
@@ -174,13 +174,13 @@ suite.prototype.cases.basicOperations = function(callback) {
 		});
 
 		// checking "enable"/"disable" methods
-		QUnit.ok(control._isPluginEnabled("MyPlugin"),
+		QUnit.ok(control._isPluginEnabled("MyTestPlugin"),
 			"Checking if a plugin is enabled (via \"_isPluginEnabled\" function)");
 		plugin.disable();
-		QUnit.ok(!control._isPluginEnabled("MyPlugin"),
+		QUnit.ok(!control._isPluginEnabled("MyTestPlugin"),
 			"Checking if a plugin was disabled after \"disable\" function call");
 		plugin.enable();
-		QUnit.ok(control._isPluginEnabled("MyPlugin"),
+		QUnit.ok(control._isPluginEnabled("MyTestPlugin"),
 			"Checking if a plugin was enabled back after \"enable\" function call");
 
 		this.destroy();
@@ -189,7 +189,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 	};
 	suite.control().initTestControl({
 		"plugins": [{
-			"name": "MyPlugin",
+			"name": "MyTestPlugin",
 			"requiredParam1": true,
 			"requiredParam2": true
 		}],
@@ -201,10 +201,10 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	var initWithMissingParams = function(_callback) {
 		suite.control().initTestControl({
 			"plugins": [{
-				"name": "MyPlugin"
+				"name": "MyTestPlugin"
 			}],
 			"ready": function() {
-				var plugin = this.getPlugin("MyPlugin");
+				var plugin = this.getPlugin("MyTestPlugin");
 				QUnit.ok(!plugin,
 					"Checking if the plugin was disabled if invalid config params were passed and \"init\" function returned \"false\"");
 
@@ -217,12 +217,12 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	var initWithMandatoryParamsDefined = function(_callback) {
 		suite.control().initTestControl({
 			"plugins": [{
-				"name": "MyPlugin",
+				"name": "MyTestPlugin",
 				"requiredParam1": true,
 				"requiredParam2": true
 			}],
 			"ready": function() {
-				var plugin = this.getPlugin("MyPlugin");
+				var plugin = this.getPlugin("MyTestPlugin");
 				QUnit.ok(!!plugin,
 					"Checking if the plugin was initialize successfully if valid config params were defined");
 
@@ -241,13 +241,13 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 
 suite.prototype.cases.enabledConfigParamCheck = function(callback) {
 	var plugin = {
-		"name": "MyPlugin",
+		"name": "MyTestPlugin",
 		"requiredParam1": true,
 		"requiredParam2": true
 	};
 	var checker = function(label, active, cb) {
 		return function(_callback) {
-			QUnit.ok(!!this.getPlugin("MyPlugin") == active, label);
+			QUnit.ok(!!this.getPlugin("MyTestPlugin") == active, label);
 			this.destroy();
 			cb();
 		};
@@ -291,7 +291,7 @@ suite.prototype.cases.enabledConfigParamCheck = function(callback) {
 
 suite.prototype.cases.configInterfaceCheck = function(callback) {
 	var check = function() {
-		var plugin = this.getPlugin("MyPlugin");
+		var plugin = this.getPlugin("MyTestPlugin");
 
 		QUnit.equal(plugin.config.get("nullParam"), "nullParam replacement",
 			"Checking if null parameter was overridden during control init");
@@ -330,7 +330,7 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 	};
 	suite.control().initTestControl({
 		"plugins": [{
-			"name": "MyPlugin",
+			"name": "MyTestPlugin",
 			"requiredParam1": true,
 			"requiredParam2": true,
 			"objectParam": {"param1": "param1.override"},
@@ -348,7 +348,7 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 	var check = function() {
 		var self = this;
-		var plugin = this.getPlugin("MyPlugin");
+		var plugin = this.getPlugin("MyTestPlugin");
 		QUnit.ok(this.config.get("target") instanceof jQuery,
 			"Checking if the target if a jQuery element");
 		QUnit.ok(!!this.config.get("target").children().length,
@@ -413,7 +413,7 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 	suite.control().initTestControl({
 		"data": suite.data.config.data,
 		"plugins": [{
-			"name": "MyPlugin",
+			"name": "MyTestPlugin",
 			"requiredParam1": true,
 			"requiredParam2": true,
 			"undefinedParam": "undefinedParam replacement",
@@ -444,35 +444,35 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 		});
 	};
 	subscribe("Echo.Control.onDataInvalidate");
-	subscribe("Echo.StreamServer.Controls.MyControl.Plugins.MyPlugin.outgoing.event");
+	subscribe("Echo.StreamServer.Controls.MyTestControl.Plugins.MyTestPlugin.outgoing.event.test");
 	var check = function() {
-		var plugin = this.getPlugin("MyPlugin");
+		var plugin = this.getPlugin("MyTestPlugin");
 
 		// subscribing to incoming events
 		var id = plugin.events.subscribe({
-			"topic": "incoming.event",
+			"topic": "incoming.event.test",
 			"handler": increment
 		});
-		publish("incoming.event");
-		publish("incoming.event");
-		publish("incoming.event");
+		publish("incoming.event.test");
+		publish("incoming.event.test");
+		publish("incoming.event.test");
 
 		// publishing outgoing event
-		plugin.events.publish({"topic": "outgoing.event"});
-		plugin.events.publish({"topic": "outgoing.event"});
-		plugin.events.publish({"topic": "outgoing.event"});
+		plugin.events.publish({"topic": "outgoing.event.test"});
+		plugin.events.publish({"topic": "outgoing.event.test"});
+		plugin.events.publish({"topic": "outgoing.event.test"});
 
 		// checking events defined in manifest
 		plugin.set("_eventHandler", increment);
 
-		publish("incoming.event.global");
-		publish("incoming.event.local");
+		publish("incoming.event.global.test");
+		publish("incoming.event.local.test");
 
 		// check if no events received after unsubscribing
 		plugin.events.unsubscribe({"handlerId": id});
-		publish("incoming.event");
-		publish("incoming.event");
-		publish("incoming.event");
+		publish("incoming.event.test");
+		publish("incoming.event.test");
+		publish("incoming.event.test");
 
 		// check "requestDataRefresh" method,
 		// we expect that the "internal.Echo.Control.onDataInvalidate" is fired
@@ -492,7 +492,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 	suite.control().initTestControl({
 		"context": context,
 		"plugins": [{
-			"name": "MyPlugin",
+			"name": "MyTestPlugin",
 			"requiredParam1": true,
 			"requiredParam2": true
 		}],
@@ -504,9 +504,9 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 	Echo.Labels.set({
 		"label1": "label1 global override",
 		"label2": "label2 global override"
-	}, "Echo.StreamServer.Controls.MyControl.Plugins.MyPlugin");
+	}, "Echo.StreamServer.Controls.MyTestControl.Plugins.MyTestPlugin");
 	var check = function() {
-		var plugin = this.getPlugin("MyPlugin");
+		var plugin = this.getPlugin("MyTestPlugin");
 
 		QUnit.equal(plugin.labels.get("label1"), "label1 override via config",
 			"Checking labels override via plugin config");
@@ -521,7 +521,7 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 	};
 	suite.control().initTestControl({
 		"plugins": [{
-			"name": "MyPlugin",
+			"name": "MyTestPlugin",
 			"requiredParam1": true,
 			"requiredParam2": true,
 			"labels": {
@@ -535,12 +535,12 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 suite.prototype.cases.destroy = function(callback) {
 	suite.control().initTestControl({
 		"plugins": [{
-			"name": "MyPlugin",
+			"name": "MyTestPlugin",
 			"requiredParam1": true,
 			"requiredParam2": true
 		}],
 		"ready": function() {
-			var plugin = this.getPlugin("MyPlugin");
+			var plugin = this.getPlugin("MyTestPlugin");
 			plugin.set("_destroyHandler", function() {
 				QUnit.ok(true,
 					"Checking if the plugin \"destroy\" method was called after the \"destroy\" control function was called");
@@ -580,16 +580,16 @@ suite.data.substitutions = [[
 	"non existing label extraction nonexisting, shoud return key"
 ], [
 	"<div class=\"{plugin.class:test}\">div with css class name defined</div>",
-	"<div class=\"echo-streamserver-controls-mycontrol-plugin-MyPlugin-test\">div with css class name defined</div>"
+	"<div class=\"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test\">div with css class name defined</div>"
 ], [
 	"<div class=\"{plugin.class:test} {plugin.class:test1} {plugin.class:test2}\">div with multiple css class names defined</div>",
-	"<div class=\"echo-streamserver-controls-mycontrol-plugin-MyPlugin-test echo-streamserver-controls-mycontrol-plugin-MyPlugin-test1 echo-streamserver-controls-mycontrol-plugin-MyPlugin-test2\">div with multiple css class names defined</div>"
+	"<div class=\"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test1 echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test2\">div with multiple css class names defined</div>"
 ], [
 	"<div class=\"{plugin.class:test}\">Checking transformation of the {plugin.data:} -> {self:} {plugin.data:key3.key3nested}</div>",
-	"<div class=\"echo-streamserver-controls-mycontrol-plugin-MyPlugin-test\">Checking transformation of the {plugin.data:} -> {self:} {self:plugins.MyPlugin.data.key3.key3nested}</div>"
+	"<div class=\"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test\">Checking transformation of the {plugin.data:} -> {self:} {self:plugins.MyTestPlugin.data.key3.key3nested}</div>"
 ], [
 	"<div class=\"{plugin.class:test}\">{plugin.label:label1}{plugin.label:label2}{plugin.self:data.key3.key3nested}{plugin.class:example} - mix of multiple patterns</div>",
-	"<div class=\"echo-streamserver-controls-mycontrol-plugin-MyPlugin-test\">plugin label1 valueplugin label2 value{self:plugins.MyPlugin.data.key3.key3nested}echo-streamserver-controls-mycontrol-plugin-MyPlugin-example - mix of multiple patterns</div>"
+	"<div class=\"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test\">plugin label1 valueplugin label2 value{self:plugins.MyTestPlugin.data.key3.key3nested}echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-example - mix of multiple patterns</div>"
 ]];
 
 suite.data.template =
@@ -649,7 +649,7 @@ suite.control = function() {
 };
 
 suite.getTestPluginName = function() {
-	return "MyPlugin";
+	return "MyTestPlugin";
 };
 
 suite.createTestPlugin = function(name, component) {
@@ -712,13 +712,13 @@ suite.getPluginManifest = function(name, component) {
 	manifest.templates.main = suite.data.template;
 
 	manifest.events = {
-		"incoming.event.global": {
+		"incoming.event.global.test": {
 			"context": "global",
 			"handler": function() {
 				this.get("_eventHandler") && this.get("_eventHandler")();
 			}
 		},
-		"incoming.event.local": function() {
+		"incoming.event.local.test": function() {
 			this.get("_eventHandler") && this.get("_eventHandler")();
 		}
 	};
