@@ -10,6 +10,7 @@
 	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
 	<script type="text/javascript" src="../sdk/environment.pack.js"></script>
 	<script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
+	<script type="text/javascript" src="../sdk/identity-server.pack.js"></script>
 </head>
 <body>
 	<div id="container">
@@ -24,7 +25,9 @@
 	<script type="text/javascript">
 		$(document).ready(
 			function() {
-				parent.resize($(document).height());
+				if (parent && parent.resize) {
+					parent.resize($(document).height());
+				}
 			}
 		);
 		Backplane.init({

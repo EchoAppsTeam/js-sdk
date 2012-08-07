@@ -52,7 +52,9 @@
 	<script type="text/javascript">
 		$(document).ready(
 			function() {
-				parent.resize($(document).height());
+				if (parent && parent.resize) {
+					parent.resize($(document).height());
+				}
 			}
 		);
 		new Echo.StreamServer.Controls.FacePile({
