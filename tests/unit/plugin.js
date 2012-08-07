@@ -18,6 +18,7 @@ suite.prototype.info = {
 		"getClass",
 
 		// dynamic interface
+		"log",
 		"set",
 		"get",
 		"remove",
@@ -192,6 +193,24 @@ suite.prototype.cases.basicOperations = function(callback) {
 			if (!Echo.Tests.Dependencies.Plugin["dep" + i]) result = false;
 		}
 		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
+
+		try {
+			// checking log() calls with invalid params
+			plugin.log();
+			plugin.log({});
+
+			// call log() with valid params
+			plugin.log({
+				"type": "warning",
+				"message": "Test message from the Plugin class",
+				"args": {"a": 1, "b": 2, "c": 3, "d": []}
+			});
+
+			// checking if no exceptions were thrown
+			QUnit.ok(true, "Checking if no exceptions were thrown while executing the \"log\" function with valid and invalid params");
+		} catch(e) {
+			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
+		};
 
 		this.destroy();
 

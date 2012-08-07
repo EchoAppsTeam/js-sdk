@@ -12,6 +12,7 @@ suite.prototype.info = {
         "functions": [
 		"manifest",
 		"create",
+		"log",
 		"get",
 		"set",
 		"remove",
@@ -163,6 +164,24 @@ suite.prototype.cases.basicOperations = function(callback) {
 			if (!Echo.Tests.Dependencies.Control["dep" + i]) result = false;
 		}
 		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
+
+		try {
+			// checking log() calls with invalid params
+			this.log();
+			this.log({});
+
+			// call log() with valid params
+			this.log({
+				"type": "error",
+				"message": "Test message from the Control class",
+				"args": {"a": 1, "b": 2, "c": 3}
+			});
+
+			// checking if no exceptions were thrown
+			QUnit.ok(true, "Checking if no exceptions were thrown while executing the \"log\" function with valid and invalid params");
+		} catch(e) {
+			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
+		};
 
 		this.destroy();
 

@@ -622,4 +622,22 @@ Echo.Utils.hyperlink = function(data, options) {
 	return "<a " + attributes.join(" ") + ">" + caption + "</a>";
 };
 
+/**
+ * Function to log info/error message to the browser console in a unified format
+ *
+ * @static
+ * @param {Object} data Defines the properties of the message which should be displayed
+ * @param {String} data.message Text description of the message which should be logged
+ * @param {String} [data.component="Echo SDK"] Name of the component which produced the message
+ * @param {String} [data.type="info"] Type/severity of the message
+ * @param {String} [data.args] Extra arguments to log
+ */
+Echo.Utils.log = function(data) {
+	if (!window.console || !console.log || !data || !data.message) return;
+	console.log(
+		"[" + (data.component || "Echo SDK") + "]",
+		(data.type || "info"), ":", data.message, " | args: ", data.args
+	);
+};
+
 })();

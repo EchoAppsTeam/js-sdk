@@ -6,7 +6,7 @@ suite.prototype.info = {
 	"className": "Echo.Utils",
 	"functions": [
 		"htmlize", "foldl", "getNestedValue", "setNestedValue", "stripTags", "object2JSON",
-		"parseURL", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate",
+		"parseURL", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate", "log",
 		"getVisibleColor", "isMobileDevice", "getUniqueString", "loadImage",
 		"getComponent", "isComponentDefined", "objectToQuery", "inherit"]
 };
@@ -194,6 +194,30 @@ suite.prototype.tests.TestDataMethods = {
 			"Checking if the isComponentDefined function triggers negative value for the random name");
 		QUnit.ok(!Echo.Utils.isComponentDefined("SomeNameSpace.SomeRandomLib"),
 			"Checking if the isComponentDefined function triggers negative value for the random name and namespace");
+
+		try {
+			// checking log() calls with invalid params
+			Echo.Utils.log();
+			Echo.Utils.log("Some message");
+			Echo.Utils.log(null);
+			Echo.Utils.log(undefined);
+			Echo.Utils.log({});
+			Echo.Utils.log({"test": 1});
+
+			// call log() with valid params
+			Echo.Utils.log({
+				"component": "Echo.TestComponent",
+				"type": "warning",
+				"message": "Test message from JS SDK Control class",
+				"args": {"a": 1, "b": 2}
+			});
+
+			// checking if no exceptions were thrown
+			QUnit.ok(true, "Checking if no exceptions were thrown while executing the \"log\" function with valid and invalid params");
+		} catch(e) {
+			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
+		};
+
 	}
 };
 

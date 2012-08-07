@@ -230,6 +230,14 @@ Echo.Plugin.prototype.requestDataRefresh = function() {
 	});
 };
 
+/**
+ * @method
+ * @inheritdoc Echo.Utils#log
+ */
+Echo.Plugin.prototype.log = function(data) {
+	Echo.Utils.log($.extend(data, {"component": this.component.name + ".Plugins." + this.name}));
+};
+
 // internal functions
 
 Echo.Plugin._defineNestedClass = function(name) {

@@ -420,6 +420,14 @@ Echo.Control.prototype.extendRenderer = function(name, renderer) {
 	renderers[name].functions.unshift(renderer);
 };
 
+/**
+ * @method
+ * @inheritdoc Echo.Utils#log
+ */
+Echo.Control.prototype.log = function(data) {
+	Echo.Utils.log($.extend(data, {"component": this.name}));
+};
+
 // internal functions
 
 Echo.Control.prototype._init = function(subsystems) {

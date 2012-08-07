@@ -89,6 +89,7 @@ docs:
 
 loader:
 	@echo "Making loader..."
+	@rm $(WEB_SDK_DIR)/loader.js
 	@cat $(SRC_DIR)/third-party/yepnope.1.5.4-min.js >> $(WEB_SDK_DIR)/loader.js
 	@cat $(SRC_DIR)/loader.js >> $(WEB_SDK_DIR)/loader.js
 	@echo "Done!"
