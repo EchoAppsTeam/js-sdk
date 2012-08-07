@@ -20,6 +20,10 @@ if (Echo.Plugin.isDefined(plugin)) return;
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate("insertAsLastChild", "content", plugin.templates.form);
+	var form = Echo.Utils.getNestedValue(Echo.Global, this._getFormKey());
+	$.each(form || {}, function(key, value) {
+	    self.set(key, value);
+	});
 	item.addButtonSpec("Reply", this._assembleButton());
 	$(document).click(function() {
 		var submit = self.get("submit");
@@ -71,7 +75,7 @@ plugin.events = {
 };
 
 plugin.templates.form =
-	'<div class="{class:replyForm}">' +
+	'<div class="{plugin.class:replyForm}">' +
 		'<div class="{plugin.class:submitForm}"></div>' +
 		'<div class="{plugin.class:compactForm}">' +
 			'<div class="{plugin.class:compactContent} {plugin.class:compactBorder}">' +
@@ -98,7 +102,7 @@ plugin.component.renderers.children = function(element) {
 	if (item.get("children").length == 1) {
 		var child = item.get("children")[0];
 		if (child.get("added") || child.get("deleted")) {
-			plugin._itemCSS("remove", item, item.dom.get("replyForm"));
+			plugin._itemCSS("remove", item, plugin.dom.get("replyForm"));
 			plugin.dom.render({"name": "compactForm"});
 		}
 	}
@@ -139,6 +143,14 @@ plugin.renderers.compactField = function(element) {
 	}).val(plugin.config.get("actionString"));
 };
 
+plugin.methods.destroy = function() {
+	var plugin = this, item = this.component;
+	Echo.Utils.setNestedValue(Echo.Global, plugin._getFormKey(), {
+		"submit": plugin.get("submit"),
+		"expanded": plugin.get("expanded")
+	});
+};
+
 plugin.methods._showSubmit = function() {
 	var plugin = this, item = plugin.component;
 	var submit;
@@ -162,7 +174,7 @@ plugin.methods._showSubmit = function() {
 			submit.dom.get("text").val(text);
 		}
 	}
-	plugin._itemCSS("add", item, item.dom.get("replyForm"));
+	plugin._itemCSS("add", item, plugin.dom.get("replyForm"));
 	submit.dom.get("text").focus();
 	target.click(function(event) {
 		event.stopPropagation();
@@ -175,7 +187,7 @@ plugin.methods._showSubmit = function() {
 plugin.methods._hideSubmit = function() {
 	var plugin = this, item = plugin.component;
 	plugin.dom.get("submitForm").empty();
-	plugin._itemCSS("remove", item, item.dom.get("replyForm"));
+	plugin._itemCSS("remove", item, plugin.dom.get("replyForm"));
 	plugin.dom.render({"name": "compactForm"});
 	item.dom.render({"name": "container"});
 };
@@ -205,6 +217,12 @@ plugin.methods._itemCSS = function(action, item, element) {
 		element[action + "Class"](item.get("cssPrefix") + css);
 	});
 	element[action + "Class"]('echo-trinaryBackgroundColor');
+};
+
+plugin.methods._getFormKey = function() {
+	var item = this.component;
+	var applicationContext = item.config.get("context").split("/")[0];
+	return "forms." + item.data.unique + "-" + applicationContext;
 };
 
 plugin.css = 
