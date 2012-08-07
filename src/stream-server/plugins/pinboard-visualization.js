@@ -76,8 +76,7 @@ itemMediaGallery.renderers.controls = function(element) {
 			controlContainer.addClass(activeControlClass);
 		}
 		element.one("error", function() {
-			//FIX IT
-			//itemContainer.empty().append(self.substitute(self.mediaFailedTemplate));
+			itemContainer.empty().append(self.substitute(self.mediaFailedTemplate));
 			itemContainer.empty().append("Error");
 			showCurrentMedia();
 		}).one("load", function() {
@@ -111,8 +110,7 @@ itemMediaGallery.methods.normalizeFlashContent = function(element) {
 		parts.path = parts.path || "";
 		parts.fragment = parts.fragment ? "#" + parts.fragment : "";
 		parts.query = query ? "?" + query : "";
-		//FIX IT
-		//element.attr("src",	this.substitute("{Data:scheme}://{Data:domain}{Data:path}{Data:query}{Data:fragment}", parts));
+		element.attr("src", this.substitute("{Data:scheme}://{Data:domain}{Data:path}{Data:query}{Data:fragment}", parts));
 	} else if (tagName == "embed") {
 		var wmode = element.attr("wmode");
 		if (wmode != "opaque" || wmode != "transparent") {
@@ -179,8 +177,8 @@ itemMediaGallery.css =
 	'.{class:controls} { text-align: center; margin-top: 10px; }' +
 	'.{class:control} { display: inline-block; width: 8px; height: 8px; font-size: 0px; line-height: 8px; outline: none; border-radius: 4px; vertical-align: middle; margin-left: 8px; cursor: pointer; background-color: #c6c6c6; text-decoration: none; transition: all .2s ease-in 0; -moz-transition-property: all; -moz-transition-duration: .2s; -moz-transition-timing-function: ease-in; -moz-transition-delay: 0; -webkit-transition-property: all; -webkit-transition-duration: .2s; -webkit-transition-timing-function: ease-in; -webkit-transition-delay: 0; }' +
 	'.{class:control}:hover { background-color: #ee7b11; }' +
-	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }';
-	//TODO: (isPreIE9 ? '.echo-ItemMediaControl { display: inline; zoom: 1; }' : '') +
+	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }' +
+	(Echo.Utils.isPreIE9() ? '.{class} { display: inline; zoom: 1; }' : '');
 
 Echo.Control.create(itemMediaGallery);
 	
@@ -193,6 +191,7 @@ var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Co
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
+	var self = this, item = this.component;
 	this.extendTemplate("replace", "container", plugin.template);
 };
 
@@ -217,19 +216,25 @@ plugin.labels = {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.onRender": function(topic, args) {
+	"Echo.StreamServer.Controls.Stream.Item.onReady": function(topic, args) {
 		var plugin = this, item = this.component;
-		if (item.isRoot() && !plugin.get("rendered")) {
-			plugin._getStreamBody(item).isotope("insert", item.dom.root);
+		var body = plugin._getStreamBody(item);
+		if (!body.hasClass("isotope")) {
 			plugin.set("rendered", true);
-		} else {
-			plugin._refreshView();
+			return;
 		}
+		if (item.isRoot() && !plugin.get("rendered") && !item.config.get("live")) {
+			body.isotope("insert", item.config.get("target"));
+			plugin.set("rendered", true);
+			return;
+		}
+		plugin._refreshView();
 	}
 };
 
-$.map([ "Echo.StreamServer.Controls.Submit.onEditError",
-	"Echo.StreamServer.Controls.Stream.onEditComplete",
+$.map([ "Echo.StreamServer.Controls.Submit.onRender",
+	"Echo.StreamServer.Controls.Submit.onEditError",
+	"Echo.StreamServer.Controls.Submit.onEditComplete",
 	"Echo.StreamServer.Controls.ItemMediaGallery.onLoadMedia",
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand",
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse" ], function(event) {
@@ -241,7 +246,7 @@ $.map([ "Echo.StreamServer.Controls.Submit.onEditError",
 
 plugin.component.renderers.content = function(element) {
 	var plugin = this, item = this.component;
-	return item.parentRenderer("content", arguments).css({
+	return item.parentRenderer('content', arguments).css({
 		"width": parseInt(plugin.config.get("columnWidth"))
 	});
 };
@@ -253,24 +258,6 @@ plugin.component.renderers.avatar = function(element) {
 		"width": 30,
 		"height": 30
 	});
-	return element;
-};
-
-plugin.component.renderers.container = function(element) {
-	var plugin = this, item = this.component;
-	var text = Echo.Utils.stripTags(item.get("data.object.content"));
-	var css = plugin._getCSSByLength(text.length);
-	return item.parentRenderer("container", arguments).addClass(css);
-	
-};
-
-plugin.component.renderers.text = function(element) {
-	var plugin = this, item = this.component;
-	if (!item.isRoot()) {
-		return element.empty();
-	}
-	var filteredElements = plugin.config.get("mediaSelector")(item.get("data.object.content"));
-	$(filteredElements.selector, element).remove();
 	return element;
 };
 
@@ -287,17 +274,56 @@ plugin.renderers.childBody = function(element) {
 	return element.empty().append(text);
 };
 
-plugin.component.renderers.expandChildren = function(element) {
+$.each(["expandChildren", "container"], function(i, renderer) {
+	plugin.component.renderers[renderer] = function(element) {
+		var plugin = this, item = this.component;
+		var publish = function() {
+			plugin.events.publish({
+				"topic": "onChangeView",
+				"data": {
+					"action": "rerender",
+					"itemUnique": item.get("data.unique"),
+					"actorID": item.get("actor.id"),
+					"priority": "high",
+					"handler": function() { plugin._refreshView(); }
+				},
+				"context": item.config.get("parent.context")
+			});
+		};
+		element = item.parentRenderer(renderer, arguments);
+		if (plugin.get("rendered")) {
+			element.queue("fx", function(next) {
+				next();
+				plugin._refreshView();
+			});
+			if (renderer === "expandChildren") {
+				publish();
+			} else {
+				plugin._refreshView();
+			}
+		}
+		return element;
+	}
+});
+
+plugin.component.renderers.body = function(element) {
 	var plugin = this, item = this.component;
-	element.queue("fx", function(next) {
-		next();
-		plugin._refreshView();
-	});
-	element = item.parentRenderer("expandChildren", arguments);
+	element = item.parentRenderer("body", arguments);
+	var filteredElements = plugin.config.get("mediaSelector")(item.get("data.object.content"));
+	$(filteredElements.selector, item.dom.get("text")).remove();
+	var text = Echo.Utils.stripTags(item.get("data.object.content"));
+	item.dom.get("container").addClass(plugin._getCSSByLength(text.length));
 	return element;
 };
 
-plugin.renderers.media = function(element, dom) {
+plugin.component.renderers.textToggleTruncated = function(element) {
+	var plugin = this, item = this.component;
+	return item.parentRenderer("textToggleTruncated", arguments).one('click', function() {
+		plugin._refreshView();
+	});
+};
+
+plugin.renderers.media = function(element) {
 	var plugin = this, item = this.component;
 	var items = plugin.config.get("mediaSelector")(item.get("data.object.content"));
 	if (items.length) {
@@ -312,21 +338,6 @@ plugin.renderers.media = function(element, dom) {
 		element.hide();
 	}
 	return element;
-};
-
-plugin.renderers.textToggleTruncated = function(element) {
-	var plugin = this, item = this.component;
-	var text = item.parentRenderer("textToggleTruncated", arguments);
-	/*
-	FIX IT
-	element.unbind("click." + item.data.unique).one("click." + item.data.unique, function() {
-		plugin.publish(
-			item,
-			plugin.topic("internal.Stream.Item", "onChangeView"),
-			{"item": item, "force": true}
-		);
-	});*/
-	return text;
 };
 
 plugin.methods._getCSSByLength = function(length) {
@@ -412,16 +423,23 @@ plugin.css =
 	'.{plugin.class} .{class:childrenByCurrentActorLive} .{class:container} { background-color: #F2F0F0; }' +
 	'.{plugin.class} .{class:children} .{class:wrapper}  { display: none; }' +
 	'.{plugin.class} .{class:childrenByCurrentActorLive} .{class:wrapper} {display: none}' +
-	'.{plugin.class} .{class:replyForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
 	'.{plugin.class} .{class:children} .{class:content} { box-shadow: none; margin: 0px; padding: 0px; border: none; border-bottom: 1px solid #d9d4d4; background-color: #F2F0F0; }' +
 	'.{plugin.class} .{class:childrenByCurrentActorLive} .{class:content} { box-shadow: none; margin: 0px; padding: 0px; border: none; border-bottom: 1px solid #d9d4d4; background-color: #F2F0F0; }' +
 	'.{plugin.class} .{class:container-child} { margin: 0px; padding: 10px 15px; }' +
 	'.{plugin.class} .echo-linkColor { text-decoration: none; font-weight: bold; color: #524D4D; }' +
 	'.{plugin.class} .echo-linkColor a { text-decoration: none; font-weight: bold; color: #524D4D; }' +
-	'.{plugin.class} .isotope { -webkit-transition-property: height, width; -moz-transition-property: height, width; -o-transition-property: height, width; transition-property: height, width; }' +
-	'.{plugin.class} .isotope, .echo-PinboardVisualization-plugin .isotope .isotope-item { -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }' +
-	'.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; }';
-	//TODO: add reply, expandChildren, likes and style for isPre9 styles
+	'.{plugin.class} .{class:expandChildren} .echo-message-icon { background-image: none; }' +
+	'.{plugin.class} .{class:expandChildren} { border-bottom: 1px solid #D9D4D4; background-color: #F2F0F0; }' +
+	'.{plugin.class} .{class:expandChildren} .{class:message-loading} { background-image: none; font-weight: bold; }' +
+	'.{plugin.class} .{class:expandChildren} .{class:expandChildrenLabel} { padding-left: 0px; background-image: none; }' +
+	// plugins styles
+	'.{plugin.class} .{class:plugin-Like-likedBy} { margin-top: 5px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-name { font-size: 12px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-logout { line-height: 24px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-userInfoWrapper {  margin: 5px 0px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
+	(Echo.Utils.isPreIE9() ? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }' : '');
 	
 Echo.Plugin.create(plugin);
 
@@ -449,12 +467,26 @@ plugin.config = {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.onRender": function(topic, args) {
-		var plugin = this, stream = this.component;
-		stream.dom.get("body").isotope(
-			plugin.config.get("isotope")
-		);
+		this._isotopeView();
+	},
+	"Echo.StreamServer.Controls.Stream.onRefresh": function(topic, args) {
+		this._isotopeView();
+	},
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView": function(topic, args) {
+		this.component._queueActivity(args);
 	}
 };
+
+plugin.methods._isotopeView = function() {
+	var plugin = this, stream = this.component;
+	stream.dom.get("body").isotope(
+		plugin.config.get("isotope")
+	);
+};
+
+plugin.css = 
+	'.{plugin.class} .isotope { -webkit-transition-property: height, width; -moz-transition-property: height, width; -o-transition-property: height, width; transition-property: height, width;  -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }' +
+	'.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }';
 
 Echo.Plugin.create(plugin);
 

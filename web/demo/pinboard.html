@@ -28,22 +28,32 @@
 
 		var stream = new Echo.StreamServer.Controls.Stream({
 			"target": document.getElementById("stream"),
-			"query": "childrenof:http://example.com/dbragin -state:ModeratorDeleted  children:1 childrenItemsPerPage:2",
+			"query": "scope:http://example.com/dbragin/pin -state:ModeratorDeleted  children:1 childrenItemsPerPage:2",
 			"appkey": "test.js-kit.com",
+			"item": {
+				"limits": {
+					"maxBodyCharacters": 35,
+				}
+			},
 			"reTag": false,
-			"maxBodyLines": 5,
 			"fadeTimeout": 0,
 			"slideTimeout": 0,
-			"children" : {
-				"additionalItemsPerPage": 2,
-				"itemsSlideTimeout": 50
-			},
 			"plugins": [{
 				"name": "PinboardVisualization"
 			}, {
-				"name": "Reply"
+				"name": "Reply",
+				"nestedPlugins": [{
+					"name": "FormAuth",
+					"submitPermissions": "forceLogin",
+					"identityManager": {
+						"login": identityManager,
+						"signup": identityManager
+					}
+				}]
 			}, {
 				"name": "Edit"
+			}, {
+				"name": "Like"
 			}]
 		});
 	</script>
