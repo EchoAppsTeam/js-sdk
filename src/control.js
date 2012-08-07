@@ -720,19 +720,10 @@ Echo.Control.prototype._isPluginEnabled = function(plugin) {
 
 Echo.Control.prototype._loadScripts = function(scripts, callback) {
 	var control = this;
-	var urls = Echo.Utils.foldl([], scripts || [], function(script, acc) {
-		if (!script.loaded()) {
-			acc.push(script.url);
-		}
-	});
-	if (!urls || !urls.length) {
-		callback.call(this);
-		return;
-	}
-	yepnope.errorTimeout = this.config.get("scriptLoadErrorTimeout");
-	yepnope({
-		"load": urls,
-		"complete": function() {
+	Echo.Loader.download({
+		"scripts": scripts,
+		"errorTimeout": control.config.get("scriptLoadErrorTimeout"),
+		"callback": function() {
 			callback.call(control);
 		}
 	});

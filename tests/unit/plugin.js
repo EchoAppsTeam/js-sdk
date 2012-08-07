@@ -668,6 +668,14 @@ suite.getPluginManifest = function(name, component) {
 		"label3": "plugin label3 value"
 	};
 
+	manifest.dependencies = [{
+		"url": "//cdn.echoenabled.com/clientapps/v2/social-chatter/countdown/jquery.countdown.js",
+		"loaded": function() { return !!($.fn && $.fn.countdown); }
+	}, {
+		"url": "//cdn.echoenabled.com/clientapps/v2/backplane.js",
+		"loaded": function() { return !!window.Backplane; }
+	}];
+
 	manifest.init = function() {
 		var plugin = this;
 

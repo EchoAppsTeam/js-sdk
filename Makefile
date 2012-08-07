@@ -49,7 +49,7 @@ PACK_FILES_third-party/jquery = \
 	$(SRC_DIR)/third-party/jquery.fancybox-1.3.4.min.js \
 	$(SRC_DIR)/third-party/jquery.ui-1.8.21.min.js
 
-all: clean sdk packs
+all: clean sdk packs loader
 
 packs: $(PACK_NAMES)
 
@@ -73,6 +73,12 @@ docs:
 	rm -rf web/sdk/docs
 	@echo "Making docs..."
 	jsduck src --ignore-global --title="Echo JS SDK" --pretty-json --output web/sdk/docs
+	@echo "Done!"
+
+loader:
+	@echo "Making loader..."
+	@cat $(SRC_DIR)/third-party/yepnope.1.5.4-min.js >> $(WEB_SDK_DIR)/loader.js
+	@cat $(SRC_DIR)/loader.js >> $(WEB_SDK_DIR)/loader.js
 	@echo "Done!"
 
 .PHONY: clean

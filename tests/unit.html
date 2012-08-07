@@ -9,6 +9,7 @@
 		#echo-tests { background: #FFFFFF; }
 		#qunit-header, #qunit-tests > li:last-child { border-radius:0; }
 	</style>
+	<script type="text/javascript" src="../loader.js"></script>
 	<script type="text/javascript" src="../backplane.js"></script>
 	<script type="text/javascript" src="../third-party/jquery.pack.js"></script>
 	<script type="text/javascript" src="../environment.pack.js"></script>
@@ -40,7 +41,6 @@
 	<script type="text/javascript" src="unit/stream-server/plugins/form-auth.js"></script>
 	<script type="text/javascript" src="unit/stream-server/plugins/moderation.js"></script>
 	<script type="text/javascript" src="unit/identity-server/controls/auth.js"></script>
-
 	<script>
 		$(document).ready(function() {
 			Echo.Tests.runTests();
