@@ -59,6 +59,7 @@ Echo.Control.create = function(manifest) {
 	if (manifest.methods) {
 		$.extend(_constructor.prototype, manifest.methods);
 	}
+	_constructor.prototype.dependencies = manifest.dependencies;
 	if (manifest.templates) {
 		_constructor.prototype.templates =
 			$.extend({}, _constructor.prototype.templates, manifest.templates);
@@ -84,6 +85,7 @@ Echo.Control.manifest = function(name) {
 		"methods": {},
 		"renderers": {},
 		"templates": {},
+		"dependencies": [],
 		"init": function(){ this.dom.render(); },
 		"destroy": undefined
 	};
@@ -145,6 +147,7 @@ Echo.Control.prototype.defaults.config = {
 		"enabled": true,
 		"layout": "full"
 	},
+	"scriptLoadErrorTimeout": 5000, // 5 sec
 	"query": ""
 };
 
@@ -673,8 +676,7 @@ Echo.Control.prototype._init.loading = function() {
 };
 
 Echo.Control.prototype._init.dependencies = function(callback) {
-	// TODO: check if a control has any dependencies, load them and continue execution
-	callback.call(this);
+	this._loadScripts(this.dependencies, callback);
 };
 
 Echo.Control.prototype._init.user = function(callback) {
@@ -695,7 +697,7 @@ Echo.Control.prototype._init.user = function(callback) {
 
 Echo.Control.prototype._init.plugins = function(callback) {
 	var control = this;
-	this._loadPluginsDependencies(function() {
+	this._loadPluginScripts(function() {
 		$.map(control.config.get("pluginsOrder"), function(name) {
 			var plugin = Echo.Plugin.getClass(name, control.name);
 			if (plugin && control._isPluginEnabled(name)) {
@@ -707,7 +709,7 @@ Echo.Control.prototype._init.plugins = function(callback) {
 				}
 			}
 		});
-		callback && callback.call(this);
+		callback.call(this);
 	});
 };
 
@@ -716,19 +718,60 @@ Echo.Control.prototype._isPluginEnabled = function(plugin) {
 	return $.isFunction(enabled) ? enabled.call(this) : enabled;
 };
 
-// TODO: define this function later, need to select loader first
-// TODO: load dependencies for the nested controls, ex: Stream.Item, i.e. Stream.*
-Echo.Control.prototype._loadPluginsDependencies = function(callback) {
+Echo.Control.prototype._loadScripts = function(scripts, callback) {
 	var control = this;
-	var plugins = this.config.get("pluginsOrder");
-	var scripts = Echo.Utils.foldl([], plugins, function(name, acc) {
-		var plugin = Echo.Plugin.getClass(name, control.name);
-		if (plugin && plugin.dependencies && plugin.dependencies.length) {
-			return acc.concat(plugin.dependencies);
+	var urls = Echo.Utils.foldl([], scripts || [], function(script, acc) {
+		if (!script.loaded()) {
+			acc.push(script.url);
 		}
 	});
-	// TODO: need to load "scripts" and execute callback after that
-	callback && callback.call(this);
+	if (!urls || !urls.length) {
+		callback.call(this);
+		return;
+	}
+	yepnope.errorTimeout = this.config.get("scriptLoadErrorTimeout");
+	yepnope({
+		"load": urls,
+		"complete": function() {
+			callback.call(control);
+		}
+	});
+};
+
+Echo.Control.prototype._loadPluginScripts = function(callback) {
+	var control = this;
+	var plugins = this.config.get("pluginsOrder");
+
+	var iterators = {
+		"plugins": function(name, plugin) {
+			// check if a script URL is defined for the plugin
+			var url = "plugins." + name + ".url";
+			if (!plugin && control.config.get(url)) {
+				return [{
+					"url": control.config.get(url),
+					"loaded": function() {
+						return !!Echo.Plugin.getClass(name, control.name);
+					}
+				}];
+			}
+		},
+		"dependencies": function(name, plugin) {
+			return plugin && plugin.dependencies;
+		}
+	};
+	var get = function(type) {
+		return Echo.Utils.foldl([], plugins, function(name, acc) {
+			var plugin = Echo.Plugin.getClass(name, control.name);
+			var scripts = iterators[type](name, plugin);
+			if ($.isArray(scripts) && scripts.length) {
+				return acc.concat(scripts);
+			}
+		});
+	};
+
+	control._loadScripts(get("plugins"), function() {
+		control._loadScripts(get("dependencies"), callback);
+	});
 };
 
 /**

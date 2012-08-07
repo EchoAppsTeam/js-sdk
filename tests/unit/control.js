@@ -48,6 +48,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"methods": {},
 			"renderers": {},
 			"templates": {},
+			"dependencies": [],
 			"destroy": undefined
 		};
 

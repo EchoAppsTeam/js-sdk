@@ -53,6 +53,7 @@ Echo.Plugin.create = function(manifest) {
 		}
 	};
 	_constructor.manifest = manifest;
+	_constructor.dependencies = manifest.dependencies;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
 	// copy destroy method to the list of methods
 	if (manifest.destroy) {
@@ -89,6 +90,7 @@ Echo.Plugin.manifest = function(name, component) {
 		"methods": {},
 		"renderers": {},
 		"templates": {},
+		"dependencies": [],
 		"init": function(){},
 		"destroy": undefined
 	};
