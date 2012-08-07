@@ -222,6 +222,9 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 	data = data || {};
 	instructions = $.extend({
 		"class": function(key) {
+			if (!key) {
+				return control.cssPrefix.substr(0, control.cssPrefix.length - 1);
+			}
 			return control.cssPrefix + key;
 		},
 		"data": function(key) {
