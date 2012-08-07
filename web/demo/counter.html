@@ -1,29 +1,40 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-	<title>Echo</title>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<title>Counter Demo</title>
+	<link rel="stylesheet" type="text/css" href="demo.css" />
+
+	<!-- Default scripts inclusion -->
 	<script type="text/javascript" src="../sdk/backplane.js"></script>
 	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
 	<script type="text/javascript" src="../sdk/environment.pack.js"></script>
 	<script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
 </head>
 <body>
-	<div id="container"></div>
+	<div id="container">
+		<div id="documentation"><a href="http://wiki.aboutecho.com/w/page/30184435/Echo%20Application%20-%20Echo%20Counter%20Client" target="_blank">Documentation</a></div>
+		<h1>Counter Demo</h1>
+		<div class="wrapper">
+			<div id="counter"></div>
+		</div>
+	</div>
+
+	<!-- Client initialization -->
 	<script type="text/javascript">
-	window.onload = function() {
+		$(document).ready(
+			function() {
+				parent.resize($(document).height());
+			}
+		);
 		Backplane.init({
 			"serverBaseURL": "http://api.echoenabled.com/v1",
 			"busName": "jskit"
 		});
-
-		var control = new Echo.StreamServer.Controls.Counter({
-			"target": document.getElementById("container"),
+		new Echo.StreamServer.Controls.Counter({
+			"target": document.getElementById("counter"),
 			"appkey": "test.aboutecho.com",
 			"query" : "childrenof:http://example.com/test/*"
 		});
-
-		if (console) console.log(control);
-	}
 	</script>
 </body>
 </html>

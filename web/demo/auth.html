@@ -1,16 +1,31 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-	<title>Echo</title>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<title>Auth Demo</title>
+	<link rel="stylesheet" type="text/css" href="demo.css" />
+
+	<!-- Default scripts inclusion -->
 	<script type="text/javascript" src="../sdk/backplane.js"></script>
 	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
 	<script type="text/javascript" src="../sdk/environment.pack.js"></script>
 	<script type="text/javascript" src="../sdk/identity-server.pack.js"></script>
 </head>
 <body>
-	<div id="container"></div>
-	<script type="text/javascript">
+	<div id="container">
+		<div id="documentation"><a href="http://wiki.aboutecho.com/w/page/29552139/Echo%20Application%20-%20Login%20Client" target="_blank">Documentation</a></div>
+		<h1>Auth Demo</h1>
+		<div class="wrapper">
+			<div id="auth"></div>
+		</div>
+	</div>
 
+	<!-- Client initialization -->
+	<script type="text/javascript">
+		$(document).ready(
+			function() {
+				parent.resize($(document).height());
+			}
+		);
 		Backplane.init({
 			"serverBaseURL": "http://api.echoenabled.com/v1",
 			"busName": "jskit"
@@ -18,8 +33,8 @@
 
 		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
 
-		var control = new Echo.IdentityServer.Controls.Auth({
-			"target": document.getElementById("container"),
+		new Echo.IdentityServer.Controls.Auth({
+			"target": document.getElementById("auth"),
 			"appkey": "test.aboutecho.com",
 			"param": "test",
 			"identityManager": {
@@ -27,9 +42,7 @@
 				"signup": identityManager
 			}
 		});
-
-		if (console) console.log(control);
-
 	</script>
 </body>
 </html>
+

@@ -1,9 +1,63 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>Echo JSSDK demo</title>
+	<title>Echo JS SDK demo</title>
+	<link rel="stylesheet" type="text/css" href="demo.css" />
+	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var nav = $(".navigation");
+			nav.on("mouseenter", function(e) {
+				nav.fadeTo("slow", 1);
+				e.stopPropagation();
+			}).on("mouseleave", function(e) {
+				nav.fadeTo("slow", 0.5);
+				e.stopPropagation();
+			})
+		});
+		window.resize = function(height){
+				alert(height);
+				document.getElementById("frame").style.height = height + 48 + "px";
+		}
+	</script>
 </head>
 <body>
-
+	<div class="top navigation">
+		<ul class="menu">
+			<li style=" padding-right: 0px; border: 0px; color: #808080;">Controls: </li>
+			<li>
+				<a href="auth.html" target="frame">Auth</a>
+				<a href="auth.html" target="_blank">
+					<img src="link.jpg" class="open-in-new-window" title="Open this control in a separate window" />
+				</a>
+			</li>
+			<li>
+				<a href="counter.html" target="frame">Counter</a>
+				<a href="counter.html" target="_blank">
+					<img src="link.jpg" class="open-in-new-window" title="Open this control in a separate window" />
+				</a>
+			</li>
+			<li>
+				<a href="facepile.html" target="frame">Facepile</a>
+				<a href="facepile.html" target="_blank">
+					<img src="link.jpg" class="open-in-new-window" title="Open this control in a separate window" />
+				</a>
+			</li>
+			<li>
+				<a href="stream.html" target="frame">Stream</a>
+				<a href="stream.html" target="_blank">
+					<img src="link.jpg" class="open-in-new-window" title="Open this control in a separate window">
+				</a>
+			</li>
+			<li style="border-right: 0px;">
+				<a href="submit.html" target="frame">Submit</a>
+				<a href="submit.html" target="_blank">
+					<img src="link.jpg" class="open-in-new-window" title="Open this control in a separate window">
+				</a>
+			</li>
+		</ul>
+		<div class="powered-by"><small>JS SDK powered</small></div><div class="clear"></div>
+	</div>
+	<iframe class="frame" id="frame" name="frame" src="stream.html"></iframe>
 </body>
 </html>

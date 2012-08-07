@@ -1,65 +1,59 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>User List Client Demo</title>
+	<head>
+	<title>Facepile Demo</title>
+	<link rel="stylesheet" type="text/css" href="demo.css" />
 
-<!-- Default scripts inclusion -->
-<script type="text/javascript" src="../sdk/backplane.js"></script>
-<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
-<script type="text/javascript" src="../sdk/environment.pack.js"></script>
-<script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
-
-<style>
-body { font-family: Arial, Helvetica, sans-serif; background-color: lightgrey; }
-#documentation { float: right; font-size: 12px; margin-top: 20px; }
-#container { -moz-box-shadow: 0 4px 3px #666666; background: #FAF9F3; border: 1px solid #FFFFFF; width: 640px; padding: 0 20px 20px 20px; margin: 30px auto 50px auto; }
-.wrapper { background: #F5F4EE; border: 1px solid #CCCCCC; margin-bottom: 25px; padding: 5px; }
-.block { background-color: white; border: 1px solid #DDDDDD; border-radius: 6px; -moz-border-radius: 6px; -webkit-border-radius: 6px; margin: 10px 0px; padding: 5px; }
-</style>	
-
+	<!-- Default scripts inclusion -->
+	<script type="text/javascript" src="../sdk/backplane.js"></script>
+	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="../sdk/environment.pack.js"></script>
+	<script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
 </head>
 <body>
+	<div id="container">
+		<div id="documentation"><a href="http://wiki.aboutecho.com/Echo+Application+-+User+List+Client" target="_blank">Documentation</a></div>
+		<h1>Facepile Demo</h1>
 
-<div id="container">
+		<div class="wrapper">
+			<h3>Dynamic lists (by "query")</h3>
+			<small>query: "childrenof:http://aboutecho.com/* itemsPerPage:N children:0"</small>
+			<hr>
+			<b>name and avatar</b>
+			<small><br>itemsPerPage = 2, with suffixText</small>
+			<div class="block" id="ulist-d1"></div>
+			<b>only name</b>
+			<small><br>itemsPerPage = 3</small>
+			<div class="block" id="ulist-d2"></div>
+			<b>only avatar</b>
+			<small><br>itemsPerPage = 6</small>
+			<div class="block" id="ulist-d3"></div>
+		</div>
 
-	<div id="documentation"><a href="http://wiki.aboutecho.com/Echo+Application+-+User+List+Client" target="_blank">Documentation</a></div>
-	<h1>User List Client Demo</h1>
-
-	<div class="wrapper">
-		<h3>Dynamic lists (by "query")</h3>
-		<small>query: "childrenof:http://aboutecho.com/* itemsPerPage:N children:0"</small>
-		<hr>
-		<b>name and avatar</b>
-		<small><br>itemsPerPage = 2, with suffixText</small>
-		<div class="block" id="ulist-d1"></div>
-		<b>only name</b>
-		<small><br>itemsPerPage = 3</small>
-		<div class="block" id="ulist-d2"></div>
-		<b>only avatar</b>
-		<small><br>itemsPerPage = 6</small>
-		<div class="block" id="ulist-d3"></div>
+		<div class="wrapper">
+			<h3>Static lists (by "data")</h3>
+			<hr>
+			<b>name and avatar</b>
+			<small><br>itemsPerPage = 2, initialUsersCount = 5, with suffixText</small>
+			<div class="block" id="ulist-s1"></div>
+			<b>only name</b>
+			<small><br>itemsPerPage = 3, totalUsersCount = 100</small>
+			<div class="block" id="ulist-s2"></div>
+			<b>only avatar</b>
+			<small><br>itemsPerPage = 6</small>
+			<div class="block" id="ulist-s3"></div>
+			<div style="clear: both"></div>
+		</div>
+		
 	</div>
-
-	<div class="wrapper">
-		<h3>Static lists (by "data")</h3>
-		<hr>
-		<b>name and avatar</b>
-		<small><br>itemsPerPage = 2, initialUsersCount = 5, with suffixText</small>
-		<div class="block" id="ulist-s1"></div>
-		<b>only name</b>
-		<small><br>itemsPerPage = 3, totalUsersCount = 100</small>
-		<div class="block" id="ulist-s2"></div>
-		<b>only avatar</b>
-		<small><br>itemsPerPage = 6</small>
-		<div class="block" id="ulist-s3"></div>
-		<div style="clear: both"></div>
-	</div>
-	
-</div>
 
 	<!-- Client initialization -->
 	<script type="text/javascript">
+		$(document).ready(
+			function() {
+				parent.resize($(document).height());
+			}
+		);
 		new Echo.StreamServer.Controls.FacePile({
 			"target": document.getElementById("ulist-d1"),
 			"appkey": "test.aboutecho.com",
@@ -112,7 +106,6 @@ body { font-family: Arial, Helvetica, sans-serif; background-color: lightgrey; }
 			});
 		}, "jsonp");
 	</script>
-
 </body>
 </html>
 
