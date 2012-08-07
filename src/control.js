@@ -37,7 +37,6 @@ Echo.Control.create = function(manifest) {
 		if (!config || !config.target || !config.appkey) return {};
 		this.data = config.data || {};
 		this.name = manifest.name;
-		this.manifest = manifest;
 		this._init([
 			"vars",
 			"extension",
@@ -56,10 +55,10 @@ Echo.Control.create = function(manifest) {
 		]);
 	};
 	Echo.Utils.inherit(_constructor, manifest.inherits || Echo.Control);
+	_constructor.manifest = manifest;
 	if (manifest.methods) {
 		$.extend(_constructor.prototype, manifest.methods);
 	}
-	_constructor.prototype.dependencies = manifest.dependencies;
 	if (manifest.templates) {
 		_constructor.prototype.templates =
 			$.extend({}, _constructor.prototype.templates, manifest.templates);
@@ -272,7 +271,7 @@ Echo.Control.prototype.refresh = function() {
 		"loading",
 		"user:async",
 		"plugins:async",
-		this.manifest.init
+		this._manifest("init")
 	]);
 };
 
@@ -461,7 +460,7 @@ Echo.Control.prototype._init.vars = function() {
 	// but we need to avoid any references to the default var objects,
 	// thus we copy and recursively merge default values separately
 	// and apply default values to the given instance non-recursively
-	$.extend(this, $.extend(true, {}, this.defaults.vars, this.manifest.vars));
+	$.extend(this, $.extend(true, {}, this.defaults.vars, this._manifest("vars")));
 };
 
 Echo.Control.prototype._init.extension = function() {
@@ -487,9 +486,9 @@ Echo.Control.prototype._init.config = function(data) {
 	data = $.extend({"plugins": []}, data || {});
 	var defaults = $.extend(true, {}, this.get("defaults.config"), {
 		"context": (data.parent ? data.parent.context + "/" : "") + Echo.Utils.getUniqueString()
-	}, this.manifest.config || {});
+	}, this._manifest("config") || {});
 	// TODO: find better home for normalizer...
-	var normalizer = this.manifest.config.normalizer;
+	var normalizer = this._manifest("config").normalizer;
 	return new Echo.Configuration(data, defaults, function(key, value) {
 		var handler = normalizer && normalizer[key] || _normalizer && _normalizer[key];
 		return handler ? handler.call(this, value) : value;
@@ -531,7 +530,7 @@ Echo.Control.prototype._init.events = function() {
 
 Echo.Control.prototype._init.subscriptions = function() {
 	var control = this;
-	$.each(control.manifest.events, function(topic, data) {
+	$.each(control._manifest("events"), function(topic, data) {
 		data = $.isFunction(data) ? {"handler": data} : data;
 		control.events.subscribe($.extend({"topic": topic}, data));
 	});
@@ -573,8 +572,8 @@ Echo.Control.prototype._init.subscriptions = function() {
 			});
 
 			// apply control-specific logic
-			if (control.manifest.destroy) {
-				control.manifest.destroy.call(control, data.producer);
+			if (control._manifest("destroy")) {
+				control._manifest("destroy").call(control, data.producer);
 			}
 
 			// abort and cleanup data request machinery
@@ -613,7 +612,7 @@ Echo.Control.prototype._init.subscriptions = function() {
 };
 
 Echo.Control.prototype._init.labels = function() {
-	var labels = $.extend({}, this.get("defaults.labels"), this.manifest.labels);
+	var labels = $.extend({}, this.get("defaults.labels"), this._manifest("labels"));
 
 	// define default language var values with the lowest priority available
 	Echo.Labels.set(labels, this.name, true);
@@ -625,13 +624,13 @@ Echo.Control.prototype._init.labels = function() {
 Echo.Control.prototype._init.css = function() {
 	Echo.Utils.addCSS(this.baseCSS, "control");
 	this.config.get("target").addClass(this.cssPrefix.substr(0, this.cssPrefix.length - 1));
-	if (!this.manifest.css) return;
-	Echo.Utils.addCSS(this.substitute(this.manifest.css), this.manifest.name);
+	if (!this._manifest("css")) return;
+	Echo.Utils.addCSS(this.substitute(this._manifest("css")), this.name);
 };
 
 Echo.Control.prototype._init.renderers = function() {
 	var control = this;
-	$.each(this.manifest.renderers, function() {
+	$.each(this._manifest("renderers"), function() {
 		control.extendRenderer.apply(control, arguments);
 	});
 };
@@ -676,7 +675,7 @@ Echo.Control.prototype._init.loading = function() {
 };
 
 Echo.Control.prototype._init.dependencies = function(callback) {
-	this._loadScripts(this.dependencies, callback);
+	this._loadScripts(this._manifest("dependencies"), callback);
 };
 
 Echo.Control.prototype._init.user = function(callback) {
@@ -711,6 +710,13 @@ Echo.Control.prototype._init.plugins = function(callback) {
 		});
 		callback.call(this);
 	});
+};
+
+Echo.Control.prototype._manifest = function(key) {
+	var component = Echo.Utils.getComponent(this.name);
+	return component
+		? key ? component.manifest[key] : component.manifest
+		: undefined;
 };
 
 Echo.Control.prototype._isPluginEnabled = function(plugin) {

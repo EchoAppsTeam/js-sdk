@@ -33,7 +33,6 @@ Echo.Plugin.create = function(manifest) {
 		if (!config || !config.component) return;
 		var self = this;
 		this.name = manifest.name;
-		this.manifest = manifest;
 		this.component = config.component;
 		this.cssPrefix = this.component.cssPrefix + "plugin-" + manifest.name + "-";
 		// define extra css class for the control target
@@ -243,18 +242,24 @@ Echo.Plugin.prototype._init = function() {
 	Echo.Control.prototype._init.apply(this, arguments);
 };
 
+Echo.Plugin.prototype._manifest = function(key) {
+	var plugin = Echo.Plugin.getClass(this.name, this.component.name);
+	return plugin
+		? key ? plugin.manifest[key] : plugin.manifest
+		: undefined;
+};
+
 Echo.Plugin.prototype._init.css = function() {
-	var manifest = this.manifest;
-	if (!manifest.css) return;
-	var parts = [this.component.manifest.name, "Plugins", manifest.name];
-	Echo.Utils.addCSS(this.substitute(manifest.css), parts.join("."));
+	if (!this._manifest("css")) return;
+	var parts = [this.component.name, "Plugins", this.name];
+	Echo.Utils.addCSS(this.substitute(this._manifest("css")), parts.join("."));
 };
 
 Echo.Plugin.prototype._init.labels = function() {
 	var namespace = this.component.name + ".Plugins." + this.name;
 
 	// define default language var values with the lowest priority available
-	Echo.Labels.set($.extend({}, this.manifest.labels), namespace, true);
+	Echo.Labels.set($.extend({}, this._manifest("labels")), namespace, true);
 
 	// define language var values passed within the config with the highest priority
 	return new Echo.Labels(this.config.get("labels", {}), namespace);
@@ -270,7 +275,7 @@ Echo.Plugin.prototype._init.events = function() {
 
 Echo.Plugin.prototype._init.subscriptions = function() {
 	var self = this;
-	$.each(this.manifest.events, function(topic, data) {
+	$.each(this._manifest("events"), function(topic, data) {
 		data = $.isFunction(data) ? {"handler": data} : data;
 		self.events.subscribe($.extend({"topic": topic}, data));
 	});
@@ -278,17 +283,17 @@ Echo.Plugin.prototype._init.subscriptions = function() {
 
 Echo.Plugin.prototype._init.renderers = function() {
 	var self = this;
-	$.each(this.manifest.renderers, function(name, renderer) {
-		self.component.extendRenderer.call(self.component, "plugin-" + self.manifest.name + "-" + name, $.proxy(renderer, self));
+	$.each(this._manifest("renderers"), function(name, renderer) {
+		self.component.extendRenderer.call(self.component, "plugin-" + self.name + "-" + name, $.proxy(renderer, self));
 	});
-	$.each(this.manifest.component.renderers, function(name, renderer) {
+	$.each(this._manifest("component").renderers, function(name, renderer) {
 		self.component.extendRenderer.call(self.component, name, $.proxy(renderer, self));
 	});
 };
 
 Echo.Plugin.prototype._init.dom = function() {
 	var parentDOM = this.component.dom;
-	var prefix = "plugin-" + this.manifest.name + "-";
+	var prefix = "plugin-" + this.name + "-";
 	this.dom = {
 		"clear": function() {
 			parentDOM.clear();
@@ -348,7 +353,9 @@ Echo.Plugin.Config.prototype.set = function(key, value) {
  */
 Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
 	var component = this.plugin.component;
-	var value = component.config.get(this._normalize(key), this.plugin.manifest.config[key]);
+	var value = component.config.get(
+		this._normalize(key),
+		this.plugin._manifest("config")[key]);
 	return typeof value == "undefined"
 		? askParent
 			? component.config.get(key, defaults)
