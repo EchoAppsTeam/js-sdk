@@ -498,12 +498,18 @@ stream.methods._getRespectiveAccumulator = function(item, sort) {
 
 stream.methods._appendRootItems = function(items, container) {
 	var self = this;
+	if (!items || !items.length) return;
 	var fragment = document.createDocumentFragment();
-	$.each(items || [], function(i, item) {
-		item.dom.render();
+	// note: we should render an item only when the target is appended into the DOM,
+	//       so we append targets into the fragment first, append fragment to the stream
+	//	 and call render for items only after that
+	$.each(items, function(i, item) {
 		fragment.appendChild(item.config.get("target").get(0));
 	});
 	container.append(fragment);
+	$.each(items, function(i, item) {
+		item.dom.render();
+	});
 };
 
 stream.methods._constructChildrenSearchQuery = function(item) {
@@ -1680,7 +1686,7 @@ item.renderers.textToggleTruncated = function(element) {
 		self.dom.render({"name": "body"});
 		self.dom.render({"name": "textToggleTruncated"});
 	});
-	return element.append(
+	return element.empty().append(
 		this.labels.get("textToggleTruncated" + (this.textExpanded ? "Less" : "More"))
 	);
 };
