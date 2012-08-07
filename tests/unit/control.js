@@ -2,6 +2,9 @@
 
 "use strict";
 
+Echo.Tests.Dependencies = Echo.Tests.Dependencies || {};
+Echo.Tests.Dependencies.Control = {};
+
 var suite = Echo.Tests.Unit.Control = function() {};
 
 suite.prototype.info = {
@@ -153,6 +156,13 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking if existing plugin ref is available");
 		QUnit.ok(!this.getPlugin("FakePlugin"),
 			"Checking if dummy plugin ref is NOT available");
+
+		// checking if all dependencies are available
+		var result = true;
+		for (var i = 1; i < 6; i++) {
+			if (!Echo.Tests.Dependencies.Control["dep" + i]) result = false;
+		}
+		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
 
 		this.destroy();
 
@@ -698,6 +708,14 @@ suite.getControlManifest = function(name) {
 		"label2": "label2 value",
 		"label3": "label3 value"
 	};
+
+	var addDependency = function(n) {
+		manifest.dependencies.push({
+			"url": "unit/dependencies/control.dep." + n + ".js",
+			"loaded": function() { return !!Echo.Tests.Dependencies.Control["dep" + n]; }
+		});
+	};
+	for (var i = 1; i < 6; i++) addDependency(i);
 
 	manifest.init = function() {
 		this.dom.render();

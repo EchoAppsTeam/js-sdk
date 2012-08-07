@@ -2,6 +2,9 @@
 
 "use strict";
 
+Echo.Tests.Dependencies = Echo.Tests.Dependencies || {};
+Echo.Tests.Dependencies.Plugin = {};
+
 var suite = Echo.Tests.Unit.Plugin = function() {};
 
 suite.prototype.info = {
@@ -182,6 +185,13 @@ suite.prototype.cases.basicOperations = function(callback) {
 		plugin.enable();
 		QUnit.ok(control._isPluginEnabled("MyTestPlugin"),
 			"Checking if a plugin was enabled back after \"enable\" function call");
+
+		// checking if all dependencies are available
+		var result = true;
+		for (var i = 1; i < 6; i++) {
+			if (!Echo.Tests.Dependencies.Plugin["dep" + i]) result = false;
+		}
+		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
 
 		this.destroy();
 
@@ -668,13 +678,13 @@ suite.getPluginManifest = function(name, component) {
 		"label3": "plugin label3 value"
 	};
 
-	manifest.dependencies = [{
-		"url": "//cdn.echoenabled.com/clientapps/v2/social-chatter/countdown/jquery.countdown.js",
-		"loaded": function() { return !!($.fn && $.fn.countdown); }
-	}, {
-		"url": "//cdn.echoenabled.com/clientapps/v2/backplane.js",
-		"loaded": function() { return !!window.Backplane; }
-	}];
+	var addDependency = function(n) {
+		manifest.dependencies.push({
+			"url": "unit/dependencies/plugin.dep." + n + ".js",
+			"loaded": function() { return !!Echo.Tests.Dependencies.Plugin["dep" + n]; }
+		});
+	};
+	for (var i = 1; i < 6; i++) addDependency(i);
 
 	manifest.init = function() {
 		var plugin = this;

@@ -16,7 +16,7 @@ Echo.Loader.download = function(params) {
 	if (params.scripts && params.scripts.length) {
 		for (var i = 0; i < scripts.length; i++) {
 			var script = scripts[i];
-			if (!script.loaded || script.loaded()) {
+			if (!script.loaded || !script.loaded()) {
 				urls.push(script.url);
 			}
 		}
