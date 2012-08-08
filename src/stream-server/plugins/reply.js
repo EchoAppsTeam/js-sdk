@@ -47,6 +47,17 @@ plugin.config = {
 };
 
 plugin.events = {
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
+		var plugin = this, item = this.component;
+		var context = item.config.get("context");
+		if (context && context !== args.context) {
+			plugin.set("expanded", false);
+			plugin._hideSubmit();
+			plugin.events.publish({
+				"topic": "onCollapse"
+			});
+		}
+	},
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		this.set("expanded", false);
 		this._hideSubmit();
@@ -123,7 +134,11 @@ plugin.renderers.compactField = function(element) {
 		 * is triggered when the reply form is opened
 		 */
 		plugin.events.publish({
-			"topic": "onExpand"
+			"topic": "onExpand",
+			"data": {
+				"context": item.config.get("context")
+			},
+			"context": item.config.get("parent.context")
 		});
 	}).val(plugin.config.get("actionString"));
 };
@@ -198,12 +213,16 @@ plugin.methods._getClickHandler = function() {
 };
 
 plugin.methods._assembleButton = function() {
-	var plugin = this;
+	var plugin = this, item = this.component;
 	var callback = function() {
 		plugin.set("expanded", true);
 		plugin._showSubmit();
 		plugin.events.publish({
-			"topic": "onExpand"
+			"topic": "onExpand",
+			"data": {
+				"context": item.config.get("context")
+			},
+			"context": item.config.get("parent.context")
 		});
 	};
 	return function() {
