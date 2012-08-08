@@ -25,21 +25,8 @@ plugin.init = function() {
 	    self.set(key, value);
 	});
 	item.addButtonSpec("Reply", this._assembleButton());
-	$(document).click(function() {
-		var submit = self.get("submit");
-		if (self.get("expanded") && submit && !submit.dom.get("text").val()) {
-			self.set("expanded", false);
-			self._hideSubmit();
-			/**
-			 * @event onCollapse
-			 * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
-			 * is triggered when the reply form is closed 
-			 */
-			self.events.publish({
-				"topic": "onCollapse"
-			});
-		}
-	});
+	this.set("documentClickHandler", this._getClickHandler());
+	$(document).on('click', this.get("documentClickHandler"));
 };
 
 plugin.labels = {
@@ -149,6 +136,7 @@ plugin.methods.destroy = function() {
 		"submit": plugin.get("submit"),
 		"expanded": plugin.get("expanded")
 	});
+	$(document).off('click', plugin.get("documentClickHandler"));
 };
 
 plugin.methods._showSubmit = function() {
@@ -190,6 +178,25 @@ plugin.methods._hideSubmit = function() {
 	plugin._itemCSS("remove", item, plugin.dom.get("replyForm"));
 	plugin.dom.render({"name": "compactForm"});
 	item.dom.render({"name": "container"});
+};
+
+plugin.methods._getClickHandler = function() {
+	var plugin = this;
+	return function() {
+	    var submit = plugin.get("submit");
+	    if (plugin.get("expanded") && submit && !submit.dom.get("text").val()) {
+		    plugin.set("expanded", false);
+		    plugin._hideSubmit();
+		    /**
+		     * @event onCollapse
+		     * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
+		     * is triggered when the reply form is closed
+		     */
+		    plugin.events.publish({
+			    "topic": "onCollapse"
+		    });
+	    }
+	};
 };
 
 plugin.methods._assembleButton = function() {
