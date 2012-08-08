@@ -551,7 +551,8 @@ Echo.Control.prototype._init.subscriptions = function() {
 	};
 	control.events.subscribe({
 		"topic": "Echo.Control.onDataInvalidate",
-		"handler": requestUpdates
+		"handler": requestUpdates,
+		"data": {}
 	});
 
 	// call "ready" callback after the control was rendered

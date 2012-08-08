@@ -329,7 +329,6 @@ var _itemData = {
 };
 
 var _streamConfigData = {
-	"target": $(document.getElementById("qunit-fixture")).empty(),
 	"children": {
 		"additionalItemsPerPage": 5,
 		"displaySortOrder": "chronological",
@@ -353,7 +352,9 @@ var _streamConfigData = {
 		"text": true
 	},
 	"streamStateToggleBy": "mouseover", // mouseover | button | none
-	"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity"
+	"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity",
+	"query": "query_string",
+	"target": $("<div>")
 };
 
 var _itemConfigData = {

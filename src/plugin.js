@@ -224,7 +224,8 @@ Echo.Plugin.prototype.requestDataRefresh = function() {
 		"topic": "Echo.Control.onDataInvalidate",
 		"context": this.component.config.get("context"),
 		"global": false,
-		"propagation": false
+		"propagation": false,
+		"data": {}
 	});
 };
 

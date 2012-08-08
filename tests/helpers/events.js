@@ -196,6 +196,8 @@ Echo.Tests.Events.contracts = {
 	"Echo.StreamServer.Controls.Counter.onRerender": {},
 	"Echo.StreamServer.Controls.Counter.onRefresh": {},
 	"Echo.IdentityServer.Controls.Auth.onRender": {},
-	"Echo.IdentityServer.Controls.Auth.onReady": {}
+	"Echo.IdentityServer.Controls.Auth.onReady": {},
+	"Echo.IdentityServer.Controls.Auth.onRerender": {},
+	"Echo.IdentityServer.Controls.Auth.onRefresh": {}
 };
 })(Echo.jQuery);

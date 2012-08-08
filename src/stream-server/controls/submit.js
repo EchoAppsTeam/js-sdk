@@ -346,7 +346,8 @@ submit.methods.post = function() {
 			 */
 			Echo.Events.publish({
 				"topic": "Echo.Control.onDataInvalidate",
-				"context": "global"
+				"context": "global",
+				"data": {}
 			});
 		},
 		"onError": function(data) {
