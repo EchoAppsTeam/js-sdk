@@ -63,10 +63,9 @@ packs: $(PACK_NAMES)
 	printf "})(Echo.jQuery);\n" >> $(pack);
 %.pack:
 	@echo "Assembling $@.js..."
-	@printf $(PACK_HEADER) >> $(pack) \
-	@$(if $(filter third-party/jquery, $*), \
-		cat $(SRC_DIR)/third-party/jquery.js \
-		$(SRC_DIR)/third-party/echo.jquery.noconflict.js >> $(pack) \
+	@printf $(PACK_HEADER) >> $(pack); \
+	$(if $(filter third-party/jquery, $*), \
+		cat $(SRC_DIR)/third-party/jquery.js $(SRC_DIR)/third-party/echo.jquery.noconflict.js >> $(pack) \
 	) # push jquery code into jquery.pack
 	@$(foreach file, $(shell find $(PACK_FILES_$*)), $(wrap_file))
 
