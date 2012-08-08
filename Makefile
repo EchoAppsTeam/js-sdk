@@ -9,7 +9,7 @@ PACK_NAMES = \
 	identity-server/controls.pack \
 	identity-server/plugins.pack \
 	identity-server.pack \
-	third-party/jquery.plugins.pack
+	third-party/jquery.pack
 
 PACK_FILES_api = \
 	$(SRC_DIR)/api.js \
@@ -41,7 +41,7 @@ PACK_FILES_identity-server = \
 PACK_FILES_identity-server/controls = $(SRC_DIR)/identity-server/controls/*.js
 PACK_FILES_identity-server/plugins = $(SRC_DIR)/identity-server/plugins/*.js
 
-PACK_FILES_third-party/jquery.plugins = \
+PACK_FILES_third-party/jquery = \
 	$(SRC_DIR)/third-party/jquery.ihint.js \
 	$(SRC_DIR)/third-party/jquery.viewport.mini.js \
 	$(SRC_DIR)/third-party/jquery.easing-1.3.min.js \
@@ -49,28 +49,26 @@ PACK_FILES_third-party/jquery.plugins = \
 	$(SRC_DIR)/third-party/echo.fancybox.css.js \
 	$(SRC_DIR)/third-party/jquery.ui-1.8.21.min.js
 
-PACK_HEADER = "/*\n * Copyright (c) 2006-`date +%Y` Echo <solutions@aboutecho.com>. All rights reserved.\n * You may copy and modify this script as long as the above copyright notice,\n * this condition and the following disclaimer is left intact.\n * This software is provided by the author "AS IS" and no warranties are\n * implied, including fitness for a particular purpose. In no event shall\n * the author be liable for any damages arising in any way out of the use\n * of this software, even if advised of the possibility of such damage.\n *\n * Assembled at: `date -u`\n */\n"
+PACK_HEADER = "/*\n * Copyright (c) 2006-`date +%Y` Echo <solutions@aboutecho.com>. All rights reserved.\n * You may copy and modify this script as long as the above copyright notice,\n * this condition and the following disclaimer is left intact.\n * This software is provided by the author \"AS IS\" and no warranties are\n * implied, including fitness for a particular purpose. In no event shall\n * the author be liable for any damages arising in any way out of the use\n * of this software, even if advised of the possibility of such damage.\n *\n * Assembled at: `date -u`\n */\n"
 
 
 all: clean sdk packs loader
 
-packs: $(PACK_NAMES) third-party/jquery.pack
+packs: $(PACK_NAMES)
 
-%.pack: wrap_file = echo -e "(function(jQuery) {\nvar $$ = jQuery;\n" >> $(WEB_SDK_DIR)/$*.pack.js; \
-	cat $(file) >> $(WEB_SDK_DIR)/$*.pack.js; \
-	echo -e "})(Echo.jQuery);\n" >> $(WEB_SDK_DIR)/$*.pack.js;
+%.pack: pack = $(WEB_SDK_DIR)/$@.js
+%.pack: wrap_file = \
+	printf "(function(jQuery) {\nvar $$ = jQuery;\n" >> $(pack); \
+	cat $(file) >> $(pack); \
+	printf "})(jQuery);\n" >> $(pack);
 %.pack:
-	@echo "Assembling $*.pack.js..."
-	@echo -e $(PACK_HEADER) >> $(WEB_SDK_DIR)/$*.pack.js
-	@$(foreach file, $(shell find $(PACK_FILES_$*)), $(wrap_file))
-
-third-party/jquery.pack:
 	@echo "Assembling $@.js..."
-	@echo -e $(PACK_HEADER) >> $(WEB_SDK_DIR)/$@.js
-	@cat $(SRC_DIR)/third-party/jquery.js >> $(WEB_SDK_DIR)/$@.js
-	@cat $(SRC_DIR)/third-party/echo.jquery.noconflict.js >> $(WEB_SDK_DIR)/$@.js
-	@cat $(WEB_SDK_DIR)/third-party/jquery.plugins.pack.js >> $(WEB_SDK_DIR)/$@.js
-	@rm $(WEB_SDK_DIR)/third-party/jquery.plugins.pack.js
+	@printf $(PACK_HEADER) >> $(pack) \
+	@$(if $(filter third-party/jquery, $*), \
+		cat $(SRC_DIR)/third-party/jquery.js \
+		$(SRC_DIR)/third-party/echo.jquery.noconflict.js >> $(pack) \
+	) # push jquery code into jquery.pack
+	@$(foreach file, $(shell find $(PACK_FILES_$*)), $(wrap_file))
 
 clean:
 	@echo "Removing old files..."
