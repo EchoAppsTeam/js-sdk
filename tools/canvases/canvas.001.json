@@ -7,7 +7,7 @@
     },
     "apps": [{
         "id": "my-submit",
-        "script": "../sdk/stream-server/controls/submit.js",
+        "script": "../sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Submit",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -24,7 +24,7 @@
         }
     }, {
         "id": "my-stream",
-        "script": "../sdk/stream-server/controls/stream.js",
+        "script": "../sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Stream",
         "config": {
             "appkey": "test.aboutecho.com",

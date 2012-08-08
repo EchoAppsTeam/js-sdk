@@ -35,7 +35,7 @@ plugin.init = function() {
 };
 
 plugin.dependencies = [{
-	"url": Echo.Loader.config.cdnBaseURL + "sdk/identity-server/controls/auth.js",
+	"url": Echo.Loader.config.cdnBaseURL + "sdk/identity-server.pack.js",
 	"loaded": function() {
 		return Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth");
 	}

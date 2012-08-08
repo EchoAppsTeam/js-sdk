@@ -62,8 +62,8 @@ Echo.Loader._initEnvironment = function(callback) {
 
 Echo.Loader._initCanvases = function(callback) {
 	var canvases = [];
-	$(".echo-canvas").each(function() {
-		var target = $(this);
+	Echo.jQuery(".echo-canvas").each(function() {
+		var target = Echo.jQuery(this);
 		var id = target.attr("data-canvas-id");
 		var appkey = target.attr("data-appkey");
 
@@ -88,12 +88,12 @@ Echo.Loader._initCanvases = function(callback) {
 	}
 
 	Echo.Loader._fetchCanvasConfigs(canvases, function(configs) {
-		$.each(canvases, function(id, canvas) {
+		Echo.jQuery.each(canvases, function(id, canvas) {
 			var config = configs[canvas.id];
 			if (!config) return;
 			// copy config object to prevent the same object
 			// sharing across multiple canvas instances
-			canvas.config = $.extend(true, {}, configs[canvas.id]);
+			canvas.config = Echo.jQuery.extend(true, {}, configs[canvas.id]);
 			Echo.Loader._initCanvas(canvas);
 		});
 	});
@@ -137,7 +137,7 @@ Echo.Loader._initUser = function(canvas, callback) {
 
 Echo.Loader._initApplications = function(canvas) {
 	var scripts = [];
-	$.each(canvas.config.apps, function(id, app) {
+	Echo.jQuery.each(canvas.config.apps, function(id, app) {
 		app.config = app.config || {};
 		if (!app.component || !app.script || !app.id) {
 			Echo.Loader._log({
@@ -162,7 +162,7 @@ Echo.Loader._initApplications = function(canvas) {
 		"scripts": scripts,
 		"errorTimeout": Echo.Loader.config.errorTimeout,
 		"callback": function() {
-			$.each(canvas.config.apps, function(id, app) {
+			Echo.jQuery.each(canvas.config.apps, function(id, app) {
 				var application = Echo.Utils.getComponent(app.component);
 				if (!application) {
 					Echo.Loader._log({
@@ -181,7 +181,7 @@ Echo.Loader._initApplications = function(canvas) {
 
 Echo.Loader._createApplicationTarget = function(config) {
 	// TODO: add more specific classname and may be id from canvas?
-	return $('<div class="echo-application"></div>');
+	return Echo.jQuery('<div class="echo-application"></div>');
 };
 
 Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
@@ -198,7 +198,7 @@ Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
 			"method": "kvs/get",
 		});
 	});
-	$.get("http://api.echoenabled.com/v1/mux", {
+	Echo.jQuery.get("http://api.echoenabled.com/v1/mux", {
 		"appkey": canvases[0].appkey,
 		"requests": Echo.Utils.object2JSON(requests)
 	}, function(response) {
@@ -221,7 +221,7 @@ Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
 			}
 			var config;
 			try {
-				config = $.parseJSON(data.value);
+				config = Echo.jQuery.parseJSON(data.value);
 			} catch(exception) {
 				Echo.Loader._log({
 					"type": "error",
@@ -238,7 +238,7 @@ Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
 };
 
 Echo.Loader._log = function(data) {
-	Echo.Utils.log($.extend(data, {"component": "Echo.Loader"}));
+	Echo.Utils.log(Echo.jQuery.extend(data, {"component": "Echo.Loader"}));
 };
 
 })();
