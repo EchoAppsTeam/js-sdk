@@ -1,4 +1,5 @@
-(function($) {
+(function(jQuery) {
+var $ = jQuery;
 
 "use strict";
 
@@ -318,7 +319,7 @@ Echo.Tests.Stats = {
 	},
 	"getFunctionNames": function(namespace, prefix) {
 		var stats = Echo.Tests.Stats;
-		var ignoreList = ["Echo.Tests", "Echo.Vars", "Echo.Global"];
+		var ignoreList = ["Echo.Tests", "Echo.Vars", "Echo.Global", "Echo.jQuery"];
 		$.each([namespace, namespace.prototype], function(i, parentObject) {
 			if (!parentObject) return;
 			$.each(parentObject, function(name, value) {
@@ -688,4 +689,4 @@ QUnit.checkContract = function(actual, expected, message) {
 	QUnit.push(_checkContract(actual, expected), _prepareEventData(actual), _prepareEventData(expected), message);
 };
 
-})(jQuery);
+})(Echo.jQuery);

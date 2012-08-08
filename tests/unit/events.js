@@ -214,4 +214,4 @@ suite.prototype.tests.AdvancedPublishing = {
 	}
 };
 
-})(jQuery);
+})(Echo.jQuery);

@@ -26,4 +26,4 @@ suite.prototype.info = {
 	"functions": []
 };
 
-})(jQuery);
+})(Echo.jQuery);

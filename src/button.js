@@ -1,5 +1,3 @@
-(function($) {
- 
 if (Echo.Utils.isComponentDefined("Echo.Button")) return;
 
 /**
@@ -111,5 +109,3 @@ Echo.Button.prototype._css =
 	".echo-button .label { font-size: 16px; float: left; } " +
 	".echo-button .icon { height: 16px; width: 16px; float: left; margin-right: 2px; margin-top: 2px; } " +
 	".echo-button .icon-waiting { background: no-repeat center url(//cdn.echoenabled.com/images/loading.gif); height: 16px; width: 16px; } ";
-
-})(jQuery);

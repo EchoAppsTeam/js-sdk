@@ -1,4 +1,4 @@
-(function($) {
+(function() {
 
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile")) return;
 
@@ -350,11 +350,11 @@ pile.css =
 
 Echo.Control.create(pile);
 
-})(jQuery);
+})();
 
 // FacePile item definition
 
-(function($) {
+(function() {
 
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile.Item")) return;
 
@@ -408,4 +408,4 @@ item.css =
 
 Echo.Control.create(item);
 
-})(jQuery);
+})();

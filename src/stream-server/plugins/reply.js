@@ -1,5 +1,3 @@
-(function($) {
-
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
  * Adds extra button Reply to each root item in the Echo Stream control. Integrates Echo Submit control and provides the ability to submit replies to the posted items.
@@ -238,5 +236,3 @@ plugin.css =
 	".{plugin.class:compactField} { width: 100%; border: none; }";
 
 Echo.Plugin.create(plugin);
-
-})(jQuery);

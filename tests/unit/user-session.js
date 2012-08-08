@@ -157,4 +157,4 @@ suite.prototype.checkBasicOperations = function(user) {
 	}});
 };
 
-})(jQuery);
+})(Echo.jQuery);

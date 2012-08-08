@@ -1,5 +1,3 @@
-(function($) {
-
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.FormAuth
  * Adds the authentication section to the Echo Submit control
@@ -140,5 +138,3 @@ plugin.css =
 	'.{plugin.class:error} { color: red; }';
 
 Echo.Plugin.create(plugin);
-
-})(jQuery);

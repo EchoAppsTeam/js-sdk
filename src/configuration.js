@@ -1,5 +1,3 @@
-(function($) {
-
 if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
 
 /**
@@ -129,5 +127,3 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 		}
 	});
 };
-
-})(jQuery);

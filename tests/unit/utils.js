@@ -322,4 +322,4 @@ suite.prototype.tests.TestAsyncMethods = {
 	}
 };
 
-})(jQuery);
+})(Echo.jQuery);

@@ -1,4 +1,5 @@
-(function($) {
+(function(jQuery) {
+var $ = jQuery;
 
 "use strict";
 
@@ -795,4 +796,4 @@ suite.getControlManifest = function(name) {
 
 };
 
-})(jQuery);
+})(Echo.jQuery);

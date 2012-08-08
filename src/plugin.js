@@ -1,5 +1,3 @@
-(function($) {
-
 if (Echo.Utils.isComponentDefined("Echo.Plugin")) return;
 
 /**
@@ -434,5 +432,3 @@ Echo.Plugin.Events.prototype.subscribe = function(params) {
 Echo.Plugin.Events.prototype.unsubscribe = function(params) {
 	this.plugin.component.events.unsubscribe(params);
 };
-
-})(jQuery);

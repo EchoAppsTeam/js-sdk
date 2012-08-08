@@ -402,4 +402,4 @@ Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Stream.Item", 
 	return stream;
 });
 
-})(jQuery);
+})(Echo.jQuery);

@@ -90,4 +90,4 @@ suite.prototype.tests.anonymousUser = {
 	}
 };
 
-})(jQuery);
+})(Echo.jQuery);

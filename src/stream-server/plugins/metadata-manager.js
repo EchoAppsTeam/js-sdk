@@ -1,5 +1,3 @@
-(function($) {
-
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.MetadataManager
  * Provides the ability to add buttons to the Echo Stream control items adding/removing markers/tags. By default those buttons will be available for moderators and administrators, though the visibility of tag controls can be configured via special param.
@@ -193,5 +191,3 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 };
 
 Echo.Plugin.create(plugin);
-
-})(jQuery);

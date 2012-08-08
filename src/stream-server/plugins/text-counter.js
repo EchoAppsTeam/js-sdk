@@ -1,5 +1,3 @@
-(function($) {
-
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.TextCounter
  * Adds the character counter under the text field in the Echo Submit control. Allows to set the maximum length of the text to enter.
@@ -80,5 +78,3 @@ plugin.renderers.counterLabel = function(element) {
 };
 
 Echo.Plugin.create(plugin);
-
-})(jQuery);

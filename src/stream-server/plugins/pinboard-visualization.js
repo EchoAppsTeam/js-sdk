@@ -1,4 +1,4 @@
-(function($) {
+(function() {
 
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.ItemMediaGallery")) return;
 
@@ -182,9 +182,9 @@ itemMediaGallery.css =
 
 Echo.Control.create(itemMediaGallery);
 	
-})(jQuery);
+})();
 
-(function($) {
+(function() {
 
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream.Item");
 
@@ -443,9 +443,9 @@ plugin.css =
 	
 Echo.Plugin.create(plugin);
 
-})(jQuery);
+})();
 
-(function($) {
+(function() {
 
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream");
 
@@ -490,4 +490,4 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})(jQuery);
+})();

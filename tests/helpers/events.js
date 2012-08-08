@@ -198,4 +198,4 @@ Echo.Tests.Events.contracts = {
 	"Echo.IdentityServer.Controls.Auth.onRender": {},
 	"Echo.IdentityServer.Controls.Auth.onReady": {}
 };
-})(jQuery);
+})(Echo.jQuery);

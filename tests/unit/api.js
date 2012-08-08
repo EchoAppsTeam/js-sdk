@@ -42,4 +42,4 @@ suite.prototype.tests.PrivateInterfaceTests = {
 	}
 };
 
-})(jQuery);
+})(Echo.jQuery);

@@ -1,5 +1,3 @@
-(function($) {
- 
 if (Echo.Utils.isComponentDefined("Echo.API.Request")) return;
 
 Echo.API = {"Transports": {}, "Request": {}};
@@ -352,5 +350,3 @@ Echo.API.Request.prototype._getHandlersByConfig = function() {
 Echo.API.Request.prototype._prepareURI = function() {
 	return this.config.get("apiBaseURL").replace(/^(http|ws)s?:\/\//, "") + this.config.get("endpoint");
 };
-
-})(jQuery);

@@ -65,4 +65,4 @@ suite.prototype.tests.commonWorkflow = {
 	}
 };
 
-})(jQuery);
+})(Echo.jQuery);

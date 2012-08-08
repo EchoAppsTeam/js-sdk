@@ -1,5 +1,3 @@
-(function($) {
-
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing
  * Plugin provides the ability to load JanRain sharing dialog after the item has been posted using the Echo Submit control.
@@ -134,5 +132,3 @@ plugin.methods._getTweetAuthor = function(data) {
 };
 
 Echo.Plugin.create(plugin);
-
-})(jQuery);

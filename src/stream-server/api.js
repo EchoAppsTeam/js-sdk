@@ -1,5 +1,3 @@
-(function($) {
-
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.API")) return;
 
 /**
@@ -377,5 +375,3 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 Echo.StreamServer.API.request = function(config) {
 	return (new Echo.StreamServer.API.Request(config));
 };
-
-})(jQuery);

@@ -1,5 +1,3 @@
-(function($) {
-
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit")) return;
 
 /**
@@ -532,5 +530,3 @@ submit.css =
 		'.{class:metadataSubwrapper} input { outline: none; }' : '');
 
 Echo.Control.create(submit);
-
-})(jQuery);

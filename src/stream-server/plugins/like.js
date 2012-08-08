@@ -1,4 +1,4 @@
-(function($) {
+(function() {
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.Like
@@ -151,9 +151,9 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})(jQuery);
+})();
 
-(function($) {
+(function() {
 
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
 
@@ -203,4 +203,4 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})(jQuery);
+})();

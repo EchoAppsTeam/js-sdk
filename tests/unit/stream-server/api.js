@@ -308,4 +308,4 @@ suite.prototype.items.postWithMetadata = [
 	}
 ];
 
-})(jQuery);
+})(Echo.jQuery);

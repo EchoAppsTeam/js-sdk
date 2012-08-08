@@ -1,5 +1,3 @@
-(function($) {
-
 if (Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth")) return;
 
 /**
@@ -210,5 +208,3 @@ auth.css =
 	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }";
 
 Echo.Control.create(auth);
-
-})(jQuery);

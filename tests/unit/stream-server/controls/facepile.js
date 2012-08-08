@@ -232,4 +232,4 @@ suite.prototype._checkActorsView = function(item, callback) {
 	});
 };
 
-})(jQuery);
+})(Echo.jQuery);

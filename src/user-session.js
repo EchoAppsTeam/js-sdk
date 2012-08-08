@@ -1,5 +1,3 @@
-(function($) {
-
 if (Echo.Utils.isComponentDefined("Echo.UserSession")) return;
 
 /**
@@ -440,5 +438,3 @@ Echo.UserSession._anyMarker = function(value) {
 Echo.UserSession._anyRole = function(value) {
 	return this.any("roles", value);
 };
-
-})(jQuery);

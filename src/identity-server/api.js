@@ -1,5 +1,3 @@
-(function($) {
-
 if (Echo.Utils.isComponentDefined("Echo.IdentityServer.API")) return;
 
 /**
@@ -85,5 +83,3 @@ Echo.IdentityServer.API.Request.prototype._whoami = function(args) {
 Echo.IdentityServer.API.request = function(config) {
 	return (new Echo.IdentityServer.API.Request(config));
 };
-
-})(jQuery);

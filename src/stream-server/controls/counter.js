@@ -1,5 +1,3 @@
-(function($) {
-
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
 
 /**
@@ -110,5 +108,3 @@ counter.methods._error = function(data) {
 };
 
 Echo.Control.create(counter);
-
-})(jQuery);

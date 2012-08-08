@@ -1,5 +1,3 @@
-(function($) {
-
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream")) return;
 
 var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
@@ -2330,5 +2328,3 @@ item.css =
 	);
 
 Echo.Control.create(item);
-
-})(jQuery);

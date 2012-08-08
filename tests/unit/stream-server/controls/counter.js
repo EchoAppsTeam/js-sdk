@@ -218,4 +218,4 @@ suite.prototype.cases.destroy = function(callback) {
 	callback();
 };
 
-})(jQuery);
+})(Echo.jQuery);

@@ -159,4 +159,4 @@ suite.prototype.tests.PrivateFunctionsTests = {
 	}
 };
 
-})(jQuery);
+})(Echo.jQuery);

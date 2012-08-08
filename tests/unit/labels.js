@@ -68,4 +68,4 @@ suite.prototype.tests.TestLabelsMethods = {
 	}
 };
 
-})(jQuery);
+})(Echo.jQuery);

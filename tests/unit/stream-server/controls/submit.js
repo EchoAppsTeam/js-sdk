@@ -324,4 +324,4 @@ Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Submit", funct
 //
 //};
 
-})(jQuery);
+})(Echo.jQuery);

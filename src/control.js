@@ -1,5 +1,3 @@
-(function($) {
-
 if (Echo.Utils.isComponentDefined("Echo.Control")) return;
 
 /**
@@ -13,7 +11,7 @@ Echo.Control = function() {};
 /**
  * @static
  * Function which creates a control object using it manifest declaration.
- * 
+ *
  * @param {Object} manifest (required) Specifies the control interface in the predefined way.
  * @param {String} manifest.name (required) Specifies the control name including namespace (ex. "Echo.StreamServer.Controls.Submit")
  * @param {Object} [manifest.vars] Specifies internal control variables.
@@ -172,7 +170,7 @@ Echo.Control.prototype.defaults.labels = {
  * Accessor method to get specific field.
  *
  * This function returns the corresponding value of the given key or the default value if specified in the second argument.
- * 
+ *
  * @param {String} key Defines the key for data extraction.
  * @param {Object} [defaults] Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
  * @return {Mixed} Returns the corresponding value found in the object.
@@ -186,7 +184,7 @@ Echo.Control.prototype.get = function(key, defaults) {
  * Setter method to define specific object value.
  *
  * This function allows to define the value for the corresponding object field.
- * 
+ *
  * @param {String} key Defines the key where the given data should be stored.
  * @param {Mixed} value The corresponding value which should be defined for the key.
  */
@@ -200,7 +198,7 @@ Echo.Control.prototype.set = function(key, value) {
  *
  * This function allows to remove the value associated with the given key.
  * If the key contains a complex structure (such as objects or arrays), it will be removed as well.
- * 
+ *
  * @param {String} key Defines the key which should be removed from the object.
  */
 Echo.Control.prototype.remove = function(key) {
@@ -255,7 +253,7 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 /**
  * @method
  * Basic method to reinitialize control.
- * 
+ *
  * Function can be overriden by class descendants implying specific logic.
  */
 Echo.Control.prototype.refresh = function() {
@@ -366,7 +364,7 @@ Echo.Control.prototype.showError = function(data, options) {
 /**
  * @method
  * Accessor function allowing to obtain the plugin by its name.
- * 
+ *
  * @param {String} name (required) Specifies plugin name.
  * @return {Object} Instance of the corresponding plugin.
  */
@@ -396,7 +394,7 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
  * @method
  * Method to extend the template of particular control.
  * @param {String} action (required) One of the following actions:
- *  
+ *
  * + "insertBefore"
  * + "insertAfter"
  * + "insertAsFirstChild"
@@ -953,5 +951,3 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message-empty { background-image: url(//cdn.echoenabled.com/images/information.png); }' +
 	'.echo-control-message-loading { background-image: url(//cdn.echoenabled.com/images/loading.gif); }' +
 	'.echo-control-message-error { background-image: url(//cdn.echoenabled.com/images/warning.gif); }';
-
-})(jQuery);

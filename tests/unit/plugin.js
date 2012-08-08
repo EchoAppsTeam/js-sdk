@@ -1,4 +1,5 @@
-(function($) {
+(function(jQuery) {
+var $ = jQuery;
 
 "use strict";
 
@@ -797,4 +798,4 @@ suite.getPluginManifest = function(name, component) {
 
 };
 
-})(jQuery);
+})(Echo.jQuery);
