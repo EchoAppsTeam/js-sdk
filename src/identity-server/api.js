@@ -1,8 +1,10 @@
 if (Echo.Utils.isComponentDefined("Echo.IdentityServer.API")) return;
 
 /**
- * @class
+ * @class Echo.IdentityServer.API.Request
  * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/35104702/API-section-users" target="_blank">Echo Users API</a> 
+ * @extends Echo.API.Request
+ * @inheritdoc Echo.API.Request
  */
 if (!Echo.IdentityServer) Echo.IdentityServer = {};
 

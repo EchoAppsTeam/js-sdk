@@ -1,8 +1,10 @@
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.API")) return;
 
 /**
- * @class
- * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/19987923/FrontPage" target="_blank">Echo StreamServer API</a> 
+ * @class Echo.StreamServer.API.Request
+ * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/19987923/FrontPage" target="_blank">Echo StreamServer API</a>
+ * @extends Echo.API.Request
+ * @inheritdoc Echo.API.Request
  */
 if (!Echo.StreamServer) Echo.StreamServer = {};
 
