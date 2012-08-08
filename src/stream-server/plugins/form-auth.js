@@ -34,6 +34,13 @@ plugin.init = function() {
 	this.component.addPostValidator(this._validator());
 };
 
+plugin.dependencies = [{
+	"url": Echo.Loader.config.cdnBaseURL + "sdk/identity-server/controls/auth.js",
+	"loaded": function() {
+		return Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth");
+	}
+}];
+
 plugin.config = {
 /**
  * @cfg {Object} identityManager The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.

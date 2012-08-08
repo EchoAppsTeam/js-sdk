@@ -1,0 +1,29 @@
+<html>
+<head>
+  <title>Echo Loader Demo</title>
+</head>
+<body>
+
+  <!-- all mandatory fields are missing -->
+  <div class="echo-canvas"></div>
+
+  <!-- missing appkey -->
+  <div class="echo-canvas" data-canvas-id="canvas.001"></div>
+
+  <!-- missing canvas id-->
+  <div class="echo-canvas" data-appkey="canvas.002"></div>
+
+  <!-- all fields defined properly -->
+  <div class="echo-canvas" data-canvas-id="canvas.001" data-appkey="test.echoenabled.com"></div>
+
+  <!-- all fields defined, but no config available for the canvas id specified -->
+  <div class="echo-canvas" data-canvas-id="canvas.004" data-appkey="test.echoenabled.com"></div>
+
+  <!-- couple of valid canvases -->
+  <div class="echo-canvas" data-canvas-id="canvas.005" data-appkey="test.echoenabled.com"></div>
+  <div class="echo-canvas" data-canvas-id="canvas.006" data-appkey="test.echoenabled.com"></div>
+
+  <script type="text/javascript" src="../sdk/loader.js"></script>
+  <script> Echo.Loader.init(); </script>
+</body>
+</html>
