@@ -442,11 +442,11 @@ stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 	var wrapper = $('<div class="' + this.cssPrefix + 'children-wrapper"></div>');
 	var getIdx = function(item) { return self._getItemListIndex(item, parent.get("children")); };
 	$.each(children, function(i, item) {
-		item.dom.render();
 		var insertion = i > 0 && getIdx(children[i-1]) < getIdx(item)
 			? "append"
 			: "prepend";
 		wrapper[insertion](item.config.get("target"));
+		item.dom.render();
 	});
 	return wrapper;
 };
@@ -499,15 +499,8 @@ stream.methods._getRespectiveAccumulator = function(item, sort) {
 stream.methods._appendRootItems = function(items, container) {
 	var self = this;
 	if (!items || !items.length) return;
-	var fragment = document.createDocumentFragment();
-	// note: we should render an item only when the target is appended into the DOM,
-	//       so we append targets into the fragment first, append fragment to the stream
-	//	 and call render for items only after that
-	$.each(items, function(i, item) {
-		fragment.appendChild(item.config.get("target").get(0));
-	});
-	container.append(fragment);
-	$.each(items, function(i, item) {
+	$.map(items, function(item) {
+		container.append(item.config.get("target").get(0));
 		item.dom.render();
 	});
 };
@@ -971,7 +964,6 @@ stream.methods._compareItems = function(a, b, sort) {
 };
 
 stream.methods._placeRootItem = function(item) {
-	item.dom.render();
 	var content = item.config.get("target");
 	if (this.threads.length > 1) {
 		var id = this._getItemListIndex(item, this.threads);
@@ -984,6 +976,7 @@ stream.methods._placeRootItem = function(item) {
 	} else {
 		this.dom.get("body").empty().append(content);
 	}
+	item.dom.render();
 	item.events.publish({
 		"topic": "onAdd",
 		"data": {"item": item},
@@ -1430,8 +1423,8 @@ item.renderers._childrenContainer = function(element, config) {
 		if (config && config.filter && !config.filter(child)) return;
 		// FIXME: temporarily disabled, we need to check rendered state in the other way
 		var initialRendering = true;//!child.dom;
-		if (initialRendering) child.dom.render();
 		element.append(child.config.get("target"));
+		if (initialRendering) child.dom.render();
 		if (child.deleted) {
 			self.events.publish({
 				"topic": "onDelete",
