@@ -424,7 +424,7 @@ submit.methods._getActivity = function(verb, type, data) {
 		},
 		"object": {
 			"objectTypes": [ type ],
-			"content": data,
+			"content": data
 		},
 		"source": this.config.get("source"),
 		"verbs": [ this._getASURL(verb) ],

@@ -179,7 +179,7 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
 		"onData": callback,
 		"onError": errorCallback,
-		"data": data,
+		"data": data
 	}).send();
 };
 
