@@ -60,7 +60,7 @@ packs: $(PACK_NAMES)
 %.pack: wrap_file = \
 	printf "(function(jQuery) {\nvar $$ = jQuery;\n" >> $(pack); \
 	cat $(file) >> $(pack); \
-	printf "})(jQuery);\n" >> $(pack);
+	printf "})(Echo.jQuery);\n" >> $(pack);
 %.pack:
 	@echo "Assembling $@.js..."
 	@printf $(PACK_HEADER) >> $(pack) \
