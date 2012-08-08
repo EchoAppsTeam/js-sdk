@@ -172,7 +172,7 @@ Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
 		plugin.component.dom.render();
 	}
 	var _check = function(forComponent) {
-		var renderers = forComponent ? plugin.manifest.component.renderers : plugin.manifest.renderers;
+		var renderers = forComponent ? plugin._manifest("component").renderers : plugin._manifest("renderers");
 		$.each(renderers, function(name, renderer) {
 			self.info.functions.push((forComponent ? "component." : "") + "renderers." + name);
 			var element = forComponent ? plugin.component.dom.get(name) : plugin.dom.get(name);
