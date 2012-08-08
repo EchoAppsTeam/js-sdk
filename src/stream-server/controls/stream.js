@@ -77,6 +77,7 @@ stream.events = {
 			"itemUnique": data.item.get("data.unique"),
 			"priority": "highest",
 			"handler": function() {
+				data.item.dom.render();
 				data.item.set("added", false);
 				self._addItemSpotUpdate(data.item);
 			}
@@ -960,7 +961,6 @@ stream.methods._placeRootItem = function(item) {
 	} else {
 		this.dom.get("body").empty().append(content);
 	}
-	item.dom.render();
 	item.events.publish({
 		"topic": "onAdd",
 		"data": {"item": item},
@@ -1408,7 +1408,7 @@ item.renderers._childrenContainer = function(element, config) {
 		// FIXME: temporarily disabled, we need to check rendered state in the other way
 		var initialRendering = true;//!child.dom;
 		element.append(child.config.get("target"));
-		if (initialRendering) child.dom.render();
+		if (initialRendering && !child.added) child.dom.render();
 		if (child.deleted) {
 			self.events.publish({
 				"topic": "onDelete",
