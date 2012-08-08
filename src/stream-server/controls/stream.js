@@ -833,18 +833,6 @@ stream.methods._addItemSpotUpdate = function(item) {
 	} else {
 		item.config.get("target").show();
 	}
-	var publish = function() {
-		//if (!item.dom.root || !item.dom.root.length) return;
-		self.events.publish({
-			"topic": "Item.onRender",
-			"data": {
-				"item": {
-					"data": item.data,
-					"target": item.config.get("target")
-				}
-			}
-		});
-	};
 	if (this.timeouts.fade) {
 		var container = item.dom.get("container");
 		var originalBGColor = Echo.Utils.getVisibleColor(container);
@@ -859,13 +847,11 @@ stream.methods._addItemSpotUpdate = function(item) {
 			"linear",
 			function() {
 				container.css("backgroundColor", "");
-				publish();
 				self.activities.animations--;
 				self._executeNextActivity();
 			}
 		);
 	} else {
-		publish();
 		this.activities.animations--;
 		this._executeNextActivity();
 	}
@@ -1441,12 +1427,6 @@ item.renderers._childrenContainer = function(element, config) {
 				"data": {"item": child},
 				"global": false,
 				"propagation": false
-			});
-		// don't publish events while rerendering
-		} else if (initialRendering) {
-			child.events.publish({
-				"topic": "onRender",
-				"data": {"item": child}
 			});
 		}
 	});
