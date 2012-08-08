@@ -632,27 +632,38 @@ QUnit.done(function() {
 });
 
 // Extending QUnit lib to have an ability to verify function contract
-var _checkContract = function(origin, template) {
+var _checkContract = function(origin, template, isRecursion) {
 	var result = true;
-	if ($.type(template) == $.type(origin)) {
-		if ($.isPlainObject(template)) {
-			$.each(template, function(i) {
-				if (origin.hasOwnProperty(i) && $.type(template[i]) == $.type(origin[i])) {
-					if ($.isPlainObject(template[i])) {
-						result =  _checkContract(origin[i], template[i]);
+	if (!isRecursion && $.isArray(template)) {
+		$.each(template, function(i, value) {
+			result = _checkContract(origin, value, true);
+			if (result) return false;
+		});
+	} else {
+		if ($.type(template) == $.type(origin)) {
+			if ($.isPlainObject(template)) {
+				$.each(template, function(i) {
+					if (origin.hasOwnProperty(i) && $.type(template[i]) == "function") {
+						result = template[i](origin[i]);
+					} else {
+						if (origin.hasOwnProperty(i) && $.type(template[i]) == $.type(origin[i])) {
+							if ($.isPlainObject(template[i])) {
+								result =  _checkContract(origin[i], template[i], true);
+							}
+						} else {
+							result = false;
+						}
 					}
-				} else {
+					if (!result)
+						return result;
+				});
+				if ($.isEmptyObject(template) && !$.isEmptyObject(origin)) {
 					result = false;
 				}
-				if (!result)
-					return result;
-			});
-			if ($.isEmptyObject(template) && !$.isEmptyObject(origin)) {
-				result = false;
 			}
+		} else {
+			result = false;
 		}
-	} else {
-		result = false;
 	}
 	return result;
 };
