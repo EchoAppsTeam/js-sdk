@@ -1,20 +1,20 @@
 (function() {
 
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.ItemMediaGallery")) return;
+if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream.Item.MediaGallery")) return;
 
-var itemMediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.ItemMediaGallery");
+var mediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item.MediaGallery");
 
-itemMediaGallery.labels = {
+mediaGallery.labels = {
 	"mediaIsNotAvailable": "<i>Media is not avaiable at this moment...</i>"
 };
 
-itemMediaGallery.config = {
+mediaGallery.config = {
 	"resizeDuration": 250,
 	"contextId": null,
 	"currentIndex": 0
 };
 
-itemMediaGallery.templates.main =
+mediaGallery.templates.main =
 	'<div class="{class:container}">' +
 		'<div class="{class:thumbnails}">' +
 			'<div class="{class:items}"></div>' +
@@ -22,11 +22,11 @@ itemMediaGallery.templates.main =
 		'<div class="{class:controls}"></div>' +
 	'</div>';
 
-itemMediaGallery.templates.mediaError =
+mediaGallery.templates.mediaError =
 	'<span class="{class:itemErrorLoading}">{label:mediaIsNotAvailable}</span>';
 
 
-itemMediaGallery.renderers.controls = function(element) {
+mediaGallery.renderers.controls = function(element) {
 	var self = this;
 	var item = self.config.get("item");
 	this.elements = this.config.get("elements");
@@ -94,7 +94,7 @@ itemMediaGallery.renderers.controls = function(element) {
 
 // To avoid bugs with flash content when we show/hide it
 // we should try fix it with wmode parameter if needed
-itemMediaGallery.methods.normalizeFlashContent = function(element) {
+mediaGallery.methods.normalizeFlashContent = function(element) {
 	var tagName = element.get(0).tagName.toLowerCase();
 	if (tagName == "iframe") {
 		var parts = Echo.Utils.parseURL(element.attr("src") || "");
@@ -119,7 +119,7 @@ itemMediaGallery.methods.normalizeFlashContent = function(element) {
 	}
 };
 
-itemMediaGallery.methods.getHiddenElementDimensions = function(parent, element) {
+mediaGallery.methods.getHiddenElementDimensions = function(parent, element) {
 	var dimensions;
 	parent.css({
 		"postion": "absolute",
@@ -138,7 +138,7 @@ itemMediaGallery.methods.getHiddenElementDimensions = function(parent, element) 
 	return dimensions;
 };
 
-itemMediaGallery.methods.loadMediaHandler = function(element, elementContainer) {
+mediaGallery.methods.loadMediaHandler = function(element, elementContainer) {
 	var self = this;
 	var target = this.config.get("target");
 	var viewportDimensions = {
@@ -171,7 +171,7 @@ itemMediaGallery.methods.loadMediaHandler = function(element, elementContainer) 
 	}
 };
 
-itemMediaGallery.css =
+mediaGallery.css =
 	'.{class:thumbnails} { overflow: hidden; }' +
 	'.{class:item} { width: 100%; display: none; }' +
 	'.{class:controls} { text-align: center; margin-top: 10px; }' +
@@ -180,7 +180,7 @@ itemMediaGallery.css =
 	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }' +
 	(Echo.Utils.isPreIE9() ? '.{class} { display: inline; zoom: 1; }' : '');
 
-Echo.Control.create(itemMediaGallery);
+Echo.Control.create(mediaGallery);
 	
 })();
 
@@ -235,9 +235,11 @@ plugin.events = {
 $.map([ "Echo.StreamServer.Controls.Submit.onRender",
 	"Echo.StreamServer.Controls.Submit.onEditError",
 	"Echo.StreamServer.Controls.Submit.onEditComplete",
-	"Echo.StreamServer.Controls.ItemMediaGallery.onLoadMedia",
+	"Echo.StreamServer.Controls.Stream.Item.onDelete",
+	"Echo.StreamServer.Controls.Stream.Item.onRerender",
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand",
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse" ], function(event) {
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse",
+	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia" ], function(event) {
 	plugin.events[event] = function(topic, args) {
 		this._refreshView();
 	};
@@ -296,7 +298,7 @@ $.each(["expandChildren", "container"], function(i, renderer) {
 				next();
 				plugin._refreshView();
 			});
-			if (renderer === "expandChildren") {
+			if (renderer === "container") {
 				publish();
 			} else {
 				plugin._refreshView();
@@ -333,7 +335,7 @@ plugin.renderers.media = function(element) {
 			"item": item,
 			"elements": items
 		});
-		new Echo.StreamServer.Controls.ItemMediaGallery(config);
+		new Echo.StreamServer.Controls.Stream.Item.MediaGallery(config);
 	} else {
 		element.hide();
 	}
