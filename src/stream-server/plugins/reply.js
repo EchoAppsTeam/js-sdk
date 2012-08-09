@@ -1,3 +1,5 @@
+(function() {
+
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
  * Adds extra button Reply to each root item in the Echo Stream control. Integrates Echo Submit control and provides the ability to submit replies to the posted items.
@@ -47,7 +49,7 @@ plugin.config = {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
+	"Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand": function(topic, args) {
 		var plugin = this, item = this.component;
 		var context = item.config.get("context");
 		if (plugin.get("expanded") && context && context !== args.context) {
@@ -137,8 +139,7 @@ plugin.renderers.compactField = function(element) {
 			"topic": "onExpand",
 			"data": {
 				"context": item.config.get("context")
-			},
-			"context": item.config.get("parent.context")
+			}
 		});
 	}).val(plugin.config.get("actionString"));
 };
@@ -221,8 +222,7 @@ plugin.methods._assembleButton = function() {
 			"topic": "onExpand",
 			"data": {
 				"context": item.config.get("context")
-			},
-			"context": item.config.get("parent.context")
+			}
 		});
 	};
 	return function() {
@@ -255,3 +255,26 @@ plugin.css =
 	".{plugin.class:compactField} { width: 100%; border: none; }";
 
 Echo.Plugin.create(plugin);
+
+})();
+
+(function() {
+
+var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream");
+
+if (Echo.Plugin.isDefined(plugin)) return;
+
+plugin.events = {
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
+		this.events.publish({
+			"topic": "onFormExpand",
+			"data": {
+			    "context": args.context
+			}
+		});
+	}
+};
+
+Echo.Plugin.create(plugin);
+
+})();
