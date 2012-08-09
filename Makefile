@@ -47,7 +47,8 @@ PACK_FILES_third-party/jquery = \
 	$(SRC_DIR)/third-party/jquery.easing-1.3.min.js \
 	$(SRC_DIR)/third-party/jquery.fancybox-1.3.4.min.js \
 	$(SRC_DIR)/third-party/echo.fancybox.css.js \
-	$(SRC_DIR)/third-party/jquery.ui-1.8.21.min.js
+	$(SRC_DIR)/third-party/jquery.ui-1.8.21.min.js \
+	$(SRC_DIR)/third-party/jquery.isotope.min.js
 
 PACK_HEADER = "/*\n * Copyright (c) 2006-`date +%Y` Echo <solutions@aboutecho.com>. All rights reserved.\n * You may copy and modify this script as long as the above copyright notice,\n * this condition and the following disclaimer is left intact.\n * This software is provided by the author \"AS IS\" and no warranties are\n * implied, including fitness for a particular purpose. In no event shall\n * the author be liable for any damages arising in any way out of the use\n * of this software, even if advised of the possibility of such damage.\n *\n * Assembled at: `date -u`\n */\n"
 
