@@ -8,7 +8,8 @@ Echo.Loader = {
 	"config": {
 		"cdnBaseURL": "http://cdn.echoenabled.com/",
 		"errorTimeout": 5000 // 5 sec
-	}
+	},
+	"overrides": {}
 };
 
 // public interface
@@ -39,6 +40,12 @@ Echo.Loader.download = function(params) {
 		"load": urls,
 		"complete": callback
 	});
+};
+
+Echo.Loader.override = function(canvasID, appID, config) {
+	var overrides = Echo.Loader.overrides;
+	overrides[canvasID] = overrides[canvasID] || {};
+	overrides[canvasID][appID] = config;
 };
 
 // internal functions
@@ -172,7 +179,9 @@ Echo.Loader._initApplications = function(canvas) {
 					});
 					return;
 				}
-				app.ref = new application(app.config);
+				var overrides = (Echo.Loader.overrides[canvas.id] || {})[app.id] || {};
+				var config = Echo.jQuery.extend(true, app.config, overrides);
+				app.ref = new application(config);
 				canvas.target.append(app.config.target);
 			});
 		}

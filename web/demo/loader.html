@@ -24,6 +24,10 @@
   <div class="echo-canvas" data-canvas-id="canvas.006" data-appkey="test.echoenabled.com"></div>
 
   <script type="text/javascript" src="../sdk/loader.js"></script>
-  <script> Echo.Loader.init(); </script>
+  <script type="text/javascript">
+	Echo.Loader.override("canvas.001", "my-stream", {"appkey": "test.echoenabled.com"});
+	Echo.Loader.init();
+  </script>
+
 </body>
 </html>
