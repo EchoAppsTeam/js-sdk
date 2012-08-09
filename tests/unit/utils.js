@@ -217,7 +217,17 @@ suite.prototype.tests.TestDataMethods = {
 		} catch(e) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
 		};
-
+		QUnit.deepEqual(new RegExp(Echo.Vars.regexps.templateSubstitution).exec("{key:value}"),
+			["{key:value}", "key", "value"], "Checking templateSubstitution regexp with one key-value pair");
+		QUnit.deepEqual(new RegExp(Echo.Vars.regexps.templateSubstitution).exec("{key}"),
+			["{key}", "key", undefined], "Checking templateSubstitution regexp with key and empty value");
+		QUnit.deepEqual(new RegExp(Echo.Vars.regexps.templateSubstitution).exec("string without template"),
+			null, "Checking templateSubstitution regexp with fake string as parameter");
+		var regexp = new RegExp(Echo.Vars.regexps.templateSubstitution);
+		var found = [].concat(regexp.exec("{key1:value1} {key2:value2}"),
+				      regexp.exec("{key1:value1} {key2:value2}"));
+		QUnit.deepEqual(found, ["{key1:value1}", "key1", "value1", "{key2:value2}", "key2", "value2"],
+				"Checking templateSubstitution regexp with multiple key-value pairs");
 	}
 };
 

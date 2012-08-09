@@ -8,7 +8,7 @@ if (!Echo.Global) Echo.Global = {};
 
 if (!Echo.Vars) Echo.Vars = {
 	"regexps": {
-		"templateSubstitution": /{([a-z\.]+)(?:\:(([0-9a-z_-]+\.)*[0-9a-z_-]+))?}/ig,
+		"templateSubstitution": /{([0-9a-z\.]+)(?:\:((?:[0-9a-z_-]+\.)*[0-9a-z_-]+))?}/ig,
 		"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
 		"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/,
 		"w3cdtf": /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/
