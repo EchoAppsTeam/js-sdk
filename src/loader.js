@@ -14,8 +14,16 @@ Echo.Loader = {
 
 // public interface
 
-Echo.Loader.init = function() {
-	Echo.Loader._initEnvironment(Echo.Loader._initCanvases);
+Echo.Loader.init = function(canvases) {
+	Echo.Loader._initEnvironment(function() {
+		if (canvases && !Echo.jQuery.isArray(canvases)) {
+			canvases = [canvases];
+		}
+		// if no canvases defined during initialization,
+		// we look for all canvases in the document
+		canvases = canvases || Echo.jQuery(".echo-canvas");
+		Echo.Loader._initCanvases(canvases);
+	});
 };
 
 Echo.Loader.download = function(params) {
@@ -67,10 +75,10 @@ Echo.Loader._initEnvironment = function(callback) {
 	});
 };
 
-Echo.Loader._initCanvases = function(callback) {
-	var canvases = [];
-	Echo.jQuery(".echo-canvas").each(function() {
-		var target = Echo.jQuery(this);
+Echo.Loader._initCanvases = function(canvases) {
+	var collection = [];
+	Echo.jQuery.map(canvases, function(target) {
+		target = Echo.jQuery(target);
 		var id = target.attr("data-canvas-id");
 		var appkey = target.attr("data-appkey");
 
@@ -83,10 +91,10 @@ Echo.Loader._initCanvases = function(callback) {
 			return;
 		}
 
-		canvases.push({"id": id, "appkey": appkey, "target": target});
+		collection.push({"id": id, "appkey": appkey, "target": target});
 	});
 
-	if (!canvases.length) {
+	if (!collection.length) {
 		Echo.Loader._log({
 			"type": "warning",
 			"description": "No canvases found on the page..."
@@ -94,8 +102,8 @@ Echo.Loader._initCanvases = function(callback) {
 		return;
 	}
 
-	Echo.Loader._fetchCanvasConfigs(canvases, function(configs) {
-		Echo.jQuery.each(canvases, function(id, canvas) {
+	Echo.Loader._fetchCanvasConfigs(collection, function(configs) {
+		Echo.jQuery.each(collection, function(id, canvas) {
 			var config = configs[canvas.id];
 			if (!config) return;
 			// copy config object to prevent the same object
