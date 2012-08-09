@@ -50,7 +50,7 @@ plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
 		var plugin = this, item = this.component;
 		var context = item.config.get("context");
-		if (context && context !== args.context) {
+		if (plugin.get("expanded") && context && context !== args.context) {
 			plugin.set("expanded", false);
 			plugin._hideSubmit();
 			plugin.events.publish({
