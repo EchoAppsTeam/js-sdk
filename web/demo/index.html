@@ -9,12 +9,12 @@
 		$(document).ready(function() {
 			var nav = $(".navigation");
 			nav.on("mouseenter", function(e) {
-				nav.fadeTo("slow", 1);
+				nav.stop().fadeTo("slow", 1);
 				e.stopPropagation();
 			}).on("mouseleave", function(e) {
-				nav.fadeTo("slow", 0.5);
+				nav.stop().fadeTo("slow", 0.5);
 				e.stopPropagation();
-			})
+			});
 		});
 		window.resize = function(height){
 				document.getElementById("frame").style.height = height + 48 + "px";
@@ -24,7 +24,7 @@
 <body>
 	<div class="top navigation">
 		<ul class="menu">
-			<li style=" padding-right: 0px; border: 0px; color: #808080;">Controls: </li>
+			<li style="padding-right: 0px; border: 0px; color: #808080;">Controls: </li>
 			<li>
 				<a href="auth.html" target="frame">Auth</a>
 				<a href="auth.html" target="_blank">
