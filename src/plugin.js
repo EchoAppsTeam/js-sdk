@@ -170,7 +170,7 @@ Echo.Plugin.prototype.disable = function() {
  */
 Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 	if (html) {
-		html = this.substitute($.isFunction(html) ? html() : html);
+		html = this.substitute($.isFunction(html) ? html.call(this) : html);
 	}
 	this.component.extendTemplate.call(this.component, action, anchor, html);
 };
@@ -256,13 +256,15 @@ Echo.Plugin.prototype._manifest = function(key) {
 		: undefined;
 };
 
-Echo.Plugin.prototype._init.css = function() {
+Echo.Plugin.prototype._initializers = {};
+
+Echo.Plugin.prototype._initializers.css = function() {
 	if (!this._manifest("css")) return;
 	var parts = [this.component.name, "Plugins", this.name];
 	Echo.Utils.addCSS(this.substitute(this._manifest("css")), parts.join("."));
 };
 
-Echo.Plugin.prototype._init.labels = function() {
+Echo.Plugin.prototype._initializers.labels = function() {
 	var namespace = this.component.name + ".Plugins." + this.name;
 
 	// define default language var values with the lowest priority available
@@ -272,15 +274,15 @@ Echo.Plugin.prototype._init.labels = function() {
 	return new Echo.Labels(this.config.get("labels", {}), namespace);
 };
 
-Echo.Plugin.prototype._init.config = function() {
+Echo.Plugin.prototype._initializers.config = function() {
 	return new Echo.Plugin.Config({"plugin": this});
 };
 
-Echo.Plugin.prototype._init.events = function() {
+Echo.Plugin.prototype._initializers.events = function() {
 	return new Echo.Plugin.Events({"plugin": this});
 };
 
-Echo.Plugin.prototype._init.subscriptions = function() {
+Echo.Plugin.prototype._initializers.subscriptions = function() {
 	var self = this;
 	$.each(this._manifest("events"), function(topic, data) {
 		data = $.isFunction(data) ? {"handler": data} : data;
@@ -288,7 +290,7 @@ Echo.Plugin.prototype._init.subscriptions = function() {
 	});
 };
 
-Echo.Plugin.prototype._init.renderers = function() {
+Echo.Plugin.prototype._initializers.renderers = function() {
 	var self = this;
 	$.each(this._manifest("renderers"), function(name, renderer) {
 		self.component.extendRenderer.call(self.component, "plugin-" + self.name + "-" + name, $.proxy(renderer, self));
@@ -298,7 +300,7 @@ Echo.Plugin.prototype._init.renderers = function() {
 	});
 };
 
-Echo.Plugin.prototype._init.dom = function() {
+Echo.Plugin.prototype._initializers.dom = function() {
 	var parentDOM = this.component.dom;
 	var prefix = "plugin-" + this.name + "-";
 	this.dom = {

@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Echo</title>
+	<script type="text/javascript" src="../../sdk/backplane.js"></script>
+	<script type="text/javascript" src="../../sdk/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="../../sdk/loader.js"></script>
+	<script type="text/javascript" src="../../sdk/environment.pack.js"></script>
+	<script type="text/javascript" src="../../sdk/identity-server.pack.js"></script>
+	<script type="text/javascript" src="../../sdk/stream-server.pack.js"></script>
+	<script type="text/javascript" src="../../sdk/stream-server.pack.js"></script>
+	<script type="text/javascript" src="../../sdk/products/social-chatter/countdown/jquery.countdown.js"></script>
+	<script type="text/javascript" src="../../sdk/products/social-chatter/datepicker/jquery-ui-1.8.18.custom.min.js"></script>
+	<script type="text/javascript" src="../../sdk/products/social-chatter/datepicker/jquery-ui-timepicker-addon.js"></script>
+	<!--<script type="text/javascript" src="../../sdk/products/social-chatter/plugins/item-conditional-css-classes.js"></script>-->
+	<script type="text/javascript" src="../../sdk/products/social-chatter/plugins/social-chatter-event.js"></script>
+	<!--
+	<script type="text/javascript" src="../../sdk/products/social-chatter/plugins/submit-countdown-event.js"></script>
+	<script type="text/javascript" src="../../sdk/products/social-chatter/plugins/submit-textarea-auto-resize.js"></script>
+	<script type="text/javascript" src="../../sdk/products/social-chatter/plugins/user-metadata-manager.js"></script>
+	<script type="text/javascript" src="../../sdk/products/social-chatter/plugins/vip-replies.js"></script>-->
+	<script type="text/javascript" src="../../sdk/products/social-chatter/social-chatter.js"></script>
+</head>
+<body>
+	<div id="stream"></div>
+	<script>
+		Backplane.init({
+			"serverBaseURL": "http://api.echoenabled.com/v1",
+			"busName": "jskit"
+		});
+
+		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
+		new Echo.Products.SocialChatter({
+			"appkey": "test.aboutecho.com",
+			"apiBaseURL": "http://api.echoenabled.com/v1/",
+			"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+			"target": document.getElementById("stream"),
+			"eventsTargetURL": "http://echosandbox.com/green-room-events-local",
+			"views": {
+				"EventList": {
+					"Stream": {
+						"plugins": [{
+							"name": "Edit",
+							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+						}, {
+							"name": "SocialChatterItemEvent"
+						}]
+					}
+				},
+				"Main": {
+					"Auth": {
+						"appkey": "test.aboutecho.com",
+						"identityManager": identityManager
+					}
+				}/*,
+				"PublicEvent": {
+					"Stream": {
+						"plugins": [{
+							"name": "Edit",
+							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+						}, {
+							"name": "Like",
+							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+						}, {
+							"name": "Reply",
+							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+						}]
+					},
+					"VIPStream": {
+						"plugins": [{
+							"name": "Edit",
+							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+						}, {
+							"name": "Like",
+							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+						}, {
+							"name": "Reply",
+							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+						}]
+					}
+				},
+				"GreenRoom": {
+					"Stream": {
+						"plugins": [{
+							"name": "Edit",
+							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+						}, {
+							"name": "Like",
+							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+						}, {
+							"name": "Reply",
+							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+						}]
+					}
+				}*/
+			},
+			"backplane": {
+				"serverBaseURL" : "http://api.echoenabled.com/v1",
+				"busName": "jskit"
+			},
+			"identityManager": { // use as an indicator of Auth widget appearance
+				"login": {
+					"width": 400,
+					"height": 250,
+					"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+				},
+				"signup": {
+					"width": 400,
+					"height": 250,
+					"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+				}
+			}
+		});
+	</script>
+</body>
+</html>

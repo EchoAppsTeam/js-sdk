@@ -24,6 +24,7 @@ PACK_FILES_environment = \
 	$(WEB_SDK_DIR)/api.pack.js \
 	$(SRC_DIR)/user-session.js \
 	$(SRC_DIR)/control.js \
+	$(SRC_DIR)/product.js \
 	$(SRC_DIR)/plugin.js \
 	$(SRC_DIR)/button.js
 
@@ -77,6 +78,7 @@ clean:
 sdk:
 	@echo "Making SDK..."
 	@cp -r src/* web/sdk
+	@./tools/jquery-wrapper.sh
 	@cp -r tests web/sdk
 	@echo "Done!"
 
