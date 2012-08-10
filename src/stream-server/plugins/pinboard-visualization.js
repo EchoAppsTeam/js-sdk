@@ -10,8 +10,8 @@ mediaGallery.labels = {
 
 mediaGallery.config = {
 	"resizeDuration": 250,
-	"contextId": null,
-	"currentIndex": 0
+	"elements": [],
+	"item": null
 };
 
 mediaGallery.templates.main =
@@ -28,9 +28,9 @@ mediaGallery.templates.mediaError =
 
 mediaGallery.renderers.controls = function(element) {
 	var self = this;
-	var item = self.config.get("item");
+	var item = this.config.get("item");
 	this.elements = this.config.get("elements");
-	this.currentIndex = this.config.get("currentIndex");
+	this.currentIndex = 0;
 	var publish = function() {
 		self.events.publish({
 			"topic": "onLoadMedia",
@@ -47,7 +47,7 @@ mediaGallery.renderers.controls = function(element) {
 	var activeControlClass = this.cssPrefix + 'activeControl';
 	$.each(this.elements, function(i, element) {
 		element = $(element);
-		self.normalizeFlashContent(element);
+		self._normalizeFlashContent(element);
 		var ratio;
 		var isCurrentControl = (i == self.currentIndex);
 		var itemContainer = $('<div></div>').append(element).addClass(itemClass);
@@ -80,7 +80,7 @@ mediaGallery.renderers.controls = function(element) {
 			itemContainer.empty().append("Error");
 			showCurrentMedia();
 		}).one("load", function() {
-			self.loadMediaHandler(element, itemContainer);
+			self._loadMediaHandler(element, itemContainer);
 			showCurrentMedia();
 		});
 		itemsContainer.append(itemContainer);
@@ -94,7 +94,7 @@ mediaGallery.renderers.controls = function(element) {
 
 // To avoid bugs with flash content when we show/hide it
 // we should try fix it with wmode parameter if needed
-mediaGallery.methods.normalizeFlashContent = function(element) {
+mediaGallery.methods._normalizeFlashContent = function(element) {
 	var tagName = element.get(0).tagName.toLowerCase();
 	if (tagName == "iframe") {
 		var parts = Echo.Utils.parseURL(element.attr("src") || "");
@@ -119,7 +119,7 @@ mediaGallery.methods.normalizeFlashContent = function(element) {
 	}
 };
 
-mediaGallery.methods.getHiddenElementDimensions = function(parent, element) {
+mediaGallery.methods._getHiddenElementDimensions = function(parent, element) {
 	var dimensions;
 	parent.css({
 		"postion": "absolute",
@@ -138,7 +138,7 @@ mediaGallery.methods.getHiddenElementDimensions = function(parent, element) {
 	return dimensions;
 };
 
-mediaGallery.methods.loadMediaHandler = function(element, elementContainer) {
+mediaGallery.methods._loadMediaHandler = function(element, elementContainer) {
 	var self = this;
 	var target = this.config.get("target");
 	var viewportDimensions = {
@@ -147,7 +147,7 @@ mediaGallery.methods.loadMediaHandler = function(element, elementContainer) {
 	};
 	var getElementDimensions = function() {
 		return !elementContainer.is(":visible")
-			? self.getHiddenElementDimensions(elementContainer, element)
+			? self._getHiddenElementDimensions(elementContainer, element)
 			: {
 				"width": element.width(),
 				"height": element.height()
@@ -263,19 +263,6 @@ plugin.component.renderers.avatar = function(element) {
 	return element;
 };
 
-plugin.renderers.childBody = function(element) {
-	var plugin = this, item = this.component;
-	if (item.isRoot()) {
-		return element.empty();
-	}
-	var text = Echo.Utils.htmlTextTruncate(
-		item.get("data.object.content"),
-		plugin.config.get("maxChildrenBodyCharacters"),
-		"..."
-	);
-	return element.empty().append(text);
-};
-
 $.each(["expandChildren", "container"], function(i, renderer) {
 	plugin.component.renderers[renderer] = function(element) {
 		var plugin = this, item = this.component;
@@ -323,6 +310,19 @@ plugin.component.renderers.textToggleTruncated = function(element) {
 	return item.parentRenderer("textToggleTruncated", arguments).one('click', function() {
 		plugin._refreshView();
 	});
+};
+
+plugin.renderers.childBody = function(element) {
+	var plugin = this, item = this.component;
+	if (item.isRoot()) {
+		return element.empty();
+	}
+	var text = Echo.Utils.htmlTextTruncate(
+		item.get("data.object.content"),
+		plugin.config.get("maxChildrenBodyCharacters"),
+		"..."
+	);
+	return element.empty().append(text);
 };
 
 plugin.renderers.media = function(element) {
