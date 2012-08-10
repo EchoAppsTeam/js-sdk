@@ -719,7 +719,7 @@ Echo.Control.prototype._init.plugins = function(callback) {
 				}
 			}
 		});
-		callback.call(this);
+		callback.call(control);
 	});
 };
 
