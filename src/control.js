@@ -617,6 +617,7 @@ Echo.Control.prototype._init.subscriptions = function() {
 	control.events.subscribe({
 		"topic": "Echo.UserSession.onInvalidate",
 		"context": "global",
+		"once": true,
 		"handler": control.refresh
 	});
 };
