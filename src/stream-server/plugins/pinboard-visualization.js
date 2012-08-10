@@ -11,7 +11,7 @@ mediaGallery.labels = {
 mediaGallery.config = {
 	"resizeDuration": 250,
 	"elements": [],
-	"item": null
+	"contextId": undefined
 };
 
 mediaGallery.templates.main =
@@ -34,10 +34,7 @@ mediaGallery.renderers.controls = function(element) {
 	var publish = function() {
 		self.events.publish({
 			"topic": "onLoadMedia",
-			"data": {
-				"item": item
-			},
-			"context": item.config.get("context")
+			"context": self.config.get("contextId", self.config.get("context")) 
 		});
 	};
 	var controlsContainer = element;
@@ -332,7 +329,7 @@ plugin.renderers.media = function(element) {
 		var config = $.extend(plugin.config.get("gallery"), {
 			"target": element,
 			"appkey": item.config.get("appkey"),
-			"item": item,
+			"contextId": item.config.get("context"),
 			"elements": items
 		});
 		new Echo.StreamServer.Controls.Stream.Item.MediaGallery(config);
