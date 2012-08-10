@@ -60,9 +60,7 @@ Echo.ProductView.prototype._initControl = function(controlSpec, controlConfig) {
 		)
 	);
 	var Control = Echo.Utils.getComponent(controlSpec.name);
-	console.log(controlConfig);
 	this.controls[controlSpec.name] = new Control(controlConfig);
-	console.log(this.controls);
 	return this.controls[controlSpec.name];
 };
 
