@@ -74,7 +74,7 @@ stream.events = {
 		this._queueActivity({
 			"action": "animation",
 			"actorID": data.item.get("data.actor.id"),
-			"itemUnique": data.item.get("data.unique"),
+			"item": data.item,
 			"priority": "highest",
 			"handler": function() {
 				data.item.dom.render();
@@ -88,7 +88,7 @@ stream.events = {
 		var self = this;
 		this._queueActivity({
 			"action": "animation",
-			"itemUnique": data.item.get("data.unique"),
+			"item": data.item,
 			"actorID": data.item.data.actor.id,
 			"priority": "highest",
 			"handler": function() {
@@ -255,14 +255,21 @@ stream.methods.requestChildrenItems = function(unique) {
 				"propagation": false
 			});
 			var children = [];
-			$.each(data.entries, function(i, entry) {
-				var _item = self._initItem(entry);
-				self._applyStructureUpdates("add", _item);
-				if (entry.parentUnique === item.get("data.unique")) {
-					children.push(_item);
-				}
+			var actions = $.map(data.entries, function(entry) {
+				return function(callback) {
+					self._initItem(entry, false, function() {
+						var _item = this;
+						self._applyStructureUpdates("add", _item);
+						if (entry.parentUnique === item.get("data.unique")) {
+							children.push(_item);
+						}
+						callback();
+					});
+				};
 			});
-			self._placeChildrenItems(item, children);
+			Echo.Utils.sequentialCall(actions, function() {
+				self._placeChildrenItems(item, children);
+			});
 		}
 	});
 	childrenRequest.send();
@@ -371,21 +378,27 @@ stream.methods._prepareEventParams = function(params) {
 	return params;
 };
 
-stream.methods.applyLiveUpdates = function(entries) {
+stream.methods.applyLiveUpdates = function(entries, callback) {
 	var self = this;
 	this._refreshItemsDate();
 	this._checkTimeframeSatisfy();
-	$.each(entries || [], function(i, entry) {
-		entry = self._normalizeEntry(entry);
-		var item = self.items[entry.unique];
-		var action = self._classifyAction(entry);
-		if (!item && action != "post") return;
-		switch (action) {
-			case "post":
+	var actions = $.map(entries || [], function(entry) {
+		return function(_callback) {
+			entry = self._normalizeEntry(entry);
+			var item = self.items[entry.unique];
+			var action = self._classifyAction(entry);
+			if (!item && action !== "post") {
+				_callback();
+				return;
+			}
+			if (action === "post") {
 				if (item) {
 					self._applySpotUpdates("replace", self._updateItem(entry));
-				} else {
-					item = self._initItem(entry, true);
+					_callback();
+					return;
+				}
+				self._initItem(entry, true, function() {
+					item = this;
 					var satisfies = item.isRoot()
 						? self._withinVisibleFrame(item)
 						: self._withinVisibleChildrenFrame(item);
@@ -402,17 +415,21 @@ stream.methods.applyLiveUpdates = function(entries) {
 							"propagation": false
 						});
 						self._applySpotUpdates("add", item);
-					} else {
-						delete self.items[entry.unique];
 					}
-				}
-				break;
-			case "delete":
+					_callback();
+				});
+				return;
+			}
+			if (action === "delete") {
 				self._applySpotUpdates("delete", item);
-				break;
-		}
+				_callback();
+			}
+		};
 	});
-	this._recalcEffectsTimeouts();
+	Echo.Utils.sequentialCall(actions, function() {
+		self._recalcEffectsTimeouts();
+		callback && callback.call(self);
+	});
 };
 
 stream.methods._actualizeChildrenList = function(parent, entries) {
@@ -555,26 +572,31 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 		"propagation": false
 	});
 	var sortOrder = this.config.get("sortOrder");
-	$.each(data.entries, function(i, entry) {
-		entry = self._normalizeEntry(entry);
-		var item = self._initItem(entry);
-		// avoiding problem when children can go before parents
-		self._applyStructureUpdates("add", item);
-		if (item.isRoot()) {
-			self._addItemToList(roots, item, sortOrder);
-		}
-	});
-
-	this.hasInitialData = true;
-	this.isViewComplete = roots.length !== this.config.get("itemsPerPage");
-	visualizer = visualizer || function(data) {
-		self.lastRequest = {
-			"initial": true,
-			"data": data
+	var actions = $.map(data.entries, function(entry) {
+		return function(callback) {
+			self._initItem(entry, false, function() {
+				var item = this;
+				// avoiding problem when children can go before parents
+				self._applyStructureUpdates("add", item);
+				if (item.isRoot()) {
+					self._addItemToList(roots, item, sortOrder);
+				}
+				callback();
+			});
 		};
-		self.dom.render();
-	};
-	visualizer(roots);
+	});
+	Echo.Utils.sequentialCall(actions, function() {
+		self.hasInitialData = true;
+		self.isViewComplete = roots.length !== self.config.get("itemsPerPage");
+		visualizer = visualizer || function(data) {
+			self.lastRequest = {
+				"initial": true,
+				"data": data
+			};
+			self.dom.render();
+		};
+		visualizer(roots);
+	});
 };
 
 stream.methods._checkTimeframeSatisfy = function() {
@@ -598,9 +620,10 @@ stream.methods._handleLiveUpdatesResponse = function(data) {
 		this.startLiveUpdates();
 		return;
 	}
-	this.applyLiveUpdates(data.entries);
-	this.dom.render({"name": "state"});
-	this._executeNextActivity();
+	this.applyLiveUpdates(data.entries, function() {
+		self.dom.render({"name": "state"});
+		self._executeNextActivity();
+	});
 };
 
 stream.methods._recalcEffectsTimeouts = function() {
@@ -744,29 +767,28 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 	};
 	this._queueActivity({
 		"action": action,
-		"itemUnique": item.get("data.unique"),
-		"actorID": item.data.actor.id,
+		"item": item,
+		"actorID": item.get("data.actor.id"),
 		"priority": options.priority,
 		"handler": function() { handler(action); }
 	});
 };
 
 stream.methods._queueActivity = function(params) {
-	var item = this.items[params.itemUnique];
-	if (!item) return;
+	if (!params.item) return;
 	// we consider activity related to the current user if:
 	//  - the corresponding item is blocked (moderation action in progress)
 	//  - or the activity was performed by the current user
-	var byCurrentUser = item.blocked || params.actorID && this.user.has("identity", params.actorID);
+	var byCurrentUser = params.item.blocked || params.actorID && this.user.has("identity", params.actorID);
 	var index = this._getActivityProjectedIndex(byCurrentUser, params);
 	var data = {
 		"action": params.action,
+		"item": item,
 		"type": params.type || "",
 		"affectCounter": params.action === "add",
-		"itemUnique": params.itemUnique,
 		"priority": params.priority,
 		"byCurrentUser": byCurrentUser,
-		"handler": function() { params.handler(); }
+		"handler": params.handler
 	};
 	if (typeof index !== "undefined") {
 		this.activities.queue.splice(index, 0, data);
@@ -1027,7 +1049,7 @@ stream.methods._isItemInList = function(item, items) {
 	return this._getItemListIndex(item, items) >= 0;
 };
 
-stream.methods._initItem = function(entry, isLive) {
+stream.methods._initItem = function(entry, isLive, callback) {
 	var self = this;
 	var parentConfig = this.config.getAsHash();
 	var config = $.extend({
@@ -1035,11 +1057,12 @@ stream.methods._initItem = function(entry, isLive) {
 		"appkey": this.config.get("appkey"),
 		"parent": parentConfig,
 		"plugins": this.config.get("plugins"),
-		"data": entry,
-		"live": isLive
+		"data": this._normalizeEntry(entry),
+		"live": isLive,
+		"ready": callback
 	}, parentConfig.item);
 	delete parentConfig.item;
-	var item = new Echo.StreamServer.Controls.Stream.Item(config);
+	new Echo.StreamServer.Controls.Stream.Item(config);
 	// TODO: return cache (disabled because it was being cached in the wrong moment with incorrect data)
 	// caching item template to avoid unnecessary work
 	/*var template = item.template;
@@ -1052,8 +1075,6 @@ stream.methods._initItem = function(entry, isLive) {
 		}
 		return self.cache.itemTemplate;
 	};*/
-	this.items[entry.unique] = item;
-	return item;
 };
 
 stream.methods._updateItem = function(entry) {
@@ -1100,6 +1121,8 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 	options = options || {};
 	switch (action) {
 		case "add":
+			// adding item into the list
+			this.items[item.get("data.unique")] = item;
 			if (!item.isRoot()) {
 				var parent = this._getParentItem(item);
 				// avoiding problem with missing parent
@@ -1226,6 +1249,7 @@ item.config = {
 	},
 	"optimizedContext": true,
 	"reTag": true,
+	"render": false,
 	"viaLabel": {
 		"icon": false,
 		"text": false
@@ -1243,6 +1267,17 @@ item.config.normalizer = {
 		});
 		return object;
 	}
+};
+
+item.vars = {
+	"children": [],
+	"depth": 0,
+	"threading": false,
+	"textExpanded": false,
+	"blocked": false,
+	"buttonsOrder": [],
+	"buttonSpecs": {},
+	"buttons": {}
 };
 
 item.labels = {
@@ -1273,6 +1308,18 @@ item.labels = {
 	"fromLabel": "from",
 	"viaLabel": "via",
 	"childrenMoreItems": "View more items"
+};
+
+item.init = function(config) {
+	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
+	// FIXME: employ general logic to fire "onReady" event
+	//
+	// this.ready();
+	var ready = this.config.get("ready");
+	if (ready) {
+		this.config.set("ready", function() {});
+		ready.call(this);
+	}
 };
 
 item.renderers.authorName = function(element) {
@@ -2250,22 +2297,6 @@ item.methods._sortButtons = function() {
 		return [text, extra];
 	};
 })();
-
-item.vars = {
-	"children": [],
-	"depth": 0,
-	"threading": false,
-	"textExpanded": false,
-	"blocked": false,
-	"buttonsOrder": [],
-	"buttonSpecs": {},
-	"buttons": {}
-}
-
-item.init = function(config) {
-	//"id": entry.object.id, // short cut for "id" item field
-	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
-};
 
 var itemDepthRules = [];
 // 100 is a maximum level of children in query, but we can apply styles for ~20

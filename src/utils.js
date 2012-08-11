@@ -640,6 +640,16 @@ Echo.Utils.log = function(data) {
 	);
 };
 
+Echo.Utils.sequentialCall = function(actions, callback) {
+	if (!actions || !actions.length) {
+		callback && callback();
+		return;
+	}
+	actions.shift()(function() {
+		Echo.Utils.sequentialCall(actions, callback);
+	});
+};
+
 Echo.Utils.isPreIE9 = function() {
 	return ($.browser.msie && $.browser.version < 9 && document.documentMode && document.documentMode < 9);
 };
