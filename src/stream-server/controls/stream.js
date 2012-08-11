@@ -1063,18 +1063,6 @@ stream.methods._initItem = function(entry, isLive, callback) {
 	}, parentConfig.item);
 	delete parentConfig.item;
 	new Echo.StreamServer.Controls.Stream.Item(config);
-	// TODO: return cache (disabled because it was being cached in the wrong moment with incorrect data)
-	// caching item template to avoid unnecessary work
-	/*var template = item.template;
-	item.template = function() {
-		if (!self.cache) self.cache = {};
-		if (!self.cache.itemTemplate) {
-			self.cache.itemTemplate = $.isFunction(template)
-				? template.apply(this, arguments)
-				: template;
-		}
-		return self.cache.itemTemplate;
-	};*/
 };
 
 stream.methods._updateItem = function(entry) {
