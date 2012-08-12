@@ -69,7 +69,7 @@ Echo.Control.manifest = function(name) {
 		"renderers": {},
 		"templates": {},
 		"dependencies": [],
-		"init": function(){ this.dom.render(); },
+		"init": function() { this.dom.render(); },
 		"destroy": undefined
 	};
 };
@@ -260,6 +260,8 @@ Echo.Control.prototype.refresh = function() {
 
 	// restore originally defined data
 	this.set("data", this.config.get("data", {}));
+
+	this.set("internal.state", "refresh");
 
 	this._init(
 		this._refreshInitializersList.slice(0)
@@ -664,17 +666,44 @@ Echo.Control.prototype._initializers.dom = function() {
 			return this.elements[(ignorePrefix ? "" : self.cssPrefix) + name];
 		},
 		"remove": function(element) {
-			var name;
-			if (typeof element === "string") {
-				name = self.cssPrefix + element;
-			} else {
-				name = element.echo.name;
-			}
+			var name = typeof element === "string"
+				? self.cssPrefix + element
+				: element.echo.name;
 			this.elements[name].remove();
 			delete this.elements[name];
 		},
 		"render": function(args) {
-			return self._render(args);
+			args = args || {};
+
+			var state = self.get("internal.state", "init");
+
+			// we render if the "render" flag is defined as true in a config
+			// or when the "dom.render" function was call explicitly (in this case
+			// the state whould be "ready")
+			var render = self.config.get("render", true) || state === "ready";
+
+			// render in event-less mode
+			if (args.stealth || args.target || args.name) {
+				return render ? self._render(args) : undefined;
+			}
+
+			// cleanup dom strcuture when we render the whole control
+			self.dom.clear();
+
+			var content;
+			var publish = function(topic) {
+				if (!topic) return;
+				self.events.publish({"topic": topic});
+			};
+			if (render) {
+				var rendered = self.dom.rendered;
+				content = self._render(args);
+				self.dom.rendered = true;
+				publish(rendered ? "onRerender" : "onRender");
+			}
+			self.set("internal.state", "ready");
+			publish({"init": "onReady", "refresh": "onRefresh"}[state]);
+			return content;
 		}
 	};
 };
@@ -805,9 +834,7 @@ Echo.Control.prototype._loadPluginScripts = function(callback) {
  */
 Echo.Control.prototype._render = function(args) {
 	args = args || {};
-	var self = this, rendered;
 	var data = args.data || this.data;
-	var stealth = args.stealth || args.target;
 	var template = args.template || this.template;
 	var target = args.target ||
 		(args.name && this.dom.get(args.name)) ||
@@ -840,24 +867,9 @@ Echo.Control.prototype._render = function(args) {
 		return newNode;
 	}
 
-	// cleanup dom if we render the whole control
-	if (!stealth) {
-		rendered = this.dom.rendered;
-		this.dom.clear();
-	}
-	template = this._compileTemplate(template, data, stealth ? {} : this.extension.template);
+	template = this._compileTemplate(template, data, args.target ? {} : this.extension.template);
 	this._applyRenderers(template);
 	target.empty().append(this.dom.root);
-
-	if (!stealth) {
-		this.dom.rendered = true;
-		var topics = rendered
-			? ["onRerender", "onRefresh"]
-			: ["onRender", "onReady"];
-		$.map(topics, function(topic) {
-			self.events.publish({"topic": topic});
-		});
-	}
 	return this.dom.root;
 };
 

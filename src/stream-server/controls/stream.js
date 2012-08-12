@@ -1300,14 +1300,7 @@ item.labels = {
 
 item.init = function(config) {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
-	// FIXME: employ general logic to fire "onReady" event
-	//
-	// this.ready();
-	var ready = this.config.get("ready");
-	if (ready) {
-		this.config.set("ready", function() {});
-		ready.call(this);
-	}
+	this.dom.render();
 };
 
 item.renderers.authorName = function(element) {
