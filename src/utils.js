@@ -640,6 +640,22 @@ Echo.Utils.log = function(data) {
 	);
 };
 
+Echo.Utils.parallelCall = function(actions, callback) {
+	if (!actions || !actions.length) {
+		callback && callback();
+		return;
+	}
+	var remaining = actions.length;
+	$.map(actions, function(action) {
+		action(function() {
+			remaining--;
+			if (!remaining) {
+				callback && callback();
+			}
+		});
+	});
+};
+
 Echo.Utils.sequentialCall = function(actions, callback) {
 	if (!actions || !actions.length) {
 		callback && callback();

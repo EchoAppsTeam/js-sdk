@@ -239,7 +239,7 @@ stream.methods.requestChildrenItems = function(unique) {
 			self.showError(data, options);
 		},
 		"onData": function(data) {
-			var item = self.items[unique];
+			var item = self.items[unique], items = {};
 			var element = item.dom.get("expandChildren");
 			if (!data.hasMoreChildren || data.hasMoreChildren === "false") {
 				item.set("data.hasMoreChildren", false);
@@ -254,20 +254,23 @@ stream.methods.requestChildrenItems = function(unique) {
 				},
 				"propagation": false
 			});
-			var children = [];
 			var actions = $.map(data.entries, function(entry) {
 				return function(callback) {
 					self._initItem(entry, false, function() {
-						var _item = this;
-						self._applyStructureUpdates("add", _item);
-						if (entry.parentUnique === item.get("data.unique")) {
-							children.push(_item);
-						}
+						items[this.get("data.unique")] = this;
 						callback();
 					});
 				};
 			});
-			Echo.Utils.sequentialCall(actions, function() {
+			Echo.Utils.parallelCall(actions, function() {
+				var children = [];
+				$.map(data.entries, function(entry) {
+					var child = items[entry.unique];
+					self._applyStructureUpdates("add", child);
+					if (entry.parentUnique === item.get("data.unique")) {
+						children.push(child);
+					}
+				});
 				self._placeChildrenItems(item, children);
 			});
 		}
@@ -545,7 +548,7 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 };
 
 stream.methods._handleInitialResponse = function(data, visualizer) {
-	var self = this, items = [], roots = [];
+	var self = this, items = {}, roots = [];
 	this.config.get("target").show();
 	this.nextSince = data.nextSince || 0;
 	this.nextPageAfter = data.nextPageAfter;
@@ -575,17 +578,22 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	var actions = $.map(data.entries, function(entry) {
 		return function(callback) {
 			self._initItem(entry, false, function() {
-				var item = this;
-				// avoiding problem when children can go before parents
-				self._applyStructureUpdates("add", item);
-				if (item.isRoot()) {
-					self._addItemToList(roots, item, sortOrder);
-				}
+				items[this.get("data.unique")] = this;
 				callback();
 			});
 		};
 	});
-	Echo.Utils.sequentialCall(actions, function() {
+	// items initialization is an async process, so we init
+	// item instances first and append them into the structure later
+	Echo.Utils.parallelCall(actions, function() {
+		$.map(data.entries, function(entry) {
+			var item = items[entry.unique];
+			// avoiding problem when children can go before parents
+			self._applyStructureUpdates("add", item);
+			if (item.isRoot()) {
+				self._addItemToList(roots, item, sortOrder);
+			}
+		});
 		self.hasInitialData = true;
 		self.isViewComplete = roots.length !== self.config.get("itemsPerPage");
 		visualizer = visualizer || function(data) {
