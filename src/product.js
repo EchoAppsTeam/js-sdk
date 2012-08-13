@@ -54,8 +54,7 @@ Echo.ProductView.prototype._initControl = function(controlSpec, controlConfig) {
 	controlConfig = this._normalizeControlConfig(
 		$.extend(true, 
 			{},
-			// FIXME: should be in config
-			this._manifest(controlSpec.name),
+			this._manifest("controls")[controlSpec.name],
 			controlConfig
 		)
 	);

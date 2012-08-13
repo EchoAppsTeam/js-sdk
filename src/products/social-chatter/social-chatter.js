@@ -683,6 +683,26 @@ SocialChatter.methods._updateAppPlugins = function(plugins, updatePlugins) {
 	});
 };
 
+SocialChatter.assemblers.Auth = function(target) {
+	if (!this.config.get("identityManager")) {
+		target.hide();
+		return;
+	}
+	var ViewConstructor = this.getView("Main");
+	var view = new ViewConstructor({
+		"user": this.user,
+		"target": target,
+		"appkey": this.config.get("appkey"),
+		"type": "eventsList"
+	});
+	var content = view.dom.render();
+	view._initControl({
+		"name": "Echo.IdentityServer.Controls.Auth"
+	}, {
+		"target": view.dom.get("auth")
+	});
+};
+
 SocialChatter.assemblers.EventsList = function(target) {
 	var ViewConstructor = this.getView("EventsList");
 	var view = new ViewConstructor({
