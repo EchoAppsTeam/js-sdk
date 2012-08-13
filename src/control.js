@@ -740,11 +740,10 @@ Echo.Control.prototype._initializers.plugins = function(callback) {
 	this._loadPluginScripts(function() {
 		$.map(control.config.get("pluginsOrder"), function(name) {
 			var plugin = Echo.Plugin.getClass(name, control.name);
-			if (plugin && control._isPluginEnabled(name)) {
+			if (plugin) {
 				var instance = new plugin({"component": control});
-				// plugin might be disabled in the plugin init function,
-				// we need to double check the "enabled" config setting
-				if (control._isPluginEnabled(name)) {
+				if (instance.enabled()) {
+					instance.init();
 					control.plugins[name] = instance;
 				}
 			}
@@ -762,11 +761,6 @@ Echo.Control.prototype._manifest = function(key) {
 	return component
 		? key ? component.manifest[key] : component.manifest
 		: undefined;
-};
-
-Echo.Control.prototype._isPluginEnabled = function(plugin) {
-	var enabled = this.config.get("plugins." + plugin + ".enabled", true);
-	return $.isFunction(enabled) ? enabled.call(this) : enabled;
 };
 
 Echo.Control.prototype._loadScripts = function(scripts, callback) {

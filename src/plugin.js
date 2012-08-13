@@ -36,20 +36,8 @@ Echo.Plugin.create = function(manifest) {
 		// define extra css class for the control target
 		this.component.config.get("target").addClass(this.cssPrefix.substr(0, this.cssPrefix.length - 1));
 		this._init([
-			"config",
-			"enabled"
+			"config"
 		]);
-		if (this.config.get("enabled")) {
-			this._init([
-				"css",
-				"events",
-				"subscriptions",
-				"labels",
-				"renderers",
-				"dom"
-			]);
-			manifest.init.call(this);
-		}
 	};
 	_constructor.manifest = manifest;
 	_constructor.dependencies = manifest.dependencies;
@@ -115,6 +103,25 @@ Echo.Plugin.isDefined = function(manifest) {
  */
 Echo.Plugin.getClass = function(name, component) {
 	return Echo.Utils.getNestedValue(window, Echo.Plugin._getClassName(name, component));
+};
+
+Echo.Plugin.prototype.init = function() {
+	this._init([
+		"css",
+		"events",
+		"subscriptions",
+		"labels",
+		"renderers",
+		"dom"
+	]);
+	this._manifest("init").call(this);
+};
+
+Echo.Plugin.prototype.enabled = function() {
+	var enabled = this.config.get("enabled");
+	var enabledByConfig = (typeof enabled === "undefined") ? true :
+				($.isFunction(enabled) ? enabled() : enabled);
+	return (!!this._manifest("enabled").call(this) && enabledByConfig);
 };
 
 /**
@@ -283,14 +290,6 @@ Echo.Plugin.prototype._initializers.config = function() {
 
 Echo.Plugin.prototype._initializers.events = function() {
 	return new Echo.Plugin.Events({"plugin": this});
-};
-
-Echo.Plugin.prototype._initializers.enabled = function() {
-	if (this._manifest("enabled").call(this) && this.config.get("enabled") !== false) {
-		this.enable();
-	} else {
-		this.disable();
-	}
 };
 
 Echo.Plugin.prototype._initializers.subscriptions = function() {
