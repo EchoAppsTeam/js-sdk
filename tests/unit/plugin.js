@@ -73,6 +73,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.ok(!!_manifest.init,
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
+		delete _manifest.enabled;
 		QUnit.deepEqual(manifest, _manifest,
 			"Checking the \"manifest\" function output");
 
@@ -709,9 +710,6 @@ suite.getPluginManifest = function(name, component) {
 	manifest.init = function() {
 		var plugin = this;
 
-		if (!this.config.get("requiredParam1") || !this.config.get("requiredParam2")) {
-			return false;
-		}
 		this.data = {
 			"key1": "key1 value",
 			"key2": "key2 value",
@@ -741,6 +739,10 @@ suite.getPluginManifest = function(name, component) {
 			"remove",
 			"plugin_templateRemoveCheck"
 		);
+	};
+
+	manifest.enabled = function() {
+		return (this.config.get("requiredParam1") && this.config.get("requiredParam2"));
 	};
 
 	manifest.destroy = function() {
