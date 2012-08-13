@@ -27,22 +27,20 @@ plugin.labels = {
 	"comment": "Comment"
 };
 
-//plugin.dependencies = [{
-//	"loaded": function() { return !!window.twttr; },
-//	"url": "http://platform.twitter.com/widgets.js"
-//}];
+plugin.dependencies = [{
+	"loaded": function() { return !!window.twttr; },
+	"url": "http://platform.twitter.com/widgets.js"
+}];
 
 plugin.init = function() {
 	var item = this.component;
 
-	if (!this.isTweet(item)) return false;
-	// TODO: improve this block
-	item.config.set("contentTransformations", {
-		"text": ["smileys", "urls", "newlines"],
-		"html": ["smileys", "urls", "newlines"],
-		"xhtml": ["smileys", "urls"]
+	var config = item.config.get("contentTransformations");
+	$.map(["text", "html", "xhtml"], function(contentType) {
+		config[contentType].hashtags = false;
 	});
 
+	item.config.set("contentTransformations", config);
 	item.config.set("plugins.Like.enabled", false);
 	item.config.set("plugins.Reply.enabled", false);
 
@@ -54,17 +52,25 @@ plugin.init = function() {
 	item.addButtonSpec(this.name, this._assembleButton("favorite"));
 };
 
+plugin.enabled = function() {
+	var item = this.component;
+	return this.isTweet(item);
+};
+
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.onReady": function(topic, args) {
+	"Echo.StreamServer.Controls.Stream.Item.onRender": function(topic, args) {
 		var activeClass = this.cssPrefix + "activeButton";
-		var plugin = this, item = this.component;
-		$.map(item.buttons[this.name], function(name) {
-			name.element.unbind("click").unbind("mouseover mouseout")
-				.hover(
-					function() { name.element.addClass(activeClass); },
-					function() { name.element.removeClass(activeClass); }
-				);
-		});
+		var item = this.component;
+		if( this.isTweet(item) ) {
+			$.map(item.buttons[this.name], function(name) {
+				name.element.unbind("click").unbind("mouseover mouseout")
+					.hover(
+						function() { name.element.addClass(activeClass); },
+						function() { name.element.removeClass(activeClass); }
+					);
+			});
+			window.twttr.widgets.load();
+		}
 	}
 };
 
