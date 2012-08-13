@@ -21,17 +21,17 @@ var plugin = Echo.Plugin.manifest("FormAuth", "Echo.StreamServer.Controls.Submit
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-
-	// checking if it makes sense to init the plugin
-	if (!this.component.user.get("sessionID") ||
-		!this.config.get("identityManager.login") ||
-		!this.config.get("identityManager.signup")) return false;
-
 	if (this._userStatus() === "forcedLogin") {
 		this.extendTemplate("replace", "header", plugin.templates.forcedLogin);
 	}
 	this.extendTemplate("insertBefore", "header", plugin.templates.auth);
 	this.component.addPostValidator(this._validator());
+};
+
+plugin.enabled = function() {
+	return (!this.component.user.get("sessionID") ||
+		!this.config.get("identityManager.login") ||
+		!this.config.get("identityManager.signup")) ? false : true;
 };
 
 plugin.dependencies = [{

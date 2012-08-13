@@ -38,16 +38,14 @@ Echo.Plugin.create = function(manifest) {
 		this._init([
 			"config",
 			"css",
+			"enabled",
 			"events",
 			"subscriptions",
 			"labels",
 			"renderers",
 			"dom"
 		]);
-		// we treat "false" as an indication that the plugin was not initialized
-		if (manifest.init.call(this) === false) {
-			this.disable();
-		}
+		manifest.init.call(this);
 	};
 	_constructor.manifest = manifest;
 	_constructor.dependencies = manifest.dependencies;
@@ -88,6 +86,7 @@ Echo.Plugin.manifest = function(name, component) {
 		"renderers": {},
 		"templates": {},
 		"dependencies": [],
+		"enabled": function() { return true; },
 		"init": function(){},
 		"destroy": undefined
 	};
@@ -282,6 +281,14 @@ Echo.Plugin.prototype._initializers.events = function() {
 	return new Echo.Plugin.Events({"plugin": this});
 };
 
+Echo.Plugin.prototype._initializers.enabled = function() {
+	if (this._manifest("enabled").call(this) && this.config.get("enabled") !== false) {
+		this.enable();
+	} else {
+		this.disable();
+	}
+};
+
 Echo.Plugin.prototype._initializers.subscriptions = function() {
 	var self = this;
 	$.each(this._manifest("events"), function(topic, data) {
@@ -292,6 +299,7 @@ Echo.Plugin.prototype._initializers.subscriptions = function() {
 
 Echo.Plugin.prototype._initializers.renderers = function() {
 	var self = this;
+	if (!this.config.get("enabled")) return;
 	$.each(this._manifest("renderers"), function(name, renderer) {
 		self.component.extendRenderer.call(self.component, "plugin-" + self.name + "-" + name, $.proxy(renderer, self));
 	});
@@ -424,6 +432,7 @@ Echo.Plugin.Events.prototype.publish = function(params) {
  * @inheritdoc Echo.Events#subscribe
 */
 Echo.Plugin.Events.prototype.subscribe = function(params) {
+	if (!this.plugin.config.get("enabled")) return;
 	params.handler = $.proxy(params.handler, this.plugin);
 	return this.plugin.component.events.subscribe(params);
 };

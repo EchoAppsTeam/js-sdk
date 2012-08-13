@@ -29,8 +29,8 @@ var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
-plugin.init = function() {
-	if (!this.config.get("appId") || !this.config.get("xdReceiver")) return false;
+plugin.enabled = function() {
+	return (!this.config.get("appId") || !this.config.get("xdReceiver")) ? false : true;
 };
 
 plugin.labels = {
