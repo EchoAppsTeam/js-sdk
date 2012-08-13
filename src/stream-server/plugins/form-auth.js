@@ -29,9 +29,9 @@ plugin.init = function() {
 };
 
 plugin.enabled = function() {
-	return (!this.component.user.get("sessionID") ||
-		!this.config.get("identityManager.login") ||
-		!this.config.get("identityManager.signup")) ? false : true;
+	return (this.component.user.get("sessionID") &&
+		this.config.get("identityManager.login") &&
+		this.config.get("identityManager.signup"));
 };
 
 plugin.dependencies = [{

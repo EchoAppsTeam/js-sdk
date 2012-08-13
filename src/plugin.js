@@ -37,15 +37,19 @@ Echo.Plugin.create = function(manifest) {
 		this.component.config.get("target").addClass(this.cssPrefix.substr(0, this.cssPrefix.length - 1));
 		this._init([
 			"config",
-			"css",
-			"enabled",
-			"events",
-			"subscriptions",
-			"labels",
-			"renderers",
-			"dom"
+			"enabled"
 		]);
-		manifest.init.call(this);
+		if (this.config.get("enabled")) {
+			this._init([
+				"css",
+				"events",
+				"subscriptions",
+				"labels",
+				"renderers",
+				"dom"
+			]);
+			manifest.init.call(this);
+		}
 	};
 	_constructor.manifest = manifest;
 	_constructor.dependencies = manifest.dependencies;
@@ -299,7 +303,6 @@ Echo.Plugin.prototype._initializers.subscriptions = function() {
 
 Echo.Plugin.prototype._initializers.renderers = function() {
 	var self = this;
-	if (!this.config.get("enabled")) return;
 	$.each(this._manifest("renderers"), function(name, renderer) {
 		self.component.extendRenderer.call(self.component, "plugin-" + self.name + "-" + name, $.proxy(renderer, self));
 	});
@@ -432,7 +435,6 @@ Echo.Plugin.Events.prototype.publish = function(params) {
  * @inheritdoc Echo.Events#subscribe
 */
 Echo.Plugin.Events.prototype.subscribe = function(params) {
-	if (!this.plugin.config.get("enabled")) return;
 	params.handler = $.proxy(params.handler, this.plugin);
 	return this.plugin.component.events.subscribe(params);
 };
