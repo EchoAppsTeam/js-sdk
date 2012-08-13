@@ -1060,7 +1060,7 @@ stream.methods._isItemInList = function(item, items) {
 stream.methods._initItem = function(entry, isLive, callback) {
 	var self = this;
 	var parentConfig = this.config.getAsHash();
-	var config = $.extend({
+	var config = $.extend(true, {}, {
 		"target": $("<div>"),
 		"appkey": this.config.get("appkey"),
 		"parent": parentConfig,
