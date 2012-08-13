@@ -180,13 +180,13 @@ suite.prototype.cases.basicOperations = function(callback) {
 		});
 
 		// checking "enable"/"disable" methods
-		QUnit.ok(control._isPluginEnabled("MyTestPlugin"),
-			"Checking if a plugin is enabled (via \"_isPluginEnabled\" function)");
+		QUnit.ok(plugin.enabled(),
+			"Checking if a plugin is enabled");
 		plugin.disable();
-		QUnit.ok(!control._isPluginEnabled("MyTestPlugin"),
+		QUnit.ok(!plugin.enabled(),
 			"Checking if a plugin was disabled after \"disable\" function call");
 		plugin.enable();
-		QUnit.ok(control._isPluginEnabled("MyTestPlugin"),
+		QUnit.ok(plugin.enabled(),
 			"Checking if a plugin was enabled back after \"enable\" function call");
 
 		// checking if all dependencies are available
