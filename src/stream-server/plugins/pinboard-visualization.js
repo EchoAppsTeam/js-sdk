@@ -31,9 +31,9 @@ mediaGallery.renderers.controls = function(element) {
 	var item = this.config.get("item");
 	this.elements = this.config.get("elements");
 	this.currentIndex = 0;
-	var publish = function() {
+	var publish = function(topic) {
 		self.events.publish({
-			"topic": "onLoadMedia",
+			"topic": topic,
 			"data": {
 				"item": item
 			},
@@ -52,7 +52,7 @@ mediaGallery.renderers.controls = function(element) {
 		var isCurrentControl = (i == self.currentIndex);
 		var itemContainer = $('<div></div>').append(element).addClass(itemClass);
 		var showCurrentMedia = function() {
-			i == self.currentIndex && itemContainer.css("display", "block") && publish();
+			i == self.currentIndex && itemContainer.css("display", "block") && publish("onLoadMedia");
 		};
 		var controlContainer = $('<a href="#"></a>').addClass(controlClass);
 		controlContainer.click(function() {
@@ -63,11 +63,12 @@ mediaGallery.renderers.controls = function(element) {
 			itemsContainer.animate({
 				"height": itemContainer.height()
 			}, self.config.get("resizeDuration"), function() {
-				publish();
+				publish("onResize");
 			});
 			currentItem.fadeOut(function() {
 				itemContainer.fadeIn(function() {
 					self.currentIndex = i;
+					publish("onChangeMedia");
 				});
 			});
 			return false;
@@ -276,7 +277,8 @@ $.map([ "Echo.StreamServer.Controls.Submit.onRender",
 	"Echo.StreamServer.Controls.Stream.Item.onRerender",
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand",
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse",
-	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia" ], function(event) {
+	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize",
+	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia"], function(event) {
 	plugin.events[event] = function(topic, args) {
 		this._refreshView();
 	};

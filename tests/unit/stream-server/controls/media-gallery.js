@@ -33,30 +33,30 @@ suite.prototype.tests.commonWorkflow = {
 			"<img src='http://cdn.echoenabled.com/images/avatar-default.png'/>",
 			"<img src='http://cdn.echoenabled.com/extra/jquery/plugins/fancybox/fancybox.png'/>"
 		];
+		suite.checkGalleryActiveItem = function(gallery, index) {
+			var isActive = true;
+			var items = gallery.dom.get("items");
+			var controls = gallery.dom.get("controls");
+			$.each(controls.children(), function(i, element){
+				if (i === index) {
+					isActive = $(element).hasClass(suite.mediaGallery.cssPrefix + "activeControl") &&
+						$(items.children().get(i)).is(":visible");
+				} else {
+					isActive = !$(element).hasClass(suite.mediaGallery.cssPrefix + "activeControl") &&
+						!$(items.children().get(i)).is(":visible");
+				}
+				return isActive;
+			});
+			return isActive;
+		};
 		new Echo.StreamServer.Controls.Stream.Item.MediaGallery({
 			"target": this.config.target,
-			"appkey": "test.aboutecho.com",
+			"appkey": this.config.appkey,
 			"elements": elements,
 			"ready": function() {
 				suite.mediaGallery = this;
-				var items = suite.mediaGallery.dom.get("items");
-				var controls = suite.mediaGallery.dom.get("controls");
-				suite.checkActiveControl = function(index) {
-					var isActive = true;
-					$.each(controls.children(), function(i, element){
-						if (i === index) {
-							isActive = $(element).hasClass(suite.mediaGallery.cssPrefix + "activeControl");
-						} else {
-							isActive = !$(element).hasClass(suite.mediaGallery.cssPrefix + "activeControl");
-						}
-						
-						return isActive;
-					});
-					return isActive;
-				};
-				QUnit.ok(suite.checkActiveControl(0),
-					"Checking initial view of media gallery (first control is active, all others is not)");
 				self.sequentialAsyncTests([
+					"initialView",
 					"changeActiveItem",
 					"oneMediaItem",
 					"destroy"
@@ -68,18 +68,31 @@ suite.prototype.tests.commonWorkflow = {
 
 suite.prototype.cases = {};
 
-suite.prototype.cases.changeActiveItem = function(callback) {
+suite.prototype.cases.initialView = function(callback) {
 	var gallery = suite.mediaGallery;
 	gallery.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia",
 		"once": true,
 		"handler": function(topic, params) {
-			QUnit.ok(suite.checkActiveControl(1),
-				"Checking that next control is active after control click");
+			QUnit.ok(suite.checkGalleryActiveItem(gallery, 0),
+				"Checking initial view of media gallery (first item is active, all others are not)");
 			callback();
 		}
 	});
-	gallery.dom.get("controls").children().get(1).click();
+};
+
+suite.prototype.cases.changeActiveItem = function(callback) {
+	var gallery = suite.mediaGallery;
+	gallery.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia",
+		"once": true,
+		"handler": function(topic, params) {
+			QUnit.ok(suite.checkGalleryActiveItem(gallery, 1),
+				"Checking that next item is active after control click");
+			callback();
+		}
+	});
+	$(gallery.dom.get("controls").children().get(1)).click();
 };
 
 suite.prototype.cases.oneMediaItem = function(callback) {
