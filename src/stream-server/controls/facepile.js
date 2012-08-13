@@ -79,7 +79,6 @@ pile.init = function() {
 	if ($.isEmptyObject(this.data)) {
 		this._request();
 	} else {
-		this.uniqueUsers = [];
 		this.data.itemsPerPage = this.data.itemsPerPage || 2;
 		this.config.set("liveUpdates", false);
 		this._initialResponseHandler(this.data);
@@ -246,19 +245,39 @@ pile.methods._secondaryResponseHandler = function(data) {
 
 pile.methods._processResponse = function(data, isLive) {
 	var self = this, fetchMoreUsers = true;
-	$.each(data.entries, function(i, entry) {
-		var isDeleting = (entry.verbs && entry.verbs[0] == "http://activitystrea.ms/schema/1.0/delete");
-		if (isDeleting && !self.uniqueUsers[entry.actor.id]) return;
-		if (isDeleting) {
-			self._maybeRemoveItem(entry);
-		} else {
-			if (self._isUniqueUser(entry)) {
-				fetchMoreUsers = false;
+	var actions = $.map(data.entries, function(entry) {
+		return function(callback) {
+			if (self._isRemoveAction(entry)) {
+				self._maybeRemoveItem(entry);
+				callback();
 			} else {
+				if (self._isUniqueUser(entry)) {
+					fetchMoreUsers = false;
+				}
+				var user = self.uniqueUsers[entry.actor.id];
+				if (user) {
+					// user is already in the list -> increment counter and return
+					user.itemsCount++;
+					callback();
+				} else {
+					self._initItem(entry, function() {
+						self._updateStructure(this);
+						callback();
+					});
+				}
 			}
-			self._initItem(entry);
-		}
+		};
 	});
+	Echo.Utils.parallelCall(actions, function() {
+		self._output(isLive, fetchMoreUsers);
+	});
+};
+
+pile.methods._isRemoveAction = function(entry) {
+	return entry.verbs && entry.verbs[0] == "http://activitystrea.ms/schema/1.0/delete";
+};
+
+pile.methods._output = function(isLive, fetchMoreUsers) {
 	if (this._fromExternalData()) {
 		this.count.total = Math.max(this.users.length, this.count.total);
 	} else {
@@ -279,24 +298,23 @@ pile.methods._isUniqueUser = function(entry) {
 	return !this.uniqueUsers[entry.actor.id];
 };
 
-pile.methods._initItem = function(entry) {
-	var user = this.uniqueUsers[entry.actor.id];
-	// user is already in the list -> increment counter and return
-	if (user) {
-		user.itemsCount++;
-		return;
-	}
-	var config = $.extend(true, {
+pile.methods._initItem = function(entry, callback) {
+	var config = $.extend({
 		"target": $("<div>"),
 		"appkey": this.config.get("appkey"),
-		"parent": $.extend({}, this.config.getAsHash()),
+		"parent": this.config.getAsHash(),
 		"plugins": this.config.get("plugins"),
 		"data": entry.actor,
-		"user": this.user
+		"user": this.user,
+		"ready": callback
 	}, this.config.get("item"));
-	user = this.uniqueUsers[entry.actor.id] = {
+	return new Echo.StreamServer.Controls.FacePile.Item(config);
+};
+
+pile.methods._updateStructure = function(item) {
+	var user = this.uniqueUsers[item.get("data.id")] = {
 		"itemsCount": 1,
-		"instance": new Echo.StreamServer.Controls.FacePile.Item(config)
+		"instance": item
 	};
 	this.users[user.instance.isYou() ? "unshift" : "push"](user);
 };
@@ -305,7 +323,7 @@ pile.methods._maybeRemoveItem = function(entry) {
 	var user = this.uniqueUsers[entry.actor.id];
 	// if we have move than one item posted by the same user,
 	// we decrement the counter, but leave the user in the list
-	if (--user.itemsCount) return;
+	if (!user || --user.itemsCount) return;
 	var index;
 	$.each(this.users, function(i, u) {
 		if (u.instance.data.id == entry.actor.id) {
