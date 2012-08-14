@@ -69,15 +69,14 @@ plugin.init = function() {
 };
 
 plugin.enabled = function() {
-	var item = this.component;
-	return this.isTweet(item);
+	return this._isTweet();
 };
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.onRender": function(topic, args) {
 		var activeClass = this.cssPrefix + "activeButton";
 		var item = this.component;
-		if( this.isTweet(item) ) {
+		if( this._isTweet() ) {
 			$.map(item.buttons[this.name], function(name) {
 				name.element.unbind("click").unbind("mouseover mouseout")
 					.hover(
@@ -170,7 +169,7 @@ plugin.renderers.tweetUserName = function(element) {
 	var item = this.component;
 	return element.html(Echo.Utils.hyperlink({
 		"href": item.get("data.actor.id"),
-		"caption": this.extractTwitterID(item)
+		"caption": this._extractTwitterID()
 	}, {
 		"openInNewWindow": item.config.get("openLinksInNewWindow"),
 		"skipEscaping": true
@@ -195,16 +194,18 @@ plugin.methods._assembleButton = function(name) {
 				"openInNewWindow": item.config.get("openLinksInNewWindow"),
 				"skipEscaping": true
 			}),
-			"visible": id && plugin.isTweet(item)
+			"visible": id && plugin._isTweet()
 		};
 	};
 };
 
-plugin.methods.isTweet = function(item) {
+plugin.methods._isTweet = function() {
+	var item = this.component;
 	return item.get("data.source.name") === "Twitter";
 };
 
-plugin.methods.extractTwitterID = function(item) {
+plugin.methods._extractTwitterID = function() {
+	var item = this.component;
 	var match = item.get("data.actor.id").match(/twitter.com\/(.*)/);
 	return match ? match[1] : item.get("data.actor.id");
 };
