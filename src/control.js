@@ -456,7 +456,7 @@ Echo.Control.prototype._initializers.list = [
 
 Echo.Control.prototype._getInitializers = function(action) {
 	return Echo.Utils.foldl([], this._initializers.list, function(initializer, acc) {
-		if (~$.isArray(action, initializer[1])) {
+		if (~$.inArray(action, initializer[1])) {
 			acc.push(initializer[0]);
 		}
 	});
