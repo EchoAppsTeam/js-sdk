@@ -1,5 +1,3 @@
-(function() {
-
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.TwitterIntents
  * Adds the Twitter intents controls into the item UI and updates the item UI to look and behave like a Twitter item. The item UI update includes:
@@ -37,9 +35,6 @@
 var plugin = Echo.Plugin.manifest("TwitterIntents", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
-
-plugin.config = {
-};
 
 plugin.labels = {
 	"tweet": "Reply",
@@ -90,7 +85,7 @@ plugin.events = {
 						function() { name.element.removeClass(activeClass); }
 					);
 			});
-			window.twttr.widgets.load();
+			window.twttr && window.twttr.widgets.load();
 		}
 	}
 };
@@ -102,7 +97,9 @@ plugin.templates = {
 
 plugin.component.renderers.authorName = function(element) {
 	var item = this.component;
-	return element.append(item.data.actor.title).removeClass("echo-linkColor").addClass(this.cssPrefix + "tweetScreenName echo-secondaryColor");
+	return element.html(item.get("data.actor.title"))
+				  .removeClass("echo-linkColor")
+				  .addClass(this.cssPrefix + "tweetScreenName echo-secondaryColor");
 };
 
 plugin.component.renderers._buttonsDelimiter = function(element) {
@@ -118,8 +115,8 @@ plugin.component.renderers._buttonsDelimiter = function(element) {
 plugin.component.renderers.via = function(element) {
 	var item = this.component;
 	var provider = Echo.Utils.hyperlink({
-		"href": item.data.provider.uri,
-		"caption": item.data.provider.name
+		"href": item.get("data.provider.uri"),
+		"caption": item.get("data.provider.name")
 	}, {
 		"openInNewWindow": item.config.get("openLinksInNewWindow"),
 		"skipEscaping": true
@@ -131,8 +128,8 @@ plugin.component.renderers.via = function(element) {
 plugin.component.renderers.from = function(element) {
 	var item = this.component;
 	var source = Echo.Utils.hyperlink({
-		"href": item.data.source.uri,
-		"caption": item.data.source.name
+		"href": item.get("data.source.uri"),
+		"caption": item.get("data.source.name")
 	}, {
 		"openInNewWindow": item.config.get("openLinksInNewWindow"),
 		"skipEscaping": true
@@ -147,7 +144,7 @@ plugin.component.renderers.date = function(element) {
 
 	var date = Echo.Utils.hyperlink({
 		"caption": item.age,
-		"href": item.data.object.id,
+		"href": item.get("data.object.id"),
 		"class": this.cssPrefix + "date"
 	}, {
 		"openInNewWindow": item.config.get("openLinksInNewWindow"),
@@ -160,9 +157,8 @@ plugin.component.renderers.date = function(element) {
 plugin.renderers.twitterIcon = function(element) {
 	var item = this.component;
 	var icon = Echo.Utils.hyperlink({
-		"caption": '<img src="'+ item.data.source.icon+ '"/>',
-		"href": item.data.source.uri,
-		"class": ""
+		"caption": '<img src="' + item.get("data.source.icon") + '"/>',
+		"href": item.get("data.source.uri")
 	}, {
 		"openInNewWindow": item.config.get("openLinksInNewWindow"),
 		"skipEscaping": true
@@ -173,7 +169,7 @@ plugin.renderers.twitterIcon = function(element) {
 plugin.renderers.tweetUserName = function(element) {
 	var item = this.component;
 	return element.html(Echo.Utils.hyperlink({
-		"href": item.data.actor.id,
+		"href": item.get("data.actor.id"),
 		"caption": this.extractTwitterID(item)
 	}, {
 		"openInNewWindow": item.config.get("openLinksInNewWindow"),
@@ -183,7 +179,7 @@ plugin.renderers.tweetUserName = function(element) {
 
 plugin.methods._assembleButton = function(name) {
 	var plugin = this, item = this.component;
-	var match = item.data.object.id.match(/\/(\d+)$/);
+	var match = item.get("data.object.id").match(/\/(\d+)$/);
 	var id = match && match[1];
 	return function() {
 		return {
@@ -205,12 +201,12 @@ plugin.methods._assembleButton = function(name) {
 };
 
 plugin.methods.isTweet = function(item) {
-	return item.data.source.name == "Twitter";
+	return item.get("data.source.name") === "Twitter";
 };
 
 plugin.methods.extractTwitterID = function(item) {
-	var match = item.data.actor.id.match(/twitter.com\/(.*)/);
-	return match ? match[1] : item.data.actor.id;
+	var match = item.get("data.actor.id").match(/twitter.com\/(.*)/);
+	return match ? match[1] : item.get("data.actor.id");
 };
 
 plugin.css =
@@ -232,5 +228,3 @@ plugin.css =
 	".{plugin.class:tweetScreenName} { font-size: 11px; font-weight: normal; margin-left: 4px; padding-top: 1px; }";
 
 Echo.Plugin.create(plugin);
-
-})();
