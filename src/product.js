@@ -149,8 +149,6 @@ list.splice(list.length - 1, 0, ["views", ["init", "refresh"]]);
 Echo.Product.prototype._initializers = $.extend({}, Echo.Product.prototype._initializers);
 Echo.Product.prototype._initializers.list = list;
 
-console.log("initializers", list);
-
 })();
 
 Echo.Product.prototype._initializers.views = function() {
