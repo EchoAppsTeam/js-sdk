@@ -151,7 +151,7 @@ plugin.renderers.twitterIcon = function(element) {
 
 plugin.renderers.tweetUserName = function(element) {
 	var item = this.component;
-	return element.append(Echo.Utils.hyperlink({
+	return element.html(Echo.Utils.hyperlink({
 		"href": item.data.actor.id,
 		"caption": this.extractTwitterID(item)
 	}, {

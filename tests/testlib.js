@@ -162,7 +162,7 @@ Echo.Tests.Common.prototype.constructPluginRenderersTest = function(config) {
 		var _config = new Echo.Configuration(config, defaults).getAsHash();
 		_config.plugins.push(_config.plugin);
 		init(_config);
-	}
+	};
 	this.tests.TestPluginRenderers = data;
 };
 
@@ -174,6 +174,9 @@ Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
 	var _check = function(forComponent) {
 		var renderers = forComponent ? plugin._manifest("component").renderers : plugin._manifest("renderers");
 		$.each(renderers, function(name, renderer) {
+			// don't test private renderer
+			if (name.charAt(0) == "_") return true;
+
 			self.info.functions.push((forComponent ? "component." : "") + "renderers." + name);
 			var element = forComponent ? plugin.component.dom.get(name) : plugin.dom.get(name);
 			var oldElement = element.clone();
@@ -192,14 +195,14 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 	data.check = function(instance) {
 		if (!instance.dom.rendered) {
 			instance.dom.render();
-		};
+		}
 		$.each(instance.extension.renderers, function(name, renderer) {
 			self.info.functions.push("renderers." + name);
 			var element = instance.dom.get(name);
 			if (!element) {
 				QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template.");
 				return;
-			};
+			}
 			var oldElement = element.clone();
 			var renderedElement = instance.dom.render({"name": name});
 			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
