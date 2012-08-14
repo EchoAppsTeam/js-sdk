@@ -2,6 +2,15 @@
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.TwitterIntents
+ * Adds the Twitter intents controls into the item UI and updates the item UI to look and behave like a Twitter item. The item UI update includes:
+ *
+ * + by clicking on the avatar or the user name - the user account on Twitter will be opened;
+ * + the item timestamp transforms from a static field to a permanent item link on Twitter.
+ *
+ * More information about Twitter Intents is available on the page <https://dev.twitter.com/docs/intents>.
+ *
+ * #### How to use
+ * To enable this plugin should be taken add the corresponding section into the Echo Stream configuration parameter plugins:
  *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
@@ -10,6 +19,18 @@
  *             "name": "TwitterIntents"
  *         }]
  *     });
+ *
+ * <b>Note</b>: plugin must be at the very beginning of the plugin list to work correctly.
+ *
+ * <b>Note</b>: if TwitterIntents plugin is added to the stream then Reply and Like plugins will be disabled for tweet items. Moreover Reply control is renamed with Comment on non-tweet items to avoid possible confusion.
+ *
+ * #### Configuration
+ * The TwitterIntents plugin configuration options include the following:
+ *
+ * + enabled <br/>
+ *   This parameter specifies if plugin is enabled during application initialization.
+ *   See more [here](http://wiki.aboutecho.com/Client-Extensions-Framework#Enabling/disablingpluginsinrealtime).
+ *
  * @extends Echo.Plugin
  * @inheritdoc Echo.Plugin
  */
