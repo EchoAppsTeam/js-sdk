@@ -10,6 +10,7 @@ Echo.Control = function() {};
 
 /**
  * @static
+ * @method
  * Function which creates a control object using it manifest declaration.
  *
  * @param {Object} manifest (required) Specifies the control interface in the predefined way.
@@ -54,6 +55,7 @@ Echo.Control.create = function(manifest) {
 
 /**
  * @static
+ * @method
  * Method returning common manifest structure.
  * @param {String} name (required) Specifies control name.
  * @return {Object} Basic control manifest declaration.

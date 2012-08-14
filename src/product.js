@@ -99,12 +99,28 @@ Echo.ProductView.prototype.getControl = function(name) {
 
 if (Echo.Utils.isComponentDefined("Echo.Product")) return;
 
+/**
+ * @class Echo.Product
+ * Foundation class implementing core logic to create products.
+ * @extends Echo.Control
+ */
 Echo.Product = function() {};
 
 Echo.Utils.inherit(Echo.Product, Echo.Control);
 
+/**
+ * @static
+ * @method
+ * Function which creates a product object using it manifest declaration.
+ * @inheritdoc Echo.Control#create
+ */
 Echo.Product.create = Echo.Control.create;
 
+/**
+ * @static
+ * @method
+ * @inheritdoc Echo.Control#manifest
+ */
 Echo.Product.manifest = function(name) {
 	var _manifest = Echo.Product.parent.constructor.manifest.apply(this, arguments);
 	_manifest.inherits = _manifest.inherits || Echo.Product;
@@ -113,6 +129,12 @@ Echo.Product.manifest = function(name) {
 	});
 };
 
+/**
+ * @method
+ * Accessor method to get product view by its name.
+ * @param {String} name (required) Specifies the name of the view to be accessed.
+ * @return {Class} Class referense.
+ */
 Echo.Product.prototype.getView = function(name) {
 	return Echo.Utils.getComponent(this.name + "." + name);
 };
