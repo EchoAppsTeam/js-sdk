@@ -105,6 +105,11 @@ Echo.Plugin.getClass = function(name, component) {
 	return Echo.Utils.getNestedValue(window, Echo.Plugin._getClassName(name, component));
 };
 
+/**
+ *
+ * @method
+ * Initializes the plugin.
+ */
 Echo.Plugin.prototype.init = function() {
 	this._init([
 		"css",
@@ -117,6 +122,11 @@ Echo.Plugin.prototype.init = function() {
 	this._manifest("init").call(this);
 };
 
+/**
+ *
+ * @method
+ * Checks if the plugin is enabled.
+ */
 Echo.Plugin.prototype.enabled = function() {
 	var enabled = this.config.get("enabled");
 	var enabledByConfig = (typeof enabled === "undefined") ? true :
