@@ -637,9 +637,9 @@ QUnit.done(function() {
 });
 
 // Extending QUnit lib to have an ability to verify function contract
-var _checkContract = function(origin, template, isRecursion) {
+var _checkContract = function(origin, template, isRecursive) {
 	var result = true;
-	if (!isRecursion && $.isArray(template)) {
+	if (!isRecursive && $.isArray(template)) {
 		$.each(template, function(i, value) {
 			result = _checkContract(origin, value, true);
 			if (result) return false;
