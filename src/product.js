@@ -10,11 +10,14 @@ Echo.ProductView.create = Echo.Control.create;
 
 Echo.ProductView.manifest = Echo.Control.manifest;
 
-$.map(["_initializersList", "_refreshInitializersList"], function(listName) {
-	var list = Echo.ProductView.prototype[listName].slice(0);
-	list.splice(list.length - 1, 0, "controls");
-	Echo.ProductView.prototype[listName] = list;
-});
+(function() {
+
+var list = Echo.ProductView.prototype._initializers.list.slice(0);
+list.splice(list.length - 1, 0, ["controls", ["init", "refresh"]]);
+Echo.ProductView.prototype._initializers = $.extend({}, Echo.ProductView.prototype._initializers);
+Echo.ProductView.prototype._initializers.list = list;
+
+})();
 
 Echo.ProductView.prototype._initializers.controls = function() {
 	var view = this;
@@ -139,11 +142,16 @@ Echo.Product.prototype.getView = function(name) {
 	return Echo.Utils.getComponent(this.name + "." + name);
 };
 
-$.map(["_initializersList", "_refreshInitializersList"], function(listName) {
-	var list = Echo.Product.prototype[listName].slice(0);
-	list.splice(list.length - 1, 0, "views");
-	Echo.Product.prototype[listName] = list;
-});
+(function() {
+
+var list = Echo.Product.prototype._initializers.list.slice(0);
+list.splice(list.length - 1, 0, ["views", ["init", "refresh"]]);
+Echo.Product.prototype._initializers = $.extend({}, Echo.Product.prototype._initializers);
+Echo.Product.prototype._initializers.list = list;
+
+console.log("initializers", list);
+
+})();
 
 Echo.Product.prototype._initializers.views = function() {
 	var product = this;

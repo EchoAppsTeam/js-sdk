@@ -37,7 +37,7 @@ Echo.Control.create = function(manifest) {
 		this.data = config.data || {};
 		this.name = manifest.name;
 		this.config = config;
-		this._init(this._initializersList.slice(0));
+		this._init(this._getInitializers("init"));
 	};
 	Echo.Utils.inherit(_constructor, manifest.inherits || Echo.Control);
 	_constructor.manifest = manifest;
@@ -238,17 +238,6 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 	return template.replace(Echo.Vars.regexps.templateSubstitution, processor);
 };
 
-Echo.Control.prototype._refreshInitializersList = [
-	"vars",
-	"extension",
-	"subscriptions",
-	"renderers",
-	"loading",
-	"user:async",
-	"plugins:async",
-	"launcher"
-];
-
 /**
  * @method
  * Basic method to reinitialize control.
@@ -265,9 +254,7 @@ Echo.Control.prototype.refresh = function() {
 
 	this.set("internal.state", "refresh");
 
-	this._init(
-		this._refreshInitializersList.slice(0)
-	);
+	this._init(this._getInitializers("refresh"));
 };
 
 /**
@@ -448,24 +435,32 @@ Echo.Control.prototype._init = function(subsystems) {
 	}
 };
 
-Echo.Control.prototype._initializersList = [
-	"vars",
-	"extension",
-	"config",
-	"events",
-	"subscriptions",
-	"labels",
-	"css",
-	"renderers",
-	"dom",
-	"loading",
-	"dependencies:async",
-	"user:async",
-	"plugins:async",
-	"launcher"
+Echo.Control.prototype._initializers = {};
+
+Echo.Control.prototype._initializers.list = [
+	["vars",               ["init", "refresh"]],
+	["extension",          ["init", "refresh"]],
+	["config",             ["init"]],
+	["events",             ["init"]],
+	["subscriptions",      ["init", "refresh"]],
+	["labels",             ["init"]],
+	["css",                ["init"]],
+	["renderers",          ["init", "refresh"]],
+	["dom",                ["init"]],
+	["loading",            ["init", "refresh"]],
+	["dependencies:async", ["init"]],
+	["user:async",         ["init", "refresh"]],
+	["plugins:async",      ["init", "refresh"]],
+	["launcher",           ["init", "refresh"]]
 ];
 
-Echo.Control.prototype._initializers = {};
+Echo.Control.prototype._getInitializers = function(action) {
+	return Echo.Utils.foldl([], this._initializers.list, function(initializer, acc) {
+		if (~$.isArray(action, initializer[1])) {
+			acc.push(initializer[0]);
+		}
+	});
+};
 
 Echo.Control.prototype._initializers.vars = function() {
 	// we need to apply default field values to the control,
