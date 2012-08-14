@@ -489,7 +489,7 @@ suite.prototype.cases.refresh = function(callback) {
 			}
 		});
 		this.config.set("stringParam", "updated string value1");
-		this.getPlugin("MyPlugin").disable();
+		this.getPlugin("MyPlugin").disable(1);
 		this.refresh();
 	};
 	suite.initTestControl({
