@@ -128,10 +128,14 @@ Echo.Plugin.prototype.init = function() {
  * Checks if the plugin is enabled.
  */
 Echo.Plugin.prototype.enabled = function() {
-	var enabled = this.config.get("enabled");
-	var enabledByConfig = (typeof enabled === "undefined") ? true :
-				($.isFunction(enabled) ? enabled() : enabled);
-	return (!!this._manifest("enabled").call(this) && enabledByConfig);
+	if (typeof this._enabled === "undefined") {
+		var enabled = this.config.get("enabled", true);
+		if ($.isFunction(enabled)) {
+			enabled = enabled.call(this);
+		}
+		this._enabled = enabled && !!this._manifest("enabled").call(this);
+	}
+	return this._enabled;
 };
 
 /**
@@ -162,16 +166,22 @@ Echo.Plugin.prototype.remove = function(key) {
  * @method
  * Enables the plugin.
  */
-Echo.Plugin.prototype.enable = function() {
-	this.config.set("enabled", true);
+Echo.Plugin.prototype.enable = function(global) {
+	if (global) {
+		this.config.set("enabled", true);
+	}
+	this._enabled = true;
 };
 
 /**
  * @method
  * Disables the plugin.
  */
-Echo.Plugin.prototype.disable = function() {
-	this.config.set("enabled", false);
+Echo.Plugin.prototype.disable = function(global) {
+	if (global) {
+		this.config.set("enabled", false);
+	}
+	this._enabled = false;
 };
 
 /**
