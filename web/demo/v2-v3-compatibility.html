@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>v2 - v3 compatibility</title>
+    <link rel="stylesheet" type="text/css" href="demo.css" />
+
+    <!-- Default v3 scripts inclusion -->
+    <script type="text/javascript" src="../sdk/loader.js"></script>
+    <script type="text/javascript" src="../sdk/backplane.js"></script>
+    <script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
+    <script type="text/javascript" src="../sdk/environment.pack.js"></script>
+    <script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
+    <script type="text/javascript" src="../sdk/identity-server.pack.js"></script>
+    <!-- Default v2 scripts inclusion -->
+    <script src="http://cdn.echoenabled.com/clientapps/v2/packs/full-pack.js"></script>
+
+    <script>
+        Backplane.init({
+            "serverBaseURL": "http://api.echoenabled.com/v1",
+            "busName": "jskit"
+        });
+        var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
+    </script>
+</head>
+<body>
+<div class="container">
+    <div id="container-v2">
+        <h2>widgets v2</h2>
+        <div class="wrapper">
+            <!-- Echo.Stream v2 -->
+            <b>Stream</b>
+            <div id="stream-v2"></div>
+
+            <script type="text/javascript">
+                new Echo.Stream({
+                    "target": document.getElementById("stream-v2"),
+                    "appkey": "test.echoenabled.com",
+                    "query": "childrenof:http://example.com/* itemsPerPage:1",
+//                    "query": "childrenof:http://aboutecho.com/* itemsPerPage:1",
+                    "plugins": [{
+                        "name": "TwitterIntents"
+                    } , {
+                        "name": "PinboardVisualization"
+                    } , {
+                        "name": "Reply",
+                        "nestedPlugins": [{
+                            "name": "FormAuth",
+                            "identityManager": {
+                                "login": identityManager,
+                                "signup": identityManager
+                            }
+                        }]
+                    }, {
+                        "name": "MetadataManager",
+                        "controls": [{
+                            "marker": "sticky",
+                            "labelMark": "Pin",
+                            "labelUnmark": "Unpin"
+                        }, {
+                            "tag": "football",
+                            "labelMark": "Set Football tag",
+                            "labelUnmark": "Unset Football tag"
+                        }]
+                    }, {
+                        "name": "Like"
+                    }, {
+                        "name": "Edit"
+                    }, {
+                        "name": "CommunityFlag",
+                        "showUserList": true
+                    }, {
+                        "name": "Moderation"
+                    } , {
+                        "name": "ItemAccumulatorDisplay"
+                    } , {
+                        "name": "UserBan"
+                    } , {
+                        "name": "UserPrivileges"
+                    }]
+                });
+            </script>
+            <!-- // -->
+        </div>
+
+        <div class="wrapper">
+            <!-- Echo.Submit v2 -->
+            <b>Submit</b>
+            <div id="submit-form-v2"></div>
+            <script type="text/javascript">
+                new Echo.Submit({
+                    "target": document.getElementById("submit-form-v2"),
+                    "appkey": "test.echoenabled.com",
+                    "targetURL": "http://example.com/js-sdk",
+                    "plugins": [{
+                        "name": "FormAuth",
+                        "identityManager": {
+                            "login": identityManager,
+                            "signup": identityManager
+                        }
+                    } , {
+                        "name": "SubmitTextCounter",
+                        "limit": 200,
+                        "label": "You have typed {typed} chars, {left} chars left"
+                    }]
+                });
+            </script>
+            <!-- // -->
+        </div>
+
+        <div class="wrapper">
+            <!-- Echo.Counter v2 -->
+            <b>Counter</b>
+            <div id="counter-v2"></div>
+            <script type="text/javascript">
+                new Echo.Counter({
+                    "target": document.getElementById("counter-v2"),
+                    "appkey": "test.echoenabled.com",
+                    "query": "childrenof:http://example.com/*"
+                });
+            </script>
+            <!-- // -->
+        </div>
+    </div>
+
+    <div id="container-v3">
+        <h2>widgets v3</h2>
+        <div class="wrapper">
+            <!-- Echo.StreamServer.Controls.Stream v3 -->
+            <b>Stream</b>
+            <div id="stream-v3"></div>
+            <script>
+                new Echo.StreamServer.Controls.Stream({
+                    "target": document.getElementById("stream-v3"),
+                    "query": "childrenof:http://example.com/* itemsPerPage:1",
+//                  "query": "childrenof:http://aboutecho.com/* itemsPerPage:1",
+                    "appkey": "test.js-kit.com",
+                    "plugins": [{
+                        "name": "TwitterIntents"
+                    }, {
+                        "name": "Reply",
+                        "nestedPlugins": [{
+                            "name": "FormAuth",
+                            "identityManager": {
+                                "login": identityManager,
+                                "signup": identityManager
+                            }
+                        }]
+                    }, {
+                        "name": "MetadataManager",
+                        "controls": [{
+                            "marker": "sticky",
+                            "labelMark": "Pin",
+                            "labelUnmark": "Unpin"
+                        }, {
+                            "tag": "football",
+                            "labelMark": "Set Football tag",
+                            "labelUnmark": "Unset Football tag"
+                        }]
+                    }, {
+                        "name": "Like"
+                    }, {
+                        "name": "Edit"
+                    }, {
+                        "name": "CommunityFlag",
+                        "showUserList": true
+                    }, {
+                        "name": "Moderation"
+                    }/*, {
+                        "name": "InfiniteScroll"
+                    }*/, {
+                        "name": "ItemAccumulatorDisplay"
+                    } , {
+                        "name": "UserBan"
+                    } , {
+                        "name": "UserPrivileges"
+                    }]
+                });
+            </script>
+            <!-- // -->
+        </div>
+
+        <div class="wrapper">
+            <!-- Echo.StreamServer.Controls.Submit v3 -->
+            <b>Submit</b>
+            <div id="submit-form-v3"></div>
+            <script type="text/javascript">
+                new Echo.StreamServer.Controls.Submit({
+                    "target": document.getElementById("submit-form-v3"),
+                    "appkey": "test.js-kit.com",
+                    "targetURL": "http://example.com/js-sdk",
+                    "plugins": [{
+                        "name": "FormAuth",
+                        "submitPermissions": "forceLogin",
+                        "identityManager": {
+                            "login": identityManager,
+                            "signup": identityManager
+                        }
+                    }, {
+                        "name": "TextCounter",
+                        "limit": 40,
+                        "label": "You have typed {typed} chars, {left} chars left"
+                    }]
+                });
+            </script>
+            <!-- // -->
+        </div>
+
+        <div class="wrapper">
+            <!-- Echo.StreamServer.Controls.Submit v3 -->
+            <b>Counter</b>
+            <div id="counter-v3"></div>
+            <script type="text/javascript">
+                new Echo.StreamServer.Controls.Counter({
+                    "target": document.getElementById("counter-v3"),
+                    "appkey": "test.aboutecho.com",
+                    "query" : "childrenof:http://example.com/*"
+                });
+            </script>
+            <!-- // -->
+        </div>
+
+        <div class="wrapper">
+            <!-- Echo.StreamServer.Controls.FacePile v3 -->
+            <b>Face Pile</b>
+            <div id="face-pile-v3"></div>
+            <script type="text/javascript">
+                new Echo.StreamServer.Controls.FacePile({
+                    "target": document.getElementById("face-pile-v3"),
+                    "appkey": "test.aboutecho.com",
+                    "query": "childrenof:http://example.com/*",
+                    "suffixText": " commented on aboutecho.com",
+                    "item": {"avatar": true, "text": true}
+                });
+            </script>
+            <!-- // -->
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+</body>
+</html>

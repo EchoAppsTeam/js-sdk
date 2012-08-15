@@ -89,3 +89,21 @@ body {
 	margin: 10px 0px;
 	padding: 5px;
 }
+
+.container {
+    margin: 50px auto 50px auto;
+    width: 900px;
+}
+
+#container-v2, #container-v3 {
+    box-shadow: 0 4px 15px #666666;
+    background: #FAF9F3;
+    border: 1px solid #FFFFFF;
+    width: 400px;
+    padding: 0 20px 20px 20px;
+    float: left;
+}
+
+#container-v3 {
+    float: right;
+}
