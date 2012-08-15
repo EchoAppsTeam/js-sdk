@@ -9,8 +9,8 @@ Echo.Tests.Dependencies.Control = {};
 var suite = Echo.Tests.Unit.Control = function() {};
 
 suite.prototype.info = {
-        "className": "Echo.Control",
-        "functions": [
+	"className": "Echo.Control",
+	"functions": [
 		"manifest",
 		"create",
 		"log",
@@ -582,7 +582,7 @@ suite.data.substitutions = [[
 	"<div class=\"echo-streamserver-controls-mytestcontrol-test echo-streamserver-controls-mytestcontrol-test1 echo-streamserver-controls-mytestcontrol-test2\">div with multiple css class names defined</div>"
 ], [
 	"<div class=\"{class:test}\">{data:key3.key3nested}</div>",
-	"<div class=\"echo-streamserver-controls-mytestcontrol-test\"></div>"
+	"<div class=\"echo-streamserver-controls-mytestcontrol-test\">nested value for key 3</div>"
 ], [
 	"<div class=\"{class:test}\">{self:data.key3.key3nested}</div>",
 	"<div class=\"echo-streamserver-controls-mytestcontrol-test\">nested value for key 3</div>"
