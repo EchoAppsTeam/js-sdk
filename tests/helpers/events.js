@@ -76,6 +76,22 @@ Echo.Tests.Events.contracts = {
 	"Echo.StreamServer.Controls.Stream.Item.onRerender": _stream.item,
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Curation.onSelect": _stream.item,
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Curation.onUnselect": _stream.item,
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView": {
+		"action": "",
+		"itemUnique": "",
+		"actorID": "",
+		"priority": "",
+		"handler": function() { return true; }
+	},
+
+	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRender": {},
+	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRerender": {},
+	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRefresh": {},
+	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onReady": {},
+	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize": {},
+	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia": {},
+	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia": {},
+
 	"Echo.StreamServer.Controls.Stream.Plugins.Like.onLikeComplete": _stream.item,
 	"Echo.StreamServer.Controls.Stream.Plugins.Like.onUnlikeComplete": _stream.item,
 	"Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagComplete": _stream.item,
