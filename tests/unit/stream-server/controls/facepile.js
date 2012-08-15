@@ -93,7 +93,7 @@ suite.prototype.cases.staticCommon = function(callback) {
 suite.prototype.cases.staticMore = function(callback) {
 	var self = this, pile = suite.pile;
 	pile.events.subscribe({
-		"topic"  : "Echo.StreamServer.Controls.FacePile.onRefresh",
+		"topic"  : "Echo.StreamServer.Controls.FacePile.onRerender",
 		"once"   : true,
 		"handler": function(topic, params) {
 			QUnit.equal(self.config.target.html().match(/echo-streamserver-controls-facepile-item-container/g).length, 7,
@@ -120,6 +120,7 @@ suite.prototype.tests.dynamicWorkflow = {
 			"query"  : "scope:" + this.config.dataBaseLocation + "tests/facepile sortOrder:chronological " +
 				 "itemsPerPage: 1 -user.id:http://js-kit.com/ECHO/user/fake_user",
 			"item"   : {"avatar": true, "text": true},
+			"liveUpdates": false,
 			"ready"  : function() {
 				suite.pile = this;
 				var html = self.config.target.html();
@@ -141,7 +142,7 @@ suite.prototype.tests.dynamicWorkflow = {
 suite.prototype.cases.dynamicMore = function(callback) {
 	var self = this, pile = suite.pile;
 	pile.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.FacePile.onRefresh",
+		"topic"   : "Echo.StreamServer.Controls.FacePile.onRerender",
 		"once"    : true,
 		"handler" : function(topic, params) {
 			QUnit.equal(self.config.target.html().match(/echo-streamserver-controls-facepile-item-container/g).length, 3,
