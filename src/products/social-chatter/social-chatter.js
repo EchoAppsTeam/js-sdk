@@ -429,19 +429,10 @@ SocialChatter.templates.main =
 
 SocialChatter.assemblers = {};
 
-/*SocialChatter.renderers.auth = function(element) {
-	if (!this.config.get("identityManager")) {
-		element.hide();
-		return;
-	}
-	this._initInternalApplication({
-		"view": "Main",
-		"name": "Auth",
-		"application": "Echo.IdentityServer.Controls.Auth"
-	}, {
-		"target": element
-	});
-};*/
+SocialChatter.renderers.auth = function(element) {
+	this._assembler("Auth", element);
+	return element;
+};
 
 SocialChatter.renderers.tabs = function(element) {
 	this._assembler("EventsList", element);
@@ -652,35 +643,6 @@ SocialChatter.methods._requestEventsList = function(callback) {
 SocialChatter.methods._assembler = function(name) {
 	var args = Array.prototype.slice.call(arguments, 1);
 	return this._manifest("assemblers")[name].apply(this, args);
-};
-
-SocialChatter.methods._updateAppPlugins = function(plugins, updatePlugins) {
-	var self = this;
-	var getPluginIndex = function(plugin, plugins) {
-		var idx = -1;
-		$.each(plugins, function(i, _plugin) {
-			if (plugin.name === _plugin.name) {
-				idx = i;
-				return false;
-			}
-		});
-		return idx;
-	};
-	return Echo.Utils.foldl(plugins, updatePlugins, function(extender) {
-		var id = getPluginIndex(extender, plugins);
-		if (!~id) {
-			plugins.push(extender);
-			return;
-		}
-		if (extender.name === plugins[id].name) {
-			if (extender.nestedPlugins && plugins[id].nestedPlugins) {
-				self._updateAppPlugins(plugins[id].nestedPlugins, extender.nestedPlugins);
-				// delete nested plugins in the extender to avoid override effect after extend below
-				delete extender.nestedPlugins;
-			}
-			plugins[id] = $.extend(true, plugins[id], extender);
-		}
-	});
 };
 
 SocialChatter.assemblers.Auth = function(target) {

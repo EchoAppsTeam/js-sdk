@@ -64,6 +64,35 @@ Echo.ProductView.prototype._initControl = function(controlSpec, controlConfig) {
 	return this.controls[controlSpec.name];
 };
 
+Echo.ProductView.prototype._updateControlPlugins = function(plugins, updatePlugins) {
+	var self = this;
+	var getPluginIndex = function(plugin, plugins) {
+		var idx = -1;
+		$.each(plugins, function(i, _plugin) {
+			if (plugin.name === _plugin.name) {
+				idx = i;
+				return false;
+			}
+		});
+		return idx;
+	};
+	return Echo.Utils.foldl(plugins, updatePlugins, function(extender) {
+		var id = getPluginIndex(extender, plugins);
+		if (!~id) {
+			plugins.push(extender);
+			return;
+		}
+		if (extender.name === plugins[id].name) {
+			if (extender.nestedPlugins && plugins[id].nestedPlugins) {
+				self._updateAppPlugins(plugins[id].nestedPlugins, extender.nestedPlugins);
+				// delete nested plugins in the extender to avoid override effect after extend below
+				delete extender.nestedPlugins;
+			}
+			plugins[id] = $.extend(true, {}, plugins[id], extender);
+		}
+	});
+};
+
 Echo.ProductView.prototype._destroyControl = function(name) {
 	var control = this.get("controls." + name);
 	control && control.destroy();
