@@ -34,9 +34,6 @@ mediaGallery.renderers.controls = function(element) {
 	var publish = function(topic) {
 		self.events.publish({
 			"topic": topic,
-			"data": {
-				"item": item
-			},
 			"context": item ? item.config.get("context") : self.config.get("context")
 		});
 	};
@@ -315,7 +312,7 @@ $.each(["expandChildren", "container"], function(i, renderer) {
 				"data": {
 					"action": "rerender",
 					"itemUnique": item.get("data.unique"),
-					"actorID": item.get("actor.id"),
+					"actorID": item.get("data.actor.id"),
 					"priority": "high",
 					"handler": function() { plugin._refreshView(); }
 				},
