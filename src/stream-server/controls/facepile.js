@@ -182,7 +182,7 @@ pile.methods._request = function() {
 				"appkey": this.config.get("appkey")
 			},
 			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
-			"recurring": true,
+			"recurring": this.config.get("liveUpdates"),
 			"onError": function(data) {
 				pile.showMessage({"type": "error", "data": data});
 			},
