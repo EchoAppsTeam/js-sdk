@@ -1,8 +1,7 @@
 (function() {
 
-if (Echo.Utils.isComponentDefined("Echo.Events")) return;
-
 /**
+ * @class Echo.Events
  * Library for exchanging messages between components on the page. It also provides external interface for users to subscribe to a certain events (like "app was rendered", "user logged in", etc).
  *
  * Contexts used in this library are complex identifiers constructed using the following rules:

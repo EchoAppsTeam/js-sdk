@@ -1,5 +1,3 @@
-if (Echo.Utils.isComponentDefined("Echo.Plugin")) return;
-
 /**
  * @class Echo.Plugin
  * Foundation class implementing core logic to create plugins and manipulate with them.

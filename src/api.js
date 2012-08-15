@@ -1,4 +1,6 @@
-if (Echo.Utils.isComponentDefined("Echo.API.Request")) return;
+/**
+ * @class Echo.API
+ */
 
 Echo.API = {"Transports": {}, "Request": {}};
 

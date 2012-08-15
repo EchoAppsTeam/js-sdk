@@ -1,7 +1,5 @@
-if (Echo.Utils.isComponentDefined("Echo.UserSession")) return;
-
 /**
- * @class
+ * @class Echo.UserSession
  *
  * Class implements the interface to work with the user object.
  * The Echo.UserSession class is used in pretty much all applications built in top of Echo JS SDK.

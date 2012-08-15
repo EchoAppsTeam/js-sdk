@@ -1,7 +1,5 @@
-if (Echo.Utils.isComponentDefined("Echo.Button")) return;
-
 /**
- * @class
+ * @class Echo.Button
  * Class implements form element button.
  *
  * This class enhances standard form element button by adding the ability to define and update button properties like label, disabled and icon.

@@ -1,7 +1,5 @@
 (function() {
  
-if (Echo.Utils.isComponentDefined("Echo.ProductView")) return;
-
 Echo.ProductView = function() {};
 
 Echo.Utils.inherit(Echo.ProductView, Echo.Control);
@@ -99,8 +97,6 @@ Echo.ProductView.prototype.getControl = function(name) {
 })();
 
 (function() {
-
-if (Echo.Utils.isComponentDefined("Echo.Product")) return;
 
 /**
  * @class Echo.Product

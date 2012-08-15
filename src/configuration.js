@@ -1,7 +1,5 @@
-if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
-
 /**
- * @class
+ * @class Echo.Configuration
  * Class implements the interface for convenient work with different configurations.
  * The Echo.Configuration class is used in various places of Echo JS SDK components.
  *

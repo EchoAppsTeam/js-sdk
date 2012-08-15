@@ -1,9 +1,7 @@
 (function() {
 
-if (Echo.Utils.isComponentDefined("Echo.Labels")) return;
-
 /**
- * @class
+ * @class Echo.Labels
  * Class implements the language variables mechanics across the components.
  *
  * It should be instantiated to override language variables within the scope of a particular component instance.
