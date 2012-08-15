@@ -509,6 +509,11 @@ plugin.config = {
 	}
 };
 
+plugin.dependencies = [{
+	"loaded": function() { return !!Echo.jQuery().isotope; },
+	"url": Echo.Loader.config.cdnBaseURL + "third-party/jquery.isotope.min.js"
+}];
+
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.onRender": function(topic, args) {
 		this._isotopeView();
