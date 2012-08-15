@@ -205,7 +205,6 @@ Echo.Control.prototype.remove = function(key) {
  */
 Echo.Control.prototype.substitute = function(template, data, instructions) {
 	var control = this;
-	data = data || {};
 	instructions = $.extend({
 		"class": function(key) {
 			if (!key) {
