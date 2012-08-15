@@ -1,7 +1,7 @@
 (function() {
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
  * Adds extra button Reply to each root item in the Echo Stream control. Integrates Echo Submit control and provides the ability to submit replies to the posted items.
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
@@ -14,8 +14,6 @@
  * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -261,8 +259,6 @@ Echo.Plugin.create(plugin);
 (function() {
 
 var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {

@@ -1,5 +1,5 @@
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.TwitterIntents
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents
  * Adds the Twitter intents controls into the item UI and updates the item UI to look and behave like a Twitter item. The item UI update includes:
  *
  * + by clicking on the avatar or the user name - the user account on Twitter will be opened;
@@ -33,8 +33,6 @@
  * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("TwitterIntents", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.labels = {
 	"tweet": "Reply",

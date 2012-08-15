@@ -1,5 +1,5 @@
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.ItemAccumulatorDisplay
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay
  * Shows one of the item accumulators in the top right corner of each item in the Echo Stream control.
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
@@ -12,8 +12,6 @@
  * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("ItemAccumulatorDisplay", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 /**

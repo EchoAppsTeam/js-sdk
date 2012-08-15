@@ -13,8 +13,6 @@
  */
 var plugin = Echo.Plugin.manifest("TextCounter", "Echo.StreamServer.Controls.Submit");
 
-if (Echo.Plugin.isDefined(plugin)) return;
-
 /**
  * @cfg {Number} limit Specifies the maximum length of the text. There is no limit if it is not defined.
  * @cfg {String} label Specifies the custom label for the counter. Parameter string is a template that has several placeholders. Placeholder is some word wrapped with the curly brackets. It supports the following list of placeholder words:
@@ -28,7 +26,6 @@ if (Echo.Plugin.isDefined(plugin)) return;
  * + "{typed}/{limit} characters" if limit parameter is provided
  * + "{typed} characters" if limit parameter is not provided
  */
-
 plugin.init = function() {
 	var component = this.component;
 	this.extendTemplate("insertAfter", "content", plugin.templates.counter);

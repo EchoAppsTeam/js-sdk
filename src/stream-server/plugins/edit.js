@@ -15,8 +15,6 @@
  */
 var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Stream.Item");
 
-if (Echo.Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	var component = this.component;
 	var button = this._assembleButton();
@@ -68,8 +66,6 @@ Echo.Plugin.create(plugin);
 (function() {
 
 var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Submit");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this;

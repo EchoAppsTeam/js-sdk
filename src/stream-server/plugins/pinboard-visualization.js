@@ -201,10 +201,7 @@ Echo.Control.create(mediaGallery);
  * @extends Echo.Plugin
  * @inheritdoc Echo.Plugin
  */
-
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -496,8 +493,6 @@ Echo.Plugin.create(plugin);
 (function() {
 
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 /**

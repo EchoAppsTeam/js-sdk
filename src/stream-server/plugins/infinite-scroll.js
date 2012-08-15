@@ -13,8 +13,6 @@
  */
 var plugin = Echo.Plugin.manifest("InfiniteScroll", "Echo.StreamServer.Controls.Stream");
 
-if (Echo.Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	var plugin = this;
 	$(window).on("scroll", function(event) {

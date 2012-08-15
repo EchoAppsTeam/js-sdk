@@ -1,5 +1,5 @@
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.MetadataManager
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager
  * Provides the ability to add buttons to the Echo Stream control items adding/removing markers/tags. By default those buttons will be available for moderators and administrators, though the visibility of tag controls can be configured via special param.
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
@@ -13,7 +13,6 @@
  */
 var plugin = Echo.Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
-if (Echo.Plugin.isDefined(plugin)) return;
 /**
  * @cfg {Array} controls Specifies the list of buttons which should be added to the Echo Stream item.
  * @cfg {String} controls.marker Specifies the value of marker to be set.

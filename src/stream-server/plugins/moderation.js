@@ -1,5 +1,5 @@
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.Moderation
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation
  * Adds several moderation controls to change item status. Besides it provides the opportunity to ban specific user or change his privileges.
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
@@ -12,8 +12,6 @@
  * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Moderation", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 var capitalize = function(string) {
 	return string.replace(/\b[a-z]/g, function(match) {

@@ -27,8 +27,6 @@
  */
 var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Submit");
 
-if (Echo.Plugin.isDefined(plugin)) return;
-
 plugin.enabled = function() {
 	return (this.config.get("appId") && this.config.get("xdReceiver"));
 };

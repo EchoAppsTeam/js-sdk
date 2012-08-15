@@ -1,7 +1,7 @@
 (function() {
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.Like
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Like
  * Adds extra controls Like/Unlike to each item in the Echo Stream control. Note that these controls will appear only for authenticated users.
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
@@ -14,8 +14,6 @@
  * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this;
@@ -156,8 +154,6 @@ Echo.Plugin.create(plugin);
 (function() {
 
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.labels = {
 	"unlikeOnBehalf": "Unlike on behalf of this user"
