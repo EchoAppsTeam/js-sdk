@@ -698,7 +698,7 @@ Echo.Control.prototype._initializers.dom = function() {
 				self.dom.rendered = true;
 				publish(rendered ? "onRerender" : "onRender");
 			}
-			self.set("internal.state", "ready");
+			if (state !== "ready") self.set("internal.state", "ready");
 			publish({"init": "onReady", "refresh": "onRefresh"}[state]);
 			return content;
 		}
