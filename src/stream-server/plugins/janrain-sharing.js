@@ -37,6 +37,12 @@ plugin.labels = {
 	"sharePrompt": "Share your comment:"
 };
 
+plugin.dependencies = [{
+	"loaded": function() { return !!window.RPXNOW; },
+	"url": ("https:" === document.location.protocol) ?
+		"https://" : "http://static." + "rpxnow.com/js/lib/rpx.js"
+}];
+
 plugin.config = {
 	// actual limit is 140, reserving some space
 	// for ellipses and shortened link to the page
@@ -48,7 +54,6 @@ plugin.config = {
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		var plugin = this;
-		//TODO: using Echo.Loader when it's ready
 		RPXNOW.init({
 			"appId": plugin.config.get("appId"),
 			"xdReceiver": plugin.config.get("xdReceiver")
