@@ -4,6 +4,11 @@ if (!window.Echo) window.Echo = {};
 
 if (Echo.Loader) return;
 
+/**
+ * @class Echo.Loader
+ * Static class implements common methods of loading canvas.
+ */
+
 Echo.Loader = {
 	"config": {
 		"cdnBaseURL": "http://cdn.echoenabled.com/",
@@ -14,6 +19,14 @@ Echo.Loader = {
 
 // public interface
 
+/**
+ * @static
+ * @method
+ * Function initialize canvases on the page.
+ *
+ * @param {Mixed} [canvases] Array of jQuery objects or single jQuery
+ * if param not specified then there will be initialized by all objects on the page.
+*/
 Echo.Loader.init = function(canvases) {
 	Echo.Loader._initEnvironment(function() {
 		if (canvases && !Echo.jQuery.isArray(canvases)) {
@@ -26,6 +39,17 @@ Echo.Loader.init = function(canvases) {
 	});
 };
 
+/**
+ * @static
+ * @method
+ * Function asynchronous loading javascript or stylesheet files.
+ *
+ * @param {Object} params Object with properties:
+ * @param {Array} params.scripts Array of objects with properties:
+ * @param {String} params.scripts.url URL of javascript or stylesheet file.
+ * @param {Function} params.scripts.loaded Function for check if script was loaded.
+ * @param {Function} params.callback Callback function is called after all files have been downloaded.
+ */
 Echo.Loader.download = function(params) {
 	var scripts = params.scripts, urls = [];
 	var callback = params.callback || function() {};
@@ -50,6 +74,15 @@ Echo.Loader.download = function(params) {
 	});
 };
 
+/**
+ * @static
+ * @method
+ * Function overriding parameters of config.
+ *
+ * @param {String} canvasID String with id of canvas on the page.
+ * @param {String} appID String with application id to override config.
+ * @param {Object} config Configuration of application.
+ */
 Echo.Loader.override = function(canvasID, appID, config) {
 	var overrides = Echo.Loader.overrides;
 	overrides[canvasID] = overrides[canvasID] || {};
@@ -212,7 +245,7 @@ Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
 			"id": canvas.id,
 			"key": canvas.id,
 			"public": true,
-			"method": "kvs/get",
+			"method": "kvs/get"
 		});
 	});
 	Echo.jQuery.get("http://api.echoenabled.com/v1/mux", {
