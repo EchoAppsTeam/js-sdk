@@ -1,7 +1,7 @@
 (function() {
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.Edit
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Edit
  * Adds extra Button Edit to each item in the Echo Stream control which allows to edit the content and some metadata of the item. This button will appear either for the users with the administrative privileges or for editing personal comments.
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),

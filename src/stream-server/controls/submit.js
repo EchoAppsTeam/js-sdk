@@ -1,5 +1,3 @@
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit")) return;
-
 /**
  * @class Echo.StreamServer.Controls.Submit
  * Echo Submit control which encapsulates interaction with the

@@ -1,5 +1,3 @@
-if (Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth")) return;
-
 /**
  * @class Echo.IdentityServer.Controls.Auth
  * Echo Auth control displays user login status and allows to sign in using different social identities.

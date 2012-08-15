@@ -1,5 +1,3 @@
-if (Echo.Utils.isComponentDefined("Echo.Control")) return;
-
 /**
  * @class Echo.Control
  * Foundation class implementing core logic to create controls and manipulate with them.

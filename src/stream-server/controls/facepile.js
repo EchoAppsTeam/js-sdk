@@ -1,7 +1,5 @@
 (function() {
 
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile")) return;
-
 /**
  * @class Echo.StreamServer.Controls.FacePile
  * Echo FacePile control displays users (actors) returned in any activity stream. 
@@ -373,8 +371,6 @@ Echo.Control.create(pile);
 // FacePile item definition
 
 (function() {
-
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile.Item")) return;
 
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile.Item");
 
