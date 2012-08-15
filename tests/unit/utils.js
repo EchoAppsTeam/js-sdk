@@ -8,7 +8,8 @@ suite.prototype.info = {
 		"htmlize", "foldl", "getNestedValue", "setNestedValue", "stripTags", "object2JSON",
 		"parseURL", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate", "log",
 		"getVisibleColor", "isMobileDevice", "getUniqueString", "loadImage",
-		"getComponent", "isComponentDefined", "objectToQuery", "inherit"]
+		"getComponent", "isComponentDefined", "objectToQuery", "inherit",
+		"parallelCall", "sequentialCall"]
 };
 
 suite.prototype.tests = {};
@@ -295,9 +296,9 @@ suite.prototype.tests.TestDomMethods = {
 	}
 };
 
-suite.prototype.imageCases = {};
+suite.prototype.async = {};
 
-suite.prototype.imageCases.simple = function(callback) {
+suite.prototype.async.simpleImageTest = function(callback) {
 	var img = Echo.Utils.loadImage("http://cdn.echoenabled.com/extra/jquery/plugins/fancybox/fancybox.png");
 	img.one({
 		"load": function() {
@@ -309,7 +310,7 @@ suite.prototype.imageCases.simple = function(callback) {
 	$("#qunit-fixture").append(img);
 };
 
-suite.prototype.imageCases.fake = function(callback) {
+suite.prototype.async.fakeImageTest = function(callback) {
 	var img = Echo.Utils.loadImage("http://example.com/fake.jpg", "http://cdn.echoenabled.com/images/avatar-default.png");
 	img.one({
 		"load": function() {
@@ -321,6 +322,44 @@ suite.prototype.imageCases.fake = function(callback) {
 	$("#qunit-fixture").append(img);
 };
 
+var getTestFunctions = function() {
+	var result = []
+	var functions = [
+		function(cb) { result.push(1); cb(); },
+		function(cb) { result.push(2); cb(); },
+		function(cb) { result.push(3); cb(); },
+		function(cb) { setTimeout(function () { result.push(4); cb(); }, 100); },
+		function(cb) { result.push(5); cb(); }
+	];
+	return {"functions": functions, "result": result};
+};
+
+suite.prototype.async.sequentialCallTest = function(callback) {
+	Echo.Utils.sequentialCall([], function() {
+		QUnit.ok(true, "Checking if an empty list of actions doesn't produce error while executing the \"sequentialCall\" function");
+	});
+
+	var data = getTestFunctions();
+	Echo.Utils.sequentialCall(data.functions, function() {
+		QUnit.deepEqual(data.result, [1,2,3,4,5],
+			"Checking \"sequentialCall\" function execution order");
+		callback();
+	});
+};
+
+suite.prototype.async.parallelCallTest = function(callback) {
+	Echo.Utils.parallelCall([], function() {
+		QUnit.ok(true, "Checking if an empty list of actions doesn't produce error while executing the \"parallelCall\" function");
+	});
+
+	var data = getTestFunctions();
+	Echo.Utils.parallelCall(data.functions, function() {
+		QUnit.deepEqual(data.result, [1,2,3,5,4],
+			"Checking \"parallelCall\" function execution order");
+		callback();
+	});
+};
+
 suite.prototype.tests.TestAsyncMethods = {
 	"config": {
 		"async": true,
@@ -328,7 +367,12 @@ suite.prototype.tests.TestAsyncMethods = {
 		"testTimeout": 10000
 	},
 	"check": function() {
-		this.sequentialAsyncTests(["simple", "fake"], "imageCases");
+		this.sequentialAsyncTests([
+			"simpleImageTest",
+			"fakeImageTest",
+			"sequentialCallTest",
+			"parallelCallTest"
+		], "async");
 	}
 };
 
