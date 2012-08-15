@@ -211,6 +211,11 @@ plugin.init = function() {
 	this.extendTemplate("replace", "container", plugin.template);
 };
 
+plugin.dependencies = [{
+	"loaded": function() { return !!Echo.jQuery().isotope; },
+	"url": Echo.Loader.config.cdnBaseURL + "third-party/jquery.isotope.min.js"
+}];
+
 plugin.config = {
 /**
  * @cfg {Number} columnWidth Allows to define the width for one column in pixels, default width is 250px. The amount of columns is calculated based on the width of the Echo Stream Client container.
