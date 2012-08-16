@@ -181,7 +181,10 @@ SocialChatter.views.Main.templates = {};
 
 SocialChatter.views.EventsList.templates = {};
 
-SocialChatter.views.Main.templates.main = SocialChatter.views.EventsList.templates.main =
+SocialChatter.views.Main.templates.main =
+	'<div class="{class:auth}"></div>';
+
+SocialChatter.views.EventsList.templates.main =
 	'<div class="{class:eventListContainer}">' +
 		'<div class="{class:newEventButton}">' +
 			'<div class="{class:eventSubmitLabel} echo-linkColor">{label:newEvent}</div>' +
@@ -293,8 +296,6 @@ SocialChatter.views.EventsList.controls["Echo.StreamServer.Controls.Stream"] = {
 SocialChatter.templates.main = 
 	'<div class="{class:container} echo-primaryFont echo-primaryBackgroundColor">' +
 		'<div class="{class:authContainer}">' +
-			'<div class="{class:auth}"></div>' +
-			'<div class="echo-clear"></div>' +
 		'</div>' +
 		'<div class="{class:tabs}"></div>' +
 	'</div>';
@@ -429,7 +430,7 @@ SocialChatter.templates.main =
 
 SocialChatter.assemblers = {};
 
-SocialChatter.renderers.auth = function(element) {
+SocialChatter.renderers.authContainer = function(element) {
 	this._assembler("Auth", element);
 	return element;
 };
