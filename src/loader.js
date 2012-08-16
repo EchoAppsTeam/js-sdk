@@ -6,9 +6,8 @@ if (Echo.Loader) return;
 
 /**
  * @class Echo.Loader
- * Static class implements common methods of loading canvas.
+ * Static class which implements a common methods for canvases loading.
  */
-
 Echo.Loader = {
 	"config": {
 		"cdnBaseURL": "http://cdn.echoenabled.com/",
@@ -22,19 +21,20 @@ Echo.Loader = {
 /**
  * @static
  * @method
- * Function initialize canvases on the page.
+ * Function to initialize canvases on the page.
  *
- * @param {Mixed} [canvases] Array of jQuery objects or single jQuery
- * if param not specified then there will be initialized by all objects on the page.
+ * @param {Mixed} [canvases] Array of jQuery elements or a single jQuery element, which represents a canvas target. If this param is omitted, Echo Loader will look for the canvases in the DOM structure.
 */
 Echo.Loader.init = function(canvases) {
 	Echo.Loader._initEnvironment(function() {
 		if (canvases && !Echo.jQuery.isArray(canvases)) {
 			canvases = [canvases];
 		}
+
 		// if no canvases defined during initialization,
 		// we look for all canvases in the document
 		canvases = canvases || Echo.jQuery(".echo-canvas");
+
 		Echo.Loader._initCanvases(canvases);
 	});
 };
@@ -42,13 +42,13 @@ Echo.Loader.init = function(canvases) {
 /**
  * @static
  * @method
- * Function asynchronous loading javascript or stylesheet files.
+ * Function to load the JavaScript or CSS stylesheet files in async mode.
  *
- * @param {Object} params Object with properties:
- * @param {Array} params.scripts Array of objects with properties:
- * @param {String} params.scripts.url URL of javascript or stylesheet file.
- * @param {Function} params.scripts.loaded Function for check if script was loaded.
- * @param {Function} params.callback Callback function is called after all files have been downloaded.
+ * @param {Object} params Object with the following properties:
+ * @param {Array} params.scripts Array of objects with the properties described below:
+ * @param {String} params.scripts.url JavaScript or CSS stylesheet file URL.
+ * @param {Function} params.scripts.loaded Function for check whether the script was loaded. This function must return boolean value which indicates whether the resource was already loaded on the page or not. If the resource was already loaded - no download is performed and the callback is called immediately.
+ * @param {Function} params.callback Callback function which should be called as soon as all requested files were downloaded.
  */
 Echo.Loader.download = function(params) {
 	var scripts = params.scripts, urls = [];
@@ -77,11 +77,11 @@ Echo.Loader.download = function(params) {
 /**
  * @static
  * @method
- * Function overriding parameters of config.
+ * Function which provides an ability to override config parameters of the specific application within the canvas.
  *
- * @param {String} canvasID String with id of canvas on the page.
- * @param {String} appID String with application id to override config.
- * @param {Object} config Configuration of application.
+ * @param {String} canvasID Canvas ID.
+ * @param {String} appID Application ID inside the canvas.
+ * @param {Object} config Object with the application config overrides.
  */
 Echo.Loader.override = function(canvasID, appID, config) {
 	var overrides = Echo.Loader.overrides;
@@ -139,9 +139,11 @@ Echo.Loader._initCanvases = function(canvases) {
 		Echo.jQuery.each(collection, function(id, canvas) {
 			var config = configs[canvas.id];
 			if (!config) return;
+
 			// copy config object to prevent the same object
 			// sharing across multiple canvas instances
 			canvas.config = Echo.jQuery.extend(true, {}, configs[canvas.id]);
+
 			Echo.Loader._initCanvas(canvas);
 		});
 	});
@@ -238,8 +240,10 @@ Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
 	if (!canvases.length) return callback();
 	var processed = {};
 	var requests = Echo.Utils.foldl([], canvases, function(canvas, acc) {
+
 		// do not request config twice
 		if (processed[canvas.id]) return;
+
 		processed[canvas.id] = true;
 		acc.push({
 			"id": canvas.id,
