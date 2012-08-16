@@ -59,7 +59,6 @@ plugin.init = function() {
 	item.config.set("plugins.Reply.enabled", false);
 
 	this.extendTemplate("insertBefore", "authorName", plugin.templates.usernameTemplate);
-	this.extendTemplate("insertBefore", "date", plugin.templates.twitterIcon);
 
 	item.addButtonSpec(this.name, this._assembleButton("tweet"));
 	item.addButtonSpec(this.name, this._assembleButton("retweet"));
@@ -74,7 +73,6 @@ plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.onRender": function(topic, args) {
 		var activeClass = this.cssPrefix + "activeButton";
 		var item = this.component;
-		if( this._isTweet() ) {
 			$.map(item.buttons[this.name], function(name) {
 				name.element.unbind("click").unbind("mouseover mouseout")
 					.hover(
@@ -83,84 +81,53 @@ plugin.events = {
 					);
 			});
 			window.twttr && window.twttr.widgets.load();
-		}
 	}
 };
 
 plugin.templates = {
-	"usernameTemplate": '<div class="{plugin.class:tweetUserName} echo-linkColor"></div>',
-	"twitterIcon": '<div class="{plugin.class:twitterIcon}"></div>'
+	"usernameTemplate": '<div class="{plugin.class:tweetUserName} echo-linkColor"></div>'
 };
 
 plugin.component.renderers.authorName = function(element) {
 	var item = this.component;
-	return element.html(item.get("data.actor.title"))
-				  .removeClass("echo-linkColor")
-				  .addClass(this.cssPrefix + "tweetScreenName echo-secondaryColor");
+	return item.parentRenderer("authorName", arguments)
+		.removeClass("echo-linkColor")
+		.addClass(this.cssPrefix + "tweetScreenName echo-secondaryColor");
+};
+
+plugin.component.renderers.avatar = function(element) {
+	var item = this.component;
+	return item.parentRenderer("avatar", arguments).wrap(
+		Echo.Utils.hyperlink({
+			"href": item.get("data.actor.id"),
+			"caption": ""
+		}, {
+			"openInNewWindow": item.config.get("openLinksInNewWindow"),
+			"skipEscaping": true
+		})
+	);
 };
 
 plugin.component.renderers._buttonsDelimiter = function(element) {
 	var item = this.component;
-	var result = item.parentRenderer("_buttonsDelimiter", arguments);
 	var posDelimiter = item.buttonSpecs[this.name].length;
 
-	element.find("span[class*='button-delim']").eq(posDelimiter).text(" | ");
-
-	return result;
-};
-
-plugin.component.renderers.via = function(element) {
-	var item = this.component;
-	var provider = Echo.Utils.hyperlink({
-		"href": item.get("data.provider.uri"),
-		"caption": item.get("data.provider.name")
-	}, {
-		"openInNewWindow": item.config.get("openLinksInNewWindow"),
-		"skipEscaping": true
-	});
-	element.html('&nbsp;' + item.labels.get("viaLabel") + '&nbsp;' + provider);
-	return item.parentRenderer("via", arguments);
-};
-
-plugin.component.renderers.from = function(element) {
-	var item = this.component;
-	var source = Echo.Utils.hyperlink({
-		"href": item.get("data.source.uri"),
-		"caption": item.get("data.source.name")
-	}, {
-		"openInNewWindow": item.config.get("openLinksInNewWindow"),
-		"skipEscaping": true
-	});
-	element.html('&nbsp;' + item.labels.get("fromLabel") + '&nbsp;' + source);
-	return item.parentRenderer("from", arguments);
+	return item.parentRenderer("_buttonsDelimiter", arguments)
+		.find("span[class*='button-delim']").eq(posDelimiter).text(" | ");
 };
 
 plugin.component.renderers.date = function(element) {
 	var item = this.component;
-	item._calcAge();
-
-	var date = Echo.Utils.hyperlink({
-		"caption": item.age,
-		"href": item.get("data.object.id"),
-		"class": this.cssPrefix + "date"
-	}, {
-		"openInNewWindow": item.config.get("openLinksInNewWindow"),
-		"skipEscaping": true
-	});
-
-	return element.html(date);
-};
-
-plugin.renderers.twitterIcon = function(element) {
-	var item = this.component;
-	var icon = Echo.Utils.hyperlink({
-		"caption": '<img src="' + item.get("data.source.icon") + '"/>',
-		"href": item.get("data.source.uri")
-	}, {
-		"openInNewWindow": item.config.get("openLinksInNewWindow"),
-		"skipEscaping": true
-	});
-	return element.html(icon);
+	return item.parentRenderer("date", arguments).wrap(
+		Echo.Utils.hyperlink({
+			"caption": "",
+			"href": item.get("data.object.id"),
+			"class": this.cssPrefix + "date"
+		}, {
+			"openInNewWindow": item.config.get("openLinksInNewWindow"),
+			"skipEscaping": true
+		})
+	);
 };
 
 plugin.renderers.tweetUserName = function(element) {
