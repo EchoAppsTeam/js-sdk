@@ -4,6 +4,8 @@ SRC_DIR=src
 BUILD_DIR=.build
 WEB_SDK_DIR=web/sdk
 
+ALLOWABLE_EXTENSIONS=(css jpg png gif)
+
 DONT_WRAP=(
     $SRC_DIR/backplane.js
     $SRC_DIR/third-party/jquery.js
@@ -51,6 +53,13 @@ assemble() {
         cat $file >> $tempfile
         printf "\n})(Echo.jQuery);\n" >> $tempfile
     done
+	for item in ${ALLOWABLE_EXTENSIONS[@]}; do
+		while read file; do
+			echo "file $file"
+			if [ ! -e "$WEB_SDK_DIR/`dirname $file`" ]; then mkdir -p "$WEB_SDK_DIR/`dirname $file`"; fi
+			cp "$SRC_DIR/$file" "$WEB_SDK_DIR/$file"
+		done < <(find "$SRC_DIR" -type f -name "*.$item" -printf "%P\n")
+	done
     cp -r $BUILD_DIR/$SRC_DIR/* $WEB_SDK_DIR
     rm -rf $BUILD_DIR
 }
