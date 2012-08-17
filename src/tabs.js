@@ -2,11 +2,18 @@ Echo.Tabs = function(element, config) {
 	config = config || {};
 	this.element = element;
 	this.panels = config.panels || this.getPanels();
+	this._initEvents(config);
 };
 
 Echo.Tabs.prototype.getPanels = function() {
 	var id = $("a:first", this.element).attr("href");
 	return $(id);
+};
+
+Echo.Tabs.prototype._initEvents = function(config) {
+	this.element.find('a[data-toggle=tab]').each(function(i, el) {
+		$(el).on("show", config.show || function() {});
+	});
 };
 
 Echo.Tabs.prototype.disable = function(id) {

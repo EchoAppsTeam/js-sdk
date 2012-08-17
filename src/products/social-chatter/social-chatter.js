@@ -297,7 +297,14 @@ SocialChatter.templates.main =
 	'<div class="{class:container} echo-primaryFont echo-primaryBackgroundColor">' +
 		'<div class="{class:authContainer}">' +
 		'</div>' +
-		'<div class="{class:tabs}"></div>' +
+		'<div class="{class:tabsContainer}">' +
+			'<ul class="{class:tabs} nav nav-tabs">' +
+				'<li><a data-toggle="tab" href="#EventsList">{label:eventsList}</a></li>' +
+			'</ul>' +
+			'<div class="{class:tabPanels} tab-content">' +
+				'<div class="{class:EventsList}" id="EventsList" class="tab-pane"></div>' +
+			'</div>' +
+		'</div>' +
 	'</div>';
 
 /*SocialChatter.methods._getDefaultAppsConfig = function(config) {
@@ -436,7 +443,27 @@ SocialChatter.renderers.authContainer = function(element) {
 };
 
 SocialChatter.renderers.tabs = function(element) {
-	this._assembler("EventsList", element);
+	var self = this;
+	var tabs = new Echo.Tabs(element, {
+		"show": function(e) {
+			var panel = self.dom.get("EventsList");
+			self._assembler("EventsList", panel);
+		}
+	});
+	if (this.event) {
+		var data = this.event.data;
+		tabs.add({
+			"id": "PublicEvent",
+			"label": data.eventName || this.labels.get("tabPublicEventLabel")
+		});
+	}
+	if (this.event && this._hasGreenRoomAccess()) {
+		tabs.add({
+			"id": "GreenRoom",
+			"label": this.labels.get("tabGreenRoomLabel")
+		});
+	}
+	tabs.show("EventsList");
 	return element;
 };
 
@@ -578,50 +605,6 @@ SocialChatter.methods._handleLiveUpdatesResponse = function(data) {
 SocialChatter.methods._initBackplane = function() {
 	if (!this.config.get("backplane.busName")) return;
 	Backplane.init(this.config.get("backplane"));
-};
-
-SocialChatter.methods._initTabs = function() {
-	var self = this;
-	var tabs = [{
-		"id": "EventsList",
-		"label": this.labels.get("tabAllEventsLabel"),
-		"icon": false
-	}];
-	if (this.event) {
-		var data = this.event.data;
-		tabs.push({
-			"id": "PublicEvent",
-			"label": data.eventName || this.labels.get("tabPublicEventLabel"),
-			"icon": false,
-			"selected": true
-		});
-	}
-	if (this.event && this._hasGreenRoomAccess()) {
-		tabs.push({
-			"id": "GreenRoom",
-			"label": this.labels.get("tabGreenRoomLabel"),
-			"icon": false
-		});
-	}
-	this.tabs = new Echo.UI.Tabs({
-		"target": this.dom.get("tabs"),
-		"addUIClass": false,
-		"idPrefix": "socialchatter-tabs-",
-		"classPrefix": "socialchatter-tabs-",
-		"config": {
-			"show": function(event, ui) {
-				self._updateTab({
-					"name": tabs[ui.index].id,
-					"target": ui.panel,
-					"ui": ui
-				});
-			}
-		},	
-		"tabs": tabs 
-	});
-	if (this.event) {
-		this.tabs.select("PublicEvent");
-	}
 };
 
 SocialChatter.methods._requestEventsList = function(callback) {
