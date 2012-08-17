@@ -18,7 +18,7 @@ plugin.init = function() {
 };
 
 plugin.events = {
-	"internal.Echo.StreamServer.Controls.Stream..Item.onDelete": function(topic, args) {
+	"internal.Echo.StreamServer.Controls.Stream.Item.onDelete": function(topic, args) {
 		this.publish("SocialChatter.onEventDelete", args);
 	}
 };
@@ -202,7 +202,7 @@ plugin.component.renderers.avatar = function() {
 	// reset default avatar
 	this.component.user.set("defaultAvatar", defaultAvatar);
 	return element;
-}
+};
 
 plugin.component.renderers.authorName = plugin.component.renderers.body = function(element) {
 	return element.remove();
@@ -210,17 +210,17 @@ plugin.component.renderers.authorName = plugin.component.renderers.body = functi
 
 plugin.methods._getFullDate = function(timestamp) {
 	var d = new Date(timestamp);
-	return (timestamp
-		? $.datepicker.formatDate(this.config.get("dateFormat"), d)
-		+ " " + $.datepicker.formatTime(this.config.get("timeFormat"),  {
-			"hour": d.getHours(),
-			"minute": d.getMinutes(),
-			"second": d.getSeconds(),
-			"millisec": d.getMilliseconds()
-		}, {
-			"ampm": this.config.get("ampm")
-		})
-		: this.labels.get("unknown"));
+	return (timestamp);
+//		? $.datepicker.formatDate(this.config.get("dateFormat"), d)
+//		+ " " + $.datepicker.formatTime(this.config.get("timeFormat"),  {
+//			"hour": d.getHours(),
+//			"minute": d.getMinutes(),
+//			"second": d.getSeconds(),
+//			"millisec": d.getMilliseconds()
+//		}, {
+//			"ampm": this.config.get("ampm")
+//		})
+//		: this.labels.get("unknown"));
 };
 
 plugin.methods._assembleButton = function() {
@@ -342,13 +342,19 @@ plugin.templates.Metadata =
 	'<div class="{plugin.class:metadata-container}">' +
 		'<div class="{class:field-title}">{plugin.label:eventStart} <span class="{plugin.class:field-mandatory">*</span></div>' +
 		'<div class="{plugin.class:inputContainer} {class:border}">' +
-			'<input type="text" class="{plugin.class:eventStart} {class:text-input} echo-primaryFont">' +
+			'<input type="text" class="{plugin.class:eventDateStart} {class:text-input} echo-primaryFont">' +
+			'<i class="icon-th"></i>' +
+			'<input type="text" class="{plugin.class:eventTimeStart} {class:text-input} echo-primaryFont">' +
+			'<i class="icon-time"></i>' +
 		'</div>' +
 	'</div>' +
 	'<div class="{plugin.class:metadata-container}">' +
 		'<div class="{plugin.class:field-title}">{plugin.label:eventEnd} <span class="{plugin.class:field-mandatory}">*</span></div>' +
 		'<div class="{plugin.class:inputContainer} {class:border}">' +
-			'<input type="text" class="{plugin.class:eventEnd} {class:text-input} echo-primaryFont">' +
+			'<input type="text" class="{plugin.class:eventDateEnd} {class:text-input} echo-primaryFont">' +
+			'<i class="icon-th"></i>' +
+			'<input type="text" class="{plugin.class:eventTimeEnd} {class:text-input} echo-primaryFont">' +
+			'<i class="icon-time"></i>' +
 		'</div>' +
 	'</div>' +
 	'<div class="{plugin.class:metadata-container}">' +
@@ -364,7 +370,8 @@ plugin.templates.Metadata =
 		'</div>' +
 	'</div>';
 
-plugin.fields = ["eventName", "vipName", "vipInstructions", "vipPhoto", "eventDescription", "eventStart", "eventEnd"];
+plugin.fields = ["eventName", "vipName", "vipInstructions", "vipPhoto",	"eventDescription",
+	"eventDateStart", "eventTimeStart", "eventDateEnd", "eventTimeEnd"];
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
@@ -434,44 +441,62 @@ plugin.renderers.eventSubmitNotice = function(element) {
 	return element.html('<span>' + this.labels.get("eventSubmitNotice") + '</span>');
 };
 
-$.map(["eventStart", "eventEnd"], function(field) {
+$.map(["eventTimeStart", "eventTimeEnd"], function(field) {
 	plugin.renderers[field] = function(element) {
 		var self = this;
 		this.dom.render({"name": "eventInfo", "extra": {"type": field}});
-		var datepicker = $("#ui-datepicker-div");
+		element.timepicker({
+			minuteStep: 1,
+			secondStep: 5,
+			showInputs: false
+		});
+		return element;
+	};
+});
+
+$.map(["eventDateStart", "eventDateEnd"], function(field) {
+	plugin.renderers[field] = function(element) {
+		var self = this;
+		this.dom.render({"name": "eventInfo", "extra": {"type": field}});
+//		var datepicker = $("#ui-datepicker-div");
 		var event = new Echo.SocialChatterEvent(this.component.get("data.object.content"));
 		if (event.data[field]) {
 			this.set("eventsTimestamp." + field, event.data[field]);
 		}
-		var datetimepickerConfig = {
-			"ampm": this.config.get("ampm"),
-			"dateFormat": this.config.get("dateFormat"),
-			"timeFormat": this.config.get("timeFormat"),
-			"onSelect": function() {
-				self.set("eventsTimestamp." + field, element.datetimepicker("getDate").getTime());
-			},
-			"onClose": function(date) {
-				var element = field === "eventStart"
-					? self.dom.get("eventEnd")
-					: self.dom.get("eventStart");
-				if (element.val()) {
-					var startDate = self.get("eventsTimestamp.eventStart");
-					var endDate = self.get("eventsTimestamp.eventEnd");
-					if (startDate > endDate) {
-						element.val(date);
-					}
-				} else {
-					element.val(date);
-				}
-			}
-		};
-		element.datetimepicker(datetimepickerConfig)
-		.keydown(function(e) {
-			var code = e.keyCode || e.which;
-			if (code ^ 9 && code ^ 13)
-				return false;
+
+		element.datepicker({
+			format: 'mm/dd/yyyy'
 		});
-		!datepicker.parents(".datepicker-ui").length && datepicker.wrap('<div class="datepicker-ui"></div>');
+
+//		var datetimepickerConfig = {
+//			"ampm": this.config.get("ampm"),
+//			"dateFormat": this.config.get("dateFormat"),
+//			"timeFormat": this.config.get("timeFormat"),
+//			"onSelect": function() {
+//				self.set("eventsTimestamp." + field, element.datetimepicker("getDate").getTime());
+//			},
+//			"onClose": function(date) {
+//				var element = field === "eventDateStart"
+//					? self.dom.get("eventDateEnd")
+//					: self.dom.get("eventDateStart");
+//				if (element.val()) {
+//					var startDate = self.get("eventsTimestamp.eventDateStart");
+//					var endDate = self.get("eventsTimestamp.eventDateEnd");
+//					if (startDate > endDate) {
+//						element.val(date);
+//					}
+//				} else {
+//					element.val(date);
+//				}
+//			}
+//		};
+//		element.datetimepicker(datetimepickerConfig)
+//		.keydown(function(e) {
+//			var code = e.keyCode || e.which;
+//			if (code ^ 9 && code ^ 13)
+//				return false;
+//		});
+//		!datepicker.parents(".datepicker-ui").length && datepicker.wrap('<div class="datepicker-ui"></div>');
 		return element;
 	};
 });
@@ -537,17 +562,17 @@ plugin.methods._postAction = function() {
 
 plugin.methods._getFullDate = function(timestamp) {
 	var d = new Date(timestamp);
-	return (timestamp
-		? $.datepicker.formatDate(this.config.get("dateFormat"), d)
-		+ " " + $.datepicker.formatTime(this.config.get("timeFormat"),  {
-			"hour": d.getHours(),
-			"minute": d.getMinutes(),
-			"second": d.getSeconds(),
-			"millisec": d.getMilliseconds()
-		}, {
-			"ampm": this.config.get("ampm")
-		})
-		: this.labels.get("unknown"));
+	return (timestamp);
+//		? $.datepicker.formatDate(this.config.get("dateFormat"), d)
+//		+ " " + $.datepicker.formatTime(this.config.get("timeFormat"),  {
+//			"hour": d.getHours(),
+//			"minute": d.getMinutes(),
+//			"second": d.getSeconds(),
+//			"millisec": d.getMilliseconds()
+//		}, {
+//			"ampm": this.config.get("ampm")
+//		})
+//		: this.labels.get("unknown"));
 };
 
 plugin.css =
@@ -572,7 +597,11 @@ plugin.css =
 	'.{plugin.class:eventSubmitNotice} { background-color: #D9EDF7; border: 1px solid #BCE8F1; border-radius: 4px 4px 4px 4px; color: #3A87AD;  padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 14px; line-height: 16px; text-align: center; }' +
 	'.{plugin.class:eventSubmitNotice} a { color: #3A87AD; cursor: pointer; text-decoration: underline; }' +
 	'.{plugin.class:field-mandatory} { color: red; font-weight: bold; }' +
-	'.{plugin.class:inputContainer} { margin-bottom: 15px; width: 300px; padding: 5px; }';
+	'.{plugin.class:inputContainer} { margin-bottom: 15px; width: 300px; padding: 5px; }' +
+	'.{plugin.class:inputContainer} .icon-time { margin: -4px 0 0 -22.5px; pointer-events: none; position: relative; }' +
+	'.{plugin.class:inputContainer} .icon-th { margin: -4px 0 0 -22.5px; pointer-events: none; position: relative; }' +
+	'.{plugin.class:eventTimeStart}, .{plugin.class:eventTimeEnd} { width: 90px; margin-left: 20px; }' +
+	'.{plugin.class:eventDateStart}, .{plugin.class:eventDateEnd} { width: 100px; }';
 
 Echo.Plugin.create(plugin);
 
