@@ -36,47 +36,84 @@
                     "target": document.getElementById("stream-v2"),
                     "appkey": "test.echoenabled.com",
                     "query": "childrenof:http://example.com/* itemsPerPage:1",
-//                    "query": "childrenof:http://aboutecho.com/* itemsPerPage:1",
+                    "viaLabel": { "icon": true, "text": true },
                     "plugins": [{
-                        "name": "TwitterIntents"
-                    } , {
-                        "name": "PinboardVisualization"
-                    } , {
-                        "name": "Reply",
-                        "nestedPlugins": [{
-                            "name": "FormAuth",
-                            "identityManager": {
-                                "login": identityManager,
-                                "signup": identityManager
-                            }
-                        }]
-                    }, {
-                        "name": "MetadataManager",
-                        "controls": [{
-                            "marker": "sticky",
-                            "labelMark": "Pin",
-                            "labelUnmark": "Unpin"
+                            "name": "AuthorNameInText"
                         }, {
-                            "tag": "football",
-                            "labelMark": "Set Football tag",
-                            "labelUnmark": "Unset Football tag"
+                            "name": "TwitterIntents"
+                        }, {
+                            "name": "CommunityFlag",
+                            "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+                            "showUserList": true
+                        }, {
+                            "name": "Like",
+                            "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+                        }, {
+                            "name": "Reply",
+                            "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+                            "useDisplayName": true,
+                            "actionString": "Write reply here...",
+                            "nestedPlugins": [
+                                {
+                                    "name": "SubmitTextCounter"
+                                }, {
+                                    "name": "FormAuth",
+                                    "identityManagerLogin": identityManager,
+                                    "identityManagerSignup": identityManager,
+                                    "identityManagerEdit": identityManager,
+                                    "submitPermissions": "forceLogin"
+                                }
+                            ]
+                        }, {
+                            "name": "Whirlpools",
+                            "after": 0,
+                            "clickable": true
+                        }, {
+                            "name": "Curation",
+                            "domain": "example.com"
+                        }, {
+                            "name": "Edit",
+                            "enabled": false
+                        }, {
+                            "name": "MetadataManager",
+                            "controls": [{
+                                "tag": "sticky",
+                                "labelMark": "Pin",
+                                "labelUnmark": "Unpin",
+                                "visible": {
+                                    "user.roles": ["moderator"],
+                                    "user.state": ["ModeratorApproved"]
+                                }
+                            }]
+                        }, {
+                            "name": "BumpTopic"
+                        }, {
+                            "name": "UserBan"
+                        }, {
+                            "name": "UserPrivileges"
+                        }, {
+                            "name": "UserComments"
+                        }, {
+                            "name": "ItemsAutoRequest",
+                            "enabled": false
                         }]
-                    }, {
-                        "name": "Like"
-                    }, {
-                        "name": "Edit"
-                    }, {
-                        "name": "CommunityFlag",
-                        "showUserList": true
-                    }, {
-                        "name": "Moderation"
-                    } , {
-                        "name": "ItemAccumulatorDisplay"
-                    } , {
-                        "name": "UserBan"
-                    } , {
-                        "name": "UserPrivileges"
-                    }]
+                });
+            </script>
+            <!-- // -->
+        </div>
+
+        <div class="wrapper">
+            <!-- Echo.Auth v2 -->
+            <b>FormAuth</b>
+            <div id="auth-form-v2"></div>
+            <script type="text/javascript">
+                new Echo.Auth({
+                    "target": document.getElementById("auth-form-v2"),
+                    "appkey": "test.echoenabled.com",
+                    "identityManager": {
+                        "login": identityManager,
+                        "signup": identityManager
+                    }
                 });
             </script>
             <!-- // -->
@@ -93,13 +130,13 @@
                     "targetURL": "http://example.com/js-sdk",
                     "plugins": [{
                         "name": "FormAuth",
-                        "identityManager": {
-                            "login": identityManager,
-                            "signup": identityManager
-                        }
+                        "identityManagerLogin": identityManager,
+                        "identityManagerSignup": identityManager,
+                        "identityManagerEdit": identityManager,
+                        "submitPermissions": "forceLogin"
                     } , {
                         "name": "SubmitTextCounter",
-                        "limit": 200,
+                        "limit": 40,
                         "label": "You have typed {typed} chars, {left} chars left"
                     }]
                 });
@@ -120,6 +157,22 @@
             </script>
             <!-- // -->
         </div>
+
+        <div class="wrapper">
+            <!-- Echo.UserList v2 -->
+            <b>User List</b>
+            <div id="user-list-v2"></div>
+            <script type="text/javascript">
+                new Echo.UserList({
+                    "target": document.getElementById("user-list-v2"),
+                    "appkey": "test.echoenabled.com",
+                    "query": "childrenof:http://example.com/*",
+                    "suffixText": " commented on aboutecho.com",
+                    "item": {"avatar": true, "text": true}
+                });
+            </script>
+            <!-- // -->
+        </div>
     </div>
 
     <div id="container-v3">
@@ -132,8 +185,10 @@
                 new Echo.StreamServer.Controls.Stream({
                     "target": document.getElementById("stream-v3"),
                     "query": "childrenof:http://example.com/* itemsPerPage:1",
-//                  "query": "childrenof:http://aboutecho.com/* itemsPerPage:1",
                     "appkey": "test.js-kit.com",
+                    "item": {
+                        "viaLabel": { "icon": true, "text": true }
+                    },
                     "plugins": [{
                         "name": "TwitterIntents"
                     }, {
@@ -165,15 +220,30 @@
                         "showUserList": true
                     }, {
                         "name": "Moderation"
-                    }/*, {
-                        "name": "InfiniteScroll"
-                    }*/, {
+                    }, {
                         "name": "ItemAccumulatorDisplay"
                     } , {
                         "name": "UserBan"
                     } , {
                         "name": "UserPrivileges"
                     }]
+                });
+            </script>
+            <!-- // -->
+        </div>
+
+        <div class="wrapper">
+            <!-- Echo.Auth v3 -->
+            <b>FormAuth</b>
+            <div id="auth-form-v3"></div>
+            <script type="text/javascript">
+                new Echo.IdentityServer.Controls.Auth({
+                    "target": document.getElementById("auth-form-v3"),
+                    "appkey": "test.echoenabled.com",
+                    "identityManager": {
+                        "login": identityManager,
+                        "signup": identityManager
+                    }
                 });
             </script>
             <!-- // -->
@@ -187,7 +257,7 @@
                 new Echo.StreamServer.Controls.Submit({
                     "target": document.getElementById("submit-form-v3"),
                     "appkey": "test.js-kit.com",
-                    "targetURL": "http://example.com/js-sdk",
+                    "targetURL": "http://example.com/test-js-sdk",
                     "plugins": [{
                         "name": "FormAuth",
                         "submitPermissions": "forceLogin",
@@ -206,7 +276,7 @@
         </div>
 
         <div class="wrapper">
-            <!-- Echo.StreamServer.Controls.Submit v3 -->
+            <!-- Echo.StreamServer.Controls.Counter v3 -->
             <b>Counter</b>
             <div id="counter-v3"></div>
             <script type="text/javascript">

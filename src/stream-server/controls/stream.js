@@ -1213,7 +1213,7 @@ stream.css =
 	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
 	'.{class:more-hover} { background-color: #E4E4E4; }' +
 	'.{class:more} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
-	'.{class:more} .echo-application-message { padding: 0; border: none; border-radius: 0; }' +
+	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }' +
 	($.browser.msie
 		? '.{class:state-picture} { vertical-align: middle; }' +
 		'.{class:container} { zoom: 1; }'
@@ -2335,7 +2335,7 @@ item.css =
 	'.{class:expandChildren} .{class:expandChildrenLabel} { display: inline-block; padding-left: 22px; }' +
 	'.{class:expandChildren} .echo-message-icon { background: url("//cdn.echoenabled.com/images/whirlpool.png") no-repeat 5px 4px; }' +
 	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url(//cdn.echoenabled.com/images/loading.gif); }' +
-	'.{class:expandChildren} .echo-application-message { padding: 0; border:none; border-radius: 0; }' +
+	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
 	itemDepthRules.join("\n") +
 	($.browser.msie
 		? '.{class:childrenMarker} { font-size: 1px; line-height: 1px; }' +

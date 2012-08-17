@@ -232,7 +232,7 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 		var allowedTypes = ["number", "string", "boolean"];
 		return ~$.inArray(typeof result, allowedTypes) ? result.toString() : "";
 	};
-	return template.replace(Echo.Vars.regexps.templateSubstitution, processor);
+	return template.replace(Echo.Utils.regexps.templateSubstitution, processor);
 };
 
 /**

@@ -808,8 +808,8 @@ SocialChatter.css =
 		'.echo-ui .echo-tabs-header li.ui-state-default { background-color: #E6E6E6; }' +
 		'.echo-ui .echo-tabs-header li.ui-state-active { background-color: #FFFFFF; }' +
 		// fancy buttons
-		'.echo-item-eventButtonContainer .echo-button .ui-state-default, .echo-socialchatter-view-newEventButton .echo-button .ui-state-default, .echo-submit-controls .echo-button .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
-		'.echo-socialchatter-view-newEventButton .echo-button .ui-state-default, .echo-item-eventButtonContainer .echo-button .ui-state-default { width: auto; padding: 3px 15px; }' +
+		'.echo-item-eventButtonContainer .echo-button-v3 .ui-state-default, .echo-socialchatter-view-newEventButton .echo-button-v3 .ui-state-default, .echo-submit-controls .echo-button-v3 .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
+		'.echo-socialchatter-view-newEventButton .echo-button-v3 .ui-state-default, .echo-item-eventButtonContainer .echo-button-v3 .ui-state-default { width: auto; padding: 3px 15px; }' +
 		'.echo-socialchatter-view-eventListContainer { margin-left: 15px; margin-right: 15px; }' +
 		'.echo-socialchatter-view-eventListContainer .echo-submit-userInfoWrapper { display: none; }' +
 		'.echo-socialchatter-view-publicStream, .echo-socialchatter-view-vipStream { margin-top: 15px; }' +
@@ -838,7 +838,7 @@ SocialChatter.css =
 		'.echo-socialchatter-view-publicSubmit textarea.echo-submit-text { height: 36px; }' +
 		'.echo-socialchatter-view-vipStream .echo-stream-header { display: none; }' +
 		'.echo-socialchatter-view-publicStream .echo-stream-header { display: none; }' +
-		'.echo-application-message { border: none; }' +
+		'.echo-app-message { border: none; }' +
 		'.echo-socialchatter-container .echo-submit-markersContainer, .echo-socialchatter-container .echo-submit-tagsContainer, .echo-socialchatter-container .echo-item-modeSwitch { display: none !important; }' +
 		'.echo-socialchatter-view-publicSubmit .echo-submit-text { height: 55px; }' +
 		'.echo-socialchatter-auth { float: right; }' +

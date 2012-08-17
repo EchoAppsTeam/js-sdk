@@ -18,7 +18,7 @@ var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream.It
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate("insertAsLastChild", "content", plugin.templates.form);
-	var form = Echo.Utils.getNestedValue(Echo.Global, this._getFormKey());
+	var form = Echo.Utils.getNestedValue(Echo.Variables, this._getFormKey());
 	$.each(form || {}, function(key, value) {
 	    self.set(key, value);
 	});
@@ -144,7 +144,7 @@ plugin.renderers.compactField = function(element) {
 
 plugin.methods.destroy = function() {
 	var plugin = this, item = this.component;
-	Echo.Utils.setNestedValue(Echo.Global, plugin._getFormKey(), {
+	Echo.Utils.setNestedValue(Echo.Variables, plugin._getFormKey(), {
 		"submit": plugin.get("submit"),
 		"expanded": plugin.get("expanded")
 	});

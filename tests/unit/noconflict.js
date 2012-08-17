@@ -1,14 +1,14 @@
 (function($) {
 
-	var suite = Echo.Tests.Unit.NoConflict = function() {};
+	var suite = Echo.Tests.Unit.compatibilityTest = function() {};
 
 	suite.prototype.info = {
-		"suiteName": "Echo jQuery"
+		"suiteName": "Compatibility tests"
 	};
 
 	suite.prototype.tests = {};
 
-	suite.prototype.tests.compatibilityTest = {
+	suite.prototype.tests.JqueryNoConflict = {
 		"config": {
 			"async": true,
 			"testTimeout": 20000 // 20 secs
@@ -36,5 +36,49 @@
 			});
 		}
 	};
+
+	suite.prototype.tests.V2V3CompatibilityCheck = {
+		"config": {
+			"async": true,
+			"testTimeout": 20000 // 20 secs
+		},
+		"check": function() {
+			var self = this;
+			var ids = {
+				"v2": "echo-apps-v2",
+				"v3": "echo-apps-v3"
+			};
+
+			var Stack = function(callback) {
+				var counter = 0;
+				var state = {};
+				this.init = function(id) {
+					if( !state.hasOwnProperty(id) ) {
+						state[id] = false;
+						counter++;
+					}
+				};
+				this.done = function(id) {
+					if (state[id] === false) {
+						state[id] = true;
+						--counter == 0 && callback();
+					}
+				}
+			};
+
+			Echo.Variables.V2V3Test = new Stack(function() {
+				var res = !$.map(window[ids.v3].Echo, function(val, key) {
+					return window[ids.v2].Echo[key];
+				}).length;
+
+				QUnit.ok(res, "Check if v3 Echo keys  don't match with v2 Echo keys");
+				QUnit.start();
+			});
+
+			$.each(ids, function(key, val) {
+				self.config.target.append('<iframe src="tools/' + key + '.html" name="' + val + '"></iframe>');
+			});
+		}
+	}
 
 })(Echo.jQuery);

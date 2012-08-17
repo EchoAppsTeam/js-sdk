@@ -322,7 +322,7 @@ Echo.Tests.Stats = {
 	},
 	"getFunctionNames": function(namespace, prefix) {
 		var stats = Echo.Tests.Stats;
-		var ignoreList = ["Echo.Tests", "Echo.Vars", "Echo.Global", "Echo.jQuery"];
+		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery"];
 		$.each([namespace, namespace.prototype], function(i, parentObject) {
 			if (!parentObject) return;
 			$.each(parentObject, function(name, value) {

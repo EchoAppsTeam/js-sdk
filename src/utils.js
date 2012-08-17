@@ -4,16 +4,7 @@ if (!window.Echo) window.Echo = {};
 
 if (Echo.Utils) return;
 
-if (!Echo.Global) Echo.Global = {};
-
-if (!Echo.Vars) Echo.Vars = {
-	"regexps": {
-		"templateSubstitution": /{([0-9a-z\.]+)(?:\:((?:[0-9a-z_-]+\.)*[0-9a-z_-]+))?}/ig,
-		"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
-		"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/,
-		"w3cdtf": /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/
-	}
-};
+if (!Echo.Variables) Echo.Variables = {};
 
 
 /**
@@ -27,6 +18,13 @@ var _cssStyles = {
 	"anchor": undefined,
 	"index": 1,
 	"processed": {}
+};
+
+Echo.Utils.regexps = {
+	"templateSubstitution": /{([0-9a-z\.]+)(?:\:((?:[0-9a-z_-]+\.)*[0-9a-z_-]+))?}/ig,
+	"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
+	"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/,
+	"w3cdtf": /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/
 };
 
 /**
@@ -77,7 +75,7 @@ Echo.Utils.addCSS = function(cssCode, id) {
 		oldStyle = null;
 		currentCssCode = "";
 	}
-	var newStyle = $('<style id="echo-css-' + _cssStyles.index + '" type="text/css">' + currentCssCode + cssCode + '</style>');
+	var newStyle = $('<style id="echo-css-v3-' + _cssStyles.index + '" type="text/css">' + currentCssCode + cssCode + '</style>');
 	if (oldStyle && oldStyle.length) {
 		// use replacing instead of adding css to existing element
 		// because IE doesn't allow it
@@ -397,7 +395,7 @@ Echo.Utils.stripTags = function(text) {
  * @return {Object} Returns the object containing the following parts of the URL as fields: scheme, domain, path, query, fragment.
  */
 Echo.Utils.parseURL = function(url) {
-	var parts = url.match(Echo.Vars.regexps.parseURL);
+	var parts = url.match(Echo.Utils.regexps.parseURL);
 	return parts ? {
 		"scheme": parts[3],
 		"domain": parts[4],
@@ -455,7 +453,7 @@ Echo.Utils.getVisibleColor = function(element) {
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
 	var parts = ['year', 'month', 'day', 'hours', 'minutes', 'seconds'];
 	var dt = {};
-	var matches = datetime.match(Echo.Vars.regexps.w3cdtf);
+	var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
 	if (!matches) return;
 	$.each(parts, function(i, p) {
 		dt[p] = matches[i + 1];
@@ -473,7 +471,7 @@ Echo.Utils.timestampFromW3CDTF = function(datetime) {
  * @return {Boolean} Returns true if mobile device is used, false if not.
  */
 Echo.Utils.isMobileDevice = function() {
-	return Echo.Vars.regexps.mobileUA.test(navigator.userAgent);
+	return Echo.Utils.regexps.mobileUA.test(navigator.userAgent);
 };
 
 /**

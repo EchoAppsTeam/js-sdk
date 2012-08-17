@@ -218,13 +218,13 @@ suite.prototype.tests.TestDataMethods = {
 		} catch(e) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
 		};
-		QUnit.deepEqual(new RegExp(Echo.Vars.regexps.templateSubstitution).exec("{key:value}"),
+		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key:value}"),
 			["{key:value}", "key", "value"], "Checking templateSubstitution regexp with one key-value pair");
-		QUnit.deepEqual(new RegExp(Echo.Vars.regexps.templateSubstitution).exec("{key}"),
+		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key}"),
 			["{key}", "key", undefined], "Checking templateSubstitution regexp with key and empty value");
-		QUnit.deepEqual(new RegExp(Echo.Vars.regexps.templateSubstitution).exec("string without template"),
+		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("string without template"),
 			null, "Checking templateSubstitution regexp with fake string as parameter");
-		var regexp = new RegExp(Echo.Vars.regexps.templateSubstitution);
+		var regexp = new RegExp(Echo.Utils.regexps.templateSubstitution);
 		var found = [].concat(regexp.exec("{key1:value1} {key2:value2}"),
 				      regexp.exec("{key1:value1} {key2:value2}"));
 		QUnit.deepEqual(found, ["{key1:value1}", "key1", "value1", "{key2:value2}", "key2", "value2"],
@@ -278,17 +278,17 @@ suite.prototype.tests.TestDomMethods = {
 					"(KHTML, like Gecko) Chrome/10.0.648.205 Safari/534.16"
 		};
 		// test regexp for isMobileDevice() method to avoid redefining userAgent
-		QUnit.ok(Echo.Vars.regexps.mobileUA.test(user_agents['android']),
+		QUnit.ok(Echo.Utils.regexps.mobileUA.test(user_agents['android']),
 			"Checking mobile device regexp for Android user agent");
-		QUnit.ok(Echo.Vars.regexps.mobileUA.test(user_agents['iphone']),
+		QUnit.ok(Echo.Utils.regexps.mobileUA.test(user_agents['iphone']),
 			"Checking mobile device regexp for iPhone user agent");
-		QUnit.ok(Echo.Vars.regexps.mobileUA.test(user_agents['opera-mini']),
+		QUnit.ok(Echo.Utils.regexps.mobileUA.test(user_agents['opera-mini']),
 			"Checking mobile device regexp for Opera-Mini user agent");
-		QUnit.ok(!Echo.Vars.regexps.mobileUA.test(user_agents['ie']),
+		QUnit.ok(!Echo.Utils.regexps.mobileUA.test(user_agents['ie']),
 			"Checking mobile device regexp for IE user agent");
-		QUnit.ok(!Echo.Vars.regexps.mobileUA.test(user_agents['firefox']),
+		QUnit.ok(!Echo.Utils.regexps.mobileUA.test(user_agents['firefox']),
 			"Checking mobile device regexp for Firefox user agent");
-		QUnit.ok(!Echo.Vars.regexps.mobileUA.test(user_agents['chrome']),
+		QUnit.ok(!Echo.Utils.regexps.mobileUA.test(user_agents['chrome']),
 			"Checking mobile device regexp for Chrome user agent");
 		// change it if tests is running on mobile devices
 		QUnit.equal(Echo.Utils.isMobileDevice(), false,

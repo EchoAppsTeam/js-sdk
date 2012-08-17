@@ -3,7 +3,7 @@
 var cdnBaseURL = window.Echo && Echo.Loader && Echo.Loader.cdnBaseURL || "http://cdn.echoenabled.com/";
 
 (function() {
-	var id = 'echo-css-fancybox';
+	var id = 'echo-css-fancybox-v3';
 	if ($('#' + id).length) return;
 	var css =
 		"#fancybox-loading { position: fixed; top: 50%; left: 50%; width: 40px; height: 40px; margin-top: -20px; margin-left: -20px; cursor: pointer; overflow: hidden; z-index: 1104; display: none; }" +
