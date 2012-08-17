@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="demo.css" />
+
+	<!-- Default scripts inclusion -->
+	<script type="text/javascript" src="../sdk/loader.js"></script>
+	<script type="text/javascript" src="../sdk/backplane.js"></script>
+	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="../sdk/environment.pack.js"></script>
+	<script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
+	<script type="text/javascript" src="../sdk/identity-server.pack.js"></script>
+	<script type="text/javascript" src="../sdk/app-server.pack.js"></script>
+	<script type="text/javascript" src="../sdk/stream-server/config.js"></script>
+</head>
+<body>
+	<div id="container">
+		<div class="wrapper">
+			<div id="configurator"></div>
+		</div>
+	</div>
+
+	<!-- Client initialization -->
+	<script type="text/javascript">
+        var loadedData = {
+            "appkey": "test.js-kit.com",
+            "target": document.getElementById("configurator"),
+            "fadeTimeout": 1000,
+            "children": {
+                "displaySortOrder": "chronological"
+            },
+            "liveUpdates": false,
+            "plugins": [{
+                "name": "Reply",
+                "components": {
+                    "submitForm": {
+                        "actionString": "What?",
+                        "postingTimeout": 30,
+                        "markers": ["m1", "m2"],
+                        "source": {
+                            "name": "Twitter"
+                        },
+                        "requestMethod": "GET"
+                    }
+                }
+            }],
+            "components": {
+                "item": {
+                    "contentTransformations": {
+                        "text": ["smileys", "newlines"]
+                    },
+                    "limits": {
+                        "maxBodyCharacters": 500,
+                        "maxReTitleLength": 100
+                    }
+                }
+            }
+        };
+
+		var configurator = new Echo.AppServer.Controls.Configurator({
+			"target": document.getElementById("configurator"),
+			"appkey": "test.js-kit.com",
+			"data": loadedData,
+			"startPage": "Echo.StreamServer.Controls.Stream"
+		});
+	</script>
+</body>
+</html>

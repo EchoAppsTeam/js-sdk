@@ -9,6 +9,9 @@ PACK_NAMES = \
 	identity-server/controls.pack \
 	identity-server/plugins.pack \
 	identity-server.pack \
+	app-server/controls.pack \
+	app-server/plugins.pack \
+	app-server.pack \
 	third-party/jquery.pack
 
 PACK_FILES_api = \
@@ -42,6 +45,13 @@ PACK_FILES_identity-server = \
 PACK_FILES_identity-server/controls = $(WEB_SDK_DIR)/identity-server/controls/*.js
 PACK_FILES_identity-server/plugins = $(WEB_SDK_DIR)/identity-server/plugins/*.js
 
+PACK_FILES_app-server = \
+	$(WEB_SDK_DIR)/app-server/controls.pack.js \
+	$(WEB_SDK_DIR)/app-server/plugins.pack.js
+
+PACK_FILES_app-server/controls = $(WEB_SDK_DIR)/app-server/controls/*.js
+PACK_FILES_app-server/plugins = $(WEB_SDK_DIR)/app-server/plugins/*.js
+
 PACK_FILES_third-party/jquery = \
 	$(WEB_SDK_DIR)/third-party/jquery.js \
 	$(WEB_SDK_DIR)/third-party/echo.jquery.noconflict.js \
@@ -74,7 +84,7 @@ clean:
 
 sdk:
 	@echo "Making SDK..."
-	@./tools/assemble.sh > /dev/null
+	@./tools/assemble.sh
 	@cp -r tests web/sdk
 	@echo "Done!"
 
