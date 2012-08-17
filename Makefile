@@ -29,7 +29,8 @@ PACK_FILES_environment = \
 	$(WEB_SDK_DIR)/control.js \
 	$(WEB_SDK_DIR)/product.js \
 	$(WEB_SDK_DIR)/plugin.js \
-	$(WEB_SDK_DIR)/button.js
+	$(WEB_SDK_DIR)/button.js \
+	$(WEB_SDK_DIR)/tabs.js
 
 PACK_FILES_stream-server = \
 	$(WEB_SDK_DIR)/stream-server/controls.pack.js \
