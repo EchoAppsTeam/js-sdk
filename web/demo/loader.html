@@ -29,7 +29,7 @@
 	Echo.Loader.override("canvas.001", "my-stream", {"appkey": "test.echoenabled.com"});
 
 	// init one specific canvas
-	Echo.Loader.init(document.getElementById("canvas.005"));
+	Echo.Loader.init({"canvases": document.getElementById("canvas.005")});
 
 	// init all canvases on the page
 	Echo.Loader.init();

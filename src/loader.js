@@ -23,17 +23,24 @@ Echo.Loader = {
  * @method
  * Function to initialize canvases on the page.
  *
- * @param {Mixed} [canvases] Array of jQuery elements or a single jQuery element, which represents a canvas target. If this param is omitted, Echo Loader will look for the canvases in the DOM structure.
+ * @param {Object} [config] Object which defines an initialization config parameters
+ * @param {Mixed} [config.canvases] Array of jQuery elements or a single jQuery element, which represents a canvas target. If this param is omitted, Echo Loader will look for the canvases in the DOM structure.
+ * @param {Object} [config.target] Target element where Echo Loader should look for the canvases if no canvases were passed in the "config.canvases" field.
 */
-Echo.Loader.init = function(canvases) {
+Echo.Loader.init = function(config) {
+	config = config || {};
 	Echo.Loader._initEnvironment(function() {
+		var canvases = config.canvases;
+
+		// convert a single canvas to the 1-element array
+		// to keep the same contract below in the code
 		if (canvases && !Echo.jQuery.isArray(canvases)) {
 			canvases = [canvases];
 		}
 
 		// if no canvases defined during initialization,
-		// we look for all canvases in the document
-		canvases = canvases || Echo.jQuery(".echo-canvas");
+		// we look for all canvases in the target ('document' by default)
+		canvases = canvases || Echo.jQuery(".echo-canvas", config.target);
 
 		Echo.Loader._initCanvases(canvases);
 	});
