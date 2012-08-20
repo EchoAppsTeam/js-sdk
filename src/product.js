@@ -52,14 +52,16 @@ Echo.ProductView.prototype._initControl = function(controlSpec, controlConfig) {
 	this._destroyControl(controlSpec.name);
 
 	// we need to copy apps config to avoid changes in the common config
+	var parentConfig = this.config.getAsHash();
+	controlConfig.parent = controlConfig.parent || parentConfig;
 	controlConfig = this._normalizeControlConfig(
 		$.extend(true, 
 			{},
-			this._manifest("controls")[controlSpec.name],
+			this._manifest("controls")[controlSpec.name].config,
 			controlConfig
 		)
 	);
-	var Control = Echo.Utils.getComponent(controlSpec.name);
+	var Control = Echo.Utils.getComponent(this._manifest("controls")[controlSpec.name].control);
 	this.controls[controlSpec.name] = new Control(controlConfig);
 	return this.controls[controlSpec.name];
 };
@@ -94,7 +96,7 @@ Echo.ProductView.prototype._updateControlPlugins = function(plugins, updatePlugi
 };
 
 Echo.ProductView.prototype._destroyControl = function(name) {
-	var control = this.get("controls." + name);
+	var control = this.get("controls." + name + ".control");
 	control && control.destroy();
 	delete this.controls[name];
 };
@@ -167,6 +169,15 @@ Echo.Product.prototype.getView = function(name) {
 	return Echo.Utils.getComponent(this.name + "." + name);
 };
 
+Echo.Product.prototype.initView = function(name, config) {
+	var View = this.getView(name);
+	config = config || {};
+	config.parent = config.parent || this.config.getAsHash();
+	// FIXME
+	config.appkey = config.parent.appkey;
+	return new View(config);
+};
+
 (function() {
 
 var list = Echo.Product.prototype._initializers.list.slice(0);
@@ -178,6 +189,7 @@ Echo.Product.prototype._initializers.list = list;
 
 Echo.Product.prototype._initializers.views = function() {
 	var product = this;
+	var parentConfig = this.config.getAsHash();
 	$.each(this._manifest("views"), function(name, view) {
 		view.inherits = view.inherits || Echo.ProductView;
 		Echo.ProductView.create(

@@ -151,7 +151,6 @@ SocialChatter.vars = {"cache": {}};
 SocialChatter.init = function() {
 	var self = this;
 	this.showMessage({"type": "loading", "message": this.labels.get("loading")});
-	this.config.set("eventListQuery", "childrenof: " + this.config.get("eventsTargetURL") + " itemsPerPage:100 state:Untouched,ModeratorApproved children:0");
 	self._initVars();
 	self._initBackplane();
 	self._requestEventsList(function(data) {
@@ -167,6 +166,7 @@ SocialChatter.config = {
 		"serverBaseURL": "http://api.echoenabled.com/v1"
 	},
 	"eventsTargetURL": undefined,
+	"eventListQuery": undefined,
 	"liveUpdates": true,
 	"liveUpdatesTimeout": 60, // request Events updates once per minute
 	"identityManager": undefined,
@@ -175,7 +175,19 @@ SocialChatter.config = {
 
 SocialChatter.views.Main = {};
 
+SocialChatter.views.Main.controls = {};
+
 SocialChatter.views.EventsList = {};
+
+SocialChatter.views.EventsList.controls = {};
+
+SocialChatter.views.PublicEvent = {};
+
+SocialChatter.views.PublicEvent.controls = {};
+
+SocialChatter.views.GreenRoom = {};
+
+SocialChatter.views.GreenRoom.controls = {};
 
 SocialChatter.views.Main.templates = {};
 
@@ -195,11 +207,138 @@ SocialChatter.views.EventsList.templates.main =
 		'<div class="{class:eventsStream}"></div>' +
 	'</div>';
 
-SocialChatter.views.Main.controls = {};
+(function() {
+	var plugins = {
+		"MetadataManager": {
+			"name": "MetadataManager",
+			"controls": [{
+				"marker": "greenroom",
+				"labelMark": "{Label:sendToGreenRoomControl}",
+				"labelUnmark": "{Label:removeFromGreenRoomControl}"
+			}],
+			"enabled": "{Self:isNonVIPUser}"
+		},
+		"ItemConditionalCSSClasses": {
+			"name": "ItemConditionalCSSClasses",
+			"conditions": [{
+				"field": "actor.roles",
+				"value": ["vip"],
+				"className": "echo-item-vip-guest"
+			}]
+		},
+		"UserMetadataManager": {
+			"name": "UserMetadataManager",
+			"controls": [{
+				// we need "moderator" role for VIP as well
+				// since we need to apply markers to some items
+				"roles": "vip,moderator",
+				"labelSet": "{Label:assignVIPRoleControl}",
+				"labelUnset": "{Label:revokeVIPRoleControl}"
+			}],
+			"enabled": "{Self:isNonVIPUser}"
+		}
+	};
+	SocialChatter.views.GreenRoom.controls.Stream = {
+		"control": "Echo.StreamServer.Controls.Stream",
+		"config": {
+			"appkey": null,
+			"query": "childrenof:{Self:event.id}/* state:Untouched,ModeratorApproved markers:greenroom -markers:answered children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"reTag": false,
+			"plugins": [{
+				"name": "Reply",
+				"itemURIPattern": "{Self:event.id}/{id}",
+				"nestedPlugins": [{
+					"name": "SubmitTextareaAutoResize"
+				}]
+			}, {
+				"name": "VipReplies",
+				"copyTo": {
+					"target": "{Self:event.id}"
+				},
+				"view": "private"
+			}, plugins.MetadataManager]
+		}
+	};
 
-SocialChatter.views.Main.controls["Echo.IdentityServer.Controls.Auth"] = {
-	"appkey": null,
-	"identityManager": "{config:identityManager}"
+	SocialChatter.views.PublicEvent.controls.Stream = {
+		"control": "Echo.StreamServer.Controls.Stream",
+		"config": {
+			"appkey": null,
+			"query": "childrenof:{Self:event.id} state:Untouched,ModeratorApproved safeHTML:off user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"reTag": false,
+			"liveUpdatesTimeout": 60,
+			"plugins": [{
+				"name": "Reply",
+				"itemURIPattern": "{Self:event.id}/{id}",
+				"nestedPlugins": [{
+					"name": "SubmitTextareaAutoResize"
+				}]
+			}, {
+				"name": "Like"
+			}, {
+				"name": "Curation",
+				"enabled": "{Self:isNonVIPUser}"
+			}, {
+				"name": "VipReplies",
+				"copyTo": {
+					"target": "{Self:event.id}"
+				},
+				"view": "private"
+			},
+			plugins.ItemConditionalCSSClasses,
+			plugins.MetadataManager,
+			plugins.UserMetadataManager]
+		}
+	};
+
+	SocialChatter.views.PublicEvent.controls.Submit = {
+		"control": "Echo.StreamServer.Controls.Submit",
+		"config": {
+			"appkey": null,
+			"targetURL": "{Self:event.id}",
+			"itemURIPattern": "{Self:event.id}/{id}",
+			"actionString": "Type your question here...",
+			"plugins": [{
+				"name": "SubmitTextareaAutoResize"
+			}, {
+				"name": "SubmitCountdownEvent",
+				"eventEnd": "{Self:event.data.eventEnd}",
+				"enabled": "{Self:event.isOnAir}"
+			}]
+		}
+	};
+
+	SocialChatter.views.PublicEvent.controls.VIPStream = {
+		"control": "Echo.StreamServer.Controls.Stream",
+		"config": {
+			"appkey": null,
+			"query": "childrenof:{Self:event.id} state:Untouched,ModeratorApproved safeHTML:off user.roles:vip user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"reTag": false,
+			"plugins": [{
+				"name": "Reply",
+				"itemURIPattern": "{Self:event.id}/{id}",
+				"nestedPlugins": [{
+					"name": "SubmitTextareaAutoResize"
+				}]
+			}, {
+				"name": "Like"
+			}, {
+				"name": "Curation",
+				"enabled": "{Self:isNonVIPUser}"
+			}, {
+				"name": "VipReplies"
+			},
+			plugins.ItemConditionalCSSClasses]
+		}
+	};
+})();
+
+SocialChatter.views.Main.controls.Auth = {
+	"control": "Echo.IdentityServer.Controls.Auth",
+	"config": {
+		"appkey": null,
+		"identityManager": "{config:identityManager}"
+	}
 };
 
 SocialChatter.views.EventsList.renderers = {};
@@ -266,31 +405,35 @@ SocialChatter.views.EventsList.renderers.eventSubmitLabel = function(element) {
 	return element;
 };
 
-SocialChatter.views.EventsList.controls = {};
-
-SocialChatter.views.EventsList.controls["Echo.StreamServer.Controls.Submit"] = {
-	"appkey": null,
-	"targetURL": "{Self:eventsTargetURL}",
-	"itemURIPattern": "{Self:eventsTargetURL}/{id}",
-	"plugins": [{
-		"name": "SocialChatterEvent"
-	}]
+SocialChatter.views.EventsList.controls.Submit = {
+	"control": "Echo.StreamServer.Controls.Submit",
+	"config": {
+		"appkey": null,
+		"targetURL": "{config:eventsTargetURL}",
+		"itemURIPattern": "{config:eventsTargetURL}/{id}",
+		"plugins": [{
+			"name": "SocialChatterEvent"
+		}]
+	}
 };
 
-SocialChatter.views.EventsList.controls["Echo.StreamServer.Controls.Stream"] = {
-	"appkey": null,
-	"query": "childrenof:{Self:eventsTargetURL} state:Untouched,ModeratorApproved children:0",
-	"reTag": false,
-	"itemControlsOrder": ["SocialChatterEvent", "Edit", "Curation.Delete"],
-	"plugins": [{
-		"name": "SocialChatterEvent"
-	}, {
-		"name": "Edit",
-		"layout": "inline",
-		"nestedPlugins": [{"name": "SocialChatterEvent"}]
-	}, {
-		"name": "Curation"
-	}]
+SocialChatter.views.EventsList.controls.Stream = {
+	"control": "Echo.StreamServer.Controls.Stream",
+	"config": {
+		"appkey": null,
+		"query": "childrenof:{self:eventsTargetURL} state:Untouched,ModeratorApproved children:0",
+		"reTag": false,
+		"itemControlsOrder": ["SocialChatterEvent", "Edit", "Curation.Delete"],
+		"plugins": [{
+			"name": "SocialChatterEvent"
+		}, {
+			"name": "Edit",
+			"layout": "inline",
+			"nestedPlugins": [{"name": "SocialChatterEvent"}]
+		}, {
+			"name": "Moderation"
+		}]
+	}
 };
 
 SocialChatter.templates.main = 
@@ -302,138 +445,10 @@ SocialChatter.templates.main =
 				'<li><a data-toggle="tab" href="#EventsList">{label:eventsList}</a></li>' +
 			'</ul>' +
 			'<div class="{class:tabPanels} tab-content">' +
-				'<div class="{class:EventsList}" id="EventsList" class="tab-pane"></div>' +
+				'<div class="{class:EventsList}" id="EventsList"></div>' +
 			'</div>' +
 		'</div>' +
 	'</div>';
-
-/*SocialChatter.methods._getDefaultAppsConfig = function(config) {
-	var plugins = {
-		"MetadataManager": {
-			"name": "MetadataManager",
-			"controls": [{
-				"marker": "greenroom",
-				"labelMark": "{Label:sendToGreenRoomControl}",
-				"labelUnmark": "{Label:removeFromGreenRoomControl}"
-			}],
-			"enabled": "{Self:isNonVIPUser}"
-		},
-		"ItemConditionalCSSClasses": {
-			"name": "ItemConditionalCSSClasses",
-			"conditions": [{
-				"field": "actor.roles",
-				"value": ["vip"],
-				"className": "echo-item-vip-guest"
-			}]
-		},
-		"UserMetadataManager": {
-			"name": "UserMetadataManager",
-			"controls": [{
-				// we need "moderator" role for VIP as well
-				// since we need to apply markers to some items
-				"roles": "vip,moderator",
-				"labelSet": "{Label:assignVIPRoleControl}",
-				"labelUnset": "{Label:revokeVIPRoleControl}"
-			}],
-			"enabled": "{Self:isNonVIPUser}"
-		}
-	};
-	return {
-		// Green Room tab applications
-		/*"GreenRoom": {
-			"Stream": {
-				"appkey": null,
-				"query": "childrenof:{Self:event.id}/* state:Untouched,ModeratorApproved markers:greenroom -markers:answered children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
-				"reTag": false,
-				"plugins": [{
-					"name": "Reply",
-					"itemURIPattern": "{Self:event.id}/{id}",
-					"nestedPlugins": [{
-						"name": "SubmitTextareaAutoResize"
-					}]
-				}, {
-					"name": "VipReplies",
-					"copyTo": {
-						"target": "{Self:event.id}"
-					},
-					"view": "private"
-				}, plugins.MetadataManager]
-			}
-		},*/
-		// All Events tab applications
-		/*,
-		// all applications from the public event tab
-		"PublicEvent": {
-			"Stream": {
-				"appkey": null,
-				"query": "childrenof:{Self:event.id} state:Untouched,ModeratorApproved safeHTML:off user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
-				"reTag": false,
-				"liveUpdatesTimeout": 60,
-				"plugins": [{
-					"name": "Reply",
-					"itemURIPattern": "{Self:event.id}/{id}",
-					"nestedPlugins": [{
-						"name": "SubmitTextareaAutoResize"
-					}]
-				}, {
-					"name": "Like"
-				}, {
-					"name": "Curation",
-					"enabled": "{Self:isNonVIPUser}"
-				}, {
-					"name": "VipReplies",
-					"copyTo": {
-						"target": "{Self:event.id}"
-					},
-					"view": "private"
-				},
-				plugins.ItemConditionalCSSClasses,
-				plugins.MetadataManager,
-				plugins.UserMetadataManager]
-			},
-			"Submit": {
-				"appkey": null,
-				"targetURL": "{Self:event.id}",
-				"itemURIPattern": "{Self:event.id}/{id}",
-				"actionString": "Type your question here...",
-				"plugins": [{
-					"name": "SubmitTextareaAutoResize"
-				}, {
-					"name": "SubmitCountdownEvent",
-					"eventEnd": "{Self:event.data.eventEnd}",
-					"enabled": "{Self:event.isOnAir}"
-				}]
-			},
-			"VIPStream": {
-				"appkey": null,
-				"query": "childrenof:{Self:event.id} state:Untouched,ModeratorApproved safeHTML:off user.roles:vip user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
-				"reTag": false,
-				"plugins": [{
-					"name": "Reply",
-					"itemURIPattern": "{Self:event.id}/{id}",
-					"nestedPlugins": [{
-						"name": "SubmitTextareaAutoResize"
-					}]
-				}, {
-					"name": "Like"
-				}, {
-					"name": "Curation",
-					"enabled": "{Self:isNonVIPUser}"
-				}, {
-					"name": "VipReplies"
-				},
-				plugins.ItemConditionalCSSClasses]
-			}
-		},
-		// views-independent applications
-		"Main": {
-			"Auth": {
-				"appkey": null,
-				"identityManager": config.identityManager
-			}
-		}
-	};
-};*/
 
 SocialChatter.assemblers = {};
 
@@ -444,7 +459,8 @@ SocialChatter.renderers.authContainer = function(element) {
 
 SocialChatter.renderers.tabs = function(element) {
 	var self = this;
-	var tabs = new Echo.Tabs(element, {
+	var tabs = this.tabs = new Echo.Tabs(element, {
+		"panels": this.dom.get("tabPanels"),
 		"show": function(e) {
 			var panel = self.dom.get("EventsList");
 			self._assembler("EventsList", panel);
@@ -504,21 +520,19 @@ SocialChatter.methods._updateTab = function(config) {
 	}
 	// exit if we don't have access to Green Room tab
 	if (config.name == "GreenRoom" && !this._hasGreenRoomAccess()) return;
-	if (this.tabs && typeof this.tabs.tabIndexById[config.name] == "undefined") {
+	if (this.tabs) {
 		this.tabs.add({
 			"id": config.name,
 			"label": config.name == "PublicEvent"
 				? this.event.data.eventName || this.labels.get("tabPublicEventLabel")
-				: this.labels.get("tabGreenRoomLabel"),
-			"icon": false
-		});
+				: this.labels.get("tabGreenRoomLabel")
+		}, $(this.substitute('<div class="{class:{data:name}}" id="{data:name}"></div>', config)));
 	}
-	var tabsDomContainer = this.dom.get("tabs");
-	config.target = config.target || $("#" + this.tabs.idPrefix + config.name, tabsDomContainer);
-	config.ui = config.ui || {"tab": $(".echo-" + this.tabs.classPrefix + config.name, tabsDomContainer)};
-	if (this.assemblers[config.name]) {
+	var tabsDomContainer = this.dom.get("tabPanels");
+	config.target = config.target || $("#" + config.name, tabsDomContainer);
+	if (this._manifest("assemblers")[config.name]) {
 		$(config.target).empty();
-		this._assembler(config.name, config.target, config.ui);
+		this._assembler(config.name, config.target);
 	}
 };
 
@@ -634,8 +648,7 @@ SocialChatter.assemblers.Auth = function(target) {
 		target.hide();
 		return;
 	}
-	var ViewConstructor = this.getView("Main");
-	var view = new ViewConstructor({
+	var view = this.initView("Main", {
 		"user": this.user,
 		"target": target,
 		"appkey": this.config.get("appkey"),
@@ -643,24 +656,22 @@ SocialChatter.assemblers.Auth = function(target) {
 	});
 	var content = view.dom.render();
 	view._initControl({
-		"name": "Echo.IdentityServer.Controls.Auth"
+		"name": "Auth"
 	}, {
 		"target": view.dom.get("auth")
 	});
 };
 
 SocialChatter.assemblers.EventsList = function(target) {
-	var ViewConstructor = this.getView("EventsList");
-	var view = new ViewConstructor({
+	var view = this.initView("EventsList", {
 		"user": this.user,
 		"target": target,
-		"appkey": this.config.get("appkey"),
 		"type": "eventsList"
 	});
 	var content = view.dom.render();
 	if (this.user.is("admin")) {
 		var submit = view._initControl({
-			"name": "Echo.StreamServer.Controls.Submit"
+			"name": "Submit"
 		}, {
 			"target": view.dom.get("eventSubmit")
 		});
@@ -669,7 +680,7 @@ SocialChatter.assemblers.EventsList = function(target) {
 		});*/
 	}
 	var stream = view._initControl({
-		"name": "Echo.StreamServer.Controls.Stream"
+		"name": "Stream"
 	}, {
 		"target": view.dom.get("eventsStream"),
 		"query": this.config.get("eventListQuery")
@@ -682,7 +693,7 @@ SocialChatter.assemblers.PublicEvent = function(target, ui) {
 	var self = this;
 	var data = this.event.data;
 	var pluginEnabled = !(this.event && this.event.getEventStatus() == "passed");
-	var view = new Echo.SocialChatterView({
+	var view = this.initView("PublicEvent", {
 		"user": this.user,
 		"data": data,
 		"target": target,
@@ -696,17 +707,13 @@ SocialChatter.assemblers.PublicEvent = function(target, ui) {
 		return;
 	}
 	if (this.event.onAir()) 
-		this._initInternalApplication({
-			"view": "PublicEvent",
-			"name": "Submit",
-			"application": "Submit"
+		this._initControl({
+			"name": "Submit"
 		}, {
 			"target": view.dom.get("publicSubmit")
 		});
-	this._initInternalApplication({
-		"view": "PublicEvent",
-		"name": "Stream",
-		"application": "Stream"
+	this._initControl({
+		"name": "Stream"
 	}, {
 		"target": view.dom.get("publicStream"),
 		"plugins": this._updateAppPlugins(
@@ -720,10 +727,8 @@ SocialChatter.assemblers.PublicEvent = function(target, ui) {
 			}]
 		)
 	});
-	this._initInternalApplication({
-		"view": "PublicEvent",
-		"name": "VIPStream",
-		"application": "Stream"
+	this._initControl({
+		"name": "VIPStream"
 	}, {
 		"target": view.dom.get("vipStream"),
 		"plugins": this._updateAppPlugins(
@@ -741,16 +746,14 @@ SocialChatter.assemblers.PublicEvent = function(target, ui) {
 };
 
 SocialChatter.assemblers.GreenRoom = function(target, ui) {
-	var view = new Echo.SocialChatterView({
+	var view = this.initView("GreenRoom", {
 		"user": this.user,
 		"target": target,
 		"type": "greenRoom"
 	});
 	var content = view.dom.render();
-	this._initInternalApplication({
-		"view": "GreenRoom",
-		"name": "Stream",
-		"application": "Stream"
+	this._initControl({
+		"name": "Stream"
 	}, {
 		"target": view.dom.get("vipStream")
 	});
@@ -767,11 +770,11 @@ SocialChatter.events = {
 	"User.onInvalidate": function() {
 		this.refresh();
 	},
-	"SocialChatter.onBeforeEventOpen": function(topic, args) {
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onBeforeEventOpen": function(topic, args) {
 		var obj = args.event.object;
-		self._setPublicEvent(new Echo.SocialChatterEvent(obj.content, obj.id));
-		self._updateTabs();
-		self.tabs.select("PublicEvent");
+		this._setPublicEvent(new Echo.SocialChatterEvent(obj.content, obj.id));
+		this._updateTabs();
+		this.tabs.select("PublicEvent");
 	}
 };
 

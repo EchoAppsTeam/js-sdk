@@ -7,7 +7,7 @@ Echo.Tabs = function(element, config) {
 
 Echo.Tabs.prototype.getPanels = function() {
 	var id = $("a:first", this.element).attr("href");
-	return $(id);
+	return $(id).parent();
 };
 
 Echo.Tabs.prototype._initEvents = function(config) {

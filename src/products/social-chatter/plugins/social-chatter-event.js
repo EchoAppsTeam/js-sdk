@@ -93,8 +93,6 @@ plugin.templates.main = '<div class="{plugin.class:eventContainer}">' +
 
 plugin.fields = ["eventName", "vipName", "vipInstructions", "vipPhoto", "eventDescription", "eventStart", "eventEnd"];
 
-plugin.mandatoryFields = ["eventName", "vipName", "eventStart", "eventEnd"];
-
 plugin.renderers.eventBrief = function(element) {
 	return this.get("eventDisplay", "brief") === "full"
 		? element.hide()
@@ -169,12 +167,16 @@ plugin.renderers.eventButton = function(element) {
 	if ($.isEmptyObject(this.event)) {
 		return element.detach();
 	}
+	var self = this;
 	new Echo.Button(element, {
 		"label": this.labels.get(this.event.getEventStatus() + "EventOpen")
 	});
 	return element.click(function() {
-		plugin.events.publish("SocialChatter.onBeforeEventOpen", {
-			"event": self.component.get("data")
+		self.events.publish({
+			"topic": "onBeforeEventOpen",
+			"data": {
+				"event": self.component.get("data")
+			}
 		});
 	});
 };
@@ -377,25 +379,23 @@ plugin.fields = ["eventName", "vipName", "vipInstructions", "vipPhoto",	"eventDe
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
+		var component = this.component;
 		$.map(plugin.fields, function(field) {
-			this.component.render({"name": field});
+			component.dom.render({"name": field});
 		});
 	}
 };
+
+plugin.mandatoryFields = ["eventName", "vipName", "eventStart", "eventEnd"];
 
 $.extend(plugin.events,
 	Echo.Utils.foldl({}, ["Post", "Edit"], function(action, acc) {
 		acc["Echo.StreamServer.Controls.Submit.on" + action + "Init"] = function(topic, args) {
 			var self = this;
-			if ($.isArray(args.postData)) {
-				$.map(args.postData, function(data) {
-					if (data.field == "content") {
-						data.value = Echo.Utils.object2JSON(self._assembleContent());
-					}
-				});
-			} else {
-				args.postData.content = Echo.Utils.object2JSON(self._assembleContent());
-			}
+			var postType = this.config.get("parent.type", this.component._getASURL("comment"));
+			args.postData.content = [
+				this.component._getActivity("post", postType, Echo.Utils.object2JSON(this._assembleContent()))
+			];
 		};
 	})
 );
@@ -587,7 +587,7 @@ plugin.methods._assembleContent = function() {
 			acc[name] = self.get("eventsTimestamp." + name);
 			return;
 		}
-		acc[name] = self.component.dom.get(name).val();
+		acc[name] = self.dom.get(name).val();
 	});
 };
 

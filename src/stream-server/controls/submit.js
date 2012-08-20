@@ -365,6 +365,7 @@ submit.methods.post = function() {
 	publish("Init", entry);
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
+		"method": this.config.get("requestMethod"),
 		"submissionProxyURL": this.config.get("submissionProxyURL"),
 		"timeout": this.config.get("postingTimeout"),
 		"data": entry,
