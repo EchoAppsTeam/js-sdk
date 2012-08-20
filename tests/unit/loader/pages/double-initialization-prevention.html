@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<base href="../../../..">
+</head>
+<body>
+
+	<div class="echo-canvas" id="canvas" data-canvas-id="test.canvas.001" data-appkey="test.echoenabled.com"></div>
+
+	<script>
+		// link Echo & QUnit objects from the parent window
+		window.Echo = window.parent.Echo;
+		window.QUnit = window.parent.QUnit;
+
+		// cleanup Echo.Loader to allow the new one to take control
+		delete Echo.Loader;
+	</script>
+
+	<script type="text/javascript" src="loader.js"></script>
+
+	<script>
+		// create "test" function which will be called within the parent window
+		window.test = function(callback) {
+			var suite = Echo.Tests.Unit.Loader;
+			var count = {
+				"valid": 2,
+				"invalid": 6
+			};
+			var errors = {
+				"no_canvases_found": [0, 3],
+				"canvas_already_initialized": [0, 3]
+			};
+
+			// check multiple initialization
+			Echo.Events.subscribe({
+				"topic": "Echo.Loader.onError",
+				"handler": function(topic, args) {
+					count.invalid--;
+					errors[args.code][0]++;
+					if (!count.invalid) {
+						QUnit.ok(suite.eventsCountCheck(errors), "Checking if the Loader indicated multiple initialization attmpts (case: double-initialization-prevention)");
+						if (!count.valid) callback();
+					}
+				}
+			});
+
+			var waitForCompletion = function(canvasID, appID) {
+				Echo.Loader.override(canvasID, appID, {"ready": function() {
+					this.destroy();
+					count.valid--;
+					if (!count.valid) {
+						QUnit.ok(true, "Checking if both controls (Stream and Submit) were initialized correctly after a page canvases lookup (case: double-initialization-prevention)");
+						if (!count.invalid) callback();
+					}
+				}});
+			};
+			waitForCompletion("test.canvas.001", "submit");
+			waitForCompletion("test.canvas.001", "stream");
+
+			// multiple initialization attempts,
+			// we expect each canvas to be initialized only once
+			Echo.Loader.init({"target": document.body});
+			Echo.Loader.init({"canvases": document.getElementById("canvas")});
+			Echo.Loader.init({"canvases": Echo.jQuery("#canvas", document.body)});
+			Echo.Loader.init({"canvases": Echo.jQuery(".echo-canvas", document.body)});
+		};
+	</script>
+</body>
+</html>

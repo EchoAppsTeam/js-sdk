@@ -10,7 +10,9 @@ var suite = Echo.Tests.Unit.Loader = function() {};
 suite.prototype.info = {
 	"className": "Echo.Loader",
 	"functions": [
-		"download"
+		"init",
+		"download",
+		"override"
 	]
 };
 
@@ -22,6 +24,7 @@ suite.prototype.cases = {};
 
 suite.prototype.tests.resourceDownloadingTests = {
 	"config": {
+		"async": true,
 		"testTimeout": 15000
 	},
 	"check": function() {
@@ -156,9 +159,48 @@ suite.prototype.cases.loadingSameScriptMultipleTimes = function(callback) {
 // checking canvases initialization scenarios
 
 suite.prototype.tests.canvasesInitializationTests = {
+	"config": {
+		"async": true
+	},
 	"check": function() {
-		QUnit.ok(true, "Checking canvases initialization");
+		var self = this;
+		this.sequentialAsyncTests($.map([
+			"simple-valid-canvas",
+			"valid-and-invalid-canvases",
+			"double-initialization-prevention",
+			"different-initialization-schemas",
+			"multiple-apps-canvas",
+			"app-config-overrides"
+		], function(name) {
+			return self.loaderIframeTest(name);
+		}));
 	}
+};
+
+// dynamic interface with utils functions
+
+suite.prototype.loaderIframeTest = function(name) {
+	return function(callback) {
+		var iframe = $('<iframe name="' + name + '" style="width:0px; height: 0px; border: 0px; visibility:hidden; display:none;"></iframe>');
+		$(document.body).append(iframe);
+		iframe.on("load", function() {
+			iframe.get(0).contentWindow.test(callback);
+		});
+		iframe.attr("src", "unit/loader/pages/" + name + ".html");
+	};
+};
+
+// static interface with utils functions (to be accessible within nested iframes)
+
+suite.eventsCountCheck = function(events) {
+	var success = true;
+	$.each(events, function(id, event) {
+		if (event[0] != event[1]) {
+			success = false;
+			return false; // break
+		}
+	});
+	return success;
 };
 
 })(Echo.jQuery);

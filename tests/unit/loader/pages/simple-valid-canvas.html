@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<base href="../../../..">
+</head>
+<body>
+
+	<div class="echo-canvas" data-canvas-id="test.canvas.001" data-appkey="test.echoenabled.com"></div>
+
+	<script>
+		// link Echo & QUnit objects from the parent window
+		window.Echo = window.parent.Echo;
+		window.QUnit = window.parent.QUnit;
+
+		// cleanup Echo.Loader to allow the new one to take control
+		delete Echo.Loader;
+	</script>
+
+	<script type="text/javascript" src="loader.js"></script>
+
+	<script>
+		// create "test" function which will be called within the parent window
+		window.test = function(callback) {
+			var expecting = 2;
+			var waitForCompletion = function(canvasID, appID) {
+				Echo.Loader.override(canvasID, appID, {"ready": function() {
+					this.destroy();
+					expecting--;
+					if (!expecting) {
+						QUnit.ok(true, "Checking if both controls (Stream and Submit) were initialized correctly after a page canvases lookup (case: simple-valid-canvas)");
+						callback();
+					}
+				}});
+			};
+			waitForCompletion("test.canvas.001", "submit");
+			waitForCompletion("test.canvas.001", "stream");
+			Echo.Loader.init({"target": document.body});
+		};
+	</script>
+</body>
+</html>
