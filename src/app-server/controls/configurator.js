@@ -36,8 +36,8 @@ configurator.templates.main =
 configurator.templates.formRow =
 	'<div class="{class:form-row}">' +
 		'<div class="{class:name}">{data:name}</div>' +
-		'<div class="{class:field}"></div>' +
 		'<div class="{class:description}">{data:description}</div>' +
+		'<div class="{class:field}"></div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
 
@@ -135,6 +135,9 @@ configurator.methods._form = function(config, data, depth) {
 		// XXXX
 		spec.description = spec.description || (spec.name + " " + spec.type);
 		var row = $(self.substitute(self.templates.formRow, spec));
+		if (type === "nestedForm") {
+			row.addClass(self.cssPrefix + "form-row-group");
+		}
 		form.append(row);
 		self["_" + type](row.find("." + self.cssPrefix + "field"), spec, value, depth);
 	});
@@ -198,16 +201,20 @@ configurator.methods._nestedPage = function(element, spec, value, depth) {
 };
 
 configurator.css =
-	'.{class:page} { border: 1px solid gray; padding: 10px 0px; margin: 5px; overflow: hidden; }' +
+	'.{class:page} { border: 1px solid #808080; margin: 5px; }' +
 	'.{class:form} { clear: both; }' +
 	'.{class:form} input { margin: 0px; width: 120px; }' +
 	'.{class:form-0} { margin-left: 0px; }' +
-	'.{class:form-1} { margin-left: 20px; margin-top: 20px; }' +
-	'.{class:form-row} { border-bottom: 1px solid gray; padding: 5px 10px; }' +
-	'.{class:form-1} .{class:form-row}:last-child { border-bottom: 0px; }' +
+	'.{class:form-1} { margin-left: 20px; border: 1px solid #CCCCCC; border-right: 0px; border-bottom: 0px; }' +
+	'.{class:form-row} { border-bottom: 1px solid #808080; padding: 5px 10px; }' +
+	'.{class:form-row}:last-child { border-bottom: 0px; }' +
+	'.{class:form-1} .{class:form-row} { border-color: #CCCCCC; }' +
 	'.{class:form-row} .{class:name} { width: 25%; float: left; }' +
 	'.{class:form-row} .{class:field} { width: 50%; float: left; }' +
-	'.{class:form-row} .{class:description} { width: 25%; float: right; color: gray; }';
+	'.{class:form-row} .{class:description} { width: 25%; float: right; color: gray; }' +
+	'.{class:form-row-group} { padding-right: 0px; padding-bottom: 0px; }' +
+	'.{class:form-row-group} > .{class:field} { width: 100%; float: none; }' +
+	'.{class:form-row-group} > .{class:description} { width: 75%; float: left; margin-bottom: 10px; }';
 
 Echo.Control.create(configurator);
 
