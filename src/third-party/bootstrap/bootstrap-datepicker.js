@@ -61,7 +61,7 @@
 		
 		show: function(e) {
 			this.picker.show();
-			this.height = this.component ? this.component.outerHeight() : this.element.outerHeight();
+			this.height = this.component ? this.component.outerHeight() : this.element[0].offsetHeight;
 			this.place();
 			$(window).on('resize', $.proxy(this.place, this));
 			if (e ) {

@@ -210,17 +210,19 @@ plugin.component.renderers.authorName = plugin.component.renderers.body = functi
 
 plugin.methods._getFullDate = function(timestamp) {
 	var d = new Date(timestamp);
-	return (timestamp);
-//		? $.datepicker.formatDate(this.config.get("dateFormat"), d)
-//		+ " " + $.datepicker.formatTime(this.config.get("timeFormat"),  {
-//			"hour": d.getHours(),
-//			"minute": d.getMinutes(),
-//			"second": d.getSeconds(),
-//			"millisec": d.getMilliseconds()
-//		}, {
-//			"ampm": this.config.get("ampm")
-//		})
-//		: this.labels.get("unknown"));
+	var date = {
+		"h": d.getHours(),
+		"i": d.getMinutes(),
+		"d": d.getDate(),
+		"m": d.getMonth() + 1,
+		"yyyy": d.getFullYear()
+	};
+	date.dd = (date.d < 10 ? '0' : '') + date.d;
+	date.mm = (date.m < 10 ? '0' : '') + date.m;
+	date.ii = (date.i < 10 ? '0' : '') + date.i;
+	date.hh = (date.h < 10 ? '0' : '') + date.h;
+
+	return timestamp ? date.mm + "/" + date.dd + "/" + date.yyyy + " " +date.hh + ":" + date.ii : this.labels.get("unknown");
 };
 
 plugin.methods._assembleButton = function() {
@@ -416,87 +418,131 @@ plugin.component.renderers.text = function(element) {
 	return element.val(".").detach();
 };
 
-plugin.renderers.eventInfo = function(element, extra) {
-	extra = extra || {};
-	var type = extra.type;
-	var event = new Echo.SocialChatterEvent(this.component.get("data.object.content"));
-	var value = event.data && event.data[type] && (type == "eventStart" || type == "eventEnd")
-		? this._getFullDate(event.data[type])
-		: event.data[type] || "";
-	if (!$.isEmptyObject(event)) {
-		this.dom.get(type)
-			.iHint({
-				"text": this.labels.get(type + "Hint"),
-				"className": "echo-secondaryColor"
-			})
-			.val($.trim(Echo.Utils.stripTags(value || "")))
-			.blur();
-	} else {
-		this.dom.get(type).detach();
-	}
-	return element;
-};
+//plugin.renderers.eventInfo = function(element, extra) {
+//	extra = extra || {};
+//	var type = extra.type;
+//	var event = new Echo.SocialChatterEvent(this.component.get("data.object.content"));
+//	var value = event.data && event.data[type] && (type == "eventStart" || type == "eventEnd")
+//		? this._getFullDate(event.data[type])
+//		: event.data[type] || "";
+//	if (!$.isEmptyObject(event)) {
+//		this.dom.get(type)
+//			.iHint({
+//				"text": this.labels.get(type + "Hint"),
+//				"className": "echo-secondaryColor"
+//			})
+//			.val($.trim(Echo.Utils.stripTags(value || "")))
+//			.blur();
+//	} else {
+//		this.dom.get(type).detach();
+//	}
+//	return element;
+//};
 
 plugin.renderers.eventSubmitNotice = function(element) {
 	return element.html('<span>' + this.labels.get("eventSubmitNotice") + '</span>');
 };
 
-$.map(["eventTimeStart", "eventTimeEnd"], function(field) {
-	plugin.renderers[field] = function(element) {
-		var self = this;
-		this.dom.render({"name": "eventInfo", "extra": {"type": field}});
-		element.timepicker({
-			minuteStep: 1,
-			secondStep: 5,
-			showInputs: false
-		});
-		return element;
-	};
-});
+$.map(["eventDateStart", "eventDateEnd" ,"eventTimeStart", "eventTimeEnd"], function(field) {
 
-$.map(["eventDateStart", "eventDateEnd"], function(field) {
+	var toMillisecond = function(hours, minutes, seconds) {
+		hours = hours || 0;
+		minutes = minutes || 0;
+		seconds = seconds || 0;
+		return (seconds + 60 * minutes + 60 * 60 * hours) * 1000;
+	};
+
+	var formatDatetime = function(timestasmp) {
+		var dateObj = timestasmp ? new Date(timestasmp) : new Date();
+		var date = {
+			"h": dateObj.getHours(),
+			"i": dateObj.getMinutes(),
+			"d": dateObj.getDate(),
+			"m": dateObj.getMonth() + 1,
+			"yyyy": dateObj.getFullYear()
+		};
+		date.dd = (date.d < 10 ? '0' : '') + date.d;
+		date.mm = (date.m < 10 ? '0' : '') + date.m;
+		date.ii = (date.i < 10 ? '0' : '') + date.i;
+		date.hh = (date.h < 10 ? '0' : '') + date.h;
+		return {
+			"time": date.hh + ":" + date.ii,
+			"date": date.mm + "/" + date.dd + "/" + date.yyyy
+		};
+	};
+
 	plugin.renderers[field] = function(element) {
 		var self = this;
 		this.dom.render({"name": "eventInfo", "extra": {"type": field}});
-//		var datepicker = $("#ui-datepicker-div");
 		var event = new Echo.SocialChatterEvent(this.component.get("data.object.content"));
-		if (event.data[field]) {
-			this.set("eventsTimestamp." + field, event.data[field]);
+		var normField = field.replace(/(time)|(date)/i, "");
+
+		var checkDateInterval = function() {
+			var start = self.get("eventsTimestamp.eventStart");
+			var end = self.get("eventsTimestamp.eventEnd");
+			if (start > end) {
+				var datetime = formatDatetime(start);
+				self.dom.get("eventDateEnd").val(datetime.date);
+				self.dom.get("eventTimeEnd").val(datetime.time);
+			}
+		};
+
+		var defaultDate;
+		if (event.data[normField]) {
+			defaultDate = new Date(event.data[normField]);
+			this.set("eventsTimestamp." + normField, event.data[normField]);
+		} else {
+			defaultDate = new Date();
+			this.set("eventsTimestamp." + normField, defaultDate.valueOf());
 		}
 
-		element.datepicker({
-			format: 'mm/dd/yyyy'
-		});
+		var time = toMillisecond(defaultDate.getHours(), defaultDate.getMinutes());
+		self.set("eventsTime." + normField, time);
+		self.set("eventsDate." + normField, defaultDate.valueOf() - time);
 
-//		var datetimepickerConfig = {
-//			"ampm": this.config.get("ampm"),
-//			"dateFormat": this.config.get("dateFormat"),
-//			"timeFormat": this.config.get("timeFormat"),
-//			"onSelect": function() {
-//				self.set("eventsTimestamp." + field, element.datetimepicker("getDate").getTime());
-//			},
-//			"onClose": function(date) {
-//				var element = field === "eventDateStart"
-//					? self.dom.get("eventDateEnd")
-//					: self.dom.get("eventDateStart");
-//				if (element.val()) {
-//					var startDate = self.get("eventsTimestamp.eventDateStart");
-//					var endDate = self.get("eventsTimestamp.eventDateEnd");
-//					if (startDate > endDate) {
-//						element.val(date);
-//					}
-//				} else {
-//					element.val(date);
-//				}
-//			}
-//		};
-//		element.datetimepicker(datetimepickerConfig)
-//		.keydown(function(e) {
-//			var code = e.keyCode || e.which;
-//			if (code ^ 9 && code ^ 13)
-//				return false;
-//		});
-//		!datepicker.parents(".datepicker-ui").length && datepicker.wrap('<div class="datepicker-ui"></div>');
+		var datetime = formatDatetime(defaultDate);
+
+		if (field === "eventDateStart" || field === "eventDateEnd") {
+			element.val(datetime.date)
+				.datepicker()
+				.on("changeDate", function(ev) {
+					self.set("eventsDate." + normField, ev.date.valueOf());
+					self.set("eventsTimestamp." + normField, self.get("eventsTime." + normField) + self.get("eventsDate." + normField));
+					checkDateInterval();
+				}).on("change", function() {
+					console.log("change");
+					checkDateInterval();
+				});
+		} else {
+			element.val(datetime.time).timepicker({
+				"minuteStep": 1,
+				"secondStep": 5,
+				"showInputs": false,
+				"showMeridian": false,
+				"defaultTime": "value"
+			}).on("change", function() {
+					var time = $(this).val();
+					var timeArray = time.split(':');
+					var hour = parseInt(timeArray[0], 10) || 0;
+					var minute = parseInt(timeArray[1], 10) || 0;
+
+					if (hour > 23) {
+						hour = 23;
+					} else if (hour < 0) {
+						hour = 0;
+					}
+
+					if (minute < 0) {
+						minute = 0;
+					} else if (minute > 59) {
+						minute = 59;
+					}
+					var millisecond = toMillisecond(hour, minute);
+					self.set("eventsTime." + normField, millisecond);
+					self.set("eventsTimestamp." + normField, self.get("eventsTime." + normField) + self.get("eventsDate." + normField));
+					checkDateInterval();
+			});
+		}
 		return element;
 	};
 });
@@ -560,9 +606,9 @@ plugin.methods._postAction = function() {
 	}
 };
 
-plugin.methods._getFullDate = function(timestamp) {
-	var d = new Date(timestamp);
-	return (timestamp);
+//plugin.methods._getFullDate = function(timestamp) {
+//	var d = new Date(timestamp);
+//	return (timestamp
 //		? $.datepicker.formatDate(this.config.get("dateFormat"), d)
 //		+ " " + $.datepicker.formatTime(this.config.get("timeFormat"),  {
 //			"hour": d.getHours(),
@@ -573,7 +619,7 @@ plugin.methods._getFullDate = function(timestamp) {
 //			"ampm": this.config.get("ampm")
 //		})
 //		: this.labels.get("unknown"));
-};
+//};
 
 plugin.css =
 	'.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }' +
