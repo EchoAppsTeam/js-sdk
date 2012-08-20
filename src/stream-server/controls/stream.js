@@ -1,3 +1,12 @@
+/**
+ * @class Echo.StreamServer.Controls.Stream
+ * Echo Stream control
+ * @extends Echo.Control
+ * @inheritdoc Echo.Control
+ *
+ * @constructor
+ * @param {Object} config Configuration options
+ */
 var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 
 stream.vars = {
