@@ -34,8 +34,9 @@ Echo.Loader.init = function(config) {
 
 		// convert a single canvas to the 1-element array
 		// to keep the same contract below in the code
-		if (canvases && !Echo.jQuery.isArray(canvases)) {
-			canvases = [canvases];
+		if (canvases && !Echo.jQuery.isArray(canvases) &&
+			!(canvases instanceof Echo.jQuery)) {
+				canvases = [canvases];
 		}
 
 		// if no canvases defined during initialization,
@@ -119,24 +120,39 @@ Echo.Loader._initCanvases = function(canvases) {
 	var collection = [];
 	Echo.jQuery.map(canvases, function(target) {
 		target = Echo.jQuery(target);
-		var id = target.attr("data-canvas-id");
-		var appkey = target.attr("data-appkey");
 
-		if (!id || !appkey) {
-			Echo.Loader._log({
-				"type": "error",
-				"message": "Canvas with invalid configuration found",
-				"args": {"target": target}
+		// check if the canvas was already initialized
+		if (target.data("initialized")) {
+			Echo.Loader._error({
+				"args": {"target": target},
+				"code": "canvas_already_initialized",
+				"message": "Canvas has been initialized already"
 			});
 			return;
 		}
+
+		var id = target.data("canvas-id");
+		var appkey = target.data("appkey");
+
+		if (!id || !appkey) {
+			Echo.Loader._error({
+				"args": {"target": target},
+				"code": "invalid_canvas_config",
+				"message": "Canvas with invalid configuration found"
+			});
+			return;
+		}
+
+		// define initialized state for the canvas
+		// to prevent multiple initalization of the same canvas
+		target.data("initialized", true);
 
 		collection.push({"id": id, "appkey": appkey, "target": target});
 	});
 
 	if (!collection.length) {
-		Echo.Loader._log({
-			"type": "warning",
+		Echo.Loader._error({
+			"code": "no_canvases_found",
 			"description": "No canvases found on the page..."
 		});
 		return;
@@ -158,10 +174,10 @@ Echo.Loader._initCanvases = function(canvases) {
 
 Echo.Loader._initCanvas = function(canvas) {
 	if (!canvas.config.apps || !canvas.config.apps.length) {
-		Echo.Loader._log({
-			"type": "warning",
-			"message": "Canvas with no applications",
-			"args": {"canvas": canvas}
+		Echo.Loader._error({
+			"args": {"canvas": canvas},
+			"code": "canvas_with_no_apps",
+			"message": "Canvas with no applications"
 		});
 		return;
 	}
@@ -197,10 +213,10 @@ Echo.Loader._initApplications = function(canvas) {
 	Echo.jQuery.each(canvas.config.apps, function(id, app) {
 		app.config = app.config || {};
 		if (!app.component || !app.script || !app.id) {
-			Echo.Loader._log({
-				"type": "error",
-				"message": "Unable to init an app, config is incomplete",
-				"args": {"app": app}
+			Echo.Loader._error({
+				"args": {"app": app},
+				"code": "incomplete_app_config",
+				"message": "Unable to init an app, config is incomplete"
 			});
 			return;
 		}
@@ -222,10 +238,10 @@ Echo.Loader._initApplications = function(canvas) {
 			Echo.jQuery.each(canvas.config.apps, function(id, app) {
 				var application = Echo.Utils.getComponent(app.component);
 				if (!application) {
-					Echo.Loader._log({
-						"type": "error",
-						"message": "Unable to init an app, no suitable class found",
-						"args": {"app": app}
+					Echo.Loader._error({
+						"args": {"app": app},
+						"code": "no_suitable_app_class",
+						"message": "Unable to init an app, no suitable class found"
 					});
 					return;
 				}
@@ -264,19 +280,19 @@ Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
 		"requests": Echo.Utils.object2JSON(requests)
 	}, function(response) {
 		if (!response || response.result === "error") {
-			Echo.Loader._log({
-				"type": "error",
-				"message": "Unable to retrieve Canvas configs from AppServer",
-				"args": response
+			Echo.Loader._error({
+				"args": response,
+				"code": "unable_to_retrieve_app_config",
+				"message": "Unable to retrieve Canvas configs from AppServer"
 			});
 			return;
 		}
 		var configs = Echo.Utils.foldl({}, response, function(data, acc, id) {
 			if (!data || data.result === "error") {
-				Echo.Loader._log({
-					"type": "error",
-					"message": "Unable to retrieve Canvas config from AppServer",
-					"args": data
+				Echo.Loader._error({
+					"args": data,
+					"code": "unable_to_retrieve_app_config",
+					"message": "Unable to retrieve Canvas config from AppServer"
 				});
 				return;
 			}
@@ -284,10 +300,10 @@ Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
 			try {
 				config = Echo.jQuery.parseJSON(data.value);
 			} catch(exception) {
-				Echo.Loader._log({
-					"type": "error",
-					"message": "Unable to parse JSON config",
-					"args": [data, exception]
+				Echo.Loader._error({
+					"args": [data, exception],
+					"code": "unable_to_parse_app_config",
+					"message": "Unable to parse JSON config"
 				});
 			}
 			if (config) {
@@ -298,8 +314,12 @@ Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
 	}, "jsonp");
 };
 
-Echo.Loader._log = function(data) {
-	Echo.Utils.log(Echo.jQuery.extend(data, {"component": "Echo.Loader"}));
+Echo.Loader._error = function(data) {
+	Echo.Events.publish({
+		"topic": "Echo.Loader.onError",
+		"data": data
+	});
+	Echo.Utils.log(Echo.jQuery.extend(data, {"type": "error", "component": "Echo.Loader"}));
 };
 
 })();
