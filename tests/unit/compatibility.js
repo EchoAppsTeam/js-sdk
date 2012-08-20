@@ -76,7 +76,7 @@
 			});
 
 			$.each(ids, function(key, val) {
-				self.config.target.append('<iframe src="tools/' + key + '.html" name="' + val + '"></iframe>');
+				self.config.target.append('<iframe src="unit/compatibility/' + key + '.html" name="' + val + '"></iframe>');
 			});
 		}
 	}
