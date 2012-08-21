@@ -27,12 +27,12 @@ Echo.Plugin.create = function(manifest) {
 	// prevent multiple re-definitions
 	if (plugin) return plugin;
 
-	var _constructor = function(config) {
+	var constructor = function(config) {
 		if (!config || !config.component) return;
 		var self = this;
 		this.name = manifest.name;
 		this.component = config.component;
-		this.cssClass = this.component.cssPrefix + "plugin-" + manifest.name;
+		this.cssClass = this.component.get("cssPrefix") + "plugin-" + manifest.name;
 		this.cssPrefix = this.cssClass + "-";
 
 		// define extra css class for the control target
@@ -40,9 +40,10 @@ Echo.Plugin.create = function(manifest) {
 
 		this._init(["config"]);
 	};
-	_constructor.manifest = manifest;
-	_constructor.dependencies = manifest.dependencies;
-	Echo.Utils.inherit(_constructor, Echo.Plugin);
+	constructor.manifest = manifest;
+	constructor.dependencies = manifest.dependencies;
+
+	Echo.Utils.inherit(constructor, Echo.Plugin);
 
 	// copy destroy method to the list of methods
 	if (manifest.destroy) {
@@ -50,14 +51,14 @@ Echo.Plugin.create = function(manifest) {
 	}
 
 	if (manifest.methods) {
-		$.extend(_constructor.prototype, manifest.methods);
+		$.extend(constructor.prototype, manifest.methods);
 	}
 	Echo.Utils.setNestedValue(
 		window,
 		Echo.Plugin._getClassName(manifest.name, manifest.component.name),
-		_constructor
+		constructor
 	);
-	return _constructor;
+	return constructor;
 };
 
 /**
@@ -120,9 +121,9 @@ Echo.Plugin.prototype.init = function() {
 		"subscriptions",
 		"labels",
 		"renderers",
-		"dom"
+		"dom",
+		"launcher"
 	]);
-	this._manifest("init").call(this);
 };
 
 /**
@@ -290,12 +291,12 @@ Echo.Plugin.prototype._initializers = {};
 
 Echo.Plugin.prototype._initializers.css = function() {
 	if (!this._manifest("css")) return;
-	var parts = [this.component.name, "Plugins", this.name];
+	var parts = [this.component.get("name"), "Plugins", this.name];
 	Echo.Utils.addCSS(this.substitute(this._manifest("css")), parts.join("."));
 };
 
 Echo.Plugin.prototype._initializers.labels = function() {
-	var namespace = this.component.name + ".Plugins." + this.name;
+	var namespace = this.component.get("name") + ".Plugins." + this.name;
 
 	// define default language var values with the lowest priority available
 	Echo.Labels.set($.extend({}, this._manifest("labels")), namespace, true);
@@ -331,7 +332,7 @@ Echo.Plugin.prototype._initializers.renderers = function() {
 };
 
 Echo.Plugin.prototype._initializers.dom = function() {
-	var parentDOM = this.component.dom;
+	var parentDOM = this.component.get("dom");
 	var prefix = "plugin-" + this.name + "-";
 	this.dom = {
 		"clear": function() {
@@ -356,6 +357,10 @@ Echo.Plugin.prototype._initializers.dom = function() {
 			parentDOM.render(args);
 		}
 	};
+};
+
+Echo.Plugin.prototype._initializers.launcher = function() {
+	this._manifest("init").call(this);
 };
 
 Echo.Plugin._getClassName = function(name, component) {

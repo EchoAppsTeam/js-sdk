@@ -1077,7 +1077,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"ready": callback
 	}, parentConfig.item);
 	delete parentConfig.item;
-	new Echo.StreamServer.Controls.Stream.Item(config);
+	return new Echo.StreamServer.Controls.Stream.Item(config);
 };
 
 stream.methods._updateItem = function(entry) {
