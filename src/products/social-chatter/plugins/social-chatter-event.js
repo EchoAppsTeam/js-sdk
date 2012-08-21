@@ -171,7 +171,7 @@ plugin.renderers.eventButton = function(element) {
 	new Echo.Button(element, {
 		"label": this.labels.get(this.event.getEventStatus() + "EventOpen")
 	});
-	return element.click(function() {
+	return element.addClass("btn btn-small").click(function() {
 		self.events.publish({
 			"topic": "onBeforeEventOpen",
 			"data": {
@@ -270,7 +270,8 @@ plugin.css =
 	'.echo-products-socialchatter-view-eventsStream .{plugin.class:avatar}, .echo-products-socialchatter-view-eventsStream .{plugin.class:avatar} img { height: auto !important; }' +
 	'.echo-products-socialchatter-view-eventsStream .{plugin.class:modeSwitch}, .echo-products-socialchatter-view-eventsStream .{plugin.class:status} { display: none !important; }' +
 	'.echo-products-socialchatter-view-eventsStream .{plugin.class:subcontainer} { margin-left: 10px; }' +
-	'.echo-event-onair-label { color: green; font-weight: bold; }';
+	'.echo-event-onair-label { color: green; font-weight: bold; }' +
+	'.{plugin.class:eventButton} .echo-label { font-size: 12px; }';
 
 Echo.Plugin.create(plugin);
 
@@ -416,6 +417,10 @@ plugin.component.renderers.text = function(element) {
 	// to satisfy submission code requirements,
 	// this value would be re-written by the plugin later
 	return element.val(".").detach();
+};
+
+plugin.component.renderers.postButton = function(element) {
+	return this.parentRenderer("postButton", arguments).addClass("btn btn-small");
 };
 
 plugin.renderers.eventInfo = function(element, extra) {

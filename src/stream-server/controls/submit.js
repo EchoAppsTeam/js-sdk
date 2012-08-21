@@ -258,7 +258,7 @@ submit.renderers.postButton = function(element) {
 			"label": self.labels.get("post")
 		},
 		"posting": {
-			"icon": "icon-waiting",
+			"icon": "echo-icon-waiting",
 			"disabled": true,
 			"label": self.labels.get("posting")
 		}

@@ -198,7 +198,7 @@ SocialChatter.views.Main.templates.main =
 SocialChatter.views.EventsList.templates.main =
 	'<div class="{class:eventListContainer}">' +
 		'<div class="{class:newEventButton}">' +
-			'<div class="{class:eventSubmitLabel} echo-linkColor">{label:newEvent}</div>' +
+			'<button class="{class:eventSubmitLabel} echo-linkColor"></button>' +
 		'</div>' +
 		'<div class="{class:eventSubmitContainer}">' +
 			'<div class="{class:eventSubmit}"></div>' +
@@ -206,11 +206,13 @@ SocialChatter.views.EventsList.templates.main =
 		'<div class="{class:eventsStream}"></div>' +
 	'</div>';
 
+SocialChatter.views.EventsList.labels = {
+	"scheduleEvent": "Schedule new event"
+};
+
 SocialChatter.views.PublicEvent.labels = {
-	"newEvent": "Schedule new event",
 	"askQuestion": "Ask your question to",
 	"answersFrom": "Answers from",
-	"scheduleEvent": "Schedule new event",
 	"chatClosesIn": "VIP Chat closes in: ",
 	"chatOpensIn": "<b>Live chat starts in:</b> <br><br>",
 	"passedEventViewNotice": "<b>Note:</b> this event is over. You are viewing chat archive.",
@@ -468,7 +470,7 @@ SocialChatter.views.EventsList.renderers.eventSubmitLabel = function(element) {
 		new Echo.Button(element, {
 			"label": this.labels.get("scheduleEvent")
 		});
-		element.click(function() {
+		element.addClass("btn btn-small").click(function() {
 			self.dom.get("eventSubmitContainer").slideToggle();
 		});
 	} else {
@@ -868,7 +870,7 @@ Echo.Utils.foldl(SocialChatter.events, ["SocialChatter.onEventStart", "SocialCha
 });
 
 SocialChatter.views.EventsList.css =
-	'.{class:newEventButton} .echo-button-v3 .ui-state-default, .echo-item-eventButtonContainer .echo-button-v3 .ui-state-default { width: auto; padding: 3px 15px; }' +
+	'.{class:newEventButton} .echo-sdk-button .ui-state-default, .echo-item-eventButtonContainer .echo-button-v3 .ui-state-default { width: auto; padding: 3px 15px; }' +
 	'.{class:eventListContainer} { margin-left: 15px; margin-right: 15px; }' +
 	'.{class:eventListContainer} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
 	'.{class:eventSubmitContainer} { display: none; }' +
@@ -932,7 +934,7 @@ SocialChatter.css =
 	'.echo-ui .echo-tabs-header li.ui-state-default { background-color: #E6E6E6; }' +
 	'.echo-ui .echo-tabs-header li.ui-state-active { background-color: #FFFFFF; }' +
 	// fancy buttons
-	'.echo-item-eventButtonContainer .echo-button-v3 .ui-state-default, .{class:newEventButton} .echo-button-v3 .ui-state-default, .echo-streamserver-controls-submit-controls .echo-button-v3 .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
+	'.echo-item-eventButtonContainer .echo-sdk-button .ui-state-default, .{class:newEventButton} .echo-button-v3 .ui-state-default, .echo-streamserver-controls-submit-controls .echo-button-v3 .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
 	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-nav li { border: 1px solid #DDDDDD; border-bottom: none; }' +
 	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-nav li a { padding: 7px 15px 5px 15px; font-size: 16px; }' +
 	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-panel { border-radius: 0px; border-left: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; }' +

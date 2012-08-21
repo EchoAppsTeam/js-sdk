@@ -25,14 +25,14 @@ Echo.Button = function(element, params) {
 	if (!element) return;
 	params = params || {};
 	this.element = element;
-	this.element.addClass("echo-button-v3");
-	$("<div>").appendTo(element).addClass("label");
+	this.element.addClass("echo-sdk-button");
+	$("<div>").appendTo(element).addClass("echo-label");
 	this.update({
 		"label": params.label || this.element.text(),
 		"icon": params.icon || "",
 		"disabled": params.disabled || !!this.element.attr('disabled')
 	});
-	Echo.Utils.addCSS(this._css, "echo-button-v3");
+	Echo.Utils.addCSS(this._css, "echo-sdk-button");
 };
 
 /**
@@ -86,13 +86,13 @@ Echo.Button.prototype.update = function(params) {
  */
 
 Echo.Button.prototype.render = function() {
-	$(".label", this.element).text(this.label);
-	var iconElement = $(".icon", this.element);
+	$(".echo-label", this.element).text(this.label);
+	var iconElement = $(".echo-icon", this.element);
 	if (this.icon) {
 		if (iconElement.length) {
-			iconElement.removeClass().addClass(this.icon + " icon");
+			iconElement.removeClass().addClass(this.icon + " echo-icon");
 		} else {
-			$("<div>").addClass(this.icon + " icon").prependTo(this.element);
+			$("<div>").addClass(this.icon + " echo-icon").prependTo(this.element);
 		}
 	} else {
 		iconElement.remove();
@@ -101,9 +101,9 @@ Echo.Button.prototype.render = function() {
 };
 
 Echo.Button.prototype._css =
-	".echo-button-v3 { padding: 3px 12px; border: 1px solid #D3D3D3; cursor: pointer; border-radius: 4px;" +
+	".echo-sdk-button { padding: 3px 12px; border: 1px solid #D3D3D3; cursor: pointer; border-radius: 4px;" +
 		       "background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED);" +
 		       "text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0,0, 0, 0.2); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }" +
-	".echo-button-v3 .label { font-size: 16px; float: left; } " +
-	".echo-button-v3 .icon { height: 16px; width: 16px; float: left; margin-right: 2px; margin-top: 2px; } " +
-	".echo-button-v3 .icon-waiting { background: no-repeat center url(//cdn.echoenabled.com/images/loading.gif); height: 16px; width: 16px; } ";
+	".echo-sdk-button .echo-label { font-size: 16px; float: left; } " +
+	".echo-sdk-button .echo-icon { height: 16px; width: 16px; float: left; margin-right: 2px; margin-top: 2px; } " +
+	".echo-sdk-button .echo-icon-waiting { background: no-repeat center url(//cdn.echoenabled.com/images/loading.gif); height: 16px; width: 16px; } ";
