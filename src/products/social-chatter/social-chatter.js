@@ -50,7 +50,7 @@ Echo.SocialChatterEvent.prototype.displayDateDiff = function(diff, display) {
 		});
 	};
 	if (diff < 60) {
-		when = labels.get("fewMoments");
+		when = labels.get("fewMoments", "Echo.SocialChatterEvent");
 	} else if (diff < 60 * 60) {
 		diff = Math.floor(diff / 60);
 		when = display(diff, "minute");
@@ -137,6 +137,7 @@ SocialChatter.labels = {
 	"emptyGreenRoom": "No items at this time...",
 	"new": "new",
 	"loading": "Loading...",
+	"eventsList": "All Events",
 	"tabGreenRoomLabel": "Green room",
 	"tabPublicEventLabel": "Public event",
 	"tabAllEventsLabel": "All Events", 
@@ -505,7 +506,9 @@ SocialChatter.views.EventsList.controls.Stream = {
 			"layout": "inline",
 			"nestedPlugins": [{"name": "SocialChatterEvent"}]
 		}, {
-			"name": "Moderation"
+			"name": "Moderation",
+			"userActions": [],
+			"itemActions": ["delete"]
 		}]
 	}
 };
@@ -870,14 +873,15 @@ Echo.Utils.foldl(SocialChatter.events, ["SocialChatter.onEventStart", "SocialCha
 });
 
 SocialChatter.views.EventsList.css =
-	'.{class:newEventButton} .echo-sdk-button .ui-state-default, .echo-item-eventButtonContainer .echo-button-v3 .ui-state-default { width: auto; padding: 3px 15px; }' +
+	'.{class:newEventButton} .echo-sdk-button .ui-state-default { width: auto; padding: 3px 15px; }' +
+	'.{class:newEventButton} .echo-button-v3 .ui-state-default, .echo-streamserver-controls-submit-controls .echo-button-v3 .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
 	'.{class:eventListContainer} { margin-left: 15px; margin-right: 15px; }' +
 	'.{class:eventListContainer} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
 	'.{class:eventSubmitContainer} { display: none; }' +
 	'.{class:eventsStream} { margin-top: 15px; }' +
 	'.{class:eventsStream} .echo-streamserver-controls-stream-header { display: none; }' +
 	'.{class:eventSubmitLabel} { margin-top: 10px; cursor: pointer; font-weight: bold; font-size: 16px; }' +
-	'.{class:eventSubmit} .echo-streamserver-controls-submit-post-container { float: left; margin-left: 7px; }' +
+	'.{class:eventSubmit} .echo-streamserver-controls-submit-postContainer { float: left; margin-left: 7px; }' +
 	'.{class:eventSubmit} .echo-streamserver-controls-submit-content { border: none; }' +
 	'.{class:eventSubmit} { margin: 10px auto; padding: 10px; width: 550px; }' +
 	'.{class:eventSubmitContainer} { border-radius: 7px; border: 1px solid #D3D3D3; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); margin: 10px 0px; }'
@@ -934,13 +938,12 @@ SocialChatter.css =
 	'.echo-ui .echo-tabs-header li.ui-state-default { background-color: #E6E6E6; }' +
 	'.echo-ui .echo-tabs-header li.ui-state-active { background-color: #FFFFFF; }' +
 	// fancy buttons
-	'.echo-item-eventButtonContainer .echo-sdk-button .ui-state-default, .{class:newEventButton} .echo-button-v3 .ui-state-default, .echo-streamserver-controls-submit-controls .echo-button-v3 .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
 	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-nav li { border: 1px solid #DDDDDD; border-bottom: none; }' +
 	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-nav li a { padding: 7px 15px 5px 15px; font-size: 16px; }' +
 	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-panel { border-radius: 0px; border-left: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; }' +
 	'.echo-ui .echo-socialchatter-tabs .echo-tabs-header { border-bottom: 1px solid #DDDDDD; }' +
 	'.echo-app-message { border: none; }' +
-	'.echo-socialchatter-container .echo-streamserver-controls-submit-markersContainer, .echo-socialchatter-container .echo-streamserver-controls-submit-tagsContainer, .echo-socialchatter-container .echo-item-modeSwitch { display: none !important; }'
+	'.{class:container} .echo-streamserver-controls-submit-markersContainer, .{class:container} .echo-streamserver-controls-submit-tagsContainer, .{class:container} .echo-streamserver-controls-stream-item-modeSwitch { display: none !important; }'
 ;
 
 Echo.Product.create(SocialChatter);

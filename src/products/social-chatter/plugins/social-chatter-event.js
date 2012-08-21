@@ -50,7 +50,7 @@ plugin.templates.main = '<div class="{plugin.class:eventContainer}">' +
 		'<div class="{plugin.class:eventBrief}">' +
 			'<div class="{plugin.class:eventNameBrief}"></div>' +
 			'<div class="{plugin.class:eventDescriptionBrief}"></div>' +
-			'<div class="{plugin.class:eventStatus}"></div>' +
+			'<div class="{plugin.class:eventStatusBrief}"></div>' +
 		'</div>' +
 		'<div class="{plugin.class:eventFull}">' +
 			'<div class="{plugin.class:eventInfo}">' +
@@ -120,7 +120,7 @@ Echo.Utils.foldl(plugin.renderers, ["eventName", "vipName", "eventStart", "event
 	};
 });
 
-plugin.renderers.eventStatus = function(element) {
+plugin.renderers.eventStatusBrief = plugin.renderers.eventStatus = function(element) {
 	var event = this.event;
 	var status = event.getEventStatus();
 	var content = this.labels.get("eventStatus") + ": " + this.labels.get(status);
@@ -262,14 +262,15 @@ plugin.methods._assembleButton = function() {
 plugin.css =
 	'.{plugin.class:eventItem} { margin: 5px 0px; }' +
 	'.{plugin.class:eventContainer} { float: left; }' +
-	'.echo-streamserver-controls-stream-SocialChatterEvent .{plugin.class:avatar}-wrapper { margin-top: 7px; }' +
+	'.echo-streamserver-controls-stream-SocialChatterEvent .{class:avatar-wrapper} { margin-top: 7px; }' +
 	'.{plugin.class:eventButtonContainer} { padding: 15px 0 15px 0px; text-align: left; }' +
+	'.(plugin.class:eventButtonContainer} .echo-sdk-button .ui-state-default, .{class:newEventButton} .echo-button-v3 .ui-state-default, .echo-streamserver-controls-submit-controls .echo-button-v3 .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
 	'.{plugin.class:eventBrief} { padding: 5px 0 5px 0px; }' +
 	'.{plugin.class:eventNameBrief} { font-size: 20px; font-weight: bold; }' +
 	'.{plugin.class:eventDescriptionBrief} { font-size: 14px; margin: 10px 0px; }' +
-	'.echo-products-socialchatter-view-eventsStream .{plugin.class:avatar}, .echo-products-socialchatter-view-eventsStream .{plugin.class:avatar} img { height: auto !important; }' +
-	'.echo-products-socialchatter-view-eventsStream .{plugin.class:modeSwitch}, .echo-products-socialchatter-view-eventsStream .{plugin.class:status} { display: none !important; }' +
-	'.echo-products-socialchatter-view-eventsStream .{plugin.class:subcontainer} { margin-left: 10px; }' +
+	'.echo-products-socialchatter-eventslist .{class:avatar}, .echo-products-socialchatter-eventslist .{class:avatar} img { height: auto !important; }' +
+	'.echo-products-socialchatter-view-eventsStream .{plugin.class:modeSwitch}, .echo-products-socialchatter-eventslist .{class:plugin-Moderation-status} { display: none !important; }' +
+	'.echo-products-socialchatter-eventslist .{class:subcontainer} { margin-left: 10px; }' +
 	'.echo-event-onair-label { color: green; font-weight: bold; }' +
 	'.{plugin.class:eventButton} .echo-label { font-size: 12px; }';
 
@@ -394,8 +395,9 @@ $.extend(plugin.events,
 		acc["Echo.StreamServer.Controls.Submit.on" + action + "Init"] = function(topic, args) {
 			var self = this;
 			var postType = this.config.get("parent.type", this.component._getASURL("comment"));
+			var verb = action === "Post" ? "post" : "update";
 			args.postData.content = [
-				this.component._getActivity("post", postType, Echo.Utils.object2JSON(this._assembleContent()))
+				this.component._getActivity(verb, postType, Echo.Utils.object2JSON(this._assembleContent()))
 			];
 		};
 	})
