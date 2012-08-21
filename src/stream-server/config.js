@@ -155,6 +155,7 @@ Echo.StreamServer.Controls.Stream.Item.ConfigSpecification = [{
 //}, {
 //	"name": "buttonsOrder",
 //	"type": "Object"
+/* FIXME: not looking good atm, enable later
 }, {
 	"name": "contentTransformations",
 	"type": "Object",
@@ -171,6 +172,7 @@ Echo.StreamServer.Controls.Stream.Item.ConfigSpecification = [{
 		"type": "Array",
 		"values": ["smileys", "hashtags", "urls"]
 	}]
+*/
 }, {
 	"name": "limits",
 	"type": "Object",
