@@ -9,21 +9,21 @@
  * of this software, even if advised of the possibility of such damage.
  */
 
-var plugin = Echo.createPlugin({
-	"name": "VipReplies",
-	"applications": ["Stream"],
-	"init": function(plugin, application) {
-		plugin.addCss(plugin.css);
-		if (plugin.config.get(application, "view") == "public" ||
-		    !application.user.hasAnyRole(["vip"])) return;
-		plugin.subscribe(application, "Submit.onPostComplete", function(topic, args) {
-			var question = args.inReplyTo;
-			if (!question) return;
-			plugin.markQuestionAsAnswered(question, application);
-			plugin.copyAnswer(question, args.postData, application);
-		});
+var plugin = Echo.Plugin.manifest("VipReplies", "Echo.StreamServer.Controls.Stream.Item");
+
+plugin.init = function(plugin, application) {
+	if (plugin.config.get(application, "view") == "public" ||
+		!application.user.hasAnyRole(["vip"])) return;
+};
+
+plugin.events = {
+	"Echo.StreamServer.Controls.Stream.Submit.onPostComplete": function(topic, args) {
+		var question = args.inReplyTo;
+		if (!question) return;
+		plugin.markQuestionAsAnswered(question, application);
+		plugin.copyAnswer(question, args.postData, application);
 	}
-});
+};
 
 plugin.request = function(application, data) {
 	$.get(plugin.config.get(application, "submissionProxyURL", "", true), {
@@ -62,3 +62,4 @@ plugin.css =
 	".echo-item-data .question-quote .author { color: #476CB8; }" +
 	".echo-item-data .special-quest-reply .reply { font-size: 14px; margin-bottom: 10px; }";
 
+Echo.Plugin.create(plugin);

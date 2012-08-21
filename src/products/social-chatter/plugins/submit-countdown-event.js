@@ -10,35 +10,17 @@
  * $Id$
  */
 
-var plugin = Echo.createPlugin({
-	"name": "SubmitCountdownEvent",
-	"applications": ["Submit"],
-	"init": function(plugin, application) {
-		plugin.extendRenderer("Submit", "countdownLabel",
-			plugin.renderers.Submit.countdownLabel);
-		plugin.extendRenderer("Submit", "tagsContainer",
-			plugin.renderers.Submit.metadata);
-		plugin.extendRenderer("Submit", "markersContainer",
-			plugin.renderers.Submit.metadata);
-		plugin.extendTemplate("Submit",
-			plugin.countdownTemplate, "insertAfter", "echo-submit-content");
-		plugin.addCss(plugin.css);
-	}
-});
+var plugin = Echo.Plugin.manifest("SubmitCountdownEvent", "Echo.StreamServer.Controls.Stream.Submit");
 
-plugin.addLabels({
-	"chatClosesIn": "Chat closes in "
-});
-
-plugin.countdownTemplate = '<div class="echo-submit-countdownLabel echo-secondaryFont echo-secondaryColor"></div>';
-
-plugin.renderers = {"Submit": {}};
-
-plugin.renderers.Submit.metadata = function(element) {
-	element.hide();
+plugin.init = function() {
+	this.extendTemplate("insertAfter", "echo-submit-content", plugin.countdownTemplate);
 };
 
-plugin.renderers.Submit.countdownLabel = function(element) {
+plugin.labels = {
+	"chatClosesIn": "Chat closes in "
+};
+
+plugin.component.renderers.countdownLabel = function(element) {
 	var application = this;
 	if (application.config.get("mode") == "compact") {
 		element.hide();
@@ -55,7 +37,15 @@ plugin.renderers.Submit.countdownLabel = function(element) {
 		}
 	});
 };
+plugin.component.renderers.tagsContainer = function(element) {};
+plugin.component.renderers.markersContainer = function(element) {};
+plugin.component.renderers.metadata = function(element) {
+	element.hide();
+};
 
-plugin.css = 
-	'.echo-submit-countdownLabel { float: left; margin-top: 15px; }';
+plugin.countdownTemplate = '<div class="{plugin.class:countdownLabel} echo-secondaryFont echo-secondaryColor"></div>';
 
+plugin.css =
+	'.{plugin.class:countdownLabel} { float: left; margin-top: 15px; }';
+
+Echo.Plugin.create(plugin);

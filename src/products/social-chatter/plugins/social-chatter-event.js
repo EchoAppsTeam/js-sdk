@@ -418,26 +418,27 @@ plugin.component.renderers.text = function(element) {
 	return element.val(".").detach();
 };
 
-//plugin.renderers.eventInfo = function(element, extra) {
-//	extra = extra || {};
-//	var type = extra.type;
-//	var event = new Echo.SocialChatterEvent(this.component.get("data.object.content"));
+plugin.renderers.eventInfo = function(element, extra) {
+	extra = extra || {};
+	var type = extra.type;
+	var event = new Echo.SocialChatterEvent(this.component.get("data.object.content"));
 //	var value = event.data && event.data[type] && (type == "eventStart" || type == "eventEnd")
 //		? this._getFullDate(event.data[type])
 //		: event.data[type] || "";
-//	if (!$.isEmptyObject(event)) {
-//		this.dom.get(type)
-//			.iHint({
-//				"text": this.labels.get(type + "Hint"),
-//				"className": "echo-secondaryColor"
-//			})
-//			.val($.trim(Echo.Utils.stripTags(value || "")))
-//			.blur();
-//	} else {
-//		this.dom.get(type).detach();
-//	}
-//	return element;
-//};
+	var value = event.data[type] || "";
+	if (!$.isEmptyObject(event)) {
+		this.dom.get(type)
+			.iHint({
+				"text": this.labels.get(type + "Hint"),
+				"className": "echo-secondaryColor"
+			})
+			.val($.trim(Echo.Utils.stripTags(value || "")))
+			.blur();
+	} else {
+		this.dom.get(type).detach();
+	}
+	return element;
+};
 
 plugin.renderers.eventSubmitNotice = function(element) {
 	return element.html('<span>' + this.labels.get("eventSubmitNotice") + '</span>');

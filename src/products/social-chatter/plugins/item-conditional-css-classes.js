@@ -9,17 +9,9 @@
  * of this software, even if advised of the possibility of such damage.
  */
 
-var plugin = Echo.createPlugin({
-	"name": "ItemConditionalCSSClasses",
-	"applications": ["Stream"],
-	"init": function(plugin, application) {
-		plugin.extendRenderer("Item", "content", plugin.renderers.Item.content);
-	}
-});
+var plugin = Echo.Plugin.manifest("ItemConditionalCSSClasses", "Echo.StreamServer.Controls.Stream.Item");
 
-plugin.renderers = {"Item": {}};
-
-plugin.renderers.Item.content = function(element) {
+plugin.component.renderers.content = function(element) {
 	var item = this;
 	item.parentRenderer("content", arguments);
 	var conditions = plugin.config.get(item, "conditions");
@@ -48,3 +40,4 @@ plugin.areEqual = function(string1, string2, isCaseInsensitive) {
 	return string1 == string2;
 };
 
+Echo.Plugin.create(plugin);
