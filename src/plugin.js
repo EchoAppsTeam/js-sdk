@@ -23,27 +23,32 @@ Echo.Plugin = function() {};
  */
 Echo.Plugin.create = function(manifest) {
 	var plugin = Echo.Plugin.getClass(manifest.name, manifest.component.name);
+
 	// prevent multiple re-definitions
 	if (plugin) return plugin;
+
 	var _constructor = function(config) {
 		if (!config || !config.component) return;
 		var self = this;
 		this.name = manifest.name;
 		this.component = config.component;
-		this.cssPrefix = this.component.cssPrefix + "plugin-" + manifest.name + "-";
+		this.cssClass = this.component.cssPrefix + "plugin-" + manifest.name;
+		this.cssPrefix = this.cssClass + "-";
+
 		// define extra css class for the control target
-		this.component.config.get("target").addClass(this.cssPrefix.substr(0, this.cssPrefix.length - 1));
-		this._init([
-			"config"
-		]);
+		this.component.config.get("target").addClass(this.cssClass);
+
+		this._init(["config"]);
 	};
 	_constructor.manifest = manifest;
 	_constructor.dependencies = manifest.dependencies;
 	Echo.Utils.inherit(_constructor, Echo.Plugin);
+
 	// copy destroy method to the list of methods
 	if (manifest.destroy) {
 		manifest.methods.destroy = manifest.destroy;
 	}
+
 	if (manifest.methods) {
 		$.extend(_constructor.prototype, manifest.methods);
 	}
@@ -224,11 +229,8 @@ Echo.Plugin.prototype.substitute = function(template, data) {
 		"plugin.label": function(key) {
 			return plugin.labels.get(key, "");
 		},
-		"plugin.class": function(value) {
-			if (!value) {
-				return plugin.cssPrefix.substr(0, plugin.cssPrefix.length - 1);
-			}
-			return plugin.cssPrefix + value;
+		"plugin.class": function(key) {
+			return key ? plugin.cssPrefix + key : plugin.cssClass;
 		},
 		"plugin.data": function(key) {
 			return "{self:plugins." + plugin.name + ".data." + key + "}";

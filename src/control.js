@@ -26,29 +26,40 @@ Echo.Control = function() {};
  */
 Echo.Control.create = function(manifest) {
 	var control = Echo.Utils.getNestedValue(window, manifest.name);
+
 	// prevent multiple re-definitions
 	if (control) return control;
-	var _constructor = function(config) {
+
+	var constructor = function(config) {
 		var self = this;
+
 		// perform basic validation of incoming params
 		if (!config || !config.target || !config.appkey) return {};
+
 		this.data = config.data || {};
 		this.name = manifest.name;
 		this.config = config;
 		this._init(this._getInitializers("init"));
 	};
-	Echo.Utils.inherit(_constructor, manifest.inherits || Echo.Control);
-	_constructor.manifest = manifest;
+
+	Echo.Utils.inherit(constructor, manifest.inherits || Echo.Control);
+
+	var cssClass = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
+	var prototype = constructor.prototype;
+	constructor.manifest = manifest;
 	if (manifest.methods) {
-		$.extend(_constructor.prototype, manifest.methods);
+		$.extend(prototype, manifest.methods);
 	}
 	if (manifest.templates) {
-		_constructor.prototype.templates =
-			$.extend({}, _constructor.prototype.templates, manifest.templates);
+		prototype.templates = $.extend({}, prototype.templates, manifest.templates);
 	}
-	_constructor.prototype.cssPrefix = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-") + "-";
-	Echo.Utils.setNestedValue(window, manifest.name, _constructor);
-	return _constructor;
+
+	// define CSS class and prefix for the class
+	prototype.cssClass = cssClass;
+	prototype.cssPrefix = cssClass + "-";
+
+	Echo.Utils.setNestedValue(window, manifest.name, constructor);
+	return constructor;
 };
 
 /**
@@ -205,10 +216,7 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 	var control = this;
 	instructions = $.extend({
 		"class": function(key) {
-			if (!key) {
-				return control.cssPrefix.substr(0, control.cssPrefix.length - 1);
-			}
-			return control.cssPrefix + key;
+			return key ? control.cssPrefix + key : control.cssClass
 		},
 		"data": function(key) {
 			return Echo.Utils.getNestedValue(data || control.data, key, "");
@@ -250,7 +258,6 @@ Echo.Control.prototype.refresh = function() {
 	this.set("data", this.config.get("data", {}));
 
 	this.set("internal.state", "refresh");
-
 	this._init(this._getInitializers("refresh"));
 };
 
@@ -514,12 +521,14 @@ Echo.Control.prototype._initializers.events = function() {
 		"publish": function(params) {
 			params.topic = control.name + "." + params.topic;
 			params.data = params.data || {};
+
 			// process data through the normalization function if defined
 			if (control._prepareEventParams) {
 				params.data = control._prepareEventParams(params.data);
 			}
+
 			Echo.Events.publish(prepare(params));
-	},
+		},
 		"subscribe": function(params) {
 			var handlerId = Echo.Events.subscribe(prepare(params));
 			control.subscriptionIDs[handlerId] = true;
@@ -631,7 +640,7 @@ Echo.Control.prototype._initializers.labels = function() {
 
 Echo.Control.prototype._initializers.css = function() {
 	Echo.Utils.addCSS(this.baseCSS, "control");
-	this.config.get("target").addClass(this.cssPrefix.substr(0, this.cssPrefix.length - 1));
+	this.config.get("target").addClass(this.cssClass);
 	if (!this._manifest("css")) return;
 	Echo.Utils.addCSS(this.substitute(this._manifest("css")), this.name);
 };
@@ -904,9 +913,9 @@ Echo.Control.prototype._domTransformer = function(args) {
 	if (!action) {
 		return args.dom;
 	}
+	var content;
 	var html = args.transformation.html;
 	var anchor = "." + this.cssPrefix + args.transformation.anchor;
-	var content;
 	if (html) {
 		content = this.substitute($.isFunction(html) ? html() : html, args.data)
 	}
