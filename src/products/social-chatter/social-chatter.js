@@ -150,7 +150,6 @@ SocialChatter.vars = {"cache": {}};
 
 SocialChatter.init = function() {
 	var self = this;
-	this.showMessage({"type": "loading", "message": this.labels.get("loading")});
 	self._initVars();
 	self._initBackplane();
 	self._requestEventsList(function(data) {
@@ -207,6 +206,19 @@ SocialChatter.views.EventsList.templates.main =
 		'<div class="{class:eventsStream}"></div>' +
 	'</div>';
 
+SocialChatter.views.PublicEvent.labels = {
+	"newEvent": "Schedule new event",
+	"askQuestion": "Ask your question to",
+	"answersFrom": "Answers from",
+	"scheduleEvent": "Schedule new event",
+	"chatClosesIn": "VIP Chat closes in: ",
+	"chatOpensIn": "<b>Live chat starts in:</b> <br><br>",
+	"passedEventViewNotice": "<b>Note:</b> this event is over. You are viewing chat archive.",
+	"upcomingEventWarning": "Please login to join this event.",
+	"passedEventWarning": "Please login to view this chat archive.",
+	"onAirEventWarning": "<b>Chat is on air now!</b> <br><br> Please login to join the conversation!"
+};
+
 SocialChatter.views.PublicEvent.templates = {
 	"main": '<div class="{class:publicView}">' +
 			'<div class="{class:publicViewNotice}"></div>' +
@@ -217,7 +229,7 @@ SocialChatter.views.PublicEvent.templates = {
 					'<div class="{class:publicStream}"></div>' +
 				'</div></td>' +
 				'<td class="{class:rightColumnTD}"><div class="{class:rightColumn}">' +
-					'<div class="{class:publicSubmitLabel}">{label:answersFrom} {lata:vipName}</div>' +
+					'<div class="{class:publicSubmitLabel}">{label:answersFrom} {data:vipName}</div>' +
 					'<div class="{class:eventDescription}">' +
 						'<div class="{class:avatar}"></div>' +
 						'<div class="{class:eventDataWrapper}">' +
@@ -262,10 +274,10 @@ SocialChatter.views.PublicEvent.templates = {
 			"name": "MetadataManager",
 			"controls": [{
 				"marker": "greenroom",
-				"labelMark": "{Label:sendToGreenRoomControl}",
-				"labelUnmark": "{Label:removeFromGreenRoomControl}"
+				"labelMark": "{label:sendToGreenRoomControl}",
+				"labelUnmark": "{label:removeFromGreenRoomControl}"
 			}],
-			"enabled": "{Self:isNonVIPUser}"
+			"enabled": "{self:isNonVIPUser}"
 		},
 		"ItemConditionalCSSClasses": {
 			"name": "ItemConditionalCSSClasses",
@@ -281,28 +293,28 @@ SocialChatter.views.PublicEvent.templates = {
 				// we need "moderator" role for VIP as well
 				// since we need to apply markers to some items
 				"roles": "vip,moderator",
-				"labelSet": "{Label:assignVIPRoleControl}",
-				"labelUnset": "{Label:revokeVIPRoleControl}"
+				"labelSet": "{label:assignVIPRoleControl}",
+				"labelUnset": "{label:revokeVIPRoleControl}"
 			}],
-			"enabled": "{Self:isNonVIPUser}"
+			"enabled": "{self:isNonVIPUser}"
 		}
 	};
 	SocialChatter.views.GreenRoom.controls.Stream = {
 		"control": "Echo.StreamServer.Controls.Stream",
 		"config": {
 			"appkey": null,
-			"query": "childrenof:{Self:event.id}/* state:Untouched,ModeratorApproved markers:greenroom -markers:answered children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:{config:event.id}/* state:Untouched,ModeratorApproved markers:greenroom -markers:answered children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"reTag": false,
 			"plugins": [{
 				"name": "Reply",
-				"itemURIPattern": "{Self:event.id}/{id}",
+				"itemURIPattern": "{config:event.id}/{id}",
 				"nestedPlugins": [{
 					"name": "SubmitTextareaAutoResize"
 				}]
 			}, {
 				"name": "VipReplies",
 				"copyTo": {
-					"target": "{Self:event.id}"
+					"target": "{config:event.id}"
 				},
 				"view": "private"
 			}, plugins.MetadataManager]
@@ -313,12 +325,12 @@ SocialChatter.views.PublicEvent.templates = {
 		"control": "Echo.StreamServer.Controls.Stream",
 		"config": {
 			"appkey": null,
-			"query": "childrenof:{Self:event.id} state:Untouched,ModeratorApproved safeHTML:off user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"reTag": false,
 			"liveUpdatesTimeout": 60,
 			"plugins": [{
 				"name": "Reply",
-				"itemURIPattern": "{Self:event.id}/{id}",
+				"itemURIPattern": "{config:event.id}/{id}",
 				"nestedPlugins": [{
 					"name": "SubmitTextareaAutoResize"
 				}]
@@ -326,11 +338,11 @@ SocialChatter.views.PublicEvent.templates = {
 				"name": "Like"
 			}, {
 				"name": "Curation",
-				"enabled": "{Self:isNonVIPUser}"
+				"enabled": "{self:isNonVIPUser}"
 			}, {
 				"name": "VipReplies",
 				"copyTo": {
-					"target": "{Self:event.id}"
+					"target": "{config:event.id}"
 				},
 				"view": "private"
 			},
@@ -344,15 +356,15 @@ SocialChatter.views.PublicEvent.templates = {
 		"control": "Echo.StreamServer.Controls.Submit",
 		"config": {
 			"appkey": null,
-			"targetURL": "{Self:event.id}",
-			"itemURIPattern": "{Self:event.id}/{id}",
+			"targetURL": "{self:event.id}",
+			"itemURIPattern": "{self:event.id}/{id}",
 			"actionString": "Type your question here...",
 			"plugins": [{
 				"name": "SubmitTextareaAutoResize"
 			}, {
 				"name": "SubmitCountdownEvent",
-				"eventEnd": "{Self:event.data.eventEnd}",
-				"enabled": "{Self:event.isOnAir}"
+				"eventEnd": "{self:event.data.eventEnd}",
+				"enabled": "{self:event.isOnAir}"
 			}]
 		}
 	};
@@ -361,11 +373,11 @@ SocialChatter.views.PublicEvent.templates = {
 		"control": "Echo.StreamServer.Controls.Stream",
 		"config": {
 			"appkey": null,
-			"query": "childrenof:{Self:event.id} state:Untouched,ModeratorApproved safeHTML:off user.roles:vip user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.roles:vip user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
 			"reTag": false,
 			"plugins": [{
 				"name": "Reply",
-				"itemURIPattern": "{Self:event.id}/{id}",
+				"itemURIPattern": "{config:event.id}/{id}",
 				"nestedPlugins": [{
 					"name": "SubmitTextareaAutoResize"
 				}]
@@ -373,7 +385,7 @@ SocialChatter.views.PublicEvent.templates = {
 				"name": "Like"
 			}, {
 				"name": "Curation",
-				"enabled": "{Self:isNonVIPUser}"
+				"enabled": "{self:isNonVIPUser}"
 			}, {
 				"name": "VipReplies"
 			},
@@ -820,7 +832,7 @@ SocialChatter.assemblers.GreenRoom = function(target) {
 };
 
 SocialChatter.events = {
-	"User.onInvalidate": function() {
+	"Echo.UserSession.onInvalidate": function() {
 		this.refresh();
 	},
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onBeforeEventOpen": function(topic, args) {
@@ -843,63 +855,78 @@ Echo.Utils.foldl(SocialChatter.events, ["SocialChatter.onEventStart", "SocialCha
 	};
 });
 
+SocialChatter.views.EventsList.css =
+	'.{class:newEventButton} .echo-button-v3 .ui-state-default, .echo-item-eventButtonContainer .echo-button-v3 .ui-state-default { width: auto; padding: 3px 15px; }' +
+	'.{class:eventListContainer} { margin-left: 15px; margin-right: 15px; }' +
+	'.{class:eventListContainer} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:eventSubmitContainer} { display: none; }' +
+	'.{class:eventsStream} { margin-top: 15px; }' +
+	'.{class:eventsStream} .echo-streamserver-controls-stream-header { display: none; }' +
+	'.{class:eventSubmitLabel} { margin-top: 10px; cursor: pointer; font-weight: bold; font-size: 16px; }' +
+	'.{class:eventSubmit} .echo-streamserver-controls-submit-post-container { float: left; margin-left: 7px; }' +
+	'.{class:eventSubmit} .echo-streamserver-controls-submit-content { border: none; }' +
+	'.{class:eventSubmit} { margin: 10px auto; padding: 10px; width: 550px; }' +
+	'.{class:eventSubmitContainer} { border-radius: 7px; border: 1px solid #D3D3D3; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); margin: 10px 0px; }'
+;
+
+SocialChatter.views.PublicEvent.css =
+	'.{class:publicStream}, .{class:vipStream} { margin-top: 15px; }' +
+	'.{class:vipStream} { margin-bottom: 20px; }' +
+	'.{class:leftColumn} { margin: 5px 25px 0px 10px; }' +
+	'.{class:leftColumnTD} { width: 40%; vertical-align: top; }' +
+	'.{class:rightColumnTD} { width: 60%; vertical-align: top; }' +
+	'.{class:rightColumn} { margin: 0 10px; border: 1px solid #D3D3D3; padding: 15px 10px 15px 20px; border-radius: 4px; -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); }' +
+	'.{class:publicSubmitLabel} { font-weight: bold; font-size: 16px; margin-bottom: 10px; }' +
+	'.{class:publicSubmit} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:eventSubmit} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:publicStream} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:vipStream} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:vipStream} textarea.echo-streamserver-controls-submit-text { height: 36px; }' +
+	'.{class:publicStream} textarea.echo-streamserver-controls-submit-text { height: 36px; }' +
+	'.{class:publicSubmit} textarea.echo-streamserver-controls-submit-text { height: 36px; }' +
+	'.{class:vipStream} .echo-streamserver-controls-stream-header { display: none; }' +
+	'.{class:publicStream} .echo-streamserver-controls-stream-header { display: none; }' +
+	'.{class:publicSubmit} .echo-streamserver-controls-submit-text { height: 55px; }' +
+	'.{class:publicView} { margin-top: 5px; }' +
+	'.{class:publicView} table { width: 100%; }' +
+	'.{class:eventDescription} .{class:avatar} { float: left; width: 100px; margin-right:-110px; margin-top: 2px; }' +
+	'.{class:eventDescription} .{class:avatar} img { width: 100px; }' +
+	'.{class:eventDescription} .{class:title} { margin-left: 115px; font-size: 20px; line-height: 20px; font-weight: bold; }' +
+	'.{class:eventDescription} .{class:description}, .{class:eventDescription} .startEvent, .{class:eventDescription} .{class:countdown} { margin-left: 115px; font-size: 14px; margin-top: 10px; }' +
+	'.{class:publicViewUpcoming} .{class:eventDescription}, .{class:publicViewAnonymous} .{class:eventDescription} { max-width: 400px; margin: 20px auto; }' +
+	'.{class:publicViewUpcoming} { margin-top: 35px; }' +
+	'.{class:countdown}, .{class:publicViewNotice} { background-color: #D9EDF7; border: 1px solid #BCE8F1; border-radius: 4px 4px 4px 4px; color: #3A87AD;  margin: 20px auto 30px; padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 16px; text-align: center; }' +
+	'.{class:countdown} { display: none; }' +
+	'.{class:publicViewNotice} { width: 450px; }' +
+	'.{class:publicViewNotice} { margin-top: 0px; margin-bottom: 10px; }' +
+	'.{class:publicViewAnonymous} .{class:loginWarning} { background-color: #F2DEDE; border: 1px solid #EED3D7; border-radius: 4px 4px 4px 4px; color: #B94A48;  margin: 20px auto 30px; padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 16px; text-align: center; width: 300px; }'
+;
+
+SocialChatter.views.GreenRoom.css =
+	'.{class:vipInstructions} { line-height: 20px; margin-top: 10px; background-color: #D9EDF7; border: 1px solid #BCE8F1; border-radius: 4px 4px 4px 4px; color: #3A87AD;  margin: 20px auto 30px; padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 16px; text-align: center; }' +
+	'.{class:vipStream} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:vipStream} textarea.echo-streamserver-controls-submit-text { height: 36px; }' +
+	'.{class:vipStream} .echo-streamserver-controls-stream-header { display: none; }'
+;
+
+SocialChatter.views.Main.css =
+	'.{class:auth} { float: right; }' +
+	'.{class:auth} .echo-identityserver-controls-auth-avatar, .{class:auth} .echo-identityserver-controls-auth-logout { height: 24px; line-height: 24px; margin: 0px;}' +
+	'.{class:auth} .echo-identityserver-controls-auth-name { line-height: 23px; font-size: 14px; margin: 0px 20px 0px 0px; }' +
+	'.{class:auth} .echo-identityserver-controls-auth-edit { height: 24px; line-height: 24px; margin: 0px 5px 0px 0px; }'
+;
+
 SocialChatter.css =
-		'.echo-ui .echo-tabs-header li.ui-state-default { background-color: #E6E6E6; }' +
-		'.echo-ui .echo-tabs-header li.ui-state-active { background-color: #FFFFFF; }' +
-		// fancy buttons
-		'.echo-item-eventButtonContainer .echo-button-v3 .ui-state-default, .echo-socialchatter-view-newEventButton .echo-button-v3 .ui-state-default, .echo-submit-controls .echo-button-v3 .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
-		'.echo-socialchatter-view-newEventButton .echo-button-v3 .ui-state-default, .echo-item-eventButtonContainer .echo-button-v3 .ui-state-default { width: auto; padding: 3px 15px; }' +
-		'.echo-socialchatter-view-eventListContainer { margin-left: 15px; margin-right: 15px; }' +
-		'.echo-socialchatter-view-eventListContainer .echo-submit-userInfoWrapper { display: none; }' +
-		'.echo-socialchatter-view-publicStream, .echo-socialchatter-view-vipStream { margin-top: 15px; }' +
-		'.echo-socialchatter-view-vipStream { margin-bottom: 20px; }' +
-		'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-nav li { border: 1px solid #DDDDDD; border-bottom: none; }' +
-		'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-nav li a { padding: 7px 15px 5px 15px; font-size: 16px; }' +
-		'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-panel { border-radius: 0px; border-left: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; }' +
-		'.echo-ui .echo-socialchatter-tabs .echo-tabs-header { border-bottom: 1px solid #DDDDDD; }' +
-		'.echo-socialchatter-view-eventSubmitContainer { display: none; }' +
-		'.echo-socialchatter-view-eventsStream { margin-top: 15px; }' +
-		'.echo-socialchatter-view-eventsStream .echo-stream-header { display: none; }' +
-		'.echo-socialchatter-view-leftColumn { margin: 5px 25px 0px 10px; }' +
-		'.echo-socialchatter-view-leftColumnTD { width: 40%; vertical-align: top; }' +
-		'.echo-socialchatter-view-rightColumnTD { width: 60%; vertical-align: top; }' +
-		'.echo-socialchatter-view-rightColumn { margin: 0 10px; border: 1px solid #D3D3D3; padding: 15px 10px 15px 20px; border-radius: 4px; -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); }' +
-		'.echo-socialchatter-view-publicSubmitLabel { font-weight: bold; font-size: 16px; margin-bottom: 10px; }' +
-		'.echo-socialchatter-view-eventSubmitLabel { margin-top: 10px; cursor: pointer; font-weight: bold; font-size: 16px; }' +
-		'.echo-socialchatter-view-eventSubmit .echo-submit-post-container { float: left; margin-left: 7px; }' +
-		'.echo-socialchatter-view-eventSubmit .echo-submit-content { border: none; }' +
-		'.echo-socialchatter-view-publicSubmit .echo-submit-userInfoWrapper { display: none; }' +
-		'.echo-socialchatter-view-eventSubmit .echo-submit-userInfoWrapper { display: none; }' +
-		'.echo-socialchatter-view-publicStream .echo-submit-userInfoWrapper { display: none; }' +
-		'.echo-socialchatter-view-vipStream .echo-submit-userInfoWrapper { display: none; }' +
-		'.echo-socialchatter-view-vipStream textarea.echo-submit-text { height: 36px; }' +
-		'.echo-socialchatter-view-publicStream textarea.echo-submit-text { height: 36px; }' +
-		'.echo-socialchatter-view-publicSubmit textarea.echo-submit-text { height: 36px; }' +
-		'.echo-socialchatter-view-vipStream .echo-stream-header { display: none; }' +
-		'.echo-socialchatter-view-publicStream .echo-stream-header { display: none; }' +
-		'.echo-app-message { border: none; }' +
-		'.echo-socialchatter-container .echo-submit-markersContainer, .echo-socialchatter-container .echo-submit-tagsContainer, .echo-socialchatter-container .echo-item-modeSwitch { display: none !important; }' +
-		'.echo-socialchatter-view-publicSubmit .echo-submit-text { height: 55px; }' +
-		'.echo-socialchatter-auth { float: right; }' +
-		'.echo-socialchatter-auth .echo-auth-avatar, .echo-auth-logout { height: 24px; line-height: 24px; margin: 0px;}' +
-		'.echo-socialchatter-auth .echo-auth-name { line-height: 23px; font-size: 14px; margin: 0px 20px 0px 0px; }' +
-		'.echo-socialchatter-auth .echo-auth-edit { height: 24px; line-height: 24px; margin: 0px 5px 0px 0px; }' +
-		'.echo-socialchatter-view-publicView { margin-top: 5px; }' +
-		'.echo-socialchatter-view-publicView table { width: 100%; }' +
-		'.echo-socialchatter-view-eventSubmit { margin: 10px auto; padding: 10px; width: 550px; }' +
-		'.echo-socialchatter-view-eventSubmitContainer { border-radius: 7px; border: 1px solid #D3D3D3; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); margin: 10px 0px; }' +
-		'.echo-socialchatter-view-eventDescription .echo-socialchatter-view-avatar { float: left; width: 100px; margin-right:-110px; margin-top: 2px; }' +
-		'.echo-socialchatter-view-eventDescription .echo-socialchatter-view-avatar img { width: 100px; }' +
-		'.echo-socialchatter-view-eventDescription .echo-socialchatter-view-title { margin-left: 115px; font-size: 20px; line-height: 20px; font-weight: bold; }' +
-		'.echo-socialchatter-view-eventDescription .echo-socialchatter-view-description, .echo-socialchatter-view-eventDescription .startEvent, .echo-socialchatter-view-eventDescription .echo-socialchatter-view-countdown { margin-left: 115px; font-size: 14px; margin-top: 10px; }' +
-		'.echo-socialchatter-view-publicViewUpcoming .echo-socialchatter-view-eventDescription, .echo-socialchatter-view-publicViewAnonymous .echo-socialchatter-view-eventDescription { max-width: 400px; margin: 20px auto; }' +
-		'.echo-socialchatter-view-publicViewUpcoming { margin-top: 35px; }' +
-		'.echo-socialchatter-view-countdown, .echo-socialchatter-view-publicViewNotice, .echo-socialchatter-view-vipInstructions { background-color: #D9EDF7; border: 1px solid #BCE8F1; border-radius: 4px 4px 4px 4px; color: #3A87AD;  margin: 20px auto 30px; padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 16px; text-align: center; }' +
-		'.echo-socialchatter-view-countdown { display: none; }' +
-		'.echo-socialchatter-view-vipInstructions { line-height: 20px; margin-top: 10px; }' +
-		'.echo-socialchatter-view-publicViewNotice { width: 450px; }' +
-		'.echo-socialchatter-view-publicViewNotice { margin-top: 0px; margin-bottom: 10px; }' +
-		'.echo-socialchatter-view-publicViewAnonymous .echo-socialchatter-view-loginWarning { background-color: #F2DEDE; border: 1px solid #EED3D7; border-radius: 4px 4px 4px 4px; color: #B94A48;  margin: 20px auto 30px; padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 16px; text-align: center; width: 300px; }'
+	'.echo-ui .echo-tabs-header li.ui-state-default { background-color: #E6E6E6; }' +
+	'.echo-ui .echo-tabs-header li.ui-state-active { background-color: #FFFFFF; }' +
+	// fancy buttons
+	'.echo-item-eventButtonContainer .echo-button-v3 .ui-state-default, .{class:newEventButton} .echo-button-v3 .ui-state-default, .echo-streamserver-controls-submit-controls .echo-button-v3 .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
+	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-nav li { border: 1px solid #DDDDDD; border-bottom: none; }' +
+	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-nav li a { padding: 7px 15px 5px 15px; font-size: 16px; }' +
+	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-panel { border-radius: 0px; border-left: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; }' +
+	'.echo-ui .echo-socialchatter-tabs .echo-tabs-header { border-bottom: 1px solid #DDDDDD; }' +
+	'.echo-app-message { border: none; }' +
+	'.echo-socialchatter-container .echo-streamserver-controls-submit-markersContainer, .echo-socialchatter-container .echo-streamserver-controls-submit-tagsContainer, .echo-socialchatter-container .echo-item-modeSwitch { display: none !important; }'
 ;
 
 Echo.Product.create(SocialChatter);
