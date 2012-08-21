@@ -344,7 +344,7 @@ plugin.templates.Metadata =
 		'</div>' +
 	'</div>' +
 	'<div class="{plugin.class:metadata-container}">' +
-		'<div class="{class:field-title}">{plugin.label:eventStart} <span class="{plugin.class:field-mandatory">*</span></div>' +
+		'<div class="{class:field-title}">{plugin.label:eventStart} <span class="{plugin.class:field-mandatory}">*</span></div>' +
 		'<div class="{plugin.class:inputContainer} {class:border}">' +
 			'<input type="text" class="{plugin.class:eventDateStart} {class:text-input} echo-primaryFont">' +
 			'<i class="icon-th"></i>' +
@@ -386,7 +386,7 @@ plugin.events = {
 	}
 };
 
-plugin.mandatoryFields = ["eventName", "vipName", "eventStart", "eventEnd"];
+plugin.mandatoryFields = ["eventName", "vipName", "eventDateStart", "eventDateEnd", "eventTimeStart", "eventTimeEnd"];
 
 $.extend(plugin.events,
 	Echo.Utils.foldl({}, ["Post", "Edit"], function(action, acc) {
@@ -594,15 +594,16 @@ plugin.methods._assembleContent = function() {
 
 plugin.methods._postAction = function() {
 	var component = this.component;
+	var self = this;
 	component.posting = component.posting || {};
 	component.posting.action = function() {
-		var highlighted;
-		$.map(plugin.mandatoryFields, function(v) {
-			var element = component.dom.get(v);
-			highlighted = component.highlightMandatory(element);
-			return !highlighted;
+		var hasErrors;
+		$.each(plugin.mandatoryFields, function(i, v) {
+			var element = component.dom.get(self.get("cssPrefix") + v, true);
+			var highlighted = component.highlightMandatory(element);
+			hasErrors = hasErrors || highlighted;
 		});
-		if (highlighted) return;
+		if (hasErrors) return;
 		component.post();
 	}
 };
