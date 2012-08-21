@@ -648,7 +648,8 @@ plugin.css =
 	'.{plugin.class:inputContainer} .icon-time { margin: -4px 0 0 -22.5px; pointer-events: none; position: relative; }' +
 	'.{plugin.class:inputContainer} .icon-th { margin: -4px 0 0 -22.5px; pointer-events: none; position: relative; }' +
 	'.{plugin.class:eventTimeStart}, .{plugin.class:eventTimeEnd} { width: 90px; margin-left: 20px; }' +
-	'.{plugin.class:eventDateStart}, .{plugin.class:eventDateEnd} { width: 100px; }';
+	'.{plugin.class:eventDateStart}, .{plugin.class:eventDateEnd} { width: 100px; }' +
+	'.bootstrap-timepicker { width: 160px; }';
 
 Echo.Plugin.create(plugin);
 
