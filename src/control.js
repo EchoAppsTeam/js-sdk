@@ -656,11 +656,9 @@ Echo.Control.prototype._initializers.dom = function() {
 	var self = this;
 	this.dom = {
 		"rendered": false,
-		"root": undefined,
 		"elements": {},
 		"clear": function() {
 			this.elements = {};
-			delete this.root;
 		},
 		"set": function(name, element) {
 			this.elements[self.cssPrefix + name] = $(element);
@@ -864,10 +862,11 @@ Echo.Control.prototype._render = function(args) {
 		return newNode;
 	}
 
-	template = this._compileTemplate(template, data, args.target ? {} : this.extension.template);
-	this._applyRenderers(template);
-	target.empty().append(this.dom.root);
-	return this.dom.root;
+	var dom = this._applyRenderers(
+		this._compileTemplate(template, data, this.extension.template)
+	);
+	target.empty().append(dom);
+	return dom;
 };
 
 Echo.Control.prototype._compileTemplate = function(template, data, transformations) {
@@ -890,14 +889,15 @@ Echo.Control.prototype._compileTemplate = function(template, data, transformatio
 
 Echo.Control.prototype._applyRenderers = function(template) {
 	var self = this;
-	this.dom.root = $(template);
-	var elements = this._getRenderableElements();
+	var dom = $(template);
+	var elements = this._getRenderableElements(dom);
 	$.each(elements, function(name, element) {
 		self.dom.render({
 			"name": name,
 			"target": element
 		});
 	});
+	return dom;
 };
 
 Echo.Control.prototype._domTransformer = function(args) {
@@ -923,10 +923,10 @@ Echo.Control.prototype._domTransformer = function(args) {
 	return args.dom;
 };
 
-Echo.Control.prototype._getRenderableElements = function() {
+Echo.Control.prototype._getRenderableElements = function(container) {
 	var self = this, elements = {};
 	var isRenderer = new RegExp(this.cssPrefix + "(.*)$");
-	this.dom.root.find("*").andSelf().each(function(i, element) {
+	container.find("*").andSelf().each(function(i, element) {
 		if (!element.className) {
 			return;
 		}
