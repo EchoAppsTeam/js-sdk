@@ -8,7 +8,7 @@ Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
 		"type": "Number",
 		"defaultValue": 5,
 		"title": "Items per page",
-		"description": "Additional items per page for children threads"
+		"description": "Specifies how many items should be retrieved from server and rendered after clicking the \"View more items\" button."
 	}, {
 		"name": "displaySortOrder",
 		"type": "String",
@@ -51,68 +51,101 @@ Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
 }, {
 	"name": "flashColor",
 	"type": "String",
-	"defaultValue": "#ffff99"
+	"defaultValue": "#ffff99",
+	"title": "Slide down animation duration for the new items",
+	"description": "The duration of the sliding down animation when an item comes to stream as a live update"
 }, {
 	"name": "components",
 	"type": "Object",
+	"title": "Stream item configuration",
+	"description": "Specific configuration of the stream Item class",
 	"properties": [{
 		"name": "item",
-		"type": "Echo.StreamServer.Controls.Stream.Item"
+		"type": "Echo.StreamServer.Controls.Stream.Item",
+		"title": "Item",
+		"description": " "
 	}]
 }, {
 	"name": "itemsPerPage",
 	"type": "Number",
-	"defaultValue": 15
+	"defaultValue": 15,
+	"title": "Root items per page",
+	"description": "Specifies the amount of root items per page",
 }, {
 	"name": "liveUpdates",
 	"type": "Boolean",
-	"defaultValue": true
+	"defaultValue": true,
+	"title": "Live updating",
+	"description": "Parameter to enable/disable receiving live updates by the application"
 }, {
 	"name": "liveUpdatesTimeout",
 	"type": "Number",
-	"defaultValue": 10
+	"defaultValue": 10,
+	"title": "Live updates timeout",
+	"description": "The timeout between the regular live update requests"
 }, {
 	"name": "liveUpdatesTimeoutMin",
 	"type": "Number",
-	"defaultValue": 3
+	"defaultValue": 3,
+	"title": "Frequent live updates timeout",
+	"description": "The timeout between the live update requests in case of huge amount of incoming items"
 }, {
 	"name": "openLinksInNewWindow",
 	"type": "Boolean",
-	"defaultValue": false
+	"defaultValue": false,
+	"title": "Open links in a new window",
+	"description": "Specifies if the links from the item body should be opened in the new window or in the current one"
 }, {
 	"name": "providerIcon",
 	"type": "String",
-	"defaultValue": "http://cdn.echoenabled.com/images/favicons/comments.png"
+	"defaultValue": "http://cdn.echoenabled.com/images/favicons/comments.png",
+	"title": "Default provider icon",
+	"description": "Specifies the default provider icon URL"
 }, {
 	"name": "slideTimeout",
 	"type": "Number",
-	"defaultValue": 700
+	"defaultValue": 700,
+	"title": "Slide down animation duration for the new items",
+	"description": "Allows to adjust the duration of the sliding animation when an item comes to a stream as a live update"
 }, {
 	"name": "sortOrder",
 	"type": "Number",
 	"defaultValue": "reverseChronological",
-	"values": ["chronological", "reverseChronological"]
+	"values": ["chronological", "reverseChronological"],
+	"title": "Root items sorting order",
+	"description": "Aloows to define root items sorting order"
+
 }, {
 	"name": "streamStateLabel",
 	"type": "Object",
+	"title": "Stream state label",
+	"description": "Configuration of the Live/Pause stream indicator",
 	"properties": [{
 		"name": "icon",
 		"type": "Boolean",
-		"defaultValue": true
+		"defaultValue": true,
+		"title": "Icon",
+		"description": "Specifies if the state icon should be visible"
 	}, {
 		"name": "text",
 		"type": "Boolean",
-		"defaultValue": true
+		"defaultValue": true,
+		"title": "Text",
+		"description": "Specifies if the state text should be visible"
 	}]
 }, {
 	"name": "streamStateToggleBy",
 	"type": "String",
 	"defaultValue": "mouseover",
-	"values": ["mouseover", "button", "none"]
+	"values": ["mouseover", "button", "none"],
+	"title": "Stream state change trigger",
+	"description": "Specifies the method of changing stream live/paused state"
 }, {
 	"name": "submissionProxyURL",
 	"type": "String",
-	"defaultValue": "http://apps.echoenabled.com/v2/esp/activity"
+	"defaultValue": "http://apps.echoenabled.com/v2/esp/activity",
+	"title": "Submission Proxy URL",
+	"description": "Specifies the submission proxy URL"
 }];
 
 Echo.StreamServer.Controls.Stream.Item.ConfigSpecification = [{
