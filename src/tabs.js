@@ -38,10 +38,18 @@ Echo.Tabs.prototype.remove = function(id) {
 
 Echo.Tabs.prototype.add = function(tabConfig, panel) {
 	tabConfig = tabConfig || {};
-	var tab = $('<li><a data-toggle="tabs" href="#"' + tabConfig.id + '>' + tabConfig.label  + '</a></li>');
+	var tab = $('<li><a data-toggle="tab" href="#' + tabConfig.id + '">' + tabConfig.label  + '</a></li>');
 	this.element.append(tab);
 	this.panels.append(panel);
 	return this;
+};
+
+Echo.Tabs.prototype.get = function(id) {
+	return this.element.find("a[href=#" + id + "]");
+};
+
+Echo.Tabs.prototype.has = function(id) {
+	return !!this.element.has("a[href=#" + id + "]").length;
 };
 
 Echo.Tabs.prototype.update = function(id, config) {

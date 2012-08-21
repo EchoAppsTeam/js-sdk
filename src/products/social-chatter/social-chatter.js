@@ -207,6 +207,55 @@ SocialChatter.views.EventsList.templates.main =
 		'<div class="{class:eventsStream}"></div>' +
 	'</div>';
 
+SocialChatter.views.PublicEvent.templates = {
+	"main": '<div class="echo-socialchatter-view-publicView">' +
+			'<div class="echo-socialchatter-view-publicViewNotice"></div>' +
+			'<table><tr>' +
+				'<td class="echo-socialchatter-view-leftColumnTD"><div class="echo-socialchatter-view-leftColumn">' +
+					'<div class="echo-socialchatter-view-publicSubmitLabel">{label:askQuestion} {data:vipName}</div>' +
+					'<div class="echo-socialchatter-view-publicSubmit"></div>' +
+					'<div class="echo-socialchatter-view-publicStream"></div>' +
+				'</div></td>' +
+				'<td class="echo-socialchatter-view-rightColumnTD"><div class="echo-socialchatter-view-rightColumn">' +
+					'<div class="echo-socialchatter-view-publicSubmitLabel">{label:answersFrom} {lata:vipName}</div>' +
+					'<div class="echo-socialchatter-view-eventDescription">' +
+						'<div class="echo-socialchatter-view-avatar"></div>' +
+						'<div class="echo-socialchatter-view-eventDataWrapper">' +
+							'<div class="echo-socialchatter-view-title">{data:eventName}</div>' +
+							'<div class="echo-socialchatter-view-description">{data:eventDescription}</div>' +
+							'<div class="echo-socialchatter-view-countdown"></div>' +
+						'</div>' +
+						'<div class="echo-clear"></div>' +
+					'</div>' +
+					'<div class="echo-socialchatter-view-vipStream"></div>' +
+				'</div></td>' +
+			'</tr></table>' +
+		'</div>',
+	"upcoming": '<div class="echo-socialchatter-view-publicView echo-socialchatter-view-publicViewUpcoming">' +
+			'<div class="echo-socialchatter-view-eventDescription">' +
+				'<div class="echo-socialchatter-view-avatar"></div>' +
+				'<div class="echo-socialchatter-view-eventDataWrapper">' +
+					'<div class="echo-socialchatter-view-title">{data:eventName}</div>' +
+					'<div class="echo-socialchatter-view-description">{data:eventDescription}</div>' +
+					'<div class="echo-socialchatter-view-countdown"></div>' +
+				'</div>' +
+				'<div class="echo-clear"></div>' +
+			'</div>' +
+		'</div>',
+	"anonymous": '<div class="echo-socialchatter-view-publicView echo-socialchatter-view-publicViewAnonymous">' +
+			'<div class="echo-socialchatter-view-loginWarning"></div>' +
+			'<div class="echo-socialchatter-view-eventDescription">' +
+				'<div class="echo-socialchatter-view-avatar"></div>' +
+				'<div class="echo-socialchatter-view-eventDataWrapper">' +
+					'<div class="echo-socialchatter-view-title">{data:eventName}</div>' +
+					'<div class="echo-socialchatter-view-description">{data:eventDescription}</div>' +
+					'<div class="echo-socialchatter-view-countdown"></div>' +
+				'</div>' +
+				'<div class="echo-clear"></div>' +
+			'</div>' +
+		'</div>'
+};
+
 (function() {
 	var plugins = {
 		"MetadataManager": {
@@ -445,7 +494,7 @@ SocialChatter.templates.main =
 				'<li><a data-toggle="tab" href="#EventsList">{label:eventsList}</a></li>' +
 			'</ul>' +
 			'<div class="{class:tabPanels} tab-content">' +
-				'<div class="{class:EventsList}" id="EventsList"></div>' +
+				'<div class="{class:EventsList} tab-pane" id="EventsList"></div>' +
 			'</div>' +
 		'</div>' +
 	'</div>';
@@ -480,6 +529,7 @@ SocialChatter.renderers.tabs = function(element) {
 		});
 	}
 	tabs.show("EventsList");
+	this.dom.get("EventsList").addClass("active");
 	return element;
 };
 
@@ -520,13 +570,13 @@ SocialChatter.methods._updateTab = function(config) {
 	}
 	// exit if we don't have access to Green Room tab
 	if (config.name == "GreenRoom" && !this._hasGreenRoomAccess()) return;
-	if (this.tabs) {
+	if (this.tabs && !this.tabs.has(config.name)) {
 		this.tabs.add({
 			"id": config.name,
 			"label": config.name == "PublicEvent"
 				? this.event.data.eventName || this.labels.get("tabPublicEventLabel")
 				: this.labels.get("tabGreenRoomLabel")
-		}, $(this.substitute('<div class="{class:{data:name}}" id="{data:name}"></div>', config)));
+		}, $(this.substitute('<div class="{class:{data:name}} tab-pane" id="{data:name}"></div>', config)));
 	}
 	var tabsDomContainer = this.dom.get("tabPanels");
 	config.target = config.target || $("#" + config.name, tabsDomContainer);
@@ -689,7 +739,7 @@ SocialChatter.assemblers.EventsList = function(target) {
 };
 
 
-SocialChatter.assemblers.PublicEvent = function(target, ui) {
+SocialChatter.assemblers.PublicEvent = function(target) {
 	var self = this;
 	var data = this.event.data;
 	var pluginEnabled = !(this.event && this.event.getEventStatus() == "passed");
@@ -701,8 +751,8 @@ SocialChatter.assemblers.PublicEvent = function(target, ui) {
 	});
 	var content = view.dom.render();
 	// setting tab title
-	$(ui.tab).html(data.eventName || "Unknown Event");
-	if (!this.user.logged() || this.event.getEventStatus() == "upcoming") {
+	this.tabs.get("PublicEvent").html(data.eventName || "Unknown Event");
+	if (!this.user.is("logged") || this.event.getEventStatus() == "upcoming") {
 		$(target).append(content);
 		return;
 	}
@@ -712,12 +762,12 @@ SocialChatter.assemblers.PublicEvent = function(target, ui) {
 		}, {
 			"target": view.dom.get("publicSubmit")
 		});
-	this._initControl({
+	view._initControl({
 		"name": "Stream"
 	}, {
 		"target": view.dom.get("publicStream"),
-		"plugins": this._updateAppPlugins(
-			this.config.get("views")["PublicEvent"]["Stream"].plugins,
+		"plugins": view._updateControlPlugins(
+			this._manifest("views").PublicEvent.controls.Stream.config.plugins,
 			[{
 				"name": "Reply",
 				"enabled": pluginEnabled
@@ -727,12 +777,12 @@ SocialChatter.assemblers.PublicEvent = function(target, ui) {
 			}]
 		)
 	});
-	this._initControl({
+	view._initControl({
 		"name": "VIPStream"
 	}, {
 		"target": view.dom.get("vipStream"),
-		"plugins": this._updateAppPlugins(
-			this.config.get("views")["PublicEvent"]["VIPStream"].plugins,
+		"plugins": view._updateControlPlugins(
+			this._manifest("views").PublicEvent.controls.VIPStream.config.plugins,
 			[{
 				"name": "Reply",
 				"enabled": pluginEnabled
@@ -745,7 +795,7 @@ SocialChatter.assemblers.PublicEvent = function(target, ui) {
 	$(target).append(content);
 };
 
-SocialChatter.assemblers.GreenRoom = function(target, ui) {
+SocialChatter.assemblers.GreenRoom = function(target) {
 	var view = this.initView("GreenRoom", {
 		"user": this.user,
 		"target": target,
@@ -774,7 +824,7 @@ SocialChatter.events = {
 		var obj = args.event.object;
 		this._setPublicEvent(new Echo.SocialChatterEvent(obj.content, obj.id));
 		this._updateTabs();
-		this.tabs.select("PublicEvent");
+		this.tabs.show("PublicEvent");
 	}
 };
 
