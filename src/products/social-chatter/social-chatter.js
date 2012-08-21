@@ -356,15 +356,15 @@ SocialChatter.views.PublicEvent.templates = {
 		"control": "Echo.StreamServer.Controls.Submit",
 		"config": {
 			"appkey": null,
-			"targetURL": "{self:event.id}",
-			"itemURIPattern": "{self:event.id}/{id}",
+			"targetURL": "{config:event.id}",
+			"itemURIPattern": "{config:event.id}/{id}",
 			"actionString": "Type your question here...",
 			"plugins": [{
 				"name": "SubmitTextareaAutoResize"
 			}, {
 				"name": "SubmitCountdownEvent",
-				"eventEnd": "{self:event.data.eventEnd}",
-				"enabled": "{self:event.isOnAir}"
+				"eventEnd": "{config:event.data.eventEnd}",
+				"enabled": "{config:event.isOnAir}"
 			}]
 		}
 	};
@@ -472,8 +472,8 @@ SocialChatter.views.EventsList.controls.Submit = {
 	"control": "Echo.StreamServer.Controls.Submit",
 	"config": {
 		"appkey": null,
-		"targetURL": "{config:eventsTargetURL}",
-		"itemURIPattern": "{config:eventsTargetURL}/{id}",
+		"targetURL": "{config:parent.eventsTargetURL}",
+		"itemURIPattern": "{config:parent.eventsTargetURL}/{id}",
 		"plugins": [{
 			"name": "SocialChatterEvent"
 		}]
