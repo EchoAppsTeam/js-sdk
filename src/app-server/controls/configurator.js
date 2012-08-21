@@ -133,6 +133,7 @@ configurator.methods._form = function(config, data, depth) {
 			? spec.defaultValue
 			: data[spec.name];
 		// XXXX
+		spec.name = spec.title || spec.name;
 		spec.description = spec.description || (spec.name + " " + spec.type);
 		var row = $(self.substitute(self.templates.formRow, spec));
 		if (type === "nestedForm") {
