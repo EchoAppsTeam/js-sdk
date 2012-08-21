@@ -208,48 +208,48 @@ SocialChatter.views.EventsList.templates.main =
 	'</div>';
 
 SocialChatter.views.PublicEvent.templates = {
-	"main": '<div class="echo-socialchatter-view-publicView">' +
-			'<div class="echo-socialchatter-view-publicViewNotice"></div>' +
+	"main": '<div class="{class:publicView}">' +
+			'<div class="{class:publicViewNotice}"></div>' +
 			'<table><tr>' +
-				'<td class="echo-socialchatter-view-leftColumnTD"><div class="echo-socialchatter-view-leftColumn">' +
-					'<div class="echo-socialchatter-view-publicSubmitLabel">{label:askQuestion} {data:vipName}</div>' +
-					'<div class="echo-socialchatter-view-publicSubmit"></div>' +
-					'<div class="echo-socialchatter-view-publicStream"></div>' +
+				'<td class="{class:leftColumnTD}"><div class="{class:leftColumn}">' +
+					'<div class="{class:publicSubmitLabel}">{label:askQuestion} {data:vipName}</div>' +
+					'<div class="{class:publicSubmit}"></div>' +
+					'<div class="{class:publicStream}"></div>' +
 				'</div></td>' +
-				'<td class="echo-socialchatter-view-rightColumnTD"><div class="echo-socialchatter-view-rightColumn">' +
-					'<div class="echo-socialchatter-view-publicSubmitLabel">{label:answersFrom} {lata:vipName}</div>' +
-					'<div class="echo-socialchatter-view-eventDescription">' +
-						'<div class="echo-socialchatter-view-avatar"></div>' +
-						'<div class="echo-socialchatter-view-eventDataWrapper">' +
-							'<div class="echo-socialchatter-view-title">{data:eventName}</div>' +
-							'<div class="echo-socialchatter-view-description">{data:eventDescription}</div>' +
-							'<div class="echo-socialchatter-view-countdown"></div>' +
+				'<td class="{class:rightColumnTD}"><div class="{class:rightColumn}">' +
+					'<div class="{class:publicSubmitLabel}">{label:answersFrom} {lata:vipName}</div>' +
+					'<div class="{class:eventDescription}">' +
+						'<div class="{class:avatar}"></div>' +
+						'<div class="{class:eventDataWrapper}">' +
+							'<div class="{class:title}">{data:eventName}</div>' +
+							'<div class="{class:description}">{data:eventDescription}</div>' +
+							'<div class="{class:countdown}"></div>' +
 						'</div>' +
 						'<div class="echo-clear"></div>' +
 					'</div>' +
-					'<div class="echo-socialchatter-view-vipStream"></div>' +
+					'<div class="{class:vipStream}"></div>' +
 				'</div></td>' +
 			'</tr></table>' +
 		'</div>',
-	"upcoming": '<div class="echo-socialchatter-view-publicView echo-socialchatter-view-publicViewUpcoming">' +
-			'<div class="echo-socialchatter-view-eventDescription">' +
-				'<div class="echo-socialchatter-view-avatar"></div>' +
-				'<div class="echo-socialchatter-view-eventDataWrapper">' +
-					'<div class="echo-socialchatter-view-title">{data:eventName}</div>' +
-					'<div class="echo-socialchatter-view-description">{data:eventDescription}</div>' +
-					'<div class="echo-socialchatter-view-countdown"></div>' +
+	"upcoming": '<div class="{class:publicView} {class:publicViewUpcoming}">' +
+			'<div class="{class:eventDescription}">' +
+				'<div class="{class:avatar}"></div>' +
+				'<div class="{class:eventDataWrapper}">' +
+					'<div class="{class:title}">{data:eventName}</div>' +
+					'<div class="{class:description}">{data:eventDescription}</div>' +
+					'<div class="{class:countdown}"></div>' +
 				'</div>' +
 				'<div class="echo-clear"></div>' +
 			'</div>' +
 		'</div>',
-	"anonymous": '<div class="echo-socialchatter-view-publicView echo-socialchatter-view-publicViewAnonymous">' +
-			'<div class="echo-socialchatter-view-loginWarning"></div>' +
-			'<div class="echo-socialchatter-view-eventDescription">' +
-				'<div class="echo-socialchatter-view-avatar"></div>' +
-				'<div class="echo-socialchatter-view-eventDataWrapper">' +
-					'<div class="echo-socialchatter-view-title">{data:eventName}</div>' +
-					'<div class="echo-socialchatter-view-description">{data:eventDescription}</div>' +
-					'<div class="echo-socialchatter-view-countdown"></div>' +
+	"anonymous": '<div class="{class:publicView} {class:publicViewAnonymous}">' +
+			'<div class="{class:loginWarning}"></div>' +
+			'<div class="{class:eventDescription}">' +
+				'<div class="{class:avatar}"></div>' +
+				'<div class="{class:eventDataWrapper}">' +
+					'<div class="{class:title}">{data:eventName}</div>' +
+					'<div class="{class:description}">{data:eventDescription}</div>' +
+					'<div class="{class:countdown}"></div>' +
 				'</div>' +
 				'<div class="echo-clear"></div>' +
 			'</div>' +
@@ -392,19 +392,21 @@ SocialChatter.views.Main.controls.Auth = {
 
 SocialChatter.views.EventsList.renderers = {};
 
-/*SocialChatterView.renderers.loginWarning = function(element) {
-	element.html('<span>' + this.labels.get(this.event.getEventStatus() + "EventWarning") + '</span>');
+SocialChatter.views.PublicEvent.renderers = {};
+
+SocialChatter.views.PublicEvent.renderers.loginWarning = function(element) {
+	return element.html('<span>' + this.labels.get(this.config.get("event").getEventStatus() + "EventWarning") + '</span>');
 };
 
-SocialChatterView.renderers.publicViewNotice = function(element) {
-	var status = this.event.getEventStatus();
+SocialChatter.views.PublicEvent.renderers.publicViewNotice = function(element) {
+	var status = this.config.get("event").getEventStatus();
 	if (status == "passed") {
-		return '<span>' + this.labels.get("passedEventViewNotice") + '</span>';
+		return element.html('<span>' + this.labels.get("passedEventViewNotice") + '</span>');
 	}
-	element.hide();
+	return element.hide();
 };
 
-SocialChatterView.renderers.avatar = function(element) {
+SocialChatter.views.PublicEvent.renderers.avatar = function(element) {
 	var self = this;
 	var url = this.data.vipPhoto || this.config.get("defaultEventIcon");
 	var img = $("<img>", {"src": url});
@@ -415,13 +417,13 @@ SocialChatterView.renderers.avatar = function(element) {
 			}
 		});
 	}
-	element.append(img);
+	return element.append(img);
 };
 
-SocialChatterView.renderers.countdown = function(element) {
+SocialChatter.views.PublicEvent.renderers.countdown = function(element) {
 	var self = this;
 	element.hide();
-	var status = this.event.getEventStatus();
+	var status = this.config.get("event").getEventStatus();
 	var isUpcomingEvent = status == "upcoming";
 	var finishHandler = status == "upcoming" || status == "onAir"
 		? function() {
@@ -432,12 +434,12 @@ SocialChatterView.renderers.countdown = function(element) {
 		}
 		: function() {};
 	if (status != "upcoming") return;
-	element.css("display", "block")
+	return element.css("display", "block")
 		.countdown(new Date(this.data[isUpcomingEvent ? "eventStart" : "eventEnd"]), {
 			"prefix": this.labels.get(isUpcomingEvent ? "chatOpensIn" : "chatClosesIn"),
 			"finish": finishHandler
 		});
-};*/
+};
 
 SocialChatter.views.EventsList.renderers.eventSubmitLabel = function(element) {
 	var self = this;
@@ -701,7 +703,6 @@ SocialChatter.assemblers.Auth = function(target) {
 	var view = this.initView("Main", {
 		"user": this.user,
 		"target": target,
-		"appkey": this.config.get("appkey"),
 		"type": "eventsList"
 	});
 	var content = view.dom.render();
@@ -715,6 +716,7 @@ SocialChatter.assemblers.Auth = function(target) {
 SocialChatter.assemblers.EventsList = function(target) {
 	var view = this.initView("EventsList", {
 		"user": this.user,
+		"event": this.event,
 		"target": target,
 		"type": "eventsList"
 	});
@@ -746,6 +748,7 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 	var view = this.initView("PublicEvent", {
 		"user": this.user,
 		"data": data,
+		"event": this.event,
 		"target": target,
 		"type": "event"
 	});
