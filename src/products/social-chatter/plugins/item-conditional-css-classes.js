@@ -8,7 +8,6 @@
  * the author be liable for any damages arising in any way out of the use
  * of this software, even if advised of the possibility of such damage.
  */
-(function($) {
 
 var plugin = Echo.createPlugin({
 	"name": "ItemConditionalCSSClasses",
@@ -49,4 +48,3 @@ plugin.areEqual = function(string1, string2, isCaseInsensitive) {
 	return string1 == string2;
 };
 
-})(jQuery);

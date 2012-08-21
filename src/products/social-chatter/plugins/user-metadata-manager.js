@@ -9,8 +9,6 @@
  * of this software, even if advised of the possibility of such damage.
  */
 
-(function($) {
-
 var plugin = Echo.createPlugin({
 	"name": "UserMetadataManager",
 	"applications": ["Stream"],
@@ -134,5 +132,3 @@ plugin.isControlVisible = function(application, item, control, operation) {
 	}
 	return plugin.isSubset(control.field.value.split(","), actor[control.field.name]) ^ (operation == "set");
 };
-
-})(jQuery);

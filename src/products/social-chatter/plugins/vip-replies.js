@@ -8,7 +8,6 @@
  * the author be liable for any damages arising in any way out of the use
  * of this software, even if advised of the possibility of such damage.
  */
-(function($) {
 
 var plugin = Echo.createPlugin({
 	"name": "VipReplies",
@@ -62,4 +61,4 @@ plugin.css =
 	".echo-item-data .question-quote { background: #EEEEEE; padding: 10px; margin-bottom: 10px; }" +
 	".echo-item-data .question-quote .author { color: #476CB8; }" +
 	".echo-item-data .special-quest-reply .reply { font-size: 14px; margin-bottom: 10px; }";
-})(jQuery);
+

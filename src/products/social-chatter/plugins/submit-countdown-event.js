@@ -9,8 +9,7 @@
  * of this software, even if advised of the possibility of such damage.
  * $Id$
  */
-(function($) {
- 
+
 var plugin = Echo.createPlugin({
 	"name": "SubmitCountdownEvent",
 	"applications": ["Submit"],
@@ -60,4 +59,3 @@ plugin.renderers.Submit.countdownLabel = function(element) {
 plugin.css = 
 	'.echo-submit-countdownLabel { float: left; margin-top: 15px; }';
 
-})(jQuery);
