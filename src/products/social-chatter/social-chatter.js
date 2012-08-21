@@ -268,6 +268,15 @@ SocialChatter.views.PublicEvent.templates = {
 		'</div>'
 };
 
+SocialChatter.views.GreenRoom.templates = {};
+
+SocialChatter.views.GreenRoom.templates.main =
+	'<div>' +
+		'<div class="{class:vipInstructions}"></div>' +
+		'<div class="{class:vipStream}"></div>' +
+	'</div>'
+;
+
 (function() {
 	var plugins = {
 		"MetadataManager": {
@@ -525,8 +534,10 @@ SocialChatter.renderers.tabs = function(element) {
 	var tabs = this.tabs = new Echo.Tabs(element, {
 		"panels": this.dom.get("tabPanels"),
 		"show": function(e) {
-			var panel = self.dom.get("EventsList");
-			self._assembler("EventsList", panel);
+			var selector = $(e.target).attr("href");
+			var id = selector.replace(/^#/, "");
+			var panel = self.dom.get(id) || $(selector, self.dom.get("tabPanels"));
+			self._assembler(id, panel);
 		}
 	});
 	if (this.event) {
@@ -534,13 +545,13 @@ SocialChatter.renderers.tabs = function(element) {
 		tabs.add({
 			"id": "PublicEvent",
 			"label": data.eventName || this.labels.get("tabPublicEventLabel")
-		});
+		}, $(this.substitute('<div class="{class:{data:name}} tab-pane" id="{data:name}"></div>', {"name": "PublicEvent"})));
 	}
 	if (this.event && this._hasGreenRoomAccess()) {
 		tabs.add({
 			"id": "GreenRoom",
 			"label": this.labels.get("tabGreenRoomLabel")
-		});
+		}, $(this.substitute('<div class="{class:{data:name}} tab-pane" id="{data:name}"></div>', {"name": "GreenRoom"})));
 	}
 	tabs.show("EventsList");
 	this.dom.get("EventsList").addClass("active");
@@ -772,7 +783,7 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 		return;
 	}
 	if (this.event.onAir()) 
-		this._initControl({
+		view._initControl({
 			"name": "Submit"
 		}, {
 			"target": view.dom.get("publicSubmit")
@@ -813,11 +824,12 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 SocialChatter.assemblers.GreenRoom = function(target) {
 	var view = this.initView("GreenRoom", {
 		"user": this.user,
+		"event": this.event,
 		"target": target,
 		"type": "greenRoom"
 	});
 	var content = view.dom.render();
-	this._initControl({
+	view._initControl({
 		"name": "Stream"
 	}, {
 		"target": view.dom.get("vipStream")

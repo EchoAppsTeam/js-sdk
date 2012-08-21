@@ -584,8 +584,12 @@ $.map(plugin.fields, function(field) {
 plugin.methods._assembleContent = function() {
 	var self = this;
 	return Echo.Utils.foldl({}, plugin.fields, function(name, acc) {
-		if (name == "eventStart" || name == "eventEnd") {
-			acc[name] = self.get("eventsTimestamp." + name);
+		// FIXME: another logic!
+		if (name === "eventDateStart" || name === "eventDateEnd") {
+			var _name = name === "eventDateStart" ? "eventStart" : "eventEnd";
+			acc[_name] = self.get("eventsTimestamp." + _name);
+			return;
+		} else if (name === "eventTimeStart" || name === "eventTimeEnd") {
 			return;
 		}
 		acc[name] = self.dom.get(name).val();

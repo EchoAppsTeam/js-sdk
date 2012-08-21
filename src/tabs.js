@@ -1,8 +1,8 @@
 Echo.Tabs = function(element, config) {
-	config = config || {};
+	this.config = config || {};
 	this.element = element;
 	this.panels = config.panels || this.getPanels();
-	this._initEvents(config);
+	this._initEvents(this.config);
 };
 
 Echo.Tabs.prototype.getPanels = function() {
@@ -39,6 +39,7 @@ Echo.Tabs.prototype.remove = function(id) {
 Echo.Tabs.prototype.add = function(tabConfig, panel) {
 	tabConfig = tabConfig || {};
 	var tab = $('<li><a data-toggle="tab" href="#' + tabConfig.id + '">' + tabConfig.label  + '</a></li>');
+	$("a[data-toggle=tab]", tab).on("show", this.config.show);
 	this.element.append(tab);
 	this.panels.append(panel);
 	return this;
