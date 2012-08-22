@@ -34,8 +34,8 @@ plugin.labels = {
 plugin.methods._submitConfig = function(item, target) {
 	return this.config.assemble({
 		"target": target,
-		"data": item.data,
-		"targetURL": item.id
+		"data": item.get("data"),
+		"targetURL": item.get("data.object.id")
 	});
 };
 
@@ -49,7 +49,7 @@ plugin.methods._assembleButton = function() {
 			"visible": item.user.is("admin") || item.user.has("identity", item.get("data.actor.id")),
 			"callback": function() {
 				var config = plugin._submitConfig(item, item.dom.get("subcontainer"));
-				config["parent"] = plugin.component.config.getAsHash(),
+				config["parent"] = plugin.component.config.getAsHash();
 				config["targetQuery"] = plugin.config.get("query", "");
 				config.plugins.push({"name": "Edit"});
 				new Echo.StreamServer.Controls.Submit(config);
