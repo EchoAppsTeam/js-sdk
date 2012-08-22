@@ -21,7 +21,7 @@ Echo.ProductView.prototype._initializers.controls = function() {
 	var view = this;
 	this.controls = this.controls || {};
 	$.each(this._manifest("controls"), function(name, controlConfig) {
-		view.controls[name] = {};
+		view.controls[name] = null;
 	});
 };
 
@@ -96,7 +96,7 @@ Echo.ProductView.prototype._updateControlPlugins = function(plugins, updatePlugi
 };
 
 Echo.ProductView.prototype._destroyControl = function(name) {
-	var control = this.get("controls." + name + ".control");
+	var control = this.get("controls." + name);
 	control && control.destroy();
 	delete this.controls[name];
 };
@@ -175,7 +175,21 @@ Echo.Product.prototype.initView = function(name, config) {
 	config.parent = config.parent || this.config.getAsHash();
 	// FIXME
 	config.appkey = config.parent.appkey;
-	return new View(config);
+	this.views = this.views || {};
+	this.views[name] = new View(config);
+	return this.views[name];
+};
+
+Echo.Product.prototype.destroyView = function(name) {
+	var view = this.get("views." + name);
+	if (view && view.controls) {
+		$.each(view.controls, function(controlName, control) {
+			control.destroy();
+			delete view.controls[controlName];
+		});
+		//view.destroy();
+		//delete this.views[name];
+	}
 };
 
 (function() {

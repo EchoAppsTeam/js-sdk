@@ -12,7 +12,7 @@ plugin.config = {
 
 plugin.init = function() {
 	this.component.config.get("target").addClass(this.cssPrefix + "SocialChatterEvent");
-	this.event = new Echo.SocialChatterEvent(this.component.get("data.object.content"));
+	this.event = new Echo.SocialChatterEvent(this.component.get("data"));
 	this.extendTemplate("insertAfter", "authorName", plugin.templates.main);
 	this.component.addButtonSpec("SocialChatterEvent", this._assembleButton());
 };
@@ -191,7 +191,7 @@ plugin.component.renderers.footer = function(element) {
 
 plugin.component.renderers.avatar = function() {
 	var item = this.component;
-	var content = new Echo.SocialChatterEvent(item.get("data.object.content"));
+	var content = new Echo.SocialChatterEvent(item.get("data"));
 	var initialAvatar = item.get("data.actor.avatar");
 	var defaultAvatar = item.user.get("defaultAvatar");
 	// re-define default avatar for the item
@@ -411,7 +411,7 @@ plugin.renderers.changeEventIcon = function(element) {
 };
 
 plugin.component.renderers.text = function(element) {
-	var event = new Echo.SocialChatterEvent(this.component.get("data.object.content"));
+	var event = new Echo.SocialChatterEvent(this.component.get("data"));
 	if ($.isEmptyObject(event)) {
 		return this.parentRenderer("text", arguments);
 	}
@@ -428,12 +428,12 @@ plugin.component.renderers.postButton = function(element) {
 plugin.renderers.eventInfo = function(element, extra) {
 	extra = extra || {};
 	var type = extra.type;
-	var event = new Echo.SocialChatterEvent(this.component.get("data.object.content"));
+	var event = new Echo.SocialChatterEvent(this.component.get("data"));
 //	var value = event.data && event.data[type] && (type == "eventStart" || type == "eventEnd")
 //		? this._getFullDate(event.data[type])
 //		: event.data[type] || "";
-	var value = event.data[type] || "";
 	if (!$.isEmptyObject(event)) {
+		var value = event.data[type] || "";
 		this.dom.get(type)
 			.iHint({
 				"text": this.labels.get(type + "Hint"),
@@ -482,7 +482,7 @@ $.map(["eventDateStart", "eventDateEnd" ,"eventTimeStart", "eventTimeEnd"], func
 	plugin.renderers[field] = function(element) {
 		var self = this;
 		this.dom.render({"name": "eventInfo", "extra": {"type": field}});
-		var event = new Echo.SocialChatterEvent(this.component.get("data.object.content"));
+		var event = new Echo.SocialChatterEvent(this.component.get("data"));
 		var normField = field.replace(/(time)|(date)/i, "");
 
 		var checkDateInterval = function() {
@@ -496,7 +496,7 @@ $.map(["eventDateStart", "eventDateEnd" ,"eventTimeStart", "eventTimeEnd"], func
 		};
 
 		var defaultDate;
-		if (event.data[normField]) {
+		if (!$.isEmptyObject(event) && event.data[normField]) {
 			defaultDate = new Date(event.data[normField]);
 			this.set("eventsTimestamp." + normField, event.data[normField]);
 		} else {
@@ -561,10 +561,10 @@ $.map(plugin.fields, function(field) {
 		this.dom.render({"name": "eventInfo", "extra": {"type": field}});
 		// exclusion for "vipPhoto" element name
 		if (field === "vipPhoto") {
-			var content = this.component.get("data.object.content");
-			if (content) {
-				var event = new Echo.SocialChatterEvent(content);
-				if (event.data.vipPhoto) {
+			var entry = this.component.get("data");
+			if (entry && entry.object) {
+				var event = new Echo.SocialChatterEvent(entry);
+				if (!$isEmptyObject(event) && event.data.vipPhoto) {
 					this.dom.get("eventIcon").attr("src", event.data.vipPhoto);
 				}
 			}

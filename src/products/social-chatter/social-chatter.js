@@ -10,10 +10,10 @@ labels.set({
 	"endDateDiffDisplay": "Ended {diff} {period}{suffix} ago"
 }, "Echo.SocialChatterEvent", true);
 
-// TODO: pass entire entry to this constructor, not only "content" field
-Echo.SocialChatterEvent = function(data, id) {
-	this.id = id;
-	this.data = this.getData(data);
+Echo.SocialChatterEvent = function(entry) {
+	if (!entry || !entry.object) return {};
+	this.id = entry.object.id;
+	this.data = this.getData(entry.object.content);
 };
 
 Echo.SocialChatterEvent.prototype.getData = function(dataString) {
@@ -147,18 +147,15 @@ SocialChatter.labels = {
 	"removeFromGreenRoomControl": "Remove from Green Room"
 };
 
-SocialChatter.vars = {"cache": {}};
+SocialChatter.vars = {
+	"cache": {},
+	"eventById": {},
+	"event": undefined
+};
 
 SocialChatter.init = function() {
 	var self = this;
-	self._initVars();
-	self._initBackplane();
-	self._requestEventsList(function(data) {
-		self._initSocialChatterEvents(data.entries);
-		self._setPublicEvent(self._pickRelevantEvent(data.entries));
-		self.dom.render();
-		self.config.set("apps.Stream.EventsList.data", data);
-	});
+	this.dom.render();
 };
 
 SocialChatter.config = {
@@ -269,6 +266,14 @@ SocialChatter.views.PublicEvent.templates = {
 				'<div class="echo-clear"></div>' +
 			'</div>' +
 		'</div>'
+};
+
+SocialChatter.views.PublicEvent.template = function() {
+	var event = this.config.get("event");
+	var status = event && event.getEventStatus();
+	return this._manifest("templates")[this.user && this.user.is("logged")
+		? (status && status !== "upcoming" ? "main" :"upcoming")
+		: "anonymous"];
 };
 
 SocialChatter.views.GreenRoom.templates = {};
@@ -496,7 +501,8 @@ SocialChatter.views.EventsList.controls.Stream = {
 	"control": "Echo.StreamServer.Controls.Stream",
 	"config": {
 		"appkey": null,
-		"query": "childrenof:{self:eventsTargetURL} state:Untouched,ModeratorApproved children:0",
+		"query": "childrenof:{config:parent.eventsTargetURL} state:Untouched,ModeratorApproved children:0",
+		"liveUpdatesTimeout": "{config:parent.liveUpdatesTimeout}",
 		"reTag": false,
 		"itemControlsOrder": ["SocialChatterEvent", "Edit", "Curation.Delete"],
 		"plugins": [{
@@ -542,7 +548,9 @@ SocialChatter.renderers.tabs = function(element) {
 			var selector = $(e.target).attr("href");
 			var id = selector.replace(/^#/, "");
 			var panel = self.dom.get(id) || $(selector, self.dom.get("tabPanels"));
-			self._assembler(id, panel);
+			if (!self.views[id]) {
+				self._assembler(id, panel);
+			}
 		}
 	});
 	if (this.event) {
@@ -563,16 +571,11 @@ SocialChatter.renderers.tabs = function(element) {
 	return element;
 };
 
-SocialChatter.methods._initVars = function() {
-	this.event = undefined;
-	this.eventById = {};
-};
-
 SocialChatter.methods._initSocialChatterEvents = function(entries) {
 	var self = this;
 	$.each(entries, function(id, entry) {
 		self.eventById[entry.object.id] =
-			new Echo.SocialChatterEvent(entry.object.content, entry.object.id);
+			new Echo.SocialChatterEvent(entry);
 	});
 };
 
@@ -625,12 +628,11 @@ SocialChatter.methods._updateTabs = function() {
 	});
 };
 
-SocialChatter.methods._pickRelevantEvent = function(entries) {
+SocialChatter.methods._pickRelevantEvent = function() {
 	// we need to pick one most relevant event:
 	//  - look for event which is on air right now
 	//  - otherwise grab first upcoming event
 	//  - if there are no upcoming or on air events - return undefined
-	if (entries && !entries.length) return;
 	var relevantEvent;
 	$.each(this.eventById, function(id, event) {
 		var status = event.getEventStatus();
@@ -644,78 +646,6 @@ SocialChatter.methods._pickRelevantEvent = function(entries) {
 		}
 	});
 	return relevantEvent;
-};
-
-SocialChatter.methods._classifyAction = function(entry) {
-	return (entry.verbs[0] == "http://activitystrea.ms/schema/1.0/delete") ? "delete" : "post";
-};
-
-SocialChatter.methods._handleLiveUpdatesResponse = function(data) {
-	var self = this;
-	this.nextSince = data.nextSince || 0;
-	// we need to do the following:
-	//   - if the current public event is updated: update data and UI
-	//   - if the current public event was deleted: delete from data and refresh the UI
-	//   - if any other event was deleted: delete from data
-	//   - if new event is added AND public event (on air or upcoming) is displayed:
-	//		add to the data, do NOT update/switch public event view
-	//   - if new event is added AND NO public event (on air or upcoming) is displayed:
-	//		add to the data AND add public event tab!
-	if (!data.entries || !data.entries.length) return;
-	$.each(data.entries, function(id, entry) {
-		var event = self.eventById[entry.object.id];
-		var action = self._classifyAction(entry);
-		if (!event && action != "post") return;
-		switch (action) {
-			case "post":
-				var event = new Echo.SocialChatterEvent(
-					entry.object.content,
-					entry.object.id
-				);
-				var status = event.getEventStatus();
-				self.eventById[entry.object.id] = event;
-				// if current event is updated
-				// OR if NO public event - add new tab & green room tab
-				if ((self.event && self.event.id == event.id) ||
-					(!self.event && (status == "onAir" || status == "upcoming"))) {
-					self._setPublicEvent(self._pickRelevantEvent(data.entries));
-					self._updateTabs();
-				}
-				break;
-			case "delete":
-				delete self.eventById[entry.object.id];
-				// refresh if current event was removed
-				if (self.event && self.event.id == entry.object.id) {
-					delete self.event;
-					self._setPublicEvent(self._pickRelevantEvent());
-					self._updateTabs();
-				}
-				break;
-		};
-	});
-	this.startLiveUpdates();
-};
-
-SocialChatter.methods._initBackplane = function() {
-	if (!this.config.get("backplane.busName")) return;
-	Backplane.init(this.config.get("backplane"));
-};
-
-SocialChatter.methods._requestEventsList = function(callback) {
-	var self = this;
-	Echo.StreamServer.API.request({
-		"endpoint": "search",
-		"recurring": true,
-		"apiBaseURL": this.config.get("apiBaseURL"),
-		"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
-		"data": {
-			"q": this.config.get("eventListQuery"),
-			"appkey": this.config.get("appkey")
-		},
-		"onData": function(response) {
-			callback(response);
-		}
-	}).send();
 };
 
 SocialChatter.methods._assembler = function(name) {
@@ -742,6 +672,7 @@ SocialChatter.assemblers.Auth = function(target) {
 };
 
 SocialChatter.assemblers.EventsList = function(target) {
+	var self = this;
 	var view = this.initView("EventsList", {
 		"user": this.user,
 		"event": this.event,
@@ -755,15 +686,51 @@ SocialChatter.assemblers.EventsList = function(target) {
 		}, {
 			"target": view.dom.get("eventSubmit")
 		});
-		/*submit.events.subscribe("Submit.onPostComplete", function(topic, args) {
+		/*submit.events.subscribe("Echo.StreamServer.Controls.Submit.onPostComplete", function(topic, args) {
 			view.dom.get("eventSubmitContainer").slideUp();
 		});*/
 	}
 	var stream = view._initControl({
 		"name": "Stream"
 	}, {
-		"target": view.dom.get("eventsStream"),
-		"query": this.config.get("eventListQuery")
+		"target": view.dom.get("eventsStream")
+	});
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onReceive",
+		"handler": function(topic, args) {
+			var entry = args.item.data;
+			var event = new Echo.SocialChatterEvent(entry);
+			var status = event.getEventStatus();
+			self.eventById[entry.object.id] = event;
+			if ((self.event && self.event.id == event.id) ||
+				(!self.event && (status == "onAir" || status == "upcoming"
+))) {
+				self._setPublicEvent(self._pickRelevantEvent());
+				self._updateTabs();
+			}
+		}
+	});
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onDelete",
+		"handler": function(topic, data) {
+			var item = data.item;
+			var id = item.get("data.object.id");
+			delete self.eventById[id];
+			// refresh if current event was removed
+			if (self.event && self.event.id === id) {
+				delete self.event;
+				self._setPublicEvent(self._pickRelevantEvent());
+				self._updateTabs();
+			}
+		}
+	});
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
+		"handler": function(topic, data) {
+			self._initSocialChatterEvents(data.entries);
+			self._setPublicEvent(self._pickRelevantEvent());
+			self._updateTabs();
+		}
 	});
 	$(target).append(content);
 };
@@ -853,8 +820,8 @@ SocialChatter.events = {
 		this.refresh();
 	},
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onBeforeEventOpen": function(topic, args) {
-		var obj = args.event.object;
-		this._setPublicEvent(new Echo.SocialChatterEvent(obj.content, obj.id));
+		var entry = args.event;
+		this._setPublicEvent(new Echo.SocialChatterEvent(entry));
 		this._updateTabs();
 		this.tabs.show("PublicEvent");
 	}
