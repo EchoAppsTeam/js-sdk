@@ -2,6 +2,8 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
 	<title>Echo::Products::SocialChatter-Demo</title>
+	<link rel="stylesheet" type="text/css" href="../../demo.css" />
+
 	<link href="../../../sdk/third-party/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../../../sdk/third-party/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 	<link href="../../../sdk/third-party/bootstrap/css/datepicker.css" rel="stylesheet">
@@ -32,7 +34,15 @@
 	<script type="text/javascript" src="../../../sdk/products/social-chatter/social-chatter.js"></script>
 </head>
 <body>
-	<div id="stream"></div>
+<div id="container">
+	<div id="documentation"><a href="http://wiki.aboutecho.com/w/page/30181308/Echo%20Application%20-%20Echo%20Stream%20Client" target="_blank">Documentation</a></div>
+	<h1>SocialChatter Demo</h1>
+	<div class="wrapper">
+		<div id="stream"></div>
+	</div>
+</div>
+
+
 	<script>
 		Backplane.init({
 			"serverBaseURL": "http://api.echoenabled.com/v1",

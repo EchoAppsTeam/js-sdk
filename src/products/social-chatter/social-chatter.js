@@ -904,7 +904,9 @@ SocialChatter.css =
 	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-panel { border-radius: 0px; border-left: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; }' +
 	'.echo-ui .echo-socialchatter-tabs .echo-tabs-header { border-bottom: 1px solid #DDDDDD; }' +
 	'.echo-app-message { border: none; }' +
-	'.{class:container} .echo-streamserver-controls-submit-markersContainer, .{class:container} .echo-streamserver-controls-submit-tagsContainer, .{class:container} .echo-streamserver-controls-stream-item-modeSwitch { display: none !important; }'
+	'.{class:container} .echo-streamserver-controls-submit-markersContainer, .{class:container} .echo-streamserver-controls-submit-tagsContainer, .{class:container} .echo-streamserver-controls-stream-item-modeSwitch { display: none !important; }' +
+	'.{class:tabs} a { font-size: 16px; font-weight: bold; outline: none; }' +
+	'.{class:tabs}.nav.nav-tabs .active a { background-color: #F5F4EE; outline: none; }'
 ;
 
 Echo.Product.create(SocialChatter);

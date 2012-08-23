@@ -20,6 +20,14 @@ var plugin = Echo.Plugin.manifest("SubmitTextareaAutoResize", "Echo.StreamServer
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
+plugin.component.renderers.postButton = function(element) {
+	return this.parentRenderer("postButton", arguments).addClass(this.cssPrefix + "btn btn btn-small");
+};
+
+plugin.component.renderers.body = function(element) {
+	return this.parentRenderer("body", arguments).addClass(this.cssPrefix + "borderNone");
+};
+
 plugin.component.renderers.text = function(element) {
 	if (this.config.get("mode") != "compact") {
 		element.one({
@@ -28,8 +36,13 @@ plugin.component.renderers.text = function(element) {
 			}
 		});
 	}
-	this.parentRenderer("text", arguments);
+	return this.parentRenderer("text", arguments).addClass(this.cssPrefix + "border");
 };
+
+plugin.css =
+	'.{plugin.class:border} { border: 1px solid; }' +
+	'.{plugin.class:btn} div.echo-label { font-size: 12px; }' +
+	'.{plugin.class:borderNone} .{class:border} { border: none; }';
 
 Echo.Plugin.create(plugin);
 

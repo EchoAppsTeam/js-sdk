@@ -410,6 +410,10 @@ plugin.renderers.changeEventIcon = function(element) {
 		});
 };
 
+plugin.component.renderers.body = function(element) {
+	return this.parentRenderer("body", arguments).addClass(this.cssPrefix + "borderNone");
+};
+
 plugin.component.renderers.text = function(element) {
 	var event = new Echo.SocialChatterEvent(this.component.get("data"));
 	if ($.isEmptyObject(event)) {
@@ -599,6 +603,19 @@ plugin.methods._assembleContent = function() {
 	});
 };
 
+plugin.methods._highlightMandatory = function(element) {
+	var component = this.component;
+	var result = component.highlightMandatory(element);
+	if (result) {
+		var css = this.cssPrefix + "mandatory";
+		element.addClass(css)
+			.one("focus", function() {
+				element.removeClass(css);
+			});
+	}
+	return result;
+};
+
 plugin.methods._postAction = function() {
 	var component = this.component;
 	var self = this;
@@ -607,7 +624,7 @@ plugin.methods._postAction = function() {
 		var hasErrors;
 		$.each(plugin.mandatoryFields, function(i, v) {
 			var element = component.dom.get(self.get("cssPrefix") + v, true);
-			var highlighted = component.highlightMandatory(element);
+			var highlighted = self._highlightMandatory(element);
 			hasErrors = hasErrors || highlighted;
 		});
 		if (hasErrors) return;
@@ -657,7 +674,11 @@ plugin.css =
 	'.{plugin.class:inputContainer} .icon-th { margin: -4px 0 0 -22.5px; pointer-events: none; position: relative; }' +
 	'.{plugin.class:eventTimeStart}, .{plugin.class:eventTimeEnd} { width: 90px; margin-left: 20px; }' +
 	'.{plugin.class:eventDateStart}, .{plugin.class:eventDateEnd} { width: 100px; }' +
-	'.bootstrap-timepicker { width: 160px; }';
+	'.{class:content} .bootstrap-timepicker { width: 160px; }' +
+	'.{class:content} .{plugin.class:mandatory} { border-color: #ff5050; }'+
+	'.{class:content} { background-color: transparent; }' +
+	'.{plugin.class:borderNone} .{class:border} { border: none; }'
+;
 
 Echo.Plugin.create(plugin);
 
