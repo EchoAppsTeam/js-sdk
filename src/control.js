@@ -682,22 +682,8 @@ Echo.Control.prototype._initializers.dom = function() {
 			this.elements[name].remove();
 			delete this.elements[name];
 		},
-		"render": function(args) {
-			args = args || {};
-
-			// render in event-less mode
-			if (args.target || args.name) {
-				return self._render(args);
-			}
-
-			// cleanup dom strcuture when we render the whole control
-			self.dom.clear();
-
-			var rendered = self.dom.rendered;
-			var content = self._render(args);
-			self.dom.rendered = true;
-			self.events.publish({"topic": rendered ? "onRerender" : "onRender"});
-			return content;
+		"render": function() {
+			return self._render.apply(self, arguments);
 		}
 	};
 };
@@ -868,10 +854,17 @@ Echo.Control.prototype._render = function(args) {
 		return newNode;
 	}
 
+
+	// cleanup dom strcuture when we render the whole control
+	this.dom.clear();
+
+	var rendered = this.dom.rendered;
 	var dom = this._applyRenderers(
 		this._compileTemplate(template, data, this.extension.template)
 	);
 	target.empty().append(dom);
+	this.dom.rendered = true;
+	this.events.publish({"topic": rendered ? "onRerender" : "onRender"});
 	return dom;
 };
 
