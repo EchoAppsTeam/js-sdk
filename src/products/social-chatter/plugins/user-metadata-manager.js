@@ -152,7 +152,6 @@ plugin.methods._isControlVisible = function(control, operation) {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Plugins.UserMetadataManager.onUserUpdate": function(topic, args) {
-		console.log(this.component.get("data.actor.id"));
 		this._applyUserUpdate(this.component, args.item, args.field);
 	}
 };

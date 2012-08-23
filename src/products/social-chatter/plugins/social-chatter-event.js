@@ -515,7 +515,6 @@ $.map(["eventDateStart", "eventDateEnd" ,"eventTimeStart", "eventTimeEnd"], func
 					self.set("eventsTimestamp." + normField, self.get("eventsTime." + normField) + self.get("eventsDate." + normField));
 					checkDateInterval();
 				}).on("change", function() {
-					console.log("change");
 					checkDateInterval();
 				});
 		} else {
