@@ -9,35 +9,42 @@
  * of this software, even if advised of the possibility of such damage.
  */
 
-var plugin = Echo.createPlugin({
-	"name": "UserMetadataManager",
-	"applications": ["Stream"],
-	"init": function(plugin, application) {
-		var controls = plugin.config.get(application, "controls");
-		$.each(controls, function(i, control) {
-			control.field = plugin.getField(control);
-			if (!control.field) return;
-			plugin.addItemControl(application,
-				plugin.assembleControl("SetUserProperty", control, application));
-			plugin.addItemControl(application,
-				plugin.assembleControl("UnsetUserProperty", control, application));
-		});
-	}
-});
+var plugin = Echo.Plugin.manifest("UserMetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
-plugin.addLabels({
+if (Echo.Plugin.isDefined(plugin)) return;
+
+plugin.init = function() {
+	var self = this;
+	var component = this.component;
+	var controls = this.config.get("controls");
+	$.each(controls, function(i, control) {
+		control.field = self._getField(control);
+		if (!control.field) return;
+
+		component.addButtonSpec(control,
+			self._assembleControl("SetUserProperty", control));
+
+		component.addButtonSpec(this.name,
+			self._assembleControl("UnsetUserProperty", control));
+
+	});
+};
+
+plugin.labels = {
 	"setPropertyProcessing": "Adding '{value}' {name}...",
 	"unsetPropertyProcessing": "Removing '{value}' {name}..."
-});
+};
 
-plugin.assembleControl = function(action, control, application) {
+plugin.methods._assembleControl = function(action, control) {
+	var self = this;
+	var component = this.component;
 	var name = action + "-" + control.field.value.replace(/[^a-z0-9_-]/ig, '');
 	var operation = action.match(/^(.*)UserProperty$/)[1];
 	var callback = function() {
 		var item = this;
 		var actor = item.data.actor;
-		var field = plugin.getUpdatedUserProperty(operation.toLowerCase(),
-								control.field, actor);
+		var field = self._getUpdatedUserProperty(operation.toLowerCase(),
+			control.field, actor);
 		var label = operation.toLowerCase() + "PropertyProcessing";
 		item.controls[plugin.name + "." + name].element
 			.empty()
@@ -45,43 +52,50 @@ plugin.assembleControl = function(action, control, application) {
 		var value = field.name == "state"
 			? field.value
 			: field.value.length ? field.value.join(",") : "-";
-		$.get(plugin.config.get(application, "submissionProxyURL", "", true), {
-			"appkey": application.config.get("appkey"),
-			"content": $.object2JSON({
-				"endpoint": "users/update",
-				"field": field.name,
-				"value": value,
-				"identityURL": actor.id,
-				"username": actor.title
-			}),
-			"sessionID": application.user.get("sessionID", "")
-		}, function(data) {
-			if (!data || data.result == "error") {
-				item.rerender();
-				return;
-			}
-			$.map(application.threads, function(thread) {
-				thread.traverse(thread.children, function(child) {
-					plugin.applyUserUpdate(child, item, field);
+
+		var request = Echo.StreamServer.API.request({
+			"endpoint": "users/update",
+			"submissionProxyURL": component.config.get("submissionProxyURL", "", true),
+			"data": {
+				"content": {
+					"field": field.name,
+					"value": value,
+					"identityURL": actor.id,
+					"username": actor.title
+				},
+				"appkey": component.config.get("appkey"),
+				"sessionID": component.user.get("sessionID"),
+				"target-query": component.config.get("parent.query")
+			},
+			"onData": function(data) {
+				console.log(data);
+				if (!data || data.result == "error") {
+					item.dom.render();
+					return;
+				}
+				$.map(component.threads, function(thread) {
+					thread.traverse(thread.children, function(child) {
+						self._applyUserUpdate(child, item, field);
+					});
+					self._applyUserUpdate(thread, item, field);
 				});
-				plugin.applyUserUpdate(thread, item, field);
-			});
-		}, "jsonp");
+			}
+		});
+		request.send();
 	};
 	return function() {
 		var item = this;
 		return {
 			"name": name,
-			"label": control["label" + operation],
-			"visible": plugin.isControlVisible(application, item,
-						control, operation.toLowerCase()),
+			"label": self.labels.get(action),
+			"visible": self._isControlVisible(control, operation.toLowerCase()),
 			"onetime": true,
 			"callback": callback
 		};
 	};
 };
 
-plugin.getField = function(control) {
+plugin.methods._getField = function(control) {
 	var name;
 	$.map(["roles", "state", "markers"], function(_name) {
 		if (control[_name]) {
@@ -92,7 +106,7 @@ plugin.getField = function(control) {
 	return name ? {"name": name, "value": control[name]} : undefined;
 };
 
-plugin.getUpdatedUserProperty = function(action, field, actor) {
+plugin.methods._getUpdatedUserProperty = function(action, field, actor) {
 	var value;
 	if (field.name == "state") {
 		value = action == "set" ? field.value : "Untouched";
@@ -106,29 +120,32 @@ plugin.getUpdatedUserProperty = function(action, field, actor) {
 	return {"name": field.name, "value": value};
 };
 
-plugin.applyUserUpdate = function(target, source, field) {
+plugin.methods._applyUserUpdate = function(target, source, field) {
 	if (target.data.actor.id != source.data.actor.id) return;
 	target.data.actor[field.name == "state" ? "status" : field.name] = field.value;
 	target.rerender();
 };
 
-plugin.isSubset = function(target, full) {
+plugin.methods._isSubset = function(target, full) {
 	if (!full || !full.length) return false;
 	return !($.foldl([], target || [], function(item, acc) {
 		if ($.inArray(item, full) < 0) acc.push(item);
 	})).length;
 };
 
-plugin.isControlVisible = function(application, item, control, operation) {
+plugin.methods._isControlVisible = function(control, operation) {
+	var item = this.component;
 	var actor = item.data.actor;
-	if (actor.id == item.user.get("fakeIdentityURL") || !item.user.isAdmin()) {
+	if (actor.id == item.user.get("fakeIdentityURL") || !item.user.is("admin")) {
 		return false;
 	}
 	if (control.field.name == "state") {
 		return (actor.status == control.field.value) ^ (operation == "set");
 	}
-	if (control.field.name == "roles" && !item.user.hasAny("roles", ["administrator"])) {
+	if (control.field.name == "roles" && !item.user.any("role", ["administrator"])) {
 		return false;
 	}
-	return plugin.isSubset(control.field.value.split(","), actor[control.field.name]) ^ (operation == "set");
+	return this._isSubset(control.field.value.split(","), actor[control.field.name]) ^ (operation == "set");
 };
+
+Echo.Plugin.create(plugin);

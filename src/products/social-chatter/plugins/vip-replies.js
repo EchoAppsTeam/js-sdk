@@ -11,9 +11,12 @@
 
 var plugin = Echo.Plugin.manifest("VipReplies", "Echo.StreamServer.Controls.Stream.Item");
 
-plugin.init = function(plugin, application) {
-	if (plugin.config.get(application, "view") == "public" ||
-		!application.user.hasAnyRole(["vip"])) return;
+if (Echo.Plugin.isDefined(plugin)) return;
+
+plugin.init = function() {
+	var component = this.component;
+	if (this.config.get("view") == "public" ||
+		!component.user.any("role", ["vip"])) return;
 };
 
 plugin.events = {

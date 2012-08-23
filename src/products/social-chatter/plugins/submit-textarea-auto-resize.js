@@ -18,7 +18,7 @@
 
 var plugin = Echo.Plugin.manifest("SubmitTextareaAutoResize", "Echo.StreamServer.Controls.Stream.Submit");
 
-plugin.init = function() {};
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.component.renderers.text = function(element) {
 	if (this.config.get("mode") != "compact") {

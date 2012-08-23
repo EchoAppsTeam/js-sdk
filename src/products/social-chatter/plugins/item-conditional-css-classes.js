@@ -11,14 +11,16 @@
 
 var plugin = Echo.Plugin.manifest("ItemConditionalCSSClasses", "Echo.StreamServer.Controls.Stream.Item");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.component.renderers.content = function(element) {
 	var item = this;
 	item.parentRenderer("content", arguments);
-	var conditions = plugin.config.get(item, "conditions");
+	var conditions = item.config.get("conditions");
 	if (!conditions || !conditions.length) return;
 	$.map(conditions, function(condition) {
-		var value = $.getNestedValue(condition.field, item.data);
-		var isCaseInsensitive = plugin.config.get(item, "caseInsensitive") == true;
+		var value = Echo.Utils.getNestedValue(condition.field, item.data);
+		var isCaseInsensitive = item.config.get("caseInsensitive") == true;
 		if ($.isArray(value)) {
 			$.each(value, function(_id, _value) {
 				if (plugin.areEqual(_value, condition.value, isCaseInsensitive)) {
