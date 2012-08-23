@@ -48,7 +48,8 @@ counter.init = function() {
 	if ($.isEmptyObject(this.get("data"))) {
 		this._request();
 	} else {
-		this.initialized();
+		this.dom.render();
+		this.ready();
 	}
 };
 
@@ -84,7 +85,8 @@ counter.methods._update = function(data) {
 			}
 		});
 		this.set("data", data);
-		this.initialized();
+		this.dom.render();
+		this.ready();
 	}
 };
 
@@ -99,7 +101,8 @@ counter.methods._error = function(data) {
 	});
 	if (data.errorCode === "more_than") {
 		this.set("data.count", data.errorMessage + "+");
-		this.initialized();
+		this.dom.render();
+		this.ready();
 	} else {
 		this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
 	}

@@ -225,7 +225,8 @@ pile.methods._initialResponseHandler = function(data) {
 	if (!data.entries.length) {
 		if (!this.isViewComplete) {
 			this.isViewComplete = true;
-			this.initialized();
+			this.dom.render();
+			this.ready();
 		}
 		return;
 	}
@@ -288,7 +289,8 @@ pile.methods._output = function(isLive, fetchMoreUsers) {
 	if (!isLive && fetchMoreUsers) {
 		this._getMoreUsers();
 	} else {
-		this.initialized();
+		this.dom.render();
+		this.ready();
 	}
 };
 

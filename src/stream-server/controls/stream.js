@@ -602,7 +602,8 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 				"initial": true,
 				"data": data
 			};
-			self.initialized();
+			self.dom.render();
+			self.ready();
 		})(roots);
 	});
 };
@@ -1308,7 +1309,7 @@ item.labels = {
 
 item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
-	this.initialized();
+	this.ready();
 };
 
 item.renderers.authorName = function(element) {

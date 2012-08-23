@@ -79,7 +79,10 @@ Echo.Control.manifest = function(name) {
 		"renderers": {},
 		"templates": {},
 		"dependencies": [],
-		"init": function() { this.initialized(); },
+		"init": function() {
+			this.dom.render();
+			this.ready();
+		},
 		"destroy": undefined
 	};
 };
@@ -457,10 +460,9 @@ Echo.Control.prototype._initializers.list = [
 	["dependencies:async", ["init"]],
 	["user:async",         ["init", "refresh"]],
 	["plugins:async",      ["init", "refresh"]],
-	["launcher:async",     ["init", "refresh"]],
-	["rendering",          ["init", "refresh"]],
-	["initFinalizer",      ["init"]],
-	["refreshFinalizer",   ["refresh"]]
+	["init:async",         ["init", "refresh"]],
+	["ready",              ["init"]],
+	["refresh",            ["refresh"]]
 ];
 
 Echo.Control.prototype._initializers.get = function(action) {
@@ -744,27 +746,20 @@ Echo.Control.prototype._initializers.plugins = function(callback) {
 	});
 };
 
-Echo.Control.prototype._initializers.launcher = function(callback) {
+Echo.Control.prototype._initializers.init = function(callback) {
 
 	// this function should be called inside the "init" function
-	// to indicate that the control was initialized and the next
-	// step should take over further execution
-	this.initialized = callback;
+	// to indicate that the control was initialized and is now ready
+	this.ready = callback;
 
 	this._manifest("init").call(this);
 };
 
-Echo.Control.prototype._initializers.rendering = function() {
-	if (this.config.get("render", true)) {
-		this.dom.render();
-	}
-};
-
-Echo.Control.prototype._initializers.initFinalizer = function() {
+Echo.Control.prototype._initializers.ready = function() {
 	this.events.publish({"topic": "onReady"});
 };
 
-Echo.Control.prototype._initializers.refreshFinalizer = function() {
+Echo.Control.prototype._initializers.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
 };
 
