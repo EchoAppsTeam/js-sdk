@@ -264,7 +264,7 @@ plugin.css =
 	'.{plugin.class:eventContainer} { float: left; }' +
 	'.echo-streamserver-controls-stream-SocialChatterEvent .{class:avatar-wrapper} { margin-top: 7px; }' +
 	'.{plugin.class:eventButtonContainer} { padding: 15px 0 15px 0px; text-align: left; }' +
-	'.(plugin.class:eventButtonContainer} .echo-sdk-button .ui-state-default, .{class:newEventButton} .echo-button-v3 .ui-state-default, .echo-streamserver-controls-submit-controls .echo-button-v3 .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
+	'.{plugin.class:eventButtonContainer} .echo-sdk-button .ui-state-default, .{class:newEventButton} .echo-sdk-button .ui-state-default, .echo-streamserver-controls-submit-controls .echo-sdk-button .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
 	'.{plugin.class:eventBrief} { padding: 5px 0 5px 0px; }' +
 	'.{plugin.class:eventNameBrief} { font-size: 20px; font-weight: bold; }' +
 	'.{plugin.class:eventDescriptionBrief} { font-size: 14px; margin: 10px 0px; }' +
@@ -272,7 +272,7 @@ plugin.css =
 	'.echo-products-socialchatter-view-eventsStream .{plugin.class:modeSwitch}, .echo-products-socialchatter-eventslist .{class:plugin-Moderation-status} { display: none !important; }' +
 	'.echo-products-socialchatter-eventslist .{class:subcontainer} { margin-left: 10px; }' +
 	'.echo-event-onair-label { color: green; font-weight: bold; }' +
-	'.{plugin.class:eventButton} .echo-label { font-size: 12px; }';
+	'.{plugin.class:eventButton} div.echo-label { font-size: 12px; }';
 
 Echo.Plugin.create(plugin);
 

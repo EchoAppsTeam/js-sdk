@@ -830,6 +830,7 @@ SocialChatter.views.EventsList.css =
 	'.{class:eventsStream} { margin-top: 15px; }' +
 	'.{class:eventsStream} .echo-streamserver-controls-stream-header { display: none; }' +
 	'.{class:eventSubmitLabel} { margin-top: 10px; cursor: pointer; font-weight: bold; font-size: 16px; }' +
+	'.{class:eventSubmitLabel} div.echo-label { font-size: 12px; }' +
 	'.{class:eventSubmit} .echo-streamserver-controls-submit-postContainer { float: left; margin-left: 7px; }' +
 	'.{class:eventSubmit} .echo-streamserver-controls-submit-content { border: none; }' +
 	'.{class:eventSubmit} { margin: 10px auto; padding: 10px; width: 550px; }' +
