@@ -141,8 +141,6 @@ SocialChatter.labels = {
 	"tabGreenRoomLabel": "Green room",
 	"tabPublicEventLabel": "Public event",
 	"tabAllEventsLabel": "All Events", 
-	"assignVIPRoleControl": "Assign VIP role",
-	"revokeVIPRoleControl": "Revoke VIP role"
 };
 
 SocialChatter.vars = {
@@ -212,7 +210,9 @@ SocialChatter.views.PublicEvent.labels = {
 	"passedEventWarning": "Please login to view this chat archive.",
 	"onAirEventWarning": "<b>Chat is on air now!</b> <br><br> Please login to join the conversation!",
 	"sendToGreenRoomControl": "Send to Green Room",
-	"removeFromGreenRoomControl": "Remove from Green Room"
+	"removeFromGreenRoomControl": "Remove from Green Room",
+	"assignVIPRoleControl": "Assign VIP role",
+	"revokeVIPRoleControl": "Revoke VIP role"
 };
 
 SocialChatter.views.PublicEvent.templates = {
