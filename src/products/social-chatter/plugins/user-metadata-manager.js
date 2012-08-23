@@ -8,7 +8,7 @@
  * the author be liable for any damages arising in any way out of the use
  * of this software, even if advised of the possibility of such damage.
  */
-
+(function() {
 var plugin = Echo.Plugin.manifest("UserMetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
@@ -21,10 +21,10 @@ plugin.init = function() {
 		control.field = self._getField(control);
 		if (!control.field) return;
 
-		component.addButtonSpec(control,
+		component.addButtonSpec(self.name,
 			self._assembleControl("SetUserProperty", control));
 
-		component.addButtonSpec(this.name,
+		component.addButtonSpec(self.name,
 			self._assembleControl("UnsetUserProperty", control));
 
 	});
@@ -46,15 +46,16 @@ plugin.methods._assembleControl = function(action, control) {
 		var field = self._getUpdatedUserProperty(operation.toLowerCase(),
 			control.field, actor);
 		var label = operation.toLowerCase() + "PropertyProcessing";
-		item.controls[plugin.name + "." + name].element
+		item.get("buttons." + self.name + "." + name + ".element")
 			.empty()
-			.append(plugin.label(label, control.field));
+			.append(self.labels.get(label, control.field));
+
 		var value = field.name == "state"
 			? field.value
 			: field.value.length ? field.value.join(",") : "-";
 
-		var request = Echo.StreamServer.API.request({
-			"endpoint": "users/update",
+		var request = new Echo.IdentityServer.API.Request({
+			"endpoint": "update",
 			"submissionProxyURL": component.config.get("submissionProxyURL", "", true),
 			"data": {
 				"content": {
@@ -68,28 +69,29 @@ plugin.methods._assembleControl = function(action, control) {
 				"target-query": component.config.get("parent.query")
 			},
 			"onData": function(data) {
-				console.log(data);
 				if (!data || data.result == "error") {
 					item.dom.render();
 					return;
 				}
-				$.map(component.threads, function(thread) {
-					thread.traverse(thread.children, function(child) {
-						self._applyUserUpdate(child, item, field);
-					});
-					self._applyUserUpdate(thread, item, field);
+				self.events.publish({
+					"topic": "onUserUpdate",
+					"data": {
+						"item": component,
+						"field": field
+					},
+					"global": false,
+					"propagation": false
 				});
 			}
 		});
 		request.send();
 	};
 	return function() {
-		var item = this;
 		return {
 			"name": name,
-			"label": self.labels.get(action),
+			"label": control["label" + operation],
 			"visible": self._isControlVisible(control, operation.toLowerCase()),
-			"onetime": true,
+			"once": true,
 			"callback": callback
 		};
 	};
@@ -112,7 +114,7 @@ plugin.methods._getUpdatedUserProperty = function(action, field, actor) {
 		value = action == "set" ? field.value : "Untouched";
 	} else {
 		var list = field.value.split(",");
-		value = $.foldl([], actor[field.name] || [], function(name, acc) {
+		value = Echo.Utils.foldl([], actor[field.name] || [], function(name, acc) {
 			if ($.inArray(name, list) < 0) acc.push(name);
 		});
 		value = action == "set" ? value.concat(list) : value;
@@ -121,14 +123,14 @@ plugin.methods._getUpdatedUserProperty = function(action, field, actor) {
 };
 
 plugin.methods._applyUserUpdate = function(target, source, field) {
-	if (target.data.actor.id != source.data.actor.id) return;
+	if (target.get("data.actor.id") != source.get("data.actor.id")) return;
 	target.data.actor[field.name == "state" ? "status" : field.name] = field.value;
-	target.rerender();
+	target.dom.render();
 };
 
 plugin.methods._isSubset = function(target, full) {
 	if (!full || !full.length) return false;
-	return !($.foldl([], target || [], function(item, acc) {
+	return !(Echo.Utils.foldl([], target || [], function(item, acc) {
 		if ($.inArray(item, full) < 0) acc.push(item);
 	})).length;
 };
@@ -148,4 +150,30 @@ plugin.methods._isControlVisible = function(control, operation) {
 	return this._isSubset(control.field.value.split(","), actor[control.field.name]) ^ (operation == "set");
 };
 
+plugin.events = {
+	"Echo.StreamServer.Controls.Stream.Plugins.UserMetadataManager.onUserUpdate": function(topic, args) {
+		console.log(this.component.get("data.actor.id"));
+		this._applyUserUpdate(this.component, args.item, args.field);
+	}
+};
+
 Echo.Plugin.create(plugin);
+})();
+
+(function(){
+var plugin = Echo.Plugin.manifest("UserMetadataManager", "Echo.StreamServer.Controls.Stream");
+
+if (Echo.Plugin.isDefined(plugin)) return;
+
+plugin.events = {
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.UserMetadataManager.onUserUpdate": function(topic, args) {
+		this.events.publish({
+			"topic": "onUserUpdate",
+			"data": args,
+			"global": false
+		});
+	}
+};
+
+Echo.Plugin.create(plugin);
+})();
