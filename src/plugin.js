@@ -137,6 +137,10 @@ Echo.Plugin.prototype.enabled = function() {
 		if ($.isFunction(enabled)) {
 			enabled = enabled.call(this);
 		}
+		// FIXME: should be boolean value (inconsistancy behaviour of the template engine)
+		enabled = $.type(enabled) === "string"
+			? enabled === "true"
+			: enabled;
 		this._enabled = enabled && !!this._manifest("enabled").call(this);
 	}
 	return this._enabled;

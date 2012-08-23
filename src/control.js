@@ -241,7 +241,7 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 		if (!instructions[key]) return;
 		var result = instructions[key].call(control, value);
 		var allowedTypes = ["number", "string", "boolean"];
-		return ~$.inArray(typeof result, allowedTypes) ? result.toString() : "";
+		return ~$.inArray(typeof result, allowedTypes) ? result : "";
 	};
 	return template.replace(Echo.Utils.regexps.templateSubstitution, processor);
 };

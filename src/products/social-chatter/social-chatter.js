@@ -140,7 +140,7 @@ SocialChatter.labels = {
 	"eventsList": "All Events",
 	"tabGreenRoomLabel": "Green room",
 	"tabPublicEventLabel": "Public event",
-	"tabAllEventsLabel": "All Events", 
+	"tabAllEventsLabel": "All Events"
 };
 
 SocialChatter.vars = {
@@ -264,11 +264,15 @@ SocialChatter.views.PublicEvent.templates = {
 		'</div>'
 };
 
-SocialChatter.views.PublicEvent.template = function() {
+SocialChatter.views.PublicEvent.methods = {};
+
+SocialChatter.views.GreenRoom.methods = {};
+
+SocialChatter.views.PublicEvent.methods.template = function() {
 	var event = this.config.get("event");
 	var status = event && event.getEventStatus();
 	return this._manifest("templates")[this.user && this.user.is("logged")
-		? (status && status !== "upcoming" ? "main" :"upcoming")
+		? (status && status !== "upcoming" ? "main" : "upcoming")
 		: "anonymous"];
 };
 
@@ -312,6 +316,7 @@ SocialChatter.views.GreenRoom.templates.main =
 			"enabled": "{self:_isNonVIPUser}"
 		}
 	};
+
 	SocialChatter.views.GreenRoom.controls.Stream = {
 		"control": "Echo.StreamServer.Controls.Stream",
 		"config": {
@@ -350,7 +355,7 @@ SocialChatter.views.GreenRoom.templates.main =
 			}, {
 				"name": "Like"
 			}, {
-				"name": "Curation",
+				"name": "Moderation",
 				"enabled": "{self:_isNonVIPUser}"
 			}, {
 				"name": "VipReplies",
@@ -397,7 +402,7 @@ SocialChatter.views.GreenRoom.templates.main =
 			}, {
 				"name": "Like"
 			}, {
-				"name": "Curation",
+				"name": "Moderation",
 				"enabled": "{self:_isNonVIPUser}"
 			}, {
 				"name": "VipReplies"
@@ -405,6 +410,7 @@ SocialChatter.views.GreenRoom.templates.main =
 			plugins.ItemConditionalCSSClasses]
 		}
 	};
+
 })();
 
 SocialChatter.views.Main.controls.Auth = {
@@ -415,12 +421,8 @@ SocialChatter.views.Main.controls.Auth = {
 	}
 };
 
-SocialChatter.views.PublicEvent.methods = {};
-
-SocialChatter.views.GreenRoom.methods = {};
-
 SocialChatter.views.PublicEvent.methods._isNonVIPUser = SocialChatter.views.GreenRoom.methods._isNonVIPUser = function() {
-	return this.user.any("roles", ["vip"]);
+	return !this.user.any("roles", ["vip"]);
 };
 
 SocialChatter.views.EventsList.renderers = {};

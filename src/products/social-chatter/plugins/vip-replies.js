@@ -2,34 +2,40 @@ var plugin = Echo.Plugin.manifest("VipReplies", "Echo.StreamServer.Controls.Stre
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
-plugin.init = function() {
-	var component = this.component;
-	if (this.config.get("view") === "public" ||
-		!component.user.any("role", ["vip"])) return;
-};
-
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Submit.onPostComplete": function(topic, args) {
-		var question = args.inReplyTo;
-		if (!question) return;
-		plugin._markQuestionAsAnswered(question);
-		plugin._copyAnswer(question, args.postData);
+	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
+		var question = args.postData && args.postData.inReplyTo;
+		if (!question || this.config.get("view") === "public" ||
+			!this.component.user.any("role", ["vip"])) return;
+		this._markQuestionAsAnswered(question);
+		this._copyAnswer(question, args.postData);
 	}
 };
 
-plugin.methods._request = function(data) {
+plugin.methods._request = function(content) {
+	var item = this.component;
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
-		"data": data
+		"data": {
+			"appkey": item.config.get("appkey"),
+			"content": content,
+			"target-query": item.config.get("parent.query", ""),
+			"sessionID": item.user.get("sessionID", "")
+		}
 	}).send();
 };
 
 plugin.methods._markQuestionAsAnswered = function(question) {
 	this._request({
-		"verb": "mark",
-		"target": question.object.id,
-		"markers": this.config.get("answeredQuestionMarker", "answered")
+		"verbs": ["http://activitystrea.ms/schema/1.0/mark"],
+		"targets": [{"id": question.object.id}],
+		"object": {
+			"objectTypes": [
+				"http://activitystrea.ms/schema/1.0/marker"
+			],
+			"content": this.config.get("answeredQuestionMarker", "answered")
+		}
 	});
 };
 
@@ -50,7 +56,16 @@ plugin.methods._copyAnswer = function(question, answer) {
 			"questionContent": Echo.Utils.stripTags(question.object.content),
 			"title": title
 		});
-	this._request($.extend({"verb": "post", "content": content}, copyTo));
+	this._request({
+		"verbs": ["http://activitystrea.ms/schema/1.0/post"],
+		"targets": [{"id": copyTo.target}],
+		"object": {
+			"objectTypes": [
+				"http://activitystrea.ms/schema/1.0/comment"
+			],
+			"content": content
+		}
+	});
 };
 
 plugin.css =
