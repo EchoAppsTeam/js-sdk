@@ -3,3 +3,6 @@ web/products/*
 
 *.swp
 *.swo
+
+.npmignore
+npm_modules

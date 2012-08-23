@@ -1,0 +1,29 @@
+{
+  "name": "js-sdk",
+  "title": "Echo JSSDK",
+  "description": "Javascript SDK for Echo applications",
+  "version": "3.0.0alpha",
+  "homepage": "https://github.com/EchoAppsTeam/js-sdk",
+  "author": {
+    "name": "Echo",
+    "email": "solutions@aboutecho.com",
+    "url": "http://aboutecho.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/EchoAppsTeam/js-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/EchoAppsTeam/js-sdk/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/EchoAppsTeam/js-sdk/blob/master/LICENSE-MIT"
+    }
+  ],
+  "dependencies": {
+    "jquery": ">= 1"
+  },
+  "keywords": []
+}
