@@ -44,7 +44,6 @@ Echo.Control.create = function(manifest) {
 
 	Echo.Utils.inherit(constructor, manifest.inherits || Echo.Control);
 
-	var cssClass = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 	var prototype = constructor.prototype;
 	constructor.manifest = manifest;
 	if (manifest.methods) {
@@ -55,8 +54,8 @@ Echo.Control.create = function(manifest) {
 	}
 
 	// define CSS class and prefix for the class
-	prototype.cssClass = cssClass;
-	prototype.cssPrefix = cssClass + "-";
+	prototype.cssClass = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
+	prototype.cssPrefix = prototype.cssClass + "-";
 
 	Echo.Utils.setNestedValue(window, manifest.name, constructor);
 	return constructor;
@@ -623,16 +622,16 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 		}
 	});
 
-	if (this.dependent()) return;
-
 	// subscribe all root level controls to the user login/logout event
-	// and call "refresh" control method
-	control.events.subscribe({
-		"topic": "Echo.UserSession.onInvalidate",
-		"context": "global",
-		"once": true,
-		"handler": control.refresh
-	});
+	// and call the "refresh" control method
+	if (!control.dependent()) {
+		control.events.subscribe({
+			"topic": "Echo.UserSession.onInvalidate",
+			"context": "global",
+			"once": true,
+			"handler": control.refresh
+		});
+	}
 };
 
 Echo.Control.prototype._initializers.labels = function() {
@@ -648,8 +647,9 @@ Echo.Control.prototype._initializers.labels = function() {
 Echo.Control.prototype._initializers.css = function() {
 	Echo.Utils.addCSS(this.baseCSS, "control");
 	this.config.get("target").addClass(this.cssClass);
-	if (!this._manifest("css")) return;
-	Echo.Utils.addCSS(this.substitute(this._manifest("css")), this.name);
+	if (this._manifest("css")) {
+		Echo.Utils.addCSS(this.substitute(this._manifest("css")), this.name);
+	}
 };
 
 Echo.Control.prototype._initializers.renderers = function() {
