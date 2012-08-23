@@ -39,7 +39,7 @@ Echo.Control.create = function(manifest) {
 		this.data = config.data || {};
 		this.name = manifest.name;
 		this.config = config;
-		this._init(this._getInitializers("init"));
+		this._init(this._initializers.get("init"));
 	};
 
 	Echo.Utils.inherit(constructor, manifest.inherits || Echo.Control);
@@ -258,7 +258,7 @@ Echo.Control.prototype.refresh = function() {
 	this.set("data", this.config.get("data", {}));
 
 	this.set("internal.state", "refresh");
-	this._init(this._getInitializers("refresh"));
+	this._init(this._initializers.get("refresh"));
 };
 
 /**
@@ -441,6 +441,8 @@ Echo.Control.prototype._init = function(subsystems) {
 
 Echo.Control.prototype._initializers = {};
 
+// initializer helpers
+
 Echo.Control.prototype._initializers.list = [
 	["vars",               ["init", "refresh"]],
 	["extension",          ["init", "refresh"]],
@@ -458,13 +460,15 @@ Echo.Control.prototype._initializers.list = [
 	["launcher",           ["init", "refresh"]]
 ];
 
-Echo.Control.prototype._getInitializers = function(action) {
-	return Echo.Utils.foldl([], this._initializers.list, function(initializer, acc) {
+Echo.Control.prototype._initializers.get = function(action) {
+	return Echo.Utils.foldl([], this.list, function(initializer, acc) {
 		if (~$.inArray(action, initializer[1])) {
 			acc.push(initializer[0]);
 		}
 	});
 };
+
+// initializer functions
 
 Echo.Control.prototype._initializers.vars = function() {
 	// we need to apply default field values to the control,
