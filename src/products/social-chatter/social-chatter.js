@@ -154,7 +154,8 @@ SocialChatter.config = {
 	"liveUpdates": true,
 	"liveUpdatesTimeout": 60, // request Events updates once per minute
 	"identityManager": undefined,
-	"views": {}
+	"views": {},
+	"defaultEventIcon": "//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg"
 };
 
 SocialChatter.views.Main = {};
@@ -443,12 +444,12 @@ SocialChatter.views.PublicEvent.renderers.publicViewNotice = function(element) {
 
 SocialChatter.views.PublicEvent.renderers.avatar = function(element) {
 	var self = this;
-	var url = this.data.vipPhoto || this.config.get("defaultEventIcon");
+	var url = this.data.vipPhoto || this.config.get("parent.defaultEventIcon");
 	var img = $("<img>", {"src": url});
-	if (url != this.config.get("defaultEventIcon")) {
+	if (url != this.config.get("parent.defaultEventIcon")) {
 		img.one({
 			"error" : function(){
-				$(this).attr("src", self.config.get("defaultEventIcon"));
+				$(this).attr("src", self.config.get("parent.defaultEventIcon"));
 			}
 		});
 	}

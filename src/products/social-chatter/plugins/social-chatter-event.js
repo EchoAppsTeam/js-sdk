@@ -5,6 +5,7 @@ var plugin = Echo.Plugin.manifest("SocialChatterEvent", "Echo.StreamServer.Contr
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
+	"defaultEventIcon": "//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg",
 	"dateFormat": "yy-mm-dd",
 	"timeFormat": "hh:mm tt",
 	"ampm": true
@@ -195,14 +196,14 @@ plugin.component.renderers.avatar = function() {
 	var initialAvatar = item.get("data.actor.avatar");
 	var defaultAvatar = item.user.get("defaultAvatar");
 	// re-define default avatar for the item
-	this.component.user.set("defaultAvatar", "//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg");
+	this.component.user.config.set("defaultAvatar", this.config.get("defaultEventIcon"));
 	if (!$.isEmptyObject(content)) {
 		item.set("data.actor.avatar", content.data.vipPhoto);
 	}
 	var element = this.parentRenderer("avatar", arguments);
 	item.set("data.actor.avatar", initialAvatar);
 	// reset default avatar
-	this.component.user.set("defaultAvatar", defaultAvatar);
+	this.component.user.config.set("defaultAvatar", defaultAvatar);
 	return element;
 };
 
