@@ -429,9 +429,6 @@ plugin.renderers.eventInfo = function(element, extra) {
 	extra = extra || {};
 	var type = extra.type;
 	var event = new Echo.SocialChatterEvent(this.component.get("data"));
-//	var value = event.data && event.data[type] && (type == "eventStart" || type == "eventEnd")
-//		? this._getFullDate(event.data[type])
-//		: event.data[type] || "";
 	if (!$.isEmptyObject(event)) {
 		var value = event.data[type] || "";
 		this.dom.get(type)
@@ -564,7 +561,7 @@ $.map(plugin.fields, function(field) {
 			var entry = this.component.get("data");
 			if (entry && entry.object) {
 				var event = new Echo.SocialChatterEvent(entry);
-				if (!$isEmptyObject(event) && event.data.vipPhoto) {
+				if (!$.isEmptyObject(event) && event.data.vipPhoto) {
 					this.dom.get("eventIcon").attr("src", event.data.vipPhoto);
 				}
 			}

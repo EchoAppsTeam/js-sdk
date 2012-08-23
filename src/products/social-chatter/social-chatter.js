@@ -11,7 +11,7 @@ labels.set({
 }, "Echo.SocialChatterEvent", true);
 
 Echo.SocialChatterEvent = function(entry) {
-	if (!entry || !entry.object) return {};
+	if (!entry || !entry.object) return {"data": {}};
 	this.id = entry.object.id;
 	this.data = this.getData(entry.object.content);
 };
