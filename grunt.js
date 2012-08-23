@@ -2,8 +2,9 @@
 module.exports = function(grunt) {
 
 	var _dirs = {
-		src: "../src/",
-		dest: "web/sdk/"
+		src: "src/",
+		dest: "web/sdk/",
+		tests: "tests/"
 	};
 	var _dontWrap = [
 		_dirs.src + "backplane.js",
@@ -62,7 +63,7 @@ module.exports = function(grunt) {
 			},
 			tests: {
 				files: {
-					"<%= dirs.dest %>tests": ["../tests/**/*"]
+					"<%= dirs.dest %><%= dirs.tests %>": ["<%= dirs.tests %>**/*"]
 				}
 			}
 		},
