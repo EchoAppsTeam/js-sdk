@@ -142,9 +142,7 @@ SocialChatter.labels = {
 	"tabPublicEventLabel": "Public event",
 	"tabAllEventsLabel": "All Events", 
 	"assignVIPRoleControl": "Assign VIP role",
-	"revokeVIPRoleControl": "Revoke VIP role",
-	"sendToGreenRoomControl": "Send to Green Room",
-	"removeFromGreenRoomControl": "Remove from Green Room"
+	"revokeVIPRoleControl": "Revoke VIP role"
 };
 
 SocialChatter.vars = {
@@ -199,6 +197,11 @@ SocialChatter.views.EventsList.labels = {
 	"scheduleEvent": "Schedule new event"
 };
 
+SocialChatter.views.GreenRoom.labels = {
+	"sendToGreenRoomControl": "Send to Green Room",
+	"removeFromGreenRoomControl": "Remove from Green Room"
+};
+
 SocialChatter.views.PublicEvent.labels = {
 	"askQuestion": "Ask your question to",
 	"answersFrom": "Answers from",
@@ -207,7 +210,9 @@ SocialChatter.views.PublicEvent.labels = {
 	"passedEventViewNotice": "<b>Note:</b> this event is over. You are viewing chat archive.",
 	"upcomingEventWarning": "Please login to join this event.",
 	"passedEventWarning": "Please login to view this chat archive.",
-	"onAirEventWarning": "<b>Chat is on air now!</b> <br><br> Please login to join the conversation!"
+	"onAirEventWarning": "<b>Chat is on air now!</b> <br><br> Please login to join the conversation!",
+	"sendToGreenRoomControl": "Send to Green Room",
+	"removeFromGreenRoomControl": "Remove from Green Room"
 };
 
 SocialChatter.views.PublicEvent.templates = {
@@ -285,14 +290,14 @@ SocialChatter.views.GreenRoom.templates.main =
 				"labelMark": "{label:sendToGreenRoomControl}",
 				"labelUnmark": "{label:removeFromGreenRoomControl}"
 			}],
-			"enabled": "{self:isNonVIPUser}"
+			"enabled": "{self:_isNonVIPUser}"
 		},
 		"ItemConditionalCSSClasses": {
 			"name": "ItemConditionalCSSClasses",
 			"conditions": [{
 				"field": "actor.roles",
 				"value": ["vip"],
-				"className": "echo-item-vip-guest"
+				"className": "{class:vip-guest}"
 			}]
 		},
 		"UserMetadataManager": {
@@ -304,7 +309,7 @@ SocialChatter.views.GreenRoom.templates.main =
 				"labelSet": "{label:assignVIPRoleControl}",
 				"labelUnset": "{label:revokeVIPRoleControl}"
 			}],
-			"enabled": "{self:isNonVIPUser}"
+			"enabled": "{self:_isNonVIPUser}"
 		}
 	};
 	SocialChatter.views.GreenRoom.controls.Stream = {
@@ -346,7 +351,7 @@ SocialChatter.views.GreenRoom.templates.main =
 				"name": "Like"
 			}, {
 				"name": "Curation",
-				"enabled": "{self:isNonVIPUser}"
+				"enabled": "{self:_isNonVIPUser}"
 			}, {
 				"name": "VipReplies",
 				"copyTo": {
@@ -393,7 +398,7 @@ SocialChatter.views.GreenRoom.templates.main =
 				"name": "Like"
 			}, {
 				"name": "Curation",
-				"enabled": "{self:isNonVIPUser}"
+				"enabled": "{self:_isNonVIPUser}"
 			}, {
 				"name": "VipReplies"
 			},
@@ -408,6 +413,14 @@ SocialChatter.views.Main.controls.Auth = {
 		"appkey": null,
 		"identityManager": "{config:identityManager}"
 	}
+};
+
+SocialChatter.views.PublicEvent.methods = {};
+
+SocialChatter.views.GreenRoom.methods = {};
+
+SocialChatter.views.PublicEvent.methods._isNonVIPUser = SocialChatter.views.GreenRoom.methods._isNonVIPUser = function() {
+	return this.user.any("roles", ["vip"]);
 };
 
 SocialChatter.views.EventsList.renderers = {};
@@ -573,10 +586,8 @@ SocialChatter.methods._initSocialChatterEvents = function(entries) {
 SocialChatter.methods._setPublicEvent = function(event) {
 	this.data = this.data || {};
 	this.event = this.data.event = event;
-	// prepare variables for appending into config via templating engine
-	this.isNonVIPUser = this.user.any("role", ["vip"]) ? "" : "true";
 	if (this.event) {
-		this.event.isOnAir = this.event.onAir() ? "true" : "";
+		this.event.isOnAir = this.event.onAir();
 	}
 };
 

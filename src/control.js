@@ -226,12 +226,15 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 		},
 		"self": function(key) {
 			var value = Echo.Utils.getNestedValue(control, key);
+			value = $.isFunction(value) ? value.call(control) : value;
 			return typeof value == "undefined"
 				? Echo.Utils.getNestedValue(control.data, key, "")
 				: value;
 		},
 		"config": function(key) {
-			return control.config.get(key, "");
+			var value = control.config.get(key, "");
+			value = $.isFunction(value) ? value.call(control) : value;
+			return value;
 		}
 	}, instructions || {});
 	var processor = function(match, key, value) {
