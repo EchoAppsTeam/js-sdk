@@ -167,7 +167,7 @@ Echo.Plugin.prototype.get = function(key, defaults) {
  * @inheritdoc Echo.Control#remove
  */
 Echo.Plugin.prototype.remove = function(key) {
-	Echo.Utils.setNestedValue(this, key, undefined);
+	this.set(key, undefined);
 };
 
 /**

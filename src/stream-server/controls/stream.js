@@ -145,11 +145,6 @@ stream.renderers.body = function(element) {
 			self.setState("live");
 		});
 	}
-	this.events.publish({
-		"topic": "onReady",
-		"data": {"initial": this.lastRequest.initial},
-		"propagation": false
-	});
 	return element;
 };
 
@@ -523,7 +518,6 @@ stream.methods._getRespectiveAccumulator = function(item, sort) {
 };
 
 stream.methods._appendRootItems = function(items, container) {
-	var self = this;
 	if (!items || !items.length) return;
 	$.map(items, function(item) {
 		container.append(item.config.get("target").get(0));
@@ -603,14 +597,13 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 		});
 		self.hasInitialData = true;
 		self.isViewComplete = roots.length !== self.config.get("itemsPerPage");
-		visualizer = visualizer || function(data) {
+		(visualizer || function(data) {
 			self.lastRequest = {
 				"initial": true,
 				"data": data
 			};
-			self.dom.render();
-		};
-		visualizer(roots);
+			self.initialized();
+		})(roots);
 	});
 };
 
@@ -1313,9 +1306,9 @@ item.labels = {
 	"childrenMoreItems": "View more items"
 };
 
-item.init = function(config) {
+item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
-	this.dom.render();
+	this.initialized();
 };
 
 item.renderers.authorName = function(element) {

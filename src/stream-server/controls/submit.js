@@ -25,7 +25,7 @@ submit.init = function() {
 		});
 		return valid;
 	}, "low");
-	this.dom.render();
+	this.initialized();
 };
 
 submit.config = {
