@@ -203,7 +203,6 @@ Echo.Product.prototype._initializers.list = list;
 
 Echo.Product.prototype._initializers.views = function() {
 	var product = this;
-	var parentConfig = this.config.getAsHash();
 	$.each(this._manifest("views"), function(name, view) {
 		view.inherits = view.inherits || Echo.ProductView;
 		Echo.ProductView.create(

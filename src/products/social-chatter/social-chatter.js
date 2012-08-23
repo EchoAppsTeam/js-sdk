@@ -148,20 +148,11 @@ SocialChatter.labels = {
 };
 
 SocialChatter.vars = {
-	"cache": {},
 	"eventById": {},
 	"event": undefined
 };
 
-SocialChatter.init = function() {
-	var self = this;
-	this.dom.render();
-};
-
 SocialChatter.config = {
-	"backplane": {
-		"serverBaseURL": "http://api.echoenabled.com/v1"
-	},
 	"eventsTargetURL": undefined,
 	"eventListQuery": undefined,
 	"liveUpdates": true,
@@ -816,9 +807,6 @@ SocialChatter.assemblers.GreenRoom = function(target) {
 };
 
 SocialChatter.events = {
-	"Echo.UserSession.onInvalidate": function() {
-		this.refresh();
-	},
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onBeforeEventOpen": function(topic, args) {
 		var entry = args.event;
 		this._setPublicEvent(new Echo.SocialChatterEvent(entry));
@@ -827,13 +815,7 @@ SocialChatter.events = {
 	}
 };
 
-Echo.Utils.foldl(SocialChatter.events, ["Submit.onPostComplete", "Submit.onEditComplete", "SocialChatter.onEventDelete"], function(topic, acc) {
-	acc[topic] = function() {
-		self.startLiveUpdates(true);
-	};
-});
-
-Echo.Utils.foldl(SocialChatter.events, ["SocialChatter.onEventStart", "SocialChatter.onEventEnd"], function(topic, acc) {
+Echo.Utils.foldl(SocialChatter.events, ["Echo.Products.SocialChatter.onEventStart", "Echo.Products.SocialChatter.onEventEnd"], function(topic, acc) {
 	acc[topic] = function() {
 		self._updateTabs();
 	};
