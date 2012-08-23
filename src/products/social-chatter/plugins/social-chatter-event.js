@@ -194,16 +194,16 @@ plugin.component.renderers.avatar = function() {
 	var item = this.component;
 	var content = new Echo.SocialChatterEvent(item.get("data"));
 	var initialAvatar = item.get("data.actor.avatar");
-	var defaultAvatar = item.user.get("defaultAvatar");
+	var defaultAvatar = item.user.config.get("defaultAvatar");
 	// re-define default avatar for the item
-	this.component.user.config.set("defaultAvatar", this.config.get("defaultEventIcon"));
+	item.user.config.set("defaultAvatar", this.config.get("defaultEventIcon"));
 	if (!$.isEmptyObject(content)) {
 		item.set("data.actor.avatar", content.data.vipPhoto);
 	}
 	var element = this.parentRenderer("avatar", arguments);
 	item.set("data.actor.avatar", initialAvatar);
 	// reset default avatar
-	this.component.user.config.set("defaultAvatar", defaultAvatar);
+	item.user.config.set("defaultAvatar", defaultAvatar);
 	return element;
 };
 
