@@ -345,7 +345,9 @@ SocialChatter.views.GreenRoom.templates.main =
 		"config": {
 			"appkey": null,
 			"query": "childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
-			"reTag": false,
+			"item": {
+				"reTag": false
+			},
 			"liveUpdatesTimeout": 60,
 			"plugins": [{
 				"name": "Reply",
@@ -357,6 +359,7 @@ SocialChatter.views.GreenRoom.templates.main =
 				"name": "Like"
 			}, {
 				"name": "Moderation",
+				"userActions": [],
 				"enabled": "{self:_isNonVIPUser}"
 			}, {
 				"name": "VipReplies",
@@ -393,7 +396,9 @@ SocialChatter.views.GreenRoom.templates.main =
 		"config": {
 			"appkey": null,
 			"query": "childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.roles:vip user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
-			"reTag": false,
+			"item": {
+				"reTag": false
+			},
 			"plugins": [{
 				"name": "Reply",
 				"itemURIPattern": "{config:event.id}/{id}",
@@ -404,6 +409,7 @@ SocialChatter.views.GreenRoom.templates.main =
 				"name": "Like"
 			}, {
 				"name": "Moderation",
+				"userActions": [],
 				"enabled": "{self:_isNonVIPUser}"
 			}, {
 				"name": "VipReplies"
@@ -510,7 +516,9 @@ SocialChatter.views.EventsList.controls.Stream = {
 		"appkey": null,
 		"query": "childrenof:{config:parent.eventsTargetURL} state:Untouched,ModeratorApproved children:0",
 		"liveUpdatesTimeout": "{config:parent.liveUpdatesTimeout}",
-		"reTag": false,
+		"item": {
+			"reTag": false
+		},
 		"itemControlsOrder": ["SocialChatterEvent", "Edit", "Curation.Delete"],
 		"plugins": [{
 			"name": "SocialChatterEvent"
