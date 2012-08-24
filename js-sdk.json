@@ -1,6 +1,6 @@
 {
   "name": "js-sdk",
-  "title": "Echo JSSDK",
+  "title": "Echo JS SDK",
   "description": "Javascript SDK for Echo applications",
   "version": "3.0.0-alpha",
   "homepage": "https://github.com/EchoAppsTeam/js-sdk",
