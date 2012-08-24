@@ -349,6 +349,8 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"target": target
 		};
 		this.showMessage(data);
+		QUnit.ok(!!this.dom.get("container"),
+			"Checking if the \"showMessage\" function doesn't wipe out other elements in the \"dom\" structure");
 		QUnit.equal(
 			target.find(".echo-control-message-icon").attr("title"),
 			data.message,
@@ -739,6 +741,7 @@ suite.getControlManifest = function(name) {
 
 	manifest.init = function() {
 		this.dom.render();
+		this.ready();
 	};
 
 	manifest.destroy = function() {

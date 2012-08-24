@@ -823,6 +823,7 @@ Echo.Control.prototype._render = function(args) {
 	args = args || {};
 	var data = args.data || this.data;
 	var template = args.template || this.template;
+	var stealth = !!args.target;
 	var target = args.target ||
 		(args.name && this.dom.get(args.name)) ||
 		this.config.get("target");
@@ -854,17 +855,20 @@ Echo.Control.prototype._render = function(args) {
 		return newNode;
 	}
 
-
-	// cleanup dom strcuture when we render the whole control
-	this.dom.clear();
-
-	var rendered = this.dom.rendered;
+	var rendered;
+	if (!stealth) {
+		// cleanup dom strcuture when we render the whole control
+		this.dom.clear();
+		rendered = this.dom.rendered;
+	}
 	var dom = this._applyRenderers(
 		this._compileTemplate(template, data, this.extension.template)
 	);
 	target.empty().append(dom);
-	this.dom.rendered = true;
-	this.events.publish({"topic": rendered ? "onRerender" : "onRender"});
+	if (!stealth) {
+		this.dom.rendered = true;
+		this.events.publish({"topic": rendered ? "onRerender" : "onRender"});
+	}
 	return dom;
 };
 
