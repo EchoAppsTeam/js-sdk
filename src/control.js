@@ -240,7 +240,7 @@ Echo.Control.prototype.substitute = function(template, data, instructions) {
 		}
 	}, instructions || {});
 	var processor = function(match, key, value) {
-		if (!instructions[key]) return;
+		if (!instructions[key]) return match;
 		var result = instructions[key].call(control, value);
 		var allowedTypes = ["number", "string", "boolean"];
 		return ~$.inArray(typeof result, allowedTypes) ? result : "";
@@ -272,6 +272,7 @@ Echo.Control.prototype.refresh = function() {
 Echo.Control.prototype.destroy = function(config) {
 	Echo.Events.publish({
 		"topic": "Echo.Control.onDestroy",
+		"bubble": false,
 		"context": this.config.get("context"),
 		"data": $.extend({"producer": this, "self": true}, config)
 	});
@@ -586,7 +587,6 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 		"topic": "Echo.Control.onDestroy",
 		"once": true,
 		"handler": function(topic, data) {
-
 			// destroy plugins
 			$.map(control.config.get("pluginsOrder"), function(name) {
 				var plugin = control.plugins[name];

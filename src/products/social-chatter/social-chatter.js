@@ -344,11 +344,11 @@ SocialChatter.views.GreenRoom.templates.main =
 		"control": "Echo.StreamServer.Controls.Stream",
 		"config": {
 			"appkey": null,
-			"query": "childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"query": "childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved",
 			"item": {
 				"reTag": false
 			},
-			"liveUpdatesTimeout": 60,
+			"liveUpdatesTimeout": "{config:parent.liveUpdatesTimeout}",
 			"plugins": [{
 				"name": "Reply",
 				"itemURIPattern": "{config:event.id}/{id}",
@@ -395,7 +395,8 @@ SocialChatter.views.GreenRoom.templates.main =
 		"control": "Echo.StreamServer.Controls.Stream",
 		"config": {
 			"appkey": null,
-			"query": "childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.roles:vip user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved",
+			"liveUpdatesTimeout": "{config:parent.liveUpdatesTimeout}",
+			"query": "childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.roles:vip user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved",
 			"item": {
 				"reTag": false
 			},
@@ -697,9 +698,12 @@ SocialChatter.assemblers.EventsList = function(target) {
 		}, {
 			"target": view.dom.get("eventSubmit")
 		});
-		/*submit.events.subscribe("Echo.StreamServer.Controls.Submit.onPostComplete", function(topic, args) {
-			view.dom.get("eventSubmitContainer").slideUp();
-		});*/
+		submit.events.subscribe({
+			"topic": "Echo.StreamServer.Controls.Submit.onPostComplete",
+			"handler": function(topic, args) {
+				view.dom.get("eventSubmitContainer").slideUp();
+			}
+		});
 	}
 	var stream = view._initControl({
 		"name": "Stream"

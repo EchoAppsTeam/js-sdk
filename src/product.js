@@ -170,6 +170,7 @@ Echo.Product.prototype.getView = function(name) {
 };
 
 Echo.Product.prototype.initView = function(name, config) {
+	this.destroyView(name);
 	var View = this.getView(name);
 	config = config || {};
 	config.parent = config.parent || this.config.getAsHash();
@@ -183,12 +184,9 @@ Echo.Product.prototype.initView = function(name, config) {
 Echo.Product.prototype.destroyView = function(name) {
 	var view = this.get("views." + name);
 	if (view && view.controls) {
-		$.each(view.controls, function(controlName, control) {
-			control.destroy();
-			delete view.controls[controlName];
-		});
-		//view.destroy();
-		//delete this.views[name];
+		view._destroyControls();
+		view.destroy();
+		delete this.views[name];
 	}
 };
 
