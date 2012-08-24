@@ -312,7 +312,7 @@ plugin.labels = {
 	"eventDescription": "<b>Event description</b>",
 	"eventStart": "<b>Start date and time</b> <small>(in your timezone)</small>",
 	"eventEnd": "<b>End date and time</b> <small>(in your timezone)</small>",
-	"eventSubmitNotice": "<b>Notes for administrators:</b> <div style=\"text-align: left; padding-left: 40px;\"><div style=\"margin: 10px 0 10px 0;\">1. fields marked with <span class=\"echo-submit-event-field-mandatory\">*</span> are mandatory</div><div style=\"margin-bottom: 10px;\">2. there might be multiple instances of passed and upcoming events, but only <b>one on air</b> event at a time. Please make sure that there are no time overlaps in events scheduling. Learn more about the Social Chatter application <a href='http://wiki.aboutecho.com/Echo%20Application%20-%20Echo%20Social%20Chatter' target='_blank'>here</a>.</div></ul>"
+	"eventSubmitNotice": "<b>Notes for administrators:</b> <div style=\"text-align: left; padding-left: 40px;\"><div style=\"margin: 10px 0 10px 0;\">1. fields marked with <span class=\"echo-streamserver-controls-submit-plugin-SocialChatterEvent-field-mandatory\">*</span> are mandatory</div><div style=\"margin-bottom: 10px;\">2. there might be multiple instances of passed and upcoming events, but only <b>one on air</b> event at a time. Please make sure that there are no time overlaps in events scheduling. Learn more about the Social Chatter application <a href='http://wiki.aboutecho.com/Echo%20Application%20-%20Echo%20Social%20Chatter' target='_blank'>here</a>.</div></ul>"
 };
 
 plugin.templates.AdminNotice = '<div class="{plugin.class:eventSubmitNotice}"></div>';
@@ -332,19 +332,19 @@ plugin.templates.Metadata =
 		'</div>' +
 	'</div>' +
 	'<div class="{plugin.class:metadata-container}">' +
-		'<div class="{class:field-title}">{plugin.label:VIPGuestName} <span class="{plugin.class:field-mandatory}">*</span></div>' +
+		'<div class="{plugin.class:field-title}">{plugin.label:VIPGuestName} <span class="{plugin.class:field-mandatory}">*</span></div>' +
 		'<div class="{plugin.class:inputContainer} {class:border}">' +
 			'<input type="text" class="{plugin.class:vipName} {class:text-input} echo-primaryFont">' +
 		'</div>' +
 	'</div>' +
 	'<div class="{plugin.class:metadata-container}">' +
-		'<div class="{class:field-title}">{plugin.label:photoURL}</div>' +
+		'<div class="{plugin.class:field-title}">{plugin.label:photoURL}</div>' +
 		'<div class="{plugin.class:inputContainer} {class:border}">' +
 			'<input type="text" class="{plugin.class:vipPhoto} {class:text-input} echo-primaryFont">' +
 		'</div>' +
 	'</div>' +
 	'<div class="{plugin.class:metadata-container}">' +
-		'<div class="{class:field-title}">{plugin.label:eventStart} <span class="{plugin.class:field-mandatory}">*</span></div>' +
+		'<div class="{plugin.class:field-title}">{plugin.label:eventStart} <span class="{plugin.class:field-mandatory}">*</span></div>' +
 		'<div class="{plugin.class:inputContainer} {class:border}">' +
 			'<input type="text" class="{plugin.class:eventDateStart} {class:text-input} echo-primaryFont">' +
 			'<i class="icon-th"></i>' +
@@ -664,17 +664,19 @@ plugin.css =
 	'.{plugin.class:SocialChatterEvent} .{class:controls} { clear: both; margin-left: 195px; margin-bottom: 15px; }' +
 	'.{plugin.class:SocialChatterEvent} .{class:body} { margin-right: 20px; }' +
 	'.{plugin.class:field-title} { font-size: 14px; font-weight: bold; margin-bottom: 5px; }' +
+	'.{plugin.class:field-title} small { font-size: 11px; }' +
 	'.{plugin.class:eventSubmitNotice} { background-color: #D9EDF7; border: 1px solid #BCE8F1; border-radius: 4px 4px 4px 4px; color: #3A87AD;  padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 14px; line-height: 16px; text-align: center; }' +
 	'.{plugin.class:eventSubmitNotice} a { color: #3A87AD; cursor: pointer; text-decoration: underline; }' +
 	'.{plugin.class:field-mandatory} { color: red; font-weight: bold; }' +
-	'.{plugin.class:inputContainer} { margin-bottom: 15px; width: 300px; padding: 5px; }' +
+	'.{plugin.class:inputContainer} { margin-bottom: 5px; width: 300px; padding: 5px; }' +
 	'.{plugin.class:inputContainer} .icon-time { margin: -4px 0 0 -22.5px; pointer-events: none; position: relative; }' +
 	'.{plugin.class:inputContainer} .icon-th { margin: -4px 0 0 -22.5px; pointer-events: none; position: relative; }' +
 	'.{plugin.class:eventTimeStart}, .{plugin.class:eventTimeEnd} { width: 90px; margin-left: 20px; }' +
 	'.{plugin.class:eventDateStart}, .{plugin.class:eventDateEnd} { width: 100px; }' +
-	'.{class:content} .bootstrap-timepicker { width: 160px; }' +
+	'.bootstrap-timepicker { width: 160px; }' +
 	'.{class:content} .{plugin.class:mandatory} { border-color: #ff5050; }'+
 	'.{class:content} { background-color: transparent; }' +
+	'.{class:content} .echo-secondaryColor { color: #C6C6C6; }' +
 	'.{plugin.class:borderNone} .{class:border} { border: none; }'
 ;
 

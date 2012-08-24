@@ -38,7 +38,7 @@ plugin.component.renderers.text = function(element) {
 };
 
 plugin.css =
-	'.{plugin.class:border} { border: 1px solid; }' +
+	'.{plugin.class:border} { border: 1px solid #CCCCCC; padding: 4px; }' +
 	'.{plugin.class:btn} div.echo-label { font-size: 12px; }' +
 	'.{plugin.class:borderNone} .{class:border} { border: none; }';
 
