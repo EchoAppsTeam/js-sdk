@@ -677,6 +677,7 @@ SocialChatter.assemblers.Auth = function(target) {
 		"target": target,
 		"type": "eventsList"
 	});
+	var content = view.dom.render();
 	view._initControl({
 		"name": "Auth"
 	}, {
@@ -692,6 +693,7 @@ SocialChatter.assemblers.EventsList = function(target) {
 		"target": target,
 		"type": "eventsList"
 	});
+	var content = view.dom.render();
 	if (this.user.is("admin")) {
 		var submit = view._initControl({
 			"name": "Submit"
@@ -747,6 +749,7 @@ SocialChatter.assemblers.EventsList = function(target) {
 			self._updateTabs();
 		}
 	});
+	$(target).append(content);
 };
 
 
@@ -761,12 +764,13 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 		"target": target,
 		"type": "event"
 	});
-
+	var content = view.dom.render();
 	// setting tab title
 	this.tabs.get("PublicEvent").html(data.eventName || "Unknown Event");
-
-	if (!this.user.is("logged") || this.event.getEventStatus() == "upcoming") return;
-
+	if (!this.user.is("logged") || this.event.getEventStatus() == "upcoming") {
+		$(target).append(content);
+		return;
+	}
 	if (this.event.onAir()) 
 		view._initControl({
 			"name": "Submit"
@@ -803,6 +807,7 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 			}]
 		)
 	});
+	$(target).append(content);
 };
 
 SocialChatter.assemblers.GreenRoom = function(target) {
@@ -812,6 +817,7 @@ SocialChatter.assemblers.GreenRoom = function(target) {
 		"target": target,
 		"type": "greenRoom"
 	});
+	var content = view.dom.render();
 	view._initControl({
 		"name": "Stream"
 	}, {
@@ -823,6 +829,7 @@ SocialChatter.assemblers.GreenRoom = function(target) {
 	} else {
 		instrustionsContainer.html(this.event.data.vipInstructions).show();
 	}
+	$(target).append(content);
 };
 
 SocialChatter.events = {

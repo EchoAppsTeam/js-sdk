@@ -44,6 +44,7 @@ Echo.Control.create = function(manifest) {
 
 	Echo.Utils.inherit(constructor, manifest.inherits || Echo.Control);
 
+	var cssClass = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 	var prototype = constructor.prototype;
 	constructor.manifest = manifest;
 	if (manifest.methods) {
@@ -54,8 +55,8 @@ Echo.Control.create = function(manifest) {
 	}
 
 	// define CSS class and prefix for the class
-	prototype.cssClass = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
-	prototype.cssPrefix = prototype.cssClass + "-";
+	prototype.cssClass = cssClass;
+	prototype.cssPrefix = cssClass + "-";
 
 	Echo.Utils.setNestedValue(window, manifest.name, constructor);
 	return constructor;
@@ -79,10 +80,7 @@ Echo.Control.manifest = function(name) {
 		"renderers": {},
 		"templates": {},
 		"dependencies": [],
-		"init": function() {
-			this.dom.render();
-			this.ready();
-		},
+		"init": function() { this.dom.render(); },
 		"destroy": undefined
 	};
 };
@@ -262,6 +260,7 @@ Echo.Control.prototype.refresh = function() {
 	// restore originally defined data
 	this.set("data", this.config.get("data", {}));
 
+	this.set("internal.state", "refresh");
 	this._init(this._initializers.get("refresh"));
 };
 
@@ -303,7 +302,8 @@ Echo.Control.prototype.showMessage = function(data) {
 	this.dom.render({
 		"template": this.templates.message[layout],
 		"data": data,
-		"target": data.target || this.config.get("target")
+		"stealth": data.type === "loading",
+		"target": data.target
 	});
 };
 
@@ -461,9 +461,7 @@ Echo.Control.prototype._initializers.list = [
 	["dependencies:async", ["init"]],
 	["user:async",         ["init", "refresh"]],
 	["plugins:async",      ["init", "refresh"]],
-	["init:async",         ["init", "refresh"]],
-	["ready",              ["init"]],
-	["refresh",            ["refresh"]]
+	["launcher",           ["init", "refresh"]]
 ];
 
 Echo.Control.prototype._initializers.get = function(action) {
@@ -624,16 +622,16 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 		}
 	});
 
+	if (this.dependent()) return;
+
 	// subscribe all root level controls to the user login/logout event
-	// and call the "refresh" control method
-	if (!control.dependent()) {
-		control.events.subscribe({
-			"topic": "Echo.UserSession.onInvalidate",
-			"context": "global",
-			"once": true,
-			"handler": control.refresh
-		});
-	}
+	// and call "refresh" control method
+	control.events.subscribe({
+		"topic": "Echo.UserSession.onInvalidate",
+		"context": "global",
+		"once": true,
+		"handler": control.refresh
+	});
 };
 
 Echo.Control.prototype._initializers.labels = function() {
@@ -649,9 +647,8 @@ Echo.Control.prototype._initializers.labels = function() {
 Echo.Control.prototype._initializers.css = function() {
 	Echo.Utils.addCSS(this.baseCSS, "control");
 	this.config.get("target").addClass(this.cssClass);
-	if (this._manifest("css")) {
-		Echo.Utils.addCSS(this.substitute(this._manifest("css")), this.name);
-	}
+	if (!this._manifest("css")) return;
+	Echo.Utils.addCSS(this.substitute(this._manifest("css")), this.name);
 };
 
 Echo.Control.prototype._initializers.renderers = function() {
@@ -682,8 +679,38 @@ Echo.Control.prototype._initializers.dom = function() {
 			this.elements[name].remove();
 			delete this.elements[name];
 		},
-		"render": function() {
-			return self._render.apply(self, arguments);
+		"render": function(args) {
+			args = args || {};
+
+			var state = self.get("internal.state", "init");
+
+			// we render if the "render" flag is defined as true in a config
+			// or when the "dom.render" function was call explicitly (in this case
+			// the state whould be "ready")
+			var render = self.config.get("render", true) || state === "ready";
+
+			// render in event-less mode
+			if (args.stealth || args.target || args.name) {
+				return render ? self._render(args) : undefined;
+			}
+
+			// cleanup dom strcuture when we render the whole control
+			self.dom.clear();
+
+			var content;
+			var publish = function(topic) {
+				if (!topic) return;
+				self.events.publish({"topic": topic});
+			};
+			if (render) {
+				var rendered = self.dom.rendered;
+				content = self._render(args);
+				self.dom.rendered = true;
+				publish(rendered ? "onRerender" : "onRender");
+			}
+			if (state !== "ready") self.set("internal.state", "ready");
+			publish({"init": "onReady", "refresh": "onRefresh"}[state]);
+			return content;
 		}
 	};
 };
@@ -732,21 +759,8 @@ Echo.Control.prototype._initializers.plugins = function(callback) {
 	});
 };
 
-Echo.Control.prototype._initializers.init = function(callback) {
-
-	// this function should be called inside the "init" function
-	// to indicate that the control was initialized and is now ready
-	this.ready = callback;
-
+Echo.Control.prototype._initializers.launcher = function() {
 	this._manifest("init").call(this);
-};
-
-Echo.Control.prototype._initializers.ready = function() {
-	this.events.publish({"topic": "onReady"});
-};
-
-Echo.Control.prototype._initializers.refresh = function() {
-	this.events.publish({"topic": "onRefresh"});
 };
 
 Echo.Control.prototype._manifest = function(key) {
@@ -854,17 +868,10 @@ Echo.Control.prototype._render = function(args) {
 		return newNode;
 	}
 
-
-	// cleanup dom strcuture when we render the whole control
-	this.dom.clear();
-
-	var rendered = this.dom.rendered;
 	var dom = this._applyRenderers(
 		this._compileTemplate(template, data, this.extension.template)
 	);
 	target.empty().append(dom);
-	this.dom.rendered = true;
-	this.events.publish({"topic": rendered ? "onRerender" : "onRender"});
 	return dom;
 };
 

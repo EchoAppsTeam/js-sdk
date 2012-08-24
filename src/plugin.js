@@ -134,14 +134,13 @@ Echo.Plugin.prototype.init = function() {
 Echo.Plugin.prototype.enabled = function() {
 	if (typeof this._enabled === "undefined") {
 		var enabled = this.config.get("enabled", true);
-		switch ($.type(enabled)) {
-			case "string":
-				enabled = enabled === "true";
-				break;
-			case "function":
-				enabled = enabled.call(this);
-				break;
+		if ($.isFunction(enabled)) {
+			enabled = enabled.call(this);
 		}
+		// FIXME: should be boolean value (inconsistancy behaviour of the template engine)
+		enabled = $.type(enabled) === "string"
+			? enabled === "true"
+			: enabled;
 		this._enabled = enabled && !!this._manifest("enabled").call(this);
 	}
 	return this._enabled;
@@ -168,7 +167,7 @@ Echo.Plugin.prototype.get = function(key, defaults) {
  * @inheritdoc Echo.Control#remove
  */
 Echo.Plugin.prototype.remove = function(key) {
-	this.set(key, undefined);
+	Echo.Utils.setNestedValue(this, key, undefined);
 };
 
 /**
