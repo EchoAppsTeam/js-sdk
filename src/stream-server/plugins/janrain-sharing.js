@@ -109,8 +109,8 @@ plugin.methods._prepareContent = function(args) {
 			"content": plugin._truncate(text, plugin.config.get("reducedLength"))
 		});
 	}
-	//if a reply to a tweet was posted
-	var data = args.postData.inReplyTo;
+	// if a reply to a tweet was posted
+	var data = args.inReplyTo;
 	var maxLength = plugin.config.get("maxLength");
 	if (plugin._isReplyToTweet(data)) {
 		var author = plugin._getTweetAuthor(data);

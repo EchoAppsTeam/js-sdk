@@ -318,9 +318,11 @@ submit.methods.post = function() {
 		self.events.publish(params);
 	};
 	var postType = this.config.get("type", this._getASURL("comment"));
-	var content = [].concat(self._getActivity("post", postType, self.dom.get("text").val()),
-				 self._getActivity("tag", this._getASURL("marker"), self.dom.get("markers").val()),
-				 self._getActivity("tag", this._getASURL("tag"), self.dom.get("tags").val()));
+	var content = [].concat(
+		self._getActivity("post", postType, self.dom.get("text").val()),
+		self._getActivity("tag", this._getASURL("marker"), self.dom.get("markers").val()),
+		self._getActivity("tag", this._getASURL("tag"), self.dom.get("tags").val())
+	);
 	var entry = {
 		"content": content,
 		"appkey": this.config.get("appkey"),

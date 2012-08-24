@@ -64,9 +64,6 @@ plugin.events = {
 		this.events.publish({
 			"topic": "onCollapse"
 		});
-	},
-	"Echo.StreamServer.Controls.Submit.onPostInit": function(topic, args) {
-		args.postData.inReplyTo = this.component.get("data");
 	}
 };
 
@@ -163,6 +160,10 @@ plugin.methods._showSubmit = function() {
 			"parent": item.config.getAsHash(),
 			"targetQuery": item.config.get("query", ""),
 			"context": item.config.get("context")
+		});
+		config.plugins.push({
+			"name": "Reply",
+			"inReplyTo": plugin.component.get("data")
 		});
 		submit = new Echo.StreamServer.Controls.Submit(config);
 		plugin.set("submit", submit);
@@ -269,6 +270,24 @@ plugin.events = {
 			}
 		});
 	}
+};
+
+Echo.Plugin.create(plugin);
+
+})();
+
+(function() {
+
+var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Submit");
+
+plugin.init = function() {
+	var plugin = this, submit = plugin.component;
+	var _prepareEventParams = submit._prepareEventParams;
+	submit._prepareEventParams = function(params) {
+		var _params = _prepareEventParams.apply(submit, params);
+		_params.inReplyTo = plugin.config.get("inReplyTo");
+		return _params;
+	};
 };
 
 Echo.Plugin.create(plugin);
