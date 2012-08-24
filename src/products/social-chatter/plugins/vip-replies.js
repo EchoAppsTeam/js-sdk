@@ -1,7 +1,5 @@
 var plugin = Echo.Plugin.manifest("VipReplies", "Echo.StreamServer.Controls.Stream.Item");
 
-if (Echo.Plugin.isDefined(plugin)) return;
-
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		var question = args.postData && args.postData.inReplyTo;

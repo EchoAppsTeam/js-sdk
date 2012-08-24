@@ -1,7 +1,5 @@
 var plugin = Echo.Plugin.manifest("ItemConditionalCSSClasses", "Echo.StreamServer.Controls.Stream.Item");
 
-if (Echo.Plugin.isDefined(plugin)) return;
-
 plugin.component.renderers.content = function(element) {
 	var self = this;
 	var item = this.component;

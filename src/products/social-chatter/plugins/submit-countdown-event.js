@@ -1,7 +1,5 @@
 var plugin = Echo.Plugin.manifest("SubmitCountdownEvent", "Echo.StreamServer.Controls.Submit");
 
-if (Echo.Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	this.extendTemplate("insertAfter", "content", plugin.countdownTemplate);
 };

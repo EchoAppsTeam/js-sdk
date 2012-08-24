@@ -18,8 +18,6 @@
 
 var plugin = Echo.Plugin.manifest("SubmitTextareaAutoResize", "Echo.StreamServer.Controls.Submit");
 
-if (Echo.Plugin.isDefined(plugin)) return;
-
 plugin.component.renderers.postButton = function(element) {
 	return this.parentRenderer("postButton", arguments).addClass(this.cssPrefix + "btn btn btn-small");
 };

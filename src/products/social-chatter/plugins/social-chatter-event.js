@@ -2,8 +2,6 @@
 
 var plugin = Echo.Plugin.manifest("SocialChatterEvent", "Echo.StreamServer.Controls.Stream.Item");
 
-if (Echo.Plugin.isDefined(plugin)) return;
-
 plugin.config = {
 	"defaultEventIcon": "//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg",
 	"dateFormat": "yy-mm-dd",
@@ -278,11 +276,10 @@ plugin.css =
 Echo.Plugin.create(plugin);
 
 })();
+
 (function() {
 
 var plugin = Echo.Plugin.manifest("SocialChatterEvent", "Echo.StreamServer.Controls.Submit");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 	"dateFormat": "yy-mm-dd",

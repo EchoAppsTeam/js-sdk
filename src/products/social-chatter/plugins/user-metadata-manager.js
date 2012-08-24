@@ -11,8 +11,6 @@
 (function() {
 var plugin = Echo.Plugin.manifest("UserMetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
-if (Echo.Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	var self = this;
 	var component = this.component;
@@ -161,8 +159,6 @@ Echo.Plugin.create(plugin);
 
 (function(){
 var plugin = Echo.Plugin.manifest("UserMetadataManager", "Echo.StreamServer.Controls.Stream");
-
-if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.UserMetadataManager.onUserUpdate": function(topic, args) {
