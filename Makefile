@@ -61,7 +61,7 @@ PACK_FILES_third-party/jquery = \
 	$(WEB_SDK_DIR)/third-party/jquery.easing-1.3.min.js \
 	$(WEB_SDK_DIR)/third-party/jquery.fancybox-1.3.4.min.js \
 	$(WEB_SDK_DIR)/third-party/echo.fancybox.css.js \
-	$(WEB_SDK_DIR)/third-party/jquery.ui-1.8.21.min.js \
+	$(WEB_SDK_DIR)/third-party/jquery.ui-1.8.23.min.js \
 	$(WEB_SDK_DIR)/third-party/jquery.isotope.min.js \
 	$(WEB_SDK_DIR)/third-party/bootstrap/bootstrap-tab.js
 
