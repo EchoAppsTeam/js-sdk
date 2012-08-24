@@ -28,13 +28,13 @@ Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
 		"type": "Number",
 		"defaultValue": 600,
 		"title": "\"More\" button slide timeout",
-		"description": "The numer of milliseconds to animate the \"More\" button sliding out in case the last portion of child items received"
+		"description": "The number of milliseconds to animate the \"More\" button sliding out in case the last portion of child items received"
 	}, {
 		"name": "itemsSlideTimeout",
 		"type": "Number",
 		"defaultValue": 600,
 		"title": "New child items slide timeout",
-		"description": "The numer of milliseconds to animate the appearance of the new child items chunk"
+		"description": "The number of milliseconds to animate the appearance of the new child items chunk"
 	}, {
 		"name": "maxDepth",
 		"type": "Number",
@@ -55,22 +55,11 @@ Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
 	"title": "Slide down animation duration for the new items",
 	"description": "The duration of the sliding down animation when an item comes to stream as a live update"
 }, {
-	"name": "components",
-	"type": "Object",
-	"title": "Stream item configuration",
-	"description": "Specific configuration of the stream Item class",
-	"properties": [{
-		"name": "item",
-		"type": "Echo.StreamServer.Controls.Stream.Item",
-		"title": "Item",
-		"description": " "
-	}]
-}, {
 	"name": "itemsPerPage",
 	"type": "Number",
 	"defaultValue": 15,
 	"title": "Root items per page",
-	"description": "Specifies the amount of root items per page",
+	"description": "Specifies the amount of root items per page"
 }, {
 	"name": "liveUpdates",
 	"type": "Boolean",
@@ -146,6 +135,17 @@ Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
 	"defaultValue": "http://apps.echoenabled.com/v2/esp/activity",
 	"title": "Submission Proxy URL",
 	"description": "Specifies the submission proxy URL"
+}, {
+	"name": "components",
+	"type": "Object",
+	"title": "Stream item configuration",
+	"description": "Specific configuration of the stream Item class",
+	"properties": [{
+		"name": "item",
+		"type": "Echo.StreamServer.Controls.Stream.Item",
+		"title": "Item",
+		"description": " "
+	}]
 }];
 
 Echo.StreamServer.Controls.Stream.Item.ConfigSpecification = [{
@@ -225,17 +225,51 @@ Echo.StreamServer.Controls.Stream.Item.ConfigSpecification = [{
 	}]
 }];
 
-/*
 Echo.StreamServer.Controls.Submit.ConfigSpecification = [{
-	"targetURL": document.location.href,
-	"markers": [],
-	"source": {},
-	"tags": [],
-	"requestMethod": "GET",
-	"itemURIPattern": undefined,
-	"actionString": "Type your comment here...",
-	"postingTimeout": 30,
-	"type": undefined,
-	"targetQuery": undefined
-}];
+	"name": "targetURL",
+	"type": "String"//,
+/*
+	"defaultValue": document.location.href
+}, {
+	"name": "markers",
+	"type": "Array[String]"
+}, {
+	"name": "tags",
+	"type": "Array[String]"
 */
+}, {
+	"name": "source",
+	"type": "Object",
+	"properties": [{
+		"name": "name",
+		"type": "String"
+	}, {
+		"name": "uri",
+		"type": "String"
+	}, {
+		"name": "icon",
+		"type": "String"
+	}]
+}, {
+	"name": "requestMethod",
+	"type": "String",
+	"defaultValue": "GET",
+	"values": ["GET", "POST"]
+}, {
+	"name": "itemURIPattern",
+	"type": "String"
+}, {
+	"name": "actionString",
+	"type": "String",
+	"defulatValue": "Type your comment here..."
+}, {
+	"name": "postingTimeout",
+	"type": "Number",
+	"defaultValue": 30
+}, {
+	"name": "type",
+	"type": "String"
+}, {
+	"name": "targetQuery",
+	"type": "String"
+}];
