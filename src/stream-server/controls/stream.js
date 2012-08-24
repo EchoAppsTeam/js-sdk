@@ -50,7 +50,6 @@ stream.config = {
 	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
 };
 
-var _ensurePositiveValue = function(v) { return v < 0 ? 0 : v; };
 stream.config.normalizer = {
 	"safeHTML": function(value) {
 		return "off" !== value;
@@ -60,9 +59,7 @@ stream.config.normalizer = {
 			return "button";
 		}
 		return value;
-	},
-	"fadeTimeout": _ensurePositiveValue,
-	"slideTimeout": _ensurePositiveValue
+	}
 };
 
 stream.labels = {
@@ -74,13 +71,22 @@ stream.labels = {
 	"new": "new"
 };
 
+stream.init = function() {
+	var self = this;
+	this._recalcEffectsTimeouts();
+	if (this.config.get("data")) {
+		this._handleInitialResponse(this.config.get("data"));
+	} else {
+		this._requestInitialItems();
+	}
+};
+
 stream.events = {
 	"Echo.StreamServer.Controls.Stream.Item.onAdd": function(topic, data) {
 		var self = this;
 		data.item.config.get("target").hide();
 		this._queueActivity({
 			"action": "animation",
-			"actorID": data.item.get("data.actor.id"),
 			"item": data.item,
 			"priority": "highest",
 			"handler": function() {
@@ -96,7 +102,6 @@ stream.events = {
 		this._queueActivity({
 			"action": "animation",
 			"item": data.item,
-			"actorID": data.item.data.actor.id,
 			"priority": "highest",
 			"handler": function() {
 				data.item.set("deleted", false);
@@ -106,7 +111,7 @@ stream.events = {
 		return {"stop": ["bubble"]};
 	},
 	"Echo.StreamServer.Controls.Stream.Item.onChildrenExpand": function(topic, args) {
-		this.requestChildrenItems(args.data.unique);
+		this._requestChildrenItems(args.data.unique);
 		return {"stop": ["bubble"]};
 	}
 };
@@ -122,15 +127,15 @@ stream.templates.main =
 	'</div>';
 
 stream.renderers.body = function(element) {
-	var self = this;
-	if (!this.lastRequest) {
+	var self = this, request = this.lastRequest;
+	if (!request) {
 		return element;
 	}
-	if (this.lastRequest.data.length) {
-		if (this.lastRequest.initial) {
+	if (request.data.length) {
+		if (request.initial) {
 			element.empty();
 		}
-		this._appendRootItems(this.lastRequest.data, element);
+		this._appendRootItems(request.data, element);
 	} else {
 		this.showMessage({
 			"type": "empty",
@@ -138,24 +143,20 @@ stream.renderers.body = function(element) {
 			"target": element
 		});
 	}
-	if (this.lastRequest.initial && this.config.get("streamStateToggleBy") === "mouseover" && this.config.get("liveUpdates")) {
-		element.hover(function() {
-			self.setState("paused");
-		}, function() {
-			self.setState("live");
-		});
+	if (request.initial && this.config.get("liveUpdates") &&
+		this.config.get("streamStateToggleBy") === "mouseover") {
+			element.hover(
+				function() { self.setState("paused"); },
+				function() { self.setState("live"); }
+			);
 	}
-	this.events.publish({
-		"topic": "onReady",
-		"data": {"initial": this.lastRequest.initial},
-		"propagation": false
-	});
 	return element;
 };
 
 stream.renderers.state = function(element) {
 	var self = this;
 	var label = this.config.get("streamStateLabel");
+
 	if (!label.icon && !label.text || !this.config.get("liveUpdates")) {
 		return element;
 	}
@@ -219,35 +220,54 @@ stream.renderers.more = function(element) {
 		.one("click", function() {
 			self.events.publish({"topic": "onMoreButtonPress"});
 			element.html(self.labels.get("loading"));
-			self.requestMoreItems(element);
+			self._requestMoreItems(element);
 		});
 };
 
-stream.methods.requestChildrenItems = function(unique) {
+// public interface
+
+stream.methods.getState = function() {
+	return this.activities.state === undefined
+		? this.config.get("liveUpdates") ? "live" : "paused"
+		: this.activities.state;
+};
+
+stream.methods.setState = function(state) {
+	this.activities.state = state;
+	if (state === "live") {
+		this._executeNextActivity();
+	}
+	this.dom.render({"name": "state"});
+};
+
+// private functions
+
+stream.methods._requestChildrenItems = function(unique) {
 	var self = this;
-	var childrenRequest = Echo.StreamServer.API.request({
+	var item = this.items[unique];
+	var target = item.dom.get("expandChildren");
+	var request = Echo.StreamServer.API.request({
 		"endpoint": "search",
 		"apiBaseURL": this.config.get("apiBaseURL"),
 		"data": {
-			"q": this._constructChildrenSearchQuery(this.items[unique]),
+			"q": this._constructChildrenSearchQuery(item),
 			"appkey": this.config.get("appkey")
 		},
 		"onOpen": function() {
-			var target = self.items[unique].dom.get("expandChildren");
 			self.showError({}, {
 				"retryIn": 0,
 				"target": target,
-				"request": childrenRequest
+				"request": request
 			});
 		},
 		"onError": function(data, options) {
-			options.target = self.items[unique].dom.get("expandChildren");
-			options.request = childrenRequest;
-			self.showError(data, options);
+			self.showError(data, $.extend(options, {
+				"target": target,
+				"request": request
+			}));
 		},
 		"onData": function(data) {
-			var item = self.items[unique], items = {};
-			var element = item.dom.get("expandChildren");
+			var items = {};
 			if (!data.hasMoreChildren || data.hasMoreChildren === "false") {
 				item.set("data.hasMoreChildren", false);
 			}
@@ -282,10 +302,10 @@ stream.methods.requestChildrenItems = function(unique) {
 			});
 		}
 	});
-	childrenRequest.send();
+	request.send();
 };
 
-stream.methods.requestInitialItems = function() {
+stream.methods._requestInitialItems = function() {
 	var self = this;
 	if (!this.request) {
 		this.request = Echo.StreamServer.API.request({
@@ -295,7 +315,7 @@ stream.methods.requestInitialItems = function() {
 			"recurring": true,
 			"data": {
 				"q": this.config.get("query"),
-				"appkey": self.config.get("appkey")
+				"appkey": this.config.get("appkey")
 			},
 			"onOpen": function(data, options) {
 				if (options.requestType === "initial") {
@@ -306,8 +326,9 @@ stream.methods.requestInitialItems = function() {
 				}
 			},
 			"onError": function(data, options) {
-				options.request = self.request;
-				self.showError(data, options);
+				self.showError(data, $.extend(options, {
+					"request": self.request
+				}));
 			},
 			"onData": function(data, options) {
 				if (options.requestType === "initial") {
@@ -321,11 +342,9 @@ stream.methods.requestInitialItems = function() {
 	this.request.send();
 };
 
-stream.methods.requestMoreItems = function(element) {
+stream.methods._requestMoreItems = function(element) {
 	var self = this;
-	this.lastRequest = {
-		"initial": false
-	};
+	this.lastRequest = {"initial": false};
 	if (!this.moreRequest) {
 		this.moreRequest = Echo.StreamServer.API.request({
 			"endpoint": "search",
@@ -364,20 +383,6 @@ stream.methods.requestMoreItems = function(element) {
 	});
 };
 
-stream.methods.getState = function() {
-	return this.activities.state === undefined
-		? this.config.get("liveUpdates") ? "live" : "paused"
-		: this.activities.state;
-};
-
-stream.methods.setState = function(state) {
-	this.activities.state = state;
-	if (state === "live") {
-		this._executeNextActivity();
-	}
-	this.dom.render({"name": "state"});
-};
-
 stream.methods._prepareEventParams = function(params) {
 	params = params || {};
 	params.target = this.config.get("target").get(0);
@@ -388,7 +393,7 @@ stream.methods._prepareEventParams = function(params) {
 	return params;
 };
 
-stream.methods.applyLiveUpdates = function(entries, callback) {
+stream.methods._applyLiveUpdates = function(entries, callback) {
 	var self = this;
 	this._refreshItemsDate();
 	this._checkTimeframeSatisfy();
@@ -466,7 +471,9 @@ stream.methods._actualizeChildrenList = function(parent, entries) {
 stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 	var self = this;
 	var wrapper = $('<div class="' + this.cssPrefix + 'children-wrapper"></div>');
-	var getIdx = function(item) { return self._getItemListIndex(item, parent.get("children")); };
+	var getIdx = function(item) {
+		return self._getItemListIndex(item, parent.get("children"));
+	};
 	$.each(children, function(i, item) {
 		var insertion = i > 0 && getIdx(children[i-1]) < getIdx(item)
 			? "append"
@@ -523,7 +530,6 @@ stream.methods._getRespectiveAccumulator = function(item, sort) {
 };
 
 stream.methods._appendRootItems = function(items, container) {
-	var self = this;
 	if (!items || !items.length) return;
 	$.map(items, function(item) {
 		container.append(item.config.get("target").get(0));
@@ -603,14 +609,14 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 		});
 		self.hasInitialData = true;
 		self.isViewComplete = roots.length !== self.config.get("itemsPerPage");
-		visualizer = visualizer || function(data) {
+		(visualizer || function(data) {
 			self.lastRequest = {
 				"initial": true,
 				"data": data
 			};
 			self.dom.render();
-		};
-		visualizer(roots);
+			self.ready();
+		})(roots);
 	});
 };
 
@@ -635,7 +641,7 @@ stream.methods._handleLiveUpdatesResponse = function(data) {
 		this.startLiveUpdates();
 		return;
 	}
-	this.applyLiveUpdates(data.entries, function() {
+	this._applyLiveUpdates(data.entries, function() {
 		self.dom.render({"name": "state"});
 		self._executeNextActivity();
 	});
@@ -783,7 +789,6 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 	this._queueActivity({
 		"action": action,
 		"item": item,
-		"actorID": item.get("data.actor.id"),
 		"priority": options.priority,
 		"handler": function() { handler(action); }
 	});
@@ -794,7 +799,8 @@ stream.methods._queueActivity = function(params) {
 	// we consider activity related to the current user if:
 	//  - the corresponding item is blocked (moderation action in progress)
 	//  - or the activity was performed by the current user
-	var byCurrentUser = params.item.blocked || params.actorID && this.user.has("identity", params.actorID);
+	var actorID = params.item.data.actor.id;
+	var byCurrentUser = params.item.blocked || actorID && this.user.has("identity", actorID);
 	var index = this._getActivityProjectedIndex(byCurrentUser, params);
 	var data = {
 		"action": params.action,
@@ -1197,16 +1203,6 @@ stream.methods._normalizeEntry = function(entry) {
 	return entry;
 };
 
-stream.init = function() {
-	var self = this;
-	this._recalcEffectsTimeouts();
-	if (this.config.get("data")) {
-		this._handleInitialResponse(this.config.get("data"));
-	} else {
-		this.requestInitialItems();
-	}
-};
-
 stream.css =
 	'.{class:message-wrapper} { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }' +
 	'.{class:message-empty}, .{class:message-loading}, .{class:message-error} { display: inline-block; height: 16px; padding-left: 21px; background: no-repeat left center; }' +
@@ -1313,9 +1309,9 @@ item.labels = {
 	"childrenMoreItems": "View more items"
 };
 
-item.init = function(config) {
+item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
-	this.dom.render();
+	this.ready();
 };
 
 item.renderers.authorName = function(element) {

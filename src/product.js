@@ -11,7 +11,7 @@ Echo.ProductView.manifest = Echo.Control.manifest;
 (function() {
 
 var list = Echo.ProductView.prototype._initializers.list.slice(0);
-list.splice(list.length - 1, 0, ["controls", ["init", "refresh"]]);
+list.splice(list.length - 4, 0, ["controls", ["init", "refresh"]]);
 Echo.ProductView.prototype._initializers = $.extend({}, Echo.ProductView.prototype._initializers);
 Echo.ProductView.prototype._initializers.list = list;
 
@@ -193,7 +193,7 @@ Echo.Product.prototype.destroyView = function(name) {
 (function() {
 
 var list = Echo.Product.prototype._initializers.list.slice(0);
-list.splice(list.length - 1, 0, ["views", ["init", "refresh"]]);
+list.splice(list.length - 4, 0, ["views", ["init", "refresh"]]);
 Echo.Product.prototype._initializers = $.extend({}, Echo.Product.prototype._initializers);
 Echo.Product.prototype._initializers.list = list;
 

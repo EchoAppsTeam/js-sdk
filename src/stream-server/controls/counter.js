@@ -49,6 +49,7 @@ counter.init = function() {
 		this._request();
 	} else {
 		this.dom.render();
+		this.ready();
 	}
 };
 
@@ -85,6 +86,7 @@ counter.methods._update = function(data) {
 		});
 		this.set("data", data);
 		this.dom.render();
+		this.ready();
 	}
 };
 
@@ -100,6 +102,7 @@ counter.methods._error = function(data) {
 	if (data.errorCode === "more_than") {
 		this.set("data.count", data.errorMessage + "+");
 		this.dom.render();
+		this.ready();
 	} else {
 		this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
 	}
