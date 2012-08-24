@@ -560,14 +560,16 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 		control.events.subscribe($.extend({"topic": topic}, data));
 	});
 
-	control.events.subscribe({
-		"topic": "Echo.Control.onDataInvalidate",
-		"context": "global",
-		"handler": function() {
-			if (control.get("request")) {
-				control.get("request").send({"force": true});
+	$.map(["global", control.config.get("context")], function(context) {
+		control.events.subscribe({
+			"topic": "Echo.Control.onDataInvalidate",
+			"context": context,
+			"handler": function() {
+				if (control.get("request")) {
+					control.get("request").send({"force": true});
+				}
 			}
-		}
+		});
 	});
 
 	// call "ready" callback after the control was rendered
