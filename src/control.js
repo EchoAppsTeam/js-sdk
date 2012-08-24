@@ -560,6 +560,11 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 		control.events.subscribe($.extend({"topic": topic}, data));
 	});
 
+	// we need two subscriptions here, because the "Echo.Control.onDataInvalidate" event
+	// may be published by the nested controls (in this case the event is not broadcasted
+	// to the "global" context) and by the standalone control to notify other controls
+	// (not related directly) about the need to invalidate the data (in this case
+	// the "global" context is used)
 	$.map(["global", control.config.get("context")], function(context) {
 		control.events.subscribe({
 			"topic": "Echo.Control.onDataInvalidate",
