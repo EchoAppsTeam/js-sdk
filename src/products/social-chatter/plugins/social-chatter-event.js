@@ -150,7 +150,7 @@ plugin.renderers.eventNameBrief = function(element) {
 };
 
 plugin.renderers.eventDescriptionBrief = function(element) {
-	return element.html(this.event.data.eventName || this.labels.get("unknown"));
+	return element.html(this.event.data.eventDescription || this.labels.get("unknown"));
 };
 
 plugin.renderers.eventCreationDate = function(element) {
