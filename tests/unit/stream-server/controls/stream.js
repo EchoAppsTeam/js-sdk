@@ -23,18 +23,18 @@ suite.prototype.tests.commonWorkflow = {
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"liveUpdatesTimeout": 5,
-			"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:2",
+			"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:1",
 			"ready": function() {
 				var target = this.config.get("target");
 				suite.stream = this;
 				QUnit.ok($(target).hasClass("echo-streamserver-controls-stream"),
 					"Checking the common container rendering");
-				QUnit.equal($(".echo-streamserver-controls-stream-item-depth-0", target).length, 2,
+				QUnit.equal($(".echo-streamserver-controls-stream-item-depth-0", target).length, 1,
 					"Checking initial items count");
 				self.sequentialAsyncTests([
-					"moreButton",
 					"addRootItem",
 					"addChildItem",
+					"moreButton",
 					"destroy"
 				], "cases");
 			}
@@ -48,10 +48,25 @@ suite.prototype.cases.moreButton = function(callback) {
 	var stream = suite.stream;
 	var target = this.config.target;
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.onReady",
+		"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
+		"once": true,
+		"handler": function(topic, args) {
+			var count = 0;
+			$.each(args.entries, function(key, entry) {
+				if (entry.object.id == entry.targets[0].conversationID) {
+					count++;
+				}
+			}); 
+			QUnit.equal(count, 1,
+				"Checking onDataReceive event");
+		}
+	});
+
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
 		"once": true,
 		"handler": function() {
-			QUnit.equal($(".echo-streamserver-controls-stream-item-depth-0", target).length, 4,
+			QUnit.equal($(".echo-streamserver-controls-stream-item-depth-0", target).length, 2,
 				"Checking items count after more button click");
 			callback();
 		}
@@ -80,7 +95,7 @@ suite.prototype.cases.addRootItem = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
 		"once": true,
 		"handler": function(topic, args) {
-			QUnit.equal($(".echo-streamserver-controls-stream-item-depth-0", target).length, 5,
+			QUnit.equal($(".echo-streamserver-controls-stream-item-depth-0", target).length, 2,
 				"Checking items count after posting");
 			var newItem = $(".echo-streamserver-controls-stream-item-depth-0", target).get(0);
 			QUnit.equal($(".echo-streamserver-controls-stream-item-authorName", newItem).html(), "john.doe",
@@ -128,18 +143,6 @@ suite.prototype.cases.addChildItem = function(callback) {
 	}).send();
 };
 
-/*
-suite.prototype.cases.updateItem = function(callback) {
-	var stream = suite.stream;
-	var target = this.config.target;
-	var updatedItem;
-	$.each(stream.items, function(key, item) {
-		
-	});
-	callback();
-};
-*/
-
 suite.prototype.cases.destroy = function(callback) {
 	if (suite.stream) suite.stream.destroy();
 	callback();
@@ -181,8 +184,7 @@ suite.prototype._prepareUpdateEntry = function(params) {
 			"targets": [{
 				"id": params.targetId
 			}]
-		}],
-		"targetURL": params.targetURL
+		}]
 	};
 };
 

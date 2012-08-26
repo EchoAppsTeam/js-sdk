@@ -18,18 +18,27 @@ suite.prototype.tests.testItemButtons = {
 	},
 	"check": function() {
 		var self = this;
-		this.sequentialAsyncTests([
-			"visibility",
-			"order",
-			"click"
-		], "cases");
+		new Echo.StreamServer.Controls.Stream.Item({
+			"target": this.config.target,
+			"appkey": "test.js-kit.com",
+			"parent": _streamConfigData,
+			"data": _normalizeEntry($.extend(true, {}, _itemData)),
+			"ready": function() {
+				suite.item = this;
+				self.sequentialAsyncTests([
+					"visibility",
+					"order",
+					"click"
+				], "cases");
+			}
+		});
 	}
 };
 
 suite.prototype.cases = {};
 
 suite.prototype.cases.visibility = function(callback) {
-	var item = _createItem();
+	var item = suite.item;
 	var buttons =[{
 		"name": "button1",
 		"label": "Button1",
@@ -47,7 +56,7 @@ suite.prototype.cases.visibility = function(callback) {
 		"plugin": "Plugin3"
 	}];
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRefresh",
 		"once": true,
 		"handler": function() {
 			var element = item.dom.get("buttons");
@@ -63,11 +72,11 @@ suite.prototype.cases.visibility = function(callback) {
 	$.map(buttons, function(button) {
 		item.addButtonSpec(button.plugin, button);
 	});
-	item.dom.render();
+	item.refresh();
 };
 
 suite.prototype.cases.order = function(callback) {
-	var item = _createItem();
+	var item = suite.item;
 	var buttons =[{
 		"name": "button1",
 		"label": "Button1",
@@ -87,7 +96,7 @@ suite.prototype.cases.order = function(callback) {
 	var buttonsOrder = ["Plugin3", "Plugin2", "Plugin1"];
 	item.config.set("buttonsOrder", buttonsOrder);
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRefresh",
 		"once": true,
 		"handler": function() {
 			var element = item.dom.get("buttons");
@@ -111,11 +120,11 @@ suite.prototype.cases.order = function(callback) {
 	$.map(buttons, function(button) {
 		item.addButtonSpec(button.plugin, button);
 	});
-	item.dom.render();
+	item.refresh();
 };
 
 suite.prototype.cases.click = function(callback) {
-	var item = _createItem();
+	var item = suite.item;
 	var button = {
 		"name": "newButton",
 		"label": "NewButton",
@@ -137,21 +146,21 @@ suite.prototype.cases.click = function(callback) {
 		}
 	});
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRefresh",
 		"once": true,
 		"handler": function() {
 			$(item.dom.get("buttons").children().get(1)).click();
 		}
 	});
 	item.addButtonSpec(button.plugin, button);
-	item.dom.render();
+	item.refresh();
 }; 
 
 suite.prototype.tests.bodyRendererTest = {
 	"check": function() {
 		var contentTransform = '1 :) <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty';
 		var contentLimits = '1234567890 <span>qwertyuiop</span> https://encrypted.google.com/#sclient=psy&hl=en&source=hp&q=something&pbx=1&oq=something&aq=f&aqi=g5&aql=1&gs_sm=e&gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&bav=on.2,or.r_gc.r_pw.&fp=d31248080af7dd23&biw=1440&bih=788 #12345678901234567890';
-		_runTestCases([{
+		this._runTestCases([{
 			"description": "source: Twitter, aggressiveSanitization: true",
 			"config": {
 				"aggressiveSanitization": true
@@ -380,16 +389,18 @@ suite.prototype.tests.bodyRendererTest = {
 	}
 };
 
-var _createItem = function(data, config) {
+suite.prototype._createItem = function(data, config, callback) {
 	return new Echo.StreamServer.Controls.Stream.Item($.extend({
-		"target": $("<div>"),
+		"target": this.config.target,
 		"appkey": "test.js-kit.com",
 		"parent": _streamConfigData,
+		"ready": callback,
 		"data": _normalizeEntry($.extend(true, {}, _itemData, data))
 	}, config));
 };
 
-var _runTestCases = function(cases) {
+suite.prototype._runTestCases = function(cases) {
+	var self = this;
 	var template =
 		'<div class="echo-streamserver-controls-stream-item-body">' +
 			'<span class="echo-streamserver-controls-stream-item-text"></span>' +
@@ -397,7 +408,7 @@ var _runTestCases = function(cases) {
 			'<span class="echo-streamserver-controls-stream-item-textToggleTruncated"></span>' +
 		+ '</div>';
 	$.each(cases, function(i, params) {
-		var item = _createItem(params.data, params.config);
+		var item = self._createItem(params.data, params.config);
 		var element = item.dom.render({"template": template});
 		QUnit.equal(element.find(".echo-streamserver-controls-stream-item-text").html(), params.expect, params.description);
 	});
