@@ -399,18 +399,7 @@ SocialChatter.views.Main.controls.Auth = {
 	"control": "Echo.IdentityServer.Controls.Auth",
 	"config": {
 		"appkey": null,
-		"identityManager": {
-			"login": {
-				"width": "{config:parent.identityManager.login.width}",
-				"height": "{config:parent.identityManager.login.height}",
-				"url": "{config:parent.identityManager.login.url}"
-			},
-			"signup": {
-				"width": "{config:parent.identityManager.signup.width}",
-				"height": "{config:parent.identityManager.signup.height}",
-				"url": "{config:parent.identityManager.signup.url}"
-			}
-		} 
+		"identityManager": "{config:parent.identityManager}"
 	}
 };
 
