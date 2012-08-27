@@ -37,8 +37,7 @@ module.exports = function(grunt) {
 		},
 		exec: {
 			docs: {
-				command: "jsduck src --ignore-global --title=\"Echo JS SDK\" --pretty-json --output web/sdk/docs"
-						//	jsduck src --ignore-global --title="Echo JS SDK" --pretty-json --output web/sdk/docs --meta-tags=tools/jsduck.tags.rb
+				command: "jsduck src --ignore-global --title=\"Echo JS SDK\" --pretty-json --output web/sdk/docs --meta-tags=tools/jsduck.tags.rb"
 			}
 		},
 		copy: {
