@@ -472,7 +472,12 @@ Echo.Utils.timestampFromW3CDTF = function(datetime) {
  * @return {Boolean} Returns true if mobile device is used, false if not.
  */
 Echo.Utils.isMobileDevice = function() {
-	return Echo.Utils.regexps.mobileUA.test(navigator.userAgent);
+	// we can calculate it once and use the cached value
+	// in other calls since user agent will not be changed
+	if (typeof this._isMobileDevice === "undefined") {
+		this._isMobileDevice = this.regexps.mobileUA.test(navigator.userAgent);
+	}
+	return this._isMobileDevice;
 };
 
 /**
