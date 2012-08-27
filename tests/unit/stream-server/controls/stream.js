@@ -1,6 +1,18 @@
 (function($) {
 
-var suite = Echo.Tests.Unit.Stream = function() {};
+var data = {
+	"instance" : {
+		"name" : "Echo.StreamServer.Controls.Stream"
+	},
+	"config": {
+		"async"       : true,
+		"testTimeout" : 10000
+	}
+};
+
+var suite = Echo.Tests.Unit.Stream = function() {
+	this.constructRenderersTest(data);
+};
 
 suite.prototype.info = {
 	"className": "Echo.StreamServer.Controls.Stream",
@@ -43,36 +55,6 @@ suite.prototype.tests.commonWorkflow = {
 };
 
 suite.prototype.cases = {};
-
-suite.prototype.cases.moreButton = function(callback) {
-	var stream = suite.stream;
-	var target = this.config.target;
-	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
-		"once": true,
-		"handler": function(topic, args) {
-			var count = 0;
-			$.each(args.entries, function(key, entry) {
-				if (entry.object.id == entry.targets[0].conversationID) {
-					count++;
-				}
-			}); 
-			QUnit.equal(count, 1,
-				"Checking onDataReceive event");
-		}
-	});
-
-	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
-		"once": true,
-		"handler": function() {
-			QUnit.equal($(".echo-streamserver-controls-stream-item-depth-0", target).length, 2,
-				"Checking items count after more button click");
-			callback();
-		}
-	});
-	$(".echo-streamserver-controls-stream-more", target).click();
-};
 
 suite.prototype.cases.addRootItem = function(callback) {
 	var stream = suite.stream;
@@ -133,7 +115,7 @@ suite.prototype.cases.addChildItem = function(callback) {
 		"handler": function(topic, args) {
 			var data = args.item.data;
 			QUnit.equal(data.target.conversationID, parentItem.get("data.object.id"),
-				"Checking that newly posted child item is received");
+				"Checking that newly posted child item is received (onReceive event)");
 			callback();
 		}
 	});
@@ -141,6 +123,27 @@ suite.prototype.cases.addChildItem = function(callback) {
 		"endpoint": "submit",
 		"data": entry
 	}).send();
+};
+
+suite.prototype.cases.moreButton = function(callback) {
+	var stream = suite.stream;
+	var target = this.config.target;
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
+		"once": true,
+		"handler": function(topic, args) {
+			var count = 0;
+			$.each(args.entries, function(key, entry) {
+				if (entry.object.id == entry.targets[0].conversationID) {
+					count++;
+				}
+			}); 
+			QUnit.equal(count, 1,
+				"Checking that new item was received after more button click(onDataReceive event)");
+			callback();
+		}
+	});
+	$(".echo-streamserver-controls-stream-more", target).click();
 };
 
 suite.prototype.cases.destroy = function(callback) {
@@ -170,24 +173,6 @@ suite.prototype._preparePostEntry = function(params) {
 	};
 };
 
-suite.prototype._prepareUpdateEntry = function(params) {
-	return {
-		"appkey": this.config.appkey,
-		"sessionID": Backplane.getChannelID(),
-		"content": [{
-			"object": {
-				"objectTypes": [ "http://activitystrea.ms/schema/1.0/comment"],
-				"content": params.content,
-			},
-			"source": {},
-			"verbs": [ "http://activitystrea.ms/schema/1.0/update" ],
-			"targets": [{
-				"id": params.targetId
-			}]
-		}]
-	};
-};
-
 Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Stream", function(config) {
 	return new Echo.StreamServer.Controls.Stream($.extend({
 		"target": $(document.getElementById("qunit-fixture")).empty(),
@@ -195,6 +180,5 @@ Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Stream", funct
 		"query": "childrenof:" + config.dataBaseLocation + " sortOrder:repliesDescending"
 	}, config));
 });
-
 
 })(Echo.jQuery);

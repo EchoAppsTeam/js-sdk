@@ -1,15 +1,183 @@
 (function($) {
 
-var suite = Echo.Tests.Unit.Item = function() {};
+var suite = Echo.Tests.Unit.Item = function() {
+	this.constructRenderersTest({
+		"instance" : {
+			"name" : "Echo.StreamServer.Controls.Stream.Item",
+			"config": {
+				"render": true,
+				"data": suite._itemData,
+				"parent": suite._streamConfigData
+			}
+		},
+		"config": {
+			"async"       : true,
+			"testTimeout" : 10000
+		}
+	});
+};
 
 suite.prototype.info = {
 	"className": "Echo.StreamServer.Controls.Stream.Item",
 	"functions": [
+		"isRoot",
+		"block",
+		"unblock",
+		"traverse",
+		"getAccumulator",
+		"hasMoreChildren",
+		"getNextPageAfter",
 		"addButtonSpec"
 	]
 };
 
 suite.prototype.tests = {};
+
+suite.prototype.cases = {};
+
+suite.prototype.tests.commonWorkflow = {
+	"config" : {
+		"async"       : true,
+		"testTimeout" : 20000, // 20 secs
+	},
+	"check": function() {
+		var self = this;
+		new Echo.StreamServer.Controls.Stream.Item({
+			"target": this.config.target,
+			"appkey": this.config.appkey,
+			"parent": suite._streamConfigData,
+			"data": _normalizeEntry(suite._itemData),
+			"render": true,
+			"buttonsOrder": undefined,
+			"ready": function() {
+				var item = suite.item = this;
+				
+				QUnit.ok(item.isRoot(), "Checking isRoot() method");
+				item.set("data.target.conversationID", "http://example.com/ECHO/item/1311856366-373-938");
+				QUnit.ok(!item.isRoot(), "Checking isRoot() method");
+				
+				QUnit.equal(item.getAccumulator("likesCount"), 2, "Checking getAccumulator method");
+				
+				item.set("data.hasMoreChildren", "false");
+				QUnit.ok(!item.hasMoreChildren(), "Checking hasMoreChildren() method");
+				item.set("data.hasMoreChildren", "true");
+				QUnit.ok(item.hasMoreChildren(), "Checking that hasMoreChildren() method");
+				item.set("data.hasMoreChildren", true);
+				QUnit.ok(!item.hasMoreChildren(), "Checking that hasMoreChildren() method");
+				
+				item.block("TestMessage");
+				QUnit.ok(item.get("blocked"),
+					"Checking that field 'blocked' is true (block() method)");
+				QUnit.equal($("." + item.cssPrefix + "blocker-message", item.dom.get("container")).html(),
+					"TestMessage", "Checking the block message (block() method)");
+				QUnit.ok($("." + item.cssPrefix + "blocker-backdrop", item.dom.get("container")).length,
+					"Checking that block backdrop is apperead (block() method)");
+				
+				item.unblock();
+				QUnit.ok(!item.get("blocked"),
+					"Checking that field 'blocked' is false (unblock() method)");
+				QUnit.ok(!$("." + item.cssPrefix + "blocker-message", item.dom.get("container")).length,
+					"Checking that block message was removed (unblock() method)");
+				QUnit.ok(!$("." + item.cssPrefix + "blocker-backdrop", item.dom.get("container")).length,
+					"Checking that block backdrop was removed (unblock() method)");
+				
+				var children = [
+					new Echo.StreamServer.Controls.Stream.Item({
+						"target": $("<div>"),
+						"appkey": self.config.appkey,
+						"parent": suite._streamConfigData,
+						"data":  _normalizeEntry($.extend(true, {}, suite._itemData, {
+							"object": {
+								"content": "123"
+							},
+							"pageAfter": "1346051873.088351"
+						})),
+						"live": false
+					}),
+					new Echo.StreamServer.Controls.Stream.Item({
+						"target": $("<div>"),
+						"appkey": self.config.appkey,
+						"parent": suite._streamConfigData,
+						"data":  _normalizeEntry($.extend(true, {}, suite._itemData, {
+							"object": {
+								"content": "456"
+							},
+							"pageAfter": "1346051873.088352" 
+						})),
+						"live": false
+					}),
+					new Echo.StreamServer.Controls.Stream.Item({
+						"target": $("<div>"),
+						"appkey": self.config.appkey,
+						"parent": suite._streamConfigData,
+						"data":  _normalizeEntry($.extend(true, {}, suite._itemData, {
+							"object": {
+								"content": "789"
+							},
+							"pageAfter":  "1346051873.088353"
+						})),
+						"live": true
+					})
+				];
+				suite.item.set("children", children);
+				self.sequentialAsyncTests([
+					"traverse",
+					"expand",
+					"destroy"
+				], "cases");
+			}
+		});
+	}
+};
+
+suite.prototype.cases.traverse = function(callback) {
+	var item = suite.item;
+	item.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
+		"once": true,
+		"handler": function() {
+			var content = "";
+			item.traverse(item.get("children"), function(child) {
+				content += child.get("data.object.content");
+			});
+			QUnit.equal("123456789", content, "Checking traverse() method");
+			QUnit.equal(item.getNextPageAfter(), "1346051873.088351",
+				"Checking getNextPageAfter() method");
+			item.config.set("parent.children.sortOrder", "chronological");
+			QUnit.equal(item.getNextPageAfter(), "1346051873.088352",
+				"Checking getNextPageAfter() method");
+			item.traverse(item.get("children"), function(child) {
+				child.config.set("live", true);
+			});
+			QUnit.equal(item.getNextPageAfter(), undefined,
+				"Checking that getNextPageAfter() method returns undefined if all children are live");
+			callback();
+		}
+	});
+	item.dom.render();
+};
+
+suite.prototype.cases.expand = function(callback) {
+	var item = suite.item;
+	item.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onChildrenExpand",
+		"once": true,
+		"handler": function() {
+			QUnit.ok(true, "Checking onChildrenExpand() event");
+			callback();
+		}
+	});
+	item.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
+		"once": true,
+		"handler": function() {
+			item.dom.get("expandChildren").click();
+		}
+	});
+	console.log(item.get("children"));
+	item.set("data.hasMoreChildren", "true");
+	item.dom.render();
+};
 
 suite.prototype.tests.testItemButtons = {
 	"config" : {
@@ -20,22 +188,23 @@ suite.prototype.tests.testItemButtons = {
 		var self = this;
 		new Echo.StreamServer.Controls.Stream.Item({
 			"target": this.config.target,
-			"appkey": "test.js-kit.com",
-			"parent": _streamConfigData,
-			"data": _normalizeEntry($.extend(true, {}, _itemData)),
+			"appkey": this.config.appkey,
+			"parent": suite._streamConfigData,
+			"data": _normalizeEntry(suite._itemData),
+			"render": true,
+			"buttonsOrder": undefined,
 			"ready": function() {
 				suite.item = this;
 				self.sequentialAsyncTests([
 					"visibility",
 					"order",
-					"click"
+					"click",
+					"destroy"
 				], "cases");
 			}
 		});
 	}
 };
-
-suite.prototype.cases = {};
 
 suite.prototype.cases.visibility = function(callback) {
 	var item = suite.item;
@@ -56,7 +225,7 @@ suite.prototype.cases.visibility = function(callback) {
 		"plugin": "Plugin3"
 	}];
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.onRefresh",
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
 		"once": true,
 		"handler": function() {
 			var element = item.dom.get("buttons");
@@ -69,10 +238,13 @@ suite.prototype.cases.visibility = function(callback) {
 			callback();
 		}
 	});
+	item.buttonSpecs = {};
+	item.buttonsOrder = [];
+	item.config.set("buttonsOrder", undefined);
 	$.map(buttons, function(button) {
 		item.addButtonSpec(button.plugin, button);
 	});
-	item.refresh();
+	item.dom.render();
 };
 
 suite.prototype.cases.order = function(callback) {
@@ -93,10 +265,8 @@ suite.prototype.cases.order = function(callback) {
 		"visible": true,
 		"plugin": "Plugin3"
 	}];
-	var buttonsOrder = ["Plugin3", "Plugin2", "Plugin1"];
-	item.config.set("buttonsOrder", buttonsOrder);
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.onRefresh",
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
 		"once": true,
 		"handler": function() {
 			var element = item.dom.get("buttons");
@@ -117,10 +287,14 @@ suite.prototype.cases.order = function(callback) {
 			callback();
 		}
 	});
+	item.buttonSpecs = {};
+	item.buttonsOrder = [];
+	var buttonsOrder = ["Plugin3", "Plugin2", "Plugin1"];
+	item.config.set("buttonsOrder", buttonsOrder);
 	$.map(buttons, function(button) {
 		item.addButtonSpec(button.plugin, button);
 	});
-	item.refresh();
+	item.dom.render();
 };
 
 suite.prototype.cases.click = function(callback) {
@@ -146,21 +320,29 @@ suite.prototype.cases.click = function(callback) {
 		}
 	});
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.onRefresh",
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
 		"once": true,
 		"handler": function() {
 			$(item.dom.get("buttons").children().get(1)).click();
 		}
 	});
+	item.buttonSpecs = {};
+	item.buttonsOrder = [];
+	item.config.set("buttonsOrder", undefined);
 	item.addButtonSpec(button.plugin, button);
-	item.refresh();
-}; 
+	item.dom.render();
+};
+
+suite.prototype.cases.destroy = function(callback) {
+	if (suite.item) suite.item.destroy();
+	callback();
+};
 
 suite.prototype.tests.bodyRendererTest = {
 	"check": function() {
 		var contentTransform = '1 :) <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty';
 		var contentLimits = '1234567890 <span>qwertyuiop</span> https://encrypted.google.com/#sclient=psy&hl=en&source=hp&q=something&pbx=1&oq=something&aq=f&aqi=g5&aql=1&gs_sm=e&gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&bav=on.2,or.r_gc.r_pw.&fp=d31248080af7dd23&biw=1440&bih=788 #12345678901234567890';
-		this._runTestCases([{
+		this._runBodyCases([{
 			"description": "source: Twitter, aggressiveSanitization: true",
 			"config": {
 				"aggressiveSanitization": true
@@ -389,28 +571,27 @@ suite.prototype.tests.bodyRendererTest = {
 	}
 };
 
-suite.prototype._createItem = function(data, config, callback) {
-	return new Echo.StreamServer.Controls.Stream.Item($.extend({
-		"target": this.config.target,
-		"appkey": "test.js-kit.com",
-		"parent": _streamConfigData,
-		"ready": callback,
-		"data": _normalizeEntry($.extend(true, {}, _itemData, data))
-	}, config));
-};
-
-suite.prototype._runTestCases = function(cases) {
+suite.prototype._runBodyCases = function(cases) {
 	var self = this;
 	var template =
 		'<div class="echo-streamserver-controls-stream-item-body">' +
 			'<span class="echo-streamserver-controls-stream-item-text"></span>' +
 			'<span class="echo-streamserver-controls-stream-item-textEllipses">...</span>' +
 			'<span class="echo-streamserver-controls-stream-item-textToggleTruncated"></span>' +
-		+ '</div>';
+		+ '</div>';	
 	$.each(cases, function(i, params) {
-		var item = self._createItem(params.data, params.config);
-		var element = item.dom.render({"template": template});
-		QUnit.equal(element.find(".echo-streamserver-controls-stream-item-text").html(), params.expect, params.description);
+		new Echo.StreamServer.Controls.Stream.Item($.extend({
+			"target": self.config.target,
+			"appkey": self.config.appkey,
+			"parent": suite._streamConfigData,
+			"render": true,
+			"ready": function() {
+				var element = $(".echo-streamserver-controls-stream-item-body", self.config.target);
+				QUnit.equal(element.find(".echo-streamserver-controls-stream-item-text").html(),
+					params.expect, params.description);
+			},
+			"data": _normalizeEntry($.extend(true, {}, suite._itemData, params.data))
+		}, params.config));
 	});
 };
 
@@ -441,13 +622,14 @@ var _normalizeEntry = function(entry) {
 	return entry;
 };
 
-var _itemData = {
+suite._itemData = {
 	"id": "http://js-kit.com/activities/post/6b6850f9daf17d40d55661ce2dc24f14",
 	"actor": {
 		"objectTypes": ["http://activitystrea.ms/schema/1.0/person"],
 		"id": "http://twitter.com/12345",
 		"title": "Somebody",
-		"status": "Untouched"
+		"status": "Untouched",
+		"avatar": "http://cdn.echoenabled.com/images/info70.png"
 	},
 	"object": {
 		"id": "http://example.com/ECHO/item/1311856366-373-937",
@@ -457,7 +639,33 @@ var _itemData = {
 		"content": "1",
 		"content_type": "html",
 		"status": "Untouched",
-		"published": "2011-07-28T12:32:46Z"
+		"published": "2011-07-28T12:32:46Z",
+		"likes": [{
+			"actor": {
+				"links": [],
+				"objectTypes": [
+					"http://activitystrea.ms/schema/1.0/person"
+				],
+				"id": "http://facebook.com/1650421227",
+				"title": "Tester",
+				"avatar": "https://graph.facebook.com/1650421227/picture?type=large"
+			},
+			"published": "2012-08-27T07:52:35Z"
+		}, {
+			"actor": {
+				"links": [],
+				"objectTypes": [
+					"http://activitystrea.ms/schema/1.0/person"
+				],
+				"id": "http://twitter.com/175752608",
+				"title": "Tester2",
+				"avatar": "http://a0.twimg.com/profile_images/2107898907/x_368e1249_normal.jpg"
+			},
+			"published": "2012-08-27T07:50:03Z"
+		}],
+		"accumulators": {
+			"likesCount": "2"
+		}
 	},
 	"source": {
 		"name": "jskit",
@@ -474,10 +682,11 @@ var _itemData = {
 	"targets": [{
 		"id": "http://example.com",
 		"conversationID": "http://example.com/ECHO/item/1311856366-373-937"
-	}]
+	}],
+	"hasMoreChildren": "false"
 };
 
-var _streamConfigData = {
+suite._streamConfigData = {
 	"children": {
 		"additionalItemsPerPage": 5,
 		"displaySortOrder": "chronological",
@@ -504,31 +713,6 @@ var _streamConfigData = {
 	"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity",
 	"query": "query_string",
 	"target": $("<div>")
-};
-
-var _itemConfigData = {
-	"aggressiveSanitization": false,
-	"buttonsOrder": undefined,
-	"contentTransformations": {
-		"text": ["smileys", "hashtags", "urls", "newlines"],
-		"html": ["smileys", "hashtags", "urls", "newlines"],
-		"xhtml": ["smileys", "hashtags", "urls"]
-	},
-	"limits": {
-		"maxBodyCharacters": undefined,
-		"maxBodyLines": undefined,
-		"maxBodyLinkLength": 50,
-		"maxMarkerLength": 16,
-		"maxReLinkLength": 30,
-		"maxReTitleLength": 143,
-		"maxTagLength": 16
-	},
-	"optimizedContext": true,
-	"reTag": true,
-	"viaLabel": {
-		"icon": false,
-		"text": false
-	}
 };
 
 Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Stream.Item", function(config) {
