@@ -222,10 +222,10 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerHelper("wrap_code", function(code, filepath) {
-		if (_.include(_dontWrap, filepath)) {
+		if (_.include(_dontWrap, filepath) || /\.pack\.js/.test(filepath)) {
 			return code;
 		}
-		if (!/third-party|\.pack\.js/.test(filepath)) {
+		if (!/third-party/.test(filepath)) {
 			var doc = code.match(/@class ((?:\w+\.?)+)\s/);
 			var docClass = doc && doc[1];
 			if (docClass) {
