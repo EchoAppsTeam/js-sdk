@@ -1,17 +1,17 @@
 require "jsduck/meta_tag"
 
-class RendererTag < JsDuck::MetaTag
+class EchoRendererTag < JsDuck::MetaTag
 	def initialize
-		@name = "renderer"
+		@name = "echo_renderer"
 		@multiline = false
 		@boolean = true
 		@signature = {:long => "renderer", :short => "renderer"}
 	end
 end
 
-class LocalizationTag < JsDuck::MetaTag
+class EchoLocalizationTag < JsDuck::MetaTag
 	def initialize
-		@name = "localization"
+		@name = "echo_label"
 		@multiline = false
 		@boolean = true
 		@signature = {:long => "localization label", :short => "L10N"}

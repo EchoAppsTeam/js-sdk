@@ -33,12 +33,12 @@ plugin.init = function() {
 
 plugin.labels = {
 	/**
-	 * @localization
+	 * @echo_label
 	 * Label to show in the counter if maximum character limit is provided
 	 */
 	"limited": "{typed}/{left} characters",
 	/**
-	 * @localization
+	 * @echo_label
 	 * Label to show in the counter if no character limit is provided
 	 */
 	"unlimited": "{typed} characters"
@@ -53,9 +53,7 @@ plugin.events = {
 plugin.templates.counter = '<div class="{plugin.class:counterLabel} echo-primaryFont echo-primaryColor"></div>';
 
 /**
- * @method text
- * @renderer
- * @param element
+ * @echo_renderer
  */
 plugin.component.renderers.text = function(element) {
 	var plugin = this;
@@ -77,9 +75,7 @@ plugin.component.renderers.text = function(element) {
 };
 
 /**
- * @method counterLabel
- * @renderer
- * @param element
+ * @echo_renderer
  */
 plugin.renderers.counterLabel = function(element) {
 	var plugin = this;

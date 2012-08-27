@@ -130,44 +130,44 @@ submit.config = {
 
 submit.labels = {
 	/**
-	 * @localization
+	 * @echo_label
 	 */
 	"markers": "Markers:",
 	/**
-	 * @localization
+	 * @echo_label
 	 */
 	"markersHint": "Marker1, marker2, marker3, ...",
 	/**
-	 * @localization
+	 * @echo_label
 	 * Label for the button allowing to submit form
 	 */
 	"post": "Post",
 	/**
-	 * @localization
+	 * @echo_label
 	 */
 	"posting": "Posting...",
 	/**
-	 * @localization
+	 * @echo_label
 	 */
 	"postingFailed": "There was a server error while trying to submit your item. Please try again in a few minutes. <b>Error: \"{error}\"</b>.",
 	/**
-	 * @localization
+	 * @echo_label
 	 */
 	"postingTimeout": "There was a network issue while trying to submit your item. Please try again in a few minutes.",
 	/**
-	 * @localization
+	 * @echo_label
 	 */
 	"tagsHint": "Tag1, tag2, tag3, ...",
 	/**
-	 * @localization
+	 * @echo_label
 	 */
 	"tags": "Tags:",
 	/**
-	 * @localization
+	 * @echo_label
 	 */
 	"yourName": "Your Name (required)",
 	/**
-	 * @localization
+	 * @echo_label
 	 */
 	"yourWebsiteOptional": "Your website (optional)"
 };
@@ -226,7 +226,7 @@ submit.templates.main =
 // renderers
 
 /**
- * @renderer
+ * @echo_renderer
  */
 submit.renderers.tagsContainer = function(element) {
 	return (this.user.is("admin")) ? element.show() : element.hide();
@@ -234,13 +234,13 @@ submit.renderers.tagsContainer = function(element) {
 
 /**
  * @method
- * @renderer
+ * @echo_renderer
  * @param element
  */
 submit.renderers.markersContainer = submit.renderers.tagsContainer;
 
 /**
- * @renderer
+ * @echo_renderer
  */
 submit.renderers.markers = function(element) {
 	return this.dom.render({
@@ -251,7 +251,7 @@ submit.renderers.markers = function(element) {
 };
 
 /**
- * @renderer
+ * @echo_renderer
  */
 submit.renderers.tags = function(element) {
 	return this.dom.render({
@@ -262,7 +262,7 @@ submit.renderers.tags = function(element) {
 };
 
 /**
- * @renderer
+ * @echo_renderer
  * @private
  */
 submit.renderers._metaFields = function(element, extra) {
@@ -276,7 +276,7 @@ submit.renderers._metaFields = function(element, extra) {
 };
 
 /**
- * @renderer
+ * @echo_renderer
  */
 submit.renderers.text = function(element) {
 	var content = this.get("data.object.content");
@@ -288,7 +288,7 @@ submit.renderers.text = function(element) {
 };
 
 /**
- * @renderer
+ * @echo_renderer
  */
 submit.renderers.avatar = function(element) {
 	var avatar = Echo.Utils.loadImage(this.user.get("avatar"), this.user.config.get("defaultAvatar"));
@@ -296,7 +296,7 @@ submit.renderers.avatar = function(element) {
 };
 
 /**
- * @renderer
+ * @echo_renderer
  */
 submit.renderers.name = function(element) {
 	return element.val(this.user.get("name", "")).iHint({
@@ -306,7 +306,7 @@ submit.renderers.name = function(element) {
 };
 
 /**
- * @renderer
+ * @echo_renderer
  */
 submit.renderers.url = function(element) {
 	return element.val(this.user.get("domain", "")).iHint({
@@ -316,7 +316,7 @@ submit.renderers.url = function(element) {
 };
 
 /**
- * @renderer
+ * @echo_renderer
  */
 submit.renderers.postButton = function(element) {
 	var self = this;
