@@ -12,6 +12,9 @@
 var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
 
 submit.vars = {
+	/**
+	 * List of the functions validating input before submit
+	 */
 	"validators": []
 };
 
@@ -30,97 +33,97 @@ submit.init = function() {
 };
 
 submit.config = {
-/**
- * @cfg {String} [targetURL=document.location.href] Specifies the URI to which the submitted Echo item is related. This parameter will be used as a activity target value for the item.
- *     new Echo.StreamServer.Controls.Submit({
- *         ...
- *         "targetURL": "http://somedomain.com/some_article.html",
- *         ...
- *     });
- */
+	/**
+	 * @cfg {String} [targetURL=document.location.href] Specifies the URI to which the submitted Echo item is related. This parameter will be used as a activity target value for the item.
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         "targetURL": "http://somedomain.com/some_article.html",
+	 *         ...
+	 *     });
+	 */
 	"targetURL": document.location.href,
-/**
- * @cfg {Array} markers This parameter is used to attach the markers metadata to the item during the item submission. The format of the value is the array array with the string values. Markers will be also displayed in the "Markers" field in the Submit form UI for Moderators and Administrators. For non-admin users the markers value will be submitted along with the other item content when the "Post" button is pressed.
- *     new Echo.StreamServer.Controls.Submit({
- *         ...
- *         "markers": ["marker1", "marker2", "marker3"],
- *         ...
- *     });
- */
+	/**
+	 * @cfg {Array} markers This parameter is used to attach the markers metadata to the item during the item submission. The format of the value is the array array with the string values. Markers will be also displayed in the "Markers" field in the Submit form UI for Moderators and Administrators. For non-admin users the markers value will be submitted along with the other item content when the "Post" button is pressed.
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         "markers": ["marker1", "marker2", "marker3"],
+	 *         ...
+	 *     });
+	 */
 	"markers": [],
-/**
- * @cfg {Object} source Designates the initial item source (E.g. Twitter). You can override source name, URI and the corresponding icon.
- * @cfg {String} source.name Source name.
- * @cfg {String} source.uri Source uri.
- * @cfg {String} source.icon Source icon.
- *
- *     new Echo.StreamServer.Controls.Submit({
- *         ...
- *         "source": {
- *             "name": "ExampleSource",
- *             "uri": "http://example.com/",
- *             "icon": "http://example.com/images/source.png"
- *         }, 
- *         ...
- *     });
- */
+	/**
+	 * @cfg {Object} source Designates the initial item source (E.g. Twitter). You can override source name, URI and the corresponding icon.
+	 * @cfg {String} source.name Source name.
+	 * @cfg {String} source.uri Source uri.
+	 * @cfg {String} source.icon Source icon.
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         "source": {
+	 *             "name": "ExampleSource",
+	 *             "uri": "http://example.com/",
+	 *             "icon": "http://example.com/images/source.png"
+	 *         },
+	 *         ...
+	 *     });
+	 */
 	"source": {},
-/**
- * @cfg {Array} tags This parameter is used to attach the tags metadata to the item during the item submission. The format of the value is the array array with the string values. Tags will be also displayed in the "Tags" field in the Submit form UI for Moderators and Administrators. For non-admin users the tags value will be submitted along with the other item content when the "Post" button is pressed. 
- *     new Echo.StreamServer.Controls.Submit({
- *         ...
- *         "tags": ["tag1", "tag2", "tag3"],
- *         ...
- *     });
- */
+	/**
+	 * @cfg {Array} tags This parameter is used to attach the tags metadata to the item during the item submission. The format of the value is the array array with the string values. Tags will be also displayed in the "Tags" field in the Submit form UI for Moderators and Administrators. For non-admin users the tags value will be submitted along with the other item content when the "Post" button is pressed.
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         "tags": ["tag1", "tag2", "tag3"],
+	 *         ...
+	 *     });
+	 */
 	"tags": [],
-/**
- * @cfg {String} requestMethod This parameter is used to specify the request method. Possible values are "GET" and "POST".
- * Setting parameter to "POST" has some restrictions.
- * We can't handle server response, UI won't show any waiting for the server responses actions
- *
- *     new Echo.StreamServer.Controls.Submit({
- *         ...
- *         "requestMethod": "POST",
- *         ...
- *     });
- */
+	/**
+	 * @cfg {String} requestMethod This parameter is used to specify the request method. Possible values are "GET" and "POST".
+	 * Setting parameter to "POST" has some restrictions.
+	 * We can't handle server response, UI won't show any waiting for the server responses actions
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         "requestMethod": "POST",
+	 *         ...
+	 *     });
+	 */
 	"requestMethod": "GET",
-/**
- * @cfg {String} itemURIPattern Allows to define item id pattern. The value of this parameter should be a valid URI with "{id}" placeholder which will indicate the place where unique id should be inserted. If this parameter is ommited in configuration or the URI is invalid it'll be ignored.
- *     new Echo.StreamServer.Controls.Submit({
- *         ...
- *         "itemURIPattern": "http://your-domain.com/path/{id}",
- *         ...
- *     });
- */
+	/**
+	 * @cfg {String} itemURIPattern Allows to define item id pattern. The value of this parameter should be a valid URI with "{id}" placeholder which will indicate the place where unique id should be inserted. If this parameter is ommited in configuration or the URI is invalid it'll be ignored.
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         "itemURIPattern": "http://your-domain.com/path/{id}",
+	 *         ...
+	 *     });
+	 */
 	"itemURIPattern": undefined,
-/**
- * @cfg {String} actionString Is used to define the default call to action phrase.
- *     new Echo.StreamServer.Controls.Submit({
- *         ...
- *         "actionString": "Type your comment here...",
- *         ...
- *     });
- */
+	/**
+	 * @cfg {String} actionString Is used to define the default call to action phrase.
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         "actionString": "Type your comment here...",
+	 *         ...
+	 *     });
+	 */
 	"actionString": "Type your comment here...",
-/**
- * @cfg {Number} postingTimeout Is used to specify the number of seconds after which Submit Form will show timeout error dialog if the server does not return anything. If the parameter value is 0 then the mentioned dialog won't never be shown.
- *     new Echo.StreamServer.Controls.Submit({
- *         ...
- *         "postingTimeout": 15,
- *         ...
- *     });
- */
+	/**
+	 * @cfg {Number} postingTimeout Is used to specify the number of seconds after which Submit Form will show timeout error dialog if the server does not return anything. If the parameter value is 0 then the mentioned dialog won't never be shown.
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         "postingTimeout": 15,
+	 *         ...
+	 *     });
+	 */
 	"postingTimeout": 30,
-/**
- * @cfg {String} type Allows to define item type. The value of this parameter should be a valid URI.
- *     new Echo.StreamServer.Controls.Submit({
- *         ...
- *         "type": "http://echoenabled.com/activitystreams/schema/1.0/category",
- *         ...
- *     });
- */
+	/**
+	 * @cfg {String} type Allows to define item type. The value of this parameter should be a valid URI.
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         "type": "http://echoenabled.com/activitystreams/schema/1.0/category",
+	 *         ...
+	 *     });
+	 */
 	"type": undefined,
 	"targetQuery": undefined
 };
@@ -223,24 +226,21 @@ submit.templates.main =
 // renderers
 
 /**
- * @method tagsContainer
  * @renderer
- * @param element
  */
-submit.renderers.tagsContainer = 
-/**
- * @method markersContainer
- * @renderer
- * @param element
- */
-submit.renderers.markersContainer = function(element) {
+submit.renderers.tagsContainer = function(element) {
 	return (this.user.is("admin")) ? element.show() : element.hide();
 };
 
 /**
- * @method markers
+ * @method
  * @renderer
  * @param element
+ */
+submit.renderers.markersContainer = submit.renderers.tagsContainer;
+
+/**
+ * @renderer
  */
 submit.renderers.markers = function(element) {
 	return this.dom.render({
@@ -251,9 +251,7 @@ submit.renderers.markers = function(element) {
 };
 
 /**
- * @method tags
  * @renderer
- * @param element
  */
 submit.renderers.tags = function(element) {
 	return this.dom.render({
@@ -264,9 +262,7 @@ submit.renderers.tags = function(element) {
 };
 
 /**
- * @method _metaFields
  * @renderer
- * @param element
  * @private
  */
 submit.renderers._metaFields = function(element, extra) {
@@ -280,9 +276,7 @@ submit.renderers._metaFields = function(element, extra) {
 };
 
 /**
- * @method text
  * @renderer
- * @param element
  */
 submit.renderers.text = function(element) {
 	var content = this.get("data.object.content");
@@ -294,9 +288,7 @@ submit.renderers.text = function(element) {
 };
 
 /**
- * @method avatar
  * @renderer
- * @param element
  */
 submit.renderers.avatar = function(element) {
 	var avatar = Echo.Utils.loadImage(this.user.get("avatar"), this.user.config.get("defaultAvatar"));
@@ -304,9 +296,7 @@ submit.renderers.avatar = function(element) {
 };
 
 /**
- * @method name
  * @renderer
- * @param element
  */
 submit.renderers.name = function(element) {
 	return element.val(this.user.get("name", "")).iHint({
@@ -316,9 +306,7 @@ submit.renderers.name = function(element) {
 };
 
 /**
- * @method url
  * @renderer
- * @param element
  */
 submit.renderers.url = function(element) {
 	return element.val(this.user.get("domain", "")).iHint({
@@ -328,9 +316,7 @@ submit.renderers.url = function(element) {
 };
 
 /**
- * @method postButton
  * @renderer
- * @param element
  */
 submit.renderers.postButton = function(element) {
 	var self = this;
@@ -417,16 +403,14 @@ submit.methods.post = function() {
 		"onData": function(data) {
 			/**
 			 * @event onPostComplete
-			 * Echo.StreamServer.Controls.Submit.onPostComplete
-			 * is triggered when the submit operation is finished
+			 * Triggered when the submit operation is finished. Full name Echo.StreamServer.Controls.Submit.onPostComplete
 			 */
 			publish("Complete", entry);
-			// notify all widgets on the page about a new item posted
 			/**
 			 * @event onDataInvalidate
-			 * Echo.Control.onDataInvalidate
-			 * is triggered if dataset is changed
+			 * Triggered if dataset is changed. Full name Echo.Control.onDataInvalidate
 			 */
+			// notify all widgets on the page about a new item posted
 			Echo.Events.publish({
 				"topic": "Echo.Control.onDataInvalidate",
 				"context": "global",
@@ -436,16 +420,14 @@ submit.methods.post = function() {
 		"onError": function(data) {
 			/**
 			 * @event onPostError
-			 * Echo.StreamServer.Controls.Submit.onPostError
-			 * is triggered if submit operation failed
+			 * Triggered if submit operation failed. Full name Echo.StreamServer.Controls.Submit.onPostError
 			 */
 			publish("Error", data);
 		}
 	};
 	/**
 	 * @event onPostInit
-	 * Echo.StreamServer.Controls.Submit.onPostInit
-	 * is triggered if submit operation was started
+	 * Triggered if submit operation was started. Full name Echo.StreamServer.Controls.Submit.onPostInit
 	 */
 	publish("Init", entry);
 	Echo.StreamServer.API.request({
