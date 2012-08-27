@@ -680,7 +680,10 @@ stream.methods._recalcEffectsTimeouts = function() {
 
 stream.methods._refreshItemsDate = function() {
 	$.map(this.threads, function(item) {
-		item.refreshDate();
+		item.dom.render({"name": "date"});
+		item.traverse(item.get("children"), function(child) {
+			child.dom.render({"name": "date"});
+		});
 	});
 };
 
@@ -1310,12 +1313,15 @@ item.labels = {
 };
 
 item.init = function() {
-	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.data.object.published);
+	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get("data.object.published"));
+	if (this.config.get("render")) {
+		this.dom.render();
+	}
 	this.ready();
 };
 
 item.renderers.authorName = function(element) {
-	return element.append(this.data.actor.title || this.labels.get("guest"));
+	return element.append(this.get("data.actor.title") || this.labels.get("guest"));
 };
 
 item.renderers.markers = function(element) {
@@ -1395,7 +1401,7 @@ item.renderers.container = function(element) {
 };
 
 item.renderers.metadataUserIP = function(element) {
-	if (!this.data.ip) {
+	if (!this.get("data.ip")) {
 		element.hide();
 	}
 	return element;
@@ -1431,9 +1437,9 @@ item.renderers.wrapper = function(element) {
 item.renderers.avatar = function(element) {
 	var self = this;
 	var size = (!this.depth ? 48 : 24);
-	var avatar = Echo.Utils.loadImage(this.data.actor.avatar, this.user.config.get("defaultAvatar"));
+	var avatar = Echo.Utils.loadImage(this.get("data.actor.avatar"), this.user.config.get("defaultAvatar"));
 	avatar.css({"width": size, "height": size});
-	return element.append(avatar);
+	return element.empty().append(avatar);
 };
 
 item.renderers._childrenContainer = function(element, config) {
@@ -1552,10 +1558,10 @@ item.renderers.re = function(element) {
 		return element;
 	}
 	var self = this;
-	var context = this.data.object.context;
+	var context = this.get("data.object.context");
 	var re = "";
 	//XXX use normalized permalink and location instead
-	var permalink = this.data.object.permalink;
+	var permalink = this.get("data.object.permalink");
 	var limits = this.config.get("limits");
 	var openLinksInNewWindow = this.config.get("parent.openLinksInNewWindow");
 
@@ -1617,25 +1623,25 @@ item.renderers.re = function(element) {
 			re += reOfContext(c);
 		});
 	}
-	return element.append(re);
+	return element.empty().append(re);
 };
 
 item.renderers.sourceIcon = function(element) {
 	var self = this;
 	if (!this.config.get("viaLabel.icon") ||
-			this.data.source.name == "jskit" ||
-			this.data.source.name == "echo") {
+			this.get("data.source.name") == "jskit" ||
+			this.get("data.source.name") == "echo") {
 		this.dom.remove(element);
 	}
 	element.hide().attr("src", Echo.Utils.htmlize(
-		this.data.source.icon || this.config.get("providerIcon")
+		this.get("data.source.icon") || this.config.get("providerIcon")
 	))
 	.show()
 	.one("error", function() {
 		self.dom.remove(element);
 	})
 	.wrap(Echo.Utils.hyperlink({
-		"href": this.data.source.uri || this.data.object.permalink
+		"href": this.get("data.source.uri") || this.get("data.object.permalink")
 	}, {
 		"openInNewWindow": this.config.get("parent.openLinksInNewWindow")
 	}));
@@ -1681,7 +1687,7 @@ item.renderers._viaText = function(element, extra) {
 	}
 	var a = Echo.Utils.hyperlink({
 		"class": "echo-secondaryColor",
-		"href": data.uri || this.data.object.permalink,
+		"href": data.uri || this.get("data.object.permalink"),
 		"caption": data.name
 	}, {
 		"openInNewWindow": this.config.get("parent.openLinksInNewWindow")
@@ -1703,10 +1709,10 @@ item.renderers.textToggleTruncated = function(element) {
 
 item.renderers.body = function(element) {
 	var self = this;
-	var data = [this.data.object.content, {
-		"source": this.data.source.name,
+	var data = [this.get("data.object.content"), {
+		"source": this.get("data.source.name"),
 		"limits": this.config.get("limits"),
-		"contentTransformations": this.config.get("contentTransformations." + this.data.object.content_type, {}),
+		"contentTransformations": this.config.get("contentTransformations." + this.get("data.object.content_type"), {}),
 		"openLinksInNewWindow": this.config.get("parent.openLinksInNewWindow")
 	}];
 	$.each(this._getBodyTransformations(), function(i, trasformation) {
@@ -1853,7 +1859,7 @@ item.methods.template = function() {
 			'<div class="echo-clear"></div>' +
 			'<div class="{class:childrenMarker}"></div>' +
 		'</div>' +
-		(this.config.get("children.sortOrder") === "chronological"
+		(this.config.get("parent.children.sortOrder") === "chronological"
 			? '<div class="{class:children}"></div>' +
 			'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
 				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
@@ -1868,14 +1874,14 @@ item.methods.template = function() {
 };
 
 item.methods.hasMoreChildren = function() {
-	return this.data.hasMoreChildren === "true";
+	return this.get("data.hasMoreChildren") === "true";
 };
 
 item.methods.getNextPageAfter = function() {
 	var children = $.grep(this.children, function(child) {
 		return !child.config.get("live");
 	});
-	var index = this.config.get("children.sortOrder") === "chronological"
+	var index = this.config.get("parent.children.sortOrder") === "chronological"
 		? children.length - 1
 		: 0;
 	return children.length
@@ -1901,13 +1907,6 @@ item.methods.traverse = function(tree, callback, acc) {
 		acc = self.traverse(item.children, callback, callback(item, acc));
 	});
 	return acc;
-};
-
-item.methods.refreshDate = function() {
-	this.dom.render({"name": "date"});
-	$.map(this.children || [], function(child) {
-		child.refreshDate();
-	});
 };
 
 item.methods.block = function(label) {
@@ -1944,7 +1943,7 @@ item.methods.getAccumulator = function(type) {
 };
 
 item.methods.isRoot = function() {
-	return !this.config.get("parent.children.maxDepth") || this.data.object.id === this.data.target.conversationID;
+	return !this.config.get("parent.children.maxDepth") || this.get("data.object.id") === this.get("data.target.conversationID");
 };
 
 item.methods.addButtonSpec = function(plugin, spec) {
@@ -2150,9 +2149,9 @@ item.methods._sortButtons = function() {
 	var _removeLinksToSelf = function(text, extra) {
 		if (extra.source && extra.source !== "jskit" && extra.source !== "echo") {
 			var url = this.depth
-				? this.data.target.id
+				? this.get("data.target.id")
 				: this.config.get("reTag")
-					? this.data.object.permalink || this.data.target.id
+					? this.get("data.object.permalink") || this.get("data.target.id")
 					: undefined;
 			if (url) {
 				text = text.replace(new RegExp(url, "g"), "");
