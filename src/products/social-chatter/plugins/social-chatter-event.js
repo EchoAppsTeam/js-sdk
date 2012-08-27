@@ -288,11 +288,24 @@ plugin.config = {
 };
 
 plugin.init = function() {
+	var self = this;
+	var component = this.component;
+
 	this.component.config.get("target").addClass(this.cssPrefix + "SocialChatterEvent");
 	this.extendTemplate("insertAfter", "header", plugin.templates.AdminNotice);
 	this.extendTemplate("insertAfter", "text", plugin.templates.Metadata);
 	this.extendTemplate("insertBefore", "body", plugin.templates.EventIcon);
-	this._postAction();
+
+	component.addPostValidator(function() {
+		var hasErrors;
+		$.each(plugin.mandatoryFields, function(i, v) {
+			var element = component.dom.get(self.get("cssPrefix") + v, true);
+			var highlighted = self._highlightMandatory(element);
+			hasErrors = hasErrors || highlighted;
+		});
+		return !hasErrors;
+	});
+
 };
 
 plugin.labels = {
@@ -612,22 +625,6 @@ plugin.methods._highlightMandatory = function(element) {
 			});
 	}
 	return result;
-};
-
-plugin.methods._postAction = function() {
-	var component = this.component;
-	var self = this;
-	component.posting = component.posting || {};
-	component.posting.action = function() {
-		var hasErrors;
-		$.each(plugin.mandatoryFields, function(i, v) {
-			var element = component.dom.get(self.get("cssPrefix") + v, true);
-			var highlighted = self._highlightMandatory(element);
-			hasErrors = hasErrors || highlighted;
-		});
-		if (hasErrors) return;
-		component.post();
-	}
 };
 
 //plugin.methods._getFullDate = function(timestamp) {

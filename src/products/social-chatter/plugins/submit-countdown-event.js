@@ -21,7 +21,7 @@ plugin.renderers.countdownLabel = function(element) {
 		"prefix": this.labels.get("chatClosesIn"),
 		"display": "compact",
 		"finish": function() {
-			self.publish({"topic": "SocialChatter.onEventEnd"});
+			self.events.publish({"topic": "onEventEnd"});
 		}
 	});
 };

@@ -452,9 +452,12 @@ SocialChatter.views.PublicEvent.renderers.countdown = function(element) {
 	var finishHandler = status == "upcoming" || status == "onAir"
 		? function() {
 			var topic = isUpcomingEvent
-				? "SocialChatter.onEventStart"
-				: "SocialChatter.onEventEnd";
-			Echo.Broadcast.publish(topic, self.data);
+				? "onEventStart"
+				: "onEventEnd";
+		self.events.publish({
+			"topic": topic,
+			"data": self.data
+		});
 		}
 		: function() {};
 	if (status != "upcoming") return;
@@ -813,15 +816,15 @@ SocialChatter.events = {
 	}
 };
 
-Echo.Utils.foldl(SocialChatter.events, ["Echo.Products.SocialChatter.onEventStart", "Echo.Products.SocialChatter.onEventEnd"], function(topic, acc) {
+Echo.Utils.foldl(SocialChatter.events, ["Echo.StreamServer.Controls.Submit.Plugins.SubmitCountdownEvent.onEventEnd", "Echo.Products.SocialChatter.PublicEvent.onEventStart"], function(topic, acc) {
 	acc[topic] = function() {
-		self._updateTabs();
+		this._updateTabs();
 	};
 });
 
 SocialChatter.views.EventsList.css =
 	'.{class:newEventButton} .echo-sdk-button .ui-state-default { width: auto; padding: 3px 15px; }' +
-	'.{class:newEventButton} .echo-button-v3 .ui-state-default, .echo-streamserver-controls-submit-controls .echo-button-v3 .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
+	'.{class:newEventButton} .echo-sdk-button .ui-state-default, .echo-streamserver-controls-submit-controls .echo-sdk-button .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
 	'.{class:eventListContainer} { margin-left: 15px; margin-right: 15px; }' +
 	'.{class:eventListContainer} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
 	'.{class:eventSubmitContainer} { display: none; }' +
@@ -829,7 +832,8 @@ SocialChatter.views.EventsList.css =
 	'.{class:eventsStream} .echo-streamserver-controls-stream-header { display: none; }' +
 	'.{class:eventSubmitLabel} { margin-top: 10px; cursor: pointer; font-weight: bold; font-size: 16px; }' +
 	'.{class:eventSubmitLabel} div.echo-label { font-size: 12px; }' +
-	'.{class:eventSubmit} .echo-streamserver-controls-submit-postContainer { float: left; margin-left: 7px; }' +
+	'.{class:eventListContainer} .echo-streamserver-controls-submit-postContainer { float: left; margin-left: 7px; }' +
+	'.{class:eventListContainer} .echo-streamserver-controls-submit-plugin-Edit-cancelButtonContainer { float: left; margin-left: 15px; }' +
 	'.{class:eventSubmit} .echo-streamserver-controls-submit-content { border: none; }' +
 	'.{class:eventSubmit} { margin: 10px auto; padding: 10px; width: 550px; }' +
 	'.{class:eventSubmitContainer} { border-radius: 7px; border: 1px solid #D3D3D3; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); margin: 10px 0px; }'

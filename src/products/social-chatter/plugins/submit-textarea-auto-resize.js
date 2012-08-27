@@ -18,12 +18,38 @@
 
 var plugin = Echo.Plugin.manifest("SubmitTextareaAutoResize", "Echo.StreamServer.Controls.Submit");
 
+plugin.init = function() {
+	var self = this;
+	var component = this.component;
+	component.addPostValidator(function() {
+		var valid = true;
+		$.each(["text"], function (i, field) {
+			valid = !self._highlightMandatory(component.dom.get(field));
+			return valid;
+		});
+		return valid;
+	});
+};
+
 plugin.component.renderers.postButton = function(element) {
 	return this.parentRenderer("postButton", arguments).addClass(this.cssPrefix + "btn btn btn-small");
 };
 
 plugin.component.renderers.body = function(element) {
 	return this.parentRenderer("body", arguments).addClass(this.cssPrefix + "borderNone");
+};
+
+plugin.methods._highlightMandatory = function(element) {
+	var component = this.component;
+	var result = component.highlightMandatory(element);
+	if (result) {
+		var css = this.cssPrefix + "mandatory";
+		element.addClass(css)
+			.one("focus", function() {
+				element.removeClass(css);
+			});
+	}
+	return result;
 };
 
 plugin.component.renderers.text = function(element) {
@@ -40,7 +66,8 @@ plugin.component.renderers.text = function(element) {
 plugin.css =
 	'.{plugin.class:border} { border: 1px solid #CCCCCC; padding: 4px; }' +
 	'.{plugin.class:btn} div.echo-label { font-size: 12px; }' +
-	'.{plugin.class:borderNone} .{class:border} { border: none; }';
+	'.{plugin.class:borderNone} .{class:border} { border: none; }' +
+	'.{plugin.class:mandatory} { border-color: #ff5050; }';
 
 Echo.Plugin.create(plugin);
 
