@@ -144,7 +144,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 	} else {
 		return element.fancybox({
 			"autoScale": false,
-			"height": data.height,
+			"height": parseInt(data.height),
 			"href": self._appendSessionID(data.url),
 			"onClosed": function() {
 				// remove dynamic height/width calculations for overlay
@@ -176,7 +176,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 			"transitionIn": "elastic",
 			"transitionOut": "elastic",
 			"type": "iframe",
-			"width": data.width
+			"width": parseInt(data.width)
 		});
 	}
 };
