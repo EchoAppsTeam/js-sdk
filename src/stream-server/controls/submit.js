@@ -126,15 +126,46 @@ submit.config = {
 };
 
 submit.labels = {
+	/**
+	 * @localization
+	 */
 	"markers": "Markers:",
+	/**
+	 * @localization
+	 */
 	"markersHint": "Marker1, marker2, marker3, ...",
+	/**
+	 * @localization
+	 * Label for the button allowing to submit form
+	 */
 	"post": "Post",
+	/**
+	 * @localization
+	 */
 	"posting": "Posting...",
+	/**
+	 * @localization
+	 */
 	"postingFailed": "There was a server error while trying to submit your item. Please try again in a few minutes. <b>Error: \"{error}\"</b>.",
+	/**
+	 * @localization
+	 */
 	"postingTimeout": "There was a network issue while trying to submit your item. Please try again in a few minutes.",
+	/**
+	 * @localization
+	 */
 	"tagsHint": "Tag1, tag2, tag3, ...",
+	/**
+	 * @localization
+	 */
 	"tags": "Tags:",
+	/**
+	 * @localization
+	 */
 	"yourName": "Your Name (required)",
+	/**
+	 * @localization
+	 */
 	"yourWebsiteOptional": "Your website (optional)"
 };
 
@@ -191,11 +222,26 @@ submit.templates.main =
 
 // renderers
 
+/**
+ * @method tagsContainer
+ * @renderer
+ * @param element
+ */
 submit.renderers.tagsContainer = 
+/**
+ * @method markersContainer
+ * @renderer
+ * @param element
+ */
 submit.renderers.markersContainer = function(element) {
 	return (this.user.is("admin")) ? element.show() : element.hide();
 };
 
+/**
+ * @method markers
+ * @renderer
+ * @param element
+ */
 submit.renderers.markers = function(element) {
 	return this.dom.render({
 		"name": "_metaFields",
@@ -204,6 +250,11 @@ submit.renderers.markers = function(element) {
 	});
 };
 
+/**
+ * @method tags
+ * @renderer
+ * @param element
+ */
 submit.renderers.tags = function(element) {
 	return this.dom.render({
 		"name": "_metaFields",
@@ -212,6 +263,12 @@ submit.renderers.tags = function(element) {
 	});
 };
 
+/**
+ * @method _metaFields
+ * @renderer
+ * @param element
+ * @private
+ */
 submit.renderers._metaFields = function(element, extra) {
 	var type = extra.type;
 	var data = this.get("data.object." + type) || [];
@@ -222,6 +279,11 @@ submit.renderers._metaFields = function(element, extra) {
 	}).val(value).blur();
 };
 
+/**
+ * @method text
+ * @renderer
+ * @param element
+ */
 submit.renderers.text = function(element) {
 	var content = this.get("data.object.content");
 	if (content) element.val(content);
@@ -231,11 +293,21 @@ submit.renderers.text = function(element) {
 	});
 };
 
+/**
+ * @method avatar
+ * @renderer
+ * @param element
+ */
 submit.renderers.avatar = function(element) {
 	var avatar = Echo.Utils.loadImage(this.user.get("avatar"), this.user.config.get("defaultAvatar"));
 	return element.empty().append(avatar);
 };
 
+/**
+ * @method name
+ * @renderer
+ * @param element
+ */
 submit.renderers.name = function(element) {
 	return element.val(this.user.get("name", "")).iHint({
 		"text": this.labels.get("yourName"),
@@ -243,6 +315,11 @@ submit.renderers.name = function(element) {
 	});
 };
 
+/**
+ * @method url
+ * @renderer
+ * @param element
+ */
 submit.renderers.url = function(element) {
 	return element.val(this.user.get("domain", "")).iHint({
 		"text": this.labels.get("yourWebsiteOptional"),
@@ -250,6 +327,11 @@ submit.renderers.url = function(element) {
 	});
 };
 
+/**
+ * @method postButton
+ * @renderer
+ * @param element
+ */
 submit.renderers.postButton = function(element) {
 	var self = this;
 	var states = {
