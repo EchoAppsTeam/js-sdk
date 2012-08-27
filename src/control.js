@@ -401,7 +401,7 @@ Echo.Control.prototype.template = function() {
  * @return {HTMLElement} Result of parent renderer function call.
  */
 Echo.Control.prototype.parentRenderer = function(name, args) {
-	var renderer = this.extension.renderers[name];
+	var renderer = this._getRenderer(name);
 	if (!renderer || !renderer.next) return args[0]; // return DOM element
 	return renderer.next.apply(this, args);
 };
@@ -864,8 +864,8 @@ Echo.Control.prototype._render = function(args) {
 
 	// render specific element
 	if (args.name && !args.recursive) {
-		var renderer = this.extension.renderers[args.name];
-		if (renderer) {
+		if (this._hasRenderer(args.name)) {
+			var renderer = this._getRenderer(args.name);
 			var iteration = 0;
 			renderer.next = function() {
 				iteration++;
@@ -929,6 +929,11 @@ Echo.Control.prototype._applyRenderers = function(template) {
 	var dom = $(template);
 	var elements = this._getRenderableElements(dom);
 	$.each(elements, function(name, element) {
+
+		// prevent "renderer" function call
+		// in case no suitable renderer found
+		if (!self._hasRenderer(name)) return;
+
 		self.dom.render({
 			"name": name,
 			"target": element
@@ -958,6 +963,14 @@ Echo.Control.prototype._domTransformer = function(args) {
 	}
 	$(anchor, args.dom)[action](content);
 	return args.dom;
+};
+
+Echo.Control.prototype._getRenderer = function(name) {
+	return this.extension.renderers[name];
+};
+
+Echo.Control.prototype._hasRenderer = function(name) {
+	return !!this._getRenderer(name);
 };
 
 Echo.Control.prototype._getRenderableElements = function(container) {

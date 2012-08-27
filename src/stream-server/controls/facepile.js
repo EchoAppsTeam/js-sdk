@@ -376,6 +376,12 @@ Echo.Control.create(pile);
 
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile.Item");
 
+item.config = {
+	"infoMessages": {
+		"enabled": false
+	}
+};
+
 item.labels = {
 	"you": "You"
 };

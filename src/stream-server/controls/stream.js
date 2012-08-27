@@ -1240,6 +1240,9 @@ item.config = {
 		"html": ["smileys", "hashtags", "urls", "newlines"],
 		"xhtml": ["smileys", "hashtags", "urls"]
 	},
+	"infoMessages": {
+		"enabled": false
+	},
 	"limits": {
 		"maxBodyCharacters": undefined,
 		"maxBodyLines": undefined,
