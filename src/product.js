@@ -6,7 +6,13 @@ Echo.Utils.inherit(Echo.ProductView, Echo.Control);
 
 Echo.ProductView.create = Echo.Control.create;
 
-Echo.ProductView.manifest = Echo.Control.manifest;
+Echo.ProductView.manifest = function(name) {
+	var _manifest = Echo.ProductView.parent.constructor.manifest.apply(this, arguments);
+	_manifest.inherits = _manifest.inherits || Echo.ProductView;
+	return $.extend(_manifest, {
+		"controls": {}
+	});
+};
 
 (function() {
 
@@ -151,11 +157,16 @@ Echo.Product.create = Echo.Control.create;
  * @method
  * @inheritdoc Echo.Control#manifest
  */
-Echo.Product.manifest = function(name) {
+Echo.Product.manifest = function(name, views) {
 	var _manifest = Echo.Product.parent.constructor.manifest.apply(this, arguments);
 	_manifest.inherits = _manifest.inherits || Echo.Product;
 	return $.extend(_manifest, {
-		"views": {}
+		"views": $.extend(true, {}, Echo.Utils.foldl({}, views, function(_name, acc) {
+				var viewName = name + ".Views." + _name;
+				acc[_name] = Echo.ProductView.manifest(viewName);
+			})
+		),
+		"assemblers": {}
 	});
 };
 
@@ -166,7 +177,7 @@ Echo.Product.manifest = function(name) {
  * @return {Class} Class referense.
  */
 Echo.Product.prototype.getView = function(name) {
-	return Echo.Utils.getComponent(this.name + "." + name);
+	return Echo.Utils.getComponent(this.name + ".Views." + name);
 };
 
 Echo.Product.prototype.initView = function(name, config) {
@@ -202,10 +213,7 @@ Echo.Product.prototype._initializers.list = list;
 Echo.Product.prototype._initializers.views = function() {
 	var product = this;
 	$.each(this._manifest("views"), function(name, view) {
-		view.inherits = view.inherits || Echo.ProductView;
-		Echo.ProductView.create(
-			$.extend(true, Echo.ProductView.manifest(product.name + "." + name), view)
-		);
+		Echo.ProductView.create(view);
 	});
 };
 

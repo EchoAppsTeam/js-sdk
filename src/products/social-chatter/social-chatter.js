@@ -127,7 +127,7 @@ Echo.SocialChatterEvent.prototype.getEventStatus = function() {
 
 if (Echo.Utils.isComponentDefined("Echo.Products.SocialChatter")) return;
 
-var SocialChatter = Echo.Product.manifest("Echo.Products.SocialChatter");
+var SocialChatter = Echo.Product.manifest("Echo.Products.SocialChatter", ["Main", "PublicEvent", "GreenRoom", "EventsList"]);
 
 SocialChatter.labels = {
 	"guest": "Guest",
@@ -157,26 +157,6 @@ SocialChatter.config = {
 	"views": {},
 	"defaultEventIcon": "//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg"
 };
-
-SocialChatter.views.Main = {};
-
-SocialChatter.views.Main.controls = {};
-
-SocialChatter.views.EventsList = {};
-
-SocialChatter.views.EventsList.controls = {};
-
-SocialChatter.views.PublicEvent = {};
-
-SocialChatter.views.PublicEvent.controls = {};
-
-SocialChatter.views.GreenRoom = {};
-
-SocialChatter.views.GreenRoom.controls = {};
-
-SocialChatter.views.Main.templates = {};
-
-SocialChatter.views.EventsList.templates = {};
 
 SocialChatter.views.Main.templates.main =
 	'<div class="{class:auth}"></div>';
@@ -265,10 +245,6 @@ SocialChatter.views.PublicEvent.templates = {
 		'</div>'
 };
 
-SocialChatter.views.PublicEvent.methods = {};
-
-SocialChatter.views.GreenRoom.methods = {};
-
 SocialChatter.views.PublicEvent.methods.template = function() {
 	var event = this.config.get("event");
 	var status = event && event.getEventStatus();
@@ -276,8 +252,6 @@ SocialChatter.views.PublicEvent.methods.template = function() {
 		? (status && status !== "upcoming" ? "main" : "upcoming")
 		: "anonymous"];
 };
-
-SocialChatter.views.GreenRoom.templates = {};
 
 SocialChatter.views.GreenRoom.templates.main =
 	'<div>' +
@@ -444,10 +418,6 @@ SocialChatter.views.PublicEvent.methods._isNonVIPUser = SocialChatter.views.Gree
 	return !this.user.any("roles", ["vip"]);
 };
 
-SocialChatter.views.EventsList.renderers = {};
-
-SocialChatter.views.PublicEvent.renderers = {};
-
 SocialChatter.views.PublicEvent.renderers.loginWarning = function(element) {
 	return element.html('<span>' + this.labels.get(this.config.get("event").getEventStatus() + "EventWarning") + '</span>');
 };
@@ -559,8 +529,6 @@ SocialChatter.templates.main =
 			'</div>' +
 		'</div>' +
 	'</div>';
-
-SocialChatter.assemblers = {};
 
 SocialChatter.renderers.authContainer = function(element) {
 	this._assembler("Auth", element);
