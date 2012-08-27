@@ -32,7 +32,15 @@ plugin.init = function() {
 };
 
 plugin.labels = {
+	/**
+	 * @localization
+	 * Label to show in the counter if maximum character limit is provided
+	 */
 	"limited": "{typed}/{left} characters",
+	/**
+	 * @localization
+	 * Label to show in the counter if no character limit is provided
+	 */
 	"unlimited": "{typed} characters"
 };
 
@@ -44,6 +52,11 @@ plugin.events = {
 
 plugin.templates.counter = '<div class="{plugin.class:counterLabel} echo-primaryFont echo-primaryColor"></div>';
 
+/**
+ * @method text
+ * @renderer
+ * @param element
+ */
 plugin.component.renderers.text = function(element) {
 	var plugin = this;
 	plugin.parentRenderer("text", arguments);
@@ -63,6 +76,11 @@ plugin.component.renderers.text = function(element) {
 	return element.on("blur focus keyup keypress", handler);
 };
 
+/**
+ * @method counterLabel
+ * @renderer
+ * @param element
+ */
 plugin.renderers.counterLabel = function(element) {
 	var plugin = this;
 	var limit = plugin.config.get("limit", 0);
