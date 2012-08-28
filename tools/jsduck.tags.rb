@@ -26,14 +26,14 @@ class EchoEventTag < JsDuck::MetaTag
 	end
 
 	def to_value(contents)
-		contents[0] =~ /\A(\w+\.?)+(.*)/m
+		contents[0] =~ /\A((?:\w+\.?)+) (.*)/m
 		{:name => $1, :description => $2}
 	end
 
 	def to_html(params)
 		format(
 			"#{params[:description]}<br>" +
-			"<b>Full name</b>: #{@context[:owner]}.#{params[:name]}"
+			"<b>Full name</b>: #{params[:name]}"
 		)
 	end
 end
