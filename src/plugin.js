@@ -229,9 +229,9 @@ Echo.Plugin.prototype.parentRenderer = function() {
  * @param {String} template (required) Template containing placeholders used for data interspersion.
  * @return {String} Compiled string value.
  */
-Echo.Plugin.prototype.substitute = function(template, data) {
+Echo.Plugin.prototype.substitute = function(template, data, strict) {
 	var plugin = this;
-	return plugin.component.substitute(template, data || {}, {
+	return plugin.component.substitute(template, data || {}, strict, {
 		"plugin.label": function(key) {
 			return plugin.labels.get(key, "");
 		},

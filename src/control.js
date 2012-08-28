@@ -204,34 +204,6 @@ Echo.Control.prototype.remove = function(key) {
 	this.set(key, undefined);
 };
 
-(function() {
-
-var _instructions = function(data) {
-	return {
-		"class": function(key) {
-			return key ? this.cssPrefix + key : this.cssClass
-		},
-		"data": function(key) {
-			return Echo.Utils.getNestedValue(data || this.data, key, "");
-		},
-		"label": function(key) {
-			return this.labels.get(key, "");
-		},
-		"self": function(key) {
-			var value = Echo.Utils.getNestedValue(this, key);
-			value = $.isFunction(value) ? value.call(this) : value;
-			return typeof value == "undefined"
-				? Echo.Utils.getNestedValue(this.data, key, "")
-				: value;
-		},
-		"config": function(key) {
-			var value = this.config.get(key, "");
-			value = $.isFunction(value) ? value.call(this) : value;
-			return value;
-		}
-	};
-};
-
 /**
  * @method
  * Templater function which compiles given template using the provided data.
@@ -239,41 +211,31 @@ var _instructions = function(data) {
  * Function can be used widely for html templates processing or any other action requiring string interspersion.
  * @param {String} template (required) Template containing placeholders used for data interspersion.
  * @param {Object} [data] Data used in the template compilation.
+ * @param {Boolean} [strict] Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
  * @param {Object} [instructions] Object containing the list of extra instructions to be applied during template compilation.
  * @return {String} Compiled string value.
  */
-Echo.Control.prototype.substitute = function(template, data, instructions) {
-	instructions = $.extend(_instructions(data), instructions || {});
-	var processor = function(match, key, value) {
+Echo.Control.prototype.substitute = function(template, data, strict, instructions) {
+	instructions = $.extend(this._getSubstitutionInstructions(data), instructions || {});
+	var regex = Echo.Utils.regexps.templateSubstitution;
+
+	// checking if we need to execute in a strict mode,
+	// i.e. whether to keep the substitution value type or not
+	if (strict && (new RegExp("^" + regex + "$", "i")).test(template)) {
+		var match = new RegExp(regex, "i").exec(template);
+		if (match && match[1] && instructions[match[1]]) {
+			return instructions[match[1]](match[2]);
+		}
+	}
+
+	//  perform regular string sustitution
+	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
 		if (!instructions[key]) return match;
 		var result = instructions[key].call(this, value);
 		var allowedTypes = ["number", "string", "boolean"];
 		return ~$.inArray(typeof result, allowedTypes) ? result : "";
-	};
-	return template.replace(Echo.Utils.regexps.templateSubstitution, $.proxy(processor, this));
+	});
 };
-
-/**
- * @method
- * Templater function which compiles given template using the provided data.
- *
- * Function can be used widely for html templates processing or any other action requiring string interspersion. If template string contains only placeholder value, function tries to substitute these placeholder by original value from the provided data (don't use toString interpretation)
- * @param {String} template (required) Template containing placeholders used for data interspersion.
- * @param {Object} [data] Data used in the template compilation.
- * @param {Object} [instructions] Object containing the list of extra instructions to be applied during template compilation.
- * @return {Mixed} Return corresponding value found in the data or compiled string value.
- */
-Echo.Control.prototype.strictSubstitute = function(template, data, instructions) {
-	var match;
-	instructions = $.extend(_instructions(data), instructions || {});
-	if (Echo.Utils.regexps.strictTemplateSubstitution.test(template)) {
-		match = Echo.Utils.regexps.templateSubstitution.exec(template);
-		return instructions[match[1]].call(this, match[2]);
-	}
-	return this.substitute.apply(this, arguments);
-};
-
-})();
 
 /**
  * @method
@@ -781,6 +743,33 @@ Echo.Control.prototype._initializers.ready = function() {
 
 Echo.Control.prototype._initializers.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
+};
+
+Echo.Control.prototype._getSubstitutionInstructions = function(data) {
+	var control = this;
+	return {
+		"class": function(key) {
+			return key ? control.cssPrefix + key : control.cssClass
+		},
+		"data": function(key) {
+			return Echo.Utils.getNestedValue(data || control.data, key, "");
+		},
+		"label": function(key) {
+			return control.labels.get(key, "");
+		},
+		"self": function(key) {
+			var value = Echo.Utils.getNestedValue(control, key);
+			value = $.isFunction(value) ? value.call(control) : value;
+			return typeof value == "undefined"
+				? Echo.Utils.getNestedValue(control.data, key, "")
+				: value;
+		},
+		"config": function(key) {
+			var value = control.config.get(key, "");
+			value = $.isFunction(value) ? value.call(control) : value;
+			return value;
+		}
+	};
 };
 
 Echo.Control.prototype._manifest = function(key) {
