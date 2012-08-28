@@ -86,7 +86,7 @@ Echo.SocialChatterEvent.prototype.calcEndTime = function() {
 Echo.SocialChatterEvent.prototype.calcAnotherStart = function() {
 	var self = this;
 	return this.calcDates("start", function(diff, period) {
-		return this.labels.get("startDateDiffDisplay", {
+		return self.labels.get("startDateDiffDisplay", {
 			"diff": diff,
 			"period": period,
 			"suffix": diff == 1 ? "" : "s"
@@ -679,20 +679,23 @@ SocialChatter.assemblers.EventsList = function(target) {
 	var stream = view.initControl("Stream", {
 		"target": view.dom.get("eventsStream")
 	});
-	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.onReceive",
-		"handler": function(topic, args) {
-			var entry = args.item.data;
-			var event = new Echo.SocialChatterEvent(entry);
-			var status = event.getStatus();
-			self.eventById[entry.object.id] = event;
-			if ((self.event && self.event.id == event.id) ||
-				(!self.event && (status == "onAir" || status == "upcoming"
-))) {
-				self._setPublicEvent(self._pickRelevantEvent());
-				self._updateTabs();
+
+	$.map(["Echo.StreamServer.Controls.Stream.Item.onReceive", "Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onEventChange"], function(topic) {
+		stream.events.subscribe({
+			"topic": topic,
+			"handler": function(topic, args) {
+				var entry = args.item.data;
+				var event = new Echo.SocialChatterEvent(entry);
+				var status = event.getStatus();
+				self.eventById[entry.object.id] = event;
+				if ((self.event && self.event.id == event.id) ||
+					(!self.event && (status == "onAir" || status == "upcoming"
+				))) {
+					self._setPublicEvent(self._pickRelevantEvent());
+					self._updateTabs();
+				}
 			}
-		}
+		});
 	});
 	stream.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Stream.Item.onDelete",

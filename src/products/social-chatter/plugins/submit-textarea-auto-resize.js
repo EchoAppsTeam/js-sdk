@@ -36,7 +36,7 @@ plugin.component.renderers.postButton = function(element) {
 };
 
 plugin.component.renderers.body = function(element) {
-	return this.parentRenderer("body", arguments).addClass(this.cssPrefix + "borderNone");
+	return this.parentRenderer("body", arguments).addClass(this.cssPrefix + "content");
 };
 
 plugin.methods._highlightMandatory = function(element) {
@@ -66,7 +66,8 @@ plugin.component.renderers.text = function(element) {
 plugin.css =
 	'.{plugin.class:border} { border: 1px solid #CCCCCC; padding: 4px; }' +
 	'.{plugin.class:btn} div.echo-label { font-size: 12px; }' +
-	'.{plugin.class:borderNone} .{class:border} { border: none; }' +
+	'.{plugin.class:content} .{class:content} { background-color: transparent; }' +
+	'.{plugin.class:content} .{class:border} { border: none; }' +
 	'.{plugin.class:mandatory} { border-color: #ff5050; }';
 
 Echo.Plugin.create(plugin);

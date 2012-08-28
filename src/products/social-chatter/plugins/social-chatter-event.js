@@ -16,8 +16,11 @@ plugin.init = function() {
 };
 
 plugin.events = {
-	"internal.Echo.StreamServer.Controls.Stream.Item.onDelete": function(topic, args) {
-		this.publish("SocialChatter.onEventDelete", args);
+	"Echo.StreamServer.Controls.Stream.Item.onRerender": function(topic, args) {
+		this.events.publish({
+			"topic": "onEventChange",
+			"data": $.extend({ "item": this.component }, args)
+		})
 	}
 };
 
@@ -426,7 +429,7 @@ plugin.renderers.changeEventIcon = function(element) {
 };
 
 plugin.component.renderers.body = function(element) {
-	return this.parentRenderer("body", arguments).addClass(this.cssPrefix + "borderNone");
+	return this.parentRenderer("body", arguments).addClass(this.cssPrefix + "content");
 };
 
 plugin.component.renderers.text = function(element) {
@@ -676,9 +679,9 @@ plugin.css =
 	'.{plugin.class:eventDateStart}, .{plugin.class:eventDateEnd} { width: 100px; }' +
 	'.bootstrap-timepicker { width: 160px; }' +
 	'.{class:content} .{plugin.class:mandatory} { border-color: #ff5050; }'+
-	'.{class:content} { background-color: transparent; }' +
 	'.{class:content} .echo-secondaryColor { color: #C6C6C6; }' +
-	'.{plugin.class:borderNone} .{class:border} { border: none; }'
+	'.{plugin.class:content} .{class:content} { background-color: transparent; }' +
+	'.{plugin.class:content} .{class:border} { border: none; }'
 ;
 
 Echo.Plugin.create(plugin);
