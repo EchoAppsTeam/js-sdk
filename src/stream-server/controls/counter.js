@@ -101,10 +101,10 @@ counter.methods._error = function(data) {
 	if (data.errorCode === "more_than") {
 		this.set("data.count", data.errorMessage + "+");
 		this.dom.render();
-		this.ready();
 	} else {
 		this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
 	}
+	this.ready();
 };
 
 Echo.Control.create(counter);
