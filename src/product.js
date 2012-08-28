@@ -38,7 +38,7 @@ Echo.ProductView.prototype._normalizeControlConfig = function(config) {
 	});
 	var normalize = function(value) {
 		if (typeof value == "string") {
-			return self.substitute(value);
+			return self.substitute(value, undefined, true);
 		} else if ($.isPlainObject(value)) {
 			return Echo.Utils.foldl({}, value, function(value, acc, key) {
 				acc[key] = normalize(value);

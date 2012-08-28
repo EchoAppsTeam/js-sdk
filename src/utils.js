@@ -21,7 +21,7 @@ var _cssStyles = {
 };
 
 Echo.Utils.regexps = {
-	"templateSubstitution": /{([0-9a-z\.]+)(?:\:((?:[0-9a-z_-]+\.)*[0-9a-z_-]+))?}/ig,
+	"templateSubstitution": "{([0-9a-z\\.]+)(?:\\:((?:[0-9a-z_-]+\\.)*[0-9a-z_-]+))?}",
 	"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
 	"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/,
 	"w3cdtf": /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/
@@ -471,7 +471,12 @@ Echo.Utils.timestampFromW3CDTF = function(datetime) {
  * @return {Boolean} Returns true if mobile device is used, false if not.
  */
 Echo.Utils.isMobileDevice = function() {
-	return Echo.Utils.regexps.mobileUA.test(navigator.userAgent);
+	// we can calculate it once and use the cached value
+	// in other calls since user agent will not be changed
+	if (typeof this._isMobileDevice === "undefined") {
+		this._isMobileDevice = this.regexps.mobileUA.test(navigator.userAgent);
+	}
+	return this._isMobileDevice;
 };
 
 /**
