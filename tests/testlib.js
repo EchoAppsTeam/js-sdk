@@ -59,16 +59,19 @@ Echo.Tests.Common.prototype.run = function() {
 	this.info.className = this.info.className || "";
 	$.each(this.tests, function(name, test) {
 		test.config = test.config || {};
-		if (test.instance && !$.isFunction(test.instance)) {
-			test.config.async = true;
-		}
+		// QUnit should never use async tests,
+		// we will emulate this workflow by ourselves,
+		// it allows us to set testTimeout value for each test separately
+		test.config.async = false;
 		test.config.user = test.config.user || {"status": "anonymous"};
 		var check = function(instance) {
 			if (!test.config.async) {
 				test.check.call(self, instance);
+				QUnit.start();
 			} else {
 				setTimeout(function() {
 					test.check.call(self, instance);
+					QUnit.start();
 				}, test.config.asyncTimeout || self.config.asyncTimeout);
 			}
 		};
@@ -76,20 +79,17 @@ Echo.Tests.Common.prototype.run = function() {
 		if (test.config.description) {
 			name = name + " (" + test.config.description + ")";
 		}
-		QUnit.asyncTest(name, function() {
+		QUnit.test(name, function() {
+			// time in milliseconds after which test will time out
+			QUnit.config.testTimeout = test.config.testTimeout || self.config.testTimeout;
+			// we intentionally prevent next test execution
+			// allowing current test to complete or time out
+			QUnit.stop();
 			self.prepareEnvironment(test, function() {
-				// time in milliseconds after which test will time out
-				QUnit.config.testTimeout = test.config.testTimeout || self.config.testTimeout;
 				if (!test.instance) {
 					check();
-					// we need to switch to the next test
-					// if it was NOT defined as async
-					if (!test.config.async) {
-						QUnit.start();
-					}
 				} else if ($.isFunction(test.instance)) {
 					check(test.instance());
-					QUnit.start();
 				} else {
 					var config = $.extend({
 						"appkey": "test.aboutecho.com",
@@ -619,6 +619,9 @@ Echo.Utils.addCSS(
 	'.echo-tests-stats-info del {background: #E0F2BE; color: #374E0C; text-decoration: none;}' +
 	'.echo-tests-stats-info ins {background: #FFCACA;	color: #550000; text-decoration: none;}'
 , "echo-tests");
+
+// No reordering tests, they will run one by one
+QUnit.config.reorder = false;
 
 QUnit.begin(function() {
 	Echo.Tests.Stats.prepare();
