@@ -5,7 +5,6 @@
  * Echo FacePile control displays users (actors) returned in any activity stream. 
  * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
  * @extends Echo.Control
- * @inheritdoc Echo.Control
  *
  * @constructor
  * FacePile constructor initializing Echo.StreamServer.Controls.FacePile class

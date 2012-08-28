@@ -9,7 +9,6 @@
  *         }]
  *     });
  * @extends Echo.Plugin
- * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Moderation", "Echo.StreamServer.Controls.Stream.Item");
 

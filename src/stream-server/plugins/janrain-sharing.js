@@ -23,7 +23,6 @@
  * 		}]
  * 	});
  * @extends Echo.Plugin
- * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Submit");
 

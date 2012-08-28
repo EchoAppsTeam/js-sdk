@@ -30,7 +30,6 @@
  *   See more [here](http://wiki.aboutecho.com/Client-Extensions-Framework#Enabling/disablingpluginsinrealtime).
  *
  * @extends Echo.Plugin
- * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("TwitterIntents", "Echo.StreamServer.Controls.Stream.Item");
 

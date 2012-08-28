@@ -3,7 +3,6 @@
  * Echo Counter class which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
  * @extends Echo.Control
- * @inheritdoc Echo.Control
  *
  * @constructor
  * Counter constructor initializing Echo.StreamServer.Controls.Counter class

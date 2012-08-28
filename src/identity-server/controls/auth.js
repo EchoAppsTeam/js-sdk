@@ -2,7 +2,6 @@
  * @class Echo.IdentityServer.Controls.Auth
  * Echo Auth control displays user login status and allows to sign in using different social identities.
  * @extends Echo.Control
- * @inheritdoc Echo.Control
  *
  * @constructor
  * Auth constructor initializing Echo.IdentityServer.Controls.Auth class

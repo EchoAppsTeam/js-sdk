@@ -196,7 +196,6 @@ Echo.Control.create(mediaGallery);
  *         }]
  *     });
  * @extends Echo.Plugin
- * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream.Item");
 

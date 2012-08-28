@@ -9,7 +9,6 @@
  *         }]
  *     });
  * @extends Echo.Plugin
- * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("TextCounter", "Echo.StreamServer.Controls.Submit");
 

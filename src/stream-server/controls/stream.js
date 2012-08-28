@@ -2,7 +2,6 @@
  * @class Echo.StreamServer.Controls.Stream
  * Echo Stream control
  * @extends Echo.Control
- * @inheritdoc Echo.Control
  *
  * @constructor
  * @param {Object} config Configuration options

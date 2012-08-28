@@ -6,7 +6,6 @@ if (!Echo.AppServer) Echo.AppServer = {};
 /**
  * @class Echo.AppServer.Controls.Configurator
  * @extends Echo.Control
- * @inheritdoc Echo.Control
  */
 var configurator = Echo.Control.manifest("Echo.AppServer.Controls.Configurator");
 

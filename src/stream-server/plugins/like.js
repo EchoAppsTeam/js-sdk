@@ -11,7 +11,6 @@
  *         }]
  *     });
  * @extends Echo.Plugin
- * @inheritdoc Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Item");
 

@@ -3,7 +3,6 @@
  * Echo Submit control which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank">Echo Submit API</a>
  * @extends Echo.Control
- * @inheritdoc Echo.Control
  *
  * @constructor
  * Counter constructor initializing Echo.StreamServer.Controls.Submit class
