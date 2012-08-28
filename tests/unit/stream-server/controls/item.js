@@ -603,7 +603,7 @@ suite.prototype._runBodyCases = function(cases) {
 			"ready": function() {
 				var item = this;
 				item.events.subscribe({
-					"topic": "Echo.StreamServer.Controls.Stream.Item",
+					"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
 					"handler": function() {
 						var element = $(".echo-streamserver-controls-stream-item-body", self.config.target);
 						QUnit.equal(element.find(".echo-streamserver-controls-stream-item-text").html(),
