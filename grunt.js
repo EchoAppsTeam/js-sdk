@@ -48,7 +48,9 @@ module.exports = function(grunt) {
 				options: {
 					basePath: _dirs.src,
 					processContent: function(code) {
-						return grunt.helper("strip_docs", grunt.helper("wrap_code", code));
+						// temporarily disabled docs stripping until we can exclude third-party libs
+						return grunt.helper("wrap_code", code);
+						//return grunt.helper("strip_docs", grunt.helper("wrap_code", code));
 					},
 					processContentExclude: _dontWrap
 				}
