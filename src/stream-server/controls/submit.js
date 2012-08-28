@@ -13,6 +13,7 @@ var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
 
 submit.vars = {
 	/**
+	 * @property
 	 * List of the functions validating input before submit
 	 */
 	"validators": []
@@ -263,20 +264,6 @@ submit.renderers.tags = function(element) {
 
 /**
  * @echo_renderer
- * @private
- */
-submit.renderers._metaFields = function(element, extra) {
-	var type = extra.type;
-	var data = this.get("data.object." + type) || [];
-	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
-	return this.dom.get(type).iHint({
-		"text": this.labels.get(type + "Hint"),
-		"className": "echo-secondaryColor"
-	}).val(value).blur();
-};
-
-/**
- * @echo_renderer
  */
 submit.renderers.text = function(element) {
 	var content = this.get("data.object.content");
@@ -369,6 +356,16 @@ submit.renderers.postButton = function(element) {
 	};
 	element.off("click", this.posting.action).on("click", this.posting.action);
 	return element;
+};
+
+submit.renderers._metaFields = function(element, extra) {
+	var type = extra.type;
+	var data = this.get("data.object." + type) || [];
+	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
+	return this.dom.get(type).iHint({
+		"text": this.labels.get(type + "Hint"),
+		"className": "echo-secondaryColor"
+	}).val(value).blur();
 };
 
 // methods
