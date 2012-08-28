@@ -174,10 +174,6 @@ suite.prototype.cases.dynamicIsYou = function(callback) {
 			}]
 		}]
 	};
-	Echo.StreamServer.API.request({
-		"endpoint": "submit",
-		"data": entry
-	}).send();
 	pile.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.FacePile.onRefresh",
 		"once"    : true,
@@ -186,8 +182,14 @@ suite.prototype.cases.dynamicIsYou = function(callback) {
 			callback();
 		}
 	});
-	pile.config.set("query", "scope:" + this.config.dataBaseLocation + "tests/facepile itemsPerPage:1");
-	pile.refresh();
+	Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"data": entry,
+		"onData": function() {
+			pile.config.set("query", "scope:" + self.config.dataBaseLocation + "tests/facepile itemsPerPage:1");
+			pile.refresh();
+		}
+	}).send();
 };
 
 suite.prototype.tests.actorsView = {

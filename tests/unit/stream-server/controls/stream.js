@@ -1,17 +1,18 @@
 (function($) {
 
-var data = {
-	"instance" : {
-		"name" : "Echo.StreamServer.Controls.Stream"
-	},
-	"config": {
-		"async"       : true,
-		"testTimeout" : 10000
-	}
-};
-
 var suite = Echo.Tests.Unit.Stream = function() {
-	this.constructRenderersTest(data);
+	this.constructRenderersTest({
+		"instance": {
+			"name": "Echo.StreamServer.Controls.Stream",
+			"config": {
+				"query": "childrenof: " + this.config.dataBaseLocation
+			},
+		},
+		"config": {
+			"async": true,
+			"testTimeout": 10000
+		}
+	});
 };
 
 suite.prototype.info = {
@@ -27,14 +28,14 @@ suite.prototype.tests = {};
 suite.prototype.tests.commonWorkflow = {
 	"config": {
 		"async"       : true,
-		"testTimeout" : 20000, // 20 secs
+		"testTimeout" : 20000,
 	},
 	"check": function() {
 		var self = this;
 		new Echo.StreamServer.Controls.Stream({
 			"target": this.config.target,
 			"appkey": this.config.appkey,
-			"liveUpdatesTimeout": 5,
+			"liveUpdatesTimeout": 3,
 			"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:1",
 			"ready": function() {
 				var target = this.config.get("target");
@@ -88,10 +89,11 @@ suite.prototype.cases.addRootItem = function(callback) {
 		}
 	});
 	stream.setState("paused");
-	Echo.StreamServer.API.request({
+	var request = new Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"data": entry
-	}).send();
+	});
+	request.send();
 };
 
 suite.prototype.cases.addChildItem = function(callback) {
@@ -119,10 +121,11 @@ suite.prototype.cases.addChildItem = function(callback) {
 			callback();
 		}
 	});
-	Echo.StreamServer.API.request({
+	var request = new Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"data": entry
-	}).send();
+	});
+	request.send();
 };
 
 suite.prototype.cases.moreButton = function(callback) {
