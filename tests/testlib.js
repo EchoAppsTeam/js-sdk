@@ -62,7 +62,6 @@ Echo.Tests.Common.prototype.run = function() {
 		// QUnit should never use async tests,
 		// we will emulate this workflow by ourselves,
 		// it allows us to set testTimeout value for each test separately
-		test.config.async = false;
 		test.config.user = test.config.user || {"status": "anonymous"};
 		var check = function(instance) {
 			if (!test.config.async) {
@@ -71,7 +70,6 @@ Echo.Tests.Common.prototype.run = function() {
 			} else {
 				setTimeout(function() {
 					test.check.call(self, instance);
-					QUnit.start();
 				}, test.config.asyncTimeout || self.config.asyncTimeout);
 			}
 		};
