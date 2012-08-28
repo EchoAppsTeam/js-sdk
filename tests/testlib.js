@@ -59,14 +59,13 @@ Echo.Tests.Common.prototype.run = function() {
 	this.info.className = this.info.className || "";
 	$.each(this.tests, function(name, test) {
 		test.config = test.config || {};
-		// QUnit should never use async tests,
-		// we will emulate this workflow by ourselves,
-		// it allows us to set testTimeout value for each test separately
+		if (test.instance && !$.isFunction(test.instance)) {
+			test.config.async = true;
+		}
 		test.config.user = test.config.user || {"status": "anonymous"};
 		var check = function(instance) {
 			if (!test.config.async) {
 				test.check.call(self, instance);
-				QUnit.start();
 			} else {
 				setTimeout(function() {
 					test.check.call(self, instance);
@@ -86,8 +85,14 @@ Echo.Tests.Common.prototype.run = function() {
 			self.prepareEnvironment(test, function() {
 				if (!test.instance) {
 					check();
+					// we need to switch to the next test
+					// if it was NOT defined as async
+					if (!test.config.async) {
+						QUnit.start();
+					}
 				} else if ($.isFunction(test.instance)) {
 					check(test.instance());
+					QUnit.start();
 				} else {
 					var config = $.extend({
 						"appkey": "test.aboutecho.com",
