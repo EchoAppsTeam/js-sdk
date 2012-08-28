@@ -403,12 +403,12 @@ submit.methods.post = function() {
 		"onData": function(data) {
 			/**
 			 * @event onPostComplete
-			 * Triggered when the submit operation is finished. Full name Echo.StreamServer.Controls.Submit.onPostComplete
+			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete Triggered when the submit operation is finished.
 			 */
 			publish("Complete", entry);
 			/**
 			 * @event onDataInvalidate
-			 * Triggered if dataset is changed. Full name Echo.Control.onDataInvalidate
+			 * @echo_event Echo.Control.onDataInvalidate Triggered if dataset is changed.
 			 */
 			// notify all widgets on the page about a new item posted
 			Echo.Events.publish({
@@ -420,14 +420,14 @@ submit.methods.post = function() {
 		"onError": function(data) {
 			/**
 			 * @event onPostError
-			 * Triggered if submit operation failed. Full name Echo.StreamServer.Controls.Submit.onPostError
+			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError Triggered if submit operation failed.
 			 */
 			publish("Error", data);
 		}
 	};
 	/**
 	 * @event onPostInit
-	 * Triggered if submit operation was started. Full name Echo.StreamServer.Controls.Submit.onPostInit
+	 * @echo_event Echo.StreamServer.Controls.Submit.onPostInit Triggered if submit operation was started.
 	 */
 	publish("Init", entry);
 	Echo.StreamServer.API.request({

@@ -235,15 +235,7 @@ Echo.UserSession._listenEvents = function() {
 		user._init(function() {
 			/**
 			 * @event onInvalidate
-			 * Echo.UserSession.onInvalidate
-			 * is triggered after user has logged in or logged out.
-			 * 	@example
-			 * 	var id = Echo.Events.subscribe({
-			 * 		"topic": "Echo.UserSession.onInvalidate",
-			 * 		"handler": function(topic, data) {
-			 * 			// action with data..
-			 * 		}
-			 * 	});
+			 * @echo_event Echo.UserSession.onInvalidate Triggered after user has logged in or logged out.
 			 * @param {String} topic Name of the event to subscribe (ex: "Echo.UserSession.onInvalidate").
 			 * @param {Object} data Object which is returned by the users/whoami API endpoint or empty object for logout events.
 			 * @param {Object} data.echo Echo section contains three elements.
@@ -289,15 +281,7 @@ Echo.UserSession._init = function(callback) {
 		user._reset(data);
 		/**
 		 * @event onInit
-		 * Echo.UserSession.onInit
-		 * is triggered when the user is initialized on the page.
-		 * 	@example
-		 * 	var id = Echo.Events.subscribe({
-		 * 		"topic": "Echo.UserSession.onInit",
-		 * 		"handler": function(topic, data) {
-		 * 			// action with data..
-		 * 		}
-		 * 	});
+		 * @echo_event Echo.UserSession.onInit Triggered when the user is initialized on the page.
 		 * @param {String} topic Name of the event to subscribe (ex: "Echo.UserSession.onInit").
 		 * @param {Object} data Object which is returned by the users/whoami API endpoint or empty object for logout events.
 		 * @param {Object} data.echo Echo section contains three elements.
