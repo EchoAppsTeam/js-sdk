@@ -137,12 +137,20 @@ suite.prototype.cases.basicOperations = function(callback) {
 		QUnit.equal(this.get("myField"), undefined,
 			"Checking field remove operation");
 
-		// checking "substitute" method
+		// checking "substitute" method in a regular mode
 		$.each(suite.data.substitutions, function(id, substitution) {
 			QUnit.equal(
 				self.substitute(substitution[0], undefined, false, substitution[2]),
 				substitution[1],
-				"Checking \"substitute\" method, pattern #" + (id + 1));
+				"Checking \"substitute\" method in a regular mode, pattern #" + (id + 1));
+		});
+
+		// checking "substitute" method in a strict mode
+		$.each(suite.data.strictSubstitutions, function(id, substitution) {
+			QUnit[substitution[2] || "equal"](
+				self.substitute(substitution[0], undefined, true),
+				substitution[1],
+				"Checking \"substitute\" method in a strict mode, pattern #" + (id + 1));
 		});
 
 		// checking "dependent" method
@@ -685,6 +693,27 @@ suite.data.config = {
 		}
 	}
 };
+
+suite.data.strictSubstitutions = [[
+	"{config:zeroParam}",
+	0,
+	"strictEqual"
+], [
+	"{config:booleanTrueParam}",
+	true,
+	"strictEqual"
+], [
+	"{config:undefinedParam}",
+	undefined,
+	"strictEqual"
+], [
+	"{config:objectParam}",
+	suite.data.config.objectParam,
+	"deepEqual"
+
+// adding basic substitution tests for the strict processing
+// to make sure that the strict mode process regular templates corectly
+]].concat(suite.data.substitutions.slice(0, 12));
 
 // test helper functions 
 

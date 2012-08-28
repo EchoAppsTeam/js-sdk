@@ -69,6 +69,9 @@ module.exports = function(grunt) {
 			tests: {
 				files: {
 					"<%= dirs.dest %>": ["<%= dirs.tests %>/**/*"]
+				},
+				options: {
+					basePath: "."
 				}
 			}
 		},
