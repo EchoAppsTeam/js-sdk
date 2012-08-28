@@ -581,8 +581,8 @@ submit.css =
 		'.{class:tagsContainer} { zoom: 1; }' : '') +
 	(($.browser.webkit) ?
 		// get rid of extra gray line inside input elements on iOS
-		'.{class:container } input { background-position: 0px; }' +
-		'.{class:container } textarea { background-position: 0px; }' +
+		'.{class:container} input { background-position: 0px; }' +
+		'.{class:container} textarea { background-position: 0px; }' +
 		'.{class:textArea} { outline: none; }' +
 		'.{class:name} { outline: none; }' +
 		'.{class:url} { outline: none; }' +
