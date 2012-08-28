@@ -121,13 +121,13 @@ Echo.Utils.foldl(plugin.renderers, ["eventName", "vipName", "eventStart", "event
 
 plugin.renderers.eventStatusBrief = plugin.renderers.eventStatus = function(element) {
 	var event = this.event;
-	var status = event.getEventStatus();
+	var status = event.getStatus();
 	var content = this.labels.get("eventStatus") + ": " + this.labels.get(status);
 	var extra;
 	if (status == "upcoming") {
-		extra = event.calcAnotherStartEvent();
+		extra = event.calcAnotherStart();
 	} else if (status == "passed") {
-		extra = event.calcEndEvent();
+		extra = event.calcEndTime();
 	}
 	if (extra)
 		content += ". " + extra + ".";
@@ -135,7 +135,7 @@ plugin.renderers.eventStatusBrief = plugin.renderers.eventStatus = function(elem
 };
 
 plugin.renderers.eventDuration = function(element) {
-	var duration = this.event.getEventDuration();
+	var duration = this.event.getDuration();
 	return element.html(this.labels.get("eventDuration") + ": " + this.event.displayDateDiff(duration, function(diff, period) {
 		return diff + " " + period + (diff == 1 ? "" : "s");
 	}));
@@ -168,7 +168,7 @@ plugin.renderers.eventButton = function(element) {
 	}
 	var self = this;
 	new Echo.Button(element, {
-		"label": this.labels.get(this.event.getEventStatus() + "EventOpen")
+		"label": this.labels.get(this.event.getStatus() + "EventOpen")
 	});
 	return element.addClass("btn btn-small").click(function() {
 		self.events.publish({
