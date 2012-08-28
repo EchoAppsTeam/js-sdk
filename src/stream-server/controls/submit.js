@@ -12,7 +12,6 @@ var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
 
 submit.vars = {
 	/**
-	 * @property
 	 * List of the functions validating input before submit
 	 */
 	"validators": []
@@ -369,7 +368,6 @@ submit.renderers._metaFields = function(element, extra) {
 
 // methods
 /**
- * @method post
  * Method used for posting user provided content to the <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank"> Echo Submit</a> endpoint through <a href="http://wiki.aboutecho.com/w/page/53021402/Echo%20Submission%20Proxy" target="_blank"> Echo Submission Proxy</a>.
  */
 submit.methods.post = function() {
@@ -438,7 +436,6 @@ submit.methods.post = function() {
 };
 
 /**
- * @method highlightMandatory
  * Method highlighting the mandatory input data fields if they are empty
  */
 submit.methods.highlightMandatory = function(element) {
@@ -454,7 +451,6 @@ submit.methods.highlightMandatory = function(element) {
 };
 
 /**
- * @method addPostValidator
  * Method adds custom validator to check posting possibility
  */
 submit.methods.addPostValidator = function(validator, priority) {
@@ -462,7 +458,6 @@ submit.methods.addPostValidator = function(validator, priority) {
 };
 
 /**
- * @method refresh
  * Method implements the refresh logic for the Submit control.
  */
 submit.methods.refresh = function() {

@@ -87,22 +87,19 @@ plugin.labels = {
 
 /**
  * @event onEditInit
- * Echo.StreamServer.Controls.Submit.onEdit
- * is triggered if edit operation was started
+ * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Edit.onEditInit
+ * Triggered if edit operation was started
  */
-
 /**
  * @event onEditComplete
- * Echo.StreamServer.Controls.Submit.onEditComplete
- * is triggered when the submit operation is finished
+ * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Edit.onEditComplete
+ * Triggered when the submit operation is finished
  */
-
 /**
  * @event onEditError
- * Echo.StreamServer.Controls.Submit.onPostError
- * is triggered if edit operation failed
+ * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Edit.onEditError
+ * Triggered if edit operation failed
  */
-
 $.map(["Init", "Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.onPost" + action] = function(topic, args) {
 		var component = this.component;
