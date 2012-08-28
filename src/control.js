@@ -231,7 +231,7 @@ Echo.Control.prototype.substitute = function(template, data, strict, instruction
 	//  perform regular string sustitution
 	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
 		if (!instructions[key]) return match;
-		var result = instructions[key].call(this, value);
+		var result = instructions[key].call(this, value, "");
 		var allowedTypes = ["number", "string", "boolean"];
 		return ~$.inArray(typeof result, allowedTypes) ? result : "";
 	});
@@ -784,23 +784,22 @@ Echo.Control.prototype._getSubstitutionInstructions = function(data) {
 		"class": function(key) {
 			return key ? control.cssPrefix + key : control.cssClass
 		},
-		"data": function(key) {
-			return Echo.Utils.getNestedValue(data || control.data, key, "");
+		"data": function(key, defaults) {
+			return Echo.Utils.getNestedValue(data || control.data, key, defaults);
 		},
-		"label": function(key) {
-			return control.labels.get(key, "");
+		"label": function(key, defaults) {
+			return control.labels.get(key, defaults);
 		},
-		"self": function(key) {
+		"self": function(key, defaults) {
 			var value = Echo.Utils.getNestedValue(control, key);
 			value = $.isFunction(value) ? value.call(control) : value;
 			return typeof value == "undefined"
-				? Echo.Utils.getNestedValue(control.data, key, "")
+				? Echo.Utils.getNestedValue(control.data, key, defaults)
 				: value;
 		},
-		"config": function(key) {
-			var value = control.config.get(key, "");
-			value = $.isFunction(value) ? value.call(control) : value;
-			return value;
+		"config": function(key, defaults) {
+			var value = control.config.get(key, defaults);
+			return $.isFunction(value) ? value.call(control) : value;
 		}
 	};
 };
