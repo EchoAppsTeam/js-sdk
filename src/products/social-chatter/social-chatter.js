@@ -1,19 +1,18 @@
 (function() {
 
-var labels = Echo.Labels;
-
-labels.set({
+var labels = {
 	"fewMoments": "in a few moments",
 	"moreYear": "more than a year",
 	"defaultDateDiffDisplay": "in {diff} {period}{suffix}",
 	"startDateDiffDisplay": "Will be started in {diff} {period}{suffix}",
 	"endDateDiffDisplay": "Ended {diff} {period}{suffix} ago"
-}, "Echo.SocialChatterEvent", true);
+};
 
 Echo.SocialChatterEvent = function(entry) {
 	if (!entry || !entry.object) return {"data": {}};
 	this.id = entry.object.id;
 	this.data = this.getData(entry.object.content);
+	this.labels = new Echo.Labels(labels, "Echo.SocialChatterEvent");
 };
 
 Echo.SocialChatterEvent.prototype.getData = function(dataString) {
@@ -24,7 +23,7 @@ Echo.SocialChatterEvent.prototype.getData = function(dataString) {
 	return data || {};
 };
 
-Echo.SocialChatterEvent.prototype.calcEventDates = function(type, display) {
+Echo.SocialChatterEvent.prototype.calcDates = function(type, display) {
 	type = type.charAt(0).toUpperCase() + type.substr(1);
 	var content = this.data;
 	if (!content["event" + type]) return;
@@ -43,14 +42,14 @@ Echo.SocialChatterEvent.prototype.displayDateDiff = function(diff, display) {
 	var when;
 	var dayDiff = Math.floor(diff / 86400);
 	var display = display || function(diff, period) {
-		return labels.get("defaultDateDiffDisplay", "Echo.SocialChatterEvent", {
+		return this.labels.get("defaultDateDiffDisplay", {
 			"diff": diff,
 			"period": period,
 			"suffix": diff == 1 ? "" : "s"
 		});
 	};
 	if (diff < 60) {
-		when = labels.get("fewMoments", "Echo.SocialChatterEvent");
+		when = this.labels.get("fewMoments");
 	} else if (diff < 60 * 60) {
 		diff = Math.floor(diff / 60);
 		when = display(diff, "minute");
@@ -63,19 +62,19 @@ Echo.SocialChatterEvent.prototype.displayDateDiff = function(diff, display) {
 		diff =  Math.floor(dayDiff / 31);
 		when = display(diff, "month");
 	} else {
-		when = labels.get("moreYear");
+		when = this.labels.get("moreYear");
 	}
 	return when;
 };
 
-Echo.SocialChatterEvent.prototype.calcStartEvent = function() {
-	return this.calcEventDates("start");
+Echo.SocialChatterEvent.prototype.calcStartTime = function() {
+	return this.calcDates("start");
 };
 
-Echo.SocialChatterEvent.prototype.calcEndEvent = function() {
+Echo.SocialChatterEvent.prototype.calcEndTime = function() {
 	var self = this;
-	return this.calcEventDates("end", function(diff, period) {
-		return labels.get("endDateDiffDisplay", "Echo.SocialChatterEvent", {
+	return this.calcDates("end", function(diff, period) {
+		return self.labels.get("endDateDiffDisplay", {
 			"diff": diff,
 			"period": period,
 			"suffix": diff == 1 ? "" : "s"
@@ -84,10 +83,10 @@ Echo.SocialChatterEvent.prototype.calcEndEvent = function() {
 };
 
 // FIXME: need rename function
-Echo.SocialChatterEvent.prototype.calcAnotherStartEvent = function() {
+Echo.SocialChatterEvent.prototype.calcAnotherStart = function() {
 	var self = this;
-	return this.calcEventDates("start", function(diff, period) {
-		return labels.get("startDateDiffDisplay", "Echo.SocialChatterEvent", {
+	return this.calcDates("start", function(diff, period) {
+		return this.labels.get("startDateDiffDisplay", {
 			"diff": diff,
 			"period": period,
 			"suffix": diff == 1 ? "" : "s"
@@ -108,12 +107,12 @@ Echo.SocialChatterEvent.prototype.onAir = function() {
 	return (timestamp.start <= now && timestamp.end >= now);
 };
 
-Echo.SocialChatterEvent.prototype.getEventDuration = function() {
+Echo.SocialChatterEvent.prototype.getDuration = function() {
 	var timestamp = this.getTimestamp();
 	return Math.floor((timestamp.end - timestamp.start) / 1000);
 };
 
-Echo.SocialChatterEvent.prototype.getEventStatus = function() {
+Echo.SocialChatterEvent.prototype.getStatus = function() {
 	if (this.onAir()) return "onAir";
 	var timestamp = this.getTimestamp();
 	var now = (new Date()).getTime();
@@ -247,7 +246,7 @@ SocialChatter.views.PublicEvent.templates = {
 
 SocialChatter.views.PublicEvent.methods.template = function() {
 	var event = this.config.get("event");
-	var status = event && event.getEventStatus();
+	var status = event && event.getStatus();
 	return this._manifest("templates")[this.user && this.user.is("logged")
 		? (status && status !== "upcoming" ? "main" : "upcoming")
 		: "anonymous"];
@@ -408,11 +407,11 @@ SocialChatter.views.PublicEvent.methods._isNonVIPUser = SocialChatter.views.Gree
 };
 
 SocialChatter.views.PublicEvent.renderers.loginWarning = function(element) {
-	return element.html('<span>' + this.labels.get(this.config.get("event").getEventStatus() + "EventWarning") + '</span>');
+	return element.html('<span>' + this.labels.get(this.config.get("event").getStatus() + "EventWarning") + '</span>');
 };
 
 SocialChatter.views.PublicEvent.renderers.publicViewNotice = function(element) {
-	var status = this.config.get("event").getEventStatus();
+	var status = this.config.get("event").getStatus();
 	if (status == "passed") {
 		return element.html('<span>' + this.labels.get("passedEventViewNotice") + '</span>');
 	}
@@ -436,7 +435,7 @@ SocialChatter.views.PublicEvent.renderers.avatar = function(element) {
 SocialChatter.views.PublicEvent.renderers.countdown = function(element) {
 	var self = this;
 	element.hide();
-	var status = this.config.get("event").getEventStatus();
+	var status = this.config.get("event").getStatus();
 	var isUpcomingEvent = status == "upcoming";
 	var finishHandler = status == "upcoming" || status == "onAir"
 		? function() {
@@ -488,7 +487,7 @@ SocialChatter.views.EventsList.controls.Stream = {
 	"control": "Echo.StreamServer.Controls.Stream",
 	"config": {
 		"appkey": null,
-		"query": "childrenof:{config:parent.eventsTargetURL} state:Untouched,ModeratorApproved children:0",
+		"query": "childrenof:{config:parent.eventsTargetURL} state:SystemFlagged children:0",
 		"liveUpdatesTimeout": "{config:parent.liveUpdatesTimeout}",
 		"item": {
 			"reTag": false
@@ -567,10 +566,13 @@ SocialChatter.methods._initSocialChatterEvents = function(entries) {
 };
 
 SocialChatter.methods._setPublicEvent = function(event) {
+	var self = this;
 	this.data = this.data || {};
 	this.event = this.data.event = event;
 	if (this.event) {
-		this.event.isOnAir = this.event.onAir();
+		this.event.isOnAir = function() {
+			return self.event.onAir.call(self.event);
+		}
 	}
 };
 
@@ -582,7 +584,7 @@ SocialChatter.methods._hasGreenRoomAccess = function() {
 
 SocialChatter.methods._updateTab = function(config) {
 	if (this.tabs && !this.event && config.name != "EventsList"
-		|| (this.event && this.event.getEventStatus() == "passed" && config.name == "GreenRoom")) {
+		|| (this.event && this.event.getStatus() == "passed" && config.name == "GreenRoom")) {
 		this.tabs.remove(config.name);
 		return;
 	}
@@ -620,7 +622,7 @@ SocialChatter.methods._pickRelevantEvent = function() {
 	//  - if there are no upcoming or on air events - return undefined
 	var relevantEvent;
 	$.each(this.eventById, function(id, event) {
-		var status = event.getEventStatus();
+		var status = event.getStatus();
 		if (status == "onAir") {
 			relevantEvent = event;
 			return false; // break
@@ -646,7 +648,7 @@ SocialChatter.assemblers.Auth = function(target) {
 	var view = this.initView("Main", {
 		"user": this.user,
 		"target": target,
-		"type": "eventsList"
+		"type": "auth"
 	});
 	view._initControl({
 		"name": "Auth"
@@ -686,7 +688,7 @@ SocialChatter.assemblers.EventsList = function(target) {
 		"handler": function(topic, args) {
 			var entry = args.item.data;
 			var event = new Echo.SocialChatterEvent(entry);
-			var status = event.getEventStatus();
+			var status = event.getStatus();
 			self.eventById[entry.object.id] = event;
 			if ((self.event && self.event.id == event.id) ||
 				(!self.event && (status == "onAir" || status == "upcoming"
@@ -720,11 +722,10 @@ SocialChatter.assemblers.EventsList = function(target) {
 	});
 };
 
-
 SocialChatter.assemblers.PublicEvent = function(target) {
 	var self = this;
 	var data = this.event.data;
-	var pluginEnabled = !(this.event && this.event.getEventStatus() == "passed");
+	var pluginEnabled = !(this.event && this.event.getStatus() == "passed");
 	var view = this.initView("PublicEvent", {
 		"user": this.user,
 		"data": data,
@@ -736,7 +737,7 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 	// setting tab title
 	this.tabs.get("PublicEvent").html(data.eventName || "Unknown Event");
 
-	if (!this.user.is("logged") || this.event.getEventStatus() == "upcoming") return;
+	if (!this.user.is("logged") || this.event.getStatus() == "upcoming") return;
 
 	if (this.event.onAir()) 
 		view._initControl({
@@ -802,10 +803,16 @@ SocialChatter.events = {
 		this._setPublicEvent(new Echo.SocialChatterEvent(entry));
 		this._updateTabs();
 		this.tabs.show("PublicEvent");
+	},
+	"Echo.Control.onDestroy": function() {
+		var self = this;
+		$.each(this.views, function(name) {
+			self.destroyView(name);
+		});
 	}
 };
 
-Echo.Utils.foldl(SocialChatter.events, ["Echo.StreamServer.Controls.Submit.Plugins.SubmitCountdownEvent.onEventEnd", "Echo.Products.SocialChatter.PublicEvent.onEventStart"], function(topic, acc) {
+Echo.Utils.foldl(SocialChatter.events, ["Echo.StreamServer.Controls.Submit.Plugins.SubmitCountdownEvent.onEventEnd", "Echo.Products.SocialChatter.Views.PublicEvent.onEventStart"], function(topic, acc) {
 	acc[topic] = function() {
 		this._updateTabs();
 	};
@@ -869,7 +876,7 @@ SocialChatter.views.GreenRoom.css =
 ;
 
 SocialChatter.views.Main.css =
-	'.{class:auth} { float: right; }' +
+	'.{class:auth} { float: right; margin-top: 7px; }' +
 	'.{class:auth} .echo-identityserver-controls-auth-avatar, .{class:auth} .echo-identityserver-controls-auth-logout { height: 24px; line-height: 24px; margin: 0px;}' +
 	'.{class:auth} .echo-identityserver-controls-auth-name { line-height: 23px; font-size: 14px; margin: 0px 20px 0px 0px; }' +
 	'.{class:auth} .echo-identityserver-controls-auth-edit { height: 24px; line-height: 24px; margin: 0px 5px 0px 0px; }'
