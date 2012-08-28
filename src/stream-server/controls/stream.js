@@ -1253,7 +1253,6 @@ item.config = {
 	},
 	"optimizedContext": true,
 	"reTag": true,
-	"render": false,
 	"viaLabel": {
 		"icon": false,
 		"text": false
@@ -1316,9 +1315,6 @@ item.labels = {
 
 item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get("data.object.published"));
-	if (this.config.get("render")) {
-		this.dom.render();
-	}
 	this.ready();
 };
 

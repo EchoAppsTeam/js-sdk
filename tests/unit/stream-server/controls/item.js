@@ -5,7 +5,6 @@ var suite = Echo.Tests.Unit.Item = function() {
 		"instance" : {
 			"name" : "Echo.StreamServer.Controls.Stream.Item",
 			"config": {
-				"render": true,
 				"data": suite._itemData,
 				"parent": suite._streamConfigData
 			}
@@ -42,89 +41,101 @@ suite.prototype.tests.commonWorkflow = {
 	},
 	"check": function() {
 		var self = this;
+
+		var runStaticTests = function(item) {
+			QUnit.ok(item.isRoot(), "Checking isRoot() method");
+			item.set("data.target.conversationID", "http://example.com/ECHO/item/1311856366-373-938");
+			QUnit.ok(!item.isRoot(), "Checking isRoot() method");
+
+			QUnit.equal(item.getAccumulator("likesCount"), 2, "Checking getAccumulator method");
+
+			item.set("data.hasMoreChildren", "false");
+			QUnit.ok(!item.hasMoreChildren(), "Checking hasMoreChildren() method");
+			item.set("data.hasMoreChildren", "true");
+			QUnit.ok(item.hasMoreChildren(), "Checking that hasMoreChildren() method");
+			item.set("data.hasMoreChildren", true);
+			QUnit.ok(!item.hasMoreChildren(), "Checking that hasMoreChildren() method");
+
+			item.block("TestMessage");
+			QUnit.ok(item.get("blocked"),
+				"Checking that field 'blocked' is true (block() method)");
+			QUnit.equal($("." + item.cssPrefix + "blocker-message", item.dom.get("container")).html(),
+				"TestMessage", "Checking the block message (block() method)");
+			QUnit.ok($("." + item.cssPrefix + "blocker-backdrop", item.dom.get("container")).length,
+				"Checking that block backdrop is apperead (block() method)");
+
+			item.unblock();
+			QUnit.ok(!item.get("blocked"),
+				"Checking that field 'blocked' is false (unblock() method)");
+			QUnit.ok(!$("." + item.cssPrefix + "blocker-message", item.dom.get("container")).length,
+				"Checking that block message was removed (unblock() method)");
+			QUnit.ok(!$("." + item.cssPrefix + "blocker-backdrop", item.dom.get("container")).length,
+				"Checking that block backdrop was removed (unblock() method)");
+		};
+
+		var addChildren  = function(item) {
+			var children = [
+				new Echo.StreamServer.Controls.Stream.Item({
+					"target": $("<div>"),
+					"appkey": self.config.appkey,
+					"parent": suite._streamConfigData,
+					"data":  _normalizeEntry($.extend(true, {}, suite._itemData, {
+						"object": {
+							"content": "123"
+						},
+						"pageAfter": "1346051873.088351"
+					})),
+					"live": false
+				}),
+				new Echo.StreamServer.Controls.Stream.Item({
+					"target": $("<div>"),
+					"appkey": self.config.appkey,
+					"parent": suite._streamConfigData,
+					"data":  _normalizeEntry($.extend(true, {}, suite._itemData, {
+						"object": {
+							"content": "456"
+						},
+						"pageAfter": "1346051873.088352"
+					})),
+					"live": false
+				}),
+				new Echo.StreamServer.Controls.Stream.Item({
+					"target": $("<div>"),
+					"appkey": self.config.appkey,
+					"parent": suite._streamConfigData,
+					"data":  _normalizeEntry($.extend(true, {}, suite._itemData, {
+						"object": {
+							"content": "789"
+						},
+						"pageAfter":  "1346051873.088353"
+					})),
+					"live": true
+				})
+			];
+			item.set("children", children);
+		};
+
 		new Echo.StreamServer.Controls.Stream.Item({
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"parent": suite._streamConfigData,
 			"data": _normalizeEntry(suite._itemData),
-			"render": true,
 			"buttonsOrder": undefined,
 			"ready": function() {
 				var item = suite.item = this;
-				
-				QUnit.ok(item.isRoot(), "Checking isRoot() method");
-				item.set("data.target.conversationID", "http://example.com/ECHO/item/1311856366-373-938");
-				QUnit.ok(!item.isRoot(), "Checking isRoot() method");
-				
-				QUnit.equal(item.getAccumulator("likesCount"), 2, "Checking getAccumulator method");
-				
-				item.set("data.hasMoreChildren", "false");
-				QUnit.ok(!item.hasMoreChildren(), "Checking hasMoreChildren() method");
-				item.set("data.hasMoreChildren", "true");
-				QUnit.ok(item.hasMoreChildren(), "Checking that hasMoreChildren() method");
-				item.set("data.hasMoreChildren", true);
-				QUnit.ok(!item.hasMoreChildren(), "Checking that hasMoreChildren() method");
-				
-				item.block("TestMessage");
-				QUnit.ok(item.get("blocked"),
-					"Checking that field 'blocked' is true (block() method)");
-				QUnit.equal($("." + item.cssPrefix + "blocker-message", item.dom.get("container")).html(),
-					"TestMessage", "Checking the block message (block() method)");
-				QUnit.ok($("." + item.cssPrefix + "blocker-backdrop", item.dom.get("container")).length,
-					"Checking that block backdrop is apperead (block() method)");
-				
-				item.unblock();
-				QUnit.ok(!item.get("blocked"),
-					"Checking that field 'blocked' is false (unblock() method)");
-				QUnit.ok(!$("." + item.cssPrefix + "blocker-message", item.dom.get("container")).length,
-					"Checking that block message was removed (unblock() method)");
-				QUnit.ok(!$("." + item.cssPrefix + "blocker-backdrop", item.dom.get("container")).length,
-					"Checking that block backdrop was removed (unblock() method)");
-				
-				var children = [
-					new Echo.StreamServer.Controls.Stream.Item({
-						"target": $("<div>"),
-						"appkey": self.config.appkey,
-						"parent": suite._streamConfigData,
-						"data":  _normalizeEntry($.extend(true, {}, suite._itemData, {
-							"object": {
-								"content": "123"
-							},
-							"pageAfter": "1346051873.088351"
-						})),
-						"live": false
-					}),
-					new Echo.StreamServer.Controls.Stream.Item({
-						"target": $("<div>"),
-						"appkey": self.config.appkey,
-						"parent": suite._streamConfigData,
-						"data":  _normalizeEntry($.extend(true, {}, suite._itemData, {
-							"object": {
-								"content": "456"
-							},
-							"pageAfter": "1346051873.088352" 
-						})),
-						"live": false
-					}),
-					new Echo.StreamServer.Controls.Stream.Item({
-						"target": $("<div>"),
-						"appkey": self.config.appkey,
-						"parent": suite._streamConfigData,
-						"data":  _normalizeEntry($.extend(true, {}, suite._itemData, {
-							"object": {
-								"content": "789"
-							},
-							"pageAfter":  "1346051873.088353"
-						})),
-						"live": true
-					})
-				];
-				suite.item.set("children", children);
-				self.sequentialAsyncTests([
-					"traverse",
-					"expand",
-					"destroy"
-				], "cases");
+				item.events.subscribe({
+					"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
+					"handler": function() {
+						runStaticTests(item);
+						addChildren(item);
+						self.sequentialAsyncTests([
+							"traverse",
+							"expand",
+							"destroy"
+						], "cases");
+					}
+				});
+				item.dom.render();
 			}
 		});
 	}
@@ -191,16 +202,21 @@ suite.prototype.tests.testItemButtons = {
 			"appkey": this.config.appkey,
 			"parent": suite._streamConfigData,
 			"data": _normalizeEntry(suite._itemData),
-			"render": true,
 			"buttonsOrder": undefined,
 			"ready": function() {
-				suite.item = this;
-				self.sequentialAsyncTests([
-					"visibility",
-					"order",
-					"click",
-					"destroy"
-				], "cases");
+				var item = suite.item = this;
+				item.events.subscribe({
+					"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
+					"handler": function() {
+						self.sequentialAsyncTests([
+							"visibility",
+							"order",
+							"click",
+							"destroy"
+						], "cases");
+					}
+				});
+				item.dom.render();
 			}
 		});
 	}
@@ -584,11 +600,17 @@ suite.prototype._runBodyCases = function(cases) {
 			"target": self.config.target,
 			"appkey": self.config.appkey,
 			"parent": suite._streamConfigData,
-			"render": true,
 			"ready": function() {
-				var element = $(".echo-streamserver-controls-stream-item-body", self.config.target);
-				QUnit.equal(element.find(".echo-streamserver-controls-stream-item-text").html(),
-					params.expect, params.description);
+				var item = this;
+				item.events.subscribe({
+					"topic": "Echo.StreamServer.Controls.Stream.Item",
+					"handler": function() {
+						var element = $(".echo-streamserver-controls-stream-item-body", self.config.target);
+						QUnit.equal(element.find(".echo-streamserver-controls-stream-item-text").html(),
+							params.expect, params.description);
+					}
+				});
+				item.dom.render();
 			},
 			"data": _normalizeEntry($.extend(true, {}, suite._itemData, params.data))
 		}, params.config));
