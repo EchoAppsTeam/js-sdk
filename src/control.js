@@ -858,22 +858,6 @@ Echo.Control.prototype._loadPluginScripts = function(callback) {
 	});
 };
 
-/**
- * @method
- * Function used to render elements using renderes functions and templates
- *
- * Called without params the function will start render process for the control.
- * It will sequentially run the corresponding renderer functions and build the DOM structure.
- * Function can also be used for rerendering particular elements (recursively if needed).
- * It can also render templates defined explicitly.
- * @param {Object} [args] Specifies extra rendering params.
- * @param {HTMLElement} [args.target=this.config.get("target")] Specifies the target to append the rendered DOM structure. Defaults to the value defined in the control config.
- * @param {String} [args.template=this.template] Specifies the particular template to be rendered. If defined function will render only the elements from the defined template. Defaults to the main control template.
- * @param {String} [args.name] Specifies the name of the particular element to be rendered.
- * @param {Object} [args.extra] Specifes extra params to be passed to renderer function.
- * @param {Boolean} [args.recursive] Flag to enable recursive rerendering for the given anchor element.
- * @return {HTMLElement} Rendered element.
- */
 Echo.Control.prototype._render = {};
 
 Echo.Control.prototype._render.element = function(args) {

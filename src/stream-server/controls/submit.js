@@ -538,11 +538,6 @@ submit.methods._isPostValid = function() {
 	return valid;
 };
 
-/**
- * @method _prepareEventParams
- * Prepares data for further broadcasting through Echo.Events
- * @return {Object} preformatted data for publishing through Echo.Events mechanics
- */
 submit.methods._prepareEventParams = function(params) {
 	params = params || {};
 	params.data = this.get("data");
