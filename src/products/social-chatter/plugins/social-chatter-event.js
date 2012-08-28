@@ -11,7 +11,6 @@ plugin.config = {
 
 plugin.init = function() {
 	this.component.config.get("target").addClass(this.cssPrefix + "SocialChatterEvent");
-	this.event = new Echo.SocialChatterEvent(this.component.get("data"));
 	this.extendTemplate("insertAfter", "authorName", plugin.templates.main);
 	this.component.addButtonSpec("SocialChatterEvent", this._assembleButton());
 };
@@ -91,6 +90,11 @@ plugin.templates.main = '<div class="{plugin.class:eventContainer}">' +
 	'</div>';
 
 plugin.fields = ["eventName", "vipName", "vipInstructions", "vipPhoto", "eventDescription", "eventStart", "eventEnd"];
+
+plugin.component.renderers.container = function(element) {
+	this.event = new Echo.SocialChatterEvent(this.component.get("data"));
+	return this.parentRenderer("container", arguments);
+};
 
 plugin.renderers.eventBrief = function(element) {
 	return this.get("eventDisplay", "brief") === "full"
