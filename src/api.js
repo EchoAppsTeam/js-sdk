@@ -1,11 +1,10 @@
-/**
- * @class Echo.API
- */
-
 Echo.API = {"Transports": {}, "Request": {}};
 
 var utils = Echo.Utils;
 
+/**
+ * @class Echo.API.Transport
+ */
 Echo.API.Transport = function(config) {
 	this.config = new Echo.Configuration(config, {
 		"data": {},
@@ -40,6 +39,10 @@ Echo.API.Transport.prototype._prepareURL = function() {
 	return this._getScheme() + "//" + this.config.get("uri");
 };
 
+/**
+ * @class Echo.API.Transports.AJAX
+ * @extends Echo.API.Transport
+ */
 Echo.API.Transports.AJAX = function(config) {
 	config = $.extend({
 		"method": "get"
@@ -130,6 +133,10 @@ Echo.API.Transports.AJAX.available = function() {
 	return (!$.browser.msie || $.browser.msie && $.browser.version > 7);
 };
 
+/**
+ * @class Echo.API.Transports.JSONP
+ * @extends Echo.API.Transports.AJAX
+ */
 Echo.API.Transports.JSONP = function(config) {
 	return Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
 };
@@ -192,6 +199,10 @@ Echo.API.Transports.JSONP.available = function() {
 	return true;
 };
 
+/**
+ * @class Echo.API.Transports.WebSocket
+ * @extends Echo.API.Transport
+ */
 Echo.API.Transports.WebSocket = function(config) {
 	return Echo.API.Transports.WebSocket.parent.constructor.apply(this, arguments);
 };
@@ -232,7 +243,7 @@ Echo.API.Transports.WebSocket.available = function() {
 };
 
 /**
- * @class
+ * @class Echo.API.Request
  * Class implementing API requests logic on the transport layer.
  */
 /*

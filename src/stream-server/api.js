@@ -1,13 +1,12 @@
-/**
- * @class Echo.StreamServer.API.Request
- * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/19987923/FrontPage" target="_blank">Echo StreamServer API</a>
- * @extends Echo.API.Request
- */
 if (!Echo.StreamServer) Echo.StreamServer = {};
 
 Echo.StreamServer.API = {};
 
 /**
+ * @class Echo.StreamServer.API.Request
+ * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/19987923/FrontPage" target="_blank">Echo StreamServer API</a>
+ * @extends Echo.API.Request
+ *
  * @constructor
  * Constructor initializing class using configuration data.
  * @param {Object} config Configuration data.
