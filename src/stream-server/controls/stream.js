@@ -187,15 +187,15 @@ stream.renderers.state = function(element) {
 		"count": ' <span class="{class:state-count}">({data:count} {label:new})</span>'
 	};
 	if (label.icon) {
-		element.append(this.substitute(templates.picture));
+		element.append(this.substitute({"template": templates.picture}));
 	}
 	if (label.text) {
-		element.append(this.substitute(templates.message));
+		element.append(this.substitute({"template": templates.message}));
 		if (activitiesCount && this.getState() === "paused") {
-			element.append(this.substitute(
-				templates.count,
-				{"count": activitiesCount}
-			));
+			element.append(this.substitute({
+				"template": templates.count,
+				"data": {"count": activitiesCount}
+			}));
 		}
 	}
 	this.activities.lastState = currentState;
@@ -1360,7 +1360,10 @@ item.renderers._extraField = function(element, extra) {
 			? '<span title="{data:item}">{data:truncatedItem}</span>'
 			: '<span>{data:item}</span>';
 		var truncatedItem = Echo.Utils.htmlTextTruncate(item, limit, "...");
-		acc.push(self.substitute(template, {"item": item, "truncatedItem": truncatedItem}));
+		acc.push(self.substitute({
+			"template": template,
+			"data": {"item": item, "truncatedItem": truncatedItem}
+		}));
 	});
 	return element.prepend(items.sort().join(", "));
 };
@@ -1507,7 +1510,7 @@ item.renderers._button = function(element, extra) {
 		"label": extra.label || "",
 		"name": extra.name
 	};
-	var button = $(this.substitute(template, data));
+	var button = $(this.substitute({"template": template, "data": data}));
 	var clickables = $(".echo-clickable", button);
 	if (!clickables.length) {
 		clickables = button;
@@ -1922,7 +1925,10 @@ item.methods.block = function(label) {
 		"backdrop": $('<div class="' + this.cssPrefix + 'blocker-backdrop"></div>').css({
 			"width": width, "height": height
 		}),
-		"message": $(this.substitute('<div class="{class:blocker-message}">{data:label}</div>', {"label": label})).css({
+		"message": $(this.substitute({
+			"template": '<div class="{class:blocker-message}">{data:label}</div>',
+			"data": {"label": label}
+		})).css({
 			"left": ((parseInt(width) - 200)/2) + 'px',
 			"top": ((parseInt(height) - 20)/2) + 'px'
 		})
@@ -2138,7 +2144,10 @@ item.methods._sortButtons = function() {
 			? '<span class="{class:tag}" title="{data:tag}">{data:truncatedTag}</span>'
 			: '<span class="{class:tag}">{data:tag}</span>';
 		var truncatedTag = tag.substring(0, limits.maxTagLength) + "...";
-		return this.substitute(template, {"tag": tag, "truncatedTag": truncatedTag});
+		return this.substitute({
+			"template": template,
+			"data": {"tag": tag, "truncatedTag": truncatedTag}
+		});
 	};
 
 	var _aggressiveSanitization = function(text, extra) {

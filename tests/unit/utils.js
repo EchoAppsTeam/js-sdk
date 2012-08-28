@@ -224,6 +224,11 @@ suite.prototype.tests.TestDataMethods = {
 			["{key}", "key", undefined], "Checking templateSubstitution regexp with key and empty value");
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("string without template"),
 			null, "Checking templateSubstitution regexp with fake string as parameter");
+		var regexp = new RegExp(Echo.Utils.regexps.templateSubstitution, "g");
+		var found = [].concat(regexp.exec("{key1:value1} {key2:value2}"),
+				      regexp.exec("{key1:value1} {key2:value2}"));
+		QUnit.deepEqual(found, ["{key1:value1}", "key1", "value1", "{key2:value2}", "key2", "value2"],
+				"Checking templateSubstitution regexp with multiple key-value pairs");
 	}
 };
 

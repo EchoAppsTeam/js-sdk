@@ -74,7 +74,7 @@ mediaGallery.renderers.controls = function(element) {
 			controlContainer.addClass(activeControlClass);
 		}
 		element.one("error", function() {
-			itemContainer.empty().append(self.substitute(self.mediaFailedTemplate));
+			itemContainer.empty().append(self.substitute({"template": self.mediaFailedTemplate}));
 			itemContainer.empty().append("Error");
 			showCurrentMedia();
 		}).one("load", function() {
@@ -108,7 +108,10 @@ mediaGallery.methods._normalizeFlashContent = function(element) {
 		parts.path = parts.path || "";
 		parts.fragment = parts.fragment ? "#" + parts.fragment : "";
 		parts.query = query ? "?" + query : "";
-		element.attr("src", this.substitute("{Data:scheme}://{Data:domain}{Data:path}{Data:query}{Data:fragment}", parts));
+		element.attr("src", this.substitute({
+			"template": "{Data:scheme}://{Data:domain}{Data:path}{Data:query}{Data:fragment}",
+			"data": parts
+		}));
 	} else if (tagName == "embed") {
 		var wmode = element.attr("wmode");
 		if (wmode != "opaque" || wmode != "transparent") {

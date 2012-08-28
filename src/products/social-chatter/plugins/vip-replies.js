@@ -42,18 +42,20 @@ plugin.methods._copyAnswer = function(question, answer) {
 	if (!copyTo) return;
 	var title =  question.actor.title || "Guest";
 	var avatar = question.actor.avatar || this.component.user.get("defaultAvatar");
-	var content = this.substitute(
-		'<div class="{plugin.class:special-quest-reply}">' +
-			'<div class="{plugin.class:reply}">{data:answerContent}</div>' +
-			'<div class="{plugin.class:question-quote}">' +
-				'<span class="{plugin.class:author} echo-linkColor">{data:title}</span> asks: ' +
-				'<span class="text">"{data:questionContent}"</span>' +
-			'</div>' +
-		'</div>', {
+	var content = this.substitute({
+		"template": '<div class="{plugin.class:special-quest-reply}">' +
+				'<div class="{plugin.class:reply}">{data:answerContent}</div>' +
+				'<div class="{plugin.class:question-quote}">' +
+					'<span class="{plugin.class:author} echo-linkColor">{data:title}</span> asks: ' +
+					'<span class="text">"{data:questionContent}"</span>' +
+				'</div>' +
+			'</div>',
+		"data": {
 			"answerContent": answer.content,
 			"questionContent": Echo.Utils.stripTags(question.object.content),
 			"title": title
-		});
+		}
+	});
 	this._request({
 		"verbs": ["http://activitystrea.ms/schema/1.0/post"],
 		"targets": [{"id": copyTo.target}],

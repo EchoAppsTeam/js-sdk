@@ -94,7 +94,7 @@ configurator.methods._renderPage = function(page, data) {
 	}
 	this.pageIndexByName[page.name] = ++this.currentPageIndex;
 	var spec = $.extend(true, {}, Echo.Utils.getComponent(page.name).ConfigSpecification);
-	var element = $(this.substitute('<div class="{class:page}"></div>')).hide();
+	var element = $(this.substitute({"template": '<div class="{class:page}"></div>'})).hide();
 	element.append(this._form(spec, data));
 	page.element = element;
 	this.dom.get("pages").append(element);
@@ -104,7 +104,7 @@ configurator.methods._form = function(config, data, depth) {
 	var self = this;
 	data = data || {};
 	depth = depth || 0;
-	var form = $(this.substitute('<div class="{class:form} {class:form-' + depth + '}"></div>'));
+	var form = $(this.substitute({"template": '<div class="{class:form} {class:form-' + depth + '}"></div>'}));
 	$.each(config, function(i, spec) {
 		var type;
 		switch (spec.type) {
@@ -134,7 +134,7 @@ configurator.methods._form = function(config, data, depth) {
 		// XXXX
 		spec.name = spec.title || spec.name;
 		spec.description = spec.description || (spec.name + " " + spec.type);
-		var row = $(self.substitute(self.templates.formRow, spec));
+		var row = $(self.substitute({"template": self.templates.formRow, "data": spec}));
 		if (type === "nestedForm") {
 			row.addClass(self.cssPrefix + "form-row-group");
 		}
@@ -175,7 +175,7 @@ configurator.methods._multiCheckbox = function(element, spec, values) {
 			: $.inArray(v, values) >= 0;
 		var checkbox = $('<input type="checkbox">').attr("checked", checked);
 		group.append(checkbox);
-		group.append(self.substitute('<span class="{class:label}">' + v + '</span>'));
+		group.append(self.substitute({"template": '<span class="{class:label}">' + v + '</span>'}));
 	});
 	element.append(group);
 	return group;

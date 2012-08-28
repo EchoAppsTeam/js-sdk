@@ -487,7 +487,7 @@ SocialChatter.views.EventsList.controls.Stream = {
 	"control": "Echo.StreamServer.Controls.Stream",
 	"config": {
 		"appkey": null,
-		"query": "childrenof:{config:parent.eventsTargetURL} state:SystemFlagged children:0",
+		"query": "childrenof:{config:parent.eventsTargetURL} state:Untouched,ModeratorApproved children:0",
 		"liveUpdatesTimeout": "{config:parent.liveUpdatesTimeout}",
 		"item": {
 			"reTag": false
@@ -544,13 +544,19 @@ SocialChatter.renderers.tabs = function(element) {
 		tabs.add({
 			"id": "PublicEvent",
 			"label": data.eventName || this.labels.get("tabPublicEventLabel")
-		}, $(this.substitute('<div class="{class:{data:name}} tab-pane" id="{data:name}"></div>', {"name": "PublicEvent"})));
+		}, $(this.substitute({
+				"template": '<div class="{class:{data:name}} tab-pane" id="{data:name}"></div>',
+				"data": {"name": "PublicEvent"}
+			})));
 	}
 	if (this.event && this._hasGreenRoomAccess()) {
 		tabs.add({
 			"id": "GreenRoom",
 			"label": this.labels.get("tabGreenRoomLabel")
-		}, $(this.substitute('<div class="{class:{data:name}} tab-pane" id="{data:name}"></div>', {"name": "GreenRoom"})));
+		}, $(this.substitute({
+				"template": '<div class="{class:{data:name}} tab-pane" id="{data:name}"></div>',
+				"data": {"name": "GreenRoom"}
+			})));
 	}
 	tabs.show("EventsList");
 	this.dom.get("EventsList").addClass("active");
@@ -596,7 +602,10 @@ SocialChatter.methods._updateTab = function(config) {
 			"label": config.name == "PublicEvent"
 				? this.event.data.eventName || this.labels.get("tabPublicEventLabel")
 				: this.labels.get("tabGreenRoomLabel")
-		}, $(this.substitute('<div class="{class:{data:name}} tab-pane" id="{data:name}"></div>', config)));
+		}, $(this.substitute({
+				"template": '<div class="{class:{data:name}} tab-pane" id="{data:name}"></div>',
+				"data": config
+			})));
 	}
 	var tabsDomContainer = this.dom.get("tabPanels");
 	config.target = config.target || $("#" + config.name, tabsDomContainer);
@@ -806,9 +815,7 @@ SocialChatter.events = {
 	},
 	"Echo.Control.onDestroy": function() {
 		var self = this;
-		$.each(this.views, function(name) {
-			self.destroyView(name);
-		});
+		this.destroyViews();
 	}
 };
 

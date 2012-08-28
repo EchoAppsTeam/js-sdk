@@ -209,26 +209,28 @@ Echo.Control.prototype.remove = function(key) {
  * Templater function which compiles given template using the provided data.
  *
  * Function can be used widely for html templates processing or any other action requiring string interspersion.
- * @param {String} template (required) Template containing placeholders used for data interspersion.
- * @param {Object} [data] Data used in the template compilation.
- * @param {Boolean} [strict] Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
- * @param {Object} [instructions] Object containing the list of extra instructions to be applied during template compilation.
+ * @param {Object} args (required) Specifies substitution process, contains control parameters.
+ * @param {String} args.template (required) Template containing placeholders used for data interspersion.
+ * @param {Object} [args.data] Data used in the template compilation.
+ * @param {Boolean} [args.strict] Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
+ * @param {Object} [args.instructions] Object containing the list of extra instructions to be applied during template compilation.
  * @return {String} Compiled string value.
  */
-Echo.Control.prototype.substitute = function(template, data, strict, instructions) {
-	instructions = $.extend(this._getSubstitutionInstructions(data), instructions || {});
+Echo.Control.prototype.substitute = function(args) {
+	var instructions = $.extend(this._getSubstitutionInstructions(args.data), args.instructions || {});
 	var regex = Echo.Utils.regexps.templateSubstitution;
+	var template = args.template;
 
 	// checking if we need to execute in a strict mode,
 	// i.e. whether to keep the substitution value type or not
-	if (strict && (new RegExp("^" + regex + "$", "i")).test(template)) {
+	if (args.strict && (new RegExp("^" + regex + "$", "i")).test(template)) {
 		var match = new RegExp(regex, "i").exec(template);
 		if (match && match[1] && instructions[match[1]]) {
 			return instructions[match[1]](match[2]);
 		}
 	}
 
-	//  perform regular string sustitution
+	// perform regular string sustitution
 	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
 		if (!instructions[key]) return match;
 		var result = instructions[key].call(this, value, "");
@@ -646,7 +648,7 @@ Echo.Control.prototype._initializers.css = function() {
 	Echo.Utils.addCSS(this.baseCSS, "control");
 	this.config.get("target").addClass(this.cssClass);
 	if (this._manifest("css")) {
-		Echo.Utils.addCSS(this.substitute(this._manifest("css")), this.name);
+		Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), this.name);
 	}
 };
 
@@ -896,7 +898,10 @@ Echo.Control.prototype._render.template = function(args) {
 Echo.Control.prototype._compileTemplate = function(template, data, transformations) {
 	var control = this;
 	var raw = $.isFunction(template) ? template.call(this) : template;
-	var processed = this.substitute(raw, data || {});
+	var processed = this.substitute({
+		"template": raw,
+		"data": data || {}
+	});
 	if (transformations && transformations.length) {
 		var dom = $("<div/>").html(processed);
 		$.map(transformations, function(transformation) {
@@ -946,7 +951,10 @@ Echo.Control.prototype._domTransformer = function(args) {
 	var html = args.transformation.html;
 	var anchor = "." + this.cssPrefix + args.transformation.anchor;
 	if (html) {
-		content = this.substitute($.isFunction(html) ? html() : html, args.data)
+		content = this.substitute({
+			"template": $.isFunction(html) ? html() : html,
+			"data": args.data
+		});
 	}
 	$(anchor, args.dom)[action](content);
 	return args.dom;

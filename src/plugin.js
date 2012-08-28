@@ -209,7 +209,7 @@ Echo.Plugin.prototype.disable = function(global) {
  */
 Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 	if (html) {
-		html = this.substitute($.isFunction(html) ? html.call(this) : html);
+		html = this.substitute({"template": $.isFunction(html) ? html.call(this) : html});
 	}
 	this.component.extendTemplate.call(this.component, action, anchor, html);
 };
@@ -224,30 +224,37 @@ Echo.Plugin.prototype.parentRenderer = function() {
 
 /**
  * @method
- * Templater function which compiles given template using the plugin internal data.
+ * Templater function which compiles given template using the provided data.
  *
- * @param {String} template (required) Template containing placeholders used for data interspersion.
+ * Function can be used widely for html templates processing or any other action requiring string interspersion.
+ * @param {Object} args (required) Specifies substitution process, contains control parameters.
+ * @param {String} args.template (required) Template containing placeholders used for data interspersion.
+ * @param {Object} [args.data] Data used in the template compilation.
+ * @param {Boolean} [args.strict] Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
+ * @param {Object} [args.instructions] Object containing the list of extra instructions to be applied during template compilation.
  * @return {String} Compiled string value.
  */
-Echo.Plugin.prototype.substitute = function(template, data, strict) {
+Echo.Plugin.prototype.substitute = function(args) {
 	var plugin = this;
-	return plugin.component.substitute(template, data || {}, strict, {
-		"plugin.label": function(key) {
-			return plugin.labels.get(key, "");
-		},
-		"plugin.class": function(key) {
-			return key ? plugin.cssPrefix + key : plugin.cssClass;
-		},
-		"plugin.data": function(key) {
-			return "{self:plugins." + plugin.name + ".data." + key + "}";
-		},
-		"plugin.self": function(key) {
-			return "{self:plugins." + plugin.name + "." + key + "}";
-		},
-		"plugin.config": function(key) {
-			return plugin.config.get(key, "");
+	return plugin.component.substitute($.extend(args, {
+		"instructions": {
+			"plugin.label": function(key) {
+				return plugin.labels.get(key, "");
+			},
+			"plugin.class": function(key) {
+				return key ? plugin.cssPrefix + key : plugin.cssClass;
+			},
+			"plugin.data": function(key) {
+				return "{self:plugins." + plugin.name + ".data." + key + "}";
+			},
+			"plugin.self": function(key) {
+				return "{self:plugins." + plugin.name + "." + key + "}";
+			},
+			"plugin.config": function(key) {
+				return plugin.config.get(key, "");
+			}
 		}
-	});
+	}));
 };
 
 /**
@@ -297,7 +304,7 @@ Echo.Plugin.prototype._initializers = {};
 Echo.Plugin.prototype._initializers.css = function() {
 	if (!this._manifest("css")) return;
 	var parts = [this.component.get("name"), "Plugins", this.name];
-	Echo.Utils.addCSS(this.substitute(this._manifest("css")), parts.join("."));
+	Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), parts.join("."));
 };
 
 Echo.Plugin.prototype._initializers.labels = function() {

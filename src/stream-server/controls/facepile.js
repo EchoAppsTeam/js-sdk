@@ -117,9 +117,12 @@ pile.renderers.actors = function(element) {
 	var action = (item.avatar && !item.text ? "addClass" : "removeClass");
 	element[action](this.cssPrefix + "only-avatars");
 	var wrap = function(text, name) {
-		return self.substitute("<span {data:classAttr}>{data:text}</span>", {
-			"classAttr": name ? 'class="' + self.cssPrefix + name + '"' : '',
-			"text": text
+		return self.substitute({
+			"template": "<span {data:classAttr}>{data:text}</span>",
+			"data": {
+				"classAttr": name ? 'class="' + self.cssPrefix + name + '"' : '',
+				"text": text
+			}
 		});
 	};
 	$.map(this.users.slice(0, this.count.visible), function(user) {

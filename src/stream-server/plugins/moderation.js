@@ -280,7 +280,7 @@ plugin.methods._assembleBanButton = function(action) {
 			isBanned ^ (action === "Ban");
 		return {
 			"name": action,
-			"label": self.substitute(plugin.buttonLabels[isBanned ? "banned" : "unbanned"]),
+			"label": self.substitute({"template": plugin.buttonLabels[isBanned ? "banned" : "unbanned"]}),
 			"visible": visible && item.user.is("admin"),
 			"callback": callback,
 			"once": true
@@ -324,10 +324,13 @@ plugin.methods._assemblePermissionsButton = function(action) {
 				'(<span class="echo-clickable">{data:button}</span>)'
 			: '<span class="echo-clickable">{data:button}</span>'
 		);
-		var label = self.substitute(template, {
-			"role": role,
-			"label": role ? self.labels.get(role + "Role") : "",
-			"button": self.labels.get((self._getNextRole(role) || "user") + "Button")
+		var label = self.substitute({
+			"template": template,
+			"data": {
+				"role": role,
+				"label": role ? self.labels.get(role + "Role") : "",
+				"button": self.labels.get((self._getNextRole(role) || "user") + "Button")
+			}
 		});
 		return {
 			"name": action,

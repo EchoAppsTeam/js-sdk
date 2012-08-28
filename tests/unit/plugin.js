@@ -174,7 +174,10 @@ suite.prototype.cases.basicOperations = function(callback) {
 		// checking "substitute" method
 		$.each(suite.data.substitutions, function(id, substitution) {
 			QUnit.equal(
-				plugin.substitute(substitution[0], undefined, substitution[2]),
+				plugin.substitute({
+					"template": substitution[0],
+					"instructions": substitution[2]
+				}),
 				substitution[1],
 				"Checking \"substitute\" method, pattern #" + (id + 1));
 		});

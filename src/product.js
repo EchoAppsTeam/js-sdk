@@ -38,7 +38,10 @@ Echo.ProductView.prototype._normalizeControlConfig = function(config) {
 	});
 	var normalize = function(value) {
 		if (typeof value == "string") {
-			return self.substitute(value, undefined, true);
+			return self.substitute({
+				"template": value,
+				"strict": true
+			});
 		} else if ($.isPlainObject(value)) {
 			return Echo.Utils.foldl({}, value, function(value, acc, key) {
 				acc[key] = normalize(value);
@@ -190,6 +193,13 @@ Echo.Product.prototype.initView = function(name, config) {
 	this.views = this.views || {};
 	this.views[name] = new View(config);
 	return this.views[name];
+};
+
+Echo.Product.prototype.destroyViews = function() {
+	var self = this;
+	$.each(this.get("views"), function(name) {
+		self.destroyView(name);
+	});
 };
 
 Echo.Product.prototype.destroyView = function(name) {

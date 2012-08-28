@@ -140,7 +140,10 @@ suite.prototype.cases.basicOperations = function(callback) {
 		// checking "substitute" method in a regular mode
 		$.each(suite.data.substitutions, function(id, substitution) {
 			QUnit.equal(
-				self.substitute(substitution[0], undefined, false, substitution[2]),
+				self.substitute({
+					"template": substitution[0],
+					"instructions": substitution[2]
+				}),
 				substitution[1],
 				"Checking \"substitute\" method in a regular mode, pattern #" + (id + 1));
 		});
@@ -148,7 +151,10 @@ suite.prototype.cases.basicOperations = function(callback) {
 		// checking "substitute" method in a strict mode
 		$.each(suite.data.strictSubstitutions, function(id, substitution) {
 			QUnit[substitution[2] || "equal"](
-				self.substitute(substitution[0], undefined, true),
+				self.substitute({
+					"template": substitution[0],
+					"strict": true
+				}),
 				substitution[1],
 				"Checking \"substitute\" method in a strict mode, pattern #" + (id + 1));
 		});
