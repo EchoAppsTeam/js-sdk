@@ -678,8 +678,41 @@ Echo.Control.prototype._initializers.dom = function() {
 			this.elements[name].remove();
 			delete this.elements[name];
 		},
-		"render": function() {
-			return self._render.apply(self, arguments);
+		"render": function(args) {
+
+			// render the whole control when no extra config was passed
+			if (!args) {
+				self.dom.clear();
+				var topic = this.rendered ? "onRerender" : "onRender";
+				var dom = self._render.template.call(self, {
+					"template": self.template,
+					"data": self.data
+				});
+				self.config.get("target").empty().append(dom);
+				this.rendered = true;
+				self.events.publish({"topic": topic});
+				return dom;
+			}
+
+			args = args || {};
+			args.data = args.data || self.data;
+			args.template = args.template || self.template;
+
+			// render specific element (recursively if specified)
+			if (args.name) {
+				var processor = args.recursive ? "recursive" : "element";
+				return self._render[processor].call(self, args);
+			}
+
+			// render template
+			if (args.template) {
+				var dom = self._render.template.call(self, args);
+				if (args.target) {
+					args.target.empty().append(dom);
+				}
+				return dom;
+			}
+
 		}
 	};
 };
@@ -842,57 +875,39 @@ Echo.Control.prototype._loadPluginScripts = function(callback) {
  * @param {Boolean} [args.recursive] Flag to enable recursive rerendering for the given anchor element.
  * @return {HTMLElement} Rendered element.
  */
-Echo.Control.prototype._render = function(args) {
-	args = args || {};
-	var data = args.data || this.data;
-	var template = args.template || this.template;
-	var stealth = !!args.target;
+Echo.Control.prototype._render = {};
+
+Echo.Control.prototype._render.element = function(args) {
 	var target = args.target ||
 		(args.name && this.dom.get(args.name)) ||
 		this.config.get("target");
 
-	// render specific element
-	if (args.name && !args.recursive) {
-		if (this._hasRenderer(args.name)) {
-			var renderer = this._getRenderer(args.name);
-			var iteration = 0;
-			renderer.next = function() {
-				iteration++;
-				return renderer.functions.length > iteration
-					? renderer.functions[iteration].apply(this, arguments)
-					: target;
-			};
-			return renderer.functions[iteration].call(this, target, args.extra);
-		}
-		return target;
-	}
+	if (!this._hasRenderer(args.name)) return target;
 
-	// render element including its content recursively
-	if (args.name && args.recursive) {
-		var oldNode = this.dom.get(args.name);
-		template = this._compileTemplate(template, data, this.extension.template);
-		template = $("." + this.cssPrefix + args.name, $(template));
-		this._applyRenderers(template);
-		var newNode = this.dom.get(args.name);
-		oldNode.replaceWith(newNode);
-		return newNode;
-	}
+	var renderer = this._getRenderer(args.name);
+	var iteration = 0;
+	renderer.next = function() {
+		iteration++;
+		return renderer.functions.length > iteration
+			? renderer.functions[iteration].apply(this, arguments)
+			: target;
+	};
+	return renderer.functions[iteration].call(this, target, args.extra);
+};
 
-	var rendered;
-	if (!stealth) {
-		// cleanup dom strcuture when we render the whole control
-		this.dom.clear();
-		rendered = this.dom.rendered;
-	}
-	var dom = this._applyRenderers(
-		this._compileTemplate(template, data, this.extension.template)
-	);
-	target.empty().append(dom);
-	if (!stealth) {
-		this.dom.rendered = true;
-		this.events.publish({"topic": rendered ? "onRerender" : "onRender"});
-	}
-	return dom;
+Echo.Control.prototype._render.recursive = function(args) {
+	var oldNode = this.dom.get(args.name);
+	var template = this._compileTemplate(args.template, args.data, this.extension.template);
+	template = $("." + this.cssPrefix + args.name, $(template));
+	this._applyRenderers(template);
+	var newNode = this.dom.get(args.name);
+	oldNode.replaceWith(newNode);
+	return newNode;
+};
+
+Echo.Control.prototype._render.template = function(args) {
+	var template = this._compileTemplate(args.template, args.data, this.extension.template);
+	return this._applyRenderers(template);
 };
 
 Echo.Control.prototype._compileTemplate = function(template, data, transformations) {
