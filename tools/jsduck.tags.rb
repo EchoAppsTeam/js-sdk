@@ -14,19 +14,19 @@ class EchoLocalizationTag < JsDuck::MetaTag
 		@name = "echo_label"
 		@multiline = false
 		@boolean = true
-		@signature = {:long => "localization label", :short => "L10N"}
+		@signature = {:long => "localization label", :short => "label"}
 	end
 end
 
 class EchoEventTag < JsDuck::MetaTag
 	def initialize
 		@name = "echo_event"
-		@multiline = false
+		@multiline = true
 		@position = :top
 	end
 
 	def to_value(contents)
-		contents[0] =~ /\A((?:\w+\.?)+) (.*)/m
+		contents[0] =~ /\A((?:\w+\.?)+)\s+(.*)/m
 		{:name => $1, :description => $2}
 	end
 
