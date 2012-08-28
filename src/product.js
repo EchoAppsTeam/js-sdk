@@ -57,8 +57,8 @@ Echo.ProductView.prototype._normalizeControlConfig = function(config) {
 	return normalize(config);
 };
 
-Echo.ProductView.prototype._initControl = function(controlSpec, controlConfig) {
-	this._destroyControl(controlSpec.name);
+Echo.ProductView.prototype.initControl = function(name, controlConfig) {
+	this.destroyControl(name);
 
 	// we need to copy apps config to avoid changes in the common config
 	var parentConfig = this.config.getAsHash();
@@ -66,13 +66,13 @@ Echo.ProductView.prototype._initControl = function(controlSpec, controlConfig) {
 	controlConfig = this._normalizeControlConfig(
 		$.extend(true, 
 			{},
-			this._manifest("controls")[controlSpec.name].config,
+			this._manifest("controls")[name].config,
 			controlConfig
 		)
 	);
-	var Control = Echo.Utils.getComponent(this._manifest("controls")[controlSpec.name].control);
-	this.controls[controlSpec.name] = new Control(controlConfig);
-	return this.controls[controlSpec.name];
+	var Control = Echo.Utils.getComponent(this._manifest("controls")[name].control);
+	this.controls[name] = new Control(controlConfig);
+	return this.controls[name];
 };
 
 Echo.ProductView.prototype._updateControlPlugins = function(plugins, updatePlugins) {
@@ -104,13 +104,13 @@ Echo.ProductView.prototype._updateControlPlugins = function(plugins, updatePlugi
 	});
 };
 
-Echo.ProductView.prototype._destroyControl = function(name) {
+Echo.ProductView.prototype.destroyControl = function(name) {
 	var control = this.get("controls." + name);
 	control && control.destroy();
 	delete this.controls[name];
 };
 
-Echo.ProductView.prototype._destroyControls = function(exceptions) {
+Echo.ProductView.prototype.destroyControls = function(exceptions) {
 	var self = this;
 	exceptions = exceptions || [];
 	var inExceptionList = function(name) {
@@ -125,7 +125,7 @@ Echo.ProductView.prototype._destroyControls = function(exceptions) {
 	};
 	$.each(this.controls, function(name) {
 		if (!inExceptionList(name)) {
-			self._destroyControl(name);
+			self.destroyControl(name);
 		}
 	});
 };
@@ -188,7 +188,6 @@ Echo.Product.prototype.initView = function(name, config) {
 	var View = this.getView(name);
 	config = config || {};
 	config.parent = config.parent || this.config.getAsHash();
-	// FIXME
 	config.appkey = config.parent.appkey;
 	this.views = this.views || {};
 	this.views[name] = new View(config);
@@ -205,10 +204,15 @@ Echo.Product.prototype.destroyViews = function() {
 Echo.Product.prototype.destroyView = function(name) {
 	var view = this.get("views." + name);
 	if (view && view.controls) {
-		view._destroyControls();
+		view.destroyControls();
 		view.destroy();
 		delete this.views[name];
 	}
+};
+
+Echo.Product.prototype.assemble = function(viewName) {
+	var args = Array.prototype.slice.call(arguments, 1);
+	return this._manifest("assemblers")[viewName].apply(this, args);
 };
 
 (function() {

@@ -522,7 +522,7 @@ SocialChatter.templates.main =
 	'</div>';
 
 SocialChatter.renderers.authContainer = function(element) {
-	this._assembler("Auth", element);
+	this.assemble("Auth", element);
 	return element;
 };
 
@@ -535,7 +535,7 @@ SocialChatter.renderers.tabs = function(element) {
 			var id = selector.replace(/^#/, "");
 			var panel = self.dom.get(id) || $(selector, self.dom.get("tabPanels"));
 			if (!self.views[id]) {
-				self._assembler(id, panel);
+				self.assemble(id, panel);
 			}
 		}
 	});
@@ -611,7 +611,7 @@ SocialChatter.methods._updateTab = function(config) {
 	config.target = config.target || $("#" + config.name, tabsDomContainer);
 	if (this._manifest("assemblers")[config.name]) {
 		$(config.target).empty();
-		this._assembler(config.name, config.target);
+		this.assemble(config.name, config.target);
 	}
 };
 
@@ -644,11 +644,6 @@ SocialChatter.methods._pickRelevantEvent = function() {
 	return relevantEvent;
 };
 
-SocialChatter.methods._assembler = function(name) {
-	var args = Array.prototype.slice.call(arguments, 1);
-	return this._manifest("assemblers")[name].apply(this, args);
-};
-
 SocialChatter.assemblers.Auth = function(target) {
 	if (!this.config.get("identityManager")) {
 		target.hide();
@@ -656,12 +651,9 @@ SocialChatter.assemblers.Auth = function(target) {
 	}
 	var view = this.initView("Main", {
 		"user": this.user,
-		"target": target,
-		"type": "auth"
+		"target": target
 	});
-	view._initControl({
-		"name": "Auth"
-	}, {
+	view.initControl("Auth", {
 		"target": view.dom.get("auth")
 	});
 };
@@ -671,13 +663,10 @@ SocialChatter.assemblers.EventsList = function(target) {
 	var view = this.initView("EventsList", {
 		"user": this.user,
 		"event": this.event,
-		"target": target,
-		"type": "eventsList"
+		"target": target
 	});
 	if (this.user.is("admin")) {
-		var submit = view._initControl({
-			"name": "Submit"
-		}, {
+		var submit = view.initControl("Submit", {
 			"target": view.dom.get("eventSubmit")
 		});
 		submit.events.subscribe({
@@ -687,9 +676,7 @@ SocialChatter.assemblers.EventsList = function(target) {
 			}
 		});
 	}
-	var stream = view._initControl({
-		"name": "Stream"
-	}, {
+	var stream = view.initControl("Stream", {
 		"target": view.dom.get("eventsStream")
 	});
 	stream.events.subscribe({
@@ -739,8 +726,7 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 		"user": this.user,
 		"data": data,
 		"event": this.event,
-		"target": target,
-		"type": "event"
+		"target": target
 	});
 
 	// setting tab title
@@ -749,14 +735,10 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 	if (!this.user.is("logged") || this.event.getStatus() == "upcoming") return;
 
 	if (this.event.onAir()) 
-		view._initControl({
-			"name": "Submit"
-		}, {
+		view.initControl("Submit", {
 			"target": view.dom.get("publicSubmit")
 		});
-	view._initControl({
-		"name": "Stream"
-	}, {
+	view.initControl("Stream", {
 		"target": view.dom.get("publicStream"),
 		"plugins": view._updateControlPlugins(
 			this._manifest("views").PublicEvent.controls.Stream.config.plugins,
@@ -769,9 +751,7 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 			}]
 		)
 	});
-	view._initControl({
-		"name": "VIPStream"
-	}, {
+	view.initControl("VIPStream", {
 		"target": view.dom.get("vipStream"),
 		"plugins": view._updateControlPlugins(
 			this._manifest("views").PublicEvent.controls.VIPStream.config.plugins,
@@ -790,12 +770,9 @@ SocialChatter.assemblers.GreenRoom = function(target) {
 	var view = this.initView("GreenRoom", {
 		"user": this.user,
 		"event": this.event,
-		"target": target,
-		"type": "greenRoom"
+		"target": target
 	});
-	view._initControl({
-		"name": "Stream"
-	}, {
+	view.initControl("Stream", {
 		"target": view.dom.get("vipStream")
 	});
 	var instrustionsContainer = view.dom.get("vipInstructions");
