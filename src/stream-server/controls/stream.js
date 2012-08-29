@@ -267,10 +267,8 @@ stream.methods._requestChildrenItems = function(unique) {
 		},
 		"onData": function(data) {
 			var items = {};
-			if (!data.hasMoreChildren || data.hasMoreChildren === "false") {
-				item.set("data.hasMoreChildren", false);
-			}
 			item.set("data.nextPageAfter", data.nextPageAfter);
+			item.set("data.hasMoreChildren", data.hasMoreChildren);
 			data.entries = self._actualizeChildrenList(item, data.entries);
 			self.events.publish({
 				"topic": "onDataReceive",
@@ -297,7 +295,7 @@ stream.methods._requestChildrenItems = function(unique) {
 						children.push(child);
 					}
 				});
-				self._placeChildrenItems(item, children);
+				self._placeChildItems(item, children);
 			});
 		}
 	});
@@ -356,9 +354,10 @@ stream.methods._requestMoreItems = function(element) {
 				});
 			},
 			"onError": function(data, options) {
-				options.target = element;
-				options.request = self.moreRequest;
-				self.showError(data, options);
+				self.showError(data, $.extend(options, {
+					"target": element,
+					"request": self.moreRequest
+				}));
 			},
 			"onData": function(data) {
 				self._handleInitialResponse(data, function(data) {
@@ -367,8 +366,9 @@ stream.methods._requestMoreItems = function(element) {
 						self.dom.render({"name": "body"});
 						self.dom.render({"name": "more"});
 					} else {
-						// TODO: employ showMessage function here
-						element.html(self.labels.get("emptyStream")).delay(1000).fadeOut(1000);
+						element.html(self.labels.get("emptyStream"))
+							.delay(1000)
+							.fadeOut(1000);
 					}
 				});
 			}
@@ -376,8 +376,9 @@ stream.methods._requestMoreItems = function(element) {
 	}
 	this.moreRequest.send({
 		"data": {
-			"q": this.config.get("query") + " pageAfter:\"" + (this.nextPageAfter || "0") + "\"",
-			"appkey": self.config.get("appkey")
+			"q": this.config.get("query") + " pageAfter:" +
+					"\"" + (this.get("nextPageAfter", "0")) + "\"",
+			"appkey": this.config.get("appkey")
 		}
 	});
 };
@@ -416,12 +417,14 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 					var satisfies = item.isRoot()
 						? self._withinVisibleFrame(item)
 						: self._withinVisibleChildrenFrame(item);
+
 					// do not filter out items from the current user
 					// they should be displayed in a special container
 					if (!satisfies && !item.isRoot() &&
 						self.user.has("identity", item.data.actor.id)) {
 							item.set("byCurrentUser", true);
 					};
+
 					if (satisfies || item.get("byCurrentUser")) {
 						self.events.publish({
 							"topic": "Item.onReceive",
@@ -449,27 +452,31 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 stream.methods._actualizeChildrenList = function(parent, entries) {
 	var self = this;
 	return $.map(entries, function(entry) {
-		// we should change entry conversationID in accordance with
-		// conversationID of the root item
+
+		// we should change entry conversationID
+		// according to the root item conversationID
 		entry.targets = $.map(entry.targets, function(target) {
 			target.conversationID = parent.get("data.target.conversationID");
 			return target;
 		});
+
 		entry = self._normalizeEntry(entry);
 		var item = self.items[entry.unique];
+
 		// drop item from items list if the item already exists
 		// in the tree, which means that it was posted by the current user
 		// and arrived as a live update
 		if (item && item.get("byCurrentUser")) {
 			self._applyStructureUpdates("delete", item);
 		}
+
 		return entry;
 	});
 };
 
 stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 	var self = this;
-	var wrapper = $('<div class="' + this.cssPrefix + 'children-wrapper"></div>');
+	var wrapper = $('<div class="' + this.get("cssPrefix") + 'children-wrapper"></div>');
 	var getIdx = function(item) {
 		return self._getItemListIndex(item, parent.get("children"));
 	};
@@ -484,7 +491,8 @@ stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 };
 
 stream.methods._extractPresentationConfig = function(data) {
-	return Echo.Utils.foldl({}, ["sortOrder", "itemsPerPage", "safeHTML"], function(key, acc) {
+	var keys = ["sortOrder", "itemsPerPage", "safeHTML"];
+	return Echo.Utils.foldl({}, keys, function(key, acc) {
 		if (typeof data[key] !== "undefined") {
 			acc[key] = data[key];
 		}
@@ -493,23 +501,18 @@ stream.methods._extractPresentationConfig = function(data) {
 
 stream.methods._extractTimeframeConfig = function(data) {
 	var getComparator = function(value) {
-		var m = value.match(/^(<|>)(.*)$/);
-		var op = m[1];
-		var v = m[2].match(/^'([0-9]+) seconds ago'$/);
-		var getTS = v
-			? function() { return Math.floor((new Date()).getTime() / 1000) - v[1]; }
-			: function() { return m[2]; };
-		var f;
-		if (op == '<') {
-			f = function(ts) {
-				return ts < getTS()
-			}
-		} else if (op == '>') {
-			f = function(ts) {
-				return ts > getTS()
-			}
+		var match = value.match(/^(<|>)(.*)$/);
+		var operation = match[1];
+		var value = match[2].match(/^'([0-9]+) seconds ago'$/);
+		var getTS = value
+			? function() { return Math.floor((new Date()).getTime() / 1000) - value[1]; }
+			: function() { return match[2]; };
+		if (operation === '<') {
+			return function(ts) { return ts < getTS(); }
 		}
-		return f;
+		if (operation === '>') {
+			return function(ts) { return ts > getTS(); }
+		}
 	};
 	var timeframe = Echo.Utils.foldl([], ["before", "after"], function(key, acc) {
 		if (!data[key]) return;
@@ -542,17 +545,19 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 	var additionalItems = parseInt(this.config.get("children.additionalItemsPerPage"));
 	var pageAfter = item.getNextPageAfter();
 	var filter = this.config.get("children.filter");
-	var filterQuery = !filter || filter == "()" ? "" : filter + " ";
+	var filterQuery = !filter || filter === "()" ? "" : filter + " ";
 	return filterQuery + Echo.Utils.foldl("", {
-		"childrenof": item.data.object.id,
+		"childrenof": item.get("data.object.id"),
 		"children": depth,
-		"childrenItemsPerPage": depth ? parseInt(this.config.get("children.itemsPerPage")) : 0,
+		"childrenItemsPerPage": depth
+			? parseInt(this.config.get("children.itemsPerPage"))
+			: 0,
 		"itemsPerPage": additionalItems,
 		"sortOrder": this.config.get("children.sortOrder"),
 		"childrenSortOrder": this.config.get("children.sortOrder"),
 		"pageAfter": pageAfter ? '"' + (pageAfter || 0) + '"' : undefined
 	}, function(value, acc, predicate) {
-		return acc += (typeof value != "undefined"
+		return acc += (typeof value !== "undefined"
 			? predicate + ":" + value + " " 
 			: ""
 		); 
@@ -564,20 +569,18 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	this.config.get("target").show();
 	this.nextSince = data.nextSince || 0;
 	this.nextPageAfter = data.nextPageAfter;
+
 	var presentation = this._extractPresentationConfig(data);
 	presentation.itemsPerPage = +presentation.itemsPerPage;
 	this.config.extend(presentation);
+
+	data.entries = data.entries || [];
+
 	data.children.itemsPerPage = +data.children.itemsPerPage;
 	data.children.maxDepth = +data.children.maxDepth;
-	this.config.set(
-		"children",
-		$.extend(
-			this.config.get("children"),
-			data.children
-		)
-	);
+	this.config.set("children", $.extend(this.config.get("children"), data.children));
+
 	this.config.extend(this._extractTimeframeConfig(data));
-	data.entries = data.entries || [];
 	this.events.publish({
 		"topic": "onDataReceive",
 		"data": {
@@ -600,7 +603,6 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	Echo.Utils.parallelCall(actions, function() {
 		$.map(data.entries, function(entry) {
 			var item = items[entry.unique];
-			// avoiding problem when children can go before parents
 			self._applyStructureUpdates("add", item);
 			if (item.isRoot()) {
 				self._addItemToList(roots, item, sortOrder);
@@ -1014,7 +1016,7 @@ stream.methods._placeRootItem = function(item) {
 	});
 };
 
-stream.methods._placeChildrenItems = function(parent, children) {
+stream.methods._placeChildItems = function(parent, children) {
 	var self = this;
 	var itemsWrapper = this._createChildrenItemsDomWrapper(children, parent);
 	// we should calculate index of the sibling item for the responsed items
