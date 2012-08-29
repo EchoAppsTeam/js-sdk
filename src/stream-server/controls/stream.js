@@ -8,17 +8,14 @@
  */
 var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 
-stream.vars = {
-	"activities": {
-		"queue": [],
-		"state": undefined,
-		"lastState": "", // live0 | pausedN
-		"animations": 0
-	},
-	"hasInitialData": false,
-	"items": {},   // items by unique key hash
-	"threads": [], // items tree
-	"lastRequest": undefined
+stream.init = function() {
+	var self = this;
+	this._recalcEffectsTimeouts();
+	if (this.config.get("data")) {
+		this._handleInitialResponse(this.config.get("data"));
+	} else {
+		this._requestInitialItems();
+	}
 };
 
 stream.config = {
@@ -61,6 +58,19 @@ stream.config.normalizer = {
 	}
 };
 
+stream.vars = {
+	"activities": {
+		"queue": [],
+		"state": undefined,
+		"lastState": "", // live0 | pausedN
+		"animations": 0
+	},
+	"hasInitialData": false,
+	"items": {},   // items by unique key hash
+	"threads": [], // items tree
+	"lastRequest": undefined
+};
+
 stream.labels = {
 	"guest": "Guest",
 	"live": "Live",
@@ -68,16 +78,6 @@ stream.labels = {
 	"more": "More",
 	"emptyStream": "No items at this time...",
 	"new": "new"
-};
-
-stream.init = function() {
-	var self = this;
-	this._recalcEffectsTimeouts();
-	if (this.config.get("data")) {
-		this._handleInitialResponse(this.config.get("data"));
-	} else {
-		this._requestInitialItems();
-	}
 };
 
 stream.events = {
@@ -707,10 +707,10 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 	var handler = function(operation) {
 		switch (operation) {
 			case "add":
-				// if we trying to add already existing item
-				// and it was not due to item moving we should replace it
+				// if we are trying to add an item which already exists,
+				// we should change the operation to "replace"
 				var _item = self.items[item.get("data.unique")];
-				if (_item && _item.dom.rendered && options.priority != "high") {
+				if (_item && _item.dom.rendered() && options.priority != "high") {
 					self._applySpotUpdates("replace", item, {"priority": "highest"});
 					return;
 				}
@@ -720,7 +720,7 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 					self._placeRootItem(item);
 				} else {
 					var parent = self._getParentItem(item);
-					if (parent && parent.dom.rendered) {
+					if (parent && parent.dom.rendered()) {
 						parent.dom.render({"name": "container"});
 						parent.dom.render({"name": "children"});
 						parent.dom.render({"name": "childrenByCurrentActorLive"});
@@ -753,7 +753,7 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 						self._applySpotUpdates("add", item, {"priority": "high"});
 					}
 				}
-				if (item && item.dom.rendered) {
+				if (item && item.dom.rendered()) {
 					item.dom.render({"name": "container", "recursive": true});
 					item.events.publish({"topic": "onRerender"});
 				}
@@ -1454,10 +1454,8 @@ item.renderers._childrenContainer = function(element, config) {
 	});
 	$.map(this.children, function(child) {
 		if (config && config.filter && !config.filter(child)) return;
-		// FIXME: temporarily disabled, we need to check rendered state in the other way
-		var initialRendering = true;//!child.dom;
 		element.append(child.config.get("target"));
-		if (initialRendering && !child.added) child.dom.render();
+		if (!child.dom.rendered() && !child.added) child.dom.render();
 		if (child.deleted) {
 			self.events.publish({
 				"topic": "onDelete",

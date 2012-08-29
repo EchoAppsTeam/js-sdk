@@ -698,36 +698,42 @@ Echo.Control.prototype._initializers.renderers = function() {
 Echo.Control.prototype._initializers.dom = function() {
 	var self = this;
 	this.dom = {
-		"rendered": false,
-		"elements": {},
+		// private fields
+		"_rendered": false,
+		"_elements": {},
+
+		// public functions
 		"clear": function() {
-			this.elements = {};
+			this._elements = {};
 		},
 		"set": function(name, element) {
-			this.elements[self.cssPrefix + name] = $(element);
+			this._elements[self.cssPrefix + name] = $(element);
 		},
 		"get": function(name, ignorePrefix) {
-			return this.elements[(ignorePrefix ? "" : self.cssPrefix) + name];
+			return this._elements[(ignorePrefix ? "" : self.cssPrefix) + name];
 		},
 		"remove": function(element) {
 			var name = typeof element === "string"
 				? self.cssPrefix + element
 				: element.echo.name;
-			this.elements[name].remove();
-			delete this.elements[name];
+			this._elements[name].remove();
+			delete this._elements[name];
+		},
+		"rendered": function() {
+			return this._rendered;
 		},
 		"render": function(args) {
 
 			// render the whole control when no extra config was passed
 			if (!args) {
 				self.dom.clear();
-				var topic = this.rendered ? "onRerender" : "onRender";
+				var topic = this.rendered() ? "onRerender" : "onRender";
 				var dom = self._render.template.call(self, {
 					"template": self.template,
 					"data": self.data
 				});
 				self.config.get("target").empty().append(dom);
-				this.rendered = true;
+				this._rendered = true;
 				self.events.publish({"topic": topic});
 				return dom;
 			}
