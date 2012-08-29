@@ -56,7 +56,7 @@ Echo.ProductView.prototype._normalizeControlConfig = function(config) {
 
 Echo.ProductView.prototype.initControl = function(name, controlConfig) {
 	this.destroyControl(name);
-
+	controlConfig = controlConfig || {};
 	// we need to copy apps config to avoid changes in the common config
 	var parentConfig = this.config.getAsHash();
 	controlConfig.parent = controlConfig.parent || parentConfig;
@@ -113,7 +113,7 @@ Echo.ProductView.prototype.destroyControls = function(exceptions) {
 	var inExceptionList = function(name) {
 		var inList = false;
 		$.each(exceptions, function(id, exception) {
-			if (exception.name == name) {
+			if (exception == name) {
 				inList = true;
 				return false; // break
 			}
