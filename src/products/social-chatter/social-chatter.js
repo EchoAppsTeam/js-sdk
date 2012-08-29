@@ -133,24 +133,58 @@ if (Echo.Utils.isComponentDefined("Echo.Products.SocialChatter")) return;
 var SocialChatter = Echo.Product.manifest("Echo.Products.SocialChatter", ["Main", "PublicEvent", "GreenRoom", "EventsList"]);
 
 SocialChatter.dependencies = [
-	{"loaded": function() { return false; },"url": "../../../sdk/third-party/bootstrap/css/bootstrap.min.css"},
-	{"loaded": function() { return false; },"url": "../../../sdk/third-party/bootstrap/css/bootstrap-responsive.min.css"},
-	{"loaded": function() { return false; },"url": "../../../sdk/third-party/bootstrap/css/datepicker.css"},
-	{"loaded": function() { return false; },"url": "../../../sdk/third-party/bootstrap/css/timepicker.css"},
+	{"url": "../../../sdk/third-party/bootstrap/css/bootstrap.min.css"},
+	{"url": "../../../sdk/third-party/bootstrap/css/bootstrap-responsive.min.css"},
+	{"url": "../../../sdk/third-party/bootstrap/css/datepicker.css"},
+	{"url": "../../../sdk/third-party/bootstrap/css/timepicker.css"},
 
-	{"loaded": function() { return false; }, "url": "../../../sdk/third-party/bootstrap/bootstrap-datepicker.js"},
-	{"loaded": function() { return false; }, "url": "../../../sdk/third-party/bootstrap/bootstrap-timepicker.js"},
-	{"loaded": function() { return false; }, "url": "../../../sdk/products/social-chatter/countdown/jquery.countdown.js"} ,
-	{"loaded": function() { return false; },"url": "../../../sdk/stream-server.pack.js"},
-	{"loaded": function() { return false; },"url": "../../../sdk/identity-server.pack.js"},
-	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/item-conditional-css-classes.js"},
-	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/social-chatter-event.js"},
-	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/submit-countdown-event.js"},
-	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/submit-textarea-auto-resize.js"},
-	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/user-metadata-manager.js"},
-	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/vip-replies.js"},
-	{"loaded": function() { return false; },"url": "../../../sdk/third-party/bootstrap/bootstrap-tab.js"},
+	{"loaded": function() {
+		return false;
+	}, "url": "../../../sdk/stream-server.pack.js"},
 
+	{"loaded": function() {
+		return false;
+	}, "url": "../../../sdk/identity-server.pack.js"},
+
+	{"loaded": function() {
+		return !!$.fn.datepicker;
+	}, "url": "../../../sdk/third-party/bootstrap/bootstrap-datepicker.js"},
+
+	{"loaded": function() {
+		return !!$.fn.timepicker;
+	}, "url": "../../../sdk/third-party/bootstrap/bootstrap-timepicker.js"},
+
+	{"loaded": function() {
+		return !!$.fn.tab;
+	}, "url": "../../../sdk/third-party/bootstrap/bootstrap-tab.js"},
+
+	{"loaded": function() {
+		return !!$.fn.countdown;
+	}, "url": "../../../sdk/products/social-chatter/countdown/jquery.countdown.js"} ,
+
+	{"loaded": function() {
+		return false;
+	}, "url": "../../../sdk/products/social-chatter/plugins/item-conditional-css-classes.js"},
+
+	{"loaded": function() {
+		return false;
+	}, "url": "../../../sdk/products/social-chatter/plugins/social-chatter-event.js"},
+
+	{"loaded": function() {
+		return false;
+	}, "url": "../../../sdk/products/social-chatter/plugins/submit-countdown-event.js"},
+
+	{"loaded": function() {
+		return false;
+	}, "url": "../../../sdk/products/social-chatter/plugins/submit-textarea-auto-resize.js"},
+
+	{"loaded": function() {
+		return false;
+	}, "url": "../../../sdk/products/social-chatter/plugins/user-metadata-manager.js"},
+
+	{"loaded": function() {
+		return false;
+	}, "url": "../../../sdk/products/social-chatter/plugins/vip-replies.js"},
 ];
 
 SocialChatter.labels = {
