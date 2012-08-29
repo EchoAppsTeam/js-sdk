@@ -97,7 +97,7 @@ Echo.Control.manifest = function(name) {
  * + "after"
  * + "before"
  */
-Echo.Control.addInitializer = function(klass, definition, rule) {
+Echo.Control.addInitializer = function(klass, schema, rule) {
 	rule = rule || {};
 	var list = klass.prototype._initializers.list.slice(0);
 	var hasRule = !!(rule.after || rule.before);
@@ -114,11 +114,11 @@ Echo.Control.addInitializer = function(klass, definition, rule) {
 	var index = hasRule
 		? function(_index) {
 			return ~_index
-				? (!_index ? 0 : rule.after ? ++_index : --_index)
+				? (!_index && rule.before ? 0 : rule.after ? ++_index : --_index)
 				: _index;
 		}(getInitializerIndex(rule.after || rule.before))
 		: list.length;
-	list.splice(index, 0, definition);
+	list.splice(index, 0, schema);
 	klass.prototype._initializers = $.extend({}, klass.prototype._initializers);
 	klass.prototype._initializers.list = list;
 };
