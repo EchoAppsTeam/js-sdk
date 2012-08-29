@@ -83,28 +83,30 @@ stream.labels = {
 stream.events = {
 	"Echo.StreamServer.Controls.Stream.Item.onAdd": function(topic, data) {
 		var self = this;
-		data.item.config.get("target").hide();
+		var item = this.items[data.item.data.unique];
+		item.config.get("target").hide();
 		this._queueActivity({
 			"action": "animation",
-			"item": data.item,
+			"item": item,
 			"priority": "highest",
 			"handler": function() {
-				data.item.dom.render();
-				data.item.set("added", false);
-				self._addItemSpotUpdate(data.item);
+				item.dom.render();
+				item.set("added", false);
+				self._animateSpotUpdate("add", item, data.config);
 			}
 		});
 		return {"stop": ["bubble"]};
 	},
 	"Echo.StreamServer.Controls.Stream.Item.onDelete": function(topic, data) {
 		var self = this;
+		var item = this.items[data.item.data.unique];
 		this._queueActivity({
 			"action": "animation",
-			"item": data.item,
+			"item": item,
 			"priority": "highest",
 			"handler": function() {
-				data.item.set("deleted", false);
-				self._deleteItemSpotUpdate(data.item, data.config);
+				item.set("deleted", false);
+				self._animateSpotUpdate("delete", item, data.config);
 			}
 		});
 		return {"stop": ["bubble"]};
@@ -701,102 +703,192 @@ stream.methods._executeNextActivity = function() {
 	acts.queue.shift().handler();
 };
 
+// the list of spot update helpers, executed by the
+// "_applySpotUpdates" and "_animateSpotUpdates" top level functions
+stream.methods._spotUpdates = {"animate": {}};
+
+stream.methods._spotUpdates.add = function(item, options) {
+	// if we are trying to add an item which already exists,
+	// we should change the operation to "replace"
+	var _item = this.items[item.get("data.unique")];
+	if (_item && _item.dom.rendered() && options.priority != "high") {
+		this._applySpotUpdates("replace", item, {"priority": "highest"});
+
+		// notify top level function that the update was not applied,
+		// because we routed an action to the "replace" operation
+		return false;
+	}
+	this._applyStructureUpdates("add", item);
+	item.set("added", true);
+	if (item.isRoot()) {
+		this._placeRootItem(item);
+	} else {
+		var parent = this._getParentItem(item);
+		if (parent && parent.dom.rendered()) {
+			parent.dom.render({"name": "container"});
+			parent.dom.render({"name": "children"});
+			parent.dom.render({"name": "childrenByCurrentActorLive"});
+		}
+	}
+};
+
+stream.methods._spotUpdates.replace = function(item, options) {
+	item.unblock();
+	if (this._maybeMoveItem(item)) {
+		var parent = this._getParentItem(item);
+		var sort = this.config.get(parent ? "children.sortOrder" : "sortOrder");
+		var items = parent ? parent.get("children") : this.threads;
+		var oldIdx = this._getItemListIndex(item, items);
+		// We need to calculate the projected index of the item
+		// after the "replace" action and compare it with the current one
+		// to determine whether the item should be moved to the new place or not:
+		//   - create a copy of the items list
+		//   - remove the item from the copy
+		//   - calculate the new index
+		//   - compare the old and new indexes
+		var container = $.extend([], items);
+		container.splice(oldIdx, 1);
+		var newIdx = this._getItemProjectedIndex(item, container, sort);
+		if (oldIdx != newIdx) {
+			this._applySpotUpdates("delete", item, {
+				"keepChildren": true,
+				"priority": "high"
+			});
+			this._applySpotUpdates("add", item, {"priority": "high"});
+		}
+	}
+	if (item && item.dom.rendered()) {
+		item.dom.render({"name": "container", "recursive": true});
+		item.events.publish({"topic": "onRerender"});
+	}
+};
+
+stream.methods._spotUpdates.delete = function(item, options) {
+	item.set("deleted", true);
+	if (item.isRoot()) {
+		item.events.publish({
+			"topic": "onDelete",
+			"data": {"config": options},
+			"global": false,
+			"propagation": false
+		});
+		this._applyStructureUpdates("delete", item, options);
+	} else {
+		var parent = this._getParentItem(item);
+		if (parent) {
+			parent.dom.render({
+				"name": "children",
+				"target": parent.dom.get("children"),
+				"extra": options
+			});
+			parent.dom.render({
+				"name": "childrenByCurrentActorLive",
+				"target": parent.dom.get("childrenByCurrentActorLive"),
+				"extra": options
+			});
+			this._applyStructureUpdates("delete", item, options);
+			parent.dom.render({"name": "container"});
+		}
+	}
+};
+
+stream.methods._spotUpdates.animate.add = function(item) {
+	var self = this;
+	this.activities.animations++;
+	if (this.timeouts.slide) {
+		// we should specify the element height explicitly
+		// to avoid element jumping during the animation effect
+		var currentHeight = item.config.get("target").show().css("height");
+		item.config.get("target").css("height", currentHeight).hide().animate({
+			"height": "show", 
+			"marginTop": "show", 
+			"marginBottom": "show", 
+			"paddingTop": "show", 
+			"paddingBottom": "show"
+		},
+		this.timeouts.slide,
+		function(){
+			// we should remove explicitly set height
+			// as soon as the animation is complete
+			item.config.get("target").css("height", "");
+		});
+	} else {
+		item.config.get("target").show();
+	}
+	if (this.timeouts.fade) {
+		var container = item.dom.get("container");
+		var originalBGColor = Echo.Utils.getVisibleColor(container);
+		container
+		// delay fading out until content sliding is finished
+		.delay(this.timeouts.slide)
+		.css({"backgroundColor": this.config.get("flashColor")})
+		// Fading out
+		.animate(
+			{"backgroundColor": originalBGColor},
+			this.timeouts.fade,
+			"linear",
+			function() {
+				container.css("backgroundColor", "");
+				self.activities.animations--;
+				self._executeNextActivity();
+			}
+		);
+	} else {
+		this.activities.animations--;
+		this._executeNextActivity();
+	}
+};
+
+stream.methods._spotUpdates.animate.delete = function(item, config) {
+	var self = this;
+	this.activities.animations++;
+	config = config || {};
+	var callback = $.isFunction(config) ? config : config.callback || function() {
+		if (!item.config.get("target").length) return;
+		// if the item is being moved, we should keep all jQuery handlers
+		// for the nested elements (children), thus we use "detach" instead of "remove"
+		item.config.get("target")[config.keepChildren ? "detach" : "remove"]();
+		item.dom.clear();
+		item.set("vars", {});
+		var itemsCount = Echo.Utils.foldl(0, self.items, function(_item, acc) {
+			return acc + 1;
+		});
+		if (!itemsCount) {
+			self.showMessage({
+				"type": "empty",
+				"message": self.labels.get("emptyStream"),
+				"target": self.dom.get("body")
+			});
+		}
+		self.activities.animations--;
+		self._executeNextActivity();
+	};
+	if (this.timeouts.slide) {
+		item.config.get("target").slideUp(this.timeouts.slide, callback);
+	} else {
+		callback();
+	}
+};
+
 stream.methods._applySpotUpdates = function(action, item, options) {
 	var self = this;
 	options = options || {};
-	var handler = function(operation) {
-		switch (operation) {
-			case "add":
-				// if we are trying to add an item which already exists,
-				// we should change the operation to "replace"
-				var _item = self.items[item.get("data.unique")];
-				if (_item && _item.dom.rendered() && options.priority != "high") {
-					self._applySpotUpdates("replace", item, {"priority": "highest"});
-					return;
-				}
-				self._applyStructureUpdates(operation, item);
-				item.set("added", true);
-				if (item.isRoot()) {
-					self._placeRootItem(item);
-				} else {
-					var parent = self._getParentItem(item);
-					if (parent && parent.dom.rendered()) {
-						parent.dom.render({"name": "container"});
-						parent.dom.render({"name": "children"});
-						parent.dom.render({"name": "childrenByCurrentActorLive"});
-					}
-				}
-				self._executeNextActivity();
-				break;
-			case "replace":
-				item.unblock();
-				if (self._maybeMoveItem(item)) {
-					var parent = self._getParentItem(item);
-					var sort = self.config.get(parent ? "children.sortOrder" : "sortOrder");
-					var items = parent ? parent.get("children") : self.threads;
-					var oldIdx = self._getItemListIndex(item, items);
-					// We need to calculate the projected index of the item
-					// after the "replace" action and compare it with the current one
-					// to determine whether the item should be moved to the new place or not:
-					//   - create a copy of the items list
-					//   - remove the item from the copy
-					//   - calculate the new index
-					//   - compare the old and new indexes
-					var container = $.extend([], items);
-					container.splice(oldIdx, 1);
-					var newIdx = self._getItemProjectedIndex(item, container, sort);
-					if (oldIdx != newIdx) {
-						self._applySpotUpdates("delete", item, {
-							"keepChildren": true,
-							"priority": "high"
-						});
-						self._applySpotUpdates("add", item, {"priority": "high"});
-					}
-				}
-				if (item && item.dom.rendered()) {
-					item.dom.render({"name": "container", "recursive": true});
-					item.events.publish({"topic": "onRerender"});
-				}
-				self._executeNextActivity();
-				break;
-			case "delete":
-				item.deleted = true;
-				// keepChildren flag is required to detect the case when item is being moved
-				if (item.isRoot()) {
-					item.events.publish({
-						"topic": "onDelete",
-						"data": {"item": item, "config": options},
-						"global": false,
-						"propagation": false
-					});
-					self._applyStructureUpdates(operation, item, options);
-				} else {
-					var parent = self._getParentItem(item);
-					if (parent) {
-						parent.dom.render({
-							"name": "children",
-							"target": parent.dom.get("children"),
-							"extra": options
-						});
-						parent.dom.render({
-							"name": "childrenByCurrentActorLive",
-							"target": parent.dom.get("childrenByCurrentActorLive"),
-							"extra": options
-						});
-						self._applyStructureUpdates(operation, item, options);
-						parent.dom.render({"name": "container"});
-					}
-				}
-				self._executeNextActivity();
-				break;
-		}
-	};
 	this._queueActivity({
 		"action": action,
 		"item": item,
 		"priority": options.priority,
-		"handler": function() { handler(action); }
+		"handler": function() {
+			// execute corresponding update function and
+			// launch the next activity if the operation was successful
+			if (self._spotUpdates[action].call(self, item, options) !== false) {
+				self._executeNextActivity();
+			}
+		}
 	});
+};
+
+stream.methods._animateSpotUpdate = function(action, item, options) {
+	this._spotUpdates.animate[action].call(this, item, options);
 };
 
 stream.methods._queueActivity = function(params) {
@@ -855,84 +947,6 @@ stream.methods._getActivityProjectedIndex = function(byCurrentUser, params) {
 		}
 	});
 	return index;
-};
-
-stream.methods._addItemSpotUpdate = function(item) {
-	var self = this;
-	this.activities.animations++;
-	if (this.timeouts.slide) {
-		//We should specify the element height explicitly to avoid element jumping during the animation effect
-		var currentHeight = item.config.get("target").show().css("height");
-		item.config.get("target").css("height", currentHeight).hide().animate({
-			"height": "show", 
-			"marginTop": "show", 
-			"marginBottom": "show", 
-			"paddingTop": "show", 
-			"paddingBottom": "show"
-		},
-		this.timeouts.slide,
-		function(){
-			//After the animation effect we should remove explicitly set height
-			// TODO: check if it's still needed
-			//if (!item.dom.root || !item.dom.root.length) return;
-			item.config.get("target").css("height", "");
-		});
-	} else {
-		item.config.get("target").show();
-	}
-	if (this.timeouts.fade) {
-		var container = item.dom.get("container");
-		var originalBGColor = Echo.Utils.getVisibleColor(container);
-		container
-		// delay fading out until content sliding is finished
-		.delay(this.timeouts.slide)
-		.css({"backgroundColor": this.config.get("flashColor")})
-		// Fading out
-		.animate(
-			{"backgroundColor": originalBGColor},
-			this.timeouts.fade,
-			"linear",
-			function() {
-				container.css("backgroundColor", "");
-				self.activities.animations--;
-				self._executeNextActivity();
-			}
-		);
-	} else {
-		this.activities.animations--;
-		this._executeNextActivity();
-	}
-};
-
-stream.methods._deleteItemSpotUpdate = function(item, config) {
-	var self = this;
-	this.activities.animations++;
-	config = config || {};
-	var callback = $.isFunction(config) ? config : config.callback || function() {
-		if (!item.config.get("target").length) return;
-		// if the item is being moved, we should keep all jQuery handlers
-		// for the nested elements (children), thus we use "detach" instead of "remove"
-		item.config.get("target")[config.keepChildren ? "detach" : "remove"]();
-		item.dom.clear();
-		item.set("vars", {});
-		var itemsCount = Echo.Utils.foldl(0, self.items, function(_item, acc) {
-			return acc + 1;
-		});
-		if (!itemsCount) {
-			self.showMessage({
-				"type": "empty",
-				"message": self.labels.get("emptyStream"),
-				"target": self.dom.get("body")
-			});
-		}
-		self.activities.animations--;
-		self._executeNextActivity();
-	};
-	if (this.timeouts.slide) {
-		item.config.get("target").slideUp(this.timeouts.slide, callback);
-	} else {
-		callback();
-	}
 };
 
 stream.methods._classifyAction = function(entry) {
@@ -1011,7 +1025,6 @@ stream.methods._placeRootItem = function(item) {
 	}
 	item.events.publish({
 		"topic": "onAdd",
-		"data": {"item": item},
 		"global": false,
 		"propagation": false
 	});
@@ -1455,21 +1468,13 @@ item.renderers._childrenContainer = function(element, config) {
 	$.map(this.children, function(child) {
 		if (config && config.filter && !config.filter(child)) return;
 		element.append(child.config.get("target"));
-		if (!child.dom.rendered() && !child.added) child.dom.render();
-		if (child.deleted) {
-			self.events.publish({
-				"topic": "onDelete",
-				"data": {
-					"item": child,
-					"config": config
-				},
-				"global": false,
-				"propagation": false
-			});
-		} else if (child.added) {
-			self.events.publish({
-				"topic": "onAdd",
-				"data": {"item": child},
+		if (!child.dom.rendered() && !child.added) {
+			child.dom.render();
+		}
+		if (child.deleted || child.added) {
+			child.events.publish({
+				"topic": child.deleted ? "onDelete" : "onAdd",
+				"data": {"config": config},
 				"global": false,
 				"propagation": false
 			});
@@ -1891,15 +1896,14 @@ item.methods.getNextPageAfter = function() {
 		: undefined;
 };
 
-// TODO: this function is a copy of the "_prepareEventParams" one from the stream
-//       check if/how we can unify this logic
 item.methods._prepareEventParams = function(params) {
 	params = params || {};
 	params.target = this.config.get("parent.target").get(0);
 	params.query = this.config.get("parent.query");
-	if (params.item && params.item.target) {
-		params.item.target = $(params.item.target).get(0);
-	}
+	params.item = {
+		"data": this.data,
+		"target": this.config.get("target").get(0)
+	};
 	return params;
 };
 
