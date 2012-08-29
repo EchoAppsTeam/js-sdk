@@ -3,10 +3,11 @@ var plugin = Echo.Plugin.manifest("VipReplies", "Echo.StreamServer.Controls.Stre
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		var question = args.inReplyTo;
+		var answer = args.postData.content[0];
 		if (!question || this.config.get("view") === "public" ||
 			!this.component.user.any("role", ["vip"])) return;
 		this._markQuestionAsAnswered(question);
-		this._copyAnswer(question, args.postData);
+		this._copyAnswer(question, answer);
 	}
 };
 
@@ -51,7 +52,7 @@ plugin.methods._copyAnswer = function(question, answer) {
 				'</div>' +
 			'</div>',
 		"data": {
-			"answerContent": answer.content,
+			"answerContent": Echo.Utils.stripTags(answer.object.content),
 			"questionContent": Echo.Utils.stripTags(question.object.content),
 			"title": title
 		}
