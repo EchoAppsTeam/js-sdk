@@ -755,6 +755,7 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 				}
 				if (item && item.dom.rendered) {
 					item.dom.render({"name": "container", "recursive": true});
+					item.events.publish({"topic": "onRerender"});
 				}
 				self._executeNextActivity();
 				break;

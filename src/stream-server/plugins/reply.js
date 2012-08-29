@@ -283,7 +283,7 @@ plugin.init = function() {
 	var plugin = this, submit = plugin.component;
 	var _prepareEventParams = submit._prepareEventParams;
 	submit._prepareEventParams = function(params) {
-		var _params = _prepareEventParams.apply(submit, params);
+		var _params = _prepareEventParams.call(submit, params);
 		_params.inReplyTo = plugin.config.get("inReplyTo");
 		return _params;
 	};

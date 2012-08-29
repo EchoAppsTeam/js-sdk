@@ -2,14 +2,11 @@ var plugin = Echo.Plugin.manifest("VipReplies", "Echo.StreamServer.Controls.Stre
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
-		// TODO: investigate reason why args.postData is undefined
 		var question = args.inReplyTo;
-//		var question = args.postData && args.postData.inReplyTo;
 		if (!question || this.config.get("view") === "public" ||
 			!this.component.user.any("role", ["vip"])) return;
 		this._markQuestionAsAnswered(question);
-		this._copyAnswer(question, args.data);
-//		this._copyAnswer(question, args.postData);
+		this._copyAnswer(question, args.postData);
 	}
 };
 

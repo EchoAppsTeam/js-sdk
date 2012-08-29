@@ -536,6 +536,12 @@ SocialChatter.renderers.tabs = function(element) {
 			var panel = self.dom.get(id) || $(selector, self.dom.get("tabPanels"));
 			if (!self.views[id]) {
 				self.assemble(id, panel);
+			} else {
+				var request;
+				$.map(["Stream", "VIPStream"], function(name) {
+					request = self.views[id].get("controls." + name + ".request");
+					request && request.send({"force": true});
+				});
 			}
 		}
 	});
