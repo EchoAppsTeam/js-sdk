@@ -9,7 +9,6 @@
 var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 
 stream.init = function() {
-	var self = this;
 	this._recalcEffectsTimeouts();
 	if (this.config.get("data")) {
 		this._handleInitialResponse(this.config.get("data"));
@@ -51,10 +50,9 @@ stream.config.normalizer = {
 		return "off" !== value;
 	},
 	"streamStateToggleBy": function(value) {
-		if (value === "mouseover" && Echo.Utils.isMobileDevice()) {
-			return "button";
-		}
-		return value;
+		return value === "mouseover" && Echo.Utils.isMobileDevice()
+			? "button"
+			: value;
 	}
 };
 
@@ -389,9 +387,6 @@ stream.methods._prepareEventParams = function(params) {
 	params = params || {};
 	params.target = this.config.get("target").get(0);
 	params.query = this.config.get("query");
-	if (params.item && params.item.target) {
-		params.item.target = $(params.item.target).get(0);
-	}
 	return params;
 };
 
@@ -893,11 +888,13 @@ stream.methods._animateSpotUpdate = function(action, item, options) {
 
 stream.methods._queueActivity = function(params) {
 	if (!params.item) return;
+	var actorID = params.item.get("data.actor.id");
+
 	// we consider activity related to the current user if:
 	//  - the corresponding item is blocked (moderation action in progress)
 	//  - or the activity was performed by the current user
-	var actorID = params.item.data.actor.id;
 	var byCurrentUser = params.item.blocked || actorID && this.user.has("identity", actorID);
+
 	var index = this._getActivityProjectedIndex(byCurrentUser, params);
 	var data = {
 		"action": params.action,
@@ -950,7 +947,9 @@ stream.methods._getActivityProjectedIndex = function(byCurrentUser, params) {
 };
 
 stream.methods._classifyAction = function(entry) {
-	return (entry.verbs[0] == "http://activitystrea.ms/schema/1.0/delete") ? "delete" : "post";
+	return entry.verbs[0] === "http://activitystrea.ms/schema/1.0/delete"
+		? "delete"
+		: "post";
 };
 
 stream.methods._maybeMoveItem = function(item) {
@@ -1033,6 +1032,7 @@ stream.methods._placeRootItem = function(item) {
 stream.methods._placeChildItems = function(parent, children) {
 	var self = this;
 	var itemsWrapper = this._createChildrenItemsDomWrapper(children, parent);
+
 	// we should calculate index of the sibling item for the responsed items
 	var targetItemIdx = -1;
 	$.each(parent.get("children"), function(i,_item) {
@@ -1041,6 +1041,7 @@ stream.methods._placeChildItems = function(parent, children) {
 			return false;
 		}
 	});
+
 	var targetItemDom = targetItemIdx >= 0
 		? parent.get("children")[targetItemIdx].config.get("target")
 		: parent.dom.get("children");
@@ -1152,11 +1153,13 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 			this.items[item.get("data.unique")] = item;
 			if (!item.isRoot()) {
 				var parent = this._getParentItem(item);
+
 				// avoiding problem with missing parent
 				if (!parent) {
 					delete this.items[item.get("data.unique")];
 					return;
 				}
+
 				item.set("depth", parent.get("depth") + 1);
 				parent.set("threading", true);
 				item.set("forceInject", true);
@@ -1170,15 +1173,12 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 			}
 			break;
 		case "delete":
-			var container = null;
-			if (item.isRoot()) {
-				container = this.threads;
-			} else {
-				container = this.items[item.get("data.parentUnique")].get("children");
-				if (container.length === 1) {
-					var parent = this._getParentItem(item);
-					if (parent) parent.set("threading", false);
-				}
+			var container = item.isRoot()
+				? this.threads
+				: this.items[item.get("data.parentUnique")].get("children");
+			if (!item.isRoot() && container.length === 1) {
+				var parent = this._getParentItem(item);
+				if (parent) parent.set("threading", false);
 			}
 			container.splice(this._getItemListIndex(item, container), 1);
 			if (!options.keepChildren) {
@@ -1196,6 +1196,7 @@ stream.methods._normalizeEntry = function(entry) {
 	if (entry.normalized) return entry;
 	var self = this;
 	entry.normalized = true;
+
 	// detecting actual target
 	$.each(entry.targets || [], function(i, target) {
 		if ((target.id === target.conversationID) ||
@@ -1204,6 +1205,7 @@ stream.methods._normalizeEntry = function(entry) {
 				entry.target = target;
 		}
 	});
+
 	entry.object.content_type = entry.object.content_type || "text";
 	entry.object.accumulators = entry.object.accumulators || {};
 	$.each(["repliesCount", "flagsCount", "likesCount"], function(i, name) {
@@ -1245,7 +1247,14 @@ stream.css =
 
 Echo.Control.create(stream);
 
+// Stream Item control class
+
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item");
+
+item.init = function() {
+	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get("data.object.published"));
+	this.ready();
+};
 
 item.config = {
 	"aggressiveSanitization": false,
@@ -1327,11 +1336,6 @@ item.labels = {
 	"fromLabel": "from",
 	"viaLabel": "via",
 	"childrenMoreItems": "View more items"
-};
-
-item.init = function() {
-	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get("data.object.published"));
-	this.ready();
 };
 
 item.renderers.authorName = function(element) {
@@ -1952,7 +1956,8 @@ item.methods.getAccumulator = function(type) {
 };
 
 item.methods.isRoot = function() {
-	return !this.config.get("parent.children.maxDepth") || this.get("data.object.id") === this.get("data.target.conversationID");
+	return !this.config.get("parent.children.maxDepth") ||
+		this.get("data.object.id") === this.get("data.target.conversationID");
 };
 
 item.methods.addButtonSpec = function(plugin, spec) {
