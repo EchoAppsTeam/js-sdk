@@ -1,5 +1,9 @@
 (function() {
 
+if (Echo.SocialChatter && Echo.SoicalChatter.Event) return;
+
+Echo.SocialChatter = {};
+
 var labels = {
 	"fewMoments": "in a few moments",
 	"moreYear": "more than a year",
@@ -8,14 +12,14 @@ var labels = {
 	"endDateDiffDisplay": "Ended {diff} {period}{suffix} ago"
 };
 
-Echo.SocialChatterEvent = function(entry) {
+Echo.SocialChatter.Event = function(entry) {
 	if (!entry || !entry.object) return {"data": {}};
 	this.id = entry.object.id;
 	this.data = this.getData(entry.object.content);
-	this.labels = new Echo.Labels(labels, "Echo.SocialChatterEvent");
+	this.labels = new Echo.Labels(labels, "Echo.SocialChatter.Event");
 };
 
-Echo.SocialChatterEvent.prototype.getData = function(dataString) {
+Echo.SocialChatter.Event.prototype.getData = function(dataString) {
 	var data = {};
 	try {
 		data = $.parseJSON(dataString);
@@ -23,7 +27,7 @@ Echo.SocialChatterEvent.prototype.getData = function(dataString) {
 	return data || {};
 };
 
-Echo.SocialChatterEvent.prototype.calcDates = function(type, display) {
+Echo.SocialChatter.Event.prototype.calcDates = function(type, display) {
 	type = type.charAt(0).toUpperCase() + type.substr(1);
 	var content = this.data;
 	if (!content["event" + type]) return;
@@ -37,7 +41,7 @@ Echo.SocialChatterEvent.prototype.calcDates = function(type, display) {
 	return this.displayDateDiff(diff, display);
 };
 
-Echo.SocialChatterEvent.prototype.displayDateDiff = function(diff, display) {
+Echo.SocialChatter.Event.prototype.displayDateDiff = function(diff, display) {
 	var self = this;
 	var when;
 	var dayDiff = Math.floor(diff / 86400);
@@ -67,11 +71,11 @@ Echo.SocialChatterEvent.prototype.displayDateDiff = function(diff, display) {
 	return when;
 };
 
-Echo.SocialChatterEvent.prototype.calcStartTime = function() {
+Echo.SocialChatter.Event.prototype.calcStartTime = function() {
 	return this.calcDates("start");
 };
 
-Echo.SocialChatterEvent.prototype.calcEndTime = function() {
+Echo.SocialChatter.Event.prototype.calcEndTime = function() {
 	var self = this;
 	return this.calcDates("end", function(diff, period) {
 		return self.labels.get("endDateDiffDisplay", {
@@ -83,7 +87,7 @@ Echo.SocialChatterEvent.prototype.calcEndTime = function() {
 };
 
 // FIXME: need rename function
-Echo.SocialChatterEvent.prototype.calcAnotherStart = function() {
+Echo.SocialChatter.Event.prototype.calcAnotherStart = function() {
 	var self = this;
 	return this.calcDates("start", function(diff, period) {
 		return self.labels.get("startDateDiffDisplay", {
@@ -94,25 +98,25 @@ Echo.SocialChatterEvent.prototype.calcAnotherStart = function() {
 	});
 };
 
-Echo.SocialChatterEvent.prototype.getTimestamp = function() {
+Echo.SocialChatter.Event.prototype.getTimestamp = function() {
 	return {
-		"start": this.data.eventStart ? this.data.eventStart : 0,
-		"end": this.data.eventEnd ? this.data.eventEnd : 0
+		"start": this.data.eventStart || 0,
+		"end": this.data.eventEnd || 0
 	};
 };
 
-Echo.SocialChatterEvent.prototype.onAir = function() {
+Echo.SocialChatter.Event.prototype.onAir = function() {
 	var timestamp = this.getTimestamp();
 	var now = (new Date()).getTime();
 	return (timestamp.start <= now && timestamp.end >= now);
 };
 
-Echo.SocialChatterEvent.prototype.getDuration = function() {
+Echo.SocialChatter.Event.prototype.getDuration = function() {
 	var timestamp = this.getTimestamp();
 	return Math.floor((timestamp.end - timestamp.start) / 1000);
 };
 
-Echo.SocialChatterEvent.prototype.getStatus = function() {
+Echo.SocialChatter.Event.prototype.getStatus = function() {
 	if (this.onAir()) return "onAir";
 	var timestamp = this.getTimestamp();
 	var now = (new Date()).getTime();
@@ -573,7 +577,7 @@ SocialChatter.methods._initSocialChatterEvents = function(entries) {
 	var self = this;
 	$.each(entries, function(id, entry) {
 		self.eventById[entry.object.id] =
-			new Echo.SocialChatterEvent(entry);
+			new Echo.SocialChatter.Event(entry);
 	});
 };
 
@@ -686,12 +690,15 @@ SocialChatter.assemblers.EventsList = function(target) {
 		"target": view.dom.get("eventsStream")
 	});
 
-	$.map(["Echo.StreamServer.Controls.Stream.Item.onReceive", "Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onEventChange"], function(topic) {
+	$.map([
+		"Echo.StreamServer.Controls.Stream.Item.onReceive",
+		"Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onEventChange"
+	], function(topic) {
 		stream.events.subscribe({
 			"topic": topic,
 			"handler": function(topic, args) {
 				var entry = args.item.data;
-				var event = new Echo.SocialChatterEvent(entry);
+				var event = new Echo.SocialChatter.Event(entry);
 				var status = event.getStatus();
 				self.eventById[entry.object.id] = event;
 				if ((self.event && self.event.id == event.id) ||
@@ -795,7 +802,7 @@ SocialChatter.assemblers.GreenRoom = function(target) {
 SocialChatter.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onBeforeEventOpen": function(topic, args) {
 		var entry = args.event;
-		this._setPublicEvent(new Echo.SocialChatterEvent(entry));
+		this._setPublicEvent(new Echo.SocialChatter.Event(entry));
 		this._updateTabs();
 		this.tabs.show("PublicEvent");
 	},
@@ -805,15 +812,20 @@ SocialChatter.events = {
 	}
 };
 
-Echo.Utils.foldl(SocialChatter.events, ["Echo.StreamServer.Controls.Submit.Plugins.SubmitCountdownEvent.onEventEnd", "Echo.Products.SocialChatter.Views.PublicEvent.onEventStart"], function(topic, acc) {
-	acc[topic] = function() {
-		this._updateTabs();
-	};
-});
+Echo.Utils.foldl(
+	SocialChatter.events,
+	[
+		"Echo.StreamServer.Controls.Submit.Plugins.SubmitCountdownEvent.onEventEnd",
+		"Echo.Products.SocialChatter.Views.PublicEvent.onEventStart"
+	],
+	function(topic, acc) {
+		acc[topic] = function() {
+			this._updateTabs();
+		};
+	}
+);
 
 SocialChatter.views.EventsList.css =
-	'.{class:newEventButton} .echo-sdk-button .ui-state-default { width: auto; padding: 3px 15px; }' +
-	'.{class:newEventButton} .echo-sdk-button .ui-state-default, .echo-streamserver-controls-submit-controls .echo-sdk-button .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
 	'.{class:eventListContainer} { margin-left: 15px; margin-right: 15px; }' +
 	'.{class:eventListContainer} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
 	'.{class:eventSubmitContainer} { display: none; }' +
@@ -876,14 +888,6 @@ SocialChatter.views.Main.css =
 ;
 
 SocialChatter.css =
-	'.echo-ui .echo-tabs-header li.ui-state-default { background-color: #E6E6E6; }' +
-	'.echo-ui .echo-tabs-header li.ui-state-active { background-color: #FFFFFF; }' +
-	// fancy buttons
-	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-nav li { border: 1px solid #DDDDDD; border-bottom: none; }' +
-	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-nav li a { padding: 7px 15px 5px 15px; font-size: 16px; }' +
-	'.echo-ui .echo-socialchatter-tabs .ui-tabs .ui-tabs-panel { border-radius: 0px; border-left: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; }' +
-	'.echo-ui .echo-socialchatter-tabs .echo-tabs-header { border-bottom: 1px solid #DDDDDD; }' +
-	'.echo-app-message { border: none; }' +
 	'.{class:container} .echo-streamserver-controls-submit-markersContainer, .{class:container} .echo-streamserver-controls-submit-tagsContainer, .{class:container} .echo-streamserver-controls-stream-item-modeSwitch { display: none !important; }' +
 	'.{class:tabs} a { font-size: 16px; font-weight: bold; outline: none; }' +
 	'.{class:tabs}.nav.nav-tabs .active a { background-color: #F5F4EE; outline: none; }'

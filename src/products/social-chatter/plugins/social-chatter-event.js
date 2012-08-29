@@ -95,7 +95,7 @@ plugin.templates.main = '<div class="{plugin.class:eventContainer}">' +
 plugin.fields = ["eventName", "vipName", "vipInstructions", "vipPhoto", "eventDescription", "eventStart", "eventEnd"];
 
 plugin.component.renderers.container = function(element) {
-	this.event = new Echo.SocialChatterEvent(this.component.get("data"));
+	this.event = new Echo.SocialChatter.Event(this.component.get("data"));
 	return this.parentRenderer("container", arguments);
 };
 
@@ -197,7 +197,7 @@ plugin.component.renderers.footer = function(element) {
 
 plugin.component.renderers.avatar = function() {
 	var item = this.component;
-	var content = new Echo.SocialChatterEvent(item.get("data"));
+	var content = new Echo.SocialChatter.Event(item.get("data"));
 	var initialAvatar = item.get("data.actor.avatar");
 	var defaultAvatar = item.user.config.get("defaultAvatar");
 	// re-define default avatar for the item
@@ -433,7 +433,7 @@ plugin.component.renderers.body = function(element) {
 };
 
 plugin.component.renderers.text = function(element) {
-	var event = new Echo.SocialChatterEvent(this.component.get("data"));
+	var event = new Echo.SocialChatter.Event(this.component.get("data"));
 	if ($.isEmptyObject(event)) {
 		return this.parentRenderer("text", arguments);
 	}
@@ -450,7 +450,7 @@ plugin.component.renderers.postButton = function(element) {
 plugin.renderers.eventInfo = function(element, extra) {
 	extra = extra || {};
 	var type = extra.type;
-	var event = new Echo.SocialChatterEvent(this.component.get("data"));
+	var event = new Echo.SocialChatter.Event(this.component.get("data"));
 	if (!$.isEmptyObject(event)) {
 		var value = event.data[type] || "";
 		this.dom.get(type)
@@ -501,7 +501,7 @@ $.map(["eventDateStart", "eventDateEnd" ,"eventTimeStart", "eventTimeEnd"], func
 	plugin.renderers[field] = function(element) {
 		var self = this;
 		this.dom.render({"name": "eventInfo", "extra": {"type": field}});
-		var event = new Echo.SocialChatterEvent(this.component.get("data"));
+		var event = new Echo.SocialChatter.Event(this.component.get("data"));
 		var normField = field.replace(/(time)|(date)/i, "");
 
 		var checkDateInterval = function() {
@@ -581,7 +581,7 @@ $.map(plugin.fields, function(field) {
 		if (field === "vipPhoto") {
 			var entry = this.component.get("data");
 			if (entry && entry.object) {
-				var event = new Echo.SocialChatterEvent(entry);
+				var event = new Echo.SocialChatter.Event(entry);
 				if (!$.isEmptyObject(event) && event.data.vipPhoto) {
 					this.dom.get("eventIcon").attr("src", event.data.vipPhoto);
 				}
@@ -634,28 +634,7 @@ plugin.methods._highlightMandatory = function(element) {
 	return result;
 };
 
-//plugin.methods._getFullDate = function(timestamp) {
-//	var d = new Date(timestamp);
-//	return (timestamp
-//		? $.datepicker.formatDate(this.config.get("dateFormat"), d)
-//		+ " " + $.datepicker.formatTime(this.config.get("timeFormat"),  {
-//			"hour": d.getHours(),
-//			"minute": d.getMinutes(),
-//			"second": d.getSeconds(),
-//			"millisec": d.getMilliseconds()
-//		}, {
-//			"ampm": this.config.get("ampm")
-//		})
-//		: this.labels.get("unknown"));
-//};
-
 plugin.css =
-	'.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }' +
-	'.ui-timepicker-div dl { text-align: left; }' +
-	'.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }' +
-	'.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }' +
-	'.ui-timepicker-div td { font-size: 90%; }' +
-	'.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }' +
 	'.{plugin.class:SocialChatterEvent} .{class:content} { border: 0px; }' +
 	'.{plugin.class:SocialChatterEvent} .{class:post-container} { float: left; margin: 0px 15px 0px 5px; }' +
 	'.{plugin.class:SocialChatterEvent} .{class:cancelButton-container} { float: left; }' +
