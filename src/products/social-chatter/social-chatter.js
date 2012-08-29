@@ -132,6 +132,27 @@ if (Echo.Utils.isComponentDefined("Echo.Products.SocialChatter")) return;
 
 var SocialChatter = Echo.Product.manifest("Echo.Products.SocialChatter", ["Main", "PublicEvent", "GreenRoom", "EventsList"]);
 
+SocialChatter.dependencies = [
+	{"loaded": function() { return false; },"url": "../../../sdk/third-party/bootstrap/css/bootstrap.min.css"},
+	{"loaded": function() { return false; },"url": "../../../sdk/third-party/bootstrap/css/bootstrap-responsive.min.css"},
+	{"loaded": function() { return false; },"url": "../../../sdk/third-party/bootstrap/css/datepicker.css"},
+	{"loaded": function() { return false; },"url": "../../../sdk/third-party/bootstrap/css/timepicker.css"},
+
+	{"loaded": function() { return false; }, "url": "../../../sdk/third-party/bootstrap/bootstrap-datepicker.js"},
+	{"loaded": function() { return false; }, "url": "../../../sdk/third-party/bootstrap/bootstrap-timepicker.js"},
+	{"loaded": function() { return false; }, "url": "../../../sdk/products/social-chatter/countdown/jquery.countdown.js"} ,
+	{"loaded": function() { return false; },"url": "../../../sdk/stream-server.pack.js"},
+	{"loaded": function() { return false; },"url": "../../../sdk/identity-server.pack.js"},
+	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/item-conditional-css-classes.js"},
+	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/social-chatter-event.js"},
+	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/submit-countdown-event.js"},
+	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/submit-textarea-auto-resize.js"},
+	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/user-metadata-manager.js"},
+	{"loaded": function() { return false; },"url": "../../../sdk/products/social-chatter/plugins/vip-replies.js"},
+	{"loaded": function() { return false; },"url": "../../../sdk/third-party/bootstrap/bootstrap-tab.js"},
+
+];
+
 SocialChatter.labels = {
 	"guest": "Guest",
 	"live": "Live",
@@ -538,7 +559,7 @@ SocialChatter.renderers.tabs = function(element) {
 			var selector = $(e.target).attr("href");
 			var id = selector.replace(/^#/, "");
 			var panel = self.dom.get(id) || $(selector, self.dom.get("tabPanels"));
-			if (!self.views[id]) {
+			if (!self.views || !self.views[id]) {
 				self.assemble(id, panel);
 			} else {
 				var request;

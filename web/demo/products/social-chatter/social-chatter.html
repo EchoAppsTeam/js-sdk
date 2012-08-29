@@ -3,35 +3,7 @@
 <head>
 	<title>Echo::Products::SocialChatter-Demo</title>
 	<link rel="stylesheet" type="text/css" href="../../demo.css" />
-
-	<link href="../../../sdk/third-party/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-	<link href="../../../sdk/third-party/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-	<link href="../../../sdk/third-party/bootstrap/css/datepicker.css" rel="stylesheet">
-	<link href="../../../sdk/third-party/bootstrap/css/timepicker.css" rel="stylesheet">
-
-	<!--<link href="../../../sdk/products/social-chatter/datepicker/datepicker-ui/jquery-ui-1.8.18.custom.css" rel="stylesheet">-->
-	<script type="text/javascript" src="../../../sdk/backplane.js"></script>
-	<script type="text/javascript" src="../../../sdk/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="../../../sdk/third-party/bootstrap/bootstrap-tab.js"></script>
 	<script type="text/javascript" src="../../../sdk/loader.js"></script>
-	<script type="text/javascript" src="../../../sdk/environment.pack.js"></script>
-	<script type="text/javascript" src="../../../sdk/identity-server.pack.js"></script>
-	<script type="text/javascript" src="../../../sdk/stream-server.pack.js"></script>
-	<script type="text/javascript" src="../../../sdk/stream-server.pack.js"></script>
-
-    <script src="../../../sdk/third-party/bootstrap/bootstrap-datepicker.js"></script>
-    <script src="../../../sdk/third-party/bootstrap/bootstrap-timepicker.js"></script>
-	<script type="text/javascript" src="../../../sdk/products/social-chatter/countdown/jquery.countdown.js"></script>
-	<!--<script type="text/javascript" src="../../../sdk/products/social-chatter/datepicker/jquery-ui-1.8.18.custom.min.js"></script>-->
-	<!--<script type="text/javascript" src="../../../sdk/products/social-chatter/datepicker/jquery-ui-timepicker-addon.js"></script>-->
-	<script type="text/javascript" src="../../../sdk/products/social-chatter/plugins/item-conditional-css-classes.js"></script>
-	<script type="text/javascript" src="../../../sdk/products/social-chatter/plugins/social-chatter-event.js"></script>
-
-	<script type="text/javascript" src="../../../sdk/products/social-chatter/plugins/submit-countdown-event.js"></script>
-	<script type="text/javascript" src="../../../sdk/products/social-chatter/plugins/submit-textarea-auto-resize.js"></script>
-	<script type="text/javascript" src="../../../sdk/products/social-chatter/plugins/user-metadata-manager.js"></script>
-	<script type="text/javascript" src="../../../sdk/products/social-chatter/plugins/vip-replies.js"></script>
-	<script type="text/javascript" src="../../../sdk/products/social-chatter/social-chatter.js"></script>
 	<style type="text/css">
 		#container {
 			width: 870px;
@@ -43,103 +15,12 @@
 	<div id="documentation"><a href="http://wiki.aboutecho.com/w/page/30181308/Echo%20Application%20-%20Echo%20Stream%20Client" target="_blank">Documentation</a></div>
 	<h1>SocialChatter Demo</h1>
 	<div class="wrapper">
-		<div id="stream"></div>
         <div class="echo-canvas" data-canvas-id="social-chatter" data-appkey="test.echoenabled.com"></div>
         <script type="text/javascript">
+            Echo.Loader.config.cdnBaseURL = "http://safin.ul.js-kit.com/js-sdk/"
             Echo.Loader.init();
         </script>
 	</div>
 </div>
-
-
-	<!--<script>
-		Backplane.init({
-			"serverBaseURL": "http://api.echoenabled.com/v1",
-			"busName": "jskit"
-		});
-
-		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
-		new Echo.Products.SocialChatter({
-			"appkey": "test.aboutecho.com",
-			"apiBaseURL": "http://api.echoenabled.com/v1/",
-			"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
-			"target": document.getElementById("stream"),
-			"eventsTargetURL": "http://echosandbox.com/green-room-events-local/test", //  itemsPerPage:5 state:Untouched,ModeratorApproved children:0
-			"views": {
-				"EventList": {
-					"Stream": {
-						"plugins": [{
-							"name": "Edit",
-							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
-						}, {
-							"name": "SocialChatterItemEvent"
-						}]
-					}
-				},
-				"Main": {
-					"Auth": {
-						"appkey": "test.aboutecho.com",
-						"identityManager": identityManager
-					}
-				}/*,
-				"PublicEvent": {
-					"Stream": {
-						"plugins": [{
-							"name": "Edit",
-							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
-						}, {
-							"name": "Like",
-							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
-						}, {
-							"name": "Reply",
-							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
-						}]
-					},
-					"VIPStream": {
-						"plugins": [{
-							"name": "Edit",
-							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
-						}, {
-							"name": "Like",
-							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
-						}, {
-							"name": "Reply",
-							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
-						}]
-					}
-				},
-				"GreenRoom": {
-					"Stream": {
-						"plugins": [{
-							"name": "Edit",
-							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
-						}, {
-							"name": "Like",
-							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
-						}, {
-							"name": "Reply",
-							"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
-						}]
-					}
-				}*/
-			},
-			"backplane": {
-				"serverBaseURL" : "http://api.echoenabled.com/v1",
-				"busName": "jskit"
-			},
-			"identityManager": { // use as an indicator of Auth widget appearance
-				"login": {
-					"width": 400,
-					"height": 250,
-					"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-				},
-				"signup": {
-					"width": 400,
-					"height": 250,
-					"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-				}
-			}
-		});
-	</script>-->
 </body>
 </html>
