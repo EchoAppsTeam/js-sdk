@@ -1,0 +1,37 @@
+{
+    "id": "social-chatter-canvas",
+    "title": "My test social-chatter canvas",
+    "backplane": {
+        "serverBaseURL": "https://api.echoenabled.com/v1",
+        "busName": "jskit"
+    },
+    "apps": [{
+        "id": "my-social-chatter",
+        "script": "../../../sdk/products/social-chatter/social-chatter.js",
+        "component": "Echo.Products.SocialChatter",
+        "config": {
+            "appkey": "test.aboutecho.com",
+            "apiBaseURL": "http://api.echoenabled.com/v1/",
+            "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+            "eventsTargetURL": "http://echosandbox.com/green-room-events-local/test",
+            "views": {
+                "EventList": {
+                    "controls": {
+                        "Stream": {
+                            "control": "Echo.StreamServer.Controls.Stream",
+                            "config": {
+                                "plugins": [{
+                                    "name": "Edit",
+                                    "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+                                }, {
+                                    "name": "SocialChatterItemEvent"
+                                }]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }]
+}
+

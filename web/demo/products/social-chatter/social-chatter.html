@@ -44,11 +44,15 @@
 	<h1>SocialChatter Demo</h1>
 	<div class="wrapper">
 		<div id="stream"></div>
+        <div class="echo-canvas" data-canvas-id="social-chatter" data-appkey="test.echoenabled.com"></div>
+        <script type="text/javascript">
+            Echo.Loader.init();
+        </script>
 	</div>
 </div>
 
 
-	<script>
+	<!--<script>
 		Backplane.init({
 			"serverBaseURL": "http://api.echoenabled.com/v1",
 			"busName": "jskit"
@@ -60,8 +64,7 @@
 			"apiBaseURL": "http://api.echoenabled.com/v1/",
 			"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
 			"target": document.getElementById("stream"),
-			"eventsTargetURL": "http://echosandbox.com/green-room-events-local",
-			"eventListQuery": "childrenof:http://echosandbox.com/green-room-events-local itemsPerPage:100 state:Untouched,ModeratorApproved children:0",
+			"eventsTargetURL": "http://echosandbox.com/green-room-events-local/test", //  itemsPerPage:5 state:Untouched,ModeratorApproved children:0
 			"views": {
 				"EventList": {
 					"Stream": {
@@ -137,6 +140,6 @@
 				}
 			}
 		});
-	</script>
+	</script>-->
 </body>
 </html>
