@@ -87,6 +87,42 @@ Echo.Control.manifest = function(name) {
 	};
 };
 
+/**
+ * @static
+ * @method
+ * Method which add new initializer schema to the control (or control extender) prototype. Initializer function must be defined.
+ * @param {Object} klass (required) Specifies control (Echo.Control or extender) object.
+ * @param {Array} schema (required) Initializer schema which declare name and executed step.
+ * @param {Object} rule Rule object which contains action as key and target as value. Target is a defined initializer name. If this parameter omit then initializer will be pushed to the end of the list. Possible actions are:
+ * + "after"
+ * + "before"
+ */
+Echo.Control.addInitializer = function(klass, definition, rule) {
+	rule = rule || {};
+	var list = klass.prototype._initializers.list.slice(0);
+	var hasRule = !!(rule.after || rule.before);
+	var getInitializerIndex = function(name) {
+		var index = -1;
+		$.each(list, function(i, initializer) {
+			if (initializer[0] === name) {
+				index = i;
+				return false;
+			}
+		});
+		return index;
+	};
+	var index = hasRule
+		? function(_index) {
+			return ~_index
+				? (!_index ? 0 : rule.after ? ++_index : --_index)
+				: _index;
+		}(getInitializerIndex(rule.after || rule.before))
+		: list.length;
+	list.splice(index, 0, definition);
+	klass.prototype._initializers = $.extend({}, klass.prototype._initializers);
+	klass.prototype._initializers.list = list;
+};
+
 // dynamic interface (available for class instances)
 
 Echo.Control.prototype.templates = {"message": {}};

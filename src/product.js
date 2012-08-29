@@ -14,14 +14,11 @@ Echo.ProductView.manifest = function(name) {
 	});
 };
 
-(function() {
-
-var list = Echo.ProductView.prototype._initializers.list.slice(0);
-list.splice(list.length - 4, 0, ["controls", ["init", "refresh"]]);
-Echo.ProductView.prototype._initializers = $.extend({}, Echo.ProductView.prototype._initializers);
-Echo.ProductView.prototype._initializers.list = list;
-
-})();
+Echo.Control.addInitializer(
+	Echo.ProductView,
+	["controls", ["init", "refresh"]],
+	{"after": "user:async"}
+);
 
 Echo.ProductView.prototype._initializers.controls = function() {
 	var view = this;
@@ -215,14 +212,11 @@ Echo.Product.prototype.assemble = function(viewName) {
 	return this._manifest("assemblers")[viewName].apply(this, args);
 };
 
-(function() {
-
-var list = Echo.Product.prototype._initializers.list.slice(0);
-list.splice(list.length - 4, 0, ["views", ["init", "refresh"]]);
-Echo.Product.prototype._initializers = $.extend({}, Echo.Product.prototype._initializers);
-Echo.Product.prototype._initializers.list = list;
-
-})();
+Echo.Control.addInitializer(
+	Echo.Product,
+	["views", ["init", "refresh"]],
+	{"after": "user:async"}
+);
 
 Echo.Product.prototype._initializers.views = function() {
 	var product = this;
