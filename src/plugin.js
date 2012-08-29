@@ -4,22 +4,42 @@
  */
 Echo.Plugin = function() {};
 
-// static interface
 /**
  * @static
  * Function which creates a plugin object using it manifest declaration.
  * 
- * @param {Object} manifest (required) Specifies the plugin interface in the predefined way.
- * @param {String} manifest.name (required) Specifies the Plugin name.
- * @param {Object} [manifest.config] Specifies the configuration data with the ability to define default values.
- * @param {Object} [manifest.labels] Specifies the list of language labels used in the particular plugin UI.
- * @param {Object} [manifest.events] Specifies the list of external events used by plugin.
- * @param {Object} [manifest.methods] Specifies the list of plugin methods.
- * @param {Object} [manifest.renderers] Specifies the list of plugin renderers.
- * @param {Object} [manifest.templates] Specifies the list of plugin templates
- * @param {Function} [manifest.init] Function called during plugin initialization.
- * @param {String} [manifest.css] Specifies the CSS rules for the plugin.
- * @return {Object} generated plugin class
+ * @param {Object} manifest
+ * Specifies the plugin interface in the predefined way.
+ *
+ * @param {String} manifest.name
+ * Specifies the Plugin name.
+ *
+ * @param {Object} [manifest.config]
+ * Specifies the configuration data with the ability to define default values.
+ *
+ * @param {Object} [manifest.labels]
+ * Specifies the list of language labels used in the particular plugin UI.
+ *
+ * @param {Object} [manifest.events]
+ * Specifies the list of external events used by plugin.
+ *
+ * @param {Object} [manifest.methods]
+ * Specifies the list of plugin methods.
+ *
+ * @param {Object} [manifest.renderers]
+ * Specifies the list of plugin renderers.
+ *
+ * @param {Object} [manifest.templates]
+ * Specifies the list of plugin templates.
+ *
+ * @param {Function} [manifest.init]
+ * Function called during plugin initialization.
+ *
+ * @param {String} [manifest.css]
+ * Specifies the CSS rules for the plugin.
+ *
+ * @return {Object}
+ * Generated plugin class.
  */
 Echo.Plugin.create = function(manifest) {
 	var plugin = Echo.Plugin.getClass(manifest.name, manifest.component.name);
@@ -64,9 +84,15 @@ Echo.Plugin.create = function(manifest) {
 /**
  * @static
  * Method returning common manifest structure.
- * @param {String} name (required) Specifies plugin name.
- * @param {String} component (required) Specifies component name to be extended.
- * @return {Object} Basic plugin manifest declaration.
+ *
+ * @param {String} name
+ * Specifies plugin name.
+ *
+ * @param {String} component
+ * Specifies component name to be extended.
+ *
+ * @return {Object}
+ * Basic plugin manifest declaration.
  */
 Echo.Plugin.manifest = function(name, component) {
 	return {
@@ -91,7 +117,10 @@ Echo.Plugin.manifest = function(name, component) {
 /**
  * @static
  * Checks if plugin is already defined.
- * @param {Object} manifest (required) Plugin manifest.
+ *
+ * @param {Object} manifest
+ * Plugin manifest.
+ * 
  * @return {Boolean}
  */
 Echo.Plugin.isDefined = function(manifest) {
@@ -101,16 +130,21 @@ Echo.Plugin.isDefined = function(manifest) {
 /**
  * @static
  * Returns the corresponding plugin by its name and parent component name.
- * @param {String} name {required} Plugin name.
- * @param {String} component {required} Extended component name.
- * @return {Object} Plugin class.
+ *
+ * @param {String} name
+ * Plugin name.
+ *
+ * @param {String} component
+ * Extended component name.
+ *
+ * @return {Object}
+ * Plugin class.
  */
 Echo.Plugin.getClass = function(name, component) {
 	return Echo.Utils.getNestedValue(window, Echo.Plugin._getClassName(name, component));
 };
 
 /**
- *
  * @method
  * Initializes the plugin.
  */
@@ -127,7 +161,6 @@ Echo.Plugin.prototype.init = function() {
 };
 
 /**
- *
  * @method
  * Checks if the plugin is enabled.
  */
@@ -196,16 +229,21 @@ Echo.Plugin.prototype.disable = function(global) {
 /**
  * @method
  * Method to extend the template of particular component.
- * @param {String} action (required) One of the following actions:
- *  
+ *
+ * @param {String} action
+ * One of the following actions:
  * + "insertBefore"
  * + "insertAfter"
  * + "insertAsFirstChild"
  * + "insertAsLastChild"
  * + "replace"
  * + "remove"
- * @param {String} anchor (required) Element name which is a subject of a transformation application.
- * @param {String|Function} [html] The content of a transformation to be applied. Can be defined as a HTML string or a transformer function. This param is required for all actions except "remove".
+ *
+ * @param {String} anchor
+ * Element name which is a subject of a transformation application.
+ *
+ * @param {String|Function} [html]
+ * The content of a transformation to be applied. Can be defined as a HTML string or a transformer function. This param is required for all actions except "remove".
  */
 Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 	if (html) {
@@ -225,14 +263,25 @@ Echo.Plugin.prototype.parentRenderer = function() {
 /**
  * @method
  * Templater function which compiles given template using the provided data.
- *
  * Function can be used widely for html templates processing or any other action requiring string interspersion.
- * @param {Object} args (required) Specifies substitution process, contains control parameters.
- * @param {String} args.template (required) Template containing placeholders used for data interspersion.
- * @param {Object} [args.data] Data used in the template compilation.
- * @param {Boolean} [args.strict] Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
- * @param {Object} [args.instructions] Object containing the list of extra instructions to be applied during template compilation.
- * @return {String} Compiled string value.
+ *
+ * @param {Object} args
+ * Specifies substitution process, contains control parameters.
+ *
+ * @param {String} args.template
+ * Template containing placeholders used for data interspersion.
+ *
+ * @param {Object} [args.data]
+ * Data used in the template compilation.
+ *
+ * @param {Boolean} [args.strict]
+ * Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
+ *
+ * @param {Object} [args.instructions]
+ * Object containing the list of extra instructions to be applied during template compilation.
+ *
+ * @return {String}
+ * Compiled string value.
  */
 Echo.Plugin.prototype.substitute = function(args) {
 	var plugin = this;
@@ -385,15 +434,15 @@ Echo.Plugin._getClassName = function(name, component) {
  */
 Echo.Plugin._defineNestedClass("Config");
 
-Echo.Plugin.Config.prototype._normalize = function(key) {
-	return (["plugins", this.plugin.name].concat(key ? key : [])).join(".");
-};
-
 /**
  * @method
  * Setter method to define specific config field value.
- * @param {String} key Defines the key where the given data should be stored.
- * @param {Mixed} value The corresponding value which should be defined for the key.
+ *
+ * @param {String} key
+ * Defines the key where the given data should be stored.
+ *
+ * @param {Mixed} value
+ * The corresponding value which should be defined for the key.
  */
 Echo.Plugin.Config.prototype.set = function(key, value) {
 	this.plugin.component.config.set(this._normalize(key), value);
@@ -402,10 +451,18 @@ Echo.Plugin.Config.prototype.set = function(key, value) {
 /**
  * @method
  * Accessor method to get specific config field.
- * @param {String} key Defines the key for data extraction.
- * @param {Object} [defaults] Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
- * @param {Boolean} [askParent] Flag to call parent config if the value was not found in the particular instance.
- * @return {Mixed} Returns the corresponding value found in the config.
+ *
+ * @param {String} key
+ * Defines the key for data extraction.
+ *
+ * @param {Object} [defaults]
+ * Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ *
+ * @param {Boolean} [askParent]
+ * Flag to call parent config if the value was not found in the particular instance.
+ *
+ * @return {Mixed}
+ * Corresponding value found in the config.
  */
 Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
 	var component = this.plugin.component;
@@ -422,7 +479,9 @@ Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
 /**
  * @method
  * Method to remove specific config field.
- * @param {String} key Defines the key which should be removed from the configuration.
+ *
+ * @param {String} key
+ * Defines the key which should be removed from the configuration.
  */
 Echo.Plugin.Config.prototype.remove = function(key) {
 	this.plugin.component.config.remove(this._normalize(key));
@@ -431,7 +490,7 @@ Echo.Plugin.Config.prototype.remove = function(key) {
 /**
  * @method
  * Assembles config for nested control based on the parent control config.
- * @param {Object} data (required) Configuration data to be merged with the parent config.
+ * @param {Object} data Configuration data to be merged with the parent config.
  * @return {Object} Echo.Configuration instance.
  */
 Echo.Plugin.Config.prototype.assemble = function(data) {
@@ -449,6 +508,10 @@ Echo.Plugin.Config.prototype.assemble = function(data) {
 		}
 	});
 	return (new Echo.Configuration(data, this.plugin.config.get())).getAsHash();
+};
+
+Echo.Plugin.Config.prototype._normalize = function(key) {
+	return (["plugins", this.plugin.name].concat(key ? key : [])).join(".");
 };
 
 /**

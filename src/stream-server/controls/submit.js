@@ -2,6 +2,7 @@
  * @class Echo.StreamServer.Controls.Submit
  * Echo Submit control which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank">Echo Submit API</a>
+ *
  * @extends Echo.Control
  *
  * @constructor

@@ -1,6 +1,7 @@
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag
  * Adds extra buttons Flag/Unflag to each item in the Echo Stream control for the authenticated users. The item will receive the CommunityFlagged state as soon as it is flagged by a certain number of users. By default this number is 3, but it may be updated by contacting Echo Solutions team at solutions@aboutecho.com. The plugin also shows the number of flags already set for the item next to the Flag/Unflag control.
+ *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
  *         "appkey": "test.echoenabled.com",
@@ -8,14 +9,16 @@
  *             "name": "CommunityFlag"
  *         }]
  *     });
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("CommunityFlag", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.config = {
-/**
- * @cfg {Boolean} showUsers Specifies the visibility of list of users who flagged particular item. Note that the list is only visible for the users with the administrative privileges.
- */
+	/**
+	 * @cfg {Boolean} showUsers
+	 * Specifies the visibility of list of users who flagged particular item. Note that the list is only visible for the users with the administrative privileges.
+	 */
 	"showUsers": true
 };
 

@@ -2,7 +2,8 @@
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Edit
- * Adds extra Button Edit to each item in the Echo Stream control which allows to edit the content and some metadata of the item. This button will appear either for the users with the administrative privileges or for editing personal comments.
+ * Adds extra button Edit to each item in the Echo Stream control which allows to edit the content and some metadata of the item. This button will appear either for the users with the administrative privileges or for editing personal comments.
+ *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
  *         "appkey": "test.echoenabled.com",
@@ -10,6 +11,7 @@
  *             "name": "Edit"
  *         }]
  *     });
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Stream.Item");
@@ -27,7 +29,11 @@ $.map(["Complete", "Error"], function(action) {
 });
 
 plugin.labels = {
-	"editControl": "Edit"
+	/**
+	 * @echo_label
+	 * Label for the button in the item
+	 */
+	"editButton": "Edit"
 };
 
 plugin.methods._submitConfig = function(item, target) {
@@ -44,7 +50,7 @@ plugin.methods._assembleButton = function() {
 		var item = this;
 		return {
 			"name": "Edit",
-			"label": plugin.labels.get("editControl"),
+			"label": plugin.labels.get("editButton"),
 			"visible": item.user.is("admin") || item.user.has("identity", item.get("data.actor.id")),
 			"callback": function() {
 				var config = plugin._submitConfig(item, item.dom.get("subcontainer"));
@@ -64,6 +70,20 @@ Echo.Plugin.create(plugin);
 
 (function() {
 
+/**
+ * @class Echo.StreamServer.Controls.Submit.Plugins.Edit
+ * Adds new mode to the Echo Submit control which allows to edit the content and some metadata of the item.
+ *
+ *     new Echo.StreamServer.Controls.Submit({
+ *         "target": document.getElementById("echo-submit"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "Edit"
+ *         }]
+ *     });
+ *
+ * @extends Echo.Plugin
+ */
 var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Submit");
 
 plugin.init = function() {
@@ -77,27 +97,45 @@ plugin.init = function() {
 };
 
 plugin.labels = {
+	/**
+	 * @echo_label
+	 */
 	"createdBy": "Created by",
+	/**
+	 * @echo_label
+	 */
 	"edit": "Edit",
+	/**
+	 * @echo_label
+	 */
 	"on": "on",
+	/**
+	 * @echo_label
+	 */
 	"post": "Update",
+	/**
+	 * @echo_label
+	 */
 	"posting": "Updating...",
+	/**
+	 * @echo_label
+	 */
 	"cancel": "cancel"
 };
 
 /**
  * @event onEditInit
- * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Edit.onEditInit
+ * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit
  * Triggered if edit operation was started
  */
 /**
  * @event onEditComplete
- * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Edit.onEditComplete
+ * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete
  * Triggered when the submit operation is finished
  */
 /**
  * @event onEditError
- * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Edit.onEditError
+ * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError
  * Triggered if edit operation failed
  */
 $.map(["Init", "Complete", "Error"], function(action) {
@@ -126,11 +164,17 @@ plugin.templates.cancel =
 		'<a href="javascript:void(0);" class="{plugin.class:cancelButton} echo-primaryFont echo-clickable echo-linkColor">{plugin.label:cancel}</a>' +
 	'</div>';
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.author = function(element) {
 	var component = this.component;
 	return element.text(component.get("data.actor.title") || component.labels.get("guest"));
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.editedDate = function(element) {
 	var published = this.component.get("data.object.published");
 	if (!published) return element.empty();
@@ -138,6 +182,9 @@ plugin.renderers.editedDate = function(element) {
 	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.cancelButton = function(element) {
 	var plugin = this;
 	var component = plugin.component;
