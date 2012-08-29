@@ -64,6 +64,7 @@ Echo.ProductView.prototype.initControl = function(name, controlConfig) {
 		$.extend(true, 
 			{},
 			this._manifest("controls")[name].config,
+			this.config.get("controls." + name + ".config"),
 			controlConfig
 		)
 	);
@@ -186,6 +187,7 @@ Echo.Product.prototype.initView = function(name, config) {
 	config = config || {};
 	config.parent = config.parent || this.config.getAsHash();
 	config.appkey = config.parent.appkey;
+	config = $.extend(true, {}, this.config.get("views." + name), config);
 	this.views = this.views || {};
 	this.views[name] = new View(config);
 	return this.views[name];

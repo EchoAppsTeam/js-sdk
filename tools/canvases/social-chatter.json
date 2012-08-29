@@ -14,8 +14,9 @@
             "apiBaseURL": "http://api.echoenabled.com/v1/",
             "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
             "eventsTargetURL": "http://echosandbox.com/green-room-events-local/test",
+            "defaultEventIcon": "http://en.gravatar.com/userimage/38814512/35511bed3fa6a80b6afc407d64d149a7.jpg?size=200",
             "views": {
-                "EventList": {
+                "EventsList": {
                     "controls": {
                         "Stream": {
                             "control": "Echo.StreamServer.Controls.Stream",
@@ -24,7 +25,11 @@
                                     "name": "Edit",
                                     "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
                                 }, {
-                                    "name": "SocialChatterItemEvent"
+                                    "name": "SocialChatterEvent"
+                                }, {
+                                    "name": "Like"
+                                }, {
+                                    "name": "Moderation"
                                 }]
                             }
                         }
