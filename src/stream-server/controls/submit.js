@@ -5,8 +5,10 @@
  * @extends Echo.Control
  *
  * @constructor
- * Counter constructor initializing Echo.StreamServer.Controls.Submit class
- * @param {Object} config Configuration options
+ * Counter constructor initializing Echo.StreamServer.Controls.Counter class
+ *
+ * @param {Object} config
+ * Configuration options
  */
 var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
 
@@ -33,7 +35,9 @@ submit.init = function() {
 
 submit.config = {
 	/**
-	 * @cfg {String} [targetURL=document.location.href] Specifies the URI to which the submitted Echo item is related. This parameter will be used as a activity target value for the item.
+	 * @cfg {String} [targetURL=document.location.href]
+	 * Specifies the URI to which the submitted Echo item is related. This parameter will be used as a activity target value for the item.
+	 *
 	 *     new Echo.StreamServer.Controls.Submit({
 	 *         ...
 	 *         "targetURL": "http://somedomain.com/some_article.html",
@@ -42,7 +46,9 @@ submit.config = {
 	 */
 	"targetURL": document.location.href,
 	/**
-	 * @cfg {Array} markers This parameter is used to attach the markers metadata to the item during the item submission. The format of the value is the array array with the string values. Markers will be also displayed in the "Markers" field in the Submit form UI for Moderators and Administrators. For non-admin users the markers value will be submitted along with the other item content when the "Post" button is pressed.
+	 * @cfg {Array} markers
+	 * This parameter is used to attach the markers metadata to the item during the item submission. The format of the value is the array array with the string values. Markers will be also displayed in the "Markers" field in the Submit form UI for Moderators and Administrators. For non-admin users the markers value will be submitted along with the other item content when the "Post" button is pressed.
+	 *
 	 *     new Echo.StreamServer.Controls.Submit({
 	 *         ...
 	 *         "markers": ["marker1", "marker2", "marker3"],
@@ -51,10 +57,17 @@ submit.config = {
 	 */
 	"markers": [],
 	/**
-	 * @cfg {Object} source Designates the initial item source (E.g. Twitter). You can override source name, URI and the corresponding icon.
-	 * @cfg {String} source.name Source name.
-	 * @cfg {String} source.uri Source uri.
-	 * @cfg {String} source.icon Source icon.
+	 * @cfg {Object} source
+	 * Designates the initial item source (E.g. Twitter). You can override source name, URI and the corresponding icon.
+	 *
+	 * @cfg {String} source.name
+	 * Source name.
+	 *
+	 * @cfg {String} source.uri
+	 * Source uri.
+	 *
+	 * @cfg {String} source.icon
+	 * Source icon.
 	 *
 	 *     new Echo.StreamServer.Controls.Submit({
 	 *         ...
@@ -68,7 +81,9 @@ submit.config = {
 	 */
 	"source": {},
 	/**
-	 * @cfg {Array} tags This parameter is used to attach the tags metadata to the item during the item submission. The format of the value is the array array with the string values. Tags will be also displayed in the "Tags" field in the Submit form UI for Moderators and Administrators. For non-admin users the tags value will be submitted along with the other item content when the "Post" button is pressed.
+	 * @cfg {Array} tags
+	 * This parameter is used to attach the tags metadata to the item during the item submission. The format of the value is the array array with the string values. Tags will be also displayed in the "Tags" field in the Submit form UI for Moderators and Administrators. For non-admin users the tags value will be submitted along with the other item content when the "Post" button is pressed.
+	 *
 	 *     new Echo.StreamServer.Controls.Submit({
 	 *         ...
 	 *         "tags": ["tag1", "tag2", "tag3"],
@@ -77,9 +92,10 @@ submit.config = {
 	 */
 	"tags": [],
 	/**
-	 * @cfg {String} requestMethod This parameter is used to specify the request method. Possible values are "GET" and "POST".
+	 * @cfg {String} requestMethod
+	 * This parameter is used to specify the request method. Possible values are "GET" and "POST".
 	 * Setting parameter to "POST" has some restrictions.
-	 * We can't handle server response, UI won't show any waiting for the server responses actions
+	 * We can't handle server response, UI won't show any waiting for the server responses actions.
 	 *
 	 *     new Echo.StreamServer.Controls.Submit({
 	 *         ...
@@ -89,7 +105,9 @@ submit.config = {
 	 */
 	"requestMethod": "GET",
 	/**
-	 * @cfg {String} itemURIPattern Allows to define item id pattern. The value of this parameter should be a valid URI with "{id}" placeholder which will indicate the place where unique id should be inserted. If this parameter is ommited in configuration or the URI is invalid it'll be ignored.
+	 * @cfg {String} itemURIPattern
+	 * Allows to define item id pattern. The value of this parameter should be a valid URI with "{id}" placeholder which will indicate the place where unique id should be inserted. If this parameter is ommited in configuration or the URI is invalid it'll be ignored.
+	 *
 	 *     new Echo.StreamServer.Controls.Submit({
 	 *         ...
 	 *         "itemURIPattern": "http://your-domain.com/path/{id}",
@@ -98,7 +116,9 @@ submit.config = {
 	 */
 	"itemURIPattern": undefined,
 	/**
-	 * @cfg {String} actionString Is used to define the default call to action phrase.
+	 * @cfg {String} actionString
+	 * Is used to define the default call to action phrase.
+	 *
 	 *     new Echo.StreamServer.Controls.Submit({
 	 *         ...
 	 *         "actionString": "Type your comment here...",
@@ -107,7 +127,9 @@ submit.config = {
 	 */
 	"actionString": "Type your comment here...",
 	/**
-	 * @cfg {Number} postingTimeout Is used to specify the number of seconds after which Submit Form will show timeout error dialog if the server does not return anything. If the parameter value is 0 then the mentioned dialog won't never be shown.
+	 * @cfg {Number} postingTimeout
+	 * Is used to specify the number of seconds after which Submit Form will show timeout error dialog if the server does not return anything. If the parameter value is 0 then the mentioned dialog won't never be shown.
+	 *
 	 *     new Echo.StreamServer.Controls.Submit({
 	 *         ...
 	 *         "postingTimeout": 15,
@@ -116,7 +138,9 @@ submit.config = {
 	 */
 	"postingTimeout": 30,
 	/**
-	 * @cfg {String} type Allows to define item type. The value of this parameter should be a valid URI.
+	 * @cfg {String} type
+	 * Allows to define item type. The value of this parameter should be a valid URI.
+	 *
 	 *     new Echo.StreamServer.Controls.Submit({
 	 *         ...
 	 *         "type": "http://echoenabled.com/activitystreams/schema/1.0/category",
@@ -397,12 +421,14 @@ submit.methods.post = function() {
 		"onData": function(data) {
 			/**
 			 * @event onPostComplete
-			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete Triggered when the submit operation is finished.
+			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete
+			 * Triggered when the submit operation is finished.
 			 */
 			publish("Complete", entry);
 			/**
 			 * @event onDataInvalidate
-			 * @echo_event Echo.Control.onDataInvalidate Triggered if dataset is changed.
+			 * @echo_event Echo.Control.onDataInvalidate
+			 * Triggered if dataset is changed.
 			 */
 			// notify all widgets on the page about a new item posted
 			Echo.Events.publish({
@@ -414,14 +440,16 @@ submit.methods.post = function() {
 		"onError": function(data) {
 			/**
 			 * @event onPostError
-			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError Triggered if submit operation failed.
+			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
+			 * Triggered if submit operation failed.
 			 */
 			publish("Error", data);
 		}
 	};
 	/**
 	 * @event onPostInit
-	 * @echo_event Echo.StreamServer.Controls.Submit.onPostInit Triggered if submit operation was started.
+	 * @echo_event Echo.StreamServer.Controls.Submit.onPostInit
+	 * Triggered if submit operation was started.
 	 */
 	publish("Init", entry);
 	Echo.StreamServer.API.request({
