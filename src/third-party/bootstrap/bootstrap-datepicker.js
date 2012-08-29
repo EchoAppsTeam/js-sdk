@@ -398,4 +398,4 @@
 							'</div>'+
 						'</div>';
 
-}( Echo.jQuery );
+}( jQuery );

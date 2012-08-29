@@ -786,4 +786,4 @@
     }
 
     $.fn.timepicker.Constructor = Timepicker
-}(Echo.jQuery);
+}(jQuery);

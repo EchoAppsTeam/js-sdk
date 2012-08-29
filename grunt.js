@@ -226,12 +226,15 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerHelper("wrap_code", function(code, filepath) {
+		var strict = "";
 		if (_.include(_dontWrap, filepath) || /\.pack\.js/.test(filepath)) {
 			return code;
 		}
-		if (!/third-party/.test(filepath)) {
+		// check if file has Echo specific code
+		if (/\bEcho\.\w+/.test(code)) {
 			var doc = code.match(/@class ((?:\w+\.?)+)\s/);
 			var docClass = doc && doc[1];
+			strict = "\"use strict\";\n\n";
 			if (docClass) {
 				var parts = docClass.split(".Plugins.");
 				// if it's plugin file
@@ -246,6 +249,6 @@ module.exports = function(grunt) {
 				grunt.log.writeln("File " + filepath + " is missing '@class' definition");
 			}
 		}
-		return "(function(jQuery) {\nvar $ = jQuery;\n\n" + code + "\n})(Echo.jQuery);\n";
+		return "(function(jQuery) {\n" + strict + "var $ = jQuery;\n\n" + code + "\n})(Echo.jQuery);\n";
 	});
 };

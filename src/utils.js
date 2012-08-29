@@ -6,7 +6,6 @@ if (Echo.Utils) return;
 
 if (!Echo.Variables) Echo.Variables = {};
 
-
 /**
  * Static class implements common methods of data processing.
  * The Echo.Utils class is used in various places of Echo JS SDK components.
