@@ -712,11 +712,6 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	this.config.set("children", $.extend(this.config.get("children"), data.children));
 
 	this.config.extend(this._extractTimeframeConfig(data));
-	/**
-	 * @event onDataReceive
-	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
-	 * Triggered when new data is received.
-	 */
 	this.events.publish({
 		"topic": "onDataReceive",
 		"data": {

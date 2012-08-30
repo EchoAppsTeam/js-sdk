@@ -1,30 +1,12 @@
 /**
  * @class Echo.IdentityServer.Controls.Auth
  * Echo Auth control displays user login status and allows to sign in using different social identities.
- * @extends Echo.Control
  *
- * @constructor
- * Auth constructor initializing Echo.IdentityServer.Controls.Auth class
- * @param {Object} config Configuration options
- */
-var auth = Echo.Control.manifest("Echo.IdentityServer.Controls.Auth");
-
-auth.config = {
-/**
- * @cfg {Object} identityManager The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.
- * @cfg {Object} [identityManager.login] Encapsulates data for login workflow
- * @cfg {Number} [identityManager.login.width] Specifies the width of the visible auth area
- * @cfg {Number} [identityManager.login.height] Specifies the height of the visible auth area
- * @cfg {String} [identityManager.login.url] Specifies the URL to be opened as an auth handler
- * @cfg {Object} [identityManager.signup] Encapsulates data for signup workflow
- * @cfg {Number} [identityManager.signup.width] Specifies the width of the visible auth area
- * @cfg {Number} [identityManager.signup.height] Specifies the height of the visible auth area
- * @cfg {String} [identityManager.signup.url] Specifies the URL to be opened as an auth handler
- * @cfg {Object} [identityManager.edit] Encapsulates data for edit workflow
- * @cfg {Number} [identityManager.edit.width] Specifies the width of the visible auth area
- * @cfg {Number} [identityManager.edit.height] Specifies the height of the visible auth area
- * @cfg {String} [identityManager.edit.url] Specifies the URL to be opened as an auth handler
- *     var identityManager = {"width": 400, "height": 240, "url": "http://example.com/auth"};
+ *     var identityManager = {
+ *         "width": 400,
+ *         "height": 240,
+ *         "url": "http://example.com/auth"
+ *     };
  *
  *     new Echo.IdentityServer.Controls.Auth({
  *         "target": document.getElementById("container"),
@@ -34,20 +16,105 @@ auth.config = {
  *             "signup": identityManager
  *         }
  *     });
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * Auth constructor initializing Echo.IdentityServer.Controls.Auth class.
+ *
+ * @param {Object} config
+ * Configuration options.
  */
+var auth = Echo.Control.manifest("Echo.IdentityServer.Controls.Auth");
+
+auth.config = {
+	/**
+	 * @cfg {Object} identityManager
+	 * The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.
+	 *
+	 *     var identityManager = {
+	 *         "width": 400,
+	 *         "height": 240,
+	 *         "url": "http://example.com/auth"
+	 *     };
+	 *
+	 *     new Echo.IdentityServer.Controls.Auth({
+	 *         "target": document.getElementById("container"),
+	 *         "appkey": "test.aboutecho.com",
+	 *         "identityManager": {
+	 *             "login": identityManager,
+	 *             "signup": identityManager
+	 *         }
+	 *     });
+	 *
+	 * @cfg {Object} [identityManager.login]
+	 * Encapsulates data for login workflow.
+	 *
+	 * @cfg {Number} [identityManager.login.width]
+	 * Specifies the width of the visible auth area.
+	 *
+	 * @cfg {Number} [identityManager.login.height]
+	 * Specifies the height of the visible auth area.
+	 *
+	 * @cfg {String} [identityManager.login.url]
+	 * Specifies the URL to be opened as an auth handler.
+	 *
+	 * @cfg {Object} [identityManager.signup]
+	 * Encapsulates data for signup workflow.
+	 *
+	 * @cfg {Number} [identityManager.signup.width]
+	 * Specifies the width of the visible auth area.
+	 *
+	 * @cfg {Number} [identityManager.signup.height]
+	 * Specifies the height of the visible auth area.
+	 *
+	 * @cfg {String} [identityManager.signup.url]
+	 * Specifies the URL to be opened as an auth handler.
+	 *
+	 * @cfg {Object} [identityManager.edit]
+	 * Encapsulates data for edit workflow.
+	 *
+	 * @cfg {Number} [identityManager.edit.width]
+	 * Specifies the width of the visible auth area.
+	 *
+	 * @cfg {Number} [identityManager.edit.height]
+	 * Specifies the height of the visible auth area.
+	 *
+	 * @cfg {String} [identityManager.edit.url]
+	 * Specifies the URL to be opened as an auth handler.
+	 */
 	"identityManager": {},
-/**
- * @cfg {String} infoMessages Customizes the look and feel of info messages, for example "loading" and "error".
- */
+	/**
+	 * @cfg {String} infoMessages
+	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 */
 	"infoMessages": {"enabled": false}
 };
 
 auth.labels = {
+	/**
+	 * @echo_label
+	 */
 	"edit": "Edit",
+	/**
+	 * @echo_label
+	 */
 	"login": "Login",
+	/**
+	 * @echo_label
+	 */
 	"logout": "Logout",
+	/**
+	 * @echo_label
+	 */
 	"loggingOut": "Logging out...",
+	/**
+	 * @echo_label
+	 */
 	"or": "or",
+	/**
+	 * @echo_label
+	 */
 	"signup": "signup"
 };
 
@@ -76,10 +143,7 @@ auth.templates.logged =
 	'</div>';
 
 auth.events = {
-/**
- * @event
- */
-	"Echo.UserSession.onInvalidate": {
+	"Echo UserSession.onInvalidate": {
 		"context": "global",
 		"handler": function() {
 			$.fancybox.close();
@@ -87,6 +151,9 @@ auth.events = {
 	}
 };
 
+/**
+ * @echo_renderer
+ */
 auth.renderers.logout = function(element) { 
 	var self = this;
 	return element.click(function() {
@@ -95,18 +162,30 @@ auth.renderers.logout = function(element) {
 	});
 };
 
+/**
+ * @echo_renderer
+ */
 auth.renderers.login = function(element) {
 	return this._assembleIdentityControl("login", element);
 };
 
+/**
+ * @echo_renderer
+ */
 auth.renderers.edit = function(element) {
 	return this._assembleIdentityControl("edit", element);
 };
 
+/**
+ * @echo_renderer
+ */
 auth.renderers.signup = function(element) {
 	return this._assembleIdentityControl("signup", element);
 };
 
+/**
+ * @echo_renderer
+ */
 auth.renderers.or = function(element) {
 	if (!this.config.get("identityManager.login") ||
 		!this.config.get("identityManager.signup") ||
@@ -116,6 +195,9 @@ auth.renderers.or = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 auth.renderers.avatar = function(element) {
 	return element.empty().append(Echo.Utils.loadImage(
 		this.user.get("avatar"),
@@ -123,10 +205,19 @@ auth.renderers.avatar = function(element) {
 	));
 };
 
+/**
+ * @echo_renderer
+ */
 auth.renderers.name = function(element) {
 	return element.append(this.user.get("name", ""));
 };
 
+/**
+ * Method to define which template should be used for general rendering procedure.
+ *
+ * @return {String}
+ * control template.
+ */
 auth.methods.template = function() {
 	return this.templates[this.user.is("logged") ? "logged" : "anonymous"];
 };
