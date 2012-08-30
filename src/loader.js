@@ -20,19 +20,6 @@ Echo.Loader = {
 
 /**
  * @static
- * Function to get absolute url
- *
- * @param {String} url
- * Url to resource
-*/
-Echo.Loader.cdnURL = function(url) {
-	return /^[a-z]+:|^\/\//.test(url)
-		? url
-		: Echo.Loader.config.cdnBaseURL + url;
-};
-
-/**
- * @static
  * @method
  * Function to initialize canvases on the page.
  *
@@ -78,7 +65,7 @@ Echo.Loader.download = function(params) {
 		for (var i = 0; i < scripts.length; i++) {
 			var script = scripts[i];
 			if (!script.loaded || !script.loaded()) {
-				urls.push(Echo.Loader.cdnURL(script.url));
+				urls.push(Echo.Loader._getCdnURL(script.url));
 			}
 		}
 	}
@@ -112,15 +99,21 @@ Echo.Loader.override = function(canvasID, appID, config) {
 
 // internal functions
 
+Echo.Loader._getCdnURL = function(url) {
+	return /^https?:\/\/|^\/\//.test(url)
+		? url
+		: Echo.Loader.config.cdnBaseURL + url;
+};
+
 Echo.Loader._initEnvironment = function(callback) {
 	var scripts = [{
-		"url": Echo.Loader.config.cdnBaseURL + "sdk/backplane.js",
+		"url": "sdk/backplane.js",
 		"loaded": function() { return !!window.Backplane; }
 	}, {
-		"url": Echo.Loader.config.cdnBaseURL + "sdk/third-party/jquery.pack.js",
+		"url": "sdk/third-party/jquery.pack.js",
 		"loaded": function() { return !!Echo.jQuery; }
 	}, {
-		"url": Echo.Loader.config.cdnBaseURL + "sdk/environment.pack.js",
+		"url": "sdk/environment.pack.js",
 		"loaded": function() { return !!Echo.Utils; }
 	}];
 	Echo.Loader.download({
