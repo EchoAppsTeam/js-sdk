@@ -1338,6 +1338,73 @@ item.labels = {
 	"childrenMoreItems": "View more items"
 };
 
+item.methods.template = function() {
+	return '<div class="{class:content}">' +
+		'<div class="{class:container}">' +
+			'<div class="{class:avatar-wrapper}">' +
+				'<div class="{class:avatar}"></div>' +
+			'</div>' +
+			'<div class="{class:wrapper}">' +
+				'<div class="{class:subwrapper}">' +
+					'<div class="{class:subcontainer}">' +
+						'<div class="{class:frame}">' +
+							'<div class="{class:modeSwitch} echo-clickable"></div>' +
+							'<div class="{class:authorName} echo-linkColor"></div>' +
+							'<div class="echo-clear"></div>' +
+							'<div class="{class:data}">' +
+								'<div class="{class:re}"></div>' +
+								'<div class="{class:body} echo-primaryColor"> ' +
+									'<span class="{class:text}"></span>' +
+									'<span class="{class:textEllipses}">...</span>' +
+									'<span class="{class:textToggleTruncated} echo-linkColor echo-clickable"></span>' +
+								'</div>' +
+								'<div class="{class:markers} echo-secondaryFont echo-secondaryColor"></div>' +
+								'<div class="{class:tags} echo-secondaryFont echo-secondaryColor"></div>' +
+							'</div>' +
+							'<div class="{class:metadata}">' +
+								'<div class="{class:metadata-userID}">' +
+									'<span class="{class:metadata-title} {class:metadata-icon}">' +
+										'{label:userID}' +
+									'</span>' +
+									'<span class="{class:metadata-value}">{data:actor.id}</span>' +
+								'</div>' +
+								'<div class="{class:metadata-userIP} {class:metadataUserIP}">' +
+									'<span class="{class:metadata-title} {class:metadata-icon}">' +
+										'{label:userIP}' +
+									'</span>' +
+									'<span class="{class:metadata-value}">{data:ip}</span>' +
+								'</div>' +
+							'</div>' +
+							'<div class="{class:footer} echo-secondaryColor echo-secondaryFont">' +
+								'<img class="{class:sourceIcon} echo-clickable">' +
+								'<div class="{class:date}"></div>' +
+								'<div class="{class:from}"></div>' +
+								'<div class="{class:via}"></div>' +
+								'<div class="{class:buttons}"></div>' +
+								'<div class="echo-clear"></div>' +
+							'</div>' +
+						'</div>' +
+					'</div>' +
+					'<div class="echo-clear"></div>' +
+				'</div>' +
+			'</div>' +
+			'<div class="echo-clear"></div>' +
+			'<div class="{class:childrenMarker}"></div>' +
+		'</div>' +
+		(this.config.get("parent.children.sortOrder") === "chronological"
+			? '<div class="{class:children}"></div>' +
+			'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
+				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
+			'</div>'
+			: '<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
+				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
+			'</div>' +
+			'<div class="{class:children}"></div>'
+		) +
+		'<div class="{class:childrenByCurrentActorLive}"></div>' +
+	'</div>';
+};
+
 item.renderers.authorName = function(element) {
 	return element.append(this.get("data.actor.title") || this.labels.get("guest"));
 };
@@ -1811,73 +1878,6 @@ item.renderers.expandChildren = function(element, extra) {
 				"propagation": false
 			});
 		});
-};
-
-item.methods.template = function() {
-	return '<div class="{class:content}">' +
-		'<div class="{class:container}">' +
-			'<div class="{class:avatar-wrapper}">' +
-				'<div class="{class:avatar}"></div>' +
-			'</div>' +
-			'<div class="{class:wrapper}">' +
-				'<div class="{class:subwrapper}">' +
-					'<div class="{class:subcontainer}">' +
-						'<div class="{class:frame}">' +
-							'<div class="{class:modeSwitch} echo-clickable"></div>' +
-							'<div class="{class:authorName} echo-linkColor"></div>' +
-							'<div class="echo-clear"></div>' +
-							'<div class="{class:data}">' +
-								'<div class="{class:re}"></div>' +
-								'<div class="{class:body} echo-primaryColor"> ' +
-									'<span class="{class:text}"></span>' +
-									'<span class="{class:textEllipses}">...</span>' +
-									'<span class="{class:textToggleTruncated} echo-linkColor echo-clickable"></span>' +
-								'</div>' +
-								'<div class="{class:markers} echo-secondaryFont echo-secondaryColor"></div>' +
-								'<div class="{class:tags} echo-secondaryFont echo-secondaryColor"></div>' +
-							'</div>' +
-							'<div class="{class:metadata}">' +
-								'<div class="{class:metadata-userID}">' +
-									'<span class="{class:metadata-title} {class:metadata-icon}">' +
-										'{label:userID}' +
-									'</span>' +
-									'<span class="{class:metadata-value}">{data:actor.id}</span>' +
-								'</div>' +
-								'<div class="{class:metadata-userIP} {class:metadataUserIP}">' +
-									'<span class="{class:metadata-title} {class:metadata-icon}">' +
-										'{label:userIP}' +
-									'</span>' +
-									'<span class="{class:metadata-value}">{data:ip}</span>' +
-								'</div>' +
-							'</div>' +
-							'<div class="{class:footer} echo-secondaryColor echo-secondaryFont">' +
-								'<img class="{class:sourceIcon} echo-clickable">' +
-								'<div class="{class:date}"></div>' +
-								'<div class="{class:from}"></div>' +
-								'<div class="{class:via}"></div>' +
-								'<div class="{class:buttons}"></div>' +
-								'<div class="echo-clear"></div>' +
-							'</div>' +
-						'</div>' +
-					'</div>' +
-					'<div class="echo-clear"></div>' +
-				'</div>' +
-			'</div>' +
-			'<div class="echo-clear"></div>' +
-			'<div class="{class:childrenMarker}"></div>' +
-		'</div>' +
-		(this.config.get("parent.children.sortOrder") === "chronological"
-			? '<div class="{class:children}"></div>' +
-			'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
-			'</div>'
-			: '<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
-			'</div>' +
-			'<div class="{class:children}"></div>'
-		) +
-		'<div class="{class:childrenByCurrentActorLive}"></div>' +
-	'</div>';
 };
 
 item.methods.hasMoreChildren = function() {
