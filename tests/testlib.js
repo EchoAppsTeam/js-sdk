@@ -1,7 +1,8 @@
 (function(jQuery) {
-var $ = jQuery;
 
 "use strict";
+
+var $ = jQuery;
 
 if (!window.Echo) window.Echo = {};
 if (!Echo.Tests) Echo.Tests = {"Unit": {}, "Common": {}};
@@ -343,6 +344,7 @@ Echo.Tests.Stats = {
 					typeof value != "string" &&
 					typeof value != "undefined" &&
 					!$.isArray(value) &&
+					name != "cache" &&
 					name != "manifest" &&
 					name != "constructor" &&
 					name != "parent";
