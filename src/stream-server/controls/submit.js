@@ -3,6 +3,12 @@
  * Echo Submit control which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank">Echo Submit API</a>
  *
+ *     new Echo.StreamServer.Controls.Submit({
+ *         "target": document.getElementById("submit"),
+ *         "targetURL": "http://example.com/submit",
+ *         "appkey": "test.js-kit.com",
+ *     });
+ *
  * @extends Echo.Control
  *
  * @constructor
@@ -12,13 +18,6 @@
  * Configuration options
  */
 var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
-
-submit.vars = {
-	/**
-	 * List of the functions validating input before submit
-	 */
-	"validators": []
-};
 
 submit.init = function() {
 	var self = this;
@@ -152,6 +151,13 @@ submit.config = {
 	"targetQuery": undefined
 };
 
+submit.vars = {
+	/**
+	 * List of the functions validating input before submit
+	 */
+	"validators": []
+};
+
 submit.labels = {
 	/**
 	 * @echo_label
@@ -195,8 +201,6 @@ submit.labels = {
 	 */
 	"yourWebsiteOptional": "Your website (optional)"
 };
-
-// templates
 
 submit.templates.main =
 	'<div class="{class:container}">' +
@@ -246,8 +250,6 @@ submit.templates.main =
 			'<div class="echo-clear"></div>' +
 		'</div>' +
 	'</div>';
-
-// renderers
 
 /**
  * @echo_renderer
@@ -391,7 +393,6 @@ submit.renderers._metaFields = function(element, extra) {
 	}).val(value).blur();
 };
 
-// methods
 /**
  * Method used for posting user provided content to the <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank"> Echo Submit</a> endpoint through <a href="http://wiki.aboutecho.com/w/page/53021402/Echo%20Submission%20Proxy" target="_blank"> Echo Submission Proxy</a>.
  */

@@ -2,43 +2,22 @@
  * @class Echo.StreamServer.Controls.Counter
  * Echo Counter class which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
+ *
+ *     new Echo.StreamServer.Controls.Counter({
+ *         "target": document.getElementById("counter"),
+ *         "appkey": "test.aboutecho.com",
+ *         "query" : "childrenof:http://example.com/test/*"
+ *     });
+ *
  * @extends Echo.Control
  *
  * @constructor
  * Counter constructor initializing Echo.StreamServer.Controls.Counter class
- * @param {Object} config Configuration options
+ *
+ * @param {Object} config
+ * Configuration options
  */
 var counter = Echo.Control.manifest("Echo.StreamServer.Controls.Counter");
-
-counter.config = {
-/**
- * @cfg {String} query Specifies the search query to generate the necessary data set. It must be constructed according to the <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a> method specification.
- *     new Echo.StreamServer.Controls.Counter({
- *         "target": document.getElementById("container"),
- *         "appkey": "test.aboutecho.com",
- *         "query" : "childrenof:http://example.com/test/*"
- *     });
- */
-/**
- * @cfg {Object} data Specifies predefined items count which should be displayed by the application.
- *     new Echo.Counter({
- *         ...
- *         "data": {"count": 100},
- *         ...
- *     });
- */
-	"data": undefined,
-/**
- * @cfg {Number} [liveUpdatesTimeout=10] Specifies the timeout between the live updates requests (in seconds).
- */
-	"liveUpdatesTimeout": 10,
-/**
- * @cfg {String} infoMessages Customizes the look and feel of info messages, for example "loading" and "error".
- */
-	"infoMessages": {"layout": "compact"}
-};
-
-counter.templates.main = "<span>{data:count}</span>";
 
 counter.init = function() {
 	// data can be defined explicitly
@@ -52,7 +31,41 @@ counter.init = function() {
 	}
 };
 
-// internal functions
+counter.config = {
+	/**
+	 * @cfg {String} query
+	 * Specifies the search query to generate the necessary data set. It must be constructed according to the <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a> method specification.
+	 *
+	 *     new Echo.StreamServer.Controls.Counter({
+	 *         "target": document.getElementById("container"),
+	 *         "appkey": "test.aboutecho.com",
+	 *         "query" : "childrenof:http://example.com/test/*"
+	 *     });
+	 */
+	/**
+	 * @cfg {Object} data
+	 * Specifies predefined items count which should be displayed by the application.
+	 *
+	 *     new Echo.Counter({
+	 *         ...
+	 *         "data": {"count": 100},
+	 *         ...
+	 *     });
+	 */
+	"data": undefined,
+	/**
+	 * @cfg {Number} [liveUpdatesTimeout=10]
+	 * Specifies the timeout between the live updates requests (in seconds).
+	 */
+	"liveUpdatesTimeout": 10,
+	/**
+	 * @cfg {String} infoMessages 
+	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 */
+	"infoMessages": {"layout": "compact"}
+};
+
+counter.templates.main = "<span>{data:count}</span>";
 
 counter.methods._request = function() {
 	var request = this.get("request");
