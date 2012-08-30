@@ -354,7 +354,7 @@ SocialChatter.views.GreenRoom.templates.main =
 				"labelMark": "{label:sendToGreenRoomControl}",
 				"labelUnmark": "{label:removeFromGreenRoomControl}"
 			}],
-			"enabled": "{self:_isNonVIPUser}"
+			"enabled": "{self:isNonVIPUser}"
 		},
 		"ItemConditionalCSSClasses": {
 			"name": "ItemConditionalCSSClasses",
@@ -373,7 +373,7 @@ SocialChatter.views.GreenRoom.templates.main =
 				"labelSet": "{label:assignVIPRoleControl}",
 				"labelUnset": "{label:revokeVIPRoleControl}"
 			}],
-			"enabled": "{self:_isNonVIPUser}"
+			"enabled": "{self:isNonVIPUser}"
 		}
 	};
 
@@ -419,7 +419,7 @@ SocialChatter.views.GreenRoom.templates.main =
 			}, {
 				"name": "Moderation",
 				"userActions": [],
-				"enabled": "{self:_isNonVIPUser}"
+				"enabled": "{self:isNonVIPUser}"
 			}, {
 				"name": "VipReplies",
 				"copyTo": {
@@ -470,7 +470,7 @@ SocialChatter.views.GreenRoom.templates.main =
 			}, {
 				"name": "Moderation",
 				"userActions": [],
-				"enabled": "{self:_isNonVIPUser}"
+				"enabled": "{self:isNonVIPUser}"
 			}, {
 				"name": "VipReplies"
 			},
@@ -488,7 +488,7 @@ SocialChatter.views.Main.controls.Auth = {
 	}
 };
 
-SocialChatter.views.PublicEvent.methods._isNonVIPUser = SocialChatter.views.GreenRoom.methods._isNonVIPUser = function() {
+SocialChatter.views.PublicEvent.methods.isNonVIPUser = SocialChatter.views.GreenRoom.methods.isNonVIPUser = function() {
 	return !this.user.any("roles", ["vip"]);
 };
 
@@ -522,18 +522,20 @@ SocialChatter.views.PublicEvent.renderers.countdown = function(element) {
 			var topic = isUpcomingEvent
 				? "onEventStart"
 				: "onEventEnd";
-		self.events.publish({
-			"topic": topic,
-			"data": self.data
-		});
+			self.events.publish({
+				"topic": topic,
+				"data": self.data
+			});
 		}
 		: function() {};
-	if (status != "upcoming") return;
-	return element.css("display", "block")
-		.countdown(new Date(this.data[isUpcomingEvent ? "eventStart" : "eventEnd"]), {
-			"prefix": this.labels.get(isUpcomingEvent ? "chatOpensIn" : "chatClosesIn"),
-			"finish": finishHandler
-		});
+	if (status === "upcoming") {
+		element.css("display", "block")
+			.countdown(new Date(this.data[isUpcomingEvent ? "eventStart" : "eventEnd"]), {
+				"prefix": this.labels.get(isUpcomingEvent ? "chatOpensIn" : "chatClosesIn"),
+				"finish": finishHandler
+			});
+	}
+	return element;
 };
 
 SocialChatter.views.EventsList.renderers.eventSubmitLabel = function(element) {
@@ -778,8 +780,8 @@ SocialChatter.assemblers.EventsList = function(target) {
 				var status = event.getStatus();
 				self.eventById[entry.object.id] = event;
 				if ((self.event && self.event.id == event.id) ||
-					(!self.event && (status == "onAir" || status == "upcoming"
-				))) {
+					(!self.event && (status == "onAir" || status == "upcoming"))
+				) {
 					self._setPublicEvent(self._pickRelevantEvent());
 					self._updateTabs();
 				}
