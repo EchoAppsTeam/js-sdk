@@ -13,11 +13,7 @@ if (!Echo.Variables) Echo.Variables = {};
 
 Echo.Utils = {};
 
-var _cssStyles = {
-	"anchor": undefined,
-	"index": 1,
-	"processed": {}
-};
+Echo.Utils.cache = {};
 
 Echo.Utils.regexps = {
 	"templateSubstitution": "{([0-9a-z\\.]+)(?:\\:((?:[0-9a-z_-]+\\.)*[0-9a-z_-]+))?}",
@@ -57,12 +53,20 @@ Echo.Utils.regexps = {
  * @return {Boolean} Returns true if CSS styles was successfully added, false - if CSS styles is already in the document.
  */
 Echo.Utils.addCSS = function(cssCode, id) {
+	if (typeof this.cache.cssStyles === "undefined") {
+		this.cache.cssStyles = {
+			"anchor": undefined,
+			"index": 1,
+			"processed": {}
+		};
+	}
+	var cssStyles = this.cache.cssStyles;
 	if (id) {
-		if (_cssStyles.processed[id]) return false;
-		_cssStyles.processed[id] = true;
+		if (cssStyles.processed[id]) return false;
+		cssStyles.processed[id] = true;
 	}
 	var currentCssCode = "";
-	var oldStyle = _cssStyles.anchor;
+	var oldStyle = cssStyles.anchor;
 	if (oldStyle && oldStyle.length) {
 		currentCssCode = oldStyle.html();
 	}
@@ -70,23 +74,23 @@ Echo.Utils.addCSS = function(cssCode, id) {
 	// so we limit it to 100000 characters
 	// (2000 rules x 50 characters per rule)
 	if (currentCssCode.length + cssCode.length > 100000) {
-		_cssStyles.index++;
+		cssStyles.index++;
 		oldStyle = null;
 		currentCssCode = "";
 	}
-	var newStyle = $('<style id="echo-css-rules-' + _cssStyles.index + '" type="text/css">' + currentCssCode + cssCode + '</style>');
+	var newStyle = $('<style id="echo-css-rules-' + cssStyles.index + '" type="text/css">' + currentCssCode + cssCode + '</style>');
 	if (oldStyle && oldStyle.length) {
 		// use replacing instead of adding css to existing element
 		// because IE doesn't allow it
 		oldStyle.replaceWith(newStyle);
 	} else {
-		if (_cssStyles.anchor) {
-			_cssStyles.anchor.after(newStyle);
+		if (cssStyles.anchor) {
+			cssStyles.anchor.after(newStyle);
 		} else {
 			$(document.getElementsByTagName("head")[0] || document.documentElement).prepend(newStyle);
 		}
 	}
-	_cssStyles.anchor = newStyle;
+	cssStyles.anchor = newStyle;
 	return true;
 };
 
@@ -394,11 +398,10 @@ Echo.Utils.stripTags = function(text) {
  * @return {Object} Returns the object containing the following parts of the URL as fields: scheme, domain, path, query, fragment.
  */
 Echo.Utils.parseURL = function(url) {
-
-	// define global placeholder to cache URL processing result
-	Echo.Utils._parsedURLs = Echo.Utils._parsedURLs || {};
-
-	var parsed = Echo.Utils._parsedURLs;
+	if (typeof this.cache.parsedURLs === "undefined") {
+		this.cache.parsedURLs = {};
+	}
+	var parsed = this.cache.parsedURLs;
 	if (parsed.hasOwnProperty(url)) {
 		return parsed[url];
 	} else {
@@ -482,10 +485,10 @@ Echo.Utils.timestampFromW3CDTF = function(datetime) {
 Echo.Utils.isMobileDevice = function() {
 	// we can calculate it once and use the cached value
 	// in other calls since user agent will not be changed
-	if (typeof this._isMobileDevice === "undefined") {
-		this._isMobileDevice = this.regexps.mobileUA.test(navigator.userAgent);
+	if (typeof this.cache.isMobileDevice === "undefined") {
+		this.cache.isMobileDevice = this.regexps.mobileUA.test(navigator.userAgent);
 	}
-	return this._isMobileDevice;
+	return this.cache.isMobileDevice;
 };
 
 /**
