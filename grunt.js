@@ -37,7 +37,7 @@ module.exports = function(grunt) {
 		},
 		exec: {
 			docs: {
-				command: "jsduck src --ignore-global --title=\"Echo JS SDK\" --pretty-json --output web/sdk/docs --meta-tags=tools/jsduck.tags.rb"
+				command: "jsduck src --ignore-global --title=\"Echo JS SDK\" --pretty-json --output web/sdk/docs --meta-tags=tools/jsduck/meta-tags.rb"
 			}
 		},
 		copy: {
@@ -175,7 +175,7 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks("grunt-exec");
 	grunt.loadNpmTasks("grunt-contrib");
-	grunt.loadTasks("tasks");
+	grunt.loadTasks("tools/grunt/tasks");
 
 	grunt.registerMultiTask("packs", "Assemble packages", function() {
 		var name = this.target + ".pack.js";
