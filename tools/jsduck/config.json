@@ -4,5 +4,6 @@
 	"--output": "../../web/sdk/docs",
 	"--meta-tags": "meta-tags.rb",
 	"--ignore-global": true,
-	"--pretty-json": true
+	"--pretty-json": true,
+	"--head-html": "<style type=\"text/css\">.class-categories .section .middle-column { width: 500px; }</style>"
 }
