@@ -1365,11 +1365,7 @@ item.renderers._extraField = function(element, extra) {
 		this.dom.remove(element);
 		return element;
 	}
-	var name = type === "markers"
-		? "maxMarkerLength"
-		: type === "tags"
-			? "maxTagsLength"
-			: "";
+	var name = type === "markers" ? "maxMarkerLength" : "maxTagsLength";
 	var limit = this.config.get("limits." + name);
 	var items = Echo.Utils.foldl([], this.data.object[type], function(item, acc) {
 		var template = item.length > limit
@@ -1391,18 +1387,19 @@ item.renderers.container = function(element) {
 			return self.cssPrefix + "container-" + suffix;
 		}).join(" ")
 	);
-	var threadSuffix = this.threading ? "-thread" : "";
-	if (this.depth) {
-		element.addClass(this.cssPrefix + "container-child" + threadSuffix);
-		element.addClass("echo-trinaryBackgroundColor");
-	} else {
-		element.addClass(this.cssPrefix + "container-root" + threadSuffix);
-	}
-	element.addClass(this.cssPrefix + "depth-" + this.depth);
+	var suffix = this.threading ? "-thread" : "";
+	var cssClass = this.depth
+		? "container-child" + suffix + " echo-trinaryBackgroundColor"
+		: "container-root" + suffix;
+	element.addClass(
+		this.cssPrefix + "depth-" + this.depth + " " +
+		this.cssPrefix + cssClass
+	);
 	var switchClasses = function(action) {
 		$.map(self.buttonsOrder, function(name) {
 			if (!self.get("buttons." + name + ".element")) return;
-			self.get("buttons." + name + ".clickableElements")[action + "Class"]("echo-linkColor");
+			var clickables = self.get("buttons." + name + ".clickableElements");
+			clickables[action + "Class"]("echo-linkColor");
 		});
 	};
 	if (!Echo.Utils.isMobileDevice()) {
@@ -1456,15 +1453,16 @@ item.renderers.wrapper = function(element) {
 };
 
 item.renderers.avatar = function(element) {
-	var self = this;
-	var size = (!this.depth ? 48 : 24);
-	var avatar = Echo.Utils.loadImage(this.get("data.actor.avatar"), this.user.config.get("defaultAvatar"));
+	var size = this.depth ? 24 : 48;
+	var avatar = Echo.Utils.loadImage(
+		this.get("data.actor.avatar"),
+		this.user.config.get("defaultAvatar")
+	);
 	avatar.css({"width": size, "height": size});
 	return element.empty().append(avatar);
 };
 
 item.renderers._childrenContainer = function(element, config) {
-	var self = this;
 	// we cannot use element.empty() because it will remove children's event handlers
 	$.each(element.children(), function(i, child) {
 		$(child).detach();
@@ -1568,7 +1566,6 @@ item.renderers.re = function(element) {
 	if (!this.config.get("reTag")) {
 		return element;
 	}
-	var self = this;
 	var context = this.get("data.object.context");
 	var re = "";
 	//XXX use normalized permalink and location instead
@@ -1644,18 +1641,16 @@ item.renderers.sourceIcon = function(element) {
 			this.get("data.source.name") == "echo") {
 		this.dom.remove(element);
 	}
-	element.hide().attr("src", Echo.Utils.htmlize(
-		this.get("data.source.icon") || this.config.get("providerIcon")
-	))
-	.show()
-	.one("error", function() {
-		self.dom.remove(element);
-	})
-	.wrap(Echo.Utils.hyperlink({
-		"href": this.get("data.source.uri") || this.get("data.object.permalink")
+	var hyperlink = Echo.Utils.hyperlink({
+		"href": this.get("data.source.uri", this.get("data.object.permalink"))
 	}, {
 		"openInNewWindow": this.config.get("parent.openLinksInNewWindow")
-	}));
+	});
+	var url = this.get("data.source.icon", this.config.get("providerIcon"));
+	element.hide().attr("src", Echo.Utils.htmlize(url))
+		.show()
+		.one("error", function() { self.dom.remove(element); })
+		.wrap(hyperlink);
 };
 
 item.renderers.via = function(element) {
@@ -1769,14 +1764,15 @@ item.renderers.expandChildrenLabel = function(element, extra) {
 };
 
 item.renderers.expandChildren = function(element, extra) {
+	var self = this;
 	if (!this.children.length) {
 		return element;
 	}
 	if (!this.hasMoreChildren()) {
-		// IE in Quirks mode can't operate with elements with "height: 0px" correctly,
-		// element with "height: 0px" is renderered as though it doesn't have height property at all.
-		// Thus we set "height: 1px" as the final value for animate function and simply hide element
-		// after the animation is done.
+		// IE in Quirks mode can't handle elements with the "height: 0px" correctly,
+		// element with the "height: 0px" is renderered like it doesn't have
+		// the height property at all. Thus we set the "height: 1px" as the final value
+		// for the animate function and simply hide element when the animation is done.
 		if ($.browser.msie && document.compatMode !== "CSS1Compat") {
 			element.animate({
 				"height": "1px",
@@ -1795,12 +1791,12 @@ item.renderers.expandChildren = function(element, extra) {
 		}
 		return element;
 	}
-	var self = this;
-	// extra.element is sibling element for more children button
 	extra = extra || {};
-	// the "show()" jQuery method doesn't work for some reason in Chrome (A:5755)
-	return element.css("display", "block")
-		.addClass(this.cssPrefix + "depth-" + (this.depth + 1))
+
+	// the "show()" jQuery method doesn't work for some reasons in Chrome (A:5755)
+	element.css("display", "block");
+
+	return element.addClass(this.cssPrefix + "depth-" + (this.depth + 1))
 		.off("click")
 		.one("click", function() {
 			self.dom.render({
