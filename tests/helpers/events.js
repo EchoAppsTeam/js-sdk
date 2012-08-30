@@ -198,6 +198,10 @@ Echo.Tests.Events.contracts = {
 		"target": $("<div>"),
 		"targetURL": ""
 	},
+	"Echo.Loader.onError": {
+		"code": "",
+		"message": ""
+	},
 	"Echo.StreamServer.Controls.FacePile.Item.onRender": {},
 	"Echo.StreamServer.Controls.FacePile.Item.onReady": {},
 	"Echo.StreamServer.Controls.FacePile.Item.onRerender": {},

@@ -159,7 +159,7 @@ Echo.Loader._initCanvases = function(canvases) {
 	if (!collection.length) {
 		Echo.Loader._error({
 			"code": "no_canvases_found",
-			"description": "No canvases found on the page..."
+			"message": "No canvases found on the page..."
 		});
 		return;
 	}
