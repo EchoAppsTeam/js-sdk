@@ -60,11 +60,16 @@ Echo.ProductView.prototype.initControl = function(name, controlConfig) {
 	// we need to copy apps config to avoid changes in the common config
 	var parentConfig = this.config.getAsHash();
 	controlConfig.parent = controlConfig.parent || parentConfig;
+	controlConfig.plugins = this.updateControlPlugins(
+		Echo.Utils.getNestedValue(this._manifest("controls"), name + ".config.plugins", []),
+		this.config.get("controls." + name + ".config.plugins", []),
+		controlConfig.plugins || []
+	);
 	controlConfig = this._normalizeControlConfig(
 		$.extend(true, 
 			{},
-			this._manifest("controls")[name].config,
-			this.config.get("controls." + name + ".config"),
+			Echo.Utils.getNestedValue(this._manifest("controls"), name + ".config", {}),
+			this.config.get("controls." + name + ".config", {}),
 			controlConfig
 		)
 	);
@@ -73,7 +78,7 @@ Echo.ProductView.prototype.initControl = function(name, controlConfig) {
 	return this.controls[name];
 };
 
-Echo.ProductView.prototype._updateControlPlugins = function(plugins, updatePlugins) {
+Echo.ProductView.prototype.updateControlPlugins = function(plugins) {
 	var self = this;
 	var getPluginIndex = function(plugin, plugins) {
 		var idx = -1;
@@ -85,6 +90,10 @@ Echo.ProductView.prototype._updateControlPlugins = function(plugins, updatePlugi
 		});
 		return idx;
 	};
+	// flatten update plugins list
+	var updatePlugins = $.map(Array.prototype.slice.call(arguments, 1) || [], function(plugin) {
+		return plugin;
+	});
 	return Echo.Utils.foldl(plugins, updatePlugins, function(extender) {
 		var id = getPluginIndex(extender, plugins);
 		if (!~id) {

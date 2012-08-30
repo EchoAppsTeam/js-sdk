@@ -832,29 +832,23 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 		});
 	view.initControl("Stream", {
 		"target": view.dom.get("publicStream"),
-		"plugins": view._updateControlPlugins(
-			this._manifest("views").PublicEvent.controls.Stream.config.plugins,
-			[{
-				"name": "Reply",
-				"enabled": pluginEnabled
-			}, {
-				"name": "Like",
-				"enabled": pluginEnabled
-			}]
-		)
+		"plugins": [{
+			"name": "Reply",
+			"enabled": pluginEnabled
+		}, {
+			"name": "Like",
+			"enabled": pluginEnabled
+		}]
 	});
 	view.initControl("VIPStream", {
 		"target": view.dom.get("vipStream"),
-		"plugins": view._updateControlPlugins(
-			this._manifest("views").PublicEvent.controls.VIPStream.config.plugins,
-			[{
-				"name": "Reply",
-				"enabled": pluginEnabled
-			}, {
-				"name": "Like",
-				"enabled": pluginEnabled
-			}]
-		)
+		"plugins": [{
+			"name": "Reply",
+			"enabled": pluginEnabled
+		}, {
+			"name": "Like",
+			"enabled": pluginEnabled
+		}]
 	});
 };
 

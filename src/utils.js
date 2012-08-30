@@ -162,7 +162,7 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
 		if (callback) {
 			callback(_data, _key);
 		}
-		if (typeof _data[_key] === "undefined") {
+		if (typeof _data[_key] === "undefined" || _data[_key] === null) {
 			found = false;
 		} else {
 			return _data[_key];
