@@ -100,13 +100,27 @@ plugin.component.renderers.container = function(element) {
 };
 
 plugin.renderers.eventBrief = function(element) {
-	return this.get("eventDisplay", "brief") === "full"
-		? element.hide()
-		: element.show();
+	return this.dom.render({
+		"name": "_eventDisplay",
+		"target": element,
+		"extra": {
+			"mode": "brief"
+		}
+	});
 };
 
 plugin.renderers.eventFull = function(element) {
-	return this.get("eventDisplay", "brief") === "full"
+	return this.dom.render({
+		"name": "_eventDisplay",
+		"target": element,
+		"extra": {
+			"mode": "full"
+		}
+	});
+};
+
+plugin.renderers._eventDisplay = function(element, extra) {
+	return this.get("eventDisplay", "brief") === extra.mode
 		? element.show()
 		: element.hide();
 };
