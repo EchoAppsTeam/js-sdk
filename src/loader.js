@@ -20,6 +20,19 @@ Echo.Loader = {
 
 /**
  * @static
+ * Function to get absolute url
+ *
+ * @param {String} url
+ * Url to resource
+*/
+Echo.Loader.cdnURL = function(url) {
+	return /^[a-z]+:|^\/\//.test(url)
+		? url
+		: Echo.Loader.config.cdnBaseURL + url;
+};
+
+/**
+ * @static
  * @method
  * Function to initialize canvases on the page.
  *
@@ -65,7 +78,7 @@ Echo.Loader.download = function(params) {
 		for (var i = 0; i < scripts.length; i++) {
 			var script = scripts[i];
 			if (!script.loaded || !script.loaded()) {
-				urls.push(script.url);
+				urls.push(Echo.Loader.cdnURL(script.url));
 			}
 		}
 	}
