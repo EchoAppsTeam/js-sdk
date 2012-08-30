@@ -1,0 +1,8 @@
+{
+	"--title": "Echo JS SDK Documentation",
+	"--": ["../../src"],
+	"--output": "../../web/sdk/docs",
+	"--meta-tags": "meta-tags.rb",
+	"--ignore-global": true,
+	"--pretty-json": true
+}
