@@ -507,17 +507,11 @@ SocialChatter.views.PublicEvent.renderers.publicViewNotice = function(element) {
 };
 
 SocialChatter.views.PublicEvent.renderers.avatar = function(element) {
-	var self = this;
-	var url = this.data.vipPhoto || this.config.get("parent.defaultEventIcon");
-	var img = $("<img>", {"src": url});
-	if (url != this.config.get("parent.defaultEventIcon")) {
-		img.one({
-			"error" : function(){
-				$(this).attr("src", self.config.get("parent.defaultEventIcon"));
-			}
-		});
-	}
-	return element.append(img);
+	var avatar = Echo.Utils.loadImage(
+		this.data.vipPhoto,
+		this.config.get("parent.defaultEventIcon")
+	);
+	return element.empty().append(avatar);
 };
 
 SocialChatter.views.PublicEvent.renderers.countdown = function(element) {
