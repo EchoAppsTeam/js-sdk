@@ -6,3 +6,5 @@ web/products/*
 
 .npmignore
 node_modules
+
+config.local.json

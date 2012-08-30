@@ -16,7 +16,7 @@ module.exports = function(grunt) {
 	var _dontStripDocs = grunt.file.expandFiles(_dirs.src + "/third-party/*.js");
 	var _config = {
 		dirs: _dirs,
-		pkg: "<json:js-sdk.json>",
+		pkg: "<json:package.json>",
 		meta: {
 			banner:
 				"/**\n" +
@@ -82,7 +82,7 @@ module.exports = function(grunt) {
 				src: [
 					"<banner:meta.banner>",
 					"<%= dirs.src %>/third-party/yepnope.1.5.4-min.js",
-					"<%= dirs.src %>/loader.js"
+					"<actualize_cdn_domain:<%= dirs.src %>/loader.js>"
 				],
 				dest: "<%= dirs.dest %>/loader.js"
 			}
@@ -211,6 +211,19 @@ module.exports = function(grunt) {
 			}
 			return match;
 		});
+	});
+
+	grunt.registerHelper("actualize_cdn_domain", function(filepath) {
+		var config;
+		try {
+			config = grunt.file.readJSON("config.local.json");
+		} catch(e) {
+			grunt.log.writeln("No local configuration file (config.local.json) found...");
+		}
+		var code = grunt.task.directive(filepath, grunt.file.read);
+		return config && config.domain
+			? code.replace(/cdn\.echoenabled\.com/ig, config.domain)
+			: code;
 	});
 
 	grunt.registerHelper("wrap_and_concat", function(files, name) {
