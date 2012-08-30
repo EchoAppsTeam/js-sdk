@@ -119,9 +119,7 @@ Echo.SocialChatter.Event.prototype.getDuration = function() {
 Echo.SocialChatter.Event.prototype.getStatus = function() {
 	if (this.onAir()) return "onAir";
 	var timestamp = this.getTimestamp();
-	var now = (new Date()).getTime();
-	if (timestamp.start > now) return "upcoming";
-	else if (timestamp.end < now) return "passed";
+	return timestamp.start > (new Date()).getTime() ? "upcoming" : "passed";
 };
 
 })();
