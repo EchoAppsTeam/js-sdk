@@ -9,7 +9,7 @@ suite.prototype.info = {
 		"parseURL", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate", "log",
 		"getVisibleColor", "isMobileDevice", "getUniqueString", "loadImage",
 		"getComponent", "isComponentDefined", "objectToQuery", "inherit",
-		"parallelCall", "sequentialCall"]
+		"parallelCall", "sequentialCall", "hyperlink"]
 };
 
 suite.prototype.tests = {};

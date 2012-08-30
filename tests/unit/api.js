@@ -13,6 +13,7 @@ suite.prototype.info = {
 		"Transports.AJAX.send",
 		"Transports.AJAX.abort",
 		"Transports.JSONP.available",
+		"Transports.JSONP.send",
 		"Transports.WebSocket.available",
 		"Transports.WebSocket.send",
 		"Transports.WebSocket.abort",

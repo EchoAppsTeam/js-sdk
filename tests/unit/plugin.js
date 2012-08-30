@@ -26,6 +26,7 @@ suite.prototype.info = {
 		"substitute",
 		"enable",
 		"disable",
+		"enabled",
 		"extendTemplate",
 		"parentRenderer",
 		"requestDataRefresh",
