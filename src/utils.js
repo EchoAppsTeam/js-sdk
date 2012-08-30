@@ -679,8 +679,4 @@ Echo.Utils.sequentialCall = function(actions, callback) {
 	});
 };
 
-Echo.Utils.isPreIE9 = function() {
-	return ($.browser.msie && $.browser.version < 9 && document.documentMode && document.documentMode < 9);
-};
-
 })();
