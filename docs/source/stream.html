@@ -1,0 +1,2519 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Stream-method-constructor'><span id='Echo-StreamServer-Controls-Stream'>/**
+</span></span> * @class Echo.StreamServer.Controls.Stream
+ * Echo Stream control which encapsulates interaction with the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search&quot; target=&quot;_blank&quot;&gt;Echo Search API&lt;/a&gt;
+ *
+ *     var stream = new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;stream&quot;),
+ *         &quot;query&quot;: &quot;childrenof:http://example.com/js-sdk&quot;,
+ *         &quot;appkey&quot;: &quot;test.js-kit.com&quot;
+ *     });
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * Stream constructor initializing Echo.StreamServer.Controls.Stream class
+ *
+ * @param {Object} config
+ * Configuration options
+ */
+var stream = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream&quot;);
+
+stream.init = function() {
+	this._recalcEffectsTimeouts();
+	if (this.config.get(&quot;data&quot;)) {
+		this._handleInitialResponse(this.config.get(&quot;data&quot;));
+	} else {
+		this._requestInitialItems();
+	}
+};
+
+stream.config = {
+	/*
+	 * @cfg {Object} children
+	 * Specifies the children pagination feature behavior. It includes several options.
+	 *
+	 * @cfg {Number} children.additionalItemsPerPage
+	 * Specifies how many items should be retrieved from server and rendered after clicking the &quot;View more items&quot; button.
+	 *
+	 * @cfg {Number} children.moreButtonSlideTimeout
+	 * Specifies the duration of more button slide up animation in the situation when there are no more children items available and the button should be removed.
+	 *
+	 * @cfg {Number} children.itemsSlideTimeout
+	 * Specifies the duration of the slide down animation of the items coming to the stream after the &quot;View more items&quot; button click. 
+	 */
+	&quot;children&quot;: {
+		&quot;additionalItemsPerPage&quot;: 5,
+		&quot;displaySortOrder&quot;: &quot;chronological&quot;,
+		&quot;sortOrder&quot;: &quot;reverseChronological&quot;,
+		&quot;moreButtonSlideTimeout&quot;: 600,
+		&quot;itemsSlideTimeout&quot;: 600,
+		&quot;maxDepth&quot;: 1
+	},
+<span id='Echo-StreamServer-Controls-Stream-cfg-fadeTimeout'>	/**
+</span>	 * @cfg {Number} fadeTimeout
+	 * Specifies the duration of the fading animation (in milliseconds) when an item comes to stream as a live update.
+	 */
+	&quot;fadeTimeout&quot;: 2800,
+<span id='Echo-StreamServer-Controls-Stream-cfg-flashColor'>	/**
+</span>	 * @cfg {String} flashColor
+	 * Specifies the necessary flash color of the events coming to your stream as live updates. This parameter must have a hex color value.
+	 */
+	&quot;flashColor&quot;: &quot;#ffff99&quot;,
+<span id='Echo-StreamServer-Controls-Stream-cfg-item'>	/**
+</span>	 * @cfg {Object} item
+	 * Specifies the configuration options to be passed to internal Echo.StreamServer.Controls.Stream.Item component.
+	 */
+	&quot;item&quot;: {},
+<span id='Echo-StreamServer-Controls-Stream-cfg-itemsPerPage'>	/**
+</span>	 * @cfg {Number} itemsPerPage
+	 * 
+	 */
+	&quot;itemsPerPage&quot;: 15,
+<span id='Echo-StreamServer-Controls-Stream-cfg-liveUpdates'>	/**
+</span>	 * @cfg {Boolean} liveUpdates
+	 * Parameter to enable/disable receiving live updates by control. 
+	 */
+	&quot;liveUpdates&quot;: true,
+<span id='Echo-StreamServer-Controls-Stream-cfg-liveUpdatesTimeout'>	/**
+</span>	 * @cfg {Number} 
+	 * Specifies the timeout between live updates requests (in seconds).
+	 */
+	&quot;liveUpdatesTimeout&quot;: 10,
+	&quot;liveUpdatesTimeoutMin&quot;: 3,
+<span id='Echo-StreamServer-Controls-Stream-cfg-openLinksInNewWindow'>	/**
+</span>	 * @cfg {Boolean} openLinksInNewWindow
+	 * If this parameter value is set to true, each link will be opened in a new window. This is especially useful when using the control in a popup window.
+	 */
+	&quot;openLinksInNewWindow&quot;: false,
+<span id='Echo-StreamServer-Controls-Stream-cfg-providerIcon'>	/**
+</span>	 * @cfg {String} providerIcon
+	 * Specifies the URL to the icon representing data provider.
+	 */
+	&quot;providerIcon&quot;: &quot;http://cdn.echoenabled.com/images/favicons/comments.png&quot;,
+<span id='Echo-StreamServer-Controls-Stream-cfg-slideTimeout'>	/**
+</span>	 * @cfg {Number} slideTimeout
+	 * Specifies the duration of the sliding animation (in milliseconds) when an item comes to a stream as a live update.
+	 */
+	&quot;slideTimeout&quot;: 700,
+	&quot;sortOrder&quot;: &quot;reverseChronological&quot;,
+<span id='Echo-StreamServer-Controls-Stream-cfg-streamStateLabel'>	/**
+</span>	 * @cfg {Object} streamStateLabel
+	 * Hides the Pause/Play icon. Toggles the labels used in the Stream Status label. Contains a hash with two keys managing icon and text display modes.
+	 *
+	 * @cfg {Boolean} streamStateLabel.icon
+	 * Toggles the icon visibility.
+	 *
+	 * @cfg {Boolean} streamStateLabel.text
+	 * Toggles the text visibility.
+	 *
+	 */
+	&quot;streamStateLabel&quot;: {
+		&quot;icon&quot;: true,
+		&quot;text&quot;: true
+	},
+<span id='Echo-StreamServer-Controls-Stream-cfg-streamStateToggleBy'>	/**
+</span>	 * @cfg {String} streamStateToggleBy
+	 * Specifies the method of changing stream live/paused state.
+	 *
+	 * The possible values are:
+	 *
+	 * + mouseover - the stream is paused when mouse is over it and live when mouse is out.
+	 * + button - the stream changes state when user clicks on streamStateLabel (Live/Paused text). This mode would not work if neither state icon nor state text are displayed.
+	 * + none - the stream will never be paused.
+	 * 
+	 * Note that mouseover method is not available for mobile devices and will be forced to button method.
+	 */
+	&quot;streamStateToggleBy&quot;: &quot;mouseover&quot;, // mouseover | button | none
+<span id='Echo-StreamServer-Controls-Stream-cfg-submissionProxyURL'>	/**
+</span>	 * @cfg {String} submissionProxyURL URL prefix for requests to Submission Proxy subsystem.
+	 */
+	&quot;submissionProxyURL&quot;: &quot;http://apps.echoenabled.com/v2/esp/activity&quot;
+};
+
+stream.config.normalizer = {
+	&quot;safeHTML&quot;: function(value) {
+		return &quot;off&quot; !== value;
+	},
+	&quot;streamStateToggleBy&quot;: function(value) {
+		return value === &quot;mouseover&quot; &amp;&amp; Echo.Utils.isMobileDevice()
+			? &quot;button&quot;
+			: value;
+	}
+};
+
+stream.vars = {
+	&quot;activities&quot;: {
+		&quot;queue&quot;: [],
+		&quot;state&quot;: undefined,
+		&quot;lastState&quot;: &quot;&quot;, // live0 | pausedN
+		&quot;animations&quot;: 0
+	},
+	&quot;hasInitialData&quot;: false,
+	&quot;items&quot;: {},   // items by unique key hash
+	&quot;threads&quot;: [], // items tree
+	&quot;lastRequest&quot;: undefined
+};
+
+stream.labels = {
+<span id='Echo-StreamServer-Controls-Stream-property-guest'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;guest&quot;: &quot;Guest&quot;,
+<span id='Echo-StreamServer-Controls-Stream-property-live'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;live&quot;: &quot;Live&quot;,
+<span id='Echo-StreamServer-Controls-Stream-property-paused'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;paused&quot;: &quot;Paused&quot;,
+<span id='Echo-StreamServer-Controls-Stream-property-more'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;more&quot;: &quot;More&quot;,
+<span id='Echo-StreamServer-Controls-Stream-property-emptyStream'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;emptyStream&quot;: &quot;No items at this time...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-property-new'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;new&quot;: &quot;new&quot;
+};
+
+stream.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Item.onAdd&quot;: function(topic, data) {
+		var self = this;
+		var item = this.items[data.item.data.unique];
+		item.config.get(&quot;target&quot;).hide();
+		this._queueActivity({
+			&quot;action&quot;: &quot;animation&quot;,
+			&quot;item&quot;: item,
+			&quot;priority&quot;: &quot;highest&quot;,
+			&quot;handler&quot;: function() {
+				item.dom.render();
+				item.set(&quot;added&quot;, false);
+				self._animateSpotUpdate(&quot;add&quot;, item, data.config);
+			}
+		});
+		return {&quot;stop&quot;: [&quot;bubble&quot;]};
+	},
+	&quot;Echo.StreamServer.Controls.Stream.Item.onDelete&quot;: function(topic, data) {
+		var self = this;
+		var item = this.items[data.item.data.unique];
+		this._queueActivity({
+			&quot;action&quot;: &quot;animation&quot;,
+			&quot;item&quot;: item,
+			&quot;priority&quot;: &quot;highest&quot;,
+			&quot;handler&quot;: function() {
+				item.set(&quot;deleted&quot;, false);
+				self._animateSpotUpdate(&quot;delete&quot;, item, data.config);
+			}
+		});
+		return {&quot;stop&quot;: [&quot;bubble&quot;]};
+	},
+	&quot;Echo.StreamServer.Controls.Stream.Item.onChildrenExpand&quot;: function(topic, args) {
+		this._requestChildrenItems(args.data.unique);
+		return {&quot;stop&quot;: [&quot;bubble&quot;]};
+	}
+};
+
+stream.templates.main =
+	'&lt;div class=&quot;{class:container} echo-primaryFont echo-primaryBackgroundColor&quot;&gt;' +
+		'&lt;div class=&quot;{class:header}&quot;&gt;'+
+			'&lt;div class=&quot;{class:state} echo-secondaryColor&quot;&gt;&lt;/div&gt;' +
+			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:body}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:more}&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+<span id='Echo-StreamServer-Controls-Stream-method-body'>/**
+</span> * @echo_renderer
+ */
+stream.renderers.body = function(element) {
+	var self = this, request = this.lastRequest;
+	if (!request) {
+		return element;
+	}
+	if (request.data.length) {
+		if (request.initial) {
+			element.empty();
+		}
+		this._appendRootItems(request.data, element);
+	} else {
+		this.showMessage({
+			&quot;type&quot;: &quot;empty&quot;,
+			&quot;message&quot;: this.labels.get(&quot;emptyStream&quot;),
+			&quot;target&quot;: element
+		});
+	}
+	if (request.initial &amp;&amp; this.config.get(&quot;liveUpdates&quot;) &amp;&amp;
+		this.config.get(&quot;streamStateToggleBy&quot;) === &quot;mouseover&quot;) {
+			element.hover(
+				function() { self.setState(&quot;paused&quot;); },
+				function() { self.setState(&quot;live&quot;); }
+			);
+	}
+	return element;
+};
+
+<span id='Echo-StreamServer-Controls-Stream-method-state'>/**
+</span> * @echo_renderer
+ */
+stream.renderers.state = function(element) {
+	var self = this;
+	var label = this.config.get(&quot;streamStateLabel&quot;);
+
+	if (!label.icon &amp;&amp; !label.text || !this.config.get(&quot;liveUpdates&quot;)) {
+		return element;
+	}
+
+	var state = this.getState();
+	var activitiesCount = 0;
+	if (state === &quot;paused&quot;) {
+		activitiesCount = Echo.Utils.foldl(0, this.activities.queue,
+			function(entry, acc) {
+				if (entry.affectCounter) return ++acc;
+			}
+		);
+	}
+	var currentState = state + activitiesCount;
+
+	if (currentState === this.activities.lastState) {
+		return element;
+	}
+
+	element.empty();
+	if (!this.activities.lastState &amp;&amp; this.config.get(&quot;streamStateToggleBy&quot;) === &quot;button&quot;) {
+		element.addClass(&quot;echo-linkColor echo-clickable&quot;).click(function() {
+			self.setState(state === &quot;paused&quot; ? &quot;live&quot; : &quot;paused&quot;);
+		});
+	}
+	var templates = {
+		&quot;picture&quot;: '&lt;span class=&quot;{class:state-picture} {class:state-picture}-' + state + '&quot;&gt;&lt;/span&gt;',
+		&quot;message&quot;: this.config.get(&quot;streamStateToggleBy&quot;) === &quot;button&quot;
+			? '&lt;a href=&quot;javascript:void(0)&quot; class=&quot;{class:state-message}&quot;&gt;' +
+				'{label:' + state + '}' +
+			  '&lt;/a&gt;'
+			: '&lt;span class=&quot;{class:state-message}&quot;&gt;{label:' + state + '}&lt;/span&gt;',
+		&quot;count&quot;: ' &lt;span class=&quot;{class:state-count}&quot;&gt;({data:count} {label:new})&lt;/span&gt;'
+	};
+	if (label.icon) {
+		element.append(this.substitute({&quot;template&quot;: templates.picture}));
+	}
+	if (label.text) {
+		element.append(this.substitute({&quot;template&quot;: templates.message}));
+		if (activitiesCount &amp;&amp; state === &quot;paused&quot;) {
+			element.append(this.substitute({
+				&quot;template&quot;: templates.count,
+				&quot;data&quot;: {&quot;count&quot;: activitiesCount}
+			}));
+		}
+	}
+	this.activities.lastState = currentState;
+	return element;
+};
+
+<span id='Echo-StreamServer-Controls-Stream-method-more'>/**
+</span> * @echo_renderer
+ */
+stream.renderers.more = function(element) {
+	var self = this;
+	if (this.isViewComplete || !this.threads.length) {
+		return element.empty().hide();
+	}
+	return element.empty()
+		.append(this.labels.get(&quot;more&quot;))
+		.hover(function() {
+			element.addClass(self.cssPrefix + &quot;more-hover&quot;);
+		}, function() {
+			element.removeClass(self.cssPrefix + &quot;more-hover&quot;);
+		})
+		.show()
+		.off(&quot;click&quot;)
+		.one(&quot;click&quot;, function() {
+<span id='Echo-StreamServer-Controls-Stream-event-onMoreButtonPress'>			/**
+</span>			 * @event onMoreButtonPress
+			 * @echo_event Echo.StreamServer.Controls.Stream.onMoreButtonPress
+			 * Triggered when the &quot;more&quot; button is pressed.
+			 */
+			self.events.publish({&quot;topic&quot;: &quot;onMoreButtonPress&quot;});
+			element.html(self.labels.get(&quot;loading&quot;));
+			self._requestMoreItems(element);
+		});
+};
+
+<span id='Echo-StreamServer-Controls-Stream-method-getState'>/**
+</span> * Accessor method to get the current Stream state.
+ *
+ * @return {String}
+ * stream state &quot;live&quot; or &quot;paused&quot;.
+ */
+stream.methods.getState = function() {
+	return this.activities.state === undefined
+		? this.config.get(&quot;liveUpdates&quot;) ? &quot;live&quot; : &quot;paused&quot;
+		: this.activities.state;
+};
+
+<span id='Echo-StreamServer-Controls-Stream-method-setState'>/**
+</span> * Setter method to define the Stream state.
+ *
+ * @param {String} state
+ * stream state &quot;live&quot; or &quot;paused&quot;.
+ */
+stream.methods.setState = function(state) {
+	this.activities.state = state;
+	if (state === &quot;live&quot;) {
+		this._executeNextActivity();
+	}
+	this.dom.render({&quot;name&quot;: &quot;state&quot;});
+};
+
+stream.methods._requestChildrenItems = function(unique) {
+	var self = this;
+	var item = this.items[unique];
+	var target = item.dom.get(&quot;expandChildren&quot;);
+	var request = Echo.StreamServer.API.request({
+		&quot;endpoint&quot;: &quot;search&quot;,
+		&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
+		&quot;data&quot;: {
+			&quot;q&quot;: this._constructChildrenSearchQuery(item),
+			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
+		},
+		&quot;onOpen&quot;: function() {
+			self.showError({}, {
+				&quot;retryIn&quot;: 0,
+				&quot;target&quot;: target,
+				&quot;request&quot;: request
+			});
+		},
+		&quot;onError&quot;: function(data, options) {
+			self.showError(data, $.extend(options, {
+				&quot;target&quot;: target,
+				&quot;request&quot;: request
+			}));
+		},
+		&quot;onData&quot;: function(data) {
+			var items = {};
+			item.set(&quot;data.nextPageAfter&quot;, data.nextPageAfter);
+			item.set(&quot;data.hasMoreChildren&quot;, data.hasMoreChildren);
+			data.entries = self._actualizeChildrenList(item, data.entries);
+<span id='Echo-StreamServer-Controls-Stream-event-onDataReceive'>			/**
+</span>			 * @event onDataReceive
+			 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
+			 * Triggered when new data is received.
+			 */
+			self.events.publish({
+				&quot;topic&quot;: &quot;onDataReceive&quot;,
+				&quot;data&quot;: {
+					&quot;entries&quot;: data.entries,
+					&quot;initial&quot;: false
+				},
+				&quot;propagation&quot;: false
+			});
+			var actions = $.map(data.entries, function(entry) {
+				return function(callback) {
+					self._initItem(entry, false, function() {
+						items[this.get(&quot;data.unique&quot;)] = this;
+						callback();
+					});
+				};
+			});
+			Echo.Utils.parallelCall(actions, function() {
+				var children = [];
+				$.map(data.entries, function(entry) {
+					var child = items[entry.unique];
+					self._applyStructureUpdates(&quot;add&quot;, child);
+					if (entry.parentUnique === item.get(&quot;data.unique&quot;)) {
+						children.push(child);
+					}
+				});
+				self._placeChildItems(item, children);
+			});
+		}
+	});
+	request.send();
+};
+
+stream.methods._requestInitialItems = function() {
+	var self = this;
+	if (!this.request) {
+		this.request = Echo.StreamServer.API.request({
+			&quot;endpoint&quot;: &quot;search&quot;,
+			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
+			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
+			&quot;recurring&quot;: true,
+			&quot;data&quot;: {
+				&quot;q&quot;: this.config.get(&quot;query&quot;),
+				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
+			},
+			&quot;onOpen&quot;: function(data, options) {
+				if (options.requestType === &quot;initial&quot;) {
+					self.showError({}, {
+						&quot;retryIn&quot;: 0,
+						&quot;request&quot;: self.request
+					});
+				}
+			},
+			&quot;onError&quot;: function(data, options) {
+				self.showError(data, $.extend(options, {
+					&quot;request&quot;: self.request
+				}));
+			},
+			&quot;onData&quot;: function(data, options) {
+				if (options.requestType === &quot;initial&quot;) {
+					self._handleInitialResponse(data);
+				} else {
+					self._handleLiveUpdatesResponse(data);
+				}
+			}
+		});
+	}
+	this.request.send();
+};
+
+stream.methods._requestMoreItems = function(element) {
+	var self = this;
+	this.lastRequest = {&quot;initial&quot;: false};
+	if (!this.moreRequest) {
+		this.moreRequest = Echo.StreamServer.API.request({
+			&quot;endpoint&quot;: &quot;search&quot;,
+			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
+			&quot;onOpen&quot;: function() {
+				self.showError({}, {
+					&quot;retryIn&quot;: 0,
+					&quot;target&quot;: element,
+					&quot;request&quot;: self.moreRequest
+				});
+			},
+			&quot;onError&quot;: function(data, options) {
+				self.showError(data, $.extend(options, {
+					&quot;target&quot;: element,
+					&quot;request&quot;: self.moreRequest
+				}));
+			},
+			&quot;onData&quot;: function(data) {
+				self._handleInitialResponse(data, function(data) {
+					if (data.length) {
+						self.lastRequest.data = data;
+						self.dom.render({&quot;name&quot;: &quot;body&quot;});
+						self.dom.render({&quot;name&quot;: &quot;more&quot;});
+					} else {
+						element.html(self.labels.get(&quot;emptyStream&quot;))
+							.delay(1000)
+							.fadeOut(1000);
+					}
+				});
+			}
+		});
+	}
+	this.moreRequest.send({
+		&quot;data&quot;: {
+			&quot;q&quot;: this.config.get(&quot;query&quot;) + &quot; pageAfter:&quot; +
+					&quot;\&quot;&quot; + (this.get(&quot;nextPageAfter&quot;, &quot;0&quot;)) + &quot;\&quot;&quot;,
+			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
+		}
+	});
+};
+
+stream.methods._prepareEventParams = function(params) {
+	params = params || {};
+	params.target = this.config.get(&quot;target&quot;).get(0);
+	params.query = this.config.get(&quot;query&quot;);
+	return params;
+};
+
+stream.methods._applyLiveUpdates = function(entries, callback) {
+	var self = this;
+	this._refreshItemsDate();
+	this._checkTimeframeSatisfy();
+	var actions = $.map(entries || [], function(entry) {
+		return function(_callback) {
+			entry = self._normalizeEntry(entry);
+			var item = self.items[entry.unique];
+			var action = self._classifyAction(entry);
+			if (!item &amp;&amp; action !== &quot;post&quot;) {
+				_callback();
+				return;
+			}
+			if (action === &quot;post&quot;) {
+				if (item) {
+					self._applySpotUpdates(&quot;replace&quot;, self._updateItem(entry));
+					_callback();
+					return;
+				}
+				self._initItem(entry, true, function() {
+					item = this;
+					var satisfies = item.isRoot()
+						? self._withinVisibleFrame(item)
+						: self._withinVisibleChildrenFrame(item);
+
+					// do not filter out items from the current user
+					// they should be displayed in a special container
+					if (!satisfies &amp;&amp; !item.isRoot() &amp;&amp;
+						self.user.has(&quot;identity&quot;, item.data.actor.id)) {
+							item.set(&quot;byCurrentUser&quot;, true);
+					};
+
+					if (satisfies || item.get(&quot;byCurrentUser&quot;)) {
+						self.events.publish({
+							&quot;topic&quot;: &quot;Item.onReceive&quot;,
+							&quot;data&quot;: {&quot;item&quot;: {&quot;data&quot;: item.data}},
+							&quot;propagation&quot;: false
+						});
+						self._applySpotUpdates(&quot;add&quot;, item);
+					}
+					_callback();
+				});
+				return;
+			}
+			if (action === &quot;delete&quot;) {
+				self._applySpotUpdates(&quot;delete&quot;, item);
+				_callback();
+			}
+		};
+	});
+	Echo.Utils.sequentialCall(actions, function() {
+		self._recalcEffectsTimeouts();
+		callback &amp;&amp; callback.call(self);
+	});
+};
+
+stream.methods._actualizeChildrenList = function(parent, entries) {
+	var self = this;
+	return $.map(entries, function(entry) {
+
+		// we should change entry conversationID
+		// according to the root item conversationID
+		entry.targets = $.map(entry.targets, function(target) {
+			target.conversationID = parent.get(&quot;data.target.conversationID&quot;);
+			return target;
+		});
+
+		entry = self._normalizeEntry(entry);
+		var item = self.items[entry.unique];
+
+		// drop item from items list if the item already exists
+		// in the tree, which means that it was posted by the current user
+		// and arrived as a live update
+		if (item &amp;&amp; item.get(&quot;byCurrentUser&quot;)) {
+			self._applyStructureUpdates(&quot;delete&quot;, item);
+		}
+
+		return entry;
+	});
+};
+
+stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
+	var self = this;
+	var wrapper = $('&lt;div class=&quot;' + this.get(&quot;cssPrefix&quot;) + 'children-wrapper&quot;&gt;&lt;/div&gt;');
+	var getIdx = function(item) {
+		return self._getItemListIndex(item, parent.get(&quot;children&quot;));
+	};
+	$.each(children, function(i, item) {
+		var insertion = i &gt; 0 &amp;&amp; getIdx(children[i-1]) &lt; getIdx(item)
+			? &quot;append&quot;
+			: &quot;prepend&quot;;
+		wrapper[insertion](item.config.get(&quot;target&quot;));
+		item.dom.render();
+	});
+	return wrapper;
+};
+
+stream.methods._extractPresentationConfig = function(data) {
+	var keys = [&quot;sortOrder&quot;, &quot;itemsPerPage&quot;, &quot;safeHTML&quot;];
+	return Echo.Utils.foldl({}, keys, function(key, acc) {
+		if (typeof data[key] !== &quot;undefined&quot;) {
+			acc[key] = data[key];
+		}
+	});
+};
+
+stream.methods._extractTimeframeConfig = function(data) {
+	var getComparator = function(value) {
+		var match = value.match(/^(&lt;|&gt;)(.*)$/);
+		var operation = match[1];
+		var value = match[2].match(/^'([0-9]+) seconds ago'$/);
+		var getTS = value
+			? function() { return Math.floor((new Date()).getTime() / 1000) - value[1]; }
+			: function() { return match[2]; };
+		if (operation === '&lt;') {
+			return function(ts) { return ts &lt; getTS(); }
+		}
+		if (operation === '&gt;') {
+			return function(ts) { return ts &gt; getTS(); }
+		}
+	};
+	var timeframe = Echo.Utils.foldl([], [&quot;before&quot;, &quot;after&quot;], function(key, acc) {
+		if (!data[key]) return;
+		var cmp = getComparator(data[key]);
+		if (cmp) acc.push(cmp);
+	});
+	return {&quot;timeframe&quot;: timeframe};
+};
+
+stream.methods._getRespectiveAccumulator = function(item, sort) {
+	var accBySort = {
+		&quot;likesDescending&quot;: &quot;likesCount&quot;,
+		&quot;flagsDescending&quot;: &quot;flagsCount&quot;,
+		&quot;repliesDescending&quot;: &quot;repliesCount&quot;
+	};
+	return item.getAccumulator(accBySort[sort]);
+};
+
+stream.methods._appendRootItems = function(items, container) {
+	if (!items || !items.length) return;
+	$.map(items, function(item) {
+		container.append(item.config.get(&quot;target&quot;).get(0));
+		item.dom.render();
+	});
+};
+
+stream.methods._constructChildrenSearchQuery = function(item) {
+	// depth for item children request
+	var depth = this.config.get(&quot;children.maxDepth&quot;) - item.get(&quot;depth&quot;) - 1;
+	var additionalItems = parseInt(this.config.get(&quot;children.additionalItemsPerPage&quot;));
+	var pageAfter = item.getNextPageAfter();
+	var filter = this.config.get(&quot;children.filter&quot;);
+	var filterQuery = !filter || filter === &quot;()&quot; ? &quot;&quot; : filter + &quot; &quot;;
+	return filterQuery + Echo.Utils.foldl(&quot;&quot;, {
+		&quot;childrenof&quot;: item.get(&quot;data.object.id&quot;),
+		&quot;children&quot;: depth,
+		&quot;childrenItemsPerPage&quot;: depth
+			? parseInt(this.config.get(&quot;children.itemsPerPage&quot;))
+			: 0,
+		&quot;itemsPerPage&quot;: additionalItems,
+		&quot;sortOrder&quot;: this.config.get(&quot;children.sortOrder&quot;),
+		&quot;childrenSortOrder&quot;: this.config.get(&quot;children.sortOrder&quot;),
+		&quot;pageAfter&quot;: pageAfter ? '&quot;' + (pageAfter || 0) + '&quot;' : undefined
+	}, function(value, acc, predicate) {
+		return acc += (typeof value !== &quot;undefined&quot;
+			? predicate + &quot;:&quot; + value + &quot; &quot; 
+			: &quot;&quot;
+		); 
+	}) + filterQuery;
+};
+
+stream.methods._handleInitialResponse = function(data, visualizer) {
+	var self = this, items = {}, roots = [];
+	this.config.get(&quot;target&quot;).show();
+	this.nextSince = data.nextSince || 0;
+	this.nextPageAfter = data.nextPageAfter;
+
+	var presentation = this._extractPresentationConfig(data);
+	presentation.itemsPerPage = +presentation.itemsPerPage;
+	this.config.extend(presentation);
+
+	data.entries = data.entries || [];
+
+	data.children.itemsPerPage = +data.children.itemsPerPage;
+	data.children.maxDepth = +data.children.maxDepth;
+	this.config.set(&quot;children&quot;, $.extend(this.config.get(&quot;children&quot;), data.children));
+
+	this.config.extend(this._extractTimeframeConfig(data));
+	this.events.publish({
+		&quot;topic&quot;: &quot;onDataReceive&quot;,
+		&quot;data&quot;: {
+			&quot;entries&quot;: data.entries,
+			&quot;initial&quot;: !this.hasInitialData
+		},
+		&quot;propagation&quot;: false
+	});
+	var sortOrder = this.config.get(&quot;sortOrder&quot;);
+	var actions = $.map(data.entries, function(entry) {
+		return function(callback) {
+			self._initItem(entry, false, function() {
+				items[this.get(&quot;data.unique&quot;)] = this;
+				callback();
+			});
+		};
+	});
+	// items initialization is an async process, so we init
+	// item instances first and append them into the structure later
+	Echo.Utils.parallelCall(actions, function() {
+		$.map(data.entries, function(entry) {
+			var item = items[entry.unique];
+			self._applyStructureUpdates(&quot;add&quot;, item);
+			if (item.isRoot()) {
+				self._addItemToList(roots, item, sortOrder);
+			}
+		});
+		self.hasInitialData = true;
+		self.isViewComplete = roots.length !== self.config.get(&quot;itemsPerPage&quot;);
+		(visualizer || function(data) {
+			self.lastRequest = {
+				&quot;initial&quot;: true,
+				&quot;data&quot;: data
+			};
+			self.dom.render();
+			self.ready();
+		})(roots);
+	});
+};
+
+stream.methods._checkTimeframeSatisfy = function() {
+	var self = this;
+	var timeframe = this.config.get(&quot;timeframe&quot;);
+	var unsatisfying = Echo.Utils.foldl([], this.threads, function(thread, acc) {
+		var satisfy = Echo.Utils.foldl(true, timeframe, function(p, a) {
+			return a ? p(thread.get(&quot;timestamp&quot;)) : false;
+		});
+		if (!satisfy) acc.push(thread);
+	});
+	$.map(unsatisfying, function(item) {
+		self._applySpotUpdates(&quot;delete&quot;, item);
+	});
+};
+
+stream.methods._handleLiveUpdatesResponse = function(data) {
+	var self = this;
+	data = data || {};
+	if (data.result === &quot;error&quot;) {
+		this.startLiveUpdates();
+		return;
+	}
+	this._applyLiveUpdates(data.entries, function() {
+		self.dom.render({&quot;name&quot;: &quot;state&quot;});
+		self._executeNextActivity();
+	});
+};
+
+stream.methods._recalcEffectsTimeouts = function() {
+	// recalculating timeouts based on amount of items in activities queue
+	var s = this;
+	var maxTimeouts = {
+		&quot;fade&quot;: s.config.get(&quot;fadeTimeout&quot;),
+		&quot;slide&quot;: s.config.get(&quot;slideTimeout&quot;)
+	};
+	s.timeouts = s.timeouts || {
+		&quot;fade&quot;: maxTimeouts.fade,
+		&quot;slide&quot;: maxTimeouts.slide
+	};
+	if (!maxTimeouts.fade &amp;&amp; !maxTimeouts.slide) {
+		return;
+	}
+	s.timeouts.coeff = s.timeouts.coeff || {
+		&quot;fade&quot;: s.timeouts.fade / (maxTimeouts.fade + maxTimeouts.slide),
+		&quot;slide&quot;: s.timeouts.slide / (maxTimeouts.fade + maxTimeouts.slide)
+	};
+	var calc = function(timeout, value) {
+		value = Math.round(value * s.timeouts.coeff[timeout]);
+		if (value &lt; 100) return 0; // no activities for small timeouts
+		if (value &gt; maxTimeouts[timeout]) return maxTimeouts[timeout];
+		return value;
+	};
+	// reserving 80% of time between live updates for activities
+	var frame = s.config.get(&quot;liveUpdatesTimeout&quot;) * 1000 * 0.8;
+	var msPerItem = s.activities.queue.length ? frame / s.activities.queue.length : frame;
+	s.timeouts.fade = calc(&quot;fade&quot;, msPerItem);
+	s.timeouts.slide = calc(&quot;slide&quot;, msPerItem);
+};
+
+stream.methods._refreshItemsDate = function() {
+	$.map(this.threads, function(item) {
+		item.dom.render({&quot;name&quot;: &quot;date&quot;});
+		item.traverse(item.get(&quot;children&quot;), function(child) {
+			child.dom.render({&quot;name&quot;: &quot;date&quot;});
+		});
+	});
+};
+
+stream.methods._executeNextActivity = function() {
+	var acts = this.activities;
+	if (acts.animations &gt; 0 ||
+			!acts.queue.length ||
+			this.config.get(&quot;liveUpdates&quot;) &amp;&amp;
+			acts.state === &quot;paused&quot; &amp;&amp;
+			acts.queue[0].action !== &quot;replace&quot; &amp;&amp;
+			!acts.queue[0].byCurrentUser) {
+		return;
+	}
+	acts.queue.shift().handler();
+};
+
+// the list of spot update helpers, executed by the
+// &quot;_applySpotUpdates&quot; and &quot;_animateSpotUpdates&quot; top level functions
+stream.methods._spotUpdates = {&quot;animate&quot;: {}};
+
+stream.methods._spotUpdates.add = function(item, options) {
+	// if we are trying to add an item which already exists,
+	// we should change the operation to &quot;replace&quot;
+	var _item = this.items[item.get(&quot;data.unique&quot;)];
+	if (_item &amp;&amp; _item.dom.rendered() &amp;&amp; options.priority != &quot;high&quot;) {
+		this._applySpotUpdates(&quot;replace&quot;, item, {&quot;priority&quot;: &quot;highest&quot;});
+
+		// notify top level function that the update was not applied,
+		// because we routed an action to the &quot;replace&quot; operation
+		return false;
+	}
+	this._applyStructureUpdates(&quot;add&quot;, item);
+	item.set(&quot;added&quot;, true);
+	if (item.isRoot()) {
+		this._placeRootItem(item);
+	} else {
+		var parent = this._getParentItem(item);
+		if (parent &amp;&amp; parent.dom.rendered()) {
+			parent.dom.render({&quot;name&quot;: &quot;container&quot;});
+			parent.dom.render({&quot;name&quot;: &quot;children&quot;});
+			parent.dom.render({&quot;name&quot;: &quot;childrenByCurrentActorLive&quot;});
+		}
+	}
+};
+
+stream.methods._spotUpdates.replace = function(item, options) {
+	item.unblock();
+	if (this._maybeMoveItem(item)) {
+		var parent = this._getParentItem(item);
+		var sort = this.config.get(parent ? &quot;children.sortOrder&quot; : &quot;sortOrder&quot;);
+		var items = parent ? parent.get(&quot;children&quot;) : this.threads;
+		var oldIdx = this._getItemListIndex(item, items);
+		// We need to calculate the projected index of the item
+		// after the &quot;replace&quot; action and compare it with the current one
+		// to determine whether the item should be moved to the new place or not:
+		//   - create a copy of the items list
+		//   - remove the item from the copy
+		//   - calculate the new index
+		//   - compare the old and new indexes
+		var container = $.extend([], items);
+		container.splice(oldIdx, 1);
+		var newIdx = this._getItemProjectedIndex(item, container, sort);
+		if (oldIdx != newIdx) {
+			this._applySpotUpdates(&quot;delete&quot;, item, {
+				&quot;keepChildren&quot;: true,
+				&quot;priority&quot;: &quot;high&quot;
+			});
+			this._applySpotUpdates(&quot;add&quot;, item, {&quot;priority&quot;: &quot;high&quot;});
+		}
+	}
+	if (item &amp;&amp; item.dom.rendered()) {
+		item.dom.render({&quot;name&quot;: &quot;container&quot;, &quot;recursive&quot;: true});
+		item.events.publish({&quot;topic&quot;: &quot;onRerender&quot;});
+	}
+};
+
+stream.methods._spotUpdates.delete = function(item, options) {
+	item.set(&quot;deleted&quot;, true);
+	if (item.isRoot()) {
+		item.events.publish({
+			&quot;topic&quot;: &quot;onDelete&quot;,
+			&quot;data&quot;: {&quot;config&quot;: options},
+			&quot;global&quot;: false,
+			&quot;propagation&quot;: false
+		});
+		this._applyStructureUpdates(&quot;delete&quot;, item, options);
+	} else {
+		var parent = this._getParentItem(item);
+		if (parent) {
+			parent.dom.render({
+				&quot;name&quot;: &quot;children&quot;,
+				&quot;target&quot;: parent.dom.get(&quot;children&quot;),
+				&quot;extra&quot;: options
+			});
+			parent.dom.render({
+				&quot;name&quot;: &quot;childrenByCurrentActorLive&quot;,
+				&quot;target&quot;: parent.dom.get(&quot;childrenByCurrentActorLive&quot;),
+				&quot;extra&quot;: options
+			});
+			this._applyStructureUpdates(&quot;delete&quot;, item, options);
+			parent.dom.render({&quot;name&quot;: &quot;container&quot;});
+		}
+	}
+};
+
+stream.methods._spotUpdates.animate.add = function(item) {
+	var self = this;
+	this.activities.animations++;
+	if (this.timeouts.slide) {
+		// we should specify the element height explicitly
+		// to avoid element jumping during the animation effect
+		var currentHeight = item.config.get(&quot;target&quot;).show().css(&quot;height&quot;);
+		item.config.get(&quot;target&quot;).css(&quot;height&quot;, currentHeight).hide().animate({
+			&quot;height&quot;: &quot;show&quot;, 
+			&quot;marginTop&quot;: &quot;show&quot;, 
+			&quot;marginBottom&quot;: &quot;show&quot;, 
+			&quot;paddingTop&quot;: &quot;show&quot;, 
+			&quot;paddingBottom&quot;: &quot;show&quot;
+		},
+		this.timeouts.slide,
+		function(){
+			// we should remove explicitly set height
+			// as soon as the animation is complete
+			item.config.get(&quot;target&quot;).css(&quot;height&quot;, &quot;&quot;);
+		});
+	} else {
+		item.config.get(&quot;target&quot;).show();
+	}
+	if (this.timeouts.fade) {
+		var container = item.dom.get(&quot;container&quot;);
+		var originalBGColor = Echo.Utils.getVisibleColor(container);
+		container
+		// delay fading out until content sliding is finished
+		.delay(this.timeouts.slide)
+		.css({&quot;backgroundColor&quot;: this.config.get(&quot;flashColor&quot;)})
+		// Fading out
+		.animate(
+			{&quot;backgroundColor&quot;: originalBGColor},
+			this.timeouts.fade,
+			&quot;linear&quot;,
+			function() {
+				container.css(&quot;backgroundColor&quot;, &quot;&quot;);
+				self.activities.animations--;
+				self._executeNextActivity();
+			}
+		);
+	} else {
+		this.activities.animations--;
+		this._executeNextActivity();
+	}
+};
+
+stream.methods._spotUpdates.animate.delete = function(item, config) {
+	var self = this;
+	this.activities.animations++;
+	config = config || {};
+	var callback = $.isFunction(config) ? config : config.callback || function() {
+		if (!item.config.get(&quot;target&quot;).length) return;
+		// if the item is being moved, we should keep all jQuery handlers
+		// for the nested elements (children), thus we use &quot;detach&quot; instead of &quot;remove&quot;
+		item.config.get(&quot;target&quot;)[config.keepChildren ? &quot;detach&quot; : &quot;remove&quot;]();
+		item.dom.clear();
+		item.set(&quot;vars&quot;, {});
+		var itemsCount = Echo.Utils.foldl(0, self.items, function(_item, acc) {
+			return acc + 1;
+		});
+		if (!itemsCount) {
+			self.showMessage({
+				&quot;type&quot;: &quot;empty&quot;,
+				&quot;message&quot;: self.labels.get(&quot;emptyStream&quot;),
+				&quot;target&quot;: self.dom.get(&quot;body&quot;)
+			});
+		}
+		self.activities.animations--;
+		self._executeNextActivity();
+	};
+	if (this.timeouts.slide) {
+		item.config.get(&quot;target&quot;).slideUp(this.timeouts.slide, callback);
+	} else {
+		callback();
+	}
+};
+
+stream.methods._applySpotUpdates = function(action, item, options) {
+	var self = this;
+	options = options || {};
+	this._queueActivity({
+		&quot;action&quot;: action,
+		&quot;item&quot;: item,
+		&quot;priority&quot;: options.priority,
+		&quot;handler&quot;: function() {
+			// execute corresponding update function and
+			// launch the next activity if the operation was successful
+			if (self._spotUpdates[action].call(self, item, options) !== false) {
+				self._executeNextActivity();
+			}
+		}
+	});
+};
+
+stream.methods._animateSpotUpdate = function(action, item, options) {
+	this._spotUpdates.animate[action].call(this, item, options);
+};
+
+stream.methods._queueActivity = function(params) {
+	if (!params.item) return;
+	var actorID = params.item.get(&quot;data.actor.id&quot;);
+
+	// we consider activity related to the current user if:
+	//  - the corresponding item is blocked (moderation action in progress)
+	//  - or the activity was performed by the current user
+	var byCurrentUser = params.item.blocked || actorID &amp;&amp; this.user.has(&quot;identity&quot;, actorID);
+
+	var index = this._getActivityProjectedIndex(byCurrentUser, params);
+	var data = {
+		&quot;action&quot;: params.action,
+		&quot;item&quot;: item,
+		&quot;type&quot;: params.type || &quot;&quot;,
+		&quot;affectCounter&quot;: params.action === &quot;add&quot;,
+		&quot;priority&quot;: params.priority,
+		&quot;byCurrentUser&quot;: byCurrentUser,
+		&quot;handler&quot;: params.handler
+	};
+	if (typeof index !== &quot;undefined&quot;) {
+		this.activities.queue.splice(index, 0, data);
+	} else {
+		this.activities.queue.push(data);
+	}
+};
+
+stream.methods._getActivityProjectedIndex = function(byCurrentUser, params) {
+	var priorityWeights = {
+		&quot;highest&quot;: 0,
+		&quot;high&quot;: 10,
+		&quot;medium&quot;: 20,
+		&quot;low&quot;: 30,
+		&quot;lowest&quot;: 40
+	};
+	params.priority = params.priority === &quot;highest&quot; &amp;&amp; &quot;highest&quot;
+		|| byCurrentUser &amp;&amp; &quot;high&quot;
+		|| params.action == &quot;replace&quot; &amp;&amp; &quot;medium&quot;
+		|| params.priority
+		|| &quot;lowest&quot;;
+	var index;
+	if (params.action === &quot;replace&quot;) {
+		// in case we have &quot;replace&quot; activity for the item which was not added
+		// to the stream yet but queued only we should set its priority the same
+		// as that &quot;add&quot; activity so that to queue them in the right order
+		$.each(this.activities.queue, function(i, activity) {
+			if (activity.action === &quot;add&quot; &amp;&amp; activity.itemUnique === params.itemUnique) {
+				params.priority = activity.priority;
+				return false; // break
+			}
+		});
+	}
+	$.each(this.activities.queue, function(i, activity) {
+		if (priorityWeights[params.priority] &lt; priorityWeights[activity.priority]) {
+			index = i;
+			return false; // break
+		}
+	});
+	return index;
+};
+
+stream.methods._classifyAction = function(entry) {
+	return entry.verbs[0] === &quot;http://activitystrea.ms/schema/1.0/delete&quot;
+		? &quot;delete&quot;
+		: &quot;post&quot;;
+};
+
+stream.methods._maybeMoveItem = function(item) {
+	return item.get(&quot;forceInject&quot;);
+};
+
+stream.methods._withinVisibleFrame = function(item, items, isViewComplete, sortOrder) {
+	items = items || this.threads;
+	isViewComplete = typeof isViewComplete === &quot;undefined&quot;
+		? this.isViewComplete
+		: isViewComplete;
+	sortOrder = sortOrder || this.config.get(&quot;sortOrder&quot;);
+	if (isViewComplete || !items.length) {
+		return true;
+	}
+	return this._compareItems(items[items.length - 1], item, sortOrder);
+};
+
+stream.methods._withinVisibleChildrenFrame = function(item) {
+	var parent = this._getParentItem(item);
+	if (!parent) {
+		return false;
+	}
+	return this._withinVisibleFrame(
+		item,
+		parent.get(&quot;children&quot;),
+		!parent.hasMoreChildren(),
+		this.config.get(&quot;children.sortOrder&quot;)
+	);
+};
+
+stream.methods._getParentItem = function(item) {
+	return item.isRoot() ? undefined : this.items[item.get(&quot;data.parentUnique&quot;)];
+};
+
+stream.methods._compareItems = function(a, b, sort) {
+	var self = this;
+	var result = false;
+	switch (sort) {
+		case &quot;chronological&quot;:
+			result = a.get(&quot;timestamp&quot;) &gt; b.get(&quot;timestamp&quot;);
+			break;
+		case &quot;reverseChronological&quot;:
+			result = a.get(&quot;timestamp&quot;) &lt;= b.get(&quot;timestamp&quot;);
+			break;
+		case &quot;likesDescending&quot;:
+		case &quot;repliesDescending&quot;:
+		case &quot;flagsDescending&quot;:
+			var getCount = function(entry) {
+				return self._getRespectiveAccumulator(entry, sort);
+			};
+			result = (getCount(a) &lt; getCount(b) ||
+					(getCount(a) === getCount(b) &amp;&amp;
+						this._compareItems(a, b, &quot;reverseChronological&quot;)));
+			break;
+	};
+	return result;
+};
+
+stream.methods._placeRootItem = function(item) {
+	var content = item.config.get(&quot;target&quot;);
+	if (this.threads.length &gt; 1) {
+		var id = this._getItemListIndex(item, this.threads);
+		var next = this.threads[id + 1], prev = this.threads[id - 1];
+		if (next) {
+			next.config.get(&quot;target&quot;).before(content);
+		} else {
+			prev.config.get(&quot;target&quot;).after(content);
+		}
+	} else {
+		this.dom.get(&quot;body&quot;).empty().append(content);
+	}
+	item.events.publish({
+		&quot;topic&quot;: &quot;onAdd&quot;,
+		&quot;global&quot;: false,
+		&quot;propagation&quot;: false
+	});
+};
+
+stream.methods._placeChildItems = function(parent, children) {
+	var self = this;
+	var itemsWrapper = this._createChildrenItemsDomWrapper(children, parent);
+
+	// we should calculate index of the sibling item for the responsed items
+	var targetItemIdx = -1;
+	$.each(parent.get(&quot;children&quot;), function(i,_item) {
+		if (self._isItemInList(_item, children)) {
+			targetItemIdx = i - 1;
+			return false;
+		}
+	});
+
+	var targetItemDom = targetItemIdx &gt;= 0
+		? parent.get(&quot;children&quot;)[targetItemIdx].config.get(&quot;target&quot;)
+		: parent.dom.get(&quot;children&quot;);
+	var action = targetItemIdx &gt;= 0
+		? &quot;insertAfter&quot;
+		: this.config.get(&quot;children.sortOrder&quot;) != &quot;chronological&quot; 
+			? &quot;prependTo&quot;
+			: &quot;appendTo&quot;;
+	itemsWrapper[action]($(targetItemDom));
+	parent.dom.render({&quot;name&quot;: &quot;childrenByCurrentActorLive&quot;});
+	// we should specify the element height explicitly
+	// to avoid element jumping during the animation effect
+	itemsWrapper
+		.css(&quot;height&quot;, itemsWrapper.show().css(&quot;height&quot;))
+		.hide()
+		.animate({
+			&quot;height&quot;: &quot;show&quot;,
+			&quot;marginTop&quot;: &quot;show&quot;,
+			&quot;marginBottom&quot;: &quot;show&quot;,
+			&quot;paddingTop&quot;: &quot;show&quot;, 
+			&quot;paddingBottom&quot;: &quot;show&quot;
+		}, {
+			&quot;duration&quot;: this.config.get(&quot;children.itemsSlideTimeout&quot;),
+			&quot;complete&quot;: function() {
+				itemsWrapper.css(&quot;height&quot;, &quot;&quot;);
+				parent.dom.render({&quot;name&quot;: &quot;expandChildren&quot;});
+				parent.dom.render({&quot;name&quot;: &quot;expandChildrenLabel&quot;});
+				itemsWrapper.children().unwrap();
+			}
+		});
+};
+
+stream.methods._getItemListIndex = function(item, items) {
+	var idx = -1;
+	$.each(items || [], function(i, entry) {
+		if (entry == item || entry.get(&quot;data.unique&quot;) === item.get(&quot;data.unique&quot;)) {
+			idx = i;
+			return false;
+		}
+	});
+	return idx;
+};
+
+stream.methods._isItemInList = function(item, items) {
+	return this._getItemListIndex(item, items) &gt;= 0;
+};
+
+stream.methods._initItem = function(entry, isLive, callback) {
+	var self = this;
+	var parentConfig = this.config.getAsHash();
+	var config = $.extend(true, {}, {
+		&quot;target&quot;: $(&quot;&lt;div&gt;&quot;),
+		&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
+		&quot;parent&quot;: parentConfig,
+		&quot;plugins&quot;: this.config.get(&quot;plugins&quot;),
+		&quot;data&quot;: this._normalizeEntry(entry),
+		&quot;live&quot;: isLive,
+		&quot;ready&quot;: callback
+	}, parentConfig.item);
+	delete parentConfig.item;
+	return new Echo.StreamServer.Controls.Stream.Item(config);
+};
+
+stream.methods._updateItem = function(entry) {
+	var item = this.items[entry.unique];
+	// forcing item re-injection if the published date or the respective accumulator was changed
+	var sortOrder = this.config.get(item.isRoot() ? &quot;sortOrder&quot; : &quot;children.sortOrder&quot;);
+	var accRelatedSortOrder = sortOrder.match(/replies|likes|flags/);
+	var acc = accRelatedSortOrder &amp;&amp; this._getRespectiveAccumulator(item, sortOrder);
+	if (item.data.object.published !== entry.object.published) {
+		item.set(&quot;timestamp&quot;, Echo.Utils.timestampFromW3CDTF(entry.object.published));
+		item.set(&quot;forceInject&quot;, true);
+	}
+	$.extend(item.data, entry);
+	if (accRelatedSortOrder) {
+		if (this._getRespectiveAccumulator(item, sortOrder) !== acc) {
+			item.set(&quot;forceInject&quot;, true);
+		}
+	}
+	return item;
+};
+
+stream.methods._getItemProjectedIndex = function(item, items, sort) {
+	var self = this;
+	var index;
+	if (item.config.get(&quot;live&quot;) || item.get(&quot;forceInject&quot;)) {
+		$.each(items || [], function(i, entry) {
+			if (self._compareItems(entry, item, sort)) {
+				index = i;
+				return false;
+			}
+		});
+	}
+	return typeof index !== &quot;undefined&quot; ? index : items.length;
+};
+
+stream.methods._addItemToList = function(items, item, sort) {
+	items.splice(this._getItemProjectedIndex(item, items, sort), 0, item);
+	item.set(&quot;forceInject&quot;, false);
+	this.items[item.get(&quot;data.unique&quot;)] = item;
+};
+
+stream.methods._applyStructureUpdates = function(action, item, options) {
+	var self = this;
+	options = options || {};
+	switch (action) {
+		case &quot;add&quot;:
+			// adding item into the list
+			this.items[item.get(&quot;data.unique&quot;)] = item;
+			if (!item.isRoot()) {
+				var parent = this._getParentItem(item);
+
+				// avoiding problem with missing parent
+				if (!parent) {
+					delete this.items[item.get(&quot;data.unique&quot;)];
+					return;
+				}
+
+				item.set(&quot;depth&quot;, parent.get(&quot;depth&quot;) + 1);
+				parent.set(&quot;threading&quot;, true);
+				item.set(&quot;forceInject&quot;, true);
+				this._addItemToList(
+					parent.get(&quot;children&quot;),
+					item,
+					this.config.get(&quot;children.displaySortOrder&quot;)
+				);
+			} else {
+				this._addItemToList(this.threads, item, this.config.get(&quot;sortOrder&quot;));
+			}
+			break;
+		case &quot;delete&quot;:
+			var container = item.isRoot()
+				? this.threads
+				: this.items[item.get(&quot;data.parentUnique&quot;)].get(&quot;children&quot;);
+			if (!item.isRoot() &amp;&amp; container.length === 1) {
+				var parent = this._getParentItem(item);
+				if (parent) parent.set(&quot;threading&quot;, false);
+			}
+			container.splice(this._getItemListIndex(item, container), 1);
+			if (!options.keepChildren) {
+				item.traverse(item.get(&quot;children&quot;), function(child) {
+					delete self.items[child.get(&quot;data.unique&quot;)];
+				});
+				item.set(&quot;children&quot;, []);
+			}
+			delete this.items[item.get(&quot;data.unique&quot;)];
+			break;
+	};
+};
+
+stream.methods._normalizeEntry = function(entry) {
+	if (entry.normalized) return entry;
+	var self = this;
+	entry.normalized = true;
+
+	// detecting actual target
+	$.each(entry.targets || [], function(i, target) {
+		if ((target.id === target.conversationID) ||
+			(target.id === entry.object.id) ||
+			(self.items[target.id + target.conversationID])) {
+				entry.target = target;
+		}
+	});
+
+	entry.object.content_type = entry.object.content_type || &quot;text&quot;;
+	entry.object.accumulators = entry.object.accumulators || {};
+	$.each([&quot;repliesCount&quot;, &quot;flagsCount&quot;, &quot;likesCount&quot;], function(i, name) {
+		entry.object.accumulators[name] = parseInt(entry.object.accumulators[name] || &quot;0&quot;);
+	});
+	entry.object.context = entry.object.context || [];
+	entry.object.flags = entry.object.flags || [];
+	entry.object.likes = entry.object.likes || [];
+	entry.target = entry.target || entry.targets[0] || {};
+	entry.target.conversationID = entry.target.conversationID || entry.object.id;
+	entry.source = entry.source || {};
+	entry.provider = entry.provider || {};
+	entry.unique = entry.object.id + entry.target.conversationID;
+	entry.parentUnique = entry.target.id + entry.target.conversationID;
+	return entry;
+};
+
+stream.css =
+	'.{class:message-wrapper} { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }' +
+	'.{class:message-empty}, .{class:message-loading}, .{class:message-error} { display: inline-block; height: 16px; padding-left: 21px; background: no-repeat left center; }' +
+	'.{class:message-empty} { background-image: url(//cdn.echoenabled.com/images/information.png); }' +
+	'.{class:message-loading} { background-image: url(//cdn.echoenabled.com/images/loading.gif); }' +
+	'.{class:message-error} { background-image: url(//cdn.echoenabled.com/images/warning.gif); }' +
+	'.{class:header} { margin: 10px 0px 10px 20px; }' +
+	'.{class:state} { float: right; }' +
+	'.{class:state-picture} { display: inline-block; height: 9px; width: 8px; }' +
+	'.{class:state-picture-paused} { background: url(&quot;//cdn.echoenabled.com/images/control_pause.png&quot;) no-repeat center center; }' +
+	'.{class:state-picture-live} { background: url(&quot;//cdn.echoenabled.com/images/control_play.png&quot;) no-repeat center center; }' +
+	'.{class:state-message} { margin-left: 5px; text-decoration: none; }' +
+	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
+	'.{class:more-hover} { background-color: #E4E4E4; }' +
+	'.{class:more} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
+	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }' +
+	($.browser.msie
+		? '.{class:state-picture} { vertical-align: middle; }' +
+		'.{class:container} { zoom: 1; }'
+		: ''
+	);
+
+Echo.Control.create(stream);
+
+// Stream Item control class
+
+var item = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+item.init = function() {
+	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get(&quot;data.object.published&quot;));
+	this.ready();
+};
+
+item.config = {
+	&quot;aggressiveSanitization&quot;: false,
+	&quot;buttonsOrder&quot;: undefined,
+	&quot;contentTransformations&quot;: {
+		&quot;text&quot;: [&quot;smileys&quot;, &quot;hashtags&quot;, &quot;urls&quot;, &quot;newlines&quot;],
+		&quot;html&quot;: [&quot;smileys&quot;, &quot;hashtags&quot;, &quot;urls&quot;, &quot;newlines&quot;],
+		&quot;xhtml&quot;: [&quot;smileys&quot;, &quot;hashtags&quot;, &quot;urls&quot;]
+	},
+	&quot;infoMessages&quot;: {
+		&quot;enabled&quot;: false
+	},
+	&quot;limits&quot;: {
+		&quot;maxBodyCharacters&quot;: undefined,
+		&quot;maxBodyLines&quot;: undefined,
+		&quot;maxBodyLinkLength&quot;: 50,
+		&quot;maxMarkerLength&quot;: 16,
+		&quot;maxReLinkLength&quot;: 30,
+		&quot;maxReTitleLength&quot;: 143,
+		&quot;maxTagLength&quot;: 16
+	},
+	&quot;optimizedContext&quot;: true,
+	&quot;reTag&quot;: true,
+	&quot;viaLabel&quot;: {
+		&quot;icon&quot;: false,
+		&quot;text&quot;: false
+	}
+};
+
+item.config.normalizer = {
+	&quot;contentTransformations&quot;: function(object) {
+		$.each(object, function(contentType, options) {
+			object[contentType] = Echo.Utils.foldl({}, options || [],
+				function(option, acc) {
+					acc[option] = true;
+				}
+			);
+		});
+		return object;
+	}
+};
+
+item.vars = {
+	&quot;children&quot;: [],
+	&quot;depth&quot;: 0,
+	&quot;threading&quot;: false,
+	&quot;textExpanded&quot;: false,
+	&quot;blocked&quot;: false,
+	&quot;buttonsOrder&quot;: [],
+	&quot;buttonSpecs&quot;: {},
+	&quot;buttons&quot;: {}
+};
+
+item.labels = {
+	&quot;defaultModeSwitchTitle&quot;: &quot;Switch to metadata view&quot;,
+	&quot;guest&quot;: &quot;Guest&quot;,
+	&quot;today&quot;: &quot;Today&quot;,
+	&quot;yesterday&quot;: &quot;Yesterday&quot;,
+	&quot;lastWeek&quot;: &quot;Last Week&quot;,
+	&quot;lastMonth&quot;: &quot;Last Month&quot;,
+	&quot;secondAgo&quot;: &quot;Second Ago&quot;,
+	&quot;secondsAgo&quot;: &quot;Seconds Ago&quot;,
+	&quot;minuteAgo&quot;: &quot;Minute Ago&quot;,
+	&quot;minutesAgo&quot;: &quot;Minutes Ago&quot;,
+	&quot;hourAgo&quot;: &quot;Hour Ago&quot;,
+	&quot;hoursAgo&quot;: &quot;Hours Ago&quot;,
+	&quot;dayAgo&quot;: &quot;Day Ago&quot;,
+	&quot;daysAgo&quot;: &quot;Days Ago&quot;,
+	&quot;weekAgo&quot;: &quot;Week Ago&quot;,
+	&quot;weeksAgo&quot;: &quot;Weeks Ago&quot;,
+	&quot;metadataModeSwitchTitle&quot;: &quot;Return to default view&quot;,
+	&quot;monthAgo&quot;: &quot;Month Ago&quot;,
+	&quot;monthsAgo&quot;: &quot;Months Ago&quot;,
+	&quot;sharedThisOn&quot;: &quot;I shared this on {service}...&quot;,
+	&quot;userID&quot;: &quot;User ID:&quot;,
+	&quot;userIP&quot;: &quot;User IP:&quot;,
+	&quot;textToggleTruncatedMore&quot;: &quot;more&quot;,
+	&quot;textToggleTruncatedLess&quot;: &quot;less&quot;,
+	&quot;fromLabel&quot;: &quot;from&quot;,
+	&quot;viaLabel&quot;: &quot;via&quot;,
+	&quot;childrenMoreItems&quot;: &quot;View more items&quot;
+};
+
+item.methods.template = function() {
+	return '&lt;div class=&quot;{class:content}&quot;&gt;' +
+		'&lt;div class=&quot;{class:container}&quot;&gt;' +
+			'&lt;div class=&quot;{class:avatar-wrapper}&quot;&gt;' +
+				'&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+			'&lt;div class=&quot;{class:wrapper}&quot;&gt;' +
+				'&lt;div class=&quot;{class:subwrapper}&quot;&gt;' +
+					'&lt;div class=&quot;{class:subcontainer}&quot;&gt;' +
+						'&lt;div class=&quot;{class:frame}&quot;&gt;' +
+							'&lt;div class=&quot;{class:modeSwitch} echo-clickable&quot;&gt;&lt;/div&gt;' +
+							'&lt;div class=&quot;{class:authorName} echo-linkColor&quot;&gt;&lt;/div&gt;' +
+							'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+							'&lt;div class=&quot;{class:data}&quot;&gt;' +
+								'&lt;div class=&quot;{class:re}&quot;&gt;&lt;/div&gt;' +
+								'&lt;div class=&quot;{class:body} echo-primaryColor&quot;&gt; ' +
+									'&lt;span class=&quot;{class:text}&quot;&gt;&lt;/span&gt;' +
+									'&lt;span class=&quot;{class:textEllipses}&quot;&gt;...&lt;/span&gt;' +
+									'&lt;span class=&quot;{class:textToggleTruncated} echo-linkColor echo-clickable&quot;&gt;&lt;/span&gt;' +
+								'&lt;/div&gt;' +
+								'&lt;div class=&quot;{class:markers} echo-secondaryFont echo-secondaryColor&quot;&gt;&lt;/div&gt;' +
+								'&lt;div class=&quot;{class:tags} echo-secondaryFont echo-secondaryColor&quot;&gt;&lt;/div&gt;' +
+							'&lt;/div&gt;' +
+							'&lt;div class=&quot;{class:metadata}&quot;&gt;' +
+								'&lt;div class=&quot;{class:metadata-userID}&quot;&gt;' +
+									'&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;' +
+										'{label:userID}' +
+									'&lt;/span&gt;' +
+									'&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:actor.id}&lt;/span&gt;' +
+								'&lt;/div&gt;' +
+								'&lt;div class=&quot;{class:metadata-userIP} {class:metadataUserIP}&quot;&gt;' +
+									'&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;' +
+										'{label:userIP}' +
+									'&lt;/span&gt;' +
+									'&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:ip}&lt;/span&gt;' +
+								'&lt;/div&gt;' +
+							'&lt;/div&gt;' +
+							'&lt;div class=&quot;{class:footer} echo-secondaryColor echo-secondaryFont&quot;&gt;' +
+								'&lt;img class=&quot;{class:sourceIcon} echo-clickable&quot;&gt;' +
+								'&lt;div class=&quot;{class:date}&quot;&gt;&lt;/div&gt;' +
+								'&lt;div class=&quot;{class:from}&quot;&gt;&lt;/div&gt;' +
+								'&lt;div class=&quot;{class:via}&quot;&gt;&lt;/div&gt;' +
+								'&lt;div class=&quot;{class:buttons}&quot;&gt;&lt;/div&gt;' +
+								'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+							'&lt;/div&gt;' +
+						'&lt;/div&gt;' +
+					'&lt;/div&gt;' +
+					'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+				'&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+			'&lt;div class=&quot;{class:childrenMarker}&quot;&gt;&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+		(this.config.get(&quot;parent.children.sortOrder&quot;) === &quot;chronological&quot;
+			? '&lt;div class=&quot;{class:children}&quot;&gt;&lt;/div&gt;' +
+			'&lt;div class=&quot;{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable&quot;&gt;' +
+				'&lt;span class=&quot;{class:expandChildrenLabel} echo-message-icon&quot;&gt;&lt;/span&gt;' +
+			'&lt;/div&gt;'
+			: '&lt;div class=&quot;{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable&quot;&gt;' +
+				'&lt;span class=&quot;{class:expandChildrenLabel} echo-message-icon&quot;&gt;&lt;/span&gt;' +
+			'&lt;/div&gt;' +
+			'&lt;div class=&quot;{class:children}&quot;&gt;&lt;/div&gt;'
+		) +
+		'&lt;div class=&quot;{class:childrenByCurrentActorLive}&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+};
+
+item.renderers.authorName = function(element) {
+	return element.append(this.get(&quot;data.actor.title&quot;) || this.labels.get(&quot;guest&quot;));
+};
+
+item.renderers.markers = function(element) {
+	return this.dom.render({
+		&quot;name&quot;: &quot;_extraField&quot;,
+		&quot;target&quot;: element,
+		&quot;extra&quot;: {&quot;type&quot;: &quot;markers&quot;}
+	});
+};
+
+item.renderers.tags = function(element) {
+	return this.dom.render({
+		&quot;name&quot;: &quot;_extraField&quot;,
+		&quot;target&quot;: element,
+		&quot;extra&quot;: {&quot;type&quot;: &quot;tags&quot;}
+	});
+};
+
+item.renderers._extraField = function(element, extra) {
+	var self = this;
+	var type = (extra || {}).type;
+	if (!this.data.object[type] || !this.user.is(&quot;admin&quot;)) {
+		this.dom.remove(element);
+		return element;
+	}
+	var name = type === &quot;markers&quot; ? &quot;maxMarkerLength&quot; : &quot;maxTagsLength&quot;;
+	var limit = this.config.get(&quot;limits.&quot; + name);
+	var items = Echo.Utils.foldl([], this.data.object[type], function(item, acc) {
+		var template = item.length &gt; limit
+			? '&lt;span title=&quot;{data:item}&quot;&gt;{data:truncatedItem}&lt;/span&gt;'
+			: '&lt;span&gt;{data:item}&lt;/span&gt;';
+		var truncatedItem = Echo.Utils.htmlTextTruncate(item, limit, &quot;...&quot;);
+		acc.push(self.substitute({
+			&quot;template&quot;: template,
+			&quot;data&quot;: {&quot;item&quot;: item, &quot;truncatedItem&quot;: truncatedItem}
+		}));
+	});
+	return element.prepend(items.sort().join(&quot;, &quot;));
+};
+
+item.renderers.container = function(element) {
+	var self = this;
+	element.removeClass(
+		$.map([&quot;child&quot;, &quot;root&quot;, &quot;child-thread&quot;, &quot;root-thread&quot;],	function(suffix) {
+			return self.cssPrefix + &quot;container-&quot; + suffix;
+		}).join(&quot; &quot;)
+	);
+	var suffix = this.threading ? &quot;-thread&quot; : &quot;&quot;;
+	var cssClass = this.depth
+		? &quot;container-child&quot; + suffix + &quot; echo-trinaryBackgroundColor&quot;
+		: &quot;container-root&quot; + suffix;
+	element.addClass(
+		this.cssPrefix + &quot;depth-&quot; + this.depth + &quot; &quot; +
+		this.cssPrefix + cssClass
+	);
+	var switchClasses = function(action) {
+		$.map(self.buttonsOrder, function(name) {
+			if (!self.get(&quot;buttons.&quot; + name + &quot;.element&quot;)) return;
+			var clickables = self.get(&quot;buttons.&quot; + name + &quot;.clickableElements&quot;);
+			clickables[action + &quot;Class&quot;](&quot;echo-linkColor&quot;);
+		});
+	};
+	if (!Echo.Utils.isMobileDevice()) {
+		element.off([&quot;mouseleave&quot;, &quot;mouseenter&quot;]).hover(function() {
+			if (self.user.is(&quot;admin&quot;)) {
+				self.dom.get(&quot;modeSwitch&quot;).show();
+			}
+			switchClasses(&quot;add&quot;);
+		}, function() {
+			if (self.user.is(&quot;admin&quot;)) {
+				self.dom.get(&quot;modeSwitch&quot;).hide();
+			}
+			switchClasses(&quot;remove&quot;);
+		});
+	}
+	return element;
+};
+
+item.renderers.metadataUserIP = function(element) {
+	if (!this.get(&quot;data.ip&quot;)) {
+		element.hide();
+	}
+	return element;
+};
+
+item.renderers.modeSwitch = function(element) {
+	var self = this;
+	element.hide();
+	if (!this.user.is(&quot;admin&quot;)) {
+		return element;
+	}
+	var mode = &quot;default&quot;;
+	var setTitle = function(el) {
+		element.attr(&quot;title&quot;, self.labels.get(mode + &quot;ModeSwitchTitle&quot;));
+	};
+	setTitle();
+	element.click(function() {
+		mode = (mode === &quot;default&quot; ? &quot;metadata&quot; : &quot;default&quot;);
+		setTitle();
+		self.dom.get(&quot;data&quot;).toggle();
+		self.dom.get(&quot;metadata&quot;).toggle();
+	});
+	if (Echo.Utils.isMobileDevice()) {
+		element.show();
+	}
+	return element;
+};
+
+item.renderers.wrapper = function(element) {
+	return element.addClass(this.cssPrefix + &quot;wrapper&quot; + (this.depth ? &quot;-child&quot; : &quot;-root&quot;));
+};
+
+item.renderers.avatar = function(element) {
+	var size = this.depth ? 24 : 48;
+	var avatar = Echo.Utils.loadImage(
+		this.get(&quot;data.actor.avatar&quot;),
+		this.user.config.get(&quot;defaultAvatar&quot;)
+	);
+	avatar.css({&quot;width&quot;: size, &quot;height&quot;: size});
+	return element.empty().append(avatar);
+};
+
+item.renderers._childrenContainer = function(element, config) {
+	// we cannot use element.empty() because it will remove children's event handlers
+	$.each(element.children(), function(i, child) {
+		$(child).detach();
+	});
+	$.map(this.children, function(child) {
+		if (config &amp;&amp; config.filter &amp;&amp; !config.filter(child)) return;
+		element.append(child.config.get(&quot;target&quot;));
+		if (!child.dom.rendered() &amp;&amp; !child.added) {
+			child.dom.render();
+		}
+		if (child.deleted || child.added) {
+			child.events.publish({
+				&quot;topic&quot;: child.deleted ? &quot;onDelete&quot; : &quot;onAdd&quot;,
+				&quot;data&quot;: {&quot;config&quot;: config},
+				&quot;global&quot;: false,
+				&quot;propagation&quot;: false
+			});
+		}
+	});
+	return element;
+};
+
+item.renderers.children = function(element, config) {
+	return this.dom.render({
+		&quot;name&quot;: &quot;_childrenContainer&quot;,
+		&quot;target&quot;: element,
+		&quot;extra&quot;: {
+			&quot;filter&quot;: function(item) { return !item.byCurrentUser; },
+			&quot;keepChildren&quot;: config &amp;&amp; config.keepChildren
+		}
+	});
+};
+
+item.renderers.childrenByCurrentActorLive = function(element, config) {
+	return this.dom.render({
+		&quot;name&quot;: &quot;_childrenContainer&quot;,
+		&quot;target&quot;: element,
+		&quot;extra&quot;: {
+			&quot;filter&quot;: function(item) { return item.byCurrentUser; },
+			&quot;keepChildren&quot;: config &amp;&amp; config.keepChildren
+		}
+	});
+};
+
+item.renderers._button = function(element, extra) {
+	var template = extra.template ||
+		'&lt;a class=&quot;{class:button} {class:button}-{data:name}&quot;&gt;{data:label}&lt;/a&gt;';
+	var data = {
+		&quot;label&quot;: extra.label || &quot;&quot;,
+		&quot;name&quot;: extra.name
+	};
+	var button = $(this.substitute({&quot;template&quot;: template, &quot;data&quot;: data}));
+	var clickables = $(&quot;.echo-clickable&quot;, button);
+	if (!clickables.length) {
+		clickables = button;
+		button.addClass(&quot;echo-clickable&quot;);
+	}
+	clickables[extra.once ? &quot;one&quot; : &quot;on&quot;]({
+		&quot;click&quot;: function(event) {
+			event.stopPropagation();
+			if (extra.callback) extra.callback();
+		}
+	});
+	var data = this.get(&quot;buttons.&quot; + extra.plugin + &quot;.&quot; + extra.name);
+	data.element = button;
+	data.clickableElements = clickables;
+	if (Echo.Utils.isMobileDevice()) {
+		clickables.addClass(&quot;echo-linkColor&quot;);
+	}
+	return element.append(button);
+};
+
+item.renderers._buttonsDelimiter = function(element) {
+	return element.append('&lt;span class=&quot;' + this.cssPrefix + 'button-delim&quot;&gt; \u00b7 &lt;/span&gt;');
+};
+
+item.renderers.buttons = function(element) {
+	var self = this;
+	this._assembleButtons();
+	this._sortButtons();
+	element.empty();
+	$.map(this.buttonsOrder, function(name) {
+		var data = self.get(&quot;buttons.&quot; + name);
+		if (!data || !data.name || !data.visible()) {
+			return;
+		}
+		self.dom.render({
+			&quot;name&quot;: &quot;_buttonsDelimiter&quot;,
+			&quot;target&quot;: element
+		});
+		self.dom.render({
+			&quot;name&quot;: &quot;_button&quot;,
+			&quot;target&quot;: element,
+			&quot;extra&quot;: data
+		});
+	});
+	return element;
+};
+
+item.renderers.re = function(element) {
+	if (!this.config.get(&quot;reTag&quot;)) {
+		return element;
+	}
+	var context = this.get(&quot;data.object.context&quot;);
+	var re = &quot;&quot;;
+	//XXX use normalized permalink and location instead
+	var permalink = this.get(&quot;data.object.permalink&quot;);
+	var limits = this.config.get(&quot;limits&quot;);
+	var openLinksInNewWindow = this.config.get(&quot;parent.openLinksInNewWindow&quot;);
+
+	var getDomain = function(url) {
+		var parts = Echo.Utils.parseURL(url);
+		return parts &amp;&amp; parts.domain ? parts.domain : url;
+	};
+
+	var reOfContext = function(c) {
+		var maxLength = limits.maxReTitleLength;
+		if (!c.title) {
+			maxLength = limits.maxReLinkLength;
+			c.title = c.uri.replace(/^https?:\/\/(.*)/ig, '$1');
+		}
+		if (c.title.length &gt; maxLength) {
+			c.title = c.title.substring(0, maxLength) + &quot;...&quot;;
+		}
+		return &quot;&lt;div&gt;&quot; + Echo.Utils.hyperlink({
+			&quot;class&quot;: &quot;echo-primaryColor&quot;,
+			&quot;href&quot;: c.uri,
+			&quot;caption&quot;: &quot;Re: &quot; + Echo.Utils.stripTags(c.title)
+		}, {
+			&quot;openInNewWindow&quot;: openLinksInNewWindow
+		}) + &quot;&lt;/div&gt;&quot;;
+	};
+
+	var pageHref = document.location.href;
+	var pageDomain = getDomain(pageHref);
+
+	if (permalink === pageHref || this.depth || !context || !context.length) {
+		return element;
+	}
+	var mustSkipContext = false;
+	$.each(context, function(i, c) {
+		//XXX use normalized uri
+		if (c.uri === pageHref) {
+			mustSkipContext = true;
+			return false; //break
+		}
+	});
+
+	if (mustSkipContext) {
+		return element;
+	}
+
+	if (this.config.get(&quot;optimizedContext&quot;)) {
+		var primaryContext = context[0];
+		$.each(context, function(i, c) {
+			if (getDomain(c.uri) === pageDomain) {
+				primaryContext = c;
+				return false; //break
+			}
+		});
+		if (primaryContext) {
+			re = reOfContext(primaryContext);
+		}
+	} else {
+		$.each(context, function(i, c) {
+			re += reOfContext(c);
+		});
+	}
+	return element.empty().append(re);
+};
+
+item.renderers.sourceIcon = function(element) {
+	var self = this;
+	if (!this.config.get(&quot;viaLabel.icon&quot;) ||
+			this.get(&quot;data.source.name&quot;) == &quot;jskit&quot; ||
+			this.get(&quot;data.source.name&quot;) == &quot;echo&quot;) {
+		this.dom.remove(element);
+	}
+	var hyperlink = Echo.Utils.hyperlink({
+		&quot;href&quot;: this.get(&quot;data.source.uri&quot;, this.get(&quot;data.object.permalink&quot;))
+	}, {
+		&quot;openInNewWindow&quot;: this.config.get(&quot;parent.openLinksInNewWindow&quot;)
+	});
+	var url = this.get(&quot;data.source.icon&quot;, this.config.get(&quot;providerIcon&quot;));
+	element.hide().attr(&quot;src&quot;, Echo.Utils.htmlize(url))
+		.show()
+		.one(&quot;error&quot;, function() { self.dom.remove(element); })
+		.wrap(hyperlink);
+};
+
+item.renderers.via = function(element) {
+	var self = this;
+	var get = function(field) {
+		return (self.data[field].name || &quot;&quot;).toLowerCase();
+	};
+	if (get(&quot;source&quot;) === get(&quot;provider&quot;)) {
+		return element;
+	}
+	return this.dom.render({
+		&quot;name&quot;: &quot;_viaText&quot;,
+		&quot;target&quot;: element,
+		&quot;extra&quot;: {
+			&quot;label&quot;: &quot;via&quot;,
+			&quot;field&quot;: &quot;provider&quot;
+		}
+	});
+};
+
+item.renderers.from = function(element) {
+	return this.dom.render({
+		&quot;name&quot;: &quot;_viaText&quot;,
+		&quot;target&quot;: element,
+		&quot;extra&quot;: {
+			&quot;label&quot;: &quot;from&quot;,
+			&quot;field&quot;: &quot;source&quot;
+		}
+	});
+};
+
+item.renderers._viaText = function(element, extra) {
+	extra = extra || {};
+	var data = this.data[extra.field];
+	if (!this.config.get(&quot;viaLabel.text&quot;) ||
+			!data.name ||
+			data.name === &quot;jskit&quot; ||
+			data.name === &quot;echo&quot;) {
+		return element;
+	}
+	var a = Echo.Utils.hyperlink({
+		&quot;class&quot;: &quot;echo-secondaryColor&quot;,
+		&quot;href&quot;: data.uri || this.get(&quot;data.object.permalink&quot;),
+		&quot;caption&quot;: data.name
+	}, {
+		&quot;openInNewWindow&quot;: this.config.get(&quot;parent.openLinksInNewWindow&quot;)
+	});
+	return element.html(&quot;&amp;nbsp;&quot; + this.labels.get(extra.label + &quot;Label&quot;) + &quot;&amp;nbsp;&quot;).append(a);
+};
+
+item.renderers.textToggleTruncated = function(element) {
+	var self = this;
+	element.off(&quot;click&quot;).click(function() {
+		self.textExpanded = !self.textExpanded;
+		self.dom.render({&quot;name&quot;: &quot;body&quot;});
+		self.dom.render({&quot;name&quot;: &quot;textToggleTruncated&quot;});
+	});
+	return element.empty().append(
+		this.labels.get(&quot;textToggleTruncated&quot; + (this.textExpanded ? &quot;Less&quot; : &quot;More&quot;))
+	);
+};
+
+item.renderers.body = function(element) {
+	var self = this;
+	var data = [this.get(&quot;data.object.content&quot;), {
+		&quot;source&quot;: this.get(&quot;data.source.name&quot;),
+		&quot;limits&quot;: this.config.get(&quot;limits&quot;),
+		&quot;contentTransformations&quot;: this.config.get(&quot;contentTransformations.&quot; + this.get(&quot;data.object.content_type&quot;), {}),
+		&quot;openLinksInNewWindow&quot;: this.config.get(&quot;parent.openLinksInNewWindow&quot;)
+	}];
+	$.each(this._getBodyTransformations(), function(i, trasformation) {
+		data = trasformation.apply(self, data);
+		if (!/\S/.test(data[0])) {
+			data[0] = self.labels.get(&quot;sharedThisOn&quot;, {&quot;service&quot;: data[1].source});
+			return false;
+		}
+	});
+	var text = data[0];
+	var truncated = data[1].truncated;
+	this.dom.get(&quot;text&quot;).empty().append(text);
+	this.dom.get(&quot;textEllipses&quot;)[!truncated || this.textExpanded ? &quot;hide&quot; : &quot;show&quot;]();
+	this.dom.get(&quot;textToggleTruncated&quot;)[truncated || this.textExpanded ? &quot;show&quot; : &quot;hide&quot;]();
+	return element;
+};
+
+item.renderers.date = function(element) {
+	this._calcAge();
+	return element.html(this.age);
+};
+
+item.renderers.expandChildrenLabel = function(element, extra) {
+	if (!this.children.length || !this.hasMoreChildren()) {
+		return element;
+	}
+	extra = extra || {};
+	extra.state = extra.state || &quot;regular&quot;;
+	var states = {
+		&quot;loading&quot;: {
+			&quot;css&quot;: this.cssPrefix + &quot;message-loading&quot;,
+			&quot;label&quot;: &quot;loading&quot;
+		},
+		&quot;regular&quot;: {
+			&quot;css&quot;: &quot;echo-linkColor echo-message-icon&quot;,
+			&quot;label&quot;: &quot;childrenMoreItems&quot;
+		}
+	};
+	return element
+		.removeClass(states[extra.state === &quot;loading&quot; ? &quot;regular&quot; : &quot;loading&quot;].css)
+		.addClass(states[extra.state].css)
+		.html(this.labels.get(states[extra.state].label));
+};
+
+item.renderers.expandChildren = function(element, extra) {
+	var self = this;
+	if (!this.children.length) {
+		return element;
+	}
+	if (!this.hasMoreChildren()) {
+		// IE in Quirks mode can't handle elements with the &quot;height: 0px&quot; correctly,
+		// element with the &quot;height: 0px&quot; is renderered like it doesn't have
+		// the height property at all. Thus we set the &quot;height: 1px&quot; as the final value
+		// for the animate function and simply hide element when the animation is done.
+		if ($.browser.msie &amp;&amp; document.compatMode !== &quot;CSS1Compat&quot;) {
+			element.animate({
+				&quot;height&quot;: &quot;1px&quot;,
+				&quot;marginTop&quot;: &quot;hide&quot;,
+				&quot;marginBottom&quot;: &quot;hide&quot;,
+				&quot;paddingTop&quot;: &quot;hide&quot;,
+				&quot;paddingBottom&quot;: &quot;hide&quot;
+			}, {
+				&quot;duration&quot;: this.config.get(&quot;children.moreButtonSlideTimeout&quot;),
+				&quot;complete&quot;: function() {
+					element.hide();
+				}
+			});
+		} else {
+			element.slideUp(this.config.get(&quot;children.moreButtonSlideTimeout&quot;));
+		}
+		return element;
+	}
+	extra = extra || {};
+
+	// the &quot;show()&quot; jQuery method doesn't work for some reasons in Chrome (A:5755)
+	element.css(&quot;display&quot;, &quot;block&quot;);
+
+	return element.addClass(this.cssPrefix + &quot;depth-&quot; + (this.depth + 1))
+		.off(&quot;click&quot;)
+		.one(&quot;click&quot;, function() {
+			self.dom.render({
+				&quot;name&quot;: &quot;expandChildrenLabel&quot;,
+				&quot;target&quot;: self.dom.get(&quot;expandChildrenLabel&quot;),
+				&quot;extra&quot;: {&quot;state&quot;: &quot;loading&quot;}
+			});
+			self.events.publish({
+				&quot;topic&quot;: &quot;onChildrenExpand&quot;,
+				&quot;data&quot;: {&quot;data&quot;: self.data},
+				&quot;global&quot;: false,
+				&quot;propagation&quot;: false
+			});
+		});
+};
+
+item.methods.hasMoreChildren = function() {
+	return this.get(&quot;data.hasMoreChildren&quot;) === &quot;true&quot;;
+};
+
+item.methods.getNextPageAfter = function() {
+	var children = $.grep(this.children, function(child) {
+		return !child.config.get(&quot;live&quot;);
+	});
+	var index = this.config.get(&quot;parent.children.sortOrder&quot;) === &quot;chronological&quot;
+		? children.length - 1
+		: 0;
+	return children.length
+		? children[index].data.pageAfter
+		: undefined;
+};
+
+item.methods._prepareEventParams = function(params) {
+	params = params || {};
+	params.target = this.config.get(&quot;parent.target&quot;).get(0);
+	params.query = this.config.get(&quot;parent.query&quot;);
+	params.item = {
+		&quot;data&quot;: this.data,
+		&quot;target&quot;: this.config.get(&quot;target&quot;).get(0)
+	};
+	return params;
+};
+
+item.methods.traverse = function(tree, callback, acc) {
+	var self = this;
+	$.each(tree || [], function(i, item) {
+		acc = self.traverse(item.children, callback, callback(item, acc));
+	});
+	return acc;
+};
+
+item.methods.block = function(label) {
+	if (this.blocked) return;
+	this.blocked = true;
+	var content = this.dom.get(&quot;container&quot;);
+	var width = content.width();
+	// we should take into account that the container has a 10px 0px padding value
+	var height = content.outerHeight();
+	this.blockers = {
+		&quot;backdrop&quot;: $('&lt;div class=&quot;' + this.cssPrefix + 'blocker-backdrop&quot;&gt;&lt;/div&gt;').css({
+			&quot;width&quot;: width, &quot;height&quot;: height
+		}),
+		&quot;message&quot;: $(this.substitute({
+			&quot;template&quot;: '&lt;div class=&quot;{class:blocker-message}&quot;&gt;{data:label}&lt;/div&gt;',
+			&quot;data&quot;: {&quot;label&quot;: label}
+		})).css({
+			&quot;left&quot;: ((parseInt(width) - 200)/2) + 'px',
+			&quot;top&quot;: ((parseInt(height) - 20)/2) + 'px'
+		})
+	};
+	content.addClass(&quot;echo-relative&quot;)
+		.prepend(this.blockers.backdrop)
+		.prepend(this.blockers.message);
+};
+
+item.methods.unblock = function() {
+	if (!this.blocked) return;
+	this.blocked = false;
+	this.blockers.backdrop.remove();
+	this.blockers.message.remove();
+	this.dom.get(&quot;container&quot;).removeClass(&quot;echo-relative&quot;);
+};
+
+item.methods.getAccumulator = function(type) {
+	return this.data.object.accumulators[type];
+};
+
+item.methods.isRoot = function() {
+	return !this.config.get(&quot;parent.children.maxDepth&quot;) ||
+		this.get(&quot;data.object.id&quot;) === this.get(&quot;data.target.conversationID&quot;);
+};
+
+item.methods.addButtonSpec = function(plugin, spec) {
+	if (!this.buttonSpecs[plugin]) {
+		this.buttonSpecs[plugin] = [];
+	}
+	this.buttonSpecs[plugin].push(spec);
+};
+
+item.methods._calcAge = function() {
+	if (!this.timestamp) return;
+	var self = this;
+	var d = new Date(this.timestamp * 1000);
+	var now = (new Date()).getTime();
+	var when;
+	var diff = Math.floor((now - d.getTime()) / 1000);
+	var dayDiff = Math.floor(diff / 86400);
+	var getAgo = function(ago, period) {
+		return ago + &quot; &quot; + self.labels.get(period + (ago == 1 ? &quot;&quot; : &quot;s&quot;) + &quot;Ago&quot;);
+	};
+
+	if (isNaN(dayDiff) || dayDiff &lt; 0 || dayDiff &gt;= 365) {
+		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+	} else if (diff &lt; 60) {
+		when = getAgo(diff, 'second');
+	} else if (diff &lt; 60 * 60) {
+		diff = Math.floor(diff / 60);
+		when = getAgo(diff, 'minute');
+	} else if (diff &lt; 60 * 60 * 24) {
+		diff = Math.floor(diff / (60 * 60));
+		when = getAgo(diff, 'hour');
+	} else if (diff &lt; 60 * 60 * 48) {
+		when = this.labels.get(&quot;yesterday&quot;);
+	} else if (dayDiff &lt; 7) {
+		when = getAgo(dayDiff, 'day');
+	} else if (dayDiff &lt; 14) {
+		when = this.labels.get(&quot;lastWeek&quot;);
+	} else if (dayDiff &lt; 30) {
+		diff =  Math.floor(dayDiff / 7);
+		when = getAgo(diff, 'week');
+	} else if (dayDiff &lt; 60) {
+		when = this.labels.get(&quot;lastMonth&quot;);
+	} else if (dayDiff &lt; 365) {
+		diff =  Math.floor(dayDiff / 31);
+		when = getAgo(diff, 'month');
+	}
+	if (this.age !== when) {
+		this.age = when;
+	}
+};
+
+var _smileys = {
+	&quot;codes&quot;: [],
+	&quot;regexps&quot;: [],
+	&quot;hash&quot;: {
+		&quot;:)&quot;: {file: &quot;smile.png&quot;, title: &quot;Smile&quot;},
+		&quot;:-)&quot;: {file: &quot;smile.png&quot;, title: &quot;Smile&quot;},
+		&quot;;)&quot;: {file: &quot;wink.png&quot;, title: &quot;Wink&quot;},
+		&quot;;-)&quot;: {file: &quot;wink.png&quot;, title: &quot;Wink&quot;},
+		&quot;:(&quot;: {file: &quot;unhappy.png&quot;, title: &quot;Frown&quot;},
+		&quot;:-(&quot;: {file: &quot;unhappy.png&quot;, title: &quot;Frown&quot;},
+		&quot;=-O&quot;: {file: &quot;surprised.png&quot;, title: &quot;Surprised&quot;},
+		&quot;:-D&quot;: {file: &quot;grin.png&quot;, title: &quot;Laughing&quot;},
+		&quot;:-P&quot;: {file: &quot;tongue.png&quot;, title: &quot;Tongue out&quot;},
+		&quot;=)&quot;: {file: &quot;happy.png&quot;, title: &quot;Happy&quot;},
+		&quot;B-)&quot;: {file: &quot;evilgrin.png&quot;, title: &quot;Evil grin&quot;}
+	}
+};
+item.methods._initSmileysConfig = function() {
+	var self = this;
+	if (_smileys.codes.length) {
+		return _smileys;
+	}
+	var esc = function(v) { return v.replace(/([\W])/g, &quot;\\$1&quot;); };
+	var escapedCodes = [];
+	$.each(_smileys.hash, function(code) {
+		var escaped = esc(code);
+		escapedCodes.push(escaped);
+		_smileys.codes.push(code);
+		_smileys.regexps[code] = new RegExp(escaped, &quot;g&quot;);
+	});
+	_smileys.regexps.test = new RegExp(escapedCodes.join(&quot;|&quot;));
+	_smileys.tag = function(smiley) {
+		return '&lt;img class=&quot;' + self.cssPrefix + 'smiley-icon&quot; src=&quot;//cdn.echoenabled.com/images/smileys/emoticon_' + smiley.file + '&quot; title=&quot;' + smiley.title + '&quot; alt=&quot;' + smiley.title + '&quot; /&gt;';
+	};
+	return _smileys;
+};
+
+item.methods._assembleButtons = function() {
+	var self = this;
+	var buttonsOrder = [];
+	$.each(this.buttonSpecs, function(plugin, specs) {
+		$.map(specs, function(spec) {
+			var data = $.isFunction(spec)
+				? spec.call(self)
+				: $.extend({}, spec);
+			if (!data.name) return;
+			var callback = data.callback || function() {};
+			data.callback = function() {
+				callback.call(self);
+				self.events.publish({
+					&quot;topic&quot;: &quot;onButtonClick&quot;,
+					&quot;data&quot;: {
+						&quot;name&quot;: data.name,
+						&quot;plugin&quot;: plugin,
+						&quot;item&quot;: {
+							&quot;data&quot;: self.data,
+							&quot;target&quot;: self.config.get(&quot;target&quot;)
+						}
+					}
+				});
+			};
+			data.label = data.label || data.name;
+			data.plugin = plugin;
+			if (typeof data.visible === &quot;undefined&quot;) {
+				data.visible = true;
+			}
+			var visible = data.visible;
+			data.visible = $.isFunction(visible)
+				? visible
+				: function() { return visible; };
+			var name = plugin + &quot;.&quot; + data.name;
+			self.set(&quot;buttons.&quot; + name, data);
+			if ($.inArray(name, self.buttonsOrder) &lt; 0) {
+				buttonsOrder.push(name);
+			}
+		});
+	});
+	// keep correct order of plugins and buttons
+	self.buttonsOrder = buttonsOrder.concat(self.buttonsOrder);
+};
+
+item.methods._sortButtons = function() {
+	var self = this;
+	var defaultOrder = this.buttonsOrder;
+	var requiredOrder = this.config.get(&quot;buttonsOrder&quot;);
+	// if buttons order is not specified in application config, use default order
+	if (!requiredOrder) {
+		this.config.set(&quot;buttonsOrder&quot;, defaultOrder);
+	} else if (requiredOrder != defaultOrder) {
+		var push = function(name, acc, pos) {
+			if (!self.get(&quot;buttons.&quot; + name)) return;
+			acc.push(name);
+			pos = pos || $.inArray(name, defaultOrder);
+			if (pos &gt;= 0) {
+				delete defaultOrder[pos];
+			}
+		};
+		var order = Echo.Utils.foldl([], requiredOrder, function(name, acc) {
+			if (/^(.*)\./.test(name)) {
+				push(name, acc);
+			} else {
+				var re = new RegExp(&quot;^&quot; + name + &quot;\.&quot;);
+				$.map(defaultOrder, function(n, i) {
+					if (n &amp;&amp; n.match(re)) {
+						push(n, acc, i);
+					}
+				});
+			}
+		});
+		this.buttonsOrder = order;
+		this.config.set(&quot;buttonsOrder&quot;, order);
+	// if application config tells not to use buttons
+	} else if (!requiredOrder.length) {
+		this.buttonsOrder = [];
+	}
+};
+
+(function() {
+	item.methods._getBodyTransformations = function() {
+		return [
+			_aggressiveSanitization,
+			_replaceLinkedHashtags,
+			_tags2meta,
+			_removeLinksToSelf,
+			_replacePlainHashtags,
+			_autoLinking,
+			_replaceSmileys,
+			_replaceNewLines,
+			_meta2tags,
+			_normalizeLinks,
+			_applyLimits
+		];
+	};
+
+	var _urlMatcher = &quot;((?:http|ftp|https):\\/\\/(?:[a-z0-9#:\\/\\;\\?\\-\\.\\+,@&amp;=%!\\*\\'(){}\\[\\]$_|^~`](?!gt;|lt;))+)&quot;;
+
+	var _wrapTag = function(tag, limits) {
+		var template = tag.length &gt; limits.maxTagLength
+			? '&lt;span class=&quot;{class:tag}&quot; title=&quot;{data:tag}&quot;&gt;{data:truncatedTag}&lt;/span&gt;'
+			: '&lt;span class=&quot;{class:tag}&quot;&gt;{data:tag}&lt;/span&gt;';
+		var truncatedTag = tag.substring(0, limits.maxTagLength) + &quot;...&quot;;
+		return this.substitute({
+			&quot;template&quot;: template,
+			&quot;data&quot;: {&quot;tag&quot;: tag, &quot;truncatedTag&quot;: truncatedTag}
+		});
+	};
+
+	var _aggressiveSanitization = function(text, extra) {
+		if (extra.source &amp;&amp; extra.source === &quot;Twitter&quot; &amp;&amp; this.config.get(&quot;aggressiveSanitization&quot;)) {
+			text = &quot;&quot;;
+		}
+		return [text, extra];
+	};
+
+	var _removeLinksToSelf = function(text, extra) {
+		if (extra.source &amp;&amp; extra.source !== &quot;jskit&quot; &amp;&amp; extra.source !== &quot;echo&quot;) {
+			var url = this.depth
+				? this.get(&quot;data.target.id&quot;)
+				: this.config.get(&quot;reTag&quot;)
+					? this.get(&quot;data.object.permalink&quot;) || this.get(&quot;data.target.id&quot;)
+					: undefined;
+			if (url) {
+				text = text.replace(new RegExp(url, &quot;g&quot;), &quot;&quot;);
+			}
+		}
+		return [text, extra];
+	};
+
+	var _replaceLinkedHashtags = function(text, extra) {
+		var self = this;
+		if (extra.contentTransformations.hashtags) {
+			text = text.replace(/(?:#|\uff03)(&lt;a[^&gt;]*&gt;[^&lt;]*&lt;\/a&gt;)/ig, function($0, $1, $2){
+				return _wrapTag.call(self, $1, extra.limits);
+			});
+		}
+		return [text, extra];
+	};
+
+	var _replacePlainHashtags = function(text, extra) {
+		var self = this;
+		if (extra.contentTransformations.hashtags) {
+			text = text.replace(/(^|[^\w&amp;\/])(?:#|\uff03)([^\s\.,;:'&quot;#@\$%&lt;&gt;!\?\(\)\[\]]+)/ig, function($0, $1, $2) {
+				return $1 + _wrapTag.call(self, $2, extra.limits);
+			});
+		}
+		return [text, extra];
+	};
+
+	var _tags2meta = function(text, extra) {
+		var self = this, tags = [];
+		text = text.replace(/((&lt;a\s+[^&gt;]*&gt;)(.*?)(&lt;\/a&gt;))|&lt;.*?&gt;/ig, function($0, $1, $2, $3, $4) {
+			//we are cutting and pushing &lt;a&gt; tags to acc to avoid potential html issues after autolinking
+			if ($1) {
+				var data = _tags2meta.call(self, $3, extra);
+				data = _replacePlainHashtags.apply(self, data);
+				data = _meta2tags.apply(self, data);
+				$0 = $2 + data[0] + $4;
+			}
+			tags.push($0);
+			return &quot; %%HTML_TAG%% &quot;;
+		});
+		extra.tags = tags;
+		return [text, extra];
+	};
+
+	var _meta2tags = function(text, extra) {
+		$.each(extra.tags, function(i, v) {
+			text = text.replace(&quot; %%HTML_TAG%% &quot;, v);
+		});
+		return [text, extra];
+	};
+
+	var _normalizeLinks = function(text, extra) {
+		text = text.replace(/(&lt;a\s+[^&gt;]*&gt;)(.*?)(&lt;\/a&gt;)/ig, function($0, $1, $2, $3) {
+			if (new RegExp(&quot;^&quot; + _urlMatcher + &quot;$&quot;).test($2)) {
+				$2 = $2.length &gt; extra.limits.maxBodyLinkLength ? $2.substring(0, extra.limits.maxBodyLinkLength) + &quot;...&quot; : $2;
+			}
+			if (extra.openLinksInNewWindow &amp;&amp; !/\s+target=(&quot;[^&lt;&gt;&quot;]*&quot;|'[^&lt;&gt;']*'|\w+)/.test($1)) {
+				$1 = $1.replace(/(^&lt;a\s+[^&gt;]*)(&gt;$)/, '$1 target=&quot;_blank&quot;$2');
+			}
+			return $1 + $2 + $3;
+		});
+		return [text, extra];
+	};
+
+	var _autoLinking = function(text, extra) {
+		extra.textBeforeAutoLinking = text;
+		var self = this;
+		if (extra.contentTransformations.urls) {
+			text = text.replace(new RegExp(_urlMatcher, &quot;ig&quot;), function($0, $1) {
+				return Echo.Utils.hyperlink({
+					&quot;href&quot;: $1,
+					&quot;caption&quot;: $1
+				}, {
+					&quot;skipEscaping&quot;: true,
+					&quot;openInNewWindow&quot;: extra.openLinksInNewWindow
+				});
+			});
+		}
+		return [text, extra];
+	};
+
+	var _replaceSmileys = function(text, extra) {
+		if (extra.contentTransformations.smileys) {
+			if (text !== extra.textBeforeAutoLinking) {
+				var data = _meta2tags.call(this, text, extra);
+				data = _tags2meta.apply(this, data);
+				text = data[0];
+				extra = data[1];
+			}
+			var smileys = this._initSmileysConfig();
+			if (text.match(smileys.regexps.test)) {
+				$.each(smileys.codes, function(i, code) {
+					text = text.replace(smileys.regexps[code], smileys.tag(smileys.hash[code]));
+				});
+			}
+		}
+		return [text, extra];
+	};
+
+	var _replaceNewLines = function(text, extra) {
+		if (extra.contentTransformations.newlines) {
+			text = text.replace(/\n\n+/g, &quot;\n\n&quot;);
+			text = text.replace(/\n/g, &quot;&amp;nbsp;&lt;br&gt;&quot;);
+		}
+		return [text, extra];
+	};
+
+	var _applyLimits = function(text, extra) {
+		var truncated = false;
+		if ((extra.limits.maxBodyCharacters || extra.limits.maxBodyLines) &amp;&amp; !this.textExpanded) {
+			if (extra.limits.maxBodyLines) {
+				var splitter = extra.contentTransformations.newlines ? &quot;&lt;br&gt;&quot; : &quot;\n&quot;;
+				var chunks = result.split(splitter);
+				if (chunks.length &gt; extra.limits.maxBodyLines) {
+					text = chunks.splice(0, extra.limits.maxBodyLines).join(splitter);
+					truncated = true;
+				}
+			}
+			var limit = extra.limits.maxBodyCharacters &amp;&amp; text.length &gt; extra.limits.maxBodyCharacters
+				? extra.limits.maxBodyCharacters
+				: truncated
+					? text.length
+					: undefined;
+			// we should call Echo.Utils.htmlTextTruncate to close all tags
+			// which might remain unclosed after lines truncation
+			var truncatedText = Echo.Utils.htmlTextTruncate(text, limit, &quot;&quot;, true);
+			if (truncatedText.length !== text.length) {
+				truncated = true;
+			}
+			text = truncatedText;
+		}
+		extra.truncated = truncated;
+		return [text, extra];
+	};
+})();
+
+var itemDepthRules = [];
+// 100 is a maximum level of children in query, but we can apply styles for ~20
+for (var i = 0; i &lt;= 20; i++) {
+	itemDepthRules.push('.{class:depth}-' + i + ' { margin-left: ' + (i ? 68 + (i - 1) * 44 : 0) + 'px; }');
+}
+item.css =
+	'.{class:content} { word-wrap: break-word; }' +
+	'.{class:container-root} { padding: 10px 0px; }' +
+	'.{class:container-root-thread} { padding: 10px 0px 0px 0px; }' +
+	'.{class:container-child} { padding: 10px; margin: 0px 20px 2px 0px; }' +
+	'.{class:container-child-thread} { padding: 10px; margin: 0px 20px 2px 0px; }' +
+	'.{class:avatar-wrapper} { margin-right: -58px; float: left; position: relative; }' +
+	'.{class:children} .{class:avatar-wrapper}, .{class:childrenByCurrentActorLive} .{class:avatar-wrapper} { margin-right: -34px; }' +
+	'.{class:children} .{class:subwrapper}, .{class:childrenByCurrentActorLive} .{class:subwrapper} { margin-left: 34px; }' +
+	'.{class:wrapper} { float: left; width: 100%; }' +
+	'.{class:subwrapper} { margin-left: 58px; }' +
+	'.{class:subcontainer} { float: left; width: 100%; }' +
+	'.{class:markers} { line-height: 16px; background: url(//cdn.echoenabled.com/images/curation/metadata/marker.png) no-repeat; padding: 0px 0px 4px 21px; margin-top: 7px; }' +
+	'.{class:tags} { line-height: 16px; background: url(//cdn.echoenabled.com/images/tag_blue.png) no-repeat; padding: 0px 0px 4px 21px; }' +
+	'.{class:metadata} { display: none; }' +
+	'.{class:metadata-title} { font-weight: bold; line-height: 25px; height: 25px; margin-right: 5px; }' +
+	'.{class:metadata-icon} { display: inline-block; padding-left: 26px; }' +
+	'.{class:metadata-userID} { border-bottom: 1px solid #e1e1e1; border-top: 1px solid #e1e1e1;}' +
+	'.{class:metadata-userID} .{class:metadata-icon} { background: url(&quot;//cdn.echoenabled.com/images/curation/metadata/user.png&quot;) no-repeat left center; }' +
+	'.{class:metadata-userIP} { border-bottom: 1px solid #e1e1e1; }' +
+	'.{class:metadata-userIP} .{class:metadata-icon} { background: url(&quot;//cdn.echoenabled.com/images/curation/metadata/computer.png&quot;) no-repeat left center; }' +
+	'.{class:modeSwitch} { float: right; width: 16px; height: 16px; background:url(&quot;//cdn.echoenabled.com/images/curation/metadata/flip.png&quot;) no-repeat 0px 3px; }' +
+	'.{class:childrenMarker} { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }' + // This is magic &quot;arrow up&quot;. Only color and margins could be changed
+	'.{class:container-root-thread} .{class:childrenMarker} { display: block; }' +
+	'.{class:avatar} { width: 48px; height: 48px; }' +
+	'.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; height: 24px; }' +
+	'.{class:authorName} { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }' +
+	'.{class:re} { font-weight: bold; }' +
+	'.{class:re} a:link, .{class:re} a:visited, .{class:re} a:active { text-decoration: none; }' +
+	'.{class:re} a:hover { text-decoration: underline; }' +
+	'.{class:body} { padding-top: 4px; }' +
+	'.{class:buttons} { float: left; margin-left: 3px; }' +
+	'.{class:sourceIcon} { float: left; height: 16px; width: 16px; margin-right: 5px; border: 0px; }' +
+	'.{class:date}, .{class:from}, .{class:via} { float: left; }' +
+	'.{class:from} a, .{class:via} a { text-decoration: none; color: #C6C6C6; }' +
+	'.{class:from} a:hover, .{class:via} a:hover { color: #476CB8; }' +
+	'.{class:tag} { display: inline-block; height: 16px; background: url(&quot;//cdn.echoenabled.com/images/tag_blue.png&quot;) no-repeat; padding-left: 18px; }' +
+	'.{class:smiley-icon} { border: 0px; }' +
+	'.{class:textToggleTruncated} { margin-left: 5px; }' +
+	'.{class:blocker-backdrop} { position: absolute; left: 0px; top: 0px; background: #FFFFFF; opacity: 0.7; z-index: 100; }' +
+	'.{class:blocker-message} { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }' +
+	'.{class:expandChildren} { display:none; text-align: center; padding:4px; }' +
+	'.{class:expandChildren} .{class:expandChildrenLabel} { display: inline-block; padding-left: 22px; }' +
+	'.{class:expandChildren} .echo-message-icon { background: url(&quot;//cdn.echoenabled.com/images/whirlpool.png&quot;) no-repeat 5px 4px; }' +
+	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url(//cdn.echoenabled.com/images/loading.gif); }' +
+	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
+	itemDepthRules.join(&quot;\n&quot;) +
+	($.browser.msie
+		? '.{class:childrenMarker} { font-size: 1px; line-height: 1px; }' +
+		'.{class:blocker-backdrop}, .{class:blocker-message} { filter:alpha(opacity=70); }' +
+		'.{class:content}, .{class:container}, .{class:subwrapper} { zoom: 1; }' +
+		'.{class:avatar-wrapper} { position: static; }'
+		: ''
+	);
+
+Echo.Control.create(item);
+</pre>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Counter-method-constructor'><span id='Echo-StreamServer-Controls-Counter'>/**
+</span></span> * @class Echo.StreamServer.Controls.Counter
+ * Echo Counter class which encapsulates interaction with the
+ * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/27888212/API-method-count&quot; target=&quot;_blank&quot;&gt;Echo Count API&lt;/a&gt;
+ *
+ *     new Echo.StreamServer.Controls.Counter({
+ *         &quot;target&quot;: document.getElementById(&quot;counter&quot;),
+ *         &quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+ *         &quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
+ *     });
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * Counter constructor initializing Echo.StreamServer.Controls.Counter class
+ *
+ * @param {Object} config
+ * Configuration options
+ */
+var counter = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Counter&quot;);
+
+counter.init = function() {
+	// data can be defined explicitly
+	// in this case we do not make API requests
+	// TODO: no live updates for now if data is passed as a config value
+	if ($.isEmptyObject(this.get(&quot;data&quot;))) {
+		this._request();
+	} else {
+		this.dom.render();
+		this.ready();
+	}
+};
+
+counter.config = {
+<span id='Echo-StreamServer-Controls-Counter-cfg-query'>	/**
+</span>	 * @cfg {String} query
+	 * Specifies the search query to generate the necessary data set. It must be constructed according to the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt; method specification.
+	 *
+	 *     new Echo.StreamServer.Controls.Counter({
+	 *         &quot;target&quot;: document.getElementById(&quot;container&quot;),
+	 *         &quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+	 *         &quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
+	 *     });
+	 */
+<span id='Echo-StreamServer-Controls-Counter-cfg-data'>	/**
+</span>	 * @cfg {Object} data
+	 * Specifies predefined items count which should be displayed by the application.
+	 *
+	 *     new Echo.Counter({
+	 *         ...
+	 *         &quot;data&quot;: {&quot;count&quot;: 100},
+	 *         ...
+	 *     });
+	 */
+	&quot;data&quot;: undefined,
+<span id='Echo-StreamServer-Controls-Counter-cfg-liveUpdatesTimeout'>	/**
+</span>	 * @cfg {Number} [liveUpdatesTimeout=10]
+	 * Specifies the timeout between the live updates requests (in seconds).
+	 */
+	&quot;liveUpdatesTimeout&quot;: 10,
+<span id='Echo-StreamServer-Controls-Counter-cfg-infoMessages'>	/**
+</span>	 * @cfg {String} infoMessages 
+	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
+	 */
+	&quot;infoMessages&quot;: {&quot;layout&quot;: &quot;compact&quot;}
+};
+
+counter.templates.main = &quot;&lt;span&gt;{data:count}&lt;/span&gt;&quot;;
+
+counter.methods._request = function() {
+	var request = this.get(&quot;request&quot;);
+	if (!request) {
+		request = Echo.StreamServer.API.request({
+			&quot;endpoint&quot;: &quot;count&quot;,
+			&quot;data&quot;: {
+				&quot;q&quot;: this.config.get(&quot;query&quot;),
+				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
+			},
+			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
+			&quot;recurring&quot;: true,
+			&quot;onError&quot;: $.proxy(this._error, this),
+			&quot;onData&quot;: $.proxy(this._update, this)
+		});
+		this.set(&quot;request&quot;, request);
+	}
+	request.send();
+};
+
+counter.methods._update = function(data) {
+	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
+		this.events.publish({
+			&quot;topic&quot;: &quot;onUpdate&quot;,
+			&quot;data&quot;: {
+				&quot;data&quot;: data,
+				&quot;query&quot;: this.config.get(&quot;query&quot;),
+				&quot;target&quot;: this.config.get(&quot;target&quot;).get(0)
+			}
+		});
+		this.set(&quot;data&quot;, data);
+		this.dom.render();
+		this.ready();
+	}
+};
+
+counter.methods._error = function(data) {
+	this.events.publish({
+		&quot;topic&quot;: &quot;onError&quot;,
+		&quot;data&quot;: {
+			&quot;data&quot;: data,
+			&quot;query&quot;: this.config.get(&quot;query&quot;),
+			&quot;target&quot;: this.config.get(&quot;target&quot;).get(0)
+		}
+	});
+	if (data.errorCode === &quot;more_than&quot;) {
+		this.set(&quot;data.count&quot;, data.errorMessage + &quot;+&quot;);
+		this.dom.render();
+	} else {
+		this.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data, &quot;message&quot;: data.errorMessage});
+	}
+	this.ready();
+};
+
+Echo.Control.create(counter);
+</pre>
+</body>
+</html>

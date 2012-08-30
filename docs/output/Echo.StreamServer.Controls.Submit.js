@@ -1,0 +1,564 @@
+Ext.data.JsonP.Echo_StreamServer_Controls_Submit({
+  "tagname": "class",
+  "name": "Echo.StreamServer.Controls.Submit",
+  "extends": "Echo.Control",
+  "mixins": [
+
+  ],
+  "alternateClassNames": [
+
+  ],
+  "aliases": {
+  },
+  "singleton": false,
+  "requires": [
+
+  ],
+  "uses": [
+
+  ],
+  "enum": null,
+  "override": null,
+  "inheritable": null,
+  "inheritdoc": null,
+  "meta": {
+  },
+  "private": null,
+  "id": "class-Echo.StreamServer.Controls.Submit",
+  "members": {
+    "cfg": [
+      {
+        "name": "actionString",
+        "tagname": "cfg",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "cfg-actionString"
+      },
+      {
+        "name": "apiBaseURL",
+        "tagname": "cfg",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "cfg-apiBaseURL"
+      },
+      {
+        "name": "appkey",
+        "tagname": "cfg",
+        "owner": "Echo.Control",
+        "meta": {
+          "required": true
+        },
+        "id": "cfg-appkey"
+      },
+      {
+        "name": "infoMessages",
+        "tagname": "cfg",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "cfg-infoMessages"
+      },
+      {
+        "name": "itemURIPattern",
+        "tagname": "cfg",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "cfg-itemURIPattern"
+      },
+      {
+        "name": "labels",
+        "tagname": "cfg",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "cfg-labels"
+      },
+      {
+        "name": "markers",
+        "tagname": "cfg",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "cfg-markers"
+      },
+      {
+        "name": "postingTimeout",
+        "tagname": "cfg",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "cfg-postingTimeout"
+      },
+      {
+        "name": "requestMethod",
+        "tagname": "cfg",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "cfg-requestMethod"
+      },
+      {
+        "name": "source",
+        "tagname": "cfg",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "cfg-source"
+      },
+      {
+        "name": "submissionProxyURL",
+        "tagname": "cfg",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "cfg-submissionProxyURL"
+      },
+      {
+        "name": "tags",
+        "tagname": "cfg",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "cfg-tags"
+      },
+      {
+        "name": "target",
+        "tagname": "cfg",
+        "owner": "Echo.Control",
+        "meta": {
+          "required": true
+        },
+        "id": "cfg-target"
+      },
+      {
+        "name": "targetURL",
+        "tagname": "cfg",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "cfg-targetURL"
+      },
+      {
+        "name": "type",
+        "tagname": "cfg",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "cfg-type"
+      }
+    ],
+    "property": [
+      {
+        "name": "markers",
+        "tagname": "property",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_label": true
+        },
+        "id": "property-markers"
+      },
+      {
+        "name": "markersHint",
+        "tagname": "property",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_label": true
+        },
+        "id": "property-markersHint"
+      },
+      {
+        "name": "post",
+        "tagname": "property",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_label": true
+        },
+        "id": "property-post"
+      },
+      {
+        "name": "posting",
+        "tagname": "property",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_label": true
+        },
+        "id": "property-posting"
+      },
+      {
+        "name": "postingFailed",
+        "tagname": "property",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_label": true
+        },
+        "id": "property-postingFailed"
+      },
+      {
+        "name": "postingTimeout",
+        "tagname": "property",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_label": true
+        },
+        "id": "property-postingTimeout"
+      },
+      {
+        "name": "tags",
+        "tagname": "property",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_label": true
+        },
+        "id": "property-tags"
+      },
+      {
+        "name": "tagsHint",
+        "tagname": "property",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_label": true
+        },
+        "id": "property-tagsHint"
+      },
+      {
+        "name": "yourName",
+        "tagname": "property",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_label": true
+        },
+        "id": "property-yourName"
+      },
+      {
+        "name": "yourWebsiteOptional",
+        "tagname": "property",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_label": true
+        },
+        "id": "property-yourWebsiteOptional"
+      }
+    ],
+    "method": [
+      {
+        "name": "constructor",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "method-constructor"
+      },
+      {
+        "name": "addPostValidator",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "method-addPostValidator"
+      },
+      {
+        "name": "avatar",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "id": "method-avatar"
+      },
+      {
+        "name": "dependent",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-dependent"
+      },
+      {
+        "name": "destroy",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-destroy"
+      },
+      {
+        "name": "extendTemplate",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-extendTemplate"
+      },
+      {
+        "name": "get",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-get"
+      },
+      {
+        "name": "getPlugin",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-getPlugin"
+      },
+      {
+        "name": "highlightMandatory",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "method-highlightMandatory"
+      },
+      {
+        "name": "log",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-log"
+      },
+      {
+        "name": "markers",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "id": "method-markers"
+      },
+      {
+        "name": "markersContainer",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "id": "method-markersContainer"
+      },
+      {
+        "name": "name",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "id": "method-name"
+      },
+      {
+        "name": "parentRenderer",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-parentRenderer"
+      },
+      {
+        "name": "post",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "method-post"
+      },
+      {
+        "name": "postButton",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "id": "method-postButton"
+      },
+      {
+        "name": "refresh",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "id": "method-refresh"
+      },
+      {
+        "name": "remove",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-remove"
+      },
+      {
+        "name": "set",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-set"
+      },
+      {
+        "name": "showError",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-showError"
+      },
+      {
+        "name": "showMessage",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-showMessage"
+      },
+      {
+        "name": "substitute",
+        "tagname": "method",
+        "owner": "Echo.Control",
+        "meta": {
+        },
+        "id": "method-substitute"
+      },
+      {
+        "name": "tags",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "id": "method-tags"
+      },
+      {
+        "name": "tagsContainer",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "id": "method-tagsContainer"
+      },
+      {
+        "name": "text",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "id": "method-text"
+      },
+      {
+        "name": "url",
+        "tagname": "method",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "id": "method-url"
+      }
+    ],
+    "event": [
+      {
+        "name": "onDataInvalidate",
+        "tagname": "event",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.Control.onDataInvalidate",
+            "description": "Triggered if dataset is changed."
+          }
+        },
+        "id": "event-onDataInvalidate"
+      },
+      {
+        "name": "onPostComplete",
+        "tagname": "event",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.onPostComplete",
+            "description": "Triggered when the submit operation is finished."
+          }
+        },
+        "id": "event-onPostComplete"
+      },
+      {
+        "name": "onPostError",
+        "tagname": "event",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.onPostError",
+            "description": "Triggered if submit operation failed."
+          }
+        },
+        "id": "event-onPostError"
+      },
+      {
+        "name": "onPostInit",
+        "tagname": "event",
+        "owner": "Echo.StreamServer.Controls.Submit",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.onPostInit",
+            "description": "Triggered if submit operation was started."
+          }
+        },
+        "id": "event-onPostInit"
+      }
+    ],
+    "css_var": [
+
+    ],
+    "css_mixin": [
+
+    ]
+  },
+  "statics": {
+    "cfg": [
+
+    ],
+    "property": [
+
+    ],
+    "method": [
+
+    ],
+    "event": [
+
+    ],
+    "css_var": [
+
+    ],
+    "css_mixin": [
+
+    ]
+  },
+  "linenr": 1,
+  "files": [
+    {
+      "filename": "submit.js",
+      "href": "submit.html#Echo-StreamServer-Controls-Submit"
+    }
+  ],
+  "html_meta": {
+  },
+  "component": false,
+  "superclasses": [
+    "Echo.Control"
+  ],
+  "subclasses": [
+
+  ],
+  "mixedInto": [
+
+  ],
+  "parentMixins": [
+
+  ],
+  "html": "<div><pre class=\"hierarchy\"><h4>Hierarchy</h4><div class='subclass first-child'><a href='#!/api/Echo.Control' rel='Echo.Control' class='docClass'>Echo.Control</a><div class='subclass '><strong>Echo.StreamServer.Controls.Submit</strong></div></div><h4>Files</h4><div class='dependency'><a href='source/submit.html#Echo-StreamServer-Controls-Submit' target='_blank'>submit.js</a></div></pre><div class='doc-contents'><p>Echo Submit control which encapsulates interaction with the\n<a href=\"http://wiki.aboutecho.com/w/page/35059196/API-method-submit\" target=\"_blank\">Echo Submit API</a></p>\n\n<pre><code>new <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a>({\n    \"target\": document.getElementById(\"submit\"),\n    \"targetURL\": \"http://example.com/submit\",\n    \"appkey\": \"test.js-kit.com\",\n});\n</code></pre>\n</div><div class='members'><div class='members-section'><h3 class='members-title icon-cfg'>Config options</h3><div class='subsection'><div class='definedBy'>Defined By</div><h4 class='members-subtitle'>Required Config options</h3><div id='cfg-appkey' class='member first-child inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-cfg-appkey' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-cfg-appkey' class='name expandable'>appkey</a><span> : String</span><strong class='required signature' >required</strong></div><div class='description'><div class='short'>Specifies the customer application key. ...</div><div class='long'><p>Specifies the customer application key. You can use the \"test.echoenabled.com\" appkey for testing purposes.</p>\n<p>Defaults to: <code>&quot;&quot;</code></p></div></div></div><div id='cfg-target' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-cfg-target' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-cfg-target' class='name not-expandable'>target</a><span> : String</span><strong class='required signature' >required</strong></div><div class='description'><div class='short'><p>Specifies the DOM element where the control will be displayed.</p>\n</div><div class='long'><p>Specifies the DOM element where the control will be displayed.</p>\n</div></div></div></div><div class='subsection'><div class='definedBy'>Defined By</div><h4 class='members-subtitle'>Optional Config options</h3><div id='cfg-actionString' class='member first-child not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-cfg-actionString' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-cfg-actionString' class='name expandable'>actionString</a><span> : String</span></div><div class='description'><div class='short'>Is used to define the default call to action phrase. ...</div><div class='long'><p>Is used to define the default call to action phrase.</p>\n\n<pre><code>new <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a>({\n    ...\n    \"actionString\": \"Type your comment here...\",\n    ...\n});\n</code></pre>\n<p>Defaults to: <code>&quot;Type your comment here...&quot;</code></p></div></div></div><div id='cfg-apiBaseURL' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-cfg-apiBaseURL' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-cfg-apiBaseURL' class='name expandable'>apiBaseURL</a><span> : String</span></div><div class='description'><div class='short'>URL prefix for all API requests ...</div><div class='long'><p>URL prefix for all API requests</p>\n<p>Defaults to: <code>&quot;api.echoenabled.com/v1/&quot;</code></p></div></div></div><div id='cfg-infoMessages' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-cfg-infoMessages' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-cfg-infoMessages' class='name expandable'>infoMessages</a><span> : Object</span></div><div class='description'><div class='short'>Customizes the look and feel of info messages, for example \"loading\" and \"error\". ...</div><div class='long'><p>Customizes the look and feel of info messages, for example \"loading\" and \"error\".</p>\n<p>Defaults to: <code>{&quot;enabled&quot;: true, &quot;layout&quot;: &quot;full&quot;}</code></p><ul><li><span class='pre'>enabled</span> : Boolean (optional)<div class='sub-desc'><p>Specifies if info messages should be rendered.</p>\n<p>Defaults to: <code>true</code></p></div></li><li><span class='pre'>layout</span> : String (optional)<div class='sub-desc'><p>Specifies the layout of the info message. By default can be set to \"compact\" or \"full\".</p>\n\n<pre><code>\"infoMessages\" : {\n    \"enabled\" : true,\n    \"layout\" : \"full\"\n}\n</code></pre>\n<p>Defaults to: <code>&quot;full&quot;</code></p></div></li></ul></div></div></div><div id='cfg-itemURIPattern' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-cfg-itemURIPattern' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-cfg-itemURIPattern' class='name expandable'>itemURIPattern</a><span> : String</span></div><div class='description'><div class='short'>Allows to define item id pattern. ...</div><div class='long'><p>Allows to define item id pattern. The value of this parameter should be a valid URI with \"{id}\" placeholder which will indicate the place where unique id should be inserted. If this parameter is ommited in configuration or the URI is invalid it'll be ignored.</p>\n\n<pre><code>new <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a>({\n    ...\n    \"itemURIPattern\": \"http://your-domain.com/path/{id}\",\n    ...\n});\n</code></pre>\n</div></div></div><div id='cfg-labels' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-cfg-labels' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-cfg-labels' class='name expandable'>labels</a><span> : Object</span></div><div class='description'><div class='short'>Specifies the set of language variables defined for this particular control. ...</div><div class='long'><p>Specifies the set of language variables defined for this particular control.</p>\n<p>Defaults to: <code>{}</code></p></div></div></div><div id='cfg-markers' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-cfg-markers' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-cfg-markers' class='name expandable'>markers</a><span> : Array</span></div><div class='description'><div class='short'>This parameter is used to attach the markers metadata to the item during the item submission. ...</div><div class='long'><p>This parameter is used to attach the markers metadata to the item during the item submission. The format of the value is the array array with the string values. Markers will be also displayed in the \"Markers\" field in the Submit form UI for Moderators and Administrators. For non-admin users the markers value will be submitted along with the other item content when the \"Post\" button is pressed.</p>\n\n<pre><code>new <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a>({\n    ...\n    \"markers\": [\"marker1\", \"marker2\", \"marker3\"],\n    ...\n});\n</code></pre>\n<p>Defaults to: <code>[]</code></p></div></div></div><div id='cfg-postingTimeout' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-cfg-postingTimeout' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-cfg-postingTimeout' class='name expandable'>postingTimeout</a><span> : Number</span></div><div class='description'><div class='short'>Is used to specify the number of seconds after which Submit Form will show timeout error dialog if the server does no...</div><div class='long'><p>Is used to specify the number of seconds after which Submit Form will show timeout error dialog if the server does not return anything. If the parameter value is 0 then the mentioned dialog won't never be shown.</p>\n\n<pre><code>new <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a>({\n    ...\n    \"postingTimeout\": 15,\n    ...\n});\n</code></pre>\n<p>Defaults to: <code>30</code></p></div></div></div><div id='cfg-requestMethod' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-cfg-requestMethod' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-cfg-requestMethod' class='name expandable'>requestMethod</a><span> : String</span></div><div class='description'><div class='short'>This parameter is used to specify the request method. ...</div><div class='long'><p>This parameter is used to specify the request method. Possible values are \"GET\" and \"POST\".\nSetting parameter to \"POST\" has some restrictions.\nWe can't handle server response, UI won't show any waiting for the server responses actions.</p>\n\n<pre><code>new <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a>({\n    ...\n    \"requestMethod\": \"POST\",\n    ...\n});\n</code></pre>\n<p>Defaults to: <code>&quot;GET&quot;</code></p></div></div></div><div id='cfg-source' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-cfg-source' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-cfg-source' class='name expandable'>source</a><span> : Object</span></div><div class='description'><div class='short'>Designates the initial item source (E.g. ...</div><div class='long'><p>Designates the initial item source (E.g. Twitter). You can override source name, URI and the corresponding icon.</p>\n<p>Defaults to: <code>{}</code></p><ul><li><span class='pre'>name</span> : String<div class='sub-desc'><p>Source name.</p>\n</div></li><li><span class='pre'>uri</span> : String<div class='sub-desc'><p>Source uri.</p>\n</div></li><li><span class='pre'>icon</span> : String<div class='sub-desc'><p>Source icon.</p>\n\n<pre><code>new <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a>({\n    ...\n    \"source\": {\n        \"name\": \"ExampleSource\",\n        \"uri\": \"http://example.com/\",\n        \"icon\": \"http://example.com/images/source.png\"\n    },\n    ...\n});\n</code></pre>\n</div></li></ul></div></div></div><div id='cfg-submissionProxyURL' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-cfg-submissionProxyURL' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-cfg-submissionProxyURL' class='name expandable'>submissionProxyURL</a><span> : String</span></div><div class='description'><div class='short'>URL prefix for requests to Echo Submission Proxy ...</div><div class='long'><p>URL prefix for requests to Echo Submission Proxy</p>\n<p>Defaults to: <code>&quot;apps.echoenabled.com/v2/esp/activity/&quot;</code></p></div></div></div><div id='cfg-tags' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-cfg-tags' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-cfg-tags' class='name expandable'>tags</a><span> : Array</span></div><div class='description'><div class='short'>This parameter is used to attach the tags metadata to the item during the item submission. ...</div><div class='long'><p>This parameter is used to attach the tags metadata to the item during the item submission. The format of the value is the array array with the string values. Tags will be also displayed in the \"Tags\" field in the Submit form UI for Moderators and Administrators. For non-admin users the tags value will be submitted along with the other item content when the \"Post\" button is pressed.</p>\n\n<pre><code>new <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a>({\n    ...\n    \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n    ...\n});\n</code></pre>\n<p>Defaults to: <code>[]</code></p></div></div></div><div id='cfg-targetURL' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-cfg-targetURL' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-cfg-targetURL' class='name expandable'>targetURL</a><span> : String</span></div><div class='description'><div class='short'>Specifies the URI to which the submitted Echo item is related. ...</div><div class='long'><p>Specifies the URI to which the submitted Echo item is related. This parameter will be used as a activity target value for the item.</p>\n\n<pre><code>new <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a>({\n    ...\n    \"targetURL\": \"http://somedomain.com/some_article.html\",\n    ...\n});\n</code></pre>\n<p>Defaults to: <code>document.location.href</code></p></div></div></div><div id='cfg-type' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-cfg-type' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-cfg-type' class='name expandable'>type</a><span> : String</span></div><div class='description'><div class='short'>Allows to define item type. ...</div><div class='long'><p>Allows to define item type. The value of this parameter should be a valid URI.</p>\n\n<pre><code>new <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a>({\n    ...\n    \"type\": \"http://echoenabled.com/activitystreams/schema/1.0/category\",\n    ...\n});\n</code></pre>\n</div></div></div></div></div><div class='members-section'><div class='definedBy'>Defined By</div><h3 class='members-title icon-property'>Properties</h3><div class='subsection'><div id='property-markers' class='member first-child not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-property-markers' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-property-markers' class='name expandable'>markers</a><span> : String</span><strong class='echo_label signature' >localization label</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<p>Defaults to: <code>&quot;Markers:&quot;</code></p></div></div></div><div id='property-markersHint' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-property-markersHint' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-property-markersHint' class='name expandable'>markersHint</a><span> : String</span><strong class='echo_label signature' >localization label</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<p>Defaults to: <code>&quot;Marker1, marker2, marker3, ...&quot;</code></p></div></div></div><div id='property-post' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-property-post' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-property-post' class='name expandable'>post</a><span> : String</span><strong class='echo_label signature' >localization label</strong></div><div class='description'><div class='short'>Label for the button allowing to submit form ...</div><div class='long'><p>Label for the button allowing to submit form</p>\n<p>Defaults to: <code>&quot;Post&quot;</code></p></div></div></div><div id='property-posting' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-property-posting' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-property-posting' class='name expandable'>posting</a><span> : String</span><strong class='echo_label signature' >localization label</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<p>Defaults to: <code>&quot;Posting...&quot;</code></p></div></div></div><div id='property-postingFailed' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-property-postingFailed' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-property-postingFailed' class='name expandable'>postingFailed</a><span> : String</span><strong class='echo_label signature' >localization label</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<p>Defaults to: <code>&quot;There was a server error while trying to submit your item. Please try again in a few minutes. &lt;b&gt;Error: \\&quot;{error}\\&quot;&lt;/b&gt;.&quot;</code></p></div></div></div><div id='property-postingTimeout' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-property-postingTimeout' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-property-postingTimeout' class='name expandable'>postingTimeout</a><span> : String</span><strong class='echo_label signature' >localization label</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<p>Defaults to: <code>&quot;There was a network issue while trying to submit your item. Please try again in a few minutes.&quot;</code></p></div></div></div><div id='property-tags' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-property-tags' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-property-tags' class='name expandable'>tags</a><span> : String</span><strong class='echo_label signature' >localization label</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<p>Defaults to: <code>&quot;Tags:&quot;</code></p></div></div></div><div id='property-tagsHint' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-property-tagsHint' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-property-tagsHint' class='name expandable'>tagsHint</a><span> : String</span><strong class='echo_label signature' >localization label</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<p>Defaults to: <code>&quot;Tag1, tag2, tag3, ...&quot;</code></p></div></div></div><div id='property-yourName' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-property-yourName' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-property-yourName' class='name expandable'>yourName</a><span> : String</span><strong class='echo_label signature' >localization label</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<p>Defaults to: <code>&quot;Your Name (required)&quot;</code></p></div></div></div><div id='property-yourWebsiteOptional' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-property-yourWebsiteOptional' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-property-yourWebsiteOptional' class='name expandable'>yourWebsiteOptional</a><span> : String</span><strong class='echo_label signature' >localization label</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<p>Defaults to: <code>&quot;Your website (optional)&quot;</code></p></div></div></div></div></div><div class='members-section'><div class='definedBy'>Defined By</div><h3 class='members-title icon-method'>Methods</h3><div class='subsection'><div id='method-constructor' class='member first-child not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-constructor' target='_blank' class='view-source'>view source</a></div><strong class='new-keyword'>new</strong><a href='#!/api/Echo.StreamServer.Controls.Submit-method-constructor' class='name expandable'>Echo.StreamServer.Controls.Submit</a>( <span class='pre'>Object config</span> ) : Object</div><div class='description'><div class='short'>Submit constructor initializing Echo.StreamServer.Controls.Submit class ...</div><div class='long'><p>Submit constructor initializing <a href=\"#!/api/Echo.StreamServer.Controls.Submit\" rel=\"Echo.StreamServer.Controls.Submit\" class=\"docClass\">Echo.StreamServer.Controls.Submit</a> class</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>config</span> : Object<div class='sub-desc'><p>Configuration options</p>\n</div></li></ul><h3 class='pa'>Returns</h3><ul><li><span class='pre'>Object</span><div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-addPostValidator' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-addPostValidator' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-addPostValidator' class='name expandable'>addPostValidator</a>( <span class='pre'>Object validator, Object priority</span> )</div><div class='description'><div class='short'>Method adds custom validator to check posting possibility ...</div><div class='long'><p>Method adds custom validator to check posting possibility</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>validator</span> : Object<div class='sub-desc'>\n</div></li><li><span class='pre'>priority</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-avatar' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-avatar' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-avatar' class='name expandable'>avatar</a>( <span class='pre'>Object element</span> )<strong class='echo_renderer signature' >renderer</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>element</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-dependent' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-dependent' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-dependent' class='name expandable'>dependent</a>( <span class='pre'></span> )</div><div class='description'><div class='short'>Checks if control was initialized from another control. ...</div><div class='long'><p>Checks if control was initialized from another control.\nreturn {Boolean}</p>\n</div></div></div><div id='method-destroy' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-destroy' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-destroy' class='name expandable'>destroy</a>( <span class='pre'>Object config</span> )</div><div class='description'><div class='short'>Unified method to destroy control. ...</div><div class='long'><p>Unified method to destroy control.</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>config</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-extendTemplate' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-extendTemplate' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-extendTemplate' class='name expandable'>extendTemplate</a>( <span class='pre'>String action, String anchor, [String html]</span> )</div><div class='description'><div class='short'>Method to extend the template of particular control. ...</div><div class='long'><p>Method to extend the template of particular control.</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>action</span> : String<div class='sub-desc'><p>(required) One of the following actions:</p>\n\n<ul>\n<li>\"insertBefore\"</li>\n<li>\"insertAfter\"</li>\n<li>\"insertAsFirstChild\"</li>\n<li>\"insertAsLastChild\"</li>\n<li>\"replace\"</li>\n<li>\"remove\"</li>\n</ul>\n\n</div></li><li><span class='pre'>anchor</span> : String<div class='sub-desc'><p>(required) Element name which is a subject of a transformation application.</p>\n</div></li><li><span class='pre'>html</span> : String (optional)<div class='sub-desc'><p>The content of a transformation to be applied. This param is required for all actions except \"remove\".</p>\n</div></li></ul></div></div></div><div id='method-get' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-get' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-get' class='name expandable'>get</a>( <span class='pre'>String key, [Object defaults]</span> ) : Mixed</div><div class='description'><div class='short'>Accessor method to get specific field. ...</div><div class='long'><p>Accessor method to get specific field.</p>\n\n<p>This function returns the corresponding value of the given key or the default value if specified in the second argument.</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>key</span> : String<div class='sub-desc'><p>Defines the key for data extraction.</p>\n\n</div></li><li><span class='pre'>defaults</span> : Object (optional)<div class='sub-desc'><p>Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.</p>\n\n</div></li></ul><h3 class='pa'>Returns</h3><ul><li><span class='pre'>Mixed</span><div class='sub-desc'><p>Returns the corresponding value found in the object.</p>\n\n</div></li></ul></div></div></div><div id='method-getPlugin' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-getPlugin' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-getPlugin' class='name expandable'>getPlugin</a>( <span class='pre'>String name</span> ) : Object</div><div class='description'><div class='short'>Accessor function allowing to obtain the plugin by its name. ...</div><div class='long'><p>Accessor function allowing to obtain the plugin by its name.</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>name</span> : String<div class='sub-desc'><p>(required) Specifies plugin name.</p>\n</div></li></ul><h3 class='pa'>Returns</h3><ul><li><span class='pre'>Object</span><div class='sub-desc'><p>Instance of the corresponding plugin.</p>\n</div></li></ul></div></div></div><div id='method-highlightMandatory' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-highlightMandatory' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-highlightMandatory' class='name expandable'>highlightMandatory</a>( <span class='pre'>Object element</span> )</div><div class='description'><div class='short'>Method highlighting the mandatory input data fields if they are empty ...</div><div class='long'><p>Method highlighting the mandatory input data fields if they are empty</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>element</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-log' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-log' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-log' class='name expandable'>log</a>( <span class='pre'>Object data</span> )</div><div class='description'><div class='short'>Function to log info/error message to the browser console in a unified format ...</div><div class='long'><p>Function to log info/error message to the browser console in a unified format</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>data</span> : Object<div class='sub-desc'><p>Defines the properties of the message which should be displayed</p>\n\n<ul><li><span class='pre'>message</span> : String<div class='sub-desc'><p>Text description of the message which should be logged</p>\n\n</div></li><li><span class='pre'>component</span> : String (optional)<div class='sub-desc'><p>Name of the component which produced the message</p>\n\n<p>Defaults to: <code>&quot;Echo SDK&quot;</code></p></div></li><li><span class='pre'>type</span> : String (optional)<div class='sub-desc'><p>Type/severity of the message</p>\n\n<p>Defaults to: <code>&quot;info&quot;</code></p></div></li><li><span class='pre'>args</span> : String (optional)<div class='sub-desc'><p>Extra arguments to log</p>\n\n</div></li></ul></div></li></ul></div></div></div><div id='method-markers' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-markers' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-markers' class='name expandable'>markers</a>( <span class='pre'>Object element</span> )<strong class='echo_renderer signature' >renderer</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>element</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-markersContainer' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-markersContainer' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-markersContainer' class='name expandable'>markersContainer</a>( <span class='pre'>Object element</span> )<strong class='echo_renderer signature' >renderer</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>element</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-name' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-name' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-name' class='name expandable'>name</a>( <span class='pre'>Object element</span> )<strong class='echo_renderer signature' >renderer</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>element</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-parentRenderer' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-parentRenderer' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-parentRenderer' class='name expandable'>parentRenderer</a>( <span class='pre'>String name, Object args</span> ) : HTMLElement</div><div class='description'><div class='short'>Method to call parent renderer function, which was extended using Echo.Control.extendRenderer function. ...</div><div class='long'><p>Method to call parent renderer function, which was extended using Echo.Control.extendRenderer function.</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>name</span> : String<div class='sub-desc'><p>(required) Renderer name.</p>\n\n</div></li><li><span class='pre'>args</span> : Object<div class='sub-desc'><p>(required) Arguments to be proxied to the parent renderer from the overriden one.</p>\n\n</div></li></ul><h3 class='pa'>Returns</h3><ul><li><span class='pre'>HTMLElement</span><div class='sub-desc'><p>Result of parent renderer function call.</p>\n\n</div></li></ul></div></div></div><div id='method-post' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-post' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-post' class='name expandable'>post</a>( <span class='pre'></span> )</div><div class='description'><div class='short'>Method used for posting user provided content to the  Echo Submit endpoint through  Echo Submission Proxy. ...</div><div class='long'><p>Method used for posting user provided content to the <a href=\"http://wiki.aboutecho.com/w/page/35059196/API-method-submit\" target=\"_blank\"> Echo Submit</a> endpoint through <a href=\"http://wiki.aboutecho.com/w/page/53021402/Echo%20Submission%20Proxy\" target=\"_blank\"> Echo Submission Proxy</a>.</p>\n</div></div></div><div id='method-postButton' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-postButton' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-postButton' class='name expandable'>postButton</a>( <span class='pre'>Object element</span> )<strong class='echo_renderer signature' >renderer</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>element</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-refresh' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-refresh' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-refresh' class='name expandable'>refresh</a>( <span class='pre'></span> )</div><div class='description'><div class='short'>Method implements the refresh logic for the Submit control. ...</div><div class='long'><p>Method implements the refresh logic for the Submit control.</p>\n<p>Overrides: <a href='#!/api/Echo.Control-method-refresh' rel='Echo.Control-method-refresh' class='docClass'>Echo.Control.refresh</a></p></div></div></div><div id='method-remove' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-remove' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-remove' class='name expandable'>remove</a>( <span class='pre'>String key</span> )</div><div class='description'><div class='short'>Method to remove specific object field. ...</div><div class='long'><p>Method to remove specific object field.</p>\n\n<p>This function allows to remove the value associated with the given key.\nIf the key contains a complex structure (such as objects or arrays), it will be removed as well.</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>key</span> : String<div class='sub-desc'><p>Defines the key which should be removed from the object.</p>\n\n</div></li></ul></div></div></div><div id='method-set' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-set' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-set' class='name expandable'>set</a>( <span class='pre'>String key, Mixed value</span> )</div><div class='description'><div class='short'>Setter method to define specific object value. ...</div><div class='long'><p>Setter method to define specific object value.</p>\n\n<p>This function allows to define the value for the corresponding object field.</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>key</span> : String<div class='sub-desc'><p>Defines the key where the given data should be stored.</p>\n\n</div></li><li><span class='pre'>value</span> : Mixed<div class='sub-desc'><p>The corresponding value which should be defined for the key.</p>\n\n</div></li></ul></div></div></div><div id='method-showError' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-showError' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-showError' class='name expandable'>showError</a>( <span class='pre'>Object data, Object options</span> )</div><div class='description'><div class='short'>Renders error message in the target container. ...</div><div class='long'><p>Renders error message in the target container.</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>data</span> : Object<div class='sub-desc'><p>(required) Object containing error message information.</p>\n</div></li><li><span class='pre'>options</span> : Object<div class='sub-desc'><p>(required) Object containing display options.</p>\n</div></li></ul></div></div></div><div id='method-showMessage' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-showMessage' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-showMessage' class='name expandable'>showMessage</a>( <span class='pre'>Object data</span> )</div><div class='description'><div class='short'>Renders info message in the target container. ...</div><div class='long'><p>Renders info message in the target container.</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>data</span> : Object<div class='sub-desc'><p>(required) Object containing info message information.</p>\n<ul><li><span class='pre'>layout</span> : String (optional)<div class='sub-desc'><p>Specifies the type of message layout. Can be set to \"compact\" or \"full\".</p>\n</div></li><li><span class='pre'>target</span> : HTMLElement (optional)<div class='sub-desc'><p>Specifies the target container.</p>\n</div></li></ul></div></li></ul></div></div></div><div id='method-substitute' class='member  inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><a href='#!/api/Echo.Control' rel='Echo.Control' class='defined-in docClass'>Echo.Control</a><br/><a href='source/control.html#Echo-Control-method-substitute' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.Control-method-substitute' class='name expandable'>substitute</a>( <span class='pre'>Object args</span> ) : String</div><div class='description'><div class='short'>Templater function which compiles given template using the provided data. ...</div><div class='long'><p>Templater function which compiles given template using the provided data.</p>\n\n<p>Function can be used widely for html templates processing or any other action requiring string interspersion.</p>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>args</span> : Object<div class='sub-desc'><p>(required) Specifies substitution process, contains control parameters.</p>\n<ul><li><span class='pre'>template</span> : String<div class='sub-desc'><p>(required) Template containing placeholders used for data interspersion.</p>\n</div></li><li><span class='pre'>data</span> : Object (optional)<div class='sub-desc'><p>Data used in the template compilation.</p>\n</div></li><li><span class='pre'>strict</span> : Boolean (optional)<div class='sub-desc'><p>Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.</p>\n</div></li><li><span class='pre'>instructions</span> : Object (optional)<div class='sub-desc'><p>Object containing the list of extra instructions to be applied during template compilation.</p>\n</div></li></ul></div></li></ul><h3 class='pa'>Returns</h3><ul><li><span class='pre'>String</span><div class='sub-desc'><p>Compiled string value.</p>\n</div></li></ul></div></div></div><div id='method-tags' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-tags' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-tags' class='name expandable'>tags</a>( <span class='pre'>Object element</span> )<strong class='echo_renderer signature' >renderer</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>element</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-tagsContainer' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-tagsContainer' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-tagsContainer' class='name expandable'>tagsContainer</a>( <span class='pre'>Object element</span> )<strong class='echo_renderer signature' >renderer</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>element</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-text' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-text' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-text' class='name expandable'>text</a>( <span class='pre'>Object element</span> )<strong class='echo_renderer signature' >renderer</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>element</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div><div id='method-url' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-method-url' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-method-url' class='name expandable'>url</a>( <span class='pre'>Object element</span> )<strong class='echo_renderer signature' >renderer</strong></div><div class='description'><div class='short'> ...</div><div class='long'>\n<h3 class=\"pa\">Parameters</h3><ul><li><span class='pre'>element</span> : Object<div class='sub-desc'>\n</div></li></ul></div></div></div></div></div><div class='members-section'><div class='definedBy'>Defined By</div><h3 class='members-title icon-event'>Events</h3><div class='subsection'><div id='event-onDataInvalidate' class='member first-child not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-event-onDataInvalidate' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-event-onDataInvalidate' class='name expandable'>onDataInvalidate</a>( <span class='pre'></span> )</div><div class='description'><div class='short'> ...</div><div class='long'><p>Triggered if dataset is changed.<br><b>Full name</b>: Echo.Control.onDataInvalidate</p>\n\n</div></div></div><div id='event-onPostComplete' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-event-onPostComplete' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-event-onPostComplete' class='name expandable'>onPostComplete</a>( <span class='pre'></span> )</div><div class='description'><div class='short'> ...</div><div class='long'><p>Triggered when the submit operation is finished.<br><b>Full name</b>: <a href=\"#!/api/Echo.StreamServer.Controls.Submit-event-onPostComplete\" rel=\"Echo.StreamServer.Controls.Submit-event-onPostComplete\" class=\"docClass\">Echo.StreamServer.Controls.Submit.onPostComplete</a></p>\n\n</div></div></div><div id='event-onPostError' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-event-onPostError' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-event-onPostError' class='name expandable'>onPostError</a>( <span class='pre'></span> )</div><div class='description'><div class='short'> ...</div><div class='long'><p>Triggered if submit operation failed.<br><b>Full name</b>: <a href=\"#!/api/Echo.StreamServer.Controls.Submit-event-onPostError\" rel=\"Echo.StreamServer.Controls.Submit-event-onPostError\" class=\"docClass\">Echo.StreamServer.Controls.Submit.onPostError</a></p>\n\n</div></div></div><div id='event-onPostInit' class='member  not-inherited'><a href='#' class='side expandable'><span>&nbsp;</span></a><div class='title'><div class='meta'><span class='defined-in' rel='Echo.StreamServer.Controls.Submit'>Echo.StreamServer.Controls.Submit</span><br/><a href='source/submit.html#Echo-StreamServer-Controls-Submit-event-onPostInit' target='_blank' class='view-source'>view source</a></div><a href='#!/api/Echo.StreamServer.Controls.Submit-event-onPostInit' class='name expandable'>onPostInit</a>( <span class='pre'></span> )</div><div class='description'><div class='short'> ...</div><div class='long'><p>Triggered if submit operation was started.<br><b>Full name</b>: <a href=\"#!/api/Echo.StreamServer.Controls.Submit-event-onPostInit\" rel=\"Echo.StreamServer.Controls.Submit-event-onPostInit\" class=\"docClass\">Echo.StreamServer.Controls.Submit.onPostInit</a></p>\n\n</div></div></div></div></div></div></div>"
+});

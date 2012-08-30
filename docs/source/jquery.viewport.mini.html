@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">// http://www.appelsiini.net/download/jquery.viewport.mini.js
+(function($){$.belowthefold=function(element,settings){var fold=$(window).height()+$(window).scrollTop();return fold&lt;=$(element).offset().top-settings.threshold;};$.abovethetop=function(element,settings){var top=$(window).scrollTop();return top&gt;=$(element).offset().top+$(element).height()-settings.threshold;};$.rightofscreen=function(element,settings){var fold=$(window).width()+$(window).scrollLeft();return fold&lt;=$(element).offset().left-settings.threshold;};$.leftofscreen=function(element,settings){var left=$(window).scrollLeft();return left&gt;=$(element).offset().left+$(element).width()-settings.threshold;};$.inviewport=function(element,settings){return!$.rightofscreen(element,settings)&amp;&amp;!$.leftofscreen(element,settings)&amp;&amp;!$.belowthefold(element,settings)&amp;&amp;!$.abovethetop(element,settings);};$.extend($.expr[':'],{&quot;below-the-fold&quot;:function(a,i,m){return $.belowthefold(a,{threshold:0});},&quot;above-the-top&quot;:function(a,i,m){return $.abovethetop(a,{threshold:0});},&quot;left-of-screen&quot;:function(a,i,m){return $.leftofscreen(a,{threshold:0});},&quot;right-of-screen&quot;:function(a,i,m){return $.rightofscreen(a,{threshold:0});},&quot;in-viewport&quot;:function(a,i,m){return $.inviewport(a,{threshold:0});}});})(jQuery);
+</pre>
+</body>
+</html>

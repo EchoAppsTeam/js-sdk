@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Stream-Plugins-InfiniteScroll'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll
+ * Echo Stream plugin automatically loads the next page full of items when the end of the stream is displayed on the browser screen. This produces an 'Infinite Scroll' Effect.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;InfiniteScroll&quot;
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;InfiniteScroll&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
+
+plugin.init = function() {
+	var plugin = this;
+	$(window).on(&quot;scroll&quot;, function(event) {
+		var element = plugin.component.dom &amp;&amp; plugin.component.dom.get(&quot;more&quot;);
+		if (element &amp;&amp; !plugin.get(&quot;requestInProgress&quot;) &amp;&amp; $.inviewport(element, {&quot;threshold&quot;: 0})) {
+			plugin.set(&quot;requestInProgress&quot;, true);
+			element.click();
+		}
+	});	
+};
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.onDataReceive&quot;: function(topic, args) {
+		this.set(&quot;requestInProgress&quot;, false);
+	}
+};
+
+Echo.Plugin.create(plugin);</pre>
+</body>
+</html>

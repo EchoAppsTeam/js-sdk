@@ -1,0 +1,3609 @@
+Docs = {
+  "data": {
+    "classes": [
+      {
+        "name": "Echo.AppServer.Controls.Configurator",
+        "extends": "Echo.Control",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Plugin",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Plugin.config",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Plugin.events",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.API.Transport",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.API.Transports.AJAX",
+        "extends": "Echo.API.Transport",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.API.Transports.JSONP",
+        "extends": "Echo.API.Transports.AJAX",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.API.Transports.WebSocket",
+        "extends": "Echo.API.Transport",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.API.Request",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Events",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Product",
+        "extends": "Echo.Control",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Labels",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Edit",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Submit.Plugins.Edit",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Submit.Plugins.FormAuth",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation",
+        "extends": "Echo.Plugin",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.API.Request",
+        "extends": "Echo.API.Request",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.FacePile",
+        "extends": "Echo.Control",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Stream",
+        "extends": "Echo.Control",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Counter",
+        "extends": "Echo.Control",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.StreamServer.Controls.Submit",
+        "extends": "Echo.Control",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Button",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.UserSession",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Loader",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.IdentityServer.API.Request",
+        "extends": "Echo.API.Request",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.IdentityServer.Controls.Auth",
+        "extends": "Echo.Control",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Configuration",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Control",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Utils",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      }
+    ],
+    "guides": [
+
+    ],
+    "videos": [
+
+    ],
+    "examples": [
+
+    ],
+    "search": [
+      {
+        "name": "AppServer.Controls.Configurator",
+        "fullName": "Echo.AppServer.Controls.Configurator",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.AppServer.Controls.Configurator",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "Plugin",
+        "fullName": "Echo.Plugin",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Plugin",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "disable",
+        "fullName": "Echo.Plugin.disable",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-disable",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "enable",
+        "fullName": "Echo.Plugin.enable",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-enable",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "enabled",
+        "fullName": "Echo.Plugin.enabled",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-enabled",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "extendTemplate",
+        "fullName": "Echo.Plugin.extendTemplate",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-extendTemplate",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.Plugin.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-get",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "init",
+        "fullName": "Echo.Plugin.init",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-init",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "log",
+        "fullName": "Echo.Plugin.log",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-log",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "parentRenderer",
+        "fullName": "Echo.Plugin.parentRenderer",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-parentRenderer",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "remove",
+        "fullName": "Echo.Plugin.remove",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-remove",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "requestDataRefresh",
+        "fullName": "Echo.Plugin.requestDataRefresh",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-requestDataRefresh",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Plugin.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-set",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "substitute",
+        "fullName": "Echo.Plugin.substitute",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-substitute",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "create",
+        "fullName": "Echo.Plugin.create",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-static-method-create",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getClass",
+        "fullName": "Echo.Plugin.getClass",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-static-method-getClass",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "isDefined",
+        "fullName": "Echo.Plugin.isDefined",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-static-method-isDefined",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "manifest",
+        "fullName": "Echo.Plugin.manifest",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-static-method-manifest",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "Plugin.config",
+        "fullName": "Echo.Plugin.config",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Plugin.config",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "assemble",
+        "fullName": "Echo.Plugin.config.assemble",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin.config-method-assemble",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.Plugin.config.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin.config-method-get",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "remove",
+        "fullName": "Echo.Plugin.config.remove",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin.config-method-remove",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Plugin.config.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin.config-method-set",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "Plugin.events",
+        "fullName": "Echo.Plugin.events",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Plugin.events",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "publish",
+        "fullName": "Echo.Plugin.events.publish",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin.events-method-publish",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "subscribe",
+        "fullName": "Echo.Plugin.events.subscribe",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin.events-method-subscribe",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "unsubscribe",
+        "fullName": "Echo.Plugin.events.unsubscribe",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin.events-method-unsubscribe",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "API.Transport",
+        "fullName": "Echo.API.Transport",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.API.Transport",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "API.Transports.AJAX",
+        "fullName": "Echo.API.Transports.AJAX",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.API.Transports.AJAX",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "API.Transports.JSONP",
+        "fullName": "Echo.API.Transports.JSONP",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.API.Transports.JSONP",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "API.Transports.WebSocket",
+        "fullName": "Echo.API.Transports.WebSocket",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.API.Transports.WebSocket",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "API.Request",
+        "fullName": "Echo.API.Request",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.API.Request",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "apiBaseUrl",
+        "fullName": "Echo.API.Request.apiBaseUrl",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-apiBaseUrl",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "endpoint",
+        "fullName": "Echo.API.Request.endpoint",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-endpoint",
+        "meta": {
+          "required": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "onClose",
+        "fullName": "Echo.API.Request.onClose",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-onClose",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onData",
+        "fullName": "Echo.API.Request.onData",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-onData",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onError",
+        "fullName": "Echo.API.Request.onError",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-onError",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onOpen",
+        "fullName": "Echo.API.Request.onOpen",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-onOpen",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "transport",
+        "fullName": "Echo.API.Request.transport",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-transport",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "send",
+        "fullName": "Echo.API.Request.send",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.API.Request-method-send",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "Events",
+        "fullName": "Echo.Events",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Events",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "publish",
+        "fullName": "Echo.Events.publish",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Events-static-method-publish",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "subscribe",
+        "fullName": "Echo.Events.subscribe",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Events-static-method-subscribe",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "unsubscribe",
+        "fullName": "Echo.Events.unsubscribe",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Events-static-method-unsubscribe",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "Product",
+        "fullName": "Echo.Product",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Product",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "getView",
+        "fullName": "Echo.Product.getView",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Product-method-getView",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "create",
+        "fullName": "Echo.Product.create",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Product-static-method-create",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "manifest",
+        "fullName": "Echo.Product.manifest",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Product-static-method-manifest",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "Labels",
+        "fullName": "Echo.Labels",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Labels",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.Labels.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Labels-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.Labels.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Labels-method-get",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Labels.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Labels-method-set",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.Labels.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Labels-static-method-get",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Labels.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Labels-static-method-set",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Stream.Item.Plugins.CommunityFlag",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "showUsers",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.showUsers",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-cfg-showUsers",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "flagControl",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.flagControl",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-flagControl",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "flagProcessing",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.flagProcessing",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-flagProcessing",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "flaggedThis",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.flaggedThis",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-flaggedThis",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "unflagControl",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.unflagControl",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-unflagControl",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "unflagProcessing",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.unflagProcessing",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-unflagProcessing",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "flaggedBy",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.flaggedBy",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-method-flaggedBy",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "onFlagComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-event-onFlagComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagComplete",
+            "description": "Triggered if flag operation was completed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUnFlagComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnFlagComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-event-onUnFlagComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagComplete",
+            "description": "Triggered if reverse flag operation was completed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Stream.Item.Plugins.Edit",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Edit",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Edit",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "editButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Edit.editButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Edit-property-editButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Submit.Plugins.Edit",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "cancel",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.cancel",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-property-cancel",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "createdBy",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.createdBy",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-property-createdBy",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "edit",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.edit",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-property-edit",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "on",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.on",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-property-on",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "post",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.post",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-property-post",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "posting",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.posting",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-property-posting",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "author",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.author",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-method-author",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "cancelButton",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.cancelButton",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-method-cancelButton",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "editedDate",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.editedDate",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-method-editedDate",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "onEditComplete",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-event-onEditComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete",
+            "description": "Triggered when the submit operation is finished"
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onEditError",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-event-onEditError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError",
+            "description": "Triggered if edit operation failed"
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onEditInit",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-event-onEditInit",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit",
+            "description": "Triggered if edit operation was started"
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Stream.Item.Plugins.MetadataManager",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "controls",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.controls",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager-cfg-controls",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Submit.Plugins.FormAuth",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.FormAuth",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.FormAuth",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "identityManager",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.FormAuth.identityManager",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.FormAuth-cfg-identityManager",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "submitPermissions",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.FormAuth.submitPermissions",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.FormAuth-cfg-submitPermissions",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "accumulator",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay.accumulator",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay-cfg-accumulator",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "countTickTimeout",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay.countTickTimeout",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay-cfg-countTickTimeout",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "accumulatorContainer",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay.accumulatorContainer",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay-method-accumulatorContainer",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Stream.Item.Plugins.TwitterIntents",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "comment",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.comment",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-property-comment",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "favorite",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.favorite",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-property-favorite",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "retweet",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.retweet",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-property-retweet",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "tweet",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.tweet",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-property-tweet",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "authorName",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.authorName",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-method-authorName",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "avatar",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.avatar",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-method-avatar",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "date",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.date",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-method-date",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "tweetUserName",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.tweetUserName",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-method-tweetUserName",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Submit.Plugins.JanrainSharing",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "activity",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.activity",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing-cfg-activity",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "appId",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.appId",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing-cfg-appId",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "xdReceiver",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.xdReceiver",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing-cfg-xdReceiver",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "sharePrompt",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.sharePrompt",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing-property-sharePrompt",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Stream.Item.Plugins.Reply",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "actionString",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.actionString",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-cfg-actionString",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onCollapse",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-event-onCollapse",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onExpand",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-event-onExpand",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Stream.Plugins.PinboardVisulization",
+        "fullName": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "columnWidth",
+        "fullName": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.columnWidth",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization-cfg-columnWidth",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "gallery",
+        "fullName": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.gallery",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization-cfg-gallery",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "isotope",
+        "fullName": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.isotope",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization-cfg-isotope",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "itemCSSClassByContentLength",
+        "fullName": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.itemCSSClassByContentLength",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization-cfg-itemCSSClassByContentLength",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "maxChildrenBodyCharacters",
+        "fullName": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.maxChildrenBodyCharacters",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization-cfg-maxChildrenBodyCharacters",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "mediaSelector",
+        "fullName": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.mediaSelector",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization-cfg-mediaSelector",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Stream.Plugins.InfiniteScroll",
+        "fullName": "Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "StreamServer.Controls.Stream.Item.Plugins.Like",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "StreamServer.Controls.Submit.Plugins.TextCounter",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "limit",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.limit",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter-cfg-limit",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "limited",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.limited",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter-property-limited",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "unlimited",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.unlimited",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter-property-unlimited",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "counterLabel",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.counterLabel",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter-method-counterLabel",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "text",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.text",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter-method-text",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Stream.Item.Plugins.Moderation",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "itemActions",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.itemActions",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-cfg-itemActions",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "userActions",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.userActions",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-cfg-userActions",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "administratorButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.administratorButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-administratorButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "administratorRole",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.administratorRole",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-administratorRole",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "approveButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.approveButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-approveButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "banUser",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.banUser",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-banUser",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "changingStatusToCommunityFlagged",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.changingStatusToCommunityFlagged",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-changingStatusToCommunityFlagged",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "changingStatusToModeratorApproved",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.changingStatusToModeratorApproved",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-changingStatusToModeratorApproved",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "changingStatusToModeratorDeleted",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.changingStatusToModeratorDeleted",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-changingStatusToModeratorDeleted",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "changingStatusToModeratorFlagged",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.changingStatusToModeratorFlagged",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-changingStatusToModeratorFlagged",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "changingStatusToUntouched",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.changingStatusToUntouched",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-changingStatusToUntouched",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "deleteButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.deleteButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-deleteButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "moderatorButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.moderatorButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-moderatorButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "moderatorRole",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.moderatorRole",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-moderatorRole",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "processingAction",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.processingAction",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-processingAction",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "setRoleAction",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.setRoleAction",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-setRoleAction",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "spamButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.spamButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-spamButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "statusCommunityFlagged",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusCommunityFlagged",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-statusCommunityFlagged",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "statusModeratorApproved",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusModeratorApproved",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-statusModeratorApproved",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "statusModeratorDeleted",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusModeratorDeleted",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-statusModeratorDeleted",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "statusModeratorFlagged",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusModeratorFlagged",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-statusModeratorFlagged",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "statusSystemFlagged",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusSystemFlagged",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-statusSystemFlagged",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "statusUntouched",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusUntouched",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-statusUntouched",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "unbanUser",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.unbanUser",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-unbanUser",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "unsetRoleAction",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.unsetRoleAction",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-unsetRoleAction",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "untouchButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.untouchButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-untouchButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "userBanned",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.userBanned",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-userBanned",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "userButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.userButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-userButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "status",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.status",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-method-status",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "statusIcon",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusIcon",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-method-statusIcon",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.API.Request",
+        "fullName": "Echo.StreamServer.API.Request",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.API.Request",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "liveUpdatesTimeout",
+        "fullName": "Echo.StreamServer.API.Request.liveUpdatesTimeout",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-liveUpdatesTimeout",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onData",
+        "fullName": "Echo.StreamServer.API.Request.onData",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-onData",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onError",
+        "fullName": "Echo.StreamServer.API.Request.onError",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-onError",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onOpen",
+        "fullName": "Echo.StreamServer.API.Request.onOpen",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-onOpen",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "skipInitialRequests",
+        "fullName": "Echo.StreamServer.API.Request.skipInitialRequests",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-skipInitialRequests",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "submissionProxyURL",
+        "fullName": "Echo.StreamServer.API.Request.submissionProxyURL",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-submissionProxyURL",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.API.Request.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.API.Request-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "abort",
+        "fullName": "Echo.StreamServer.API.Request.abort",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.API.Request-method-abort",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "request",
+        "fullName": "Echo.StreamServer.API.Request.request",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.API.Request-static-method-request",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.FacePile",
+        "fullName": "Echo.StreamServer.Controls.FacePile",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "data",
+        "fullName": "Echo.StreamServer.Controls.FacePile.data",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-data",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "infoMessages",
+        "fullName": "Echo.StreamServer.Controls.FacePile.infoMessages",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-infoMessages",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "initialUsersCount",
+        "fullName": "Echo.StreamServer.Controls.FacePile.initialUsersCount",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-initialUsersCount",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "item",
+        "fullName": "Echo.StreamServer.Controls.FacePile.item",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-item",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "suffixText",
+        "fullName": "Echo.StreamServer.Controls.FacePile.suffixText",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-suffixText",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "totalUsersCount",
+        "fullName": "Echo.StreamServer.Controls.FacePile.totalUsersCount",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-totalUsersCount",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "and",
+        "fullName": "Echo.StreamServer.Controls.FacePile.and",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-property-and",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "more",
+        "fullName": "Echo.StreamServer.Controls.FacePile.more",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-property-more",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.Controls.FacePile.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "actors",
+        "fullName": "Echo.StreamServer.Controls.FacePile.actors",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-actors",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getVisibleUsersCount",
+        "fullName": "Echo.StreamServer.Controls.FacePile.getVisibleUsersCount",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-getVisibleUsersCount",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "more",
+        "fullName": "Echo.StreamServer.Controls.FacePile.more",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-more",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "suffixText",
+        "fullName": "Echo.StreamServer.Controls.FacePile.suffixText",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-suffixText",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Stream",
+        "fullName": "Echo.StreamServer.Controls.Stream",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "fadeTimeout",
+        "fullName": "Echo.StreamServer.Controls.Stream.fadeTimeout",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-fadeTimeout",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "flashColor",
+        "fullName": "Echo.StreamServer.Controls.Stream.flashColor",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-flashColor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "item",
+        "fullName": "Echo.StreamServer.Controls.Stream.item",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-item",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "itemsPerPage",
+        "fullName": "Echo.StreamServer.Controls.Stream.itemsPerPage",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-itemsPerPage",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "liveUpdates",
+        "fullName": "Echo.StreamServer.Controls.Stream.liveUpdates",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-liveUpdates",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "liveUpdatesTimeout",
+        "fullName": "Echo.StreamServer.Controls.Stream.liveUpdatesTimeout",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-liveUpdatesTimeout",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "openLinksInNewWindow",
+        "fullName": "Echo.StreamServer.Controls.Stream.openLinksInNewWindow",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-openLinksInNewWindow",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "providerIcon",
+        "fullName": "Echo.StreamServer.Controls.Stream.providerIcon",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-providerIcon",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "slideTimeout",
+        "fullName": "Echo.StreamServer.Controls.Stream.slideTimeout",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-slideTimeout",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "streamStateLabel",
+        "fullName": "Echo.StreamServer.Controls.Stream.streamStateLabel",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-streamStateLabel",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "streamStateToggleBy",
+        "fullName": "Echo.StreamServer.Controls.Stream.streamStateToggleBy",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-streamStateToggleBy",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "submissionProxyURL",
+        "fullName": "Echo.StreamServer.Controls.Stream.submissionProxyURL",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-submissionProxyURL",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "emptyStream",
+        "fullName": "Echo.StreamServer.Controls.Stream.emptyStream",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-emptyStream",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "guest",
+        "fullName": "Echo.StreamServer.Controls.Stream.guest",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-guest",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "live",
+        "fullName": "Echo.StreamServer.Controls.Stream.live",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-live",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "more",
+        "fullName": "Echo.StreamServer.Controls.Stream.more",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-more",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "new",
+        "fullName": "Echo.StreamServer.Controls.Stream.new",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-new",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "paused",
+        "fullName": "Echo.StreamServer.Controls.Stream.paused",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-paused",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.Controls.Stream.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "body",
+        "fullName": "Echo.StreamServer.Controls.Stream.body",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-body",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getState",
+        "fullName": "Echo.StreamServer.Controls.Stream.getState",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-getState",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "more",
+        "fullName": "Echo.StreamServer.Controls.Stream.more",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-more",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "setState",
+        "fullName": "Echo.StreamServer.Controls.Stream.setState",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-setState",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "state",
+        "fullName": "Echo.StreamServer.Controls.Stream.state",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-state",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "onDataReceive",
+        "fullName": "Echo.StreamServer.Controls.Stream.onDataReceive",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onDataReceive",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.onDataReceive",
+            "description": "Triggered when new data is received."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onMoreButtonPress",
+        "fullName": "Echo.StreamServer.Controls.Stream.onMoreButtonPress",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onMoreButtonPress",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.onMoreButtonPress",
+            "description": "Triggered when the \"more\" button is pressed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Counter",
+        "fullName": "Echo.StreamServer.Controls.Counter",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Counter",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "data",
+        "fullName": "Echo.StreamServer.Controls.Counter.data",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-data",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "infoMessages",
+        "fullName": "Echo.StreamServer.Controls.Counter.infoMessages",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-infoMessages",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "liveUpdatesTimeout",
+        "fullName": "Echo.StreamServer.Controls.Counter.liveUpdatesTimeout",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-liveUpdatesTimeout",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "query",
+        "fullName": "Echo.StreamServer.Controls.Counter.query",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-query",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.Controls.Counter.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Counter-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.Submit",
+        "fullName": "Echo.StreamServer.Controls.Submit",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "actionString",
+        "fullName": "Echo.StreamServer.Controls.Submit.actionString",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-actionString",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "itemURIPattern",
+        "fullName": "Echo.StreamServer.Controls.Submit.itemURIPattern",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-itemURIPattern",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "markers",
+        "fullName": "Echo.StreamServer.Controls.Submit.markers",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-markers",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "postingTimeout",
+        "fullName": "Echo.StreamServer.Controls.Submit.postingTimeout",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-postingTimeout",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "requestMethod",
+        "fullName": "Echo.StreamServer.Controls.Submit.requestMethod",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-requestMethod",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "source",
+        "fullName": "Echo.StreamServer.Controls.Submit.source",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-source",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "tags",
+        "fullName": "Echo.StreamServer.Controls.Submit.tags",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-tags",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "targetURL",
+        "fullName": "Echo.StreamServer.Controls.Submit.targetURL",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-targetURL",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "type",
+        "fullName": "Echo.StreamServer.Controls.Submit.type",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-type",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "markers",
+        "fullName": "Echo.StreamServer.Controls.Submit.markers",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-markers",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "markersHint",
+        "fullName": "Echo.StreamServer.Controls.Submit.markersHint",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-markersHint",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "post",
+        "fullName": "Echo.StreamServer.Controls.Submit.post",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-post",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "posting",
+        "fullName": "Echo.StreamServer.Controls.Submit.posting",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-posting",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "postingFailed",
+        "fullName": "Echo.StreamServer.Controls.Submit.postingFailed",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-postingFailed",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "postingTimeout",
+        "fullName": "Echo.StreamServer.Controls.Submit.postingTimeout",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-postingTimeout",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "tags",
+        "fullName": "Echo.StreamServer.Controls.Submit.tags",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-tags",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "tagsHint",
+        "fullName": "Echo.StreamServer.Controls.Submit.tagsHint",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-tagsHint",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "yourName",
+        "fullName": "Echo.StreamServer.Controls.Submit.yourName",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-yourName",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "yourWebsiteOptional",
+        "fullName": "Echo.StreamServer.Controls.Submit.yourWebsiteOptional",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-yourWebsiteOptional",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.Controls.Submit.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "addPostValidator",
+        "fullName": "Echo.StreamServer.Controls.Submit.addPostValidator",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-addPostValidator",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "avatar",
+        "fullName": "Echo.StreamServer.Controls.Submit.avatar",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-avatar",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "highlightMandatory",
+        "fullName": "Echo.StreamServer.Controls.Submit.highlightMandatory",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-highlightMandatory",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "markers",
+        "fullName": "Echo.StreamServer.Controls.Submit.markers",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-markers",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "markersContainer",
+        "fullName": "Echo.StreamServer.Controls.Submit.markersContainer",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-markersContainer",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "name",
+        "fullName": "Echo.StreamServer.Controls.Submit.name",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-name",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "post",
+        "fullName": "Echo.StreamServer.Controls.Submit.post",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-post",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "postButton",
+        "fullName": "Echo.StreamServer.Controls.Submit.postButton",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-postButton",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "refresh",
+        "fullName": "Echo.StreamServer.Controls.Submit.refresh",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-refresh",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "tags",
+        "fullName": "Echo.StreamServer.Controls.Submit.tags",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-tags",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "tagsContainer",
+        "fullName": "Echo.StreamServer.Controls.Submit.tagsContainer",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-tagsContainer",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "text",
+        "fullName": "Echo.StreamServer.Controls.Submit.text",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-text",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "url",
+        "fullName": "Echo.StreamServer.Controls.Submit.url",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-url",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "onDataInvalidate",
+        "fullName": "Echo.StreamServer.Controls.Submit.onDataInvalidate",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-event-onDataInvalidate",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.Control.onDataInvalidate",
+            "description": "Triggered if dataset is changed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onPostComplete",
+        "fullName": "Echo.StreamServer.Controls.Submit.onPostComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-event-onPostComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.onPostComplete",
+            "description": "Triggered when the submit operation is finished."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onPostError",
+        "fullName": "Echo.StreamServer.Controls.Submit.onPostError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-event-onPostError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.onPostError",
+            "description": "Triggered if submit operation failed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onPostInit",
+        "fullName": "Echo.StreamServer.Controls.Submit.onPostInit",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-event-onPostInit",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.onPostInit",
+            "description": "Triggered if submit operation was started."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "Button",
+        "fullName": "Echo.Button",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Button",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.Button.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Button-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "render",
+        "fullName": "Echo.Button.render",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Button-method-render",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "update",
+        "fullName": "Echo.Button.update",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Button-method-update",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "UserSession",
+        "fullName": "Echo.UserSession",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.UserSession",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.UserSession.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.UserSession-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "any",
+        "fullName": "Echo.UserSession.any",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.UserSession-method-any",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.UserSession.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.UserSession-method-get",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "has",
+        "fullName": "Echo.UserSession.has",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.UserSession-method-has",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "is",
+        "fullName": "Echo.UserSession.is",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.UserSession-method-is",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "logout",
+        "fullName": "Echo.UserSession.logout",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.UserSession-method-logout",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.UserSession.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.UserSession-method-set",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onInit",
+        "fullName": "Echo.UserSession.onInit",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.UserSession-event-onInit",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.UserSession.onInit",
+            "description": "Triggered when the user is initialized on the page."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onInvalidate",
+        "fullName": "Echo.UserSession.onInvalidate",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.UserSession-event-onInvalidate",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.UserSession.onInvalidate",
+            "description": "Triggered after user has logged in or logged out."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "Loader",
+        "fullName": "Echo.Loader",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Loader",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "config",
+        "fullName": "Echo.Loader.config",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-config",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "overrides",
+        "fullName": "Echo.Loader.overrides",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-overrides",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "download",
+        "fullName": "Echo.Loader.download",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Loader-static-method-download",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "init",
+        "fullName": "Echo.Loader.init",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Loader-static-method-init",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "override",
+        "fullName": "Echo.Loader.override",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Loader-static-method-override",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "IdentityServer.API.Request",
+        "fullName": "Echo.IdentityServer.API.Request",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.IdentityServer.API.Request",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "onData",
+        "fullName": "Echo.IdentityServer.API.Request.onData",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.IdentityServer.API.Request-cfg-onData",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onError",
+        "fullName": "Echo.IdentityServer.API.Request.onError",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.IdentityServer.API.Request-cfg-onError",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "submissionProxyURL",
+        "fullName": "Echo.IdentityServer.API.Request.submissionProxyURL",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.IdentityServer.API.Request-cfg-submissionProxyURL",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.IdentityServer.API.Request.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.API.Request-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "request",
+        "fullName": "Echo.IdentityServer.API.Request.request",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.API.Request-static-method-request",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "IdentityServer.Controls.Auth",
+        "fullName": "Echo.IdentityServer.Controls.Auth",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "identityManager",
+        "fullName": "Echo.IdentityServer.Controls.Auth.identityManager",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-cfg-identityManager",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "infoMessages",
+        "fullName": "Echo.IdentityServer.Controls.Auth.infoMessages",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-cfg-infoMessages",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "edit",
+        "fullName": "Echo.IdentityServer.Controls.Auth.edit",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-edit",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "loggingOut",
+        "fullName": "Echo.IdentityServer.Controls.Auth.loggingOut",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-loggingOut",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "login",
+        "fullName": "Echo.IdentityServer.Controls.Auth.login",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-login",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "logout",
+        "fullName": "Echo.IdentityServer.Controls.Auth.logout",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-logout",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "or",
+        "fullName": "Echo.IdentityServer.Controls.Auth.or",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-or",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "signup",
+        "fullName": "Echo.IdentityServer.Controls.Auth.signup",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-signup",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.IdentityServer.Controls.Auth.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "avatar",
+        "fullName": "Echo.IdentityServer.Controls.Auth.avatar",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-avatar",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "edit",
+        "fullName": "Echo.IdentityServer.Controls.Auth.edit",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-edit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "login",
+        "fullName": "Echo.IdentityServer.Controls.Auth.login",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-login",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "logout",
+        "fullName": "Echo.IdentityServer.Controls.Auth.logout",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-logout",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "name",
+        "fullName": "Echo.IdentityServer.Controls.Auth.name",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-name",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "or",
+        "fullName": "Echo.IdentityServer.Controls.Auth.or",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-or",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "signup",
+        "fullName": "Echo.IdentityServer.Controls.Auth.signup",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-signup",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "template",
+        "fullName": "Echo.IdentityServer.Controls.Auth.template",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-template",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "Configuration",
+        "fullName": "Echo.Configuration",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Configuration",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.Configuration.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Configuration-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "extend",
+        "fullName": "Echo.Configuration.extend",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Configuration-method-extend",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.Configuration.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Configuration-method-get",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "getAsHash",
+        "fullName": "Echo.Configuration.getAsHash",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Configuration-method-getAsHash",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "remove",
+        "fullName": "Echo.Configuration.remove",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Configuration-method-remove",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Configuration.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Configuration-method-set",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "Control",
+        "fullName": "Echo.Control",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Control",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "apiBaseURL",
+        "fullName": "Echo.Control.apiBaseURL",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.Control-cfg-apiBaseURL",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "appkey",
+        "fullName": "Echo.Control.appkey",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.Control-cfg-appkey",
+        "meta": {
+          "required": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "infoMessages",
+        "fullName": "Echo.Control.infoMessages",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.Control-cfg-infoMessages",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "labels",
+        "fullName": "Echo.Control.labels",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.Control-cfg-labels",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "submissionProxyURL",
+        "fullName": "Echo.Control.submissionProxyURL",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.Control-cfg-submissionProxyURL",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "target",
+        "fullName": "Echo.Control.target",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.Control-cfg-target",
+        "meta": {
+          "required": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "dependent",
+        "fullName": "Echo.Control.dependent",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-dependent",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "destroy",
+        "fullName": "Echo.Control.destroy",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-destroy",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "extendTemplate",
+        "fullName": "Echo.Control.extendTemplate",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-extendTemplate",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.Control.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-get",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "getPlugin",
+        "fullName": "Echo.Control.getPlugin",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-getPlugin",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "log",
+        "fullName": "Echo.Control.log",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-log",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "parentRenderer",
+        "fullName": "Echo.Control.parentRenderer",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-parentRenderer",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "refresh",
+        "fullName": "Echo.Control.refresh",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-refresh",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "remove",
+        "fullName": "Echo.Control.remove",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-remove",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Control.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-set",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "showError",
+        "fullName": "Echo.Control.showError",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-showError",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "showMessage",
+        "fullName": "Echo.Control.showMessage",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-showMessage",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "substitute",
+        "fullName": "Echo.Control.substitute",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-substitute",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "addInitializer",
+        "fullName": "Echo.Control.addInitializer",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-static-method-addInitializer",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "create",
+        "fullName": "Echo.Control.create",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-static-method-create",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "manifest",
+        "fullName": "Echo.Control.manifest",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-static-method-manifest",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "Utils",
+        "fullName": "Echo.Utils",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Utils",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "addCSS",
+        "fullName": "Echo.Utils.addCSS",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-addCSS",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "foldl",
+        "fullName": "Echo.Utils.foldl",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-foldl",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getComponent",
+        "fullName": "Echo.Utils.getComponent",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-getComponent",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getNestedValue",
+        "fullName": "Echo.Utils.getNestedValue",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-getNestedValue",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getUniqueString",
+        "fullName": "Echo.Utils.getUniqueString",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-getUniqueString",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getVisibleColor",
+        "fullName": "Echo.Utils.getVisibleColor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-getVisibleColor",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "htmlTextTruncate",
+        "fullName": "Echo.Utils.htmlTextTruncate",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-htmlTextTruncate",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "htmlize",
+        "fullName": "Echo.Utils.htmlize",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-htmlize",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "hyperlink",
+        "fullName": "Echo.Utils.hyperlink",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-hyperlink",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "inherit",
+        "fullName": "Echo.Utils.inherit",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-inherit",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "isComponentDefined",
+        "fullName": "Echo.Utils.isComponentDefined",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-isComponentDefined",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "isMobileDevice",
+        "fullName": "Echo.Utils.isMobileDevice",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-isMobileDevice",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "loadImage",
+        "fullName": "Echo.Utils.loadImage",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-loadImage",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "log",
+        "fullName": "Echo.Utils.log",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-log",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "object2JSON",
+        "fullName": "Echo.Utils.object2JSON",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-object2JSON",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "objectToQuery",
+        "fullName": "Echo.Utils.objectToQuery",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-objectToQuery",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "parseURL",
+        "fullName": "Echo.Utils.parseURL",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-parseURL",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "setNestedValue",
+        "fullName": "Echo.Utils.setNestedValue",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-setNestedValue",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "stripTags",
+        "fullName": "Echo.Utils.stripTags",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-stripTags",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "timestampFromW3CDTF",
+        "fullName": "Echo.Utils.timestampFromW3CDTF",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-timestampFromW3CDTF",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      }
+    ],
+    "stats": [
+
+    ],
+    "tests": false,
+    "signatures": [
+      {
+        "long": "abstract",
+        "short": "ABS",
+        "key": "abstract"
+      },
+      {
+        "long": "chainable",
+        "short": "&gt;",
+        "key": "chainable"
+      },
+      {
+        "long": "deprecated",
+        "short": "DEP",
+        "key": "deprecated"
+      },
+      {
+        "long": "&#9733;",
+        "short": "&#9733;",
+        "key": "new"
+      },
+      {
+        "long": "preventable",
+        "short": "PREV",
+        "key": "preventable"
+      },
+      {
+        "long": "private",
+        "short": "PRI",
+        "key": "private"
+      },
+      {
+        "long": "protected",
+        "short": "PRO",
+        "key": "protected"
+      },
+      {
+        "long": "readonly",
+        "short": "R O",
+        "key": "readonly"
+      },
+      {
+        "long": "removed",
+        "short": "REM",
+        "key": "removed"
+      },
+      {
+        "long": "required",
+        "short": "REQ",
+        "key": "required"
+      },
+      {
+        "long": "static",
+        "short": "STA",
+        "key": "static"
+      },
+      {
+        "long": "template",
+        "short": "TMP",
+        "key": "template"
+      },
+      {
+        "long": "localization label",
+        "short": "label",
+        "key": "echo_label"
+      },
+      {
+        "long": "renderer",
+        "short": "renderer",
+        "key": "echo_renderer"
+      }
+    ],
+    "localStorageDb": "docs",
+    "showPrintButton": false,
+    "touchExamplesUi": false,
+    "source": true
+  }
+};

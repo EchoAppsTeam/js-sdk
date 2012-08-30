@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">// vim: set ts=8 sts=8 sw=8 noet:
+/*
+ * Copyright (c) 2006-2011 Echo &lt;solutions@aboutecho.com&gt;. All rights reserved.
+ * You may copy and modify this script as long as the above copyright notice,
+ * this condition and the following disclaimer is left intact.
+ * This software is provided by the author &quot;AS IS&quot; and no warranties are
+ * implied, including fitness for a particular purpose. In no event shall
+ * the author be liable for any damages arising in any way out of the use
+ * of this software, even if advised of the possibility of such damage.
+ */
+(function() {
+var plugin = Echo.Plugin.manifest(&quot;UserMetadataManager&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+plugin.init = function() {
+	var self = this;
+	var component = this.component;
+	var controls = this.config.get(&quot;controls&quot;);
+	$.each(controls, function(i, control) {
+		control.field = self._getField(control);
+		if (!control.field) return;
+
+		component.addButtonSpec(self.name,
+			self._assembleControl(&quot;SetUserProperty&quot;, control));
+
+		component.addButtonSpec(self.name,
+			self._assembleControl(&quot;UnsetUserProperty&quot;, control));
+
+	});
+};
+
+plugin.labels = {
+	&quot;setPropertyProcessing&quot;: &quot;Adding '{value}' {name}...&quot;,
+	&quot;unsetPropertyProcessing&quot;: &quot;Removing '{value}' {name}...&quot;
+};
+
+plugin.methods._assembleControl = function(action, control) {
+	var self = this;
+	var component = this.component;
+	var name = action + &quot;-&quot; + control.field.value.replace(/[^a-z0-9_-]/ig, '');
+	var operation = action.match(/^(.*)UserProperty$/)[1];
+	var callback = function() {
+		var item = this;
+		var actor = item.data.actor;
+		var field = self._getUpdatedUserProperty(operation.toLowerCase(),
+			control.field, actor);
+		var label = operation.toLowerCase() + &quot;PropertyProcessing&quot;;
+		item.get(&quot;buttons.&quot; + self.name + &quot;.&quot; + name + &quot;.element&quot;)
+			.empty()
+			.append(self.labels.get(label, control.field));
+
+		var value = field.name == &quot;state&quot;
+			? field.value
+			: field.value.length ? field.value.join(&quot;,&quot;) : &quot;-&quot;;
+
+		var request = new Echo.IdentityServer.API.Request({
+			&quot;endpoint&quot;: &quot;update&quot;,
+			&quot;submissionProxyURL&quot;: component.config.get(&quot;submissionProxyURL&quot;, &quot;&quot;, true),
+			&quot;data&quot;: {
+				&quot;content&quot;: {
+					&quot;field&quot;: field.name,
+					&quot;value&quot;: value,
+					&quot;identityURL&quot;: actor.id,
+					&quot;username&quot;: actor.title
+				},
+				&quot;appkey&quot;: component.config.get(&quot;appkey&quot;),
+				&quot;sessionID&quot;: component.user.get(&quot;sessionID&quot;),
+				&quot;target-query&quot;: component.config.get(&quot;parent.query&quot;)
+			},
+			&quot;onData&quot;: function(data) {
+				if (!data || data.result == &quot;error&quot;) {
+					item.dom.render();
+					return;
+				}
+				self.events.publish({
+					&quot;topic&quot;: &quot;onUserUpdate&quot;,
+					&quot;data&quot;: {
+						&quot;item&quot;: component,
+						&quot;field&quot;: field
+					},
+					&quot;global&quot;: false,
+					&quot;propagation&quot;: false
+				});
+			}
+		});
+		request.send();
+	};
+	return function() {
+		return {
+			&quot;name&quot;: name,
+			&quot;label&quot;: control[&quot;label&quot; + operation],
+			&quot;visible&quot;: self._isControlVisible(control, operation.toLowerCase()),
+			&quot;once&quot;: true,
+			&quot;callback&quot;: callback
+		};
+	};
+};
+
+plugin.methods._getField = function(control) {
+	var name;
+	$.map([&quot;roles&quot;, &quot;state&quot;, &quot;markers&quot;], function(_name) {
+		if (control[_name]) {
+			name = _name;
+			return false; // break
+		}
+	});
+	return name ? {&quot;name&quot;: name, &quot;value&quot;: control[name]} : undefined;
+};
+
+plugin.methods._getUpdatedUserProperty = function(action, field, actor) {
+	var value;
+	if (field.name == &quot;state&quot;) {
+		value = action == &quot;set&quot; ? field.value : &quot;Untouched&quot;;
+	} else {
+		var list = field.value.split(&quot;,&quot;);
+		value = Echo.Utils.foldl([], actor[field.name] || [], function(name, acc) {
+			if ($.inArray(name, list) &lt; 0) acc.push(name);
+		});
+		value = action == &quot;set&quot; ? value.concat(list) : value;
+	}
+	return {&quot;name&quot;: field.name, &quot;value&quot;: value};
+};
+
+plugin.methods._applyUserUpdate = function(target, source, field) {
+	if (target.get(&quot;data.actor.id&quot;) != source.get(&quot;data.actor.id&quot;)) return;
+	target.data.actor[field.name == &quot;state&quot; ? &quot;status&quot; : field.name] = field.value;
+	target.dom.render();
+};
+
+plugin.methods._isSubset = function(target, full) {
+	if (!full || !full.length) return false;
+	return !(Echo.Utils.foldl([], target || [], function(item, acc) {
+		if ($.inArray(item, full) &lt; 0) acc.push(item);
+	})).length;
+};
+
+plugin.methods._isControlVisible = function(control, operation) {
+	var item = this.component;
+	var actor = item.data.actor;
+	if (actor.id == item.user.get(&quot;fakeIdentityURL&quot;) || !item.user.is(&quot;admin&quot;)) {
+		return false;
+	}
+	if (control.field.name == &quot;state&quot;) {
+		return (actor.status == control.field.value) ^ (operation == &quot;set&quot;);
+	}
+	if (control.field.name == &quot;roles&quot; &amp;&amp; !item.user.any(&quot;role&quot;, [&quot;administrator&quot;])) {
+		return false;
+	}
+	return this._isSubset(control.field.value.split(&quot;,&quot;), actor[control.field.name]) ^ (operation == &quot;set&quot;);
+};
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Plugins.UserMetadataManager.onUserUpdate&quot;: function(topic, args) {
+		this._applyUserUpdate(this.component, args.item, args.field);
+	}
+};
+
+Echo.Plugin.create(plugin);
+})();
+
+(function(){
+var plugin = Echo.Plugin.manifest(&quot;UserMetadataManager&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.UserMetadataManager.onUserUpdate&quot;: function(topic, args) {
+		this.events.publish({
+			&quot;topic&quot;: &quot;onUserUpdate&quot;,
+			&quot;data&quot;: args,
+			&quot;global&quot;: false
+		});
+	}
+};
+
+Echo.Plugin.create(plugin);
+})();</pre>
+</body>
+</html>

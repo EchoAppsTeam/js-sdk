@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Submit-method-constructor'><span id='Echo-StreamServer-Controls-Submit'>/**
+</span></span> * @class Echo.StreamServer.Controls.Submit
+ * Echo Submit control which encapsulates interaction with the
+ * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/35059196/API-method-submit&quot; target=&quot;_blank&quot;&gt;Echo Submit API&lt;/a&gt;
+ *
+ *     new Echo.StreamServer.Controls.Submit({
+ *         &quot;target&quot;: document.getElementById(&quot;submit&quot;),
+ *         &quot;targetURL&quot;: &quot;http://example.com/submit&quot;,
+ *         &quot;appkey&quot;: &quot;test.js-kit.com&quot;,
+ *     });
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * Submit constructor initializing Echo.StreamServer.Controls.Submit class
+ *
+ * @param {Object} config
+ * Configuration options
+ */
+var submit = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Submit&quot;);
+
+submit.init = function() {
+	var self = this;
+	this.addPostValidator(function() {
+		var valid = true;
+		$.each([&quot;name&quot;, &quot;text&quot;], function (i, field) {
+			valid = !self.highlightMandatory(self.dom.get(field));
+			return valid;
+		});
+		return valid;
+	}, &quot;low&quot;);
+	this.dom.render();
+	this.ready();
+};
+
+submit.config = {
+<span id='Echo-StreamServer-Controls-Submit-cfg-targetURL'>	/**
+</span>	 * @cfg {String} [targetURL=document.location.href]
+	 * Specifies the URI to which the submitted Echo item is related. This parameter will be used as a activity target value for the item.
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         &quot;targetURL&quot;: &quot;http://somedomain.com/some_article.html&quot;,
+	 *         ...
+	 *     });
+	 */
+	&quot;targetURL&quot;: document.location.href,
+<span id='Echo-StreamServer-Controls-Submit-cfg-markers'>	/**
+</span>	 * @cfg {Array} markers
+	 * This parameter is used to attach the markers metadata to the item during the item submission. The format of the value is the array array with the string values. Markers will be also displayed in the &quot;Markers&quot; field in the Submit form UI for Moderators and Administrators. For non-admin users the markers value will be submitted along with the other item content when the &quot;Post&quot; button is pressed.
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         &quot;markers&quot;: [&quot;marker1&quot;, &quot;marker2&quot;, &quot;marker3&quot;],
+	 *         ...
+	 *     });
+	 */
+	&quot;markers&quot;: [],
+<span id='Echo-StreamServer-Controls-Submit-cfg-source'>	/**
+</span>	 * @cfg {Object} source
+	 * Designates the initial item source (E.g. Twitter). You can override source name, URI and the corresponding icon.
+	 *
+	 * @cfg {String} source.name
+	 * Source name.
+	 *
+	 * @cfg {String} source.uri
+	 * Source uri.
+	 *
+	 * @cfg {String} source.icon
+	 * Source icon.
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         &quot;source&quot;: {
+	 *             &quot;name&quot;: &quot;ExampleSource&quot;,
+	 *             &quot;uri&quot;: &quot;http://example.com/&quot;,
+	 *             &quot;icon&quot;: &quot;http://example.com/images/source.png&quot;
+	 *         },
+	 *         ...
+	 *     });
+	 */
+	&quot;source&quot;: {},
+<span id='Echo-StreamServer-Controls-Submit-cfg-tags'>	/**
+</span>	 * @cfg {Array} tags
+	 * This parameter is used to attach the tags metadata to the item during the item submission. The format of the value is the array array with the string values. Tags will be also displayed in the &quot;Tags&quot; field in the Submit form UI for Moderators and Administrators. For non-admin users the tags value will be submitted along with the other item content when the &quot;Post&quot; button is pressed.
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         &quot;tags&quot;: [&quot;tag1&quot;, &quot;tag2&quot;, &quot;tag3&quot;],
+	 *         ...
+	 *     });
+	 */
+	&quot;tags&quot;: [],
+<span id='Echo-StreamServer-Controls-Submit-cfg-requestMethod'>	/**
+</span>	 * @cfg {String} requestMethod
+	 * This parameter is used to specify the request method. Possible values are &quot;GET&quot; and &quot;POST&quot;.
+	 * Setting parameter to &quot;POST&quot; has some restrictions.
+	 * We can't handle server response, UI won't show any waiting for the server responses actions.
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         &quot;requestMethod&quot;: &quot;POST&quot;,
+	 *         ...
+	 *     });
+	 */
+	&quot;requestMethod&quot;: &quot;GET&quot;,
+<span id='Echo-StreamServer-Controls-Submit-cfg-itemURIPattern'>	/**
+</span>	 * @cfg {String} itemURIPattern
+	 * Allows to define item id pattern. The value of this parameter should be a valid URI with &quot;{id}&quot; placeholder which will indicate the place where unique id should be inserted. If this parameter is ommited in configuration or the URI is invalid it'll be ignored.
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         &quot;itemURIPattern&quot;: &quot;http://your-domain.com/path/{id}&quot;,
+	 *         ...
+	 *     });
+	 */
+	&quot;itemURIPattern&quot;: undefined,
+<span id='Echo-StreamServer-Controls-Submit-cfg-actionString'>	/**
+</span>	 * @cfg {String} actionString
+	 * Is used to define the default call to action phrase.
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         &quot;actionString&quot;: &quot;Type your comment here...&quot;,
+	 *         ...
+	 *     });
+	 */
+	&quot;actionString&quot;: &quot;Type your comment here...&quot;,
+<span id='Echo-StreamServer-Controls-Submit-cfg-postingTimeout'>	/**
+</span>	 * @cfg {Number} postingTimeout
+	 * Is used to specify the number of seconds after which Submit Form will show timeout error dialog if the server does not return anything. If the parameter value is 0 then the mentioned dialog won't never be shown.
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         &quot;postingTimeout&quot;: 15,
+	 *         ...
+	 *     });
+	 */
+	&quot;postingTimeout&quot;: 30,
+<span id='Echo-StreamServer-Controls-Submit-cfg-type'>	/**
+</span>	 * @cfg {String} type
+	 * Allows to define item type. The value of this parameter should be a valid URI.
+	 *
+	 *     new Echo.StreamServer.Controls.Submit({
+	 *         ...
+	 *         &quot;type&quot;: &quot;http://echoenabled.com/activitystreams/schema/1.0/category&quot;,
+	 *         ...
+	 *     });
+	 */
+	&quot;type&quot;: undefined,
+	&quot;targetQuery&quot;: undefined
+};
+
+submit.vars = {
+	&quot;validators&quot;: []
+};
+
+submit.labels = {
+<span id='Echo-StreamServer-Controls-Submit-property-markers'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;markers&quot;: &quot;Markers:&quot;,
+<span id='Echo-StreamServer-Controls-Submit-property-markersHint'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;markersHint&quot;: &quot;Marker1, marker2, marker3, ...&quot;,
+<span id='Echo-StreamServer-Controls-Submit-property-post'>	/**
+</span>	 * @echo_label
+	 * Label for the button allowing to submit form
+	 */
+	&quot;post&quot;: &quot;Post&quot;,
+<span id='Echo-StreamServer-Controls-Submit-property-posting'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;posting&quot;: &quot;Posting...&quot;,
+<span id='Echo-StreamServer-Controls-Submit-property-postingFailed'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;postingFailed&quot;: &quot;There was a server error while trying to submit your item. Please try again in a few minutes. &lt;b&gt;Error: \&quot;{error}\&quot;&lt;/b&gt;.&quot;,
+<span id='Echo-StreamServer-Controls-Submit-property-postingTimeout'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;postingTimeout&quot;: &quot;There was a network issue while trying to submit your item. Please try again in a few minutes.&quot;,
+<span id='Echo-StreamServer-Controls-Submit-property-tagsHint'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;tagsHint&quot;: &quot;Tag1, tag2, tag3, ...&quot;,
+<span id='Echo-StreamServer-Controls-Submit-property-tags'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;tags&quot;: &quot;Tags:&quot;,
+<span id='Echo-StreamServer-Controls-Submit-property-yourName'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;yourName&quot;: &quot;Your Name (required)&quot;,
+<span id='Echo-StreamServer-Controls-Submit-property-yourWebsiteOptional'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;yourWebsiteOptional&quot;: &quot;Your website (optional)&quot;
+};
+
+submit.templates.main =
+	'&lt;div class=&quot;{class:container}&quot;&gt;' +
+		'&lt;div class=&quot;{class:header}&quot;&gt;' +
+			'&lt;div class=&quot;{class:userInfoWrapper}&quot;&gt;' +
+				'&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;' +
+				'&lt;div class=&quot;{class:fields}&quot;&gt;' +
+					'&lt;div class=&quot;{class:fieldsWrapper}&quot;&gt;' +
+						'&lt;div class=&quot;{class:nameContainer} {class:border}&quot;&gt;' +
+							'&lt;input class=&quot;{class:name} echo-primaryFont echo-primaryColor&quot;&gt;' +
+						'&lt;/div&gt;' +
+						'&lt;div class=&quot;{class:urlContainer} {class:border}&quot;&gt;' +
+							'&lt;input class=&quot;{class:url} echo-primaryFont echo-primaryColor&quot;&gt;' +
+						'&lt;/div&gt;' +
+					'&lt;/div&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:body}&quot;&gt;' +
+			'&lt;div class=&quot;{class:content} {class:border}&quot;&gt;' +
+				'&lt;textarea class=&quot;{class:text} {class:textArea} echo-primaryFont echo-primaryColor&quot;&gt;&lt;/textarea&gt;' +
+			'&lt;/div&gt;' +
+			'&lt;div class=&quot;{class:markersContainer} {class:metadataContainer} echo-primaryFont echo-primaryColor&quot;&gt;' +
+				'&lt;div class=&quot;{class:metadataLabel}&quot;&gt;{label:markers}&lt;/div&gt;' +
+				'&lt;div class=&quot;{class:metadataWrapper}&quot;&gt;' +
+					'&lt;div class=&quot;{class:metadataSubwrapper} {class:border} &quot;&gt;' +
+						'&lt;input class=&quot;{class:markers} echo-primaryFont&quot;&gt;' +
+					'&lt;/div&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+			'&lt;div class=&quot;{class:tagsContainer} {class:metadataContainer} echo-primaryFont echo-primaryColor&quot;&gt;' +
+				'&lt;div class=&quot;{class:metadataLabel}&quot;&gt;{label:tags}&lt;/div&gt;' +
+				'&lt;div class=&quot;{class:metadataWrapper}&quot;&gt;' +
+					'&lt;div class=&quot;{class:metadataSubwrapper} {class:border} &quot;&gt;' +
+						'&lt;input class=&quot;{class:tags} {class:border} echo-primaryFont&quot;&gt;' +
+					'&lt;/div&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:controls}&quot;&gt;' +
+			'&lt;div class=&quot;{class:postContainer}&quot;&gt;' +
+				'&lt;button class=&quot;{class:postButton} echo-primaryFont&quot;&gt;&lt;/button&gt;' +
+			'&lt;/div&gt;' +
+			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+<span id='Echo-StreamServer-Controls-Submit-method-tagsContainer'>/**
+</span> * @echo_renderer
+ */
+submit.renderers.tagsContainer = function(element) {
+	return (this.user.is(&quot;admin&quot;)) ? element.show() : element.hide();
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-markersContainer'>/**
+</span> * @method
+ * @echo_renderer
+ * @param element
+ */
+submit.renderers.markersContainer = submit.renderers.tagsContainer;
+
+<span id='Echo-StreamServer-Controls-Submit-method-markers'>/**
+</span> * @echo_renderer
+ */
+submit.renderers.markers = function(element) {
+	return this.dom.render({
+		&quot;name&quot;: &quot;_metaFields&quot;,
+		&quot;target&quot;: element,
+		&quot;extra&quot;: {&quot;type&quot;: &quot;markers&quot;}
+	});
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-tags'>/**
+</span> * @echo_renderer
+ */
+submit.renderers.tags = function(element) {
+	return this.dom.render({
+		&quot;name&quot;: &quot;_metaFields&quot;,
+		&quot;target&quot;: element,
+		&quot;extra&quot;: {&quot;type&quot;: &quot;tags&quot;}
+	});
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-text'>/**
+</span> * @echo_renderer
+ */
+submit.renderers.text = function(element) {
+	var content = this.get(&quot;data.object.content&quot;);
+	if (content) element.val(content);
+	return element.iHint({
+		&quot;text&quot;: this.config.get(&quot;actionString&quot;),
+		&quot;className&quot;: &quot;echo-secondaryColor&quot;
+	});
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-avatar'>/**
+</span> * @echo_renderer
+ */
+submit.renderers.avatar = function(element) {
+	var avatar = Echo.Utils.loadImage(this.user.get(&quot;avatar&quot;), this.user.config.get(&quot;defaultAvatar&quot;));
+	return element.empty().append(avatar);
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-name'>/**
+</span> * @echo_renderer
+ */
+submit.renderers.name = function(element) {
+	return element.val(this.user.get(&quot;name&quot;, &quot;&quot;)).iHint({
+		&quot;text&quot;: this.labels.get(&quot;yourName&quot;),
+		&quot;className&quot;: &quot;echo-secondaryColor&quot;
+	});
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-url'>/**
+</span> * @echo_renderer
+ */
+submit.renderers.url = function(element) {
+	return element.val(this.user.get(&quot;domain&quot;, &quot;&quot;)).iHint({
+		&quot;text&quot;: this.labels.get(&quot;yourWebsiteOptional&quot;),
+		&quot;className&quot;: &quot;echo-secondaryColor&quot;
+	});
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-postButton'>/**
+</span> * @echo_renderer
+ */
+submit.renderers.postButton = function(element) {
+	var self = this;
+	var states = {
+		&quot;normal&quot;: {
+			&quot;icon&quot;: false,
+			&quot;disabled&quot;: false,
+			&quot;label&quot;: self.labels.get(&quot;post&quot;)
+		},
+		&quot;posting&quot;: {
+			&quot;icon&quot;: &quot;echo-icon-waiting&quot;,
+			&quot;disabled&quot;: true,
+			&quot;label&quot;: self.labels.get(&quot;posting&quot;)
+		}
+	};
+	var button = new Echo.Button(element.empty(), states.normal);
+	this.posting = this.posting || {};
+	this.posting.subscriptions = this.posting.subscriptions || [];
+	var subscribe = function(phase, state, callback) {
+		var topic = submit.name + &quot;.onPost&quot; + phase;
+		var subscriptions = self.posting.subscriptions;
+		if (subscriptions[topic]) {
+			self.events.unsubscribe({
+				&quot;topic&quot;: topic,
+				&quot;handlerId&quot;: subscriptions[topic]
+			});
+		}
+		subscriptions[topic] = self.events.subscribe({
+			&quot;topic&quot;: topic,
+			&quot;handler&quot;: function(topic, params) {
+				button.update(state);
+				if (callback) callback(params);
+			}
+		});
+	};
+	
+	subscribe(&quot;Init&quot;, states.posting);
+	subscribe(&quot;Complete&quot;, states.normal, function() {
+		self.dom.get(&quot;text&quot;).val(&quot;&quot;).trigger(&quot;blur&quot;);
+		self.dom.render({&quot;name&quot;: &quot;tags&quot;});
+		self.dom.render({&quot;name&quot;: &quot;markers&quot;});
+	});
+	subscribe(&quot;Error&quot;, states.normal, function(params) {
+		self._showError(params.postData);
+	});
+	this.posting.action = this.posting.action || function() {
+		if (self._isPostValid()) {
+			self.post();
+		}
+	};
+	element.off(&quot;click&quot;, this.posting.action).on(&quot;click&quot;, this.posting.action);
+	return element;
+};
+
+submit.renderers._metaFields = function(element, extra) {
+	var type = extra.type;
+	var data = this.get(&quot;data.object.&quot; + type) || [];
+	var value = $.trim(Echo.Utils.stripTags(data.join(&quot;, &quot;)));
+	return this.dom.get(type).iHint({
+		&quot;text&quot;: this.labels.get(type + &quot;Hint&quot;),
+		&quot;className&quot;: &quot;echo-secondaryColor&quot;
+	}).val(value).blur();
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-post'>/**
+</span> * Method used for posting user provided content to the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/35059196/API-method-submit&quot; target=&quot;_blank&quot;&gt; Echo Submit&lt;/a&gt; endpoint through &lt;a href=&quot;http://wiki.aboutecho.com/w/page/53021402/Echo%20Submission%20Proxy&quot; target=&quot;_blank&quot;&gt; Echo Submission Proxy&lt;/a&gt;.
+ */
+submit.methods.post = function() {
+	var self = this;
+	var publish = function(phase, data) {
+		var params = {
+			&quot;topic&quot;: &quot;onPost&quot; + phase,
+			&quot;data&quot;: {&quot;postData&quot;: data}
+		};
+		self.events.publish(params);
+	};
+	var postType = this.config.get(&quot;type&quot;, this._getASURL(&quot;comment&quot;));
+	var content = [].concat(
+		self._getActivity(&quot;post&quot;, postType, self.dom.get(&quot;text&quot;).val()),
+		self._getActivity(&quot;tag&quot;, this._getASURL(&quot;marker&quot;), self.dom.get(&quot;markers&quot;).val()),
+		self._getActivity(&quot;tag&quot;, this._getASURL(&quot;tag&quot;), self.dom.get(&quot;tags&quot;).val())
+	);
+	var entry = {
+		&quot;content&quot;: content,
+		&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
+		&quot;sessionID&quot;: this.user.get(&quot;sessionID&quot;, &quot;&quot;)
+	};
+	if (this.config.get(&quot;targetQuery&quot;)) {
+		entry[&quot;target-query&quot;] = this.config.get(&quot;targetQuery&quot;);
+	}
+	var callbacks = {
+		&quot;onData&quot;: function(data) {
+<span id='Echo-StreamServer-Controls-Submit-event-onPostComplete'>			/**
+</span>			 * @event onPostComplete
+			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete
+			 * Triggered when the submit operation is finished.
+			 */
+			publish(&quot;Complete&quot;, entry);
+<span id='Echo-StreamServer-Controls-Submit-event-onDataInvalidate'>			/**
+</span>			 * @event onDataInvalidate
+			 * @echo_event Echo.Control.onDataInvalidate
+			 * Triggered if dataset is changed.
+			 */
+			// notify all widgets on the page about a new item posted
+			Echo.Events.publish({
+				&quot;topic&quot;: &quot;Echo.Control.onDataInvalidate&quot;,
+				&quot;context&quot;: &quot;global&quot;,
+				&quot;data&quot;: {}
+			});
+		},
+		&quot;onError&quot;: function(data) {
+<span id='Echo-StreamServer-Controls-Submit-event-onPostError'>			/**
+</span>			 * @event onPostError
+			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
+			 * Triggered if submit operation failed.
+			 */
+			publish(&quot;Error&quot;, data);
+		}
+	};
+<span id='Echo-StreamServer-Controls-Submit-event-onPostInit'>	/**
+</span>	 * @event onPostInit
+	 * @echo_event Echo.StreamServer.Controls.Submit.onPostInit
+	 * Triggered if submit operation was started.
+	 */
+	publish(&quot;Init&quot;, entry);
+	Echo.StreamServer.API.request({
+		&quot;endpoint&quot;: &quot;submit&quot;,
+		&quot;method&quot;: this.config.get(&quot;requestMethod&quot;),
+		&quot;submissionProxyURL&quot;: this.config.get(&quot;submissionProxyURL&quot;),
+		&quot;timeout&quot;: this.config.get(&quot;postingTimeout&quot;),
+		&quot;data&quot;: entry,
+		&quot;onData&quot;: callbacks.onData,
+		&quot;onError&quot;: callbacks.onError
+	}).send();
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-highlightMandatory'>/**
+</span> * Method highlighting the mandatory input data fields if they are empty
+ */
+submit.methods.highlightMandatory = function(element) {
+	if (element &amp;&amp; !$.trim(element.val())) {
+		var css = this.cssPrefix + &quot;mandatory&quot;;
+		element.parent().addClass(css);
+		element.focus(function() {
+			$(this).parent().removeClass(css);
+		});
+		return true;
+	}
+	return false;
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-addPostValidator'>/**
+</span> * Method adds custom validator to check posting possibility
+ */
+submit.methods.addPostValidator = function(validator, priority) {
+	this.validators[priority === &quot;low&quot; ? &quot;push&quot; : &quot;unshift&quot;](validator);
+};
+
+<span id='Echo-StreamServer-Controls-Submit-method-refresh'>/**
+</span> * Method implements the refresh logic for the Submit control.
+ */
+submit.methods.refresh = function() {
+	var self = this;
+	this.config.set(&quot;data.object.content&quot;, this.dom.get(&quot;text&quot;).val());
+	$.map([&quot;tags&quot;, &quot;markers&quot;], function(field) {
+		var elements = self.dom.get(field).val().split(&quot;, &quot;);
+		self.config.set(&quot;data.object.&quot; + field, elements || []);
+	});
+	var component = Echo.Utils.getComponent(&quot;Echo.StreamServer.Controls.Submit&quot;);
+	component.parent.refresh.call(this);
+};
+
+submit.methods._getActivity = function(verb, type, data) {
+	return (!data) ? [] : {
+		&quot;actor&quot;: {
+			&quot;objectTypes&quot;: [ this._getASURL(&quot;person&quot;) ],
+			&quot;name&quot;: this.user.get(&quot;name&quot;, ( this.user.is(&quot;logged&quot;) ? &quot;&quot; : this.dom.get(&quot;name&quot;).val() )),
+			&quot;avatar&quot;: this.user.get(&quot;avatar&quot;, &quot;&quot;)
+		},
+		&quot;object&quot;: {
+			&quot;objectTypes&quot;: [ type ],
+			&quot;content&quot;: data
+		},
+		&quot;source&quot;: this.config.get(&quot;source&quot;),
+		&quot;verbs&quot;: [ this._getASURL(verb) ],
+		&quot;targets&quot;: [{
+			&quot;id&quot;: this.config.get(&quot;targetURL&quot;)
+		}]
+	};
+};
+
+submit.methods._getASURL = function(postfix) {
+	return &quot;http://activitystrea.ms/schema/1.0/&quot; + postfix;
+}
+
+submit.methods._showError = function(data) {
+	data = data || {};
+	var isNetworkTimeout = ($.inArray(data.errorCode, [&quot;network_timeout&quot;, &quot;connection_failure&quot;]) &gt;= 0);
+	var message = isNetworkTimeout
+		? this.labels.get(&quot;postingTimeout&quot;)
+		: this.labels.get(&quot;postingFailed&quot;, {&quot;error&quot;: data.errorMessage || data.errorCode});
+	$.fancybox({
+		&quot;content&quot;: '&lt;div class=&quot;' + this.cssPrefix + 'error&quot;&gt;' + message + '&lt;/div&gt;',
+		&quot;height&quot;: 70,
+		&quot;width&quot;: isNetworkTimeout ? 320 : 390,
+		&quot;padding&quot;: 15,
+		&quot;orig&quot;: this.dom.get(&quot;text&quot;),
+		&quot;autoDimensions&quot;: false,
+		&quot;transitionIn&quot;: &quot;elastic&quot;,
+		&quot;transitionOut&quot;: &quot;elastic&quot;,
+		&quot;onComplete&quot;: function() {
+			// set fixed dimensions of the fancybox-wrap (for IE in quirks mode it should be bigger)
+			if ($.browser.msie &amp;&amp; document.compatMode != &quot;CSS1Compat&quot;) {
+				var options = arguments[2];
+				var delta = 2 * options.padding + 40;
+				$(&quot;#fancybox-wrap&quot;).css({
+					&quot;width&quot;: options.width + delta,
+					&quot;height&quot;: options.height + delta
+				});
+			}
+		}
+	});
+};
+
+submit.methods._isPostValid = function() {
+	var self = this, valid = true;
+	$.each(this.validators, function(i, handler) {
+		valid = handler();
+		return valid;
+	});
+	return valid;
+};
+
+submit.methods._prepareEventParams = function(params) {
+	params = params || {};
+	params.data = this.get(&quot;data&quot;);
+	params.target = this.config.get(&quot;target&quot;).get(0);
+	params.targetURL = this.config.get(&quot;targetURL&quot;);
+	return params;
+};
+
+submit.css =
+	'.{class:header} { margin-bottom: 3px; }' +
+	'.{class:avatar} { float: left; margin-right: -48px; }' +
+	'.{class:avatar} img { width: 48px; height: 48px; }' +
+	'.{class:fields} { width: 100%; float: left; }' +
+	'.{class:fields} input { width: 100%; }' +
+	'.{class:fieldsWrapper} { margin-left: 53px; }' +
+	'.{class:nameContainer} { margin: 1px 0px 4px 0px; padding: 0px 2px 1px 3px; background-color: #fff; }' +
+	'.{class:name} { font-size: 14px; font-weight: bold; border: none; }' +
+	'.{class:urlContainer} { padding: 0px 2px 1px 3px; background-color: #fff; }' +
+	'.{class:url} { height: 19px; border: none; }' +
+	'.{class:author} { font-weight: bold; }' +
+	'.{class:content} { padding: 5px 5px 5px 6px; background-color: #fff; }' +
+	'.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none ; }' +
+	'.{class:text} input { width: 100%; border: none; }' +
+	'.{class:metadataContainer} { margin-top: 6px; }' +
+	'.{class:metadataLabel} { float: left; width: 50px; margin-right: -50px; text-align: right; line-height: 22px; }' +
+	'.{class:metadataWrapper} { float: left; width: 100%; }' +
+	'.{class:metadataSubwrapper} { margin-left: 55px; padding: 2px 2px 2px 3px; background-color: #fff; }' +
+	'.{class:metadataSubwrapper} input { width: 100%; border: none; }' +
+	'.{class:controls} { margin-top: 5px; }' +
+	'.{class:postContainer} { float: right; }' +
+	'.{class:border} { border: 1px solid #d2d2d2; }' +
+	'.{class:mandatory} { border: 1px solid red; }' +
+	'.{class:queriesViewOption} { padding-right: 5px; }' +
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(&quot;' + Echo.Loader.config.cdnBaseURL + 'images/info70.png&quot;); height: 70px; }' +
+	(($.browser.msie) ?
+		'.{class:container} { zoom: 1; }' +
+		'.{class:body} { zoom: 1; }' +
+		'.{class:header} { zoom: 1; }' +
+		'.{class:content} { zoom: 1; }' +
+		'.{class:markersContainer} { zoom: 1; }' +
+		'.{class:tagsContainer} { zoom: 1; }' : '') +
+	(($.browser.webkit) ?
+		// get rid of extra gray line inside input elements on iOS
+		'.{class:container} input { background-position: 0px; }' +
+		'.{class:container} textarea { background-position: 0px; }' +
+		'.{class:textArea} { outline: none; }' +
+		'.{class:name} { outline: none; }' +
+		'.{class:url} { outline: none; }' +
+		'.{class:metadataSubwrapper} input { outline: none; }' : '');
+
+Echo.Control.create(submit);
+</pre>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function() {
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
+ * Adds extra button Reply to each root item in the Echo Stream control. Integrates Echo Submit control and provides the ability to submit replies to the posted items.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;Reply&quot;
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;Reply&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+plugin.init = function() {
+	var self = this, item = this.component;
+	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;content&quot;, plugin.templates.form);
+	var form = Echo.Utils.getNestedValue(Echo.Variables, this._getFormKey());
+	$.each(form || {}, function(key, value) {
+	    self.set(key, value);
+	});
+	item.addButtonSpec(&quot;Reply&quot;, this._assembleButton());
+	this.set(&quot;documentClickHandler&quot;, this._getClickHandler());
+	$(document).on('click', this.get(&quot;documentClickHandler&quot;));
+};
+
+plugin.labels = {
+	&quot;replyControl&quot;: &quot;Reply&quot;
+};
+
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-cfg-actionString'>/**
+</span> * @cfg {String} actionString Is used to define the default call to action phrase.
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;Reply&quot;
+ * 			&quot;actionString&quot;: &quot;Type your comment here...&quot;,
+ * 		}]
+ * 	});
+ */
+	&quot;actionString&quot;: &quot;Write reply here...&quot;
+};
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand&quot;: function(topic, args) {
+		var plugin = this, item = this.component;
+		var context = item.config.get(&quot;context&quot;);
+		if (plugin.get(&quot;expanded&quot;) &amp;&amp; context &amp;&amp; context !== args.context) {
+			plugin.set(&quot;expanded&quot;, false);
+			plugin._hideSubmit();
+			plugin.events.publish({
+				&quot;topic&quot;: &quot;onCollapse&quot;
+			});
+		}
+	},
+	&quot;Echo.StreamServer.Controls.Submit.onPostComplete&quot;: function(topic, args) {
+		this.set(&quot;expanded&quot;, false);
+		this._hideSubmit();
+		this.events.publish({
+			&quot;topic&quot;: &quot;onCollapse&quot;
+		});
+	}
+};
+
+plugin.templates.form =
+	'&lt;div class=&quot;{plugin.class:replyForm}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:submitForm}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:compactForm}&quot;&gt;' +
+			'&lt;div class=&quot;{plugin.class:compactContent} {plugin.class:compactBorder}&quot;&gt;' +
+				'&lt;input class=&quot;{plugin.class:compactField} echo-primaryFont echo-secondaryColor&quot;&gt;' +
+			'&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+plugin.component.renderers.container = function(element) {
+	var plugin = this, item = plugin.component;
+	var threading = item.threading;
+	if (plugin.get(&quot;expanded&quot;)) {
+		item.threading = true;
+	}
+	item.parentRenderer(&quot;container&quot;, arguments);
+	item.threading = threading;
+	return element;
+};
+
+plugin.component.renderers.children = function(element) {
+	var plugin = this, item = plugin.component;
+	// perform reply form rerendering *only* when we have exactly 1 item
+	// (the first item is being added or the last one is being deleted)
+	if (item.get(&quot;children&quot;).length == 1) {
+		var child = item.get(&quot;children&quot;)[0];
+		if (child.get(&quot;added&quot;) || child.get(&quot;deleted&quot;)) {
+			plugin._itemCSS(&quot;remove&quot;, item, plugin.dom.get(&quot;replyForm&quot;));
+			plugin.dom.render({&quot;name&quot;: &quot;compactForm&quot;});
+		}
+	}
+	return item.parentRenderer(&quot;children&quot;, arguments);
+};
+
+plugin.renderers.submitForm = function(element) {
+	var plugin = this;
+	if (plugin.get(&quot;expanded&quot;)) {
+		return plugin._showSubmit();
+	}
+	return element;
+};
+
+plugin.renderers.compactForm = function(element) {
+	var plugin = this, item = plugin.component;
+	var hasChildren = !!item.children.length;
+	if (!item.get(&quot;depth&quot;) &amp;&amp; hasChildren &amp;&amp; !plugin.get(&quot;expanded&quot;) &amp;&amp; !item.get(&quot;children&quot;)[0].get(&quot;deleted&quot;)) {
+		plugin._itemCSS(&quot;add&quot;, item, element.parent());
+		return element.show();
+	}
+	return element.hide();
+};
+
+plugin.renderers.compactField = function(element) {
+	var plugin = this, item = plugin.component;
+	return element.focus(function() {
+		plugin.set(&quot;expanded&quot;, true);
+		plugin._showSubmit();
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onExpand'>		/**
+</span>		 * @event onExpand
+		 * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
+		 * is triggered when the reply form is opened
+		 */
+		plugin.events.publish({
+			&quot;topic&quot;: &quot;onExpand&quot;,
+			&quot;data&quot;: {
+				&quot;context&quot;: item.config.get(&quot;context&quot;)
+			}
+		});
+	}).val(plugin.config.get(&quot;actionString&quot;));
+};
+
+plugin.methods.destroy = function() {
+	var plugin = this, item = this.component;
+	Echo.Utils.setNestedValue(Echo.Variables, plugin._getFormKey(), {
+		&quot;submit&quot;: plugin.get(&quot;submit&quot;),
+		&quot;expanded&quot;: plugin.get(&quot;expanded&quot;)
+	});
+	$(document).off('click', plugin.get(&quot;documentClickHandler&quot;));
+};
+
+plugin.methods._showSubmit = function() {
+	var plugin = this, item = plugin.component;
+	var submit;
+	var target = plugin.dom.get(&quot;submitForm&quot;).empty();
+	if (!plugin.get(&quot;submit&quot;)) {
+		var config = plugin.config.assemble({
+			&quot;target&quot;: target,
+			&quot;data&quot;: { &quot;unique&quot;: item.get(&quot;data.unique&quot;) },
+			&quot;targetURL&quot;: item.get(&quot;data.object.id&quot;),
+			&quot;parent&quot;: item.config.getAsHash(),
+			&quot;targetQuery&quot;: item.config.get(&quot;query&quot;, &quot;&quot;),
+			&quot;context&quot;: item.config.get(&quot;context&quot;)
+		});
+		config.plugins.push({
+			&quot;name&quot;: &quot;Reply&quot;,
+			&quot;inReplyTo&quot;: plugin.component.get(&quot;data&quot;)
+		});
+		submit = new Echo.StreamServer.Controls.Submit(config);
+		plugin.set(&quot;submit&quot;, submit);
+	} else {
+		submit = plugin.get(&quot;submit&quot;);
+		var text = submit.dom.get(&quot;text&quot;).val();
+		target.append(submit.dom.render());
+		if (text) {
+			submit.dom.get(&quot;text&quot;).val(text);
+		}
+	}
+	plugin._itemCSS(&quot;add&quot;, item, plugin.dom.get(&quot;replyForm&quot;));
+	submit.dom.get(&quot;text&quot;).focus();
+	target.click(function(event) {
+		event.stopPropagation();
+	});
+	plugin.dom.render({&quot;name&quot;: &quot;compactForm&quot;});
+	item.dom.render({&quot;name&quot;: &quot;container&quot;});
+	return target;
+};
+
+plugin.methods._hideSubmit = function() {
+	var plugin = this, item = plugin.component;
+	plugin.dom.get(&quot;submitForm&quot;).empty();
+	plugin._itemCSS(&quot;remove&quot;, item, plugin.dom.get(&quot;replyForm&quot;));
+	plugin.dom.render({&quot;name&quot;: &quot;compactForm&quot;});
+	item.dom.render({&quot;name&quot;: &quot;container&quot;});
+};
+
+plugin.methods._getClickHandler = function() {
+	var plugin = this;
+	return function() {
+	    var submit = plugin.get(&quot;submit&quot;);
+	    if (plugin.get(&quot;expanded&quot;) &amp;&amp; submit &amp;&amp; !submit.dom.get(&quot;text&quot;).val()) {
+		    plugin.set(&quot;expanded&quot;, false);
+		    plugin._hideSubmit();
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onCollapse'>		    /**
+</span>		     * @event onCollapse
+		     * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
+		     * is triggered when the reply form is closed
+		     */
+		    plugin.events.publish({
+			    &quot;topic&quot;: &quot;onCollapse&quot;
+		    });
+	    }
+	};
+};
+
+plugin.methods._assembleButton = function() {
+	var plugin = this, item = this.component;
+	var callback = function() {
+		plugin.set(&quot;expanded&quot;, true);
+		plugin._showSubmit();
+		plugin.events.publish({
+			&quot;topic&quot;: &quot;onExpand&quot;,
+			&quot;data&quot;: {
+				&quot;context&quot;: item.config.get(&quot;context&quot;)
+			}
+		});
+	};
+	return function() {
+		var item = this;
+		return {
+			&quot;name&quot;: &quot;Reply&quot;,
+			&quot;label&quot;: plugin.labels.get(&quot;replyControl&quot;),
+			&quot;visible&quot;: item.get(&quot;depth&quot;) &lt; item.config.get(&quot;parent.children.maxDepth&quot;),
+			&quot;callback&quot;: callback
+		};
+	};
+};
+
+plugin.methods._itemCSS = function(action, item, element) {
+	$.each([&quot;container&quot;, &quot;container-child&quot;, &quot;depth-&quot; + (item.get(&quot;depth&quot;) + 1)], function(i, css) {
+		element[action + &quot;Class&quot;](item.get(&quot;cssPrefix&quot;) + css);
+	});
+	element[action + &quot;Class&quot;]('echo-trinaryBackgroundColor');
+};
+
+plugin.methods._getFormKey = function() {
+	var item = this.component;
+	var applicationContext = item.config.get(&quot;context&quot;).split(&quot;/&quot;)[0];
+	return &quot;forms.&quot; + item.data.unique + &quot;-&quot; + applicationContext;
+};
+
+plugin.css = 
+	&quot;.{plugin.class:compactContent} { padding: 5px 5px 5px 6px; background-color: #fff; }&quot; +
+	&quot;.{plugin.class:compactBorder} { border: 1px solid #d2d2d2; }&quot; +
+	&quot;.{plugin.class:compactField} { width: 100%; border: none; }&quot;;
+
+Echo.Plugin.create(plugin);
+
+})();
+
+(function() {
+
+var plugin = Echo.Plugin.manifest(&quot;Reply&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand&quot;: function(topic, args) {
+		this.events.publish({
+			&quot;topic&quot;: &quot;onFormExpand&quot;,
+			&quot;data&quot;: {
+			    &quot;context&quot;: args.context
+			}
+		});
+	}
+};
+
+Echo.Plugin.create(plugin);
+
+})();
+
+(function() {
+
+var plugin = Echo.Plugin.manifest(&quot;Reply&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
+
+plugin.init = function() {
+	var plugin = this, submit = plugin.component;
+	var _prepareEventParams = submit._prepareEventParams;
+	submit._prepareEventParams = function(params) {
+		var _params = _prepareEventParams.call(submit, params);
+		_params.inReplyTo = plugin.config.get(&quot;inReplyTo&quot;);
+		return _params;
+	};
+};
+
+Echo.Plugin.create(plugin);
+
+})();
+</pre>
+</body>
+</html>

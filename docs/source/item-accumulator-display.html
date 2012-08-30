@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay
+ * Shows one of the item accumulators in the top right corner of each item in the Echo Stream control.
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;ItemAccumulatorDisplay&quot;
+ *         }]
+ *     });
+ *
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;ItemAccumulatorDisplay&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+plugin.init = function() {
+	this.extendTemplate(&quot;insertBefore&quot;, &quot;modeSwitch&quot;, plugin.template);
+};
+
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay-cfg-countTickTimeout'>	/**
+</span>	 * @cfg {Number} countTickTimeout
+	 * Specifies the timeout in seconds for sequential changes of the item accumulator during the update.
+ 	 *
+	 *     new Echo.StreamServer.Controls.Stream({
+	 *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+	 *         &quot;plugins&quot;: [{
+	 *             &quot;name&quot;: &quot;ItemAccumulatorDisplay&quot;
+	 *             &quot;countTickTimeout&quot;: 1,
+	 *             &quot;accumulator&quot;: &quot;likesCount&quot; 
+	 *         }]
+	 *     });
+	 */
+	&quot;countTickTimeout&quot;: 1,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay-cfg-accumulator'>	/**
+</span>	 * @cfg {String} accumulator
+	 * Specifies which item accumulator should be displayed. Supported values are &quot;repliesCount&quot; and &quot;likesCount&quot;.
+	 */
+	&quot;accumulator&quot;: &quot;repliesCount&quot;
+};
+
+plugin.template = '&lt;div class=&quot;{plugin.class:accumulatorContainer}&quot;&gt;&lt;/div&gt;';
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay-method-accumulatorContainer'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.accumulatorContainer = function(element) {
+	var item = this.component;
+	var accName = this.config.get(&quot;accumulator&quot;);
+	var accumulator = item.get(&quot;data.object.accumulators&quot;)[accName];
+	var count = this.get(&quot;count&quot;) || {};
+	if (typeof count.current === &quot;undefined&quot;) {
+		// first-time rendering actions
+		this.set(&quot;count&quot;, {
+			&quot;actual&quot;: accumulator,
+			&quot;current&quot;: accumulator
+		});
+		return element.append(accumulator);
+	}
+	this._stopTimer();
+	var container = item.dom.get(&quot;container&quot;);
+	container.stop(true, true);
+	if (count.actual !== accumulator) {
+		count.actual = accumulator;
+		this.set(&quot;count&quot;, count);
+	}
+	element.append(count.current);
+
+	// animate counter if necessary
+	if (count.current !== count.actual) {
+		var bgColor = this.get(&quot;originalBGColor&quot;);
+		if (typeof bgColor === &quot;undefined&quot;) {
+			bgColor = Echo.Utils.getVisibleColor(container);
+			this.set(&quot;originalBGColor&quot;, bgColor);
+		}
+		container.css({&quot;backgroundColor&quot;: item.config.get(&quot;parent.flashColor&quot;)});
+		this._animateCounter(bgColor);
+	}
+	return element;
+};
+
+plugin.methods._stopTimer = function() {
+	var timer = this.get(&quot;timer&quot;);
+	if (timer) clearTimeout(timer);
+	this.set(&quot;timer&quot;, undefined);
+};
+
+plugin.methods._animateCounter = function(bgColor) {
+	this._stopTimer();
+	var plugin = this;
+	var count = this.get(&quot;count&quot;);
+	var item = this.component;
+	if (typeof count.current !== &quot;undefined&quot; &amp;&amp; count.current === count.actual &amp;&amp;
+			!this.get(&quot;animationInProgress&quot;)) {
+		// fading out
+		var container = item.dom.get(&quot;container&quot;);
+		this.set(&quot;animationInProgress&quot;, true);
+		container.animate(
+			{&quot;backgroundColor&quot;: bgColor},
+			item.config.get(&quot;parent.fadeTimeout&quot;),
+			&quot;linear&quot;,
+			function() {
+				container.css(&quot;backgroundColor&quot;, &quot;&quot;);
+				plugin.set(&quot;animationInProgress&quot;, false);
+			}
+		);
+		return;
+	}
+	this.set(&quot;timer&quot;, setTimeout(function() {
+		var count = plugin.get(&quot;count&quot;);
+		if (count.current !== count.actual) {
+			count.current &lt; count.actual ? count.current++ : count.current--;
+			plugin.set(&quot;count.current&quot;, count.current);
+			plugin.dom.get(&quot;accumulatorContainer&quot;).html(count.current);
+			plugin._animateCounter(bgColor);
+		}
+	}, this.config.get(&quot;countTickTimeout&quot;) * 1000));
+};
+
+plugin.css = '.{plugin.class:accumulatorContainer} { float: right; margin-right: 7px; }';
+
+Echo.Plugin.create(plugin);
+</pre>
+</body>
+</html>

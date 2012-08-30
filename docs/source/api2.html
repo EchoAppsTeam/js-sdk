@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">if (!Echo.StreamServer) Echo.StreamServer = {};
+
+Echo.StreamServer.API = {};
+
+<span id='Echo-StreamServer-API-Request-method-constructor'><span id='Echo-StreamServer-API-Request'>/**
+</span></span> * @class Echo.StreamServer.API.Request
+ * Class implements the interaction with the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/19987923/FrontPage&quot; target=&quot;_blank&quot;&gt;Echo StreamServer API&lt;/a&gt;
+ * @extends Echo.API.Request
+ *
+ * @constructor
+ * Constructor initializing class using configuration data.
+ * @param {Object} config Configuration data.
+ */
+Echo.StreamServer.API.Request = function(config) {
+	config = $.extend({
+<span id='Echo-StreamServer-API-Request-cfg-liveUpdatesTimeout'>		/**
+</span>		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
+		 */
+		&quot;liveUpdatesTimeout&quot;: 5,
+<span id='Echo-StreamServer-API-Request-cfg-skipInitialRequests'>		/**
+</span>		 * @cfg {Boolean} [skipInitialRequests] Flag allowing to skip the initial request but continue performing live updates requests.
+		 */
+		&quot;skipInitialRequest&quot;: false,
+<span id='Echo-StreamServer-API-Request-cfg-onData'>		/**
+</span>		 * @cfg {Function} [onData] Callback called after API request succeded.
+		 */
+		&quot;onData&quot;: function() {},
+<span id='Echo-StreamServer-API-Request-cfg-onError'>		/**
+</span>		 * @cfg {Function} [onError] Callback called after API request failed. 
+		 */
+		&quot;onError&quot;: function() {},
+<span id='Echo-StreamServer-API-Request-cfg-onOpen'>		/**
+</span>		 * @cfg {Function} [onOpen] Callback called before sending an API request.
+		 */
+		&quot;onOpen&quot;: function() {},
+<span id='Echo-StreamServer-API-Request-cfg-submissionProxyURL'>		/**
+</span>		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
+		 */
+		&quot;submissionProxyURL&quot;: &quot;apps.echoenabled.com/v2/esp/activity&quot;
+	}, config);
+	config = this._wrapTransportEventHandlers(config);
+	this.requestType = &quot;initial&quot;; // initial | secondary
+	Echo.StreamServer.API.Request.parent.constructor.call(this, config);
+};
+
+Echo.Utils.inherit(Echo.StreamServer.API.Request, Echo.API.Request);
+
+<span id='Echo-StreamServer-API-Request-method-abort'>/**
+</span> * @method
+ * Method to stop live updates requests.
+ */
+Echo.StreamServer.API.Request.prototype.abort = function() {
+	this.transport &amp;&amp; this.transport.abort();
+	if (this.liveUpdates) {
+		this._stopLiveUpdates();
+		delete this.liveUpdates;
+	}
+};
+
+Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.prototype._count = function(force) {
+	if (this.config.get(&quot;recurring&quot;)) {
+		if (!this.liveUpdates) {
+			this._initLiveUpdates();
+		}
+		this._startLiveUpdates(force);
+		return;
+	}
+	this.request();
+};
+
+Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
+	var self = this;
+	var _config = $.extend({}, config);
+	return $.extend(config, {
+		&quot;onOpen&quot;: function(response, requestParams) {
+			_config.onOpen.call(self, response, {&quot;requestType&quot;: self.requestType});
+			clearInterval(self.retryTimer);
+			delete self.retryTimer;
+		},
+		&quot;onData&quot;: function(response, requestParams) {
+			self._onData(response, {
+				&quot;requestType&quot;: self.requestType
+			}, _config);
+		},
+		&quot;onError&quot;: function(responseError, requestParams) {
+			self._onError(responseError, requestParams, _config);
+		}
+	});
+};
+
+Echo.StreamServer.API.Request.prototype._onData = function(response, requestParams, config) {
+	response = response || {};
+	if (this.liveUpdates &amp;&amp; this.liveUpdates.responseHandler &amp;&amp; this.requestType === &quot;secondary&quot;) {
+		this.liveUpdates.responseHandler(response);
+	}
+	this.constructor.parent._onData.apply(this, arguments);
+	if (response.result === &quot;error&quot;) {
+		this._handleErrorResponse(response, {
+			&quot;callback&quot;: config.onError
+		});
+		return;
+	}
+	config.onData(response, requestParams);
+	if (!this.error &amp;&amp; this.requestType === &quot;initial&quot;) {
+		this.requestType = &quot;secondary&quot;;
+	}
+	this._cleanupErrorHandlers(true);
+	if (this.requestType === &quot;initial&quot;) {
+		this.abort();
+		return;
+	}
+	this.nextSince = response.nextSince;
+	this._startLiveUpdates();
+};
+
+Echo.StreamServer.API.Request.prototype._onError = function(responseError, requestParams, config) {
+	this.constructor.parent._onError.apply(this, arguments);
+	this._handleErrorResponse(responseError, {
+		&quot;callback&quot;: config.onError
+	});
+	if (this.requestType !== &quot;secondary&quot; || !this._isWaitingForData(responseError)) {
+		this.abort();
+	}
+};
+
+Echo.StreamServer.API.Request.prototype._submit = function() {
+	this.request(
+		$.extend({}, this.config.get(&quot;data&quot;), {
+			&quot;content&quot;: Echo.Utils.object2JSON(this._AS2KVL(this.config.get(&quot;data.content&quot;)))
+		})
+	);
+};
+
+Echo.StreamServer.API.Request.prototype._prepareURI = function() {
+	if (this.config.get(&quot;endpoint&quot;) === &quot;submit&quot;) {
+		// FIXME: move replace to API.Request lib
+		return this.config.get(&quot;submissionProxyURL&quot;).replace(/^(http|ws)s?:\/\//, &quot;&quot;);
+	}
+	return this.constructor.parent._prepareURI.call(this);
+};
+
+Echo.StreamServer.API.Request.prototype._getTransport = function() {
+	return this.constructor.parent._getTransport.call(this);
+};
+
+Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {
+	var self = this;
+	this.liveUpdates = {
+		&quot;originalTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
+		&quot;timers&quot;: {},
+		&quot;timeouts&quot;: [],
+		&quot;responseHandler&quot;: function(data) {
+			self._changeLiveUpdatesTimeout(data);
+		}
+	};
+};
+
+Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(data) {
+	var self = this;
+	// backwards compatibility
+	if (typeof data == &quot;string&quot;) {
+		data = {&quot;liveUpdatesTimeout&quot;: data};
+	}
+	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
+	var applyServerDefinedTimeout = function(timeout) {
+		if (!timeout &amp;&amp; self.liveUpdates.originalTimeout != self.config.get(&quot;liveUpdatesTimeout&quot;)) {
+			self.config.set(&quot;liveUpdatesTimeout&quot;, self.liveUpdates.originalTimeout);
+		} else if (timeout &amp;&amp; timeout &gt; self.config.get(&quot;liveUpdatesTimeout&quot;)) {
+			self.config.set(&quot;liveUpdatesTimeout&quot;, timeout);
+		}
+	};
+	var hasNewData = function(data) {
+		// for &quot;v1/search&quot; endpoint at the moment
+		return !!(data.entries &amp;&amp; data.entries.length);
+	};
+	if (!this.nextSince) {
+		applyServerDefinedTimeout(data.liveUpdatesTimeout);
+		return;
+	}
+	var currentTimeout = this.config.get(&quot;liveUpdatesTimeout&quot;);
+	var since = parseInt(this.nextSince);
+	var currentTime = Math.floor((new Date()).getTime() / 1000);
+	// calculate the delay before starting next request:
+	//   - have new data but still behind and need to catch up - use minimum timeout
+	//   - have new data but on the track - increase timeout by 1 second
+	//   - have no new data - increase timeout by 2 seconds
+	var timeout = hasNewData(data)
+		? currentTime - since &gt; currentTimeout
+			? this.config.get(&quot;liveUpdatesTimeoutMin&quot;, 3)
+			: currentTimeout + 1
+		: currentTimeout + 2;
+	if (timeout &gt; this.liveUpdates.originalTimeout) {
+		timeout = this.liveUpdates.originalTimeout;
+	}
+	this.config.set(&quot;liveUpdatesTimeout&quot;, timeout);
+	// if timeout remains the same, take server side value into account
+	if (timeout == this.liveUpdates.originalTimeout) {
+		applyServerDefinedTimeout(data.liveUpdatesTimeout);
+	}
+};
+
+Echo.StreamServer.API.Request.prototype._stopLiveUpdates = function() {
+	if (this.liveUpdates.timers.regular) {
+		clearTimeout(this.liveUpdates.timers.regular);
+	}
+};
+
+Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
+	var self = this;
+	if (!this.liveUpdates) return;
+	this._stopLiveUpdates();
+	if (force) {
+		// if live updates requests were forced after some operation, we will
+		// perform 3 attempts to get live updates: immediately, in 1 second
+		// and in 3 seconds after first one
+		this.liveUpdates.timeouts = [0, 1, 3];
+	}
+	var timeout = this.liveUpdates.timeouts.length
+		? this.liveUpdates.timeouts.shift()
+		: this.config.get(&quot;liveUpdatesTimeout&quot;);
+	if (this.requestType === &quot;initial&quot; &amp;&amp; !this.config.get(&quot;skipInitialRequest&quot;)) {
+		this.request();
+		return;
+	} else if (this.requestType === &quot;initial&quot;) {
+		this.config.get(&quot;onData&quot;)({}, {
+			&quot;requestType&quot;: this.requestType
+		});
+		this.requestType = &quot;secondary&quot;;
+		return;
+	}
+	this.liveUpdates.timers.regular = setTimeout(function() {
+		self.request({
+			&quot;since&quot;: self.nextSince 
+		});
+	}, timeout * 1000);
+};
+
+Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
+	return data &amp;&amp; $.inArray(data.errorCode, [&quot;waiting&quot;, &quot;timeout&quot;, &quot;busy&quot;, &quot;view_limit&quot;, &quot;view_update_capacity_exceeded&quot;]) &gt;= 0;
+};
+
+Echo.StreamServer.API.Request.prototype._isErrorWithTimer = function(data) {
+	return data &amp;&amp; $.inArray(data.errorCode, [&quot;view_limit&quot;, &quot;view_update_capacity_exceeded&quot;]) &gt;= 0;
+};
+
+Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, config) {
+	var self = this;
+	config = config || {};
+	var errorCallback = config.callback;
+	var calcWaitingTimeout = function() {
+		// interval is calculated as x^2, x=[1..7]
+		if (self.waitingTimeoutStep &gt; 0) {
+			if (self.waitingTimeoutStep &lt; 7) {
+				self.waitingTimeoutStep++;
+			}
+		} else {
+			self.waitingTimeoutStep = 1;
+		}
+		return Math.pow(self.waitingTimeoutStep, 2) * 1000;
+	};
+	if (this._isWaitingForData(data)) {
+		var timeout = calcWaitingTimeout();
+		this.waitingTimer = setInterval(function() {
+			self._cleanupErrorHandlers();
+			if (!self.liveUpdates &amp;&amp; self.requestType === &quot;initial&quot;) {
+				self._initLiveUpdates();
+			}
+			self._startLiveUpdates();
+		}, timeout);
+		errorCallback(data, {
+			&quot;requestType&quot;: self.requestType,
+			&quot;critical&quot;: false,
+			&quot;retryIn&quot;: timeout
+		});
+	} else {
+		this.waitingTimeoutStep = 0;
+		errorCallback(data, {
+			&quot;requestType&quot;: self.requestType,
+			&quot;critical&quot;: true
+		});
+	}
+	this.error = data;
+};
+
+Echo.StreamServer.API.Request.prototype._cleanupErrorHandlers = function(successResponseReceived) {
+	if (successResponseReceived) {
+		this.waitingTimeoutStep = 0;
+		delete this.error;
+	}
+	if (this.waitingTimer) {
+		clearInterval(this.waitingTimer);
+	}
+};
+
+Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
+	var self = this;
+	entries = $.isArray(entries) ? entries : [entries];
+	var strip = function(value) {
+		return value
+			.replace(&quot;http://activitystrea.ms/schema/1.0/&quot;, &quot;&quot;)
+			.replace(&quot;http://js-kit.com/spec/e2/v1/&quot;, &quot;&quot;);
+	};
+	var prepareActivity = function(activity, meta) {
+		var data = {
+			&quot;avatar&quot;: activity.actor &amp;&amp; activity.actor.avatar,
+			&quot;content&quot;: activity.object &amp;&amp; activity.object.content,
+			&quot;markers&quot;: meta.markers ? $.trim(meta.markers) : undefined,
+			&quot;name&quot;: activity.actor &amp;&amp; (activity.actor.name || activity.actor.title),
+			&quot;source&quot;: activity.source,
+			&quot;tags&quot;: meta.tags ? $.trim(meta.tags) : undefined,
+			&quot;title&quot;: activity.object &amp;&amp; activity.object.title,
+			&quot;target&quot;: activity.targets[0].id,
+			&quot;verb&quot;: verb(activity),
+			&quot;type&quot;: type(activity),
+			&quot;itemURIPattern&quot;: self.config.get(&quot;itemURIPattern&quot;)
+		};
+		if (verb(activity) === &quot;update&quot;) {
+			data = {
+				&quot;verb&quot;: verb(activity),
+				&quot;target&quot;: activity.targets[0].id
+			};
+			$.each(activity.object, function(key, value) {
+				if (key !== &quot;objectTypes&quot;) {
+					data[&quot;field&quot;] = key;
+					data[&quot;value&quot;] = value;
+					return false;
+				}
+			});
+		} else if (/tag/.test(verb(activity))) {
+			data = {
+				&quot;tags&quot;: activity.object &amp;&amp; activity.object.content,
+				&quot;verb&quot;: verb(activity),
+				&quot;target&quot;: activity.targets[0].id
+			};
+		} else if (/mark/.test(verb(activity))) {
+			data = {
+				&quot;markers&quot;: activity.object &amp;&amp; activity.object.content,
+				&quot;verb&quot;: verb(activity),
+				&quot;target&quot;: activity.targets[0].id
+			};
+		}
+		return data;
+	};
+	var verb = function(entry) {
+		return strip(entry.verbs[0]);
+	};
+	var type = function(entry) {
+		return entry.object &amp;&amp; entry.object.objectTypes ? entry.object.objectTypes[0] : undefined;
+	};
+	var post, meta = {&quot;markers&quot;: &quot;&quot;, &quot;tags&quot;: &quot;&quot;};
+	$.map(entries, function(entry) {
+		if (/tag|mark/.test(verb(entry)) &amp;&amp; /tag|marker/.test(type(entry))) {
+			meta[strip(type(entry)) + &quot;s&quot;] = entry.object.content;
+		}
+		if (verb(entry) == &quot;post&quot;) {
+			post = entry;
+		}
+	});
+	if (post) {
+		return prepareActivity(post, meta);
+	}
+	return $.map(entries, function(entry) {
+		return prepareActivity(entry, meta);
+	});
+};
+
+<span id='Echo-StreamServer-API-Request-static-method-request'>/**
+</span> * @static
+ * Alias for the class constructor.
+ * @param {Object} Configuration data.
+ * @return {Class} New class instance.
+ */
+Echo.StreamServer.API.request = function(config) {
+	return (new Echo.StreamServer.API.Request(config));
+};
+</pre>
+</body>
+</html>

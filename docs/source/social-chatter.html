@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function() {
+
+if (Echo.SocialChatter &amp;&amp; Echo.SoicalChatter.Event) return;
+
+Echo.SocialChatter = {};
+
+var labels = {
+	&quot;fewMoments&quot;: &quot;in a few moments&quot;,
+	&quot;moreYear&quot;: &quot;more than a year&quot;,
+	&quot;defaultDateDiffDisplay&quot;: &quot;in {diff} {period}{suffix}&quot;,
+	&quot;startDateDiffDisplay&quot;: &quot;Will be started in {diff} {period}{suffix}&quot;,
+	&quot;endDateDiffDisplay&quot;: &quot;Ended {diff} {period}{suffix} ago&quot;
+};
+
+Echo.SocialChatter.Event = function(entry) {
+	if (!entry || !entry.object) return {&quot;data&quot;: {}};
+	this.id = entry.object.id;
+	this.data = this.getData(entry.object.content);
+	this.labels = new Echo.Labels(labels, &quot;Echo.SocialChatter.Event&quot;);
+};
+
+Echo.SocialChatter.Event.prototype.getData = function(dataString) {
+	var data = {};
+	try {
+		data = $.parseJSON(dataString);
+	} catch (e) {}
+	return data || {};
+};
+
+Echo.SocialChatter.Event.prototype.calcDates = function(type, display) {
+	type = type.charAt(0).toUpperCase() + type.substr(1);
+	var content = this.data;
+	if (!content[&quot;event&quot; + type]) return;
+	var timestamp = content[&quot;event&quot; + type];
+	var d = new Date(timestamp);
+	var now = (new Date()).getTime();
+	var diff = Math.abs(Math.floor((d.getTime() - now) / 1000));
+	var dayDiff = Math.floor(diff / 86400);
+	if (isNaN(dayDiff) || dayDiff &lt; 0 || dayDiff &gt;= 365)
+		return (d.toLocaleDateString() + ', ' + d.toLocaleTimeString());
+	return this.displayDateDiff(diff, display);
+};
+
+Echo.SocialChatter.Event.prototype.displayDateDiff = function(diff, display) {
+	var self = this;
+	var when;
+	var dayDiff = Math.floor(diff / 86400);
+	var display = display || function(diff, period) {
+		return this.labels.get(&quot;defaultDateDiffDisplay&quot;, {
+			&quot;diff&quot;: diff,
+			&quot;period&quot;: period,
+			&quot;suffix&quot;: diff == 1 ? &quot;&quot; : &quot;s&quot;
+		});
+	};
+	if (diff &lt; 60) {
+		when = this.labels.get(&quot;fewMoments&quot;);
+	} else if (diff &lt; 60 * 60) {
+		diff = Math.floor(diff / 60);
+		when = display(diff, &quot;minute&quot;);
+	} else if (diff &lt; 60 * 60 * 24) {
+		diff = Math.floor(diff / (60 * 60));
+		when = display(diff, &quot;hour&quot;);
+	} else if (dayDiff &lt; 30) {
+		when = display(dayDiff, &quot;day&quot;);
+	} else if (dayDiff &lt; 365) {
+		diff =  Math.floor(dayDiff / 31);
+		when = display(diff, &quot;month&quot;);
+	} else {
+		when = this.labels.get(&quot;moreYear&quot;);
+	}
+	return when;
+};
+
+Echo.SocialChatter.Event.prototype.calcStartTime = function() {
+	return this.calcDates(&quot;start&quot;);
+};
+
+Echo.SocialChatter.Event.prototype.calcEndTime = function() {
+	var self = this;
+	return this.calcDates(&quot;end&quot;, function(diff, period) {
+		return self.labels.get(&quot;endDateDiffDisplay&quot;, {
+			&quot;diff&quot;: diff,
+			&quot;period&quot;: period,
+			&quot;suffix&quot;: diff == 1 ? &quot;&quot; : &quot;s&quot;
+		});
+	});
+};
+
+// FIXME: need rename function
+Echo.SocialChatter.Event.prototype.calcAnotherStart = function() {
+	var self = this;
+	return this.calcDates(&quot;start&quot;, function(diff, period) {
+		return self.labels.get(&quot;startDateDiffDisplay&quot;, {
+			&quot;diff&quot;: diff,
+			&quot;period&quot;: period,
+			&quot;suffix&quot;: diff == 1 ? &quot;&quot; : &quot;s&quot;
+		});
+	});
+};
+
+Echo.SocialChatter.Event.prototype.getTimestamp = function() {
+	return {
+		&quot;start&quot;: this.data.eventStart || 0,
+		&quot;end&quot;: this.data.eventEnd || 0
+	};
+};
+
+Echo.SocialChatter.Event.prototype.onAir = function() {
+	var timestamp = this.getTimestamp();
+	var now = (new Date()).getTime();
+	return (timestamp.start &lt;= now &amp;&amp; timestamp.end &gt;= now);
+};
+
+Echo.SocialChatter.Event.prototype.getDuration = function() {
+	var timestamp = this.getTimestamp();
+	return Math.floor((timestamp.end - timestamp.start) / 1000);
+};
+
+Echo.SocialChatter.Event.prototype.getStatus = function() {
+	if (this.onAir()) return &quot;onAir&quot;;
+	var timestamp = this.getTimestamp();
+	return timestamp.start &gt; (new Date()).getTime() ? &quot;upcoming&quot; : &quot;passed&quot;;
+};
+
+})();
+
+(function() {
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.Products.SocialChatter&quot;)) return;
+
+var SocialChatter = Echo.Product.manifest(&quot;Echo.Products.SocialChatter&quot;, [&quot;Main&quot;, &quot;PublicEvent&quot;, &quot;GreenRoom&quot;, &quot;EventsList&quot;]);
+
+SocialChatter.dependencies = [
+	{&quot;url&quot;: &quot;sdk/third-party/bootstrap/css/bootstrap.min.css&quot;},
+	{&quot;url&quot;: &quot;sdk/third-party/bootstrap/css/bootstrap-responsive.min.css&quot;},
+	{&quot;url&quot;: &quot;sdk/third-party/bootstrap/css/datepicker.css&quot;},
+	{&quot;url&quot;: &quot;sdk/third-party/bootstrap/css/timepicker.css&quot;},
+
+	{&quot;loaded&quot;: function() {
+		var isLoaded;
+		$.each([&quot;Stream&quot;, &quot;Submit&quot;], function(k, val) {
+			return isLoaded = Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.&quot; + val);
+		});
+		return isLoaded;
+	}, &quot;url&quot;: &quot;sdk/stream-server.pack.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return Echo.Utils.isComponentDefined(&quot;Echo.IdentityServer.Controls.Auth&quot;);
+	}, &quot;url&quot;: &quot;sdk/identity-server.pack.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return !!$.fn.datepicker;
+	}, &quot;url&quot;: &quot;sdk/third-party/bootstrap/bootstrap-datepicker.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return !!$.fn.timepicker;
+	}, &quot;url&quot;: &quot;sdk/third-party/bootstrap/bootstrap-timepicker.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return !!$.fn.tab;
+	}, &quot;url&quot;: &quot;sdk/third-party/bootstrap/bootstrap-tab.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return !!$.fn.countdown;
+	}, &quot;url&quot;: &quot;sdk/products/social-chatter/countdown/jquery.countdown.js&quot;} ,
+
+	{&quot;loaded&quot;: function() {
+		return Echo.Plugin.isDefined(Echo.Plugin.manifest(&quot;ItemConditionalCSSClasses&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;));
+	}, &quot;url&quot;: &quot;sdk/products/social-chatter/plugins/item-conditional-css-classes.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return Echo.Plugin.isDefined({
+			&quot;name&quot;: &quot;SocialChatterEvent&quot;,
+			&quot;component&quot;: {
+				&quot;name&quot;: &quot;Echo.StreamServer.Controls.Stream.Item&quot;
+			}
+		});
+	}, &quot;url&quot;: &quot;sdk/products/social-chatter/plugins/social-chatter-event.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return Echo.Plugin.isDefined({
+			&quot;name&quot;: &quot;SubmitCountdownEvent&quot;,
+			&quot;component&quot;: {
+				&quot;name&quot;: &quot;Echo.StreamServer.Controls.Submit&quot;
+			}
+		});
+	}, &quot;url&quot;: &quot;sdk/products/social-chatter/plugins/submit-countdown-event.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return Echo.Plugin.isDefined({
+			&quot;name&quot;: &quot;SubmitTextareaAutoResize&quot;,
+			&quot;component&quot;: {
+				&quot;name&quot;: &quot;Echo.StreamServer.Controls.Submit&quot;
+			}
+		});
+	}, &quot;url&quot;: &quot;sdk/products/social-chatter/plugins/submit-textarea-auto-resize.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return Echo.Plugin.isDefined({
+			&quot;name&quot;: &quot;UserMetadataManager&quot;,
+			&quot;component&quot;: {
+				&quot;name&quot;: &quot;Echo.StreamServer.Controls.Stream.Item&quot;
+			}
+		});
+	}, &quot;url&quot;: &quot;sdk/products/social-chatter/plugins/user-metadata-manager.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return Echo.Plugin.isDefined({
+			&quot;name&quot;: &quot;VipReplies&quot;,
+			&quot;component&quot;: {
+				&quot;name&quot;: &quot;Echo.StreamServer.Controls.Stream.Item&quot;
+			}
+		});
+	}, &quot;url&quot;: &quot;sdk/products/social-chatter/plugins/vip-replies.js&quot;}
+];
+
+SocialChatter.labels = {
+	&quot;guest&quot;: &quot;Guest&quot;,
+	&quot;live&quot;: &quot;Live&quot;,
+	&quot;paused&quot;: &quot;Paused&quot;,
+	&quot;more&quot;: &quot;More&quot;,
+	&quot;emptyGreenRoom&quot;: &quot;No items at this time...&quot;,
+	&quot;new&quot;: &quot;new&quot;,
+	&quot;loading&quot;: &quot;Loading...&quot;,
+	&quot;eventsList&quot;: &quot;All Events&quot;,
+	&quot;tabGreenRoomLabel&quot;: &quot;Green room&quot;,
+	&quot;tabPublicEventLabel&quot;: &quot;Public event&quot;,
+	&quot;tabAllEventsLabel&quot;: &quot;All Events&quot;
+};
+
+SocialChatter.vars = {
+	&quot;eventById&quot;: {},
+	&quot;event&quot;: undefined
+};
+
+SocialChatter.config = {
+	&quot;eventsTargetURL&quot;: undefined,
+	&quot;eventListQuery&quot;: undefined,
+	&quot;liveUpdates&quot;: true,
+	&quot;liveUpdatesTimeout&quot;: 60, // request Events updates once per minute
+	&quot;identityManager&quot;: undefined,
+	&quot;views&quot;: {},
+	&quot;defaultEventIcon&quot;: &quot;//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg&quot;
+};
+
+SocialChatter.views.Main.templates.main =
+	'&lt;div class=&quot;{class:auth}&quot;&gt;&lt;/div&gt;';
+
+SocialChatter.views.EventsList.templates.main =
+	'&lt;div class=&quot;{class:eventListContainer}&quot;&gt;' +
+		'&lt;div class=&quot;{class:newEventButton}&quot;&gt;' +
+			'&lt;button class=&quot;{class:eventSubmitLabel} echo-linkColor&quot;&gt;&lt;/button&gt;' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:eventSubmitContainer}&quot;&gt;' +
+			'&lt;div class=&quot;{class:eventSubmit}&quot;&gt;&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:eventsStream}&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+SocialChatter.views.EventsList.labels = {
+	&quot;scheduleEvent&quot;: &quot;Schedule new event&quot;
+};
+
+SocialChatter.views.GreenRoom.labels = {
+	&quot;sendToGreenRoomControl&quot;: &quot;Send to Green Room&quot;,
+	&quot;removeFromGreenRoomControl&quot;: &quot;Remove from Green Room&quot;
+};
+
+SocialChatter.views.PublicEvent.labels = {
+	&quot;askQuestion&quot;: &quot;Ask your question to&quot;,
+	&quot;answersFrom&quot;: &quot;Answers from&quot;,
+	&quot;chatClosesIn&quot;: &quot;VIP Chat closes in: &quot;,
+	&quot;chatOpensIn&quot;: &quot;&lt;b&gt;Live chat starts in:&lt;/b&gt; &lt;br&gt;&lt;br&gt;&quot;,
+	&quot;passedEventViewNotice&quot;: &quot;&lt;b&gt;Note:&lt;/b&gt; this event is over. You are viewing chat archive.&quot;,
+	&quot;upcomingEventWarning&quot;: &quot;Please login to join this event.&quot;,
+	&quot;passedEventWarning&quot;: &quot;Please login to view this chat archive.&quot;,
+	&quot;onAirEventWarning&quot;: &quot;&lt;b&gt;Chat is on air now!&lt;/b&gt; &lt;br&gt;&lt;br&gt; Please login to join the conversation!&quot;,
+	&quot;sendToGreenRoomControl&quot;: &quot;Send to Green Room&quot;,
+	&quot;removeFromGreenRoomControl&quot;: &quot;Remove from Green Room&quot;,
+	&quot;assignVIPRoleControl&quot;: &quot;Assign VIP role&quot;,
+	&quot;revokeVIPRoleControl&quot;: &quot;Revoke VIP role&quot;
+};
+
+SocialChatter.views.PublicEvent.templates = {
+	&quot;main&quot;: '&lt;div class=&quot;{class:publicView}&quot;&gt;' +
+			'&lt;div class=&quot;{class:publicViewNotice}&quot;&gt;&lt;/div&gt;' +
+			'&lt;table&gt;&lt;tr&gt;' +
+				'&lt;td class=&quot;{class:leftColumnTD}&quot;&gt;&lt;div class=&quot;{class:leftColumn}&quot;&gt;' +
+					'&lt;div class=&quot;{class:publicSubmitLabel}&quot;&gt;{label:askQuestion} {data:vipName}&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:publicSubmit}&quot;&gt;&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:publicStream}&quot;&gt;&lt;/div&gt;' +
+				'&lt;/div&gt;&lt;/td&gt;' +
+				'&lt;td class=&quot;{class:rightColumnTD}&quot;&gt;&lt;div class=&quot;{class:rightColumn}&quot;&gt;' +
+					'&lt;div class=&quot;{class:publicSubmitLabel}&quot;&gt;{label:answersFrom} {data:vipName}&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:eventDescription}&quot;&gt;' +
+						'&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;' +
+						'&lt;div class=&quot;{class:eventDataWrapper}&quot;&gt;' +
+							'&lt;div class=&quot;{class:title}&quot;&gt;{data:eventName}&lt;/div&gt;' +
+							'&lt;div class=&quot;{class:description}&quot;&gt;{data:eventDescription}&lt;/div&gt;' +
+							'&lt;div class=&quot;{class:countdown}&quot;&gt;&lt;/div&gt;' +
+						'&lt;/div&gt;' +
+						'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+					'&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:vipStream}&quot;&gt;&lt;/div&gt;' +
+				'&lt;/div&gt;&lt;/td&gt;' +
+			'&lt;/tr&gt;&lt;/table&gt;' +
+		'&lt;/div&gt;',
+	&quot;upcoming&quot;: '&lt;div class=&quot;{class:publicView} {class:publicViewUpcoming}&quot;&gt;' +
+			'&lt;div class=&quot;{class:eventDescription}&quot;&gt;' +
+				'&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;' +
+				'&lt;div class=&quot;{class:eventDataWrapper}&quot;&gt;' +
+					'&lt;div class=&quot;{class:title}&quot;&gt;{data:eventName}&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:description}&quot;&gt;{data:eventDescription}&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:countdown}&quot;&gt;&lt;/div&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+		'&lt;/div&gt;',
+	&quot;anonymous&quot;: '&lt;div class=&quot;{class:publicView} {class:publicViewAnonymous}&quot;&gt;' +
+			'&lt;div class=&quot;{class:loginWarning}&quot;&gt;&lt;/div&gt;' +
+			'&lt;div class=&quot;{class:eventDescription}&quot;&gt;' +
+				'&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;' +
+				'&lt;div class=&quot;{class:eventDataWrapper}&quot;&gt;' +
+					'&lt;div class=&quot;{class:title}&quot;&gt;{data:eventName}&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:description}&quot;&gt;{data:eventDescription}&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:countdown}&quot;&gt;&lt;/div&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+		'&lt;/div&gt;'
+};
+
+SocialChatter.views.PublicEvent.methods.template = function() {
+	var event = this.config.get(&quot;event&quot;);
+	var status = event &amp;&amp; event.getStatus();
+	return this._manifest(&quot;templates&quot;)[this.user &amp;&amp; this.user.is(&quot;logged&quot;)
+		? (status &amp;&amp; status !== &quot;upcoming&quot; ? &quot;main&quot; : &quot;upcoming&quot;)
+		: &quot;anonymous&quot;];
+};
+
+SocialChatter.views.GreenRoom.templates.main =
+	'&lt;div&gt;' +
+		'&lt;div class=&quot;{class:vipInstructions}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:vipStream}&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;'
+;
+
+(function() {
+	var plugins = {
+		&quot;MetadataManager&quot;: {
+			&quot;name&quot;: &quot;MetadataManager&quot;,
+			&quot;controls&quot;: [{
+				&quot;marker&quot;: &quot;greenroom&quot;,
+				&quot;labelMark&quot;: &quot;{label:sendToGreenRoomControl}&quot;,
+				&quot;labelUnmark&quot;: &quot;{label:removeFromGreenRoomControl}&quot;
+			}],
+			&quot;enabled&quot;: &quot;{self:_isNonVIPUser}&quot;
+		},
+		&quot;ItemConditionalCSSClasses&quot;: {
+			&quot;name&quot;: &quot;ItemConditionalCSSClasses&quot;,
+			&quot;conditions&quot;: [{
+				&quot;field&quot;: &quot;actor.roles&quot;,
+				&quot;value&quot;: [&quot;vip&quot;],
+				&quot;className&quot;: &quot;{class:vip-guest}&quot;
+			}]
+		},
+		&quot;UserMetadataManager&quot;: {
+			&quot;name&quot;: &quot;UserMetadataManager&quot;,
+			&quot;controls&quot;: [{
+				// we need &quot;moderator&quot; role for VIP as well
+				// since we need to apply markers to some items
+				&quot;roles&quot;: &quot;vip,moderator&quot;,
+				&quot;labelSet&quot;: &quot;{label:assignVIPRoleControl}&quot;,
+				&quot;labelUnset&quot;: &quot;{label:revokeVIPRoleControl}&quot;
+			}],
+			&quot;enabled&quot;: &quot;{self:_isNonVIPUser}&quot;
+		}
+	};
+
+	SocialChatter.views.GreenRoom.controls.Stream = {
+		&quot;control&quot;: &quot;Echo.StreamServer.Controls.Stream&quot;,
+		&quot;config&quot;: {
+			&quot;appkey&quot;: null,
+			&quot;query&quot;: &quot;childrenof:{config:event.id}/* state:Untouched,ModeratorApproved markers:greenroom -markers:answered children:1 state:Untouched,ModeratorApproved user.state:Untouched,ModeratorApproved&quot;,
+			&quot;reTag&quot;: false,
+			&quot;plugins&quot;: [{
+				&quot;name&quot;: &quot;Reply&quot;,
+				&quot;itemURIPattern&quot;: &quot;{config:event.id}/{id}&quot;,
+				&quot;nestedPlugins&quot;: [{
+					&quot;name&quot;: &quot;SubmitTextareaAutoResize&quot;
+				}]
+			}, {
+				&quot;name&quot;: &quot;VipReplies&quot;,
+				&quot;copyTo&quot;: {
+					&quot;target&quot;: &quot;{config:event.id}&quot;
+				},
+				&quot;view&quot;: &quot;private&quot;
+			}, plugins.MetadataManager]
+		}
+	};
+
+	SocialChatter.views.PublicEvent.controls.Stream = {
+		&quot;control&quot;: &quot;Echo.StreamServer.Controls.Stream&quot;,
+		&quot;config&quot;: {
+			&quot;appkey&quot;: null,
+			&quot;query&quot;: &quot;childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved&quot;,
+			&quot;item&quot;: {
+				&quot;reTag&quot;: false
+			},
+			&quot;liveUpdatesTimeout&quot;: &quot;{config:parent.liveUpdatesTimeout}&quot;,
+			&quot;plugins&quot;: [{
+				&quot;name&quot;: &quot;Reply&quot;,
+				&quot;itemURIPattern&quot;: &quot;{config:event.id}/{id}&quot;,
+				&quot;nestedPlugins&quot;: [{
+					&quot;name&quot;: &quot;SubmitTextareaAutoResize&quot;
+				}]
+			}, {
+				&quot;name&quot;: &quot;Like&quot;
+			}, {
+				&quot;name&quot;: &quot;Moderation&quot;,
+				&quot;userActions&quot;: [],
+				&quot;enabled&quot;: &quot;{self:_isNonVIPUser}&quot;
+			}, {
+				&quot;name&quot;: &quot;VipReplies&quot;,
+				&quot;copyTo&quot;: {
+					&quot;target&quot;: &quot;{config:event.id}&quot;
+				},
+				&quot;view&quot;: &quot;private&quot;
+			},
+			plugins.ItemConditionalCSSClasses,
+			plugins.MetadataManager,
+			plugins.UserMetadataManager]
+		}
+	};
+
+	SocialChatter.views.PublicEvent.controls.Submit = {
+		&quot;control&quot;: &quot;Echo.StreamServer.Controls.Submit&quot;,
+		&quot;config&quot;: {
+			&quot;appkey&quot;: null,
+			&quot;targetURL&quot;: &quot;{config:event.id}&quot;,
+			&quot;itemURIPattern&quot;: &quot;{config:event.id}/{id}&quot;,
+			&quot;actionString&quot;: &quot;Type your question here...&quot;,
+			&quot;plugins&quot;: [{
+				&quot;name&quot;: &quot;SubmitTextareaAutoResize&quot;
+			}, {
+				&quot;name&quot;: &quot;SubmitCountdownEvent&quot;,
+				&quot;eventEnd&quot;: &quot;{config:event.data.eventEnd}&quot;,
+				&quot;enabled&quot;: &quot;{config:event.isOnAir}&quot;
+			}]
+		}
+	};
+
+	SocialChatter.views.PublicEvent.controls.VIPStream = {
+		&quot;control&quot;: &quot;Echo.StreamServer.Controls.Stream&quot;,
+		&quot;config&quot;: {
+			&quot;appkey&quot;: null,
+			&quot;liveUpdatesTimeout&quot;: &quot;{config:parent.liveUpdatesTimeout}&quot;,
+			&quot;query&quot;: &quot;childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.roles:vip user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved&quot;,
+			&quot;item&quot;: {
+				&quot;reTag&quot;: false
+			},
+			&quot;plugins&quot;: [{
+				&quot;name&quot;: &quot;Reply&quot;,
+				&quot;itemURIPattern&quot;: &quot;{config:event.id}/{id}&quot;,
+				&quot;nestedPlugins&quot;: [{
+					&quot;name&quot;: &quot;SubmitTextareaAutoResize&quot;
+				}]
+			}, {
+				&quot;name&quot;: &quot;Like&quot;
+			}, {
+				&quot;name&quot;: &quot;Moderation&quot;,
+				&quot;userActions&quot;: [],
+				&quot;enabled&quot;: &quot;{self:_isNonVIPUser}&quot;
+			}, {
+				&quot;name&quot;: &quot;VipReplies&quot;
+			},
+			plugins.ItemConditionalCSSClasses]
+		}
+	};
+
+})();
+
+SocialChatter.views.Main.controls.Auth = {
+	&quot;control&quot;: &quot;Echo.IdentityServer.Controls.Auth&quot;,
+	&quot;config&quot;: {
+		&quot;appkey&quot;: null,
+		&quot;identityManager&quot;: &quot;{config:parent.identityManager}&quot;
+	}
+};
+
+SocialChatter.views.PublicEvent.methods._isNonVIPUser = SocialChatter.views.GreenRoom.methods._isNonVIPUser = function() {
+	return !this.user.any(&quot;roles&quot;, [&quot;vip&quot;]);
+};
+
+SocialChatter.views.PublicEvent.renderers.loginWarning = function(element) {
+	return element.html('&lt;span&gt;' + this.labels.get(this.config.get(&quot;event&quot;).getStatus() + &quot;EventWarning&quot;) + '&lt;/span&gt;');
+};
+
+SocialChatter.views.PublicEvent.renderers.publicViewNotice = function(element) {
+	var status = this.config.get(&quot;event&quot;).getStatus();
+	if (status == &quot;passed&quot;) {
+		return element.html('&lt;span&gt;' + this.labels.get(&quot;passedEventViewNotice&quot;) + '&lt;/span&gt;');
+	}
+	return element.hide();
+};
+
+SocialChatter.views.PublicEvent.renderers.avatar = function(element) {
+	var avatar = Echo.Utils.loadImage(
+		this.data.vipPhoto,
+		this.config.get(&quot;parent.defaultEventIcon&quot;)
+	);
+	return element.empty().append(avatar);
+};
+
+SocialChatter.views.PublicEvent.renderers.countdown = function(element) {
+	var self = this;
+	element.hide();
+	var status = this.config.get(&quot;event&quot;).getStatus();
+	var isUpcomingEvent = status == &quot;upcoming&quot;;
+	var finishHandler = status == &quot;upcoming&quot; || status == &quot;onAir&quot;
+		? function() {
+			var topic = isUpcomingEvent
+				? &quot;onEventStart&quot;
+				: &quot;onEventEnd&quot;;
+		self.events.publish({
+			&quot;topic&quot;: topic,
+			&quot;data&quot;: self.data
+		});
+		}
+		: function() {};
+	if (status != &quot;upcoming&quot;) return;
+	return element.css(&quot;display&quot;, &quot;block&quot;)
+		.countdown(new Date(this.data[isUpcomingEvent ? &quot;eventStart&quot; : &quot;eventEnd&quot;]), {
+			&quot;prefix&quot;: this.labels.get(isUpcomingEvent ? &quot;chatOpensIn&quot; : &quot;chatClosesIn&quot;),
+			&quot;finish&quot;: finishHandler
+		});
+};
+
+SocialChatter.views.EventsList.renderers.eventSubmitLabel = function(element) {
+	var self = this;
+	if (this.user.is(&quot;admin&quot;) &amp;&amp; !this.user.any(&quot;role&quot;, [&quot;vip&quot;])) {
+		new Echo.Button(element, {
+			&quot;label&quot;: this.labels.get(&quot;scheduleEvent&quot;)
+		});
+		element.addClass(&quot;btn btn-small&quot;).click(function() {
+			self.dom.get(&quot;eventSubmitContainer&quot;).slideToggle();
+		});
+	} else {
+		element.detach();
+	}
+	return element;
+};
+
+SocialChatter.views.EventsList.controls.Submit = {
+	&quot;control&quot;: &quot;Echo.StreamServer.Controls.Submit&quot;,
+	&quot;config&quot;: {
+		&quot;appkey&quot;: null,
+		&quot;targetURL&quot;: &quot;{config:parent.eventsTargetURL}&quot;,
+		&quot;itemURIPattern&quot;: &quot;{config:parent.eventsTargetURL}/{id}&quot;,
+		&quot;plugins&quot;: [{
+			&quot;name&quot;: &quot;SocialChatterEvent&quot;
+		}]
+	}
+};
+
+SocialChatter.views.EventsList.controls.Stream = {
+	&quot;control&quot;: &quot;Echo.StreamServer.Controls.Stream&quot;,
+	&quot;config&quot;: {
+		&quot;appkey&quot;: null,
+		&quot;query&quot;: &quot;childrenof:{config:parent.eventsTargetURL} state:Untouched,ModeratorApproved children:0&quot;,
+		&quot;liveUpdatesTimeout&quot;: &quot;{config:parent.liveUpdatesTimeout}&quot;,
+		&quot;item&quot;: {
+			&quot;reTag&quot;: false
+		},
+		&quot;itemControlsOrder&quot;: [&quot;SocialChatterEvent&quot;, &quot;Edit&quot;, &quot;Curation.Delete&quot;],
+		&quot;plugins&quot;: [{
+			&quot;name&quot;: &quot;SocialChatterEvent&quot;
+		}, {
+			&quot;name&quot;: &quot;Edit&quot;,
+			&quot;layout&quot;: &quot;inline&quot;,
+			&quot;nestedPlugins&quot;: [{&quot;name&quot;: &quot;SocialChatterEvent&quot;}]
+		}, {
+			&quot;name&quot;: &quot;Moderation&quot;,
+			&quot;userActions&quot;: [],
+			&quot;itemActions&quot;: [&quot;delete&quot;]
+		}]
+	}
+};
+
+SocialChatter.templates.main = 
+	'&lt;div class=&quot;{class:container} echo-primaryFont echo-primaryBackgroundColor&quot;&gt;' +
+		'&lt;div class=&quot;{class:authContainer}&quot;&gt;' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:tabsContainer}&quot;&gt;' +
+			'&lt;ul class=&quot;{class:tabs} nav nav-tabs&quot;&gt;' +
+				'&lt;li&gt;&lt;a data-toggle=&quot;tab&quot; href=&quot;#EventsList&quot;&gt;{label:eventsList}&lt;/a&gt;&lt;/li&gt;' +
+			'&lt;/ul&gt;' +
+			'&lt;div class=&quot;{class:tabPanels} tab-content&quot;&gt;' +
+				'&lt;div class=&quot;{class:EventsList} tab-pane&quot; id=&quot;EventsList&quot;&gt;&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+SocialChatter.renderers.authContainer = function(element) {
+	this.assemble(&quot;Auth&quot;, element);
+	return element;
+};
+
+SocialChatter.renderers.tabs = function(element) {
+	var self = this;
+	var tabs = this.tabs = new Echo.Tabs(element, {
+		&quot;panels&quot;: this.dom.get(&quot;tabPanels&quot;),
+		&quot;show&quot;: function(e) {
+			var selector = $(e.target).attr(&quot;href&quot;);
+			var id = selector.replace(/^#/, &quot;&quot;);
+			var panel = self.dom.get(id) || $(selector, self.dom.get(&quot;tabPanels&quot;));
+			if (!self.views || !self.views[id]) {
+				self.assemble(id, panel);
+			} else {
+				var request;
+				$.map([&quot;Stream&quot;, &quot;VIPStream&quot;], function(name) {
+					request = self.views[id].get(&quot;controls.&quot; + name + &quot;.request&quot;);
+					request &amp;&amp; request.send({&quot;force&quot;: true});
+				});
+			}
+		}
+	});
+	if (this.event) {
+		var data = this.event.data;
+		tabs.add({
+			&quot;id&quot;: &quot;PublicEvent&quot;,
+			&quot;label&quot;: data.eventName || this.labels.get(&quot;tabPublicEventLabel&quot;)
+		}, $(this.substitute({
+				&quot;template&quot;: '&lt;div class=&quot;{class:{data:name}} tab-pane&quot; id=&quot;{data:name}&quot;&gt;&lt;/div&gt;',
+				&quot;data&quot;: {&quot;name&quot;: &quot;PublicEvent&quot;}
+			})));
+	}
+	if (this.event &amp;&amp; this._hasGreenRoomAccess()) {
+		tabs.add({
+			&quot;id&quot;: &quot;GreenRoom&quot;,
+			&quot;label&quot;: this.labels.get(&quot;tabGreenRoomLabel&quot;)
+		}, $(this.substitute({
+				&quot;template&quot;: '&lt;div class=&quot;{class:{data:name}} tab-pane&quot; id=&quot;{data:name}&quot;&gt;&lt;/div&gt;',
+				&quot;data&quot;: {&quot;name&quot;: &quot;GreenRoom&quot;}
+			})));
+	}
+	tabs.show(&quot;EventsList&quot;);
+	this.dom.get(&quot;EventsList&quot;).addClass(&quot;active&quot;);
+	return element;
+};
+
+SocialChatter.methods._initSocialChatterEvents = function(entries) {
+	var self = this;
+	$.each(entries, function(id, entry) {
+		self.eventById[entry.object.id] =
+			new Echo.SocialChatter.Event(entry);
+	});
+};
+
+SocialChatter.methods._setPublicEvent = function(event) {
+	var self = this;
+	this.data = this.data || {};
+	this.event = this.data.event = event;
+	if (this.event) {
+		this.event.isOnAir = function() {
+			return self.event.onAir.call(self.event);
+		}
+	}
+};
+
+SocialChatter.methods._hasGreenRoomAccess = function() {
+	// Green Room is available for VIP guests and admins,
+	// VIP guests should have admin rights as well to mark items as &quot;answered&quot;
+	return this.user.is(&quot;admin&quot;);
+};
+
+SocialChatter.methods._updateTab = function(config) {
+	if (this.tabs &amp;&amp; !this.event &amp;&amp; config.name != &quot;EventsList&quot;
+		|| (this.event &amp;&amp; this.event.getStatus() == &quot;passed&quot; &amp;&amp; config.name == &quot;GreenRoom&quot;)) {
+		this.tabs.remove(config.name);
+		return;
+	}
+	// exit if we don't have access to Green Room tab
+	if (config.name == &quot;GreenRoom&quot; &amp;&amp; !this._hasGreenRoomAccess()) return;
+	if (this.tabs &amp;&amp; !this.tabs.has(config.name)) {
+		this.tabs.add({
+			&quot;id&quot;: config.name,
+			&quot;label&quot;: config.name == &quot;PublicEvent&quot;
+				? this.event.data.eventName || this.labels.get(&quot;tabPublicEventLabel&quot;)
+				: this.labels.get(&quot;tabGreenRoomLabel&quot;)
+		}, $(this.substitute({
+				&quot;template&quot;: '&lt;div class=&quot;{class:{data:name}} tab-pane&quot; id=&quot;{data:name}&quot;&gt;&lt;/div&gt;',
+				&quot;data&quot;: config
+			})));
+	}
+	var tabsDomContainer = this.dom.get(&quot;tabPanels&quot;);
+	config.target = config.target || $(&quot;#&quot; + config.name, tabsDomContainer);
+	if (this._manifest(&quot;assemblers&quot;)[config.name]) {
+		$(config.target).empty();
+		this.assemble(config.name, config.target);
+	}
+};
+
+SocialChatter.methods._updateTabs = function() {
+	var self = this;
+	$.each([&quot;PublicEvent&quot;, &quot;GreenRoom&quot;], function(i, tabId) {
+		self._updateTab({
+			&quot;name&quot;: tabId
+		});
+	});
+};
+
+SocialChatter.methods._pickRelevantEvent = function() {
+	// we need to pick one most relevant event:
+	//  - look for event which is on air right now
+	//  - otherwise grab first upcoming event
+	//  - if there are no upcoming or on air events - return undefined
+	var relevantEvent;
+	$.each(this.eventById, function(id, event) {
+		var status = event.getStatus();
+		if (status == &quot;onAir&quot;) {
+			relevantEvent = event;
+			return false; // break
+		}
+		if (status == &quot;upcoming&quot; &amp;&amp; event.data.eventStart &amp;&amp;
+			(!relevantEvent || relevantEvent.data.eventStart &gt; event.data.eventStart)) {
+				relevantEvent = event;
+		}
+	});
+	return relevantEvent;
+};
+
+SocialChatter.assemblers.Auth = function(target) {
+	if (!this.config.get(&quot;identityManager&quot;)) {
+		target.hide();
+		return;
+	}
+	var view = this.initView(&quot;Main&quot;, {
+		&quot;user&quot;: this.user,
+		&quot;target&quot;: target
+	});
+	view.initControl(&quot;Auth&quot;, {
+		&quot;target&quot;: view.dom.get(&quot;auth&quot;)
+	});
+};
+
+SocialChatter.assemblers.EventsList = function(target) {
+	var self = this;
+	var view = this.initView(&quot;EventsList&quot;, {
+		&quot;user&quot;: this.user,
+		&quot;event&quot;: this.event,
+		&quot;target&quot;: target
+	});
+	if (this.user.is(&quot;admin&quot;)) {
+		var submit = view.initControl(&quot;Submit&quot;, {
+			&quot;target&quot;: view.dom.get(&quot;eventSubmit&quot;)
+		});
+		submit.events.subscribe({
+			&quot;topic&quot;: &quot;Echo.StreamServer.Controls.Submit.onPostComplete&quot;,
+			&quot;handler&quot;: function(topic, args) {
+				view.dom.get(&quot;eventSubmitContainer&quot;).slideUp();
+			}
+		});
+	}
+	var stream = view.initControl(&quot;Stream&quot;, {
+		&quot;target&quot;: view.dom.get(&quot;eventsStream&quot;)
+	});
+
+	$.map([
+		&quot;Echo.StreamServer.Controls.Stream.Item.onReceive&quot;,
+		&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onEventChange&quot;
+	], function(topic) {
+		stream.events.subscribe({
+			&quot;topic&quot;: topic,
+			&quot;handler&quot;: function(topic, args) {
+				var entry = args.item.data;
+				var event = new Echo.SocialChatter.Event(entry);
+				var status = event.getStatus();
+				self.eventById[entry.object.id] = event;
+				if ((self.event &amp;&amp; self.event.id == event.id) ||
+					(!self.event &amp;&amp; (status == &quot;onAir&quot; || status == &quot;upcoming&quot;
+				))) {
+					self._setPublicEvent(self._pickRelevantEvent());
+					self._updateTabs();
+				}
+			}
+		});
+	});
+	stream.events.subscribe({
+		&quot;topic&quot;: &quot;Echo.StreamServer.Controls.Stream.Item.onDelete&quot;,
+		&quot;handler&quot;: function(topic, data) {
+			var item = data.item;
+			var id = item.get(&quot;data.object.id&quot;);
+			delete self.eventById[id];
+			// refresh if current event was removed
+			if (self.event &amp;&amp; self.event.id === id) {
+				delete self.event;
+				self._setPublicEvent(self._pickRelevantEvent());
+				self._updateTabs();
+			}
+		}
+	});
+	stream.events.subscribe({
+		&quot;topic&quot;: &quot;Echo.StreamServer.Controls.Stream.onDataReceive&quot;,
+		&quot;handler&quot;: function(topic, data) {
+			self._initSocialChatterEvents(data.entries);
+			self._setPublicEvent(self._pickRelevantEvent());
+			self._updateTabs();
+		}
+	});
+};
+
+SocialChatter.assemblers.PublicEvent = function(target) {
+	var self = this;
+	var data = this.event.data;
+	var pluginEnabled = !(this.event &amp;&amp; this.event.getStatus() == &quot;passed&quot;);
+	var view = this.initView(&quot;PublicEvent&quot;, {
+		&quot;user&quot;: this.user,
+		&quot;data&quot;: data,
+		&quot;event&quot;: this.event,
+		&quot;target&quot;: target
+	});
+
+	// setting tab title
+	this.tabs.get(&quot;PublicEvent&quot;).html(data.eventName || &quot;Unknown Event&quot;);
+
+	if (!this.user.is(&quot;logged&quot;) || this.event.getStatus() == &quot;upcoming&quot;) return;
+
+	if (this.event.onAir()) 
+		view.initControl(&quot;Submit&quot;, {
+			&quot;target&quot;: view.dom.get(&quot;publicSubmit&quot;)
+		});
+	view.initControl(&quot;Stream&quot;, {
+		&quot;target&quot;: view.dom.get(&quot;publicStream&quot;),
+		&quot;plugins&quot;: [{
+			&quot;name&quot;: &quot;Reply&quot;,
+			&quot;enabled&quot;: pluginEnabled
+		}, {
+			&quot;name&quot;: &quot;Like&quot;,
+			&quot;enabled&quot;: pluginEnabled
+		}]
+	});
+	view.initControl(&quot;VIPStream&quot;, {
+		&quot;target&quot;: view.dom.get(&quot;vipStream&quot;),
+		&quot;plugins&quot;: [{
+			&quot;name&quot;: &quot;Reply&quot;,
+			&quot;enabled&quot;: pluginEnabled
+		}, {
+			&quot;name&quot;: &quot;Like&quot;,
+			&quot;enabled&quot;: pluginEnabled
+		}]
+	});
+};
+
+SocialChatter.assemblers.GreenRoom = function(target) {
+	var view = this.initView(&quot;GreenRoom&quot;, {
+		&quot;user&quot;: this.user,
+		&quot;event&quot;: this.event,
+		&quot;target&quot;: target
+	});
+	view.initControl(&quot;Stream&quot;, {
+		&quot;target&quot;: view.dom.get(&quot;vipStream&quot;)
+	});
+	var instrustionsContainer = view.dom.get(&quot;vipInstructions&quot;);
+	if (!this.event || !this.event.data || !this.event.data.vipInstructions) {
+		instrustionsContainer.hide();
+	} else {
+		instrustionsContainer.html(this.event.data.vipInstructions).show();
+	}
+};
+
+SocialChatter.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onBeforeEventOpen&quot;: function(topic, args) {
+		var entry = args.event;
+		this._setPublicEvent(new Echo.SocialChatter.Event(entry));
+		this._updateTabs();
+		this.tabs.show(&quot;PublicEvent&quot;);
+	},
+	&quot;Echo.Control.onDestroy&quot;: function() {
+		var self = this;
+		this.destroyViews();
+	}
+};
+
+Echo.Utils.foldl(
+	SocialChatter.events,
+	[
+		&quot;Echo.StreamServer.Controls.Submit.Plugins.SubmitCountdownEvent.onEventEnd&quot;,
+		&quot;Echo.Products.SocialChatter.Views.PublicEvent.onEventStart&quot;
+	],
+	function(topic, acc) {
+		acc[topic] = function() {
+			this._updateTabs();
+		};
+	}
+);
+
+SocialChatter.views.EventsList.css =
+	'.{class:eventListContainer} { margin-left: 15px; margin-right: 15px; }' +
+	'.{class:eventListContainer} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:eventSubmitContainer} { display: none; }' +
+	'.{class:eventsStream} { margin-top: 15px; }' +
+	'.{class:eventsStream} .echo-streamserver-controls-stream-header { display: none; }' +
+	'.{class:eventSubmitLabel} { margin-top: 10px; cursor: pointer; font-weight: bold; font-size: 16px; }' +
+	'.{class:eventSubmitLabel} div.echo-label { font-size: 12px; }' +
+	'.{class:eventListContainer} .echo-streamserver-controls-submit-postContainer { float: left; margin-left: 7px; }' +
+	'.{class:eventListContainer} .echo-streamserver-controls-submit-plugin-Edit-cancelButtonContainer { float: left; margin-left: 15px; }' +
+	'.{class:eventSubmit} .echo-streamserver-controls-submit-content { border: none; }' +
+	'.{class:eventSubmit} { margin: 10px auto; padding: 10px; width: 550px; }' +
+	'.{class:eventSubmitContainer} { border-radius: 7px; border: 1px solid #D3D3D3; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); margin: 10px 0px; }'
+;
+
+SocialChatter.views.PublicEvent.css =
+	'.{class:publicStream}, .{class:vipStream} { margin-top: 15px; }' +
+	'.{class:vipStream} { margin-bottom: 20px; }' +
+	'.{class:leftColumn} { margin: 5px 25px 0px 10px; }' +
+	'.{class:leftColumnTD} { width: 40%; vertical-align: top; }' +
+	'.{class:rightColumnTD} { width: 60%; vertical-align: top; }' +
+	'.{class:rightColumn} { margin: 0 10px; border: 1px solid #D3D3D3; padding: 15px 10px 15px 20px; border-radius: 4px; -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); }' +
+	'.{class:publicSubmitLabel} { font-weight: bold; font-size: 16px; margin-bottom: 10px; }' +
+	'.{class:publicSubmit} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:eventSubmit} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:publicStream} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:vipStream} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:vipStream} textarea.echo-streamserver-controls-submit-text { height: 36px; }' +
+	'.{class:publicStream} textarea.echo-streamserver-controls-submit-text { height: 36px; }' +
+	'.{class:publicSubmit} textarea.echo-streamserver-controls-submit-text { height: 36px; }' +
+	'.{class:vipStream} .echo-streamserver-controls-stream-header { display: none; }' +
+	'.{class:publicStream} .echo-streamserver-controls-stream-header { display: none; }' +
+	'.{class:publicSubmit} .echo-streamserver-controls-submit-text { height: 55px; }' +
+	'.{class:publicView} { margin-top: 5px; }' +
+	'.{class:publicView} table { width: 100%; }' +
+	'.{class:eventDescription} .{class:avatar} { float: left; width: 100px; margin-right:-110px; margin-top: 2px; }' +
+	'.{class:eventDescription} .{class:avatar} img { width: 100px; }' +
+	'.{class:eventDescription} .{class:title} { margin-left: 115px; font-size: 20px; line-height: 20px; font-weight: bold; }' +
+	'.{class:eventDescription} .{class:description}, .{class:eventDescription} .startEvent, .{class:eventDescription} .{class:countdown} { margin-left: 115px; font-size: 14px; margin-top: 10px; }' +
+	'.{class:publicViewUpcoming} .{class:eventDescription}, .{class:publicViewAnonymous} .{class:eventDescription} { max-width: 400px; margin: 20px auto; }' +
+	'.{class:publicViewUpcoming} { margin-top: 35px; }' +
+	'.{class:countdown}, .{class:publicViewNotice} { background-color: #D9EDF7; border: 1px solid #BCE8F1; border-radius: 4px 4px 4px 4px; color: #3A87AD;  margin: 20px auto 30px; padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 16px; text-align: center; }' +
+	'.{class:countdown} { display: none; }' +
+	'.{class:publicViewNotice} { width: 450px; }' +
+	'.{class:publicViewNotice} { margin-top: 0px; margin-bottom: 10px; }' +
+	'.{class:publicViewAnonymous} .{class:loginWarning} { background-color: #F2DEDE; border: 1px solid #EED3D7; border-radius: 4px 4px 4px 4px; color: #B94A48;  margin: 20px auto 30px; padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 16px; text-align: center; width: 300px; }'
+;
+
+SocialChatter.views.GreenRoom.css =
+	'.{class:vipInstructions} { line-height: 20px; margin-top: 10px; background-color: #D9EDF7; border: 1px solid #BCE8F1; border-radius: 4px 4px 4px 4px; color: #3A87AD;  margin: 20px auto 30px; padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 16px; text-align: center; }' +
+	'.{class:vipStream} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
+	'.{class:vipStream} textarea.echo-streamserver-controls-submit-text { height: 36px; }' +
+	'.{class:vipStream} .echo-streamserver-controls-stream-header { display: none; }'
+;
+
+SocialChatter.views.Main.css =
+	'.{class:auth} { float: right; margin-top: 7px; }' +
+	'.{class:auth} .echo-identityserver-controls-auth-avatar, .{class:auth} .echo-identityserver-controls-auth-logout { height: 24px; line-height: 24px; margin: 0px;}' +
+	'.{class:auth} .echo-identityserver-controls-auth-name { line-height: 23px; font-size: 14px; margin: 0px 20px 0px 0px; }' +
+	'.{class:auth} .echo-identityserver-controls-auth-edit { height: 24px; line-height: 24px; margin: 0px 5px 0px 0px; }'
+;
+
+SocialChatter.css =
+	'.{class:container} .echo-streamserver-controls-submit-markersContainer, .{class:container} .echo-streamserver-controls-submit-tagsContainer, .{class:container} .echo-streamserver-controls-stream-item-modeSwitch { display: none !important; }' +
+	'.{class:tabs} a { font-size: 16px; font-weight: bold; outline: none; }' +
+	'.{class:tabs}.nav.nav-tabs .active a { background-color: #F5F4EE; outline: none; }'
+;
+
+Echo.Product.create(SocialChatter);
+
+})();
+</pre>
+</body>
+</html>

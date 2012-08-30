@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function() {
+
+// XXX
+if (!Echo.AppServer) Echo.AppServer = {};
+
+<span id='Echo-AppServer-Controls-Configurator'>/**
+</span> * @class Echo.AppServer.Controls.Configurator
+ * @extends Echo.Control
+ */
+var configurator = Echo.Control.manifest(&quot;Echo.AppServer.Controls.Configurator&quot;);
+
+var _pluginsByControl = {
+	&quot;Echo.StreamServer.Controls.Stream&quot;: [&quot;InfiniteScroll&quot;, &quot;PinboardVisualization&quot;],
+	&quot;Echo.StreamServer.Controls.Stream.Item&quot;: [&quot;Like&quot;, &quot;Moderation&quot;, &quot;PinboardVisualization&quot;, &quot;Edit&quot;, &quot;Reply&quot;, &quot;ItemAccumulatorDisplay&quot;, &quot;CommunityFlag&quot;, &quot;MetadataManager&quot;, &quot;TwitterIntents&quot;]
+};
+
+configurator.vars = {
+	&quot;currentPageIndex&quot;: -1,
+	&quot;pages&quot;: [],
+	&quot;pageIndexByName&quot;: {}
+};
+
+configurator.config = {
+};
+
+configurator.templates.main =
+	'&lt;div class=&quot;{class:container} echo-primaryFont echo-primaryBackgroundColor&quot;&gt;' +
+		'&lt;div class=&quot;{class:header}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:pages}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:footer}&quot;&gt;' +
+			'&lt;button&gt;Save&lt;/button&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+configurator.templates.formRow =
+	'&lt;div class=&quot;{class:form-row}&quot;&gt;' +
+		'&lt;div class=&quot;{class:name}&quot;&gt;{data:name}&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:description}&quot;&gt;{data:description}&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:field}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+configurator.init = function() {
+	this.pages.push({&quot;name&quot;: this.config.get(&quot;startPage&quot;)});
+	this.dom.render();
+};
+
+configurator.renderers.header = function(element) {
+	element.empty();
+	var names = Echo.Utils.foldl([], this.pages, function(page, acc) {
+		acc.push(page.name);
+	});
+	element.append(&quot;&lt;span&gt;&quot; + names.join(&quot; -&gt; &quot;) + &quot;&lt;/span&gt;&quot;);
+	return element;
+};
+
+configurator.renderers.pages = function(element) {
+	var self = this;
+	element.empty();
+	$.each(this.pages, function(i, page) {
+		self._renderPage(page, self.data);
+	});
+	this.showCurrentPage();
+	return element;
+};
+
+configurator.methods.showCurrentPage = function() {
+	if (!this.currentPageIndex) {
+		this.dom.get(&quot;pages&quot;).children().hide();
+		this.pages[this.currentPageIndex].element.show();
+	} else {
+		var prev = this.pages[this.currentPageIndex - 1].element;
+		var cur = this.pages[this.currentPageIndex].element;
+		var width = prev.parent().width() + 20;
+		prev.fadeOut({
+			&quot;duration&quot;: &quot;fast&quot;,
+			&quot;complete&quot;: function() {
+				cur.fadeIn({
+					&quot;duration&quot;: &quot;fast&quot;
+				});
+			}
+		});
+	}
+};
+
+// internal functions
+
+configurator.methods._renderPage = function(page, data) {
+	var index = this.pageIndexByName[page.name];
+	if (typeof index !== &quot;undefined&quot;) {
+		this.currentPageIndex = index;
+		this.showCurrentPage();
+		return;
+	}
+	this.pageIndexByName[page.name] = ++this.currentPageIndex;
+	var spec = $.extend(true, {}, Echo.Utils.getComponent(page.name).ConfigSpecification);
+	var element = $(this.substitute({&quot;template&quot;: '&lt;div class=&quot;{class:page}&quot;&gt;&lt;/div&gt;'})).hide();
+	element.append(this._form(spec, data));
+	page.element = element;
+	this.dom.get(&quot;pages&quot;).append(element);
+};
+
+configurator.methods._form = function(config, data, depth) {
+	var self = this;
+	data = data || {};
+	depth = depth || 0;
+	var form = $(this.substitute({&quot;template&quot;: '&lt;div class=&quot;{class:form} {class:form-' + depth + '}&quot;&gt;&lt;/div&gt;'}));
+	$.each(config, function(i, spec) {
+		var type;
+		switch (spec.type) {
+			case &quot;Boolean&quot;:
+				type = &quot;checkbox&quot;;
+				break;
+			case &quot;Number&quot;:
+			case &quot;String&quot;:
+				if (spec.values) {
+					type = &quot;dropdown&quot;;
+				} else {
+					type = &quot;text&quot;;
+				}
+				break;
+			case &quot;Array&quot;:
+				type = &quot;multiCheckbox&quot;;
+				break;
+			case &quot;Object&quot;:
+				type = &quot;nestedForm&quot;;
+				break;
+			default:
+				type = &quot;nestedPage&quot;;
+		}
+		var value = typeof data[spec.name] === &quot;undefined&quot;
+			? spec.defaultValue
+			: data[spec.name];
+		// XXXX
+		spec.name = spec.title || spec.name;
+		spec.description = spec.description || (spec.name + &quot; &quot; + spec.type);
+		var row = $(self.substitute({&quot;template&quot;: self.templates.formRow, &quot;data&quot;: spec}));
+		if (type === &quot;nestedForm&quot;) {
+			row.addClass(self.cssPrefix + &quot;form-row-group&quot;);
+		}
+		form.append(row);
+		self[&quot;_&quot; + type](row.find(&quot;.&quot; + self.cssPrefix + &quot;field&quot;), spec, value, depth);
+	});
+	return form;
+};
+
+configurator.methods._checkbox = function(element, spec, value) {
+	var checkbox = $('&lt;input type=&quot;checkbox&quot;&gt;').attr(&quot;checked&quot;, value);
+	element.prepend(checkbox);
+	return checkbox;
+};
+
+configurator.methods._text = function(element, spec, value) {
+	var text = $('&lt;input type=&quot;text&quot;&gt;').val(value);
+	element.append(text);
+	return text;
+};
+
+configurator.methods._dropdown = function(element, spec, value) {
+	var dropdown = $('&lt;select&gt;&lt;/select&gt;');
+	$.each(spec.values, function(i, v) {
+		dropdown.append('&lt;option value=&quot;' + v + '&quot;&gt;' + v + '&lt;/option&gt;');
+	});
+	dropdown.val(value);
+	element.append(dropdown);
+	return dropdown;
+};
+
+configurator.methods._multiCheckbox = function(element, spec, values) {
+	var self = this;
+	var group = $(&quot;&lt;div&gt;&quot;);
+	$.each(spec.values, function(i, v) {
+		var checked = $.isEmptyObject(values)
+			? true
+			: $.inArray(v, values) &gt;= 0;
+		var checkbox = $('&lt;input type=&quot;checkbox&quot;&gt;').attr(&quot;checked&quot;, checked);
+		group.append(checkbox);
+		group.append(self.substitute({&quot;template&quot;: '&lt;span class=&quot;{class:label}&quot;&gt;' + v + '&lt;/span&gt;'}));
+	});
+	element.append(group);
+	return group;
+};
+
+configurator.methods._nestedForm = function(element, spec, value, depth) {
+	var form = this._form(spec.properties, value, depth + 1);
+	element.append(form);
+	return form;
+};
+
+configurator.methods._nestedPage = function(element, spec, value, depth) {
+	var self = this;
+	var link = $('&lt;u&gt;configure&lt;/u&gt;').on(&quot;click&quot;, function() {
+		var page = {&quot;name&quot;: spec.type};
+		self.pages.push(page);
+		self.dom.render(&quot;header&quot;);
+		self._renderPage(page, value);
+		self.showCurrentPage();
+	}).css(&quot;cursor&quot;, &quot;pointer&quot;);
+	element.append(link);
+	return link;
+};
+
+configurator.css =
+	'.{class:page} { border: 1px solid #808080; margin: 5px; }' +
+	'.{class:form} { clear: both; }' +
+	'.{class:form} input { margin: 0px; width: 120px; }' +
+	'.{class:form-0} { margin-left: 0px; }' +
+	'.{class:form-1} { margin-left: 20px; border: 1px solid #CCCCCC; border-right: 0px; border-bottom: 0px; }' +
+	'.{class:form-row} { border-bottom: 1px solid #808080; padding: 5px 10px; }' +
+	'.{class:form-row}:last-child { border-bottom: 0px; }' +
+	'.{class:form-1} .{class:form-row} { border-color: #CCCCCC; }' +
+	'.{class:form-row} .{class:name} { width: 25%; float: left; }' +
+	'.{class:form-row} .{class:field} { width: 50%; float: left; }' +
+	'.{class:form-row} .{class:description} { width: 25%; float: right; color: gray; }' +
+	'.{class:form-row-group} { padding-right: 0px; padding-bottom: 0px; }' +
+	'.{class:form-row-group} &gt; .{class:field} { width: 100%; float: none; }' +
+	'.{class:form-row-group} &gt; .{class:description} { width: 75%; float: left; margin-bottom: 10px; }';
+
+Echo.Control.create(configurator);
+
+})();
+</pre>
+</body>
+</html>

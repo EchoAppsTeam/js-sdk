@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-Plugin'>/**
+</span> * @class Echo.Plugin
+ * Foundation class implementing core logic to create plugins and manipulate with them.
+ */
+Echo.Plugin = function() {};
+
+<span id='Echo-Plugin-static-method-create'>/**
+</span> * @static
+ * Function which creates a plugin object using it manifest declaration.
+ * 
+ * @param {Object} manifest
+ * Specifies the plugin interface in the predefined way.
+ *
+ * @param {String} manifest.name
+ * Specifies the Plugin name.
+ *
+ * @param {Object} [manifest.config]
+ * Specifies the configuration data with the ability to define default values.
+ *
+ * @param {Object} [manifest.labels]
+ * Specifies the list of language labels used in the particular plugin UI.
+ *
+ * @param {Object} [manifest.events]
+ * Specifies the list of external events used by plugin.
+ *
+ * @param {Object} [manifest.methods]
+ * Specifies the list of plugin methods.
+ *
+ * @param {Object} [manifest.renderers]
+ * Specifies the list of plugin renderers.
+ *
+ * @param {Object} [manifest.templates]
+ * Specifies the list of plugin templates.
+ *
+ * @param {Function} [manifest.init]
+ * Function called during plugin initialization.
+ *
+ * @param {String} [manifest.css]
+ * Specifies the CSS rules for the plugin.
+ *
+ * @return {Object}
+ * Generated plugin class.
+ */
+Echo.Plugin.create = function(manifest) {
+	var plugin = Echo.Plugin.getClass(manifest.name, manifest.component.name);
+
+	// prevent multiple re-definitions
+	if (plugin) return plugin;
+
+	var constructor = function(config) {
+		if (!config || !config.component) return;
+		var self = this;
+		this.name = manifest.name;
+		this.component = config.component;
+		this.cssClass = this.component.get(&quot;cssPrefix&quot;) + &quot;plugin-&quot; + manifest.name;
+		this.cssPrefix = this.cssClass + &quot;-&quot;;
+
+		// define extra css class for the control target
+		this.component.config.get(&quot;target&quot;).addClass(this.cssClass);
+
+		this._init([&quot;config&quot;]);
+	};
+	constructor.manifest = manifest;
+	constructor.dependencies = manifest.dependencies;
+
+	Echo.Utils.inherit(constructor, Echo.Plugin);
+
+	// copy destroy method to the list of methods
+	if (manifest.destroy) {
+		manifest.methods.destroy = manifest.destroy;
+	}
+
+	if (manifest.methods) {
+		$.extend(constructor.prototype, manifest.methods);
+	}
+	Echo.Utils.setNestedValue(
+		window,
+		Echo.Plugin._getClassName(manifest.name, manifest.component.name),
+		constructor
+	);
+	return constructor;
+};
+
+<span id='Echo-Plugin-static-method-manifest'>/**
+</span> * @static
+ * Method returning common manifest structure.
+ *
+ * @param {String} name
+ * Specifies plugin name.
+ *
+ * @param {String} component
+ * Specifies component name to be extended.
+ *
+ * @return {Object}
+ * Basic plugin manifest declaration.
+ */
+Echo.Plugin.manifest = function(name, component) {
+	return {
+		&quot;name&quot;: name,
+		&quot;component&quot;: {
+			&quot;name&quot;: component,
+			&quot;renderers&quot;: {}
+		},
+		&quot;config&quot;: {},
+		&quot;labels&quot;: {},
+		&quot;events&quot;: {},
+		&quot;methods&quot;: {},
+		&quot;renderers&quot;: {},
+		&quot;templates&quot;: {},
+		&quot;dependencies&quot;: [],
+		&quot;enabled&quot;: function() { return true; },
+		&quot;init&quot;: function(){},
+		&quot;destroy&quot;: undefined
+	};
+};
+
+<span id='Echo-Plugin-static-method-isDefined'>/**
+</span> * @static
+ * Checks if plugin is already defined.
+ *
+ * @param {Object} manifest
+ * Plugin manifest.
+ * 
+ * @return {Boolean}
+ */
+Echo.Plugin.isDefined = function(manifest) {
+	return !!Echo.Plugin.getClass(manifest.name, manifest.component.name);
+};
+
+<span id='Echo-Plugin-static-method-getClass'>/**
+</span> * @static
+ * Returns the corresponding plugin by its name and parent component name.
+ *
+ * @param {String} name
+ * Plugin name.
+ *
+ * @param {String} component
+ * Extended component name.
+ *
+ * @return {Object}
+ * Plugin class.
+ */
+Echo.Plugin.getClass = function(name, component) {
+	return Echo.Utils.getNestedValue(window, Echo.Plugin._getClassName(name, component));
+};
+
+<span id='Echo-Plugin-method-init'>/**
+</span> * @method
+ * Initializes the plugin.
+ */
+Echo.Plugin.prototype.init = function() {
+	this._init([
+		&quot;css&quot;,
+		&quot;events&quot;,
+		&quot;subscriptions&quot;,
+		&quot;labels&quot;,
+		&quot;renderers&quot;,
+		&quot;dom&quot;,
+		&quot;launcher&quot;
+	]);
+};
+
+<span id='Echo-Plugin-method-enabled'>/**
+</span> * @method
+ * Checks if the plugin is enabled.
+ */
+Echo.Plugin.prototype.enabled = function() {
+	if (typeof this._enabled === &quot;undefined&quot;) {
+		var enabled = this.config.get(&quot;enabled&quot;, true);
+		switch ($.type(enabled)) {
+			case &quot;string&quot;:
+				enabled = enabled === &quot;true&quot;;
+				break;
+			case &quot;function&quot;:
+				enabled = enabled.call(this);
+				break;
+		}
+		this._enabled = enabled &amp;&amp; !!this._manifest(&quot;enabled&quot;).call(this);
+	}
+	return this._enabled;
+};
+
+<span id='Echo-Plugin-method-set'>/**
+</span> * @method
+ * @inheritdoc Echo.Control#set
+ */
+Echo.Plugin.prototype.set = function(key, value) {
+	Echo.Utils.setNestedValue(this, key, value);
+};
+
+<span id='Echo-Plugin-method-get'>/**
+</span> * @method
+ * @inheritdoc Echo.Control#get
+ */
+Echo.Plugin.prototype.get = function(key, defaults) {
+	return Echo.Utils.getNestedValue(this, key, defaults);
+};
+
+<span id='Echo-Plugin-method-remove'>/**
+</span> * @method
+ * @inheritdoc Echo.Control#remove
+ */
+Echo.Plugin.prototype.remove = function(key) {
+	this.set(key, undefined);
+};
+
+<span id='Echo-Plugin-method-enable'>/**
+</span> * @method
+ * Enables the plugin.
+ */
+Echo.Plugin.prototype.enable = function(global) {
+	if (global) {
+		this.config.set(&quot;enabled&quot;, true);
+	}
+	this._enabled = true;
+};
+
+<span id='Echo-Plugin-method-disable'>/**
+</span> * @method
+ * Disables the plugin.
+ */
+Echo.Plugin.prototype.disable = function(global) {
+	if (global) {
+		this.config.set(&quot;enabled&quot;, false);
+	}
+	this._enabled = false;
+};
+
+<span id='Echo-Plugin-method-extendTemplate'>/**
+</span> * @method
+ * Method to extend the template of particular component.
+ *
+ * @param {String} action
+ * One of the following actions:
+ * + &quot;insertBefore&quot;
+ * + &quot;insertAfter&quot;
+ * + &quot;insertAsFirstChild&quot;
+ * + &quot;insertAsLastChild&quot;
+ * + &quot;replace&quot;
+ * + &quot;remove&quot;
+ *
+ * @param {String} anchor
+ * Element name which is a subject of a transformation application.
+ *
+ * @param {String|Function} [html]
+ * The content of a transformation to be applied. Can be defined as a HTML string or a transformer function. This param is required for all actions except &quot;remove&quot;.
+ */
+Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
+	if (html) {
+		html = this.substitute({&quot;template&quot;: $.isFunction(html) ? html.call(this) : html});
+	}
+	this.component.extendTemplate.call(this.component, action, anchor, html);
+};
+
+<span id='Echo-Plugin-method-parentRenderer'>/**
+</span> * @method
+ * @inheritdoc Echo.Control#parentRenderer
+ */
+Echo.Plugin.prototype.parentRenderer = function() {
+	return this.component.parentRenderer.apply(this.component, arguments);
+};
+
+<span id='Echo-Plugin-method-substitute'>/**
+</span> * @method
+ * Templater function which compiles given template using the provided data.
+ * Function can be used widely for html templates processing or any other action requiring string interspersion.
+ *
+ * @param {Object} args
+ * Specifies substitution process, contains control parameters.
+ *
+ * @param {String} args.template
+ * Template containing placeholders used for data interspersion.
+ *
+ * @param {Object} [args.data]
+ * Data used in the template compilation.
+ *
+ * @param {Boolean} [args.strict]
+ * Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
+ *
+ * @param {Object} [args.instructions]
+ * Object containing the list of extra instructions to be applied during template compilation.
+ *
+ * @return {String}
+ * Compiled string value.
+ */
+Echo.Plugin.prototype.substitute = function(args) {
+	var plugin = this;
+	return plugin.component.substitute($.extend(args, {
+		&quot;instructions&quot;: {
+			&quot;plugin.label&quot;: function(key) {
+				return plugin.labels.get(key, &quot;&quot;);
+			},
+			&quot;plugin.class&quot;: function(key) {
+				return key ? plugin.cssPrefix + key : plugin.cssClass;
+			},
+			&quot;plugin.data&quot;: function(key) {
+				return &quot;{self:plugins.&quot; + plugin.name + &quot;.data.&quot; + key + &quot;}&quot;;
+			},
+			&quot;plugin.self&quot;: function(key) {
+				return &quot;{self:plugins.&quot; + plugin.name + &quot;.&quot; + key + &quot;}&quot;;
+			},
+			&quot;plugin.config&quot;: function(key) {
+				return plugin.config.get(key, &quot;&quot;);
+			}
+		}
+	}));
+};
+
+<span id='Echo-Plugin-method-requestDataRefresh'>/**
+</span> * @method
+ * Method publishes the internal event to make current state invalid.
+ * It triggers data refresh.
+ */
+Echo.Plugin.prototype.requestDataRefresh = function() {
+	Echo.Events.publish({
+		&quot;topic&quot;: &quot;Echo.Control.onDataInvalidate&quot;,
+		&quot;context&quot;: this.component.config.get(&quot;context&quot;),
+		&quot;global&quot;: false,
+		&quot;propagation&quot;: false,
+		&quot;data&quot;: {}
+	});
+};
+
+<span id='Echo-Plugin-method-log'>/**
+</span> * @method
+ * @inheritdoc Echo.Utils#log
+ */
+Echo.Plugin.prototype.log = function(data) {
+	Echo.Utils.log($.extend(data, {&quot;component&quot;: this.component.name + &quot;.Plugins.&quot; + this.name}));
+};
+
+// internal functions
+
+Echo.Plugin._defineNestedClass = function(name) {
+	Echo.Plugin[name] = function(config) {
+		this.plugin = config.plugin;
+	};
+};
+
+Echo.Plugin.prototype._init = function() {
+	Echo.Control.prototype._init.apply(this, arguments);
+};
+
+Echo.Plugin.prototype._manifest = function(key) {
+	var plugin = Echo.Plugin.getClass(this.name, this.component.name);
+	return plugin
+		? key ? plugin.manifest[key] : plugin.manifest
+		: undefined;
+};
+
+Echo.Plugin.prototype._initializers = {};
+
+Echo.Plugin.prototype._initializers.css = function() {
+	if (!this._manifest(&quot;css&quot;)) return;
+	var parts = [this.component.get(&quot;name&quot;), &quot;Plugins&quot;, this.name];
+	Echo.Utils.addCSS(this.substitute({&quot;template&quot;: this._manifest(&quot;css&quot;)}), parts.join(&quot;.&quot;));
+};
+
+Echo.Plugin.prototype._initializers.labels = function() {
+	var namespace = this.component.get(&quot;name&quot;) + &quot;.Plugins.&quot; + this.name;
+
+	// define default language var values with the lowest priority available
+	Echo.Labels.set($.extend({}, this._manifest(&quot;labels&quot;)), namespace, true);
+
+	// define language var values passed within the config with the highest priority
+	return new Echo.Labels(this.config.get(&quot;labels&quot;, {}), namespace);
+};
+
+Echo.Plugin.prototype._initializers.config = function() {
+	return new Echo.Plugin.Config({&quot;plugin&quot;: this});
+};
+
+Echo.Plugin.prototype._initializers.events = function() {
+	return new Echo.Plugin.Events({&quot;plugin&quot;: this});
+};
+
+Echo.Plugin.prototype._initializers.subscriptions = function() {
+	var self = this;
+	$.each(this._manifest(&quot;events&quot;), function(topic, data) {
+		data = $.isFunction(data) ? {&quot;handler&quot;: data} : data;
+		self.events.subscribe($.extend({&quot;topic&quot;: topic}, data));
+	});
+};
+
+Echo.Plugin.prototype._initializers.renderers = function() {
+	var self = this;
+	$.each(this._manifest(&quot;renderers&quot;), function(name, renderer) {
+		self.component.extendRenderer.call(self.component, &quot;plugin-&quot; + self.name + &quot;-&quot; + name, $.proxy(renderer, self));
+	});
+	$.each(this._manifest(&quot;component&quot;).renderers, function(name, renderer) {
+		self.component.extendRenderer.call(self.component, name, $.proxy(renderer, self));
+	});
+};
+
+Echo.Plugin.prototype._initializers.dom = function() {
+	var parentDOM = this.component.get(&quot;dom&quot;);
+	var prefix = &quot;plugin-&quot; + this.name + &quot;-&quot;;
+	this.dom = {
+		&quot;clear&quot;: function() {
+			parentDOM.clear();
+		},
+		&quot;set&quot;: function(name, element) {
+			parentDOM.set(prefix + name, element);
+		},
+		&quot;get&quot;: function(name, ignorePrefix) {
+			return parentDOM.get(prefix + name, ignorePrefix);
+		},
+		&quot;remove&quot;: function(element) {
+			if (typeof element === &quot;string&quot;) {
+				element = prefix + element;
+			}
+			parentDOM.remove(element);
+		},
+		&quot;render&quot;: function(args) {
+			if (args &amp;&amp; args.name) {
+				args.name = prefix + args.name;
+			}
+			parentDOM.render(args);
+		}
+	};
+};
+
+Echo.Plugin.prototype._initializers.launcher = function() {
+	this._manifest(&quot;init&quot;).call(this);
+};
+
+Echo.Plugin._getClassName = function(name, component) {
+	return name &amp;&amp; component ? component + &quot;.Plugins.&quot; + name : undefined;
+};
+
+<span id='Echo-Plugin-config'>/**
+</span> * @class Echo.Plugin.config
+ * Echo Plugin interlayer for Echo.Configuration utilization.
+ */
+Echo.Plugin._defineNestedClass(&quot;Config&quot;);
+
+<span id='Echo-Plugin-config-method-set'>/**
+</span> * @method
+ * Setter method to define specific config field value.
+ *
+ * @param {String} key
+ * Defines the key where the given data should be stored.
+ *
+ * @param {Mixed} value
+ * The corresponding value which should be defined for the key.
+ */
+Echo.Plugin.Config.prototype.set = function(key, value) {
+	this.plugin.component.config.set(this._normalize(key), value);
+};
+
+<span id='Echo-Plugin-config-method-get'>/**
+</span> * @method
+ * Accessor method to get specific config field.
+ *
+ * @param {String} key
+ * Defines the key for data extraction.
+ *
+ * @param {Object} [defaults]
+ * Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ *
+ * @param {Boolean} [askParent]
+ * Flag to call parent config if the value was not found in the particular instance.
+ *
+ * @return {Mixed}
+ * Corresponding value found in the config.
+ */
+Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
+	var component = this.plugin.component;
+	var value = component.config.get(
+		this._normalize(key),
+		this.plugin._manifest(&quot;config&quot;)[key]);
+	return typeof value == &quot;undefined&quot;
+		? askParent
+			? component.config.get(key, defaults)
+			: defaults
+		: value;
+};
+
+<span id='Echo-Plugin-config-method-remove'>/**
+</span> * @method
+ * Method to remove specific config field.
+ *
+ * @param {String} key
+ * Defines the key which should be removed from the configuration.
+ */
+Echo.Plugin.Config.prototype.remove = function(key) {
+	this.plugin.component.config.remove(this._normalize(key));
+};
+
+<span id='Echo-Plugin-config-method-assemble'>/**
+</span> * @method
+ * Assembles config for nested control based on the parent control config.
+ * @param {Object} data Configuration data to be merged with the parent config.
+ * @return {Object} Echo.Configuration instance.
+ */
+Echo.Plugin.Config.prototype.assemble = function(data) {
+	var config = this.plugin.component.config;
+	var defaults = this.plugin.component.get(&quot;defaults.config&quot;);
+	data = data || {};
+	data.plugins = this.plugin.config.get(&quot;nestedPlugins&quot;, []);
+	data.parent = config.getAsHash();
+
+	// copy default field values from parent control
+	Echo.Utils.foldl(data, defaults, function(value, acc, key) {
+		// do not override existing values in data
+		if (typeof data[key] === &quot;undefined&quot;) {
+			acc[key] = config.get(key);
+		}
+	});
+	return (new Echo.Configuration(data, this.plugin.config.get())).getAsHash();
+};
+
+Echo.Plugin.Config.prototype._normalize = function(key) {
+	return ([&quot;plugins&quot;, this.plugin.name].concat(key ? key : [])).join(&quot;.&quot;);
+};
+
+<span id='Echo-Plugin-events'>/**
+</span> * @class Echo.Plugin.events
+ * Echo Plugin interlayer for Echo.Events utilization
+ */
+Echo.Plugin._defineNestedClass(&quot;Events&quot;);
+
+<span id='Echo-Plugin-events-method-publish'>/**
+</span> * @method
+ * @inheritdoc Echo.Events#publish
+*/
+Echo.Plugin.Events.prototype.publish = function(params) {
+	params.topic = [&quot;Plugins&quot;, this.plugin.name, params.topic].join(&quot;.&quot;);
+	return this.plugin.component.events.publish(params);
+};
+
+<span id='Echo-Plugin-events-method-subscribe'>/**
+</span> * @method
+ * @inheritdoc Echo.Events#subscribe
+*/
+Echo.Plugin.Events.prototype.subscribe = function(params) {
+	params.handler = $.proxy(params.handler, this.plugin);
+	return this.plugin.component.events.subscribe(params);
+};
+
+<span id='Echo-Plugin-events-method-unsubscribe'>/**
+</span> * @method
+ * @inheritdoc Echo.Events#unsubscribe
+*/
+Echo.Plugin.Events.prototype.unsubscribe = function(params) {
+	this.plugin.component.events.unsubscribe(params);
+};
+</pre>
+</body>
+</html>

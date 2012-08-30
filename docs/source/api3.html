@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">if (!Echo.IdentityServer) Echo.IdentityServer = {};
+
+Echo.IdentityServer.API = {};
+
+<span id='Echo-IdentityServer-API-Request-method-constructor'><span id='Echo-IdentityServer-API-Request'>/**
+</span></span> * @class Echo.IdentityServer.API.Request
+ * Class implements the interaction with the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/35104702/API-section-users&quot; target=&quot;_blank&quot;&gt;Echo Users API&lt;/a&gt; 
+ * @extends Echo.API.Request
+ *
+ * @constructor
+ * Constructor initializing class using configuration data.
+ * @param {Object} config Configuration data.
+ */
+Echo.IdentityServer.API.Request = function(config) {
+	config = $.extend({
+<span id='Echo-IdentityServer-API-Request-cfg-onData'>		/**
+</span>		 * @cfg {Function} [onData] Callback called after API request succeded.
+		 */
+		&quot;onData&quot;: function() {},
+<span id='Echo-IdentityServer-API-Request-cfg-onError'>		/**
+</span>		 * @cfg {Function} [onError] Callback called after API request failed. 
+		 */
+		&quot;onError&quot;: function() {},
+<span id='Echo-IdentityServer-API-Request-cfg-submissionProxyURL'>		/**
+</span>		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
+		 */
+		&quot;submissionProxyURL&quot;: &quot;http://apps.echoenabled.com/v2/esp/activity&quot;
+	}, config);
+	config = this._wrapTransportEventHandlers(config);
+	Echo.IdentityServer.API.Request.parent.constructor.call(this, config);
+};
+
+Echo.Utils.inherit(Echo.IdentityServer.API.Request, Echo.API.Request);
+
+Echo.IdentityServer.API.Request.prototype._prepareURI = function() {
+	return this.config.get(&quot;endpoint&quot;) === &quot;whoami&quot;
+		? Echo.IdentityServer.API.Request.parent._prepareURI.call(this)
+		// FIXME: move replace to API.Request lib
+		: this.config.get(&quot;submissionProxyURL&quot;).replace(/^(http|ws)s?:\/\//, &quot;&quot;);
+};
+
+Echo.IdentityServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
+	var self = this;
+	var _config = $.extend({}, config);
+	return $.extend(config, {
+		&quot;onData&quot;: function(response, requestParams) {
+			self._onData(response, _config);
+		}
+	});
+};
+
+Echo.IdentityServer.API.Request.prototype._onData = function(response, config) {
+	if (response &amp;&amp; response.result === &quot;error&quot;) {
+		config.onError(response);
+		return;
+	}
+	config.onData(response);
+};
+
+Echo.IdentityServer.API.Request.prototype._update = function(args) {
+	var content = $.extend(this.config.get(&quot;data.content&quot;), {
+		&quot;endpoint&quot;: &quot;users/update&quot;
+	});
+	this.request(
+		$.extend(this.config.get(&quot;data&quot;), {
+			&quot;content&quot;: Echo.Utils.object2JSON(content)
+		})
+	);
+};
+
+Echo.IdentityServer.API.Request.prototype._whoami = function(args) {
+	this.request(args);
+};
+
+<span id='Echo-IdentityServer-API-Request-static-method-request'>/**
+</span> * @static
+ * Alias for the class constructor.
+ * @param {Object} Configuration data.
+ * @return {Class} New class instance.
+ */
+Echo.IdentityServer.API.request = function(config) {
+	return (new Echo.IdentityServer.API.Request(config));
+};
+</pre>
+</body>
+</html>

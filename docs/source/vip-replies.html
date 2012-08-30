@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">var plugin = Echo.Plugin.manifest(&quot;VipReplies&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Submit.onPostComplete&quot;: function(topic, args) {
+		var question = args.inReplyTo;
+		var answer = args.postData.content[0];
+		if (!question || this.config.get(&quot;view&quot;) === &quot;public&quot; ||
+			!this.component.user.any(&quot;role&quot;, [&quot;vip&quot;])) return;
+		this._markQuestionAsAnswered(question);
+		this._copyAnswer(question, answer);
+	}
+};
+
+plugin.methods._request = function(content) {
+	var item = this.component;
+	Echo.StreamServer.API.request({
+		&quot;endpoint&quot;: &quot;submit&quot;,
+		&quot;submissionProxyURL&quot;: this.component.config.get(&quot;submissionProxyURL&quot;),
+		&quot;data&quot;: {
+			&quot;appkey&quot;: item.config.get(&quot;appkey&quot;),
+			&quot;content&quot;: content,
+			&quot;target-query&quot;: item.config.get(&quot;parent.query&quot;, &quot;&quot;),
+			&quot;sessionID&quot;: item.user.get(&quot;sessionID&quot;, &quot;&quot;)
+		}
+	}).send();
+};
+
+plugin.methods._markQuestionAsAnswered = function(question) {
+	this._request({
+		&quot;verbs&quot;: [&quot;http://activitystrea.ms/schema/1.0/mark&quot;],
+		&quot;targets&quot;: [{&quot;id&quot;: question.object.id}],
+		&quot;object&quot;: {
+			&quot;objectTypes&quot;: [
+				&quot;http://activitystrea.ms/schema/1.0/marker&quot;
+			],
+			&quot;content&quot;: this.config.get(&quot;answeredQuestionMarker&quot;, &quot;answered&quot;)
+		}
+	});
+};
+
+plugin.methods._copyAnswer = function(question, answer) {
+	var copyTo = this.config.get(&quot;copyTo&quot;);
+	if (!copyTo) return;
+	var title =  question.actor.title || &quot;Guest&quot;;
+	var avatar = question.actor.avatar || this.component.user.get(&quot;defaultAvatar&quot;);
+	var content = this.substitute({
+		&quot;template&quot;: '&lt;div class=&quot;{plugin.class:special-quest-reply}&quot;&gt;' +
+				'&lt;div class=&quot;{plugin.class:reply}&quot;&gt;{data:answerContent}&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:question-quote}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:author} echo-linkColor&quot;&gt;{data:title}&lt;/span&gt; asks: ' +
+					'&lt;span class=&quot;text&quot;&gt;&quot;{data:questionContent}&quot;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+			'&lt;/div&gt;',
+		&quot;data&quot;: {
+			&quot;answerContent&quot;: Echo.Utils.stripTags(answer.object.content),
+			&quot;questionContent&quot;: Echo.Utils.stripTags(question.object.content),
+			&quot;title&quot;: title
+		}
+	});
+	this._request({
+		&quot;verbs&quot;: [&quot;http://activitystrea.ms/schema/1.0/post&quot;],
+		&quot;targets&quot;: [{&quot;id&quot;: copyTo.target}],
+		&quot;object&quot;: {
+			&quot;objectTypes&quot;: [
+				&quot;http://activitystrea.ms/schema/1.0/comment&quot;
+			],
+			&quot;content&quot;: content
+		}
+	});
+};
+
+plugin.css =
+	&quot;.{class:data} .{plugin.class:question-quote} { background: #EEEEEE; padding: 10px; margin-bottom: 10px; }&quot; +
+	&quot;.{class:data} .{plugin.class:question-quote} .{plugin.class:author} { color: #476CB8; }&quot; +
+	&quot;.{class:data} .{plugin.class:special-quest-reply} .{plugin.class:reply} { font-size: 14px; margin-bottom: 10px; }&quot;;
+
+Echo.Plugin.create(plugin);
+</pre>
+</body>
+</html>

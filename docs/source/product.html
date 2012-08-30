@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function() {
+ 
+Echo.ProductView = function() {};
+
+Echo.Utils.inherit(Echo.ProductView, Echo.Control);
+
+Echo.ProductView.create = Echo.Control.create;
+
+Echo.ProductView.manifest = function(name) {
+	var _manifest = Echo.ProductView.parent.constructor.manifest.apply(this, arguments);
+	_manifest.inherits = _manifest.inherits || Echo.ProductView;
+	return $.extend(_manifest, {
+		&quot;controls&quot;: {}
+	});
+};
+
+Echo.Control.addInitializer(
+	Echo.ProductView,
+	[&quot;controls&quot;, [&quot;init&quot;, &quot;refresh&quot;]],
+	{&quot;after&quot;: &quot;user:async&quot;}
+);
+
+Echo.ProductView.prototype._initializers.controls = function() {
+	var view = this;
+	this.controls = this.controls || {};
+	$.each(this._manifest(&quot;controls&quot;), function(name, controlConfig) {
+		view.controls[name] = null;
+	});
+};
+
+Echo.ProductView.prototype._normalizeControlConfig = function(config) {
+	var self = this;
+	Echo.Utils.foldl(config, [&quot;appkey&quot;, &quot;apiBaseURL&quot;, &quot;submissionProxyURL&quot;], function(key, acc) {
+		acc[key] = acc[key] || self.config.get(key);
+	});
+	var normalize = function(value) {
+		if (typeof value == &quot;string&quot;) {
+			return self.substitute({
+				&quot;template&quot;: value,
+				&quot;strict&quot;: true
+			});
+		} else if ($.isPlainObject(value)) {
+			return Echo.Utils.foldl({}, value, function(value, acc, key) {
+				acc[key] = normalize(value);
+			});
+		} else if ($.isArray(value)) {
+			return $.map(value, function(element) {
+				return normalize(element);
+			});
+		} else {
+			return value;
+		}
+	};
+	return normalize(config);
+};
+
+Echo.ProductView.prototype.initControl = function(name, controlConfig) {
+	this.destroyControl(name);
+	controlConfig = controlConfig || {};
+	// we need to copy apps config to avoid changes in the common config
+	var parentConfig = this.config.getAsHash();
+	controlConfig.parent = controlConfig.parent || parentConfig;
+	controlConfig.plugins = this.updateControlPlugins(
+		Echo.Utils.getNestedValue(this._manifest(&quot;controls&quot;), name + &quot;.config.plugins&quot;, []),
+		this.config.get(&quot;controls.&quot; + name + &quot;.config.plugins&quot;, []),
+		controlConfig.plugins || []
+	);
+	controlConfig = this._normalizeControlConfig(
+		$.extend(true, 
+			{},
+			Echo.Utils.getNestedValue(this._manifest(&quot;controls&quot;), name + &quot;.config&quot;, {}),
+			this.config.get(&quot;controls.&quot; + name + &quot;.config&quot;, {}),
+			controlConfig
+		)
+	);
+	var Control = Echo.Utils.getComponent(this._manifest(&quot;controls&quot;)[name].control);
+	this.controls[name] = new Control(controlConfig);
+	return this.controls[name];
+};
+
+Echo.ProductView.prototype.updateControlPlugins = function(plugins) {
+	var self = this;
+	var getPluginIndex = function(plugin, plugins) {
+		var idx = -1;
+		$.each(plugins, function(i, _plugin) {
+			if (plugin.name === _plugin.name) {
+				idx = i;
+				return false;
+			}
+		});
+		return idx;
+	};
+	// flatten update plugins list
+	var updatePlugins = $.map(Array.prototype.slice.call(arguments, 1) || [], function(plugin) {
+		return plugin;
+	});
+	return Echo.Utils.foldl(plugins, updatePlugins, function(extender) {
+		var id = getPluginIndex(extender, plugins);
+		if (!~id) {
+			plugins.push(extender);
+			return;
+		}
+		if (extender.name === plugins[id].name) {
+			if (extender.nestedPlugins &amp;&amp; plugins[id].nestedPlugins) {
+				self._updateAppPlugins(plugins[id].nestedPlugins, extender.nestedPlugins);
+				// delete nested plugins in the extender to avoid override effect after extend below
+				delete extender.nestedPlugins;
+			}
+			plugins[id] = $.extend(true, {}, plugins[id], extender);
+		}
+	});
+};
+
+Echo.ProductView.prototype.destroyControl = function(name) {
+	var control = this.get(&quot;controls.&quot; + name);
+	control &amp;&amp; control.destroy();
+	delete this.controls[name];
+};
+
+Echo.ProductView.prototype.destroyControls = function(exceptions) {
+	var self = this;
+	exceptions = exceptions || [];
+	var inExceptionList = function(name) {
+		var inList = false;
+		$.each(exceptions, function(id, exception) {
+			if (exception == name) {
+				inList = true;
+				return false; // break
+			}
+		});
+		return inList;
+	};
+	$.each(this.controls, function(name) {
+		if (!inExceptionList(name)) {
+			self.destroyControl(name);
+		}
+	});
+};
+
+Echo.ProductView.prototype.getControl = function(name) {
+	return Echo.Utils.getComponent(name);
+};
+
+})();
+
+(function() {
+
+<span id='Echo-Product'>/**
+</span> * @class Echo.Product
+ * Foundation class implementing core logic to create products.
+ * @extends Echo.Control
+ */
+Echo.Product = function() {};
+
+Echo.Utils.inherit(Echo.Product, Echo.Control);
+
+<span id='Echo-Product-static-method-create'>/**
+</span> * @static
+ * @method
+ * Function which creates a product object using it manifest declaration.
+ * @inheritdoc Echo.Control#create
+ */
+Echo.Product.create = Echo.Control.create;
+
+<span id='Echo-Product-static-method-manifest'>/**
+</span> * @static
+ * @method
+ * @inheritdoc Echo.Control#manifest
+ */
+Echo.Product.manifest = function(name, views) {
+	var _manifest = Echo.Product.parent.constructor.manifest.apply(this, arguments);
+	_manifest.inherits = _manifest.inherits || Echo.Product;
+	return $.extend(_manifest, {
+		&quot;views&quot;: $.extend(true, {}, Echo.Utils.foldl({}, views, function(_name, acc) {
+				var viewName = name + &quot;.Views.&quot; + _name;
+				acc[_name] = Echo.ProductView.manifest(viewName);
+			})
+		),
+		&quot;assemblers&quot;: {}
+	});
+};
+
+<span id='Echo-Product-method-getView'>/**
+</span> * @method
+ * Accessor method to get product view by its name.
+ * @param {String} name (required) Specifies the name of the view to be accessed.
+ * @return {Class} Class referense.
+ */
+Echo.Product.prototype.getView = function(name) {
+	return Echo.Utils.getComponent(this.name + &quot;.Views.&quot; + name);
+};
+
+Echo.Product.prototype.initView = function(name, config) {
+	this.destroyView(name);
+	var View = this.getView(name);
+	config = config || {};
+	config.parent = config.parent || this.config.getAsHash();
+	config.appkey = config.parent.appkey;
+	config = $.extend(true, {}, this.config.get(&quot;views.&quot; + name), config);
+	this.views = this.views || {};
+	this.views[name] = new View(config);
+	return this.views[name];
+};
+
+Echo.Product.prototype.destroyViews = function() {
+	var self = this;
+	$.each(this.get(&quot;views&quot;), function(name) {
+		self.destroyView(name);
+	});
+};
+
+Echo.Product.prototype.destroyView = function(name) {
+	var view = this.get(&quot;views.&quot; + name);
+	if (view &amp;&amp; view.controls) {
+		view.destroyControls();
+		view.destroy();
+		delete this.views[name];
+	}
+};
+
+Echo.Product.prototype.assemble = function(viewName) {
+	var args = Array.prototype.slice.call(arguments, 1);
+	return this._manifest(&quot;assemblers&quot;)[viewName].apply(this, args);
+};
+
+Echo.Control.addInitializer(
+	Echo.Product,
+	[&quot;views&quot;, [&quot;init&quot;, &quot;refresh&quot;]],
+	{&quot;after&quot;: &quot;user:async&quot;}
+);
+
+Echo.Product.prototype._initializers.views = function() {
+	var product = this;
+	$.each(this._manifest(&quot;views&quot;), function(name, view) {
+		Echo.ProductView.create(view);
+	});
+};
+
+})();
+</pre>
+</body>
+</html>

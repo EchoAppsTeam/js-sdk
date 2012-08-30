@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter'>/**
+</span> * @class Echo.StreamServer.Controls.Submit.Plugins.TextCounter
+ * Adds the character counter under the text field in the Echo Submit control. Allows to set the maximum length of the text to enter.
+ *     new Echo.StreamServer.Controls.Submit({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;TextCounter&quot;
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;TextCounter&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-cfg-limit'>/**
+</span> * @cfg {Number} limit Specifies the maximum length of the text. There is no limit if it is not defined.
+ * @cfg {String} label Specifies the custom label for the counter. Parameter string is a template that has several placeholders. Placeholder is some word wrapped with the curly brackets. It supports the following list of placeholder words:
+ *
+ * + limit - The number from the limit parameter. 
+ * + typed - The number of characters currently typed in the text field.
+ * + left - The number of characters left (limit - typed).
+ *
+ * Default parameter value is:
+ *
+ * + &quot;{typed}/{limit} characters&quot; if limit parameter is provided
+ * + &quot;{typed} characters&quot; if limit parameter is not provided
+ */
+plugin.init = function() {
+	var component = this.component;
+	this.extendTemplate(&quot;insertAfter&quot;, &quot;content&quot;, plugin.templates.counter);
+};
+
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-property-limited'>	/**
+</span>	 * @echo_label
+	 * Label to show in the counter if maximum character limit is provided
+	 */
+	&quot;limited&quot;: &quot;{typed}/{left} characters&quot;,
+<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-property-unlimited'>	/**
+</span>	 * @echo_label
+	 * Label to show in the counter if no character limit is provided
+	 */
+	&quot;unlimited&quot;: &quot;{typed} characters&quot;
+};
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Submit.onPostComplete&quot;: function(topic, args) {
+		this.dom.render({&quot;name&quot;: &quot;counterLabel&quot;});
+	}
+};
+
+plugin.templates.counter = '&lt;div class=&quot;{plugin.class:counterLabel} echo-primaryFont echo-primaryColor&quot;&gt;&lt;/div&gt;';
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-method-text'>/**
+</span> * @echo_renderer
+ */
+plugin.component.renderers.text = function(element) {
+	var plugin = this;
+	plugin.parentRenderer(&quot;text&quot;, arguments);
+	var limit = plugin.config.get(&quot;limit&quot;, 0);
+	var handler = function() {
+		if (limit) {
+			var text = element.val();
+			if (text.length &lt;= limit) {
+				plugin.set(&quot;text&quot;, text);
+			} else if (text.length &gt; limit) {
+				element.val(plugin.get(&quot;text&quot;));
+				return;
+			}
+		}
+		plugin.dom.render({&quot;name&quot;: &quot;counterLabel&quot;});
+	};
+	return element.on(&quot;blur focus keyup keypress&quot;, handler);
+};
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-method-counterLabel'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.counterLabel = function(element) {
+	var plugin = this;
+	var limit = plugin.config.get(&quot;limit&quot;, 0);
+	var typed = this.component.dom.get(&quot;text&quot;).val().length;
+	var label = this.labels.get(
+		plugin.config.get(&quot;label&quot;, limit ? &quot;limited&quot; : &quot;unlimited&quot;),
+		{&quot;typed&quot;: typed, &quot;left&quot;: Math.max(limit - typed, 0), &quot;limit&quot;: limit}
+	);
+	return element.text(label);
+};
+
+Echo.Plugin.create(plugin);
+</pre>
+</body>
+</html>

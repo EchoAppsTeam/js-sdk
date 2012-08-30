@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function() {
+
+var plugin = Echo.Plugin.manifest(&quot;SocialChatterEvent&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+plugin.config = {
+	&quot;defaultEventIcon&quot;: &quot;//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg&quot;,
+	&quot;dateFormat&quot;: &quot;yy-mm-dd&quot;,
+	&quot;timeFormat&quot;: &quot;hh:mm tt&quot;,
+	&quot;ampm&quot;: true
+};
+
+plugin.init = function() {
+	this.component.config.get(&quot;target&quot;).addClass(this.cssPrefix + &quot;SocialChatterEvent&quot;);
+	this.extendTemplate(&quot;insertAfter&quot;, &quot;authorName&quot;, plugin.templates.main);
+	this.component.addButtonSpec(&quot;SocialChatterEvent&quot;, this._assembleButton());
+};
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Item.onRerender&quot;: function(topic, args) {
+		this.events.publish({
+			&quot;topic&quot;: &quot;onEventChange&quot;,
+			&quot;data&quot;: $.extend({ &quot;item&quot;: this.component }, args)
+		})
+	}
+};
+
+plugin.labels = {
+	&quot;unknown&quot;: &quot;Unknown&quot;,
+	&quot;notProvided&quot;: &quot;Not provided&quot;,
+	&quot;onAirEventOpen&quot;: &quot;View Current Session&quot;,
+	&quot;upcomingEventOpen&quot;: &quot;View this Upcoming Chat&quot;,
+	&quot;passedEventOpen&quot;: &quot;View this Chat Archive&quot;,
+	&quot;eventName&quot;: &quot;&lt;b&gt;Event title&lt;/b&gt;&quot;,
+	&quot;eventStatus&quot;: &quot;&lt;b&gt;Event status&lt;/b&gt;&quot;,
+	&quot;upcoming&quot;: &quot;upcoming event&quot;,
+	&quot;onAir&quot;: &quot;&lt;span class=\&quot;echo-event-onair-label\&quot;&gt;on air now!&lt;/span&gt;&quot;,
+	&quot;passed&quot;: &quot;passed event&quot;,
+	&quot;vipName&quot;: &quot;&lt;b&gt;VIP guest name&lt;/b&gt;&quot;,
+	&quot;vipInstructions&quot;: &quot;&lt;b&gt;Instructions for VIP guest &lt;small&gt;(for Green Room tab)&lt;/small&gt;&lt;/b&gt;&quot;,
+	&quot;eventDescription&quot;: &quot;&lt;b&gt;Event description&lt;/b&gt;&quot;,
+	&quot;eventDuration&quot;: &quot;&lt;b&gt;Event duration&lt;/b&gt;&quot;,
+	&quot;eventStart&quot;: &quot;&lt;b&gt;Start date and time&lt;/b&gt; &lt;small&gt;(in your timezone)&lt;/small&gt;&quot;,
+	&quot;eventEnd&quot;: &quot;&lt;b&gt;End date and time&lt;/b&gt; &lt;small&gt;(in your timezone)&lt;/small&gt;&quot;,
+	&quot;createdBy&quot;: &quot;&lt;b&gt;Created by&lt;/b&gt;&quot;,
+	&quot;creationDate&quot;: &quot;&lt;b&gt;Creation date&lt;/b&gt;&quot;,
+	&quot;viewFullEvent&quot;: &quot;Show event details&quot;,
+	&quot;viewBriefEvent&quot;: &quot;Hide event details&quot;
+};
+
+plugin.templates.main = '&lt;div class=&quot;{plugin.class:eventContainer}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:eventBrief}&quot;&gt;' +
+			'&lt;div class=&quot;{plugin.class:eventNameBrief}&quot;&gt;&lt;/div&gt;' +
+			'&lt;div class=&quot;{plugin.class:eventDescriptionBrief}&quot;&gt;&lt;/div&gt;' +
+			'&lt;div class=&quot;{plugin.class:eventStatusBrief}&quot;&gt;&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:eventFull}&quot;&gt;' +
+			'&lt;div class=&quot;{plugin.class:eventInfo}&quot;&gt;' +
+				'&lt;div class=&quot;{plugin.class:eventItem}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:eventName}&quot;&gt;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:eventItem}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:eventStatus}&quot;&gt;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:eventItem}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:vipName}&quot;&gt;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:eventItem}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:eventDescription}&quot;&gt;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:eventItem}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:eventDuration}&quot;&gt;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:eventItem}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:eventStart}&quot;&gt;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:eventItem}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:eventEnd}&quot;&gt;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:eventItem}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:eventCreatedBy}&quot;&gt;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:eventItem}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:eventCreationDate}&quot;&gt;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:eventItem}&quot;&gt;' +
+					'&lt;span class=&quot;{plugin.class:vipInstructions}&quot;&gt;&lt;/span&gt;' +
+				'&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:eventButtonContainer}&quot;&gt;' +
+			'&lt;button class=&quot;{plugin.class:eventButton}&quot;&gt;&lt;/button&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+plugin.fields = [&quot;eventName&quot;, &quot;vipName&quot;, &quot;vipInstructions&quot;, &quot;vipPhoto&quot;, &quot;eventDescription&quot;, &quot;eventStart&quot;, &quot;eventEnd&quot;];
+
+plugin.component.renderers.container = function(element) {
+	this.event = new Echo.SocialChatter.Event(this.component.get(&quot;data&quot;));
+	return this.parentRenderer(&quot;container&quot;, arguments);
+};
+
+plugin.renderers.eventBrief = function(element) {
+	return this.dom.render({
+		&quot;name&quot;: &quot;_eventDisplay&quot;,
+		&quot;target&quot;: element,
+		&quot;extra&quot;: {
+			&quot;mode&quot;: &quot;brief&quot;
+		}
+	});
+};
+
+plugin.renderers.eventFull = function(element) {
+	return this.dom.render({
+		&quot;name&quot;: &quot;_eventDisplay&quot;,
+		&quot;target&quot;: element,
+		&quot;extra&quot;: {
+			&quot;mode&quot;: &quot;full&quot;
+		}
+	});
+};
+
+plugin.renderers._eventDisplay = function(element, extra) {
+	return this.get(&quot;eventDisplay&quot;, &quot;brief&quot;) === extra.mode
+		? element.show()
+		: element.hide();
+};
+
+Echo.Utils.foldl(plugin.renderers, [&quot;eventName&quot;, &quot;vipName&quot;, &quot;eventStart&quot;, &quot;eventEnd&quot;, &quot;eventDescription&quot;], function(field, acc) {
+	acc[field] = function(element) {
+		var event = this.event;
+		if (field === &quot;eventStart&quot; || field === &quot;eventEnd&quot;) {
+			element.html(this.labels.get(field) + &quot;: &quot; + this._getFullDate(event.data[field]));
+		} else {
+			var prefix = this.labels.get(field) !== field
+				? this.labels.get(field) + &quot;: &quot;
+				: &quot;&quot;;
+			element.html(prefix + (event.data[field] || this.labels.get(&quot;unknown&quot;)));
+		}
+		return element;
+	};
+});
+
+plugin.renderers.eventStatusBrief = plugin.renderers.eventStatus = function(element) {
+	var event = this.event;
+	var status = event.getStatus();
+	var content = this.labels.get(&quot;eventStatus&quot;) + &quot;: &quot; + this.labels.get(status);
+	var extra;
+	if (status == &quot;upcoming&quot;) {
+		extra = event.calcAnotherStart();
+	} else if (status == &quot;passed&quot;) {
+		extra = event.calcEndTime();
+	}
+	if (extra)
+		content += &quot;. &quot; + extra + &quot;.&quot;;
+	return element.html(content);
+};
+
+plugin.renderers.eventDuration = function(element) {
+	var duration = this.event.getDuration();
+	return element.html(this.labels.get(&quot;eventDuration&quot;) + &quot;: &quot; + this.event.displayDateDiff(duration, function(diff, period) {
+		return diff + &quot; &quot; + period + (diff == 1 ? &quot;&quot; : &quot;s&quot;);
+	}));
+};
+
+plugin.renderers.eventCreatedBy = function(element) {
+	return element.html(this.labels.get(&quot;createdBy&quot;) + &quot;: &quot; + this.component.get(&quot;data.actor.title&quot;));
+};
+
+plugin.renderers.eventNameBrief = function(element) {
+	return element.html(this.event.data.eventName || this.labels.get(&quot;unknown&quot;));
+};
+
+plugin.renderers.eventDescriptionBrief = function(element) {
+	return element.html(this.event.data.eventDescription || this.labels.get(&quot;unknown&quot;));
+};
+
+plugin.renderers.eventCreationDate = function(element) {
+	this.component._calcAge();
+	return element.html(this.labels.get(&quot;creationDate&quot;) + &quot;: &quot; + this.component.get(&quot;age&quot;));
+};
+
+plugin.renderers.vipInstructions = function(element) {
+	return element.html(this.labels.get(&quot;vipInstructions&quot;) + &quot;: &quot; + (this.event.data.vipInstructions || this.labels.get(&quot;notProvided&quot;)));
+};
+
+plugin.renderers.eventButton = function(element) {
+	if ($.isEmptyObject(this.event)) {
+		return element.detach();
+	}
+	var self = this;
+	new Echo.Button(element, {
+		&quot;label&quot;: this.labels.get(this.event.getStatus() + &quot;EventOpen&quot;)
+	});
+	return element.addClass(&quot;btn btn-small&quot;).click(function() {
+		self.events.publish({
+			&quot;topic&quot;: &quot;onBeforeEventOpen&quot;,
+			&quot;data&quot;: {
+				&quot;event&quot;: self.component.get(&quot;data&quot;)
+			}
+		});
+	});
+};
+
+plugin.component.renderers.footer = function(element) {
+	this.parentRenderer(&quot;footer&quot;, arguments);
+	if (!this.component.user.is(&quot;admin&quot;) || this.component.user.any(&quot;role&quot;, [&quot;vip&quot;])) {
+		element.hide();
+	}
+	return element;
+};
+
+plugin.component.renderers.avatar = function() {
+	var item = this.component;
+	var content = new Echo.SocialChatter.Event(item.get(&quot;data&quot;));
+	var initialAvatar = item.get(&quot;data.actor.avatar&quot;);
+	var defaultAvatar = item.user.config.get(&quot;defaultAvatar&quot;);
+	// re-define default avatar for the item
+	item.user.config.set(&quot;defaultAvatar&quot;, this.config.get(&quot;defaultEventIcon&quot;));
+	if (!$.isEmptyObject(content)) {
+		item.set(&quot;data.actor.avatar&quot;, content.data.vipPhoto);
+	}
+	var element = this.parentRenderer(&quot;avatar&quot;, arguments);
+	item.set(&quot;data.actor.avatar&quot;, initialAvatar);
+	// reset default avatar
+	item.user.config.set(&quot;defaultAvatar&quot;, defaultAvatar);
+	return element;
+};
+
+plugin.component.renderers.authorName = plugin.component.renderers.body = function(element) {
+	return element.remove();
+};
+
+plugin.methods._getFullDate = function(timestamp) {
+	var d = new Date(timestamp);
+	var date = {
+		&quot;h&quot;: d.getHours(),
+		&quot;i&quot;: d.getMinutes(),
+		&quot;d&quot;: d.getDate(),
+		&quot;m&quot;: d.getMonth() + 1,
+		&quot;yyyy&quot;: d.getFullYear()
+	};
+	date.dd = (date.d &lt; 10 ? '0' : '') + date.d;
+	date.mm = (date.m &lt; 10 ? '0' : '') + date.m;
+	date.ii = (date.i &lt; 10 ? '0' : '') + date.i;
+	date.hh = (date.h &lt; 10 ? '0' : '') + date.h;
+
+	return timestamp ? date.mm + &quot;/&quot; + date.dd + &quot;/&quot; + date.yyyy + &quot; &quot; +date.hh + &quot;:&quot; + date.ii : this.labels.get(&quot;unknown&quot;);
+};
+
+plugin.methods._assembleButton = function() {
+	var self = this;
+	return function() {
+		var item = this;
+		var action = &quot;ToggleEventDetails&quot;;
+		return {
+			&quot;name&quot;: action,
+			&quot;label&quot;: self.get(&quot;eventDisplay&quot;, &quot;brief&quot;) === &quot;brief&quot;
+				? self.labels.get(&quot;viewFullEvent&quot;)
+				: self.labels.get(&quot;viewBriefEvent&quot;),
+			&quot;visible&quot;: item.user.is(&quot;admin&quot;),
+			&quot;callback&quot;: function() {
+				var type = self.get(&quot;eventDisplay&quot;, &quot;brief&quot;);
+				self.set(&quot;eventDisplay&quot;, type === &quot;brief&quot; ? &quot;full&quot; : &quot;brief&quot;);
+				item.get(&quot;buttons.&quot; + plugin.name + &quot;.&quot; + action + &quot;.element&quot;)
+					.empty()
+					.append(
+						self.get(&quot;eventDisplay&quot;, &quot;brief&quot;) === &quot;brief&quot;
+							? self.labels.get(&quot;viewFullEvent&quot;)
+							: self.labels.get(&quot;viewBriefEvent&quot;)
+					);
+				$.map([&quot;eventBrief&quot;, &quot;eventFull&quot;], function(type) {
+					self.dom.render({
+						&quot;name&quot;: type,
+						&quot;recursive&quot;: true
+					});
+				});
+			}
+		};
+	};
+};
+
+plugin.css =
+	'.{plugin.class:eventItem} { margin: 5px 0px; }' +
+	'.{plugin.class:eventContainer} { float: left; }' +
+	'.echo-streamserver-controls-stream-SocialChatterEvent .{class:avatar-wrapper} { margin-top: 7px; }' +
+	'.{plugin.class:eventButtonContainer} { padding: 15px 0 15px 0px; text-align: left; }' +
+	'.{plugin.class:eventButtonContainer} .echo-sdk-button .ui-state-default, .{class:newEventButton} .echo-sdk-button .ui-state-default, .echo-streamserver-controls-submit-controls .echo-sdk-button .ui-state-default {background: -webkit-gradient(linear, left top, left bottom, from(white), to(#EDEDED)); background: -moz-linear-gradient(top, white, #EDEDED); text-shadow: 0 1px 1px rgba(0, 0, 0, .3); -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); width: 100px;}' +
+	'.{plugin.class:eventBrief} { padding: 5px 0 5px 0px; }' +
+	'.{plugin.class:eventNameBrief} { font-size: 20px; font-weight: bold; }' +
+	'.{plugin.class:eventDescriptionBrief} { font-size: 14px; margin: 10px 0px; }' +
+	'.echo-products-socialchatter-eventslist .{class:avatar}, .echo-products-socialchatter-eventslist .{class:avatar} img { height: auto !important; }' +
+	'.echo-products-socialchatter-view-eventsStream .{plugin.class:modeSwitch}, .echo-products-socialchatter-eventslist .{class:plugin-Moderation-status} { display: none !important; }' +
+	'.echo-products-socialchatter-eventslist .{class:subcontainer} { margin-left: 10px; }' +
+	'.echo-event-onair-label { color: green; font-weight: bold; }' +
+	'.{plugin.class:eventButton} div.echo-label { font-size: 12px; }';
+
+Echo.Plugin.create(plugin);
+
+})();
+
+(function() {
+
+var plugin = Echo.Plugin.manifest(&quot;SocialChatterEvent&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
+
+plugin.config = {
+	&quot;dateFormat&quot;: &quot;yy-mm-dd&quot;,
+	&quot;timeFormat&quot;: &quot;hh:mm tt&quot;,
+	&quot;ampm&quot;: true
+};
+
+plugin.init = function() {
+	var self = this;
+	var component = this.component;
+
+	this.component.config.get(&quot;target&quot;).addClass(this.cssPrefix + &quot;SocialChatterEvent&quot;);
+	this.extendTemplate(&quot;insertAfter&quot;, &quot;header&quot;, plugin.templates.AdminNotice);
+	this.extendTemplate(&quot;insertAfter&quot;, &quot;text&quot;, plugin.templates.Metadata);
+	this.extendTemplate(&quot;insertBefore&quot;, &quot;body&quot;, plugin.templates.EventIcon);
+
+	component.addPostValidator(function() {
+		var hasErrors;
+		$.each(plugin.mandatoryFields, function(i, v) {
+			var element = component.dom.get(self.get(&quot;cssPrefix&quot;) + v, true);
+			var highlighted = self._highlightMandatory(element);
+			hasErrors = hasErrors || highlighted;
+		});
+		return !hasErrors;
+	});
+
+};
+
+plugin.labels = {
+	&quot;errorLoadingImageURL&quot;: &quot;Error loading image URL&quot;,
+	&quot;eventTitle&quot;: &quot;Event title&quot;,
+	&quot;VIPGuestName&quot;: &quot;VIP guest name&quot;,
+	&quot;photoURL&quot;: &quot;VIP/Event photo URL&quot;,
+	&quot;eventNameHint&quot;: &quot;Type event name&quot;,
+	&quot;vipNameHint&quot;: &quot;Type vip name&quot;,
+	&quot;vipPhotoHint&quot;: &quot;Type vip photo url&quot;,
+	&quot;vipInstructionsHint&quot;: &quot;Type instructions for your VIP guest. Instructions will be displayed as a note in the \&quot;Green Room\&quot; tab&quot;,
+	&quot;eventDescriptionHint&quot;: &quot;Type event description&quot;,
+	&quot;eventStartHint&quot;: &quot;Type event start date&quot;,
+	&quot;eventEndHint&quot;: &quot;Type event end date&quot;,
+	&quot;changeEventIcon&quot;: &quot;change icon&quot;,
+	&quot;vipInstructions&quot;: &quot;&lt;b&gt;Instructions for VIP guest &lt;small&gt;(for Green Room tab)&lt;/small&gt;&lt;/b&gt;&quot;,
+	&quot;eventDescription&quot;: &quot;&lt;b&gt;Event description&lt;/b&gt;&quot;,
+	&quot;eventStart&quot;: &quot;&lt;b&gt;Start date and time&lt;/b&gt; &lt;small&gt;(in your timezone)&lt;/small&gt;&quot;,
+	&quot;eventEnd&quot;: &quot;&lt;b&gt;End date and time&lt;/b&gt; &lt;small&gt;(in your timezone)&lt;/small&gt;&quot;,
+	&quot;eventSubmitNotice&quot;: &quot;&lt;b&gt;Notes for administrators:&lt;/b&gt; &lt;div style=\&quot;text-align: left; padding-left: 40px;\&quot;&gt;&lt;div style=\&quot;margin: 10px 0 10px 0;\&quot;&gt;1. fields marked with &lt;span class=\&quot;echo-streamserver-controls-submit-plugin-SocialChatterEvent-field-mandatory\&quot;&gt;*&lt;/span&gt; are mandatory&lt;/div&gt;&lt;div style=\&quot;margin-bottom: 10px;\&quot;&gt;2. there might be multiple instances of passed and upcoming events, but only &lt;b&gt;one on air&lt;/b&gt; event at a time. Please make sure that there are no time overlaps in events scheduling. Learn more about the Social Chatter application &lt;a href='http://wiki.aboutecho.com/Echo%20Application%20-%20Echo%20Social%20Chatter' target='_blank'&gt;here&lt;/a&gt;.&lt;/div&gt;&lt;/ul&gt;&quot;
+};
+
+plugin.templates.AdminNotice = '&lt;div class=&quot;{plugin.class:eventSubmitNotice}&quot;&gt;&lt;/div&gt;';
+
+plugin.templates.EventIcon =
+	'&lt;div class=&quot;{plugin.class:eventIconContainer}&quot;&gt;' +
+		'&lt;img class=&quot;{plugin.class:eventIcon}&quot; src=&quot;//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:eventIconError}&quot;&gt;{plugin.label:errorLoadingImage}&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:changeEventIcon} echo-linkColor echo-clickable&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+plugin.templates.Metadata =
+	'&lt;div class=&quot;{plugin.class:metadata-container}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:field-title}&quot;&gt;{plugin.label:eventTitle} &lt;span class=&quot;{plugin.class:field-mandatory}&quot;&gt;*&lt;/span&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:inputContainer} {class:border}&quot;&gt;' +
+			'&lt;input type=&quot;text&quot; class=&quot;{plugin.class:eventName} {class:text-input} echo-primaryFont&quot;&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;' +
+	'&lt;div class=&quot;{plugin.class:metadata-container}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:field-title}&quot;&gt;{plugin.label:VIPGuestName} &lt;span class=&quot;{plugin.class:field-mandatory}&quot;&gt;*&lt;/span&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:inputContainer} {class:border}&quot;&gt;' +
+			'&lt;input type=&quot;text&quot; class=&quot;{plugin.class:vipName} {class:text-input} echo-primaryFont&quot;&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;' +
+	'&lt;div class=&quot;{plugin.class:metadata-container}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:field-title}&quot;&gt;{plugin.label:photoURL}&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:inputContainer} {class:border}&quot;&gt;' +
+			'&lt;input type=&quot;text&quot; class=&quot;{plugin.class:vipPhoto} {class:text-input} echo-primaryFont&quot;&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;' +
+	'&lt;div class=&quot;{plugin.class:metadata-container}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:field-title}&quot;&gt;{plugin.label:eventStart} &lt;span class=&quot;{plugin.class:field-mandatory}&quot;&gt;*&lt;/span&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:inputContainer} {class:border}&quot;&gt;' +
+			'&lt;input type=&quot;text&quot; class=&quot;{plugin.class:eventDateStart} {class:text-input} echo-primaryFont&quot;&gt;' +
+			'&lt;i class=&quot;icon-th&quot;&gt;&lt;/i&gt;' +
+			'&lt;input type=&quot;text&quot; class=&quot;{plugin.class:eventTimeStart} {class:text-input} echo-primaryFont&quot;&gt;' +
+			'&lt;i class=&quot;icon-time&quot;&gt;&lt;/i&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;' +
+	'&lt;div class=&quot;{plugin.class:metadata-container}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:field-title}&quot;&gt;{plugin.label:eventEnd} &lt;span class=&quot;{plugin.class:field-mandatory}&quot;&gt;*&lt;/span&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:inputContainer} {class:border}&quot;&gt;' +
+			'&lt;input type=&quot;text&quot; class=&quot;{plugin.class:eventDateEnd} {class:text-input} echo-primaryFont&quot;&gt;' +
+			'&lt;i class=&quot;icon-th&quot;&gt;&lt;/i&gt;' +
+			'&lt;input type=&quot;text&quot; class=&quot;{plugin.class:eventTimeEnd} {class:text-input} echo-primaryFont&quot;&gt;' +
+			'&lt;i class=&quot;icon-time&quot;&gt;&lt;/i&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;' +
+	'&lt;div class=&quot;{plugin.class:metadata-container}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:field-title}&quot;&gt;{plugin.label:eventDescription}&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:inputContainer} {class:border}&quot;&gt;' +
+			'&lt;textarea class=&quot;{plugin.class:eventDescription} {class:text-area} echo-primaryFont&quot;&gt;&lt;/textarea&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;' +
+	'&lt;div class=&quot;{plugin.class:metadata-container}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:field-title}&quot;&gt;{plugin.label:vipInstructions}&lt;/div&gt;' +
+		'&lt;div class=&quot;{plugin.class:inputContainer} {class:border}&quot;&gt;' +
+			'&lt;textarea class=&quot;{plugin.class:vipInstructions} {class:text-area} echo-primaryFont&quot;&gt;&lt;/textarea&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+plugin.fields = [&quot;eventName&quot;, &quot;vipName&quot;, &quot;vipInstructions&quot;, &quot;vipPhoto&quot;,	&quot;eventDescription&quot;,
+	&quot;eventDateStart&quot;, &quot;eventTimeStart&quot;, &quot;eventDateEnd&quot;, &quot;eventTimeEnd&quot;];
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Submit.onPostComplete&quot;: function(topic, args) {
+		var component = this.component;
+		$.map(plugin.fields, function(field) {
+			component.dom.render({&quot;name&quot;: field});
+		});
+	}
+};
+
+plugin.mandatoryFields = [&quot;eventName&quot;, &quot;vipName&quot;, &quot;eventDateStart&quot;, &quot;eventDateEnd&quot;, &quot;eventTimeStart&quot;, &quot;eventTimeEnd&quot;];
+
+$.extend(plugin.events,
+	Echo.Utils.foldl({}, [&quot;Post&quot;, &quot;Edit&quot;], function(action, acc) {
+		acc[&quot;Echo.StreamServer.Controls.Submit.on&quot; + action + &quot;Init&quot;] = function(topic, args) {
+			var self = this;
+			var postType = this.config.get(&quot;parent.type&quot;, this.component._getASURL(&quot;comment&quot;));
+			var verb = action === &quot;Post&quot; ? &quot;post&quot; : &quot;update&quot;;
+			args.postData.content = [
+				this.component._getActivity(verb, postType, Echo.Utils.object2JSON(this._assembleContent()))
+			];
+		};
+	})
+);
+
+plugin.renderers.changeEventIcon = function(element) {
+	var self = this;
+	return element.text(this.labels.get(&quot;changeEventIcon&quot;)).click(function() {
+			self.dom.get(&quot;vipPhoto&quot;).focus().select();
+		});
+};
+
+plugin.component.renderers.body = function(element) {
+	return this.parentRenderer(&quot;body&quot;, arguments).addClass(this.cssPrefix + &quot;content&quot;);
+};
+
+plugin.component.renderers.text = function(element) {
+	var event = new Echo.SocialChatter.Event(this.component.get(&quot;data&quot;));
+	if ($.isEmptyObject(event)) {
+		return this.parentRenderer(&quot;text&quot;, arguments);
+	}
+	// we need to put some value into textarea
+	// to satisfy submission code requirements,
+	// this value would be re-written by the plugin later
+	return element.val(&quot;.&quot;).detach();
+};
+
+plugin.component.renderers.postButton = function(element) {
+	return this.parentRenderer(&quot;postButton&quot;, arguments).addClass(&quot;btn btn-small&quot;);
+};
+
+plugin.renderers.eventInfo = function(element, extra) {
+	extra = extra || {};
+	var type = extra.type;
+	var event = new Echo.SocialChatter.Event(this.component.get(&quot;data&quot;));
+	if (!$.isEmptyObject(event)) {
+		var value = event.data[type] || &quot;&quot;;
+		this.dom.get(type)
+			.iHint({
+				&quot;text&quot;: this.labels.get(type + &quot;Hint&quot;),
+				&quot;className&quot;: &quot;echo-secondaryColor&quot;
+			})
+			.val($.trim(Echo.Utils.stripTags(value || &quot;&quot;)))
+			.blur();
+	} else {
+		this.dom.get(type).detach();
+	}
+	return element;
+};
+
+plugin.renderers.eventSubmitNotice = function(element) {
+	return element.html('&lt;span&gt;' + this.labels.get(&quot;eventSubmitNotice&quot;) + '&lt;/span&gt;');
+};
+
+$.map([&quot;eventDateStart&quot;, &quot;eventDateEnd&quot; ,&quot;eventTimeStart&quot;, &quot;eventTimeEnd&quot;], function(field) {
+
+	var toMillisecond = function(hours, minutes, seconds) {
+		hours = hours || 0;
+		minutes = minutes || 0;
+		seconds = seconds || 0;
+		return (seconds + 60 * minutes + 60 * 60 * hours) * 1000;
+	};
+
+	var formatDatetime = function(timestasmp) {
+		var dateObj = timestasmp ? new Date(timestasmp) : new Date();
+		var date = {
+			&quot;h&quot;: dateObj.getHours(),
+			&quot;i&quot;: dateObj.getMinutes(),
+			&quot;d&quot;: dateObj.getDate(),
+			&quot;m&quot;: dateObj.getMonth() + 1,
+			&quot;yyyy&quot;: dateObj.getFullYear()
+		};
+		date.dd = (date.d &lt; 10 ? '0' : '') + date.d;
+		date.mm = (date.m &lt; 10 ? '0' : '') + date.m;
+		date.ii = (date.i &lt; 10 ? '0' : '') + date.i;
+		date.hh = (date.h &lt; 10 ? '0' : '') + date.h;
+		return {
+			&quot;time&quot;: date.hh + &quot;:&quot; + date.ii,
+			&quot;date&quot;: date.mm + &quot;/&quot; + date.dd + &quot;/&quot; + date.yyyy
+		};
+	};
+
+	plugin.renderers[field] = function(element) {
+		var self = this;
+		this.dom.render({&quot;name&quot;: &quot;eventInfo&quot;, &quot;extra&quot;: {&quot;type&quot;: field}});
+		var event = new Echo.SocialChatter.Event(this.component.get(&quot;data&quot;));
+		var normField = field.replace(/(time)|(date)/i, &quot;&quot;);
+
+		var checkDateInterval = function() {
+			var start = self.get(&quot;eventsTimestamp.eventStart&quot;);
+			var end = self.get(&quot;eventsTimestamp.eventEnd&quot;);
+			if (start &gt; end) {
+				var datetime = formatDatetime(start);
+				self.dom.get(&quot;eventDateEnd&quot;).val(datetime.date);
+				self.dom.get(&quot;eventTimeEnd&quot;).val(datetime.time);
+			}
+		};
+
+		var defaultDate;
+		if (!$.isEmptyObject(event) &amp;&amp; event.data[normField]) {
+			defaultDate = new Date(event.data[normField]);
+			this.set(&quot;eventsTimestamp.&quot; + normField, event.data[normField]);
+		} else {
+			defaultDate = new Date();
+			this.set(&quot;eventsTimestamp.&quot; + normField, defaultDate.valueOf());
+		}
+
+		var time = toMillisecond(defaultDate.getHours(), defaultDate.getMinutes());
+		self.set(&quot;eventsTime.&quot; + normField, time);
+		self.set(&quot;eventsDate.&quot; + normField, defaultDate.valueOf() - time);
+
+		var datetime = formatDatetime(defaultDate);
+
+		if (field === &quot;eventDateStart&quot; || field === &quot;eventDateEnd&quot;) {
+			element.val(datetime.date)
+				.datepicker()
+				.on(&quot;changeDate&quot;, function(ev) {
+					self.set(&quot;eventsDate.&quot; + normField, ev.date.valueOf());
+					self.set(&quot;eventsTimestamp.&quot; + normField, self.get(&quot;eventsTime.&quot; + normField) + self.get(&quot;eventsDate.&quot; + normField));
+					checkDateInterval();
+				}).on(&quot;change&quot;, function() {
+					checkDateInterval();
+				});
+		} else {
+			element.val(datetime.time).timepicker({
+				&quot;minuteStep&quot;: 1,
+				&quot;secondStep&quot;: 5,
+				&quot;showInputs&quot;: false,
+				&quot;showMeridian&quot;: false,
+				&quot;defaultTime&quot;: &quot;value&quot;
+			}).on(&quot;change&quot;, function() {
+					var time = $(this).val();
+					var timeArray = time.split(':');
+					var hour = parseInt(timeArray[0], 10) || 0;
+					var minute = parseInt(timeArray[1], 10) || 0;
+
+					if (hour &gt; 23) {
+						hour = 23;
+					} else if (hour &lt; 0) {
+						hour = 0;
+					}
+
+					if (minute &lt; 0) {
+						minute = 0;
+					} else if (minute &gt; 59) {
+						minute = 59;
+					}
+					var millisecond = toMillisecond(hour, minute);
+					self.set(&quot;eventsTime.&quot; + normField, millisecond);
+					self.set(&quot;eventsTimestamp.&quot; + normField, self.get(&quot;eventsTime.&quot; + normField) + self.get(&quot;eventsDate.&quot; + normField));
+					checkDateInterval();
+			});
+		}
+		return element;
+	};
+});
+
+$.map(plugin.fields, function(field) {
+	plugin.renderers[field] = plugin.renderers[field] || function(element) {
+		var self = this;
+		this.dom.render({&quot;name&quot;: &quot;eventInfo&quot;, &quot;extra&quot;: {&quot;type&quot;: field}});
+		// exclusion for &quot;vipPhoto&quot; element name
+		if (field === &quot;vipPhoto&quot;) {
+			var entry = this.component.get(&quot;data&quot;);
+			if (entry &amp;&amp; entry.object) {
+				var event = new Echo.SocialChatter.Event(entry);
+				if (!$.isEmptyObject(event) &amp;&amp; event.data.vipPhoto) {
+					this.dom.get(&quot;eventIcon&quot;).attr(&quot;src&quot;, event.data.vipPhoto);
+				}
+			}
+			element.focus(function() {
+				self.dom.get(&quot;eventIconError&quot;).hide();
+				element.parent().removeClass(&quot;echo-input-error&quot;);
+			}).blur(function() {
+				var _element = $(this);
+				if (_element.val()) {
+					self.dom.get(&quot;eventIcon&quot;)
+						.attr(&quot;src&quot;, _element.val())
+						.one(&quot;error&quot;, function() {
+							element.parent().addClass(&quot;echo-input-error&quot;);
+							self.dom.get(&quot;eventIconError&quot;).show();
+							self.dom.get(&quot;eventIcon&quot;)
+								.attr(&quot;src&quot;, &quot;//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg&quot;);
+						});
+				}
+			})
+		}
+	};
+});
+
+plugin.methods._assembleContent = function() {
+	var self = this;
+	return Echo.Utils.foldl({}, plugin.fields, function(name, acc) {
+		// FIXME: another logic!
+		if (name === &quot;eventDateStart&quot; || name === &quot;eventDateEnd&quot;) {
+			var _name = name === &quot;eventDateStart&quot; ? &quot;eventStart&quot; : &quot;eventEnd&quot;;
+			acc[_name] = self.get(&quot;eventsTimestamp.&quot; + _name);
+			return;
+		} else if (name === &quot;eventTimeStart&quot; || name === &quot;eventTimeEnd&quot;) {
+			return;
+		}
+		acc[name] = self.dom.get(name).val();
+	});
+};
+
+plugin.methods._highlightMandatory = function(element) {
+	var component = this.component;
+	var result = component.highlightMandatory(element);
+	if (result) {
+		var css = this.cssPrefix + &quot;mandatory&quot;;
+		element.addClass(css)
+			.one(&quot;focus&quot;, function() {
+				element.removeClass(css);
+			});
+	}
+	return result;
+};
+
+plugin.css =
+	'.{plugin.class:SocialChatterEvent} .{class:content} { border: 0px; }' +
+	'.{plugin.class:SocialChatterEvent} .{class:post-container} { float: left; margin: 0px 15px 0px 5px; }' +
+	'.{plugin.class:SocialChatterEvent} .{class:cancelButton-container} { float: left; }' +
+	'.{plugin.class:SocialChatterEvent} .echo-input-error { border: 1px solid red; }' +
+	'.{plugin.class:SocialChatterEvent} .{plugin.class:eventIconError} { display: none; color: red; font-size: 12px; margin: 10px 0px; text-align: center; }' +
+	'.{plugin.class:SocialChatterEvent} .{plugin.class:eventIconContainer} { text-align: center; width: 175px; float: left; margin-right: 20px; }' +
+	'.{plugin.class:SocialChatterEvent} .{plugin.class:eventIconContainer} img { margin: 20px 0px 10px 0px; max-width: 120px; }' +
+	'.{plugin.class:SocialChatterEvent} .{plugin.class:changeEventIcon} { text-align: center; }' +
+	'.{plugin.class:SocialChatterEvent} .{class:body} { float: left; }' +
+	'.{plugin.class:SocialChatterEvent} .{class:controls} { clear: both; margin-left: 195px; margin-bottom: 15px; }' +
+	'.{plugin.class:SocialChatterEvent} .{class:body} { margin-right: 20px; }' +
+	'.{plugin.class:field-title} { font-size: 14px; font-weight: bold; margin-bottom: 5px; }' +
+	'.{plugin.class:field-title} small { font-size: 11px; }' +
+	'.{plugin.class:eventSubmitNotice} { background-color: #D9EDF7; border: 1px solid #BCE8F1; border-radius: 4px 4px 4px 4px; color: #3A87AD;  padding: 15px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); font-size: 14px; line-height: 16px; text-align: center; }' +
+	'.{plugin.class:eventSubmitNotice} a { color: #3A87AD; cursor: pointer; text-decoration: underline; }' +
+	'.{plugin.class:field-mandatory} { color: red; font-weight: bold; }' +
+	'.{plugin.class:inputContainer} { margin-bottom: 5px; width: 300px; padding: 5px; }' +
+	'.{plugin.class:inputContainer} .icon-time { margin: -4px 0 0 -22.5px; pointer-events: none; position: relative; }' +
+	'.{plugin.class:inputContainer} .icon-th { margin: -4px 0 0 -22.5px; pointer-events: none; position: relative; }' +
+	'.{plugin.class:eventTimeStart}, .{plugin.class:eventTimeEnd} { width: 90px; margin-left: 20px; }' +
+	'.{plugin.class:eventDateStart}, .{plugin.class:eventDateEnd} { width: 100px; }' +
+	'.bootstrap-timepicker { width: 160px; }' +
+	'.{class:content} .{plugin.class:mandatory} { border-color: #ff5050; }'+
+	'.{class:content} .echo-secondaryColor { color: #C6C6C6; }' +
+	'.{plugin.class:content} .{class:content} { background-color: transparent; }' +
+	'.{plugin.class:content} .{class:border} { border: none; }'
+;
+
+Echo.Plugin.create(plugin);
+
+})();
+</pre>
+</body>
+</html>

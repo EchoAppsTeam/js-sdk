@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-IdentityServer-Controls-Auth-method-constructor'><span id='Echo-IdentityServer-Controls-Auth'>/**
+</span></span> * @class Echo.IdentityServer.Controls.Auth
+ * Echo Auth control displays user login status and allows to sign in using different social identities.
+ *
+ *     var identityManager = {
+ *         &quot;width&quot;: 400,
+ *         &quot;height&quot;: 240,
+ *         &quot;url&quot;: &quot;http://example.com/auth&quot;
+ *     };
+ *
+ *     new Echo.IdentityServer.Controls.Auth({
+ *         &quot;target&quot;: document.getElementById(&quot;container&quot;),
+ *         &quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+ *         &quot;identityManager&quot;: {
+ *             &quot;login&quot;: identityManager,
+ *             &quot;signup&quot;: identityManager
+ *         }
+ *     });
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * Auth constructor initializing Echo.IdentityServer.Controls.Auth class.
+ *
+ * @param {Object} config
+ * Configuration options.
+ */
+var auth = Echo.Control.manifest(&quot;Echo.IdentityServer.Controls.Auth&quot;);
+
+auth.config = {
+<span id='Echo-IdentityServer-Controls-Auth-cfg-identityManager'>	/**
+</span>	 * @cfg {Object} identityManager
+	 * The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.
+	 *
+	 *     var identityManager = {
+	 *         &quot;width&quot;: 400,
+	 *         &quot;height&quot;: 240,
+	 *         &quot;url&quot;: &quot;http://example.com/auth&quot;
+	 *     };
+	 *
+	 *     new Echo.IdentityServer.Controls.Auth({
+	 *         &quot;target&quot;: document.getElementById(&quot;container&quot;),
+	 *         &quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+	 *         &quot;identityManager&quot;: {
+	 *             &quot;login&quot;: identityManager,
+	 *             &quot;signup&quot;: identityManager
+	 *         }
+	 *     });
+	 *
+	 * @cfg {Object} [identityManager.login]
+	 * Encapsulates data for login workflow.
+	 *
+	 * @cfg {Number} [identityManager.login.width]
+	 * Specifies the width of the visible auth area.
+	 *
+	 * @cfg {Number} [identityManager.login.height]
+	 * Specifies the height of the visible auth area.
+	 *
+	 * @cfg {String} [identityManager.login.url]
+	 * Specifies the URL to be opened as an auth handler.
+	 *
+	 * @cfg {Object} [identityManager.signup]
+	 * Encapsulates data for signup workflow.
+	 *
+	 * @cfg {Number} [identityManager.signup.width]
+	 * Specifies the width of the visible auth area.
+	 *
+	 * @cfg {Number} [identityManager.signup.height]
+	 * Specifies the height of the visible auth area.
+	 *
+	 * @cfg {String} [identityManager.signup.url]
+	 * Specifies the URL to be opened as an auth handler.
+	 *
+	 * @cfg {Object} [identityManager.edit]
+	 * Encapsulates data for edit workflow.
+	 *
+	 * @cfg {Number} [identityManager.edit.width]
+	 * Specifies the width of the visible auth area.
+	 *
+	 * @cfg {Number} [identityManager.edit.height]
+	 * Specifies the height of the visible auth area.
+	 *
+	 * @cfg {String} [identityManager.edit.url]
+	 * Specifies the URL to be opened as an auth handler.
+	 */
+	&quot;identityManager&quot;: {},
+<span id='Echo-IdentityServer-Controls-Auth-cfg-infoMessages'>	/**
+</span>	 * @cfg {String} infoMessages
+	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
+	 */
+	&quot;infoMessages&quot;: {&quot;enabled&quot;: false}
+};
+
+auth.labels = {
+<span id='Echo-IdentityServer-Controls-Auth-property-edit'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;edit&quot;: &quot;Edit&quot;,
+<span id='Echo-IdentityServer-Controls-Auth-property-login'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;login&quot;: &quot;Login&quot;,
+<span id='Echo-IdentityServer-Controls-Auth-property-logout'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;logout&quot;: &quot;Logout&quot;,
+<span id='Echo-IdentityServer-Controls-Auth-property-loggingOut'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;loggingOut&quot;: &quot;Logging out...&quot;,
+<span id='Echo-IdentityServer-Controls-Auth-property-or'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;or&quot;: &quot;or&quot;,
+<span id='Echo-IdentityServer-Controls-Auth-property-signup'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;signup&quot;: &quot;signup&quot;
+};
+
+auth.templates.anonymous =
+	'&lt;div class=&quot;{class:userAnonymous}&quot;&gt;' +
+		'&lt;span class=&quot;{class:login} echo-linkColor echo-clickable&quot;&gt;' +
+			'{label:login}' +
+		'&lt;/span&gt;' +
+		'&lt;span class=&quot;{class:or}&quot;&gt; {label:or} &lt;/span&gt;' +
+		'&lt;span class=&quot;{class:signup} echo-linkColor echo-clickable&quot;&gt;' +
+			'{label:signup}' +
+		'&lt;/span&gt;' +
+	'&lt;/div&gt;';
+
+auth.templates.logged =
+	'&lt;div class=&quot;{class:userLogged}&quot;&gt;' +
+		'&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:name}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:edit} echo-linkColor echo-clickable&quot;&gt;' +
+			'{label:edit}' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:logout} echo-linkColor echo-clickable&quot;&gt;' +
+			'{label:logout}' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+auth.events = {
+	&quot;Echo UserSession.onInvalidate&quot;: {
+		&quot;context&quot;: &quot;global&quot;,
+		&quot;handler&quot;: function() {
+			$.fancybox.close();
+		}
+	}
+};
+
+<span id='Echo-IdentityServer-Controls-Auth-method-logout'>/**
+</span> * @echo_renderer
+ */
+auth.renderers.logout = function(element) { 
+	var self = this;
+	return element.click(function() {
+		element.empty().append(self.labels.get(&quot;loggingOut&quot;));
+		self.user.logout();
+	});
+};
+
+<span id='Echo-IdentityServer-Controls-Auth-method-login'>/**
+</span> * @echo_renderer
+ */
+auth.renderers.login = function(element) {
+	return this._assembleIdentityControl(&quot;login&quot;, element);
+};
+
+<span id='Echo-IdentityServer-Controls-Auth-method-edit'>/**
+</span> * @echo_renderer
+ */
+auth.renderers.edit = function(element) {
+	return this._assembleIdentityControl(&quot;edit&quot;, element);
+};
+
+<span id='Echo-IdentityServer-Controls-Auth-method-signup'>/**
+</span> * @echo_renderer
+ */
+auth.renderers.signup = function(element) {
+	return this._assembleIdentityControl(&quot;signup&quot;, element);
+};
+
+<span id='Echo-IdentityServer-Controls-Auth-method-or'>/**
+</span> * @echo_renderer
+ */
+auth.renderers.or = function(element) {
+	if (!this.config.get(&quot;identityManager.login&quot;) ||
+		!this.config.get(&quot;identityManager.signup&quot;) ||
+		!this.user.get(&quot;sessionID&quot;)) {
+			element.hide();
+	}
+	return element;
+};
+
+<span id='Echo-IdentityServer-Controls-Auth-method-avatar'>/**
+</span> * @echo_renderer
+ */
+auth.renderers.avatar = function(element) {
+	return element.empty().append(Echo.Utils.loadImage(
+		this.user.get(&quot;avatar&quot;),
+		this.user.config.get(&quot;defaultAvatar&quot;)
+	));
+};
+
+<span id='Echo-IdentityServer-Controls-Auth-method-name'>/**
+</span> * @echo_renderer
+ */
+auth.renderers.name = function(element) {
+	return element.append(this.user.get(&quot;name&quot;, &quot;&quot;));
+};
+
+<span id='Echo-IdentityServer-Controls-Auth-method-template'>/**
+</span> * Method to define which template should be used for general rendering procedure.
+ *
+ * @return {String}
+ * control template.
+ */
+auth.methods.template = function() {
+	return this.templates[this.user.is(&quot;logged&quot;) ? &quot;logged&quot; : &quot;anonymous&quot;];
+};
+
+auth.methods._assembleIdentityControl = function(type, element) {
+	var self = this;
+	var data = this.config.get(&quot;identityManager.&quot; + type);
+	if (!data || !this.user.get(&quot;sessionID&quot;)) return element.hide();
+
+	if (data.type == &quot;script&quot;) {
+		return element.click(function() {
+			$.getScript(self._appendSessionID(data.url));
+		});
+	} else {
+		return element.fancybox({
+			&quot;autoScale&quot;: false,
+			&quot;height&quot;: parseInt(data.height),
+			&quot;href&quot;: self._appendSessionID(data.url),
+			&quot;onClosed&quot;: function() {
+				// remove dynamic height/width calculations for overlay
+				if ($.browser.msie &amp;&amp; document.compatMode != &quot;CSS1Compat&quot;) {
+					var style = $(&quot;#fancybox-overlay&quot;).get(0).style;
+					style.removeExpression(&quot;height&quot;);
+					style.removeExpression(&quot;width&quot;);
+				}
+			},
+			&quot;onComplete&quot;: function() {
+				// set fixed dimensions of the frame (for IE in quirks mode it should be smaller)
+				var delta = ($.browser.msie &amp;&amp; document.compatMode != &quot;CSS1Compat&quot; ? 40 : 0);
+				$(&quot;#fancybox-frame&quot;).css({
+					&quot;width&quot;: data.width - delta,
+					&quot;height&quot;: data.height - delta
+				});
+			},
+			&quot;onStart&quot;: function() {
+				Backplane.expectMessages(&quot;identity/ack&quot;);
+				// dynamical calculation of overlay height/width
+				if ($.browser.msie &amp;&amp; document.compatMode != &quot;CSS1Compat&quot;) {
+					var style = $(&quot;#fancybox-overlay&quot;).get(0).style;
+					style.setExpression(&quot;height&quot;, &quot;Math.max(document.body.clientHeight, document.body.scrollHeight)&quot;);
+					style.setExpression(&quot;width&quot;, &quot;Math.max(document.body.clientWidth, document.body.scrollWidth)&quot;);
+				}
+			},
+			&quot;padding&quot;: 0,
+			&quot;scrolling&quot;: &quot;no&quot;,
+			&quot;transitionIn&quot;: &quot;elastic&quot;,
+			&quot;transitionOut&quot;: &quot;elastic&quot;,
+			&quot;type&quot;: &quot;iframe&quot;,
+			&quot;width&quot;: parseInt(data.width)
+		});
+	}
+};
+
+auth.methods._appendSessionID = function(url) {
+	var id = encodeURIComponent(this.user.get(&quot;sessionID&quot;));
+	var parts = Echo.Utils.parseURL(url);
+	var session = parts[&quot;query&quot;]
+		? parts[&quot;query&quot;].match(/=$/) ? id : &quot;&amp;sessionID=&quot; + id
+		: &quot;sessionID=&quot; + id;
+	var url = &quot;{data:scheme}://{data:domain}{data:path}?{data:query}{data:fragment}&quot;;
+	return this.substitute({
+		&quot;template&quot;: url,
+		&quot;data&quot;: {
+			&quot;scheme&quot;: parts[&quot;scheme&quot;] || &quot;http&quot;,
+			&quot;domain&quot;: parts[&quot;domain&quot;],
+			&quot;path&quot;: parts[&quot;path&quot;],
+			&quot;query&quot;: (parts[&quot;query&quot;] || &quot;&quot;) + session,
+			&quot;fragment&quot;: parts[&quot;fragment&quot;] ? (&quot;#&quot; + parts[&quot;fragment&quot;]) : &quot;&quot;
+		}
+	});
+};
+
+auth.css =
+	&quot;.{class:logout} { float: right; }&quot; +
+	&quot;.{class:userAnonymous} { text-align: right; }&quot; +
+	&quot;.{class:avatar} { float: left; }&quot; +
+	&quot;.{class:avatar} img { width: 24px; height: 24px; }&quot; +
+	&quot;.{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }&quot; +
+	&quot;.{class:edit} { float: left; margin: 6px 0px 0px 12px; }&quot;;
+
+Echo.Control.create(auth);
+</pre>
+</body>
+</html>

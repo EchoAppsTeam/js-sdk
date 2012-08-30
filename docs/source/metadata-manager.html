@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager
+ * Provides the ability to add buttons to the Echo Stream control items adding/removing markers/tags. By default those buttons will be available for moderators and administrators, though the visibility of tag controls can be configured via special param.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;MetadataManager&quot;
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;MetadataManager&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-cfg-controls'>/**
+</span> * @cfg {Array} controls Specifies the list of buttons which should be added to the Echo Stream item.
+ * @cfg {String} controls.marker Specifies the value of marker to be set.
+ * @cfg {String} controls.tag Specifies the value of tag to be set.
+ * @cfg {String} controls.labelMark Specifies the button label to perform the corresponding action.
+ * @cfg {String} controls.labelUnmark Specifies the button label to undo the corresponding action
+ * @cfg {Object|Function} controls.visible Specifies the condition of visibility. Applicable only for tags. Can be either an object or a function.
+ *
+ * Example: simple marker control
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;MetadataManager&quot;
+ *             &quot;controls&quot;: [{
+ *                 &quot;marker&quot;: &quot;sticky&quot;,
+ *                 &quot;labelMark&quot;: &quot;Pin&quot;,
+ *                 &quot;labelUnmark&quot;: &quot;Unpin&quot;
+ *             }]
+ *         }]
+ *     });
+ *
+ * Example: simple tag control
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;MetadataManager&quot;
+ *             &quot;controls&quot;: [{
+ *                 &quot;tag&quot;: &quot;football&quot;,
+ *                 &quot;labelMark&quot;: &quot;Set Football tag&quot;,
+ *                 &quot;labelUnmark&quot;: &quot;Unset Football tag&quot;
+ *             }]
+ *         }]
+ *     });
+ *
+ * Example: tag control with visibility condition defined as an object
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;MetadataManager&quot;
+ *             &quot;controls&quot;: [{
+ *                 &quot;tag&quot;: &quot;football&quot;,
+ *                 &quot;labelMark&quot;: &quot;Set Football tag&quot;,
+ *                 &quot;labelUnmark&quot;: &quot;Unset Football tag&quot;,
+ *                 &quot;visible&quot;: {
+ *                     &quot;user.markers&quot;: [&quot;top_commenter&quot;, &quot;top_visitor&quot;],
+ *                     &quot;user.state&quot;: [&quot;Untouched&quot;, &quot;ModeratorApproved&quot;]
+ *                     &quot;user.roles&quot;: [&quot;Moderator&quot;]
+ *                 }
+ *             }]
+ *         }]
+ *     });
+ *
+ * Example: tag control with visibility condition defined as a function 
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;MetadataManager&quot;
+ *             &quot;controls&quot;: [{
+ *                 &quot;tag&quot;: &quot;football&quot;,
+ *                 &quot;labelMark&quot;: &quot;Set Football tag&quot;,
+ *                 &quot;labelUnmark&quot;: &quot;Unset Football tag&quot;,
+ *                 &quot;visible&quot;: function(application, item) {
+ *                     var user = application.user;
+ *                     if (user.get(&quot;state&quot;) == &quot;Untouched&quot;) return true;
+ *                     return false;
+ *                 }
+ *             }]
+ *         }]
+ *     });
+ */
+plugin.init = function() {
+	var self = this;
+	var item = this.component;
+	$.each(this.config.get(&quot;controls&quot;), function(i, control) {
+		item.addButtonSpec(&quot;MetadataManager&quot;, self._assembleButton(&quot;Mark&quot;, control));
+		item.addButtonSpec(&quot;MetadataManager&quot;, self._assembleButton(&quot;Unmark&quot;, control));
+	});
+};
+
+plugin.labels = {
+	&quot;markProcessing&quot;: &quot;Adding {type} {marker}...&quot;,
+	&quot;unmarkProcessing&quot;: &quot;Removing {type} {marker}...&quot;
+};
+
+plugin.methods._assembleButton = function(action, control) {
+	var self = this;
+	var type = control.marker ? &quot;marker&quot; : &quot;tag&quot;;
+	var marker = (control.marker || control.tag);
+	var name = action + &quot;As&quot; + marker.replace(/[^a-z0-9_-]/ig, '');
+	var callback = function() {
+		var item = this;
+		var operation = action.toLowerCase();
+		item.get(&quot;buttons.&quot; + plugin.name + &quot;.&quot; + name + &quot;.element&quot;)
+			.empty()
+			.append(self.labels.get(operation + &quot;Processing&quot;, {&quot;type&quot;: type, &quot;marker&quot;: marker}));
+		var verb = type == &quot;tag&quot; ? operation.replace(/mark/g, &quot;tag&quot;) : operation;
+		var activity = {
+			&quot;verbs&quot;: [&quot;http://activitystrea.ms/schema/1.0/&quot; + verb],
+			&quot;targets&quot;: [{&quot;id&quot;: item.get(&quot;data.object.id&quot;)}],
+			&quot;object&quot;: {
+				&quot;objectTypes&quot;: [
+					&quot;http://activitystrea.ms/schema/1.0/&quot; + type
+				],
+				&quot;content&quot;: marker
+			}
+		};
+		Echo.StreamServer.API.request({
+			&quot;endpoint&quot;: &quot;submit&quot;,
+			&quot;submissionProxyURL&quot;: item.config.get(&quot;submissionProxyURL&quot;),
+			&quot;onData&quot;: function() {
+				self.events.publish({
+					&quot;topic&quot;: &quot;on&quot; + name + &quot;Complete&quot;,
+					&quot;data&quot;: {
+						&quot;item&quot;: {
+							&quot;data&quot;: item.get(&quot;data&quot;),
+							&quot;target&quot;: item.get(&quot;dom.content&quot;)
+						}
+					},
+					&quot;bubble&quot;: true
+				});
+				self.requestDataRefresh();
+			},
+			&quot;data&quot;: {
+				&quot;appkey&quot;: item.config.get(&quot;appkey&quot;),
+				&quot;content&quot;: activity,
+				&quot;target-query&quot;: item.config.get(&quot;parent.query&quot;, &quot;&quot;),
+				&quot;sessionID&quot;: item.user.get(&quot;sessionID&quot;, &quot;&quot;)
+			}
+		}).send();
+	};
+	return function() {
+		var item = this;
+		return {
+			&quot;name&quot;: name,
+			&quot;label&quot;: control[&quot;label&quot; + action],
+			&quot;visible&quot;: self._isButtonVisible(control, marker, action, type),
+			&quot;once&quot;: true,
+			&quot;callback&quot;: callback
+		};
+	};
+};
+
+plugin.methods._isButtonVisible = function(control, marker, action, type) {
+	var item = this.component;
+	var visible = ($.inArray(marker, item.get(&quot;data.object.&quot; + type + &quot;s&quot;) || []) == -1) ^ (action == &quot;Unmark&quot;);
+	if (!visible || !item.user.is(&quot;logged&quot;)) return false;
+	if (item.user.is(&quot;admin&quot;)) return true;
+	var customProxyURL = item.config.get(&quot;submissionProxyURL&quot;);
+	if (type == &quot;marker&quot; &amp;&amp; !customProxyURL) return false;
+	control.visible = control.visible || function() { return false; };
+	if ($.isFunction(control.visible)) {
+		return control.visible(item);
+	}
+	if ($.isEmptyObject(control.visible)) return false;
+	var isVisible = true;
+	$.each([&quot;state&quot;, &quot;roles&quot;, &quot;markers&quot;], function(i, field) {
+		var values = control.visible[&quot;user.&quot; + field];
+		if (values) {
+			values = typeof values == &quot;string&quot; ? [values] : values;
+			if (!item.user.any(field, values)) {
+				isVisible = false;
+				return false; // break
+			}
+		}
+	});
+	return isVisible;
+};
+
+Echo.Plugin.create(plugin);</pre>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag
+ * Adds extra buttons Flag/Unflag to each item in the Echo Stream control for the authenticated users. The item will receive the CommunityFlagged state as soon as it is flagged by a certain number of users. By default this number is 3, but it may be updated by contacting Echo Solutions team at solutions@aboutecho.com. The plugin also shows the number of flags already set for the item next to the Flag/Unflag control.
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;CommunityFlag&quot;
+ *         }]
+ *     });
+ *
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;CommunityFlag&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+plugin.init = function() {
+	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;data&quot;, plugin.template);
+	this.component.addButtonSpec(&quot;CommunityFlag&quot;, this._assembleButton(&quot;Flag&quot;));
+	this.component.addButtonSpec(&quot;CommunityFlag&quot;, this._assembleButton(&quot;Unflag&quot;));
+};
+
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-cfg-showUsers'>	/**
+</span>	 * @cfg {Boolean} showUsers
+	 * Specifies the visibility of list of users who flagged particular item. Note that the list is only visible for the users with the administrative privileges.
+	 */
+	&quot;showUsers&quot;: true
+};
+
+plugin.template = '&lt;div class=&quot;{plugin.class:flaggedBy}&quot;&gt;&lt;/div&gt;';
+
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-flaggedThis'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;flaggedThis&quot;: &quot; flagged this.&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-flagControl'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;flagControl&quot;: &quot;Flag&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-unflagControl'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;unflagControl&quot;: &quot;Unflag&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-flagProcessing'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;flagProcessing&quot;: &quot;Flagging...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-unflagProcessing'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;unflagProcessing&quot;: &quot;Unflagging...&quot;
+};
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-method-flaggedBy'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.flaggedBy = function(element) {
+	var plugin = this, item = this.component;
+	var flags = item.get(&quot;data.object.flags&quot;, []);
+	if (!flags.length || !item.user.is(&quot;admin&quot;) || !plugin.config.get(&quot;showUserList&quot;)) {
+		return element.hide();
+	}
+	var flagsPerPage = 5;
+	var visibleUsersCount = plugin.get(&quot;facepile&quot;)
+		? plugin.get(&quot;facepile&quot;).getVisibleUsersCount()
+		: flagsPerPage;
+	var config = plugin.config.assemble({
+		&quot;target&quot;: element,
+		&quot;data&quot;: {
+			&quot;entries&quot;: flags,
+			&quot;itemsPerPage&quot;: flagsPerPage
+		},
+		&quot;initialUsersCount&quot;: visibleUsersCount,
+		&quot;suffixText&quot;: plugin.labels.get(&quot;flaggedThis&quot;)
+	});
+	plugin.set(&quot;facepile&quot;, new Echo.StreamServer.Controls.FacePile(config));
+	return element.show();
+};
+
+plugin.methods._assembleButton = function(name) {
+	var plugin = this, item = this.component;
+	var callback = function() {
+		var item = this;
+		item.get(&quot;buttons.&quot; + plugin.name + &quot;.&quot; + name + &quot;.element&quot;)
+			.empty()
+			.append(plugin.labels.get(name.toLowerCase() + &quot;Processing&quot;));
+		var activity = {
+			&quot;verbs&quot;: [&quot;http://activitystrea.ms/schema/1.0/&quot; + name.toLowerCase()],
+			&quot;targets&quot;: [{&quot;id&quot;: item.get(&quot;data.object.id&quot;)}]
+		};
+		var request = Echo.StreamServer.API.request({
+			&quot;endpoint&quot;: &quot;submit&quot;,
+			&quot;submissionProxyURL&quot;: plugin.config.get(&quot;submissionProxyURL&quot;, &quot;&quot;, true),
+			&quot;data&quot;: {
+				&quot;content&quot;: activity,
+				&quot;appkey&quot;: item.config.get(&quot;appkey&quot;),
+				&quot;sessionID&quot;: item.user.get(&quot;sessionID&quot;),
+				&quot;target-query&quot;: item.config.get(&quot;parent.query&quot;)
+			},
+			&quot;onData&quot;: function() {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-event-onFlagComplete'>				/**
+</span>				 * @event onFlagComplete
+				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagComplete
+				 * Triggered if flag operation was completed. 
+				 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-event-onUnFlagComplete'>				/**
+</span>				 * @event onUnFlagComplete
+				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagComplete
+				 * Triggered if reverse flag operation was completed. 
+				 */
+				plugin.events.publish({
+					&quot;topic&quot;: &quot;on&quot; + name + &quot;Complete&quot;,
+					&quot;data&quot;: {
+						&quot;item&quot;: {
+							&quot;data&quot;: item.get(&quot;data&quot;),
+							&quot;target&quot;: item.config.get(&quot;target&quot;)
+						}
+					}
+				});
+				plugin.requestDataRefresh();
+			}
+		})
+		request.send();
+	};
+	return function() {
+		var item = this;
+		var flags = item.get(&quot;data.object.flags&quot;);
+		var label = plugin.labels.get(name.toLowerCase() + &quot;Control&quot;);
+		var action = plugin._myFlags(flags).length &gt; 0 ? &quot;Unflag&quot; : &quot;Flag&quot;;
+		return {
+			&quot;name&quot;: name,
+			&quot;label&quot;: '&lt;span class=&quot;echo-clickable&quot;&gt;' + label + '&lt;/span&gt;' +
+				(item.user.is(&quot;admin&quot;) &amp;&amp; flags.length ? &quot; (&quot; + flags.length + &quot;)&quot; : &quot;&quot;),
+			&quot;visible&quot;: item.user.is(&quot;logged&quot;) &amp;&amp; action == name,
+			&quot;once&quot;: true,
+			&quot;callback&quot;: callback
+		};
+	};
+};
+
+plugin.methods._myFlags = function(flags) {
+	var item = this.component;
+	return $.map(flags, function(entry) {
+		if (item.user.has(&quot;identity&quot;, entry.actor.id)) return entry;
+	});
+};
+
+plugin.css = '.{plugin.class:flaggedBy} { background: url(//cdn.echoenabled.com/images/curation/status/communityflagged.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
+
+Echo.Plugin.create(plugin);
+</pre>
+</body>
+</html>

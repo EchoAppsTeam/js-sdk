@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth'>/**
+</span> * @class Echo.StreamServer.Controls.Submit.Plugins.FormAuth
+ * Adds the authentication section to the Echo Submit control
+ *     var identityManager = {&quot;width&quot;: 400, &quot;height&quot;: 240, &quot;url&quot;: &quot;http://example.com/auth&quot;};
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;Edit&quot;,
+ *             &quot;identityManager&quot;: {
+ *                 &quot;login&quot;: identityManager,
+ *                 &quot;signup&quot;: identityManager
+ *             }
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;FormAuth&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
+
+plugin.init = function() {
+	if (this._userStatus() === &quot;forcedLogin&quot;) {
+		this.extendTemplate(&quot;replace&quot;, &quot;header&quot;, plugin.templates.forcedLogin);
+	}
+	this.extendTemplate(&quot;insertBefore&quot;, &quot;header&quot;, plugin.templates.auth);
+	this.component.addPostValidator(this._validator());
+};
+
+plugin.enabled = function() {
+	return (this.component.user.get(&quot;sessionID&quot;) &amp;&amp;
+		this.config.get(&quot;identityManager.login&quot;) &amp;&amp;
+		this.config.get(&quot;identityManager.signup&quot;));
+};
+
+plugin.dependencies = [{
+	&quot;url&quot;: Echo.Loader.config.cdnBaseURL + &quot;sdk/identity-server.pack.js&quot;,
+	&quot;loaded&quot;: function() {
+		return Echo.Utils.isComponentDefined(&quot;Echo.IdentityServer.Controls.Auth&quot;);
+	}
+}];
+
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-cfg-identityManager'>/**
+</span> * @cfg {Object} identityManager The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.
+ * @cfg {Object} [identityManager.login] Encapsulates data for login workflow
+ * @cfg {Number} [identityManager.login.width] Specifies the width of the visible auth area
+ * @cfg {Number} [identityManager.login.height] Specifies the height of the visible auth area
+ * @cfg {String} [identityManager.login.url] Specifies the URL to be opened as an auth handler
+ * @cfg {Object} [identityManager.signup] Encapsulates data for signup workflow
+ * @cfg {Number} [identityManager.signup.width] Specifies the width of the visible auth area
+ * @cfg {Number} [identityManager.signup.height] Specifies the height of the visible auth area
+ * @cfg {String} [identityManager.signup.url] Specifies the URL to be opened as an auth handler
+ * @cfg {Object} [identityManager.edit] Encapsulates data for edit workflow
+ * @cfg {Number} [identityManager.edit.width] Specifies the width of the visible auth area
+ * @cfg {Number} [identityManager.edit.height] Specifies the height of the visible auth area
+ * @cfg {String} [identityManager.edit.url] Specifies the URL to be opened as an auth handler
+ */
+	&quot;identityManager&quot;: {},
+<span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-cfg-submitPermissions'>/**
+</span> * @cfg {String} submitPermissions Specifies the permitted commenting modes. The two options are: &quot;allowGuest&quot; and &quot;forceLogin&quot;.
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;Edit&quot;,
+ *             &quot;identityManager&quot;: {
+ *                 &quot;login&quot;: identityManager,
+ *                 &quot;signup&quot;: identityManager
+ *             },
+ *             &quot;submitPermissions&quot;: &quot;forceLogin&quot;
+ *         }]
+ *     });
+ */
+	&quot;submitPermissions&quot;: &quot;allowGuest&quot;
+};
+
+plugin.labels = {
+	&quot;youMustBeLoggedIn&quot;: &quot;You must be logged in to comment&quot;
+};
+
+plugin.templates.auth = '&lt;div class=&quot;{plugin.class:auth}&quot;&gt;&lt;/div&gt;';
+
+plugin.templates.forcedLogin =
+	'&lt;div class=&quot;{class:header} echo-primaryFont&quot;&gt;' +
+		'&lt;span class=&quot;{plugin.class:forcedLoginMessage} echo-secondaryColor&quot;&gt;' +
+			'{plugin.label:youMustBeLoggedIn}' +
+		'&lt;/span&gt;' +
+	'&lt;/div&gt;';
+
+plugin.component.renderers.header = function(element) {
+	var plugin = this;
+	if (this._userStatus() === &quot;logged&quot;) {
+		return element.empty();
+	}
+	return plugin.parentRenderer(&quot;header&quot;, arguments);
+};
+
+plugin.component.renderers.container = function(element) {
+	var plugin = this;
+	plugin.parentRenderer(&quot;container&quot;, arguments);
+	var _class = function(postfix) {
+		return plugin.cssPrefix + postfix;
+	};
+	return element
+		.removeClass($.map([&quot;logged&quot;, &quot;anonymous&quot;, &quot;forcedLogin&quot;], _class).join(&quot; &quot;))
+		.addClass(_class(plugin._userStatus()));
+};
+
+plugin.renderers.auth = function(element) {
+	var plugin = this;
+	new Echo.IdentityServer.Controls.Auth(plugin.config.assemble({
+		&quot;target&quot;: element,
+		&quot;identityManager&quot;: plugin.config.get(&quot;identityManager&quot;)
+	}));
+	return element;
+};
+
+plugin.methods._validator = function() {
+	var plugin = this, submit = this.component;
+	return function() {
+		if (!submit.user.is(&quot;logged&quot;) &amp;&amp; plugin._permissions() === &quot;forceLogin&quot;) {
+			plugin.dom.get(&quot;forcedLoginMessage&quot;).addClass(plugin.cssPrefix + &quot;error&quot;);
+			return false;
+		}
+		return true;
+	}
+};
+
+plugin.methods._permissions = function() {
+	return this.config.get(&quot;submitPermissions&quot;);
+};
+
+plugin.methods._userStatus = function(application) {
+	return this.component.user.is(&quot;logged&quot;)
+		? &quot;logged&quot;
+		: this._permissions() == &quot;forceLogin&quot;
+			? &quot;forcedLogin&quot;
+			: &quot;anonymous&quot;;
+};
+
+plugin.css =
+	'.{plugin.class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }' +
+	'.{plugin.class:error} { color: red; }';
+
+Echo.Plugin.create(plugin);
+</pre>
+</body>
+</html>

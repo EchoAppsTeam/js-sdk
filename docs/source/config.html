@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
+	&quot;name&quot;: &quot;children&quot;,
+	&quot;type&quot;: &quot;Object&quot;,
+	&quot;title&quot;: &quot;Child nodes rules&quot;,
+	&quot;description&quot;: &quot;Specifies the children pagination feature behavior&quot;,
+	&quot;properties&quot;: [{
+		&quot;name&quot;: &quot;additionalItemsPerPage&quot;,
+		&quot;type&quot;: &quot;Number&quot;,
+		&quot;defaultValue&quot;: 5,
+		&quot;title&quot;: &quot;Items per page&quot;,
+		&quot;description&quot;: &quot;Specifies how many items should be retrieved from server and rendered after clicking the \&quot;View more items\&quot; button.&quot;
+	}, {
+		&quot;name&quot;: &quot;displaySortOrder&quot;,
+		&quot;type&quot;: &quot;String&quot;,
+		&quot;defaultValue&quot;: &quot;chronological&quot;,
+		&quot;values&quot;: [&quot;chronological&quot;, &quot;reverseChronological&quot;],
+		&quot;title&quot;: &quot;Display order&quot;,
+		&quot;description&quot;: &quot;The order in which the list of child nodes should be sorted during the children display&quot;
+	}, {
+		&quot;name&quot;: &quot;sortOrder&quot;,
+		&quot;type&quot;: &quot;String&quot;,
+		&quot;defaultValue&quot;: &quot;reverseChronological&quot;,
+		&quot;values&quot;: [&quot;chronological&quot;, &quot;reverseChronological&quot;],
+		&quot;title&quot;: &quot;Request sort order&quot;,
+		&quot;description&quot;: &quot;The order in which the list of child nodes should be sorted during the children list rendering&quot;
+	}, {
+		&quot;name&quot;: &quot;moreButtonSlideTimeout&quot;,
+		&quot;type&quot;: &quot;Number&quot;,
+		&quot;defaultValue&quot;: 600,
+		&quot;title&quot;: &quot;\&quot;More\&quot; button slide timeout&quot;,
+		&quot;description&quot;: &quot;The number of milliseconds to animate the \&quot;More\&quot; button sliding out in case the last portion of child items received&quot;
+	}, {
+		&quot;name&quot;: &quot;itemsSlideTimeout&quot;,
+		&quot;type&quot;: &quot;Number&quot;,
+		&quot;defaultValue&quot;: 600,
+		&quot;title&quot;: &quot;New child items slide timeout&quot;,
+		&quot;description&quot;: &quot;The number of milliseconds to animate the appearance of the new child items chunk&quot;
+	}, {
+		&quot;name&quot;: &quot;maxDepth&quot;,
+		&quot;type&quot;: &quot;Number&quot;,
+		&quot;defaultValue&quot;: 1,
+		&quot;title&quot;: &quot;Children threads max depth&quot;,
+		&quot;description&quot;: &quot;Max depth of the children tree&quot;
+	}]
+}, {
+	&quot;name&quot;: &quot;fadeTimeout&quot;,
+	&quot;type&quot;: &quot;Number&quot;,
+	&quot;defaultValue&quot;: 2800,
+	&quot;title&quot;: &quot;Fade out animation duration for the new items&quot;,
+	&quot;description&quot;: &quot;The duration of the fading animation when an item comes to stream as a live update&quot;
+}, {
+	&quot;name&quot;: &quot;flashColor&quot;,
+	&quot;type&quot;: &quot;String&quot;,
+	&quot;defaultValue&quot;: &quot;#ffff99&quot;,
+	&quot;title&quot;: &quot;Slide down animation duration for the new items&quot;,
+	&quot;description&quot;: &quot;The duration of the sliding down animation when an item comes to stream as a live update&quot;
+}, {
+	&quot;name&quot;: &quot;itemsPerPage&quot;,
+	&quot;type&quot;: &quot;Number&quot;,
+	&quot;defaultValue&quot;: 15,
+	&quot;title&quot;: &quot;Root items per page&quot;,
+	&quot;description&quot;: &quot;Specifies the amount of root items per page&quot;
+}, {
+	&quot;name&quot;: &quot;liveUpdates&quot;,
+	&quot;type&quot;: &quot;Boolean&quot;,
+	&quot;defaultValue&quot;: true,
+	&quot;title&quot;: &quot;Live updating&quot;,
+	&quot;description&quot;: &quot;Parameter to enable/disable receiving live updates by the application&quot;
+}, {
+	&quot;name&quot;: &quot;liveUpdatesTimeout&quot;,
+	&quot;type&quot;: &quot;Number&quot;,
+	&quot;defaultValue&quot;: 10,
+	&quot;title&quot;: &quot;Live updates timeout&quot;,
+	&quot;description&quot;: &quot;The timeout between the regular live update requests&quot;
+}, {
+	&quot;name&quot;: &quot;liveUpdatesTimeoutMin&quot;,
+	&quot;type&quot;: &quot;Number&quot;,
+	&quot;defaultValue&quot;: 3,
+	&quot;title&quot;: &quot;Frequent live updates timeout&quot;,
+	&quot;description&quot;: &quot;The timeout between the live update requests in case of huge amount of incoming items&quot;
+}, {
+	&quot;name&quot;: &quot;openLinksInNewWindow&quot;,
+	&quot;type&quot;: &quot;Boolean&quot;,
+	&quot;defaultValue&quot;: false,
+	&quot;title&quot;: &quot;Open links in a new window&quot;,
+	&quot;description&quot;: &quot;Specifies if the links from the item body should be opened in the new window or in the current one&quot;
+}, {
+	&quot;name&quot;: &quot;providerIcon&quot;,
+	&quot;type&quot;: &quot;String&quot;,
+	&quot;defaultValue&quot;: &quot;http://cdn.echoenabled.com/images/favicons/comments.png&quot;,
+	&quot;title&quot;: &quot;Default provider icon&quot;,
+	&quot;description&quot;: &quot;Specifies the default provider icon URL&quot;
+}, {
+	&quot;name&quot;: &quot;slideTimeout&quot;,
+	&quot;type&quot;: &quot;Number&quot;,
+	&quot;defaultValue&quot;: 700,
+	&quot;title&quot;: &quot;Slide down animation duration for the new items&quot;,
+	&quot;description&quot;: &quot;Allows to adjust the duration of the sliding animation when an item comes to a stream as a live update&quot;
+}, {
+	&quot;name&quot;: &quot;sortOrder&quot;,
+	&quot;type&quot;: &quot;Number&quot;,
+	&quot;defaultValue&quot;: &quot;reverseChronological&quot;,
+	&quot;values&quot;: [&quot;chronological&quot;, &quot;reverseChronological&quot;],
+	&quot;title&quot;: &quot;Root items sorting order&quot;,
+	&quot;description&quot;: &quot;Aloows to define root items sorting order&quot;
+
+}, {
+	&quot;name&quot;: &quot;streamStateLabel&quot;,
+	&quot;type&quot;: &quot;Object&quot;,
+	&quot;title&quot;: &quot;Stream state label&quot;,
+	&quot;description&quot;: &quot;Configuration of the Live/Pause stream indicator&quot;,
+	&quot;properties&quot;: [{
+		&quot;name&quot;: &quot;icon&quot;,
+		&quot;type&quot;: &quot;Boolean&quot;,
+		&quot;defaultValue&quot;: true,
+		&quot;title&quot;: &quot;Icon&quot;,
+		&quot;description&quot;: &quot;Specifies if the state icon should be visible&quot;
+	}, {
+		&quot;name&quot;: &quot;text&quot;,
+		&quot;type&quot;: &quot;Boolean&quot;,
+		&quot;defaultValue&quot;: true,
+		&quot;title&quot;: &quot;Text&quot;,
+		&quot;description&quot;: &quot;Specifies if the state text should be visible&quot;
+	}]
+}, {
+	&quot;name&quot;: &quot;streamStateToggleBy&quot;,
+	&quot;type&quot;: &quot;String&quot;,
+	&quot;defaultValue&quot;: &quot;mouseover&quot;,
+	&quot;values&quot;: [&quot;mouseover&quot;, &quot;button&quot;, &quot;none&quot;],
+	&quot;title&quot;: &quot;Stream state change trigger&quot;,
+	&quot;description&quot;: &quot;Specifies the method of changing stream live/paused state&quot;
+}, {
+	&quot;name&quot;: &quot;submissionProxyURL&quot;,
+	&quot;type&quot;: &quot;String&quot;,
+	&quot;defaultValue&quot;: &quot;http://apps.echoenabled.com/v2/esp/activity&quot;,
+	&quot;title&quot;: &quot;Submission Proxy URL&quot;,
+	&quot;description&quot;: &quot;Specifies the submission proxy URL&quot;
+}, {
+	&quot;name&quot;: &quot;components&quot;,
+	&quot;type&quot;: &quot;Object&quot;,
+	&quot;title&quot;: &quot;Stream item configuration&quot;,
+	&quot;description&quot;: &quot;Specific configuration of the stream Item class&quot;,
+	&quot;properties&quot;: [{
+		&quot;name&quot;: &quot;item&quot;,
+		&quot;type&quot;: &quot;Echo.StreamServer.Controls.Stream.Item&quot;,
+		&quot;title&quot;: &quot;Item&quot;,
+		&quot;description&quot;: &quot; &quot;
+	}]
+}];
+
+Echo.StreamServer.Controls.Stream.Item.ConfigSpecification = [{
+	&quot;name&quot;: &quot;aggressiveSanitization&quot;,
+	&quot;type&quot;: &quot;Boolean&quot;,
+	&quot;defaultValue&quot;: false
+//}, {
+//	&quot;name&quot;: &quot;buttonsOrder&quot;,
+//	&quot;type&quot;: &quot;Object&quot;
+/* FIXME: not looking good atm, enable later
+}, {
+	&quot;name&quot;: &quot;contentTransformations&quot;,
+	&quot;type&quot;: &quot;Object&quot;,
+	&quot;properties&quot;: [{
+		&quot;name&quot;: &quot;text&quot;,
+		&quot;type&quot;: &quot;Array&quot;,
+		&quot;values&quot;: [&quot;smileys&quot;, &quot;hashtags&quot;, &quot;urls&quot;, &quot;newlines&quot;]
+	}, {
+		&quot;name&quot;: &quot;html&quot;,
+		&quot;type&quot;: &quot;Array&quot;,
+		&quot;values&quot;: [&quot;smileys&quot;, &quot;hashtags&quot;, &quot;urls&quot;, &quot;newlines&quot;]
+	}, {
+		&quot;name&quot;: &quot;xhtml&quot;,
+		&quot;type&quot;: &quot;Array&quot;,
+		&quot;values&quot;: [&quot;smileys&quot;, &quot;hashtags&quot;, &quot;urls&quot;]
+	}]
+*/
+}, {
+	&quot;name&quot;: &quot;limits&quot;,
+	&quot;type&quot;: &quot;Object&quot;,
+	&quot;properties&quot;: [{
+		&quot;name&quot;: &quot;maxBodyCharacters&quot;,
+		&quot;type&quot;: &quot;Number&quot;
+	}, {
+		&quot;name&quot;: &quot;maxBodyLines&quot;,
+		&quot;type&quot;: &quot;Number&quot;
+	}, {
+		&quot;name&quot;: &quot;maxBodyLinkLength&quot;,
+		&quot;type&quot;: &quot;Number&quot;,
+		&quot;defaultValue&quot;: 50
+	}, {
+		&quot;name&quot;: &quot;maxMarkerLength&quot;,
+		&quot;type&quot;: &quot;Number&quot;,
+		&quot;defaultValue&quot;: 16
+	}, {
+		&quot;name&quot;: &quot;maxReLinkLength&quot;,
+		&quot;type&quot;: &quot;Number&quot;,
+		&quot;defaultValue&quot;: 30
+	}, {
+		&quot;name&quot;: &quot;maxReTitleLength&quot;,
+		&quot;type&quot;: &quot;Number&quot;,
+		&quot;defaultValue&quot;: 143
+	}, {
+		&quot;name&quot;: &quot;maxTagLength&quot;,
+		&quot;type&quot;: &quot;Number&quot;,
+		&quot;defaultValue&quot;: 16
+	}]
+}, {
+	&quot;name&quot;: &quot;optimizedContext&quot;,
+	&quot;type&quot;: &quot;Boolean&quot;,
+	&quot;defaultValue&quot;: true
+}, {
+	&quot;name&quot;: &quot;reTag&quot;,
+	&quot;type&quot;: &quot;Boolean&quot;,
+	&quot;defaultValue&quot;: true
+}, {
+	&quot;name&quot;: &quot;viaLabel&quot;,
+	&quot;type&quot;: &quot;Object&quot;,
+	&quot;properties&quot;: [{
+		&quot;name&quot;: &quot;icon&quot;,
+		&quot;type&quot;: &quot;Boolean&quot;,
+		&quot;defaultValue&quot;: false
+	}, {
+		&quot;name&quot;: &quot;text&quot;,
+		&quot;type&quot;: &quot;Boolean&quot;,
+		&quot;defaultValue&quot;: false
+	}]
+}];
+
+Echo.StreamServer.Controls.Submit.ConfigSpecification = [{
+	&quot;name&quot;: &quot;targetURL&quot;,
+	&quot;type&quot;: &quot;String&quot;//,
+/*
+	&quot;defaultValue&quot;: document.location.href
+}, {
+	&quot;name&quot;: &quot;markers&quot;,
+	&quot;type&quot;: &quot;Array[String]&quot;
+}, {
+	&quot;name&quot;: &quot;tags&quot;,
+	&quot;type&quot;: &quot;Array[String]&quot;
+*/
+}, {
+	&quot;name&quot;: &quot;source&quot;,
+	&quot;type&quot;: &quot;Object&quot;,
+	&quot;properties&quot;: [{
+		&quot;name&quot;: &quot;name&quot;,
+		&quot;type&quot;: &quot;String&quot;
+	}, {
+		&quot;name&quot;: &quot;uri&quot;,
+		&quot;type&quot;: &quot;String&quot;
+	}, {
+		&quot;name&quot;: &quot;icon&quot;,
+		&quot;type&quot;: &quot;String&quot;
+	}]
+}, {
+	&quot;name&quot;: &quot;requestMethod&quot;,
+	&quot;type&quot;: &quot;String&quot;,
+	&quot;defaultValue&quot;: &quot;GET&quot;,
+	&quot;values&quot;: [&quot;GET&quot;, &quot;POST&quot;]
+}, {
+	&quot;name&quot;: &quot;itemURIPattern&quot;,
+	&quot;type&quot;: &quot;String&quot;
+}, {
+	&quot;name&quot;: &quot;actionString&quot;,
+	&quot;type&quot;: &quot;String&quot;,
+	&quot;defulatValue&quot;: &quot;Type your comment here...&quot;
+}, {
+	&quot;name&quot;: &quot;postingTimeout&quot;,
+	&quot;type&quot;: &quot;Number&quot;,
+	&quot;defaultValue&quot;: 30
+}, {
+	&quot;name&quot;: &quot;type&quot;,
+	&quot;type&quot;: &quot;String&quot;
+}, {
+	&quot;name&quot;: &quot;targetQuery&quot;,
+	&quot;type&quot;: &quot;String&quot;
+}];
+</pre>
+</body>
+</html>

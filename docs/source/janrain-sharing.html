@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing'>/**
+</span> * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing
+ * Plugin provides the ability to load JanRain sharing dialog after the item has been posted using the Echo Submit control.
+ * Installation procedure also includes actions on Janrain side.
+ *
+ * Download the &quot;rpx_xdcomm.html&quot; file from the JanRain application dashboard (the &quot;Deployment&quot; -&gt; &quot;Social Sharing&quot; section) and place it in the root directory of your website.
+ *
+ * Configure the list of the necessary social sharing providers in the JanRain application dashboard (the &quot;Deployment&quot; -&gt; &quot;Social Sharing&quot; -&gt; &quot;Choose providers&quot; section).
+ *
+ * 	var identityManager = {&quot;width&quot;: 400, &quot;height&quot;: 240, &quot;url&quot;: &quot;http://example.com/auth&quot;};
+ * 	new Echo.StreamServer.Controls.Submit({
+ * 		&quot;target&quot;: document.getElementById(&quot;submit&quot;),
+ * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;JanrainSharing&quot;,
+ * 			&quot;appId&quot;: &quot;yourJanRainAppId&quot;,
+ * 			&quot;xdReceiver&quot;: &quot;http://your-domain.com/rpx_xdcomm.html&quot;,
+ * 			&quot;activity&quot;: {
+ * 				&quot;sharePrompt&quot;: &quot;Share your comment:&quot;,
+ * 				&quot;shareContent&quot;: &quot;I just commented '{content}' on {domain}&quot;,
+ * 				&quot;itemURL&quot;: &quot;http://your-domain.com/this-page.html&quot;
+ * 			}
+ * 		}]
+ * 	});
+ *
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;JanrainSharing&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
+
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-appId'>	/**
+</span>	 * @cfg {String} appId
+	 * JanRain application ID. You can find the application ID in the JanRain application dashboard.
+	 */
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-xdReceiver'>	/**
+</span>	 * @cfg {String} xdReceiver
+	 * Full URL of the &quot;rpx_xdcomm.html&quot; file, downloaded from the JanRain application dashboard.
+	 */
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-activity'>	/**
+</span>	 * @cfg {Object} activity
+	 * Configures the sharing dialog.
+	 *
+	 * @cfg {String} activity.sharePrompt
+	 * Caption of the textarea in the sharing dialog
+	 *
+	 * @cfg {String} activity.shareContent
+	 * Content of the message which will be shared. The following pseudo-tags can be used:
+	 *
+	 * + {content} - tag is replaced with the content of the item;
+	 * + {domain} - tag is replaced with the current page domain.
+	 * If value of shareContent parameter is not provided then the following message will be used:
+	 * + &quot;{content}&quot; for ordinary item;
+	 * + &quot;@{author} {content}&quot; if this is reply to tweet.
+	 *
+	 * @cfg {String} activity.itemURL
+	 * The url where the item was posted initially.
+	 *
+	 * @cfg {String} activity.pageTitle
+	 * The page title where this activity is taking place. This information will be displayed in the Sharing dialog if at least one of the following providers is active: Yahoo!, Facebook or LinkedIn. If this value is not provided then the original page title will be used.
+	 *
+	 * @cfg {String} activity.pageDescription
+	 * The page description where this activity is taking place. This information will be displayed in the Sharing dialog if at least one of the following providers is active: Facebook or LinkedIn.
+	 *
+	 * @cfg {Array} activity.pageImages
+	 * The list of up to five images. These images are displayed as thumbnails by Facebook and LinkedIn. Facebook uses all five images. LinkedIn uses only the first image.
+	 *
+	 * @cfg {String} activity.pageImages[0].src
+	 * The absolute URL of the image.
+	 *
+	 * @cfg {String} activity.pageImages[0].href
+	 * The absolute URL to which the image links.
+	 */
+	// actual limit is 140, reserving some space
+	// for ellipses and shortened link to the page
+	&quot;maxLength&quot;: 120,
+	&quot;reducedLength&quot;: 30,
+	&quot;maxImagesCount&quot;: 5
+};
+
+plugin.enabled = function() {
+	return (this.config.get(&quot;appId&quot;) &amp;&amp; this.config.get(&quot;xdReceiver&quot;));
+};
+
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-property-sharePrompt'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;sharePrompt&quot;: &quot;Share your comment:&quot;
+};
+
+plugin.dependencies = [{
+	&quot;loaded&quot;: function() { return !!window.RPXNOW; },
+	&quot;url&quot;: (&quot;https:&quot; === document.location.protocol) ?
+		&quot;https://&quot; : &quot;http://static.&quot; + &quot;rpxnow.com/js/lib/rpx.js&quot;
+}];
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Submit.onPostComplete&quot;: function(topic, args) {
+		var plugin = this;
+		RPXNOW.init({
+			&quot;appId&quot;: plugin.config.get(&quot;appId&quot;),
+			&quot;xdReceiver&quot;: plugin.config.get(&quot;xdReceiver&quot;)
+		});
+		RPXNOW.loadAndRun([&quot;Social&quot;], function () {
+			var activity = new RPXNOW.Social.Activity(
+				plugin.config.get(&quot;activity.sharePrompt&quot;, plugin.labels.get(&quot;sharePrompt&quot;)),
+				plugin._prepareContent(args),
+				plugin.config.get(&quot;activity.itemURL&quot;, args.targetURL)
+			);
+			RPXNOW.Social.publishActivity(plugin._prepareActivity(activity));
+		});
+	}
+};
+
+plugin.methods._prepareActivity = function(act) {
+	var plugin = this;
+	var activity = act;
+	var handlers = {
+		&quot;activity.pageDescription&quot;: function(content) {
+			activity.setDescription(content);
+		},
+		&quot;activity.pageTitle&quot;: function(content) {
+			activity.setTitle(content);
+		},
+		&quot;activity.pageImages&quot;: function(content) {
+			var count = 0;
+			var maxCount = plugin.config.get(&quot;maxImagesCount&quot;);
+			var collection = new RPXNOW.Social.ImageMediaCollection();
+			$.each(content, function(key, image) {
+				if (count === maxCount) return false;
+				if (image.src &amp;&amp; image.href) {
+					collection.addImage(image.src, image.href);
+					count++;
+				}
+			});
+			activity.setMediaItem(collection);
+		}
+	};
+	$.each(handlers, function(key, handler){
+		if (plugin.config.get(key)) {
+			handler(plugin.config.get(key));
+		}
+	});
+	return activity;
+};
+
+plugin.methods._prepareContent = function(args) {
+	var plugin = this;
+	var text = Echo.Utils.stripTags(args.postData.content[0].object.content);
+	var messagePattern = plugin.config.get(&quot;activity.shareContent&quot;);
+	if (messagePattern) {
+		return plugin.labels.get(messagePattern, {
+			&quot;domain&quot;: window.location.host,
+			&quot;content&quot;: plugin._truncate(text, plugin.config.get(&quot;reducedLength&quot;))
+		});
+	}
+	// if a reply to a tweet was posted
+	var data = args.inReplyTo;
+	var maxLength = plugin.config.get(&quot;maxLength&quot;);
+	if (plugin._isReplyToTweet(data)) {
+		var author = plugin._getTweetAuthor(data);
+		return plugin.labels.get(&quot;@{author} {content}&quot;, {
+			&quot;author&quot;: author,
+			&quot;content&quot;: plugin._truncate(text, maxLength - author.length - 2)
+		});
+	}
+	return plugin._truncate(text, maxLength);
+};
+
+plugin.methods._truncate = function(text, limit) {
+	return (limit &gt; 0 &amp;&amp; text.length &gt; limit) ? text.substring(0, limit) + &quot;...&quot; : text;
+};
+
+plugin.methods._isReplyToTweet = function(data) {
+	return !!(data &amp;&amp; data.source &amp;&amp; data.source.name === &quot;Twitter&quot;);
+};
+
+plugin.methods._getTweetAuthor = function(data) {
+	return data.actor.id.replace(/https?\:\/\/twitter\.com\//, &quot;&quot;);
+};
+
+Echo.Plugin.create(plugin);
+</pre>
+</body>
+</html>

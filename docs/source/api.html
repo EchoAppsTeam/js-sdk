@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Echo.API = {&quot;Transports&quot;: {}, &quot;Request&quot;: {}};
+
+var utils = Echo.Utils;
+
+<span id='Echo-API-Transport'>/**
+</span> * @class Echo.API.Transport
+ */
+Echo.API.Transport = function(config) {
+	this.config = new Echo.Configuration(config, {
+		&quot;data&quot;: {},
+		&quot;uri&quot;: &quot;&quot;,
+		&quot;secure&quot;: false,
+		&quot;onData&quot;: function() {},
+		&quot;onOpen&quot;: function() {},
+		&quot;onClose&quot;: function() {},
+		&quot;onError&quot;: function() {}
+	});
+	this.transportObject = this._getTransportObject();
+};
+
+Echo.API.Transport.prototype.send = function(data) {
+	this.transportObject.send(data);
+};
+
+Echo.API.Transport.prototype.abort = function() {
+	this.transportObject.abort();
+};
+
+Echo.API.Transport.prototype._wrapErrorResponse = function(responseError) {
+	return {
+		&quot;result&quot;: &quot;error&quot;,
+		&quot;errorCode&quot;: &quot;connection_failure&quot;,
+		&quot;errorMessage&quot;: &quot;&quot;,
+		&quot;transportError&quot;: responseError || &quot;&quot;
+	};
+};
+
+Echo.API.Transport.prototype._prepareURL = function() {
+	return this._getScheme() + &quot;//&quot; + this.config.get(&quot;uri&quot;);
+};
+
+<span id='Echo-API-Transports-AJAX'>/**
+</span> * @class Echo.API.Transports.AJAX
+ * @extends Echo.API.Transport
+ */
+Echo.API.Transports.AJAX = function(config) {
+	config = $.extend({
+		&quot;method&quot;: &quot;get&quot;
+	}, config || {});
+	return Echo.API.Transports.AJAX.parent.constructor.call(this, config);
+};
+
+utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transport);
+
+Echo.API.Transports.AJAX.prototype._getScheme = function() {
+	return this.config.get(&quot;secure&quot;) ? &quot;https:&quot; : &quot;http:&quot;;
+};
+
+Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
+	var self = this;
+	var ajaxSettings = {
+		url: this._prepareURL(),
+		type: this.config.get(&quot;method&quot;),
+		error: function(errorResponse, requestParams) {
+			errorResponse = self._wrapErrorResponse(errorResponse);
+			self.config.get(&quot;onError&quot;)(errorResponse, requestParams);
+		},
+		success: this.config.get(&quot;onData&quot;),
+		beforeSend: this.config.get(&quot;onOpen&quot;),
+		dataType: &quot;json&quot;
+	};
+	if (&quot;XDomainRequest&quot; in window &amp;&amp; window.XDomainRequest != null) {
+		var xhrOrigin = $.ajaxSettings.xhr;
+		var domain = utils.parseURL(document.location.href).domain;
+		$.support.cors = true;
+		ajaxSettings.xhr = function() {
+			var targetDomain = utils.parseURL(self.config.get(&quot;url&quot;)).domain;
+			if (targetDomain === &quot;&quot; || targetDomain === domain) {
+				return xhrOrigin.call($.ajaxSettings);
+			}
+			var xdr = new XDomainRequest();
+			if (!xdr.setRequestHeader) {
+				xdr.setRequestHeader = $.noop;
+			}
+			if (!xdr.getAllResponseHeaders) {
+				xdr.getAllResponseHeaders = $.noop;
+			}
+			xdr.onload = function () {
+				if ($.isFunction(xdr.onredaystatechange)) {
+					xdr.readyState = 4;
+					xdr.status = 200;
+					xdr.onreadystatechange.call(xdr, null, false);
+				}
+			};
+			xdr.onerror = xdr.ontimeout = function () {
+				if ($.isFunction(xdr.onreadystatechange)) {
+					xdr.readyState = 4;
+					xdr.status = 500;
+					xdr.onreadystatechange.call(xdr, null, false);
+				}
+			};
+			return xdr;
+		};
+	}
+	return ajaxSettings;
+};
+
+Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) {
+	var originalWrapped = Echo.API.Transports.AJAX.parent._wrapErrorResponse.apply(this, arguments);
+	if (responseError &amp;&amp; responseError.responseText) {
+		var errorObject;
+		try {
+			errorObject = $.parseJSON(responseError.responseText);
+		} catch(e) {}
+		return errorObject || originalWrapped;
+	}
+	return originalWrapped;
+};
+
+Echo.API.Transports.AJAX.prototype.send = function(data) {
+	this.transportObject.data = $.extend({}, this.config.get(&quot;data&quot;), data || {});
+	this.jxhrTransportObject = $.ajax(this.transportObject);
+};
+
+Echo.API.Transports.AJAX.prototype.abort = function() {
+	if (this.jxhrTransportObject) {
+		this.jxhrTransportObject.abort();
+	}
+	this.config.get(&quot;onClose&quot;)();
+};
+
+Echo.API.Transports.AJAX.available = function() {
+	return (!$.browser.msie || $.browser.msie &amp;&amp; $.browser.version &gt; 7);
+};
+
+<span id='Echo-API-Transports-JSONP'>/**
+</span> * @class Echo.API.Transports.JSONP
+ * @extends Echo.API.Transports.AJAX
+ */
+Echo.API.Transports.JSONP = function(config) {
+	return Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
+};
+
+utils.inherit(Echo.API.Transports.JSONP, Echo.API.Transports.AJAX);
+
+Echo.API.Transports.JSONP.prototype.send = function(data) {
+	if (this.config.get(&quot;method&quot;).toLowerCase() === &quot;get&quot;) {
+		return Echo.API.Transports.JSONP.parent.send.apply(this, arguments);
+	}
+	this._pushPostParameters($.extend({}, this.config.get(&quot;data&quot;), data));
+	this.transportObject.submit();
+	this.config.get(&quot;onData&quot;)();
+};
+
+Echo.API.Transports.JSONP.prototype._getTransportObject = function() {
+	var settings = this.constructor.parent._getTransportObject.call(this);
+	if (this.config.get(&quot;method&quot;).toLowerCase() === &quot;post&quot;) {
+		return this._getPostTransportObject({
+			&quot;url&quot;: settings.url
+		});
+	}
+	delete settings.xhr;
+	settings.dataType = &quot;jsonp&quot;;
+	return settings;
+};
+
+Echo.API.Transports.JSONP.prototype._getPostTransportObject = function(settings) {
+	var id = &quot;echo-post-&quot; + Math.random();
+	var container =
+		$(&quot;#echo-post-request&quot;).length
+			? $(&quot;#echo-post-request&quot;).empty()
+			: $('&lt;div id=&quot;echo-post-request&quot;/&gt;').css({&quot;height&quot;: 0}).prependTo(&quot;body&quot;);
+	// it won't work if the attributes are specified as a hash in the second parameter
+	this.iframe = this.iframe || $('&lt;iframe id=&quot;' + id + '&quot; name=&quot;' + id + '&quot; width=&quot;0&quot; height=&quot;0&quot; frameborder=&quot;0&quot; border=&quot;0&quot;&gt;&lt;/iframe&gt;').appendTo(container);
+	var form = $(&quot;&lt;form/&gt;&quot;, {
+		&quot;target&quot; : id,
+		&quot;method&quot; : &quot;POST&quot;,
+		&quot;enctype&quot; : &quot;application/x-www-form-urlencoded&quot;,
+		&quot;acceptCharset&quot; : &quot;UTF-8&quot;,
+		&quot;action&quot; : settings.url
+	}).appendTo(container);
+	this._pushPostParameters(settings.data);
+	return form;
+};
+
+Echo.API.Transports.JSONP.prototype._pushPostParameters = function(data) {
+	var self = this;
+	$.each(data || {}, function(key, value) {
+		$(&quot;&lt;input/&gt;&quot;, {
+			&quot;type&quot; : &quot;hidden&quot;,
+			&quot;name&quot; : key,
+			&quot;value&quot; : value
+		}).appendTo(self.transportObject);
+	});
+	return self.transportObject;
+};
+
+Echo.API.Transports.JSONP.available = function() {
+	return true;
+};
+
+<span id='Echo-API-Transports-WebSocket'>/**
+</span> * @class Echo.API.Transports.WebSocket
+ * @extends Echo.API.Transport
+ */
+Echo.API.Transports.WebSocket = function(config) {
+	return Echo.API.Transports.WebSocket.parent.constructor.apply(this, arguments);
+};
+
+utils.inherit(Echo.API.Transports.WebSocket, Echo.API.Transport);
+
+Echo.API.Transports.WebSocket.prototype._getScheme = function() {
+	return this.config.get(&quot;secure&quot;) ? &quot;wss:&quot; : &quot;ws:&quot;;
+};
+
+Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
+	var self = this;
+	var socket = new (window.WebSocket || window.MozWebSocket)(this._prepareURL());
+	socket.onmessage = function(event) {
+		self.config.get(&quot;onData&quot;)(utils.parseJSON(event.data));
+	};
+	socket.onopen = this.config.get(&quot;onOpen&quot;);
+	socket.onclose = this.config.get(&quot;onClose&quot;);
+	socket.onerror = function(errorResponse, requestParams) {
+		errorResponse = self._wrapErrorResponse(errorResponse);
+		self.config.get(&quot;onError&quot;)(errorResponse, requestParams);
+	};
+	return socket;
+};
+
+Echo.API.Transports.WebSocket.prototype.send = function(params) {
+	this.transportObject.send(utils.object2JSON(params));
+};
+
+Echo.API.Transports.WebSocket.prototype.abort = function() {
+	this.config.get(&quot;onClose&quot;)();
+};
+
+Echo.API.Transports.WebSocket.available = function() {
+	// FIXME: fix when server will support Web Sockets
+	return false;
+	//return (&quot;WebSocket&quot; in window || &quot;MozWebSocket&quot; in window);
+};
+
+<span id='Echo-API-Request'>/**
+</span> * @class Echo.API.Request
+ * Class implementing API requests logic on the transport layer.
+ */
+/*
+ * @constructor
+ * @param {Object} config (required) Configuration data.
+ */
+Echo.API.Request = function(config) {
+<span id='Echo-API-Request-cfg-endpoint'>	/**
+</span>	 * @cfg {String} endpoint (required) Specifes the API endpoint.
+	 */
+	if (!config || !config.endpoint) return;
+	this.config = new Echo.Configuration(config, {
+<span id='Echo-API-Request-cfg-onData'>		/**
+</span>		 * @cfg {Function} [onData] Callback called after API request succeded.
+		 */
+<span id='Echo-API-Request-cfg-onError'>		/**
+</span>		 * @cfg {Function} [onError] Callback called after API request failed. 
+		 */
+<span id='Echo-API-Request-cfg-onOpen'>		/**
+</span>		 * @cfg {Function} [onOpen] Callback called before sending an API request.
+		 */
+<span id='Echo-API-Request-cfg-onClose'>		/**
+</span>		 * @cfg {Function} [onClose] Callback called after API request aborting.
+		 */
+<span id='Echo-API-Request-cfg-apiBaseUrl'>		/**
+</span>		 * @cfg {String} [apiBaseUrl] Specifies the base URL for API requests
+		 */
+		&quot;apiBaseURL&quot;: &quot;api.echoenabled.com/v1/&quot;,
+<span id='Echo-API-Request-cfg-transport'>		/**
+</span>		 * @cfg {String} [transport] Specifies the transport name.
+		 */
+		&quot;transport&quot;: &quot;ajax&quot;
+	});
+};
+
+Echo.API.Request.prototype._isSecureRequest = function() {
+	var parts = utils.parseURL(this.config.get(&quot;apiBaseURL&quot;));
+	if (!parts.scheme) return false;
+	return /https|wss/.test(parts.scheme);
+};
+
+<span id='Echo-API-Request-method-send'>/**
+</span> * @method
+ * Method performing api request using given parameters.
+ * @param {Object} [args] Request parameters.
+ * @param {Boolean} [args.force] Flag to initiate aggressive polling.
+ */
+Echo.API.Request.prototype.send = function(args) {
+	var force = false;
+	if (args) {
+		force = args.force;
+		delete args.force;
+		this.config.extend(args);
+	}
+	var method = this[&quot;_&quot; + this.config.get(&quot;endpoint&quot;)];
+	method &amp;&amp; method.call(this, force);
+};
+
+//TODO: probably we should replace request with _request or simply not documenting it
+Echo.API.Request.prototype.request = function(params) {
+	var self = this;
+	var timeout = this.config.get(&quot;timeout&quot;);
+	this.transport = this._getTransport();
+	if (this.transport) {
+		this.transport.send(params);
+		if (timeout) {
+			this._timeoutId = setTimeout(function() {
+				self.config.get(&quot;onError&quot;)({
+					&quot;result&quot;: &quot;error&quot;,
+					&quot;errorCode&quot;: &quot;network_timeout&quot;
+				}, {
+					&quot;requestType&quot;: self.requestType,
+					&quot;critical&quot;: true
+				});
+				self.transport.abort();
+			}, timeout * 1000);
+		}
+	}
+};
+
+Echo.API.Request.prototype._onData = Echo.API.Request.prototype._onError = function(response) {
+	clearTimeout(this._timeoutId);
+};
+
+Echo.API.Request.prototype.abort = function() {
+	this.transport &amp;&amp; this.transport.abort();
+};
+
+Echo.API.Request.prototype._getTransport = function() {
+	var userDefinedTransport = this.config.get(&quot;transport&quot;).toUpperCase();
+	var transport = Echo.API.Transports[userDefinedTransport] &amp;&amp; Echo.API.Transports[userDefinedTransport].available()
+		? userDefinedTransport
+		: utils.foldl(&quot;&quot;, Echo.API.Transports, function(constructor, acc, name) {
+			var available = Echo.API.Transports[name].available();
+			if (available) {
+				return name;
+			}
+		});
+	return new Echo.API.Transports[transport](
+		$.extend(this._getHandlersByConfig(), {
+			&quot;uri&quot;: this._prepareURI(),
+			&quot;data&quot;: this.config.get(&quot;data&quot;),
+			&quot;method&quot;: this.config.get(&quot;method&quot;),
+			&quot;secure&quot;: this._isSecureRequest()
+		})
+	);
+};
+
+Echo.API.Request.prototype._getHandlersByConfig = function() {
+	return utils.foldl({}, this.config.getAsHash(), function(value, acc, key) {
+		if (/^on[A-Z]/.test(key)) {
+			acc[key] = value;
+		}
+	});
+};
+
+Echo.API.Request.prototype._prepareURI = function() {
+	return this.config.get(&quot;apiBaseURL&quot;).replace(/^(http|ws)s?:\/\//, &quot;&quot;) + this.config.get(&quot;endpoint&quot;);
+};</pre>
+</body>
+</html>

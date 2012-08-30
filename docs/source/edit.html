@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function() {
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Edit'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Edit
+ * Adds extra button Edit to each item in the Echo Stream control which allows to edit the content and some metadata of the item. This button will appear either for the users with the administrative privileges or for editing personal comments.
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;Edit&quot;
+ *         }]
+ *     });
+ *
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;Edit&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+plugin.init = function() {
+	var component = this.component;
+	var button = this._assembleButton();
+	component.addButtonSpec(&quot;Edit&quot;, button);
+};
+
+$.map([&quot;Complete&quot;, &quot;Error&quot;], function(action) {
+	plugin.events[&quot;Echo.StreamServer.Controls.Submit.onEdit&quot; + action] = function(topic, args) {
+		this.dom.render();
+	}
+});
+
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Edit-property-editButton'>	/**
+</span>	 * @echo_label
+	 * Label for the button in the item
+	 */
+	&quot;editButton&quot;: &quot;Edit&quot;
+};
+
+plugin.methods._submitConfig = function(item, target) {
+	return this.config.assemble({
+		&quot;target&quot;: target,
+		&quot;data&quot;: item.get(&quot;data&quot;),
+		&quot;targetURL&quot;: item.get(&quot;data.object.id&quot;)
+	});
+};
+
+plugin.methods._assembleButton = function() {
+	var plugin = this;
+	return function() {
+		var item = this;
+		return {
+			&quot;name&quot;: &quot;Edit&quot;,
+			&quot;label&quot;: plugin.labels.get(&quot;editButton&quot;),
+			&quot;visible&quot;: item.user.is(&quot;admin&quot;) || item.user.has(&quot;identity&quot;, item.get(&quot;data.actor.id&quot;)),
+			&quot;callback&quot;: function() {
+				var config = plugin._submitConfig(item, item.dom.get(&quot;subcontainer&quot;));
+				config[&quot;parent&quot;] = plugin.component.config.getAsHash();
+				config[&quot;targetQuery&quot;] = plugin.config.get(&quot;query&quot;, &quot;&quot;);
+				config.plugins.push({&quot;name&quot;: &quot;Edit&quot;});
+				new Echo.StreamServer.Controls.Submit(config);
+				item.config.get(&quot;target&quot;).get(0).scrollIntoView(true);
+			}
+		};
+	};
+};
+
+Echo.Plugin.create(plugin);
+
+})();
+
+(function() {
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit'>/**
+</span> * @class Echo.StreamServer.Controls.Submit.Plugins.Edit
+ * Adds new mode to the Echo Submit control which allows to edit the content and some metadata of the item.
+ *
+ *     new Echo.StreamServer.Controls.Submit({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;Edit&quot;
+ *         }]
+ *     });
+ *
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;Edit&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
+
+plugin.init = function() {
+	var self = this;
+	this.extendTemplate(&quot;insertAfter&quot;, &quot;postContainer&quot;, plugin.templates.cancel);
+	this.extendTemplate(&quot;replace&quot;, &quot;header&quot;, plugin.templates.header);
+	this.component.labels.set({
+		&quot;post&quot;: this.labels.get(&quot;post&quot;),
+		&quot;posting&quot;: this.labels.get(&quot;posting&quot;)
+	});
+};
+
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-createdBy'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;createdBy&quot;: &quot;Created by&quot;,
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-edit'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;edit&quot;: &quot;Edit&quot;,
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-on'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;on&quot;: &quot;on&quot;,
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-post'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;post&quot;: &quot;Update&quot;,
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-posting'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;posting&quot;: &quot;Updating...&quot;,
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-cancel'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;cancel&quot;: &quot;cancel&quot;
+};
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-event-onEditInit'>/**
+</span> * @event onEditInit
+ * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit
+ * Triggered if edit operation was started
+ */
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-event-onEditComplete'>/**
+</span> * @event onEditComplete
+ * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete
+ * Triggered when the submit operation is finished
+ */
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-event-onEditError'>/**
+</span> * @event onEditError
+ * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError
+ * Triggered if edit operation failed
+ */
+$.map([&quot;Init&quot;, &quot;Complete&quot;, &quot;Error&quot;], function(action) {
+	plugin.events[&quot;Echo.StreamServer.Controls.Submit.onPost&quot; + action] = function(topic, args) {
+		var component = this.component;
+		if (action === &quot;Init&quot;) {
+			args.postData.content = this._prepareContent();
+		}
+		component.events.publish({
+			&quot;data&quot;: args,
+			&quot;topic&quot;: &quot;onEdit&quot; + action,
+			&quot;context&quot;: component.config.get(&quot;parent.context&quot;)
+		});
+	};
+});
+
+plugin.templates.header =
+	'&lt;div class=&quot;{plugin.class:header} echo-primaryFont echo-primaryFont echo-primaryColor&quot;&gt;' +
+		'{plugin.label:createdBy} ' +
+		'&lt;span class=&quot;{plugin.class:author}&quot;&gt;&lt;/span&gt; ' +
+		'{plugin.label:on} &lt;span class=&quot;{plugin.class:editedDate}&quot;&gt;&lt;/span&gt;' +
+	'&lt;/div&gt;';
+
+plugin.templates.cancel =
+	'&lt;div class=&quot;{plugin.class:cancelButtonContainer}&quot;&gt;' +
+		'&lt;a href=&quot;javascript:void(0);&quot; class=&quot;{plugin.class:cancelButton} echo-primaryFont echo-clickable echo-linkColor&quot;&gt;{plugin.label:cancel}&lt;/a&gt;' +
+	'&lt;/div&gt;';
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-method-author'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.author = function(element) {
+	var component = this.component;
+	return element.text(component.get(&quot;data.actor.title&quot;) || component.labels.get(&quot;guest&quot;));
+};
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-method-editedDate'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.editedDate = function(element) {
+	var published = this.component.get(&quot;data.object.published&quot;);
+	if (!published) return element.empty();
+	var date = new Date(Echo.Utils.timestampFromW3CDTF(published) * 1000);
+	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
+};
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-method-cancelButton'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.cancelButton = function(element) {
+	var plugin = this;
+	var component = plugin.component;
+	var handler = function() {
+		component.events.publish({
+			&quot;topic&quot;: &quot;onEditError&quot;,
+			&quot;context&quot;: component.config.get(&quot;parent.context&quot;)
+		});
+	};
+	return element.click(handler);
+};
+
+plugin.methods._prepareContent = function() {
+	var component = this.component;
+	return [].concat(this._getMetaDataUpdates(&quot;tag&quot;, &quot;tag&quot;, component.dom.get(&quot;tags&quot;).val()),
+			 this._getMetaDataUpdates(&quot;mark&quot;, &quot;marker&quot;, component.dom.get(&quot;markers&quot;).val()),
+			 this._prepareActivity(&quot;update&quot;, &quot;comment&quot;, component.dom.get(&quot;text&quot;).val()));
+};
+
+plugin.methods._prepareActivity = function(verb, type, data) {
+	return (!data) ? [] : {
+		&quot;object&quot;: {
+			&quot;objectTypes&quot;: [ &quot;http://activitystrea.ms/schema/1.0/&quot; + type ],
+			&quot;content&quot;: data
+		},
+		&quot;source&quot;: this.component.config.get(&quot;source&quot;),
+		&quot;verbs&quot;: [ &quot;http://activitystrea.ms/schema/1.0/&quot; + verb ],
+		&quot;targets&quot;: [{
+			&quot;id&quot;: this.component.get(&quot;data.object.id&quot;)
+		}]
+	};
+};
+
+plugin.methods._getMetaDataUpdates = function(verb, type, data) {
+	var plugin = this;
+	var component = this.component;
+	var extract = function(value) {
+		return $.map(value || [], function(item) { return $.trim(item); });
+	};
+	var items = {
+		&quot;modified&quot;: extract(data.split(&quot;,&quot;)),
+		&quot;current&quot;: extract(component.get(&quot;data.object.&quot; + type + &quot;s&quot;))
+	};
+	var updates = [];
+	var diff = function(a, b, verb) {
+		$.map(a, function(item) {
+			if (item &amp;&amp; $.inArray(item, b) == -1) {
+				updates.push(plugin._prepareActivity(verb, type, item));
+			}
+		});
+	};
+	diff(items.current, items.modified, &quot;un&quot; + verb);
+	diff(items.modified, items.current, verb);
+	return updates;
+};
+
+plugin.css = 
+	'.{plugin.class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }';
+
+Echo.Plugin.create(plugin);
+
+})();
+</pre>
+</body>
+</html>

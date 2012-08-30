@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function() {
+
+var _isPreIE9 = function() {
+	return ($.browser.msie &amp;&amp; $.browser.version &lt; 9 &amp;&amp; document.documentMode &amp;&amp; document.documentMode &lt; 9);
+};
+
+(function() {
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery&quot;)) return;
+
+var mediaGallery = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery&quot;);
+
+mediaGallery.labels = {
+	&quot;mediaIsNotAvailable&quot;: &quot;&lt;i&gt;Media is not avaiable at this moment...&lt;/i&gt;&quot;
+};
+
+mediaGallery.config = {
+	&quot;resizeDuration&quot;: 250,
+	&quot;elements&quot;: [],
+	&quot;item&quot;: undefined
+};
+
+mediaGallery.templates.main =
+	'&lt;div class=&quot;{class:container}&quot;&gt;' +
+		'&lt;div class=&quot;{class:thumbnails}&quot;&gt;' +
+			'&lt;div class=&quot;{class:items}&quot;&gt;&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:controls}&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+mediaGallery.templates.mediaError =
+	'&lt;span class=&quot;{class:itemErrorLoading}&quot;&gt;{label:mediaIsNotAvailable}&lt;/span&gt;';
+
+
+mediaGallery.renderers.controls = function(element) {
+	var self = this;
+	var item = this.config.get(&quot;item&quot;);
+	this.elements = this.config.get(&quot;elements&quot;);
+	this.currentIndex = 0;
+	var publish = function(topic) {
+		self.events.publish({
+			&quot;topic&quot;: topic,
+			&quot;context&quot;: item ? item.config.get(&quot;context&quot;) : self.config.get(&quot;context&quot;)
+		});
+	};
+	var controlsContainer = element;
+	var itemsContainer = this.dom.get(&quot;items&quot;);
+	var itemClass = this.cssPrefix + &quot;item&quot;;
+	var controlClass = this.cssPrefix + &quot;control&quot;;
+	var activeControlClass = this.cssPrefix + 'activeControl';
+	$.each(this.elements, function(i, element) {
+		element = $(element);
+		self._normalizeFlashContent(element);
+		var ratio;
+		var isCurrentControl = (i == self.currentIndex);
+		var itemContainer = $('&lt;div&gt;&lt;/div&gt;').append(element).addClass(itemClass);
+		var showCurrentMedia = function() {
+			i == self.currentIndex &amp;&amp; itemContainer.css(&quot;display&quot;, &quot;block&quot;) &amp;&amp; publish(&quot;onLoadMedia&quot;);
+		};
+		var controlContainer = $('&lt;a href=&quot;#&quot;&gt;&lt;/a&gt;').addClass(controlClass);
+		controlContainer.click(function() {
+			var control = $(this);
+			var currentItem = itemsContainer.children().eq(self.currentIndex);
+			$(&quot;.&quot; + controlClass, controlsContainer).removeClass(activeControlClass);
+			control.addClass(activeControlClass);
+			itemsContainer.animate({
+				&quot;height&quot;: itemContainer.height()
+			}, self.config.get(&quot;resizeDuration&quot;), function() {
+				publish(&quot;onResize&quot;);
+			});
+			currentItem.fadeOut(function() {
+				itemContainer.fadeIn(function() {
+					self.currentIndex = i;
+					publish(&quot;onChangeMedia&quot;);
+				});
+			});
+			return false;
+		});
+		if (isCurrentControl) {
+			controlContainer.addClass(activeControlClass);
+		}
+		element.one(&quot;error&quot;, function() {
+			itemContainer.empty().append(self.substitute({&quot;template&quot;: self.mediaFailedTemplate}));
+			itemContainer.empty().append(&quot;Error&quot;);
+			showCurrentMedia();
+		}).one(&quot;load&quot;, function() {
+			self._loadMediaHandler(element, itemContainer);
+			showCurrentMedia();
+		});
+		itemsContainer.append(itemContainer);
+		controlsContainer.append(controlContainer);
+	});
+	if (this.elements.length == 1) {
+		controlsContainer.hide();
+	}
+	return element;
+};
+
+// To avoid bugs with flash content when we show/hide it
+// we should try fix it with wmode parameter if needed
+mediaGallery.methods._normalizeFlashContent = function(element) {
+	var tagName = element.get(0).tagName.toLowerCase();
+	if (tagName == &quot;iframe&quot;) {
+		var parts = Echo.Utils.parseURL(element.attr(&quot;src&quot;) || &quot;&quot;);
+		if (!/(www\.)?youtube\.com/.test(parts.domain)) return;
+		var query = parts.query;
+		query = query &amp;&amp; ~query.indexOf(&quot;wmode&quot;)
+			? query.replace(/(wmode=)([^&amp;?]+)/g, function($0, $1, $2) {
+				if ($2 != &quot;opaque&quot; || $2 != &quot;transparent&quot;) {
+					return $1 + &quot;opaque&quot;;
+				}
+			})
+			: (query ? (query += &quot;&amp;wmode=opaque&quot;) : &quot;wmode=opaque&quot;);
+		parts.path = parts.path || &quot;&quot;;
+		parts.fragment = parts.fragment ? &quot;#&quot; + parts.fragment : &quot;&quot;;
+		parts.query = query ? &quot;?&quot; + query : &quot;&quot;;
+		element.attr(&quot;src&quot;, this.substitute({
+			&quot;template&quot;: &quot;{Data:scheme}://{Data:domain}{Data:path}{Data:query}{Data:fragment}&quot;,
+			&quot;data&quot;: parts
+		}));
+	} else if (tagName == &quot;embed&quot;) {
+		var wmode = element.attr(&quot;wmode&quot;);
+		if (wmode != &quot;opaque&quot; || wmode != &quot;transparent&quot;) {
+			element.attr(&quot;wmode&quot;, &quot;opaque&quot;);
+		}
+	}
+};
+
+mediaGallery.methods._getHiddenElementDimensions = function(parent, element) {
+	var dimensions;
+	parent.css({
+		&quot;postion&quot;: &quot;absolute&quot;,
+		&quot;visibility&quot;: &quot;hidden&quot;,
+		&quot;display&quot;: &quot;block&quot;
+	});
+	dimensions = {
+		&quot;width&quot;: element.width(),
+		&quot;height&quot;: element.height()
+	};
+	parent.css({
+		&quot;postion&quot;: &quot;&quot;,
+		&quot;visibility&quot;: &quot;&quot;,
+		&quot;display&quot;: &quot;&quot;
+	});
+	return dimensions;
+};
+
+mediaGallery.methods._loadMediaHandler = function(element, elementContainer) {
+	var self = this;
+	var target = this.config.get(&quot;target&quot;);
+	var viewportDimensions = {
+		&quot;width&quot;: target.width(),
+		&quot;height&quot;: target.width()
+	};
+	var getElementDimensions = function() {
+		return !elementContainer.is(&quot;:visible&quot;)
+			? self._getHiddenElementDimensions(elementContainer, element)
+			: {
+				&quot;width&quot;: element.width(),
+				&quot;height&quot;: element.height()
+			};
+	};
+	var ratio;
+	var elementDimensions = getElementDimensions();
+	if (elementDimensions.width &gt; viewportDimensions.width) {
+		ratio = viewportDimensions.width / elementDimensions.width;
+		element.css({
+			&quot;width&quot;: viewportDimensions.width,
+			&quot;height&quot;: elementDimensions.height * ratio
+		});
+		elementDimensions = getElementDimensions();
+	}
+	if (elementDimensions.height &gt; viewportDimensions.height) {
+		ratio = viewportDimensions.height / elementDimensions.height;
+		element.css({
+			&quot;width&quot;: elementDimensions.width * ratio,
+			&quot;height&quot;: viewportDimensions.height
+		});
+	}
+};
+
+mediaGallery.css =
+	'.{class:thumbnails} { overflow: hidden; }' +
+	'.{class:item} { width: 100%; display: none; }' +
+	'.{class:controls} { text-align: center; margin-top: 10px; }' +
+	'.{class:control} { display: inline-block; width: 8px; height: 8px; font-size: 0px; line-height: 8px; outline: none; border-radius: 4px; vertical-align: middle; margin-left: 8px; cursor: pointer; background-color: #c6c6c6; text-decoration: none; transition: all .2s ease-in 0; -moz-transition-property: all; -moz-transition-duration: .2s; -moz-transition-timing-function: ease-in; -moz-transition-delay: 0; -webkit-transition-property: all; -webkit-transition-duration: .2s; -webkit-transition-timing-function: ease-in; -webkit-transition-delay: 0; }' +
+	'.{class:control}:hover { background-color: #ee7b11; }' +
+	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }' +
+	(_isPreIE9() ? '.{class} { display: inline; zoom: 1; }' : '');
+
+Echo.Control.create(mediaGallery);
+	
+})();
+
+(function() {
+
+<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization
+ * The PinboardVisualization plugin transforms Echo Stream Client visualization into a pinboard-style representation. The plugin extracts all media (such as images, videos, etc) from the item content and assembles the mini media gallery inside the item UI. You can find UI example of the plugin
+&lt;a href=&quot;http://echosandbox.com/use-cases/pinboard-visualization/&quot;&gt;here&lt;/a&gt;.
+ *     new Echo.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;PinboardVisualization&quot;
+ *         }]
+ *     });
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;PinboardVisualization&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+plugin.init = function() {
+	var self = this, item = this.component;
+	this.extendTemplate(&quot;replace&quot;, &quot;container&quot;, plugin.template);
+};
+
+/* TODO: uncomment it when jquery.isotope.min.js will be located on cdn
+plugin.dependencies = [{
+	&quot;loaded&quot;: function() { return !!Echo.jQuery().isotope; },
+	&quot;url&quot;: Echo.Loader.config.cdnBaseURL + &quot;third-party/jquery.isotope.min.js&quot;
+}];
+*/
+
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization-cfg-columnWidth'>/**
+</span> * @cfg {Number} columnWidth Allows to define the width for one column in pixels, default width is 250px. The amount of columns is calculated based on the width of the Echo Stream Client container.
+ */
+	&quot;columnWidth&quot;: 250,
+<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization-cfg-maxChildrenBodyCharacters'>/**
+</span> * @cfg {Number} maxChildrenBodyCharacters Allows to truncate the reply text displayed under the root item. Default value is 50 characters. The value of this parameter should be integer and represent the number of visible characters that need to be displayed.
+ */
+	&quot;maxChildrenBodyCharacters&quot;: 50,
+<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization-cfg-mediaSelector'>/**
+</span> * @cfg {Function} mediaSelector Allows to define the function with the custom rules for the media content extraction from the item content. The value of this parameter is function which accepts the item content (string) as a first argument and should return the jQuery element with the list of the DOM elements which are considered to be the media content of this item.
+ * 
+ * Example (also used as a default value):
+ *
+ *     &quot;mediaSelector&quot;: function(content) {
+ *         var dom = $(&quot;&lt;div&gt;&quot; + content + &quot;&lt;/div&gt;&quot;);
+ *         return $(&quot;img, video, embed, iframe&quot;, dom);
+ *     }
+ */
+	&quot;mediaSelector&quot;: function(content) {
+		var dom = $(&quot;&lt;div&gt;&quot; + content + &quot;&lt;/div&gt;&quot;);
+		return $(&quot;img, video, embed, iframe&quot;, dom);
+	},
+<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization-cfg-itemCSSClassByContentLength'>/**
+</span> * @cfg {Object} itemCSSClassByContentLength Allows to define extra CSS class to the item based on the item length. The value of this parameter is the JS object with the CSS classes as the keys and the item text length ranges as values. Multiple CSS classes might be applied to the item if the item text length satisfies several conditions simultaneously.
+ */
+	&quot;itemCSSClassByContentLength&quot;: {
+		&quot;echo-streamserver-controls-stream-item-smallSizeContent&quot;: [0, 69],
+		&quot;echo-streamserver-controls-stream-item-mediumSizeContent&quot;: [70, 120]
+	},
+<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization-cfg-gallery'>/**
+</span> * @cfg {Object} gallery Allows is a proxy for the mini media gallery class, initialized for the item in case the media content was found in its content.
+ */
+	&quot;gallery&quot;: {
+		&quot;resizeDuration&quot;: 250
+	}
+};
+
+plugin.labels = {
+	&quot;childrenMoreItems&quot;: &quot;View more items...&quot;
+};
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Item.onReady&quot;: function(topic, args) {
+		var plugin = this, item = this.component;
+		var body = plugin._getStreamBody(item);
+		if (!body.hasClass(&quot;isotope&quot;)) {
+			plugin.set(&quot;rendered&quot;, true);
+			return;
+		}
+		if (item.isRoot() &amp;&amp; !plugin.get(&quot;rendered&quot;) &amp;&amp; !item.config.get(&quot;live&quot;)) {
+			body.isotope(&quot;insert&quot;, item.config.get(&quot;target&quot;));
+			plugin.set(&quot;rendered&quot;, true);
+			return;
+		}
+		plugin._refreshView();
+	}
+};
+
+$.map([ &quot;Echo.StreamServer.Controls.Submit.onRender&quot;,
+	&quot;Echo.StreamServer.Controls.Submit.onEditError&quot;,
+	&quot;Echo.StreamServer.Controls.Submit.onEditComplete&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.onDelete&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.onRerender&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia&quot;], function(event) {
+	plugin.events[event] = function(topic, args) {
+		this._refreshView();
+	};
+});
+
+
+plugin.component.renderers.content = function(element) {
+	var plugin = this, item = this.component;
+	return item.parentRenderer('content', arguments).css({
+		&quot;width&quot;: parseInt(plugin.config.get(&quot;columnWidth&quot;))
+	});
+};
+
+plugin.component.renderers.avatar = function(element) {
+	var plugin = this, item = this.component;
+	element = item.parentRenderer(&quot;avatar&quot;, arguments);
+	$(&quot;:first-child&quot;, element).css({
+		&quot;width&quot;: 30,
+		&quot;height&quot;: 30
+	});
+	return element;
+};
+
+$.each([&quot;expandChildren&quot;, &quot;container&quot;], function(i, renderer) {
+	plugin.component.renderers[renderer] = function(element) {
+		var plugin = this, item = this.component;
+		var publish = function() {
+			plugin.events.publish({
+				&quot;topic&quot;: &quot;onChangeView&quot;,
+				&quot;data&quot;: {
+					&quot;action&quot;: &quot;rerender&quot;,
+					&quot;itemUnique&quot;: item.get(&quot;data.unique&quot;),
+					&quot;actorID&quot;: item.get(&quot;data.actor.id&quot;),
+					&quot;priority&quot;: &quot;high&quot;,
+					&quot;handler&quot;: function() { plugin._refreshView(); }
+				},
+				&quot;context&quot;: item.config.get(&quot;parent.context&quot;)
+			});
+		};
+		element = item.parentRenderer(renderer, arguments);
+		if (plugin.get(&quot;rendered&quot;)) {
+			element.queue(&quot;fx&quot;, function(next) {
+				next();
+				plugin._refreshView();
+			});
+			if (renderer === &quot;container&quot;) {
+				publish();
+			} else {
+				plugin._refreshView();
+			}
+		}
+		return element;
+	}
+});
+
+plugin.component.renderers.body = function(element) {
+	var plugin = this, item = this.component;
+	element = item.parentRenderer(&quot;body&quot;, arguments);
+	var filteredElements = plugin.config.get(&quot;mediaSelector&quot;)(item.get(&quot;data.object.content&quot;));
+	$(filteredElements.selector, item.dom.get(&quot;text&quot;)).remove();
+	var text = Echo.Utils.stripTags(item.get(&quot;data.object.content&quot;));
+	item.dom.get(&quot;container&quot;).addClass(plugin._getCSSByLength(text.length));
+	return element;
+};
+
+plugin.component.renderers.textToggleTruncated = function(element) {
+	var plugin = this, item = this.component;
+	return item.parentRenderer(&quot;textToggleTruncated&quot;, arguments).one('click', function() {
+		plugin._refreshView();
+	});
+};
+
+plugin.renderers.childBody = function(element) {
+	var plugin = this, item = this.component;
+	if (item.isRoot()) {
+		return element.empty();
+	}
+	var text = Echo.Utils.htmlTextTruncate(
+		item.get(&quot;data.object.content&quot;),
+		plugin.config.get(&quot;maxChildrenBodyCharacters&quot;),
+		&quot;...&quot;
+	);
+	return element.empty().append(text);
+};
+
+plugin.renderers.media = function(element) {
+	var plugin = this, item = this.component;
+	var mediaItems = plugin.config.get(&quot;mediaSelector&quot;)(item.get(&quot;data.object.content&quot;));
+	if (mediaItems.length) {
+		var config = $.extend(plugin.config.get(&quot;gallery&quot;), {
+			&quot;target&quot;: element,
+			&quot;appkey&quot;: item.config.get(&quot;appkey&quot;),
+			&quot;elements&quot;: mediaItems,
+			&quot;item&quot;: item
+		});
+		new Echo.StreamServer.Controls.Stream.Item.MediaGallery(config);
+	} else {
+		element.hide();
+	}
+	return element;
+};
+
+plugin.methods._getCSSByLength = function(length) {
+	var plugin = this, item = this.component;
+	var handler = function(range, acc, className) {
+		if (length &gt;= range[0] &amp;&amp; length &lt; range[1]) {
+			return (acc = className);
+		}
+	};
+	return Echo.Utils.foldl(&quot;&quot;, plugin.config.get(&quot;itemCSSClassByContentLength&quot;), handler);
+};
+
+plugin.methods._getStreamBody = function(item) {
+	var stream = item.config.get(&quot;parent&quot;);
+	return $(&quot;.echo-streamserver-controls-stream-body&quot;, stream.target);
+};
+
+plugin.methods._refreshView = function() {
+	var plugin = this, item = this.component;
+	var stream = plugin._getStreamBody(item);
+	stream.isotope(&quot;reloadItems&quot;).isotope({&quot;sortBy&quot;: &quot;original-order&quot;});
+};
+
+plugin.template =
+	'&lt;div class=&quot;{class:container}&quot;&gt;' +
+		'&lt;div class=&quot;{class:header}&quot;&gt;' +
+			'&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;' +
+			'&lt;div class=&quot;{plugin.class:topContentWrapper}&quot;&gt;' +
+				'&lt;div class=&quot;{class:authorName} echo-linkColor&quot;&gt;&lt;/div&gt;' +
+				'&lt;div class=&quot;{plugin.class:childBody}&quot;&gt;&lt;/div&gt;' +
+				'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+		'&lt;input type=&quot;hidden&quot; class=&quot;{class:modeSwitch}&quot;&gt;' +
+		'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:wrapper}&quot;&gt;' +
+			'&lt;div class=&quot;{class:subcontainer}&quot;&gt;' +
+				'&lt;div class=&quot;{class:data}&quot;&gt;' +
+					'&lt;div class=&quot;{plugin.class:media}&quot;&gt;&lt;/div&gt;' + 
+					'&lt;div class=&quot;{class:body} echo-primaryColor&quot;&gt; ' + 
+						'&lt;span class=&quot;{class:text}&quot;&gt;&lt;/span&gt;' +
+						'&lt;span class=&quot;{class:textEllipses}&quot;&gt;...&lt;/span&gt;' +
+						'&lt;span class=&quot;{class:textToggleTruncated} echo-linkColor echo-clickable&quot;&gt;&lt;/span&gt;' +
+					'&lt;/div&gt;' +
+				'&lt;/div&gt;' +
+				'&lt;div class=&quot;{class:footer} echo-secondaryColor echo-secondaryFont&quot;&gt;' +
+					'&lt;img class=&quot;{class:sourceIcon} echo-clickable&quot;&gt;' +
+					'&lt;div class=&quot;{class:date}&quot;&gt;&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:from}&quot;&gt;&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:via}&quot;&gt;&lt;/div&gt;' +
+					'&lt;div class=&quot;{class:buttons}&quot;&gt;&lt;/div&gt;' +
+					'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+				'&lt;/div&gt;' +
+			'&lt;/div&gt;' +
+		'&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+plugin.css =
+	'.{plugin.class:media} { margin-top: 7px; text-align: center; }' +
+	'.{plugin.class:topContentWrapper} { margin-left: 5px; padding-left: 35px; }' +
+	'.{plugin.class:childBody} { float: none; display: inline; margin-left: 5px; }' +
+	'.{plugin.class:childBody} a { text-decoration: none; font-weight: bold; color: #524D4D; }' +
+	'.{plugin.class} .{class:container} { padding: 0px; }' +
+	'.{plugin.class} .{class:content} { padding-bottom: 0px; background: white; box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4); margin: 0px 5px 15px 5px; border: none; }' +
+	'.{plugin.class} .{class:authorName} { float: none; display: inline; margin-left: 0px; }' +
+	'.{plugin.class} .{class:body} { margin: 0px; }' +
+	'.{plugin.class} .{class:avatar} { float: left; width: 30px; height: 30px; padding-right: 10px; }' +
+	'.{plugin.class} .{class:depth-1} { margin-left: 0px; border-bottom: none; }' +
+	'.{plugin.class} .{class:depth-1} .{class:authorName} { display: inline; font-size: 12px; }' +
+	'.{plugin.class} .{class:depth-0} { padding: 15px 15px 10px 15px; }' +
+	'.{plugin.class} .{class:depth-0} .{class:authorName} { font-size: 15px; margin-top: 4px; }' +
+	'.{plugin.class} .{class:wrapper} { float: none; }' +
+	'.{plugin.class} .{class:subcontainer} { float: none; }' +
+	'.{plugin.class} .{class:date} { color: #C6C6C6; text-decoration: none; font-weight: normal; }' +
+	'.{plugin.class} .{class:footer} a { color: #C6C6C6; text-decoration: none; font-weight: normal; }' +
+	'.{plugin.class} .{class:footer} a:hover { text-decoration: underline; }' +
+	'.{plugin.class} .{class:container} .{class:footer} { margin-top: 5px; }' +
+	'.{plugin.class} .{class:children} .{class:header} { margin-left: 0px; }' +
+	'.{plugin.class} .{class:smallSizeContent} .{class:body} { font-size: 18px; line-height: 25px; }' +
+	'.{plugin.class} .{class:mediumSizeContent} .{class:body} { font-size: 16px; line-height: 22px; }' +
+	'.{plugin.class} .{class:children} .{class:container} { background-color: #F2F0F0; }' +
+	'.{plugin.class} .{class:childrenByCurrentActorLive} .{class:container} { background-color: #F2F0F0; }' +
+	'.{plugin.class} .{class:children} .{class:wrapper}  { display: none; }' +
+	'.{plugin.class} .{class:childrenByCurrentActorLive} .{class:wrapper} {display: none}' +
+	'.{plugin.class} .{class:children} .{class:content} { box-shadow: none; margin: 0px; padding: 0px; border: none; border-bottom: 1px solid #d9d4d4; background-color: #F2F0F0; }' +
+	'.{plugin.class} .{class:childrenByCurrentActorLive} .{class:content} { box-shadow: none; margin: 0px; padding: 0px; border: none; border-bottom: 1px solid #d9d4d4; background-color: #F2F0F0; }' +
+	'.{plugin.class} .{class:container-child} { margin: 0px; padding: 10px 15px; }' +
+	'.{plugin.class} .echo-linkColor { text-decoration: none; font-weight: bold; color: #524D4D; }' +
+	'.{plugin.class} .echo-linkColor a { text-decoration: none; font-weight: bold; color: #524D4D; }' +
+	'.{plugin.class} .{class:expandChildren} .echo-message-icon { background-image: none; }' +
+	'.{plugin.class} .{class:expandChildren} { border-bottom: 1px solid #D9D4D4; background-color: #F2F0F0; }' +
+	'.{plugin.class} .{class:expandChildren} .{class:message-loading} { background-image: none; font-weight: bold; }' +
+	'.{plugin.class} .{class:expandChildren} .{class:expandChildrenLabel} { padding-left: 0px; background-image: none; }' +
+	// plugins styles
+	'.{plugin.class} .{class:plugin-Like-likedBy} { margin-top: 5px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-name { font-size: 12px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-logout { line-height: 24px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-userInfoWrapper {  margin: 5px 0px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
+	(_isPreIE9() ? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }' : '');
+	
+Echo.Plugin.create(plugin);
+
+})();
+
+(function() {
+
+var plugin = Echo.Plugin.manifest(&quot;PinboardVisualization&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
+
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization-cfg-isotope'>/**
+</span> * @cfg {Object} isotope Allows to configure the Isotope jQuery plugin, used by the plugin as the rendering engine. The possible config values can be found at the Isotope plugin homepage (http://isotope.metafizzy.co/). It's NOT recommended to change the settings of the Isotope unless it's really required.
+ */
+	&quot;isotope&quot;: {
+		&quot;animationOptions&quot;: {
+			// change duration for mozilla browsers
+			&quot;duration&quot;: $.browser.mozilla || $.browser.msie ? 0 : 2750,
+			&quot;easing&quot;: &quot;linear&quot;,
+			&quot;queue&quot;: false
+		},
+		// use only jQuery engine for animation in mozilla browsers
+		// due to the issues with video display with CSS transitions
+		&quot;animationEngine&quot;: $.browser.mozilla || $.browser.msie ? &quot;jquery&quot; : &quot;best-available&quot;
+	}
+};
+
+/* TODO: uncomment it when jquery.isotope.min.js will be located on cdn
+plugin.dependencies = [{
+	&quot;loaded&quot;: function() { return !!Echo.jQuery().isotope; },
+	&quot;url&quot;: Echo.Loader.config.cdnBaseURL + &quot;third-party/jquery.isotope.min.js&quot;
+}];
+*/
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.onRender&quot;: function(topic, args) {
+		this._isotopeView();
+	},
+	&quot;Echo.StreamServer.Controls.Stream.onRefresh&quot;: function(topic, args) {
+		this._isotopeView();
+	},
+	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView&quot;: function(topic, args) {
+		this.component._queueActivity(args);
+	}
+};
+
+plugin.methods._isotopeView = function() {
+	var plugin = this, stream = this.component;
+	stream.dom.get(&quot;body&quot;).isotope(
+		plugin.config.get(&quot;isotope&quot;)
+	);
+};
+
+plugin.css = 
+	'.{plugin.class} .isotope { -webkit-transition-property: height, width; -moz-transition-property: height, width; -o-transition-property: height, width; transition-property: height, width;  -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }' +
+	'.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }';
+
+Echo.Plugin.create(plugin);
+
+})();
+
+})();
+</pre>
+</body>
+</html>

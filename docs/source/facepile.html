@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function() {
+
+<span id='Echo-StreamServer-Controls-FacePile-method-constructor'><span id='Echo-StreamServer-Controls-FacePile'>/**
+</span></span> * @class Echo.StreamServer.Controls.FacePile
+ * Echo FacePile control displays users (actors) returned in any activity stream. 
+ * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
+ *
+ *     new Echo.StreamServer.Controls.FacePile({
+ *         &quot;target&quot;: document.getElementById(&quot;facepile&quot;),
+ *         &quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+ *         &quot;query&quot;: &quot;childrenof:http://example.com/* itemsPerPage:2 children:0&quot;,
+ *         &quot;suffixText&quot;: &quot; commented on aboutecho.com&quot;,
+ *         &quot;item&quot;: {&quot;avatar&quot;: true, &quot;text&quot;: true}
+ *     });
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * FacePile constructor initializing Echo.StreamServer.Controls.FacePile class
+ *
+ * @param {Object} config
+ * Configuration options
+ */
+var pile = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.FacePile&quot;);
+
+pile.init = function() {
+	// data can be defined explicitly
+	// in this case we do not make API requests
+	if ($.isEmptyObject(this.data)) {
+		this._request();
+	} else {
+		this.data.itemsPerPage = this.data.itemsPerPage || 2;
+		this.config.set(&quot;liveUpdates&quot;, false);
+		this._initialResponseHandler(this.data);
+	}
+};
+
+pile.config = {
+<span id='Echo-StreamServer-Controls-FacePile-cfg-data'>	/**
+</span>	 * @cfg {Object} data
+	 * Specifies static data for the list. It has the same format as returned by the search API endpoint. If the data parameter is provided then the query parameter should be omitted. If data and query parameters are both provided query takes precedence over data.
+	 */
+	&quot;data&quot;: undefined,
+<span id='Echo-StreamServer-Controls-FacePile-cfg-initialUsersCount'>	/**
+</span>	 * @cfg {String} initialUsersCount
+	 * The number of users which will be shown when the FacePile is displayed for the first time. Default value is the value of data.itemsPerPage parameter. Note that the parameter is actual only for the list created using data.
+	 */
+	&quot;initialUsersCount&quot;: undefined,
+<span id='Echo-StreamServer-Controls-FacePile-cfg-totalUsersCount'>	/**
+</span>	 * @cfg {String} totalUsersCount
+	 * The total number of users for the FacePile. If it's not defined it defaults to the length of the provided data.entries field. Note that the parameter is actual only for the list created using data.
+	 */
+	&quot;totalUsersCount&quot;: undefined,
+	&quot;query&quot;: &quot;&quot;,
+<span id='Echo-StreamServer-Controls-FacePile-cfg-suffixText'>	/**
+</span>	 * @cfg {String} suffixText
+	 * Specifies the text being appended to the end of Face Pile user's list.
+	 */
+	&quot;suffixText&quot;: &quot;&quot;,
+<span id='Echo-StreamServer-Controls-FacePile-cfg-item'>	/**
+</span>	 * @cfg {Object} item
+	 * Customizes the FacePile item
+	 *
+	 * @cfg {Boolean} item.avatar
+	 * Specifies if user avatar should be rendered within the FacePile item.
+	 *
+	 * @cfg {Boolean} item.text
+	 * Specifies if user name should be rendered within the FacePile item.
+	 */
+	&quot;item&quot;: {
+		&quot;avatar&quot;: true,
+		&quot;text&quot;: true
+	},
+<span id='Echo-StreamServer-Controls-FacePile-cfg-infoMessages'>	/**
+</span>	 * @cfg {String} infoMessages
+	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
+	 */
+	&quot;infoMessages&quot;: {
+		&quot;layout&quot;: &quot;compact&quot;
+	}
+};
+
+pile.vars = {
+	&quot;users&quot;: [],
+	&quot;uniqueUsers&quot;: {},
+	&quot;isViewComplete&quot;: false,
+	&quot;moreRequestInProgress&quot;: false,
+	&quot;count&quot;: {
+		&quot;total&quot;: 0,
+		&quot;visible&quot;: 0
+	}
+};
+
+pile.labels = {
+<span id='Echo-StreamServer-Controls-FacePile-property-and'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;and&quot;: &quot;and&quot;,
+<span id='Echo-StreamServer-Controls-FacePile-property-more'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;more&quot;: &quot;more&quot;
+};
+
+pile.templates.main =
+	'&lt;span class=&quot;{class:container}&quot;&gt;' +
+		'&lt;span class=&quot;{class:actors}&quot;&gt;&lt;/span&gt;' +
+		'&lt;span class=&quot;{class:more}&quot;&gt;&lt;/span&gt;' +
+		'&lt;span class=&quot;{class:suffixText}&quot;&gt;&lt;/span&gt;' +
+	'&lt;/span&gt;';
+
+<span id='Echo-StreamServer-Controls-FacePile-method-more'>/**
+</span> * @echo_renderer
+ */
+pile.renderers.more = function(element) {
+	var self = this;
+	if (!this._isMoreButtonVisible()) {
+		return element.hide();
+	}
+	element.empty().show();
+	var count = this.count.total - this.count.visible;
+	var caption = (count &gt; 0 ? count + &quot; &quot; : &quot;&quot;) + this.labels.get(&quot;more&quot;);
+	var linkable = !this._fromExternalData() || this.count.visible &lt; this.users.length;
+	if (linkable) {
+		var link = Echo.Utils.hyperlink({&quot;caption&quot;: caption});
+		element.addClass(&quot;echo-linkColor&quot;).append(link);
+	} else {
+		element.removeClass(&quot;echo-linkColor&quot;).append(caption);
+	}
+	this.moreRequestInProgress = false;
+	if (linkable) {
+		element.one(&quot;click&quot;, function() {
+			self._getMoreUsers();
+		});
+	}
+	return element;
+};
+
+<span id='Echo-StreamServer-Controls-FacePile-method-actors'>/**
+</span> * @echo_renderer
+ */
+pile.renderers.actors = function(element) {
+	var self = this, usersDOM = [];
+	var item = this.config.get(&quot;item&quot;);
+
+	if (!this.users.length || !item.avatar &amp;&amp; !item.text) {
+		return element.empty();
+	}
+
+	var action = (item.avatar &amp;&amp; !item.text ? &quot;addClass&quot; : &quot;removeClass&quot;);
+	element[action](this.cssPrefix + &quot;only-avatars&quot;);
+	var wrap = function(text, name) {
+		return self.substitute({
+			&quot;template&quot;: &quot;&lt;span {data:classAttr}&gt;{data:text}&lt;/span&gt;&quot;,
+			&quot;data&quot;: {
+				&quot;classAttr&quot;: name ? 'class=&quot;' + self.cssPrefix + name + '&quot;' : '',
+				&quot;text&quot;: text
+			}
+		});
+	};
+	$.map(this.users.slice(0, this.count.visible), function(user) {
+		usersDOM.push(user.instance.dom.render());
+	});
+	var last;
+	var delimiter = this.config.get(&quot;item.text&quot;) ? &quot;, &quot; : &quot;&quot;;
+	if (!this._isMoreButtonVisible()) {
+		last = usersDOM.pop();
+	}
+	if (usersDOM.length) {
+		usersDOM = delimiter
+			? this._intersperse(usersDOM, wrap(delimiter, &quot;delimiter&quot;))
+			: usersDOM;
+		// use &amp;nbsp; instead of simple space
+		// because IE will cut off simple one after &lt;span&gt;
+		usersDOM.push(wrap(&quot;&amp;nbsp;&quot; + this.labels.get(&quot;and&quot;) + &quot; &quot;, &quot;and&quot;));
+	}
+	if (!this._isMoreButtonVisible()) {
+		usersDOM.push(last);
+	}
+	$.map(usersDOM, function(chunk) {
+		element.append(chunk);
+	});
+	return element;
+};
+
+<span id='Echo-StreamServer-Controls-FacePile-method-suffixText'>/**
+</span> * @echo_renderer
+ */
+pile.renderers.suffixText = function(element) {
+	return element.empty().append(this.config.get(&quot;suffixText&quot;, &quot;&quot;));
+};
+
+<span id='Echo-StreamServer-Controls-FacePile-method-getVisibleUsersCount'>/**
+</span> * Method to get the visible users count
+ *
+ * @return {Number}
+ * visible users count
+ */
+pile.methods.getVisibleUsersCount = function() {
+	return this.count.visible;
+};
+
+pile.methods._isMoreButtonVisible = function() {
+	return !this._fromExternalData() &amp;&amp; !this.isViewComplete || this.count.visible &lt; this.count.total;
+};
+
+pile.methods._fromExternalData = function() {
+	return !this.config.get(&quot;query&quot;) &amp;&amp; !!this.data;
+};
+
+pile.methods._request = function() {
+	var pile = this;
+ 	var request = this.get(&quot;request&quot;);
+	if (!request) {
+		request = Echo.StreamServer.API.request({
+			&quot;endpoint&quot;: &quot;search&quot;,
+			&quot;data&quot;: {
+				&quot;q&quot;: this.config.get(&quot;query&quot;),
+				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
+			},
+			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
+			&quot;recurring&quot;: this.config.get(&quot;liveUpdates&quot;),
+			&quot;onError&quot;: function(data) {
+				pile.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data});
+			},
+			&quot;onData&quot;: function(data, extra) {
+				pile[&quot;_&quot; + extra.requestType + &quot;ResponseHandler&quot;](data);
+			}
+		});
+		this.set(&quot;request&quot;, request);
+	}
+	request.send();
+};
+
+pile.methods._requestMoreItems = function() {
+	var pile = this, query = this.config.get(&quot;query&quot;);
+	if (typeof this.nextPageAfter != &quot;undefined&quot;) {
+		query = 'pageAfter:&quot;' + this.nextPageAfter + '&quot; ' + query;
+	}
+	var request = Echo.StreamServer.API.request({
+		&quot;endpoint&quot;: &quot;search&quot;,
+		&quot;data&quot;: {
+			&quot;q&quot;: query,
+			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
+		},
+		&quot;onError&quot;: function(data) {
+			pile.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data});
+		},
+		&quot;onData&quot;: function(data) {
+			pile._initialResponseHandler(data);
+		}
+	});
+	request.send();
+};
+
+pile.methods._initialResponseHandler = function(data) {
+	if (data.itemsPerPage &amp;&amp; data.itemsPerPage != this.config.get(&quot;itemsPerPage&quot;)) {
+		this.config.set(&quot;itemsPerPage&quot;, +data.itemsPerPage);
+	}
+	if (this._fromExternalData()) {
+		this.count.total = this.config.get(&quot;totalUsersCount&quot;, 0);
+	}
+	this.nextPageAfter = data.nextPageAfter;
+	if (!data.entries.length) {
+		if (!this.isViewComplete) {
+			this.isViewComplete = true;
+			this.dom.render();
+			this.ready();
+		}
+		return;
+	}
+	if (!this.count.visible) {
+		this.count.visible = this._fromExternalData()
+			? this.config.get(&quot;initialUsersCount&quot;, this.config.get(&quot;itemsPerPage&quot;))
+			: this.config.get(&quot;itemsPerPage&quot;);
+	}
+	this._processResponse(data);
+};
+
+pile.methods._secondaryResponseHandler = function(data) {
+	this._processResponse(data, true);
+};
+
+pile.methods._processResponse = function(data, isLive) {
+	var self = this, fetchMoreUsers = true;
+	var actions = $.map(data.entries, function(entry) {
+		return function(callback) {
+			if (self._isRemoveAction(entry)) {
+				self._maybeRemoveItem(entry);
+				callback();
+			} else {
+				if (self._isUniqueUser(entry)) {
+					fetchMoreUsers = false;
+				}
+				var user = self.uniqueUsers[entry.actor.id];
+				if (user) {
+					// user is already in the list -&gt; increment counter and return
+					user.itemsCount++;
+					callback();
+				} else {
+					self._initItem(entry, function() {
+						self._updateStructure(this);
+						callback();
+					});
+				}
+			}
+		};
+	});
+	Echo.Utils.parallelCall(actions, function() {
+		self._output(isLive, fetchMoreUsers);
+	});
+};
+
+pile.methods._isRemoveAction = function(entry) {
+	return entry.verbs &amp;&amp; entry.verbs[0] == &quot;http://activitystrea.ms/schema/1.0/delete&quot;;
+};
+
+pile.methods._output = function(isLive, fetchMoreUsers) {
+	if (this._fromExternalData()) {
+		this.count.total = Math.max(this.users.length, this.count.total);
+	} else {
+		this.count.total = this.count.visible = this.users.length;
+	}
+	this.count.visible = Math.min(this.count.visible, this.users.length);
+	if (!this.count.total) {
+		this.isViewComplete = false;
+	}
+	if (!isLive &amp;&amp; fetchMoreUsers) {
+		this._getMoreUsers();
+	} else {
+		this.dom.render();
+		this.ready();
+	}
+};
+
+pile.methods._isUniqueUser = function(entry) {
+	return !this.uniqueUsers[entry.actor.id];
+};
+
+pile.methods._initItem = function(entry, callback) {
+	var config = $.extend({
+		&quot;target&quot;: $(&quot;&lt;div&gt;&quot;),
+		&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
+		&quot;parent&quot;: this.config.getAsHash(),
+		&quot;plugins&quot;: this.config.get(&quot;plugins&quot;),
+		&quot;data&quot;: entry.actor,
+		&quot;user&quot;: this.user,
+		&quot;ready&quot;: callback
+	}, this.config.get(&quot;item&quot;));
+	return new Echo.StreamServer.Controls.FacePile.Item(config);
+};
+
+pile.methods._updateStructure = function(item) {
+	var user = this.uniqueUsers[item.get(&quot;data.id&quot;)] = {
+		&quot;itemsCount&quot;: 1,
+		&quot;instance&quot;: item
+	};
+	this.users[user.instance.isYou() ? &quot;unshift&quot; : &quot;push&quot;](user);
+};
+
+pile.methods._maybeRemoveItem = function(entry) {
+	var user = this.uniqueUsers[entry.actor.id];
+	// if we have move than one item posted by the same user,
+	// we decrement the counter, but leave the user in the list
+	if (!user || --user.itemsCount) return;
+	var index;
+	$.each(this.users, function(i, u) {
+		if (u.instance.data.id == entry.actor.id) {
+			index = i;
+			return false; // break
+		}
+	});
+	this.users.splice(index, 1);
+	delete this.uniqueUsers[entry.actor.id];
+};
+
+pile.methods._getMoreUsers = function() {
+	if (this._fromExternalData()) {
+		this.count.visible += this.config.get(&quot;itemsPerPage&quot;);
+		if (this.count.visible &gt; this.users.length) {
+			this.count.visible = this.users.length;
+		}
+		this.dom.render();
+	} else {
+		if (!this.moreRequestInProgress) {
+			this.showMessage({
+				&quot;type&quot;: &quot;loading&quot;,
+				&quot;target&quot;: this.dom.get(&quot;more&quot;)
+			});
+			this.moreRequestInProgress = true;
+		}
+		this._requestMoreItems();
+	}
+};
+
+pile.methods._intersperse = function(object, separator) {
+	return Echo.Utils.foldl([], object, function(item, acc, key) {
+		if (acc.length) acc.push(separator);
+		acc.push(item);
+	});
+};
+
+pile.css = 
+	'.{class:container} { line-height: 20px; vertical-align: middle; }' +
+	'.{class:more} { white-space: nowrap; }' +
+	'.{class:more} .echo-control-message-icon { display: inline; margin: 0px 5px; }';
+
+Echo.Control.create(pile);
+
+})();
+
+// FacePile item definition
+
+(function() {
+
+var item = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.FacePile.Item&quot;);
+
+item.config = {
+	&quot;infoMessages&quot;: {
+		&quot;enabled&quot;: false
+	}
+};
+
+item.labels = {
+	&quot;you&quot;: &quot;You&quot;
+};
+
+item.templates.main =
+	'&lt;span class=&quot;{class:container}&quot;&gt;' +
+		'&lt;span class=&quot;{class:avatar}&quot;&gt;&lt;/span&gt;' +
+		'&lt;span class=&quot;{class:title}&quot;&gt;{data:title}&lt;/span&gt;' +
+	'&lt;/span&gt;';
+
+item.renderers.avatar = function(element) {
+	var self = this;
+	if (this.config.get(&quot;avatar&quot;)) {
+		var img = Echo.Utils.loadImage(
+			this.data.avatar,
+			this.user.config.get(&quot;defaultAvatar&quot;)
+		);
+		element.empty().append(img);
+		if (!this.config.get(&quot;text&quot;)) {
+			element.attr(&quot;title&quot;, this.data.title);
+		}
+	} else {
+		element.hide();
+	}
+	return element;
+};
+
+item.renderers.title = function(element) {
+	if (this.config.get(&quot;text&quot;)) {
+		element.empty().append(this.isYou() ? this.labels.get(&quot;you&quot;) : this.data.title);
+	} else {
+		element.hide();
+	}
+	return element;
+};
+
+item.methods.isYou = function() {
+	return this.data.id &amp;&amp; this.data.id === this.user.get(&quot;identityUrl&quot;);
+};
+
+item.css =
+	'.{class:avatar} img { width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }' +
+	'.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }' +
+	'.{class:container}, .{class:container} span { white-space: nowrap; }' +
+	'.{class:only-avatars} .{class:container} { white-space: normal; }';
+
+Echo.Control.create(item);
+
+})();
+</pre>
+</body>
+</html>

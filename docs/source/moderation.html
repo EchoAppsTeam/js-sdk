@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation
+ * Adds several moderation controls to change item status. Besides it provides the opportunity to ban specific user or change his privileges.
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ *         &quot;plugins&quot;: [{
+ *             &quot;name&quot;: &quot;Moderation&quot;
+ *         }]
+ *     });
+ *
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;Moderation&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+var capitalize = function(string) {
+	return string.replace(/\b[a-z]/g, function(match) {
+		return match.toUpperCase();
+	});
+};
+
+plugin.init = function() {
+	var self = this;
+	var item = this.component;
+	var actions = this.config.get(&quot;itemActions&quot;).concat(this.config.get(&quot;userActions&quot;));
+	this.extendTemplate(&quot;insertAfter&quot;, &quot;avatar&quot;, plugin.statusItemTemplate);
+	$.each(actions, function(i, action) {
+		var buttons = plugin.actionButtons[action];
+		if (buttons &amp;&amp; $.isArray(buttons)) {
+			$.each(buttons, function(j, button) {
+				item.addButtonSpec(&quot;Moderation&quot;, self[&quot;_assemble&quot; + capitalize(action) + &quot;Button&quot;](button));
+			});
+		} else {
+			item.addButtonSpec(&quot;Moderation&quot;, self._assembleButton(capitalize(action)));
+		}
+	});
+};
+
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-cfg-userActions'>	/**
+</span>	 * @cfg {Array} userActions
+	 * Defines the list of user specific actions to be added to the Echo Stream Item.
+	 *
+	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+	 * 		&quot;plugins&quot;: [{
+	 * 			&quot;name&quot;: &quot;Moderation&quot;
+	 * 			&quot;userActions&quot;: [&quot;ban&quot;, &quot;permissions&quot;],
+	 * 		}]
+	 * 	});
+	 */
+	&quot;userActions&quot;: [&quot;ban&quot;, &quot;permissions&quot;],
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-cfg-itemActions'>	/**
+</span>	 * @cfg {Array} itemActions
+	 * Defines the list of item specific actions to be added to the Echo Stream Item.
+	 *
+	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+	 * 		&quot;plugins&quot;: [{
+	 * 			&quot;name&quot;: &quot;Moderation&quot;
+	 * 			&quot;itemActions&quot;: [&quot;approve&quot;, &quot;spam&quot;, &quot;delete&quot;, &quot;untouch&quot;]
+	 * 		}]
+	 * 	});
+	 */
+	&quot;itemActions&quot;: [&quot;approve&quot;, &quot;spam&quot;, &quot;delete&quot;]
+};
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserUpdate&quot;: function(topic, args) {
+		args.item.set(&quot;data.actor.&quot; + args.field, args.value);
+		args.item.dom.render();
+		return {&quot;stop&quot;: [&quot;bubble&quot;]};
+	}
+};
+
+plugin.actionButtons = {
+	&quot;ban&quot;: [&quot;Ban&quot;, &quot;UnBan&quot;],
+	&quot;permissions&quot;: [&quot;UserPermissions&quot;]
+};
+
+plugin.roles = [&quot;&quot;, &quot;moderator&quot;, &quot;administrator&quot;];
+
+plugin.statusItemTemplate = 
+	'&lt;div class=&quot;{plugin.class:status}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:statusIcon}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-approveButton'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;approveButton&quot;: &quot;Approve&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-deleteButton'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;deleteButton&quot;: &quot;Delete&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-spamButton'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;spamButton&quot;: &quot;Spam&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-untouchButton'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;untouchButton&quot;: &quot;Untouch&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToCommunityFlagged'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;changingStatusToCommunityFlagged&quot;: &quot;Flagging...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToModeratorApproved'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;changingStatusToModeratorApproved&quot;: &quot;Approving...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToModeratorDeleted'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;changingStatusToModeratorDeleted&quot;: &quot;Deleting...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToUntouched'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;changingStatusToUntouched&quot;: &quot;Untouching...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToModeratorFlagged'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;changingStatusToModeratorFlagged&quot;: &quot;Marking as spam...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusCommunityFlagged'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;statusCommunityFlagged&quot;: &quot;Flagged by Community&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusModeratorApproved'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;statusModeratorApproved&quot;: &quot;Approved by Moderator&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusModeratorDeleted'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;statusModeratorDeleted&quot;: &quot;Deleted by Moderator&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusModeratorFlagged'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;statusModeratorFlagged&quot;: &quot;Flagged by Moderator&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusSystemFlagged'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;statusSystemFlagged&quot;: &quot;Flagged by System&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-banUser'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;banUser&quot;: &quot;Ban User&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-unbanUser'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;unbanUser&quot;: &quot;Unban&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-userBanned'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;userBanned&quot;: &quot;Banned User&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-processingAction'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;processingAction&quot;: &quot;Setting up '{state}' user state...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-moderatorRole'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;moderatorRole&quot;: &quot;Moderator&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-administratorRole'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;administratorRole&quot;: &quot;Administrator&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-userButton'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;userButton&quot;: &quot;Demote to User&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-moderatorButton'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;moderatorButton&quot;: &quot;Promote to Moderator&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-administratorButton'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;administratorButton&quot;: &quot;Promote to Admin&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-setRoleAction'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;setRoleAction&quot;: &quot;Setting up '{role}' role...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-unsetRoleAction'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;unsetRoleAction&quot;: &quot;Removing '{role}' role...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusUntouched'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;statusUntouched&quot;: &quot;New&quot;
+};
+
+plugin.buttonLabels = {
+	&quot;banned&quot;: '&lt;span class=&quot;{plugin.class:button-state} {plugin.class:button-state-banned}&quot;&gt;{plugin.label:userBanned}&lt;/span&gt;' +
+		'(&lt;span class=&quot;echo-clickable&quot;&gt;{plugin.label:unbanUser}&lt;/span&gt;)',
+	&quot;unbanned&quot;: '&lt;span class=&quot;echo-clickable&quot;&gt;{plugin.label:banUser}&lt;/span&gt;'
+};
+
+plugin.statuses = [
+	&quot;Untouched&quot;,
+	&quot;ModeratorApproved&quot;,
+	&quot;ModeratorDeleted&quot;,
+	&quot;CommunityFlagged&quot;,
+	&quot;ModeratorFlagged&quot;,
+	&quot;SystemFlagged&quot;
+];
+
+plugin.button2status = {
+	&quot;Spam&quot;: &quot;ModeratorFlagged&quot;,
+	&quot;Delete&quot;: &quot;ModeratorDeleted&quot;,
+	&quot;Approve&quot;: &quot;ModeratorApproved&quot;,
+	&quot;Untouch&quot;: &quot;Untouched&quot;
+};
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-method-status'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.status = function(element) {
+	var item = this.component;
+	if (!item.user.is(&quot;admin&quot;)) {
+		element.hide();
+		return element;
+	}
+	if (item.get(&quot;depth&quot;)) {
+		element.addClass(this.cssPrefix + 'status-child');
+	}
+	var status = item.get(&quot;data.object.status&quot;) || &quot;Untouched&quot;;
+	return element.addClass(this.cssPrefix + &quot;status-&quot; + status);
+};
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-method-statusIcon'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.statusIcon = function(element) {
+	var item = this.component;
+	if (!item.user.is(&quot;admin&quot;)) return element;
+	var status = item.get(&quot;data.object.status&quot;) || &quot;Untouched&quot;;
+	var title = this.labels.get(&quot;status&quot; + status);
+	return element.addClass(this.cssPrefix + &quot;status-icon-&quot; + status).attr(&quot;title&quot;, title);
+};
+
+plugin.methods._changeItemStatus = function(status) {
+	var item = this.component;
+	this.set(&quot;selected&quot;, false);
+	item.set(&quot;data.object.status&quot;, status);
+	item.dom.render({&quot;name&quot;: &quot;buttons&quot;});
+	// rerender status recursive
+	// since it contains other renderers
+	this.dom.render({
+		&quot;name&quot;: &quot;status&quot;,
+		&quot;recursive&quot;: true
+	});
+};
+
+plugin.methods._sendRequest = function(data, callback, errorCallback) {
+	Echo.StreamServer.API.request({
+		&quot;endpoint&quot;: &quot;submit&quot;,
+		&quot;submissionProxyURL&quot;: this.component.config.get(&quot;submissionProxyURL&quot;),
+		&quot;onData&quot;: callback,
+		&quot;onError&quot;: errorCallback,
+		&quot;data&quot;: data
+	}).send();
+};
+
+plugin.methods._publishCompleteActionEvent = function(name) {
+	this.events.publish({
+		&quot;topic&quot;: &quot;on&quot; + name + &quot;Complete&quot;,
+		&quot;data&quot;: {
+			&quot;item&quot;: {
+				&quot;data&quot;: this.component.get(&quot;data&quot;),
+				&quot;target&quot;: this.component.get(&quot;dom.content&quot;)
+			}
+		},
+		&quot;bubble&quot;: true
+	});
+};
+
+plugin.methods._assembleButton = function(name) {
+	var self = this;
+	var callback = function() {
+		var item = this;
+		var status = plugin.button2status[name];
+		item.block(self.labels.get(&quot;changingStatusTo&quot; + status));
+		var activity = {
+			&quot;verbs&quot;: [&quot;http://activitystrea.ms/schema/1.0/update&quot;],
+			&quot;targets&quot;: [{&quot;id&quot;: item.get(&quot;data.object.id&quot;)}],
+			&quot;actor&quot;: {&quot;title&quot;: item.get(&quot;data.actor.id&quot;)},
+			&quot;object&quot;: {
+				&quot;state&quot;: status
+			}
+		};
+		self._sendRequest({
+			&quot;content&quot;: activity,
+			&quot;appkey&quot;: item.config.get(&quot;appkey&quot;),
+			&quot;sessionID&quot;: item.user.get(&quot;sessionID&quot;),
+			&quot;target-query&quot;: item.config.get(&quot;parent.query&quot;)
+		}, function(data) {
+			self._publishCompleteActionEvent(name);
+			self._changeItemStatus(status);
+			self.requestDataRefresh();
+		}, function() {
+			item.unblock();
+		});
+	};
+	return function() {
+		var item = this;
+		return {
+			&quot;name&quot;: name,
+			&quot;label&quot;: self.labels.get(name.toLowerCase() + &quot;Button&quot;),
+			&quot;visible&quot;: item.user.is(&quot;admin&quot;) &amp;&amp;
+					item.get(&quot;data.object.status&quot;) !== plugin.button2status[name],
+			&quot;callback&quot;: callback
+		};
+	};
+};
+
+plugin.methods._sendUserUpdate = function(config) {
+	var item = this.component;
+	Echo.IdentityServer.API.request({
+		&quot;endpoint&quot;: &quot;update&quot;,
+		&quot;data&quot;: {
+			&quot;content&quot;: {
+				&quot;field&quot;: config.field,
+				&quot;value&quot;: config.value,
+				&quot;identityURL&quot;: item.get(&quot;data.actor.id&quot;),
+				&quot;username&quot;: item.get(&quot;data.actor.title&quot;)
+			},
+			&quot;appkey&quot;: item.config.get(&quot;appkey&quot;),
+			&quot;sessionID&quot;: item.user.get(&quot;sessionID&quot;, &quot;&quot;),
+			&quot;target-query&quot;: item.config.get(&quot;parent.query&quot;, &quot;&quot;)
+		},
+		&quot;onData&quot;: config.onData,
+		&quot;onError&quot;: function() {
+			item.dom.render();
+		}
+	}).send();
+};
+
+plugin.methods._assembleBanButton = function(action) {
+	var self = this;
+	var callback = function() {
+		var item = this;
+		var newState = action === &quot;Ban&quot; ? &quot;ModeratorBanned&quot; : &quot;Untouched&quot;;
+		item.get(&quot;buttons.&quot; + plugin.name + &quot;.&quot; + action + &quot;.element&quot;)
+			.empty()
+			.append(self.labels.get(&quot;processingAction&quot;, {&quot;state&quot;: newState}));
+		self._sendUserUpdate({
+			&quot;field&quot;: &quot;state&quot;,
+			&quot;value&quot;: newState,
+			&quot;onData&quot;: function(data) {
+				self._publishCompleteActionEvent(action);
+				self._publishUserUpdateEvent({
+					&quot;item&quot;: item,
+					&quot;field&quot;: &quot;state&quot;,
+					&quot;value&quot;: newState
+				});
+			}
+		});
+	};
+	return function() {
+		var item = this;
+		var isBanned = self._isUserBanned();
+		var visible = item.get(&quot;data.actor.id&quot;) != item.user.get(&quot;fakeIdentityURL&quot;) &amp;&amp;
+			isBanned ^ (action === &quot;Ban&quot;);
+		return {
+			&quot;name&quot;: action,
+			&quot;label&quot;: self.substitute({&quot;template&quot;: plugin.buttonLabels[isBanned ? &quot;banned&quot; : &quot;unbanned&quot;]}),
+			&quot;visible&quot;: visible &amp;&amp; item.user.is(&quot;admin&quot;),
+			&quot;callback&quot;: callback,
+			&quot;once&quot;: true
+		};
+	};
+};
+
+plugin.methods._assemblePermissionsButton = function(action) {
+	var self = this;
+	var callback = function() {
+		var item = this;
+		var role = self._getRole();
+		var next = self._getNextRole(role);
+		var roles = next != &quot;&quot;
+			? (item.get(&quot;data.actor.roles&quot;) || []).concat(next)
+			: Echo.Utils.foldl([], item.get(&quot;data.actor.roles&quot;) || [], function(_role, acc) {
+				if ($.inArray(_role, plugin.roles) &lt; 0) acc.push(_role);
+			});
+		var label = next == &quot;&quot; ? &quot;unset&quot; : &quot;set&quot;;
+		item.get(&quot;buttons.&quot; + plugin.name + &quot;.&quot; + action + &quot;.element&quot;)
+			.empty()
+			.append(self.labels.get(label + &quot;RoleAction&quot;, {&quot;role&quot;: next || role}));
+		self._sendUserUpdate({
+			&quot;field&quot;: &quot;roles&quot;,
+			&quot;value&quot;: roles.length ? roles.join(&quot;,&quot;) : &quot;-&quot;,
+			&quot;onData&quot;: function(data) {
+				self._publishCompleteActionEvent(action);
+				self._publishUserUpdateEvent({
+					&quot;item&quot;: item,
+					&quot;field&quot;: &quot;roles&quot;,
+					&quot;value&quot;: roles
+				});
+			}
+		});
+	};
+	return function() {
+		var item = this;
+		var role = self._getRole();
+		var template = (role
+			? '&lt;span class=&quot;{plugin.class:button-role} {plugin.class:button-role}-{data:role}&quot;&gt;{data:label}&lt;/span&gt;' +
+				'(&lt;span class=&quot;echo-clickable&quot;&gt;{data:button}&lt;/span&gt;)'
+			: '&lt;span class=&quot;echo-clickable&quot;&gt;{data:button}&lt;/span&gt;'
+		);
+		var label = self.substitute({
+			&quot;template&quot;: template,
+			&quot;data&quot;: {
+				&quot;role&quot;: role,
+				&quot;label&quot;: role ? self.labels.get(role + &quot;Role&quot;) : &quot;&quot;,
+				&quot;button&quot;: self.labels.get((self._getNextRole(role) || &quot;user&quot;) + &quot;Button&quot;)
+			}
+		});
+		return {
+			&quot;name&quot;: action,
+			&quot;label&quot;: label,
+			// FIXME: add fakeIdentityURL to UserSession
+			&quot;visible&quot;: item.get(&quot;data.actor.id&quot;) != item.user.get(&quot;fakeIdentityURL&quot;) &amp;&amp;
+				item.user.any(&quot;roles&quot;, [&quot;administrator&quot;]),
+			&quot;callback&quot;: callback,
+			&quot;once&quot;: true
+		};
+	};
+};
+
+plugin.methods._publishUserUpdateEvent = function(data) {
+	this.events.publish({
+		&quot;topic&quot;: &quot;onUserUpdate&quot;,
+		&quot;data&quot;: {
+			&quot;item&quot;: data.item,
+			&quot;field&quot;: data.field,
+			&quot;value&quot;: data.value
+		},
+		&quot;global&quot;: false,
+		&quot;propagation&quot;: false
+	});
+	this.requestDataRefresh();
+};
+
+plugin.methods._isUserBanned = function() {
+	return this.component.get(&quot;data.actor.status&quot;) === &quot;ModeratorBanned&quot;;
+};
+
+plugin.methods._getRole = function() {
+	var result = &quot;&quot;;
+	$.each(this.component.get(&quot;data.actor.roles&quot;) || [], function(id, role) {
+		if ($.inArray(role, plugin.roles) &gt; 0) {
+			result = role;
+			if (role === &quot;administrator&quot;) {
+				return false; // break;
+			}
+		}
+	});
+	return result;
+};
+
+plugin.methods._getNextRole = function(role) {
+	return plugin.roles[($.inArray(role, plugin.roles) + 1) % plugin.roles.length];
+};
+
+plugin.css = function() {
+	var msieCss = &quot;&quot;;
+	if ($.browser.msie) {
+		msieCss =
+			'.{plugin.class:status} { zoom: 1; }';
+	};
+	return '.{plugin.class:status} { width: 48px; height: 24px; }' +
+		'.{plugin.class:status-child} { width: 24px; height: 24px; }' +
+		'.{plugin.class:statusIcon} { float: right; margin: 4px; width: 16px; height: 16px; }' +
+		// statuses
+		'.{plugin.class:status-Untouched} { background: #00aaff; }' +
+		'.{plugin.class:status-ModeratorApproved} { background: #bdfb6d; }' +
+		'.{plugin.class:status-ModeratorDeleted} { background: #f20202; }' +
+		'.{plugin.class:status-SystemFlagged}, .{plugin.class:status-CommunityFlagged}, .{plugin.class:status-ModeratorFlagged} { background: #ff9e00; }' +
+		// buttons
+		'.{plugin.class:button-state} { margin-right: 3px; }' +
+		'.{plugin.class:button-state-banned} { color: #FF0000; }' +
+		'.{plugin.class:button-role} { margin-right: 3px; }' +
+		'.{plugin.class:button-role-moderator} { color: #0000FF; }' +
+		'.{plugin.class:button-role-administrator} { color: #008000; }' +
+		// status icons
+		$.map(plugin.statuses, function(name) {
+			return '.{plugin.class:status-icon-' + name + '} { background: url(&quot;//cdn.echoenabled.com/images/curation/status/' + name.toLowerCase() + '.png&quot;) no-repeat; }';
+		}).join(&quot;&quot;) + msieCss;
+}();
+
+Echo.Plugin.create(plugin);
+</pre>
+</body>
+</html>
