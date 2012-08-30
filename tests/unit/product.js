@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Product = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.Product",
-	"function": [
+	"functions": [
 		"create",
 		"initView",
 		"getView",
@@ -74,15 +74,24 @@ suite.prototype.tests.PublicInterfaceTests = {
 				}
 			}
 		};
-		
-		suite.createProduct("TestProduct", views, {});
+		var assemblers = {
+			"View1": function() {
+				QUnit.ok(true,
+					"Checking that assembler function was called");
+			},
+			"View2": function(param) {
+				QUnit.equal(param, "param",
+					"Checking that assembler function was called with correct parameters");
+			}
+		};
+		suite.createProduct("TestProduct", views, assemblers);
 		this.sequentialAsyncTests([
 			"initView",
 			"getView",
 			"destroyView",
-			"destroyViews"
+			"destroyViews",
+			"assemble"
 		], "cases");
-		QUnit.start();
 	}
 };
 
@@ -92,7 +101,6 @@ suite.prototype.cases.initView = function(callback) {
 	var self = this;
 	var check = function() {
 		var product = this;
-		console.log("initView callback");
 		var view = this.initView("View1", {
 			"target": self.config.target,
 			"appkey": self.config.appkey,
@@ -127,7 +135,7 @@ suite.prototype.cases.getView = function(callback) {
 		QUnit.deepEqual(this.getView("View1"), window.TestProduct.Views.View1,
 			"Checking that getControl returns a proper link");
 		QUnit.equal(this.getView("FakeView"), undefined,
-			"Checking that getControl() returns undefined with fake control name");
+			"Checking that getControl() returns undefined with fake view name");
 		this.destroy();
 		callback();
 	};
@@ -190,6 +198,19 @@ suite.prototype.cases.destroyViews = function(callback) {
 	})
 };
 
+suite.prototype.cases.assemble = function(callback) {
+	var check = function() {
+		this.assemble("View1");
+		this.assemble("View2", "param");
+		callback();
+	};
+	suite.initProduct({
+		"target": this.config.target,
+		"appkey": this.config.appkey,
+		"ready": check
+	});
+};
+
 // test helper functions
 
 suite.createControls = function(names) {
@@ -211,10 +232,6 @@ suite.getControlManifest = function(name) {
 	return manifest;
 };
 
-suite.createProductView = function(name, controls) {
-	Echo.ProductView.create(suite.getProductViewManifest(name, controls));
-};
-
 suite.getProductViewManifest = function(name, controls) {
 	var manifest = Echo.ProductView.manifest(name);
 	manifest.templates.main = "<div>Sample View Template</div>";
@@ -224,26 +241,26 @@ suite.getProductViewManifest = function(name, controls) {
 	manifest.controls = controls;
 	return manifest;
 };
+
 suite.initProduct = function(config) {
 	var Product = suite.getProductClass();
 	new Product($.extend(true, {}, config));
 };
 
 suite.createProduct = function(name, views, assemblers) {
-	Echo.Product.create(suite.getProductManifest(name, views));
+	Echo.Product.create(suite.getProductManifest(name, views, assemblers));
 };
 
 suite.getProductManifest = function(name, views, assemblers) {
-	var manifest = Echo.Product.manifest(name || suite.getProductClassName(),
-						["TestProduct.Views.View1", "TestProduct.Views.View2"]);
-	console.log(manifest.views);
-	manifest.templates.main = "<div>Sample Product Template</div>";
-	$.each(views, function(_name, controls) {
-		var viewName = name + ".Views." + _name;
-		console.log(viewName);
-		manifest.views[viewName] = suite.getProductViewManifest(viewName, controls);
+	var viewNames = Echo.Utils.foldl([], views, function(controls, acc, _name) {
+			acc.push(name + ".Views." + _name);
 	});
-	console.log(manifest.views);
+	var manifest = Echo.Product.manifest(name, viewNames);
+	manifest.templates.main = "<div>Sample Product Template</div>";
+	manifest.views = Echo.Utils.foldl({}, views, function(controls, acc, _name) {
+		var viewName = name + ".Views." + _name;
+		acc[viewName] = suite.getProductViewManifest(viewName, controls);
+	});
 	manifest.assemblers = assemblers || {};
 	return manifest;
 };

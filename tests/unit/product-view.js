@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.ProductView = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.ProductView",
-	"function": [
+	"functions": [
 		"create",
 		"initControl",
 		"getControl",
