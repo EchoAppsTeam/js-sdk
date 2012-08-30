@@ -618,7 +618,8 @@ Echo.Utils.loadImage = function(image, defaultImage) {
  * @return {String} HTML string for <a> tag
  */
 Echo.Utils.hyperlink = function(data, options) {
-	options = options || {};
+	var data = $.extend({}, data);
+	var options = $.extend({}, options);
 	if (options.openInNewWindow && !data.target) {
 		data.target = "_blank";
 	}

@@ -229,6 +229,45 @@ suite.prototype.tests.TestDataMethods = {
 				      regexp.exec("{key1:value1} {key2:value2}"));
 		QUnit.deepEqual(found, ["{key1:value1}", "key1", "value1", "{key2:value2}", "key2", "value2"],
 				"Checking templateSubstitution regexp with multiple key-value pairs");
+
+		var linkParams = {
+			"data": {
+				"caption": "TestLink",
+				"href": "http://aboutecho.com",
+				"target": "_blank"
+			},
+			"options": {
+				"openInNewWindow": true,
+				"skipEscaping": true
+			}
+		};
+
+		var link = Echo.Utils.hyperlink(linkParams.data, linkParams.options);
+		QUnit.equal(link, "<a href=\"http://aboutecho.com\" target=\"_blank\">TestLink</a>",
+			"Checking that hyperlink() method returns a proper link");
+
+		linkParams.data.href = undefined;
+		link = Echo.Utils.hyperlink(linkParams.data, linkParams.options);
+		QUnit.equal(link, "<a target=\"_blank\" href=\"javascript:void(0)\">TestLink</a>",
+			"Checking that hyperlink() method sets 'javascript:void(0)' as default href");
+
+		linkParams.data.href="http://aboutecho.com";
+		linkParams.data.caption = undefined;
+		link = Echo.Utils.hyperlink(linkParams.data, linkParams.options);
+		QUnit.equal(link, "<a href=\"http://aboutecho.com\" target=\"_blank\"></a>",
+			"Checking hyperlink() method without caption");
+
+		linkParams.data.target = undefined;
+		linkParams.options.openInNewWindow = true;
+		link = Echo.Utils.hyperlink(linkParams.data, linkParams.options);
+		QUnit.equal(link, "<a href=\"http://aboutecho.com\" target=\"_blank\"></a>",
+			"Checking hyperlink() method sets target to '_blank' value if openInNewWindow is true");
+
+		linkParams.data.href = "http://aboutecho.com\?&a=b";
+		linkParams.options.skipEscaping = false;
+		link = Echo.Utils.hyperlink(linkParams.data, linkParams.options);
+		QUnit.equal(link, "<a href=\"http://aboutecho.com\?&amp;a=b\" target=\"_blank\"></a>",
+			"Checking hyperlink() method htmlizes href attribute if skipEscaping is false");
 	}
 };
 
