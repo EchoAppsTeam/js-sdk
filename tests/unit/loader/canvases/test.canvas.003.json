@@ -7,7 +7,7 @@
     },
     "apps": [{
         "id": "test.counter.1",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -15,7 +15,7 @@
         }
     }, {
         "id": "test.counter.2",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -23,7 +23,7 @@
         }
     }, {
         "id": "test.counter.3",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -31,7 +31,7 @@
         }
     }, {
         "id": "test.counter.4",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -39,7 +39,7 @@
         }
     }, {
         "id": "test.counter.5",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -47,7 +47,7 @@
         }
     }, {
         "id": "test.counter.6",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -55,7 +55,7 @@
         }
     }, {
         "id": "test.counter.7",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -63,7 +63,7 @@
         }
     }, {
         "id": "test.counter.8",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -71,7 +71,7 @@
         }
     }, {
         "id": "test.counter.9",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -79,7 +79,7 @@
         }
     }, {
         "id": "test.counter.10",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -87,7 +87,7 @@
         }
     }, {
         "id": "test.counter.11",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -95,7 +95,7 @@
         }
     }, {
         "id": "test.counter.12",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -103,7 +103,7 @@
         }
     }, {
         "id": "test.counter.13",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -111,7 +111,7 @@
         }
     }, {
         "id": "test.counter.14",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",
@@ -119,7 +119,7 @@
         }
     }, {
         "id": "test.counter.15",
-        "script": "stream-server.pack.js",
+        "script": "sdk/stream-server.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "test.aboutecho.com",

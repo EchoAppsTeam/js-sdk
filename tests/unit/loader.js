@@ -75,7 +75,6 @@ suite.prototype.cases.invalidParameters = function(callback) {
 };
 
 suite.prototype.cases.nonExistingScripts = function(callback) {
-	QUnit.stop();
 	Echo.Loader.download({
 		"errorTimeout": 1000, // 1 sec
 		"scripts": [{
@@ -95,12 +94,12 @@ suite.prototype.cases.nonExistingScripts = function(callback) {
 suite.prototype.cases.alreadyLoadedScripts = function(callback) {
 	Echo.Loader.download({
 		"scripts": [{
-			"url": "../events.js"
+			"url": "sdk/events.js"
 		}, {
-			"url": "../labels.js",
+			"url": "sdk/labels.js",
 			"loaded": function() { return !!Echo.Labels; }
 		}, {
-			"url": "../plugin.js"
+			"url": "sdk/plugin.js"
 		}],
 		"callback": function() {
 			QUnit.ok(true, "Checking if the callback is executed when the scripts loaded previously are loaded again");
@@ -115,7 +114,7 @@ suite.prototype.cases.validScriptsLoading = function(callback, count, descriptio
 	var existingScriptsCount = 5;
 	for (var i = 1; i <= count; i++) {
 		scripts.push({
-			"url": "unit/loader/scripts/" + i + ".js",
+			"url": "sdk/tests/unit/loader/scripts/" + (count > existingScriptsCount ? "non-existing" : i) + ".js",
 			"loaded": function() { return !!Echo.Tests.Download["object" + i]; }
 		});
 	}
@@ -144,7 +143,7 @@ suite.prototype.cases.loadingSameScriptMultipleTimes = function(callback) {
 	var scripts = [];
 	for (var i = 1; i <= 5; i++) {
 		scripts.push({
-			"url": "unit/loader/scripts/1.js"
+			"url": "sdk/tests/unit/loader/scripts/1.js"
 		});
 	}
  	Echo.Loader.download({
@@ -160,7 +159,8 @@ suite.prototype.cases.loadingSameScriptMultipleTimes = function(callback) {
 
 suite.prototype.tests.canvasesInitializationTests = {
 	"config": {
-		"async": true
+		"async": true,
+		"testTimeout": 15000
 	},
 	"check": function() {
 		var self = this;

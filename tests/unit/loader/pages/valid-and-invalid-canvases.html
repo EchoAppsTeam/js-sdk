@@ -39,7 +39,7 @@
 	<script>
 		// link QUnit objects from the parent window
 		window.QUnit = window.parent.QUnit;
-
+		Echo.Loader.config.cdnBaseURL = window.parent.Echo.Loader.config.cdnBaseURL;
 		// create "test" function which will be called within the parent window
 		window.test = function(callback) {
 			var suite = window.parent.Echo.Tests.Unit.Loader;

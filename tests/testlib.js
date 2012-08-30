@@ -14,6 +14,19 @@ Echo.Tests.runTests = function() {
 		"serverBaseURL" : "http://api.echoenabled.com/v1",
 		"busName": "jskit"		
 	});
+
+	// hack for tests of loader
+	window.onerror = function( message, file, line ) {
+		if (/non-existing/.test(file)) return;
+		if ( QUnit.config.current ) {
+			QUnit.ok( false, message + ", " + file + ":" + line );
+		} else {
+			QUnit.test( "global failure", function() {
+				QUnit.ok( false, message + ", " + file + ":" + line );
+			});
+		}
+	};
+
 	$.each(this.Unit, function(name, suiteClass) {
 		$.extend(suiteClass.prototype, new Echo.Tests.Common());
 		suiteClass.prototype.tests = suiteClass.prototype.tests || {};

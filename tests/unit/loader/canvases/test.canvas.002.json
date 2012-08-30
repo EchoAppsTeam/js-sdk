@@ -7,7 +7,7 @@
     },
     "apps": [{
         "id": "auth",
-        "script": "identity-server.pack.js",
+        "script": "sdk/identity-server.pack.js",
         "component": "Echo.IdentityServer.Controls.Auth",
         "config": {
             "appkey": "test.aboutecho.com",
