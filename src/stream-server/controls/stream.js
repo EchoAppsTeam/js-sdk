@@ -1,10 +1,20 @@
 /**
  * @class Echo.StreamServer.Controls.Stream
- * Echo Stream control
+ * Echo Stream control which encapsulates interaction with the <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">Echo Search API</a>
+ *
+ *     var stream = new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("stream"),
+ *         "query": "childrenof:http://example.com/js-sdk",
+ *         "appkey": "test.js-kit.com"
+ *     });
+ *
  * @extends Echo.Control
  *
  * @constructor
- * @param {Object} config Configuration options
+ * Stream constructor initializing Echo.StreamServer.Controls.Stream class
+ *
+ * @param {Object} config
+ * Configuration options
  */
 var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 
@@ -18,6 +28,19 @@ stream.init = function() {
 };
 
 stream.config = {
+	/*
+	 * @cfg {Object} children
+	 * Specifies the children pagination feature behavior. It includes several options.
+	 *
+	 * @cfg {Number} children.additionalItemsPerPage
+	 * Specifies how many items should be retrieved from server and rendered after clicking the "View more items" button.
+	 *
+	 * @cfg {Number} children.moreButtonSlideTimeout
+	 * Specifies the duration of more button slide up animation in the situation when there are no more children items available and the button should be removed.
+	 *
+	 * @cfg {Number} children.itemsSlideTimeout
+	 * Specifies the duration of the slide down animation of the items coming to the stream after the "View more items" button click. 
+	 */
 	"children": {
 		"additionalItemsPerPage": 5,
 		"displaySortOrder": "chronological",
@@ -26,22 +49,84 @@ stream.config = {
 		"itemsSlideTimeout": 600,
 		"maxDepth": 1
 	},
+	/**
+	 * @cfg {Number} fadeTimeout
+	 * Specifies the duration of the fading animation (in milliseconds) when an item comes to stream as a live update.
+	 */
 	"fadeTimeout": 2800,
+	/**
+	 * @cfg {String} flashColor
+	 * Specifies the necessary flash color of the events coming to your stream as live updates. This parameter must have a hex color value.
+	 */
 	"flashColor": "#ffff99",
+	/**
+	 * @cfg {Object} item
+	 * Specifies the configuration options to be passed to internal Echo.StreamServer.Controls.Stream.Item component.
+	 */
 	"item": {},
+	/**
+	 * @cfg {Number} itemsPerPage
+	 * 
+	 */
 	"itemsPerPage": 15,
+	/**
+	 * @cfg {Boolean} liveUpdates
+	 * Parameter to enable/disable receiving live updates by control. 
+	 */
 	"liveUpdates": true,
+	/**
+	 * @cfg {Number} 
+	 * Specifies the timeout between live updates requests (in seconds).
+	 */
 	"liveUpdatesTimeout": 10,
 	"liveUpdatesTimeoutMin": 3,
+	/**
+	 * @cfg {Boolean} openLinksInNewWindow
+	 * If this parameter value is set to true, each link will be opened in a new window. This is especially useful when using the control in a popup window.
+	 */
 	"openLinksInNewWindow": false,
+	/**
+	 * @cfg {String} providerIcon
+	 * Specifies the URL to the icon representing data provider.
+	 */
 	"providerIcon": "http://cdn.echoenabled.com/images/favicons/comments.png",
+	/**
+	 * @cfg {Number} slideTimeout
+	 * Specifies the duration of the sliding animation (in milliseconds) when an item comes to a stream as a live update.
+	 */
 	"slideTimeout": 700,
 	"sortOrder": "reverseChronological",
+	/**
+	 * @cfg {Object} streamStateLabel
+	 * Hides the Pause/Play icon. Toggles the labels used in the Stream Status label. Contains a hash with two keys managing icon and text display modes.
+	 *
+	 * @cfg {Boolean} streamStateLabel.icon
+	 * Toggles the icon visibility.
+	 *
+	 * @cfg {Boolean} streamStateLabel.text
+	 * Toggles the text visibility.
+	 *
+	 */
 	"streamStateLabel": {
 		"icon": true,
 		"text": true
 	},
+	/**
+	 * @cfg {String} streamStateToggleBy
+	 * Specifies the method of changing stream live/paused state.
+	 *
+	 * The possible values are:
+	 *
+	 * + mouseover - the stream is paused when mouse is over it and live when mouse is out.
+	 * + button - the stream changes state when user clicks on streamStateLabel (Live/Paused text). This mode would not work if neither state icon nor state text are displayed.
+	 * + none - the stream will never be paused.
+	 * 
+	 * Note that mouseover method is not available for mobile devices and will be forced to button method.
+	 */
 	"streamStateToggleBy": "mouseover", // mouseover | button | none
+	/**
+	 * @cfg {String} submissionProxyURL URL prefix for requests to Submission Proxy subsystem.
+	 */
 	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
 };
 
@@ -70,11 +155,29 @@ stream.vars = {
 };
 
 stream.labels = {
+	/**
+	 * @echo_label
+	 */
 	"guest": "Guest",
+	/**
+	 * @echo_label
+	 */
 	"live": "Live",
+	/**
+	 * @echo_label
+	 */
 	"paused": "Paused",
+	/**
+	 * @echo_label
+	 */
 	"more": "More",
+	/**
+	 * @echo_label
+	 */
 	"emptyStream": "No items at this time...",
+	/**
+	 * @echo_label
+	 */
 	"new": "new"
 };
 
@@ -125,6 +228,9 @@ stream.templates.main =
 		'<div class="{class:more}"></div>' +
 	'</div>';
 
+/**
+ * @echo_renderer
+ */
 stream.renderers.body = function(element) {
 	var self = this, request = this.lastRequest;
 	if (!request) {
@@ -152,6 +258,9 @@ stream.renderers.body = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 stream.renderers.state = function(element) {
 	var self = this;
 	var label = this.config.get("streamStateLabel");
@@ -206,6 +315,9 @@ stream.renderers.state = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 stream.renderers.more = function(element) {
 	var self = this;
 	if (this.isViewComplete || !this.threads.length) {
@@ -221,20 +333,35 @@ stream.renderers.more = function(element) {
 		.show()
 		.off("click")
 		.one("click", function() {
+			/**
+			 * @event onMoreButtonPress
+			 * @echo_event Echo.StreamServer.Controls.Stream.onMoreButtonPress
+			 * Triggered when the "more" button is pressed.
+			 */
 			self.events.publish({"topic": "onMoreButtonPress"});
 			element.html(self.labels.get("loading"));
 			self._requestMoreItems(element);
 		});
 };
 
-// public interface
-
+/**
+ * Accessor method to get the current Stream state.
+ *
+ * @return {String}
+ * stream state "live" or "paused".
+ */
 stream.methods.getState = function() {
 	return this.activities.state === undefined
 		? this.config.get("liveUpdates") ? "live" : "paused"
 		: this.activities.state;
 };
 
+/**
+ * Setter method to define the Stream state.
+ *
+ * @param {String} state
+ * stream state "live" or "paused".
+ */
 stream.methods.setState = function(state) {
 	this.activities.state = state;
 	if (state === "live") {
@@ -242,8 +369,6 @@ stream.methods.setState = function(state) {
 	}
 	this.dom.render({"name": "state"});
 };
-
-// private functions
 
 stream.methods._requestChildrenItems = function(unique) {
 	var self = this;
@@ -274,6 +399,11 @@ stream.methods._requestChildrenItems = function(unique) {
 			item.set("data.nextPageAfter", data.nextPageAfter);
 			item.set("data.hasMoreChildren", data.hasMoreChildren);
 			data.entries = self._actualizeChildrenList(item, data.entries);
+			/**
+			 * @event onDataReceive
+			 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
+			 * Triggered when new data is received.
+			 */
 			self.events.publish({
 				"topic": "onDataReceive",
 				"data": {
@@ -582,6 +712,11 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	this.config.set("children", $.extend(this.config.get("children"), data.children));
 
 	this.config.extend(this._extractTimeframeConfig(data));
+	/**
+	 * @event onDataReceive
+	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
+	 * Triggered when new data is received.
+	 */
 	this.events.publish({
 		"topic": "onDataReceive",
 		"data": {

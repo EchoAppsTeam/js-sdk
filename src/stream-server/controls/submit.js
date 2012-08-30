@@ -12,7 +12,7 @@
  * @extends Echo.Control
  *
  * @constructor
- * Counter constructor initializing Echo.StreamServer.Controls.Counter class
+ * Submit constructor initializing Echo.StreamServer.Controls.Submit class
  *
  * @param {Object} config
  * Configuration options
