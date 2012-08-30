@@ -16,15 +16,10 @@ Echo.Tests.runTests = function() {
 	});
 
 	// hack for tests of loader
+	var quintOnError = window.onerror;
 	window.onerror = function( message, file, line ) {
-		if (/non-existing/.test(file)) return;
-		if ( QUnit.config.current ) {
-			QUnit.ok( false, message + ", " + file + ":" + line );
-		} else {
-			QUnit.test( "global failure", function() {
-				QUnit.ok( false, message + ", " + file + ":" + line );
-			});
-		}
+		if (!/non-existing/.test(file))
+			quintOnError(message, file, line);
 	};
 
 	$.each(this.Unit, function(name, suiteClass) {
