@@ -14,6 +14,12 @@
  */
 var plugin = Echo.Plugin.manifest("CommunityFlag", "Echo.StreamServer.Controls.Stream.Item");
 
+plugin.init = function() {
+	this.extendTemplate("insertAsLastChild", "data", plugin.template);
+	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Flag"));
+	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Unflag"));
+};
+
 plugin.config = {
 	/**
 	 * @cfg {Boolean} showUsers
@@ -22,22 +28,34 @@ plugin.config = {
 	"showUsers": true
 };
 
+plugin.template = '<div class="{plugin.class:flaggedBy}"></div>';
+
 plugin.labels = {
+	/**
+	 * @echo_label
+	 */
 	"flaggedThis": " flagged this.",
+	/**
+	 * @echo_label
+	 */
 	"flagControl": "Flag",
+	/**
+	 * @echo_label
+	 */
 	"unflagControl": "Unflag",
+	/**
+	 * @echo_label
+	 */
 	"flagProcessing": "Flagging...",
+	/**
+	 * @echo_label
+	 */
 	"unflagProcessing": "Unflagging..."
 };
 
-plugin.init = function() {
-	this.extendTemplate("insertAsLastChild", "data", plugin.template);
-	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Flag"));
-	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Unflag"));
-};
-
-plugin.template = '<div class="{plugin.class:flaggedBy}"></div>';
-
+/**
+ * @echo_renderer
+ */
 plugin.renderers.flaggedBy = function(element) {
 	var plugin = this, item = this.component;
 	var flags = item.get("data.object.flags", []);
@@ -82,6 +100,16 @@ plugin.methods._assembleButton = function(name) {
 				"target-query": item.config.get("parent.query")
 			},
 			"onData": function() {
+				/**
+				 * @event onFlagComplete
+				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagComplete
+				 * Triggered if flag operation was completed. 
+				 */
+				/**
+				 * @event onUnFlagComplete
+				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagComplete
+				 * Triggered if reverse flag operation was completed. 
+				 */
 				plugin.events.publish({
 					"topic": "on" + name + "Complete",
 					"data": {

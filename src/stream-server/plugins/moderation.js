@@ -1,6 +1,7 @@
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation
  * Adds several moderation controls to change item status. Besides it provides the opportunity to ban specific user or change his privileges.
+ *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
  *         "appkey": "test.echoenabled.com",
@@ -8,6 +9,7 @@
  *             "name": "Moderation"
  *         }]
  *     });
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Moderation", "Echo.StreamServer.Controls.Stream.Item");
@@ -16,46 +18,6 @@ var capitalize = function(string) {
 	return string.replace(/\b[a-z]/g, function(match) {
 		return match.toUpperCase();
 	});
-};
-
-plugin.config = {
-/**
- * @cfg {Array} userActions Defines the list of user specific actions to be added to the Echo Stream Item.
- * 	new Echo.StreamServer.Controls.Stream({
- * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
- * 		"plugins": [{
- * 			"name": "Moderation"
- * 			"userActions": ["ban", "permissions"],
- * 		}]
- * 	});
- */
-	"userActions": ["ban", "permissions"],
-/**
- * @cfg {Array} itemActions Defines the list of item specific actions to be added to the Echo Stream Item.
- * 	new Echo.StreamServer.Controls.Stream({
- * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
- * 		"plugins": [{
- * 			"name": "Moderation"
- * 			"itemActions": ["approve", "spam", "delete", "untouch"]
- * 		}]
- * 	});
- */
-	"itemActions": ["approve", "spam", "delete"]
-};
-
-plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserUpdate": function(topic, args) {
-		args.item.set("data.actor." + args.field, args.value);
-		args.item.dom.render();
-		return {"stop": ["bubble"]};
-	}
-};
-
-plugin.actionButtons = {
-	"ban": ["Ban", "UnBan"],
-	"permissions": ["UserPermissions"]
 };
 
 plugin.init = function() {
@@ -75,6 +37,50 @@ plugin.init = function() {
 	});
 };
 
+plugin.config = {
+	/**
+	 * @cfg {Array} userActions
+	 * Defines the list of user specific actions to be added to the Echo Stream Item.
+	 *
+	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 		"target": document.getElementById("echo-stream"),
+	 * 		"appkey": "test.echoenabled.com",
+	 * 		"plugins": [{
+	 * 			"name": "Moderation"
+	 * 			"userActions": ["ban", "permissions"],
+	 * 		}]
+	 * 	});
+	 */
+	"userActions": ["ban", "permissions"],
+	/**
+	 * @cfg {Array} itemActions
+	 * Defines the list of item specific actions to be added to the Echo Stream Item.
+	 *
+	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 		"target": document.getElementById("echo-stream"),
+	 * 		"appkey": "test.echoenabled.com",
+	 * 		"plugins": [{
+	 * 			"name": "Moderation"
+	 * 			"itemActions": ["approve", "spam", "delete", "untouch"]
+	 * 		}]
+	 * 	});
+	 */
+	"itemActions": ["approve", "spam", "delete"]
+};
+
+plugin.events = {
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserUpdate": function(topic, args) {
+		args.item.set("data.actor." + args.field, args.value);
+		args.item.dom.render();
+		return {"stop": ["bubble"]};
+	}
+};
+
+plugin.actionButtons = {
+	"ban": ["Ban", "UnBan"],
+	"permissions": ["UserPermissions"]
+};
+
 plugin.roles = ["", "moderator", "administrator"];
 
 plugin.statusItemTemplate = 
@@ -84,31 +90,109 @@ plugin.statusItemTemplate =
 	'</div>';
 
 plugin.labels = {
+	/**
+	 * @echo_label
+	 */
 	"approveButton": "Approve",
+	/**
+	 * @echo_label
+	 */
 	"deleteButton": "Delete",
+	/**
+	 * @echo_label
+	 */
 	"spamButton": "Spam",
+	/**
+	 * @echo_label
+	 */
 	"untouchButton": "Untouch",
+	/**
+	 * @echo_label
+	 */
 	"changingStatusToCommunityFlagged": "Flagging...",
+	/**
+	 * @echo_label
+	 */
 	"changingStatusToModeratorApproved": "Approving...",
+	/**
+	 * @echo_label
+	 */
 	"changingStatusToModeratorDeleted": "Deleting...",
+	/**
+	 * @echo_label
+	 */
 	"changingStatusToUntouched": "Untouching...",
+	/**
+	 * @echo_label
+	 */
 	"changingStatusToModeratorFlagged": "Marking as spam...",
+	/**
+	 * @echo_label
+	 */
 	"statusCommunityFlagged": "Flagged by Community",
+	/**
+	 * @echo_label
+	 */
 	"statusModeratorApproved": "Approved by Moderator",
+	/**
+	 * @echo_label
+	 */
 	"statusModeratorDeleted": "Deleted by Moderator",
+	/**
+	 * @echo_label
+	 */
 	"statusModeratorFlagged": "Flagged by Moderator",
+	/**
+	 * @echo_label
+	 */
 	"statusSystemFlagged": "Flagged by System",
+	/**
+	 * @echo_label
+	 */
 	"banUser": "Ban User",
+	/**
+	 * @echo_label
+	 */
 	"unbanUser": "Unban",
+	/**
+	 * @echo_label
+	 */
 	"userBanned": "Banned User",
+	/**
+	 * @echo_label
+	 */
 	"processingAction": "Setting up '{state}' user state...",
+	/**
+	 * @echo_label
+	 */
 	"moderatorRole": "Moderator",
+	/**
+	 * @echo_label
+	 */
 	"administratorRole": "Administrator",
+	/**
+	 * @echo_label
+	 */
 	"userButton": "Demote to User",
+	/**
+	 * @echo_label
+	 */
 	"moderatorButton": "Promote to Moderator",
+	/**
+	 * @echo_label
+	 */
 	"administratorButton": "Promote to Admin",
+	/**
+	 * @echo_label
+	 */
 	"setRoleAction": "Setting up '{role}' role...",
+	/**
+	 * @echo_label
+	 */
 	"unsetRoleAction": "Removing '{role}' role...",
+	/**
+	 * @echo_label
+	 */
 	"statusUntouched": "New"
 };
 
@@ -134,6 +218,9 @@ plugin.button2status = {
 	"Untouch": "Untouched"
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.status = function(element) {
 	var item = this.component;
 	if (!item.user.is("admin")) {
@@ -147,6 +234,9 @@ plugin.renderers.status = function(element) {
 	return element.addClass(this.cssPrefix + "status-" + status);
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.statusIcon = function(element) {
 	var item = this.component;
 	if (!item.user.is("admin")) return element;

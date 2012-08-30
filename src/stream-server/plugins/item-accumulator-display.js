@@ -1,6 +1,7 @@
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay
  * Shows one of the item accumulators in the top right corner of each item in the Echo Stream control.
+ *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
  *         "appkey": "test.echoenabled.com",
@@ -8,36 +9,43 @@
  *             "name": "ItemAccumulatorDisplay"
  *         }]
  *     });
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("ItemAccumulatorDisplay", "Echo.StreamServer.Controls.Stream.Item");
-
-plugin.config = {
-/**
- * @cfg {Number} countTickTimeout Specifies the timeout in seconds for sequential changes of the item accumulator during the update.
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "ItemAccumulatorDisplay"
- *             "countTickTimeout": 1,
- *             "accumulator": "likesCount" 
- *         }]
- *     });
- */
-	"countTickTimeout": 1,
-/**
- * @cfg {String} accumulator Specifies which item accumulator should be displayed. Supported values are "repliesCount" and "likesCount".
- */
-	"accumulator": "repliesCount"
-};
 
 plugin.init = function() {
 	this.extendTemplate("insertBefore", "modeSwitch", plugin.template);
 };
 
+plugin.config = {
+	/**
+	 * @cfg {Number} countTickTimeout
+	 * Specifies the timeout in seconds for sequential changes of the item accumulator during the update.
+ 	 *
+	 *     new Echo.StreamServer.Controls.Stream({
+	 *         "target": document.getElementById("echo-stream"),
+	 *         "appkey": "test.echoenabled.com",
+	 *         "plugins": [{
+	 *             "name": "ItemAccumulatorDisplay"
+	 *             "countTickTimeout": 1,
+	 *             "accumulator": "likesCount" 
+	 *         }]
+	 *     });
+	 */
+	"countTickTimeout": 1,
+	/**
+	 * @cfg {String} accumulator
+	 * Specifies which item accumulator should be displayed. Supported values are "repliesCount" and "likesCount".
+	 */
+	"accumulator": "repliesCount"
+};
+
 plugin.template = '<div class="{plugin.class:accumulatorContainer}"></div>';
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.accumulatorContainer = function(element) {
 	var item = this.component;
 	var accName = this.config.get("accumulator");
