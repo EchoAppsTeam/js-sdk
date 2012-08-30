@@ -1920,7 +1920,7 @@ item.methods.block = function(label) {
 	this.blocked = true;
 	var content = this.dom.get("container");
 	var width = content.width();
-	//We should take into account that container has a 10px 0px padding value
+	// we should take into account that the container has a 10px 0px padding value
 	var height = content.outerHeight();
 	this.blockers = {
 		"backdrop": $('<div class="' + this.cssPrefix + 'blocker-backdrop"></div>').css({

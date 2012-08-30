@@ -394,14 +394,24 @@ Echo.Utils.stripTags = function(text) {
  * @return {Object} Returns the object containing the following parts of the URL as fields: scheme, domain, path, query, fragment.
  */
 Echo.Utils.parseURL = function(url) {
-	var parts = url.match(Echo.Utils.regexps.parseURL);
-	return parts ? {
-		"scheme": parts[3],
-		"domain": parts[4],
-		"path": parts[5],
-		"query": parts[7],
-		"fragment": parts[9]
-	} : undefined;
+
+	// define global placeholder to cache URL processing result
+	Echo.Utils._parsedURLs = Echo.Utils._parsedURLs || {};
+
+	var parsed = Echo.Utils._parsedURLs;
+	if (parsed.hasOwnProperty(url)) {
+		return parsed[url];
+	} else {
+		var parts = url.match(Echo.Utils.regexps.parseURL);
+		parsed[url] = parts ? {
+			"scheme": parts[3],
+			"domain": parts[4],
+			"path": parts[5],
+			"query": parts[7],
+			"fragment": parts[9]
+		} : undefined;
+	}
+	return parsed[url];
 };
 
 /**
