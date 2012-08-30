@@ -133,10 +133,10 @@ if (Echo.Utils.isComponentDefined("Echo.Products.SocialChatter")) return;
 var SocialChatter = Echo.Product.manifest("Echo.Products.SocialChatter", ["Main", "PublicEvent", "GreenRoom", "EventsList"]);
 
 SocialChatter.dependencies = [
-	{"url": "../../../sdk/third-party/bootstrap/css/bootstrap.min.css"},
-	{"url": "../../../sdk/third-party/bootstrap/css/bootstrap-responsive.min.css"},
-	{"url": "../../../sdk/third-party/bootstrap/css/datepicker.css"},
-	{"url": "../../../sdk/third-party/bootstrap/css/timepicker.css"},
+	{"url": "sdk/third-party/bootstrap/css/bootstrap.min.css"},
+	{"url": "sdk/third-party/bootstrap/css/bootstrap-responsive.min.css"},
+	{"url": "sdk/third-party/bootstrap/css/datepicker.css"},
+	{"url": "sdk/third-party/bootstrap/css/timepicker.css"},
 
 	{"loaded": function() {
 		var isLoaded;
@@ -144,51 +144,76 @@ SocialChatter.dependencies = [
 			return isLoaded = Echo.Utils.isComponentDefined("Echo.StreamServer.Controls." + val);
 		});
 		return isLoaded;
-	}, "url": "../../../sdk/stream-server.pack.js"},
+	}, "url": "sdk/stream-server.pack.js"},
 
 	{"loaded": function() {
 		return Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth");
-	}, "url": "../../../sdk/identity-server.pack.js"},
+	}, "url": "sdk/identity-server.pack.js"},
 
 	{"loaded": function() {
 		return !!$.fn.datepicker;
-	}, "url": "../../../sdk/third-party/bootstrap/bootstrap-datepicker.js"},
+	}, "url": "sdk/third-party/bootstrap/bootstrap-datepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.timepicker;
-	}, "url": "../../../sdk/third-party/bootstrap/bootstrap-timepicker.js"},
+	}, "url": "sdk/third-party/bootstrap/bootstrap-timepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.tab;
-	}, "url": "../../../sdk/third-party/bootstrap/bootstrap-tab.js"},
+	}, "url": "sdk/third-party/bootstrap/bootstrap-tab.js"},
 
 	{"loaded": function() {
 		return !!$.fn.countdown;
-	}, "url": "../../../sdk/products/social-chatter/countdown/jquery.countdown.js"} ,
+	}, "url": "sdk/products/social-chatter/countdown/jquery.countdown.js"} ,
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined(Echo.Plugin.manifest("ItemConditionalCSSClasses", "Echo.StreamServer.Controls.Stream.Item"));
-	}, "url": "../../../sdk/products/social-chatter/plugins/item-conditional-css-classes.js"},
+	}, "url": "sdk/products/social-chatter/plugins/item-conditional-css-classes.js"},
 
 	{"loaded": function() {
-		return Echo.Plugin.isDefined(Echo.Plugin.manifest("SocialChatterEvent", "Echo.StreamServer.Controls.Stream.Item"));
-	}, "url": "../../../sdk/products/social-chatter/plugins/social-chatter-event.js"},
+		return Echo.Plugin.isDefined({
+			"name": "SocialChatterEvent",
+			"component": {
+				"name": "Echo.StreamServer.Controls.Stream.Item"
+			}
+		});
+	}, "url": "sdk/products/social-chatter/plugins/social-chatter-event.js"},
 
 	{"loaded": function() {
-		return Echo.Plugin.isDefined(Echo.Plugin.manifest("SubmitCountdownEvent", "Echo.StreamServer.Controls.Submit"));
-	}, "url": "../../../sdk/products/social-chatter/plugins/submit-countdown-event.js"},
+		return Echo.Plugin.isDefined({
+			"name": "SubmitCountdownEvent",
+			"component": {
+				"name": "Echo.StreamServer.Controls.Submit"
+			}
+		});
+	}, "url": "sdk/products/social-chatter/plugins/submit-countdown-event.js"},
 
 	{"loaded": function() {
-		return Echo.Plugin.isDefined(Echo.Plugin.manifest("SubmitTextareaAutoResize", "Echo.StreamServer.Controls.Submit"));
-	}, "url": "../../../sdk/products/social-chatter/plugins/submit-textarea-auto-resize.js"},
+		return Echo.Plugin.isDefined({
+			"name": "SubmitTextareaAutoResize",
+			"component": {
+				"name": "Echo.StreamServer.Controls.Submit"
+			}
+		});
+	}, "url": "sdk/products/social-chatter/plugins/submit-textarea-auto-resize.js"},
 
 	{"loaded": function() {
-		return Echo.Plugin.isDefined(Echo.Plugin.manifest("UserMetadataManager", "Echo.StreamServer.Controls.Stream.Item"));
-	}, "url": "../../../sdk/products/social-chatter/plugins/user-metadata-manager.js"},
+		return Echo.Plugin.isDefined({
+			"name": "UserMetadataManager",
+			"component": {
+				"name": "Echo.StreamServer.Controls.Stream.Item"
+			}
+		});
+	}, "url": "sdk/products/social-chatter/plugins/user-metadata-manager.js"},
 
 	{"loaded": function() {
-		return Echo.Plugin.isDefined(Echo.Plugin.manifest("VipReplies", "Echo.StreamServer.Controls.Stream.Item"));
-	}, "url": "../../../sdk/products/social-chatter/plugins/vip-replies.js"}
+		return Echo.Plugin.isDefined({
+			"name": "VipReplies",
+			"component": {
+				"name": "Echo.StreamServer.Controls.Stream.Item"
+			}
+		});
+	}, "url": "sdk/products/social-chatter/plugins/vip-replies.js"}
 ];
 
 SocialChatter.labels = {
