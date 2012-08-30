@@ -160,15 +160,17 @@ stream.renderers.state = function(element) {
 		return element;
 	}
 
+	var state = this.getState();
 	var activitiesCount = 0;
-	if (this.getState() === "paused") {
-		activitiesCount = Echo.Utils.foldl(0, this.activities.queue, function(entry, acc) {
-			if (entry.affectCounter) {
-				return ++acc;
+	if (state === "paused") {
+		activitiesCount = Echo.Utils.foldl(0, this.activities.queue,
+			function(entry, acc) {
+				if (entry.affectCounter) return ++acc;
 			}
-		});
+		);
 	}
-	var currentState = this.getState() + activitiesCount;
+	var currentState = state + activitiesCount;
+
 	if (currentState === this.activities.lastState) {
 		return element;
 	}
@@ -176,14 +178,16 @@ stream.renderers.state = function(element) {
 	element.empty();
 	if (!this.activities.lastState && this.config.get("streamStateToggleBy") === "button") {
 		element.addClass("echo-linkColor echo-clickable").click(function() {
-			self.setState(self.getState() === "paused" ? "live" : "paused");
+			self.setState(state === "paused" ? "live" : "paused");
 		});
 	}
 	var templates = {
-		"picture": '<span class="{class:state-picture} {class:state-picture}-' + this.getState() + '"></span>',
+		"picture": '<span class="{class:state-picture} {class:state-picture}-' + state + '"></span>',
 		"message": this.config.get("streamStateToggleBy") === "button"
-			? '<a href="javascript:void(0)" class="{class:state-message}">{label:' + this.getState() + '}</a>'
-			: '<span class="{class:state-message}">{label:' + this.getState() + '}</span>',
+			? '<a href="javascript:void(0)" class="{class:state-message}">' +
+				'{label:' + state + '}' +
+			  '</a>'
+			: '<span class="{class:state-message}">{label:' + state + '}</span>',
 		"count": ' <span class="{class:state-count}">({data:count} {label:new})</span>'
 	};
 	if (label.icon) {
@@ -191,7 +195,7 @@ stream.renderers.state = function(element) {
 	}
 	if (label.text) {
 		element.append(this.substitute({"template": templates.message}));
-		if (activitiesCount && this.getState() === "paused") {
+		if (activitiesCount && state === "paused") {
 			element.append(this.substitute({
 				"template": templates.count,
 				"data": {"count": activitiesCount}
