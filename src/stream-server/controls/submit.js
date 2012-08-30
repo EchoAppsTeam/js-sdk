@@ -152,9 +152,6 @@ submit.config = {
 };
 
 submit.vars = {
-	/**
-	 * List of the functions validating input before submit
-	 */
 	"validators": []
 };
 
