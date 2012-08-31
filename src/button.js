@@ -120,4 +120,4 @@ Echo.Button.prototype._css =
 		       "text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0,0, 0, 0.2); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }" +
 	".echo-sdk-button .echo-label { font-size: 16px; float: left; } " +
 	".echo-sdk-button .echo-icon { height: 16px; width: 16px; float: left; margin-right: 2px; margin-top: 2px; } " +
-	".echo-sdk-button .echo-icon-waiting { background: no-repeat center url(//cdn.echoenabled.com/images/loading.gif); height: 16px; width: 16px; } ";
+	".echo-sdk-button .echo-icon-waiting { background: no-repeat center url(" + Echo.Loader.getURL("sdk/images/loading.gif") + "); height: 16px; width: 16px; } ";

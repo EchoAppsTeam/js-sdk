@@ -338,10 +338,10 @@ suite.prototype.tests.TestDomMethods = {
 suite.prototype.async = {};
 
 suite.prototype.async.simpleImageTest = function(callback) {
-	var img = Echo.Utils.loadImage("http://cdn.echoenabled.com/extra/jquery/plugins/fancybox/fancybox.png");
+	var img = Echo.Utils.loadImage(Echo.Loader.getURL("sdk/third-party/jquery/img/fancybox/fancybox.png"));
 	img.one({
 		"load": function() {
-			QUnit.equal($(this).attr("src"), "http://cdn.echoenabled.com/extra/jquery/plugins/fancybox/fancybox.png",
+			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("sdk/third-party/jquery/img/fancybox/fancybox.png"),
 				"Checking loadImage() method");
 			callback();
 		}
@@ -350,10 +350,10 @@ suite.prototype.async.simpleImageTest = function(callback) {
 };
 
 suite.prototype.async.fakeImageTest = function(callback) {
-	var img = Echo.Utils.loadImage("http://example.com/fake.jpg", "http://cdn.echoenabled.com/images/avatar-default.png");
+	var img = Echo.Utils.loadImage("http://example.com/fake.jpg", Echo.Loader.getURL("sdk/images/avatar-default.png"));
 	img.one({
 		"load": function() {
-			QUnit.equal($(this).attr("src"), "http://cdn.echoenabled.com/images/avatar-default.png",
+			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("sdk/images/avatar-default.png"),
 				"Checking loadImage() method with fake image");
 			callback();
 		}

@@ -220,7 +220,7 @@ Echo.UserSession._getDefaultConfig = function() {
 			"logout": "http://apps.echoenabled.com/v2/",
 			"whoami": "http://api.echoenabled.com/v1/users/"
 		},
-		"defaultAvatar": "http://cdn.echoenabled.com/images/avatar-default.png",
+		"defaultAvatar": Echo.Loader.getURL("sdk/images/avatar-default.png"),
 		"fakeIdentityURL": "http://js-kit.com/ECHO/user/fake_user"
 	};
 };

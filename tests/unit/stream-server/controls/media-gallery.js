@@ -30,8 +30,8 @@ suite.prototype.tests.commonWorkflow = {
 	"check": function() {
 		var self = this;
 		var elements = [
-			"<img src='http://cdn.echoenabled.com/images/avatar-default.png'/>",
-			"<img src='http://cdn.echoenabled.com/extra/jquery/plugins/fancybox/fancybox.png'/>"
+			"<img src='" + Echo.Loader.getURL("sdk/images/avatar-default.png") + "'/>",
+			"<img src='" + Echo.Loader.getURL("sdk/third-party/jquery/img/fancybox/fancybox.png") + "'/>"
 		];
 		suite.checkGalleryActiveItem = function(gallery, index) {
 			var isActive = true;
@@ -107,7 +107,7 @@ suite.prototype.cases.oneMediaItem = function(callback) {
 		}
 	});
 	gallery.config.set("elements", [
-		"<img src='http://cdn.echoenabled.com/images/avatar-default.png'/>"
+		"<img src='" + Echo.Loader.getURL("sdk/images/avatar-default.png") + "'/>"
 	]);
 	gallery.refresh();
 };

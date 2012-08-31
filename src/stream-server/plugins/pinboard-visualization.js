@@ -216,12 +216,10 @@ plugin.init = function() {
 	this.extendTemplate("replace", "container", plugin.template);
 };
 
-/* TODO: uncomment it when jquery.isotope.min.js will be located on cdn
 plugin.dependencies = [{
 	"loaded": function() { return !!Echo.jQuery().isotope; },
-	"url": Echo.Loader.config.cdnBaseURL + "third-party/jquery.isotope.min.js"
+	"url": "sdk/third-party/jquery/jquery.isotope.min.js"
 }];
-*/
 
 plugin.config = {
 	/**
@@ -551,12 +549,10 @@ plugin.config = {
 	}
 };
 
-/* TODO: uncomment it when jquery.isotope.min.js will be located on cdn
 plugin.dependencies = [{
 	"loaded": function() { return !!Echo.jQuery().isotope; },
-	"url": Echo.Loader.config.cdnBaseURL + "third-party/jquery.isotope.min.js"
+	"url": "sdk/third-party/jquery/jquery.isotope.min.js"
 }];
-*/
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.onRender": function(topic, args) {

@@ -87,7 +87,7 @@ Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
 }, {
 	"name": "providerIcon",
 	"type": "String",
-	"defaultValue": "http://cdn.echoenabled.com/images/favicons/comments.png",
+	"defaultValue": Echo.Loader.getURL("sdk/images/favicons/comments.png"),
 	"title": "Default provider icon",
 	"description": "Specifies the default provider icon URL"
 }, {

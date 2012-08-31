@@ -151,6 +151,12 @@ submit.config = {
 	"targetQuery": undefined
 };
 
+// TODO: need investigate
+//submit.dependencies = [{
+//	"loaded": function() { return false; },
+//	"url": "sdk/third-party/jquery/css/fancybox.css"
+//}];
+
 submit.vars = {
 	"validators": []
 };
@@ -595,7 +601,7 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url("' + Echo.Loader.config.cdnBaseURL + 'images/info70.png"); height: 70px; }' +
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url("' + Echo.Loader.getURL("images/info70.png") + '"); height: 70px; }' +
 	(($.browser.msie) ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +

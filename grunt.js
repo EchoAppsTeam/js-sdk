@@ -10,10 +10,10 @@ module.exports = function(grunt) {
 	var _dontWrap = [
 		_dirs.src + "/backplane.js",
 		_dirs.src + "/loader.js",
-		_dirs.src + "/third-party/jquery.js",
-		_dirs.src + "/third-party/echo.jquery.noconflict.js"
+		_dirs.src + "/third-party/jquery/jquery.js",
+		_dirs.src + "/third-party/jquery/echo.jquery.noconflict.js"
 	];
-	var _dontStripDocs = grunt.file.expandFiles(_dirs.src + "/third-party/*.js");
+	var _dontStripDocs = grunt.file.expandFiles(_dirs.src + "/third-party/**/*.js");
 	var _config = {
 		dirs: _dirs,
 		pkg: "<json:package.json>",
@@ -81,7 +81,7 @@ module.exports = function(grunt) {
 			loader: {
 				src: [
 					"<banner:meta.banner>",
-					"<%= dirs.src %>/third-party/yepnope.1.5.4-min.js",
+					"<%= dirs.src %>/third-party/yepnope/yepnope.1.5.4-min.js",
 					"<actualize_cdn_domain:<%= dirs.src %>/loader.js>"
 				],
 				dest: "<%= dirs.dest %>/loader.js"
@@ -107,15 +107,15 @@ module.exports = function(grunt) {
 				"<%= dirs.src %>/tabs.js"
 			],
 			"third-party/jquery": [
-				"<%= dirs.src %>/third-party/jquery.js",
-				"<%= dirs.src %>/third-party/echo.jquery.noconflict.js",
-				"<%= dirs.src %>/third-party/jquery.ihint.js",
-				"<%= dirs.src %>/third-party/jquery.viewport.mini.js",
-				"<%= dirs.src %>/third-party/jquery.easing-1.3.min.js",
-				"<%= dirs.src %>/third-party/jquery.fancybox-1.3.4.min.js",
-				"<%= dirs.src %>/third-party/echo.fancybox.css.js",
-				"<%= dirs.src %>/third-party/jquery.ui-1.8.21.min.js",
-				"<%= dirs.src %>/third-party/jquery.isotope.min.js",
+				"<%= dirs.src %>/third-party/jquery/jquery.js",
+				"<%= dirs.src %>/third-party/jquery/echo.jquery.noconflict.js",
+				"<%= dirs.src %>/third-party/jquery/jquery.ihint.js",
+				"<%= dirs.src %>/third-party/jquery/jquery.viewport.mini.js",
+				"<%= dirs.src %>/third-party/jquery/jquery.easing-1.3.min.js",
+				"<%= dirs.src %>/third-party/jquery/jquery.fancybox-1.3.4.min.js",
+				"<%= dirs.src %>/third-party/jquery/echo.fancybox.css.js",
+				"<%= dirs.src %>/third-party/jquery/jquery.ui-1.8.21.min.js",
+				"<%= dirs.src %>/third-party/jquery/jquery.isotope.min.js",
 				"<%= dirs.src %>/third-party/bootstrap/bootstrap-tab.js"
 			]
 		},
