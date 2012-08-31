@@ -269,6 +269,26 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 };
 
 plugin.methods._publishCompleteActionEvent = function(name) {
+	/**
+	 * @event onApproveComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveComplete
+	 * Triggered if "Approve" operation was completed.
+	 */
+	/**
+	 * @event onSpamComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamComplete
+	 * Triggered if "Spam" operation was completed.
+	 */
+	/**
+	 * @event onDeleteComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete
+	 * Triggered if "Delete" operation was completed.
+	 */
+	/**
+	 * @event onUntouchComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete
+	 * Triggered if "Untouch" operation was completed.
+	 */
 	this.events.publish({
 		"topic": "on" + name + "Complete",
 		"data": {

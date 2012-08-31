@@ -198,13 +198,15 @@ Echo.Control.create(mediaGallery);
  * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization
  * The PinboardVisualization plugin transforms Echo Stream Client visualization into a pinboard-style representation. The plugin extracts all media (such as images, videos, etc) from the item content and assembles the mini media gallery inside the item UI. You can find UI example of the plugin
 <a href="http://echosandbox.com/use-cases/pinboard-visualization/">here</a>.
- *     new Echo.Stream({
+ *
+ *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
  *         "appkey": "test.echoenabled.com",
  *         "plugins": [{
  *             "name": "PinboardVisualization"
  *         }]
  *     });
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream.Item");
@@ -222,44 +224,52 @@ plugin.dependencies = [{
 */
 
 plugin.config = {
-/**
- * @cfg {Number} columnWidth Allows to define the width for one column in pixels, default width is 250px. The amount of columns is calculated based on the width of the Echo Stream Client container.
- */
+	/**
+	 * @cfg {Number} columnWidth
+	 * Allows to define the width for one column in pixels, default width is 250px. The amount of columns is calculated based on the width of the Echo Stream Client container.
+	 */
 	"columnWidth": 250,
-/**
- * @cfg {Number} maxChildrenBodyCharacters Allows to truncate the reply text displayed under the root item. Default value is 50 characters. The value of this parameter should be integer and represent the number of visible characters that need to be displayed.
- */
+	/**
+	 * @cfg {Number} maxChildrenBodyCharacters
+	 * Allows to truncate the reply text displayed under the root item. Default value is 50 characters. The value of this parameter should be integer and represent the number of visible characters that need to be displayed.
+	 */
 	"maxChildrenBodyCharacters": 50,
-/**
- * @cfg {Function} mediaSelector Allows to define the function with the custom rules for the media content extraction from the item content. The value of this parameter is function which accepts the item content (string) as a first argument and should return the jQuery element with the list of the DOM elements which are considered to be the media content of this item.
- * 
- * Example (also used as a default value):
- *
- *     "mediaSelector": function(content) {
- *         var dom = $("<div>" + content + "</div>");
- *         return $("img, video, embed, iframe", dom);
- *     }
- */
+	/**
+	 * @cfg {Function} mediaSelector
+	 * Allows to define the function with the custom rules for the media content extraction from the item content. The value of this parameter is function which accepts the item content (string) as a first argument and should return the jQuery element with the list of the DOM elements which are considered to be the media content of this item.
+	 * 
+	 * Example (also used as a default value):
+	 *
+	 *     "mediaSelector": function(content) {
+	 *         var dom = $("<div>" + content + "</div>");
+	 *         return $("img, video, embed, iframe", dom);
+	 *     }
+	 */
 	"mediaSelector": function(content) {
 		var dom = $("<div>" + content + "</div>");
 		return $("img, video, embed, iframe", dom);
 	},
-/**
- * @cfg {Object} itemCSSClassByContentLength Allows to define extra CSS class to the item based on the item length. The value of this parameter is the JS object with the CSS classes as the keys and the item text length ranges as values. Multiple CSS classes might be applied to the item if the item text length satisfies several conditions simultaneously.
- */
+	/**
+	 * @cfg {Object} itemCSSClassByContentLength
+	 * Allows to define extra CSS class to the item based on the item length. The value of this parameter is the JS object with the CSS classes as the keys and the item text length ranges as values. Multiple CSS classes might be applied to the item if the item text length satisfies several conditions simultaneously.
+	 */
 	"itemCSSClassByContentLength": {
 		"echo-streamserver-controls-stream-item-smallSizeContent": [0, 69],
 		"echo-streamserver-controls-stream-item-mediumSizeContent": [70, 120]
 	},
-/**
- * @cfg {Object} gallery Allows is a proxy for the mini media gallery class, initialized for the item in case the media content was found in its content.
- */
+	/**
+	 * @cfg {Object} gallery
+	 * Allows is a proxy for the mini media gallery class, initialized for the item in case the media content was found in its content.
+	 */
 	"gallery": {
 		"resizeDuration": 250
 	}
 };
 
 plugin.labels = {
+	/**
+	 * @echo_label
+	 */
 	"childrenMoreItems": "View more items..."
 };
 
@@ -295,6 +305,9 @@ $.map([ "Echo.StreamServer.Controls.Submit.onRender",
 });
 
 
+/**
+ * @echo_renderer
+ */
 plugin.component.renderers.content = function(element) {
 	var plugin = this, item = this.component;
 	return item.parentRenderer('content', arguments).css({
@@ -302,6 +315,9 @@ plugin.component.renderers.content = function(element) {
 	});
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.component.renderers.avatar = function(element) {
 	var plugin = this, item = this.component;
 	element = item.parentRenderer("avatar", arguments);
@@ -311,11 +327,16 @@ plugin.component.renderers.avatar = function(element) {
 	});
 	return element;
 };
-
+//FIXME
 $.each(["expandChildren", "container"], function(i, renderer) {
 	plugin.component.renderers[renderer] = function(element) {
 		var plugin = this, item = this.component;
 		var publish = function() {
+			/**
+			 * @event onChangeView
+			 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.onChangeView
+			 * Triggered if the view was changed.
+			 */
 			plugin.events.publish({
 				"topic": "onChangeView",
 				"data": {
@@ -344,6 +365,9 @@ $.each(["expandChildren", "container"], function(i, renderer) {
 	}
 });
 
+/**
+ * @echo_renderer
+ */
 plugin.component.renderers.body = function(element) {
 	var plugin = this, item = this.component;
 	element = item.parentRenderer("body", arguments);
@@ -354,6 +378,9 @@ plugin.component.renderers.body = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.component.renderers.textToggleTruncated = function(element) {
 	var plugin = this, item = this.component;
 	return item.parentRenderer("textToggleTruncated", arguments).one('click', function() {
@@ -361,6 +388,9 @@ plugin.component.renderers.textToggleTruncated = function(element) {
 	});
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.childBody = function(element) {
 	var plugin = this, item = this.component;
 	if (item.isRoot()) {
@@ -374,6 +404,9 @@ plugin.renderers.childBody = function(element) {
 	return element.empty().append(text);
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.media = function(element) {
 	var plugin = this, item = this.component;
 	var mediaItems = plugin.config.get("mediaSelector")(item.get("data.object.content"));
@@ -501,9 +534,10 @@ Echo.Plugin.create(plugin);
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream");
 
 plugin.config = {
-/**
- * @cfg {Object} isotope Allows to configure the Isotope jQuery plugin, used by the plugin as the rendering engine. The possible config values can be found at the Isotope plugin homepage (http://isotope.metafizzy.co/). It's NOT recommended to change the settings of the Isotope unless it's really required.
- */
+	/**
+	 * @cfg {Object} isotope
+	 * Allows to configure the Isotope jQuery plugin, used by the plugin as the rendering engine. The possible config values can be found at the Isotope plugin homepage (http://isotope.metafizzy.co/). It's NOT recommended to change the settings of the Isotope unless it's really required.
+	 */
 	"isotope": {
 		"animationOptions": {
 			// change duration for mozilla browsers

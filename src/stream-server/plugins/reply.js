@@ -3,6 +3,7 @@
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
  * Adds extra button Reply to each root item in the Echo Stream control. Integrates Echo Submit control and provides the ability to submit replies to the posted items.
+ *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
  *         "appkey": "test.echoenabled.com",
@@ -10,6 +11,7 @@
  *             "name": "Reply"
  *         }]
  *     });
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream.Item");
@@ -26,23 +28,29 @@ plugin.init = function() {
 	$(document).on('click', this.get("documentClickHandler"));
 };
 
-plugin.labels = {
-	"replyControl": "Reply"
+plugin.config = {
+	/**
+	 * @cfg {String} actionString
+	 * Specifies the hint placed in the empty text area.
+	 *
+	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 		"target": document.getElementById("echo-stream"),
+	 * 		"appkey": "test.echoenabled.com",
+	 * 		"plugins": [{
+	 * 			"name": "Reply"
+	 * 			"actionString": "Type your comment here...",
+	 * 		}]
+	 * 	});
+	 */
+	"actionString": "Write reply here..."
 };
 
-plugin.config = {
-/**
- * @cfg {String} actionString Is used to define the default call to action phrase.
- * 	new Echo.StreamServer.Controls.Stream({
- * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
- * 		"plugins": [{
- * 			"name": "Reply"
- * 			"actionString": "Type your comment here...",
- * 		}]
- * 	});
- */
-	"actionString": "Write reply here..."
+plugin.labels = {
+	/**
+	 * @echo_label
+	 * Label for the button in the item
+	 */
+	"replyControl": "Reply"
 };
 
 plugin.events = {
@@ -76,6 +84,9 @@ plugin.templates.form =
 		'</div>' +
 	'</div>';
 
+/**
+ * @echo_renderer
+ */
 plugin.component.renderers.container = function(element) {
 	var plugin = this, item = plugin.component;
 	var threading = item.threading;
@@ -87,6 +98,9 @@ plugin.component.renderers.container = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.component.renderers.children = function(element) {
 	var plugin = this, item = plugin.component;
 	// perform reply form rerendering *only* when we have exactly 1 item
@@ -101,6 +115,9 @@ plugin.component.renderers.children = function(element) {
 	return item.parentRenderer("children", arguments);
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.submitForm = function(element) {
 	var plugin = this;
 	if (plugin.get("expanded")) {
@@ -109,6 +126,9 @@ plugin.renderers.submitForm = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.compactForm = function(element) {
 	var plugin = this, item = plugin.component;
 	var hasChildren = !!item.children.length;
@@ -119,6 +139,9 @@ plugin.renderers.compactForm = function(element) {
 	return element.hide();
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.compactField = function(element) {
 	var plugin = this, item = plugin.component;
 	return element.focus(function() {
@@ -126,8 +149,8 @@ plugin.renderers.compactField = function(element) {
 		plugin._showSubmit();
 		/**
 		 * @event onExpand
-		 * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
-		 * is triggered when the reply form is opened
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
+		 * Triggered when the reply form is expanded.
 		 */
 		plugin.events.publish({
 			"topic": "onExpand",
@@ -138,6 +161,9 @@ plugin.renderers.compactField = function(element) {
 	}).val(plugin.config.get("actionString"));
 };
 
+/**
+ * Method to destroy the plugin.
+ */
 plugin.methods.destroy = function() {
 	var plugin = this, item = this.component;
 	Echo.Utils.setNestedValue(Echo.Variables, plugin._getFormKey(), {
@@ -201,8 +227,8 @@ plugin.methods._getClickHandler = function() {
 		    plugin._hideSubmit();
 		    /**
 		     * @event onCollapse
-		     * Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
-		     * is triggered when the reply form is closed
+		     * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
+		     * Triggered when the reply form is closed.
 		     */
 		    plugin.events.publish({
 			    "topic": "onCollapse"
@@ -258,10 +284,29 @@ Echo.Plugin.create(plugin);
 
 (function() {
 
+/**
+ * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
+ * Proxies the "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand" event on the Stream control level.
+ *
+ *     new Echo.StreamServer.Controls.Stream({
+ *         "target": document.getElementById("stream"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "Reply"
+ *         }]
+ *     });
+ *
+ * @extends Echo.Plugin
+ */
 var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream");
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
+		/**
+		 * @event onFormExpand
+		 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand
+		 * Triggered if reply form is expanded.
+		 */
 		this.events.publish({
 			"topic": "onFormExpand",
 			"data": {
@@ -277,6 +322,21 @@ Echo.Plugin.create(plugin);
 
 (function() {
 
+/**
+ * @class Echo.StreamServer.Controls.Submit.Plugins.Reply
+ * Adds internal data field "inReplyTo" for correct reply workflow.
+ *
+ *     new Echo.StreamServer.Controls.Submit({
+ *         "target": document.getElementById("submit"),
+ *         "appkey": "test.echoenabled.com",
+ *         "plugins": [{
+ *             "name": "Reply",
+ *             "inReplyTo": data 
+ *         }]
+ *     });
+ *
+ * @extends Echo.Plugin
+ */
 var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Submit");
 
 plugin.init = function() {
@@ -288,6 +348,11 @@ plugin.init = function() {
 		return _params;
 	};
 };
+//FIXME
+/**
+ * @cfg {Object} inReplyTo
+ * 
+ */
 
 Echo.Plugin.create(plugin);
 
