@@ -15,10 +15,11 @@ var plugin = Echo.Plugin.manifest("InfiniteScroll", "Echo.StreamServer.Controls.
 plugin.init = function() {
 	var plugin = this;
 	$(window).on("scroll", function(event) {
-		var element = plugin.component.dom && plugin.component.dom.get("more");
-		if (element && !plugin.get("requestInProgress") && $.inviewport(element, {"threshold": 0})) {
-			plugin.set("requestInProgress", true);
-			element.click();
+		var element = plugin.component.dom.get("more");
+		if (element && !plugin.get("requestInProgress") &&
+			$.inviewport(element, {"threshold": 0})) {
+				plugin.set("requestInProgress", true);
+				element.click();
 		}
 	});	
 };
