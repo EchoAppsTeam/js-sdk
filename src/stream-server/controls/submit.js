@@ -502,7 +502,9 @@ submit.methods._getActivity = function(verb, type, data) {
 	return (!data) ? [] : {
 		"actor": {
 			"objectTypes": [ this._getASURL("person") ],
-			"name": this.user.get("name", ( this.user.is("logged") ? "" : this.dom.get("name").val() )),
+			"name": this.user.get("name", this.user.is("logged")
+					? ""
+					: this.dom.get("name").val()),
 			"avatar": this.user.get("avatar", "")
 		},
 		"object": {
@@ -523,7 +525,7 @@ submit.methods._getASURL = function(postfix) {
 
 submit.methods._showError = function(data) {
 	data = data || {};
-	var isNetworkTimeout = ($.inArray(data.errorCode, ["network_timeout", "connection_failure"]) >= 0);
+	var isNetworkTimeout = $.inArray(data.errorCode, ["network_timeout", "connection_failure"]) >= 0;
 	var message = isNetworkTimeout
 		? this.labels.get("postingTimeout")
 		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
@@ -537,7 +539,8 @@ submit.methods._showError = function(data) {
 		"transitionIn": "elastic",
 		"transitionOut": "elastic",
 		"onComplete": function() {
-			// set fixed dimensions of the fancybox-wrap (for IE in quirks mode it should be bigger)
+			// set fixed dimensions of the fancybox-wrap
+			// (for IE in quirks mode it should be bigger)
 			if ($.browser.msie && document.compatMode != "CSS1Compat") {
 				var options = arguments[2];
 				var delta = 2 * options.padding + 40;
@@ -560,11 +563,11 @@ submit.methods._isPostValid = function() {
 };
 
 submit.methods._prepareEventParams = function(params) {
-	params = params || {};
-	params.data = this.get("data");
-	params.target = this.config.get("target").get(0);
-	params.targetURL = this.config.get("targetURL");
-	return params;
+	return $.extend(params, {
+		"data": this.get("data"),
+		"target": this.config.get("target").get(0),
+		"targetURL": this.config.get("targetURL")
+	});
 };
 
 submit.css =
