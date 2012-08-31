@@ -519,7 +519,9 @@ submit.methods._getActivity = function(verb, type, data) {
 	return (!data) ? [] : {
 		&quot;actor&quot;: {
 			&quot;objectTypes&quot;: [ this._getASURL(&quot;person&quot;) ],
-			&quot;name&quot;: this.user.get(&quot;name&quot;, ( this.user.is(&quot;logged&quot;) ? &quot;&quot; : this.dom.get(&quot;name&quot;).val() )),
+			&quot;name&quot;: this.user.get(&quot;name&quot;, this.user.is(&quot;logged&quot;)
+					? &quot;&quot;
+					: this.dom.get(&quot;name&quot;).val()),
 			&quot;avatar&quot;: this.user.get(&quot;avatar&quot;, &quot;&quot;)
 		},
 		&quot;object&quot;: {
@@ -540,7 +542,7 @@ submit.methods._getASURL = function(postfix) {
 
 submit.methods._showError = function(data) {
 	data = data || {};
-	var isNetworkTimeout = ($.inArray(data.errorCode, [&quot;network_timeout&quot;, &quot;connection_failure&quot;]) &gt;= 0);
+	var isNetworkTimeout = $.inArray(data.errorCode, [&quot;network_timeout&quot;, &quot;connection_failure&quot;]) &gt;= 0;
 	var message = isNetworkTimeout
 		? this.labels.get(&quot;postingTimeout&quot;)
 		: this.labels.get(&quot;postingFailed&quot;, {&quot;error&quot;: data.errorMessage || data.errorCode});
@@ -554,7 +556,8 @@ submit.methods._showError = function(data) {
 		&quot;transitionIn&quot;: &quot;elastic&quot;,
 		&quot;transitionOut&quot;: &quot;elastic&quot;,
 		&quot;onComplete&quot;: function() {
-			// set fixed dimensions of the fancybox-wrap (for IE in quirks mode it should be bigger)
+			// set fixed dimensions of the fancybox-wrap
+			// (for IE in quirks mode it should be bigger)
 			if ($.browser.msie &amp;&amp; document.compatMode != &quot;CSS1Compat&quot;) {
 				var options = arguments[2];
 				var delta = 2 * options.padding + 40;
@@ -577,11 +580,11 @@ submit.methods._isPostValid = function() {
 };
 
 submit.methods._prepareEventParams = function(params) {
-	params = params || {};
-	params.data = this.get(&quot;data&quot;);
-	params.target = this.config.get(&quot;target&quot;).get(0);
-	params.targetURL = this.config.get(&quot;targetURL&quot;);
-	return params;
+	return $.extend(params, {
+		&quot;data&quot;: this.get(&quot;data&quot;),
+		&quot;target&quot;: this.config.get(&quot;target&quot;).get(0),
+		&quot;targetURL&quot;: this.config.get(&quot;targetURL&quot;)
+	});
 };
 
 submit.css =

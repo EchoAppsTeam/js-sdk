@@ -32,10 +32,11 @@ var plugin = Echo.Plugin.manifest(&quot;InfiniteScroll&quot;, &quot;Echo.StreamS
 plugin.init = function() {
 	var plugin = this;
 	$(window).on(&quot;scroll&quot;, function(event) {
-		var element = plugin.component.dom &amp;&amp; plugin.component.dom.get(&quot;more&quot;);
-		if (element &amp;&amp; !plugin.get(&quot;requestInProgress&quot;) &amp;&amp; $.inviewport(element, {&quot;threshold&quot;: 0})) {
-			plugin.set(&quot;requestInProgress&quot;, true);
-			element.click();
+		var element = plugin.component.dom.get(&quot;more&quot;);
+		if (element &amp;&amp; !plugin.get(&quot;requestInProgress&quot;) &amp;&amp;
+			$.inviewport(element, {&quot;threshold&quot;: 0})) {
+				plugin.set(&quot;requestInProgress&quot;, true);
+				element.click();
 		}
 	});	
 };
@@ -46,6 +47,7 @@ plugin.events = {
 	}
 };
 
-Echo.Plugin.create(plugin);</pre>
+Echo.Plugin.create(plugin);
+</pre>
 </body>
 </html>

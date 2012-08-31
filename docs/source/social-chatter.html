@@ -371,7 +371,7 @@ SocialChatter.views.GreenRoom.templates.main =
 				&quot;labelMark&quot;: &quot;{label:sendToGreenRoomControl}&quot;,
 				&quot;labelUnmark&quot;: &quot;{label:removeFromGreenRoomControl}&quot;
 			}],
-			&quot;enabled&quot;: &quot;{self:_isNonVIPUser}&quot;
+			&quot;enabled&quot;: &quot;{self:isNonVIPUser}&quot;
 		},
 		&quot;ItemConditionalCSSClasses&quot;: {
 			&quot;name&quot;: &quot;ItemConditionalCSSClasses&quot;,
@@ -390,7 +390,7 @@ SocialChatter.views.GreenRoom.templates.main =
 				&quot;labelSet&quot;: &quot;{label:assignVIPRoleControl}&quot;,
 				&quot;labelUnset&quot;: &quot;{label:revokeVIPRoleControl}&quot;
 			}],
-			&quot;enabled&quot;: &quot;{self:_isNonVIPUser}&quot;
+			&quot;enabled&quot;: &quot;{self:isNonVIPUser}&quot;
 		}
 	};
 
@@ -436,7 +436,7 @@ SocialChatter.views.GreenRoom.templates.main =
 			}, {
 				&quot;name&quot;: &quot;Moderation&quot;,
 				&quot;userActions&quot;: [],
-				&quot;enabled&quot;: &quot;{self:_isNonVIPUser}&quot;
+				&quot;enabled&quot;: &quot;{self:isNonVIPUser}&quot;
 			}, {
 				&quot;name&quot;: &quot;VipReplies&quot;,
 				&quot;copyTo&quot;: {
@@ -487,7 +487,7 @@ SocialChatter.views.GreenRoom.templates.main =
 			}, {
 				&quot;name&quot;: &quot;Moderation&quot;,
 				&quot;userActions&quot;: [],
-				&quot;enabled&quot;: &quot;{self:_isNonVIPUser}&quot;
+				&quot;enabled&quot;: &quot;{self:isNonVIPUser}&quot;
 			}, {
 				&quot;name&quot;: &quot;VipReplies&quot;
 			},
@@ -505,7 +505,7 @@ SocialChatter.views.Main.controls.Auth = {
 	}
 };
 
-SocialChatter.views.PublicEvent.methods._isNonVIPUser = SocialChatter.views.GreenRoom.methods._isNonVIPUser = function() {
+SocialChatter.views.PublicEvent.methods.isNonVIPUser = SocialChatter.views.GreenRoom.methods.isNonVIPUser = function() {
 	return !this.user.any(&quot;roles&quot;, [&quot;vip&quot;]);
 };
 
@@ -539,18 +539,20 @@ SocialChatter.views.PublicEvent.renderers.countdown = function(element) {
 			var topic = isUpcomingEvent
 				? &quot;onEventStart&quot;
 				: &quot;onEventEnd&quot;;
-		self.events.publish({
-			&quot;topic&quot;: topic,
-			&quot;data&quot;: self.data
-		});
+			self.events.publish({
+				&quot;topic&quot;: topic,
+				&quot;data&quot;: self.data
+			});
 		}
 		: function() {};
-	if (status != &quot;upcoming&quot;) return;
-	return element.css(&quot;display&quot;, &quot;block&quot;)
-		.countdown(new Date(this.data[isUpcomingEvent ? &quot;eventStart&quot; : &quot;eventEnd&quot;]), {
-			&quot;prefix&quot;: this.labels.get(isUpcomingEvent ? &quot;chatOpensIn&quot; : &quot;chatClosesIn&quot;),
-			&quot;finish&quot;: finishHandler
-		});
+	if (status === &quot;upcoming&quot;) {
+		element.css(&quot;display&quot;, &quot;block&quot;)
+			.countdown(new Date(this.data[isUpcomingEvent ? &quot;eventStart&quot; : &quot;eventEnd&quot;]), {
+				&quot;prefix&quot;: this.labels.get(isUpcomingEvent ? &quot;chatOpensIn&quot; : &quot;chatClosesIn&quot;),
+				&quot;finish&quot;: finishHandler
+			});
+	}
+	return element;
 };
 
 SocialChatter.views.EventsList.renderers.eventSubmitLabel = function(element) {
@@ -795,8 +797,8 @@ SocialChatter.assemblers.EventsList = function(target) {
 				var status = event.getStatus();
 				self.eventById[entry.object.id] = event;
 				if ((self.event &amp;&amp; self.event.id == event.id) ||
-					(!self.event &amp;&amp; (status == &quot;onAir&quot; || status == &quot;upcoming&quot;
-				))) {
+					(!self.event &amp;&amp; (status == &quot;onAir&quot; || status == &quot;upcoming&quot;))
+				) {
 					self._setPublicEvent(self._pickRelevantEvent());
 					self._updateTabs();
 				}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function() {
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.Products.CommentsSample&quot;)) return;
+
+var Comments = Echo.Product.manifest(&quot;Echo.Products.CommentsSample&quot;, [&quot;Main&quot;]);
+
+Comments.dependencies = [
+	{&quot;loaded&quot;: function() {
+		var isLoaded;
+		$.each([&quot;Stream&quot;, &quot;Submit&quot;], function(k, val) {
+			return isLoaded = Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.&quot; + val);
+		});
+		return isLoaded;
+	}, &quot;url&quot;: &quot;sdk/stream-server.pack.js&quot;},
+
+	{&quot;loaded&quot;: function() {
+		return Echo.Utils.isComponentDefined(&quot;Echo.IdentityServer.Controls.Auth&quot;);
+	}, &quot;url&quot;: &quot;sdk/identity-server.pack.js&quot;}
+];
+
+Comments.config = {
+	&quot;submitFormPosition&quot;: &quot;top&quot;
+};
+
+Comments.templates.main = '&lt;div class=&quot;{class:container}&quot;&gt;&lt;/div&gt;';
+
+Comments.renderers.container = function(element) {
+	this.assemble(&quot;Main&quot;, element);
+	return element;
+};
+
+Comments.assemblers.Main = function(target) {
+	var view = this.initView(&quot;Main&quot;, {
+		&quot;user&quot;: this.user,
+		&quot;target&quot;: target
+	});
+	if (this.config.get(&quot;identityManager&quot;)) {
+		view.initControl(&quot;Auth&quot;, {
+			&quot;target&quot;: view.dom.get(&quot;auth&quot;)
+		});
+	}
+	view.initControl(&quot;Submit&quot;, {
+		&quot;target&quot;: view.dom.get(&quot;submit&quot;)
+	});
+	view.initControl(&quot;Stream&quot;, {
+		&quot;target&quot;: view.dom.get(&quot;stream&quot;)	
+	});
+};
+
+Comments.views.Main.templates.submitFormTop = 
+	'&lt;div class=&quot;{class:container}&quot;&gt;' +
+		'&lt;div class=&quot;{class:auth}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:submit}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:stream}&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+Comments.views.Main.templates.submitFormBottom = 
+	'&lt;div class=&quot;{class:container}&quot;&gt;' +
+		'&lt;div class=&quot;{class:auth}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:stream}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:submit}&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+Comments.views.Main.methods.template = function() {
+	return this.config.get(&quot;parent.submitFormPosition&quot;) === &quot;top&quot;
+		? this._manifest(&quot;templates&quot;).submitFormTop
+		: this._manifest(&quot;templates&quot;).submitFormBottom
+};
+
+Comments.views.Main.css = &quot;.{class:container} &gt; div { margin-bottom: 7px; }&quot;;
+
+Comments.views.Main.controls.Auth = {
+	&quot;control&quot;: &quot;Echo.IdentityServer.Controls.Auth&quot;,
+	&quot;config&quot;: {
+		&quot;appkey&quot;: null,
+		&quot;identityManager&quot;: &quot;{config:parent.identityManager}&quot;
+	}
+};
+
+Comments.views.Main.controls.Stream = {
+	&quot;control&quot;: &quot;Echo.StreamServer.Controls.Stream&quot;,
+	&quot;config&quot;: {}
+};
+
+Comments.views.Main.controls.Submit = {
+	&quot;control&quot;: &quot;Echo.StreamServer.Controls.Submit&quot;,
+	&quot;config&quot;: {}
+};
+
+Echo.Product.create(Comments);
+
+})();
+</pre>
+</body>
+</html>

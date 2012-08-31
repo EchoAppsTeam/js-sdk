@@ -30,11 +30,7 @@ if (!Echo.Variables) Echo.Variables = {};
 
 Echo.Utils = {};
 
-var _cssStyles = {
-	&quot;anchor&quot;: undefined,
-	&quot;index&quot;: 1,
-	&quot;processed&quot;: {}
-};
+Echo.Utils.cache = {};
 
 Echo.Utils.regexps = {
 	&quot;templateSubstitution&quot;: &quot;{([0-9a-z\\.]+)(?:\\:((?:[0-9a-z_-]+\\.)*[0-9a-z_-]+))?}&quot;,
@@ -74,12 +70,20 @@ Echo.Utils.regexps = {
  * @return {Boolean} Returns true if CSS styles was successfully added, false - if CSS styles is already in the document.
  */
 Echo.Utils.addCSS = function(cssCode, id) {
+	if (typeof this.cache.cssStyles === &quot;undefined&quot;) {
+		this.cache.cssStyles = {
+			&quot;anchor&quot;: undefined,
+			&quot;index&quot;: 1,
+			&quot;processed&quot;: {}
+		};
+	}
+	var cssStyles = this.cache.cssStyles;
 	if (id) {
-		if (_cssStyles.processed[id]) return false;
-		_cssStyles.processed[id] = true;
+		if (cssStyles.processed[id]) return false;
+		cssStyles.processed[id] = true;
 	}
 	var currentCssCode = &quot;&quot;;
-	var oldStyle = _cssStyles.anchor;
+	var oldStyle = cssStyles.anchor;
 	if (oldStyle &amp;&amp; oldStyle.length) {
 		currentCssCode = oldStyle.html();
 	}
@@ -87,23 +91,23 @@ Echo.Utils.addCSS = function(cssCode, id) {
 	// so we limit it to 100000 characters
 	// (2000 rules x 50 characters per rule)
 	if (currentCssCode.length + cssCode.length &gt; 100000) {
-		_cssStyles.index++;
+		cssStyles.index++;
 		oldStyle = null;
 		currentCssCode = &quot;&quot;;
 	}
-	var newStyle = $('&lt;style id=&quot;echo-css-rules-' + _cssStyles.index + '&quot; type=&quot;text/css&quot;&gt;' + currentCssCode + cssCode + '&lt;/style&gt;');
+	var newStyle = $('&lt;style id=&quot;echo-css-rules-' + cssStyles.index + '&quot; type=&quot;text/css&quot;&gt;' + currentCssCode + cssCode + '&lt;/style&gt;');
 	if (oldStyle &amp;&amp; oldStyle.length) {
 		// use replacing instead of adding css to existing element
 		// because IE doesn't allow it
 		oldStyle.replaceWith(newStyle);
 	} else {
-		if (_cssStyles.anchor) {
-			_cssStyles.anchor.after(newStyle);
+		if (cssStyles.anchor) {
+			cssStyles.anchor.after(newStyle);
 		} else {
 			$(document.getElementsByTagName(&quot;head&quot;)[0] || document.documentElement).prepend(newStyle);
 		}
 	}
-	_cssStyles.anchor = newStyle;
+	cssStyles.anchor = newStyle;
 	return true;
 };
 
@@ -179,7 +183,7 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
 		if (callback) {
 			callback(_data, _key);
 		}
-		if (typeof _data[_key] === &quot;undefined&quot; || _data[_key] === null) {
+		if (typeof _data[_key] === &quot;undefined&quot;) {
 			found = false;
 		} else {
 			return _data[_key];
@@ -411,11 +415,10 @@ Echo.Utils.stripTags = function(text) {
  * @return {Object} Returns the object containing the following parts of the URL as fields: scheme, domain, path, query, fragment.
  */
 Echo.Utils.parseURL = function(url) {
-
-	// define global placeholder to cache URL processing result
-	Echo.Utils._parsedURLs = Echo.Utils._parsedURLs || {};
-
-	var parsed = Echo.Utils._parsedURLs;
+	if (typeof this.cache.parsedURLs === &quot;undefined&quot;) {
+		this.cache.parsedURLs = {};
+	}
+	var parsed = this.cache.parsedURLs;
 	if (parsed.hasOwnProperty(url)) {
 		return parsed[url];
 	} else {
@@ -499,10 +502,10 @@ Echo.Utils.timestampFromW3CDTF = function(datetime) {
 Echo.Utils.isMobileDevice = function() {
 	// we can calculate it once and use the cached value
 	// in other calls since user agent will not be changed
-	if (typeof this._isMobileDevice === &quot;undefined&quot;) {
-		this._isMobileDevice = this.regexps.mobileUA.test(navigator.userAgent);
+	if (typeof this.cache.isMobileDevice === &quot;undefined&quot;) {
+		this.cache.isMobileDevice = this.regexps.mobileUA.test(navigator.userAgent);
 	}
-	return this._isMobileDevice;
+	return this.cache.isMobileDevice;
 };
 
 <span id='Echo-Utils-static-method-getUniqueString'>/**
@@ -533,26 +536,9 @@ Echo.Utils.getUniqueString = function() {
 Echo.Utils.inherit = function(child, parent) {
 	var F = function() {};
 	F.prototype = parent.prototype;
-	var _proto = $.extend({}, child.prototype);
 	child.prototype = new F;
 	child.prototype.constructor = child;
 	child.parent = parent.prototype;
-	$.each(_proto, function(name, value) {
-		child.prototype[name] = $.isFunction(parent.prototype[name]) &amp;&amp; $.isFunction(value)
-			? function () {
-				var self = this;
-				var tmp = this.base;
-				var args = arguments;
-				this.base = function() {
-					var _args = arguments.length ? arguments : args;
-					return parent.prototype[name].apply(self, _args);
-				};
-				var returnValue = value.apply(this, arguments);
-				this.base = tmp;
-				return returnValue;
-			}
-			: value;
-	});
 	return child;
 };
 

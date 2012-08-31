@@ -209,20 +209,20 @@ Ext.data.JsonP.Echo_Plugin({
 
   ],
   "subclasses": [
-    "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag",
+    "Echo.StreamServer.Controls.Stream.Item.Plugins.Like",
+    "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation",
+    "Echo.StreamServer.Controls.Submit.Plugins.TextCounter",
+    "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization",
     "Echo.StreamServer.Controls.Stream.Item.Plugins.Edit",
     "Echo.StreamServer.Controls.Submit.Plugins.Edit",
-    "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager",
-    "Echo.StreamServer.Controls.Submit.Plugins.FormAuth",
-    "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay",
-    "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents",
-    "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing",
     "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply",
-    "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization",
+    "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay",
+    "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag",
+    "Echo.StreamServer.Controls.Submit.Plugins.FormAuth",
+    "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager",
     "Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll",
-    "Echo.StreamServer.Controls.Stream.Item.Plugins.Like",
-    "Echo.StreamServer.Controls.Submit.Plugins.TextCounter",
-    "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation"
+    "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents",
+    "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing"
   ],
   "mixedInto": [
 
