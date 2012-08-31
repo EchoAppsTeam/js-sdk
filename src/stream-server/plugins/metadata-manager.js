@@ -1,6 +1,7 @@
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager
  * Provides the ability to add buttons to the Echo Stream control items adding/removing markers/tags. By default those buttons will be available for moderators and administrators, though the visibility of tag controls can be configured via special param.
+ *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
  *         "appkey": "test.echoenabled.com",
@@ -8,19 +9,40 @@
  *             "name": "MetadataManager"
  *         }]
  *     });
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
+plugin.init = function() {
+	var self = this;
+	var item = this.component;
+	$.each(this.config.get("controls"), function(i, control) {
+		item.addButtonSpec("MetadataManager", self._assembleButton("Mark", control));
+		item.addButtonSpec("MetadataManager", self._assembleButton("Unmark", control));
+	});
+};
+
 /**
- * @cfg {Array} controls Specifies the list of buttons which should be added to the Echo Stream item.
- * @cfg {String} controls.marker Specifies the value of marker to be set.
- * @cfg {String} controls.tag Specifies the value of tag to be set.
- * @cfg {String} controls.labelMark Specifies the button label to perform the corresponding action.
- * @cfg {String} controls.labelUnmark Specifies the button label to undo the corresponding action
- * @cfg {Object|Function} controls.visible Specifies the condition of visibility. Applicable only for tags. Can be either an object or a function.
+ * @cfg {Array} controls
+ * Specifies the list of buttons which should be added to the Echo Stream item.
  *
- * Example: simple marker control
+ * @cfg {String} controls.marker
+ * Specifies the value of marker to be set.
+ *
+ * @cfg {String} controls.tag
+ * Specifies the value of tag to be set.
+ *
+ * @cfg {String} controls.labelMark
+ * Specifies the button label to perform the corresponding action.
+ * 
+ * @cfg {String} controls.labelUnmark
+ * Specifies the button label to undo the corresponding action.
+ *
+ * @cfg {Object|Function} controls.visible
+ * Specifies the condition of visibility. Applicable only for tags. Can be either an object or a function.
+ *
+ * Example: simple marker control.
  *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
@@ -35,7 +57,7 @@ var plugin = Echo.Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls
  *         }]
  *     });
  *
- * Example: simple tag control
+ * Example: simple tag control.
  *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
@@ -50,7 +72,7 @@ var plugin = Echo.Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls
  *         }]
  *     });
  *
- * Example: tag control with visibility condition defined as an object
+ * Example: tag control with visibility condition defined as an object.
  *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
@@ -90,17 +112,14 @@ var plugin = Echo.Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls
  *         }]
  *     });
  */
-plugin.init = function() {
-	var self = this;
-	var item = this.component;
-	$.each(this.config.get("controls"), function(i, control) {
-		item.addButtonSpec("MetadataManager", self._assembleButton("Mark", control));
-		item.addButtonSpec("MetadataManager", self._assembleButton("Unmark", control));
-	});
-};
-
 plugin.labels = {
+	/**
+	 * @echo_label
+	 */
 	"markProcessing": "Adding {type} {marker}...",
+	/**
+	 * @echo_label
+	 */
 	"unmarkProcessing": "Removing {type} {marker}..."
 };
 

@@ -3,6 +3,7 @@
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Like
  * Adds extra controls Like/Unlike to each item in the Echo Stream control. Note that these controls will appear only for authenticated users.
+ *
  *     new Echo.StreamServer.Controls.Stream({
  *         "target": document.getElementById("echo-stream"),
  *         "appkey": "test.echoenabled.com",
@@ -10,6 +11,7 @@
  *             "name": "Like"
  *         }]
  *     });
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Item");
@@ -22,11 +24,29 @@ plugin.init = function() {
 };
 
 plugin.labels = {
+	/**
+	 * @echo_label
+	 */
 	"likeThis": " like this.",
+	/**
+	 * @echo_label
+	 */
 	"likesThis": " likes this.",
+	/**
+	 * @echo_label
+	 */
 	"likeControl": "Like",
+	/**
+	 * @echo_label
+	 */
 	"unlikeControl": "Unlike",
+	/**
+	 * @echo_label
+	 */
 	"likeProcessing": "Liking...",
+	/**
+	 * @echo_label
+	 */
 	"unlikeProcessing": "Unliking..."
 };
 
@@ -38,66 +58,6 @@ plugin.events = {
 };
 
 plugin.template = '<div class="{plugin.class:likedBy}"></div>';
-
-plugin.methods._sendRequest = function(data, callback) {
-	Echo.StreamServer.API.request({
-		"endpoint": "submit",
-		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
-		"onData": callback,
-		"data": data
-	}).send();
-};
-
-plugin.methods._sendActivity = function(name, item) {
-	var plugin = this;
-	var activity = {
-		"verbs": ["http://activitystrea.ms/schema/1.0/" + name.toLowerCase()],
-		"targets": [{"id": item.get("data.object.id")}]
-	};
-	this._sendRequest({
-		"content": activity,
-		"appkey": item.config.get("appkey"),
-		"sessionID": item.user.get("sessionID"),
-		"target-query": item.config.get("parent.query")
-	}, function() {
-		plugin.events.publish({
-			"topic": "on" + name + "Complete",
-			"data": {
-				"item": {
-					"data": item.get("data"),
-					"target": item.config.get("target")
-				}
-			}
-		});
-		plugin.requestDataRefresh();
-	});
-};
-
-plugin.methods._assembleButton = function(name) {
-	var plugin = this;
-	var component = this.component;
-	var callback = function() {
-		var item = this;
-		item.get("buttons." + plugin.name + "." + name + ".element")
-			.empty()
-			.append(plugin.labels.get(name.toLowerCase() + "Processing"));
-		plugin._sendActivity(name, item);
-	};
-	return function() {
-		var item = this;
-		var action =
-			($.map(item.get("data.object.likes"), function(entry) {
-				if (item.user.has("identity", entry.actor.id)) return entry;
-			})).length > 0 ? "Unlike" : "Like";
-		return {
-			"name": name,
-			"label": plugin.labels.get(name.toLowerCase() + "Control"),
-			"visible": item.user.is("logged") && action === name,
-			"once": true,
-			"callback": callback
-		};
-	};
-};
 
 plugin.renderers.likedBy = function(element) {
 	var plugin = this;
@@ -135,6 +95,76 @@ plugin.renderers.likedBy = function(element) {
 	var facePile = new Echo.StreamServer.Controls.FacePile(config);
 	plugin.set("facePile", facePile);
 	return element.show();
+};
+
+plugin.methods._sendRequest = function(data, callback) {
+	Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
+		"onData": callback,
+		"data": data
+	}).send();
+};
+
+plugin.methods._sendActivity = function(name, item) {
+	var plugin = this;
+	var activity = {
+		"verbs": ["http://activitystrea.ms/schema/1.0/" + name.toLowerCase()],
+		"targets": [{"id": item.get("data.object.id")}]
+	};
+	this._sendRequest({
+		"content": activity,
+		"appkey": item.config.get("appkey"),
+		"sessionID": item.user.get("sessionID"),
+		"target-query": item.config.get("parent.query")
+	}, function() {
+		/**
+		 * @event onLikeComplete
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeComplete
+		 * Triggered when the Like operation is finished.
+		 */
+		/**
+		 * @event onUnlikeComplete
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete
+		 * Triggered when the reverse Like operation is finished.
+		 */
+		plugin.events.publish({
+			"topic": "on" + name + "Complete",
+			"data": {
+				"item": {
+					"data": item.get("data"),
+					"target": item.config.get("target")
+				}
+			}
+		});
+		plugin.requestDataRefresh();
+	});
+};
+
+plugin.methods._assembleButton = function(name) {
+	var plugin = this;
+	var component = this.component;
+	var callback = function() {
+		var item = this;
+		item.get("buttons." + plugin.name + "." + name + ".element")
+			.empty()
+			.append(plugin.labels.get(name.toLowerCase() + "Processing"));
+		plugin._sendActivity(name, item);
+	};
+	return function() {
+		var item = this;
+		var action =
+			($.map(item.get("data.object.likes"), function(entry) {
+				if (item.user.has("identity", entry.actor.id)) return entry;
+			})).length > 0 ? "Unlike" : "Like";
+		return {
+			"name": name,
+			"label": plugin.labels.get(name.toLowerCase() + "Control"),
+			"visible": item.user.is("logged") && action === name,
+			"once": true,
+			"callback": callback
+		};
+	};
 };
 
 plugin.css =
@@ -179,6 +209,11 @@ plugin.renderers.adminUnlike = function(element) {
 	}
 	return element.one("click", function() {
 		item.dom.get("container").css("opacity", 0.3);
+		/**
+		 * @event onUnlike
+		 * @echo_event Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike
+		 * Triggered when the item is "unliked" by admin on behalf of a user.
+		 */
 		plugin.events.publish({
 			"topic": "onUnlike",
 			"actor": item.get("data"),

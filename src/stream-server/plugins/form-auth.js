@@ -1,18 +1,22 @@
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.FormAuth
  * Adds the authentication section to the Echo Submit control
+ *
  *     var identityManager = {"width": 400, "height": 240, "url": "http://example.com/auth"};
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
+ *
+ *     new Echo.StreamServer.Controls.Submit({
+ *         "target": document.getElementById("submit"),
+ *         "appkey": "test.aboutecho.com",
  *         "plugins": [{
- *             "name": "Edit",
+ *             "name": "FormAuth",
+ *             "submitPermissions": "forceLogin",
  *             "identityManager": {
  *                 "login": identityManager,
  *                 "signup": identityManager
  *             }
  *         }]
  *     });
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("FormAuth", "Echo.StreamServer.Controls.Submit");
@@ -23,6 +27,30 @@ plugin.init = function() {
 	}
 	this.extendTemplate("insertBefore", "header", plugin.templates.auth);
 	this.component.addPostValidator(this._validator());
+};
+
+plugin.config = {
+	/**
+	 * @cfg {Object} identityManager The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.
+	 * @cfg {Object} [identityManager.login] Encapsulates data for login workflow
+	 * @cfg {Number} [identityManager.login.width] Specifies the width of the visible auth area
+	 * @cfg {Number} [identityManager.login.height] Specifies the height of the visible auth area
+	 * @cfg {String} [identityManager.login.url] Specifies the URL to be opened as an auth handler
+	 * @cfg {Object} [identityManager.signup] Encapsulates data for signup workflow
+	 * @cfg {Number} [identityManager.signup.width] Specifies the width of the visible auth area
+	 * @cfg {Number} [identityManager.signup.height] Specifies the height of the visible auth area
+	 * @cfg {String} [identityManager.signup.url] Specifies the URL to be opened as an auth handler
+	 * @cfg {Object} [identityManager.edit] Encapsulates data for edit workflow
+	 * @cfg {Number} [identityManager.edit.width] Specifies the width of the visible auth area
+	 * @cfg {Number} [identityManager.edit.height] Specifies the height of the visible auth area
+	 * @cfg {String} [identityManager.edit.url] Specifies the URL to be opened as an auth handler
+	 */
+	"identityManager": {},
+	/**
+	 * @cfg {String} submitPermissions
+	 * Specifies the permitted commenting modes. The two options are: "allowGuest" and "forceLogin".
+	 */
+	"submitPermissions": "allowGuest"
 };
 
 plugin.enabled = function() {
@@ -38,42 +66,10 @@ plugin.dependencies = [{
 	}
 }];
 
-plugin.config = {
-/**
- * @cfg {Object} identityManager The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.
- * @cfg {Object} [identityManager.login] Encapsulates data for login workflow
- * @cfg {Number} [identityManager.login.width] Specifies the width of the visible auth area
- * @cfg {Number} [identityManager.login.height] Specifies the height of the visible auth area
- * @cfg {String} [identityManager.login.url] Specifies the URL to be opened as an auth handler
- * @cfg {Object} [identityManager.signup] Encapsulates data for signup workflow
- * @cfg {Number} [identityManager.signup.width] Specifies the width of the visible auth area
- * @cfg {Number} [identityManager.signup.height] Specifies the height of the visible auth area
- * @cfg {String} [identityManager.signup.url] Specifies the URL to be opened as an auth handler
- * @cfg {Object} [identityManager.edit] Encapsulates data for edit workflow
- * @cfg {Number} [identityManager.edit.width] Specifies the width of the visible auth area
- * @cfg {Number} [identityManager.edit.height] Specifies the height of the visible auth area
- * @cfg {String} [identityManager.edit.url] Specifies the URL to be opened as an auth handler
- */
-	"identityManager": {},
-/**
- * @cfg {String} submitPermissions Specifies the permitted commenting modes. The two options are: "allowGuest" and "forceLogin".
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "Edit",
- *             "identityManager": {
- *                 "login": identityManager,
- *                 "signup": identityManager
- *             },
- *             "submitPermissions": "forceLogin"
- *         }]
- *     });
- */
-	"submitPermissions": "allowGuest"
-};
-
 plugin.labels = {
+	/**
+	 * @echo_label
+	 */
 	"youMustBeLoggedIn": "You must be logged in to comment"
 };
 
@@ -86,6 +82,9 @@ plugin.templates.forcedLogin =
 		'</span>' +
 	'</div>';
 
+/**
+ * @echo_renderer
+ */
 plugin.component.renderers.header = function(element) {
 	var plugin = this;
 	if (this._userStatus() === "logged") {
@@ -94,6 +93,9 @@ plugin.component.renderers.header = function(element) {
 	return plugin.parentRenderer("header", arguments);
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.component.renderers.container = function(element) {
 	var plugin = this;
 	plugin.parentRenderer("container", arguments);
@@ -105,6 +107,9 @@ plugin.component.renderers.container = function(element) {
 		.addClass(_class(plugin._userStatus()));
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.auth = function(element) {
 	var plugin = this;
 	new Echo.IdentityServer.Controls.Auth(plugin.config.assemble({
