@@ -20,6 +20,18 @@ Echo.Loader = {
 
 /**
  * @static
+ * Function to get absolute URL.
+ *
+ * @param {String} url
+ * JavaScript or CSS stylesheet file URL
+ */
+Echo.Loader.getURL = function(url) {
+	return /^https?:\/\/|^\/\//.test(url)
+		? url
+		: Echo.Loader.config.cdnBaseURL + url;
+};
+/**
+ * @static
  * @method
  * Function to initialize canvases on the page.
  *
@@ -65,7 +77,7 @@ Echo.Loader.download = function(params) {
 		for (var i = 0; i < scripts.length; i++) {
 			var script = scripts[i];
 			if (!script.loaded || !script.loaded()) {
-				urls.push(Echo.Loader._getCdnURL(script.url));
+				urls.push(Echo.Loader.getURL(script.url));
 			}
 		}
 	}
@@ -98,12 +110,6 @@ Echo.Loader.override = function(canvasID, appID, config) {
 };
 
 // internal functions
-
-Echo.Loader._getCdnURL = function(url) {
-	return /^https?:\/\/|^\/\//.test(url)
-		? url
-		: Echo.Loader.config.cdnBaseURL + url;
-};
 
 Echo.Loader._initEnvironment = function(callback) {
 	var scripts = [{

@@ -12,7 +12,8 @@ suite.prototype.info = {
 	"functions": [
 		"init",
 		"download",
-		"override"
+		"override",
+		"getURL"
 	]
 };
 
@@ -36,6 +37,35 @@ suite.prototype.tests.resourceDownloadingTests = {
 			"validAndInvalidScriptsMix",
 			"loadingSameScriptMultipleTimes"
 		], "cases");
+	}
+};
+
+suite.prototype.tests.urlConvertingTests = {
+	"check": function() {
+		var cdnBaseURL = Echo.Loader.config.cdnBaseURL;
+		var urls = {
+			"absolute": [
+				"//cdn/echoenabled.com/image.png",
+				"http://echoenabled.com/image.png",
+				"https://echoenabled.com/image.png"
+			],
+			"relative": [
+				"/web/image.png",
+				"web/image.png",
+				"sdk"
+			]
+		};
+		$.each(urls, function(key, val) {
+			var checked = true;
+			$.map(val, function(url) {
+				if (key === "absolute" && url !== Echo.Loader.getURL(url) ||
+					key === "relative" && cdnBaseURL + url !== Echo.Loader.getURL(url)
+				) {
+					checked = false;
+				}
+			});
+			QUnit.ok(checked, "Checking if " + key + " URL has been correctly converted");
+		});
 	}
 };
 
