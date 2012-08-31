@@ -12,6 +12,7 @@ body {
 	margin: 0px;
 	padding: 7px 0px;
 	font: 13px Arial;
+    width: 100%;
 }
 .menu {
 	float: left;
