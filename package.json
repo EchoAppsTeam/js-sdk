@@ -23,7 +23,8 @@
     }
   ],
   "dependencies": {
-    "jquery": ">= 1"
+    "grunt-exec": "~0.2.1",
+    "grunt-contrib": "~0.1.7"
   },
   "keywords": []
 }
