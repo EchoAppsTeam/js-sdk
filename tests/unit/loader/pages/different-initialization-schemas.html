@@ -39,13 +39,6 @@
 		window.Echo = window.parent.Echo;
 		window.QUnit = window.parent.QUnit;
 
-		// cleanup Echo.Loader to allow the new one to take control
-		// delete Echo.Loader;
-	</script>
-
-	<script type="text/javascript" src="loader.js"></script>
-
-	<script>
 		// create "test" function which will be called within the parent window
 		window.test = function(callback) {
 			var suite = Echo.Tests.Unit.Loader;
@@ -58,12 +51,13 @@
 			};
 
 			// check multiple initialization
-			Echo.Events.subscribe({
+			var handlerId = Echo.Events.subscribe({
 				"topic": "Echo.Loader.onError",
 				"handler": function(topic, args) {
 					count.invalid--;
 					errors[args.code][0]++;
 					if (!count.invalid) {
+						Echo.Events.unsubscribe({"handlerId": handlerId});
 						QUnit.ok(suite.eventsCountCheck(errors), "Checking if the Loader indicated multiple initialization attmpts (case: different-initialization-schemas)");
 						if (!count.valid) callback();
 					}
