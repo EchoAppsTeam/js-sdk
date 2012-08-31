@@ -3,7 +3,7 @@
 var plugin = Echo.Plugin.manifest("SocialChatterEvent", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.config = {
-	"defaultEventIcon": "//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg",
+	"defaultEventIcon": Echo.Loader.getURL("sdk/images/vip.jpg"),
 	"dateFormat": "yy-mm-dd",
 	"timeFormat": "hh:mm tt",
 	"ampm": true
@@ -353,7 +353,7 @@ plugin.templates.AdminNotice = '<div class="{plugin.class:eventSubmitNotice}"></
 
 plugin.templates.EventIcon =
 	'<div class="{plugin.class:eventIconContainer}">' +
-		'<img class="{plugin.class:eventIcon}" src="//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg">' +
+		'<img class="{plugin.class:eventIcon}" src="' + Echo.Loader.getURL("sdk/images/vip.jpg") + '">' +
 		'<div class="{plugin.class:eventIconError}">{plugin.label:errorLoadingImage}</div>' +
 		'<div class="{plugin.class:changeEventIcon} echo-linkColor echo-clickable"></div>' +
 	'</div>';
@@ -612,7 +612,7 @@ $.map(plugin.fields, function(field) {
 							element.parent().addClass("echo-input-error");
 							self.dom.get("eventIconError").show();
 							self.dom.get("eventIcon")
-								.attr("src", "//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg");
+								.attr("src", Echo.Loader.getURL("sdk/images/vip.jpg"));
 						});
 				}
 			})

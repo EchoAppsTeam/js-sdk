@@ -60,7 +60,7 @@ plugin.enabled = function() {
 };
 
 plugin.dependencies = [{
-	"url": Echo.Loader.config.cdnBaseURL + "sdk/identity-server.pack.js",
+	"url": "sdk/identity-server.pack.js",
 	"loaded": function() {
 		return Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth");
 	}

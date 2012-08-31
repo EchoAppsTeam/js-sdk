@@ -28,7 +28,7 @@ suite.prototype.tests.commonWorkflow = {
 		QUnit.ok(!$(target).html().match(/icon/),
 			"Checking that icon CSS class is not added by default");
 		
-		var css = ".ui-test-icon { background: url(//cdn.echoenabled.com/images/loading.gif); height: 16px; width: 16px; }";
+		var css = ".ui-test-icon { background: url(" + Echo.Loader.getURL("sdk/images/loading.gif") + "); height: 16px; width: 16px; }";
 		Echo.Utils.addCSS(css, "echo-button-test");
 		button.update({
 			"label": "SecondLabel",

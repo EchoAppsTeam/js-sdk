@@ -168,7 +168,7 @@ plugin.methods._assembleButton = function(name) {
 };
 
 plugin.css =
-	'.{plugin.class:likedBy} { background: url(//cdn.echoenabled.com/images/likes.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
+	'.{plugin.class:likedBy} { background: url(' + Echo.Loader.getURL("sdk/images/likes.png") + ') no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
 	'.{plugin.class:highlight} { line-height: 23px; }' +
 	($.browser.msie ?
 		'.{plugin.class:highlight} span { vertical-align: middle; }' +
@@ -192,7 +192,7 @@ plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "container", plugin.template);
 };
 
-plugin.template = '<img class="{plugin.class:adminUnlike}" src="//cdn.echoenabled.com/images/container/closeWindow.png" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
+plugin.template = '<img class="{plugin.class:adminUnlike}" src="' + Echo.Loader.getURL("sdk/images/container/closeWindow.png") + '" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
 
 plugin.component.renderers.container = function(element) {
 	this.parentRenderer("container", arguments);

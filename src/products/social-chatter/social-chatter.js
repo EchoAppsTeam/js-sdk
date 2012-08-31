@@ -240,7 +240,7 @@ SocialChatter.config = {
 	"liveUpdatesTimeout": 60, // request Events updates once per minute
 	"identityManager": undefined,
 	"views": {},
-	"defaultEventIcon": "//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg"
+	"defaultEventIcon": Echo.Loader.getURL("sdk/images/vip.jpg")
 };
 
 SocialChatter.views.Main.templates.main =
