@@ -16,9 +16,14 @@
  *         "paused": "Paused"
  *     }, "Stream");
  *
- * @param {Object} labels Flat object containing the list of language variables to be initialized.
- * @param {String} namespace String representing the component namespace.
- * @return {Object} Returns the reference to the given Echo.Labels class instance.
+ * @param {Object} labels
+ * Flat object containing the list of language variables to be initialized.
+ *
+ * @param {String} namespace
+ * Component namespace.
+ *
+ * @return {Class}
+ * The reference to the given Echo.Labels class instance.
  */
 
 Echo.Labels = function(labels, namespace) {
@@ -31,7 +36,6 @@ Echo.Labels = function(labels, namespace) {
 };
 
 /**
- * @method
  * Method to access specific language variable within the scope of a particular component instance.
  *
  * Function will return the language variable value corresponding to this instance.
@@ -45,9 +49,14 @@ Echo.Labels = function(labels, namespace) {
  *     labels.get("live"); // will return "Live"
  *     labels.get("paused"); // will return "Paused"
  *
- * @param {String} name Language variable name.
- * @param {Object} data Flat object data that should be inserted instead of a placeholder in the language variable.
- * @return {String} Returns the string value of the language variable.
+ * @param {String} name
+ * Language variable name.
+ *
+ * @param {Object} data
+ * Flat object data that should be inserted instead of a placeholder in the language variable.
+ *
+ * @return {String}
+ * Value of the language variable.
  */
 
 Echo.Labels.prototype.get = function(name, data) {
@@ -80,7 +89,8 @@ Echo.Labels.prototype.get = function(name, data) {
  *     labels.get("live"); // will return "Live..."
  *     labels.get("paused"); // will return "Paused..."
  *
- * @param {Object} labels Flat object containing the list of language variables to be added/overriden. 
+ * @param {Object} labels
+ * Flat object containing the list of language variables to be added/overriden. 
  */
 
 Echo.Labels.prototype.set = function(labels) {
@@ -91,7 +101,6 @@ Echo.Labels.prototype.set = function(labels) {
 	});
 };
 
-// Static interface
 /**
  * @static
  * Function to add/override the language variable list in the global scope.
@@ -126,9 +135,14 @@ Echo.Labels.prototype.set = function(labels) {
  *     Echo.Labels.get("live", "Stream"); // will return "Live label"
  *     Echo.Labels.get("paused", "Stream"); // will return "Paused label"
  *
- * @param {Object} labels Object containing the list of language variables.
- * @param {String} namespace String representing the namespace.
- * @param {Boolean} isDefault Flag switching the localization mode to setting defaults one.
+ * @param {Object} labels
+ * Object containing the list of language variables.
+ *
+ * @param {String} namespace
+ * Namespace.
+ *
+ * @param {Boolean} isDefault
+ * Flag switching the localization mode to setting defaults one.
  */
 
 Echo.Labels.set = function(labels, namespace, isDefault) {
@@ -154,10 +168,17 @@ Echo.Labels.set = function(labels, namespace, isDefault) {
  *     Echo.Labels.get("live", "Stream"); // will return "Live"
  *     Echo.Labels.get("Stream.paused"); // will return "Paused"
  *
- * @param {String} name Language variable name.
- * @param {String} namespace String representing the namespace.
- * @param {Object} data Flat object data that should be inserted instead of a placeholder in the language variable.
- * @return {String} Returns the string value of the language variable.
+ * @param {String} name
+ * Language variable name.
+ *
+ * @param {String} namespace
+ * String representing the namespace.
+ *
+ * @param {Object} data
+ * Flat object data that should be inserted instead of a placeholder in the language variable.
+ *
+ * @return {String}
+ * Value of the language variable.
  */
 
 Echo.Labels.get = function(name, namespace, data) {
@@ -165,8 +186,6 @@ Echo.Labels.get = function(name, namespace, data) {
 	var label = Echo.Labels._storage["custom"][key] || Echo.Labels._storage["general"][key] || name;
 	return Echo.Labels._substitute(label, data);
 };
-
-// internal functions
 
 Echo.Labels._storage = { "general": {}, "custom": {} };
 

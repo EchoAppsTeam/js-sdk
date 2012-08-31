@@ -15,14 +15,29 @@ Echo.Events = {};
  * Function allowing to subscribe to an event with a specific callback function and topic.
  *
  * @static
- * @param {Object} params Configuration parameters object with the following fields:
- * @param {String} params.topic Event name.
- * @param {String} params.context (optional) Unique identifier for inter-component communication.
- * @param {Boolean} [params.once=false] Specifies that provided handler should be executed exactly once (handler will be unsubscribed right before its execution).
- * @param {Function} params.handler Callback function which will be called when event is published
- * @param {String} params.handler.topic Event name (same as params.topic).
- * @param {Object} params.handler.data Arbitrary data object passed to the {@link #publish} function.
- * @return {String} Unique identifier for the current subscription which can be used for unsubscribing.
+ * @param {Object} params
+ * Configuration parameters object with the following fields:
+ *
+ * @param {String} params.topic
+ * Event name.
+ *
+ * @param {String} [params.context]
+ * Unique identifier for inter-component communication.
+ *
+ * @param {Boolean} [params.once=false]
+ * Specifies that provided handler should be executed exactly once (handler will be unsubscribed right before its execution).
+ *
+ * @param {Function} params.handler
+ * Callback function which will be called when event is published
+ *
+ * @param {String} params.handler.topic
+ * Event name (same as params.topic).
+ *
+ * @param {Object} params.handler.data
+ * Arbitrary data object passed to the {@link #publish} function.
+ *
+ * @return {String}
+ * Unique identifier for the current subscription which can be used for unsubscribing.
  */
 Echo.Events.subscribe = function(params) {
 	var handlerId = Echo.Utils.getUniqueString();
@@ -51,11 +66,20 @@ Echo.Events.subscribe = function(params) {
  * Function allowing to unsubscribe from an event.
  *
  * @static
- * @param {Object} params Configuration parameters object with the following fields:
- * @param {String} params.topic Event name.
- * @param {String} params.context (optional) Unique identifier for inter-component communication.
- * @param {String} params.handlerId Unique identifier from the {@link #subscribe} function.
- * @return {Boolean} Unsubscription status.
+ * @param {Object} params
+ * Configuration parameters object with the following fields:
+ *
+ * @param {String} params.topic
+ * Event name.
+ *
+ * @param {String} [params.context]
+ * Unique identifier for inter-component communication.
+ *
+ * @param {String} params.handlerId
+ * Unique identifier from the {@link #subscribe} function.
+ *
+ * @return {Boolean}
+ * Unsubscription status.
  */
 Echo.Events.unsubscribe = function(params) {
 	var unsubscribed = false;
@@ -107,13 +131,26 @@ Echo.Events.unsubscribe = function(params) {
  * Function allowing to publish an event providing arbitrary data.
  *
  * @static
- * @param {Object} params Configuration parameters object with the following fields:
- * @param {String} params.topic Event name.
- * @param {String} params.context (optional) Unique identifier for inter-component communication.
- * @param {String} params.data (optional) Some data object.
- * @param {Boolean} [params.bubble=true] Indicates whether a given event should be propagated into the parent contexts.
- * @param {Boolean} [params.propagation=true] Indicates whether a given event should be propagated into the child contexts AND executed for the current context.
- * @param {Boolean} [params.global=true] Specifies whether the event should be also published to "global" context or not
+ * @param {Object} params
+ * Configuration parameters object with the following fields:
+ *
+ * @param {String} params.topic
+ *  Event name.
+ *
+ * @param {String} [params.context]
+ * Unique identifier for inter-component communication.
+ *
+ * @param {String} [params.data]
+ * Some data object.
+ *
+ * @param {Boolean} [params.bubble=true]
+ * Indicates whether a given event should be propagated into the parent contexts.
+ *
+ * @param {Boolean} [params.propagation=true]
+ * Indicates whether a given event should be propagated into the child contexts AND executed for the current context.
+ *
+ * @param {Boolean} [params.global=true]
+ * Specifies whether the event should be also published to "global" context or not
  */
 Echo.Events.publish = function(params) {
 	params = $.extend({
@@ -131,8 +168,6 @@ Echo.Events.publish = function(params) {
 		Echo.Events.publish(params);
 	}
 };
-
-// private stuff
 
 var _lastHandlerResult = {}, _dataByHandlerId = {};
 var _subscriptions = Echo.Events._subscriptions = {};

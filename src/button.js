@@ -14,11 +14,20 @@
  *         "disabled": false
  *     }); // will add simple button with label 'MyButton' and without icon
  *
- * @param {HTMLElement} element HTML element which is container for the button.
- * @param {Object} params Object representing button properties.
- * @param {String} params.label String representing text to show on the button.
- * @param {String} params.icon String representing CSS class which containes background icon of the button.
- * @param {Boolean} params.disabled Disables(true) or enables(false) the button.
+ * @param {HTMLElement} element
+ * HTML element which is container for the button.
+ *
+ * @param {Object} params
+ * Object representing button properties.
+ *
+ * @param {String} params.label
+ * String representing text to show on the button.
+ *
+ * @param {String} params.icon
+ * String representing CSS class which containes background icon of the button.
+ *
+ * @param {Boolean} params.disabled
+ * Disables(true) or enables(false) the button.
  */
 
 Echo.Button = function(element, params) {
@@ -36,7 +45,6 @@ Echo.Button = function(element, params) {
 };
 
 /**
- * @method update
  * Method updates button properties and rerenders the button.
  *
  *     // style tag in the head of HTML document
@@ -55,10 +63,17 @@ Echo.Button = function(element, params) {
  *         "disabled": true
  *     }); // will disables the button and set "http://example.com/image.jpg" as a background icon of the button
  *
- * @param {Object} params Object representing button properties.
- * @param {String} params.label String representing text to show on the button.
- * @param {String} params.icon String representing CSS class which containes background icon of the button.
- * @param {Boolean} params.disabled Disables(true) or enables(false) the button.
+ * @param {Object} params
+ * Object representing button properties.
+ *
+ * @param {String} params.label
+ * String representing text to show on the button.
+ *
+ * @param {String} params.icon
+ * String representing CSS class which containes background icon of the button.
+ *
+ * @param {Boolean} params.disabled
+ * Disables(true) or enables(false) the button.
  */
 
 Echo.Button.prototype.update = function(params) {
@@ -70,7 +85,6 @@ Echo.Button.prototype.update = function(params) {
 };
 
 /**
- * @method render
  * Method used to render the button.
  *
  *     var element = $("<button></button>");
