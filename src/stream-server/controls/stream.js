@@ -518,10 +518,10 @@ stream.methods._requestMoreItems = function(element) {
 };
 
 stream.methods._prepareEventParams = function(params) {
-	params = params || {};
-	params.target = this.config.get("target").get(0);
-	params.query = this.config.get("query");
-	return params;
+	return $.extend(params, {
+		"target": this.config.get("target").get(0),
+		"query": this.config.get("query")
+	});
 };
 
 stream.methods._applyLiveUpdates = function(entries, callback) {
@@ -2031,14 +2031,14 @@ item.methods.getNextPageAfter = function() {
 };
 
 item.methods._prepareEventParams = function(params) {
-	params = params || {};
-	params.target = this.config.get("parent.target").get(0);
-	params.query = this.config.get("parent.query");
-	params.item = {
-		"data": this.data,
-		"target": this.config.get("target").get(0)
-	};
-	return params;
+	return $.extend(params, {
+		"target": this.config.get("parent.target").get(0),
+		"query": this.config.get("parent.query"),
+		"item": {
+			"data": this.data,
+			"target": this.config.get("target").get(0)
+		}
+	});
 };
 
 item.methods.traverse = function(tree, callback, acc) {
