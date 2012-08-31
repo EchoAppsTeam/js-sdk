@@ -519,26 +519,9 @@ Echo.Utils.getUniqueString = function() {
 Echo.Utils.inherit = function(child, parent) {
 	var F = function() {};
 	F.prototype = parent.prototype;
-	var _proto = $.extend({}, child.prototype);
 	child.prototype = new F;
 	child.prototype.constructor = child;
 	child.parent = parent.prototype;
-	$.each(_proto, function(name, value) {
-		child.prototype[name] = $.isFunction(parent.prototype[name]) && $.isFunction(value)
-			? function () {
-				var self = this;
-				var tmp = this.base;
-				var args = arguments;
-				this.base = function() {
-					var _args = arguments.length ? arguments : args;
-					return parent.prototype[name].apply(self, _args);
-				};
-				var returnValue = value.apply(this, arguments);
-				this.base = tmp;
-				return returnValue;
-			}
-			: value;
-	});
 	return child;
 };
 
