@@ -621,7 +621,8 @@ SocialChatter.renderers.tabs = function(element) {
 			} else {
 				var request;
 				$.map(["Stream", "VIPStream"], function(name) {
-					request = self.views[id].get("controls." + name + ".request");
+					var control = self.views[id].get("controls." + name);
+					request = control && control.get("request");
 					request && request.send({"force": true});
 				});
 			}
