@@ -170,7 +170,7 @@ Echo.Events.publish = function(params) {
 };
 
 var _lastHandlerResult = {}, _dataByHandlerId = {};
-var _subscriptions = Echo.Events._subscriptions = {};
+Echo.Events._subscriptions = {};
 
 var _initContext = function(topic, context) {
 	context = context || "global";
@@ -213,16 +213,16 @@ var _shouldStopEvent = function(stopperType, topic) {
 
 var _callHandlers = function(obj, params, restContexts) {
 	// use copy of handler list so that inner unsubscribe actions couldn't mess it up
-	var handlers = (obj.handlers || []).slice(0);
+	var _params, handlers = (obj.handlers || []).slice(0);
 	$.each(handlers, function(i, data) {
 		_lastHandlerResult[params.topic] = data.handler(params.topic, params.data);
 		if (_shouldStopEvent("propagation.siblings", params.topic)) {
 			return false;
 		}
 	});
-	if (params.bubble && !_shouldStopEvent("bubble", params.topic) && restContexts.length) {
+	if (params.bubble && restContexts.length && !_shouldStopEvent("bubble", params.topic)) {
 		// copy incoming parameters object so that we can manipulate it freely
-		var _params = $.extend({}, params);
+		_params = $.extend({}, params);
 		_params.context = restContexts.join("/");
 		_params.global = false;
 		_params.propagation = false;
@@ -230,7 +230,7 @@ var _callHandlers = function(obj, params, restContexts) {
 	}
 	if (params.propagation && !_shouldStopEvent("propagation.children", params.topic)) {
 		// copy incoming parameters object so that we can manipulate it freely
-		var _params = $.extend({}, params);
+		_params = $.extend({}, params);
 		_params.global = false;
 		_params.bubble = false;
 		$.each(obj.contexts, function(id, context) {
