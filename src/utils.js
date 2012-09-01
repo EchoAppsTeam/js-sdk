@@ -26,27 +26,30 @@ Echo.Utils.regexps = {
  * @static
  * Method to add CSS styles on the page.
  *
- * This function adds CSS styles to the style tag which is placed in the head of the document.
- * The first argument is a string that contains CSS styles, the second one is the unique identity string of CSS styles to be added. 
- * If CSS styles with corresponding id were added before then this function returns false.
+ * This function adds CSS styles to the style tag which is placed in the head
+ * of the document. The first argument is a string that contains CSS styles,
+ * the second one is the unique identity string of CSS styles to be added. 
+ * If CSS styles with corresponding id were added before then this function
+ * returns false.
  *
- *     // style tag in the head of HTML document
- *     // <style>
- *     //     .example-class { font-size: 12px; }
- *     // </style>
+ * 	// style tag in the head of HTML document
+ * 	// <style>
+ * 	//     .example-class { font-size: 12px; }
+ * 	// </style>
  *
- *     Echo.Utils.addCSS(
- *         '.echo-class { font-size: 14px; } '
- *     , 'echo-class-id'); // will return true
- *     // and new CSS style will be added to style tag
- *     // <style>
- *     //     .example-class { font-size: 12px; }
- *     //     .echo-class { font-size: 14px; }
- *     // </style>
+ * 	Echo.Utils.addCSS(
+ * 		'.echo-class { font-size: 14px; } '
+ * 		, 'echo-class-id'); // will return true
+ * 	// and new CSS style will be added to style tag
+ * 	// <style>
+ * 	//     .example-class { font-size: 12px; }
+ * 	//     .echo-class { font-size: 14px; }
+ * 	// </style>
  *
- *     Echo.Utils.addCSS(
- *         '.echo-new-class { font-size: 16px; } '
- *     , 'echo-class-id'); // will return false because styles with id = 'echo-class-id' were added before
+ * 	Echo.Utils.addCSS(
+ * 	'.echo-new-class { font-size: 16px; } '
+ * 	, 'echo-class-id'); // will return false because styles with
+ * id = 'echo-class-id' were added before
  *
  * @param {String} cssCode
  * Contains CSS styles to be added.
@@ -55,7 +58,8 @@ Echo.Utils.regexps = {
  * Unique identity string of CSS styles.
  *
  * @return {Boolean}
- * true if CSS styles was successfully added, false - if CSS styles is already in the document.
+ * true if CSS styles was successfully added, false - if CSS styles are already
+ * in the document.
  */
 Echo.Utils.addCSS = function(cssCode, id) {
 	if (typeof this.cache.cssStyles === "undefined") {
@@ -103,17 +107,18 @@ Echo.Utils.addCSS = function(cssCode, id) {
  * @static
  * Method implementing folding mechanism.
  *
- * This function iterates over each value of the object passing them to callback function.
- * The first argument is the object that is available in callback function to accumulate items.
+ * This function iterates over each value of the object passing them to
+ * callback function. The first argument is the object that is available
+ * in callback function to accumulate items.
  *
- *     var array = Echo.Utils.foldl([], [1, 2, 3], function(item, acc) {
- *         acc.push(item);
- *     }); // array will be [1, 2, 3];
+ * 	var array = Echo.Utils.foldl([], [1, 2, 3], function(item, acc) {
+ * 		acc.push(item);
+ * 	}); // array will be [1, 2, 3];
  *     
- *     var hash = Echo.Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
- *         if (key === "key2") return;
- *         acc[key] = item;
- *     }); // hash will be {"key1": "value1"};
+ * 	var hash = Echo.Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
+ * 		if (key === "key2") return;
+ * 		acc[key] = item;
+ * 	}); // hash will be {"key1": "value1"};
  * 
  * @param {Object} acc
  * Defines the initial accumulator.
@@ -151,19 +156,20 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * @static
  * Method to access specific nested field value in the object.
  *
- * This function returns the corresponding value of the given key or the default value
- * if specified in the third argument. Use the dot as a delimiter of key parts to get nested field value.
+ * This function returns the corresponding value of the given key or the
+ * default value if specified in the third argument. Use the dot as a delimiter
+ * of key parts to get nested field value.
  *
- *     var data = {
- *         "key1": "value1",
- *         "key2": {
- *             "key2-1": "value2-1"
- *         }
- *     };
+ * 	var data = {
+ * 		"key1": "value1",
+ * 		"key2": {
+ * 			"key2-1": "value2-1"
+ * 		}
+ * 	};
  *
- *     Echo.Utils.getNestedValue(data, "key1"); // will return "value1"
- *     Echo.Utils.getNestedValue(data, "key2"); // will return object {"key2-1": "value2-1"}
- *     Echo.Utils.getNestedValue(data, "key2.key2-1"); // will return "value2-1"
+ * 	Echo.Utils.getNestedValue(data, "key1"); // will return "value1"
+ * 	Echo.Utils.getNestedValue(data, "key2"); // will return object {"key2-1": "value2-1"}
+ * 	Echo.Utils.getNestedValue(data, "key2.key2-1"); // will return "value2-1"
  *
  * @param {Object} obj
  * The object from which the value is taken.
@@ -217,15 +223,15 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
  * This function allows to define the value for the corresponding field in the object.
  * Use the dot as a delimiter of key parts to set nested field value.
  *
- *     var data = {
- *         "key1": "value1",
- *         "key2": {
- *             "key2-1": "value2-1"
- *         }
- *     };
+ * 	var data = {
+ * 		"key1": "value1",
+ * 		"key2": {
+ * 			"key2-1": "value2-1"
+ * 		}
+ * 	};
  *
- *     Echo.Utils.setNestedValue(data, "key1", "new value"); // data["key1"] will be "new value"
- *     Echo.Utils.setNestedValue(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
+ * 	Echo.Utils.setNestedValue(data, "key1", "new value"); // data["key1"] will be "new value"
+ * 	Echo.Utils.setNestedValue(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
  * 
  * @param {Object} obj
  * The object for which the value is set.
@@ -251,10 +257,11 @@ Echo.Utils.setNestedValue = function(obj, key, value) {
  * @static
  * Method to convert special characters to HTML entities.
  * 
- * Some characters have special significance in HTML and should be represented by HTML entities if they are to preserve their meanings.
- * This function returns a string with these conversions made.
+ * Some characters have special significance in HTML and should be represented by
+ * HTML entities if they are to preserve their meanings. This function returns a
+ * string with these conversions made.
  *
- *     Echo.Utils.htmlize("special characters: &<>"); // will return "special characters: &amp;&lt;&gt;"
+ * 	Echo.Utils.htmlize("special characters: &<>"); // will return "special characters: &amp;&lt;&gt;"
  *
  * @param {String} text
  * The string to be converted.
@@ -274,13 +281,13 @@ Echo.Utils.htmlize = function(text) {
  * Methods converts JavaScript object to JSON string.
  * This function uses JSON.stringify() method if it is available in the browser.
  *
- *     Echo.Utils.object2JSON(null); // will return 'null'
- *     Echo.Utils.object2JSON(123); // will return '123'
- *     Echo.Utils.object2JSON(Number.POSITIVE_INFINITY); // will return 'null'
- *     Echo.Utils.object2JSON("string\n"); // will return '"string\n"'
- *     Echo.Utils.object2JSON(true); // will return true
- *     Echo.Utils.object2JSON(["value1", "value2"]); // will return '["value1","value2"]'
- *     Echo.Utils.object2JSON({"k1": "v1", "k2": "v2"}); // will return '{"k1":"v1","k2":"v2"}'
+ * 	Echo.Utils.object2JSON(null); // will return 'null'
+ * 	Echo.Utils.object2JSON(123); // will return '123'
+ * 	Echo.Utils.object2JSON(Number.POSITIVE_INFINITY); // will return 'null'
+ * 	Echo.Utils.object2JSON("string\n"); // will return '"string\n"'
+ * 	Echo.Utils.object2JSON(true); // will return true
+ * 	Echo.Utils.object2JSON(["value1", "value2"]); // will return '["value1","value2"]'
+ * 	Echo.Utils.object2JSON({"k1": "v1", "k2": "v2"}); // will return '{"k1":"v1","k2":"v2"}'
  *
  * @param {Mixed} obj
  * The value to be converted.
@@ -340,14 +347,15 @@ Echo.Utils.object2JSON = function(obj) {
  * @static
  * Method to truncate HTML text.
  *
- * This function truncates HTML contents preserving the right HTML structure and without truncate tags.
+ * This function truncates HTML contents preserving the right HTML structure
+ * and without truncating tags.
  *
- *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5, "12345"); // will return "<div>1234512345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "", true); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "", false); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "", true); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "", false); // will return "<div>12345"
+ * 	Echo.Utils.htmlTextTruncate("<div>123456</div>", 5); // will return "<div>12345</div>"
+ * 	Echo.Utils.htmlTextTruncate("<div>123456</div>", 5, "12345"); // will return "<div>1234512345</div>"
+ * 	Echo.Utils.htmlTextTruncate("<div>123456", 5, "", true); // will return "<div>12345</div>"
+ * 	Echo.Utils.htmlTextTruncate("<div>123456", 5, "", false); // will return "<div>12345</div>"
+ * 	Echo.Utils.htmlTextTruncate("<div>12345", 5, "", true); // will return "<div>12345</div>"
+ * 	Echo.Utils.htmlTextTruncate("<div>12345", 5, "", false); // will return "<div>12345"
  * 
  * @param {String} text
  * The string to be truncated.
@@ -359,7 +367,9 @@ Echo.Utils.object2JSON = function(obj) {
  * The string to be added to truncated string.
  *
  * @param {Boolean} forceClosingTags
- * This parameter takes affect only when no truncation was performed. Otherwise (when the content was truncated) the function restores HTML structure regardless the forseClosingTags parameter value.
+ * This parameter takes affect only when no truncation was performed. Otherwise
+ * (when the content was truncated) the function restores HTML structure
+ * regardless the forseClosingTags parameter value.
  *
  * @return {String}
  * Truncated string.
@@ -420,7 +430,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  *
  * This function returns a string with all HTML tags stripped from the given string.
  *
- *     Echo.Utils.stripTags("<div>Content</div>"); // will return "Content"
+ * 	Echo.Utils.stripTags("<div>Content</div>"); // will return "Content"
  *
  * @param {String} text
  * The string to be stripped.
@@ -436,23 +446,25 @@ Echo.Utils.stripTags = function(text) {
  * @static
  * Method to parse the URL and return its parts.
  *
- * This function parses a URL and returns a hash containing parts of the URL which are presented.
- * This function is not meant to validate the given URL, it only breaks it up into the parts.
+ * This function parses a URL and returns a hash containing parts of the URL
+ * which are presented. This function is not meant to validate the given URL,
+ * it only breaks it up into the parts.
  *
- *     var url = "http://domain.com/some/path/?query_string#hash_value";
- *     Echo.Utils.parseURL(url); // will return {
- *                               //     "scheme": "http",
- *                               //     "domain": "domain.com",
- *                               //     "path": "/some/path/"
- *                               //     "query": "query_string",
- *                               //     "fragment": "hash_value"
- *                               // };
+ * 	var url = "http://domain.com/some/path/?query_string#hash_value";
+ * 	Echo.Utils.parseURL(url); 	// will return {
+ * 								// "scheme": "http",
+ * 								// "domain": "domain.com",
+ * 								// "path": "/some/path/"
+ * 								// "query": "query_string",
+ * 								// "fragment": "hash_value"
+ * 								// };
  *
  * @param {String} url
  * The URL to be parsed.
  *
  * @return {Object}
- * Object containing the following parts of the URL as fields: scheme, domain, path, query, fragment.
+ * Object containing the following parts of the URL as fields:
+ * scheme, domain, path, query, fragment.
  */
 Echo.Utils.parseURL = function(url) {
 	if (typeof this.cache.parsedURLs === "undefined") {
@@ -476,22 +488,24 @@ Echo.Utils.parseURL = function(url) {
  * @static
  * Method returning original visible color of the element.
  *
- * This function traverses the element parents recoursively to determine original visible color of the element.
- * This function returns 'transparent' string if background-color of the element and its parents is not specified.
+ * This function traverses the element parents recoursively to determine
+ * original visible color of the element.It returns `transparent` string
+ * if background-color of the element and its parents is not specified.
  *
- *     // HTML template
- *     var template = '<div class="container">' +
- *                        '<div class="header" style="background-color: green;">header</div>' +
- *                        '<div class="content" style="background-color: red;">' +
- *                            '<div class="section1"></div>' +
- *                            '<div class="section2"></div>' +
- *                        '</div>' +
- *                        '<div class="footer">footer</div>' +
- *                    '</div>';
+ * 	// HTML template
+ * 	var template =
+ * 		'<div class="container">' +
+ * 			'<div class="header" style="background-color: green;">header</div>' +
+ * 			'<div class="content" style="background-color: red;">' +
+ * 				'<div class="section1"></div>' +
+ * 				'<div class="section2"></div>' +
+ * 			'</div>' +
+ * 			'<div class="footer">footer</div>' +
+ * 		'</div>';
  *
- *     Echo.Utils.getVisibleColor( $(".header", template) ); // will return "rgb(0, 128, 0)"
- *     Echo.Utils.getVisibleColor( $(".section1", template) ); // will return "rgb(255, 0, 0)"
- *     Echo.Utils.getVisibleColor( $(".footer", template) ); // will return "transparent"
+ * 	Echo.Utils.getVisibleColor( $(".header", template) ); // will return "rgb(0, 128, 0)"
+ * 	Echo.Utils.getVisibleColor( $(".section1", template) ); // will return "rgb(255, 0, 0)"
+ * 	Echo.Utils.getVisibleColor( $(".footer", template) ); // will return "transparent"
  * 
  * @param {HTMLElement} element
  * HTML element which visible color is being determined.
@@ -515,7 +529,7 @@ Echo.Utils.getVisibleColor = function(element) {
  * @static
  * Method to convert datetime value from W3C datetime format to timestamp.
  *
- *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // will return 886930050
+ * 	Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // will return 886930050
  *
  * @param {String} datetime
  * String containing datetime value to be converted.
@@ -557,10 +571,10 @@ Echo.Utils.isMobileDevice = function() {
  * @static
  * Method returning unique random string.
  *
- * This function returns unique string is the number of milliseconds between midnight January 1, 1970 (GMT)
- * to current time plus random number.
+ * This function returns unique string is the number of milliseconds between
+ * midnight January 1, 1970 (GMT) to current time plus random number.
  *
- *     Echo.Utils.getUniqueString(); // will return something like "134086853327622290480640764643"
+ * 	Echo.Utils.getUniqueString(); // will return something like "134086853327622290480640764643"
  *
  * @return {String}
  * Unique random string.
@@ -597,7 +611,8 @@ Echo.Utils.inherit = function(child, parent) {
  * @static
  * Method which serializes a given object to the GET string.
  *
- * This function returns the GET string which can be used for further URL constructions. The values of the corresponding keys are URL encoded.
+ * This function returns the GET string which can be used for further URL
+ * constructions. The values of the corresponding keys are URL encoded.
  *
  * @param {Object} data
  * Object which should be transformed into the GET string.
@@ -615,7 +630,8 @@ Echo.Utils.objectToQuery = function(data) {
  * @static
  * Method to acquire a class reference by the JS class name.
  *
- * This function returns the reference to the corresponding JS class defined on the page.
+ * This function returns the reference to the corresponding JS class defined
+ * on the page.
  *
  * @param {String} name
  * Name of the component which we need to access.
@@ -629,9 +645,11 @@ Echo.Utils.getComponent = function(name) {
 
 /**
  * @static
- * Method which allows to check whether a given component was defined on the page.
+ * Method which allows to check whether a given component was defined
+ * on the page.
  *
- * This function returns the boolean value which represents whether a given component is defined on the page.
+ * This function returns the boolean value which represents whether
+ * a given component is defined on the page.
  *
  * @param {String} name
  * Component name which needs to be checked.
@@ -647,8 +665,9 @@ Echo.Utils.isComponentDefined = function(name) {
  * @static
  * Method which loads image.
  *
- * This function returns image HTML element with source attribute that equals first argument.
- * If the image is not available then this function loads the default image that is passed as a second argument.
+ * This function returns image HTML element with source attribute that
+ * equals first argument. If the image is not available then this function
+ * loads the default image that is passed as a second argument.
  *
  * @param {String} image
  * Specifies the URL of the image to be loaded.
@@ -747,7 +766,8 @@ Echo.Utils.log = function(data) {
 
 /**
  * @static
- * Function to call the functions from the list and call callback function after it. Functions are called async. For sync calls use Echo.Utils.sequentialCall
+ * Function to call the functions from the list and call callback function
+ * after it. Functions are called async. For sync calls use Echo.Utils.sequentialCall
  *
  * @param {Array} actions
  * List of functions to be called.
@@ -772,7 +792,8 @@ Echo.Utils.parallelCall = function(actions, callback) {
 
 /**
  * @static
- * Function to call the functions from the list sequentially and call callback function after it. 
+ * Function to call the functions from the list sequentially and call callback
+ * function after it. 
  *
  * @param {Array} actions
  * List of functions to be called sequentially.
