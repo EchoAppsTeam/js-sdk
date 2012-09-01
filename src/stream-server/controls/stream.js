@@ -1,12 +1,15 @@
+(function() {
+
 /**
  * @class Echo.StreamServer.Controls.Stream
- * Echo Stream control which encapsulates interaction with the <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">Echo Search API</a>
+ * Echo Stream control which encapsulates interaction with the
+ * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">Echo Search API</a>
  *
- *     var stream = new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("stream"),
- *         "query": "childrenof:http://example.com/js-sdk",
- *         "appkey": "test.js-kit.com"
- *     });
+ * 	var stream = new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("stream"),
+ * 		"query": "childrenof:http://example.com/js-sdk",
+ * 		"appkey": "test.js-kit.com"
+ * 	});
  *
  * @extends Echo.Control
  *
@@ -30,16 +33,21 @@ stream.init = function() {
 stream.config = {
 	/*
 	 * @cfg {Object} children
-	 * Specifies the children pagination feature behavior. It includes several options.
+	 * Specifies the children pagination feature behavior.
+	 * It includes several options.
 	 *
 	 * @cfg {Number} children.additionalItemsPerPage
-	 * Specifies how many items should be retrieved from server and rendered after clicking the "View more items" button.
+	 * Specifies how many items should be retrieved from server and
+	 * rendered after clicking the "View more items" button.
 	 *
 	 * @cfg {Number} children.moreButtonSlideTimeout
-	 * Specifies the duration of more button slide up animation in the situation when there are no more children items available and the button should be removed.
+	 * Specifies the duration of more button slide up animation in the
+	 * situation when there are no more children items available and
+	 * the button should be removed.
 	 *
 	 * @cfg {Number} children.itemsSlideTimeout
-	 * Specifies the duration of the slide down animation of the items coming to the stream after the "View more items" button click. 
+	 * Specifies the duration of the slide down animation of the items
+	 * coming to the stream after the "View more items" button click. 
 	 */
 	"children": {
 		"additionalItemsPerPage": 5,
@@ -51,17 +59,20 @@ stream.config = {
 	},
 	/**
 	 * @cfg {Number} fadeTimeout
-	 * Specifies the duration of the fading animation (in milliseconds) when an item comes to stream as a live update.
+	 * Specifies the duration of the fading animation (in milliseconds)
+	 * when an item comes to stream as a live update.
 	 */
 	"fadeTimeout": 2800,
 	/**
 	 * @cfg {String} flashColor
-	 * Specifies the necessary flash color of the events coming to your stream as live updates. This parameter must have a hex color value.
+	 * Specifies the necessary flash color of the events coming to your
+	 * stream as live updates. This parameter must have a hex color value.
 	 */
 	"flashColor": "#ffff99",
 	/**
 	 * @cfg {Object} item
-	 * Specifies the configuration options to be passed to internal Echo.StreamServer.Controls.Stream.Item component.
+	 * Specifies the configuration options to be passed to internal
+	 * Echo.StreamServer.Controls.Stream.Item component.
 	 */
 	"item": {},
 	/**
@@ -82,7 +93,9 @@ stream.config = {
 	"liveUpdatesTimeoutMin": 3,
 	/**
 	 * @cfg {Boolean} openLinksInNewWindow
-	 * If this parameter value is set to true, each link will be opened in a new window. This is especially useful when using the control in a popup window.
+	 * If this parameter value is set to true, each link will be opened
+	 * in a new window. This is especially useful when using the control
+	 * in a popup window.
 	 */
 	"openLinksInNewWindow": false,
 	/**
@@ -92,13 +105,15 @@ stream.config = {
 	"providerIcon": Echo.Loader.getURL("sdk/images/favicons/comments.png"),
 	/**
 	 * @cfg {Number} slideTimeout
-	 * Specifies the duration of the sliding animation (in milliseconds) when an item comes to a stream as a live update.
+	 * Specifies the duration of the sliding animation (in milliseconds)
+	 * when an item comes to a stream as a live update.
 	 */
 	"slideTimeout": 700,
 	"sortOrder": "reverseChronological",
 	/**
 	 * @cfg {Object} streamStateLabel
-	 * Hides the Pause/Play icon. Toggles the labels used in the Stream Status label. Contains a hash with two keys managing icon and text display modes.
+	 * Hides the Pause/Play icon. Toggles the labels used in the Stream Status
+	 * label. Contains a hash with two keys managing icon and text display modes.
 	 *
 	 * @cfg {Boolean} streamStateLabel.icon
 	 * Toggles the icon visibility.
@@ -117,15 +132,20 @@ stream.config = {
 	 *
 	 * The possible values are:
 	 *
-	 * + mouseover - the stream is paused when mouse is over it and live when mouse is out.
-	 * + button - the stream changes state when user clicks on streamStateLabel (Live/Paused text). This mode would not work if neither state icon nor state text are displayed.
+	 * + mouseover - the stream is paused when mouse is over it and live
+	 *  when mouse is out.
+	 * + button - the stream changes state when user clicks on streamStateLabel
+	 * (Live/Paused text). This mode would not work if neither state icon nor
+	 * state text are displayed.
 	 * + none - the stream will never be paused.
 	 * 
-	 * Note that mouseover method is not available for mobile devices and will be forced to button method.
+	 * Note that mouseover method is not available for mobile devices and will
+	 * be forced to button method.
 	 */
 	"streamStateToggleBy": "mouseover", // mouseover | button | none
 	/**
-	 * @cfg {String} submissionProxyURL URL prefix for requests to Submission Proxy subsystem.
+	 * @cfg {String} submissionProxyURL URL prefix for requests to
+	 * Submission Proxy subsystem.
 	 */
 	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
 };
@@ -1379,8 +1399,22 @@ stream.css =
 
 Echo.Control.create(stream);
 
-// Stream Item control class
+})();
 
+(function() {
+
+/**
+ * @class Echo.StreamServer.Controls.Stream.Item
+ * Echo Stream.Item control which encapsulates Item mechanics.
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * Item constructor initializing Echo.StreamServer.Controls.Stream.Item class
+ *
+ * @param {Object} config
+ * Configuration options
+ */
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item");
 
 item.init = function() {
@@ -1389,16 +1423,79 @@ item.init = function() {
 };
 
 item.config = {
+	/**
+	 * @cfg {Boolean} aggressiveSanitization
+	 * If this parameter value is set to `true`, the entire item body will
+	 * be replaced with "I just shared this on Twitter..." text in the 
+	 * stream if the item came from Twitter.
+	 */
 	"aggressiveSanitization": false,
 	"buttonsOrder": undefined,
+	/**
+	 * @cfg {Object} contentTransformations
+	 * Specifies allowed item's content transformations for each content type.
+	 * Contains a hash where keys are content types and values are arrays with
+	 * formatting options enabled for given content type. Available options are:
+	 *
+	 * + smileys - replaces textual smileys with images
+	 * + hashtags - highlights hashtags in text
+	 * + urls - highlights urls represented as plain text
+	 * + newlines - replaces newlines with <br> tags
+	 */
 	"contentTransformations": {
 		"text": ["smileys", "hashtags", "urls", "newlines"],
 		"html": ["smileys", "hashtags", "urls", "newlines"],
 		"xhtml": ["smileys", "hashtags", "urls"]
 	},
+	/**
+	 * @cfg {String} infoMessages
+	 * Customizes the look and feel of info messages,
+	 * for example "loading" and "error".
+	 */
 	"infoMessages": {
 		"enabled": false
 	},
+	/**
+	 * @cfg {Object} limits
+	 * Defines the limits for different metrics.
+	 *
+	 * @cfg {Number} [limits.maxBodyCharacters]
+	 * Allows to truncate the number of characters of the body.
+	 * The value of this parameter should be integer and represents the 
+	 * number of visible characters that need to be displayed.
+	 *
+	 * @cfg {Number} [limits.maxBodyLines]
+	 * Allows to truncate the number of lines of the body. The value of
+	 * this parameter should be integer and represents the number of lines
+	 * that need to be displayed. Note: the definition of "Line" here is the
+	 * sequence of characters separated by the "End Of Line" character
+	 * ("\n" for plain text or <br> for HTML format).
+	 *
+	 * @cfg {Number} [limits.maxBodyLinkLength=50]
+	 * Allows to truncate the number of characters of the hyperlinks in the
+	 * item body. The value of this parameter should be integer and represents
+	 * the number of visible characters that need to be displayed.
+	 *
+	 * @cfg {Number} [limits.maxMarkerLength=16]
+	 * Allows to truncate the number of characters of markers in the item body.
+	 * The value of this parameter should be integer and represents the number
+	 * of visible characters that need to be displayed.
+	 *
+	 * @cfg {Number} [limits.maxReLinkLength=30]
+	 * Allows to truncate the number of characters of hyperlinks in the "reTag"
+	 * section of an item. The value of this parameter should be integer and
+	 * represents the number of visible characters that need to be displayed.
+	 *
+	 * @cfg {Number} [limits.maxReTitleLength=143]
+	 * Allows to truncate the number of characters of titles in "reTag" section
+	 * of an item. The value of this parameter should be integer and represents
+	 * the number of visible characters that need to be displayed.
+	 *
+	 * @cfg {Number} [limits.maxTagLength=16]
+	 * Allows to truncate the number of characters of tags in the item body.
+	 * The value of this parameter should be integer and represents the number
+	 * of visible characters that need to be displayed.
+	 */
 	"limits": {
 		"maxBodyCharacters": undefined,
 		"maxBodyLines": undefined,
@@ -1408,8 +1505,28 @@ item.config = {
 		"maxReTitleLength": 143,
 		"maxTagLength": 16
 	},
+	/**
+	 * @cfg {Boolean} [optimizedContext=true]
+	 * Allows to configure the context mode of the "reTag" section of an item.
+	 * If set to true the context is turned into optimized mode. "reTag" section
+	 * contains only one hyperlink in this case (the same current domain is a priority).
+	 * Otherwise all hyperlinks in the item body will be resolved and converted into reTags.
+	 */
 	"optimizedContext": true,
+	/**
+	 * @cfg {Boolean} [retag=true]
+	 * Allows to show/hide the "reTag" section of an item.
+	 */
 	"reTag": true,
+	/**
+	 * @cfg {Object} [viaLabel]
+	 * Allows to show/hide parts or the whole "via" tag. Contains a hash with two keys
+	 * managing icon and text display modes.
+	 *
+	 * @cfg {Boolean} [viaLabel.icon=false]
+	 *
+	 * @cfg {Boolean} [viaLabel.text=false]
+	 */
 	"viaLabel": {
 		"icon": false,
 		"text": false
@@ -1441,32 +1558,113 @@ item.vars = {
 };
 
 item.labels = {
+	/**
+	 * @echo_label
+	 */
 	"defaultModeSwitchTitle": "Switch to metadata view",
+	/**
+	 * @echo_label
+	 */
 	"guest": "Guest",
+	/**
+	 * @echo_label
+	 */
 	"today": "Today",
+	/**
+	 * @echo_label
+	 */
 	"yesterday": "Yesterday",
+	/**
+	 * @echo_label
+	 */
 	"lastWeek": "Last Week",
+	/**
+	 * @echo_label
+	 */
 	"lastMonth": "Last Month",
+	/**
+	 * @echo_label
+	 */
 	"secondAgo": "Second Ago",
+	/**
+	 * @echo_label
+	 */
 	"secondsAgo": "Seconds Ago",
+	/**
+	 * @echo_label
+	 */
 	"minuteAgo": "Minute Ago",
+	/**
+	 * @echo_label
+	 */
 	"minutesAgo": "Minutes Ago",
+	/**
+	 * @echo_label
+	 */
 	"hourAgo": "Hour Ago",
+	/**
+	 * @echo_label
+	 */
 	"hoursAgo": "Hours Ago",
+	/**
+	 * @echo_label
+	 */
 	"dayAgo": "Day Ago",
+	/**
+	 * @echo_label
+	 */
 	"daysAgo": "Days Ago",
+	/**
+	 * @echo_label
+	 */
 	"weekAgo": "Week Ago",
+	/**
+	 * @echo_label
+	 */
 	"weeksAgo": "Weeks Ago",
+	/**
+	 * @echo_label
+	 */
 	"metadataModeSwitchTitle": "Return to default view",
+	/**
+	 * @echo_label
+	 */
 	"monthAgo": "Month Ago",
+	/**
+	 * @echo_label
+	 */
 	"monthsAgo": "Months Ago",
+	/**
+	 * @echo_label
+	 */
 	"sharedThisOn": "I shared this on {service}...",
+	/**
+	 * @echo_label
+	 */
 	"userID": "User ID:",
+	/**
+	 * @echo_label
+	 */
 	"userIP": "User IP:",
+	/**
+	 * @echo_label
+	 */
 	"textToggleTruncatedMore": "more",
+	/**
+	 * @echo_label
+	 */
 	"textToggleTruncatedLess": "less",
+	/**
+	 * @echo_label
+	 */
 	"fromLabel": "from",
+	/**
+	 * @echo_label
+	 */
 	"viaLabel": "via",
+	/**
+	 * @echo_label
+	 */
 	"childrenMoreItems": "View more items"
 };
 
@@ -1537,10 +1735,16 @@ item.methods.template = function() {
 	'</div>';
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.authorName = function(element) {
 	return element.append(this.get("data.actor.title") || this.labels.get("guest"));
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.markers = function(element) {
 	return this.dom.render({
 		"name": "_extraField",
@@ -1549,6 +1753,9 @@ item.renderers.markers = function(element) {
 	});
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.tags = function(element) {
 	return this.dom.render({
 		"name": "_extraField",
@@ -1557,28 +1764,9 @@ item.renderers.tags = function(element) {
 	});
 };
 
-item.renderers._extraField = function(element, extra) {
-	var self = this;
-	var type = (extra || {}).type;
-	if (!this.data.object[type] || !this.user.is("admin")) {
-		this.dom.remove(element);
-		return element;
-	}
-	var name = type === "markers" ? "maxMarkerLength" : "maxTagsLength";
-	var limit = this.config.get("limits." + name);
-	var items = Echo.Utils.foldl([], this.data.object[type], function(item, acc) {
-		var template = item.length > limit
-			? '<span title="{data:item}">{data:truncatedItem}</span>'
-			: '<span>{data:item}</span>';
-		var truncatedItem = Echo.Utils.htmlTextTruncate(item, limit, "...");
-		acc.push(self.substitute({
-			"template": template,
-			"data": {"item": item, "truncatedItem": truncatedItem}
-		}));
-	});
-	return element.prepend(items.sort().join(", "));
-};
-
+/**
+ * @echo_renderer
+ */
 item.renderers.container = function(element) {
 	var self = this;
 	element.removeClass(
@@ -1617,6 +1805,9 @@ item.renderers.container = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.metadataUserIP = function(element) {
 	if (!this.get("data.ip")) {
 		element.hide();
@@ -1624,6 +1815,9 @@ item.renderers.metadataUserIP = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.modeSwitch = function(element) {
 	var self = this;
 	element.hide();
@@ -1647,10 +1841,16 @@ item.renderers.modeSwitch = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.wrapper = function(element) {
 	return element.addClass(this.cssPrefix + "wrapper" + (this.depth ? "-child" : "-root"));
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.avatar = function(element) {
 	var size = this.depth ? 24 : 48;
 	var avatar = Echo.Utils.loadImage(
@@ -1661,29 +1861,9 @@ item.renderers.avatar = function(element) {
 	return element.empty().append(avatar);
 };
 
-item.renderers._childrenContainer = function(element, config) {
-	// we cannot use element.empty() because it will remove children's event handlers
-	$.each(element.children(), function(i, child) {
-		$(child).detach();
-	});
-	$.map(this.children, function(child) {
-		if (config && config.filter && !config.filter(child)) return;
-		element.append(child.config.get("target"));
-		if (!child.dom.rendered() && !child.added) {
-			child.dom.render();
-		}
-		if (child.deleted || child.added) {
-			child.events.publish({
-				"topic": child.deleted ? "onDelete" : "onAdd",
-				"data": {"config": config},
-				"global": false,
-				"propagation": false
-			});
-		}
-	});
-	return element;
-};
-
+/**
+ * @echo_renderer
+ */
 item.renderers.children = function(element, config) {
 	return this.dom.render({
 		"name": "_childrenContainer",
@@ -1695,6 +1875,9 @@ item.renderers.children = function(element, config) {
 	});
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.childrenByCurrentActorLive = function(element, config) {
 	return this.dom.render({
 		"name": "_childrenContainer",
@@ -1706,38 +1889,9 @@ item.renderers.childrenByCurrentActorLive = function(element, config) {
 	});
 };
 
-item.renderers._button = function(element, extra) {
-	var template = extra.template ||
-		'<a class="{class:button} {class:button}-{data:name}">{data:label}</a>';
-	var data = {
-		"label": extra.label || "",
-		"name": extra.name
-	};
-	var button = $(this.substitute({"template": template, "data": data}));
-	var clickables = $(".echo-clickable", button);
-	if (!clickables.length) {
-		clickables = button;
-		button.addClass("echo-clickable");
-	}
-	clickables[extra.once ? "one" : "on"]({
-		"click": function(event) {
-			event.stopPropagation();
-			if (extra.callback) extra.callback();
-		}
-	});
-	var data = this.get("buttons." + extra.plugin + "." + extra.name);
-	data.element = button;
-	data.clickableElements = clickables;
-	if (Echo.Utils.isMobileDevice()) {
-		clickables.addClass("echo-linkColor");
-	}
-	return element.append(button);
-};
-
-item.renderers._buttonsDelimiter = function(element) {
-	return element.append('<span class="' + this.cssPrefix + 'button-delim"> \u00b7 </span>');
-};
-
+/**
+ * @echo_renderer
+ */
 item.renderers.buttons = function(element) {
 	var self = this;
 	this._assembleButtons();
@@ -1761,6 +1915,9 @@ item.renderers.buttons = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.re = function(element) {
 	if (!this.config.get("reTag")) {
 		return element;
@@ -1833,6 +1990,9 @@ item.renderers.re = function(element) {
 	return element.empty().append(re);
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.sourceIcon = function(element) {
 	var self = this;
 	if (!this.config.get("viaLabel.icon") ||
@@ -1852,6 +2012,9 @@ item.renderers.sourceIcon = function(element) {
 		.wrap(hyperlink);
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.via = function(element) {
 	var self = this;
 	var get = function(field) {
@@ -1870,6 +2033,9 @@ item.renderers.via = function(element) {
 	});
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.from = function(element) {
 	return this.dom.render({
 		"name": "_viaText",
@@ -1881,25 +2047,9 @@ item.renderers.from = function(element) {
 	});
 };
 
-item.renderers._viaText = function(element, extra) {
-	extra = extra || {};
-	var data = this.data[extra.field];
-	if (!this.config.get("viaLabel.text") ||
-			!data.name ||
-			data.name === "jskit" ||
-			data.name === "echo") {
-		return element;
-	}
-	var a = Echo.Utils.hyperlink({
-		"class": "echo-secondaryColor",
-		"href": data.uri || this.get("data.object.permalink"),
-		"caption": data.name
-	}, {
-		"openInNewWindow": this.config.get("parent.openLinksInNewWindow")
-	});
-	return element.html("&nbsp;" + this.labels.get(extra.label + "Label") + "&nbsp;").append(a);
-};
-
+/**
+ * @echo_renderer
+ */
 item.renderers.textToggleTruncated = function(element) {
 	var self = this;
 	element.off("click").click(function() {
@@ -1912,6 +2062,9 @@ item.renderers.textToggleTruncated = function(element) {
 	);
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.body = function(element) {
 	var self = this;
 	var data = [this.get("data.object.content"), {
@@ -1935,11 +2088,17 @@ item.renderers.body = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.date = function(element) {
 	this._calcAge();
 	return element.html(this.age);
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.expandChildrenLabel = function(element, extra) {
 	if (!this.children.length || !this.hasMoreChildren()) {
 		return element;
@@ -1962,6 +2121,9 @@ item.renderers.expandChildrenLabel = function(element, extra) {
 		.html(this.labels.get(states[extra.state].label));
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.expandChildren = function(element, extra) {
 	var self = this;
 	if (!this.children.length) {
@@ -2012,10 +2174,117 @@ item.renderers.expandChildren = function(element, extra) {
 		});
 };
 
+item.renderers._childrenContainer = function(element, config) {
+	// we cannot use element.empty() because it will remove children's event handlers
+	$.each(element.children(), function(i, child) {
+		$(child).detach();
+	});
+	$.map(this.children, function(child) {
+		if (config && config.filter && !config.filter(child)) return;
+		element.append(child.config.get("target"));
+		if (!child.dom.rendered() && !child.added) {
+			child.dom.render();
+		}
+		if (child.deleted || child.added) {
+			child.events.publish({
+				"topic": child.deleted ? "onDelete" : "onAdd",
+				"data": {"config": config},
+				"global": false,
+				"propagation": false
+			});
+		}
+	});
+	return element;
+};
+
+item.renderers._extraField = function(element, extra) {
+	var self = this;
+	var type = (extra || {}).type;
+	if (!this.data.object[type] || !this.user.is("admin")) {
+		this.dom.remove(element);
+		return element;
+	}
+	var name = type === "markers" ? "maxMarkerLength" : "maxTagsLength";
+	var limit = this.config.get("limits." + name);
+	var items = Echo.Utils.foldl([], this.data.object[type], function(item, acc) {
+		var template = item.length > limit
+			? '<span title="{data:item}">{data:truncatedItem}</span>'
+			: '<span>{data:item}</span>';
+		var truncatedItem = Echo.Utils.htmlTextTruncate(item, limit, "...");
+		acc.push(self.substitute({
+			"template": template,
+			"data": {"item": item, "truncatedItem": truncatedItem}
+		}));
+	});
+	return element.prepend(items.sort().join(", "));
+};
+
+item.renderers._button = function(element, extra) {
+	var template = extra.template ||
+		'<a class="{class:button} {class:button}-{data:name}">{data:label}</a>';
+	var data = {
+		"label": extra.label || "",
+		"name": extra.name
+	};
+	var button = $(this.substitute({"template": template, "data": data}));
+	var clickables = $(".echo-clickable", button);
+	if (!clickables.length) {
+		clickables = button;
+		button.addClass("echo-clickable");
+	}
+	clickables[extra.once ? "one" : "on"]({
+		"click": function(event) {
+			event.stopPropagation();
+			if (extra.callback) extra.callback();
+		}
+	});
+	var data = this.get("buttons." + extra.plugin + "." + extra.name);
+	data.element = button;
+	data.clickableElements = clickables;
+	if (Echo.Utils.isMobileDevice()) {
+		clickables.addClass("echo-linkColor");
+	}
+	return element.append(button);
+};
+
+item.renderers._buttonsDelimiter = function(element) {
+	return element.append('<span class="' + this.cssPrefix + 'button-delim"> \u00b7 </span>');
+};
+
+item.renderers._viaText = function(element, extra) {
+	extra = extra || {};
+	var data = this.data[extra.field];
+	if (!this.config.get("viaLabel.text") ||
+			!data.name ||
+			data.name === "jskit" ||
+			data.name === "echo") {
+		return element;
+	}
+	var a = Echo.Utils.hyperlink({
+		"class": "echo-secondaryColor",
+		"href": data.uri || this.get("data.object.permalink"),
+		"caption": data.name
+	}, {
+		"openInNewWindow": this.config.get("parent.openLinksInNewWindow")
+	});
+	return element.html("&nbsp;" + this.labels.get(extra.label + "Label") + "&nbsp;").append(a);
+};
+
+/**
+ * Method checking if item has more children.
+ *
+ * @return {Boolean}
+ */
 item.methods.hasMoreChildren = function() {
 	return this.get("data.hasMoreChildren") === "true";
 };
 
+/**
+ * Accessor method to get the correct `pageAfter` property value
+ * according to the defined `sortOrder`.
+ *
+ * return {String}
+ */
 item.methods.getNextPageAfter = function() {
 	var children = $.grep(this.children, function(child) {
 		return !child.config.get("live");
@@ -2028,17 +2297,21 @@ item.methods.getNextPageAfter = function() {
 		: undefined;
 };
 
-item.methods._prepareEventParams = function(params) {
-	return $.extend(params, {
-		"target": this.config.get("parent.target").get(0),
-		"query": this.config.get("parent.query"),
-		"item": {
-			"data": this.data,
-			"target": this.config.get("target").get(0)
-		}
-	});
-};
-
+/**
+ * Method implementing the children tree traversal
+ *
+ * @param {Array} tree
+ * List of nodes to traverse through.
+ *
+ * @param {Function} callback
+ * Callback function to be applied to the tree node.
+ *
+ * @param {Array} acc
+ * Accumulator.
+ *
+ * @return {Array}
+ * Acumulator.
+ */
 item.methods.traverse = function(tree, callback, acc) {
 	var self = this;
 	$.each(tree || [], function(i, item) {
@@ -2047,6 +2320,13 @@ item.methods.traverse = function(tree, callback, acc) {
 	return acc;
 };
 
+/**
+ * Method which blocks the particular item during data processing.
+ * For example while changing its status.
+ *
+ * @param {String} label
+ * Text label to be shown as a block message
+ */
 item.methods.block = function(label) {
 	if (this.blocked) return;
 	this.blocked = true;
@@ -2071,6 +2351,9 @@ item.methods.block = function(label) {
 		.prepend(this.blockers.message);
 };
 
+/**
+ * Method which unblocks the particular blocked item.
+ */
 item.methods.unblock = function() {
 	if (!this.blocked) return;
 	this.blocked = false;
@@ -2079,20 +2362,54 @@ item.methods.unblock = function() {
 	this.dom.get("container").removeClass("echo-relative");
 };
 
+/**
+ * Accessor method to get the item accumulator value by type.
+ *
+ * @param {String} type
+ * Accumulator type.
+ *
+ * @return {String}
+ * Accumulator value.
+ */
 item.methods.getAccumulator = function(type) {
 	return this.data.object.accumulators[type];
 };
 
+/**
+ * Method to check if item is a root one.
+ *
+ * @return {Boolean}
+ */
 item.methods.isRoot = function() {
 	return !this.config.get("parent.children.maxDepth") ||
 		this.get("data.object.id") === this.get("data.target.conversationID");
 };
 
+/**
+ * Method to add the item control button specification.
+ *
+ * @param {String} plugin
+ * Plugin name.
+ *
+ * @param {Function} spec
+ * Function describing the control specification.
+ */
 item.methods.addButtonSpec = function(plugin, spec) {
 	if (!this.buttonSpecs[plugin]) {
 		this.buttonSpecs[plugin] = [];
 	}
 	this.buttonSpecs[plugin].push(spec);
+};
+
+item.methods._prepareEventParams = function(params) {
+	return $.extend(params, {
+		"target": this.config.get("parent.target").get(0),
+		"query": this.config.get("parent.query"),
+		"item": {
+			"data": this.data,
+			"target": this.config.get("target").get(0)
+		}
+	});
 };
 
 item.methods._calcAge = function() {
@@ -2154,6 +2471,7 @@ var _smileys = {
 		"B-)": {file: "evilgrin.png", title: "Evil grin"}
 	}
 };
+
 item.methods._initSmileysConfig = function() {
 	var self = this;
 	if (_smileys.codes.length) {
@@ -2439,6 +2757,7 @@ var itemDepthRules = [];
 for (var i = 0; i <= 20; i++) {
 	itemDepthRules.push('.{class:depth}-' + i + ' { margin-left: ' + (i ? 68 + (i - 1) * 44 : 0) + 'px; }');
 }
+
 item.css =
 	'.{class:content} { word-wrap: break-word; }' +
 	'.{class:container-root} { padding: 10px 0px; }' +
@@ -2495,3 +2814,5 @@ item.css =
 	);
 
 Echo.Control.create(item);
+
+})();
