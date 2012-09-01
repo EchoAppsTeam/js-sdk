@@ -36,10 +36,13 @@ Echo.Loader.getURL = function(url) {
  * Object which defines an initialization config parameters
  *
  * @param {Mixed} [config.canvases]
- * Array of jQuery elements or a single jQuery element, which represents a canvas target. If this param is omitted, Echo Loader will look for the canvases in the DOM structure.
+ * Array of jQuery elements or a single jQuery element, which represents a
+ * canvas target. If this param is omitted, Echo Loader will look for the
+ * canvases in the DOM structure.
  *
  * @param {Object} [config.target]
- * Target element where Echo Loader should look for the canvases if no canvases were passed in the "config.canvases" field.
+ * Target element where Echo Loader should look for the canvases if no
+ * canvases were passed in the "config.canvases" field.
 */
 Echo.Loader.init = function(config) {
 	config = config || {};
@@ -75,10 +78,14 @@ Echo.Loader.init = function(config) {
  * JavaScript or CSS stylesheet file URL.
  *
  * @param {Function} params.scripts.loaded
- * Function for check whether the script was loaded. This function must return boolean value which indicates whether the resource was already loaded on the page or not. If the resource was already loaded - no download is performed and the callback is called immediately.
+ * Function for check whether the script was loaded. This function must return
+ * boolean value which indicates whether the resource was already loaded on the
+ * page or not. If the resource was already loaded - no download is performed
+ * and the callback is called immediately.
  *
  * @param {Function} params.callback
- * Callback function which should be called as soon as all requested files were downloaded.
+ * Callback function which should be called as soon as all requested files
+ * were downloaded.
  */
 Echo.Loader.download = function(params) {
 	var scripts = params.scripts || [], urls = [];
@@ -104,7 +111,8 @@ Echo.Loader.download = function(params) {
 
 /**
  * @static
- * Function which provides an ability to override config parameters of the specific application within the canvas.
+ * Function which provides an ability to override config parameters of the
+ * specific application within the canvas.
  *
  * @param {String} canvasID
  * Canvas ID.
