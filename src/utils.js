@@ -204,7 +204,7 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
 		}
 	};
 	// avoid foldl usage for plain keys
-	var value = key.length == 1
+	var value = key.length === 1
 		? iteration(key.pop(), obj)
 		: Echo.Utils.foldl(obj, key, iteration);
 	return found ? value : defaults;
@@ -240,7 +240,7 @@ Echo.Utils.setNestedValue = function(obj, key, value) {
 	var keys = key.split(/\./);
 	var field = keys.pop();
 	var data = Echo.Utils.getNestedValue(obj, keys, undefined, function(acc, v) {
-		if (typeof acc[v] == "undefined") {
+		if (typeof acc[v] === "undefined") {
 			acc[v] = {};
 		}
 	});
@@ -263,8 +263,8 @@ Echo.Utils.setNestedValue = function(obj, key, value) {
  * Converted string.
  */
 Echo.Utils.htmlize = function(text) {
-	if (!text) return '';
-	return $('<div>').text(text).html();
+	if (!text) return "";
+	return $("<div>").text(text).html();
 };
 
 /**
@@ -376,27 +376,27 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	
 	for (var i = 0; i < text.length; i++) {
 		var symbol = text.charAt(i);
-		if (symbol == "<") {
+		if (symbol === "<") {
 			var tail = text.indexOf(">", i);
 			if (tail < 0) return text;
 			var source = text.substring(i + 1, tail);
 			var tag = {"name": "", "closing": false};
-			if (source.charAt(0) == "/") {
+			if (source.charAt(0) === "/") {
 				tag.closing = true;
 				source = source.substring(1);
 			}
 			tag.name = source.match(/(\w)+/)[0];
 			if (tag.closing) {
 				var current = tags.pop();
-				if (!current || current.name != tag.name) return text;
+				if (!current || current.name !== tag.name) return text;
 			} else if (!standalone[tag.name]) {
 				tags.push(tag);
 			}
 			i = tail;
-		} else if (symbol == "&" && text.substring(i).match(/^(\S)+;/)) {
+		} else if (symbol === "&" && text.substring(i).match(/^(\S)+;/)) {
 			i = text.indexOf(";", i);
 		} else {
-			if (count == limit) {
+			if (count === limit) {
 				finalPos = i;
 				break;
 			}
@@ -429,7 +429,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  * Stripped string.
  */
 Echo.Utils.stripTags = function(text) {
-	return $('<div>').html(text).text();
+	return $("<div>").html(text).text();
 };
 
 /**
@@ -459,9 +459,7 @@ Echo.Utils.parseURL = function(url) {
 		this.cache.parsedURLs = {};
 	}
 	var parsed = this.cache.parsedURLs;
-	if (parsed.hasOwnProperty(url)) {
-		return parsed[url];
-	} else {
+	if (!parsed.hasOwnProperty(url)) {
 		var parts = url.match(Echo.Utils.regexps.parseURL);
 		parsed[url] = parts ? {
 			"scheme": parts[3],
@@ -505,12 +503,12 @@ Echo.Utils.getVisibleColor = function(element) {
 	// calculate visible color of element (transparent is not visible)
 	var color;
 	do {
-		color = element.css('backgroundColor');
-		if (color != '' && color != 'transparent' && !/rgba\(0, 0, 0, 0\)/.test(color) || $.nodeName(element.get(0), 'body')) {
+		color = element.css("backgroundColor");
+		if (color !== "" && color !== "transparent" && !/rgba\(0, 0, 0, 0\)/.test(color) || $.nodeName(element.get(0), "body")) {
 			break;
 		}
 	} while (element = element.parent());
-	return color || 'transparent';
+	return color || "transparent";
 };
 
 /**
@@ -526,15 +524,15 @@ Echo.Utils.getVisibleColor = function(element) {
  * UNIX timestamp.
  */
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
-	var parts = ['year', 'month', 'day', 'hours', 'minutes', 'seconds'];
+	var parts = ["year", "month", "day", "hours", "minutes", "seconds"];
 	var dt = {};
 	var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
 	if (!matches) return;
 	$.each(parts, function(i, p) {
 		dt[p] = matches[i + 1];
 	});
-	return Date.UTC(dt['year'], dt['month'] - 1, dt['day'],
-			dt['hours'], dt['minutes'], dt['seconds']) / 1000;
+	return Date.UTC(dt.year, dt.month - 1, dt.day,
+			dt.hours, dt.minutes, dt.seconds) / 1000;
 };
 
 /**
@@ -663,10 +661,10 @@ Echo.Utils.isComponentDefined = function(name) {
  */
 Echo.Utils.loadImage = function(image, defaultImage) {
 	var url = image || defaultImage;
-	var img = $("<img>", { "src": url });
+	var img = $("<img>", {"src": url});
 	if (url !== defaultImage) {
 		img.one({
-			"error" : function() {
+			"error": function() {
 				$(this).attr("src", defaultImage);
 			}
 		});
@@ -705,11 +703,11 @@ Echo.Utils.loadImage = function(image, defaultImage) {
 Echo.Utils.hyperlink = function(data, options) {
 	var data = $.extend({}, data);
 	var options = $.extend({}, options);
+	var caption = data.caption || "";
+	delete data.caption;
 	if (options.openInNewWindow && !data.target) {
 		data.target = "_blank";
 	}
-	var caption = data.caption || "";
-	delete data.caption;
 	if (!options.skipEscaping) {
 		data.href = Echo.Utils.htmlize(data.href);
 	}
@@ -740,7 +738,7 @@ Echo.Utils.hyperlink = function(data, options) {
  * Extra arguments to log.
  */
 Echo.Utils.log = function(data) {
-	if (!window.console || !console.log || !data || !data.message) return;
+	if (!(window.console && console.log && data && data.message)) return;
 	console.log(
 		"[" + (data.component || "Echo SDK") + "]",
 		(data.type || "info"), ":", data.message, " | args: ", data.args
@@ -765,8 +763,7 @@ Echo.Utils.parallelCall = function(actions, callback) {
 	var remaining = actions.length;
 	$.map(actions, function(action) {
 		action(function() {
-			remaining--;
-			if (!remaining) {
+			if (!--remaining) {
 				callback && callback();
 			}
 		});
