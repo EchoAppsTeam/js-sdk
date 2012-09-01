@@ -2,15 +2,16 @@
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay
- * Shows one of the item accumulators in the top right corner of each item in the Echo Stream control.
+ * Shows one of the item accumulators in the top right corner of each item in
+ * the Echo Stream control.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "ItemAccumulatorDisplay"
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "ItemAccumulatorDisplay"
+ * 		}]
+ * 	});
  *
  * @extends Echo.Plugin
  */
@@ -23,22 +24,24 @@ plugin.init = function() {
 plugin.config = {
 	/**
 	 * @cfg {Number} countTickTimeout
-	 * Specifies the timeout in seconds for sequential changes of the item accumulator during the update.
+	 * Specifies the timeout in seconds for sequential changes of the item
+	 * accumulator during the update.
  	 *
-	 *     new Echo.StreamServer.Controls.Stream({
-	 *         "target": document.getElementById("echo-stream"),
-	 *         "appkey": "test.echoenabled.com",
-	 *         "plugins": [{
-	 *             "name": "ItemAccumulatorDisplay"
-	 *             "countTickTimeout": 1,
-	 *             "accumulator": "likesCount" 
-	 *         }]
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 		"target": document.getElementById("echo-stream"),
+	 * 		"appkey": "test.echoenabled.com",
+	 * 		"plugins": [{
+	 * 			"name": "ItemAccumulatorDisplay"
+	 * 			"countTickTimeout": 1,
+	 * 			"accumulator": "likesCount" 
+	 * 		}]
+	 * });
 	 */
 	"countTickTimeout": 1,
 	/**
 	 * @cfg {String} accumulator
-	 * Specifies which item accumulator should be displayed. Supported values are "repliesCount" and "likesCount".
+	 * Specifies which item accumulator should be displayed. Supported values
+	 * are "repliesCount" and "likesCount".
 	 */
 	"accumulator": "repliesCount"
 };
