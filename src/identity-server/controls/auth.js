@@ -2,22 +2,23 @@
 
 /**
  * @class Echo.IdentityServer.Controls.Auth
- * Echo Auth control displays user login status and allows to sign in using different social identities.
+ * Echo Auth control displays user login status and allows to sign in using
+ * different social identities.
  *
- *     var identityManager = {
- *         "width": 400,
- *         "height": 240,
- *         "url": "http://example.com/auth"
- *     };
+ * 	var identityManager = {
+ * 		"width": 400,
+ * 		"height": 240,
+ * 		"url": "http://example.com/auth"
+ * 	};
  *
- *     new Echo.IdentityServer.Controls.Auth({
- *         "target": document.getElementById("container"),
- *         "appkey": "test.aboutecho.com",
- *         "identityManager": {
- *             "login": identityManager,
- *             "signup": identityManager
- *         }
- *     });
+ * 	new Echo.IdentityServer.Controls.Auth({
+ * 		"target": document.getElementById("echo-auth"),
+ * 		"appkey": "test.aboutecho.com",
+ * 		"identityManager": {
+ * 			"login": identityManager,
+ * 			"signup": identityManager
+ * 		}
+ * 	});
  *
  * @extends Echo.Control
  *
@@ -32,22 +33,27 @@ var auth = Echo.Control.manifest("Echo.IdentityServer.Controls.Auth");
 auth.config = {
 	/**
 	 * @cfg {Object} identityManager
-	 * The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server.
+	 * The list of handlers for login, edit and signup action. If some action
+	 * is ommited then it will not be available for users in the Auth control.
+	 * Each handler accepts sessionID as GET parameter. This parameter is necessary
+	 * for communication with Backplane server. When handler finishes working it
+	 * constructs the corresponding Backplane message (for login, signup or user
+	 * data update) and sends this message to Backplane server.
 	 *
-	 *     var identityManager = {
-	 *         "width": 400,
-	 *         "height": 240,
-	 *         "url": "http://example.com/auth"
-	 *     };
+	 * 	var identityManager = {
+	 * 		"width": 400,
+	 * 		"height": 240,
+	 * 		"url": "http://example.com/auth"
+	 * 	};
 	 *
-	 *     new Echo.IdentityServer.Controls.Auth({
-	 *         "target": document.getElementById("container"),
-	 *         "appkey": "test.aboutecho.com",
-	 *         "identityManager": {
-	 *             "login": identityManager,
-	 *             "signup": identityManager
-	 *         }
-	 *     });
+	 * 	new Echo.IdentityServer.Controls.Auth({
+	 * 		"target": document.getElementById("echo-auth"),
+	 * 		"appkey": "test.aboutecho.com",
+	 * 		"identityManager": {
+	 * 			"login": identityManager,
+	 * 			"signup": identityManager
+	 * 		}
+	 * 	});
 	 *
 	 * @cfg {Object} [identityManager.login]
 	 * Encapsulates data for login workflow.
@@ -223,7 +229,7 @@ auth.renderers.name = function(element) {
  * Method to define which template should be used for general rendering procedure.
  *
  * @return {String}
- * control template.
+ * Control template.
  */
 auth.methods.template = function() {
 	return this.templates[this.user.is("logged") ? "logged" : "anonymous"];
