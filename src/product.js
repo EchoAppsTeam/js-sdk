@@ -28,32 +28,6 @@ Echo.ProductView.prototype._initializers.controls = function() {
 	});
 };
 
-Echo.ProductView.prototype._normalizeControlConfig = function(config) {
-	var self = this;
-	Echo.Utils.foldl(config, ["appkey", "apiBaseURL", "submissionProxyURL"], function(key, acc) {
-		acc[key] = acc[key] || self.config.get(key);
-	});
-	var normalize = function(value) {
-		if (typeof value == "string") {
-			return self.substitute({
-				"template": value,
-				"strict": true
-			});
-		} else if ($.isPlainObject(value)) {
-			return Echo.Utils.foldl({}, value, function(value, acc, key) {
-				acc[key] = normalize(value);
-			});
-		} else if ($.isArray(value)) {
-			return $.map(value, function(element) {
-				return normalize(element);
-			});
-		} else {
-			return value;
-		}
-	};
-	return normalize(config);
-};
-
 Echo.ProductView.prototype.initControl = function(name, controlConfig) {
 	this.destroyControl(name);
 	controlConfig = controlConfig || {};
@@ -123,7 +97,7 @@ Echo.ProductView.prototype.destroyControls = function(exceptions) {
 	var inExceptionList = function(name) {
 		var inList = false;
 		$.each(exceptions, function(id, exception) {
-			if (exception == name) {
+			if (exception === name) {
 				inList = true;
 				return false; // break
 			}
@@ -139,6 +113,32 @@ Echo.ProductView.prototype.destroyControls = function(exceptions) {
 
 Echo.ProductView.prototype.getControl = function(name) {
 	return Echo.Utils.getComponent(name);
+};
+
+Echo.ProductView.prototype._normalizeControlConfig = function(config) {
+	var self = this;
+	Echo.Utils.foldl(config, ["appkey", "apiBaseURL", "submissionProxyURL"], function(key, acc) {
+		acc[key] = acc[key] || self.config.get(key);
+	});
+	var normalize = function(value) {
+		if (typeof value === "string") {
+			return self.substitute({
+				"template": value,
+				"strict": true
+			});
+		} else if ($.isPlainObject(value)) {
+			return Echo.Utils.foldl({}, value, function(value, acc, key) {
+				acc[key] = normalize(value);
+			});
+		} else if ($.isArray(value)) {
+			return $.map(value, function(element) {
+				return normalize(element);
+			});
+		} else {
+			return value;
+		}
+	};
+	return normalize(config);
 };
 
 })();
@@ -177,6 +177,18 @@ Echo.Product.manifest = function(name, views) {
 			})
 		),
 		"assemblers": {}
+	});
+};
+
+Echo.Control.addInitializer(
+	Echo.Product,
+	["views", ["init", "refresh"]],
+	{"after": "user:async"}
+);
+
+Echo.Product.prototype._initializers.views = function() {
+	$.each(this._manifest("views"), function(name, view) {
+		Echo.ProductView.create(view);
 	});
 };
 
@@ -224,19 +236,6 @@ Echo.Product.prototype.destroyView = function(name) {
 Echo.Product.prototype.assemble = function(viewName) {
 	var args = Array.prototype.slice.call(arguments, 1);
 	return this._manifest("assemblers")[viewName].apply(this, args);
-};
-
-Echo.Control.addInitializer(
-	Echo.Product,
-	["views", ["init", "refresh"]],
-	{"after": "user:async"}
-);
-
-Echo.Product.prototype._initializers.views = function() {
-	var product = this;
-	$.each(this._manifest("views"), function(name, view) {
-		Echo.ProductView.create(view);
-	});
 };
 
 })();

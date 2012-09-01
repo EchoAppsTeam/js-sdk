@@ -1,3 +1,4 @@
+(function(){
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.FormAuth
  * Adds the authentication section to the Echo Submit control
@@ -53,18 +54,18 @@ plugin.config = {
 	"submitPermissions": "allowGuest"
 };
 
-plugin.enabled = function() {
-	return (this.component.user.get("sessionID") &&
-		this.config.get("identityManager.login") &&
-		this.config.get("identityManager.signup"));
-};
-
 plugin.dependencies = [{
 	"url": "sdk/identity-server.pack.js",
 	"loaded": function() {
 		return Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth");
 	}
 }];
+
+plugin.enabled = function() {
+	return (this.component.user.get("sessionID") &&
+		this.config.get("identityManager.login") &&
+		this.config.get("identityManager.signup"));
+};
 
 plugin.labels = {
 	/**
@@ -87,7 +88,7 @@ plugin.templates.forcedLogin =
  */
 plugin.component.renderers.header = function(element) {
 	var plugin = this;
-	if (this._userStatus() === "logged") {
+	if (plugin._userStatus() === "logged") {
 		return element.empty();
 	}
 	return plugin.parentRenderer("header", arguments);
@@ -134,10 +135,10 @@ plugin.methods._permissions = function() {
 	return this.config.get("submitPermissions");
 };
 
-plugin.methods._userStatus = function(application) {
+plugin.methods._userStatus = function() {
 	return this.component.user.is("logged")
 		? "logged"
-		: this._permissions() == "forceLogin"
+		: this._permissions() === "forceLogin"
 			? "forcedLogin"
 			: "anonymous";
 };
@@ -147,3 +148,5 @@ plugin.css =
 	'.{plugin.class:error} { color: red; }';
 
 Echo.Plugin.create(plugin);
+
+});

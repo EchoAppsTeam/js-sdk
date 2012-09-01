@@ -17,7 +17,6 @@
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.init = function() {
-	var self = this;
 	this.extendTemplate("insertAsLastChild", "data", plugin.template);
 	this.component.addButtonSpec("Like", this._assembleButton("Like"));
 	this.component.addButtonSpec("Like", this._assembleButton("Unlike"));
@@ -143,7 +142,6 @@ plugin.methods._sendActivity = function(name, item) {
 
 plugin.methods._assembleButton = function(name) {
 	var plugin = this;
-	var component = this.component;
 	var callback = function() {
 		var item = this;
 		item.get("buttons." + plugin.name + "." + name + ".element")
@@ -184,12 +182,12 @@ Echo.Plugin.create(plugin);
 
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
 
-plugin.labels = {
-	"unlikeOnBehalf": "Unlike on behalf of this user"
-};
-
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "container", plugin.template);
+};
+
+plugin.labels = {
+	"unlikeOnBehalf": "Unlike on behalf of this user"
 };
 
 plugin.template = '<img class="{plugin.class:adminUnlike}" src="' + Echo.Loader.getURL("sdk/images/container/closeWindow.png") + '" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
