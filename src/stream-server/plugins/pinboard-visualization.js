@@ -80,8 +80,7 @@ mediaGallery.renderers.controls = function(element) {
 			controlContainer.addClass(activeControlClass);
 		}
 		element.one("error", function() {
-			itemContainer.empty().append(self.substitute({"template": self.mediaFailedTemplate}));
-			itemContainer.empty().append("Error");
+			itemContainer.empty().append(self.substitute({"template": self.templates.mediaError}));
 			showCurrentMedia();
 		}).one("load", function() {
 			self._loadMediaHandler(element, itemContainer);
@@ -272,7 +271,7 @@ plugin.labels = {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.onReady": function(topic, args) {
+	"Echo.StreamServer.Controls.Stream.Item.onRender": function(topic, args) {
 		var plugin = this, item = this.component;
 		var body = plugin._getStreamBody(item);
 		if (!body.hasClass("isotope")) {
@@ -291,7 +290,6 @@ plugin.events = {
 $.map([ "Echo.StreamServer.Controls.Submit.onRender",
 	"Echo.StreamServer.Controls.Submit.onEditError",
 	"Echo.StreamServer.Controls.Submit.onEditComplete",
-	"Echo.StreamServer.Controls.Stream.Item.onDelete",
 	"Echo.StreamServer.Controls.Stream.Item.onRerender",
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand",
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse",
@@ -302,6 +300,23 @@ $.map([ "Echo.StreamServer.Controls.Submit.onRender",
 	};
 });
 
+plugin.events["Echo.StreamServer.Controls.Stream.Item.onDelete"] = function(topic, args) {
+	var plugin = this, item = this.component;
+	/**
+	 * @event onChangeView
+	 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.onChangeView
+	 * Triggered if the view was changed.
+	 */
+	plugin.events.publish({
+		"topic": "onChangeView",
+		"data": {
+			"action": "rerender",
+			"priority": "high",
+			"handler": function() { plugin._refreshView(); }
+		},
+		"context": item.config.get("parent.context")
+	});
+};
 
 /**
  * @echo_renderer
@@ -325,43 +340,46 @@ plugin.component.renderers.avatar = function(element) {
 	});
 	return element;
 };
-//FIXME
-$.each(["expandChildren", "container"], function(i, renderer) {
-	plugin.component.renderers[renderer] = function(element) {
-		var plugin = this, item = this.component;
-		var publish = function() {
-			/**
-			 * @event onChangeView
-			 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.onChangeView
-			 * Triggered if the view was changed.
-			 */
-			plugin.events.publish({
-				"topic": "onChangeView",
-				"data": {
-					"action": "rerender",
-					"itemUnique": item.get("data.unique"),
-					"actorID": item.get("data.actor.id"),
-					"priority": "high",
-					"handler": function() { plugin._refreshView(); }
-				},
-				"context": item.config.get("parent.context")
-			});
-		};
-		element = item.parentRenderer(renderer, arguments);
-		if (plugin.get("rendered")) {
-			element.queue("fx", function(next) {
-				next();
-				plugin._refreshView();
-			});
-			if (renderer === "container") {
-				publish();
-			} else {
-				plugin._refreshView();
-			}
-		}
-		return element;
+
+/**
+ * @echo_renderer
+ */
+plugin.component.renderers.container = function(element) {
+	var plugin = this, item = this.component;
+	element = item.parentRenderer("container", arguments);
+	if (plugin.get("rendered")) {
+		element.queue("fx", function(next) {
+			next();
+			plugin._refreshView();
+		});
+		plugin.events.publish({
+			"topic": "onChangeView",
+			"data": {
+				"action": "rerender",
+				"priority": "high",
+				"handler": function() { plugin._refreshView(); }
+			},
+			"context": item.config.get("parent.context")
+		});
 	}
-});
+	return element;
+};
+
+/**
+ * @echo_renderer
+ */
+plugin.component.renderers.expandChildren = function(element) {
+	var plugin = this, item = this.component;
+	element = item.parentRenderer("expandChildren", arguments);
+	if (plugin.get("rendered")) {
+		element.queue("fx", function(next) {
+			next();
+			plugin._refreshView();
+		});
+		plugin._refreshView();
+	}
+	return element;
+};
 
 /**
  * @echo_renderer
@@ -562,7 +580,9 @@ plugin.events = {
 		this._isotopeView();
 	},
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView": function(topic, args) {
-		this.component._queueActivity(args);
+		var stream = this.component;
+		var params = $.extend({}, args, {"item": stream.items[args.item.data.unique]});
+		stream.queueActivity(params);
 	}
 };
 

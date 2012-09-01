@@ -186,7 +186,7 @@ stream.events = {
 		var self = this;
 		var item = this.items[data.item.data.unique];
 		item.config.get("target").hide();
-		this._queueActivity({
+		this.queueActivity({
 			"action": "animation",
 			"item": item,
 			"priority": "highest",
@@ -201,7 +201,7 @@ stream.events = {
 	"Echo.StreamServer.Controls.Stream.Item.onDelete": function(topic, data) {
 		var self = this;
 		var item = this.items[data.item.data.unique];
-		this._queueActivity({
+		this.queueActivity({
 			"action": "animation",
 			"item": item,
 			"priority": "highest",
@@ -1002,7 +1002,7 @@ stream.methods._spotUpdates.animate.delete = function(item, config) {
 stream.methods._applySpotUpdates = function(action, item, options) {
 	var self = this;
 	options = options || {};
-	this._queueActivity({
+	this.queueActivity({
 		"action": action,
 		"item": item,
 		"priority": options.priority,
@@ -1020,15 +1020,13 @@ stream.methods._animateSpotUpdate = function(action, item, options) {
 	this._spotUpdates.animate[action].call(this, item, options);
 };
 
-stream.methods._queueActivity = function(params) {
+stream.methods.queueActivity = function(params) {
 	if (!params.item) return;
 	var actorID = params.item.get("data.actor.id");
-
 	// we consider activity related to the current user if:
 	//  - the corresponding item is blocked (moderation action in progress)
 	//  - or the activity was performed by the current user
 	var byCurrentUser = params.item.blocked || actorID && this.user.has("identity", actorID);
-
 	var index = this._getActivityProjectedIndex(byCurrentUser, params);
 	var data = {
 		"action": params.action,
