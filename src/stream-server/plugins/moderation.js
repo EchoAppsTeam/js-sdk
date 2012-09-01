@@ -1,15 +1,17 @@
 (function(){
+
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation
- * Adds several moderation controls to change item status. Besides it provides the opportunity to ban specific user or change his privileges.
+ * Adds several moderation controls to change item status. Besides
+ * it provides the opportunity to ban specific user or change his privileges.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "Moderation"
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "Moderation"
+ * 		}]
+ * 	});
  *
  * @extends Echo.Plugin
  */
@@ -44,7 +46,7 @@ plugin.config = {
 	 * 			"name": "Moderation"
 	 * 			"userActions": ["ban", "permissions"],
 	 * 		}]
-	 * 	});
+	 * });
 	 */
 	"userActions": ["ban", "permissions"],
 	/**
