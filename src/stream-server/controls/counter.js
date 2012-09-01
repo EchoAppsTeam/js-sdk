@@ -3,11 +3,11 @@
  * Echo Counter class which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
  *
- *     new Echo.StreamServer.Controls.Counter({
- *         "target": document.getElementById("counter"),
- *         "appkey": "test.aboutecho.com",
- *         "query" : "childrenof:http://example.com/test/*"
- *     });
+ * 	new Echo.StreamServer.Controls.Counter({
+ * 		"target": document.getElementById("echo-counter"),
+ * 		"appkey": "test.aboutecho.com",
+ * 		"query" : "childrenof:http://example.com/test/*"
+ * 	});
  *
  * @extends Echo.Control
  *
@@ -34,27 +34,30 @@ counter.init = function() {
 counter.config = {
 	/**
 	 * @cfg {String} query
-	 * Specifies the search query to generate the necessary data set. It must be constructed according to the <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a> method specification.
+	 * Specifies the search query to generate the necessary data set.
+	 * It must be constructed according to the
+	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
+	 * method specification.
 	 *
-	 *     new Echo.StreamServer.Controls.Counter({
-	 *         "target": document.getElementById("container"),
-	 *         "appkey": "test.aboutecho.com",
-	 *         "query" : "childrenof:http://example.com/test/*"
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Counter({
+	 * 		"target": document.getElementById("echo-counter"),
+	 * 		"appkey": "test.aboutecho.com",
+	 * 		"query" : "childrenof:http://example.com/test/*"
+	 * 	});
 	 */
 	/**
 	 * @cfg {Object} data
 	 * Specifies predefined items count which should be displayed by the application.
 	 *
-	 *     new Echo.Counter({
-	 *         ...
-	 *         "data": {"count": 100},
-	 *         ...
-	 *     });
+	 * 	new Echo.Counter({
+	 * 		...
+	 * 		"data": {"count": 100},
+	 * 		...
+	 * 	});
 	 */
 	"data": undefined,
 	/**
-	 * @cfg {Number} [liveUpdatesTimeout=10]
+	 * @cfg {Number} liveUpdatesTimeout
 	 * Specifies the timeout between the live updates requests (in seconds).
 	 */
 	"liveUpdatesTimeout": 10,

@@ -6,7 +6,7 @@
  * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
  *
  * 	new Echo.StreamServer.Controls.FacePile({
- * 		"target": document.getElementById("facepile"),
+ * 		"target": document.getElementById("echo-facepile"),
  * 		"appkey": "test.aboutecho.com",
  * 		"query": "childrenof:http://example.com/* itemsPerPage:2 children:0",
  * 		"suffixText": " commented on aboutecho.com",
