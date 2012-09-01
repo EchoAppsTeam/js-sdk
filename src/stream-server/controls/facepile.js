@@ -5,13 +5,13 @@
  * Echo FacePile control displays users (actors) returned in any activity stream. 
  * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
  *
- *     new Echo.StreamServer.Controls.FacePile({
- *         "target": document.getElementById("facepile"),
- *         "appkey": "test.aboutecho.com",
- *         "query": "childrenof:http://example.com/* itemsPerPage:2 children:0",
- *         "suffixText": " commented on aboutecho.com",
- *         "item": {"avatar": true, "text": true}
- *     });
+ * 	new Echo.StreamServer.Controls.FacePile({
+ * 		"target": document.getElementById("facepile"),
+ * 		"appkey": "test.aboutecho.com",
+ * 		"query": "childrenof:http://example.com/* itemsPerPage:2 children:0",
+ * 		"suffixText": " commented on aboutecho.com",
+ * 		"item": {"avatar": true, "text": true}
+ * 	});
  *
  * @extends Echo.Control
  *
@@ -38,17 +38,25 @@ pile.init = function() {
 pile.config = {
 	/**
 	 * @cfg {Object} data
-	 * Specifies static data for the list. It has the same format as returned by the search API endpoint. If the data parameter is provided then the query parameter should be omitted. If data and query parameters are both provided query takes precedence over data.
+	 * Specifies static data for the list. It has the same format as returned
+	 * by the search API endpoint. If the `data` parameter is provided then the
+	 * `query` parameter should be omitted. If `data` and `query` parameters are both
+	 * provided `query` takes precedence over `data`.
 	 */
 	"data": undefined,
 	/**
 	 * @cfg {String} initialUsersCount
-	 * The number of users which will be shown when the FacePile is displayed for the first time. Default value is the value of data.itemsPerPage parameter. Note that the parameter is actual only for the list created using data.
+	 * The number of users which will be shown when the FacePile is displayed
+	 * for the first time. Default value is the value of `data.itemsPerPage`
+	 * parameter. Note that the parameter is actual only for the list created
+	 * using `data`.
 	 */
 	"initialUsersCount": undefined,
 	/**
 	 * @cfg {String} totalUsersCount
-	 * The total number of users for the FacePile. If it's not defined it defaults to the length of the provided data.entries field. Note that the parameter is actual only for the list created using data.
+	 * The total number of users for the FacePile. If it's not defined it defaults to
+	 * the length of the provided data.entries field. Note that the parameter is actual
+	 * only for the list created using `data`.
 	 */
 	"totalUsersCount": undefined,
 	"query": "",
@@ -416,19 +424,36 @@ Echo.Control.create(pile);
 
 })();
 
-// FacePile item definition
-
 (function() {
 
+/**
+ * @class Echo.StreamServer.Controls.FacePile.Item
+ * Echo FacePile.Item control displays single user (actor). 
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * FacePile.Item constructor initializing Echo.StreamServer.Controls.FacePile.Item class
+ *
+ * @param {Object} config
+ * Configuration options
+ */
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile.Item");
 
 item.config = {
+	/**
+	 * @cfg {String} infoMessages
+	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 */
 	"infoMessages": {
 		"enabled": false
 	}
 };
 
 item.labels = {
+	/**
+	 * @echo_label
+	 */
 	"you": "You"
 };
 
@@ -438,6 +463,9 @@ item.templates.main =
 		'<span class="{class:title}">{data:title}</span>' +
 	'</span>';
 
+/**
+ * @echo_renderer
+ */
 item.renderers.avatar = function(element) {
 	var self = this;
 	if (this.config.get("avatar")) {
@@ -455,6 +483,9 @@ item.renderers.avatar = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 item.renderers.title = function(element) {
 	if (this.config.get("text")) {
 		element.empty().append(this.isYou() ? this.labels.get("you") : this.get("data.title"));
@@ -464,6 +495,9 @@ item.renderers.title = function(element) {
 	return element;
 };
 
+/**
+ * @echo_renderer
+ */
 item.methods.isYou = function() {
 	var id = this.get("data.id");
 	return id && id === this.user.get("identityUrl");
