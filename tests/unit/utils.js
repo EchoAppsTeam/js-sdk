@@ -9,7 +9,7 @@ suite.prototype.info = {
 		"parseURL", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate", "log",
 		"getVisibleColor", "isMobileDevice", "getUniqueString", "loadImage",
 		"getComponent", "isComponentDefined", "objectToQuery", "inherit",
-		"parallelCall", "sequentialCall", "hyperlink"]
+		"parallelCall", "sequentialCall", "hyperlink", "capitalize"]
 };
 
 suite.prototype.tests = {};
@@ -268,6 +268,12 @@ suite.prototype.tests.TestDataMethods = {
 		link = Echo.Utils.hyperlink(linkParams.data, linkParams.options);
 		QUnit.equal(link, "<a href=\"http://aboutecho.com\?&amp;a=b\" target=\"_blank\"></a>",
 			"Checking hyperlink() method htmlizes href attribute if skipEscaping is false");
+		QUnit.strictEqual(Echo.Utils.capitalize(""), "", "Checking capitalize method if string is empty");
+		QUnit.strictEqual(Echo.Utils.capitalize("someword"), "Someword", "Checking capitalize method if argument is lowercased word but with no word boundary.");
+		QUnit.strictEqual(Echo.Utils.capitalize(" someword"), " Someword", "Checking capitalize method if argument is lowercased word but with word boundary.");
+		QUnit.strictEqual(Echo.Utils.capitalize("SOMEWORD"), "SOMEWORD", "Checking capitalize method if argument is uppercased word");
+		QUnit.strictEqual(Echo.Utils.capitalize("some text with whitespaces capitalized"), "Some Text With Whitespaces Capitalized", "Checking capitalize method if argument is regular text with whitespaces");
+		QUnit.strictEqual(Echo.Utils.capitalize("some|long|word|with|no|whitespace|delimiter"), "Some|Long|Word|With|No|Whitespace|Delimiter", "Checking capitalize method if argument string is delimted with no whiespaces word boundary");
 	}
 };
 
