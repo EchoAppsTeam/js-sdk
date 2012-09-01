@@ -794,3 +794,16 @@ Echo.Utils.sequentialCall = function(actions, callback) {
 };
 
 })();
+
+/**
+ * @static
+ * Function to Replacement of first character in the words with uppercase character
+ *
+ * @param {String} string
+ * String of some words
+ */
+Echo.Utils.capitalize = function(string) {
+	return string.replace(/\b[a-z]/g, function(match) {
+		return match.toUpperCase();
+	});
+};

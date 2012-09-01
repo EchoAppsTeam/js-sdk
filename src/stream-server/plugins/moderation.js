@@ -14,25 +14,19 @@
  */
 var plugin = Echo.Plugin.manifest("Moderation", "Echo.StreamServer.Controls.Stream.Item");
 
-var capitalize = function(string) {
-	return string.replace(/\b[a-z]/g, function(match) {
-		return match.toUpperCase();
-	});
-};
-
 plugin.init = function() {
 	var self = this;
 	var item = this.component;
 	var actions = this.config.get("itemActions").concat(this.config.get("userActions"));
-	this.extendTemplate("insertAfter", "avatar", plugin.statusItemTemplate);
+	this.extendTemplate("insertAfter", "avatar", plugin.templates.status);
 	$.each(actions, function(i, action) {
 		var buttons = plugin.actionButtons[action];
 		if (buttons && $.isArray(buttons)) {
 			$.each(buttons, function(j, button) {
-				item.addButtonSpec("Moderation", self["_assemble" + capitalize(action) + "Button"](button));
+				item.addButtonSpec("Moderation", self["_assemble" + Echo.Utils.capitalize(action) + "Button"](button));
 			});
 		} else {
-			item.addButtonSpec("Moderation", self._assembleButton(capitalize(action)));
+			item.addButtonSpec("Moderation", self._assembleButton(Echo.Utils.capitalize(action)));
 		}
 	});
 };
@@ -75,19 +69,6 @@ plugin.events = {
 		return {"stop": ["bubble"]};
 	}
 };
-
-plugin.actionButtons = {
-	"ban": ["Ban", "UnBan"],
-	"permissions": ["UserPermissions"]
-};
-
-plugin.roles = ["", "moderator", "administrator"];
-
-plugin.statusItemTemplate = 
-	'<div class="{plugin.class:status}">' +
-		'<div class="{plugin.class:statusIcon}"></div>' +
-		'<div class="echo-clear"></div>' +
-	'</div>';
 
 plugin.labels = {
 	/**
@@ -196,27 +177,17 @@ plugin.labels = {
 	"statusUntouched": "New"
 };
 
-plugin.buttonLabels = {
+plugin.templates.buttonLabels = {
 	"banned": '<span class="{plugin.class:button-state} {plugin.class:button-state-banned}">{plugin.label:userBanned}</span>' +
 		'(<span class="echo-clickable">{plugin.label:unbanUser}</span>)',
 	"unbanned": '<span class="echo-clickable">{plugin.label:banUser}</span>'
 };
 
-plugin.statuses = [
-	"Untouched",
-	"ModeratorApproved",
-	"ModeratorDeleted",
-	"CommunityFlagged",
-	"ModeratorFlagged",
-	"SystemFlagged"
-];
-
-plugin.button2status = {
-	"Spam": "ModeratorFlagged",
-	"Delete": "ModeratorDeleted",
-	"Approve": "ModeratorApproved",
-	"Untouch": "Untouched"
-};
+plugin.templates.status =
+	'<div class="{plugin.class:status}">' +
+		'<div class="{plugin.class:statusIcon}"></div>' +
+		'<div class="echo-clear"></div>' +
+	'</div>';
 
 /**
  * @echo_renderer
@@ -244,6 +215,29 @@ plugin.renderers.statusIcon = function(element) {
 	var title = this.labels.get("status" + status);
 	return element.addClass(this.cssPrefix + "status-icon-" + status).attr("title", title);
 };
+
+plugin.statuses = [
+	"Untouched",
+	"ModeratorApproved",
+	"ModeratorDeleted",
+	"CommunityFlagged",
+	"ModeratorFlagged",
+	"SystemFlagged"
+];
+
+plugin.button2status = {
+	"Spam": "ModeratorFlagged",
+	"Delete": "ModeratorDeleted",
+	"Approve": "ModeratorApproved",
+	"Untouch": "Untouched"
+};
+
+plugin.actionButtons = {
+	"ban": ["Ban", "UnBan"],
+	"permissions": ["UserPermissions"]
+};
+
+plugin.roles = ["", "moderator", "administrator"];
 
 plugin.methods._changeItemStatus = function(status) {
 	var item = this.component;
@@ -386,11 +380,11 @@ plugin.methods._assembleBanButton = function(action) {
 	return function() {
 		var item = this;
 		var isBanned = self._isUserBanned();
-		var visible = item.get("data.actor.id") != item.user.get("fakeIdentityURL") &&
+		var visible = item.get("data.actor.id") !== item.user.get("fakeIdentityURL") &&
 			isBanned ^ (action === "Ban");
 		return {
 			"name": action,
-			"label": self.substitute({"template": plugin.buttonLabels[isBanned ? "banned" : "unbanned"]}),
+			"label": self.substitute({"template": plugin.templates.buttonLabels[isBanned ? "banned" : "unbanned"]}),
 			"visible": visible && item.user.is("admin"),
 			"callback": callback,
 			"once": true
@@ -404,12 +398,12 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		var item = this;
 		var role = self._getRole();
 		var next = self._getNextRole(role);
-		var roles = next != ""
+		var roles = next !== ""
 			? (item.get("data.actor.roles") || []).concat(next)
 			: Echo.Utils.foldl([], item.get("data.actor.roles") || [], function(_role, acc) {
 				if ($.inArray(_role, plugin.roles) < 0) acc.push(_role);
 			});
-		var label = next == "" ? "unset" : "set";
+		var label = next === "" ? "unset" : "set";
 		item.get("buttons." + plugin.name + "." + action + ".element")
 			.empty()
 			.append(self.labels.get(label + "RoleAction", {"role": next || role}));
@@ -429,11 +423,11 @@ plugin.methods._assemblePermissionsButton = function(action) {
 	return function() {
 		var item = this;
 		var role = self._getRole();
-		var template = (role
+		var template = role
 			? '<span class="{plugin.class:button-role} {plugin.class:button-role}-{data:role}">{data:label}</span>' +
 				'(<span class="echo-clickable">{data:button}</span>)'
-			: '<span class="echo-clickable">{data:button}</span>'
-		);
+			: '<span class="echo-clickable">{data:button}</span>';
+
 		var label = self.substitute({
 			"template": template,
 			"data": {
@@ -446,7 +440,7 @@ plugin.methods._assemblePermissionsButton = function(action) {
 			"name": action,
 			"label": label,
 			// FIXME: add fakeIdentityURL to UserSession
-			"visible": item.get("data.actor.id") != item.user.get("fakeIdentityURL") &&
+			"visible": item.get("data.actor.id") !== item.user.get("fakeIdentityURL") &&
 				item.user.any("roles", ["administrator"]),
 			"callback": callback,
 			"once": true
@@ -494,7 +488,7 @@ plugin.css = function() {
 	if ($.browser.msie) {
 		msieCss =
 			'.{plugin.class:status} { zoom: 1; }';
-	};
+	}
 	return '.{plugin.class:status} { width: 48px; height: 24px; }' +
 		'.{plugin.class:status-child} { width: 24px; height: 24px; }' +
 		'.{plugin.class:statusIcon} { float: right; margin: 4px; width: 16px; height: 16px; }' +
