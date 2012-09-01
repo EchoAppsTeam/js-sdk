@@ -1,14 +1,18 @@
+(function() {
+
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll
- * Echo Stream plugin automatically loads the next page full of items when the end of the stream is displayed on the browser screen. This produces an 'Infinite Scroll' Effect.
+ * Echo Stream plugin automatically loads the next page full of items
+ * when the end of the stream is displayed on the browser screen.
+ * This produces an 'Infinite Scroll' Effect.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "InfiniteScroll"
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "InfiniteScroll"
+ * 		}]
+ * 	});
  *
  * @extends Echo.Plugin
  */
@@ -33,3 +37,5 @@ plugin.events = {
 };
 
 Echo.Plugin.create(plugin);
+
+})();
