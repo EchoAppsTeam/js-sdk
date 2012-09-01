@@ -1,22 +1,26 @@
+(function(){
+
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager
- * Provides the ability to add buttons to the Echo Stream control items adding/removing markers/tags. By default those buttons will be available for moderators and administrators, though the visibility of tag controls can be configured via special param.
+ * Provides the ability to add buttons to the Echo Stream control items
+ * adding/removing markers/tags. By default those buttons will be available
+ * for moderators and administrators, though the visibility of tag controls
+ * can be configured via special param.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "MetadataManager"
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "MetadataManager"
+ * 		}]
+ * 	});
  *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.init = function() {
-	var self = this;
-	var item = this.component;
+	var self = this, item = this.component;
 	$.each(this.config.get("controls"), function(i, control) {
 		item.addButtonSpec("MetadataManager", self._assembleButton("Mark", control));
 		item.addButtonSpec("MetadataManager", self._assembleButton("Unmark", control));
@@ -40,77 +44,78 @@ plugin.init = function() {
  * Specifies the button label to undo the corresponding action.
  *
  * @cfg {Object|Function} controls.visible
- * Specifies the condition of visibility. Applicable only for tags. Can be either an object or a function.
+ * Specifies the condition of visibility. Applicable only for tags.
+ * Can be either an object or a function.
  *
  * Example: simple marker control.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "MetadataManager"
- *             "controls": [{
- *                 "marker": "sticky",
- *                 "labelMark": "Pin",
- *                 "labelUnmark": "Unpin"
- *             }]
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "MetadataManager"
+ * 			"controls": [{
+ * 				"marker": "sticky",
+ * 				"labelMark": "Pin",
+ * 				"labelUnmark": "Unpin"
+ * 			}]
+ * 		}]
+ * 	});
  *
  * Example: simple tag control.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "MetadataManager"
- *             "controls": [{
- *                 "tag": "football",
- *                 "labelMark": "Set Football tag",
- *                 "labelUnmark": "Unset Football tag"
- *             }]
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "MetadataManager"
+ * 			"controls": [{
+ * 				"tag": "football",
+ * 				"labelMark": "Set Football tag",
+ * 				"labelUnmark": "Unset Football tag"
+ * 			}]
+ * 		}]
+ * 	});
  *
  * Example: tag control with visibility condition defined as an object.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "MetadataManager"
- *             "controls": [{
- *                 "tag": "football",
- *                 "labelMark": "Set Football tag",
- *                 "labelUnmark": "Unset Football tag",
- *                 "visible": {
- *                     "user.markers": ["top_commenter", "top_visitor"],
- *                     "user.state": ["Untouched", "ModeratorApproved"]
- *                     "user.roles": ["Moderator"]
- *                 }
- *             }]
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "MetadataManager"
+ * 			"controls": [{
+ * 				"tag": "football",
+ * 				"labelMark": "Set Football tag",
+ * 				"labelUnmark": "Unset Football tag",
+ * 				"visible": {
+ * 					"user.markers": ["top_commenter", "top_visitor"],
+ * 					"user.state": ["Untouched", "ModeratorApproved"]
+ * 					"user.roles": ["Moderator"]
+ * 				}
+ * 			}]
+ * 		}]
+ * 	});
  *
  * Example: tag control with visibility condition defined as a function 
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "MetadataManager"
- *             "controls": [{
- *                 "tag": "football",
- *                 "labelMark": "Set Football tag",
- *                 "labelUnmark": "Unset Football tag",
- *                 "visible": function(application, item) {
- *                     var user = application.user;
- *                     if (user.get("state") == "Untouched") return true;
- *                     return false;
- *                 }
- *             }]
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "MetadataManager"
+ * 			"controls": [{
+ * 				"tag": "football",
+ * 				"labelMark": "Set Football tag",
+ * 				"labelUnmark": "Unset Football tag",
+ * 				"visible": function(application, item) {
+ * 					var user = application.user;
+ * 					if (user.get("state") == "Untouched") return true;
+ * 					return false;
+ * 				}
+ * 			}]
+ * 		}]
+ * 	});
  */
 plugin.labels = {
 	/**
@@ -149,6 +154,28 @@ plugin.methods._assembleButton = function(action, control) {
 			"endpoint": "submit",
 			"submissionProxyURL": item.config.get("submissionProxyURL"),
 			"onData": function() {
+				/**
+				* @event onMarkAs_value_Complete
+				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkAs_value_Complete
+				* action specific event which is generated automatically using the parametrized value of marker/tag.
+				* Triggered when the Mark action is finished.
+				*
+				* Example events:
+				*
+				* + onMarkAssticky
+				* + onMarkAsfootball
+				*/
+				/**
+				* @event onUnmarkAs_value_Complete
+				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarkAs_value_Complete
+				* action specific event which is generated automatically using the parametrized value of marker/tag.
+				* Triggered when the Mark action is finished.
+				*
+				* Example events:
+				*
+				* + onUnmarkAssticky
+				* + onUnmarkAsfootball
+				*/
 				self.events.publish({
 					"topic": "on" + name + "Complete",
 					"data": {
@@ -183,11 +210,11 @@ plugin.methods._assembleButton = function(action, control) {
 
 plugin.methods._isButtonVisible = function(control, marker, action, type) {
 	var item = this.component;
-	var visible = ($.inArray(marker, item.get("data.object." + type + "s") || []) == -1) ^ (action == "Unmark");
+	var visible = (!~$.inArray(marker, item.get("data.object." + type + "s") || [])) ^ (action === "Unmark");
 	if (!visible || !item.user.is("logged")) return false;
 	if (item.user.is("admin")) return true;
 	var customProxyURL = item.config.get("submissionProxyURL");
-	if (type == "marker" && !customProxyURL) return false;
+	if (type === "marker" && !customProxyURL) return false;
 	control.visible = control.visible || function() { return false; };
 	if ($.isFunction(control.visible)) {
 		return control.visible(item);
@@ -197,7 +224,7 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 	$.each(["state", "roles", "markers"], function(i, field) {
 		var values = control.visible["user." + field];
 		if (values) {
-			values = typeof values == "string" ? [values] : values;
+			values = typeof values === "string" ? [values] : values;
 			if (!item.user.any(field, values)) {
 				isVisible = false;
 				return false; // break
@@ -208,3 +235,5 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 };
 
 Echo.Plugin.create(plugin);
+
+})();
