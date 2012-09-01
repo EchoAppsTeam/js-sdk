@@ -142,7 +142,6 @@ Echo.Plugin.getClass = function(name, component) {
 };
 
 /**
- * @method
  * Initializes the plugin.
  */
 Echo.Plugin.prototype.init = function() {
@@ -158,7 +157,6 @@ Echo.Plugin.prototype.init = function() {
 };
 
 /**
- * @method
  * Checks if the plugin is enabled.
  */
 Echo.Plugin.prototype.enabled = function() {
@@ -178,7 +176,6 @@ Echo.Plugin.prototype.enabled = function() {
 };
 
 /**
- * @method
  * @inheritdoc Echo.Control#set
  */
 Echo.Plugin.prototype.set = function(key, value) {
@@ -186,7 +183,6 @@ Echo.Plugin.prototype.set = function(key, value) {
 };
 
 /**
- * @method
  * @inheritdoc Echo.Control#get
  */
 Echo.Plugin.prototype.get = function(key, defaults) {
@@ -194,7 +190,6 @@ Echo.Plugin.prototype.get = function(key, defaults) {
 };
 
 /**
- * @method
  * @inheritdoc Echo.Control#remove
  */
 Echo.Plugin.prototype.remove = function(key) {
@@ -202,29 +197,22 @@ Echo.Plugin.prototype.remove = function(key) {
 };
 
 /**
- * @method
  * Enables the plugin.
  */
 Echo.Plugin.prototype.enable = function(global) {
-	if (global) {
-		this.config.set("enabled", true);
-	}
+	global && this.config.set("enabled", true);
 	this._enabled = true;
 };
 
 /**
- * @method
  * Disables the plugin.
  */
 Echo.Plugin.prototype.disable = function(global) {
-	if (global) {
-		this.config.set("enabled", false);
-	}
+	global && this.config.set("enabled", false);
 	this._enabled = false;
 };
 
 /**
- * @method
  * Method to extend the template of particular component.
  *
  * @param {String} action
@@ -240,7 +228,9 @@ Echo.Plugin.prototype.disable = function(global) {
  * Element name which is a subject of a transformation application.
  *
  * @param {String|Function} [html]
- * The content of a transformation to be applied. Can be defined as a HTML string or a transformer function. This param is required for all actions except "remove".
+ * The content of a transformation to be applied. Can be defined as a
+ * HTML string or a transformer function. This param is required for all
+ * actions except "remove".
  */
 Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 	if (html) {
@@ -250,7 +240,6 @@ Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 };
 
 /**
- * @method
  * @inheritdoc Echo.Control#parentRenderer
  */
 Echo.Plugin.prototype.parentRenderer = function() {
@@ -258,9 +247,9 @@ Echo.Plugin.prototype.parentRenderer = function() {
 };
 
 /**
- * @method
  * Templater function which compiles given template using the provided data.
- * Function can be used widely for html templates processing or any other action requiring string interspersion.
+ * Function can be used widely for html templates processing or any other
+ * action requiring string interspersion.
  *
  * @param {Object} args
  * Specifies substitution process, contains control parameters.
@@ -272,10 +261,12 @@ Echo.Plugin.prototype.parentRenderer = function() {
  * Data used in the template compilation.
  *
  * @param {Boolean} [args.strict]
- * Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
+ * Specifies whether the template should be replaced with the corresponding
+ * value, preserving replacement value type.
  *
  * @param {Object} [args.instructions]
- * Object containing the list of extra instructions to be applied during template compilation.
+ * Object containing the list of extra instructions to be applied during
+ * template compilation.
  *
  * @return {String}
  * Compiled string value.
@@ -304,7 +295,6 @@ Echo.Plugin.prototype.substitute = function(args) {
 };
 
 /**
- * @method
  * Method publishes the internal event to make current state invalid.
  * It triggers data refresh.
  */
@@ -319,14 +309,11 @@ Echo.Plugin.prototype.requestDataRefresh = function() {
 };
 
 /**
- * @method
  * @inheritdoc Echo.Utils#log
  */
 Echo.Plugin.prototype.log = function(data) {
 	Echo.Utils.log($.extend(data, {"component": this.component.name + ".Plugins." + this.name}));
 };
-
-// internal functions
 
 Echo.Plugin._defineNestedClass = function(name) {
 	Echo.Plugin[name] = function(config) {
@@ -432,7 +419,6 @@ Echo.Plugin._getClassName = function(name, component) {
 Echo.Plugin._defineNestedClass("Config");
 
 /**
- * @method
  * Setter method to define specific config field value.
  *
  * @param {String} key
@@ -446,14 +432,16 @@ Echo.Plugin.Config.prototype.set = function(key, value) {
 };
 
 /**
- * @method
  * Accessor method to get specific config field.
  *
  * @param {String} key
  * Defines the key for data extraction.
  *
  * @param {Object} [defaults]
- * Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ * Default value if no corresponding key was found in the config.
+ * Note: only the `undefined` JS statement triggers the default
+ * value usage. The `false`, `null`, `0`, `[]` are considered
+ * as a proper value.
  *
  * @param {Boolean} [askParent]
  * Flag to call parent config if the value was not found in the particular instance.
@@ -474,7 +462,6 @@ Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
 };
 
 /**
- * @method
  * Method to remove specific config field.
  *
  * @param {String} key
@@ -485,10 +472,13 @@ Echo.Plugin.Config.prototype.remove = function(key) {
 };
 
 /**
- * @method
- * Assembles config for nested control based on the parent control config.
- * @param {Object} data Configuration data to be merged with the parent config.
- * @return {Object} Echo.Configuration instance.
+ * Method to assemble config for nested control based on the parent control config.
+ *
+ * @param {Object} data
+ * Configuration data to be merged with the parent config.
+ *
+ * @return {Class}
+ * Echo.Configuration instance.
  */
 Echo.Plugin.Config.prototype.assemble = function(data) {
 	var config = this.plugin.component.config;
@@ -518,7 +508,6 @@ Echo.Plugin.Config.prototype._normalize = function(key) {
 Echo.Plugin._defineNestedClass("Events");
 
 /**
- * @method
  * @inheritdoc Echo.Events#publish
 */
 Echo.Plugin.Events.prototype.publish = function(params) {
@@ -527,7 +516,6 @@ Echo.Plugin.Events.prototype.publish = function(params) {
 };
 
 /**
- * @method
  * @inheritdoc Echo.Events#subscribe
 */
 Echo.Plugin.Events.prototype.subscribe = function(params) {
@@ -536,7 +524,6 @@ Echo.Plugin.Events.prototype.subscribe = function(params) {
 };
 
 /**
- * @method
  * @inheritdoc Echo.Events#unsubscribe
 */
 Echo.Plugin.Events.prototype.unsubscribe = function(params) {
