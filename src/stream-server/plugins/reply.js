@@ -2,15 +2,17 @@
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
- * Adds extra button Reply to each root item in the Echo Stream control. Integrates Echo Submit control and provides the ability to submit replies to the posted items.
+ * Adds extra button Reply to each root item in the Echo Stream control.
+ * Integrates Echo Submit control and provides the ability to submit
+ * replies to the posted items.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "Reply"
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "Reply"
+ * 		}]
+ * 	});
  *
  * @extends Echo.Plugin
  */
@@ -286,15 +288,16 @@ Echo.Plugin.create(plugin);
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
- * Proxies the "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand" event on the Stream control level.
+ * Proxies the "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand"
+ * event on the Stream control level.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "Reply"
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "Reply"
+ * 		}]
+ * 	});
  *
  * @extends Echo.Plugin
  */
@@ -326,14 +329,14 @@ Echo.Plugin.create(plugin);
  * @class Echo.StreamServer.Controls.Submit.Plugins.Reply
  * Adds internal data field "inReplyTo" for correct reply workflow.
  *
- *     new Echo.StreamServer.Controls.Submit({
- *         "target": document.getElementById("submit"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "Reply",
- *             "inReplyTo": data 
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Submit({
+ * 		"target": document.getElementById("echo-submit"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "Reply",
+ * 			"inReplyTo": data 
+ * 		}]
+ * 	});
  *
  * @extends Echo.Plugin
  */
@@ -348,10 +351,9 @@ plugin.init = function() {
 		return _params;
 	};
 };
-//FIXME
 /**
  * @cfg {Object} inReplyTo
- * 
+ * Entry which is the parent for the current reply.
  */
 
 Echo.Plugin.create(plugin);
