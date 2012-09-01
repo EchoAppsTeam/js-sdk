@@ -28,7 +28,7 @@ Echo.SocialChatter.Event.prototype.getData = function(dataString) {
 };
 
 Echo.SocialChatter.Event.prototype.calcDates = function(type, display) {
-	type = type.charAt(0).toUpperCase() + type.substr(1);
+	type = Echo.Utils.capitalize(type);
 	var content = this.data;
 	if (!content["event" + type]) return;
 	var timestamp = content["event" + type];

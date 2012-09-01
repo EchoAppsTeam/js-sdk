@@ -217,13 +217,13 @@ Echo.UserSession._construct = function(config) {
 			user.config = new Echo.Configuration(config, user._getDefaultConfig());
 			user._listenEvents();
 			user._init(callback);
-	};
+	}
 	return user;
 };
 
 Echo.UserSession._maybeDelegate = function(config) {
 	var user = this;
-	var name = config.key.charAt(0).toUpperCase() + config.key.slice(1);
+	var name = Echo.Utils.capitalize(config.key);
 	var handler = user["_" + config.action + name];
 	return handler
 		? handler.call(this, config.arg || [])
