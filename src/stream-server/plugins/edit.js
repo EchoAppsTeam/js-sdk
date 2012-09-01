@@ -210,7 +210,7 @@ plugin.methods._prepareContent = function() {
 };
 
 plugin.methods._prepareActivity = function(verb, type, data) {
-	return (!data) ? {} : {
+	return (!data) ? [] : {
 		"object": {
 			"objectTypes": ["http://activitystrea.ms/schema/1.0/" + type],
 			"content": data
