@@ -1,3 +1,4 @@
+(function(){
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation
  * Adds several moderation controls to change item status. Besides it provides the opportunity to ban specific user or change his privileges.
@@ -510,3 +511,5 @@ plugin.css = function() {
 }();
 
 Echo.Plugin.create(plugin);
+
+})();
