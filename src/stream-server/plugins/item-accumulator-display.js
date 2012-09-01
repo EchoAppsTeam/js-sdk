@@ -1,3 +1,5 @@
+(function() {
+
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay
  * Shows one of the item accumulators in the top right corner of each item in the Echo Stream control.
@@ -122,3 +124,5 @@ plugin.methods._animateCounter = function(bgColor) {
 plugin.css = '.{plugin.class:accumulatorContainer} { float: right; margin-right: 7px; }';
 
 Echo.Plugin.create(plugin);
+
+})();
