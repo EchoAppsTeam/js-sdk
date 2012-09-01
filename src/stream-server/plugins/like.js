@@ -2,15 +2,16 @@
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Like
- * Adds extra controls Like/Unlike to each item in the Echo Stream control. Note that these controls will appear only for authenticated users.
+ * Adds extra controls Like/Unlike to each item in the Echo Stream control.
+ * Note that these controls will appear only for authenticated users.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         "target": document.getElementById("echo-stream"),
- *         "appkey": "test.echoenabled.com",
- *         "plugins": [{
- *             "name": "Like"
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "test.echoenabled.com",
+ * 		"plugins": [{
+ * 			"name": "Like"
+ * 		}]
+ * 	});
  *
  * @extends Echo.Plugin
  */
@@ -58,6 +59,9 @@ plugin.events = {
 
 plugin.template = '<div class="{plugin.class:likedBy}"></div>';
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.likedBy = function(element) {
 	var plugin = this;
 	var item = this.component;
@@ -180,6 +184,12 @@ Echo.Plugin.create(plugin);
 
 (function() {
 
+/**
+ * @class Echo.StreamServer.Controls.Facepile.Item.Plugins.Like
+ * Adds extra controls to items in the Echo Facepile control.
+ *
+ * @extends Echo.Plugin
+ */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
 
 plugin.init = function() {
@@ -187,11 +197,17 @@ plugin.init = function() {
 };
 
 plugin.labels = {
+	/**
+	 * @echo_label
+	 */
 	"unlikeOnBehalf": "Unlike on behalf of this user"
 };
 
 plugin.template = '<img class="{plugin.class:adminUnlike}" src="' + Echo.Loader.getURL("sdk/images/container/closeWindow.png") + '" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
 
+/**
+ * @echo_renderer
+ */
 plugin.component.renderers.container = function(element) {
 	this.parentRenderer("container", arguments);
 	if (this.component.user.is("admin")) {
@@ -199,6 +215,9 @@ plugin.component.renderers.container = function(element) {
 	}
 };
 
+/**
+ * @echo_renderer
+ */
 plugin.renderers.adminUnlike = function(element) {
 	var plugin = this;
 	var item = this.component;
