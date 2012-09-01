@@ -31,7 +31,7 @@ stream.init = function() {
 };
 
 stream.config = {
-	/*
+	/**
 	 * @cfg {Object} children
 	 * Specifies the children pagination feature behavior.
 	 * It includes several options.
