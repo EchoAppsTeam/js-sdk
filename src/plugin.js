@@ -1,3 +1,5 @@
+(function() {
+
 /**
  * @class Echo.Plugin
  * Foundation class implementing core logic to create plugins and manipulate with them.
@@ -64,11 +66,6 @@ Echo.Plugin.create = function(manifest) {
 	constructor.dependencies = manifest.dependencies;
 
 	Echo.Utils.inherit(constructor, Echo.Plugin);
-
-	// copy destroy method to the list of methods
-	if (manifest.destroy) {
-		manifest.methods.destroy = manifest.destroy;
-	}
 
 	if (manifest.methods) {
 		$.extend(constructor.prototype, manifest.methods);
@@ -469,7 +466,7 @@ Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
 	var value = component.config.get(
 		this._normalize(key),
 		this.plugin._manifest("config")[key]);
-	return typeof value == "undefined"
+	return typeof value === "undefined"
 		? askParent
 			? component.config.get(key, defaults)
 			: defaults
@@ -545,3 +542,5 @@ Echo.Plugin.Events.prototype.subscribe = function(params) {
 Echo.Plugin.Events.prototype.unsubscribe = function(params) {
 	this.plugin.component.events.unsubscribe(params);
 };
+
+})();
