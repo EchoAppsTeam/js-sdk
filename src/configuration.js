@@ -1,3 +1,5 @@
+(function() {
+
 /**
  * @class Echo.Configuration
  * Class implements the interface for convenient work with different configurations.
@@ -51,13 +53,13 @@ Echo.Configuration = function(master, slave, normalizer) {
  */
 Echo.Configuration.prototype.get = function(key, defaults) {
 	var k = key;
-	if (typeof k != "string") {
+	if (typeof k !== "string") {
 		k = k.join(".");
 	}
 	if (!this.cache.hasOwnProperty(k)) {
 		this.cache[k] = Echo.Utils.getNestedValue(this.data, key);
 	}
-	return typeof this.cache[k] == "undefined" ? defaults : this.cache[k];
+	return typeof this.cache[k] === "undefined" ? defaults : this.cache[k];
 };
 
 /**
@@ -76,7 +78,7 @@ Echo.Configuration.prototype.get = function(key, defaults) {
 Echo.Configuration.prototype.set = function(key, value) {
 	var keys = key.split(/\./);
 	delete this.cache[key];
-	if (typeof value == "object") {
+	if (typeof value === "object") {
 		this._clearCacheByPrefix(key);
 	}
 	Echo.Utils.setNestedValue(this.data, key, this.normalize(keys.pop(), value));
@@ -134,3 +136,5 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 		}
 	});
 };
+
+})();
