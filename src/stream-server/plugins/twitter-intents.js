@@ -1,3 +1,5 @@
+(function() {
+
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents
  * Adds the Twitter intents controls into the item UI and updates the item UI to look and behave like a Twitter item. The item UI update includes:
@@ -45,7 +47,7 @@ plugin.init = function() {
 	item.config.set("plugins.Like.enabled", false);
 	item.config.set("plugins.Reply.enabled", false);
 
-	this.extendTemplate("insertBefore", "authorName", plugin.templates.usernameTemplate);
+	this.extendTemplate("insertBefore", "authorName", plugin.templates.username);
 
 	item.addButtonSpec(this.name, this._assembleButton("tweet"));
 	item.addButtonSpec(this.name, this._assembleButton("retweet"));
@@ -84,34 +86,18 @@ plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.onRender": function(topic, args) {
 		var activeClass = this.cssPrefix + "activeButton";
 		var item = this.component;
-			$.map(item.buttons[this.name], function(name) {
-				name.element.unbind("click").unbind("mouseover mouseout")
-					.hover(
-						function() { name.element.addClass(activeClass); },
-						function() { name.element.removeClass(activeClass); }
-					);
-			});
-			window.twttr && window.twttr.widgets.load();
+		$.map(item.buttons[this.name], function(name) {
+			name.element.unbind("click").unbind("mouseover mouseout")
+				.hover(
+					function() { name.element.addClass(activeClass); },
+					function() { name.element.removeClass(activeClass); }
+				);
+		});
+		window.twttr && window.twttr.widgets.load();
 	}
 };
 
-plugin.templates = {
-	"usernameTemplate": '<div class="{plugin.class:tweetUserName} echo-linkColor"></div>'
-};
-
-/**
- * @echo_renderer
- */
-plugin.renderers.tweetUserName = function(element) {
-	var item = this.component;
-	return element.html(Echo.Utils.hyperlink({
-		"href": item.get("data.actor.id"),
-		"caption": this._extractTwitterID()
-	}, {
-		"openInNewWindow": item.config.get("openLinksInNewWindow"),
-		"skipEscaping": true
-	}));
-};
+plugin.templates.username = '<div class="{plugin.class:tweetUserName} echo-linkColor"></div>';
 
 /**
  * @echo_renderer
@@ -162,6 +148,20 @@ plugin.component.renderers._buttonsDelimiter = function(element) {
 
 	return item.parentRenderer("_buttonsDelimiter", arguments)
 		.find("span[class*='button-delim']").eq(posDelimiter).text(" | ");
+};
+
+/**
+ * @echo_renderer
+ */
+plugin.renderers.tweetUserName = function(element) {
+	var item = this.component;
+	return element.html(Echo.Utils.hyperlink({
+		"href": item.get("data.actor.id"),
+		"caption": this._extractTwitterID()
+	}, {
+		"openInNewWindow": item.config.get("openLinksInNewWindow"),
+		"skipEscaping": true
+	}));
 };
 
 plugin.methods._assembleButton = function(name) {
@@ -217,3 +217,5 @@ plugin.css =
 	".{plugin.class:tweetScreenName} { font-size: 11px; font-weight: normal; margin-left: 4px; padding-top: 1px; }";
 
 Echo.Plugin.create(plugin);
+
+})();
