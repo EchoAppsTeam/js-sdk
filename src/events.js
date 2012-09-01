@@ -2,17 +2,20 @@
 
 /**
  * @class Echo.Events
- * Library for exchanging messages between components on the page. It also provides external interface for users to subscribe to a certain events (like "app was rendered", "user logged in", etc).
+ * Library for exchanging messages between components on the page. It also
+ * provides external interface for users to subscribe to a certain events
+ * (like "app was rendered", "user logged in", etc).
  *
  * Contexts used in this library are complex identifiers constructed using the following rules:
- *     <contextId> :: "<id>" or "<parentContextID>/<id>", where
- *     <id> :: some unique identifier assigned to component
- *     <parentContextID> :: "<contextID>"
+ * 	<contextId> :: "<id>" or "<parentContextID>/<id>", where
+ * 	<id> :: some unique identifier assigned to component
+ * 	<parentContextID> :: "<contextID>"
  */
 Echo.Events = {};
 
 /**
- * Function allowing to subscribe to an event with a specific callback function and topic.
+ * Function allowing to subscribe to an event with a specific callback function
+ * and topic.
  *
  * @static
  * @param {Object} params
@@ -25,7 +28,8 @@ Echo.Events = {};
  * Unique identifier for inter-component communication.
  *
  * @param {Boolean} [params.once=false]
- * Specifies that provided handler should be executed exactly once (handler will be unsubscribed right before its execution).
+ * Specifies that provided handler should be executed exactly once (handler will
+ * be unsubscribed right before its execution).
  *
  * @param {Function} params.handler
  * Callback function which will be called when event is published
@@ -147,10 +151,11 @@ Echo.Events.unsubscribe = function(params) {
  * Indicates whether a given event should be propagated into the parent contexts.
  *
  * @param {Boolean} [params.propagation=true]
- * Indicates whether a given event should be propagated into the child contexts AND executed for the current context.
+ * Indicates whether a given event should be propagated into the child contexts
+ * AND executed for the current context.
  *
  * @param {Boolean} [params.global=true]
- * Specifies whether the event should be also published to "global" context or not
+ * Specifies whether the event should be also published to "global" context or not.
  */
 Echo.Events.publish = function(params) {
 	params = $.extend({
