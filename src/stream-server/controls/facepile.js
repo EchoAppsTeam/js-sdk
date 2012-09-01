@@ -26,10 +26,10 @@ var pile = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile");
 pile.init = function() {
 	// data can be defined explicitly
 	// in this case we do not make API requests
-	if ($.isEmptyObject(this.data)) {
+	if ($.isEmptyObject(this.get("data"))) {
 		this._request();
 	} else {
-		this.data.itemsPerPage = this.data.itemsPerPage || 2;
+		this.set("data.itemsPerPage", this.get("data.itemsPerPage", 2));
 		this.config.set("liveUpdates", false);
 		this._initialResponseHandler(this.data);
 	}
@@ -118,16 +118,16 @@ pile.renderers.more = function(element) {
 		return element.hide();
 	}
 	element.empty().show();
-	var count = this.count.total - this.count.visible;
+	var count = this.get("count.total") - this.get("count.visible");
 	var caption = (count > 0 ? count + " " : "") + this.labels.get("more");
-	var linkable = !this._fromExternalData() || this.count.visible < this.users.length;
+	var linkable = !this._fromExternalData() || this.get("count.visible") < this.get("users").length;
 	if (linkable) {
 		var link = Echo.Utils.hyperlink({"caption": caption});
 		element.addClass("echo-linkColor").append(link);
 	} else {
 		element.removeClass("echo-linkColor").append(caption);
 	}
-	this.moreRequestInProgress = false;
+	this.set("moreRequestInProgress", false);
 	if (linkable) {
 		element.one("click", function() {
 			self._getMoreUsers();
@@ -141,24 +141,25 @@ pile.renderers.more = function(element) {
  */
 pile.renderers.actors = function(element) {
 	var self = this, usersDOM = [];
+	var cssPrefix = this.get("cssPrefix");
 	var item = this.config.get("item");
 
-	if (!this.users.length || !item.avatar && !item.text) {
+	if (!this.get("users").length || !item.avatar && !item.text) {
 		return element.empty();
 	}
 
 	var action = (item.avatar && !item.text ? "addClass" : "removeClass");
-	element[action](this.cssPrefix + "only-avatars");
+	element[action](cssPrefix + "only-avatars");
 	var wrap = function(text, name) {
 		return self.substitute({
 			"template": "<span {data:classAttr}>{data:text}</span>",
 			"data": {
-				"classAttr": name ? 'class="' + self.cssPrefix + name + '"' : '',
+				"classAttr": name ? 'class="' + cssPrefix + name + '"' : '',
 				"text": text
 			}
 		});
 	};
-	$.map(this.users.slice(0, this.count.visible), function(user) {
+	$.map(this.get("users").slice(0, this.get("count.visible")), function(user) {
 		usersDOM.push(user.instance.dom.render());
 	});
 	var last;
@@ -209,7 +210,7 @@ pile.methods._fromExternalData = function() {
 };
 
 pile.methods._request = function() {
-	var pile = this;
+	var self = this;
  	var request = this.get("request");
 	if (!request) {
 		request = Echo.StreamServer.API.request({
@@ -221,10 +222,10 @@ pile.methods._request = function() {
 			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
 			"recurring": this.config.get("liveUpdates"),
 			"onError": function(data) {
-				pile.showMessage({"type": "error", "data": data});
+				self.showMessage({"type": "error", "data": data});
 			},
 			"onData": function(data, extra) {
-				pile["_" + extra.requestType + "ResponseHandler"](data);
+				self["_" + extra.requestType + "ResponseHandler"](data);
 			}
 		});
 		this.set("request", request);
@@ -233,9 +234,10 @@ pile.methods._request = function() {
 };
 
 pile.methods._requestMoreItems = function() {
-	var pile = this, query = this.config.get("query");
-	if (typeof this.nextPageAfter != "undefined") {
-		query = 'pageAfter:"' + this.nextPageAfter + '" ' + query;
+	var self = this, query = this.config.get("query");
+	var nextPageAfter = this.get("nextPageAfter");
+	if (typeof nextPageAfter !== "undefined") {
+		query = 'pageAfter:"' + nextPageAfter + '" ' + query;
 	}
 	var request = Echo.StreamServer.API.request({
 		"endpoint": "search",
@@ -244,35 +246,36 @@ pile.methods._requestMoreItems = function() {
 			"appkey": this.config.get("appkey")
 		},
 		"onError": function(data) {
-			pile.showMessage({"type": "error", "data": data});
+			self.showMessage({"type": "error", "data": data});
 		},
 		"onData": function(data) {
-			pile._initialResponseHandler(data);
+			self._initialResponseHandler(data);
 		}
 	});
 	request.send();
 };
 
 pile.methods._initialResponseHandler = function(data) {
-	if (data.itemsPerPage && data.itemsPerPage != this.config.get("itemsPerPage")) {
+	if (data.itemsPerPage && data.itemsPerPage !== this.config.get("itemsPerPage")) {
 		this.config.set("itemsPerPage", +data.itemsPerPage);
 	}
 	if (this._fromExternalData()) {
-		this.count.total = this.config.get("totalUsersCount", 0);
+		this.set("count.total", this.config.get("totalUsersCount", 0));
 	}
-	this.nextPageAfter = data.nextPageAfter;
+	this.set("nextPageAfter", data.nextPageAfter);
 	if (!data.entries.length) {
-		if (!this.isViewComplete) {
-			this.isViewComplete = true;
+		if (!this.get("isViewComplete")) {
+			this.set("isViewComplete", true);
 			this.dom.render();
 			this.ready();
 		}
 		return;
 	}
-	if (!this.count.visible) {
-		this.count.visible = this._fromExternalData()
+	if (!this.get("count.visible")) {
+		this.set("count.visible", this._fromExternalData()
 			? this.config.get("initialUsersCount", this.config.get("itemsPerPage"))
-			: this.config.get("itemsPerPage");
+			: this.config.get("itemsPerPage")
+		);
 	}
 	this._processResponse(data);
 };
@@ -292,7 +295,7 @@ pile.methods._processResponse = function(data, isLive) {
 				if (self._isUniqueUser(entry)) {
 					fetchMoreUsers = false;
 				}
-				var user = self.uniqueUsers[entry.actor.id];
+				var user = self.get("uniqueUsers." + entry.actor.id);
 				if (user) {
 					// user is already in the list -> increment counter and return
 					user.itemsCount++;
@@ -312,18 +315,19 @@ pile.methods._processResponse = function(data, isLive) {
 };
 
 pile.methods._isRemoveAction = function(entry) {
-	return entry.verbs && entry.verbs[0] == "http://activitystrea.ms/schema/1.0/delete";
+	return entry.verbs && entry.verbs[0] === "http://activitystrea.ms/schema/1.0/delete";
 };
 
 pile.methods._output = function(isLive, fetchMoreUsers) {
 	if (this._fromExternalData()) {
-		this.count.total = Math.max(this.users.length, this.count.total);
+		this.set("count.total", Math.max(this.get("users").length, this.get("count.total")));
 	} else {
-		this.count.total = this.count.visible = this.users.length;
+		this.set("count.total", this.get("users").length);
+		this.set("count.visible", this.get("users").length);
 	}
-	this.count.visible = Math.min(this.count.visible, this.users.length);
-	if (!this.count.total) {
-		this.isViewComplete = false;
+	this.set("count.visible", Math.min(this.get("count.visible"), this.get("users").length));
+	if (!this.get("count.total")) {
+		this.set("isViewComplete", false);
 	}
 	if (!isLive && fetchMoreUsers) {
 		this._getMoreUsers();
@@ -334,7 +338,7 @@ pile.methods._output = function(isLive, fetchMoreUsers) {
 };
 
 pile.methods._isUniqueUser = function(entry) {
-	return !this.uniqueUsers[entry.actor.id];
+	return !this.get("uniqueUsers." + entry.actor.id);
 };
 
 pile.methods._initItem = function(entry, callback) {
@@ -351,43 +355,46 @@ pile.methods._initItem = function(entry, callback) {
 };
 
 pile.methods._updateStructure = function(item) {
-	var user = this.uniqueUsers[item.get("data.id")] = {
+	this.set("uniqueUsers." + item.get("data.id"), {
 		"itemsCount": 1,
 		"instance": item
-	};
-	this.users[user.instance.isYou() ? "unshift" : "push"](user);
+	});
+	var user = this.get("uniqueUsers." + item.get("data.id"));
+	this.get("users")[user.instance.isYou() ? "unshift" : "push"](user);
 };
 
 pile.methods._maybeRemoveItem = function(entry) {
-	var user = this.uniqueUsers[entry.actor.id];
+	var user = this.get("uniqueUsers." + entry.actor.id);
 	// if we have move than one item posted by the same user,
 	// we decrement the counter, but leave the user in the list
 	if (!user || --user.itemsCount) return;
 	var index;
-	$.each(this.users, function(i, u) {
-		if (u.instance.data.id == entry.actor.id) {
+	$.each(this.get("users"), function(i, u) {
+		if (u.instance.data.id === entry.actor.id) {
 			index = i;
 			return false; // break
 		}
 	});
-	this.users.splice(index, 1);
-	delete this.uniqueUsers[entry.actor.id];
+	this.get("users").splice(index, 1);
+	this.remove("uniqueUsers." + entry.actor.id);
 };
 
 pile.methods._getMoreUsers = function() {
 	if (this._fromExternalData()) {
-		this.count.visible += this.config.get("itemsPerPage");
-		if (this.count.visible > this.users.length) {
-			this.count.visible = this.users.length;
+		var usersLength = this.get("users").length;
+		var currentVisible = this.get("count.visible");
+		this.set("count.visible", currentVisible += this.config.get("itemsPerPage"));
+		if (this.get("count.visible") > usersLength) {
+			this.set("count.visible", usersLength);
 		}
 		this.dom.render();
 	} else {
-		if (!this.moreRequestInProgress) {
+		if (!this.get("moreRequestInProgress")) {
 			this.showMessage({
 				"type": "loading",
 				"target": this.dom.get("more")
 			});
-			this.moreRequestInProgress = true;
+			this.set("moreRequestInProgress", true);
 		}
 		this._requestMoreItems();
 	}
@@ -435,12 +442,12 @@ item.renderers.avatar = function(element) {
 	var self = this;
 	if (this.config.get("avatar")) {
 		var img = Echo.Utils.loadImage(
-			this.data.avatar,
+			this.get("data.avatar"),
 			this.user.config.get("defaultAvatar")
 		);
 		element.empty().append(img);
 		if (!this.config.get("text")) {
-			element.attr("title", this.data.title);
+			element.attr("title", this.get("data.title"));
 		}
 	} else {
 		element.hide();
@@ -450,7 +457,7 @@ item.renderers.avatar = function(element) {
 
 item.renderers.title = function(element) {
 	if (this.config.get("text")) {
-		element.empty().append(this.isYou() ? this.labels.get("you") : this.data.title);
+		element.empty().append(this.isYou() ? this.labels.get("you") : this.get("data.title"));
 	} else {
 		element.hide();
 	}
@@ -458,7 +465,8 @@ item.renderers.title = function(element) {
 };
 
 item.methods.isYou = function() {
-	return this.data.id && this.data.id === this.user.get("identityUrl");
+	var id = this.get("data.id");
+	return id && id === this.user.get("identityUrl");
 };
 
 item.css =
