@@ -1065,7 +1065,7 @@ stream.methods.queueActivity = function(params) {
 	var index = this._getActivityProjectedIndex(byCurrentUser, params);
 	var data = {
 		"action": params.action,
-		"item": item,
+		"item": params.item,
 		"type": params.type || "",
 		"affectCounter": params.action === "add",
 		"priority": params.priority,

@@ -416,7 +416,7 @@ Echo.UserSession._onInit = function(callback) {
 };
 
 Echo.UserSession._attrLocation = function(key) {
-	return $.inArray(key, ["roles", "state", "markers"]) >= 0
+	return ~$.inArray(key, ["roles", "state", "markers"])
 		? this.data.echo
 		: this.identity;
 };
