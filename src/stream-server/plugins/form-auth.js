@@ -149,4 +149,4 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-});
+})();
