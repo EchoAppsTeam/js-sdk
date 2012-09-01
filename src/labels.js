@@ -25,7 +25,7 @@
  * @param {String} namespace
  * Component namespace.
  *
- * @return {Class}
+ * @return {Object}
  * The reference to the given Echo.Labels class instance.
  */
 

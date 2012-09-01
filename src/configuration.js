@@ -23,7 +23,7 @@
  * Function which is applied for every field value. You can use this function
  * if any additional processing of the config field value is required.
  *
- * @return {Class}
+ * @return {Object}
  * Reference to the given Echo.Configuration class instance.
  */
 Echo.Configuration = function(master, slave, normalizer) {

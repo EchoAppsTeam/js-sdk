@@ -477,7 +477,7 @@ Echo.Plugin.Config.prototype.remove = function(key) {
  * @param {Object} data
  * Configuration data to be merged with the parent config.
  *
- * @return {Class}
+ * @return {Object}
  * Echo.Configuration instance.
  */
 Echo.Plugin.Config.prototype.assemble = function(data) {

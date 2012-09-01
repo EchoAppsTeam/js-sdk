@@ -23,7 +23,7 @@
  * no avatar information defined in the user profile. Also used for
  * anonymous users.
  *
- * @return {Class}
+ * @return {Object}
  * The reference to the Echo.UserSession class.
  */
 Echo.UserSession = function(config) {

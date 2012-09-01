@@ -76,7 +76,7 @@ Echo.IdentityServer.API.Request.prototype._whoami = function(args) {
  * @static
  * Alias for the class constructor.
  * @param {Object} Configuration data.
- * @return {Class} New class instance.
+ * @return {Object} New class instance.
  */
 Echo.IdentityServer.API.request = function(config) {
 	return (new Echo.IdentityServer.API.Request(config));

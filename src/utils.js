@@ -589,13 +589,13 @@ Echo.Utils.getUniqueString = function() {
  *
  * This function performs prototype inheritance of the JS objects.
  *
- * @param {Class} child
+ * @param {Object} child
  * Class which should be entended.
  *
- * @param {Class} parent
+ * @param {Object} parent
  * Class which should be used as a parent for the first class.
  *
- * @return {Class}
+ * @return {Object}
  * Resulting class.
  */
 Echo.Utils.inherit = function(child, parent) {
@@ -636,7 +636,7 @@ Echo.Utils.objectToQuery = function(data) {
  * @param {String} name
  * Name of the component which we need to access.
  *
- * @return {Class}
+ * @return {Object}
  * Reference to the necessary JS class.
  */
 Echo.Utils.getComponent = function(name) {

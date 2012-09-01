@@ -157,6 +157,7 @@ Echo.Utils.inherit(Echo.Product, Echo.Control);
 
 /**
  * @static
+ * @method
  * Function which creates a product object using it manifest declaration.
  *
  * @inheritdoc Echo.Control#create
@@ -198,7 +199,7 @@ Echo.Product.prototype._initializers.views = function() {
  * @param {String} name
  * Specifies the name of the view to be accessed.
  *
- * @return {Class}
+ * @return {Object}
  * Class referense.
  */
 Echo.Product.prototype.getView = function(name) {

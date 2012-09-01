@@ -44,7 +44,7 @@ Echo.Control = function() {};
  * @param {String} [manifest.css]
  * Specifies the CSS rules for the control.
  *
- * @return {Class}
+ * @return {Object}
  * Reference to the generated control class.
  */
 Echo.Control.create = function(manifest) {
@@ -486,7 +486,7 @@ Echo.Control.prototype.showError = function(data, options) {
  * @param {String} name
  * Specifies plugin name.
  *
- * @return {Class}
+ * @return {Object}
  * Instance of the corresponding plugin.
  */
 Echo.Control.prototype.getPlugin = function(name) {
