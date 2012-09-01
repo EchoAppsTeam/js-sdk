@@ -1,3 +1,5 @@
+(function() {
+
 /**
  * @class Echo.IdentityServer.Controls.Auth
  * Echo Auth control displays user login status and allows to sign in using different social identities.
@@ -123,6 +125,15 @@ auth.labels = {
 	"signup": "signup"
 };
 
+auth.events = {
+	"Echo UserSession.onInvalidate": {
+		"context": "global",
+		"handler": function() {
+			$.fancybox.close();
+		}
+	}
+};
+
 auth.templates.anonymous =
 	'<div class="{class:userAnonymous}">' +
 		'<span class="{class:login} echo-linkColor echo-clickable">' +
@@ -146,15 +157,6 @@ auth.templates.logged =
 		'</div>' +
 		'<div class="echo-clear"></div>' +
 	'</div>';
-
-auth.events = {
-	"Echo UserSession.onInvalidate": {
-		"context": "global",
-		"handler": function() {
-			$.fancybox.close();
-		}
-	}
-};
 
 /**
  * @echo_renderer
@@ -282,9 +284,9 @@ auth.methods._appendSessionID = function(url) {
 	var session = parts["query"]
 		? parts["query"].match(/=$/) ? id : "&sessionID=" + id
 		: "sessionID=" + id;
-	var url = "{data:scheme}://{data:domain}{data:path}?{data:query}{data:fragment}";
+	var template = "{data:scheme}://{data:domain}{data:path}?{data:query}{data:fragment}";
 	return this.substitute({
-		"template": url,
+		"template": template,
 		"data": {
 			"scheme": parts["scheme"] || "http",
 			"domain": parts["domain"],
@@ -304,3 +306,5 @@ auth.css =
 	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }";
 
 Echo.Control.create(auth);
+
+})();
