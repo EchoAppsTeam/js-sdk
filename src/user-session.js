@@ -1,12 +1,16 @@
+(function(){
+
 /**
  * @singleton
  * @class Echo.UserSession
  * Class implements the interface to work with the user object.
- * The Echo.UserSession class is used in pretty much all applications built in top of Echo JS SDK.
+ * The Echo.UserSession class is used in pretty much all applications
+ *  built in top of Echo JS SDK.
  *
  * @constructor
- * Class constructor which accepts the object which represents the configuration as the argument.
- * The class is a singleton, i.e. one user instance is shared across the different apps on the page. 
+ * Class constructor which accepts the object which represents the
+ * configuration as the argument. The class is a singleton, i.e. one
+ * user instance is shared across the different apps on the page. 
  * 
  * @param {Object} config
  * Class configuration, which is an object with the following fields:
@@ -15,7 +19,9 @@
  * Echo application key to make user initialization request.
  *
  * @param {Object} [config.defaultAvatar]
- * Default avatar URL which will be used for the user in case there is no avatar information defined in the user profile. Also used for the anonymous users.
+ * Default avatar URL which will be used for the user in case there is
+ * no avatar information defined in the user profile. Also used for
+ * anonymous users.
  *
  * @return {Class}
  * The reference to the Echo.UserSession class.
@@ -27,7 +33,8 @@ Echo.UserSession = function(config) {
 /**
  * Method to define specific user object field value.
  *
- * This function allows to define the value for the corresponding field in the user object.
+ * This function allows to define the value for the corresponding
+ * field in the user object.
  * 
  * @param {String} key
  * Defines the key where the given data should be stored.
@@ -50,14 +57,16 @@ Echo.UserSession.set = function(key, value) {
 /**
  * Method to access specific user object field.
  *
- * This function returns the corresponding value of the given key or the default value
- * if specified in the second argument.
+ * This function returns the corresponding value of the given key or the
+ * default value if specified in the second argument.
  * 
  * @param {String} key
  * Defines the key for which the value needs to be retrieved.
  *
  * @param {Mixed} [defaults]
- * Default value if no corresponding key was found in the user object. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ * Default value if no corresponding key was found in the user object.
+ * Note: only the `undefined` JS statement triggers the default value usage.
+ * The `false`, `null`, `0`, `[]` are considered as a proper value.
  *
  * @return {Mixed}
  * The corresponding value found in the user object.
@@ -77,7 +86,10 @@ Echo.UserSession.get = function(key, defaults) {
 /**
  * Method for checking if the user object conforms a certain condition.
  *      
- * The argument of the function defines the condition which should be checked. The list of built-in conditions is pre-defined. For instance, you can check if the used is logged in or not by passing the "logged" string as the function value.
+ * The argument of the function defines the condition which should be checked.
+ * The list of built-in conditions is pre-defined. For instance, you can check
+ * if the used is logged in or not by passing the "logged" string as the function
+ * value.
  *              
  * @param {String} key
  * Defines the name of the condition to check.
@@ -93,7 +105,8 @@ Echo.UserSession.is = function(key) {
 };
 
 /**
- * Method to check if the user object has a given value defined for a certain field.
+ * Method to check if the user object has a given value defined for a certain
+ * field.
  *      
  * @param {String} key
  * Defines the name of the user object field.
@@ -117,9 +130,11 @@ Echo.UserSession.has = function(key, value) {
 };
 
 /**
- * Method to check if the value of a certain user object field belongs to the array of values.
+ * Method to check if the value of a certain user object field belongs to the
+ * array of values.
  *
- * This function is very similar to the Echo.UserSession.has with the difference that the value of the second argument should be Array.
+ * This function is very similar to the Echo.UserSession.has with the difference
+ * that the value of the second argument should be `Array`.
  *
  * @param {String} key
  * Defines the name of the user object field.
@@ -141,7 +156,7 @@ Echo.UserSession.any = function(key, values) {
 			if (!user.identity) return false;
 			$.each(values, function(i, value) {
 				var data = user.get(key, {});
-				if ((typeof data == "string" && data == value) ||
+				if ((typeof data === "string" && data === value) ||
 					($.isArray(data) && $.inArray(value, data) >= 0)) {
 						satisfies = true;
 						return false; // break
@@ -155,16 +170,18 @@ Echo.UserSession.any = function(key, values) {
 /**
  * Method to log the user out.
  *
- * This function is async, so you should pass the callback if you want to perform any additional operations after the logout event.
+ * This function is async, so you should pass the callback if you want
+ * to perform any additional operations after the logout event.
  *
  * @param {Function} callback
- * The callback executed as soon as the logout action was completed. The callback is executed without arguments.
+ * The callback executed as soon as the logout action was completed.
+ * The callback is executed without arguments.
  */
 Echo.UserSession.logout = function(callback) {
 	var user = this;
 	if (!user.is("logged")) {
 		user._reset({});
-		(callback || function(){})();
+		callback && callback();
 		return;
 	}
 	user._logoutRequest({
@@ -179,7 +196,7 @@ Echo.UserSession._construct = function(config) {
 	if (!config || !config.appkey) return;
 	var user = this;
 	var callback = function() {
-		(config.ready || function() {}).call(user);
+		config.ready && config.ready.call(user);
 	};
 	user.state = user.state || "init";
 	switch (user.state) {
@@ -253,20 +270,48 @@ Echo.UserSession._listenEvents = function() {
 		user._init(function() {
 			/**
 			 * @event onInvalidate
-			 * @echo_event Echo.UserSession.onInvalidate Triggered after user has logged in or logged out.
-			 * @param {String} topic Name of the event to subscribe (ex: "Echo.UserSession.onInvalidate").
-			 * @param {Object} data Object which is returned by the users/whoami API endpoint or empty object for logout events.
-			 * @param {Object} data.echo Echo section contains three elements.
-			 * @param {Array} data.echo.roles Array of roles.
-			 * @param {String} data.echo.state State of user.
-			 * @param {Array} data.echo.marker Markers act as hidden metadata for a user.
-			 * @param {Object} data.poco Contains user record representation in Portable Contacts format.
-			 * @param {Object} data.poco.entry Portable contacts object.
-			 * @param {Array} data.poco.entry.accounts Array of user identities held in this contact.
-			 * @param {String} data.poco.entry.id Unique user identifier automatically assigned by the platform.
-			 * @param {Number} data.poco.entry.startIndex The index of the first result returned in this response.
-			 * @param {Number} data.poco.entry.itemsPerPage The number of results returned per page in this response.
-			 * @param {Number} data.poco.entry.totalResults The total number of contacts found.
+			 * @echo_event Echo.UserSession.onInvalidate
+			 * Triggered after user has logged in or logged out.
+			 *
+			 * @param {String} topic
+			 * Name of the event to subscribe (ex: "Echo.UserSession.onInvalidate").
+			 *
+			 * @param {Object} data
+			 * Object which is returned by the users/whoami API endpoint or empty
+			 * object for logout events.
+			 * 
+			 * @param {Object} data.echo
+			 * Echo section contains three elements.
+			 *
+			 * @param {Array} data.echo.roles
+			 * Array of roles.
+			 *
+			 * @param {String} data.echo.state
+			 * State of user.
+			 *
+			 * @param {Array} data.echo.marker
+			 * Markers act as hidden metadata for a user.
+			 *
+			 * @param {Object} data.poco
+			 * Contains user record representation in Portable Contacts format.
+			 *
+			 * @param {Object} data.poco.entry
+			 * Portable contacts object.
+			 *
+			 * @param {Array} data.poco.entry.accounts
+			 * Array of user identities held in this contact.
+			 *
+			 * @param {String} data.poco.entry.id
+			 * Unique user identifier automatically assigned by the platform.
+			 *
+			 * @param {Number} data.poco.entry.startIndex
+			 * The index of the first result returned in this response.
+			 *
+			 * @param {Number} data.poco.entry.itemsPerPage
+			 * The number of results returned per page in this response.
+			 *
+			 * @param {Number} data.poco.entry.totalResults
+			 * The total number of contacts found.
 			 */
 			Echo.Events.publish({
 				"topic": "Echo.UserSession.onInvalidate",
@@ -299,26 +344,54 @@ Echo.UserSession._init = function(callback) {
 		user._reset(data);
 		/**
 		 * @event onInit
-		 * @echo_event Echo.UserSession.onInit Triggered when the user is initialized on the page.
-		 * @param {String} topic Name of the event to subscribe (ex: "Echo.UserSession.onInit").
-		 * @param {Object} data Object which is returned by the users/whoami API endpoint or empty object for logout events.
-		 * @param {Object} data.echo Echo section contains three elements.
-		 * @param {Array} data.echo.roles Array of roles.
-		 * @param {String} data.echo.state State of user.
-		 * @param {Array} data.echo.marker Markers act as hidden metadata for a user.
-		 * @param {Object} data.poco Contains user record representation in Portable Contacts format.
-		 * @param {Object} data.poco.entry Portable contacts object.
-		 * @param {Array} data.poco.entry.accounts Array of user identities held in this contact.
-		 * @param {String} data.poco.entry.id Unique user identifier automatically assigned by the platform.
-		 * @param {Number} data.poco.entry.startIndex The index of the first result returned in this response.
-		 * @param {Number} data.poco.entry.itemsPerPage The number of results returned per page in this response.
-		 * @param {Number} data.poco.entry.totalResults The total number of contacts found.
+		 * @echo_event Echo.UserSession.onInit
+		 * Triggered when the user is initialized on the page.
+		 *
+		 * @param {String} topic
+		 * Name of the event to subscribe (ex: "Echo.UserSession.onInit").
+		 *
+		 * @param {Object} data
+		 * Object which is returned by the users/whoami API endpoint or
+		 * empty object for logout events.
+		 *
+		 * @param {Object} data.echo
+		 * Echo section contains three elements.
+		 *
+		 * @param {Array} data.echo.roles
+		 * Array of roles.
+		 *
+		 * @param {String} data.echo.state
+		 * State of user.
+		 *
+		 * @param {Array} data.echo.marker
+		 * Markers act as hidden metadata for a user.
+		 *
+		 * @param {Object} data.poco
+		 * Contains user record representation in Portable Contacts format.
+		 *
+		 * @param {Object} data.poco.entry
+		 * Portable contacts object.
+		 *
+		 * @param {Array} data.poco.entry.accounts
+		 * Array of user identities held in this contact.
+		 *
+		 * @param {String} data.poco.entry.id
+		 * Unique user identifier automatically assigned by the platform.
+		 *
+		 * @param {Number} data.poco.entry.startIndex
+		 * The index of the first result returned in this response.
+		 *
+		 * @param {Number} data.poco.entry.itemsPerPage
+		 * The number of results returned per page in this response.
+		 *
+		 * @param {Number} data.poco.entry.totalResults
+		 * The total number of contacts found.
 		 */
 		Echo.Events.publish({
 			"topic": "Echo.UserSession.onInit",
 			"data": data
 		});
-		(callback || function(){})();
+		callback && callback();
 	});
 };
 
@@ -355,8 +428,6 @@ Echo.UserSession._extract = function(field, container, filter) {
 	return user.identity[field];
 };
 
-// functions delegated by the user.is(..) call
-
 Echo.UserSession._isLogged = function() {
 	var activeIdentities = this.get("activeIdentities");
 	return !!(activeIdentities && activeIdentities.length);
@@ -366,13 +437,9 @@ Echo.UserSession._isAdmin = function() {
 	return this.any("roles", ["administrator", "moderator"]);
 };
 
-// functions delegated by the user.set(..) call
-
 Echo.UserSession._setName = function(value) {
 	this.identity.displayName = value;
 };
-
-// functions delegated by the user.get(..) call
 
 Echo.UserSession._getActiveIdentities = function() {
 	var user = this;
@@ -416,20 +483,16 @@ Echo.UserSession._getSessionID = function() {
 	return Backplane.getChannelID();
 };
 
-// functions delegated by the user.has(..) call
-
 Echo.UserSession._hasIdentity = function(identityUrl) {
 	var user = this, hasIdentity = false;
 	$.each(user.data.identities, function(i, identity) {
-		if (identity.identityUrl && identity.identityUrl == identityUrl) {
+		if (identity.identityUrl && identity.identityUrl === identityUrl) {
 			hasIdentity = true;
 			return false; // break
 		}
 	});
 	return hasIdentity;	
 };
-
-// functions delegated by the user.any(..) call
 
 Echo.UserSession._anyMarker = function(value) {
 	return this.any("markers", value);
@@ -438,3 +501,5 @@ Echo.UserSession._anyMarker = function(value) {
 Echo.UserSession._anyRole = function(value) {
 	return this.any("roles", value);
 };
+
+})();
