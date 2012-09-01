@@ -165,7 +165,7 @@ plugin.renderers.compactField = function(element) {
  * Method to destroy the plugin.
  */
 plugin.methods.destroy = function() {
-	var plugin = this, item = this.component;
+	var plugin = this;
 	Echo.Utils.setNestedValue(Echo.Variables, plugin._getFormKey(), {
 		"submit": plugin.get("submit"),
 		"expanded": plugin.get("expanded")
