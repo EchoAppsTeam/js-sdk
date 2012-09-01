@@ -1,13 +1,15 @@
+(function() {
+
 /**
  * @class Echo.StreamServer.Controls.Submit
  * Echo Submit control which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank">Echo Submit API</a>
  *
- *     new Echo.StreamServer.Controls.Submit({
- *         "target": document.getElementById("submit"),
- *         "targetURL": "http://example.com/submit",
- *         "appkey": "test.js-kit.com",
- *     });
+ * 	new Echo.StreamServer.Controls.Submit({
+ * 		"target": document.getElementById("submit"),
+ * 		"targetURL": "http://example.com/submit",
+ * 		"appkey": "test.js-kit.com",
+ * 	});
  *
  * @extends Echo.Control
  *
@@ -36,29 +38,36 @@ submit.init = function() {
 submit.config = {
 	/**
 	 * @cfg {String} [targetURL=document.location.href]
-	 * Specifies the URI to which the submitted Echo item is related. This parameter will be used as a activity target value for the item.
+	 * Specifies the URI to which the submitted Echo item is related. 
+	 * This parameter will be used as a activity target value for the item.
 	 *
-	 *     new Echo.StreamServer.Controls.Submit({
-	 *         ...
-	 *         "targetURL": "http://somedomain.com/some_article.html",
-	 *         ...
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 		...
+	 * 		"targetURL": "http://somedomain.com/some_article.html",
+	 * 		...
+	 * 	});
 	 */
 	"targetURL": document.location.href,
 	/**
 	 * @cfg {Array} markers
-	 * This parameter is used to attach the markers metadata to the item during the item submission. The format of the value is the array array with the string values. Markers will be also displayed in the "Markers" field in the Submit form UI for Moderators and Administrators. For non-admin users the markers value will be submitted along with the other item content when the "Post" button is pressed.
+	 * This parameter is used to attach the markers metadata to the item
+	 * during the item submission. The format of the value is the array 
+	 * with the string values. Markers will be also displayed in the "Markers"
+	 * field in the Submit form UI for Moderators and Administrators.
+	 * For non-admin users the markers value will be submitted along with the
+	 * other item content when the "Post" button is pressed.
 	 *
-	 *     new Echo.StreamServer.Controls.Submit({
-	 *         ...
-	 *         "markers": ["marker1", "marker2", "marker3"],
-	 *         ...
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 		...
+	 * 		"markers": ["marker1", "marker2", "marker3"],
+	 * 		...
+	 * 	});
 	 */
 	"markers": [],
 	/**
 	 * @cfg {Object} source
-	 * Designates the initial item source (E.g. Twitter). You can override source name, URI and the corresponding icon.
+	 * Designates the initial item source (E.g. Twitter). You can override
+	 * source name, URI and the corresponding icon.
 	 *
 	 * @cfg {String} source.name
 	 * Source name.
@@ -69,50 +78,59 @@ submit.config = {
 	 * @cfg {String} source.icon
 	 * Source icon.
 	 *
-	 *     new Echo.StreamServer.Controls.Submit({
-	 *         ...
-	 *         "source": {
-	 *             "name": "ExampleSource",
-	 *             "uri": "http://example.com/",
-	 *             "icon": "http://example.com/images/source.png"
-	 *         },
-	 *         ...
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 		...
+	 * 		"source": {
+	 * 			"name": "ExampleSource",
+	 * 			"uri": "http://example.com/",
+	 * 			"icon": "http://example.com/images/source.png"
+	 * 		},
+	 * 		...
+	 * 	});
 	 */
 	"source": {},
 	/**
 	 * @cfg {Array} tags
-	 * This parameter is used to attach the tags metadata to the item during the item submission. The format of the value is the array array with the string values. Tags will be also displayed in the "Tags" field in the Submit form UI for Moderators and Administrators. For non-admin users the tags value will be submitted along with the other item content when the "Post" button is pressed.
+	 * This parameter is used to attach the tags metadata to the item during
+	 * the item submission. The format of the value is the array array with
+	 * the string values. Tags will be also displayed in the "Tags" field in
+	 * the Submit form UI for Moderators and Administrators. For non-admin
+	 * users the tags value will be submitted along with the other item
+	 * content when the "Post" button is pressed.
 	 *
-	 *     new Echo.StreamServer.Controls.Submit({
-	 *         ...
-	 *         "tags": ["tag1", "tag2", "tag3"],
-	 *         ...
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 		...
+	 * 		"tags": ["tag1", "tag2", "tag3"],
+	 * 		...
+	 * 	});
 	 */
 	"tags": [],
 	/**
 	 * @cfg {String} requestMethod
-	 * This parameter is used to specify the request method. Possible values are "GET" and "POST".
-	 * Setting parameter to "POST" has some restrictions.
-	 * We can't handle server response, UI won't show any waiting for the server responses actions.
+	 * This parameter is used to specify the request method. Possible values
+	 * are "GET" and "POST". Setting parameter to "POST" has some restrictions.
+	 * We can't handle server response, UI won't show any waiting for the
+	 * server responses actions.
 	 *
-	 *     new Echo.StreamServer.Controls.Submit({
-	 *         ...
-	 *         "requestMethod": "POST",
-	 *         ...
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 		...
+	 * 		"requestMethod": "POST",
+	 * 		...
+	 * 	});
 	 */
 	"requestMethod": "GET",
 	/**
 	 * @cfg {String} itemURIPattern
-	 * Allows to define item id pattern. The value of this parameter should be a valid URI with "{id}" placeholder which will indicate the place where unique id should be inserted. If this parameter is ommited in configuration or the URI is invalid it'll be ignored.
+	 * Allows to define item id pattern. The value of this parameter should be
+	 * a valid URI with "{id}" placeholder which will indicate the place where
+	 * unique id should be inserted. If this parameter is ommited in
+	 * configuration or the URI is invalid it'll be ignored.
 	 *
-	 *     new Echo.StreamServer.Controls.Submit({
-	 *         ...
-	 *         "itemURIPattern": "http://your-domain.com/path/{id}",
-	 *         ...
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 		...
+	 * 		"itemURIPattern": "http://your-domain.com/path/{id}",
+	 * 		...
+	 * 	});
 	 */
 	"itemURIPattern": undefined,
 	/**
@@ -128,24 +146,26 @@ submit.config = {
 	"actionString": "Type your comment here...",
 	/**
 	 * @cfg {Number} postingTimeout
-	 * Is used to specify the number of seconds after which Submit Form will show timeout error dialog if the server does not return anything. If the parameter value is 0 then the mentioned dialog won't never be shown.
+	 * Is used to specify the number of seconds after which Submit Form will show
+	 * timeout error dialog if the server does not return anything. If the parameter
+	 * value is 0 then the mentioned dialog won't never be shown.
 	 *
-	 *     new Echo.StreamServer.Controls.Submit({
-	 *         ...
-	 *         "postingTimeout": 15,
-	 *         ...
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 		...
+	 * 		"postingTimeout": 15,
+	 * 		...
+	 * 	});
 	 */
 	"postingTimeout": 30,
 	/**
 	 * @cfg {String} type
 	 * Allows to define item type. The value of this parameter should be a valid URI.
 	 *
-	 *     new Echo.StreamServer.Controls.Submit({
-	 *         ...
-	 *         "type": "http://echoenabled.com/activitystreams/schema/1.0/category",
-	 *         ...
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 		...
+	 * 		"type": "http://echoenabled.com/activitystreams/schema/1.0/category",
+	 * 		...
+	 * 	});
 	 */
 	"type": undefined,
 	"targetQuery": undefined
@@ -397,7 +417,9 @@ submit.renderers._metaFields = function(element, extra) {
 };
 
 /**
- * Method used for posting user provided content to the <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank"> Echo Submit</a> endpoint through <a href="http://wiki.aboutecho.com/w/page/53021402/Echo%20Submission%20Proxy" target="_blank"> Echo Submission Proxy</a>.
+ * Method used for posting user provided content to the
+ * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank"> Echo Submit</a>
+ * endpoint through <a href="http://wiki.aboutecho.com/w/page/53021402/Echo%20Submission%20Proxy" target="_blank"> Echo Submission Proxy</a>.
  */
 submit.methods.post = function() {
 	var self = this;
@@ -619,3 +641,5 @@ submit.css =
 		'.{class:metadataSubwrapper} input { outline: none; }' : '');
 
 Echo.Control.create(submit);
+
+})();
