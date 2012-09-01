@@ -185,7 +185,6 @@ suite.prototype.cases.expand = function(callback) {
 			item.dom.get("expandChildren").click();
 		}
 	});
-	console.log(item.get("children"));
 	item.set("data.hasMoreChildren", "true");
 	item.dom.render();
 };
