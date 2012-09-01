@@ -577,6 +577,11 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 					};
 
 					if (satisfies || item.get("byCurrentUser")) {
+						/**
+						 * @event Item.onReceive
+						 * @echo_event Echo.StreamServer.Controls.Stream.Item.onReceive
+						 * Triggered when new item is received.
+						 */
 						self.events.publish({
 							"topic": "Item.onReceive",
 							"data": {"item": {"data": item.data}},
@@ -908,6 +913,11 @@ stream.methods._spotUpdates.replace = function(item, options) {
 	}
 	if (item && item.dom.rendered()) {
 		item.dom.render({"name": "container", "recursive": true});
+		/**
+		 * @event onRerender
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onRerender
+		 * Triggered when the item is rerendered.
+		 */
 		item.events.publish({"topic": "onRerender"});
 	}
 };
@@ -915,6 +925,11 @@ stream.methods._spotUpdates.replace = function(item, options) {
 stream.methods._spotUpdates.delete = function(item, options) {
 	item.set("deleted", true);
 	if (item.isRoot()) {
+		/**
+		 * @event onDelete
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onDelete
+		 * Triggered when the item is deleted.
+		 */
 		item.events.publish({
 			"topic": "onDelete",
 			"data": {"config": options},
@@ -1174,6 +1189,11 @@ stream.methods._placeRootItem = function(item) {
 	} else {
 		this.dom.get("body").empty().append(content);
 	}
+	/**
+	 * @event onAdd
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.onAdd
+	 * Triggered when the item is added.
+	 */
 	item.events.publish({
 		"topic": "onAdd",
 		"global": false,
@@ -2165,6 +2185,11 @@ item.renderers.expandChildren = function(element, extra) {
 				"target": self.dom.get("expandChildrenLabel"),
 				"extra": {"state": "loading"}
 			});
+			/**
+			 * @event onChildrenExpand
+			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onChildrenExpand
+			 * Triggered when the children block is expanded.
+			 */
 			self.events.publish({
 				"topic": "onChildrenExpand",
 				"data": {"data": self.data},
@@ -2186,6 +2211,16 @@ item.renderers._childrenContainer = function(element, config) {
 			child.dom.render();
 		}
 		if (child.deleted || child.added) {
+			/**
+			 * @event onDelete
+			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onDelete
+			 * Triggered when the child item is deleted.
+			 */
+			/**
+			 * @event onAdd
+			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onAdd
+			 * Triggered when the child item is added.
+			 */
 			child.events.publish({
 				"topic": child.deleted ? "onDelete" : "onAdd",
 				"data": {"config": config},
@@ -2504,6 +2539,11 @@ item.methods._assembleButtons = function() {
 			var callback = data.callback || function() {};
 			data.callback = function() {
 				callback.call(self);
+				/**
+				 * @event onButtonClick 
+				 * @echo_event Echo.StreamServer.Controls.Stream.Item.onButtonClick
+				 * Triggered when the item control button is clicked.
+				 */
 				self.events.publish({
 					"topic": "onButtonClick",
 					"data": {
