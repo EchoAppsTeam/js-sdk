@@ -205,18 +205,18 @@ plugin.methods._prepareContent = function() {
 		return submit.dom.get(name).val();
 	};
 	return [].concat(this._getMetaDataUpdates("tag", "tag", get("tags")),
-			 this._getMetaDataUpdates("mark", "marker", get("markets")),
+			 this._getMetaDataUpdates("mark", "marker", get("markers")),
 			 this._prepareActivity("update", "comment", get("text")));
 };
 
 plugin.methods._prepareActivity = function(verb, type, data) {
-	return (!data) ? [] : {
+	return (!data) ? {} : {
 		"object": {
-			"objectTypes": [ "http://activitystrea.ms/schema/1.0/" + type ],
+			"objectTypes": ["http://activitystrea.ms/schema/1.0/" + type],
 			"content": data
 		},
 		"source": this.component.config.get("source"),
-		"verbs": [ "http://activitystrea.ms/schema/1.0/" + verb ],
+		"verbs": ["http://activitystrea.ms/schema/1.0/" + verb],
 		"targets": [{
 			"id": this.component.get("data.object.id")
 		}]
@@ -235,7 +235,7 @@ plugin.methods._getMetaDataUpdates = function(verb, type, data) {
 	var updates = [];
 	var diff = function(a, b, verb) {
 		$.map(a, function(item) {
-			if (item && $.inArray(item, b) == -1) {
+			if (item && !~$.inArray(item, b)) {
 				updates.push(plugin._prepareActivity(verb, type, item));
 			}
 		});
