@@ -34,7 +34,7 @@ Echo.ProductView.prototype.initControl = function(name, controlConfig) {
 	// we need to copy apps config to avoid changes in the common config
 	var parentConfig = this.config.getAsHash();
 	controlConfig.parent = controlConfig.parent || parentConfig;
-	controlConfig.plugins = this.updateControlPlugins(
+	controlConfig.plugins = this._updateControlPlugins(
 		Echo.Utils.getNestedValue(this._manifest("controls"), name + ".config.plugins", []),
 		this.config.get("controls." + name + ".config.plugins", []),
 		controlConfig.plugins || []
@@ -52,7 +52,7 @@ Echo.ProductView.prototype.initControl = function(name, controlConfig) {
 	return this.controls[name];
 };
 
-Echo.ProductView.prototype.updateControlPlugins = function(plugins) {
+Echo.ProductView.prototype._updateControlPlugins = function(plugins) {
 	var self = this;
 	var getPluginIndex = function(plugin, plugins) {
 		var idx = -1;
