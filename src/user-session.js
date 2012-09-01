@@ -150,7 +150,7 @@ Echo.UserSession.any = function(key, values) {
 	return user._maybeDelegate({
 		"action": "any",
 		"key": key,
-		"arg": values,
+		"arg": [values],
 		"fallback": function() {
 			var satisfies = false;
 			if (!user.identity) return false;
@@ -226,7 +226,7 @@ Echo.UserSession._maybeDelegate = function(config) {
 	var name = Echo.Utils.capitalize(config.key);
 	var handler = user["_" + config.action + name];
 	return handler
-		? handler.call(this, config.arg || [])
+		? handler.apply(this, config.arg || [])
 		: (config.fallback ? config.fallback() : undefined);
 };
 

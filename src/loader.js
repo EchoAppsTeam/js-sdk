@@ -81,14 +81,12 @@ Echo.Loader.init = function(config) {
  * Callback function which should be called as soon as all requested files were downloaded.
  */
 Echo.Loader.download = function(params) {
-	var scripts = params.scripts, urls = [];
+	var scripts = params.scripts || [], urls = [];
 	var callback = params.callback || function() {};
-	if (params.scripts && params.scripts.length) {
-		for (var i = 0; i < scripts.length; i++) {
-			var script = scripts[i];
-			if (!script.loaded || !script.loaded()) {
-				urls.push(Echo.Loader.getURL(script.url));
-			}
+	for (var i = 0; i < scripts.length; i++) {
+		var script = scripts[i];
+		if (!script.loaded || !script.loaded()) {
+			urls.push(Echo.Loader.getURL(script.url));
 		}
 	}
 	if (!urls.length) {
