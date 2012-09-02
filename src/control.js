@@ -115,7 +115,8 @@ Echo.Control.manifest = function(name) {
 
 /**
  * @static
- * Method which adds new initializer scheme to the control (or control extender) prototype. Initializer function must be defined.
+ * Method which adds new initializer scheme to the control (or control extender) prototype.
+ * Initializer function must be defined.
  *
  * @param {Object} klass
  * Specifies control (Echo.Control or extender) object.
@@ -124,7 +125,9 @@ Echo.Control.manifest = function(name) {
  * Initializer schema which declare name and executed step.
  *
  * @param {Object} rule
- * Object containing action as key and target as value. Target is a defined initializer name. If this parameter is omitted then initializer will be pushed to the end of the list. Possible actions are:
+ * Object containing action as key and target as value. Target is a defined initializer name.
+ * If this parameter is omitted then initializer will be pushed to the end of the list.
+ * Possible actions are:
  * + "after"
  * + "before"
  */
@@ -184,7 +187,8 @@ Echo.Control.prototype.defaults.config = {
 	"target": undefined,
 	/**
 	 * @cfg {String} appkey (required)
-	 * Specifies the customer application key. You can use the "test.echoenabled.com" appkey for testing purposes.
+	 * Specifies the customer application key. You can use the "test.echoenabled.com"
+	 * appkey for testing purposes.
 	 */
 	"appkey": "",
 	/**
@@ -287,13 +291,16 @@ Echo.Control.prototype.defaults.labels = {
 /**
  * Accessor method to get specific field.
  *
- * This function returns the corresponding value of the given key or the default value if specified in the second argument.
+ * This function returns the corresponding value of the given key
+ * or the default value if specified in the second argument.
  *
  * @param {String} key
  * Defines the key for data extraction.
  *
  * @param {Object} [defaults]
- * Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ * Default value if no corresponding key was found in the config.
+ * Note: only the 'undefined' JS statement triggers the default value usage.
+ * The false, null, 0, [] are considered as a proper value.
  *
  * @return {Mixed}
  * The corresponding value found in the object.
@@ -321,7 +328,8 @@ Echo.Control.prototype.set = function(key, value) {
  * Method to remove specific object field.
  *
  * This function allows to remove the value associated with the given key.
- * If the key contains a complex structure (such as objects or arrays), it will be removed as well.
+ * If the key contains a complex structure (such as objects or arrays),
+ * it will be removed as well.
  *
  * @param {String} key
  * Specifies the key which should be removed from the object.
@@ -330,7 +338,14 @@ Echo.Control.prototype.remove = function(key) {
 	this.set(key, undefined);
 };
 
-// TODO: need docs
+/**
+ * Rendering function which prepares the DOM representation of the control
+ * and appends it to the control target element. This function also used to
+ * re-render the control.
+ *
+ * @return {Object}
+ * Control DOM representation
+ */
 Echo.Control.prototype.render = function() {
 	var view = this.dom;
 	var topic = view.rendered() ? "onRerender" : "onRender";
@@ -346,7 +361,8 @@ Echo.Control.prototype.render = function() {
 /**
  * Templater function which compiles given template using the provided data.
  *
- * Function can be used widely for html templates processing or any other action requiring string interspersion.
+ * Function can be used widely for html templates processing or any other action
+ * requiring string interspersion.
  *
  * @param {Object} args
  * Specifies substitution process, contains control parameters.
@@ -358,7 +374,8 @@ Echo.Control.prototype.render = function() {
  * Data used in the template compilation.
  *
  * @param {Boolean} [args.strict]
- * Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
+ * Specifies whether the template should be replaced with the corresponding value,
+ * preserving replacement value type.
  *
  * @param {Object} [args.instructions]
  * Object containing the list of extra instructions to be applied during template compilation.
@@ -499,7 +516,8 @@ Echo.Control.prototype.template = function() {
 };
 
 /**
- * Method to call parent renderer function, which was extended using Echo.Control.extendRenderer function.
+ * Method to call parent renderer function, which was extended using
+ * Echo.Control.extendRenderer function.
  *
  * @param {String} name
  * Renderer name.
@@ -534,7 +552,8 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
  * Element name which is a subject of a transformation application.
  *
  * @param {String} [html]
- * The content of a transformation to be applied. This param is required for all actions except "remove".
+ * The content of a transformation to be applied.
+ * This param is required for all actions except "remove".
  */
 Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
 	this.extension.template.push({"action": action, "anchor": anchor, "html": html});
@@ -651,7 +670,6 @@ Echo.Control.prototype._initializers.config = function() {
 	var defaults = $.extend(true, {}, this.get("defaults.config"), {
 		"context": (data.parent ? data.parent.context + "/" : "") + Echo.Utils.getUniqueString()
 	}, this._manifest("config") || {});
-	// TODO: find better home for normalizer...
 	var normalizer = this._manifest("config").normalizer;
 	return new Echo.Configuration(data, defaults, function(key, value) {
 		var handler = normalizer && normalizer[key] || _normalizer && _normalizer[key];
