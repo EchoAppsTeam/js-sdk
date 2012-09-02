@@ -107,12 +107,10 @@ Echo.View.prototype._clear = function() {
 };
 
 Echo.View.prototype._compileTemplate = function(args) {
-
 	// do not process if template is not a string
 	if (typeof args.template !== "string") {
 		return args.template;
 	}
-
 	var template = Echo.Utils.substitute({
 		"data": args.data,
 		"template": args.template,

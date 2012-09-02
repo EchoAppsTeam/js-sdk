@@ -328,16 +328,6 @@ Echo.Control.prototype.remove = function(key) {
 	this.set(key, undefined);
 };
 
-Echo.Control.prototype.initView = function() {
-	return new Echo.View({
-		"caller": this, // FIXME: temporary condition!! pass renderers as functions to fix
-		"cssPrefix": this.get("cssPrefix"),
-		"extension": this.get("extension"),
-		"substitutions": this._getSubstitutionInstructions(),
-		"instructions": this._getSubstitutionInstructions()
-	});
-};
-
 // TODO: need docs
 Echo.Control.prototype.render = function() {
 	var view = this.dom;
@@ -434,8 +424,7 @@ Echo.Control.prototype.showMessage = function(data) {
 	if (!this.config.get("infoMessages.enabled")) return;
 	var target = data.target || this.config.get("target");
 	var layout = data.layout || this.config.get("infoMessages.layout");
-	var view = this.initView();
-//	var view = this.view.fork();
+	var view = this.dom.fork();
 	target.empty().append(view.render({
 		"data": data,
 		"template": this.templates.message[layout]
@@ -605,11 +594,11 @@ Echo.Control.prototype._initializers.list = [
 	["labels",             ["init"]],
 	["css",                ["init"]],
 	["renderers",          ["init", "refresh"]],
+	["dom",                ["init"]],
 	["loading",            ["init", "refresh"]],
 	["dependencies:async", ["init"]],
 	["user:async",         ["init", "refresh"]],
 	["plugins:async",      ["init", "refresh"]],
-	["dom",                ["init"]],
 	["init:async",         ["init", "refresh"]],
 	["ready",              ["init"]],
 	["refresh",            ["refresh"]]
@@ -817,7 +806,13 @@ Echo.Control.prototype._initializers.renderers = function() {
 
 // TODO: rename to "view" everywhere
 Echo.Control.prototype._initializers.dom = function() {
-	return this.initView();
+	return new Echo.View({
+		"caller": this, // FIXME: temporary condition!! pass renderers as functions to fix
+		"cssPrefix": this.get("cssPrefix"),
+		"extension": this.get("extension"),
+		"substitutions": this._getSubstitutionInstructions(),
+		"instructions": this._getSubstitutionInstructions()
+	});
 };
 
 Echo.Control.prototype._initializers.loading = function() {
