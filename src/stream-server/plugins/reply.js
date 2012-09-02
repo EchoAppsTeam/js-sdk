@@ -197,7 +197,7 @@ plugin.methods._showSubmit = function() {
 	} else {
 		submit = plugin.get("submit");
 		var text = submit.dom.get("text").val();
-		target.append(submit.dom.render());
+		target.append(submit.render());
 		if (text) {
 			submit.dom.get("text").val(text);
 		}

@@ -171,6 +171,8 @@ Echo.Control.prototype.defaults = {};
 Echo.Control.prototype.defaults.vars = {
 	"cache": {},
 	"plugins": {},
+	"renderers": {},
+	"parentRenderers": {},
 	"subscriptionIDs": {}
 };
 
@@ -509,10 +511,7 @@ Echo.Control.prototype.template = function() {
  * Result of parent renderer function call.
  */
 Echo.Control.prototype.parentRenderer = function(name, args) {
-	// TODO: revisit this...
-	var renderer = this.extension.renderers[name];
-	if (!renderer || !renderer.next) return args[0]; // return DOM element
-	return renderer.next.apply(this, args);
+	return this.parentRenderers[name].apply(this, args);
 };
 
 /**
@@ -548,9 +547,12 @@ Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
  * Renderer function to be applied.
  */
 Echo.Control.prototype.extendRenderer = function(name, renderer) {
-	var renderers = this.extension.renderers;
-	renderers[name] = renderers[name] || {"functions": []};
-	renderers[name].functions.unshift(renderer);
+	var control = this;
+	var renderer = this.renderers[name];
+	this.renderers[name] = $.proxy(function() {
+		this.parentRenderers[name] = renderer || function() {};
+		return renderer.apply(this, arguments);
+	}, control);
 };
 
 /**
@@ -799,7 +801,7 @@ Echo.Control.prototype._initializers.css = function() {
 
 Echo.Control.prototype._initializers.renderers = function() {
 	var control = this;
-	$.each(this._manifest("renderers"), function() {
+	$.each(control._manifest("renderers"), function() {
 		control.extendRenderer.apply(control, arguments);
 	});
 };
@@ -807,11 +809,8 @@ Echo.Control.prototype._initializers.renderers = function() {
 // TODO: rename to "view" everywhere
 Echo.Control.prototype._initializers.dom = function() {
 	return new Echo.View({
-		"caller": this, // FIXME: temporary condition!! pass renderers as functions to fix
 		"cssPrefix": this.get("cssPrefix"),
-		"extension": this.get("extension"),
-		"substitutions": this._getSubstitutionInstructions(),
-		"instructions": this._getSubstitutionInstructions()
+		"substitutions": this._getSubstitutionInstructions()
 	});
 };
 

@@ -3,14 +3,9 @@
  * Class implementing core rendering logic, which is widely used across the system.
  */
 Echo.View = function(config) {
-	// TODO: define default CSS prefix
-	// TODO: define via Echo.Configuration?
 	this.config = config;
 	this.config.cssPrefix = this.config.cssPrefix || "";
-
-	// TODO: find better way to handle this...
-	this.extension = config.extension || {"renderers": {}};
-
+	this.renderers = config.renderers || {};
 	this._clear();
 };
 
@@ -45,6 +40,10 @@ Echo.View.prototype.render = function(args) {
 	args.data = args.data || this.config.data || {};
 	args.template = args.template || this.config.template;
 
+	// merge renderers passed into the "render" function
+	// and the ones defined in the view config during initialization
+	$.extend(this.renderers, args.renderers);
+
 	// render specific element (recursively if specified)
 	if (args.name) {
 		args.target = args.target || this.get(args.name);
@@ -71,21 +70,11 @@ Echo.View.prototype.render = function(args) {
 Echo.View.prototype._render = {};
 
 Echo.View.prototype._render.element = function(args) {
-
-	// no renderer found - nothing to render,
-	// return non-modified target in this case
-	if (!this._hasRenderer(args.name)) return args.target;
-
-	var renderer = this._getRenderer(args.name);
-	var iteration = 0;
-	renderer.next = function() {
-		iteration++;
-		return renderer.functions.length > iteration
-			? renderer.functions[iteration].apply(this, arguments)
-			: args.target;
-	};
-	// FIXME: caller!!
-	return renderer.functions[iteration].call(this.config.caller, args.target, args.extra);
+	return this._hasRenderer(args.name)
+		? this._getRenderer(args.name)(args.target, args.extra)
+		// no renderer found - nothing to render,
+		// return non-modified target in this case
+		: args.target;
 };
 
 Echo.View.prototype._render.recursive = function(args) {
@@ -114,7 +103,7 @@ Echo.View.prototype._compileTemplate = function(args) {
 	var template = Echo.Utils.substitute({
 		"data": args.data,
 		"template": args.template,
-		"instructions": this.config.instructions
+		"instructions": this.config.substitutions
 	});
 	return $("<div/>").html(template);
 };
@@ -134,7 +123,7 @@ Echo.View.prototype._applyRenderers = function(dom) {
 };
 
 Echo.View.prototype._getRenderer = function(name) {
-	return this.extension.renderers[name];
+	return this.renderers[name];
 };
 
 Echo.View.prototype._hasRenderer = function(name) {
