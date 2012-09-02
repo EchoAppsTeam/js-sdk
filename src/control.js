@@ -174,6 +174,7 @@ Echo.Control.prototype.defaults = {};
 Echo.Control.prototype.defaults.vars = {
 	"cache": {},
 	"plugins": {},
+	"extension": {"template": []},
 	"renderers": {},
 	"parentRenderers": {},
 	"subscriptionIDs": {}
@@ -611,7 +612,6 @@ Echo.Control.prototype._initializers = {};
 
 Echo.Control.prototype._initializers.list = [
 	["vars",               ["init", "refresh"]],
-	["extension",          ["init", "refresh"]],
 	["config",             ["init"]],
 	["events",             ["init"]],
 	["subscriptions",      ["init", "refresh"]],
@@ -642,10 +642,6 @@ Echo.Control.prototype._initializers.vars = function() {
 	// thus we copy and recursively merge default values separately
 	// and apply default values to the given instance non-recursively
 	$.extend(this, $.extend(true, {}, this.defaults.vars, this._manifest("vars")));
-};
-
-Echo.Control.prototype._initializers.extension = function() {
-	return {"renderers": {}, "template": []};
 };
 
 Echo.Control.prototype._initializers.config = function() {
