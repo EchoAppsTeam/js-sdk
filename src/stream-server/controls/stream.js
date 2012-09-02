@@ -911,8 +911,6 @@ stream.methods._spotUpdates.replace = function(item, options) {
 			this._applySpotUpdates("add", item, {"priority": "high"});
 		}
 	}
-	console.log(item.dom);
-	console.log(item.dom.rendered());
 	if (item && item.dom.rendered()) {
 		item.dom.render({"name": "container", "recursive": true});
 		/**
