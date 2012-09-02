@@ -42,7 +42,7 @@ configurator.templates.formRow =
 
 configurator.init = function() {
 	this.pages.push({"name": this.config.get("startPage")});
-	this.dom.render();
+	this.render();
 };
 
 configurator.renderers.header = function(element) {

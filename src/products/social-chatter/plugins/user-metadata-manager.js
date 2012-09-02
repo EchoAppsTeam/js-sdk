@@ -68,7 +68,7 @@ plugin.methods._assembleControl = function(action, control) {
 			},
 			"onData": function(data) {
 				if (!data || data.result == "error") {
-					item.dom.render();
+					item.render();
 					return;
 				}
 				self.events.publish({
@@ -123,7 +123,7 @@ plugin.methods._getUpdatedUserProperty = function(action, field, actor) {
 plugin.methods._applyUserUpdate = function(target, source, field) {
 	if (target.get("data.actor.id") != source.get("data.actor.id")) return;
 	target.data.actor[field.name == "state" ? "status" : field.name] = field.value;
-	target.dom.render();
+	target.render();
 };
 
 plugin.methods._isSubset = function(target, full) {

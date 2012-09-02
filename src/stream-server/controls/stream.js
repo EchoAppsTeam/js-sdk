@@ -911,6 +911,8 @@ stream.methods._spotUpdates.replace = function(item, options) {
 			this._applySpotUpdates("add", item, {"priority": "high"});
 		}
 	}
+	console.log(item.dom);
+	console.log(item.dom.rendered());
 	if (item && item.dom.rendered()) {
 		item.dom.render({"name": "container", "recursive": true});
 		/**
@@ -1012,7 +1014,6 @@ stream.methods._spotUpdates.animate.delete = function(item, config) {
 		// if the item is being moved, we should keep all jQuery handlers
 		// for the nested elements (children), thus we use "detach" instead of "remove"
 		item.config.get("target")[config.keepChildren ? "detach" : "remove"]();
-		item.dom.clear();
 		item.set("vars", {});
 		var itemsCount = Echo.Utils.foldl(0, self.items, function(_item, acc) {
 			return acc + 1;

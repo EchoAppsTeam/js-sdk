@@ -511,7 +511,10 @@ Echo.Control.prototype.template = function() {
  * Result of parent renderer function call.
  */
 Echo.Control.prototype.parentRenderer = function(name, args) {
-	return this.parentRenderers[name].apply(this, args);
+	var renderer = this.parentRenderers[name];
+	return renderer
+		? renderer.apply(this, args)
+		: undefined;
 };
 
 /**
@@ -548,9 +551,9 @@ Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
  */
 Echo.Control.prototype.extendRenderer = function(name, renderer) {
 	var control = this;
-	var renderer = this.renderers[name];
-	this.renderers[name] = $.proxy(function() {
-		this.parentRenderers[name] = renderer || function() {};
+	var _renderer = this.renderers[name];
+	this.renderers[name] = $.proxy(function(element) {
+		this.parentRenderers[name] = _renderer;
 		return renderer.apply(this, arguments);
 	}, control);
 };

@@ -32,7 +32,7 @@ Echo.View.prototype.remove = function(element) {
 };
 
 Echo.View.prototype.rendered = function() {
-	return this._rendered;
+	return !!this._rendered;
 };
 
 Echo.View.prototype.render = function(args) {
@@ -58,7 +58,9 @@ Echo.View.prototype.render = function(args) {
 	// render template
 	if (args.template) {
 		this._clear();
-		return this._render.template.call(this, args);
+		var dom = this._render.template.call(this, args);
+		this._rendered = true;
+		return dom;
 	}
 
 	// unknown action

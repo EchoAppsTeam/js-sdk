@@ -68,7 +68,7 @@ plugin.config = {
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserUpdate": function(topic, args) {
 		args.item.set("data.actor." + args.field, args.value);
-		args.item.dom.render();
+		args.item.render();
 		return {"stop": ["bubble"]};
 	}
 };
@@ -354,7 +354,7 @@ plugin.methods._sendUserUpdate = function(config) {
 		},
 		"onData": config.onData,
 		"onError": function() {
-			item.dom.render();
+			item.render();
 		}
 	}).send();
 };
