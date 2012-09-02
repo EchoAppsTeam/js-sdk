@@ -58,6 +58,13 @@ Echo.View.prototype.render = function(args) {
 	// render template
 	if (args.template) {
 		this._clear();
+
+		// save template to use it for
+		// the recursive renderer application call
+		this._template = typeof args.template === "string"
+					? args.template
+					: args.template.html();
+
 		var dom = this._render.template.call(this, args);
 		this._rendered = true;
 		return dom;
@@ -81,7 +88,10 @@ Echo.View.prototype._render.element = function(args) {
 
 Echo.View.prototype._render.recursive = function(args) {
 	var oldNode = this.get(args.name);
-	// TODO: save template somewhere to retrieve the original state here
+
+	// define original template
+	args.template = this._template;
+
 	var dom = this._compileTemplate(args);
 	this._applyRenderers($("." + this.config.cssPrefix + args.name, dom));
 	var newNode = this.get(args.name);
