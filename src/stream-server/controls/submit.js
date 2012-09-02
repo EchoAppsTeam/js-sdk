@@ -31,7 +31,7 @@ submit.init = function() {
 		});
 		return valid;
 	}, "low");
-	this.dom.render();
+	this.render();
 	this.ready();
 };
 

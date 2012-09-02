@@ -825,3 +825,59 @@ Echo.Utils.capitalize = function(string) {
 		return match.toUpperCase();
 	});
 };
+
+/**
+ * @static
+ * Templater function which compiles given template using the provided data.
+ *
+ * Function can be used widely for html templates processing or any other action
+ * requiring string interspersion.
+ *
+ * @param {Object} args
+ * Specifies substitution process and parameters.
+ *
+ * @param {String} args.template
+ * Template containing placeholders used for data interspersion.
+ *
+ * @param {Object} [args.data]
+ * Data used in the template compilation.
+ *
+ * @param {Boolean} [args.strict]
+ * Specifies whether the template should be replaced with the corresponding value,
+ * preserving replacement value type.
+ *
+ * @param {Object} [args.instructions]
+ * Object containing the list of extra instructions to be applied during template compilation.
+ *
+ * @return {String}
+ * Compiled string value.
+ */
+Echo.Utils.substitute = function(args) {
+	var utils = this;
+	var substitutions = {
+		"data": function(key, defaults) {
+			return utils.getNestedValue(args.data, key, defaults);
+		}
+	};
+	var instructions = $.extend(substitutions, args.instructions);
+	var regex = utils.regexps.templateSubstitution;
+	var template = args.template;
+
+	// checking if we need to execute in a strict mode,
+	// i.e. whether to keep the substitution value type or not
+	if (args.strict && (new RegExp("^" + regex + "$", "i")).test(template)) {
+		var match = new RegExp(regex, "i").exec(template);
+		if (match && match[1] && instructions[match[1]]) {
+			return instructions[match[1]](match[2]);
+		}
+	}
+
+	// perform regular string substitution
+	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
+		if (!instructions[key]) return match;
+		var result = instructions[key].call(this, value, "");
+		var allowedTypes = ["number", "string", "boolean"];
+		return ~$.inArray(typeof result, allowedTypes) ? result : "";
+	});
+};
+

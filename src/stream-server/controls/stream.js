@@ -211,7 +211,7 @@ stream.events = {
 			"item": item,
 			"priority": "highest",
 			"handler": function() {
-				item.dom.render();
+				item.render();
 				item.set("added", false);
 				self._animateSpotUpdate("add", item, data.config);
 			}
@@ -641,7 +641,7 @@ stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 			? "append"
 			: "prepend";
 		wrapper[insertion](item.config.get("target"));
-		item.dom.render();
+		item.render();
 	});
 	return wrapper;
 };
@@ -691,7 +691,7 @@ stream.methods._appendRootItems = function(items, container) {
 	if (!items || !items.length) return;
 	$.map(items, function(item) {
 		container.append(item.config.get("target").get(0));
-		item.dom.render();
+		item.render();
 	});
 };
 
@@ -771,7 +771,7 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 				"initial": true,
 				"data": data
 			};
-			self.dom.render();
+			self.render();
 			self.ready();
 		})(roots);
 	});
@@ -2208,7 +2208,7 @@ item.renderers._childrenContainer = function(element, config) {
 		if (config && config.filter && !config.filter(child)) return;
 		element.append(child.config.get("target"));
 		if (!child.dom.rendered() && !child.added) {
-			child.dom.render();
+			child.render();
 		}
 		if (child.deleted || child.added) {
 			/**

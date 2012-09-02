@@ -377,29 +377,33 @@ Echo.Plugin.prototype._initializers.renderers = function() {
 };
 
 Echo.Plugin.prototype._initializers.dom = function() {
-	var parentDOM = this.component.get("dom");
+	var plugin = this;
 	var prefix = "plugin-" + this.name + "-";
-	this.dom = {
+	var action = function(name, args) {
+		var dom = plugin.component.get("dom");
+		return dom[name].apply(dom, args);
+	};
+	return {
 		"clear": function() {
-			parentDOM.clear();
+			action("clear");
 		},
 		"set": function(name, element) {
-			parentDOM.set(prefix + name, element);
+			action("set", [prefix + name, element]);
 		},
 		"get": function(name, ignorePrefix) {
-			return parentDOM.get(prefix + name, ignorePrefix);
+			return action("get", [prefix + name, ignorePrefix]);
 		},
 		"remove": function(element) {
 			if (typeof element === "string") {
 				element = prefix + element;
 			}
-			parentDOM.remove(element);
+			action("remove", [element]);
 		},
 		"render": function(args) {
 			if (args && args.name) {
 				args.name = prefix + args.name;
 			}
-			parentDOM.render(args);
+			action("render", [args]);
 		}
 	};
 };
