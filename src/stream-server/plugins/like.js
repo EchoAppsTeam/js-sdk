@@ -185,8 +185,8 @@ Echo.Plugin.create(plugin);
 (function() {
 
 /**
- * @class Echo.StreamServer.Controls.Facepile.Item.Plugins.Like
- * Adds extra controls to items in the Echo Facepile control.
+ * @class Echo.StreamServer.Controls.FacePile.Item.Plugins.Like
+ * Adds extra controls to items in the Echo FacePile control.
  *
  * @extends Echo.Plugin
  */
