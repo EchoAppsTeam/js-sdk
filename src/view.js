@@ -11,7 +11,7 @@
  * class names (matching the CSS prefix).
  */
 Echo.View = function(config) {
-	this.config = config;
+	this.config = config || {};
 	this.config.cssPrefix = this.config.cssPrefix || "";
 	this.renderers = config.renderers || {};
 	this._clear();
@@ -114,8 +114,10 @@ Echo.View.prototype.render = function(args) {
 	return false;
 };
 
-Echo.View.prototype.fork = function() {
-	return new Echo.View(this.config);
+Echo.View.prototype.fork = function(config) {
+	return new Echo.View(
+		$.extend(true, this.config, config)
+	);
 };
 
 // private functions
