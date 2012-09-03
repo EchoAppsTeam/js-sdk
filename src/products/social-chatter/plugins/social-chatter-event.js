@@ -429,7 +429,7 @@ $.extend(plugin.events,
 			var postType = this.config.get("parent.type", this.component._getASURL("comment"));
 			var verb = action === "Post" ? "post" : "update";
 			args.postData.content = [
-				this.component._getActivity(verb, postType, Echo.Utils.object2JSON(this._assembleContent()))
+				this.component._getActivity(verb, postType, Echo.Utils.objectToJSON(this._assembleContent()))
 			];
 		};
 	})

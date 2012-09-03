@@ -5,11 +5,32 @@ var suite = Echo.Tests.Unit.Utils = function() {};
 suite.prototype.info = {
 	"className": "Echo.Utils",
 	"functions": [
-		"htmlize", "foldl", "getNestedValue", "setNestedValue", "stripTags", "object2JSON",
-		"parseURL", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate", "log",
-		"getVisibleColor", "isMobileDevice", "getUniqueString", "loadImage",
-		"getComponent", "isComponentDefined", "objectToQuery", "inherit",
-		"parallelCall", "sequentialCall", "hyperlink", "capitalize", "invoke"]
+		"addCSS",
+		"capitalize",
+		"foldl",
+		"getComponent",
+		"getNestedValue",
+		"getUniqueString",
+		"getVisibleColor",
+		"htmlize",
+		"htmlTextTruncate",
+		"hyperlink",
+		"inherit",
+		"invoke",
+		"isComponentDefined",
+		"isMobileDevice",
+		"loadImage",
+		"log",
+		"objectToJSON",
+		"objectToQuery",
+		"parallelCall",
+		"parseURL",
+		"sequentialCall",
+		"setNestedValue",
+		"stripTags",
+		"substitute", // covered within the Control and Plugin tests
+		"timestampFromW3CDTF"
+	]
 };
 
 suite.prototype.tests = {};
@@ -71,24 +92,24 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.equal(Echo.Utils.stripTags("<div>Outer<div><!-- Comment -->Inner</div></div>"), "OuterInner",
 			"Checking stripTags() method with complex HTML");
 
-		QUnit.equal(Echo.Utils.object2JSON(null), "null",
-			"Checking object2JSON() method for null object ");
-		QUnit.equal(Echo.Utils.object2JSON(123), "123",
-			"Checking object2JSON() method for number object");
-		QUnit.equal(Echo.Utils.object2JSON("string\n"), "\"string\\n\"",
-			"Checking object2JSON() method for string object");
-		QUnit.equal(Echo.Utils.object2JSON(Number.POSITIVE_INFINITY), "null",
-			"Checking object2JSON() method for number object (infinity value)");
-		QUnit.equal(Echo.Utils.object2JSON(true), "true",
-			"Checking object2JSON() method for boolean object (true value)");
-		QUnit.equal(Echo.Utils.object2JSON(false), "false",
-			"Checking object2JSON() method for boolen object (false value)");
-		QUnit.equal(Echo.Utils.object2JSON(["value1", "value2"]), '["value1","value2"]',
-			"Checking object2JSON() method for simple array");
-		QUnit.equal(Echo.Utils.object2JSON([["value1.1", "value1.2"], "value2"]), '[["value1.1","value1.2"],"value2"]',
-			"Checking object2JSON() method for complex array");
-		QUnit.equal(Echo.Utils.object2JSON({"k1": "v1", "k2": "v2"}), '{"k1":"v1","k2":"v2"}',
-			"Checking object2JSON() method for simple object");
+		QUnit.equal(Echo.Utils.objectToJSON(null), "null",
+			"Checking objectToJSON() method for null object ");
+		QUnit.equal(Echo.Utils.objectToJSON(123), "123",
+			"Checking objectToJSON() method for number object");
+		QUnit.equal(Echo.Utils.objectToJSON("string\n"), "\"string\\n\"",
+			"Checking objectToJSON() method for string object");
+		QUnit.equal(Echo.Utils.objectToJSON(Number.POSITIVE_INFINITY), "null",
+			"Checking objectToJSON() method for number object (infinity value)");
+		QUnit.equal(Echo.Utils.objectToJSON(true), "true",
+			"Checking objectToJSON() method for boolean object (true value)");
+		QUnit.equal(Echo.Utils.objectToJSON(false), "false",
+			"Checking objectToJSON() method for boolen object (false value)");
+		QUnit.equal(Echo.Utils.objectToJSON(["value1", "value2"]), '["value1","value2"]',
+			"Checking objectToJSON() method for simple array");
+		QUnit.equal(Echo.Utils.objectToJSON([["value1.1", "value1.2"], "value2"]), '[["value1.1","value1.2"],"value2"]',
+			"Checking objectToJSON() method for complex array");
+		QUnit.equal(Echo.Utils.objectToJSON({"k1": "v1", "k2": "v2"}), '{"k1":"v1","k2":"v2"}',
+			"Checking objectToJSON() method for simple object");
 
 		var complex_object = {
 			"k1": ["v1.1", null, false],
@@ -97,8 +118,8 @@ suite.prototype.tests.TestDataMethods = {
 				"k2.2": 22
 			}
 		};
-		QUnit.equal(Echo.Utils.object2JSON(complex_object), '{"k1":["v1.1",null,false],"k2":{"k2.1":21,"k2.2":22}}',
-			"Checking object2JSON() method for complex object");
+		QUnit.equal(Echo.Utils.objectToJSON(complex_object), '{"k1":["v1.1",null,false],"k2":{"k2.1":21,"k2.2":22}}',
+			"Checking objectToJSON() method for complex object");
 
 		QUnit.equal(Echo.Utils.objectToQuery(), "",
 			"Calling objectToQuery() function with no arguments");

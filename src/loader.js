@@ -307,7 +307,7 @@ Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
 	});
 	Echo.jQuery.get("http://api.echoenabled.com/v1/mux", {
 		"appkey": canvases[0].appkey,
-		"requests": Echo.Utils.object2JSON(requests)
+		"requests": Echo.Utils.objectToJSON(requests)
 	}, function(response) {
 		if (!response || response.result === "error") {
 			Echo.Loader._error({

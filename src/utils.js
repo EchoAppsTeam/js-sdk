@@ -281,13 +281,13 @@ Echo.Utils.htmlize = function(text) {
  * Methods converts JavaScript object to JSON string.
  * This function uses JSON.stringify() method if it is available in the browser.
  *
- * 	Echo.Utils.object2JSON(null); // will return 'null'
- * 	Echo.Utils.object2JSON(123); // will return '123'
- * 	Echo.Utils.object2JSON(Number.POSITIVE_INFINITY); // will return 'null'
- * 	Echo.Utils.object2JSON("string\n"); // will return '"string\n"'
- * 	Echo.Utils.object2JSON(true); // will return true
- * 	Echo.Utils.object2JSON(["value1", "value2"]); // will return '["value1","value2"]'
- * 	Echo.Utils.object2JSON({"k1": "v1", "k2": "v2"}); // will return '{"k1":"v1","k2":"v2"}'
+ * 	Echo.Utils.objectToJSON(null); // will return 'null'
+ * 	Echo.Utils.objectToJSON(123); // will return '123'
+ * 	Echo.Utils.objectToJSON(Number.POSITIVE_INFINITY); // will return 'null'
+ * 	Echo.Utils.objectToJSON("string\n"); // will return '"string\n"'
+ * 	Echo.Utils.objectToJSON(true); // will return true
+ * 	Echo.Utils.objectToJSON(["value1", "value2"]); // will return '["value1","value2"]'
+ * 	Echo.Utils.objectToJSON({"k1": "v1", "k2": "v2"}); // will return '{"k1":"v1","k2":"v2"}'
  *
  * @param {Mixed} obj
  * The value to be converted.
@@ -295,7 +295,7 @@ Echo.Utils.htmlize = function(text) {
  * @return {String}
  * String containing JSON.
  */
-Echo.Utils.object2JSON = function(obj) {
+Echo.Utils.objectToJSON = function(obj) {
 	if (JSON && JSON.stringify) {
 		return JSON.stringify(obj);
 	}
@@ -324,7 +324,7 @@ Echo.Utils.object2JSON = function(obj) {
 		case "boolean" : out = obj.toString(); break;
 		default :
 			if (obj instanceof Array) {
-				var container = $.map(obj, function(element) { return Echo.Utils.object2JSON(element); });
+				var container = $.map(obj, function(element) { return Echo.Utils.objectToJSON(element); });
 				out = '[' + container.join(",") + ']';
 			} else if (obj instanceof Object) {
 				var source = obj.exportProperties || obj;
@@ -333,7 +333,7 @@ Echo.Utils.object2JSON = function(obj) {
 						property = value;
 						value = obj[property];
 					}
-					acc.push('"' + property + '":' + Echo.Utils.object2JSON(value));
+					acc.push('"' + property + '":' + Echo.Utils.objectToJSON(value));
 				});
 				out = '{' + container.join(",") + '}';
 			} else {
@@ -622,7 +622,7 @@ Echo.Utils.inherit = function(child, parent) {
  */
 Echo.Utils.objectToQuery = function(data) {
 	return $.map(data || {}, function(value, key) {
-		return key + "=" + encodeURIComponent(Echo.Utils.object2JSON(value));
+		return key + "=" + encodeURIComponent(Echo.Utils.objectToJSON(value));
 	}).join("&");
 };
 
