@@ -9,7 +9,7 @@ suite.prototype.info = {
 		"parseURL", "timestampFromW3CDTF", "addCSS", "htmlTextTruncate", "log",
 		"getVisibleColor", "isMobileDevice", "getUniqueString", "loadImage",
 		"getComponent", "isComponentDefined", "objectToQuery", "inherit",
-		"parallelCall", "sequentialCall", "hyperlink", "capitalize"]
+		"parallelCall", "sequentialCall", "hyperlink", "capitalize", "invoke"]
 };
 
 suite.prototype.tests = {};
@@ -274,6 +274,33 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.strictEqual(Echo.Utils.capitalize("SOMEWORD"), "SOMEWORD", "Checking capitalize method if argument is uppercased word");
 		QUnit.strictEqual(Echo.Utils.capitalize("some text with whitespaces capitalized"), "Some Text With Whitespaces Capitalized", "Checking capitalize method if argument is regular text with whitespaces");
 		QUnit.strictEqual(Echo.Utils.capitalize("some|long|word|with|no|whitespace|delimiter"), "Some|Long|Word|With|No|Whitespace|Delimiter", "Checking capitalize method if argument string is delimted with no whiespaces word boundary");
+
+		var nonCtxSpecificCases = [
+			[10, 10],
+			[true, true],
+			[undefined, undefined],
+			["some string", "some string"],
+			[function() { return "test"; }, "test"],
+			[function() {}, undefined],
+			[function() { return this.a; }, undefined]
+		];
+		var ctxSpecificTests = [
+			[function() { return this.a; }, 1],
+			[function() { return this.b; }, undefined],
+			[function() { return this.c; }, "test"]
+		];
+		var invoke = function(cases, context) {
+			$.each(cases, function(id, _case) {
+				QUnit.strictEqual(
+					Echo.Utils.invoke(_case[0], context),
+					_case[1],
+					"Checking \"invoke()\" method, case #" + (id + 1) + ", " +
+						"with " + (context ? "defined" : "no") + " context"
+				);
+			});
+		};
+		invoke(nonCtxSpecificCases);
+		invoke(ctxSpecificTests, {"a": 1, "c": "test"});
 	}
 };
 

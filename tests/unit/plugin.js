@@ -19,6 +19,7 @@ suite.prototype.info = {
 		"getClass",
 
 		// dynamic interface
+		"init",
 		"log",
 		"set",
 		"get",
@@ -27,6 +28,7 @@ suite.prototype.info = {
 		"enable",
 		"disable",
 		"enabled",
+		"invoke",
 		"extendTemplate",
 		"parentRenderer",
 		"requestDataRefresh",
@@ -217,6 +219,23 @@ suite.prototype.cases.basicOperations = function(callback) {
 		} catch(e) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
 		};
+
+		// checking "invoke" method
+		var cases = [
+			[plugin.enabled, true],
+			[function() { return this.cssClass; },
+				"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin"],
+			[function() { return this.fakeKey; }, undefined],
+			[function() { return this.get("data.key1")}, "key1 value"],
+			[function() { return this.get("name")}, "MyTestPlugin"]
+		];
+		$.each(cases, function(id, _case) {
+			QUnit.strictEqual(
+				Echo.Utils.invoke(_case[0], plugin),
+				_case[1],
+				"Checking \"invoke()\" method, case #" + (id + 1)
+			);
+		});
 
 		this.destroy();
 

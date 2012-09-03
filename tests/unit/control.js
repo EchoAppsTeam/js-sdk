@@ -17,6 +17,7 @@ suite.prototype.info = {
 		"get",
 		"set",
 		"remove",
+		"invoke",
 		"substitute",
 		"dependent",
 		"template",
@@ -197,6 +198,24 @@ suite.prototype.cases.basicOperations = function(callback) {
 		} catch(e) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
 		};
+
+		// checking "invoke" method
+		var cases = [
+			[function() { return this.getPlugin("MyFakeTestPlugin"); }, undefined],
+			[function() { return this.cssClass; },
+				"echo-streamserver-controls-mytestcontrol"],
+			[function() { return this.fakeKey; }, undefined],
+			[function() { return this.get("data.key1")}, "key1 value"],
+			[function() { return this.get("name")},
+				"Echo.StreamServer.Controls.MyTestControl"]
+		];
+		$.each(cases, function(id, _case) {
+			QUnit.strictEqual(
+				Echo.Utils.invoke(_case[0], self),
+				_case[1],
+				"Checking \"invoke()\" method, case #" + (id + 1)
+			);
+		});
 
 		this.destroy();
 
