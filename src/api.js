@@ -256,40 +256,51 @@ Echo.API.Transports.WebSocket.available = function() {
  */
 /*
  * @constructor
- * @param {Object} config (required) Configuration data.
+ * @param {Object} config
+ * Configuration data.
  */
 Echo.API.Request = function(config) {
 	/**
-	 * @cfg {String} endpoint (required) Specifes the API endpoint.
+	 * @cfg {String} endpoint
+	 * Specifes the API endpoint.
 	 */
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
 		/**
-		 * @cfg {Function} [onData] Callback called after API request succeded.
+		 * @cfg {Function} [onData]
+		 * Callback called after API request succeded.
 		 */
 		/**
-		 * @cfg {Function} [onError] Callback called after API request failed. 
+		 * @cfg {Function} [onError]
+		 * Callback called after API request failed. 
 		 */
 		/**
-		 * @cfg {Function} [onOpen] Callback called before sending an API request.
+		 * @cfg {Function} [onOpen]
+		 * Callback called before sending an API request.
 		 */
 		/**
-		 * @cfg {Function} [onClose] Callback called after API request aborting.
+		 * @cfg {Function} [onClose]
+		 * Callback called after API request aborting.
 		 */
 		/**
-		 * @cfg {String} [apiBaseUrl] Specifies the base URL for API requests
+		 * @cfg {String} [apiBaseUrl]
+		 * Specifies the base URL for API requests
 		 */
 		"apiBaseURL": "api.echoenabled.com/v1/",
 		/**
-		 * @cfg {String} [transport] Specifies the transport name.
+		 * @cfg {String} [transport]
+		 * Specifies the transport name.
 		 */
 		"transport": "ajax",
 		/**
-		 * @cfg {String} [method] Specifies the request method.
+		 * @cfg {String} [method]
+		 * Specifies the request method.
 		 */
 		"method": "GET",
 		/**
-		 * @cfg {Number} [timeout] Specifies the number of seconds after which onError callback will be called if API request failed.
+		 * @cfg {Number} [timeout]
+		 * Specifies the number of seconds after which onError callback will be
+		 * called if API request failed.
 		 */
 		"timeout": 30
 	});
@@ -302,8 +313,8 @@ Echo.API.Request.prototype._isSecureRequest = function() {
 };
 
 /**
- * @method
  * Method performing api request using given parameters.
+ *
  * @param {Object} [args] Request parameters.
  * @param {Boolean} [args.force] Flag to initiate aggressive polling.
  */
