@@ -437,10 +437,6 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 		QUnit.equal(plugin.view.get("testPluginRenderer"), undefined,
 			"Checking if an element is not available after view.remove call");
 
-		plugin.view.clear();
-		QUnit.ok($.isEmptyObject(plugin.view.elements),
-			"Checking plugin.view.clear() function");
-
 		this.destroy();
 
 		callback && callback();

@@ -169,13 +169,15 @@ Echo.View.prototype.render = function(args) {
  * This function is helpful when you need to process the template using the rules and
  * renderers specified for the parent Echo.View class instance.
  *
+ * @param [config]
+ * Configuration overrides object. See Echo.View class constructor
+ * to get more information about the config object fields and types.
+ *
  * @return {Object}
  * New Echo.View class instance with the configuration params taken from the current instance.
  */
 Echo.View.prototype.fork = function(config) {
-	return new Echo.View(
-		$.extend(true, this.config, config)
-	);
+	return new Echo.View($.extend(true, this.config, config));
 };
 
 // private functions

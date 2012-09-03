@@ -384,9 +384,6 @@ Echo.Plugin.prototype._initializers.view = function() {
 		return view[name].apply(view, args);
 	};
 	return {
-		"clear": function() {
-			action("clear");
-		},
 		"set": function(name, element) {
 			action("set", [prefix + name, element]);
 		},
