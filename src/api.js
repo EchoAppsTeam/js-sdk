@@ -1,6 +1,10 @@
+(function() {
+
 Echo.API = {"Transports": {}, "Request": {}};
 
 var utils = Echo.Utils;
+
+(function() {
 
 /**
  * @class Echo.API.Transport
@@ -59,15 +63,15 @@ Echo.API.Transports.AJAX.prototype._getScheme = function() {
 Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 	var self = this;
 	var ajaxSettings = {
-		url: this._prepareURL(),
-		type: this.config.get("method"),
-		error: function(errorResponse, requestParams) {
+		"url": this._prepareURL(),
+		"type": this.config.get("method"),
+		"error": function(errorResponse, requestParams) {
 			errorResponse = self._wrapErrorResponse(errorResponse);
 			self.config.get("onError")(errorResponse, requestParams);
 		},
-		success: this.config.get("onData"),
-		beforeSend: this.config.get("onOpen"),
-		dataType: "json"
+		"success": this.config.get("onData"),
+		"beforeSend": this.config.get("onOpen"),
+		"dataType": "json"
 	};
 	if ("XDomainRequest" in window && window.XDomainRequest != null) {
 		var xhrOrigin = $.ajaxSettings.xhr;
@@ -217,7 +221,7 @@ Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 	var self = this;
 	var socket = new (window.WebSocket || window.MozWebSocket)(this._prepareURL());
 	socket.onmessage = function(event) {
-		self.config.get("onData")(utils.parseJSON(event.data));
+		self.config.get("onData")($.parseJSON(event.data));
 	};
 	socket.onopen = this.config.get("onOpen");
 	socket.onclose = this.config.get("onClose");
@@ -241,6 +245,10 @@ Echo.API.Transports.WebSocket.available = function() {
 	return false;
 	//return ("WebSocket" in window || "MozWebSocket" in window);
 };
+
+})();
+
+(function() {
 
 /**
  * @class Echo.API.Request
@@ -275,7 +283,15 @@ Echo.API.Request = function(config) {
 		/**
 		 * @cfg {String} [transport] Specifies the transport name.
 		 */
-		"transport": "ajax"
+		"transport": "ajax",
+		/**
+		 * @cfg {String} [method] Specifies the request method.
+		 */
+		"method": "GET",
+		/**
+		 * @cfg {Number} [timeout] Specifies the number of seconds after which onError callback will be called if API request failed.
+		 */
+		"timeout": 30
 	});
 };
 
@@ -309,7 +325,7 @@ Echo.API.Request.prototype.request = function(params) {
 	this.transport = this._getTransport();
 	if (this.transport) {
 		this.transport.send(params);
-		if (timeout) {
+		if (timeout && this.config.get("onError")) {
 			this._timeoutId = setTimeout(function() {
 				self.config.get("onError")({
 					"result": "error",
@@ -363,3 +379,7 @@ Echo.API.Request.prototype._getHandlersByConfig = function() {
 Echo.API.Request.prototype._prepareURI = function() {
 	return this.config.get("apiBaseURL").replace(/^(http|ws)s?:\/\//, "") + this.config.get("endpoint");
 };
+
+})();
+
+})();

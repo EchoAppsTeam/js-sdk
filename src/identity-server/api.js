@@ -1,3 +1,5 @@
+(function() {
+
 if (!Echo.IdentityServer) Echo.IdentityServer = {};
 
 Echo.IdentityServer.API = {};
@@ -42,7 +44,7 @@ Echo.IdentityServer.API.Request.prototype._prepareURI = function() {
 Echo.IdentityServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
 	var self = this;
 	var _config = $.extend({}, config);
-	return $.extend(config, {
+	return $.extend({}, config, {
 		"onData": function(response, requestParams) {
 			self._onData(response, _config);
 		}
@@ -58,11 +60,11 @@ Echo.IdentityServer.API.Request.prototype._onData = function(response, config) {
 };
 
 Echo.IdentityServer.API.Request.prototype._update = function(args) {
-	var content = $.extend(this.config.get("data.content"), {
+	var content = $.extend({}, this.config.get("data.content"), {
 		"endpoint": "users/update"
 	});
 	this.request(
-		$.extend(this.config.get("data"), {
+		$.extend({}, this.config.get("data"), {
 			"content": Echo.Utils.object2JSON(content)
 		})
 	);
@@ -81,3 +83,5 @@ Echo.IdentityServer.API.Request.prototype._whoami = function(args) {
 Echo.IdentityServer.API.request = function(config) {
 	return (new Echo.IdentityServer.API.Request(config));
 };
+
+})();

@@ -1,3 +1,5 @@
+(function() {
+
 if (!Echo.StreamServer) Echo.StreamServer = {};
 
 Echo.StreamServer.API = {};
@@ -18,9 +20,17 @@ Echo.StreamServer.API.Request = function(config) {
 		 */
 		"liveUpdatesTimeout": 5,
 		/**
-		 * @cfg {Boolean} [skipInitialRequests] Flag allowing to skip the initial request but continue performing live updates requests.
+		 * @cfg {Boolean} [skipInitialRequest] Flag allowing to skip the initial request but continue performing live updates requests.
 		 */
 		"skipInitialRequest": false,
+		/**
+		 * @cfg {Boolean} [recurring] Specifies that the live updates are enabled.
+		 */
+		"recurring": false,
+		/**
+		 * @cfg {String} [itemURIPattern] Specifies the item id pattern.
+		 */
+		"itemURIPattern": undefined,
 		/**
 		 * @cfg {Function} [onData] Callback called after API request succeded.
 		 */
@@ -71,7 +81,7 @@ Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.
 Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
 	var self = this;
 	var _config = $.extend({}, config);
-	return $.extend(config, {
+	return $.extend({}, config, {
 		"onOpen": function(response, requestParams) {
 			_config.onOpen.call(self, response, {"requestType": self.requestType});
 			clearInterval(self.retryTimer);
@@ -158,7 +168,7 @@ Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {
 Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(data) {
 	var self = this;
 	// backwards compatibility
-	if (typeof data == "string") {
+	if (typeof data === "string") {
 		data = {"liveUpdatesTimeout": data};
 	}
 	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
@@ -236,11 +246,11 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
-	return data && $.inArray(data.errorCode, ["waiting", "timeout", "busy", "view_limit", "view_update_capacity_exceeded"]) >= 0;
+	return data && ~$.inArray(data.errorCode, ["waiting", "timeout", "busy", "view_limit", "view_update_capacity_exceeded"]);
 };
 
 Echo.StreamServer.API.Request.prototype._isErrorWithTimer = function(data) {
-	return data && $.inArray(data.errorCode, ["view_limit", "view_update_capacity_exceeded"]) >= 0;
+	return data && ~$.inArray(data.errorCode, ["view_limit", "view_update_capacity_exceeded"]);
 };
 
 Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, config) {
@@ -373,3 +383,5 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 Echo.StreamServer.API.request = function(config) {
 	return (new Echo.StreamServer.API.Request(config));
 };
+
+})();
