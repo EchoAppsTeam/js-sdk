@@ -1,14 +1,39 @@
 /**
  * @class Echo.View
  * Class implementing core rendering logic, which is widely used across the system.
+ * In addition to the rendering facilities, this class maintains the list of elements within
+ * the given view ("view elements collection") and provides the interface to access/update them.
+ *
+ * @constructor
+ * Class constructor encapsulating templates rendering and renderers application mechanics.
  *
  * @param config
  * Specifies class configuration parameters.
  *
+ * @param {String} [config.cssPrefix]
+ * CSS class name prefix used by the Echo.View to detect whether a certain element
+ * should be added into the view elements collection (if the element CSS class name
+ * matches the prefix) and which renderer should be applied in case the element
+ * satisfies the CSS prefix match condition.
+ *
+ * @param {Object} [config.renderers]
+ * Object which specifies a set of renderers which should be applied during the template
+ * rendering. The name of the element is used as a key, the renderer function as the value.
+ *
+ * @param {Object} [config.substitutions]
+ * Object containing the list of extra instructions to be applied during template compilation.
+ *
+ * @param {Object} [config.data]
+ * Object with the data to be inserted into the template into the {data:%KEY%} placeholder.
+ * The {data:%KEY%} is a default placeholder supported by the Echo.View even if no
+ * substitution rules were defined in the config via "substitutions" field.
+ *
  * @param {String} [config.template]
- * Note: in order to prevent elements overriding, make sure that the template
- * defined in the Echo.View constructor call contains elements with the unique CSS
- * class names (matching the CSS prefix).
+ * Template which should be processed using a given substitution rules and
+ * the set of renderers.
+ * Note: in order to prevent elements overriding in the view elements collection,
+ * make sure that the template defined in the Echo.View constructor call contains
+ * elements with the unique CSS class names (matching the CSS prefix).
  */
 Echo.View = function(config) {
 	this.config = config || {};
@@ -78,6 +103,31 @@ Echo.View.prototype.rendered = function() {
 	return !!this._rendered;
 };
 
+/**
+ * Function to transform the template into the DOM representation and apply renderers.
+ *
+ * @param args
+ * Specifies rendering parameters.
+ *
+ * @param {Object} [args.renderers]
+ * Object which specifies a set of renderers which should be applied during the template
+ * rendering. The name of the element is used as a key, the renderer function as the value.
+ *
+ * @param {Object} [args.substitutions]
+ * Object containing the list of extra instructions to be applied during template compilation.
+ *
+ * @param {Object} [args.data]
+ * Object with the data to be inserted into the template into the {data:%KEY%} placeholder.
+ * The {data:%KEY%} is a default placeholder supported by the Echo.View even if no
+ * substitution rules were defined in the config via "substitutions" field.
+ *
+ * @param {String} [args.template]
+ * Template which should be processed using a given substitution rules and
+ * the set of renderers.
+ *
+ * @return {Object}
+ * DOM (jQuery element) representation of the given template using the rules specified.
+ */
 Echo.View.prototype.render = function(args) {
 	args = args || {};
 	args.data = args.data || this.config.data || {};
@@ -114,7 +164,15 @@ Echo.View.prototype.render = function(args) {
 	return false;
 };
 
-Echo.View.prototype.fork = function(config) {
+/**
+ * Function which instantiates an Echo.View object with the confing of the current instance.
+ * This function is helpful when you need to process the template using the rules and
+ * renderers specified for the parent Echo.View class instance.
+ *
+ * @return {Object}
+ * New Echo.View class instance with the configuration params taken from the current instance.
+ */
+Echo.View.prototype.fork = function() {
 	return new Echo.View(
 		$.extend(true, this.config, config)
 	);
