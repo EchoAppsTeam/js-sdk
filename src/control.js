@@ -351,8 +351,7 @@ Echo.Control.prototype.render = function() {
 	var view = this.dom;
 	var topic = view.rendered() ? "onRerender" : "onRender";
 	var content = view.render({
-		"template": this._compileTemplate(),
-		"renderers": this.get("renderers")
+		"template": this._compileTemplate()
 	});
 	this.config.get("target").empty().append(content);
 	this.events.publish({"topic": topic});
@@ -360,29 +359,7 @@ Echo.Control.prototype.render = function() {
 };
 
 /**
- * Templater function which compiles given template using the provided data.
- *
- * Function can be used widely for html templates processing or any other action
- * requiring string interspersion.
- *
- * @param {Object} args
- * Specifies substitution process, contains control parameters.
- *
- * @param {String} args.template
- * Template containing placeholders used for data interspersion.
- *
- * @param {Object} [args.data]
- * Data used in the template compilation.
- *
- * @param {Boolean} [args.strict]
- * Specifies whether the template should be replaced with the corresponding value,
- * preserving replacement value type.
- *
- * @param {Object} [args.instructions]
- * Object containing the list of extra instructions to be applied during template compilation.
- *
- * @return {String}
- * Compiled string value.
+ * @inheritdoc Echo.Utils#substitute
  */
 Echo.Control.prototype.substitute = function(args) {
 	var instructions = this._getSubstitutionInstructions();
@@ -827,6 +804,7 @@ Echo.Control.prototype._initializers.renderers = function() {
 Echo.Control.prototype._initializers.dom = function() {
 	return new Echo.View({
 		"cssPrefix": this.get("cssPrefix"),
+		"renderers": this.get("renderers"),
 		"substitutions": this._getSubstitutionInstructions()
 	});
 };

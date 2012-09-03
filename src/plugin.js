@@ -390,8 +390,8 @@ Echo.Plugin.prototype._initializers.dom = function() {
 		"set": function(name, element) {
 			action("set", [prefix + name, element]);
 		},
-		"get": function(name, ignorePrefix) {
-			return action("get", [prefix + name, ignorePrefix]);
+		"get": function(name) {
+			return action("get", [prefix + name]);
 		},
 		"remove": function(element) {
 			if (typeof element === "string") {

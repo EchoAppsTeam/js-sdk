@@ -1,6 +1,14 @@
 /**
  * @class Echo.View
  * Class implementing core rendering logic, which is widely used across the system.
+ *
+ * @param config
+ * Specifies class configuration parameters.
+ *
+ * @param {String} [config.template]
+ * Note: in order to prevent elements overriding, make sure that the template
+ * defined in the Echo.View constructor call contains elements with the unique CSS
+ * class names (matching the CSS prefix).
  */
 Echo.View = function(config) {
 	this.config = config;
@@ -9,28 +17,63 @@ Echo.View = function(config) {
 	this._clear();
 };
 
-// public interface
-
-Echo.View.prototype.fork = function() {
-	return new Echo.View(this.config);
+/**
+ * Accessor function to get specific element in this view.
+ *
+ * This function returns the corresponding element if it exists in the view.
+ *
+ * @param {String} name
+ * The name of the element in the view to be obtained.
+ * The name equals to a CSS class name defined for the element minus the CSS prefix
+ * defined in the Echo.View object config. For example, if an element has the
+ * "echo-item-container" CSS class and the "echo-item-" CSS prefix was defined
+ * during the object constructor call, the element will be available using
+ * the "container" name. If element has more than one CSS class name matching
+ * the CSS prefix - it will be available under multiple names.
+ *
+ * @return {Object}
+ * The corresponding value found in the object.
+ */
+Echo.View.prototype.get = function(name) {
+	return this._elements[this._key(name)];
 };
 
-Echo.View.prototype.get = function(name, ignorePrefix) {
-	return this._elements[(ignorePrefix ? "" : this.config.cssPrefix) + name];
-};
-
+/**
+ * Setter method to add element into the view elements collection.
+ *
+ * @param {String} name
+ * The name of the element which should be added into the view elements collection.
+ * See (link #get) to get more information about this field format.
+ *
+ * @param {Object|String} element
+ * The corresponding DOM or jQuery element which should be added into collection.
+ * The element might also be a HTML markup string which will be transformed into the
+ * jQuery element before assignment.
+ */
 Echo.View.prototype.set = function(name, element) {
-	this._elements[this.config.cssPrefix + name] = $(element);
+	this._elements[this._key(name)] = $(element);
 };
 
+/**
+ * Method to remove a specific element from the view elements collection.
+ *
+ * @param {String|Object} element
+ * The name of the element or the element itself to be removed from the collection.
+ * See (link #get) to get more information about this field format in case of string name.
+ */
 Echo.View.prototype.remove = function(element) {
 	var name = typeof element === "string"
-		? this.config.cssPrefix + element
+		? this._key(element)
 		: element.echo.name;
 	this._elements[name].remove();
 	delete this._elements[name];
 };
 
+/**
+ * Function which indicates whether the view was rendered or not.
+ *
+ * return {Boolean}
+ */
 Echo.View.prototype.rendered = function() {
 	return !!this._rendered;
 };
@@ -47,10 +90,7 @@ Echo.View.prototype.render = function(args) {
 	// render specific element (recursively if specified)
 	if (args.name) {
 		args.target = args.target || this.get(args.name);
-
-		// exit if no target found
 		if (!args.target) return false;
-
 		var processor = args.recursive ? "recursive" : "element";
 		return this._render[processor].call(this, args);
 	}
@@ -74,6 +114,10 @@ Echo.View.prototype.render = function(args) {
 	return false;
 };
 
+Echo.View.prototype.fork = function() {
+	return new Echo.View(this.config);
+};
+
 // private functions
 
 Echo.View.prototype._render = {};
@@ -93,7 +137,7 @@ Echo.View.prototype._render.recursive = function(args) {
 	args.template = this._template;
 
 	var dom = this._compileTemplate(args);
-	this._applyRenderers($("." + this.config.cssPrefix + args.name, dom));
+	this._applyRenderers($("." + this._key(args.name), dom));
 	var newNode = this.get(args.name);
 	oldNode.replaceWith(newNode);
 	return newNode;
@@ -101,6 +145,10 @@ Echo.View.prototype._render.recursive = function(args) {
 
 Echo.View.prototype._render.template = function(args) {
 	return this._applyRenderers(this._compileTemplate(args));
+};
+
+Echo.View.prototype._key = function(name) {
+	return this.config.cssPrefix + name;
 };
 
 Echo.View.prototype._clear = function() {
