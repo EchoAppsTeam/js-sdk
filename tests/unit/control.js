@@ -299,7 +299,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 				'<div class="{class:testRenderer}"></div>' +
 				'<div class="c1">{config:integerParam}</div>' +
 			'</div>';
-		var result = this.view.render({
+		var result = this.view.fork().render({
 			"template": template,
 			"target": $("<div></div>"),
 			"data": {"k1": "myvalue1", "k2": {}}

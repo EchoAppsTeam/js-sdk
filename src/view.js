@@ -147,6 +147,7 @@ Echo.View.prototype.render = function(args) {
 
 	// render template
 	if (args.template) {
+		this.clear();
 
 		// save template to use it for
 		// the recursive renderer application call

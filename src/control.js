@@ -965,7 +965,7 @@ Echo.Control.prototype._compileTemplate = function() {
 			});
 		});
 	}
-	return dom;
+	return $(dom.html());
 };
 
 Echo.Control.prototype._domTransformer = function(args) {
