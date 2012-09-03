@@ -19,31 +19,51 @@
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Like
- * Adds extra controls Like/Unlike to each item in the Echo Stream control. Note that these controls will appear only for authenticated users.
- *     new Echo.StreamServer.Controls.Stream({
- *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
- *         &quot;plugins&quot;: [{
- *             &quot;name&quot;: &quot;Like&quot;
- *         }]
- *     });
+ * Adds extra controls Like/Unlike to each item in the Echo Stream control.
+ * Note that these controls will appear only for authenticated users.
+ *
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;Like&quot;
+ * 		}]
+ * 	});
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;Like&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
 plugin.init = function() {
-	var self = this;
 	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;data&quot;, plugin.template);
 	this.component.addButtonSpec(&quot;Like&quot;, this._assembleButton(&quot;Like&quot;));
 	this.component.addButtonSpec(&quot;Like&quot;, this._assembleButton(&quot;Unlike&quot;));
 };
 
 plugin.labels = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-property-likeThis'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;likeThis&quot;: &quot; like this.&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-property-likesThis'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;likesThis&quot;: &quot; likes this.&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-property-likeControl'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;likeControl&quot;: &quot;Like&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-property-unlikeControl'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;unlikeControl&quot;: &quot;Unlike&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-property-likeProcessing'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;likeProcessing&quot;: &quot;Liking...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-property-unlikeProcessing'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;unlikeProcessing&quot;: &quot;Unliking...&quot;
 };
 
@@ -56,66 +76,9 @@ plugin.events = {
 
 plugin.template = '&lt;div class=&quot;{plugin.class:likedBy}&quot;&gt;&lt;/div&gt;';
 
-plugin.methods._sendRequest = function(data, callback) {
-	Echo.StreamServer.API.request({
-		&quot;endpoint&quot;: &quot;submit&quot;,
-		&quot;submissionProxyURL&quot;: this.component.config.get(&quot;submissionProxyURL&quot;),
-		&quot;onData&quot;: callback,
-		&quot;data&quot;: data
-	}).send();
-};
-
-plugin.methods._sendActivity = function(name, item) {
-	var plugin = this;
-	var activity = {
-		&quot;verbs&quot;: [&quot;http://activitystrea.ms/schema/1.0/&quot; + name.toLowerCase()],
-		&quot;targets&quot;: [{&quot;id&quot;: item.get(&quot;data.object.id&quot;)}]
-	};
-	this._sendRequest({
-		&quot;content&quot;: activity,
-		&quot;appkey&quot;: item.config.get(&quot;appkey&quot;),
-		&quot;sessionID&quot;: item.user.get(&quot;sessionID&quot;),
-		&quot;target-query&quot;: item.config.get(&quot;parent.query&quot;)
-	}, function() {
-		plugin.events.publish({
-			&quot;topic&quot;: &quot;on&quot; + name + &quot;Complete&quot;,
-			&quot;data&quot;: {
-				&quot;item&quot;: {
-					&quot;data&quot;: item.get(&quot;data&quot;),
-					&quot;target&quot;: item.config.get(&quot;target&quot;)
-				}
-			}
-		});
-		plugin.requestDataRefresh();
-	});
-};
-
-plugin.methods._assembleButton = function(name) {
-	var plugin = this;
-	var component = this.component;
-	var callback = function() {
-		var item = this;
-		item.get(&quot;buttons.&quot; + plugin.name + &quot;.&quot; + name + &quot;.element&quot;)
-			.empty()
-			.append(plugin.labels.get(name.toLowerCase() + &quot;Processing&quot;));
-		plugin._sendActivity(name, item);
-	};
-	return function() {
-		var item = this;
-		var action =
-			($.map(item.get(&quot;data.object.likes&quot;), function(entry) {
-				if (item.user.has(&quot;identity&quot;, entry.actor.id)) return entry;
-			})).length &gt; 0 ? &quot;Unlike&quot; : &quot;Like&quot;;
-		return {
-			&quot;name&quot;: name,
-			&quot;label&quot;: plugin.labels.get(name.toLowerCase() + &quot;Control&quot;),
-			&quot;visible&quot;: item.user.is(&quot;logged&quot;) &amp;&amp; action === name,
-			&quot;once&quot;: true,
-			&quot;callback&quot;: callback
-		};
-	};
-};
-
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-method-likedBy'>/**
+</span> * @echo_renderer
+ */
 plugin.renderers.likedBy = function(element) {
 	var plugin = this;
 	var item = this.component;
@@ -154,8 +117,77 @@ plugin.renderers.likedBy = function(element) {
 	return element.show();
 };
 
+plugin.methods._sendRequest = function(data, callback) {
+	Echo.StreamServer.API.request({
+		&quot;endpoint&quot;: &quot;submit&quot;,
+		&quot;submissionProxyURL&quot;: this.component.config.get(&quot;submissionProxyURL&quot;),
+		&quot;onData&quot;: callback,
+		&quot;data&quot;: data
+	}).send();
+};
+
+plugin.methods._sendActivity = function(name, item) {
+	var plugin = this;
+	var activity = {
+		&quot;verbs&quot;: [&quot;http://activitystrea.ms/schema/1.0/&quot; + name.toLowerCase()],
+		&quot;targets&quot;: [{&quot;id&quot;: item.get(&quot;data.object.id&quot;)}]
+	};
+	this._sendRequest({
+		&quot;content&quot;: activity,
+		&quot;appkey&quot;: item.config.get(&quot;appkey&quot;),
+		&quot;sessionID&quot;: item.user.get(&quot;sessionID&quot;),
+		&quot;target-query&quot;: item.config.get(&quot;parent.query&quot;)
+	}, function() {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-event-onLikeComplete'>		/**
+</span>		 * @event onLikeComplete
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeComplete
+		 * Triggered when the Like operation is finished.
+		 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-event-onUnlikeComplete'>		/**
+</span>		 * @event onUnlikeComplete
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete
+		 * Triggered when the reverse Like operation is finished.
+		 */
+		plugin.events.publish({
+			&quot;topic&quot;: &quot;on&quot; + name + &quot;Complete&quot;,
+			&quot;data&quot;: {
+				&quot;item&quot;: {
+					&quot;data&quot;: item.get(&quot;data&quot;),
+					&quot;target&quot;: item.config.get(&quot;target&quot;)
+				}
+			}
+		});
+		plugin.requestDataRefresh();
+	});
+};
+
+plugin.methods._assembleButton = function(name) {
+	var plugin = this;
+	var callback = function() {
+		var item = this;
+		item.get(&quot;buttons.&quot; + plugin.name + &quot;.&quot; + name + &quot;.element&quot;)
+			.empty()
+			.append(plugin.labels.get(name.toLowerCase() + &quot;Processing&quot;));
+		plugin._sendActivity(name, item);
+	};
+	return function() {
+		var item = this;
+		var action =
+			($.map(item.get(&quot;data.object.likes&quot;), function(entry) {
+				if (item.user.has(&quot;identity&quot;, entry.actor.id)) return entry;
+			})).length &gt; 0 ? &quot;Unlike&quot; : &quot;Like&quot;;
+		return {
+			&quot;name&quot;: name,
+			&quot;label&quot;: plugin.labels.get(name.toLowerCase() + &quot;Control&quot;),
+			&quot;visible&quot;: item.user.is(&quot;logged&quot;) &amp;&amp; action === name,
+			&quot;once&quot;: true,
+			&quot;callback&quot;: callback
+		};
+	};
+};
+
 plugin.css =
-	'.{plugin.class:likedBy} { background: url(//cdn.echoenabled.com/images/likes.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
+	'.{plugin.class:likedBy} { background: url(' + Echo.Loader.getURL(&quot;sdk/images/likes.png&quot;) + ') no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
 	'.{plugin.class:highlight} { line-height: 23px; }' +
 	($.browser.msie ?
 		'.{plugin.class:highlight} span { vertical-align: middle; }' +
@@ -169,18 +201,30 @@ Echo.Plugin.create(plugin);
 
 (function() {
 
+<span id='Echo-StreamServer-Controls-Facepile-Item-Plugins-Like'>/**
+</span> * @class Echo.StreamServer.Controls.Facepile.Item.Plugins.Like
+ * Adds extra controls to items in the Echo Facepile control.
+ *
+ * @extends Echo.Plugin
+ */
 var plugin = Echo.Plugin.manifest(&quot;Like&quot;, &quot;Echo.StreamServer.Controls.FacePile.Item&quot;);
-
-plugin.labels = {
-	&quot;unlikeOnBehalf&quot;: &quot;Unlike on behalf of this user&quot;
-};
 
 plugin.init = function() {
 	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;container&quot;, plugin.template);
 };
 
-plugin.template = '&lt;img class=&quot;{plugin.class:adminUnlike}&quot; src=&quot;//cdn.echoenabled.com/images/container/closeWindow.png&quot; title=&quot;{plugin.label:unlikeOnBehalf}&quot; width=&quot;10&quot; height=&quot;9&quot;&gt;';
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Facepile-Item-Plugins-Like-property-unlikeOnBehalf'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;unlikeOnBehalf&quot;: &quot;Unlike on behalf of this user&quot;
+};
 
+plugin.template = '&lt;img class=&quot;{plugin.class:adminUnlike}&quot; src=&quot;' + Echo.Loader.getURL(&quot;sdk/images/container/closeWindow.png&quot;) + '&quot; title=&quot;{plugin.label:unlikeOnBehalf}&quot; width=&quot;10&quot; height=&quot;9&quot;&gt;';
+
+<span id='Echo-StreamServer-Controls-Facepile-Item-Plugins-Like-method-container'>/**
+</span> * @echo_renderer
+ */
 plugin.component.renderers.container = function(element) {
 	this.parentRenderer(&quot;container&quot;, arguments);
 	if (this.component.user.is(&quot;admin&quot;)) {
@@ -188,6 +232,9 @@ plugin.component.renderers.container = function(element) {
 	}
 };
 
+<span id='Echo-StreamServer-Controls-Facepile-Item-Plugins-Like-method-adminUnlike'>/**
+</span> * @echo_renderer
+ */
 plugin.renderers.adminUnlike = function(element) {
 	var plugin = this;
 	var item = this.component;
@@ -196,6 +243,11 @@ plugin.renderers.adminUnlike = function(element) {
 	}
 	return element.one(&quot;click&quot;, function() {
 		item.dom.get(&quot;container&quot;).css(&quot;opacity&quot;, 0.3);
+<span id='Echo-StreamServer-Controls-Facepile-Item-Plugins-Like-event-onUnlike'>		/**
+</span>		 * @event onUnlike
+		 * @echo_event Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike
+		 * Triggered when the item is &quot;unliked&quot; by admin on behalf of a user.
+		 */
 		plugin.events.publish({
 			&quot;topic&quot;: &quot;onUnlike&quot;,
 			&quot;actor&quot;: item.get(&quot;data&quot;),
@@ -215,6 +267,7 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();</pre>
+})();
+</pre>
 </body>
 </html>

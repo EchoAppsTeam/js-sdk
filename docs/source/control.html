@@ -28,18 +28,41 @@ Echo.Control = function() {};
  * @method
  * Function which creates a control object using it manifest declaration.
  *
- * @param {Object} manifest (required) Specifies the control interface in the predefined way.
- * @param {String} manifest.name (required) Specifies the control name including namespace (ex. &quot;Echo.StreamServer.Controls.Submit&quot;)
- * @param {Object} [manifest.vars] Specifies internal control variables.
- * @param {Object} [manifest.config] Specifies the configuration data with the ability to define default values.
- * @param {Object} [manifest.labels] Specifies the list of language labels used in the particular control UI.
- * @param {Object} [manifest.events] Specifies the list of external events used by control.
- * @param {Object} [manifest.methods] Specifies the list of control methods.
- * @param {Object} [manifest.renderers] Specifies the list of control renderers.
- * @param {Object} [manifest.templates] Specifies the list of control templates
- * @param {Function} [manifest.init] Function called during control initialization.
- * @param {String} [manifest.css] Specifies the CSS rules for the control.
- * @return {Object} generated control class
+ * @param {Object} manifest
+ * Specifies the control interface in the predefined way.
+ *
+ * @param {String} manifest.name
+ * Specifies the control name including namespace (ex. &quot;Echo.StreamServer.Controls.Submit&quot;)
+ *
+ * @param {Object} [manifest.vars]
+ * Specifies internal control variables.
+ *
+ * @param {Object} [manifest.config]
+ * Specifies the configuration data with the ability to define default values.
+ *
+ * @param {Object} [manifest.labels]
+ * Specifies the list of language labels used in the particular control UI.
+ *
+ * @param {Object} [manifest.events]
+ * Specifies the list of external events used by control.
+ *
+ * @param {Object} [manifest.methods]
+ * Specifies the list of control methods.
+ *
+ * @param {Object} [manifest.renderers]
+ * Specifies the list of control renderers.
+ *
+ * @param {Object} [manifest.templates]
+ * Specifies the list of control templates.
+ *
+ * @param {Function} [manifest.init]
+ * Function called during control initialization.
+ *
+ * @param {String} [manifest.css]
+ * Specifies the CSS rules for the control.
+ *
+ * @return {Object}
+ * Reference to the generated control class.
  */
 Echo.Control.create = function(manifest) {
 	var control = Echo.Utils.getNestedValue(window, manifest.name);
@@ -80,10 +103,13 @@ Echo.Control.create = function(manifest) {
 
 <span id='Echo-Control-static-method-manifest'>/**
 </span> * @static
- * @method
  * Method returning common manifest structure.
- * @param {String} name (required) Specifies control name.
- * @return {Object} Basic control manifest declaration.
+ *
+ * @param {String} name
+ * Specifies control name.
+ *
+ * @return {Object}
+ * Basic control manifest declaration.
  */
 Echo.Control.manifest = function(name) {
 	return {
@@ -106,11 +132,16 @@ Echo.Control.manifest = function(name) {
 
 <span id='Echo-Control-static-method-addInitializer'>/**
 </span> * @static
- * @method
- * Method which add new initializer schema to the control (or control extender) prototype. Initializer function must be defined.
- * @param {Object} klass (required) Specifies control (Echo.Control or extender) object.
- * @param {Array} schema (required) Initializer schema which declare name and executed step.
- * @param {Object} rule Rule object which contains action as key and target as value. Target is a defined initializer name. If this parameter omit then initializer will be pushed to the end of the list. Possible actions are:
+ * Method which adds new initializer scheme to the control (or control extender) prototype. Initializer function must be defined.
+ *
+ * @param {Object} klass
+ * Specifies control (Echo.Control or extender) object.
+ *
+ * @param {Array} schema
+ * Initializer schema which declare name and executed step.
+ *
+ * @param {Object} rule
+ * Object containing action as key and target as value. Target is a defined initializer name. If this parameter is omitted then initializer will be pushed to the end of the list. Possible actions are:
  * + &quot;after&quot;
  * + &quot;before&quot;
  */
@@ -140,8 +171,6 @@ Echo.Control.addInitializer = function(klass, schema, rule) {
 	klass.prototype._initializers.list = list;
 };
 
-// dynamic interface (available for class instances)
-
 Echo.Control.prototype.templates = {&quot;message&quot;: {}};
 
 Echo.Control.prototype.templates.message.compact =
@@ -163,35 +192,46 @@ Echo.Control.prototype.defaults.vars = {
 };
 
 Echo.Control.prototype.defaults.config = {
-<span id='Echo-Control-cfg-target'>/**
-</span> * @cfg {String} target (required) Specifies the DOM element where the control will be displayed.
- */
+<span id='Echo-Control-cfg-target'>	/**
+</span>	 * @cfg {String} target(required)
+	 * Specifies the DOM element where the control will be displayed.
+	 */
 	&quot;target&quot;: undefined,
-<span id='Echo-Control-cfg-appkey'>/**
-</span> * @cfg {String} appkey (required) Specifies the customer application key. You can use the &quot;test.echoenabled.com&quot; appkey for testing purposes.
- */
+<span id='Echo-Control-cfg-appkey'>	/**
+</span>	 * @cfg {String} appkey (required)
+	 * Specifies the customer application key. You can use the &quot;test.echoenabled.com&quot; appkey for testing purposes.
+	 */
 	&quot;appkey&quot;: &quot;&quot;,
-<span id='Echo-Control-cfg-labels'>/**
-</span> * @cfg {Object} labels Specifies the set of language variables defined for this particular control.
- */
+<span id='Echo-Control-cfg-labels'>	/**
+</span>	 * @cfg {Object} labels
+	 * Specifies the set of language variables defined for this particular control.
+	 */
 	&quot;labels&quot;: {},
-<span id='Echo-Control-cfg-apiBaseURL'>/**
-</span> * @cfg {String} [apiBaseURL=&quot;api.echoenabled.com/v1/&quot;] URL prefix for all API requests
- */
+<span id='Echo-Control-cfg-apiBaseURL'>	/**
+</span>	 * @cfg {String} [apiBaseURL=&quot;api.echoenabled.com/v1/&quot;]
+	 * URL prefix for all API requests
+	 */
 	&quot;apiBaseURL&quot;: &quot;api.echoenabled.com/v1/&quot;,
-<span id='Echo-Control-cfg-submissionProxyURL'>/**
-</span> * @cfg {String} [submissionProxyURL=&quot;apps.echoenabled.com/v2/esp/activity/&quot;] URL prefix for requests to Echo Submission Proxy
- */
+<span id='Echo-Control-cfg-submissionProxyURL'>	/**
+</span>	 * @cfg {String} [submissionProxyURL=&quot;apps.echoenabled.com/v2/esp/activity/&quot;]
+	 * URL prefix for requests to Echo Submission Proxy
+	 */
 	&quot;submissionProxyURL&quot;: &quot;apps.echoenabled.com/v2/esp/activity/&quot;,
-<span id='Echo-Control-cfg-infoMessages'>/**
-</span> * @cfg {Object} [infoMessages] Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
- * @cfg {Boolean} [infoMessages.enabled=true] Specifies if info messages should be rendered.
- * @cfg {String} [infoMessages.layout=&quot;full&quot;] Specifies the layout of the info message. By default can be set to &quot;compact&quot; or &quot;full&quot;.
- *     &quot;infoMessages&quot; : {
- *         &quot;enabled&quot; : true,
- *         &quot;layout&quot; : &quot;full&quot;
- *     }
- */
+<span id='Echo-Control-cfg-infoMessages'>	/**
+</span>	 * @cfg {Object} [infoMessages]
+	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
+	 *
+	 * @cfg {Boolean} [infoMessages.enabled=true]
+	 * Specifies if info messages should be rendered.
+	 *
+	 * @cfg {String} [infoMessages.layout=&quot;full&quot;]
+ 	 * Specifies the layout of the info message. By default can be set to &quot;compact&quot; or &quot;full&quot;.
+	 *
+	 *     &quot;infoMessages&quot; : {
+	 *         &quot;enabled&quot; : true,
+	 *         &quot;layout&quot; : &quot;full&quot;
+	 *     }
+	 */
 	&quot;infoMessages&quot;: {
 		&quot;enabled&quot;: true,
 		&quot;layout&quot;: &quot;full&quot;
@@ -201,73 +241,132 @@ Echo.Control.prototype.defaults.config = {
 };
 
 Echo.Control.prototype.defaults.labels = {
+<span id='Echo-Control-property-loading'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;loading&quot;: &quot;Loading...&quot;,
+<span id='Echo-Control-property-retrying'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;retrying&quot;: &quot;Retrying...&quot;,
+<span id='Echo-Control-property-error_busy'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_busy&quot;: &quot;Loading. Please wait...&quot;,
+<span id='Echo-Control-property-error_timeout'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_timeout&quot;: &quot;Loading. Please wait...&quot;,
+<span id='Echo-Control-property-error_waiting'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_waiting&quot;: &quot;Loading. Please wait...&quot;,
+<span id='Echo-Control-property-error_view_limit'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_view_limit&quot;: &quot;View creation rate limit has been exceeded. Retrying in {seconds} seconds...&quot;,
+<span id='Echo-Control-property-error_view_update_capacity_exceeded'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_view_update_capacity_exceeded&quot;: &quot;This stream is momentarily unavailable due to unusually high activity. Retrying in {seconds} seconds...&quot;,
+<span id='Echo-Control-property-error_result_too_large'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_result_too_large&quot;: &quot;(result_too_large) The search result is too large.&quot;,
+<span id='Echo-Control-property-error_wrong_query'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_wrong_query&quot;: &quot;(wrong_query) Incorrect or missing query parameter.&quot;,
+<span id='Echo-Control-property-error_incorrect_appkey'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_incorrect_appkey&quot;: &quot;(incorrect_appkey) Incorrect or missing appkey.&quot;,
+<span id='Echo-Control-property-error_internal_error'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_internal_error&quot;: &quot;(internal_error) Unknown server error.&quot;,
+<span id='Echo-Control-property-error_quota_exceeded'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_quota_exceeded&quot;: &quot;(quota_exceeded) Required more quota than is available.&quot;,
+<span id='Echo-Control-property-error_incorrect_user_id'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_incorrect_user_id&quot;: &quot;(incorrect_user_id) Incorrect user specified in User ID predicate.&quot;,
+<span id='Echo-Control-property-error_unknown'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;error_unknown&quot;: &quot;(unknown) Unknown error.&quot;
 };
 
 <span id='Echo-Control-method-get'>/**
-</span> * @method
- * Accessor method to get specific field.
+</span> * Accessor method to get specific field.
  *
  * This function returns the corresponding value of the given key or the default value if specified in the second argument.
  *
- * @param {String} key Defines the key for data extraction.
- * @param {Object} [defaults] Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
- * @return {Mixed} Returns the corresponding value found in the object.
+ * @param {String} key
+ * Defines the key for data extraction.
+ *
+ * @param {Object} [defaults]
+ * Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ *
+ * @return {Mixed}
+ * The corresponding value found in the object.
  */
 Echo.Control.prototype.get = function(key, defaults) {
 	return Echo.Utils.getNestedValue(this, key, defaults);
 };
 
 <span id='Echo-Control-method-set'>/**
-</span> * @method
- * Setter method to define specific object value.
+</span> * Setter method to define specific object value.
  *
  * This function allows to define the value for the corresponding object field.
  *
- * @param {String} key Defines the key where the given data should be stored.
- * @param {Mixed} value The corresponding value which should be defined for the key.
+ * @param {String} key
+ * Defines the key where the given data should be stored.
+ *
+ * @param {Mixed} value
+ * The corresponding value which should be defined for the key.
  */
 Echo.Control.prototype.set = function(key, value) {
 	Echo.Utils.setNestedValue(this, key, value);
 };
 
 <span id='Echo-Control-method-remove'>/**
-</span> * @method
- * Method to remove specific object field.
+</span> * Method to remove specific object field.
  *
  * This function allows to remove the value associated with the given key.
  * If the key contains a complex structure (such as objects or arrays), it will be removed as well.
  *
- * @param {String} key Defines the key which should be removed from the object.
+ * @param {String} key
+ * Specifies the key which should be removed from the object.
  */
 Echo.Control.prototype.remove = function(key) {
 	this.set(key, undefined);
 };
 
 <span id='Echo-Control-method-substitute'>/**
-</span> * @method
- * Templater function which compiles given template using the provided data.
+</span> * Templater function which compiles given template using the provided data.
  *
  * Function can be used widely for html templates processing or any other action requiring string interspersion.
- * @param {Object} args (required) Specifies substitution process, contains control parameters.
- * @param {String} args.template (required) Template containing placeholders used for data interspersion.
- * @param {Object} [args.data] Data used in the template compilation.
- * @param {Boolean} [args.strict] Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
- * @param {Object} [args.instructions] Object containing the list of extra instructions to be applied during template compilation.
- * @return {String} Compiled string value.
+ *
+ * @param {Object} args
+ * Specifies substitution process, contains control parameters.
+ *
+ * @param {String} args.template
+ * Template containing placeholders used for data interspersion.
+ *
+ * @param {Object} [args.data]
+ * Data used in the template compilation.
+ *
+ * @param {Boolean} [args.strict]
+ * Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
+ *
+ * @param {Object} [args.instructions]
+ * Object containing the list of extra instructions to be applied during template compilation.
+ *
+ * @return {String}
+ * Compiled string value.
  */
 Echo.Control.prototype.substitute = function(args) {
 	var instructions = $.extend(this._getSubstitutionInstructions(args.data), args.instructions || {});
@@ -293,8 +392,7 @@ Echo.Control.prototype.substitute = function(args) {
 };
 
 <span id='Echo-Control-method-refresh'>/**
-</span> * @method
- * Basic method to reinitialize control.
+</span> * Basic method to reinitialize control.
  *
  * Function can be overriden by class descendants implying specific logic.
  */
@@ -310,8 +408,7 @@ Echo.Control.prototype.refresh = function() {
 };
 
 <span id='Echo-Control-method-destroy'>/**
-</span> * @method
- * Unified method to destroy control.
+</span> * Unified method to destroy control.
  */
 Echo.Control.prototype.destroy = function(config) {
 	Echo.Events.publish({
@@ -323,8 +420,8 @@ Echo.Control.prototype.destroy = function(config) {
 };
 
 <span id='Echo-Control-method-dependent'>/**
-</span> * @method
- * Checks if control was initialized from another control.
+</span> * Method checks if control was initialized from another control.
+ *
  * return {Boolean}
  */
 Echo.Control.prototype.dependent = function() {
@@ -332,12 +429,16 @@ Echo.Control.prototype.dependent = function() {
 };
 
 <span id='Echo-Control-method-showMessage'>/**
-</span> * @method
- * Renders info message in the target container.
+</span> * Renders info message in the target container.
  *
- * @param {Object} data (required) Object containing info message information.
- * @param {String} [data.layout] Specifies the type of message layout. Can be set to &quot;compact&quot; or &quot;full&quot;.
- * @param {HTMLElement} [data.target] Specifies the target container.
+ * @param {Object} data
+ * Object containing info message information.
+ *
+ * @param {String} [data.layout]
+ * Specifies the type of message layout. Can be set to &quot;compact&quot; or &quot;full&quot;.
+ *
+ * @param {HTMLElement} [data.target]
+ * Specifies the target container.
  */
 Echo.Control.prototype.showMessage = function(data) {
 	if (!this.config.get(&quot;infoMessages.enabled&quot;)) return;
@@ -352,11 +453,13 @@ Echo.Control.prototype.showMessage = function(data) {
 };
 
 <span id='Echo-Control-method-showError'>/**
-</span> * @method
- * Renders error message in the target container.
+</span> * Renders error message in the target container.
  *
- * @param {Object} data (required) Object containing error message information.
- * @param {Object} options (required) Object containing display options.
+ * @param {Object} data
+ * Object containing error message information.
+ *
+ * @param {Object} options
+ * Object containing display options.
  */
 Echo.Control.prototype.showError = function(data, options) {
 	var self = this;
@@ -395,27 +498,36 @@ Echo.Control.prototype.showError = function(data, options) {
 };
 
 <span id='Echo-Control-method-getPlugin'>/**
-</span> * @method
- * Accessor function allowing to obtain the plugin by its name.
+</span> * Accessor function allowing to obtain the plugin by its name.
  *
- * @param {String} name (required) Specifies plugin name.
- * @return {Object} Instance of the corresponding plugin.
+ * @param {String} name
+ * Specifies plugin name.
+ *
+ * @return {Object}
+ * Instance of the corresponding plugin.
  */
 Echo.Control.prototype.getPlugin = function(name) {
 	return this.plugins[name];
 };
 
+<span id='Echo-Control-method-template'>/**
+</span> * Method to get the control template during rendering procedure. Can be overriden.
+ */
 Echo.Control.prototype.template = function() {
 	return this.templates.main;
 };
 
-// plugin-specific interface
 <span id='Echo-Control-method-parentRenderer'>/**
-</span> * @method
- * Method to call parent renderer function, which was extended using Echo.Control.extendRenderer function.
- * @param {String} name (required) Renderer name.
- * @param {Object} args (required) Arguments to be proxied to the parent renderer from the overriden one.
- * @return {HTMLElement} Result of parent renderer function call.
+</span> * Method to call parent renderer function, which was extended using Echo.Control.extendRenderer function.
+ *
+ * @param {String} name
+ * Renderer name.
+ *
+ * @param {Object} args
+ * Arguments to be proxied to the parent renderer from the overriden one.
+ *
+ * @return {HTMLElement}
+ * Result of parent renderer function call.
  */
 Echo.Control.prototype.parentRenderer = function(name, args) {
 	var renderer = this._getRenderer(name);
@@ -424,9 +536,10 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
 };
 
 <span id='Echo-Control-method-extendTemplate'>/**
-</span> * @method
- * Method to extend the template of particular control.
- * @param {String} action (required) One of the following actions:
+</span> * Method to extend the template of particular control.
+ *
+ * @param {String} action
+ * One of the following actions:
  *
  * + &quot;insertBefore&quot;
  * + &quot;insertAfter&quot;
@@ -434,19 +547,25 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
  * + &quot;insertAsLastChild&quot;
  * + &quot;replace&quot;
  * + &quot;remove&quot;
- * @param {String} anchor (required) Element name which is a subject of a transformation application.
- * @param {String} [html] The content of a transformation to be applied. This param is required for all actions except &quot;remove&quot;.
+ *
+ * @param {String} anchor
+ * Element name which is a subject of a transformation application.
+ *
+ * @param {String} [html]
+ * The content of a transformation to be applied. This param is required for all actions except &quot;remove&quot;.
  */
 Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
 	this.extension.template.push({&quot;action&quot;: action, &quot;anchor&quot;: anchor, &quot;html&quot;: html});
 };
 
 /*
- * @method
  * Method extending the paticular renderer with defined function.
  *
- * @param {String} name (required) Renderer name to be extended.
- * @param {Function} renderer (required) Renderer function to apply.
+ * @param {String} name
+ * Renderer name to be extended.
+ *
+ * @param {Function} renderer
+ * Renderer function to be applied.
  */
 Echo.Control.prototype.extendRenderer = function(name, renderer) {
 	var renderers = this.extension.renderers;
@@ -455,14 +574,11 @@ Echo.Control.prototype.extendRenderer = function(name, renderer) {
 };
 
 <span id='Echo-Control-method-log'>/**
-</span> * @method
- * @inheritdoc Echo.Utils#log
+</span> * @inheritdoc Echo.Utils#log
  */
 Echo.Control.prototype.log = function(data) {
 	Echo.Utils.log($.extend(data, {&quot;component&quot;: this.name}));
 };
-
-// internal functions
 
 Echo.Control.prototype._init = function(subsystems) {
 	var control = this;
@@ -488,8 +604,6 @@ Echo.Control.prototype._init = function(subsystems) {
 };
 
 Echo.Control.prototype._initializers = {};
-
-// initializer helpers
 
 Echo.Control.prototype._initializers.list = [
 	[&quot;vars&quot;,               [&quot;init&quot;, &quot;refresh&quot;]],
@@ -517,8 +631,6 @@ Echo.Control.prototype._initializers.get = function(action) {
 		}
 	});
 };
-
-// initializer functions
 
 Echo.Control.prototype._initializers.vars = function() {
 	// we need to apply default field values to the control,
@@ -1067,9 +1179,9 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
 	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-empty { background-image: url(//cdn.echoenabled.com/images/information.png); }' +
-	'.echo-control-message-loading { background-image: url(//cdn.echoenabled.com/images/loading.gif); }' +
-	'.echo-control-message-error { background-image: url(//cdn.echoenabled.com/images/warning.gif); }';
+	'.echo-control-message-empty { background-image: url(' + Echo.Loader.getURL(&quot;sdk/images/information.png&quot;) + '); }' +
+	'.echo-control-message-loading { background-image: url(' + Echo.Loader.getURL(&quot;sdk/images/loading.gif&quot;) + '); }' +
+	'.echo-control-message-error { background-image: url(' + Echo.Loader.getURL(&quot;sdk/images/warning.gif&quot;) + '); }';
 </pre>
 </body>
 </html>

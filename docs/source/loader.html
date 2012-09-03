@@ -23,7 +23,7 @@ if (Echo.Loader) return;
 
 <span id='Echo-Loader'>/**
 </span> * @class Echo.Loader
- * Static class which implements a common methods for canvases loading.
+ * Static class which implements common mechanics for canvases loading.
  */
 Echo.Loader = {
 <span id='Echo-Loader-property-config'>	&quot;config&quot;: {
@@ -33,14 +33,12 @@ Echo.Loader = {
 <span id='Echo-Loader-property-overrides'>	&quot;overrides&quot;: {}
 </span>};
 
-// public interface
-
 <span id='Echo-Loader-static-method-getURL'>/**
 </span> * @static
  * Function to get absolute URL.
  *
  * @param {String} url
- * JavaScript or CSS stylesheet file URL
+ * JavaScript or CSS stylesheet file URL.
  */
 Echo.Loader.getURL = function(url) {
 	return /^https?:\/\/|^\/\//.test(url)
@@ -49,12 +47,19 @@ Echo.Loader.getURL = function(url) {
 };
 <span id='Echo-Loader-static-method-init'>/**
 </span> * @static
- * @method
  * Function to initialize canvases on the page.
  *
- * @param {Object} [config] Object which defines an initialization config parameters
- * @param {Mixed} [config.canvases] Array of jQuery elements or a single jQuery element, which represents a canvas target. If this param is omitted, Echo Loader will look for the canvases in the DOM structure.
- * @param {Object} [config.target] Target element where Echo Loader should look for the canvases if no canvases were passed in the &quot;config.canvases&quot; field.
+ * @param {Object} [config]
+ * Object which defines an initialization config parameters
+ *
+ * @param {Mixed} [config.canvases]
+ * Array of jQuery elements or a single jQuery element, which represents a
+ * canvas target. If this param is omitted, Echo Loader will look for the
+ * canvases in the DOM structure.
+ *
+ * @param {Object} [config.target]
+ * Target element where Echo Loader should look for the canvases if no
+ * canvases were passed in the &quot;config.canvases&quot; field.
 */
 Echo.Loader.init = function(config) {
 	config = config || {};
@@ -78,24 +83,34 @@ Echo.Loader.init = function(config) {
 
 <span id='Echo-Loader-static-method-download'>/**
 </span> * @static
- * @method
  * Function to load the JavaScript or CSS stylesheet files in async mode.
  *
- * @param {Object} params Object with the following properties:
- * @param {Array} params.scripts Array of objects with the properties described below:
- * @param {String} params.scripts.url JavaScript or CSS stylesheet file URL.
- * @param {Function} params.scripts.loaded Function for check whether the script was loaded. This function must return boolean value which indicates whether the resource was already loaded on the page or not. If the resource was already loaded - no download is performed and the callback is called immediately.
- * @param {Function} params.callback Callback function which should be called as soon as all requested files were downloaded.
+ * @param {Object} params
+ * Object with the following properties:
+ *
+ * @param {Array} params.scripts
+ * Array of objects with the properties described below:
+ *
+ * @param {String} params.scripts.url
+ * JavaScript or CSS stylesheet file URL.
+ *
+ * @param {Function} params.scripts.loaded
+ * Function for check whether the script was loaded. This function must return
+ * boolean value which indicates whether the resource was already loaded on the
+ * page or not. If the resource was already loaded - no download is performed
+ * and the callback is called immediately.
+ *
+ * @param {Function} params.callback
+ * Callback function which should be called as soon as all requested files
+ * were downloaded.
  */
 Echo.Loader.download = function(params) {
-	var scripts = params.scripts, urls = [];
+	var scripts = params.scripts || [], urls = [];
 	var callback = params.callback || function() {};
-	if (params.scripts &amp;&amp; params.scripts.length) {
-		for (var i = 0; i &lt; scripts.length; i++) {
-			var script = scripts[i];
-			if (!script.loaded || !script.loaded()) {
-				urls.push(Echo.Loader.getURL(script.url));
-			}
+	for (var i = 0; i &lt; scripts.length; i++) {
+		var script = scripts[i];
+		if (!script.loaded || !script.loaded()) {
+			urls.push(Echo.Loader.getURL(script.url));
 		}
 	}
 	if (!urls.length) {
@@ -113,20 +128,23 @@ Echo.Loader.download = function(params) {
 
 <span id='Echo-Loader-static-method-override'>/**
 </span> * @static
- * @method
- * Function which provides an ability to override config parameters of the specific application within the canvas.
+ * Function which provides an ability to override config parameters of the
+ * specific application within the canvas.
  *
- * @param {String} canvasID Canvas ID.
- * @param {String} appID Application ID inside the canvas.
- * @param {Object} config Object with the application config overrides.
+ * @param {String} canvasID
+ * Canvas ID.
+ *
+ * @param {String} appID
+ * Application ID inside the canvas.
+ *
+ * @param {Object} config
+ * Object with the application config overrides.
  */
 Echo.Loader.override = function(canvasID, appID, config) {
 	var overrides = Echo.Loader.overrides;
 	overrides[canvasID] = overrides[canvasID] || {};
 	overrides[canvasID][appID] = config;
 };
-
-// internal functions
 
 Echo.Loader._initEnvironment = function(callback) {
 	var scripts = [{

@@ -15,16 +15,22 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Stream-Plugins-InfiniteScroll'>/**
+  <pre class="prettyprint lang-js">(function() {
+
+<span id='Echo-StreamServer-Controls-Stream-Plugins-InfiniteScroll'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll
- * Echo Stream plugin automatically loads the next page full of items when the end of the stream is displayed on the browser screen. This produces an 'Infinite Scroll' Effect.
- *     new Echo.StreamServer.Controls.Stream({
- *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
- *         &quot;plugins&quot;: [{
- *             &quot;name&quot;: &quot;InfiniteScroll&quot;
- *         }]
- *     });
+ * Echo Stream plugin automatically loads the next page full of items
+ * when the end of the stream is displayed on the browser screen.
+ * This produces an 'Infinite Scroll' Effect.
+ *
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;InfiniteScroll&quot;
+ * 		}]
+ * 	});
+ *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;InfiniteScroll&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
@@ -48,6 +54,8 @@ plugin.events = {
 };
 
 Echo.Plugin.create(plugin);
+
+})();
 </pre>
 </body>
 </html>

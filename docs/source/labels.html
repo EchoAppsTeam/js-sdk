@@ -21,21 +21,29 @@
 </span></span> * @class Echo.Labels
  * Class implements the language variables mechanics across the components.
  *
- * It should be instantiated to override language variables within the scope of a particular component instance.
- * Language variables overriden with the instance of this class will have the highest priority.
- * Static methods should be used for general language variable definition and localization purposes.
+ * It should be instantiated to override language variables within
+ * the scope of a particular component instance.
+ * Language variables overriden with the instance of this class
+ * will have the highest priority.
+ * Static methods should be used for general language variable
+ * definition and localization purposes.
  *
  * @constructor
  * Constructor of class encapsulating language variable mechanics.
  *
- *     new Echo.Labels({
- *         &quot;live&quot;: &quot;Live&quot;,
- *         &quot;paused&quot;: &quot;Paused&quot;
- *     }, &quot;Stream&quot;);
+ * 	new Echo.Labels({
+ * 		&quot;live&quot;: &quot;Live&quot;,
+ * 		&quot;paused&quot;: &quot;Paused&quot;
+ * 	}, &quot;Stream&quot;);
  *
- * @param {Object} labels Flat object containing the list of language variables to be initialized.
- * @param {String} namespace String representing the component namespace.
- * @return {Object} Returns the reference to the given Echo.Labels class instance.
+ * @param {Object} labels
+ * Flat object containing the list of language variables to be initialized.
+ *
+ * @param {String} namespace
+ * Component namespace.
+ *
+ * @return {Object}
+ * The reference to the given Echo.Labels class instance.
  */
 
 Echo.Labels = function(labels, namespace) {
@@ -48,23 +56,28 @@ Echo.Labels = function(labels, namespace) {
 };
 
 <span id='Echo-Labels-method-get'>/**
-</span> * @method
- * Method to access specific language variable within the scope of a particular component instance.
+</span> * Method to access specific language variable within the scope of a particular component instance.
  *
  * Function will return the language variable value corresponding to this instance.
- * If current instance doesn't contain this particular language variable, it will fall back to the global language variable list.
+ * If current instance doesn't contain this particular language variable
+ * it will fall back to the global language variable list.
  *
- *     var labels = new Echo.Labels({
- *         &quot;live&quot;: &quot;Live&quot;,
- *         &quot;paused&quot;: &quot;Paused&quot;
- *     }, &quot;Stream&quot;);
+ * 	var labels = new Echo.Labels({
+ * 		&quot;live&quot;: &quot;Live&quot;,
+ * 		&quot;paused&quot;: &quot;Paused&quot;
+ * 	}, &quot;Stream&quot;);
  *
- *     labels.get(&quot;live&quot;); // will return &quot;Live&quot;
- *     labels.get(&quot;paused&quot;); // will return &quot;Paused&quot;
+ * 	labels.get(&quot;live&quot;); // will return &quot;Live&quot;
+ * 	labels.get(&quot;paused&quot;); // will return &quot;Paused&quot;
  *
- * @param {String} name Language variable name.
- * @param {Object} data Flat object data that should be inserted instead of a placeholder in the language variable.
- * @return {String} Returns the string value of the language variable.
+ * @param {String} name
+ * Language variable name.
+ *
+ * @param {Object} data
+ * Flat object data that should be inserted instead of a placeholder in the language variable.
+ *
+ * @return {String}
+ * Value of the language variable.
  */
 
 Echo.Labels.prototype.get = function(name, data) {
@@ -76,28 +89,31 @@ Echo.Labels.prototype.get = function(name, data) {
 
 <span id='Echo-Labels-method-set'>/**
 </span> * @method
- * Method to add/override the language variable list within the scope of a particular component instance.
+ * Method to add/override the language variable list within the scope
+ * of a particular component instance.
  *
- * Function should be used to customize the text part of the UI within the particular component instance.
- * For global text definitions and localization purposes the static method should be used.
+ * Function should be used to customize the text part of the UI within
+ * the particular component instance.For global text definitions and
+ * localization purposes the static method should be used.
  *
- *     var labels = new Echo.Labels({
- *         &quot;live&quot;: &quot;Live&quot;,
- *         &quot;paused&quot;: &quot;Paused&quot;
- *     }, &quot;Stream&quot;);
+ * 	var labels = new Echo.Labels({
+ * 		&quot;live&quot;: &quot;Live&quot;,
+ * 		&quot;paused&quot;: &quot;Paused&quot;
+ * 	}, &quot;Stream&quot;);
  *
- *     labels.get(&quot;live&quot;); // will return &quot;Live&quot;
- *     labels.get(&quot;paused&quot;); // will return &quot;Paused&quot;
+ * 	labels.get(&quot;live&quot;); // will return &quot;Live&quot;
+ * 	labels.get(&quot;paused&quot;); // will return &quot;Paused&quot;
  *
- *     labels.set({
- *         &quot;live&quot;: &quot;Live...&quot;,
- *         &quot;paused&quot;: &quot;Paused...&quot;
- *     });
+ * 	labels.set({
+ * 		&quot;live&quot;: &quot;Live...&quot;,
+ * 		&quot;paused&quot;: &quot;Paused...&quot;
+ * 	});
  *
- *     labels.get(&quot;live&quot;); // will return &quot;Live...&quot;
- *     labels.get(&quot;paused&quot;); // will return &quot;Paused...&quot;
+ * 	labels.get(&quot;live&quot;); // will return &quot;Live...&quot;
+ * 	labels.get(&quot;paused&quot;); // will return &quot;Paused...&quot;
  *
- * @param {Object} labels Flat object containing the list of language variables to be added/overriden. 
+ * @param {Object} labels
+ * Flat object containing the list of language variables to be added/overriden. 
  */
 
 Echo.Labels.prototype.set = function(labels) {
@@ -108,7 +124,6 @@ Echo.Labels.prototype.set = function(labels) {
 	});
 };
 
-// Static interface
 <span id='Echo-Labels-static-method-set'>/**
 </span> * @static
  * Function to add/override the language variable list in the global scope.
@@ -119,33 +134,38 @@ Echo.Labels.prototype.set = function(labels) {
  * In this case the `isDefault` param can be omitted or set to `false`.
  * The values overriden with the function will be available globally.
  *
- *     Echo.Labels.set({
- *         &quot;live&quot;: &quot;Live&quot;,
- *         &quot;paused&quot;: &quot;Paused&quot;
- *     }, &quot;Stream&quot;); // setting custom labels
+ * 	Echo.Labels.set({
+ * 		&quot;live&quot;: &quot;Live&quot;,
+ * 		&quot;paused&quot;: &quot;Paused&quot;
+ * 	}, &quot;Stream&quot;); // setting custom labels
  *
- *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live&quot;
- *     Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // will return &quot;Paused&quot;
+ * 	Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live&quot;
+ * 	Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // will return &quot;Paused&quot;
  *
- *     Echo.Labels.set({
- *         &quot;live&quot;: &quot;Live...&quot;,
- *         &quot;paused&quot;: &quot;Paused...&quot;
- *     }, &quot;Stream&quot;, true); // setting default labels
+ * 	Echo.Labels.set({
+ * 		&quot;live&quot;: &quot;Live...&quot;,
+ * 		&quot;paused&quot;: &quot;Paused...&quot;
+ * 	}, &quot;Stream&quot;, true); // setting default labels
  *
- *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live&quot; (custom label is not overridden by default)
- *     Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // will return &quot;Paused&quot; (custom label is not overridden by default)
+ * 	Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live&quot; (custom label is not overridden by default)
+ * 	Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // will return &quot;Paused&quot; (custom label is not overridden by default)
  *
- *     Echo.Labels.set({
- *         &quot;live&quot;: &quot;Live label&quot;,
- *         &quot;paused&quot;: &quot;Paused label&quot;
- *     }, &quot;Stream&quot;); // overriding custom labels
+ * 	Echo.Labels.set({
+ * 		&quot;live&quot;: &quot;Live label&quot;,
+ * 		&quot;paused&quot;: &quot;Paused label&quot;
+ * 	}, &quot;Stream&quot;); // overriding custom labels
  *
- *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live label&quot;
- *     Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // will return &quot;Paused label&quot;
+ * 	Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live label&quot;
+ * 	Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // will return &quot;Paused label&quot;
  *
- * @param {Object} labels Object containing the list of language variables.
- * @param {String} namespace String representing the namespace.
- * @param {Boolean} isDefault Flag switching the localization mode to setting defaults one.
+ * @param {Object} labels
+ * Object containing the list of language variables.
+ *
+ * @param {String} namespace
+ * Namespace.
+ *
+ * @param {Boolean} isDefault
+ * Flag switching the localization mode to setting defaults one.
  */
 
 Echo.Labels.set = function(labels, namespace, isDefault) {
@@ -157,24 +177,33 @@ Echo.Labels.set = function(labels, namespace, isDefault) {
 
 <span id='Echo-Labels-static-method-get'>/**
 </span> * @static
- * Function returning the language variable value by its name from the global language variable list.
+ * Function returning the language variable value by its name from the global
+ * language variable list.
  *
- * Function will return the language variable value from the global language variable list.
- * It also takes into consideration the localized values.
- * If value of the particular language variable is not found in the localization list it will fall back to the default language variable value.
+ * Function will return the language variable value from the global language
+ * variable list. It also takes into consideration the localized values.
+ * If value of the particular language variable is not found in the localization
+ * list it will fall back to the default language variable value.
  *
- *     Echo.Labels.set({
- *         &quot;live&quot;: &quot;Live&quot;,
- *         &quot;paused&quot;: &quot;Paused&quot;
- *     }, &quot;Stream&quot;);
+ * 	Echo.Labels.set({
+ * 		&quot;live&quot;: &quot;Live&quot;,
+ * 		&quot;paused&quot;: &quot;Paused&quot;
+ * 	}, &quot;Stream&quot;);
  *
- *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live&quot;
- *     Echo.Labels.get(&quot;Stream.paused&quot;); // will return &quot;Paused&quot;
+ * 	Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live&quot;
+ * 	Echo.Labels.get(&quot;Stream.paused&quot;); // will return &quot;Paused&quot;
  *
- * @param {String} name Language variable name.
- * @param {String} namespace String representing the namespace.
- * @param {Object} data Flat object data that should be inserted instead of a placeholder in the language variable.
- * @return {String} Returns the string value of the language variable.
+ * @param {String} name
+ * Language variable name.
+ *
+ * @param {String} namespace
+ * String representing the namespace.
+ *
+ * @param {Object} data
+ * Flat object data that should be inserted instead of a placeholder in the language variable.
+ *
+ * @return {String}
+ * Value of the language variable.
  */
 
 Echo.Labels.get = function(name, namespace, data) {
@@ -182,8 +211,6 @@ Echo.Labels.get = function(name, namespace, data) {
 	var label = Echo.Labels._storage[&quot;custom&quot;][key] || Echo.Labels._storage[&quot;general&quot;][key] || name;
 	return Echo.Labels._substitute(label, data);
 };
-
-// internal functions
 
 Echo.Labels._storage = { &quot;general&quot;: {}, &quot;custom&quot;: {} };
 

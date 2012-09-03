@@ -45,7 +45,7 @@ Echo.SocialChatter.Event.prototype.getData = function(dataString) {
 };
 
 Echo.SocialChatter.Event.prototype.calcDates = function(type, display) {
-	type = type.charAt(0).toUpperCase() + type.substr(1);
+	type = Echo.Utils.capitalize(type);
 	var content = this.data;
 	if (!content[&quot;event&quot; + type]) return;
 	var timestamp = content[&quot;event&quot; + type];
@@ -257,7 +257,7 @@ SocialChatter.config = {
 	&quot;liveUpdatesTimeout&quot;: 60, // request Events updates once per minute
 	&quot;identityManager&quot;: undefined,
 	&quot;views&quot;: {},
-	&quot;defaultEventIcon&quot;: &quot;//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg&quot;
+	&quot;defaultEventIcon&quot;: Echo.Loader.getURL(&quot;sdk/images/vip.jpg&quot;)
 };
 
 SocialChatter.views.Main.templates.main =
@@ -638,7 +638,8 @@ SocialChatter.renderers.tabs = function(element) {
 			} else {
 				var request;
 				$.map([&quot;Stream&quot;, &quot;VIPStream&quot;], function(name) {
-					request = self.views[id].get(&quot;controls.&quot; + name + &quot;.request&quot;);
+					var control = self.views[id].get(&quot;controls.&quot; + name);
+					request = control &amp;&amp; control.get(&quot;request&quot;);
 					request &amp;&amp; request.send({&quot;force&quot;: true});
 				});
 			}

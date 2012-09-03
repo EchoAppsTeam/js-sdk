@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+var Tabs = function(element, config) {
+	this.config = config || {};
+	this.element = $(element);
+	this.panels = config.panels || this.getPanels();
+	this._initEvents(this.config);
+};
+
+Tabs.prototype.getPanels = function() {
+	var id = $(&quot;a:first&quot;, this.element).attr(&quot;href&quot;);
+	return $(id).parent();
+};
+
+Tabs.prototype._initEvents = function(config) {
+	this.element.find('a[data-toggle=tab]').each(function(i, el) {
+		$(el).on(&quot;show&quot;, config.show || function() {});
+	});
+};
+
+Tabs.prototype.disable = function(id) {
+	this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;)
+		.removeAttr(&quot;data-toggle&quot;)
+		.addClass(&quot;disabled&quot;);
+};
+
+Tabs.prototype.enable = function(id) {
+	this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;)
+		.attr(&quot;data-toggle&quot;, &quot;tabs&quot;)
+		.removeClass(&quot;disabled&quot;);
+};
+
+Tabs.prototype.remove = function(id) {
+	this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;).remove();
+};
+
+Tabs.prototype.add = function(tabConfig, panel) {
+	tabConfig = tabConfig || {};
+	var tab = $('&lt;li&gt;&lt;a data-toggle=&quot;tab&quot; href=&quot;#' + tabConfig.id + '&quot;&gt;' + tabConfig.label  + '&lt;/a&gt;&lt;/li&gt;');
+	$(&quot;a[data-toggle=tab]&quot;, tab).on(&quot;show&quot;, this.config.show);
+	this.element.append(tab);
+	this.panels.append(panel);
+	return this.element;
+};
+
+Tabs.prototype.get = function(id) {
+	return this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;);
+};
+
+Tabs.prototype.has = function(id) {
+	return !!this.element.has(&quot;a[href=#&quot; + id + &quot;]&quot;).length;
+};
+
+Tabs.prototype.update = function(id, config) {
+	this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;)
+		.html(config.label)
+		.addClass(config.class || &quot;&quot;);
+};
+
+Tabs.prototype.show = function(id) {
+	this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;).tab(&quot;show&quot;);
+};
+
+$.fn.echoTabs = function() {
+	var args  = arguments;
+	return this.each(function(){
+		var data = $(this).data('echoTabs');
+		var config = typeof args[0] === &quot;object&quot; &amp;&amp; args[0];
+		if (!data) {
+			$(this).data('echoTabs', (data = new Tabs(this, config)));
+		}
+		if (typeof args[0] === &quot;string&quot;) {
+			data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
+		}
+	});
+};
+
+$.fn.echoTabs.Contructor = Tabs;
+</pre>
+</body>
+</html>

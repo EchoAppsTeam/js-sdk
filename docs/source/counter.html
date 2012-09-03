@@ -20,11 +20,11 @@
  * Echo Counter class which encapsulates interaction with the
  * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/27888212/API-method-count&quot; target=&quot;_blank&quot;&gt;Echo Count API&lt;/a&gt;
  *
- *     new Echo.StreamServer.Controls.Counter({
- *         &quot;target&quot;: document.getElementById(&quot;counter&quot;),
- *         &quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
- *         &quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
- *     });
+ * 	new Echo.StreamServer.Controls.Counter({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-counter&quot;),
+ * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+ * 		&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
+ * 	});
  *
  * @extends Echo.Control
  *
@@ -51,27 +51,30 @@ counter.init = function() {
 counter.config = {
 <span id='Echo-StreamServer-Controls-Counter-cfg-query'>	/**
 </span>	 * @cfg {String} query
-	 * Specifies the search query to generate the necessary data set. It must be constructed according to the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt; method specification.
+	 * Specifies the search query to generate the necessary data set.
+	 * It must be constructed according to the
+	 * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
+	 * method specification.
 	 *
-	 *     new Echo.StreamServer.Controls.Counter({
-	 *         &quot;target&quot;: document.getElementById(&quot;container&quot;),
-	 *         &quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
-	 *         &quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Counter({
+	 * 		&quot;target&quot;: document.getElementById(&quot;echo-counter&quot;),
+	 * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+	 * 		&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
+	 * 	});
 	 */
 <span id='Echo-StreamServer-Controls-Counter-cfg-data'>	/**
 </span>	 * @cfg {Object} data
 	 * Specifies predefined items count which should be displayed by the application.
 	 *
-	 *     new Echo.Counter({
-	 *         ...
-	 *         &quot;data&quot;: {&quot;count&quot;: 100},
-	 *         ...
-	 *     });
+	 * 	new Echo.Counter({
+	 * 		...
+	 * 		&quot;data&quot;: {&quot;count&quot;: 100},
+	 * 		...
+	 * 	});
 	 */
 	&quot;data&quot;: undefined,
 <span id='Echo-StreamServer-Controls-Counter-cfg-liveUpdatesTimeout'>	/**
-</span>	 * @cfg {Number} [liveUpdatesTimeout=10]
+</span>	 * @cfg {Number} liveUpdatesTimeout
 	 * Specifies the timeout between the live updates requests (in seconds).
 	 */
 	&quot;liveUpdatesTimeout&quot;: 10,

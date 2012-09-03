@@ -20,7 +20,7 @@
 var plugin = Echo.Plugin.manifest(&quot;SocialChatterEvent&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
 plugin.config = {
-	&quot;defaultEventIcon&quot;: &quot;//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg&quot;,
+	&quot;defaultEventIcon&quot;: Echo.Loader.getURL(&quot;sdk/images/vip.jpg&quot;),
 	&quot;dateFormat&quot;: &quot;yy-mm-dd&quot;,
 	&quot;timeFormat&quot;: &quot;hh:mm tt&quot;,
 	&quot;ampm&quot;: true
@@ -370,7 +370,7 @@ plugin.templates.AdminNotice = '&lt;div class=&quot;{plugin.class:eventSubmitNot
 
 plugin.templates.EventIcon =
 	'&lt;div class=&quot;{plugin.class:eventIconContainer}&quot;&gt;' +
-		'&lt;img class=&quot;{plugin.class:eventIcon}&quot; src=&quot;//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg&quot;&gt;' +
+		'&lt;img class=&quot;{plugin.class:eventIcon}&quot; src=&quot;' + Echo.Loader.getURL(&quot;sdk/images/vip.jpg&quot;) + '&quot;&gt;' +
 		'&lt;div class=&quot;{plugin.class:eventIconError}&quot;&gt;{plugin.label:errorLoadingImage}&lt;/div&gt;' +
 		'&lt;div class=&quot;{plugin.class:changeEventIcon} echo-linkColor echo-clickable&quot;&gt;&lt;/div&gt;' +
 	'&lt;/div&gt;';
@@ -629,7 +629,7 @@ $.map(plugin.fields, function(field) {
 							element.parent().addClass(&quot;echo-input-error&quot;);
 							self.dom.get(&quot;eventIconError&quot;).show();
 							self.dom.get(&quot;eventIcon&quot;)
-								.attr(&quot;src&quot;, &quot;//cdn.echoenabled.com/clientapps/v2/social-chatter/images/vip.jpg&quot;);
+								.attr(&quot;src&quot;, Echo.Loader.getURL(&quot;sdk/images/vip.jpg&quot;));
 						});
 				}
 			})

@@ -15,18 +15,29 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing'>/**
+  <pre class="prettyprint lang-js">(function(){
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing'>/**
 </span> * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing
- * Plugin provides the ability to load JanRain sharing dialog after the item has been posted using the Echo Submit control.
+ * Plugin provides the ability to load JanRain sharing dialog after
+ * the item has been posted using the Echo Submit control.
  * Installation procedure also includes actions on Janrain side.
  *
- * Download the &quot;rpx_xdcomm.html&quot; file from the JanRain application dashboard (the &quot;Deployment&quot; -&gt; &quot;Social Sharing&quot; section) and place it in the root directory of your website.
+ * Download the &quot;rpx_xdcomm.html&quot; file from the JanRain application
+ * dashboard (the &quot;Deployment&quot; -&gt; &quot;Social Sharing&quot; section) and
+ * place it in the root directory of your website.
  *
- * Configure the list of the necessary social sharing providers in the JanRain application dashboard (the &quot;Deployment&quot; -&gt; &quot;Social Sharing&quot; -&gt; &quot;Choose providers&quot; section).
+ * Configure the list of the necessary social sharing providers
+ * in the JanRain application dashboard
+ * (the &quot;Deployment&quot; -&gt; &quot;Social Sharing&quot; -&gt; &quot;Choose providers&quot; section).
  *
- * 	var identityManager = {&quot;width&quot;: 400, &quot;height&quot;: 240, &quot;url&quot;: &quot;http://example.com/auth&quot;};
+ * 	var identityManager = {
+ * 		&quot;width&quot;: 400,
+ * 		&quot;height&quot;: 240,
+ * 		&quot;url&quot;: &quot;http://example.com/auth&quot;
+ * 	};
  * 	new Echo.StreamServer.Controls.Submit({
- * 		&quot;target&quot;: document.getElementById(&quot;submit&quot;),
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
  * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;JanrainSharing&quot;,
@@ -47,11 +58,13 @@ var plugin = Echo.Plugin.manifest(&quot;JanrainSharing&quot;, &quot;Echo.StreamS
 plugin.config = {
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-appId'>	/**
 </span>	 * @cfg {String} appId
-	 * JanRain application ID. You can find the application ID in the JanRain application dashboard.
+	 * JanRain application ID. You can find the application ID
+	 *  in the JanRain application dashboard.
 	 */
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-xdReceiver'>	/**
 </span>	 * @cfg {String} xdReceiver
-	 * Full URL of the &quot;rpx_xdcomm.html&quot; file, downloaded from the JanRain application dashboard.
+	 * Full URL of the &quot;rpx_xdcomm.html&quot; file, downloaded from
+	 * the JanRain application dashboard.
 	 */
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-activity'>	/**
 </span>	 * @cfg {Object} activity
@@ -61,11 +74,15 @@ plugin.config = {
 	 * Caption of the textarea in the sharing dialog
 	 *
 	 * @cfg {String} activity.shareContent
-	 * Content of the message which will be shared. The following pseudo-tags can be used:
+	 * Content of the message which will be shared.
+	 * The following pseudo-tags can be used:
 	 *
 	 * + {content} - tag is replaced with the content of the item;
 	 * + {domain} - tag is replaced with the current page domain.
-	 * If value of shareContent parameter is not provided then the following message will be used:
+	 *
+	 * If value of shareContent parameter is not provided then
+	 * the following message will be used:
+	 *
 	 * + &quot;{content}&quot; for ordinary item;
 	 * + &quot;@{author} {content}&quot; if this is reply to tweet.
 	 *
@@ -73,18 +90,27 @@ plugin.config = {
 	 * The url where the item was posted initially.
 	 *
 	 * @cfg {String} activity.pageTitle
-	 * The page title where this activity is taking place. This information will be displayed in the Sharing dialog if at least one of the following providers is active: Yahoo!, Facebook or LinkedIn. If this value is not provided then the original page title will be used.
+	 * The page title where this activity is taking place.
+	 * This information will be displayed in the Sharing dialog
+	 * if at least one of the following providers is active: 
+	 * Yahoo!, Facebook or LinkedIn. If this value is not provided
+	 * then the original page title will be used.
 	 *
 	 * @cfg {String} activity.pageDescription
-	 * The page description where this activity is taking place. This information will be displayed in the Sharing dialog if at least one of the following providers is active: Facebook or LinkedIn.
+	 * The page description where this activity is taking place.
+	 * This information will be displayed in the Sharing dialog
+	 * if at least one of the following providers is active:
+	 * Facebook or LinkedIn.
 	 *
 	 * @cfg {Array} activity.pageImages
-	 * The list of up to five images. These images are displayed as thumbnails by Facebook and LinkedIn. Facebook uses all five images. LinkedIn uses only the first image.
+	 * The list of up to five images. These images are displayed
+	 * as thumbnails by Facebook and LinkedIn. Facebook uses all 
+	 * five images. LinkedIn uses only the first image.
 	 *
-	 * @cfg {String} activity.pageImages[0].src
+	 * @cfg {String} activity.pageImages.src
 	 * The absolute URL of the image.
 	 *
-	 * @cfg {String} activity.pageImages[0].href
+	 * @cfg {String} activity.pageImages.href
 	 * The absolute URL to which the image links.
 	 */
 	// actual limit is 140, reserving some space
@@ -96,13 +122,6 @@ plugin.config = {
 
 plugin.enabled = function() {
 	return (this.config.get(&quot;appId&quot;) &amp;&amp; this.config.get(&quot;xdReceiver&quot;));
-};
-
-plugin.labels = {
-<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-property-sharePrompt'>	/**
-</span>	 * @echo_label
-	 */
-	&quot;sharePrompt&quot;: &quot;Share your comment:&quot;
 };
 
 plugin.dependencies = [{
@@ -127,6 +146,13 @@ plugin.events = {
 			RPXNOW.Social.publishActivity(plugin._prepareActivity(activity));
 		});
 	}
+};
+
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-property-sharePrompt'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;sharePrompt&quot;: &quot;Share your comment:&quot;
 };
 
 plugin.methods._prepareActivity = function(act) {
@@ -197,6 +223,8 @@ plugin.methods._getTweetAuthor = function(data) {
 };
 
 Echo.Plugin.create(plugin);
+
+})();
 </pre>
 </body>
 </html>

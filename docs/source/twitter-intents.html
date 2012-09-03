@@ -15,29 +15,39 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents'>/**
+  <pre class="prettyprint lang-js">(function() {
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents
- * Adds the Twitter intents controls into the item UI and updates the item UI to look and behave like a Twitter item. The item UI update includes:
+ * Adds the Twitter intents controls into the item UI and updates the
+ * item UI to look and behave like a Twitter item. The item UI update includes:
  *
- * + by clicking on the avatar or the user name - the user account on Twitter will be opened;
- * + the item timestamp transforms from a static field to a permanent item link on Twitter.
+ * + by clicking on the avatar or the user name - the user account on Twitter
+ * will be opened;
+ * + the item timestamp transforms from a static field to a permanent item
+ * link on Twitter.
  *
- * More information about Twitter Intents is available on the page &lt;https://dev.twitter.com/docs/intents&gt;.
+ * More information about Twitter Intents is available on the page
+ * &lt;https://dev.twitter.com/docs/intents&gt;.
  *
  * #### How to use
- * To enable this plugin should be taken add the corresponding section into the Echo Stream configuration parameter plugins:
+ * To enable this plugin should be taken add the corresponding section into the
+ * Echo Stream configuration parameter plugins:
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
- *         &quot;plugins&quot;: [{
- *             &quot;name&quot;: &quot;TwitterIntents&quot;
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;TwitterIntents&quot;
+ * 		}]
+ * 	});
  *
- * &lt;b&gt;Note&lt;/b&gt;: plugin must be at the very beginning of the plugin list to work correctly.
+ * &lt;b&gt;Note&lt;/b&gt;: plugin must be at the very beginning of the plugin list to
+ * work correctly.
  *
- * &lt;b&gt;Note&lt;/b&gt;: if TwitterIntents plugin is added to the stream then Reply and Like plugins will be disabled for tweet items. Moreover Reply control is renamed with Comment on non-tweet items to avoid possible confusion.
+ * &lt;b&gt;Note&lt;/b&gt;: if TwitterIntents plugin is added to the stream then Reply and
+ * Like plugins will be disabled for tweet items. Moreover Reply control is
+ * renamed with Comment on non-tweet items to avoid possible confusion.
  *
  * #### Configuration
  * The TwitterIntents plugin configuration options include the following:
@@ -62,7 +72,7 @@ plugin.init = function() {
 	item.config.set(&quot;plugins.Like.enabled&quot;, false);
 	item.config.set(&quot;plugins.Reply.enabled&quot;, false);
 
-	this.extendTemplate(&quot;insertBefore&quot;, &quot;authorName&quot;, plugin.templates.usernameTemplate);
+	this.extendTemplate(&quot;insertBefore&quot;, &quot;authorName&quot;, plugin.templates.username);
 
 	item.addButtonSpec(this.name, this._assembleButton(&quot;tweet&quot;));
 	item.addButtonSpec(this.name, this._assembleButton(&quot;retweet&quot;));
@@ -101,34 +111,18 @@ plugin.events = {
 	&quot;Echo.StreamServer.Controls.Stream.Item.onRender&quot;: function(topic, args) {
 		var activeClass = this.cssPrefix + &quot;activeButton&quot;;
 		var item = this.component;
-			$.map(item.buttons[this.name], function(name) {
-				name.element.unbind(&quot;click&quot;).unbind(&quot;mouseover mouseout&quot;)
-					.hover(
-						function() { name.element.addClass(activeClass); },
-						function() { name.element.removeClass(activeClass); }
-					);
-			});
-			window.twttr &amp;&amp; window.twttr.widgets.load();
+		$.map(item.buttons[this.name], function(name) {
+			name.element.unbind(&quot;click&quot;).unbind(&quot;mouseover mouseout&quot;)
+				.hover(
+					function() { name.element.addClass(activeClass); },
+					function() { name.element.removeClass(activeClass); }
+				);
+		});
+		window.twttr &amp;&amp; window.twttr.widgets.load();
 	}
 };
 
-plugin.templates = {
-	&quot;usernameTemplate&quot;: '&lt;div class=&quot;{plugin.class:tweetUserName} echo-linkColor&quot;&gt;&lt;/div&gt;'
-};
-
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-method-tweetUserName'>/**
-</span> * @echo_renderer
- */
-plugin.renderers.tweetUserName = function(element) {
-	var item = this.component;
-	return element.html(Echo.Utils.hyperlink({
-		&quot;href&quot;: item.get(&quot;data.actor.id&quot;),
-		&quot;caption&quot;: this._extractTwitterID()
-	}, {
-		&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
-		&quot;skipEscaping&quot;: true
-	}));
-};
+plugin.templates.username = '&lt;div class=&quot;{plugin.class:tweetUserName} echo-linkColor&quot;&gt;&lt;/div&gt;';
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-method-authorName'>/**
 </span> * @echo_renderer
@@ -179,6 +173,20 @@ plugin.component.renderers._buttonsDelimiter = function(element) {
 
 	return item.parentRenderer(&quot;_buttonsDelimiter&quot;, arguments)
 		.find(&quot;span[class*='button-delim']&quot;).eq(posDelimiter).text(&quot; | &quot;);
+};
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-method-tweetUserName'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.tweetUserName = function(element) {
+	var item = this.component;
+	return element.html(Echo.Utils.hyperlink({
+		&quot;href&quot;: item.get(&quot;data.actor.id&quot;),
+		&quot;caption&quot;: this._extractTwitterID()
+	}, {
+		&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
+		&quot;skipEscaping&quot;: true
+	}));
 };
 
 plugin.methods._assembleButton = function(name) {
@@ -234,6 +242,8 @@ plugin.css =
 	&quot;.{plugin.class:tweetScreenName} { font-size: 11px; font-weight: normal; margin-left: 4px; padding-top: 1px; }&quot;;
 
 Echo.Plugin.create(plugin);
+
+})();
 </pre>
 </body>
 </html>

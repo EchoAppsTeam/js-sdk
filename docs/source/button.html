@@ -31,11 +31,20 @@
  *         &quot;disabled&quot;: false
  *     }); // will add simple button with label 'MyButton' and without icon
  *
- * @param {HTMLElement} element HTML element which is container for the button.
- * @param {Object} params Object representing button properties.
- * @param {String} params.label String representing text to show on the button.
- * @param {String} params.icon String representing CSS class which containes background icon of the button.
- * @param {Boolean} params.disabled Disables(true) or enables(false) the button.
+ * @param {HTMLElement} element
+ * HTML element which is container for the button.
+ *
+ * @param {Object} params
+ * Object representing button properties.
+ *
+ * @param {String} params.label
+ * String representing text to show on the button.
+ *
+ * @param {String} params.icon
+ * String representing CSS class which containes background icon of the button.
+ *
+ * @param {Boolean} params.disabled
+ * Disables(true) or enables(false) the button.
  */
 
 Echo.Button = function(element, params) {
@@ -53,8 +62,7 @@ Echo.Button = function(element, params) {
 };
 
 <span id='Echo-Button-method-update'>/**
-</span> * @method update
- * Method updates button properties and rerenders the button.
+</span> * Method updates button properties and rerenders the button.
  *
  *     // style tag in the head of HTML document
  *     // &lt;style&gt;
@@ -72,10 +80,17 @@ Echo.Button = function(element, params) {
  *         &quot;disabled&quot;: true
  *     }); // will disables the button and set &quot;http://example.com/image.jpg&quot; as a background icon of the button
  *
- * @param {Object} params Object representing button properties.
- * @param {String} params.label String representing text to show on the button.
- * @param {String} params.icon String representing CSS class which containes background icon of the button.
- * @param {Boolean} params.disabled Disables(true) or enables(false) the button.
+ * @param {Object} params
+ * Object representing button properties.
+ *
+ * @param {String} params.label
+ * String representing text to show on the button.
+ *
+ * @param {String} params.icon
+ * String representing CSS class which containes background icon of the button.
+ *
+ * @param {Boolean} params.disabled
+ * Disables(true) or enables(false) the button.
  */
 
 Echo.Button.prototype.update = function(params) {
@@ -87,8 +102,7 @@ Echo.Button.prototype.update = function(params) {
 };
 
 <span id='Echo-Button-method-render'>/**
-</span> * @method render
- * Method used to render the button.
+</span> * Method used to render the button.
  *
  *     var element = $(&quot;&lt;button&gt;&lt;/button&gt;&quot;);
  *
@@ -123,7 +137,7 @@ Echo.Button.prototype._css =
 		       &quot;text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0,0, 0, 0.2); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }&quot; +
 	&quot;.echo-sdk-button .echo-label { font-size: 16px; float: left; } &quot; +
 	&quot;.echo-sdk-button .echo-icon { height: 16px; width: 16px; float: left; margin-right: 2px; margin-top: 2px; } &quot; +
-	&quot;.echo-sdk-button .echo-icon-waiting { background: no-repeat center url(//cdn.echoenabled.com/images/loading.gif); height: 16px; width: 16px; } &quot;;
+	&quot;.echo-sdk-button .echo-icon-waiting { background: no-repeat center url(&quot; + Echo.Loader.getURL(&quot;sdk/images/loading.gif&quot;) + &quot;); height: 16px; width: 16px; } &quot;;
 </pre>
 </body>
 </html>

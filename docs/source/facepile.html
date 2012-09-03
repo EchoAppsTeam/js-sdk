@@ -22,13 +22,13 @@
  * Echo FacePile control displays users (actors) returned in any activity stream. 
  * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
  *
- *     new Echo.StreamServer.Controls.FacePile({
- *         &quot;target&quot;: document.getElementById(&quot;facepile&quot;),
- *         &quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
- *         &quot;query&quot;: &quot;childrenof:http://example.com/* itemsPerPage:2 children:0&quot;,
- *         &quot;suffixText&quot;: &quot; commented on aboutecho.com&quot;,
- *         &quot;item&quot;: {&quot;avatar&quot;: true, &quot;text&quot;: true}
- *     });
+ * 	new Echo.StreamServer.Controls.FacePile({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-facepile&quot;),
+ * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+ * 		&quot;query&quot;: &quot;childrenof:http://example.com/* itemsPerPage:2 children:0&quot;,
+ * 		&quot;suffixText&quot;: &quot; commented on aboutecho.com&quot;,
+ * 		&quot;item&quot;: {&quot;avatar&quot;: true, &quot;text&quot;: true}
+ * 	});
  *
  * @extends Echo.Control
  *
@@ -43,10 +43,10 @@ var pile = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.FacePile&quot;
 pile.init = function() {
 	// data can be defined explicitly
 	// in this case we do not make API requests
-	if ($.isEmptyObject(this.data)) {
+	if ($.isEmptyObject(this.get(&quot;data&quot;))) {
 		this._request();
 	} else {
-		this.data.itemsPerPage = this.data.itemsPerPage || 2;
+		this.set(&quot;data.itemsPerPage&quot;, this.get(&quot;data.itemsPerPage&quot;, 2));
 		this.config.set(&quot;liveUpdates&quot;, false);
 		this._initialResponseHandler(this.data);
 	}
@@ -55,17 +55,25 @@ pile.init = function() {
 pile.config = {
 <span id='Echo-StreamServer-Controls-FacePile-cfg-data'>	/**
 </span>	 * @cfg {Object} data
-	 * Specifies static data for the list. It has the same format as returned by the search API endpoint. If the data parameter is provided then the query parameter should be omitted. If data and query parameters are both provided query takes precedence over data.
+	 * Specifies static data for the list. It has the same format as returned
+	 * by the search API endpoint. If the `data` parameter is provided then the
+	 * `query` parameter should be omitted. If `data` and `query` parameters are both
+	 * provided `query` takes precedence over `data`.
 	 */
 	&quot;data&quot;: undefined,
 <span id='Echo-StreamServer-Controls-FacePile-cfg-initialUsersCount'>	/**
 </span>	 * @cfg {String} initialUsersCount
-	 * The number of users which will be shown when the FacePile is displayed for the first time. Default value is the value of data.itemsPerPage parameter. Note that the parameter is actual only for the list created using data.
+	 * The number of users which will be shown when the FacePile is displayed
+	 * for the first time. Default value is the value of `data.itemsPerPage`
+	 * parameter. Note that the parameter is actual only for the list created
+	 * using `data`.
 	 */
 	&quot;initialUsersCount&quot;: undefined,
 <span id='Echo-StreamServer-Controls-FacePile-cfg-totalUsersCount'>	/**
 </span>	 * @cfg {String} totalUsersCount
-	 * The total number of users for the FacePile. If it's not defined it defaults to the length of the provided data.entries field. Note that the parameter is actual only for the list created using data.
+	 * The total number of users for the FacePile. If it's not defined it defaults to
+	 * the length of the provided data.entries field. Note that the parameter is actual
+	 * only for the list created using `data`.
 	 */
 	&quot;totalUsersCount&quot;: undefined,
 	&quot;query&quot;: &quot;&quot;,
@@ -135,16 +143,16 @@ pile.renderers.more = function(element) {
 		return element.hide();
 	}
 	element.empty().show();
-	var count = this.count.total - this.count.visible;
+	var count = this.get(&quot;count.total&quot;) - this.get(&quot;count.visible&quot;);
 	var caption = (count &gt; 0 ? count + &quot; &quot; : &quot;&quot;) + this.labels.get(&quot;more&quot;);
-	var linkable = !this._fromExternalData() || this.count.visible &lt; this.users.length;
+	var linkable = !this._fromExternalData() || this.get(&quot;count.visible&quot;) &lt; this.get(&quot;users&quot;).length;
 	if (linkable) {
 		var link = Echo.Utils.hyperlink({&quot;caption&quot;: caption});
 		element.addClass(&quot;echo-linkColor&quot;).append(link);
 	} else {
 		element.removeClass(&quot;echo-linkColor&quot;).append(caption);
 	}
-	this.moreRequestInProgress = false;
+	this.set(&quot;moreRequestInProgress&quot;, false);
 	if (linkable) {
 		element.one(&quot;click&quot;, function() {
 			self._getMoreUsers();
@@ -158,24 +166,25 @@ pile.renderers.more = function(element) {
  */
 pile.renderers.actors = function(element) {
 	var self = this, usersDOM = [];
+	var cssPrefix = this.get(&quot;cssPrefix&quot;);
 	var item = this.config.get(&quot;item&quot;);
 
-	if (!this.users.length || !item.avatar &amp;&amp; !item.text) {
+	if (!this.get(&quot;users&quot;).length || !item.avatar &amp;&amp; !item.text) {
 		return element.empty();
 	}
 
 	var action = (item.avatar &amp;&amp; !item.text ? &quot;addClass&quot; : &quot;removeClass&quot;);
-	element[action](this.cssPrefix + &quot;only-avatars&quot;);
+	element[action](cssPrefix + &quot;only-avatars&quot;);
 	var wrap = function(text, name) {
 		return self.substitute({
 			&quot;template&quot;: &quot;&lt;span {data:classAttr}&gt;{data:text}&lt;/span&gt;&quot;,
 			&quot;data&quot;: {
-				&quot;classAttr&quot;: name ? 'class=&quot;' + self.cssPrefix + name + '&quot;' : '',
+				&quot;classAttr&quot;: name ? 'class=&quot;' + cssPrefix + name + '&quot;' : '',
 				&quot;text&quot;: text
 			}
 		});
 	};
-	$.map(this.users.slice(0, this.count.visible), function(user) {
+	$.map(this.get(&quot;users&quot;).slice(0, this.get(&quot;count.visible&quot;)), function(user) {
 		usersDOM.push(user.instance.dom.render());
 	});
 	var last;
@@ -226,7 +235,7 @@ pile.methods._fromExternalData = function() {
 };
 
 pile.methods._request = function() {
-	var pile = this;
+	var self = this;
  	var request = this.get(&quot;request&quot;);
 	if (!request) {
 		request = Echo.StreamServer.API.request({
@@ -238,10 +247,10 @@ pile.methods._request = function() {
 			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
 			&quot;recurring&quot;: this.config.get(&quot;liveUpdates&quot;),
 			&quot;onError&quot;: function(data) {
-				pile.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data});
+				self.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data});
 			},
 			&quot;onData&quot;: function(data, extra) {
-				pile[&quot;_&quot; + extra.requestType + &quot;ResponseHandler&quot;](data);
+				self[&quot;_&quot; + extra.requestType + &quot;ResponseHandler&quot;](data);
 			}
 		});
 		this.set(&quot;request&quot;, request);
@@ -250,9 +259,10 @@ pile.methods._request = function() {
 };
 
 pile.methods._requestMoreItems = function() {
-	var pile = this, query = this.config.get(&quot;query&quot;);
-	if (typeof this.nextPageAfter != &quot;undefined&quot;) {
-		query = 'pageAfter:&quot;' + this.nextPageAfter + '&quot; ' + query;
+	var self = this, query = this.config.get(&quot;query&quot;);
+	var nextPageAfter = this.get(&quot;nextPageAfter&quot;);
+	if (typeof nextPageAfter !== &quot;undefined&quot;) {
+		query = 'pageAfter:&quot;' + nextPageAfter + '&quot; ' + query;
 	}
 	var request = Echo.StreamServer.API.request({
 		&quot;endpoint&quot;: &quot;search&quot;,
@@ -261,35 +271,36 @@ pile.methods._requestMoreItems = function() {
 			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
 		},
 		&quot;onError&quot;: function(data) {
-			pile.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data});
+			self.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data});
 		},
 		&quot;onData&quot;: function(data) {
-			pile._initialResponseHandler(data);
+			self._initialResponseHandler(data);
 		}
 	});
 	request.send();
 };
 
 pile.methods._initialResponseHandler = function(data) {
-	if (data.itemsPerPage &amp;&amp; data.itemsPerPage != this.config.get(&quot;itemsPerPage&quot;)) {
+	if (data.itemsPerPage &amp;&amp; data.itemsPerPage !== this.config.get(&quot;itemsPerPage&quot;)) {
 		this.config.set(&quot;itemsPerPage&quot;, +data.itemsPerPage);
 	}
 	if (this._fromExternalData()) {
-		this.count.total = this.config.get(&quot;totalUsersCount&quot;, 0);
+		this.set(&quot;count.total&quot;, this.config.get(&quot;totalUsersCount&quot;, 0));
 	}
-	this.nextPageAfter = data.nextPageAfter;
+	this.set(&quot;nextPageAfter&quot;, data.nextPageAfter);
 	if (!data.entries.length) {
-		if (!this.isViewComplete) {
-			this.isViewComplete = true;
+		if (!this.get(&quot;isViewComplete&quot;)) {
+			this.set(&quot;isViewComplete&quot;, true);
 			this.dom.render();
 			this.ready();
 		}
 		return;
 	}
-	if (!this.count.visible) {
-		this.count.visible = this._fromExternalData()
+	if (!this.get(&quot;count.visible&quot;)) {
+		this.set(&quot;count.visible&quot;, this._fromExternalData()
 			? this.config.get(&quot;initialUsersCount&quot;, this.config.get(&quot;itemsPerPage&quot;))
-			: this.config.get(&quot;itemsPerPage&quot;);
+			: this.config.get(&quot;itemsPerPage&quot;)
+		);
 	}
 	this._processResponse(data);
 };
@@ -309,7 +320,7 @@ pile.methods._processResponse = function(data, isLive) {
 				if (self._isUniqueUser(entry)) {
 					fetchMoreUsers = false;
 				}
-				var user = self.uniqueUsers[entry.actor.id];
+				var user = self.get(&quot;uniqueUsers.&quot; + entry.actor.id);
 				if (user) {
 					// user is already in the list -&gt; increment counter and return
 					user.itemsCount++;
@@ -329,18 +340,19 @@ pile.methods._processResponse = function(data, isLive) {
 };
 
 pile.methods._isRemoveAction = function(entry) {
-	return entry.verbs &amp;&amp; entry.verbs[0] == &quot;http://activitystrea.ms/schema/1.0/delete&quot;;
+	return entry.verbs &amp;&amp; entry.verbs[0] === &quot;http://activitystrea.ms/schema/1.0/delete&quot;;
 };
 
 pile.methods._output = function(isLive, fetchMoreUsers) {
 	if (this._fromExternalData()) {
-		this.count.total = Math.max(this.users.length, this.count.total);
+		this.set(&quot;count.total&quot;, Math.max(this.get(&quot;users&quot;).length, this.get(&quot;count.total&quot;)));
 	} else {
-		this.count.total = this.count.visible = this.users.length;
+		this.set(&quot;count.total&quot;, this.get(&quot;users&quot;).length);
+		this.set(&quot;count.visible&quot;, this.get(&quot;users&quot;).length);
 	}
-	this.count.visible = Math.min(this.count.visible, this.users.length);
-	if (!this.count.total) {
-		this.isViewComplete = false;
+	this.set(&quot;count.visible&quot;, Math.min(this.get(&quot;count.visible&quot;), this.get(&quot;users&quot;).length));
+	if (!this.get(&quot;count.total&quot;)) {
+		this.set(&quot;isViewComplete&quot;, false);
 	}
 	if (!isLive &amp;&amp; fetchMoreUsers) {
 		this._getMoreUsers();
@@ -351,7 +363,7 @@ pile.methods._output = function(isLive, fetchMoreUsers) {
 };
 
 pile.methods._isUniqueUser = function(entry) {
-	return !this.uniqueUsers[entry.actor.id];
+	return !this.get(&quot;uniqueUsers.&quot; + entry.actor.id);
 };
 
 pile.methods._initItem = function(entry, callback) {
@@ -368,43 +380,46 @@ pile.methods._initItem = function(entry, callback) {
 };
 
 pile.methods._updateStructure = function(item) {
-	var user = this.uniqueUsers[item.get(&quot;data.id&quot;)] = {
+	this.set(&quot;uniqueUsers.&quot; + item.get(&quot;data.id&quot;), {
 		&quot;itemsCount&quot;: 1,
 		&quot;instance&quot;: item
-	};
-	this.users[user.instance.isYou() ? &quot;unshift&quot; : &quot;push&quot;](user);
+	});
+	var user = this.get(&quot;uniqueUsers.&quot; + item.get(&quot;data.id&quot;));
+	this.get(&quot;users&quot;)[user.instance.isYou() ? &quot;unshift&quot; : &quot;push&quot;](user);
 };
 
 pile.methods._maybeRemoveItem = function(entry) {
-	var user = this.uniqueUsers[entry.actor.id];
+	var user = this.get(&quot;uniqueUsers.&quot; + entry.actor.id);
 	// if we have move than one item posted by the same user,
 	// we decrement the counter, but leave the user in the list
 	if (!user || --user.itemsCount) return;
 	var index;
-	$.each(this.users, function(i, u) {
-		if (u.instance.data.id == entry.actor.id) {
+	$.each(this.get(&quot;users&quot;), function(i, u) {
+		if (u.instance.data.id === entry.actor.id) {
 			index = i;
 			return false; // break
 		}
 	});
-	this.users.splice(index, 1);
-	delete this.uniqueUsers[entry.actor.id];
+	this.get(&quot;users&quot;).splice(index, 1);
+	this.remove(&quot;uniqueUsers.&quot; + entry.actor.id);
 };
 
 pile.methods._getMoreUsers = function() {
 	if (this._fromExternalData()) {
-		this.count.visible += this.config.get(&quot;itemsPerPage&quot;);
-		if (this.count.visible &gt; this.users.length) {
-			this.count.visible = this.users.length;
+		var usersLength = this.get(&quot;users&quot;).length;
+		var currentVisible = this.get(&quot;count.visible&quot;);
+		this.set(&quot;count.visible&quot;, currentVisible += this.config.get(&quot;itemsPerPage&quot;));
+		if (this.get(&quot;count.visible&quot;) &gt; usersLength) {
+			this.set(&quot;count.visible&quot;, usersLength);
 		}
 		this.dom.render();
 	} else {
-		if (!this.moreRequestInProgress) {
+		if (!this.get(&quot;moreRequestInProgress&quot;)) {
 			this.showMessage({
 				&quot;type&quot;: &quot;loading&quot;,
 				&quot;target&quot;: this.dom.get(&quot;more&quot;)
 			});
-			this.moreRequestInProgress = true;
+			this.set(&quot;moreRequestInProgress&quot;, true);
 		}
 		this._requestMoreItems();
 	}
@@ -426,19 +441,36 @@ Echo.Control.create(pile);
 
 })();
 
-// FacePile item definition
-
 (function() {
 
+<span id='Echo-StreamServer-Controls-FacePile-Item-method-constructor'><span id='Echo-StreamServer-Controls-FacePile-Item'>/**
+</span></span> * @class Echo.StreamServer.Controls.FacePile.Item
+ * Echo FacePile.Item control displays single user (actor). 
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * FacePile.Item constructor initializing Echo.StreamServer.Controls.FacePile.Item class
+ *
+ * @param {Object} config
+ * Configuration options
+ */
 var item = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.FacePile.Item&quot;);
 
 item.config = {
+<span id='Echo-StreamServer-Controls-FacePile-Item-cfg-infoMessages'>	/**
+</span>	 * @cfg {String} infoMessages
+	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
+	 */
 	&quot;infoMessages&quot;: {
 		&quot;enabled&quot;: false
 	}
 };
 
 item.labels = {
+<span id='Echo-StreamServer-Controls-FacePile-Item-property-you'>	/**
+</span>	 * @echo_label
+	 */
 	&quot;you&quot;: &quot;You&quot;
 };
 
@@ -448,16 +480,19 @@ item.templates.main =
 		'&lt;span class=&quot;{class:title}&quot;&gt;{data:title}&lt;/span&gt;' +
 	'&lt;/span&gt;';
 
+<span id='Echo-StreamServer-Controls-FacePile-Item-method-avatar'>/**
+</span> * @echo_renderer
+ */
 item.renderers.avatar = function(element) {
 	var self = this;
 	if (this.config.get(&quot;avatar&quot;)) {
 		var img = Echo.Utils.loadImage(
-			this.data.avatar,
+			this.get(&quot;data.avatar&quot;),
 			this.user.config.get(&quot;defaultAvatar&quot;)
 		);
 		element.empty().append(img);
 		if (!this.config.get(&quot;text&quot;)) {
-			element.attr(&quot;title&quot;, this.data.title);
+			element.attr(&quot;title&quot;, this.get(&quot;data.title&quot;));
 		}
 	} else {
 		element.hide();
@@ -465,17 +500,24 @@ item.renderers.avatar = function(element) {
 	return element;
 };
 
+<span id='Echo-StreamServer-Controls-FacePile-Item-method-title'>/**
+</span> * @echo_renderer
+ */
 item.renderers.title = function(element) {
 	if (this.config.get(&quot;text&quot;)) {
-		element.empty().append(this.isYou() ? this.labels.get(&quot;you&quot;) : this.data.title);
+		element.empty().append(this.isYou() ? this.labels.get(&quot;you&quot;) : this.get(&quot;data.title&quot;));
 	} else {
 		element.hide();
 	}
 	return element;
 };
 
+<span id='Echo-StreamServer-Controls-FacePile-Item-method-isYou'>/**
+</span> * @echo_renderer
+ */
 item.methods.isYou = function() {
-	return this.data.id &amp;&amp; this.data.id === this.user.get(&quot;identityUrl&quot;);
+	var id = this.get(&quot;data.id&quot;);
+	return id &amp;&amp; id === this.user.get(&quot;identityUrl&quot;);
 };
 
 item.css =

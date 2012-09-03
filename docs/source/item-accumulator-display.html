@@ -15,17 +15,20 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay'>/**
+  <pre class="prettyprint lang-js">(function() {
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay
- * Shows one of the item accumulators in the top right corner of each item in the Echo Stream control.
+ * Shows one of the item accumulators in the top right corner of each item in
+ * the Echo Stream control.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
- *         &quot;plugins&quot;: [{
- *             &quot;name&quot;: &quot;ItemAccumulatorDisplay&quot;
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;ItemAccumulatorDisplay&quot;
+ * 		}]
+ * 	});
  *
  * @extends Echo.Plugin
  */
@@ -38,22 +41,24 @@ plugin.init = function() {
 plugin.config = {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay-cfg-countTickTimeout'>	/**
 </span>	 * @cfg {Number} countTickTimeout
-	 * Specifies the timeout in seconds for sequential changes of the item accumulator during the update.
+	 * Specifies the timeout in seconds for sequential changes of the item
+	 * accumulator during the update.
  	 *
-	 *     new Echo.StreamServer.Controls.Stream({
-	 *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
-	 *         &quot;plugins&quot;: [{
-	 *             &quot;name&quot;: &quot;ItemAccumulatorDisplay&quot;
-	 *             &quot;countTickTimeout&quot;: 1,
-	 *             &quot;accumulator&quot;: &quot;likesCount&quot; 
-	 *         }]
-	 *     });
+	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+	 * 		&quot;plugins&quot;: [{
+	 * 			&quot;name&quot;: &quot;ItemAccumulatorDisplay&quot;
+	 * 			&quot;countTickTimeout&quot;: 1,
+	 * 			&quot;accumulator&quot;: &quot;likesCount&quot; 
+	 * 		}]
+	 * });
 	 */
 	&quot;countTickTimeout&quot;: 1,
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay-cfg-accumulator'>	/**
 </span>	 * @cfg {String} accumulator
-	 * Specifies which item accumulator should be displayed. Supported values are &quot;repliesCount&quot; and &quot;likesCount&quot;.
+	 * Specifies which item accumulator should be displayed. Supported values
+	 * are &quot;repliesCount&quot; and &quot;likesCount&quot;.
 	 */
 	&quot;accumulator&quot;: &quot;repliesCount&quot;
 };
@@ -139,6 +144,8 @@ plugin.methods._animateCounter = function(bgColor) {
 plugin.css = '.{plugin.class:accumulatorContainer} { float: right; margin-right: 7px; }';
 
 Echo.Plugin.create(plugin);
+
+})();
 </pre>
 </body>
 </html>

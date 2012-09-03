@@ -15,41 +15,38 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation'>/**
+  <pre class="prettyprint lang-js">(function(){
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation
- * Adds several moderation controls to change item status. Besides it provides the opportunity to ban specific user or change his privileges.
+ * Adds several moderation controls to change item status. Besides
+ * it provides the opportunity to ban specific user or change his privileges.
  *
- *     new Echo.StreamServer.Controls.Stream({
- *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
- *         &quot;plugins&quot;: [{
- *             &quot;name&quot;: &quot;Moderation&quot;
- *         }]
- *     });
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;Moderation&quot;
+ * 		}]
+ * 	});
  *
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;Moderation&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
-var capitalize = function(string) {
-	return string.replace(/\b[a-z]/g, function(match) {
-		return match.toUpperCase();
-	});
-};
-
 plugin.init = function() {
 	var self = this;
 	var item = this.component;
 	var actions = this.config.get(&quot;itemActions&quot;).concat(this.config.get(&quot;userActions&quot;));
-	this.extendTemplate(&quot;insertAfter&quot;, &quot;avatar&quot;, plugin.statusItemTemplate);
+	this.extendTemplate(&quot;insertAfter&quot;, &quot;avatar&quot;, plugin.templates.status);
 	$.each(actions, function(i, action) {
 		var buttons = plugin.actionButtons[action];
 		if (buttons &amp;&amp; $.isArray(buttons)) {
 			$.each(buttons, function(j, button) {
-				item.addButtonSpec(&quot;Moderation&quot;, self[&quot;_assemble&quot; + capitalize(action) + &quot;Button&quot;](button));
+				item.addButtonSpec(&quot;Moderation&quot;, self[&quot;_assemble&quot; + Echo.Utils.capitalize(action) + &quot;Button&quot;](button));
 			});
 		} else {
-			item.addButtonSpec(&quot;Moderation&quot;, self._assembleButton(capitalize(action)));
+			item.addButtonSpec(&quot;Moderation&quot;, self._assembleButton(Echo.Utils.capitalize(action)));
 		}
 	});
 };
@@ -66,7 +63,7 @@ plugin.config = {
 	 * 			&quot;name&quot;: &quot;Moderation&quot;
 	 * 			&quot;userActions&quot;: [&quot;ban&quot;, &quot;permissions&quot;],
 	 * 		}]
-	 * 	});
+	 * });
 	 */
 	&quot;userActions&quot;: [&quot;ban&quot;, &quot;permissions&quot;],
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-cfg-itemActions'>	/**
@@ -92,19 +89,6 @@ plugin.events = {
 		return {&quot;stop&quot;: [&quot;bubble&quot;]};
 	}
 };
-
-plugin.actionButtons = {
-	&quot;ban&quot;: [&quot;Ban&quot;, &quot;UnBan&quot;],
-	&quot;permissions&quot;: [&quot;UserPermissions&quot;]
-};
-
-plugin.roles = [&quot;&quot;, &quot;moderator&quot;, &quot;administrator&quot;];
-
-plugin.statusItemTemplate = 
-	'&lt;div class=&quot;{plugin.class:status}&quot;&gt;' +
-		'&lt;div class=&quot;{plugin.class:statusIcon}&quot;&gt;&lt;/div&gt;' +
-		'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-	'&lt;/div&gt;';
 
 plugin.labels = {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-approveButton'>	/**
@@ -213,27 +197,17 @@ plugin.labels = {
 	&quot;statusUntouched&quot;: &quot;New&quot;
 };
 
-plugin.buttonLabels = {
+plugin.templates.buttonLabels = {
 	&quot;banned&quot;: '&lt;span class=&quot;{plugin.class:button-state} {plugin.class:button-state-banned}&quot;&gt;{plugin.label:userBanned}&lt;/span&gt;' +
 		'(&lt;span class=&quot;echo-clickable&quot;&gt;{plugin.label:unbanUser}&lt;/span&gt;)',
 	&quot;unbanned&quot;: '&lt;span class=&quot;echo-clickable&quot;&gt;{plugin.label:banUser}&lt;/span&gt;'
 };
 
-plugin.statuses = [
-	&quot;Untouched&quot;,
-	&quot;ModeratorApproved&quot;,
-	&quot;ModeratorDeleted&quot;,
-	&quot;CommunityFlagged&quot;,
-	&quot;ModeratorFlagged&quot;,
-	&quot;SystemFlagged&quot;
-];
-
-plugin.button2status = {
-	&quot;Spam&quot;: &quot;ModeratorFlagged&quot;,
-	&quot;Delete&quot;: &quot;ModeratorDeleted&quot;,
-	&quot;Approve&quot;: &quot;ModeratorApproved&quot;,
-	&quot;Untouch&quot;: &quot;Untouched&quot;
-};
+plugin.templates.status =
+	'&lt;div class=&quot;{plugin.class:status}&quot;&gt;' +
+		'&lt;div class=&quot;{plugin.class:statusIcon}&quot;&gt;&lt;/div&gt;' +
+		'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-method-status'>/**
 </span> * @echo_renderer
@@ -262,6 +236,29 @@ plugin.renderers.statusIcon = function(element) {
 	return element.addClass(this.cssPrefix + &quot;status-icon-&quot; + status).attr(&quot;title&quot;, title);
 };
 
+plugin.statuses = [
+	&quot;Untouched&quot;,
+	&quot;ModeratorApproved&quot;,
+	&quot;ModeratorDeleted&quot;,
+	&quot;CommunityFlagged&quot;,
+	&quot;ModeratorFlagged&quot;,
+	&quot;SystemFlagged&quot;
+];
+
+plugin.button2status = {
+	&quot;Spam&quot;: &quot;ModeratorFlagged&quot;,
+	&quot;Delete&quot;: &quot;ModeratorDeleted&quot;,
+	&quot;Approve&quot;: &quot;ModeratorApproved&quot;,
+	&quot;Untouch&quot;: &quot;Untouched&quot;
+};
+
+plugin.actionButtons = {
+	&quot;ban&quot;: [&quot;Ban&quot;, &quot;UnBan&quot;],
+	&quot;permissions&quot;: [&quot;UserPermissions&quot;]
+};
+
+plugin.roles = [&quot;&quot;, &quot;moderator&quot;, &quot;administrator&quot;];
+
 plugin.methods._changeItemStatus = function(status) {
 	var item = this.component;
 	this.set(&quot;selected&quot;, false);
@@ -286,6 +283,26 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 };
 
 plugin.methods._publishCompleteActionEvent = function(name) {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onApproveComplete'>	/**
+</span>	 * @event onApproveComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveComplete
+	 * Triggered if &quot;Approve&quot; operation was completed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onSpamComplete'>	/**
+</span>	 * @event onSpamComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamComplete
+	 * Triggered if &quot;Spam&quot; operation was completed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onDeleteComplete'>	/**
+</span>	 * @event onDeleteComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete
+	 * Triggered if &quot;Delete&quot; operation was completed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUntouchComplete'>	/**
+</span>	 * @event onUntouchComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete
+	 * Triggered if &quot;Untouch&quot; operation was completed.
+	 */
 	this.events.publish({
 		&quot;topic&quot;: &quot;on&quot; + name + &quot;Complete&quot;,
 		&quot;data&quot;: {
@@ -383,11 +400,11 @@ plugin.methods._assembleBanButton = function(action) {
 	return function() {
 		var item = this;
 		var isBanned = self._isUserBanned();
-		var visible = item.get(&quot;data.actor.id&quot;) != item.user.get(&quot;fakeIdentityURL&quot;) &amp;&amp;
+		var visible = item.get(&quot;data.actor.id&quot;) !== item.user.get(&quot;fakeIdentityURL&quot;) &amp;&amp;
 			isBanned ^ (action === &quot;Ban&quot;);
 		return {
 			&quot;name&quot;: action,
-			&quot;label&quot;: self.substitute({&quot;template&quot;: plugin.buttonLabels[isBanned ? &quot;banned&quot; : &quot;unbanned&quot;]}),
+			&quot;label&quot;: self.substitute({&quot;template&quot;: plugin.templates.buttonLabels[isBanned ? &quot;banned&quot; : &quot;unbanned&quot;]}),
 			&quot;visible&quot;: visible &amp;&amp; item.user.is(&quot;admin&quot;),
 			&quot;callback&quot;: callback,
 			&quot;once&quot;: true
@@ -401,12 +418,12 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		var item = this;
 		var role = self._getRole();
 		var next = self._getNextRole(role);
-		var roles = next != &quot;&quot;
+		var roles = next !== &quot;&quot;
 			? (item.get(&quot;data.actor.roles&quot;) || []).concat(next)
 			: Echo.Utils.foldl([], item.get(&quot;data.actor.roles&quot;) || [], function(_role, acc) {
 				if ($.inArray(_role, plugin.roles) &lt; 0) acc.push(_role);
 			});
-		var label = next == &quot;&quot; ? &quot;unset&quot; : &quot;set&quot;;
+		var label = next === &quot;&quot; ? &quot;unset&quot; : &quot;set&quot;;
 		item.get(&quot;buttons.&quot; + plugin.name + &quot;.&quot; + action + &quot;.element&quot;)
 			.empty()
 			.append(self.labels.get(label + &quot;RoleAction&quot;, {&quot;role&quot;: next || role}));
@@ -426,11 +443,11 @@ plugin.methods._assemblePermissionsButton = function(action) {
 	return function() {
 		var item = this;
 		var role = self._getRole();
-		var template = (role
+		var template = role
 			? '&lt;span class=&quot;{plugin.class:button-role} {plugin.class:button-role}-{data:role}&quot;&gt;{data:label}&lt;/span&gt;' +
 				'(&lt;span class=&quot;echo-clickable&quot;&gt;{data:button}&lt;/span&gt;)'
-			: '&lt;span class=&quot;echo-clickable&quot;&gt;{data:button}&lt;/span&gt;'
-		);
+			: '&lt;span class=&quot;echo-clickable&quot;&gt;{data:button}&lt;/span&gt;';
+
 		var label = self.substitute({
 			&quot;template&quot;: template,
 			&quot;data&quot;: {
@@ -443,7 +460,7 @@ plugin.methods._assemblePermissionsButton = function(action) {
 			&quot;name&quot;: action,
 			&quot;label&quot;: label,
 			// FIXME: add fakeIdentityURL to UserSession
-			&quot;visible&quot;: item.get(&quot;data.actor.id&quot;) != item.user.get(&quot;fakeIdentityURL&quot;) &amp;&amp;
+			&quot;visible&quot;: item.get(&quot;data.actor.id&quot;) !== item.user.get(&quot;fakeIdentityURL&quot;) &amp;&amp;
 				item.user.any(&quot;roles&quot;, [&quot;administrator&quot;]),
 			&quot;callback&quot;: callback,
 			&quot;once&quot;: true
@@ -491,7 +508,7 @@ plugin.css = function() {
 	if ($.browser.msie) {
 		msieCss =
 			'.{plugin.class:status} { zoom: 1; }';
-	};
+	}
 	return '.{plugin.class:status} { width: 48px; height: 24px; }' +
 		'.{plugin.class:status-child} { width: 24px; height: 24px; }' +
 		'.{plugin.class:statusIcon} { float: right; margin: 4px; width: 16px; height: 16px; }' +
@@ -508,11 +525,13 @@ plugin.css = function() {
 		'.{plugin.class:button-role-administrator} { color: #008000; }' +
 		// status icons
 		$.map(plugin.statuses, function(name) {
-			return '.{plugin.class:status-icon-' + name + '} { background: url(&quot;//cdn.echoenabled.com/images/curation/status/' + name.toLowerCase() + '.png&quot;) no-repeat; }';
+			return '.{plugin.class:status-icon-' + name + '} { background: url(&quot;' + Echo.Loader.getURL(&quot;sdk/images/curation/status/&quot;) + name.toLowerCase() + '.png&quot;) no-repeat; }';
 		}).join(&quot;&quot;) + msieCss;
 }();
 
 Echo.Plugin.create(plugin);
+
+})();
 </pre>
 </body>
 </html>

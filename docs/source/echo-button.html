@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+var Button = function(element, params) {
+	this.element = $(element);
+	params = params || {};
+	this.element.addClass(&quot;echo-sdk-button&quot;);
+	$(&quot;&lt;div&gt;&quot;).appendTo(element).addClass(&quot;echo-label&quot;);
+	this.update({
+		&quot;label&quot;: params.label || this.element.text(),
+		&quot;icon&quot;: params.icon || &quot;&quot;,
+		&quot;disabled&quot;: params.disabled || !!this.element.attr('disabled')
+	});
+	Echo.Utils.addCSS(this._css);
+};
+
+Button.prototype.update = function(params) {
+	console.log(params);
+	params = params || {};
+	this.label = params.label || &quot;&quot;;
+	this.icon = params.icon || &quot;&quot;;
+	this.disabled = params.disabled || false;
+	this.render();
+};
+
+Button.prototype.render = function() {
+	$(&quot;.echo-label&quot;, this.element).text(this.label);
+	var iconElement = $(&quot;.echo-icon&quot;, this.element);
+	if (this.icon) {
+		if (iconElement.length) {
+			iconElement.removeClass().addClass(this.icon + &quot; echo-icon&quot;);
+		} else {
+			$(&quot;&lt;div&gt;&quot;).addClass(this.icon + &quot; echo-icon&quot;).prependTo(this.element);
+		}
+	} else {
+		iconElement.remove();
+	}
+	this.element.attr(&quot;disabled&quot;, this.disabled);
+};
+
+Button.prototype._css =
+	&quot;.echo-sdk-button .echo-label { float: left; } &quot; +
+	&quot;.echo-sdk-button .echo-icon { height: 16px; width: 16px; float: left; margin-right: 2px; margin-top: 2px; } &quot; +
+	&quot;.echo-sdk-button .echo-icon-waiting { background: no-repeat center url(//cdn.echoenabled.com/images/loading.gif); height: 16px; width: 16px; } &quot;;
+
+$.fn.echoButton = function() {
+	var args  = arguments;
+	return this.each(function(){
+		var data = $(this).data('echoButton');
+		var config = typeof args[0] === &quot;object&quot; &amp;&amp; args[0];
+		if (!data) {
+			$(this).data('echoButton', (data = new Button(this, config)));
+		}
+		if (typeof args[0] === &quot;string&quot;) {
+			data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
+		}
+	});
+};
+</pre>
+</body>
+</html>
