@@ -180,8 +180,8 @@ Echo.Tests.Common.prototype.constructPluginRenderersTest = function(config) {
 
 Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
 	var self = this;
-	if (!plugin.component.dom.rendered) {
-		plugin.component.dom.render();
+	if (!plugin.component.view.rendered()) {
+		plugin.component.render();
 	}
 	var _check = function(forComponent) {
 		var renderers = forComponent ? plugin._manifest("component").renderers : plugin._manifest("renderers");
@@ -190,7 +190,7 @@ Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
 			if (name.charAt(0) == "_") return true;
 
 			self.info.functions.push((forComponent ? "component." : "") + "renderers." + name);
-			var element = forComponent ? plugin.component.dom.get(name) : plugin.dom.get(name);
+			var element = forComponent ? plugin.component.view.get(name) : plugin.view.get(name);
 			var oldElement = element.clone();
 			var renderedElement = renderer.call(plugin, element);
 			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
@@ -205,18 +205,18 @@ Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
 Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 	var self = this;
 	data.check = function(instance) {
-		if (!instance.dom.rendered) {
-			instance.dom.render();
+		if (!instance.view.rendered()) {
+			instance.render();
 		}
 		$.each(instance.extension.renderers, function(name, renderer) {
 			self.info.functions.push("renderers." + name);
-			var element = instance.dom.get(name);
+			var element = instance.view.get(name);
 			if (!element) {
 				QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template.");
 				return;
 			}
 			var oldElement = element.clone();
-			var renderedElement = instance.dom.render({"name": name});
+			var renderedElement = instance.view.render({"name": name});
 			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
 			QUnit.ok(renderedElement.jquery == oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
 			QUnit.deepEqual(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element");

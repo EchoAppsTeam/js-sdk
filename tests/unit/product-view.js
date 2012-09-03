@@ -179,7 +179,7 @@ suite.getControlManifest = function(name) {
 	var manifest = Echo.Control.manifest(name);
 	manifest.templates.main = "<div>Sample Control Template</div>";
 	manifest.init = function() {
-		this.dom.render();
+		this.render();
 		this.ready();
 	};
 	manifest.destroy = function() {
