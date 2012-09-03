@@ -159,7 +159,7 @@ plugin.methods._validator = function() {
 	var plugin = this, submit = this.component;
 	return function() {
 		if (!submit.user.is("logged") && plugin._permissions() === "forceLogin") {
-			plugin.dom.get("forcedLoginMessage").addClass(plugin.cssPrefix + "error");
+			plugin.view.get("forcedLoginMessage").addClass(plugin.cssPrefix + "error");
 			return false;
 		}
 		return true;

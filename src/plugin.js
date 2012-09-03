@@ -151,7 +151,7 @@ Echo.Plugin.prototype.init = function() {
 		"subscriptions",
 		"labels",
 		"renderers",
-		"dom",
+		"view",
 		"launcher"
 	]);
 };
@@ -376,12 +376,12 @@ Echo.Plugin.prototype._initializers.renderers = function() {
 	});
 };
 
-Echo.Plugin.prototype._initializers.dom = function() {
+Echo.Plugin.prototype._initializers.view = function() {
 	var plugin = this;
 	var prefix = "plugin-" + this.name + "-";
 	var action = function(name, args) {
-		var dom = plugin.component.get("dom");
-		return dom[name].apply(dom, args);
+		var view = plugin.component.get("view");
+		return view[name].apply(view, args);
 	};
 	return {
 		"clear": function() {

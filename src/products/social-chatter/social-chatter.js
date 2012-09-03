@@ -545,7 +545,7 @@ SocialChatter.views.EventsList.renderers.eventSubmitLabel = function(element) {
 			"label": this.labels.get("scheduleEvent")
 		});
 		element.addClass("btn btn-small").click(function() {
-			self.dom.get("eventSubmitContainer").slideToggle();
+			self.view.get("eventSubmitContainer").slideToggle();
 		});
 	} else {
 		element.detach();
@@ -611,11 +611,11 @@ SocialChatter.renderers.authContainer = function(element) {
 SocialChatter.renderers.tabs = function(element) {
 	var self = this;
 	var tabs = this.tabs = new Echo.Tabs(element, {
-		"panels": this.dom.get("tabPanels"),
+		"panels": this.view.get("tabPanels"),
 		"show": function(e) {
 			var selector = $(e.target).attr("href");
 			var id = selector.replace(/^#/, "");
-			var panel = self.dom.get(id) || $(selector, self.dom.get("tabPanels"));
+			var panel = self.view.get(id) || $(selector, self.view.get("tabPanels"));
 			if (!self.views || !self.views[id]) {
 				self.assemble(id, panel);
 			} else {
@@ -648,7 +648,7 @@ SocialChatter.renderers.tabs = function(element) {
 			})));
 	}
 	tabs.show("EventsList");
-	this.dom.get("EventsList").addClass("active");
+	this.view.get("EventsList").addClass("active");
 	return element;
 };
 
@@ -696,7 +696,7 @@ SocialChatter.methods._updateTab = function(config) {
 				"data": config
 			})));
 	}
-	var tabsDomContainer = this.dom.get("tabPanels");
+	var tabsDomContainer = this.view.get("tabPanels");
 	config.target = config.target || $("#" + config.name, tabsDomContainer);
 	if (this._manifest("assemblers")[config.name]) {
 		$(config.target).empty();
@@ -743,7 +743,7 @@ SocialChatter.assemblers.Auth = function(target) {
 		"target": target
 	});
 	view.initControl("Auth", {
-		"target": view.dom.get("auth")
+		"target": view.view.get("auth")
 	});
 };
 
@@ -756,17 +756,17 @@ SocialChatter.assemblers.EventsList = function(target) {
 	});
 	if (this.user.is("admin")) {
 		var submit = view.initControl("Submit", {
-			"target": view.dom.get("eventSubmit")
+			"target": view.view.get("eventSubmit")
 		});
 		submit.events.subscribe({
 			"topic": "Echo.StreamServer.Controls.Submit.onPostComplete",
 			"handler": function(topic, args) {
-				view.dom.get("eventSubmitContainer").slideUp();
+				view.view.get("eventSubmitContainer").slideUp();
 			}
 		});
 	}
 	var stream = view.initControl("Stream", {
-		"target": view.dom.get("eventsStream")
+		"target": view.view.get("eventsStream")
 	});
 
 	$.map([
@@ -831,10 +831,10 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 
 	if (this.event.onAir()) 
 		view.initControl("Submit", {
-			"target": view.dom.get("publicSubmit")
+			"target": view.view.get("publicSubmit")
 		});
 	view.initControl("Stream", {
-		"target": view.dom.get("publicStream"),
+		"target": view.view.get("publicStream"),
 		"plugins": [{
 			"name": "Reply",
 			"enabled": pluginEnabled
@@ -844,7 +844,7 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 		}]
 	});
 	view.initControl("VIPStream", {
-		"target": view.dom.get("vipStream"),
+		"target": view.view.get("vipStream"),
 		"plugins": [{
 			"name": "Reply",
 			"enabled": pluginEnabled
@@ -862,9 +862,9 @@ SocialChatter.assemblers.GreenRoom = function(target) {
 		"target": target
 	});
 	view.initControl("Stream", {
-		"target": view.dom.get("vipStream")
+		"target": view.view.get("vipStream")
 	});
-	var instrustionsContainer = view.dom.get("vipInstructions");
+	var instrustionsContainer = view.view.get("vipInstructions");
 	if (!this.event || !this.event.data || !this.event.data.vipInstructions) {
 		instrustionsContainer.hide();
 	} else {

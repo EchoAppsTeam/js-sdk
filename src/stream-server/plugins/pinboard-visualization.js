@@ -53,7 +53,7 @@ mediaGallery.renderers.controls = function(element) {
 		});
 	};
 	var controlsContainer = element;
-	var itemsContainer = this.dom.get("items");
+	var itemsContainer = this.view.get("items");
 	var itemClass = this.cssPrefix + "item";
 	var controlClass = this.cssPrefix + "control";
 	var activeControlClass = this.cssPrefix + 'activeControl';
@@ -417,9 +417,9 @@ plugin.component.renderers.body = function(element) {
 	var plugin = this, item = this.component;
 	element = item.parentRenderer("body", arguments);
 	var filteredElements = plugin.config.get("mediaSelector")(item.get("data.object.content"));
-	$(filteredElements.selector, item.dom.get("text")).remove();
+	$(filteredElements.selector, item.view.get("text")).remove();
 	var text = Echo.Utils.stripTags(item.get("data.object.content"));
-	item.dom.get("container").addClass(plugin._getCSSByLength(text.length));
+	item.view.get("container").addClass(plugin._getCSSByLength(text.length));
 	return element;
 };
 
@@ -638,7 +638,7 @@ plugin.events = {
 
 plugin.methods._isotopeView = function() {
 	var plugin = this, stream = this.component;
-	stream.dom.get("body").isotope(
+	stream.view.get("body").isotope(
 		plugin.config.get("isotope")
 	);
 };

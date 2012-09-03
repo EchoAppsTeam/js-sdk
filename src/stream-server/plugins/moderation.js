@@ -246,10 +246,10 @@ plugin.methods._changeItemStatus = function(status) {
 	var item = this.component;
 	this.set("selected", false);
 	item.set("data.object.status", status);
-	item.dom.render({"name": "buttons"});
+	item.view.render({"name": "buttons"});
 	// rerender status recursive
 	// since it contains other renderers
-	this.dom.render({
+	this.view.render({
 		"name": "status",
 		"recursive": true
 	});
@@ -291,7 +291,7 @@ plugin.methods._publishCompleteActionEvent = function(name) {
 		"data": {
 			"item": {
 				"data": this.component.get("data"),
-				"target": this.component.get("dom.content")
+				"target": this.component.get("view.content")
 			}
 		},
 		"bubble": true

@@ -43,7 +43,7 @@ plugin.init = function() {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
-		this.dom.render({"name": "counterLabel"});
+		this.view.render({"name": "counterLabel"});
 	}
 };
 
@@ -80,7 +80,7 @@ plugin.component.renderers.text = function(element) {
 				return;
 			}
 		}
-		plugin.dom.render({"name": "counterLabel"});
+		plugin.view.render({"name": "counterLabel"});
 	};
 	return element.on("blur focus keyup keypress", handler);
 };
@@ -91,7 +91,7 @@ plugin.component.renderers.text = function(element) {
 plugin.renderers.counterLabel = function(element) {
 	var plugin = this, submit = this.component;
 	var limit = plugin.config.get("limit", 0);
-	var typed = submit.dom.get("text").val().length;
+	var typed = submit.view.get("text").val().length;
 	var label = plugin.labels.get(
 		plugin.config.get("label", limit ? "limited" : "unlimited"),
 		{

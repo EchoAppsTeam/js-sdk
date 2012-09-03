@@ -348,7 +348,7 @@ Echo.Control.prototype.remove = function(key) {
  * Control DOM representation
  */
 Echo.Control.prototype.render = function() {
-	var view = this.dom;
+	var view = this.view;
 	var topic = view.rendered() ? "onRerender" : "onRender";
 	var content = view.render({
 		"template": this._compileTemplate()
@@ -421,7 +421,7 @@ Echo.Control.prototype.showMessage = function(data) {
 	if (!this.config.get("infoMessages.enabled")) return;
 	var target = data.target || this.config.get("target");
 	var layout = data.layout || this.config.get("infoMessages.layout");
-	var view = this.dom.fork();
+	var view = this.view.fork();
 	target.empty().append(view.render({
 		"data": data,
 		"template": this.templates.message[layout]
@@ -595,7 +595,7 @@ Echo.Control.prototype._initializers.list = [
 	["labels",             ["init"]],
 	["css",                ["init"]],
 	["renderers",          ["init", "refresh"]],
-	["dom",                ["init"]],
+	["view",               ["init"]],
 	["loading",            ["init", "refresh"]],
 	["dependencies:async", ["init"]],
 	["user:async",         ["init", "refresh"]],
@@ -800,8 +800,7 @@ Echo.Control.prototype._initializers.renderers = function() {
 	});
 };
 
-// TODO: rename to "view" everywhere
-Echo.Control.prototype._initializers.dom = function() {
+Echo.Control.prototype._initializers.view = function() {
 	return new Echo.View({
 		"cssPrefix": this.get("cssPrefix"),
 		"renderers": this.get("renderers"),
@@ -996,7 +995,6 @@ Echo.Control.prototype._domTransformer = function(args) {
 };
 
 Echo.Control.prototype.baseCSS =
-	'.echo-primaryBackgroundColor {  }' +
 	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
 	'.echo-primaryColor { color: #3A3A3A; }' +

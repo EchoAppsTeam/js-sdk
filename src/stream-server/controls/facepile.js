@@ -400,7 +400,7 @@ pile.methods._getMoreUsers = function() {
 		if (!this.get("moreRequestInProgress")) {
 			this.showMessage({
 				"type": "loading",
-				"target": this.dom.get("more")
+				"target": this.view.get("more")
 			});
 			this.set("moreRequestInProgress", true);
 		}

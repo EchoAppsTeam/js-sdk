@@ -181,7 +181,7 @@ plugin.methods._assembleButton = function(action, control) {
 					"data": {
 						"item": {
 							"data": item.get("data"),
-							"target": item.get("dom.content")
+							"target": item.get("view.content")
 						}
 					},
 					"bubble": true
