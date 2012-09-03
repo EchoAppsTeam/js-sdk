@@ -876,8 +876,8 @@ Echo.Utils.substitute = function(args) {
 	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
 		if (!instructions[key]) return match;
 		var result = instructions[key](value, "");
+		// TODO: try to remove type constraints
 		var allowedTypes = ["number", "string", "boolean"];
 		return ~$.inArray(typeof result, allowedTypes) ? result : "";
 	});
 };
-
