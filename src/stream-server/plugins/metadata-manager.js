@@ -44,8 +44,9 @@ plugin.init = function() {
  * Specifies the button label to undo the corresponding action.
  *
  * @cfg {Object|Function} controls.visible
- * Specifies the condition of visibility. Applicable only for tags.
- * Can be either an object or a function.
+ * Specifies the visibility condition. Applicable only for tags.
+ * Can be either an object or a function. In case of a function type,
+ * the function is called within the Item context ("this" points to the current item).
  *
  * Example: simple marker control.
  *
@@ -108,8 +109,9 @@ plugin.init = function() {
  * 				"tag": "football",
  * 				"labelMark": "Set Football tag",
  * 				"labelUnmark": "Unset Football tag",
- * 				"visible": function(application, item) {
- * 					var user = application.user;
+ * 				"visible": function() {
+					var item = this;
+ * 					var user = item.user;
  * 					if (user.get("state") == "Untouched") return true;
  * 					return false;
  * 				}
@@ -215,10 +217,7 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 	if (item.user.is("admin")) return true;
 	var customProxyURL = item.config.get("submissionProxyURL");
 	if (type === "marker" && !customProxyURL) return false;
-	control.visible = control.visible || function() { return false; };
-	if ($.isFunction(control.visible)) {
-		return control.visible(item);
-	}
+	control.visible = item.invoke(control.visible);
 	if ($.isEmptyObject(control.visible)) return false;
 	var isVisible = true;
 	$.each(["state", "roles", "markers"], function(i, field) {
@@ -231,7 +230,7 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 			}
 		}
 	});
-	return isVisible;
+	return !!isVisible;
 };
 
 Echo.Plugin.create(plugin);

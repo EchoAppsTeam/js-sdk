@@ -197,6 +197,13 @@ Echo.Plugin.prototype.remove = function(key) {
 };
 
 /**
+ * @inheritdoc Echo.Utils#invoke
+ */
+Echo.Plugin.prototype.invoke = function(mixed, context) {
+	return Echo.Utils.invoke(mixed, context || this);
+};
+
+/**
  * Enables the plugin.
  */
 Echo.Plugin.prototype.enable = function(global) {
@@ -234,7 +241,7 @@ Echo.Plugin.prototype.disable = function(global) {
  */
 Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 	if (html) {
-		html = this.substitute({"template": $.isFunction(html) ? html.call(this) : html});
+		html = this.substitute({"template": this.invoke(html)});
 	}
 	this.component.extendTemplate.call(this.component, action, anchor, html);
 };

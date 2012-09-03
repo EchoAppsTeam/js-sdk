@@ -876,8 +876,28 @@ Echo.Utils.substitute = function(args) {
 	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
 		if (!instructions[key]) return match;
 		var result = instructions[key](value, "");
-		// TODO: try to remove type constraints
 		var allowedTypes = ["number", "string", "boolean"];
 		return ~$.inArray(typeof result, allowedTypes) ? result : "";
 	});
+};
+
+/**
+ * @static
+ * Function which checks if the value passed as a first argument is a function and executes
+ * it in given context. If the first argument has different type, it's returned as is.
+ *
+ * @param {Mixed} mixed
+ * The value which should be checked and executed in case of a function type.
+ *
+ * @param {Object} context
+ * Context in which the function should be executed.
+ *
+ * @return {Mixed}
+ * The result of the function call in case the first argument is a function
+ * or the first argument as is otherwise.
+ */
+Echo.Utils.invoke = function(mixed, context) {
+	return $.isFunction(mixed)
+		? context ? mixed.call(context) : mixed()
+		: mixed;
 };

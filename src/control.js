@@ -369,6 +369,13 @@ Echo.Control.prototype.substitute = function(args) {
 };
 
 /**
+ * @inheritdoc Echo.Utils#invoke
+ */
+Echo.Control.prototype.invoke = function(mixed, context) {
+	return Echo.Utils.invoke(mixed, context || this);
+};
+
+/**
  * Basic method to reinitialize control.
  *
  * Function can be overriden by class descendants implying specific logic.
@@ -879,15 +886,13 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 			return control.labels.get(key, defaults);
 		},
 		"self": function(key, defaults) {
-			var value = Echo.Utils.getNestedValue(control, key);
-			value = $.isFunction(value) ? value.call(control) : value;
+			var value = control.invoke(Echo.Utils.getNestedValue(control, key));
 			return typeof value == "undefined"
 				? Echo.Utils.getNestedValue(control.data, key, defaults)
 				: value;
 		},
 		"config": function(key, defaults) {
-			var value = control.config.get(key, defaults);
-			return $.isFunction(value) ? value.call(control) : value;
+			return control.invoke(control.config.get(key, defaults));
 		}
 	};
 };
