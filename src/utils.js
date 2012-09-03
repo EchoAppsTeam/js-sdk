@@ -875,7 +875,7 @@ Echo.Utils.substitute = function(args) {
 	// perform regular string substitution
 	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
 		if (!instructions[key]) return match;
-		var result = instructions[key].call(this, value, "");
+		var result = instructions[key](value, "");
 		var allowedTypes = ["number", "string", "boolean"];
 		return ~$.inArray(typeof result, allowedTypes) ? result : "";
 	});

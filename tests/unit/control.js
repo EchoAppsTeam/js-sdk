@@ -664,7 +664,7 @@ suite.data.template =
 		'<div class="{class:selfDataKey} echo-primaryFont">{self:data.key1}</div>' +
 		'<div class="{class:selfDataKeyNested}">{self:data.key3.key3nested}</div>' +
 		'<div class="{class:selfNonExistingKey}">{self:nonExistingKey}</div>' +
-		'<div class="{class:selfFunction}">{self:render}</div>' +
+		'<div class="{class:selfFunction}"></div>' +
 		// checking custom substitution rules
 		'<div class="{class:customSubstitution}">{mysubs:key}</div>' +
 		'<div class="{class:customSubstitutionNestedKey}">{mysubs:key.key1.key2}</div>' +

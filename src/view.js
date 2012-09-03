@@ -39,7 +39,7 @@ Echo.View = function(config) {
 	this.config = config || {};
 	this.config.cssPrefix = this.config.cssPrefix || "";
 	this.renderers = config.renderers || {};
-	this._clear();
+	this.clear();
 };
 
 /**
@@ -147,7 +147,6 @@ Echo.View.prototype.render = function(args) {
 
 	// render template
 	if (args.template) {
-		this._clear();
 
 		// save template to use it for
 		// the recursive renderer application call
@@ -211,7 +210,7 @@ Echo.View.prototype._key = function(name) {
 	return this.config.cssPrefix + name;
 };
 
-Echo.View.prototype._clear = function() {
+Echo.View.prototype.clear = function() {
 	this._elements = {};
 };
 
