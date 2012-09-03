@@ -510,7 +510,7 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
 	var renderer = this.parentRenderers[name];
 	return renderer
 		? renderer.apply(this, args)
-		: undefined;
+		: args[0]; // return DOM element
 };
 
 /**
