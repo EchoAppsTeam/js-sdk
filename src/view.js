@@ -207,7 +207,11 @@ Echo.View.prototype._render.recursive = function(args) {
 };
 
 Echo.View.prototype._render.template = function(args) {
-	return this._applyRenderers(this._compileTemplate(args));
+	var dom = this._compileTemplate(args);
+	if (dom.hasClass("echo-tmp-wrapper")) {
+		dom = $(dom.html());
+	}
+	return this._applyRenderers(dom);
 };
 
 Echo.View.prototype._key = function(name) {
@@ -228,7 +232,7 @@ Echo.View.prototype._compileTemplate = function(args) {
 		"template": args.template,
 		"instructions": this.config.substitutions
 	});
-	return $("<div/>").html(template);
+	return $('<div class="echo-tmp-wrapper"/>').html(template);
 };
 
 Echo.View.prototype._applyRenderers = function(dom) {

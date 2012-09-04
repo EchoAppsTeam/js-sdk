@@ -73,8 +73,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.ok(!result, "Checking if the \"render\" call with no the template defined as an empty string returns 'false'");
 
 		var dom = view.render({"template": "  "});
-		QUnit.equal(dom.html(), "  ",
-			"Checking if the \"render\" call is tolerant to the template made of whitespaces only");
+		QUnit.strictEqual(dom.html(), undefined,
+			"Checking if the \"render\" call returns \"undefined\" of whitespaces only");
 
 		// simple template rendering with no cssPrefix defined
 		var view = new Echo.View();
