@@ -809,6 +809,7 @@ Echo.Control.prototype._initializers.renderers = function() {
 
 Echo.Control.prototype._initializers.view = function() {
 	return new Echo.View({
+		"data": this.get("data")
 		"cssPrefix": this.get("cssPrefix"),
 		"renderers": this.get("renderers"),
 		"substitutions": this._getSubstitutionInstructions()
