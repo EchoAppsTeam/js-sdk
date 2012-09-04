@@ -30,6 +30,7 @@ suite.prototype.tests.resourceDownloadingTests = {
 	},
 	"check": function() {
 		this.sequentialAsyncTests([
+			"alreadyLoadedStylesheets",
 			"invalidParameters",
 			"nonExistingScripts",
 			"alreadyLoadedScripts",
@@ -133,6 +134,20 @@ suite.prototype.cases.alreadyLoadedScripts = function(callback) {
 		}],
 		"callback": function() {
 			QUnit.ok(true, "Checking if the callback is executed when the scripts loaded previously are loaded again");
+			callback();
+		}
+	});
+};
+
+suite.prototype.cases.alreadyLoadedStylesheets = function(callback) {
+	Echo.Loader.download({
+		"scripts": [{
+			"url": "sdk/third-party/jquery/css/fancybox.css"
+		}, {
+			"url": "sdk/third-party/jquery/css/fancybox.css"
+		}],
+		"callback": function() {
+			QUnit.ok(true, "Checking if the callback is executed when the stylesheets loaded previously are loaded again");
 			callback();
 		}
 	});
