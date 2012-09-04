@@ -106,7 +106,7 @@ Echo.Control.manifest = function(name) {
 		"templates": {},
 		"dependencies": [],
 		"init": function() {
-			this.dom.render();
+			this.render();
 			this.ready();
 		},
 		"destroy": undefined
@@ -115,7 +115,8 @@ Echo.Control.manifest = function(name) {
 
 /**
  * @static
- * Method which adds new initializer scheme to the control (or control extender) prototype. Initializer function must be defined.
+ * Method which adds new initializer scheme to the control (or control extender) prototype.
+ * Initializer function must be defined.
  *
  * @param {Object} klass
  * Specifies control (Echo.Control or extender) object.
@@ -124,7 +125,9 @@ Echo.Control.manifest = function(name) {
  * Initializer schema which declare name and executed step.
  *
  * @param {Object} rule
- * Object containing action as key and target as value. Target is a defined initializer name. If this parameter is omitted then initializer will be pushed to the end of the list. Possible actions are:
+ * Object containing action as key and target as value. Target is a defined initializer name.
+ * If this parameter is omitted then initializer will be pushed to the end of the list.
+ * Possible actions are:
  * + "after"
  * + "before"
  */
@@ -171,6 +174,9 @@ Echo.Control.prototype.defaults = {};
 Echo.Control.prototype.defaults.vars = {
 	"cache": {},
 	"plugins": {},
+	"extension": {"template": []},
+	"renderers": {},
+	"parentRenderers": {},
 	"subscriptionIDs": {}
 };
 
@@ -182,7 +188,8 @@ Echo.Control.prototype.defaults.config = {
 	"target": undefined,
 	/**
 	 * @cfg {String} appkey (required)
-	 * Specifies the customer application key. You can use the "test.echoenabled.com" appkey for testing purposes.
+	 * Specifies the customer application key. You can use the "test.echoenabled.com"
+	 * appkey for testing purposes.
 	 */
 	"appkey": "",
 	/**
@@ -285,13 +292,16 @@ Echo.Control.prototype.defaults.labels = {
 /**
  * Accessor method to get specific field.
  *
- * This function returns the corresponding value of the given key or the default value if specified in the second argument.
+ * This function returns the corresponding value of the given key
+ * or the default value if specified in the second argument.
  *
  * @param {String} key
  * Defines the key for data extraction.
  *
  * @param {Object} [defaults]
- * Default value if no corresponding key was found in the config. Note: only the 'undefined' JS statement triggers the default value usage. The false, null, 0, [] are considered as a proper value.
+ * Default value if no corresponding key was found in the config.
+ * Note: only the 'undefined' JS statement triggers the default value usage.
+ * The false, null, 0, [] are considered as a proper value.
  *
  * @return {Mixed}
  * The corresponding value found in the object.
@@ -319,7 +329,8 @@ Echo.Control.prototype.set = function(key, value) {
  * Method to remove specific object field.
  *
  * This function allows to remove the value associated with the given key.
- * If the key contains a complex structure (such as objects or arrays), it will be removed as well.
+ * If the key contains a complex structure (such as objects or arrays),
+ * it will be removed as well.
  *
  * @param {String} key
  * Specifies the key which should be removed from the object.
@@ -329,49 +340,39 @@ Echo.Control.prototype.remove = function(key) {
 };
 
 /**
- * Templater function which compiles given template using the provided data.
+ * Rendering function which prepares the DOM representation of the control
+ * and appends it to the control target element. This function also used to
+ * re-render the control.
  *
- * Function can be used widely for html templates processing or any other action requiring string interspersion.
- *
- * @param {Object} args
- * Specifies substitution process, contains control parameters.
- *
- * @param {String} args.template
- * Template containing placeholders used for data interspersion.
- *
- * @param {Object} [args.data]
- * Data used in the template compilation.
- *
- * @param {Boolean} [args.strict]
- * Specifies whether the template should be replaced with the corresponding value, preserving replacement value type.
- *
- * @param {Object} [args.instructions]
- * Object containing the list of extra instructions to be applied during template compilation.
- *
- * @return {String}
- * Compiled string value.
+ * @return {Object}
+ * Control DOM representation
+ */
+Echo.Control.prototype.render = function() {
+	var view = this.view;
+	var topic = view.rendered() ? "onRerender" : "onRender";
+	var content = view.render({
+		"template": this._compileTemplate()
+	});
+	this.config.get("target").empty().append(content);
+	this.events.publish({"topic": topic});
+	return content;
+};
+
+/**
+ * @inheritdoc Echo.Utils#substitute
  */
 Echo.Control.prototype.substitute = function(args) {
-	var instructions = $.extend(this._getSubstitutionInstructions(args.data), args.instructions || {});
-	var regex = Echo.Utils.regexps.templateSubstitution;
-	var template = args.template;
+	var instructions = this._getSubstitutionInstructions();
+	args.data = args.data || this.get("data");
+	args.instructions = $.extend(instructions, args.instructions);
+	return Echo.Utils.substitute(args);
+};
 
-	// checking if we need to execute in a strict mode,
-	// i.e. whether to keep the substitution value type or not
-	if (args.strict && (new RegExp("^" + regex + "$", "i")).test(template)) {
-		var match = new RegExp(regex, "i").exec(template);
-		if (match && match[1] && instructions[match[1]]) {
-			return instructions[match[1]](match[2]);
-		}
-	}
-
-	// perform regular string sustitution
-	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
-		if (!instructions[key]) return match;
-		var result = instructions[key].call(this, value, "");
-		var allowedTypes = ["number", "string", "boolean"];
-		return ~$.inArray(typeof result, allowedTypes) ? result : "";
-	});
+/**
+ * @inheritdoc Echo.Utils#invoke
+ */
+Echo.Control.prototype.invoke = function(mixed, context) {
+	return Echo.Utils.invoke(mixed, context || this);
 };
 
 /**
@@ -425,14 +426,13 @@ Echo.Control.prototype.dependent = function() {
  */
 Echo.Control.prototype.showMessage = function(data) {
 	if (!this.config.get("infoMessages.enabled")) return;
-	// TODO: check if we need a parameter to hide error, but show loading messages
-	//       (if data.type == "error")
+	var target = data.target || this.config.get("target");
 	var layout = data.layout || this.config.get("infoMessages.layout");
-	this.dom.render({
-		"template": this.templates.message[layout],
+	var view = this.view.fork();
+	target.empty().append(view.render({
 		"data": data,
-		"target": data.target || this.config.get("target")
-	});
+		"template": this.templates.message[layout]
+	}));
 };
 
 /**
@@ -501,7 +501,8 @@ Echo.Control.prototype.template = function() {
 };
 
 /**
- * Method to call parent renderer function, which was extended using Echo.Control.extendRenderer function.
+ * Method to call parent renderer function, which was extended using
+ * Echo.Control.extendRenderer function.
  *
  * @param {String} name
  * Renderer name.
@@ -513,9 +514,10 @@ Echo.Control.prototype.template = function() {
  * Result of parent renderer function call.
  */
 Echo.Control.prototype.parentRenderer = function(name, args) {
-	var renderer = this._getRenderer(name);
-	if (!renderer || !renderer.next) return args[0]; // return DOM element
-	return renderer.next.apply(this, args);
+	var renderer = this.parentRenderers[name];
+	return renderer
+		? renderer.apply(this, args)
+		: args[0]; // return DOM element
 };
 
 /**
@@ -535,7 +537,8 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
  * Element name which is a subject of a transformation application.
  *
  * @param {String} [html]
- * The content of a transformation to be applied. This param is required for all actions except "remove".
+ * The content of a transformation to be applied.
+ * This param is required for all actions except "remove".
  */
 Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
 	this.extension.template.push({"action": action, "anchor": anchor, "html": html});
@@ -551,9 +554,12 @@ Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
  * Renderer function to be applied.
  */
 Echo.Control.prototype.extendRenderer = function(name, renderer) {
-	var renderers = this.extension.renderers;
-	renderers[name] = renderers[name] || {"functions": []};
-	renderers[name].functions.unshift(renderer);
+	var control = this;
+	var _renderer = this.renderers[name];
+	this.renderers[name] = $.proxy(function(element) {
+		this.parentRenderers[name] = _renderer;
+		return renderer.apply(this, arguments);
+	}, control);
 };
 
 /**
@@ -590,14 +596,13 @@ Echo.Control.prototype._initializers = {};
 
 Echo.Control.prototype._initializers.list = [
 	["vars",               ["init", "refresh"]],
-	["extension",          ["init", "refresh"]],
 	["config",             ["init"]],
 	["events",             ["init"]],
 	["subscriptions",      ["init", "refresh"]],
 	["labels",             ["init"]],
 	["css",                ["init"]],
 	["renderers",          ["init", "refresh"]],
-	["dom",                ["init"]],
+	["view",               ["init"]],
 	["loading",            ["init", "refresh"]],
 	["dependencies:async", ["init"]],
 	["user:async",         ["init", "refresh"]],
@@ -623,10 +628,6 @@ Echo.Control.prototype._initializers.vars = function() {
 	$.extend(this, $.extend(true, {}, this.defaults.vars, this._manifest("vars")));
 };
 
-Echo.Control.prototype._initializers.extension = function() {
-	return {"renderers": {}, "template": []};
-};
-
 Echo.Control.prototype._initializers.config = function() {
 	var control = this;
 	var _normalizer = {};
@@ -649,7 +650,6 @@ Echo.Control.prototype._initializers.config = function() {
 	var defaults = $.extend(true, {}, this.get("defaults.config"), {
 		"context": (data.parent ? data.parent.context + "/" : "") + Echo.Utils.getUniqueString()
 	}, this._manifest("config") || {});
-	// TODO: find better home for normalizer...
 	var normalizer = this._manifest("config").normalizer;
 	return new Echo.Configuration(data, defaults, function(key, value) {
 		var handler = normalizer && normalizer[key] || _normalizer && _normalizer[key];
@@ -802,75 +802,18 @@ Echo.Control.prototype._initializers.css = function() {
 
 Echo.Control.prototype._initializers.renderers = function() {
 	var control = this;
-	$.each(this._manifest("renderers"), function() {
+	$.each(control._manifest("renderers"), function() {
 		control.extendRenderer.apply(control, arguments);
 	});
 };
 
-Echo.Control.prototype._initializers.dom = function() {
-	var self = this;
-	this.dom = {
-		// private fields
-		"_rendered": false,
-		"_elements": {},
-
-		// public functions
-		"clear": function() {
-			this._elements = {};
-		},
-		"set": function(name, element) {
-			this._elements[self.cssPrefix + name] = $(element);
-		},
-		"get": function(name, ignorePrefix) {
-			return this._elements[(ignorePrefix ? "" : self.cssPrefix) + name];
-		},
-		"remove": function(element) {
-			var name = typeof element === "string"
-				? self.cssPrefix + element
-				: element.echo.name;
-			this._elements[name].remove();
-			delete this._elements[name];
-		},
-		"rendered": function() {
-			return this._rendered;
-		},
-		"render": function(args) {
-
-			// render the whole control when no extra config was passed
-			if (!args) {
-				self.dom.clear();
-				var topic = this.rendered() ? "onRerender" : "onRender";
-				var dom = self._render.template.call(self, {
-					"template": self.template,
-					"data": self.data
-				});
-				self.config.get("target").empty().append(dom);
-				this._rendered = true;
-				self.events.publish({"topic": topic});
-				return dom;
-			}
-
-			args = args || {};
-			args.data = args.data || self.data;
-			args.template = args.template || self.template;
-
-			// render specific element (recursively if specified)
-			if (args.name) {
-				var processor = args.recursive ? "recursive" : "element";
-				return self._render[processor].call(self, args);
-			}
-
-			// render template
-			if (args.template) {
-				var dom = self._render.template.call(self, args);
-				if (args.target) {
-					args.target.empty().append(dom);
-				}
-				return dom;
-			}
-
-		}
-	};
+Echo.Control.prototype._initializers.view = function() {
+	return new Echo.View({
+		"data": this.get("data"),
+		"cssPrefix": this.get("cssPrefix"),
+		"renderers": this.get("renderers"),
+		"substitutions": this._getSubstitutionInstructions()
+	});
 };
 
 Echo.Control.prototype._initializers.loading = function() {
@@ -934,28 +877,23 @@ Echo.Control.prototype._initializers.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
 };
 
-Echo.Control.prototype._getSubstitutionInstructions = function(data) {
+Echo.Control.prototype._getSubstitutionInstructions = function() {
 	var control = this;
 	return {
 		"class": function(key) {
 			return key ? control.cssPrefix + key : control.cssClass
 		},
-		"data": function(key, defaults) {
-			return Echo.Utils.getNestedValue(data || control.data, key, defaults);
-		},
 		"label": function(key, defaults) {
 			return control.labels.get(key, defaults);
 		},
 		"self": function(key, defaults) {
-			var value = Echo.Utils.getNestedValue(control, key);
-			value = $.isFunction(value) ? value.call(control) : value;
+			var value = control.invoke(Echo.Utils.getNestedValue(control, key));
 			return typeof value == "undefined"
 				? Echo.Utils.getNestedValue(control.data, key, defaults)
 				: value;
 		},
 		"config": function(key, defaults) {
-			var value = control.config.get(key, defaults);
-			return $.isFunction(value) ? value.call(control) : value;
+			return control.invoke(control.config.get(key, defaults));
 		}
 	};
 };
@@ -1014,78 +952,26 @@ Echo.Control.prototype._loadPluginScripts = function(callback) {
 	});
 };
 
-Echo.Control.prototype._render = {};
-
-Echo.Control.prototype._render.element = function(args) {
-	var target = args.target ||
-		(args.name && this.dom.get(args.name)) ||
-		this.config.get("target");
-
-	if (!this._hasRenderer(args.name)) return target;
-
-	var renderer = this._getRenderer(args.name);
-	var iteration = 0;
-	renderer.next = function() {
-		iteration++;
-		return renderer.functions.length > iteration
-			? renderer.functions[iteration].apply(this, arguments)
-			: target;
-	};
-	return renderer.functions[iteration].call(this, target, args.extra);
-};
-
-Echo.Control.prototype._render.recursive = function(args) {
-	var oldNode = this.dom.get(args.name);
-	var template = this._compileTemplate(args.template, args.data, this.extension.template);
-	template = $("." + this.cssPrefix + args.name, $(template));
-	this._applyRenderers(template);
-	var newNode = this.dom.get(args.name);
-	oldNode.replaceWith(newNode);
-	return newNode;
-};
-
-Echo.Control.prototype._render.template = function(args) {
-	var template = this._compileTemplate(args.template, args.data, this.extension.template);
-	return this._applyRenderers(template);
-};
-
-Echo.Control.prototype._compileTemplate = function(template, data, transformations) {
+Echo.Control.prototype._compileTemplate = function() {
 	var control = this;
-	var raw = $.isFunction(template) ? template.call(this) : template;
-	var processed = this.substitute({
-		"template": raw,
-		"data": data || {}
+	var data = this.get("data", {});
+	var transformations = this.extension.template;
+	var template = $.isFunction(this.template) ? this.template() : this.template;
+	var processed = control.substitute({
+		"data": data,
+		"template": template
 	});
+	var dom = $("<div/>").html(processed);
 	if (transformations && transformations.length) {
-		var dom = $("<div/>").html(processed);
 		$.map(transformations, function(transformation) {
 			dom = control._domTransformer({
-				"data": data || {},
 				"dom": dom,
+				"data": data,
 				"transformation": transformation
 			});
 		});
-		processed = dom.html();
 	}
-	return processed;
-};
-
-Echo.Control.prototype._applyRenderers = function(template) {
-	var self = this;
-	var dom = $(template);
-	var elements = this._getRenderableElements(dom);
-	$.each(elements, function(name, element) {
-
-		// prevent "renderer" function call
-		// in case no suitable renderer found
-		if (!self._hasRenderer(name)) return;
-
-		self.dom.render({
-			"name": name,
-			"target": element
-		});
-	});
-	return dom;
+	return $(dom.html());
 };
 
 Echo.Control.prototype._domTransformer = function(args) {
@@ -1103,50 +989,18 @@ Echo.Control.prototype._domTransformer = function(args) {
 	}
 	var content;
 	var html = args.transformation.html;
-	var anchor = "." + this.cssPrefix + args.transformation.anchor;
+	var anchor = "." + this.get("cssPrefix") + args.transformation.anchor;
 	if (html) {
 		content = this.substitute({
-			"template": $.isFunction(html) ? html() : html,
-			"data": args.data
+			"data": args.data,
+			"template": html
 		});
 	}
 	$(anchor, args.dom)[action](content);
 	return args.dom;
 };
 
-Echo.Control.prototype._getRenderer = function(name) {
-	return this.extension.renderers[name];
-};
-
-Echo.Control.prototype._hasRenderer = function(name) {
-	return !!this._getRenderer(name);
-};
-
-Echo.Control.prototype._getRenderableElements = function(container) {
-	var self = this, elements = {};
-	var isRenderer = new RegExp(this.cssPrefix + "(.*)$");
-	container.find("*").andSelf().each(function(i, element) {
-		if (!element.className) {
-			return;
-		}
-		var classes = element.className.split(/[ ]+/);
-		$.each(classes, function(j, className) {
-			var pattern = className.match(isRenderer);
-			var name = pattern ? pattern[1] : undefined;
-			if (name) {
-				self.dom.set(name, element);
-				element = $(element);
-				element.echo = element.echo || {};
-				element.echo.name = className;
-				elements[name] = element;
-			}
-		});
-	});
-	return elements;
-};
-
 Echo.Control.prototype.baseCSS =
-	'.echo-primaryBackgroundColor {  }' +
 	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
 	'.echo-primaryColor { color: #3A3A3A; }' +

@@ -211,7 +211,7 @@ stream.events = {
 			"item": item,
 			"priority": "highest",
 			"handler": function() {
-				item.dom.render();
+				item.render();
 				item.set("added", false);
 				self._animateSpotUpdate("add", item, data.config);
 			}
@@ -387,13 +387,13 @@ stream.methods.setState = function(state) {
 	if (state === "live") {
 		this._executeNextActivity();
 	}
-	this.dom.render({"name": "state"});
+	this.view.render({"name": "state"});
 };
 
 stream.methods._requestChildrenItems = function(unique) {
 	var self = this;
 	var item = this.items[unique];
-	var target = item.dom.get("expandChildren");
+	var target = item.view.get("expandChildren");
 	var request = Echo.StreamServer.API.request({
 		"endpoint": "search",
 		"apiBaseURL": this.config.get("apiBaseURL"),
@@ -517,8 +517,8 @@ stream.methods._requestMoreItems = function(element) {
 				self._handleInitialResponse(data, function(data) {
 					if (data.length) {
 						self.lastRequest.data = data;
-						self.dom.render({"name": "body"});
-						self.dom.render({"name": "more"});
+						self.view.render({"name": "body"});
+						self.view.render({"name": "more"});
 					} else {
 						element.html(self.labels.get("emptyStream"))
 							.delay(1000)
@@ -641,7 +641,7 @@ stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 			? "append"
 			: "prepend";
 		wrapper[insertion](item.config.get("target"));
-		item.dom.render();
+		item.render();
 	});
 	return wrapper;
 };
@@ -691,7 +691,7 @@ stream.methods._appendRootItems = function(items, container) {
 	if (!items || !items.length) return;
 	$.map(items, function(item) {
 		container.append(item.config.get("target").get(0));
-		item.dom.render();
+		item.render();
 	});
 };
 
@@ -771,7 +771,7 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 				"initial": true,
 				"data": data
 			};
-			self.dom.render();
+			self.render();
 			self.ready();
 		})(roots);
 	});
@@ -799,7 +799,7 @@ stream.methods._handleLiveUpdatesResponse = function(data) {
 		return;
 	}
 	this._applyLiveUpdates(data.entries, function() {
-		self.dom.render({"name": "state"});
+		self.view.render({"name": "state"});
 		self._executeNextActivity();
 	});
 };
@@ -837,9 +837,9 @@ stream.methods._recalcEffectsTimeouts = function() {
 
 stream.methods._refreshItemsDate = function() {
 	$.map(this.threads, function(item) {
-		item.dom.render({"name": "date"});
+		item.view.render({"name": "date"});
 		item.traverse(item.get("children"), function(child) {
-			child.dom.render({"name": "date"});
+			child.view.render({"name": "date"});
 		});
 	});
 };
@@ -865,7 +865,7 @@ stream.methods._spotUpdates.add = function(item, options) {
 	// if we are trying to add an item which already exists,
 	// we should change the operation to "replace"
 	var _item = this.items[item.get("data.unique")];
-	if (_item && _item.dom.rendered() && options.priority != "high") {
+	if (_item && _item.view.rendered() && options.priority != "high") {
 		this._applySpotUpdates("replace", item, {"priority": "highest"});
 
 		// notify top level function that the update was not applied,
@@ -878,10 +878,10 @@ stream.methods._spotUpdates.add = function(item, options) {
 		this._placeRootItem(item);
 	} else {
 		var parent = this._getParentItem(item);
-		if (parent && parent.dom.rendered()) {
-			parent.dom.render({"name": "container"});
-			parent.dom.render({"name": "children"});
-			parent.dom.render({"name": "childrenByCurrentActorLive"});
+		if (parent && parent.view.rendered()) {
+			parent.view.render({"name": "container"});
+			parent.view.render({"name": "children"});
+			parent.view.render({"name": "childrenByCurrentActorLive"});
 		}
 	}
 };
@@ -911,8 +911,8 @@ stream.methods._spotUpdates.replace = function(item, options) {
 			this._applySpotUpdates("add", item, {"priority": "high"});
 		}
 	}
-	if (item && item.dom.rendered()) {
-		item.dom.render({"name": "container", "recursive": true});
+	if (item && item.view.rendered()) {
+		item.view.render({"name": "container", "recursive": true});
 		/**
 		 * @event onRerender
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onRerender
@@ -940,18 +940,18 @@ stream.methods._spotUpdates.delete = function(item, options) {
 	} else {
 		var parent = this._getParentItem(item);
 		if (parent) {
-			parent.dom.render({
+			parent.view.render({
 				"name": "children",
-				"target": parent.dom.get("children"),
+				"target": parent.view.get("children"),
 				"extra": options
 			});
-			parent.dom.render({
+			parent.view.render({
 				"name": "childrenByCurrentActorLive",
-				"target": parent.dom.get("childrenByCurrentActorLive"),
+				"target": parent.view.get("childrenByCurrentActorLive"),
 				"extra": options
 			});
 			this._applyStructureUpdates("delete", item, options);
-			parent.dom.render({"name": "container"});
+			parent.view.render({"name": "container"});
 		}
 	}
 };
@@ -980,7 +980,7 @@ stream.methods._spotUpdates.animate.add = function(item) {
 		item.config.get("target").show();
 	}
 	if (this.timeouts.fade) {
-		var container = item.dom.get("container");
+		var container = item.view.get("container");
 		var originalBGColor = Echo.Utils.getVisibleColor(container);
 		container
 		// delay fading out until content sliding is finished
@@ -1012,7 +1012,6 @@ stream.methods._spotUpdates.animate.delete = function(item, config) {
 		// if the item is being moved, we should keep all jQuery handlers
 		// for the nested elements (children), thus we use "detach" instead of "remove"
 		item.config.get("target")[config.keepChildren ? "detach" : "remove"]();
-		item.dom.clear();
 		item.set("vars", {});
 		var itemsCount = Echo.Utils.foldl(0, self.items, function(_item, acc) {
 			return acc + 1;
@@ -1021,7 +1020,7 @@ stream.methods._spotUpdates.animate.delete = function(item, config) {
 			self.showMessage({
 				"type": "empty",
 				"message": self.labels.get("emptyStream"),
-				"target": self.dom.get("body")
+				"target": self.view.get("body")
 			});
 		}
 		self.activities.animations--;
@@ -1187,7 +1186,7 @@ stream.methods._placeRootItem = function(item) {
 			prev.config.get("target").after(content);
 		}
 	} else {
-		this.dom.get("body").empty().append(content);
+		this.view.get("body").empty().append(content);
 	}
 	/**
 	 * @event onAdd
@@ -1216,14 +1215,14 @@ stream.methods._placeChildItems = function(parent, children) {
 
 	var targetItemDom = targetItemIdx >= 0
 		? parent.get("children")[targetItemIdx].config.get("target")
-		: parent.dom.get("children");
+		: parent.view.get("children");
 	var action = targetItemIdx >= 0
 		? "insertAfter"
 		: this.config.get("children.sortOrder") != "chronological" 
 			? "prependTo"
 			: "appendTo";
 	itemsWrapper[action]($(targetItemDom));
-	parent.dom.render({"name": "childrenByCurrentActorLive"});
+	parent.view.render({"name": "childrenByCurrentActorLive"});
 	// we should specify the element height explicitly
 	// to avoid element jumping during the animation effect
 	itemsWrapper
@@ -1239,8 +1238,8 @@ stream.methods._placeChildItems = function(parent, children) {
 			"duration": this.config.get("children.itemsSlideTimeout"),
 			"complete": function() {
 				itemsWrapper.css("height", "");
-				parent.dom.render({"name": "expandChildren"});
-				parent.dom.render({"name": "expandChildrenLabel"});
+				parent.view.render({"name": "expandChildren"});
+				parent.view.render({"name": "expandChildrenLabel"});
 				itemsWrapper.children().unwrap();
 			}
 		});
@@ -1766,7 +1765,7 @@ item.renderers.authorName = function(element) {
  * @echo_renderer
  */
 item.renderers.markers = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		"name": "_extraField",
 		"target": element,
 		"extra": {"type": "markers"}
@@ -1777,7 +1776,7 @@ item.renderers.markers = function(element) {
  * @echo_renderer
  */
 item.renderers.tags = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		"name": "_extraField",
 		"target": element,
 		"extra": {"type": "tags"}
@@ -1812,12 +1811,12 @@ item.renderers.container = function(element) {
 	if (!Echo.Utils.isMobileDevice()) {
 		element.off(["mouseleave", "mouseenter"]).hover(function() {
 			if (self.user.is("admin")) {
-				self.dom.get("modeSwitch").show();
+				self.view.get("modeSwitch").show();
 			}
 			switchClasses("add");
 		}, function() {
 			if (self.user.is("admin")) {
-				self.dom.get("modeSwitch").hide();
+				self.view.get("modeSwitch").hide();
 			}
 			switchClasses("remove");
 		});
@@ -1852,8 +1851,8 @@ item.renderers.modeSwitch = function(element) {
 	element.click(function() {
 		mode = (mode === "default" ? "metadata" : "default");
 		setTitle();
-		self.dom.get("data").toggle();
-		self.dom.get("metadata").toggle();
+		self.view.get("data").toggle();
+		self.view.get("metadata").toggle();
 	});
 	if (Echo.Utils.isMobileDevice()) {
 		element.show();
@@ -1885,7 +1884,7 @@ item.renderers.avatar = function(element) {
  * @echo_renderer
  */
 item.renderers.children = function(element, config) {
-	return this.dom.render({
+	return this.view.render({
 		"name": "_childrenContainer",
 		"target": element,
 		"extra": {
@@ -1899,7 +1898,7 @@ item.renderers.children = function(element, config) {
  * @echo_renderer
  */
 item.renderers.childrenByCurrentActorLive = function(element, config) {
-	return this.dom.render({
+	return this.view.render({
 		"name": "_childrenContainer",
 		"target": element,
 		"extra": {
@@ -1922,11 +1921,11 @@ item.renderers.buttons = function(element) {
 		if (!data || !data.name || !data.visible()) {
 			return;
 		}
-		self.dom.render({
+		self.view.render({
 			"name": "_buttonsDelimiter",
 			"target": element
 		});
-		self.dom.render({
+		self.view.render({
 			"name": "_button",
 			"target": element,
 			"extra": data
@@ -2018,7 +2017,7 @@ item.renderers.sourceIcon = function(element) {
 	if (!this.config.get("viaLabel.icon") ||
 			this.get("data.source.name") == "jskit" ||
 			this.get("data.source.name") == "echo") {
-		this.dom.remove(element);
+		this.view.remove(element);
 	}
 	var hyperlink = Echo.Utils.hyperlink({
 		"href": this.get("data.source.uri", this.get("data.object.permalink"))
@@ -2028,7 +2027,7 @@ item.renderers.sourceIcon = function(element) {
 	var url = this.get("data.source.icon", this.config.get("providerIcon"));
 	element.hide().attr("src", Echo.Utils.htmlize(url))
 		.show()
-		.one("error", function() { self.dom.remove(element); })
+		.one("error", function() { self.view.remove(element); })
 		.wrap(hyperlink);
 };
 
@@ -2043,7 +2042,7 @@ item.renderers.via = function(element) {
 	if (get("source") === get("provider")) {
 		return element;
 	}
-	return this.dom.render({
+	return this.view.render({
 		"name": "_viaText",
 		"target": element,
 		"extra": {
@@ -2057,7 +2056,7 @@ item.renderers.via = function(element) {
  * @echo_renderer
  */
 item.renderers.from = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		"name": "_viaText",
 		"target": element,
 		"extra": {
@@ -2074,8 +2073,8 @@ item.renderers.textToggleTruncated = function(element) {
 	var self = this;
 	element.off("click").click(function() {
 		self.textExpanded = !self.textExpanded;
-		self.dom.render({"name": "body"});
-		self.dom.render({"name": "textToggleTruncated"});
+		self.view.render({"name": "body"});
+		self.view.render({"name": "textToggleTruncated"});
 	});
 	return element.empty().append(
 		this.labels.get("textToggleTruncated" + (this.textExpanded ? "Less" : "More"))
@@ -2102,9 +2101,9 @@ item.renderers.body = function(element) {
 	});
 	var text = data[0];
 	var truncated = data[1].truncated;
-	this.dom.get("text").empty().append(text);
-	this.dom.get("textEllipses")[!truncated || this.textExpanded ? "hide" : "show"]();
-	this.dom.get("textToggleTruncated")[truncated || this.textExpanded ? "show" : "hide"]();
+	this.view.get("text").empty().append(text);
+	this.view.get("textEllipses")[!truncated || this.textExpanded ? "hide" : "show"]();
+	this.view.get("textToggleTruncated")[truncated || this.textExpanded ? "show" : "hide"]();
 	return element;
 };
 
@@ -2180,9 +2179,9 @@ item.renderers.expandChildren = function(element, extra) {
 	return element.addClass(this.cssPrefix + "depth-" + (this.depth + 1))
 		.off("click")
 		.one("click", function() {
-			self.dom.render({
+			self.view.render({
 				"name": "expandChildrenLabel",
-				"target": self.dom.get("expandChildrenLabel"),
+				"target": self.view.get("expandChildrenLabel"),
 				"extra": {"state": "loading"}
 			});
 			/**
@@ -2207,8 +2206,8 @@ item.renderers._childrenContainer = function(element, config) {
 	$.map(this.children, function(child) {
 		if (config && config.filter && !config.filter(child)) return;
 		element.append(child.config.get("target"));
-		if (!child.dom.rendered() && !child.added) {
-			child.dom.render();
+		if (!child.view.rendered() && !child.added) {
+			child.render();
 		}
 		if (child.deleted || child.added) {
 			/**
@@ -2236,7 +2235,7 @@ item.renderers._extraField = function(element, extra) {
 	var self = this;
 	var type = (extra || {}).type;
 	if (!this.data.object[type] || !this.user.is("admin")) {
-		this.dom.remove(element);
+		this.view.remove(element);
 		return element;
 	}
 	var name = type === "markers" ? "maxMarkerLength" : "maxTagsLength";
@@ -2365,7 +2364,7 @@ item.methods.traverse = function(tree, callback, acc) {
 item.methods.block = function(label) {
 	if (this.blocked) return;
 	this.blocked = true;
-	var content = this.dom.get("container");
+	var content = this.view.get("container");
 	var width = content.width();
 	// we should take into account that the container has a 10px 0px padding value
 	var height = content.outerHeight();
@@ -2394,7 +2393,7 @@ item.methods.unblock = function() {
 	this.blocked = false;
 	this.blockers.backdrop.remove();
 	this.blockers.message.remove();
-	this.dom.get("container").removeClass("echo-relative");
+	this.view.get("container").removeClass("echo-relative");
 };
 
 /**

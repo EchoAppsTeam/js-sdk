@@ -104,6 +104,7 @@ module.exports = function(grunt) {
 				"<%= dirs.src %>/configuration.js",
 				"<file_strip_banner:<%= dirs.dest %>/api.pack.js>",
 				"<%= dirs.src %>/user-session.js",
+				"<%= dirs.src %>/view.js",
 				"<%= dirs.src %>/control.js",
 				"<%= dirs.src %>/product.js",
 				"<%= dirs.src %>/plugin.js",

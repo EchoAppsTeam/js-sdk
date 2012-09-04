@@ -110,8 +110,8 @@ plugin.component.renderers.children = function(element) {
 	if (item.get("children").length == 1) {
 		var child = item.get("children")[0];
 		if (child.get("added") || child.get("deleted")) {
-			plugin._itemCSS("remove", item, plugin.dom.get("replyForm"));
-			plugin.dom.render({"name": "compactForm"});
+			plugin._itemCSS("remove", item, plugin.view.get("replyForm"));
+			plugin.view.render({"name": "compactForm"});
 		}
 	}
 	return item.parentRenderer("children", arguments);
@@ -178,7 +178,7 @@ plugin.methods.destroy = function() {
 plugin.methods._showSubmit = function() {
 	var plugin = this, item = plugin.component;
 	var submit;
-	var target = plugin.dom.get("submitForm").empty();
+	var target = plugin.view.get("submitForm").empty();
 	if (!plugin.get("submit")) {
 		var config = plugin.config.assemble({
 			"target": target,
@@ -196,35 +196,35 @@ plugin.methods._showSubmit = function() {
 		plugin.set("submit", submit);
 	} else {
 		submit = plugin.get("submit");
-		var text = submit.dom.get("text").val();
-		target.append(submit.dom.render());
+		var text = submit.view.get("text").val();
+		target.append(submit.render());
 		if (text) {
-			submit.dom.get("text").val(text);
+			submit.view.get("text").val(text);
 		}
 	}
-	plugin._itemCSS("add", item, plugin.dom.get("replyForm"));
-	submit.dom.get("text").focus();
+	plugin._itemCSS("add", item, plugin.view.get("replyForm"));
+	submit.view.get("text").focus();
 	target.click(function(event) {
 		event.stopPropagation();
 	});
-	plugin.dom.render({"name": "compactForm"});
-	item.dom.render({"name": "container"});
+	plugin.view.render({"name": "compactForm"});
+	item.view.render({"name": "container"});
 	return target;
 };
 
 plugin.methods._hideSubmit = function() {
 	var plugin = this, item = plugin.component;
-	plugin.dom.get("submitForm").empty();
-	plugin._itemCSS("remove", item, plugin.dom.get("replyForm"));
-	plugin.dom.render({"name": "compactForm"});
-	item.dom.render({"name": "container"});
+	plugin.view.get("submitForm").empty();
+	plugin._itemCSS("remove", item, plugin.view.get("replyForm"));
+	plugin.view.render({"name": "compactForm"});
+	item.view.render({"name": "container"});
 };
 
 plugin.methods._getClickHandler = function() {
 	var plugin = this;
 	return function() {
 	    var submit = plugin.get("submit");
-	    if (plugin.get("expanded") && submit && !submit.dom.get("text").val()) {
+	    if (plugin.get("expanded") && submit && !submit.view.get("text").val()) {
 		    plugin.set("expanded", false);
 		    plugin._hideSubmit();
 		    /**

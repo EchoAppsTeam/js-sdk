@@ -281,13 +281,13 @@ Echo.Utils.htmlize = function(text) {
  * Methods converts JavaScript object to JSON string.
  * This function uses JSON.stringify() method if it is available in the browser.
  *
- * 	Echo.Utils.object2JSON(null); // will return 'null'
- * 	Echo.Utils.object2JSON(123); // will return '123'
- * 	Echo.Utils.object2JSON(Number.POSITIVE_INFINITY); // will return 'null'
- * 	Echo.Utils.object2JSON("string\n"); // will return '"string\n"'
- * 	Echo.Utils.object2JSON(true); // will return true
- * 	Echo.Utils.object2JSON(["value1", "value2"]); // will return '["value1","value2"]'
- * 	Echo.Utils.object2JSON({"k1": "v1", "k2": "v2"}); // will return '{"k1":"v1","k2":"v2"}'
+ * 	Echo.Utils.objectToJSON(null); // will return 'null'
+ * 	Echo.Utils.objectToJSON(123); // will return '123'
+ * 	Echo.Utils.objectToJSON(Number.POSITIVE_INFINITY); // will return 'null'
+ * 	Echo.Utils.objectToJSON("string\n"); // will return '"string\n"'
+ * 	Echo.Utils.objectToJSON(true); // will return true
+ * 	Echo.Utils.objectToJSON(["value1", "value2"]); // will return '["value1","value2"]'
+ * 	Echo.Utils.objectToJSON({"k1": "v1", "k2": "v2"}); // will return '{"k1":"v1","k2":"v2"}'
  *
  * @param {Mixed} obj
  * The value to be converted.
@@ -295,7 +295,7 @@ Echo.Utils.htmlize = function(text) {
  * @return {String}
  * String containing JSON.
  */
-Echo.Utils.object2JSON = function(obj) {
+Echo.Utils.objectToJSON = function(obj) {
 	if (JSON && JSON.stringify) {
 		return JSON.stringify(obj);
 	}
@@ -324,7 +324,7 @@ Echo.Utils.object2JSON = function(obj) {
 		case "boolean" : out = obj.toString(); break;
 		default :
 			if (obj instanceof Array) {
-				var container = $.map(obj, function(element) { return Echo.Utils.object2JSON(element); });
+				var container = $.map(obj, function(element) { return Echo.Utils.objectToJSON(element); });
 				out = '[' + container.join(",") + ']';
 			} else if (obj instanceof Object) {
 				var source = obj.exportProperties || obj;
@@ -333,7 +333,7 @@ Echo.Utils.object2JSON = function(obj) {
 						property = value;
 						value = obj[property];
 					}
-					acc.push('"' + property + '":' + Echo.Utils.object2JSON(value));
+					acc.push('"' + property + '":' + Echo.Utils.objectToJSON(value));
 				});
 				out = '{' + container.join(",") + '}';
 			} else {
@@ -622,7 +622,7 @@ Echo.Utils.inherit = function(child, parent) {
  */
 Echo.Utils.objectToQuery = function(data) {
 	return $.map(data || {}, function(value, key) {
-		return key + "=" + encodeURIComponent(Echo.Utils.object2JSON(value));
+		return key + "=" + encodeURIComponent(Echo.Utils.objectToJSON(value));
 	}).join("&");
 };
 
@@ -824,4 +824,80 @@ Echo.Utils.capitalize = function(string) {
 	return string.replace(/\b[a-z]/g, function(match) {
 		return match.toUpperCase();
 	});
+};
+
+/**
+ * @static
+ * Templater function which compiles given template using the provided data.
+ *
+ * Function can be used widely for html templates processing or any other action
+ * requiring string interspersion.
+ *
+ * @param {Object} args
+ * Specifies substitution process and parameters.
+ *
+ * @param {String} args.template
+ * Template containing placeholders used for data interspersion.
+ *
+ * @param {Object} [args.data]
+ * Data used in the template compilation.
+ *
+ * @param {Boolean} [args.strict]
+ * Specifies whether the template should be replaced with the corresponding value,
+ * preserving replacement value type.
+ *
+ * @param {Object} [args.instructions]
+ * Object containing the list of extra instructions to be applied during template compilation.
+ *
+ * @return {String}
+ * Compiled string value.
+ */
+Echo.Utils.substitute = function(args) {
+	var utils = this;
+	var substitutions = {
+		"data": function(key, defaults) {
+			return utils.getNestedValue(args.data, key, defaults);
+		}
+	};
+	var instructions = $.extend(substitutions, args.instructions);
+	var regex = utils.regexps.templateSubstitution;
+	var template = args.template;
+
+	// checking if we need to execute in a strict mode,
+	// i.e. whether to keep the substitution value type or not
+	if (args.strict && (new RegExp("^" + regex + "$", "i")).test(template)) {
+		var match = new RegExp(regex, "i").exec(template);
+		if (match && match[1] && instructions[match[1]]) {
+			return instructions[match[1]](match[2]);
+		}
+	}
+
+	// perform regular string substitution
+	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
+		if (!instructions[key]) return match;
+		var result = instructions[key](value, "");
+		var allowedTypes = ["number", "string", "boolean"];
+		return ~$.inArray(typeof result, allowedTypes) ? result : "";
+	});
+};
+
+/**
+ * @static
+ * Function which checks if the value passed as a first argument is a function and executes
+ * it in given context. If the first argument has different type, it's returned as is.
+ *
+ * @param {Mixed} mixed
+ * The value which should be checked and executed in case of a function type.
+ *
+ * @param {Object} context
+ * Context in which the function should be executed.
+ *
+ * @return {Mixed}
+ * The result of the function call in case the first argument is a function
+ * or the first argument as is otherwise.
+ */
+Echo.Utils.invoke = function(mixed, context) {
+	return $.isFunction(mixed)
+		? context ? mixed.call(context) : mixed()
+		: mixed;
 };

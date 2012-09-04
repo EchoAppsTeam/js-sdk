@@ -25,7 +25,7 @@ plugin.init = function() {
 
 $.map(["Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.onEdit" + action] = function(topic, args) {
-		this.dom.render();
+		this.component.render();
 	}
 });
 
@@ -54,7 +54,7 @@ plugin.methods._assembleButton = function() {
 			"label": plugin.labels.get("editButton"),
 			"visible": item.user.is("admin") || item.user.has("identity", item.get("data.actor.id")),
 			"callback": function() {
-				var config = plugin._submitConfig(item, item.dom.get("subcontainer"));
+				var config = plugin._submitConfig(item, item.view.get("subcontainer"));
 				config["parent"] = plugin.component.config.getAsHash();
 				config["targetQuery"] = plugin.config.get("query", "");
 				config.plugins.push({"name": "Edit"});
@@ -202,7 +202,7 @@ plugin.renderers.cancelButton = function(element) {
 plugin.methods._prepareContent = function() {
 	var submit = this.component;
 	var get = function(name){
-		return submit.dom.get(name).val();
+		return submit.view.get(name).val();
 	};
 	return [].concat(this._getMetaDataUpdates("tag", "tag", get("tags")),
 			 this._getMetaDataUpdates("mark", "marker", get("markers")),

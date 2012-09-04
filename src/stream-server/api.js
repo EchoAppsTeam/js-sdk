@@ -136,7 +136,7 @@ Echo.StreamServer.API.Request.prototype._onError = function(responseError, reque
 Echo.StreamServer.API.Request.prototype._submit = function() {
 	this.request(
 		$.extend({}, this.config.get("data"), {
-			"content": Echo.Utils.object2JSON(this._AS2KVL(this.config.get("data.content")))
+			"content": Echo.Utils.objectToJSON(this._AS2KVL(this.config.get("data.content")))
 		})
 	);
 };

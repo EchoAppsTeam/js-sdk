@@ -225,7 +225,7 @@ plugin.renderers.adminUnlike = function(element) {
 		return element.remove();
 	}
 	return element.one("click", function() {
-		item.dom.get("container").css("opacity", 0.3);
+		item.view.get("container").css("opacity", 0.3);
 		/**
 		 * @event onUnlike
 		 * @echo_event Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike

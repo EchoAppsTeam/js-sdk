@@ -19,6 +19,7 @@ suite.prototype.info = {
 		"getClass",
 
 		// dynamic interface
+		"init",
 		"log",
 		"set",
 		"get",
@@ -27,6 +28,7 @@ suite.prototype.info = {
 		"enable",
 		"disable",
 		"enabled",
+		"invoke",
 		"extendTemplate",
 		"parentRenderer",
 		"requestDataRefresh",
@@ -218,6 +220,23 @@ suite.prototype.cases.basicOperations = function(callback) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
 		};
 
+		// checking "invoke" method
+		var cases = [
+			[plugin.enabled, true],
+			[function() { return this.cssClass; },
+				"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin"],
+			[function() { return this.fakeKey; }, undefined],
+			[function() { return this.get("data.key1")}, "key1 value"],
+			[function() { return this.get("name")}, "MyTestPlugin"]
+		];
+		$.each(cases, function(id, _case) {
+			QUnit.strictEqual(
+				Echo.Utils.invoke(_case[0], plugin),
+				_case[1],
+				"Checking \"invoke()\" method, case #" + (id + 1)
+			);
+		});
+
 		this.destroy();
 
 		callback && callback();
@@ -403,43 +422,39 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 
 		$.map(assertions, function(assertion) {
 			QUnit.equal(
-				self.dom.get("plugin_" + assertion[0]).html(),
+				self.view.get("plugin_" + assertion[0]).html(),
 				assertion[1],
 				"Checking rendering output of the \"" + assertion[0] + "\" element"
 			);
 		});
 
-		QUnit.ok(!!this.dom.get("testRenderer").children().length,
+		QUnit.ok(!!this.view.get("testRenderer").children().length,
 			"Checking if initially empty element became non-empty after applying renderer");
 
 		// checking extendRenderer & parentRenderer functions
-		QUnit.ok(this.dom.get("testComponentRenderer").children().length == 2,
+		QUnit.ok(this.view.get("testComponentRenderer").children().length == 2,
 			"Checking multiple extension of the same renderer, checking if \"parentRenderer\" function is called");
 
 		// checking extendTemplate function
 		var actions = ["insertAsLastChild", "insertBefore", "insertAfter", "insertAsFirstChild", "replace"];
 		$.map(actions, function(action) {
-			var element = self.dom.get("ext_" + action);
+			var element = self.view.get("ext_" + action);
 			QUnit.ok(element.html() == action,
 				"Checking \"" + action + "\" extendTemplate method");
 		});
-		QUnit.ok(!self.dom.get("plugin_templateRemoveCheck"),
+		QUnit.ok(!self.view.get("plugin_templateRemoveCheck"),
 			"Checking \"remove\" extendTemplate method")
 
-		// checking plugin.dom.* methods
-		QUnit.ok(!!plugin.dom.get("testPluginRenderer"),
-			"Checking if we have a proper element as a result of the plugin.dom.get(name) call");
-		QUnit.equal(plugin.dom.get("testPluginRenderer").html(),
+		// checking plugin.view.* methods
+		QUnit.ok(!!plugin.view.get("testPluginRenderer"),
+			"Checking if we have a proper element as a result of the plugin.view.get(name) call");
+		QUnit.equal(plugin.view.get("testPluginRenderer").html(),
 			"<div>Plugin extension (testPluginRenderer)</div>",
 			"Checking if a renderer was applied to the element added within the plugin");
 
-		plugin.dom.remove("testPluginRenderer");
-		QUnit.equal(plugin.dom.get("testPluginRenderer"), undefined,
-			"Checking if an element is not available after dom.remove call");
-
-		plugin.dom.clear();
-		QUnit.ok($.isEmptyObject(plugin.dom.elements),
-			"Checking plugin.dom.clear() function");
+		plugin.view.remove("testPluginRenderer");
+		QUnit.equal(plugin.view.get("testPluginRenderer"), undefined,
+			"Checking if an element is not available after view.remove call");
 
 		this.destroy();
 

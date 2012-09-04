@@ -168,7 +168,7 @@ pile.renderers.actors = function(element) {
 		});
 	};
 	$.map(this.get("users").slice(0, this.get("count.visible")), function(user) {
-		usersDOM.push(user.instance.dom.render());
+		usersDOM.push(user.instance.render());
 	});
 	var last;
 	var delimiter = this.config.get("item.text") ? ", " : "";
@@ -274,7 +274,7 @@ pile.methods._initialResponseHandler = function(data) {
 	if (!data.entries.length) {
 		if (!this.get("isViewComplete")) {
 			this.set("isViewComplete", true);
-			this.dom.render();
+			this.render();
 			this.ready();
 		}
 		return;
@@ -340,7 +340,7 @@ pile.methods._output = function(isLive, fetchMoreUsers) {
 	if (!isLive && fetchMoreUsers) {
 		this._getMoreUsers();
 	} else {
-		this.dom.render();
+		this.render();
 		this.ready();
 	}
 };
@@ -395,12 +395,12 @@ pile.methods._getMoreUsers = function() {
 		if (this.get("count.visible") > usersLength) {
 			this.set("count.visible", usersLength);
 		}
-		this.dom.render();
+		this.render();
 	} else {
 		if (!this.get("moreRequestInProgress")) {
 			this.showMessage({
 				"type": "loading",
-				"target": this.dom.get("more")
+				"target": this.view.get("more")
 			});
 			this.set("moreRequestInProgress", true);
 		}

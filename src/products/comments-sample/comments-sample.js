@@ -36,25 +36,25 @@ Comments.assemblers.Main = function(target) {
 	});
 	if (this.config.get("identityManager")) {
 		view.initControl("Auth", {
-			"target": view.dom.get("auth")
+			"target": view.view.get("auth")
 		});
 	}
 	view.initControl("Submit", {
-		"target": view.dom.get("submit")
+		"target": view.view.get("submit")
 	});
 	view.initControl("Stream", {
-		"target": view.dom.get("stream")	
+		"target": view.view.get("stream")
 	});
 };
 
-Comments.views.Main.templates.submitFormTop = 
+Comments.views.Main.templates.submitFormTop =
 	'<div class="{class:container}">' +
 		'<div class="{class:auth}"></div>' +
 		'<div class="{class:submit}"></div>' +
 		'<div class="{class:stream}"></div>' +
 	'</div>';
 
-Comments.views.Main.templates.submitFormBottom = 
+Comments.views.Main.templates.submitFormBottom =
 	'<div class="{class:container}">' +
 		'<div class="{class:auth}"></div>' +
 		'<div class="{class:stream}"></div>' +

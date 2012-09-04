@@ -233,7 +233,7 @@ Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 };
 
 Echo.API.Transports.WebSocket.prototype.send = function(params) {
-	this.transportObject.send(utils.object2JSON(params));
+	this.transportObject.send(utils.objectToJSON(params));
 };
 
 Echo.API.Transports.WebSocket.prototype.abort = function() {

@@ -151,7 +151,7 @@ Echo.Plugin.prototype.init = function() {
 		"subscriptions",
 		"labels",
 		"renderers",
-		"dom",
+		"view",
 		"launcher"
 	]);
 };
@@ -197,6 +197,13 @@ Echo.Plugin.prototype.remove = function(key) {
 };
 
 /**
+ * @inheritdoc Echo.Utils#invoke
+ */
+Echo.Plugin.prototype.invoke = function(mixed, context) {
+	return Echo.Utils.invoke(mixed, context || this);
+};
+
+/**
  * Enables the plugin.
  */
 Echo.Plugin.prototype.enable = function(global) {
@@ -234,7 +241,7 @@ Echo.Plugin.prototype.disable = function(global) {
  */
 Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 	if (html) {
-		html = this.substitute({"template": $.isFunction(html) ? html.call(this) : html});
+		html = this.substitute({"template": this.invoke(html)});
 	}
 	this.component.extendTemplate.call(this.component, action, anchor, html);
 };
@@ -376,30 +383,31 @@ Echo.Plugin.prototype._initializers.renderers = function() {
 	});
 };
 
-Echo.Plugin.prototype._initializers.dom = function() {
-	var parentDOM = this.component.get("dom");
+Echo.Plugin.prototype._initializers.view = function() {
+	var plugin = this;
 	var prefix = "plugin-" + this.name + "-";
-	this.dom = {
-		"clear": function() {
-			parentDOM.clear();
-		},
+	var action = function(name, args) {
+		var view = plugin.component.get("view");
+		return view[name].apply(view, args);
+	};
+	return {
 		"set": function(name, element) {
-			parentDOM.set(prefix + name, element);
+			action("set", [prefix + name, element]);
 		},
-		"get": function(name, ignorePrefix) {
-			return parentDOM.get(prefix + name, ignorePrefix);
+		"get": function(name) {
+			return action("get", [prefix + name]);
 		},
 		"remove": function(element) {
 			if (typeof element === "string") {
 				element = prefix + element;
 			}
-			parentDOM.remove(element);
+			action("remove", [element]);
 		},
 		"render": function(args) {
 			if (args && args.name) {
 				args.name = prefix + args.name;
 			}
-			parentDOM.render(args);
+			action("render", [args]);
 		}
 	};
 };

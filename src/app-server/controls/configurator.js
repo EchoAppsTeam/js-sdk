@@ -42,7 +42,7 @@ configurator.templates.formRow =
 
 configurator.init = function() {
 	this.pages.push({"name": this.config.get("startPage")});
-	this.dom.render();
+	this.render();
 };
 
 configurator.renderers.header = function(element) {
@@ -66,7 +66,7 @@ configurator.renderers.pages = function(element) {
 
 configurator.methods.showCurrentPage = function() {
 	if (!this.currentPageIndex) {
-		this.dom.get("pages").children().hide();
+		this.view.get("pages").children().hide();
 		this.pages[this.currentPageIndex].element.show();
 	} else {
 		var prev = this.pages[this.currentPageIndex - 1].element;
@@ -97,7 +97,7 @@ configurator.methods._renderPage = function(page, data) {
 	var element = $(this.substitute({"template": '<div class="{class:page}"></div>'})).hide();
 	element.append(this._form(spec, data));
 	page.element = element;
-	this.dom.get("pages").append(element);
+	this.view.get("pages").append(element);
 };
 
 configurator.methods._form = function(config, data, depth) {
@@ -192,7 +192,7 @@ configurator.methods._nestedPage = function(element, spec, value, depth) {
 	var link = $('<u>configure</u>').on("click", function() {
 		var page = {"name": spec.type};
 		self.pages.push(page);
-		self.dom.render("header");
+		self.view.render("header");
 		self._renderPage(page, value);
 		self.showCurrentPage();
 	}).css("cursor", "pointer");

@@ -100,7 +100,7 @@ plugin.component.renderers.container = function(element) {
 };
 
 plugin.renderers.eventBrief = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		"name": "_eventDisplay",
 		"target": element,
 		"extra": {
@@ -110,7 +110,7 @@ plugin.renderers.eventBrief = function(element) {
 };
 
 plugin.renderers.eventFull = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		"name": "_eventDisplay",
 		"target": element,
 		"extra": {
@@ -269,7 +269,7 @@ plugin.methods._assembleButton = function() {
 							: self.labels.get("viewBriefEvent")
 					);
 				$.map(["eventBrief", "eventFull"], function(type) {
-					self.dom.render({
+					self.view.render({
 						"name": type,
 						"recursive": true
 					});
@@ -320,7 +320,7 @@ plugin.init = function() {
 	component.addPostValidator(function() {
 		var hasErrors;
 		$.each(plugin.mandatoryFields, function(i, v) {
-			var element = component.dom.get(self.get("cssPrefix") + v, true);
+			var element = self.view.get(v);
 			var highlighted = self._highlightMandatory(element);
 			hasErrors = hasErrors || highlighted;
 		});
@@ -359,7 +359,7 @@ plugin.templates.EventIcon =
 	'</div>';
 
 plugin.templates.Metadata =
-	'<div class="{plugin.class:metadata-container}">' +
+	'<div class="{plugin.class:metadata-container} {plugin.class:eventInfo}">' +
 		'<div class="{plugin.class:field-title}">{plugin.label:eventTitle} <span class="{plugin.class:field-mandatory}">*</span></div>' +
 		'<div class="{plugin.class:inputContainer} {class:border}">' +
 			'<input type="text" class="{plugin.class:eventName} {class:text-input} echo-primaryFont">' +
@@ -415,7 +415,7 @@ plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		var component = this.component;
 		$.map(plugin.fields, function(field) {
-			component.dom.render({"name": field});
+			component.view.render({"name": field});
 		});
 	}
 };
@@ -429,7 +429,7 @@ $.extend(plugin.events,
 			var postType = this.config.get("parent.type", this.component._getASURL("comment"));
 			var verb = action === "Post" ? "post" : "update";
 			args.postData.content = [
-				this.component._getActivity(verb, postType, Echo.Utils.object2JSON(this._assembleContent()))
+				this.component._getActivity(verb, postType, Echo.Utils.objectToJSON(this._assembleContent()))
 			];
 		};
 	})
@@ -438,7 +438,7 @@ $.extend(plugin.events,
 plugin.renderers.changeEventIcon = function(element) {
 	var self = this;
 	return element.text(this.labels.get("changeEventIcon")).click(function() {
-			self.dom.get("vipPhoto").focus().select();
+			self.view.get("vipPhoto").focus().select();
 		});
 };
 
@@ -464,10 +464,13 @@ plugin.component.renderers.postButton = function(element) {
 plugin.renderers.eventInfo = function(element, extra) {
 	extra = extra || {};
 	var type = extra.type;
+	if (!type) {
+		return element;
+	}
 	var event = new Echo.SocialChatter.Event(this.component.get("data"));
 	if (!$.isEmptyObject(event)) {
 		var value = event.data[type] || "";
-		this.dom.get(type)
+		this.view.get(type)
 			.iHint({
 				"text": this.labels.get(type + "Hint"),
 				"className": "echo-secondaryColor"
@@ -475,7 +478,7 @@ plugin.renderers.eventInfo = function(element, extra) {
 			.val($.trim(Echo.Utils.stripTags(value || "")))
 			.blur();
 	} else {
-		this.dom.get(type).detach();
+		this.view.get(type).detach();
 	}
 	return element;
 };
@@ -514,7 +517,7 @@ $.map(["eventDateStart", "eventDateEnd" ,"eventTimeStart", "eventTimeEnd"], func
 
 	plugin.renderers[field] = function(element) {
 		var self = this;
-		this.dom.render({"name": "eventInfo", "extra": {"type": field}});
+		this.view.render({"name": "eventInfo", "extra": {"type": field}});
 		var event = new Echo.SocialChatter.Event(this.component.get("data"));
 		var normField = field.replace(/(time)|(date)/i, "");
 
@@ -523,8 +526,8 @@ $.map(["eventDateStart", "eventDateEnd" ,"eventTimeStart", "eventTimeEnd"], func
 			var end = self.get("eventsTimestamp.eventEnd");
 			if (start > end) {
 				var datetime = formatDatetime(start);
-				self.dom.get("eventDateEnd").val(datetime.date);
-				self.dom.get("eventTimeEnd").val(datetime.time);
+				self.view.get("eventDateEnd").val(datetime.date);
+				self.view.get("eventTimeEnd").val(datetime.time);
 			}
 		};
 
@@ -590,28 +593,28 @@ $.map(["eventDateStart", "eventDateEnd" ,"eventTimeStart", "eventTimeEnd"], func
 $.map(plugin.fields, function(field) {
 	plugin.renderers[field] = plugin.renderers[field] || function(element) {
 		var self = this;
-		this.dom.render({"name": "eventInfo", "extra": {"type": field}});
+		this.view.render({"name": "eventInfo", "extra": {"type": field}});
 		// exclusion for "vipPhoto" element name
 		if (field === "vipPhoto") {
 			var entry = this.component.get("data");
 			if (entry && entry.object) {
 				var event = new Echo.SocialChatter.Event(entry);
 				if (!$.isEmptyObject(event) && event.data.vipPhoto) {
-					this.dom.get("eventIcon").attr("src", event.data.vipPhoto);
+					this.view.get("eventIcon").attr("src", event.data.vipPhoto);
 				}
 			}
 			element.focus(function() {
-				self.dom.get("eventIconError").hide();
+				self.view.get("eventIconError").hide();
 				element.parent().removeClass("echo-input-error");
 			}).blur(function() {
 				var _element = $(this);
 				if (_element.val()) {
-					self.dom.get("eventIcon")
+					self.view.get("eventIcon")
 						.attr("src", _element.val())
 						.one("error", function() {
 							element.parent().addClass("echo-input-error");
-							self.dom.get("eventIconError").show();
-							self.dom.get("eventIcon")
+							self.view.get("eventIconError").show();
+							self.view.get("eventIcon")
 								.attr("src", Echo.Loader.getURL("sdk/images/vip.jpg"));
 						});
 				}
@@ -631,7 +634,7 @@ plugin.methods._assembleContent = function() {
 		} else if (name === "eventTimeStart" || name === "eventTimeEnd") {
 			return;
 		}
-		acc[name] = self.dom.get(name).val();
+		acc[name] = self.view.get(name).val();
 	});
 };
 

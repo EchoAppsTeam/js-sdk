@@ -24,7 +24,7 @@ plugin.init = function() {
 	component.addPostValidator(function() {
 		var valid = true;
 		$.each(["text"], function (i, field) {
-			valid = !self._highlightMandatory(component.dom.get(field));
+			valid = !self._highlightMandatory(component.view.get(field));
 			return valid;
 		});
 		return valid;

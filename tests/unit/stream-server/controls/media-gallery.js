@@ -35,8 +35,8 @@ suite.prototype.tests.commonWorkflow = {
 		];
 		suite.checkGalleryActiveItem = function(gallery, index) {
 			var isActive = true;
-			var items = gallery.dom.get("items");
-			var controls = gallery.dom.get("controls");
+			var items = gallery.view.get("items");
+			var controls = gallery.view.get("controls");
 			$.each(controls.children(), function(i, element){
 				if (i === index) {
 					isActive = $(element).hasClass(suite.mediaGallery.cssPrefix + "activeControl") &&
@@ -92,7 +92,7 @@ suite.prototype.cases.changeActiveItem = function(callback) {
 			callback();
 		}
 	});
-	$(gallery.dom.get("controls").children().get(1)).click();
+	$(gallery.view.get("controls").children().get(1)).click();
 };
 
 suite.prototype.cases.oneMediaItem = function(callback) {
@@ -101,7 +101,7 @@ suite.prototype.cases.oneMediaItem = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRefresh",
 		"once": true,
 		"handler": function(topic, params) {
-			QUnit.ok(!(gallery.dom.get("controls").is(":visible") && gallery.dom.get("controls").children().length),
+			QUnit.ok(!(gallery.view.get("controls").is(":visible") && gallery.view.get("controls").children().length),
 				"Checking that one media item is displayed without controls");
 			callback();
 		}

@@ -26,12 +26,12 @@ submit.init = function() {
 	this.addPostValidator(function() {
 		var valid = true;
 		$.each(["name", "text"], function (i, field) {
-			valid = !self.highlightMandatory(self.dom.get(field));
+			valid = !self.highlightMandatory(self.view.get(field));
 			return valid;
 		});
 		return valid;
 	}, "low");
-	this.dom.render();
+	this.render();
 	this.ready();
 };
 
@@ -292,7 +292,7 @@ submit.renderers.markersContainer = submit.renderers.tagsContainer;
  * @echo_renderer
  */
 submit.renderers.markers = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		"name": "_metaFields",
 		"target": element,
 		"extra": {"type": "markers"}
@@ -303,7 +303,7 @@ submit.renderers.markers = function(element) {
  * @echo_renderer
  */
 submit.renderers.tags = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		"name": "_metaFields",
 		"target": element,
 		"extra": {"type": "tags"}
@@ -390,9 +390,9 @@ submit.renderers.postButton = function(element) {
 	
 	subscribe("Init", states.posting);
 	subscribe("Complete", states.normal, function() {
-		self.dom.get("text").val("").trigger("blur");
-		self.dom.render({"name": "tags"});
-		self.dom.render({"name": "markers"});
+		self.view.get("text").val("").trigger("blur");
+		self.view.render({"name": "tags"});
+		self.view.render({"name": "markers"});
 	});
 	subscribe("Error", states.normal, function(params) {
 		self._showError(params.postData);
@@ -410,7 +410,7 @@ submit.renderers._metaFields = function(element, extra) {
 	var type = extra.type;
 	var data = this.get("data.object." + type) || [];
 	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
-	return this.dom.get(type).iHint({
+	return this.view.get(type).iHint({
 		"text": this.labels.get(type + "Hint"),
 		"className": "echo-secondaryColor"
 	}).val(value).blur();
@@ -432,9 +432,9 @@ submit.methods.post = function() {
 	};
 	var postType = this.config.get("type", this._getASURL("comment"));
 	var content = [].concat(
-		self._getActivity("post", postType, self.dom.get("text").val()),
-		self._getActivity("tag", this._getASURL("marker"), self.dom.get("markers").val()),
-		self._getActivity("tag", this._getASURL("tag"), self.dom.get("tags").val())
+		self._getActivity("post", postType, self.view.get("text").val()),
+		self._getActivity("tag", this._getASURL("marker"), self.view.get("markers").val()),
+		self._getActivity("tag", this._getASURL("tag"), self.view.get("tags").val())
 	);
 	var entry = {
 		"content": content,
@@ -517,9 +517,9 @@ submit.methods.addPostValidator = function(validator, priority) {
  */
 submit.methods.refresh = function() {
 	var self = this;
-	this.config.set("data.object.content", this.dom.get("text").val());
+	this.config.set("data.object.content", this.view.get("text").val());
 	$.map(["tags", "markers"], function(field) {
-		var elements = self.dom.get(field).val().split(", ");
+		var elements = self.view.get(field).val().split(", ");
 		self.config.set("data.object." + field, elements || []);
 	});
 	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Submit");
@@ -532,7 +532,7 @@ submit.methods._getActivity = function(verb, type, data) {
 			"objectTypes": [ this._getASURL("person") ],
 			"name": this.user.get("name", this.user.is("logged")
 					? ""
-					: this.dom.get("name").val()),
+					: this.view.get("name").val()),
 			"avatar": this.user.get("avatar", "")
 		},
 		"object": {
@@ -562,7 +562,7 @@ submit.methods._showError = function(data) {
 		"height": 70,
 		"width": isNetworkTimeout ? 320 : 390,
 		"padding": 15,
-		"orig": this.dom.get("text"),
+		"orig": this.view.get("text"),
 		"autoDimensions": false,
 		"transitionIn": "elastic",
 		"transitionOut": "elastic",

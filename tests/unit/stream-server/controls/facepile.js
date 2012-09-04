@@ -83,7 +83,7 @@ suite.prototype.cases.staticCommon = function(callback) {
 				"Checking that user avatars are displayed by default");
 			QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-title/g).length, 5,
 				"Checking that user names are displayed by default");
-			QUnit.equal(pile.dom.get("suffixText").html(), " commented on aboutecho.com", "Checking suffix text");
+			QUnit.equal(pile.view.get("suffixText").html(), " commented on aboutecho.com", "Checking suffix text");
 			callback();
 		}
 	});
@@ -101,7 +101,7 @@ suite.prototype.cases.staticMore = function(callback) {
 			callback();
 		}
 	});
-	$(":first-child", pile.dom.get("more")).click();
+	$(":first-child", pile.view.get("more")).click();
 };
 
 suite.prototype.tests.dynamicWorkflow = {
@@ -128,7 +128,7 @@ suite.prototype.tests.dynamicWorkflow = {
 					"Checking the common container rendering");
 				QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-container/g).length, 2,
 					"Checking initial users count");
-				QUnit.equal(suite.pile.dom.get("suffixText").html(), suite.pile.config.get("suffixText"), "Checking suffix text");
+				QUnit.equal(suite.pile.view.get("suffixText").html(), suite.pile.config.get("suffixText"), "Checking suffix text");
 				self.sequentialAsyncTests([
 					"dynamicMore",
 					"dynamicIsYou",
@@ -150,7 +150,7 @@ suite.prototype.cases.dynamicMore = function(callback) {
 			callback();
 		}
 	});
-	$(":first-child", pile.dom.get("more")).click();
+	$(":first-child", pile.view.get("more")).click();
 };
 
 suite.prototype.cases.dynamicIsYou = function(callback) {

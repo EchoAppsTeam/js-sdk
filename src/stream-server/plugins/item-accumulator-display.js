@@ -65,7 +65,7 @@ plugin.renderers.accumulatorContainer = function(element) {
 		return element.append(accumulator);
 	}
 	this._stopTimer();
-	var container = item.dom.get("container");
+	var container = item.view.get("container");
 	container.stop(true, true);
 	if (count.actual !== accumulator) {
 		count.actual = accumulator;
@@ -100,7 +100,7 @@ plugin.methods._animateCounter = function(bgColor) {
 	if (typeof count.current !== "undefined" && count.current === count.actual &&
 			!this.get("animationInProgress")) {
 		// fading out
-		var container = item.dom.get("container");
+		var container = item.view.get("container");
 		this.set("animationInProgress", true);
 		container.animate(
 			{"backgroundColor": bgColor},
@@ -118,7 +118,7 @@ plugin.methods._animateCounter = function(bgColor) {
 		if (count.current !== count.actual) {
 			count.current < count.actual ? count.current++ : count.current--;
 			plugin.set("count.current", count.current);
-			plugin.dom.get("accumulatorContainer").html(count.current);
+			plugin.view.get("accumulatorContainer").html(count.current);
 			plugin._animateCounter(bgColor);
 		}
 	}, this.config.get("countTickTimeout") * 1000));
