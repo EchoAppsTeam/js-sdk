@@ -140,6 +140,8 @@ Echo.Loader._initEnvironment = function(callback) {
 	}, {
 		"url": "sdk/environment.pack.js",
 		"loaded": function() { return !!Echo.Utils; }
+	}, {
+		"url": "sdk/third-party/bootstrap/css/ui.css"
 	}];
 	Echo.Loader.download({
 		"scripts": scripts,
