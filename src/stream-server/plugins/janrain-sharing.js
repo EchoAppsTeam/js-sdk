@@ -41,6 +41,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Submit");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.config = {
 	/**
 	 * @cfg {String} appId

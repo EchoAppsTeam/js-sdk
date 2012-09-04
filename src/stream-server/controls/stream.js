@@ -3,6 +3,8 @@
 
 var $ = jQuery;
 
+if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream")) return;
+
 /**
  * @class Echo.StreamServer.Controls.Stream
  * Echo Stream control which encapsulates interaction with the
@@ -1427,6 +1429,8 @@ Echo.Control.create(stream);
 "use strict";
 
 var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream.Item")) return;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item

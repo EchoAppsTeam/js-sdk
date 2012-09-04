@@ -21,6 +21,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream.Item");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate("insertAsLastChild", "content", plugin.templates.form);
@@ -308,6 +310,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
 		/**
@@ -349,6 +353,8 @@ var $ = jQuery;
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Submit");
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var plugin = this, submit = plugin.component;

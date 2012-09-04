@@ -25,6 +25,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("CommunityFlag", "Echo.StreamServer.Controls.Stream.Item");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "data", plugin.template);
 	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Flag"));

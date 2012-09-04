@@ -20,6 +20,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Item");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "data", plugin.template);
 	this.component.addButtonSpec("Like", this._assembleButton("Like"));
@@ -197,6 +199,8 @@ var $ = jQuery;
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "container", plugin.template);

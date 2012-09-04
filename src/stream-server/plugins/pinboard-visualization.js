@@ -11,6 +11,7 @@ var _isPreIE9 = function() {
 "use strict";
 
 var $ = jQuery;
+if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream.Item.MediaGallery")) return;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.MediaGallery 
@@ -19,7 +20,6 @@ var $ = jQuery;
  *
  * @extends Echo.Control
  */
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream.Item.MediaGallery")) return;
 
 var mediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item.MediaGallery");
 
@@ -234,6 +234,8 @@ var $ = jQuery;
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream.Item");
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -607,6 +609,8 @@ var $ = jQuery;
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream");
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 	/**

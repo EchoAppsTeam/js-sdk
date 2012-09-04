@@ -20,6 +20,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("Moderation", "Echo.StreamServer.Controls.Stream.Item");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	var self = this;
 	var item = this.component;

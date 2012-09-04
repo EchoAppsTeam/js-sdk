@@ -6,6 +6,8 @@ var $ = jQuery;
 // XXX
 if (!Echo.AppServer) Echo.AppServer = {};
 
+if (Echo.Utils.isComponentDefined("Echo.AppServer.Controls.Configurator")) return;
+
 /**
  * @class Echo.AppServer.Controls.Configurator
  * @extends Echo.Control

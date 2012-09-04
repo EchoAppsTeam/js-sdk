@@ -3,6 +3,8 @@
 
 var $ = jQuery;
 
+if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
+
 /**
  * @class Echo.Configuration
  * Class implements the interface for convenient work with different

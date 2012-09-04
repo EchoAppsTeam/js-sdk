@@ -22,6 +22,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	var self = this, item = this.component;
 	$.each(this.config.get("controls"), function(i, control) {

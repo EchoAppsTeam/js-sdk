@@ -20,6 +20,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("ItemAccumulatorDisplay", "Echo.StreamServer.Controls.Stream.Item");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	this.extendTemplate("insertBefore", "modeSwitch", plugin.template);
 };

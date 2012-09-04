@@ -3,6 +3,8 @@
 
 var $ = jQuery;
 
+if (Echo.Utils.isComponentDefined("Echo.Events")) return;
+
 /**
  * @class Echo.Events
  * Library for exchanging messages between components on the page. It also

@@ -20,6 +20,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("TextCounter", "Echo.StreamServer.Controls.Submit");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 /**
  * @cfg {Number} limit
  * Specifies the maximum length of the text.

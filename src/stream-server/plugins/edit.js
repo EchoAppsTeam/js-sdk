@@ -22,6 +22,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Stream.Item");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	this.component.addButtonSpec("Edit", this._assembleButton());
 };
@@ -93,6 +95,8 @@ var $ = jQuery;
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Submit");
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	this.extendTemplate("insertAfter", "postContainer", plugin.templates.cancel);

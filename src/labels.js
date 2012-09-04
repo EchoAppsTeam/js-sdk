@@ -3,6 +3,8 @@
 
 var $ = jQuery;
 
+if (Echo.Utils.isComponentDefined("Echo.Labels")) return;
+
 /**
  * @class Echo.Labels
  * Class implements the language variables mechanics across the components.

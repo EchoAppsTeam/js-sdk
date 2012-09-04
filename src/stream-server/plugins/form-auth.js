@@ -30,6 +30,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("FormAuth", "Echo.StreamServer.Controls.Submit");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	if (this._userStatus() === "forcedLogin") {
 		this.extendTemplate("replace", "header", plugin.templates.forcedLogin);

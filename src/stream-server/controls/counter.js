@@ -2,6 +2,9 @@
 "use strict";
 
 var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
+
 /**
  * @class Echo.StreamServer.Controls.Counter
  * Echo Counter class which encapsulates interaction with the

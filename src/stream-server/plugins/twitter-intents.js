@@ -46,6 +46,8 @@ var $ = jQuery;
  */
 var plugin = Echo.Plugin.manifest("TwitterIntents", "Echo.StreamServer.Controls.Stream.Item");
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	var item = this.component;
 

@@ -3,6 +3,8 @@
 
 var $ = jQuery;
 
+if (Echo.Utils.isComponentDefined("Echo.UserSession")) return;
+
 /**
  * @singleton
  * @class Echo.UserSession

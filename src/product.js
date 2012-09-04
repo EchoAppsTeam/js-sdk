@@ -2,6 +2,8 @@
 "use strict";
 
 var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined("Echo.ProductView")) return;
  
 Echo.ProductView = function() {};
 
@@ -150,6 +152,7 @@ Echo.ProductView.prototype._normalizeControlConfig = function(config) {
 "use strict";
 
 var $ = jQuery;
+if (Echo.Utils.isComponentDefined("Echo.Product")) return;
 
 /**
  * @class Echo.Product

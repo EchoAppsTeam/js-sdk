@@ -3,6 +3,8 @@
 
 var $ = jQuery;
 
+if (Echo.Utils.isComponentDefined("Echo.View")) return;
+
 /**
  * @class Echo.View
  * Class implementing core rendering logic, which is widely used across the system.
