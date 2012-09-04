@@ -137,6 +137,10 @@ SocialChatter.dependencies = [
 	{"url": "sdk/products/social-chatter/third-party/bootstrap/css/timepicker.css"},
 
 	{"loaded": function() {
+		return !!$.fn.echoButton;
+	}, "url": "sdk/third-party/bootstrap/plugins/echo-button.js"},
+
+	{"loaded": function() {
 		var isLoaded;
 		$.each(["Stream", "Submit"], function(k, val) {
 			return isLoaded = Echo.Utils.isComponentDefined("Echo.StreamServer.Controls." + val);
@@ -541,7 +545,7 @@ SocialChatter.views.PublicEvent.renderers.countdown = function(element) {
 SocialChatter.views.EventsList.renderers.eventSubmitLabel = function(element) {
 	var self = this;
 	if (this.user.is("admin") && !this.user.any("role", ["vip"])) {
-		new Echo.Button(element, {
+		element.echoButton({
 			"label": this.labels.get("scheduleEvent")
 		});
 		element.addClass("btn btn-small").click(function() {
