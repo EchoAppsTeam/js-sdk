@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.IdentityServer.Controls.Auth
@@ -313,4 +316,4 @@ auth.css =
 
 Echo.Control.create(auth);
 
-})();
+})(Echo.jQuery);

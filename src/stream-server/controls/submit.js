@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Submit
@@ -642,4 +645,4 @@ submit.css =
 
 Echo.Control.create(submit);
 
-})();
+})(Echo.jQuery);

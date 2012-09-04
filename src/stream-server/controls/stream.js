@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream
@@ -1418,9 +1421,12 @@ stream.css =
 
 Echo.Control.create(stream);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item
@@ -2854,4 +2860,4 @@ item.css =
 
 Echo.Control.create(item);
 
-})();
+})(Echo.jQuery);

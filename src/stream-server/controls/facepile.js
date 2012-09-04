@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.FacePile
@@ -422,9 +425,12 @@ pile.css =
 
 Echo.Control.create(pile);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.FacePile.Item
@@ -511,4 +517,4 @@ item.css =
 
 Echo.Control.create(item);
 
-})();
+})(Echo.jQuery);

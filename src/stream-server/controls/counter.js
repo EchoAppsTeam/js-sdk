@@ -1,3 +1,7 @@
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 /**
  * @class Echo.StreamServer.Controls.Counter
  * Echo Counter class which encapsulates interaction with the
@@ -124,3 +128,5 @@ counter.methods._error = function(data) {
 };
 
 Echo.Control.create(counter);
+
+})(Echo.jQuery);
