@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents
@@ -226,4 +229,4 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);

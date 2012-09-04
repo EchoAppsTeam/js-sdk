@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Edit
@@ -67,9 +70,12 @@ plugin.methods._assembleButton = function() {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.Edit
@@ -250,4 +256,4 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);

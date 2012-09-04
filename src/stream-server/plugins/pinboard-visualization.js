@@ -1,10 +1,16 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 var _isPreIE9 = function() {
 	return ($.browser.msie && $.browser.version < 9 && document.documentMode && document.documentMode < 9);
 };
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.MediaGallery 
@@ -213,9 +219,12 @@ mediaGallery.css =
 
 Echo.Control.create(mediaGallery);
 	
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization
@@ -572,9 +581,12 @@ plugin.css =
 	
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization
@@ -649,6 +661,6 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 
-})();
+})(Echo.jQuery);

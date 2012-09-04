@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag
@@ -161,4 +164,4 @@ plugin.css = '.{plugin.class:flaggedBy} { background: url(' + Echo.Loader.getURL
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);

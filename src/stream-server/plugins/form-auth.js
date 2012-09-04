@@ -1,4 +1,8 @@
-(function(){
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
+
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.FormAuth
  * Adds the authentication section to the Echo Submit control
@@ -184,4 +188,4 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);

@@ -1,4 +1,7 @@
-(function(){
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation
@@ -514,4 +517,4 @@ plugin.css = function() {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);

@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay
@@ -128,4 +131,4 @@ plugin.css = '.{plugin.class:accumulatorContainer} { float: right; margin-right:
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);

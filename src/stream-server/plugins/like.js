@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Like
@@ -180,9 +183,12 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.FacePile.Item.Plugins.Like
@@ -250,4 +256,4 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);

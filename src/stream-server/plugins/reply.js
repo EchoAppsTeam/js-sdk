@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
@@ -282,9 +285,12 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
@@ -321,9 +327,12 @@ plugin.events = {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.Reply
@@ -358,4 +367,4 @@ plugin.init = function() {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);

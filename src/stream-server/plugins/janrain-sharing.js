@@ -1,4 +1,7 @@
-(function(){
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing
@@ -207,4 +210,4 @@ plugin.methods._getTweetAuthor = function(data) {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);

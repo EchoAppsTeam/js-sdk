@@ -1,4 +1,7 @@
-(function(){
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.TextCounter
@@ -105,4 +108,4 @@ plugin.renderers.counterLabel = function(element) {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);

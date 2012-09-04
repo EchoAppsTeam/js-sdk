@@ -1,4 +1,7 @@
-(function(){
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager
@@ -235,4 +238,4 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
