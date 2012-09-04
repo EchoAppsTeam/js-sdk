@@ -174,15 +174,19 @@ submit.config = {
 	"targetQuery": undefined
 };
 
-// TODO: need investigate
-//submit.dependencies = [{
-//	"loaded": function() { return false; },
-//	"url": "sdk/third-party/jquery/css/fancybox.css"
-//}];
-
 submit.vars = {
 	"validators": []
 };
+
+submit.dependencies = [{
+	"loaded": function() { return !!Echo.jQuery.echoButton; },
+	"url": "sdk/third-party/bootstrap/plugins/echo-button.js"
+	// TODO: need investigate
+	// { "loaded": function() { return false; },
+	//   "url": "sdk/third-party/jquery/css/fancybox.css" }
+}];
+
+
 
 submit.labels = {
 	/**
@@ -271,7 +275,7 @@ submit.templates.main =
 		'</div>' +
 		'<div class="{class:controls}">' +
 			'<div class="{class:postContainer}">' +
-				'<button class="{class:postButton} echo-primaryFont"></button>' +
+				'<button class="{class:postButton} btn echo-primaryFont"></button>' +
 			'</div>' +
 			'<div class="echo-clear"></div>' +
 		'</div>' +
@@ -365,12 +369,12 @@ submit.renderers.postButton = function(element) {
 			"label": self.labels.get("post")
 		},
 		"posting": {
-			"icon": "echo-icon-waiting",
+			"icon": Echo.Loader.getURL("sdk/images/loading.gif"),
 			"disabled": true,
 			"label": self.labels.get("posting")
 		}
 	};
-	var button = new Echo.Button(element.empty(), states.normal);
+	$(element.empty()).echoButton(states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
@@ -385,7 +389,7 @@ submit.renderers.postButton = function(element) {
 		subscriptions[topic] = self.events.subscribe({
 			"topic": topic,
 			"handler": function(topic, params) {
-				button.update(state);
+				$(element).echoButton("update", state);
 				if (callback) callback(params);
 			}
 		});

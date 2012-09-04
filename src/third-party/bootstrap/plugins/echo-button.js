@@ -1,45 +1,6 @@
+(function(jQuery) {
 
-var Button = function(element, params) {
-	this.element = $(element);
-	params = params || {};
-	this.element.addClass("echo-sdk-button");
-	$("<div>").appendTo(element).addClass("echo-label");
-	this.update({
-		"label": params.label || this.element.text(),
-		"icon": params.icon || "",
-		"disabled": params.disabled || !!this.element.attr('disabled')
-	});
-	Echo.Utils.addCSS(this._css);
-};
-
-Button.prototype.update = function(params) {
-	console.log(params);
-	params = params || {};
-	this.label = params.label || "";
-	this.icon = params.icon || "";
-	this.disabled = params.disabled || false;
-	this.render();
-};
-
-Button.prototype.render = function() {
-	$(".echo-label", this.element).text(this.label);
-	var iconElement = $(".echo-icon", this.element);
-	if (this.icon) {
-		if (iconElement.length) {
-			iconElement.removeClass().addClass(this.icon + " echo-icon");
-		} else {
-			$("<div>").addClass(this.icon + " echo-icon").prependTo(this.element);
-		}
-	} else {
-		iconElement.remove();
-	}
-	this.element.attr("disabled", this.disabled);
-};
-
-Button.prototype._css =
-	".echo-sdk-button .echo-label { float: left; } " +
-	".echo-sdk-button .echo-icon { height: 16px; width: 16px; float: left; margin-right: 2px; margin-top: 2px; } " +
-	".echo-sdk-button .echo-icon-waiting { background: no-repeat center url(//cdn.echoenabled.com/images/loading.gif); height: 16px; width: 16px; } ";
+var $ = jQuery;
 
 $.fn.echoButton = function() {
 	var args  = arguments;
@@ -54,3 +15,52 @@ $.fn.echoButton = function() {
 		}
 	});
 };
+
+var Button = function(element, params) {
+	params = params || {};
+	this.element = $(element);
+	this.element.addClass("echo-sdk-button");
+	$("<div>").appendTo(element).addClass("echo-label").css({
+		"float": "left"
+	});
+	this.update({
+		"label": params.label || this.element.text(),
+		"icon": params.icon || "",
+		"disabled": params.disabled || !!this.element.attr('disabled')
+	});
+};
+
+Button.prototype.update = function(params) {
+	params = params || {};
+	this.label = params.label || "";
+	this.icon = params.icon || "";
+	this.disabled = params.disabled || false;
+	this.render();
+};
+
+Button.prototype.render = function() {
+	$(".echo-label", this.element).text(this.label);
+	var iconElement = $(".echo-icon", this.element);
+	var setBackground = function(element, icon) {
+		element.css({
+			"background" : "no-repeat center url(" + icon + ")"
+		});
+	};
+	if (this.icon) {
+		if (!iconElement.length) {
+			iconElement = $("<div>").addClass("echo-icon").prependTo(this.element).css({
+				"height": 16,
+				"width": 16,
+				"float": "left",
+				"margin-right": 2,
+				"margin-top": 2
+			});
+		}
+		setBackground(iconElement, this.icon);
+	} else {
+		iconElement.remove();
+	}
+	this.element.attr("disabled", this.disabled);
+};
+
+})(Echo.jQuery);
