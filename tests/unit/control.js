@@ -406,8 +406,6 @@ suite.prototype.cases.controlRendering = function(callback) {
 		this.view.remove("testRenderer");
 		QUnit.equal(this.view.get("testRenderer"), undefined,
 			"Checking control.view.remove() function");
-		this.view.clear();
-		QUnit.ok($.isEmptyObject(this.view.elements), "Checking control.view.clear() function");
 
 		this.destroy();
 
