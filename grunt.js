@@ -85,6 +85,10 @@ module.exports = function(grunt) {
 					"<actualize_cdn_domain:<%= dirs.src %>/loader.js>"
 				],
 				dest: "<%= dirs.dest %>/loader.js"
+			},
+			ui: {
+				src: ["<build_less_file:<%= dirs.src %>/third-party/bootstrap/less/base.less>"],
+				dest: "<%= dirs.src %>/third-party/bootstrap/less/ui.less"
 			}
 		},
 		packs: {
@@ -133,6 +137,12 @@ module.exports = function(grunt) {
 				"<%= dirs.dest %>/**/*.js",
 				"<%= dirs.tests %>/**/*.js"
 			]
+		},
+		less: {
+			all : {
+				src: "<%= dirs.src %>/third-party/bootstrap/less/ui.less",
+				dest: "<%= dirs.dest %>/third-party/bootstrap/css/ui.css"
+			}
 		},
 		//watch: {
 		//	files: "<config:lint.files>",
@@ -194,7 +204,7 @@ module.exports = function(grunt) {
 	grunt.registerTask("docs", "clean:docs exec:docs");
 
 	// Default task
-	grunt.registerTask("default", "clean copy concat:loader packs");
+	grunt.registerTask("default", "clean copy concat:loader concat:ui less packs");
 
 	// ==========================================================================
 	// HELPERS
@@ -211,6 +221,23 @@ module.exports = function(grunt) {
 			}
 			return match;
 		});
+	});
+
+	grunt.registerHelper("build_less_file", function(filepath, output_filepath) {
+		var config;
+		try {
+			config = grunt.file.readJSON("tools/grunt/config.ui.json");
+		} catch(e) {
+			grunt.log.writeln("No local configuration file (config.local.json) found...");
+		}
+		var styles = grunt.task.directive(filepath, grunt.file.read);
+		if (!(config || config.controls)) {
+			return styles;
+		}
+		config.controls.map(function(control) {
+			styles += "\n@import \"src/third-party/bootstrap/less/" + control + ".less\";\n";
+		});
+		return styles;
 	});
 
 	grunt.registerHelper("actualize_cdn_domain", function(filepath) {
