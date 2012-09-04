@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.Plugin
@@ -538,4 +541,4 @@ Echo.Plugin.Events.prototype.unsubscribe = function(params) {
 	this.plugin.component.events.unsubscribe(params);
 };
 
-})();
+})(Echo.jQuery);

@@ -1,4 +1,7 @@
-(function(){
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @singleton
@@ -502,4 +505,4 @@ Echo.UserSession._anyRole = function(value) {
 	return this.any("roles", value);
 };
 
-})();
+})(Echo.jQuery);

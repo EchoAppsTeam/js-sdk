@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.Labels
@@ -208,4 +211,4 @@ Echo.Labels._substitute = function(label, data) {
 	return label;
 };
 
-})();
+})(Echo.jQuery);

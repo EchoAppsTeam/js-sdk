@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.Events
@@ -247,4 +250,4 @@ var _callHandlers = function(obj, params, restContexts) {
 	}
 };
 
-})();
+})(Echo.jQuery);

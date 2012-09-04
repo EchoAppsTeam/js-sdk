@@ -1,3 +1,8 @@
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
+
 Echo.Tabs = function(element, config) {
 	this.config = config || {};
 	this.element = element;
@@ -64,3 +69,5 @@ Echo.Tabs.prototype.show = function(id) {
 	this.element.find("a[href=#" + id + "]").tab("show");
 	return this;
 };
+
+})(Echo.jQuery);

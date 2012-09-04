@@ -1,3 +1,8 @@
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
+
 /**
  * @class Echo.View
  * Class implementing core rendering logic, which is widely used across the system.
@@ -279,3 +284,5 @@ Echo.View.prototype._getRenderableElements = function(container) {
 	});
 	return elements;
 };
+
+})(Echo.jQuery);

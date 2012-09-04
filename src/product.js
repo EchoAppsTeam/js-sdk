@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
  
 Echo.ProductView = function() {};
 
@@ -141,9 +144,12 @@ Echo.ProductView.prototype._normalizeControlConfig = function(config) {
 	return normalize(config);
 };
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.Product
@@ -239,4 +245,4 @@ Echo.Product.prototype.assemble = function(viewName) {
 	return this._manifest("assemblers")[viewName].apply(this, args);
 };
 
-})();
+})(Echo.jQuery);

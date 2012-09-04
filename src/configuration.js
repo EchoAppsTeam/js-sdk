@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.Configuration
@@ -151,4 +154,4 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	});
 };
 
-})();
+})(Echo.jQuery);

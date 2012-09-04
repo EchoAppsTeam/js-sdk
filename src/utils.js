@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 if (!window.Echo) window.Echo = {};
 
@@ -811,8 +814,6 @@ Echo.Utils.sequentialCall = function(actions, callback) {
 	});
 };
 
-})();
-
 /**
  * @static
  * Function to Replacement of first character in the words with uppercase character
@@ -901,3 +902,5 @@ Echo.Utils.invoke = function(mixed, context) {
 		? context ? mixed.call(context) : mixed()
 		: mixed;
 };
+
+})(Echo.jQuery);
