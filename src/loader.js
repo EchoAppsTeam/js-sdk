@@ -1,7 +1,5 @@
-(function(jQuery) {
+(function() {
 "use strict";
-
-var $ = jQuery;
 
 if (!window.Echo) window.Echo = {};
 
@@ -355,4 +353,4 @@ Echo.Loader._error = function(data) {
 	Echo.Utils.log(Echo.jQuery.extend(data, {"type": "error", "component": "Echo.Loader"}));
 };
 
-})(Echo.jQuery);
+})();

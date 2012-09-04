@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 if (!Echo.IdentityServer) Echo.IdentityServer = {};
 
@@ -84,4 +87,4 @@ Echo.IdentityServer.API.request = function(config) {
 	return (new Echo.IdentityServer.API.Request(config));
 };
 
-})();
+})(Echo.jQuery);

@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 // XXX
 if (!Echo.AppServer) Echo.AppServer = {};
@@ -218,4 +221,4 @@ configurator.css =
 
 Echo.Control.create(configurator);
 
-})();
+})(Echo.jQuery);

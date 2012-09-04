@@ -1,4 +1,7 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 if (!Echo.StreamServer) Echo.StreamServer = {};
 
@@ -384,4 +387,4 @@ Echo.StreamServer.API.request = function(config) {
 	return (new Echo.StreamServer.API.Request(config));
 };
 
-})();
+})(Echo.jQuery);

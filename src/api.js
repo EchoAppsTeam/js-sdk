@@ -1,10 +1,16 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 Echo.API = {"Transports": {}, "Request": {}};
 
 var utils = Echo.Utils;
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.API.Transport
@@ -246,9 +252,12 @@ Echo.API.Transports.WebSocket.available = function() {
 	//return ("WebSocket" in window || "MozWebSocket" in window);
 };
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 /**
  * @class Echo.API.Request
@@ -391,6 +400,6 @@ Echo.API.Request.prototype._prepareURI = function() {
 	return this.config.get("apiBaseURL").replace(/^(http|ws)s?:\/\//, "") + this.config.get("endpoint");
 };
 
-})();
+})(Echo.jQuery);
 
-})();
+})(Echo.jQuery);
