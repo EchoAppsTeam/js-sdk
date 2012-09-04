@@ -1,3 +1,8 @@
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
+
 /**
  * @class Echo.Control
  * Foundation class implementing core logic to create controls and manipulate with them.
@@ -1019,3 +1024,5 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message-empty { background-image: url(' + Echo.Loader.getURL("sdk/images/information.png") + '); }' +
 	'.echo-control-message-loading { background-image: url(' + Echo.Loader.getURL("sdk/images/loading.gif") + '); }' +
 	'.echo-control-message-error { background-image: url(' + Echo.Loader.getURL("sdk/images/warning.gif") + '); }';
+
+})(Echo.jQuery);
