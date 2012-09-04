@@ -206,7 +206,6 @@ plugin.methods._showSubmit = function() {
 		}
 	}
 	plugin._itemCSS("add", item, plugin.view.get("replyForm"));
-	submit.view.get("text").focus();
 	target.click(function(event) {
 		event.stopPropagation();
 	});
@@ -360,10 +359,17 @@ plugin.init = function() {
 		return _params;
 	};
 };
+
 /**
  * @cfg {Object} inReplyTo
  * Entry which is the parent for the current reply.
  */
+
+plugin.events = {
+	"Echo.StreamServer.Controls.Submit.onRender": function(topic, args) {
+		this.component.view.get("text").focus();
+	}
+}
 
 Echo.Plugin.create(plugin);
 
