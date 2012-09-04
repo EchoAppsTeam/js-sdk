@@ -1,3 +1,7 @@
-if (!window.Echo) window.Echo = {};
+if (!window.Echo)
+	window.Echo = {};
 
-Echo.jQuery = jQuery.noConflict(true);
+if(Echo.jQuery)
+	jQuery.noConflict(true);
+else
+	Echo.jQuery = jQuery.noConflict(true);

@@ -376,7 +376,7 @@ submit.renderers.postButton = function(element) {
 			"label": self.labels.get("posting")
 		}
 	};
-	$(element.empty()).echoButton(states.normal);
+	element.empty().echoButton(states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
@@ -391,7 +391,7 @@ submit.renderers.postButton = function(element) {
 		subscriptions[topic] = self.events.subscribe({
 			"topic": topic,
 			"handler": function(topic, params) {
-				$(element).echoButton("update", state);
+				element.echoButton("update", state);
 				if (callback) callback(params);
 			}
 		});
