@@ -36,7 +36,8 @@
  * elements with the unique CSS class names (matching the CSS prefix).
  */
 Echo.View = function(config) {
-	this.config = config || {};
+	config = config || {};
+	this.config = config;
 	this.config.cssPrefix = this.config.cssPrefix || "";
 	this.renderers = config.renderers || {};
 	this._clear();
@@ -265,7 +266,7 @@ Echo.View.prototype._getRenderableElements = function(container) {
 			var name = pattern ? pattern[1] : undefined;
 			if (name) {
 				view.set(name, element);
-				element = $(element);
+				element = view.get(name);
 				element.echo = element.echo || {};
 				element.echo.name = className;
 				elements[name] = element;
