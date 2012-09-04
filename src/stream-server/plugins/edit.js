@@ -25,7 +25,7 @@ plugin.init = function() {
 
 $.map(["Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.onEdit" + action] = function(topic, args) {
-		this.render();
+		this.component.render();
 	}
 });
 

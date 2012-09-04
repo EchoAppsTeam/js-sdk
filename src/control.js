@@ -961,7 +961,6 @@ Echo.Control.prototype._compileTemplate = function() {
 		"data": data,
 		"template": template
 	});
-	// TODO: unwrap it cause unnecessary (maybe use document fragment)
 	var dom = $("<div/>").html(processed);
 	if (transformations && transformations.length) {
 		$.map(transformations, function(transformation) {

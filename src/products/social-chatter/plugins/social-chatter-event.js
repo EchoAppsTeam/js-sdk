@@ -320,7 +320,7 @@ plugin.init = function() {
 	component.addPostValidator(function() {
 		var hasErrors;
 		$.each(plugin.mandatoryFields, function(i, v) {
-			var element = component.view.get(self.get("cssPrefix") + v, true);
+			var element = self.view.get(v);
 			var highlighted = self._highlightMandatory(element);
 			hasErrors = hasErrors || highlighted;
 		});
@@ -359,7 +359,7 @@ plugin.templates.EventIcon =
 	'</div>';
 
 plugin.templates.Metadata =
-	'<div class="{plugin.class:metadata-container}">' +
+	'<div class="{plugin.class:metadata-container} {plugin.class:eventInfo}">' +
 		'<div class="{plugin.class:field-title}">{plugin.label:eventTitle} <span class="{plugin.class:field-mandatory}">*</span></div>' +
 		'<div class="{plugin.class:inputContainer} {class:border}">' +
 			'<input type="text" class="{plugin.class:eventName} {class:text-input} echo-primaryFont">' +
@@ -464,6 +464,9 @@ plugin.component.renderers.postButton = function(element) {
 plugin.renderers.eventInfo = function(element, extra) {
 	extra = extra || {};
 	var type = extra.type;
+	if (!type) {
+		return element;
+	}
 	var event = new Echo.SocialChatter.Event(this.component.get("data"));
 	if (!$.isEmptyObject(event)) {
 		var value = event.data[type] || "";
