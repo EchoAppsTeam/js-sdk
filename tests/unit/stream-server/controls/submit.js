@@ -104,6 +104,9 @@ suite.prototype.tests.eventSubscriptions = {
 };
 
 suite.prototype.tests.testMethods = {
+	"config": {
+		"async": true
+	},
 	"check": function() {
 		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
@@ -129,6 +132,7 @@ suite.prototype.tests.testMethods = {
 						QUnit.equal(this.view.get("text").val(), "TestContent",
 							"Checking that comment field is saved after refresh() method");
 						this.destroy();
+						QUnit.start();
 					}
 				});
 				this.refresh();
