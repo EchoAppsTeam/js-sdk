@@ -71,9 +71,12 @@ plugin.config = {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserUpdate": function(topic, args) {
-		args.item.set("data.actor." + args.field, args.value);
-		args.item.render();
+	"Echo.StreamServer.Controls.Stream.Plugins.Moderation.onUserUpdate": function(topic, args) {
+		var target = this.component;
+		var source = args.item;
+		if (target.get("data.actor.id") !== source.data.actor.id) return;
+		target.set("data.actor." + (args.field === "state" ? "status" : args.field), args.value);
+		target.render();
 		return {"stop": ["bubble"]};
 	}
 };
@@ -270,7 +273,7 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 	}).send();
 };
 
-plugin.methods._publishCompleteActionEvent = function(name) {
+plugin.methods._publishCompleteActionEvent = function(args) {
 	/**
 	 * @event onApproveComplete
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveComplete
@@ -291,15 +294,65 @@ plugin.methods._publishCompleteActionEvent = function(name) {
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete
 	 * Triggered if "Untouch" operation was completed.
 	 */
+	/**
+	 * @event onBanComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanComplete
+	 * Triggered if "Ban" operation was completed.
+	 */
+	/**
+	 * @event onUnBanComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete
+	 * Triggered if "UnBan" operation was completed.
+	 */
+	/**
+	 * @event onUserPermissionsComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete
+	 * Triggered if "UserPermissions" operation was completed.
+	 */
+	/**
+	 * @event onApproveError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError
+	 * Triggered if "Approve" operation was failed.
+	 */
+	/**
+	 * @event onSpamError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError
+	 * Triggered if "Spam" operation was failed.
+	 */
+	/**
+	 * @event onDeleteError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteError
+	 * Triggered if "Delete" operation was failed.
+	 */
+	/**
+	 * @event onUntouchError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError
+	 * Triggered if "Untouch" operation was failed.
+	 */
+	/**
+	 * @event onBanError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError
+	 * Triggered if "Ban" operation was failed.
+	 */
+	/**
+	 * @event onUnBanError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanError
+	 * Triggered if "UnBan" operation was failed.
+	 */
+	/**
+	 * @event onUserPermissionsError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsError
+	 * Triggered if "UserPermissions" operation was failed.
+	 */
 	this.events.publish({
-		"topic": "on" + name + "Complete",
+		"topic": "on" + args.name + args.state,
 		"data": {
 			"item": {
 				"data": this.component.get("data"),
 				"target": this.component.get("view.content")
-			}
-		},
-		"bubble": true
+			},
+			"response": args.response
+		}
 	});
 };
 
@@ -322,11 +375,20 @@ plugin.methods._assembleButton = function(name) {
 			"appkey": item.config.get("appkey"),
 			"sessionID": item.user.get("sessionID"),
 			"target-query": item.config.get("parent.query")
-		}, function(data) {
-			self._publishCompleteActionEvent(name);
+		}, function(response) {
+			self._publishCompleteActionEvent({
+				"name": name,
+				"state": "Complete",
+				"response": response
+			});
 			self._changeItemStatus(status);
 			self.requestDataRefresh();
-		}, function() {
+		}, function(response) {
+			self._publishCompleteActionEvent({
+				"name": name,
+				"state": "Error",
+				"response": response
+			});
 			item.unblock();
 		});
 	};
@@ -375,12 +437,23 @@ plugin.methods._assembleBanButton = function(action) {
 		self._sendUserUpdate({
 			"field": "state",
 			"value": newState,
-			"onData": function(data) {
-				self._publishCompleteActionEvent(action);
+			"onData": function(response) {
+				self._publishCompleteActionEvent({
+					"name": action,
+					"state": "Complete",
+					"response": response
+				});
 				self._publishUserUpdateEvent({
 					"item": item,
 					"field": "state",
 					"value": newState
+				});
+			},
+			"onError": function(response) {
+				self._publishCompleteActionEvent({
+					"name": action,
+					"state": "Error",
+					"response": response
 				});
 			}
 		});
@@ -418,12 +491,23 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		self._sendUserUpdate({
 			"field": "roles",
 			"value": roles.length ? roles.join(",") : "-",
-			"onData": function(data) {
-				self._publishCompleteActionEvent(action);
+			"onData": function(response) {
+				self._publishCompleteActionEvent({
+					"name": action,
+					"state": "Complete",
+					"response": response
+				});
 				self._publishUserUpdateEvent({
 					"item": item,
 					"field": "roles",
 					"value": roles
+				});
+			},
+			"onError": function(response) {
+				self._publishCompleteActionEvent({
+					"name": action,
+					"state": "Error",
+					"response": response
 				});
 			}
 		});
@@ -519,4 +603,25 @@ plugin.css = function() {
 
 Echo.Plugin.create(plugin);
 
+})(Echo.jQuery);
+
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
+
+var plugin = Echo.Plugin.manifest("Moderation", "Echo.StreamServer.Controls.Stream");
+
+plugin.events = {
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserUpdate": function(topic, args) {
+		this.events.publish({
+			"topic": "onUserUpdate",
+			"data": args,
+			"global": false
+		});
+		return {"stop": ["bubble"]};
+	}
+};
+
+Echo.Plugin.create(plugin);
 })(Echo.jQuery);

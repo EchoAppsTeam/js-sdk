@@ -114,27 +114,41 @@ plugin.methods._assembleButton = function(name) {
 				"sessionID": item.user.get("sessionID"),
 				"target-query": item.config.get("parent.query")
 			},
-			"onData": function() {
+			"onData": function(response) {
 				/**
 				 * @event onFlagComplete
 				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagComplete
-				 * Triggered if flag operation was completed. 
+				 * Triggered if flag operation was completed.
 				 */
 				/**
 				 * @event onUnFlagComplete
 				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagComplete
-				 * Triggered if reverse flag operation was completed. 
+				 * Triggered if reverse flag operation was completed.
 				 */
-				plugin.events.publish({
-					"topic": "on" + name + "Complete",
-					"data": {
-						"item": {
-							"data": item.get("data"),
-							"target": item.config.get("target")
-						}
-					}
+				plugin._publishEventComplete({
+					"name": name,
+					"state": "Complete",
+					"response": response
 				});
 				plugin.requestDataRefresh();
+			},
+			"onError": function(response) {
+				/**
+				 * @event onFlagError
+				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagError
+				 * Triggered if flag operation was failed.
+				 */
+				/**
+				 * @event onUnFlagError
+				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagError
+				 * Triggered if reverse flag operation was failed.
+				 */
+				plugin._publishEventComplete({
+					"name": name,
+					"state": "Error",
+					"response": response
+				});
+				item.render();
 			}
 		});
 		request.send();
@@ -153,6 +167,20 @@ plugin.methods._assembleButton = function(name) {
 			"callback": callback
 		};
 	};
+};
+
+plugin.methods._publishEventComplete = function(args) {
+	var item = this.component;
+	this.events.publish({
+		"topic": "on" + args.name + args.state,
+		"data": {
+			"item": {
+				"data": item.get("data"),
+				"target": item.config.get("target")
+			},
+			"response": args.response
+		}
+	});
 };
 
 plugin.methods._myFlags = function(flags) {

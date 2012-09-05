@@ -68,7 +68,7 @@ Echo.IdentityServer.API.Request.prototype._update = function(args) {
 	});
 	this.request(
 		$.extend({}, this.config.get("data"), {
-			"content": Echo.Utils.object2JSON(content)
+			"content": Echo.Utils.objectToJSON(content)
 		})
 	);
 };

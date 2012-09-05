@@ -1,13 +1,3 @@
-// vim: set ts=8 sts=8 sw=8 noet:
-/*
- * Copyright (c) 2006-2011 Echo <solutions@aboutecho.com>. All rights reserved.
- * You may copy and modify this script as long as the above copyright notice,
- * this condition and the following disclaimer is left intact.
- * This software is provided by the author "AS IS" and no warranties are
- * implied, including fitness for a particular purpose. In no event shall
- * the author be liable for any damages arising in any way out of the use
- * of this software, even if advised of the possibility of such damage.
- */
 /*
  *  jQuery autoResize (textarea auto-resizer)
  *  @copyright James Padolsey http://james.padolsey.com

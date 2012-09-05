@@ -105,11 +105,12 @@ plugin.renderers.likedBy = function(element) {
 	return element.show();
 };
 
-plugin.methods._sendRequest = function(data, callback) {
+plugin.methods._sendRequest = function(data, callbacki, errorCallback) {
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
 		"onData": callback,
+		"onError": errorCallback,
 		"data": data
 	}).send();
 };
@@ -125,7 +126,7 @@ plugin.methods._sendActivity = function(name, item) {
 		"appkey": item.config.get("appkey"),
 		"sessionID": item.user.get("sessionID"),
 		"target-query": item.config.get("parent.query")
-	}, function() {
+	}, function(response) {
 		/**
 		 * @event onLikeComplete
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeComplete
@@ -136,16 +137,42 @@ plugin.methods._sendActivity = function(name, item) {
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete
 		 * Triggered when the reverse Like operation is finished.
 		 */
-		plugin.events.publish({
-			"topic": "on" + name + "Complete",
-			"data": {
-				"item": {
-					"data": item.get("data"),
-					"target": item.config.get("target")
-				}
-			}
+		plugin._publishEventComplete({
+			"name": name,
+			"state": "Complete",
+			"response": response
 		});
 		plugin.requestDataRefresh();
+	}, function(response) {
+		/**
+		 * @event onLikeError
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeError
+		 * Triggered when the Like operation was failed.
+		 */
+		/**
+		 * @event onUnlikeError
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeError
+		 * Triggered when the reverse Like operation was failed.
+		 */
+		plugin._publishEventComplete({
+			"name": name,
+			"state": "Error",
+			"response": response
+		});
+	});
+};
+
+plugin.methods._publishEventComplete = function(args) {
+	var item = this.component;
+	this.events.publish({
+		"topic": "on" + args.name + args.state,
+		"data": {
+			"item": {
+				"data": item.get("data"),
+				"target": item.config.get("target")
+			},
+			"response": args.response
+		}
 	});
 };
 

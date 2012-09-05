@@ -139,7 +139,7 @@ plugin.methods._assembleButton = function(action, control) {
 	var self = this;
 	var type = control.marker ? "marker" : "tag";
 	var marker = (control.marker || control.tag);
-	var name = action + "As" + marker.replace(/[^a-z0-9_-]/ig, '');
+	var name = action + "As" + Echo.Utils.capitalize(marker.replace(/[^a-z0-9_-]/ig, ''));
 	var callback = function() {
 		var item = this;
 		var operation = action.toLowerCase();
@@ -157,43 +157,40 @@ plugin.methods._assembleButton = function(action, control) {
 				"content": marker
 			}
 		};
+		var publishCompleteEvent = self._prepareCompleteEventPublish({
+			"name": name,
+			"type": type,
+			"action": action
+		});
 		Echo.StreamServer.API.request({
 			"endpoint": "submit",
 			"submissionProxyURL": item.config.get("submissionProxyURL"),
-			"onData": function() {
+			"onData": function(response) {
 				/**
-				* @event onMarkAs_value_Complete
-				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkAs_value_Complete
-				* action specific event which is generated automatically using the parametrized value of marker/tag.
+				* @event onMarkComplete
+				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkComplete
 				* Triggered when the Mark action is finished.
-				*
-				* Example events:
-				*
-				* + onMarkAssticky
-				* + onMarkAsfootball
 				*/
 				/**
-				* @event onUnmarkAs_value_Complete
-				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarkAs_value_Complete
-				* action specific event which is generated automatically using the parametrized value of marker/tag.
-				* Triggered when the Mark action is finished.
-				*
-				* Example events:
-				*
-				* + onUnmarkAssticky
-				* + onUnmarkAsfootball
+				* @event onUnmarkComplete
+				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarComplete
+				* Triggered when the Unmark action is finished.
 				*/
-				self.events.publish({
-					"topic": "on" + name + "Complete",
-					"data": {
-						"item": {
-							"data": item.get("data"),
-							"target": item.get("view.content")
-						}
-					},
-					"bubble": true
-				});
+				publishCompleteEvent("Complete", response);
 				self.requestDataRefresh();
+			},
+			"onError": function(response) {
+				/**
+				* @event onMarkError
+				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkError
+				* Triggered when the Mark action completed with error.
+				*/
+				/**
+				* @event onUnmarkError
+				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarError
+				* Triggered when the Unmark action completed with error.
+				*/
+				publishCompleteEvent("Error", response);
 			},
 			"data": {
 				"appkey": item.config.get("appkey"),
@@ -212,6 +209,31 @@ plugin.methods._assembleButton = function(action, control) {
 			"once": true,
 			"callback": callback
 		};
+	};
+};
+
+plugin.methods._prepareCompleteEventPublish = function(args) {
+	var self = this;
+	var item = this.component;
+	var publishArgs = {
+		"data": {
+			"item": {
+				"data": item.get("data"),
+				"target": item.get("view.content")
+			},
+			"type": args.type,
+			"name": args.name
+		}
+	};
+	return function(state, response) {
+		self.events.publish(
+			$.extend(true, publishArgs, {
+				"topic": "on" + args.action + state,
+				"data": {
+					"response": response
+				}
+			})
+		);
 	};
 };
 

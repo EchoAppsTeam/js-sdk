@@ -1,14 +1,8 @@
-// vim: set ts=8 sts=8 sw=8 noet:
-/*
- * Copyright (c) 2006-2011 Echo <solutions@aboutecho.com>. All rights reserved.
- * You may copy and modify this script as long as the above copyright notice,
- * this condition and the following disclaimer is left intact.
- * This software is provided by the author "AS IS" and no warranties are
- * implied, including fitness for a particular purpose. In no event shall
- * the author be liable for any damages arising in any way out of the use
- * of this software, even if advised of the possibility of such damage.
- */
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
+
 var plugin = Echo.Plugin.manifest("UserMetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.init = function() {
@@ -74,7 +68,7 @@ plugin.methods._assembleControl = function(action, control) {
 				self.events.publish({
 					"topic": "onUserUpdate",
 					"data": {
-						"item": component,
+						"item": item,
 						"field": field
 					},
 					"global": false,
@@ -120,9 +114,10 @@ plugin.methods._getUpdatedUserProperty = function(action, field, actor) {
 	return {"name": field.name, "value": value};
 };
 
-plugin.methods._applyUserUpdate = function(target, source, field) {
-	if (target.get("data.actor.id") != source.get("data.actor.id")) return;
-	target.data.actor[field.name == "state" ? "status" : field.name] = field.value;
+plugin.methods._applyUserUpdate = function(source, field) {
+	var target = this.component;
+	if (target.get("data.actor.id") !== source.data.actor.id) return;
+	target.set("data.actor." + (field.name === "state" ? "status" : field.name), field.value);
 	target.render();
 };
 
@@ -150,14 +145,18 @@ plugin.methods._isControlVisible = function(control, operation) {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Plugins.UserMetadataManager.onUserUpdate": function(topic, args) {
-		this._applyUserUpdate(this.component, args.item, args.field);
+		this._applyUserUpdate(args.item, args.field);
 	}
 };
 
 Echo.Plugin.create(plugin);
-})();
+})(Echo.jQuery);
 
-(function(){
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
+
 var plugin = Echo.Plugin.manifest("UserMetadataManager", "Echo.StreamServer.Controls.Stream");
 
 plugin.events = {
@@ -167,8 +166,9 @@ plugin.events = {
 			"data": args,
 			"global": false
 		});
+		return {"stop": ["bubble"]};
 	}
 };
 
 Echo.Plugin.create(plugin);
-})();
+})(Echo.jQuery);
