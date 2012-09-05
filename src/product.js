@@ -4,7 +4,7 @@
 var $ = jQuery;
 
 if (Echo.Utils.isComponentDefined("Echo.ProductView")) return;
- 
+
 Echo.ProductView = function() {};
 
 Echo.Utils.inherit(Echo.ProductView, Echo.Control);
@@ -45,7 +45,7 @@ Echo.ProductView.prototype.initControl = function(name, controlConfig) {
 		controlConfig.plugins || []
 	);
 	controlConfig = this._normalizeControlConfig(
-		$.extend(true, 
+		$.extend(true,
 			{},
 			Echo.Utils.getNestedValue(this._manifest("controls"), name + ".config", {}),
 			this.config.get("controls." + name + ".config", {}),
