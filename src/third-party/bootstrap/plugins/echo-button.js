@@ -7,7 +7,7 @@ $.fn.echoButton = function() {
 	return this.each(function(){
 		var data = $(this).data("echoButton");
 		if (!data || typeof args[0] === "object") {
-			$(this).data("echoButton", new Button(this, args[0]));
+			$(this).data("echoButton", (data = new Button(this, args[0])));
 		}
 		if (typeof args[0] === "string") {
 			data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
@@ -34,10 +34,10 @@ Button.prototype.update = function(params) {
 	this.label = params.label || "";
 	this.icon = params.icon || "";
 	this.disabled = params.disabled || false;
-	this.render();
+	this._render();
 };
 
-Button.prototype.render = function() {
+Button.prototype._render = function() {
 	$(".echo-label", this.element).text(this.label);
 	var iconElement = $(".echo-icon", this.element);
 	var setBackground = function(element, icon) {
