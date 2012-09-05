@@ -136,14 +136,14 @@ module.exports = function(grunt) {
 			]
 		},
 		build_less: {
-			"third-party/bootstrap/less/ui": [
+			"third-party/bootstrap/css/ui": [
 				"<%= dirs.src %>/third-party/bootstrap/less/variables.less",
 				"<%= dirs.src %>/third-party/bootstrap/less/mixins.less"
 			]
 		},
 		less: {
 			all : {
-				src: "<%= dirs.src %>/third-party/bootstrap/less/ui.less",
+				src: "<%= dirs.dest %>/third-party/bootstrap/css/ui.less",
 				dest: "<%= dirs.dest %>/third-party/bootstrap/css/ui.css"
 			}
 		},
@@ -218,18 +218,20 @@ module.exports = function(grunt) {
 			return grunt.task.directive("src/third-party/bootstrap/less/" + control + ".less", grunt.file.read);
 		}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
 		less += "}";
-		grunt.file.write(grunt.config("dirs.src") + "/" + name, less);
+		grunt.file.write(grunt.config("dirs.dest") + "/" + name, less);
 
 		if (this.errorCount) {
 			return false;
 		}
 		grunt.log.ok();
+		grunt.task.run('less');
+		//TODO: temporarily ui.less should be removed
 	});
 
 	grunt.registerTask("docs", "clean:docs exec:docs");
 
 	// Default task
-	grunt.registerTask("default", "clean copy concat:loader build_less less packs");
+	grunt.registerTask("default", "clean copy concat:loader build_less packs");
 
 	// ==========================================================================
 	// HELPERS
