@@ -85,10 +85,6 @@ module.exports = function(grunt) {
 					"<actualize_cdn_domain:<%= dirs.src %>/loader.js>"
 				],
 				dest: "<%= dirs.dest %>/loader.js"
-			},
-			ui: {
-				src: ["<build_less_file:<%= dirs.src %>/third-party/bootstrap/less/base.less>"],
-				dest: "<%= dirs.src %>/third-party/bootstrap/less/ui.less"
 			}
 		},
 		packs: {
@@ -137,6 +133,12 @@ module.exports = function(grunt) {
 				"grunt.js",
 				"<%= dirs.dest %>/**/*.js",
 				"<%= dirs.tests %>/**/*.js"
+			]
+		},
+		build_less: {
+			"third-party/bootstrap/less/ui": [
+				"<%= dirs.src %>/third-party/bootstrap/less/variables.less",
+				"<%= dirs.src %>/third-party/bootstrap/less/mixins.less"
 			]
 		},
 		less: {
@@ -202,10 +204,32 @@ module.exports = function(grunt) {
 		grunt.log.ok();
 	});
 
+	grunt.registerMultiTask("build_less", "Assebmle less file", function() {
+		var name = this.target + ".less";
+		grunt.log.write("Assembling \"" + name + "\"...");
+		var files = grunt.file.expandFiles(this.file.src);
+		var config = grunt.file.readJSON("tools/grunt/config.ui.json");
+
+		var less = ".echo-wrapper {\n";
+		less += files.map(function(control) {
+			return grunt.task.directive(control, grunt.file.read);
+		}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
+		less += config.controls.map(function(control) {
+			return grunt.task.directive("src/third-party/bootstrap/less/" + control + ".less", grunt.file.read);
+		}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
+		less += "}";
+		grunt.file.write(grunt.config("dirs.src") + "/" + name, less);
+
+		if (this.errorCount) {
+			return false;
+		}
+		grunt.log.ok();
+	});
+
 	grunt.registerTask("docs", "clean:docs exec:docs");
 
 	// Default task
-	grunt.registerTask("default", "clean copy concat:loader concat:ui less packs");
+	grunt.registerTask("default", "clean copy concat:loader build_less less packs");
 
 	// ==========================================================================
 	// HELPERS
@@ -222,23 +246,6 @@ module.exports = function(grunt) {
 			}
 			return match;
 		});
-	});
-
-	grunt.registerHelper("build_less_file", function(filepath, output_filepath) {
-		var config;
-		try {
-			config = grunt.file.readJSON("tools/grunt/config.ui.json");
-		} catch(e) {
-			grunt.log.writeln("No local configuration file (config.local.json) found...");
-		}
-		var styles = grunt.task.directive(filepath, grunt.file.read);
-		if (!(config || config.controls)) {
-			return styles;
-		}
-		config.controls.map(function(control) {
-			styles += "\n@import \"src/third-party/bootstrap/less/" + control + ".less\";\n";
-		});
-		return styles;
 	});
 
 	grunt.registerHelper("actualize_cdn_domain", function(filepath) {
