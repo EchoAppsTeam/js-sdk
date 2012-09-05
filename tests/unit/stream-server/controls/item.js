@@ -53,7 +53,9 @@ suite.prototype.tests.commonWorkflow = {
 			QUnit.ok(!item.hasMoreChildren(), "Checking hasMoreChildren() method");
 			item.set("data.hasMoreChildren", "true");
 			QUnit.ok(item.hasMoreChildren(), "Checking that hasMoreChildren() method");
-			item.set("data.hasMoreChildren", true);
+			item.set("data.hasMoreChildren", "0");
+			QUnit.ok(!item.hasMoreChildren(), "Checking that hasMoreChildren() method");
+			item.set("data.hasMoreChildren", "1");
 			QUnit.ok(!item.hasMoreChildren(), "Checking that hasMoreChildren() method");
 
 			item.block("TestMessage");
