@@ -5,10 +5,9 @@ var $ = jQuery;
 $.fn.echoButton = function() {
 	var args  = arguments;
 	return this.each(function(){
-		var data = $(this).data('echoButton');
-		var config = typeof args[0] === "object" && args[0];
-		if (!data) {
-			$(this).data('echoButton', (data = new Button(this, config)));
+		var data = $(this).data("echoButton");
+		if (!data || typeof args[0] === "object") {
+			$(this).data("echoButton", new Button(this, args[0]));
 		}
 		if (typeof args[0] === "string") {
 			data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
