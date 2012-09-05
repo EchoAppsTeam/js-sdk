@@ -14,7 +14,8 @@ Echo.Loader = {
 		"cdnBaseURL": "http://cdn.echoenabled.com/",
 		"errorTimeout": 5000 // 5 sec
 	},
-	"overrides": {}
+	"overrides": {},
+	"vars": {}
 };
 
 /**
@@ -89,11 +90,17 @@ Echo.Loader.init = function(config) {
  * were downloaded.
  */
 Echo.Loader.download = function(params) {
+	if (!Echo.Loader.vars.queued)
+		Echo.Loader.vars.queued = {};
+
 	var scripts = params.scripts || [], urls = [];
 	var callback = params.callback || function() {};
+	var queued = Echo.Loader.vars.queued;
 	for (var i = 0; i < scripts.length; i++) {
 		var script = scripts[i];
-		if (!script.loaded || !script.loaded()) {
+		if (!queued[script.url] && (!script.loaded ||
+			!script.loaded())) {
+			queued[script.url] = true;
 			urls.push(Echo.Loader.getURL(script.url));
 		}
 	}
