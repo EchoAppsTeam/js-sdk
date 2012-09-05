@@ -43,24 +43,24 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.deepEqual(manifest, _manifest,
 			"Checking the \"manifest\" function output");
 
-		suite.createControls(["Control1", "Control2", "Control3"]);
+		suite.createControls(["TestControl1", "TestControl2", "TestControl3"]);
 		suite.createProductView("TestProductView", {
-			"Control1": {
-				"control": "Control1",
+			"TestControl1": {
+				"control": "TestControl1",
 				"config": {
 					"target": this.config.target,
 					"appkey": this.config.appkey
 				}
 			},
-			"Control2": {
-				"control": "Control2",
+			"TestControl2": {
+				"control": "TestControl2",
 				"config": {
 					"target": this.config.target,
 					"appkey": this.config.appkey
 				}
 			},
-			"Control3": {
-				"control": "Control3",
+			"TestControl3": {
+				"control": "TestControl3",
 				"config": {
 					"target": this.config.target,
 					"appkey": this.config.appkey
@@ -83,11 +83,11 @@ suite.prototype.cases.initControl = function(callback) {
 	var check = function() {
 		var self = this;
 		QUnit.deepEqual(this.controls, {
-			"Control1": null,
-			"Control2": null,
-			"Control3": null
+			"TestControl1": null,
+			"TestControl2": null,
+			"TestControl3": null
 		}, "Checking controls of product view after initialization");
-		var control = this.initControl("Control1", {
+		var control = this.initControl("TestControl1", {
 			"ready": function() {
 				QUnit.ok(true,
 					"Checking that control.onReady() handler was called after initControl()");
@@ -109,13 +109,13 @@ suite.prototype.cases.initControl = function(callback) {
 suite.prototype.cases.destroyControl = function(callback) {
 	var check = function() {
 		var self = this;
-		var control = this.initControl("Control1");
+		var control = this.initControl("TestControl1");
 		control.set("_destroyHandler", function() {
 			QUnit.ok(true,
 				"Checking if the Control.destroy() mehtod was called after destroyControl()");
 		});
-		this.destroyControl("Control1");
-		QUnit.equal(self.controls["Control1"], undefined,
+		this.destroyControl("TestControl1");
+		QUnit.equal(self.controls["TestControl1"], undefined,
 			"Checking that the control was deleted from product view after destroyControl()");
 		this.destroy();
 		callback();
@@ -130,15 +130,15 @@ suite.prototype.cases.destroyControl = function(callback) {
 suite.prototype.cases.destroyControls = function(callback) {
 	var check = function() {
 		var self = this;
-		var controls = ["Control1", "Control2", "Control3"];
+		var controls = ["TestControl1", "TestControl2", "TestControl3"];
 		$.map(controls, function(control) {
 			self.initControl(control);
 		});
-		var exceptions = ["Control2"];
+		var exceptions = ["TestControl2"];
 		this.destroyControls(exceptions);
-		QUnit.ok(!this.controls["Control1"] && !this.controls["Control3"],
+		QUnit.ok(!this.controls["TestControl1"] && !this.controls["TestControl3"],
 			"Checking that controls were deleted after destroyControls()");
-		QUnit.ok(this.controls["Control2"],
+		QUnit.ok(this.controls["TestControl2"],
 			"Checking that control which is in exceptions list was not deleted after destroyControls()");
 		this.destroy();
 		callback();
@@ -152,8 +152,8 @@ suite.prototype.cases.destroyControls = function(callback) {
 
 suite.prototype.cases.getControl = function(callback) {
 	var check = function() {
-		this.initControl("Control1");
-		QUnit.deepEqual(this.getControl("Control1"), window.Control1,
+		this.initControl("TestControl1");
+		QUnit.deepEqual(this.getControl("TestControl1"), window.TestControl1,
 			"Checking that getControl returns a proper link");
 		QUnit.equal(this.getControl("FakeControl"), undefined,
 			"Checking that getControl() returns undefined with fake control name");

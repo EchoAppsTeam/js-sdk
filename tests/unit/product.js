@@ -45,19 +45,19 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.deepEqual(manifest, _manifest,
 			"Checking the \"manifest\" function output");
 		
-		suite.createControls(["Control1", "Control2", "Control3"]);
+		suite.createControls(["TestControl1", "TestControl2", "TestControl3"]);
 		
 		var views = {
 			"View1": {
-				"Control1": {
-					"control": "Control1",
+				"TestControl1": {
+					"control": "TestControl1",
 					"config": {
 						"target": this.config.target,
 						"appkey": this.config.appkey
 					}
 				},
-				"Control2": {
-					"control": "Control1",
+				"TestControl2": {
+					"control": "TestControl1",
 					"config": {
 						"target": this.config.target,
 						"appkey": this.config.appkey
@@ -65,8 +65,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 				}
 			},
 			"View2": {
-				"Control3": {
-					"control": "Control3",
+				"TestControl3": {
+					"control": "TestControl3",
 					"config": {
 						"target": this.config.target,
 						"appkey": this.config.appkey
@@ -108,7 +108,7 @@ suite.prototype.cases.initView = function(callback) {
 		});
 		QUnit.ok(this.views["View1"],
 			"Checking that view was added to product after initView()");
-		view.initControl("Control1", {
+		view.initControl("TestControl1", {
 			"ready": function() {
 				QUnit.ok(true,
 					"Checking that control was rendered after initView() and initControl()");
@@ -154,7 +154,7 @@ suite.prototype.cases.destroyView = function(callback) {
 			"target": self.config.target,
 			"appkey": self.config.appkey
 		});
-		var control = view.initControl("Control1");
+		var control = view.initControl("TestControl1");
 		control.set("_destroyHandler", function() {
 			QUnit.ok(true,
 				"Checking that Control.destroy() was called after Product.destroy()");
