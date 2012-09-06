@@ -4,6 +4,7 @@ module.exports = function(grunt) {
 	var _ = grunt.utils._;
 	var _dirs = {
 		src: "src",
+		web: "web",
 		dest: "web/sdk",
 		tests: "tests"
 	};
@@ -13,7 +14,6 @@ module.exports = function(grunt) {
 		_dirs.src + "/third-party/jquery/jquery.js",
 		_dirs.src + "/third-party/jquery/echo.jquery.noconflict.js"
 	];
-	var _dontStripDocs = grunt.file.expandFiles(_dirs.src + "/third-party/**/*.js");
 	var _config = {
 		dirs: _dirs,
 		pkg: "<json:package.json>",
@@ -48,9 +48,7 @@ module.exports = function(grunt) {
 				options: {
 					basePath: _dirs.src,
 					processContent: function(code) {
-						// temporarily disabled docs stripping until we can exclude third-party libs
 						return grunt.helper("wrap_code", code);
-						//return grunt.helper("strip_docs", grunt.helper("wrap_code", code));
 					},
 					processContentExclude: _dontWrap
 				}
@@ -244,19 +242,6 @@ module.exports = function(grunt) {
 	// HELPERS
 	// ==========================================================================
 
-	var _stripDocsRE = /[^\r\n]*\/\*[\s\S]*?\*\/\n/g;
-	grunt.registerHelper("strip_docs", function(code, filepath) {
-		if (_.include(_dontStripDocs, filepath)) {
-			return code;
-		}
-		return code.replace(_stripDocsRE, function(match) {
-			if (/\s+\* @\w/.test(match)) {
-				return "";
-			}
-			return match;
-		});
-	});
-
 	grunt.registerHelper("actualize_cdn_domain", function(filepath) {
 		var config;
 		try {
@@ -277,7 +262,6 @@ module.exports = function(grunt) {
 		return files.map(function(filepath) {
 			var code = grunt.task.directive(filepath, grunt.file.read);
 			code = grunt.helper("wrap_code", code, filepath);
-			code = grunt.helper("strip_docs", code, filepath);
 			return code;
 		}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
 	});
