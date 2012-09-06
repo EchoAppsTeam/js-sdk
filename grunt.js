@@ -133,7 +133,7 @@ module.exports = function(grunt) {
 				"<%= dirs.tests %>/**/*.js"
 			]
 		},
-		build_css: {
+		assemble_css: {
 			"third-party/bootstrap/css": [
 				"<%= dirs.src %>/third-party/bootstrap/less/variables.less",
 				"<%= dirs.src %>/third-party/bootstrap/less/mixins.less"
@@ -202,7 +202,7 @@ module.exports = function(grunt) {
 		grunt.log.ok();
 	});
 
-	grunt.registerMultiTask("build_css", "Assebmle css files", function() {
+	grunt.registerMultiTask("assemble_css", "Assebmle css files", function() {
 		var target = this.target;
 		grunt.log.write("Assembling \"" + this.target + "\"...");
 
@@ -227,6 +227,8 @@ module.exports = function(grunt) {
 				grunt.file.write(filepaths["css"], css);
 			});
 		});
+		grunt.helper('assemble_fancybox_css');
+
 		if (this.errorCount) {
 			return false;
 		}
@@ -236,7 +238,7 @@ module.exports = function(grunt) {
 	grunt.registerTask("docs", "clean:docs exec:docs");
 
 	// Default task
-	grunt.registerTask("default", "clean copy concat:loader build_css packs");
+	grunt.registerTask("default", "clean copy concat:loader assemble_css packs");
 
 	// ==========================================================================
 	// HELPERS
@@ -264,6 +266,27 @@ module.exports = function(grunt) {
 			code = grunt.helper("wrap_code", code, filepath);
 			return code;
 		}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
+	});
+
+	grunt.registerHelper('assemble_fancybox_css', function() {
+		var cssPath = "/third-party/jquery/css/fancybox.css";
+		var source = grunt.task.directive(grunt.config("dirs.src") + cssPath, grunt.file.read);
+		var config;
+		try {
+			config = grunt.file.readJSON("config.local.json");
+		} catch(e) {
+			grunt.log.writeln("No local configuration file (config.local.json) found...");
+		}
+		var domainPrefix =
+			"//"  + (config && config.domain ? config.domain : "cdn.echoenabled.com") +
+			"/sdk/third-party/jquery/img/fancybox/";
+		var prepareCSS = function(css) {
+			return css.replace(/\n\#fancybox/g, "\n#fancybox-echo")
+				.replace(/\n\.fancybox/g, "\n.fancybox-echo")
+				.replace(/url\(\'(.*)\'\)/g, "url('" + domainPrefix + "$1')")
+				.replace(/src=\'fancybox\/(.*)\'/g, "src='" + domainPrefix + "$1')");
+		};
+		grunt.file.write(grunt.config("dirs.dest") + cssPath, prepareCSS(source));
 	});
 
 	grunt.registerHelper("wrap_code", function(code, filepath) {
