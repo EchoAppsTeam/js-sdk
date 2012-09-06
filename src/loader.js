@@ -98,8 +98,7 @@ Echo.Loader.download = function(params) {
 	var queued = Echo.Loader.vars.queued;
 	for (var i = 0; i < scripts.length; i++) {
 		var script = scripts[i];
-		if (!queued[script.url] && (!script.loaded ||
-			!script.loaded())) {
+		if (!queued[script.url] && (!script.loaded || !script.loaded())) {
 			queued[script.url] = true;
 			urls.push(Echo.Loader.getURL(script.url));
 		}
