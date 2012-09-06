@@ -185,11 +185,9 @@ submit.dependencies = [{
 	"url": "sdk/third-party/bootstrap/plugins/echo-button.js"
 }, {
 	"url":"sdk/third-party/bootstrap/css/buttons.css"
-}
-// TODO: need investigate
-// { "loaded": function() { return false; },
-//   "url": "sdk/third-party/jquery/css/fancybox.css" }
-];
+}, {
+	"url": "sdk/third-party/jquery/css/fancybox.css"
+}];
 
 
 

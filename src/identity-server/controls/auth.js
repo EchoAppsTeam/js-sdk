@@ -104,10 +104,9 @@ auth.config = {
 	"infoMessages": {"enabled": false}
 };
 
-// TODO: need investigate
-//auth.dependencies = [{
-//	"url": "sdk/third-party/jquery/css/fancybox.css"
-//}];
+auth.dependencies = [{
+	"url": "sdk/third-party/jquery/css/fancybox.css"
+}];
 
 auth.labels = {
 	/**
