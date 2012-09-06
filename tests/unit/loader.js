@@ -30,7 +30,9 @@ suite.prototype.tests.resourceDownloadingTests = {
 	},
 	"check": function() {
 		this.sequentialAsyncTests([
-			"alreadyLoadedStylesheets",
+			"equalUrlsPerSingleCall",
+			"equalUrlsPerSequentialCalls",
+			"equalUrlsPerParallelCalls",
 			"invalidParameters",
 			"nonExistingScripts",
 			"alreadyLoadedScripts",
@@ -139,22 +141,74 @@ suite.prototype.cases.alreadyLoadedScripts = function(callback) {
 	});
 };
 
-suite.prototype.cases.alreadyLoadedStylesheets = function(callback) {
+suite.prototype.cases.equalUrlsPerSingleCall = function(callback) {
 	Echo.Loader.download({
-		"scripts": [{
-			"url": "sdk/third-party/jquery/css/fancybox.css"
-		}, {
-			"url": "sdk/third-party/jquery/css/fancybox.css"
-		}],
+		"scripts": [
+			{"url": "sdk/tests/unit/loader/scripts/d1.js"},
+			{"url": "sdk/tests/unit/loader/scripts/d1.js"},
+			{"url": "sdk/tests/unit/loader/styles/1.css"},
+			{"url": "sdk/tests/unit/loader/styles/1.css"}
+		],
 		"callback": function() {
-			QUnit.ok(true, "Checking if the callback is executed when the stylesheets loaded previously are loaded again");
+			QUnit.ok(!!Echo.Tests.Download.duplicate1, "Checking if the callback is executed when equal urls of js/css was loaded per single call");
 			callback();
 		}
 	});
 };
 
+suite.prototype.cases.equalUrlsPerSequentialCalls = function(callback) {
+	Echo.Loader.download({
+		"scripts": [
+			{"url": "sdk/tests/unit/loader/scripts/d2.js"},
+			{"url": "sdk/tests/unit/loader/styles/2.css"}
+		],
+		"callback": function() {
+			Echo.Loader.download({
+				"scripts": [
+					{"url": "sdk/tests/unit/loader/scripts/d2.js"},
+					{"url": "sdk/tests/unit/loader/styles/2.css"}
+				],
+				"callback": function() {
+					QUnit.ok(!!Echo.Tests.Download.duplicate2, "Checking if the callback is executed when equal urls of js/css was loaded per sequential call");
+					callback();
+				}
+			});
+		}
+	});
+};
+
+suite.prototype.cases.equalUrlsPerParallelCalls = function(callback) {
+	var k = 2;
+	var commonCallback = function() {
+		if(!--k) {
+			QUnit.ok(!!Echo.Tests.Download.duplicate3, "Checking if the callback is executed when equal urls of js/css was loaded per parallel call");
+			callback();
+		}
+		console.log(k);
+	};
+	Echo.Loader.download({
+		"scripts": [
+			{"url": "sdk/tests/unit/loader/scripts/d3.js"},
+			{"url": "sdk/tests/unit/loader/styles/3.css"}
+		],
+		"callback": function() {
+			commonCallback();
+		}
+	});
+
+	Echo.Loader.download({
+		"scripts": [
+			{"url": "sdk/tests/unit/loader/scripts/d3.js"},
+			{"url": "sdk/tests/unit/loader/styles/3.css"}
+		],
+		"callback": function() {
+			commonCallback();
+		}
+	});
+};
+
 suite.prototype.cases.validScriptsLoading = function(callback, count, description) {
-	count = count || 5
+	count = count || 5;
 	var scripts = [];
 	var existingScriptsCount = 5;
 	for (var i = 1; i <= count; i++) {
