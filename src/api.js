@@ -7,11 +7,6 @@ Echo.API = {"Transports": {}, "Request": {}};
 
 var utils = Echo.Utils;
 
-(function(jQuery) {
-"use strict";
-
-var $ = jQuery;
-
 /**
  * @class Echo.API.Transport
  */
@@ -252,13 +247,6 @@ Echo.API.Transports.WebSocket.available = function() {
 	//return ("WebSocket" in window || "MozWebSocket" in window);
 };
 
-})(Echo.jQuery);
-
-(function(jQuery) {
-"use strict";
-
-var $ = jQuery;
-
 /**
  * @class Echo.API.Request
  * Class implementing API requests logic on the transport layer.
@@ -399,7 +387,5 @@ Echo.API.Request.prototype._getHandlersByConfig = function() {
 Echo.API.Request.prototype._prepareURI = function() {
 	return this.config.get("apiBaseURL").replace(/^(http|ws)s?:\/\//, "") + this.config.get("endpoint");
 };
-
-})(Echo.jQuery);
 
 })(Echo.jQuery);
