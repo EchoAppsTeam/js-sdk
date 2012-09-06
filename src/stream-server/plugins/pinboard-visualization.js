@@ -3,14 +3,6 @@
 
 var $ = jQuery;
 
-var _isPreIE9 = function() {
-	return ($.browser.msie && $.browser.version < 9 && document.documentMode && document.documentMode < 9);
-};
-
-(function(jQuery) {
-"use strict";
-
-var $ = jQuery;
 if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream.Item.MediaGallery")) return;
 
 /**
@@ -22,6 +14,10 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream.Item.MediaG
  */
 
 var mediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item.MediaGallery");
+
+var _isPreIE9 = function() {
+	return ($.browser.msie && $.browser.version < 9 && document.documentMode && document.documentMode < 9);
+};
 
 mediaGallery.labels = {
 	"mediaIsNotAvailable": "<i>Media is not avaiable at this moment...</i>"
@@ -233,9 +229,14 @@ var $ = jQuery;
  *
  * @extends Echo.Plugin
  */
+
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
+
+var _isPreIE9 = function() {
+	return ($.browser.msie && $.browser.version < 9 && document.documentMode && document.documentMode < 9);
+};
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -664,7 +665,5 @@ plugin.css =
 	'.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }';
 
 Echo.Plugin.create(plugin);
-
-})(Echo.jQuery);
 
 })(Echo.jQuery);
