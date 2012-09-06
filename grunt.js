@@ -135,8 +135,8 @@ module.exports = function(grunt) {
 				"<%= dirs.tests %>/**/*.js"
 			]
 		},
-		build_less: {
-			"third-party/bootstrap/css/ui": [
+		build_css: {
+			"third-party/bootstrap/css": [
 				"<%= dirs.src %>/third-party/bootstrap/less/variables.less",
 				"<%= dirs.src %>/third-party/bootstrap/less/mixins.less"
 			]
@@ -204,34 +204,41 @@ module.exports = function(grunt) {
 		grunt.log.ok();
 	});
 
-	grunt.registerMultiTask("build_less", "Assebmle less file", function() {
-		var name = this.target + ".less";
-		grunt.log.write("Assembling \"" + name + "\"...");
-		var files = grunt.file.expandFiles(this.file.src);
-		var config = grunt.file.readJSON("tools/grunt/config.ui.json");
+	grunt.registerMultiTask("build_css", "Assebmle css files", function() {
+		var target = this.target;
+		grunt.log.write("Assembling \"" + this.target + "\"...");
 
-		var less = ".echo-wrapper {\n";
-		less += files.map(function(control) {
+		var files = grunt.file.expandFiles(this.file.src);
+		var baseCSS = files.map(function(control) {
 			return grunt.task.directive(control, grunt.file.read);
 		}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
-		less += config.controls.map(function(control) {
-			return grunt.task.directive("src/third-party/bootstrap/less/" + control + ".less", grunt.file.read);
-		}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
-		less += "}";
-		grunt.file.write(grunt.config("dirs.dest") + "/" + name, less);
 
+		var config = grunt.file.readJSON("tools/grunt/config.ui.json");
+		config.controls.map(function(control) {
+			var filepaths = {
+				"less": grunt.config("dirs.src") + "/third-party/bootstrap/less/" + control + ".less",
+				"css": grunt.config("dirs.dest") + "/third-party/bootstrap/css/" + control + ".css"
+			};
+			var less = [
+				".echo-wrapper {",
+				baseCSS,
+				grunt.task.directive(filepaths["less"], grunt.file.read),
+				"}"
+			].join(grunt.utils.normalizelf(grunt.utils.linefeed));
+			grunt.helper("less", less, {}, function(css) {
+				grunt.file.write(filepaths["css"], css);
+			});
+		});
 		if (this.errorCount) {
 			return false;
 		}
 		grunt.log.ok();
-		grunt.task.run('less');
-		//TODO: temporarily ui.less should be removed
 	});
 
 	grunt.registerTask("docs", "clean:docs exec:docs");
 
 	// Default task
-	grunt.registerTask("default", "clean copy concat:loader build_less packs");
+	grunt.registerTask("default", "clean copy concat:loader build_css packs");
 
 	// ==========================================================================
 	// HELPERS
