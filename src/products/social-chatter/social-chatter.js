@@ -244,7 +244,10 @@ SocialChatter.config = {
 	"liveUpdatesTimeout": 60, // request Events updates once per minute
 	"identityManager": undefined,
 	"views": {},
-	"defaultEventIcon": Echo.Loader.getURL("sdk/images/vip.jpg")
+	"defaultEventIcon": Echo.Loader.getURL("sdk/images/vip.jpg"),
+	"permissions": {
+		"access": "allowGuest"
+	}
 };
 
 SocialChatter.views.Main.templates.main =
@@ -276,6 +279,7 @@ SocialChatter.views.PublicEvent.labels = {
 	"chatClosesIn": "VIP Chat closes in: ",
 	"chatOpensIn": "<b>Live chat starts in:</b> <br><br>",
 	"passedEventViewNotice": "<b>Note:</b> this event is over. You are viewing chat archive.",
+	"askQuestionViewNotice": "<b>Note:</b> You must be logged in to ask question",
 	"upcomingEventWarning": "Please login to join this event.",
 	"passedEventWarning": "Please login to view this chat archive.",
 	"onAirEventWarning": "<b>Chat is on air now!</b> <br><br> Please login to join the conversation!",
@@ -295,7 +299,7 @@ SocialChatter.views.PublicEvent.templates = {
 					'<div class="{class:publicStream}"></div>' +
 				'</div></td>' +
 				'<td class="{class:rightColumnTD}"><div class="{class:rightColumn}">' +
-					'<div class="{class:publicSubmitLabel}">{label:answersFrom} {data:vipName}</div>' +
+					'<div class="{class:publicSubmitVIPLabel}">{label:answersFrom} {data:vipName}</div>' +
 					'<div class="{class:eventDescription}">' +
 						'<div class="{class:avatar}"></div>' +
 						'<div class="{class:eventDataWrapper}">' +
@@ -337,7 +341,7 @@ SocialChatter.views.PublicEvent.templates = {
 SocialChatter.views.PublicEvent.methods.template = function() {
 	var event = this.config.get("event");
 	var status = event && event.getStatus();
-	return this._manifest("templates")[this.user && this.user.is("logged")
+	return this._manifest("templates")[this.hasPublicEventAccess()
 		? (status && status !== "upcoming" ? "main" : "upcoming")
 		: "anonymous"];
 };
@@ -496,6 +500,15 @@ SocialChatter.views.PublicEvent.methods.isNonVIPUser = SocialChatter.views.Green
 	return !this.user.any("roles", ["vip"]);
 };
 
+
+SocialChatter.views.PublicEvent.methods.userIsLogged = function() {
+	return this.user && this.user.is("logged");
+};
+
+SocialChatter.views.PublicEvent.methods.hasPublicEventAccess = function() {
+	return this.config.get("parent.permissions.access") === "allowGuest" || this.userIsLogged();
+};
+
 SocialChatter.views.PublicEvent.renderers.loginWarning = function(element) {
 	return element.html('<span>' + this.labels.get(this.config.get("event").getStatus() + "EventWarning") + '</span>');
 };
@@ -504,6 +517,8 @@ SocialChatter.views.PublicEvent.renderers.publicViewNotice = function(element) {
 	var status = this.config.get("event").getStatus();
 	if (status == "passed") {
 		return element.html('<span>' + this.labels.get("passedEventViewNotice") + '</span>');
+	} else if (!this.userIsLogged()) {
+		return element.html('<span>' + this.labels.get("askQuestionViewNotice") + '</span>');
 	}
 	return element.hide();
 };
@@ -681,6 +696,10 @@ SocialChatter.methods._hasGreenRoomAccess = function() {
 	return this.user.is("admin");
 };
 
+SocialChatter.methods.hasPublicEventAccess = function() {
+	return this.config.get("permissions.access") === "allowGuest" || this.user.is("logged");
+};
+
 SocialChatter.methods._updateTab = function(config) {
 	if (this.tabs && !this.event && config.name != "EventsList"
 		|| (this.event && this.event.getStatus() == "passed" && config.name == "GreenRoom")) {
@@ -820,7 +839,7 @@ SocialChatter.assemblers.EventsList = function(target) {
 SocialChatter.assemblers.PublicEvent = function(target) {
 	var self = this;
 	var data = this.event.data;
-	var pluginEnabled = !(this.event && this.event.getStatus() == "passed");
+	var pluginEnabled = !(this.event && this.event.getStatus() == "passed") && this.user.is("logged");
 	var view = this.initView("PublicEvent", {
 		"user": this.user,
 		"data": data,
@@ -831,12 +850,17 @@ SocialChatter.assemblers.PublicEvent = function(target) {
 	// setting tab title
 	this.tabs.get("PublicEvent").html(data.eventName || "Unknown Event");
 
-	if (!this.user.is("logged") || this.event.getStatus() == "upcoming") return;
+	if (!this.hasPublicEventAccess() || this.event.getStatus() == "upcoming") return;
 
-	if (this.event.onAir()) 
+	if (this.event.onAir() && this.user.is("logged")) {
 		view.initControl("Submit", {
 			"target": view.view.get("publicSubmit")
 		});
+		view.view.get("publicSubmitLabel").show();
+	} else if( !this.user.is("logged") ) {
+		view.view.get("publicSubmitLabel").hide();
+	}
+
 	view.initControl("Stream", {
 		"target": view.view.get("publicStream"),
 		"plugins": [{
@@ -924,7 +948,7 @@ SocialChatter.views.PublicEvent.css =
 	'.{class:leftColumnTD} { width: 40%; vertical-align: top; }' +
 	'.{class:rightColumnTD} { width: 60%; vertical-align: top; }' +
 	'.{class:rightColumn} { margin: 0 10px; border: 1px solid #D3D3D3; padding: 15px 10px 15px 20px; border-radius: 4px; -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 1px 2px rgba(0,0,0,.2); }' +
-	'.{class:publicSubmitLabel} { font-weight: bold; font-size: 16px; margin-bottom: 10px; }' +
+	'.{class:publicSubmitLabel}, .{class:publicSubmitVIPLabel} { font-weight: bold; font-size: 16px; margin-bottom: 10px; }' +
 	'.{class:publicSubmit} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
 	'.{class:eventSubmit} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
 	'.{class:publicStream} .echo-streamserver-controls-submit-userInfoWrapper { display: none; }' +
