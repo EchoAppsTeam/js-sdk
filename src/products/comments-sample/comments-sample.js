@@ -1,8 +1,11 @@
-(function() {
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
 
 if (Echo.Utils.isComponentDefined("Echo.Products.CommentsSample")) return;
 
-var Comments = Echo.Product.manifest("Echo.Products.CommentsSample", ["Main"]);
+var Comments = Echo.Product.manifest("Echo.Products.CommentsSample");
 
 Comments.dependencies = [
 	{"loaded": function() {
@@ -19,74 +22,52 @@ Comments.dependencies = [
 ];
 
 Comments.config = {
-	"submitFormPosition": "top"
+	"submitFormPosition": "top" // top | bottom
 };
 
-Comments.templates.main = '<div class="{class:container}"></div>';
-
-Comments.renderers.container = function(element) {
-	this.assemble("Main", element);
-	return element;
-};
-
-Comments.assemblers.Main = function(target) {
-	var view = this.initView("Main", {
-		"user": this.user,
-		"target": target
-	});
-	if (this.config.get("identityManager")) {
-		view.initControl("Auth", {
-			"target": view.view.get("auth")
-		});
-	}
-	view.initControl("Submit", {
-		"target": view.view.get("submit")
-	});
-	view.initControl("Stream", {
-		"target": view.view.get("stream")
-	});
-};
-
-Comments.views.Main.templates.submitFormTop =
+Comments.templates.submitFormTop =
 	'<div class="{class:container}">' +
 		'<div class="{class:auth}"></div>' +
 		'<div class="{class:submit}"></div>' +
 		'<div class="{class:stream}"></div>' +
 	'</div>';
 
-Comments.views.Main.templates.submitFormBottom =
+Comments.templates.submitFormBottom =
 	'<div class="{class:container}">' +
 		'<div class="{class:auth}"></div>' +
 		'<div class="{class:stream}"></div>' +
 		'<div class="{class:submit}"></div>' +
 	'</div>';
 
-Comments.views.Main.methods.template = function() {
-	return this.config.get("parent.submitFormPosition") === "top"
-		? this._manifest("templates").submitFormTop
-		: this._manifest("templates").submitFormBottom
+Comments.methods.template = function() {
+	return this.templates[
+		"submitForm" + Echo.Utils.capitalize(
+			this.config.get("submitFormPosition")
+		)
+	];
 };
 
-Comments.views.Main.css = ".{class:container} > div { margin-bottom: 7px; }";
-
-Comments.views.Main.controls.Auth = {
-	"control": "Echo.IdentityServer.Controls.Auth",
+Comments.controls = [{
+	"name": "Echo.IdentityServer.Controls.Auth",
 	"config": {
 		"appkey": null,
-		"identityManager": "{config:parent.identityManager}"
+		"target": "{target:auth}",
+		"identityManager": "{config:identityManager}"
 	}
-};
+}, {
+	"name": "Echo.StreamServer.Controls.Stream",
+	"config": {
+		"target": "{target:stream}"
+	}
+}, {
+	"name": "Echo.StreamServer.Controls.Submit",
+	"config": {
+		"target": "{target:submit}"
+	}
+}];
 
-Comments.views.Main.controls.Stream = {
-	"control": "Echo.StreamServer.Controls.Stream",
-	"config": {}
-};
-
-Comments.views.Main.controls.Submit = {
-	"control": "Echo.StreamServer.Controls.Submit",
-	"config": {}
-};
+Comments.css = ".{class:container} > div { margin-bottom: 7px; }";
 
 Echo.Product.create(Comments);
 
-})();
+})(Echo.jQuery);

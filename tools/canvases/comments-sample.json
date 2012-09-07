@@ -13,31 +13,24 @@
             "appkey": "test.aboutecho.com",
             "apiBaseURL": "http://api.echoenabled.com/v1/",
             "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
-            "views": {
-                "Main": {
-                    "controls": {
-                        "Stream": {
-                            "control": "Echo.StreamServer.Controls.Stream",
-                            "config": {
-								"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
-                                "plugins": [{
-                                    "name": "Edit"
-                                }, {
-                                    "name": "Like"
-                                }, {
-                                    "name": "Moderation"
-                                }]
-                            }
-                        },
-						"Submit": {
-							"control": "Echo.StreamServer.Controls.Submit",
-							"config": {
-								"targetURL": "http://echosandbox.com/test/comments-sampler-test"
-							}
-						}
-                    }
-                }
-            },
+			"controls": [{
+				"name": "Echo.StreamServer.Controls.Stream",
+				"config": {
+					"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
+					"plugins": [{
+						"name": "Edit"
+					}, {
+						"name": "Like"
+					}, {
+						"name": "Moderation"
+					}]
+				}
+			}, {
+				"name": "Echo.StreamServer.Controls.Submit",
+				"config": {
+					"targetURL": "http://echosandbox.com/test/comments-sampler-test"
+				}
+			}],
             "identityManager": {
                 "login": {
                     "width": 400,
