@@ -139,12 +139,6 @@ module.exports = function(grunt) {
 				"<%= dirs.src %>/third-party/bootstrap/less/mixins.less"
 			]
 		},
-		less: {
-			all : {
-				src: "<%= dirs.dest %>/third-party/bootstrap/css/ui.less",
-				dest: "<%= dirs.dest %>/third-party/bootstrap/css/ui.css"
-			}
-		},
 		//watch: {
 		//	files: "<config:lint.files>",
 		//	tasks: "lint qunit"
@@ -202,7 +196,7 @@ module.exports = function(grunt) {
 		grunt.log.ok();
 	});
 
-	grunt.registerMultiTask("assemble_css", "Assebmle css files", function() {
+	grunt.registerMultiTask("assemble_css", "Assemble css files", function() {
 		var target = this.target;
 		grunt.log.write("Assembling \"" + this.target + "\"...");
 
@@ -214,17 +208,19 @@ module.exports = function(grunt) {
 		var config = grunt.file.readJSON("tools/grunt/config.ui.json");
 		config.controls.map(function(control) {
 			var filepaths = {
-				"less": grunt.config("dirs.src") + "/third-party/bootstrap/less/" + control + ".less",
-				"css": grunt.config("dirs.dest") + "/third-party/bootstrap/css/" + control + ".css"
+				"less": grunt.config("dirs.src") + "/third-party/bootstrap/less/" + control.less + ".less",
+				"css": grunt.config("dirs.dest") + "/third-party/bootstrap/css/plugins/" + control.css + ".css"
 			};
 			var less = [
-				".echo-wrapper {",
+				".echo-sdk-ui {",
 				baseCSS,
 				grunt.task.directive(filepaths["less"], grunt.file.read),
 				"}"
 			].join(grunt.utils.normalizelf(grunt.utils.linefeed));
 			grunt.helper("less", less, {}, function(css) {
 				grunt.file.write(filepaths["css"], css);
+				grunt.file.write(filepaths["css"].replace(/\.css$/, ".min.css"),
+						 grunt.helper("mincss", css));
 			});
 		});
 		grunt.helper('assemble_fancybox_css');

@@ -356,7 +356,7 @@ Echo.Control.prototype.render = function() {
 	var view = this.view;
 	var topic = view.rendered() ? "onRerender" : "onRender";
 	if (!this.dependent() && !view.rendered()) {
-		this.config.get("target").addClass("echo-wrapper");
+		this.config.get("target").addClass("echo-sdk-ui");
 	}
 	var content = view.render({
 		"template": this._compileTemplate()

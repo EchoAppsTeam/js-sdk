@@ -1,5 +1,6 @@
 {
-  "controls": [
-    "buttons"
-  ]
+  "controls": [{
+    "less": "buttons",
+    "css": "echo-button"
+  }]
 }
