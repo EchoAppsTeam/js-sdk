@@ -55,7 +55,7 @@ Echo.API.Transports.AJAX = function(config) {
 	return Echo.API.Transports.AJAX.parent.constructor.call(this, config);
 };
 
-utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transport);
+utils.inherit(Echo.API.Transport, Echo.API.Transports.AJAX);
 
 Echo.API.Transports.AJAX.prototype._getScheme = function() {
 	return this.config.get("secure") ? "https:" : "http:";
@@ -146,7 +146,7 @@ Echo.API.Transports.JSONP = function(config) {
 	return Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
 };
 
-utils.inherit(Echo.API.Transports.JSONP, Echo.API.Transports.AJAX);
+utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transports.JSONP);
 
 Echo.API.Transports.JSONP.prototype.send = function(data) {
 	if (this.config.get("method").toLowerCase() === "get") {
@@ -212,7 +212,7 @@ Echo.API.Transports.WebSocket = function(config) {
 	return Echo.API.Transports.WebSocket.parent.constructor.apply(this, arguments);
 };
 
-utils.inherit(Echo.API.Transports.WebSocket, Echo.API.Transport);
+utils.inherit(Echo.API.Transport, Echo.API.Transports.WebSocket);
 
 Echo.API.Transports.WebSocket.prototype._getScheme = function() {
 	return this.config.get("secure") ? "wss:" : "ws:";

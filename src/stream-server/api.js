@@ -56,7 +56,7 @@ Echo.StreamServer.API.Request = function(config) {
 	Echo.StreamServer.API.Request.parent.constructor.call(this, config);
 };
 
-Echo.Utils.inherit(Echo.StreamServer.API.Request, Echo.API.Request);
+Echo.Utils.inherit(Echo.API.Request, Echo.StreamServer.API.Request);
 
 /**
  * @method

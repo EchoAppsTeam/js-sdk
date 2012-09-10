@@ -70,7 +70,7 @@ Echo.Plugin.create = function(manifest) {
 	constructor.manifest = manifest;
 	constructor.dependencies = manifest.dependencies;
 
-	Echo.Utils.inherit(constructor, Echo.Plugin);
+	Echo.Utils.inherit(Echo.Plugin, constructor);
 
 	if (manifest.methods) {
 		$.extend(constructor.prototype, manifest.methods);

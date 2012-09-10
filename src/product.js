@@ -11,9 +11,7 @@ if (Echo.Utils.isComponentDefined("Echo.Product")) return;
  *
  * @extends Echo.Control
  */
-Echo.Product = function() {};
-
-Echo.Utils.inherit(Echo.Product, Echo.Control);
+Echo.Product = Echo.Utils.inherit(Echo.Control);
 
 /**
  * @static

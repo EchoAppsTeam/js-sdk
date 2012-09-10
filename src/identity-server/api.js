@@ -35,7 +35,7 @@ Echo.IdentityServer.API.Request = function(config) {
 	Echo.IdentityServer.API.Request.parent.constructor.call(this, config);
 };
 
-Echo.Utils.inherit(Echo.IdentityServer.API.Request, Echo.API.Request);
+Echo.Utils.inherit(Echo.API.Request, Echo.IdentityServer.API.Request);
 
 Echo.IdentityServer.API.Request.prototype._prepareURI = function() {
 	return this.config.get("endpoint") === "whoami"

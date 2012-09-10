@@ -187,8 +187,7 @@ suite.prototype.tests.TestDataMethods = {
 
 		var classA = function() {};
 		classA.prototype.functionA = function() {};
-		var classB = function() {};
-		Echo.Utils.inherit(classB, classA);
+		var classB = Echo.Utils.inherit(classA);
 		classB.prototype.functionB = function() {};
 		QUnit.ok(!!classB.prototype.functionB,
 			"Checking that the result object extended using the Echo.Utils.inherit function has native methods");

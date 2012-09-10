@@ -592,17 +592,18 @@ Echo.Utils.getUniqueString = function() {
  *
  * This function performs prototype inheritance of the JS objects.
  *
- * @param {Object} child
- * Class which should be entended.
- *
  * @param {Object} parent
  * Class which should be used as a parent for the first class.
+ *
+ * @param {Object} child
+ * Class which should be entended.
  *
  * @return {Object}
  * Resulting class.
  */
-Echo.Utils.inherit = function(child, parent) {
+Echo.Utils.inherit = function(parent, child) {
 	var F = function() {};
+	child = child || function() {};
 	F.prototype = parent.prototype;
 	child.prototype = new F;
 	child.prototype.constructor = child;

@@ -70,7 +70,7 @@ Echo.Control.create = function(manifest) {
 		this._init(this._initializers.get("init"));
 	};
 
-	Echo.Utils.inherit(constructor, manifest.inherits || Echo.Control);
+	Echo.Utils.inherit(manifest.inherits || Echo.Control, constructor);
 
 	var prototype = constructor.prototype;
 	constructor.manifest = manifest;
@@ -116,50 +116,6 @@ Echo.Control.manifest = function(name) {
 		},
 		"destroy": undefined
 	};
-};
-
-/**
- * @static
- * Method which adds new initializer scheme to the control (or control extender) prototype.
- * Initializer function must be defined.
- *
- * @param {Object} klass
- * Specifies control (Echo.Control or extender) object.
- *
- * @param {Array} schema
- * Initializer schema which declare name and executed step.
- *
- * @param {Object} rule
- * Object containing action as key and target as value. Target is a defined initializer name.
- * If this parameter is omitted then initializer will be pushed to the end of the list.
- * Possible actions are:
- * + "after"
- * + "before"
- */
-Echo.Control.addInitializer = function(klass, schema, rule) {
-	rule = rule || {};
-	var list = klass.prototype._initializers.list.slice(0);
-	var hasRule = !!(rule.after || rule.before);
-	var getInitializerIndex = function(name) {
-		var index = -1;
-		$.each(list, function(i, initializer) {
-			if (initializer[0] === name) {
-				index = i;
-				return false;
-			}
-		});
-		return index;
-	};
-	var index = hasRule
-		? function(_index) {
-			return ~_index
-				? (!_index && rule.before ? 0 : rule.after ? ++_index : --_index)
-				: _index;
-		}(getInitializerIndex(rule.after || rule.before))
-		: list.length;
-	list.splice(index, 0, schema);
-	klass.prototype._initializers = $.extend({}, klass.prototype._initializers);
-	klass.prototype._initializers.list = list;
 };
 
 Echo.Control.prototype.templates = {"message": {}};
