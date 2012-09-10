@@ -57,8 +57,8 @@ Echo.Product.manifest = function(name, controlIds) {
  * Method to add and initialize nested control.
  *
  * This function allows to initialize nested control and setting ref
- * to the inner continer "controls". Also it merge configs from manifest,
- * config from the constructor call and from the the parameter if defined.
+ * to the inner conatiner "controls". Also it merge configs from manifest,
+ * config from the constructor call and from the accepted parameter if defined.
  *
  * @param {String} id
  * Defines the nested control id.
@@ -105,10 +105,10 @@ Echo.Product.prototype.addControl = function(id, controlSpec) {
 /**
  * Method to destroy nested control by id. If control defined,
  * then will be called "destroy" method of the nested control
- * and it removed from the inner container "controls";
+ * and the ref removing from the inner container "controls".
  *
  * @param {String} id
- * Specifies the which indicates what control should be removed.
+ * Specifies a id which indicates what control should be removed.
  */
 Echo.Product.prototype.destroyControl = function(id) {
 	var control = this.get("controls." + id);
@@ -119,10 +119,10 @@ Echo.Product.prototype.destroyControl = function(id) {
 };
 
 /**
- * Method to destroy all defined nested controls but ids in exception list.
+ * Method to destroy all defined nested controls but ids in the exception list.
  *
  * Method can accept one parameter which specifies the exception 
- * nested control id list. If list is omit or empty, then method destroyes
+ * nested control ids list. If list is omit or empty, then method destroys
  * all defined nested controls.
  *
  * @param {Array} [exceptions]
