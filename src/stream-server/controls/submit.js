@@ -189,8 +189,6 @@ submit.dependencies = [{
 	"url": "sdk/third-party/jquery/css/fancybox.css"
 }];
 
-
-
 submit.labels = {
 	/**
 	 * @echo_label
