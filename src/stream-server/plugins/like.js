@@ -57,7 +57,7 @@ plugin.labels = {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike": function(topic, args) {
-		this._sendActivity("Unlike", this.component);
+		this._sendActivity("Unlike", this.component, args.actor);
 		return {"stop": ["bubble"]};
 	}
 };
@@ -115,12 +115,15 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 	}).send();
 };
 
-plugin.methods._sendActivity = function(name, item) {
+plugin.methods._sendActivity = function(name, item, actor) {
 	var plugin = this;
 	var activity = {
 		"verbs": ["http://activitystrea.ms/schema/1.0/" + name.toLowerCase()],
 		"targets": [{"id": item.get("data.object.id")}]
 	};
+	if (actor && actor.id)
+		activity.author = actor.id;
+
 	this._sendRequest({
 		"content": activity,
 		"appkey": item.config.get("appkey"),
@@ -270,7 +273,6 @@ plugin.renderers.adminUnlike = function(element) {
 		 */
 		plugin.events.publish({
 			"topic": "onUnlike",
-			"actor": item.get("data"),
 			"data": {
 				"actor": item.get("data"),
 				"target": item.config.get("parent.target").get(0)

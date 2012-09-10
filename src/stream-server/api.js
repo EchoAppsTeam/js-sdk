@@ -325,7 +325,8 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 			"target": activity.targets[0].id,
 			"verb": verb(activity),
 			"type": type(activity),
-			"itemURIPattern": self.config.get("itemURIPattern")
+			"itemURIPattern": self.config.get("itemURIPattern"),
+			"author": activity.author
 		};
 		if (verb(activity) === "update") {
 			data = {
