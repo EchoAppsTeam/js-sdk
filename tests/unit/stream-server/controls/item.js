@@ -26,7 +26,8 @@ suite.prototype.info = {
 		"getAccumulator",
 		"hasMoreChildren",
 		"getNextPageAfter",
-		"addButtonSpec"
+		"addButtonSpec",
+		"template"
 	]
 };
 

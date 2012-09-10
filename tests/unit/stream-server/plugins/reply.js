@@ -9,7 +9,9 @@ suite.prototype.tests = {};
 suite.prototype.info = {
 	"className": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply",
 	"suiteName": "Reply plugin",
-	"functions": []
+	"functions": [
+		"destroy"
+	]
 };
 
 })(Echo.jQuery);

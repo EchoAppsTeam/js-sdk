@@ -25,6 +25,7 @@ suite.prototype.info = {
 		"showMessage",
 		"destroy",
 		"refresh",
+		"render",
 
 		// functions below are covered
 		// within the Plugin component test
