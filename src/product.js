@@ -2,6 +2,7 @@
 "use strict";
 
 var $ = jQuery;
+
 if (Echo.Utils.isComponentDefined("Echo.Product")) return;
 
 /**
@@ -23,45 +24,79 @@ Echo.Utils.inherit(Echo.Product, Echo.Control);
  */
 Echo.Product.create = Echo.Control.create;
 
-Echo.Control.addInitializer(
-	Echo.Product,
-	["controls", ["init", "refresh"]],
-	{"after": "init:async"}
-);
+// public interface
 
-Echo.Product.manifest = function(name) {
+Echo.Product.manifest = function(name, controlIds) {
 	var _manifest = Echo.Product.parent.constructor.manifest.apply(this, arguments);
 	_manifest.inherits = _manifest.inherits || Echo.Product;
 	return $.extend(_manifest, {
-		"controls": []
+		"controls": Echo.Utils.foldl({}, controlIds || [], function(controlId, acc) {
+			acc[controlId] = {};
+		})
 	});
 };
 
-Echo.Product.prototype._initializers.controls = function() {
-	this.controls = this.controls || {};
-	var controlsOrder = this._mergeSpecsByName(
-		$.map(this._manifest("controls"), function(el) {
-			return $.extend(true, {}, el);
-		}),
-		$.map(this.config.get("controls", []), function(el) {
-			return $.extend(true, {}, el);
-		})
-	);
-	$.map(controlsOrder, $.proxy(this.addControl, this));
-};
-
-Echo.Product.prototype.addControl = function(controlSpec) {
-	this.destroyControl(controlSpec.name);
+Echo.Product.prototype.addControl = function(id, controlSpec) {
+	this.destroyControl(id);
+	controlSpec.name = controlSpec.name || this._getControlNameById(id);
 	controlSpec.config = controlSpec.config || {};
 	if (this.user) {
 		controlSpec.config.user = this.user;
 	}
 	controlSpec.config.parent = controlSpec.config.parent || this.config.getAsHash();
 	delete controlSpec.config.parent.controls;
-	controlSpec.config = this._normalizeControlConfig(controlSpec.config);
+	controlSpec.config.plugins = this._mergeSpecsByName(
+		Echo.Utils.getNestedValue(this._manifest("controls"), id + ".config.plugins", []),
+		this.config.get("controls." + id + ".config.plugins", []),
+		controlSpec.config.plugins || []
+	);
+	controlSpec.config = this._normalizeControlConfig(
+		$.extend(
+			true,
+			{},
+			Echo.Utils.getNestedValue(this._manifest("controls"), id + ".config", {}),
+			this.config.get("controls." + id + ".config", {}),
+			controlSpec.config
+		)
+	);
 	var Control = Echo.Utils.getComponent(controlSpec.name);
-	this.controls[controlSpec.name] = new Control(controlSpec.config);
-	return this.controls[controlSpec.name];
+	this.controls = this.controls || {};
+	this.controls[id] = new Control(controlSpec.config);
+	return this.controls[id];
+};
+
+Echo.Product.prototype.destroyControl = function(id) {
+	var control = this.get("controls." + id);
+	if (control) {
+		control.destroy();
+		delete this.controls[id];
+	}
+};
+
+Echo.Product.prototype.destroyControls = function(exceptions) {
+	var self = this;
+	exceptions = exceptions || [];
+	var inExceptionList = function(id) {
+		var inList = false;
+		$.each(exceptions, function(_id, exception) {
+			if (exception === id) {
+				inList = true;
+				return false; // break
+			}
+		});
+		return inList;
+	};
+	$.each(this.controls, function(id) {
+		if (!inExceptionList(id)) {
+			self.destroyControl(id);
+		}
+	});
+};
+
+// private interface
+
+Echo.Product.prototype._getControlNameById = function(id) {
+	return Echo.Utils.getNestedValue(this._manifest("controls"), id + ".name", "") || this.config.get("controls." + id + ".name");
 };
 
 Echo.Product.prototype._mergeSpecsByName = function(specs) {
@@ -87,46 +122,14 @@ Echo.Product.prototype._mergeSpecsByName = function(specs) {
 			return;
 		}
 		if (extender.name === specs[id].name) {
-			if (extender.plugins || extender.nestedPlugins) {
-				if (extender.plugins) {
-					specs[id].plugins = specs[id].plugins || [];
-					self._mergeSpecsByName(specs[id].plugins, extender.plugins);
-				}
-				if (extender.nestedPlugins) {
-					specs[id].nestedPlugins = specs[id].nestedPlugins || []
-					self._mergeSpecsByName(specs[id].nestedPlugins, extender.nestedPlugins);
-					// delete nested plugins in the extender to avoid override effect after extend below
-					delete extender.nestedPlugins;
-				}
+			if (extender.nestedPlugins) {
+				specs[id].nestedPlugins = specs[id].nestedPlugins || [];
+				self._mergeSpecsByName(specs[id].nestedPlugins, extender.nestedPlugins);
+				// delete nested plugins in the extender to avoid override effect after extend below
+				delete extender.nestedPlugins;
 			}
-			specs[id] = $.extend(true, {}, specs[id], extender);
 		}
-	});
-};
-
-Echo.Product.prototype.destroyControl = function(name) {
-	var control = this.get("controls." + name);
-	control && control.destroy();
-	delete this.controls[name];
-};
-
-Echo.Product.prototype.destroyControls = function(exceptions) {
-	var self = this;
-	exceptions = exceptions || [];
-	var inExceptionList = function(name) {
-		var inList = false;
-		$.each(exceptions, function(id, exception) {
-			if (exception === name) {
-				inList = true;
-				return false; // break
-			}
-		});
-		return inList;
-	};
-	$.each(this.controls, function(name) {
-		if (!inExceptionList(name)) {
-			self.destroyControl(name);
-		}
+		specs[id] = $.extend(true, {}, specs[id], extender);
 	});
 };
 
@@ -154,16 +157,6 @@ Echo.Product.prototype._normalizeControlConfig = function(config) {
 		}
 	};
 	return normalize(config);
-};
-
-Echo.Product.prototype._getSubstitutionInstructions = function() {
-	var self = this;
-	var instructions = Echo.Product.parent._getSubstitutionInstructions.call(this);
-	return $.extend(instructions, {
-		"target": function(key) {
-			return self.view.get(key);
-		}
-	});
 };
 
 })(Echo.jQuery);

@@ -5,15 +5,11 @@ var $ = jQuery;
 
 if (Echo.Utils.isComponentDefined("Echo.Products.CommentsSample")) return;
 
-var Comments = Echo.Product.manifest("Echo.Products.CommentsSample");
+var Comments = Echo.Product.manifest("Echo.Products.CommentsSample", ["Auth", "Submit", "Stream"]);
 
 Comments.dependencies = [
 	{"loaded": function() {
-		var isLoaded;
-		$.each(["Stream", "Submit"], function(k, val) {
-			return isLoaded = Echo.Utils.isComponentDefined("Echo.StreamServer.Controls." + val);
-		});
-		return isLoaded;
+		return Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit") && Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream");
 	}, "url": "sdk/stream-server.pack.js"},
 
 	{"loaded": function() {
@@ -25,14 +21,14 @@ Comments.config = {
 	"submitFormPosition": "top" // top | bottom
 };
 
-Comments.templates.submitFormTop =
+Comments.templates.topSubmitFormPosition =
 	'<div class="{class:container}">' +
 		'<div class="{class:auth}"></div>' +
 		'<div class="{class:submit}"></div>' +
 		'<div class="{class:stream}"></div>' +
 	'</div>';
 
-Comments.templates.submitFormBottom =
+Comments.templates.bottomSubmitFormPosition =
 	'<div class="{class:container}">' +
 		'<div class="{class:auth}"></div>' +
 		'<div class="{class:stream}"></div>' +
@@ -41,30 +37,33 @@ Comments.templates.submitFormBottom =
 
 Comments.methods.template = function() {
 	return this.templates[
-		"submitForm" + Echo.Utils.capitalize(
-			this.config.get("submitFormPosition")
-		)
+		this.config.get("submitFormPosition") + "SubmitFormPosition"
 	];
 };
 
-Comments.controls = [{
+$.map(["auth", "stream", "submit"], function(name) {
+	Comments.renderers[name] = function(element) {
+		var id = Echo.Utils.capitalize(name);
+		this.addControl(id, {
+			"config": {"target": element}
+		});
+		return element;
+	};
+});
+
+Comments.controls.Auth = {
 	"name": "Echo.IdentityServer.Controls.Auth",
 	"config": {
 		"appkey": null,
-		"target": "{target:auth}",
 		"identityManager": "{config:identityManager}"
 	}
-}, {
-	"name": "Echo.StreamServer.Controls.Stream",
-	"config": {
-		"target": "{target:stream}"
-	}
-}, {
-	"name": "Echo.StreamServer.Controls.Submit",
-	"config": {
-		"target": "{target:submit}"
-	}
-}];
+};
+Comments.controls.Stream = {
+	"name": "Echo.StreamServer.Controls.Stream"
+};
+Comments.controls.Submit = {
+	"name": "Echo.StreamServer.Controls.Submit"
+};
 
 Comments.css = ".{class:container} > div { margin-bottom: 7px; }";
 
