@@ -18,12 +18,6 @@ module.exports = function(grunt) {
 		dest: "web/sdk",
 		tests: "tests"
 	};
-	var _dontWrap = [
-		_dirs.src + "/backplane.js",
-		_dirs.src + "/loader.js",
-		_dirs.src + "/third-party/jquery/jquery.js",
-		_dirs.src + "/third-party/jquery/echo.jquery.noconflict.js"
-	];
 	var _config = {
 		dirs: _dirs,
 		pkg: "<json:package.json>",
