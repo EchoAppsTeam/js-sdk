@@ -5,6 +5,8 @@ var $ = jQuery;
 
 if (Echo.Utils.isComponentDefined("Echo.Product")) return;
 
+// static interface
+
 /**
  * @class Echo.Product
  * Foundation class implementing core logic to create products.
@@ -22,8 +24,23 @@ Echo.Product = Echo.Utils.inherit(Echo.Control);
  */
 Echo.Product.create = Echo.Control.create;
 
-// public interface
-
+/**
+ * @static
+ * @method
+ * Method returning common manifest structure for a product.
+ *
+ * @param {String} name
+ * Specifies product name.
+ *
+ * @param {Array} [controlIds]
+ * Specifies a list of nested control identificators that will be
+ * used to declare their names and configuration options.
+ * 
+ * @return {Object}
+ * Basic product manifest declaration.
+ *
+ * @inheritdoc Echo.Control#create
+ */
 Echo.Product.manifest = function(name, controlIds) {
 	var _manifest = Echo.Product.parent.constructor.manifest.apply(this, arguments);
 	_manifest.inherits = _manifest.inherits || Echo.Product;
@@ -34,6 +51,27 @@ Echo.Product.manifest = function(name, controlIds) {
 	});
 };
 
+// public interface
+
+/**
+ * Method to add and initialize nested control.
+ *
+ * This function allows to initialize nested control and setting ref
+ * to the inner continer "controls". Also it merge configs from manifest,
+ * config from the constructor call and from the the parameter if defined.
+ *
+ * @param {String} id
+ * Defines the nested control id.
+ *
+ * @param {Object} [controlSpec]
+ * Defines the specification for the nested control.
+ *
+ * @param {String} [controlSpec.name]
+ * Defines a full nested control name like "Echo.StreamServer.Control.Stream".
+ *
+ * @param {Object} [controlSpec.config]
+ * Defines a config for the nested control.
+ */
 Echo.Product.prototype.addControl = function(id, controlSpec) {
 	this.destroyControl(id);
 	controlSpec = controlSpec || {};
@@ -64,6 +102,14 @@ Echo.Product.prototype.addControl = function(id, controlSpec) {
 	return this.controls[id];
 };
 
+/**
+ * Method to destroy nested control by id. If control defined,
+ * then will be called "destroy" method of the nested control
+ * and it removed from the inner container "controls";
+ *
+ * @param {String} id
+ * Specifies the which indicates what control should be removed.
+ */
 Echo.Product.prototype.destroyControl = function(id) {
 	var control = this.get("controls." + id);
 	if (control) {
@@ -72,6 +118,16 @@ Echo.Product.prototype.destroyControl = function(id) {
 	}
 };
 
+/**
+ * Method to destroy all defined nested controls but ids in exception list.
+ *
+ * Method can accept one parameter which specifies the exception 
+ * nested control id list. If list is omit or empty, then method destroyes
+ * all defined nested controls.
+ *
+ * @param {Array} [exceptions]
+ * Specifies nested control ids exception list.
+ */
 Echo.Product.prototype.destroyControls = function(exceptions) {
 	var self = this;
 	exceptions = exceptions || [];
