@@ -134,7 +134,7 @@ module.exports = function(grunt) {
 			case "products":
 				new FtpUploader(_.extend({
 					"complete": done,
-					"rootDir": grunt.config("dirs.web") + "/"
+					"rootDir": grunt.config("dirs.dest") + "/"
 				}, config.release[target]));
 				break;
 		}

@@ -1,4 +1,3 @@
-/*global module:false*/
 module.exports = function(grunt) {
 
 	// readOptionalJSON by Ben Alman (https://gist.github.com/2876125)
@@ -12,14 +11,11 @@ module.exports = function(grunt) {
 	}
 
 	var _ = grunt.utils._;
-	var _dirs = {
-		src: "src",
-		web: "web",
-		dest: "web/sdk",
-		tests: "tests"
-	};
 	var _config = {
-		dirs: _dirs,
+		dirs: {
+			src: "src",
+			dest: "web"
+		},
 		pkg: "<json:package.json>",
 		local: readOptionalJSON("config.local.json"),
 		meta: {
@@ -38,7 +34,12 @@ module.exports = function(grunt) {
 		},
 		clean: {
 			docs: ["<%= dirs.dest %>/docs"],
-			all: ["<%= dirs.dest %>"]
+			all: [
+				"<%= dirs.dest %>/sdk",
+				"<%= dirs.dest %>/products",
+				"<%= dirs.dest %>/tests",
+				"<config:clean:docs>"
+			]
 		},
 		exec: {
 			docs: {
@@ -48,15 +49,15 @@ module.exports = function(grunt) {
 		copy: {
 			js: {
 				files: {
-					"<%= dirs.dest %>": ["<%= dirs.src %>/**/*.js"]
+					"<%= dirs.dest %>/sdk": ["<%= dirs.src %>/**/*.js"]
 				},
 				options: {
-					basePath: _dirs.src
+					basePath: "<config:dirs.src>"
 				}
 			},
 			"images-css": {
 				files: {
-					"<%= dirs.dest %>": [
+					"<%= dirs.dest %>/sdk": [
 						"<%= dirs.src %>/**/*.css",
 						"<%= dirs.src %>/**/*.png",
 						"<%= dirs.src %>/**/*.jpg",
@@ -64,12 +65,20 @@ module.exports = function(grunt) {
 					]
 				},
 				options: {
-					basePath: _dirs.src
+					basePath: "<config:dirs.src>"
+				}
+			},
+			products: {
+				files: {
+					"<%= dirs.dest %>": ["products/**/*"]
+				},
+				options: {
+					basePath: "."
 				}
 			},
 			tests: {
 				files: {
-					"<%= dirs.dest %>": ["<%= dirs.tests %>/**/*"]
+					"<%= dirs.dest %>": ["tests/**/*"]
 				},
 				options: {
 					basePath: "."
@@ -82,11 +91,11 @@ module.exports = function(grunt) {
 					"<%= dirs.src %>/third-party/yepnope/yepnope.1.5.4-min.js",
 					"<actualize_cdn_domain:<%= dirs.src %>/loader.js>"
 				],
-				dest: "<%= dirs.dest %>/loader.js"
+				dest: "<%= dirs.dest %>/sdk/loader.js"
 			},
 			"fancybox-css": {
 				src: ["<patch_fancybox_css:<%= dirs.src %>/third-party/jquery/css/fancybox.css>"],
-				dest: "<%= dirs.dest %>/third-party/jquery/css/fancybox.css"
+				dest: "<%= dirs.dest %>/sdk/third-party/jquery/css/fancybox.css"
 			},
 			"api": {
 				src: [
@@ -94,7 +103,7 @@ module.exports = function(grunt) {
 					"<%= dirs.src %>/stream-server/api.js",
 					"<%= dirs.src %>/identity-server/api.js"
 				],
-				dest: "<%= dirs.dest %>/api.pack.js"
+				dest: "<%= dirs.dest %>/sdk/api.pack.js"
 			},
 			"environment": {
 				src: [
@@ -102,7 +111,7 @@ module.exports = function(grunt) {
 					"<%= dirs.src %>/events.js",
 					"<%= dirs.src %>/labels.js",
 					"<%= dirs.src %>/configuration.js",
-					"<file_strip_banner:<%= dirs.dest %>/api.pack.js>",
+					"<file_strip_banner:<%= dirs.dest %>/sdk/api.pack.js>",
 					"<%= dirs.src %>/user-session.js",
 					"<%= dirs.src %>/view.js",
 					"<%= dirs.src %>/control.js",
@@ -111,7 +120,7 @@ module.exports = function(grunt) {
 					"<%= dirs.src %>/button.js",
 					"<%= dirs.src %>/tabs.js"
 				],
-				dest: "<%= dirs.dest %>/environment.pack.js"
+				dest: "<%= dirs.dest %>/sdk/environment.pack.js"
 			},
 			"third-party/jquery": {
 				src: [
@@ -123,13 +132,13 @@ module.exports = function(grunt) {
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.fancybox-1.3.4.min.js>",
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.isotope.min.js>"
 				],
-				dest: "<%= dirs.dest %>/third-party/jquery.pack.js"
+				dest: "<%= dirs.dest %>/sdk/third-party/jquery.pack.js"
 			}
 		},
 		mincss: {
 			"echo-button": {
-				src: "<%= dirs.dest %>/third-party/bootstrap/css/plugins/echo-button.css",
-				dest: "<%= dirs.dest %>/third-party/bootstrap/css/plugins/echo-button.min.css"
+				src: "<%= dirs.dest %>/sdk/third-party/bootstrap/css/plugins/echo-button.css",
+				dest: "<%= dirs.dest %>/sdk/third-party/bootstrap/css/plugins/echo-button.min.css"
 			}
 		},
 		//min: {
@@ -143,8 +152,8 @@ module.exports = function(grunt) {
 			// TODO: lint dest dir cause all files there are properly wrapped
 			files: [
 				"grunt.js",
-				"<%= dirs.dest %>/**/*.js",
-				"<%= dirs.tests %>/**/*.js"
+				"<%= dirs.dest %>/sdk/**/*.js",
+				"<%= dirs.dest %>/tests/**/*.js"
 			]
 		},
 		assemble_css: {
@@ -183,18 +192,18 @@ module.exports = function(grunt) {
 	_.each(["stream-server", "identity-server", "app-server"], function(name) {
 		_config.concat[name + "/controls"] = {
 			src: ["<%= dirs.src %>/" + name + "/controls/*.js"],
-			dest: "<%= dirs.dest %>/" + name + "/controls.pack.js"
+			dest: "<%= dirs.dest %>/sdk/" + name + "/controls.pack.js"
 		};
 		_config.concat[name + "/plugins"] = {
 			src: ["<%= dirs.src %>/" + name + "/plugins/*.js"],
-			dest: "<%= dirs.dest %>/" + name + "/plugins.pack.js"
+			dest: "<%= dirs.dest %>/sdk/" + name + "/plugins.pack.js"
 		};
 		_config.concat[name] = {
 			src: [
-				"<file_strip_banner:<%= dirs.dest %>/" + name + "/controls.pack.js>",
-				"<file_strip_banner:<%= dirs.dest %>/" + name + "/plugins.pack.js>"
+				"<file_strip_banner:<%= dirs.dest %>/sdk/" + name + "/controls.pack.js>",
+				"<file_strip_banner:<%= dirs.dest %>/sdk/" + name + "/plugins.pack.js>"
 			],
-			dest: "<%= dirs.dest %>/" + name + ".pack.js"
+			dest: "<%= dirs.dest %>/sdk/" + name + ".pack.js"
 		}
 	});
 
@@ -225,7 +234,7 @@ module.exports = function(grunt) {
 		config.controls.map(function(control) {
 			var filepaths = {
 				"less": grunt.config("dirs.src") + "/third-party/bootstrap/less/" + control.less + ".less",
-				"css": grunt.config("dirs.dest") + "/third-party/bootstrap/css/plugins/" + control.css + ".css"
+				"css": grunt.config("dirs.dest") + "/sdk/third-party/bootstrap/css/plugins/" + control.css + ".css"
 			};
 			var less = [
 				".echo-sdk-ui {",
@@ -247,7 +256,7 @@ module.exports = function(grunt) {
 	grunt.registerTask("docs", "clean:docs exec:docs");
 
 	// Default task
-	grunt.registerTask("default", "clean copy assemble_css concat");
+	grunt.registerTask("default", "clean:all copy assemble_css mincss concat");
 
 	// ==========================================================================
 	// HELPERS
