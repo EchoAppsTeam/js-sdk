@@ -36,6 +36,7 @@ Echo.Product.manifest = function(name, controlIds) {
 
 Echo.Product.prototype.addControl = function(id, controlSpec) {
 	this.destroyControl(id);
+	controlSpec = controlSpec || {};
 	controlSpec.name = controlSpec.name || this._getControlNameById(id);
 	controlSpec.config = controlSpec.config || {};
 	if (this.user) {
