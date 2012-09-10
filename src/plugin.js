@@ -54,9 +54,8 @@ Echo.Plugin.create = function(manifest) {
 	// prevent multiple re-definitions
 	if (plugin) return plugin;
 
-	var constructor = function(config) {
+	var constructor = Echo.Utils.inherit(Echo.Plugin, function(config) {
 		if (!config || !config.component) return;
-		var self = this;
 		this.name = manifest.name;
 		this.component = config.component;
 		this.cssClass = this.component.get("cssPrefix") + "plugin-" + manifest.name;
@@ -66,11 +65,10 @@ Echo.Plugin.create = function(manifest) {
 		this.component.config.get("target").addClass(this.cssClass);
 
 		this._init(["config"]);
-	};
+	});
+
 	constructor.manifest = manifest;
 	constructor.dependencies = manifest.dependencies;
-
-	Echo.Utils.inherit(Echo.Plugin, constructor);
 
 	if (manifest.methods) {
 		$.extend(constructor.prototype, manifest.methods);

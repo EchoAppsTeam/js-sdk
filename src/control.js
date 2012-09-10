@@ -58,8 +58,8 @@ Echo.Control.create = function(manifest) {
 	// prevent multiple re-definitions
 	if (control) return control;
 
-	var constructor = function(config) {
-		var self = this;
+	var parent = manifest.inherits || Echo.Control;
+	var constructor = Echo.Utils.inherit(parent, function(config) {
 
 		// perform basic validation of incoming params
 		if (!config || !config.target || !config.appkey) return {};
@@ -68,18 +68,17 @@ Echo.Control.create = function(manifest) {
 		this.name = manifest.name;
 		this.config = config;
 		this._init(this._initializers.get("init"));
-	};
-
-	Echo.Utils.inherit(manifest.inherits || Echo.Control, constructor);
+	});
 
 	var prototype = constructor.prototype;
-	constructor.manifest = manifest;
 	if (manifest.methods) {
 		$.extend(prototype, manifest.methods);
 	}
 	if (manifest.templates) {
 		prototype.templates = $.extend({}, prototype.templates, manifest.templates);
 	}
+
+	constructor.manifest = manifest;
 
 	// define CSS class and prefix for the class
 	prototype.cssClass = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
