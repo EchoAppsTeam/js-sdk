@@ -1,6 +1,16 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
+	// readOptionalJSON by Ben Alman (https://gist.github.com/2876125)
+	function readOptionalJSON(filepath) {
+		var data = {};
+		try {
+			data = grunt.file.readJSON(filepath);
+			grunt.log.write("Reading data from " + filepath + "...").ok();
+		} catch(e) {}
+		return data;
+	}
+
 	var _ = grunt.utils._;
 	var _dirs = {
 		src: "src",
@@ -17,6 +27,7 @@ module.exports = function(grunt) {
 	var _config = {
 		dirs: _dirs,
 		pkg: "<json:package.json>",
+		local: readOptionalJSON("config.local.json"),
 		meta: {
 			banner:
 				"/**\n" +
@@ -46,11 +57,7 @@ module.exports = function(grunt) {
 					"<%= dirs.dest %>": ["<%= dirs.src %>/**/*.js"]
 				},
 				options: {
-					basePath: _dirs.src,
-					processContent: function(code) {
-						return grunt.helper("wrap_code", code);
-					},
-					processContentExclude: _dontWrap
+					basePath: _dirs.src
 				}
 			},
 			"images-css": {
@@ -78,45 +85,58 @@ module.exports = function(grunt) {
 		concat: {
 			loader: {
 				src: [
-					"<banner:meta.banner>",
 					"<%= dirs.src %>/third-party/yepnope/yepnope.1.5.4-min.js",
 					"<actualize_cdn_domain:<%= dirs.src %>/loader.js>"
 				],
 				dest: "<%= dirs.dest %>/loader.js"
+			},
+			"fancybox-css": {
+				src: ["<patch_fancybox_css:<%= dirs.src %>/third-party/jquery/css/fancybox.css>"],
+				dest: "<%= dirs.dest %>/third-party/jquery/css/fancybox.css"
+			},
+			"api": {
+				src: [
+					"<%= dirs.src %>/api.js",
+					"<%= dirs.src %>/stream-server/api.js",
+					"<%= dirs.src %>/identity-server/api.js"
+				],
+				dest: "<%= dirs.dest %>/api.pack.js"
+			},
+			"environment": {
+				src: [
+					"<%= dirs.src %>/utils.js",
+					"<%= dirs.src %>/events.js",
+					"<%= dirs.src %>/labels.js",
+					"<%= dirs.src %>/configuration.js",
+					"<file_strip_banner:<%= dirs.dest %>/api.pack.js>",
+					"<%= dirs.src %>/user-session.js",
+					"<%= dirs.src %>/view.js",
+					"<%= dirs.src %>/control.js",
+					"<%= dirs.src %>/product.js",
+					"<%= dirs.src %>/plugin.js",
+					"<%= dirs.src %>/button.js",
+					"<%= dirs.src %>/tabs.js"
+				],
+				dest: "<%= dirs.dest %>/environment.pack.js"
+			},
+			"third-party/jquery": {
+				src: [
+					"<%= dirs.src %>/third-party/jquery/jquery.js",
+					"<%= dirs.src %>/third-party/jquery/echo.jquery.noconflict.js",
+					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.ihint.js>",
+					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.viewport.mini.js>",
+					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.easing-1.3.min.js>",
+					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.fancybox-1.3.4.min.js>",
+					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.isotope.min.js>"
+				],
+				dest: "<%= dirs.dest %>/third-party/jquery.pack.js"
 			}
 		},
-		packs: {
-			"api": [
-				"<%= dirs.src %>/api.js",
-				"<%= dirs.src %>/stream-server/api.js",
-				"<%= dirs.src %>/identity-server/api.js"
-			],
-			"environment": [
-				"<%= dirs.src %>/utils.js",
-				"<%= dirs.src %>/events.js",
-				"<%= dirs.src %>/labels.js",
-				"<%= dirs.src %>/configuration.js",
-				"<file_strip_banner:<%= dirs.dest %>/api.pack.js>",
-				"<%= dirs.src %>/user-session.js",
-				"<%= dirs.src %>/view.js",
-				"<%= dirs.src %>/control.js",
-				"<%= dirs.src %>/product.js",
-				"<%= dirs.src %>/plugin.js",
-				"<%= dirs.src %>/button.js",
-				"<%= dirs.src %>/tabs.js"
-			],
-			"third-party/jquery": [
-				"<%= dirs.src %>/third-party/jquery/jquery.js",
-				"<%= dirs.src %>/third-party/jquery/echo.jquery.noconflict.js",
-				"<%= dirs.src %>/third-party/jquery/jquery.ihint.js",
-				"<%= dirs.src %>/third-party/jquery/jquery.viewport.mini.js",
-				"<%= dirs.src %>/third-party/jquery/jquery.easing-1.3.min.js",
-				"<%= dirs.src %>/third-party/jquery/jquery.fancybox-1.3.4.min.js",
-				"<%= dirs.src %>/third-party/jquery/echo.fancybox.css.js",
-				"<%= dirs.src %>/third-party/jquery/jquery.ui-1.8.21.min.js",
-				"<%= dirs.src %>/third-party/jquery/jquery.isotope.min.js",
-				"<%= dirs.src %>/third-party/bootstrap/bootstrap-tab.js"
-			]
+		mincss: {
+			"echo-button": {
+				src: "<%= dirs.dest %>/third-party/bootstrap/css/plugins/echo-button.css",
+				dest: "<%= dirs.dest %>/third-party/bootstrap/css/plugins/echo-button.min.css"
+			}
 		},
 		//min: {
 		//	all: ["**/*.pack.js"]
@@ -167,9 +187,25 @@ module.exports = function(grunt) {
 	};
 
 	_.each(["stream-server", "identity-server", "app-server"], function(name) {
-		_config.packs[name + "/controls"] = ["<%= dirs.src %>/" + name + "/controls/*.js"];
-		_config.packs[name + "/plugins"] = ["<%= dirs.src %>/" + name + "/plugins/*.js"];
-		_config.packs[name] = _config.packs[name + "/controls"].concat(_config.packs[name + "/plugins"]);
+		_config.concat[name + "/controls"] = {
+			src: ["<%= dirs.src %>/" + name + "/controls/*.js"],
+			dest: "<%= dirs.dest %>/" + name + "/controls.pack.js"
+		};
+		_config.concat[name + "/plugins"] = {
+			src: ["<%= dirs.src %>/" + name + "/plugins/*.js"],
+			dest: "<%= dirs.dest %>/" + name + "/plugins.pack.js"
+		};
+		_config.concat[name] = {
+			src: [
+				"<file_strip_banner:<%= dirs.dest %>/" + name + "/controls.pack.js>",
+				"<file_strip_banner:<%= dirs.dest %>/" + name + "/plugins.pack.js>"
+			],
+			dest: "<%= dirs.dest %>/" + name + ".pack.js"
+		}
+	});
+
+	_.each(_config.concat, function(file) {
+		file.src.unshift("<banner>");
 	});
 
 	grunt.initConfig(_config);
@@ -181,20 +217,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-exec");
 	grunt.loadNpmTasks("grunt-contrib");
 	grunt.loadTasks("tools/grunt/tasks");
-
-	grunt.registerMultiTask("packs", "Assemble packages", function() {
-		var name = this.target + ".pack.js";
-		grunt.log.write("Assembling \"" + name + "\"...");
-		var files = grunt.file.expandFiles(this.file.src);
-		var code = grunt.helper("wrap_and_concat", files, this.target);
-		code = grunt.template.process(grunt.config("meta.banner")) + "\n" + code;
-		grunt.file.write(grunt.config("dirs.dest") + "/" + name, code);
-
-		if (this.errorCount) {
-			return false;
-		}
-		grunt.log.ok();
-	});
 
 	grunt.registerMultiTask("assemble_css", "Assemble css files", function() {
 		var target = this.target;
@@ -219,11 +241,8 @@ module.exports = function(grunt) {
 			].join(grunt.utils.normalizelf(grunt.utils.linefeed));
 			grunt.helper("less", less, {}, function(css) {
 				grunt.file.write(filepaths["css"], css);
-				grunt.file.write(filepaths["css"].replace(/\.css$/, ".min.css"),
-						 grunt.helper("mincss", css));
 			});
 		});
-		grunt.helper('assemble_fancybox_css');
 
 		if (this.errorCount) {
 			return false;
@@ -234,81 +253,36 @@ module.exports = function(grunt) {
 	grunt.registerTask("docs", "clean:docs exec:docs");
 
 	// Default task
-	grunt.registerTask("default", "clean copy concat:loader assemble_css packs");
+	grunt.registerTask("default", "clean copy assemble_css concat");
 
 	// ==========================================================================
 	// HELPERS
 	// ==========================================================================
 
 	grunt.registerHelper("actualize_cdn_domain", function(filepath) {
-		var config;
-		try {
-			config = grunt.file.readJSON("config.local.json");
-		} catch(e) {
-			grunt.log.writeln("No local configuration file (config.local.json) found...");
-		}
 		var code = grunt.task.directive(filepath, grunt.file.read);
+		var config = grunt.config("local");
 		return config && config.domain
 			? code.replace(/cdn\.echoenabled\.com/ig, config.domain)
 			: code;
 	});
 
-	grunt.registerHelper("wrap_and_concat", function(files, name) {
-		if (!files) {
-			return "";
-		}
-		return files.map(function(filepath) {
-			var code = grunt.task.directive(filepath, grunt.file.read);
-			code = grunt.helper("wrap_code", code, filepath);
-			return code;
-		}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
-	});
-
-	grunt.registerHelper('assemble_fancybox_css', function() {
-		var cssPath = "/third-party/jquery/css/fancybox.css";
-		var source = grunt.task.directive(grunt.config("dirs.src") + cssPath, grunt.file.read);
-		var config;
-		try {
-			config = grunt.file.readJSON("config.local.json");
-		} catch(e) {
-			grunt.log.writeln("No local configuration file (config.local.json) found...");
-		}
+	grunt.registerHelper("patch_fancybox_css", function(filepath) {
+		var css = grunt.task.directive(filepath, grunt.file.read);
+		var config = grunt.config("local");
 		var domainPrefix =
 			"//"  + (config && config.domain ? config.domain : "cdn.echoenabled.com") +
 			"/sdk/third-party/jquery/img/fancybox/";
-		var prepareCSS = function(css) {
-			return css.replace(/\n\#fancybox/g, "\n#fancybox-echo")
-				.replace(/\n\.fancybox/g, "\n.fancybox-echo")
-				.replace(/url\(\'(.*)\'\)/g, "url('" + domainPrefix + "$1')")
-				.replace(/src=\'fancybox\/(.*)\'/g, "src='" + domainPrefix + "$1')");
-		};
-		grunt.file.write(grunt.config("dirs.dest") + cssPath, prepareCSS(source));
+		css = css.replace(/\n\#fancybox/g, "\n#fancybox-echo")
+			.replace(/\n\.fancybox/g, "\n.fancybox-echo")
+			.replace(/url\(\'(.*)\'\)/g, "url('" + domainPrefix + "$1')")
+			.replace(/src=\'fancybox\/(.*)\'/g, "src='" + domainPrefix + "$1')");
+		return css;
 	});
 
-	grunt.registerHelper("wrap_code", function(code, filepath) {
-		var strict = "";
-		if (_.include(_dontWrap, filepath) || /\.pack\.js/.test(filepath)) {
-			return code;
-		}
-		// check if file has Echo specific code
-		if (/\bEcho\.\w+/.test(code)) {
-			var doc = code.match(/@class ((?:\w+\.?)+)\s/);
-			var docClass = doc && doc[1];
-			strict = "\"use strict\";\n\n";
-			if (docClass) {
-				var parts = docClass.split(".Plugins.");
-				// if it's plugin file
-				if (parts[1]) {
-					// we don't wrap plugin files at the moment because they can have 2 plugins in 1 file
-					//code = "var plugin = Echo.Plugin.manifest(\"" + parts[1] + "\", \"" + parts[0] + "\");\n\n" +
-					//	"if (Echo.Plugin.isDefined(plugin)) return;\n\n" + code;
-				} else {
-					code = "if (Echo.Utils.isComponentDefined(\"" + docClass + "\")) return;\n\n" + code;
-				}
-			} else if (filepath) {
-				grunt.log.writeln("File " + filepath + " is missing '@class' definition");
-			}
-		}
-		return "(function(jQuery) {\n" + strict + "var $ = jQuery;\n\n" + code + "\n})(Echo.jQuery);\n";
+	grunt.registerHelper("echo_wrapper", function(filepath) {
+		return "(function(jQuery) {\nvar $ = jQuery;\n\n" +
+			grunt.task.directive(filepath, grunt.file.read) +
+			"\n})(Echo.jQuery);\n";
 	});
 };
