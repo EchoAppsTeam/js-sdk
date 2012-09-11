@@ -178,7 +178,8 @@ suite.prototype.tests.PrivateFunctionsTests = {
 			"target": "http://nymag.com/daily/intel/2012/06/nora-ephron-1941-2012.html",
 			"verb": "post",
 			"type": "http://activitystrea.ms/schema/1.0/comment",
-			"itemURIPattern": undefined
+			"itemURIPattern": undefined,
+			"author": undefined
 		}, "Check decompiler from AS to KVL");
 		QUnit.deepEqual(req._AS2KVL(this.items.postWithMetadata), {
 			"avatar": "http://my.nymag.com/thenext_mrsbass/picture?type=square",
@@ -194,7 +195,8 @@ suite.prototype.tests.PrivateFunctionsTests = {
 			"target": "http://nymag.com/daily/intel/2012/06/nora-ephron-1941-2012.html",
 			"verb": "post",
 			"type": "http://activitystrea.ms/schema/1.0/comment",
-			"itemURIPattern": undefined
+			"itemURIPattern": undefined,
+			"author": undefined
 		}, "Check decompiler from AS to KVL with post and metadata");
 		QUnit.deepEqual(req._AS2KVL(this.items.postWithMetadata.slice(1)), [
 		{
