@@ -105,7 +105,7 @@ Echo.View.prototype.remove = function(element) {
 /**
  * Function which indicates whether the view was rendered or not.
  *
- * return {Boolean}
+ * @return {Boolean}
  */
 Echo.View.prototype.rendered = function() {
 	return !!this._rendered;

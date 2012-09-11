@@ -369,7 +369,7 @@ Echo.Control.prototype.destroy = function(config) {
 /**
  * Method checks if control was initialized from another control.
  *
- * return {Boolean}
+ * @return {Boolean}
  */
 Echo.Control.prototype.dependent = function() {
 	return !!this.config.get("parent");
