@@ -104,13 +104,16 @@ suite.prototype.tests.eventSubscriptions = {
 };
 
 suite.prototype.tests.testMethods = {
+	"config": {
+		"async": true
+	},
 	"check": function() {
 		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
 			"appkey": "test.aboutecho.com",
 			"targetURL": "http://example.com/",
 			"ready": function() {
-				var content = this.dom.get("text");
+				var content = this.view.get("text");
 				var mandatoryCSS = 'echo-streamserver-controls-submit-mandatory';
 				QUnit.ok(this.highlightMandatory(content),
 					"Checking that highlightMandatory() returns true if element is empty");
@@ -126,9 +129,10 @@ suite.prototype.tests.testMethods = {
 					"topic": "Echo.StreamServer.Controls.Submit.onRefresh",
 					"once": true,
 					"handler": function(topic, params) {
-						QUnit.equal(this.dom.get("text").val(), "TestContent",
+						QUnit.equal(this.view.get("text").val(), "TestContent",
 							"Checking that comment field is saved after refresh() method");
 						this.destroy();
+						QUnit.start();
 					}
 				});
 				this.refresh();
@@ -141,7 +145,7 @@ suite.prototype.cases = {};
 
 suite.prototype.cases.name = function(callback) {
 	var target = this.config.target, submit = suite.submit;
-	var button = submit.dom.get("postButton");
+	var button = submit.view.get("postButton");
 	suite.postHandler = function() {
 		var element = $(".echo-streamserver-controls-submit-nameContainer", target);
 		QUnit.ok(element.hasClass('echo-streamserver-controls-submit-mandatory'),
@@ -153,11 +157,11 @@ suite.prototype.cases.name = function(callback) {
 
 suite.prototype.cases.content = function(callback) {
 	var submit = suite.submit;
-	var button = submit.dom.get("postButton");
-	submit.dom.get("name").val("TestName");
+	var button = submit.view.get("postButton");
+	submit.view.get("name").val("TestName");
 	button.off('click', suite.postHandler);
 	suite.postHandler = function() {
-		var content = submit.dom.get("content");
+		var content = submit.view.get("content");
 		QUnit.ok(content.hasClass('echo-streamserver-controls-submit-mandatory'),
 			"Checking that content is mandatory field for anonymous");
 		callback();
@@ -169,7 +173,7 @@ suite.prototype.cases.content = function(callback) {
 suite.prototype.cases.validator = function(callback) {
 	var submit = suite.submit;
 	var validator = function() {
-		var text = submit.dom.get("text");
+		var text = submit.view.get("text");
 		if (text.val() === "Content") {
 			submit.highlightMandatory(text.val(""));
 			return false;
@@ -177,10 +181,10 @@ suite.prototype.cases.validator = function(callback) {
 		return true;
 	};
 	submit.addPostValidator(validator);
-	var button = submit.dom.get("postButton");
+	var button = submit.view.get("postButton");
 	button.off('click', suite.postHandler);
-	var content = submit.dom.get("content");
-	var text = submit.dom.get("text").val("Content");
+	var content = submit.view.get("content");
+	var text = submit.view.get("text").val("Content");
 	suite.postHandler = function() {
 		QUnit.ok(content.hasClass('echo-streamserver-controls-submit-mandatory'),
 			"Checking custom validator");
@@ -191,10 +195,10 @@ suite.prototype.cases.validator = function(callback) {
 
 suite.prototype.cases.post = function(callback) {
 	var submit = suite.submit;
-	var button = submit.dom.get("postButton");
-	var name = submit.dom.get("name").val("TestName");
-	var url = submit.dom.get("url").val("TestURL");
-	var text = submit.dom.get("text").val("TestContent");
+	var button = submit.view.get("postButton");
+	var name = submit.view.get("name").val("TestName");
+	var url = submit.view.get("url").val("TestURL");
+	var text = submit.view.get("text").val("TestContent");
 	submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostComplete",
 		"once": true,
@@ -210,16 +214,16 @@ suite.prototype.cases.post = function(callback) {
 
 suite.prototype.cases.user = function(callback) {
 	var submit = suite.submit;
-	QUnit.equal(submit.dom.get("name").val(), "john.doe", "Checking name of logged user");
-	QUnit.equal(submit.dom.get("avatar").html(), "<img src=\"http://c0.echoenabled.com/images/avatar-default.png\">",
+	QUnit.equal(submit.view.get("name").val(), "john.doe", "Checking name of logged user");
+	QUnit.equal(submit.view.get("avatar").html(), "<img src=\"http://c0.echoenabled.com/images/avatar-default.png\">",
 		"Checking avatar of logged user");
 	callback();
 };
 
 suite.prototype.cases.onInit = function(callback) {
 	var submit = suite.submit;
-	var button = submit.dom.get("postButton");
-	var text = submit.dom.get("text").val("UserContent");
+	var button = submit.view.get("postButton");
+	var text = submit.view.get("text").val("UserContent");
 	submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
 		"once": true,
@@ -254,8 +258,8 @@ suite.prototype.cases.onInit = function(callback) {
 
 suite.prototype.cases.onComplete = function(callback) {
 	var submit = suite.submit;
-	var button = submit.dom.get("postButton");
-	var text = submit.dom.get("text").val("UserContent");
+	var button = submit.view.get("postButton");
+	var text = submit.view.get("text").val("UserContent");
 	submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
 		"once": true,
@@ -281,7 +285,7 @@ suite.prototype.cases.onComplete = function(callback) {
 
 suite.prototype.cases.onError = function(callback) {
 	var submit = suite.submit;
-	var text = submit.dom.get("text").val("UserContent");
+	var text = submit.view.get("text").val("UserContent");
 	submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
 		"once": true,

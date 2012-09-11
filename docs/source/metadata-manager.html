@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function(){
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager
@@ -35,6 +38,8 @@
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;MetadataManager&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -61,8 +66,9 @@ plugin.init = function() {
  * Specifies the button label to undo the corresponding action.
  *
  * @cfg {Object|Function} controls.visible
- * Specifies the condition of visibility. Applicable only for tags.
- * Can be either an object or a function.
+ * Specifies the visibility condition. Applicable only for tags.
+ * Can be either an object or a function. In case of a function type,
+ * the function is called within the Item context (&quot;this&quot; points to the current item).
  *
  * Example: simple marker control.
  *
@@ -125,8 +131,9 @@ plugin.init = function() {
  * 				&quot;tag&quot;: &quot;football&quot;,
  * 				&quot;labelMark&quot;: &quot;Set Football tag&quot;,
  * 				&quot;labelUnmark&quot;: &quot;Unset Football tag&quot;,
- * 				&quot;visible&quot;: function(application, item) {
- * 					var user = application.user;
+ * 				&quot;visible&quot;: function() {
+					var item = this;
+ * 					var user = item.user;
  * 					if (user.get(&quot;state&quot;) == &quot;Untouched&quot;) return true;
  * 					return false;
  * 				}
@@ -149,7 +156,7 @@ plugin.methods._assembleButton = function(action, control) {
 	var self = this;
 	var type = control.marker ? &quot;marker&quot; : &quot;tag&quot;;
 	var marker = (control.marker || control.tag);
-	var name = action + &quot;As&quot; + marker.replace(/[^a-z0-9_-]/ig, '');
+	var name = action + &quot;As&quot; + Echo.Utils.capitalize(marker.replace(/[^a-z0-9_-]/ig, ''));
 	var callback = function() {
 		var item = this;
 		var operation = action.toLowerCase();
@@ -167,43 +174,40 @@ plugin.methods._assembleButton = function(action, control) {
 				&quot;content&quot;: marker
 			}
 		};
+		var publishCompleteEvent = self._prepareCompleteEventPublish({
+			&quot;name&quot;: name,
+			&quot;type&quot;: type,
+			&quot;action&quot;: action
+		});
 		Echo.StreamServer.API.request({
 			&quot;endpoint&quot;: &quot;submit&quot;,
 			&quot;submissionProxyURL&quot;: item.config.get(&quot;submissionProxyURL&quot;),
-			&quot;onData&quot;: function() {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onMarkAs_value_Complete'>				/**
-</span>				* @event onMarkAs_value_Complete
-				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkAs_value_Complete
-				* action specific event which is generated automatically using the parametrized value of marker/tag.
+			&quot;onData&quot;: function(response) {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onMarkComplete'>				/**
+</span>				* @event onMarkComplete
+				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkComplete
 				* Triggered when the Mark action is finished.
-				*
-				* Example events:
-				*
-				* + onMarkAssticky
-				* + onMarkAsfootball
 				*/
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onUnmarkAs_value_Complete'>				/**
-</span>				* @event onUnmarkAs_value_Complete
-				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarkAs_value_Complete
-				* action specific event which is generated automatically using the parametrized value of marker/tag.
-				* Triggered when the Mark action is finished.
-				*
-				* Example events:
-				*
-				* + onUnmarkAssticky
-				* + onUnmarkAsfootball
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onUnmarkComplete'>				/**
+</span>				* @event onUnmarkComplete
+				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarComplete
+				* Triggered when the Unmark action is finished.
 				*/
-				self.events.publish({
-					&quot;topic&quot;: &quot;on&quot; + name + &quot;Complete&quot;,
-					&quot;data&quot;: {
-						&quot;item&quot;: {
-							&quot;data&quot;: item.get(&quot;data&quot;),
-							&quot;target&quot;: item.get(&quot;dom.content&quot;)
-						}
-					},
-					&quot;bubble&quot;: true
-				});
+				publishCompleteEvent(&quot;Complete&quot;, response);
 				self.requestDataRefresh();
+			},
+			&quot;onError&quot;: function(response) {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onMarkError'>				/**
+</span>				* @event onMarkError
+				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkError
+				* Triggered when the Mark action completed with error.
+				*/
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onUnmarkError'>				/**
+</span>				* @event onUnmarkError
+				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarError
+				* Triggered when the Unmark action completed with error.
+				*/
+				publishCompleteEvent(&quot;Error&quot;, response);
 			},
 			&quot;data&quot;: {
 				&quot;appkey&quot;: item.config.get(&quot;appkey&quot;),
@@ -225,6 +229,31 @@ plugin.methods._assembleButton = function(action, control) {
 	};
 };
 
+plugin.methods._prepareCompleteEventPublish = function(args) {
+	var self = this;
+	var item = this.component;
+	var publishArgs = {
+		&quot;data&quot;: {
+			&quot;item&quot;: {
+				&quot;data&quot;: item.get(&quot;data&quot;),
+				&quot;target&quot;: item.get(&quot;view.content&quot;)
+			},
+			&quot;type&quot;: args.type,
+			&quot;name&quot;: args.name
+		}
+	};
+	return function(state, response) {
+		self.events.publish(
+			$.extend(true, publishArgs, {
+				&quot;topic&quot;: &quot;on&quot; + args.action + state,
+				&quot;data&quot;: {
+					&quot;response&quot;: response
+				}
+			})
+		);
+	};
+};
+
 plugin.methods._isButtonVisible = function(control, marker, action, type) {
 	var item = this.component;
 	var visible = (!~$.inArray(marker, item.get(&quot;data.object.&quot; + type + &quot;s&quot;) || [])) ^ (action === &quot;Unmark&quot;);
@@ -232,10 +261,7 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 	if (item.user.is(&quot;admin&quot;)) return true;
 	var customProxyURL = item.config.get(&quot;submissionProxyURL&quot;);
 	if (type === &quot;marker&quot; &amp;&amp; !customProxyURL) return false;
-	control.visible = control.visible || function() { return false; };
-	if ($.isFunction(control.visible)) {
-		return control.visible(item);
-	}
+	control.visible = item.invoke(control.visible);
 	if ($.isEmptyObject(control.visible)) return false;
 	var isVisible = true;
 	$.each([&quot;state&quot;, &quot;roles&quot;, &quot;markers&quot;], function(i, field) {
@@ -248,12 +274,12 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 			}
 		}
 	});
-	return isVisible;
+	return !!isVisible;
 };
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

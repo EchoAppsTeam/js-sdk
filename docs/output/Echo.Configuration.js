@@ -112,7 +112,7 @@ Ext.data.JsonP.Echo_Configuration({
 
     ]
   },
-  "linenr": 3,
+  "linenr": 8,
   "files": [
     {
       "filename": "configuration.js",

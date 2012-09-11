@@ -6,7 +6,50 @@ _stream.render = {
 	"target": $("<div>")
 };
 
+_stream.itemOnReceive = {
+	"query": "",
+	"target": $("<div>"),
+	"item": {
+		"data": {
+			"id": "",
+			"unique": "",
+			"target": {
+				"conversationID": ""
+			},
+			"verbs": [],
+			"provider": {
+				"icon": "",
+				"name": "",
+				"uri": ""
+			},
+			"normalized": true
+		}
+	}
+};
 _stream.item = {
+	"query": "",
+	"target": $("<div>"),
+	"item": {
+		"data": {
+			"id": "",
+			"unique": "",
+			"target": {
+				"conversationID": ""
+			},
+			"verbs": [],
+			"provider": {
+				"icon": "",
+				"name": "",
+				"uri": ""
+			},
+			"hasMoreChildren": "",
+			"normalized": true
+		},
+		"target": $("<div>")
+	}
+};
+
+_stream.items = {
 	"query": "",
 	"target": $("<div>"),
 	"item": {
@@ -68,20 +111,79 @@ Echo.Tests.Events.contracts = {
 	"Echo.StreamServer.Controls.Stream.onRender": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onRerender": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onMoreButtonPress": _stream.render,
-	"Echo.StreamServer.Controls.Stream.Item.onRender": _stream.render,
+	"Echo.StreamServer.Controls.Stream.Item.onRender": _stream.itemOnReceive,
 	"Echo.StreamServer.Controls.Stream.Item.onReady": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onReady": _stream.render,
+	"Echo.StreamServer.Controls.Stream.Item.onAdd": _stream.item,
+	"Echo.StreamServer.Controls.Stream.Item.onChildrenExpand": {
+		"data": {
+			"id": ""
+		},
+		"target": $("<div>"),
+		"query": "",
+		"item": {
+			"data": {
+				"id": "",
+				"verbs": [],
+				"targets": [],
+				"postedTime": "",
+				"normalized": true,
+				"target": {
+					"id": "",
+					"conversationID": ""
+				},
+				"unique": ""
+			},
+			"target": $("<div>")
+		}
+	},
+	"Echo.StreamServer.Controls.Stream.Item.onButtonClick": {
+		"name": "",
+		"plugin": "",
+		"item": {
+			"data": {
+				"id": "",
+				"verbs": [],
+				"targets": [],
+				"postedTime": "",
+				"normalized": true,
+				"target": {
+					"id": "",
+					"conversationID": ""
+				},
+				"unique": ""
+			},
+			"target": $("<div>")
+		},
+		"target": $("<div>"),
+		"query": "query_string"
+	},
 
-	"Echo.StreamServer.Controls.Stream.Item.onReceive": _stream.item,
+	"Echo.StreamServer.Controls.Stream.Item.onReceive": _stream.itemOnReceive,
 	"Echo.StreamServer.Controls.Stream.Item.onRerender": _stream.item,
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Curation.onSelect": _stream.item,
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Curation.onUnselect": _stream.item,
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.Curation.onSelect": _stream.items,
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.Curation.onUnselect": _stream.items,
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView": {
 		"action": "",
-		"itemUnique": "",
-		"actorID": "",
 		"priority": "",
-		"handler": function() { return true; }
+		"handler": function() { return true; },
+		"target": $("<div>"),
+		"query": "",
+		"item": {
+			"data": {
+				"id": "",
+				"verbs": [],
+				"targets": [],
+				"postedTime": "",
+				"normalized": true,
+				"target": {
+					"id": "",
+					"conversationID": ""
+				},
+				"unique": ""
+			},
+			"target": $("<div>")
+		}
 	},
 
 	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRender": {},
@@ -92,10 +194,10 @@ Echo.Tests.Events.contracts = {
 	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia": {},
 	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia": {},
 
-	"Echo.StreamServer.Controls.Stream.Plugins.Like.onLikeComplete": _stream.item,
-	"Echo.StreamServer.Controls.Stream.Plugins.Like.onUnlikeComplete": _stream.item,
-	"Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagComplete": _stream.item,
-	"Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnflagComplete": _stream.item,
+	"Echo.StreamServer.Controls.Stream.Plugins.Like.onLikeComplete": _stream.items,
+	"Echo.StreamServer.Controls.Stream.Plugins.Like.onUnlikeComplete": _stream.items,
+	"Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagComplete": _stream.items,
+	"Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnflagComplete": _stream.items,
 
 	"Echo.StreamServer.Controls.Submit.onRerender": _submit.onRerender,
 	"Echo.StreamServer.Controls.Submit.onRefresh": _submit.onRerender,

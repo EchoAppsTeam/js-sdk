@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 if (!window.Echo) window.Echo = {};
 
@@ -291,20 +294,20 @@ Echo.Utils.htmlize = function(text) {
 	return $(&quot;&lt;div&gt;&quot;).text(text).html();
 };
 
-<span id='Echo-Utils-static-method-object2JSON'>/**
+<span id='Echo-Utils-static-method-objectToJSON'>/**
 </span> * @static
  * Method to convert JavaScript value to JavaScript Object Notation (JSON) string.
  *
  * Methods converts JavaScript object to JSON string.
  * This function uses JSON.stringify() method if it is available in the browser.
  *
- * 	Echo.Utils.object2JSON(null); // will return 'null'
- * 	Echo.Utils.object2JSON(123); // will return '123'
- * 	Echo.Utils.object2JSON(Number.POSITIVE_INFINITY); // will return 'null'
- * 	Echo.Utils.object2JSON(&quot;string\n&quot;); // will return '&quot;string\n&quot;'
- * 	Echo.Utils.object2JSON(true); // will return true
- * 	Echo.Utils.object2JSON([&quot;value1&quot;, &quot;value2&quot;]); // will return '[&quot;value1&quot;,&quot;value2&quot;]'
- * 	Echo.Utils.object2JSON({&quot;k1&quot;: &quot;v1&quot;, &quot;k2&quot;: &quot;v2&quot;}); // will return '{&quot;k1&quot;:&quot;v1&quot;,&quot;k2&quot;:&quot;v2&quot;}'
+ * 	Echo.Utils.objectToJSON(null); // will return 'null'
+ * 	Echo.Utils.objectToJSON(123); // will return '123'
+ * 	Echo.Utils.objectToJSON(Number.POSITIVE_INFINITY); // will return 'null'
+ * 	Echo.Utils.objectToJSON(&quot;string\n&quot;); // will return '&quot;string\n&quot;'
+ * 	Echo.Utils.objectToJSON(true); // will return true
+ * 	Echo.Utils.objectToJSON([&quot;value1&quot;, &quot;value2&quot;]); // will return '[&quot;value1&quot;,&quot;value2&quot;]'
+ * 	Echo.Utils.objectToJSON({&quot;k1&quot;: &quot;v1&quot;, &quot;k2&quot;: &quot;v2&quot;}); // will return '{&quot;k1&quot;:&quot;v1&quot;,&quot;k2&quot;:&quot;v2&quot;}'
  *
  * @param {Mixed} obj
  * The value to be converted.
@@ -312,7 +315,7 @@ Echo.Utils.htmlize = function(text) {
  * @return {String}
  * String containing JSON.
  */
-Echo.Utils.object2JSON = function(obj) {
+Echo.Utils.objectToJSON = function(obj) {
 	if (JSON &amp;&amp; JSON.stringify) {
 		return JSON.stringify(obj);
 	}
@@ -341,7 +344,7 @@ Echo.Utils.object2JSON = function(obj) {
 		case &quot;boolean&quot; : out = obj.toString(); break;
 		default :
 			if (obj instanceof Array) {
-				var container = $.map(obj, function(element) { return Echo.Utils.object2JSON(element); });
+				var container = $.map(obj, function(element) { return Echo.Utils.objectToJSON(element); });
 				out = '[' + container.join(&quot;,&quot;) + ']';
 			} else if (obj instanceof Object) {
 				var source = obj.exportProperties || obj;
@@ -350,7 +353,7 @@ Echo.Utils.object2JSON = function(obj) {
 						property = value;
 						value = obj[property];
 					}
-					acc.push('&quot;' + property + '&quot;:' + Echo.Utils.object2JSON(value));
+					acc.push('&quot;' + property + '&quot;:' + Echo.Utils.objectToJSON(value));
 				});
 				out = '{' + container.join(&quot;,&quot;) + '}';
 			} else {
@@ -606,17 +609,18 @@ Echo.Utils.getUniqueString = function() {
  *
  * This function performs prototype inheritance of the JS objects.
  *
- * @param {Object} child
- * Class which should be entended.
- *
  * @param {Object} parent
  * Class which should be used as a parent for the first class.
+ *
+ * @param {Object} child
+ * Class which should be entended.
  *
  * @return {Object}
  * Resulting class.
  */
-Echo.Utils.inherit = function(child, parent) {
+Echo.Utils.inherit = function(parent, child) {
 	var F = function() {};
+	child = child || function() {};
 	F.prototype = parent.prototype;
 	child.prototype = new F;
 	child.prototype.constructor = child;
@@ -639,7 +643,7 @@ Echo.Utils.inherit = function(child, parent) {
  */
 Echo.Utils.objectToQuery = function(data) {
 	return $.map(data || {}, function(value, key) {
-		return key + &quot;=&quot; + encodeURIComponent(Echo.Utils.object2JSON(value));
+		return key + &quot;=&quot; + encodeURIComponent(Echo.Utils.objectToJSON(value));
 	}).join(&quot;&amp;&quot;);
 };
 
@@ -828,8 +832,6 @@ Echo.Utils.sequentialCall = function(actions, callback) {
 	});
 };
 
-})();
-
 <span id='Echo-Utils-static-method-capitalize'>/**
 </span> * @static
  * Function to Replacement of first character in the words with uppercase character
@@ -842,6 +844,84 @@ Echo.Utils.capitalize = function(string) {
 		return match.toUpperCase();
 	});
 };
+
+<span id='Echo-Utils-static-method-substitute'>/**
+</span> * @static
+ * Templater function which compiles given template using the provided data.
+ *
+ * Function can be used widely for html templates processing or any other action
+ * requiring string interspersion.
+ *
+ * @param {Object} args
+ * Specifies substitution process and parameters.
+ *
+ * @param {String} args.template
+ * Template containing placeholders used for data interspersion.
+ *
+ * @param {Object} [args.data]
+ * Data used in the template compilation.
+ *
+ * @param {Boolean} [args.strict]
+ * Specifies whether the template should be replaced with the corresponding value,
+ * preserving replacement value type.
+ *
+ * @param {Object} [args.instructions]
+ * Object containing the list of extra instructions to be applied during template compilation.
+ *
+ * @return {String}
+ * Compiled string value.
+ */
+Echo.Utils.substitute = function(args) {
+	var utils = this;
+	var substitutions = {
+		&quot;data&quot;: function(key, defaults) {
+			return utils.getNestedValue(args.data, key, defaults);
+		}
+	};
+	var instructions = $.extend(substitutions, args.instructions);
+	var regex = utils.regexps.templateSubstitution;
+	var template = args.template;
+
+	// checking if we need to execute in a strict mode,
+	// i.e. whether to keep the substitution value type or not
+	if (args.strict &amp;&amp; (new RegExp(&quot;^&quot; + regex + &quot;$&quot;, &quot;i&quot;)).test(template)) {
+		var match = new RegExp(regex, &quot;i&quot;).exec(template);
+		if (match &amp;&amp; match[1] &amp;&amp; instructions[match[1]]) {
+			return instructions[match[1]](match[2]);
+		}
+	}
+
+	// perform regular string substitution
+	return template.replace(new RegExp(regex, &quot;ig&quot;), function(match, key, value) {
+		if (!instructions[key]) return match;
+		var result = instructions[key](value, &quot;&quot;);
+		var allowedTypes = [&quot;number&quot;, &quot;string&quot;, &quot;boolean&quot;];
+		return ~$.inArray(typeof result, allowedTypes) ? result : &quot;&quot;;
+	});
+};
+
+<span id='Echo-Utils-static-method-invoke'>/**
+</span> * @static
+ * Function which checks if the value passed as a first argument is a function and executes
+ * it in given context. If the first argument has different type, it's returned as is.
+ *
+ * @param {Mixed} mixed
+ * The value which should be checked and executed in case of a function type.
+ *
+ * @param {Object} context
+ * Context in which the function should be executed.
+ *
+ * @return {Mixed}
+ * The result of the function call in case the first argument is a function
+ * or the first argument as is otherwise.
+ */
+Echo.Utils.invoke = function(mixed, context) {
+	return $.isFunction(mixed)
+		? context ? mixed.call(context) : mixed()
+		: mixed;
+};
+
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

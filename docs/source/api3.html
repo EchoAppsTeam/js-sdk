@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Echo.API = {&quot;Transports&quot;: {}, &quot;Request&quot;: {}};
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+Echo.API = {&quot;Transports&quot;: {}, &quot;Request&quot;: {}};
 
 var utils = Echo.Utils;
 
@@ -67,7 +72,7 @@ Echo.API.Transports.AJAX = function(config) {
 	return Echo.API.Transports.AJAX.parent.constructor.call(this, config);
 };
 
-utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transport);
+utils.inherit(Echo.API.Transport, Echo.API.Transports.AJAX);
 
 Echo.API.Transports.AJAX.prototype._getScheme = function() {
 	return this.config.get(&quot;secure&quot;) ? &quot;https:&quot; : &quot;http:&quot;;
@@ -76,15 +81,15 @@ Echo.API.Transports.AJAX.prototype._getScheme = function() {
 Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 	var self = this;
 	var ajaxSettings = {
-		url: this._prepareURL(),
-		type: this.config.get(&quot;method&quot;),
-		error: function(errorResponse, requestParams) {
+		&quot;url&quot;: this._prepareURL(),
+		&quot;type&quot;: this.config.get(&quot;method&quot;),
+		&quot;error&quot;: function(errorResponse, requestParams) {
 			errorResponse = self._wrapErrorResponse(errorResponse);
 			self.config.get(&quot;onError&quot;)(errorResponse, requestParams);
 		},
-		success: this.config.get(&quot;onData&quot;),
-		beforeSend: this.config.get(&quot;onOpen&quot;),
-		dataType: &quot;json&quot;
+		&quot;success&quot;: this.config.get(&quot;onData&quot;),
+		&quot;beforeSend&quot;: this.config.get(&quot;onOpen&quot;),
+		&quot;dataType&quot;: &quot;json&quot;
 	};
 	if (&quot;XDomainRequest&quot; in window &amp;&amp; window.XDomainRequest != null) {
 		var xhrOrigin = $.ajaxSettings.xhr;
@@ -158,7 +163,7 @@ Echo.API.Transports.JSONP = function(config) {
 	return Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
 };
 
-utils.inherit(Echo.API.Transports.JSONP, Echo.API.Transports.AJAX);
+utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transports.JSONP);
 
 Echo.API.Transports.JSONP.prototype.send = function(data) {
 	if (this.config.get(&quot;method&quot;).toLowerCase() === &quot;get&quot;) {
@@ -224,7 +229,7 @@ Echo.API.Transports.WebSocket = function(config) {
 	return Echo.API.Transports.WebSocket.parent.constructor.apply(this, arguments);
 };
 
-utils.inherit(Echo.API.Transports.WebSocket, Echo.API.Transport);
+utils.inherit(Echo.API.Transport, Echo.API.Transports.WebSocket);
 
 Echo.API.Transports.WebSocket.prototype._getScheme = function() {
 	return this.config.get(&quot;secure&quot;) ? &quot;wss:&quot; : &quot;ws:&quot;;
@@ -234,7 +239,7 @@ Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 	var self = this;
 	var socket = new (window.WebSocket || window.MozWebSocket)(this._prepareURL());
 	socket.onmessage = function(event) {
-		self.config.get(&quot;onData&quot;)(utils.parseJSON(event.data));
+		self.config.get(&quot;onData&quot;)($.parseJSON(event.data));
 	};
 	socket.onopen = this.config.get(&quot;onOpen&quot;);
 	socket.onclose = this.config.get(&quot;onClose&quot;);
@@ -246,7 +251,7 @@ Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 };
 
 Echo.API.Transports.WebSocket.prototype.send = function(params) {
-	this.transportObject.send(utils.object2JSON(params));
+	this.transportObject.send(utils.objectToJSON(params));
 };
 
 Echo.API.Transports.WebSocket.prototype.abort = function() {
@@ -265,34 +270,53 @@ Echo.API.Transports.WebSocket.available = function() {
  */
 /*
  * @constructor
- * @param {Object} config (required) Configuration data.
+ * @param {Object} config
+ * Configuration data.
  */
 Echo.API.Request = function(config) {
 <span id='Echo-API-Request-cfg-endpoint'>	/**
-</span>	 * @cfg {String} endpoint (required) Specifes the API endpoint.
+</span>	 * @cfg {String} endpoint
+	 * Specifes the API endpoint.
 	 */
 	if (!config || !config.endpoint) return;
 	this.config = new Echo.Configuration(config, {
 <span id='Echo-API-Request-cfg-onData'>		/**
-</span>		 * @cfg {Function} [onData] Callback called after API request succeded.
+</span>		 * @cfg {Function} [onData]
+		 * Callback called after API request succeded.
 		 */
 <span id='Echo-API-Request-cfg-onError'>		/**
-</span>		 * @cfg {Function} [onError] Callback called after API request failed. 
+</span>		 * @cfg {Function} [onError]
+		 * Callback called after API request failed. 
 		 */
 <span id='Echo-API-Request-cfg-onOpen'>		/**
-</span>		 * @cfg {Function} [onOpen] Callback called before sending an API request.
+</span>		 * @cfg {Function} [onOpen]
+		 * Callback called before sending an API request.
 		 */
 <span id='Echo-API-Request-cfg-onClose'>		/**
-</span>		 * @cfg {Function} [onClose] Callback called after API request aborting.
+</span>		 * @cfg {Function} [onClose]
+		 * Callback called after API request aborting.
 		 */
 <span id='Echo-API-Request-cfg-apiBaseUrl'>		/**
-</span>		 * @cfg {String} [apiBaseUrl] Specifies the base URL for API requests
+</span>		 * @cfg {String} [apiBaseUrl]
+		 * Specifies the base URL for API requests
 		 */
 		&quot;apiBaseURL&quot;: &quot;api.echoenabled.com/v1/&quot;,
 <span id='Echo-API-Request-cfg-transport'>		/**
-</span>		 * @cfg {String} [transport] Specifies the transport name.
+</span>		 * @cfg {String} [transport]
+		 * Specifies the transport name.
 		 */
-		&quot;transport&quot;: &quot;ajax&quot;
+		&quot;transport&quot;: &quot;ajax&quot;,
+<span id='Echo-API-Request-cfg-method'>		/**
+</span>		 * @cfg {String} [method]
+		 * Specifies the request method.
+		 */
+		&quot;method&quot;: &quot;GET&quot;,
+<span id='Echo-API-Request-cfg-timeout'>		/**
+</span>		 * @cfg {Number} [timeout]
+		 * Specifies the number of seconds after which onError callback will be
+		 * called if API request failed.
+		 */
+		&quot;timeout&quot;: 30
 	});
 };
 
@@ -303,8 +327,8 @@ Echo.API.Request.prototype._isSecureRequest = function() {
 };
 
 <span id='Echo-API-Request-method-send'>/**
-</span> * @method
- * Method performing api request using given parameters.
+</span> * Method performing api request using given parameters.
+ *
  * @param {Object} [args] Request parameters.
  * @param {Boolean} [args.force] Flag to initiate aggressive polling.
  */
@@ -326,7 +350,7 @@ Echo.API.Request.prototype.request = function(params) {
 	this.transport = this._getTransport();
 	if (this.transport) {
 		this.transport.send(params);
-		if (timeout) {
+		if (timeout &amp;&amp; this.config.get(&quot;onError&quot;)) {
 			this._timeoutId = setTimeout(function() {
 				self.config.get(&quot;onError&quot;)({
 					&quot;result&quot;: &quot;error&quot;,
@@ -379,6 +403,9 @@ Echo.API.Request.prototype._getHandlersByConfig = function() {
 
 Echo.API.Request.prototype._prepareURI = function() {
 	return this.config.get(&quot;apiBaseURL&quot;).replace(/^(http|ws)s?:\/\//, &quot;&quot;) + this.config.get(&quot;endpoint&quot;);
-};</pre>
+};
+
+})(Echo.jQuery);
+</pre>
 </body>
 </html>

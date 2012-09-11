@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function(){
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.UserSession&quot;)) return;
 
 <span id='Echo-UserSession-method-constructor'><span id='Echo-UserSession'>/**
 </span></span> * @singleton
@@ -519,7 +524,7 @@ Echo.UserSession._anyRole = function(value) {
 	return this.any(&quot;roles&quot;, value);
 };
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

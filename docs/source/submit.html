@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Submit&quot;)) return;
 
 <span id='Echo-StreamServer-Controls-Submit-method-constructor'><span id='Echo-StreamServer-Controls-Submit'>/**
 </span></span> * @class Echo.StreamServer.Controls.Submit
@@ -43,12 +48,12 @@ submit.init = function() {
 	this.addPostValidator(function() {
 		var valid = true;
 		$.each([&quot;name&quot;, &quot;text&quot;], function (i, field) {
-			valid = !self.highlightMandatory(self.dom.get(field));
+			valid = !self.highlightMandatory(self.view.get(field));
 			return valid;
 		});
 		return valid;
 	}, &quot;low&quot;);
-	this.dom.render();
+	this.render();
 	this.ready();
 };
 
@@ -188,15 +193,18 @@ submit.config = {
 	&quot;targetQuery&quot;: undefined
 };
 
-// TODO: need investigate
-//submit.dependencies = [{
-//	&quot;loaded&quot;: function() { return false; },
-//	&quot;url&quot;: &quot;sdk/third-party/jquery/css/fancybox.css&quot;
-//}];
-
 submit.vars = {
 	&quot;validators&quot;: []
 };
+
+submit.dependencies = [{
+	&quot;loaded&quot;: function() { return !!Echo.jQuery.echoButton; },
+	&quot;url&quot;: &quot;sdk/third-party/bootstrap/plugins/echo-button/echo-button.js&quot;
+}, {
+	&quot;url&quot;: &quot;sdk/third-party/bootstrap/plugins/echo-button/echo-button.css&quot;
+}, {
+	&quot;url&quot;: &quot;sdk/third-party/jquery/css/fancybox.css&quot;
+}];
 
 submit.labels = {
 <span id='Echo-StreamServer-Controls-Submit-property-markers'>	/**
@@ -285,7 +293,7 @@ submit.templates.main =
 		'&lt;/div&gt;' +
 		'&lt;div class=&quot;{class:controls}&quot;&gt;' +
 			'&lt;div class=&quot;{class:postContainer}&quot;&gt;' +
-				'&lt;button class=&quot;{class:postButton} echo-primaryFont&quot;&gt;&lt;/button&gt;' +
+				'&lt;button class=&quot;{class:postButton} btn echo-primaryFont&quot;&gt;&lt;/button&gt;' +
 			'&lt;/div&gt;' +
 			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
 		'&lt;/div&gt;' +
@@ -309,7 +317,7 @@ submit.renderers.markersContainer = submit.renderers.tagsContainer;
 </span> * @echo_renderer
  */
 submit.renderers.markers = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		&quot;name&quot;: &quot;_metaFields&quot;,
 		&quot;target&quot;: element,
 		&quot;extra&quot;: {&quot;type&quot;: &quot;markers&quot;}
@@ -320,7 +328,7 @@ submit.renderers.markers = function(element) {
 </span> * @echo_renderer
  */
 submit.renderers.tags = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		&quot;name&quot;: &quot;_metaFields&quot;,
 		&quot;target&quot;: element,
 		&quot;extra&quot;: {&quot;type&quot;: &quot;tags&quot;}
@@ -379,12 +387,12 @@ submit.renderers.postButton = function(element) {
 			&quot;label&quot;: self.labels.get(&quot;post&quot;)
 		},
 		&quot;posting&quot;: {
-			&quot;icon&quot;: &quot;echo-icon-waiting&quot;,
+			&quot;icon&quot;: Echo.Loader.getURL(&quot;sdk/images/loading.gif&quot;),
 			&quot;disabled&quot;: true,
 			&quot;label&quot;: self.labels.get(&quot;posting&quot;)
 		}
 	};
-	var button = new Echo.Button(element.empty(), states.normal);
+	element.empty().echoButton(states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
@@ -399,7 +407,7 @@ submit.renderers.postButton = function(element) {
 		subscriptions[topic] = self.events.subscribe({
 			&quot;topic&quot;: topic,
 			&quot;handler&quot;: function(topic, params) {
-				button.update(state);
+				element.echoButton(&quot;update&quot;, state);
 				if (callback) callback(params);
 			}
 		});
@@ -407,9 +415,9 @@ submit.renderers.postButton = function(element) {
 	
 	subscribe(&quot;Init&quot;, states.posting);
 	subscribe(&quot;Complete&quot;, states.normal, function() {
-		self.dom.get(&quot;text&quot;).val(&quot;&quot;).trigger(&quot;blur&quot;);
-		self.dom.render({&quot;name&quot;: &quot;tags&quot;});
-		self.dom.render({&quot;name&quot;: &quot;markers&quot;});
+		self.view.get(&quot;text&quot;).val(&quot;&quot;).trigger(&quot;blur&quot;);
+		self.view.render({&quot;name&quot;: &quot;tags&quot;});
+		self.view.render({&quot;name&quot;: &quot;markers&quot;});
 	});
 	subscribe(&quot;Error&quot;, states.normal, function(params) {
 		self._showError(params.postData);
@@ -427,7 +435,7 @@ submit.renderers._metaFields = function(element, extra) {
 	var type = extra.type;
 	var data = this.get(&quot;data.object.&quot; + type) || [];
 	var value = $.trim(Echo.Utils.stripTags(data.join(&quot;, &quot;)));
-	return this.dom.get(type).iHint({
+	return this.view.get(type).iHint({
 		&quot;text&quot;: this.labels.get(type + &quot;Hint&quot;),
 		&quot;className&quot;: &quot;echo-secondaryColor&quot;
 	}).val(value).blur();
@@ -449,9 +457,9 @@ submit.methods.post = function() {
 	};
 	var postType = this.config.get(&quot;type&quot;, this._getASURL(&quot;comment&quot;));
 	var content = [].concat(
-		self._getActivity(&quot;post&quot;, postType, self.dom.get(&quot;text&quot;).val()),
-		self._getActivity(&quot;tag&quot;, this._getASURL(&quot;marker&quot;), self.dom.get(&quot;markers&quot;).val()),
-		self._getActivity(&quot;tag&quot;, this._getASURL(&quot;tag&quot;), self.dom.get(&quot;tags&quot;).val())
+		self._getActivity(&quot;post&quot;, postType, self.view.get(&quot;text&quot;).val()),
+		self._getActivity(&quot;tag&quot;, this._getASURL(&quot;marker&quot;), self.view.get(&quot;markers&quot;).val()),
+		self._getActivity(&quot;tag&quot;, this._getASURL(&quot;tag&quot;), self.view.get(&quot;tags&quot;).val())
 	);
 	var entry = {
 		&quot;content&quot;: content,
@@ -534,9 +542,9 @@ submit.methods.addPostValidator = function(validator, priority) {
  */
 submit.methods.refresh = function() {
 	var self = this;
-	this.config.set(&quot;data.object.content&quot;, this.dom.get(&quot;text&quot;).val());
+	this.config.set(&quot;data.object.content&quot;, this.view.get(&quot;text&quot;).val());
 	$.map([&quot;tags&quot;, &quot;markers&quot;], function(field) {
-		var elements = self.dom.get(field).val().split(&quot;, &quot;);
+		var elements = self.view.get(field).val().split(&quot;, &quot;);
 		self.config.set(&quot;data.object.&quot; + field, elements || []);
 	});
 	var component = Echo.Utils.getComponent(&quot;Echo.StreamServer.Controls.Submit&quot;);
@@ -549,7 +557,7 @@ submit.methods._getActivity = function(verb, type, data) {
 			&quot;objectTypes&quot;: [ this._getASURL(&quot;person&quot;) ],
 			&quot;name&quot;: this.user.get(&quot;name&quot;, this.user.is(&quot;logged&quot;)
 					? &quot;&quot;
-					: this.dom.get(&quot;name&quot;).val()),
+					: this.view.get(&quot;name&quot;).val()),
 			&quot;avatar&quot;: this.user.get(&quot;avatar&quot;, &quot;&quot;)
 		},
 		&quot;object&quot;: {
@@ -579,7 +587,7 @@ submit.methods._showError = function(data) {
 		&quot;height&quot;: 70,
 		&quot;width&quot;: isNetworkTimeout ? 320 : 390,
 		&quot;padding&quot;: 15,
-		&quot;orig&quot;: this.dom.get(&quot;text&quot;),
+		&quot;orig&quot;: this.view.get(&quot;text&quot;),
 		&quot;autoDimensions&quot;: false,
 		&quot;transitionIn&quot;: &quot;elastic&quot;,
 		&quot;transitionOut&quot;: &quot;elastic&quot;,
@@ -659,7 +667,7 @@ submit.css =
 
 Echo.Control.create(submit);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

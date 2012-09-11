@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function(){
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation
@@ -33,6 +36,8 @@
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;Moderation&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this;
@@ -83,9 +88,12 @@ plugin.config = {
 };
 
 plugin.events = {
-	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserUpdate&quot;: function(topic, args) {
-		args.item.set(&quot;data.actor.&quot; + args.field, args.value);
-		args.item.dom.render();
+	&quot;Echo.StreamServer.Controls.Stream.Plugins.Moderation.onUserUpdate&quot;: function(topic, args) {
+		var target = this.component;
+		var source = args.item;
+		if (target.get(&quot;data.actor.id&quot;) !== source.data.actor.id) return;
+		target.set(&quot;data.actor.&quot; + (args.field === &quot;state&quot; ? &quot;status&quot; : args.field), args.value);
+		target.render();
 		return {&quot;stop&quot;: [&quot;bubble&quot;]};
 	}
 };
@@ -263,10 +271,10 @@ plugin.methods._changeItemStatus = function(status) {
 	var item = this.component;
 	this.set(&quot;selected&quot;, false);
 	item.set(&quot;data.object.status&quot;, status);
-	item.dom.render({&quot;name&quot;: &quot;buttons&quot;});
+	item.view.render({&quot;name&quot;: &quot;buttons&quot;});
 	// rerender status recursive
 	// since it contains other renderers
-	this.dom.render({
+	this.view.render({
 		&quot;name&quot;: &quot;status&quot;,
 		&quot;recursive&quot;: true
 	});
@@ -282,7 +290,7 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 	}).send();
 };
 
-plugin.methods._publishCompleteActionEvent = function(name) {
+plugin.methods._publishCompleteActionEvent = function(args) {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onApproveComplete'>	/**
 </span>	 * @event onApproveComplete
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveComplete
@@ -303,15 +311,65 @@ plugin.methods._publishCompleteActionEvent = function(name) {
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete
 	 * Triggered if &quot;Untouch&quot; operation was completed.
 	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onBanComplete'>	/**
+</span>	 * @event onBanComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanComplete
+	 * Triggered if &quot;Ban&quot; operation was completed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUnBanComplete'>	/**
+</span>	 * @event onUnBanComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete
+	 * Triggered if &quot;UnBan&quot; operation was completed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUserPermissionsComplete'>	/**
+</span>	 * @event onUserPermissionsComplete
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete
+	 * Triggered if &quot;UserPermissions&quot; operation was completed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onApproveError'>	/**
+</span>	 * @event onApproveError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError
+	 * Triggered if &quot;Approve&quot; operation was failed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onSpamError'>	/**
+</span>	 * @event onSpamError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError
+	 * Triggered if &quot;Spam&quot; operation was failed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onDeleteError'>	/**
+</span>	 * @event onDeleteError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteError
+	 * Triggered if &quot;Delete&quot; operation was failed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUntouchError'>	/**
+</span>	 * @event onUntouchError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError
+	 * Triggered if &quot;Untouch&quot; operation was failed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onBanError'>	/**
+</span>	 * @event onBanError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError
+	 * Triggered if &quot;Ban&quot; operation was failed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUnBanError'>	/**
+</span>	 * @event onUnBanError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanError
+	 * Triggered if &quot;UnBan&quot; operation was failed.
+	 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUserPermissionsError'>	/**
+</span>	 * @event onUserPermissionsError
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsError
+	 * Triggered if &quot;UserPermissions&quot; operation was failed.
+	 */
 	this.events.publish({
-		&quot;topic&quot;: &quot;on&quot; + name + &quot;Complete&quot;,
+		&quot;topic&quot;: &quot;on&quot; + args.name + args.state,
 		&quot;data&quot;: {
 			&quot;item&quot;: {
 				&quot;data&quot;: this.component.get(&quot;data&quot;),
-				&quot;target&quot;: this.component.get(&quot;dom.content&quot;)
-			}
-		},
-		&quot;bubble&quot;: true
+				&quot;target&quot;: this.component.get(&quot;view.content&quot;)
+			},
+			&quot;response&quot;: args.response
+		}
 	});
 };
 
@@ -334,11 +392,20 @@ plugin.methods._assembleButton = function(name) {
 			&quot;appkey&quot;: item.config.get(&quot;appkey&quot;),
 			&quot;sessionID&quot;: item.user.get(&quot;sessionID&quot;),
 			&quot;target-query&quot;: item.config.get(&quot;parent.query&quot;)
-		}, function(data) {
-			self._publishCompleteActionEvent(name);
+		}, function(response) {
+			self._publishCompleteActionEvent({
+				&quot;name&quot;: name,
+				&quot;state&quot;: &quot;Complete&quot;,
+				&quot;response&quot;: response
+			});
 			self._changeItemStatus(status);
 			self.requestDataRefresh();
-		}, function() {
+		}, function(response) {
+			self._publishCompleteActionEvent({
+				&quot;name&quot;: name,
+				&quot;state&quot;: &quot;Error&quot;,
+				&quot;response&quot;: response
+			});
 			item.unblock();
 		});
 	};
@@ -371,7 +438,7 @@ plugin.methods._sendUserUpdate = function(config) {
 		},
 		&quot;onData&quot;: config.onData,
 		&quot;onError&quot;: function() {
-			item.dom.render();
+			item.render();
 		}
 	}).send();
 };
@@ -387,12 +454,23 @@ plugin.methods._assembleBanButton = function(action) {
 		self._sendUserUpdate({
 			&quot;field&quot;: &quot;state&quot;,
 			&quot;value&quot;: newState,
-			&quot;onData&quot;: function(data) {
-				self._publishCompleteActionEvent(action);
+			&quot;onData&quot;: function(response) {
+				self._publishCompleteActionEvent({
+					&quot;name&quot;: action,
+					&quot;state&quot;: &quot;Complete&quot;,
+					&quot;response&quot;: response
+				});
 				self._publishUserUpdateEvent({
 					&quot;item&quot;: item,
 					&quot;field&quot;: &quot;state&quot;,
 					&quot;value&quot;: newState
+				});
+			},
+			&quot;onError&quot;: function(response) {
+				self._publishCompleteActionEvent({
+					&quot;name&quot;: action,
+					&quot;state&quot;: &quot;Error&quot;,
+					&quot;response&quot;: response
 				});
 			}
 		});
@@ -430,12 +508,23 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		self._sendUserUpdate({
 			&quot;field&quot;: &quot;roles&quot;,
 			&quot;value&quot;: roles.length ? roles.join(&quot;,&quot;) : &quot;-&quot;,
-			&quot;onData&quot;: function(data) {
-				self._publishCompleteActionEvent(action);
+			&quot;onData&quot;: function(response) {
+				self._publishCompleteActionEvent({
+					&quot;name&quot;: action,
+					&quot;state&quot;: &quot;Complete&quot;,
+					&quot;response&quot;: response
+				});
 				self._publishUserUpdateEvent({
 					&quot;item&quot;: item,
 					&quot;field&quot;: &quot;roles&quot;,
 					&quot;value&quot;: roles
+				});
+			},
+			&quot;onError&quot;: function(response) {
+				self._publishCompleteActionEvent({
+					&quot;name&quot;: action,
+					&quot;state&quot;: &quot;Error&quot;,
+					&quot;response&quot;: response
 				});
 			}
 		});
@@ -531,7 +620,28 @@ plugin.css = function() {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
+
+(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+var plugin = Echo.Plugin.manifest(&quot;Moderation&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserUpdate&quot;: function(topic, args) {
+		this.events.publish({
+			&quot;topic&quot;: &quot;onUserUpdate&quot;,
+			&quot;data&quot;: args,
+			&quot;global&quot;: false
+		});
+		return {&quot;stop&quot;: [&quot;bubble&quot;]};
+	}
+};
+
+Echo.Plugin.create(plugin);
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

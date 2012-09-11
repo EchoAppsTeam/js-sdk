@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Stream&quot;)) return;
 
 <span id='Echo-StreamServer-Controls-Stream-method-constructor'><span id='Echo-StreamServer-Controls-Stream'>/**
 </span></span> * @class Echo.StreamServer.Controls.Stream
@@ -228,7 +233,7 @@ stream.events = {
 			&quot;item&quot;: item,
 			&quot;priority&quot;: &quot;highest&quot;,
 			&quot;handler&quot;: function() {
-				item.dom.render();
+				item.render();
 				item.set(&quot;added&quot;, false);
 				self._animateSpotUpdate(&quot;add&quot;, item, data.config);
 			}
@@ -404,13 +409,13 @@ stream.methods.setState = function(state) {
 	if (state === &quot;live&quot;) {
 		this._executeNextActivity();
 	}
-	this.dom.render({&quot;name&quot;: &quot;state&quot;});
+	this.view.render({&quot;name&quot;: &quot;state&quot;});
 };
 
 stream.methods._requestChildrenItems = function(unique) {
 	var self = this;
 	var item = this.items[unique];
-	var target = item.dom.get(&quot;expandChildren&quot;);
+	var target = item.view.get(&quot;expandChildren&quot;);
 	var request = Echo.StreamServer.API.request({
 		&quot;endpoint&quot;: &quot;search&quot;,
 		&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
@@ -534,8 +539,8 @@ stream.methods._requestMoreItems = function(element) {
 				self._handleInitialResponse(data, function(data) {
 					if (data.length) {
 						self.lastRequest.data = data;
-						self.dom.render({&quot;name&quot;: &quot;body&quot;});
-						self.dom.render({&quot;name&quot;: &quot;more&quot;});
+						self.view.render({&quot;name&quot;: &quot;body&quot;});
+						self.view.render({&quot;name&quot;: &quot;more&quot;});
 					} else {
 						element.html(self.labels.get(&quot;emptyStream&quot;))
 							.delay(1000)
@@ -658,7 +663,7 @@ stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 			? &quot;append&quot;
 			: &quot;prepend&quot;;
 		wrapper[insertion](item.config.get(&quot;target&quot;));
-		item.dom.render();
+		item.render();
 	});
 	return wrapper;
 };
@@ -708,7 +713,7 @@ stream.methods._appendRootItems = function(items, container) {
 	if (!items || !items.length) return;
 	$.map(items, function(item) {
 		container.append(item.config.get(&quot;target&quot;).get(0));
-		item.dom.render();
+		item.render();
 	});
 };
 
@@ -788,7 +793,7 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 				&quot;initial&quot;: true,
 				&quot;data&quot;: data
 			};
-			self.dom.render();
+			self.render();
 			self.ready();
 		})(roots);
 	});
@@ -816,7 +821,7 @@ stream.methods._handleLiveUpdatesResponse = function(data) {
 		return;
 	}
 	this._applyLiveUpdates(data.entries, function() {
-		self.dom.render({&quot;name&quot;: &quot;state&quot;});
+		self.view.render({&quot;name&quot;: &quot;state&quot;});
 		self._executeNextActivity();
 	});
 };
@@ -854,9 +859,9 @@ stream.methods._recalcEffectsTimeouts = function() {
 
 stream.methods._refreshItemsDate = function() {
 	$.map(this.threads, function(item) {
-		item.dom.render({&quot;name&quot;: &quot;date&quot;});
+		item.view.render({&quot;name&quot;: &quot;date&quot;});
 		item.traverse(item.get(&quot;children&quot;), function(child) {
-			child.dom.render({&quot;name&quot;: &quot;date&quot;});
+			child.view.render({&quot;name&quot;: &quot;date&quot;});
 		});
 	});
 };
@@ -882,7 +887,7 @@ stream.methods._spotUpdates.add = function(item, options) {
 	// if we are trying to add an item which already exists,
 	// we should change the operation to &quot;replace&quot;
 	var _item = this.items[item.get(&quot;data.unique&quot;)];
-	if (_item &amp;&amp; _item.dom.rendered() &amp;&amp; options.priority != &quot;high&quot;) {
+	if (_item &amp;&amp; _item.view.rendered() &amp;&amp; options.priority != &quot;high&quot;) {
 		this._applySpotUpdates(&quot;replace&quot;, item, {&quot;priority&quot;: &quot;highest&quot;});
 
 		// notify top level function that the update was not applied,
@@ -895,10 +900,10 @@ stream.methods._spotUpdates.add = function(item, options) {
 		this._placeRootItem(item);
 	} else {
 		var parent = this._getParentItem(item);
-		if (parent &amp;&amp; parent.dom.rendered()) {
-			parent.dom.render({&quot;name&quot;: &quot;container&quot;});
-			parent.dom.render({&quot;name&quot;: &quot;children&quot;});
-			parent.dom.render({&quot;name&quot;: &quot;childrenByCurrentActorLive&quot;});
+		if (parent &amp;&amp; parent.view.rendered()) {
+			parent.view.render({&quot;name&quot;: &quot;container&quot;});
+			parent.view.render({&quot;name&quot;: &quot;children&quot;});
+			parent.view.render({&quot;name&quot;: &quot;childrenByCurrentActorLive&quot;});
 		}
 	}
 };
@@ -928,8 +933,8 @@ stream.methods._spotUpdates.replace = function(item, options) {
 			this._applySpotUpdates(&quot;add&quot;, item, {&quot;priority&quot;: &quot;high&quot;});
 		}
 	}
-	if (item &amp;&amp; item.dom.rendered()) {
-		item.dom.render({&quot;name&quot;: &quot;container&quot;, &quot;recursive&quot;: true});
+	if (item &amp;&amp; item.view.rendered()) {
+		item.view.render({&quot;name&quot;: &quot;container&quot;, &quot;recursive&quot;: true});
 <span id='Echo-StreamServer-Controls-Stream-event-onRerender'>		/**
 </span>		 * @event onRerender
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onRerender
@@ -957,18 +962,18 @@ stream.methods._spotUpdates.delete = function(item, options) {
 	} else {
 		var parent = this._getParentItem(item);
 		if (parent) {
-			parent.dom.render({
+			parent.view.render({
 				&quot;name&quot;: &quot;children&quot;,
-				&quot;target&quot;: parent.dom.get(&quot;children&quot;),
+				&quot;target&quot;: parent.view.get(&quot;children&quot;),
 				&quot;extra&quot;: options
 			});
-			parent.dom.render({
+			parent.view.render({
 				&quot;name&quot;: &quot;childrenByCurrentActorLive&quot;,
-				&quot;target&quot;: parent.dom.get(&quot;childrenByCurrentActorLive&quot;),
+				&quot;target&quot;: parent.view.get(&quot;childrenByCurrentActorLive&quot;),
 				&quot;extra&quot;: options
 			});
 			this._applyStructureUpdates(&quot;delete&quot;, item, options);
-			parent.dom.render({&quot;name&quot;: &quot;container&quot;});
+			parent.view.render({&quot;name&quot;: &quot;container&quot;});
 		}
 	}
 };
@@ -997,7 +1002,7 @@ stream.methods._spotUpdates.animate.add = function(item) {
 		item.config.get(&quot;target&quot;).show();
 	}
 	if (this.timeouts.fade) {
-		var container = item.dom.get(&quot;container&quot;);
+		var container = item.view.get(&quot;container&quot;);
 		var originalBGColor = Echo.Utils.getVisibleColor(container);
 		container
 		// delay fading out until content sliding is finished
@@ -1029,7 +1034,6 @@ stream.methods._spotUpdates.animate.delete = function(item, config) {
 		// if the item is being moved, we should keep all jQuery handlers
 		// for the nested elements (children), thus we use &quot;detach&quot; instead of &quot;remove&quot;
 		item.config.get(&quot;target&quot;)[config.keepChildren ? &quot;detach&quot; : &quot;remove&quot;]();
-		item.dom.clear();
 		item.set(&quot;vars&quot;, {});
 		var itemsCount = Echo.Utils.foldl(0, self.items, function(_item, acc) {
 			return acc + 1;
@@ -1038,7 +1042,7 @@ stream.methods._spotUpdates.animate.delete = function(item, config) {
 			self.showMessage({
 				&quot;type&quot;: &quot;empty&quot;,
 				&quot;message&quot;: self.labels.get(&quot;emptyStream&quot;),
-				&quot;target&quot;: self.dom.get(&quot;body&quot;)
+				&quot;target&quot;: self.view.get(&quot;body&quot;)
 			});
 		}
 		self.activities.animations--;
@@ -1204,7 +1208,7 @@ stream.methods._placeRootItem = function(item) {
 			prev.config.get(&quot;target&quot;).after(content);
 		}
 	} else {
-		this.dom.get(&quot;body&quot;).empty().append(content);
+		this.view.get(&quot;body&quot;).empty().append(content);
 	}
 <span id='Echo-StreamServer-Controls-Stream-event-onAdd'>	/**
 </span>	 * @event onAdd
@@ -1233,14 +1237,14 @@ stream.methods._placeChildItems = function(parent, children) {
 
 	var targetItemDom = targetItemIdx &gt;= 0
 		? parent.get(&quot;children&quot;)[targetItemIdx].config.get(&quot;target&quot;)
-		: parent.dom.get(&quot;children&quot;);
+		: parent.view.get(&quot;children&quot;);
 	var action = targetItemIdx &gt;= 0
 		? &quot;insertAfter&quot;
 		: this.config.get(&quot;children.sortOrder&quot;) != &quot;chronological&quot; 
 			? &quot;prependTo&quot;
 			: &quot;appendTo&quot;;
 	itemsWrapper[action]($(targetItemDom));
-	parent.dom.render({&quot;name&quot;: &quot;childrenByCurrentActorLive&quot;});
+	parent.view.render({&quot;name&quot;: &quot;childrenByCurrentActorLive&quot;});
 	// we should specify the element height explicitly
 	// to avoid element jumping during the animation effect
 	itemsWrapper
@@ -1256,8 +1260,8 @@ stream.methods._placeChildItems = function(parent, children) {
 			&quot;duration&quot;: this.config.get(&quot;children.itemsSlideTimeout&quot;),
 			&quot;complete&quot;: function() {
 				itemsWrapper.css(&quot;height&quot;, &quot;&quot;);
-				parent.dom.render({&quot;name&quot;: &quot;expandChildren&quot;});
-				parent.dom.render({&quot;name&quot;: &quot;expandChildrenLabel&quot;});
+				parent.view.render({&quot;name&quot;: &quot;expandChildren&quot;});
+				parent.view.render({&quot;name&quot;: &quot;expandChildrenLabel&quot;});
 				itemsWrapper.children().unwrap();
 			}
 		});
@@ -1378,7 +1382,7 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 			}
 			delete this.items[item.get(&quot;data.unique&quot;)];
 			break;
-	};
+	}
 };
 
 stream.methods._normalizeEntry = function(entry) {
@@ -1409,6 +1413,7 @@ stream.methods._normalizeEntry = function(entry) {
 	entry.provider = entry.provider || {};
 	entry.unique = entry.object.id + entry.target.conversationID;
 	entry.parentUnique = entry.target.id + entry.target.conversationID;
+	entry.hasMoreChildren = entry.hasMoreChildren || &quot;false&quot;;
 	return entry;
 };
 
@@ -1436,9 +1441,14 @@ stream.css =
 
 Echo.Control.create(stream);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Stream.Item&quot;)) return;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-method-constructor'><span id='Echo-StreamServer-Controls-Stream-Item'>/**
 </span></span> * @class Echo.StreamServer.Controls.Stream.Item
@@ -1783,7 +1793,7 @@ item.renderers.authorName = function(element) {
 </span> * @echo_renderer
  */
 item.renderers.markers = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		&quot;name&quot;: &quot;_extraField&quot;,
 		&quot;target&quot;: element,
 		&quot;extra&quot;: {&quot;type&quot;: &quot;markers&quot;}
@@ -1794,7 +1804,7 @@ item.renderers.markers = function(element) {
 </span> * @echo_renderer
  */
 item.renderers.tags = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		&quot;name&quot;: &quot;_extraField&quot;,
 		&quot;target&quot;: element,
 		&quot;extra&quot;: {&quot;type&quot;: &quot;tags&quot;}
@@ -1829,12 +1839,12 @@ item.renderers.container = function(element) {
 	if (!Echo.Utils.isMobileDevice()) {
 		element.off([&quot;mouseleave&quot;, &quot;mouseenter&quot;]).hover(function() {
 			if (self.user.is(&quot;admin&quot;)) {
-				self.dom.get(&quot;modeSwitch&quot;).show();
+				self.view.get(&quot;modeSwitch&quot;).show();
 			}
 			switchClasses(&quot;add&quot;);
 		}, function() {
 			if (self.user.is(&quot;admin&quot;)) {
-				self.dom.get(&quot;modeSwitch&quot;).hide();
+				self.view.get(&quot;modeSwitch&quot;).hide();
 			}
 			switchClasses(&quot;remove&quot;);
 		});
@@ -1869,8 +1879,8 @@ item.renderers.modeSwitch = function(element) {
 	element.click(function() {
 		mode = (mode === &quot;default&quot; ? &quot;metadata&quot; : &quot;default&quot;);
 		setTitle();
-		self.dom.get(&quot;data&quot;).toggle();
-		self.dom.get(&quot;metadata&quot;).toggle();
+		self.view.get(&quot;data&quot;).toggle();
+		self.view.get(&quot;metadata&quot;).toggle();
 	});
 	if (Echo.Utils.isMobileDevice()) {
 		element.show();
@@ -1902,7 +1912,7 @@ item.renderers.avatar = function(element) {
 </span> * @echo_renderer
  */
 item.renderers.children = function(element, config) {
-	return this.dom.render({
+	return this.view.render({
 		&quot;name&quot;: &quot;_childrenContainer&quot;,
 		&quot;target&quot;: element,
 		&quot;extra&quot;: {
@@ -1916,7 +1926,7 @@ item.renderers.children = function(element, config) {
 </span> * @echo_renderer
  */
 item.renderers.childrenByCurrentActorLive = function(element, config) {
-	return this.dom.render({
+	return this.view.render({
 		&quot;name&quot;: &quot;_childrenContainer&quot;,
 		&quot;target&quot;: element,
 		&quot;extra&quot;: {
@@ -1939,11 +1949,11 @@ item.renderers.buttons = function(element) {
 		if (!data || !data.name || !data.visible()) {
 			return;
 		}
-		self.dom.render({
+		self.view.render({
 			&quot;name&quot;: &quot;_buttonsDelimiter&quot;,
 			&quot;target&quot;: element
 		});
-		self.dom.render({
+		self.view.render({
 			&quot;name&quot;: &quot;_button&quot;,
 			&quot;target&quot;: element,
 			&quot;extra&quot;: data
@@ -2035,7 +2045,7 @@ item.renderers.sourceIcon = function(element) {
 	if (!this.config.get(&quot;viaLabel.icon&quot;) ||
 			this.get(&quot;data.source.name&quot;) == &quot;jskit&quot; ||
 			this.get(&quot;data.source.name&quot;) == &quot;echo&quot;) {
-		this.dom.remove(element);
+		this.view.remove(element);
 	}
 	var hyperlink = Echo.Utils.hyperlink({
 		&quot;href&quot;: this.get(&quot;data.source.uri&quot;, this.get(&quot;data.object.permalink&quot;))
@@ -2045,7 +2055,7 @@ item.renderers.sourceIcon = function(element) {
 	var url = this.get(&quot;data.source.icon&quot;, this.config.get(&quot;providerIcon&quot;));
 	element.hide().attr(&quot;src&quot;, Echo.Utils.htmlize(url))
 		.show()
-		.one(&quot;error&quot;, function() { self.dom.remove(element); })
+		.one(&quot;error&quot;, function() { self.view.remove(element); })
 		.wrap(hyperlink);
 };
 
@@ -2060,7 +2070,7 @@ item.renderers.via = function(element) {
 	if (get(&quot;source&quot;) === get(&quot;provider&quot;)) {
 		return element;
 	}
-	return this.dom.render({
+	return this.view.render({
 		&quot;name&quot;: &quot;_viaText&quot;,
 		&quot;target&quot;: element,
 		&quot;extra&quot;: {
@@ -2074,7 +2084,7 @@ item.renderers.via = function(element) {
 </span> * @echo_renderer
  */
 item.renderers.from = function(element) {
-	return this.dom.render({
+	return this.view.render({
 		&quot;name&quot;: &quot;_viaText&quot;,
 		&quot;target&quot;: element,
 		&quot;extra&quot;: {
@@ -2091,8 +2101,8 @@ item.renderers.textToggleTruncated = function(element) {
 	var self = this;
 	element.off(&quot;click&quot;).click(function() {
 		self.textExpanded = !self.textExpanded;
-		self.dom.render({&quot;name&quot;: &quot;body&quot;});
-		self.dom.render({&quot;name&quot;: &quot;textToggleTruncated&quot;});
+		self.view.render({&quot;name&quot;: &quot;body&quot;});
+		self.view.render({&quot;name&quot;: &quot;textToggleTruncated&quot;});
 	});
 	return element.empty().append(
 		this.labels.get(&quot;textToggleTruncated&quot; + (this.textExpanded ? &quot;Less&quot; : &quot;More&quot;))
@@ -2119,9 +2129,9 @@ item.renderers.body = function(element) {
 	});
 	var text = data[0];
 	var truncated = data[1].truncated;
-	this.dom.get(&quot;text&quot;).empty().append(text);
-	this.dom.get(&quot;textEllipses&quot;)[!truncated || this.textExpanded ? &quot;hide&quot; : &quot;show&quot;]();
-	this.dom.get(&quot;textToggleTruncated&quot;)[truncated || this.textExpanded ? &quot;show&quot; : &quot;hide&quot;]();
+	this.view.get(&quot;text&quot;).empty().append(text);
+	this.view.get(&quot;textEllipses&quot;)[!truncated || this.textExpanded ? &quot;hide&quot; : &quot;show&quot;]();
+	this.view.get(&quot;textToggleTruncated&quot;)[truncated || this.textExpanded ? &quot;show&quot; : &quot;hide&quot;]();
 	return element;
 };
 
@@ -2197,9 +2207,9 @@ item.renderers.expandChildren = function(element, extra) {
 	return element.addClass(this.cssPrefix + &quot;depth-&quot; + (this.depth + 1))
 		.off(&quot;click&quot;)
 		.one(&quot;click&quot;, function() {
-			self.dom.render({
+			self.view.render({
 				&quot;name&quot;: &quot;expandChildrenLabel&quot;,
-				&quot;target&quot;: self.dom.get(&quot;expandChildrenLabel&quot;),
+				&quot;target&quot;: self.view.get(&quot;expandChildrenLabel&quot;),
 				&quot;extra&quot;: {&quot;state&quot;: &quot;loading&quot;}
 			});
 <span id='Echo-StreamServer-Controls-Stream-Item-event-onChildrenExpand'>			/**
@@ -2224,8 +2234,8 @@ item.renderers._childrenContainer = function(element, config) {
 	$.map(this.children, function(child) {
 		if (config &amp;&amp; config.filter &amp;&amp; !config.filter(child)) return;
 		element.append(child.config.get(&quot;target&quot;));
-		if (!child.dom.rendered() &amp;&amp; !child.added) {
-			child.dom.render();
+		if (!child.view.rendered() &amp;&amp; !child.added) {
+			child.render();
 		}
 		if (child.deleted || child.added) {
 <span id='Echo-StreamServer-Controls-Stream-Item-event-onDelete'>			/**
@@ -2253,7 +2263,7 @@ item.renderers._extraField = function(element, extra) {
 	var self = this;
 	var type = (extra || {}).type;
 	if (!this.data.object[type] || !this.user.is(&quot;admin&quot;)) {
-		this.dom.remove(element);
+		this.view.remove(element);
 		return element;
 	}
 	var name = type === &quot;markers&quot; ? &quot;maxMarkerLength&quot; : &quot;maxTagsLength&quot;;
@@ -2382,7 +2392,7 @@ item.methods.traverse = function(tree, callback, acc) {
 item.methods.block = function(label) {
 	if (this.blocked) return;
 	this.blocked = true;
-	var content = this.dom.get(&quot;container&quot;);
+	var content = this.view.get(&quot;container&quot;);
 	var width = content.width();
 	// we should take into account that the container has a 10px 0px padding value
 	var height = content.outerHeight();
@@ -2411,7 +2421,7 @@ item.methods.unblock = function() {
 	this.blocked = false;
 	this.blockers.backdrop.remove();
 	this.blockers.message.remove();
-	this.dom.get(&quot;container&quot;).removeClass(&quot;echo-relative&quot;);
+	this.view.get(&quot;container&quot;).removeClass(&quot;echo-relative&quot;);
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-method-getAccumulator'>/**
@@ -2872,7 +2882,7 @@ item.css =
 
 Echo.Control.create(item);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

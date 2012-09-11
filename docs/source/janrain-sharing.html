@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function(){
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing'>/**
 </span> * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing
@@ -54,6 +57,8 @@
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;JanrainSharing&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-appId'>	/**
@@ -224,7 +229,7 @@ plugin.methods._getTweetAuthor = function(data) {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

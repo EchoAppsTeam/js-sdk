@@ -4,6 +4,9 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 	background: url("bg.png");
 }
+img {
+    border-style: none;
+}
 .navigation {
 	position: fixed;
 	box-shadow: 0 0 15px #666666;
@@ -44,8 +47,9 @@ body {
 	color: #EE7B11;
 }
 .frame{
-	overflow: hidden;
-	height: 300px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	height: 100%;
 	width: 100%;
 	border: 0px;
 	border-top: 1px solid #BEBEBE;

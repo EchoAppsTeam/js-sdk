@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents
@@ -59,6 +62,8 @@
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;TwitterIntents&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var item = this.component;
@@ -243,7 +248,7 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

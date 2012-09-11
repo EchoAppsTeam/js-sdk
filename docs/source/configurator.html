@@ -15,10 +15,15 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 // XXX
 if (!Echo.AppServer) Echo.AppServer = {};
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.AppServer.Controls.Configurator&quot;)) return;
 
 <span id='Echo-AppServer-Controls-Configurator'>/**
 </span> * @class Echo.AppServer.Controls.Configurator
@@ -59,7 +64,7 @@ configurator.templates.formRow =
 
 configurator.init = function() {
 	this.pages.push({&quot;name&quot;: this.config.get(&quot;startPage&quot;)});
-	this.dom.render();
+	this.render();
 };
 
 configurator.renderers.header = function(element) {
@@ -83,7 +88,7 @@ configurator.renderers.pages = function(element) {
 
 configurator.methods.showCurrentPage = function() {
 	if (!this.currentPageIndex) {
-		this.dom.get(&quot;pages&quot;).children().hide();
+		this.view.get(&quot;pages&quot;).children().hide();
 		this.pages[this.currentPageIndex].element.show();
 	} else {
 		var prev = this.pages[this.currentPageIndex - 1].element;
@@ -114,7 +119,7 @@ configurator.methods._renderPage = function(page, data) {
 	var element = $(this.substitute({&quot;template&quot;: '&lt;div class=&quot;{class:page}&quot;&gt;&lt;/div&gt;'})).hide();
 	element.append(this._form(spec, data));
 	page.element = element;
-	this.dom.get(&quot;pages&quot;).append(element);
+	this.view.get(&quot;pages&quot;).append(element);
 };
 
 configurator.methods._form = function(config, data, depth) {
@@ -209,7 +214,7 @@ configurator.methods._nestedPage = function(element, spec, value, depth) {
 	var link = $('&lt;u&gt;configure&lt;/u&gt;').on(&quot;click&quot;, function() {
 		var page = {&quot;name&quot;: spec.type};
 		self.pages.push(page);
-		self.dom.render(&quot;header&quot;);
+		self.view.render(&quot;header&quot;);
 		self._renderPage(page, value);
 		self.showCurrentPage();
 	}).css(&quot;cursor&quot;, &quot;pointer&quot;);
@@ -235,7 +240,7 @@ configurator.css =
 
 Echo.Control.create(configurator);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

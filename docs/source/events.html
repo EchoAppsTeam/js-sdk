@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.Events&quot;)) return;
 
 <span id='Echo-Events'>/**
 </span> * @class Echo.Events
@@ -264,7 +269,7 @@ var _callHandlers = function(obj, params, restContexts) {
 	}
 };
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

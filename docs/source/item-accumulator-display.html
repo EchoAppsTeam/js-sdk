@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay
@@ -33,6 +36,8 @@
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;ItemAccumulatorDisplay&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	this.extendTemplate(&quot;insertBefore&quot;, &quot;modeSwitch&quot;, plugin.template);
@@ -82,7 +87,7 @@ plugin.renderers.accumulatorContainer = function(element) {
 		return element.append(accumulator);
 	}
 	this._stopTimer();
-	var container = item.dom.get(&quot;container&quot;);
+	var container = item.view.get(&quot;container&quot;);
 	container.stop(true, true);
 	if (count.actual !== accumulator) {
 		count.actual = accumulator;
@@ -117,7 +122,7 @@ plugin.methods._animateCounter = function(bgColor) {
 	if (typeof count.current !== &quot;undefined&quot; &amp;&amp; count.current === count.actual &amp;&amp;
 			!this.get(&quot;animationInProgress&quot;)) {
 		// fading out
-		var container = item.dom.get(&quot;container&quot;);
+		var container = item.view.get(&quot;container&quot;);
 		this.set(&quot;animationInProgress&quot;, true);
 		container.animate(
 			{&quot;backgroundColor&quot;: bgColor},
@@ -135,7 +140,7 @@ plugin.methods._animateCounter = function(bgColor) {
 		if (count.current !== count.actual) {
 			count.current &lt; count.actual ? count.current++ : count.current--;
 			plugin.set(&quot;count.current&quot;, count.current);
-			plugin.dom.get(&quot;accumulatorContainer&quot;).html(count.current);
+			plugin.view.get(&quot;accumulatorContainer&quot;).html(count.current);
 			plugin._animateCounter(bgColor);
 		}
 	}, this.config.get(&quot;countTickTimeout&quot;) * 1000));
@@ -145,7 +150,7 @@ plugin.css = '.{plugin.class:accumulatorContainer} { float: right; margin-right:
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

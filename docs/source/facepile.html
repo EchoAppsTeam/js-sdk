@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.FacePile&quot;)) return;
 
 <span id='Echo-StreamServer-Controls-FacePile-method-constructor'><span id='Echo-StreamServer-Controls-FacePile'>/**
 </span></span> * @class Echo.StreamServer.Controls.FacePile
@@ -185,7 +190,7 @@ pile.renderers.actors = function(element) {
 		});
 	};
 	$.map(this.get(&quot;users&quot;).slice(0, this.get(&quot;count.visible&quot;)), function(user) {
-		usersDOM.push(user.instance.dom.render());
+		usersDOM.push(user.instance.render());
 	});
 	var last;
 	var delimiter = this.config.get(&quot;item.text&quot;) ? &quot;, &quot; : &quot;&quot;;
@@ -291,7 +296,7 @@ pile.methods._initialResponseHandler = function(data) {
 	if (!data.entries.length) {
 		if (!this.get(&quot;isViewComplete&quot;)) {
 			this.set(&quot;isViewComplete&quot;, true);
-			this.dom.render();
+			this.render();
 			this.ready();
 		}
 		return;
@@ -357,7 +362,7 @@ pile.methods._output = function(isLive, fetchMoreUsers) {
 	if (!isLive &amp;&amp; fetchMoreUsers) {
 		this._getMoreUsers();
 	} else {
-		this.dom.render();
+		this.render();
 		this.ready();
 	}
 };
@@ -412,12 +417,12 @@ pile.methods._getMoreUsers = function() {
 		if (this.get(&quot;count.visible&quot;) &gt; usersLength) {
 			this.set(&quot;count.visible&quot;, usersLength);
 		}
-		this.dom.render();
+		this.render();
 	} else {
 		if (!this.get(&quot;moreRequestInProgress&quot;)) {
 			this.showMessage({
 				&quot;type&quot;: &quot;loading&quot;,
-				&quot;target&quot;: this.dom.get(&quot;more&quot;)
+				&quot;target&quot;: this.view.get(&quot;more&quot;)
 			});
 			this.set(&quot;moreRequestInProgress&quot;, true);
 		}
@@ -439,9 +444,14 @@ pile.css =
 
 Echo.Control.create(pile);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.FacePile.Item&quot;)) return;
 
 <span id='Echo-StreamServer-Controls-FacePile-Item-method-constructor'><span id='Echo-StreamServer-Controls-FacePile-Item'>/**
 </span></span> * @class Echo.StreamServer.Controls.FacePile.Item
@@ -528,7 +538,7 @@ item.css =
 
 Echo.Control.create(item);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

@@ -17,6 +17,7 @@ suite.prototype.info = {
 		"get",
 		"set",
 		"remove",
+		"invoke",
 		"substitute",
 		"dependent",
 		"template",
@@ -24,6 +25,7 @@ suite.prototype.info = {
 		"showMessage",
 		"destroy",
 		"refresh",
+		"render",
 
 		// functions below are covered
 		// within the Plugin component test
@@ -100,8 +102,8 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking if we have \"labels\" interface available");
 		QUnit.ok(!!this.user,
 			"Checking if we have \"user\" interface available");
-		QUnit.ok(!!this.dom,
-			"Checking if we have \"dom\" interface available");
+		QUnit.ok(!!this.view,
+			"Checking if we have \"view\" interface available");
 
 		// checking if all functions defined in "methods" namespace are available
 		QUnit.ok(this.myMethod(true),
@@ -198,6 +200,24 @@ suite.prototype.cases.basicOperations = function(callback) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
 		};
 
+		// checking "invoke" method
+		var cases = [
+			[function() { return this.getPlugin("MyFakeTestPlugin"); }, undefined],
+			[function() { return this.cssClass; },
+				"echo-streamserver-controls-mytestcontrol"],
+			[function() { return this.fakeKey; }, undefined],
+			[function() { return this.get("data.key1")}, "key1 value"],
+			[function() { return this.get("name")},
+				"Echo.StreamServer.Controls.MyTestControl"]
+		];
+		$.each(cases, function(id, _case) {
+			QUnit.strictEqual(
+				Echo.Utils.invoke(_case[0], self),
+				_case[1],
+				"Checking \"invoke()\" method, case #" + (id + 1)
+			);
+		});
+
 		this.destroy();
 
 		callback && callback();
@@ -281,13 +301,13 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		$.map(assertions, function(assertion) {
 			QUnit.equal(
-				self.dom.get(assertion[0]).html(),
+				self.view.get(assertion[0]).html(),
 				assertion[1],
 				"Checking rendering output of the \"" + assertion[0] + "\" element"
 			);
 		});
 
-		QUnit.ok(!!this.dom.get("testRenderer").children().length,
+		QUnit.ok(!!this.view.get("testRenderer").children().length,
 			"Checking if initially empty element became non-empty after applying renderer");
 
 		// template rendering
@@ -299,7 +319,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 				'<div class="{class:testRenderer}"></div>' +
 				'<div class="c1">{config:integerParam}</div>' +
 			'</div>';
-		var result = this.dom.render({
+		var result = this.view.fork().render({
 			"template": template,
 			"target": $("<div></div>"),
 			"data": {"k1": "myvalue1", "k2": {}}
@@ -314,8 +334,8 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"Checking config values substitution into template");
 
 		// element rendering, specific renderer application
-		var target = this.dom.get("testRenderer");
-		this.dom.render({
+		var target = this.view.get("testRenderer");
+		this.view.render({
 			"target": target,
 			"name": "testRendererWithExtra",
 			"extra": {"value": "my-value"}
@@ -323,7 +343,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		QUnit.equal(target.html(), "<span>my-value</span>",
 			"Checking if element content was updated after renderer application");
 
-		this.dom.render({
+		this.view.render({
 			"target": target,
 			"name": "testRendererWithExtra",
 			"extra": {"value": "another-value"}
@@ -331,27 +351,27 @@ suite.prototype.cases.controlRendering = function(callback) {
 		QUnit.equal(target.html(), "<span>another-value</span>",
 			"Checking if element content was updated as a result of renderer application");
 
-		this.dom.render({
+		this.view.render({
 			"name": "testRenderer"
 		});
 		QUnit.equal(target.html(), "<div>Some value</div>",
 			"Checking if element content was updated as a result of the native renderer application");
 
 		// recursive element rendering
-		this.dom.get("nestedSubcontainer").append('<div class="extra-div">Extra DIV appended</div>');
-		this.dom.render({
+		this.view.get("nestedSubcontainer").append('<div class="extra-div">Extra DIV appended</div>');
+		this.view.render({
 			"name": "testRendererRecursive",
 			"recursive": true
 		});
-		QUnit.equal(this.dom.get("testRendererRecursive").html(), "<div class=\"echo-streamserver-controls-mytestcontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mytestcontrol-nestedSubcontainer\"></div></div>",
+		QUnit.equal(this.view.get("testRendererRecursive").html(), "<div class=\"echo-streamserver-controls-mytestcontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mytestcontrol-nestedSubcontainer\"></div></div>",
 			"Checking if element content was updated after recursive rendering");
 
 		// checking re-rendering
 		target.append('<div class="extra-div">Extra DIV appended</div>');
 		this.config.get("target").append('<div class="extra-div-1">Another DIV appended</div>');
 		this.config.get("target").append('<div class="extra-div-2">DIV appended</div>');
-		this.dom.render();
-		QUnit.equal(this.dom.get("testRenderer").html(), "<div>Some value</div>",
+		this.render();
+		QUnit.equal(this.view.get("testRenderer").html(), "<div>Some value</div>",
 			"Checking if component was re-rendered and appended elements were wiped out");
 
 		// checking "showMessage" method
@@ -363,8 +383,8 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"target": target
 		};
 		this.showMessage(data);
-		QUnit.ok(!!this.dom.get("container"),
-			"Checking if the \"showMessage\" function doesn't wipe out other elements in the \"dom\" structure");
+		QUnit.ok(!!this.view.get("container"),
+			"Checking if the \"showMessage\" function doesn't wipe out other elements in the \"view\" structure");
 		QUnit.equal(
 			target.find(".echo-control-message-icon").attr("title"),
 			data.message,
@@ -378,17 +398,15 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"Checking \"showMessage\" in full mode");
 
 		var template = '<div class="echo-utils-tests-footer">footer content</div>';
-		this.dom.render();
-		QUnit.equal(this.dom.get("testRenderer").html(), "<div>Some value</div>",
-			"Checking control.dom.get() function");
-		this.dom.set("testRenderer", $(template));
-		QUnit.equal(this.dom.get("testRenderer").html(), "footer content",
-			"Checking control.dom.set() function");
-		this.dom.remove("testRenderer");
-		QUnit.equal(this.dom.get("testRenderer"), undefined,
-			"Checking control.dom.remove() function");
-		this.dom.clear();
-		QUnit.ok($.isEmptyObject(this.dom.elements), "Checking control.dom.clear() function");
+		this.render();
+		QUnit.equal(this.view.get("testRenderer").html(), "<div>Some value</div>",
+			"Checking control.view.get() function");
+		this.view.set("testRenderer", $(template));
+		QUnit.equal(this.view.get("testRenderer").html(), "footer content",
+			"Checking control.view.set() function");
+		this.view.remove("testRenderer");
+		QUnit.equal(this.view.get("testRenderer"), undefined,
+			"Checking control.view.remove() function");
 
 		this.destroy();
 
@@ -493,11 +511,11 @@ suite.prototype.cases.refresh = function(callback) {
 					"Check if the control was rerendered after \"refresh\" function call (non-empty target)");
 				QUnit.ok(!control.getPlugin("MyPlugin"),
 					"Checking if the plugin keeps the state within \"refresh\" function call");
-				QUnit.equal(control.dom.get("configString").html(),
+				QUnit.equal(control.view.get("configString").html(),
 					"updated string value1",
 					"Checking if the control was rerendered after \"refresh\" function call (validate template re-rendering)");
-				QUnit.ok(!control.dom.get("plugin_testRenderer"),
-					"Check if there is no disabled plugin elements in dom after \"refresh\" function call");
+				QUnit.ok(!control.view.get("plugin_testRenderer"),
+					"Check if there is no disabled plugin elements in view after \"refresh\" function call");
 
 				control.destroy();
 
@@ -664,7 +682,7 @@ suite.data.template =
 		'<div class="{class:selfDataKey} echo-primaryFont">{self:data.key1}</div>' +
 		'<div class="{class:selfDataKeyNested}">{self:data.key3.key3nested}</div>' +
 		'<div class="{class:selfNonExistingKey}">{self:nonExistingKey}</div>' +
-		'<div class="{class:selfFunction}">{self:render}</div>' +
+		'<div class="{class:selfFunction}"></div>' +
 		// checking custom substitution rules
 		'<div class="{class:customSubstitution}">{mysubs:key}</div>' +
 		'<div class="{class:customSubstitutionNestedKey}">{mysubs:key.key1.key2}</div>' +
@@ -768,14 +786,14 @@ suite.getControlManifest = function(name) {
 
 	var addDependency = function(n) {
 		manifest.dependencies.push({
-			"url": "sdk/tests/unit/dependencies/control.dep." + n + ".js",
+			"url": "tests/unit/dependencies/control.dep." + n + ".js",
 			"loaded": function() { return !!Echo.Tests.Dependencies.Control["dep" + n]; }
 		});
 	};
 	for (var i = 1; i < 6; i++) addDependency(i);
 
 	manifest.init = function() {
-		this.dom.render();
+		this.render();
 		this.ready();
 	};
 

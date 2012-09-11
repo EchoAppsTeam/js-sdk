@@ -15,7 +15,14 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Echo-StreamServer-Controls-Counter-method-constructor'><span id='Echo-StreamServer-Controls-Counter'>/**
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Counter&quot;)) return;
+
+<span id='Echo-StreamServer-Controls-Counter-method-constructor'><span id='Echo-StreamServer-Controls-Counter'>/**
 </span></span> * @class Echo.StreamServer.Controls.Counter
  * Echo Counter class which encapsulates interaction with the
  * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/27888212/API-method-count&quot; target=&quot;_blank&quot;&gt;Echo Count API&lt;/a&gt;
@@ -43,7 +50,7 @@ counter.init = function() {
 	if ($.isEmptyObject(this.get(&quot;data&quot;))) {
 		this._request();
 	} else {
-		this.dom.render();
+		this.render();
 		this.ready();
 	}
 };
@@ -117,7 +124,7 @@ counter.methods._update = function(data) {
 			}
 		});
 		this.set(&quot;data&quot;, data);
-		this.dom.render();
+		this.render();
 		this.ready();
 	}
 };
@@ -133,7 +140,7 @@ counter.methods._error = function(data) {
 	});
 	if (data.errorCode === &quot;more_than&quot;) {
 		this.set(&quot;data.count&quot;, data.errorMessage + &quot;+&quot;);
-		this.dom.render();
+		this.render();
 	} else {
 		this.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data, &quot;message&quot;: data.errorMessage});
 	}
@@ -141,6 +148,8 @@ counter.methods._error = function(data) {
 };
 
 Echo.Control.create(counter);
+
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.IdentityServer.Controls.Auth&quot;)) return;
 
 <span id='Echo-IdentityServer-Controls-Auth-method-constructor'><span id='Echo-IdentityServer-Controls-Auth'>/**
 </span></span> * @class Echo.IdentityServer.Controls.Auth
@@ -116,10 +121,9 @@ auth.config = {
 	&quot;infoMessages&quot;: {&quot;enabled&quot;: false}
 };
 
-// TODO: need investigate
-//auth.dependencies = [{
-//	&quot;url&quot;: &quot;sdk/third-party/jquery/css/fancybox.css&quot;
-//}];
+auth.dependencies = [{
+	&quot;url&quot;: &quot;sdk/third-party/jquery/css/fancybox.css&quot;
+}];
 
 auth.labels = {
 <span id='Echo-IdentityServer-Controls-Auth-property-edit'>	/**
@@ -330,7 +334,7 @@ auth.css =
 
 Echo.Control.create(auth);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

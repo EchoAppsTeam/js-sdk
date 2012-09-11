@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
@@ -35,10 +38,12 @@
  */
 var plugin = Echo.Plugin.manifest(&quot;Reply&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;content&quot;, plugin.templates.form);
-	var form = Echo.Utils.getNestedValue(Echo.Variables, this._getFormKey());
+	var form = Echo.Utils.getNestedValue(Echo.Variables, this._getSubmitKey());
 	$.each(form || {}, function(key, value) {
 	    self.set(key, value);
 	});
@@ -74,24 +79,42 @@ plugin.labels = {
 
 plugin.events = {
 	&quot;Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand&quot;: function(topic, args) {
-		var plugin = this, item = this.component;
+		var item = this.component;
 		var context = item.config.get(&quot;context&quot;);
-		if (plugin.get(&quot;expanded&quot;) &amp;&amp; context &amp;&amp; context !== args.context) {
-			plugin.set(&quot;expanded&quot;, false);
-			plugin._hideSubmit();
-			plugin.events.publish({
-				&quot;topic&quot;: &quot;onCollapse&quot;
-			});
+		if (this.get(&quot;expanded&quot;) &amp;&amp; context &amp;&amp; context !== args.context) {
+			this._hideSubmit();
 		}
 	},
 	&quot;Echo.StreamServer.Controls.Submit.onPostComplete&quot;: function(topic, args) {
-		this.set(&quot;expanded&quot;, false);
 		this._hideSubmit();
-		this.events.publish({
-			&quot;topic&quot;: &quot;onCollapse&quot;
-		});
+	},
+	&quot;Echo.StreamServer.Controls.Stream.Item.onRender&quot;: function(topic, args) {
+		if (this.get(&quot;expanded&quot;)) {
+			this._showSubmit();
+		}
 	}
 };
+
+$.map([&quot;onRender&quot;, &quot;onRerender&quot;], function(topic) {
+	plugin.events[&quot;Echo.StreamServer.Controls.Submit.&quot; + topic] = function() {
+		var item = this.component;
+		this.set(&quot;expanded&quot;, true);
+		this._itemCSS(&quot;add&quot;, item, this.view.get(&quot;replyForm&quot;));
+		this.view.render({&quot;name&quot;: &quot;compactForm&quot;});
+		item.view.render({&quot;name&quot;: &quot;container&quot;});
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onExpand'>		/**
+</span>		 * @event onExpand
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
+		 * Triggered when the reply form is expanded.
+		 */
+		this.events.publish({
+			&quot;topic&quot;: &quot;onExpand&quot;,
+			&quot;data&quot;: {
+				&quot;context&quot;: item.config.get(&quot;context&quot;)
+			}
+		});
+	};
+});
 
 plugin.templates.form =
 	'&lt;div class=&quot;{plugin.class:replyForm}&quot;&gt;' +
@@ -107,9 +130,9 @@ plugin.templates.form =
 </span> * @echo_renderer
  */
 plugin.component.renderers.container = function(element) {
-	var plugin = this, item = plugin.component;
+	var item = this.component;
 	var threading = item.threading;
-	if (plugin.get(&quot;expanded&quot;)) {
+	if (this.get(&quot;expanded&quot;)) {
 		item.threading = true;
 	}
 	item.parentRenderer(&quot;container&quot;, arguments);
@@ -121,14 +144,14 @@ plugin.component.renderers.container = function(element) {
 </span> * @echo_renderer
  */
 plugin.component.renderers.children = function(element) {
-	var plugin = this, item = plugin.component;
+	var item = this.component;
 	// perform reply form rerendering *only* when we have exactly 1 item
 	// (the first item is being added or the last one is being deleted)
 	if (item.get(&quot;children&quot;).length == 1) {
 		var child = item.get(&quot;children&quot;)[0];
 		if (child.get(&quot;added&quot;) || child.get(&quot;deleted&quot;)) {
-			plugin._itemCSS(&quot;remove&quot;, item, plugin.dom.get(&quot;replyForm&quot;));
-			plugin.dom.render({&quot;name&quot;: &quot;compactForm&quot;});
+			this._itemCSS(&quot;remove&quot;, item, this.view.get(&quot;replyForm&quot;));
+			this.view.render({&quot;name&quot;: &quot;compactForm&quot;});
 		}
 	}
 	return item.parentRenderer(&quot;children&quot;, arguments);
@@ -138,21 +161,19 @@ plugin.component.renderers.children = function(element) {
 </span> * @echo_renderer
  */
 plugin.renderers.submitForm = function(element) {
-	var plugin = this;
-	if (plugin.get(&quot;expanded&quot;)) {
-		return plugin._showSubmit();
-	}
-	return element;
+	return element.click(function(event) {
+		event.stopPropagation();
+	});
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-method-compactForm'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.compactForm = function(element) {
-	var plugin = this, item = plugin.component;
+	var item = this.component;
 	var hasChildren = !!item.children.length;
-	if (!item.get(&quot;depth&quot;) &amp;&amp; hasChildren &amp;&amp; !plugin.get(&quot;expanded&quot;) &amp;&amp; !item.get(&quot;children&quot;)[0].get(&quot;deleted&quot;)) {
-		plugin._itemCSS(&quot;add&quot;, item, element.parent());
+	if (!item.get(&quot;depth&quot;) &amp;&amp; hasChildren &amp;&amp; !this.get(&quot;expanded&quot;) &amp;&amp; !item.get(&quot;children&quot;)[0].get(&quot;deleted&quot;)) {
+		this._itemCSS(&quot;add&quot;, item, element.parent());
 		return element.show();
 	}
 	return element.hide();
@@ -162,96 +183,80 @@ plugin.renderers.compactForm = function(element) {
 </span> * @echo_renderer
  */
 plugin.renderers.compactField = function(element) {
-	var plugin = this, item = plugin.component;
+	var plugin = this, item = this.component;
 	return element.focus(function() {
-		plugin.set(&quot;expanded&quot;, true);
 		plugin._showSubmit();
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onExpand'>		/**
-</span>		 * @event onExpand
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
-		 * Triggered when the reply form is expanded.
-		 */
-		plugin.events.publish({
-			&quot;topic&quot;: &quot;onExpand&quot;,
-			&quot;data&quot;: {
-				&quot;context&quot;: item.config.get(&quot;context&quot;)
-			}
-		});
-	}).val(plugin.config.get(&quot;actionString&quot;));
+	}).val(this.config.get(&quot;actionString&quot;));
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-method-destroy'>/**
 </span> * Method to destroy the plugin.
  */
 plugin.methods.destroy = function() {
-	var plugin = this;
-	Echo.Utils.setNestedValue(Echo.Variables, plugin._getFormKey(), {
-		&quot;submit&quot;: plugin.get(&quot;submit&quot;),
-		&quot;expanded&quot;: plugin.get(&quot;expanded&quot;)
+	if (this.get(&quot;submit&quot;)) {
+		Echo.Utils.setNestedValue(Echo.Variables, this._getSubmitKey(), {
+			&quot;expanded&quot;: this.get(&quot;expanded&quot;),
+			&quot;data&quot;: {
+				&quot;object&quot;: this._getSubmitData()
+			}
+		});
+	}
+	$(document).off('click', this.get(&quot;documentClickHandler&quot;));
+};
+
+plugin.methods._submitConfig = function(target) {
+	var plugin = this, item = this.component;
+	return plugin.config.assemble({
+		&quot;target&quot;: target,
+		&quot;targetURL&quot;: item.get(&quot;data.object.id&quot;),
+		&quot;parent&quot;: item.config.getAsHash(),
+		&quot;data&quot;: plugin.get(&quot;data&quot;) || {},
+		&quot;targetQuery&quot;: item.config.get(&quot;query&quot;, &quot;&quot;),
+		&quot;ready&quot;: function() {
+			plugin.set(&quot;submit&quot;, this);
+		}
 	});
-	$(document).off('click', plugin.get(&quot;documentClickHandler&quot;));
 };
 
 plugin.methods._showSubmit = function() {
-	var plugin = this, item = plugin.component;
-	var submit;
-	var target = plugin.dom.get(&quot;submitForm&quot;).empty();
-	if (!plugin.get(&quot;submit&quot;)) {
-		var config = plugin.config.assemble({
-			&quot;target&quot;: target,
-			&quot;data&quot;: { &quot;unique&quot;: item.get(&quot;data.unique&quot;) },
-			&quot;targetURL&quot;: item.get(&quot;data.object.id&quot;),
-			&quot;parent&quot;: item.config.getAsHash(),
-			&quot;targetQuery&quot;: item.config.get(&quot;query&quot;, &quot;&quot;),
-			&quot;context&quot;: item.config.get(&quot;context&quot;)
-		});
-		config.plugins.push({
-			&quot;name&quot;: &quot;Reply&quot;,
-			&quot;inReplyTo&quot;: plugin.component.get(&quot;data&quot;)
-		});
-		submit = new Echo.StreamServer.Controls.Submit(config);
-		plugin.set(&quot;submit&quot;, submit);
-	} else {
-		submit = plugin.get(&quot;submit&quot;);
-		var text = submit.dom.get(&quot;text&quot;).val();
-		target.append(submit.dom.render());
-		if (text) {
-			submit.dom.get(&quot;text&quot;).val(text);
-		}
+	var item = this.component;
+	var target = this.view.get(&quot;submitForm&quot;).empty();
+	if (this.get(&quot;submit&quot;)) {
+		this.get(&quot;submit&quot;).render();
+		return target;
 	}
-	plugin._itemCSS(&quot;add&quot;, item, plugin.dom.get(&quot;replyForm&quot;));
-	submit.dom.get(&quot;text&quot;).focus();
-	target.click(function(event) {
-		event.stopPropagation();
+	var config = this._submitConfig(target);
+	config.plugins.push({
+		&quot;name&quot;: &quot;Reply&quot;,
+		&quot;inReplyTo&quot;: item.get(&quot;data&quot;)
 	});
-	plugin.dom.render({&quot;name&quot;: &quot;compactForm&quot;});
-	item.dom.render({&quot;name&quot;: &quot;container&quot;});
+	new Echo.StreamServer.Controls.Submit(config);
 	return target;
 };
 
 plugin.methods._hideSubmit = function() {
-	var plugin = this, item = plugin.component;
-	plugin.dom.get(&quot;submitForm&quot;).empty();
-	plugin._itemCSS(&quot;remove&quot;, item, plugin.dom.get(&quot;replyForm&quot;));
-	plugin.dom.render({&quot;name&quot;: &quot;compactForm&quot;});
-	item.dom.render({&quot;name&quot;: &quot;container&quot;});
+	var item = this.component;
+	this.set(&quot;expanded&quot;, false);
+	this.view.get(&quot;submitForm&quot;).empty();
+	this._itemCSS(&quot;remove&quot;, item, this.view.get(&quot;replyForm&quot;));
+	this.view.render({&quot;name&quot;: &quot;compactForm&quot;});
+	item.view.render({&quot;name&quot;: &quot;container&quot;});
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onCollapse'>	/**
+</span>	 * @event onCollapse
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
+	 * Triggered when the reply form is closed.
+	 */
+	this.events.publish({
+		&quot;topic&quot;: &quot;onCollapse&quot;
+	});
 };
 
 plugin.methods._getClickHandler = function() {
 	var plugin = this;
 	return function() {
 	    var submit = plugin.get(&quot;submit&quot;);
-	    if (plugin.get(&quot;expanded&quot;) &amp;&amp; submit &amp;&amp; !submit.dom.get(&quot;text&quot;).val()) {
-		    plugin.set(&quot;expanded&quot;, false);
+	    if (plugin.get(&quot;expanded&quot;) &amp;&amp; submit &amp;&amp; !submit.view.get(&quot;text&quot;).val()) {
 		    plugin._hideSubmit();
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onCollapse'>		    /**
-</span>		     * @event onCollapse
-		     * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
-		     * Triggered when the reply form is closed.
-		     */
-		    plugin.events.publish({
-			    &quot;topic&quot;: &quot;onCollapse&quot;
-		    });
 	    }
 	};
 };
@@ -259,14 +264,7 @@ plugin.methods._getClickHandler = function() {
 plugin.methods._assembleButton = function() {
 	var plugin = this, item = this.component;
 	var callback = function() {
-		plugin.set(&quot;expanded&quot;, true);
 		plugin._showSubmit();
-		plugin.events.publish({
-			&quot;topic&quot;: &quot;onExpand&quot;,
-			&quot;data&quot;: {
-				&quot;context&quot;: item.config.get(&quot;context&quot;)
-			}
-		});
 	};
 	return function() {
 		var item = this;
@@ -286,10 +284,21 @@ plugin.methods._itemCSS = function(action, item, element) {
 	element[action + &quot;Class&quot;]('echo-trinaryBackgroundColor');
 };
 
-plugin.methods._getFormKey = function() {
+plugin.methods._getSubmitKey = function() {
 	var item = this.component;
 	var applicationContext = item.config.get(&quot;context&quot;).split(&quot;/&quot;)[0];
 	return &quot;forms.&quot; + item.data.unique + &quot;-&quot; + applicationContext;
+};
+
+plugin.methods._getSubmitData = function() {
+	var data = {};
+	var submit = this.get(&quot;submit&quot;);
+	data[&quot;content&quot;] = submit.view.get(&quot;text&quot;).val();
+	$.map([&quot;tags&quot;, &quot;markers&quot;], function(field) {
+		var elements = submit.view.get(field).val().split(&quot;, &quot;);
+		data[field] = elements || [];
+	});
+	return data;
 };
 
 plugin.css = 
@@ -299,9 +308,12 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Plugins-Reply'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
@@ -319,6 +331,8 @@ Echo.Plugin.create(plugin);
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;Reply&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.events = {
 	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand&quot;: function(topic, args) {
@@ -338,9 +352,12 @@ plugin.events = {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-Reply'>/**
 </span> * @class Echo.StreamServer.Controls.Submit.Plugins.Reply
@@ -359,6 +376,8 @@ Echo.Plugin.create(plugin);
  */
 var plugin = Echo.Plugin.manifest(&quot;Reply&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	var plugin = this, submit = plugin.component;
 	var _prepareEventParams = submit._prepareEventParams;
@@ -368,14 +387,21 @@ plugin.init = function() {
 		return _params;
 	};
 };
+
 <span id='Echo-StreamServer-Controls-Submit-Plugins-Reply-cfg-inReplyTo'>/**
 </span> * @cfg {Object} inReplyTo
  * Entry which is the parent for the current reply.
  */
 
+$.map([&quot;onRender&quot;, &quot;onRerender&quot;], function(topic) {
+	plugin.events[&quot;Echo.StreamServer.Controls.Submit.&quot; + topic] = function() {
+		this.component.view.get(&quot;text&quot;).focus();
+	};
+});
+
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

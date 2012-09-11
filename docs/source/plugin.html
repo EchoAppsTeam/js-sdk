@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.Plugin&quot;)) return;
 
 <span id='Echo-Plugin'>/**
 </span> * @class Echo.Plugin
@@ -66,9 +71,8 @@ Echo.Plugin.create = function(manifest) {
 	// prevent multiple re-definitions
 	if (plugin) return plugin;
 
-	var constructor = function(config) {
+	var constructor = Echo.Utils.inherit(Echo.Plugin, function(config) {
 		if (!config || !config.component) return;
-		var self = this;
 		this.name = manifest.name;
 		this.component = config.component;
 		this.cssClass = this.component.get(&quot;cssPrefix&quot;) + &quot;plugin-&quot; + manifest.name;
@@ -78,11 +82,10 @@ Echo.Plugin.create = function(manifest) {
 		this.component.config.get(&quot;target&quot;).addClass(this.cssClass);
 
 		this._init([&quot;config&quot;]);
-	};
+	});
+
 	constructor.manifest = manifest;
 	constructor.dependencies = manifest.dependencies;
-
-	Echo.Utils.inherit(constructor, Echo.Plugin);
 
 	if (manifest.methods) {
 		$.extend(constructor.prototype, manifest.methods);
@@ -168,7 +171,7 @@ Echo.Plugin.prototype.init = function() {
 		&quot;subscriptions&quot;,
 		&quot;labels&quot;,
 		&quot;renderers&quot;,
-		&quot;dom&quot;,
+		&quot;view&quot;,
 		&quot;launcher&quot;
 	]);
 };
@@ -213,6 +216,13 @@ Echo.Plugin.prototype.remove = function(key) {
 	this.set(key, undefined);
 };
 
+<span id='Echo-Plugin-method-invoke'>/**
+</span> * @inheritdoc Echo.Utils#invoke
+ */
+Echo.Plugin.prototype.invoke = function(mixed, context) {
+	return Echo.Utils.invoke(mixed, context || this);
+};
+
 <span id='Echo-Plugin-method-enable'>/**
 </span> * Enables the plugin.
  */
@@ -234,6 +244,7 @@ Echo.Plugin.prototype.disable = function(global) {
  *
  * @param {String} action
  * One of the following actions:
+ *
  * + &quot;insertBefore&quot;
  * + &quot;insertAfter&quot;
  * + &quot;insertAsFirstChild&quot;
@@ -251,7 +262,7 @@ Echo.Plugin.prototype.disable = function(global) {
  */
 Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 	if (html) {
-		html = this.substitute({&quot;template&quot;: $.isFunction(html) ? html.call(this) : html});
+		html = this.substitute({&quot;template&quot;: this.invoke(html)});
 	}
 	this.component.extendTemplate.call(this.component, action, anchor, html);
 };
@@ -393,30 +404,31 @@ Echo.Plugin.prototype._initializers.renderers = function() {
 	});
 };
 
-Echo.Plugin.prototype._initializers.dom = function() {
-	var parentDOM = this.component.get(&quot;dom&quot;);
+Echo.Plugin.prototype._initializers.view = function() {
+	var plugin = this;
 	var prefix = &quot;plugin-&quot; + this.name + &quot;-&quot;;
-	this.dom = {
-		&quot;clear&quot;: function() {
-			parentDOM.clear();
-		},
+	var action = function(name, args) {
+		var view = plugin.component.get(&quot;view&quot;);
+		return view[name].apply(view, args);
+	};
+	return {
 		&quot;set&quot;: function(name, element) {
-			parentDOM.set(prefix + name, element);
+			action(&quot;set&quot;, [prefix + name, element]);
 		},
-		&quot;get&quot;: function(name, ignorePrefix) {
-			return parentDOM.get(prefix + name, ignorePrefix);
+		&quot;get&quot;: function(name) {
+			return action(&quot;get&quot;, [prefix + name]);
 		},
 		&quot;remove&quot;: function(element) {
 			if (typeof element === &quot;string&quot;) {
 				element = prefix + element;
 			}
-			parentDOM.remove(element);
+			action(&quot;remove&quot;, [element]);
 		},
 		&quot;render&quot;: function(args) {
 			if (args &amp;&amp; args.name) {
 				args.name = prefix + args.name;
 			}
-			parentDOM.render(args);
+			action(&quot;render&quot;, [args]);
 		}
 	};
 };
@@ -547,7 +559,7 @@ Echo.Plugin.Events.prototype.unsubscribe = function(params) {
 	this.plugin.component.events.unsubscribe(params);
 };
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

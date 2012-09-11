@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.Configuration&quot;)) return;
 
 <span id='Echo-Configuration-method-constructor'><span id='Echo-Configuration'>/**
 </span></span> * @class Echo.Configuration
@@ -168,7 +173,7 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	});
 };
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

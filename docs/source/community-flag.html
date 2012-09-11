@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag
@@ -38,6 +41,8 @@
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;CommunityFlag&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;data&quot;, plugin.template);
@@ -126,27 +131,41 @@ plugin.methods._assembleButton = function(name) {
 				&quot;sessionID&quot;: item.user.get(&quot;sessionID&quot;),
 				&quot;target-query&quot;: item.config.get(&quot;parent.query&quot;)
 			},
-			&quot;onData&quot;: function() {
+			&quot;onData&quot;: function(response) {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-event-onFlagComplete'>				/**
 </span>				 * @event onFlagComplete
 				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagComplete
-				 * Triggered if flag operation was completed. 
+				 * Triggered if flag operation was completed.
 				 */
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-event-onUnFlagComplete'>				/**
 </span>				 * @event onUnFlagComplete
 				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagComplete
-				 * Triggered if reverse flag operation was completed. 
+				 * Triggered if reverse flag operation was completed.
 				 */
-				plugin.events.publish({
-					&quot;topic&quot;: &quot;on&quot; + name + &quot;Complete&quot;,
-					&quot;data&quot;: {
-						&quot;item&quot;: {
-							&quot;data&quot;: item.get(&quot;data&quot;),
-							&quot;target&quot;: item.config.get(&quot;target&quot;)
-						}
-					}
+				plugin._publishEventComplete({
+					&quot;name&quot;: name,
+					&quot;state&quot;: &quot;Complete&quot;,
+					&quot;response&quot;: response
 				});
 				plugin.requestDataRefresh();
+			},
+			&quot;onError&quot;: function(response) {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-event-onFlagError'>				/**
+</span>				 * @event onFlagError
+				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagError
+				 * Triggered if flag operation was failed.
+				 */
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-event-onUnFlagError'>				/**
+</span>				 * @event onUnFlagError
+				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagError
+				 * Triggered if reverse flag operation was failed.
+				 */
+				plugin._publishEventComplete({
+					&quot;name&quot;: name,
+					&quot;state&quot;: &quot;Error&quot;,
+					&quot;response&quot;: response
+				});
+				item.render();
 			}
 		});
 		request.send();
@@ -167,6 +186,20 @@ plugin.methods._assembleButton = function(name) {
 	};
 };
 
+plugin.methods._publishEventComplete = function(args) {
+	var item = this.component;
+	this.events.publish({
+		&quot;topic&quot;: &quot;on&quot; + args.name + args.state,
+		&quot;data&quot;: {
+			&quot;item&quot;: {
+				&quot;data&quot;: item.get(&quot;data&quot;),
+				&quot;target&quot;: item.config.get(&quot;target&quot;)
+			},
+			&quot;response&quot;: args.response
+		}
+	});
+};
+
 plugin.methods._myFlags = function(flags) {
 	var item = this.component;
 	return $.map(flags, function(entry) {
@@ -178,7 +211,7 @@ plugin.css = '.{plugin.class:flaggedBy} { background: url(' + Echo.Loader.getURL
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

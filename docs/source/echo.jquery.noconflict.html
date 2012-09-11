@@ -15,9 +15,13 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">if (!window.Echo) window.Echo = {};
+  <pre class="prettyprint lang-js">if (!window.Echo)
+	window.Echo = {};
 
-Echo.jQuery = jQuery.noConflict(true);
+if(Echo.jQuery)
+	jQuery.noConflict(true);
+else
+	Echo.jQuery = jQuery.noConflict(true);
 </pre>
 </body>
 </html>

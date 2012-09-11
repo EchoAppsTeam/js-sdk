@@ -86,7 +86,7 @@ Docs = {
         "icon": "icon-class"
       },
       {
-        "name": "Echo.StreamServer.Controls.Facepile.Item.Plugins.Like",
+        "name": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like",
         "extends": "Echo.Plugin",
         "private": null,
         "icon": "icon-class"
@@ -206,6 +206,12 @@ Docs = {
         "icon": "icon-class"
       },
       {
+        "name": "Echo.View",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
         "name": "Echo.Utils",
         "extends": null,
         "private": null,
@@ -220,12 +226,6 @@ Docs = {
       {
         "name": "Echo.AppServer.Controls.Configurator",
         "extends": "Echo.Control",
-        "private": null,
-        "icon": "icon-class"
-      },
-      {
-        "name": "Echo.Button",
-        "extends": null,
         "private": null,
         "icon": "icon-class"
       },
@@ -626,10 +626,28 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "getView",
-        "fullName": "Echo.Product.getView",
+        "name": "addControl",
+        "fullName": "Echo.Product.addControl",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Product-method-getView",
+        "url": "#!/api/Echo.Product-method-addControl",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "destroyControl",
+        "fullName": "Echo.Product.destroyControl",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Product-method-destroyControl",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "destroyControls",
+        "fullName": "Echo.Product.destroyControls",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Product-method-destroyControls",
         "meta": {
         },
         "sort": 3
@@ -713,6 +731,15 @@ Docs = {
         "fullName": "Echo.Plugin.init",
         "icon": "icon-method",
         "url": "#!/api/Echo.Plugin-method-init",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "invoke",
+        "fullName": "Echo.Plugin.invoke",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-invoke",
         "meta": {
         },
         "sort": 3
@@ -2610,6 +2637,19 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "onLikeError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like-event-onLikeError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeError",
+            "description": "Triggered when the Like operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
         "name": "onUnlikeComplete",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete",
         "icon": "icon-event",
@@ -2623,19 +2663,32 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "StreamServer.Controls.Facepile.Item.Plugins.Like",
-        "fullName": "Echo.StreamServer.Controls.Facepile.Item.Plugins.Like",
+        "name": "onUnlikeError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like-event-onUnlikeError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeError",
+            "description": "Triggered when the reverse Like operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "StreamServer.Controls.FacePile.Item.Plugins.Like",
+        "fullName": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like",
         "icon": "icon-class",
-        "url": "#!/api/Echo.StreamServer.Controls.Facepile.Item.Plugins.Like",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item.Plugins.Like",
         "meta": {
         },
         "sort": 1
       },
       {
         "name": "unlikeOnBehalf",
-        "fullName": "Echo.StreamServer.Controls.Facepile.Item.Plugins.Like.unlikeOnBehalf",
+        "fullName": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.unlikeOnBehalf",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Facepile.Item.Plugins.Like-property-unlikeOnBehalf",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item.Plugins.Like-property-unlikeOnBehalf",
         "meta": {
           "echo_label": true
         },
@@ -2643,9 +2696,9 @@ Docs = {
       },
       {
         "name": "adminUnlike",
-        "fullName": "Echo.StreamServer.Controls.Facepile.Item.Plugins.Like.adminUnlike",
+        "fullName": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.adminUnlike",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Facepile.Item.Plugins.Like-method-adminUnlike",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item.Plugins.Like-method-adminUnlike",
         "meta": {
           "echo_renderer": true
         },
@@ -2653,9 +2706,9 @@ Docs = {
       },
       {
         "name": "container",
-        "fullName": "Echo.StreamServer.Controls.Facepile.Item.Plugins.Like.container",
+        "fullName": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.container",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Facepile.Item.Plugins.Like-method-container",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item.Plugins.Like-method-container",
         "meta": {
           "echo_renderer": true
         },
@@ -2663,9 +2716,9 @@ Docs = {
       },
       {
         "name": "onUnlike",
-        "fullName": "Echo.StreamServer.Controls.Facepile.Item.Plugins.Like.onUnlike",
+        "fullName": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike",
         "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Facepile.Item.Plugins.Like-event-onUnlike",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item.Plugins.Like-event-onUnlike",
         "meta": {
           "echo_event": {
             "name": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike",
@@ -2995,6 +3048,45 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "onApproveError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onApproveError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError",
+            "description": "Triggered if \"Approve\" operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onBanComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onBanComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanComplete",
+            "description": "Triggered if \"Ban\" operation was completed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onBanError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onBanError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError",
+            "description": "Triggered if \"Ban\" operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
         "name": "onDeleteComplete",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete",
         "icon": "icon-event",
@@ -3003,6 +3095,19 @@ Docs = {
           "echo_event": {
             "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete",
             "description": "Triggered if \"Delete\" operation was completed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onDeleteError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onDeleteError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteError",
+            "description": "Triggered if \"Delete\" operation was failed."
           }
         },
         "sort": 3
@@ -3021,6 +3126,45 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "onSpamError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onSpamError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError",
+            "description": "Triggered if \"Spam\" operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUnBanComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUnBanComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete",
+            "description": "Triggered if \"UnBan\" operation was completed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUnBanError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUnBanError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanError",
+            "description": "Triggered if \"UnBan\" operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
         "name": "onUntouchComplete",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete",
         "icon": "icon-event",
@@ -3029,6 +3173,45 @@ Docs = {
           "echo_event": {
             "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete",
             "description": "Triggered if \"Untouch\" operation was completed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUntouchError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUntouchError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError",
+            "description": "Triggered if \"Untouch\" operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUserPermissionsComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUserPermissionsComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete",
+            "description": "Triggered if \"UserPermissions\" operation was completed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUserPermissionsError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUserPermissionsError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsError",
+            "description": "Triggered if \"UserPermissions\" operation was failed."
           }
         },
         "sort": 3
@@ -3763,6 +3946,19 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "onFlagError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-event-onFlagError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagError",
+            "description": "Triggered if flag operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
         "name": "onUnFlagComplete",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnFlagComplete",
         "icon": "icon-event",
@@ -3771,6 +3967,19 @@ Docs = {
           "echo_event": {
             "name": "Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagComplete",
             "description": "Triggered if reverse flag operation was completed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUnFlagError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnFlagError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-event-onUnFlagError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagError",
+            "description": "Triggered if reverse flag operation was failed."
           }
         },
         "sort": 3
@@ -3881,27 +4090,53 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onMarkAs_value_Complete",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkAs_value_Complete",
+        "name": "onMarkComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkComplete",
         "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager-event-onMarkAs_value_Complete",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager-event-onMarkComplete",
         "meta": {
           "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkAs_value_Complete",
-            "description": "action specific event which is generated automatically using the parametrized value of marker/tag.\nTriggered when the Mark action is finished.\n\nExample events:\n\n+ onMarkAssticky\n+ onMarkAsfootball"
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkComplete",
+            "description": "Triggered when the Mark action is finished."
           }
         },
         "sort": 3
       },
       {
-        "name": "onUnmarkAs_value_Complete",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarkAs_value_Complete",
+        "name": "onMarkError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkError",
         "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager-event-onUnmarkAs_value_Complete",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager-event-onMarkError",
         "meta": {
           "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarkAs_value_Complete",
-            "description": "action specific event which is generated automatically using the parametrized value of marker/tag.\nTriggered when the Mark action is finished.\n\nExample events:\n\n+ onUnmarkAssticky\n+ onUnmarkAsfootball"
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkError",
+            "description": "Triggered when the Mark action completed with error."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUnmarkComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarkComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager-event-onUnmarkComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarComplete",
+            "description": "Triggered when the Unmark action is finished."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUnmarkError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarkError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager-event-onUnmarkError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarError",
+            "description": "Triggered when the Unmark action completed with error."
           }
         },
         "sort": 3
@@ -4060,6 +4295,15 @@ Docs = {
         "sort": 1
       },
       {
+        "name": "itemURIPattern",
+        "fullName": "Echo.StreamServer.API.Request.itemURIPattern",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-itemURIPattern",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "liveUpdatesTimeout",
         "fullName": "Echo.StreamServer.API.Request.liveUpdatesTimeout",
         "icon": "icon-cfg",
@@ -4096,10 +4340,19 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "skipInitialRequests",
-        "fullName": "Echo.StreamServer.API.Request.skipInitialRequests",
+        "name": "recurring",
+        "fullName": "Echo.StreamServer.API.Request.recurring",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.API.Request-cfg-skipInitialRequests",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-recurring",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "skipInitialRequest",
+        "fullName": "Echo.StreamServer.API.Request.skipInitialRequest",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-skipInitialRequest",
         "meta": {
         },
         "sort": 3
@@ -4194,6 +4447,78 @@ Docs = {
         "url": "#!/api/Echo.Labels-static-method-set",
         "meta": {
           "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "View",
+        "fullName": "Echo.View",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.View",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.View.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "fork",
+        "fullName": "Echo.View.fork",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-fork",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.View.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-get",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "remove",
+        "fullName": "Echo.View.remove",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-remove",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "render",
+        "fullName": "Echo.View.render",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-render",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "rendered",
+        "fullName": "Echo.View.rendered",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-rendered",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.View.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-set",
+        "meta": {
         },
         "sort": 3
       },
@@ -4317,6 +4642,16 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "invoke",
+        "fullName": "Echo.Utils.invoke",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-invoke",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
         "name": "isComponentDefined",
         "fullName": "Echo.Utils.isComponentDefined",
         "icon": "icon-method",
@@ -4357,10 +4692,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "object2JSON",
-        "fullName": "Echo.Utils.object2JSON",
+        "name": "objectToJSON",
+        "fullName": "Echo.Utils.objectToJSON",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-object2JSON",
+        "url": "#!/api/Echo.Utils-static-method-objectToJSON",
         "meta": {
           "static": true
         },
@@ -4427,6 +4762,16 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "substitute",
+        "fullName": "Echo.Utils.substitute",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-substitute",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
         "name": "timestampFromW3CDTF",
         "fullName": "Echo.Utils.timestampFromW3CDTF",
         "icon": "icon-method",
@@ -4485,42 +4830,6 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "Button",
-        "fullName": "Echo.Button",
-        "icon": "icon-class",
-        "url": "#!/api/Echo.Button",
-        "meta": {
-        },
-        "sort": 1
-      },
-      {
-        "name": "constructor",
-        "fullName": "Echo.Button.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Button-method-constructor",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "render",
-        "fullName": "Echo.Button.render",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Button-method-render",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "update",
-        "fullName": "Echo.Button.update",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Button-method-update",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
         "name": "Loader",
         "fullName": "Echo.Loader",
         "icon": "icon-class",
@@ -4544,6 +4853,16 @@ Docs = {
         "fullName": "Echo.Loader.overrides",
         "icon": "icon-property",
         "url": "#!/api/Echo.Loader-property-overrides",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "vars",
+        "fullName": "Echo.Loader.vars",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-vars",
         "meta": {
           "private": true
         },
@@ -4840,6 +5159,15 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "invoke",
+        "fullName": "Echo.Control.invoke",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-invoke",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "log",
         "fullName": "Echo.Control.log",
         "icon": "icon-method",
@@ -4871,6 +5199,15 @@ Docs = {
         "fullName": "Echo.Control.remove",
         "icon": "icon-method",
         "url": "#!/api/Echo.Control-method-remove",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "render",
+        "fullName": "Echo.Control.render",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-render",
         "meta": {
         },
         "sort": 3
@@ -4917,16 +5254,6 @@ Docs = {
         "icon": "icon-method",
         "url": "#!/api/Echo.Control-method-template",
         "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "addInitializer",
-        "fullName": "Echo.Control.addInitializer",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Control-static-method-addInitializer",
-        "meta": {
-          "static": true
         },
         "sort": 3
       },
@@ -5073,7 +5400,15 @@ Docs = {
         "icon": "icon-cfg",
         "url": "#!/api/Echo.API.Request-cfg-endpoint",
         "meta": {
-          "required": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "method",
+        "fullName": "Echo.API.Request.method",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-method",
+        "meta": {
         },
         "sort": 3
       },
@@ -5109,6 +5444,15 @@ Docs = {
         "fullName": "Echo.API.Request.onOpen",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.API.Request-cfg-onOpen",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "timeout",
+        "fullName": "Echo.API.Request.timeout",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-timeout",
         "meta": {
         },
         "sort": 3

@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function(){
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter'>/**
 </span> * @class Echo.StreamServer.Controls.Submit.Plugins.TextCounter
@@ -33,6 +36,8 @@
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;TextCounter&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-cfg-limit'>/**
 </span> * @cfg {Number} limit
@@ -60,7 +65,7 @@ plugin.init = function() {
 
 plugin.events = {
 	&quot;Echo.StreamServer.Controls.Submit.onPostComplete&quot;: function(topic, args) {
-		this.dom.render({&quot;name&quot;: &quot;counterLabel&quot;});
+		this.view.render({&quot;name&quot;: &quot;counterLabel&quot;});
 	}
 };
 
@@ -97,7 +102,7 @@ plugin.component.renderers.text = function(element) {
 				return;
 			}
 		}
-		plugin.dom.render({&quot;name&quot;: &quot;counterLabel&quot;});
+		plugin.view.render({&quot;name&quot;: &quot;counterLabel&quot;});
 	};
 	return element.on(&quot;blur focus keyup keypress&quot;, handler);
 };
@@ -108,7 +113,7 @@ plugin.component.renderers.text = function(element) {
 plugin.renderers.counterLabel = function(element) {
 	var plugin = this, submit = this.component;
 	var limit = plugin.config.get(&quot;limit&quot;, 0);
-	var typed = submit.dom.get(&quot;text&quot;).val().length;
+	var typed = submit.view.get(&quot;text&quot;).val().length;
 	var label = plugin.labels.get(
 		plugin.config.get(&quot;label&quot;, limit ? &quot;limited&quot; : &quot;unlimited&quot;),
 		{
@@ -122,7 +127,7 @@ plugin.renderers.counterLabel = function(element) {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

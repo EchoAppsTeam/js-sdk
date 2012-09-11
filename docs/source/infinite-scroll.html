@@ -15,7 +15,10 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Plugins-InfiniteScroll'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll
@@ -35,10 +38,12 @@
  */
 var plugin = Echo.Plugin.manifest(&quot;InfiniteScroll&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
 
+if (Echo.Plugin.isDefined(plugin)) return;
+
 plugin.init = function() {
 	var plugin = this;
 	$(window).on(&quot;scroll&quot;, function(event) {
-		var element = plugin.component.dom.get(&quot;more&quot;);
+		var element = plugin.component.view.get(&quot;more&quot;);
 		if (element &amp;&amp; !plugin.get(&quot;requestInProgress&quot;) &amp;&amp;
 			$.inviewport(element, {&quot;threshold&quot;: 0})) {
 				plugin.set(&quot;requestInProgress&quot;, true);
@@ -55,7 +60,7 @@ plugin.events = {
 
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

@@ -15,13 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
 
-var _isPreIE9 = function() {
-	return ($.browser.msie &amp;&amp; $.browser.version &lt; 9 &amp;&amp; document.documentMode &amp;&amp; document.documentMode &lt; 9);
-};
+var $ = jQuery;
 
-(function() {
+if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery&quot;)) return;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.MediaGallery 
@@ -30,9 +29,12 @@ var _isPreIE9 = function() {
  *
  * @extends Echo.Control
  */
-if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery&quot;)) return;
 
 var mediaGallery = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery&quot;);
+
+var _isPreIE9 = function() {
+	return ($.browser.msie &amp;&amp; $.browser.version &lt; 9 &amp;&amp; document.documentMode &amp;&amp; document.documentMode &lt; 9);
+};
 
 mediaGallery.labels = {
 	&quot;mediaIsNotAvailable&quot;: &quot;&lt;i&gt;Media is not avaiable at this moment...&lt;/i&gt;&quot;
@@ -70,7 +72,7 @@ mediaGallery.renderers.controls = function(element) {
 		});
 	};
 	var controlsContainer = element;
-	var itemsContainer = this.dom.get(&quot;items&quot;);
+	var itemsContainer = this.view.get(&quot;items&quot;);
 	var itemClass = this.cssPrefix + &quot;item&quot;;
 	var controlClass = this.cssPrefix + &quot;control&quot;;
 	var activeControlClass = this.cssPrefix + 'activeControl';
@@ -230,9 +232,12 @@ mediaGallery.css =
 
 Echo.Control.create(mediaGallery);
 	
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization
@@ -241,7 +246,14 @@ Echo.Control.create(mediaGallery);
  *
  * @extends Echo.Plugin
  */
+
 var plugin = Echo.Plugin.manifest(&quot;PinboardVisualization&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
+
+var _isPreIE9 = function() {
+	return ($.browser.msie &amp;&amp; $.browser.version &lt; 9 &amp;&amp; document.documentMode &amp;&amp; document.documentMode &lt; 9);
+};
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -434,9 +446,9 @@ plugin.component.renderers.body = function(element) {
 	var plugin = this, item = this.component;
 	element = item.parentRenderer(&quot;body&quot;, arguments);
 	var filteredElements = plugin.config.get(&quot;mediaSelector&quot;)(item.get(&quot;data.object.content&quot;));
-	$(filteredElements.selector, item.dom.get(&quot;text&quot;)).remove();
+	$(filteredElements.selector, item.view.get(&quot;text&quot;)).remove();
 	var text = Echo.Utils.stripTags(item.get(&quot;data.object.content&quot;));
-	item.dom.get(&quot;container&quot;).addClass(plugin._getCSSByLength(text.length));
+	item.view.get(&quot;container&quot;).addClass(plugin._getCSSByLength(text.length));
 	return element;
 };
 
@@ -589,9 +601,12 @@ plugin.css =
 	
 Echo.Plugin.create(plugin);
 
-})();
+})(Echo.jQuery);
 
-(function() {
+(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization
@@ -612,6 +627,8 @@ Echo.Plugin.create(plugin);
  * @extends Echo.Plugin
  */
 var plugin = Echo.Plugin.manifest(&quot;PinboardVisualization&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 <span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization-cfg-isotope'>	/**
@@ -655,7 +672,7 @@ plugin.events = {
 
 plugin.methods._isotopeView = function() {
 	var plugin = this, stream = this.component;
-	stream.dom.get(&quot;body&quot;).isotope(
+	stream.view.get(&quot;body&quot;).isotope(
 		plugin.config.get(&quot;isotope&quot;)
 	);
 };
@@ -666,9 +683,7 @@ plugin.css =
 
 Echo.Plugin.create(plugin);
 
-})();
-
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

@@ -15,7 +15,12 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.Labels&quot;)) return;
 
 <span id='Echo-Labels-method-constructor'><span id='Echo-Labels'>/**
 </span></span> * @class Echo.Labels
@@ -225,7 +230,7 @@ Echo.Labels._substitute = function(label, data) {
 	return label;
 };
 
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

@@ -16,6 +16,7 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js">(function() {
+&quot;use strict&quot;;
 
 if (!window.Echo) window.Echo = {};
 
@@ -30,7 +31,8 @@ Echo.Loader = {
 </span>		&quot;cdnBaseURL&quot;: &quot;http://cdn.echoenabled.com/&quot;,
 		&quot;errorTimeout&quot;: 5000 // 5 sec
 	},
-<span id='Echo-Loader-property-overrides'>	&quot;overrides&quot;: {}
+<span id='Echo-Loader-property-overrides'>	&quot;overrides&quot;: {},
+</span><span id='Echo-Loader-property-vars'>	&quot;vars&quot;: {}
 </span>};
 
 <span id='Echo-Loader-static-method-getURL'>/**
@@ -105,11 +107,16 @@ Echo.Loader.init = function(config) {
  * were downloaded.
  */
 Echo.Loader.download = function(params) {
+	if (!Echo.Loader.vars.queued)
+		Echo.Loader.vars.queued = {};
+
 	var scripts = params.scripts || [], urls = [];
 	var callback = params.callback || function() {};
+	var queued = Echo.Loader.vars.queued;
 	for (var i = 0; i &lt; scripts.length; i++) {
 		var script = scripts[i];
-		if (!script.loaded || !script.loaded()) {
+		if (!queued[script.url] &amp;&amp; (!script.loaded || !script.loaded())) {
+			queued[script.url] = true;
 			urls.push(Echo.Loader.getURL(script.url));
 		}
 	}
@@ -156,6 +163,8 @@ Echo.Loader._initEnvironment = function(callback) {
 	}, {
 		&quot;url&quot;: &quot;sdk/environment.pack.js&quot;,
 		&quot;loaded&quot;: function() { return !!Echo.Utils; }
+	}, {
+		&quot;url&quot;: &quot;sdk/third-party/bootstrap/css/ui.css&quot;
 	}];
 	Echo.Loader.download({
 		&quot;scripts&quot;: scripts,
@@ -324,7 +333,7 @@ Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
 	});
 	Echo.jQuery.get(&quot;http://api.echoenabled.com/v1/mux&quot;, {
 		&quot;appkey&quot;: canvases[0].appkey,
-		&quot;requests&quot;: Echo.Utils.object2JSON(requests)
+		&quot;requests&quot;: Echo.Utils.objectToJSON(requests)
 	}, function(response) {
 		if (!response || response.result === &quot;error&quot;) {
 			Echo.Loader._error({

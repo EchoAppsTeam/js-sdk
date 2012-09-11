@@ -15,124 +15,232 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">(function() {
- 
-Echo.ProductView = function() {};
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
 
-Echo.Utils.inherit(Echo.ProductView, Echo.Control);
+var $ = jQuery;
 
-Echo.ProductView.create = Echo.Control.create;
+if (Echo.Utils.isComponentDefined(&quot;Echo.Product&quot;)) return;
 
-Echo.ProductView.manifest = function(name) {
-	var _manifest = Echo.ProductView.parent.constructor.manifest.apply(this, arguments);
-	_manifest.inherits = _manifest.inherits || Echo.ProductView;
+// static interface
+
+<span id='Echo-Product'>/**
+</span> * @class Echo.Product
+ * Foundation class implementing core logic to create products.
+ *
+ * @extends Echo.Control
+ */
+Echo.Product = Echo.Utils.inherit(Echo.Control);
+
+<span id='Echo-Product-static-method-create'>/**
+</span> * @static
+ * @method
+ * Function which creates a product object using it manifest declaration.
+ *
+ * @param {Object} manifest
+ * Specifies the product interface in the predefined way.
+ *
+ * @param {String} manifest.name
+ * Specifies the product name including namespace
+ *
+ * @param {Object} [manifest.vars]
+ * Specifies internal product variables.
+ *
+ * @param {Object} [manifest.config]
+ * Specifies the configuration data with the ability to define default values.
+ *
+ * @param {Object} [manifest.labels]
+ * Specifies the list of language labels used in the particular product UI.
+ *
+ * @param {Object} [manifest.events]
+ * Specifies the list of external events used by product.
+ *
+ * @param {Object} [manifest.methods]
+ * Specifies the list of product methods.
+ *
+ * @param {Object} [manifest.renderers]
+ * Specifies the list of product renderers.
+ *
+ * @param {Object} [manifest.templates]
+ * Specifies the list of product templates.
+ *
+ * @param {Function} [manifest.init]
+ * Function called during product initialization.
+ *
+ * @param {String} [manifest.css]
+ * Specifies the CSS rules for the product.
+ *
+ * @return {Object}
+ * Reference to the generated product class.
+ */
+Echo.Product.create = Echo.Control.create;
+
+<span id='Echo-Product-static-method-manifest'>/**
+</span> * @static
+ * @method
+ * Method returning common manifest structure for a product.
+ *
+ * @param {String} name
+ * Product name.
+ *
+ * @param {Array} [controlIds]
+ * List of nested control identificators that will be used to declare their names
+ * and configuration options.
+ * 
+ * @return {Object}
+ * Basic product manifest declaration.
+ */
+Echo.Product.manifest = function(name, controlIds) {
+	var _manifest = Echo.Product.parent.constructor.manifest.apply(this, arguments);
+	_manifest.inherits = _manifest.inherits || Echo.Product;
 	return $.extend(_manifest, {
-		&quot;controls&quot;: {}
+		&quot;controls&quot;: Echo.Utils.foldl({}, controlIds || [], function(controlId, acc) {
+			acc[controlId] = {};
+		})
 	});
 };
 
-Echo.Control.addInitializer(
-	Echo.ProductView,
-	[&quot;controls&quot;, [&quot;init&quot;, &quot;refresh&quot;]],
-	{&quot;after&quot;: &quot;user:async&quot;}
-);
+// public interface
 
-Echo.ProductView.prototype._initializers.controls = function() {
-	var view = this;
-	this.controls = this.controls || {};
-	$.each(this._manifest(&quot;controls&quot;), function(name, controlConfig) {
-		view.controls[name] = null;
-	});
-};
-
-Echo.ProductView.prototype.initControl = function(name, controlConfig) {
-	this.destroyControl(name);
-	controlConfig = controlConfig || {};
-	// we need to copy apps config to avoid changes in the common config
-	var parentConfig = this.config.getAsHash();
-	controlConfig.parent = controlConfig.parent || parentConfig;
-	controlConfig.plugins = this._updateControlPlugins(
-		Echo.Utils.getNestedValue(this._manifest(&quot;controls&quot;), name + &quot;.config.plugins&quot;, []),
-		this.config.get(&quot;controls.&quot; + name + &quot;.config.plugins&quot;, []),
-		controlConfig.plugins || []
+<span id='Echo-Product-method-addControl'>/**
+</span> * Method to add and initialize nested control.
+ *
+ * This function allows to initialize nested control. Control configuration object
+ * is constructed by merging the following 3 objects:
+ *
+ * + config from manifest
+ * + this instance config
+ * + controlSpec parameter if it's provided
+ *
+ * @param {String} id
+ * Nested control id.
+ *
+ * @param {Object} [controlSpec]
+ * Specification for the nested control.
+ *
+ * @param {String} [controlSpec.name]
+ * Full name for the nested control like &quot;Echo.StreamServer.Control.Stream&quot;.
+ *
+ * @param {Object} [controlSpec.config]
+ * Configuration object for the nested control.
+ */
+Echo.Product.prototype.addControl = function(id, controlSpec) {
+	this.destroyControl(id);
+	controlSpec = controlSpec || {};
+	controlSpec.name = controlSpec.name || this._getControlNameById(id);
+	controlSpec.config = controlSpec.config || {};
+	if (this.user) {
+		controlSpec.config.user = this.user;
+	}
+	controlSpec.config.parent = controlSpec.config.parent || this.config.getAsHash();
+	delete controlSpec.config.parent.controls;
+	controlSpec.config.plugins = this._mergeSpecsByName(
+		Echo.Utils.getNestedValue(this._manifest(&quot;controls&quot;), id + &quot;.config.plugins&quot;, []),
+		this.config.get(&quot;controls.&quot; + id + &quot;.config.plugins&quot;, []),
+		controlSpec.config.plugins || []
 	);
-	controlConfig = this._normalizeControlConfig(
-		$.extend(true, 
+	controlSpec.config = this._normalizeControlConfig(
+		$.extend(
+			true,
 			{},
-			Echo.Utils.getNestedValue(this._manifest(&quot;controls&quot;), name + &quot;.config&quot;, {}),
-			this.config.get(&quot;controls.&quot; + name + &quot;.config&quot;, {}),
-			controlConfig
+			Echo.Utils.getNestedValue(this._manifest(&quot;controls&quot;), id + &quot;.config&quot;, {}),
+			this.config.get(&quot;controls.&quot; + id + &quot;.config&quot;, {}),
+			controlSpec.config
 		)
 	);
-	var Control = Echo.Utils.getComponent(this._manifest(&quot;controls&quot;)[name].control);
-	this.controls[name] = new Control(controlConfig);
-	return this.controls[name];
+	var Control = Echo.Utils.getComponent(controlSpec.name);
+	this.controls = this.controls || {};
+	this.controls[id] = new Control(controlSpec.config);
+	return this.controls[id];
 };
 
-Echo.ProductView.prototype._updateControlPlugins = function(plugins) {
-	var self = this;
-	var getPluginIndex = function(plugin, plugins) {
-		var idx = -1;
-		$.each(plugins, function(i, _plugin) {
-			if (plugin.name === _plugin.name) {
-				idx = i;
-				return false;
-			}
-		});
-		return idx;
-	};
-	// flatten update plugins list
-	var updatePlugins = $.map(Array.prototype.slice.call(arguments, 1) || [], function(plugin) {
-		return plugin;
-	});
-	return Echo.Utils.foldl(plugins, updatePlugins, function(extender) {
-		var id = getPluginIndex(extender, plugins);
-		if (!~id) {
-			plugins.push(extender);
-			return;
-		}
-		if (extender.name === plugins[id].name) {
-			if (extender.nestedPlugins &amp;&amp; plugins[id].nestedPlugins) {
-				self._updateAppPlugins(plugins[id].nestedPlugins, extender.nestedPlugins);
-				// delete nested plugins in the extender to avoid override effect after extend below
-				delete extender.nestedPlugins;
-			}
-			plugins[id] = $.extend(true, {}, plugins[id], extender);
-		}
-	});
+<span id='Echo-Product-method-destroyControl'>/**
+</span> * Method to destroy nested control by id. If control defined,
+ * then will be called &quot;destroy&quot; method of the nested control
+ * and the ref removing from the inner container &quot;controls&quot;.
+ *
+ * @param {String} id
+ * Id of the control to be removed.
+ */
+Echo.Product.prototype.destroyControl = function(id) {
+	var control = this.get(&quot;controls.&quot; + id);
+	if (control) {
+		control.destroy();
+		delete this.controls[id];
+	}
 };
 
-Echo.ProductView.prototype.destroyControl = function(name) {
-	var control = this.get(&quot;controls.&quot; + name);
-	control &amp;&amp; control.destroy();
-	delete this.controls[name];
-};
-
-Echo.ProductView.prototype.destroyControls = function(exceptions) {
+<span id='Echo-Product-method-destroyControls'>/**
+</span> * Method to destroy all defined nested controls but ids in the exception list.
+ *
+ * Method can accept one parameter which specifies the exception 
+ * nested control ids list. If list is omit or empty, then method destroys
+ * all defined nested controls.
+ *
+ * @param {Array} [exceptions]
+ * List of nested control to be kept.
+ */
+Echo.Product.prototype.destroyControls = function(exceptions) {
 	var self = this;
 	exceptions = exceptions || [];
-	var inExceptionList = function(name) {
+	var inExceptionList = function(id) {
 		var inList = false;
-		$.each(exceptions, function(id, exception) {
-			if (exception === name) {
+		$.each(exceptions, function(_id, exception) {
+			if (exception === id) {
 				inList = true;
 				return false; // break
 			}
 		});
 		return inList;
 	};
-	$.each(this.controls, function(name) {
-		if (!inExceptionList(name)) {
-			self.destroyControl(name);
+	$.each(this.controls, function(id) {
+		if (!inExceptionList(id)) {
+			self.destroyControl(id);
 		}
 	});
 };
 
-Echo.ProductView.prototype.getControl = function(name) {
-	return Echo.Utils.getComponent(name);
+// private interface
+
+Echo.Product.prototype._getControlNameById = function(id) {
+	return Echo.Utils.getNestedValue(this._manifest(&quot;controls&quot;), id + &quot;.name&quot;, &quot;&quot;) || this.config.get(&quot;controls.&quot; + id + &quot;.name&quot;);
 };
 
-Echo.ProductView.prototype._normalizeControlConfig = function(config) {
+Echo.Product.prototype._mergeSpecsByName = function(specs) {
+	var self = this;
+	var getSpecIndex = function(spec, specs) {
+		var idx = -1;
+		$.each(specs, function(i, _spec) {
+			if (spec.name === _spec.name) {
+				idx = i;
+				return false;
+			}
+		});
+		return idx;
+	};
+	// flatten update specs list
+	var updateSpecs = $.map(Array.prototype.slice.call(arguments, 1) || [], function(spec) {
+		return spec;
+	});
+	return Echo.Utils.foldl(specs, updateSpecs, function(extender) {
+		var id = getSpecIndex(extender, specs);
+		if (!~id) {
+			specs.push(extender);
+			return;
+		}
+		if (extender.name === specs[id].name) {
+			if (extender.nestedPlugins) {
+				specs[id].nestedPlugins = specs[id].nestedPlugins || [];
+				self._mergeSpecsByName(specs[id].nestedPlugins, extender.nestedPlugins);
+				// delete nested plugins in the extender to avoid override effect after extend below
+				delete extender.nestedPlugins;
+			}
+		}
+		specs[id] = $.extend(true, {}, specs[id], extender);
+	});
+};
+
+Echo.Product.prototype._normalizeControlConfig = function(config) {
 	var self = this;
 	Echo.Utils.foldl(config, [&quot;appkey&quot;, &quot;apiBaseURL&quot;, &quot;submissionProxyURL&quot;], function(key, acc) {
 		acc[key] = acc[key] || self.config.get(key);
@@ -158,105 +266,7 @@ Echo.ProductView.prototype._normalizeControlConfig = function(config) {
 	return normalize(config);
 };
 
-})();
-
-(function() {
-
-<span id='Echo-Product'>/**
-</span> * @class Echo.Product
- * Foundation class implementing core logic to create products.
- *
- * @extends Echo.Control
- */
-Echo.Product = function() {};
-
-Echo.Utils.inherit(Echo.Product, Echo.Control);
-
-<span id='Echo-Product-static-method-create'>/**
-</span> * @static
- * @method
- * Function which creates a product object using it manifest declaration.
- *
- * @inheritdoc Echo.Control#create
- */
-Echo.Product.create = Echo.Control.create;
-
-<span id='Echo-Product-static-method-manifest'>/**
-</span> * @static
- * @inheritdoc Echo.Control#manifest
- */
-Echo.Product.manifest = function(name, views) {
-	var _manifest = Echo.Product.parent.constructor.manifest.apply(this, arguments);
-	_manifest.inherits = _manifest.inherits || Echo.Product;
-	return $.extend(_manifest, {
-		&quot;views&quot;: $.extend(true, {}, Echo.Utils.foldl({}, views, function(_name, acc) {
-				var viewName = name + &quot;.Views.&quot; + _name;
-				acc[_name] = Echo.ProductView.manifest(viewName);
-			})
-		),
-		&quot;assemblers&quot;: {}
-	});
-};
-
-Echo.Control.addInitializer(
-	Echo.Product,
-	[&quot;views&quot;, [&quot;init&quot;, &quot;refresh&quot;]],
-	{&quot;after&quot;: &quot;user:async&quot;}
-);
-
-Echo.Product.prototype._initializers.views = function() {
-	$.each(this._manifest(&quot;views&quot;), function(name, view) {
-		Echo.ProductView.create(view);
-	});
-};
-
-<span id='Echo-Product-method-getView'>/**
-</span> * Accessor method to get product view by its name.
- *
- * @param {String} name
- * Specifies the name of the view to be accessed.
- *
- * @return {Object}
- * Class referense.
- */
-Echo.Product.prototype.getView = function(name) {
-	return Echo.Utils.getComponent(this.name + &quot;.Views.&quot; + name);
-};
-
-Echo.Product.prototype.initView = function(name, config) {
-	this.destroyView(name);
-	var View = this.getView(name);
-	config = config || {};
-	config.parent = config.parent || this.config.getAsHash();
-	config.appkey = config.parent.appkey;
-	config = $.extend(true, {}, this.config.get(&quot;views.&quot; + name), config);
-	this.views = this.views || {};
-	this.views[name] = new View(config);
-	return this.views[name];
-};
-
-Echo.Product.prototype.destroyViews = function() {
-	var self = this;
-	$.each(this.get(&quot;views&quot;), function(name) {
-		self.destroyView(name);
-	});
-};
-
-Echo.Product.prototype.destroyView = function(name) {
-	var view = this.get(&quot;views.&quot; + name);
-	if (view &amp;&amp; view.controls) {
-		view.destroyControls();
-		view.destroy();
-		delete this.views[name];
-	}
-};
-
-Echo.Product.prototype.assemble = function(viewName) {
-	var args = Array.prototype.slice.call(arguments, 1);
-	return this._manifest(&quot;assemblers&quot;)[viewName].apply(this, args);
-};
-
-})();
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

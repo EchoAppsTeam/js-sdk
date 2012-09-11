@@ -26,7 +26,8 @@ suite.prototype.info = {
 		"getAccumulator",
 		"hasMoreChildren",
 		"getNextPageAfter",
-		"addButtonSpec"
+		"addButtonSpec",
+		"template"
 	]
 };
 
@@ -53,23 +54,25 @@ suite.prototype.tests.commonWorkflow = {
 			QUnit.ok(!item.hasMoreChildren(), "Checking hasMoreChildren() method");
 			item.set("data.hasMoreChildren", "true");
 			QUnit.ok(item.hasMoreChildren(), "Checking that hasMoreChildren() method");
-			item.set("data.hasMoreChildren", true);
+			item.set("data.hasMoreChildren", "0");
+			QUnit.ok(!item.hasMoreChildren(), "Checking that hasMoreChildren() method");
+			item.set("data.hasMoreChildren", "1");
 			QUnit.ok(!item.hasMoreChildren(), "Checking that hasMoreChildren() method");
 
 			item.block("TestMessage");
 			QUnit.ok(item.get("blocked"),
 				"Checking that field 'blocked' is true (block() method)");
-			QUnit.equal($("." + item.cssPrefix + "blocker-message", item.dom.get("container")).html(),
+			QUnit.equal($("." + item.cssPrefix + "blocker-message", item.view.get("container")).html(),
 				"TestMessage", "Checking the block message (block() method)");
-			QUnit.ok($("." + item.cssPrefix + "blocker-backdrop", item.dom.get("container")).length,
+			QUnit.ok($("." + item.cssPrefix + "blocker-backdrop", item.view.get("container")).length,
 				"Checking that block backdrop is apperead (block() method)");
 
 			item.unblock();
 			QUnit.ok(!item.get("blocked"),
 				"Checking that field 'blocked' is false (unblock() method)");
-			QUnit.ok(!$("." + item.cssPrefix + "blocker-message", item.dom.get("container")).length,
+			QUnit.ok(!$("." + item.cssPrefix + "blocker-message", item.view.get("container")).length,
 				"Checking that block message was removed (unblock() method)");
-			QUnit.ok(!$("." + item.cssPrefix + "blocker-backdrop", item.dom.get("container")).length,
+			QUnit.ok(!$("." + item.cssPrefix + "blocker-backdrop", item.view.get("container")).length,
 				"Checking that block backdrop was removed (unblock() method)");
 		};
 
@@ -135,7 +138,7 @@ suite.prototype.tests.commonWorkflow = {
 						], "cases");
 					}
 				});
-				item.dom.render();
+				item.render();
 			}
 		});
 	}
@@ -165,7 +168,7 @@ suite.prototype.cases.traverse = function(callback) {
 			callback();
 		}
 	});
-	item.dom.render();
+	item.render();
 };
 
 suite.prototype.cases.expand = function(callback) {
@@ -182,11 +185,11 @@ suite.prototype.cases.expand = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
 		"once": true,
 		"handler": function() {
-			item.dom.get("expandChildren").click();
+			item.view.get("expandChildren").click();
 		}
 	});
 	item.set("data.hasMoreChildren", "true");
-	item.dom.render();
+	item.render();
 };
 
 suite.prototype.tests.testItemButtons = {
@@ -215,7 +218,7 @@ suite.prototype.tests.testItemButtons = {
 						], "cases");
 					}
 				});
-				item.dom.render();
+				item.render();
 			}
 		});
 	}
@@ -243,7 +246,7 @@ suite.prototype.cases.visibility = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
 		"once": true,
 		"handler": function() {
-			var element = item.dom.get("buttons");
+			var element = item.view.get("buttons");
 			QUnit.ok($(element).html().match(buttons[0].label),
 				"Checking visible button");
 			QUnit.ok(!$(element).html().match(buttons[1].label),
@@ -259,7 +262,7 @@ suite.prototype.cases.visibility = function(callback) {
 	$.map(buttons, function(button) {
 		item.addButtonSpec(button.plugin, button);
 	});
-	item.dom.render();
+	item.render();
 };
 
 suite.prototype.cases.order = function(callback) {
@@ -284,7 +287,7 @@ suite.prototype.cases.order = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
 		"once": true,
 		"handler": function() {
-			var element = item.dom.get("buttons");
+			var element = item.view.get("buttons");
 			var isOrderCorrect = true;
 			$.each(buttonsOrder, function(i, plugin) {
 				var index = 1 + 2 * i;
@@ -309,7 +312,7 @@ suite.prototype.cases.order = function(callback) {
 	$.map(buttons, function(button) {
 		item.addButtonSpec(button.plugin, button);
 	});
-	item.dom.render();
+	item.render();
 };
 
 suite.prototype.cases.click = function(callback) {
@@ -338,14 +341,14 @@ suite.prototype.cases.click = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
 		"once": true,
 		"handler": function() {
-			$(item.dom.get("buttons").children().get(1)).click();
+			$(item.view.get("buttons").children().get(1)).click();
 		}
 	});
 	item.buttonSpecs = {};
 	item.buttonsOrder = [];
 	item.config.set("buttonsOrder", undefined);
 	item.addButtonSpec(button.plugin, button);
-	item.dom.render();
+	item.render();
 };
 
 suite.prototype.cases.destroy = function(callback) {
@@ -609,7 +612,7 @@ suite.prototype._runBodyCases = function(cases) {
 							params.expect, params.description);
 					}
 				});
-				item.dom.render();
+				item.render();
 			},
 			"data": _normalizeEntry($.extend(true, {}, suite._itemData, params.data))
 		}, params.config));

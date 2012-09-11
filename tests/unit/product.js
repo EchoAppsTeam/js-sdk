@@ -6,11 +6,9 @@ suite.prototype.info = {
 	"className": "Echo.Product",
 	"functions": [
 		"create",
-		"initView",
-		"getView",
-		"destroyView",
-		"destroyViews",
-		"assemble"
+		"addControl",
+		"destroyControl",
+		"destroyControls"
 	]
 };
 
@@ -33,175 +31,110 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"templates": {},
 			"dependencies": [],
 			"destroy": undefined,
-			"views": {},
-			"assemblers": {}
+			"controls": {},
 		};
-		var _manifest = Echo.Product.manifest(manifest.name, []);
+		var _manifest = Echo.Product.manifest(manifest.name);
 		QUnit.ok(!!_manifest.init,
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
 		delete _manifest.inherits;
-		
+
 		QUnit.deepEqual(manifest, _manifest,
 			"Checking the \"manifest\" function output");
-		
-		suite.createControls(["Control1", "Control2", "Control3"]);
-		
-		var views = {
-			"View1": {
-				"Control1": {
-					"control": "Control1",
-					"config": {
-						"target": this.config.target,
-						"appkey": this.config.appkey
-					}
-				},
-				"Control2": {
-					"control": "Control1",
-					"config": {
-						"target": this.config.target,
-						"appkey": this.config.appkey
-					}
+
+		suite.createControls(["TestControl1", "TestControl2", "TestControl3"]);
+		suite.createProduct("TestProduct", {
+			"TestControl1": {
+				"name": "TestControl1",
+				"config": {
+					"target": this.config.target,
+					"appkey": this.config.appkey
 				}
 			},
-			"View2": {
-				"Control3": {
-					"control": "Control3",
-					"config": {
-						"target": this.config.target,
-						"appkey": this.config.appkey
-					}
+			"TestControl2": {
+				"name": "TestControl2",
+				"config": {
+					"target": this.config.target,
+					"appkey": this.config.appkey
+				}
+			},
+			"TestControl3": {
+				"name": "TestControl3",
+				"config": {
+					"target": this.config.target,
+					"appkey": this.config.appkey
 				}
 			}
-		};
-		var assemblers = {
-			"View1": function() {
-				QUnit.ok(true,
-					"Checking that assembler function was called");
-			},
-			"View2": function(param) {
-				QUnit.equal(param, "param",
-					"Checking that assembler function was called with correct parameters");
-			}
-		};
-		suite.createProduct("TestProduct", views, assemblers);
+		});
+
 		this.sequentialAsyncTests([
-			"initView",
-			"getView",
-			"destroyView",
-			"destroyViews",
-			"assemble"
+			"addControl",
+			"destroyControl",
+			"destroyControls"
 		], "cases");
 	}
 };
 
 suite.prototype.cases = {};
 
-suite.prototype.cases.initView = function(callback) {
-	var self = this;
+suite.prototype.cases.addControl = function(callback) {
 	var check = function() {
-		var product = this;
-		var view = this.initView("View1", {
-			"target": self.config.target,
-			"appkey": self.config.appkey,
-			"key": "value"
-		});
-		QUnit.ok(this.views["View1"],
-			"Checking that view was added to product after initView()");
-		view.initControl("Control1", {
-			"ready": function() {
-				QUnit.ok(true,
-					"Checking that control was rendered after initView() and initControl()");
-				product.destroy();
-				callback();
+		this.addControl("TestControl1", {
+			"config": {
+				"ready": function() {
+					QUnit.ok(true,
+						"Checking that control.onReady() handler was called after addControl()");
+					QUnit.equal(this.config.get("parent.key1"), "value1",
+						"Checking that parent section of control config is the config of appropriate product");
+					callback();
+				}
 			}
 		});
-	};
-	suite.initProduct({
-		"target": this.config.target,
-		"appkey": this.config.appkey,
-		"ready": check
-	});
-};
-
-suite.prototype.cases.getView = function(callback) {
-	var self = this;
-	var check = function() {
-		var product = this;
-		this.initView("View1", {
-			"target": self.config.target,
-			"appkey": self.config.appkey
-		});
-		QUnit.deepEqual(this.getView("View1"), window.TestProduct.Views.View1,
-			"Checking that getControl returns a proper link");
-		QUnit.equal(this.getView("FakeView"), undefined,
-			"Checking that getControl() returns undefined with fake view name");
 		this.destroy();
-		callback();
 	};
 	suite.initProduct({
 		"target": this.config.target,
 		"appkey": this.config.appkey,
-		"ready": check
+		"ready": check,
+		"key1": "value1"
 	});
 };
 
-suite.prototype.cases.destroyView = function(callback) {
-	var self = this;
+suite.prototype.cases.destroyControl = function(callback) {
 	var check = function() {
-		var product = this;
-		var view = this.initView("View1", {
-			"target": self.config.target,
-			"appkey": self.config.appkey
-		});
-		var control = view.initControl("Control1");
+		var self = this;
+		var control = this.addControl("TestControl1");
 		control.set("_destroyHandler", function() {
 			QUnit.ok(true,
-				"Checking that Control.destroy() was called after Product.destroy()");
+				"Checking if the Control.destroy() mehtod was called after destroyControl()");
 		});
-		view.set("_destroyHandler", function() {
-			QUnit.ok(true,
-				"Checking that View.destroy() was called after Product.destroy()");
-		});
-		this.destroyView();
+		this.destroyControl("TestControl1");
+		QUnit.equal(self.controls["TestControl1"], undefined,
+			"Checking that the control was deleted from product after destroyControl()");
 		this.destroy();
 		callback();
-	}
+	};
 	suite.initProduct({
 		"target": this.config.target,
 		"appkey": this.config.appkey,
 		"ready": check
-	})
+	});
 };
 
-suite.prototype.cases.destroyViews = function(callback) {
-	var self = this;
+suite.prototype.cases.destroyControls = function(callback) {
 	var check = function() {
-		var product = this;
-		var views = ["View1", "View2"];
-		$.map(views, function(view) {
-			product.initView(view, {
-				"target": self.config.target,
-				"appkey": self.config.appket
-			});
+		var self = this;
+		var controls = ["TestControl1", "TestControl2", "TestControl3"];
+		$.map(controls, function(control) {
+			self.addControl(control);
 		});
-		this.destroyViews();
-		QUnit.ok(!this.views["View1"] && !this.views["View2"],
-			"Checking that all views were deleted from product");
+		var exceptions = ["TestControl2"];
+		this.destroyControls(exceptions);
+		QUnit.ok(!this.controls["TestControl1"] && !this.controls["TestControl3"],
+			"Checking that controls were deleted after destroyControls()");
+		QUnit.ok(this.controls["TestControl2"],
+			"Checking that control which is in exceptions list was not deleted after destroyControls()");
 		this.destroy();
-		callback();
-	}
-	suite.initProduct({
-		"target": this.config.target,
-		"appkey": this.config.appkey,
-		"ready": check
-	})
-};
-
-suite.prototype.cases.assemble = function(callback) {
-	var check = function() {
-		this.assemble("View1");
-		this.assemble("View2", "param");
 		callback();
 	};
 	suite.initProduct({
@@ -223,7 +156,7 @@ suite.getControlManifest = function(name) {
 	var manifest = Echo.Control.manifest(name);
 	manifest.templates.main = "<div>Sample Control Template</div>";
 	manifest.init = function() {
-		this.dom.render();
+		this.render();
 		this.ready();
 	};
 	manifest.destroy = function() {
@@ -232,45 +165,28 @@ suite.getControlManifest = function(name) {
 	return manifest;
 };
 
-suite.getProductViewManifest = function(name, controls) {
-	var manifest = Echo.ProductView.manifest(name);
-	manifest.templates.main = "<div>Sample View Template</div>";
-	manifest.destroy = function() {
-		this.get("_destroyHandler") && this.get("_destroyHandler")();
-	};
-	manifest.controls = controls;
-	return manifest;
-};
-
 suite.initProduct = function(config) {
 	var Product = suite.getProductClass();
 	new Product($.extend(true, {}, config));
 };
 
-suite.createProduct = function(name, views, assemblers) {
-	Echo.Product.create(suite.getProductManifest(name, views, assemblers));
+suite.createProduct = function(name, controls) {
+	Echo.Product.create(suite.getProductManifest(name, controls));
 };
 
-suite.getProductManifest = function(name, views, assemblers) {
-	var viewNames = Echo.Utils.foldl([], views, function(controls, acc, _name) {
-			acc.push(name + ".Views." + _name);
-	});
-	var manifest = Echo.Product.manifest(name, viewNames);
+suite.getProductManifest = function(name, controls) {
+	var manifest = Echo.Product.manifest(name || suite.getProductClassName());
 	manifest.templates.main = "<div>Sample Product Template</div>";
-	manifest.views = Echo.Utils.foldl({}, views, function(controls, acc, _name) {
-		var viewName = name + ".Views." + _name;
-		acc[viewName] = suite.getProductViewManifest(viewName, controls);
-	});
-	manifest.assemblers = assemblers || {};
+	manifest.controls = controls;
 	return manifest;
-};
-
-suite.getProductClassName = function() {
-	return "TestProduct";
 };
 
 suite.getProductClass = function() {
 	return Echo.Utils.getComponent(suite.getProductClassName());
+};
+
+suite.getProductClassName = function() {
+	return "TestProduct";
 };
 
 })(Echo.jQuery);
