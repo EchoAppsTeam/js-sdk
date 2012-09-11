@@ -137,8 +137,8 @@ module.exports = function(grunt) {
 		},
 		mincss: {
 			"echo-button": {
-				src: "<%= dirs.dest %>/sdk/third-party/bootstrap/css/plugins/echo-button.css",
-				dest: "<%= dirs.dest %>/sdk/third-party/bootstrap/css/plugins/echo-button.min.css"
+				src: "<%= dirs.dest %>/sdk/third-party/bootstrap/plugins/echo-button/echo-button.css",
+				dest: "<%= dirs.dest %>/sdk/third-party/bootstrap/plugins/echo-button/echo-button.min.css"
 			}
 		},
 		//min: {
@@ -234,7 +234,8 @@ module.exports = function(grunt) {
 		config.controls.map(function(control) {
 			var filepaths = {
 				"less": grunt.config("dirs.src") + "/third-party/bootstrap/less/" + control.less + ".less",
-				"css": grunt.config("dirs.dest") + "/sdk/third-party/bootstrap/css/plugins/" + control.css + ".css"
+				"css": grunt.config("dirs.dest") + "/sdk/third-party/bootstrap/plugins/" + control.css +
+					"/" + control.css + ".css"
 			};
 			var less = [
 				".echo-sdk-ui {",
