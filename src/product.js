@@ -66,104 +66,92 @@ Echo.Product.create = Echo.Control.create;
  * @param {String} name
  * Product name.
  *
- * @param {Array} [controlIds]
- * List of nested control identificators that will be used to declare their names
- * and configuration options.
- * 
  * @return {Object}
  * Basic product manifest declaration.
  */
-Echo.Product.manifest = function(name, controlIds) {
+Echo.Product.manifest = function(name) {
 	var _manifest = Echo.Product.parent.constructor.manifest.apply(this, arguments);
 	_manifest.inherits = _manifest.inherits || Echo.Product;
-	return $.extend(_manifest, {
-		"controls": Echo.Utils.foldl({}, controlIds || [], function(controlId, acc) {
-			acc[controlId] = {};
-		})
-	});
+	return _manifest;
 };
 
 // public interface
 
 /**
- * Method to add and initialize nested control.
+ * Method to add and initialize nested component.
  *
- * This function allows to initialize nested control. Control configuration object
- * is constructed by merging the following 3 objects:
+ * This function allows to initialize nested component. Component configuration object
+ * is constructed by merging the following 2 objects:
  *
- * + config from manifest
  * + this instance config
- * + controlSpec parameter if it's provided
+ * + componentSpec parameter if it's provided
  *
- * @param {String} id
- * Nested control id.
+ * @param {Object} componentSpec
  *
- * @param {Object} [controlSpec]
- * Specification for the nested control.
+ * @param {String} componentSpec.id
+ * Nested component id.
  *
- * @param {String} [controlSpec.name]
- * Full name for the nested control like "Echo.StreamServer.Control.Stream".
+ * @param {String} componentSpec.constructor
+ * Constructor name for the nested component like "Echo.StreamServer.Control.Stream".
  *
- * @param {Object} [controlSpec.config]
- * Configuration object for the nested control.
+ * @param {Object} [componentSpec.config]
+ * Configuration object for the nested component.
  */
-Echo.Product.prototype.addControl = function(id, controlSpec) {
-	this.destroyControl(id);
-	controlSpec = controlSpec || {};
-	controlSpec.name = controlSpec.name || this._getControlNameById(id);
-	controlSpec.config = controlSpec.config || {};
+Echo.Product.prototype.initComponent = function(componentSpec) {
+	this.destroyComponent(componentSpec.id);
+	componentSpec.config = componentSpec.config || {};
 	if (this.user) {
-		controlSpec.config.user = this.user;
+		componentSpec.config.user = this.user;
 	}
-	controlSpec.config.parent = controlSpec.config.parent || this.config.getAsHash();
-	delete controlSpec.config.parent.controls;
-	controlSpec.config.plugins = this._mergeSpecsByName(
-		Echo.Utils.getNestedValue(this._manifest("controls"), id + ".config.plugins", []),
-		this.config.get("controls." + id + ".config.plugins", []),
-		controlSpec.config.plugins || []
+	componentSpec.config.parent = componentSpec.config.parent || this.config.getAsHash();
+	if (componentSpec.config.parent.components) {
+		delete componentSpec.config.parent.components;
+	}
+	componentSpec.config.plugins = this._mergeSpecsByName(
+		$.extend(true, [], this.config.get("components." + componentSpec.id + ".plugins", [])),
+		componentSpec.config.plugins || []
 	);
-	controlSpec.config = this._normalizeControlConfig(
+	componentSpec.config = this._normalizeComponentConfig(
 		$.extend(
 			true,
 			{},
-			Echo.Utils.getNestedValue(this._manifest("controls"), id + ".config", {}),
-			this.config.get("controls." + id + ".config", {}),
-			controlSpec.config
+			this.config.get("components." + componentSpec.id, {}),
+			componentSpec.config
 		)
 	);
-	var Control = Echo.Utils.getComponent(controlSpec.name);
-	this.controls = this.controls || {};
-	this.controls[id] = new Control(controlSpec.config);
-	return this.controls[id];
+	var Component = Echo.Utils.getComponent(componentSpec.constructor);
+	this.components = this.components || {};
+	this.components[componentSpec.id] = new Component(componentSpec.config);
+	return this.components[componentSpec.id];
 };
 
 /**
- * Method to destroy nested control by id. If control defined,
- * then will be called "destroy" method of the nested control
- * and the ref removing from the inner container "controls".
+ * Method to destroy nested component by id. If component defined,
+ * then will be called "destroy" method of the nested component
+ * and the ref removing from the inner container "components".
  *
  * @param {String} id
- * Id of the control to be removed.
+ * Id of the component to be removed.
  */
-Echo.Product.prototype.destroyControl = function(id) {
-	var control = this.get("controls." + id);
-	if (control) {
-		control.destroy();
-		delete this.controls[id];
+Echo.Product.prototype.destroyComponent = function(id) {
+	var component = this.get("components." + id);
+	if (component) {
+		component.destroy();
+		delete this.components[id];
 	}
 };
 
 /**
- * Method to destroy all defined nested controls but ids in the exception list.
+ * Method to destroy all defined nested components but ids in the exception list.
  *
  * Method can accept one parameter which specifies the exception 
- * nested control ids list. If list is omit or empty, then method destroys
- * all defined nested controls.
+ * nested component ids list. If list is omit or empty, then method destroys
+ * all defined nested components.
  *
  * @param {Array} [exceptions]
- * List of nested control to be kept.
+ * List of nested component to be kept.
  */
-Echo.Product.prototype.destroyControls = function(exceptions) {
+Echo.Product.prototype.destroyComponents = function(exceptions) {
 	var self = this;
 	exceptions = exceptions || [];
 	var inExceptionList = function(id) {
@@ -176,18 +164,14 @@ Echo.Product.prototype.destroyControls = function(exceptions) {
 		});
 		return inList;
 	};
-	$.each(this.controls, function(id) {
+	$.each(this.components, function(id) {
 		if (!inExceptionList(id)) {
-			self.destroyControl(id);
+			self.destroyComponent(id);
 		}
 	});
 };
 
 // private interface
-
-Echo.Product.prototype._getControlNameById = function(id) {
-	return Echo.Utils.getNestedValue(this._manifest("controls"), id + ".name", "") || this.config.get("controls." + id + ".name");
-};
 
 Echo.Product.prototype._mergeSpecsByName = function(specs) {
 	var self = this;
@@ -223,7 +207,7 @@ Echo.Product.prototype._mergeSpecsByName = function(specs) {
 	});
 };
 
-Echo.Product.prototype._normalizeControlConfig = function(config) {
+Echo.Product.prototype._normalizeComponentConfig = function(config) {
 	var self = this;
 	Echo.Utils.foldl(config, ["appkey", "apiBaseURL", "submissionProxyURL"], function(key, acc) {
 		acc[key] = acc[key] || self.config.get(key);

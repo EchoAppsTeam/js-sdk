@@ -7,31 +7,25 @@
     },
     "apps": [{
         "id": "my-comments-sample",
-        "script": "sdk/products/comments-sample/comments-sample.js",
+        "script": "products/comments-sample/comments-sample.js",
         "component": "Echo.Products.CommentsSample",
         "config": {
             "appkey": "test.aboutecho.com",
             "apiBaseURL": "http://api.echoenabled.com/v1/",
             "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
-			"controls": {
+			"components": {
 				"Stream": {
-					"name": "Echo.StreamServer.Controls.Stream",
-					"config": {
-						"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
-						"plugins": [{
-							"name": "Edit"
-						}, {
-							"name": "Like"
-						}, {
-							"name": "Moderation"
-						}]
-					}
+					"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
+					"plugins": [{
+						"name": "Edit"
+					}, {
+						"name": "Like"
+					}, {
+						"name": "Moderation"
+					}]
 				},
 				"Submit": {
-					"name": "Echo.StreamServer.Controls.Submit",
-					"config": {
-						"targetURL": "http://echosandbox.com/test/comments-sampler-test"
-					}
+					"targetURL": "http://echosandbox.com/test/comments-sampler-test"
 				}
 			},
             "identityManager": {

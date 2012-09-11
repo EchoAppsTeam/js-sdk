@@ -5,7 +5,7 @@ var $ = jQuery;
 
 if (Echo.Utils.isComponentDefined("Echo.Products.CommentsSample")) return;
 
-var Comments = Echo.Product.manifest("Echo.Products.CommentsSample", ["Auth", "Submit", "Stream"]);
+var Comments = Echo.Product.manifest("Echo.Products.CommentsSample");
 
 Comments.dependencies = [
 	{"loaded": function() {
@@ -41,28 +41,39 @@ Comments.methods.template = function() {
 	];
 };
 
-$.map(["auth", "stream", "submit"], function(name) {
-	Comments.renderers[name] = function(element) {
-		var id = Echo.Utils.capitalize(name);
-		this.addControl(id, {
-			"config": {"target": element}
-		});
-		return element;
-	};
-});
+Comments.renderers.auth = function(element) {
+	this.initComponent({
+		"id": "Auth",
+		"constructor": "Echo.IdentityServer.Controls.Auth",
+		"config": {
+			"appkey": null,
+			"target": element,
+			"identityManager": "{config:identityManager}"
+		}
+	});
+	return element;
+};
 
-Comments.controls.Auth = {
-	"name": "Echo.IdentityServer.Controls.Auth",
-	"config": {
-		"appkey": null,
-		"identityManager": "{config:identityManager}"
-	}
+Comments.renderers.stream = function(element) {
+	this.initComponent({
+		"id": "Stream",
+		"constructor": "Echo.StreamServer.Controls.Stream",
+		"config": {
+			"target": element
+		}
+	});
+	return element;
 };
-Comments.controls.Stream = {
-	"name": "Echo.StreamServer.Controls.Stream"
-};
-Comments.controls.Submit = {
-	"name": "Echo.StreamServer.Controls.Submit"
+
+Comments.renderers.submit = function(element) {
+	this.initComponent({
+		"id": "Submit",
+		"constructor": "Echo.StreamServer.Controls.Submit",
+		"config": {
+			"target": element
+		}
+	});
+	return element;
 };
 
 Comments.css = ".{class:container} > div { margin-bottom: 7px; }";
