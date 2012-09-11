@@ -561,7 +561,7 @@ Echo.Control.prototype._initializers.list = [
 	["vars",               ["init", "refresh"]],
 	["config",             ["init"]],
 	["events",             ["init"]],
-	["subscriptions",      ["init", "refresh"]],
+	["subscriptions",      ["init"]],
 	["labels",             ["init"]],
 	["css",                ["init"]],
 	["renderers",          ["init", "refresh"]],
@@ -694,7 +694,6 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 	// register destroy handlers
 	control.events.subscribe({
 		"topic": "Echo.Control.onDestroy",
-		"once": true,
 		"handler": function(topic, data) {
 			// destroy plugins
 			$.map(control.config.get("pluginsOrder"), function(name) {
@@ -739,7 +738,6 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 		control.events.subscribe({
 			"topic": "Echo.UserSession.onInvalidate",
 			"context": "global",
-			"once": true,
 			"handler": control.refresh
 		});
 	}
