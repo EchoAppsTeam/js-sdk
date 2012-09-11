@@ -227,6 +227,7 @@ Echo.Plugin.prototype.disable = function(global) {
  *
  * @param {String} action
  * One of the following actions:
+ *
  * + "insertBefore"
  * + "insertAfter"
  * + "insertAsFirstChild"

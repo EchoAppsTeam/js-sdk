@@ -20,7 +20,41 @@ Echo.Product = Echo.Utils.inherit(Echo.Control);
  * @method
  * Function which creates a product object using it manifest declaration.
  *
- * @inheritdoc Echo.Control#create
+ * @param {Object} manifest
+ * Specifies the product interface in the predefined way.
+ *
+ * @param {String} manifest.name
+ * Specifies the product name including namespace
+ *
+ * @param {Object} [manifest.vars]
+ * Specifies internal product variables.
+ *
+ * @param {Object} [manifest.config]
+ * Specifies the configuration data with the ability to define default values.
+ *
+ * @param {Object} [manifest.labels]
+ * Specifies the list of language labels used in the particular product UI.
+ *
+ * @param {Object} [manifest.events]
+ * Specifies the list of external events used by product.
+ *
+ * @param {Object} [manifest.methods]
+ * Specifies the list of product methods.
+ *
+ * @param {Object} [manifest.renderers]
+ * Specifies the list of product renderers.
+ *
+ * @param {Object} [manifest.templates]
+ * Specifies the list of product templates.
+ *
+ * @param {Function} [manifest.init]
+ * Function called during product initialization.
+ *
+ * @param {String} [manifest.css]
+ * Specifies the CSS rules for the product.
+ *
+ * @return {Object}
+ * Reference to the generated product class.
  */
 Echo.Product.create = Echo.Control.create;
 
@@ -30,16 +64,14 @@ Echo.Product.create = Echo.Control.create;
  * Method returning common manifest structure for a product.
  *
  * @param {String} name
- * Specifies product name.
+ * Product name.
  *
  * @param {Array} [controlIds]
- * Specifies a list of nested control identificators that will be
- * used to declare their names and configuration options.
+ * List of nested control identificators that will be used to declare their names
+ * and configuration options.
  * 
  * @return {Object}
  * Basic product manifest declaration.
- *
- * @inheritdoc Echo.Control#create
  */
 Echo.Product.manifest = function(name, controlIds) {
 	var _manifest = Echo.Product.parent.constructor.manifest.apply(this, arguments);
@@ -56,21 +88,24 @@ Echo.Product.manifest = function(name, controlIds) {
 /**
  * Method to add and initialize nested control.
  *
- * This function allows to initialize nested control and setting ref
- * to the inner conatiner "controls". Also it merge configs from manifest,
- * config from the constructor call and from the accepted parameter if defined.
+ * This function allows to initialize nested control. Control configuration object
+ * is constructed by merging the following 3 objects:
+ *
+ * + config from manifest
+ * + this instance config
+ * + controlSpec parameter if it's provided
  *
  * @param {String} id
- * Defines the nested control id.
+ * Nested control id.
  *
  * @param {Object} [controlSpec]
- * Defines the specification for the nested control.
+ * Specification for the nested control.
  *
  * @param {String} [controlSpec.name]
- * Defines a full nested control name like "Echo.StreamServer.Control.Stream".
+ * Full name for the nested control like "Echo.StreamServer.Control.Stream".
  *
  * @param {Object} [controlSpec.config]
- * Defines a config for the nested control.
+ * Configuration object for the nested control.
  */
 Echo.Product.prototype.addControl = function(id, controlSpec) {
 	this.destroyControl(id);
@@ -108,7 +143,7 @@ Echo.Product.prototype.addControl = function(id, controlSpec) {
  * and the ref removing from the inner container "controls".
  *
  * @param {String} id
- * Specifies a id which indicates what control should be removed.
+ * Id of the control to be removed.
  */
 Echo.Product.prototype.destroyControl = function(id) {
 	var control = this.get("controls." + id);
@@ -126,7 +161,7 @@ Echo.Product.prototype.destroyControl = function(id) {
  * all defined nested controls.
  *
  * @param {Array} [exceptions]
- * Specifies nested control ids exception list.
+ * List of nested control to be kept.
  */
 Echo.Product.prototype.destroyControls = function(exceptions) {
 	var self = this;
