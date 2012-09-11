@@ -6,9 +6,9 @@ suite.prototype.info = {
 	"className": "Echo.Product",
 	"functions": [
 		"create",
-		"addControl",
-		"destroyControl",
-		"destroyControls"
+		"initComponent",
+		"destroyComponent",
+		"destroyComponents"
 	]
 };
 
@@ -30,8 +30,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"renderers": {},
 			"templates": {},
 			"dependencies": [],
-			"destroy": undefined,
-			"controls": {},
+			"destroy": undefined
 		};
 		var _manifest = Echo.Product.manifest(manifest.name);
 		QUnit.ok(!!_manifest.init,
@@ -42,50 +41,45 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.deepEqual(manifest, _manifest,
 			"Checking the \"manifest\" function output");
 
-		suite.createControls(["TestControl1", "TestControl2", "TestControl3"]);
+		suite.createComponents(["TestComponent1", "TestComponent2", "TestComponent3"]);
 		suite.createProduct("TestProduct", {
-			"TestControl1": {
-				"name": "TestControl1",
-				"config": {
-					"target": this.config.target,
-					"appkey": this.config.appkey
-				}
+			"TestComponent1": {
+				"target": this.config.target,
+				"appkey": this.config.appkey
 			},
-			"TestControl2": {
-				"name": "TestControl2",
-				"config": {
-					"target": this.config.target,
-					"appkey": this.config.appkey
-				}
+			"TestComponent2": {
+				"target": this.config.target,
+				"appkey": this.config.appkey
 			},
-			"TestControl3": {
-				"name": "TestControl3",
-				"config": {
-					"target": this.config.target,
-					"appkey": this.config.appkey
-				}
+			"TestComponent3": {
+				"target": this.config.target,
+				"appkey": this.config.appkey
 			}
 		});
 
 		this.sequentialAsyncTests([
-			"addControl",
-			"destroyControl",
-			"destroyControls"
+			"initComponent",
+			"destroyComponent",
+			"destroyComponents"
 		], "cases");
 	}
 };
 
 suite.prototype.cases = {};
 
-suite.prototype.cases.addControl = function(callback) {
+suite.prototype.cases.initComponent = function(callback) {
+	var self = this;
 	var check = function() {
-		this.addControl("TestControl1", {
+		this.initComponent({
+			"id": "TestComponent1",
+			"constructor": "TestComponent1",
 			"config": {
+				"target": self.config.target,
 				"ready": function() {
 					QUnit.ok(true,
-						"Checking that control.onReady() handler was called after addControl()");
+						"Checking that control.onReady() handler was called after initComponent()");
 					QUnit.equal(this.config.get("parent.key1"), "value1",
-						"Checking that parent section of control config is the config of appropriate product");
+						"Checking that parent section of component config is the config of appropriate product");
 					callback();
 				}
 			}
@@ -100,17 +94,23 @@ suite.prototype.cases.addControl = function(callback) {
 	});
 };
 
-suite.prototype.cases.destroyControl = function(callback) {
+suite.prototype.cases.destroyComponent = function(callback) {
+	var self = this;
 	var check = function() {
-		var self = this;
-		var control = this.addControl("TestControl1");
-		control.set("_destroyHandler", function() {
-			QUnit.ok(true,
-				"Checking if the Control.destroy() mehtod was called after destroyControl()");
+		var component = this.initComponent({
+			"id": "TestComponent1",
+			"constructor": "TestComponent1",
+			"config": {
+				"target": self.config.target,
+			}
 		});
-		this.destroyControl("TestControl1");
-		QUnit.equal(self.controls["TestControl1"], undefined,
-			"Checking that the control was deleted from product after destroyControl()");
+		component.set("_destroyHandler", function() {
+			QUnit.ok(true,
+				"Checking if the control.destroy() mehtod was called after destroyComponent()");
+		});
+		this.destroyComponent("TestComponent1");
+		QUnit.equal(this.components["TestComponent1"], undefined,
+			"Checking that the component was deleted from product after destroyComponent()");
 		this.destroy();
 		callback();
 	};
@@ -121,19 +121,26 @@ suite.prototype.cases.destroyControl = function(callback) {
 	});
 };
 
-suite.prototype.cases.destroyControls = function(callback) {
+suite.prototype.cases.destroyComponents = function(callback) {
+	var test = this;
 	var check = function() {
 		var self = this;
-		var controls = ["TestControl1", "TestControl2", "TestControl3"];
-		$.map(controls, function(control) {
-			self.addControl(control);
+		var components = ["TestComponent1", "TestComponent2", "TestComponent3"];
+		$.map(components, function(component) {
+			self.initComponent({
+				"id": component,
+				"constructor": component,
+				"config": {
+					"target": test.config.target,
+				}
+			});
 		});
-		var exceptions = ["TestControl2"];
-		this.destroyControls(exceptions);
-		QUnit.ok(!this.controls["TestControl1"] && !this.controls["TestControl3"],
-			"Checking that controls were deleted after destroyControls()");
-		QUnit.ok(this.controls["TestControl2"],
-			"Checking that control which is in exceptions list was not deleted after destroyControls()");
+		var exceptions = ["TestComponent2"];
+		this.destroyComponents(exceptions);
+		QUnit.ok(!this.components["TestComponent1"] && !this.components["TestComponent3"],
+			"Checking that components were deleted after destroyComponents()");
+		QUnit.ok(this.components["TestComponent2"],
+			"Checking that component which is in exceptions list was not deleted after destroyComponents()");
 		this.destroy();
 		callback();
 	};
@@ -146,15 +153,15 @@ suite.prototype.cases.destroyControls = function(callback) {
 
 // test helper functions
 
-suite.createControls = function(names) {
+suite.createComponents = function(names) {
 	$.map(names, function(name) {
-		Echo.Control.create(suite.getControlManifest(name));
+		Echo.Control.create(suite.getComponentManifest(name));
 	});
 };
 
-suite.getControlManifest = function(name) {
+suite.getComponentManifest = function(name) {
 	var manifest = Echo.Control.manifest(name);
-	manifest.templates.main = "<div>Sample Control Template</div>";
+	manifest.templates.main = "<div>Sample Component Template</div>";
 	manifest.init = function() {
 		this.render();
 		this.ready();
@@ -170,14 +177,13 @@ suite.initProduct = function(config) {
 	new Product($.extend(true, {}, config));
 };
 
-suite.createProduct = function(name, controls) {
-	Echo.Product.create(suite.getProductManifest(name, controls));
+suite.createProduct = function(name) {
+	Echo.Product.create(suite.getProductManifest(name));
 };
 
-suite.getProductManifest = function(name, controls) {
+suite.getProductManifest = function(name) {
 	var manifest = Echo.Product.manifest(name || suite.getProductClassName());
 	manifest.templates.main = "<div>Sample Product Template</div>";
-	manifest.controls = controls;
 	return manifest;
 };
 

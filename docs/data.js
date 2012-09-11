@@ -626,28 +626,28 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "addControl",
-        "fullName": "Echo.Product.addControl",
+        "name": "destroyComponent",
+        "fullName": "Echo.Product.destroyComponent",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Product-method-addControl",
+        "url": "#!/api/Echo.Product-method-destroyComponent",
         "meta": {
         },
         "sort": 3
       },
       {
-        "name": "destroyControl",
-        "fullName": "Echo.Product.destroyControl",
+        "name": "destroyComponents",
+        "fullName": "Echo.Product.destroyComponents",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Product-method-destroyControl",
+        "url": "#!/api/Echo.Product-method-destroyComponents",
         "meta": {
         },
         "sort": 3
       },
       {
-        "name": "destroyControls",
-        "fullName": "Echo.Product.destroyControls",
+        "name": "initComponent",
+        "fullName": "Echo.Product.initComponent",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Product-method-destroyControls",
+        "url": "#!/api/Echo.Product-method-initComponent",
         "meta": {
         },
         "sort": 3
