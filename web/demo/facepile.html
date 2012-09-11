@@ -45,19 +45,10 @@
 			<div class="block" id="ulist-s3"></div>
 			<div style="clear: both"></div>
 		</div>
-		
 	</div>
 
 	<!-- Client initialization -->
 	<script type="text/javascript">
-        var $ = Echo.jQuery;
-		$(document).ready(
-			function() {
-				if (parent && parent.resize) {
-					parent.resize($(document).height());
-				}
-			}
-		);
 		new Echo.StreamServer.Controls.FacePile({
 			"target": document.getElementById("ulist-d1"),
 			"appkey": "test.aboutecho.com",
@@ -81,7 +72,7 @@
 		});
 
 
-        $.get("http://api.echoenabled.com/v1/search", {
+        Echo.jQuery.get("http://api.echoenabled.com/v1/search", {
 			"q": "childrenof:http://aboutecho.com/* itemsPerPage:100 children:0",
 			"appkey": "test.aboutecho.com"
 		}, function(data) {

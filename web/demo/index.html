@@ -6,23 +6,27 @@
 	<script type="text/javascript" src="../sdk/loader.js"></script>
 	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
 	<script type="text/javascript">
-        var $ = Echo.jQuery;
-		$(document).ready(function() {
-			var nav = $(".navigation");
-			nav.on("mouseenter", function(e) {
-				nav.stop().fadeTo("slow", 1);
-				e.stopPropagation();
-			}).on("mouseleave", function(e) {
-				nav.stop().fadeTo("slow", 0.5);
-				e.stopPropagation();
+		(function($) {
+			$(document).ready(function() {
+				var nav = $(".navigation");
+				nav.on("mouseenter", function(e) {
+					nav.stop().fadeTo("slow", 1);
+					e.stopPropagation();
+				}).on("mouseleave", function(e) {
+					nav.stop().fadeTo("slow", 0.5);
+					e.stopPropagation();
+				});
+
+				$("body").css("height", $(window).height());
+
+				$(window).on("resize", function() {
+					$("body").css("height", $(window).height());
+				});
 			});
-		});
-		window.resize = function(height){
-				document.getElementById("frame").style.height = height + 48 + "px";
-		}
+		})(Echo.jQuery);
 	</script>
 </head>
-<body>
+<body style="overflow: hidden;">
 	<div class="top navigation">
 		<ul class="menu">
 			<li style="padding-right: 0px; border: 0px; color: #808080;">Controls: </li>

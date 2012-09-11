@@ -23,14 +23,6 @@
 
 	<!-- Client initialization -->
 	<script type="text/javascript">
-        var $ = Echo.jQuery;
-		$(document).ready(
-			function() {
-				if (parent && parent.resize) {
-					parent.resize($(document).height());
-				}
-			}
-		);
 		Backplane.init({
 			"serverBaseURL": "http://api.echoenabled.com/v1",
 			"busName": "jskit",
@@ -44,7 +36,7 @@
 			"appkey": "test.js-kit.com",
 			"item": {
 				"limits": {
-					"maxBodyCharacters": 35,
+					"maxBodyCharacters": 35
 				}
 			},
 			"reTag": false,
