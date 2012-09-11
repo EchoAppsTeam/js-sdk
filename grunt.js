@@ -97,6 +97,10 @@ module.exports = function(grunt) {
 				src: ["<patch_fancybox_css:<%= dirs.src %>/third-party/jquery/css/fancybox.css>"],
 				dest: "<%= dirs.dest %>/sdk/third-party/jquery/css/fancybox.css"
 			},
+			"fancybox-js": {
+				src: ["<patch_fancybox_js:<%= dirs.src %>/third-party/jquery/jquery.fancybox-1.3.4.min.js>"],
+				dest: "<%= dirs.dest %>/sdk/third-party/jquery/jquery.fancybox-1.3.4.min.js"
+			},
 			"api": {
 				src: [
 					"<%= dirs.src %>/api.js",
@@ -129,7 +133,7 @@ module.exports = function(grunt) {
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.ihint.js>",
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.viewport.mini.js>",
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.easing-1.3.min.js>",
-					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.fancybox-1.3.4.min.js>",
+					"<echo_wrapper:<%= dirs.dest %>/sdk/third-party/jquery/jquery.fancybox-1.3.4.min.js>",
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.isotope.min.js>"
 				],
 				dest: "<%= dirs.dest %>/sdk/third-party/jquery.pack.js"
@@ -282,6 +286,11 @@ module.exports = function(grunt) {
 			.replace(/url\(\'(.*)\'\)/g, "url('" + domainPrefix + "$1')")
 			.replace(/src=\'fancybox\/(.*)\'/g, "src='" + domainPrefix + "$1')");
 		return css;
+	});
+
+	grunt.registerHelper("patch_fancybox_js", function(filepath) {
+		var js = grunt.task.directive(filepath, grunt.file.read);
+		return js.replace(/(["'][.#]?)fancybox([a-z0-9-]*["'])/gi, "$1fancybox-echo$2");
 	});
 
 	grunt.registerHelper("echo_wrapper", function(filepath) {
