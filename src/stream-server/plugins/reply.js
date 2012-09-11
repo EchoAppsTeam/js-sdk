@@ -26,7 +26,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate("insertAsLastChild", "content", plugin.templates.form);
-	var form = Echo.Utils.getNestedValue(Echo.Variables, this._getFormKey());
+	var form = Echo.Utils.getNestedValue(Echo.Variables, this._getSubmitKey());
 	$.each(form || {}, function(key, value) {
 	    self.set(key, value);
 	});
@@ -62,24 +62,42 @@ plugin.labels = {
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand": function(topic, args) {
-		var plugin = this, item = this.component;
+		var item = this.component;
 		var context = item.config.get("context");
-		if (plugin.get("expanded") && context && context !== args.context) {
-			plugin.set("expanded", false);
-			plugin._hideSubmit();
-			plugin.events.publish({
-				"topic": "onCollapse"
-			});
+		if (this.get("expanded") && context && context !== args.context) {
+			this._hideSubmit();
 		}
 	},
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
-		this.set("expanded", false);
 		this._hideSubmit();
-		this.events.publish({
-			"topic": "onCollapse"
-		});
+	},
+	"Echo.StreamServer.Controls.Stream.Item.onRender": function(topic, args) {
+		if (this.get("expanded")) {
+			this._showSubmit();
+		}
 	}
 };
+
+$.map(["onRender", "onRerender"], function(topic) {
+	plugin.events["Echo.StreamServer.Controls.Submit." + topic] = function() {
+		var item = this.component;
+		this.set("expanded", true);
+		this._itemCSS("add", item, this.view.get("replyForm"));
+		this.view.render({"name": "compactForm"});
+		item.view.render({"name": "container"});
+		/**
+		 * @event onExpand
+		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
+		 * Triggered when the reply form is expanded.
+		 */
+		this.events.publish({
+			"topic": "onExpand",
+			"data": {
+				"context": item.config.get("context")
+			}
+		});
+	};
+});
 
 plugin.templates.form =
 	'<div class="{plugin.class:replyForm}">' +
@@ -95,9 +113,9 @@ plugin.templates.form =
  * @echo_renderer
  */
 plugin.component.renderers.container = function(element) {
-	var plugin = this, item = plugin.component;
+	var item = this.component;
 	var threading = item.threading;
-	if (plugin.get("expanded")) {
+	if (this.get("expanded")) {
 		item.threading = true;
 	}
 	item.parentRenderer("container", arguments);
@@ -109,14 +127,14 @@ plugin.component.renderers.container = function(element) {
  * @echo_renderer
  */
 plugin.component.renderers.children = function(element) {
-	var plugin = this, item = plugin.component;
+	var item = this.component;
 	// perform reply form rerendering *only* when we have exactly 1 item
 	// (the first item is being added or the last one is being deleted)
 	if (item.get("children").length == 1) {
 		var child = item.get("children")[0];
 		if (child.get("added") || child.get("deleted")) {
-			plugin._itemCSS("remove", item, plugin.view.get("replyForm"));
-			plugin.view.render({"name": "compactForm"});
+			this._itemCSS("remove", item, this.view.get("replyForm"));
+			this.view.render({"name": "compactForm"});
 		}
 	}
 	return item.parentRenderer("children", arguments);
@@ -126,21 +144,19 @@ plugin.component.renderers.children = function(element) {
  * @echo_renderer
  */
 plugin.renderers.submitForm = function(element) {
-	var plugin = this;
-	if (plugin.get("expanded")) {
-		return plugin._showSubmit();
-	}
-	return element;
+	return element.click(function(event) {
+		event.stopPropagation();
+	});
 };
 
 /**
  * @echo_renderer
  */
 plugin.renderers.compactForm = function(element) {
-	var plugin = this, item = plugin.component;
+	var item = this.component;
 	var hasChildren = !!item.children.length;
-	if (!item.get("depth") && hasChildren && !plugin.get("expanded") && !item.get("children")[0].get("deleted")) {
-		plugin._itemCSS("add", item, element.parent());
+	if (!item.get("depth") && hasChildren && !this.get("expanded") && !item.get("children")[0].get("deleted")) {
+		this._itemCSS("add", item, element.parent());
 		return element.show();
 	}
 	return element.hide();
@@ -150,78 +166,72 @@ plugin.renderers.compactForm = function(element) {
  * @echo_renderer
  */
 plugin.renderers.compactField = function(element) {
-	var plugin = this, item = plugin.component;
+	var plugin = this, item = this.component;
 	return element.focus(function() {
-		plugin.set("expanded", true);
 		plugin._showSubmit();
-		/**
-		 * @event onExpand
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
-		 * Triggered when the reply form is expanded.
-		 */
-		plugin.events.publish({
-			"topic": "onExpand",
-			"data": {
-				"context": item.config.get("context")
-			}
-		});
-	}).val(plugin.config.get("actionString"));
+	}).val(this.config.get("actionString"));
 };
 
 /**
  * Method to destroy the plugin.
  */
 plugin.methods.destroy = function() {
-	var plugin = this;
-	Echo.Utils.setNestedValue(Echo.Variables, plugin._getFormKey(), {
-		"submit": plugin.get("submit"),
-		"expanded": plugin.get("expanded")
+	if (this.get("submit")) {
+		Echo.Utils.setNestedValue(Echo.Variables, this._getSubmitKey(), {
+			"expanded": this.get("expanded"),
+			"data": {
+				"object": this._getSubmitData()
+			}
+		});
+	}
+	$(document).off('click', this.get("documentClickHandler"));
+};
+
+plugin.methods._submitConfig = function(target) {
+	var plugin = this, item = this.component;
+	return plugin.config.assemble({
+		"target": target,
+		"targetURL": item.get("data.object.id"),
+		"parent": item.config.getAsHash(),
+		"data": plugin.get("data") || {},
+		"targetQuery": item.config.get("query", ""),
+		"ready": function() {
+			plugin.set("submit", this);
+		}
 	});
-	$(document).off('click', plugin.get("documentClickHandler"));
 };
 
 plugin.methods._showSubmit = function() {
-	var plugin = this, item = plugin.component;
-	var submit;
-	var target = plugin.view.get("submitForm").empty();
-	if (!plugin.get("submit")) {
-		var config = plugin.config.assemble({
-			"target": target,
-			"data": { "unique": item.get("data.unique") },
-			"targetURL": item.get("data.object.id"),
-			"parent": item.config.getAsHash(),
-			"targetQuery": item.config.get("query", ""),
-			"context": item.config.get("context")
-		});
-		config.plugins.push({
-			"name": "Reply",
-			"inReplyTo": plugin.component.get("data")
-		});
-		submit = new Echo.StreamServer.Controls.Submit(config);
-		plugin.set("submit", submit);
-	} else {
-		submit = plugin.get("submit");
-		var text = submit.view.get("text").val();
-		target.append(submit.render());
-		if (text) {
-			submit.view.get("text").val(text);
-		}
+	var item = this.component;
+	var target = this.view.get("submitForm").empty();
+	if (this.get("submit")) {
+		this.get("submit").render();
+		return target;
 	}
-	plugin._itemCSS("add", item, plugin.view.get("replyForm"));
-	target.click(function(event) {
-		event.stopPropagation();
+	var config = this._submitConfig(target);
+	config.plugins.push({
+		"name": "Reply",
+		"inReplyTo": item.get("data")
 	});
-	plugin.view.render({"name": "compactForm"});
-	item.view.render({"name": "container"});
+	new Echo.StreamServer.Controls.Submit(config);
 	return target;
 };
 
 plugin.methods._hideSubmit = function() {
-	var plugin = this, item = plugin.component;
-	plugin.view.get("submitForm").empty();
-	plugin._itemCSS("remove", item, plugin.view.get("replyForm"));
-	plugin.view.render({"name": "compactForm"});
+	var item = this.component;
+	this.set("expanded", false);
+	this.view.get("submitForm").empty();
+	this._itemCSS("remove", item, this.view.get("replyForm"));
+	this.view.render({"name": "compactForm"});
 	item.view.render({"name": "container"});
+	/**
+	 * @event onCollapse
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
+	 * Triggered when the reply form is closed.
+	 */
+	this.events.publish({
+		"topic": "onCollapse"
+	});
 };
 
 plugin.methods._getClickHandler = function() {
@@ -229,16 +239,7 @@ plugin.methods._getClickHandler = function() {
 	return function() {
 	    var submit = plugin.get("submit");
 	    if (plugin.get("expanded") && submit && !submit.view.get("text").val()) {
-		    plugin.set("expanded", false);
 		    plugin._hideSubmit();
-		    /**
-		     * @event onCollapse
-		     * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
-		     * Triggered when the reply form is closed.
-		     */
-		    plugin.events.publish({
-			    "topic": "onCollapse"
-		    });
 	    }
 	};
 };
@@ -246,14 +247,7 @@ plugin.methods._getClickHandler = function() {
 plugin.methods._assembleButton = function() {
 	var plugin = this, item = this.component;
 	var callback = function() {
-		plugin.set("expanded", true);
 		plugin._showSubmit();
-		plugin.events.publish({
-			"topic": "onExpand",
-			"data": {
-				"context": item.config.get("context")
-			}
-		});
 	};
 	return function() {
 		var item = this;
@@ -273,10 +267,21 @@ plugin.methods._itemCSS = function(action, item, element) {
 	element[action + "Class"]('echo-trinaryBackgroundColor');
 };
 
-plugin.methods._getFormKey = function() {
+plugin.methods._getSubmitKey = function() {
 	var item = this.component;
 	var applicationContext = item.config.get("context").split("/")[0];
 	return "forms." + item.data.unique + "-" + applicationContext;
+};
+
+plugin.methods._getSubmitData = function() {
+	var data = {};
+	var submit = this.get("submit");
+	data["content"] = submit.view.get("text").val();
+	$.map(["tags", "markers"], function(field) {
+		var elements = submit.view.get(field).val().split(", ");
+		data[field] = elements || [];
+	});
+	return data;
 };
 
 plugin.css = 
@@ -371,11 +376,11 @@ plugin.init = function() {
  * Entry which is the parent for the current reply.
  */
 
-plugin.events = {
-	"Echo.StreamServer.Controls.Submit.onRender": function(topic, args) {
+$.map(["onRender", "onRerender"], function(topic) {
+	plugin.events["Echo.StreamServer.Controls.Submit." + topic] = function() {
 		this.component.view.get("text").focus();
-	}
-}
+	};
+});
 
 Echo.Plugin.create(plugin);
 
