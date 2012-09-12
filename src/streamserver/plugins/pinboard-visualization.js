@@ -328,16 +328,25 @@ plugin.events = {
 	}
 };
 
-$.map([ "Echo.StreamServer.Controls.Submit.onRender",
-	"Echo.StreamServer.Controls.Submit.onEditError",
-	"Echo.StreamServer.Controls.Submit.onEditComplete",
-	"Echo.StreamServer.Controls.Stream.Item.onRerender",
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand",
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse",
+$.map([ "Echo.StreamServer.Controls.Stream.Item.onRerender",
 	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize",
 	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia"], function(event) {
 	plugin.events[event] = function(topic, args) {
 		this._refreshView();
+	};
+});
+
+$.map([ "Echo.StreamServer.Controls.Submit.onRender",
+	"Echo.StreamServer.Controls.Submit.onEditError",
+	"Echo.StreamServer.Controls.Submit.onEditComplete",
+	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse"], function(event) {
+	plugin.events[event] = function(topic, args) {
+		var plugin = this;
+		// in some cases we need to refresh isotope layout immediately
+		if (!plugin.get("rendered")) return;
+		setTimeout(function() {
+			plugin._refreshView();
+		}, 0);
 	};
 });
 
@@ -385,6 +394,7 @@ plugin.component.renderers.avatar = function(element) {
 /**
  * @echo_renderer
  */
+
 plugin.component.renderers.container = function(element) {
 	var plugin = this, item = this.component;
 	element = item.parentRenderer("container", arguments);

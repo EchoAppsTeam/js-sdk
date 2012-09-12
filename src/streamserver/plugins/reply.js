@@ -78,27 +78,6 @@ plugin.events = {
 	}
 };
 
-$.map(["onRender", "onRerender"], function(topic) {
-	plugin.events["Echo.StreamServer.Controls.Submit." + topic] = function() {
-		var item = this.component;
-		this.set("expanded", true);
-		this._itemCSS("add", item, this.view.get("replyForm"));
-		this.view.render({"name": "compactForm"});
-		item.view.render({"name": "container"});
-		/**
-		 * @event onExpand
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
-		 * Triggered when the reply form is expanded.
-		 */
-		this.events.publish({
-			"topic": "onExpand",
-			"data": {
-				"context": item.config.get("context")
-			}
-		});
-	};
-});
-
 plugin.templates.form =
 	'<div class="{plugin.class:replyForm}">' +
 		'<div class="{plugin.class:submitForm}"></div>' +
@@ -197,6 +176,7 @@ plugin.methods._submitConfig = function(target) {
 		"targetQuery": item.config.get("query", ""),
 		"ready": function() {
 			plugin.set("submit", this);
+			plugin._expand();
 		}
 	});
 };
@@ -205,7 +185,8 @@ plugin.methods._showSubmit = function() {
 	var item = this.component;
 	var target = this.view.get("submitForm").empty();
 	if (this.get("submit")) {
-		this.get("submit").render();
+		target.append(this.get("submit").render());
+		this._expand();
 		return target;
 	}
 	var config = this._submitConfig(target);
@@ -232,6 +213,25 @@ plugin.methods._hideSubmit = function() {
 	this.events.publish({
 		"topic": "onCollapse"
 	});
+};
+
+plugin.methods._expand = function() {
+	var item = this.component;
+	this.set("expanded", true);
+	this._itemCSS("add", item, this.view.get("replyForm"));
+	this.view.render({"name": "compactForm"});
+	/**
+	 * @event onExpand
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
+	 * Triggered when the reply form is expanded.
+	 */
+	this.events.publish({
+		"topic": "onExpand",
+		"data": {
+			"context": item.config.get("context")
+		}
+	});
+	item.view.render({"name": "container"});
 };
 
 plugin.methods._getClickHandler = function() {
