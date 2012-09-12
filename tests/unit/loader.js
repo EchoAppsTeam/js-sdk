@@ -46,6 +46,7 @@ suite.prototype.tests.resourceDownloadingTests = {
 suite.prototype.tests.urlConvertingTests = {
 	"check": function() {
 		var cdnBaseURL = Echo.Loader.config.cdnBaseURL;
+		var version = Echo.Loader.version;
 		var urls = {
 			"absolute": [
 				"//cdn/echoenabled.com/image.png",
@@ -56,13 +57,24 @@ suite.prototype.tests.urlConvertingTests = {
 				"/web/image.png",
 				"web/image.png",
 				"sdk"
+			],
+			"sdk": [
+				"{sdk}/web/image.png",
+				"{sdk}web/image.png",
+				"{sdk}"
+			],
+			"products": [
+				"{products}/web/image.png",
+				"{products}/web/image.png",
+				"{products}"
 			]
 		};
 		$.each(urls, function(key, val) {
 			var checked = true;
 			$.map(val, function(url) {
-				if (key === "absolute" && url !== Echo.Loader.getURL(url) ||
-					key === "relative" && cdnBaseURL + url !== Echo.Loader.getURL(url)
+				if ((key === "absolute" || key === "relative") && url !== Echo.Loader.getURL(url) ||
+					key === "products" && url.replace("{products}", "products") !== Echo.Loader.getURL(url) ||
+					key === "sdk" && url.replace("{sdk}", cdnBaseURL + "sdk/v" + version) !== Echo.Loader.getURL(url)
 				) {
 					checked = false;
 				}
@@ -127,12 +139,12 @@ suite.prototype.cases.nonExistingScripts = function(callback) {
 suite.prototype.cases.alreadyLoadedScripts = function(callback) {
 	Echo.Loader.download({
 		"scripts": [{
-			"url": "events.js"
+			"url": "{sdk}/events.js"
 		}, {
-			"url": "labels.js",
+			"url": "{sdk}/labels.js",
 			"loaded": function() { return !!Echo.Labels; }
 		}, {
-			"url": "plugin.js"
+			"url": "{sdk}/plugin.js"
 		}],
 		"callback": function() {
 			QUnit.ok(true, "Checking if the callback is executed when the scripts loaded previously are loaded again");

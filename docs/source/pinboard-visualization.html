@@ -345,16 +345,25 @@ plugin.events = {
 	}
 };
 
-$.map([ &quot;Echo.StreamServer.Controls.Submit.onRender&quot;,
-	&quot;Echo.StreamServer.Controls.Submit.onEditError&quot;,
-	&quot;Echo.StreamServer.Controls.Submit.onEditComplete&quot;,
-	&quot;Echo.StreamServer.Controls.Stream.Item.onRerender&quot;,
-	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand&quot;,
-	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse&quot;,
+$.map([ &quot;Echo.StreamServer.Controls.Stream.Item.onRerender&quot;,
 	&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize&quot;,
 	&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia&quot;], function(event) {
 	plugin.events[event] = function(topic, args) {
 		this._refreshView();
+	};
+});
+
+$.map([ &quot;Echo.StreamServer.Controls.Submit.onRender&quot;,
+	&quot;Echo.StreamServer.Controls.Submit.onEditError&quot;,
+	&quot;Echo.StreamServer.Controls.Submit.onEditComplete&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse&quot;], function(event) {
+	plugin.events[event] = function(topic, args) {
+		var plugin = this;
+		// in some cases we need to refresh isotope layout immediately
+		if (!plugin.get(&quot;rendered&quot;)) return;
+		setTimeout(function() {
+			plugin._refreshView();
+		}, 0);
 	};
 });
 
@@ -402,6 +411,7 @@ plugin.component.renderers.avatar = function(element) {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-container'>/**
 </span> * @echo_renderer
  */
+
 plugin.component.renderers.container = function(element) {
 	var plugin = this, item = this.component;
 	element = item.parentRenderer(&quot;container&quot;, arguments);

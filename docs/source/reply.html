@@ -95,27 +95,6 @@ plugin.events = {
 	}
 };
 
-$.map([&quot;onRender&quot;, &quot;onRerender&quot;], function(topic) {
-	plugin.events[&quot;Echo.StreamServer.Controls.Submit.&quot; + topic] = function() {
-		var item = this.component;
-		this.set(&quot;expanded&quot;, true);
-		this._itemCSS(&quot;add&quot;, item, this.view.get(&quot;replyForm&quot;));
-		this.view.render({&quot;name&quot;: &quot;compactForm&quot;});
-		item.view.render({&quot;name&quot;: &quot;container&quot;});
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onExpand'>		/**
-</span>		 * @event onExpand
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
-		 * Triggered when the reply form is expanded.
-		 */
-		this.events.publish({
-			&quot;topic&quot;: &quot;onExpand&quot;,
-			&quot;data&quot;: {
-				&quot;context&quot;: item.config.get(&quot;context&quot;)
-			}
-		});
-	};
-});
-
 plugin.templates.form =
 	'&lt;div class=&quot;{plugin.class:replyForm}&quot;&gt;' +
 		'&lt;div class=&quot;{plugin.class:submitForm}&quot;&gt;&lt;/div&gt;' +
@@ -214,6 +193,7 @@ plugin.methods._submitConfig = function(target) {
 		&quot;targetQuery&quot;: item.config.get(&quot;query&quot;, &quot;&quot;),
 		&quot;ready&quot;: function() {
 			plugin.set(&quot;submit&quot;, this);
+			plugin._expand();
 		}
 	});
 };
@@ -222,7 +202,8 @@ plugin.methods._showSubmit = function() {
 	var item = this.component;
 	var target = this.view.get(&quot;submitForm&quot;).empty();
 	if (this.get(&quot;submit&quot;)) {
-		this.get(&quot;submit&quot;).render();
+		target.append(this.get(&quot;submit&quot;).render());
+		this._expand();
 		return target;
 	}
 	var config = this._submitConfig(target);
@@ -249,6 +230,25 @@ plugin.methods._hideSubmit = function() {
 	this.events.publish({
 		&quot;topic&quot;: &quot;onCollapse&quot;
 	});
+};
+
+plugin.methods._expand = function() {
+	var item = this.component;
+	this.set(&quot;expanded&quot;, true);
+	this._itemCSS(&quot;add&quot;, item, this.view.get(&quot;replyForm&quot;));
+	this.view.render({&quot;name&quot;: &quot;compactForm&quot;});
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onExpand'>	/**
+</span>	 * @event onExpand
+	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
+	 * Triggered when the reply form is expanded.
+	 */
+	this.events.publish({
+		&quot;topic&quot;: &quot;onExpand&quot;,
+		&quot;data&quot;: {
+			&quot;context&quot;: item.config.get(&quot;context&quot;)
+		}
+	});
+	item.view.render({&quot;name&quot;: &quot;container&quot;});
 };
 
 plugin.methods._getClickHandler = function() {
