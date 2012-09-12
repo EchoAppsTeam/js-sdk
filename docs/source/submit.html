@@ -199,11 +199,11 @@ submit.vars = {
 
 submit.dependencies = [{
 	&quot;loaded&quot;: function() { return !!Echo.jQuery.echoButton; },
-	&quot;url&quot;: &quot;sdk/third-party/bootstrap/plugins/echo-button/echo-button.js&quot;
+	&quot;url&quot;: &quot;{sdk}/thirdparty/bootstrap/plugins/echo-button/echo-button.js&quot;
 }, {
-	&quot;url&quot;: &quot;sdk/third-party/bootstrap/plugins/echo-button/echo-button.css&quot;
+	&quot;url&quot;: &quot;{sdk}/thirdparty/bootstrap/plugins/echo-button/echo-button.css&quot;
 }, {
-	&quot;url&quot;: &quot;sdk/third-party/jquery/css/fancybox.css&quot;
+	&quot;url&quot;: &quot;{sdk}/thirdparty/jquery/css/fancybox.css&quot;
 }];
 
 submit.labels = {
@@ -387,7 +387,7 @@ submit.renderers.postButton = function(element) {
 			&quot;label&quot;: self.labels.get(&quot;post&quot;)
 		},
 		&quot;posting&quot;: {
-			&quot;icon&quot;: Echo.Loader.getURL(&quot;sdk/images/loading.gif&quot;),
+			&quot;icon&quot;: Echo.Loader.getURL(&quot;{sdk}/images/loading.gif&quot;),
 			&quot;disabled&quot;: true,
 			&quot;label&quot;: self.labels.get(&quot;posting&quot;)
 		}
@@ -648,7 +648,7 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(&quot;' + Echo.Loader.getURL(&quot;sdk/images/info70.png&quot;) + '&quot;); height: 70px; }' +
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/info70.png&quot;) + '&quot;); height: 70px; }' +
 	(($.browser.msie) ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +

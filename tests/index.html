@@ -9,12 +9,12 @@
 		#echo-tests { background: #FFFFFF; }
 		#qunit-header, #qunit-tests > li:last-child { border-radius:0; }
 	</style>
-	<script type="text/javascript" src="../sdk/backplane.js"></script>
-	<script type="text/javascript" src="../sdk/loader.js"></script>
-	<script type="text/javascript" src="../sdk/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="../sdk/environment.pack.js"></script>
-	<script type="text/javascript" src="../sdk/stream-server.pack.js"></script>
-	<script type="text/javascript" src="../sdk/identity-server.pack.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/thirdparty/jquery.pack.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/identityserver.pack.js"></script>
 	<script type="text/javascript" src="qunit/qunit.js"></script>
 	<script type="text/javascript" src="testlib.js"></script>
 	<script type="text/javascript" src="helpers/events.js"></script>
@@ -26,29 +26,30 @@
 	<script type="text/javascript" src="unit/utils.js"></script>
 	<script type="text/javascript" src="unit/user-session.js"></script>
 	<script type="text/javascript" src="unit/api.js"></script>
-	<script type="text/javascript" src="unit/stream-server/api.js"></script>
+	<script type="text/javascript" src="unit/streamserver/api.js"></script>
+	<script type="text/javascript" src="unit/identityserver/api.js"></script>
 	<script type="text/javascript" src="unit/control.js"></script>
 	<script type="text/javascript" src="unit/plugin.js"></script>
 	<script type="text/javascript" src="unit/view.js"></script>
 	<script type="text/javascript" src="unit/product.js"></script>
 	<script type="text/javascript" src="unit/loader.js"></script>
-	<script type="text/javascript" src="unit/stream-server/controls/counter.js"></script>
-	<script type="text/javascript" src="unit/stream-server/controls/submit.js"></script>
-	<script type="text/javascript" src="unit/stream-server/controls/facepile.js"></script>
-	<script type="text/javascript" src="unit/stream-server/controls/stream.js"></script>
-	<script type="text/javascript" src="unit/stream-server/controls/item.js"></script>
-	<script type="text/javascript" src="unit/stream-server/controls/media-gallery.js"></script>
-	<script type="text/javascript" src="unit/stream-server/plugins/edit.js"></script>
-	<script type="text/javascript" src="unit/stream-server/plugins/reply.js"></script>
-	<script type="text/javascript" src="unit/stream-server/plugins/item-accumulator-display.js"></script>
-	<script type="text/javascript" src="unit/stream-server/plugins/pinboard-visualization.js"></script>
-	<script type="text/javascript" src="unit/stream-server/plugins/form-auth.js"></script>
-	<script type="text/javascript" src="unit/stream-server/plugins/text-counter.js"></script>
-	<script type="text/javascript" src="unit/stream-server/plugins/community-flag.js"></script>
-	<script type="text/javascript" src="unit/stream-server/plugins/form-auth.js"></script>
-	<script type="text/javascript" src="unit/stream-server/plugins/moderation.js"></script>
-	<script type="text/javascript" src="unit/stream-server/plugins/twitter-intents.js"></script>
-	<script type="text/javascript" src="unit/identity-server/controls/auth.js"></script>
+	<script type="text/javascript" src="unit/streamserver/controls/counter.js"></script>
+	<script type="text/javascript" src="unit/streamserver/controls/submit.js"></script>
+	<script type="text/javascript" src="unit/streamserver/controls/facepile.js"></script>
+	<script type="text/javascript" src="unit/streamserver/controls/stream.js"></script>
+	<script type="text/javascript" src="unit/streamserver/controls/item.js"></script>
+	<script type="text/javascript" src="unit/streamserver/controls/media-gallery.js"></script>
+	<script type="text/javascript" src="unit/streamserver/plugins/edit.js"></script>
+	<script type="text/javascript" src="unit/streamserver/plugins/reply.js"></script>
+	<script type="text/javascript" src="unit/streamserver/plugins/item-accumulator-display.js"></script>
+	<script type="text/javascript" src="unit/streamserver/plugins/pinboard-visualization.js"></script>
+	<script type="text/javascript" src="unit/streamserver/plugins/form-auth.js"></script>
+	<script type="text/javascript" src="unit/streamserver/plugins/text-counter.js"></script>
+	<script type="text/javascript" src="unit/streamserver/plugins/community-flag.js"></script>
+	<script type="text/javascript" src="unit/streamserver/plugins/form-auth.js"></script>
+	<script type="text/javascript" src="unit/streamserver/plugins/moderation.js"></script>
+	<script type="text/javascript" src="unit/streamserver/plugins/twitter-intents.js"></script>
+	<script type="text/javascript" src="unit/identityserver/controls/auth.js"></script>
 	<script>
 		Echo.jQuery(document).ready(function() {
 			Echo.Tests.runTests();

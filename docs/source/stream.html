@@ -124,7 +124,7 @@ stream.config = {
 </span>	 * @cfg {String} providerIcon
 	 * Specifies the URL to the icon representing data provider.
 	 */
-	&quot;providerIcon&quot;: Echo.Loader.getURL(&quot;sdk/images/favicons/comments.png&quot;),
+	&quot;providerIcon&quot;: Echo.Loader.getURL(&quot;{sdk}/images/favicons/comments.png&quot;),
 <span id='Echo-StreamServer-Controls-Stream-cfg-slideTimeout'>	/**
 </span>	 * @cfg {Number} slideTimeout
 	 * Specifies the duration of the sliding animation (in milliseconds)
@@ -249,7 +249,7 @@ stream.events = {
 			&quot;priority&quot;: &quot;highest&quot;,
 			&quot;handler&quot;: function() {
 				item.set(&quot;deleted&quot;, false);
-				self._animateSpotUpdate(&quot;delete&quot;, item, data.config);
+				self._animateSpotUpdate(&quot;remove&quot;, item, data.config);
 			}
 		});
 		return {&quot;stop&quot;: [&quot;bubble&quot;]};
@@ -596,7 +596,7 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 					if (!satisfies &amp;&amp; !item.isRoot() &amp;&amp;
 						self.user.has(&quot;identity&quot;, item.data.actor.id)) {
 							item.set(&quot;byCurrentUser&quot;, true);
-					};
+					}
 
 					if (satisfies || item.get(&quot;byCurrentUser&quot;)) {
 <span id='Echo-StreamServer-Controls-Stream-event-Item'>						/**
@@ -616,7 +616,7 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 				return;
 			}
 			if (action === &quot;delete&quot;) {
-				self._applySpotUpdates(&quot;delete&quot;, item);
+				self._applySpotUpdates(&quot;remove&quot;, item);
 				_callback();
 			}
 		};
@@ -809,7 +809,7 @@ stream.methods._checkTimeframeSatisfy = function() {
 		if (!satisfy) acc.push(thread);
 	});
 	$.map(unsatisfying, function(item) {
-		self._applySpotUpdates(&quot;delete&quot;, item);
+		self._applySpotUpdates(&quot;remove&quot;, item);
 	});
 };
 
@@ -926,7 +926,7 @@ stream.methods._spotUpdates.replace = function(item, options) {
 		container.splice(oldIdx, 1);
 		var newIdx = this._getItemProjectedIndex(item, container, sort);
 		if (oldIdx != newIdx) {
-			this._applySpotUpdates(&quot;delete&quot;, item, {
+			this._applySpotUpdates(&quot;remove&quot;, item, {
 				&quot;keepChildren&quot;: true,
 				&quot;priority&quot;: &quot;high&quot;
 			});
@@ -944,7 +944,7 @@ stream.methods._spotUpdates.replace = function(item, options) {
 	}
 };
 
-stream.methods._spotUpdates.delete = function(item, options) {
+stream.methods._spotUpdates.remove = function(item, options) {
 	item.set(&quot;deleted&quot;, true);
 	if (item.isRoot()) {
 <span id='Echo-StreamServer-Controls-Stream-event-onDelete'>		/**
@@ -1025,7 +1025,7 @@ stream.methods._spotUpdates.animate.add = function(item) {
 	}
 };
 
-stream.methods._spotUpdates.animate.delete = function(item, config) {
+stream.methods._spotUpdates.animate.remove = function(item, config) {
 	var self = this;
 	this.activities.animations++;
 	config = config || {};
@@ -1193,7 +1193,7 @@ stream.methods._compareItems = function(a, b, sort) {
 					(getCount(a) === getCount(b) &amp;&amp;
 						this._compareItems(a, b, &quot;reverseChronological&quot;)));
 			break;
-	};
+	}
 	return result;
 };
 
@@ -1420,14 +1420,14 @@ stream.methods._normalizeEntry = function(entry) {
 stream.css =
 	'.{class:message-wrapper} { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }' +
 	'.{class:message-empty}, .{class:message-loading}, .{class:message-error} { display: inline-block; height: 16px; padding-left: 21px; background: no-repeat left center; }' +
-	'.{class:message-empty} { background-image: url(' + Echo.Loader.getURL(&quot;sdk/images/information.png&quot;) + '); }' +
-	'.{class:message-loading} { background-image: url(' + Echo.Loader.getURL(&quot;sdk/images/loading.gif&quot;) + '); }' +
-	'.{class:message-error} { background-image: url(' + Echo.Loader.getURL(&quot;sdk/images/warning.gif&quot;) + '); }' +
+	'.{class:message-empty} { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/information.png&quot;) + '); }' +
+	'.{class:message-loading} { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/loading.gif&quot;) + '); }' +
+	'.{class:message-error} { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/warning.gif&quot;) + '); }' +
 	'.{class:header} { margin: 10px 0px 10px 20px; }' +
 	'.{class:state} { float: right; }' +
 	'.{class:state-picture} { display: inline-block; height: 9px; width: 8px; }' +
-	'.{class:state-picture-paused} { background: url(&quot;' + Echo.Loader.getURL(&quot;sdk/images/control_pause.png&quot;) + '&quot;) no-repeat center center; }' +
-	'.{class:state-picture-live} { background: url(&quot;' + Echo.Loader.getURL(&quot;sdk/images/control_play.png&quot;) + '&quot;) no-repeat center center; }' +
+	'.{class:state-picture-paused} { background: url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/control_pause.png&quot;) + '&quot;) no-repeat center center; }' +
+	'.{class:state-picture-live} { background: url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/control_play.png&quot;) + '&quot;) no-repeat center center; }' +
 	'.{class:state-message} { margin-left: 5px; text-decoration: none; }' +
 	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
 	'.{class:more-hover} { background-color: #E4E4E4; }' +
@@ -2549,7 +2549,7 @@ item.methods._initSmileysConfig = function() {
 	});
 	_smileys.regexps.test = new RegExp(escapedCodes.join(&quot;|&quot;));
 	_smileys.tag = function(smiley) {
-		return '&lt;img class=&quot;' + self.cssPrefix + 'smiley-icon&quot; src=&quot;' + Echo.Loader.getURL(&quot;sdk/images/smileys/emoticon_&quot;) + smiley.file + '&quot; title=&quot;' + smiley.title + '&quot; alt=&quot;' + smiley.title + '&quot; /&gt;';
+		return '&lt;img class=&quot;' + self.cssPrefix + 'smiley-icon&quot; src=&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/smileys/emoticon_&quot;) + smiley.file + '&quot; title=&quot;' + smiley.title + '&quot; alt=&quot;' + smiley.title + '&quot; /&gt;';
 	};
 	return _smileys;
 };
@@ -2837,16 +2837,16 @@ item.css =
 	'.{class:wrapper} { float: left; width: 100%; }' +
 	'.{class:subwrapper} { margin-left: 58px; }' +
 	'.{class:subcontainer} { float: left; width: 100%; }' +
-	'.{class:markers} { line-height: 16px; background: url(' + Echo.Loader.getURL(&quot;sdk/images/curation/metadata/marker.png&quot;) + ') no-repeat; padding: 0px 0px 4px 21px; margin-top: 7px; }' +
-	'.{class:tags} { line-height: 16px; background: url(' + Echo.Loader.getURL(&quot;sdk/images/tag_blue.png&quot;) + ') no-repeat; padding: 0px 0px 4px 21px; }' +
+	'.{class:markers} { line-height: 16px; background: url(' + Echo.Loader.getURL(&quot;{sdk}/images/curation/metadata/marker.png&quot;) + ') no-repeat; padding: 0px 0px 4px 21px; margin-top: 7px; }' +
+	'.{class:tags} { line-height: 16px; background: url(' + Echo.Loader.getURL(&quot;{sdk}/images/tag_blue.png&quot;) + ') no-repeat; padding: 0px 0px 4px 21px; }' +
 	'.{class:metadata} { display: none; }' +
 	'.{class:metadata-title} { font-weight: bold; line-height: 25px; height: 25px; margin-right: 5px; }' +
 	'.{class:metadata-icon} { display: inline-block; padding-left: 26px; }' +
 	'.{class:metadata-userID} { border-bottom: 1px solid #e1e1e1; border-top: 1px solid #e1e1e1;}' +
-	'.{class:metadata-userID} .{class:metadata-icon} { background: url(&quot;' + Echo.Loader.getURL(&quot;sdk/images/curation/metadata/user.png&quot;) + '&quot;) no-repeat left center; }' +
+	'.{class:metadata-userID} .{class:metadata-icon} { background: url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/curation/metadata/user.png&quot;) + '&quot;) no-repeat left center; }' +
 	'.{class:metadata-userIP} { border-bottom: 1px solid #e1e1e1; }' +
-	'.{class:metadata-userIP} .{class:metadata-icon} { background: url(&quot;' + Echo.Loader.getURL(&quot;sdk/images/curation/metadata/computer.png&quot;) + '&quot;) no-repeat left center; }' +
-	'.{class:modeSwitch} { float: right; width: 16px; height: 16px; background:url(&quot;' + Echo.Loader.getURL(&quot;sdk/images/curation/metadata/flip.png&quot;) + '&quot;) no-repeat 0px 3px; }' +
+	'.{class:metadata-userIP} .{class:metadata-icon} { background: url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/curation/metadata/computer.png&quot;) + '&quot;) no-repeat left center; }' +
+	'.{class:modeSwitch} { float: right; width: 16px; height: 16px; background:url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/curation/metadata/flip.png&quot;) + '&quot;) no-repeat 0px 3px; }' +
 	'.{class:childrenMarker} { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }' + // This is magic &quot;arrow up&quot;. Only color and margins could be changed
 	'.{class:container-root-thread} .{class:childrenMarker} { display: block; }' +
 	'.{class:avatar} { width: 48px; height: 48px; }' +
@@ -2861,15 +2861,15 @@ item.css =
 	'.{class:date}, .{class:from}, .{class:via} { float: left; }' +
 	'.{class:from} a, .{class:via} a { text-decoration: none; color: #C6C6C6; }' +
 	'.{class:from} a:hover, .{class:via} a:hover { color: #476CB8; }' +
-	'.{class:tag} { display: inline-block; height: 16px; background: url(&quot;' + Echo.Loader.getURL(&quot;sdk/images/tag_blue.png&quot;) + '&quot;) no-repeat; padding-left: 18px; }' +
+	'.{class:tag} { display: inline-block; height: 16px; background: url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/tag_blue.png&quot;) + '&quot;) no-repeat; padding-left: 18px; }' +
 	'.{class:smiley-icon} { border: 0px; }' +
 	'.{class:textToggleTruncated} { margin-left: 5px; }' +
 	'.{class:blocker-backdrop} { position: absolute; left: 0px; top: 0px; background: #FFFFFF; opacity: 0.7; z-index: 100; }' +
 	'.{class:blocker-message} { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }' +
 	'.{class:expandChildren} { display:none; text-align: center; padding:4px; }' +
 	'.{class:expandChildren} .{class:expandChildrenLabel} { display: inline-block; padding-left: 22px; }' +
-	'.{class:expandChildren} .echo-message-icon { background: url(&quot;' + Echo.Loader.getURL(&quot;sdk/images/whirlpool.png&quot;) + '&quot;) no-repeat 5px 4px; }' +
-	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url(' + Echo.Loader.getURL(&quot;sdk/images/loading.gif&quot;) + '); }' +
+	'.{class:expandChildren} .echo-message-icon { background: url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/whirlpool.png&quot;) + '&quot;) no-repeat 5px 4px; }' +
+	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url(' + Echo.Loader.getURL(&quot;{sdk}/images/loading.gif&quot;) + '); }' +
 	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
 	itemDepthRules.join(&quot;\n&quot;) +
 	($.browser.msie

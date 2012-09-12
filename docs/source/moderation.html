@@ -614,7 +614,7 @@ plugin.css = function() {
 		'.{plugin.class:button-role-administrator} { color: #008000; }' +
 		// status icons
 		$.map(plugin.statuses, function(name) {
-			return '.{plugin.class:status-icon-' + name + '} { background: url(&quot;' + Echo.Loader.getURL(&quot;sdk/images/curation/status/&quot;) + name.toLowerCase() + '.png&quot;) no-repeat; }';
+			return '.{plugin.class:status-icon-' + name + '} { background: url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/curation/status/&quot;) + name.toLowerCase() + '.png&quot;) no-repeat; }';
 		}).join(&quot;&quot;) + msieCss;
 }();
 

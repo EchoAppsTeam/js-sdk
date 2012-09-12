@@ -222,7 +222,7 @@ plugin.methods._assembleButton = function(name) {
 };
 
 plugin.css =
-	'.{plugin.class:likedBy} { background: url(' + Echo.Loader.getURL(&quot;sdk/images/likes.png&quot;) + ') no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
+	'.{plugin.class:likedBy} { background: url(' + Echo.Loader.getURL(&quot;{sdk}/images/likes.png&quot;) + ') no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
 	'.{plugin.class:highlight} { line-height: 23px; }' +
 	($.browser.msie ?
 		'.{plugin.class:highlight} span { vertical-align: middle; }' +
@@ -260,7 +260,7 @@ plugin.labels = {
 	&quot;unlikeOnBehalf&quot;: &quot;Unlike on behalf of this user&quot;
 };
 
-plugin.template = '&lt;img class=&quot;{plugin.class:adminUnlike}&quot; src=&quot;' + Echo.Loader.getURL(&quot;sdk/images/container/closeWindow.png&quot;) + '&quot; title=&quot;{plugin.label:unlikeOnBehalf}&quot; width=&quot;10&quot; height=&quot;9&quot;&gt;';
+plugin.template = '&lt;img class=&quot;{plugin.class:adminUnlike}&quot; src=&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/container/closeWindow.png&quot;) + '&quot; title=&quot;{plugin.label:unlikeOnBehalf}&quot; width=&quot;10&quot; height=&quot;9&quot;&gt;';
 
 <span id='Echo-StreamServer-Controls-FacePile-Item-Plugins-Like-method-container'>/**
 </span> * @echo_renderer

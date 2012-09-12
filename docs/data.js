@@ -8,14 +8,8 @@ Docs = {
         "icon": "icon-singleton"
       },
       {
-        "name": "Echo.IdentityServer.Controls.Auth",
+        "name": "Echo.AppServer.Controls.Configurator",
         "extends": "Echo.Control",
-        "private": null,
-        "icon": "icon-class"
-      },
-      {
-        "name": "Echo.IdentityServer.API.Request",
-        "extends": "Echo.API.Request",
         "private": null,
         "icon": "icon-class"
       },
@@ -39,6 +33,48 @@ Docs = {
       },
       {
         "name": "Echo.Plugin.events",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.IdentityServer.Controls.Auth",
+        "extends": "Echo.Control",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.IdentityServer.API.Request",
+        "extends": "Echo.API.Request",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Labels",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.View",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Utils",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Events",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.Loader",
         "extends": null,
         "private": null,
         "icon": "icon-class"
@@ -200,42 +236,6 @@ Docs = {
         "icon": "icon-class"
       },
       {
-        "name": "Echo.Labels",
-        "extends": null,
-        "private": null,
-        "icon": "icon-class"
-      },
-      {
-        "name": "Echo.View",
-        "extends": null,
-        "private": null,
-        "icon": "icon-class"
-      },
-      {
-        "name": "Echo.Utils",
-        "extends": null,
-        "private": null,
-        "icon": "icon-class"
-      },
-      {
-        "name": "Echo.Events",
-        "extends": null,
-        "private": null,
-        "icon": "icon-class"
-      },
-      {
-        "name": "Echo.AppServer.Controls.Configurator",
-        "extends": "Echo.Control",
-        "private": null,
-        "icon": "icon-class"
-      },
-      {
-        "name": "Echo.Loader",
-        "extends": null,
-        "private": null,
-        "icon": "icon-class"
-      },
-      {
         "name": "Echo.Control",
         "extends": null,
         "private": null,
@@ -387,234 +387,13 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "IdentityServer.Controls.Auth",
-        "fullName": "Echo.IdentityServer.Controls.Auth",
+        "name": "AppServer.Controls.Configurator",
+        "fullName": "Echo.AppServer.Controls.Configurator",
         "icon": "icon-class",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth",
+        "url": "#!/api/Echo.AppServer.Controls.Configurator",
         "meta": {
         },
         "sort": 1
-      },
-      {
-        "name": "identityManager",
-        "fullName": "Echo.IdentityServer.Controls.Auth.identityManager",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-cfg-identityManager",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "infoMessages",
-        "fullName": "Echo.IdentityServer.Controls.Auth.infoMessages",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-cfg-infoMessages",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "edit",
-        "fullName": "Echo.IdentityServer.Controls.Auth.edit",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-edit",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "loggingOut",
-        "fullName": "Echo.IdentityServer.Controls.Auth.loggingOut",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-loggingOut",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "login",
-        "fullName": "Echo.IdentityServer.Controls.Auth.login",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-login",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "logout",
-        "fullName": "Echo.IdentityServer.Controls.Auth.logout",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-logout",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "or",
-        "fullName": "Echo.IdentityServer.Controls.Auth.or",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-or",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "signup",
-        "fullName": "Echo.IdentityServer.Controls.Auth.signup",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-signup",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "constructor",
-        "fullName": "Echo.IdentityServer.Controls.Auth.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-constructor",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "avatar",
-        "fullName": "Echo.IdentityServer.Controls.Auth.avatar",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-avatar",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "edit",
-        "fullName": "Echo.IdentityServer.Controls.Auth.edit",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-edit",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "login",
-        "fullName": "Echo.IdentityServer.Controls.Auth.login",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-login",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "logout",
-        "fullName": "Echo.IdentityServer.Controls.Auth.logout",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-logout",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "name",
-        "fullName": "Echo.IdentityServer.Controls.Auth.name",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-name",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "or",
-        "fullName": "Echo.IdentityServer.Controls.Auth.or",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-or",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "signup",
-        "fullName": "Echo.IdentityServer.Controls.Auth.signup",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-signup",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "template",
-        "fullName": "Echo.IdentityServer.Controls.Auth.template",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-template",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "IdentityServer.API.Request",
-        "fullName": "Echo.IdentityServer.API.Request",
-        "icon": "icon-class",
-        "url": "#!/api/Echo.IdentityServer.API.Request",
-        "meta": {
-        },
-        "sort": 1
-      },
-      {
-        "name": "onData",
-        "fullName": "Echo.IdentityServer.API.Request.onData",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.IdentityServer.API.Request-cfg-onData",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "onError",
-        "fullName": "Echo.IdentityServer.API.Request.onError",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.IdentityServer.API.Request-cfg-onError",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "submissionProxyURL",
-        "fullName": "Echo.IdentityServer.API.Request.submissionProxyURL",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.IdentityServer.API.Request-cfg-submissionProxyURL",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "constructor",
-        "fullName": "Echo.IdentityServer.API.Request.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.API.Request-method-constructor",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "request",
-        "fullName": "Echo.IdentityServer.API.Request.request",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.API.Request-static-method-request",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
       },
       {
         "name": "Product",
@@ -916,6 +695,751 @@ Docs = {
         "icon": "icon-method",
         "url": "#!/api/Echo.Plugin.events-method-unsubscribe",
         "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "IdentityServer.Controls.Auth",
+        "fullName": "Echo.IdentityServer.Controls.Auth",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "identityManager",
+        "fullName": "Echo.IdentityServer.Controls.Auth.identityManager",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-cfg-identityManager",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "infoMessages",
+        "fullName": "Echo.IdentityServer.Controls.Auth.infoMessages",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-cfg-infoMessages",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "edit",
+        "fullName": "Echo.IdentityServer.Controls.Auth.edit",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-edit",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "loggingOut",
+        "fullName": "Echo.IdentityServer.Controls.Auth.loggingOut",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-loggingOut",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "login",
+        "fullName": "Echo.IdentityServer.Controls.Auth.login",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-login",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "logout",
+        "fullName": "Echo.IdentityServer.Controls.Auth.logout",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-logout",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "or",
+        "fullName": "Echo.IdentityServer.Controls.Auth.or",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-or",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "signup",
+        "fullName": "Echo.IdentityServer.Controls.Auth.signup",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-signup",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.IdentityServer.Controls.Auth.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "avatar",
+        "fullName": "Echo.IdentityServer.Controls.Auth.avatar",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-avatar",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "edit",
+        "fullName": "Echo.IdentityServer.Controls.Auth.edit",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-edit",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "login",
+        "fullName": "Echo.IdentityServer.Controls.Auth.login",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-login",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "logout",
+        "fullName": "Echo.IdentityServer.Controls.Auth.logout",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-logout",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "name",
+        "fullName": "Echo.IdentityServer.Controls.Auth.name",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-name",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "or",
+        "fullName": "Echo.IdentityServer.Controls.Auth.or",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-or",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "signup",
+        "fullName": "Echo.IdentityServer.Controls.Auth.signup",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-signup",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "template",
+        "fullName": "Echo.IdentityServer.Controls.Auth.template",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-template",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "IdentityServer.API.Request",
+        "fullName": "Echo.IdentityServer.API.Request",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.IdentityServer.API.Request",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "onData",
+        "fullName": "Echo.IdentityServer.API.Request.onData",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.IdentityServer.API.Request-cfg-onData",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onError",
+        "fullName": "Echo.IdentityServer.API.Request.onError",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.IdentityServer.API.Request-cfg-onError",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "submissionProxyURL",
+        "fullName": "Echo.IdentityServer.API.Request.submissionProxyURL",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.IdentityServer.API.Request-cfg-submissionProxyURL",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.IdentityServer.API.Request.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.API.Request-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "request",
+        "fullName": "Echo.IdentityServer.API.Request.request",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.API.Request-static-method-request",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "Labels",
+        "fullName": "Echo.Labels",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Labels",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.Labels.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Labels-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.Labels.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Labels-method-get",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Labels.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Labels-method-set",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.Labels.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Labels-static-method-get",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Labels.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Labels-static-method-set",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "View",
+        "fullName": "Echo.View",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.View",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.View.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "fork",
+        "fullName": "Echo.View.fork",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-fork",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.View.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-get",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "remove",
+        "fullName": "Echo.View.remove",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-remove",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "render",
+        "fullName": "Echo.View.render",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-render",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "rendered",
+        "fullName": "Echo.View.rendered",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-rendered",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.View.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-set",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "Utils",
+        "fullName": "Echo.Utils",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Utils",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "addCSS",
+        "fullName": "Echo.Utils.addCSS",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-addCSS",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "capitalize",
+        "fullName": "Echo.Utils.capitalize",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-capitalize",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "foldl",
+        "fullName": "Echo.Utils.foldl",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-foldl",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getComponent",
+        "fullName": "Echo.Utils.getComponent",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-getComponent",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getNestedValue",
+        "fullName": "Echo.Utils.getNestedValue",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-getNestedValue",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getUniqueString",
+        "fullName": "Echo.Utils.getUniqueString",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-getUniqueString",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getVisibleColor",
+        "fullName": "Echo.Utils.getVisibleColor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-getVisibleColor",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "htmlTextTruncate",
+        "fullName": "Echo.Utils.htmlTextTruncate",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-htmlTextTruncate",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "htmlize",
+        "fullName": "Echo.Utils.htmlize",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-htmlize",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "hyperlink",
+        "fullName": "Echo.Utils.hyperlink",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-hyperlink",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "inherit",
+        "fullName": "Echo.Utils.inherit",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-inherit",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "invoke",
+        "fullName": "Echo.Utils.invoke",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-invoke",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "isComponentDefined",
+        "fullName": "Echo.Utils.isComponentDefined",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-isComponentDefined",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "isMobileDevice",
+        "fullName": "Echo.Utils.isMobileDevice",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-isMobileDevice",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "loadImage",
+        "fullName": "Echo.Utils.loadImage",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-loadImage",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "log",
+        "fullName": "Echo.Utils.log",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-log",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "objectToJSON",
+        "fullName": "Echo.Utils.objectToJSON",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-objectToJSON",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "objectToQuery",
+        "fullName": "Echo.Utils.objectToQuery",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-objectToQuery",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "parallelCall",
+        "fullName": "Echo.Utils.parallelCall",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-parallelCall",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "parseURL",
+        "fullName": "Echo.Utils.parseURL",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-parseURL",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "sequentialCall",
+        "fullName": "Echo.Utils.sequentialCall",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-sequentialCall",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "setNestedValue",
+        "fullName": "Echo.Utils.setNestedValue",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-setNestedValue",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "stripTags",
+        "fullName": "Echo.Utils.stripTags",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-stripTags",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "substitute",
+        "fullName": "Echo.Utils.substitute",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-substitute",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "timestampFromW3CDTF",
+        "fullName": "Echo.Utils.timestampFromW3CDTF",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-timestampFromW3CDTF",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "Events",
+        "fullName": "Echo.Events",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Events",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "publish",
+        "fullName": "Echo.Events.publish",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Events-static-method-publish",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "subscribe",
+        "fullName": "Echo.Events.subscribe",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Events-static-method-subscribe",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "unsubscribe",
+        "fullName": "Echo.Events.unsubscribe",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Events-static-method-unsubscribe",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "Loader",
+        "fullName": "Echo.Loader",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Loader",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "config",
+        "fullName": "Echo.Loader.config",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-config",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "overrides",
+        "fullName": "Echo.Loader.overrides",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-overrides",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "vars",
+        "fullName": "Echo.Loader.vars",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-vars",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "version",
+        "fullName": "Echo.Loader.version",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-version",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "download",
+        "fullName": "Echo.Loader.download",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Loader-static-method-download",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getURL",
+        "fullName": "Echo.Loader.getURL",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Loader-static-method-getURL",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "init",
+        "fullName": "Echo.Loader.init",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Loader-static-method-init",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "override",
+        "fullName": "Echo.Loader.override",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Loader-static-method-override",
+        "meta": {
+          "static": true
         },
         "sort": 3
       },
@@ -4389,520 +4913,6 @@ Docs = {
         "fullName": "Echo.StreamServer.API.Request.request",
         "icon": "icon-method",
         "url": "#!/api/Echo.StreamServer.API.Request-static-method-request",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "Labels",
-        "fullName": "Echo.Labels",
-        "icon": "icon-class",
-        "url": "#!/api/Echo.Labels",
-        "meta": {
-        },
-        "sort": 1
-      },
-      {
-        "name": "constructor",
-        "fullName": "Echo.Labels.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Labels-method-constructor",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "get",
-        "fullName": "Echo.Labels.get",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Labels-method-get",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "set",
-        "fullName": "Echo.Labels.set",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Labels-method-set",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "get",
-        "fullName": "Echo.Labels.get",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Labels-static-method-get",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "set",
-        "fullName": "Echo.Labels.set",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Labels-static-method-set",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "View",
-        "fullName": "Echo.View",
-        "icon": "icon-class",
-        "url": "#!/api/Echo.View",
-        "meta": {
-        },
-        "sort": 1
-      },
-      {
-        "name": "constructor",
-        "fullName": "Echo.View.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-constructor",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "fork",
-        "fullName": "Echo.View.fork",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-fork",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "get",
-        "fullName": "Echo.View.get",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-get",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "remove",
-        "fullName": "Echo.View.remove",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-remove",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "render",
-        "fullName": "Echo.View.render",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-render",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "rendered",
-        "fullName": "Echo.View.rendered",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-rendered",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "set",
-        "fullName": "Echo.View.set",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-set",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "Utils",
-        "fullName": "Echo.Utils",
-        "icon": "icon-class",
-        "url": "#!/api/Echo.Utils",
-        "meta": {
-        },
-        "sort": 1
-      },
-      {
-        "name": "addCSS",
-        "fullName": "Echo.Utils.addCSS",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-addCSS",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "capitalize",
-        "fullName": "Echo.Utils.capitalize",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-capitalize",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "foldl",
-        "fullName": "Echo.Utils.foldl",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-foldl",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "getComponent",
-        "fullName": "Echo.Utils.getComponent",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-getComponent",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "getNestedValue",
-        "fullName": "Echo.Utils.getNestedValue",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-getNestedValue",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "getUniqueString",
-        "fullName": "Echo.Utils.getUniqueString",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-getUniqueString",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "getVisibleColor",
-        "fullName": "Echo.Utils.getVisibleColor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-getVisibleColor",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "htmlTextTruncate",
-        "fullName": "Echo.Utils.htmlTextTruncate",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-htmlTextTruncate",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "htmlize",
-        "fullName": "Echo.Utils.htmlize",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-htmlize",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "hyperlink",
-        "fullName": "Echo.Utils.hyperlink",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-hyperlink",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "inherit",
-        "fullName": "Echo.Utils.inherit",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-inherit",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "invoke",
-        "fullName": "Echo.Utils.invoke",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-invoke",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "isComponentDefined",
-        "fullName": "Echo.Utils.isComponentDefined",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-isComponentDefined",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "isMobileDevice",
-        "fullName": "Echo.Utils.isMobileDevice",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-isMobileDevice",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "loadImage",
-        "fullName": "Echo.Utils.loadImage",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-loadImage",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "log",
-        "fullName": "Echo.Utils.log",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-log",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "objectToJSON",
-        "fullName": "Echo.Utils.objectToJSON",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-objectToJSON",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "objectToQuery",
-        "fullName": "Echo.Utils.objectToQuery",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-objectToQuery",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "parallelCall",
-        "fullName": "Echo.Utils.parallelCall",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-parallelCall",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "parseURL",
-        "fullName": "Echo.Utils.parseURL",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-parseURL",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "sequentialCall",
-        "fullName": "Echo.Utils.sequentialCall",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-sequentialCall",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "setNestedValue",
-        "fullName": "Echo.Utils.setNestedValue",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-setNestedValue",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "stripTags",
-        "fullName": "Echo.Utils.stripTags",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-stripTags",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "substitute",
-        "fullName": "Echo.Utils.substitute",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-substitute",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "timestampFromW3CDTF",
-        "fullName": "Echo.Utils.timestampFromW3CDTF",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-timestampFromW3CDTF",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "Events",
-        "fullName": "Echo.Events",
-        "icon": "icon-class",
-        "url": "#!/api/Echo.Events",
-        "meta": {
-        },
-        "sort": 1
-      },
-      {
-        "name": "publish",
-        "fullName": "Echo.Events.publish",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Events-static-method-publish",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "subscribe",
-        "fullName": "Echo.Events.subscribe",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Events-static-method-subscribe",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "unsubscribe",
-        "fullName": "Echo.Events.unsubscribe",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Events-static-method-unsubscribe",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "AppServer.Controls.Configurator",
-        "fullName": "Echo.AppServer.Controls.Configurator",
-        "icon": "icon-class",
-        "url": "#!/api/Echo.AppServer.Controls.Configurator",
-        "meta": {
-        },
-        "sort": 1
-      },
-      {
-        "name": "Loader",
-        "fullName": "Echo.Loader",
-        "icon": "icon-class",
-        "url": "#!/api/Echo.Loader",
-        "meta": {
-        },
-        "sort": 1
-      },
-      {
-        "name": "config",
-        "fullName": "Echo.Loader.config",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Loader-property-config",
-        "meta": {
-          "private": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "overrides",
-        "fullName": "Echo.Loader.overrides",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Loader-property-overrides",
-        "meta": {
-          "private": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "vars",
-        "fullName": "Echo.Loader.vars",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Loader-property-vars",
-        "meta": {
-          "private": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "download",
-        "fullName": "Echo.Loader.download",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Loader-static-method-download",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "getURL",
-        "fullName": "Echo.Loader.getURL",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Loader-static-method-getURL",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "init",
-        "fullName": "Echo.Loader.init",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Loader-static-method-init",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "override",
-        "fullName": "Echo.Loader.override",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Loader-static-method-override",
         "meta": {
           "static": true
         },

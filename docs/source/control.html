@@ -578,7 +578,7 @@ Echo.Control.prototype._initializers.list = [
 	[&quot;vars&quot;,               [&quot;init&quot;, &quot;refresh&quot;]],
 	[&quot;config&quot;,             [&quot;init&quot;]],
 	[&quot;events&quot;,             [&quot;init&quot;]],
-	[&quot;subscriptions&quot;,      [&quot;init&quot;, &quot;refresh&quot;]],
+	[&quot;subscriptions&quot;,      [&quot;init&quot;]],
 	[&quot;labels&quot;,             [&quot;init&quot;]],
 	[&quot;css&quot;,                [&quot;init&quot;]],
 	[&quot;renderers&quot;,          [&quot;init&quot;, &quot;refresh&quot;]],
@@ -711,7 +711,6 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 	// register destroy handlers
 	control.events.subscribe({
 		&quot;topic&quot;: &quot;Echo.Control.onDestroy&quot;,
-		&quot;once&quot;: true,
 		&quot;handler&quot;: function(topic, data) {
 			// destroy plugins
 			$.map(control.config.get(&quot;pluginsOrder&quot;), function(name) {
@@ -756,7 +755,6 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 		control.events.subscribe({
 			&quot;topic&quot;: &quot;Echo.UserSession.onInvalidate&quot;,
 			&quot;context&quot;: &quot;global&quot;,
-			&quot;once&quot;: true,
 			&quot;handler&quot;: control.refresh
 		});
 	}
@@ -996,9 +994,9 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
 	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-empty { background-image: url(' + Echo.Loader.getURL(&quot;sdk/images/information.png&quot;) + '); }' +
-	'.echo-control-message-loading { background-image: url(' + Echo.Loader.getURL(&quot;sdk/images/loading.gif&quot;) + '); }' +
-	'.echo-control-message-error { background-image: url(' + Echo.Loader.getURL(&quot;sdk/images/warning.gif&quot;) + '); }';
+	'.echo-control-message-empty { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/information.png&quot;) + '); }' +
+	'.echo-control-message-loading { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/loading.gif&quot;) + '); }' +
+	'.echo-control-message-error { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/warning.gif&quot;) + '); }';
 
 })(Echo.jQuery);
 </pre>
