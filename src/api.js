@@ -79,7 +79,7 @@ Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 		var domain = utils.parseURL(document.location.href).domain;
 		$.support.cors = true;
 		ajaxSettings.xhr = function() {
-			var targetDomain = utils.parseURL(self.config.get("url")).domain;
+			var targetDomain = utils.parseURL(self.config.get("uri")).domain;
 			if (targetDomain === "" || targetDomain === domain) {
 				return xhrOrigin.call($.ajaxSettings);
 			}
@@ -91,7 +91,7 @@ Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 				xdr.getAllResponseHeaders = $.noop;
 			}
 			xdr.onload = function () {
-				if ($.isFunction(xdr.onredaystatechange)) {
+				if ($.isFunction(xdr.onreadystatechange)) {
 					xdr.readyState = 4;
 					xdr.status = 200;
 					xdr.onreadystatechange.call(xdr, null, false);
@@ -135,7 +135,7 @@ Echo.API.Transports.AJAX.prototype.abort = function() {
 };
 
 Echo.API.Transports.AJAX.available = function() {
-	return (!$.browser.msie || $.browser.msie && $.browser.version > 7);
+	return (!$.browser.msie);
 };
 
 /**

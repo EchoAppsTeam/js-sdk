@@ -232,7 +232,7 @@ stream.events = {
 			"priority": "highest",
 			"handler": function() {
 				item.set("deleted", false);
-				self._animateSpotUpdate("delete", item, data.config);
+				self._animateSpotUpdate("remove", item, data.config);
 			}
 		});
 		return {"stop": ["bubble"]};
@@ -579,7 +579,7 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 					if (!satisfies && !item.isRoot() &&
 						self.user.has("identity", item.data.actor.id)) {
 							item.set("byCurrentUser", true);
-					};
+					}
 
 					if (satisfies || item.get("byCurrentUser")) {
 						/**
@@ -599,7 +599,7 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 				return;
 			}
 			if (action === "delete") {
-				self._applySpotUpdates("delete", item);
+				self._applySpotUpdates("remove", item);
 				_callback();
 			}
 		};
@@ -792,7 +792,7 @@ stream.methods._checkTimeframeSatisfy = function() {
 		if (!satisfy) acc.push(thread);
 	});
 	$.map(unsatisfying, function(item) {
-		self._applySpotUpdates("delete", item);
+		self._applySpotUpdates("remove", item);
 	});
 };
 
@@ -909,7 +909,7 @@ stream.methods._spotUpdates.replace = function(item, options) {
 		container.splice(oldIdx, 1);
 		var newIdx = this._getItemProjectedIndex(item, container, sort);
 		if (oldIdx != newIdx) {
-			this._applySpotUpdates("delete", item, {
+			this._applySpotUpdates("remove", item, {
 				"keepChildren": true,
 				"priority": "high"
 			});
@@ -927,7 +927,7 @@ stream.methods._spotUpdates.replace = function(item, options) {
 	}
 };
 
-stream.methods._spotUpdates.delete = function(item, options) {
+stream.methods._spotUpdates.remove = function(item, options) {
 	item.set("deleted", true);
 	if (item.isRoot()) {
 		/**
@@ -1008,7 +1008,7 @@ stream.methods._spotUpdates.animate.add = function(item) {
 	}
 };
 
-stream.methods._spotUpdates.animate.delete = function(item, config) {
+stream.methods._spotUpdates.animate.remove = function(item, config) {
 	var self = this;
 	this.activities.animations++;
 	config = config || {};
@@ -1176,7 +1176,7 @@ stream.methods._compareItems = function(a, b, sort) {
 					(getCount(a) === getCount(b) &&
 						this._compareItems(a, b, "reverseChronological")));
 			break;
-	};
+	}
 	return result;
 };
 

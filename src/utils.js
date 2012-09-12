@@ -318,7 +318,7 @@ Echo.Utils.objectToJSON = function(obj) {
 					? replacements[a]
 					: '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
 			});
-	}
+	};
 	
 	var out;
 	switch (typeof obj) {
