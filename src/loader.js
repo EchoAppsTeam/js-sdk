@@ -10,6 +10,7 @@ if (Echo.Loader) return;
  * Static class which implements common mechanics for canvases loading.
  */
 Echo.Loader = {
+	"version": "{version}",
 	"config": {
 		"cdnBaseURL": "http://cdn.echoenabled.com/",
 		"errorTimeout": 5000 // 5 sec
@@ -28,7 +29,8 @@ Echo.Loader = {
 Echo.Loader.getURL = function(url) {
 	return /^https?:\/\/|^\/\//.test(url)
 		? url
-		: Echo.Loader.config.cdnBaseURL + url;
+		: url.replace(/{products}/, "products")
+			.replace(/{sdk}/, Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version);
 };
 /**
  * @static
@@ -90,8 +92,9 @@ Echo.Loader.init = function(config) {
  * were downloaded.
  */
 Echo.Loader.download = function(params) {
-	if (!Echo.Loader.vars.queued)
+	if (!Echo.Loader.vars.queued) {
 		Echo.Loader.vars.queued = {};
+	}
 
 	var scripts = params.scripts || [], urls = [];
 	var callback = params.callback || function() {};
@@ -138,13 +141,13 @@ Echo.Loader.override = function(canvasID, appID, config) {
 
 Echo.Loader._initEnvironment = function(callback) {
 	var scripts = [{
-		"url": "sdk/backplane.js",
+		"url": "{sdk}/backplane.js",
 		"loaded": function() { return !!window.Backplane; }
 	}, {
-		"url": "sdk/thirdparty/jquery.pack.js",
+		"url": "{sdk}/thirdparty/jquery.pack.js",
 		"loaded": function() { return !!Echo.jQuery; }
 	}, {
-		"url": "sdk/environment.pack.js",
+		"url": "{sdk}/environment.pack.js",
 		"loaded": function() { return !!Echo.Utils; }
 	}];
 	Echo.Loader.download({

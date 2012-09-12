@@ -7,7 +7,7 @@
     },
     "apps": [{
         "id": "my-social-chatter",
-        "script": "sdk/products/social-chatter/social-chatter.js",
+        "script": "{products}/social-chatter/social-chatter.js",
         "component": "Echo.Products.SocialChatter",
         "config": {
             "appkey": "test.aboutecho.com",

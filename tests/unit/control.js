@@ -843,7 +843,7 @@ suite.getControlManifest = function(name) {
 
 	var addDependency = function(n) {
 		manifest.dependencies.push({
-			"url": "tests/unit/dependencies/control.dep." + n + ".js",
+			"url": "unit/dependencies/control.dep." + n + ".js",
 			"loaded": function() { return !!Echo.Tests.Dependencies.Control["dep" + n]; }
 		});
 	};

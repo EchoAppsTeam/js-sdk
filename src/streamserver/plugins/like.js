@@ -205,7 +205,7 @@ plugin.methods._assembleButton = function(name) {
 };
 
 plugin.css =
-	'.{plugin.class:likedBy} { background: url(' + Echo.Loader.getURL("sdk/images/likes.png") + ') no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
+	'.{plugin.class:likedBy} { background: url(' + Echo.Loader.getURL("{sdk}/images/likes.png") + ') no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
 	'.{plugin.class:highlight} { line-height: 23px; }' +
 	($.browser.msie ?
 		'.{plugin.class:highlight} span { vertical-align: middle; }' +
@@ -243,7 +243,7 @@ plugin.labels = {
 	"unlikeOnBehalf": "Unlike on behalf of this user"
 };
 
-plugin.template = '<img class="{plugin.class:adminUnlike}" src="' + Echo.Loader.getURL("sdk/images/container/closeWindow.png") + '" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
+plugin.template = '<img class="{plugin.class:adminUnlike}" src="' + Echo.Loader.getURL("{sdk}/images/container/closeWindow.png") + '" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
 
 /**
  * @echo_renderer

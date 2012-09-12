@@ -126,6 +126,9 @@ module.exports = function(grunt) {
 			case "sdk":
 			case "sandbox":
 				_.each(config.release[target].upload, function(upload) {
+					upload.from = upload.from
+						.replace("{majorVersion}", majorVersion)
+						.replace("{version}", version);
 					upload.to = upload.to
 						.replace("{majorVersion}", majorVersion)
 						.replace("{version}", version);

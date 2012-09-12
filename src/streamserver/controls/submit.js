@@ -182,11 +182,11 @@ submit.vars = {
 
 submit.dependencies = [{
 	"loaded": function() { return !!Echo.jQuery.echoButton; },
-	"url": "sdk/thirdparty/bootstrap/plugins/echo-button/echo-button.js"
+	"url": "{sdk}/thirdparty/bootstrap/plugins/echo-button/echo-button.js"
 }, {
-	"url": "sdk/thirdparty/bootstrap/plugins/echo-button/echo-button.css"
+	"url": "{sdk}/thirdparty/bootstrap/plugins/echo-button/echo-button.css"
 }, {
-	"url": "sdk/thirdparty/jquery/css/fancybox.css"
+	"url": "{sdk}/thirdparty/jquery/css/fancybox.css"
 }];
 
 submit.labels = {
@@ -370,7 +370,7 @@ submit.renderers.postButton = function(element) {
 			"label": self.labels.get("post")
 		},
 		"posting": {
-			"icon": Echo.Loader.getURL("sdk/images/loading.gif"),
+			"icon": Echo.Loader.getURL("{sdk}/images/loading.gif"),
 			"disabled": true,
 			"label": self.labels.get("posting")
 		}
@@ -631,7 +631,7 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url("' + Echo.Loader.getURL("sdk/images/info70.png") + '"); height: 70px; }' +
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url("' + Echo.Loader.getURL("{sdk}/images/info70.png") + '"); height: 70px; }' +
 	(($.browser.msie) ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +

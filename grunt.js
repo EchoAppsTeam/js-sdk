@@ -14,7 +14,8 @@ module.exports = function(grunt) {
 	var _config = {
 		dirs: {
 			src: "src",
-			dest: "web"
+			dest: "web",
+			sdk: "web/sdk/v<%= pkg.majorVersion %>"
 		},
 		pkg: "<json:package.json>",
 		local: readOptionalJSON("config.local.json"),
@@ -35,7 +36,7 @@ module.exports = function(grunt) {
 		clean: {
 			docs: ["<%= dirs.dest %>/docs"],
 			all: [
-				"<%= dirs.dest %>/sdk",
+				"<%= dirs.sdk %>",
 				"<%= dirs.dest %>/products",
 				"<%= dirs.dest %>/tests",
 				"<config:clean:docs>"
@@ -49,7 +50,7 @@ module.exports = function(grunt) {
 		copy: {
 			js: {
 				files: {
-					"<%= dirs.dest %>/sdk": ["<%= dirs.src %>/**/*.js"]
+					"<%= dirs.sdk %>": ["<%= dirs.src %>/**/*.js"]
 				},
 				options: {
 					basePath: "<config:dirs.src>"
@@ -57,7 +58,7 @@ module.exports = function(grunt) {
 			},
 			"images-css": {
 				files: {
-					"<%= dirs.dest %>/sdk": [
+					"<%= dirs.sdk %>": [
 						"<%= dirs.src %>/**/*.css",
 						"<%= dirs.src %>/**/*.png",
 						"<%= dirs.src %>/**/*.jpg",
@@ -89,17 +90,17 @@ module.exports = function(grunt) {
 			loader: {
 				src: [
 					"<%= dirs.src %>/thirdparty/yepnope/yepnope.1.5.4-min.js",
-					"<actualize_cdn_domain:<%= dirs.src %>/loader.js>"
+					"<patch_loader:<%= dirs.src %>/loader.js>"
 				],
-				dest: "<%= dirs.dest %>/sdk/loader.js"
+				dest: "<%= dirs.sdk %>/loader.js"
 			},
 			"fancybox-css": {
 				src: ["<patch_fancybox_css:<%= dirs.src %>/thirdparty/jquery/css/fancybox.css>"],
-				dest: "<%= dirs.dest %>/sdk/thirdparty/jquery/css/fancybox.css"
+				dest: "<%= dirs.sdk %>/thirdparty/jquery/css/fancybox.css"
 			},
 			"fancybox-js": {
 				src: ["<patch_fancybox_js:<%= dirs.src %>/thirdparty/jquery/jquery.fancybox-1.3.4.min.js>"],
-				dest: "<%= dirs.dest %>/sdk/thirdparty/jquery/jquery.fancybox-1.3.4.min.js"
+				dest: "<%= dirs.sdk %>/thirdparty/jquery/jquery.fancybox-1.3.4.min.js"
 			},
 			"api": {
 				src: [
@@ -107,7 +108,7 @@ module.exports = function(grunt) {
 					"<%= dirs.src %>/streamserver/api.js",
 					"<%= dirs.src %>/identityserver/api.js"
 				],
-				dest: "<%= dirs.dest %>/sdk/api.pack.js"
+				dest: "<%= dirs.sdk %>/api.pack.js"
 			},
 			"environment": {
 				src: [
@@ -115,7 +116,7 @@ module.exports = function(grunt) {
 					"<%= dirs.src %>/events.js",
 					"<%= dirs.src %>/labels.js",
 					"<%= dirs.src %>/configuration.js",
-					"<file_strip_banner:<%= dirs.dest %>/sdk/api.pack.js>",
+					"<file_strip_banner:<%= dirs.sdk %>/api.pack.js>",
 					"<%= dirs.src %>/user-session.js",
 					"<%= dirs.src %>/view.js",
 					"<%= dirs.src %>/control.js",
@@ -124,7 +125,7 @@ module.exports = function(grunt) {
 					"<%= dirs.src %>/button.js",
 					"<%= dirs.src %>/tabs.js"
 				],
-				dest: "<%= dirs.dest %>/sdk/environment.pack.js"
+				dest: "<%= dirs.sdk %>/environment.pack.js"
 			},
 			"thirdparty/jquery": {
 				src: [
@@ -133,16 +134,16 @@ module.exports = function(grunt) {
 					"<echo_wrapper:<%= dirs.src %>/thirdparty/jquery/jquery.ihint.js>",
 					"<echo_wrapper:<%= dirs.src %>/thirdparty/jquery/jquery.viewport.mini.js>",
 					"<echo_wrapper:<%= dirs.src %>/thirdparty/jquery/jquery.easing-1.3.min.js>",
-					"<echo_wrapper:<%= dirs.dest %>/sdk/thirdparty/jquery/jquery.fancybox-1.3.4.min.js>",
+					"<echo_wrapper:<%= dirs.sdk %>/thirdparty/jquery/jquery.fancybox-1.3.4.min.js>",
 					"<echo_wrapper:<%= dirs.src %>/thirdparty/jquery/jquery.isotope.min.js>"
 				],
-				dest: "<%= dirs.dest %>/sdk/thirdparty/jquery.pack.js"
+				dest: "<%= dirs.sdk %>/thirdparty/jquery.pack.js"
 			}
 		},
 		mincss: {
 			"echo-button": {
-				src: "<%= dirs.dest %>/sdk/thirdparty/bootstrap/plugins/echo-button/echo-button.css",
-				dest: "<%= dirs.dest %>/sdk/thirdparty/bootstrap/plugins/echo-button/echo-button.min.css"
+				src: "<%= dirs.sdk %>/thirdparty/bootstrap/plugins/echo-button/echo-button.css",
+				dest: "<%= dirs.sdk %>/thirdparty/bootstrap/plugins/echo-button/echo-button.min.css"
 			}
 		},
 		//min: {
@@ -156,7 +157,7 @@ module.exports = function(grunt) {
 			// TODO: lint dest dir cause all files there are properly wrapped
 			files: [
 				"grunt.js",
-				"<%= dirs.dest %>/sdk/**/*.js",
+				"<%= dirs.sdk %>/**/*.js",
 				"<%= dirs.dest %>/tests/**/*.js"
 			]
 		},
@@ -196,18 +197,18 @@ module.exports = function(grunt) {
 	_.each(["streamserver", "identityserver", "appserver"], function(name) {
 		_config.concat[name + "/controls"] = {
 			src: ["<%= dirs.src %>/" + name + "/controls/*.js"],
-			dest: "<%= dirs.dest %>/sdk/" + name + "/controls.pack.js"
+			dest: "<%= dirs.sdk %>/" + name + "/controls.pack.js"
 		};
 		_config.concat[name + "/plugins"] = {
 			src: ["<%= dirs.src %>/" + name + "/plugins/*.js"],
-			dest: "<%= dirs.dest %>/sdk/" + name + "/plugins.pack.js"
+			dest: "<%= dirs.sdk %>/" + name + "/plugins.pack.js"
 		};
 		_config.concat[name] = {
 			src: [
-				"<file_strip_banner:<%= dirs.dest %>/sdk/" + name + "/controls.pack.js>",
-				"<file_strip_banner:<%= dirs.dest %>/sdk/" + name + "/plugins.pack.js>"
+				"<file_strip_banner:<%= dirs.sdk %>/" + name + "/controls.pack.js>",
+				"<file_strip_banner:<%= dirs.sdk %>/" + name + "/plugins.pack.js>"
 			],
-			dest: "<%= dirs.dest %>/sdk/" + name + ".pack.js"
+			dest: "<%= dirs.sdk %>/" + name + ".pack.js"
 		}
 	});
 
@@ -216,6 +217,7 @@ module.exports = function(grunt) {
 	});
 
 	grunt.initConfig(_config);
+	grunt.config("pkg.majorVersion",  grunt.config("pkg.version").split(".")[0]);
 
 	// ==========================================================================
 	// TASKS
@@ -238,7 +240,7 @@ module.exports = function(grunt) {
 		config.controls.map(function(control) {
 			var filepaths = {
 				"less": grunt.config("dirs.src") + "/thirdparty/bootstrap/less/" + control.less + ".less",
-				"css": grunt.config("dirs.dest") + "/sdk/thirdparty/bootstrap/plugins/" + control.css +
+				"css": grunt.config.process("dirs.sdk") + "/thirdparty/bootstrap/plugins/" + control.css +
 					"/" + control.css + ".css"
 			};
 			var less = [
@@ -267,12 +269,13 @@ module.exports = function(grunt) {
 	// HELPERS
 	// ==========================================================================
 
-	grunt.registerHelper("actualize_cdn_domain", function(filepath) {
+	grunt.registerHelper("patch_loader", function(filepath) {
 		var code = grunt.task.directive(filepath, grunt.file.read);
 		var config = grunt.config("local");
-		return config && config.domain
-			? code.replace(/cdn\.echoenabled\.com/ig, config.domain)
-			: code;
+		if (config && config.domain) {
+			code = code.replace(/cdn\.echoenabled\.com/ig, config.domain);
+		}
+		return code.replace(': "{version}"', ': "' + grunt.config("pkg.majorVersion") + '"');
 	});
 
 	grunt.registerHelper("patch_fancybox_css", function(filepath) {

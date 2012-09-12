@@ -33,7 +33,7 @@ suite.prototype.tests.commonWorkflow = {
 			element.echoButton("update", {
 				"label": "SecondLabel",
 				"disabled": true,
-				"icon": Echo.Loader.getURL("sdk/images/loading.gif")
+				"icon": Echo.Loader.getURL("{sdk}/images/loading.gif")
 			});
 			QUnit.ok(!$(target).html().match(/FirstLabel/) && $(target).html().match(/SecondLabel/),
 				"Checking that label is changed after update() method");
@@ -66,7 +66,7 @@ suite.prototype.tests.commonWorkflow = {
 		
 		Echo.Loader.download({
 			"scripts": [{
-				"url": Echo.Loader.getURL("sdk/thirdparty/bootstrap/plugins/echo-button/echo-button.js")
+				"url": Echo.Loader.getURL("{sdk}/thirdparty/bootstrap/plugins/echo-button/echo-button.js")
 			}],
 			"callback": check
 		});
