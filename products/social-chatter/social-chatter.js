@@ -593,6 +593,7 @@ SocialChatter.views.EventsList.controls.Stream = {
 		"item": {
 			"reTag": false
 		},
+		// FIXME: we don't have Curation plugin anymore, just delete it?
 		"itemControlsOrder": ["SocialChatterEvent", "Edit", "Curation.Delete"],
 		"plugins": [{
 			"name": "SocialChatterEvent"
