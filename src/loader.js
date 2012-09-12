@@ -141,13 +141,11 @@ Echo.Loader._initEnvironment = function(callback) {
 		"url": "sdk/backplane.js",
 		"loaded": function() { return !!window.Backplane; }
 	}, {
-		"url": "sdk/third-party/jquery.pack.js",
+		"url": "sdk/thirdparty/jquery.pack.js",
 		"loaded": function() { return !!Echo.jQuery; }
 	}, {
 		"url": "sdk/environment.pack.js",
 		"loaded": function() { return !!Echo.Utils; }
-	}, {
-		"url": "sdk/third-party/bootstrap/css/ui.css"
 	}];
 	Echo.Loader.download({
 		"scripts": scripts,

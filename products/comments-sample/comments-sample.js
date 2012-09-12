@@ -10,11 +10,11 @@ var Comments = Echo.Product.manifest("Echo.Products.CommentsSample");
 Comments.dependencies = [
 	{"loaded": function() {
 		return Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit") && Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream");
-	}, "url": "sdk/stream-server.pack.js"},
+	}, "url": "sdk/streamserver.pack.js"},
 
 	{"loaded": function() {
 		return Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth");
-	}, "url": "sdk/identity-server.pack.js"}
+	}, "url": "sdk/identityserver.pack.js"}
 ];
 
 Comments.config = {

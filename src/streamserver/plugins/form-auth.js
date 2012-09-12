@@ -96,7 +96,7 @@ plugin.config = {
 };
 
 plugin.dependencies = [{
-	"url": "sdk/identity-server.pack.js",
+	"url": "sdk/identityserver.pack.js",
 	"loaded": function() {
 		return Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth");
 	}

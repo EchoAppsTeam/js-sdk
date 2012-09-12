@@ -391,10 +391,10 @@ suite.prototype.tests.TestDomMethods = {
 suite.prototype.async = {};
 
 suite.prototype.async.simpleImageTest = function(callback) {
-	var img = Echo.Utils.loadImage(Echo.Loader.getURL("sdk/third-party/jquery/img/fancybox/fancybox.png"));
+	var img = Echo.Utils.loadImage(Echo.Loader.getURL("sdk/thirdparty/jquery/img/fancybox/fancybox.png"));
 	img.one({
 		"load": function() {
-			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("sdk/third-party/jquery/img/fancybox/fancybox.png"),
+			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("sdk/thirdparty/jquery/img/fancybox/fancybox.png"),
 				"Checking loadImage() method");
 			callback();
 		}

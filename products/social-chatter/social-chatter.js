@@ -131,14 +131,14 @@ if (Echo.Utils.isComponentDefined("Echo.Products.SocialChatter")) return;
 var SocialChatter = Echo.Product.manifest("Echo.Products.SocialChatter", ["Main", "PublicEvent", "GreenRoom", "EventsList"]);
 
 SocialChatter.dependencies = [
-	{"url": "sdk/products/social-chatter/third-party/bootstrap/css/bootstrap.min.css"},
-	{"url": "sdk/products/social-chatter/third-party/bootstrap/css/bootstrap-responsive.min.css"},
-	{"url": "sdk/products/social-chatter/third-party/bootstrap/css/datepicker.css"},
-	{"url": "sdk/products/social-chatter/third-party/bootstrap/css/timepicker.css"},
+	{"url": "sdk/products/social-chatter/thirdparty/bootstrap/css/bootstrap.min.css"},
+	{"url": "sdk/products/social-chatter/thirdparty/bootstrap/css/bootstrap-responsive.min.css"},
+	{"url": "sdk/products/social-chatter/thirdparty/bootstrap/css/datepicker.css"},
+	{"url": "sdk/products/social-chatter/thirdparty/bootstrap/css/timepicker.css"},
 
 	{"loaded": function() {
 		return !!$.fn.echoButton;
-	}, "url": "sdk/third-party/bootstrap/plugins/echo-button.js"},
+	}, "url": "sdk/thirdparty/bootstrap/plugins/echo-button.js"},
 
 	{"loaded": function() {
 		var isLoaded;
@@ -146,23 +146,23 @@ SocialChatter.dependencies = [
 			return isLoaded = Echo.Utils.isComponentDefined("Echo.StreamServer.Controls." + val);
 		});
 		return isLoaded;
-	}, "url": "sdk/stream-server.pack.js"},
+	}, "url": "sdk/streamserver.pack.js"},
 
 	{"loaded": function() {
 		return Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth");
-	}, "url": "sdk/identity-server.pack.js"},
+	}, "url": "sdk/identityserver.pack.js"},
 
 	{"loaded": function() {
 		return !!$.fn.datepicker;
-	}, "url": "sdk/products/social-chatter/third-party/bootstrap/bootstrap-datepicker.js"},
+	}, "url": "sdk/products/social-chatter/thirdparty/bootstrap/bootstrap-datepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.timepicker;
-	}, "url": "sdk/products/social-chatter/third-party/bootstrap/bootstrap-timepicker.js"},
+	}, "url": "sdk/products/social-chatter/thirdparty/bootstrap/bootstrap-timepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.tab;
-	}, "url": "sdk/products/social-chatter/third-party/bootstrap/bootstrap-tab.js"},
+	}, "url": "sdk/products/social-chatter/thirdparty/bootstrap/bootstrap-tab.js"},
 
 	{"loaded": function() {
 		return !!$.fn.countdown;
