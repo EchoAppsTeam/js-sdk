@@ -161,8 +161,6 @@ Echo.Tests.Events.contracts = {
 
 	"Echo.StreamServer.Controls.Stream.Item.onReceive": _stream.itemOnReceive,
 	"Echo.StreamServer.Controls.Stream.Item.onRerender": _stream.item,
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Curation.onSelect": _stream.items,
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Curation.onUnselect": _stream.items,
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView": {
 		"action": "",
 		"priority": "",
