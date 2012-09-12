@@ -295,7 +295,7 @@ module.exports = function(grunt) {
 
 	grunt.registerHelper("echo_wrapper", function(filepath) {
 		return "(function(jQuery) {\nvar $ = jQuery;\n\n" +
-			grunt.task.directive(filepath, grunt.file.read) +
+			grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)) +
 			"\n})(Echo.jQuery);\n";
 	});
 };
