@@ -23,6 +23,7 @@ suite.prototype.info = {
 		"template",
 		"getPlugin",
 		"showMessage",
+		"showError",
 		"destroy",
 		"refresh",
 		"render",
@@ -396,6 +397,62 @@ suite.prototype.cases.controlRendering = function(callback) {
 			target.find(".echo-control-message-icon").html(),
 			data.message,
 			"Checking \"showMessage\" in full mode");
+
+		// checking "showError" method
+		var errorCount = 0;
+		var errorTarget = $("<div></div>");
+		var errorData = {
+			"errorCode": "someUndefinedErrorCode",
+			"errorMessage": "Some Error Message"
+		};
+		var errorRequest = new Echo.API.Request({
+			"endpoint": "search",
+			"data": {
+				"appkey": "test.aboutecho.com",
+				"q": "unsupported query"
+			},
+			"onData": function(response) {},
+			"onError": function(response) {},
+			"onOpen": function() {}
+		});
+		var errorOptions = {
+			"target": errorTarget,
+			"critical": false,
+			"request": errorRequest
+		};
+		this.showError(errorData, errorOptions);
+		QUnit.equal(
+			errorTarget.find(".echo-control-message-icon").html(),
+			"(someUndefinedErrorCode) Some Error Message",
+			"Checking if the unsupported errorCode received"
+		);
+		errorData.errorCode = "busy";
+		this.showError(errorData, errorOptions);
+		QUnit.equal(
+			errorTarget.find(".echo-control-message-icon").html(),
+			"Loading. Please wait...",
+			"Checking if the supported errorCode received and errorMessage ignored"
+		);
+		errorOptions.retryIn = 3000;
+		errorData.errorCode = "view_limit";
+		this.showError(errorData, errorOptions);
+		QUnit.equal(
+			errorTarget.find(".echo-control-message-icon").html(),
+			"View creation rate limit has been exceeded. Retrying in 3 seconds...",
+			"Checking if the retrying mechanism works"
+		);
+		QUnit.stop();
+		setTimeout(function() {
+			errorOptions.retryIn = 0;
+			self.showError(errorData, errorOptions);
+			QUnit.equal(
+				errorTarget.find(".echo-control-message-icon").html(),
+				"Retrying...",
+				"Checking if the retrying mechanism works after 3 seconds counted"
+			);
+			clearInterval(errorRequest.retryTimer);
+			QUnit.start();
+		}, 3000);
 
 		var template = '<div class="echo-utils-tests-footer">footer content</div>';
 		this.render();
