@@ -90,17 +90,9 @@ module.exports = function(grunt) {
 			loader: {
 				src: [
 					"<%= dirs.src %>/thirdparty/yepnope/yepnope.1.5.4-min.js",
-					"<patch_loader:<%= dirs.src %>/loader.js>"
+					"<%= dirs.src %>/loader.js"
 				],
 				dest: "<%= dirs.sdk %>/loader.js"
-			},
-			"fancybox-css": {
-				src: ["<patch_fancybox_css:<%= dirs.src %>/thirdparty/jquery/css/fancybox.css>"],
-				dest: "<%= dirs.sdk %>/thirdparty/jquery/css/fancybox.css"
-			},
-			"fancybox-js": {
-				src: ["<patch_fancybox_js:<%= dirs.src %>/thirdparty/jquery/jquery.fancybox-1.3.4.min.js>"],
-				dest: "<%= dirs.sdk %>/thirdparty/jquery/jquery.fancybox-1.3.4.min.js"
 			},
 			"api": {
 				src: [
@@ -138,6 +130,25 @@ module.exports = function(grunt) {
 					"<echo_wrapper:<%= dirs.src %>/thirdparty/jquery/jquery.isotope.min.js>"
 				],
 				dest: "<%= dirs.sdk %>/thirdparty/jquery.pack.js"
+			}
+		},
+		patch: {
+			"loader": {
+				files: ["<%= dirs.sdk %>/loader.js"],
+				patcher: "loader"
+			},
+			"fancybox-css": {
+				files: ["<%= dirs.sdk %>/thirdparty/jquery/css/fancybox.css"],
+				patcher: "fancybox_css"
+			},
+			"fancybox-js": {
+				files: ["<%= dirs.sdk %>/thirdparty/jquery/jquery.fancybox-1.3.4.min.js"],
+				patcher: "fancybox_js"
+			//},
+			// TODO: move demo out of web folder so that patching couldn't modify versioned files
+			//"html": {
+			//	files: ["<%= dirs.dest %>/demo/**/*.html", "<%= dirs.dest %>/tests/**/*.html"],
+			//	patcher: "url"
 			}
 		},
 		mincss: {
@@ -260,40 +271,53 @@ module.exports = function(grunt) {
 		grunt.log.ok();
 	});
 
+	grunt.registerMultiTask("patch", "Patching files", function() {
+		var self = this;
+		var files = grunt.file.expandFiles(this.data.files);
+		var config = grunt.config("local");
+		files.map(function(file) {
+			grunt.log.write("Patching \"" + file + "\"...");
+			var src = grunt.file.read(file);
+			src = grunt.helper("patch_" + self.data.patcher, src, config);
+			grunt.file.write(file, src);
+			grunt.log.ok();
+		});
+	});
+
 	grunt.registerTask("docs", "clean:docs exec:docs");
 
 	// Default task
-	grunt.registerTask("default", "clean:all copy assemble_css mincss concat");
+	grunt.registerTask("default", "clean:all copy assemble_css concat patch mincss");
 
 	// ==========================================================================
 	// HELPERS
 	// ==========================================================================
 
-	grunt.registerHelper("patch_loader", function(filepath) {
-		var code = grunt.task.directive(filepath, grunt.file.read);
-		var config = grunt.config("local");
+	grunt.registerHelper("patch_url", function(src, config) {
 		if (config && config.domain) {
-			code = code.replace(/cdn\.echoenabled\.com/ig, config.domain);
+			src = src.replace(/cdn\.echoenabled\.com/ig, config.domain);
 		}
-		return code.replace(': "{version}"', ': "' + grunt.config("pkg.majorVersion") + '"');
+		return src;
 	});
 
-	grunt.registerHelper("patch_fancybox_css", function(filepath) {
-		var css = grunt.task.directive(filepath, grunt.file.read);
-		var config = grunt.config("local");
+	grunt.registerHelper("patch_loader", function(src, config) {
+		src = grunt.helper("patch_url", src, config);
+		return src.replace(': "{version}"', ': "' + grunt.config("pkg.majorVersion") + '"');
+	});
+
+	grunt.registerHelper("patch_fancybox_css", function(src, config) {
 		var domainPrefix =
 			"//"  + (config && config.domain ? config.domain : "cdn.echoenabled.com") +
-			"/sdk/thirdparty/jquery/img/fancybox/";
-		css = css.replace(/\n\#fancybox/g, "\n#fancybox-echo")
+			"/sdk/v" + grunt.config("pkg.majorVersion") + "/thirdparty/jquery/img/fancybox/";
+		src = src.replace(/\n\#fancybox/g, "\n#fancybox-echo")
 			.replace(/\n\.fancybox/g, "\n.fancybox-echo")
 			.replace(/url\(\'(.*)\'\)/g, "url('" + domainPrefix + "$1')")
 			.replace(/src=\'fancybox\/(.*)\'/g, "src='" + domainPrefix + "$1')");
-		return css;
+		return src;
 	});
 
-	grunt.registerHelper("patch_fancybox_js", function(filepath) {
-		var js = grunt.task.directive(filepath, grunt.file.read);
-		return js.replace(/(["'][.#]?)fancybox([a-z0-9-]*["'])/gi, "$1fancybox-echo$2");
+	grunt.registerHelper("patch_fancybox_js", function(src, config) {
+		return src.replace(/(["'][.#]?)fancybox([a-z0-9-]*["'])/gi, "$1fancybox-echo$2");
 	});
 
 	grunt.registerHelper("echo_wrapper", function(filepath) {
