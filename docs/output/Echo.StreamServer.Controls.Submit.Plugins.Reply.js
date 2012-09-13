@@ -17,11 +17,13 @@ Ext.data.JsonP.Echo_StreamServer_Controls_Submit_Plugins_Reply({
   "uses": [
 
   ],
-  "code_type": "assignment",
-  "inheritable": false,
+  "enum": null,
+  "override": null,
+  "inheritable": null,
   "inheritdoc": null,
   "meta": {
   },
+  "private": null,
   "id": "class-Echo.StreamServer.Controls.Submit.Plugins.Reply",
   "members": {
     "cfg": [
@@ -173,6 +175,7 @@ Ext.data.JsonP.Echo_StreamServer_Controls_Submit_Plugins_Reply({
 
     ]
   },
+  "linenr": 349,
   "files": [
     {
       "filename": "reply.js",

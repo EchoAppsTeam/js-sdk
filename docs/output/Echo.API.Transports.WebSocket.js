@@ -17,11 +17,13 @@ Ext.data.JsonP.Echo_API_Transports_WebSocket({
   "uses": [
 
   ],
-  "code_type": "assignment",
-  "inheritable": false,
+  "enum": null,
+  "override": null,
+  "inheritable": null,
   "inheritdoc": null,
   "meta": {
   },
+  "private": null,
   "id": "class-Echo.API.Transports.WebSocket",
   "members": {
     "cfg": [
@@ -63,6 +65,7 @@ Ext.data.JsonP.Echo_API_Transports_WebSocket({
 
     ]
   },
+  "linenr": 199,
   "files": [
     {
       "filename": "api.js",

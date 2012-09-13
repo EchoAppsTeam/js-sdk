@@ -17,11 +17,13 @@ Ext.data.JsonP.Echo_StreamServer_Controls_Stream_Plugins_InfiniteScroll({
   "uses": [
 
   ],
-  "code_type": "assignment",
-  "inheritable": false,
+  "enum": null,
+  "override": null,
+  "inheritable": null,
   "inheritdoc": null,
   "meta": {
   },
+  "private": null,
   "id": "class-Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll",
   "members": {
     "cfg": [
@@ -166,6 +168,7 @@ Ext.data.JsonP.Echo_StreamServer_Controls_Stream_Plugins_InfiniteScroll({
 
     ]
   },
+  "linenr": 6,
   "files": [
     {
       "filename": "infinite-scroll.js",

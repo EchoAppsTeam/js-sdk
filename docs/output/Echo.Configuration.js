@@ -17,11 +17,13 @@ Ext.data.JsonP.Echo_Configuration({
   "uses": [
 
   ],
-  "code_type": "assignment",
-  "inheritable": false,
+  "enum": null,
+  "override": null,
+  "inheritable": null,
   "inheritdoc": null,
   "meta": {
   },
+  "private": null,
   "id": "class-Echo.Configuration",
   "members": {
     "cfg": [
@@ -110,6 +112,7 @@ Ext.data.JsonP.Echo_Configuration({
 
     ]
   },
+  "linenr": 8,
   "files": [
     {
       "filename": "configuration.js",

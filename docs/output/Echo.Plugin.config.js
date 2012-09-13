@@ -17,11 +17,13 @@ Ext.data.JsonP.Echo_Plugin_config({
   "uses": [
 
   ],
-  "code_type": "nop",
-  "inheritable": false,
+  "enum": null,
+  "override": null,
+  "inheritable": null,
   "inheritdoc": null,
   "meta": {
   },
+  "private": null,
   "id": "class-Echo.Plugin.config",
   "members": {
     "cfg": [
@@ -94,6 +96,7 @@ Ext.data.JsonP.Echo_Plugin_config({
 
     ]
   },
+  "linenr": 427,
   "files": [
     {
       "filename": "plugin.js",

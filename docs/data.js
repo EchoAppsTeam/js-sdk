@@ -1364,6 +1364,46 @@ Docs = {
         "sort": 1
       },
       {
+        "name": "config",
+        "fullName": "Echo.Loader.config",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-config",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "overrides",
+        "fullName": "Echo.Loader.overrides",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-overrides",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "vars",
+        "fullName": "Echo.Loader.vars",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-vars",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "version",
+        "fullName": "Echo.Loader.version",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-version",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
         "name": "download",
         "fullName": "Echo.Loader.download",
         "icon": "icon-method",
@@ -1417,6 +1457,15 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Submit.actionString",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-actionString",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "errorWindow",
+        "fullName": "Echo.StreamServer.Controls.Submit.errorWindow",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-errorWindow",
         "meta": {
         },
         "sort": 3
@@ -5466,9 +5515,19 @@ Docs = {
         "key": "abstract"
       },
       {
+        "long": "chainable",
+        "short": "&gt;",
+        "key": "chainable"
+      },
+      {
         "long": "deprecated",
         "short": "DEP",
         "key": "deprecated"
+      },
+      {
+        "long": "&#9733;",
+        "short": "&#9733;",
+        "key": "new"
       },
       {
         "long": "preventable",

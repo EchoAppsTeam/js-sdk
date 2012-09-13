@@ -17,11 +17,13 @@ Ext.data.JsonP.Echo_View({
   "uses": [
 
   ],
-  "code_type": "assignment",
-  "inheritable": false,
+  "enum": null,
+  "override": null,
+  "inheritable": null,
   "inheritdoc": null,
   "meta": {
   },
+  "private": null,
   "id": "class-Echo.View",
   "members": {
     "cfg": [
@@ -118,6 +120,7 @@ Ext.data.JsonP.Echo_View({
 
     ]
   },
+  "linenr": 8,
   "files": [
     {
       "filename": "view.js",
