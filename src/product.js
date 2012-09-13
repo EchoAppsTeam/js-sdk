@@ -91,7 +91,7 @@ Echo.Product.manifest = function(name) {
  * @param {String} componentSpec.id
  * Nested component id.
  *
- * @param {String} componentSpec.constructor
+ * @param {String} componentSpec.name
  * Constructor name for the nested component like "Echo.StreamServer.Control.Stream".
  *
  * @param {Object} [componentSpec.config]
@@ -119,7 +119,7 @@ Echo.Product.prototype.initComponent = function(componentSpec) {
 			componentSpec.config
 		)
 	);
-	var Component = Echo.Utils.getComponent(componentSpec.constructor);
+	var Component = Echo.Utils.getComponent(componentSpec.name);
 	this.components = this.components || {};
 	this.components[componentSpec.id] = new Component(componentSpec.config);
 	return this.components[componentSpec.id];

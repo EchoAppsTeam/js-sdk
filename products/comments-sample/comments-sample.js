@@ -44,7 +44,7 @@ Comments.methods.template = function() {
 Comments.renderers.auth = function(element) {
 	this.initComponent({
 		"id": "Auth",
-		"constructor": "Echo.IdentityServer.Controls.Auth",
+		"name": "Echo.IdentityServer.Controls.Auth",
 		"config": {
 			"appkey": null,
 			"target": element,
@@ -57,7 +57,7 @@ Comments.renderers.auth = function(element) {
 Comments.renderers.stream = function(element) {
 	this.initComponent({
 		"id": "Stream",
-		"constructor": "Echo.StreamServer.Controls.Stream",
+		"name": "Echo.StreamServer.Controls.Stream",
 		"config": {
 			"target": element
 		}
@@ -68,7 +68,7 @@ Comments.renderers.stream = function(element) {
 Comments.renderers.submit = function(element) {
 	this.initComponent({
 		"id": "Submit",
-		"constructor": "Echo.StreamServer.Controls.Submit",
+		"name": "Echo.StreamServer.Controls.Submit",
 		"config": {
 			"target": element
 		}
