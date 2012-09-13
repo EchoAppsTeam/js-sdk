@@ -23,14 +23,6 @@ Echo.API.Transport = function(config) {
 	this.transportObject = this._getTransportObject();
 };
 
-Echo.API.Transport.prototype.send = function(data) {
-	this.transportObject.send(data);
-};
-
-Echo.API.Transport.prototype.abort = function() {
-	this.transportObject.abort();
-};
-
 Echo.API.Transport.prototype._wrapErrorResponse = function(responseError) {
 	return {
 		"result": "error",
@@ -135,7 +127,7 @@ Echo.API.Transports.AJAX.prototype.abort = function() {
 };
 
 Echo.API.Transports.AJAX.available = function() {
-	return (!$.browser.msie);
+	return !$.browser.msie;
 };
 
 /**

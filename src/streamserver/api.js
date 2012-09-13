@@ -63,7 +63,7 @@ Echo.Utils.inherit(Echo.API.Request, Echo.StreamServer.API.Request);
  * Method to stop live updates requests.
  */
 Echo.StreamServer.API.Request.prototype.abort = function() {
-	this.transport && this.transport.abort();
+	Echo.StreamServer.API.Request.parent.abort.call(this);
 	if (this.liveUpdates) {
 		this._stopLiveUpdates();
 		delete this.liveUpdates;
