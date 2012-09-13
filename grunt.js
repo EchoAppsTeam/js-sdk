@@ -95,7 +95,7 @@ module.exports = function(grunt) {
 		concat: {
 			loader: {
 				src: [
-					"<%= dirs.src %>/thirdparty/yepnope/yepnope.1.5.4-min.js",
+					"<%= dirs.src %>/third-party/yepnope/yepnope.1.5.4-min.js",
 					"<%= dirs.sdk %>/loader.js"
 				],
 				dest: "<%= dirs.sdk %>/loader.js"
@@ -125,17 +125,17 @@ module.exports = function(grunt) {
 				],
 				dest: "<%= dirs.sdk %>/environment.pack.js"
 			},
-			"thirdparty/jquery": {
+			"third-party/jquery": {
 				src: [
-					"<%= dirs.src %>/thirdparty/jquery/jquery.js",
-					"<%= dirs.src %>/thirdparty/jquery/echo.jquery.noconflict.js",
-					"<echo_wrapper:<%= dirs.src %>/thirdparty/jquery/jquery.ihint.js>",
-					"<echo_wrapper:<%= dirs.src %>/thirdparty/jquery/jquery.viewport.mini.js>",
-					"<echo_wrapper:<%= dirs.src %>/thirdparty/jquery/jquery.easing-1.3.min.js>",
-					"<echo_wrapper:<%= dirs.sdk %>/thirdparty/jquery/jquery.fancybox-1.3.4.min.js>",
-					"<echo_wrapper:<%= dirs.src %>/thirdparty/jquery/jquery.isotope.min.js>"
+					"<%= dirs.src %>/third-party/jquery/jquery.js",
+					"<%= dirs.src %>/third-party/jquery/echo.jquery.noconflict.js",
+					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.ihint.js>",
+					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.viewport.mini.js>",
+					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.easing-1.3.min.js>",
+					"<echo_wrapper:<%= dirs.sdk %>/third-party/jquery/jquery.fancybox-1.3.4.min.js>",
+					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.isotope.min.js>"
 				],
-				dest: "<%= dirs.sdk %>/thirdparty/jquery.pack.js"
+				dest: "<%= dirs.sdk %>/third-party/jquery.pack.js"
 			}
 		},
 		patch: {
@@ -144,11 +144,11 @@ module.exports = function(grunt) {
 				patcher: "loader"
 			},
 			"fancybox-css": {
-				files: ["<%= dirs.sdk %>/thirdparty/jquery/css/fancybox.css"],
+				files: ["<%= dirs.sdk %>/third-party/jquery/css/fancybox.css"],
 				patcher: "fancybox_css"
 			},
 			"fancybox-js": {
-				files: ["<%= dirs.sdk %>/thirdparty/jquery/jquery.fancybox-1.3.4.min.js"],
+				files: ["<%= dirs.sdk %>/third-party/jquery/jquery.fancybox-1.3.4.min.js"],
 				patcher: "fancybox_js"
 			},
 
@@ -159,8 +159,8 @@ module.exports = function(grunt) {
 		},
 		mincss: {
 			"echo-button": {
-				src: "<%= dirs.sdk %>/thirdparty/bootstrap/plugins/echo-button/echo-button.css",
-				dest: "<%= dirs.sdk %>/thirdparty/bootstrap/plugins/echo-button/echo-button.min.css"
+				src: "<%= dirs.sdk %>/third-party/bootstrap/plugins/echo-button/echo-button.css",
+				dest: "<%= dirs.sdk %>/third-party/bootstrap/plugins/echo-button/echo-button.min.css"
 			}
 		},
 		//min: {
@@ -170,7 +170,7 @@ module.exports = function(grunt) {
 		//	files: ["test/**/*.html"]
 		//},
 		lint: {
-			// TODO: exclude thirdparty and qunit from linting
+			// TODO: exclude third-party and qunit from linting
 			// TODO: lint dest dir cause all files there are properly wrapped
 			files: [
 				"grunt.js",
@@ -179,9 +179,9 @@ module.exports = function(grunt) {
 			]
 		},
 		assemble_css: {
-			"thirdparty/bootstrap/css": [
-				"<%= dirs.src %>/thirdparty/bootstrap/less/variables.less",
-				"<%= dirs.src %>/thirdparty/bootstrap/less/mixins.less"
+			"third-party/bootstrap/css": [
+				"<%= dirs.src %>/third-party/bootstrap/less/variables.less",
+				"<%= dirs.src %>/third-party/bootstrap/less/mixins.less"
 			]
 		},
 		//watch: {
@@ -256,8 +256,8 @@ module.exports = function(grunt) {
 		var config = grunt.file.readJSON("tools/grunt/config.ui.json");
 		config.controls.map(function(control) {
 			var filepaths = {
-				"less": grunt.config("dirs.src") + "/thirdparty/bootstrap/less/" + control.less + ".less",
-				"css": grunt.config.process("dirs.sdk") + "/thirdparty/bootstrap/plugins/" + control.css +
+				"less": grunt.config("dirs.src") + "/third-party/bootstrap/less/" + control.less + ".less",
+				"css": grunt.config.process("dirs.sdk") + "/third-party/bootstrap/plugins/" + control.css +
 					"/" + control.css + ".css"
 			};
 			var less = [
@@ -301,7 +301,7 @@ module.exports = function(grunt) {
 
 	grunt.registerHelper("patch_url", function(src, config) {
 		if (config && config.domain) {
-			src = src.replace(/cdn\.echoenabled\.com\/(sdk|product)/ig, config.domain + "/$1");
+			src = src.replace(/cdn\.echoenabled\.com\/(?=sdk\/|products\/|")/g, config.domain + "/");
 		}
 		return src;
 	});
@@ -314,7 +314,7 @@ module.exports = function(grunt) {
 	grunt.registerHelper("patch_fancybox_css", function(src, config) {
 		var domainPrefix =
 			"//"  + (config && config.domain ? config.domain : "cdn.echoenabled.com") +
-			"/sdk/v" + grunt.config("pkg.majorVersion") + "/thirdparty/jquery/img/fancybox/";
+			"/sdk/v" + grunt.config("pkg.majorVersion") + "/third-party/jquery/img/fancybox/";
 		src = src.replace(/\n\#fancybox/g, "\n#fancybox-echo")
 			.replace(/\n\.fancybox/g, "\n.fancybox-echo")
 			.replace(/url\(\'(.*)\'\)/g, "url('" + domainPrefix + "$1')")

@@ -131,14 +131,14 @@ if (Echo.Utils.isComponentDefined("Echo.Products.SocialChatter")) return;
 var SocialChatter = Echo.Product.manifest("Echo.Products.SocialChatter", ["Main", "PublicEvent", "GreenRoom", "EventsList"]);
 
 SocialChatter.dependencies = [
-	{"url": "{products}/social-chatter/thirdparty/bootstrap/css/bootstrap.min.css"},
-	{"url": "{products}/social-chatter/thirdparty/bootstrap/css/bootstrap-responsive.min.css"},
-	{"url": "{products}/social-chatter/thirdparty/bootstrap/css/datepicker.css"},
-	{"url": "{products}/social-chatter/thirdparty/bootstrap/css/timepicker.css"},
+	{"url": "{products}/social-chatter/third-party/bootstrap/css/bootstrap.min.css"},
+	{"url": "{products}/social-chatter/third-party/bootstrap/css/bootstrap-responsive.min.css"},
+	{"url": "{products}/social-chatter/third-party/bootstrap/css/datepicker.css"},
+	{"url": "{products}/social-chatter/third-party/bootstrap/css/timepicker.css"},
 
 	{"loaded": function() {
 		return !!$.fn.echoButton;
-	}, "url": "{sdk}/thirdparty/bootstrap/plugins/echo-button.js"},
+	}, "url": "{sdk}/third-party/bootstrap/plugins/echo-button.js"},
 
 	{"loaded": function() {
 		var isLoaded;
@@ -154,15 +154,15 @@ SocialChatter.dependencies = [
 
 	{"loaded": function() {
 		return !!$.fn.datepicker;
-	}, "url": "{products}/social-chatter/thirdparty/bootstrap/bootstrap-datepicker.js"},
+	}, "url": "{products}/social-chatter/third-party/bootstrap/bootstrap-datepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.timepicker;
-	}, "url": "{products}/social-chatter/thirdparty/bootstrap/bootstrap-timepicker.js"},
+	}, "url": "{products}/social-chatter/third-party/bootstrap/bootstrap-timepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.tab;
-	}, "url": "{products}/social-chatter/thirdparty/bootstrap/bootstrap-tab.js"},
+	}, "url": "{products}/social-chatter/third-party/bootstrap/bootstrap-tab.js"},
 
 	{"loaded": function() {
 		return !!$.fn.countdown;

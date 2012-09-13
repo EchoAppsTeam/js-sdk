@@ -105,7 +105,7 @@ auth.config = {
 };
 
 auth.dependencies = [{
-	"url": "{sdk}/thirdparty/jquery/css/fancybox.css"
+	"url": "{sdk}/third-party/jquery/css/fancybox.css"
 }];
 
 auth.labels = {
