@@ -1,4 +1,5 @@
 #!/bin/sh
+mkdir -p web
 git checkout gh-pages
 git checkout master -- grunt.js package.json tools tests src demo
 grunt docs
