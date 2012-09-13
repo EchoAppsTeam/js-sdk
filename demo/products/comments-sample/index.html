@@ -18,6 +18,11 @@
 	<div class="wrapper">
         <div id="comments-sample"></div>
         <script type="text/javascript">
+			Backplane.init({
+				"serverBaseURL": "http://api.echoenabled.com/v1",
+				"busName": "jskit"
+			});
+
 			new Echo.Products.CommentsSample({
 				"target": document.getElementById("comments-sample"),
 				"appkey": "test.aboutecho.com",
