@@ -1,6 +1,7 @@
 module.exports = function(grunt) {
 	var Ftp = require("ftp");
 	var fs = require("fs");
+	var http = require("http");
 	var _ = grunt.utils._;
 
 	var FtpUploader = function(config) {
@@ -111,6 +112,11 @@ module.exports = function(grunt) {
 		if (!config || !config.release) {
 			grunt.fail.fatal("No configuration for this task.");
 		}
+		if (config.domain) {
+			grunt.fail.fatal("Can't release files from dev environment");
+		}
+		// TODO: check if we have modified files, we must not release this
+		// TODO: execute `grunt` before releasing anything
 		if (!target) {
 			grunt.task.run([
 				"release:sdk",
@@ -124,7 +130,6 @@ module.exports = function(grunt) {
 		var majorVersion = version.split(".")[0];
 		switch (target) {
 			case "sdk":
-			case "sandbox":
 				_.each(config.release[target].upload, function(upload) {
 					upload.from = upload.from
 						.replace("{majorVersion}", majorVersion)
@@ -139,7 +144,70 @@ module.exports = function(grunt) {
 					"complete": done,
 					"rootDir": grunt.config("dirs.dest") + "/"
 				}, config.release[target]));
+				grunt.task.run("release:purge:" + target);
+				break;
+			case "purge":
+				// TODO: purge all paths in one request
+				grunt.helper("cdn_purge", [arguments[1]], config.release, done);
 				break;
 		}
+	});
+
+	grunt.registerHelper("cdn_purge", function(paths, config, done) {
+		var xml =
+			'<?xml version="1.0" encoding="utf-8"?>' +
+			'<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+				'<soap:Header>' +
+					'<AuthHeader xmlns="http://www.llnw.com/Purge">' +
+						'<Username>' + config.soap.user + '</Username>' +
+						'<Password>' + config.soap.password + '</Password>' +
+					'</AuthHeader>' +
+				'</soap:Header>' +
+				'<soap:Body>' +
+					'<CreatePurgeRequest xmlns="http://www.llnw.com/Purge">' +
+					'<request>' +
+						'<EmailType>detail</EmailType>' +
+						'<EmailSubject>[JS-SDK] [Limelight] Code pushed to CDN</EmailSubject>' +
+						'<EmailTo>' + config.email + '</EmailTo>' +
+						'<EmailCc>' + (config.emailCC || "") + '</EmailCc>' +
+						'<EmailBcc></EmailBcc>' +
+						'<Entries>' +
+							paths.map(function(path) {
+								return '<PurgeRequestEntry>' +
+									'<Shortname>' + config.soap.target.name + '</Shortname>' +
+									'<Url>' + config.soap.target.url.replace("{path}", path) + '</Url>' +
+									'<Regex>true</Regex>' +
+								'</PurgeRequestEntry>';
+							}).join("") +
+						'</Entries>' +
+					'</request>' +
+					'</CreatePurgeRequest>' +
+				'</soap:Body>' +
+			'</soap:Envelope>';
+		var req = http.request({
+			"host": config.soap.host,
+			"path": config.soap.path,
+			"method": "POST",
+			"headers": {
+				"Content-Type": "text/xml"
+			}
+		}, function(response) {
+			if (response.statusCode == 200) {
+				grunt.log.ok();
+				done();
+			} else if (response.statusCode == 500) {
+				response.on("data", function (text) {
+					grunt.log.writeln(text);
+					grunt.fail.fatal("Can't purge");
+				});
+			} else {
+				grunt.fail.fatal("Can't purge: " + response.statusCode + " error");
+			}
+		});
+		req.on("error", function(e) {
+			grunt.fail.fatal("Problem with request: " + e.message);
+		});
+		req.write(xml);
+		req.end();
 	});
 };
