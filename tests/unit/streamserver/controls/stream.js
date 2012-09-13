@@ -19,7 +19,8 @@ suite.prototype.info = {
 	"className": "Echo.StreamServer.Controls.Stream",
 	"functions": [
 		"getState",
-		"setState"
+		"setState",
+		"queueActivity"
 	]
 };
 
@@ -46,6 +47,7 @@ suite.prototype.tests.commonWorkflow = {
 					"Checking initial items count");
 				self.sequentialAsyncTests([
 					"addRootItem",
+					"queueActivityTesting",
 					"addChildItem",
 					"moreButton",
 					"destroy"
@@ -89,11 +91,88 @@ suite.prototype.cases.addRootItem = function(callback) {
 		}
 	});
 	stream.setState("paused");
-	var request = new Echo.StreamServer.API.request({
+	var request = Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"data": entry
 	});
 	request.send();
+};
+
+suite.prototype.cases.queueActivityTesting = function(callback) {
+	var self = this;
+	var stream = suite.stream;
+	var target = this.config.target;
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
+		"once": true,
+		"handler": function(topic, args) {
+			var item = stream.threads[stream.threads.length - 1];
+			var currentQueue = $.extend(true, [], stream.activities.queue);
+			stream.activities.queue = [];
+			var activities = [{
+				"action": "action1",
+				"priority": "lowest",
+				"item": item
+			}, {
+				"action": "action2",
+				"priority": "highest",
+				"item": item
+			}, {
+				"action": "replace",
+				"priority": "lowest",
+				"item": item
+			}, {
+				"action": "action3",
+				"priority": "lowest",
+				"item": stream.items[args.item.data.unique]
+			}];
+			stream.items[args.item.data.unique].blocked = true;
+			$.map(activities, $.proxy(stream.queueActivity, stream));
+			stream.activities.queue = $.map(stream.activities.queue, function(activity) {
+				delete activity.item;
+				return activity;
+			});
+			QUnit.deepEqual(
+				stream.activities.queue,
+				[{
+					"action": "action2",
+					"affectCounter": false,
+					"priority": "highest",
+					"byCurrentUser": false,
+					"handler": undefined,
+				}, {
+					"action": "action3",
+					"affectCounter": false,
+					"priority": "high",
+					"byCurrentUser": true,
+					"handler": undefined,
+				}, {
+					"action": "replace",
+					"affectCounter": false,
+					"priority": "medium",
+					"byCurrentUser": false,
+					"handler": undefined,
+				}, {
+					"action": "action1",
+					"affectCounter": false,
+					"priority": "lowest",
+					"byCurrentUser": false,
+					"handler": undefined,
+				}],
+				"Checking queueActivity functionality"
+			);
+			stream.activities.queue = currentQueue;
+			callback();
+		}
+	});
+	Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"data": this._preparePostEntry({
+			"username": "another.john.doe",
+			"content": "TestContent by another.john.doe",
+			"targetId": this.config.dataBaseLocation
+		})
+	}).send();
 };
 
 suite.prototype.cases.addChildItem = function(callback) {
