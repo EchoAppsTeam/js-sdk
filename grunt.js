@@ -37,8 +37,7 @@ module.exports = function(grunt) {
 			docs: ["<%= dirs.dest %>/docs"],
 			all: [
 				"<%= dirs.sdk %>",
-				"<%= dirs.dest %>/products",
-				"<%= dirs.dest %>/tests",
+				"<%= dirs.dest %>",
 				"<config:clean:docs>"
 			]
 		},
@@ -80,6 +79,14 @@ module.exports = function(grunt) {
 			tests: {
 				files: {
 					"<%= dirs.dest %>": ["tests/**/*"]
+				},
+				options: {
+					basePath: "."
+				}
+			},
+			demo: {
+				files: {
+					"<%= dirs.dest %>": ["demo/**/*"]
 				},
 				options: {
 					basePath: "."
@@ -144,11 +151,11 @@ module.exports = function(grunt) {
 			"fancybox-js": {
 				files: ["<%= dirs.sdk %>/thirdparty/jquery/jquery.fancybox-1.3.4.min.js"],
 				patcher: "fancybox_js"
-			//},
-			// TODO: move demo out of web folder so that patching couldn't modify versioned files
-			//"html": {
-			//	files: ["<%= dirs.dest %>/demo/**/*.html", "<%= dirs.dest %>/tests/**/*.html"],
-			//	patcher: "url"
+			},
+
+			"html": {
+				files: ["<%= dirs.dest %>/demo/**/*.html", "<%= dirs.dest %>/tests/**/*.html"],
+				patcher: "url"
 			}
 		},
 		mincss: {
@@ -295,7 +302,7 @@ module.exports = function(grunt) {
 
 	grunt.registerHelper("patch_url", function(src, config) {
 		if (config && config.domain) {
-			src = src.replace(/cdn\.echoenabled\.com/ig, config.domain);
+			src = src.replace(/cdn\.echoenabled\.com\/(sdk|product)/ig, config.domain + "/$1");
 		}
 		return src;
 	});
