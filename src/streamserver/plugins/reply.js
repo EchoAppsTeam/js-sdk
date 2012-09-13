@@ -185,7 +185,7 @@ plugin.methods._showSubmit = function() {
 	var item = this.component;
 	var target = this.view.get("submitForm").empty();
 	if (this.get("submit")) {
-		target.append(this.get("submit").render());
+		this.get("submit").render();
 		this._expand();
 		return target;
 	}
@@ -200,6 +200,10 @@ plugin.methods._showSubmit = function() {
 
 plugin.methods._hideSubmit = function() {
 	var item = this.component;
+	var submit = this.get("submit");
+	if (submit) {
+		submit.set("data", undefined);
+	}
 	this.set("expanded", false);
 	this.view.get("submitForm").empty();
 	this._itemCSS("remove", item, this.view.get("replyForm"));
