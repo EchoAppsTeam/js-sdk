@@ -17,13 +17,11 @@ Ext.data.JsonP.Echo_API_Transport({
   "uses": [
 
   ],
-  "enum": null,
-  "override": null,
-  "inheritable": null,
+  "code_type": "assignment",
+  "inheritable": false,
   "inheritdoc": null,
   "meta": {
   },
-  "private": null,
   "id": "class-Echo.API.Transport",
   "members": {
     "cfg": [
@@ -65,7 +63,6 @@ Ext.data.JsonP.Echo_API_Transport({
 
     ]
   },
-  "linenr": 10,
   "files": [
     {
       "filename": "api.js",

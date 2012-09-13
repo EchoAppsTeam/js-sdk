@@ -27,14 +27,14 @@ if (Echo.Loader) return;
  * Static class which implements common mechanics for canvases loading.
  */
 Echo.Loader = {
-<span id='Echo-Loader-property-version'>	&quot;version&quot;: &quot;{version}&quot;,
-</span><span id='Echo-Loader-property-config'>	&quot;config&quot;: {
-</span>		&quot;cdnBaseURL&quot;: &quot;http://cdn.echoenabled.com/&quot;,
+	&quot;version&quot;: &quot;{version}&quot;,
+	&quot;config&quot;: {
+		&quot;cdnBaseURL&quot;: &quot;http://cdn.echoenabled.com/&quot;,
 		&quot;errorTimeout&quot;: 5000 // 5 sec
 	},
-<span id='Echo-Loader-property-overrides'>	&quot;overrides&quot;: {},
-</span><span id='Echo-Loader-property-vars'>	&quot;vars&quot;: {}
-</span>};
+	&quot;overrides&quot;: {},
+	&quot;vars&quot;: {}
+};
 
 <span id='Echo-Loader-static-method-getURL'>/**
 </span> * @static
@@ -46,7 +46,7 @@ Echo.Loader = {
 Echo.Loader.getURL = function(url) {
 	return /^https?:\/\/|^\/\//.test(url)
 		? url
-		: url.replace(/{products}/, &quot;products&quot;)
+		: url.replace(/{products}/, Echo.Loader.config.cdnBaseURL + &quot;products&quot;)
 			.replace(/{sdk}/, Echo.Loader.config.cdnBaseURL + &quot;sdk/v&quot; + Echo.Loader.version);
 };
 <span id='Echo-Loader-static-method-init'>/**
@@ -161,7 +161,7 @@ Echo.Loader._initEnvironment = function(callback) {
 		&quot;url&quot;: &quot;{sdk}/backplane.js&quot;,
 		&quot;loaded&quot;: function() { return !!window.Backplane; }
 	}, {
-		&quot;url&quot;: &quot;{sdk}/thirdparty/jquery.pack.js&quot;,
+		&quot;url&quot;: &quot;{sdk}/third-party/jquery.pack.js&quot;,
 		&quot;loaded&quot;: function() { return !!Echo.jQuery; }
 	}, {
 		&quot;url&quot;: &quot;{sdk}/environment.pack.js&quot;,

@@ -334,7 +334,8 @@ Echo.Tests.Stats = {
 	},
 	"getFunctionNames": function(namespace, prefix) {
 		var stats = Echo.Tests.Stats;
-		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery"];
+		// FIXME: remove WebSocket later when server-side support WebSocket's
+		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.API.Transports.WebSocket"];
 		$.each([namespace, namespace.prototype], function(i, parentObject) {
 			if (!parentObject) return;
 			$.each(parentObject, function(name, value) {

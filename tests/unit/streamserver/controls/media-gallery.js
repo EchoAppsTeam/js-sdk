@@ -31,7 +31,7 @@ suite.prototype.tests.commonWorkflow = {
 		var self = this;
 		var elements = [
 			"<img src='" + Echo.Loader.getURL("{sdk}/images/avatar-default.png") + "'/>",
-			"<img src='" + Echo.Loader.getURL("{sdk}/thirdparty/jquery/img/fancybox/fancybox.png") + "'/>"
+			"<img src='" + Echo.Loader.getURL("{sdk}/third-party/jquery/img/fancybox/fancybox.png") + "'/>"
 		];
 		suite.checkGalleryActiveItem = function(gallery, index) {
 			var isActive = true;

@@ -17,13 +17,11 @@ Ext.data.JsonP.Echo_Plugin_events({
   "uses": [
 
   ],
-  "enum": null,
-  "override": null,
-  "inheritable": null,
+  "code_type": "nop",
+  "inheritable": false,
   "inheritdoc": null,
   "meta": {
   },
-  "private": null,
   "id": "class-Echo.Plugin.events",
   "members": {
     "cfg": [
@@ -88,7 +86,6 @@ Ext.data.JsonP.Echo_Plugin_events({
 
     ]
   },
-  "linenr": 516,
   "files": [
     {
       "filename": "plugin.js",

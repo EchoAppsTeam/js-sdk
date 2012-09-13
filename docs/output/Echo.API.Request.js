@@ -17,13 +17,11 @@ Ext.data.JsonP.Echo_API_Request({
   "uses": [
 
   ],
-  "enum": null,
-  "override": null,
-  "inheritable": null,
+  "code_type": "assignment",
+  "inheritable": false,
   "inheritdoc": null,
   "meta": {
   },
-  "private": null,
   "id": "class-Echo.API.Request",
   "members": {
     "cfg": [
@@ -143,7 +141,6 @@ Ext.data.JsonP.Echo_API_Request({
 
     ]
   },
-  "linenr": 250,
   "files": [
     {
       "filename": "api.js",

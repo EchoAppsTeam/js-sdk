@@ -17,13 +17,11 @@ Ext.data.JsonP.Echo_StreamServer_Controls_Stream_Plugins_PinboardVisulization({
   "uses": [
 
   ],
-  "enum": null,
-  "override": null,
-  "inheritable": null,
+  "code_type": "assignment",
+  "inheritable": false,
   "inheritdoc": null,
   "meta": {
   },
-  "private": null,
   "id": "class-Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization",
   "members": {
     "cfg": [
@@ -175,7 +173,6 @@ Ext.data.JsonP.Echo_StreamServer_Controls_Stream_Plugins_PinboardVisulization({
 
     ]
   },
-  "linenr": 604,
   "files": [
     {
       "filename": "pinboard-visualization.js",

@@ -17,13 +17,11 @@ Ext.data.JsonP.Echo_UserSession({
   "uses": [
 
   ],
-  "enum": null,
-  "override": null,
-  "inheritable": null,
+  "code_type": "assignment",
+  "inheritable": false,
   "inheritdoc": null,
   "meta": {
   },
-  "private": null,
   "id": "class-Echo.UserSession",
   "members": {
     "cfg": [
@@ -143,7 +141,6 @@ Ext.data.JsonP.Echo_UserSession({
 
     ]
   },
-  "linenr": 8,
   "files": [
     {
       "filename": "user-session.js",

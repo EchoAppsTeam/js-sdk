@@ -412,6 +412,48 @@ stream.methods.setState = function(state) {
 	this.view.render({&quot;name&quot;: &quot;state&quot;});
 };
 
+<span id='Echo-StreamServer-Controls-Stream-method-queueActivity'>/**
+</span> * Method used to add activity to Stream activities queue.
+ *
+ * @param {Object} params
+ * Object with the following properties:
+ *
+ * @param {Object} params.item
+ * Item for which the activity is added.
+ *
+ * @param {String} params.priority
+ * The priority of the activity.
+ * This parameter can be equal to &quot;highest&quot;, &quot;high&quot;, &quot;medium&quot;, &quot;low&quot; or &quot;lowest&quot;.
+ *
+ * @param {String} params.action
+ * The action name of the activity.
+ *
+ * @param {Function} params.handler
+ * The handler function of the activity.
+ */
+stream.methods.queueActivity = function(params) {
+	if (!params.item) return;
+	var actorID = params.item.get(&quot;data.actor.id&quot;);
+	// we consider activity related to the current user if:
+	//  - the corresponding item is blocked (moderation action in progress)
+	//  - or the activity was performed by the current user
+	var byCurrentUser = params.item.blocked || actorID &amp;&amp; this.user.has(&quot;identity&quot;, actorID);
+	var index = this._getActivityProjectedIndex(byCurrentUser, params);
+	var data = {
+		&quot;action&quot;: params.action,
+		&quot;item&quot;: params.item,
+		&quot;affectCounter&quot;: params.action === &quot;add&quot;,
+		&quot;priority&quot;: params.priority,
+		&quot;byCurrentUser&quot;: byCurrentUser,
+		&quot;handler&quot;: params.handler
+	};
+	if (typeof index !== &quot;undefined&quot;) {
+		this.activities.queue.splice(index, 0, data);
+	} else {
+		this.activities.queue.push(data);
+	}
+};
+
 stream.methods._requestChildrenItems = function(unique) {
 	var self = this;
 	var item = this.items[unique];
@@ -1074,30 +1116,6 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 
 stream.methods._animateSpotUpdate = function(action, item, options) {
 	this._spotUpdates.animate[action].call(this, item, options);
-};
-
-stream.methods.queueActivity = function(params) {
-	if (!params.item) return;
-	var actorID = params.item.get(&quot;data.actor.id&quot;);
-	// we consider activity related to the current user if:
-	//  - the corresponding item is blocked (moderation action in progress)
-	//  - or the activity was performed by the current user
-	var byCurrentUser = params.item.blocked || actorID &amp;&amp; this.user.has(&quot;identity&quot;, actorID);
-	var index = this._getActivityProjectedIndex(byCurrentUser, params);
-	var data = {
-		&quot;action&quot;: params.action,
-		&quot;item&quot;: params.item,
-		&quot;type&quot;: params.type || &quot;&quot;,
-		&quot;affectCounter&quot;: params.action === &quot;add&quot;,
-		&quot;priority&quot;: params.priority,
-		&quot;byCurrentUser&quot;: byCurrentUser,
-		&quot;handler&quot;: params.handler
-	};
-	if (typeof index !== &quot;undefined&quot;) {
-		this.activities.queue.splice(index, 0, data);
-	} else {
-		this.activities.queue.push(data);
-	}
 };
 
 stream.methods._getActivityProjectedIndex = function(byCurrentUser, params) {

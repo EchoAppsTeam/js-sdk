@@ -128,6 +128,7 @@ suite.prototype.tests.dynamicWorkflow = {
 					"Checking the common container rendering");
 				QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-container/g).length, 2,
 					"Checking initial users count");
+				QUnit.strictEqual(this.getVisibleUsersCount(), 2, "Checking initial users count (by \"getVisibleUsersCount()\")");
 				QUnit.equal(suite.pile.view.get("suffixText").html(), suite.pile.config.get("suffixText"), "Checking suffix text");
 				self.sequentialAsyncTests([
 					"dynamicMore",
@@ -147,6 +148,7 @@ suite.prototype.cases.dynamicMore = function(callback) {
 		"handler" : function(topic, params) {
 			QUnit.equal(self.config.target.html().match(/echo-streamserver-controls-facepile-item-container/g).length, 3,
 				"Checking users count after more button click");
+			QUnit.strictEqual(pile.getVisibleUsersCount(), 3, "Checking users count after more button click (by \"getVisibleUsersCount()\")");
 			callback();
 		}
 	});

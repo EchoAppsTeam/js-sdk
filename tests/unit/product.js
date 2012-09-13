@@ -72,7 +72,7 @@ suite.prototype.cases.initComponent = function(callback) {
 	var check = function() {
 		this.initComponent({
 			"id": "TestComponent1",
-			"constructor": "TestComponent1",
+			"name": "TestComponent1",
 			"config": {
 				"target": self.config.target,
 				"ready": function() {
@@ -99,9 +99,9 @@ suite.prototype.cases.destroyComponent = function(callback) {
 	var check = function() {
 		var component = this.initComponent({
 			"id": "TestComponent1",
-			"constructor": "TestComponent1",
+			"name": "TestComponent1",
 			"config": {
-				"target": self.config.target,
+				"target": self.config.target
 			}
 		});
 		component.set("_destroyHandler", function() {
@@ -129,9 +129,9 @@ suite.prototype.cases.destroyComponents = function(callback) {
 		$.map(components, function(component) {
 			self.initComponent({
 				"id": component,
-				"constructor": component,
+				"name": component,
 				"config": {
-					"target": test.config.target,
+					"target": test.config.target
 				}
 			});
 		});
