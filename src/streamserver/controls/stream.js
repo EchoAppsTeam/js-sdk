@@ -395,6 +395,48 @@ stream.methods.setState = function(state) {
 	this.view.render({"name": "state"});
 };
 
+/**
+ * Method used to add activity to Stream activities queue.
+ *
+ * @param {Object} params
+ * Object with the following properties:
+ *
+ * @param {Object} params.item
+ * Item for which the activity is added.
+ *
+ * @param {String} params.priority
+ * The priority of the activity.
+ * This parameter can be equal to "highest", "high", "medium", "low" or "lowest".
+ *
+ * @param {String} params.action
+ * The action name of the activity.
+ *
+ * @param {Function} params.handler
+ * The handler function of the activity.
+ */
+stream.methods.queueActivity = function(params) {
+	if (!params.item) return;
+	var actorID = params.item.get("data.actor.id");
+	// we consider activity related to the current user if:
+	//  - the corresponding item is blocked (moderation action in progress)
+	//  - or the activity was performed by the current user
+	var byCurrentUser = params.item.blocked || actorID && this.user.has("identity", actorID);
+	var index = this._getActivityProjectedIndex(byCurrentUser, params);
+	var data = {
+		"action": params.action,
+		"item": params.item,
+		"affectCounter": params.action === "add",
+		"priority": params.priority,
+		"byCurrentUser": byCurrentUser,
+		"handler": params.handler
+	};
+	if (typeof index !== "undefined") {
+		this.activities.queue.splice(index, 0, data);
+	} else {
+		this.activities.queue.push(data);
+	}
+};
+
 stream.methods._requestChildrenItems = function(unique) {
 	var self = this;
 	var item = this.items[unique];
@@ -1057,30 +1099,6 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 
 stream.methods._animateSpotUpdate = function(action, item, options) {
 	this._spotUpdates.animate[action].call(this, item, options);
-};
-
-stream.methods.queueActivity = function(params) {
-	if (!params.item) return;
-	var actorID = params.item.get("data.actor.id");
-	// we consider activity related to the current user if:
-	//  - the corresponding item is blocked (moderation action in progress)
-	//  - or the activity was performed by the current user
-	var byCurrentUser = params.item.blocked || actorID && this.user.has("identity", actorID);
-	var index = this._getActivityProjectedIndex(byCurrentUser, params);
-	var data = {
-		"action": params.action,
-		"item": params.item,
-		"type": params.type || "",
-		"affectCounter": params.action === "add",
-		"priority": params.priority,
-		"byCurrentUser": byCurrentUser,
-		"handler": params.handler
-	};
-	if (typeof index !== "undefined") {
-		this.activities.queue.splice(index, 0, data);
-	} else {
-		this.activities.queue.push(data);
-	}
 };
 
 stream.methods._getActivityProjectedIndex = function(byCurrentUser, params) {
