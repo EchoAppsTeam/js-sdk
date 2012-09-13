@@ -29,7 +29,7 @@ Echo.Loader = {
 Echo.Loader.getURL = function(url) {
 	return /^https?:\/\/|^\/\//.test(url)
 		? url
-		: url.replace(/{products}/, "products")
+		: url.replace(/{products}/, Echo.Loader.config.cdnBaseURL + "products")
 			.replace(/{sdk}/, Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version);
 };
 /**

@@ -73,7 +73,7 @@ suite.prototype.tests.urlConvertingTests = {
 			var checked = true;
 			$.map(val, function(url) {
 				if ((key === "absolute" || key === "relative") && url !== Echo.Loader.getURL(url) ||
-					key === "products" && url.replace("{products}", "products") !== Echo.Loader.getURL(url) ||
+					key === "products" && url.replace("{products}", cdnBaseURL + "products") !== Echo.Loader.getURL(url) ||
 					key === "sdk" && url.replace("{sdk}", cdnBaseURL + "sdk/v" + version) !== Echo.Loader.getURL(url)
 				) {
 					checked = false;
