@@ -90,7 +90,7 @@ module.exports = function(grunt) {
 			loader: {
 				src: [
 					"<%= dirs.src %>/thirdparty/yepnope/yepnope.1.5.4-min.js",
-					"<%= dirs.src %>/loader.js"
+					"<%= dirs.sdk %>/loader.js"
 				],
 				dest: "<%= dirs.sdk %>/loader.js"
 			},
@@ -287,7 +287,7 @@ module.exports = function(grunt) {
 	grunt.registerTask("docs", "clean:docs exec:docs");
 
 	// Default task
-	grunt.registerTask("default", "clean:all copy assemble_css concat patch mincss");
+	grunt.registerTask("default", "clean:all copy assemble_css patch concat mincss");
 
 	// ==========================================================================
 	// HELPERS
