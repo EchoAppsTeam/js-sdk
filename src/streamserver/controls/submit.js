@@ -173,6 +173,35 @@ submit.config = {
 	 * 	});
 	 */
 	"type": undefined,
+	/**
+	 * @cfg {Object} errorWindow
+	 * Is used to define dimensions of error message window. The value of this parameter
+	 * is an object with the following fields:
+	 *
+	 * @cfg {Number} errorWindow.minHeight
+	 * The minimum height of error message window.
+	 *
+	 * @cfg {Number} errorWindow.maxHeight
+	 * The maximum height of error message window.
+	 *
+	 * @cfg {Number} errorWindow.width
+	 * The width of error message window.
+	 *
+	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 		...
+	 * 		"errorWindow": {
+	 * 			"minHeight": 70,
+	 * 			"maxHeight": 150,
+	 * 			"width": 390
+	 * 		}
+	 * 		...
+	 * 	});
+	 */
+	"errorWindow": {
+		"minHeight": 70,
+		"maxHeight": 150,
+		"width": 390
+	},
 	"targetQuery": undefined
 };
 
@@ -560,31 +589,39 @@ submit.methods._getASURL = function(postfix) {
 }
 
 submit.methods._showError = function(data) {
+	var self = this;
 	data = data || {};
 	var isNetworkTimeout = $.inArray(data.errorCode, ["network_timeout", "connection_failure"]) >= 0;
 	var message = isNetworkTimeout
 		? this.labels.get("postingTimeout")
 		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
+	var dimensions = self.config.get("errorWindow");
+	var template = self.substitute({
+		"template": '<div class="{data:css}">{data:message}</div>',
+		"data": {
+			"message": message,
+			"css": this.cssPrefix + "error"
+		}
+	});
+	var messageBox = $(template).css({
+		"min-height": dimensions.minHeight,
+		"max-height": dimensions.maxHeight,
+		"width": dimensions.width,
+		"visibility": "hidden"
+	}).appendTo(this.view.get("container"));
 	$.fancybox({
-		"content": '<div class="' + this.cssPrefix + 'error">' + message + '</div>',
-		"height": 70,
-		"width": isNetworkTimeout ? 320 : 390,
+		"content": $(template).css({
+			"height": messageBox.height()
+		}),
+		"height": messageBox.height(),
+		"width": messageBox.width(),
 		"padding": 15,
 		"orig": this.view.get("text"),
 		"autoDimensions": false,
 		"transitionIn": "elastic",
 		"transitionOut": "elastic",
 		"onComplete": function() {
-			// set fixed dimensions of the fancybox-wrap
-			// (for IE in quirks mode it should be bigger)
-			if ($.browser.msie && document.compatMode != "CSS1Compat") {
-				var options = arguments[2];
-				var delta = 2 * options.padding + 40;
-				$("#fancybox-wrap").css({
-					"width": options.width + delta,
-					"height": options.height + delta
-				});
-			}
+			messageBox.remove();
 		}
 	});
 };
@@ -631,7 +668,7 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url("' + Echo.Loader.getURL("{sdk}/images/info70.png") + '"); height: 70px; }' +
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url("' + Echo.Loader.getURL("{sdk}/images/info70.png") + '"); }' +
 	(($.browser.msie) ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +
