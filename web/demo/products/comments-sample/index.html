@@ -3,15 +3,54 @@
 <head>
 	<title>Echo::Products::CommentsSample - Demo</title>
 	<link rel="stylesheet" type="text/css" href="../../demo.css" />
+
+	<!-- Default scripts inclusion -->
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/thirdparty/jquery.pack.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/identityserver.pack.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/products/comments-sample/comments-sample.js"></script>
 </head>
 <body>
 <div id="container">
 	<h1>CommentsSample Demo</h1>
 	<div class="wrapper">
-        <div class="echo-canvas" data-canvas-id="comments-sample" data-appkey="test.echoenabled.com"></div>
+        <div id="comments-sample"></div>
         <script type="text/javascript">
-            Echo.Loader.init();
+			new Echo.Products.CommentsSample({
+				"target": document.getElementById("comments-sample"),
+				"appkey": "test.aboutecho.com",
+				"apiBaseURL": "http://api.echoenabled.com/v1/",
+				"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+				"components": {
+					"Stream": {
+						"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
+								"plugins": [{
+							"name": "Edit"
+						}, {
+							"name": "Like"
+						}, {
+							"name": "Moderation"
+						}]
+					},
+					"Submit": {
+						"targetURL": "http://echosandbox.com/test/comments-sampler-test"
+					}
+				},
+				"identityManager": {
+					"login": {
+						"width": 400,
+								"height": 250,
+								"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+					},
+					"signup": {
+						"width": 400,
+								"height": 250,
+								"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+					}
+				}
+			});
         </script>
 	</div>
 </div>
