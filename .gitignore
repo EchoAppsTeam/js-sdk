@@ -1,8 +1,4 @@
-web/sdk/*
-web/products/*
-web/tests/*
-web/products/*
-web/docs/*
+web/*
 
 *.swp
 *.swo

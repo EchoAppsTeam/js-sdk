@@ -36,7 +36,6 @@ module.exports = function(grunt) {
 		clean: {
 			docs: ["<%= dirs.dest %>/docs"],
 			all: [
-				"<%= dirs.sdk %>",
 				"<%= dirs.dest %>",
 				"<config:clean:docs>"
 			]
