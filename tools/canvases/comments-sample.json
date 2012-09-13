@@ -7,7 +7,7 @@
     },
     "apps": [{
         "id": "my-comments-sample",
-        "script": "{products}/comments-sample/comments-sample.js",
+        "script": "{products}/echo/comments-sample/comments-sample.js",
         "component": "Echo.Products.CommentsSample",
         "config": {
             "appkey": "test.aboutecho.com",

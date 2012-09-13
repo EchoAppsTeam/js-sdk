@@ -131,10 +131,10 @@ if (Echo.Utils.isComponentDefined("Echo.Products.SocialChatter")) return;
 var SocialChatter = Echo.Product.manifest("Echo.Products.SocialChatter", ["Main", "PublicEvent", "GreenRoom", "EventsList"]);
 
 SocialChatter.dependencies = [
-	{"url": "{products}/social-chatter/third-party/bootstrap/css/bootstrap.min.css"},
-	{"url": "{products}/social-chatter/third-party/bootstrap/css/bootstrap-responsive.min.css"},
-	{"url": "{products}/social-chatter/third-party/bootstrap/css/datepicker.css"},
-	{"url": "{products}/social-chatter/third-party/bootstrap/css/timepicker.css"},
+	{"url": "{products}/echo/social-chatter/third-party/bootstrap/css/bootstrap.min.css"},
+	{"url": "{products}/echo/social-chatter/third-party/bootstrap/css/bootstrap-responsive.min.css"},
+	{"url": "{products}/echo/social-chatter/third-party/bootstrap/css/datepicker.css"},
+	{"url": "{products}/echo/social-chatter/third-party/bootstrap/css/timepicker.css"},
 
 	{"loaded": function() {
 		return !!$.fn.echoButton;
@@ -154,23 +154,23 @@ SocialChatter.dependencies = [
 
 	{"loaded": function() {
 		return !!$.fn.datepicker;
-	}, "url": "{products}/social-chatter/third-party/bootstrap/bootstrap-datepicker.js"},
+	}, "url": "{products}/echo/social-chatter/third-party/bootstrap/bootstrap-datepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.timepicker;
-	}, "url": "{products}/social-chatter/third-party/bootstrap/bootstrap-timepicker.js"},
+	}, "url": "{products}/echo/social-chatter/third-party/bootstrap/bootstrap-timepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.tab;
-	}, "url": "{products}/social-chatter/third-party/bootstrap/bootstrap-tab.js"},
+	}, "url": "{products}/echo/social-chatter/third-party/bootstrap/bootstrap-tab.js"},
 
 	{"loaded": function() {
 		return !!$.fn.countdown;
-	}, "url": "{products}/social-chatter/countdown/jquery.countdown.js"} ,
+	}, "url": "{products}/echo/social-chatter/countdown/jquery.countdown.js"} ,
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined(Echo.Plugin.manifest("ItemConditionalCSSClasses", "Echo.StreamServer.Controls.Stream.Item"));
-	}, "url": "{products}/social-chatter/plugins/item-conditional-css-classes.js"},
+	}, "url": "{products}/echo/social-chatter/plugins/item-conditional-css-classes.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -179,7 +179,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Stream.Item"
 			}
 		});
-	}, "url": "{products}/social-chatter/plugins/social-chatter-event.js"},
+	}, "url": "{products}/echo/social-chatter/plugins/social-chatter-event.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -188,7 +188,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Submit"
 			}
 		});
-	}, "url": "{products}/social-chatter/plugins/submit-countdown-event.js"},
+	}, "url": "{products}/echo/social-chatter/plugins/submit-countdown-event.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -197,7 +197,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Submit"
 			}
 		});
-	}, "url": "{products}/social-chatter/plugins/submit-textarea-auto-resize.js"},
+	}, "url": "{products}/echo/social-chatter/plugins/submit-textarea-auto-resize.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -206,7 +206,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Stream.Item"
 			}
 		});
-	}, "url": "{products}/social-chatter/plugins/user-metadata-manager.js"},
+	}, "url": "{products}/echo/social-chatter/plugins/user-metadata-manager.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -215,7 +215,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Stream.Item"
 			}
 		});
-	}, "url": "{products}/social-chatter/plugins/vip-replies.js"}
+	}, "url": "{products}/echo/social-chatter/plugins/vip-replies.js"}
 ];
 
 SocialChatter.labels = {
@@ -244,7 +244,7 @@ SocialChatter.config = {
 	"liveUpdatesTimeout": 60, // request Events updates once per minute
 	"identityManager": undefined,
 	"views": {},
-	"defaultEventIcon": Echo.Loader.getURL("{products}/social-chatter/images/vip.jpg"),
+	"defaultEventIcon": Echo.Loader.getURL("{products}/echo/social-chatter/images/vip.jpg"),
 	"permissions": {
 		"access": "allowGuest"
 	}
