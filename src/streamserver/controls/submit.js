@@ -174,22 +174,22 @@ submit.config = {
 	 */
 	"type": undefined,
 	/**
-	 * @cfg {Object} errorWindow
-	 * Is used to define dimensions of error message window. The value of this parameter
+	 * @cfg {Object} errorPopup
+	 * Is used to define dimensions of error message popup. The value of this parameter
 	 * is an object with the following fields:
 	 *
-	 * @cfg {Number} errorWindow.minHeight
-	 * The minimum height of error message window.
+	 * @cfg {Number} errorPopup.minHeight
+	 * The minimum height of error message popup.
 	 *
-	 * @cfg {Number} errorWindow.maxHeight
-	 * The maximum height of error message window.
+	 * @cfg {Number} errorPopup.maxHeight
+	 * The maximum height of error message popup.
 	 *
-	 * @cfg {Number} errorWindow.width
-	 * The width of error message window.
+	 * @cfg {Number} errorPopup.width
+	 * The width of error message popup.
 	 *
 	 * 	new Echo.StreamServer.Controls.Submit({
 	 * 		...
-	 * 		"errorWindow": {
+	 * 		"errorPopup": {
 	 * 			"minHeight": 70,
 	 * 			"maxHeight": 150,
 	 * 			"width": 390
@@ -197,7 +197,7 @@ submit.config = {
 	 * 		...
 	 * 	});
 	 */
-	"errorWindow": {
+	"errorPopup": {
 		"minHeight": 70,
 		"maxHeight": 150,
 		"width": 390
@@ -595,7 +595,7 @@ submit.methods._showError = function(data) {
 	var message = isNetworkTimeout
 		? this.labels.get("postingTimeout")
 		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
-	var dimensions = self.config.get("errorWindow");
+	var dimensions = self.config.get("errorPopup");
 	var template = self.substitute({
 		"template": '<div class="{data:css}">{data:message}</div>',
 		"data": {
@@ -620,7 +620,7 @@ submit.methods._showError = function(data) {
 		"autoDimensions": false,
 		"transitionIn": "elastic",
 		"transitionOut": "elastic",
-		"onComplete": function() {
+		"onStart": function() {
 			messageBox.remove();
 		}
 	});
