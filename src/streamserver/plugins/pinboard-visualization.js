@@ -515,7 +515,9 @@ plugin.methods._refreshView = function() {
 plugin.template =
 	'<div class="{class:container}">' +
 		'<div class="{class:header}">' +
-			'<div class="{class:avatar}"></div>' +
+			'<div class="{class:avatar-wrapper}">' +
+				'<div class="{class:avatar}"></div>' +
+			'</div>' +
 			'<div class="{plugin.class:topContentWrapper}">' +
 				'<div class="{class:authorName} echo-linkColor"></div>' +
 				'<div class="{plugin.class:childBody}"></div>' +
@@ -579,6 +581,8 @@ plugin.css =
 	'.{plugin.class} .{class:container-child} { margin: 0px; padding: 10px 15px; }' +
 	'.{plugin.class} .echo-linkColor { text-decoration: none; font-weight: bold; color: #524D4D; }' +
 	'.{plugin.class} .echo-linkColor a { text-decoration: none; font-weight: bold; color: #524D4D; }' +
+	'.{plugin.class} .{class:buttons} .echo-linkColor { font-weight: normal; color: #C6C6C6; }' +
+	'.{plugin.class} .{class:buttons} .echo-linkColor:hover { font-weight: normal; color: #C6C6C6; }' +
 	'.{plugin.class} .{class:expandChildren} .echo-message-icon { background-image: none; }' +
 	'.{plugin.class} .{class:expandChildren} { border-bottom: 1px solid #D9D4D4; background-color: #F2F0F0; }' +
 	'.{plugin.class} .{class:expandChildren} .{class:message-loading} { background-image: none; font-weight: bold; }' +
@@ -590,6 +594,7 @@ plugin.css =
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-logout { line-height: 24px; }' +
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-userInfoWrapper {  margin: 5px 0px; }' +
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
+	'.{plugin.class} .{class:plugin-Moderation-status}  { width: 30px; clear: both; }' +
 	(_isPreIE9() ? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }' : '');
 	
 Echo.Plugin.create(plugin);
