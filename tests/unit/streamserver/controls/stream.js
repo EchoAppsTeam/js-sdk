@@ -5,6 +5,7 @@ var suite = Echo.Tests.Unit.Stream = function() {
 		"instance": {
 			"name": "Echo.StreamServer.Controls.Stream",
 			"config": {
+				"liveUpdates": false,
 				"query": "childrenof: " + this.config.dataBaseLocation
 			},
 		},
@@ -258,6 +259,7 @@ suite.prototype._preparePostEntry = function(params) {
 Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Stream", function(config) {
 	return new Echo.StreamServer.Controls.Stream($.extend({
 		"target": $(document.getElementById("qunit-fixture")).empty(),
+		"liveUpdates": false,
 		"appkey": config.appkey,
 		"query": "childrenof:" + config.dataBaseLocation + " sortOrder:repliesDescending"
 	}, config));

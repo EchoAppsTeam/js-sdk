@@ -510,7 +510,7 @@ stream.methods._requestInitialItems = function() {
 			"endpoint": "search",
 			"apiBaseURL": this.config.get("apiBaseURL"),
 			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
-			"recurring": true,
+			"recurring": this.config.get("liveUpdates"),
 			"data": {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")
