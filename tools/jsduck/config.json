@@ -5,6 +5,6 @@
 	"--meta-tags": "meta-tags.rb",
 	"--ignore-global": true,
 	"--pretty-json": true,
-	"--warnings": ["-no_doc"],
+	"--warnings": ["-no_doc", "-global"],
 	"--head-html": "<style type=\"text/css\">#header-content { background: none; padding-left: 10px; } .class-categories .section .middle-column { width: 500px; }</style>"
 }
