@@ -1462,10 +1462,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "errorWindow",
-        "fullName": "Echo.StreamServer.Controls.Submit.errorWindow",
+        "name": "errorPopup",
+        "fullName": "Echo.StreamServer.Controls.Submit.errorPopup",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-errorWindow",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-errorPopup",
         "meta": {
         },
         "sort": 3

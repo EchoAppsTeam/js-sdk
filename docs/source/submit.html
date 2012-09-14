@@ -190,23 +190,23 @@ submit.config = {
 	 * 	});
 	 */
 	&quot;type&quot;: undefined,
-<span id='Echo-StreamServer-Controls-Submit-cfg-errorWindow'>	/**
-</span>	 * @cfg {Object} errorWindow
-	 * Is used to define dimensions of error message window. The value of this parameter
+<span id='Echo-StreamServer-Controls-Submit-cfg-errorPopup'>	/**
+</span>	 * @cfg {Object} errorPopup
+	 * Is used to define dimensions of error message popup. The value of this parameter
 	 * is an object with the following fields:
 	 *
-	 * @cfg {Number} errorWindow.minHeight
-	 * The minimum height of error message window.
+	 * @cfg {Number} errorPopup.minHeight
+	 * The minimum height of error message popup.
 	 *
-	 * @cfg {Number} errorWindow.maxHeight
-	 * The maximum height of error message window.
+	 * @cfg {Number} errorPopup.maxHeight
+	 * The maximum height of error message popup.
 	 *
-	 * @cfg {Number} errorWindow.width
-	 * The width of error message window.
+	 * @cfg {Number} errorPopup.width
+	 * The width of error message popup.
 	 *
 	 * 	new Echo.StreamServer.Controls.Submit({
 	 * 		...
-	 * 		&quot;errorWindow&quot;: {
+	 * 		&quot;errorPopup&quot;: {
 	 * 			&quot;minHeight&quot;: 70,
 	 * 			&quot;maxHeight&quot;: 150,
 	 * 			&quot;width&quot;: 390
@@ -214,7 +214,7 @@ submit.config = {
 	 * 		...
 	 * 	});
 	 */
-	&quot;errorWindow&quot;: {
+	&quot;errorPopup&quot;: {
 		&quot;minHeight&quot;: 70,
 		&quot;maxHeight&quot;: 150,
 		&quot;width&quot;: 390
@@ -612,7 +612,7 @@ submit.methods._showError = function(data) {
 	var message = isNetworkTimeout
 		? this.labels.get(&quot;postingTimeout&quot;)
 		: this.labels.get(&quot;postingFailed&quot;, {&quot;error&quot;: data.errorMessage || data.errorCode});
-	var dimensions = self.config.get(&quot;errorWindow&quot;);
+	var dimensions = self.config.get(&quot;errorPopup&quot;);
 	var template = self.substitute({
 		&quot;template&quot;: '&lt;div class=&quot;{data:css}&quot;&gt;{data:message}&lt;/div&gt;',
 		&quot;data&quot;: {
@@ -637,7 +637,7 @@ submit.methods._showError = function(data) {
 		&quot;autoDimensions&quot;: false,
 		&quot;transitionIn&quot;: &quot;elastic&quot;,
 		&quot;transitionOut&quot;: &quot;elastic&quot;,
-		&quot;onComplete&quot;: function() {
+		&quot;onStart&quot;: function() {
 			messageBox.remove();
 		}
 	});

@@ -201,8 +201,10 @@ plugin.methods._submitConfig = function(target) {
 plugin.methods._showSubmit = function() {
 	var item = this.component;
 	var target = this.view.get(&quot;submitForm&quot;).empty();
-	if (this.get(&quot;submit&quot;)) {
-		this.get(&quot;submit&quot;).render();
+	var submit = this.get(&quot;submit&quot;);
+	if (submit) {
+		submit.config.set(&quot;target&quot;, target);
+		submit.render();
 		this._expand();
 		return target;
 	}
