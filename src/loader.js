@@ -21,7 +21,7 @@ Echo.Loader = {
 
 /**
  * @static
- * Function to get absolute URL.
+ * Function to get normalized URL.
  *
  * @param {String} url
  * JavaScript or CSS stylesheet file URL.
