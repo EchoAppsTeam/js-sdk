@@ -595,8 +595,22 @@ submit.methods._showError = function(data) {
 	var message = isNetworkTimeout
 		? this.labels.get("postingTimeout")
 		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
-	var dimensions = self.config.get("errorPopup");
-	var template = self.substitute({
+	var popup = this._assembleErrorPopup(message);
+	$.fancybox({
+		"content": popup.content,
+		"height": popup.height,
+		"width": popup.width,
+		"padding": 15,
+		"orig": this.view.get("text"),
+		"autoDimensions": false,
+		"transitionIn": "elastic",
+		"transitionOut": "elastic"
+	});
+};
+
+submit.methods._assembleErrorPopup = function(message) {
+	var dimensions = this.config.get("errorPopup");
+	var template = this.substitute({
 		"template": '<div class="{data:css}">{data:message}</div>',
 		"data": {
 			"message": message,
@@ -609,21 +623,15 @@ submit.methods._showError = function(data) {
 		"width": dimensions.width,
 		"visibility": "hidden"
 	}).appendTo(this.view.get("container"));
-	$.fancybox({
+	var popup = {
 		"content": $(template).css({
 			"height": messageBox.height()
 		}),
 		"height": messageBox.height(),
-		"width": messageBox.width(),
-		"padding": 15,
-		"orig": this.view.get("text"),
-		"autoDimensions": false,
-		"transitionIn": "elastic",
-		"transitionOut": "elastic",
-		"onStart": function() {
-			messageBox.remove();
-		}
-	});
+		"width": messageBox.width()
+	};
+	messageBox.remove();
+	return popup;
 };
 
 submit.methods._isPostValid = function() {
