@@ -11,6 +11,7 @@ module.exports = function(grunt) {
 	}
 
 	var _ = grunt.utils._;
+	var child_process = require("child_process");
 	var _config = {
 		dirs: {
 			src: "src",
@@ -34,16 +35,9 @@ module.exports = function(grunt) {
 				" */"
 		},
 		clean: {
-			docs: ["<%= dirs.dest %>/docs"],
 			all: [
-				"<%= dirs.dest %>",
-				"<config:clean:docs>"
+				"<%= dirs.dest %>"
 			]
-		},
-		exec: {
-			docs: {
-				command: "jsduck --config=tools/jsduck/config.json"
-			}
 		},
 		copy: {
 			js: {
@@ -240,7 +234,6 @@ module.exports = function(grunt) {
 	// TASKS
 	// ==========================================================================
 
-	grunt.loadNpmTasks("grunt-exec");
 	grunt.loadNpmTasks("grunt-contrib");
 	grunt.loadTasks("tools/grunt/tasks");
 
@@ -290,7 +283,12 @@ module.exports = function(grunt) {
 		});
 	});
 
-	grunt.registerTask("docs", "clean:docs exec:docs");
+	grunt.registerTask("docs", function() {
+		var done = this.async();
+		grunt.helper("exec", "rm -rf " + grunt.config("dirs.dest") + "/docs", function() {
+			grunt.helper("exec", "jsduck --config=tools/jsduck/config.json", done);
+		});
+	});
 
 	// Default task
 	grunt.registerTask("default", "clean:all copy assemble_css patch concat mincss");
@@ -330,5 +328,18 @@ module.exports = function(grunt) {
 		return "(function(jQuery) {\nvar $ = jQuery;\n\n" +
 			grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)) +
 			"\n})(Echo.jQuery);\n";
+	});
+
+	grunt.registerHelper("exec", function(command, callback) {
+		grunt.log.subhead(command.yellow);
+		child_process.exec(command, function(err, stdout, stderr) {
+			if (err) {
+				grunt.fail.fatal(err);
+			}
+			if (stderr) {
+				grunt.log.writeln(stderr);
+			}
+			callback(stdout, stderr);
+		});
 	});
 };

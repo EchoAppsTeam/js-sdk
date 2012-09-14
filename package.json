@@ -23,7 +23,6 @@
     }
   ],
   "dependencies": {
-    "grunt-exec": "~0.2.1",
     "grunt-contrib": "~0.1.7",
     "ftp": "~0.1.5"
   },
