@@ -184,7 +184,6 @@ plugin.methods._submitConfig = function(target) {
 plugin.methods._showSubmit = function() {
 	var item = this.component;
 	var target = this.view.get("submitForm").empty();
-	this._itemCSS("add", item, this.view.get("replyForm"));
 	var submit = this.get("submit");
 	if (submit) {
 		submit.config.set("target", target);
@@ -225,6 +224,7 @@ plugin.methods._hideSubmit = function() {
 plugin.methods._expand = function() {
 	var item = this.component;
 	this.set("expanded", true);
+	this._itemCSS("add", item, this.view.get("replyForm"));
 	this.view.render({"name": "compactForm"});
 	/**
 	 * @event onExpand
