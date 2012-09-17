@@ -196,7 +196,6 @@ suite.prototype.cases.equalUrlsPerParallelCalls = function(callback) {
 			QUnit.ok(!!Echo.Tests.Download.duplicate3, "Checking if the callback is executed when equal urls of js/css was loaded per parallel call");
 			callback();
 		}
-		console.log(k);
 	};
 	Echo.Loader.download({
 		"scripts": [
