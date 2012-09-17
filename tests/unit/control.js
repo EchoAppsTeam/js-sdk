@@ -137,7 +137,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 		QUnit.equal(this.get("myField.key1"), "value1",
 			"Checking basic value set/get scenario (value of type object)");
 		this.remove("myField", "myValue");
-		QUnit.equal(this.get("myField"), undefined,
+		QUnit.strictEqual(this.get("myField"), undefined,
 			"Checking field remove operation");
 
 		// checking "substitute" method in a regular mode

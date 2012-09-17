@@ -221,6 +221,53 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
 
 /**
  * @static
+ * Method to remove specific nested field value in the object.
+ *
+ * This function removes the corresponding value of the given key or the.
+ * Use the dot as a delimiter of key parts to remove nested field value.
+ *
+ * 	var data = {
+ * 		"key1": "value1",
+ * 		"key2": {
+ * 			"key2-1": "value2-1",
+ * 			"key2-2": {
+ *				"key2-2-1": "value2-2-1"
+ * 			}
+ * 		}
+ * 	};
+ *
+ * 	Echo.Utils.removeNestedValue(data, "key1"); // will return true and key1 delete
+ * 	Echo.Utils.removeNestedValue(data, "key2"); // will return true and key2 delete
+ * 	Echo.Utils.removeNestedValue(data, "key2.key2-2.key2-2-1"); // will return true and obj.key2.key2-2 will return empty object
+ * 	Echo.Utils.removeNestedValue(data, "not_defined_key"); // will return false
+ *
+ * @param {Object} obj
+ * The object from which the value is taken.
+ *
+ * @param {String} key
+ * The key for value removing.
+ *
+ * @return {Boolean}
+ * The boolean value which indicates that value by key exists and removed.
+ */
+Echo.Utils.removeNestedValue = function(obj, key) {
+	if (!key) return false;
+	var _key;
+	var keys = key.split(/\./);
+	do {
+		_key = keys.shift();
+		if (typeof obj[_key] === "undefined") {
+			return false;
+		}
+		if (!keys.length) {
+			return delete obj[_key];
+		}
+		obj = obj[_key];
+	} while (keys.length);
+};
+
+/**
+ * @static
  * Method to define specific nested field value in the object.
  *
  * This function allows to define the value for the corresponding field in the object.

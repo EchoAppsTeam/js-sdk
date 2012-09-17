@@ -25,6 +25,7 @@ suite.prototype.info = {
 		"objectToQuery",
 		"parallelCall",
 		"parseURL",
+		"removeNestedValue",
 		"sequentialCall",
 		"setNestedValue",
 		"stripTags",
@@ -58,7 +59,10 @@ suite.prototype.tests.TestDataMethods = {
 		var data = {
 			"key1": "value1",
 			"key2": {
-				"key2-1": "value2-1"
+				"key2-1": "value2-1",
+				"key2-2": {
+					"key2-2-1": "value2-2-1"
+				}
 			}
 		};
 
@@ -66,10 +70,14 @@ suite.prototype.tests.TestDataMethods = {
 			"Checking getNestedValue() method with simple key");
 		QUnit.deepEqual(Echo.Utils.getNestedValue(data, ""), data,
 			"Checking getNestedValue() method with empty key");
-		QUnit.deepEqual(Echo.Utils.getNestedValue(data, "key2"), {"key2-1": "value2-1"},
-			"Checking getNestedValue() method")
+		QUnit.deepEqual(Echo.Utils.getNestedValue(data, "key2"), {
+			"key2-1": "value2-1",
+			"key2-2": {
+				"key2-2-1": "value2-2-1"
+			}
+		}, "Checking getNestedValue() method")
 		QUnit.equal(Echo.Utils.getNestedValue(data, "key2.key2-1"), "value2-1",
-			"Checking getNestedValue() method with complex key")
+			"ChEcking getNestedValue() method with complex key")
 		QUnit.equal(Echo.Utils.getNestedValue(data, "key1.fakekey", "default value"), "default value",
 			"Checking getNestedValue() method with fake key and default value");
 
@@ -79,6 +87,26 @@ suite.prototype.tests.TestDataMethods = {
 		Echo.Utils.setNestedValue(data, "key3", "value3");
 		QUnit.equal(data["key3"], "value3",
 			"Checking setNestedValue() method with plain param");
+		QUnit.ok(!Echo.Utils.removeNestedValue(data, ""), "Checking removeNestedValue() with empty key");
+		QUnit.ok(!Echo.Utils.removeNestedValue(data), "Checking removeNestedValue() with undefined key");
+		QUnit.ok(Echo.Utils.removeNestedValue(data, "key1") && typeof data.key1 === "undefined" && !data.hasOwnProperty("key1"), "Checking that removeNestedValue() returns right value and that vakue by key realy removed");
+		QUnit.deepEqual(data, {
+			"key2": {
+				"key2-1": "value2-1",
+				"key2-2": {
+					"key2-2-1": "value2-2-1"
+				}
+			},
+			"key3": "value3"
+		}, "Checking removeNestedValue() with simple key");
+		Echo.Utils.removeNestedValue(data, "key2.key2-2.key2-2-1");
+		QUnit.deepEqual(data, {
+			"key2": {
+				"key2-1": "value2-1",
+				"key2-2": {}
+			},
+			"key3": "value3"
+		}, "Checking removeNestedValue() with complex key");
 
 		QUnit.equal(Echo.Utils.htmlize(), "",
 			"Checking htmlize() method with empty param");
