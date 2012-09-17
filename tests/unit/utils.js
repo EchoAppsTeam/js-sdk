@@ -89,7 +89,7 @@ suite.prototype.tests.TestDataMethods = {
 			"Checking setNestedValue() method with plain param");
 		QUnit.ok(!Echo.Utils.removeNestedValue(data, ""), "Checking removeNestedValue() with empty key");
 		QUnit.ok(!Echo.Utils.removeNestedValue(data), "Checking removeNestedValue() with undefined key");
-		QUnit.ok(Echo.Utils.removeNestedValue(data, "key1") && typeof data.key1 === "undefined" && !data.hasOwnProperty("key1"), "Checking that removeNestedValue() returns right value and that vakue by key realy removed");
+		QUnit.ok(Echo.Utils.removeNestedValue(data, "key1") && typeof data.key1 === "undefined" && !data.hasOwnProperty("key1"), "Checking that removeNestedValue() returns right value and that value by key realy removed");
 		QUnit.deepEqual(data, {
 			"key2": {
 				"key2-1": "value2-1",
@@ -107,6 +107,7 @@ suite.prototype.tests.TestDataMethods = {
 			},
 			"key3": "value3"
 		}, "Checking removeNestedValue() with complex key");
+		QUnit.ok(!Echo.Utils.removeNestedValue("key2.key2-2.key2-2-1"), "Checking removeNestedValue() method with non-existing complex key");
 
 		QUnit.equal(Echo.Utils.htmlize(), "",
 			"Checking htmlize() method with empty param");
