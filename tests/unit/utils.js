@@ -77,7 +77,7 @@ suite.prototype.tests.TestDataMethods = {
 			}
 		}, "Checking getNestedValue() method")
 		QUnit.equal(Echo.Utils.getNestedValue(data, "key2.key2-1"), "value2-1",
-			"ChEcking getNestedValue() method with complex key")
+			"Checking getNestedValue() method with complex key")
 		QUnit.equal(Echo.Utils.getNestedValue(data, "key1.fakekey", "default value"), "default value",
 			"Checking getNestedValue() method with fake key and default value");
 
