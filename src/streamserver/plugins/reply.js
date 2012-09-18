@@ -117,7 +117,7 @@ plugin.component.renderers.children = function(element) {
 	if (item.get("children").length == 1) {
 		var child = item.get("children")[0];
 		if (child.get("added") || child.get("deleted")) {
-			this._itemCSS("remove", item, this.view.get("replyForm"));
+			this._itemCSS("remove", item, this.view.get("compactForm"));
 			this.view.render({"name": "compactForm"});
 		}
 	}
@@ -128,9 +128,10 @@ plugin.component.renderers.children = function(element) {
  * @echo_renderer
  */
 plugin.renderers.submitForm = function(element) {
-	return element.click(function(event) {
+	element.click(function(event) {
 		event.stopPropagation();
 	});
+	return this.get("expanded") ? element.show() : element.empty().hide();
 };
 
 /**
@@ -140,9 +141,10 @@ plugin.renderers.compactForm = function(element) {
 	var item = this.component;
 	var hasChildren = !!item.children.length;
 	if (!item.get("depth") && hasChildren && !this.get("expanded") && !item.get("children")[0].get("deleted")) {
-		this._itemCSS("add", item, element.parent());
+		this._itemCSS("add", item, element);
 		return element.show();
 	}
+	this._itemCSS("remove", item, this.view.get("compactForm"));
 	return element.hide();
 };
 
@@ -188,7 +190,8 @@ plugin.methods._submitConfig = function(target) {
 
 plugin.methods._showSubmit = function() {
 	var item = this.component;
-	var target = this.view.get("submitForm").empty();
+	var target = this.view.get("submitForm");
+	this._itemCSS("add", item, this.view.get("submitForm"));
 	var submit = this.get("submit");
 	if (submit) {
 		submit.config.set("target", target);
@@ -212,8 +215,8 @@ plugin.methods._hideSubmit = function() {
 		submit.set("data", undefined);
 	}
 	this.set("expanded", false);
+	this._itemCSS("remove", item, this.view.get("submitForm"));
 	this.view.get("submitForm").empty();
-	this._itemCSS("remove", item, this.view.get("replyForm"));
 	this.view.render({"name": "compactForm"});
 	item.view.render({"name": "container"});
 	/**
@@ -229,7 +232,7 @@ plugin.methods._hideSubmit = function() {
 plugin.methods._expand = function() {
 	var item = this.component;
 	this.set("expanded", true);
-	this._itemCSS("add", item, this.view.get("replyForm"));
+	this.view.render({"name": "submitForm"});
 	this.view.render({"name": "compactForm"});
 	/**
 	 * @event onExpand
@@ -391,7 +394,9 @@ plugin.init = function() {
 
 $.map(["onRender", "onRerender"], function(topic) {
 	plugin.events["Echo.StreamServer.Controls.Submit." + topic] = function() {
-		this.component.view.get("text").focus();
+		var submit = this.component;
+		submit.config.get("target").show();
+		submit.view.get("text").focus();
 	};
 });
 
