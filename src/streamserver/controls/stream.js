@@ -2202,10 +2202,8 @@ item.renderers.expandChildren = function(element, extra) {
 	}
 	extra = extra || {};
 
-	// the "show()" jQuery method doesn't work for some reasons in Chrome (A:5755)
-	element.css("display", "block");
-
 	return element.addClass(this.cssPrefix + "depth-" + (this.depth + 1))
+		.show()
 		.off("click")
 		.one("click", function() {
 			self.view.render({
