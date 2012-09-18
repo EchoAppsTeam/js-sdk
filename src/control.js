@@ -358,6 +358,13 @@ Echo.Control.prototype.refresh = function() {
 };
 
 /**
+ * @method ready
+ * Should be called in the "init" function of the control manifest to
+ * show that the control was initialized. Basically it is the indicator
+ * of the control to be ready and operable.
+ */
+
+/**
  * Unified method to destroy control.
  */
 Echo.Control.prototype.destroy = function(config) {
