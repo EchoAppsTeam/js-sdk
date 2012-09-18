@@ -677,14 +677,14 @@ submit.css =
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
 	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url("' + Echo.Loader.getURL("{sdk}/images/info70.png") + '"); }' +
-	(($.browser.msie) ?
+	($.browser.msie ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +
 		'.{class:header} { zoom: 1; }' +
 		'.{class:content} { zoom: 1; }' +
 		'.{class:markersContainer} { zoom: 1; }' +
 		'.{class:tagsContainer} { zoom: 1; }' : '') +
-	(($.browser.webkit) ?
+	($.browser.webkit ?
 		// get rid of extra gray line inside input elements on iOS
 		'.{class:container} input { background-position: 0px; }' +
 		'.{class:container} textarea { background-position: 0px; }' +

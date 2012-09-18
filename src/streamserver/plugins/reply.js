@@ -302,7 +302,7 @@ plugin.css =
 	".{plugin.class:compactContent} { padding: 5px 5px 5px 6px; background-color: #fff; }" +
 	".{plugin.class:compactBorder} { border: 1px solid #d2d2d2; }" +
 	".{plugin.class:compactField} { width: 100%; border: none; }" +
-	(($.browser.webkit) ?
+	($.browser.webkit ?
 		'.{plugin.class:compactContent} input { outline: none; }' : '');
 
 Echo.Plugin.create(plugin);
