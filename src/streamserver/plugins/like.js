@@ -55,6 +55,11 @@ plugin.labels = {
 	"unlikeProcessing": "Unliking..."
 };
 
+plugin.dependencies = [{
+	"loaded": function() { Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile"); },
+	"url": "{sdk}/streamserver.pack.js"
+}];
+
 plugin.events = {
 	"Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike": function(topic, args) {
 		this._sendActivity("Unlike", this.component, args.actor);

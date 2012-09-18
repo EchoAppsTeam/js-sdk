@@ -66,6 +66,11 @@ plugin.labels = {
 	"unflagProcessing": "Unflagging..."
 };
 
+plugin.dependencies = [{
+	"loaded": function() { Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile"); },
+	"url": "{sdk}/streamserver.pack.js"
+}];
+
 plugin.template = '<div class="{plugin.class:flaggedBy}"></div>';
 
 /**

@@ -60,6 +60,11 @@ plugin.labels = {
 	"replyControl": "Reply"
 };
 
+plugin.dependencies = [{
+	"loaded": function() { Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit"); },
+	"url": "{sdk}/streamserver.pack.js"
+}];
+
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand": function(topic, args) {
 		var item = this.component;
