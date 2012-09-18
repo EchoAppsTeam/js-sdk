@@ -17,10 +17,8 @@ Echo.Tests.runTests = function() {
 	});
 
 	// hack for tests of loader
-	var quintOnError = window.onerror;
 	window.onerror = function( message, file, line ) {
-		if (!/non-existing/.test(file))
-			quintOnError(message, file, line);
+		return /non-existing/.test(file);
 	};
 
 	$.each(this.Unit, function(name, suiteClass) {
@@ -625,7 +623,7 @@ Echo.Utils.addCSS(
 	'.echo-tests-stats p .red { color: red; }' +
 	'.echo-tests-stats .echo-clickable { text-decoration: underline; cursor: pointer; }' +
 	'.echo-tests-stats-info { display: none; background: #b9d9dd; margin-top: 10px; padding: 5px 10px; }' +
-	'.echo-event-data { display: none; }' +
+	'.echo-event-data { color: black; display: none; }' +
 	'.echo-event-data pre { border: 1px dashed #999999;	padding: 10px; background: #B0D0D0; }' +
 	'.echo-tests-stats-info span { color: #555555; }' +
 	'.echo-tests-coverage, .echo-tests-events { float: left; width: 400px; }' +

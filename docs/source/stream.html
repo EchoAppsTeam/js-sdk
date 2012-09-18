@@ -527,7 +527,7 @@ stream.methods._requestInitialItems = function() {
 			&quot;endpoint&quot;: &quot;search&quot;,
 			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
 			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
-			&quot;recurring&quot;: true,
+			&quot;recurring&quot;: this.config.get(&quot;liveUpdates&quot;),
 			&quot;data&quot;: {
 				&quot;q&quot;: this.config.get(&quot;query&quot;),
 				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)

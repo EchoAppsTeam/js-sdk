@@ -19,7 +19,7 @@ suite.prototype.info = {
 
 suite.prototype.params = {
 	"appkey": "test.aboutecho.com",
-	"q": "childrenof:http://example.com/sdk/test-target/" + Math.random() + " state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved"
+	"q": "childrenof:http://example.com/sdk/test-target/" + Echo.Utils.getUniqueString() + " children:1"
 };
 
 suite.prototype.cases = {};
@@ -87,9 +87,9 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 		"onData": function(response) {
 			if (response && response.count) {
 				QUnit.equal(1, response.count, "Checking if live updates mecahnism by count works correctly after posting");
-				cuReq.abort();
 				callback();
 			}
+			cuReq.abort();
 		},
 		"data": $.extend({}, params)
 	});
@@ -99,9 +99,9 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 		"onData": function(response) {
 			if (response && response.entries && response.entries.length) {
 				QUnit.equal(response.entries[0].object.content, self.items.post.object.content, 
-					"checking if the live update mechanism by search works correctly after posting");
-				luReq.abort();
+					"Checking if the live update mechanism by search works correctly after posting");
 				cuReq.send({force: true});
+				luReq.abort();
 			}
 		},
 		"data": $.extend({}, params)

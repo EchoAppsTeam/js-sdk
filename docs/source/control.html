@@ -311,9 +311,12 @@ Echo.Control.prototype.set = function(key, value) {
  *
  * @param {String} key
  * Specifies the key which should be removed from the object.
+ *
+ * @return {Boolean}
+ * The boolean value which indicates that value by key exists and removed.
  */
 Echo.Control.prototype.remove = function(key) {
-	this.set(key, undefined);
+	return Echo.Utils.removeNestedValue(this, key);
 };
 
 <span id='Echo-Control-method-render'>/**

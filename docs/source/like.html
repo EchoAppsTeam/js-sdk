@@ -138,8 +138,9 @@ plugin.methods._sendActivity = function(name, item, actor) {
 		&quot;verbs&quot;: [&quot;http://activitystrea.ms/schema/1.0/&quot; + name.toLowerCase()],
 		&quot;targets&quot;: [{&quot;id&quot;: item.get(&quot;data.object.id&quot;)}]
 	};
-	if (actor &amp;&amp; actor.id)
+	if (actor &amp;&amp; actor.id) {
 		activity.author = actor.id;
+	}
 
 	this._sendRequest({
 		&quot;content&quot;: activity,

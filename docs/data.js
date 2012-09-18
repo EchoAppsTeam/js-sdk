@@ -1266,6 +1266,16 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "removeNestedValue",
+        "fullName": "Echo.Utils.removeNestedValue",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-removeNestedValue",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
         "name": "sequentialCall",
         "fullName": "Echo.Utils.sequentialCall",
         "icon": "icon-method",

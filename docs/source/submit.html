@@ -612,8 +612,22 @@ submit.methods._showError = function(data) {
 	var message = isNetworkTimeout
 		? this.labels.get(&quot;postingTimeout&quot;)
 		: this.labels.get(&quot;postingFailed&quot;, {&quot;error&quot;: data.errorMessage || data.errorCode});
-	var dimensions = self.config.get(&quot;errorPopup&quot;);
-	var template = self.substitute({
+	var popup = this._assembleErrorPopup(message);
+	$.fancybox({
+		&quot;content&quot;: popup.content,
+		&quot;height&quot;: popup.height,
+		&quot;width&quot;: popup.width,
+		&quot;padding&quot;: 15,
+		&quot;orig&quot;: this.view.get(&quot;text&quot;),
+		&quot;autoDimensions&quot;: false,
+		&quot;transitionIn&quot;: &quot;elastic&quot;,
+		&quot;transitionOut&quot;: &quot;elastic&quot;
+	});
+};
+
+submit.methods._assembleErrorPopup = function(message) {
+	var dimensions = this.config.get(&quot;errorPopup&quot;);
+	var template = this.substitute({
 		&quot;template&quot;: '&lt;div class=&quot;{data:css}&quot;&gt;{data:message}&lt;/div&gt;',
 		&quot;data&quot;: {
 			&quot;message&quot;: message,
@@ -626,21 +640,15 @@ submit.methods._showError = function(data) {
 		&quot;width&quot;: dimensions.width,
 		&quot;visibility&quot;: &quot;hidden&quot;
 	}).appendTo(this.view.get(&quot;container&quot;));
-	$.fancybox({
+	var popup = {
 		&quot;content&quot;: $(template).css({
 			&quot;height&quot;: messageBox.height()
 		}),
 		&quot;height&quot;: messageBox.height(),
-		&quot;width&quot;: messageBox.width(),
-		&quot;padding&quot;: 15,
-		&quot;orig&quot;: this.view.get(&quot;text&quot;),
-		&quot;autoDimensions&quot;: false,
-		&quot;transitionIn&quot;: &quot;elastic&quot;,
-		&quot;transitionOut&quot;: &quot;elastic&quot;,
-		&quot;onStart&quot;: function() {
-			messageBox.remove();
-		}
-	});
+		&quot;width&quot;: messageBox.width()
+	};
+	messageBox.remove();
+	return popup;
 };
 
 submit.methods._isPostValid = function() {
