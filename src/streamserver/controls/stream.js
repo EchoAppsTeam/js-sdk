@@ -268,7 +268,7 @@ stream.renderers.body = function(element) {
 		this._appendRootItems(request.data, element);
 	} else {
 		this.showMessage({
-			"type": "empty",
+			"type": "info",
 			"message": this.labels.get("emptyStream"),
 			"target": element
 		});
@@ -1065,7 +1065,7 @@ stream.methods._spotUpdates.animate.remove = function(item, config) {
 		});
 		if (!itemsCount) {
 			self.showMessage({
-				"type": "empty",
+				"type": "info",
 				"message": self.labels.get("emptyStream"),
 				"target": self.view.get("body")
 			});
