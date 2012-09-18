@@ -285,8 +285,26 @@ module.exports = function(grunt) {
 
 	grunt.registerTask("docs", function() {
 		var done = this.async();
-		grunt.helper("exec", "rm -rf " + grunt.config("dirs.dest") + "/docs", function() {
-			grunt.helper("exec", "jsduck --config=tools/jsduck/config.json", done);
+		grunt.helper("make_docs", done);
+	});
+
+	grunt.registerTask("gh-pages", function() {
+		var done = this.async();
+		grunt.helper("make_docs", function() {
+			var updateCmd = [
+				"git checkout gh-pages",
+				"git pull",
+				"git checkout master -- tests demo",
+				"cp -r web/docs/* docs",
+				"git add docs/ tests/ demo/",
+				"git commit -m \"up\"",
+				"git push origin gh-pages",
+				"git checkout master"
+			].join(" && ");
+			grunt.helper("exec", updateCmd, function() {
+				grunt.log.ok();
+				done();
+			});
 		});
 	});
 
@@ -340,6 +358,12 @@ module.exports = function(grunt) {
 				grunt.log.writeln(stderr);
 			}
 			callback(stdout, stderr);
+		});
+	});
+
+	grunt.registerHelper("make_docs", function(callback) {
+		grunt.helper("exec", "mkdir -p web && rm -rf " + grunt.config("dirs.dest") + "/docs", function() {
+			grunt.helper("exec", "jsduck --config=tools/jsduck/config.json", callback);
 		});
 	});
 };
