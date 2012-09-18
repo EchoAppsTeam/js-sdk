@@ -617,7 +617,7 @@ submit.methods._assembleErrorPopup = function(message) {
 			"css": this.cssPrefix + "error"
 		}
 	});
-	var messageBox = $(template).css({
+	var box = $(template).css({
 		"min-height": dimensions.minHeight,
 		"max-height": dimensions.maxHeight,
 		"width": dimensions.width,
@@ -625,12 +625,12 @@ submit.methods._assembleErrorPopup = function(message) {
 	}).appendTo(this.view.get("container"));
 	var popup = {
 		"content": $(template).css({
-			"height": messageBox.height()
+			"height": box.height()
 		}),
-		"height": messageBox.height(),
-		"width": messageBox.width()
+		"height": box.height(),
+		"width": box.width()
 	};
-	messageBox.remove();
+	box.remove();
 	return popup;
 };
 
