@@ -106,7 +106,7 @@ plugin.events = {
 					function() { name.element.removeClass(activeClass); }
 				);
 		});
-		window.twttr && window.twttr.widgets.load();
+		window.twttr && window.twttr.widgets && window.twttr.widgets.load();
 	}
 };
 
