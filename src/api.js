@@ -55,6 +55,8 @@ Echo.API.Transports.AJAX.prototype._getScheme = function() {
 
 Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 	var self = this;
+	var domain = utils.parseURL(document.location.href).domain;
+	var targetDomain = utils.parseURL(self.config.get("uri")).domain;
 	var ajaxSettings = {
 		"url": this._prepareURL(),
 		"type": this.config.get("method"),
@@ -63,41 +65,33 @@ Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 			self.config.get("onError")(errorResponse, requestParams);
 		},
 		"success": this.config.get("onData"),
+		"crossDomain": true,
 		"beforeSend": this.config.get("onOpen"),
 		"dataType": "json"
 	};
-	if ("XDomainRequest" in window && window.XDomainRequest != null) {
-		var xhrOrigin = $.ajaxSettings.xhr;
-		var domain = utils.parseURL(document.location.href).domain;
-		$.support.cors = true;
-		ajaxSettings.xhr = function() {
-			var targetDomain = utils.parseURL(self.config.get("uri")).domain;
-			if (targetDomain === "" || targetDomain === domain) {
-				return xhrOrigin.call($.ajaxSettings);
+	if ("XDomainRequest" in window && window.XDomainRequest !== null && (!targetDomain || targetDomain !== domain)) {
+		var xdr = new XDomainRequest();
+		var parseResponseText = function(responseText) {
+			var data;
+			try {
+				data = $.parseJSON(xdr.responseText);
+			} catch(e) {
+				data = {
+					"type": "error",
+					"errorCode": "parse_error",
+					"message": "Parse JSON error"
+				};
 			}
-			var xdr = new XDomainRequest();
-			if (!xdr.setRequestHeader) {
-				xdr.setRequestHeader = $.noop;
-			}
-			if (!xdr.getAllResponseHeaders) {
-				xdr.getAllResponseHeaders = $.noop;
-			}
-			xdr.onload = function () {
-				if ($.isFunction(xdr.onreadystatechange)) {
-					xdr.readyState = 4;
-					xdr.status = 200;
-					xdr.onreadystatechange.call(xdr, null, false);
-				}
-			};
-			xdr.onerror = xdr.ontimeout = function () {
-				if ($.isFunction(xdr.onreadystatechange)) {
-					xdr.readyState = 4;
-					xdr.status = 500;
-					xdr.onreadystatechange.call(xdr, null, false);
-				}
-			};
-			return xdr;
+			return data;
 		};
+		xdr.onload = function() {
+			self.config.get("onData")(parseResponseText(xdr.responseText));
+		};
+		xdr.onerror = function() {
+			var errorResponse = self._wrapErrorResponse(parseResponseText(xdr.responseText));
+			self.config.get("onError")(errorResponse);
+		};
+		ajaxSettings.xdr = xdr;
 	}
 	return ajaxSettings;
 };
@@ -115,19 +109,40 @@ Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) 
 };
 
 Echo.API.Transports.AJAX.prototype.send = function(data) {
+	data = data || {};
+	var method = this.config.get("method").toLowerCase();
 	this.transportObject.data = $.extend({}, this.config.get("data"), data || {});
-	this.jxhrTransportObject = $.ajax(this.transportObject);
+	this._transportObject = this.transportObject.xdr
+		? this.transportObject.xdr
+		: $.ajax(this.transportObject);
+	if ("XDomainRequest" in window
+		&& window.XDomainRequest !== null
+		&& this._transportObject instanceof XDomainRequest) {
+		this.config.get("onOpen")();
+		// TODO: need investigate XDomainRequest cache
+		// avoid recieved data caching
+		$.extend(this.transportObject.data, {
+			"_echo": utils.getUniqueString()
+		});
+		if (method === "get") {
+			this._transportObject.open(method, this._prepareURL() + "?" + $.param(this.transportObject.data));
+			this._transportObject.send(null);
+		} else {
+			this._transportObject.open(method, this._prepareURL());
+			this._transportObject.send($.param(this.transportObject.data));
+		}
+	}
 };
 
 Echo.API.Transports.AJAX.prototype.abort = function() {
-	if (this.jxhrTransportObject) {
-		this.jxhrTransportObject.abort();
+	if (this._transportObject) {
+		this._transportObject.abort();
 	}
 	this.config.get("onClose")();
 };
 
 Echo.API.Transports.AJAX.available = function() {
-	return !$.browser.msie;
+	return !($.browser.msie && $.browser.version < 8);
 };
 
 /**
@@ -142,7 +157,8 @@ utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transports.JSONP);
 
 Echo.API.Transports.JSONP.prototype.send = function(data) {
 	if (this.config.get("method").toLowerCase() === "get") {
-		return Echo.API.Transports.JSONP.parent.send.apply(this, arguments);
+		this.transportObject.data = $.extend({}, this.config.get("data"), data);
+		return $.ajax(this.transportObject);
 	}
 	this._pushPostParameters($.extend({}, this.config.get("data"), data));
 	this.transportObject.submit();
@@ -326,7 +342,7 @@ Echo.API.Request.prototype.request = function(params) {
 	if (this.transport) {
 		this.transport.send(params);
 		if (timeout && this.config.get("onError")) {
-			this._timeoutId = setTimeout(function() {
+			var timeout = this._timeoutId = setTimeout(function() {
 				self.config.get("onError")({
 					"result": "error",
 					"errorCode": "network_timeout"

@@ -22,7 +22,6 @@ suite.prototype.info = {
 		"loadImage",
 		"log",
 		"objectToJSON",
-		"objectToQuery",
 		"parallelCall",
 		"parseURL",
 		"removeNestedValue",
@@ -149,20 +148,6 @@ suite.prototype.tests.TestDataMethods = {
 		};
 		QUnit.equal(Echo.Utils.objectToJSON(complex_object), '{"k1":["v1.1",null,false],"k2":{"k2.1":21,"k2.2":22}}',
 			"Checking objectToJSON() method for complex object");
-
-		QUnit.equal(Echo.Utils.objectToQuery(), "",
-			"Calling objectToQuery() function with no arguments");
-		QUnit.equal(Echo.Utils.objectToQuery({"k1": undefined}),
-			"k1=undefined",
-			"Checking simple object transformation with the \"undefined\" value to the query string via objectToQuery() function");
-		QUnit.equal(Echo.Utils.objectToQuery({"k1": "some string with spaces"}),
-			"k1=%22some%20string%20with%20spaces%22",
-			"Checking simple object transformation with the string value to the query string via objectToQuery() function");
-		QUnit.equal(Echo.Utils.objectToQuery({"k1": true}), "k1=true",
-			"Checking simple object transformation with the bool value to the query string via objectToQuery() function");
-		QUnit.equal(Echo.Utils.objectToQuery(complex_object),
-			"k1=%5B%22v1.1%22%2Cnull%2Cfalse%5D&k2=%7B%22k2.1%22%3A21%2C%22k2.2%22%3A22%7D",
-			"Checking complex object transformation to the query string via  objectToQuery() function");
 
 		QUnit.deepEqual(Echo.Utils.parseURL("http://domain.com/some/path/1?query_string#hash_value"), {
 			"scheme": "http",

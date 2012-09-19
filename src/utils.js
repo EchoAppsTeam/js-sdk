@@ -346,9 +346,6 @@ Echo.Utils.htmlize = function(text) {
  * String containing JSON.
  */
 Echo.Utils.objectToJSON = function(obj) {
-	if (JSON && JSON.stringify) {
-		return JSON.stringify(obj);
-	}
 	var encodeJSONLiteral = function(string) {
 		var replacements = {
 			'\b': '\\b',
@@ -656,25 +653,6 @@ Echo.Utils.inherit = function(parent, child) {
 	child.prototype.constructor = child;
 	child.parent = parent.prototype;
 	return child;
-};
-
-/**
- * @static
- * Method which serializes a given object to the GET string.
- *
- * This function returns the GET string which can be used for further URL
- * constructions. The values of the corresponding keys are URL encoded.
- *
- * @param {Object} data
- * Object which should be transformed into the GET string.
- *
- * @return {String}
- * GET string.
- */
-Echo.Utils.objectToQuery = function(data) {
-	return $.map(data || {}, function(value, key) {
-		return key + "=" + encodeURIComponent(Echo.Utils.objectToJSON(value));
-	}).join("&");
 };
 
 /**
