@@ -315,7 +315,7 @@ auth.methods._appendSessionID = function(url) {
 };
 
 auth.methods._getDefaultAvatar = function() {
-	return this.config.get("defaultAvatar") && 0
+	return this.config.get("defaultAvatar")
 		? Echo.Loader.getURL(this.config.get("defaultAvatar"))
 		: this.user.config.get("defaultAvatar");
 };
