@@ -81,7 +81,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"eventsMechanism",
 			"labelsOverriding",
 			"refresh",
-			"destroy"
+			"destroy",
+			"destroyBroadcasting"
 		], "cases");
 
 	}
@@ -638,6 +639,43 @@ suite.prototype.cases.destroy = function(callback) {
 		}],
 		"ready": check
 	});
+};
+
+suite.prototype.cases.destroyBroadcasting = function(callback) {
+	var controls = [];
+	var destroyedControls = [];
+	var check = function() {
+		controls[2].destroy();
+		QUnit.deepEqual(destroyedControls, [controls[2], controls[4]],
+			"Checking that Echo.Control.onDestroy event is published only for current control and its children");
+		$.map(controls, function(control) {
+			control.destroy();
+		})
+		callback && callback();
+	};
+	// define controls tree through declaration of links to parent controls
+	var parents = [undefined, 0, 0, 1, 2];
+	var i = 0, count = parents.length;
+	var initControls = function() {
+		suite.initTestControl({
+			"ready": function() {
+				var self = this;
+				this.set("_destroyHandler", function() {
+					destroyedControls.push(self);
+				});
+				if (i++ < count) {
+					controls.push(this);
+					initControls();
+					return;
+				}
+				check();
+			},
+			"parent": typeof parents[i] !== "undefined"
+					? controls[parents[i]].config.getAsHash()
+					: undefined
+		});
+	};
+	initControls();
 };
 
 // data required to perform tests
