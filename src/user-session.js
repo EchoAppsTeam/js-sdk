@@ -428,8 +428,9 @@ Echo.UserSession._attrLocation = function(key) {
 
 Echo.UserSession._extract = function(field, container, filter) {
 	var user = this;
-	user.identity[field] = user.identity[field] ||
-		Echo.Utils.foldl(undefined, user.identity[container] || [], filter);
+	user.identity[field] = typeof user.identity[field] !== "undefined"
+		? user.identity[field]
+		: Echo.Utils.foldl(undefined, user.identity[container] || [], filter);
 	return user.identity[field];
 };
 
