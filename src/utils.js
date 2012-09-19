@@ -177,8 +177,9 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * @param {Object} obj
  * The object from which the value is taken.
  *
- * @param {String} key
- * Defines the key for value extraction.
+ * @param {Mixed} key
+ * The key for value extraction. Possible types are String or Array. If its Array, parameter
+ * should contains list of keys if its complex. Ex.: "key2.key2-2" => ["key2", "key2-2"].
  *
  * @param {Object} [defauts]
  * Default value if no corresponding key was found in the object.
@@ -244,26 +245,22 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
  * @param {Object} obj
  * The object from which the value is taken.
  *
- * @param {String} key
- * The key for value removing.
+ * @param {Mixed} key
+ * The key for value removing. Possible types are String or Array. If its Array, parameter
+ * should contains list of keys if its complex. Ex.: "key2.key2-2" => ["key2", "key2-2"].
  *
  * @return {Boolean}
  * The boolean value which indicates that value by key exists and removed.
  */
 Echo.Utils.removeNestedValue = function(obj, key) {
 	if (!key) return false;
-	var _key;
-	var keys = key.split(/\./);
-	do {
-		_key = keys.shift();
-		if (typeof obj[_key] === "undefined") {
-			return false;
-		}
-		if (!keys.length) {
-			return delete obj[_key];
-		}
-		obj = obj[_key];
-	} while (keys.length);
+	var keys = $.type(key) === "array" ? key : key.split(/\./);
+	var _key = keys.pop();
+	var target = Echo.Utils.getNestedValue(obj, keys);
+	if ($.type(target[_key]) === "undefined") {
+		return false;
+	}
+	return delete target[_key];
 };
 
 /**
