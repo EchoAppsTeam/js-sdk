@@ -20,10 +20,10 @@ if (Echo.Utils.isComponentDefined("Echo.UserSession")) return;
  * @param {Object} config
  * Class configuration, which is an object with the following fields:
  *
- * @param {Object} config.appkey
+ * @param {String} config.appkey
  * Echo application key to make user initialization request.
  *
- * @param {Object} [config.defaultAvatar]
+ * @param {String} [config.defaultAvatar]
  * Default avatar URL which will be used for the user in case there is
  * no avatar information defined in the user profile. Also used for
  * anonymous users.
