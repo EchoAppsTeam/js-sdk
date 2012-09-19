@@ -343,6 +343,9 @@ Echo.Utils.htmlize = function(text) {
  * String containing JSON.
  */
 Echo.Utils.objectToJSON = function(obj) {
+	if (JSON && JSON.stringify) {
+		return JSON.stringify(obj);
+	}
 	var encodeJSONLiteral = function(string) {
 		var replacements = {
 			'\b': '\\b',

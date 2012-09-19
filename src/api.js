@@ -56,7 +56,7 @@ Echo.API.Transports.AJAX.prototype._getScheme = function() {
 Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 	var self = this;
 	var domain = utils.parseURL(document.location.href).domain;
-	var targetDomain = utils.parseURL(self.config.get("uri")).domain;
+	var targetDomain = utils.parseURL(this.config.get("uri")).domain;
 	var ajaxSettings = {
 		"url": this._prepareURL(),
 		"type": this.config.get("method"),
@@ -74,12 +74,12 @@ Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 		var parseResponseText = function(responseText) {
 			var data;
 			try {
-				data = $.parseJSON(xdr.responseText);
+				data = $.parseJSON(responseText);
 			} catch(e) {
 				data = {
-					"type": "error",
+					"result": "error",
 					"errorCode": "parse_error",
-					"message": "Parse JSON error"
+					"errorMessage": "Parse JSON error"
 				};
 			}
 			return data;
@@ -342,7 +342,7 @@ Echo.API.Request.prototype.request = function(params) {
 	if (this.transport) {
 		this.transport.send(params);
 		if (timeout && this.config.get("onError")) {
-			var timeout = this._timeoutId = setTimeout(function() {
+			this._timeoutId = setTimeout(function() {
 				self.config.get("onError")({
 					"result": "error",
 					"errorCode": "network_timeout"
