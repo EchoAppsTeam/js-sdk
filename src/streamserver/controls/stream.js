@@ -1578,7 +1578,14 @@ item.config = {
 	"viaLabel": {
 		"icon": false,
 		"text": false
-	}
+	},
+	/**
+	 * @cfg {String} [defaultAvatar]
+	 * Default avatar URL which will be used for the user in
+	 * case there is no avatar information defined in the user
+	 * profile. Also used for anonymous users.
+	 */
+	"defaultAvatar": undefined
 };
 
 item.config.normalizer = {
@@ -1903,7 +1910,7 @@ item.renderers.avatar = function(element) {
 	var size = this.depth ? 24 : 48;
 	var avatar = Echo.Utils.loadImage(
 		this.get("data.actor.avatar"),
-		this.user.config.get("defaultAvatar")
+		this._getDefaultAvatar()
 	);
 	avatar.css({"width": size, "height": size});
 	return element.empty().append(avatar);
@@ -2636,6 +2643,12 @@ item.methods._sortButtons = function() {
 	} else if (!requiredOrder.length) {
 		this.buttonsOrder = [];
 	}
+};
+
+item.methods._getDefaultAvatar = function() {
+	return this.config.get("defaultAvatar")
+		? Echo.Loader.getURL(this.config.get("defaultAvatar"))
+		: this.user.config.get("defaultAvatar");
 };
 
 (function() {

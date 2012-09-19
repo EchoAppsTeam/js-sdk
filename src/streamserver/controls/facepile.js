@@ -457,7 +457,14 @@ item.config = {
 	 */
 	"infoMessages": {
 		"enabled": false
-	}
+	},
+	/**
+	 * @cfg {String} [defaultAvatar]
+	 * Default avatar URL which will be used for the user in
+	 * case there is no avatar information defined in the user
+	 * profile. Also used for anonymous users.
+	 */
+	"defaultAvatar": undefined
 };
 
 item.labels = {
@@ -481,7 +488,7 @@ item.renderers.avatar = function(element) {
 	if (this.config.get("avatar")) {
 		var img = Echo.Utils.loadImage(
 			this.get("data.avatar"),
-			this.user.config.get("defaultAvatar")
+			this._getDefaultAvatar()
 		);
 		element.empty().append(img);
 		if (!this.config.get("text")) {
@@ -511,6 +518,12 @@ item.renderers.title = function(element) {
 item.methods.isYou = function() {
 	var id = this.get("data.id");
 	return id && id === this.user.get("identityUrl");
+};
+
+item.methods._getDefaultAvatar = function() {
+	return this.config.get("defaultAvatar")
+		? Echo.Loader.getURL(this.config.get("defaultAvatar"))
+		: this.user.config.get("defaultAvatar");
 };
 
 item.css =
