@@ -1,0 +1,32 @@
+[
+	{
+		"title": "JS SDK Guides",
+		"items": [
+			{
+				"name": "overview",
+				"title": "Basic overview",
+				"description": "Some description."
+			},
+			{
+				"name": "terminology",
+				"title": "Terminology",
+				"description": "Some description."
+			},
+			{
+				"name": "control",
+				"title": "How to develop a control",
+				"description": "Some description."
+			},
+			{
+				"name": "plugin",
+				"title": "How to develop a plugin",
+				"description": "Some description."
+			},
+			{
+				"name": "app",
+				"title": "How to develop an app",
+				"description": "Some description."
+			}
+		]
+	}
+]

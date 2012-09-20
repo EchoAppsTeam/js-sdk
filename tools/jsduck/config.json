@@ -3,6 +3,7 @@
 	"--": ["../../src"],
 	"--output": "../../web/docs",
 	"--meta-tags": "meta-tags.rb",
+	"--guides": "guides.json",
 	"--ignore-global": true,
 	"--pretty-json": true,
 	"--warnings": ["-no_doc", "-global"],
