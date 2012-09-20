@@ -7,6 +7,7 @@ suite.prototype.info = {
 	"functions": [
 		"create",
 		"initComponent",
+		"getComponent",
 		"destroyComponent",
 		"destroyComponents"
 	]
@@ -84,6 +85,8 @@ suite.prototype.cases.initComponent = function(callback) {
 				}
 			}
 		});
+		QUnit.ok(this.getComponent("TestComponent1") && this.getComponent("TestComponent1") instanceof Echo.Control, "Check getComponent() returns a ref to the initialized component");
+		QUnit.strictEqual(undefined, this.getComponent("TestComponent1000"), "Check getComponent() returns \"undefined\" value for the uninitialized component");
 		this.destroy();
 	};
 	suite.initProduct({

@@ -120,9 +120,18 @@ Echo.Product.prototype.initComponent = function(componentSpec) {
 		)
 	);
 	var Component = Echo.Utils.getComponent(componentSpec.name);
-	this.components = this.components || {};
-	this.components[componentSpec.id] = new Component(componentSpec.config);
-	return this.components[componentSpec.id];
+	this.set("components." + componentSpec.id, new Component(componentSpec.config));
+	return this.getComponent(componentSpec.id);
+};
+
+/**
+ * Method to retrieve initialized component by id.
+ *
+ * @param {String} id
+ * Id of the component to be retrieved.
+ */
+Echo.Product.prototype.getComponent = function(id) {
+	return this.get("components." + id);
 };
 
 /**
@@ -134,10 +143,10 @@ Echo.Product.prototype.initComponent = function(componentSpec) {
  * Id of the component to be removed.
  */
 Echo.Product.prototype.destroyComponent = function(id) {
-	var component = this.get("components." + id);
+	var component = this.getComponent(id);
 	if (component) {
 		component.destroy();
-		delete this.components[id];
+		this.remove("components." + id);
 	}
 };
 
