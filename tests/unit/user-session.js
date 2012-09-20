@@ -118,7 +118,7 @@ suite.prototype.checkBasicOperations = function(user) {
 		"Checking basic get/set operations with simple values (user avatar: string)");
 
 	user.set("avatar", false);
-	QUnit.equal(user.get("avatar"), false,
+	QUnit.strictEqual(user.get("avatar"), false,
 		"Checking basic get/set operations with casting to false values");
 
 	user.set("some_attr", undefined);
