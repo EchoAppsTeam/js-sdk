@@ -3,75 +3,75 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.Product")) return;
+if (Echo.Utils.isComponentDefined("Echo.App")) return;
 
 // static interface
 
 /**
- * @class Echo.Product
- * Foundation class implementing core logic to create products.
+ * @class Echo.App
+ * Foundation class implementing core logic to create applications.
  *
  * @extends Echo.Control
  */
-Echo.Product = Echo.Utils.inherit(Echo.Control);
+Echo.App = Echo.Utils.inherit(Echo.Control);
 
 /**
  * @static
  * @method
- * Function which creates a product object using it manifest declaration.
+ * Function which creates a application object using it manifest declaration.
  *
  * @param {Object} manifest
- * Specifies the product interface in the predefined way.
+ * Specifies the application interface in the predefined way.
  *
  * @param {String} manifest.name
- * Specifies the product name including namespace
+ * Specifies the application name including namespace
  *
  * @param {Object} [manifest.vars]
- * Specifies internal product variables.
+ * Specifies internal application variables.
  *
  * @param {Object} [manifest.config]
  * Specifies the configuration data with the ability to define default values.
  *
  * @param {Object} [manifest.labels]
- * Specifies the list of language labels used in the particular product UI.
+ * Specifies the list of language labels used in the particular application UI.
  *
  * @param {Object} [manifest.events]
- * Specifies the list of external events used by product.
+ * Specifies the list of external events used by application.
  *
  * @param {Object} [manifest.methods]
- * Specifies the list of product methods.
+ * Specifies the list of application methods.
  *
  * @param {Object} [manifest.renderers]
- * Specifies the list of product renderers.
+ * Specifies the list of application renderers.
  *
  * @param {Object} [manifest.templates]
- * Specifies the list of product templates.
+ * Specifies the list of application templates.
  *
  * @param {Function} [manifest.init]
- * Function called during product initialization.
+ * Function called during application initialization.
  *
  * @param {String} [manifest.css]
- * Specifies the CSS rules for the product.
+ * Specifies the CSS rules for the application.
  *
  * @return {Object}
- * Reference to the generated product class.
+ * Reference to the generated application class.
  */
-Echo.Product.create = Echo.Control.create;
+Echo.App.create = Echo.Control.create;
 
 /**
  * @static
  * @method
- * Method returning common manifest structure for a product.
+ * Method returning common manifest structure for a application.
  *
  * @param {String} name
- * Product name.
+ * App name.
  *
  * @return {Object}
- * Basic product manifest declaration.
+ * Basic application manifest declaration.
  */
-Echo.Product.manifest = function(name) {
-	var _manifest = Echo.Product.parent.constructor.manifest.apply(this, arguments);
-	_manifest.inherits = _manifest.inherits || Echo.Product;
+Echo.App.manifest = function(name) {
+	var _manifest = Echo.App.parent.constructor.manifest.apply(this, arguments);
+	_manifest.inherits = _manifest.inherits || Echo.App;
 	return _manifest;
 };
 
@@ -97,7 +97,7 @@ Echo.Product.manifest = function(name) {
  * @param {Object} [componentSpec.config]
  * Configuration object for the nested component.
  */
-Echo.Product.prototype.initComponent = function(componentSpec) {
+Echo.App.prototype.initComponent = function(componentSpec) {
 	this.destroyComponent(componentSpec.id);
 	componentSpec.config = componentSpec.config || {};
 	if (this.user) {
@@ -130,7 +130,7 @@ Echo.Product.prototype.initComponent = function(componentSpec) {
  * @param {String} id
  * Id of the component to be retrieved.
  */
-Echo.Product.prototype.getComponent = function(id) {
+Echo.App.prototype.getComponent = function(id) {
 	return this.get("components." + id);
 };
 
@@ -142,7 +142,7 @@ Echo.Product.prototype.getComponent = function(id) {
  * @param {String} id
  * Id of the component to be removed.
  */
-Echo.Product.prototype.destroyComponent = function(id) {
+Echo.App.prototype.destroyComponent = function(id) {
 	var component = this.getComponent(id);
 	if (component) {
 		component.destroy();
@@ -160,7 +160,7 @@ Echo.Product.prototype.destroyComponent = function(id) {
  * @param {Array} [exceptions]
  * List of nested component to be kept.
  */
-Echo.Product.prototype.destroyComponents = function(exceptions) {
+Echo.App.prototype.destroyComponents = function(exceptions) {
 	var self = this;
 	exceptions = exceptions || [];
 	var inExceptionList = function(id) {
@@ -182,7 +182,7 @@ Echo.Product.prototype.destroyComponents = function(exceptions) {
 
 // private interface
 
-Echo.Product.prototype._mergeSpecsByName = function(specs) {
+Echo.App.prototype._mergeSpecsByName = function(specs) {
 	var self = this;
 	var getSpecIndex = function(spec, specs) {
 		var idx = -1;
@@ -216,7 +216,7 @@ Echo.Product.prototype._mergeSpecsByName = function(specs) {
 	});
 };
 
-Echo.Product.prototype._normalizeComponentConfig = function(config) {
+Echo.App.prototype._normalizeComponentConfig = function(config) {
 	var self = this;
 	Echo.Utils.foldl(config, ["appkey", "apiBaseURL", "submissionProxyURL"], function(key, acc) {
 		acc[key] = acc[key] || self.config.get(key);

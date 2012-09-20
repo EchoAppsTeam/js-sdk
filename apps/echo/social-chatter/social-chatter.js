@@ -126,15 +126,15 @@ Echo.SocialChatter.Event.prototype.getStatus = function() {
 
 (function() {
 
-if (Echo.Utils.isComponentDefined("Echo.Products.SocialChatter")) return;
+if (Echo.Utils.isComponentDefined("Echo.Apps.SocialChatter")) return;
 
-var SocialChatter = Echo.Product.manifest("Echo.Products.SocialChatter", ["Main", "PublicEvent", "GreenRoom", "EventsList"]);
+var SocialChatter = Echo.App.manifest("Echo.Apps.SocialChatter", ["Main", "PublicEvent", "GreenRoom", "EventsList"]);
 
 SocialChatter.dependencies = [
-	{"url": "{products}/echo/social-chatter/third-party/bootstrap/css/bootstrap.min.css"},
-	{"url": "{products}/echo/social-chatter/third-party/bootstrap/css/bootstrap-responsive.min.css"},
-	{"url": "{products}/echo/social-chatter/third-party/bootstrap/css/datepicker.css"},
-	{"url": "{products}/echo/social-chatter/third-party/bootstrap/css/timepicker.css"},
+	{"url": "{apps}/echo/social-chatter/third-party/bootstrap/css/bootstrap.min.css"},
+	{"url": "{apps}/echo/social-chatter/third-party/bootstrap/css/bootstrap-responsive.min.css"},
+	{"url": "{apps}/echo/social-chatter/third-party/bootstrap/css/datepicker.css"},
+	{"url": "{apps}/echo/social-chatter/third-party/bootstrap/css/timepicker.css"},
 
 	{"loaded": function() {
 		return !!$.fn.echoButton;
@@ -154,23 +154,23 @@ SocialChatter.dependencies = [
 
 	{"loaded": function() {
 		return !!$.fn.datepicker;
-	}, "url": "{products}/echo/social-chatter/third-party/bootstrap/bootstrap-datepicker.js"},
+	}, "url": "{apps}/echo/social-chatter/third-party/bootstrap/bootstrap-datepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.timepicker;
-	}, "url": "{products}/echo/social-chatter/third-party/bootstrap/bootstrap-timepicker.js"},
+	}, "url": "{apps}/echo/social-chatter/third-party/bootstrap/bootstrap-timepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.tab;
-	}, "url": "{products}/echo/social-chatter/third-party/bootstrap/bootstrap-tab.js"},
+	}, "url": "{apps}/echo/social-chatter/third-party/bootstrap/bootstrap-tab.js"},
 
 	{"loaded": function() {
 		return !!$.fn.countdown;
-	}, "url": "{products}/echo/social-chatter/countdown/jquery.countdown.js"} ,
+	}, "url": "{apps}/echo/social-chatter/countdown/jquery.countdown.js"} ,
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined(Echo.Plugin.manifest("ItemConditionalCSSClasses", "Echo.StreamServer.Controls.Stream.Item"));
-	}, "url": "{products}/echo/social-chatter/plugins/item-conditional-css-classes.js"},
+	}, "url": "{apps}/echo/social-chatter/plugins/item-conditional-css-classes.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -179,7 +179,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Stream.Item"
 			}
 		});
-	}, "url": "{products}/echo/social-chatter/plugins/social-chatter-event.js"},
+	}, "url": "{apps}/echo/social-chatter/plugins/social-chatter-event.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -188,7 +188,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Submit"
 			}
 		});
-	}, "url": "{products}/echo/social-chatter/plugins/submit-countdown-event.js"},
+	}, "url": "{apps}/echo/social-chatter/plugins/submit-countdown-event.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -197,7 +197,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Submit"
 			}
 		});
-	}, "url": "{products}/echo/social-chatter/plugins/submit-textarea-auto-resize.js"},
+	}, "url": "{apps}/echo/social-chatter/plugins/submit-textarea-auto-resize.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -206,7 +206,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Stream.Item"
 			}
 		});
-	}, "url": "{products}/echo/social-chatter/plugins/user-metadata-manager.js"},
+	}, "url": "{apps}/echo/social-chatter/plugins/user-metadata-manager.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -215,7 +215,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Stream.Item"
 			}
 		});
-	}, "url": "{products}/echo/social-chatter/plugins/vip-replies.js"}
+	}, "url": "{apps}/echo/social-chatter/plugins/vip-replies.js"}
 ];
 
 SocialChatter.labels = {
@@ -244,7 +244,7 @@ SocialChatter.config = {
 	"liveUpdatesTimeout": 60, // request Events updates once per minute
 	"identityManager": undefined,
 	"views": {},
-	"defaultEventIcon": Echo.Loader.getURL("{products}/echo/social-chatter/images/vip.jpg"),
+	"defaultEventIcon": Echo.Loader.getURL("{apps}/echo/social-chatter/images/vip.jpg"),
 	"permissions": {
 		"access": "allowGuest"
 	}
@@ -918,7 +918,7 @@ Echo.Utils.foldl(
 	SocialChatter.events,
 	[
 		"Echo.StreamServer.Controls.Submit.Plugins.SubmitCountdownEvent.onEventEnd",
-		"Echo.Products.SocialChatter.Views.PublicEvent.onEventStart"
+		"Echo.Apps.SocialChatter.Views.PublicEvent.onEventStart"
 	],
 	function(topic, acc) {
 		acc[topic] = function() {
@@ -995,6 +995,6 @@ SocialChatter.css =
 	'.{class:tabs}.nav.nav-tabs .active a { background-color: #F5F4EE; outline: none; }'
 ;
 
-Echo.Product.create(SocialChatter);
+Echo.App.create(SocialChatter);
 
 })();

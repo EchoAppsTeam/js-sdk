@@ -63,17 +63,17 @@ suite.prototype.tests.urlConvertingTests = {
 				"{sdk}web/image.png",
 				"{sdk}"
 			],
-			"products": [
-				"{products}/web/image.png",
-				"{products}/web/image.png",
-				"{products}"
+			"apps": [
+				"{apps}/web/image.png",
+				"{apps}/web/image.png",
+				"{apps}"
 			]
 		};
 		$.each(urls, function(key, val) {
 			var checked = true;
 			$.map(val, function(url) {
 				if ((key === "absolute" || key === "relative") && url !== Echo.Loader.getURL(url) ||
-					key === "products" && url.replace("{products}", cdnBaseURL + "products") !== Echo.Loader.getURL(url) ||
+					key === "apps" && url.replace("{apps}", cdnBaseURL + "apps") !== Echo.Loader.getURL(url) ||
 					key === "sdk" && url.replace("{sdk}", cdnBaseURL + "sdk/v" + version) !== Echo.Loader.getURL(url)
 				) {
 					checked = false;

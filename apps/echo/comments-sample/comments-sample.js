@@ -3,9 +3,9 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.Products.CommentsSample")) return;
+if (Echo.Utils.isComponentDefined("Echo.Apps.CommentsSample")) return;
 
-var Comments = Echo.Product.manifest("Echo.Products.CommentsSample");
+var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
 
 Comments.dependencies = [
 	{"loaded": function() {
@@ -78,6 +78,6 @@ Comments.renderers.submit = function(element) {
 
 Comments.css = ".{class:container} > div { margin-bottom: 7px; }";
 
-Echo.Product.create(Comments);
+Echo.App.create(Comments);
 
 })(Echo.jQuery);

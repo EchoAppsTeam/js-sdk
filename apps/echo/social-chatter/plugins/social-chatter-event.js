@@ -3,7 +3,7 @@
 var plugin = Echo.Plugin.manifest("SocialChatterEvent", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.config = {
-	"defaultEventIcon": Echo.Loader.getURL("{products}/echo/social-chatter/images/vip.jpg"),
+	"defaultEventIcon": Echo.Loader.getURL("{apps}/echo/social-chatter/images/vip.jpg"),
 	"dateFormat": "yy-mm-dd",
 	"timeFormat": "hh:mm tt",
 	"ampm": true
@@ -288,9 +288,9 @@ plugin.css =
 	'.{plugin.class:eventBrief} { padding: 5px 0 5px 0px; }' +
 	'.{plugin.class:eventNameBrief} { font-size: 20px; font-weight: bold; }' +
 	'.{plugin.class:eventDescriptionBrief} { font-size: 14px; margin: 10px 0px; }' +
-	'.echo-products-socialchatter-eventslist .{class:avatar}, .echo-products-socialchatter-eventslist .{class:avatar} img { height: auto !important; }' +
-	'.echo-products-socialchatter-view-eventsStream .{plugin.class:modeSwitch}, .echo-products-socialchatter-eventslist .{class:plugin-Moderation-status} { display: none !important; }' +
-	'.echo-products-socialchatter-eventslist .{class:subcontainer} { margin-left: 10px; }' +
+	'.echo-apps-socialchatter-eventslist .{class:avatar}, .echo-apps-socialchatter-eventslist .{class:avatar} img { height: auto !important; }' +
+	'.echo-apps-socialchatter-view-eventsStream .{plugin.class:modeSwitch}, .echo-apps-socialchatter-eventslist .{class:plugin-Moderation-status} { display: none !important; }' +
+	'.echo-apps-socialchatter-eventslist .{class:subcontainer} { margin-left: 10px; }' +
 	'.echo-event-onair-label { color: green; font-weight: bold; }' +
 	'.{plugin.class:eventButton} div.echo-label { font-size: 12px; }';
 
@@ -353,7 +353,7 @@ plugin.templates.AdminNotice = '<div class="{plugin.class:eventSubmitNotice}"></
 
 plugin.templates.EventIcon =
 	'<div class="{plugin.class:eventIconContainer}">' +
-		'<img class="{plugin.class:eventIcon}" src="' + Echo.Loader.getURL("{products}/echo/social-chatter/images/vip.jpg") + '">' +
+		'<img class="{plugin.class:eventIcon}" src="' + Echo.Loader.getURL("{apps}/echo/social-chatter/images/vip.jpg") + '">' +
 		'<div class="{plugin.class:eventIconError}">{plugin.label:errorLoadingImage}</div>' +
 		'<div class="{plugin.class:changeEventIcon} echo-linkColor echo-clickable"></div>' +
 	'</div>';
@@ -615,7 +615,7 @@ $.map(plugin.fields, function(field) {
 							element.parent().addClass("echo-input-error");
 							self.view.get("eventIconError").show();
 							self.view.get("eventIcon")
-								.attr("src", Echo.Loader.getURL("{products}/echo/social-chatter/images/vip.jpg"));
+								.attr("src", Echo.Loader.getURL("{apps}/echo/social-chatter/images/vip.jpg"));
 						});
 				}
 			})

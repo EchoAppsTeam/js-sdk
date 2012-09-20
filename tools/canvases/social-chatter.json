@@ -7,8 +7,8 @@
     },
     "apps": [{
         "id": "my-social-chatter",
-        "script": "{products}/echo/social-chatter/social-chatter.js",
-        "component": "Echo.Products.SocialChatter",
+        "script": "{apps}/echo/social-chatter/social-chatter.js",
+        "component": "Echo.Apps.SocialChatter",
         "config": {
             "appkey": "test.aboutecho.com",
             "apiBaseURL": "http://api.echoenabled.com/v1/",

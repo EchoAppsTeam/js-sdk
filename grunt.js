@@ -61,9 +61,9 @@ module.exports = function(grunt) {
 					basePath: "<config:dirs.src>"
 				}
 			},
-			products: {
+			apps: {
 				files: {
-					"<%= dirs.dest %>": ["products/**/*"]
+					"<%= dirs.dest %>": ["apps/**/*"]
 				},
 				options: {
 					basePath: "."
@@ -112,7 +112,7 @@ module.exports = function(grunt) {
 					"<%= dirs.src %>/user-session.js",
 					"<%= dirs.src %>/view.js",
 					"<%= dirs.src %>/control.js",
-					"<%= dirs.src %>/product.js",
+					"<%= dirs.src %>/app.js",
 					"<%= dirs.src %>/plugin.js",
 					"<%= dirs.src %>/button.js",
 					"<%= dirs.src %>/tabs.js"
@@ -317,7 +317,7 @@ module.exports = function(grunt) {
 
 	grunt.registerHelper("patch_url", function(src, config) {
 		if (config && config.domain) {
-			src = src.replace(/cdn\.echoenabled\.com\/(?=sdk\/|products\/|")/g, config.domain + "/");
+			src = src.replace(/cdn\.echoenabled\.com\/(?=sdk\/|apps\/|")/g, config.domain + "/");
 		}
 		return src;
 	});

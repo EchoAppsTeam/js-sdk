@@ -120,7 +120,7 @@ module.exports = function(grunt) {
 		if (!target) {
 			grunt.task.run([
 				"release:sdk",
-				"release:products"
+				"release:apps"
 			]);
 			return;
 		}
@@ -139,7 +139,7 @@ module.exports = function(grunt) {
 						.replace("{version}", version);
 				});
 				// no break statement!
-			case "products":
+			case "apps":
 				new FtpUploader(_.extend({
 					"complete": done,
 					"rootDir": grunt.config("dirs.dest") + "/"

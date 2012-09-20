@@ -1,9 +1,9 @@
 (function($) {
 
-var suite = Echo.Tests.Unit.Product = function() {};
+var suite = Echo.Tests.Unit.App = function() {};
 
 suite.prototype.info = {
-	"className": "Echo.Product",
+	"className": "Echo.App",
 	"functions": [
 		"create",
 		"initComponent",
@@ -22,7 +22,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 	"check": function() {
 		var self = this;
 		var manifest = {
-			"name": suite.getProductClassName(),
+			"name": suite.getAppClassName(),
 			"vars": {},
 			"config": {},
 			"labels": {},
@@ -33,7 +33,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"dependencies": [],
 			"destroy": undefined
 		};
-		var _manifest = Echo.Product.manifest(manifest.name);
+		var _manifest = Echo.App.manifest(manifest.name);
 		QUnit.ok(!!_manifest.init,
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
@@ -43,7 +43,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"Checking the \"manifest\" function output");
 
 		suite.createComponents(["TestComponent1", "TestComponent2", "TestComponent3"]);
-		suite.createProduct("TestProduct", {
+		suite.createApp("TestApp", {
 			"TestComponent1": {
 				"target": this.config.target,
 				"appkey": this.config.appkey
@@ -80,7 +80,7 @@ suite.prototype.cases.initComponent = function(callback) {
 					QUnit.ok(true,
 						"Checking that control.onReady() handler was called after initComponent()");
 					QUnit.equal(this.config.get("parent.key1"), "value1",
-						"Checking that parent section of component config is the config of appropriate product");
+						"Checking that parent section of component config is the config of appropriate application");
 					callback();
 				}
 			}
@@ -89,7 +89,7 @@ suite.prototype.cases.initComponent = function(callback) {
 		QUnit.strictEqual(undefined, this.getComponent("TestComponent1000"), "Check getComponent() returns \"undefined\" value for the uninitialized component");
 		this.destroy();
 	};
-	suite.initProduct({
+	suite.initApp({
 		"target": this.config.target,
 		"appkey": this.config.appkey,
 		"ready": check,
@@ -113,11 +113,11 @@ suite.prototype.cases.destroyComponent = function(callback) {
 		});
 		this.destroyComponent("TestComponent1");
 		QUnit.equal(this.components["TestComponent1"], undefined,
-			"Checking that the component was deleted from product after destroyComponent()");
+			"Checking that the component was deleted from application after destroyComponent()");
 		this.destroy();
 		callback();
 	};
-	suite.initProduct({
+	suite.initApp({
 		"target": this.config.target,
 		"appkey": this.config.appkey,
 		"ready": check
@@ -147,7 +147,7 @@ suite.prototype.cases.destroyComponents = function(callback) {
 		this.destroy();
 		callback();
 	};
-	suite.initProduct({
+	suite.initApp({
 		"target": this.config.target,
 		"appkey": this.config.appkey,
 		"ready": check
@@ -175,27 +175,27 @@ suite.getComponentManifest = function(name) {
 	return manifest;
 };
 
-suite.initProduct = function(config) {
-	var Product = suite.getProductClass();
-	new Product($.extend(true, {}, config));
+suite.initApp = function(config) {
+	var App = suite.getAppClass();
+	new App($.extend(true, {}, config));
 };
 
-suite.createProduct = function(name) {
-	Echo.Product.create(suite.getProductManifest(name));
+suite.createApp = function(name) {
+	Echo.App.create(suite.getAppManifest(name));
 };
 
-suite.getProductManifest = function(name) {
-	var manifest = Echo.Product.manifest(name || suite.getProductClassName());
-	manifest.templates.main = "<div>Sample Product Template</div>";
+suite.getAppManifest = function(name) {
+	var manifest = Echo.App.manifest(name || suite.getAppClassName());
+	manifest.templates.main = "<div>Sample App Template</div>";
 	return manifest;
 };
 
-suite.getProductClass = function() {
-	return Echo.Utils.getComponent(suite.getProductClassName());
+suite.getAppClass = function() {
+	return Echo.Utils.getComponent(suite.getAppClassName());
 };
 
-suite.getProductClassName = function() {
-	return "TestProduct";
+suite.getAppClassName = function() {
+	return "TestApp";
 };
 
 })(Echo.jQuery);
