@@ -39,7 +39,7 @@ module.exports = function(grunt) {
 			self.totalSteps = self.queue.length;
 			self._next();
 		});
-	}
+	};
 
 	FtpUploader.prototype.enqueueDir = function(dir, fromPrefix, toPrefix) {
 		var self = this;

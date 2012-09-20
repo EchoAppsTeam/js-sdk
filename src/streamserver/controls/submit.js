@@ -589,7 +589,7 @@ submit.methods._getActivity = function(verb, type, data) {
 
 submit.methods._getASURL = function(postfix) {
 	return "http://activitystrea.ms/schema/1.0/" + postfix;
-}
+};
 
 submit.methods._showError = function(data) {
 	var self = this;
