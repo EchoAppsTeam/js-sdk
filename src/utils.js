@@ -253,10 +253,10 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
  * The boolean value which indicates that value by key exists and removed.
  */
 Echo.Utils.removeNestedValue = function(obj, key) {
-	if (!key) return false;
+	if (!key || !obj) return false;
 	var keys = $.type(key) === "array" ? key : key.split(/\./);
 	var _key = keys.pop();
-	var target = Echo.Utils.getNestedValue(obj, keys);
+	var target = Echo.Utils.getNestedValue(obj, keys, {});
 	if ($.type(target[_key]) === "undefined") {
 		return false;
 	}
