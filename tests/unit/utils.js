@@ -74,11 +74,11 @@ suite.prototype.tests.TestDataMethods = {
 			"key2-2": {
 				"key2-2-1": "value2-2-1"
 			}
-		}, "Checking getNestedValue() method")
+		}, "Checking getNestedValue() method");
 		QUnit.equal(Echo.Utils.getNestedValue(data, "key2.key2-1"), "value2-1",
-			"Checking getNestedValue() method with complex key")
+			"Checking getNestedValue() method with complex key");
 		QUnit.equal(Echo.Utils.getNestedValue(data, ["key2", "key2-1"]), "value2-1",
-			"Checking getNestedValue() method with complex key represented by Array")
+			"Checking getNestedValue() method with complex key represented by Array");
 		QUnit.equal(Echo.Utils.getNestedValue(data, "key1.fakekey", "default value"), "default value",
 			"Checking getNestedValue() method with fake key and default value");
 
@@ -440,7 +440,7 @@ suite.prototype.async.fakeImageTest = function(callback) {
 };
 
 var getTestFunctions = function() {
-	var result = []
+	var result = [];
 	var functions = [
 		function(cb) { result.push(1); cb(); },
 		function(cb) { result.push(2); cb(); },

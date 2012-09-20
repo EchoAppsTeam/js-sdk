@@ -200,7 +200,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 			QUnit.ok(true, "Checking if no exceptions were thrown while executing the \"log\" function with valid and invalid params");
 		} catch(e) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
-		};
+		}
 
 		// checking "invoke" method
 		var cases = [
@@ -650,7 +650,7 @@ suite.prototype.cases.destroyBroadcasting = function(callback) {
 			"Checking that Echo.Control.onDestroy event is published only for current control and its children");
 		$.map(controls, function(control) {
 			control.destroy();
-		})
+		});
 		callback && callback();
 	};
 	// define controls tree through declaration of links to parent controls
@@ -852,7 +852,7 @@ suite.initTestControl = function(config) {
 	var definition = suite.getTestControlClass();
 	new definition($.extend({
 		"target": $("<div></div>"),
-		"appkey": "test.echoenabled.com",
+		"appkey": "test.echoenabled.com"
 	}, config));
 };
 

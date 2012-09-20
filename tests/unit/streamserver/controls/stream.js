@@ -7,7 +7,7 @@ var suite = Echo.Tests.Unit.Stream = function() {
 			"config": {
 				"liveUpdates": false,
 				"query": "childrenof: " + this.config.dataBaseLocation
-			},
+			}
 		},
 		"config": {
 			"async": true,
@@ -30,7 +30,7 @@ suite.prototype.tests = {};
 suite.prototype.tests.commonWorkflow = {
 	"config": {
 		"async"       : true,
-		"testTimeout" : 20000,
+		"testTimeout" : 20000
 	},
 	"check": function() {
 		var self = this;
@@ -140,25 +140,25 @@ suite.prototype.cases.queueActivityTesting = function(callback) {
 					"affectCounter": false,
 					"priority": "highest",
 					"byCurrentUser": false,
-					"handler": undefined,
+					"handler": undefined
 				}, {
 					"action": "action3",
 					"affectCounter": false,
 					"priority": "high",
 					"byCurrentUser": true,
-					"handler": undefined,
+					"handler": undefined
 				}, {
 					"action": "replace",
 					"affectCounter": false,
 					"priority": "medium",
 					"byCurrentUser": false,
-					"handler": undefined,
+					"handler": undefined
 				}, {
 					"action": "action1",
 					"affectCounter": false,
 					"priority": "lowest",
 					"byCurrentUser": false,
-					"handler": undefined,
+					"handler": undefined
 				}],
 				"Checking queueActivity functionality"
 			);
@@ -245,7 +245,7 @@ suite.prototype._preparePostEntry = function(params) {
 			},
 			"object": {
 				"objectTypes": [ "http://activitystrea.ms/schema/1.0/comment"],
-				"content": params.content,
+				"content": params.content
 			},
 			"source": {},
 			"verbs": [ "http://activitystrea.ms/schema/1.0/post" ],

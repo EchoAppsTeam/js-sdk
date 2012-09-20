@@ -38,7 +38,7 @@ suite.prototype.cases = {};
 suite.prototype.tests.commonWorkflow = {
 	"config" : {
 		"async"       : true,
-		"testTimeout" : 20000, // 20 secs
+		"testTimeout" : 20000 // 20 secs
 	},
 	"check": function() {
 		var self = this;
