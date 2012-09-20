@@ -101,14 +101,7 @@ auth.config = {
 	 * @cfg {String} infoMessages
 	 * Customizes the look and feel of info messages, for example "loading" and "error".
 	 */
-	"infoMessages": {"enabled": false},
-	/**
-	 * @cfg {String} [defaultAvatar]
-	 * Default avatar URL which will be used for the user in
-	 * case there is no avatar information defined in the user
-	 * profile. Also used for anonymous users.
-	 */
-	"defaultAvatar": undefined
+	"infoMessages": {"enabled": false}
 };
 
 auth.dependencies = [{
@@ -225,7 +218,7 @@ auth.renderers.or = function(element) {
 auth.renderers.avatar = function(element) {
 	return element.empty().append(Echo.Utils.loadImage(
 		this.user.get("avatar"),
-		this._getDefaultAvatar()
+		this.config.get("defaultAvatar") || this.user.get("defaultAvatar")
 	));
 };
 
@@ -312,12 +305,6 @@ auth.methods._appendSessionID = function(url) {
 			"fragment": parts["fragment"] ? ("#" + parts["fragment"]) : ""
 		}
 	});
-};
-
-auth.methods._getDefaultAvatar = function() {
-	return this.config.get("defaultAvatar")
-		? Echo.Loader.getURL(this.config.get("defaultAvatar"))
-		: this.user.config.get("defaultAvatar");
 };
 
 auth.css =

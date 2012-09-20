@@ -187,7 +187,14 @@ Echo.Control.prototype.defaults.config = {
 		"layout": "full"
 	},
 	"scriptLoadErrorTimeout": 5000, // 5 sec
-	"query": ""
+	"query": "",
+	/**
+	 * @cfg {String} [defaultAvatar]
+	 * Default avatar URL which will be used for the user in
+	 * case there is no avatar information defined in the user
+	 * profile. Also used for anonymous users.
+	 */
+	"defaultAvatar": "{sdk}/images/avatar-default.png"
 };
 
 Echo.Control.prototype.defaults.labels = {
@@ -618,6 +625,9 @@ Echo.Control.prototype._initializers.config = function() {
 			});
 		this.set("pluginsOrder", data.order);
 		return data.hash;
+	};
+	_normalizer.defaultAvatar = function(url) {
+		return Echo.Loader.getURL(url);
 	};
 	data = $.extend({"plugins": []}, data || {});
 	var defaults = $.extend(true, {}, this.get("defaults.config"), {

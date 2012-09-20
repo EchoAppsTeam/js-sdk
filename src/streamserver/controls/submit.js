@@ -202,14 +202,7 @@ submit.config = {
 		"maxHeight": 150,
 		"width": 390
 	},
-	"targetQuery": undefined,
-	/**
-	 * @cfg {String} [defaultAvatar]
-	 * Default avatar URL which will be used for the user in
-	 * case there is no avatar information defined in the user
-	 * profile. Also used for anonymous users.
-	 */
-	"defaultAvatar": undefined
+	"targetQuery": undefined
 };
 
 submit.vars = {
@@ -372,7 +365,7 @@ submit.renderers.text = function(element) {
 submit.renderers.avatar = function(element) {
 	var avatar = Echo.Utils.loadImage(
 		this.user.get("avatar"),
-		this._getDefaultAvatar()
+		this.config.get("defaultAvatar")
 	);
 	return element.empty().append(avatar);
 };
@@ -659,12 +652,6 @@ submit.methods._prepareEventParams = function(params) {
 		"target": this.config.get("target").get(0),
 		"targetURL": this.config.get("targetURL")
 	});
-};
-
-submit.methods._getDefaultAvatar = function() {
-	return this.config.get("defaultAvatar")
-		? Echo.Loader.getURL(this.config.get("defaultAvatar"))
-		: this.user.config.get("defaultAvatar");
 };
 
 submit.css =

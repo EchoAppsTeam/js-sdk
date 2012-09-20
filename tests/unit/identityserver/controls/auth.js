@@ -43,16 +43,40 @@ suite.prototype.tests.loggedInUser = {
 				});
 				QUnit.ok($(target).html().match(/echo-identityserver-controls-auth-userLogged/),
 					'Checking the logged user mode rendering');
-				QUnit.start();
 			}
 		});
+
+		var checkAvatar = function() {
+			var self = this;
+			var getRenderedAvatar = function() {
+				return self.view.get("avatar").find("img").attr("src");
+			};
+			// case: user avatar is available
+			QUnit.equal(this.user.get("avatar"), getRenderedAvatar(), 'Checking if user avatar rendered');
+			// case: user avatar isn't available
+			this.user.set("avatar", "");
+			this.refresh();
+			QUnit.equal(Echo.Loader.getURL(this.defaults.config.defaultAvatar), getRenderedAvatar(), 'Checking if default avatar rendered');
+			// case: user avatar isn't available and defaultAvatar was setted
+			this.config.set("defaultAvatar", "{sdk}/images/info70.png");
+			this.refresh();
+			QUnit.equal(Echo.Loader.getURL("{sdk}/images/info70.png"), getRenderedAvatar(), 'Checking if specified default avatar rendered');
+			// case: user avatar isn't available and defaultAvatar was setted fo false
+			this.config.set("defaultAvatar", "");
+			this.refresh();
+			QUnit.equal(this.user.get("defaultAvatar"), getRenderedAvatar(), 'Checking if default avatar from UserSession rendered');
+
+			QUnit.start();
+		};
+
 		new Echo.IdentityServer.Controls.Auth({
 			"target": target,
 			"appkey": "test.aboutecho.com",
 			"identityManager": {
 				"login": identityManager,
 				"signup": identityManager
-			}
+			},
+			"ready": checkAvatar
 		});
 	}
 };
