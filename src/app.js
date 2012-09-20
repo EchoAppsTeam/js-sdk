@@ -129,6 +129,10 @@ Echo.App.prototype.initComponent = function(componentSpec) {
  *
  * @param {String} id
  * Id of the component to be retrieved.
+ *
+ * @return {Object}
+ * The link to the corresponding component or 'undefined'
+ * in case no control with the given id found.
  */
 Echo.App.prototype.getComponent = function(id) {
 	return this.get("components." + id);
