@@ -1716,6 +1716,23 @@ item.labels = {
 	"childrenMoreItems": "View more items"
 };
 
+item.templates.metadata = {
+	"userID":
+		'<div class="{class:metadata-userID}">' +
+			'<span class="{class:metadata-title} {class:metadata-icon}">' +
+				'{label:userID}' +
+			'</span>' +
+			'<span class="{class:metadata-value}">{data:actor.id}</span>' +
+		'</div>',
+	"userIP":
+		'<div class="{class:metadata-userIP} {class:metadataUserIP}">' +
+			'<span class="{class:metadata-title} {class:metadata-icon}">' +
+				'{label:userIP}' +
+			'</span>' +
+			'<span class="{class:metadata-value}">{data:ip}</span>' +
+		'</div>'
+};
+
 item.methods.template = function() {
 	return '<div class="{class:content}">' +
 		'<div class="{class:container}">' +
@@ -1739,20 +1756,7 @@ item.methods.template = function() {
 								'<div class="{class:markers} echo-secondaryFont echo-secondaryColor"></div>' +
 								'<div class="{class:tags} echo-secondaryFont echo-secondaryColor"></div>' +
 							'</div>' +
-							'<div class="{class:metadata}">' +
-								'<div class="{class:metadata-userID}">' +
-									'<span class="{class:metadata-title} {class:metadata-icon}">' +
-										'{label:userID}' +
-									'</span>' +
-									'<span class="{class:metadata-value}">{data:actor.id}</span>' +
-								'</div>' +
-								'<div class="{class:metadata-userIP} {class:metadataUserIP}">' +
-									'<span class="{class:metadata-title} {class:metadata-icon}">' +
-										'{label:userIP}' +
-									'</span>' +
-									'<span class="{class:metadata-value}">{data:ip}</span>' +
-								'</div>' +
-							'</div>' +
+							'<div class="{class:metadata}"></div>' +
 							'<div class="{class:footer} echo-secondaryColor echo-secondaryFont">' +
 								'<img class="{class:sourceIcon} echo-clickable">' +
 								'<div class="{class:date}"></div>' +
@@ -1856,11 +1860,21 @@ item.renderers.container = function(element) {
 /**
  * @echo_renderer
  */
-item.renderers.metadataUserIP = function(element) {
-	if (!this.get("data.ip")) {
-		element.hide();
+item.renderers.metadata = function(element) {
+	var self = this;
+	element.empty();
+	if (this.user.is('admin')) {
+		var addField = function(field) {
+			element.append(self.substitute({
+				"template": item.templates.metadata[field]
+			}));
+		};
+		addField("userID");
+		if (this.get("data.ip")) {
+			addField("userIP");
+		}
 	}
-	return element;
+	return element.hide();
 };
 
 /**
@@ -2838,7 +2852,6 @@ item.css =
 	'.{class:subcontainer} { float: left; width: 100%; }' +
 	'.{class:markers} { line-height: 16px; background: url(' + Echo.Loader.getURL("{sdk}/images/curation/metadata/marker.png") + ') no-repeat; padding: 0px 0px 4px 21px; margin-top: 7px; }' +
 	'.{class:tags} { line-height: 16px; background: url(' + Echo.Loader.getURL("{sdk}/images/tag_blue.png") + ') no-repeat; padding: 0px 0px 4px 21px; }' +
-	'.{class:metadata} { display: none; }' +
 	'.{class:metadata-title} { font-weight: bold; line-height: 25px; height: 25px; margin-right: 5px; }' +
 	'.{class:metadata-icon} { display: inline-block; padding-left: 26px; }' +
 	'.{class:metadata-userID} { border-bottom: 1px solid #e1e1e1; border-top: 1px solid #e1e1e1;}' +
