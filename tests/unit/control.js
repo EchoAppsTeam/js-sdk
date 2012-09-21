@@ -265,6 +265,8 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 			"Checking if object parameter was overridden (checking new key)");
 		QUnit.equal(this.config.get("objectParam.param2"), undefined,
 			"Checking if object parameter was overridden (checking existing key)");
+		QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("{sdk}/images/info70.png"),
+			"Checking if object parameter was overridden and was normalized (checking defaultAvatar key)");
 
 		this.destroy();
 
@@ -275,6 +277,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		"myTestParam": "test value",
 		"undefinedParam": "undefinedParam replacement",
 		"nullParam": "nullParam replacement",
+		"defaultAvatar": "{sdk}/images/info70.png",
 		"ready": check
 	});
 };
