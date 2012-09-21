@@ -109,7 +109,7 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	"loaded": function() { Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth"); },
+	"loaded": function() { return Echo.Control.isDefined("Echo.IdentityServer.Controls.Auth"); },
 	"url": "{sdk}/identityserver.pack.js"
 }];
 

@@ -56,7 +56,7 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	"loaded": function() { Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile"); },
+	"loaded": function() { return Echo.Control.isDefined("Echo.StreamServer.Controls.FacePile"); },
 	"url": "{sdk}/streamserver.pack.js"
 }];
 

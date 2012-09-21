@@ -3,8 +3,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth")) return;
-
 /**
  * @class Echo.IdentityServer.Controls.Auth
  * Echo Auth control displays user login status and allows to sign in using
@@ -34,6 +32,8 @@ if (Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth")) return;
  * Configuration options.
  */
 var auth = Echo.Control.manifest("Echo.IdentityServer.Controls.Auth");
+
+if (Echo.Control.isDefined(auth)) return;
 
 auth.config = {
 	/**

@@ -53,10 +53,10 @@ Echo.Control = function() {};
  * Reference to the generated control class.
  */
 Echo.Control.create = function(manifest) {
-	var control = Echo.Utils.getNestedValue(window, manifest.name);
+	var control = Echo.Utils.getComponent(manifest.name);
 
 	// prevent multiple re-definitions
-	if (control) return control;
+	if (Echo.Control.isDefined(manifest)) return control;
 
 	var parent = manifest.inherits || Echo.Control;
 	var constructor = Echo.Utils.inherit(parent, function(config) {
@@ -84,7 +84,7 @@ Echo.Control.create = function(manifest) {
 	prototype.cssClass = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 	prototype.cssPrefix = prototype.cssClass + "-";
 
-	Echo.Utils.setNestedValue(window, manifest.name, constructor);
+	Echo.Utils.setNestedValue(window, manifest.name, $.extend(constructor, control));
 	return constructor;
 };
 
@@ -115,6 +115,23 @@ Echo.Control.manifest = function(name) {
 		},
 		"destroy": undefined
 	};
+};
+
+/**
+ * @static
+ * Checks if control is already defined.
+ *
+ * @param {Mixed} manifest
+ * Control manifest or control name.
+ *
+ * @return {Boolean}
+ */
+Echo.Control.isDefined = function(manifest) {
+	var component = Echo.Utils.getNestedValue(window, typeof manifest === "string"
+			? manifest
+			: manifest.name
+	);
+	return component && component.manifest;
 };
 
 Echo.Control.prototype.templates = {"message": {}};

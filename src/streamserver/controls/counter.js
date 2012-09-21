@@ -3,8 +3,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
-
 /**
  * @class Echo.StreamServer.Controls.Counter
  * Echo Counter class which encapsulates interaction with the
@@ -25,6 +23,8 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
  * Configuration options
  */
 var counter = Echo.Control.manifest("Echo.StreamServer.Controls.Counter");
+
+if (Echo.Control.isDefined(counter)) return;
 
 counter.init = function() {
 	// data can be defined explicitly

@@ -3,8 +3,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream.Item.MediaGallery")) return;
-
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.MediaGallery 
  * The MediaGallery control is used to display different media (pictures, video,
@@ -14,6 +12,8 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream.Item.MediaG
  */
 
 var mediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item.MediaGallery");
+
+if (Echo.Control.isDefined(mediaGallery)) return;
 
 var _isPreIE9 = function() {
 	return ($.browser.msie && $.browser.version < 9 && document.documentMode && document.documentMode < 9);
