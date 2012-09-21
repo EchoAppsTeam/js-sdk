@@ -119,7 +119,7 @@ suite.prototype.tests.TestDataMethods = {
 			"key3": "value3"
 		}, "Checking removeNestedValue() with complex key represented by Array");
 		Echo.Utils.setNestedValue(data, "key1.key-null", null);
-		QUnit.ok(!Echo.Utils.removeNestedValue(data, "key1.key-null.key"), "Check removeNestedValue() with null target");
+		QUnit.ok(!Echo.Utils.removeNestedValue(data, "key1.key-null.key"), "Checking removeNestedValue() with null target");
 
 		QUnit.equal(Echo.Utils.htmlize(), "",
 			"Checking htmlize() method with empty param");
