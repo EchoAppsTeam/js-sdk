@@ -89,7 +89,8 @@ module.exports = function(grunt) {
 		concat: {
 			loader: {
 				src: [
-					"<%= dirs.src %>/third-party/yepnope/yepnope.1.0.2-min.js",
+					"<%= dirs.src %>/third-party/yepnope/yepnope.1.5.4-min.js",
+					"<%= dirs.src %>/third-party/yepnope/yepnope.css.js",
 					"<%= dirs.sdk %>/loader.js"
 				],
 				dest: "<%= dirs.sdk %>/loader.js"
