@@ -257,7 +257,7 @@ Echo.Utils.removeNestedValue = function(obj, key) {
 	var keys = $.type(key) === "array" ? key : key.split(/\./);
 	var _key = keys.pop();
 	var target = Echo.Utils.getNestedValue(obj, keys, {});
-	if ($.type(target[_key]) === "undefined") {
+	if (target === null || $.type(target[_key]) === "undefined") {
 		return false;
 	}
 	return delete target[_key];
