@@ -1725,7 +1725,7 @@ item.templates.metadata = {
 			'<span class="{class:metadata-value}">{data:actor.id}</span>' +
 		'</div>',
 	"userIP":
-		'<div class="{class:metadata-userIP} {class:metadataUserIP}">' +
+		'<div class="{class:metadata-userIP}">' +
 			'<span class="{class:metadata-title} {class:metadata-icon}">' +
 				'{label:userIP}' +
 			'</span>' +
@@ -1864,14 +1864,15 @@ item.renderers.metadata = function(element) {
 	var self = this;
 	element.empty();
 	if (this.user.is('admin')) {
-		var addField = function(field) {
-			element.append(self.substitute({
-				"template": item.templates.metadata[field]
+		var view = self.view.fork();
+		var addSection = function(section) {
+			element.append(view.render({
+				"template": item.templates.metadata[section]
 			}));
 		};
-		addField("userID");
+		addSection("userID");
 		if (this.get("data.ip")) {
-			addField("userIP");
+			addSection("userIP");
 		}
 	}
 	return element.hide();
