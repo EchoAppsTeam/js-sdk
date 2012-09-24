@@ -1861,10 +1861,9 @@ item.renderers.container = function(element) {
  * @echo_renderer
  */
 item.renderers.metadata = function(element) {
-	var self = this;
 	element.empty();
 	if (this.user.is("admin")) {
-		var view = self.view.fork();
+		var view = this.view.fork();
 		var addSection = function(section) {
 			element.append(view.render({
 				"template": item.templates.metadata[section]
