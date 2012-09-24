@@ -4,8 +4,11 @@
 	"--output": "../../web/docs",
 	"--meta-tags": "meta-tags.rb",
 	"--guides": "guides.json",
+	"--examples": "examples.json",
+	"--examples-base-url": "../demo/",
 	"--ignore-global": true,
 	"--pretty-json": true,
 	"--warnings": ["-no_doc", "-global"],
+	"--welcome": "welcome.html",
 	"--head-html": "<style type=\"text/css\">#header-content { background: none; padding-left: 10px; } .class-categories .section .middle-column { width: 500px; }</style>"
 }

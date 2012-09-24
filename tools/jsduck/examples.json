@@ -1,0 +1,73 @@
+[
+	{
+		"title": "Controls Examples",
+		"items": [
+			{
+				"name": "auth",
+				"title": "Auth",
+				"description": "",
+				"url": "auth.html",
+				"icon": "../docs/resources/images/default-guide.png",
+				"status": "new"
+			},
+			{
+				"name": "counter",
+				"text": "Counter",
+				"description": "",
+				"url": "counter.html",
+				"icon": "../docs/resources/images/default-guide.png",
+				"status": "new"
+			},
+			{
+				"name": "facepile",
+				"text": "Facepile",
+				"description": "",
+				"url": "facepile.html",
+				"icon": "../docs/resources/images/default-guide.png",
+				"status": "new"
+			},
+			{
+				"name": "stream",
+				"text": "Stream",
+				"description": "",
+				"url": "stream.html",
+				"icon": "../docs/resources/images/default-guide.png",
+				"status": "new"
+			},
+			{
+				"name": "submit",
+				"text": "Submit",
+				"description": "",
+				"url": "submit.html",
+				"icon": "../docs/resources/images/default-guide.png",
+				"status": "new"
+			}
+		]
+	},
+	{
+		"title": "Plugins Examples",
+		"items": [
+			{
+				"name": "pinboard-visualization",
+				"title": "Pinboard Visualization",
+				"description": "",
+				"url": "pinboard.html",
+				"icon": "../docs/resources/images/default-guide.png",
+				"status": "new"
+			}
+		]
+	},
+	{
+		"title": "Apps Examples",
+		"items": [
+			{
+				"name": "comments-sample",
+				"title": "Comments sample",
+				"description": "Example of simple app",
+				"url": "apps/comments-sample/index.html",
+				"icon": "../docs/resources/images/default-guide.png",
+				"status": "new"
+			}
+		]
+	}
+]
