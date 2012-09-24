@@ -84,7 +84,7 @@ Echo.Control.create = function(manifest) {
 	prototype.cssClass = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 	prototype.cssPrefix = prototype.cssClass + "-";
 
-	Echo.Utils.setNestedValue(window, manifest.name, $.extend(constructor, control));
+	Echo.Utils.set(window, manifest.name, $.extend(constructor, control));
 	return constructor;
 };
 
@@ -130,7 +130,7 @@ Echo.Control.isDefined = function(manifest) {
 	var name = typeof manifest === "string"
 		? manifest
 		: manifest.name;
-	var component = Echo.Utils.getNestedValue(window, name);
+	var component = Echo.Utils.get(window, name);
 	return !!(component && component.manifest);
 };
 
@@ -291,7 +291,7 @@ Echo.Control.prototype.defaults.labels = {
  * The corresponding value found in the object.
  */
 Echo.Control.prototype.get = function(key, defaults) {
-	return Echo.Utils.getNestedValue(this, key, defaults);
+	return Echo.Utils.get(this, key, defaults);
 };
 
 /**
@@ -306,7 +306,7 @@ Echo.Control.prototype.get = function(key, defaults) {
  * The corresponding value which should be defined for the key.
  */
 Echo.Control.prototype.set = function(key, value) {
-	Echo.Utils.setNestedValue(this, key, value);
+	Echo.Utils.set(this, key, value);
 };
 
 /**
@@ -323,7 +323,7 @@ Echo.Control.prototype.set = function(key, value) {
  * The boolean value which indicates that value by key exists and removed.
  */
 Echo.Control.prototype.remove = function(key) {
-	return Echo.Utils.removeNestedValue(this, key);
+	return Echo.Utils.remove(this, key);
 };
 
 /**
@@ -885,9 +885,9 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 			return control.labels.get(key, defaults);
 		},
 		"self": function(key, defaults) {
-			var value = control.invoke(Echo.Utils.getNestedValue(control, key));
+			var value = control.invoke(Echo.Utils.get(control, key));
 			return typeof value == "undefined"
-				? Echo.Utils.getNestedValue(control.data, key, defaults)
+				? Echo.Utils.get(control.data, key, defaults)
 				: value;
 		},
 		"config": function(key, defaults) {

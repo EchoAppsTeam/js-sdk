@@ -170,9 +170,9 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * 		}
  * 	};
  *
- * 	Echo.Utils.getNestedValue(data, "key1"); // will return "value1"
- * 	Echo.Utils.getNestedValue(data, "key2"); // will return object {"key2-1": "value2-1"}
- * 	Echo.Utils.getNestedValue(data, "key2.key2-1"); // will return "value2-1"
+ * 	Echo.Utils.get(data, "key1"); // will return "value1"
+ * 	Echo.Utils.get(data, "key2"); // will return object {"key2-1": "value2-1"}
+ * 	Echo.Utils.get(data, "key2.key2-1"); // will return "value2-1"
  *
  * @param {Object} obj
  * The object from which the value is taken.
@@ -196,7 +196,7 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * @return {Mixed}
  * The corresponding nested value found in the object.
 */
-Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
+Echo.Utils.get = function(obj, key, defaults, callback) {
 	if (!key) return obj;
 	if (typeof key === "string") {
 		key = key.split(/\./);
@@ -237,10 +237,10 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
  * 		}
  * 	};
  *
- * 	Echo.Utils.removeNestedValue(data, "key1"); // will return true and key1 delete
- * 	Echo.Utils.removeNestedValue(data, "key2"); // will return true and key2 delete
- * 	Echo.Utils.removeNestedValue(data, "key2.key2-2.key2-2-1"); // will return true and obj.key2.key2-2 will return empty object
- * 	Echo.Utils.removeNestedValue(data, "not_defined_key"); // will return false
+ * 	Echo.Utils.remove(data, "key1"); // will return true and key1 delete
+ * 	Echo.Utils.remove(data, "key2"); // will return true and key2 delete
+ * 	Echo.Utils.remove(data, "key2.key2-2.key2-2-1"); // will return true and obj.key2.key2-2 will return empty object
+ * 	Echo.Utils.remove(data, "not_defined_key"); // will return false
  *
  * @param {Object} obj
  * The object from which the value is taken.
@@ -252,11 +252,11 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
  * @return {Boolean}
  * The boolean value which indicates that value by key exists and removed.
  */
-Echo.Utils.removeNestedValue = function(obj, key) {
+Echo.Utils.remove = function(obj, key) {
 	if (!key || !obj) return false;
 	var keys = $.type(key) === "array" ? key : key.split(/\./);
 	var _key = keys.pop();
-	var target = Echo.Utils.getNestedValue(obj, keys, {});
+	var target = Echo.Utils.get(obj, keys, {});
 	if (target === null || $.type(target[_key]) === "undefined") {
 		return false;
 	}
@@ -277,8 +277,8 @@ Echo.Utils.removeNestedValue = function(obj, key) {
  * 		}
  * 	};
  *
- * 	Echo.Utils.setNestedValue(data, "key1", "new value"); // data["key1"] will be "new value"
- * 	Echo.Utils.setNestedValue(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
+ * 	Echo.Utils.set(data, "key1", "new value"); // data["key1"] will be "new value"
+ * 	Echo.Utils.set(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
  * 
  * @param {Object} obj
  * The object for which the value is set.
@@ -289,10 +289,10 @@ Echo.Utils.removeNestedValue = function(obj, key) {
  * @param {Mixed} value
  * The object data that should be inserted for the key.
  */
-Echo.Utils.setNestedValue = function(obj, key, value) {
+Echo.Utils.set = function(obj, key, value) {
 	var keys = key.split(/\./);
 	var field = keys.pop();
-	var data = Echo.Utils.getNestedValue(obj, keys, undefined, function(acc, v) {
+	var data = Echo.Utils.get(obj, keys, undefined, function(acc, v) {
 		if (typeof acc[v] === "undefined") {
 			acc[v] = {};
 		}
@@ -669,7 +669,7 @@ Echo.Utils.inherit = function(parent, child) {
  * Reference to the necessary JS class.
  */
 Echo.Utils.getComponent = function(name) {
-	return Echo.Utils.getNestedValue(window, name);
+	return Echo.Utils.get(window, name);
 };
 
 /**
@@ -883,7 +883,7 @@ Echo.Utils.substitute = function(args) {
 	var utils = this;
 	var substitutions = {
 		"data": function(key, defaults) {
-			return utils.getNestedValue(args.data, key, defaults);
+			return utils.get(args.data, key, defaults);
 		}
 	};
 	var instructions = $.extend(substitutions, args.instructions);

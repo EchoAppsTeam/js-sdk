@@ -26,7 +26,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate("insertAsLastChild", "content", plugin.templates.form);
-	var form = Echo.Utils.getNestedValue(Echo.Variables, this._getSubmitKey());
+	var form = Echo.Utils.get(Echo.Variables, this._getSubmitKey());
 	$.each(form || {}, function(key, value) {
 	    self.set(key, value);
 	});
@@ -163,7 +163,7 @@ plugin.renderers.compactField = function(element) {
  */
 plugin.methods.destroy = function() {
 	if (this.get("submit")) {
-		Echo.Utils.setNestedValue(Echo.Variables, this._getSubmitKey(), {
+		Echo.Utils.set(Echo.Variables, this._getSubmitKey(), {
 			"expanded": this.get("expanded"),
 			"data": {
 				"object": this._getSubmitData()
