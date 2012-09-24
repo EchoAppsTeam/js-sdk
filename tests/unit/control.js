@@ -27,6 +27,7 @@ suite.prototype.info = {
 		"destroy",
 		"refresh",
 		"render",
+		"isDefined",
 
 		// functions below are covered
 		// within the Plugin component test

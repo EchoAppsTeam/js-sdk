@@ -9,7 +9,8 @@ suite.prototype.info = {
 		"initComponent",
 		"getComponent",
 		"destroyComponent",
-		"destroyComponents"
+		"destroyComponents",
+		"isDefined"
 	]
 };
 

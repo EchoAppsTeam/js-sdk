@@ -127,10 +127,10 @@ Echo.Control.manifest = function(name) {
  * @return {Boolean}
  */
 Echo.Control.isDefined = function(manifest) {
-	var component = Echo.Utils.getNestedValue(window, typeof manifest === "string"
-			? manifest
-			: manifest.name
-	);
+	var name = typeof manifest === "string"
+		? manifest
+		: manifest.name;
+	var component = Echo.Utils.getNestedValue(window, name);
 	return !!(component && component.manifest);
 };
 
