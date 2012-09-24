@@ -131,7 +131,7 @@ Echo.Control.isDefined = function(manifest) {
 			? manifest
 			: manifest.name
 	);
-	return component && component.manifest;
+	return !!(component && component.manifest);
 };
 
 Echo.Control.prototype.templates = {"message": {}};

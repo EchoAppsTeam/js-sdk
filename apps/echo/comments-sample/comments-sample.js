@@ -5,7 +5,7 @@ var $ = jQuery;
 
 var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
 
-if (Echo.Control.isDefined("Echo.Apps.CommentsSample")) return;
+if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
 
 Comments.dependencies = [
 	{"loaded": function() {
