@@ -3,8 +3,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit")) return;
-
 /**
  * @class Echo.StreamServer.Controls.Submit
  * Echo Submit control which encapsulates interaction with the
@@ -25,6 +23,8 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit")) return;
  * Configuration options
  */
 var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
+
+if (Echo.Control.isDefined(submit)) return;
 
 submit.init = function() {
 	var self = this;

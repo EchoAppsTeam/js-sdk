@@ -73,7 +73,7 @@ Echo.Plugin.create = function(manifest) {
 	if (manifest.methods) {
 		$.extend(constructor.prototype, manifest.methods);
 	}
-	Echo.Utils.setNestedValue(
+	Echo.Utils.set(
 		window,
 		Echo.Plugin._getClassName(manifest.name, manifest.component.name),
 		constructor
@@ -141,7 +141,7 @@ Echo.Plugin.isDefined = function(manifest) {
  * Plugin class.
  */
 Echo.Plugin.getClass = function(name, component) {
-	return Echo.Utils.getNestedValue(window, Echo.Plugin._getClassName(name, component));
+	return Echo.Utils.get(window, Echo.Plugin._getClassName(name, component));
 };
 
 /**
@@ -182,14 +182,14 @@ Echo.Plugin.prototype.enabled = function() {
  * @inheritdoc Echo.Control#set
  */
 Echo.Plugin.prototype.set = function(key, value) {
-	Echo.Utils.setNestedValue(this, key, value);
+	Echo.Utils.set(this, key, value);
 };
 
 /**
  * @inheritdoc Echo.Control#get
  */
 Echo.Plugin.prototype.get = function(key, defaults) {
-	return Echo.Utils.getNestedValue(this, key, defaults);
+	return Echo.Utils.get(this, key, defaults);
 };
 
 /**

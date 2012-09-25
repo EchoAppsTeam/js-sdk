@@ -27,6 +27,7 @@ suite.prototype.info = {
 		"destroy",
 		"refresh",
 		"render",
+		"isDefined",
 
 		// functions below are covered
 		// within the Plugin component test
@@ -67,8 +68,16 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.deepEqual(manifest, _manifest,
 			"Checking the \"manifest\" function output");
 
+		// checking if we have class before it was defined
+		QUnit.ok(!Echo.Control.isDefined(manifest),
+			"Checking if the control class was defined (via isDefined static method), before actual control definition");
+
 		// create class out of manifest
 		suite.createTestControl(manifest.name);
+
+		// checking if we have class after class definition
+		QUnit.ok(Echo.Control.isDefined(manifest),
+			"Checking if the control class was defined (via isDefined static method), after control definition");
 
 		// create test plugin
 		suite.plugin().createTestPlugin("MyPlugin", manifest.name);

@@ -9,7 +9,8 @@ suite.prototype.info = {
 		"initComponent",
 		"getComponent",
 		"destroyComponent",
-		"destroyComponents"
+		"destroyComponents",
+		"isDefined"
 	]
 };
 
@@ -43,6 +44,11 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"Checking the \"manifest\" function output");
 
 		suite.createComponents(["TestComponent1", "TestComponent2", "TestComponent3"]);
+
+		// checking if we have class before it was defined
+		QUnit.ok(!Echo.App.isDefined(manifest),
+			"Checking if the app class was defined (via isDefined static method), before actual app definition");
+
 		suite.createApp("TestApp", {
 			"TestComponent1": {
 				"target": this.config.target,
@@ -57,6 +63,10 @@ suite.prototype.tests.PublicInterfaceTests = {
 				"appkey": this.config.appkey
 			}
 		});
+
+		// checking if we have class after class definition
+		QUnit.ok(Echo.App.isDefined(manifest),
+			"Checking if the app class was defined (via isDefined static method), after app definition");
 
 		this.sequentialAsyncTests([
 			"initComponent",

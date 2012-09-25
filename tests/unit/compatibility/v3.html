@@ -103,7 +103,7 @@
                 stack.done(key + "v3");
             };
             stack.init(key + "v3");
-            var control = Echo.Utils.getNestedValue(Echo, key);
+            var control = Echo.Utils.get(Echo, key);
             new control(Echo.jQuery.extend(defaultConf, val));
         });
     </script>
