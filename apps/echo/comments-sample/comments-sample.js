@@ -9,7 +9,8 @@ var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
 
 Comments.dependencies = [
 	{"loaded": function() {
-		return Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit") && Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream");
+		return Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit") &&
+			Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream");
 	}, "url": "{sdk}/streamserver.pack.js"},
 
 	{"loaded": function() {
@@ -70,7 +71,8 @@ Comments.renderers.submit = function(element) {
 		"id": "Submit",
 		"name": "Echo.StreamServer.Controls.Submit",
 		"config": {
-			"target": element
+			"target": element,
+			"infoMessages": {"enabled": false}
 		}
 	});
 	return element;
