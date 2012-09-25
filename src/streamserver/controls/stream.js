@@ -524,9 +524,11 @@ stream.methods._requestInitialItems = function() {
 				}
 			},
 			"onError": function(data, options) {
-				self.showError(data, $.extend(options, {
-					"request": self.request
-				}));
+				if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+					self.showError(data, $.extend(options, {
+						"request": self.request
+					}));
+				}
 			},
 			"onData": function(data, options) {
 				if (options.requestType === "initial") {

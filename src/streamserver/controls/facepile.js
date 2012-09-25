@@ -234,8 +234,11 @@ pile.methods._request = function() {
 			},
 			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
 			"recurring": this.config.get("liveUpdates"),
-			"onError": function(data) {
-				self.showMessage({"type": "error", "data": data});
+			"onError": function(data, extra) {
+				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
+				if (needShowError) {
+					self.showMessage({"type": "error", "data": data});
+				}
 			},
 			"onData": function(data, extra) {
 				self["_" + extra.requestType + "ResponseHandler"](data);
