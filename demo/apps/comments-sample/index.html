@@ -9,7 +9,11 @@
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
+	<!-- TODO: remove the "streamserver.pack.js" script inclusion when the plugin-dependencies branch merged -->
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js"></script>
 	<script type="text/javascript" src="http://cdn.echoenabled.com/apps/echo/comments-sample/comments-sample.js"></script>
+	<!-- TODO: update with CDN URL when the script is available on CDN -->
+	<script type="text/javascript" src="../../../apps/echo/comments-sample/plugins/stream-sorting-selector.js"></script>
 </head>
 <body>
 <div id="container">
@@ -30,12 +34,14 @@
 				"components": {
 					"Stream": {
 						"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
-								"plugins": [{
+						"plugins": [{
 							"name": "Edit"
 						}, {
 							"name": "Like"
 						}, {
 							"name": "Moderation"
+						}, {
+							"name": "StreamSortingSelector"
 						}]
 					},
 					"Submit": {
