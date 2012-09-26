@@ -53,7 +53,6 @@ plugin.renderers.selector = function(element) {
 	var plugin = this, stream = plugin.component;
 	return element.on("change", function() {
 		plugin._setSortOrder($(this).val());
-		stream.refresh();
 	});
 };
 
