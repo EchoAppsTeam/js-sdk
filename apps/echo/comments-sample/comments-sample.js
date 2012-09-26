@@ -9,12 +9,12 @@ if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
 
 Comments.dependencies = [
 	{"loaded": function() {
-		return Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Submit") &&
-			Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream");
+		return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
+			Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
 	}, "url": "{sdk}/streamserver.pack.js"},
 
 	{"loaded": function() {
-		return Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth");
+		return Echo.Control.isDefined("Echo.IdentityServer.Controls.Auth");
 	}, "url": "{sdk}/identityserver.pack.js"}
 ];
 
