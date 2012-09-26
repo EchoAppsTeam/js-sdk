@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<title>Stream Demo</title>
+	<link rel="stylesheet" type="text/css" href="demo.css" />
+
+	<!-- Default scripts inclusion -->
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
+
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver/controls/stream.js"></script>
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/like.js"></script>
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/reply.js"></script>
+
+	<!--<script type="text/javascript" src="http://safin.ul.js-kit.com/js-sdk/sdk/v3/streamserver.pack.js"></script>-->
+	<!--<script type="text/javascript" src="http://safin.ul.js-kit.com/js-sdk/sdk/v3/identityserver.pack.js"></script>-->
+</head>
+<body>
+	<div id="container">
+		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream" target="_blank">Documentation</a></div>
+		<h1>Stream Demo</h1>
+		<div class="wrapper">
+			<div id="stream"></div>
+		</div>
+	</div>
+
+	<!-- Client initialization -->
+	<script type="text/javascript">
+		Backplane.init({
+			"serverBaseURL": "http://api.echoenabled.com/v1",
+			"busName": "jskit"
+		});
+		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
+
+		var stream = new Echo.StreamServer.Controls.Stream({
+			"target": document.getElementById("stream"),
+			"query": "childrenof:http://example.com/js-sdk -state:ModeratorDeleted itemsPerPage:2 sortOrder:likesDescending children:2 childrenItemsPerPage:2 -state:ModeratorDeleted",
+			"appkey": "test.js-kit.com",
+			"item": {
+//				"defaultAvatar": "https://secure.gravatar.com/avatar/8e7717f3eb16cb2666e13ed10d3904b9"
+				"defaultAvatar": "{sdk}/images/info70.png"
+			},
+			"plugins": [{
+				"name": "Reply"
+			} , {
+				"name": "Like"
+			}]
+		});
+	</script>
+</body>
+</html>

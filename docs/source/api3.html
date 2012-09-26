@@ -72,51 +72,23 @@ Echo.API.Transports.AJAX.prototype._getScheme = function() {
 
 Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 	var self = this;
-	var ajaxSettings = {
+	var domain = utils.parseURL(document.location.href).domain;
+	var targetDomain = utils.parseURL(this.config.get(&quot;uri&quot;)).domain;
+	return {
 		&quot;url&quot;: this._prepareURL(),
 		&quot;type&quot;: this.config.get(&quot;method&quot;),
 		&quot;error&quot;: function(errorResponse, requestParams) {
 			errorResponse = self._wrapErrorResponse(errorResponse);
+			if (errorResponse.transportError &amp;&amp; errorResponse.transportError.statusText === &quot;abort&quot;) {
+				errorResponse.errorCode = &quot;connection_aborted&quot;;
+			}
 			self.config.get(&quot;onError&quot;)(errorResponse, requestParams);
 		},
 		&quot;success&quot;: this.config.get(&quot;onData&quot;),
+		&quot;crossDomain&quot;: true,
 		&quot;beforeSend&quot;: this.config.get(&quot;onOpen&quot;),
 		&quot;dataType&quot;: &quot;json&quot;
 	};
-	if (&quot;XDomainRequest&quot; in window &amp;&amp; window.XDomainRequest != null) {
-		var xhrOrigin = $.ajaxSettings.xhr;
-		var domain = utils.parseURL(document.location.href).domain;
-		$.support.cors = true;
-		ajaxSettings.xhr = function() {
-			var targetDomain = utils.parseURL(self.config.get(&quot;uri&quot;)).domain;
-			if (targetDomain === &quot;&quot; || targetDomain === domain) {
-				return xhrOrigin.call($.ajaxSettings);
-			}
-			var xdr = new XDomainRequest();
-			if (!xdr.setRequestHeader) {
-				xdr.setRequestHeader = $.noop;
-			}
-			if (!xdr.getAllResponseHeaders) {
-				xdr.getAllResponseHeaders = $.noop;
-			}
-			xdr.onload = function () {
-				if ($.isFunction(xdr.onreadystatechange)) {
-					xdr.readyState = 4;
-					xdr.status = 200;
-					xdr.onreadystatechange.call(xdr, null, false);
-				}
-			};
-			xdr.onerror = xdr.ontimeout = function () {
-				if ($.isFunction(xdr.onreadystatechange)) {
-					xdr.readyState = 4;
-					xdr.status = 500;
-					xdr.onreadystatechange.call(xdr, null, false);
-				}
-			};
-			return xdr;
-		};
-	}
-	return ajaxSettings;
 };
 
 Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) {
@@ -133,18 +105,88 @@ Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) 
 
 Echo.API.Transports.AJAX.prototype.send = function(data) {
 	this.transportObject.data = $.extend({}, this.config.get(&quot;data&quot;), data || {});
-	this.jxhrTransportObject = $.ajax(this.transportObject);
+	this.transportObject = $.ajax(this.transportObject);
 };
 
 Echo.API.Transports.AJAX.prototype.abort = function() {
-	if (this.jxhrTransportObject) {
-		this.jxhrTransportObject.abort();
+	if (this.transportObject) {
+		this.transportObject.abort();
 	}
 	this.config.get(&quot;onClose&quot;)();
 };
 
 Echo.API.Transports.AJAX.available = function() {
 	return !$.browser.msie;
+};
+
+<span id='Echo-API-Transports-XDomainRequest'>/**
+</span> * @class Echo.API.Transports.XDomainRequest
+ * @extends Echo.API.Transports.AJAX
+ */
+Echo.API.Transports.XDomainRequest = function(config) {
+	return Echo.API.Transports.XDomainRequest.parent.constructor.apply(this, arguments);
+};
+
+utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transports.XDomainRequest);
+
+Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
+	var self = this;
+	var xdr = new XDomainRequest();
+	var parseResponseText = function(responseText) {
+		var data;
+		try {
+			data = $.parseJSON(responseText);
+		} catch(e) {
+			data = {
+				&quot;result&quot;: &quot;error&quot;,
+				&quot;errorCode&quot;: &quot;parse_error&quot;,
+				&quot;errorMessage&quot;: &quot;Parse JSON error&quot;
+			};
+		}
+		return data;
+	};
+	xdr.onload = function() {
+		self.config.get(&quot;onData&quot;)(parseResponseText(xdr.responseText));
+	};
+	xdr.onerror = function() {
+		var errorResponse = self._wrapErrorResponse(parseResponseText(xdr.responseText));
+		self.config.get(&quot;onError&quot;)(errorResponse);
+	};
+	return xdr;
+};
+
+Echo.API.Transports.XDomainRequest.prototype.send = function(data) {
+	data = $.extend(true, {}, this.config.get(&quot;data&quot;), data || {});
+	var method = this.config.get(&quot;method&quot;).toLowerCase();
+	this.config.get(&quot;onOpen&quot;)();
+	// TODO: need investigate XDomainRequest cache
+	// avoid recieved data caching
+	$.extend(data, {
+		&quot;_echo&quot;: utils.getUniqueString()
+	});
+	if (method === &quot;get&quot;) {
+		this.transportObject.open(method, this._prepareURL() + &quot;?&quot; + $.param(data));
+		this.transportObject.send(null);
+	} else {
+		this.transportObject.open(method, this._prepareURL());
+		this.transportObject.send($.param(data));
+	}
+};
+
+Echo.API.Transports.XDomainRequest.prototype.abort = function() {
+	Echo.API.Transports.XDomainRequest.parent.abort.call(this);
+	this.config.get(&quot;onError&quot;)(
+		$.extend(true, this._wrapErrorResponse(), {
+			&quot;errorCode&quot;: &quot;connection_aborted&quot;
+		})
+	);
+};
+
+Echo.API.Transports.XDomainRequest.available = function() {
+	return $.browser.msie
+		&amp;&amp; $.browser.version &gt; 7
+		&amp;&amp; &quot;XDomainRequest&quot; in window
+		&amp;&amp; window.XDomainRequest !== null;
 };
 
 <span id='Echo-API-Transports-JSONP'>/**
@@ -159,7 +201,8 @@ utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transports.JSONP);
 
 Echo.API.Transports.JSONP.prototype.send = function(data) {
 	if (this.config.get(&quot;method&quot;).toLowerCase() === &quot;get&quot;) {
-		return Echo.API.Transports.JSONP.parent.send.apply(this, arguments);
+		this.transportObject.data = $.extend({}, this.config.get(&quot;data&quot;), data);
+		return $.ajax(this.transportObject);
 	}
 	this._pushPostParameters($.extend({}, this.config.get(&quot;data&quot;), data));
 	this.transportObject.submit();
@@ -366,15 +409,25 @@ Echo.API.Request.prototype.abort = function() {
 };
 
 Echo.API.Request.prototype._getTransport = function() {
-	var userDefinedTransport = this.config.get(&quot;transport&quot;).toUpperCase();
+	var self = this;
+	var userDefinedTransport = utils.foldl(&quot;&quot;, Echo.API.Transports, function(constructor, acc, name) {
+		if (self.config.get(&quot;transport&quot;).toLowerCase() === name.toLowerCase()) {
+			return name;
+		}
+	});
 	var transport = Echo.API.Transports[userDefinedTransport] &amp;&amp; Echo.API.Transports[userDefinedTransport].available()
 		? userDefinedTransport
-		: utils.foldl(&quot;&quot;, Echo.API.Transports, function(constructor, acc, name) {
-			var available = Echo.API.Transports[name].available();
-			if (available) {
-				return name;
-			}
-		});
+		: function() {
+			var transport;
+			$.each([&quot;WebSocket&quot;, &quot;AJAX&quot;, &quot;XDomainRequest&quot;, &quot;JSONP&quot;], function(i, name) {
+				var available = Echo.API.Transports[name].available();
+				if (available) {
+					transport = name;
+					return false;
+				}
+			});
+			return transport;
+		}();
 	return new Echo.API.Transports[transport](
 		$.extend(this._getHandlersByConfig(), {
 			&quot;uri&quot;: this._prepareURI(),

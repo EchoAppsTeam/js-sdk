@@ -90,7 +90,7 @@ Echo.Plugin.create = function(manifest) {
 	if (manifest.methods) {
 		$.extend(constructor.prototype, manifest.methods);
 	}
-	Echo.Utils.setNestedValue(
+	Echo.Utils.set(
 		window,
 		Echo.Plugin._getClassName(manifest.name, manifest.component.name),
 		constructor
@@ -158,7 +158,7 @@ Echo.Plugin.isDefined = function(manifest) {
  * Plugin class.
  */
 Echo.Plugin.getClass = function(name, component) {
-	return Echo.Utils.getNestedValue(window, Echo.Plugin._getClassName(name, component));
+	return Echo.Utils.get(window, Echo.Plugin._getClassName(name, component));
 };
 
 <span id='Echo-Plugin-method-init'>/**
@@ -199,14 +199,14 @@ Echo.Plugin.prototype.enabled = function() {
 </span> * @inheritdoc Echo.Control#set
  */
 Echo.Plugin.prototype.set = function(key, value) {
-	Echo.Utils.setNestedValue(this, key, value);
+	Echo.Utils.set(this, key, value);
 };
 
 <span id='Echo-Plugin-method-get'>/**
 </span> * @inheritdoc Echo.Control#get
  */
 Echo.Plugin.prototype.get = function(key, defaults) {
-	return Echo.Utils.getNestedValue(this, key, defaults);
+	return Echo.Utils.get(this, key, defaults);
 };
 
 <span id='Echo-Plugin-method-remove'>/**

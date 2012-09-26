@@ -27,6 +27,7 @@ suite.prototype.info = {
 		"destroy",
 		"refresh",
 		"render",
+		"isDefined",
 
 		// functions below are covered
 		// within the Plugin component test
@@ -67,8 +68,16 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.deepEqual(manifest, _manifest,
 			"Checking the \"manifest\" function output");
 
+		// checking if we have class before it was defined
+		QUnit.ok(!Echo.Control.isDefined(manifest),
+			"Checking if the control class was defined (via isDefined static method), before actual control definition");
+
 		// create class out of manifest
 		suite.createTestControl(manifest.name);
+
+		// checking if we have class after class definition
+		QUnit.ok(Echo.Control.isDefined(manifest),
+			"Checking if the control class was defined (via isDefined static method), after control definition");
 
 		// create test plugin
 		suite.plugin().createTestPlugin("MyPlugin", manifest.name);
@@ -81,7 +90,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"eventsMechanism",
 			"labelsOverriding",
 			"refresh",
-			"destroy"
+			"destroy",
+			"destroyBroadcasting"
 		], "cases");
 
 	}
@@ -199,7 +209,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 			QUnit.ok(true, "Checking if no exceptions were thrown while executing the \"log\" function with valid and invalid params");
 		} catch(e) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
-		};
+		}
 
 		// checking "invoke" method
 		var cases = [
@@ -264,6 +274,8 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 			"Checking if object parameter was overridden (checking new key)");
 		QUnit.equal(this.config.get("objectParam.param2"), undefined,
 			"Checking if object parameter was overridden (checking existing key)");
+		QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("{sdk}/images/info70.png"),
+			"Checking if object parameter was overridden and was normalized (checking defaultAvatar key)");
 
 		this.destroy();
 
@@ -274,6 +286,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		"myTestParam": "test value",
 		"undefinedParam": "undefinedParam replacement",
 		"nullParam": "nullParam replacement",
+		"defaultAvatar": "{sdk}/images/info70.png",
 		"ready": check
 	});
 };
@@ -640,6 +653,43 @@ suite.prototype.cases.destroy = function(callback) {
 	});
 };
 
+suite.prototype.cases.destroyBroadcasting = function(callback) {
+	var controls = [];
+	var destroyedControls = [];
+	var check = function() {
+		controls[2].destroy();
+		QUnit.deepEqual(destroyedControls, [controls[2], controls[4]],
+			"Checking that Echo.Control.onDestroy event is published only for current control and its children");
+		$.map(controls, function(control) {
+			control.destroy();
+		});
+		callback && callback();
+	};
+	// define controls tree through declaration of links to parent controls
+	var parents = [undefined, 0, 0, 1, 2];
+	var i = 0, count = parents.length;
+	var initControls = function() {
+		suite.initTestControl({
+			"ready": function() {
+				var self = this;
+				this.set("_destroyHandler", function() {
+					destroyedControls.push(self);
+				});
+				if (i++ < count) {
+					controls.push(this);
+					initControls();
+					return;
+				}
+				check();
+			},
+			"parent": typeof parents[i] !== "undefined"
+					? controls[parents[i]].config.getAsHash()
+					: undefined
+		});
+	};
+	initControls();
+};
+
 // data required to perform tests
 
 suite.data = {};
@@ -814,7 +864,7 @@ suite.initTestControl = function(config) {
 	var definition = suite.getTestControlClass();
 	new definition($.extend({
 		"target": $("<div></div>"),
-		"appkey": "test.echoenabled.com",
+		"appkey": "test.echoenabled.com"
 	}, config));
 };
 

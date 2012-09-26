@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Utils.isComponentDefined(&quot;Echo.App&quot;)) return;
+
+// static interface
+
+<span id='Echo-App'>/**
+</span> * @class Echo.App
+ * Foundation class implementing core logic to create applications.
+ *
+ * @extends Echo.Control
+ */
+Echo.App = Echo.Utils.inherit(Echo.Control);
+
+<span id='Echo-App-static-method-create'>/**
+</span> * @static
+ * @method
+ * Function which creates a application object using it manifest declaration.
+ *
+ * @param {Object} manifest
+ * Specifies the application interface in the predefined way.
+ *
+ * @param {String} manifest.name
+ * Specifies the application name including namespace
+ *
+ * @param {Object} [manifest.vars]
+ * Specifies internal application variables.
+ *
+ * @param {Object} [manifest.config]
+ * Specifies the configuration data with the ability to define default values.
+ *
+ * @param {Object} [manifest.labels]
+ * Specifies the list of language labels used in the particular application UI.
+ *
+ * @param {Object} [manifest.events]
+ * Specifies the list of external events used by application.
+ *
+ * @param {Object} [manifest.methods]
+ * Specifies the list of application methods.
+ *
+ * @param {Object} [manifest.renderers]
+ * Specifies the list of application renderers.
+ *
+ * @param {Object} [manifest.templates]
+ * Specifies the list of application templates.
+ *
+ * @param {Function} [manifest.init]
+ * Function called during application initialization.
+ *
+ * @param {String} [manifest.css]
+ * Specifies the CSS rules for the application.
+ *
+ * @return {Object}
+ * Reference to the generated application class.
+ */
+Echo.App.create = Echo.Control.create;
+
+<span id='Echo-App-static-method-manifest'>/**
+</span> * @static
+ * @method
+ * Method returning common manifest structure for a application.
+ *
+ * @param {String} name
+ * App name.
+ *
+ * @return {Object}
+ * Basic application manifest declaration.
+ */
+Echo.App.manifest = function(name) {
+	var _manifest = Echo.App.parent.constructor.manifest.apply(this, arguments);
+	_manifest.inherits = _manifest.inherits || Echo.App;
+	return _manifest;
+};
+
+<span id='Echo-App-static-method-isDefined'>/**
+</span> * @static
+ * Checks if app is already defined.
+ *
+ * @param {Mixed} manifest
+ * Control manifest or control name.
+ *
+ * @return {Boolean}
+ */
+Echo.App.isDefined = function(manifest) {
+	return Echo.Control.isDefined(manifest);
+};
+// public interface
+
+<span id='Echo-App-method-initComponent'>/**
+</span> * Method to add and initialize nested component.
+ *
+ * This function allows to initialize nested component. Component configuration object
+ * is constructed by merging the following 2 objects:
+ *
+ * + this instance config
+ * + componentSpec parameter if it's provided
+ *
+ * @param {Object} componentSpec
+ *
+ * @param {String} componentSpec.id
+ * Nested component id.
+ *
+ * @param {String} componentSpec.name
+ * Constructor name for the nested component like &quot;Echo.StreamServer.Control.Stream&quot;.
+ *
+ * @param {Object} [componentSpec.config]
+ * Configuration object for the nested component.
+ */
+Echo.App.prototype.initComponent = function(componentSpec) {
+	this.destroyComponent(componentSpec.id);
+	componentSpec.config = componentSpec.config || {};
+	if (this.user) {
+		componentSpec.config.user = this.user;
+	}
+	componentSpec.config.parent = componentSpec.config.parent || this.config.getAsHash();
+	if (componentSpec.config.parent.components) {
+		delete componentSpec.config.parent.components;
+	}
+	componentSpec.config.plugins = this._mergeSpecsByName(
+		$.extend(true, [], this.config.get(&quot;components.&quot; + componentSpec.id + &quot;.plugins&quot;, [])),
+		componentSpec.config.plugins || []
+	);
+	componentSpec.config = this._normalizeComponentConfig(
+		$.extend(
+			true,
+			{},
+			this.config.get(&quot;components.&quot; + componentSpec.id, {}),
+			componentSpec.config
+		)
+	);
+	var Component = Echo.Utils.getComponent(componentSpec.name);
+	this.set(&quot;components.&quot; + componentSpec.id, new Component(componentSpec.config));
+	return this.getComponent(componentSpec.id);
+};
+
+<span id='Echo-App-method-getComponent'>/**
+</span> * Method to retrieve initialized component by id.
+ *
+ * @param {String} id
+ * Id of the component to be retrieved.
+ *
+ * @return {Object}
+ * The link to the corresponding component or 'undefined'
+ * in case no control with the given id found.
+ */
+Echo.App.prototype.getComponent = function(id) {
+	return this.get(&quot;components.&quot; + id);
+};
+
+<span id='Echo-App-method-destroyComponent'>/**
+</span> * Method to destroy nested component by id. If component defined,
+ * then will be called &quot;destroy&quot; method of the nested component
+ * and the ref removing from the inner container &quot;components&quot;.
+ *
+ * @param {String} id
+ * Id of the component to be removed.
+ */
+Echo.App.prototype.destroyComponent = function(id) {
+	var component = this.getComponent(id);
+	if (component) {
+		component.destroy();
+		this.remove(&quot;components.&quot; + id);
+	}
+};
+
+<span id='Echo-App-method-destroyComponents'>/**
+</span> * Method to destroy all defined nested components but ids in the exception list.
+ *
+ * Method can accept one parameter which specifies the exception 
+ * nested component ids list. If list is omit or empty, then method destroys
+ * all defined nested components.
+ *
+ * @param {Array} [exceptions]
+ * List of nested component to be kept.
+ */
+Echo.App.prototype.destroyComponents = function(exceptions) {
+	var self = this;
+	exceptions = exceptions || [];
+	var inExceptionList = function(id) {
+		var inList = false;
+		$.each(exceptions, function(_id, exception) {
+			if (exception === id) {
+				inList = true;
+				return false; // break
+			}
+		});
+		return inList;
+	};
+	$.each(this.components, function(id) {
+		if (!inExceptionList(id)) {
+			self.destroyComponent(id);
+		}
+	});
+};
+
+// private interface
+
+Echo.App.prototype._mergeSpecsByName = function(specs) {
+	var self = this;
+	var getSpecIndex = function(spec, specs) {
+		var idx = -1;
+		$.each(specs, function(i, _spec) {
+			if (spec.name === _spec.name) {
+				idx = i;
+				return false;
+			}
+		});
+		return idx;
+	};
+	// flatten update specs list
+	var updateSpecs = $.map(Array.prototype.slice.call(arguments, 1) || [], function(spec) {
+		return spec;
+	});
+	return Echo.Utils.foldl(specs, updateSpecs, function(extender) {
+		var id = getSpecIndex(extender, specs);
+		if (!~id) {
+			specs.push(extender);
+			return;
+		}
+		if (extender.name === specs[id].name) {
+			if (extender.nestedPlugins) {
+				specs[id].nestedPlugins = specs[id].nestedPlugins || [];
+				self._mergeSpecsByName(specs[id].nestedPlugins, extender.nestedPlugins);
+				// delete nested plugins in the extender to avoid override effect after extend below
+				delete extender.nestedPlugins;
+			}
+		}
+		specs[id] = $.extend(true, {}, specs[id], extender);
+	});
+};
+
+Echo.App.prototype._normalizeComponentConfig = function(config) {
+	var self = this;
+	Echo.Utils.foldl(config, [&quot;appkey&quot;, &quot;apiBaseURL&quot;, &quot;submissionProxyURL&quot;], function(key, acc) {
+		acc[key] = acc[key] || self.config.get(key);
+	});
+	var normalize = function(value) {
+		if (typeof value === &quot;string&quot;) {
+			return self.substitute({
+				&quot;template&quot;: value,
+				&quot;strict&quot;: true
+			});
+		} else if ($.isPlainObject(value)) {
+			return Echo.Utils.foldl({}, value, function(value, acc, key) {
+				acc[key] = normalize(value);
+			});
+		} else if ($.isArray(value)) {
+			return $.map(value, function(element) {
+				return normalize(element);
+			});
+		} else {
+			return value;
+		}
+	};
+	return normalize(config);
+};
+
+})(Echo.jQuery);
+</pre>
+</body>
+</html>

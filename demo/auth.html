@@ -19,7 +19,16 @@
 			<div id="auth"></div>
 		</div>
 	</div>
-
+	<script>
+		if (window.parent.Docs) {
+			var link = Echo.jQuery("#documentation > a");
+			link.on("click", function(e) {
+				e.preventDefault();
+				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
+				return false;
+			});
+		}
+	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
 		Backplane.init({
@@ -32,7 +41,6 @@
 		new Echo.IdentityServer.Controls.Auth({
 			"target": document.getElementById("auth"),
 			"appkey": "test.aboutecho.com",
-			"param": "test",
 			"identityManager": {
 				"login": identityManager,
 				"signup": identityManager

@@ -37,10 +37,10 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.UserSession&quot;)) return;
  * @param {Object} config
  * Class configuration, which is an object with the following fields:
  *
- * @param {Object} config.appkey
+ * @param {String} config.appkey
  * Echo application key to make user initialization request.
  *
- * @param {Object} [config.defaultAvatar]
+ * @param {String} [config.defaultAvatar]
  * Default avatar URL which will be used for the user in case there is
  * no avatar information defined in the user profile. Also used for
  * anonymous users.
@@ -445,8 +445,9 @@ Echo.UserSession._attrLocation = function(key) {
 
 Echo.UserSession._extract = function(field, container, filter) {
 	var user = this;
-	user.identity[field] = user.identity[field] ||
-		Echo.Utils.foldl(undefined, user.identity[container] || [], filter);
+	user.identity[field] = typeof user.identity[field] !== &quot;undefined&quot;
+		? user.identity[field]
+		: Echo.Utils.foldl(undefined, user.identity[container] || [], filter);
 	return user.identity[field];
 };
 

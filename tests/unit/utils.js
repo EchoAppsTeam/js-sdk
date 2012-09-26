@@ -9,7 +9,7 @@ suite.prototype.info = {
 		"capitalize",
 		"foldl",
 		"getComponent",
-		"getNestedValue",
+		"get",
 		"getUniqueString",
 		"getVisibleColor",
 		"htmlize",
@@ -22,12 +22,11 @@ suite.prototype.info = {
 		"loadImage",
 		"log",
 		"objectToJSON",
-		"objectToQuery",
 		"parallelCall",
 		"parseURL",
-		"removeNestedValue",
+		"remove",
 		"sequentialCall",
-		"setNestedValue",
+		"set",
 		"stripTags",
 		"substitute", // covered within the Control and Plugin tests
 		"timestampFromW3CDTF"
@@ -66,30 +65,33 @@ suite.prototype.tests.TestDataMethods = {
 			}
 		};
 
-		QUnit.equal(Echo.Utils.getNestedValue(data, "key1"), "value1",
-			"Checking getNestedValue() method with simple key");
-		QUnit.deepEqual(Echo.Utils.getNestedValue(data, ""), data,
-			"Checking getNestedValue() method with empty key");
-		QUnit.deepEqual(Echo.Utils.getNestedValue(data, "key2"), {
+		QUnit.equal(Echo.Utils.get(data, "key1"), "value1",
+			"Checking get() method with simple key");
+		QUnit.deepEqual(Echo.Utils.get(data, ""), data,
+			"Checking get() method with empty key");
+		QUnit.deepEqual(Echo.Utils.get(data, "key2"), {
 			"key2-1": "value2-1",
 			"key2-2": {
 				"key2-2-1": "value2-2-1"
 			}
-		}, "Checking getNestedValue() method")
-		QUnit.equal(Echo.Utils.getNestedValue(data, "key2.key2-1"), "value2-1",
-			"Checking getNestedValue() method with complex key")
-		QUnit.equal(Echo.Utils.getNestedValue(data, "key1.fakekey", "default value"), "default value",
-			"Checking getNestedValue() method with fake key and default value");
+		}, "Checking get() method");
+		QUnit.equal(Echo.Utils.get(data, "key2.key2-1"), "value2-1",
+			"Checking get() method with complex key");
+		QUnit.equal(Echo.Utils.get(data, ["key2", "key2-1"]), "value2-1",
+			"Checking get() method with complex key represented by Array");
+		QUnit.equal(Echo.Utils.get(data, "key1.fakekey", "default value"), "default value",
+			"Checking get() method with fake key and default value");
 
-		Echo.Utils.setNestedValue(data, "key1", { "key1-1": "value1-1"});
+		Echo.Utils.set(data, "key1", { "key1-1": "value1-1"});
 		QUnit.deepEqual(data["key1"], {"key1-1": "value1-1"},
-			"Checking setNestedValue() method with object param");
-		Echo.Utils.setNestedValue(data, "key3", "value3");
+			"Checking set() method with object param");
+		Echo.Utils.set(data, "key3", "value3");
 		QUnit.equal(data["key3"], "value3",
-			"Checking setNestedValue() method with plain param");
-		QUnit.ok(!Echo.Utils.removeNestedValue(data, ""), "Checking removeNestedValue() with empty key");
-		QUnit.ok(!Echo.Utils.removeNestedValue(data), "Checking removeNestedValue() with undefined key");
-		QUnit.ok(Echo.Utils.removeNestedValue(data, "key1") && typeof data.key1 === "undefined" && !data.hasOwnProperty("key1"), "Checking that removeNestedValue() returns right value and that value by key realy removed");
+			"Checking set() method with plain param");
+		QUnit.ok(!Echo.Utils.remove(data, ""), "Checking remove() with empty key");
+		QUnit.ok(!Echo.Utils.remove(undefined, "key2"), "Checking remove() with undefined object");
+		QUnit.ok(!Echo.Utils.remove(data), "Checking remove() with undefined key");
+		QUnit.ok(Echo.Utils.remove(data, "key1") && typeof data.key1 === "undefined" && !data.hasOwnProperty("key1"), "Checking that remove() returns right value and that value by key realy removed");
 		QUnit.deepEqual(data, {
 			"key2": {
 				"key2-1": "value2-1",
@@ -98,16 +100,26 @@ suite.prototype.tests.TestDataMethods = {
 				}
 			},
 			"key3": "value3"
-		}, "Checking removeNestedValue() with simple key");
-		Echo.Utils.removeNestedValue(data, "key2.key2-2.key2-2-1");
+		}, "Checking remove() with simple key");
+		Echo.Utils.remove(data, "key2.key2-2.key2-2-1");
 		QUnit.deepEqual(data, {
 			"key2": {
 				"key2-1": "value2-1",
 				"key2-2": {}
 			},
 			"key3": "value3"
-		}, "Checking removeNestedValue() with complex key");
-		QUnit.ok(!Echo.Utils.removeNestedValue("key2.key2-2.key2-2-1"), "Checking removeNestedValue() method with non-existing complex key");
+		}, "Checking remove() with complex key");
+		QUnit.ok(!Echo.Utils.remove("key2.key2-2.key2-2-1"), "Checking remove() method with non-existing complex key (tail key is not defined)");
+		QUnit.ok(!Echo.Utils.remove("key2.key2-34.key2-2-1"), "Checking remove() method with non-existing complex key (middle key is not defined)");
+		Echo.Utils.remove(data, ["key2", "key2-2"]);
+		QUnit.deepEqual(data, {
+			"key2": {
+				"key2-1": "value2-1"
+			},
+			"key3": "value3"
+		}, "Checking remove() with complex key represented by Array");
+		Echo.Utils.set(data, "key1.key-null", null);
+		QUnit.ok(!Echo.Utils.remove(data, "key1.key-null.key"), "Checking remove() with null target");
 
 		QUnit.equal(Echo.Utils.htmlize(), "",
 			"Checking htmlize() method with empty param");
@@ -149,20 +161,6 @@ suite.prototype.tests.TestDataMethods = {
 		};
 		QUnit.equal(Echo.Utils.objectToJSON(complex_object), '{"k1":["v1.1",null,false],"k2":{"k2.1":21,"k2.2":22}}',
 			"Checking objectToJSON() method for complex object");
-
-		QUnit.equal(Echo.Utils.objectToQuery(), "",
-			"Calling objectToQuery() function with no arguments");
-		QUnit.equal(Echo.Utils.objectToQuery({"k1": undefined}),
-			"k1=undefined",
-			"Checking simple object transformation with the \"undefined\" value to the query string via objectToQuery() function");
-		QUnit.equal(Echo.Utils.objectToQuery({"k1": "some string with spaces"}),
-			"k1=%22some%20string%20with%20spaces%22",
-			"Checking simple object transformation with the string value to the query string via objectToQuery() function");
-		QUnit.equal(Echo.Utils.objectToQuery({"k1": true}), "k1=true",
-			"Checking simple object transformation with the bool value to the query string via objectToQuery() function");
-		QUnit.equal(Echo.Utils.objectToQuery(complex_object),
-			"k1=%5B%22v1.1%22%2Cnull%2Cfalse%5D&k2=%7B%22k2.1%22%3A21%2C%22k2.2%22%3A22%7D",
-			"Checking complex object transformation to the query string via  objectToQuery() function");
 
 		QUnit.deepEqual(Echo.Utils.parseURL("http://domain.com/some/path/1?query_string#hash_value"), {
 			"scheme": "http",
@@ -444,7 +442,7 @@ suite.prototype.async.fakeImageTest = function(callback) {
 };
 
 var getTestFunctions = function() {
-	var result = []
+	var result = [];
 	var functions = [
 		function(cb) { result.push(1); cb(); },
 		function(cb) { result.push(2); cb(); },

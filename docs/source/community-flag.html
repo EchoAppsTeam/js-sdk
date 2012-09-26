@@ -83,6 +83,11 @@ plugin.labels = {
 	&quot;unflagProcessing&quot;: &quot;Unflagging...&quot;
 };
 
+plugin.dependencies = [{
+	&quot;loaded&quot;: function() { return Echo.Control.isDefined(&quot;Echo.StreamServer.Controls.FacePile&quot;); },
+	&quot;url&quot;: &quot;{sdk}/streamserver.pack.js&quot;
+}];
+
 plugin.template = '&lt;div class=&quot;{plugin.class:flaggedBy}&quot;&gt;&lt;/div&gt;';
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-method-flaggedBy'>/**

@@ -20,8 +20,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.FacePile&quot;)) return;
-
 <span id='Echo-StreamServer-Controls-FacePile-method-constructor'><span id='Echo-StreamServer-Controls-FacePile'>/**
 </span></span> * @class Echo.StreamServer.Controls.FacePile
  * Echo FacePile control displays users (actors) returned in any activity stream. 
@@ -44,6 +42,8 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.FacePile&quot
  * Configuration options
  */
 var pile = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.FacePile&quot;);
+
+if (Echo.Control.isDefined(pile)) return;
 
 pile.init = function() {
 	// data can be defined explicitly
@@ -251,8 +251,11 @@ pile.methods._request = function() {
 			},
 			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
 			&quot;recurring&quot;: this.config.get(&quot;liveUpdates&quot;),
-			&quot;onError&quot;: function(data) {
-				self.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data});
+			&quot;onError&quot;: function(data, extra) {
+				var needShowError = typeof extra.critical === &quot;undefined&quot; || extra.critical || extra.requestType === &quot;initial&quot;;
+				if (needShowError) {
+					self.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data});
+				}
 			},
 			&quot;onData&quot;: function(data, extra) {
 				self[&quot;_&quot; + extra.requestType + &quot;ResponseHandler&quot;](data);
@@ -451,8 +454,6 @@ Echo.Control.create(pile);
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.FacePile.Item&quot;)) return;
-
 <span id='Echo-StreamServer-Controls-FacePile-Item-method-constructor'><span id='Echo-StreamServer-Controls-FacePile-Item'>/**
 </span></span> * @class Echo.StreamServer.Controls.FacePile.Item
  * Echo FacePile.Item control displays single user (actor). 
@@ -466,6 +467,8 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.FacePile.Item
  * Configuration options
  */
 var item = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.FacePile.Item&quot;);
+
+if (Echo.Control.isDefined(item)) return;
 
 item.config = {
 <span id='Echo-StreamServer-Controls-FacePile-Item-cfg-infoMessages'>	/**
@@ -498,7 +501,7 @@ item.renderers.avatar = function(element) {
 	if (this.config.get(&quot;avatar&quot;)) {
 		var img = Echo.Utils.loadImage(
 			this.get(&quot;data.avatar&quot;),
-			this.user.config.get(&quot;defaultAvatar&quot;)
+			this.config.get(&quot;defaultAvatar&quot;)
 		);
 		element.empty().append(img);
 		if (!this.config.get(&quot;text&quot;)) {

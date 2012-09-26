@@ -23,13 +23,13 @@ var $ = jQuery;
 // XXX
 if (!Echo.AppServer) Echo.AppServer = {};
 
-if (Echo.Utils.isComponentDefined(&quot;Echo.AppServer.Controls.Configurator&quot;)) return;
-
 <span id='Echo-AppServer-Controls-Configurator'>/**
 </span> * @class Echo.AppServer.Controls.Configurator
  * @extends Echo.Control
  */
 var configurator = Echo.Control.manifest(&quot;Echo.AppServer.Controls.Configurator&quot;);
+
+if (Echo.Control.isDefined(configurator)) return;
 
 var _pluginsByControl = {
 	&quot;Echo.StreamServer.Controls.Stream&quot;: [&quot;InfiniteScroll&quot;, &quot;PinboardVisualization&quot;],

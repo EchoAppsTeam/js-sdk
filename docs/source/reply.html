@@ -43,7 +43,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;content&quot;, plugin.templates.form);
-	var form = Echo.Utils.getNestedValue(Echo.Variables, this._getSubmitKey());
+	var form = Echo.Utils.get(Echo.Variables, this._getSubmitKey());
 	$.each(form || {}, function(key, value) {
 	    self.set(key, value);
 	});
@@ -76,6 +76,11 @@ plugin.labels = {
 	 */
 	&quot;replyControl&quot;: &quot;Reply&quot;
 };
+
+plugin.dependencies = [{
+	&quot;loaded&quot;: function() { return Echo.Control.isDefined(&quot;Echo.StreamServer.Controls.Submit&quot;); },
+	&quot;url&quot;: &quot;{sdk}/streamserver.pack.js&quot;
+}];
 
 plugin.events = {
 	&quot;Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand&quot;: function(topic, args) {
@@ -129,7 +134,7 @@ plugin.component.renderers.children = function(element) {
 	if (item.get(&quot;children&quot;).length == 1) {
 		var child = item.get(&quot;children&quot;)[0];
 		if (child.get(&quot;added&quot;) || child.get(&quot;deleted&quot;)) {
-			this._itemCSS(&quot;remove&quot;, item, this.view.get(&quot;replyForm&quot;));
+			this._itemCSS(&quot;remove&quot;, item, this.view.get(&quot;compactForm&quot;));
 			this.view.render({&quot;name&quot;: &quot;compactForm&quot;});
 		}
 	}
@@ -140,9 +145,10 @@ plugin.component.renderers.children = function(element) {
 </span> * @echo_renderer
  */
 plugin.renderers.submitForm = function(element) {
-	return element.click(function(event) {
+	element.click(function(event) {
 		event.stopPropagation();
 	});
+	return this.get(&quot;expanded&quot;) ? element.show() : element.empty().hide();
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-method-compactForm'>/**
@@ -152,9 +158,10 @@ plugin.renderers.compactForm = function(element) {
 	var item = this.component;
 	var hasChildren = !!item.children.length;
 	if (!item.get(&quot;depth&quot;) &amp;&amp; hasChildren &amp;&amp; !this.get(&quot;expanded&quot;) &amp;&amp; !item.get(&quot;children&quot;)[0].get(&quot;deleted&quot;)) {
-		this._itemCSS(&quot;add&quot;, item, element.parent());
+		this._itemCSS(&quot;add&quot;, item, element);
 		return element.show();
 	}
+	this._itemCSS(&quot;remove&quot;, item, this.view.get(&quot;compactForm&quot;));
 	return element.hide();
 };
 
@@ -173,7 +180,7 @@ plugin.renderers.compactField = function(element) {
  */
 plugin.methods.destroy = function() {
 	if (this.get(&quot;submit&quot;)) {
-		Echo.Utils.setNestedValue(Echo.Variables, this._getSubmitKey(), {
+		Echo.Utils.set(Echo.Variables, this._getSubmitKey(), {
 			&quot;expanded&quot;: this.get(&quot;expanded&quot;),
 			&quot;data&quot;: {
 				&quot;object&quot;: this._getSubmitData()
@@ -200,7 +207,8 @@ plugin.methods._submitConfig = function(target) {
 
 plugin.methods._showSubmit = function() {
 	var item = this.component;
-	var target = this.view.get(&quot;submitForm&quot;).empty();
+	var target = this.view.get(&quot;submitForm&quot;);
+	this._itemCSS(&quot;add&quot;, item, this.view.get(&quot;submitForm&quot;));
 	var submit = this.get(&quot;submit&quot;);
 	if (submit) {
 		submit.config.set(&quot;target&quot;, target);
@@ -224,8 +232,8 @@ plugin.methods._hideSubmit = function() {
 		submit.set(&quot;data&quot;, undefined);
 	}
 	this.set(&quot;expanded&quot;, false);
+	this._itemCSS(&quot;remove&quot;, item, this.view.get(&quot;submitForm&quot;));
 	this.view.get(&quot;submitForm&quot;).empty();
-	this._itemCSS(&quot;remove&quot;, item, this.view.get(&quot;replyForm&quot;));
 	this.view.render({&quot;name&quot;: &quot;compactForm&quot;});
 	item.view.render({&quot;name&quot;: &quot;container&quot;});
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onCollapse'>	/**
@@ -241,7 +249,7 @@ plugin.methods._hideSubmit = function() {
 plugin.methods._expand = function() {
 	var item = this.component;
 	this.set(&quot;expanded&quot;, true);
-	this._itemCSS(&quot;add&quot;, item, this.view.get(&quot;replyForm&quot;));
+	this.view.render({&quot;name&quot;: &quot;submitForm&quot;});
 	this.view.render({&quot;name&quot;: &quot;compactForm&quot;});
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onExpand'>	/**
 </span>	 * @event onExpand
@@ -311,7 +319,7 @@ plugin.css =
 	&quot;.{plugin.class:compactContent} { padding: 5px 5px 5px 6px; background-color: #fff; }&quot; +
 	&quot;.{plugin.class:compactBorder} { border: 1px solid #d2d2d2; }&quot; +
 	&quot;.{plugin.class:compactField} { width: 100%; border: none; }&quot; +
-	(($.browser.webkit) ?
+	($.browser.webkit ?
 		'.{plugin.class:compactContent} input { outline: none; }' : '');
 
 Echo.Plugin.create(plugin);
@@ -403,7 +411,9 @@ plugin.init = function() {
 
 $.map([&quot;onRender&quot;, &quot;onRerender&quot;], function(topic) {
 	plugin.events[&quot;Echo.StreamServer.Controls.Submit.&quot; + topic] = function() {
-		this.component.view.get(&quot;text&quot;).focus();
+		var submit = this.component;
+		submit.config.get(&quot;target&quot;).show();
+		submit.view.get(&quot;text&quot;).focus();
 	};
 });
 

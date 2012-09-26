@@ -172,7 +172,7 @@ Echo.Utils.foldl = function(acc, object, callback) {
 	return acc;
 };
 
-<span id='Echo-Utils-static-method-getNestedValue'>/**
+<span id='Echo-Utils-static-method-get'>/**
 </span> * @static
  * Method to access specific nested field value in the object.
  *
@@ -187,15 +187,16 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * 		}
  * 	};
  *
- * 	Echo.Utils.getNestedValue(data, &quot;key1&quot;); // will return &quot;value1&quot;
- * 	Echo.Utils.getNestedValue(data, &quot;key2&quot;); // will return object {&quot;key2-1&quot;: &quot;value2-1&quot;}
- * 	Echo.Utils.getNestedValue(data, &quot;key2.key2-1&quot;); // will return &quot;value2-1&quot;
+ * 	Echo.Utils.get(data, &quot;key1&quot;); // will return &quot;value1&quot;
+ * 	Echo.Utils.get(data, &quot;key2&quot;); // will return object {&quot;key2-1&quot;: &quot;value2-1&quot;}
+ * 	Echo.Utils.get(data, &quot;key2.key2-1&quot;); // will return &quot;value2-1&quot;
  *
  * @param {Object} obj
  * The object from which the value is taken.
  *
- * @param {String} key
- * Defines the key for value extraction.
+ * @param {Mixed} key
+ * The key for value extraction. Possible types are String or Array. If its Array, parameter
+ * should contains list of keys if its complex. Ex.: &quot;key2.key2-2&quot; =&gt; [&quot;key2&quot;, &quot;key2-2&quot;].
  *
  * @param {Object} [defauts]
  * Default value if no corresponding key was found in the object.
@@ -212,7 +213,7 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * @return {Mixed}
  * The corresponding nested value found in the object.
 */
-Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
+Echo.Utils.get = function(obj, key, defaults, callback) {
 	if (!key) return obj;
 	if (typeof key === &quot;string&quot;) {
 		key = key.split(/\./);
@@ -236,7 +237,7 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
 	return found ? value : defaults;
 };
 
-<span id='Echo-Utils-static-method-removeNestedValue'>/**
+<span id='Echo-Utils-static-method-remove'>/**
 </span> * @static
  * Method to remove specific nested field value in the object.
  *
@@ -253,37 +254,33 @@ Echo.Utils.getNestedValue = function(obj, key, defaults, callback) {
  * 		}
  * 	};
  *
- * 	Echo.Utils.removeNestedValue(data, &quot;key1&quot;); // will return true and key1 delete
- * 	Echo.Utils.removeNestedValue(data, &quot;key2&quot;); // will return true and key2 delete
- * 	Echo.Utils.removeNestedValue(data, &quot;key2.key2-2.key2-2-1&quot;); // will return true and obj.key2.key2-2 will return empty object
- * 	Echo.Utils.removeNestedValue(data, &quot;not_defined_key&quot;); // will return false
+ * 	Echo.Utils.remove(data, &quot;key1&quot;); // will return true and key1 delete
+ * 	Echo.Utils.remove(data, &quot;key2&quot;); // will return true and key2 delete
+ * 	Echo.Utils.remove(data, &quot;key2.key2-2.key2-2-1&quot;); // will return true and obj.key2.key2-2 will return empty object
+ * 	Echo.Utils.remove(data, &quot;not_defined_key&quot;); // will return false
  *
  * @param {Object} obj
  * The object from which the value is taken.
  *
- * @param {String} key
- * The key for value removing.
+ * @param {Mixed} key
+ * The key for value removing. Possible types are String or Array. If its Array, parameter
+ * should contains list of keys if its complex. Ex.: &quot;key2.key2-2&quot; =&gt; [&quot;key2&quot;, &quot;key2-2&quot;].
  *
  * @return {Boolean}
  * The boolean value which indicates that value by key exists and removed.
  */
-Echo.Utils.removeNestedValue = function(obj, key) {
-	if (!key) return false;
-	var _key;
-	var keys = key.split(/\./);
-	do {
-		_key = keys.shift();
-		if (typeof obj[_key] === &quot;undefined&quot;) {
-			return false;
-		}
-		if (!keys.length) {
-			return delete obj[_key];
-		}
-		obj = obj[_key];
-	} while (keys.length);
+Echo.Utils.remove = function(obj, key) {
+	if (!key || !obj) return false;
+	var keys = $.type(key) === &quot;array&quot; ? key : key.split(/\./);
+	var _key = keys.pop();
+	var target = Echo.Utils.get(obj, keys, {});
+	if (target === null || $.type(target[_key]) === &quot;undefined&quot;) {
+		return false;
+	}
+	return delete target[_key];
 };
 
-<span id='Echo-Utils-static-method-setNestedValue'>/**
+<span id='Echo-Utils-static-method-set'>/**
 </span> * @static
  * Method to define specific nested field value in the object.
  *
@@ -297,8 +294,8 @@ Echo.Utils.removeNestedValue = function(obj, key) {
  * 		}
  * 	};
  *
- * 	Echo.Utils.setNestedValue(data, &quot;key1&quot;, &quot;new value&quot;); // data[&quot;key1&quot;] will be &quot;new value&quot;
- * 	Echo.Utils.setNestedValue(data, &quot;key1&quot;, {&quot;key1-1&quot;: &quot;value1-1&quot;}); // data[&quot;key1&quot;] will be {&quot;key1-1&quot;:&quot;value1-1&quot;}
+ * 	Echo.Utils.set(data, &quot;key1&quot;, &quot;new value&quot;); // data[&quot;key1&quot;] will be &quot;new value&quot;
+ * 	Echo.Utils.set(data, &quot;key1&quot;, {&quot;key1-1&quot;: &quot;value1-1&quot;}); // data[&quot;key1&quot;] will be {&quot;key1-1&quot;:&quot;value1-1&quot;}
  * 
  * @param {Object} obj
  * The object for which the value is set.
@@ -309,10 +306,10 @@ Echo.Utils.removeNestedValue = function(obj, key) {
  * @param {Mixed} value
  * The object data that should be inserted for the key.
  */
-Echo.Utils.setNestedValue = function(obj, key, value) {
+Echo.Utils.set = function(obj, key, value) {
 	var keys = key.split(/\./);
 	var field = keys.pop();
-	var data = Echo.Utils.getNestedValue(obj, keys, undefined, function(acc, v) {
+	var data = Echo.Utils.get(obj, keys, undefined, function(acc, v) {
 		if (typeof acc[v] === &quot;undefined&quot;) {
 			acc[v] = {};
 		}
@@ -675,25 +672,6 @@ Echo.Utils.inherit = function(parent, child) {
 	return child;
 };
 
-<span id='Echo-Utils-static-method-objectToQuery'>/**
-</span> * @static
- * Method which serializes a given object to the GET string.
- *
- * This function returns the GET string which can be used for further URL
- * constructions. The values of the corresponding keys are URL encoded.
- *
- * @param {Object} data
- * Object which should be transformed into the GET string.
- *
- * @return {String}
- * GET string.
- */
-Echo.Utils.objectToQuery = function(data) {
-	return $.map(data || {}, function(value, key) {
-		return key + &quot;=&quot; + encodeURIComponent(Echo.Utils.objectToJSON(value));
-	}).join(&quot;&amp;&quot;);
-};
-
 <span id='Echo-Utils-static-method-getComponent'>/**
 </span> * @static
  * Method to acquire a class reference by the JS class name.
@@ -708,7 +686,7 @@ Echo.Utils.objectToQuery = function(data) {
  * Reference to the necessary JS class.
  */
 Echo.Utils.getComponent = function(name) {
-	return Echo.Utils.getNestedValue(window, name);
+	return Echo.Utils.get(window, name);
 };
 
 <span id='Echo-Utils-static-method-isComponentDefined'>/**
@@ -922,7 +900,7 @@ Echo.Utils.substitute = function(args) {
 	var utils = this;
 	var substitutions = {
 		&quot;data&quot;: function(key, defaults) {
-			return utils.getNestedValue(args.data, key, defaults);
+			return utils.get(args.data, key, defaults);
 		}
 	};
 	var instructions = $.extend(substitutions, args.instructions);

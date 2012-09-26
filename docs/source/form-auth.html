@@ -112,13 +112,6 @@ plugin.config = {
 	&quot;submitPermissions&quot;: &quot;allowGuest&quot;
 };
 
-plugin.dependencies = [{
-	&quot;url&quot;: &quot;{sdk}/identityserver.pack.js&quot;,
-	&quot;loaded&quot;: function() {
-		return Echo.Utils.isComponentDefined(&quot;Echo.IdentityServer.Controls.Auth&quot;);
-	}
-}];
-
 plugin.enabled = function() {
 	return (this.component.user.get(&quot;sessionID&quot;) &amp;&amp;
 		this.config.get(&quot;identityManager.login&quot;) &amp;&amp;
@@ -131,6 +124,11 @@ plugin.labels = {
 	 */
 	&quot;youMustBeLoggedIn&quot;: &quot;You must be logged in to comment&quot;
 };
+
+plugin.dependencies = [{
+	&quot;loaded&quot;: function() { return Echo.Control.isDefined(&quot;Echo.IdentityServer.Controls.Auth&quot;); },
+	&quot;url&quot;: &quot;{sdk}/identityserver.pack.js&quot;
+}];
 
 plugin.templates.auth = '&lt;div class=&quot;{plugin.class:auth}&quot;&gt;&lt;/div&gt;';
 

@@ -59,6 +59,11 @@ plugin.labels = {
 	&quot;editButton&quot;: &quot;Edit&quot;
 };
 
+plugin.dependencies = [{
+	&quot;loaded&quot;: function() { return Echo.Control.isDefined(&quot;Echo.StreamServer.Controls.Submit&quot;); },
+	&quot;url&quot;: &quot;{sdk}/streamserver.pack.js&quot;
+}];
+
 plugin.methods._submitConfig = function(item, target) {
 	return this.config.assemble({
 		&quot;target&quot;: target,

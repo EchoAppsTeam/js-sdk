@@ -20,8 +20,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined(&quot;Echo.IdentityServer.Controls.Auth&quot;)) return;
-
 <span id='Echo-IdentityServer-Controls-Auth-method-constructor'><span id='Echo-IdentityServer-Controls-Auth'>/**
 </span></span> * @class Echo.IdentityServer.Controls.Auth
  * Echo Auth control displays user login status and allows to sign in using
@@ -51,6 +49,8 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.IdentityServer.Controls.Auth&quot;)
  * Configuration options.
  */
 var auth = Echo.Control.manifest(&quot;Echo.IdentityServer.Controls.Auth&quot;);
+
+if (Echo.Control.isDefined(auth)) return;
 
 auth.config = {
 <span id='Echo-IdentityServer-Controls-Auth-cfg-identityManager'>	/**
@@ -235,7 +235,7 @@ auth.renderers.or = function(element) {
 auth.renderers.avatar = function(element) {
 	return element.empty().append(Echo.Utils.loadImage(
 		this.user.get(&quot;avatar&quot;),
-		this.user.config.get(&quot;defaultAvatar&quot;)
+		this.config.get(&quot;defaultAvatar&quot;)
 	));
 };
 

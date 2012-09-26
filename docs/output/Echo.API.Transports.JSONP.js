@@ -45,15 +45,6 @@ Ext.data.JsonP.Echo_API_Transports_JSONP({
 
     ]
   },
-  "linenr": 133,
-  "files": [
-    {
-      "filename": "api.js",
-      "href": "api3.html#Echo-API-Transports-JSONP"
-    }
-  ],
-  "html_meta": {
-  },
   "statics": {
     "cfg": [
 
@@ -73,6 +64,15 @@ Ext.data.JsonP.Echo_API_Transports_JSONP({
     "css_mixin": [
 
     ]
+  },
+  "linenr": 175,
+  "files": [
+    {
+      "filename": "api.js",
+      "href": "api3.html#Echo-API-Transports-JSONP"
+    }
+  ],
+  "html_meta": {
   },
   "component": false,
   "superclasses": [

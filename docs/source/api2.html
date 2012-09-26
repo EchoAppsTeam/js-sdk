@@ -123,7 +123,7 @@ Echo.StreamServer.API.Request.prototype._onData = function(response, requestPara
 	if (this.liveUpdates &amp;&amp; this.liveUpdates.responseHandler &amp;&amp; this.requestType === &quot;secondary&quot;) {
 		this.liveUpdates.responseHandler(response);
 	}
-	this.constructor.parent._onData.apply(this, arguments);
+	Echo.StreamServer.API.Request.parent._onData.apply(this, arguments);
 	if (response.result === &quot;error&quot;) {
 		this._handleErrorResponse(response, {
 			&quot;callback&quot;: config.onError
@@ -148,9 +148,6 @@ Echo.StreamServer.API.Request.prototype._onError = function(responseError, reque
 	this._handleErrorResponse(responseError, {
 		&quot;callback&quot;: config.onError
 	});
-	if (this.requestType !== &quot;secondary&quot; || !this._isWaitingForData(responseError)) {
-		this.abort();
-	}
 };
 
 Echo.StreamServer.API.Request.prototype._submit = function() {
@@ -266,11 +263,7 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
-	return data &amp;&amp; ~$.inArray(data.errorCode, [&quot;waiting&quot;, &quot;timeout&quot;, &quot;busy&quot;, &quot;view_limit&quot;, &quot;view_update_capacity_exceeded&quot;]);
-};
-
-Echo.StreamServer.API.Request.prototype._isErrorWithTimer = function(data) {
-	return data &amp;&amp; ~$.inArray(data.errorCode, [&quot;view_limit&quot;, &quot;view_update_capacity_exceeded&quot;]);
+	return data &amp;&amp; ~$.inArray(data.errorCode, [&quot;waiting&quot;, &quot;timeout&quot;, &quot;busy&quot;, &quot;view_limit&quot;, &quot;view_update_capacity_exceeded&quot;, &quot;connection_failure&quot;, &quot;network_timeout&quot;]);
 };
 
 Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, config) {
@@ -304,9 +297,12 @@ Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, co
 		});
 	} else {
 		this.waitingTimeoutStep = 0;
+		if (this.liveUpdates) {
+			this._stopLiveUpdates();
+		}
 		errorCallback(data, {
 			&quot;requestType&quot;: self.requestType,
-			&quot;critical&quot;: true
+			&quot;critical&quot;: data.errorCode !== &quot;connection_aborted&quot;
 		});
 	}
 	this.error = data;

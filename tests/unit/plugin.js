@@ -443,7 +443,7 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 				"Checking \"" + action + "\" extendTemplate method");
 		});
 		QUnit.ok(!self.view.get("plugin_templateRemoveCheck"),
-			"Checking \"remove\" extendTemplate method")
+			"Checking \"remove\" extendTemplate method");
 
 		// checking plugin.view.* methods
 		QUnit.ok(!!plugin.view.get("testPluginRenderer"),

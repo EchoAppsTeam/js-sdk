@@ -14,12 +14,6 @@ Docs = {
         "icon": "icon-class"
       },
       {
-        "name": "Echo.Product",
-        "extends": "Echo.Control",
-        "private": null,
-        "icon": "icon-class"
-      },
-      {
         "name": "Echo.Plugin",
         "extends": null,
         "private": null,
@@ -46,6 +40,12 @@ Docs = {
       {
         "name": "Echo.IdentityServer.API.Request",
         "extends": "Echo.API.Request",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
+        "name": "Echo.App",
+        "extends": "Echo.Control",
         "private": null,
         "icon": "icon-class"
       },
@@ -260,6 +260,12 @@ Docs = {
         "icon": "icon-class"
       },
       {
+        "name": "Echo.API.Transports.XDomainRequest",
+        "extends": "Echo.API.Transports.AJAX",
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
         "name": "Echo.API.Transports.JSONP",
         "extends": "Echo.API.Transports.AJAX",
         "private": null,
@@ -279,13 +285,112 @@ Docs = {
       }
     ],
     "guides": [
-
+      {
+        "title": "JS SDK Guides",
+        "items": [
+          {
+            "name": "overview",
+            "title": "High-level overview",
+            "description": "The high-level overview of Echo JS SDK and its components."
+          },
+          {
+            "name": "terminology",
+            "title": "Terminology and dev tips",
+            "description": "Terminology guide and the set of the useful tips about the JS SDK architecture."
+          },
+          {
+            "name": "how_to_develop_control",
+            "title": "How to develop a control",
+            "description": "Control development hands-on guide."
+          },
+          {
+            "name": "how_to_develop_plugin",
+            "title": "How to develop a plugin",
+            "description": "Plugin development hands-on guide."
+          },
+          {
+            "name": "how_to_develop_app",
+            "title": "How to develop an app",
+            "description": "Application development hands-on guide."
+          }
+        ]
+      }
     ],
     "videos": [
 
     ],
     "examples": [
-
+      {
+        "title": "Controls Examples",
+        "items": [
+          {
+            "name": "auth",
+            "title": "Auth",
+            "description": "",
+            "url": "../demo/auth.html",
+            "icon": "../demo/../docs/resources/images/default-guide.png",
+            "status": "new"
+          },
+          {
+            "name": "counter",
+            "description": "",
+            "url": "../demo/counter.html",
+            "icon": "../demo/../docs/resources/images/default-guide.png",
+            "status": "new",
+            "title": "Counter"
+          },
+          {
+            "name": "facepile",
+            "description": "",
+            "url": "../demo/facepile.html",
+            "icon": "../demo/../docs/resources/images/default-guide.png",
+            "status": "new",
+            "title": "Facepile"
+          },
+          {
+            "name": "stream",
+            "description": "",
+            "url": "../demo/stream.html",
+            "icon": "../demo/../docs/resources/images/default-guide.png",
+            "status": "new",
+            "title": "Stream"
+          },
+          {
+            "name": "submit",
+            "description": "",
+            "url": "../demo/submit.html",
+            "icon": "../demo/../docs/resources/images/default-guide.png",
+            "status": "new",
+            "title": "Submit"
+          }
+        ]
+      },
+      {
+        "title": "Plugins Examples",
+        "items": [
+          {
+            "name": "pinboard-visualization",
+            "title": "Pinboard Visualization",
+            "description": "",
+            "url": "../demo/pinboard.html",
+            "icon": "../demo/../docs/resources/images/default-guide.png",
+            "status": "new"
+          }
+        ]
+      },
+      {
+        "title": "Apps Examples",
+        "items": [
+          {
+            "name": "comments-sample",
+            "title": "Comments sample",
+            "description": "Example of simple app",
+            "url": "../demo/apps/comments-sample/index.html",
+            "icon": "../demo/../docs/resources/images/default-guide.png",
+            "status": "new"
+          }
+        ]
+      }
     ],
     "search": [
       {
@@ -307,10 +412,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "set",
-        "fullName": "Echo.UserSession.set",
+        "name": "any",
+        "fullName": "Echo.UserSession.any",
         "icon": "icon-method",
-        "url": "#!/api/Echo.UserSession-method-set",
+        "url": "#!/api/Echo.UserSession-method-any",
         "meta": {
         },
         "sort": 3
@@ -325,15 +430,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "is",
-        "fullName": "Echo.UserSession.is",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.UserSession-method-is",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
         "name": "has",
         "fullName": "Echo.UserSession.has",
         "icon": "icon-method",
@@ -343,10 +439,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "any",
-        "fullName": "Echo.UserSession.any",
+        "name": "is",
+        "fullName": "Echo.UserSession.is",
         "icon": "icon-method",
-        "url": "#!/api/Echo.UserSession-method-any",
+        "url": "#!/api/Echo.UserSession-method-is",
         "meta": {
         },
         "sort": 3
@@ -361,15 +457,11 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onInvalidate",
-        "fullName": "Echo.UserSession.onInvalidate",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.UserSession-event-onInvalidate",
+        "name": "set",
+        "fullName": "Echo.UserSession.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.UserSession-method-set",
         "meta": {
-          "echo_event": {
-            "name": "Echo.UserSession.onInvalidate",
-            "description": "Triggered after user has logged in or logged out."
-          }
         },
         "sort": 3
       },
@@ -387,6 +479,19 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "onInvalidate",
+        "fullName": "Echo.UserSession.onInvalidate",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.UserSession-event-onInvalidate",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.UserSession.onInvalidate",
+            "description": "Triggered after user has logged in or logged out."
+          }
+        },
+        "sort": 3
+      },
+      {
         "name": "AppServer.Controls.Configurator",
         "fullName": "Echo.AppServer.Controls.Configurator",
         "icon": "icon-class",
@@ -394,62 +499,6 @@ Docs = {
         "meta": {
         },
         "sort": 1
-      },
-      {
-        "name": "Product",
-        "fullName": "Echo.Product",
-        "icon": "icon-class",
-        "url": "#!/api/Echo.Product",
-        "meta": {
-        },
-        "sort": 1
-      },
-      {
-        "name": "create",
-        "fullName": "Echo.Product.create",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Product-static-method-create",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "manifest",
-        "fullName": "Echo.Product.manifest",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Product-static-method-manifest",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "initComponent",
-        "fullName": "Echo.Product.initComponent",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Product-method-initComponent",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "destroyComponent",
-        "fullName": "Echo.Product.destroyComponent",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Product-method-destroyComponent",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "destroyComponents",
-        "fullName": "Echo.Product.destroyComponents",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Product-method-destroyComponents",
-        "meta": {
-        },
-        "sort": 3
       },
       {
         "name": "Plugin",
@@ -461,30 +510,127 @@ Docs = {
         "sort": 1
       },
       {
+        "name": "disable",
+        "fullName": "Echo.Plugin.disable",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-disable",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "enable",
+        "fullName": "Echo.Plugin.enable",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-enable",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "enabled",
+        "fullName": "Echo.Plugin.enabled",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-enabled",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "extendTemplate",
+        "fullName": "Echo.Plugin.extendTemplate",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-extendTemplate",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.Plugin.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-get",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "init",
+        "fullName": "Echo.Plugin.init",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-init",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "invoke",
+        "fullName": "Echo.Plugin.invoke",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-invoke",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "log",
+        "fullName": "Echo.Plugin.log",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-log",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "parentRenderer",
+        "fullName": "Echo.Plugin.parentRenderer",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-parentRenderer",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "remove",
+        "fullName": "Echo.Plugin.remove",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-remove",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "requestDataRefresh",
+        "fullName": "Echo.Plugin.requestDataRefresh",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-requestDataRefresh",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Plugin.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-set",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "substitute",
+        "fullName": "Echo.Plugin.substitute",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Plugin-method-substitute",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "create",
         "fullName": "Echo.Plugin.create",
         "icon": "icon-method",
         "url": "#!/api/Echo.Plugin-static-method-create",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "manifest",
-        "fullName": "Echo.Plugin.manifest",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-static-method-manifest",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "isDefined",
-        "fullName": "Echo.Plugin.isDefined",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-static-method-isDefined",
         "meta": {
           "static": true
         },
@@ -501,119 +647,22 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "init",
-        "fullName": "Echo.Plugin.init",
+        "name": "isDefined",
+        "fullName": "Echo.Plugin.isDefined",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-init",
+        "url": "#!/api/Echo.Plugin-static-method-isDefined",
         "meta": {
+          "static": true
         },
         "sort": 3
       },
       {
-        "name": "enabled",
-        "fullName": "Echo.Plugin.enabled",
+        "name": "manifest",
+        "fullName": "Echo.Plugin.manifest",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-enabled",
+        "url": "#!/api/Echo.Plugin-static-method-manifest",
         "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "set",
-        "fullName": "Echo.Plugin.set",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-set",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "get",
-        "fullName": "Echo.Plugin.get",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-get",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "remove",
-        "fullName": "Echo.Plugin.remove",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-remove",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "invoke",
-        "fullName": "Echo.Plugin.invoke",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-invoke",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "enable",
-        "fullName": "Echo.Plugin.enable",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-enable",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "disable",
-        "fullName": "Echo.Plugin.disable",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-disable",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "extendTemplate",
-        "fullName": "Echo.Plugin.extendTemplate",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-extendTemplate",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "parentRenderer",
-        "fullName": "Echo.Plugin.parentRenderer",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-parentRenderer",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "substitute",
-        "fullName": "Echo.Plugin.substitute",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-substitute",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "requestDataRefresh",
-        "fullName": "Echo.Plugin.requestDataRefresh",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-requestDataRefresh",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "log",
-        "fullName": "Echo.Plugin.log",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin-method-log",
-        "meta": {
+          "static": true
         },
         "sort": 3
       },
@@ -627,10 +676,10 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "set",
-        "fullName": "Echo.Plugin.config.set",
+        "name": "assemble",
+        "fullName": "Echo.Plugin.config.assemble",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin.config-method-set",
+        "url": "#!/api/Echo.Plugin.config-method-assemble",
         "meta": {
         },
         "sort": 3
@@ -654,10 +703,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "assemble",
-        "fullName": "Echo.Plugin.config.assemble",
+        "name": "set",
+        "fullName": "Echo.Plugin.config.set",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Plugin.config-method-assemble",
+        "url": "#!/api/Echo.Plugin.config-method-set",
         "meta": {
         },
         "sort": 3
@@ -708,15 +757,6 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "constructor",
-        "fullName": "Echo.IdentityServer.Controls.Auth.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-constructor",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
         "name": "identityManager",
         "fullName": "Echo.IdentityServer.Controls.Auth.identityManager",
         "icon": "icon-cfg",
@@ -745,6 +785,16 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "loggingOut",
+        "fullName": "Echo.IdentityServer.Controls.Auth.loggingOut",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-loggingOut",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
         "name": "login",
         "fullName": "Echo.IdentityServer.Controls.Auth.login",
         "icon": "icon-property",
@@ -759,16 +809,6 @@ Docs = {
         "fullName": "Echo.IdentityServer.Controls.Auth.logout",
         "icon": "icon-property",
         "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-logout",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "loggingOut",
-        "fullName": "Echo.IdentityServer.Controls.Auth.loggingOut",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-property-loggingOut",
         "meta": {
           "echo_label": true
         },
@@ -795,20 +835,19 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "logout",
-        "fullName": "Echo.IdentityServer.Controls.Auth.logout",
+        "name": "constructor",
+        "fullName": "Echo.IdentityServer.Controls.Auth.constructor",
         "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-logout",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-constructor",
         "meta": {
-          "echo_renderer": true
         },
         "sort": 3
       },
       {
-        "name": "login",
-        "fullName": "Echo.IdentityServer.Controls.Auth.login",
+        "name": "avatar",
+        "fullName": "Echo.IdentityServer.Controls.Auth.avatar",
         "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-login",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-avatar",
         "meta": {
           "echo_renderer": true
         },
@@ -825,10 +864,30 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "signup",
-        "fullName": "Echo.IdentityServer.Controls.Auth.signup",
+        "name": "login",
+        "fullName": "Echo.IdentityServer.Controls.Auth.login",
         "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-signup",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-login",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "logout",
+        "fullName": "Echo.IdentityServer.Controls.Auth.logout",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-logout",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "name",
+        "fullName": "Echo.IdentityServer.Controls.Auth.name",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-name",
         "meta": {
           "echo_renderer": true
         },
@@ -845,20 +904,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "avatar",
-        "fullName": "Echo.IdentityServer.Controls.Auth.avatar",
+        "name": "signup",
+        "fullName": "Echo.IdentityServer.Controls.Auth.signup",
         "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-avatar",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "name",
-        "fullName": "Echo.IdentityServer.Controls.Auth.name",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-name",
+        "url": "#!/api/Echo.IdentityServer.Controls.Auth-method-signup",
         "meta": {
           "echo_renderer": true
         },
@@ -881,15 +930,6 @@ Docs = {
         "meta": {
         },
         "sort": 1
-      },
-      {
-        "name": "constructor",
-        "fullName": "Echo.IdentityServer.API.Request.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.IdentityServer.API.Request-method-constructor",
-        "meta": {
-        },
-        "sort": 3
       },
       {
         "name": "onData",
@@ -919,10 +959,94 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "constructor",
+        "fullName": "Echo.IdentityServer.API.Request.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.IdentityServer.API.Request-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "request",
         "fullName": "Echo.IdentityServer.API.Request.request",
         "icon": "icon-method",
         "url": "#!/api/Echo.IdentityServer.API.Request-static-method-request",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "App",
+        "fullName": "Echo.App",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.App",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "destroyComponent",
+        "fullName": "Echo.App.destroyComponent",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.App-method-destroyComponent",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "destroyComponents",
+        "fullName": "Echo.App.destroyComponents",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.App-method-destroyComponents",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "getComponent",
+        "fullName": "Echo.App.getComponent",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.App-method-getComponent",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "initComponent",
+        "fullName": "Echo.App.initComponent",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.App-method-initComponent",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "create",
+        "fullName": "Echo.App.create",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.App-static-method-create",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "isDefined",
+        "fullName": "Echo.App.isDefined",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.App-static-method-isDefined",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "manifest",
+        "fullName": "Echo.App.manifest",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.App-static-method-manifest",
         "meta": {
           "static": true
         },
@@ -965,20 +1089,20 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "set",
-        "fullName": "Echo.Labels.set",
+        "name": "get",
+        "fullName": "Echo.Labels.get",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Labels-static-method-set",
+        "url": "#!/api/Echo.Labels-static-method-get",
         "meta": {
           "static": true
         },
         "sort": 3
       },
       {
-        "name": "get",
-        "fullName": "Echo.Labels.get",
+        "name": "set",
+        "fullName": "Echo.Labels.set",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Labels-static-method-get",
+        "url": "#!/api/Echo.Labels-static-method-set",
         "meta": {
           "static": true
         },
@@ -1003,19 +1127,19 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "get",
-        "fullName": "Echo.View.get",
+        "name": "fork",
+        "fullName": "Echo.View.fork",
         "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-get",
+        "url": "#!/api/Echo.View-method-fork",
         "meta": {
         },
         "sort": 3
       },
       {
-        "name": "set",
-        "fullName": "Echo.View.set",
+        "name": "get",
+        "fullName": "Echo.View.get",
         "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-set",
+        "url": "#!/api/Echo.View-method-get",
         "meta": {
         },
         "sort": 3
@@ -1030,15 +1154,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "rendered",
-        "fullName": "Echo.View.rendered",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-rendered",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
         "name": "render",
         "fullName": "Echo.View.render",
         "icon": "icon-method",
@@ -1048,10 +1163,19 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "fork",
-        "fullName": "Echo.View.fork",
+        "name": "rendered",
+        "fullName": "Echo.View.rendered",
         "icon": "icon-method",
-        "url": "#!/api/Echo.View-method-fork",
+        "url": "#!/api/Echo.View-method-rendered",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.View.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.View-method-set",
         "meta": {
         },
         "sort": 3
@@ -1076,6 +1200,16 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "capitalize",
+        "fullName": "Echo.Utils.capitalize",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-capitalize",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
         "name": "foldl",
         "fullName": "Echo.Utils.foldl",
         "icon": "icon-method",
@@ -1086,140 +1220,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "getNestedValue",
-        "fullName": "Echo.Utils.getNestedValue",
+        "name": "get",
+        "fullName": "Echo.Utils.get",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-getNestedValue",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "removeNestedValue",
-        "fullName": "Echo.Utils.removeNestedValue",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-removeNestedValue",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "setNestedValue",
-        "fullName": "Echo.Utils.setNestedValue",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-setNestedValue",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "htmlize",
-        "fullName": "Echo.Utils.htmlize",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-htmlize",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "objectToJSON",
-        "fullName": "Echo.Utils.objectToJSON",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-objectToJSON",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "htmlTextTruncate",
-        "fullName": "Echo.Utils.htmlTextTruncate",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-htmlTextTruncate",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "stripTags",
-        "fullName": "Echo.Utils.stripTags",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-stripTags",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "parseURL",
-        "fullName": "Echo.Utils.parseURL",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-parseURL",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "getVisibleColor",
-        "fullName": "Echo.Utils.getVisibleColor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-getVisibleColor",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "timestampFromW3CDTF",
-        "fullName": "Echo.Utils.timestampFromW3CDTF",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-timestampFromW3CDTF",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "isMobileDevice",
-        "fullName": "Echo.Utils.isMobileDevice",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-isMobileDevice",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "getUniqueString",
-        "fullName": "Echo.Utils.getUniqueString",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-getUniqueString",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "inherit",
-        "fullName": "Echo.Utils.inherit",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-inherit",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "objectToQuery",
-        "fullName": "Echo.Utils.objectToQuery",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-objectToQuery",
+        "url": "#!/api/Echo.Utils-static-method-get",
         "meta": {
           "static": true
         },
@@ -1236,20 +1240,40 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "isComponentDefined",
-        "fullName": "Echo.Utils.isComponentDefined",
+        "name": "getUniqueString",
+        "fullName": "Echo.Utils.getUniqueString",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-isComponentDefined",
+        "url": "#!/api/Echo.Utils-static-method-getUniqueString",
         "meta": {
           "static": true
         },
         "sort": 3
       },
       {
-        "name": "loadImage",
-        "fullName": "Echo.Utils.loadImage",
+        "name": "getVisibleColor",
+        "fullName": "Echo.Utils.getVisibleColor",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-loadImage",
+        "url": "#!/api/Echo.Utils-static-method-getVisibleColor",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "htmlTextTruncate",
+        "fullName": "Echo.Utils.htmlTextTruncate",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-htmlTextTruncate",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "htmlize",
+        "fullName": "Echo.Utils.htmlize",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-htmlize",
         "meta": {
           "static": true
         },
@@ -1266,50 +1290,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "log",
-        "fullName": "Echo.Utils.log",
+        "name": "inherit",
+        "fullName": "Echo.Utils.inherit",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-log",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "parallelCall",
-        "fullName": "Echo.Utils.parallelCall",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-parallelCall",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "sequentialCall",
-        "fullName": "Echo.Utils.sequentialCall",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-sequentialCall",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "capitalize",
-        "fullName": "Echo.Utils.capitalize",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-capitalize",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "substitute",
-        "fullName": "Echo.Utils.substitute",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Utils-static-method-substitute",
+        "url": "#!/api/Echo.Utils-static-method-inherit",
         "meta": {
           "static": true
         },
@@ -1326,6 +1310,136 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "isComponentDefined",
+        "fullName": "Echo.Utils.isComponentDefined",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-isComponentDefined",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "isMobileDevice",
+        "fullName": "Echo.Utils.isMobileDevice",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-isMobileDevice",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "loadImage",
+        "fullName": "Echo.Utils.loadImage",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-loadImage",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "log",
+        "fullName": "Echo.Utils.log",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-log",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "objectToJSON",
+        "fullName": "Echo.Utils.objectToJSON",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-objectToJSON",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "parallelCall",
+        "fullName": "Echo.Utils.parallelCall",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-parallelCall",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "parseURL",
+        "fullName": "Echo.Utils.parseURL",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-parseURL",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "remove",
+        "fullName": "Echo.Utils.remove",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-remove",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "sequentialCall",
+        "fullName": "Echo.Utils.sequentialCall",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-sequentialCall",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Utils.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-set",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "stripTags",
+        "fullName": "Echo.Utils.stripTags",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-stripTags",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "substitute",
+        "fullName": "Echo.Utils.substitute",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-substitute",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "timestampFromW3CDTF",
+        "fullName": "Echo.Utils.timestampFromW3CDTF",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-timestampFromW3CDTF",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
         "name": "Events",
         "fullName": "Echo.Events",
         "icon": "icon-class",
@@ -1333,6 +1447,16 @@ Docs = {
         "meta": {
         },
         "sort": 1
+      },
+      {
+        "name": "publish",
+        "fullName": "Echo.Events.publish",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Events-static-method-publish",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
       },
       {
         "name": "subscribe",
@@ -1355,16 +1479,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "publish",
-        "fullName": "Echo.Events.publish",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Events-static-method-publish",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
         "name": "Loader",
         "fullName": "Echo.Loader",
         "icon": "icon-class",
@@ -1372,16 +1486,6 @@ Docs = {
         "meta": {
         },
         "sort": 1
-      },
-      {
-        "name": "version",
-        "fullName": "Echo.Loader.version",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Loader-property-version",
-        "meta": {
-          "private": true
-        },
-        "sort": 3
       },
       {
         "name": "config",
@@ -1414,6 +1518,26 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "version",
+        "fullName": "Echo.Loader.version",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-version",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "download",
+        "fullName": "Echo.Loader.download",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Loader-static-method-download",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
         "name": "getURL",
         "fullName": "Echo.Loader.getURL",
         "icon": "icon-method",
@@ -1428,16 +1552,6 @@ Docs = {
         "fullName": "Echo.Loader.init",
         "icon": "icon-method",
         "url": "#!/api/Echo.Loader-static-method-init",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "download",
-        "fullName": "Echo.Loader.download",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Loader-static-method-download",
         "meta": {
           "static": true
         },
@@ -1463,19 +1577,28 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "constructor",
-        "fullName": "Echo.StreamServer.Controls.Submit.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-constructor",
+        "name": "actionString",
+        "fullName": "Echo.StreamServer.Controls.Submit.actionString",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-actionString",
         "meta": {
         },
         "sort": 3
       },
       {
-        "name": "targetURL",
-        "fullName": "Echo.StreamServer.Controls.Submit.targetURL",
+        "name": "errorPopup",
+        "fullName": "Echo.StreamServer.Controls.Submit.errorPopup",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-targetURL",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-errorPopup",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "itemURIPattern",
+        "fullName": "Echo.StreamServer.Controls.Submit.itemURIPattern",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-itemURIPattern",
         "meta": {
         },
         "sort": 3
@@ -1485,6 +1608,24 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Submit.markers",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-markers",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "postingTimeout",
+        "fullName": "Echo.StreamServer.Controls.Submit.postingTimeout",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-postingTimeout",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "requestMethod",
+        "fullName": "Echo.StreamServer.Controls.Submit.requestMethod",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-requestMethod",
         "meta": {
         },
         "sort": 3
@@ -1508,37 +1649,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "requestMethod",
-        "fullName": "Echo.StreamServer.Controls.Submit.requestMethod",
+        "name": "targetURL",
+        "fullName": "Echo.StreamServer.Controls.Submit.targetURL",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-requestMethod",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "itemURIPattern",
-        "fullName": "Echo.StreamServer.Controls.Submit.itemURIPattern",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-itemURIPattern",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "actionString",
-        "fullName": "Echo.StreamServer.Controls.Submit.actionString",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-actionString",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "postingTimeout",
-        "fullName": "Echo.StreamServer.Controls.Submit.postingTimeout",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-postingTimeout",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-targetURL",
         "meta": {
         },
         "sort": 3
@@ -1548,15 +1662,6 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Submit.type",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-type",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "errorPopup",
-        "fullName": "Echo.StreamServer.Controls.Submit.errorPopup",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-cfg-errorPopup",
         "meta": {
         },
         "sort": 3
@@ -1622,20 +1727,20 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "tagsHint",
-        "fullName": "Echo.StreamServer.Controls.Submit.tagsHint",
+        "name": "tags",
+        "fullName": "Echo.StreamServer.Controls.Submit.tags",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-tagsHint",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-tags",
         "meta": {
           "echo_label": true
         },
         "sort": 3
       },
       {
-        "name": "tags",
-        "fullName": "Echo.StreamServer.Controls.Submit.tags",
+        "name": "tagsHint",
+        "fullName": "Echo.StreamServer.Controls.Submit.tagsHint",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-tags",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-property-tagsHint",
         "meta": {
           "echo_label": true
         },
@@ -1662,10 +1767,47 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "tagsContainer",
-        "fullName": "Echo.StreamServer.Controls.Submit.tagsContainer",
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.Controls.Submit.constructor",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-tagsContainer",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "addPostValidator",
+        "fullName": "Echo.StreamServer.Controls.Submit.addPostValidator",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-addPostValidator",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "avatar",
+        "fullName": "Echo.StreamServer.Controls.Submit.avatar",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-avatar",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "highlightMandatory",
+        "fullName": "Echo.StreamServer.Controls.Submit.highlightMandatory",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-highlightMandatory",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "markers",
+        "fullName": "Echo.StreamServer.Controls.Submit.markers",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-markers",
         "meta": {
           "echo_renderer": true
         },
@@ -1682,12 +1824,40 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "markers",
-        "fullName": "Echo.StreamServer.Controls.Submit.markers",
+        "name": "name",
+        "fullName": "Echo.StreamServer.Controls.Submit.name",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-markers",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-name",
         "meta": {
           "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "post",
+        "fullName": "Echo.StreamServer.Controls.Submit.post",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-post",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "postButton",
+        "fullName": "Echo.StreamServer.Controls.Submit.postButton",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-postButton",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "refresh",
+        "fullName": "Echo.StreamServer.Controls.Submit.refresh",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-refresh",
+        "meta": {
         },
         "sort": 3
       },
@@ -1696,6 +1866,16 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Submit.tags",
         "icon": "icon-method",
         "url": "#!/api/Echo.StreamServer.Controls.Submit-method-tags",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "tagsContainer",
+        "fullName": "Echo.StreamServer.Controls.Submit.tagsContainer",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-tagsContainer",
         "meta": {
           "echo_renderer": true
         },
@@ -1712,64 +1892,12 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "avatar",
-        "fullName": "Echo.StreamServer.Controls.Submit.avatar",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-avatar",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "name",
-        "fullName": "Echo.StreamServer.Controls.Submit.name",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-name",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
         "name": "url",
         "fullName": "Echo.StreamServer.Controls.Submit.url",
         "icon": "icon-method",
         "url": "#!/api/Echo.StreamServer.Controls.Submit-method-url",
         "meta": {
           "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "postButton",
-        "fullName": "Echo.StreamServer.Controls.Submit.postButton",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-postButton",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "post",
-        "fullName": "Echo.StreamServer.Controls.Submit.post",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-post",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "onPostComplete",
-        "fullName": "Echo.StreamServer.Controls.Submit.onPostComplete",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-event-onPostComplete",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Submit.onPostComplete",
-            "description": "Triggered when the submit operation is finished."
-          }
         },
         "sort": 3
       },
@@ -1782,6 +1910,19 @@ Docs = {
           "echo_event": {
             "name": "Echo.Control.onDataInvalidate",
             "description": "Triggered if dataset is changed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onPostComplete",
+        "fullName": "Echo.StreamServer.Controls.Submit.onPostComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit-event-onPostComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.onPostComplete",
+            "description": "Triggered when the submit operation is finished."
           }
         },
         "sort": 3
@@ -1813,33 +1954,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "highlightMandatory",
-        "fullName": "Echo.StreamServer.Controls.Submit.highlightMandatory",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-highlightMandatory",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "addPostValidator",
-        "fullName": "Echo.StreamServer.Controls.Submit.addPostValidator",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-addPostValidator",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "refresh",
-        "fullName": "Echo.StreamServer.Controls.Submit.refresh",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit-method-refresh",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
         "name": "StreamServer.Controls.FacePile",
         "fullName": "Echo.StreamServer.Controls.FacePile",
         "icon": "icon-class",
@@ -1849,19 +1963,19 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "constructor",
-        "fullName": "Echo.StreamServer.Controls.FacePile.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-constructor",
+        "name": "data",
+        "fullName": "Echo.StreamServer.Controls.FacePile.data",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-data",
         "meta": {
         },
         "sort": 3
       },
       {
-        "name": "data",
-        "fullName": "Echo.StreamServer.Controls.FacePile.data",
+        "name": "infoMessages",
+        "fullName": "Echo.StreamServer.Controls.FacePile.infoMessages",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-data",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-infoMessages",
         "meta": {
         },
         "sort": 3
@@ -1876,10 +1990,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "totalUsersCount",
-        "fullName": "Echo.StreamServer.Controls.FacePile.totalUsersCount",
+        "name": "item",
+        "fullName": "Echo.StreamServer.Controls.FacePile.item",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-totalUsersCount",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-item",
         "meta": {
         },
         "sort": 3
@@ -1894,19 +2008,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "item",
-        "fullName": "Echo.StreamServer.Controls.FacePile.item",
+        "name": "totalUsersCount",
+        "fullName": "Echo.StreamServer.Controls.FacePile.totalUsersCount",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-item",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "infoMessages",
-        "fullName": "Echo.StreamServer.Controls.FacePile.infoMessages",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-infoMessages",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-cfg-totalUsersCount",
         "meta": {
         },
         "sort": 3
@@ -1932,12 +2037,11 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "more",
-        "fullName": "Echo.StreamServer.Controls.FacePile.more",
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.Controls.FacePile.constructor",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-more",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-constructor",
         "meta": {
-          "echo_renderer": true
         },
         "sort": 3
       },
@@ -1946,6 +2050,25 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.FacePile.actors",
         "icon": "icon-method",
         "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-actors",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getVisibleUsersCount",
+        "fullName": "Echo.StreamServer.Controls.FacePile.getVisibleUsersCount",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-getVisibleUsersCount",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "more",
+        "fullName": "Echo.StreamServer.Controls.FacePile.more",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-more",
         "meta": {
           "echo_renderer": true
         },
@@ -1962,15 +2085,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "getVisibleUsersCount",
-        "fullName": "Echo.StreamServer.Controls.FacePile.getVisibleUsersCount",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile-method-getVisibleUsersCount",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
         "name": "StreamServer.Controls.FacePile.Item",
         "fullName": "Echo.StreamServer.Controls.FacePile.Item",
         "icon": "icon-class",
@@ -1978,15 +2092,6 @@ Docs = {
         "meta": {
         },
         "sort": 1
-      },
-      {
-        "name": "constructor",
-        "fullName": "Echo.StreamServer.Controls.FacePile.Item.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item-method-constructor",
-        "meta": {
-        },
-        "sort": 3
       },
       {
         "name": "infoMessages",
@@ -2008,20 +2113,19 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "avatar",
-        "fullName": "Echo.StreamServer.Controls.FacePile.Item.avatar",
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.Controls.FacePile.Item.constructor",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item-method-avatar",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item-method-constructor",
         "meta": {
-          "echo_renderer": true
         },
         "sort": 3
       },
       {
-        "name": "title",
-        "fullName": "Echo.StreamServer.Controls.FacePile.Item.title",
+        "name": "avatar",
+        "fullName": "Echo.StreamServer.Controls.FacePile.Item.avatar",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item-method-title",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item-method-avatar",
         "meta": {
           "echo_renderer": true
         },
@@ -2038,6 +2142,16 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "title",
+        "fullName": "Echo.StreamServer.Controls.FacePile.Item.title",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item-method-title",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
         "name": "StreamServer.Controls.Stream",
         "fullName": "Echo.StreamServer.Controls.Stream",
         "icon": "icon-class",
@@ -2045,15 +2159,6 @@ Docs = {
         "meta": {
         },
         "sort": 1
-      },
-      {
-        "name": "constructor",
-        "fullName": "Echo.StreamServer.Controls.Stream.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-constructor",
-        "meta": {
-        },
-        "sort": 3
       },
       {
         "name": "children",
@@ -2173,6 +2278,16 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "emptyStream",
+        "fullName": "Echo.StreamServer.Controls.Stream.emptyStream",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-emptyStream",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
         "name": "guest",
         "fullName": "Echo.StreamServer.Controls.Stream.guest",
         "icon": "icon-property",
@@ -2193,30 +2308,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "paused",
-        "fullName": "Echo.StreamServer.Controls.Stream.paused",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-paused",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
         "name": "more",
         "fullName": "Echo.StreamServer.Controls.Stream.more",
         "icon": "icon-property",
         "url": "#!/api/Echo.StreamServer.Controls.Stream-property-more",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "emptyStream",
-        "fullName": "Echo.StreamServer.Controls.Stream.emptyStream",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-emptyStream",
         "meta": {
           "echo_label": true
         },
@@ -2233,6 +2328,25 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "paused",
+        "fullName": "Echo.StreamServer.Controls.Stream.paused",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-paused",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.Controls.Stream.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "body",
         "fullName": "Echo.StreamServer.Controls.Stream.body",
         "icon": "icon-method",
@@ -2243,12 +2357,11 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "state",
-        "fullName": "Echo.StreamServer.Controls.Stream.state",
+        "name": "getState",
+        "fullName": "Echo.StreamServer.Controls.Stream.getState",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-state",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-getState",
         "meta": {
-          "echo_renderer": true
         },
         "sort": 3
       },
@@ -2263,23 +2376,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onMoreButtonPress",
-        "fullName": "Echo.StreamServer.Controls.Stream.onMoreButtonPress",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onMoreButtonPress",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.onMoreButtonPress",
-            "description": "Triggered when the \"more\" button is pressed."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "getState",
-        "fullName": "Echo.StreamServer.Controls.Stream.getState",
+        "name": "queueActivity",
+        "fullName": "Echo.StreamServer.Controls.Stream.queueActivity",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-getState",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-queueActivity",
         "meta": {
         },
         "sort": 3
@@ -2294,24 +2394,12 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "queueActivity",
-        "fullName": "Echo.StreamServer.Controls.Stream.queueActivity",
+        "name": "state",
+        "fullName": "Echo.StreamServer.Controls.Stream.state",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-queueActivity",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-method-state",
         "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "onDataReceive",
-        "fullName": "Echo.StreamServer.Controls.Stream.onDataReceive",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onDataReceive",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.onDataReceive",
-            "description": "Triggered when new data is received."
-          }
+          "echo_renderer": true
         },
         "sort": 3
       },
@@ -2324,32 +2412,6 @@ Docs = {
           "echo_event": {
             "name": "Echo.StreamServer.Controls.Stream.Item.onReceive",
             "description": "Triggered when new item is received."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "onRerender",
-        "fullName": "Echo.StreamServer.Controls.Stream.onRerender",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onRerender",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.onRerender",
-            "description": "Triggered when the item is rerendered."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "onDelete",
-        "fullName": "Echo.StreamServer.Controls.Stream.onDelete",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onDelete",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.onDelete",
-            "description": "Triggered when the item is deleted."
           }
         },
         "sort": 3
@@ -2368,6 +2430,58 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "onDataReceive",
+        "fullName": "Echo.StreamServer.Controls.Stream.onDataReceive",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onDataReceive",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.onDataReceive",
+            "description": "Triggered when new data is received."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onDelete",
+        "fullName": "Echo.StreamServer.Controls.Stream.onDelete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onDelete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.onDelete",
+            "description": "Triggered when the item is deleted."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onMoreButtonPress",
+        "fullName": "Echo.StreamServer.Controls.Stream.onMoreButtonPress",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onMoreButtonPress",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.onMoreButtonPress",
+            "description": "Triggered when the \"more\" button is pressed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onRerender",
+        "fullName": "Echo.StreamServer.Controls.Stream.onRerender",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onRerender",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.onRerender",
+            "description": "Triggered when the item is rerendered."
+          }
+        },
+        "sort": 3
+      },
+      {
         "name": "StreamServer.Controls.Stream.Item",
         "fullName": "Echo.StreamServer.Controls.Stream.Item",
         "icon": "icon-class",
@@ -2375,15 +2489,6 @@ Docs = {
         "meta": {
         },
         "sort": 1
-      },
-      {
-        "name": "constructor",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-constructor",
-        "meta": {
-        },
-        "sort": 3
       },
       {
         "name": "aggressiveSanitization",
@@ -2449,120 +2554,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "defaultModeSwitchTitle",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.defaultModeSwitchTitle",
+        "name": "childrenMoreItems",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.childrenMoreItems",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-defaultModeSwitchTitle",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "guest",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.guest",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-guest",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "today",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.today",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-today",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "yesterday",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.yesterday",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-yesterday",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "lastWeek",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.lastWeek",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-lastWeek",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "lastMonth",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.lastMonth",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-lastMonth",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "secondAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.secondAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-secondAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "secondsAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.secondsAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-secondsAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "minuteAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.minuteAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-minuteAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "minutesAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.minutesAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-minutesAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "hourAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.hourAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-hourAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "hoursAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.hoursAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-hoursAgo",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-childrenMoreItems",
         "meta": {
           "echo_label": true
         },
@@ -2589,20 +2584,70 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "weekAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.weekAgo",
+        "name": "defaultModeSwitchTitle",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.defaultModeSwitchTitle",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-weekAgo",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-defaultModeSwitchTitle",
         "meta": {
           "echo_label": true
         },
         "sort": 3
       },
       {
-        "name": "weeksAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.weeksAgo",
+        "name": "fromLabel",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.fromLabel",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-weeksAgo",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-fromLabel",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "guest",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.guest",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-guest",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "hourAgo",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.hourAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-hourAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "hoursAgo",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.hoursAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-hoursAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "lastMonth",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.lastMonth",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-lastMonth",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "lastWeek",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.lastWeek",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-lastWeek",
         "meta": {
           "echo_label": true
         },
@@ -2613,6 +2658,26 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Stream.Item.metadataModeSwitchTitle",
         "icon": "icon-property",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-metadataModeSwitchTitle",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "minuteAgo",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.minuteAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-minuteAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "minutesAgo",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.minutesAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-minutesAgo",
         "meta": {
           "echo_label": true
         },
@@ -2639,10 +2704,60 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "secondAgo",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.secondAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-secondAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "secondsAgo",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.secondsAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-secondsAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
         "name": "sharedThisOn",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.sharedThisOn",
         "icon": "icon-property",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-sharedThisOn",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "textToggleTruncatedLess",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.textToggleTruncatedLess",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-textToggleTruncatedLess",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "textToggleTruncatedMore",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.textToggleTruncatedMore",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-textToggleTruncatedMore",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "today",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.today",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-today",
         "meta": {
           "echo_label": true
         },
@@ -2669,36 +2784,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "textToggleTruncatedMore",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.textToggleTruncatedMore",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-textToggleTruncatedMore",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "textToggleTruncatedLess",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.textToggleTruncatedLess",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-textToggleTruncatedLess",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "fromLabel",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.fromLabel",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-fromLabel",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
         "name": "viaLabel",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.viaLabel",
         "icon": "icon-property",
@@ -2709,12 +2794,50 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "childrenMoreItems",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.childrenMoreItems",
+        "name": "weekAgo",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.weekAgo",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-childrenMoreItems",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-weekAgo",
         "meta": {
           "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "weeksAgo",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.weeksAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-weeksAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "yesterday",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.yesterday",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-yesterday",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "addButtonSpec",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.addButtonSpec",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-addButtonSpec",
+        "meta": {
         },
         "sort": 3
       },
@@ -2729,70 +2852,39 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "markers",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.markers",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-markers",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "tags",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.tags",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-tags",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "container",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.container",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-container",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "metadataUserIP",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.metadataUserIP",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-metadataUserIP",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "modeSwitch",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.modeSwitch",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-modeSwitch",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "wrapper",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.wrapper",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-wrapper",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
         "name": "avatar",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.avatar",
         "icon": "icon-method",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-avatar",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "block",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.block",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-block",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "body",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.body",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-body",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "buttons",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.buttons",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-buttons",
         "meta": {
           "echo_renderer": true
         },
@@ -2819,10 +2911,116 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "buttons",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.buttons",
+        "name": "container",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.container",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-buttons",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-container",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "date",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.date",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-date",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "expandChildren",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.expandChildren",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-expandChildren",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "expandChildrenLabel",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.expandChildrenLabel",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-expandChildrenLabel",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "from",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.from",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-from",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "getAccumulator",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.getAccumulator",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-getAccumulator",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "getNextPageAfter",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.getNextPageAfter",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-getNextPageAfter",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "hasMoreChildren",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.hasMoreChildren",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-hasMoreChildren",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "isRoot",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.isRoot",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-isRoot",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "markers",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.markers",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-markers",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "metadata",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.metadata",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-metadata",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "modeSwitch",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.modeSwitch",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-modeSwitch",
         "meta": {
           "echo_renderer": true
         },
@@ -2849,20 +3047,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "via",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.via",
+        "name": "tags",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.tags",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-via",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "from",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.from",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-from",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-tags",
         "meta": {
           "echo_renderer": true
         },
@@ -2879,42 +3067,66 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "body",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.body",
+        "name": "traverse",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.traverse",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-body",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-traverse",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "unblock",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.unblock",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-unblock",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "via",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.via",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-via",
         "meta": {
           "echo_renderer": true
         },
         "sort": 3
       },
       {
-        "name": "date",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.date",
+        "name": "wrapper",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.wrapper",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-date",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-wrapper",
         "meta": {
           "echo_renderer": true
         },
         "sort": 3
       },
       {
-        "name": "expandChildrenLabel",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.expandChildrenLabel",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-expandChildrenLabel",
+        "name": "onAdd",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.onAdd",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-event-onAdd",
         "meta": {
-          "echo_renderer": true
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.onAdd",
+            "description": "Triggered when the child item is added."
+          }
         },
         "sort": 3
       },
       {
-        "name": "expandChildren",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.expandChildren",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-expandChildren",
+        "name": "onButtonClick",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.onButtonClick",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-event-onButtonClick",
         "meta": {
-          "echo_renderer": true
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.onButtonClick",
+            "description": "Triggered when the item control button is clicked."
+          }
         },
         "sort": 3
       },
@@ -2945,104 +3157,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onAdd",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.onAdd",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-event-onAdd",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.onAdd",
-            "description": "Triggered when the child item is added."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "hasMoreChildren",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.hasMoreChildren",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-hasMoreChildren",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "getNextPageAfter",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.getNextPageAfter",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-getNextPageAfter",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "traverse",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.traverse",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-traverse",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "block",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.block",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-block",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "unblock",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.unblock",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-unblock",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "getAccumulator",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.getAccumulator",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-getAccumulator",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "isRoot",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.isRoot",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-isRoot",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "addButtonSpec",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.addButtonSpec",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-method-addButtonSpec",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "onButtonClick",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.onButtonClick",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-event-onButtonClick",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.onButtonClick",
-            "description": "Triggered when the item control button is clicked."
-          }
-        },
-        "sort": 3
-      },
-      {
         "name": "StreamServer.Controls.Counter",
         "fullName": "Echo.StreamServer.Controls.Counter",
         "icon": "icon-class",
@@ -3052,37 +3166,10 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "constructor",
-        "fullName": "Echo.StreamServer.Controls.Counter.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Counter-method-constructor",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "query",
-        "fullName": "Echo.StreamServer.Controls.Counter.query",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-query",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
         "name": "data",
         "fullName": "Echo.StreamServer.Controls.Counter.data",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-data",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "liveUpdatesTimeout",
-        "fullName": "Echo.StreamServer.Controls.Counter.liveUpdatesTimeout",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-liveUpdatesTimeout",
         "meta": {
         },
         "sort": 3
@@ -3097,6 +3184,33 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "liveUpdatesTimeout",
+        "fullName": "Echo.StreamServer.Controls.Counter.liveUpdatesTimeout",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-liveUpdatesTimeout",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "query",
+        "fullName": "Echo.StreamServer.Controls.Counter.query",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-query",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.Controls.Counter.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Counter-method-constructor",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "StreamServer.Controls.Stream.Item.Plugins.Like",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like",
         "icon": "icon-class",
@@ -3104,6 +3218,26 @@ Docs = {
         "meta": {
         },
         "sort": 1
+      },
+      {
+        "name": "likeControl",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.likeControl",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like-property-likeControl",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "likeProcessing",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.likeProcessing",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like-property-likeProcessing",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
       },
       {
         "name": "likeThis",
@@ -3126,30 +3260,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "likeControl",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.likeControl",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like-property-likeControl",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
         "name": "unlikeControl",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.unlikeControl",
         "icon": "icon-property",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like-property-unlikeControl",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "likeProcessing",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.likeProcessing",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like-property-likeProcessing",
         "meta": {
           "echo_label": true
         },
@@ -3189,19 +3303,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onUnlikeComplete",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like-event-onUnlikeComplete",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete",
-            "description": "Triggered when the reverse Like operation is finished."
-          }
-        },
-        "sort": 3
-      },
-      {
         "name": "onLikeError",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeError",
         "icon": "icon-event",
@@ -3210,6 +3311,19 @@ Docs = {
           "echo_event": {
             "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeError",
             "description": "Triggered when the Like operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUnlikeComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like-event-onUnlikeComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete",
+            "description": "Triggered when the reverse Like operation is finished."
           }
         },
         "sort": 3
@@ -3247,20 +3361,20 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "container",
-        "fullName": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.container",
+        "name": "adminUnlike",
+        "fullName": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.adminUnlike",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item.Plugins.Like-method-container",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item.Plugins.Like-method-adminUnlike",
         "meta": {
           "echo_renderer": true
         },
         "sort": 3
       },
       {
-        "name": "adminUnlike",
-        "fullName": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.adminUnlike",
+        "name": "container",
+        "fullName": "Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.container",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item.Plugins.Like-method-adminUnlike",
+        "url": "#!/api/Echo.StreamServer.Controls.FacePile.Item.Plugins.Like-method-container",
         "meta": {
           "echo_renderer": true
         },
@@ -3289,6 +3403,15 @@ Docs = {
         "sort": 1
       },
       {
+        "name": "itemActions",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.itemActions",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-cfg-itemActions",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "userActions",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.userActions",
         "icon": "icon-cfg",
@@ -3298,11 +3421,22 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "itemActions",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.itemActions",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-cfg-itemActions",
+        "name": "administratorButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.administratorButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-administratorButton",
         "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "administratorRole",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.administratorRole",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-administratorRole",
+        "meta": {
+          "echo_label": true
         },
         "sort": 3
       },
@@ -3317,30 +3451,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "deleteButton",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.deleteButton",
+        "name": "banUser",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.banUser",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-deleteButton",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "spamButton",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.spamButton",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-spamButton",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "untouchButton",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.untouchButton",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-untouchButton",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-banUser",
         "meta": {
           "echo_label": true
         },
@@ -3377,6 +3491,16 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "changingStatusToModeratorFlagged",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.changingStatusToModeratorFlagged",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-changingStatusToModeratorFlagged",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
         "name": "changingStatusToUntouched",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.changingStatusToUntouched",
         "icon": "icon-property",
@@ -3387,10 +3511,60 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "changingStatusToModeratorFlagged",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.changingStatusToModeratorFlagged",
+        "name": "deleteButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.deleteButton",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-changingStatusToModeratorFlagged",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-deleteButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "moderatorButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.moderatorButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-moderatorButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "moderatorRole",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.moderatorRole",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-moderatorRole",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "processingAction",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.processingAction",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-processingAction",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "setRoleAction",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.setRoleAction",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-setRoleAction",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "spamButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.spamButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-spamButton",
         "meta": {
           "echo_label": true
         },
@@ -3447,10 +3621,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "banUser",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.banUser",
+        "name": "statusUntouched",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusUntouched",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-banUser",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-statusUntouched",
         "meta": {
           "echo_label": true
         },
@@ -3467,86 +3641,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "userBanned",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.userBanned",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-userBanned",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "processingAction",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.processingAction",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-processingAction",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "moderatorRole",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.moderatorRole",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-moderatorRole",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "administratorRole",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.administratorRole",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-administratorRole",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "userButton",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.userButton",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-userButton",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "moderatorButton",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.moderatorButton",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-moderatorButton",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "administratorButton",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.administratorButton",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-administratorButton",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "setRoleAction",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.setRoleAction",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-setRoleAction",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
         "name": "unsetRoleAction",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.unsetRoleAction",
         "icon": "icon-property",
@@ -3557,10 +3651,30 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "statusUntouched",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusUntouched",
+        "name": "untouchButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.untouchButton",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-statusUntouched",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-untouchButton",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "userBanned",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.userBanned",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-userBanned",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "userButton",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.userButton",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-userButton",
         "meta": {
           "echo_label": true
         },
@@ -3600,40 +3714,14 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onSpamComplete",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamComplete",
+        "name": "onApproveError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError",
         "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onSpamComplete",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onApproveError",
         "meta": {
           "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamComplete",
-            "description": "Triggered if \"Spam\" operation was completed."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "onDeleteComplete",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onDeleteComplete",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete",
-            "description": "Triggered if \"Delete\" operation was completed."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "onUntouchComplete",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUntouchComplete",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete",
-            "description": "Triggered if \"Untouch\" operation was completed."
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError",
+            "description": "Triggered if \"Approve\" operation was failed."
           }
         },
         "sort": 3
@@ -3652,53 +3740,27 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onUnBanComplete",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete",
+        "name": "onBanError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError",
         "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUnBanComplete",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onBanError",
         "meta": {
           "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete",
-            "description": "Triggered if \"UnBan\" operation was completed."
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError",
+            "description": "Triggered if \"Ban\" operation was failed."
           }
         },
         "sort": 3
       },
       {
-        "name": "onUserPermissionsComplete",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete",
+        "name": "onDeleteComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete",
         "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUserPermissionsComplete",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onDeleteComplete",
         "meta": {
           "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete",
-            "description": "Triggered if \"UserPermissions\" operation was completed."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "onApproveError",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onApproveError",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError",
-            "description": "Triggered if \"Approve\" operation was failed."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "onSpamError",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onSpamError",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError",
-            "description": "Triggered if \"Spam\" operation was failed."
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete",
+            "description": "Triggered if \"Delete\" operation was completed."
           }
         },
         "sort": 3
@@ -3717,27 +3779,40 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onUntouchError",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError",
+        "name": "onSpamComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamComplete",
         "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUntouchError",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onSpamComplete",
         "meta": {
           "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError",
-            "description": "Triggered if \"Untouch\" operation was failed."
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamComplete",
+            "description": "Triggered if \"Spam\" operation was completed."
           }
         },
         "sort": 3
       },
       {
-        "name": "onBanError",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError",
+        "name": "onSpamError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError",
         "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onBanError",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onSpamError",
         "meta": {
           "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError",
-            "description": "Triggered if \"Ban\" operation was failed."
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError",
+            "description": "Triggered if \"Spam\" operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUnBanComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUnBanComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete",
+            "description": "Triggered if \"UnBan\" operation was completed."
           }
         },
         "sort": 3
@@ -3751,6 +3826,45 @@ Docs = {
           "echo_event": {
             "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanError",
             "description": "Triggered if \"UnBan\" operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUntouchComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUntouchComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete",
+            "description": "Triggered if \"Untouch\" operation was completed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUntouchError",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUntouchError",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError",
+            "description": "Triggered if \"Untouch\" operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUserPermissionsComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-event-onUserPermissionsComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete",
+            "description": "Triggered if \"UserPermissions\" operation was completed."
           }
         },
         "sort": 3
@@ -3807,20 +3921,20 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "text",
-        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.text",
+        "name": "counterLabel",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.counterLabel",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter-method-text",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter-method-counterLabel",
         "meta": {
           "echo_renderer": true
         },
         "sort": 3
       },
       {
-        "name": "counterLabel",
-        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.counterLabel",
+        "name": "text",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.text",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter-method-counterLabel",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter-method-text",
         "meta": {
           "echo_renderer": true
         },
@@ -3842,6 +3956,19 @@ Docs = {
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.MediaGallery-method-controls",
         "meta": {
           "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "onChangeMedia",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.MediaGallery-event-onChangeMedia",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia",
+            "description": "Triggered when media is changed."
+          }
         },
         "sort": 3
       },
@@ -3872,19 +3999,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onChangeMedia",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.MediaGallery-event-onChangeMedia",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia",
-            "description": "Triggered when media is changed."
-          }
-        },
-        "sort": 3
-      },
-      {
         "name": "StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization",
         "icon": "icon-class",
@@ -3898,6 +4012,24 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.columnWidth",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-cfg-columnWidth",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "gallery",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.gallery",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-cfg-gallery",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "itemCSSClassByContentLength",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.itemCSSClassByContentLength",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-cfg-itemCSSClassByContentLength",
         "meta": {
         },
         "sort": 3
@@ -3921,24 +4053,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "itemCSSClassByContentLength",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.itemCSSClassByContentLength",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-cfg-itemCSSClassByContentLength",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "gallery",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.gallery",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-cfg-gallery",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
         "name": "childrenMoreItems",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.childrenMoreItems",
         "icon": "icon-property",
@@ -3949,53 +4063,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onChangeView",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.onChangeView",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-event-onChangeView",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.onChangeView",
-            "description": "Triggered if the view was changed."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "content",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.content",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-content",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
         "name": "avatar",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.avatar",
         "icon": "icon-method",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-avatar",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "container",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.container",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-container",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "expandChildren",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.expandChildren",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-expandChildren",
         "meta": {
           "echo_renderer": true
         },
@@ -4012,20 +4083,40 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "textToggleTruncated",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.textToggleTruncated",
+        "name": "childBody",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.childBody",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-textToggleTruncated",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-childBody",
         "meta": {
           "echo_renderer": true
         },
         "sort": 3
       },
       {
-        "name": "childBody",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.childBody",
+        "name": "container",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.container",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-childBody",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-container",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "content",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.content",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-content",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "expandChildren",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.expandChildren",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-expandChildren",
         "meta": {
           "echo_renderer": true
         },
@@ -4038,6 +4129,29 @@ Docs = {
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-media",
         "meta": {
           "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "textToggleTruncated",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.textToggleTruncated",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-textToggleTruncated",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "onChangeView",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.onChangeView",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-event-onChangeView",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.onChangeView",
+            "description": "Triggered if the view was changed."
+          }
         },
         "sort": 3
       },
@@ -4086,6 +4200,16 @@ Docs = {
         "meta": {
         },
         "sort": 1
+      },
+      {
+        "name": "cancel",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.cancel",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-property-cancel",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
       },
       {
         "name": "createdBy",
@@ -4138,25 +4262,32 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "cancel",
-        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.cancel",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-property-cancel",
+        "name": "author",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.author",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-method-author",
         "meta": {
-          "echo_label": true
+          "echo_renderer": true
         },
         "sort": 3
       },
       {
-        "name": "onEditInit",
-        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-event-onEditInit",
+        "name": "cancelButton",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.cancelButton",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-method-cancelButton",
         "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit",
-            "description": "Triggered when edit operation was started"
-          }
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "editedDate",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.editedDate",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-method-editedDate",
+        "meta": {
+          "echo_renderer": true
         },
         "sort": 3
       },
@@ -4187,32 +4318,15 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "author",
-        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.author",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-method-author",
+        "name": "onEditInit",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-event-onEditInit",
         "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "editedDate",
-        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.editedDate",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-method-editedDate",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "cancelButton",
-        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.Edit.cancelButton",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit-method-cancelButton",
-        "meta": {
-          "echo_renderer": true
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit",
+            "description": "Triggered when edit operation was started"
+          }
         },
         "sort": 3
       },
@@ -4245,40 +4359,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "container",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.container",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-method-container",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
         "name": "children",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.children",
         "icon": "icon-method",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-method-children",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "submitForm",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.submitForm",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-method-submitForm",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "compactForm",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.compactForm",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-method-compactForm",
         "meta": {
           "echo_renderer": true
         },
@@ -4295,11 +4379,41 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "compactForm",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.compactForm",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-method-compactForm",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "container",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.container",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-method-container",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
         "name": "destroy",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.destroy",
         "icon": "icon-method",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-method-destroy",
         "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "submitForm",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.submitForm",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply-method-submitForm",
+        "meta": {
+          "echo_renderer": true
         },
         "sort": 3
       },
@@ -4379,19 +4493,19 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "countTickTimeout",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay.countTickTimeout",
+        "name": "accumulator",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay.accumulator",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay-cfg-countTickTimeout",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay-cfg-accumulator",
         "meta": {
         },
         "sort": 3
       },
       {
-        "name": "accumulator",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay.accumulator",
+        "name": "countTickTimeout",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay.countTickTimeout",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay-cfg-accumulator",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay-cfg-countTickTimeout",
         "meta": {
         },
         "sort": 3
@@ -4425,16 +4539,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "flaggedThis",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.flaggedThis",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-flaggedThis",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
         "name": "flagControl",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.flagControl",
         "icon": "icon-property",
@@ -4445,20 +4549,30 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "unflagControl",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.unflagControl",
+        "name": "flagProcessing",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.flagProcessing",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-unflagControl",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-flagProcessing",
         "meta": {
           "echo_label": true
         },
         "sort": 3
       },
       {
-        "name": "flagProcessing",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.flagProcessing",
+        "name": "flaggedThis",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.flaggedThis",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-flagProcessing",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-flaggedThis",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "unflagControl",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.unflagControl",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-property-unflagControl",
         "meta": {
           "echo_label": true
         },
@@ -4498,19 +4612,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onUnFlagComplete",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnFlagComplete",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-event-onUnFlagComplete",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagComplete",
-            "description": "Triggered if reverse flag operation was completed."
-          }
-        },
-        "sort": 3
-      },
-      {
         "name": "onFlagError",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagError",
         "icon": "icon-event",
@@ -4519,6 +4620,19 @@ Docs = {
           "echo_event": {
             "name": "Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagError",
             "description": "Triggered if flag operation was failed."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUnFlagComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnFlagComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-event-onUnFlagComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagComplete",
+            "description": "Triggered if reverse flag operation was completed."
           }
         },
         "sort": 3
@@ -4574,10 +4688,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "header",
-        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.FormAuth.header",
+        "name": "auth",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.FormAuth.auth",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.FormAuth-method-header",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.FormAuth-method-auth",
         "meta": {
           "echo_renderer": true
         },
@@ -4594,10 +4708,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "auth",
-        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.FormAuth.auth",
+        "name": "header",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.FormAuth.header",
         "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.FormAuth-method-auth",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.FormAuth-method-header",
         "meta": {
           "echo_renderer": true
         },
@@ -4655,19 +4769,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onUnmarkComplete",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarkComplete",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager-event-onUnmarkComplete",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarComplete",
-            "description": "Triggered when the Unmark action is finished."
-          }
-        },
-        "sort": 3
-      },
-      {
         "name": "onMarkError",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkError",
         "icon": "icon-event",
@@ -4676,6 +4777,19 @@ Docs = {
           "echo_event": {
             "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkError",
             "description": "Triggered when the Mark action completed with error."
+          }
+        },
+        "sort": 3
+      },
+      {
+        "name": "onUnmarkComplete",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarkComplete",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager-event-onUnmarkComplete",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarComplete",
+            "description": "Triggered when the Unmark action is finished."
           }
         },
         "sort": 3
@@ -4712,20 +4826,10 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "tweet",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.tweet",
+        "name": "comment",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.comment",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-property-tweet",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "retweet",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.retweet",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-property-retweet",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-property-comment",
         "meta": {
           "echo_label": true
         },
@@ -4742,10 +4846,20 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "comment",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.comment",
+        "name": "retweet",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.retweet",
         "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-property-comment",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-property-retweet",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "tweet",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents.tweet",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents-property-tweet",
         "meta": {
           "echo_label": true
         },
@@ -4801,6 +4915,15 @@ Docs = {
         "sort": 1
       },
       {
+        "name": "activity",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.activity",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing-cfg-activity",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "appId",
         "fullName": "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.appId",
         "icon": "icon-cfg",
@@ -4814,15 +4937,6 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.xdReceiver",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing-cfg-xdReceiver",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "activity",
-        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.activity",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing-cfg-activity",
         "meta": {
         },
         "sort": 3
@@ -4847,10 +4961,10 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "constructor",
-        "fullName": "Echo.StreamServer.API.Request.constructor",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.API.Request-method-constructor",
+        "name": "itemURIPattern",
+        "fullName": "Echo.StreamServer.API.Request.itemURIPattern",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-itemURIPattern",
         "meta": {
         },
         "sort": 3
@@ -4860,33 +4974,6 @@ Docs = {
         "fullName": "Echo.StreamServer.API.Request.liveUpdatesTimeout",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.StreamServer.API.Request-cfg-liveUpdatesTimeout",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "skipInitialRequest",
-        "fullName": "Echo.StreamServer.API.Request.skipInitialRequest",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.API.Request-cfg-skipInitialRequest",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "recurring",
-        "fullName": "Echo.StreamServer.API.Request.recurring",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.API.Request-cfg-recurring",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "itemURIPattern",
-        "fullName": "Echo.StreamServer.API.Request.itemURIPattern",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.API.Request-cfg-itemURIPattern",
         "meta": {
         },
         "sort": 3
@@ -4919,10 +5006,37 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "recurring",
+        "fullName": "Echo.StreamServer.API.Request.recurring",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-recurring",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "skipInitialRequest",
+        "fullName": "Echo.StreamServer.API.Request.skipInitialRequest",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.API.Request-cfg-skipInitialRequest",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "submissionProxyURL",
         "fullName": "Echo.StreamServer.API.Request.submissionProxyURL",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.StreamServer.API.Request-cfg-submissionProxyURL",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "constructor",
+        "fullName": "Echo.StreamServer.API.Request.constructor",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.API.Request-method-constructor",
         "meta": {
         },
         "sort": 3
@@ -4956,32 +5070,11 @@ Docs = {
         "sort": 1
       },
       {
-        "name": "create",
-        "fullName": "Echo.Control.create",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Control-static-method-create",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "manifest",
-        "fullName": "Echo.Control.manifest",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Control-static-method-manifest",
-        "meta": {
-          "static": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "target",
-        "fullName": "Echo.Control.target",
+        "name": "apiBaseURL",
+        "fullName": "Echo.Control.apiBaseURL",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.Control-cfg-target",
+        "url": "#!/api/Echo.Control-cfg-apiBaseURL",
         "meta": {
-          "required": true
         },
         "sort": 3
       },
@@ -4996,28 +5089,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "labels",
-        "fullName": "Echo.Control.labels",
+        "name": "defaultAvatar",
+        "fullName": "Echo.Control.defaultAvatar",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.Control-cfg-labels",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "apiBaseURL",
-        "fullName": "Echo.Control.apiBaseURL",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.Control-cfg-apiBaseURL",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "submissionProxyURL",
-        "fullName": "Echo.Control.submissionProxyURL",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.Control-cfg-submissionProxyURL",
+        "url": "#!/api/Echo.Control-cfg-defaultAvatar",
         "meta": {
         },
         "sort": 3
@@ -5032,22 +5107,30 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "loading",
-        "fullName": "Echo.Control.loading",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Control-property-loading",
+        "name": "labels",
+        "fullName": "Echo.Control.labels",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.Control-cfg-labels",
         "meta": {
-          "echo_label": true
         },
         "sort": 3
       },
       {
-        "name": "retrying",
-        "fullName": "Echo.Control.retrying",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Control-property-retrying",
+        "name": "submissionProxyURL",
+        "fullName": "Echo.Control.submissionProxyURL",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.Control-cfg-submissionProxyURL",
         "meta": {
-          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "target",
+        "fullName": "Echo.Control.target",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.Control-cfg-target",
+        "meta": {
+          "required": true
         },
         "sort": 3
       },
@@ -5062,70 +5145,20 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "error_timeout",
-        "fullName": "Echo.Control.error_timeout",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Control-property-error_timeout",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "error_waiting",
-        "fullName": "Echo.Control.error_waiting",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Control-property-error_waiting",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "error_view_limit",
-        "fullName": "Echo.Control.error_view_limit",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Control-property-error_view_limit",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "error_view_update_capacity_exceeded",
-        "fullName": "Echo.Control.error_view_update_capacity_exceeded",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Control-property-error_view_update_capacity_exceeded",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "error_result_too_large",
-        "fullName": "Echo.Control.error_result_too_large",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Control-property-error_result_too_large",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "error_wrong_query",
-        "fullName": "Echo.Control.error_wrong_query",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.Control-property-error_wrong_query",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
         "name": "error_incorrect_appkey",
         "fullName": "Echo.Control.error_incorrect_appkey",
         "icon": "icon-property",
         "url": "#!/api/Echo.Control-property-error_incorrect_appkey",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "error_incorrect_user_id",
+        "fullName": "Echo.Control.error_incorrect_user_id",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-error_incorrect_user_id",
         "meta": {
           "echo_label": true
         },
@@ -5152,10 +5185,20 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "error_incorrect_user_id",
-        "fullName": "Echo.Control.error_incorrect_user_id",
+        "name": "error_result_too_large",
+        "fullName": "Echo.Control.error_result_too_large",
         "icon": "icon-property",
-        "url": "#!/api/Echo.Control-property-error_incorrect_user_id",
+        "url": "#!/api/Echo.Control-property-error_result_too_large",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "error_timeout",
+        "fullName": "Echo.Control.error_timeout",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-error_timeout",
         "meta": {
           "echo_label": true
         },
@@ -5172,6 +5215,93 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "error_view_limit",
+        "fullName": "Echo.Control.error_view_limit",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-error_view_limit",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "error_view_update_capacity_exceeded",
+        "fullName": "Echo.Control.error_view_update_capacity_exceeded",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-error_view_update_capacity_exceeded",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "error_waiting",
+        "fullName": "Echo.Control.error_waiting",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-error_waiting",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "error_wrong_query",
+        "fullName": "Echo.Control.error_wrong_query",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-error_wrong_query",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "loading",
+        "fullName": "Echo.Control.loading",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-loading",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "retrying",
+        "fullName": "Echo.Control.retrying",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-retrying",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "dependent",
+        "fullName": "Echo.Control.dependent",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-dependent",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "destroy",
+        "fullName": "Echo.Control.destroy",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-destroy",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "extendTemplate",
+        "fullName": "Echo.Control.extendTemplate",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-extendTemplate",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "get",
         "fullName": "Echo.Control.get",
         "icon": "icon-method",
@@ -5181,10 +5311,55 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "set",
-        "fullName": "Echo.Control.set",
+        "name": "getPlugin",
+        "fullName": "Echo.Control.getPlugin",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-set",
+        "url": "#!/api/Echo.Control-method-getPlugin",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "invoke",
+        "fullName": "Echo.Control.invoke",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-invoke",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "log",
+        "fullName": "Echo.Control.log",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-log",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "parentRenderer",
+        "fullName": "Echo.Control.parentRenderer",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-parentRenderer",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "ready",
+        "fullName": "Echo.Control.ready",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-ready",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "refresh",
+        "fullName": "Echo.Control.refresh",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-refresh",
         "meta": {
         },
         "sort": 3
@@ -5208,64 +5383,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "substitute",
-        "fullName": "Echo.Control.substitute",
+        "name": "set",
+        "fullName": "Echo.Control.set",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-substitute",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "invoke",
-        "fullName": "Echo.Control.invoke",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-invoke",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "refresh",
-        "fullName": "Echo.Control.refresh",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-refresh",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "ready",
-        "fullName": "Echo.Control.ready",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-ready",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "destroy",
-        "fullName": "Echo.Control.destroy",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-destroy",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "dependent",
-        "fullName": "Echo.Control.dependent",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-dependent",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "showMessage",
-        "fullName": "Echo.Control.showMessage",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-showMessage",
+        "url": "#!/api/Echo.Control-method-set",
         "meta": {
         },
         "sort": 3
@@ -5280,10 +5401,19 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "getPlugin",
-        "fullName": "Echo.Control.getPlugin",
+        "name": "showMessage",
+        "fullName": "Echo.Control.showMessage",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-getPlugin",
+        "url": "#!/api/Echo.Control-method-showMessage",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "substitute",
+        "fullName": "Echo.Control.substitute",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-substitute",
         "meta": {
         },
         "sort": 3
@@ -5298,29 +5428,32 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "parentRenderer",
-        "fullName": "Echo.Control.parentRenderer",
+        "name": "create",
+        "fullName": "Echo.Control.create",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-parentRenderer",
+        "url": "#!/api/Echo.Control-static-method-create",
         "meta": {
+          "static": true
         },
         "sort": 3
       },
       {
-        "name": "extendTemplate",
-        "fullName": "Echo.Control.extendTemplate",
+        "name": "isDefined",
+        "fullName": "Echo.Control.isDefined",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-extendTemplate",
+        "url": "#!/api/Echo.Control-static-method-isDefined",
         "meta": {
+          "static": true
         },
         "sort": 3
       },
       {
-        "name": "log",
-        "fullName": "Echo.Control.log",
+        "name": "manifest",
+        "fullName": "Echo.Control.manifest",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Control-method-log",
+        "url": "#!/api/Echo.Control-static-method-manifest",
         "meta": {
+          "static": true
         },
         "sort": 3
       },
@@ -5343,6 +5476,15 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "extend",
+        "fullName": "Echo.Configuration.extend",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Configuration-method-extend",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "get",
         "fullName": "Echo.Configuration.get",
         "icon": "icon-method",
@@ -5352,10 +5494,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "set",
-        "fullName": "Echo.Configuration.set",
+        "name": "getAsHash",
+        "fullName": "Echo.Configuration.getAsHash",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Configuration-method-set",
+        "url": "#!/api/Echo.Configuration-method-getAsHash",
         "meta": {
         },
         "sort": 3
@@ -5370,19 +5512,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "extend",
-        "fullName": "Echo.Configuration.extend",
+        "name": "set",
+        "fullName": "Echo.Configuration.set",
         "icon": "icon-method",
-        "url": "#!/api/Echo.Configuration-method-extend",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "getAsHash",
-        "fullName": "Echo.Configuration.getAsHash",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.Configuration-method-getAsHash",
+        "url": "#!/api/Echo.Configuration-method-set",
         "meta": {
         },
         "sort": 3
@@ -5401,6 +5534,15 @@ Docs = {
         "fullName": "Echo.API.Transports.AJAX",
         "icon": "icon-class",
         "url": "#!/api/Echo.API.Transports.AJAX",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "API.Transports.XDomainRequest",
+        "fullName": "Echo.API.Transports.XDomainRequest",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.API.Transports.XDomainRequest",
         "meta": {
         },
         "sort": 1
@@ -5433,10 +5575,37 @@ Docs = {
         "sort": 1
       },
       {
+        "name": "apiBaseUrl",
+        "fullName": "Echo.API.Request.apiBaseUrl",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-apiBaseUrl",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "endpoint",
         "fullName": "Echo.API.Request.endpoint",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.API.Request-cfg-endpoint",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "method",
+        "fullName": "Echo.API.Request.method",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-method",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "onClose",
+        "fullName": "Echo.API.Request.onClose",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-onClose",
         "meta": {
         },
         "sort": 3
@@ -5469,19 +5638,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onClose",
-        "fullName": "Echo.API.Request.onClose",
+        "name": "timeout",
+        "fullName": "Echo.API.Request.timeout",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.API.Request-cfg-onClose",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "apiBaseUrl",
-        "fullName": "Echo.API.Request.apiBaseUrl",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.API.Request-cfg-apiBaseUrl",
+        "url": "#!/api/Echo.API.Request-cfg-timeout",
         "meta": {
         },
         "sort": 3
@@ -5496,24 +5656,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "method",
-        "fullName": "Echo.API.Request.method",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.API.Request-cfg-method",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "timeout",
-        "fullName": "Echo.API.Request.timeout",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.API.Request-cfg-timeout",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
         "name": "send",
         "fullName": "Echo.API.Request.send",
         "icon": "icon-method",
@@ -5521,7 +5663,118 @@ Docs = {
         "meta": {
         },
         "sort": 3
+      },
+      {
+        "name": "High-level overview",
+        "fullName": "guide: High-level overview",
+        "icon": "icon-guide",
+        "url": "#!/guide/overview",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "Terminology and dev tips",
+        "fullName": "guide: Terminology and dev tips",
+        "icon": "icon-guide",
+        "url": "#!/guide/terminology",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "How to develop a control",
+        "fullName": "guide: How to develop a control",
+        "icon": "icon-guide",
+        "url": "#!/guide/how_to_develop_control",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "How to develop a plugin",
+        "fullName": "guide: How to develop a plugin",
+        "icon": "icon-guide",
+        "url": "#!/guide/how_to_develop_plugin",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "How to develop an app",
+        "fullName": "guide: How to develop an app",
+        "icon": "icon-guide",
+        "url": "#!/guide/how_to_develop_app",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "Auth",
+        "fullName": "example: Auth",
+        "icon": "icon-example",
+        "url": "#!/example/auth",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "Counter",
+        "fullName": "example: Counter",
+        "icon": "icon-example",
+        "url": "#!/example/counter",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "Facepile",
+        "fullName": "example: Facepile",
+        "icon": "icon-example",
+        "url": "#!/example/facepile",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "Stream",
+        "fullName": "example: Stream",
+        "icon": "icon-example",
+        "url": "#!/example/stream",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "Submit",
+        "fullName": "example: Submit",
+        "icon": "icon-example",
+        "url": "#!/example/submit",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "Pinboard Visualization",
+        "fullName": "example: Pinboard Visualization",
+        "icon": "icon-example",
+        "url": "#!/example/pinboard-visualization",
+        "meta": {
+        },
+        "sort": 4
+      },
+      {
+        "name": "Comments sample",
+        "fullName": "example: Comments sample",
+        "icon": "icon-example",
+        "url": "#!/example/comments-sample",
+        "meta": {
+        },
+        "sort": 4
       }
+    ],
+    "stats": [
+
     ],
     "tests": false,
     "signatures": [

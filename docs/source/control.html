@@ -70,10 +70,10 @@ Echo.Control = function() {};
  * Reference to the generated control class.
  */
 Echo.Control.create = function(manifest) {
-	var control = Echo.Utils.getNestedValue(window, manifest.name);
+	var control = Echo.Utils.getComponent(manifest.name);
 
 	// prevent multiple re-definitions
-	if (control) return control;
+	if (Echo.Control.isDefined(manifest)) return control;
 
 	var parent = manifest.inherits || Echo.Control;
 	var constructor = Echo.Utils.inherit(parent, function(config) {
@@ -101,7 +101,7 @@ Echo.Control.create = function(manifest) {
 	prototype.cssClass = manifest.name.toLowerCase().replace(/-/g, &quot;&quot;).replace(/\./g, &quot;-&quot;);
 	prototype.cssPrefix = prototype.cssClass + &quot;-&quot;;
 
-	Echo.Utils.setNestedValue(window, manifest.name, constructor);
+	Echo.Utils.set(window, manifest.name, $.extend(constructor, control));
 	return constructor;
 };
 
@@ -132,6 +132,23 @@ Echo.Control.manifest = function(name) {
 		},
 		&quot;destroy&quot;: undefined
 	};
+};
+
+<span id='Echo-Control-static-method-isDefined'>/**
+</span> * @static
+ * Checks if control is already defined.
+ *
+ * @param {Mixed} manifest
+ * Control manifest or control name.
+ *
+ * @return {Boolean}
+ */
+Echo.Control.isDefined = function(manifest) {
+	var name = typeof manifest === &quot;string&quot;
+		? manifest
+		: manifest.name;
+	var component = Echo.Utils.get(window, name);
+	return !!(component &amp;&amp; component.manifest);
 };
 
 Echo.Control.prototype.templates = {&quot;message&quot;: {}};
@@ -204,7 +221,14 @@ Echo.Control.prototype.defaults.config = {
 		&quot;layout&quot;: &quot;full&quot;
 	},
 	&quot;scriptLoadErrorTimeout&quot;: 5000, // 5 sec
-	&quot;query&quot;: &quot;&quot;
+	&quot;query&quot;: &quot;&quot;,
+<span id='Echo-Control-cfg-defaultAvatar'>	/**
+</span>	 * @cfg {String} [defaultAvatar]
+	 * Default avatar URL which will be used for the user in
+	 * case there is no avatar information defined in the user
+	 * profile. Also used for anonymous users.
+	 */
+	&quot;defaultAvatar&quot;: &quot;{sdk}/images/avatar-default.png&quot;
 };
 
 Echo.Control.prototype.defaults.labels = {
@@ -284,7 +308,7 @@ Echo.Control.prototype.defaults.labels = {
  * The corresponding value found in the object.
  */
 Echo.Control.prototype.get = function(key, defaults) {
-	return Echo.Utils.getNestedValue(this, key, defaults);
+	return Echo.Utils.get(this, key, defaults);
 };
 
 <span id='Echo-Control-method-set'>/**
@@ -299,7 +323,7 @@ Echo.Control.prototype.get = function(key, defaults) {
  * The corresponding value which should be defined for the key.
  */
 Echo.Control.prototype.set = function(key, value) {
-	Echo.Utils.setNestedValue(this, key, value);
+	Echo.Utils.set(this, key, value);
 };
 
 <span id='Echo-Control-method-remove'>/**
@@ -316,7 +340,7 @@ Echo.Control.prototype.set = function(key, value) {
  * The boolean value which indicates that value by key exists and removed.
  */
 Echo.Control.prototype.remove = function(key) {
-	return Echo.Utils.removeNestedValue(this, key);
+	return Echo.Utils.remove(this, key);
 };
 
 <span id='Echo-Control-method-render'>/**
@@ -636,6 +660,9 @@ Echo.Control.prototype._initializers.config = function() {
 		this.set(&quot;pluginsOrder&quot;, data.order);
 		return data.hash;
 	};
+	_normalizer.defaultAvatar = function(url) {
+		return Echo.Loader.getURL(url);
+	};
 	data = $.extend({&quot;plugins&quot;: []}, data || {});
 	var defaults = $.extend(true, {}, this.get(&quot;defaults.config&quot;), {
 		&quot;context&quot;: (data.parent ? data.parent.context + &quot;/&quot; : &quot;&quot;) + Echo.Utils.getUniqueString()
@@ -875,9 +902,9 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 			return control.labels.get(key, defaults);
 		},
 		&quot;self&quot;: function(key, defaults) {
-			var value = control.invoke(Echo.Utils.getNestedValue(control, key));
+			var value = control.invoke(Echo.Utils.get(control, key));
 			return typeof value == &quot;undefined&quot;
-				? Echo.Utils.getNestedValue(control.data, key, defaults)
+				? Echo.Utils.get(control.data, key, defaults)
 				: value;
 		},
 		&quot;config&quot;: function(key, defaults) {
@@ -1004,7 +1031,7 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
 	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-empty { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/information.png&quot;) + '); }' +
+	'.echo-control-message-info { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/information.png&quot;) + '); }' +
 	'.echo-control-message-loading { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/loading.gif&quot;) + '); }' +
 	'.echo-control-message-error { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/warning.gif&quot;) + '); }';
 

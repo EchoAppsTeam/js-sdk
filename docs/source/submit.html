@@ -20,8 +20,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Submit&quot;)) return;
-
 <span id='Echo-StreamServer-Controls-Submit-method-constructor'><span id='Echo-StreamServer-Controls-Submit'>/**
 </span></span> * @class Echo.StreamServer.Controls.Submit
  * Echo Submit control which encapsulates interaction with the
@@ -42,6 +40,8 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Submit&quot;)
  * Configuration options
  */
 var submit = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Submit&quot;);
+
+if (Echo.Control.isDefined(submit)) return;
 
 submit.init = function() {
 	var self = this;
@@ -380,7 +380,10 @@ submit.renderers.text = function(element) {
 </span> * @echo_renderer
  */
 submit.renderers.avatar = function(element) {
-	var avatar = Echo.Utils.loadImage(this.user.get(&quot;avatar&quot;), this.user.config.get(&quot;defaultAvatar&quot;));
+	var avatar = Echo.Utils.loadImage(
+		this.user.get(&quot;avatar&quot;),
+		this.config.get(&quot;defaultAvatar&quot;)
+	);
 	return element.empty().append(avatar);
 };
 
@@ -603,7 +606,7 @@ submit.methods._getActivity = function(verb, type, data) {
 
 submit.methods._getASURL = function(postfix) {
 	return &quot;http://activitystrea.ms/schema/1.0/&quot; + postfix;
-}
+};
 
 submit.methods._showError = function(data) {
 	var self = this;
@@ -634,7 +637,7 @@ submit.methods._assembleErrorPopup = function(message) {
 			&quot;css&quot;: this.cssPrefix + &quot;error&quot;
 		}
 	});
-	var messageBox = $(template).css({
+	var box = $(template).css({
 		&quot;min-height&quot;: dimensions.minHeight,
 		&quot;max-height&quot;: dimensions.maxHeight,
 		&quot;width&quot;: dimensions.width,
@@ -642,12 +645,12 @@ submit.methods._assembleErrorPopup = function(message) {
 	}).appendTo(this.view.get(&quot;container&quot;));
 	var popup = {
 		&quot;content&quot;: $(template).css({
-			&quot;height&quot;: messageBox.height()
+			&quot;height&quot;: box.height()
 		}),
-		&quot;height&quot;: messageBox.height(),
-		&quot;width&quot;: messageBox.width()
+		&quot;height&quot;: box.height(),
+		&quot;width&quot;: box.width()
 	};
-	messageBox.remove();
+	box.remove();
 	return popup;
 };
 
@@ -694,14 +697,14 @@ submit.css =
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
 	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/info70.png&quot;) + '&quot;); }' +
-	(($.browser.msie) ?
+	($.browser.msie ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +
 		'.{class:header} { zoom: 1; }' +
 		'.{class:content} { zoom: 1; }' +
 		'.{class:markersContainer} { zoom: 1; }' +
 		'.{class:tagsContainer} { zoom: 1; }' : '') +
-	(($.browser.webkit) ?
+	($.browser.webkit ?
 		// get rid of extra gray line inside input elements on iOS
 		'.{class:container} input { background-position: 0px; }' +
 		'.{class:container} textarea { background-position: 0px; }' +

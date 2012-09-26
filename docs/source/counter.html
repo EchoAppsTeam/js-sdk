@@ -20,8 +20,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Counter&quot;)) return;
-
 <span id='Echo-StreamServer-Controls-Counter-method-constructor'><span id='Echo-StreamServer-Controls-Counter'>/**
 </span></span> * @class Echo.StreamServer.Controls.Counter
  * Echo Counter class which encapsulates interaction with the
@@ -42,6 +40,8 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Counter&quot;
  * Configuration options
  */
 var counter = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Counter&quot;);
+
+if (Echo.Control.isDefined(counter)) return;
 
 counter.init = function() {
 	// data can be defined explicitly
@@ -129,7 +129,7 @@ counter.methods._update = function(data) {
 	}
 };
 
-counter.methods._error = function(data) {
+counter.methods._error = function(data, options) {
 	this.events.publish({
 		&quot;topic&quot;: &quot;onError&quot;,
 		&quot;data&quot;: {
@@ -142,7 +142,9 @@ counter.methods._error = function(data) {
 		this.set(&quot;data.count&quot;, data.errorMessage + &quot;+&quot;);
 		this.render();
 	} else {
-		this.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data, &quot;message&quot;: data.errorMessage});
+		if (typeof options.critical === &quot;undefined&quot; || options.critical || options.requestType === &quot;initial&quot;) {
+			this.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data, &quot;message&quot;: data.errorMessage});
+		}
 	}
 	this.ready();
 };

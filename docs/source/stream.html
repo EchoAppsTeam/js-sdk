@@ -20,8 +20,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Stream&quot;)) return;
-
 <span id='Echo-StreamServer-Controls-Stream-method-constructor'><span id='Echo-StreamServer-Controls-Stream'>/**
 </span></span> * @class Echo.StreamServer.Controls.Stream
  * Echo Stream control which encapsulates interaction with the
@@ -42,6 +40,8 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Stream&quot;)
  * Configuration options
  */
 var stream = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream&quot;);
+
+if (Echo.Control.isDefined(stream)) return;
 
 stream.init = function() {
 	this._recalcEffectsTimeouts();
@@ -285,7 +285,7 @@ stream.renderers.body = function(element) {
 		this._appendRootItems(request.data, element);
 	} else {
 		this.showMessage({
-			&quot;type&quot;: &quot;empty&quot;,
+			&quot;type&quot;: &quot;info&quot;,
 			&quot;message&quot;: this.labels.get(&quot;emptyStream&quot;),
 			&quot;target&quot;: element
 		});
@@ -541,9 +541,11 @@ stream.methods._requestInitialItems = function() {
 				}
 			},
 			&quot;onError&quot;: function(data, options) {
-				self.showError(data, $.extend(options, {
-					&quot;request&quot;: self.request
-				}));
+				if (typeof options.critical === &quot;undefined&quot; || options.critical || options.requestType === &quot;initial&quot;) {
+					self.showError(data, $.extend(options, {
+						&quot;request&quot;: self.request
+					}));
+				}
 			},
 			&quot;onData&quot;: function(data, options) {
 				if (options.requestType === &quot;initial&quot;) {
@@ -1082,7 +1084,7 @@ stream.methods._spotUpdates.animate.remove = function(item, config) {
 		});
 		if (!itemsCount) {
 			self.showMessage({
-				&quot;type&quot;: &quot;empty&quot;,
+				&quot;type&quot;: &quot;info&quot;,
 				&quot;message&quot;: self.labels.get(&quot;emptyStream&quot;),
 				&quot;target&quot;: self.view.get(&quot;body&quot;)
 			});
@@ -1466,8 +1468,6 @@ Echo.Control.create(stream);
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Stream.Item&quot;)) return;
-
 <span id='Echo-StreamServer-Controls-Stream-Item-method-constructor'><span id='Echo-StreamServer-Controls-Stream-Item'>/**
 </span></span> * @class Echo.StreamServer.Controls.Stream.Item
  * Echo Stream.Item control which encapsulates Item mechanics.
@@ -1481,6 +1481,8 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.StreamServer.Controls.Stream.Item&q
  * Configuration options
  */
 var item = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+if (Echo.Control.isDefined(item)) return;
 
 item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get(&quot;data.object.published&quot;));
@@ -1733,6 +1735,23 @@ item.labels = {
 	&quot;childrenMoreItems&quot;: &quot;View more items&quot;
 };
 
+item.templates.metadata = {
+	&quot;userID&quot;:
+		'&lt;div class=&quot;{class:metadata-userID}&quot;&gt;' +
+			'&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;' +
+				'{label:userID}' +
+			'&lt;/span&gt;' +
+			'&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:actor.id}&lt;/span&gt;' +
+		'&lt;/div&gt;',
+	&quot;userIP&quot;:
+		'&lt;div class=&quot;{class:metadata-userIP}&quot;&gt;' +
+			'&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;' +
+				'{label:userIP}' +
+			'&lt;/span&gt;' +
+			'&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:ip}&lt;/span&gt;' +
+		'&lt;/div&gt;'
+};
+
 item.methods.template = function() {
 	return '&lt;div class=&quot;{class:content}&quot;&gt;' +
 		'&lt;div class=&quot;{class:container}&quot;&gt;' +
@@ -1756,20 +1775,7 @@ item.methods.template = function() {
 								'&lt;div class=&quot;{class:markers} echo-secondaryFont echo-secondaryColor&quot;&gt;&lt;/div&gt;' +
 								'&lt;div class=&quot;{class:tags} echo-secondaryFont echo-secondaryColor&quot;&gt;&lt;/div&gt;' +
 							'&lt;/div&gt;' +
-							'&lt;div class=&quot;{class:metadata}&quot;&gt;' +
-								'&lt;div class=&quot;{class:metadata-userID}&quot;&gt;' +
-									'&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;' +
-										'{label:userID}' +
-									'&lt;/span&gt;' +
-									'&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:actor.id}&lt;/span&gt;' +
-								'&lt;/div&gt;' +
-								'&lt;div class=&quot;{class:metadata-userIP} {class:metadataUserIP}&quot;&gt;' +
-									'&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;' +
-										'{label:userIP}' +
-									'&lt;/span&gt;' +
-									'&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:ip}&lt;/span&gt;' +
-								'&lt;/div&gt;' +
-							'&lt;/div&gt;' +
+							'&lt;div class=&quot;{class:metadata}&quot;&gt;&lt;/div&gt;' +
 							'&lt;div class=&quot;{class:footer} echo-secondaryColor echo-secondaryFont&quot;&gt;' +
 								'&lt;img class=&quot;{class:sourceIcon} echo-clickable&quot;&gt;' +
 								'&lt;div class=&quot;{class:date}&quot;&gt;&lt;/div&gt;' +
@@ -1870,14 +1876,24 @@ item.renderers.container = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-metadataUserIP'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-method-metadata'>/**
 </span> * @echo_renderer
  */
-item.renderers.metadataUserIP = function(element) {
-	if (!this.get(&quot;data.ip&quot;)) {
-		element.hide();
+item.renderers.metadata = function(element) {
+	element.empty();
+	if (this.user.is(&quot;admin&quot;)) {
+		var view = this.view.fork();
+		var addSection = function(section) {
+			element.append(view.render({
+				&quot;template&quot;: item.templates.metadata[section]
+			}));
+		};
+		addSection(&quot;userID&quot;);
+		if (this.get(&quot;data.ip&quot;)) {
+			addSection(&quot;userIP&quot;);
+		}
 	}
-	return element;
+	return element.hide();
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-method-modeSwitch'>/**
@@ -1920,7 +1936,7 @@ item.renderers.avatar = function(element) {
 	var size = this.depth ? 24 : 48;
 	var avatar = Echo.Utils.loadImage(
 		this.get(&quot;data.actor.avatar&quot;),
-		this.user.config.get(&quot;defaultAvatar&quot;)
+		this.config.get(&quot;defaultAvatar&quot;)
 	);
 	avatar.css({&quot;width&quot;: size, &quot;height&quot;: size});
 	return element.empty().append(avatar);
@@ -2855,7 +2871,6 @@ item.css =
 	'.{class:subcontainer} { float: left; width: 100%; }' +
 	'.{class:markers} { line-height: 16px; background: url(' + Echo.Loader.getURL(&quot;{sdk}/images/curation/metadata/marker.png&quot;) + ') no-repeat; padding: 0px 0px 4px 21px; margin-top: 7px; }' +
 	'.{class:tags} { line-height: 16px; background: url(' + Echo.Loader.getURL(&quot;{sdk}/images/tag_blue.png&quot;) + ') no-repeat; padding: 0px 0px 4px 21px; }' +
-	'.{class:metadata} { display: none; }' +
 	'.{class:metadata-title} { font-weight: bold; line-height: 25px; height: 25px; margin-right: 5px; }' +
 	'.{class:metadata-icon} { display: inline-block; padding-left: 26px; }' +
 	'.{class:metadata-userID} { border-bottom: 1px solid #e1e1e1; border-top: 1px solid #e1e1e1;}' +

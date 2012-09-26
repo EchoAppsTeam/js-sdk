@@ -131,8 +131,8 @@ plugin.enabled = function() {
 
 plugin.dependencies = [{
 	&quot;loaded&quot;: function() { return !!window.RPXNOW; },
-	&quot;url&quot;: (&quot;https:&quot; === document.location.protocol) ?
-		&quot;https://&quot; : &quot;http://static.&quot; + &quot;rpxnow.com/js/lib/rpx.js&quot;
+	&quot;url&quot;: (&quot;https:&quot; === document.location.protocol ?
+		&quot;https://&quot; : &quot;http://static.&quot;) + &quot;rpxnow.com/js/lib/rpx.js&quot;
 }];
 
 plugin.events = {

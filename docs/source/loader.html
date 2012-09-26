@@ -46,7 +46,7 @@ Echo.Loader = {
 Echo.Loader.getURL = function(url) {
 	return /^https?:\/\/|^\/\//.test(url)
 		? url
-		: url.replace(/{products}/, Echo.Loader.config.cdnBaseURL + &quot;products&quot;)
+		: url.replace(/{apps}/, Echo.Loader.config.cdnBaseURL + &quot;apps&quot;)
 			.replace(/{sdk}/, Echo.Loader.config.cdnBaseURL + &quot;sdk/v&quot; + Echo.Loader.version);
 };
 <span id='Echo-Loader-static-method-init'>/**
