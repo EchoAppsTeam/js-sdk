@@ -3,8 +3,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream")) return;
-
 /**
  * @class Echo.StreamServer.Controls.Stream
  * Echo Stream control which encapsulates interaction with the
@@ -25,6 +23,8 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream")) return;
  * Configuration options
  */
 var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
+
+if (Echo.Control.isDefined(stream)) return;
 
 stream.init = function() {
 	this._recalcEffectsTimeouts();
@@ -524,9 +524,11 @@ stream.methods._requestInitialItems = function() {
 				}
 			},
 			"onError": function(data, options) {
-				self.showError(data, $.extend(options, {
-					"request": self.request
-				}));
+				if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+					self.showError(data, $.extend(options, {
+						"request": self.request
+					}));
+				}
 			},
 			"onData": function(data, options) {
 				if (options.requestType === "initial") {
@@ -1449,8 +1451,6 @@ Echo.Control.create(stream);
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream.Item")) return;
-
 /**
  * @class Echo.StreamServer.Controls.Stream.Item
  * Echo Stream.Item control which encapsulates Item mechanics.
@@ -1464,6 +1464,8 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Stream.Item")) ret
  * Configuration options
  */
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item");
+
+if (Echo.Control.isDefined(item)) return;
 
 item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get("data.object.published"));

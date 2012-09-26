@@ -3,8 +3,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile")) return;
-
 /**
  * @class Echo.StreamServer.Controls.FacePile
  * Echo FacePile control displays users (actors) returned in any activity stream. 
@@ -27,6 +25,8 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile")) return
  * Configuration options
  */
 var pile = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile");
+
+if (Echo.Control.isDefined(pile)) return;
 
 pile.init = function() {
 	// data can be defined explicitly
@@ -234,8 +234,11 @@ pile.methods._request = function() {
 			},
 			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
 			"recurring": this.config.get("liveUpdates"),
-			"onError": function(data) {
-				self.showMessage({"type": "error", "data": data});
+			"onError": function(data, extra) {
+				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
+				if (needShowError) {
+					self.showMessage({"type": "error", "data": data});
+				}
 			},
 			"onData": function(data, extra) {
 				self["_" + extra.requestType + "ResponseHandler"](data);
@@ -434,8 +437,6 @@ Echo.Control.create(pile);
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile.Item")) return;
-
 /**
  * @class Echo.StreamServer.Controls.FacePile.Item
  * Echo FacePile.Item control displays single user (actor). 
@@ -449,6 +450,8 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.FacePile.Item")) r
  * Configuration options
  */
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile.Item");
+
+if (Echo.Control.isDefined(item)) return;
 
 item.config = {
 	/**

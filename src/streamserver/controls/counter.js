@@ -3,8 +3,6 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
-
 /**
  * @class Echo.StreamServer.Controls.Counter
  * Echo Counter class which encapsulates interaction with the
@@ -25,6 +23,8 @@ if (Echo.Utils.isComponentDefined("Echo.StreamServer.Controls.Counter")) return;
  * Configuration options
  */
 var counter = Echo.Control.manifest("Echo.StreamServer.Controls.Counter");
+
+if (Echo.Control.isDefined(counter)) return;
 
 counter.init = function() {
 	// data can be defined explicitly
@@ -112,7 +112,7 @@ counter.methods._update = function(data) {
 	}
 };
 
-counter.methods._error = function(data) {
+counter.methods._error = function(data, options) {
 	this.events.publish({
 		"topic": "onError",
 		"data": {
@@ -125,7 +125,9 @@ counter.methods._error = function(data) {
 		this.set("data.count", data.errorMessage + "+");
 		this.render();
 	} else {
-		this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
+		if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+			this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
+		}
 	}
 	this.ready();
 };

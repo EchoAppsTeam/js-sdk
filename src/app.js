@@ -75,6 +75,18 @@ Echo.App.manifest = function(name) {
 	return _manifest;
 };
 
+/**
+ * @static
+ * Checks if app is already defined.
+ *
+ * @param {Mixed} manifest
+ * Control manifest or control name.
+ *
+ * @return {Boolean}
+ */
+Echo.App.isDefined = function(manifest) {
+	return Echo.Control.isDefined(manifest);
+};
 // public interface
 
 /**

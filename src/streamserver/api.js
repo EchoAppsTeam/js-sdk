@@ -131,9 +131,6 @@ Echo.StreamServer.API.Request.prototype._onError = function(responseError, reque
 	this._handleErrorResponse(responseError, {
 		"callback": config.onError
 	});
-	if (this.requestType !== "secondary" || !this._isWaitingForData(responseError)) {
-		this.abort();
-	}
 };
 
 Echo.StreamServer.API.Request.prototype._submit = function() {
@@ -249,11 +246,7 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
-	return data && ~$.inArray(data.errorCode, ["waiting", "timeout", "busy", "view_limit", "view_update_capacity_exceeded"]);
-};
-
-Echo.StreamServer.API.Request.prototype._isErrorWithTimer = function(data) {
-	return data && ~$.inArray(data.errorCode, ["view_limit", "view_update_capacity_exceeded"]);
+	return data && ~$.inArray(data.errorCode, ["waiting", "timeout", "busy", "view_limit", "view_update_capacity_exceeded", "connection_failure", "network_timeout"]);
 };
 
 Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, config) {
@@ -287,9 +280,12 @@ Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, co
 		});
 	} else {
 		this.waitingTimeoutStep = 0;
+		if (this.liveUpdates) {
+			this._stopLiveUpdates();
+		}
 		errorCallback(data, {
 			"requestType": self.requestType,
-			"critical": true
+			"critical": data.errorCode !== "connection_aborted"
 		});
 	}
 	this.error = data;

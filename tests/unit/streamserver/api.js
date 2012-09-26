@@ -56,7 +56,7 @@ suite.prototype.cases.requestWithAbort = function(callback) {
 		"endpoint": "search",
 		"data": $.extend({}, this.params),
 		"onError": function(data) {
-			QUnit.ok(data && data.result === "error" && data.errorCode === "connection_failure", 
+			QUnit.ok(data && data.result === "error" && data.errorCode === "connection_aborted",
 				"Checking if the \"onError\" callback was executed when the request aborted");
 			callback();
 		},
@@ -163,7 +163,6 @@ suite.prototype.tests.PrivateFunctionsTests = {
 			"data": $.extend({}, this.params)
 		});
 		QUnit.ok(req._isWaitingForData({"result": "error", "errorCode": "view_limit", "extra": {}}), "Checking if error responsed JSON contains waiting error code");
-		QUnit.ok(req._isErrorWithTimer({"result": "error", "errorCode": "view_update_capacity_exceeded", "extra": {}}), "Checking if error responsed JSON contains error timer code");
 		QUnit.deepEqual(req._AS2KVL(this.items.post), {
 			"avatar": "http://my.nymag.com/thenext_mrsbass/picture?type=square",
 			"content": "For the record, I think your neck looked just fine.\n\nPeace out, Nora.",
