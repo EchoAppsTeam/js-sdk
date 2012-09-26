@@ -91,13 +91,13 @@ Before we add the dropdown we need to understand which option should be marked a
 		return result && result[1];
 	};
 
-Few imprtant notes here:
+Few important notes here:
 
 - we added the underscore before the name of the function to indicate that this function is private and nobody should call it outside the plugin's code
 
-- we refer to the Stream control using the "this.component" field. The reference to the parent component is always available inside the plugin.
+- we refer to the Stream control using the "this.component" field. The reference to the parent component is always available inside the plugin
 
-- the "_getSortOrder" function will be available in the plugin's code as "this._getSortOrder()", assuming that "this" points to the plugin instance
+- the "\_getSortOrder" function will be available in the plugin's code as "this.\_getSortOrder()", assuming that "this" points to the plugin instance
 
 The function assembles the regular expression and parses the stream query using it to extract the value of the sorting order. The "_getSortOrder" function returns 'undefined' in case no "sortOrder" predicate was found in the search query.
 
