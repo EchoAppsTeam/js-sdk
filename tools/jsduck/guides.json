@@ -9,8 +9,8 @@
 			},
 			{
 				"name": "terminology",
-				"title": "Terminology",
-				"description": "Terminology guide with the list of the terms used in the JS SDK."
+				"title": "Terminology and dev tips",
+				"description": "Terminology guide and the set of the useful tips about the JS SDK architecture."
 			},
 			{
 				"name": "how_to_develop_control",

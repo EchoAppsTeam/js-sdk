@@ -1,13 +1,3 @@
-# How to develop app
+# How to develop an app
 
-A guide about blah blah blah...
-
-## First subsection
-
-More text...
-
-### A sub-subsection
-
-- some
-- bulleted
-- list
+The work is in progress, please check back soon...
