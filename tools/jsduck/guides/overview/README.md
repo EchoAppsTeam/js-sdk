@@ -40,7 +40,7 @@ The SDK libraries can be divided into 2 main groups:
 - server-specific controls and plugins
 
 
-The first group is the core SDK libs which serves as a base for all other components:
+#### The first group is the core SDK libs which serves as a base for all other components:
 
 ### [Echo.API](#!/api/Echo.API.Request)
 
@@ -86,8 +86,11 @@ Foundation class implementing core logic to create plugins and manipulate with t
 
 Foundation class implementing core logic to create applications. See the "application" definition in the ["Terminology" guide](#!/guide/terminology).
 
+### Echo.jQuery
 
-The second group is the set of server-specific controls:
+The separate jQuery instance used in all Echo JS SDK components.
+
+#### The second group is the set of server-specific controls:
 
 ### [Echo.StreamServer.Controls.Stream](#!/api/Echo.StreamServer.Controls.Stream)
 
