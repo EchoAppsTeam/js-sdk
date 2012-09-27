@@ -12,7 +12,7 @@ The unified structure which describes a certain application, control or a plugin
 
 ### Control
 
-*Control* is a JavaScript class with the pre-defined structure (generated out of the control manifest) which represents a certain set of discrete funcitonality. Control examples: [Stream control](#!/api/Echo.StreamServer.Controls.Stream), [Submit control](#!/api/Echo.StreamServer.Controls.Submit), [Auth control](#!/api/Echo.IdentityServer.Controls.Auth), etc. More information about the Controls development can be found in [the hands-on guide](#!/guide/how_to_develop_control).
+*Control* is a JavaScript class with the pre-defined structure (generated out of the control manifest) which represents a certain set of discrete functionality. Control examples: [Stream control](#!/api/Echo.StreamServer.Controls.Stream), [Submit control](#!/api/Echo.StreamServer.Controls.Submit), [Auth control](#!/api/Echo.IdentityServer.Controls.Auth), etc. More information about the Controls development can be found in [the hands-on guide](#!/guide/how_to_develop_control).
 
 ### Plugin
 
@@ -46,4 +46,52 @@ Also we add the directive to switch the JS code execution to the strict mode ("u
 
 ## Rendering engine
 
-How the rendering works...
+Rendering is the process of transformation from declarative templates, css rules and renderer handlers to the complete DOM structures. Basically one has to create an Echo template (just a HTML structure with some meta placeholders actually), add a bunch of renderer functions and call the `render` method of Echo.View class.
+
+### Echo HTML Templates
+
+Echo HTML template is a HTML declarative structure with placeholders in curly brackets.
+
+	@example
+	var template =
+		'<span class="{class:container}">' +
+			'<span class="{class:avatar}">' +
+				'<img src="{self:avatar}">'
+			'</span>' +
+			'<span class="{class:title}">{label:title} - {data:title}</span>' +
+		'</span>';
+
+
+There are several types of placeholders:
+
++ {class:KEY} - the placeholder will be replaced with the auto generated CSS class name + the KEY value
++ {label:KEY} - the placeholder to access the corresponding label text using the KEY as a key
++ {self:KEY}  - provides the ability to access the component field using the KEY as a key
++ {config:KEY} - the placeholder to access the config value using the KEY as a key
++ {data:KEY} - the placeholder to be replaced with a value from the object provided as an argument
+
+### Echo CSS Templates
+
+Echo CSS template is a CSS declarative structure with placeholders in curly brackets.
+
+	@example
+	var css = 
+		'.{class:avatar} img { width: 16px; height: 16px; margin: 3px; }' +
+		'.{class:container}, .{class:container} span { white-space: nowrap; }' +
+		'.{class:title} { font-weight: bold; }';
+
+### Echo Renderer functions
+
+Echo renderer function is a javascript function with fixed interface which produces or modifies the particular DOM element.
+
+	@example
+	var renderer = function(element) {
+		if (condition) {
+			element.empty().append(title));
+		} else {
+			element.hide();
+		}
+		return element;
+	};
+
+

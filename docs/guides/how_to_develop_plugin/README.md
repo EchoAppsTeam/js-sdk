@@ -38,13 +38,13 @@ Now let's add the plugin definition. Echo JS SDK contains a special [Echo.Plugin
 
 	})(Echo.jQuery);
 
-So we've called the ["Echo.Plugin.manifest"](#!/api/Echo.Plugin-static-method-manifest) function, passed the name of the plugin and the type of the control as arguments. We checked whether the plugin was already initialized or not, to avoid multiple plugin re-definitions in case the plugin script was included into the page source several times. After that we passed the manifest generated into the [Echo.Plugin.create](#!/api/Echo.Plugin-static-method-create) function to generate the plugin JS class out of the static manifest declaration.
+So we've called the ["Echo.Plugin.manifest"](#!/api/Echo.Plugin-static-method-manifest) function, passed the name of the plugin and the type of the control as arguments. We checked whether the plugin was already initialized or not, to avoid multiple plugin re-definitions in case the plugin script was included into the page source several times. After that we passed the manifest into the [Echo.Plugin.create](#!/api/Echo.Plugin-static-method-create) function to generate the plugin JS class out of the static declaration.
 
 At that point we can consider the plugin skeleton ready and start adding the business logic into it.
 
 ## Plugin configuration
 
-Let's assume that we need a configuration parameter for our plugin to define the list of the sorting options we want to expose in the dropdown. Also we want to define a default value of the parameter in case it is omitted in the plugin configuration while installing it to the necessary Stream control. In order to do it we should add the "config" object to the plugin manifest with the name of the config field as a key and a default as its value, so the code of the plugin will look like:
+Let's assume that we need a configuration parameter for our plugin to define the list of the sorting options we want to expose in the dropdown. Also we want to define a default value of the parameter in case it is omitted in the plugin configuration while installing it into the necessary Stream control. In order to do it we add the "config" object to the plugin manifest with the name of the config field as a key and a default as its value, so the code of the plugin will look like:
 
 	@example
 	(function(jQuery) {
