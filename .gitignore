@@ -6,4 +6,4 @@ web/*
 .npmignore
 node_modules
 
-config.local.json
+config/local.json

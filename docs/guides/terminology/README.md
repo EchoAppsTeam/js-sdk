@@ -1,4 +1,4 @@
-# Terminology and dev tips 
+# Terminology and dev tips
 
 ## Overview
 

@@ -63,7 +63,7 @@ Let's assume that we need a configuration parameter for our plugin to define the
 			"likesDescending",
 			"flagsDescending",
 			"repliesDescending"
-		] 
+		]
 	};
 
 	Echo.Plugin.create(plugin);
@@ -180,7 +180,7 @@ Here is what's going on in the function:
 Important note: as you can see, the final template contains the placeholders such as: "{plugin.class:wrapper}" and "{plugin.label:sortOrderSelection}". These placeholders will be processed by the templating engine before the template is inserted into the Stream UI. You can find the general description of the rendering engine in the ["Terminology and dev tips" guide](#!/guide/terminology). In addition to the basic placeholders supported by the rendering engine, the base plugins functionality also provides the ability to define the following placeholders:
 
 - {plugin.class:KEY} - the placeholder will be replaced with the CSS class name + the KEY value
-- {plugin.label:KEY} - the placeholder to access the corresponding label text using the KEY as a key 
+- {plugin.label:KEY} - the placeholder to access the corresponding label text using the KEY as a key
 - {plugin.config:KEY} - the placeholder to access the config value using the KEY as a key
 - {plugin.self:KEY} - provides the ability to access the plugin field using the KEY as a key
 
@@ -320,7 +320,7 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 			"likesDescending",
 			"flagsDescending",
 			"repliesDescending"
-		] 
+		]
 	};
 
 	plugin.init = function() {
@@ -391,7 +391,7 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 ## More examples
 
 Each bundled Echo plugin uses the same mechanisms described in this guide. Bundled Echo plugins are good examples which you can use as a pattern for your own plugins:
- 
+
 - [CommunityFlag](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/community-flag.js)
 - [Edit](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/edit.js)
 - [Like](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/like.js)

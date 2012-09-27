@@ -99,3 +99,10 @@ The first steps is to prepare a template which should be appended into page of w
 			this.config.get("submitFormPosition") + "SubmitFormPosition"
 		];
 	};
+
+Important note: as you can see, the final template contains the placeholders such as: "{plugin.class:wrapper}" and "{plugin.label:sortOrderSelection}". These placeholders will be processed by the templating engine before the template is inserted into the Stream UI. You can find the general description of the rendering engine in the ["Terminology and dev tips" guide](#!/guide/terminology). In addition to the basic placeholders supported by the rendering engine, the base plugins functionality also provides the ability to define the following placeholders:
+
+- {class:KEY} - the placeholder will be replaced with the CSS class name + the KEY value
+- {label:KEY} - the placeholder to access the corresponding label text using the KEY as a key
+- {config:KEY} - the placeholder to access the config value using the KEY as a key
+- {self:KEY} - provides the ability to access the plugin field using the KEY as a key

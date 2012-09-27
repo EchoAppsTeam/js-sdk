@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 			sdk: "web/sdk/v<%= pkg.majorVersion %>"
 		},
 		pkg: "<json:package.json>",
-		local: readOptionalJSON("config.local.json"),
+		local: readOptionalJSON("config/local.json"),
 		meta: {
 			banner:
 				"/**\n" +
@@ -247,7 +247,7 @@ module.exports = function(grunt) {
 			return grunt.task.directive(control, grunt.file.read);
 		}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
 
-		var config = grunt.file.readJSON("tools/grunt/config.ui.json");
+		var config = grunt.file.readJSON("config/grunt/config.ui.json");
 		config.controls.map(function(control) {
 			var filepaths = {
 				"less": grunt.config("dirs.src") + "/third-party/bootstrap/less/" + control.less + ".less",
@@ -364,7 +364,7 @@ module.exports = function(grunt) {
 
 	grunt.registerHelper("make_docs", function(callback) {
 		grunt.helper("exec", "mkdir -p web && rm -rf " + grunt.config("dirs.dest") + "/docs", function() {
-			grunt.helper("exec", "jsduck --config=tools/jsduck/config.json", callback);
+			grunt.helper("exec", "jsduck --config=config/jsduck/config.json", callback);
 		});
 	});
 };

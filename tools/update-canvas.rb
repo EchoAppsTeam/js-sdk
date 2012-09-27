@@ -7,11 +7,11 @@ require 'openssl'
 require 'json'
 
 # check if local configuration file exists
-if (!File.exists?("../config.local.json"))
-	abort "No local configuration file (config.local.json) found..."
+if (!File.exists?("../config/local.json"))
+	abort "No local configuration file (config/local.json) found..."
 end
 
-config = JSON.parse(File.read("../config.local.json"))
+config = JSON.parse(File.read("../config/local.json"))
 
 # check if we have appkey and secret info
 if (config["appkey"] == nil || config["secret"] == nil)
