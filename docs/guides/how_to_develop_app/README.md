@@ -1,3 +1,3 @@
-# How to develop an app
+# How to develop an application
 
 The work is in progress, please check back soon...

@@ -63,7 +63,7 @@ Let's assume that we need a configuration parameter for our plugin to define the
 			"likesDescending",
 			"flagsDescending",
 			"repliesDescending"
-		] 
+		]
 	};
 
 	Echo.Plugin.create(plugin);
@@ -91,13 +91,13 @@ Before we add the dropdown we need to understand which option should be marked a
 		return result && result[1];
 	};
 
-Few imprtant notes here:
+Few important notes here:
 
 - we added the underscore before the name of the function to indicate that this function is private and nobody should call it outside the plugin's code
 
-- we refer to the Stream control using the "this.component" field. The reference to the parent component is always available inside the plugin.
+- we refer to the Stream control using the "this.component" field. The reference to the parent component is always available inside the plugin
 
-- the "_getSortOrder" function will be available in the plugin's code as "this._getSortOrder()", assuming that "this" points to the plugin instance
+- the "\_getSortOrder" function will be available in the plugin's code as "this.\_getSortOrder()", assuming that "this" points to the plugin instance
 
 The function assembles the regular expression and parses the stream query using it to extract the value of the sorting order. The "_getSortOrder" function returns 'undefined' in case no "sortOrder" predicate was found in the search query.
 
@@ -180,7 +180,7 @@ Here is what's going on in the function:
 Important note: as you can see, the final template contains the placeholders such as: "{plugin.class:wrapper}" and "{plugin.label:sortOrderSelection}". These placeholders will be processed by the templating engine before the template is inserted into the Stream UI. You can find the general description of the rendering engine in the ["Terminology and dev tips" guide](#!/guide/terminology). In addition to the basic placeholders supported by the rendering engine, the base plugins functionality also provides the ability to define the following placeholders:
 
 - {plugin.class:KEY} - the placeholder will be replaced with the CSS class name + the KEY value
-- {plugin.label:KEY} - the placeholder to access the corresponding label text using the KEY as a key 
+- {plugin.label:KEY} - the placeholder to access the corresponding label text using the KEY as a key
 - {plugin.config:KEY} - the placeholder to access the config value using the KEY as a key
 - {plugin.self:KEY} - provides the ability to access the plugin field using the KEY as a key
 
@@ -320,7 +320,7 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 			"likesDescending",
 			"flagsDescending",
 			"repliesDescending"
-		] 
+		]
 	};
 
 	plugin.init = function() {
@@ -391,7 +391,7 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 ## More examples
 
 Each bundled Echo plugin uses the same mechanisms described in this guide. Bundled Echo plugins are good examples which you can use as a pattern for your own plugins:
- 
+
 - [CommunityFlag](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/community-flag.js)
 - [Edit](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/edit.js)
 - [Like](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/like.js)
