@@ -1,0 +1,50 @@
+#header-content {
+	background: none; padding-left: 10px;
+}
+
+.class-categories .section .middle-column {
+	width: 500px;
+}
+
+.welcome-page .sub-title {
+	color: rgb(49, 78, 100);
+	margin: 7px 0;
+	font-weight: bold;
+	font-size: 18px;
+	padding: 10px 0 18px 55px;
+}
+
+.welcome-page .sub-title.api {
+	background: url("../images/class-m.png") no-repeat scroll -5px -5px transparent;
+}
+
+.welcome-page .sub-title.guides {
+	background: url("../images/doc-m.png") no-repeat scroll -5px -5px transparent;
+}
+
+.welcome-page .sub-title.examples {
+	background: url("../images/component-m.png") no-repeat scroll -5px -5px transparent;
+}
+
+.welcome-page .col {
+	width: 33%;
+	float: left;
+	padding: 0 10px;
+}
+
+.welcome-page img {
+	float: right;
+	width: 550px;
+}
+
+.welcome-page .copy {
+	float: left;
+	width: 350px;
+	padding-top: 80px;
+	padding-left: 30px;
+}
+
+.welcome-page {
+	width: 900px;
+	margin: 15px auto 0;
+}

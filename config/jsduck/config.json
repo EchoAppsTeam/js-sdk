@@ -10,5 +10,5 @@
 	"--pretty-json": true,
 	"--warnings": ["-no_doc", "-global"],
 	"--welcome": "../../docs/welcome.html",
-	"--head-html": "<style type=\"text/css\">#header-content { background: none; padding-left: 10px; } .class-categories .section .middle-column { width: 500px; }</style>"
+	"--head-html": "<link type=\"text/css\" href=\"resources/css/echo.css\" rel=\"stylesheet\">"
 }
