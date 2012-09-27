@@ -10,7 +10,6 @@ Let's imagine that we want to create the application for posting and viewing com
 
 ## Creating the Application skeleton
 
-First of all, let's prepare the JavaScript closure to allocate a separate namespace for our application's code. This step is common for all apps, controls and plugins built on top of the JS SDK. You can find the detailed information on how to create the JS closure in the ["Terminology and dev tips" guide](#!/guide/terminology-section-3). So we have the following code as a starting point:
 
 	@example
 	(function(jQuery) {
@@ -32,7 +31,7 @@ Now let's add the application definition. Echo JS SDK contains a special Echo.Ap
 
 	var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
 
-    if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
+	if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
 
 	Echo.App.create(Comments);
 
@@ -54,11 +53,11 @@ Let's assume that we need a configuration parameter for our application to defin
 
 	var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
 
-    if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
+	if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
 
-    Comments.config = {
+	Comments.config = {
 		"submitFormPosition": "top" // top | bottom
-    };
+	};
 
 	Echo.App.create(Comments);
 
@@ -100,9 +99,235 @@ The first steps is to prepare a template which should be appended into page of w
 		];
 	};
 
-Important note: as you can see, the final template contains the placeholders such as: "{plugin.class:wrapper}" and "{plugin.label:sortOrderSelection}". These placeholders will be processed by the templating engine before the template is inserted into the Stream UI. You can find the general description of the rendering engine in the ["Terminology and dev tips" guide](#!/guide/terminology). In addition to the basic placeholders supported by the rendering engine, the base plugins functionality also provides the ability to define the following placeholders:
+Important note: as you can see, the templates contains the placeholders such as: "{class:container}", "{class:auth}" etc. These placeholders will be processed by the templating engine before the template is inserted into a page. You can find the general description of the rendering engine in the ["Terminology and dev tips" guide](#!/guide/terminology).
 
-- {class:KEY} - the placeholder will be replaced with the CSS class name + the KEY value
-- {label:KEY} - the placeholder to access the corresponding label text using the KEY as a key
-- {config:KEY} - the placeholder to access the config value using the KEY as a key
-- {self:KEY} - provides the ability to access the plugin field using the KEY as a key
+If you use simple template then you can use two methods as the following example:
+
+	@example
+	Comments.templates.main = '<div class="{class:container}"></div>';
+
+or
+
+	@example
+	Comments.methods.template = function() {
+		return '<div class="{class:container}"></div>';
+	};
+
+## Adding renderers
+
+Now we have placeholder for our Auth, Submit and Stream Controls and we need to add logic adding control to our application. Applicaiont manifest specifies the location for the renderers, it's the "renderers" hash, it contains the renderers for the elements added within the templates of application. The renderer for the application may look like:
+
+	@example
+	Comments.renderers.auth = function(element) {
+		this.initComponent({
+			"id": "Auth",
+			"name": "Echo.IdentityServer.Controls.Auth",
+			"config": {
+				"appkey": null,
+				"target": element,
+				"identityManager": "{config:identityManager}"
+			}
+		});
+		return element;
+	};
+
+	Comments.renderers.stream = function(element) {
+		this.initComponent({
+			"id": "Stream",
+			"name": "Echo.StreamServer.Controls.Stream",
+			"config": {
+				"target": element
+			}
+		});
+		return element;
+	};
+
+	Comments.renderers.submit = function(element) {
+		this.initComponent({
+			"id": "Submit",
+			"name": "Echo.StreamServer.Controls.Submit",
+			"config": {
+				"target": element,
+				"infoMessages": {"enabled": false}
+			}
+		});
+		return element;
+	};
+
+Important note: to transfer configuration settings from the application to child controls we can use placeholders as well as in application templates. In our application we transfer "identityManager" as param of config Echo.IdentityServer.Controls.Auth Control by means of "{config:identityManager}"
+
+## CSS rules
+
+To make the UI look nice, we should add some CSS rules. There is a special placeholder for the CSS rules in the application definition. The field is called "css". The value of this field is a CSS string. Here are CSS rules for our application:
+
+	@example
+	Comments.css = ".{class:container} > div { margin-bottom: 7px; }";
+
+## Dependencies
+
+If the application depends on some other external component/library (including those of other Echo components), it's possible to define the dependencies list for the application. In this case the engine will download the dependencies first and launch the application after that. The dependency is an object with the "url" and the "loaded" fields. The "url" field contains the resource URL and the "loaded" field should be defined as a function which returns 'true' or 'false' and indicate whether the resource should be downloaded or not. Example:
+
+	@example
+	Comments.dependencies = [
+		{"loaded": function() {
+			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
+				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
+		}, "url": "{sdk}/streamserver.pack.js"},
+
+		{"loaded": function() {
+			return Echo.Control.isDefined("Echo.IdentityServer.Controls.Auth");
+		}, "url": "{sdk}/identityserver.pack.js"}
+	];
+
+## Events
+
+Another important aspect is events.
+
+Each Echo component is an independent part of the system and can communicate with each other on subscribe-publish basis. One application can subscribe to the expected event and the other application can publish it and the event data will be delivered to the subscribed applications. This model is very similar to the DOM events model when you can add event listener and perform some actions when a certain event is fired. All the events are powered by the [Echo.Events library](#!/api/Echo.Events).
+
+There are lots of events going on during the application and control life. The list of the events for each component can be found on the respective page in the documentation. The application definition structure provides the interface to subscribe to the necessary events. The events subscriptions should be defined inside the "events" hash using the event name as a key and the event handler as a value, for example:
+
+	@example
+	Comments.events = {
+		"Echo.StreamServer.Controls.Stream.onDataReceive": function(topic, args) {
+			// ... some actions ...
+		}
+	};
+
+## Application installation
+
+In order to install the application into a page, the following steps should be taken:
+
+- the application script should be delivered to the client side (for example, using the &lt;script&gt; tag inclusion)
+
+- the application should be added into the page, for example as shown below:
+&nbsp;
+	@example
+	new Echo.Apps.CommentsSample({
+		"target": document.getElementById("comments-sample"),
+		"appkey": "test.aboutecho.com",
+		"apiBaseURL": "http://api.echoenabled.com/v1/",
+		"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+		"components": {
+			"Stream": {
+				"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
+				"plugins": [{
+					"name": "Edit"
+				}, {
+					"name": "Like"
+				}, {
+					"name": "Moderation"
+				}, {
+					"name": "StreamSortingSelector"
+				}]
+			},
+			"Submit": {
+				"targetURL": "http://echosandbox.com/test/comments-sampler-test"
+			}
+		},
+		"identityManager": {
+			"login": {
+				"width": 400,
+						"height": 250,
+						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+			},
+			"signup": {
+				"width": 400,
+						"height": 250,
+						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+			}
+	   },
+	   "submitFormPosition": "bottom"
+	});
+
+Note: as a hash of configuration parameters, we pass a standard set of data "Echo.Controls", by means of key of "components"  we can set configuration of nested Controls.
+Also we set "submitFormPosition" and ["identityManager"](#!/api/Echo.IdentityServer.Controls.Auth-cfg-identityManager) keys that we use within our application
+
+## Complete application source code
+
+	@example
+	(function(jQuery) {
+	"use strict";
+
+	var $ = jQuery;
+
+	var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
+
+	if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
+
+	Comments.dependencies = [
+		{"loaded": function() {
+			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
+				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
+		}, "url": "{sdk}/streamserver.pack.js"},
+
+		{"loaded": function() {
+			return Echo.Control.isDefined("Echo.IdentityServer.Controls.Auth");
+		}, "url": "{sdk}/identityserver.pack.js"}
+	];
+
+	Comments.config = {
+		"submitFormPosition": "top" // top | bottom
+	};
+
+	Comments.templates.topSubmitFormPosition =
+		'<div class="{class:container}">' +
+			'<div class="{class:auth}"></div>' +
+			'<div class="{class:submit}"></div>' +
+			'<div class="{class:stream}"></div>' +
+		'</div>';
+
+	Comments.templates.bottomSubmitFormPosition =
+		'<div class="{class:container}">' +
+			'<div class="{class:auth}"></div>' +
+			'<div class="{class:stream}"></div>' +
+			'<div class="{class:submit}"></div>' +
+		'</div>';
+
+	Comments.methods.template = function() {
+		return this.templates[
+			this.config.get("submitFormPosition") + "SubmitFormPosition"
+		];
+	};
+
+	Comments.renderers.auth = function(element) {
+		this.initComponent({
+			"id": "Auth",
+			"name": "Echo.IdentityServer.Controls.Auth",
+			"config": {
+				"appkey": null,
+				"target": element,
+				"identityManager": "{config:identityManager}"
+			}
+		});
+		return element;
+	};
+
+	Comments.renderers.stream = function(element) {
+		this.initComponent({
+			"id": "Stream",
+			"name": "Echo.StreamServer.Controls.Stream",
+			"config": {
+				"target": element
+			}
+		});
+		return element;
+	};
+
+	Comments.renderers.submit = function(element) {
+		this.initComponent({
+			"id": "Submit",
+			"name": "Echo.StreamServer.Controls.Submit",
+			"config": {
+				"target": element,
+				"infoMessages": {"enabled": false}
+			}
+		});
+		return element;
+	};
+
+	Comments.css = ".{class:container} > div { margin-bottom: 7px; }";
+
+	Echo.App.create(Comments);
+
+	})(Echo.jQuery);
