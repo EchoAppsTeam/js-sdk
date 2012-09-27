@@ -1,12 +1,10 @@
 # How to develop a control
 
-Echo JS SDK alows to create JS Class called Echo Control which provides ability to quickly assembling app leveraging any data in the Echo platform. This page will guide you through the steps of custom control creation.
+Echo JS SDK provides the ability to package a certain set of the discrete functionality allows into a JavaScript class which is called the *Control* in the SDK terminology. This page will guide you through the steps of custom control creation.
 
 ## Introduction
 
-Control is a JavaScript class with the pre-defined structure (generated out of the control manifest) which represents a certain set of discrete funcitonality.
-
-Let's imagine that we want to create the control for displaying a number of items that match the specified query.
+Let's imagine that we want to create the control for displaying a number of items matching the specified query.
 
 ## Creating the control skeleton
 
@@ -38,13 +36,19 @@ Now let's add the control definition. Echo JS SDK contains a special [Echo.Contr
 
 	})(Echo.jQuery);
 
-So we've called the ["Echo.Control.manifest"](#!/api/Echo.Control-static-method-manifest) function, passed the name of the control as argument. We checked whether the control was already initialized or not, to avoid multiple control re-definitions in case the control script was included into the page source several times. After that we passed the manifest generated into the [Echo.Control.create](#!/api/Echo.Control-static-method-create) function to generate the control JS class out of the static manifest declaration.
+We called the ["Echo.Control.manifest"](#!/api/Echo.Control-static-method-manifest) function and passed the name of the control as an argument. We checked whether the control was already initialized or not, to avoid multiple control re-definitions in case the control script was included into the page source several times. After that we passed the manifest generated into the [Echo.Control.create](#!/api/Echo.Control-static-method-create) function to generate the control JS class out of the static manifest declaration.
 
 At that point we can consider the control skeleton ready and start adding the business logic into it.
 
 ## Control init function
 
-In most of cases we need to prepare control when other dependent components or actions are initialized. For this case we need to define init function which provide an ability to reflect control states according to existing control data. In our case data can be defined explicitly and in this case we do not make API request, in another case we need it. Let's try to define this function:
+There are 2 possible scenarios of our control initialization:
+
+- when there is no data available and we need to make an API call to get it
+
+- when the data is here and we just need to render it (it's usually the case when we count the items which were already delivered to the client side or we request the data during another API call, for example by making a "mux" request)
+
+In order to fulfill both use-cases we need to add the corresponding check into the control initialization function, for example as shown below:
 
 	@example
 	(function(jQuery) {

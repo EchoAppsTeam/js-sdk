@@ -24,7 +24,7 @@ respectively.
 Echo.StreamServer.Controls.Submit control to provide an ability to
 define the necessary dimensions for the error message popup raised by
 the Submit form in case of error. Documentation for the "errorPopup"
-option is available in ours docs center:
+option is available in our docs center:
 http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-cfg-errorPopup.
 
 - jQuery library was upgraded from 1.8.1 to 1.8.2 version.
@@ -57,7 +57,7 @@ field value.
 - the "defaultAvatar" option was added to the Stream, Submit, Auth and
 FacePile controls. Now you can define the avatar URL to be used as a
 default one in the control UI. Documentation for the "defaultAvatar"
-option is available in ours docs center:
+option is available in our docs center:
 http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-defaultAvatar
 
 - the "getComponent" function was added to the "Echo.App" class to

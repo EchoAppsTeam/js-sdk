@@ -1,15 +1,16 @@
 # How to develop an application
 
-Echo JS SDK allows to create complex applications based on Echo Control. This page will guide you through the steps of custom Application creation.
+Echo JS SDK allows to create complex applications based on Echo.App class. This page will guide you through the process of custom Application creation.
 
 ## Introduction
 
-Application is an object with the predefined structure which allows to work with Echo Controls as with single component.
+*Application* (or *App*) is an object with the predefined structure which incapsulates a certain business logic and allows to work with the set of Echo Controls and Echo Plugins as with the single component.
 
-Let's imagine that we want to create the application for posting and viewing comments on a website.
+Let's imagine that we want to create the application for posting and viewing comments on a website. For this purpose we'll use the [Stream](#!/api/Echo.StreamServer.Controls.Stream), the [Submit](#!/api/Echo.StreamServer.Controls.Submit) and the [Auth](#!/api/Echo.IdentityServer.Controls.Auth) controls and assemble them in one logical unit using the Echo Application approach.
 
 ## Creating the Application skeleton
 
+First of all, let's prepare the JavaScript closure to allocate a separate namespace for our applications's code. This step is common for all plugins, controls and apps built on top of the JS SDK. You can find the detailed information on how to create the JS closure in the ["Terminology and dev tips" guide](#!/guide/terminology-section-3). So we have the following code as a starting point:
 
 	@example
 	(function(jQuery) {
@@ -37,13 +38,13 @@ Now let's add the application definition. Echo JS SDK contains a special Echo.Ap
 
 	})(Echo.jQuery);
 
-So we've called the "Echo.App.manifest" function, passed the name of the application. We checked whether the application was already initialized or not, to avoid multiple application re-definitions in case the application script was included into the application source several times. After that we passed the manifest generated into the Echo.App.create function to generate the application JS class out of the static manifest declaration.
+We've called the "Echo.App.manifest" function and passed the name of the application as an argument. We checked whether the application was already initialized or not, to avoid multiple application re-definitions in case the application script was included into the application source several times. After that we passed the manifest into the Echo.App.create function to generate the application JS class out of the static declaration.
 
 At that point we can consider the application skeleton ready and start adding the business logic into it.
 
 ## Application configuration
 
-Let's assume that we need a configuration parameter for our application to define where be position of submit form. Also we want to define a default value of the parameter in case it is omitted in the application configuration while installing it to a website. In order to do it we should add the "config" object to the application manifest with the name of the config field as a key and a default as its value, so the code of the application will look like:
+Let's assume that we need a configuration parameter for our application to define the position of the submit form (before or after the Stream control). Also we want to define a default value of the parameter in case it is omitted in the application configuration while installing it into a website. In order to do it we add the "config" object to the application manifest with the name of the config field as a key and a default as its value, so the code of the application will look like:
 
 	@example
 	(function(jQuery) {
@@ -76,7 +77,7 @@ to get the value of the "submitFormPosition" config parameter defined during the
 
 Ok, now it's time to create the application UI.
 
-The first steps is to prepare a template which should be appended into page of website. Due to the fact that the template for our application depends on configuration of application, we'll create two template and will dynamically choose the template to use, for example as shown below:
+The first steps is to prepare a template to represent the application UI. Due to the fact that the template of our application depends on the configuration of the application, we'll create two templates and will dynamically choose which one to use. The templates might look like:
 
 	@example
 	Comments.templates.topSubmitFormPosition =
@@ -101,21 +102,16 @@ The first steps is to prepare a template which should be appended into page of w
 
 Important note: as you can see, the templates contains the placeholders such as: "{class:container}", "{class:auth}" etc. These placeholders will be processed by the templating engine before the template is inserted into a page. You can find the general description of the rendering engine in the ["Terminology and dev tips" guide](#!/guide/terminology).
 
-If you use simple template then you can use two methods as the following example:
+If your application requires only one template, you can define it as "main" in the "templates" object as shown below:
 
 	@example
 	Comments.templates.main = '<div class="{class:container}"></div>';
 
-or
-
-	@example
-	Comments.methods.template = function() {
-		return '<div class="{class:container}"></div>';
-	};
+Note: the template might be also represented by the function. In this case the function will be called within the application context (i.e. "this" will point to the current application instance).
 
 ## Adding renderers
 
-Now we have placeholder for our Auth, Submit and Stream Controls and we need to add logic adding control to our application. Applicaiont manifest specifies the location for the renderers, it's the "renderers" hash, it contains the renderers for the elements added within the templates of application. The renderer for the application may look like:
+Now we have placeholders for our Auth, Submit and Stream controls and we need the logic to init the necessary applications in the right places and we'll employ renderers here. Application manifest specifies the location for the renderers, it's the "renderers" hash. This hash should contain the renderers for the elements added within the app templates. The set of renderers to initialize the controls may look like:
 
 	@example
 	Comments.renderers.auth = function(element) {
@@ -154,7 +150,7 @@ Now we have placeholder for our Auth, Submit and Stream Controls and we need to 
 		return element;
 	};
 
-Important note: to transfer configuration settings from the application to child controls we can use placeholders as well as in application templates. In our application we transfer "identityManager" as param of config Echo.IdentityServer.Controls.Auth Control by means of "{config:identityManager}"
+Important note: to proxy the configuration settings from the application to the child controls we can use placeholders, like the ones we used in the application templates. In our application we proxythe "identityManager" as a param of the Echo.IdentityServer.Controls.Auth control config by defining the "{config:identityManager}" placeholder.
 
 ## CSS rules
 
@@ -165,7 +161,7 @@ To make the UI look nice, we should add some CSS rules. There is a special place
 
 ## Dependencies
 
-If the application depends on some other external component/library (including those of other Echo components), it's possible to define the dependencies list for the application. In this case the engine will download the dependencies first and launch the application after that. The dependency is an object with the "url" and the "loaded" fields. The "url" field contains the resource URL and the "loaded" field should be defined as a function which returns 'true' or 'false' and indicate whether the resource should be downloaded or not. Example:
+If the application depends on some other external component/library (including other Echo components), it's possible to define the dependencies list for the application. In this case the SDK engine will download the dependencies first and launch the application after that. The dependency is an object with the "url" and the "loaded" fields. The "url" field contains the resource URL and the "loaded" field should be defined as a function which returns 'true' or 'false' and indicate whether the resource should be downloaded or not. Example:
 
 	@example
 	Comments.dependencies = [
@@ -206,8 +202,6 @@ In order to install the application into a page, the following steps should be t
 	new Echo.Apps.CommentsSample({
 		"target": document.getElementById("comments-sample"),
 		"appkey": "test.aboutecho.com",
-		"apiBaseURL": "http://api.echoenabled.com/v1/",
-		"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
 		"components": {
 			"Stream": {
 				"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
@@ -240,8 +234,7 @@ In order to install the application into a page, the following steps should be t
 	   "submitFormPosition": "bottom"
 	});
 
-Note: as a hash of configuration parameters, we pass a standard set of data "Echo.Controls", by means of key of "components"  we can set configuration of nested Controls.
-Also we set "submitFormPosition" and ["identityManager"](#!/api/Echo.IdentityServer.Controls.Auth-cfg-identityManager) keys that we use within our application
+Note: in order to configure internal Echo Controls and Plugins used in the application, the "components" field (with the JS object as a value) can be added into the application config. The keys of the "components" field value are the internal names of the controls, in our case: "Stream" and "Submit". These names are assigned within the application definition while the "initComponent" function is called.  Also we set the "submitFormPosition" and the ["identityManager"](#!/api/Echo.IdentityServer.Controls.Auth-cfg-identityManager) keys to defined the location of the Submit form and the configuration of the identity manager feature.
 
 ## Complete application source code
 

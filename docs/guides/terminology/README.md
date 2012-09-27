@@ -12,7 +12,7 @@ The unified structure which describes a certain application, control or a plugin
 
 ### Control
 
-*Control* is a JavaScript class with the pre-defined structure (generated out of the control manifest) which represents a certain set of discrete funcitonality. Control examples: [Stream control](#!/api/Echo.StreamServer.Controls.Stream), [Submit control](#!/api/Echo.StreamServer.Controls.Submit), [Auth control](#!/api/Echo.IdentityServer.Controls.Auth), etc. More information about the Controls development can be found in [the hands-on guide](#!/guide/how_to_develop_control).
+*Control* is a JavaScript class with the pre-defined structure (generated out of the control manifest) which represents a certain set of discrete functionality. Control examples: [Stream control](#!/api/Echo.StreamServer.Controls.Stream), [Submit control](#!/api/Echo.StreamServer.Controls.Submit), [Auth control](#!/api/Echo.IdentityServer.Controls.Auth), etc. More information about the Controls development can be found in [the hands-on guide](#!/guide/how_to_develop_control).
 
 ### Plugin
 
