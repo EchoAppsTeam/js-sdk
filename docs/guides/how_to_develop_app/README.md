@@ -197,6 +197,7 @@ In order to install the application into a page, the following steps should be t
 - the application script should be delivered to the client side (for example, using the &lt;script&gt; tag inclusion)
 
 - the application should be added into the page, for example as shown below:
+
 &nbsp;
 	@example
 	new Echo.Apps.CommentsSample({
