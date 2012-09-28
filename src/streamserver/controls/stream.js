@@ -249,8 +249,10 @@ stream.templates.main =
 			'<div class="{class:state} echo-secondaryColor"></div>' +
 			'<div class="echo-clear"></div>' +
 		'</div>' +
-		'<div class="{class:body}"></div>' +
-		'<div class="{class:more}"></div>' +
+		'<div class="{class:content}">' +
+			'<div class="{class:body}"></div>' +
+			'<div class="{class:more}"></div>' +
+		'</div>' +
 	'</div>';
 
 /**
@@ -273,6 +275,14 @@ stream.renderers.body = function(element) {
 			"target": element
 		});
 	}
+	return element;
+};
+
+/**
+ * @echo_renderer
+ */
+stream.renderers.content = function(element) {
+	var self = this, request = this.lastRequest;
 	if (request.initial && this.config.get("liveUpdates") &&
 		this.config.get("streamStateToggleBy") === "mouseover") {
 			element.hover(
