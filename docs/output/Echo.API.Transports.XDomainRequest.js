@@ -45,6 +45,15 @@ Ext.data.JsonP.Echo_API_Transports_XDomainRequest({
 
     ]
   },
+  "linenr": 105,
+  "files": [
+    {
+      "filename": "api.js",
+      "href": "api3.html#Echo-API-Transports-XDomainRequest"
+    }
+  ],
+  "html_meta": {
+  },
   "statics": {
     "cfg": [
 
@@ -64,15 +73,6 @@ Ext.data.JsonP.Echo_API_Transports_XDomainRequest({
     "css_mixin": [
 
     ]
-  },
-  "linenr": 105,
-  "files": [
-    {
-      "filename": "api.js",
-      "href": "api3.html#Echo-API-Transports-XDomainRequest"
-    }
-  ],
-  "html_meta": {
   },
   "component": false,
   "superclasses": [

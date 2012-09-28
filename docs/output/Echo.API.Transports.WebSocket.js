@@ -45,6 +45,15 @@ Ext.data.JsonP.Echo_API_Transports_WebSocket({
 
     ]
   },
+  "linenr": 242,
+  "files": [
+    {
+      "filename": "api.js",
+      "href": "api3.html#Echo-API-Transports-WebSocket"
+    }
+  ],
+  "html_meta": {
+  },
   "statics": {
     "cfg": [
 
@@ -64,15 +73,6 @@ Ext.data.JsonP.Echo_API_Transports_WebSocket({
     "css_mixin": [
 
     ]
-  },
-  "linenr": 242,
-  "files": [
-    {
-      "filename": "api.js",
-      "href": "api3.html#Echo-API-Transports-WebSocket"
-    }
-  ],
-  "html_meta": {
   },
   "component": false,
   "superclasses": [
