@@ -366,7 +366,7 @@ module.exports = function(grunt) {
 		var path = grunt.config("dirs.dest") + "/docs";
 		grunt.helper("exec", "rm -rf " + path + " && mkdir -p " + path, function() {
 			grunt.helper("exec", "jsduck --config=config/jsduck/config.json", function() {
-				grunt.helper("exec", "cp -r docs/resources/ " + path, callback);
+				grunt.helper("exec", "cp -r docs/patch/* " + path, callback);
 			});
 		});
 	});
