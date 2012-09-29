@@ -28,6 +28,13 @@ if (Echo.Control.isDefined(stream)) return;
 
 stream.init = function() {
 	this._recalcEffectsTimeouts();
+
+	// define default stream state based on the config parameters
+	var state = this.config.get("streamStateButtonLayout") === "full"
+		? "paused"
+		: this.config.get("liveUpdates") ? "live" : "paused"
+	this.activities.state = state;
+
 	if (this.config.get("data")) {
 		this._handleInitialResponse(this.config.get("data"));
 	} else {
@@ -138,7 +145,7 @@ stream.config = {
 	 * The possible values are:
 	 *
 	 * + mouseover - the stream is paused when mouse is over it and live
-	 *  when mouse is out.
+	 * when mouse is out.
 	 * + button - the stream changes state when user clicks on streamStateLabel
 	 * (Live/Paused text). This mode would not work if neither state icon nor
 	 * state text are displayed.
@@ -148,6 +155,20 @@ stream.config = {
 	 * be forced to button method.
 	 */
 	"streamStateToggleBy": "mouseover", // mouseover | button | none
+	/**
+	 * @cfg {String} streamStateButtonLayout
+	 * Specifies the Live/Pause button layout. This option is available only when
+	 * the "streamStateToggleBy" option is set to "button". In other cases, this option
+	 * will be ignored.
+	 *
+	 * The possible values are:
+	 *
+	 * + compact - the Live/Pause button (link) will be located at the top right corner
+	 * of the Stream control, above the stream items list.
+	 * + full - the button will appear above the stream when the new live updates are available.
+	 * User will be able to click the button to apply live updates to the stream.
+	 */
+	"streamStateButtonLayout": "compact", // compact | full
 	/**
 	 * @cfg {String} submissionProxyURL URL prefix for requests to
 	 * Submission Proxy subsystem.
@@ -163,6 +184,11 @@ stream.config.normalizer = {
 		return value === "mouseover" && Echo.Utils.isMobileDevice()
 			? "button"
 			: value;
+	},
+	"streamStateButtonLayout": function(value) {
+		return this.get("streamStateToggleBy") === "button"
+			? value
+			: stream.config.streamStateButtonLayout;
 	}
 };
 
@@ -203,7 +229,15 @@ stream.labels = {
 	/**
 	 * @echo_label
 	 */
-	"new": "new"
+	"new": "new",
+	/**
+	 * @echo_label
+	 */
+	"newItem": "new item",
+	/**
+	 * @echo_label
+	 */
+	"newItems": "new items"
 };
 
 stream.events = {
@@ -246,7 +280,7 @@ stream.events = {
 stream.templates.main =
 	'<div class="{class:container} echo-primaryFont echo-primaryBackgroundColor">' +
 		'<div class="{class:header}">'+
-			'<div class="{class:state} echo-secondaryColor"></div>' +
+			'<div class="{class:state}"></div>' +
 			'<div class="echo-clear"></div>' +
 		'</div>' +
 		'<div class="{class:content}">' +
@@ -299,6 +333,7 @@ stream.renderers.content = function(element) {
 stream.renderers.state = function(element) {
 	var self = this;
 	var label = this.config.get("streamStateLabel");
+	var layout = this.config.get("streamStateButtonLayout");
 
 	if (!label.icon && !label.text || !this.config.get("liveUpdates")) {
 		return element;
@@ -319,10 +354,17 @@ stream.renderers.state = function(element) {
 		return element;
 	}
 
-	element.empty();
+	element.empty().show();
+	element.addClass(this.cssPrefix + layout + "StateLayout");
+	if (layout === "compact") {
+		element.addClass("echo-secondaryColor");
+	}
 	if (!this.activities.lastState && this.config.get("streamStateToggleBy") === "button") {
-		element.addClass("echo-linkColor echo-clickable").click(function() {
-			self.setState(state === "paused" ? "live" : "paused");
+		if (layout === "compact") {
+			element.addClass("echo-linkColor echo-clickable");
+		}
+		element.click(function() {
+			self.setState(self.getState() === "paused" ? "live" : "paused");
 		});
 	}
 	var templates = {
@@ -332,18 +374,33 @@ stream.renderers.state = function(element) {
 				'{label:' + state + '}' +
 			  '</a>'
 			: '<span class="{class:state-message}">{label:' + state + '}</span>',
-		"count": ' <span class="{class:state-count}">({data:count} {label:new})</span>'
+		"count": ' <span class="{class:state-count}">({data:count} {label:new})</span>',
+		"button": '<span class="{class:state-message}">{data:count} {data:label}</span>'
 	};
-	if (label.icon) {
-		element.append(this.substitute({"template": templates.picture}));
-	}
-	if (label.text) {
-		element.append(this.substitute({"template": templates.message}));
-		if (activitiesCount && state === "paused") {
+	if (layout === "full") {
+		if (activitiesCount) {
 			element.append(this.substitute({
-				"template": templates.count,
-				"data": {"count": activitiesCount}
+				"template": templates.button,
+				"data": {
+					"count": activitiesCount,
+					"label": this.labels.get(activitiesCount == 1 ? "newItem" : "newItems")
+				}
 			}));
+		} else {
+			element.hide();
+		}
+	} else {
+		if (label.icon) {
+			element.append(this.substitute({"template": templates.picture}));
+		}
+		if (label.text) {
+			element.append(this.substitute({"template": templates.message}));
+			if (activitiesCount && state === "paused") {
+				element.append(this.substitute({
+					"template": templates.count,
+					"data": {"count": activitiesCount}
+				}));
+			}
 		}
 	}
 	this.activities.lastState = currentState;
@@ -360,11 +417,6 @@ stream.renderers.more = function(element) {
 	}
 	return element.empty()
 		.append(this.labels.get("more"))
-		.hover(function() {
-			element.addClass(self.cssPrefix + "more-hover");
-		}, function() {
-			element.removeClass(self.cssPrefix + "more-hover");
-		})
 		.show()
 		.off("click")
 		.one("click", function() {
@@ -386,9 +438,7 @@ stream.renderers.more = function(element) {
  * stream state "live" or "paused".
  */
 stream.methods.getState = function() {
-	return this.activities.state === undefined
-		? this.config.get("liveUpdates") ? "live" : "paused"
-		: this.activities.state;
+	return this.activities.state;
 };
 
 /**
@@ -435,7 +485,7 @@ stream.methods.queueActivity = function(params) {
 	var data = {
 		"action": params.action,
 		"item": params.item,
-		"affectCounter": params.action === "add",
+		"affectCounter": params.action === "add" && !byCurrentUser,
 		"priority": params.priority,
 		"byCurrentUser": byCurrentUser,
 		"handler": params.handler
@@ -905,6 +955,13 @@ stream.methods._refreshItemsDate = function() {
 
 stream.methods._executeNextActivity = function() {
 	var acts = this.activities;
+
+	// return stream state to "paused" when no more items
+	// to visualize and the state button layout is set to "full"
+	if (!acts.queue.length && this.config.get("streamStateButtonLayout") === "full") {
+		acts.state = "paused";
+	}
+
 	if (acts.animations > 0 ||
 			!acts.queue.length ||
 			this.config.get("liveUpdates") &&
@@ -1436,15 +1493,16 @@ stream.css =
 	'.{class:message-empty} { background-image: url(' + Echo.Loader.getURL("{sdk}/images/information.png") + '); }' +
 	'.{class:message-loading} { background-image: url(' + Echo.Loader.getURL("{sdk}/images/loading.gif") + '); }' +
 	'.{class:message-error} { background-image: url(' + Echo.Loader.getURL("{sdk}/images/warning.gif") + '); }' +
-	'.{class:header} { margin: 10px 0px 10px 20px; }' +
-	'.{class:state} { float: right; }' +
+	'.{class:header} { margin: 10px 0px 10px 0px; }' +
+	'.{class:compactStateLayout} { float: right; }' +
+	'.{class:fullStateLayout} { text-align: center; }' +
 	'.{class:state-picture} { display: inline-block; height: 9px; width: 8px; }' +
 	'.{class:state-picture-paused} { background: url("' + Echo.Loader.getURL("{sdk}/images/control_pause.png") + '") no-repeat center center; }' +
 	'.{class:state-picture-live} { background: url("' + Echo.Loader.getURL("{sdk}/images/control_play.png") + '") no-repeat center center; }' +
 	'.{class:state-message} { margin-left: 5px; text-decoration: none; }' +
 	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
-	'.{class:more-hover} { background-color: #E4E4E4; }' +
-	'.{class:more} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
+	'.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }' +
+	'.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
 	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }' +
 	($.browser.msie
 		? '.{class:state-picture} { vertical-align: middle; }' +
