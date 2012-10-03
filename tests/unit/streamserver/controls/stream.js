@@ -69,7 +69,7 @@ suite.prototype.cases.addRootItem = function(callback) {
 		"targetId": this.config.dataBaseLocation
 	});
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.onReceive",
+		"topic": "Echo.StreamServer.Controls.Stream.onItemReceive",
 		"once": true,
 		"handler": function() {
 			QUnit.equal(stream.getState(), "paused",
@@ -192,12 +192,12 @@ suite.prototype.cases.addChildItem = function(callback) {
 		"targetId": parentItem.get("data.object.id")
 	});
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.onReceive",
+		"topic": "Echo.StreamServer.Controls.Stream.onItemReceive",
 		"once": true,
 		"handler": function(topic, args) {
 			var data = args.item.data;
 			QUnit.equal(data.target.conversationID, parentItem.get("data.object.id"),
-				"Checking that newly posted child item is received (onReceive event)");
+				"Checking that newly posted child item is received (onItemReceive event)");
 			callback();
 		}
 	});

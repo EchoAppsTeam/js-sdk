@@ -687,12 +687,12 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 
 					if (satisfies || item.get("byCurrentUser")) {
 						/**
-						 * @event Item.onReceive
-						 * @echo_event Echo.StreamServer.Controls.Stream.Item.onReceive
+						 * @event onItemReceive
+						 * @echo_event Echo.StreamServer.Controls.Stream.onItemReceive
 						 * Triggered when new item is received.
 						 */
 						self.events.publish({
-							"topic": "Item.onReceive",
+							"topic": "onItemReceive",
 							"data": {"item": {"data": item.data}},
 							"propagation": false
 						});
@@ -1041,11 +1041,6 @@ stream.methods._spotUpdates.replace = function(item, options) {
 stream.methods._spotUpdates.remove = function(item, options) {
 	item.set("deleted", true);
 	if (item.isRoot()) {
-		/**
-		 * @event onDelete
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onDelete
-		 * Triggered when the item is deleted.
-		 */
 		item.events.publish({
 			"topic": "onDelete",
 			"data": {"config": options},
@@ -1280,11 +1275,6 @@ stream.methods._placeRootItem = function(item) {
 	} else {
 		this.view.get("body").empty().append(content);
 	}
-	/**
-	 * @event onAdd
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.onAdd
-	 * Triggered when the item is added.
-	 */
 	item.events.publish({
 		"topic": "onAdd",
 		"global": false,

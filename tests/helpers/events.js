@@ -6,7 +6,7 @@ _stream.render = {
 	"target": $("<div>")
 };
 
-_stream.itemOnReceive = {
+_stream.onItemReceive = {
 	"query": "",
 	"target": $("<div>"),
 	"item": {
@@ -111,7 +111,7 @@ Echo.Tests.Events.contracts = {
 	"Echo.StreamServer.Controls.Stream.onRender": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onRerender": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onMoreButtonPress": _stream.render,
-	"Echo.StreamServer.Controls.Stream.Item.onRender": _stream.itemOnReceive,
+	"Echo.StreamServer.Controls.Stream.Item.onRender": _stream.onItemReceive,
 	"Echo.StreamServer.Controls.Stream.Item.onReady": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onReady": _stream.render,
 	"Echo.StreamServer.Controls.Stream.Item.onAdd": _stream.item,
@@ -159,7 +159,7 @@ Echo.Tests.Events.contracts = {
 		"query": "query_string"
 	},
 
-	"Echo.StreamServer.Controls.Stream.Item.onReceive": _stream.itemOnReceive,
+	"Echo.StreamServer.Controls.Stream.onItemReceive": _stream.onItemReceive,
 	"Echo.StreamServer.Controls.Stream.Item.onRerender": _stream.item,
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView": {
 		"action": "",

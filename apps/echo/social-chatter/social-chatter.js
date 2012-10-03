@@ -794,7 +794,7 @@ SocialChatter.assemblers.EventsList = function(target) {
 	});
 
 	$.map([
-		"Echo.StreamServer.Controls.Stream.Item.onReceive",
+		"Echo.StreamServer.Controls.Stream.onItemReceive",
 		"Echo.StreamServer.Controls.Stream.Item.Plugins.SocialChatterEvent.onEventChange"
 	], function(topic) {
 		stream.events.subscribe({
