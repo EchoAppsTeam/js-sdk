@@ -296,7 +296,7 @@ module.exports = function(grunt) {
 				"git checkout gh-pages",
 				"git pull",
 				"git checkout master -- tests demo",
-				"cp -r web/docs/* docs",
+				"cp -r " + grunt.config("dirs.dest") + "/docs/* docs",
 				"git add docs/ tests/ demo/",
 				"git commit -m \"up\"",
 				"git push origin gh-pages",
@@ -366,6 +366,7 @@ module.exports = function(grunt) {
 		var path = grunt.config("dirs.dest") + "/docs";
 		grunt.helper("exec", "rm -rf " + path + " && mkdir -p " + path, function() {
 			grunt.helper("exec", "jsduck --config=config/jsduck/config.json", function() {
+				// copy Echo specific images and CSS to documentation directory
 				grunt.helper("exec", "cp -r docs/patch/* " + path, callback);
 			});
 		});
