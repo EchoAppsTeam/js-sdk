@@ -317,7 +317,7 @@ stream.renderers.body = function(element) {
  */
 stream.renderers.content = function(element) {
 	var self = this, request = this.lastRequest;
-	if (request.initial && this.config.get("liveUpdates") &&
+	if (request && request.initial && this.config.get("liveUpdates") &&
 		this.config.get("streamStateToggleBy") === "mouseover") {
 			element.hover(
 				function() { self.setState("paused"); },
