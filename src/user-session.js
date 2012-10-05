@@ -337,12 +337,9 @@ Echo.UserSession._reset = function(data) {
 Echo.UserSession._init = function(callback) {
 	var user = this;
 	user.state = "waiting";
-	user._whoamiRequest({
-		"appkey": user.config.get("appkey"),
-		"sessionID": user.get("sessionID")
-	}, function(data) {
+	var handler = function(data) {
 		// user is not logged in
-		if (data.result && data.result == "session_not_found") {
+		if (!data || data.result && data.result == "session_not_found") {
 			data = {};
 		}
 		user.state = "ready";
@@ -397,7 +394,15 @@ Echo.UserSession._init = function(callback) {
 			"data": data
 		});
 		callback && callback();
-	});
+	};
+	if (user.get("sessionID")) {
+		user._whoamiRequest({
+			"appkey": user.config.get("appkey"),
+			"sessionID": user.get("sessionID")
+		}, handler);
+	} else {
+		handler();
+	}
 };
 
 Echo.UserSession._normalize = function(data) {
