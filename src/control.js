@@ -149,7 +149,6 @@ Echo.Control.prototype.templates.message.full =
 Echo.Control.prototype.defaults = {};
 
 Echo.Control.prototype.defaults.vars = {
-	"cache": {},
 	"plugins": {},
 	"extension": {"template": []},
 	"renderers": {},
