@@ -1080,18 +1080,16 @@ stream.methods._spotUpdates.animate.add = function(item) {
 		// we should specify the element height explicitly
 		// to avoid element jumping during the animation effect
 		var currentHeight = item.config.get("target").show().css("height");
-		item.config.get("target").css("height", currentHeight).hide().animate({
-			"height": "show",
-			"marginTop": "show",
-			"marginBottom": "show",
-			"paddingTop": "show",
-			"paddingBottom": "show"
+		item.config.get("target").css("overflow", "hidden");
+		item.view.get("content").css("margin-top", "-" + currentHeight).animate({
+			"margin-top": "0px"
 		},
 		this.timeouts.slide,
 		function(){
 			// we should remove explicitly set height
 			// as soon as the animation is complete
-			item.config.get("target").css("height", "");
+			item.config.get("target").css("overflow", "");
+			item.view.get("content").css("margin-top", "");
 		});
 	} else {
 		item.config.get("target").show();
