@@ -61,18 +61,21 @@ Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
 	"title": "Root items per page",
 	"description": "Specifies the amount of root items per page"
 }, {
+	// configuration is outdated
 	"name": "liveUpdates",
 	"type": "Boolean",
 	"defaultValue": true,
 	"title": "Live updating",
 	"description": "Parameter to enable/disable receiving live updates by the application"
 }, {
+	// configuration is outdated
 	"name": "liveUpdatesTimeout",
 	"type": "Number",
 	"defaultValue": 10,
 	"title": "Live updates timeout",
 	"description": "The timeout between the regular live update requests"
 }, {
+	// configuration is outdated
 	"name": "liveUpdatesTimeoutMin",
 	"type": "Number",
 	"defaultValue": 3,
@@ -105,6 +108,7 @@ Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
 	"description": "Aloows to define root items sorting order"
 
 }, {
+	// configuration is outdated
 	"name": "streamStateLabel",
 	"type": "Object",
 	"title": "Stream state label",
@@ -123,6 +127,7 @@ Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
 		"description": "Specifies if the state text should be visible"
 	}]
 }, {
+	// configuration is outdated
 	"name": "streamStateToggleBy",
 	"type": "String",
 	"defaultValue": "mouseover",
