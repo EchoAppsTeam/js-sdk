@@ -19,7 +19,7 @@ suite.prototype.info = {
 };
 
 suite.prototype.data = {
-	"original": {
+	"original": { // default values
 		"key1": 1,
 		"key2": {
 			"key2-1": "key2-1 value",
@@ -28,16 +28,29 @@ suite.prototype.data = {
 			}
 		},
 		"key3": true,
-		"key6": [1,2,3,4,5]
+		"key6": [1,2,3,4,5],
+		"key8": $("<div>"),
+		"key9": $("<p>"),
+		"key10": true,
+		"key11": true,
+		"key12": {"a": 1, "b": 2},
+		"key13": {"b": 1, "c": 2},
+		"key14": {"a": 1, "b": 2}
 	},
-	"overrides": {
+	"overrides": { // master values
 		"key2": {
 			"key2-1": "NEW key2-1 value"
 		},
 		"key3": false,
 		"key4": "Value from overrides object",
 		"key5": 10,
-		"key6": [1,2,3]
+		"key6": [6,7,8],
+		"key8": $("<span>"),
+		"key10": undefined,
+		"key11": null,
+		"key12": {},
+		"key13": {"b": 3},
+		"key14": undefined
 	}
 };
 
@@ -140,6 +153,21 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"Check the remove() method with objects defined as values");
 		QUnit.equal(config.get("key2.key2-2.key2-2-1"), undefined,
 			"Check the remove() method with objects defined as values, checking if nested structure was cleared");
+
+		QUnit.equal(config.get("key8"), overrides["key8"],
+			"Checking if the default config jQuery values were overriden correctly (key exists)");
+		QUnit.equal(config.get("key9"), original["key9"],
+			"Checking if the default config jQuery values were overriden correctly (key undefined)");
+		QUnit.equal(config.get("key10"), overrides["key10"],
+			"Checking if the default configuration not override undefined key");
+		QUnit.equal(config.get("key11"), overrides["key11"],
+			"Checking if the default configuration not override null key");
+		QUnit.equal(config.get("key12"), overrides["key12"],
+			"Checking if the default config values were merged correctly with empty object");
+		QUnit.deepEqual(config.get("key13"), {"b": 3, "c": 2},
+			"Checking if the default config values were merged correctly with non empty object");
+		QUnit.equal(config.get("key14"), overrides["key14"],
+			"Checking if the default configuration not override undefined key (default key is object)");
 	}
 };
 

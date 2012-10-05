@@ -39,7 +39,7 @@ Echo.Configuration = function(master, slave, normalizer) {
 	if (!slave && !normalizer) {
 		this.data = master;
 	} else {
-		$.each($.extend({}, slave, master), function(key, value) {
+		$.each(this._mergeConfigs(master, slave), function(key, value) {
 			self.set(key, value);
 		});
 	}
@@ -154,6 +154,22 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 			delete self.cache[key];
 		}
 	});
+};
+
+Echo.Configuration.prototype._mergeConfigs = function(master, slave) {
+	var self = this;
+	if ($.isPlainObject(master)) {
+		$.each(slave, function(key, val) {
+			if (!master.hasOwnProperty(key)) {
+				master[key] = val;
+			} else if ($.isPlainObject(val) && $.isPlainObject(master[key])) {
+				self._mergeConfigs(master[key], val);
+			}
+		});
+	} else {
+		master = slave;
+	}
+	return master;
 };
 
 })(Echo.jQuery);
