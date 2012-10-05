@@ -1086,7 +1086,7 @@ stream.methods._spotUpdates.animate.add = function(item) {
 		},
 		this.timeouts.slide,
 		function(){
-			// we should remove explicitly set height
+			// we should remove temporary set of css styles
 			// as soon as the animation is complete
 			item.config.get("target").css("overflow", "");
 			item.view.get("content").css("margin-top", "");
