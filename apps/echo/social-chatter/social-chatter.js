@@ -240,8 +240,10 @@ SocialChatter.vars = {
 SocialChatter.config = {
 	"eventsTargetURL": undefined,
 	"eventListQuery": undefined,
-	"liveUpdates": true,
-	"liveUpdatesTimeout": 60, // request Events updates once per minute
+	"liveUpdates": {
+		"enabled": true,
+		"timeout": 60 // request Events updates once per minute
+	},
 	"identityManager": undefined,
 	"views": {},
 	"defaultEventIcon": Echo.Loader.getURL("{apps}/echo/social-chatter/images/vip.jpg"),
@@ -415,7 +417,9 @@ SocialChatter.views.GreenRoom.templates.main =
 			"item": {
 				"reTag": false
 			},
-			"liveUpdatesTimeout": "{config:parent.liveUpdatesTimeout}",
+			"liveUpdates": {
+				"timeout": "{config:parent.liveUpdates.timeout}"
+			},
 			"plugins": [{
 				"name": "Reply",
 				"itemURIPattern": "{config:event.id}/{id}",
@@ -462,7 +466,9 @@ SocialChatter.views.GreenRoom.templates.main =
 		"control": "Echo.StreamServer.Controls.Stream",
 		"config": {
 			"appkey": null,
-			"liveUpdatesTimeout": "{config:parent.liveUpdatesTimeout}",
+			"liveUpdates": {
+				"timeout": "{config:parent.liveUpdates.timeout}"
+			},
 			"query": "childrenof:{config:event.id} state:Untouched,ModeratorApproved safeHTML:off user.roles:vip user.state:Untouched,ModeratorApproved children:1 state:Untouched,ModeratorApproved",
 			"item": {
 				"reTag": false
@@ -589,7 +595,9 @@ SocialChatter.views.EventsList.controls.Stream = {
 	"config": {
 		"appkey": null,
 		"query": "childrenof:{config:parent.eventsTargetURL} state:Untouched,ModeratorApproved children:0",
-		"liveUpdatesTimeout": "{config:parent.liveUpdatesTimeout}",
+		"liveUpdates": {
+			"timeout": "{config:parent.liveUpdates.timeout}"
+		},
 		"item": {
 			"reTag": false
 		},

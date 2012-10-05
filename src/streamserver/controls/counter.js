@@ -64,10 +64,19 @@ counter.config = {
 	 */
 	"data": undefined,
 	/**
-	 * @cfg {Number} liveUpdatesTimeout
-	 * Specifies the timeout between the live updates requests (in seconds).
+	 * @cfg {Object} liveUpdates
+	 * Defines configurations for liveUpdates.
+	 *
+	 * @cfg {Boolean} liveUpdates.enabled
+	 * Parameter to enable/disable receiving live updates by control.
+	 *
+	 * @cfg {Number} liveUpdates.timeout
+	 * Specifies the timeout between live updates requests (in seconds).
 	 */
-	"liveUpdatesTimeout": 10,
+	"liveUpdates": {
+		"enabled": true,
+		"timeout": 10
+	},
 	/**
 	 * @cfg {String} infoMessages 
 	 * Customizes the look and feel of info messages, for example "loading" and "error".
@@ -86,8 +95,8 @@ counter.methods._request = function() {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")
 			},
-			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
-			"recurring": true,
+			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
+			"recurring": this.config.get("liveUpdates.enabled"),
 			"onError": $.proxy(this._error, this),
 			"onData": $.proxy(this._update, this)
 		});

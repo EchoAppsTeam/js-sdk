@@ -30,9 +30,9 @@ stream.init = function() {
 	this._recalcEffectsTimeouts();
 
 	// define default stream state based on the config parameters
-	var state = this.config.get("streamStateButtonLayout") === "full"
+	var state = this.config.get("state.layout") === "full"
 		? "paused"
-		: this.config.get("liveUpdates") ? "live" : "paused"
+		: this.config.get("liveUpdates.enabled") ? "live" : "paused"
 	this.activities.state = state;
 
 	if (this.config.get("data")) {
@@ -93,16 +93,20 @@ stream.config = {
 	 */
 	"itemsPerPage": 15,
 	/**
-	 * @cfg {Boolean} liveUpdates
-	 * Parameter to enable/disable receiving live updates by control. 
-	 */
-	"liveUpdates": true,
-	/**
-	 * @cfg {Number} 
+	 * @cfg {Object} liveUpdates
+	 * Defines configurations for liveUpdates.
+	 *
+	 * @cfg {Boolean} liveUpdates.enabled
+	 * Parameter to enable/disable receiving live updates by control.
+	 *
+	 * @cfg {Number} liveUpdates.timeout
 	 * Specifies the timeout between live updates requests (in seconds).
 	 */
-	"liveUpdatesTimeout": 10,
-	"liveUpdatesTimeoutMin": 3,
+	"liveUpdates": {
+		"enabled": true,
+		"timeout": 10
+	},
+
 	/**
 	 * @cfg {Boolean} openLinksInNewWindow
 	 * If this parameter value is set to true, each link will be opened
@@ -123,42 +127,37 @@ stream.config = {
 	"slideTimeout": 700,
 	"sortOrder": "reverseChronological",
 	/**
-	 * @cfg {Object} streamStateLabel
+	 * @cfg {Object} state
+	 * Defines configurations for Stream Status
+	 *
+	 * @cfg {Object} state.label
 	 * Hides the Pause/Play icon. Toggles the labels used in the Stream Status
 	 * label. Contains a hash with two keys managing icon and text display modes.
 	 *
-	 * @cfg {Boolean} streamStateLabel.icon
+	 * @cfg {Boolean} state.label.icon
 	 * Toggles the icon visibility.
 	 *
-	 * @cfg {Boolean} streamStateLabel.text
+	 * @cfg {Boolean} state.label.text
 	 * Toggles the text visibility.
 	 *
-	 */
-	"streamStateLabel": {
-		"icon": true,
-		"text": true
-	},
-	/**
-	 * @cfg {String} streamStateToggleBy
+	 * @cfg {String} state.toggleBy
 	 * Specifies the method of changing stream live/paused state.
 	 *
 	 * The possible values are:
 	 *
 	 * + mouseover - the stream is paused when mouse is over it and live
 	 * when mouse is out.
-	 * + button - the stream changes state when user clicks on streamStateLabel
+	 * + button - the stream changes state when user clicks on state.label
 	 * (Live/Paused text). This mode would not work if neither state icon nor
 	 * state text are displayed.
 	 * + none - the stream will never be paused.
-	 * 
+	 *
 	 * Note that mouseover method is not available for mobile devices and will
 	 * be forced to button method.
-	 */
-	"streamStateToggleBy": "mouseover", // mouseover | button | none
-	/**
-	 * @cfg {String} streamStateButtonLayout
+	 *
+	 * @cfg {String} state.layout
 	 * Specifies the Live/Pause button layout. This option is available only when
-	 * the "streamStateToggleBy" option is set to "button". In other cases, this option
+	 * the "state.toggleBy" option is set to "button". In other cases, this option
 	 * will be ignored.
 	 *
 	 * The possible values are:
@@ -168,7 +167,14 @@ stream.config = {
 	 * + full - the button will appear above the stream when the new live updates are available.
 	 * User will be able to click the button to apply live updates to the stream.
 	 */
-	"streamStateButtonLayout": "compact", // compact | full
+	"state": {
+		"label": {
+			"icon": true,
+			"text": true
+		},
+		"toggleBy":  "mouseover", // mouseover | button | none,
+		"layout": "compact" // compact | full
+	},
 	/**
 	 * @cfg {String} submissionProxyURL URL prefix for requests to
 	 * Submission Proxy subsystem.
@@ -180,15 +186,15 @@ stream.config.normalizer = {
 	"safeHTML": function(value) {
 		return "off" !== value;
 	},
-	"streamStateToggleBy": function(value) {
-		return value === "mouseover" && Echo.Utils.isMobileDevice()
+	"state": function(object) {
+		object["toggleBy"] =  object["toggleBy"] === "mouseover" && Echo.Utils.isMobileDevice()
 			? "button"
-			: value;
-	},
-	"streamStateButtonLayout": function(value) {
-		return this.get("streamStateToggleBy") === "button"
-			? value
-			: stream.config.streamStateButtonLayout;
+			: object["toggleBy"];
+
+		object["layout"] = object["toggleBy"] === "button"
+			? object["layout"]
+			: stream.config.state.layout;
+		return object;
 	}
 };
 
@@ -317,8 +323,8 @@ stream.renderers.body = function(element) {
  */
 stream.renderers.content = function(element) {
 	var self = this, request = this.lastRequest;
-	if (request && request.initial && this.config.get("liveUpdates") &&
-		this.config.get("streamStateToggleBy") === "mouseover") {
+	if (request && request.initial && this.config.get("liveUpdates.enabled") &&
+		this.config.get("state.toggleBy") === "mouseover") {
 			element.hover(
 				function() { self.setState("paused"); },
 				function() { self.setState("live"); }
@@ -332,10 +338,10 @@ stream.renderers.content = function(element) {
  */
 stream.renderers.state = function(element) {
 	var self = this;
-	var label = this.config.get("streamStateLabel");
-	var layout = this.config.get("streamStateButtonLayout");
+	var label = this.config.get("state.label");
+	var layout = this.config.get("state.layout");
 
-	if (!label.icon && !label.text || !this.config.get("liveUpdates")) {
+	if (!label.icon && !label.text || !this.config.get("liveUpdates.enabled")) {
 		return element;
 	}
 
@@ -359,7 +365,7 @@ stream.renderers.state = function(element) {
 	if (layout === "compact") {
 		element.addClass("echo-secondaryColor");
 	}
-	if (!this.activities.lastState && this.config.get("streamStateToggleBy") === "button") {
+	if (!this.activities.lastState && this.config.get("state.toggleBy") === "button") {
 		if (layout === "compact") {
 			element.addClass("echo-linkColor echo-clickable");
 		}
@@ -369,7 +375,7 @@ stream.renderers.state = function(element) {
 	}
 	var templates = {
 		"picture": '<span class="{class:state-picture} {class:state-picture}-' + state + '"></span>',
-		"message": this.config.get("streamStateToggleBy") === "button"
+		"message": this.config.get("state.toggleBy") === "button"
 			? '<a href="javascript:void(0)" class="{class:state-message}">' +
 				'{label:' + state + '}' +
 			  '</a>'
@@ -569,8 +575,8 @@ stream.methods._requestInitialItems = function() {
 		this.request = Echo.StreamServer.API.request({
 			"endpoint": "search",
 			"apiBaseURL": this.config.get("apiBaseURL"),
-			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
-			"recurring": this.config.get("liveUpdates"),
+			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
+			"recurring": this.config.get("liveUpdates.enabled"),
 			"data": {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")
@@ -938,7 +944,7 @@ stream.methods._recalcEffectsTimeouts = function() {
 		return value;
 	};
 	// reserving 80% of time between live updates for activities
-	var frame = s.config.get("liveUpdatesTimeout") * 1000 * 0.8;
+	var frame = s.config.get("liveUpdates.timeout") * 1000 * 0.8;
 	var msPerItem = s.activities.queue.length ? frame / s.activities.queue.length : frame;
 	s.timeouts.fade = calc("fade", msPerItem);
 	s.timeouts.slide = calc("slide", msPerItem);
@@ -958,13 +964,13 @@ stream.methods._executeNextActivity = function() {
 
 	// return stream state to "paused" when no more items
 	// to visualize and the state button layout is set to "full"
-	if (!acts.queue.length && this.config.get("streamStateButtonLayout") === "full") {
+	if (!acts.queue.length && this.config.get("state.layout") === "full") {
 		acts.state = "paused";
 	}
 
 	if (acts.animations > 0 ||
 			!acts.queue.length ||
-			this.config.get("liveUpdates") &&
+			this.config.get("liveUpdates.enabled") &&
 			acts.state === "paused" &&
 			acts.queue[0].action !== "replace" &&
 			!acts.queue[0].byCurrentUser) {
@@ -1075,10 +1081,10 @@ stream.methods._spotUpdates.animate.add = function(item) {
 		// to avoid element jumping during the animation effect
 		var currentHeight = item.config.get("target").show().css("height");
 		item.config.get("target").css("height", currentHeight).hide().animate({
-			"height": "show", 
-			"marginTop": "show", 
-			"marginBottom": "show", 
-			"paddingTop": "show", 
+			"height": "show",
+			"marginTop": "show",
+			"marginBottom": "show",
+			"paddingTop": "show",
 			"paddingBottom": "show"
 		},
 		this.timeouts.slide,

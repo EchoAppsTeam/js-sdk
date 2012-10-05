@@ -196,7 +196,7 @@ Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(dat
 	//   - have no new data - increase timeout by 2 seconds
 	var timeout = hasNewData(data)
 		? currentTime - since > currentTimeout
-			? this.config.get("liveUpdatesTimeoutMin", 3)
+			? Math.min(3, this.liveUpdates.originalTimeout) // liveUpdatesTimeoutMin
 			: currentTimeout + 1
 		: currentTimeout + 2;
 	if (timeout > this.liveUpdates.originalTimeout) {

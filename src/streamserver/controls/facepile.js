@@ -35,7 +35,7 @@ pile.init = function() {
 		this._request();
 	} else {
 		this.set("data.itemsPerPage", this.get("data.itemsPerPage", 2));
-		this.config.set("liveUpdates", false);
+		this.config.set("liveUpdates.enabled", false);
 		this._initialResponseHandler(this.data);
 	}
 };
@@ -232,8 +232,8 @@ pile.methods._request = function() {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")
 			},
-			"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
-			"recurring": this.config.get("liveUpdates"),
+			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
+			"recurring": this.config.get("liveUpdates.enabled"),
 			"onError": function(data, extra) {
 				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
 				if (needShowError) {

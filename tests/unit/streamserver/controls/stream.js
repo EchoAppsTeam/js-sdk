@@ -5,7 +5,9 @@ var suite = Echo.Tests.Unit.Stream = function() {
 		"instance": {
 			"name": "Echo.StreamServer.Controls.Stream",
 			"config": {
-				"liveUpdates": false,
+				"liveUpdates": {
+					"enabled" :false
+				},
 				"query": "childrenof: " + this.config.dataBaseLocation
 			}
 		},
@@ -37,7 +39,9 @@ suite.prototype.tests.commonWorkflow = {
 		new Echo.StreamServer.Controls.Stream({
 			"target": this.config.target,
 			"appkey": this.config.appkey,
-			"liveUpdatesTimeout": 3,
+			"liveUpdates": {
+				"timeout": 3
+			},
 			"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:1",
 			"ready": function() {
 				var target = this.config.get("target");
@@ -259,7 +263,9 @@ suite.prototype._preparePostEntry = function(params) {
 Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Stream", function(config) {
 	return new Echo.StreamServer.Controls.Stream($.extend({
 		"target": $(document.getElementById("qunit-fixture")).empty(),
-		"liveUpdates": false,
+		"liveUpdates": {
+			"enabled": false
+		},
 		"appkey": config.appkey,
 		"query": "childrenof:" + config.dataBaseLocation + " sortOrder:repliesDescending"
 	}, config));
