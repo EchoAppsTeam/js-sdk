@@ -104,7 +104,10 @@ Most of controls should contain several configuration parameters that defines a 
 
 	counter.config = {
 		"data": undefined,
-		"liveUpdatesTimeout": 10,
+		"liveUpdates": {
+			"enabled": true,
+			"timeout": 10
+		},
 		"infoMessages": {"layout": "compact"}
 	};
 
@@ -116,15 +119,15 @@ If we need more options in future, they can be appended as additional fields int
 Let's describe config parameters:
 
 - "data" defines a default value that used to display items count;
-- "liveUpdatesTimeout" defines a timeout that used by the Echo.StreamServer.API.Request class for the recurring server request for data;
+- "liveUpdates" defines a timeout that used by the Echo.StreamServer.API.Request class for the recurring server request for data. This parameter describes in ["Echo.StreamServer.Controls.Counter"](#!/api/Echo.StreamServer.Controls.Counter-cfg-liveUpdates);
 - "infoMessages" defines messages layout for control. This parameter describes in ["Echo.Control"](#!/api/Echo.Control-cfg-infoMessages)
 
 Now everywhere in the control's code we'll be able to use the following call:
 
 	@example
-	this.config.get("liveUpdatesTimeout"); // assuming that "this" points to the control instance
+	this.config.get("liveUpdates"); // assuming that "this" points to the control instance
 
-to get the value of the "liveUpdatesTimeout" config parameter or any other defined during the control installation or to access the default value otherwise. Note: the "this" var should point to the control instance.
+to get the value of the "liveUpdates" config parameter or any other defined during the control installation or to access the default value otherwise. Note: the "this" var should point to the control instance.
 
 ## Defining control template
 
@@ -159,7 +162,10 @@ In our case we need a simple template which contains a count items number. Let's
 
 	counter.config = {
 		"data": undefined,
-		"liveUpdatesTimeout": 10,
+		"liveUpdates": {
+			"enabled": true,
+			"timeout": 10
+		},
 		"infoMessages": {"layout": "compact"}
 	};
 
@@ -190,8 +196,8 @@ Now we can define a helper functions which will be doing some actions. For examp
 					"q": this.config.get("query"),
 					"appkey": this.config.get("appkey")
 				},
-				"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
-				"recurring": true,
+				"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
+				"recurring": this.config.get("liveUpdates.enabled"),
 				"onError": $.proxy(this._error, this),
 				"onData": $.proxy(this._update, this)
 			});
@@ -267,7 +273,9 @@ In order to install the control, the following steps should be taken:
 	@example
 	new Echo.StreamServer.Controls.Counter({
 		...
-		"liveUpdatesTimeout": 5,
+		"liveUpdates": {
+			"timeout": 5
+		}
 		...
 	});
 
@@ -296,7 +304,10 @@ In order to install the control, the following steps should be taken:
 
 	counter.config = {
 		"data": undefined,
-		"liveUpdatesTimeout": 10,
+		"liveUpdates": {
+			"enabled": true,
+			"timeout": 10
+		},
 		"infoMessages": {"layout": "compact"}
 	};
 
@@ -311,8 +322,8 @@ In order to install the control, the following steps should be taken:
 					"q": this.config.get("query"),
 					"appkey": this.config.get("appkey")
 				},
-				"liveUpdatesTimeout": this.config.get("liveUpdatesTimeout"),
-				"recurring": true,
+				"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
+				"recurring": this.config.get("liveUpdates.enabled"),
 				"onError": $.proxy(this._error, this),
 				"onData": $.proxy(this._update, this)
 			});
