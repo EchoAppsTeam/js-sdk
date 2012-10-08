@@ -84,9 +84,8 @@ Echo.App.manifest = function(name) {
  *
  * @return {Boolean}
  */
-Echo.App.isDefined = function(manifest) {
-	return Echo.Control.isDefined(manifest);
-};
+Echo.App.isDefined = Echo.Control.isDefined;
+
 // public interface
 
 /**
