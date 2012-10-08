@@ -39,7 +39,7 @@ Echo.Configuration = function(master, slave, normalizer) {
 	if (!slave && !normalizer) {
 		this.data = master;
 	} else {
-		$.each(this._mergeConfigs(master, slave), function(key, value) {
+		$.each(this._merge(master, slave), function(key, value) {
 			self.set(key, value);
 		});
 	}
@@ -156,20 +156,23 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	});
 };
 
-Echo.Configuration.prototype._mergeConfigs = function(master, slave) {
-	var self = this;
-	if ($.isPlainObject(master)) {
-		$.each(slave, function(key, val) {
-			if (!master.hasOwnProperty(key)) {
-				master[key] = val;
-			} else if ($.isPlainObject(val) && $.isPlainObject(master[key])) {
-				self._mergeConfigs(master[key], val);
-			}
-		});
-	} else {
-		master = slave;
+Echo.Configuration.prototype._merge = function(master, slave) {
+	var src,options,target = {}, self = this;
+
+	for(var i = 0; i < arguments.length; i++) {
+		options = arguments[i];
+		if ($.isPlainObject(options)) {
+			$.each(options, function(name, copy) {
+				src = target[name];
+				if ($.isPlainObject(src)) {
+					target[name] = self._merge(src, copy);
+				} else if (!target.hasOwnProperty(name)) {
+					target[name] = copy;
+				}
+			});
+		}
 	}
-	return master;
+	return target;
 };
 
 })(Echo.jQuery);

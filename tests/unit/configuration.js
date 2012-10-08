@@ -58,10 +58,28 @@ suite.prototype.tests = {};
 
 suite.prototype.tests.PublicInterfaceTests = {
 	"check": function() {
-		var original = this.data.original;
-		var overrides = this.data.overrides;
+
+		var clone = function(obj) {
+			var target = $.isArray(obj) ? [] : {};
+			$.each(obj, function(key, val) {
+				if ($.isPlainObject(val) || $.isArray(val)) {
+					target[key] = clone(val);
+				} else {
+					target[key] = val;
+				}
+			});
+			return target;
+		};
+
+		var original = clone(this.data.original);
+		var overrides = clone(this.data.overrides);
 
 		var config = new Echo.Configuration(overrides, original);
+
+		QUnit.deepEqual(this.data.original, original,
+			"Checkind if original object \"original\" don't changed");
+		QUnit.deepEqual(this.data.overrides, overrides,
+			"Checking if original object \"overrides\" don't changed");
 
 		QUnit.equal(config.get("key3"), false,
 			"Checking if the default config values were overriden correctly");
@@ -162,7 +180,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"Checking if the default configuration not override undefined key");
 		QUnit.equal(config.get("key11"), overrides["key11"],
 			"Checking if the default configuration not override null key");
-		QUnit.equal(config.get("key12"), overrides["key12"],
+		QUnit.deepEqual(config.get("key12"), original["key12"],
 			"Checking if the default config values were merged correctly with empty object");
 		QUnit.deepEqual(config.get("key13"), {"b": 3, "c": 2},
 			"Checking if the default config values were merged correctly with non empty object");
