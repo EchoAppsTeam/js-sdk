@@ -405,14 +405,15 @@ Echo.Tests.Stats = {
 
 				events.published[params.topic].count++;
 
+				var data = $.extend(true, {}, params.data);
 				if (Echo.Tests.Events.contracts[params.topic]) {
 					if (_checkContract(params.data, Echo.Tests.Events.contracts[params.topic]) !== true) {
 						events.published[params.topic].status = "failed";
-						events.published[params.topic].data.push(params.data);
+						events.published[params.topic].data.push(data);
 					}
 				} else {
 					events.published[params.topic].status = "notcovered";
-					events.published[params.topic].data.push(params.data);
+					events.published[params.topic].data.push(data);
 				}
 			}
 			return eventPublish(params);
