@@ -532,28 +532,7 @@ stream.methods._requestChildrenItems = function(unique) {
 			item.set("data.nextPageAfter", data.nextPageAfter);
 			item.set("data.hasMoreChildren", data.hasMoreChildren);
 			data.entries = self._actualizeChildrenList(item, data.entries);
-			/**
-			 * @event onDataReceive
-			 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
-			 * Triggered when new data is received.
-			 */
-			self.events.publish({
-				"topic": "onDataReceive",
-				"data": {
-					"entries": data.entries,
-					"initial": false
-				},
-				"propagation": false
-			});
-			var actions = $.map(data.entries, function(entry) {
-				return function(callback) {
-					self._initItem(entry, false, function() {
-						items[this.get("data.unique")] = this;
-						callback();
-					});
-				};
-			});
-			Echo.Utils.parallelCall(actions, function() {
+			self._onDataReceive(data, false, function(items) {
 				var children = [];
 				$.map(data.entries, function(entry) {
 					var child = items[entry.unique];
@@ -649,6 +628,37 @@ stream.methods._requestMoreItems = function(element) {
 					"\"" + (this.get("nextPageAfter", "0")) + "\"",
 			"appkey": this.config.get("appkey")
 		}
+	});
+};
+
+stream.methods._onDataReceive = function(data, initial, callback) {
+	var self = this;
+	var items = {};
+	/**
+	 * @event onDataReceive
+	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
+	 * Triggered when new data is received.
+	 */
+	this.events.publish({
+		"topic": "onDataReceive",
+		"data": {
+			"entries": data.entries,
+			"initial": initial
+		},
+		"propagation": false
+	});
+	var actions = $.map(data.entries, function(entry) {
+		return function(cb) {
+			self._initItem(entry, false, function() {
+				items[this.get("data.unique")] = this;
+				cb();
+			});
+		};
+	});
+	// items initialization is an async process, so we init
+	// item instances first and append them into the structure later
+	Echo.Utils.parallelCall(actions, function() {
+		callback(items);
 	});
 };
 
@@ -829,7 +839,7 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 		"pageAfter": pageAfter ? '"' + (pageAfter || 0) + '"' : undefined
 	}, function(value, acc, predicate) {
 		return acc += (typeof value !== "undefined"
-			? predicate + ":" + value + " " 
+			? predicate + ":" + value + " "
 			: ""
 		); 
 	}) + filterQuery;
@@ -852,26 +862,11 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	this.config.set("children", $.extend(this.config.get("children"), data.children));
 
 	this.config.extend(this._extractTimeframeConfig(data));
-	this.events.publish({
-		"topic": "onDataReceive",
-		"data": {
-			"entries": data.entries,
-			"initial": !this.hasInitialData
-		},
-		"propagation": false
-	});
 	var sortOrder = this.config.get("sortOrder");
-	var actions = $.map(data.entries, function(entry) {
-		return function(callback) {
-			self._initItem(entry, false, function() {
-				items[this.get("data.unique")] = this;
-				callback();
-			});
-		};
+	data.entries = $.map(data.entries, function(entry) {
+		return self._normalizeEntry(entry);
 	});
-	// items initialization is an async process, so we init
-	// item instances first and append them into the structure later
-	Echo.Utils.parallelCall(actions, function() {
+	this._onDataReceive(data, !this.hasInitialData, function(items) {
 		$.map(data.entries, function(entry) {
 			var item = items[entry.unique];
 			self._applyStructureUpdates("add", item);

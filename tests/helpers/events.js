@@ -209,7 +209,9 @@ Echo.Tests.Events.contracts = {
 		"data": {}
 	},
 	"Echo.StreamServer.Controls.Stream.onDataReceive": {
-		"entries": [],
+		"entries": function(value) {
+			return $.isArray(value) && value[0] && $.type(value[0].normalized) !== "undefined";
+		},
 		"initial": true,
 		"query": "",
 		"target": $("<div>")
