@@ -219,6 +219,7 @@ Echo.UserSession._construct = function(config) {
 		// first time call
 		default:
 			user.data = {};
+			user.cache = {};
 			user.config = new Echo.Configuration(config, user._getDefaultConfig());
 			user._listenEvents();
 			user._init(callback);
@@ -330,6 +331,7 @@ Echo.UserSession._reset = function(data) {
 	var user = this;
 	user.data = user._normalize($.extend({}, data));
 	user.identity = {};
+	user.cache = {};
 	var identities = user.get("activeIdentities");
 	user.identity = identities && identities.length ? identities[0] : {};
 };
@@ -458,8 +460,8 @@ Echo.UserSession._getActiveIdentities = function() {
 	if (!user.data.poco || !user.data.poco.entry) return;
 
 	// check if we already have this information
-	if (user.identity && user.identity.activeIdentities) {
-		return user.identity.activeIdentities;
+	if (user.cache.activeIdentities) {
+		return user.cache.activeIdentities;
 	}
 
 	var identities = $.map(user.data.poco.entry.accounts || [], function(entry) {
@@ -467,9 +469,8 @@ Echo.UserSession._getActiveIdentities = function() {
 	});
 
 	// cache data for next calls
-	if (user.identity) {
-		user.identity.activeIdentities = identities;
-	}
+	user.cache.activeIdentities = identities;
+
 	return identities;
 };
 
