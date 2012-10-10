@@ -83,7 +83,7 @@ suite.prototype.cases.initComponent = function(callback) {
 	var check = function() {
 		this.initComponent({
 			"id": "TestComponent1",
-			"name": "TestComponent1",
+			"component": "TestComponent1",
 			"config": {
 				"target": self.config.target,
 				"ready": function() {
@@ -112,7 +112,7 @@ suite.prototype.cases.destroyComponent = function(callback) {
 	var check = function() {
 		var component = this.initComponent({
 			"id": "TestComponent1",
-			"name": "TestComponent1",
+			"component": "TestComponent1",
 			"config": {
 				"target": self.config.target
 			}
@@ -142,7 +142,7 @@ suite.prototype.cases.destroyComponents = function(callback) {
 		$.map(components, function(component) {
 			self.initComponent({
 				"id": component,
-				"name": component,
+				"component": component,
 				"config": {
 					"target": test.config.target
 				}

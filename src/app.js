@@ -102,7 +102,7 @@ Echo.App.isDefined = Echo.Control.isDefined;
  * @param {String} componentSpec.id
  * Nested component id.
  *
- * @param {String} componentSpec.name
+ * @param {String} componentSpec.component
  * Constructor name for the nested component like "Echo.StreamServer.Control.Stream".
  *
  * @param {Object} [componentSpec.config]
@@ -130,7 +130,7 @@ Echo.App.prototype.initComponent = function(componentSpec) {
 			componentSpec.config
 		)
 	);
-	var Component = Echo.Utils.getComponent(componentSpec.name);
+	var Component = Echo.Utils.getComponent(componentSpec.component);
 	this.set("components." + componentSpec.id, new Component(componentSpec.config));
 	return this.getComponent(componentSpec.id);
 };
