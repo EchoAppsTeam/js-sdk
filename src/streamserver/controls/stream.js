@@ -69,38 +69,83 @@ stream.config = {
 		"itemsSlideTimeout": 600,
 		"maxDepth": 1
 	},
+
 	/**
 	 * @cfg {Number} fadeTimeout
 	 * Specifies the duration of the fading animation (in milliseconds)
 	 * when an item comes to stream as a live update.
 	 */
 	"fadeTimeout": 2800,
+
 	/**
 	 * @cfg {String} flashColor
 	 * Specifies the necessary flash color of the events coming to your
 	 * stream as live updates. This parameter must have a hex color value.
 	 */
 	"flashColor": "#ffff99",
+
 	/**
 	 * @cfg {Object} item
 	 * Specifies the configuration options to be passed to internal
 	 * Echo.StreamServer.Controls.Stream.Item component.
 	 */
 	"item": {},
+
 	/**
-	 * @cfg {Number} itemsPerPage
-	 * 
+	 * @ignore
 	 */
 	"itemsPerPage": 15,
+
+	/**
+	 * @cfg {Function} itemsComparator
+	 * Function allowing to specify custom items sorting rules. It is used to find
+	 * a correct place for a new item in the already existing list of items
+	 * by comparing this item against each item in the list.
+	 *
+	 * **Note**: there is one restriction about how this function works.
+	 * It allows to sort initial items list, puts new item from live update
+	 * in the correct place. Although next page items (loaded after clicking
+	 * "More" button) are sorted only for that page and not for the whole list
+	 * of items.
+	 *
+	 * 	// sorting items in the content lexicographical order
+	 * 	var stream = new Echo.StreamServer.Controls.Stream({
+	 * 		...
+	 * 		"itemsComparator": function(listedItem, newItem, sort) {
+	 * 			return listedItem.get("data.object.content") > newItem.get("data.object.content")
+	 * 				? 1;
+	 * 				: -1;
+	 * 		},
+	 * 		...
+	 * 	});
+	 *
+	 * @cfg {Echo.StreamServer.Controls.Stream.Item} itemsComparator.listedItem
+	 * Item from the list which is compared with new item.
+	 *
+	 * @cfg {Echo.StreamServer.Controls.Stream.Item} itemsComparator.newItem
+	 * Item we are trying to find place for.
+	 *
+	 * @cfg {String} itemsComparator.sort
+	 * The existing list sort order.
+	 * Depending on the item it's either root sort order or children sort order.
+	 *
+	 * @cfg {Number} itemsComparator.return
+	 *
+	 * + 1 - newItem will be injected into the list before listedItem
+	 * + -1 - it's not the right place for the newItem
+	 * + 0 - comparison result is undefined
+	 */
+	"itemsComparator": undefined,
+
 	/**
 	 * @cfg {Object} liveUpdates
-	 * Defines configurations for liveUpdates.
+	 * Configuration options for liveUpdates.
 	 *
 	 * @cfg {Boolean} liveUpdates.enabled
 	 * Parameter to enable/disable receiving live updates by control.
 	 *
 	 * @cfg {Number} liveUpdates.timeout
-	 * Specifies the timeout between live updates requests (in seconds).
+	 * Timeout between live updates requests (in seconds).
 	 */
 	"liveUpdates": {
 		"enabled": true,
@@ -114,18 +159,25 @@ stream.config = {
 	 * in a popup window.
 	 */
 	"openLinksInNewWindow": false,
+
 	/**
 	 * @cfg {String} providerIcon
 	 * Specifies the URL to the icon representing data provider.
 	 */
 	"providerIcon": Echo.Loader.getURL("{sdk}/images/favicons/comments.png"),
+
 	/**
 	 * @cfg {Number} slideTimeout
 	 * Specifies the duration of the sliding animation (in milliseconds)
 	 * when an item comes to a stream as a live update.
 	 */
 	"slideTimeout": 700,
+
+	/**
+	 * @ignore
+	 */
 	"sortOrder": "reverseChronological",
+
 	/**
 	 * @cfg {Object} state
 	 * Defines configurations for Stream Status
@@ -152,8 +204,8 @@ stream.config = {
 	 * state text are displayed.
 	 * + none - the stream will never be paused.
 	 *
-	 * Note that mouseover method is not available for mobile devices and will
-	 * be forced to button method.
+	 * Note that "mouseover" method is not available for mobile devices and will
+	 * be forced to "button" method.
 	 *
 	 * @cfg {String} state.layout
 	 * Specifies the Live/Pause button layout. This option is available only when
@@ -175,6 +227,7 @@ stream.config = {
 		"toggleBy":  "mouseover", // mouseover | button | none,
 		"layout": "compact" // compact | full
 	},
+
 	/**
 	 * @cfg {String} submissionProxyURL URL prefix for requests to
 	 * Submission Proxy subsystem.
@@ -1217,7 +1270,7 @@ stream.methods._withinVisibleFrame = function(item, items, isViewComplete, sortO
 	if (isViewComplete || !items.length) {
 		return true;
 	}
-	return this._compareItems(items[items.length - 1], item, sortOrder);
+	return this._itemsComparator(items[items.length - 1], item, sortOrder) === 1;
 };
 
 stream.methods._withinVisibleChildrenFrame = function(item) {
@@ -1237,15 +1290,18 @@ stream.methods._getParentItem = function(item) {
 	return item.isRoot() ? undefined : this.items[item.get("data.parentUnique")];
 };
 
-stream.methods._compareItems = function(a, b, sort) {
-	var self = this;
-	var result = false;
+stream.methods._itemsComparator = function(listedItem, newItem, sort) {
+	var self = this, result;
+	var customComparator = this.config.get("itemsComparator");
+	if (customComparator && $.isFunction(customComparator)) {
+		return customComparator(listedItem, newItem, sort);
+	}
 	switch (sort) {
 		case "chronological":
-			result = a.get("timestamp") > b.get("timestamp");
+			result = listedItem.get("timestamp") > newItem.get("timestamp");
 			break;
 		case "reverseChronological":
-			result = a.get("timestamp") <= b.get("timestamp");
+			result = listedItem.get("timestamp") <= newItem.get("timestamp");
 			break;
 		case "likesDescending":
 		case "repliesDescending":
@@ -1253,12 +1309,12 @@ stream.methods._compareItems = function(a, b, sort) {
 			var getCount = function(entry) {
 				return self._getRespectiveAccumulator(entry, sort);
 			};
-			result = (getCount(a) < getCount(b) ||
-					(getCount(a) === getCount(b) &&
-						this._compareItems(a, b, "reverseChronological")));
+			result = (getCount(listedItem) < getCount(newItem) ||
+					(getCount(listedItem) === getCount(newItem) &&
+						this._itemsComparator(listedItem, newItem, "reverseChronological") === 1));
 			break;
 	}
-	return result;
+	return result ? 1 : (typeof result === "undefined" ? 0 : -1);
 };
 
 stream.methods._placeRootItem = function(item) {
@@ -1381,7 +1437,7 @@ stream.methods._getItemProjectedIndex = function(item, items, sort) {
 	var index;
 	if (item.config.get("live") || item.get("forceInject")) {
 		$.each(items || [], function(i, entry) {
-			if (self._compareItems(entry, item, sort)) {
+			if (self._itemsComparator(entry, item, sort) === 1) {
 				index = i;
 				return false;
 			}
@@ -1391,6 +1447,9 @@ stream.methods._getItemProjectedIndex = function(item, items, sort) {
 };
 
 stream.methods._addItemToList = function(items, item, sort) {
+	if (this.config.get("itemsComparator")) {
+		item.set("forceInject", true);
+	}
 	items.splice(this._getItemProjectedIndex(item, items, sort), 0, item);
 	item.set("forceInject", false);
 	this.items[item.get("data.unique")] = item;
