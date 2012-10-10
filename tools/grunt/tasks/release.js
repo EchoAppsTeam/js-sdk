@@ -3,6 +3,9 @@ module.exports = function(grunt) {
 	var fs = require("fs");
 	var http = require("http");
 	var _ = grunt.utils._;
+	// if DEBUG is true no actual release will be performed
+	// to enable debug mode execute `grunt release -d`
+	var DEBUG = !!grunt.option("debug");
 
 	var FtpUploader = function(config) {
 		var self = this;
@@ -34,7 +37,7 @@ module.exports = function(grunt) {
 				});
 				self.enqueueDir("", self.config.rootDir + upload.from, upload.to);
 			});
-			grunt.verbose.writeln("Starting upload");
+			!DEBUG && grunt.verbose.writeln("Starting upload");
 			self.currentStep = 1;
 			self.totalSteps = self.queue.length;
 			self._next();
@@ -71,8 +74,12 @@ module.exports = function(grunt) {
 
 	FtpUploader.prototype._uploadFile = function(name, fromPrefix, toPrefix) {
 		var self = this;
+		this._log(toPrefix + name);
+		if (DEBUG) {
+			this._next();
+			return;
+		}
 		this.client.put(fs.createReadStream(fromPrefix + name), toPrefix + name, function(err) {
-			self._log(toPrefix + name);
 			if (err) {
 				self._error(err);
 			} else {
@@ -83,8 +90,12 @@ module.exports = function(grunt) {
 
 	FtpUploader.prototype._makeDir = function(name) {
 		var self = this;
+		this._log(name);
+		if (DEBUG) {
+			this._next();
+			return;
+		}
 		this.client.mkdir(name, function() {
-			self._log(name);
 			self._next();
 		});
 	};
@@ -107,11 +118,12 @@ module.exports = function(grunt) {
 		this.config.complete(false);
 	};
 
-	grunt.registerInitTask("release", "Release", function(target) {
+	grunt.registerInitTask("release", "Release", function(target, subtarget) {
 		var config = grunt.config("local");
 		if (!config || !config.release) {
 			grunt.fail.fatal("No configuration for this task.");
 		}
+		DEBUG && delete config.domain;
 		if (config.domain) {
 			grunt.fail.fatal("Can't release files from dev environment");
 		}
@@ -119,18 +131,28 @@ module.exports = function(grunt) {
 		// TODO: execute `grunt` before releasing anything
 		if (!target) {
 			grunt.task.run([
-				"release:sdk",
+				"release:sdk:latest",
+				"release:sdk:stable",
 				"release:apps"
 			]);
 			return;
 		}
+		console.time(target.yellow);
 		// Tell grunt this task is asynchronous.
-		var done = this.async();
+		var _complete = this.async();
+		var done = function() {
+			console.timeEnd(target.yellow);
+			_complete();
+		};
 		var version = grunt.config("pkg.version");
 		var majorVersion = version.split(".")[0];
+		var params;
 		switch (target) {
 			case "sdk":
-				_.each(config.release[target].upload, function(upload) {
+				if (!subtarget) {
+					subtarget = "latest";
+				}
+				_.each(config.release[target][subtarget].upload, function(upload) {
 					upload.from = upload.from
 						.replace("{majorVersion}", majorVersion)
 						.replace("{version}", version);
@@ -138,22 +160,29 @@ module.exports = function(grunt) {
 						.replace("{majorVersion}", majorVersion)
 						.replace("{version}", version);
 				});
+				params = config.release[target][subtarget];
 				// no break statement!
 			case "apps":
+				params = params || config.release[target];
 				new FtpUploader(_.extend({
 					"complete": done,
 					"rootDir": grunt.config("dirs.dest") + "/"
-				}, config.release[target]));
+				}, params));
 				grunt.task.run("release:purge:" + target);
 				break;
 			case "purge":
 				// TODO: purge all paths in one request
-				grunt.helper("cdn_purge", [arguments[1]], config.release, done);
+				grunt.helper("cdn_purge", [subtarget], config.release, done);
 				break;
 		}
 	});
 
 	grunt.registerHelper("cdn_purge", function(paths, config, done) {
+		if (DEBUG) {
+			console.log(arguments[0]);
+			done();
+			return;
+		}
 		var xml =
 			'<?xml version="1.0" encoding="utf-8"?>' +
 			'<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
