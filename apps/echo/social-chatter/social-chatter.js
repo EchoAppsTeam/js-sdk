@@ -530,10 +530,10 @@ SocialChatter.views.PublicEvent.renderers.publicViewNotice = function(element) {
 };
 
 SocialChatter.views.PublicEvent.renderers.avatar = function(element) {
-	var avatar = Echo.Utils.loadImage(
-		this.data.vipPhoto,
-		this.config.get("parent.defaultEventIcon")
-	);
+	var avatar = Echo.Utils.loadImage({
+		"image": this.data.vipPhoto,
+		"defaultImage": this.config.get("parent.defaultEventIcon")
+	});
 	return element.empty().append(avatar);
 };
 

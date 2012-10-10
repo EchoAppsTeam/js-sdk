@@ -148,25 +148,25 @@ suite.prototype.cases.name = function(callback) {
 	var button = submit.view.get("postButton");
 	suite.postHandler = function() {
 		var element = $(".echo-streamserver-controls-submit-nameContainer", target);
-		QUnit.ok(element.hasClass('echo-streamserver-controls-submit-mandatory'),
+		QUnit.ok(element.hasClass("echo-streamserver-controls-submit-mandatory"),
 			"Checking that name is mandatory field for anonymous");
 		callback();
 	};
-	button.on('click', suite.postHandler).click();
+	button.on("click", suite.postHandler).click();
 };
 
 suite.prototype.cases.content = function(callback) {
 	var submit = suite.submit;
 	var button = submit.view.get("postButton");
 	submit.view.get("name").val("TestName");
-	button.off('click', suite.postHandler);
+	button.off("click", suite.postHandler);
 	suite.postHandler = function() {
 		var content = submit.view.get("content");
-		QUnit.ok(content.hasClass('echo-streamserver-controls-submit-mandatory'),
+		QUnit.ok(content.hasClass("echo-streamserver-controls-submit-mandatory"),
 			"Checking that content is mandatory field for anonymous");
 		callback();
 	};
-	button.on('click', suite.postHandler).click();
+	button.on("click", suite.postHandler).click();
 };
 
 
@@ -215,7 +215,8 @@ suite.prototype.cases.post = function(callback) {
 suite.prototype.cases.user = function(callback) {
 	var submit = suite.submit;
 	QUnit.equal(submit.view.get("name").val(), "john.doe", "Checking name of logged user");
-	QUnit.equal(submit.view.get("avatar").html(), "<img src=\"http://c0.echoenabled.com/images/avatar-default.png\">",
+	var avatar = submit.view.get("avatar");
+	QUnit.ok(avatar && avatar.length === 1 && avatar.find("img") && avatar.find("img").attr("src") === "http://c0.echoenabled.com/images/avatar-default.png",
 		"Checking avatar of logged user");
 	callback();
 };
@@ -237,7 +238,7 @@ suite.prototype.cases.onInit = function(callback) {
 				},
 				"object": {
 					"objectTypes": [ "http://activitystrea.ms/schema/1.0/comment"],
-					"content": "UserContent",
+					"content": "UserContent"
 				},
 				"source": {},
 				"verbs": [ "http://activitystrea.ms/schema/1.0/post" ],

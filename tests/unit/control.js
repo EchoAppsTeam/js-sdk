@@ -292,6 +292,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 };
 
 suite.prototype.cases.controlRendering = function(callback) {
+	var _suite = this;
 	var check = function() {
 		var self = this;
 		QUnit.ok(this.config.get("target") instanceof jQuery,
@@ -354,7 +355,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"name": "testRendererWithExtra",
 			"extra": {"value": "my-value"}
 		});
-		QUnit.equal(target.html(), "<span>my-value</span>",
+		_suite.jqueryObjectsEqual($(target.html()), $("<span>my-value</span>"),
 			"Checking if element content was updated after renderer application");
 
 		this.view.render({
@@ -362,13 +363,13 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"name": "testRendererWithExtra",
 			"extra": {"value": "another-value"}
 		});
-		QUnit.equal(target.html(), "<span>another-value</span>",
+		_suite.jqueryObjectsEqual($(target.html()), $("<span>another-value</span>"),
 			"Checking if element content was updated as a result of renderer application");
 
 		this.view.render({
 			"name": "testRenderer"
 		});
-		QUnit.equal(target.html(), "<div>Some value</div>",
+		_suite.jqueryObjectsEqual($(target.html()), $("<div>Some value</div>"),
 			"Checking if element content was updated as a result of the native renderer application");
 
 		// recursive element rendering
@@ -377,7 +378,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"name": "testRendererRecursive",
 			"recursive": true
 		});
-		QUnit.equal(this.view.get("testRendererRecursive").html(), "<div class=\"echo-streamserver-controls-mytestcontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mytestcontrol-nestedSubcontainer\"></div></div>",
+		_suite.jqueryObjectsEqual($(this.view.get("testRendererRecursive").html()), $("<div class=\"echo-streamserver-controls-mytestcontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mytestcontrol-nestedSubcontainer\"></div></div>"),
 			"Checking if element content was updated after recursive rendering");
 
 		// checking re-rendering
@@ -385,7 +386,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		this.config.get("target").append('<div class="extra-div-1">Another DIV appended</div>');
 		this.config.get("target").append('<div class="extra-div-2">DIV appended</div>');
 		this.render();
-		QUnit.equal(this.view.get("testRenderer").html(), "<div>Some value</div>",
+		_suite.jqueryObjectsEqual($(this.view.get("testRenderer").html()), $("<div>Some value</div>"),
 			"Checking if component was re-rendered and appended elements were wiped out");
 
 		// checking "showMessage" method
@@ -469,7 +470,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		var template = '<div class="echo-utils-tests-footer">footer content</div>';
 		this.render();
-		QUnit.equal(this.view.get("testRenderer").html(), "<div>Some value</div>",
+		_suite.jqueryObjectsEqual($(this.view.get("testRenderer").html()), $("<div>Some value</div>"),
 			"Checking control.view.get() function");
 		this.view.set("testRenderer", $(template));
 		QUnit.equal(this.view.get("testRenderer").html(), "footer content",

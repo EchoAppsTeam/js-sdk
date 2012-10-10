@@ -86,7 +86,7 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 		"recurring": "true",
 		"onData": function(response) {
 			if (response && response.count) {
-				QUnit.equal(1, response.count, "Checking if live updates mecahnism by count works correctly after posting");
+				QUnit.equal(1, response.count, "Checking if live updates mechanism by count works correctly after posting");
 				callback();
 			}
 			cuReq.abort();
@@ -242,7 +242,7 @@ suite.prototype.items.post = {
 			"uri": "http://nymag.com/daily/intel/2012/06/nora-ephron-1941-2012.html",
 			"title": "Nora Ephron, 1941-2012"
 		}],
-		"content": "For the record, I think your neck looked just fine.\n\nPeace out, Nora.",
+		"content": "For the record, I think your neck looked just fine.\n\nPeace out, Nora."
 	},
 	"source": {
 		"name": "aboutecho.com",

@@ -363,10 +363,10 @@ submit.renderers.text = function(element) {
  * @echo_renderer
  */
 submit.renderers.avatar = function(element) {
-	var avatar = Echo.Utils.loadImage(
-		this.user.get("avatar"),
-		this.config.get("defaultAvatar")
-	);
+	var avatar = Echo.Utils.loadImage({
+		"image": this.user.get("avatar"),
+		"defaultImage": this.config.get("defaultAvatar")
+	});
 	return element.empty().append(avatar);
 };
 

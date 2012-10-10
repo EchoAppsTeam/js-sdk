@@ -2044,10 +2044,10 @@ item.renderers.wrapper = function(element) {
  */
 item.renderers.avatar = function(element) {
 	var size = this.depth ? 24 : 48;
-	var avatar = Echo.Utils.loadImage(
-		this.get("data.actor.avatar"),
-		this.config.get("defaultAvatar")
-	);
+	var avatar = Echo.Utils.loadImage({
+		"image": this.get("data.actor.avatar"),
+		"dafaultImage": this.config.get("defaultAvatar")
+	});
 	avatar.css({"width": size, "height": size});
 	return element.empty().append(avatar);
 };

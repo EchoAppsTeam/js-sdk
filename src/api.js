@@ -103,76 +103,6 @@ Echo.API.Transports.AJAX.available = function() {
 };
 
 /**
- * @class Echo.API.Transports.XDomainRequest
- * @extends Echo.API.Transports.AJAX
- */
-Echo.API.Transports.XDomainRequest = function(config) {
-	return Echo.API.Transports.XDomainRequest.parent.constructor.apply(this, arguments);
-};
-
-utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transports.XDomainRequest);
-
-Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
-	var self = this;
-	var xdr = new XDomainRequest();
-	var parseResponseText = function(responseText) {
-		var data;
-		try {
-			data = $.parseJSON(responseText);
-		} catch(e) {
-			data = {
-				"result": "error",
-				"errorCode": "parse_error",
-				"errorMessage": "Parse JSON error"
-			};
-		}
-		return data;
-	};
-	xdr.onload = function() {
-		self.config.get("onData")(parseResponseText(xdr.responseText));
-	};
-	xdr.onerror = function() {
-		var errorResponse = self._wrapErrorResponse(parseResponseText(xdr.responseText));
-		self.config.get("onError")(errorResponse);
-	};
-	return xdr;
-};
-
-Echo.API.Transports.XDomainRequest.prototype.send = function(data) {
-	data = $.extend(true, {}, this.config.get("data"), data || {});
-	var method = this.config.get("method").toLowerCase();
-	this.config.get("onOpen")();
-	// TODO: need investigate XDomainRequest cache
-	// avoid recieved data caching
-	$.extend(data, {
-		"_echo": utils.getUniqueString()
-	});
-	if (method === "get") {
-		this.transportObject.open(method, this._prepareURL() + "?" + $.param(data));
-		this.transportObject.send(null);
-	} else {
-		this.transportObject.open(method, this._prepareURL());
-		this.transportObject.send($.param(data));
-	}
-};
-
-Echo.API.Transports.XDomainRequest.prototype.abort = function() {
-	Echo.API.Transports.XDomainRequest.parent.abort.call(this);
-	this.config.get("onError")(
-		$.extend(true, this._wrapErrorResponse(), {
-			"errorCode": "connection_aborted"
-		})
-	);
-};
-
-Echo.API.Transports.XDomainRequest.available = function() {
-	return $.browser.msie
-		&& $.browser.version > 7
-		&& "XDomainRequest" in window
-		&& window.XDomainRequest !== null;
-};
-
-/**
  * @class Echo.API.Transports.JSONP
  * @extends Echo.API.Transports.AJAX
  */
@@ -185,15 +115,24 @@ utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transports.JSONP);
 Echo.API.Transports.JSONP.prototype.send = function(data) {
 	if (this.config.get("method").toLowerCase() === "get") {
 		this.transportObject.data = $.extend({}, this.config.get("data"), data);
-		return $.ajax(this.transportObject);
+		return (this.transportObject = $.ajax(this.transportObject));
 	}
 	this._pushPostParameters($.extend({}, this.config.get("data"), data));
 	this.transportObject.submit();
 	this.config.get("onData")();
 };
 
+Echo.API.Transports.JSONP.prototype.abort = function() {
+	if (this.transportObject.form && this.transportObject.iframe) {
+		this.transportObject.form.remove();
+		this.transportObject.iframe.remove();
+		return;
+	}
+	return Echo.API.Transports.JSONP.parent.abort.call(this);
+};
+
 Echo.API.Transports.JSONP.prototype._getTransportObject = function() {
-	var settings = this.constructor.parent._getTransportObject.call(this);
+	var settings = Echo.API.Transports.JSONP.parent._getTransportObject.call(this);
 	if (this.config.get("method").toLowerCase() === "post") {
 		return this._getPostTransportObject({
 			"url": settings.url
@@ -220,7 +159,10 @@ Echo.API.Transports.JSONP.prototype._getPostTransportObject = function(settings)
 		"action" : settings.url
 	}).appendTo(container);
 	this._pushPostParameters(settings.data);
-	return form;
+	return {
+		"form": form,
+		"iframe": iframe
+	};
 };
 
 Echo.API.Transports.JSONP.prototype._pushPostParameters = function(data) {
@@ -402,7 +344,7 @@ Echo.API.Request.prototype._getTransport = function() {
 		? userDefinedTransport
 		: function() {
 			var transport;
-			$.each(["WebSocket", "AJAX", "XDomainRequest", "JSONP"], function(i, name) {
+			$.each(["WebSocket", "AJAX", "JSONP"], function(i, name) {
 				var available = Echo.API.Transports[name].available();
 				if (available) {
 					transport = name;

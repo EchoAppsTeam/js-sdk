@@ -200,6 +200,77 @@ Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
 	_check(true);
 };
 
+
+/*
+The Idea of the function were took from https://github.com/jquery/jquery-ui/blob/master/tests/unit/testsuite.js
+Some functionality copied as is.
+*/
+Echo.Tests.Common.prototype.jqueryObjectsEqual = function(source, target, message) {
+	var expected, actual;
+	var properties = [
+		"disabled",
+		"readOnly"
+	];
+	var attributes = [
+		"autocomplete",
+		"aria-activedescendant",
+		"aria-controls",
+		"aria-describedby",
+		"aria-disabled",
+		"aria-expanded",
+		"aria-haspopup",
+		"aria-hidden",
+		"aria-labelledby",
+		"aria-pressed",
+		"aria-selected",
+		"aria-valuemax",
+		"aria-valuemin",
+		"aria-valuenow",
+		"class",
+		"href",
+		"id",
+		"nodeName",
+		"role",
+		"tabIndex",
+		"src",
+		"alt",
+		"title"
+	];
+	function extract(elem) {
+		if (!elem || !elem.length) {
+			QUnit.push(false, actual, expected,
+				"jqueryObjectsEqual failed, can't extract the element, message was: " + message);
+			return;
+		}
+
+		var children, result = {};
+		$.map(properties, function(attr) {
+			var value = elem.prop(attr);
+			result[attr] = typeof value !== "undefined" ? value : "";
+		});
+		$.map(attributes, function(attr) {
+			var value = elem.attr(attr);
+			result[attr] = typeof value !== "undefined" ? value : "";
+		});
+		result.events = $._data(elem[0], "events");
+		result.data = $.extend({}, elem.data());
+		delete result.data[$.expando];
+		children = elem.children();
+		if (children.length) {
+			result.children = elem.children().map(function( ind ) {
+				return extract($(this));
+			}).get();
+		} else {
+			result.text = elem.text();
+		}
+		return result;
+	}
+	expected = extract(source);
+
+	actual = extract(target);
+	QUnit.push(QUnit.equiv(actual, expected), actual, expected, message);
+};
+
 Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 	var self = this;
 	data.check = function(instance) {
@@ -333,7 +404,7 @@ Echo.Tests.Stats = {
 	"getFunctionNames": function(namespace, prefix) {
 		var stats = Echo.Tests.Stats;
 		// FIXME: remove WebSocket later when server-side support WebSocket's
-		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.API.Transports.WebSocket", "Echo.API.Transports.XDomainRequest"];
+		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.API.Transports.WebSocket", ($.browser.msie < 10 ? "Echo.API.Transports.AJAX" : "Echo.API.Transports.JSONP")];
 		$.each([namespace, namespace.prototype], function(i, parentObject) {
 			if (!parentObject) return;
 			$.each(parentObject, function(name, value) {

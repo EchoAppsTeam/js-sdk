@@ -343,7 +343,7 @@ Echo.Utils.htmlize = function(text) {
  * String containing JSON.
  */
 Echo.Utils.objectToJSON = function(obj) {
-	if (JSON && JSON.stringify) {
+	if (window.JSON && JSON.stringify) {
 		return JSON.stringify(obj);
 	}
 	var encodeJSONLiteral = function(string) {
@@ -521,11 +521,11 @@ Echo.Utils.parseURL = function(url) {
 	if (!parsed.hasOwnProperty(url)) {
 		var parts = url.match(Echo.Utils.regexps.parseURL);
 		parsed[url] = parts ? {
-			"scheme": parts[3],
-			"domain": parts[4],
-			"path": parts[5],
-			"query": parts[7],
-			"fragment": parts[9]
+			"scheme": parts[3] || "",
+			"domain": parts[4] || "",
+			"path": parts[5] || "/",
+			"query": parts[7] || "",
+			"fragment": parts[9] || ""
 		} : undefined;
 	}
 	return parsed[url];
@@ -565,7 +565,7 @@ Echo.Utils.getVisibleColor = function(element) {
 	var color;
 	do {
 		color = element.css("backgroundColor");
-		if (color !== "" && color !== "transparent" && !/rgba\(0, 0, 0, 0\)/.test(color) || $.nodeName(element.get(0), "body")) {
+		if (color !== "" && color !== "transparent" && !/rgba\((0,\s*){3}0\)/.test(color) || $.nodeName(element.get(0), "body")) {
 			break;
 		}
 	} while (element = element.parent());
@@ -698,26 +698,36 @@ Echo.Utils.isComponentDefined = function(name) {
  * equals first argument. If the image is not available then this function
  * loads the default image that is passed as a second argument.
  *
- * @param {String} image
- * Specifies the URL of the image to be loaded.
+ * @param {Object} args
+ * The object which contains attributes for loading image.
  *
- * @param {String} defaultImage
- * Specifies the URL of the default image.
+ * @param {String} args.image
+ * The URL of the image to be loaded.
+ *
+ * @param {String} args.defaultImage
+ * The URL of the default image.
+ *
+ * @param {Function} [args.onload]
+ * The callback which fires when image is loaded.
+ *
+ * @param {Function} [args.onerror]
+ * The callback which fires when loading image fails.
  *
  * @return {HTMLElement}
  * Image HTML element.
  */
-Echo.Utils.loadImage = function(image, defaultImage) {
-	var url = image || defaultImage;
-	var img = $("<img>", {"src": url});
-	if (url !== defaultImage) {
+Echo.Utils.loadImage = function(args) {
+	var url = args.image || args.defaultImage;
+	var img = $("<img>");
+	if (url !== args.defaultImage) {
 		img.one({
-			"error": function() {
-				$(this).attr("src", defaultImage);
-			}
+			"error": args.onerror || function() {
+				$(this).attr("src", args.defaultImage);
+			},
+			"load": args.onload || $.noop
 		});
 	}
-	return img;
+	return img.attr("src", url);
 };
 
 /**

@@ -216,10 +216,10 @@ auth.renderers.or = function(element) {
  * @echo_renderer
  */
 auth.renderers.avatar = function(element) {
-	return element.empty().append(Echo.Utils.loadImage(
-		this.user.get("avatar"),
-		this.config.get("defaultAvatar")
-	));
+	return element.empty().append(Echo.Utils.loadImage({
+		"image": this.user.get("avatar"),
+		"defaultImage": this.config.get("defaultAvatar")
+	}));
 };
 
 /**

@@ -117,7 +117,7 @@ suite.prototype.cases.onError_more_than = function(callback) {
 		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
 		"once"    : true,
 		"handler" : function(topic, params) {
-			QUnit.ok(self.config.target.html() === "<span>5000+</span>",
+			self.jqueryObjectsEqual($(self.config.target.html()), $("<span>5000+</span>"),
 				'Checking the Error: "more_than" usecase rendering');
 			callback();
 		}
