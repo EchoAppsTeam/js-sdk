@@ -67,12 +67,9 @@ suite.prototype.tests.commonWorkflow = {
 			QUnit.start();
 		};
 		
-		Echo.Loader.download({
-			"scripts": [{
-				"url": Echo.Loader.getURL("{sdk}/third-party/bootstrap/plugins/echo-button/echo-button.js")
-			}],
-			"callback": check
-		});
+		Echo.Loader.download([{
+			"url": Echo.Loader.getURL("{sdk}/third-party/bootstrap/plugins/echo-button/echo-button.js")
+		}], check);
 	}
 };
 

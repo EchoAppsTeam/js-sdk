@@ -19,20 +19,13 @@
 			QUnit.ok(!(window.$ || window.jQuery),
 				"Checking if jQuery is not defined in the window namespace");
 
-			Echo.Loader.download({
-				"scripts" : [{"url": "https://ajax.googleapis.com/ajax/libs/jquery/" + testVersion + "/jquery.min.js"}],
-				"callback": function () {
-					QUnit.ok(window.$.fn.jquery === testVersion && $.fn.jquery !== window.$.fn.jquery, "Checking if Echo jQuery lib wasn't overridden after another jQuery version inclusion into the page");
-
-					Echo.Loader.download({
-						"scripts": [{"url": "{sdk}/third-party/jquery.pack.js"}],
-						"callback": function () {
-							QUnit.ok(window.$.fn.jquery === testVersion && $.fn.jquery !== window.$.fn.jquery, "Checking if the native jQuery lib on the page is not overridden after Echo jQuery inclusion");
-							window.jQuery.noConflict(true);
-							QUnit.start();
-						}
-					});
-				}
+			Echo.Loader.download([{"url": "https://ajax.googleapis.com/ajax/libs/jquery/" + testVersion + "/jquery.min.js"}], function () {
+				QUnit.ok(window.$.fn.jquery === testVersion && $.fn.jquery !== window.$.fn.jquery, "Checking if Echo jQuery lib wasn't overridden after another jQuery version inclusion into the page");
+				Echo.Loader.download([{"url": "{sdk}/third-party/jquery.pack.js"}], function () {
+					QUnit.ok(window.$.fn.jquery === testVersion && $.fn.jquery !== window.$.fn.jquery, "Checking if the native jQuery lib on the page is not overridden after Echo jQuery inclusion");
+					window.jQuery.noConflict(true);
+					QUnit.start();
+				});
 			});
 		}
 	};

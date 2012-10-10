@@ -902,14 +902,12 @@ Echo.Control.prototype._manifest = function(key) {
 		: undefined;
 };
 
-Echo.Control.prototype._loadScripts = function(scripts, callback) {
+Echo.Control.prototype._loadScripts = function(resources, callback) {
 	var control = this;
-	Echo.Loader.download({
-		"scripts": scripts,
-		"errorTimeout": control.config.get("scriptLoadErrorTimeout"),
-		"callback": function() {
-			callback.call(control);
-		}
+	Echo.Loader.download(resources, function() {
+		callback.call(control);
+	}, {
+		"errorTimeout": control.config.get("scriptLoadErrorTimeout")
 	});
 };
 

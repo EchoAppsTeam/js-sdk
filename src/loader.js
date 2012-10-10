@@ -72,46 +72,53 @@ Echo.Loader.init = function(config) {
  * @static
  * Function to load the JavaScript or CSS stylesheet files in async mode.
  *
- * @param {Object} params
- * Object with the following properties:
- *
- * @param {Array} params.scripts
+ * @param {Array} resources
  * Array of objects with the properties described below:
  *
- * @param {String} params.scripts.url
+ * @param {String} resources.url
  * JavaScript or CSS stylesheet file URL.
  *
- * @param {Function} params.scripts.loaded
+ * @param {Function} resources.loaded
  * Function for check whether the script was loaded. This function must return
  * boolean value which indicates whether the resource was already loaded on the
  * page or not. If the resource was already loaded - no download is performed
  * and the callback is called immediately.
  *
- * @param {Function} params.callback
+ * @param {Function} [callback]
  * Callback function which should be called as soon as all requested files
  * were downloaded.
+ *
+ * @param {Object} [config]
+ * Object with configuration parameters
+ *
+ * @param {Integer} config.errorTimeout
+ * Timeout loading of resources in milliseconds, use as yepnope.errorTimeout
+ *
  */
-Echo.Loader.download = function(params) {
+Echo.Loader.download = function(resources, callback, config) {
+	resources = resources || [];
+	config = config || {};
+	callback = callback || function() {};
+
 	if (!Echo.Loader.vars.queued) {
 		Echo.Loader.vars.queued = {};
 	}
 
-	var scripts = params.scripts || [], urls = [];
-	var callback = params.callback || function() {};
+	var urls = [];
 	var queued = Echo.Loader.vars.queued;
-	for (var i = 0; i < scripts.length; i++) {
-		var script = scripts[i];
-		if (!queued[script.url] && (!script.loaded || !script.loaded())) {
-			queued[script.url] = true;
-			urls.push(Echo.Loader.getURL(script.url));
+	for (var i = 0; i < resources.length; i++) {
+		var res = resources[i];
+		if (!queued[res.url] && (!res.loaded || !res.loaded())) {
+			queued[res.url] = true;
+			urls.push(Echo.Loader.getURL(res.url));
 		}
 	}
 	if (!urls.length) {
 		callback();
 		return false;
 	}
-	if (params.errorTimeout) {
-		yepnope.errorTimeout = params.errorTimeout;
+	if (config.errorTimeout) {
+		yepnope.errorTimeout = config.errorTimeout;
 	}
 	yepnope({
 		"load": urls,
@@ -140,7 +147,7 @@ Echo.Loader.override = function(canvasID, appID, config) {
 };
 
 Echo.Loader._initEnvironment = function(callback) {
-	var scripts = [{
+	var resources = [{
 		"url": "{sdk}/backplane.js",
 		"loaded": function() { return !!window.Backplane; }
 	}, {
@@ -150,10 +157,7 @@ Echo.Loader._initEnvironment = function(callback) {
 		"url": "{sdk}/environment.pack.js",
 		"loaded": function() { return !!Echo.Utils; }
 	}];
-	Echo.Loader.download({
-		"scripts": scripts,
-		"callback": callback
-	});
+	Echo.Loader.download(resources, callback);
 };
 
 Echo.Loader._initCanvases = function(canvases) {
@@ -249,7 +253,7 @@ Echo.Loader._initUser = function(canvas, callback) {
 };
 
 Echo.Loader._initApplications = function(canvas) {
-	var scripts = [];
+	var resources = [];
 	Echo.jQuery.each(canvas.config.apps, function(id, app) {
 		app.config = app.config || {};
 		if (!app.component || !app.script || !app.id) {
@@ -263,7 +267,7 @@ Echo.Loader._initApplications = function(canvas) {
 
 		app.config.user = canvas.config.user;
 		app.config.target = Echo.Loader._createApplicationTarget(app);
-		scripts.push({
+		resources.push({
 			"url": app.script,
 			"loaded": function() {
 				return Echo.Utils.isComponentDefined(app.component);
@@ -271,26 +275,24 @@ Echo.Loader._initApplications = function(canvas) {
 		});
 	});
 
-	Echo.Loader.download({
-		"scripts": scripts,
-		"errorTimeout": Echo.Loader.config.errorTimeout,
-		"callback": function() {
-			Echo.jQuery.each(canvas.config.apps, function(id, app) {
-				var application = Echo.Utils.getComponent(app.component);
-				if (!application) {
-					Echo.Loader._error({
-						"args": {"app": app},
-						"code": "no_suitable_app_class",
-						"message": "Unable to init an app, no suitable class found"
-					});
-					return;
-				}
-				var overrides = (Echo.Loader.overrides[canvas.id] || {})[app.id] || {};
-				var config = Echo.jQuery.extend(true, app.config, overrides);
-				app.ref = new application(config);
-				canvas.target.append(app.config.target);
-			});
-		}
+	Echo.Loader.download(resources, function() {
+		Echo.jQuery.each(canvas.config.apps, function(id, app) {
+			var application = Echo.Utils.getComponent(app.component);
+			if (!application) {
+				Echo.Loader._error({
+					"args": {"app": app},
+					"code": "no_suitable_app_class",
+					"message": "Unable to init an app, no suitable class found"
+				});
+				return;
+			}
+			var overrides = (Echo.Loader.overrides[canvas.id] || {})[app.id] || {};
+			var config = Echo.jQuery.extend(true, app.config, overrides);
+			app.ref = new application(config);
+			canvas.target.append(app.config.target);
+		});
+	}, {
+		"errorTimeout": Echo.Loader.config.errorTimeout
 	});
 };
 
