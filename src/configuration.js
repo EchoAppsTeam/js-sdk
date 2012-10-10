@@ -157,9 +157,9 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 };
 
 Echo.Configuration.prototype._merge = function(master, slave) {
-	var src,options,target = {}, self = this;
+	var self = this, target = {}, src, options;
 
-	for(var i = 0; i < arguments.length; i++) {
+	for (var i = 0; i < arguments.length; i++) {
 		options = arguments[i];
 		if ($.isPlainObject(options)) {
 			$.each(options, function(name, copy) {
