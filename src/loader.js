@@ -91,7 +91,7 @@ Echo.Loader.init = function(config) {
  * @param {Object} [config]
  * Object with configuration parameters
  *
- * @param {Integer} config.errorTimeout
+ * @param {Number} config.errorTimeout
  * Timeout loading of resources in milliseconds, use as yepnope.errorTimeout
  *
  */
