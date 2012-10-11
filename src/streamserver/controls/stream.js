@@ -726,9 +726,20 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 	var self = this;
 	this._refreshItemsDate();
 	this._checkTimeframeSatisfy();
-	var actions = $.map(entries || [], function(entry) {
+	var data = {};
+	data.entries = $.map(entries || [], function(entry) {
+		return self._normalizeEntry(entry);
+	});
+	this.events.publish({
+		"topic": "onDataReceive",
+		"data": {
+			"entries": data.entries,
+			"initial": false
+		},
+		"propagation": false
+	});
+	var actions = $.map(data.entries, function(entry) {
 		return function(_callback) {
-			entry = self._normalizeEntry(entry);
 			var item = self.items[entry.unique];
 			var action = self._classifyAction(entry);
 			if (!item && action !== "post") {
