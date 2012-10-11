@@ -80,11 +80,20 @@ counter.config = {
 	 * 	});
 	 */
 	&quot;data&quot;: undefined,
-<span id='Echo-StreamServer-Controls-Counter-cfg-liveUpdatesTimeout'>	/**
-</span>	 * @cfg {Number} liveUpdatesTimeout
-	 * Specifies the timeout between the live updates requests (in seconds).
+<span id='Echo-StreamServer-Controls-Counter-cfg-liveUpdates'>	/**
+</span>	 * @cfg {Object} liveUpdates
+	 * Defines configurations for liveUpdates.
+	 *
+	 * @cfg {Boolean} liveUpdates.enabled
+	 * Parameter to enable/disable receiving live updates by control.
+	 *
+	 * @cfg {Number} liveUpdates.timeout
+	 * Specifies the timeout between live updates requests (in seconds).
 	 */
-	&quot;liveUpdatesTimeout&quot;: 10,
+	&quot;liveUpdates&quot;: {
+		&quot;enabled&quot;: true,
+		&quot;timeout&quot;: 10
+	},
 <span id='Echo-StreamServer-Controls-Counter-cfg-infoMessages'>	/**
 </span>	 * @cfg {String} infoMessages 
 	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
@@ -103,8 +112,8 @@ counter.methods._request = function() {
 				&quot;q&quot;: this.config.get(&quot;query&quot;),
 				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
 			},
-			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
-			&quot;recurring&quot;: true,
+			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdates.timeout&quot;),
+			&quot;recurring&quot;: this.config.get(&quot;liveUpdates.enabled&quot;),
 			&quot;onError&quot;: $.proxy(this._error, this),
 			&quot;onData&quot;: $.proxy(this._update, this)
 		});

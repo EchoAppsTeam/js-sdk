@@ -166,7 +166,6 @@ Echo.Control.prototype.templates.message.full =
 Echo.Control.prototype.defaults = {};
 
 Echo.Control.prototype.defaults.vars = {
-	&quot;cache&quot;: {},
 	&quot;plugins&quot;: {},
 	&quot;extension&quot;: {&quot;template&quot;: []},
 	&quot;renderers&quot;: {},
@@ -920,14 +919,12 @@ Echo.Control.prototype._manifest = function(key) {
 		: undefined;
 };
 
-Echo.Control.prototype._loadScripts = function(scripts, callback) {
+Echo.Control.prototype._loadScripts = function(resources, callback) {
 	var control = this;
-	Echo.Loader.download({
-		&quot;scripts&quot;: scripts,
-		&quot;errorTimeout&quot;: control.config.get(&quot;scriptLoadErrorTimeout&quot;),
-		&quot;callback&quot;: function() {
-			callback.call(control);
-		}
+	Echo.Loader.download(resources, function() {
+		callback.call(control);
+	}, {
+		&quot;errorTimeout&quot;: control.config.get(&quot;scriptLoadErrorTimeout&quot;)
 	});
 };
 

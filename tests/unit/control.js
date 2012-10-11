@@ -282,7 +282,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		callback && callback();
 	};
 	suite.initTestControl({
-		"objectParam": {"param1": "param1.override"},
+		"objectParam": {"param1": "param1.override", "param2": undefined},
 		"myTestParam": "test value",
 		"undefinedParam": "undefinedParam replacement",
 		"nullParam": "nullParam replacement",

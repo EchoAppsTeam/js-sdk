@@ -45,6 +45,13 @@ if (Echo.Control.isDefined(stream)) return;
 
 stream.init = function() {
 	this._recalcEffectsTimeouts();
+
+	// define default stream state based on the config parameters
+	var state = this.config.get(&quot;state.layout&quot;) === &quot;full&quot;
+		? &quot;paused&quot;
+		: this.config.get(&quot;liveUpdates.enabled&quot;) ? &quot;live&quot; : &quot;paused&quot;
+	this.activities.state = state;
+
 	if (this.config.get(&quot;data&quot;)) {
 		this._handleInitialResponse(this.config.get(&quot;data&quot;));
 	} else {
@@ -79,40 +86,89 @@ stream.config = {
 		&quot;itemsSlideTimeout&quot;: 600,
 		&quot;maxDepth&quot;: 1
 	},
+
 <span id='Echo-StreamServer-Controls-Stream-cfg-fadeTimeout'>	/**
 </span>	 * @cfg {Number} fadeTimeout
 	 * Specifies the duration of the fading animation (in milliseconds)
 	 * when an item comes to stream as a live update.
 	 */
 	&quot;fadeTimeout&quot;: 2800,
+
 <span id='Echo-StreamServer-Controls-Stream-cfg-flashColor'>	/**
 </span>	 * @cfg {String} flashColor
 	 * Specifies the necessary flash color of the events coming to your
 	 * stream as live updates. This parameter must have a hex color value.
 	 */
 	&quot;flashColor&quot;: &quot;#ffff99&quot;,
+
 <span id='Echo-StreamServer-Controls-Stream-cfg-item'>	/**
 </span>	 * @cfg {Object} item
 	 * Specifies the configuration options to be passed to internal
 	 * Echo.StreamServer.Controls.Stream.Item component.
 	 */
 	&quot;item&quot;: {},
-<span id='Echo-StreamServer-Controls-Stream-cfg-itemsPerPage'>	/**
-</span>	 * @cfg {Number} itemsPerPage
-	 * 
+
+<span id='global-property-itemsPerPage'>	/**
+</span>	 * @ignore
 	 */
 	&quot;itemsPerPage&quot;: 15,
+
+<span id='Echo-StreamServer-Controls-Stream-cfg-itemsComparator'>	/**
+</span>	 * @cfg {Function} itemsComparator
+	 * Function allowing to specify custom items sorting rules. It is used to find
+	 * a correct place for a new item in the already existing list of items
+	 * by comparing this item against each item in the list.
+	 *
+	 * **Note**: there is one restriction about how this function works.
+	 * It allows to sort initial items list, puts new item from live update
+	 * in the correct place. Although next page items (loaded after clicking
+	 * &quot;More&quot; button) are sorted only for that page and not for the whole list
+	 * of items.
+	 *
+	 * 	// sorting items in the content lexicographical order
+	 * 	var stream = new Echo.StreamServer.Controls.Stream({
+	 * 		...
+	 * 		&quot;itemsComparator&quot;: function(listedItem, newItem, sort) {
+	 * 			return listedItem.get(&quot;data.object.content&quot;) &gt; newItem.get(&quot;data.object.content&quot;)
+	 * 				? 1;
+	 * 				: -1;
+	 * 		},
+	 * 		...
+	 * 	});
+	 *
+	 * @cfg {Echo.StreamServer.Controls.Stream.Item} itemsComparator.listedItem
+	 * Item from the list which is compared with new item.
+	 *
+	 * @cfg {Echo.StreamServer.Controls.Stream.Item} itemsComparator.newItem
+	 * Item we are trying to find place for.
+	 *
+	 * @cfg {String} itemsComparator.sort
+	 * The existing list sort order.
+	 * Depending on the item it's either root sort order or children sort order.
+	 *
+	 * @cfg {Number} itemsComparator.return
+	 *
+	 * + 1 - newItem will be injected into the list before listedItem
+	 * + -1 - it's not the right place for the newItem
+	 * + 0 - comparison result is undefined
+	 */
+	&quot;itemsComparator&quot;: undefined,
+
 <span id='Echo-StreamServer-Controls-Stream-cfg-liveUpdates'>	/**
-</span>	 * @cfg {Boolean} liveUpdates
-	 * Parameter to enable/disable receiving live updates by control. 
+</span>	 * @cfg {Object} liveUpdates
+	 * Configuration options for liveUpdates.
+	 *
+	 * @cfg {Boolean} liveUpdates.enabled
+	 * Parameter to enable/disable receiving live updates by control.
+	 *
+	 * @cfg {Number} liveUpdates.timeout
+	 * Timeout between live updates requests (in seconds).
 	 */
-	&quot;liveUpdates&quot;: true,
-<span id='Echo-StreamServer-Controls-Stream-cfg-liveUpdatesTimeout'>	/**
-</span>	 * @cfg {Number} 
-	 * Specifies the timeout between live updates requests (in seconds).
-	 */
-	&quot;liveUpdatesTimeout&quot;: 10,
-	&quot;liveUpdatesTimeoutMin&quot;: 3,
+	&quot;liveUpdates&quot;: {
+		&quot;enabled&quot;: true,
+		&quot;timeout&quot;: 10
+	},
+
 <span id='Echo-StreamServer-Controls-Stream-cfg-openLinksInNewWindow'>	/**
 </span>	 * @cfg {Boolean} openLinksInNewWindow
 	 * If this parameter value is set to true, each link will be opened
@@ -120,51 +176,75 @@ stream.config = {
 	 * in a popup window.
 	 */
 	&quot;openLinksInNewWindow&quot;: false,
+
 <span id='Echo-StreamServer-Controls-Stream-cfg-providerIcon'>	/**
 </span>	 * @cfg {String} providerIcon
 	 * Specifies the URL to the icon representing data provider.
 	 */
 	&quot;providerIcon&quot;: Echo.Loader.getURL(&quot;{sdk}/images/favicons/comments.png&quot;),
+
 <span id='Echo-StreamServer-Controls-Stream-cfg-slideTimeout'>	/**
 </span>	 * @cfg {Number} slideTimeout
 	 * Specifies the duration of the sliding animation (in milliseconds)
 	 * when an item comes to a stream as a live update.
 	 */
 	&quot;slideTimeout&quot;: 700,
+
+<span id='global-property-sortOrder'>	/**
+</span>	 * @ignore
+	 */
 	&quot;sortOrder&quot;: &quot;reverseChronological&quot;,
-<span id='Echo-StreamServer-Controls-Stream-cfg-streamStateLabel'>	/**
-</span>	 * @cfg {Object} streamStateLabel
+
+<span id='Echo-StreamServer-Controls-Stream-cfg-state'>	/**
+</span>	 * @cfg {Object} state
+	 * Defines configurations for Stream Status
+	 *
+	 * @cfg {Object} state.label
 	 * Hides the Pause/Play icon. Toggles the labels used in the Stream Status
 	 * label. Contains a hash with two keys managing icon and text display modes.
 	 *
-	 * @cfg {Boolean} streamStateLabel.icon
+	 * @cfg {Boolean} state.label.icon
 	 * Toggles the icon visibility.
 	 *
-	 * @cfg {Boolean} streamStateLabel.text
+	 * @cfg {Boolean} state.label.text
 	 * Toggles the text visibility.
 	 *
-	 */
-	&quot;streamStateLabel&quot;: {
-		&quot;icon&quot;: true,
-		&quot;text&quot;: true
-	},
-<span id='Echo-StreamServer-Controls-Stream-cfg-streamStateToggleBy'>	/**
-</span>	 * @cfg {String} streamStateToggleBy
+	 * @cfg {String} state.toggleBy
 	 * Specifies the method of changing stream live/paused state.
 	 *
 	 * The possible values are:
 	 *
 	 * + mouseover - the stream is paused when mouse is over it and live
-	 *  when mouse is out.
-	 * + button - the stream changes state when user clicks on streamStateLabel
+	 * when mouse is out.
+	 * + button - the stream changes state when user clicks on state.label
 	 * (Live/Paused text). This mode would not work if neither state icon nor
 	 * state text are displayed.
 	 * + none - the stream will never be paused.
-	 * 
-	 * Note that mouseover method is not available for mobile devices and will
-	 * be forced to button method.
+	 *
+	 * Note that &quot;mouseover&quot; method is not available for mobile devices and will
+	 * be forced to &quot;button&quot; method.
+	 *
+	 * @cfg {String} state.layout
+	 * Specifies the Live/Pause button layout. This option is available only when
+	 * the &quot;state.toggleBy&quot; option is set to &quot;button&quot;. In other cases, this option
+	 * will be ignored.
+	 *
+	 * The possible values are:
+	 *
+	 * + compact - the Live/Pause button (link) will be located at the top right corner
+	 * of the Stream control, above the stream items list.
+	 * + full - the button will appear above the stream when the new live updates are available.
+	 * User will be able to click the button to apply live updates to the stream.
 	 */
-	&quot;streamStateToggleBy&quot;: &quot;mouseover&quot;, // mouseover | button | none
+	&quot;state&quot;: {
+		&quot;label&quot;: {
+			&quot;icon&quot;: true,
+			&quot;text&quot;: true
+		},
+		&quot;toggleBy&quot;:  &quot;mouseover&quot;, // mouseover | button | none,
+		&quot;layout&quot;: &quot;compact&quot; // compact | full
+	},
+
 <span id='Echo-StreamServer-Controls-Stream-cfg-submissionProxyURL'>	/**
 </span>	 * @cfg {String} submissionProxyURL URL prefix for requests to
 	 * Submission Proxy subsystem.
@@ -176,10 +256,15 @@ stream.config.normalizer = {
 	&quot;safeHTML&quot;: function(value) {
 		return &quot;off&quot; !== value;
 	},
-	&quot;streamStateToggleBy&quot;: function(value) {
-		return value === &quot;mouseover&quot; &amp;&amp; Echo.Utils.isMobileDevice()
+	&quot;state&quot;: function(object) {
+		object[&quot;toggleBy&quot;] =  object[&quot;toggleBy&quot;] === &quot;mouseover&quot; &amp;&amp; Echo.Utils.isMobileDevice()
 			? &quot;button&quot;
-			: value;
+			: object[&quot;toggleBy&quot;];
+
+		object[&quot;layout&quot;] = object[&quot;toggleBy&quot;] === &quot;button&quot;
+			? object[&quot;layout&quot;]
+			: stream.config.state.layout;
+		return object;
 	}
 };
 
@@ -220,7 +305,15 @@ stream.labels = {
 <span id='Echo-StreamServer-Controls-Stream-property-new'>	/**
 </span>	 * @echo_label
 	 */
-	&quot;new&quot;: &quot;new&quot;
+	&quot;new&quot;: &quot;new&quot;,
+<span id='Echo-StreamServer-Controls-Stream-property-newItem'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;newItem&quot;: &quot;new item&quot;,
+<span id='Echo-StreamServer-Controls-Stream-property-newItems'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;newItems&quot;: &quot;new items&quot;
 };
 
 stream.events = {
@@ -263,7 +356,7 @@ stream.events = {
 stream.templates.main =
 	'&lt;div class=&quot;{class:container} echo-primaryFont echo-primaryBackgroundColor&quot;&gt;' +
 		'&lt;div class=&quot;{class:header}&quot;&gt;'+
-			'&lt;div class=&quot;{class:state} echo-secondaryColor&quot;&gt;&lt;/div&gt;' +
+			'&lt;div class=&quot;{class:state}&quot;&gt;&lt;/div&gt;' +
 			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
 		'&lt;/div&gt;' +
 		'&lt;div class=&quot;{class:content}&quot;&gt;' +
@@ -300,8 +393,8 @@ stream.renderers.body = function(element) {
  */
 stream.renderers.content = function(element) {
 	var self = this, request = this.lastRequest;
-	if (request.initial &amp;&amp; this.config.get(&quot;liveUpdates&quot;) &amp;&amp;
-		this.config.get(&quot;streamStateToggleBy&quot;) === &quot;mouseover&quot;) {
+	if (request &amp;&amp; request.initial &amp;&amp; this.config.get(&quot;liveUpdates.enabled&quot;) &amp;&amp;
+		this.config.get(&quot;state.toggleBy&quot;) === &quot;mouseover&quot;) {
 			element.hover(
 				function() { self.setState(&quot;paused&quot;); },
 				function() { self.setState(&quot;live&quot;); }
@@ -315,9 +408,10 @@ stream.renderers.content = function(element) {
  */
 stream.renderers.state = function(element) {
 	var self = this;
-	var label = this.config.get(&quot;streamStateLabel&quot;);
+	var label = this.config.get(&quot;state.label&quot;);
+	var layout = this.config.get(&quot;state.layout&quot;);
 
-	if (!label.icon &amp;&amp; !label.text || !this.config.get(&quot;liveUpdates&quot;)) {
+	if (!label.icon &amp;&amp; !label.text || !this.config.get(&quot;liveUpdates.enabled&quot;)) {
 		return element;
 	}
 
@@ -336,31 +430,53 @@ stream.renderers.state = function(element) {
 		return element;
 	}
 
-	element.empty();
-	if (!this.activities.lastState &amp;&amp; this.config.get(&quot;streamStateToggleBy&quot;) === &quot;button&quot;) {
-		element.addClass(&quot;echo-linkColor echo-clickable&quot;).click(function() {
-			self.setState(state === &quot;paused&quot; ? &quot;live&quot; : &quot;paused&quot;);
+	element.empty().show();
+	element.addClass(this.cssPrefix + layout + &quot;StateLayout&quot;);
+	if (layout === &quot;compact&quot;) {
+		element.addClass(&quot;echo-secondaryColor&quot;);
+	}
+	if (!this.activities.lastState &amp;&amp; this.config.get(&quot;state.toggleBy&quot;) === &quot;button&quot;) {
+		if (layout === &quot;compact&quot;) {
+			element.addClass(&quot;echo-linkColor echo-clickable&quot;);
+		}
+		element.click(function() {
+			self.setState(self.getState() === &quot;paused&quot; ? &quot;live&quot; : &quot;paused&quot;);
 		});
 	}
 	var templates = {
 		&quot;picture&quot;: '&lt;span class=&quot;{class:state-picture} {class:state-picture}-' + state + '&quot;&gt;&lt;/span&gt;',
-		&quot;message&quot;: this.config.get(&quot;streamStateToggleBy&quot;) === &quot;button&quot;
+		&quot;message&quot;: this.config.get(&quot;state.toggleBy&quot;) === &quot;button&quot;
 			? '&lt;a href=&quot;javascript:void(0)&quot; class=&quot;{class:state-message}&quot;&gt;' +
 				'{label:' + state + '}' +
 			  '&lt;/a&gt;'
 			: '&lt;span class=&quot;{class:state-message}&quot;&gt;{label:' + state + '}&lt;/span&gt;',
-		&quot;count&quot;: ' &lt;span class=&quot;{class:state-count}&quot;&gt;({data:count} {label:new})&lt;/span&gt;'
+		&quot;count&quot;: ' &lt;span class=&quot;{class:state-count}&quot;&gt;({data:count} {label:new})&lt;/span&gt;',
+		&quot;button&quot;: '&lt;span class=&quot;{class:state-message}&quot;&gt;{data:count} {data:label}&lt;/span&gt;'
 	};
-	if (label.icon) {
-		element.append(this.substitute({&quot;template&quot;: templates.picture}));
-	}
-	if (label.text) {
-		element.append(this.substitute({&quot;template&quot;: templates.message}));
-		if (activitiesCount &amp;&amp; state === &quot;paused&quot;) {
+	if (layout === &quot;full&quot;) {
+		if (activitiesCount) {
 			element.append(this.substitute({
-				&quot;template&quot;: templates.count,
-				&quot;data&quot;: {&quot;count&quot;: activitiesCount}
+				&quot;template&quot;: templates.button,
+				&quot;data&quot;: {
+					&quot;count&quot;: activitiesCount,
+					&quot;label&quot;: this.labels.get(activitiesCount == 1 ? &quot;newItem&quot; : &quot;newItems&quot;)
+				}
 			}));
+		} else {
+			element.hide();
+		}
+	} else {
+		if (label.icon) {
+			element.append(this.substitute({&quot;template&quot;: templates.picture}));
+		}
+		if (label.text) {
+			element.append(this.substitute({&quot;template&quot;: templates.message}));
+			if (activitiesCount &amp;&amp; state === &quot;paused&quot;) {
+				element.append(this.substitute({
+					&quot;template&quot;: templates.count,
+					&quot;data&quot;: {&quot;count&quot;: activitiesCount}
+				}));
+			}
 		}
 	}
 	this.activities.lastState = currentState;
@@ -377,11 +493,6 @@ stream.renderers.more = function(element) {
 	}
 	return element.empty()
 		.append(this.labels.get(&quot;more&quot;))
-		.hover(function() {
-			element.addClass(self.cssPrefix + &quot;more-hover&quot;);
-		}, function() {
-			element.removeClass(self.cssPrefix + &quot;more-hover&quot;);
-		})
 		.show()
 		.off(&quot;click&quot;)
 		.one(&quot;click&quot;, function() {
@@ -403,9 +514,7 @@ stream.renderers.more = function(element) {
  * stream state &quot;live&quot; or &quot;paused&quot;.
  */
 stream.methods.getState = function() {
-	return this.activities.state === undefined
-		? this.config.get(&quot;liveUpdates&quot;) ? &quot;live&quot; : &quot;paused&quot;
-		: this.activities.state;
+	return this.activities.state;
 };
 
 <span id='Echo-StreamServer-Controls-Stream-method-setState'>/**
@@ -452,7 +561,7 @@ stream.methods.queueActivity = function(params) {
 	var data = {
 		&quot;action&quot;: params.action,
 		&quot;item&quot;: params.item,
-		&quot;affectCounter&quot;: params.action === &quot;add&quot;,
+		&quot;affectCounter&quot;: params.action === &quot;add&quot; &amp;&amp; !byCurrentUser,
 		&quot;priority&quot;: params.priority,
 		&quot;byCurrentUser&quot;: byCurrentUser,
 		&quot;handler&quot;: params.handler
@@ -493,28 +602,7 @@ stream.methods._requestChildrenItems = function(unique) {
 			item.set(&quot;data.nextPageAfter&quot;, data.nextPageAfter);
 			item.set(&quot;data.hasMoreChildren&quot;, data.hasMoreChildren);
 			data.entries = self._actualizeChildrenList(item, data.entries);
-<span id='Echo-StreamServer-Controls-Stream-event-onDataReceive'>			/**
-</span>			 * @event onDataReceive
-			 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
-			 * Triggered when new data is received.
-			 */
-			self.events.publish({
-				&quot;topic&quot;: &quot;onDataReceive&quot;,
-				&quot;data&quot;: {
-					&quot;entries&quot;: data.entries,
-					&quot;initial&quot;: false
-				},
-				&quot;propagation&quot;: false
-			});
-			var actions = $.map(data.entries, function(entry) {
-				return function(callback) {
-					self._initItem(entry, false, function() {
-						items[this.get(&quot;data.unique&quot;)] = this;
-						callback();
-					});
-				};
-			});
-			Echo.Utils.parallelCall(actions, function() {
+			self._onDataReceive(data, false, function(items) {
 				var children = [];
 				$.map(data.entries, function(entry) {
 					var child = items[entry.unique];
@@ -536,8 +624,8 @@ stream.methods._requestInitialItems = function() {
 		this.request = Echo.StreamServer.API.request({
 			&quot;endpoint&quot;: &quot;search&quot;,
 			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
-			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
-			&quot;recurring&quot;: this.config.get(&quot;liveUpdates&quot;),
+			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdates.timeout&quot;),
+			&quot;recurring&quot;: this.config.get(&quot;liveUpdates.enabled&quot;),
 			&quot;data&quot;: {
 				&quot;q&quot;: this.config.get(&quot;query&quot;),
 				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
@@ -613,6 +701,37 @@ stream.methods._requestMoreItems = function(element) {
 	});
 };
 
+stream.methods._onDataReceive = function(data, initial, callback) {
+	var self = this;
+	var items = {};
+<span id='Echo-StreamServer-Controls-Stream-event-onDataReceive'>	/**
+</span>	 * @event onDataReceive
+	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
+	 * Triggered when new data is received.
+	 */
+	this.events.publish({
+		&quot;topic&quot;: &quot;onDataReceive&quot;,
+		&quot;data&quot;: {
+			&quot;entries&quot;: data.entries,
+			&quot;initial&quot;: initial
+		},
+		&quot;propagation&quot;: false
+	});
+	var actions = $.map(data.entries, function(entry) {
+		return function(cb) {
+			self._initItem(entry, false, function() {
+				items[this.get(&quot;data.unique&quot;)] = this;
+				cb();
+			});
+		};
+	});
+	// items initialization is an async process, so we init
+	// item instances first and append them into the structure later
+	Echo.Utils.parallelCall(actions, function() {
+		callback(items);
+	});
+};
+
 stream.methods._prepareEventParams = function(params) {
 	return $.extend(params, {
 		&quot;target&quot;: this.config.get(&quot;target&quot;).get(0),
@@ -624,9 +743,20 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 	var self = this;
 	this._refreshItemsDate();
 	this._checkTimeframeSatisfy();
-	var actions = $.map(entries || [], function(entry) {
+	var data = {};
+	data.entries = $.map(entries || [], function(entry) {
+		return self._normalizeEntry(entry);
+	});
+	this.events.publish({
+		&quot;topic&quot;: &quot;onDataReceive&quot;,
+		&quot;data&quot;: {
+			&quot;entries&quot;: data.entries,
+			&quot;initial&quot;: false
+		},
+		&quot;propagation&quot;: false
+	});
+	var actions = $.map(data.entries, function(entry) {
 		return function(_callback) {
-			entry = self._normalizeEntry(entry);
 			var item = self.items[entry.unique];
 			var action = self._classifyAction(entry);
 			if (!item &amp;&amp; action !== &quot;post&quot;) {
@@ -653,13 +783,13 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 					}
 
 					if (satisfies || item.get(&quot;byCurrentUser&quot;)) {
-<span id='Echo-StreamServer-Controls-Stream-event-Item'>						/**
-</span>						 * @event Item.onReceive
-						 * @echo_event Echo.StreamServer.Controls.Stream.Item.onReceive
+<span id='Echo-StreamServer-Controls-Stream-event-onItemReceive'>						/**
+</span>						 * @event onItemReceive
+						 * @echo_event Echo.StreamServer.Controls.Stream.onItemReceive
 						 * Triggered when new item is received.
 						 */
 						self.events.publish({
-							&quot;topic&quot;: &quot;Item.onReceive&quot;,
+							&quot;topic&quot;: &quot;onItemReceive&quot;,
 							&quot;data&quot;: {&quot;item&quot;: {&quot;data&quot;: item.data}},
 							&quot;propagation&quot;: false
 						});
@@ -790,7 +920,7 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 		&quot;pageAfter&quot;: pageAfter ? '&quot;' + (pageAfter || 0) + '&quot;' : undefined
 	}, function(value, acc, predicate) {
 		return acc += (typeof value !== &quot;undefined&quot;
-			? predicate + &quot;:&quot; + value + &quot; &quot; 
+			? predicate + &quot;:&quot; + value + &quot; &quot;
 			: &quot;&quot;
 		); 
 	}) + filterQuery;
@@ -813,26 +943,11 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	this.config.set(&quot;children&quot;, $.extend(this.config.get(&quot;children&quot;), data.children));
 
 	this.config.extend(this._extractTimeframeConfig(data));
-	this.events.publish({
-		&quot;topic&quot;: &quot;onDataReceive&quot;,
-		&quot;data&quot;: {
-			&quot;entries&quot;: data.entries,
-			&quot;initial&quot;: !this.hasInitialData
-		},
-		&quot;propagation&quot;: false
-	});
 	var sortOrder = this.config.get(&quot;sortOrder&quot;);
-	var actions = $.map(data.entries, function(entry) {
-		return function(callback) {
-			self._initItem(entry, false, function() {
-				items[this.get(&quot;data.unique&quot;)] = this;
-				callback();
-			});
-		};
+	data.entries = $.map(data.entries, function(entry) {
+		return self._normalizeEntry(entry);
 	});
-	// items initialization is an async process, so we init
-	// item instances first and append them into the structure later
-	Echo.Utils.parallelCall(actions, function() {
+	this._onDataReceive(data, !this.hasInitialData, function(items) {
 		$.map(data.entries, function(entry) {
 			var item = items[entry.unique];
 			self._applyStructureUpdates(&quot;add&quot;, item);
@@ -905,7 +1020,7 @@ stream.methods._recalcEffectsTimeouts = function() {
 		return value;
 	};
 	// reserving 80% of time between live updates for activities
-	var frame = s.config.get(&quot;liveUpdatesTimeout&quot;) * 1000 * 0.8;
+	var frame = s.config.get(&quot;liveUpdates.timeout&quot;) * 1000 * 0.8;
 	var msPerItem = s.activities.queue.length ? frame / s.activities.queue.length : frame;
 	s.timeouts.fade = calc(&quot;fade&quot;, msPerItem);
 	s.timeouts.slide = calc(&quot;slide&quot;, msPerItem);
@@ -922,9 +1037,16 @@ stream.methods._refreshItemsDate = function() {
 
 stream.methods._executeNextActivity = function() {
 	var acts = this.activities;
+
+	// return stream state to &quot;paused&quot; when no more items
+	// to visualize and the state button layout is set to &quot;full&quot;
+	if (!acts.queue.length &amp;&amp; this.config.get(&quot;state.layout&quot;) === &quot;full&quot;) {
+		acts.state = &quot;paused&quot;;
+	}
+
 	if (acts.animations &gt; 0 ||
 			!acts.queue.length ||
-			this.config.get(&quot;liveUpdates&quot;) &amp;&amp;
+			this.config.get(&quot;liveUpdates.enabled&quot;) &amp;&amp;
 			acts.state === &quot;paused&quot; &amp;&amp;
 			acts.queue[0].action !== &quot;replace&quot; &amp;&amp;
 			!acts.queue[0].byCurrentUser) {
@@ -1001,11 +1123,6 @@ stream.methods._spotUpdates.replace = function(item, options) {
 stream.methods._spotUpdates.remove = function(item, options) {
 	item.set(&quot;deleted&quot;, true);
 	if (item.isRoot()) {
-<span id='Echo-StreamServer-Controls-Stream-event-onDelete'>		/**
-</span>		 * @event onDelete
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onDelete
-		 * Triggered when the item is deleted.
-		 */
 		item.events.publish({
 			&quot;topic&quot;: &quot;onDelete&quot;,
 			&quot;data&quot;: {&quot;config&quot;: options},
@@ -1039,18 +1156,16 @@ stream.methods._spotUpdates.animate.add = function(item) {
 		// we should specify the element height explicitly
 		// to avoid element jumping during the animation effect
 		var currentHeight = item.config.get(&quot;target&quot;).show().css(&quot;height&quot;);
-		item.config.get(&quot;target&quot;).css(&quot;height&quot;, currentHeight).hide().animate({
-			&quot;height&quot;: &quot;show&quot;, 
-			&quot;marginTop&quot;: &quot;show&quot;, 
-			&quot;marginBottom&quot;: &quot;show&quot;, 
-			&quot;paddingTop&quot;: &quot;show&quot;, 
-			&quot;paddingBottom&quot;: &quot;show&quot;
+		item.config.get(&quot;target&quot;).css(&quot;overflow&quot;, &quot;hidden&quot;);
+		item.view.get(&quot;content&quot;).css(&quot;margin-top&quot;, &quot;-&quot; + currentHeight).animate({
+			&quot;margin-top&quot;: &quot;0px&quot;
 		},
 		this.timeouts.slide,
 		function(){
-			// we should remove explicitly set height
+			// we should remove temporary set of css styles
 			// as soon as the animation is complete
-			item.config.get(&quot;target&quot;).css(&quot;height&quot;, &quot;&quot;);
+			item.config.get(&quot;target&quot;).css(&quot;overflow&quot;, &quot;&quot;);
+			item.view.get(&quot;content&quot;).css(&quot;margin-top&quot;, &quot;&quot;);
 		});
 	} else {
 		item.config.get(&quot;target&quot;).show();
@@ -1183,7 +1298,7 @@ stream.methods._withinVisibleFrame = function(item, items, isViewComplete, sortO
 	if (isViewComplete || !items.length) {
 		return true;
 	}
-	return this._compareItems(items[items.length - 1], item, sortOrder);
+	return this._itemsComparator(items[items.length - 1], item, sortOrder) === 1;
 };
 
 stream.methods._withinVisibleChildrenFrame = function(item) {
@@ -1203,15 +1318,18 @@ stream.methods._getParentItem = function(item) {
 	return item.isRoot() ? undefined : this.items[item.get(&quot;data.parentUnique&quot;)];
 };
 
-stream.methods._compareItems = function(a, b, sort) {
-	var self = this;
-	var result = false;
+stream.methods._itemsComparator = function(listedItem, newItem, sort) {
+	var self = this, result;
+	var customComparator = this.config.get(&quot;itemsComparator&quot;);
+	if (customComparator &amp;&amp; $.isFunction(customComparator)) {
+		return customComparator(listedItem, newItem, sort);
+	}
 	switch (sort) {
 		case &quot;chronological&quot;:
-			result = a.get(&quot;timestamp&quot;) &gt; b.get(&quot;timestamp&quot;);
+			result = listedItem.get(&quot;timestamp&quot;) &gt; newItem.get(&quot;timestamp&quot;);
 			break;
 		case &quot;reverseChronological&quot;:
-			result = a.get(&quot;timestamp&quot;) &lt;= b.get(&quot;timestamp&quot;);
+			result = listedItem.get(&quot;timestamp&quot;) &lt;= newItem.get(&quot;timestamp&quot;);
 			break;
 		case &quot;likesDescending&quot;:
 		case &quot;repliesDescending&quot;:
@@ -1219,12 +1337,12 @@ stream.methods._compareItems = function(a, b, sort) {
 			var getCount = function(entry) {
 				return self._getRespectiveAccumulator(entry, sort);
 			};
-			result = (getCount(a) &lt; getCount(b) ||
-					(getCount(a) === getCount(b) &amp;&amp;
-						this._compareItems(a, b, &quot;reverseChronological&quot;)));
+			result = (getCount(listedItem) &lt; getCount(newItem) ||
+					(getCount(listedItem) === getCount(newItem) &amp;&amp;
+						this._itemsComparator(listedItem, newItem, &quot;reverseChronological&quot;) === 1));
 			break;
 	}
-	return result;
+	return result ? 1 : (typeof result === &quot;undefined&quot; ? 0 : -1);
 };
 
 stream.methods._placeRootItem = function(item) {
@@ -1240,11 +1358,6 @@ stream.methods._placeRootItem = function(item) {
 	} else {
 		this.view.get(&quot;body&quot;).empty().append(content);
 	}
-<span id='Echo-StreamServer-Controls-Stream-event-onAdd'>	/**
-</span>	 * @event onAdd
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.onAdd
-	 * Triggered when the item is added.
-	 */
 	item.events.publish({
 		&quot;topic&quot;: &quot;onAdd&quot;,
 		&quot;global&quot;: false,
@@ -1352,7 +1465,7 @@ stream.methods._getItemProjectedIndex = function(item, items, sort) {
 	var index;
 	if (item.config.get(&quot;live&quot;) || item.get(&quot;forceInject&quot;)) {
 		$.each(items || [], function(i, entry) {
-			if (self._compareItems(entry, item, sort)) {
+			if (self._itemsComparator(entry, item, sort) === 1) {
 				index = i;
 				return false;
 			}
@@ -1362,6 +1475,9 @@ stream.methods._getItemProjectedIndex = function(item, items, sort) {
 };
 
 stream.methods._addItemToList = function(items, item, sort) {
+	if (this.config.get(&quot;itemsComparator&quot;)) {
+		item.set(&quot;forceInject&quot;, true);
+	}
 	items.splice(this._getItemProjectedIndex(item, items, sort), 0, item);
 	item.set(&quot;forceInject&quot;, false);
 	this.items[item.get(&quot;data.unique&quot;)] = item;
@@ -1453,15 +1569,16 @@ stream.css =
 	'.{class:message-empty} { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/information.png&quot;) + '); }' +
 	'.{class:message-loading} { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/loading.gif&quot;) + '); }' +
 	'.{class:message-error} { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/warning.gif&quot;) + '); }' +
-	'.{class:header} { margin: 10px 0px 10px 20px; }' +
-	'.{class:state} { float: right; }' +
+	'.{class:header} { margin: 10px 0px 10px 0px; }' +
+	'.{class:compactStateLayout} { float: right; }' +
+	'.{class:fullStateLayout} { text-align: center; }' +
 	'.{class:state-picture} { display: inline-block; height: 9px; width: 8px; }' +
 	'.{class:state-picture-paused} { background: url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/control_pause.png&quot;) + '&quot;) no-repeat center center; }' +
 	'.{class:state-picture-live} { background: url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/control_play.png&quot;) + '&quot;) no-repeat center center; }' +
 	'.{class:state-message} { margin-left: 5px; text-decoration: none; }' +
 	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
-	'.{class:more-hover} { background-color: #E4E4E4; }' +
-	'.{class:more} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
+	'.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }' +
+	'.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
 	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }' +
 	($.browser.msie
 		? '.{class:state-picture} { vertical-align: middle; }' +

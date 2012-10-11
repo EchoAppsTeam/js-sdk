@@ -722,16 +722,20 @@ suite._streamConfigData = {
 	"fadeTimeout": 2800,
 	"flashColor": "#ffff99",
 	"itemsPerPage": 15,
-	"liveUpdates": false,
+	"liveUpdates": {
+		"enabled": false
+	},
 	"openLinksInNewWindow": false,
 	"providerIcon": Echo.Loader.getURL("{sdk}/images/favicons/comments.png"),
 	"slideTimeout": 700,
 	"sortOrder": "reverseChronological",
-	"streamStateLabel": {
-		"icon": true,
-		"text": true
+	"state": {
+		"label": {
+			"icon": true,
+			"text": true
+		},
+		"toggleBy": "mouseover" // mouseover | button | none
 	},
-	"streamStateToggleBy": "mouseover", // mouseover | button | none
 	"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity",
 	"query": "query_string",
 	"target": $("<div>")

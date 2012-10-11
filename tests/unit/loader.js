@@ -86,25 +86,20 @@ suite.prototype.tests.urlConvertingTests = {
 
 suite.prototype.cases.invalidParameters = function(callback) {
 	var emptyArray = function(_callback) {
-		Echo.Loader.download({
-			"scripts": [],
-			"callback": function() {
-				QUnit.ok(true, "Checking if the callback is fired even if the list of the scripts to load is empty (empty array)");
-				_callback();
-			}
+		Echo.Loader.download([], function() {
+			QUnit.ok(true, "Checking if the callback is fired even if the list of the scripts to load is empty (empty array)");
+			_callback();
 		});
 	};
 	var scriptsParamMissing = function(_callback) {
-		Echo.Loader.download({
-			"callback": function() {
-				QUnit.ok(true, "Checking if the callback is fired even if the scripts list is undefined");
-				_callback();
-			}
+		Echo.Loader.download(undefined, function() {
+			QUnit.ok(true, "Checking if the callback is fired even if the scripts list is undefined");
+			_callback();
 		});
 	};
 	var callbackCheck = function(_callback) {
 		try {
-			Echo.Loader.download({"scripts": []});
+			Echo.Loader.download([]);
 			QUnit.ok(true, "Checking if the callback is an optional parameter (no JS error expected)");
 			_callback();
 		} catch(e) {
@@ -120,72 +115,58 @@ suite.prototype.cases.invalidParameters = function(callback) {
 };
 
 suite.prototype.cases.nonExistingScripts = function(callback) {
-	Echo.Loader.download({
-		"errorTimeout": 1000, // 1 sec
-		"scripts": [{
-			"url": "non-existing-folder/1.js"
-		}, {
-			"url": "non-existing-folder/2.js"
-		}, {
-			"url": "non-existing-folder/3.js"
-		}],
-		"callback": function() {
-			QUnit.ok(true, "Checking if the callback is executed when non-existing scripts were passed as a function arguments");
-			callback();
-		}
+	Echo.Loader.download([{
+		"url": "non-existing-folder/1.js"
+	}, {
+		"url": "non-existing-folder/2.js"
+	}, {
+		"url": "non-existing-folder/3.js"
+	}], function() {
+		QUnit.ok(true, "Checking if the callback is executed when non-existing scripts were passed as a function arguments");
+		callback();
+	}, {
+		"errorTimeout": 1000 // 1 sec
 	});
 };
 
 suite.prototype.cases.alreadyLoadedScripts = function(callback) {
-	Echo.Loader.download({
-		"scripts": [{
-			"url": "{sdk}/events.js"
-		}, {
-			"url": "{sdk}/labels.js",
-			"loaded": function() { return !!Echo.Labels; }
-		}, {
-			"url": "{sdk}/plugin.js"
-		}],
-		"callback": function() {
-			QUnit.ok(true, "Checking if the callback is executed when the scripts loaded previously are loaded again");
-			callback();
-		}
+	Echo.Loader.download([{
+		"url": "{sdk}/events.js"
+	}, {
+		"url": "{sdk}/labels.js",
+		"loaded": function() { return !!Echo.Labels; }
+	}, {
+		"url": "{sdk}/plugin.js"
+	}], function() {
+		QUnit.ok(true, "Checking if the callback is executed when the scripts loaded previously are loaded again");
+		callback();
 	});
 };
 
 suite.prototype.cases.equalUrlsPerSingleCall = function(callback) {
-	Echo.Loader.download({
-		"scripts": [
-			{"url": "unit/loader/scripts/d1.js"},
-			{"url": "unit/loader/scripts/d1.js"},
-			{"url": "unit/loader/styles/1.css"},
-			{"url": "unit/loader/styles/1.css"}
-		],
-		"callback": function() {
-			QUnit.ok(!!Echo.Tests.Download.duplicate1, "Checking if the callback is executed when equal urls of js/css was loaded per single call");
-			callback();
-		}
+	Echo.Loader.download([
+		{"url": "unit/loader/scripts/d1.js"},
+		{"url": "unit/loader/scripts/d1.js"},
+		{"url": "unit/loader/styles/1.css"},
+		{"url": "unit/loader/styles/1.css"}
+	], function() {
+		QUnit.ok(!!Echo.Tests.Download.duplicate1, "Checking if the callback is executed when equal urls of js/css was loaded per single call");
+		callback();
 	});
 };
 
 suite.prototype.cases.equalUrlsPerSequentialCalls = function(callback) {
-	Echo.Loader.download({
-		"scripts": [
+	Echo.Loader.download([
+		{"url": "unit/loader/scripts/d2.js"},
+		{"url": "unit/loader/styles/2.css"}
+	], function() {
+		Echo.Loader.download([
 			{"url": "unit/loader/scripts/d2.js"},
 			{"url": "unit/loader/styles/2.css"}
-		],
-		"callback": function() {
-			Echo.Loader.download({
-				"scripts": [
-					{"url": "unit/loader/scripts/d2.js"},
-					{"url": "unit/loader/styles/2.css"}
-				],
-				"callback": function() {
-					QUnit.ok(!!Echo.Tests.Download.duplicate2, "Checking if the callback is executed when equal urls of js/css was loaded per sequential call");
-					callback();
-				}
-			});
-		}
+		], function() {
+			QUnit.ok(!!Echo.Tests.Download.duplicate2, "Checking if the callback is executed when equal urls of js/css was loaded per sequential call");
+			callback();
+		});
 	});
 };
 
@@ -197,51 +178,39 @@ suite.prototype.cases.equalUrlsPerParallelCalls = function(callback) {
 			callback();
 		}
 	};
-	Echo.Loader.download({
-		"scripts": [
-			{"url": "unit/loader/scripts/d3.js"},
-			{"url": "unit/loader/styles/3.css"}
-		],
-		"callback": function() {
-			commonCallback();
-		}
-	});
+	Echo.Loader.download([
+		{"url": "unit/loader/scripts/d3.js"},
+		{"url": "unit/loader/styles/3.css"}
+	], commonCallback);
 
-	Echo.Loader.download({
-		"scripts": [
-			{"url": "unit/loader/scripts/d3.js"},
-			{"url": "unit/loader/styles/3.css"}
-		],
-		"callback": function() {
-			commonCallback();
-		}
-	});
+	Echo.Loader.download([
+		{"url": "unit/loader/scripts/d3.js"},
+		{"url": "unit/loader/styles/3.css"}
+	], commonCallback);
 };
 
 suite.prototype.cases.validScriptsLoading = function(callback, count, description) {
 	count = count || 5;
-	var scripts = [];
+	var resources = [];
 	var existingScriptsCount = 5;
 	for (var i = 1; i <= count; i++) {
-		scripts.push({
+		resources.push({
 			"url": "unit/loader/scripts/" + (count > existingScriptsCount ? "non-existing" : i) + ".js",
 			"loaded": function() { return !!Echo.Tests.Download["object" + i]; }
 		});
 	}
- 	Echo.Loader.download({
-		"errorTimeout": 1000, // 1 sec
-		"scripts": scripts,
-		"callback": function() {
-			var success = true;
-			// check only existing scripts
-			for (var i = 1; i <= existingScriptsCount; i++) {
-				if (success) {
-					success = !!Echo.Tests.Download["object" + i];
-				}
+	Echo.Loader.download(resources, function() {
+		var success = true;
+		// check only existing scripts
+		for (var i = 1; i <= existingScriptsCount; i++) {
+			if (success) {
+				success = !!Echo.Tests.Download["object" + i];
 			}
-			QUnit.ok(success, description || "Checking if all the test scripts were loaded successfully");
-			callback();
 		}
+		QUnit.ok(success, description || "Checking if all the test scripts were loaded successfully");
+		callback();
+	}, {
+		"errorTimeout": 1000 // 1 sec
 	});
 };
 
@@ -250,18 +219,15 @@ suite.prototype.cases.validAndInvalidScriptsMix = function(callback) {
 };
 
 suite.prototype.cases.loadingSameScriptMultipleTimes = function(callback) {
-	var scripts = [];
+	var resources = [];
 	for (var i = 1; i <= 5; i++) {
-		scripts.push({
+		resources.push({
 			"url": "unit/loader/scripts/1.js"
 		});
 	}
- 	Echo.Loader.download({
-		"scripts": scripts,
-		"callback": function() {
-			QUnit.ok(true, "Checking the situation when the same script is loaded multiple times (checking if the callback is executed)");
-			callback();
-		}
+	Echo.Loader.download(resources, function() {
+		QUnit.ok(true, "Checking the situation when the same script is loaded multiple times (checking if the callback is executed)");
+		callback();
 	});
 };
 

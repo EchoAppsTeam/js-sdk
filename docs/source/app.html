@@ -101,9 +101,8 @@ Echo.App.manifest = function(name) {
  *
  * @return {Boolean}
  */
-Echo.App.isDefined = function(manifest) {
-	return Echo.Control.isDefined(manifest);
-};
+Echo.App.isDefined = Echo.Control.isDefined;
+
 // public interface
 
 <span id='Echo-App-method-initComponent'>/**
@@ -120,7 +119,7 @@ Echo.App.isDefined = function(manifest) {
  * @param {String} componentSpec.id
  * Nested component id.
  *
- * @param {String} componentSpec.name
+ * @param {String} componentSpec.component
  * Constructor name for the nested component like &quot;Echo.StreamServer.Control.Stream&quot;.
  *
  * @param {Object} [componentSpec.config]
@@ -148,7 +147,7 @@ Echo.App.prototype.initComponent = function(componentSpec) {
 			componentSpec.config
 		)
 	);
-	var Component = Echo.Utils.getComponent(componentSpec.name);
+	var Component = Echo.Utils.getComponent(componentSpec.component);
 	this.set(&quot;components.&quot; + componentSpec.id, new Component(componentSpec.config));
 	return this.getComponent(componentSpec.id);
 };

@@ -236,6 +236,7 @@ Echo.UserSession._construct = function(config) {
 		// first time call
 		default:
 			user.data = {};
+			user.cache = {};
 			user.config = new Echo.Configuration(config, user._getDefaultConfig());
 			user._listenEvents();
 			user._init(callback);
@@ -347,6 +348,7 @@ Echo.UserSession._reset = function(data) {
 	var user = this;
 	user.data = user._normalize($.extend({}, data));
 	user.identity = {};
+	user.cache = {};
 	var identities = user.get(&quot;activeIdentities&quot;);
 	user.identity = identities &amp;&amp; identities.length ? identities[0] : {};
 };
@@ -354,12 +356,9 @@ Echo.UserSession._reset = function(data) {
 Echo.UserSession._init = function(callback) {
 	var user = this;
 	user.state = &quot;waiting&quot;;
-	user._whoamiRequest({
-		&quot;appkey&quot;: user.config.get(&quot;appkey&quot;),
-		&quot;sessionID&quot;: user.get(&quot;sessionID&quot;)
-	}, function(data) {
+	var handler = function(data) {
 		// user is not logged in
-		if (data.result &amp;&amp; data.result == &quot;session_not_found&quot;) {
+		if (!data || data.result &amp;&amp; data.result == &quot;session_not_found&quot;) {
 			data = {};
 		}
 		user.state = &quot;ready&quot;;
@@ -414,7 +413,15 @@ Echo.UserSession._init = function(callback) {
 			&quot;data&quot;: data
 		});
 		callback &amp;&amp; callback();
-	});
+	};
+	if (user.get(&quot;sessionID&quot;)) {
+		user._whoamiRequest({
+			&quot;appkey&quot;: user.config.get(&quot;appkey&quot;),
+			&quot;sessionID&quot;: user.get(&quot;sessionID&quot;)
+		}, handler);
+	} else {
+		handler();
+	}
 };
 
 Echo.UserSession._normalize = function(data) {
@@ -470,8 +477,8 @@ Echo.UserSession._getActiveIdentities = function() {
 	if (!user.data.poco || !user.data.poco.entry) return;
 
 	// check if we already have this information
-	if (user.identity &amp;&amp; user.identity.activeIdentities) {
-		return user.identity.activeIdentities;
+	if (user.cache.activeIdentities) {
+		return user.cache.activeIdentities;
 	}
 
 	var identities = $.map(user.data.poco.entry.accounts || [], function(entry) {
@@ -479,9 +486,8 @@ Echo.UserSession._getActiveIdentities = function() {
 	});
 
 	// cache data for next calls
-	if (user.identity) {
-		user.identity.activeIdentities = identities;
-	}
+	user.cache.activeIdentities = identities;
+
 	return identities;
 };
 

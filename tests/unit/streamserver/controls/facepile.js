@@ -120,7 +120,9 @@ suite.prototype.tests.dynamicWorkflow = {
 			"query"  : "scope:" + this.config.dataBaseLocation + "tests/facepile sortOrder:chronological " +
 				 "itemsPerPage: 1 -user.id:http://js-kit.com/ECHO/user/fake_user",
 			"item"   : {"avatar": true, "text": true},
-			"liveUpdates": false,
+			"liveUpdates": {
+				"enabled": false
+			},
 			"ready"  : function() {
 				suite.pile = this;
 				var html = self.config.target.html();

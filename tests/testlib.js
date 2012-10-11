@@ -374,7 +374,7 @@ Echo.Tests.Stats = {
 		var eventPublish = Echo.Events.publish;
 		var eventSubscribe = Echo.Events.subscribe;
 		var events = Echo.Tests.Stats.lists.events;
-		var testRexExp = new RegExp("test", "i");
+		var testRegExp = /test/i;
 
 		Echo.Tests.Stats.stopEventsSpy = function() {
 			Echo.Events.subscribe = eventSubscribe;
@@ -382,7 +382,7 @@ Echo.Tests.Stats = {
 		};
 
 		Echo.Events.subscribe = function(params) {
-			if (!testRexExp.test(params.topic)) {
+			if (!testRegExp.test(params.topic)) {
 				if ($.type(events.subscribed[params.topic]) == "undefined") {
 					events.subscribed[params.topic] = {
 						"count": 0
@@ -394,7 +394,7 @@ Echo.Tests.Stats = {
 		};
 
 		Echo.Events.publish = function(params) {
-			if (!testRexExp.test(params.topic)) {
+			if (!testRegExp.test(params.topic)) {
 				if ($.type(events.published[params.topic]) == "undefined") {
 					events.published[params.topic] = {
 						"count": 0,
@@ -405,14 +405,15 @@ Echo.Tests.Stats = {
 
 				events.published[params.topic].count++;
 
+				var data = $.extend(true, {}, params.data);
 				if (Echo.Tests.Events.contracts[params.topic]) {
 					if (_checkContract(params.data, Echo.Tests.Events.contracts[params.topic]) !== true) {
 						events.published[params.topic].status = "failed";
-						events.published[params.topic].data.push(params.data);
+						events.published[params.topic].data.push(data);
 					}
 				} else {
 					events.published[params.topic].status = "notcovered";
-					events.published[params.topic].data.push(params.data);
+					events.published[params.topic].data.push(data);
 				}
 			}
 			return eventPublish(params);

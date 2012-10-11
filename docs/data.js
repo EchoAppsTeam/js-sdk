@@ -2206,10 +2206,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "itemsPerPage",
-        "fullName": "Echo.StreamServer.Controls.Stream.itemsPerPage",
+        "name": "itemsComparator",
+        "fullName": "Echo.StreamServer.Controls.Stream.itemsComparator",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-itemsPerPage",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-itemsComparator",
         "meta": {
         },
         "sort": 3
@@ -2219,15 +2219,6 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Stream.liveUpdates",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-liveUpdates",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "liveUpdatesTimeout",
-        "fullName": "Echo.StreamServer.Controls.Stream.liveUpdatesTimeout",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-liveUpdatesTimeout",
         "meta": {
         },
         "sort": 3
@@ -2260,19 +2251,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "streamStateLabel",
-        "fullName": "Echo.StreamServer.Controls.Stream.streamStateLabel",
+        "name": "state",
+        "fullName": "Echo.StreamServer.Controls.Stream.state",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-streamStateLabel",
-        "meta": {
-        },
-        "sort": 3
-      },
-      {
-        "name": "streamStateToggleBy",
-        "fullName": "Echo.StreamServer.Controls.Stream.streamStateToggleBy",
-        "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-streamStateToggleBy",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-cfg-state",
         "meta": {
         },
         "sort": 3
@@ -2341,6 +2323,26 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Stream.new",
         "icon": "icon-property",
         "url": "#!/api/Echo.StreamServer.Controls.Stream-property-new",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "newItem",
+        "fullName": "Echo.StreamServer.Controls.Stream.newItem",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-newItem",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "newItems",
+        "fullName": "Echo.StreamServer.Controls.Stream.newItems",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-property-newItems",
         "meta": {
           "echo_label": true
         },
@@ -2440,13 +2442,13 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "Item",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item",
+        "name": "onItemReceive",
+        "fullName": "Echo.StreamServer.Controls.Stream.onItemReceive",
         "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-Item",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onItemReceive",
         "meta": {
           "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.onReceive",
+            "name": "Echo.StreamServer.Controls.Stream.onItemReceive",
             "description": "Triggered when new item is received."
           }
         },
@@ -2461,32 +2463,6 @@ Docs = {
           "echo_event": {
             "name": "Echo.StreamServer.Controls.Stream.Item.onRerender",
             "description": "Triggered when the item is rerendered."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "onDelete",
-        "fullName": "Echo.StreamServer.Controls.Stream.onDelete",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onDelete",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.onDelete",
-            "description": "Triggered when the item is deleted."
-          }
-        },
-        "sort": 3
-      },
-      {
-        "name": "onAdd",
-        "fullName": "Echo.StreamServer.Controls.Stream.onAdd",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onAdd",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.onAdd",
-            "description": "Triggered when the item is added."
           }
         },
         "sort": 3
@@ -3203,10 +3179,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "liveUpdatesTimeout",
-        "fullName": "Echo.StreamServer.Controls.Counter.liveUpdatesTimeout",
+        "name": "liveUpdates",
+        "fullName": "Echo.StreamServer.Controls.Counter.liveUpdates",
         "icon": "icon-cfg",
-        "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-liveUpdatesTimeout",
+        "url": "#!/api/Echo.StreamServer.Controls.Counter-cfg-liveUpdates",
         "meta": {
         },
         "sort": 3

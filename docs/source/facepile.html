@@ -52,7 +52,7 @@ pile.init = function() {
 		this._request();
 	} else {
 		this.set(&quot;data.itemsPerPage&quot;, this.get(&quot;data.itemsPerPage&quot;, 2));
-		this.config.set(&quot;liveUpdates&quot;, false);
+		this.config.set(&quot;liveUpdates.enabled&quot;, false);
 		this._initialResponseHandler(this.data);
 	}
 };
@@ -249,8 +249,8 @@ pile.methods._request = function() {
 				&quot;q&quot;: this.config.get(&quot;query&quot;),
 				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
 			},
-			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
-			&quot;recurring&quot;: this.config.get(&quot;liveUpdates&quot;),
+			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdates.timeout&quot;),
+			&quot;recurring&quot;: this.config.get(&quot;liveUpdates.enabled&quot;),
 			&quot;onError&quot;: function(data, extra) {
 				var needShowError = typeof extra.critical === &quot;undefined&quot; || extra.critical || extra.requestType === &quot;initial&quot;;
 				if (needShowError) {
