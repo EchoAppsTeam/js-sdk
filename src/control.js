@@ -493,7 +493,7 @@ Echo.Control.prototype.getPlugin = function(name) {
  * Method to get the control template during rendering procedure. Can be overriden.
  */
 Echo.Control.prototype.template = function() {
-	return this.templates.main;
+	return this.invoke(this.templates.main);
 };
 
 /**
@@ -951,10 +951,9 @@ Echo.Control.prototype._compileTemplate = function() {
 	var control = this;
 	var data = this.get("data", {});
 	var transformations = this.extension.template;
-	var template = $.isFunction(this.template) ? this.template() : this.template;
 	var processed = control.substitute({
 		"data": data,
-		"template": template
+		"template": this.invoke(this.template)
 	});
 	var dom = $("<div/>").html(processed);
 	if (transformations && transformations.length) {
