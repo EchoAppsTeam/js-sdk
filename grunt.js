@@ -277,14 +277,19 @@ module.exports = function(grunt) {
 		grunt.log.ok();
 	});
 
-	grunt.registerMultiTask("patch", "Patching files", function() {
+	grunt.registerMultiTask("patch", "Patching files", function(version) {
 		var self = this;
 		var files = grunt.file.expandFiles(this.data.files);
 		var config = grunt.config("local");
 		files.map(function(file) {
 			grunt.log.write("Patching \"" + file + "\"...");
 			var src = grunt.file.read(file);
-			src = grunt.helper("patch_" + self.data.patcher, src, config);
+			src = grunt.helper(
+				"patch_" + self.data.patcher,
+				src,
+				config,
+				grunt.config("pkg." + (version === "stable" ? "version" : "majorVersion"))
+			);
 			grunt.file.write(file, src);
 			grunt.log.ok();
 		});
@@ -335,22 +340,22 @@ module.exports = function(grunt) {
 	// HELPERS
 	// ==========================================================================
 
-	grunt.registerHelper("patch_url", function(src, config) {
+	grunt.registerHelper("patch_url", function(src, config, version) {
 		if (config && config.domain) {
 			src = src.replace(/cdn\.echoenabled\.com\/(?=sdk\/|apps\/|")/g, config.domain + "/");
 		}
 		return src;
 	});
 
-	grunt.registerHelper("patch_loader", function(src, config) {
+	grunt.registerHelper("patch_loader", function(src, config, version) {
 		src = grunt.helper("patch_url", src, config);
-		return src.replace(': "{version}"', ': "' + grunt.config("pkg.majorVersion") + '"');
+		return src.replace(/("version": ").*?(",)/, '$1' + version + '$2');
 	});
 
-	grunt.registerHelper("patch_fancybox_css", function(src, config) {
+	grunt.registerHelper("patch_fancybox_css", function(src, config, version) {
 		var domainPrefix =
 			"//"  + (config && config.domain ? config.domain : "cdn.echoenabled.com") +
-			"/sdk/v" + grunt.config("pkg.majorVersion") + "/third-party/jquery/img/fancybox/";
+			"/sdk/v" + version + "/third-party/jquery/img/fancybox/";
 		src = src.replace(/\n\#fancybox/g, "\n#fancybox-echo")
 			.replace(/\n\.fancybox/g, "\n.fancybox-echo")
 			.replace(/url\(\'(.*)\'\)/g, "url('" + domainPrefix + "$1')")
@@ -358,7 +363,7 @@ module.exports = function(grunt) {
 		return src;
 	});
 
-	grunt.registerHelper("patch_fancybox_js", function(src, config) {
+	grunt.registerHelper("patch_fancybox_js", function(src, config, version) {
 		return src.replace(/(["'][.#]?)fancybox([a-z0-9-]*["'])/gi, "$1fancybox-echo$2");
 	});
 

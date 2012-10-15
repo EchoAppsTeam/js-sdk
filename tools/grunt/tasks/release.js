@@ -134,6 +134,7 @@ module.exports = function(grunt) {
 			grunt.task.run([
 				"check:versions",
 				"release:sdk:latest",
+				"patch:loader:stable",
 				"release:sdk:stable",
 				"release:apps"
 			]);

@@ -10,7 +10,7 @@ if (Echo.Loader) return;
  * Static class which implements common mechanics for canvases loading.
  */
 Echo.Loader = {
-	"version": "{version}",
+	"version": "",
 	"config": {
 		"cdnBaseURL": "http://cdn.echoenabled.com/",
 		"errorTimeout": 5000 // 5 sec
