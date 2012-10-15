@@ -128,11 +128,9 @@ module.exports = function(grunt) {
 			grunt.fail.fatal("Can't release files from dev environment");
 		}
 		// TODO: check if we have modified files, we must not release this
-		// TODO: execute `grunt` before releasing anything
-		// TODO? check versions before running particular task
 		if (!target) {
 			grunt.task.run([
-				"check:versions",
+				"default",
 				"release:sdk:latest",
 				"patch:loader:stable",
 				"release:sdk:stable",
