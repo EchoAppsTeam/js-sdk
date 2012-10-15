@@ -34,6 +34,12 @@ module.exports = function(grunt) {
 				" * Version: <%= pkg.version %> (<%= grunt.template.today(\"UTC:yyyy-mm-dd HH:MM:ss Z\") %>)\n" +
 				" */"
 		},
+		check: {
+			versions: {
+				jsduck: "4.2.0",
+				grunt: "v0.3.16"
+			}
+		},
 		clean: {
 			all: [
 				"<%= dirs.dest %>"
@@ -291,26 +297,39 @@ module.exports = function(grunt) {
 
 	grunt.registerTask("gh-pages", function() {
 		var done = this.async();
-		grunt.helper("make_docs", function() {
-			var updateCmd = [
-				"git checkout gh-pages",
-				"git pull",
-				"git checkout master -- tests demo",
-				"cp -r " + grunt.config("dirs.dest") + "/docs/* docs",
-				"git add docs/ tests/ demo/",
-				"git commit -m \"up\"",
-				"git push origin gh-pages",
-				"git checkout master"
-			].join(" && ");
-			grunt.helper("exec", updateCmd, function() {
-				grunt.log.ok();
-				done();
+		grunt.helper("check_versions", grunt.config("check.versions"), function(ok) {
+			if (!ok) {
+				done(false);
+				return;
+			}
+			grunt.helper("make_docs", function() {
+				var updateCmd = [
+					"git checkout gh-pages",
+					"git pull",
+					"git checkout master -- tests demo",
+					"cp -r " + grunt.config("dirs.dest") + "/docs/* docs",
+					"git add docs/ tests/ demo/",
+					"git commit -m \"up\"",
+					"git push origin gh-pages",
+					"git checkout master"
+				].join(" && ");
+				grunt.helper("exec", updateCmd, function() {
+					grunt.log.ok();
+					done();
+				});
 			});
 		});
 	});
 
+	grunt.registerMultiTask("check", "Different checks (versions, pre-release, post-release, ...)", function() {
+		var done = this.async();
+		if (this.target == "versions") {
+			grunt.helper("check_versions", this.data, done);
+		}
+	});
+
 	// Default task
-	grunt.registerTask("default", "clean:all copy assemble_css patch concat mincss");
+	grunt.registerTask("default", "check:versions clean:all copy assemble_css patch concat mincss");
 
 	// ==========================================================================
 	// HELPERS
@@ -368,6 +387,29 @@ module.exports = function(grunt) {
 			grunt.helper("exec", "jsduck --config=config/jsduck/config.json", function() {
 				// copy Echo specific images and CSS to documentation directory
 				grunt.helper("exec", "cp -r docs/patch/* " + path, callback);
+			});
+		});
+	});
+
+	grunt.registerHelper("check_versions", function(versions, done) {
+		var failed = false;
+		grunt.helper("exec", "grunt --version | awk '{ print $2; }'", function(version) {
+			version = _.trim(version);
+			if (version < versions.grunt) {
+				failed = true;
+				grunt.log.writeln("grunt version is " + version.red + " but must be at least " + versions.grunt.green + ". Update it by running command `" + "sudo npm update -g grunt".yellow + "`.");
+			} else {
+				grunt.log.ok();
+			}
+			grunt.helper("exec", "jsduck --version | awk '{ print $2; }'", function(version) {
+				version = _.trim(version);
+				if (version < versions.jsduck) {
+					failed = true;
+					grunt.log.writeln("jsduck version is " + version.red + " but must be at least " + versions.jsduck.green + ". Update it by running command `" + "sudo gem update jsduck".yellow + "`.").cyan;
+				} else {
+					grunt.log.ok();
+				}
+				done(!failed);
 			});
 		});
 	});

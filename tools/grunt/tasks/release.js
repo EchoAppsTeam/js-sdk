@@ -129,8 +129,10 @@ module.exports = function(grunt) {
 		}
 		// TODO: check if we have modified files, we must not release this
 		// TODO: execute `grunt` before releasing anything
+		// TODO? check versions before running particular task
 		if (!target) {
 			grunt.task.run([
+				"check:versions",
 				"release:sdk:latest",
 				"release:sdk:stable",
 				"release:apps"
