@@ -123,10 +123,8 @@ module.exports = function(grunt) {
 		if (!config || !config.release) {
 			grunt.fail.fatal("No configuration for this task.");
 		}
-		DEBUG && delete config.domain;
-		if (config.domain) {
-			grunt.fail.fatal("Can't release files from dev environment");
-		}
+		// we are pushing code to production so we must delete development configuration
+		delete config.domain;
 		// TODO: check if we have modified files, we must not release this
 		if (!target) {
 			grunt.task.run([
