@@ -300,32 +300,6 @@ module.exports = function(grunt) {
 		grunt.helper("make_docs", done);
 	});
 
-	grunt.registerTask("gh-pages", function() {
-		var done = this.async();
-		grunt.helper("check_versions", grunt.config("check.versions"), function(ok) {
-			if (!ok) {
-				done(false);
-				return;
-			}
-			grunt.helper("make_docs", function() {
-				var updateCmd = [
-					"git checkout gh-pages",
-					"git pull",
-					"git checkout master -- tests demo",
-					"cp -r " + grunt.config("dirs.dest") + "/docs/* docs",
-					"git add docs/ tests/ demo/",
-					"git commit -m \"up\"",
-					"git push origin gh-pages",
-					"git checkout master"
-				].join(" && ");
-				grunt.helper("exec", updateCmd, function() {
-					grunt.log.ok();
-					done();
-				});
-			});
-		});
-	});
-
 	grunt.registerMultiTask("check", "Different checks (versions, pre-release, post-release, ...)", function() {
 		var done = this.async();
 		if (this.target == "versions") {

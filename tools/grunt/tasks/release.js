@@ -132,7 +132,8 @@ module.exports = function(grunt) {
 				"release:sdk:latest",
 				"patch:loader:stable",
 				"release:sdk:stable",
-				"release:apps"
+				"release:apps",
+				"release:pages"
 			]);
 			return;
 		}
@@ -172,6 +173,9 @@ module.exports = function(grunt) {
 			case "purge":
 				// TODO: purge all paths in one request
 				grunt.helper("cdn_purge", [subtarget], config.release, done);
+				break;
+			case "pages":
+				grunt.helper("push_pages", done);
 				break;
 		}
 	});
@@ -220,10 +224,10 @@ module.exports = function(grunt) {
 				"Content-Type": "text/xml"
 			}
 		}, function(response) {
-			if (response.statusCode == 200) {
+			if (response.statusCode === 200) {
 				grunt.log.ok();
 				done();
-			} else if (response.statusCode == 500) {
+			} else if (response.statusCode === 500) {
 				response.on("data", function (text) {
 					grunt.log.writeln(text);
 					grunt.fail.fatal("Can't purge");
@@ -237,5 +241,29 @@ module.exports = function(grunt) {
 		});
 		req.write(xml);
 		req.end();
+	});
+
+	grunt.registerHelper("push_pages", function(done) {
+		grunt.helper("make_docs", function() {
+			var updateCmd = [
+				"git checkout gh-pages",
+				"git pull",
+				"git checkout master -- tests demo",
+				"cp -r " + grunt.config("dirs.dest") + "/docs/* docs",
+				"git add docs/ tests/ demo/",
+				"git commit -m \"up to v" + grunt.config("pkg.version") + "\"",
+				"git push origin gh-pages",
+				"git checkout master"
+			].join(" && ");
+			if (DEBUG) {
+				console.log(updateCmd);
+				done();
+				return;
+			}
+			grunt.helper("exec", updateCmd, function() {
+				grunt.log.ok();
+				done();
+			});
+		});
 	});
 };
