@@ -3,7 +3,9 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
+if (Echo.Utils.isComponentDefined("Echo.Configuration")) {
+	return;
+}
 
 /**
  * @class Echo.Configuration

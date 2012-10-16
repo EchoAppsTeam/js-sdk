@@ -3,7 +3,9 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.Events")) return;
+if (Echo.Utils.isComponentDefined("Echo.Events")) {
+	return;
+}
 
 /**
  * @class Echo.Events
@@ -12,9 +14,9 @@ if (Echo.Utils.isComponentDefined("Echo.Events")) return;
  * (like "app was rendered", "user logged in", etc).
  *
  * Contexts used in this library are complex identifiers constructed using the following rules:
- * 	<contextId> :: "<id>" or "<parentContextID>/<id>", where
- * 	<id> :: some unique identifier assigned to component
- * 	<parentContextID> :: "<contextID>"
+ *     <contextId> :: "<id>" or "<parentContextID>/<id>", where
+ *     <id> :: some unique identifier assigned to component
+ *     <parentContextID> :: "<contextID>"
  */
 Echo.Events = {};
 
