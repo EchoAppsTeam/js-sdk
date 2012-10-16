@@ -3,6 +3,8 @@
 
 var $ = jQuery;
 
+if (Echo.API && Echo.API.Transport) return;
+
 Echo.API = {"Transports": {}, "Request": {}};
 
 var utils = Echo.Utils;
@@ -40,14 +42,12 @@ Echo.API.Transport.prototype._prepareURL = function() {
  * @class Echo.API.Transports.AJAX
  * @extends Echo.API.Transport
  */
-Echo.API.Transports.AJAX = function(config) {
+Echo.API.Transports.AJAX = utils.inherit(Echo.API.Transport, function(config) {
 	config = $.extend({
 		"method": "get"
 	}, config || {});
 	return Echo.API.Transports.AJAX.parent.constructor.call(this, config);
-};
-
-utils.inherit(Echo.API.Transport, Echo.API.Transports.AJAX);
+});
 
 Echo.API.Transports.AJAX.prototype._getScheme = function() {
 	return this.config.get("secure") ? "https:" : "http:";
@@ -106,11 +106,9 @@ Echo.API.Transports.AJAX.available = function() {
  * @class Echo.API.Transports.JSONP
  * @extends Echo.API.Transports.AJAX
  */
-Echo.API.Transports.JSONP = function(config) {
+Echo.API.Transports.JSONP = utils.inherit(Echo.API.Transports.AJAX, function(config) {
 	return Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
-};
-
-utils.inherit(Echo.API.Transports.AJAX, Echo.API.Transports.JSONP);
+});
 
 Echo.API.Transports.JSONP.prototype.send = function(data) {
 	if (this.config.get("method").toLowerCase() === "get") {
@@ -185,11 +183,9 @@ Echo.API.Transports.JSONP.available = function() {
  * @class Echo.API.Transports.WebSocket
  * @extends Echo.API.Transport
  */
-Echo.API.Transports.WebSocket = function(config) {
+Echo.API.Transports.WebSocket = utils.inherit(Echo.API.Transport, function(config) {
 	return Echo.API.Transports.WebSocket.parent.constructor.apply(this, arguments);
-};
-
-utils.inherit(Echo.API.Transport, Echo.API.Transports.WebSocket);
+});
 
 Echo.API.Transports.WebSocket.prototype._getScheme = function() {
 	return this.config.get("secure") ? "wss:" : "ws:";

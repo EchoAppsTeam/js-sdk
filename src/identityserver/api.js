@@ -3,6 +3,8 @@
 
 var $ = jQuery;
 
+if (Echo.IdentityServer && Echo.IdentityServer.API) return;
+
 if (!Echo.IdentityServer) Echo.IdentityServer = {};
 
 Echo.IdentityServer.API = {};
@@ -16,7 +18,7 @@ Echo.IdentityServer.API = {};
  * Constructor initializing class using configuration data.
  * @param {Object} config Configuration data.
  */
-Echo.IdentityServer.API.Request = function(config) {
+Echo.IdentityServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
 	config = $.extend({
 		/**
 		 * @cfg {Function} [onData] Callback called after API request succeded.
@@ -33,9 +35,7 @@ Echo.IdentityServer.API.Request = function(config) {
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	Echo.IdentityServer.API.Request.parent.constructor.call(this, config);
-};
-
-Echo.Utils.inherit(Echo.API.Request, Echo.IdentityServer.API.Request);
+});
 
 Echo.IdentityServer.API.Request.prototype._prepareURI = function() {
 	return this.config.get("endpoint") === "whoami"

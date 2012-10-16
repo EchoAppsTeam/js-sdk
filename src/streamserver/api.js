@@ -3,6 +3,8 @@
 
 var $ = jQuery;
 
+if (Echo.StreamServer && Echo.StreamServer.API) return;
+
 if (!Echo.StreamServer) Echo.StreamServer = {};
 
 Echo.StreamServer.API = {};
@@ -16,7 +18,7 @@ Echo.StreamServer.API = {};
  * Constructor initializing class using configuration data.
  * @param {Object} config Configuration data.
  */
-Echo.StreamServer.API.Request = function(config) {
+Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
 	config = $.extend({
 		/**
 		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
@@ -54,9 +56,7 @@ Echo.StreamServer.API.Request = function(config) {
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = "initial"; // initial | secondary
 	Echo.StreamServer.API.Request.parent.constructor.call(this, config);
-};
-
-Echo.Utils.inherit(Echo.API.Request, Echo.StreamServer.API.Request);
+});
 
 /**
  * @method
