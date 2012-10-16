@@ -65,14 +65,13 @@ Echo.Configuration = function(master, slave, normalizer) {
  * Corresponding value found in the config.
  */
 Echo.Configuration.prototype.get = function(key, defaults) {
-	var k = key;
-	if (typeof k !== "string") {
-		k = k.join(".");
+	if (typeof key !== "string") {
+		key = key.join(".");
 	}
-	if (!this.cache.hasOwnProperty(k)) {
-		this.cache[k] = Echo.Utils.get(this.data, key);
+	if (!this.cache.hasOwnProperty(key)) {
+		this.cache[key] = Echo.Utils.get(this.data, key);
 	}
-	return typeof this.cache[k] === "undefined" ? defaults : this.cache[k];
+	return typeof this.cache[key] === "undefined" ? defaults : this.cache[key];
 };
 
 /**
