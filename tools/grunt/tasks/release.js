@@ -7,6 +7,8 @@ module.exports = function(grunt) {
 	// to enable debug mode execute `grunt release -d`
 	var DEBUG = !!grunt.option("debug");
 
+	grunt.log.writeln("\nDEBUG mode is " + (DEBUG ? "ON".green : "OFF".red));
+
 	var FtpUploader = function(config) {
 		var self = this;
 		this.config = config;
