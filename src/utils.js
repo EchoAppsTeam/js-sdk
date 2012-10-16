@@ -310,6 +310,10 @@ Echo.Utils.set = function(obj, key, value) {
  *
  * 	Echo.Utils.htmlize("special characters: &<>"); // will return "special characters: &amp;&lt;&gt;"
  *
+ * Note: the function works with the "string" type argument only. If the value with
+ * type different from "string" is passed to the function, the same value would be
+ * returned with no changes.
+ *
  * @param {String} text
  * The string to be converted.
  *
@@ -317,8 +321,7 @@ Echo.Utils.set = function(obj, key, value) {
  * Converted string.
  */
 Echo.Utils.htmlize = function(text) {
-	if (!text) return "";
-	return $("<div>").text(text).html();
+	return typeof text === "string" ? $("<div>").text(text).html() : text;
 };
 
 /**
@@ -479,6 +482,10 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  *
  * 	Echo.Utils.stripTags("<div>Content</div>"); // will return "Content"
  *
+ * Note: the function works with the "string" type argument only. If the value with
+ * type different from "string" is passed to the function, the same value would be
+ * returned with no changes.
+ *
  * @param {String} text
  * The string to be stripped.
  *
@@ -486,7 +493,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  * Stripped string.
  */
 Echo.Utils.stripTags = function(text) {
-	return $("<div>").html(text).text();
+	return typeof text === "string" ? $("<div>").html(text).text() : text;
 };
 
 /**

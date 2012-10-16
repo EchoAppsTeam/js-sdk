@@ -121,13 +121,21 @@ suite.prototype.tests.TestDataMethods = {
 		Echo.Utils.set(data, "key1.key-null", null);
 		QUnit.ok(!Echo.Utils.remove(data, "key1.key-null.key"), "Checking remove() with null target");
 
-		QUnit.equal(Echo.Utils.htmlize(), "",
-			"Checking htmlize() method with empty param");
+		QUnit.equal(Echo.Utils.htmlize(), undefined,
+			"Checking htmlize() method with undefined param");
+		QUnit.equal(Echo.Utils.htmlize(""), "",
+			"Checking htmlize() method with empty string param");
+		QUnit.equal(Echo.Utils.htmlize(10), 10,
+			"Checking htmlize() method with integer param (expecting the same integer to be returned)");
 		QUnit.equal(Echo.Utils.htmlize("text1 < & > text2"), "text1 &lt; &amp; &gt; text2",
 			"Checking htmlize() method with special characters");
 
+		QUnit.equal(Echo.Utils.stripTags(), undefined,
+			"Checking stripTags() method with undefined param");
 		QUnit.equal(Echo.Utils.stripTags(""), "",
-			"Checking stripTags() method with empty param");
+			"Checking stripTags() method with empty string param");
+		QUnit.equal(Echo.Utils.stripTags(20), 20,
+			"Checking stripTags() method with integer param (expecting the same integer to be returned)");
 		QUnit.equal(Echo.Utils.stripTags("<div>Content</div>"), "Content",
 			"Checking stripTags() method with simple HTML");
 		QUnit.equal(Echo.Utils.stripTags("<div>Outer<div><!-- Comment -->Inner</div></div>"), "OuterInner",
