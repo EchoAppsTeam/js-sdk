@@ -292,12 +292,15 @@ Echo.Utils.remove = function(obj, key) {
 Echo.Utils.set = function(obj, key, value) {
 	var keys = key.split(/\./);
 	var field = keys.pop();
-	var data = Echo.Utils.get(obj, keys, undefined, function(acc, v) {
-		if (typeof acc[v] === "undefined") {
-			acc[v] = {};
-		}
-	});
-	data[field] = value;
+	var target = obj;
+	if (keys.length > 0) {
+		target = Echo.Utils.get(obj, keys, undefined, function(acc, v) {
+			if (typeof acc[v] === "undefined") {
+				acc[v] = {};
+			}
+		});
+	}
+	target[field] = value;
 };
 
 /**
