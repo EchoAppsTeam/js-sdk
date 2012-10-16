@@ -3,11 +3,17 @@
 
 var $ = jQuery;
 
-if (!window.Echo) window.Echo = {};
+if (!window.Echo) {
+	window.Echo = {};
+}
 
-if (Echo.Utils) return;
+if (Echo.Utils) {
+	return;
+}
 
-if (!Echo.Variables) Echo.Variables = {};
+if (!Echo.Variables) {
+	Echo.Variables = {};
+}
 
 /**
  * Static class implements common methods of data processing.
@@ -35,24 +41,24 @@ Echo.Utils.regexps = {
  * If CSS styles with corresponding id were added before then this function
  * returns false.
  *
- * 	// style tag in the head of HTML document
- * 	// <style>
- * 	//     .example-class { font-size: 12px; }
- * 	// </style>
+ *     // style tag in the head of HTML document
+ *     // <style>
+ *     //     .example-class { font-size: 12px; }
+ *     // </style>
  *
- * 	Echo.Utils.addCSS(
- * 		'.echo-class { font-size: 14px; } '
- * 		, 'echo-class-id'); // will return true
- * 	// and new CSS style will be added to style tag
- * 	// <style>
- * 	//     .example-class { font-size: 12px; }
- * 	//     .echo-class { font-size: 14px; }
- * 	// </style>
+ *     Echo.Utils.addCSS(
+ *         '.echo-class { font-size: 14px; }'
+ *         , 'echo-class-id');
+ *     // will return true and new CSS style will be added to style tag
+ *     // <style>
+ *     //     .example-class { font-size: 12px; }
+ *     //     .echo-class { font-size: 14px; }
+ *     // </style>
  *
- * 	Echo.Utils.addCSS(
- * 	'.echo-new-class { font-size: 16px; } '
- * 	, 'echo-class-id'); // will return false because styles with
- * id = 'echo-class-id' were added before
+ *     Echo.Utils.addCSS(
+ *         '.echo-new-class { font-size: 16px; }'
+ *         , 'echo-class-id');
+ *     // will return false because styles with id = 'echo-class-id' were added before
  *
  * @param {String} cssCode
  * Contains CSS styles to be added.
@@ -74,7 +80,9 @@ Echo.Utils.addCSS = function(cssCode, id) {
 	}
 	var cssStyles = this.cache.cssStyles;
 	if (id) {
-		if (cssStyles.processed[id]) return false;
+		if (cssStyles.processed[id]) {
+			return false;
+		}
 		cssStyles.processed[id] = true;
 	}
 	var currentCssCode = "";
@@ -114,15 +122,17 @@ Echo.Utils.addCSS = function(cssCode, id) {
  * callback function. The first argument is the object that is available
  * in callback function to accumulate items.
  *
- * 	var array = Echo.Utils.foldl([], [1, 2, 3], function(item, acc) {
- * 		acc.push(item);
- * 	}); // array will be [1, 2, 3];
- *     
- * 	var hash = Echo.Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
- * 		if (key === "key2") return;
- * 		acc[key] = item;
- * 	}); // hash will be {"key1": "value1"};
- * 
+ *     var array = Echo.Utils.foldl([], [1, 2, 3], function(item, acc) {
+ *         acc.push(item);
+ *     }); // array will be [1, 2, 3];
+ *
+ *     var hash = Echo.Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
+ *         if (key === "key2") {
+ *             return;
+ *         }
+ *         acc[key] = item;
+ *     }); // hash will be {"key1": "value1"};
+ *
  * @param {Object} acc
  * Defines the initial accumulator.
  *
@@ -163,16 +173,16 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * default value if specified in the third argument. Use the dot as a delimiter
  * of key parts to get nested field value.
  *
- * 	var data = {
- * 		"key1": "value1",
- * 		"key2": {
- * 			"key2-1": "value2-1"
- * 		}
- * 	};
+ *     var data = {
+ *         "key1": "value1",
+ *         "key2": {
+ *             "key2-1": "value2-1"
+ *         }
+ *     };
  *
- * 	Echo.Utils.get(data, "key1"); // will return "value1"
- * 	Echo.Utils.get(data, "key2"); // will return object {"key2-1": "value2-1"}
- * 	Echo.Utils.get(data, "key2.key2-1"); // will return "value2-1"
+ *     Echo.Utils.get(data, "key1"); // will return "value1"
+ *     Echo.Utils.get(data, "key2"); // will return object {"key2-1": "value2-1"}
+ *     Echo.Utils.get(data, "key2.key2-1"); // will return "value2-1"
  *
  * @param {Object} obj
  * The object from which the value is taken.
@@ -197,11 +207,15 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * The corresponding nested value found in the object.
 */
 Echo.Utils.get = function(obj, key, defaults, callback) {
-	if (!key) return obj;
+	if (!key) {
+		return obj;
+	}
 	if (typeof key === "string") {
 		key = key.split(/\./);
 	}
-	if (!key.length) return obj;
+	if (!key.length) {
+		return obj;
+	}
 	var found = true;
 	var iteration = function(_key, _data) {
 		if (callback) {
@@ -227,20 +241,20 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
  * This function removes the corresponding value of the given key or the.
  * Use the dot as a delimiter of key parts to remove nested field value.
  *
- * 	var data = {
- * 		"key1": "value1",
- * 		"key2": {
- * 			"key2-1": "value2-1",
- * 			"key2-2": {
- *				"key2-2-1": "value2-2-1"
- * 			}
- * 		}
- * 	};
+ *     var data = {
+ *         "key1": "value1",
+ *         "key2": {
+ *             "key2-1": "value2-1",
+ *             "key2-2": {
+ *                 "key2-2-1": "value2-2-1"
+ *             }
+ *         }
+ *     };
  *
- * 	Echo.Utils.remove(data, "key1"); // will return true and key1 delete
- * 	Echo.Utils.remove(data, "key2"); // will return true and key2 delete
- * 	Echo.Utils.remove(data, "key2.key2-2.key2-2-1"); // will return true and obj.key2.key2-2 will return empty object
- * 	Echo.Utils.remove(data, "not_defined_key"); // will return false
+ *     Echo.Utils.remove(data, "key1"); // will return true and key1 delete
+ *     Echo.Utils.remove(data, "key2"); // will return true and key2 delete
+ *     Echo.Utils.remove(data, "key2.key2-2.key2-2-1"); // will return true and obj.key2.key2-2 will return empty object
+ *     Echo.Utils.remove(data, "not_defined_key"); // will return false
  *
  * @param {Object} obj
  * The object from which the value is taken.
@@ -253,7 +267,9 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
  * The boolean value which indicates that value by key exists and removed.
  */
 Echo.Utils.remove = function(obj, key) {
-	if (!key || !obj) return false;
+	if (!key || !obj) {
+		return false;
+	}
 	var keys = $.type(key) === "array" ? key : key.split(/\./);
 	var _key = keys.pop();
 	var target = Echo.Utils.get(obj, keys, {});
@@ -270,15 +286,15 @@ Echo.Utils.remove = function(obj, key) {
  * This function allows to define the value for the corresponding field in the object.
  * Use the dot as a delimiter of key parts to set nested field value.
  *
- * 	var data = {
- * 		"key1": "value1",
- * 		"key2": {
- * 			"key2-1": "value2-1"
- * 		}
- * 	};
+ *     var data = {
+ *         "key1": "value1",
+ *         "key2": {
+ *             "key2-1": "value2-1"
+ *         }
+ *     };
  *
- * 	Echo.Utils.set(data, "key1", "new value"); // data["key1"] will be "new value"
- * 	Echo.Utils.set(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
+ *     Echo.Utils.set(data, "key1", "new value"); // data["key1"] will be "new value"
+ *     Echo.Utils.set(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
  * 
  * @param {Object} obj
  * The object for which the value is set.
@@ -311,7 +327,7 @@ Echo.Utils.set = function(obj, key, value) {
  * HTML entities if they are to preserve their meanings. This function returns a
  * string with these conversions made.
  *
- * 	Echo.Utils.htmlize("special characters: &<>"); // will return "special characters: &amp;&lt;&gt;"
+ *     Echo.Utils.htmlize("special characters: &<>"); // will return "special characters: &amp;&lt;&gt;"
  *
  * Note: the function works with the "string" type argument only. If the value with
  * type different from "string" is passed to the function, the same value would be
@@ -334,13 +350,13 @@ Echo.Utils.htmlize = function(text) {
  * Methods converts JavaScript object to JSON string.
  * This function uses JSON.stringify() method if it is available in the browser.
  *
- * 	Echo.Utils.objectToJSON(null); // will return 'null'
- * 	Echo.Utils.objectToJSON(123); // will return '123'
- * 	Echo.Utils.objectToJSON(Number.POSITIVE_INFINITY); // will return 'null'
- * 	Echo.Utils.objectToJSON("string\n"); // will return '"string\n"'
- * 	Echo.Utils.objectToJSON(true); // will return true
- * 	Echo.Utils.objectToJSON(["value1", "value2"]); // will return '["value1","value2"]'
- * 	Echo.Utils.objectToJSON({"k1": "v1", "k2": "v2"}); // will return '{"k1":"v1","k2":"v2"}'
+ *     Echo.Utils.objectToJSON(null); // will return 'null'
+ *     Echo.Utils.objectToJSON(123); // will return '123'
+ *     Echo.Utils.objectToJSON(Number.POSITIVE_INFINITY); // will return 'null'
+ *     Echo.Utils.objectToJSON("string\n"); // will return '"string\n"'
+ *     Echo.Utils.objectToJSON(true); // will return true
+ *     Echo.Utils.objectToJSON(["value1", "value2"]); // will return '["value1","value2"]'
+ *     Echo.Utils.objectToJSON({"k1": "v1", "k2": "v2"}); // will return '{"k1":"v1","k2":"v2"}'
  *
  * @param {Mixed} obj
  * The value to be converted.
@@ -349,6 +365,7 @@ Echo.Utils.htmlize = function(text) {
  * String containing JSON.
  */
 Echo.Utils.objectToJSON = function(obj) {
+	var container;
 	if (window.JSON && JSON.stringify) {
 		return JSON.stringify(obj);
 	}
@@ -359,7 +376,7 @@ Echo.Utils.objectToJSON = function(obj) {
 			'\n': '\\n',
 			'\f': '\\f',
 			'\r': '\\r',
-			'"' : '\\"',
+			'"': '\\"',
 			'\\': '\\\\'
 		};
 		return string.replace(/[\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff\\]/g,
@@ -369,19 +386,19 @@ Echo.Utils.objectToJSON = function(obj) {
 					: '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
 			});
 	};
-	
+
 	var out;
 	switch (typeof obj) {
-		case "number"  : out = isFinite(obj) ? obj : 'null'; break;
-		case "string"  : out = '"' + encodeJSONLiteral(obj) + '"'; break;
-		case "boolean" : out = obj.toString(); break;
-		default :
+		case "number": out = isFinite(obj) ? obj : 'null'; break;
+		case "string": out = '"' + encodeJSONLiteral(obj) + '"'; break;
+		case "boolean": out = obj.toString(); break;
+		default:
 			if (obj instanceof Array) {
-				var container = $.map(obj, function(element) { return Echo.Utils.objectToJSON(element); });
+				container = $.map(obj, function(element) { return Echo.Utils.objectToJSON(element); });
 				out = '[' + container.join(",") + ']';
 			} else if (obj instanceof Object) {
 				var source = obj.exportProperties || obj;
-				var container = Echo.Utils.foldl([], source, function(value, acc, property) {
+				container = Echo.Utils.foldl([], source, function(value, acc, property) {
 					if (source instanceof Array) {
 						property = value;
 						value = obj[property];
@@ -403,13 +420,13 @@ Echo.Utils.objectToJSON = function(obj) {
  * This function truncates HTML contents preserving the right HTML structure
  * and without truncating tags.
  *
- * 	Echo.Utils.htmlTextTruncate("<div>123456</div>", 5); // will return "<div>12345</div>"
- * 	Echo.Utils.htmlTextTruncate("<div>123456</div>", 5, "12345"); // will return "<div>1234512345</div>"
- * 	Echo.Utils.htmlTextTruncate("<div>123456", 5, "", true); // will return "<div>12345</div>"
- * 	Echo.Utils.htmlTextTruncate("<div>123456", 5, "", false); // will return "<div>12345</div>"
- * 	Echo.Utils.htmlTextTruncate("<div>12345", 5, "", true); // will return "<div>12345</div>"
- * 	Echo.Utils.htmlTextTruncate("<div>12345", 5, "", false); // will return "<div>12345"
- * 
+ *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5); // will return "<div>12345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5, "12345"); // will return "<div>1234512345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "", true); // will return "<div>12345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "", false); // will return "<div>12345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "", true); // will return "<div>12345</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "", false); // will return "<div>12345"
+ *
  * @param {String} text
  * The string to be truncated.
  *
@@ -428,20 +445,23 @@ Echo.Utils.objectToJSON = function(obj) {
  * Truncated string.
  */
 Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
-	
-	if (!limit || text.length < limit) return text;
-	
+	if (!limit || text.length < limit) {
+		return text;
+	}
+
 	var tags = [], count = 0, finalPos = 0;
 	var list = "br hr input img area param base link meta option".split(" ");
 	var standalone = Echo.Utils.foldl({}, list, function(value, acc, key) {
 		acc[value] = true;
 	});
-	
+
 	for (var i = 0; i < text.length; i++) {
 		var symbol = text.charAt(i);
 		if (symbol === "<") {
 			var tail = text.indexOf(">", i);
-			if (tail < 0) return text;
+			if (tail < 0) {
+				return text;
+			}
 			var source = text.substring(i + 1, tail);
 			var tag = {"name": "", "closing": false};
 			if (source.charAt(0) === "/") {
@@ -451,7 +471,9 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 			tag.name = source.match(/(\w)+/)[0];
 			if (tag.closing) {
 				var current = tags.pop();
-				if (!current || current.name !== tag.name) return text;
+				if (!current || current.name !== tag.name) {
+					return text;
+				}
 			} else if (!standalone[tag.name]) {
 				tags.push(tag);
 			}
@@ -483,7 +505,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  *
  * This function returns a string with all HTML tags stripped from the given string.
  *
- * 	Echo.Utils.stripTags("<div>Content</div>"); // will return "Content"
+ *     Echo.Utils.stripTags("<div>Content</div>"); // will return "Content"
  *
  * Note: the function works with the "string" type argument only. If the value with
  * type different from "string" is passed to the function, the same value would be
@@ -507,14 +529,15 @@ Echo.Utils.stripTags = function(text) {
  * which are presented. This function is not meant to validate the given URL,
  * it only breaks it up into the parts.
  *
- * 	var url = "http://domain.com/some/path/?query_string#hash_value";
- * 	Echo.Utils.parseURL(url); 	// will return {
- * 								// "scheme": "http",
- * 								// "domain": "domain.com",
- * 								// "path": "/some/path/"
- * 								// "query": "query_string",
- * 								// "fragment": "hash_value"
- * 								// };
+ *     var url = "http://domain.com/some/path/?query_string#hash_value";
+ *     Echo.Utils.parseURL(url);
+ *     // will return {
+ *     //     "scheme": "http",
+ *     //     "domain": "domain.com",
+ *     //     "path": "/some/path/"
+ *     //     "query": "query_string",
+ *     //     "fragment": "hash_value"
+ *     // };
  *
  * @param {String} url
  * The URL to be parsed.
@@ -549,20 +572,20 @@ Echo.Utils.parseURL = function(url) {
  * original visible color of the element.It returns `transparent` string
  * if background-color of the element and its parents is not specified.
  *
- * 	// HTML template
- * 	var template =
- * 		'<div class="container">' +
- * 			'<div class="header" style="background-color: green;">header</div>' +
- * 			'<div class="content" style="background-color: red;">' +
- * 				'<div class="section1"></div>' +
- * 				'<div class="section2"></div>' +
- * 			'</div>' +
- * 			'<div class="footer">footer</div>' +
- * 		'</div>';
+ *     // HTML template
+ *     var template =
+ *         '<div class="container">' +
+ *             '<div class="header" style="background-color: green;">header</div>' +
+ *             '<div class="content" style="background-color: red;">' +
+ *                 '<div class="section1"></div>' +
+ *                 '<div class="section2"></div>' +
+ *             '</div>' +
+ *             '<div class="footer">footer</div>' +
+ *         '</div>';
  *
- * 	Echo.Utils.getVisibleColor( $(".header", template) ); // will return "rgb(0, 128, 0)"
- * 	Echo.Utils.getVisibleColor( $(".section1", template) ); // will return "rgb(255, 0, 0)"
- * 	Echo.Utils.getVisibleColor( $(".footer", template) ); // will return "transparent"
+ *     Echo.Utils.getVisibleColor( $(".header", template) ); // will return "rgb(0, 128, 0)"
+ *     Echo.Utils.getVisibleColor( $(".section1", template) ); // will return "rgb(255, 0, 0)"
+ *     Echo.Utils.getVisibleColor( $(".footer", template) ); // will return "transparent"
  * 
  * @param {HTMLElement} element
  * HTML element which visible color is being determined.
@@ -586,7 +609,7 @@ Echo.Utils.getVisibleColor = function(element) {
  * @static
  * Method to convert datetime value from W3C datetime format to timestamp.
  *
- * 	Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // will return 886930050
+ *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // will return 886930050
  *
  * @param {String} datetime
  * String containing datetime value to be converted.
@@ -598,7 +621,9 @@ Echo.Utils.timestampFromW3CDTF = function(datetime) {
 	var parts = ["year", "month", "day", "hours", "minutes", "seconds"];
 	var dt = {};
 	var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
-	if (!matches) return;
+	if (!matches) {
+		return;
+	}
 	$.each(parts, function(i, p) {
 		dt[p] = matches[i + 1];
 	});
@@ -631,7 +656,7 @@ Echo.Utils.isMobileDevice = function() {
  * This function returns unique string is the number of milliseconds between
  * midnight January 1, 1970 (GMT) to current time plus random number.
  *
- * 	Echo.Utils.getUniqueString(); // will return something like "134086853327622290480640764643"
+ *     Echo.Utils.getUniqueString(); // will return something like "134086853327622290480640764643"
  *
  * @return {String}
  * Unique random string.
@@ -659,7 +684,7 @@ Echo.Utils.inherit = function(parent, child) {
 	var F = function() {};
 	child = child || function() {};
 	F.prototype = parent.prototype;
-	child.prototype = new F;
+	child.prototype = new F();
 	child.prototype.constructor = child;
 	child.parent = parent.prototype;
 	return child;
@@ -769,8 +794,8 @@ Echo.Utils.loadImage = function(args) {
  * HTML string for <a> tag.
  */
 Echo.Utils.hyperlink = function(data, options) {
-	var data = $.extend({}, data);
-	var options = $.extend({}, options);
+	data = $.extend({}, data);
+	options = $.extend({}, options);
 	var caption = data.caption || "";
 	delete data.caption;
 	if (options.openInNewWindow && !data.target) {
@@ -806,7 +831,9 @@ Echo.Utils.hyperlink = function(data, options) {
  * Extra arguments to log.
  */
 Echo.Utils.log = function(data) {
-	if (!(window.console && console.log && data && data.message)) return;
+	if (!(window.console && console.log && data && data.message)) {
+		return;
+	}
 	console.log(
 		"[" + (data.component || "Echo SDK") + "]",
 		(data.type || "info"), ":", data.message, " | args: ", data.args
@@ -921,7 +948,9 @@ Echo.Utils.substitute = function(args) {
 
 	// perform regular string substitution
 	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
-		if (!instructions[key]) return match;
+		if (!instructions[key]) {
+			return match;
+		}
 		var result = instructions[key](value, "");
 		var allowedTypes = ["number", "string", "boolean"];
 		return ~$.inArray(typeof result, allowedTypes) ? result : "";
