@@ -365,10 +365,11 @@ Echo.Utils.htmlize = function(text) {
  * String containing JSON.
  */
 Echo.Utils.objectToJSON = function(obj) {
-	var container;
 	if (window.JSON && JSON.stringify) {
 		return JSON.stringify(obj);
 	}
+	// object -> JSON conversion support for IE7
+	var container;
 	var encodeJSONLiteral = function(string) {
 		var replacements = {
 			'\b': '\\b',
@@ -623,13 +624,12 @@ Echo.Utils.getVisibleColor = function(element) {
  */
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
 	var parts = ["year", "month", "day", "hours", "minutes", "seconds"];
-	var dt = {};
 	var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
 	if (!matches) {
 		return;
 	}
-	$.each(parts, function(i, p) {
-		dt[p] = matches[i + 1];
+	var dt = Echo.Utils.foldl({}, parts, function(key, acc, id) {
+		acc[key] = matches[id + 1];
 	});
 	return Date.UTC(dt.year, dt.month - 1, dt.day,
 			dt.hours, dt.minutes, dt.seconds) / 1000;
