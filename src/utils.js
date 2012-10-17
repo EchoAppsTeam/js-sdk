@@ -450,10 +450,14 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	}
 
 	var tags = [], count = 0, finalPos = 0;
-	var list = "br hr input img area param base link meta option".split(" ");
-	var standalone = Echo.Utils.foldl({}, list, function(value, acc, key) {
-		acc[value] = true;
-	});
+	if (!this.cache.standaloneTags) {
+		this.cache.standaloneTags =
+			Echo.Utils.foldl(
+				{},
+				"br hr input img area param base link meta option".split(" "),
+				function(value, acc, key) { acc[value] = true; }
+			);
+	}
 
 	for (var i = 0; i < text.length; i++) {
 		var symbol = text.charAt(i);
@@ -474,7 +478,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 				if (!current || current.name !== tag.name) {
 					return text;
 				}
-			} else if (!standalone[tag.name]) {
+			} else if (!this.cache.standaloneTags[tag.name]) {
 				tags.push(tag);
 			}
 			i = tail;
