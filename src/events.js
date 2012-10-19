@@ -3,9 +3,7 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.Events")) {
-	return;
-}
+if (Echo.Utils.isComponentDefined("Echo.Events")) return;
 
 /**
  * @class Echo.Events

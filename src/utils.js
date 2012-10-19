@@ -3,17 +3,11 @@
 
 var $ = jQuery;
 
-if (!window.Echo) {
-	window.Echo = {};
-}
+if (!window.Echo) window.Echo = {};
 
-if (Echo.Utils) {
-	return;
-}
+if (Echo.Utils) return;
 
-if (!Echo.Variables) {
-	Echo.Variables = {};
-}
+if (!Echo.Variables) Echo.Variables = {};
 
 /**
  * Static class implements common methods of data processing.
@@ -37,7 +31,7 @@ Echo.Utils.regexps = {
  *
  * This function adds CSS styles to the style tag which is placed in the head
  * of the document. The first argument is a string that contains CSS styles,
- * the second one is the unique identity string of CSS styles to be added. 
+ * the second one is the unique identity string of CSS styles to be added.
  * If CSS styles with corresponding id were added before then this function
  * returns false.
  *
@@ -80,9 +74,7 @@ Echo.Utils.addCSS = function(cssCode, id) {
 	}
 	var cssStyles = this.cache.cssStyles;
 	if (id) {
-		if (cssStyles.processed[id]) {
-			return false;
-		}
+		if (cssStyles.processed[id]) return false;
 		cssStyles.processed[id] = true;
 	}
 	var currentCssCode = "";
@@ -127,9 +119,7 @@ Echo.Utils.addCSS = function(cssCode, id) {
  *     }); // array will be [1, 2, 3];
  *
  *     var hash = Echo.Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
- *         if (key === "key2") {
- *             return;
- *         }
+ *         if (key === "key2") return;
  *         acc[key] = item;
  *     }); // hash will be {"key1": "value1"};
  *
@@ -210,9 +200,7 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
 	if (typeof key === "string") {
 		key = key.split(/\./);
 	}
-	if (!key || !key.length) {
-		return obj;
-	}
+	if (!key || !key.length) return obj;
 	var found = true;
 	var iteration = function(_key, _data) {
 		if (callback) {
@@ -264,9 +252,7 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
  * The boolean value which indicates that value by key exists and removed.
  */
 Echo.Utils.remove = function(obj, key) {
-	if (!key || !obj) {
-		return false;
-	}
+	if (!key || !obj) return false;
 	var keys = $.type(key) === "array" ? key : key.split(/\./);
 	var _key = keys.pop();
 	var target = Echo.Utils.get(obj, keys, {});
@@ -292,7 +278,7 @@ Echo.Utils.remove = function(obj, key) {
  *
  *     Echo.Utils.set(data, "key1", "new value"); // data["key1"] will be "new value"
  *     Echo.Utils.set(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
- * 
+ *
  * @param {Object} obj
  * The object for which the value is set.
  *
@@ -319,7 +305,7 @@ Echo.Utils.set = function(obj, key, value) {
 /**
  * @static
  * Method to convert special characters to HTML entities.
- * 
+ *
  * Some characters have special significance in HTML and should be represented by
  * HTML entities if they are to preserve their meanings. This function returns a
  * string with these conversions made.
@@ -443,9 +429,7 @@ Echo.Utils.objectToJSON = function(obj) {
  * Truncated string.
  */
 Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
-	if (!limit || text.length < limit) {
-		return text;
-	}
+	if (!limit || text.length < limit) return text;
 
 	var tags = [], count = 0, finalPos = 0;
 	if (!this.cache.standaloneTags) {
@@ -461,9 +445,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 		var symbol = text.charAt(i);
 		if (symbol === "<") {
 			var tail = text.indexOf(">", i);
-			if (tail < 0) {
-				return text;
-			}
+			if (tail < 0) return text;
 			var source = text.substring(i + 1, tail);
 			var tag = {"name": "", "closing": false};
 			if (source.charAt(0) === "/") {
@@ -473,9 +455,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 			tag.name = source.match(/(\w)+/)[0];
 			if (tag.closing) {
 				var current = tags.pop();
-				if (!current || current.name !== tag.name) {
-					return text;
-				}
+				if (!current || current.name !== tag.name) return text;
 			} else if (!this.cache.standaloneTags[tag.name]) {
 				tags.push(tag);
 			}
@@ -588,7 +568,7 @@ Echo.Utils.parseURL = function(url) {
  *     Echo.Utils.getVisibleColor( $(".header", template) ); // will return "rgb(0, 128, 0)"
  *     Echo.Utils.getVisibleColor( $(".section1", template) ); // will return "rgb(255, 0, 0)"
  *     Echo.Utils.getVisibleColor( $(".footer", template) ); // will return "transparent"
- * 
+ *
  * @param {HTMLElement} element
  * HTML element which visible color is being determined.
  *
@@ -622,14 +602,12 @@ Echo.Utils.getVisibleColor = function(element) {
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
 	var parts = ["year", "month", "day", "hours", "minutes", "seconds"];
 	var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
-	if (!matches) {
-		return;
-	}
+	if (!matches) return;
 	var dt = Echo.Utils.foldl({}, parts, function(key, acc, id) {
 		acc[key] = matches[id + 1];
 	});
 	return Date.UTC(dt.year, dt.month - 1, dt.day,
-			dt.hours, dt.minutes, dt.seconds) / 1000;
+		dt.hours, dt.minutes, dt.seconds) / 1000;
 };
 
 /**
@@ -870,7 +848,7 @@ Echo.Utils.parallelCall = function(actions, callback) {
 /**
  * @static
  * Function to call the functions from the list sequentially and call callback
- * function after it. 
+ * function after it.
  *
  * @param {Array} actions
  * List of functions to be called sequentially.
@@ -949,9 +927,7 @@ Echo.Utils.substitute = function(args) {
 
 	// perform regular string substitution
 	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
-		if (!instructions[key]) {
-			return match;
-		}
+		if (!instructions[key]) return match;
 		var result = instructions[key](value, "");
 		var allowedTypes = ["number", "string", "boolean"];
 		return ~$.inArray(typeof result, allowedTypes) ? result : "";

@@ -3,9 +3,7 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.Labels")) {
-	return;
-}
+if (Echo.Utils.isComponentDefined("Echo.Labels")) return;
 
 /**
  * @class Echo.Labels
@@ -103,7 +101,7 @@ Echo.Labels.prototype.get = function(name, data) {
  *     labels.get("paused"); // will return "Paused..."
  *
  * @param {Object} labels
- * Flat object containing the list of language variables to be added/overriden. 
+ * Flat object containing the list of language variables to be added/overriden.
  */
 
 Echo.Labels.prototype.set = function(labels) {
@@ -132,7 +130,7 @@ Echo.Labels.prototype.set = function(labels) {
  *     Echo.Labels.get("live", "Stream"); // will return "Live"
  *     Echo.Labels.get("paused", "Stream"); // will return "Paused"
  *
- * Echo.Labels.set({
+ *     Echo.Labels.set({
  *         "live": "Live...",
  *         "paused": "Paused..."
  *     }, "Stream", true); // setting default labels

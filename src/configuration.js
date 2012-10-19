@@ -3,9 +3,7 @@
 
 var $ = jQuery;
 
-if (Echo.Utils.isComponentDefined("Echo.Configuration")) {
-	return;
-}
+if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
 
 /**
  * @class Echo.Configuration
@@ -17,7 +15,7 @@ if (Echo.Utils.isComponentDefined("Echo.Configuration")) {
  * Class constructor, which accepts user defined and default configuration
  * and applies the normalization function to the necessary
  * (defined in normalization function) fields.
- * 
+ *
  * @param {Object} master
  * Specifies the primary source of configuration. Usually the configuration
  * defined in component config.
@@ -54,7 +52,7 @@ Echo.Configuration = function(master, slave, normalizer) {
  * default value if specified in the second argument. Method provides the
  * ability to extract the value located on any level of the config structure,
  * in case the config contains JS objects as values for some keys.
- * 
+ *
  * @param {String} key
  * Specifies the key for data extraction.
  *
@@ -83,7 +81,7 @@ Echo.Configuration.prototype.get = function(key, defaults) {
  * the config. Method provides the ability to define the value located on
  * any level of the config structure, in case the config contains JS objects
  * as values for some keys.
- * 
+ *
  * @param {String} key
  * Specifies the key where the given data should be stored.
  *
@@ -105,7 +103,7 @@ Echo.Configuration.prototype.set = function(key, value) {
  * This function allows to remove the value associated with the given key.
  * If the key contains a complex structure (such as objects or arrays), it
  * will be removed as well.
- * 
+ *
  * @param {String} key
  * Specifies the key which should be removed from the configuration.
  */
@@ -124,7 +122,7 @@ Echo.Configuration.prototype.remove = function(key) {
  * This function provides the ability to extend a given instance of the
  * config with the extra set of data. The new data overrides the existing
  * values.
- * 
+ *
  * @param {Object} extra
  * The corresponding value which should be defined for the key.
  */
