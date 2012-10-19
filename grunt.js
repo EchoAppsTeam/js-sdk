@@ -191,21 +191,29 @@ module.exports = function(grunt) {
 		//},
 		jshint: {
 			options: {
-				curly: true,
+				//curly: true,
 				eqeqeq: true,
+				forin: true,
 				immed: true,
 				latedef: true,
 				newcap: true,
 				noarg: true,
+				nonew: true,
+				strict: true,
 				sub: true,
+				trailing: true,
 				undef: true,
-				boss: true,
-				eqnull: true,
-				browser: true
+				unused: true,
+				//boss: true,
+				//eqnull: true,
+				browser: true,
+				scripturl: true,
+				jquery: true,
+				devel: true,
+				laxbreak: true
 			},
 			globals: {
 				Echo: true,
-				jQuery: true,
 				QUnit: true
 			}
 		},
