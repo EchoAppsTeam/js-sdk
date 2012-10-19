@@ -193,12 +193,14 @@ module.exports = function(grunt) {
 			options: {
 				//curly: true,
 				eqeqeq: true,
+				expr: true,
 				forin: true,
 				immed: true,
 				latedef: true,
 				newcap: true,
 				noarg: true,
 				nonew: true,
+				smarttabs: true,
 				strict: true,
 				sub: true,
 				trailing: true,
@@ -213,8 +215,10 @@ module.exports = function(grunt) {
 				laxbreak: true
 			},
 			globals: {
+				Backplane: true,
 				Echo: true,
-				QUnit: true
+				QUnit: true,
+				yepnope: true
 			}
 		},
 		uglify: {}
