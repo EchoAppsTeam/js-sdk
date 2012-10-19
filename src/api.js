@@ -159,7 +159,7 @@ Echo.API.Transports.JSONP.prototype._getPostTransportObject = function(settings)
 	this._pushPostParameters(settings.data);
 	return {
 		"form": form,
-		"iframe": iframe
+		"iframe": this.iframe
 	};
 };
 
