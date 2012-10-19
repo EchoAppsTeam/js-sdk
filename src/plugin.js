@@ -14,7 +14,7 @@ Echo.Plugin = function() {};
 /**
  * @static
  * Function which creates a plugin object using it manifest declaration.
- * 
+ *
  * @param {Object} manifest
  * Specifies the plugin interface in the predefined way.
  *
@@ -120,7 +120,7 @@ Echo.Plugin.manifest = function(name, component) {
  *
  * @param {Object} manifest
  * Plugin manifest.
- * 
+ *
  * @return {Boolean}
  */
 Echo.Plugin.isDefined = function(manifest) {

@@ -191,11 +191,11 @@ Echo.Control.prototype.defaults.config = {
 	 * Specifies if info messages should be rendered.
 	 *
 	 * @cfg {String} [infoMessages.layout="full"]
- 	 * Specifies the layout of the info message. By default can be set to "compact" or "full".
+	 * Specifies the layout of the info message. By default can be set to "compact" or "full".
 	 *
-	 *     "infoMessages" : {
-	 *         "enabled" : true,
-	 *         "layout" : "full"
+	 *     "infoMessages": {
+	 *         "enabled": true,
+	 *         "layout": "full"
 	 *     }
 	 */
 	"infoMessages": {
@@ -444,7 +444,7 @@ Echo.Control.prototype.showError = function(data, options) {
 	var self = this;
 	if (typeof options.retryIn === "undefined") {
 		var label = this.labels.get("error_" + data.errorCode);
-		var message = label == "error_" + data.errorCode
+		var message = label === "error_" + data.errorCode
 			? "(" + data.errorCode + ") " + (data.errorMessage || "")
 			: label;
 		this.showMessage({
@@ -575,9 +575,9 @@ Echo.Control.prototype._init = function(subsystems) {
 		"init": control._initializers[parts[0]],
 		"type": parts[1] || "sync"
 	};
-	if (subsystem.type == "sync") {
+	if (subsystem.type === "sync") {
 		var result = subsystem.init.call(control);
-		if (typeof result != "undefined") {
+		if (typeof result !== "undefined") {
 			control[subsystem.name] = result;
 		}
 		control._init(subsystems);
@@ -844,9 +844,9 @@ Echo.Control.prototype._initializers.plugins = function(callback) {
 	var control = this;
 	this._loadPluginScripts(function() {
 		$.map(control.config.get("pluginsOrder"), function(name) {
-			var plugin = Echo.Plugin.getClass(name, control.name);
-			if (plugin) {
-				var instance = new plugin({"component": control});
+			var Plugin = Echo.Plugin.getClass(name, control.name);
+			if (Plugin) {
+				var instance = new Plugin({"component": control});
 				if (instance.enabled()) {
 					instance.init();
 					control.plugins[name] = instance;
@@ -878,14 +878,14 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 	var control = this;
 	return {
 		"class": function(key) {
-			return key ? control.cssPrefix + key : control.cssClass
+			return key ? control.cssPrefix + key : control.cssClass;
 		},
 		"label": function(key, defaults) {
 			return control.labels.get(key, defaults);
 		},
 		"self": function(key, defaults) {
 			var value = control.invoke(Echo.Utils.get(control, key));
-			return typeof value == "undefined"
+			return typeof value === "undefined"
 				? Echo.Utils.get(control.data, key, defaults)
 				: value;
 		},

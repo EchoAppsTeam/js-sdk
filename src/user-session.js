@@ -10,13 +10,13 @@ if (Echo.Utils.isComponentDefined("Echo.UserSession")) return;
  * @class Echo.UserSession
  * Class implements the interface to work with the user object.
  * The Echo.UserSession class is used in pretty much all applications
- *  built in top of Echo JS SDK.
+ * built in top of Echo JS SDK.
  *
  * @constructor
  * Class constructor which accepts the object which represents the
  * configuration as the argument. The class is a singleton, i.e. one
- * user instance is shared across the different apps on the page. 
- * 
+ * user instance is shared across the different apps on the page.
+ *
  * @param {Object} config
  * Class configuration, which is an object with the following fields:
  *
@@ -40,7 +40,7 @@ Echo.UserSession = function(config) {
  *
  * This function allows to define the value for the corresponding
  * field in the user object.
- * 
+ *
  * @param {String} key
  * Defines the key where the given data should be stored.
  *
@@ -64,7 +64,7 @@ Echo.UserSession.set = function(key, value) {
  *
  * This function returns the corresponding value of the given key or the
  * default value if specified in the second argument.
- * 
+ *
  * @param {String} key
  * Defines the key for which the value needs to be retrieved.
  *
@@ -85,17 +85,17 @@ Echo.UserSession.get = function(key, defaults) {
 			return user._attrLocation(key)[key];
 		}
 	});
-	return value == undefined ? defaults : value;
+	return typeof value === "undefined" ? defaults : value;
 };
 
 /**
  * Method for checking if the user object conforms a certain condition.
- *      
+ *
  * The argument of the function defines the condition which should be checked.
  * The list of built-in conditions is pre-defined. For instance, you can check
  * if the used is logged in or not by passing the "logged" string as the function
  * value.
- *              
+ *
  * @param {String} key
  * Defines the name of the condition to check.
  *
@@ -112,7 +112,7 @@ Echo.UserSession.is = function(key) {
 /**
  * Method to check if the user object has a given value defined for a certain
  * field.
- *      
+ *
  * @param {String} key
  * Defines the name of the user object field.
  *
@@ -272,7 +272,7 @@ Echo.UserSession._listenEvents = function() {
 	var user = this;
 	if (user.backplaneSubscriptionID) return;
 	user.backplaneSubscriptionID = Backplane.subscribe(function(message) {
-		if (message.type != "identity/ack") return;
+		if (message.type !== "identity/ack") return;
 		user._init(function() {
 			/**
 			 * @event onInvalidate
@@ -285,7 +285,7 @@ Echo.UserSession._listenEvents = function() {
 			 * @param {Object} data
 			 * Object which is returned by the users/whoami API endpoint or empty
 			 * object for logout events.
-			 * 
+			 *
 			 * @param {Object} data.echo
 			 * Echo section contains three elements.
 			 *
@@ -341,7 +341,7 @@ Echo.UserSession._init = function(callback) {
 	user.state = "waiting";
 	var handler = function(data) {
 		// user is not logged in
-		if (!data || data.result && data.result == "session_not_found") {
+		if (!data || data.result && data.result === "session_not_found") {
 			data = {};
 		}
 		user.state = "ready";
@@ -465,7 +465,7 @@ Echo.UserSession._getActiveIdentities = function() {
 	}
 
 	var identities = $.map(user.data.poco.entry.accounts || [], function(entry) {
-		if (entry.loggedIn == "true") return entry;
+		if (entry.loggedIn === "true") return entry;
 	});
 
 	// cache data for next calls
@@ -476,7 +476,7 @@ Echo.UserSession._getActiveIdentities = function() {
 
 Echo.UserSession._getAvatar = function() {
 	return this._extract("avatar", "photos", function(img) {
-		if (img.type == "avatar") return img.value;
+		if (img.type === "avatar") return img.value;
 	});
 };
 
@@ -487,7 +487,7 @@ Echo.UserSession._getName = function() {
 
 Echo.UserSession._getEmail = function() {
 	return this._extract("email", "emails", function(email) {
-		if (email.primary == "true") return email.value;
+		if (email.primary === "true") return email.value;
 	});
 };
 
@@ -503,7 +503,7 @@ Echo.UserSession._hasIdentity = function(identityUrl) {
 			return false; // break
 		}
 	});
-	return hasIdentity;	
+	return hasIdentity;
 };
 
 Echo.UserSession._anyMarker = function(value) {

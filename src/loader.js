@@ -277,8 +277,8 @@ Echo.Loader._initApplications = function(canvas) {
 
 	Echo.Loader.download(resources, function() {
 		Echo.jQuery.each(canvas.config.apps, function(id, app) {
-			var application = Echo.Utils.getComponent(app.component);
-			if (!application) {
+			var Application = Echo.Utils.getComponent(app.component);
+			if (!Application) {
 				Echo.Loader._error({
 					"args": {"app": app},
 					"code": "no_suitable_app_class",
@@ -288,7 +288,7 @@ Echo.Loader._initApplications = function(canvas) {
 			}
 			var overrides = (Echo.Loader.overrides[canvas.id] || {})[app.id] || {};
 			var config = Echo.jQuery.extend(true, app.config, overrides);
-			app.ref = new application(config);
+			app.ref = new Application(config);
 			canvas.target.append(app.config.target);
 		});
 	}, {

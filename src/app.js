@@ -168,7 +168,7 @@ Echo.App.prototype.destroyComponent = function(id) {
 /**
  * Method to destroy all defined nested components but ids in the exception list.
  *
- * Method can accept one parameter which specifies the exception 
+ * Method can accept one parameter which specifies the exception
  * nested component ids list. If list is omit or empty, then method destroys
  * all defined nested components.
  *

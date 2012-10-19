@@ -242,7 +242,7 @@ Echo.API.Request = function(config) {
 		 */
 		/**
 		 * @cfg {Function} [onError]
-		 * Callback called after API request failed. 
+		 * Callback called after API request failed.
 		 */
 		/**
 		 * @cfg {Function} [onOpen]
