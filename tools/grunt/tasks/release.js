@@ -2,12 +2,16 @@ module.exports = function(grunt) {
 	var Ftp = require("ftp");
 	var fs = require("fs");
 	var http = require("http");
+	var path = require("path");
 	var _ = grunt.utils._;
-	// if DEBUG is true no actual release will be performed
-	// to enable debug mode execute `grunt release -d`
-	var DEBUG = !!grunt.option("debug");
 
-	grunt.log.writeln("\nDEBUG mode is " + (DEBUG ? "ON".green : "OFF".red));
+	// if IS_DEBUG is true no actual release will be performed
+	// to enable debug mode execute `grunt release -d=1`
+	var IS_DEBUG = !!grunt.option("debug");
+	// execute `grunt release --production` for actual release
+	var IS_PRODUCTION = !!grunt.option("production");
+	grunt.log.writeln("\nDEBUG mode is " + (IS_DEBUG ? "ON".green : "OFF".red));
+	grunt.log.writeln("Working with " + (IS_PRODUCTION ? "PRODUCTION".red : "SANDBOX".green) + " environment");
 
 	var FtpUploader = function(config) {
 		var self = this;
@@ -30,39 +34,52 @@ module.exports = function(grunt) {
 			}
 
 			self.queue = [];
-			_.each(self.config.upload, function(upload) {
-				var dir = "";
-				// substring(1) because variable starts from slash symbol
-				_.each(upload.to.substring(1).split("/"), function(name) {
-					dir += "/" + name;
-					self.enqueue("makeDir", dir);
+			var processedDirs = {};
+			var dirs = [];
+			var files = [];
+			var recursiveAdd = function(dir) {
+				var name = "/";
+				var parts = dir.split("/");
+				// remove first and last elements because they are empty
+				parts.pop();
+				parts.shift();
+				_.each(parts, function(n) {
+					name += n + "/";
+					if (!processedDirs[name]) {
+						processedDirs[name] = true;
+						dirs.push(name);
+					}
 				});
-				self.enqueueDir("", self.config.rootDir + upload.from, upload.to);
+			};
+			_.each(self.config.uploads, function(upload) {
+				var baseSrcPath = grunt.template.process(upload.baseSrcPath);
+				var dest = grunt.template.process(upload.dest);
+				if (!IS_PRODUCTION) {
+					dest = "/tests/release" + dest;
+				}
+				var src = grunt.file.expandFiles(baseSrcPath + upload.src);
+				src.sort();
+				_.each(src, function(srcName) {
+					var name = srcName.replace(baseSrcPath, "")
+					var destName = dest + name;
+					files.push({
+						"src": srcName,
+						"dest": destName
+					});
+					recursiveAdd(path.dirname(destName) + "/");
+				});
 			});
-			!DEBUG && grunt.verbose.writeln("Starting upload");
+			dirs.sort();
+			_.each(dirs, function(dir) {
+				self.enqueue("makeDir", dir);
+			});
+			_.each(files, function(file) {
+				self.enqueue("uploadFile", file);
+			});
+			!IS_DEBUG && grunt.verbose.writeln("Starting upload");
 			self.currentStep = 1;
 			self.totalSteps = self.queue.length;
 			self._next();
-		});
-	};
-
-	FtpUploader.prototype.enqueueDir = function(dir, fromPrefix, toPrefix) {
-		var self = this;
-		var names = fs.readdirSync(fromPrefix + dir);
-		_.each(names, function(name) {
-			// skip hidden files
-			if (/^\./.test(name)) {
-				return;
-			}
-
-			name = dir + "/" + name;
-			var stats = fs.statSync(fromPrefix + name);
-			if (stats.isFile()) {
-				self.enqueue("uploadFile", name, fromPrefix, toPrefix);
-			} else if (stats.isDirectory()) {
-				self.enqueue("makeDir", toPrefix + name);
-				self.enqueueDir(name, fromPrefix, toPrefix);
-			}
 		});
 	};
 
@@ -74,14 +91,14 @@ module.exports = function(grunt) {
 		});
 	};
 
-	FtpUploader.prototype._uploadFile = function(name, fromPrefix, toPrefix) {
+	FtpUploader.prototype._uploadFile = function(file) {
 		var self = this;
-		this._log(toPrefix + name);
-		if (DEBUG) {
+		this._log(file.dest);
+		if (IS_DEBUG) {
 			this._next();
 			return;
 		}
-		this.client.put(fs.createReadStream(fromPrefix + name), toPrefix + name, function(err) {
+		this.client.put(fs.createReadStream(file.src), file.dest, function(err) {
 			if (err) {
 				self._error(err);
 			} else {
@@ -93,7 +110,7 @@ module.exports = function(grunt) {
 	FtpUploader.prototype._makeDir = function(name) {
 		var self = this;
 		this._log(name);
-		if (DEBUG) {
+		if (IS_DEBUG) {
 			this._next();
 			return;
 		}
@@ -120,7 +137,7 @@ module.exports = function(grunt) {
 		this.config.complete(false);
 	};
 
-	grunt.registerInitTask("release", "Release", function(target, subtarget) {
+	grunt.registerInitTask("release", "Release", function() {
 		var config = grunt.config("local");
 		if (!config || !config.release) {
 			grunt.fail.fatal("No configuration for this task.");
@@ -128,19 +145,25 @@ module.exports = function(grunt) {
 		// we are pushing code to production so we must delete development configuration
 		delete config.domain;
 		// TODO: check if we have modified files, we must not release this
-		if (!target) {
-			grunt.task.run([
+		// TODO: prevent executing separate release steps
+		if (!this.args.length) {
+			var tasks = [
 				"default",
 				"release:sdk:latest",
 				"patch:loader:stable",
 				"release:sdk:stable",
-				"release:apps",
-				"release:pages"
-			]);
+				"release:apps"
+			];
+			if (IS_PRODUCTION) {
+				tasks.push("release:purge");
+			}
+			tasks.push("release:pages");
+			grunt.task.run(tasks);
 			return;
 		}
+		var target = this.args.join(":");
 		console.time(target.yellow);
-		// Tell grunt this task is asynchronous.
+
 		var _complete = this.async();
 		var done = function() {
 			console.timeEnd(target.yellow);
@@ -150,40 +173,33 @@ module.exports = function(grunt) {
 		var majorVersion = version.split(".")[0];
 		var params;
 		switch (target) {
-			case "sdk":
-				if (!subtarget) {
-					subtarget = "latest";
-				}
-				_.each(config.release[target][subtarget].upload, function(upload) {
-					upload.from = upload.from
-						.replace("{majorVersion}", majorVersion)
-						.replace("{version}", version);
-					upload.to = upload.to
-						.replace("{majorVersion}", majorVersion)
-						.replace("{version}", version);
-				});
-				params = config.release[target][subtarget];
-				// no break statement!
-			case "apps":
-				params = params || config.release[target];
-				new FtpUploader(_.extend({
-					"complete": done,
-					"rootDir": grunt.config("dirs.dest") + "/"
-				}, params));
-				grunt.task.run("release:purge:" + target);
-				break;
 			case "purge":
-				// TODO: purge all paths in one request
-				grunt.helper("cdn_purge", [subtarget], config.release, done);
+				grunt.helper("cdn_purge", ["sdk", "apps"], config.release.purger, done);
 				break;
 			case "pages":
 				grunt.helper("push_pages", done);
+				break;
+			default:
+				var uploads = config.release.targets;
+				_.each(this.args, function(arg) {
+					uploads = uploads[arg];
+				});
+				if (!uploads || !uploads.length) {
+					grunt.log.writeln("Nothing to upload for target ".yellow + target);
+					return;
+				}
+				var auth = config.release.auth[IS_PRODUCTION ? "cdn" : "sandbox"];
+				new FtpUploader({
+					"complete": done,
+					"auth": auth,
+					"uploads": uploads
+				});
 				break;
 		}
 	});
 
 	grunt.registerHelper("cdn_purge", function(paths, config, done) {
-		if (DEBUG) {
+		if (IS_DEBUG) {
 			console.log(arguments[0]);
 			done();
 			return;
@@ -193,8 +209,8 @@ module.exports = function(grunt) {
 			'<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
 				'<soap:Header>' +
 					'<AuthHeader xmlns="http://www.llnw.com/Purge">' +
-						'<Username>' + config.soap.user + '</Username>' +
-						'<Password>' + config.soap.password + '</Password>' +
+						'<Username>' + config.user + '</Username>' +
+						'<Password>' + config.password + '</Password>' +
 					'</AuthHeader>' +
 				'</soap:Header>' +
 				'<soap:Body>' +
@@ -202,14 +218,14 @@ module.exports = function(grunt) {
 					'<request>' +
 						'<EmailType>detail</EmailType>' +
 						'<EmailSubject>[JS-SDK] [Limelight] Code pushed to CDN</EmailSubject>' +
-						'<EmailTo>' + config.email + '</EmailTo>' +
+						'<EmailTo>' + config.emailTo + '</EmailTo>' +
 						'<EmailCc>' + (config.emailCC || "") + '</EmailCc>' +
 						'<EmailBcc></EmailBcc>' +
 						'<Entries>' +
 							paths.map(function(path) {
 								return '<PurgeRequestEntry>' +
-									'<Shortname>' + config.soap.target.name + '</Shortname>' +
-									'<Url>' + config.soap.target.url.replace("{path}", path) + '</Url>' +
+									'<Shortname>' + config.target.name + '</Shortname>' +
+									'<Url>' + config.target.url.replace("{path}", path) + '</Url>' +
 									'<Regex>true</Regex>' +
 								'</PurgeRequestEntry>';
 							}).join("") +
@@ -219,8 +235,8 @@ module.exports = function(grunt) {
 				'</soap:Body>' +
 			'</soap:Envelope>';
 		var req = http.request({
-			"host": config.soap.host,
-			"path": config.soap.path,
+			"host": config.host,
+			"path": config.path,
 			"method": "POST",
 			"headers": {
 				"Content-Type": "text/xml"
@@ -257,7 +273,7 @@ module.exports = function(grunt) {
 				"git push origin gh-pages",
 				"git checkout master"
 			].join(" && ");
-			if (DEBUG) {
+			if (IS_DEBUG) {
 				console.log(updateCmd);
 				done();
 				return;
