@@ -273,7 +273,7 @@ module.exports = function(grunt) {
 				"git push origin gh-pages",
 				"git checkout master"
 			].join(" && ");
-			if (IS_DEBUG) {
+			if (IS_DEBUG || !IS_PRODUCTION) {
 				console.log(updateCmd);
 				done();
 				return;
