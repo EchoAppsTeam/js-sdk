@@ -1096,6 +1096,7 @@ stream.methods._spotUpdates.replace = function(item, options) {
 		item.view.render({"name": "container", "recursive": true});
 		/**
 		 * @event onRerender
+		 * @member Echo.StreamServer.Controls.Stream.Item
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onRerender
 		 * Triggered when the item is rerendered.
 		 */
