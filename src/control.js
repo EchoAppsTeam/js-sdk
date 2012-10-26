@@ -731,6 +731,8 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 	control.events.subscribe({
 		"topic": "Echo.Control.onDestroy",
 		"handler": function(topic, data) {
+			var isProducer = control.config.get("context") ===
+						data.producer.config.get("context");
 			// destroy plugins
 			$.map(control.config.get("pluginsOrder"), function(name) {
 				var plugin = control.plugins[name];
@@ -751,18 +753,19 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 				control.remove("request");
 			}
 
-			// unsubscribe from all events when:
-			//  - we want to destroy the whole control
-			//  - the control is a dependent one
-			var ctx = function(obj) { return obj.config.get("context"); };
-			if (data.self || ctx(control) != ctx(data.producer)) {
+			// a. keep subscriptions in case of refresh (if "self" is false)
+			// b. unsubscribe from all events when:
+			//     - we want to destroy the whole control
+			//     - the control is a dependent one
+			if (data.self || !isProducer) {
 				$.each(control.subscriptionIDs, function(handlerId) {
 					control.events.unsubscribe({"handlerId": handlerId});
 				});
 			}
 
-			// cleanup target element for top level control
-			if (!control.dependent()) {
+			// cleanup the target element of the control
+			// which produced the current "destroy" action
+			if (isProducer) {
 				control.config.get("target").empty();
 			}
 		}
