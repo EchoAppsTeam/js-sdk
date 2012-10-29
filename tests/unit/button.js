@@ -68,7 +68,7 @@ suite.prototype.tests.commonWorkflow = {
 		};
 		
 		Echo.Loader.download([{
-			"url": Echo.Loader.getURL("{sdk}/third-party/bootstrap/plugins/echo-button/echo-button.js")
+			"url": Echo.Loader.getURL("{sdk}/third-party/bootstrap/echo-button.js")
 		}], check);
 	}
 };

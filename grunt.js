@@ -48,7 +48,11 @@ module.exports = function(grunt) {
 		copy: {
 			js: {
 				files: {
-					"<%= dirs.sdk %>": ["<%= dirs.src %>/**/*.js"]
+					"<%= dirs.sdk %>": [
+						"<%= dirs.src %>/*.js",
+						"<%= dirs.src %>/!(third-party)/**/*.js",
+						"<%= dirs.src %>/third-party/!(bootstrap)/**/*.js"
+					]
 				},
 				options: {
 					basePath: "<config:dirs.src>"
@@ -137,6 +141,12 @@ module.exports = function(grunt) {
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.isotope.min.js>"
 				],
 				dest: "<%= dirs.sdk %>/third-party/jquery.pack.js"
+			},
+			"third-party/bootstrap": {
+				src: [
+					"<%= dirs.sdk %>/third-party/bootstrap/*.js"
+				],
+				dest: "<%= dirs.sdk %>/third-party/bootstrap.pack.js"
 			}
 		},
 		patch: {
@@ -267,19 +277,31 @@ module.exports = function(grunt) {
 
 		var config = grunt.file.readJSON("config/grunt/config.ui.json");
 		config.controls.map(function(control) {
-			var filepaths = {
-				"less": grunt.config("dirs.src") + "/third-party/bootstrap/less/" + control.less + ".less",
-				"css": grunt.config.process("dirs.sdk") + "/third-party/bootstrap/plugins/" + control.css +
-					"/" + control.css + ".css"
-			};
+			var target = grunt.config.process("dirs.sdk") + "/third-party/bootstrap/" + (control.plugin || "echo-" + control.less) + ".js";
+			var sources = [];
+
+			if (control.js) {
+				sources.push(
+					grunt.task.directive(grunt.config("dirs.src") + "/third-party/bootstrap/js/" + control.js + ".js", grunt.file.read)
+						.replace("window.jQuery", "Echo.jQuery")
+				);
+			}
+			if (control.plugin) {
+				sources.push(
+					grunt.task.directive(grunt.config("dirs.src") + "/third-party/bootstrap/plugins/" + control.plugin + ".js", grunt.file.read)
+				);
+			}
+
 			var less = [
 				".echo-sdk-ui {",
 				baseCSS,
-				grunt.task.directive(filepaths["less"], grunt.file.read),
+				grunt.task.directive(grunt.config("dirs.src") + "/third-party/bootstrap/less/" + control.less + ".less", grunt.file.read),
 				"}"
 			].join(grunt.utils.normalizelf(grunt.utils.linefeed));
+
 			grunt.helper("less", less, {}, function(css) {
-				grunt.file.write(filepaths["css"], css);
+				sources.push(grunt.helper("css_wrapper", css, control.target));
+				grunt.file.write(target, sources.join(grunt.utils.normalizelf(grunt.utils.linefeed)));
 			});
 		});
 
@@ -357,6 +379,10 @@ module.exports = function(grunt) {
 		return "(function(jQuery) {\nvar $ = jQuery;\n\n" +
 			grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)) +
 			"\n})(Echo.jQuery);\n";
+	});
+
+	grunt.registerHelper("css_wrapper", function(css, id) {
+		return "Echo.Utils.addCSS('" + grunt.helper("mincss", css).replace(/'/g, "\\'") + "', '" + id + "');\n";
 	});
 
 	grunt.registerHelper("exec", function(command, callback) {

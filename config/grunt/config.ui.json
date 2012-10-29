@@ -1,6 +1,14 @@
 {
-  "controls": [{
-    "less": "buttons",
-    "css": "echo-button"
-  }]
+	"controls": [{
+		"less": "buttons",
+		"plugin": "echo-button"
+	}, {
+		"less": "alerts"
+	}, {
+		"less": "navbar"
+	}, {
+		"less": "modals",
+		"js": "bootstrap-modal",
+		"plugin": "echo-modal"
+	}]
 }

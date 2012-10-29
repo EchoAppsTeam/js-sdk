@@ -211,9 +211,7 @@ submit.vars = {
 
 submit.dependencies = [{
 	"loaded": function() { return !!Echo.jQuery.echoButton; },
-	"url": "{sdk}/third-party/bootstrap/plugins/echo-button/echo-button.js"
-}, {
-	"url": "{sdk}/third-party/bootstrap/plugins/echo-button/echo-button.css"
+	"url": "{sdk}/third-party/bootstrap/echo-button.js"
 }, {
 	"url": "{sdk}/third-party/jquery/css/fancybox.css"
 }];
