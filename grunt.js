@@ -189,7 +189,7 @@ module.exports = function(grunt) {
 				"<%= dirs.dest %>/tests/**/*.js"
 			]
 		},
-		assemble_css: {
+		assemble_bootstrap: {
 			"third-party/bootstrap/css": [
 				"<%= dirs.src %>/third-party/bootstrap/less/variables.less",
 				"<%= dirs.src %>/third-party/bootstrap/less/mixins.less"
@@ -266,7 +266,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib");
 	grunt.loadTasks("tools/grunt/tasks");
 
-	grunt.registerMultiTask("assemble_css", "Assemble css files", function() {
+	grunt.registerMultiTask("assemble_bootstrap", "Assemble bootstrap files", function() {
 		var target = this.target;
 		grunt.log.write("Assembling \"" + this.target + "\"...");
 
@@ -277,7 +277,8 @@ module.exports = function(grunt) {
 
 		var config = grunt.file.readJSON("config/grunt/config.ui.json");
 		config.controls.map(function(control) {
-			var target = grunt.config.process("dirs.sdk") + "/third-party/bootstrap/" + (control.plugin || "echo-" + control.less) + ".js";
+			var pluginName = control.plugin || "echo-" + control.less;
+			var targetFile = grunt.config.process("dirs.sdk") + "/third-party/bootstrap/" + pluginName + ".js";
 			var sources = [];
 
 			if (control.js) {
@@ -300,8 +301,8 @@ module.exports = function(grunt) {
 			].join(grunt.utils.normalizelf(grunt.utils.linefeed));
 
 			grunt.helper("less", less, {}, function(css) {
-				sources.push(grunt.helper("css_wrapper", css, control.target));
-				grunt.file.write(target, sources.join(grunt.utils.normalizelf(grunt.utils.linefeed)));
+				sources.push(grunt.helper("bootstrap_css_wrapper", css, pluginName));
+				grunt.file.write(targetFile, sources.join(grunt.utils.normalizelf(grunt.utils.linefeed)));
 			});
 		});
 
@@ -342,7 +343,7 @@ module.exports = function(grunt) {
 	});
 
 	// Default task
-	grunt.registerTask("default", "check:versions clean:all copy assemble_css patch concat mincss");
+	grunt.registerTask("default", "check:versions clean:all copy assemble_bootstrap patch concat mincss");
 
 	// ==========================================================================
 	// HELPERS
@@ -381,8 +382,12 @@ module.exports = function(grunt) {
 			"\n})(Echo.jQuery);\n";
 	});
 
-	grunt.registerHelper("css_wrapper", function(css, id) {
-		return "Echo.Utils.addCSS('" + grunt.helper("mincss", css).replace(/'/g, "\\'") + "', '" + id + "');\n";
+	grunt.registerHelper("bootstrap_css_wrapper", function(css, id) {
+		css = grunt.helper("mincss", css)
+				.replace(/'/g, "\\'")
+				.replace(/(url\(")\.\.([/a-z-.]+)("\))/ig, "$1' + Echo.Loader.getURL('{sdk}/third-party/bootstrap$2') + '$3");
+
+		return "Echo.Utils.addCSS('" + css + "', '" + id + "');\n";
 	});
 
 	grunt.registerHelper("exec", function(command, callback) {
