@@ -1,13 +1,17 @@
 {
 	"controls": [{
-		"less": "buttons",
+		"name": "echo-button",
+		"less": ["buttons"],
 		"plugin": "echo-button"
 	}, {
-		"less": "alerts"
+		"name": "echo-alerts",
+		"less": ["alerts"]
 	}, {
-		"less": "navbar"
+		"name": "echo-navbar",
+		"less": ["navbar"]
 	}, {
-		"less": "modals",
+		"name": "echo-modal",
+		"less": ["modals", "close", "buttons"],
 		"js": "bootstrap-modal",
 		"plugin": "echo-modal"
 	}]

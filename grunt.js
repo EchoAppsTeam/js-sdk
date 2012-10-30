@@ -277,9 +277,10 @@ module.exports = function(grunt) {
 
 		var config = grunt.file.readJSON("config/grunt/config.ui.json");
 		config.controls.map(function(control) {
-			var pluginName = control.plugin || "echo-" + control.less;
+			var pluginName = control.name;
 			var targetFile = grunt.config.process("dirs.sdk") + "/third-party/bootstrap/" + pluginName + ".js";
 			var sources = [];
+			var mainCSS;
 
 			if (control.js) {
 				sources.push(
@@ -293,10 +294,14 @@ module.exports = function(grunt) {
 				);
 			}
 
+			mainCSS = control.less.map(function(less) {
+				return grunt.task.directive(grunt.config("dirs.src") + "/third-party/bootstrap/less/" + less + ".less", grunt.file.read);
+			}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
+
 			var less = [
 				".echo-sdk-ui {",
 				baseCSS,
-				grunt.task.directive(grunt.config("dirs.src") + "/third-party/bootstrap/less/" + control.less + ".less", grunt.file.read),
+				mainCSS,
 				"}"
 			].join(grunt.utils.normalizelf(grunt.utils.linefeed));
 
