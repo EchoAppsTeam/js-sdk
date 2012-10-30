@@ -68,7 +68,9 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.equal(Echo.Utils.get(data, "key1"), "value1",
 			"Checking get() method with simple key");
 		QUnit.deepEqual(Echo.Utils.get(data, ""), data,
-			"Checking get() method with empty key");
+			"Checking get() method with empty string as key");
+		QUnit.deepEqual(Echo.Utils.get(data, []), data,
+			"Checking get() method with empty array as key");
 		QUnit.deepEqual(Echo.Utils.get(data, "key2"), {
 			"key2-1": "value2-1",
 			"key2-2": {

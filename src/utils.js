@@ -197,12 +197,11 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * The corresponding nested value found in the object.
 */
 Echo.Utils.get = function(obj, key, defaults, callback) {
-	if (!key) {
-		return obj;
-	}
-
-	if (typeof key === "string") {
+	if (key && typeof key === "string") {
 		key = key.split(/\./);
+	}
+	if (!key || !key.length) {
+		return obj;
 	}
 	var found = true;
 	var iteration = function(_key, _data) {
