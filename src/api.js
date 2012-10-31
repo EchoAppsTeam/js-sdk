@@ -17,6 +17,10 @@ Echo.API.Transport = function(config) {
 		"data": {},
 		"uri": "",
 		"secure": false,
+		"settings": {
+			"crossDomain": true,
+			"dataType": "json"
+		},
 		"onData": function() {},
 		"onOpen": function() {},
 		"onClose": function() {},
@@ -55,7 +59,7 @@ Echo.API.Transports.AJAX.prototype._getScheme = function() {
 
 Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 	var self = this;
-	return {
+	return $.extend(true, {
 		"url": this._prepareURL(),
 		"type": this.config.get("method"),
 		"error": function(errorResponse, requestParams) {
@@ -66,10 +70,8 @@ Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 			self.config.get("onError")(errorResponse, requestParams);
 		},
 		"success": this.config.get("onData"),
-		"crossDomain": true,
-		"beforeSend": this.config.get("onOpen"),
-		"dataType": "json"
-	};
+		"beforeSend": this.config.get("onOpen")
+	}, this.config.get("settings"));
 };
 
 Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) {
@@ -371,6 +373,14 @@ Echo.API.Request = function(config) {
 		 */
 		"apiBaseURL": "api.echoenabled.com/v1/",
 		/**
+		 * @cfg {Object} [settings]
+		 * A set of key/value pairs that configure the transport object.
+		 * Accordingly transports implementation these values configure
+		 * transports through jquery's ajaxSettings. See http://api.jquery.com/jQuery.ajax/.
+		 * Note: for some transports these settings has no effect accordingly link above.
+		 */
+		"settings": {},
+		/**
 		 * @cfg {String} [transport]
 		 * Specifies the transport name.
 		 */
@@ -466,6 +476,7 @@ Echo.API.Request.prototype._getTransport = function() {
 		$.extend(this._getHandlersByConfig(), {
 			"uri": this._prepareURI(),
 			"data": this.config.get("data"),
+			"settings": this.config.get("settings"),
 			"method": this.config.get("method"),
 			"secure": this._isSecureRequest()
 		})
