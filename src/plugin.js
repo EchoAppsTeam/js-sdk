@@ -55,7 +55,15 @@ Echo.Plugin.create = function(manifest) {
 	if (plugin) return plugin;
 
 	var constructor = Echo.Utils.inherit(Echo.Plugin, function(config) {
-		if (!config || !config.component) return;
+		if (!config || !config.component) {
+			Echo.Utils.log({
+				"type": "error",
+				"component": manifest.name,
+				"message": "Unable to initialize plugin, config is invalid",
+				"args": {"config": config}
+			});
+			return;
+		}
 		this.name = manifest.name;
 		this.component = config.component;
 		this.cssClass = this.component.get("cssPrefix") + "plugin-" + manifest.name;

@@ -62,7 +62,15 @@ Echo.Control.create = function(manifest) {
 	var constructor = Echo.Utils.inherit(parent, function(config) {
 
 		// perform basic validation of incoming params
-		if (!config || !config.target || !config.appkey) return {};
+		if (!config || !config.target || !config.appkey) {
+			Echo.Utils.log({
+				"type": "error",
+				"component": manifest.name,
+				"message": "Unable to initialize control, config is invalid",
+				"args": {"config": config}
+			});
+			return {};
+		}
 
 		this.data = config.data || {};
 		this.name = manifest.name;

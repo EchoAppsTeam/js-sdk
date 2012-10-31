@@ -198,7 +198,15 @@ Echo.UserSession.logout = function(callback) {
 };
 
 Echo.UserSession._construct = function(config) {
-	if (!config || !config.appkey) return;
+	if (!config || !config.appkey) {
+		Echo.Utils.log({
+			"type": "error",
+			"component": "Echo.UserSession",
+			"message": "Unable to initialize user session, config is invalid",
+			"args": {"config": config}
+		});
+		return;
+	}
 	var user = this;
 	var callback = function() {
 		config.ready && config.ready.call(user);

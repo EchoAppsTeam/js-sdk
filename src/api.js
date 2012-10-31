@@ -234,7 +234,15 @@ Echo.API.Request = function(config) {
 	 * @cfg {String} endpoint
 	 * Specifes the API endpoint.
 	 */
-	if (!config || !config.endpoint) return;
+	if (!config || !config.endpoint) {
+		Echo.Utils.log({
+			"type": "error",
+			"component": "Echo.API",
+			"message": "Unable to initialize API request, config is invalid",
+			"args": {"config": config}
+		});
+		return {};
+	}
 	this.config = new Echo.Configuration(config, {
 		/**
 		 * @cfg {Function} [onData]
