@@ -53,13 +53,16 @@ suite.prototype.tests.dynamicWorkflow = {
 				suite.counter = this;
 				QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
 				'Checking the dynamic usecase rendering');
-				self.sequentialAsyncTests([
+				var sequentialTests = [
 					"onError_more_than",
-					"onError_wrong_query",
-					"onError_incorrect_appkey",
 					"onUpdate",
 					"destroy"
-				], "cases");
+				];
+				// FIXME: when server will support XDomainRequest handling
+				if (!Echo.API.Transports.XDomainRequest.available()) {
+					sequentialTests = sequentialTests.concat(["onError_wrong_query", "onError_incorrect_appkey"]);
+				}
+				self.sequentialAsyncTests(sequentialTests, "cases");
 			}
 		});
 	}

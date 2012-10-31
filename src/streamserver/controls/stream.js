@@ -2191,6 +2191,7 @@ item.renderers.sourceIcon = function(element) {
 			this.get("data.source.name") == "jskit" ||
 			this.get("data.source.name") == "echo") {
 		this.view.remove(element);
+		return;
 	}
 	var hyperlink = Echo.Utils.hyperlink({
 		"href": this.get("data.source.uri", this.get("data.object.permalink"))
@@ -2202,6 +2203,7 @@ item.renderers.sourceIcon = function(element) {
 		.show()
 		.one("error", function() { self.view.remove(element); })
 		.wrap(hyperlink);
+	return element;
 };
 
 /**

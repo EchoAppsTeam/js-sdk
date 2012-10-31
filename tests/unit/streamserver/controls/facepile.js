@@ -2,7 +2,13 @@
 
 var data = {
 	"instance" : {
-		"name" : "Echo.StreamServer.Controls.FacePile"
+		"name" : "Echo.StreamServer.Controls.FacePile",
+		"config": {
+			"data": {"entries": []},
+			"liveUpdates": {
+				"enabled": false
+			}
+		}
 	},
 	"config": {
 		"async"       : true,

@@ -146,13 +146,17 @@ suite.prototype.tests.PublicInterfaceTests = {
 		 "testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
-		this.sequentialAsyncTests([
+		var sequentialTests = [
 			"simpleSearchRequest",
-			"searchRequestWithError",
 			"requestWithAbort",
 			"checkLiveUpdate",
 			"simpleLiveUpdatesRequest"
-		], "cases");
+		];
+		// FIXME: when server will support XDomainRequest handling
+		if (!Echo.API.Transports.XDomainRequest.available()) {
+			sequentialTests.push("searchRequestWithError");
+		}
+		this.sequentialAsyncTests(sequentialTests, "cases");
 	}
 };
 

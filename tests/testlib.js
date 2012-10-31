@@ -403,8 +403,14 @@ Echo.Tests.Stats = {
 	},
 	"getFunctionNames": function(namespace, prefix) {
 		var stats = Echo.Tests.Stats;
-		// FIXME: remove WebSocket later when server-side support WebSocket's
-		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.API.Transports.WebSocket", ($.browser.msie < 10 ? "Echo.API.Transports.AJAX" : "Echo.API.Transports.JSONP")];
+		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.API.Transports.WebSocket"];
+		var isNotLteIE7 = !($.browser.msie && $.browser.version <= 7);
+		// browser-specific ignore
+		$.map(["WebSocket", "AJAX", "XDomainRequest", "JSONP"], function(transport) {
+			if (!Echo.API.Transports[transport].available() || isNotLteIE7 && transport === "JSONP") {
+				ignoreList.push("Echo.API.Transports." + transport);
+			}
+		});
 		$.each([namespace, namespace.prototype], function(i, parentObject) {
 			if (!parentObject) return;
 			$.each(parentObject, function(name, value) {
