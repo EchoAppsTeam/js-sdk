@@ -87,7 +87,12 @@ Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) 
 };
 
 Echo.API.Transports.AJAX.prototype.send = function(data) {
-	this.transportObject.data = $.extend({}, this.config.get("data"), data || {});
+	var configData = this.config.get("data");
+	this.transportObject.data = data && typeof data === "string"
+		? data
+		: typeof configData === "string"
+			? configData
+			: $.extend({}, this.config.get("data"), data || {});
 	this.transportObject = $.ajax(this.transportObject);
 };
 
