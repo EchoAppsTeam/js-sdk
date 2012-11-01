@@ -92,7 +92,7 @@ Echo.API.Transports.AJAX.prototype.send = function(data) {
 		? data
 		: typeof configData === "string"
 			? configData
-			: $.extend({}, this.config.get("data"), data || {});
+			: $.extend({}, configData, data || {});
 	this.transportObject = $.ajax(this.transportObject);
 };
 
@@ -112,7 +112,7 @@ Echo.API.Transports.AJAX.available = function() {
  * @extends Echo.API.Transports.AJAX
  */
 Echo.API.Transports.XDomainRequest = utils.inherit(Echo.API.Transports.AJAX, function() {
-	return Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
+	return Echo.API.Transports.XDomainRequest.parent.constructor.apply(this, arguments);
 });
 
 Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
@@ -378,6 +378,12 @@ Echo.API.Request = function(config) {
 		 */
 		"apiBaseURL": "api.echoenabled.com/v1/",
 		/**
+		 * @cfg {Object|String} [data]
+		 * Data to be sent to the server. It is converted to a query string,
+		 * if not already a string. Object must be key/value pairs.
+		 */
+		"data": {},
+		/**
 		 * @cfg {Object} [settings]
 		 * A set of key/value pairs that configure the transport object.
 		 * Accordingly transports implementation these values configure
@@ -481,9 +487,9 @@ Echo.API.Request.prototype._getTransport = function() {
 		$.extend(this._getHandlersByConfig(), {
 			"uri": this._prepareURI(),
 			"data": this.config.get("data"),
-			"settings": this.config.get("settings"),
 			"method": this.config.get("method"),
-			"secure": this._isSecureRequest()
+			"secure": this._isSecureRequest(),
+			"settings": this.config.get("settings")
 		})
 	);
 };
