@@ -585,7 +585,7 @@ stream.methods._requestChildrenItems = function(unique) {
 			item.set("data.nextPageAfter", data.nextPageAfter);
 			item.set("data.hasMoreChildren", data.hasMoreChildren);
 			data.entries = self._actualizeChildrenList(item, data.entries);
-			self._onDataReceive(data, false, function(items) {
+			self._onDataReceive(data, "children", function(items) {
 				var children = [];
 				$.map(data.entries, function(entry) {
 					var child = items[entry.unique];
@@ -684,7 +684,7 @@ stream.methods._requestMoreItems = function(element) {
 	});
 };
 
-stream.methods._onDataReceive = function(data, initial, callback) {
+stream.methods._onDataReceive = function(data, type, callback) {
 	var self = this;
 	var items = {};
 	/**
@@ -696,7 +696,7 @@ stream.methods._onDataReceive = function(data, initial, callback) {
 		"topic": "onDataReceive",
 		"data": {
 			"entries": data.entries,
-			"initial": initial
+			"type": type
 		},
 		"propagation": false
 	});
@@ -734,7 +734,7 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 		"topic": "onDataReceive",
 		"data": {
 			"entries": data.entries,
-			"initial": false
+			"type": "live"
 		},
 		"propagation": false
 	});
@@ -930,7 +930,8 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 	data.entries = $.map(data.entries, function(entry) {
 		return self._normalizeEntry(entry);
 	});
-	this._onDataReceive(data, !this.hasInitialData, function(items) {
+	var receivedDataType = this.hasInitialData ? "more" : "initial";
+	this._onDataReceive(data, receivedDataType, function(items) {
 		$.map(data.entries, function(entry) {
 			var item = items[entry.unique];
 			self._applyStructureUpdates("add", item);

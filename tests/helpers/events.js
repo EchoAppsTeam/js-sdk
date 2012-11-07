@@ -212,7 +212,7 @@ Echo.Tests.Events.contracts = {
 		"entries": function(value) {
 			return $.isArray(value) && value[0] && $.type(value[0].normalized) !== "undefined";
 		},
-		"initial": true,
+		"type": "initial",
 		"query": "",
 		"target": $("<div>")
 	},
