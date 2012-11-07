@@ -49,7 +49,7 @@ plugin.config = {
 	 * 		}]
 	 * 	});
 	 */
-	"actionString": "Write reply here..."
+	"actionString": "Write a reply..."
 };
 
 plugin.labels = {
