@@ -213,7 +213,8 @@ submit.dependencies = [{
 	"loaded": function() { return !!Echo.jQuery.echoButton; },
 	"url": "{sdk}/third-party/bootstrap/echo-button.js"
 }, {
-	"url": "{sdk}/third-party/jquery/css/fancybox.css"
+	"loaded": function() { return !!Echo.jQuery.echoModal; },
+	"url": "{sdk}/third-party/bootstrap/echo-modal.js"
 }];
 
 submit.labels = {
@@ -597,15 +598,15 @@ submit.methods._showError = function(data) {
 		? this.labels.get("postingTimeout")
 		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
 	var popup = this._assembleErrorPopup(message);
-	$.fancybox({
-		"content": popup.content,
-		"height": popup.height,
+
+	$.echoModal({
+		"data": {
+			"body": popup.content
+		},
 		"width": popup.width,
-		"padding": 15,
-		"orig": this.view.get("text"),
-		"autoDimensions": false,
-		"transitionIn": "elastic",
-		"transitionOut": "elastic"
+		"footer": false,
+		"fade": true,
+		"show": true
 	});
 };
 
@@ -618,20 +619,13 @@ submit.methods._assembleErrorPopup = function(message) {
 			"css": this.cssPrefix + "error"
 		}
 	});
-	var box = $(template).css({
-		"min-height": dimensions.minHeight,
-		"max-height": dimensions.maxHeight,
-		"width": dimensions.width,
-		"visibility": "hidden"
-	}).appendTo(this.view.get("container"));
 	var popup = {
 		"content": $(template).css({
-			"height": box.height()
+			"min-height": dimensions.minHeight,
+			"max-height": dimensions.maxHeight
 		}),
-		"height": box.height(),
-		"width": box.width()
+		"width": dimensions.width
 	};
-	box.remove();
 	return popup;
 };
 

@@ -1,18 +1,51 @@
 {
 	"controls": [{
-		"name": "echo-button",
-		"less": ["buttons"],
-		"plugin": "echo-button"
+		"output": "echo-button.js",
+		"input": {
+			"echoPlugins": [
+				"plugins/echo-button.js"
+			],
+			"bootstrapLess": [
+				"less/buttons.less"
+			]
+		}
 	}, {
-		"name": "echo-alerts",
-		"less": ["alerts"]
+		"output": "echo-alerts.js",
+		"input": {
+			"bootstrapLess": [
+				"less/alerts.less"
+			]
+		}
 	}, {
-		"name": "echo-navbar",
-		"less": ["navbar"]
+		"output": "echo-navbar.js",
+		"input": {
+			"bootstrapLess": [
+				"less/navbar.less"
+			]
+		}
 	}, {
-		"name": "echo-modal",
-		"less": ["modals", "close", "buttons"],
-		"js": "bootstrap-modal",
-		"plugin": "echo-modal"
+		"output": "echo-modal.js",
+		"input": {
+			"bootstrapPlugins": [
+				{
+					"file": "js/bootstrap-modal.js",
+					"existKey": "modal"
+				},
+				{
+					"file": "js/bootstrap-transition.js",
+					"existKey": "support.transition"
+				}
+			],
+			"echoPlugins": [
+				"plugins/echo-modal.js"
+			],
+			"bootstrapLess": [
+				"less/modals.less",
+				"less/close.less",
+				"less/buttons.less",
+				"less/utilities.less",
+				"less/component-animations.less"
+			]
+		}
 	}]
 }

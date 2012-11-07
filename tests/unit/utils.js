@@ -430,9 +430,9 @@ suite.prototype.async = {};
 
 suite.prototype.async.simpleImageTest = function(callback) {
 	var img = Echo.Utils.loadImage({
-		"image": Echo.Loader.getURL("{sdk}/third-party/jquery/img/fancybox/fancybox.png"),
+		"image": Echo.Loader.getURL("{sdk}/third-party/bootstrap/img/glyphicons-halflings.png"),
 		"onload": function() {
-			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("{sdk}/third-party/jquery/img/fancybox/fancybox.png"),
+			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("{sdk}/third-party/bootstrap/img/glyphicons-halflings.png"),
 				"Checking loadImage() method");
 			callback();
 		}

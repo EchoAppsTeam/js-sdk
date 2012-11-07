@@ -137,7 +137,6 @@ module.exports = function(grunt) {
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.ihint.js>",
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.viewport.mini.js>",
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.easing-1.3.min.js>",
-					"<echo_wrapper:<%= dirs.sdk %>/third-party/jquery/jquery.fancybox-1.3.4.min.js>",
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.isotope.min.js>"
 				],
 				dest: "<%= dirs.sdk %>/third-party/jquery.pack.js"
@@ -154,15 +153,6 @@ module.exports = function(grunt) {
 				files: ["<%= dirs.sdk %>/loader.js"],
 				patcher: "loader"
 			},
-			"fancybox-css": {
-				files: ["<%= dirs.sdk %>/third-party/jquery/css/fancybox.css"],
-				patcher: "fancybox_css"
-			},
-			"fancybox-js": {
-				files: ["<%= dirs.sdk %>/third-party/jquery/jquery.fancybox-1.3.4.min.js"],
-				patcher: "fancybox_js"
-			},
-
 			"html": {
 				files: ["<%= dirs.dest %>/demo/**/*.html", "<%= dirs.dest %>/tests/**/*.html"],
 				patcher: "url"
@@ -267,47 +257,66 @@ module.exports = function(grunt) {
 	grunt.loadTasks("tools/grunt/tasks");
 
 	grunt.registerMultiTask("assemble_bootstrap", "Assemble bootstrap files", function() {
-		var target = this.target;
 		grunt.log.write("Assembling \"" + this.target + "\"...");
 
-		var files = grunt.file.expandFiles(this.file.src);
-		var baseCSS = files.map(function(control) {
-			return grunt.task.directive(control, grunt.file.read);
-		}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
-
+		var inputPath = grunt.config.process("dirs.src") + "/third-party/bootstrap/";
+		var outputPath = grunt.config.process("dirs.sdk") + "/third-party/bootstrap/";
+		var eol = grunt.utils.normalizelf(grunt.utils.linefeed);
 		var config = grunt.file.readJSON("config/grunt/config.ui.json");
+
+		var makeCSS = function(arLess, callback) {
+			var output = arguments[2] || [];
+			if (arLess.length) {
+				var item = arLess.shift();
+				grunt.helper("less", item.less, {}, function(css) {
+					output.push(grunt.helper("bootstrap_css_wrapper", css, item.key));
+					makeCSS(arLess, callback, output);
+				});
+			} else {
+				callback && callback(output);
+
+			}
+		};
+
+		var files = grunt.file.expandFiles(this.file.src);
+		var baseLess = files.map(function(control) {
+			return grunt.task.directive(control, grunt.file.read);
+		}).join(eol);
+
 		config.controls.map(function(control) {
-			var pluginName = control.name;
-			var targetFile = grunt.config.process("dirs.sdk") + "/third-party/bootstrap/" + pluginName + ".js";
-			var sources = [];
-			var mainCSS;
+			var targetFile = outputPath + control.output;
+			var js = [];
+			var less = [];
 
-			if (control.js) {
-				sources.push(
-					grunt.task.directive(grunt.config("dirs.src") + "/third-party/bootstrap/js/" + control.js + ".js", grunt.file.read)
-						.replace("window.jQuery", "Echo.jQuery")
+			control.input["bootstrapPlugins"] && control.input["bootstrapPlugins"].map(function(plugin) {
+				js.push([
+					'(function(){',
+					'if (Echo.Utils.get(Echo.jQuery, "' + plugin.existKey + '")) return;',
+					grunt.task.directive(inputPath + plugin.file, grunt.file.read).replace("window.jQuery", "Echo.jQuery"),
+					'})();'
+				].join(eol));
+			});
+
+			control.input["echoPlugins"] && control.input["echoPlugins"].map(function(file) {
+				js.push(
+					grunt.task.directive(inputPath + file, grunt.file.read)
 				);
-			}
-			if (control.plugin) {
-				sources.push(
-					grunt.task.directive(grunt.config("dirs.src") + "/third-party/bootstrap/plugins/" + control.plugin + ".js", grunt.file.read)
-				);
-			}
+			});
 
-			mainCSS = control.less.map(function(less) {
-				return grunt.task.directive(grunt.config("dirs.src") + "/third-party/bootstrap/less/" + less + ".less", grunt.file.read);
-			}).join(grunt.utils.normalizelf(grunt.utils.linefeed));
+			control.input["bootstrapLess"].map(function(file) {
+				less.push({
+					"key": file,
+					"less": [
+						".echo-sdk-ui {",
+						baseLess,
+						grunt.task.directive(inputPath + file, grunt.file.read),
+						"}"
+					].join(eol)
+				});
+			});
 
-			var less = [
-				".echo-sdk-ui {",
-				baseCSS,
-				mainCSS,
-				"}"
-			].join(grunt.utils.normalizelf(grunt.utils.linefeed));
-
-			grunt.helper("less", less, {}, function(css) {
-				sources.push(grunt.helper("bootstrap_css_wrapper", css, pluginName));
-				grunt.file.write(targetFile, sources.join(grunt.utils.normalizelf(grunt.utils.linefeed)));
+			makeCSS(less, function(css) {
+				grunt.file.write(targetFile, js.join(eol) + css.join(eol));
 			});
 		});
 
@@ -364,21 +373,6 @@ module.exports = function(grunt) {
 	grunt.registerHelper("patch_loader", function(src, config, version) {
 		src = grunt.helper("patch_url", src, config);
 		return src.replace(/("version": ").*?(",)/, '$1' + version + '$2');
-	});
-
-	grunt.registerHelper("patch_fancybox_css", function(src, config, version) {
-		var domainPrefix =
-			"//"  + (config && config.domain ? config.domain : "cdn.echoenabled.com") +
-			"/sdk/v" + version + "/third-party/jquery/img/fancybox/";
-		src = src.replace(/\n\#fancybox/g, "\n#fancybox-echo")
-			.replace(/\n\.fancybox/g, "\n.fancybox-echo")
-			.replace(/url\(\'(.*)\'\)/g, "url('" + domainPrefix + "$1')")
-			.replace(/src=\'fancybox\/(.*)\'/g, "src='" + domainPrefix + "$1')");
-		return src;
-	});
-
-	grunt.registerHelper("patch_fancybox_js", function(src, config, version) {
-		return src.replace(/(["'][.#]?)fancybox([a-z0-9-]*["'])/gi, "$1fancybox-echo$2");
 	});
 
 	grunt.registerHelper("echo_wrapper", function(filepath) {

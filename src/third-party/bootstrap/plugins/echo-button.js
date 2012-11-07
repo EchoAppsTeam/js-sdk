@@ -2,6 +2,8 @@
 
 var $ = jQuery;
 
+if ($.fn.echoButton) return;
+
 $.fn.echoButton = function() {
 	var args  = arguments;
 	return this.each(function(){

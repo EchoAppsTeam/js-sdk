@@ -295,7 +295,7 @@ suite.prototype.cases.onError = function(callback) {
 			params.postData.content[0].object.content = {};
 		}
 	});
-	// unsubscribe all onPostError handlers to hide fancybox error message
+	// unsubscribe all onPostError handlers to hide error message
 	submit.events.unsubscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostError"
 	});

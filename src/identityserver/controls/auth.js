@@ -9,6 +9,7 @@ var $ = jQuery;
  * different social identities.
  *
  * 	var identityManager = {
+ * 		"title": "Title of the auth area"
  * 		"width": 400,
  * 		"height": 240,
  * 		"url": "http://example.com/auth"
@@ -46,6 +47,7 @@ auth.config = {
 	 * data update) and sends this message to Backplane server.
 	 *
 	 * 	var identityManager = {
+	 * 		"title": "Title of the auth area"
 	 * 		"width": 400,
 	 * 		"height": 240,
 	 * 		"url": "http://example.com/auth"
@@ -72,6 +74,9 @@ auth.config = {
 	 * @cfg {String} [identityManager.login.url]
 	 * Specifies the URL to be opened as an auth handler.
 	 *
+	 * @cfg {String} [identityManager.login.title]
+	 * Specifies the Title of the visible auth area.
+	 *
 	 * @cfg {Object} [identityManager.signup]
 	 * Encapsulates data for signup workflow.
 	 *
@@ -83,6 +88,9 @@ auth.config = {
 	 *
 	 * @cfg {String} [identityManager.signup.url]
 	 * Specifies the URL to be opened as an auth handler.
+	 *
+	 * @cfg {String} [identityManager.signup.title]
+	 * Specifies the Title of the visible auth area.
 	 *
 	 * @cfg {Object} [identityManager.edit]
 	 * Encapsulates data for edit workflow.
@@ -105,7 +113,8 @@ auth.config = {
 };
 
 auth.dependencies = [{
-	"url": "{sdk}/third-party/jquery/css/fancybox.css"
+	"loaded": function() { return !!Echo.jQuery.echoModal; },
+	"url": "{sdk}/third-party/bootstrap/echo-modal.js"
 }];
 
 auth.labels = {
@@ -133,15 +142,6 @@ auth.labels = {
 	 * @echo_label
 	 */
 	"signup": "signup"
-};
-
-auth.events = {
-	"Echo.UserSession.onInvalidate": {
-		"context": "global",
-		"handler": function() {
-			$.fancybox.close();
-		}
-	}
 };
 
 auth.templates.anonymous =
@@ -249,41 +249,31 @@ auth.methods._assembleIdentityControl = function(type, element) {
 			$.getScript(self._appendSessionID(data.url));
 		});
 	} else {
-		return element.fancybox({
-			"autoScale": false,
-			"height": parseInt(data.height),
+		var modalAuth = $.echoModal({
+			"data": {
+				"title": this.config.get("identityManager." + type + ".title")
+			},
 			"href": self._appendSessionID(data.url),
-			"onClosed": function() {
-				// remove dynamic height/width calculations for overlay
-				if ($.browser.msie && document.compatMode != "CSS1Compat") {
-					var style = $("#fancybox-overlay").get(0).style;
-					style.removeExpression("height");
-					style.removeExpression("width");
-				}
-			},
-			"onComplete": function() {
-				// set fixed dimensions of the frame (for IE in quirks mode it should be smaller)
-				var delta = ($.browser.msie && document.compatMode != "CSS1Compat" ? 40 : 0);
-				$("#fancybox-frame").css({
-					"width": data.width - delta,
-					"height": data.height - delta
-				});
-			},
-			"onStart": function() {
+			"width": parseInt(data.width),
+			"height": parseInt(data.height),
+			"padding": "0 0 5px 0",
+			"footer": false,
+			"fade": true,
+			"onShown": function() {
 				Backplane.expectMessages("identity/ack");
-				// dynamical calculation of overlay height/width
-				if ($.browser.msie && document.compatMode != "CSS1Compat") {
-					var style = $("#fancybox-overlay").get(0).style;
-					style.setExpression("height", "Math.max(document.body.clientHeight, document.body.scrollHeight)");
-					style.setExpression("width", "Math.max(document.body.clientWidth, document.body.scrollWidth)");
-				}
-			},
-			"padding": 0,
-			"scrolling": "no",
-			"transitionIn": "elastic",
-			"transitionOut": "elastic",
-			"type": "iframe",
-			"width": parseInt(data.width)
+			}
+		});
+
+		Echo.Events.subscribe({
+			"topic": "Echo.UserSession.onInvalidate",
+			"context": "global",
+			"handler": function() {
+				modalAuth.hide();
+			}
+		});
+
+		return element.on("click", function() {
+			modalAuth.show();
 		});
 	}
 };
