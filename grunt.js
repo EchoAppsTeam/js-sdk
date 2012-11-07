@@ -136,7 +136,6 @@ module.exports = function(grunt) {
 					"<%= dirs.src %>/third-party/jquery/echo.jquery.noconflict.js",
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.ihint.js>",
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.viewport.mini.js>",
-					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.easing-1.3.min.js>",
 					"<echo_wrapper:<%= dirs.src %>/third-party/jquery/jquery.isotope.min.js>"
 				],
 				dest: "<%= dirs.sdk %>/third-party/jquery.pack.js"
