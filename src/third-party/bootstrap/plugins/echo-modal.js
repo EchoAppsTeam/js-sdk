@@ -70,7 +70,6 @@ var Modal = function(config) {
 	}
 
 	if (params.backdrop) {
-		var wrapper;
 		if (params.fade) {
 			this.element.on("show", function() {
 				var modal = self.element.data('modal');
@@ -83,15 +82,15 @@ var Modal = function(config) {
 				modal.isShown = shown;
 				modal.options.backdrop = backdrop;
 
-				wrapper = modal.$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
+				modal.$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
 			});
 		} else {
 			this.element.on("shown", function() {
-				wrapper = self.element.data('modal').$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
+				self.element.data('modal').$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
 			});
 		}
 		this.element.on("hidden", function() {
-			wrapper.remove();
+			self.remove();
 		});
 	}
 	if (params.header && params.closeButton) {
@@ -103,9 +102,9 @@ var Modal = function(config) {
 			params.onHide.call(self, self.element);
 		});
 	}
-	if ($.isFunction(params.onShown)) {
+	if ($.isFunction(params.onShow)) {
 		this.element.on("shown", function() {
-			params.onShown.call(self, self.element);
+			params.onShow.call(self, self.element);
 		});
 	}
 
@@ -142,8 +141,10 @@ Modal.prototype.show = function() {
 };
 
 Modal.prototype.remove = function() {
-	this.element.remove();
-	$(".modal-backdrop").remove();
+	this.element.data('modal').$backdrop.unwrap()
+		.remove();
+	this.element.unwrap()
+		.remove();
 };
 
 Modal.prototype.hide = function() {

@@ -117,6 +117,10 @@ auth.dependencies = [{
 	"url": "{sdk}/third-party/bootstrap/echo-modal.js"
 }];
 
+auth.vars = {
+	"modals": {}
+};
+
 auth.labels = {
 	/**
 	 * @echo_label
@@ -142,6 +146,17 @@ auth.labels = {
 	 * @echo_label
 	 */
 	"signup": "signup"
+};
+
+auth.events = {
+	"Echo.UserSession.onInvalidate": {
+		"context": "global",
+		"handler": function() {
+			$.map(this.modals, function(modal) {
+				modal.hide();
+			});
+		}
+	}
 };
 
 auth.templates.anonymous =
@@ -249,31 +264,25 @@ auth.methods._assembleIdentityControl = function(type, element) {
 			$.getScript(self._appendSessionID(data.url));
 		});
 	} else {
-		var modalAuth = $.echoModal({
-			"data": {
-				"title": this.config.get("identityManager." + type + ".title")
-			},
-			"href": self._appendSessionID(data.url),
-			"width": parseInt(data.width),
-			"height": parseInt(data.height),
-			"padding": "0 0 5px 0",
-			"footer": false,
-			"fade": true,
-			"onShown": function() {
-				Backplane.expectMessages("identity/ack");
-			}
-		});
-
-		Echo.Events.subscribe({
-			"topic": "Echo.UserSession.onInvalidate",
-			"context": "global",
-			"handler": function() {
-				modalAuth.hide();
-			}
-		});
-
 		return element.on("click", function() {
-			modalAuth.show();
+			self.modals[type] = $.echoModal({
+				"data": {
+					"title": self.config.get("identityManager." + type + ".title")
+				},
+				"href": self._appendSessionID(data.url),
+				"width": parseInt(data.width),
+				"height": parseInt(data.height),
+				"padding": "0 0 5px 0",
+				"footer": false,
+				"fade": true,
+				"onShow": function() {
+					Backplane.expectMessages("identity/ack");
+				},
+				"onHide": function() {
+					delete self.modals[type];
+				}
+			});
+			self.modals[type].show();
 		});
 	}
 };
