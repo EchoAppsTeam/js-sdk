@@ -362,7 +362,7 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 		if (/tag|mark/.test(verb(entry)) && /tag|marker/.test(type(entry))) {
 			meta[strip(type(entry)) + "s"] = entry.object.content;
 		}
-		if (verb(entry) == "post") {
+		if (verb(entry) === "post") {
 			post = entry;
 		}
 	});

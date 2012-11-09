@@ -566,20 +566,20 @@ submit.methods.refresh = function() {
 };
 
 submit.methods._getActivity = function(verb, type, data) {
-	return (!data) ? [] : {
+	return !data ? [] : {
 		"actor": {
-			"objectTypes": [ this._getASURL("person") ],
+			"objectTypes": [this._getASURL("person")],
 			"name": this.user.get("name", this.user.is("logged")
 					? ""
 					: this.view.get("name").val()),
 			"avatar": this.user.get("avatar", "")
 		},
 		"object": {
-			"objectTypes": [ type ],
+			"objectTypes": [type],
 			"content": data
 		},
 		"source": this.config.get("source"),
-		"verbs": [ this._getASURL(verb) ],
+		"verbs": [this._getASURL(verb)],
 		"targets": [{
 			"id": this.config.get("targetURL")
 		}]
