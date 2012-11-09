@@ -118,7 +118,7 @@ auth.dependencies = [{
 }];
 
 auth.vars = {
-	"modals": null
+	"modal": null
 };
 
 auth.labels = {
@@ -277,10 +277,10 @@ auth.methods._assembleIdentityControl = function(type, element) {
 					Backplane.expectMessages("identity/ack");
 				},
 				"onHide": function() {
-					self.modals = null;
+					self.modal = null;
 				}
 			});
-			self.modals.show();
+			self.modal.show();
 		});
 	}
 };
