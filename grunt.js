@@ -283,39 +283,42 @@ module.exports = function(grunt) {
 		}).join(eol);
 
 		config.controls.map(function(control) {
-			var targetFile = outputPath + control.output;
+			var outputFile = outputPath + control.output;
 			var js = [];
 			var less = [];
 
-			control.input["bootstrapPlugins"] && control.input["bootstrapPlugins"].map(function(plugin) {
-				js.push([
-					'(function(){',
-					'if (Echo.Utils.get(Echo.jQuery, "' + plugin.existKey + '")) return;',
-					grunt.task.directive(inputPath + plugin.file, grunt.file.read).replace("window.jQuery", "Echo.jQuery"),
-					'})();'
-				].join(eol));
-			});
-
-			control.input["echoPlugins"] && control.input["echoPlugins"].map(function(file) {
-				js.push(
-					grunt.task.directive(inputPath + file, grunt.file.read)
-				);
-			});
-
-			control.input["bootstrapLess"].map(function(file) {
-				less.push({
-					"key": file,
-					"less": [
-						".echo-sdk-ui {",
-						baseLess,
-						grunt.task.directive(inputPath + file, grunt.file.read),
-						"}"
-					].join(eol)
-				});
+			control.input.map(function(inputFile) {
+				if (_.isArray(inputFile)) {
+					var params = inputFile[1];
+					inputFile = inputFile[0];
+					js.push([
+						'(function(){',
+						'if (Echo.Utils.get(Echo.jQuery, "' + params.check + '")) return;',
+						grunt.task.directive(inputPath + inputFile, grunt.file.read).replace("window.jQuery", "Echo.jQuery"),
+						'})();'
+					].join(eol));
+				} else {
+					var type = (inputFile.match(/\.([a-z]+)$/) || [])[1];
+					if (type === "less") {
+						less.push({
+							"key": inputFile,
+							"less": [
+								".echo-sdk-ui {",
+								baseLess,
+								grunt.task.directive(inputPath + inputFile, grunt.file.read),
+								"}"
+							].join(eol)
+						});
+					} else if (type === "js") {
+						js.push(
+							grunt.task.directive(inputPath + inputFile, grunt.file.read)
+						);
+					}
+				}
 			});
 
 			makeCSS(less, function(css) {
-				grunt.file.write(targetFile, js.join(eol) + css.join(eol));
+				grunt.file.write(outputFile, js.join(eol) + css.join(eol));
 			});
 		});
 
