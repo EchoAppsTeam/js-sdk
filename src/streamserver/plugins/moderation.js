@@ -113,6 +113,10 @@ plugin.labels = {
 	/**
 	 * @echo_label
 	 */
+	"changingStatusToUserDeleted": "Deleting...",
+	/**
+	 * @echo_label
+	 */
 	"changingStatusToUntouched": "Untouching...",
 	/**
 	 * @echo_label
@@ -130,6 +134,10 @@ plugin.labels = {
 	 * @echo_label
 	 */
 	"statusModeratorDeleted": "Deleted by Moderator",
+	/**
+	 * @echo_label
+	 */
+	"statusUserDeleted": "Deleted by User",
 	/**
 	 * @echo_label
 	 */
@@ -231,6 +239,7 @@ plugin.statuses = [
 	"Untouched",
 	"ModeratorApproved",
 	"ModeratorDeleted",
+	"UserDeleted",
 	"CommunityFlagged",
 	"ModeratorFlagged",
 	"SystemFlagged"
@@ -358,9 +367,20 @@ plugin.methods._publishCompleteActionEvent = function(args) {
 
 plugin.methods._assembleButton = function(name) {
 	var self = this;
+	var getStatus = function(item) {
+		var status = plugin.button2status[name];
+		if (!item.user.is("admin") &&
+			name === "Delete" &&
+			self.config.get("removePersonalItemsAllowed") &&
+			item.user.has("identity", item.data.actor.id)
+		) {
+			status = "UserDeleted";
+		}
+		return status;
+	};
 	var callback = function() {
 		var item = this;
-		var status = plugin.button2status[name];
+		var status = getStatus(item);
 		item.block(self.labels.get("changingStatusTo" + status));
 		var activity = {
 			"verbs": ["http://activitystrea.ms/schema/1.0/update"],
@@ -394,11 +414,12 @@ plugin.methods._assembleButton = function(name) {
 	};
 	return function() {
 		var item = this;
+		var status = getStatus(item);
 		return {
 			"name": name,
 			"label": self.labels.get(name.toLowerCase() + "Button"),
-			"visible": item.user.is("admin") &&
-					item.get("data.object.status") !== plugin.button2status[name],
+			"visible": item.get("data.object.status") !== status &&
+					(item.user.is("admin") || status === "UserDeleted"),
 			"callback": callback
 		};
 	};
@@ -588,6 +609,7 @@ plugin.css = function() {
 		'.{plugin.class:status-Untouched} { background: #00aaff; }' +
 		'.{plugin.class:status-ModeratorApproved} { background: #bdfb6d; }' +
 		'.{plugin.class:status-ModeratorDeleted} { background: #f20202; }' +
+		'.{plugin.class:status-UserDeleted} { background: #ff8e8e; }' +
 		'.{plugin.class:status-SystemFlagged}, .{plugin.class:status-CommunityFlagged}, .{plugin.class:status-ModeratorFlagged} { background: #ff9e00; }' +
 		// buttons
 		'.{plugin.class:button-state} { margin-right: 3px; }' +
