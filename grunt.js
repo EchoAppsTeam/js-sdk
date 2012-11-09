@@ -157,12 +157,6 @@ module.exports = function(grunt) {
 				patcher: "url"
 			}
 		},
-		mincss: {
-			"echo-button": {
-				src: "<%= dirs.sdk %>/third-party/bootstrap/plugins/echo-button/echo-button.css",
-				dest: "<%= dirs.sdk %>/third-party/bootstrap/plugins/echo-button/echo-button.min.css"
-			}
-		},
 		//min: {
 		//	all: ["**/*.pack.js"]
 		//},
@@ -359,7 +353,7 @@ module.exports = function(grunt) {
 	});
 
 	// Default task
-	grunt.registerTask("default", "check:versions clean:all copy assemble_bootstrap patch concat mincss");
+	grunt.registerTask("default", "check:versions clean:all copy assemble_bootstrap patch concat");
 
 	// ==========================================================================
 	// HELPERS
