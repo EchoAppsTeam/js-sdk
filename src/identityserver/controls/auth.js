@@ -118,7 +118,7 @@ auth.dependencies = [{
 }];
 
 auth.vars = {
-	"modals": {}
+	"modals": null
 };
 
 auth.labels = {
@@ -152,9 +152,7 @@ auth.events = {
 	"Echo.UserSession.onInvalidate": {
 		"context": "global",
 		"handler": function() {
-			$.map(this.modals, function(modal) {
-				modal.hide();
-			});
+			this.modal && this.modal.hide();
 		}
 	}
 };
@@ -265,7 +263,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 		});
 	} else {
 		return element.on("click", function() {
-			self.modals[type] = $.echoModal({
+			self.modal = $.echoModal({
 				"data": {
 					"title": self.config.get("identityManager." + type + ".title")
 				},
@@ -279,10 +277,10 @@ auth.methods._assembleIdentityControl = function(type, element) {
 					Backplane.expectMessages("identity/ack");
 				},
 				"onHide": function() {
-					delete self.modals[type];
+					self.modals = null;
 				}
 			});
-			self.modals[type].show();
+			self.modals.show();
 		});
 	}
 };
