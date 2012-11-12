@@ -11,11 +11,11 @@ Comments.dependencies = [
 	{"loaded": function() {
 		return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
 			Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
-	}, "url": "{sdk}/streamserver.pack.js"},
+	}, "url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"},
 
 	{"loaded": function() {
 		return Echo.Control.isDefined("Echo.IdentityServer.Controls.Auth");
-	}, "url": "{sdk}/identityserver.pack.js"}
+	}, "url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"}
 ];
 
 Comments.config = {

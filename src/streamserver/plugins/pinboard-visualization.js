@@ -245,7 +245,7 @@ plugin.init = function() {
 
 plugin.dependencies = [{
 	"loaded": function() { return !!Echo.jQuery().isotope; },
-	"url": "{sdk}/third-party/jquery/jquery.isotope.min.js"
+	"url": "{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js"
 }];
 
 plugin.config = {
@@ -630,7 +630,7 @@ plugin.config = {
 
 plugin.dependencies = [{
 	"loaded": function() { return !!Echo.jQuery().isotope; },
-	"url": "{sdk}/third-party/jquery/jquery.isotope.min.js"
+	"url": "{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js"
 }];
 
 plugin.events = {

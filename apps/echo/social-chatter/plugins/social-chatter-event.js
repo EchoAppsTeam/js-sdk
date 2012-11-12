@@ -353,7 +353,7 @@ plugin.templates.AdminNotice = '<div class="{plugin.class:eventSubmitNotice}"></
 
 plugin.templates.EventIcon =
 	'<div class="{plugin.class:eventIconContainer}">' +
-		'<img class="{plugin.class:eventIcon}" src="' + Echo.Loader.getURL("{apps}/echo/social-chatter/images/vip.jpg") + '">' +
+		'<img class="{plugin.class:eventIcon}" src="{config:cdnBaseURL.apps}/echo/social-chatter/images/vip.jpg">' +
 		'<div class="{plugin.class:eventIconError}">{plugin.label:errorLoadingImage}</div>' +
 		'<div class="{plugin.class:changeEventIcon} echo-linkColor echo-clickable"></div>' +
 	'</div>';
@@ -615,7 +615,7 @@ $.map(plugin.fields, function(field) {
 							element.parent().addClass("echo-input-error");
 							self.view.get("eventIconError").show();
 							self.view.get("eventIcon")
-								.attr("src", Echo.Loader.getURL("{apps}/echo/social-chatter/images/vip.jpg"));
+								.attr("src", self.substitute({"template": "{config:cdnBaseURL.apps}/echo/social-chatter/images/vip.jpg"}));
 						});
 				}
 			})

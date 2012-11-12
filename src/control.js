@@ -210,6 +210,22 @@ Echo.Control.prototype.defaults.config = {
 		"enabled": true,
 		"layout": "full"
 	},
+	/**
+	 * @cfg {Object} [cdnBaseURL]
+	 * A set of key/value pairs, value is a URL prefix for all static files, such as
+	 * scripts, stylesheets, images etc. You can add your own CDN prefix URL and use it
+	 * anywhere when configuration is available.
+	 *
+	 * @cfg {String} [cdnBaseURL.sdk]
+	 * A prefix of the SDK CDN base URL.
+	 *
+	 * @cfg {String} [cdnBaseURL.apps]
+	 * A prefix of the apps CDN base URL.
+	 */
+	"cdnBaseURL": {
+		"sdk": Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version,
+		"apps": Echo.Loader.config.cdnBaseURL + "/apps"
+	},
 	"scriptLoadErrorTimeout": 5000, // 5 sec
 	"query": "",
 	/**
@@ -218,7 +234,7 @@ Echo.Control.prototype.defaults.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": "{sdk}/images/avatar-default.png"
+	"defaultAvatar": Echo.Loader.getURL("{sdk}/images/avatar-default.png")
 };
 
 Echo.Control.prototype.defaults.labels = {
@@ -801,7 +817,7 @@ Echo.Control.prototype._initializers.labels = function() {
 };
 
 Echo.Control.prototype._initializers.css = function() {
-	Echo.Utils.addCSS(this.baseCSS, "control");
+	Echo.Utils.addCSS(this.substitute({"template": this.baseCSS}), "control");
 	this.config.get("target").addClass(this.cssClass);
 	if (this._manifest("css")) {
 		Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), this.name);
@@ -915,6 +931,11 @@ Echo.Control.prototype._manifest = function(key) {
 
 Echo.Control.prototype._loadScripts = function(resources, callback) {
 	var control = this;
+	resources = $.map(resources, function(resource) {
+		return $.extend(resource, {
+			"url": control.substitute({"template": resource.url})
+		});
+	});
 	Echo.Loader.download(resources, function() {
 		callback.call(control);
 	}, {
@@ -1021,8 +1042,8 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
 	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-info { background-image: url(' + Echo.Loader.getURL("{sdk}/images/information.png") + '); }' +
-	'.echo-control-message-loading { background-image: url(' + Echo.Loader.getURL("{sdk}/images/loading.gif") + '); }' +
-	'.echo-control-message-error { background-image: url(' + Echo.Loader.getURL("{sdk}/images/warning.gif") + '); }';
+	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk}/images/information.png); }' +
+	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk}/images/loading.gif); }' +
+	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk}/images/warning.gif); }';
 
 })(Echo.jQuery);

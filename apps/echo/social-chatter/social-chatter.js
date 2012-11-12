@@ -131,14 +131,14 @@ if (Echo.Utils.isComponentDefined("Echo.Apps.SocialChatter")) return;
 var SocialChatter = Echo.App.manifest("Echo.Apps.SocialChatter", ["Main", "PublicEvent", "GreenRoom", "EventsList"]);
 
 SocialChatter.dependencies = [
-	{"url": "{apps}/echo/social-chatter/third-party/bootstrap/css/bootstrap.min.css"},
-	{"url": "{apps}/echo/social-chatter/third-party/bootstrap/css/bootstrap-responsive.min.css"},
-	{"url": "{apps}/echo/social-chatter/third-party/bootstrap/css/datepicker.css"},
-	{"url": "{apps}/echo/social-chatter/third-party/bootstrap/css/timepicker.css"},
+	{"url": "{config:cdnBaseURL.apps}/echo/social-chatter/third-party/bootstrap/css/bootstrap.min.css"},
+	{"url": "{config:cdnBaseURL.apps}/echo/social-chatter/third-party/bootstrap/css/bootstrap-responsive.min.css"},
+	{"url": "{config:cdnBaseURL.apps}/echo/social-chatter/third-party/bootstrap/css/datepicker.css"},
+	{"url": "{config:cdnBaseURL.apps}/echo/social-chatter/third-party/bootstrap/css/timepicker.css"},
 
 	{"loaded": function() {
 		return !!$.fn.echoButton;
-	}, "url": "{sdk}/third-party/bootstrap/plugins/echo-button.js"},
+	}, "url": "{config:cdnBaseURL.sdk}/third-party/bootstrap/plugins/echo-button.js"},
 
 	{"loaded": function() {
 		var isLoaded;
@@ -146,31 +146,31 @@ SocialChatter.dependencies = [
 			return isLoaded = Echo.Utils.isComponentDefined("Echo.StreamServer.Controls." + val);
 		});
 		return isLoaded;
-	}, "url": "{sdk}/stream-server.pack.js"},
+	}, "url": "{config:cdnBaseURL.sdk}/stream-server.pack.js"},
 
 	{"loaded": function() {
 		return Echo.Utils.isComponentDefined("Echo.IdentityServer.Controls.Auth");
-	}, "url": "{sdk}/identity-server.pack.js"},
+	}, "url": "{config:cdnBaseURL.sdk}/identity-server.pack.js"},
 
 	{"loaded": function() {
 		return !!$.fn.datepicker;
-	}, "url": "{apps}/echo/social-chatter/third-party/bootstrap/bootstrap-datepicker.js"},
+	}, "url": "{config:cdnBaseURL.apps}/echo/social-chatter/third-party/bootstrap/bootstrap-datepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.timepicker;
-	}, "url": "{apps}/echo/social-chatter/third-party/bootstrap/bootstrap-timepicker.js"},
+	}, "url": "{config:cdnBaseURL.apps}/echo/social-chatter/third-party/bootstrap/bootstrap-timepicker.js"},
 
 	{"loaded": function() {
 		return !!$.fn.tab;
-	}, "url": "{apps}/echo/social-chatter/third-party/bootstrap/bootstrap-tab.js"},
+	}, "url": "{config:cdnBaseURL.apps}/echo/social-chatter/third-party/bootstrap/bootstrap-tab.js"},
 
 	{"loaded": function() {
 		return !!$.fn.countdown;
-	}, "url": "{apps}/echo/social-chatter/countdown/jquery.countdown.js"} ,
+	}, "url": "{config:cdnBaseURL.apps}/echo/social-chatter/countdown/jquery.countdown.js"} ,
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined(Echo.Plugin.manifest("ItemConditionalCSSClasses", "Echo.StreamServer.Controls.Stream.Item"));
-	}, "url": "{apps}/echo/social-chatter/plugins/item-conditional-css-classes.js"},
+	}, "url": "{config:cdnBaseURL.apps}/echo/social-chatter/plugins/item-conditional-css-classes.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -179,7 +179,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Stream.Item"
 			}
 		});
-	}, "url": "{apps}/echo/social-chatter/plugins/social-chatter-event.js"},
+	}, "url": "{config:cdnBaseURL.apps}/echo/social-chatter/plugins/social-chatter-event.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -188,7 +188,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Submit"
 			}
 		});
-	}, "url": "{apps}/echo/social-chatter/plugins/submit-countdown-event.js"},
+	}, "url": "{config:cdnBaseURL.apps}/echo/social-chatter/plugins/submit-countdown-event.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -197,7 +197,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Submit"
 			}
 		});
-	}, "url": "{apps}/echo/social-chatter/plugins/submit-textarea-auto-resize.js"},
+	}, "url": "{config:cdnBaseURL.apps}/echo/social-chatter/plugins/submit-textarea-auto-resize.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -206,7 +206,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Stream.Item"
 			}
 		});
-	}, "url": "{apps}/echo/social-chatter/plugins/user-metadata-manager.js"},
+	}, "url": "{config:cdnBaseURL.apps}/echo/social-chatter/plugins/user-metadata-manager.js"},
 
 	{"loaded": function() {
 		return Echo.Plugin.isDefined({
@@ -215,7 +215,7 @@ SocialChatter.dependencies = [
 				"name": "Echo.StreamServer.Controls.Stream.Item"
 			}
 		});
-	}, "url": "{apps}/echo/social-chatter/plugins/vip-replies.js"}
+	}, "url": "{config:cdnBaseURL.apps}/echo/social-chatter/plugins/vip-replies.js"}
 ];
 
 SocialChatter.labels = {

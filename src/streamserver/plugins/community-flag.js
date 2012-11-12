@@ -68,7 +68,7 @@ plugin.labels = {
 
 plugin.dependencies = [{
 	"loaded": function() { return Echo.Control.isDefined("Echo.StreamServer.Controls.FacePile"); },
-	"url": "{sdk}/streamserver.pack.js"
+	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
 
 plugin.template = '<div class="{plugin.class:flaggedBy}"></div>';
@@ -195,7 +195,7 @@ plugin.methods._myFlags = function(flags) {
 	});
 };
 
-plugin.css = '.{plugin.class:flaggedBy} { background: url(' + Echo.Loader.getURL("{sdk}/images/curation/status/communityflagged.png") + ') no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
+plugin.css = '.{plugin.class:flaggedBy} { background: url({config:cdnBaseURL.sdk}/images/curation/status/communityflagged.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
 
 Echo.Plugin.create(plugin);
 

@@ -211,10 +211,10 @@ submit.vars = {
 
 submit.dependencies = [{
 	"loaded": function() { return !!Echo.jQuery.echoButton; },
-	"url": "{sdk}/third-party/bootstrap/echo-button.js"
+	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-button.js"
 }, {
 	"loaded": function() { return !!Echo.jQuery.echoModal; },
-	"url": "{sdk}/third-party/bootstrap/echo-modal.js"
+	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-modal.js"
 }];
 
 submit.labels = {
@@ -398,12 +398,12 @@ submit.renderers.postButton = function(element) {
 		"normal": {
 			"icon": false,
 			"disabled": false,
-			"label": self.labels.get("post")
+			"label": this.labels.get("post")
 		},
 		"posting": {
-			"icon": Echo.Loader.getURL("{sdk}/images/loading.gif"),
+			"icon": this.config.get("cdnBaseURL.sdk") + "/images/loading.gif",
 			"disabled": true,
-			"label": self.labels.get("posting")
+			"label": this.labels.get("posting")
 		}
 	};
 	element.empty().echoButton(states.normal);
@@ -671,7 +671,7 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url("' + Echo.Loader.getURL("{sdk}/images/info70.png") + '"); }' +
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk}/images/info70.png); }' +
 	($.browser.msie ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +
