@@ -385,10 +385,12 @@ Echo.API.Request = function(config) {
 		"data": {},
 		/**
 		 * @cfg {Object} [settings]
-		 * A set of key/value pairs that configure the transport object.
-		 * Accordingly transports implementation these values configure
-		 * transports through jquery's ajaxSettings. See http://api.jquery.com/jQuery.ajax/.
-		 * Note: for some transports these settings has no effect accordingly link above.
+		 * A set of the key/value pairs to configure the transport object.
+		 * This configuration is passed to the transport object through the
+		 * jQuery's ajaxSettings field.
+		 * For more info see http://api.jquery.com/jQuery.ajax/.
+		 * Note: according to the link above, for some transports these settings
+		 * have no effect.
 		 */
 		"settings": {},
 		/**
