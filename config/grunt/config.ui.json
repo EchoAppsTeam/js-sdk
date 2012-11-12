@@ -8,7 +8,7 @@
 	}, {
 		"output": "echo-modal.js",
 		"input": [
-			["js/bootstrap-modal.js", {"check": "modal"}],
+			["js/bootstrap-modal.js", {"check": "fn.modal"}],
 			["js/bootstrap-transition.js", {"check": "support.transition"}],
 			"plugins/echo-modal.js",
 			"less/modals.less",

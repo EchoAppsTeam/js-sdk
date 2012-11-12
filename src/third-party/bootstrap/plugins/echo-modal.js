@@ -9,8 +9,7 @@ $.echoModal = function() {
 };
 
 var Modal = function(config) {
-	var self = this;
-	var params = $.extend({
+	this.config = $.extend({
 		"show": false,
 		"backdrop": true,
 		"keyboard": true,
@@ -26,35 +25,46 @@ var Modal = function(config) {
 		"fade": false
 	}, config);
 
+	if (this.config.show) {
+		this._render();
+	}
+};
+
+Modal.prototype._render = function() {
+	var self = this;
+
+	if (this.rendered) return;
+
+	this.rendered = true;
 	this.element = $('<div class="modal" role="dialog" tabindex="-1">');
 
-	if (params.fade) {
+	if (this.config.fade) {
 		this.element.addClass("fade");
 	} else {
 		this.element.addClass("hide");
 	}
 
-	if (params.header) {
-		var header = this._addSection("modal-header", $("<h3>").append(params.data.title));
+	if (this.config.header) {
+		var header = this._addSection("modal-header", $("<h3>").append(this.config.data.title));
 	}
 
-	var body = this._addSection("modal-body", params.data.body);
+	var body = this._addSection("modal-body", this.config.data.body);
 
-	if (params.footer) {
+	if (this.config.footer) {
 		var footer = this._addSection("modal-footer");
 	}
-	if (params.width !== null) {
-		this.element.width(params.width)
-			.css({"margin-left": params.width * -0.5});
+	if (this.config.width !== null) {
+		this.element.width(this.config.width)
+			.css({"margin-left": this.config.width * -0.5});
 	}
-	if (params.height !== null) {
-		body.height(params.height);
+	if (this.config.height !== null) {
+		body.height(this.config.height);
 	}
-	if (params.padding !== null) {
-		body.css("padding", params.padding);
+	if (this.config.padding !== null) {
+		body.css("padding", this.config.padding);
 	}
-	if (params.footer && params.data.buttons) {
-		$.map(params.data.buttons, function(button) {
+	if (this.config.footer && this.config.data.buttons) {
+		$.map(this.config.data.buttons, function(button) {
 			var el = $("<button>").addClass("btn").append(button.title);
 			if (button.extraClass) {
 				el.addClass(button.extraClass);
@@ -65,12 +75,12 @@ var Modal = function(config) {
 			el.appendTo(footer);
 		});
 	}
-	if (params.extraClass) {
-		this.element.addClass(params.extraClass);
+	if (this.config.extraClass) {
+		this.element.addClass(this.config.extraClass);
 	}
 
-	if (params.backdrop) {
-		if (params.fade) {
+	if (this.config.backdrop) {
+		if (this.config.fade) {
 			this.element.on("show", function() {
 				var modal = self.element.data('modal');
 				var shown = modal.isShown;
@@ -82,46 +92,46 @@ var Modal = function(config) {
 				modal.isShown = shown;
 				modal.options.backdrop = backdrop;
 
-				modal.$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
+				self.backdrop = modal.$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
 			});
 		} else {
 			this.element.on("shown", function() {
-				self.element.data('modal').$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
+				self.backdrop = self.element.data('modal').$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
 			});
 		}
-		this.element.on("hidden", function() {
-			self.remove();
-		});
 	}
-	if (params.header && params.closeButton) {
+	this.element.on("hidden", function() {
+		self.remove();
+	});
+	if (this.config.header && this.config.closeButton) {
 		$('<button aria-hidden="true" data-dismiss="modal" class="close" type="button">')
 			.append("&times;").prependTo(header);
 	}
-	if ($.isFunction(params.onHide)) {
+	if ($.isFunction(this.config.onHide)) {
 		this.element.on("hide", function() {
-			params.onHide.call(self, self.element);
+			self.config.onHide.call(self, self.element);
 		});
 	}
-	if ($.isFunction(params.onShow)) {
+	if ($.isFunction(this.config.onShow)) {
 		this.element.on("shown", function() {
-			params.onShow.call(self, self.element);
+			self.config.onShow.call(self, self.element);
 		});
 	}
 
-	if (params.href) {
+	if (this.config.href) {
 		this.element.one("shown", function() {
-			body.append('<iframe src="' + params.href + '" id="" name="" class="echo-modal-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>');
+			body.append('<iframe src="' + self.config.href + '" id="" name="" class="echo-modal-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>');
 		});
 	}
 
 	// we used manual control for backdrop if fade is true
-	if (params.backdrop && params.fade) {
-		params.backdrop = false;
+	if (this.config.backdrop && this.config.fade) {
+		this.config.backdrop = false;
 	}
 
 	this.element.appendTo("body")
 		.wrap("<div class='echo-sdk-ui'>")
-		.modal(params);
+		.modal(this.config);
 
 	// if we try show few modals in one time, then event "focusin.modal" be called infinity times
 	$(document).off('focusin.modal');
@@ -137,18 +147,22 @@ Modal.prototype._addSection = function(css, content) {
 };
 
 Modal.prototype.show = function() {
+	this._render();
 	this.element.modal("show");
 };
 
 Modal.prototype.remove = function() {
-	this.element.data('modal').$backdrop.unwrap()
-		.remove();
-	this.element.unwrap()
-		.remove();
+	if (this.rendered) {
+		this.rendered = false;
+		this.backdrop && this.backdrop.remove();
+		this.element.unwrap().remove();
+	}
 };
 
 Modal.prototype.hide = function() {
-	this.element.modal("hide");
+	if (this.rendered) {
+		this.element.modal("hide");
+	}
 };
 
 Echo.Utils.addCSS(
