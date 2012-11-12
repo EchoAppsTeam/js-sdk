@@ -212,15 +212,16 @@ Echo.Control.prototype.defaults.config = {
 	},
 	/**
 	 * @cfg {Object} [cdnBaseURL]
-	 * A set of key/value pairs, value is a URL prefix for all static files, such as
-	 * scripts, stylesheets, images etc. You can add your own CDN prefix URL and use it
-	 * anywhere when configuration is available.
+	 * A set of the key/value pairs to define CDN base URLs for different components.
+	 * The values are used as the URL prefixes for all static files, such as scripts,
+	 * stylesheets, images etc. You can add your own CDN base URL and use it anywhere
+	 * when the configuration object is available.
 	 *
 	 * @cfg {String} [cdnBaseURL.sdk]
-	 * A prefix of the SDK CDN base URL.
+	 * Base URL of the SDK CDN location used for the main SDK resources.
 	 *
 	 * @cfg {String} [cdnBaseURL.apps]
-	 * A prefix of the apps CDN base URL.
+	 * Base URL of the Echo apps built on top of the JS SDK.
 	 */
 	"cdnBaseURL": {
 		"sdk": Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version,
