@@ -1,17 +1,12 @@
 module.exports = function(grunt) {
+
+	var helpers = require("../lib.js").init(grunt);
+
 	var Ftp = require("ftp");
 	var fs = require("fs");
 	var http = require("http");
 	var path = require("path");
 	var _ = grunt.utils._;
-
-	// if IS_DEBUG is true no actual release will be performed
-	// to enable debug mode execute `grunt release -d=1`
-	var IS_DEBUG = !!grunt.option("debug");
-	// execute `grunt release --production` for actual release
-	var IS_PRODUCTION = !!grunt.option("production");
-	grunt.log.writeln("\nDEBUG mode is " + (IS_DEBUG ? "ON".green : "OFF".red));
-	grunt.log.writeln("Working with " + (IS_PRODUCTION ? "PRODUCTION".red : "SANDBOX".green) + " environment");
 
 	var FtpUploader = function(config) {
 		var self = this;
@@ -54,7 +49,7 @@ module.exports = function(grunt) {
 			_.each(self.config.uploads, function(upload) {
 				var baseSrcPath = grunt.template.process(upload.baseSrcPath);
 				var dest = grunt.template.process(upload.dest);
-				if (!IS_PRODUCTION) {
+				if (!helpers.env("production")) {
 					dest = "/tests/release" + dest;
 				}
 				var src = grunt.file.expandFiles(baseSrcPath + upload.src);
@@ -76,7 +71,7 @@ module.exports = function(grunt) {
 			_.each(files, function(file) {
 				self.enqueue("uploadFile", file);
 			});
-			!IS_DEBUG && grunt.verbose.writeln("Starting upload");
+			!helpers.env("debug") && grunt.verbose.writeln("Starting upload");
 			self.currentStep = 1;
 			self.totalSteps = self.queue.length;
 			self._next();
@@ -94,7 +89,7 @@ module.exports = function(grunt) {
 	FtpUploader.prototype._uploadFile = function(file) {
 		var self = this;
 		this._log(file.dest);
-		if (IS_DEBUG) {
+		if (helpers.env("debug")) {
 			this._next();
 			return;
 		}
@@ -110,7 +105,7 @@ module.exports = function(grunt) {
 	FtpUploader.prototype._makeDir = function(name) {
 		var self = this;
 		this._log(name);
-		if (IS_DEBUG) {
+		if (helpers.env("debug")) {
 			this._next();
 			return;
 		}
@@ -154,10 +149,11 @@ module.exports = function(grunt) {
 				"release:sdk:stable",
 				"release:apps"
 			];
-			if (IS_PRODUCTION) {
+			if (helpers.env("production")) {
 				tasks.push("release:purge");
 			}
 			tasks.push("release:pages");
+			helpers.env("release", true);
 			grunt.task.run(tasks);
 			return;
 		}
@@ -188,7 +184,7 @@ module.exports = function(grunt) {
 					grunt.log.writeln("Nothing to upload for target ".yellow + target);
 					return;
 				}
-				var auth = config.release.auth[IS_PRODUCTION ? "cdn" : "sandbox"];
+				var auth = config.release.auth[helpers.env("production") ? "cdn" : "sandbox"];
 				new FtpUploader({
 					"complete": done,
 					"auth": auth,
@@ -199,7 +195,7 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerHelper("cdn_purge", function(paths, config, done) {
-		if (IS_DEBUG) {
+		if (helpers.env("debug")) {
 			console.log(arguments[0]);
 			done();
 			return;
@@ -267,18 +263,18 @@ module.exports = function(grunt) {
 				"git checkout gh-pages",
 				"git pull",
 				"git checkout master -- tests demo",
-				"cp -r " + grunt.config("dirs.dest") + "/docs/* docs",
+				"cp -r " + grunt.config("dirs.dist") + "/docs/* docs",
 				"git add docs/ tests/ demo/",
 				"git commit -m \"up to v" + grunt.config("pkg.version") + "\"",
 				"git push origin gh-pages",
 				"git checkout master"
 			].join(" && ");
-			if (IS_DEBUG || !IS_PRODUCTION) {
+			if (helpers.env("debug") || !helpers.env("production")) {
 				console.log(updateCmd);
 				done();
 				return;
 			}
-			grunt.helper("exec", updateCmd, function() {
+			helpers.exec(updateCmd, function() {
 				grunt.log.ok();
 				done();
 			});
