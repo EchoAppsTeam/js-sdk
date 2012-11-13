@@ -691,6 +691,24 @@ stream.methods._onDataReceive = function(data, type, callback) {
 	 * @event onDataReceive
 	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
 	 * Triggered when new data is received.
+	 *
+	 * @param {String} topic
+	 * Name of the event to subscribe (ex: "Echo.StreamServer.Controls.Stream")
+	 *
+	 * @param {Object} data
+	 * Object which is returned by the search API endpoint
+	 *
+	 * @param {Array} data.entries
+	 * Array which contains receieved entries if exists
+	 *
+	 * @param {String} data.type
+	 * Describe specific subsystem which produced the event. Possible values:
+	 *
+	 * + "initial" - triggered by initial items request (first time stream loaded)
+	 * + "more" - triggered by server response after click at "more" button
+	 * + "live" - triggered by liveUpdate mechanism (new items received in real-time)
+	 * + "children" - triggered by server response after click at "View more items..."
+	 * button (children items was requested)
 	 */
 	this.events.publish({
 		"topic": "onDataReceive",

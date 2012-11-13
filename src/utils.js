@@ -529,6 +529,7 @@ Echo.Utils.stripTags = function(text) {
  * @return {Object}
  * Object containing the following parts of the URL as fields:
  * scheme, domain, path, query, fragment.
+ * If some of fields doesn't matched, then value by field key will be empty string.
  */
 Echo.Utils.parseURL = function(url) {
 	if (typeof this.cache.parsedURLs === "undefined") {
