@@ -47,40 +47,53 @@ suite.prototype.tests.urlConvertingTests = {
 	"check": function() {
 		var cdnBaseURL = Echo.Loader.config.cdnBaseURL;
 		var version = Echo.Loader.version;
-		var urls = {
-			"absolute": [
-				"//cdn/echoenabled.com/image.png",
-				"http://echoenabled.com/image.png",
-				"https://echoenabled.com/image.png"
-			],
-			"relative": [
-				"/web/image.png",
-				"web/image.png",
-				"sdk"
-			],
-			"sdk": [
-				"{sdk}/web/image.png",
-				"{sdk}web/image.png",
-				"{sdk}"
-			],
-			"apps": [
-				"{apps}/web/image.png",
-				"{apps}/web/image.png",
-				"{apps}"
-			]
-		};
-		$.each(urls, function(key, val) {
-			var checked = true;
-			$.map(val, function(url) {
-				if ((key === "absolute" || key === "relative") && url !== Echo.Loader.getURL(url) ||
-					key === "apps" && url.replace("{apps}", cdnBaseURL + "apps") !== Echo.Loader.getURL(url) ||
-					key === "sdk" && url.replace("{sdk}", cdnBaseURL + "sdk/v" + version) !== Echo.Loader.getURL(url)
-				) {
-					checked = false;
-				}
+		var debug = Echo.Loader.debug;
+		function checkURLs(urls) {
+			$.each(urls, function(i, spec) {
+				QUnit.ok(spec.expect === Echo.Loader.getURL(spec.data), "Checking URL conversion: " + spec.data);
 			});
-			QUnit.ok(checked, "Checking if " + key + " URL has been correctly converted");
-		});
+		};
+		var urls = {
+			"plain": [{
+				"data": "//cdn/echoenabled.com/image.png",
+				"expect": "//cdn/echoenabled.com/image.png"
+			}, {
+				"data": "http://echoenabled.com/image.png",
+				"expect": "http://echoenabled.com/image.png"
+			}, {
+				"data": "https://echoenabled.com/image.png",
+				"expect": "https://echoenabled.com/image.png"
+			}, {
+				"data": "/web/image.png",
+				"expect": "/web/image.png"
+			}],
+			"placeholders": [{
+				"data": "{apps}/web/image.png",
+				"expect": cdnBaseURL + "apps/web/image.png"
+			}, {
+				"data": "{sdk-assets}/web/image.png",
+				"expect": cdnBaseURL + "sdk/v" + version + "/web/image.png"
+			}, {
+				"data": "{sdk}/web/image.png",
+				"expect": cdnBaseURL + "sdk/v" + version + "/web/image.png"
+			}],
+			"placeholdersDev": [{
+				"data": "{apps}/web/image.png",
+				"expect": cdnBaseURL + "apps/web/image.png"
+			}, {
+				"data": "{sdk-assets}/web/image.png",
+				"expect": cdnBaseURL + "sdk/v" + version + "/web/image.png"
+			}, {
+				"data": "{sdk}/web/image.png",
+				"expect": cdnBaseURL + "sdk/v" + version + "/dev/web/image.png"
+			}]
+		};
+		checkURLs(urls.plain);
+		Echo.Loader.debug = false;
+		checkURLs(urls.placeholders);
+		Echo.Loader.debug = true;
+		checkURLs(urls.placeholdersDev);
+		Echo.Loader.debug = debug;
 	}
 };
 
