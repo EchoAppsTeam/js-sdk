@@ -228,11 +228,10 @@ submit.vars = {
 
 submit.dependencies = [{
 	&quot;loaded&quot;: function() { return !!Echo.jQuery.echoButton; },
-	&quot;url&quot;: &quot;{sdk}/third-party/bootstrap/plugins/echo-button/echo-button.js&quot;
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-button.js&quot;
 }, {
-	&quot;url&quot;: &quot;{sdk}/third-party/bootstrap/plugins/echo-button/echo-button.css&quot;
-}, {
-	&quot;url&quot;: &quot;{sdk}/third-party/jquery/css/fancybox.css&quot;
+	&quot;loaded&quot;: function() { return !!Echo.jQuery.echoModal; },
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-modal.js&quot;
 }];
 
 submit.labels = {
@@ -380,10 +379,10 @@ submit.renderers.text = function(element) {
 </span> * @echo_renderer
  */
 submit.renderers.avatar = function(element) {
-	var avatar = Echo.Utils.loadImage(
-		this.user.get(&quot;avatar&quot;),
-		this.config.get(&quot;defaultAvatar&quot;)
-	);
+	var avatar = Echo.Utils.loadImage({
+		&quot;image&quot;: this.user.get(&quot;avatar&quot;),
+		&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)
+	});
 	return element.empty().append(avatar);
 };
 
@@ -416,12 +415,12 @@ submit.renderers.postButton = function(element) {
 		&quot;normal&quot;: {
 			&quot;icon&quot;: false,
 			&quot;disabled&quot;: false,
-			&quot;label&quot;: self.labels.get(&quot;post&quot;)
+			&quot;label&quot;: this.labels.get(&quot;post&quot;)
 		},
 		&quot;posting&quot;: {
-			&quot;icon&quot;: Echo.Loader.getURL(&quot;{sdk}/images/loading.gif&quot;),
+			&quot;icon&quot;: this.config.get(&quot;cdnBaseURL.sdk&quot;) + &quot;/images/loading.gif&quot;,
 			&quot;disabled&quot;: true,
-			&quot;label&quot;: self.labels.get(&quot;posting&quot;)
+			&quot;label&quot;: this.labels.get(&quot;posting&quot;)
 		}
 	};
 	element.empty().echoButton(states.normal);
@@ -584,20 +583,20 @@ submit.methods.refresh = function() {
 };
 
 submit.methods._getActivity = function(verb, type, data) {
-	return (!data) ? [] : {
+	return !data ? [] : {
 		&quot;actor&quot;: {
-			&quot;objectTypes&quot;: [ this._getASURL(&quot;person&quot;) ],
+			&quot;objectTypes&quot;: [this._getASURL(&quot;person&quot;)],
 			&quot;name&quot;: this.user.get(&quot;name&quot;, this.user.is(&quot;logged&quot;)
 					? &quot;&quot;
 					: this.view.get(&quot;name&quot;).val()),
 			&quot;avatar&quot;: this.user.get(&quot;avatar&quot;, &quot;&quot;)
 		},
 		&quot;object&quot;: {
-			&quot;objectTypes&quot;: [ type ],
+			&quot;objectTypes&quot;: [type],
 			&quot;content&quot;: data
 		},
 		&quot;source&quot;: this.config.get(&quot;source&quot;),
-		&quot;verbs&quot;: [ this._getASURL(verb) ],
+		&quot;verbs&quot;: [this._getASURL(verb)],
 		&quot;targets&quot;: [{
 			&quot;id&quot;: this.config.get(&quot;targetURL&quot;)
 		}]
@@ -616,15 +615,15 @@ submit.methods._showError = function(data) {
 		? this.labels.get(&quot;postingTimeout&quot;)
 		: this.labels.get(&quot;postingFailed&quot;, {&quot;error&quot;: data.errorMessage || data.errorCode});
 	var popup = this._assembleErrorPopup(message);
-	$.fancybox({
-		&quot;content&quot;: popup.content,
-		&quot;height&quot;: popup.height,
+
+	$.echoModal({
+		&quot;data&quot;: {
+			&quot;body&quot;: popup.content
+		},
 		&quot;width&quot;: popup.width,
-		&quot;padding&quot;: 15,
-		&quot;orig&quot;: this.view.get(&quot;text&quot;),
-		&quot;autoDimensions&quot;: false,
-		&quot;transitionIn&quot;: &quot;elastic&quot;,
-		&quot;transitionOut&quot;: &quot;elastic&quot;
+		&quot;footer&quot;: false,
+		&quot;fade&quot;: true,
+		&quot;show&quot;: true
 	});
 };
 
@@ -637,20 +636,13 @@ submit.methods._assembleErrorPopup = function(message) {
 			&quot;css&quot;: this.cssPrefix + &quot;error&quot;
 		}
 	});
-	var box = $(template).css({
-		&quot;min-height&quot;: dimensions.minHeight,
-		&quot;max-height&quot;: dimensions.maxHeight,
-		&quot;width&quot;: dimensions.width,
-		&quot;visibility&quot;: &quot;hidden&quot;
-	}).appendTo(this.view.get(&quot;container&quot;));
 	var popup = {
 		&quot;content&quot;: $(template).css({
-			&quot;height&quot;: box.height()
+			&quot;min-height&quot;: dimensions.minHeight,
+			&quot;max-height&quot;: dimensions.maxHeight
 		}),
-		&quot;height&quot;: box.height(),
-		&quot;width&quot;: box.width()
+		&quot;width&quot;: dimensions.width
 	};
-	box.remove();
 	return popup;
 };
 
@@ -696,7 +688,7 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/info70.png&quot;) + '&quot;); }' +
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk}/images/info70.png); }' +
 	($.browser.msie ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +

@@ -31,7 +31,7 @@ Echo.Plugin = function() {};
 <span id='Echo-Plugin-static-method-create'>/**
 </span> * @static
  * Function which creates a plugin object using it manifest declaration.
- * 
+ *
  * @param {Object} manifest
  * Specifies the plugin interface in the predefined way.
  *
@@ -72,7 +72,15 @@ Echo.Plugin.create = function(manifest) {
 	if (plugin) return plugin;
 
 	var constructor = Echo.Utils.inherit(Echo.Plugin, function(config) {
-		if (!config || !config.component) return;
+		if (!config || !config.component) {
+			Echo.Utils.log({
+				&quot;type&quot;: &quot;error&quot;,
+				&quot;component&quot;: manifest.name,
+				&quot;message&quot;: &quot;Unable to initialize plugin, config is invalid&quot;,
+				&quot;args&quot;: {&quot;config&quot;: config}
+			});
+			return;
+		}
 		this.name = manifest.name;
 		this.component = config.component;
 		this.cssClass = this.component.get(&quot;cssPrefix&quot;) + &quot;plugin-&quot; + manifest.name;
@@ -137,7 +145,7 @@ Echo.Plugin.manifest = function(name, component) {
  *
  * @param {Object} manifest
  * Plugin manifest.
- * 
+ *
  * @return {Boolean}
  */
 Echo.Plugin.isDefined = function(manifest) {

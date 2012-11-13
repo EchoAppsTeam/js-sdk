@@ -53,13 +53,16 @@ suite.prototype.tests.dynamicWorkflow = {
 				suite.counter = this;
 				QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
 				'Checking the dynamic usecase rendering');
-				self.sequentialAsyncTests([
+				var sequentialTests = [
 					"onError_more_than",
-					"onError_wrong_query",
-					"onError_incorrect_appkey",
 					"onUpdate",
 					"destroy"
-				], "cases");
+				];
+				// FIXME: when server will support XDomainRequest handling
+				if (!Echo.API.Transports.XDomainRequest.available()) {
+					sequentialTests = sequentialTests.concat(["onError_wrong_query", "onError_incorrect_appkey"]);
+				}
+				self.sequentialAsyncTests(sequentialTests, "cases");
 			}
 		});
 	}
@@ -117,7 +120,7 @@ suite.prototype.cases.onError_more_than = function(callback) {
 		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
 		"once"    : true,
 		"handler" : function(topic, params) {
-			QUnit.ok(self.config.target.html() === "<span>5000+</span>",
+			self.jqueryObjectsEqual($(self.config.target.html()), $("<span>5000+</span>"),
 				'Checking the Error: "more_than" usecase rendering');
 			callback();
 		}

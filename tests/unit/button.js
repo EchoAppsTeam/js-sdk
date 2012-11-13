@@ -40,7 +40,7 @@ suite.prototype.tests.commonWorkflow = {
 			QUnit.ok(element.attr('disabled'),
 				"Checking that button is disabled after update() method");
 
-			var backgroundRegExp = new RegExp(".*background(-image)?:.*" + Echo.Loader.getURL("{sdk}\/images\/loading.gif"));
+			var backgroundRegExp = new RegExp(".*background(-image)?:.*" + Echo.Loader.getURL("{sdk}\/images\/loading.gif"), "i");
 
 			QUnit.ok($(target).html().match(/icon/) && $(target).html().match(backgroundRegExp),
 				"Checking that background icon is added to element after update() method");
@@ -68,7 +68,7 @@ suite.prototype.tests.commonWorkflow = {
 		};
 		
 		Echo.Loader.download([{
-			"url": Echo.Loader.getURL("{sdk}/third-party/bootstrap/plugins/echo-button/echo-button.js")
+			"url": Echo.Loader.getURL("{sdk}/third-party/bootstrap/echo-button.js")
 		}], check);
 	}
 };

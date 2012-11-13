@@ -155,7 +155,7 @@ Ext.data.JsonP.Echo_StreamServer_Controls_Stream_Plugins_PinboardVisulization({
 
     ]
   },
-  "linenr": 610,
+  "linenr": 588,
   "files": [
     {
       "filename": "pinboard-visualization.js",

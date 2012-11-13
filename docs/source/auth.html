@@ -26,6 +26,7 @@ var $ = jQuery;
  * different social identities.
  *
  * 	var identityManager = {
+ * 		&quot;title&quot;: &quot;Title of the auth area&quot;
  * 		&quot;width&quot;: 400,
  * 		&quot;height&quot;: 240,
  * 		&quot;url&quot;: &quot;http://example.com/auth&quot;
@@ -63,6 +64,7 @@ auth.config = {
 	 * data update) and sends this message to Backplane server.
 	 *
 	 * 	var identityManager = {
+	 * 		&quot;title&quot;: &quot;Title of the auth area&quot;
 	 * 		&quot;width&quot;: 400,
 	 * 		&quot;height&quot;: 240,
 	 * 		&quot;url&quot;: &quot;http://example.com/auth&quot;
@@ -89,6 +91,9 @@ auth.config = {
 	 * @cfg {String} [identityManager.login.url]
 	 * Specifies the URL to be opened as an auth handler.
 	 *
+	 * @cfg {String} [identityManager.login.title]
+	 * Specifies the Title of the auth modal dialog.
+	 *
 	 * @cfg {Object} [identityManager.signup]
 	 * Encapsulates data for signup workflow.
 	 *
@@ -100,6 +105,9 @@ auth.config = {
 	 *
 	 * @cfg {String} [identityManager.signup.url]
 	 * Specifies the URL to be opened as an auth handler.
+	 *
+	 * @cfg {String} [identityManager.signup.title]
+	 * Specifies the Title of the auth modal dialog.
 	 *
 	 * @cfg {Object} [identityManager.edit]
 	 * Encapsulates data for edit workflow.
@@ -122,8 +130,13 @@ auth.config = {
 };
 
 auth.dependencies = [{
-	&quot;url&quot;: &quot;{sdk}/third-party/jquery/css/fancybox.css&quot;
+	&quot;loaded&quot;: function() { return !!Echo.jQuery.echoModal; },
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-modal.js&quot;
 }];
+
+auth.vars = {
+	&quot;modal&quot;: null
+};
 
 auth.labels = {
 <span id='Echo-IdentityServer-Controls-Auth-property-edit'>	/**
@@ -156,7 +169,7 @@ auth.events = {
 	&quot;Echo.UserSession.onInvalidate&quot;: {
 		&quot;context&quot;: &quot;global&quot;,
 		&quot;handler&quot;: function() {
-			$.fancybox.close();
+			this.modal &amp;&amp; this.modal.hide();
 		}
 	}
 };
@@ -233,10 +246,10 @@ auth.renderers.or = function(element) {
 </span> * @echo_renderer
  */
 auth.renderers.avatar = function(element) {
-	return element.empty().append(Echo.Utils.loadImage(
-		this.user.get(&quot;avatar&quot;),
-		this.config.get(&quot;defaultAvatar&quot;)
-	));
+	return element.empty().append(Echo.Utils.loadImage({
+		&quot;image&quot;: this.user.get(&quot;avatar&quot;),
+		&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)
+	}));
 };
 
 <span id='Echo-IdentityServer-Controls-Auth-method-name'>/**
@@ -266,41 +279,25 @@ auth.methods._assembleIdentityControl = function(type, element) {
 			$.getScript(self._appendSessionID(data.url));
 		});
 	} else {
-		return element.fancybox({
-			&quot;autoScale&quot;: false,
-			&quot;height&quot;: parseInt(data.height),
-			&quot;href&quot;: self._appendSessionID(data.url),
-			&quot;onClosed&quot;: function() {
-				// remove dynamic height/width calculations for overlay
-				if ($.browser.msie &amp;&amp; document.compatMode != &quot;CSS1Compat&quot;) {
-					var style = $(&quot;#fancybox-overlay&quot;).get(0).style;
-					style.removeExpression(&quot;height&quot;);
-					style.removeExpression(&quot;width&quot;);
+		return element.on(&quot;click&quot;, function() {
+			self.modal = $.echoModal({
+				&quot;data&quot;: {
+					&quot;title&quot;: self.config.get(&quot;identityManager.&quot; + type + &quot;.title&quot;)
+				},
+				&quot;href&quot;: self._appendSessionID(data.url),
+				&quot;width&quot;: parseInt(data.width),
+				&quot;height&quot;: parseInt(data.height),
+				&quot;padding&quot;: &quot;0 0 5px 0&quot;,
+				&quot;footer&quot;: false,
+				&quot;fade&quot;: true,
+				&quot;onShow&quot;: function() {
+					Backplane.expectMessages(&quot;identity/ack&quot;);
+				},
+				&quot;onHide&quot;: function() {
+					self.modal = null;
 				}
-			},
-			&quot;onComplete&quot;: function() {
-				// set fixed dimensions of the frame (for IE in quirks mode it should be smaller)
-				var delta = ($.browser.msie &amp;&amp; document.compatMode != &quot;CSS1Compat&quot; ? 40 : 0);
-				$(&quot;#fancybox-frame&quot;).css({
-					&quot;width&quot;: data.width - delta,
-					&quot;height&quot;: data.height - delta
-				});
-			},
-			&quot;onStart&quot;: function() {
-				Backplane.expectMessages(&quot;identity/ack&quot;);
-				// dynamical calculation of overlay height/width
-				if ($.browser.msie &amp;&amp; document.compatMode != &quot;CSS1Compat&quot;) {
-					var style = $(&quot;#fancybox-overlay&quot;).get(0).style;
-					style.setExpression(&quot;height&quot;, &quot;Math.max(document.body.clientHeight, document.body.scrollHeight)&quot;);
-					style.setExpression(&quot;width&quot;, &quot;Math.max(document.body.clientWidth, document.body.scrollWidth)&quot;);
-				}
-			},
-			&quot;padding&quot;: 0,
-			&quot;scrolling&quot;: &quot;no&quot;,
-			&quot;transitionIn&quot;: &quot;elastic&quot;,
-			&quot;transitionOut&quot;: &quot;elastic&quot;,
-			&quot;type&quot;: &quot;iframe&quot;,
-			&quot;width&quot;: parseInt(data.width)
+			});
+			self.modal.show();
 		});
 	}
 };

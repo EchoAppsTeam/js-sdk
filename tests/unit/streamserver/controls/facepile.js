@@ -2,7 +2,13 @@
 
 var data = {
 	"instance" : {
-		"name" : "Echo.StreamServer.Controls.FacePile"
+		"name" : "Echo.StreamServer.Controls.FacePile",
+		"config": {
+			"data": {"entries": []},
+			"liveUpdates": {
+				"enabled": false
+			}
+		}
 	},
 	"config": {
 		"async"       : true,
@@ -169,7 +175,7 @@ suite.prototype.cases.dynamicIsYou = function(callback) {
 			},
 			"object": {
 				"objectTypes": [ "http://activitystrea.ms/schema/1.0/comment"],
-				"content": "TestContent",
+				"content": "TestContent"
 			},
 			"source": {},
 			"verbs": [ "http://activitystrea.ms/schema/1.0/post" ],
@@ -199,7 +205,7 @@ suite.prototype.cases.dynamicIsYou = function(callback) {
 suite.prototype.tests.actorsView = {
 	"config" : {
 		"async" : true,
-		"testTimeout" : 20000, // 20 secs
+		"testTimeout" : 20000 // 20 secs
 	},
 	"check" : function() {
 		this.sequentialAsyncTests([

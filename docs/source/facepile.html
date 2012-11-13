@@ -499,10 +499,10 @@ item.templates.main =
 item.renderers.avatar = function(element) {
 	var self = this;
 	if (this.config.get(&quot;avatar&quot;)) {
-		var img = Echo.Utils.loadImage(
-			this.get(&quot;data.avatar&quot;),
-			this.config.get(&quot;defaultAvatar&quot;)
-		);
+		var img = Echo.Utils.loadImage({
+			&quot;image&quot;: this.get(&quot;data.avatar&quot;),
+			&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)
+		});
 		element.empty().append(img);
 		if (!this.config.get(&quot;text&quot;)) {
 			element.attr(&quot;title&quot;, this.get(&quot;data.title&quot;));

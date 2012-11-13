@@ -292,7 +292,8 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 };
 
 suite.prototype.cases.controlRendering = function(callback) {
-	var check = function() {
+	var _suite = this;
+	var check = function(_callback) {
 		var self = this;
 		QUnit.ok(this.config.get("target") instanceof jQuery,
 			"Checking if the target if a jQuery element");
@@ -325,7 +326,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"Checking if initially empty element became non-empty after applying renderer");
 
 		// template rendering
-		var cssClass = ".echo-streamserver-controls-mytestcontrol-testRenderer";
+		var cssClass = "." + this.get("cssPrefix") + "testRenderer";
 		var template =
 			'<div class="{class:container}">' +
 				'<div class="k1">{data:k1}</div>' +
@@ -354,7 +355,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"name": "testRendererWithExtra",
 			"extra": {"value": "my-value"}
 		});
-		QUnit.equal(target.html(), "<span>my-value</span>",
+		_suite.jqueryObjectsEqual($(target.html()), $("<span>my-value</span>"),
 			"Checking if element content was updated after renderer application");
 
 		this.view.render({
@@ -362,13 +363,13 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"name": "testRendererWithExtra",
 			"extra": {"value": "another-value"}
 		});
-		QUnit.equal(target.html(), "<span>another-value</span>",
+		_suite.jqueryObjectsEqual($(target.html()), $("<span>another-value</span>"),
 			"Checking if element content was updated as a result of renderer application");
 
 		this.view.render({
 			"name": "testRenderer"
 		});
-		QUnit.equal(target.html(), "<div>Some value</div>",
+		_suite.jqueryObjectsEqual($(target.html()), $("<div>Some value</div>"),
 			"Checking if element content was updated as a result of the native renderer application");
 
 		// recursive element rendering
@@ -377,7 +378,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"name": "testRendererRecursive",
 			"recursive": true
 		});
-		QUnit.equal(this.view.get("testRendererRecursive").html(), "<div class=\"echo-streamserver-controls-mytestcontrol-nestedContainer\"><div class=\"echo-streamserver-controls-mytestcontrol-nestedSubcontainer\"></div></div>",
+		_suite.jqueryObjectsEqual($(this.view.get("testRendererRecursive").html()), $("<div class=\"" + this.get("cssPrefix") + "nestedContainer\"><div class=\"" + this.get("cssPrefix") + "nestedSubcontainer\"></div></div>"),
 			"Checking if element content was updated after recursive rendering");
 
 		// checking re-rendering
@@ -385,7 +386,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		this.config.get("target").append('<div class="extra-div-1">Another DIV appended</div>');
 		this.config.get("target").append('<div class="extra-div-2">DIV appended</div>');
 		this.render();
-		QUnit.equal(this.view.get("testRenderer").html(), "<div>Some value</div>",
+		_suite.jqueryObjectsEqual($(this.view.get("testRenderer").html()), $("<div>Some value</div>"),
 			"Checking if component was re-rendered and appended elements were wiped out");
 
 		// checking "showMessage" method
@@ -469,7 +470,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		var template = '<div class="echo-utils-tests-footer">footer content</div>';
 		this.render();
-		QUnit.equal(this.view.get("testRenderer").html(), "<div>Some value</div>",
+		_suite.jqueryObjectsEqual($(this.view.get("testRenderer").html()), $("<div>Some value</div>"),
 			"Checking control.view.get() function");
 		this.view.set("testRenderer", $(template));
 		QUnit.equal(this.view.get("testRenderer").html(), "footer content",
@@ -480,12 +481,26 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		this.destroy();
 
-		callback && callback();
+		_callback && _callback();
 	};
-	suite.initTestControl({
-		"data": suite.data.config.data,
-		"ready": check
-	});
+	Echo.Utils.sequentialCall([
+		function(_callback) {
+			suite.initTestControl({
+				"data": suite.data.config.data,
+				"ready": function() {
+					check.call(this, _callback);
+				}
+			});
+		}, function(_callback) {
+			var name = "Echo.StreamServer.Controls.AnotherTestControl";
+			suite.createTestControl(name, {"dynamicTemplate": true});
+			suite.initTestControl({
+				"data": suite.data.config.data,
+				"ready": function() {
+					check.call(this, _callback);
+				}
+			}, name);
+		}, callback]);
 };
 
 suite.prototype.cases.eventsMechanism = function(callback) {
@@ -856,23 +871,24 @@ suite.getTestControlClassName = function() {
 	return "Echo.StreamServer.Controls.MyTestControl";
 };
 
-suite.getTestControlClass = function() {
-	return Echo.Utils.getComponent(suite.getTestControlClassName());
+suite.getTestControlClass = function(name) {
+	return Echo.Utils.getComponent(name || suite.getTestControlClassName());
 };
 
-suite.initTestControl = function(config) {
-	var definition = suite.getTestControlClass();
+suite.initTestControl = function(config, name) {
+	var definition = suite.getTestControlClass(name);
 	new definition($.extend({
 		"target": $("<div></div>"),
 		"appkey": "test.echoenabled.com"
 	}, config));
 };
 
-suite.createTestControl = function(name) {
-	Echo.Control.create(suite.getControlManifest(name));
+suite.createTestControl = function(name, config) {
+	Echo.Control.create(suite.getControlManifest(name, config));
 };
 
-suite.getControlManifest = function(name) {
+suite.getControlManifest = function(name, config) {
+	config = config || {};
 
 	var manifest = Echo.Control.manifest(name || suite.getTestControlClassName());
 
@@ -908,7 +924,9 @@ suite.getControlManifest = function(name) {
 		this.get("_destroyHandler") && this.get("_destroyHandler")();
 	};
 
-	manifest.templates.main = suite.data.template;
+	manifest.templates.main = config.dynamicTemplate
+		? function() { return suite.data.template; }
+		: suite.data.template;
 
 	manifest.templates.custom =
 		'<div class="{class:container}">' +

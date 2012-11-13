@@ -127,7 +127,7 @@ plugin.labels = {
 
 plugin.dependencies = [{
 	&quot;loaded&quot;: function() { return Echo.Control.isDefined(&quot;Echo.IdentityServer.Controls.Auth&quot;); },
-	&quot;url&quot;: &quot;{sdk}/identityserver.pack.js&quot;
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/identityserver.pack.js&quot;
 }];
 
 plugin.templates.auth = '&lt;div class=&quot;{plugin.class:auth}&quot;&gt;&lt;/div&gt;';

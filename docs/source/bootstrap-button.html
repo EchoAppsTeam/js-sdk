@@ -16,7 +16,7 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js">/* ============================================================
- * bootstrap-button.js v2.1.0
+ * bootstrap-button.js v2.2.1
  * http://twitter.github.com/bootstrap/javascript.html#buttons
  * ============================================================
  * Copyright 2012 Twitter, Inc.
@@ -33,6 +33,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============================================================ */
+
+
+!function ($) {
 
   &quot;use strict&quot;; // jshint ;_;
 
@@ -65,7 +68,7 @@
   }
 
   Button.prototype.toggle = function () {
-    var $parent = this.$element.parent('[data-toggle=&quot;buttons-radio&quot;]')
+    var $parent = this.$element.closest('[data-toggle=&quot;buttons-radio&quot;]')
 
     $parent &amp;&amp; $parent
       .find('.active')
@@ -99,13 +102,12 @@
  /* BUTTON DATA-API
   * =============== */
 
-  $(function () {
-    $('body').on('click.button.data-api', '[data-toggle^=button]', function ( e ) {
-      var $btn = $(e.target)
-      if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
-      $btn.button('toggle')
-    })
+  $(document).on('click.button.data-api', '[data-toggle^=button]', function (e) {
+    var $btn = $(e.target)
+    if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
+    $btn.button('toggle')
   })
-</pre>
+
+}(window.jQuery);</pre>
 </body>
 </html>

@@ -57,6 +57,32 @@ plugin.init = function() {
 };
 
 plugin.config = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-cfg-removePersonalItemsAllowed'>	/**
+</span>	 * @cfg {Boolean} [removePersonalItemsAllowed=false]
+	 * Specifies whether users are allowed to remove their own items from stream or not.
+	 *
+	 *     new Echo.StreamServer.Controls.Stream({
+	 *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+	 *         &quot;plugins&quot;: [{
+	 *             &quot;name&quot;: &quot;Moderation&quot;
+	 *             &quot;removePersonalItemsAllowed&quot;: true
+	 *         }]
+	 *     });
+	 *
+	 * Please note that this parameter affects only client-side interface.
+	 * This feature can be enabled on server side via a kvs/put API call, where:
+	 *
+	 * + key - is &lt;b&gt;remove-personal-items-allowed&lt;/b&gt;
+	 * + value - boolean &lt;b&gt;false/true&lt;/b&gt;
+	 * + public - is &lt;b&gt;false&lt;/b&gt; (can be omitted)
+	 *
+	 * &lt;b&gt;IMPORTANT&lt;/b&gt;: Client-side &lt;i&gt;&quot;removePersonalItemsAllowed&quot;&lt;/i&gt; and KVS
+	 * stored &lt;i&gt;&quot;remove-personal-items-allowed&quot;&lt;/i&gt; parameters do not depend from
+	 * each other, so please keep them synchronized to achieve consistent behavior.
+	 */
+	&quot;removePersonalItemsAllowed&quot;: false,
+
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-cfg-userActions'>	/**
 </span>	 * @cfg {Array} userActions
 	 * Defines the list of user specific actions to be added to the Echo Stream Item.
@@ -71,6 +97,7 @@ plugin.config = {
 	 * });
 	 */
 	&quot;userActions&quot;: [&quot;ban&quot;, &quot;permissions&quot;],
+
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-cfg-itemActions'>	/**
 </span>	 * @cfg {Array} itemActions
 	 * Defines the list of item specific actions to be added to the Echo Stream Item.
@@ -127,6 +154,10 @@ plugin.labels = {
 </span>	 * @echo_label
 	 */
 	&quot;changingStatusToModeratorDeleted&quot;: &quot;Deleting...&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToUserDeleted'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;changingStatusToUserDeleted&quot;: &quot;Deleting...&quot;,
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToUntouched'>	/**
 </span>	 * @echo_label
 	 */
@@ -147,6 +178,10 @@ plugin.labels = {
 </span>	 * @echo_label
 	 */
 	&quot;statusModeratorDeleted&quot;: &quot;Deleted by Moderator&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusUserDeleted'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;statusUserDeleted&quot;: &quot;Deleted by User&quot;,
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusModeratorFlagged'>	/**
 </span>	 * @echo_label
 	 */
@@ -248,6 +283,7 @@ plugin.statuses = [
 	&quot;Untouched&quot;,
 	&quot;ModeratorApproved&quot;,
 	&quot;ModeratorDeleted&quot;,
+	&quot;UserDeleted&quot;,
 	&quot;CommunityFlagged&quot;,
 	&quot;ModeratorFlagged&quot;,
 	&quot;SystemFlagged&quot;
@@ -375,9 +411,20 @@ plugin.methods._publishCompleteActionEvent = function(args) {
 
 plugin.methods._assembleButton = function(name) {
 	var self = this;
+	var getStatus = function(item) {
+		var status = plugin.button2status[name];
+		if (!item.user.is(&quot;admin&quot;) &amp;&amp;
+			name === &quot;Delete&quot; &amp;&amp;
+			self.config.get(&quot;removePersonalItemsAllowed&quot;) &amp;&amp;
+			item.user.has(&quot;identity&quot;, item.data.actor.id)
+		) {
+			status = &quot;UserDeleted&quot;;
+		}
+		return status;
+	};
 	var callback = function() {
 		var item = this;
-		var status = plugin.button2status[name];
+		var status = getStatus(item);
 		item.block(self.labels.get(&quot;changingStatusTo&quot; + status));
 		var activity = {
 			&quot;verbs&quot;: [&quot;http://activitystrea.ms/schema/1.0/update&quot;],
@@ -411,11 +458,12 @@ plugin.methods._assembleButton = function(name) {
 	};
 	return function() {
 		var item = this;
+		var status = getStatus(item);
 		return {
 			&quot;name&quot;: name,
 			&quot;label&quot;: self.labels.get(name.toLowerCase() + &quot;Button&quot;),
-			&quot;visible&quot;: item.user.is(&quot;admin&quot;) &amp;&amp;
-					item.get(&quot;data.object.status&quot;) !== plugin.button2status[name],
+			&quot;visible&quot;: item.get(&quot;data.object.status&quot;) !== status &amp;&amp;
+					(item.user.is(&quot;admin&quot;) || status === &quot;UserDeleted&quot;),
 			&quot;callback&quot;: callback
 		};
 	};
@@ -605,6 +653,7 @@ plugin.css = function() {
 		'.{plugin.class:status-Untouched} { background: #00aaff; }' +
 		'.{plugin.class:status-ModeratorApproved} { background: #bdfb6d; }' +
 		'.{plugin.class:status-ModeratorDeleted} { background: #f20202; }' +
+		'.{plugin.class:status-UserDeleted} { background: #ff8e8e; }' +
 		'.{plugin.class:status-SystemFlagged}, .{plugin.class:status-CommunityFlagged}, .{plugin.class:status-ModeratorFlagged} { background: #ff9e00; }' +
 		// buttons
 		'.{plugin.class:button-state} { margin-right: 3px; }' +
@@ -614,7 +663,7 @@ plugin.css = function() {
 		'.{plugin.class:button-role-administrator} { color: #008000; }' +
 		// status icons
 		$.map(plugin.statuses, function(name) {
-			return '.{plugin.class:status-icon-' + name + '} { background: url(&quot;' + Echo.Loader.getURL(&quot;{sdk}/images/curation/status/&quot;) + name.toLowerCase() + '.png&quot;) no-repeat; }';
+			return '.{plugin.class:status-icon-' + name + '} { background: url({config:cdnBaseURL.sdk}/images/curation/status/' + name.toLowerCase() + '.png) no-repeat; }';
 		}).join(&quot;&quot;) + msieCss;
 }();
 

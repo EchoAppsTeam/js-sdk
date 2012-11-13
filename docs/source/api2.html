@@ -20,6 +20,8 @@
 
 var $ = jQuery;
 
+if (Echo.StreamServer &amp;&amp; Echo.StreamServer.API) return;
+
 if (!Echo.StreamServer) Echo.StreamServer = {};
 
 Echo.StreamServer.API = {};
@@ -33,7 +35,7 @@ Echo.StreamServer.API = {};
  * Constructor initializing class using configuration data.
  * @param {Object} config Configuration data.
  */
-Echo.StreamServer.API.Request = function(config) {
+Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
 	config = $.extend({
 <span id='Echo-StreamServer-API-Request-cfg-liveUpdatesTimeout'>		/**
 </span>		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
@@ -71,9 +73,7 @@ Echo.StreamServer.API.Request = function(config) {
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = &quot;initial&quot;; // initial | secondary
 	Echo.StreamServer.API.Request.parent.constructor.call(this, config);
-};
-
-Echo.Utils.inherit(Echo.API.Request, Echo.StreamServer.API.Request);
+});
 
 <span id='Echo-StreamServer-API-Request-method-abort'>/**
 </span> * @method
@@ -379,7 +379,7 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 		if (/tag|mark/.test(verb(entry)) &amp;&amp; /tag|marker/.test(type(entry))) {
 			meta[strip(type(entry)) + &quot;s&quot;] = entry.object.content;
 		}
-		if (verb(entry) == &quot;post&quot;) {
+		if (verb(entry) === &quot;post&quot;) {
 			post = entry;
 		}
 	});

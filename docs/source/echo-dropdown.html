@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function(jQuery) {
+
+var $ = jQuery;
+
+if ($.fn.echoDropdown) return;
+
+$.fn.echoDropdown = function() {
+	var args = arguments;
+	return this.each(function(){
+		var data = $(this).data(&quot;echoDropdown&quot;);
+		if (!data || typeof args[0] === &quot;object&quot;) {
+			$(this).data(&quot;echoDropdown&quot;, (data = new Dropdown(this, args[0])));
+		}
+		if (typeof args[0] === &quot;string&quot;) {
+			data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
+		}
+	});
+};
+
+var Dropdown = function(element, params) {
+	this.element = $(element);
+	var dropdown = this._assembleContainer(params);
+	this._assembleEntries(params.entries, dropdown);
+};
+
+Dropdown.prototype.setTitle = function(title) {
+	$(&quot;.dropdown-toggle&quot;, this.element).empty().append(title);
+};
+
+Dropdown.prototype._assembleContainer = function(params) {
+	var container = $(&quot;&lt;ul&gt;&quot;).addClass(&quot;nav&quot;)
+		.appendTo(this.element);
+	var dropdown = $(&quot;&lt;li&gt;&quot;)
+		.addClass(&quot;dropdown&quot;)
+		.appendTo(container);
+	$(&quot;&lt;a&gt;&quot;).addClass(&quot;dropdown-toggle&quot;)
+		.attr(&quot;data-toggle&quot;, &quot;dropdown&quot;)
+		.attr(&quot;role&quot;, &quot;button&quot;)
+		.attr(&quot;href&quot;, &quot;#&quot;)
+		.append(params.title)
+		.appendTo(dropdown);
+	return dropdown;	
+};
+
+Dropdown.prototype._assembleEntries = function(entries, container) {
+	var menu = $(&quot;&lt;ul&gt;&quot;).addClass(&quot;dropdown-menu&quot;)
+		.attr(&quot;role&quot;, &quot;menu&quot;)
+		.appendTo(container);
+	$.map(entries || [], function(entry) {
+		$(&quot;&lt;a role='button' class='echo-clickable' /&gt;&quot;)
+			.css({
+				&quot;background-image&quot;: &quot;url(&quot; + entry.icon + &quot;)&quot;,
+				&quot;background-repeat&quot;: &quot;no-repeat&quot;,
+				&quot;background-position&quot;: &quot;10px 5px&quot;,
+				&quot;padding-left&quot;: 32
+			})
+			.append(entry.title)
+			.click(function() {
+				entry.handler &amp;&amp; entry.handler({
+					&quot;title&quot;: entry.title
+				});
+			})
+			.appendTo(($(&quot;&lt;li&gt;&quot;).appendTo(menu)));
+	});
+	return menu;
+};
+
+})(Echo.jQuery);
+</pre>
+</body>
+</html>

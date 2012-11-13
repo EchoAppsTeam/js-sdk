@@ -16,7 +16,7 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js">/* ========================================================
- * bootstrap-tab.js v2.0.4
+ * bootstrap-tab.js v2.2.1
  * http://twitter.github.com/bootstrap/javascript.html#tabs
  * ========================================================
  * Copyright 2012 Twitter, Inc.
@@ -35,13 +35,15 @@
  * ======================================================== */
 
 
+!function ($) {
+
   &quot;use strict&quot;; // jshint ;_;
 
 
  /* TAB CLASS DEFINITION
   * ==================== */
 
-  var Tab = function ( element ) {
+  var Tab = function (element) {
     this.element = $(element)
   }
 
@@ -64,7 +66,7 @@
 
       if ( $this.parent('li').hasClass('active') ) return
 
-      previous = $ul.find('.active a').last()[0]
+      previous = $ul.find('.active:last a')[0]
 
       e = $.Event('show', {
         relatedTarget: previous
@@ -140,12 +142,11 @@
  /* TAB DATA-API
   * ============ */
 
-  $(function () {
-    $('body').on('click.tab.data-api', '[data-toggle=&quot;tab&quot;], [data-toggle=&quot;pill&quot;]', function (e) {
-      e.preventDefault()
-      $(this).tab('show')
-    })
+  $(document).on('click.tab.data-api', '[data-toggle=&quot;tab&quot;], [data-toggle=&quot;pill&quot;]', function (e) {
+    e.preventDefault()
+    $(this).tab('show')
   })
-</pre>
+
+}(window.jQuery);</pre>
 </body>
 </html>

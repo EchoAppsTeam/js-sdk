@@ -400,6 +400,7 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 };
 
 suite.prototype.cases.pluginRenderingMechanism = function(callback) {
+	var _suite = this;
 	var check = function() {
 		var self = this;
 		var plugin = this.getPlugin("MyTestPlugin");
@@ -448,8 +449,8 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 		// checking plugin.view.* methods
 		QUnit.ok(!!plugin.view.get("testPluginRenderer"),
 			"Checking if we have a proper element as a result of the plugin.view.get(name) call");
-		QUnit.equal(plugin.view.get("testPluginRenderer").html(),
-			"<div>Plugin extension (testPluginRenderer)</div>",
+		_suite.jqueryObjectsEqual($(plugin.view.get("testPluginRenderer").html()),
+			$("<div>Plugin extension (testPluginRenderer)</div>"),
 			"Checking if a renderer was applied to the element added within the plugin");
 
 		plugin.view.remove("testPluginRenderer");

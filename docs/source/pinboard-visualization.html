@@ -262,7 +262,7 @@ plugin.init = function() {
 
 plugin.dependencies = [{
 	&quot;loaded&quot;: function() { return !!Echo.jQuery().isotope; },
-	&quot;url&quot;: &quot;{sdk}/third-party/jquery/jquery.isotope.min.js&quot;
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js&quot;
 }];
 
 plugin.config = {
@@ -328,63 +328,6 @@ plugin.labels = {
 	&quot;childrenMoreItems&quot;: &quot;View more items...&quot;
 };
 
-plugin.events = {
-	&quot;Echo.StreamServer.Controls.Stream.Item.onRender&quot;: function(topic, args) {
-		var plugin = this, item = this.component;
-		var body = plugin._getStreamBody(item);
-		if (!body.hasClass(&quot;isotope&quot;)) {
-			plugin.set(&quot;rendered&quot;, true);
-			return;
-		}
-		if (item.isRoot() &amp;&amp; !plugin.get(&quot;rendered&quot;) &amp;&amp; !item.config.get(&quot;live&quot;)) {
-			body.isotope(&quot;insert&quot;, item.config.get(&quot;target&quot;));
-			plugin.set(&quot;rendered&quot;, true);
-			return;
-		}
-		plugin._refreshView();
-	}
-};
-
-$.map([ &quot;Echo.StreamServer.Controls.Stream.Item.onRerender&quot;,
-	&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize&quot;,
-	&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia&quot;], function(event) {
-	plugin.events[event] = function(topic, args) {
-		this._refreshView();
-	};
-});
-
-$.map([ &quot;Echo.StreamServer.Controls.Submit.onRender&quot;,
-	&quot;Echo.StreamServer.Controls.Submit.onEditError&quot;,
-	&quot;Echo.StreamServer.Controls.Submit.onEditComplete&quot;,
-	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse&quot;], function(event) {
-	plugin.events[event] = function(topic, args) {
-		var plugin = this;
-		// in some cases we need to refresh isotope layout immediately
-		if (!plugin.get(&quot;rendered&quot;)) return;
-		setTimeout(function() {
-			plugin._refreshView();
-		}, 0);
-	};
-});
-
-plugin.events[&quot;Echo.StreamServer.Controls.Stream.Item.onDelete&quot;] = function(topic, args) {
-	var plugin = this, item = this.component;
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-event-onChangeView'>	/**
-</span>	 * @event onChangeView
-	 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.onChangeView
-	 * Triggered if the view was changed.
-	 */
-	plugin.events.publish({
-		&quot;topic&quot;: &quot;onChangeView&quot;,
-		&quot;data&quot;: {
-			&quot;action&quot;: &quot;rerender&quot;,
-			&quot;priority&quot;: &quot;high&quot;,
-			&quot;handler&quot;: function() { plugin._refreshView(); }
-		},
-		&quot;context&quot;: item.config.get(&quot;parent.context&quot;)
-	});
-};
-
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-content'>/**
 </span> * @echo_renderer
  */
@@ -408,46 +351,102 @@ plugin.component.renderers.avatar = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-container'>/**
-</span> * @echo_renderer
- */
+(function() {
 
-plugin.component.renderers.container = function(element) {
-	var plugin = this, item = this.component;
-	element = item.parentRenderer(&quot;container&quot;, arguments);
-	if (plugin.get(&quot;rendered&quot;)) {
-		element.queue(&quot;fx&quot;, function(next) {
-			next();
-			plugin._refreshView();
-		});
-		plugin.events.publish({
-			&quot;topic&quot;: &quot;onChangeView&quot;,
-			&quot;data&quot;: {
-				&quot;action&quot;: &quot;rerender&quot;,
-				&quot;priority&quot;: &quot;high&quot;,
-				&quot;handler&quot;: function() { plugin._refreshView(); }
-			},
-			&quot;context&quot;: item.config.get(&quot;parent.context&quot;)
-		});
-	}
-	return element;
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-event-onChangeView'>/**
+</span> * @event onChangeView
+ * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.onChangeView
+ * Triggered if the view was changed.
+ */
+var publish = function(force) {
+	this.events.publish({
+		&quot;topic&quot;: &quot;onChangeView&quot;,
+		&quot;data&quot;: {
+			&quot;force&quot;: force
+		}
+	});
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-expandChildren'>/**
+var getRenderer = function(name) {
+	return function(element) {
+		var plugin = this, item = this.component;
+		element = item.parentRenderer(name, arguments);
+		if (plugin.get(&quot;rendered&quot;)) {
+			element.queue(&quot;fx&quot;, function(next) {
+				next();
+				publish.call(plugin, true);
+			});
+			publish.call(plugin, name === &quot;expandChildren&quot;);
+		}
+		return element;
+	};
+};
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-property-container'>/**
 </span> * @echo_renderer
  */
-plugin.component.renderers.expandChildren = function(element) {
+plugin.component.renderers.container = getRenderer(&quot;container&quot;);
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-property-expandChildren'>/**
+</span> * @echo_renderer
+ */
+plugin.component.renderers.expandChildren = getRenderer(&quot;expandChildren&quot;);
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-textToggleTruncated'>/**
+</span> * @echo_renderer
+ */
+plugin.component.renderers.textToggleTruncated = function(element) {
 	var plugin = this, item = this.component;
-	element = item.parentRenderer(&quot;expandChildren&quot;, arguments);
-	if (plugin.get(&quot;rendered&quot;)) {
-		element.queue(&quot;fx&quot;, function(next) {
-			next();
-			plugin._refreshView();
-		});
-		plugin._refreshView();
-	}
-	return element;
+	return item.parentRenderer(&quot;textToggleTruncated&quot;, arguments).one('click', function() {
+		publish.call(plugin, true);
+	});
 };
+
+$.map([&quot;Echo.StreamServer.Controls.Stream.Item.onRerender&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.onDelete&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia&quot;], function(topic) {
+		plugin.events[topic] = function() {
+			var force = topic !== &quot;Echo.StreamServer.Controls.Stream.Item.onDelete&quot;;
+			publish.call(this, force);
+		};
+});
+
+$.map([&quot;Echo.StreamServer.Controls.Submit.onRender&quot;,
+	&quot;Echo.StreamServer.Controls.Submit.onEditError&quot;,
+	&quot;Echo.StreamServer.Controls.Submit.onEditComplete&quot;,
+	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse&quot;], function(event) {
+	plugin.events[event] = function(topic, args) {
+		var plugin = this;
+		// in some cases we need to refresh isotope layout immediately
+		if (!plugin.get(&quot;rendered&quot;)) return;
+		setTimeout(function() {
+			publish.call(plugin, true);
+		}, 0);
+	};
+});
+
+// TODO: avoid coherence between plugin components
+plugin.events[&quot;Echo.StreamServer.Controls.Stream.Item.onRender&quot;] = function(topic, args) {
+	var plugin = this, item = this.component;
+	var body = $(&quot;.echo-streamserver-controls-stream-body&quot;, item.config.get(&quot;parent.target&quot;));
+	if (!body.data(&quot;isotope&quot;)) {
+		plugin.set(&quot;rendered&quot;, true);
+		return;
+	}
+	if (item.isRoot()) {
+		if (!plugin.get(&quot;rendered&quot;) &amp;&amp; !item.config.get(&quot;live&quot;)) {
+			body.isotope(&quot;insert&quot;, item.config.get(&quot;target&quot;));
+		} else {
+			publish.call(this, true);
+		}
+		plugin.set(&quot;rendered&quot;, true);
+		return;
+	}
+	publish.call(this, true);
+};
+
+})();
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-body'>/**
 </span> * @echo_renderer
@@ -460,16 +459,6 @@ plugin.component.renderers.body = function(element) {
 	var text = Echo.Utils.stripTags(item.get(&quot;data.object.content&quot;));
 	item.view.get(&quot;container&quot;).addClass(plugin._getCSSByLength(text.length));
 	return element;
-};
-
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-textToggleTruncated'>/**
-</span> * @echo_renderer
- */
-plugin.component.renderers.textToggleTruncated = function(element) {
-	var plugin = this, item = this.component;
-	return item.parentRenderer(&quot;textToggleTruncated&quot;, arguments).one('click', function() {
-		plugin._refreshView();
-	});
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-childBody'>/**
@@ -516,17 +505,6 @@ plugin.methods._getCSSByLength = function(length) {
 		}
 	};
 	return Echo.Utils.foldl(&quot;&quot;, plugin.config.get(&quot;itemCSSClassByContentLength&quot;), handler);
-};
-
-plugin.methods._getStreamBody = function(item) {
-	var stream = item.config.get(&quot;parent&quot;);
-	return $(&quot;.echo-streamserver-controls-stream-body&quot;, stream.target);
-};
-
-plugin.methods._refreshView = function() {
-	var plugin = this, item = this.component;
-	var stream = plugin._getStreamBody(item);
-	stream.isotope(&quot;reloadItems&quot;).isotope({&quot;sortBy&quot;: &quot;original-order&quot;});
 };
 
 plugin.template =
@@ -669,28 +647,42 @@ plugin.config = {
 
 plugin.dependencies = [{
 	&quot;loaded&quot;: function() { return !!Echo.jQuery().isotope; },
-	&quot;url&quot;: &quot;{sdk}/third-party/jquery/jquery.isotope.min.js&quot;
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js&quot;
 }];
 
 plugin.events = {
 	&quot;Echo.StreamServer.Controls.Stream.onRender&quot;: function(topic, args) {
-		this._isotopeView();
+		this._refreshView();
 	},
 	&quot;Echo.StreamServer.Controls.Stream.onRefresh&quot;: function(topic, args) {
-		this._isotopeView();
+		this._refreshView();
 	},
 	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView&quot;: function(topic, args) {
-		var stream = this.component;
-		var params = $.extend({}, args, {&quot;item&quot;: stream.items[args.item.data.unique]});
-		stream.queueActivity(params);
+		var plugin = this;
+		if (args.force) {
+			plugin._refreshView();
+		} else {
+			plugin.component.queueActivity({
+				&quot;action&quot;: &quot;rerender&quot;,
+				&quot;item&quot;: plugin.component.items[args.item.data.unique],
+				&quot;priority&quot;: &quot;high&quot;,
+				&quot;handler&quot;: function() { plugin._refreshView(); }
+			});
+		}
 	}
 };
 
-plugin.methods._isotopeView = function() {
+plugin.methods._refreshView = function() {
 	var plugin = this, stream = this.component;
-	stream.view.get(&quot;body&quot;).isotope(
-		plugin.config.get(&quot;isotope&quot;)
-	);
+	var body = stream.view.get(&quot;body&quot;);
+	var hasEntries = stream.threads.length;
+	body.data(&quot;isotope&quot;)
+		? (hasEntries
+			? body.isotope(&quot;reloadItems&quot;).isotope({&quot;sortBy&quot;: &quot;original-order&quot;})
+			: body.isotope(&quot;destroy&quot;))
+		: hasEntries &amp;&amp; body.isotope(
+			plugin.config.get(&quot;isotope&quot;)
+		);
 };
 
 plugin.css = 

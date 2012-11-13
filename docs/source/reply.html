@@ -66,7 +66,7 @@ plugin.config = {
 	 * 		}]
 	 * 	});
 	 */
-	&quot;actionString&quot;: &quot;Write reply here...&quot;
+	&quot;actionString&quot;: &quot;Write a reply...&quot;
 };
 
 plugin.labels = {
@@ -79,7 +79,7 @@ plugin.labels = {
 
 plugin.dependencies = [{
 	&quot;loaded&quot;: function() { return Echo.Control.isDefined(&quot;Echo.StreamServer.Controls.Submit&quot;); },
-	&quot;url&quot;: &quot;{sdk}/streamserver.pack.js&quot;
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/streamserver.pack.js&quot;
 }];
 
 plugin.events = {

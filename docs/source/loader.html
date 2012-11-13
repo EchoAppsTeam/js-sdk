@@ -27,7 +27,7 @@ if (Echo.Loader) return;
  * Static class which implements common mechanics for canvases loading.
  */
 Echo.Loader = {
-<span id='Echo-Loader-property-version'>	&quot;version&quot;: &quot;{version}&quot;,
+<span id='Echo-Loader-property-version'>	&quot;version&quot;: &quot;&quot;,
 </span><span id='Echo-Loader-property-config'>	&quot;config&quot;: {
 </span>		&quot;cdnBaseURL&quot;: &quot;http://cdn.echoenabled.com/&quot;,
 		&quot;errorTimeout&quot;: 5000 // 5 sec
@@ -294,8 +294,8 @@ Echo.Loader._initApplications = function(canvas) {
 
 	Echo.Loader.download(resources, function() {
 		Echo.jQuery.each(canvas.config.apps, function(id, app) {
-			var application = Echo.Utils.getComponent(app.component);
-			if (!application) {
+			var Application = Echo.Utils.getComponent(app.component);
+			if (!Application) {
 				Echo.Loader._error({
 					&quot;args&quot;: {&quot;app&quot;: app},
 					&quot;code&quot;: &quot;no_suitable_app_class&quot;,
@@ -305,7 +305,7 @@ Echo.Loader._initApplications = function(canvas) {
 			}
 			var overrides = (Echo.Loader.overrides[canvas.id] || {})[app.id] || {};
 			var config = Echo.jQuery.extend(true, app.config, overrides);
-			app.ref = new application(config);
+			app.ref = new Application(config);
 			canvas.target.append(app.config.target);
 		});
 	}, {

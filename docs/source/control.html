@@ -79,7 +79,15 @@ Echo.Control.create = function(manifest) {
 	var constructor = Echo.Utils.inherit(parent, function(config) {
 
 		// perform basic validation of incoming params
-		if (!config || !config.target || !config.appkey) return {};
+		if (!config || !config.target || !config.appkey) {
+			Echo.Utils.log({
+				&quot;type&quot;: &quot;error&quot;,
+				&quot;component&quot;: manifest.name,
+				&quot;message&quot;: &quot;Unable to initialize control, config is invalid&quot;,
+				&quot;args&quot;: {&quot;config&quot;: config}
+			});
+			return {};
+		}
 
 		this.data = config.data || {};
 		this.name = manifest.name;
@@ -208,16 +216,33 @@ Echo.Control.prototype.defaults.config = {
 	 * Specifies if info messages should be rendered.
 	 *
 	 * @cfg {String} [infoMessages.layout=&quot;full&quot;]
- 	 * Specifies the layout of the info message. By default can be set to &quot;compact&quot; or &quot;full&quot;.
+	 * Specifies the layout of the info message. By default can be set to &quot;compact&quot; or &quot;full&quot;.
 	 *
-	 *     &quot;infoMessages&quot; : {
-	 *         &quot;enabled&quot; : true,
-	 *         &quot;layout&quot; : &quot;full&quot;
+	 *     &quot;infoMessages&quot;: {
+	 *         &quot;enabled&quot;: true,
+	 *         &quot;layout&quot;: &quot;full&quot;
 	 *     }
 	 */
 	&quot;infoMessages&quot;: {
 		&quot;enabled&quot;: true,
 		&quot;layout&quot;: &quot;full&quot;
+	},
+<span id='Echo-Control-cfg-cdnBaseURL'>	/**
+</span>	 * @cfg {Object} [cdnBaseURL]
+	 * A set of the key/value pairs to define CDN base URLs for different components.
+	 * The values are used as the URL prefixes for all static files, such as scripts,
+	 * stylesheets, images etc. You can add your own CDN base URL and use it anywhere
+	 * when the configuration object is available.
+	 *
+	 * @cfg {String} [cdnBaseURL.sdk]
+	 * Base URL of the SDK CDN location used for the main SDK resources.
+	 *
+	 * @cfg {String} [cdnBaseURL.apps]
+	 * Base URL of the Echo apps built on top of the JS SDK.
+	 */
+	&quot;cdnBaseURL&quot;: {
+		&quot;sdk&quot;: Echo.Loader.config.cdnBaseURL + &quot;sdk/v&quot; + Echo.Loader.version,
+		&quot;apps&quot;: Echo.Loader.config.cdnBaseURL + &quot;apps&quot;
 	},
 	&quot;scriptLoadErrorTimeout&quot;: 5000, // 5 sec
 	&quot;query&quot;: &quot;&quot;,
@@ -227,7 +252,7 @@ Echo.Control.prototype.defaults.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	&quot;defaultAvatar&quot;: &quot;{sdk}/images/avatar-default.png&quot;
+	&quot;defaultAvatar&quot;: Echo.Loader.getURL(&quot;{sdk}/images/avatar-default.png&quot;)
 };
 
 Echo.Control.prototype.defaults.labels = {
@@ -461,7 +486,7 @@ Echo.Control.prototype.showError = function(data, options) {
 	var self = this;
 	if (typeof options.retryIn === &quot;undefined&quot;) {
 		var label = this.labels.get(&quot;error_&quot; + data.errorCode);
-		var message = label == &quot;error_&quot; + data.errorCode
+		var message = label === &quot;error_&quot; + data.errorCode
 			? &quot;(&quot; + data.errorCode + &quot;) &quot; + (data.errorMessage || &quot;&quot;)
 			: label;
 		this.showMessage({
@@ -510,7 +535,7 @@ Echo.Control.prototype.getPlugin = function(name) {
 </span> * Method to get the control template during rendering procedure. Can be overriden.
  */
 Echo.Control.prototype.template = function() {
-	return this.templates.main;
+	return this.invoke(this.templates.main);
 };
 
 <span id='Echo-Control-method-parentRenderer'>/**
@@ -592,9 +617,9 @@ Echo.Control.prototype._init = function(subsystems) {
 		&quot;init&quot;: control._initializers[parts[0]],
 		&quot;type&quot;: parts[1] || &quot;sync&quot;
 	};
-	if (subsystem.type == &quot;sync&quot;) {
+	if (subsystem.type === &quot;sync&quot;) {
 		var result = subsystem.init.call(control);
-		if (typeof result != &quot;undefined&quot;) {
+		if (typeof result !== &quot;undefined&quot;) {
 			control[subsystem.name] = result;
 		}
 		control._init(subsystems);
@@ -748,6 +773,8 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 	control.events.subscribe({
 		&quot;topic&quot;: &quot;Echo.Control.onDestroy&quot;,
 		&quot;handler&quot;: function(topic, data) {
+			var isProducer = control.config.get(&quot;context&quot;) ===
+						data.producer.config.get(&quot;context&quot;);
 			// destroy plugins
 			$.map(control.config.get(&quot;pluginsOrder&quot;), function(name) {
 				var plugin = control.plugins[name];
@@ -768,18 +795,19 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 				control.remove(&quot;request&quot;);
 			}
 
-			// unsubscribe from all events when:
-			//  - we want to destroy the whole control
-			//  - the control is a dependent one
-			var ctx = function(obj) { return obj.config.get(&quot;context&quot;); };
-			if (data.self || ctx(control) != ctx(data.producer)) {
+			// a. keep subscriptions in case of refresh (if &quot;self&quot; is false)
+			// b. unsubscribe from all events when:
+			//     - we want to destroy the whole control
+			//     - the control is a dependent one
+			if (data.self || !isProducer) {
 				$.each(control.subscriptionIDs, function(handlerId) {
 					control.events.unsubscribe({&quot;handlerId&quot;: handlerId});
 				});
 			}
 
-			// cleanup target element for top level control
-			if (!control.dependent()) {
+			// cleanup the target element of the control
+			// which produced the current &quot;destroy&quot; action
+			if (isProducer) {
 				control.config.get(&quot;target&quot;).empty();
 			}
 		}
@@ -807,7 +835,7 @@ Echo.Control.prototype._initializers.labels = function() {
 };
 
 Echo.Control.prototype._initializers.css = function() {
-	Echo.Utils.addCSS(this.baseCSS, &quot;control&quot;);
+	Echo.Utils.addCSS(this.substitute({&quot;template&quot;: this.baseCSS}), &quot;control&quot;);
 	this.config.get(&quot;target&quot;).addClass(this.cssClass);
 	if (this._manifest(&quot;css&quot;)) {
 		Echo.Utils.addCSS(this.substitute({&quot;template&quot;: this._manifest(&quot;css&quot;)}), this.name);
@@ -861,9 +889,9 @@ Echo.Control.prototype._initializers.plugins = function(callback) {
 	var control = this;
 	this._loadPluginScripts(function() {
 		$.map(control.config.get(&quot;pluginsOrder&quot;), function(name) {
-			var plugin = Echo.Plugin.getClass(name, control.name);
-			if (plugin) {
-				var instance = new plugin({&quot;component&quot;: control});
+			var Plugin = Echo.Plugin.getClass(name, control.name);
+			if (Plugin) {
+				var instance = new Plugin({&quot;component&quot;: control});
 				if (instance.enabled()) {
 					instance.init();
 					control.plugins[name] = instance;
@@ -895,14 +923,14 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 	var control = this;
 	return {
 		&quot;class&quot;: function(key) {
-			return key ? control.cssPrefix + key : control.cssClass
+			return key ? control.cssPrefix + key : control.cssClass;
 		},
 		&quot;label&quot;: function(key, defaults) {
 			return control.labels.get(key, defaults);
 		},
 		&quot;self&quot;: function(key, defaults) {
 			var value = control.invoke(Echo.Utils.get(control, key));
-			return typeof value == &quot;undefined&quot;
+			return typeof value === &quot;undefined&quot;
 				? Echo.Utils.get(control.data, key, defaults)
 				: value;
 		},
@@ -921,6 +949,11 @@ Echo.Control.prototype._manifest = function(key) {
 
 Echo.Control.prototype._loadScripts = function(resources, callback) {
 	var control = this;
+	resources = $.map(resources, function(resource) {
+		return $.extend(resource, {
+			&quot;url&quot;: control.substitute({&quot;template&quot;: resource.url})
+		});
+	});
 	Echo.Loader.download(resources, function() {
 		callback.call(control);
 	}, {
@@ -968,10 +1001,9 @@ Echo.Control.prototype._compileTemplate = function() {
 	var control = this;
 	var data = this.get(&quot;data&quot;, {});
 	var transformations = this.extension.template;
-	var template = $.isFunction(this.template) ? this.template() : this.template;
 	var processed = control.substitute({
 		&quot;data&quot;: data,
-		&quot;template&quot;: template
+		&quot;template&quot;: this.invoke(this.template)
 	});
 	var dom = $(&quot;&lt;div/&gt;&quot;).html(processed);
 	if (transformations &amp;&amp; transformations.length) {
@@ -1028,9 +1060,9 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
 	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-info { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/information.png&quot;) + '); }' +
-	'.echo-control-message-loading { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/loading.gif&quot;) + '); }' +
-	'.echo-control-message-error { background-image: url(' + Echo.Loader.getURL(&quot;{sdk}/images/warning.gif&quot;) + '); }';
+	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk}/images/information.png); }' +
+	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk}/images/loading.gif); }' +
+	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk}/images/warning.gif); }';
 
 })(Echo.jQuery);
 </pre>

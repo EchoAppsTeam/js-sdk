@@ -156,7 +156,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			}
 		});
 		view.render({
-			"template": suite.templates.substitutions,
+			"template": suite.templates.substitutions
 		});
 		QUnit.equal(view.get("header").html(),
 			"key1 key replaced by the \"tag\" substitution!",

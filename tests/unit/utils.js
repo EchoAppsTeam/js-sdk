@@ -68,7 +68,9 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.equal(Echo.Utils.get(data, "key1"), "value1",
 			"Checking get() method with simple key");
 		QUnit.deepEqual(Echo.Utils.get(data, ""), data,
-			"Checking get() method with empty key");
+			"Checking get() method with empty string as key");
+		QUnit.deepEqual(Echo.Utils.get(data, []), data,
+			"Checking get() method with empty array as key");
 		QUnit.deepEqual(Echo.Utils.get(data, "key2"), {
 			"key2-1": "value2-1",
 			"key2-2": {
@@ -121,13 +123,21 @@ suite.prototype.tests.TestDataMethods = {
 		Echo.Utils.set(data, "key1.key-null", null);
 		QUnit.ok(!Echo.Utils.remove(data, "key1.key-null.key"), "Checking remove() with null target");
 
-		QUnit.equal(Echo.Utils.htmlize(), "",
-			"Checking htmlize() method with empty param");
+		QUnit.equal(Echo.Utils.htmlize(), undefined,
+			"Checking htmlize() method with undefined param");
+		QUnit.equal(Echo.Utils.htmlize(""), "",
+			"Checking htmlize() method with empty string param");
+		QUnit.equal(Echo.Utils.htmlize(10), 10,
+			"Checking htmlize() method with integer param (expecting the same integer to be returned)");
 		QUnit.equal(Echo.Utils.htmlize("text1 < & > text2"), "text1 &lt; &amp; &gt; text2",
 			"Checking htmlize() method with special characters");
 
+		QUnit.equal(Echo.Utils.stripTags(), undefined,
+			"Checking stripTags() method with undefined param");
 		QUnit.equal(Echo.Utils.stripTags(""), "",
-			"Checking stripTags() method with empty param");
+			"Checking stripTags() method with empty string param");
+		QUnit.equal(Echo.Utils.stripTags(20), 20,
+			"Checking stripTags() method with integer param (expecting the same integer to be returned)");
 		QUnit.equal(Echo.Utils.stripTags("<div>Content</div>"), "Content",
 			"Checking stripTags() method with simple HTML");
 		QUnit.equal(Echo.Utils.stripTags("<div>Outer<div><!-- Comment -->Inner</div></div>"), "OuterInner",
@@ -173,9 +183,9 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.deepEqual(Echo.Utils.parseURL("https://www.domain.com"), {
 			"scheme": "https",
 			"domain": "www.domain.com",
-			"path": "",
-			"query": undefined,
-			"fragment": undefined
+			"path": "/",
+			"query": "",
+			"fragment": ""
 		}, "Checking parseURL() method with some undefined fields");
 
 		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-05T08:15:30Z"), 784023330,
@@ -268,7 +278,7 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key:value}"),
 			["{key:value}", "key", "value"], "Checking templateSubstitution regexp with one key-value pair");
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key}"),
-			["{key}", "key", undefined], "Checking templateSubstitution regexp with key and empty value");
+			["{key}", "key", ($.browser.msie && $.browser.version <= 8 ? "" : undefined)], "Checking templateSubstitution regexp with key and empty value");
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("string without template"),
 			null, "Checking templateSubstitution regexp with fake string as parameter");
 		var regexp = new RegExp(Echo.Utils.regexps.templateSubstitution, "g");
@@ -357,7 +367,7 @@ suite.prototype.tests.TestDomMethods = {
 			"Checking that addCSS() method returns true if CSS-class was added");
 		var testElement = $('<div class="echo-utils-tests"></div>');
 		$("#qunit-fixture").append(testElement);
-		QUnit.equal(Echo.Utils.getVisibleColor(testElement), "rgb(12, 34, 56)",
+		QUnit.ok(/rgb\(12,\s*34,\s*56\)/.test(Echo.Utils.getVisibleColor(testElement)),
 			"Test element has correct background color added via addCss() function");
 		QUnit.ok(!Echo.Utils.addCSS(".echo-utils-tests {}", "utils-tests"),
 			"Checking that addCSS() method returns false if previously added Id is used");
@@ -377,10 +387,10 @@ suite.prototype.tests.TestDomMethods = {
 			return $(".echo-utils-tests-" + name, container);
 		};
 		get("section1").css("background-color", "rgb(255, 0, 0)");
-		QUnit.equal(Echo.Utils.getVisibleColor(get("section1")), "rgb(255, 0, 0)",
+		QUnit.ok(/rgb\(255,\s*0,\s*0\)/.test(Echo.Utils.getVisibleColor(get("section1"))),
 			"Checking getVisibleColor() method with element color");
 		get("content").css("background-color", "rgb(0, 255, 0)");
-		QUnit.equal(Echo.Utils.getVisibleColor(get("section3")), "rgb(0, 255, 0)",
+		QUnit.ok(/rgb\(0,\s*255,\s*0\)/.test(Echo.Utils.getVisibleColor(get("section3"))),
 			"Checking that getVisibleColor() method returns parent element color if element color is undefined");
 		get("footer").css("background-color", "rgba(0, 0, 0, 0)");
 		QUnit.equal(Echo.Utils.getVisibleColor(get("footer")), "transparent",
@@ -409,8 +419,9 @@ suite.prototype.tests.TestDomMethods = {
 			"Checking mobile device regexp for Firefox user agent");
 		QUnit.ok(!Echo.Utils.regexps.mobileUA.test(user_agents['chrome']),
 			"Checking mobile device regexp for Chrome user agent");
-		// change it if tests is running on mobile devices
-		QUnit.equal(Echo.Utils.isMobileDevice(), false,
+		QUnit.equal(
+			Echo.Utils.isMobileDevice(),
+			Echo.Utils.regexps.mobileUA.test(navigator.userAgent) ? true : false,
 			"Checking isMobileDevice() method for real userAgent");
 	}
 };
@@ -418,10 +429,10 @@ suite.prototype.tests.TestDomMethods = {
 suite.prototype.async = {};
 
 suite.prototype.async.simpleImageTest = function(callback) {
-	var img = Echo.Utils.loadImage(Echo.Loader.getURL("{sdk}/third-party/jquery/img/fancybox/fancybox.png"));
-	img.one({
-		"load": function() {
-			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("{sdk}/third-party/jquery/img/fancybox/fancybox.png"),
+	var img = Echo.Utils.loadImage({
+		"image": Echo.Loader.getURL("{sdk}/third-party/bootstrap/img/glyphicons-halflings.png"),
+		"onload": function() {
+			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("{sdk}/third-party/bootstrap/img/glyphicons-halflings.png"),
 				"Checking loadImage() method");
 			callback();
 		}
@@ -430,9 +441,10 @@ suite.prototype.async.simpleImageTest = function(callback) {
 };
 
 suite.prototype.async.fakeImageTest = function(callback) {
-	var img = Echo.Utils.loadImage("http://example.com/fake.jpg", Echo.Loader.getURL("{sdk}/images/avatar-default.png"));
-	img.one({
-		"load": function() {
+	var img = Echo.Utils.loadImage({
+		"image": "http://example.com/fake.jpg",
+		"defaultImage": Echo.Loader.getURL("{sdk}/images/avatar-default.png"),
+		"onload": function() {
 			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("{sdk}/images/avatar-default.png"),
 				"Checking loadImage() method with fake image");
 			callback();

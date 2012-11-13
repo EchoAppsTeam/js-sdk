@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function(jQuery) {
+
+var $ = jQuery;
+
+if ($.echoModal) return;
+
+$.echoModal = function() {
+	return new Modal(arguments[0]);
+};
+
+var Modal = function(config) {
+	this.config = $.extend({
+		&quot;show&quot;: false,
+		&quot;backdrop&quot;: true,
+		&quot;keyboard&quot;: true,
+		&quot;closeButton&quot;: true,
+		&quot;remote&quot;: false,
+		&quot;extraClass&quot;: &quot;&quot;,
+		&quot;data&quot;: {},
+		&quot;width&quot;: null,
+		&quot;height&quot;: null,
+		&quot;padding&quot;: null,
+		&quot;footer&quot;: true,
+		&quot;header&quot;: true,
+		&quot;fade&quot;: false
+	}, config);
+
+	if (this.config.show) {
+		this._render();
+	}
+};
+
+Modal.prototype._render = function() {
+	var self = this;
+
+	if (this.rendered) return;
+
+	this.rendered = true;
+	this.element = $('&lt;div class=&quot;modal&quot; role=&quot;dialog&quot; tabindex=&quot;-1&quot;&gt;');
+
+	if (this.config.fade) {
+		this.element.addClass(&quot;fade&quot;);
+	} else {
+		this.element.addClass(&quot;hide&quot;);
+	}
+
+	if (this.config.header) {
+		var header = this._addSection(&quot;modal-header&quot;, $(&quot;&lt;h3&gt;&quot;).append(this.config.data.title));
+	}
+
+	var body = this._addSection(&quot;modal-body&quot;, this.config.data.body);
+
+	if (this.config.footer) {
+		var footer = this._addSection(&quot;modal-footer&quot;);
+	}
+	if (this.config.width !== null) {
+		this.element.width(this.config.width)
+			.css({&quot;margin-left&quot;: this.config.width * -0.5});
+	}
+	if (this.config.height !== null) {
+		body.height(this.config.height);
+	}
+	if (this.config.padding !== null) {
+		body.css(&quot;padding&quot;, this.config.padding);
+	}
+	if (this.config.footer &amp;&amp; this.config.data.buttons) {
+		$.map(this.config.data.buttons, function(button) {
+			var el = $(&quot;&lt;button&gt;&quot;).addClass(&quot;btn&quot;).append(button.title);
+			if (button.extraClass) {
+				el.addClass(button.extraClass);
+			}
+			el.click(function() {
+				button.handler &amp;&amp; button.handler();
+			});
+			el.appendTo(footer);
+		});
+	}
+	if (this.config.extraClass) {
+		this.element.addClass(this.config.extraClass);
+	}
+
+	if (this.config.backdrop) {
+		if (this.config.fade) {
+			this.element.on(&quot;show&quot;, function() {
+				var modal = self.element.data('modal');
+				var shown = modal.isShown;
+				var backdrop = modal.options.backdrop;
+
+				modal.options.backdrop = true;
+				modal.isShown = true;
+				modal.backdrop(function(){});
+				modal.isShown = shown;
+				modal.options.backdrop = backdrop;
+
+				self.backdrop = modal.$backdrop.wrap(&quot;&lt;div class='echo-sdk-ui'&gt;&quot;).parent();
+			});
+		} else {
+			this.element.on(&quot;shown&quot;, function() {
+				self.backdrop = self.element.data('modal').$backdrop.wrap(&quot;&lt;div class='echo-sdk-ui'&gt;&quot;).parent();
+			});
+		}
+	}
+	this.element.on(&quot;hidden&quot;, function() {
+		self.remove();
+	});
+	if (this.config.header &amp;&amp; this.config.closeButton) {
+		$('&lt;button aria-hidden=&quot;true&quot; data-dismiss=&quot;modal&quot; class=&quot;close&quot; type=&quot;button&quot;&gt;')
+			.append(&quot;&amp;times;&quot;).prependTo(header);
+	}
+	if ($.isFunction(this.config.onHide)) {
+		this.element.on(&quot;hide&quot;, function() {
+			self.config.onHide.call(self, self.element);
+		});
+	}
+	if ($.isFunction(this.config.onShow)) {
+		this.element.on(&quot;shown&quot;, function() {
+			self.config.onShow.call(self, self.element);
+		});
+	}
+
+	if (this.config.href) {
+		this.element.one(&quot;shown&quot;, function() {
+			body.append('&lt;iframe src=&quot;' + self.config.href + '&quot; id=&quot;&quot; name=&quot;&quot; class=&quot;echo-modal-iframe&quot; frameborder=&quot;0&quot; vspace=&quot;0&quot; hspace=&quot;0&quot; webkitAllowFullScreen mozallowfullscreen allowFullScreen' + ($.browser.msie ? ' allowtransparency=&quot;true&quot;' : '') + '&gt;&lt;/iframe&gt;');
+		});
+	}
+
+	// we used manual control for backdrop if fade is true
+	if (this.config.backdrop &amp;&amp; this.config.fade) {
+		this.config.backdrop = false;
+	}
+
+	this.element.appendTo(&quot;body&quot;)
+		.wrap(&quot;&lt;div class='echo-sdk-ui'&gt;&quot;)
+		.modal(this.config);
+
+	// if we try show few modals in one time, then event &quot;focusin.modal&quot; be called infinity times
+	$(document).off('focusin.modal');
+};
+
+Modal.prototype._addSection = function(css, content) {
+	var element = $(&quot;&lt;div&gt;&quot;);
+	element.addClass(css).appendTo(this.element);
+	if (content) {
+		element.append($.isFunction(content) ? content(element) : content);
+	}
+	return element;
+};
+
+Modal.prototype.show = function() {
+	this._render();
+	this.element.modal(&quot;show&quot;);
+};
+
+Modal.prototype.remove = function() {
+	if (this.rendered) {
+		this.rendered = false;
+		this.backdrop &amp;&amp; this.backdrop.remove();
+		this.element.unwrap().remove();
+	}
+};
+
+Modal.prototype.hide = function() {
+	if (this.rendered) {
+		this.element.modal(&quot;hide&quot;);
+	}
+};
+
+Echo.Utils.addCSS(
+	&quot;.echo-sdk-ui .modal-header { min-height: 20px; }&quot; +
+	&quot;.echo-modal-iframe { display: block; width: 100%; height: 100%; }&quot;,
+&quot;echo-modal-plugin&quot;);
+
+})(Echo.jQuery);
+</pre>
+</body>
+</html>

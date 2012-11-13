@@ -2455,19 +2455,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onRerender",
-        "fullName": "Echo.StreamServer.Controls.Stream.onRerender",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream-event-onRerender",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Item.onRerender",
-            "description": "Triggered when the item is rerendered."
-          }
-        },
-        "sort": 3
-      },
-      {
         "name": "StreamServer.Controls.Stream.Item",
         "fullName": "Echo.StreamServer.Controls.Stream.Item",
         "icon": "icon-class",
@@ -2475,6 +2462,19 @@ Docs = {
         "meta": {
         },
         "sort": 1
+      },
+      {
+        "name": "onRerender",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.onRerender",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-event-onRerender",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.onRerender",
+            "description": "Triggered when the item is rerendered."
+          }
+        },
+        "sort": 3
       },
       {
         "name": "constructor",
@@ -3389,6 +3389,15 @@ Docs = {
         "sort": 1
       },
       {
+        "name": "removePersonalItemsAllowed",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.removePersonalItemsAllowed",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-cfg-removePersonalItemsAllowed",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "userActions",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.userActions",
         "icon": "icon-cfg",
@@ -3477,6 +3486,16 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "changingStatusToUserDeleted",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.changingStatusToUserDeleted",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-changingStatusToUserDeleted",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
         "name": "changingStatusToUntouched",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.changingStatusToUntouched",
         "icon": "icon-property",
@@ -3521,6 +3540,16 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusModeratorDeleted",
         "icon": "icon-property",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-statusModeratorDeleted",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "statusUserDeleted",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.statusUserDeleted",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-property-statusUserDeleted",
         "meta": {
           "echo_label": true
         },
@@ -4049,19 +4078,6 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "onChangeView",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.onChangeView",
-        "icon": "icon-event",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-event-onChangeView",
-        "meta": {
-          "echo_event": {
-            "name": "Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization.onChangeView",
-            "description": "Triggered if the view was changed."
-          }
-        },
-        "sort": 3
-      },
-      {
         "name": "content",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.content",
         "icon": "icon-method",
@@ -4082,10 +4098,23 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "onChangeView",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.onChangeView",
+        "icon": "icon-event",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-event-onChangeView",
+        "meta": {
+          "echo_event": {
+            "name": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.onChangeView",
+            "description": "Triggered if the view was changed."
+          }
+        },
+        "sort": 3
+      },
+      {
         "name": "container",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.container",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-container",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-property-container",
         "meta": {
           "echo_renderer": true
         },
@@ -4094,18 +4123,8 @@ Docs = {
       {
         "name": "expandChildren",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.expandChildren",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-expandChildren",
-        "meta": {
-          "echo_renderer": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "body",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.body",
-        "icon": "icon-method",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-body",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-property-expandChildren",
         "meta": {
           "echo_renderer": true
         },
@@ -4116,6 +4135,16 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.textToggleTruncated",
         "icon": "icon-method",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-textToggleTruncated",
+        "meta": {
+          "echo_renderer": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "body",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.body",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization-method-body",
         "meta": {
           "echo_renderer": true
         },
@@ -5142,6 +5171,15 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "cdnBaseURL",
+        "fullName": "Echo.Control.cdnBaseURL",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.Control-cfg-cdnBaseURL",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "defaultAvatar",
         "fullName": "Echo.Control.defaultAvatar",
         "icon": "icon-cfg",
@@ -5610,6 +5648,24 @@ Docs = {
         "fullName": "Echo.API.Request.apiBaseUrl",
         "icon": "icon-cfg",
         "url": "#!/api/Echo.API.Request-cfg-apiBaseUrl",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "data",
+        "fullName": "Echo.API.Request.data",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-data",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "settings",
+        "fullName": "Echo.API.Request.settings",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.API.Request-cfg-settings",
         "meta": {
         },
         "sort": 3
