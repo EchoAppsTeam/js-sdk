@@ -231,17 +231,21 @@ module.exports = function(grunt) {
 		grunt.config("copy", {});
 		grunt.config("min", {});
 		grunt.config("concat", {});
-		_assignThirdPartyFilesVersion(system);
-		_makeCopySpec(system, version);
+		helpers.env("build", {
+			"target": system,
+			"stage": version
+		});
+		_assignThirdPartyFilesVersion();
+		_makeCopySpec();
 		var tasks = "";
 		switch (version) {
 			case "dev":
-				_makeConcatSpec(system, version);
+				_makeConcatSpec();
 				tasks = "copy:own-js copy:third-party-js assemble_bootstrap patch:loader concat copy:build";
 				break;
 			case "min":
-				_makeMinSpec(system, version);
-				_makeConcatSpec(system, version);
+				_makeMinSpec();
+				_makeConcatSpec();
 				tasks = "copy:own-js copy:third-party-js assemble_bootstrap patch:loader min concat copy:build";
 				break;
 			case "final":
@@ -404,7 +408,8 @@ module.exports = function(grunt) {
 
 	// private stuff
 
-	function _assignThirdPartyFilesVersion(system) {
+	function _assignThirdPartyFilesVersion() {
+		var system = helpers.env("build.target");
 		if (thirdPartyFileVersions[system]) return;
 		var versions = thirdPartyFileVersions[system] = {};
 		var files = grunt.file.expandFiles(grunt.config("sources." + system + ".third-party-js"));
@@ -424,7 +429,7 @@ module.exports = function(grunt) {
 		});
 	};
 
-	function _chooseFile (name, dir, system, version) {
+	function _chooseFile(name, dir, system, version) {
 		var versions = thirdPartyFileVersions[system];
 		var parts = name.split(/[:>]/);
 		if (parts.length > 1) {
@@ -445,7 +450,9 @@ module.exports = function(grunt) {
 		return file;
 	};
 
-	function _makeCopySpec(system, version) {
+	function _makeCopySpec() {
+		var system = helpers.env("build.target");
+		var version = helpers.env("build.stage");
 		var spec = {};
 		if (version === "final") {
 			_.each(["css", "images"], function(type) {
@@ -498,7 +505,9 @@ module.exports = function(grunt) {
 		grunt.config("copy", spec);
 	};
 
-	function _makeMinSpec(system, version) {
+	function _makeMinSpec() {
+		var system = helpers.env("build.target");
+		var version = helpers.env("build.stage");
 		var spec = {};
 		var copy = grunt.config("copy");
 		_.each(["own-js", "third-party-js"], function(type) {
@@ -517,7 +526,9 @@ module.exports = function(grunt) {
 		grunt.config("min", spec);
 	};
 
-	function _makeConcatSpec(system, version) {
+	function _makeConcatSpec() {
+		var system = helpers.env("build.target");
+		var version = helpers.env("build.stage");
 		var spec = {};
 		var choose = function(name) {
 			return _chooseFile(name, "<%= dirs.build %>", system, version);

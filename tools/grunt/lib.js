@@ -1,4 +1,4 @@
-var flags = {
+var environment = {
 	"initialized": false,
 	// if this value is true no actual release will be performed,
 	// to enable debug mode execute `grunt release -d=1`
@@ -17,9 +17,9 @@ exports.init = function(grunt) {
 
 	exports.env = function(key, value) {
 		if (typeof arguments[1] !== "undefined") {
-			flags[key] = value;
+			return grunt.utils.namespace.set(environment, key, value);
 		} else {
-			return flags[key] || false;
+			return grunt.utils.namespace.get(environment, key);
 		}
 	};
 
@@ -70,13 +70,13 @@ exports.init = function(grunt) {
 		});
 	};
 
-	if (!flags.initialized) {
-		flags.initialized = true;
-		flags.debug = true || !!grunt.option("debug");
-		flags.production = !!grunt.option("production");
+	if (!exports.env("initialized")) {
+		exports.env("initialized", true);
+		exports.env("debug", !!grunt.option("debug"));
+		exports.env("production", !!grunt.option("production"));
 		grunt.log.writeln("");
-		grunt.log.writeln("DEBUG mode is " + (flags.debug ? "ON".green : "OFF".red));
-		grunt.log.writeln("Working with " + (flags.production ? "PRODUCTION".red : "SANDBOX".green) + " environment");
+		grunt.log.writeln("DEBUG mode is " + (exports.env("debug") ? "ON".green : "OFF".red));
+		grunt.log.writeln("Working with " + (exports.env("production") ? "PRODUCTION".red : "SANDBOX".green) + " environment");
 		grunt.log.writeln("");
 	}
 
