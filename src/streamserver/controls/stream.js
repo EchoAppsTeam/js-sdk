@@ -699,16 +699,16 @@ stream.methods._onDataReceive = function(data, type, callback) {
 	 * Object which is returned by the search API endpoint
 	 *
 	 * @param {Array} data.entries
-	 * Array which contains receieved entries if exists
+	 * Array which contains receieved entries if any
 	 *
 	 * @param {String} data.type
-	 * Describe specific subsystem which produced the event. Possible values:
+	 * Describe's specific subsystem which produced the event. Possible values:
 	 *
-	 * + "initial" - triggered by initial items request (first time stream loaded)
-	 * + "more" - triggered by server response after click at "more" button
+	 * + "initial" - triggered by initial items request (stream loaded for the first time)
+	 * + "more" - triggered by server response after "more" button click
 	 * + "live" - triggered by liveUpdate mechanism (new items received in real-time)
-	 * + "children" - triggered by server response after click at "View more items..."
-	 * button (children items was requested)
+	 * + "children" - triggered by server response after "View more items..." button click
+	 * (children items were requested)
 	 */
 	this.events.publish({
 		"topic": "onDataReceive",
