@@ -41,6 +41,32 @@ plugin.init = function() {
 
 plugin.config = {
 	/**
+	 * @cfg {Boolean} [removePersonalItemsAllowed=false]
+	 * Specifies whether users are allowed to remove their own items from stream or not.
+	 *
+	 *     new Echo.StreamServer.Controls.Stream({
+	 *         "target": document.getElementById("echo-stream"),
+	 *         "appkey": "test.echoenabled.com",
+	 *         "plugins": [{
+	 *             "name": "Moderation"
+	 *             "removePersonalItemsAllowed": true
+	 *         }]
+	 *     });
+	 *
+	 * Please note that this parameter affects only client-side interface.
+	 * This feature can be enabled on server side via a kvs/put API call, where:
+	 *
+	 * + key - is <b>remove-personal-items-allowed</b>
+	 * + value - boolean <b>false/true</b>
+	 * + public - is <b>false</b> (can be omitted)
+	 *
+	 * <b>IMPORTANT</b>: Client-side <i>"removePersonalItemsAllowed"</i> and KVS
+	 * stored <i>"remove-personal-items-allowed"</i> parameters do not depend from
+	 * each other, so please keep them synchronized to achieve consistent behavior.
+	 */
+	"removePersonalItemsAllowed": false,
+
+	/**
 	 * @cfg {Array} userActions
 	 * Defines the list of user specific actions to be added to the Echo Stream Item.
 	 *
@@ -54,6 +80,7 @@ plugin.config = {
 	 * });
 	 */
 	"userActions": ["ban", "permissions"],
+
 	/**
 	 * @cfg {Array} itemActions
 	 * Defines the list of item specific actions to be added to the Echo Stream Item.
