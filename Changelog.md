@@ -1,5 +1,96 @@
 # Echo JS SDK CHANGELOG:
 
+## v3.0.3 - Nov 13, 2012
+
+- We employed the Bootstrap Modal dialog to display popups. The previously used jQuery Fancybox
+was removed from the code base, since it's no longer required. If you use the $.fancybox calls
+in your code, please update them employing the $.echoModal library. Example of the library usage
+can be found in the Echo.IdentityServer.Control.Auth and Echo.StreamServer.Controls.Submit applications.
+
+- The Bootstrap libraries assembling procedure was updated. Now the Bootstrap lib is represented
+as one JS file instead of 2-3 JS and CSS files. The CSS code and extra JS wrappers were packaged
+into a single JS file. The CSS rules required for the Bootstrap component are inserted into the page
+using the standard Echo.Utils.addCSS function. It helped to reduce the amount of resources required
+to load the SDK which reduces the SDK loading time. Please check the "dependencies" section of your App,
+Control and Plugin manifests and remove the Bootstrap CSS files usage required for Echo Bootstrap components.
+
+- The interface of the Echo.StreamServer.Controls.Stream.onDataReceive event was updated. Now the "onDataReceive"
+handlers are called with the new parameter "type" instead of "initial". This parameter specifies
+the origin of data request and provides the ability to identify event producers more precise. More information
+about the event and its new interface can be found in our docs center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-event-onDataReceive
+
+- The contract of the Echo.Utils.loadImage was updated. Now the function accepts one argument with
+the object type. The "onload" and "onerror" callbacks were added as well to provide better flexibility
+for the function users. More information about the function and its new contract can be found in our docs center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage
+
+- The Echo.Utils.parseURL function contract was slightly updated. Now an empty string is returned as a value
+for the keys which represent the part which was not found in the URL, the "undefined" value was returned
+previously in such cases. If you use this function in your code, please make check it and update accordingly.
+More information about the Echo.Utils.parseURL function can be found in our docs center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-parseURL
+
+- The Twitter Bootstrap UI framework was upgraded from 2.1.1 to 2.2.1 version.
+
+- A new "title" configuration parameter was added for the Echo.IdentityServer.Controls.Auth control
+to provide an ability to set the auth modal dialog title. More information about the new parameter
+can be found in our docs center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth-cfg-identityManager
+
+- The "destroy" method called for the dependent control (i.e. when it was initialized within another control)
+didn't clean up the target element, the target was cleared only in case the "destroy" was called for the top
+level control. Now the target is cleared properly for the dependent controls when the "destroy" method is being called.
+
+- Now the "templates.main" field in the Control or App manifest might be either a string or a function which generates
+the template. It provides more flexibility for the templates generation based on the required conditions.
+
+- The empty stream message was displayed incorrectly in case the PinboardVisualization plugin was enabled for the Stream
+control. Now the PinboardVisualization plugin doesn't affect the info messages displayed in the Stream control.
+
+- A new "removePersonalItemsAllowed" configuration parameter was added for the Moderation plugin to provide users
+with the ability to delete their own items. More information about the new parameter can be found in our docs center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-cfg-removePersonalItemsAllowed
+
+- The Echo.Utils.htmlize and Echo.Utils.stripTags functions logic was slightly updated. Now the functions process
+the argument value only if it's a string type argument and return incoming argument value as is otherwise.
+
+- The Echo.Utils.set function logic was optimized to work with plain keys, i.e. keys without nesting levels
+(example of the plain keys: "key1", "key2"; example of the keys with the nesting levels: "key1.key2", "key3.key4.key5").
+If the plain key is passed into the function, the part of machinery is not activated to speed up and simplify the process.
+
+- The Echo.API lib and the respective StreamServer, IdentityServer, etc libs were improved by adding the condition
+into the JS closure to exit the function in case the given class was already defined on the page.
+
+- The logic of the Echo.API lib was updated to provide an ability to make cross domain AJAX requests using
+the POST method. The HTTP method can be defined using the "method" parameter of the Echo.API object instance
+creation. More information about the Echo.API lib can be found in our docs center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.API.Request-cfg-method
+
+- A new "settings" configuration parameter was added for the Echo.API library to provide an access to transport
+object configuration. More information about the new configuration parameter can be found in our docs center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.API.Request-cfg-settings
+
+- A new "cdnBaseURL" configuration parameter was added for all Apps and Controls. The intention is to collect
+different CDN base URLs used in the products built on top of the JS SDK in one single place for consistency purposes.
+In addition to the new configuration parameter we updated the dependencies management mechanisms and provided
+the ability to use the configuration parameters in the resource URLs. Now the "{config:someKey}" is available
+for the URLs defined in the "dependencies" object of the App, Control or Plugin manifest. The idea is to use
+the newly added "cdnBaseURL" configuration parameter values in the URLs to give more flexibility for the publishers
+and developers to define the location of the resources and avoid the need to update the code itself in case
+the base URL is changed. More information about the "cdnBaseURL" parameter can be found in our docs center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-cfg-cdnBaseURL
+
+- The internal machinery of the Echo.Utils.htmlTextTruncate function was updated to cache the generated
+list of tags used inside the function to prevent the same set of tags generation each time the function is being called.
+
+- The Echo.Utils.log function calls were added into several places where the function execution is stopped
+due to the wrong incoming parameters. This should be very useful while developing the applications built on top
+of the SDK v3. We will add more annotations like this as we move forward.
+
+- The jQuery Easing plugin which was a dependency for the FancyBox plugin was removed, since it's no longer required
+(since the FancyBox was replaced with the Bootstrap Modal).
+
 ## v3.0.2 - Oct 11, 2012
 
 - the "Echo.StreamServer.Controls.Stream.Item.onReceive" event fired within
@@ -19,7 +110,9 @@ center: http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Cont
 
 - the "Echo.Loader.download" function interface was updated. Now the function
 accepts 3 arguments: resources to download, callback and the config. Previously
-these arguments were specified as keys of the single object argument. Please update the "Echo.Loader.download" function calls in your code. Updated information about the function is available in our docs center: http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-download
+these arguments were specified as keys of the single object argument. Please update the "Echo.Loader.download"
+function calls in your code. Updated information about the function is available in our docs center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-download
 
 - the "More" button of the Stream control is now included into the Live/Pause
 trigger area, if the "state.toggleBy" config option is defined as "mouseover"
