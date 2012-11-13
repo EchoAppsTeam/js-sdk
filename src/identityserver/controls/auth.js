@@ -75,7 +75,7 @@ auth.config = {
 	 * Specifies the URL to be opened as an auth handler.
 	 *
 	 * @cfg {String} [identityManager.login.title]
-	 * Specifies the Title of the visible auth area.
+	 * Specifies the Title of the auth modal dialog.
 	 *
 	 * @cfg {Object} [identityManager.signup]
 	 * Encapsulates data for signup workflow.
@@ -90,7 +90,7 @@ auth.config = {
 	 * Specifies the URL to be opened as an auth handler.
 	 *
 	 * @cfg {String} [identityManager.signup.title]
-	 * Specifies the Title of the visible auth area.
+	 * Specifies the Title of the auth modal dialog.
 	 *
 	 * @cfg {Object} [identityManager.edit]
 	 * Encapsulates data for edit workflow.
