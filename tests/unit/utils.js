@@ -429,11 +429,11 @@ suite.prototype.tests.TestDomMethods = {
 suite.prototype.async = {};
 
 suite.prototype.async.simpleImageTest = function(callback) {
+	var url = Echo.Loader.getURL("{sdk-assets}/third-party/bootstrap/img/glyphicons-halflings.png");
 	var img = Echo.Utils.loadImage({
-		"image": Echo.Loader.getURL("{sdk}/third-party/bootstrap/img/glyphicons-halflings.png"),
+		"image": url,
 		"onload": function() {
-			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("{sdk}/third-party/bootstrap/img/glyphicons-halflings.png"),
-				"Checking loadImage() method");
+			QUnit.equal($(this).attr("src"), url, "Checking loadImage() method");
 			callback();
 		}
 	});
@@ -441,12 +441,12 @@ suite.prototype.async.simpleImageTest = function(callback) {
 };
 
 suite.prototype.async.fakeImageTest = function(callback) {
+	var url = Echo.Loader.getURL("{sdk-assets}/images/avatar-default.png");
 	var img = Echo.Utils.loadImage({
 		"image": "http://example.com/fake.jpg",
-		"defaultImage": Echo.Loader.getURL("{sdk}/images/avatar-default.png"),
+		"defaultImage": url,
 		"onload": function() {
-			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("{sdk}/images/avatar-default.png"),
-				"Checking loadImage() method with fake image");
+			QUnit.equal($(this).attr("src"), url, "Checking loadImage() method with fake image");
 			callback();
 		}
 	});

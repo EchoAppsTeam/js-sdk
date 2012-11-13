@@ -441,7 +441,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-				"expect": $('1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("{sdk}/images/smileys/emoticon_smile.png") + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\n<a href="http://google.com/#qwerty">http://google.com/#qwerty</a>')
+				"expect": $('1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("{sdk-assets}/images/smileys/emoticon_smile.png") + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\n<a href="http://google.com/#qwerty">http://google.com/#qwerty</a>')
 		}, {
 			"description": "[hashtags]",
 			"config": {
@@ -471,7 +471,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": $('1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("{sdk}/images/smileys/emoticon_smile.png") + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty')
+			"expect": $('1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("{sdk-assets}/images/smileys/emoticon_smile.png") + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty')
 		}, {
 			"description": "[hashtags, urls]",
 			"config": {
@@ -501,7 +501,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": $('1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("{sdk}/images/smileys/emoticon_smile.png") + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#&nbsp;<br><a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>&nbsp;<br><a href="http://ya.ru">http://ya.ru</a>&nbsp;<br>&nbsp;<br><a href="http://google.com/#qwerty">http://google.com/#qwerty</a>')
+			"expect": $('1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("{sdk-assets}/images/smileys/emoticon_smile.png") + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#&nbsp;<br><a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>&nbsp;<br><a href="http://ya.ru">http://ya.ru</a>&nbsp;<br>&nbsp;<br><a href="http://google.com/#qwerty">http://google.com/#qwerty</a>')
 		}, {
 			"description": "very high limits",
 			"config": {
@@ -661,7 +661,7 @@ suite._itemData = {
 		"id": "http://twitter.com/12345",
 		"title": "Somebody",
 		"status": "Untouched",
-		"avatar": Echo.Loader.getURL("{sdk}/images/info70.png")
+		"avatar": Echo.Loader.getURL("{sdk-assets}/images/info70.png")
 	},
 	"object": {
 		"id": "http://example.com/ECHO/item/1311856366-373-937",
@@ -734,7 +734,7 @@ suite._streamConfigData = {
 		"enabled": false
 	},
 	"openLinksInNewWindow": false,
-	"providerIcon": Echo.Loader.getURL("{sdk}/images/favicons/comments.png"),
+	"providerIcon": Echo.Loader.getURL("{sdk-assets}/images/favicons/comments.png"),
 	"slideTimeout": 700,
 	"sortOrder": "reverseChronological",
 	"state": {

@@ -33,14 +33,14 @@ suite.prototype.tests.commonWorkflow = {
 			element.echoButton("update", {
 				"label": "SecondLabel",
 				"disabled": true,
-				"icon": Echo.Loader.getURL("{sdk}/images/loading.gif")
+				"icon": Echo.Loader.getURL("{sdk-assets}/images/loading.gif")
 			});
 			QUnit.ok(!$(target).html().match(/FirstLabel/) && $(target).html().match(/SecondLabel/),
 				"Checking that label is changed after update() method");
 			QUnit.ok(element.attr('disabled'),
 				"Checking that button is disabled after update() method");
 
-			var backgroundRegExp = new RegExp(".*background(-image)?:.*" + Echo.Loader.getURL("{sdk}\/images\/loading.gif"), "i");
+			var backgroundRegExp = new RegExp(".*background(-image)?:.*" + Echo.Loader.getURL("{sdk-assets}/images/loading.gif"), "i");
 
 			QUnit.ok($(target).html().match(/icon/) && $(target).html().match(backgroundRegExp),
 				"Checking that background icon is added to element after update() method");

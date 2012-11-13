@@ -11,6 +11,7 @@ if (Echo.Loader) return;
  */
 Echo.Loader = {
 	"version": "",
+	"debug": false,
 	"config": {
 		"cdnBaseURL": "http://cdn.echoenabled.com/",
 		"errorTimeout": 5000 // 5 sec
@@ -27,10 +28,12 @@ Echo.Loader = {
  * JavaScript or CSS stylesheet file URL.
  */
 Echo.Loader.getURL = function(url) {
+	var sdkBase = Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version;
 	return /^https?:\/\/|^\/\//.test(url)
 		? url
 		: url.replace(/{apps}/, Echo.Loader.config.cdnBaseURL + "apps")
-			.replace(/{sdk}/, Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version);
+			.replace(/{sdk-assets}/, sdkBase)
+			.replace(/{sdk}/, sdkBase + (Echo.Loader.debug ? "/dev" : ""));
 };
 /**
  * @static

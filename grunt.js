@@ -357,7 +357,7 @@ module.exports = function(grunt) {
 	grunt.registerHelper("bootstrap_css_wrapper", function(css, id) {
 		css = grunt.helper("mincss", css)
 				.replace(/'/g, "\\'")
-				.replace(/(url\(")\.\.([/a-z-.]+)("\))/ig, "$1' + Echo.Loader.getURL('{sdk}/third-party/bootstrap$2') + '$3");
+				.replace(/(url\(")\.\.([/a-z-.]+)("\))/ig, "$1' + Echo.Loader.getURL('{sdk-assets}/third-party/bootstrap$2') + '$3");
 
 		return "Echo.Utils.addCSS('" + css + "', '" + id + "');\n";
 	});
@@ -392,6 +392,7 @@ module.exports = function(grunt) {
 		},
 		"loader": function(src, config, version) {
 			src = patchers.url(src, config);
+			src = src.replace(/("?debug"?: ?).*?(,)/, '$1' + !helpers.env("release") + '$2');
 			return src.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 		}
 	};
