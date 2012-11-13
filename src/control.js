@@ -225,7 +225,7 @@ Echo.Control.prototype.defaults.config = {
 	 */
 	"cdnBaseURL": {
 		"sdk": Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version,
-		"apps": Echo.Loader.config.cdnBaseURL + "/apps"
+		"apps": Echo.Loader.config.cdnBaseURL + "apps"
 	},
 	"scriptLoadErrorTimeout": 5000, // 5 sec
 	"query": "",
