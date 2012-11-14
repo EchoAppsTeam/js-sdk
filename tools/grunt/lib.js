@@ -1,10 +1,11 @@
-var environment = {
-	"initialized": false,
+var initialized = false;
+var data = {
 	// if this value is true no actual release will be performed,
 	// to enable debug mode execute `grunt release -d=1`
 	"debug": false,
-	// execute `grunt release --production` for actual release
-	"production": false,
+	// execute `grunt release --env=production` for actual release
+	"env": "dev",
+	// flag is set to true when we execute release task
 	"release": false
 };
 var child_process = require("child_process");
@@ -17,9 +18,9 @@ exports.init = function(grunt) {
 
 	exports.config = function(key, value) {
 		if (typeof arguments[1] !== "undefined") {
-			return grunt.utils.namespace.set(environment, key, value);
+			return grunt.utils.namespace.set(data, key, value);
 		} else {
-			return grunt.utils.namespace.get(environment, key);
+			return grunt.utils.namespace.get(data, key);
 		}
 	};
 
@@ -70,13 +71,24 @@ exports.init = function(grunt) {
 		});
 	};
 
-	if (!exports.config("initialized")) {
-		exports.config("initialized", true);
+	if (!initialized) {
+		initialized = true;
+
+		grunt.cli.optlist.env = {
+			"info": "Specify working environment. Some actions might be skipped or added during build process. Possible values are: \"production\", \"staging\", \"test\", \"dev\".",
+			"type": String
+		};
+
+
 		exports.config("debug", !!grunt.option("debug"));
-		exports.config("production", !!grunt.option("production"));
+		var env = grunt.option("env");
+		if (!_.contains(["production", "staging", "test", "dev"], env)) {
+			env = "dev";
+		}
+		exports.config("env", env);
 		grunt.log.writeln("");
 		grunt.log.writeln("DEBUG mode is " + (exports.config("debug") ? "ON".green : "OFF".red));
-		grunt.log.writeln("Working with " + (exports.config("production") ? "PRODUCTION".red : "SANDBOX".green) + " environment");
+		grunt.log.writeln("Working in the " + (env === "production" ? "PRODUCTION".red : env.toUpperCase().green) + " environment");
 		grunt.log.writeln("");
 	}
 
