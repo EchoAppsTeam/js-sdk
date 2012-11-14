@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
 	"use strict";
 
-	var helpers = require("./tools/grunt/lib.js").init(grunt);
+	var shared = require("./tools/grunt/lib.js").init(grunt);
 
 	var _ = grunt.utils._;
 	var path = require("path");
@@ -118,7 +118,7 @@ module.exports = function(grunt) {
 		destinations: destinations,
 		packs: packs,
 		pkg: "<json:package.json>",
-		local: helpers.readOptionalJSON("config/local.json"),
+		local: shared.readOptionalJSON("config/local.json"),
 		meta: {
 			banner:
 				"/**\n" +
@@ -231,7 +231,7 @@ module.exports = function(grunt) {
 		grunt.config("copy", {});
 		grunt.config("min", {});
 		grunt.config("concat", {});
-		helpers.env("build", {
+		shared.config("build", {
 			"target": system,
 			"stage": version
 		});
@@ -280,7 +280,7 @@ module.exports = function(grunt) {
 	grunt.registerMultiTask("check", "Different checks (versions, pre-release, post-release, ...)", function() {
 		var done = this.async();
 		if (this.target === "versions") {
-			helpers.checkVersions(this.data, done);
+			shared.checkVersions(this.data, done);
 		}
 	});
 
@@ -356,7 +356,7 @@ module.exports = function(grunt) {
 		grunt.log.ok();
 	});
 
-	// helpers
+	// shared
 
 	grunt.registerHelper("bootstrap_css_wrapper", function(css, id) {
 		css = grunt.helper("mincss", css)
@@ -379,10 +379,10 @@ module.exports = function(grunt) {
 
 	grunt.registerHelper("make_docs", function(callback) {
 		var path = grunt.config("dirs.dist") + "/docs";
-		helpers.exec("rm -rf " + path + " && mkdir -p " + path, function() {
-			helpers.exec("jsduck --config=config/jsduck/config.json", function() {
+		shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
+			shared.exec("jsduck --config=config/jsduck/config.json", function() {
 				// copy Echo specific images and CSS to documentation directory
-				helpers.exec("cp -r docs/patch/* " + path, callback);
+				shared.exec("cp -r docs/patch/* " + path, callback);
 			});
 		});
 	});
@@ -396,7 +396,7 @@ module.exports = function(grunt) {
 		},
 		"loader": function(src, config, version) {
 			src = patchers.url(src, config);
-			src = src.replace(/("?debug"?: ?).*?(,)/, '$1' + !helpers.env("release") + '$2');
+			src = src.replace(/("?debug"?: ?).*?(,)/, '$1' + !shared.config("release") + '$2');
 			return src.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 		}
 	};
@@ -409,7 +409,7 @@ module.exports = function(grunt) {
 	// private stuff
 
 	function _assignThirdPartyFilesVersion() {
-		var system = helpers.env("build.target");
+		var system = shared.config("build.target");
 		if (thirdPartyFileVersions[system]) return;
 		var versions = thirdPartyFileVersions[system] = {};
 		var files = grunt.file.expandFiles(grunt.config("sources." + system + ".third-party-js"));
@@ -451,8 +451,8 @@ module.exports = function(grunt) {
 	};
 
 	function _makeCopySpec() {
-		var system = helpers.env("build.target");
-		var version = helpers.env("build.stage");
+		var system = shared.config("build.target");
+		var version = shared.config("build.stage");
 		var spec = {};
 		if (version === "final") {
 			_.each(["css", "images"], function(type) {
@@ -506,8 +506,8 @@ module.exports = function(grunt) {
 	};
 
 	function _makeMinSpec() {
-		var system = helpers.env("build.target");
-		var version = helpers.env("build.stage");
+		var system = shared.config("build.target");
+		var version = shared.config("build.stage");
 		var spec = {};
 		var copy = grunt.config("copy");
 		_.each(["own-js", "third-party-js"], function(type) {
@@ -527,8 +527,8 @@ module.exports = function(grunt) {
 	};
 
 	function _makeConcatSpec() {
-		var system = helpers.env("build.target");
-		var version = helpers.env("build.stage");
+		var system = shared.config("build.target");
+		var version = shared.config("build.stage");
 		var spec = {};
 		var choose = function(name) {
 			return _chooseFile(name, "<%= dirs.build %>", system, version);

@@ -15,7 +15,7 @@ exports.init = function(grunt) {
 	var exports = {};
 	var _ = grunt.utils._;
 
-	exports.env = function(key, value) {
+	exports.config = function(key, value) {
 		if (typeof arguments[1] !== "undefined") {
 			return grunt.utils.namespace.set(environment, key, value);
 		} else {
@@ -70,13 +70,13 @@ exports.init = function(grunt) {
 		});
 	};
 
-	if (!exports.env("initialized")) {
-		exports.env("initialized", true);
-		exports.env("debug", !!grunt.option("debug"));
-		exports.env("production", !!grunt.option("production"));
+	if (!exports.config("initialized")) {
+		exports.config("initialized", true);
+		exports.config("debug", !!grunt.option("debug"));
+		exports.config("production", !!grunt.option("production"));
 		grunt.log.writeln("");
-		grunt.log.writeln("DEBUG mode is " + (exports.env("debug") ? "ON".green : "OFF".red));
-		grunt.log.writeln("Working with " + (exports.env("production") ? "PRODUCTION".red : "SANDBOX".green) + " environment");
+		grunt.log.writeln("DEBUG mode is " + (exports.config("debug") ? "ON".green : "OFF".red));
+		grunt.log.writeln("Working with " + (exports.config("production") ? "PRODUCTION".red : "SANDBOX".green) + " environment");
 		grunt.log.writeln("");
 	}
 
