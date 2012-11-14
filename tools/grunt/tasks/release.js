@@ -137,10 +137,12 @@ module.exports = function(grunt) {
 		if (!config || !config.release) {
 			grunt.fail.fatal("No configuration for this task.");
 		}
+		if (!_.contains(["production", "staging"], shared.config("env"))) {
+			grunt.fail.fatal("Release can be performed only in \"production\" and \"staging\" environment.");
+		}
 		// we are pushing code to production so we must delete development configuration
 		delete config.domain;
 		// TODO: check if we have modified files, we must not release this
-		// TODO: prevent executing separate release steps
 		if (!this.args.length) {
 			var tasks = [
 				"default",
@@ -158,6 +160,11 @@ module.exports = function(grunt) {
 			grunt.task.run(tasks);
 			return;
 		}
+
+		if (!shared.config("release")) {
+			grunt.fail.warn("Release steps shouldn't be executed separately but only as a part of whole release process.");
+		}
+
 		var target = this.args.join(":");
 		console.time(target.yellow);
 
