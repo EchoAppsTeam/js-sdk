@@ -178,10 +178,10 @@ module.exports = function(grunt) {
 		var params;
 		switch (target) {
 			case "purge":
-				grunt.helper("cdn_purge", ["sdk", "apps"], config.release.purger, done);
+				purgeCDN(["sdk", "apps"], config.release.purger, done);
 				break;
 			case "pages":
-				grunt.helper("push_pages", done);
+				pushPages(done);
 				break;
 			default:
 				var uploads = config.release.targets;
@@ -202,7 +202,7 @@ module.exports = function(grunt) {
 		}
 	});
 
-	grunt.registerHelper("cdn_purge", function(paths, config, done) {
+	function purgeCDN(paths, config, done) {
 		if (shared.config("debug")) {
 			console.log(arguments[0]);
 			done();
@@ -263,9 +263,9 @@ module.exports = function(grunt) {
 		});
 		req.write(xml);
 		req.end();
-	});
+	};
 
-	grunt.registerHelper("push_pages", function(done) {
+	function pushPages(done) {
 		grunt.helper("make_docs", function() {
 			var updateCmd = [
 				"git checkout gh-pages",
@@ -287,5 +287,5 @@ module.exports = function(grunt) {
 				done();
 			});
 		});
-	});
+	};
 };
