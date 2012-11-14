@@ -3916,6 +3916,15 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "label",
+        "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.label",
+        "icon": "icon-cfg",
+        "url": "#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter-cfg-label",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
         "name": "limited",
         "fullName": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter.limited",
         "icon": "icon-property",
