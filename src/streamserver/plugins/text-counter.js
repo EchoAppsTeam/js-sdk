@@ -25,8 +25,9 @@ if (Echo.Plugin.isDefined(plugin)) return;
 /**
  * @cfg {Number} limit
  * Specifies the maximum length of the text.
- *  There is no limit if it is not defined.
- *
+ * There is no limit if it is not defined.
+ */
+/**
  * @cfg {String} label
  * Specifies the custom label for the counter. Parameter string is
  * a template that has several placeholders. Placeholder is some
