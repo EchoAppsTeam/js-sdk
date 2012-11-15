@@ -224,13 +224,13 @@ module.exports = function(grunt) {
 
 	grunt.registerTask("default", "check:versions clean:all build:sdk");
 
-	grunt.registerTask("build", "Build all versions of some system", function(system, version) {
-		if (!version) {
-			var tasks = ["build:" + system + ":dev"];
+	grunt.registerTask("build", "Go through all stages of building some target/system", function(target, stage) {
+		if (!stage) {
+			var tasks = ["build:" + target + ":dev"];
 			if (shared.config("env") !== "dev") {
-				tasks.push("build:" + system + ":min");
+				tasks.push("build:" + target + ":min");
 			}
-			tasks.push("build:" + system + ":final");
+			tasks.push("build:" + target + ":final");
 			grunt.task.run(tasks);
 			return;
 		}
@@ -238,13 +238,13 @@ module.exports = function(grunt) {
 		grunt.config("min", {});
 		grunt.config("concat", {});
 		shared.config("build", {
-			"target": system,
-			"stage": version
+			"target": target,
+			"stage": stage
 		});
 		_assignThirdPartyFilesVersion();
 		_makeCopySpec();
 		var tasks = "";
-		switch (version) {
+		switch (stage) {
 			case "dev":
 				_makeConcatSpec();
 				tasks = "copy:own-js copy:third-party-js assemble_bootstrap patch:loader concat clean:third-party copy:build";
@@ -422,10 +422,10 @@ module.exports = function(grunt) {
 	// private stuff
 
 	function _assignThirdPartyFilesVersion() {
-		var system = shared.config("build.target");
-		if (thirdPartyFileVersions[system]) return;
-		var versions = thirdPartyFileVersions[system] = {};
-		var files = grunt.file.expandFiles(grunt.config("sources." + system + ".third-party-js"));
+		var target = shared.config("build.target");
+		if (thirdPartyFileVersions[target]) return;
+		var versions = thirdPartyFileVersions[target] = {};
+		var files = grunt.file.expandFiles(grunt.config("sources." + target + ".third-party-js"));
 		var name, isMinified;
 		_.each(files, function(filename) {
 			filename = filename.replace(reRelative, "");
@@ -442,17 +442,17 @@ module.exports = function(grunt) {
 		});
 	};
 
-	function _chooseFile(name, dir, system, version) {
-		var versions = thirdPartyFileVersions[system];
+	function _chooseFile(name, dir, target, stage) {
+		var versions = thirdPartyFileVersions[target];
 		var parts = name.split(/[:>]/);
 		if (parts.length > 1) {
 			name = parts[1];
 		}
 		var file = name;
 		if (versions[name]) {
-			file = versions[name][version];
+			file = versions[name][stage];
 			if (!file) {
-				file = versions[name][version === "dev" ? "min" : "dev"];
+				file = versions[name][stage === "dev" ? "min" : "dev"];
 			}
 		}
 		file = dir + "/" + file;
@@ -464,14 +464,14 @@ module.exports = function(grunt) {
 	};
 
 	function _makeCopySpec() {
-		var system = shared.config("build.target");
-		var version = shared.config("build.stage");
+		var target = shared.config("build.target");
+		var stage = shared.config("build.stage");
 		var spec = {};
-		if (version === "final") {
+		if (stage === "final") {
 			_.each(["css", "images"], function(type) {
 				spec[type] = {
 					"files": {
-						"<%= dirs.build %>": grunt.config("sources." + system + "." + type)
+						"<%= dirs.build %>": grunt.config("sources." + target + "." + type)
 					},
 					"options": {
 						"basePath": "<config:dirs.src>"
@@ -491,7 +491,7 @@ module.exports = function(grunt) {
 		} else {
 			spec["own-js"] = {
 				"files": {
-					"<%= dirs.build %>": grunt.config("sources." + system + ".own-js")
+					"<%= dirs.build %>": grunt.config("sources." + target + ".own-js")
 				},
 				"options": {
 					"basePath": "<config:dirs.src>"
@@ -500,7 +500,7 @@ module.exports = function(grunt) {
 			spec["third-party-js"] = {
 				"files": {
 					"<%= dirs.build %>": thirdPartySrc.map(function(name) {
-						return _chooseFile(name, "<%= dirs.src %>", system, version);
+						return _chooseFile(name, "<%= dirs.src %>", target, stage);
 					})
 				},
 				"options": {
@@ -514,13 +514,11 @@ module.exports = function(grunt) {
 				"basePath": "<config:dirs.build>"
 			}
 		};
-		spec["build"].files[grunt.config("destinations." + system + "." + version)] = ["<%= dirs.build %>/**"];
+		spec["build"].files[grunt.config("destinations." + target + "." + stage)] = ["<%= dirs.build %>/**"];
 		grunt.config("copy", spec);
 	};
 
 	function _makeMinSpec() {
-		var system = shared.config("build.target");
-		var version = shared.config("build.stage");
 		var spec = {};
 		var copy = grunt.config("copy");
 		_.each(["own-js", "third-party-js"], function(type) {
@@ -540,11 +538,11 @@ module.exports = function(grunt) {
 	};
 
 	function _makeConcatSpec() {
-		var system = shared.config("build.target");
-		var version = shared.config("build.stage");
+		var target = shared.config("build.target");
+		var stage = shared.config("build.stage");
 		var spec = {};
 		var choose = function(name) {
-			return _chooseFile(name, "<%= dirs.build %>", system, version);
+			return _chooseFile(name, "<%= dirs.build %>", target, stage);
 		};
 		_.each(grunt.config("packs"), function(pack, key) {
 			spec[key] = {
