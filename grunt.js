@@ -367,7 +367,7 @@ module.exports = function(grunt) {
 		return "Echo.Utils.addCSS('" + css + "', '" + id + "');\n";
 	});
 
-	grunt.registerHelper("echo_wrapper", function(filepath, version) {
+	grunt.registerHelper("echo_wrapper", function(filepath) {
 		var lines = [
 			"(function(jQuery) {",
 			"var $ = jQuery;",
@@ -375,7 +375,7 @@ module.exports = function(grunt) {
 			grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)),
 			"})(Echo.jQuery);"
 		];
-		return lines.join(version === "min" ? "" : "\n");
+		return lines.join(shared.config("build.stage") === "min" ? "" : "\n");
 	});
 
 	grunt.registerHelper("make_docs", function(callback) {
@@ -453,7 +453,7 @@ module.exports = function(grunt) {
 		file = dir + "/" + file;
 		if (parts.length > 1) {
 			parts[1] = file;
-			file = parts.slice(0, -1).join(":") + ":" + version + ">";
+			file = parts.slice(0, -1).join(":") + ">";
 		}
 		return file;
 	};
