@@ -396,7 +396,7 @@ module.exports = function(grunt) {
 					/cdn\.echoenabled\.com(\/sdk\/v[\d\.]+\/)(?!dev)/g,
 					config.domain + "$1" + (env === "dev" ? "dev/" : "")
 				).replace(
-					/cdn\.echoenabled\.com(\/apps\/)/g,
+					/cdn\.echoenabled\.com(\/apps\/|\/")/g,
 					config.domain + "$1"
 				);
 			}
