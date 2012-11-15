@@ -143,6 +143,11 @@ module.exports = function(grunt) {
 			build: [
 				"<%= dirs.build %>"
 			],
+			"third-party": [
+				"<%= dirs.build %>/third-party/yepnope",
+				"<%= dirs.build %>/third-party/jquery",
+				"<%= dirs.build %>/third-party/bootstrap/!(echo-)*.js"
+			],
 			all: [
 				"<%= dirs.dist %>",
 				"<config:clean.build>"
@@ -242,12 +247,12 @@ module.exports = function(grunt) {
 		switch (version) {
 			case "dev":
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js assemble_bootstrap patch:loader concat copy:build";
+				tasks = "copy:own-js copy:third-party-js assemble_bootstrap patch:loader concat clean:third-party copy:build";
 				break;
 			case "min":
 				_makeMinSpec();
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js assemble_bootstrap patch:loader min concat copy:build";
+				tasks = "copy:own-js copy:third-party-js assemble_bootstrap patch:loader min concat clean:third-party copy:build";
 				break;
 			case "final":
 				tasks = "copy:css copy:images copy:build copy:demo copy:tests copy:apps patch:html";
