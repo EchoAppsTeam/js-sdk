@@ -1044,8 +1044,8 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
 	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk}/images/information.png); }' +
-	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk}/images/loading.gif); }' +
-	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk}/images/warning.gif); }';
+	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
+	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
+	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
 
 })(Echo.jQuery);
