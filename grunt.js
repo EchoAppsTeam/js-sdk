@@ -271,7 +271,7 @@ module.exports = function(grunt) {
 		var self = this;
 		var files = this.data.files;
 		if (this.target === "loader") {
-			files = files[shared.config("release") ? "release" : "build"];
+			files = files[shared.config("release") && !shared.config("build") ? "release" : "build"];
 		}
 		var config = grunt.config("local");
 		grunt.file.expandFiles(files).map(function(file) {
@@ -417,9 +417,14 @@ module.exports = function(grunt) {
 			return src;
 		},
 		"loader": function(src, config, version) {
-			return patchers.url(src, config)
-				.replace(/("?debug"?: ?).*?(,)/, '$1' + (shared.config("build.stage") === "dev") + '$2')
+			src = patchers.url(src, config)
 				.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
+			if (shared.config("build")) {
+				// patch debug field only when we are building files
+				// and not patching already built ones during release
+				src = src.replace(/("?debug"?: ?).*?(,)/, '$1' + (shared.config("build.stage") === "dev") + '$2');
+			}
+			return src;
 		}
 	};
 

@@ -164,6 +164,8 @@ module.exports = function(grunt) {
 			grunt.fail.warn("Release steps shouldn't be executed separately but only as a part of whole release process.");
 		}
 
+		// release step can't be build step at the same time
+		shared.config("build", null);
 		var target = this.args.join(":");
 		console.time(target.yellow);
 
@@ -174,7 +176,6 @@ module.exports = function(grunt) {
 		};
 		var version = grunt.config("pkg.version");
 		var majorVersion = version.split(".")[0];
-		var params;
 		switch (target) {
 			case "purge":
 				purgeCDN(["sdk", "apps"], config.release.purger, done);
