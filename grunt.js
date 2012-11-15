@@ -155,7 +155,13 @@ module.exports = function(grunt) {
 		},
 		patch: {
 			"loader": {
-				files: ["<%= dirs.build %>/loader.js"],
+				files: {
+					"build": ["<%= dirs.build %>/loader.js"],
+					"release": [
+						"<%= destinations.sdk.dev %>/loader.js",
+						"<%= destinations.sdk.min %>/loader.js"
+					]
+				},
 				patcher: "loader"
 			},
 			"html": {
@@ -263,9 +269,12 @@ module.exports = function(grunt) {
 
 	grunt.registerMultiTask("patch", "Patching files", function(version) {
 		var self = this;
-		var files = grunt.file.expandFiles(this.data.files);
+		var files = this.data.files;
+		if (this.target === "loader") {
+			files = files[shared.config("release") ? "release" : "build"];
+		}
 		var config = grunt.config("local");
-		files.map(function(file) {
+		grunt.file.expandFiles(files).map(function(file) {
 			grunt.log.write("Patching \"" + file + "\"...");
 			var src = grunt.file.read(file);
 			src = patchers[self.data.patcher](

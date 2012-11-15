@@ -147,7 +147,6 @@ module.exports = function(grunt) {
 			var tasks = [
 				"default",
 				"release:sdk:latest",
-				// FIXME: doesn't work atm cause it tries to patch files in build folder
 				"patch:loader:stable",
 				"release:sdk:stable",
 				"release:apps"
