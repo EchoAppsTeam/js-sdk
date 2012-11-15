@@ -404,7 +404,7 @@ module.exports = function(grunt) {
 		},
 		"loader": function(src, config, version) {
 			return patchers.url(src, config)
-				.replace(/("?debug"?: ?).*?(,)/, '$1' + !shared.config("release") + '$2')
+				.replace(/("?debug"?: ?).*?(,)/, '$1' + (shared.config("build.stage") === "dev") + '$2')
 				.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 		}
 	};
