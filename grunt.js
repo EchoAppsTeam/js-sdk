@@ -221,11 +221,12 @@ module.exports = function(grunt) {
 
 	grunt.registerTask("build", "Build all versions of some system", function(system, version) {
 		if (!version) {
-			grunt.task.run([
-				"build:" + system + ":dev",
-				"build:" + system + ":min",
-				"build:" + system + ":final",
-			]);
+			var tasks = ["build:" + system + ":dev"];
+			if (shared.config("env") !== "dev") {
+				tasks.push("build:" + system + ":min");
+			}
+			tasks.push("build:" + system + ":final");
+			grunt.task.run(tasks);
 			return;
 		}
 		grunt.config("copy", {});
@@ -389,15 +390,22 @@ module.exports = function(grunt) {
 
 	var patchers = {
 		"url": function(src, config, version) {
-			if (config && config.domain) {
-				src = src.replace(/cdn\.echoenabled\.com\/(?=sdk\/|apps\/|")/g, config.domain + "/");
+			var env = shared.config("env");
+			if ((env === "dev" || env === "test") && config && config.domain) {
+				src = src.replace(
+					/cdn\.echoenabled\.com(\/sdk\/v[\d\.]+\/)(?!dev)/g,
+					config.domain + "$1" + (env === "dev" ? "dev/" : "")
+				).replace(
+					/cdn\.echoenabled\.com(\/apps\/)/g,
+					config.domain + "$1"
+				);
 			}
 			return src;
 		},
 		"loader": function(src, config, version) {
-			src = patchers.url(src, config);
-			src = src.replace(/("?debug"?: ?).*?(,)/, '$1' + !shared.config("release") + '$2');
-			return src.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
+			return patchers.url(src, config)
+				.replace(/("?debug"?: ?).*?(,)/, '$1' + !shared.config("release") + '$2')
+				.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 		}
 	};
 
