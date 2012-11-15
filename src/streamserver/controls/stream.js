@@ -2713,7 +2713,7 @@ item.methods._initSmileysConfig = function() {
 	});
 	_smileys.regexps.test = new RegExp(escapedCodes.join("|"));
 	_smileys.tag = function(smiley) {
-		return self.substitute({"template": '<img class="' + self.cssPrefix + 'smiley-icon" src="{config:cdnBaseURL.sdk-assets}/images/smileys/emoticon_"' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '" />'});
+		return self.substitute({"template": '<img class="{class:smiley-icon}" src="{config:cdnBaseURL.sdk-assets}/images/smileys/emoticon_"' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '" />'});
 	};
 	return _smileys;
 };
