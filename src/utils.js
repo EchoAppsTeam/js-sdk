@@ -204,8 +204,8 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * or its value is undefined.
  */
 Echo.Utils.get = function(obj, key, defaults, callback) {
-	if (!key || !obj) return false;
 	var keys = Echo.Utils._prepareFieldAccessKey(key);
+	if (!keys || !obj) return defaults;
 	var found = true;
 	var iteration = function(_key, _data) {
 		if (callback) {
@@ -257,10 +257,12 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
  * The boolean value which indicates whether the key was removed from the given object.
  */
 Echo.Utils.remove = function(obj, key) {
-	if (!obj || !key) return false;
 	var keys = Echo.Utils._prepareFieldAccessKey(key);
+	if (!keys || !obj) return false;
 	var field = keys.pop();
-	var target = Echo.Utils.get(obj, keys, {});
+	// passing obj as a default value as well
+	// to operate with it in case of the plain key
+	var target = Echo.Utils.get(obj, keys, obj);
 	return target === null || typeof target[field] === "undefined"
 		? false
 		: delete target[field];
@@ -298,8 +300,8 @@ Echo.Utils.remove = function(obj, key) {
  * in case the object or the key is not specified.
  */
 Echo.Utils.set = function(obj, key, value) {
-	if (!obj || !key) return false;
 	var keys = Echo.Utils._prepareFieldAccessKey(key);
+	if (!keys || !obj) return false;
 	var field = keys.pop();
 	var target = obj;
 	if (keys.length > 0) {
@@ -314,7 +316,12 @@ Echo.Utils.set = function(obj, key, value) {
 };
 
 Echo.Utils._prepareFieldAccessKey = function(key) {
-	return typeof key === "string" ? key.split(".") : key;
+	if (!key) return false;
+	return typeof key === "string"
+		? key.split(".")
+		: key instanceof Array && key.length
+			? key
+			: false; // unknown key type
 };
 
 /**
