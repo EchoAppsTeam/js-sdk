@@ -157,11 +157,11 @@ Echo.Utils.foldl = function(acc, object, callback) {
 
 /**
  * @static
- * Method to access specific nested field value in the object.
+ * Method to get a specific field value in the given object.
  *
- * This function returns the corresponding value of the given key or the
- * default value if specified in the third argument. Use the dot as a delimiter
- * of key parts to get nested field value.
+ * This function returns the corresponding value of the given object field or the
+ * default value if specified as the third argument. Use the dot char ('.') as the
+ * delimiter of the key parts to get the nested field value.
  *
  *     var data = {
  *         "key1": "value1",
@@ -175,34 +175,37 @@ Echo.Utils.foldl = function(acc, object, callback) {
  *     Echo.Utils.get(data, "key2.key2-1"); // will return "value2-1"
  *
  * @param {Object} obj
- * The object from which the value is taken.
+ * The source object where the value defined for the given key should be looked for.
  *
  * @param {Mixed} key
- * The key for value extraction. Possible types are String or Array. If its Array, parameter
- * should contains list of keys if its complex. Ex.: "key2.key2-2" => ["key2", "key2-2"].
+ * Specifies the field to access the necessary value.
+ * Possible types are String or Array. If the key is defined as an Array,
+ * the parameter should contain the key chain to access the necessary value.
+ * Example: the "key2.key2-2" and ["key2", "key2-2"] key representations are equivalent.
  *
  * @param {Object} [defauts]
- * Default value if no corresponding key was found in the object.
+ * Default value to be returned in case when no corresponding key was found
+ * in the specified object.
  *
  * @param {Function} [callback]
- * The callback function executed for each object of corresponding part of the key.
+ * The callback function to be executed while switching between the nesting levels
+ * while traversing the source object. The callback is executed once in case of the
+ * plain keys (i.e. without nesting levels).
  *
  * @param {Object} callback.data
- * The object of corresponding part of the key.
+ * Contains the object value on the current nesting level during the object traversing.
  *
  * @param {String} callback.key
- * Defines corresponding part of the key.
+ * Contains the part of the key to be used during this iteration of the object traversing.
  *
  * @return {Mixed}
- * The corresponding nested value found in the object.
-*/
+ * The corresponding value found in the source object or the default value
+ * (if defined during the function call) in case the specified field is not found
+ * or its value is undefined.
+ */
 Echo.Utils.get = function(obj, key, defaults, callback) {
-	if (key && typeof key === "string") {
-		key = key.split(/\./);
-	}
-	if (!key || !key.length) {
-		return obj;
-	}
+	if (!key || !obj) return false;
+	var keys = Echo.Utils._prepareFieldAccessKey(key);
 	var found = true;
 	var iteration = function(_key, _data) {
 		if (callback) {
@@ -215,18 +218,18 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
 		}
 	};
 	// avoid foldl usage for plain keys
-	var value = key.length === 1
-		? iteration(key.pop(), obj)
-		: Echo.Utils.foldl(obj, key, iteration);
+	var value = keys.length === 1
+		? iteration(keys.pop(), obj)
+		: Echo.Utils.foldl(obj, keys, iteration);
 	return found ? value : defaults;
 };
 
 /**
  * @static
- * Method to remove specific nested field value in the object.
+ * Method to remove a specific field from the given object.
  *
- * This function removes the corresponding value of the given key or the.
- * Use the dot as a delimiter of key parts to remove nested field value.
+ * This function removes the corresponding field in the target object.
+ * Use the dot char ('.') as a delimiter of the key parts to remove nested field.
  *
  *     var data = {
  *         "key1": "value1",
@@ -244,32 +247,31 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
  *     Echo.Utils.remove(data, "not_defined_key"); // will return false
  *
  * @param {Object} obj
- * The object from which the value is taken.
+ * Specifies the target object which should be updated.
  *
  * @param {Mixed} key
  * The key for value removing. Possible types are String or Array. If its Array, parameter
  * should contains list of keys if its complex. Ex.: "key2.key2-2" => ["key2", "key2-2"].
  *
  * @return {Boolean}
- * The boolean value which indicates that value by key exists and removed.
+ * The boolean value which indicates whether the key was removed from the given object.
  */
 Echo.Utils.remove = function(obj, key) {
-	if (!key || !obj) return false;
-	var keys = $.type(key) === "array" ? key : key.split(/\./);
-	var _key = keys.pop();
+	if (!obj || !key) return false;
+	var keys = Echo.Utils._prepareFieldAccessKey(key);
+	var field = keys.pop();
 	var target = Echo.Utils.get(obj, keys, {});
-	if (target === null || $.type(target[_key]) === "undefined") {
-		return false;
-	}
-	return delete target[_key];
+	return target === null || typeof target[field] === "undefined"
+		? false
+		: delete target[field];
 };
 
 /**
  * @static
- * Method to define specific nested field value in the object.
+ * Method to define a given value for the specified key in the target object.
  *
  * This function allows to define the value for the corresponding field in the object.
- * Use the dot as a delimiter of key parts to set nested field value.
+ * Use the dot char ('.') as a delimiter of the key parts to define nested field value.
  *
  *     var data = {
  *         "key1": "value1",
@@ -282,16 +284,22 @@ Echo.Utils.remove = function(obj, key) {
  *     Echo.Utils.set(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
  *
  * @param {Object} obj
- * The object for which the value is set.
+ * Specifies the target object which should be updated.
  *
  * @param {String} key
  * Defines the key where the given value should be stored.
  *
  * @param {Mixed} value
- * The object data that should be inserted for the key.
+ * The data which should be defined for the given key.
+ *
+ * @return {Boolean}
+ * The boolean value which indicates whether the necessary value was defined
+ * for the target object using the key specified. Returns the 'false' boolean value
+ * in case the object or the key is not specified.
  */
 Echo.Utils.set = function(obj, key, value) {
-	var keys = key.split(/\./);
+	if (!obj || !key) return false;
+	var keys = Echo.Utils._prepareFieldAccessKey(key);
 	var field = keys.pop();
 	var target = obj;
 	if (keys.length > 0) {
@@ -302,6 +310,11 @@ Echo.Utils.set = function(obj, key, value) {
 		});
 	}
 	target[field] = value;
+	return true;
+};
+
+Echo.Utils._prepareFieldAccessKey = function(key) {
+	return typeof key === "string" ? key.split(".") : key;
 };
 
 /**

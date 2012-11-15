@@ -67,8 +67,8 @@ suite.prototype.tests.TestDataMethods = {
 
 		QUnit.equal(Echo.Utils.get(data, "key1"), "value1",
 			"Checking get() method with simple key");
-		QUnit.deepEqual(Echo.Utils.get(data, ""), data,
-			"Checking get() method with empty string as key");
+		QUnit.deepEqual(Echo.Utils.get(data, ""), false,
+			"Checking get() method with empty string as key, expecting 'false'");
 		QUnit.deepEqual(Echo.Utils.get(data, []), data,
 			"Checking get() method with empty array as key");
 		QUnit.deepEqual(Echo.Utils.get(data, "key2"), {
@@ -83,11 +83,24 @@ suite.prototype.tests.TestDataMethods = {
 			"Checking get() method with complex key represented by Array");
 		QUnit.equal(Echo.Utils.get(data, "key1.fakekey", "default value"), "default value",
 			"Checking get() method with fake key and default value");
+		QUnit.equal(Echo.Utils.get(data), false,
+			"Checking if the get() method returns 'false' in case the key is mising");
+		QUnit.equal(Echo.Utils.get(undefined, "key1"), false,
+			"Checking if the get() method returns 'false' in case the data is mising");
+		QUnit.equal(Echo.Utils.get(), false,
+			"Checking if the get() method returns 'false' in case both the data and key are mising");
 
 		Echo.Utils.set(data, "key1", { "key1-1": "value1-1"});
 		QUnit.deepEqual(data["key1"], {"key1-1": "value1-1"},
 			"Checking set() method with object param");
 		Echo.Utils.set(data, "key3", "value3");
+		QUnit.equal(Echo.Utils.set(data), false,
+			"Checking if the set() method returns 'false' in case the key is mising");
+		QUnit.equal(Echo.Utils.set(undefined, "key1"), false,
+			"Checking if the set() method returns 'false' in case the data is mising");
+		QUnit.equal(Echo.Utils.set(), false,
+			"Checking if the set() method returns 'false' in case both the data and key are mising");
+
 		QUnit.equal(data["key3"], "value3",
 			"Checking set() method with plain param");
 		QUnit.ok(!Echo.Utils.remove(data, ""), "Checking remove() with empty key");
@@ -122,6 +135,14 @@ suite.prototype.tests.TestDataMethods = {
 		}, "Checking remove() with complex key represented by Array");
 		Echo.Utils.set(data, "key1.key-null", null);
 		QUnit.ok(!Echo.Utils.remove(data, "key1.key-null.key"), "Checking remove() with null target");
+		QUnit.equal(Echo.Utils.remove(data), false,
+			"Checking if the remove() method returns 'false' in case the key is mising");
+		QUnit.equal(Echo.Utils.remove(undefined, "key1"), false,
+			"Checking if the remove() method returns 'false' in case the data is mising");
+		QUnit.equal(Echo.Utils.remove(), false,
+			"Checking if the remove() method returns 'false' in case both the data and key are mising");
+
+
 
 		QUnit.equal(Echo.Utils.htmlize(), undefined,
 			"Checking htmlize() method with undefined param");
