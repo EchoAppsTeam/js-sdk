@@ -224,8 +224,9 @@ Echo.Control.prototype.defaults.config = {
 	 * Base URL of the Echo apps built on top of the JS SDK.
 	 */
 	"cdnBaseURL": {
-		"sdk": Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version,
-		"apps": Echo.Loader.config.cdnBaseURL + "apps"
+		"sdk": Echo.Loader.getURL("{sdk}"),
+		"sdk-assets": Echo.Loader.getURL("{sdk-assets}"),
+		"apps": Echo.Loader.getURL("{apps}")
 	},
 	"scriptLoadErrorTimeout": 5000, // 5 sec
 	"query": "",
@@ -235,7 +236,7 @@ Echo.Control.prototype.defaults.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": Echo.Loader.getURL("{sdk}/images/avatar-default.png")
+	"defaultAvatar": Echo.Loader.getURL("{sdk-assets}/images/avatar-default.png")
 };
 
 Echo.Control.prototype.defaults.labels = {
@@ -1043,8 +1044,8 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
 	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk}/images/information.png); }' +
-	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk}/images/loading.gif); }' +
-	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk}/images/warning.gif); }';
+	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
+	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
+	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
 
 })(Echo.jQuery);

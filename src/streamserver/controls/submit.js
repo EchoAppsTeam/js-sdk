@@ -401,7 +401,7 @@ submit.renderers.postButton = function(element) {
 			"label": this.labels.get("post")
 		},
 		"posting": {
-			"icon": this.config.get("cdnBaseURL.sdk") + "/images/loading.gif",
+			"icon": this.config.get("cdnBaseURL.sdk-assets") + "/images/loading.gif",
 			"disabled": true,
 			"label": this.labels.get("posting")
 		}
@@ -671,7 +671,7 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk}/images/info70.png); }' +
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk-assets}/images/info70.png); }' +
 	($.browser.msie ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +
