@@ -897,7 +897,7 @@ stream.methods._getRespectiveAccumulator = function(item, sort) {
 stream.methods._appendRootItems = function(items, container) {
 	if (!items || !items.length) return;
 	$.map(items, function(item) {
-		container.append(item.config.get("target").get(0));
+		container.append(item.config.get("target"));
 		item.render();
 	});
 };
