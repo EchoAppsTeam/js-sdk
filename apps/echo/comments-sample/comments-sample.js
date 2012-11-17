@@ -24,14 +24,12 @@ Comments.config = {
 
 Comments.templates.topSubmitFormPosition =
 	'<div class="{class:container}">' +
-		'<div class="{class:auth}"></div>' +
 		'<div class="{class:submit}"></div>' +
 		'<div class="{class:stream}"></div>' +
 	'</div>';
 
 Comments.templates.bottomSubmitFormPosition =
 	'<div class="{class:container}">' +
-		'<div class="{class:auth}"></div>' +
 		'<div class="{class:stream}"></div>' +
 		'<div class="{class:submit}"></div>' +
 	'</div>';
@@ -40,19 +38,6 @@ Comments.methods.template = function() {
 	return this.templates[
 		this.config.get("submitFormPosition") + "SubmitFormPosition"
 	];
-};
-
-Comments.renderers.auth = function(element) {
-	this.initComponent({
-		"id": "Auth",
-		"component": "Echo.IdentityServer.Controls.Auth",
-		"config": {
-			"appkey": null,
-			"target": element,
-			"identityManager": "{config:identityManager}"
-		}
-	});
-	return element;
 };
 
 Comments.renderers.stream = function(element) {
@@ -72,7 +57,11 @@ Comments.renderers.submit = function(element) {
 		"component": "Echo.StreamServer.Controls.Submit",
 		"config": {
 			"target": element,
-			"infoMessages": {"enabled": false}
+			"infoMessages": {"enabled": false},
+			"plugins": [{
+				"name": "FormAuth",
+				"identityManager": "{config:identityManager}"
+			}]
 		}
 	});
 	return element;
