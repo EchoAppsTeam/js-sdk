@@ -1416,7 +1416,7 @@ stream.methods._placeChildItems = function(parent, children) {
 stream.methods._getItemListIndex = function(item, items) {
 	var idx = -1;
 	$.each(items || [], function(i, entry) {
-		if (entry == item || entry.get("data.unique") === item.get("data.unique")) {
+		if (entry.get("data.unique") === item.get("data.unique")) {
 			idx = i;
 			return false;
 		}
