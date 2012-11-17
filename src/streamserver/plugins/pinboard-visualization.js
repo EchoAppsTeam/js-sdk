@@ -63,7 +63,7 @@ mediaGallery.renderers.controls = function(element) {
 		element = $(element);
 		self._normalizeFlashContent(element);
 		var ratio;
-		var isCurrentControl = (i == self.currentIndex);
+		var isCurrentControl = (i === self.currentIndex);
 		var itemContainer = $('<div></div>').append(element).addClass(itemClass);
 		var showCurrentMedia = function() {
 			/**
@@ -71,7 +71,7 @@ mediaGallery.renderers.controls = function(element) {
 			 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia
 			 * Triggered when corresponding media is loaded.
 			 */
-			i == self.currentIndex && itemContainer.css("display", "block") && publish("onLoadMedia");
+			i === self.currentIndex && itemContainer.css("display", "block") && publish("onLoadMedia");
 		};
 		var controlContainer = $('<a href="#"></a>').addClass(controlClass);
 		controlContainer.click(function() {
@@ -115,7 +115,7 @@ mediaGallery.renderers.controls = function(element) {
 		itemsContainer.append(itemContainer);
 		controlsContainer.append(controlContainer);
 	});
-	if (this.elements.length == 1) {
+	if (this.elements.length === 1) {
 		controlsContainer.hide();
 	}
 	return element;
@@ -125,7 +125,7 @@ mediaGallery.renderers.controls = function(element) {
 // we should try fix it with wmode parameter if needed
 mediaGallery.methods._normalizeFlashContent = function(element) {
 	var tagName = element.get(0).tagName.toLowerCase();
-	if (tagName == "iframe") {
+	if (tagName === "iframe") {
 		var parts = Echo.Utils.parseURL(element.attr("src") || "");
 		if (!/(www\.)?youtube\.com/.test(parts.domain)) return;
 		var query = parts.query;
@@ -143,7 +143,7 @@ mediaGallery.methods._normalizeFlashContent = function(element) {
 			"template": "{Data:scheme}://{Data:domain}{Data:path}{Data:query}{Data:fragment}",
 			"data": parts
 		}));
-	} else if (tagName == "embed") {
+	} else if (tagName === "embed") {
 		var wmode = element.attr("wmode");
 		if (wmode != "opaque" || wmode != "transparent") {
 			element.attr("wmode", "opaque");

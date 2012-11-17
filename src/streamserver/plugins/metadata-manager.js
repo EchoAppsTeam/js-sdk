@@ -117,7 +117,7 @@ plugin.init = function() {
  * 				"visible": function() {
 					var item = this;
  * 					var user = item.user;
- * 					if (user.get("state") == "Untouched") return true;
+ * 					if (user.get("state") === "Untouched") return true;
  * 					return false;
  * 				}
  * 			}]
@@ -146,7 +146,7 @@ plugin.methods._assembleButton = function(action, control) {
 		item.get("buttons." + plugin.name + "." + name + ".element")
 			.empty()
 			.append(self.labels.get(operation + "Processing", {"type": type, "marker": marker}));
-		var verb = type == "tag" ? operation.replace(/mark/g, "tag") : operation;
+		var verb = type === "tag" ? operation.replace(/mark/g, "tag") : operation;
 		var activity = {
 			"verbs": ["http://activitystrea.ms/schema/1.0/" + verb],
 			"targets": [{"id": item.get("data.object.id")}],

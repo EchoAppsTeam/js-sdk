@@ -257,7 +257,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 	var data = this.config.get("identityManager." + type);
 	if (!data || !this.user.get("sessionID")) return element.hide();
 
-	if (data.type == "script") {
+	if (data.type === "script") {
 		return element.click(function() {
 			$.getScript(self._appendSessionID(data.url));
 		});

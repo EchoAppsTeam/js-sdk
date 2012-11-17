@@ -442,7 +442,7 @@ stream.renderers.state = function(element) {
 				"template": templates.button,
 				"data": {
 					"count": activitiesCount,
-					"label": this.labels.get(activitiesCount == 1 ? "newItem" : "newItems")
+					"label": this.labels.get(activitiesCount === 1 ? "newItem" : "newItems")
 				}
 			}));
 		} else {
@@ -1258,7 +1258,7 @@ stream.methods._getActivityProjectedIndex = function(byCurrentUser, params) {
 	};
 	params.priority = params.priority === "highest" && "highest"
 		|| byCurrentUser && "high"
-		|| params.action == "replace" && "medium"
+		|| params.action === "replace" && "medium"
 		|| params.priority
 		|| "lowest";
 	var index;
@@ -2207,8 +2207,8 @@ item.renderers.re = function(element) {
 item.renderers.sourceIcon = function(element) {
 	var self = this;
 	if (!this.config.get("viaLabel.icon") ||
-			this.get("data.source.name") == "jskit" ||
-			this.get("data.source.name") == "echo") {
+			this.get("data.source.name") === "jskit" ||
+			this.get("data.source.name") === "echo") {
 		this.view.remove(element);
 		return element;
 	}
@@ -2647,7 +2647,7 @@ item.methods._calcAge = function() {
 	var diff = Math.floor((now - d.getTime()) / 1000);
 	var dayDiff = Math.floor(diff / 86400);
 	var getAgo = function(ago, period) {
-		return ago + " " + self.labels.get(period + (ago == 1 ? "" : "s") + "Ago");
+		return ago + " " + self.labels.get(period + (ago === 1 ? "" : "s") + "Ago");
 	};
 
 	if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 365) {

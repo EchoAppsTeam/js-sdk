@@ -204,7 +204,7 @@ Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(dat
 	}
 	this.config.set("liveUpdatesTimeout", timeout);
 	// if timeout remains the same, take server side value into account
-	if (timeout == this.liveUpdates.originalTimeout) {
+	if (timeout === this.liveUpdates.originalTimeout) {
 		applyServerDefinedTimeout(data.liveUpdatesTimeout);
 	}
 };

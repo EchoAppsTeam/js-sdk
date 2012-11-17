@@ -167,7 +167,7 @@ plugin.methods._assembleButton = function(name) {
 			"name": name,
 			"label": '<span class="echo-clickable">' + label + '</span>' +
 				(item.user.is("admin") && flags.length ? " (" + flags.length + ")" : ""),
-			"visible": item.user.is("logged") && action == name,
+			"visible": item.user.is("logged") && action === name,
 			"once": true,
 			"callback": callback
 		};
