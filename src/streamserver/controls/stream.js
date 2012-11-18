@@ -2205,24 +2205,19 @@ item.renderers.re = function(element) {
  * @echo_renderer
  */
 item.renderers.sourceIcon = function(element) {
-	var self = this;
 	if (!this.config.get("viaLabel.icon") ||
 			this.get("data.source.name") === "jskit" ||
 			this.get("data.source.name") === "echo") {
-		this.view.remove(element);
-		return element;
+		return element.hide();
 	}
-	var hyperlink = Echo.Utils.hyperlink({
-		"href": this.get("data.source.uri", this.get("data.object.permalink"))
-	}, {
-		"openInNewWindow": this.config.get("parent.openLinksInNewWindow")
-	});
 	var url = this.get("data.source.icon", this.config.get("providerIcon"));
-	element.hide().attr("src", Echo.Utils.htmlize(url))
-		.show()
-		.one("error", function() { self.view.remove(element); })
-		.wrap(hyperlink);
-	return element;
+	var data = {"href": this.get("data.source.uri", this.get("data.object.permalink"))};
+	var config = {"openInNewWindow": this.config.get("parent.openLinksInNewWindow")};
+	element.hide()
+		.attr("src", Echo.Utils.htmlize(url))
+		.one("error", function() { element.hide(); })
+		.wrap(Echo.Utils.hyperlink(data, config));
+	return element.show();
 };
 
 /**
@@ -2427,8 +2422,7 @@ item.renderers._extraField = function(element, extra) {
 	var self = this;
 	var type = (extra || {}).type;
 	if (!this.data.object[type] || !this.user.is("admin")) {
-		this.view.remove(element);
-		return element;
+		return element.hide();
 	}
 	var name = type === "markers" ? "maxMarkerLength" : "maxTagsLength";
 	var limit = this.config.get("limits." + name);
@@ -2442,7 +2436,7 @@ item.renderers._extraField = function(element, extra) {
 			"data": {"item": item, "truncatedItem": truncatedItem}
 		}));
 	});
-	return element.prepend(items.sort().join(", "));
+	return element.prepend(items.sort().join(", ")).show();
 };
 
 item.renderers._button = function(element, extra) {
