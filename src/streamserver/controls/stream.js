@@ -1862,7 +1862,11 @@ item.labels = {
 	/**
 	 * @echo_label
 	 */
-	"childrenMoreItems": "View more items"
+	"childrenMoreItems": "View more items",
+	/**
+	 * @echo_label
+	 */
+	"re": "Re"
 };
 
 item.templates.metadata = {
@@ -2130,75 +2134,51 @@ item.renderers.buttons = function(element) {
  * @echo_renderer
  */
 item.renderers.re = function(element) {
-	if (!this.config.get("reTag")) {
-		return element;
+	var self = this;
+	if (!this.config.get("reTag") || this.depth) {
+		return element.hide();
 	}
-	var context = this.get("data.object.context");
-	var re = "";
-	//XXX use normalized permalink and location instead
-	var permalink = this.get("data.object.permalink");
-	var limits = this.config.get("limits");
-	var openLinksInNewWindow = this.config.get("parent.openLinksInNewWindow");
 
-	var getDomain = function(url) {
-		var parts = Echo.Utils.parseURL(url);
-		return parts && parts.domain ? parts.domain : url;
-	};
-
-	var reOfContext = function(c) {
-		var maxLength = limits.maxReTitleLength;
-		if (!c.title) {
-			maxLength = limits.maxReLinkLength;
-			c.title = c.uri.replace(/^https?:\/\/(.*)/ig, '$1');
-		}
-		if (c.title.length > maxLength) {
-			c.title = c.title.substring(0, maxLength) + "...";
-		}
-		return "<div>" + Echo.Utils.hyperlink({
-			"class": "echo-primaryColor",
-			"href": c.uri,
-			"caption": "Re: " + Echo.Utils.stripTags(c.title)
-		}, {
-			"openInNewWindow": openLinksInNewWindow
-		}) + "</div>";
-	};
-
+	// TODO: use normalized permalink and location instead
 	var pageHref = document.location.href;
-	var pageDomain = getDomain(pageHref);
-
-	if (permalink === pageHref || this.depth || !context || !context.length) {
-		return element;
+	var context = this.get("data.object.context");
+	var permalink = this.get("data.object.permalink");
+	if (permalink === pageHref || !context || !context.length) {
+		return element.hide();
 	}
-	var mustSkipContext = false;
-	$.each(context, function(i, c) {
-		//XXX use normalized uri
-		if (c.uri === pageHref) {
-			mustSkipContext = true;
-			return false; //break
+
+	var fromCurrentPage = false;
+	$.map(context, function(ctx) {
+		// TODO: use normalized uri here
+		if (ctx.uri === pageHref) {
+			fromCurrentPage = true;
+			return false; // break
 		}
 	});
+	if (fromCurrentPage) return element.hide();
 
-	if (mustSkipContext) {
-		return element;
-	}
+	var re;
+	var config = {
+		"limits": this.config.get("limits"),
+		"openLinksInNewWindow": this.config.get("parent.openLinksInNewWindow")
+	};
+	var pageDomain = this._getDomain(pageHref);
 
 	if (this.config.get("optimizedContext")) {
-		var primaryContext = context[0];
-		$.each(context, function(i, c) {
-			if (getDomain(c.uri) === pageDomain) {
-				primaryContext = c;
-				return false; //break
+		var primary;
+		$.map(context, function(ctx) {
+			if (self._getDomain(ctx.uri) === pageDomain) {
+				primary = ctx;
+				return false; // break
 			}
 		});
-		if (primaryContext) {
-			re = reOfContext(primaryContext);
-		}
+		re = this._reOfContext(primary || context[0], config);
 	} else {
-		$.each(context, function(i, c) {
-			re += reOfContext(c);
+		re = $.map(context, function(ctx) {
+			return self._reOfContext(ctx, config);
 		});
 	}
-	return element.empty().append(re);
+	return element.empty().append(re).show();
 };
 
 /**
@@ -2619,6 +2599,30 @@ item.methods.addButtonSpec = function(plugin, spec) {
 		this.buttonSpecs[plugin] = [];
 	}
 	this.buttonSpecs[plugin].push(spec);
+};
+
+item.methods._getDomain = function(url) {
+	var parts = Echo.Utils.parseURL(url);
+	return parts && parts.domain ? parts.domain : url;
+};
+
+item.methods._reOfContext = function(context, config) {
+	var title = context.title || context.uri.replace(/^https?:\/\/(.*)/ig, '$1');
+	var maxLength = config.limits[title ? "maxReTitleLength" : "maxReLinkLength"];
+	if (title.length > maxLength) {
+		title = title.substring(0, maxLength) + "...";
+	}
+	var hyperlink = Echo.Utils.hyperlink({
+		"class": "echo-primaryColor",
+		"href": context.uri,
+		"caption": this.labels.get("re") + ": " + Echo.Utils.stripTags(title)
+	}, {
+		"openInNewWindow": config.openLinksInNewWindow
+	});
+	return $(this.substitute({
+		"template": '<div class="{class:re-container}">{data:hyperlink}</div>',
+		"data": {"hyperlink": hyperlink}
+	}));
 };
 
 item.methods._prepareEventParams = function(params) {
