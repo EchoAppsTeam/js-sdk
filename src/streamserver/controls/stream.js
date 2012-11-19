@@ -1152,48 +1152,57 @@ stream.methods._spotUpdates.remove = function(item, options) {
 	}
 };
 
+stream.methods._spotUpdates.animate.fade = function(item) {
+	var self = this;
+	if (this.timeouts.fade) {
+		var interval = Math.round(this.timeouts.fade / 2);
+		var container = item.view.get("container");
+		var originalBGColor = Echo.Utils.getVisibleColor(container);
+		var transition = "background-color " + interval + "ms linear";
+		container.css("background-color", this.config.get("flashColor"));
+		setTimeout(function() {
+			container.css({
+				"transition": transition,
+				"-o-transition": transition,
+				"-moz-transition": transition,
+				"-webkit-transition": transition,
+				"background-color": originalBGColor
+			});
+			container.css("background-color", "");
+			self.activities.animations--;
+			self._executeNextActivity();
+		}, interval);
+	} else {
+		this.activities.animations--;
+		this._executeNextActivity();
+	}
+};
+
 stream.methods._spotUpdates.animate.add = function(item) {
 	var self = this;
 	this.activities.animations++;
 	if (this.timeouts.slide) {
 		// we should specify the element height explicitly
 		// to avoid element jumping during the animation effect
-		var currentHeight = item.config.get("target").show().css("height");
+		var height = item.config.get("target").show().css("height");
 		item.config.get("target").css("overflow", "hidden");
-		item.view.get("content").css("margin-top", "-" + currentHeight).animate({
-			"margin-top": "0px"
-		},
-		this.timeouts.slide,
-		function(){
-			// we should remove temporary set of css styles
-			// as soon as the animation is complete
-			item.config.get("target").css("overflow", "");
-			item.view.get("content").css("margin-top", "");
-		});
+		item.view.get("content")
+			.css("margin-top", "-" + height)
+			.animate(
+				{"margin-top": "0px"},
+				this.timeouts.slide,
+				function() {
+					// we should remove temporary set of css styles
+					// as soon as the animation is complete
+					item.config.get("target").css("overflow", "");
+					item.view.get("content").css("margin-top", "");
+
+					self._spotUpdates.animate.fade.call(self, item);
+				}
+			);
 	} else {
 		item.config.get("target").show();
-	}
-	if (this.timeouts.fade) {
-		var container = item.view.get("container");
-		var originalBGColor = Echo.Utils.getVisibleColor(container);
-		container
-		// delay fading out until content sliding is finished
-		.delay(this.timeouts.slide)
-		.css({"backgroundColor": this.config.get("flashColor")})
-		// Fading out
-		.animate(
-			{"backgroundColor": originalBGColor},
-			this.timeouts.fade,
-			"linear",
-			function() {
-				container.css("backgroundColor", "");
-				self.activities.animations--;
-				self._executeNextActivity();
-			}
-		);
-	} else {
-		this.activities.animations--;
-		this._executeNextActivity();
+		self._spotUpdates.animate.fade.call(self, item);
 	}
 };
 
