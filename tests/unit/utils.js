@@ -65,6 +65,28 @@ suite.prototype.tests.TestDataMethods = {
 			}
 		};
 
+		var cases = [
+			["", false, "empty string as a value"],
+			[false, false, "boolean 'false' as a value"],
+			[true, false, "boolean 'true' as a value"],
+			[0, false, "integer '0' as a value"],
+			[12, false, "non-zero integer '12' as a value"],
+			[{}, false, "object as a value"],
+			["key", ["key"], "plain key string"],
+			["key1.key2", ["key1", "key2"], "string key with nesting"],
+			[["key1", "key2"], ["key1", "key2"], "array as a key"],
+			[[], false, "empty array as a key"]
+		];
+		$.map(cases, function(_case) {
+			var result = Echo.Utils._prepareFieldAccessKey(_case[0]);
+			var label = "Checking Echo.Utils._prepareFieldAccessKey (" + _case[2] + ")";
+			if (_case[1] === false) {
+				QUnit.equal(result, _case[1], label);
+			} else {
+				QUnit.deepEqual(result, _case[1], label);
+			}
+		});
+
 		QUnit.equal(Echo.Utils.get(data, "key1"), "value1",
 			"Checking get() method with simple key");
 		QUnit.deepEqual(Echo.Utils.get(data, ""), undefined,
