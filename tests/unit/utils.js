@@ -382,8 +382,14 @@ suite.prototype.tests.TestDataMethods = {
 
 suite.prototype.tests.TestDomMethods = {
 	"check": function() {
+		QUnit.ok(!Echo.Utils.hasCSS("utils-tests"),
+			"Checking whether we have the \"utils-tests\" CSS styles set added to the document before really adding it (using hasCSS function)");
 		QUnit.ok(Echo.Utils.addCSS(".echo-utils-tests { background-color: rgb(12, 34, 56); }", "utils-tests"),
 			"Checking that addCSS() method returns true if CSS-class was added");
+		QUnit.ok(Echo.Utils.hasCSS("utils-tests"),
+			"Checking whether we have the \"utils-tests\" CSS styles set added as soon as we added it into the document (using hasCSS function)");
+		QUnit.ok(!Echo.Utils.hasCSS(), "Checking the hasCSS function with empty argument");
+
 		var testElement = $('<div class="echo-utils-tests"></div>');
 		$("#qunit-fixture").append(testElement);
 		QUnit.ok(/rgb\(12,\s*34,\s*56\)/.test(Echo.Utils.getVisibleColor(testElement)),

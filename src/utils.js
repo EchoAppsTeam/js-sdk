@@ -58,7 +58,7 @@ Echo.Utils.regexps = {
  * Contains CSS styles to be added.
  *
  * @param {String} id
- * Unique identity string of CSS styles.
+ * Unique identity string of the CSS styles set.
  *
  * @return {Boolean}
  * true if CSS styles was successfully added, false - if CSS styles are already
@@ -74,7 +74,7 @@ Echo.Utils.addCSS = function(cssCode, id) {
 	}
 	var cssStyles = this.cache.cssStyles;
 	if (id) {
-		if (cssStyles.processed[id]) return false;
+		if (Echo.Utils.hasCSS(id)) return false;
 		cssStyles.processed[id] = true;
 	}
 	var currentCssCode = "";
@@ -104,6 +104,26 @@ Echo.Utils.addCSS = function(cssCode, id) {
 	}
 	cssStyles.anchor = newStyle;
 	return true;
+};
+
+/**
+ * @static
+ * Method to check whether the given set of CSS rules was already added into the page.
+ *
+ * This function might be used in conjunction with the Echo.Utils.addCSS function
+ * to check a certain conditions before adding new styles.
+ *
+ * @param {String} id
+ * Unique identity string of the CSS styles set.
+ *
+ * @return {Boolean}
+ * true if the given CSS styles set was already added into the page previously,
+ * false - otherwise.
+ */
+Echo.Utils.hasCSS = function(id) {
+	return this.cache.cssStyles
+		? !!this.cache.cssStyles.processed[id]
+		: false;
 };
 
 /**

@@ -619,10 +619,10 @@ Echo.Control.prototype._initializers = {};
 Echo.Control.prototype._initializers.list = [
 	["vars",               ["init", "refresh"]],
 	["config",             ["init"]],
+	["css",                ["init"]],
 	["events",             ["init"]],
 	["subscriptions",      ["init"]],
 	["labels",             ["init"]],
-	["css",                ["init"]],
 	["renderers",          ["init", "refresh"]],
 	["view",               ["init"]],
 	["loading",            ["init", "refresh"]],
@@ -819,9 +819,11 @@ Echo.Control.prototype._initializers.labels = function() {
 };
 
 Echo.Control.prototype._initializers.css = function() {
-	Echo.Utils.addCSS(this.substitute({"template": this.baseCSS}), "control");
 	this.config.get("target").addClass(this.cssClass);
-	if (this._manifest("css")) {
+	if (!Echo.Utils.hasCSS("control")) {
+		Echo.Utils.addCSS(this.substitute({"template": this.baseCSS}), "control");
+	}
+	if (this._manifest("css") && !Echo.Utils.hasCSS(this.name)) {
 		Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), this.name);
 	}
 };

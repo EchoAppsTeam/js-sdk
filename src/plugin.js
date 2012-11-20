@@ -355,8 +355,10 @@ Echo.Plugin.prototype._initializers = {};
 
 Echo.Plugin.prototype._initializers.css = function() {
 	if (!this._manifest("css")) return;
-	var parts = [this.component.get("name"), "Plugins", this.name];
-	Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), parts.join("."));
+	var name = [this.component.get("name"), "Plugins", this.name].join(".");
+	if (!Echo.Utils.hasCSS(name)) {
+		Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), name);
+	}
 };
 
 Echo.Plugin.prototype._initializers.labels = function() {
