@@ -155,6 +155,7 @@ Modal.prototype.remove = function() {
 	if (this.rendered) {
 		this.rendered = false;
 		this.backdrop && this.backdrop.remove();
+		this.element.find('iframe').hide().attr('src', '//about:blank').end().empty();
 		this.element.unwrap().remove();
 	}
 };
