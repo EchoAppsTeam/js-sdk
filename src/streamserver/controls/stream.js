@@ -1164,6 +1164,7 @@ stream.methods._spotUpdates.animate.fade = function(item) {
 			container.css({
 				"transition": transition,
 				"-o-transition": transition,
+				"-ms-transition": transition,
 				"-moz-transition": transition,
 				"-webkit-transition": transition,
 				"background-color": originalBGColor
