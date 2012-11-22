@@ -149,46 +149,6 @@ Echo.Loader.override = function(canvasID, appID, config) {
 	overrides[canvasID][appID] = config;
 };
 
-Echo.Loader.cookie = (function () {
-	var pluses = /\+/g;
-	function decode(s) {
-		return decodeURIComponent(s.replace(pluses, " "));
-	}
-	return {
-		"set": function(key, value, options) {
-			options = options || {};
-			if (typeof options.expires === "number") {
-				var days = options.expires;
-				var d = options.expires = new Date();
-				d.setDate(d.getDate() + days);
-			}
-			document.cookie = [
-				encodeURIComponent(key), "=", encodeURIComponent(value),
-				options.expires ? "; expires=" + options.expires.toUTCString() : "",
-				options.path ? "; path=" + options.path : "",
-				options.domain ? "; domain=" + options.domain : "",
-				options.secure ? "; secure" : ""
-			].join("");
-		},
-		"get": function(key) {
-			var cookies = document.cookie.split("; ");
-			for (var i = 0, l = cookies.length; i < l; i++) {
-				var parts = cookies[i].split("=");
-				if (decode(parts.shift()) === key) {
-					return decode(parts.join("="));
-				}
-			}
-		},
-		"remove": function(key, options) {
-			options = options || {};
-			if (typeof this.get(key) !== "undefined") {
-				options.expires = -1;
-				this.set(key, "", options);
-			}
-		}
-	};
-})();
-
 (function() {
 	if (Echo.Loader.debug) return;
 

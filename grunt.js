@@ -49,6 +49,7 @@ module.exports = function(grunt) {
 			"src": [
 				"third-party/yepnope/yepnope.1.5.4.js",
 				"third-party/yepnope/yepnope.css.js",
+				"cookie.js",
 				"loader.js"
 			],
 			"dest": "loader.js"
