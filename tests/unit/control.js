@@ -28,6 +28,7 @@ suite.prototype.info = {
 		"refresh",
 		"render",
 		"isDefined",
+		"getRelativeTime",
 
 		// functions below are covered
 		// within the Plugin component test
@@ -210,6 +211,28 @@ suite.prototype.cases.basicOperations = function(callback) {
 		} catch(e) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
 		}
+
+		// checking "getRelativeTime" method
+		var now = Math.round((new Date()).getTime() / 1000);
+		var probes = [
+			["", undefined, "empty string"],
+			[0, undefined, "zero as a value"],
+			["some-random-string", undefined, "random string"],
+			[false, undefined, "boolean 'false'"],
+			[now - 5, "5 Seconds Ago", "seconds ago"],
+			[now - 3 * 60, "3 Minutes Ago", "minutes ago"],
+			[now - 4 * 60 * 60, "4 Hours Ago", "hours ago"],
+			[now - 1 * 24 * 60 * 60, "Yesterday", "yesterday"],
+			[now - 3 * 24 * 60 * 60, "3 Days Ago", "days ago"],
+			[now - 7 * 24 * 60 * 60, "Last Week", "last week"],
+			[now - 32 * 24 * 60 * 60, "Last Month", "last month"],
+			[now - 64 * 24 * 60 * 60, "2 Months Ago", "months ago"],
+			["2010-04-04T12:00:01", "04/04/2010, 12:00:01", "old date"]
+		];
+		$.map(probes, function(probe) {
+			QUnit.equal(self.getRelativeTime(probe[0]), probe[1],
+				"Checking \"getRelativeTime\" function (" + probe[2] + ")");
+		});
 
 		// checking "invoke" method
 		var cases = [

@@ -299,7 +299,71 @@ Echo.Control.prototype.defaults.labels = {
 	/**
 	 * @echo_label
 	 */
-	"error_unknown": "(unknown) Unknown error."
+	"error_unknown": "(unknown) Unknown error.",
+	/**
+	 * @echo_label
+	 */
+	"today": "Today",
+	/**
+	 * @echo_label
+	 */
+	"yesterday": "Yesterday",
+	/**
+	 * @echo_label
+	 */
+	"lastWeek": "Last Week",
+	/**
+	 * @echo_label
+	 */
+	"lastMonth": "Last Month",
+	/**
+	 * @echo_label
+	 */
+	"secondAgo": "{number} Second Ago",
+	/**
+	 * @echo_label
+	 */
+	"secondsAgo": "{number} Seconds Ago",
+	/**
+	 * @echo_label
+	 */
+	"minuteAgo": "{number} Minute Ago",
+	/**
+	 * @echo_label
+	 */
+	"minutesAgo": "{number} Minutes Ago",
+	/**
+	 * @echo_label
+	 */
+	"hourAgo": "{number} Hour Ago",
+	/**
+	 * @echo_label
+	 */
+	"hoursAgo": "{number} Hours Ago",
+	/**
+	 * @echo_label
+	 */
+	"dayAgo": "{number} Day Ago",
+	/**
+	 * @echo_label
+	 */
+	"daysAgo": "{number} Days Ago",
+	/**
+	 * @echo_label
+	 */
+	"weekAgo": "{number} Week Ago",
+	/**
+	 * @echo_label
+	 */
+	"weeksAgo": "{number} Weeks Ago",
+	/**
+	 * @echo_label
+	 */
+	"monthAgo": "{number} Month Ago",
+	/**
+	 * @echo_label
+	 */
+	"monthsAgo": "{number} Months Ago"
 };
 
 /**
@@ -593,6 +657,60 @@ Echo.Control.prototype.extendRenderer = function(name, renderer) {
  */
 Echo.Control.prototype.log = function(data) {
 	Echo.Utils.log($.extend(data, {"component": this.name}));
+};
+
+/**
+ * Method to calculate the relative time passed since the given date and time.
+ *
+ * @param {Mixed} datetime
+ * The date to calculate how much time passed since that moment. The function recognizes
+ * the date in W3CDFT or UNIX timestamp formats.
+ *
+ * @return {String}
+ * String which represents the date and time in the relative format.
+ */
+Echo.Control.prototype.getRelativeTime = function(datetime) {
+	if (!datetime) return;
+	var self = this;
+	var ts = typeof datetime === "string"
+		? Echo.Utils.timestampFromW3CDTF(datetime)
+		: datetime;
+	if (!ts) return;
+	var d = new Date(ts * 1000);
+	var now = (new Date()).getTime();
+	var when;
+	var diff = Math.floor((now - d.getTime()) / 1000);
+	var dayDiff = Math.floor(diff / 86400);
+	var getAgo = function(ago, period) {
+		return self.labels.get(period + (ago === 1 ? "" : "s") + "Ago", {"number": ago});
+	};
+
+	if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 365) {
+		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+	} else if (diff < 60) {
+		when = getAgo(diff, 'second');
+	} else if (diff < 60 * 60) {
+		diff = Math.floor(diff / 60);
+		when = getAgo(diff, 'minute');
+	} else if (diff < 60 * 60 * 24) {
+		diff = Math.floor(diff / (60 * 60));
+		when = getAgo(diff, 'hour');
+	} else if (diff < 60 * 60 * 48) {
+		when = this.labels.get("yesterday");
+	} else if (dayDiff < 7) {
+		when = getAgo(dayDiff, 'day');
+	} else if (dayDiff < 14) {
+		when = this.labels.get("lastWeek");
+	} else if (dayDiff < 30) {
+		diff =  Math.floor(dayDiff / 7);
+		when = getAgo(diff, 'week');
+	} else if (dayDiff < 60) {
+		when = this.labels.get("lastMonth");
+	} else if (dayDiff < 365) {
+		diff =  Math.floor(dayDiff / 31);
+		when = getAgo(diff, 'month');
+	}
+	return when;
 };
 
 Echo.Control.prototype._init = function(subsystems) {

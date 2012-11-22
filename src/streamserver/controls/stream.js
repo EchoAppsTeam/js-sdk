@@ -1754,10 +1754,12 @@ item.config.normalizer = {
 };
 
 item.vars = {
+	"age": undefined,
 	"children": [],
 	"depth": 0,
 	"threading": false,
 	"textExpanded": false,
+	"timestamp": undefined,
 	"blocked": false,
 	"buttonsOrder": [],
 	"buttonSpecs": {},
@@ -1776,71 +1778,7 @@ item.labels = {
 	/**
 	 * @echo_label
 	 */
-	"today": "Today",
-	/**
-	 * @echo_label
-	 */
-	"yesterday": "Yesterday",
-	/**
-	 * @echo_label
-	 */
-	"lastWeek": "Last Week",
-	/**
-	 * @echo_label
-	 */
-	"lastMonth": "Last Month",
-	/**
-	 * @echo_label
-	 */
-	"secondAgo": "Second Ago",
-	/**
-	 * @echo_label
-	 */
-	"secondsAgo": "Seconds Ago",
-	/**
-	 * @echo_label
-	 */
-	"minuteAgo": "Minute Ago",
-	/**
-	 * @echo_label
-	 */
-	"minutesAgo": "Minutes Ago",
-	/**
-	 * @echo_label
-	 */
-	"hourAgo": "Hour Ago",
-	/**
-	 * @echo_label
-	 */
-	"hoursAgo": "Hours Ago",
-	/**
-	 * @echo_label
-	 */
-	"dayAgo": "Day Ago",
-	/**
-	 * @echo_label
-	 */
-	"daysAgo": "Days Ago",
-	/**
-	 * @echo_label
-	 */
-	"weekAgo": "Week Ago",
-	/**
-	 * @echo_label
-	 */
-	"weeksAgo": "Weeks Ago",
-	/**
-	 * @echo_label
-	 */
 	"metadataModeSwitchTitle": "Return to default view",
-	/**
-	 * @echo_label
-	 */
-	"monthAgo": "Month Ago",
-	/**
-	 * @echo_label
-	 */
-	"monthsAgo": "Months Ago",
 	/**
 	 * @echo_label
 	 */
@@ -2290,8 +2228,12 @@ item.renderers.body = function(element) {
  * @echo_renderer
  */
 item.renderers.date = function(element) {
-	this._calcAge();
-	return element.html(this.age);
+	var age = this.getRelativeTime(this.timestamp);
+	if (age !== this.age) {
+		this.age = age;
+		element.html(this.age);
+	}
+	return element;
 };
 
 /**
@@ -2644,48 +2586,6 @@ item.methods._prepareEventParams = function(params) {
 			"target": this.config.get("target").get(0)
 		}
 	});
-};
-
-item.methods._calcAge = function() {
-	if (!this.timestamp) return;
-	var self = this;
-	var d = new Date(this.timestamp * 1000);
-	var now = (new Date()).getTime();
-	var when;
-	var diff = Math.floor((now - d.getTime()) / 1000);
-	var dayDiff = Math.floor(diff / 86400);
-	var getAgo = function(ago, period) {
-		return ago + " " + self.labels.get(period + (ago === 1 ? "" : "s") + "Ago");
-	};
-
-	if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 365) {
-		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
-	} else if (diff < 60) {
-		when = getAgo(diff, 'second');
-	} else if (diff < 60 * 60) {
-		diff = Math.floor(diff / 60);
-		when = getAgo(diff, 'minute');
-	} else if (diff < 60 * 60 * 24) {
-		diff = Math.floor(diff / (60 * 60));
-		when = getAgo(diff, 'hour');
-	} else if (diff < 60 * 60 * 48) {
-		when = this.labels.get("yesterday");
-	} else if (dayDiff < 7) {
-		when = getAgo(dayDiff, 'day');
-	} else if (dayDiff < 14) {
-		when = this.labels.get("lastWeek");
-	} else if (dayDiff < 30) {
-		diff =  Math.floor(dayDiff / 7);
-		when = getAgo(diff, 'week');
-	} else if (dayDiff < 60) {
-		when = this.labels.get("lastMonth");
-	} else if (dayDiff < 365) {
-		diff =  Math.floor(dayDiff / 31);
-		when = getAgo(diff, 'month');
-	}
-	if (this.age !== when) {
-		this.age = when;
-	}
 };
 
 var _smileys = {
