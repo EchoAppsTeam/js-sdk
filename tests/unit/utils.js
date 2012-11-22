@@ -12,6 +12,7 @@ suite.prototype.info = {
 		"get",
 		"getUniqueString",
 		"getVisibleColor",
+		"hasCSS",
 		"htmlize",
 		"htmlTextTruncate",
 		"hyperlink",
