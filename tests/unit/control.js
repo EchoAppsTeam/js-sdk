@@ -229,8 +229,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 			[now - 3 * 24 * 60 * 60, "3 Days Ago", "days ago"],
 			[now - 7 * 24 * 60 * 60, "Last Week", "last week"],
 			[now - 32 * 24 * 60 * 60, "Last Month", "last month"],
-			[now - 64 * 24 * 60 * 60, "2 Months Ago", "months ago"],
-			["2010-04-04T12:00:01", "04/04/2010, 12:00:01", "old date"]
+			[now - 64 * 24 * 60 * 60, "2 Months Ago", "months ago"]
 		];
 		$.map(probes, function(probe) {
 			QUnit.equal(self.getRelativeTime(probe[0]), probe[1],
