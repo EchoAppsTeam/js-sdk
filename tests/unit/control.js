@@ -213,7 +213,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 		}
 
 		// checking "getRelativeTime" method
-		var now = Math.round((new Date()).getTime() / 1000);
+		var now = Math.floor((new Date()).getTime() / 1000);
 		var probes = [
 			["", undefined, "empty string"],
 			[0, undefined, "zero as a value"],
