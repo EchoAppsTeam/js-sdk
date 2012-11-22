@@ -21,8 +21,7 @@ Echo.Utils.cache = {};
 Echo.Utils.regexps = {
 	"templateSubstitution": "{([0-9a-z\\.]+)(?:\\:((?:[0-9a-z_-]+\\.)*[0-9a-z_-]+))?}",
 	"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
-	"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/,
-	"w3cdtf": /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/
+	"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/
 };
 
 /**
@@ -643,14 +642,10 @@ Echo.Utils.getVisibleColor = function(element) {
  * UNIX timestamp.
  */
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
-	var parts = ["year", "month", "day", "hours", "minutes", "seconds"];
-	var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
-	if (!matches) return;
-	var dt = Echo.Utils.foldl({}, parts, function(key, acc, id) {
-		acc[key] = matches[id + 1];
-	});
-	return Date.UTC(dt.year, dt.month - 1, dt.day,
-		dt.hours, dt.minutes, dt.seconds) / 1000;
+	var time = (new Date(datetime)).getTime();
+	return isNaN(time)
+		? undefined
+		: Math.round(time / 1000);
 };
 
 /**

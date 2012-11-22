@@ -231,6 +231,14 @@ suite.prototype.tests.TestDataMethods = {
 
 		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-05T08:15:30Z"), 784023330,
 			"Checking timestampFromW3CDTF() method");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09T11:32:23.726Z"), 1352460744,
+			"Checking timestampFromW3CDTF() method with milliseconds");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09T11:32:23.726+01:00"), 1352457144,
+			"Checking timestampFromW3CDTF() method with timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09T11:32:23.726-01:00"), 1352464344,
+			"Checking timestampFromW3CDTF() method with timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09"), 1352419200,
+			"Checking timestampFromW3CDTF() method with just date defined");
 		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-0508-15:30"), undefined,
 			"Checking timestampFromW3CDTF() method with incorrect input value");
 
