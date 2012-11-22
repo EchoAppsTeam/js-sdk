@@ -86,6 +86,10 @@ Echo.Control.create = function(manifest) {
 		prototype.templates = $.extend({}, prototype.templates, manifest.templates);
 	}
 
+	// define default language var values with the lowest priority available
+	var labels = $.extend({}, prototype.defaults.labels, manifest.labels);
+	Echo.Labels.set(labels, manifest.name, true);
+
 	constructor.manifest = manifest;
 
 	// define CSS class and prefix for the class
@@ -809,12 +813,6 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 };
 
 Echo.Control.prototype._initializers.labels = function() {
-	var labels = $.extend({}, this.get("defaults.labels"), this._manifest("labels"));
-
-	// define default language var values with the lowest priority available
-	Echo.Labels.set(labels, this.name, true);
-
-	// define language var values passed within the config with the highest priority
 	return new Echo.Labels(this.config.get("labels"), this.name);
 };
 
