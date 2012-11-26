@@ -172,14 +172,14 @@ Echo.Loader.isDebug = function() {
 	if (typeof debug !== "undefined") {
 		if (debug === "true") {
 			Echo.Loader.debug = true;
-			Echo.Loader.cookie.set(_debugCookieName, true, options);
+			Echo.Cookie.set(_debugCookieName, true, options);
 		} else {
 			Echo.Loader.debug = false;
-			Echo.Loader.cookie.remove(_debugCookieName, options);
+			Echo.Cookie.remove(_debugCookieName, options);
 		}
 		return;
 	}
-	Echo.Loader.debug = !!Echo.Loader.cookie.get(_debugCookieName);
+	Echo.Loader.debug = !!Echo.Cookie.get(_debugCookieName);
 })();
 
 Echo.Loader._initEnvironment = function(callback) {
