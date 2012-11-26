@@ -149,6 +149,16 @@ Echo.Loader.override = function(canvasID, appID, config) {
 	overrides[canvasID][appID] = config;
 };
 
+/**
+ * @static
+ * Allows to identify if code should print logs, use non-minified versions of scripts, ...
+ *
+ * @return {Boolean}
+ */
+Echo.Loader.isDebug = function() {
+	return Echo.Loader.debug;
+};
+
 (function() {
 	if (Echo.Loader.debug) return;
 
