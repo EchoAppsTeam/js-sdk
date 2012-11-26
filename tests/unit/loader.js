@@ -11,6 +11,7 @@ suite.prototype.info = {
 	"className": "Echo.Loader",
 	"functions": [
 		"init",
+		"isDebug",
 		"download",
 		"override",
 		"getURL"
@@ -90,8 +91,10 @@ suite.prototype.tests.urlConvertingTests = {
 		};
 		checkURLs(urls.plain);
 		Echo.Loader.debug = false;
+		QUnit.ok(!Echo.Loader.isDebug(), "Checking if debug mode is off");
 		checkURLs(urls.placeholders);
 		Echo.Loader.debug = true;
+		QUnit.ok(Echo.Loader.isDebug(), "Checking if debug mode is on");
 		checkURLs(urls.placeholdersDev);
 		Echo.Loader.debug = debug;
 	}
