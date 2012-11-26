@@ -424,9 +424,9 @@ plugin.events["Echo.StreamServer.Controls.Stream.Item.onRender"] = function(topi
 			publish.call(this, true);
 		}
 		plugin.set("rendered", true);
-		return;
+	} else {
+		publish.call(this, true);
 	}
-	publish.call(this, true);
 };
 
 })();
@@ -649,7 +649,10 @@ plugin.events = {
 				"action": "rerender",
 				"item": plugin.component.items[args.item.data.unique],
 				"priority": "high",
-				"handler": function() { plugin._refreshView(); }
+				"handler": function() {
+					plugin._refreshView();
+					plugin.component._executeNextActivity();
+				}
 			});
 		}
 	}

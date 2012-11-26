@@ -1068,9 +1068,7 @@ stream.methods._spotUpdates.add = function(item, options) {
 	if (_item && _item.view.rendered() && options.priority != "high") {
 		this._applySpotUpdates("replace", item, {"priority": "highest"});
 
-		// notify top level function that the update was not applied,
-		// because we routed an action to the "replace" operation
-		return false;
+		return;
 	}
 	this._applyStructureUpdates("add", item);
 	item.set("added", true);
@@ -1245,11 +1243,8 @@ stream.methods._applySpotUpdates = function(action, item, options) {
 		"item": item,
 		"priority": options.priority,
 		"handler": function() {
-			// execute corresponding update function and
-			// launch the next activity if the operation was successful
-			if (self._spotUpdates[action].call(self, item, options) !== false) {
-				self._executeNextActivity();
-			}
+			self._spotUpdates[action].call(self, item, options);
+			self._executeNextActivity();
 		}
 	});
 };
