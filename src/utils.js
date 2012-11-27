@@ -644,10 +644,10 @@ Echo.Utils.getVisibleColor = function(element) {
  */
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
 	if (!Echo.Utils.regexps.w3cdtf.test(datetime)) return;
-	var parts = ["year", "month", "day", "hours", "minutes", "seconds", "milliseconds"];
 	var time = (new Date(datetime)).getTime();
-	var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
 	if (isNaN(time)) {
+		var parts = ["year", "month", "day", "hours", "minutes", "seconds", "milliseconds"];
+		var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
 		var dt = Echo.Utils.foldl({}, parts, function(key, acc, id) {
 			acc[key] = +matches[id + 1] || 0;
 		});
