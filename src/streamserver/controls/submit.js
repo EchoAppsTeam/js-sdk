@@ -434,7 +434,9 @@ submit.renderers.postButton = function(element) {
 		self.view.render({"name": "markers"});
 	});
 	subscribe("Error", states.normal, function(params) {
-		self._showError(params.postData);
+		if (params.extra && params.extra.critical) {
+			self._showError(params.postData);
+		}
 	});
 	this.posting.action = this.posting.action || function() {
 		if (self._isPostValid()) {
@@ -462,10 +464,11 @@ submit.renderers._metaFields = function(element, extra) {
  */
 submit.methods.post = function() {
 	var self = this;
-	var publish = function(phase, data) {
+	var publish = function(phase, data, requestState) {
+		requestState = requestState || {};
 		var params = {
 			"topic": "onPost" + phase,
-			"data": {"postData": data}
+			"data": {"postData": data, "extra": requestState}
 		};
 		self.events.publish(params);
 	};
@@ -503,13 +506,13 @@ submit.methods.post = function() {
 				"data": {}
 			});
 		},
-		"onError": function(data) {
+		"onError": function(data, requestState) {
 			/**
 			 * @event onPostError
 			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
 			 * Triggered if submit operation failed.
 			 */
-			publish("Error", data);
+			publish("Error", data, requestState);
 		}
 	};
 	/**

@@ -246,7 +246,10 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
-	return data && ~$.inArray(data.errorCode, ["waiting", "timeout", "busy", "view_limit", "view_update_capacity_exceeded", "connection_failure", "network_timeout"]);
+	var errorCodes = ["waiting", "timeout", "busy", "view_limit", "view_update_capacity_exceeded", "connection_failure", "network_timeout"];
+	return data
+		&& this.config.get("endpoint") !== "submit"
+		&& ~$.inArray(data.errorCode, errorCodes);
 };
 
 Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, config) {
