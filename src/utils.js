@@ -21,6 +21,7 @@ Echo.Utils.cache = {};
 Echo.Utils.regexps = {
 	"templateSubstitution": "{([0-9a-z\\.]+)(?:\\:((?:[0-9a-z_-]+\\.)*[0-9a-z_-]+))?}",
 	"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
+	"w3cdtf": /^(\d{4})(?:-(\d\d)(?:-(\d\d))?(?:(?:T(\d\d):(\d\d):(\d\d))(?:\.(\d{1,3}))?(?:Z|(?:(\+|-)(\d\d):(\d\d))))?)?$/,
 	"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/
 };
 
@@ -642,10 +643,33 @@ Echo.Utils.getVisibleColor = function(element) {
  * UNIX timestamp.
  */
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
+	if (!Echo.Utils.regexps.w3cdtf.test(datetime)) return;
+	var parts = ["year", "month", "day", "hours", "minutes", "seconds", "milliseconds"];
 	var time = (new Date(datetime)).getTime();
-	return isNaN(time)
-		? undefined
-		: Math.round(time / 1000);
+	var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
+	if (isNaN(time)) {
+		var dt = Echo.Utils.foldl({}, parts, function(key, acc, id) {
+			acc[key] = +matches[id + 1] || 0;
+		});
+		var timeZone = matches.slice(parts.length + 1);
+		if (timeZone[0]) {
+			dt.hours = dt.hours - +(timeZone[0] + timeZone[1]);
+			dt.minutes = dt.minutes - +(timeZone[0] + timeZone[2]);
+		}
+		time = Date.UTC(
+			dt.year,
+			dt.month - 1,
+			dt.day,
+			dt.hours,
+			dt.minutes,
+			dt.seconds,
+			dt.milliseconds
+		);
+		return isNaN(time)
+			? undefined
+			: Math.round(time / 1000);
+	}
+	return Math.round(time / 1000);
 };
 
 /**

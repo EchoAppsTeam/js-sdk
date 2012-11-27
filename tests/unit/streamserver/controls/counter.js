@@ -59,7 +59,10 @@ suite.prototype.tests.dynamicWorkflow = {
 					"destroy"
 				];
 				// FIXME: when server will support XDomainRequest handling
-				if (!Echo.API.Transports.XDomainRequest.available()) {
+				if (!Echo.API.Transports.XDomainRequest.available({
+					"method": "get",
+					"URL": "api.echoenabled.com"
+				})) {
 					sequentialTests = sequentialTests.concat(["onError_wrong_query", "onError_incorrect_appkey"]);
 				}
 				self.sequentialAsyncTests(sequentialTests, "cases");
