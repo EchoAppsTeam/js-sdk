@@ -1,3 +1,4 @@
+// FILE IS OUT OF DATE
 Echo.StreamServer.Controls.Stream.ConfigSpecification = [{
 	"name": "children",
 	"type": "Object",
