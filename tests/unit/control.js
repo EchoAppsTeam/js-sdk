@@ -299,7 +299,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 			"Checking if object parameter was overridden (checking new key)");
 		QUnit.equal(this.config.get("objectParam.param2"), undefined,
 			"Checking if object parameter was overridden (checking existing key)");
-		QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("{sdk-assets}/images/info70.png"),
+		QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("images/info70.png", false),
 			"Checking if object parameter was overridden and was normalized (checking defaultAvatar key)");
 
 		this.destroy();
@@ -311,7 +311,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		"myTestParam": "test value",
 		"undefinedParam": "undefinedParam replacement",
 		"nullParam": "nullParam replacement",
-		"defaultAvatar": "{sdk-assets}/images/info70.png",
+		"defaultAvatar": Echo.Loader.getURL("images/info70.png", false),
 		"ready": check
 	});
 };
@@ -934,7 +934,7 @@ suite.getControlManifest = function(name, config) {
 
 	var addDependency = function(n) {
 		manifest.dependencies.push({
-			"url": "unit/dependencies/control.dep." + n + ".js",
+			"url": Echo.Loader.config.cdnBaseURL + "tests/unit/dependencies/control.dep." + n + ".js",
 			"loaded": function() { return !!Echo.Tests.Dependencies.Control["dep" + n]; }
 		});
 	};

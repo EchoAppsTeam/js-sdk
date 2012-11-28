@@ -26,14 +26,19 @@ Echo.Loader = {
  *
  * @param {String} url
  * JavaScript or CSS stylesheet file URL.
+ *
+ * @param {Boolean} [devVersion=true]
+ * Specifies whether function should return dev version of the file or not,
+ * <em>false</em> value is useful when we want to get URL to image because
+ * images don't have dev versions
  */
-Echo.Loader.getURL = function(url) {
-	var sdkBase = Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version;
+Echo.Loader.getURL = function(url, devVersion) {
+	if (typeof devVersion === "undefined") devVersion = true;
 	return /^https?:\/\/|^\/\//.test(url)
 		? url
-		: url.replace(/{apps}/, Echo.Loader.config.cdnBaseURL + "apps")
-			.replace(/{sdk-assets}/, sdkBase)
-			.replace(/{sdk}/, sdkBase + (Echo.Loader.debug ? "/dev" : ""));
+		: Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version +
+			(devVersion && Echo.Loader.isDebug() ? "/dev" : "") +
+			(!url || url.charAt(0) === "/" ? "" : "/") + url;
 };
 /**
  * @static
@@ -184,13 +189,13 @@ Echo.Loader.isDebug = function() {
 
 Echo.Loader._initEnvironment = function(callback) {
 	var resources = [{
-		"url": "{sdk}/backplane.js",
+		"url": "backplane.js",
 		"loaded": function() { return !!window.Backplane; }
 	}, {
-		"url": "{sdk}/third-party/jquery.pack.js",
+		"url": "third-party/jquery.pack.js",
 		"loaded": function() { return !!Echo.jQuery; }
 	}, {
-		"url": "{sdk}/environment.pack.js",
+		"url": "environment.pack.js",
 		"loaded": function() { return !!Echo.Utils; }
 	}];
 	Echo.Loader.download(resources, callback);

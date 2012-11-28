@@ -164,7 +164,7 @@ stream.config = {
 	 * @cfg {String} providerIcon
 	 * Specifies the URL to the icon representing data provider.
 	 */
-	"providerIcon": Echo.Loader.getURL("{sdk-assets}/images/favicons/comments.png"),
+	"providerIcon": Echo.Loader.getURL("images/favicons/comments.png", false),
 
 	/**
 	 * @cfg {Number} slideTimeout

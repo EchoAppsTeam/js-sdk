@@ -721,7 +721,7 @@ suite.getPluginManifest = function(name, component) {
 
 	var addDependency = function(n) {
 		manifest.dependencies.push({
-			"url": "unit/dependencies/plugin.dep." + n + ".js",
+			"url": Echo.Loader.config.cdnBaseURL + "tests/unit/dependencies/plugin.dep." + n + ".js",
 			"loaded": function() { return !!Echo.Tests.Dependencies.Plugin["dep" + n]; }
 		});
 	};

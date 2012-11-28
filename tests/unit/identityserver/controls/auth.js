@@ -56,11 +56,12 @@ suite.prototype.tests.loggedInUser = {
 			// case: user avatar isn't available
 			this.user.set("avatar", "");
 			this.refresh();
-			QUnit.equal(Echo.Loader.getURL(this.defaults.config.defaultAvatar), getRenderedAvatar(), 'Checking if default avatar rendered');
+			QUnit.equal(this.defaults.config.defaultAvatar, getRenderedAvatar(), 'Checking if default avatar rendered');
+			var avatar = Echo.Loader.getURL("images/info70.png", false);
 			// case: user avatar isn't available and defaultAvatar was setted
-			this.config.set("defaultAvatar", "{sdk-assets}/images/info70.png");
+			this.config.set("defaultAvatar", avatar);
 			this.refresh();
-			QUnit.equal(Echo.Loader.getURL("{sdk-assets}/images/info70.png"), getRenderedAvatar(), 'Checking if specified default avatar rendered');
+			QUnit.equal(avatar, getRenderedAvatar(), 'Checking if specified default avatar rendered');
 
 			QUnit.start();
 		};

@@ -377,7 +377,7 @@ module.exports = function(grunt) {
 	grunt.registerHelper("bootstrap_css_wrapper", function(css, id) {
 		css = grunt.helper("mincss", css)
 				.replace(/'/g, "\\'")
-				.replace(/(url\(")\.\.([/a-z-.]+)("\))/ig, "$1' + Echo.Loader.getURL('{sdk-assets}/third-party/bootstrap$2') + '$3");
+				.replace(/(url\(")\.\.([/a-z-.]+)("\))/ig, "$1' + Echo.Loader.getURL(\"third-party/bootstrap$2\", false) + '$3");
 
 		return "Echo.Utils.addCSS('" + css + "', '" + id + "');\n";
 	});

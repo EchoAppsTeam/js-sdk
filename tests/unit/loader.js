@@ -51,11 +51,11 @@ suite.prototype.tests.urlConvertingTests = {
 		var debug = Echo.Loader.debug;
 		function checkURLs(urls) {
 			$.each(urls, function(i, spec) {
-				QUnit.ok(spec.expect === Echo.Loader.getURL(spec.data), "Checking URL conversion: " + spec.data);
+				QUnit.ok(spec.expect === Echo.Loader.getURL(spec.data), "Checking URL conversion: '" + spec.data + "'");
 			});
 		};
 		var urls = {
-			"plain": [{
+			"absolute": [{
 				"data": "//cdn/echoenabled.com/image.png",
 				"expect": "//cdn/echoenabled.com/image.png"
 			}, {
@@ -64,38 +64,40 @@ suite.prototype.tests.urlConvertingTests = {
 			}, {
 				"data": "https://echoenabled.com/image.png",
 				"expect": "https://echoenabled.com/image.png"
-			}, {
+			}],
+			"relative": [{
 				"data": "/web/image.png",
-				"expect": "/web/image.png"
+				"expect": cdnBaseURL + "sdk/v" + version + "/web/image.png"
+			}, {
+				"data": "web/image.png",
+				"expect": cdnBaseURL + "sdk/v" + version + "/web/image.png"
+			}, {
+				"data": "",
+				"expect": cdnBaseURL + "sdk/v" + version
 			}],
-			"placeholders": [{
-				"data": "{apps}/web/image.png",
-				"expect": cdnBaseURL + "apps/web/image.png"
-			}, {
-				"data": "{sdk-assets}/web/image.png",
-				"expect": cdnBaseURL + "sdk/v" + version + "/web/image.png"
-			}, {
-				"data": "{sdk}/web/image.png",
-				"expect": cdnBaseURL + "sdk/v" + version + "/web/image.png"
-			}],
-			"placeholdersDev": [{
-				"data": "{apps}/web/image.png",
-				"expect": cdnBaseURL + "apps/web/image.png"
-			}, {
-				"data": "{sdk-assets}/web/image.png",
-				"expect": cdnBaseURL + "sdk/v" + version + "/web/image.png"
-			}, {
-				"data": "{sdk}/web/image.png",
+			"relativeDev": [{
+				"data": "/web/image.png",
 				"expect": cdnBaseURL + "sdk/v" + version + "/dev/web/image.png"
+			}, {
+				"data": "web/image.png",
+				"expect": cdnBaseURL + "sdk/v" + version + "/dev/web/image.png"
+			}, {
+				"data": "",
+				"expect": cdnBaseURL + "sdk/v" + version + "/dev"
 			}]
 		};
-		checkURLs(urls.plain);
+		checkURLs(urls.absolute);
 		Echo.Loader.debug = false;
 		QUnit.ok(!Echo.Loader.isDebug(), "Checking if debug mode is off");
-		checkURLs(urls.placeholders);
+		checkURLs(urls.relative);
 		Echo.Loader.debug = true;
 		QUnit.ok(Echo.Loader.isDebug(), "Checking if debug mode is on");
-		checkURLs(urls.placeholdersDev);
+		checkURLs(urls.relativeDev);
+		QUnit.equal(
+			Echo.Loader.getURL("web/image.png", false),
+			cdnBaseURL + "sdk/v" + version + "/web/image.png",
+			"Checking URL conversion: /web/image.png, no dev version"
+		);
 		Echo.Loader.debug = debug;
 	}
 };
@@ -131,12 +133,13 @@ suite.prototype.cases.invalidParameters = function(callback) {
 };
 
 suite.prototype.cases.nonExistingScripts = function(callback) {
+	var base = Echo.Loader.config.cdnBaseURL + "tests/unit/loader/";
 	Echo.Loader.download([{
-		"url": "non-existing-folder/1.js"
+		"url": base + "non-existing-folder/1.js"
 	}, {
-		"url": "non-existing-folder/2.js"
+		"url": base + "non-existing-folder/2.js"
 	}, {
-		"url": "non-existing-folder/3.js"
+		"url": base + "non-existing-folder/3.js"
 	}], function() {
 		QUnit.ok(true, "Checking if the callback is executed when non-existing scripts were passed as a function arguments");
 		callback();
@@ -147,12 +150,12 @@ suite.prototype.cases.nonExistingScripts = function(callback) {
 
 suite.prototype.cases.alreadyLoadedScripts = function(callback) {
 	Echo.Loader.download([{
-		"url": "{sdk}/events.js"
+		"url": "events.js"
 	}, {
-		"url": "{sdk}/labels.js",
+		"url": "labels.js",
 		"loaded": function() { return !!Echo.Labels; }
 	}, {
-		"url": "{sdk}/plugin.js"
+		"url": "plugin.js"
 	}], function() {
 		QUnit.ok(true, "Checking if the callback is executed when the scripts loaded previously are loaded again");
 		callback();
@@ -160,11 +163,12 @@ suite.prototype.cases.alreadyLoadedScripts = function(callback) {
 };
 
 suite.prototype.cases.equalUrlsPerSingleCall = function(callback) {
+	var base = Echo.Loader.config.cdnBaseURL + "tests/unit/loader/";
 	Echo.Loader.download([
-		{"url": "unit/loader/scripts/d1.js"},
-		{"url": "unit/loader/scripts/d1.js"},
-		{"url": "unit/loader/styles/1.css"},
-		{"url": "unit/loader/styles/1.css"}
+		{"url": base + "scripts/d1.js"},
+		{"url": base + "scripts/d1.js"},
+		{"url": base + "styles/1.css"},
+		{"url": base + "styles/1.css"}
 	], function() {
 		QUnit.ok(!!Echo.Tests.Download.duplicate1, "Checking if the callback is executed when equal urls of js/css was loaded per single call");
 		callback();
@@ -172,13 +176,14 @@ suite.prototype.cases.equalUrlsPerSingleCall = function(callback) {
 };
 
 suite.prototype.cases.equalUrlsPerSequentialCalls = function(callback) {
+	var base = Echo.Loader.config.cdnBaseURL + "tests/unit/loader/";
 	Echo.Loader.download([
-		{"url": "unit/loader/scripts/d2.js"},
-		{"url": "unit/loader/styles/2.css"}
+		{"url": base + "scripts/d2.js"},
+		{"url": base + "styles/2.css"}
 	], function() {
 		Echo.Loader.download([
-			{"url": "unit/loader/scripts/d2.js"},
-			{"url": "unit/loader/styles/2.css"}
+			{"url": base + "scripts/d2.js"},
+			{"url": base + "styles/2.css"}
 		], function() {
 			QUnit.ok(!!Echo.Tests.Download.duplicate2, "Checking if the callback is executed when equal urls of js/css was loaded per sequential call");
 			callback();
@@ -187,21 +192,21 @@ suite.prototype.cases.equalUrlsPerSequentialCalls = function(callback) {
 };
 
 suite.prototype.cases.equalUrlsPerParallelCalls = function(callback) {
+	var base = Echo.Loader.config.cdnBaseURL + "tests/unit/loader/";
 	var k = 2;
 	var commonCallback = function() {
-		if(!--k) {
+		if (!--k) {
 			QUnit.ok(!!Echo.Tests.Download.duplicate3, "Checking if the callback is executed when equal urls of js/css was loaded per parallel call");
 			callback();
 		}
 	};
 	Echo.Loader.download([
-		{"url": "unit/loader/scripts/d3.js"},
-		{"url": "unit/loader/styles/3.css"}
+		{"url": base + "scripts/d3.js"},
+		{"url": base + "styles/3.css"}
 	], commonCallback);
-
 	Echo.Loader.download([
-		{"url": "unit/loader/scripts/d3.js"},
-		{"url": "unit/loader/styles/3.css"}
+		{"url": base + "scripts/d3.js"},
+		{"url": base + "styles/3.css"}
 	], commonCallback);
 };
 
@@ -211,7 +216,8 @@ suite.prototype.cases.validScriptsLoading = function(callback, count, descriptio
 	var existingScriptsCount = 5;
 	for (var i = 1; i <= count; i++) {
 		resources.push({
-			"url": "unit/loader/scripts/" + (count > existingScriptsCount ? "non-existing" : i) + ".js",
+			"url": Echo.Loader.config.cdnBaseURL + "tests/unit/loader/scripts/" +
+				(count > existingScriptsCount ? "non-existing" : i) + ".js",
 			"loaded": function() { return !!Echo.Tests.Download["object" + i]; }
 		});
 	}
@@ -238,7 +244,7 @@ suite.prototype.cases.loadingSameScriptMultipleTimes = function(callback) {
 	var resources = [];
 	for (var i = 1; i <= 5; i++) {
 		resources.push({
-			"url": "unit/loader/scripts/1.js"
+			"url": Echo.Loader.config.cdnBaseURL + "tests/unit/loader/scripts/1.js"
 		});
 	}
 	Echo.Loader.download(resources, function() {

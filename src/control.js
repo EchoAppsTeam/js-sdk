@@ -228,9 +228,9 @@ Echo.Control.prototype.defaults.config = {
 	 * Base URL of the Echo apps built on top of the JS SDK.
 	 */
 	"cdnBaseURL": {
-		"sdk": Echo.Loader.getURL("{sdk}"),
-		"sdk-assets": Echo.Loader.getURL("{sdk-assets}"),
-		"apps": Echo.Loader.getURL("{apps}")
+		"sdk": Echo.Loader.getURL(""),
+		"sdk-assets": Echo.Loader.getURL("", false),
+		"apps": Echo.Loader.config.cdnBaseURL + "apps"
 	},
 	"scriptLoadErrorTimeout": 5000, // 5 sec
 	"query": "",
@@ -240,7 +240,7 @@ Echo.Control.prototype.defaults.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": Echo.Loader.getURL("{sdk-assets}/images/avatar-default.png")
+	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false)
 };
 
 Echo.Control.prototype.defaults.labels = {

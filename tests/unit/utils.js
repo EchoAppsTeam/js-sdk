@@ -513,7 +513,7 @@ suite.prototype.tests.TestDomMethods = {
 suite.prototype.async = {};
 
 suite.prototype.async.simpleImageTest = function(callback) {
-	var url = Echo.Loader.getURL("{sdk-assets}/third-party/bootstrap/img/glyphicons-halflings.png");
+	var url = Echo.Loader.getURL("third-party/bootstrap/img/glyphicons-halflings.png", false);
 	var img = Echo.Utils.loadImage({
 		"image": url,
 		"onload": function() {
@@ -525,7 +525,7 @@ suite.prototype.async.simpleImageTest = function(callback) {
 };
 
 suite.prototype.async.fakeImageTest = function(callback) {
-	var url = Echo.Loader.getURL("{sdk-assets}/images/avatar-default.png");
+	var url = Echo.Loader.getURL("images/avatar-default.png", false);
 	var img = Echo.Utils.loadImage({
 		"image": "http://example.com/fake.jpg",
 		"defaultImage": url,

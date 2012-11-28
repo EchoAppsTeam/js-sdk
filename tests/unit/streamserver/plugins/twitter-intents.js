@@ -70,7 +70,7 @@
 				"status": "Untouched",
 				"markers": [],
 				"roles": [],
-				"avatar": Echo.Loader.getURL("{sdk-assets}/images/avatar-default.png")
+				"avatar": Echo.Loader.getURL("images/avatar-default.png", false)
 			},
 			"object": {
 				"id": "http://twitter.com/user-name/statuses/" + Echo.Utils.getUniqueString(),
@@ -107,7 +107,7 @@
 				"status": "Untouched",
 				"markers": [],
 				"roles": [],
-				"avatar": Echo.Loader.getURL("{sdk-assets}/images/avatar-default.png")
+				"avatar": Echo.Loader.getURL("images/avatar-default.png", false)
 			},
 			"object": {
 				"id": "http://twitter.com/user-name/statuses/" + Echo.Utils.getUniqueString(),
