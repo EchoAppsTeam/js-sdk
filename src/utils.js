@@ -635,6 +635,7 @@ Echo.Utils.getVisibleColor = function(element) {
  * Method to convert datetime value from W3C datetime format to timestamp.
  *
  *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // will return 886930050
+ *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30.733Z"); // will return 886930050.733
  *
  * @param {String} datetime
  * String containing datetime value to be converted.
@@ -653,13 +654,13 @@ Echo.Utils.timestampFromW3CDTF = function(datetime) {
 		});
 		var timeZone = matches.slice(parts.length + 1);
 		if (timeZone[0]) {
-			dt.hours = dt.hours - +(timeZone[0] + timeZone[1]);
-			dt.minutes = dt.minutes - +(timeZone[0] + timeZone[2]);
+			dt.hours = dt.hours - (timeZone[0] + timeZone[1]);
+			dt.minutes = dt.minutes - (timeZone[0] + timeZone[2]);
 		}
 		time = Date.UTC(
 			dt.year,
-			dt.month - 1,
-			dt.day,
+			dt.month ? dt.month - 1 : dt.month,
+			dt.day || 1,
 			dt.hours,
 			dt.minutes,
 			dt.seconds,
@@ -667,9 +668,9 @@ Echo.Utils.timestampFromW3CDTF = function(datetime) {
 		);
 		return isNaN(time)
 			? undefined
-			: Math.round(time / 1000);
+			: time / 1000;
 	}
-	return Math.round(time / 1000);
+	return time / 1000;
 };
 
 /**
