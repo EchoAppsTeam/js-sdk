@@ -29,8 +29,7 @@ suite.prototype.tests.staticWorkflow = {
 					'Checking the static usecase rendering');
 				self.sequentialAsyncTests([
 					"staticInit",
-					"staticRefresh",
-					"destroy"
+					"staticRefresh"
 				], "cases");
 			}
 		});
@@ -55,8 +54,7 @@ suite.prototype.tests.dynamicWorkflow = {
 				'Checking the dynamic usecase rendering');
 				var sequentialTests = [
 					"onError_more_than",
-					"onUpdate",
-					"destroy"
+					"onUpdate"
 				];
 				// FIXME: when server will support XDomainRequest handling
 				if (!Echo.API.Transports.XDomainRequest.available({

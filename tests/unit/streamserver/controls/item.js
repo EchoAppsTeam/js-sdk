@@ -133,8 +133,7 @@ suite.prototype.tests.commonWorkflow = {
 						addChildren(item);
 						self.sequentialAsyncTests([
 							"traverse",
-							"expand",
-							"destroy"
+							"expand"
 						], "cases");
 					}
 				});
@@ -213,8 +212,7 @@ suite.prototype.tests.testItemButtons = {
 						self.sequentialAsyncTests([
 							"visibility",
 							"order",
-							"click",
-							"destroy"
+							"click"
 						], "cases");
 					}
 				});

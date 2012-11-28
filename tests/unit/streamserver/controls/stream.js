@@ -54,8 +54,7 @@ suite.prototype.tests.commonWorkflow = {
 					"addRootItem",
 					"queueActivityTesting",
 					"addChildItem",
-					"moreButton",
-					"destroy"
+					"moreButton"
 				], "cases");
 			}
 		});

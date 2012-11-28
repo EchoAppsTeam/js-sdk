@@ -115,6 +115,9 @@ Echo.Tests.Common.prototype.run = function() {
 };
 
 Echo.Tests.Common.prototype.sequentialAsyncTests = function(funcs, namespace) {
+	if (namespace && $.isPlainObject(this[namespace]) && $.isFunction(this[namespace]['destroy'])) {
+		funcs.push('destroy');
+	}
 	funcs.push(function() {
 		QUnit.start();
 	});

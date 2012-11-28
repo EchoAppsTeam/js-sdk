@@ -58,8 +58,7 @@ suite.prototype.tests.commonWorkflow = {
 				self.sequentialAsyncTests([
 					"initialView",
 					"changeActiveItem",
-					"oneMediaItem",
-					"destroy"
+					"oneMediaItem"
 				], "cases");
 			}
 		});

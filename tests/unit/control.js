@@ -91,7 +91,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"eventsMechanism",
 			"labelsOverriding",
 			"refresh",
-			"destroy",
+			"destroyCalled",
 			"destroyBroadcasting"
 		], "cases");
 
@@ -646,7 +646,7 @@ suite.prototype.cases.refresh = function(callback) {
 	});
 };
 
-suite.prototype.cases.destroy = function(callback) {
+suite.prototype.cases.destroyCalled = function(callback) {
 	var publish = function(topic, control) {
 		Echo.Events.publish({
 			"topic": topic,
