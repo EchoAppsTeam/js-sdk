@@ -667,7 +667,7 @@ Echo.Tests.Stats = {
 					}
 					break;
 				case "coverage":
-					html = Echo.Tests.Stats.lists[prefix][type].length && "<ul><li>" + ($.unique(Echo.Tests.Stats.lists[prefix][type]).join("</li><li>")) + "</li></ul>" || "Empty list";
+					html = Echo.Tests.Stats.lists[prefix][type].length && "<ul><li>" + (Echo.Tests.Stats.lists[prefix][type].sort().join("</li><li>")) + "</li></ul>" || "Empty list";
 					break;
 			}
 
