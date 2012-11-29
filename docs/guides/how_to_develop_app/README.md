@@ -168,11 +168,11 @@ If the application depends on some other external component/library (including o
 		{"loaded": function() {
 			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
 				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
-		}, "url": "{sdk}/streamserver.pack.js"},
+		}, "url": "streamserver.pack.js"},
 
 		{"loaded": function() {
 			return Echo.Control.isDefined("Echo.IdentityServer.Controls.Auth");
-		}, "url": "{sdk}/identityserver.pack.js"}
+		}, "url": "identityserver.pack.js"}
 	];
 
 ## Events
@@ -253,11 +253,11 @@ Note: in order to configure internal Echo Controls and Plugins used in the appli
 		{"loaded": function() {
 			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
 				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
-		}, "url": "{sdk}/streamserver.pack.js"},
+		}, "url": "streamserver.pack.js"},
 
 		{"loaded": function() {
 			return Echo.Control.isDefined("Echo.IdentityServer.Controls.Auth");
-		}, "url": "{sdk}/identityserver.pack.js"}
+		}, "url": "identityserver.pack.js"}
 	];
 
 	Comments.config = {
