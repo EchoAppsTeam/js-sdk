@@ -1051,6 +1051,10 @@ Echo.Control.prototype._manifest = function(key) {
 
 Echo.Control.prototype._loadScripts = function(resources, callback) {
 	var control = this;
+	if (!resources || !resources.length) {
+		callback.call(control);
+		return;
+	}
 	resources = $.map(resources, function(resource) {
 		return $.extend(resource, {
 			"url": control.substitute({"template": resource.url})
