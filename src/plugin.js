@@ -74,9 +74,14 @@ Echo.Plugin.create = function(manifest) {
 
 		this._init(["config"]);
 	});
+	var namespace = [manifest.component.name, "Plugins", manifest.name].join(".");
 
 	constructor.manifest = manifest;
 	constructor.dependencies = manifest.dependencies;
+	constructor.prototype.namespace = namespace;
+
+	// define default language var values with the lowest priority available
+	Echo.Labels.set($.extend({}, manifest.labels), namespace, true);
 
 	if (manifest.methods) {
 		$.extend(constructor.prototype, manifest.methods);
@@ -331,7 +336,7 @@ Echo.Plugin.prototype.requestDataRefresh = function() {
  * @inheritdoc Echo.Utils#log
  */
 Echo.Plugin.prototype.log = function(data) {
-	Echo.Utils.log($.extend(data, {"component": this.component.name + ".Plugins." + this.name}));
+	Echo.Utils.log($.extend(data, {"component": this.namespace}));
 };
 
 Echo.Plugin._defineNestedClass = function(name) {
@@ -354,21 +359,12 @@ Echo.Plugin.prototype._manifest = function(key) {
 Echo.Plugin.prototype._initializers = {};
 
 Echo.Plugin.prototype._initializers.css = function() {
-	if (!this._manifest("css")) return;
-	var name = [this.component.get("name"), "Plugins", this.name].join(".");
-	if (!Echo.Utils.hasCSS(name)) {
-		Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), name);
-	}
+	if (!this._manifest("css") || Echo.Utils.hasCSS(this.namespace)) return;
+	Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), this.namespace);
 };
 
 Echo.Plugin.prototype._initializers.labels = function() {
-	var namespace = this.component.get("name") + ".Plugins." + this.name;
-
-	// define default language var values with the lowest priority available
-	Echo.Labels.set($.extend({}, this._manifest("labels")), namespace, true);
-
-	// define language var values passed within the config with the highest priority
-	return new Echo.Labels(this.config.get("labels", {}), namespace);
+	return new Echo.Labels(this.config.get("labels", {}), this.namespace);
 };
 
 Echo.Plugin.prototype._initializers.config = function() {
