@@ -1,5 +1,93 @@
 # Echo JS SDK CHANGELOG:
 
+## v3.0.4 - Nov 29, 2012
+
+- The most important update which we performed within this release is the minification of the JS
+ scripts using the UglifyJS software before pushing them to our CDN.
+ Now all files from http://cdn.echoenabled.com/sdk/v3/ directory are served minified by default,
+ which allowed us to reduce the size of the scripts to 26-84% of the original versions (min+gzip compared to dev+gzip)
+ and as a result, reduce the scripts download time. The dev versions (non-minified) of these files are located in /sdk/v3/dev/
+ directory (note the "dev" path). The downside of the minification might be the fact that it's inconvenient to debug JS code
+ on the site where the app was installed if you don't have access to the source code to switch the minified scripts to development
+ versions (for example - any customer's site). Through the instrumentality of SDK dependencies management architecture we were able
+ to overcome this problem and added the ability to specify which version you want to download without changing the source code.
+ The loader mechanism can recognize certain flags which you can pass through the URL fragment/anchor.
+ The value of the flag is saved in a cookie and the loader will use it later to download the corresponding
+ minified or development version of the particular script. If there is no cookie defined - the minified versions
+ will be used by default. More information about the specifics of the minified -> development scripts switch mechanics can be found in our docs center here:
+http://echoappsteam.github.com/js-sdk/docs/#!/guide/terminology-section-5
+
+- URL placeholders such as {sdk} and {apps} were removed from the code. Now URLs should use the "cdnBaseURL"
+configuration parameter of the Echo.Control class. This parameter was introduced in the SDK v3.0.3 release.
+See more information about it  in our documentation center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-cfg-cdnBaseURL
+
+Note that Echo.Loader.getURL function was modified to handle relative URLs to SDK resources. More details here:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-getURL
+
+So if you use these placeholders you should perform some changes using the following rules:
+**Inside the component templates or dependency URLs you should use the {config:cdnBaseURL.sdk} and {config:cdnBaseURL.apps} placeholders instead of {sdk} and {apps} respectively.**
+**In other cases you can use Echo.Loader.getURL function providing it with a relative URL to resource. URL is relative to http://cdn.echoenabled.com/sdk/v3/ folder.**
+
+- The Echo.Cookie class was added to SDK libraries suite. It provides the number of setter
+and accessor operations which allow to work with cookies (get/set/remove). The class is used to
+power the minified vs development script modes switch state, but you can start using it to work
+with cookies in your code. It's available by including the http://cdn.echoenabled.com/sdk/v3/loader.js file.
+Documentation for the Echo.Cookie class is available in our documentation center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Cookie
+
+- New items animation machinery was introduced in the Stream control. Powered by native CSS 3
+transitions new items come into the stream as live updates fading out more smoothly.
+Previously the jQuery plugin was used to power the fading out effect. For the browsers without
+the CSS 3 transitions support (IE < 10) the background color of the item is changed from the "flash"
+color to the original one without the animation.
+
+- The contract of "set", "get" and "remove" functions of the Echo.Utils library was slightly updated.
+Now the "set" and "remove" functions return the boolean result of the operation (true/false).
+The "get" function now returns the default value in case the key or the source object is
+missing (used to return the source object before).
+More information about the above mentioned functions can be found in our documentation center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-set
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-get
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-remove
+
+- A couple of issues were fixed in the $.echoModal class. Now the closing modal form action should not
+cause errors in IE browsers. Also the issue with the redundant iframe content loading after closing the
+modal form was fixed.
+
+- A new "hasCSS" method was added into the Echo.Utils library to check whether the given set of the CSS styles
+was already added into the page. The function was employed in the internal factory class which assembles
+the JS class using the manifest declaration. It prevent the same CSS rules from being processed for each instance.
+This modification contributes to the SDK performance improvement.
+More information about the Echo.Utils.hasCSS function can be found in our doc center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-hasCSS
+
+- The Echo.Utils.timestampFromW3CDTF function internal machinery was updated to use the natively supported
+Date JS class functions first before switching to the home-grown implementations (for the browsers which doesn't
+recognize the W3CDTF format in some cases). This helped us to improve the function performance and gave a complete
+W3CDTF date and time format compliance.
+
+- The relative time calculation logic was extracted from the Echo.StreamServer.Controls.Stream.Item control and placed to
+the Echo.Control class to provide an ability for any control/plugin/app to use it.
+More information about the newly added "getRelativeTime" method can be found in our docs center:
+http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-static-method-getRelativeTime
+
+- The internal machinery which generates the JS class from the manifest was updated to define the set of
+default language vars once during the JS class generation rather than adding the same set of labels every
+time during the class instance initialization.
+
+- The "available" static method of the Echo.API.Transports.XDomainRequest object was extended to check
+the certain conditions when XDomainRequest can not be used. The XDomainRequest can not be used when:
+**the method other than GET or POST is used for the request**
+**the request protocol doesn't match the caller page protocol (for example, the XDomainRequest can not be
+executed if the URL with HTTP protocol is requested within the HTTPS page and vice versa)**
+
+- The problem with the PinboardVisualization plugin on high-velocity stream was fixed. In some case,
+when we receive duplicate items from the server, the activity application mechanism wasn't working correctly and
+the animation queue got stuck. The issue is now fixed and tested with both slow and high velocity streams.
+Also we updated the Isotope library (which powers the PinboardVisualization rendering mechanics) from 1.5.19 to 1.5.21 version,
+which should slightly improve the rendering performance and stability for the streams with the PinboardVisualization enabled.
+
 ## v3.0.3 - Nov 13, 2012
 
 - We employed the Bootstrap Modal dialog to display popups. The previously used jQuery Fancybox
