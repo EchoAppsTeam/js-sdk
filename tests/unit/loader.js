@@ -133,7 +133,7 @@ suite.prototype.cases.invalidParameters = function(callback) {
 };
 
 suite.prototype.cases.nonExistingScripts = function(callback) {
-	var base = Echo.Loader.config.cdnBaseURL + "tests/unit/loader/";
+	var base = Echo.Tests.baseURL + "tests/unit/loader/";
 	Echo.Loader.download([{
 		"url": base + "non-existing-folder/1.js"
 	}, {
@@ -163,7 +163,7 @@ suite.prototype.cases.alreadyLoadedScripts = function(callback) {
 };
 
 suite.prototype.cases.equalUrlsPerSingleCall = function(callback) {
-	var base = Echo.Loader.config.cdnBaseURL + "tests/unit/loader/";
+	var base = Echo.Tests.baseURL + "tests/unit/loader/";
 	Echo.Loader.download([
 		{"url": base + "scripts/d1.js"},
 		{"url": base + "scripts/d1.js"},
@@ -176,7 +176,7 @@ suite.prototype.cases.equalUrlsPerSingleCall = function(callback) {
 };
 
 suite.prototype.cases.equalUrlsPerSequentialCalls = function(callback) {
-	var base = Echo.Loader.config.cdnBaseURL + "tests/unit/loader/";
+	var base = Echo.Tests.baseURL + "tests/unit/loader/";
 	Echo.Loader.download([
 		{"url": base + "scripts/d2.js"},
 		{"url": base + "styles/2.css"}
@@ -192,7 +192,7 @@ suite.prototype.cases.equalUrlsPerSequentialCalls = function(callback) {
 };
 
 suite.prototype.cases.equalUrlsPerParallelCalls = function(callback) {
-	var base = Echo.Loader.config.cdnBaseURL + "tests/unit/loader/";
+	var base = Echo.Tests.baseURL + "tests/unit/loader/";
 	var k = 2;
 	var commonCallback = function() {
 		if (!--k) {
@@ -216,7 +216,7 @@ suite.prototype.cases.validScriptsLoading = function(callback, count, descriptio
 	var existingScriptsCount = 5;
 	for (var i = 1; i <= count; i++) {
 		resources.push({
-			"url": Echo.Loader.config.cdnBaseURL + "tests/unit/loader/scripts/" +
+			"url": Echo.Tests.baseURL + "tests/unit/loader/scripts/" +
 				(count > existingScriptsCount ? "non-existing" : i) + ".js",
 			"loaded": function() { return !!Echo.Tests.Download["object" + i]; }
 		});
@@ -244,7 +244,7 @@ suite.prototype.cases.loadingSameScriptMultipleTimes = function(callback) {
 	var resources = [];
 	for (var i = 1; i <= 5; i++) {
 		resources.push({
-			"url": Echo.Loader.config.cdnBaseURL + "tests/unit/loader/scripts/1.js"
+			"url": Echo.Tests.baseURL + "tests/unit/loader/scripts/1.js"
 		});
 	}
 	Echo.Loader.download(resources, function() {

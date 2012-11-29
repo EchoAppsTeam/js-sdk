@@ -934,7 +934,7 @@ suite.getControlManifest = function(name, config) {
 
 	var addDependency = function(n) {
 		manifest.dependencies.push({
-			"url": Echo.Loader.config.cdnBaseURL + "tests/unit/dependencies/control.dep." + n + ".js",
+			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep." + n + ".js",
 			"loaded": function() { return !!Echo.Tests.Dependencies.Control["dep" + n]; }
 		});
 	};

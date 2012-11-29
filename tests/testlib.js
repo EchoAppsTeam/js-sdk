@@ -10,6 +10,8 @@ if (!Echo.Tests) Echo.Tests = {"Unit": {}, "Common": {}};
 // collection of component initializers
 var _initializers = {};
 
+Echo.Tests.baseURL = "http://echoappsteam.github.com/js-sdk/";
+
 Echo.Tests.runTests = function() {
 	Backplane.init({
 		"serverBaseURL" : "http://api.echoenabled.com/v1",
