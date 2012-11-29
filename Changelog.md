@@ -25,7 +25,7 @@ Note that Echo.Loader.getURL function was modified to handle relative URLs to SD
 http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-getURL .
 So if you use these placeholders you should perform some changes using the following rules:
     - Inside the component templates or dependency URLs you should use the {config:cdnBaseURL.sdk} and {config:cdnBaseURL.apps} placeholders instead of {sdk} and {apps} respectively.
-    - In other cases you can use Echo.Loader.getURL function providing it with a relative URL to resource. URL is relative to http://cdn.echoenabled.com/sdk/v3/ folder.
+    - In other cases you can use Echo.Loader.getURL function providing it with a relative URL to resource. URL is relative to http://cdn.echoenabled.com/sdk/v3/ folder.<br><br>
 
 - The Echo.Cookie class was added to SDK libraries suite. It provides the number of setter
 and accessor operations which allow to work with cookies (get/set/remove). The class is used to
@@ -78,7 +78,7 @@ time during the class instance initialization.
 the certain conditions when XDomainRequest can not be used. The XDomainRequest can not be used when:
     - the method other than GET or POST is used for the request
     - the request protocol doesn't match the caller page protocol (for example, the XDomainRequest can not be
-executed if the URL with HTTP protocol is requested within the HTTPS page and vice versa)
+executed if the URL with HTTP protocol is requested within the HTTPS page and vice versa)<br><br>
 
 - The problem with the PinboardVisualization plugin on high-velocity stream was fixed. In some case,
 when we receive duplicate items from the server, the activity application mechanism wasn't working correctly and
