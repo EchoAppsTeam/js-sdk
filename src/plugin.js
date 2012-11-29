@@ -195,7 +195,7 @@ Echo.Plugin.prototype.enabled = function() {
  * @inheritdoc Echo.Control#set
  */
 Echo.Plugin.prototype.set = function(key, value) {
-	Echo.Utils.set(this, key, value);
+	return Echo.Utils.set(this, key, value);
 };
 
 /**
@@ -209,7 +209,7 @@ Echo.Plugin.prototype.get = function(key, defaults) {
  * @inheritdoc Echo.Control#remove
  */
 Echo.Plugin.prototype.remove = function(key) {
-	this.set(key, undefined);
+	return Echo.Utils.remove(this, key);
 };
 
 /**

@@ -399,7 +399,7 @@ Echo.Control.prototype.get = function(key, defaults) {
  * The corresponding value which should be defined for the key.
  */
 Echo.Control.prototype.set = function(key, value) {
-	Echo.Utils.set(this, key, value);
+	return Echo.Utils.set(this, key, value);
 };
 
 /**
