@@ -7,7 +7,7 @@
     },
     "apps": [{
         "id": "my-comments-sample",
-        "script": "{apps}/echo/comments-sample/comments-sample.js",
+        "script": "http://cdn.echoenabled.com/apps/echo/comments-sample/comments-sample.js",
         "component": "Echo.Apps.CommentsSample",
         "config": {
             "appkey": "test.aboutecho.com",

@@ -7,7 +7,7 @@
     },
     "apps": [{
         "id": "my-social-chatter",
-        "script": "{apps}/echo/social-chatter/social-chatter.js",
+        "script": "http://cdn.echoenabled.com/apps/echo/social-chatter/social-chatter.js",
         "component": "Echo.Apps.SocialChatter",
         "config": {
             "appkey": "test.aboutecho.com",
