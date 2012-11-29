@@ -91,9 +91,14 @@ Echo.Plugin.create = function(manifest) {
 
 		this._init([&quot;config&quot;]);
 	});
+	var namespace = [manifest.component.name, &quot;Plugins&quot;, manifest.name].join(&quot;.&quot;);
 
 	constructor.manifest = manifest;
 	constructor.dependencies = manifest.dependencies;
+	constructor.prototype.namespace = namespace;
+
+	// define default language var values with the lowest priority available
+	Echo.Labels.set($.extend({}, manifest.labels), namespace, true);
 
 	if (manifest.methods) {
 		$.extend(constructor.prototype, manifest.methods);
@@ -207,7 +212,7 @@ Echo.Plugin.prototype.enabled = function() {
 </span> * @inheritdoc Echo.Control#set
  */
 Echo.Plugin.prototype.set = function(key, value) {
-	Echo.Utils.set(this, key, value);
+	return Echo.Utils.set(this, key, value);
 };
 
 <span id='Echo-Plugin-method-get'>/**
@@ -221,7 +226,7 @@ Echo.Plugin.prototype.get = function(key, defaults) {
 </span> * @inheritdoc Echo.Control#remove
  */
 Echo.Plugin.prototype.remove = function(key) {
-	this.set(key, undefined);
+	return Echo.Utils.remove(this, key);
 };
 
 <span id='Echo-Plugin-method-invoke'>/**
@@ -348,7 +353,7 @@ Echo.Plugin.prototype.requestDataRefresh = function() {
 </span> * @inheritdoc Echo.Utils#log
  */
 Echo.Plugin.prototype.log = function(data) {
-	Echo.Utils.log($.extend(data, {&quot;component&quot;: this.component.name + &quot;.Plugins.&quot; + this.name}));
+	Echo.Utils.log($.extend(data, {&quot;component&quot;: this.namespace}));
 };
 
 Echo.Plugin._defineNestedClass = function(name) {
@@ -371,19 +376,12 @@ Echo.Plugin.prototype._manifest = function(key) {
 Echo.Plugin.prototype._initializers = {};
 
 Echo.Plugin.prototype._initializers.css = function() {
-	if (!this._manifest(&quot;css&quot;)) return;
-	var parts = [this.component.get(&quot;name&quot;), &quot;Plugins&quot;, this.name];
-	Echo.Utils.addCSS(this.substitute({&quot;template&quot;: this._manifest(&quot;css&quot;)}), parts.join(&quot;.&quot;));
+	if (!this._manifest(&quot;css&quot;) || Echo.Utils.hasCSS(this.namespace)) return;
+	Echo.Utils.addCSS(this.substitute({&quot;template&quot;: this._manifest(&quot;css&quot;)}), this.namespace);
 };
 
 Echo.Plugin.prototype._initializers.labels = function() {
-	var namespace = this.component.get(&quot;name&quot;) + &quot;.Plugins.&quot; + this.name;
-
-	// define default language var values with the lowest priority available
-	Echo.Labels.set($.extend({}, this._manifest(&quot;labels&quot;)), namespace, true);
-
-	// define language var values passed within the config with the highest priority
-	return new Echo.Labels(this.config.get(&quot;labels&quot;, {}), namespace);
+	return new Echo.Labels(this.config.get(&quot;labels&quot;, {}), this.namespace);
 };
 
 Echo.Plugin.prototype._initializers.config = function() {

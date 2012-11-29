@@ -144,81 +144,77 @@ Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
 	// IE8+
 	// link: https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest
 	if (!jQuery.support.cors &amp;&amp; window.XDomainRequest) {
-		var httpRegEx = /^https?:\/\//i;
-		var getOrPostRegEx = /^get|post$/i;
-		var sameSchemeRegEx = new RegExp(&quot;^&quot; + location.protocol, &quot;i&quot;);
 		var jsonRegEx = /\/json/i;
 		var xmlRegEx = /\/xml/i;
 
 		// ajaxTransport exists in jQuery 1.5+
 		jQuery.ajaxTransport(&quot;text html xml json&quot;, function(options, userOptions, jqXHR) {
-			// XDomainRequests must be: asynchronous, GET or POST methods, HTTP or HTTPS protocol, and same scheme as calling page
-			if (options.crossDomain &amp;&amp; options.async &amp;&amp; getOrPostRegEx.test(options.type) &amp;&amp; httpRegEx.test(userOptions.url) &amp;&amp; sameSchemeRegEx.test(userOptions.url)) {
-				var xdr = null;
-				var userType = (userOptions.dataType || &quot;&quot;).toLowerCase();
-				return {
-					&quot;send&quot;: function(headers, complete) {
-						xdr = new XDomainRequest();
-						if (/^\d+$/.test(userOptions.timeout)) {
-							xdr.timeout = userOptions.timeout;
-						}
-						xdr.ontimeout = function() {
-							complete(500, &quot;timeout&quot;);
-						};
-						xdr.onload = function() {
-							var allResponseHeaders = &quot;Content-Length: &quot; + xdr.responseText.length + &quot;\r\nContent-Type: &quot; + xdr.contentType;
-							var status = {
-								&quot;code&quot;: 200,
-								&quot;message&quot;: &quot;success&quot;
-							};
-							var responses = {
-								&quot;text&quot;: xdr.responseText
-							};
-							try {
-								if ((userType === &quot;json&quot;) || ((userType !== &quot;text&quot;) &amp;&amp; jsonRegEx.test(xdr.contentType))) {
-									try {
-										responses.json = $.parseJSON(xdr.responseText);
-									} catch(e) {
-										status.code = 500;
-										status.message = &quot;parseerror&quot;;
-									}
-								} else if ((userType === &quot;xml&quot;) || ((userType !== &quot;text&quot;) &amp;&amp; xmlRegEx.test(xdr.contentType))) {
-									var doc = new ActiveXObject(&quot;Microsoft.XMLDOM&quot;);
-									doc.async = false;
-									try {
-										doc.loadXML(xdr.responseText);
-									} catch(e) {
-										doc = undefined;
-									}
-									if (!doc || !doc.documentElement || doc.getElementsByTagName(&quot;parsererror&quot;).length) {
-										status.code = 500;
-										status.message = &quot;parseerror&quot;;
-										throw &quot;Invalid XML: &quot; + xdr.responseText;
-									}
-									responses.xml = doc;
-								}
-							} catch(parseMessage) {
-								throw parseMessage;
-							} finally {
-								complete(status.code, status.message, responses, allResponseHeaders);
-							}
-						};
-						xdr.onerror = function() {
-							complete(500, &quot;error&quot;, {
-								&quot;text&quot;: xdr.responseText
-							});
-						};
-						var postData = (userOptions.data &amp;&amp; $.param(userOptions.data)) || &quot;&quot;;
-						xdr.open(options.type, options.url);
-						xdr.send(postData);
-					},
-					&quot;abort&quot;: function() {
-						if (xdr) {
-							xdr.abort();
-						}
+			var xdr = null;
+			var userType = (userOptions.dataType || &quot;&quot;).toLowerCase();
+			return {
+				&quot;send&quot;: function(headers, complete) {
+					xdr = new XDomainRequest();
+					if (/^\d+$/.test(userOptions.timeout)) {
+						xdr.timeout = userOptions.timeout;
 					}
-				};
-			}
+					xdr.ontimeout = function() {
+						complete(500, &quot;timeout&quot;);
+					};
+					xdr.onload = function() {
+						var allResponseHeaders = &quot;Content-Length: &quot; + xdr.responseText.length + &quot;\r\nContent-Type: &quot; + xdr.contentType;
+						var status = {
+							&quot;code&quot;: 200,
+							&quot;message&quot;: &quot;success&quot;
+						};
+						var responses = {
+							&quot;text&quot;: xdr.responseText
+						};
+						try {
+							if ((userType === &quot;json&quot;) || ((userType !== &quot;text&quot;) &amp;&amp; jsonRegEx.test(xdr.contentType))) {
+								try {
+									responses.json = $.parseJSON(xdr.responseText);
+								} catch(e) {
+									status.code = 500;
+									status.message = &quot;parseerror&quot;;
+								}
+							} else if ((userType === &quot;xml&quot;) || ((userType !== &quot;text&quot;) &amp;&amp; xmlRegEx.test(xdr.contentType))) {
+								var doc = new ActiveXObject(&quot;Microsoft.XMLDOM&quot;);
+								doc.async = false;
+								try {
+									doc.loadXML(xdr.responseText);
+								} catch(e) {
+									doc = undefined;
+								}
+								if (!doc || !doc.documentElement || doc.getElementsByTagName(&quot;parsererror&quot;).length) {
+									status.code = 500;
+									status.message = &quot;parseerror&quot;;
+									throw &quot;Invalid XML: &quot; + xdr.responseText;
+								}
+								responses.xml = doc;
+							}
+						} catch(parseMessage) {
+							throw parseMessage;
+						} finally {
+							complete(status.code, status.message, responses, allResponseHeaders);
+						}
+					};
+					xdr.onerror = function() {
+						complete(500, &quot;error&quot;, {
+							&quot;text&quot;: xdr.responseText
+						});
+					};
+					var postData = typeof userOptions.data === &quot;string&quot;
+						? userOptions.data
+						: $.param(userOptions.data || &quot;&quot;);
+					xdr.open(options.type, options.url);
+					xdr.send(postData);
+				},
+				&quot;abort&quot;: function() {
+					if (xdr) {
+						xdr.abort();
+					}
+				}
+			};
 		});
 	}
 	// avoid caching the respond result
@@ -227,8 +223,17 @@ Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
 	});
 };
 
-Echo.API.Transports.XDomainRequest.available = function() {
-	return $.browser.msie &amp;&amp; ~$.inArray(parseInt($.browser.version), [8, 9]);
+Echo.API.Transports.XDomainRequest.available = function(config) {
+	config = config || {&quot;URL&quot;: &quot;&quot;, &quot;method&quot;: &quot;&quot;};
+	var schema = utils.parseURL(config.URL) &amp;&amp; utils.parseURL(config.URL).schema || &quot;http:&quot;;
+	// XDomainRequests must be: GET or POST methods, HTTP or HTTPS protocol,
+	// and same scheme as calling page
+	var transportSpecAvailability = /^get|post$/i.test(config.method)
+		&amp;&amp; /^https?/.test(schema)
+		&amp;&amp; document.location.protocol === schema;
+	return $.browser.msie
+		&amp;&amp; ~$.inArray(parseInt($.browser.version), [8, 9])
+		&amp;&amp; transportSpecAvailability;
 };
 
 <span id='Echo-API-Transports-JSONP'>/**
@@ -494,7 +499,10 @@ Echo.API.Request.prototype._getTransport = function() {
 		: function() {
 			var transport;
 			$.each([&quot;WebSocket&quot;, &quot;AJAX&quot;, &quot;XDomainRequest&quot;, &quot;JSONP&quot;], function(i, name) {
-				var available = Echo.API.Transports[name].available();
+				var available = Echo.API.Transports[name].available({
+					&quot;URL&quot;: self.config.get(&quot;apiBaseURL&quot;),
+					&quot;method&quot;: self.config.get(&quot;method&quot;)
+				});
 				if (available) {
 					transport = name;
 					return false;

@@ -44,6 +44,12 @@ Docs = {
         "icon": "icon-class"
       },
       {
+        "name": "Echo.Cookie",
+        "extends": null,
+        "private": null,
+        "icon": "icon-class"
+      },
+      {
         "name": "Echo.App",
         "extends": "Echo.Control",
         "private": null,
@@ -978,6 +984,45 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "Cookie",
+        "fullName": "Echo.Cookie",
+        "icon": "icon-class",
+        "url": "#!/api/Echo.Cookie",
+        "meta": {
+        },
+        "sort": 1
+      },
+      {
+        "name": "get",
+        "fullName": "Echo.Cookie.get",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Cookie-static-method-get",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "set",
+        "fullName": "Echo.Cookie.set",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Cookie-static-method-set",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "remove",
+        "fullName": "Echo.Cookie.remove",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Cookie-static-method-remove",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
         "name": "App",
         "fullName": "Echo.App",
         "icon": "icon-class",
@@ -1194,6 +1239,16 @@ Docs = {
         "fullName": "Echo.Utils.addCSS",
         "icon": "icon-method",
         "url": "#!/api/Echo.Utils-static-method-addCSS",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "hasCSS",
+        "fullName": "Echo.Utils.hasCSS",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Utils-static-method-hasCSS",
         "meta": {
           "static": true
         },
@@ -1498,6 +1553,16 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "debug",
+        "fullName": "Echo.Loader.debug",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Loader-property-debug",
+        "meta": {
+          "private": true
+        },
+        "sort": 3
+      },
+      {
         "name": "config",
         "fullName": "Echo.Loader.config",
         "icon": "icon-property",
@@ -1562,6 +1627,16 @@ Docs = {
         "fullName": "Echo.Loader.override",
         "icon": "icon-method",
         "url": "#!/api/Echo.Loader-static-method-override",
+        "meta": {
+          "static": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "isDebug",
+        "fullName": "Echo.Loader.isDebug",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Loader-static-method-isDebug",
         "meta": {
           "static": true
         },
@@ -2569,170 +2644,10 @@ Docs = {
         "sort": 3
       },
       {
-        "name": "today",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.today",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-today",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "yesterday",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.yesterday",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-yesterday",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "lastWeek",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.lastWeek",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-lastWeek",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "lastMonth",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.lastMonth",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-lastMonth",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "secondAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.secondAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-secondAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "secondsAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.secondsAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-secondsAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "minuteAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.minuteAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-minuteAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "minutesAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.minutesAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-minutesAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "hourAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.hourAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-hourAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "hoursAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.hoursAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-hoursAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "dayAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.dayAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-dayAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "daysAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.daysAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-daysAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "weekAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.weekAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-weekAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "weeksAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.weeksAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-weeksAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
         "name": "metadataModeSwitchTitle",
         "fullName": "Echo.StreamServer.Controls.Stream.Item.metadataModeSwitchTitle",
         "icon": "icon-property",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-metadataModeSwitchTitle",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "monthAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.monthAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-monthAgo",
-        "meta": {
-          "echo_label": true
-        },
-        "sort": 3
-      },
-      {
-        "name": "monthsAgo",
-        "fullName": "Echo.StreamServer.Controls.Stream.Item.monthsAgo",
-        "icon": "icon-property",
-        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-monthsAgo",
         "meta": {
           "echo_label": true
         },
@@ -2813,6 +2728,16 @@ Docs = {
         "fullName": "Echo.StreamServer.Controls.Stream.Item.childrenMoreItems",
         "icon": "icon-property",
         "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-childrenMoreItems",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "re",
+        "fullName": "Echo.StreamServer.Controls.Stream.Item.re",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.StreamServer.Controls.Stream.Item-property-re",
         "meta": {
           "echo_label": true
         },
@@ -5338,6 +5263,166 @@ Docs = {
         "sort": 3
       },
       {
+        "name": "today",
+        "fullName": "Echo.Control.today",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-today",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "yesterday",
+        "fullName": "Echo.Control.yesterday",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-yesterday",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "lastWeek",
+        "fullName": "Echo.Control.lastWeek",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-lastWeek",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "lastMonth",
+        "fullName": "Echo.Control.lastMonth",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-lastMonth",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "secondAgo",
+        "fullName": "Echo.Control.secondAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-secondAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "secondsAgo",
+        "fullName": "Echo.Control.secondsAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-secondsAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "minuteAgo",
+        "fullName": "Echo.Control.minuteAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-minuteAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "minutesAgo",
+        "fullName": "Echo.Control.minutesAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-minutesAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "hourAgo",
+        "fullName": "Echo.Control.hourAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-hourAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "hoursAgo",
+        "fullName": "Echo.Control.hoursAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-hoursAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "dayAgo",
+        "fullName": "Echo.Control.dayAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-dayAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "daysAgo",
+        "fullName": "Echo.Control.daysAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-daysAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "weekAgo",
+        "fullName": "Echo.Control.weekAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-weekAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "weeksAgo",
+        "fullName": "Echo.Control.weeksAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-weeksAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "monthAgo",
+        "fullName": "Echo.Control.monthAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-monthAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
+        "name": "monthsAgo",
+        "fullName": "Echo.Control.monthsAgo",
+        "icon": "icon-property",
+        "url": "#!/api/Echo.Control-property-monthsAgo",
+        "meta": {
+          "echo_label": true
+        },
+        "sort": 3
+      },
+      {
         "name": "get",
         "fullName": "Echo.Control.get",
         "icon": "icon-method",
@@ -5486,6 +5571,15 @@ Docs = {
         "fullName": "Echo.Control.log",
         "icon": "icon-method",
         "url": "#!/api/Echo.Control-method-log",
+        "meta": {
+        },
+        "sort": 3
+      },
+      {
+        "name": "getRelativeTime",
+        "fullName": "Echo.Control.getRelativeTime",
+        "icon": "icon-method",
+        "url": "#!/api/Echo.Control-method-getRelativeTime",
         "meta": {
         },
         "sort": 3

@@ -106,7 +106,7 @@ Echo.Configuration.prototype.get = function(key, defaults) {
  * The corresponding value which should be defined for the key.
  */
 Echo.Configuration.prototype.set = function(key, value) {
-	var keys = key.split(/\./);
+	var keys = key.split(&quot;.&quot;);
 	delete this.cache[key];
 	if (typeof value === &quot;object&quot;) {
 		this._clearCacheByPrefix(key);
@@ -125,9 +125,9 @@ Echo.Configuration.prototype.set = function(key, value) {
  * Specifies the key which should be removed from the configuration.
  */
 Echo.Configuration.prototype.remove = function(key) {
-	var keys = key.split(/\./);
+	var keys = key.split(&quot;.&quot;);
 	var field = keys.pop();
-	var data = Echo.Utils.get(this.data, keys);
+	var data = Echo.Utils.get(this.data, keys, this.data);
 	Echo.Utils.set(this.cache, key, undefined);
 	delete this.cache[key];
 	delete data[field];

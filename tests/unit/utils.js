@@ -12,6 +12,7 @@ suite.prototype.info = {
 		"get",
 		"getUniqueString",
 		"getVisibleColor",
+		"hasCSS",
 		"htmlize",
 		"htmlTextTruncate",
 		"hyperlink",
@@ -65,12 +66,34 @@ suite.prototype.tests.TestDataMethods = {
 			}
 		};
 
+		var cases = [
+			["", false, "empty string as a value"],
+			[false, false, "boolean 'false' as a value"],
+			[true, false, "boolean 'true' as a value"],
+			[0, false, "integer '0' as a value"],
+			[12, false, "non-zero integer '12' as a value"],
+			[{}, false, "object as a value"],
+			["key", ["key"], "plain key string"],
+			["key1.key2", ["key1", "key2"], "string key with nesting"],
+			[["key1", "key2"], ["key1", "key2"], "array as a key"],
+			[[], false, "empty array as a key"]
+		];
+		$.map(cases, function(_case) {
+			var result = Echo.Utils._prepareFieldAccessKey(_case[0]);
+			var label = "Checking Echo.Utils._prepareFieldAccessKey (" + _case[2] + ")";
+			if (_case[1] === false) {
+				QUnit.equal(result, _case[1], label);
+			} else {
+				QUnit.deepEqual(result, _case[1], label);
+			}
+		});
+
 		QUnit.equal(Echo.Utils.get(data, "key1"), "value1",
 			"Checking get() method with simple key");
-		QUnit.deepEqual(Echo.Utils.get(data, ""), data,
-			"Checking get() method with empty string as key");
-		QUnit.deepEqual(Echo.Utils.get(data, []), data,
-			"Checking get() method with empty array as key");
+		QUnit.deepEqual(Echo.Utils.get(data, ""), undefined,
+			"Checking get() method with empty string as key, expecting 'undefined'");
+		QUnit.deepEqual(Echo.Utils.get(data, []), undefined,
+			"Checking get() method with empty array as key, expecting 'undefined'");
 		QUnit.deepEqual(Echo.Utils.get(data, "key2"), {
 			"key2-1": "value2-1",
 			"key2-2": {
@@ -83,11 +106,24 @@ suite.prototype.tests.TestDataMethods = {
 			"Checking get() method with complex key represented by Array");
 		QUnit.equal(Echo.Utils.get(data, "key1.fakekey", "default value"), "default value",
 			"Checking get() method with fake key and default value");
+		QUnit.equal(Echo.Utils.get(data), undefined,
+			"Checking if the get() method returns 'undefined' in case the key is mising");
+		QUnit.equal(Echo.Utils.get(undefined, "key1"), undefined,
+			"Checking if the get() method returns 'false' in case the data is mising");
+		QUnit.equal(Echo.Utils.get(), undefined,
+			"Checking if the get() method returns 'false' in case both the data and key are mising");
 
-		Echo.Utils.set(data, "key1", { "key1-1": "value1-1"});
+		Echo.Utils.set(data, "key1", {"key1-1": "value1-1"});
 		QUnit.deepEqual(data["key1"], {"key1-1": "value1-1"},
 			"Checking set() method with object param");
 		Echo.Utils.set(data, "key3", "value3");
+		QUnit.equal(Echo.Utils.set(data), false,
+			"Checking if the set() method returns 'false' in case the key is mising");
+		QUnit.equal(Echo.Utils.set(undefined, "key1"), false,
+			"Checking if the set() method returns 'false' in case the data is mising");
+		QUnit.equal(Echo.Utils.set(), false,
+			"Checking if the set() method returns 'false' in case both the data and key are mising");
+
 		QUnit.equal(data["key3"], "value3",
 			"Checking set() method with plain param");
 		QUnit.ok(!Echo.Utils.remove(data, ""), "Checking remove() with empty key");
@@ -122,6 +158,12 @@ suite.prototype.tests.TestDataMethods = {
 		}, "Checking remove() with complex key represented by Array");
 		Echo.Utils.set(data, "key1.key-null", null);
 		QUnit.ok(!Echo.Utils.remove(data, "key1.key-null.key"), "Checking remove() with null target");
+		QUnit.equal(Echo.Utils.remove(data), false,
+			"Checking if the remove() method returns 'false' in case the key is mising");
+		QUnit.equal(Echo.Utils.remove(undefined, "key1"), false,
+			"Checking if the remove() method returns 'false' in case the data is mising");
+		QUnit.equal(Echo.Utils.remove(), false,
+			"Checking if the remove() method returns 'false' in case both the data and key are mising");
 
 		QUnit.equal(Echo.Utils.htmlize(), undefined,
 			"Checking htmlize() method with undefined param");
@@ -190,6 +232,42 @@ suite.prototype.tests.TestDataMethods = {
 
 		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-05T08:15:30Z"), 784023330,
 			"Checking timestampFromW3CDTF() method");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-05T08:15:30+01:30"), 784017930,
+			"Checking timestampFromW3CDTF() method with timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09T11:32:23.726Z"), 1352460743.726,
+			"Checking timestampFromW3CDTF() method with milliseconds");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09T11:32:23.726+01:00"), 1352457143.726,
+			"Checking timestampFromW3CDTF() method with timezone offset and millisecond");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09T11:32:23.726-01:00"), 1352464343.726,
+			"Checking timestampFromW3CDTF() method with negative timezone offset and milliseconds");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09"), 1352419200,
+			"Checking timestampFromW3CDTF() method with just date defined");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11"), 1351728000,
+			"Checking timestampFromW3CDTF() method with year and month defined");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012"), 1325376000,
+			"Checking timestampFromW3CDTF() method with just year defined");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-01-01"), 1325376000,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (min both)");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-01"), 1354320000,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (month max, date min)");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-31"), 1356912000,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (max both)");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-01-01T00:00:00.000Z"), 1325376000,
+			"Checking timestampFromW3CDTF() method with boundary values (min time)");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-01-01T00:00:00.000+00:00"), 1325376000,
+			"Checking timestampFromW3CDTF() method with boundary values (min time) and timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-31T23:59:59.999Z"), 1356998399.999,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (max time)");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-31T23:59:59.999-00:00"), 1356998399.999,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (max time) and negative zero timzone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-01-01T00:00:00.000-01:45"), 1325382300,
+			"Checking timestampFromW3CDTF() method with boundary values (min time) and negative timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-01-01T00:00:00.000+01:45"), 1325369700,
+			"Checking timestampFromW3CDTF() method with boundary values (min time) and positive timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-31T23:59:59.999-23:59"), 1357084739.999,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (max time) and negative timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-31T23:59:59.999+23:59"), 1356912059.999,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (max time) and positive timezone offset");
 		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-0508-15:30"), undefined,
 			"Checking timestampFromW3CDTF() method with incorrect input value");
 
@@ -278,7 +356,7 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key:value}"),
 			["{key:value}", "key", "value"], "Checking templateSubstitution regexp with one key-value pair");
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key}"),
-			["{key}", "key", ($.browser.msie && $.browser.version <= 8 ? "" : undefined)], "Checking templateSubstitution regexp with key and empty value");
+			["{key}", "key", ($.browser.msie && $.browser.version <= 8 || $.browser.msie && document.compatMode === "BackCompat" ? "" : undefined)], "Checking templateSubstitution regexp with key and empty value");
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("string without template"),
 			null, "Checking templateSubstitution regexp with fake string as parameter");
 		var regexp = new RegExp(Echo.Utils.regexps.templateSubstitution, "g");
@@ -363,8 +441,14 @@ suite.prototype.tests.TestDataMethods = {
 
 suite.prototype.tests.TestDomMethods = {
 	"check": function() {
+		QUnit.ok(!Echo.Utils.hasCSS("utils-tests"),
+			"Checking whether we have the \"utils-tests\" CSS styles set added to the document before really adding it (using hasCSS function)");
 		QUnit.ok(Echo.Utils.addCSS(".echo-utils-tests { background-color: rgb(12, 34, 56); }", "utils-tests"),
 			"Checking that addCSS() method returns true if CSS-class was added");
+		QUnit.ok(Echo.Utils.hasCSS("utils-tests"),
+			"Checking whether we have the \"utils-tests\" CSS styles set added as soon as we added it into the document (using hasCSS function)");
+		QUnit.ok(!Echo.Utils.hasCSS(), "Checking the hasCSS function with empty argument");
+
 		var testElement = $('<div class="echo-utils-tests"></div>');
 		$("#qunit-fixture").append(testElement);
 		QUnit.ok(/rgb\(12,\s*34,\s*56\)/.test(Echo.Utils.getVisibleColor(testElement)),
@@ -429,11 +513,11 @@ suite.prototype.tests.TestDomMethods = {
 suite.prototype.async = {};
 
 suite.prototype.async.simpleImageTest = function(callback) {
+	var url = Echo.Loader.getURL("third-party/bootstrap/img/glyphicons-halflings.png", false);
 	var img = Echo.Utils.loadImage({
-		"image": Echo.Loader.getURL("{sdk}/third-party/bootstrap/img/glyphicons-halflings.png"),
+		"image": url,
 		"onload": function() {
-			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("{sdk}/third-party/bootstrap/img/glyphicons-halflings.png"),
-				"Checking loadImage() method");
+			QUnit.equal($(this).attr("src"), url, "Checking loadImage() method");
 			callback();
 		}
 	});
@@ -441,12 +525,12 @@ suite.prototype.async.simpleImageTest = function(callback) {
 };
 
 suite.prototype.async.fakeImageTest = function(callback) {
+	var url = Echo.Loader.getURL("images/avatar-default.png", false);
 	var img = Echo.Utils.loadImage({
 		"image": "http://example.com/fake.jpg",
-		"defaultImage": Echo.Loader.getURL("{sdk}/images/avatar-default.png"),
+		"defaultImage": url,
 		"onload": function() {
-			QUnit.equal($(this).attr("src"), Echo.Loader.getURL("{sdk}/images/avatar-default.png"),
-				"Checking loadImage() method with fake image");
+			QUnit.equal($(this).attr("src"), url, "Checking loadImage() method with fake image");
 			callback();
 		}
 	});

@@ -115,6 +115,9 @@ Echo.Tests.Common.prototype.run = function() {
 };
 
 Echo.Tests.Common.prototype.sequentialAsyncTests = function(funcs, namespace) {
+	if (namespace && $.isPlainObject(this[namespace]) && $.isFunction(this[namespace].destroy)) {
+		funcs.push("destroy");
+	}
 	funcs.push(function() {
 		QUnit.start();
 	});
@@ -664,7 +667,7 @@ Echo.Tests.Stats = {
 					}
 					break;
 				case "coverage":
-					html = Echo.Tests.Stats.lists[prefix][type].length && "<ul><li>" + ($.unique(Echo.Tests.Stats.lists[prefix][type]).join("</li><li>")) + "</li></ul>" || "Empty list";
+					html = Echo.Tests.Stats.lists[prefix][type].length && "<ul><li>" + (Echo.Tests.Stats.lists[prefix][type].sort().join("</li><li>")) + "</li></ul>" || "Empty list";
 					break;
 			}
 

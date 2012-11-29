@@ -131,7 +131,7 @@ plugin.component.renderers.children = function(element) {
 	var item = this.component;
 	// perform reply form rerendering *only* when we have exactly 1 item
 	// (the first item is being added or the last one is being deleted)
-	if (item.get(&quot;children&quot;).length == 1) {
+	if (item.get(&quot;children&quot;).length === 1) {
 		var child = item.get(&quot;children&quot;)[0];
 		if (child.get(&quot;added&quot;) || child.get(&quot;deleted&quot;)) {
 			this._itemCSS(&quot;remove&quot;, item, this.view.get(&quot;compactForm&quot;));

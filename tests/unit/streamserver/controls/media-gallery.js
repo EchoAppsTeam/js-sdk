@@ -30,8 +30,8 @@ suite.prototype.tests.commonWorkflow = {
 	"check": function() {
 		var self = this;
 		var elements = [
-			"<img src='" + Echo.Loader.getURL("{sdk}/images/avatar-default.png") + "'/>",
-			"<img src='" + Echo.Loader.getURL("{sdk}/third-party/bootstrap/img/glyphicons-halflings.png") + "'/>"
+			"<img src='" + Echo.Loader.getURL("images/avatar-default.png", false) + "'/>",
+			"<img src='" + Echo.Loader.getURL("third-party/bootstrap/img/glyphicons-halflings.png", false) + "'/>"
 		];
 		suite.checkGalleryActiveItem = function(gallery, index) {
 			var isActive = true;
@@ -58,8 +58,7 @@ suite.prototype.tests.commonWorkflow = {
 				self.sequentialAsyncTests([
 					"initialView",
 					"changeActiveItem",
-					"oneMediaItem",
-					"destroy"
+					"oneMediaItem"
 				], "cases");
 			}
 		});
@@ -107,7 +106,7 @@ suite.prototype.cases.oneMediaItem = function(callback) {
 		}
 	});
 	gallery.config.set("elements", [
-		"<img src='" + Echo.Loader.getURL("{sdk}/images/avatar-default.png") + "'/>"
+		"<img src='" + Echo.Loader.getURL("images/avatar-default.png", false) + "'/>"
 	]);
 	gallery.refresh();
 };

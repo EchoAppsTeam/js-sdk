@@ -38,8 +38,8 @@ Echo.Utils.cache = {};
 Echo.Utils.regexps = {
 	&quot;templateSubstitution&quot;: &quot;{([0-9a-z\\.]+)(?:\\:((?:[0-9a-z_-]+\\.)*[0-9a-z_-]+))?}&quot;,
 	&quot;mobileUA&quot;: /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
-	&quot;parseURL&quot;: /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/,
-	&quot;w3cdtf&quot;: /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/
+	&quot;w3cdtf&quot;: /^(\d{4})(?:-(\d\d)(?:-(\d\d))?(?:(?:T(\d\d):(\d\d):(\d\d))(?:\.(\d{1,3}))?(?:Z|(?:(\+|-)(\d\d):(\d\d))))?)?$/,
+	&quot;parseURL&quot;: /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/
 };
 
 <span id='Echo-Utils-static-method-addCSS'>/**
@@ -75,7 +75,7 @@ Echo.Utils.regexps = {
  * Contains CSS styles to be added.
  *
  * @param {String} id
- * Unique identity string of CSS styles.
+ * Unique identity string of the CSS styles set.
  *
  * @return {Boolean}
  * true if CSS styles was successfully added, false - if CSS styles are already
@@ -91,7 +91,7 @@ Echo.Utils.addCSS = function(cssCode, id) {
 	}
 	var cssStyles = this.cache.cssStyles;
 	if (id) {
-		if (cssStyles.processed[id]) return false;
+		if (Echo.Utils.hasCSS(id)) return false;
 		cssStyles.processed[id] = true;
 	}
 	var currentCssCode = &quot;&quot;;
@@ -121,6 +121,26 @@ Echo.Utils.addCSS = function(cssCode, id) {
 	}
 	cssStyles.anchor = newStyle;
 	return true;
+};
+
+<span id='Echo-Utils-static-method-hasCSS'>/**
+</span> * @static
+ * Method to check whether the given set of CSS rules was already added into the page.
+ *
+ * This function might be used in conjunction with the Echo.Utils.addCSS function
+ * to check a certain conditions before adding new styles.
+ *
+ * @param {String} id
+ * Unique identity string of the CSS styles set.
+ *
+ * @return {Boolean}
+ * true if the given CSS styles set was already added into the page previously,
+ * false - otherwise.
+ */
+Echo.Utils.hasCSS = function(id) {
+	return this.cache.cssStyles
+		? !!this.cache.cssStyles.processed[id]
+		: false;
 };
 
 <span id='Echo-Utils-static-method-foldl'>/**
@@ -174,11 +194,11 @@ Echo.Utils.foldl = function(acc, object, callback) {
 
 <span id='Echo-Utils-static-method-get'>/**
 </span> * @static
- * Method to access specific nested field value in the object.
+ * Method to get a specific field value in the given object.
  *
- * This function returns the corresponding value of the given key or the
- * default value if specified in the third argument. Use the dot as a delimiter
- * of key parts to get nested field value.
+ * This function returns the corresponding value of the given object field or the
+ * default value if specified as the third argument. Use the dot char ('.') as the
+ * delimiter of the key parts to get the nested field value.
  *
  *     var data = {
  *         &quot;key1&quot;: &quot;value1&quot;,
@@ -192,34 +212,37 @@ Echo.Utils.foldl = function(acc, object, callback) {
  *     Echo.Utils.get(data, &quot;key2.key2-1&quot;); // will return &quot;value2-1&quot;
  *
  * @param {Object} obj
- * The object from which the value is taken.
+ * The source object where the value defined for the given key should be looked for.
  *
  * @param {Mixed} key
- * The key for value extraction. Possible types are String or Array. If its Array, parameter
- * should contains list of keys if its complex. Ex.: &quot;key2.key2-2&quot; =&gt; [&quot;key2&quot;, &quot;key2-2&quot;].
+ * Specifies the field to access the necessary value.
+ * Possible types are String or Array. If the key is defined as an Array,
+ * the parameter should contain the key chain to access the necessary value.
+ * Example: the &quot;key2.key2-2&quot; and [&quot;key2&quot;, &quot;key2-2&quot;] key representations are equivalent.
  *
  * @param {Object} [defauts]
- * Default value if no corresponding key was found in the object.
+ * Default value to be returned in case when no corresponding key was found
+ * in the specified object.
  *
  * @param {Function} [callback]
- * The callback function executed for each object of corresponding part of the key.
+ * The callback function to be executed while switching between the nesting levels
+ * while traversing the source object. The callback is executed once in case of the
+ * plain keys (i.e. without nesting levels).
  *
  * @param {Object} callback.data
- * The object of corresponding part of the key.
+ * Contains the object value on the current nesting level during the object traversing.
  *
  * @param {String} callback.key
- * Defines corresponding part of the key.
+ * Contains the part of the key to be used during this iteration of the object traversing.
  *
  * @return {Mixed}
- * The corresponding nested value found in the object.
-*/
+ * The corresponding value found in the source object or the default value
+ * (if defined during the function call) in case the specified field is not found
+ * or its value is undefined.
+ */
 Echo.Utils.get = function(obj, key, defaults, callback) {
-	if (key &amp;&amp; typeof key === &quot;string&quot;) {
-		key = key.split(/\./);
-	}
-	if (!key || !key.length) {
-		return obj;
-	}
+	var keys = Echo.Utils._prepareFieldAccessKey(key);
+	if (!keys || !obj) return defaults;
 	var found = true;
 	var iteration = function(_key, _data) {
 		if (callback) {
@@ -232,18 +255,18 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
 		}
 	};
 	// avoid foldl usage for plain keys
-	var value = key.length === 1
-		? iteration(key.pop(), obj)
-		: Echo.Utils.foldl(obj, key, iteration);
+	var value = keys.length === 1
+		? iteration(keys.pop(), obj)
+		: Echo.Utils.foldl(obj, keys, iteration);
 	return found ? value : defaults;
 };
 
 <span id='Echo-Utils-static-method-remove'>/**
 </span> * @static
- * Method to remove specific nested field value in the object.
+ * Method to remove a specific field from the given object.
  *
- * This function removes the corresponding value of the given key or the.
- * Use the dot as a delimiter of key parts to remove nested field value.
+ * This function removes the corresponding field in the target object.
+ * Use the dot char ('.') as a delimiter of the key parts to remove nested field.
  *
  *     var data = {
  *         &quot;key1&quot;: &quot;value1&quot;,
@@ -261,32 +284,33 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
  *     Echo.Utils.remove(data, &quot;not_defined_key&quot;); // will return false
  *
  * @param {Object} obj
- * The object from which the value is taken.
+ * Specifies the target object which should be updated.
  *
  * @param {Mixed} key
  * The key for value removing. Possible types are String or Array. If its Array, parameter
  * should contains list of keys if its complex. Ex.: &quot;key2.key2-2&quot; =&gt; [&quot;key2&quot;, &quot;key2-2&quot;].
  *
  * @return {Boolean}
- * The boolean value which indicates that value by key exists and removed.
+ * The boolean value which indicates whether the key was removed from the given object.
  */
 Echo.Utils.remove = function(obj, key) {
-	if (!key || !obj) return false;
-	var keys = $.type(key) === &quot;array&quot; ? key : key.split(/\./);
-	var _key = keys.pop();
-	var target = Echo.Utils.get(obj, keys, {});
-	if (target === null || $.type(target[_key]) === &quot;undefined&quot;) {
-		return false;
-	}
-	return delete target[_key];
+	var keys = Echo.Utils._prepareFieldAccessKey(key);
+	if (!keys || !obj) return false;
+	var field = keys.pop();
+	// passing obj as a default value as well
+	// to operate with it in case of the plain key
+	var target = Echo.Utils.get(obj, keys, obj);
+	return target === null || typeof target[field] === &quot;undefined&quot;
+		? false
+		: delete target[field];
 };
 
 <span id='Echo-Utils-static-method-set'>/**
 </span> * @static
- * Method to define specific nested field value in the object.
+ * Method to define a given value for the specified key in the target object.
  *
  * This function allows to define the value for the corresponding field in the object.
- * Use the dot as a delimiter of key parts to set nested field value.
+ * Use the dot char ('.') as a delimiter of the key parts to define nested field value.
  *
  *     var data = {
  *         &quot;key1&quot;: &quot;value1&quot;,
@@ -299,16 +323,22 @@ Echo.Utils.remove = function(obj, key) {
  *     Echo.Utils.set(data, &quot;key1&quot;, {&quot;key1-1&quot;: &quot;value1-1&quot;}); // data[&quot;key1&quot;] will be {&quot;key1-1&quot;:&quot;value1-1&quot;}
  *
  * @param {Object} obj
- * The object for which the value is set.
+ * Specifies the target object which should be updated.
  *
  * @param {String} key
  * Defines the key where the given value should be stored.
  *
  * @param {Mixed} value
- * The object data that should be inserted for the key.
+ * The data which should be defined for the given key.
+ *
+ * @return {Boolean}
+ * The boolean value which indicates whether the necessary value was defined
+ * for the target object using the key specified. Returns the 'false' boolean value
+ * in case the object or the key is not specified.
  */
 Echo.Utils.set = function(obj, key, value) {
-	var keys = key.split(/\./);
+	var keys = Echo.Utils._prepareFieldAccessKey(key);
+	if (!keys || !obj) return false;
 	var field = keys.pop();
 	var target = obj;
 	if (keys.length &gt; 0) {
@@ -319,6 +349,16 @@ Echo.Utils.set = function(obj, key, value) {
 		});
 	}
 	target[field] = value;
+	return true;
+};
+
+Echo.Utils._prepareFieldAccessKey = function(key) {
+	if (!key) return false;
+	return typeof key === &quot;string&quot;
+		? key.split(&quot;.&quot;)
+		: key instanceof Array &amp;&amp; key.length
+			? key
+			: false; // unknown key type
 };
 
 <span id='Echo-Utils-static-method-htmlize'>/**
@@ -612,6 +652,7 @@ Echo.Utils.getVisibleColor = function(element) {
  * Method to convert datetime value from W3C datetime format to timestamp.
  *
  *     Echo.Utils.timestampFromW3CDTF(&quot;1998-02-08T09:27:30Z&quot;); // will return 886930050
+ *     Echo.Utils.timestampFromW3CDTF(&quot;1998-02-08T09:27:30.733Z&quot;); // will return 886930050.733
  *
  * @param {String} datetime
  * String containing datetime value to be converted.
@@ -620,14 +661,33 @@ Echo.Utils.getVisibleColor = function(element) {
  * UNIX timestamp.
  */
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
-	var parts = [&quot;year&quot;, &quot;month&quot;, &quot;day&quot;, &quot;hours&quot;, &quot;minutes&quot;, &quot;seconds&quot;];
-	var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
-	if (!matches) return;
-	var dt = Echo.Utils.foldl({}, parts, function(key, acc, id) {
-		acc[key] = matches[id + 1];
-	});
-	return Date.UTC(dt.year, dt.month - 1, dt.day,
-		dt.hours, dt.minutes, dt.seconds) / 1000;
+	if (!Echo.Utils.regexps.w3cdtf.test(datetime)) return;
+	var time = (new Date(datetime)).getTime();
+	if (isNaN(time)) {
+		var parts = [&quot;year&quot;, &quot;month&quot;, &quot;day&quot;, &quot;hours&quot;, &quot;minutes&quot;, &quot;seconds&quot;, &quot;milliseconds&quot;];
+		var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
+		var dt = Echo.Utils.foldl({}, parts, function(key, acc, id) {
+			acc[key] = +matches[id + 1] || 0;
+		});
+		var timeZone = matches.slice(parts.length + 1);
+		if (timeZone[0]) {
+			dt.hours = dt.hours - (timeZone[0] + timeZone[1]);
+			dt.minutes = dt.minutes - (timeZone[0] + timeZone[2]);
+		}
+		time = Date.UTC(
+			dt.year,
+			dt.month ? dt.month - 1 : dt.month,
+			dt.day || 1,
+			dt.hours,
+			dt.minutes,
+			dt.seconds,
+			dt.milliseconds
+		);
+		return isNaN(time)
+			? undefined
+			: time / 1000;
+	}
+	return time / 1000;
 };
 
 <span id='Echo-Utils-static-method-isMobileDevice'>/**

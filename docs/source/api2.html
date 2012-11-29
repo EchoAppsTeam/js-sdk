@@ -221,7 +221,7 @@ Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(dat
 	}
 	this.config.set(&quot;liveUpdatesTimeout&quot;, timeout);
 	// if timeout remains the same, take server side value into account
-	if (timeout == this.liveUpdates.originalTimeout) {
+	if (timeout === this.liveUpdates.originalTimeout) {
 		applyServerDefinedTimeout(data.liveUpdatesTimeout);
 	}
 };
@@ -263,7 +263,10 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
-	return data &amp;&amp; ~$.inArray(data.errorCode, [&quot;waiting&quot;, &quot;timeout&quot;, &quot;busy&quot;, &quot;view_limit&quot;, &quot;view_update_capacity_exceeded&quot;, &quot;connection_failure&quot;, &quot;network_timeout&quot;]);
+	var errorCodes = [&quot;waiting&quot;, &quot;timeout&quot;, &quot;busy&quot;, &quot;view_limit&quot;, &quot;view_update_capacity_exceeded&quot;, &quot;connection_failure&quot;, &quot;network_timeout&quot;];
+	return data
+		&amp;&amp; this.config.get(&quot;endpoint&quot;) !== &quot;submit&quot;
+		&amp;&amp; ~$.inArray(data.errorCode, errorCodes);
 };
 
 Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, config) {

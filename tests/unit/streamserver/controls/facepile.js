@@ -59,8 +59,7 @@ suite.prototype.tests.staticWorkflow = {
 				suite.pile = this;
 				self.sequentialAsyncTests([
 					"staticCommon",
-					"staticMore",
-					"destroy"
+					"staticMore"
 				], "cases");
 			}
 		});
@@ -140,8 +139,7 @@ suite.prototype.tests.dynamicWorkflow = {
 				QUnit.equal(suite.pile.view.get("suffixText").html(), suite.pile.config.get("suffixText"), "Checking suffix text");
 				self.sequentialAsyncTests([
 					"dynamicMore",
-					"dynamicIsYou",
-					"destroy"
+					"dynamicIsYou"
 				], "cases");
 			}
 		});

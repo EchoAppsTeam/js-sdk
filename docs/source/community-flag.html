@@ -184,7 +184,7 @@ plugin.methods._assembleButton = function(name) {
 			&quot;name&quot;: name,
 			&quot;label&quot;: '&lt;span class=&quot;echo-clickable&quot;&gt;' + label + '&lt;/span&gt;' +
 				(item.user.is(&quot;admin&quot;) &amp;&amp; flags.length ? &quot; (&quot; + flags.length + &quot;)&quot; : &quot;&quot;),
-			&quot;visible&quot;: item.user.is(&quot;logged&quot;) &amp;&amp; action == name,
+			&quot;visible&quot;: item.user.is(&quot;logged&quot;) &amp;&amp; action === name,
 			&quot;once&quot;: true,
 			&quot;callback&quot;: callback
 		};
@@ -212,7 +212,7 @@ plugin.methods._myFlags = function(flags) {
 	});
 };
 
-plugin.css = '.{plugin.class:flaggedBy} { background: url({config:cdnBaseURL.sdk}/images/curation/status/communityflagged.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
+plugin.css = '.{plugin.class:flaggedBy} { background: url({config:cdnBaseURL.sdk-assets}/images/curation/status/communityflagged.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
 
 Echo.Plugin.create(plugin);
 

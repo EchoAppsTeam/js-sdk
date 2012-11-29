@@ -28,6 +28,7 @@ suite.prototype.info = {
 		"refresh",
 		"render",
 		"isDefined",
+		"getRelativeTime",
 
 		// functions below are covered
 		// within the Plugin component test
@@ -90,7 +91,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"eventsMechanism",
 			"labelsOverriding",
 			"refresh",
-			"destroy",
+			"destroyCalled",
 			"destroyBroadcasting"
 		], "cases");
 
@@ -211,6 +212,30 @@ suite.prototype.cases.basicOperations = function(callback) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
 		}
 
+		// checking "getRelativeTime" method
+		var now = Math.floor((new Date()).getTime() / 1000);
+		var probes = [
+			["", undefined, "empty string"],
+			[0, undefined, "zero as a value"],
+			["some-random-string", undefined, "random string"],
+			[false, undefined, "boolean 'false'"],
+			[now - 1, "1 Second Ago", "second ago"],
+			[now - 5, "5 Seconds Ago", "seconds ago"],
+			[now - 1 * 60, "1 Minute Ago", "minute ago"],
+			[now - 3 * 60, "3 Minutes Ago", "minutes ago"],
+			[now - 1 * 60 * 60, "1 Hour Ago", "hour ago"],
+			[now - 4 * 60 * 60, "4 Hours Ago", "hours ago"],
+			[now - 1 * 24 * 60 * 60, "Yesterday", "yesterday"],
+			[now - 3 * 24 * 60 * 60, "3 Days Ago", "days ago"],
+			[now - 7 * 24 * 60 * 60, "Last Week", "last week"],
+			[now - 32 * 24 * 60 * 60, "Last Month", "last month"],
+			[now - 64 * 24 * 60 * 60, "2 Months Ago", "months ago"]
+		];
+		$.map(probes, function(probe) {
+			QUnit.equal(self.getRelativeTime(probe[0]), probe[1],
+				"Checking \"getRelativeTime\" function (" + probe[2] + ")");
+		});
+
 		// checking "invoke" method
 		var cases = [
 			[function() { return this.getPlugin("MyFakeTestPlugin"); }, undefined],
@@ -274,7 +299,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 			"Checking if object parameter was overridden (checking new key)");
 		QUnit.equal(this.config.get("objectParam.param2"), undefined,
 			"Checking if object parameter was overridden (checking existing key)");
-		QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("{sdk}/images/info70.png"),
+		QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("images/info70.png", false),
 			"Checking if object parameter was overridden and was normalized (checking defaultAvatar key)");
 
 		this.destroy();
@@ -286,7 +311,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		"myTestParam": "test value",
 		"undefinedParam": "undefinedParam replacement",
 		"nullParam": "nullParam replacement",
-		"defaultAvatar": "{sdk}/images/info70.png",
+		"defaultAvatar": Echo.Loader.getURL("images/info70.png", false),
 		"ready": check
 	});
 };
@@ -621,7 +646,7 @@ suite.prototype.cases.refresh = function(callback) {
 	});
 };
 
-suite.prototype.cases.destroy = function(callback) {
+suite.prototype.cases.destroyCalled = function(callback) {
 	var publish = function(topic, control) {
 		Echo.Events.publish({
 			"topic": topic,
@@ -909,7 +934,7 @@ suite.getControlManifest = function(name, config) {
 
 	var addDependency = function(n) {
 		manifest.dependencies.push({
-			"url": "unit/dependencies/control.dep." + n + ".js",
+			"url": Echo.Loader.config.cdnBaseURL + "tests/unit/dependencies/control.dep." + n + ".js",
 			"loaded": function() { return !!Echo.Tests.Dependencies.Control["dep" + n]; }
 		});
 	};

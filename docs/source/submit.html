@@ -418,7 +418,7 @@ submit.renderers.postButton = function(element) {
 			&quot;label&quot;: this.labels.get(&quot;post&quot;)
 		},
 		&quot;posting&quot;: {
-			&quot;icon&quot;: this.config.get(&quot;cdnBaseURL.sdk&quot;) + &quot;/images/loading.gif&quot;,
+			&quot;icon&quot;: this.config.get(&quot;cdnBaseURL.sdk-assets&quot;) + &quot;/images/loading.gif&quot;,
 			&quot;disabled&quot;: true,
 			&quot;label&quot;: this.labels.get(&quot;posting&quot;)
 		}
@@ -451,7 +451,9 @@ submit.renderers.postButton = function(element) {
 		self.view.render({&quot;name&quot;: &quot;markers&quot;});
 	});
 	subscribe(&quot;Error&quot;, states.normal, function(params) {
-		self._showError(params.postData);
+		if (params.extra &amp;&amp; params.extra.critical) {
+			self._showError(params.postData);
+		}
 	});
 	this.posting.action = this.posting.action || function() {
 		if (self._isPostValid()) {
@@ -479,10 +481,11 @@ submit.renderers._metaFields = function(element, extra) {
  */
 submit.methods.post = function() {
 	var self = this;
-	var publish = function(phase, data) {
+	var publish = function(phase, data, requestState) {
+		requestState = requestState || {};
 		var params = {
 			&quot;topic&quot;: &quot;onPost&quot; + phase,
-			&quot;data&quot;: {&quot;postData&quot;: data}
+			&quot;data&quot;: {&quot;postData&quot;: data, &quot;extra&quot;: requestState}
 		};
 		self.events.publish(params);
 	};
@@ -520,13 +523,13 @@ submit.methods.post = function() {
 				&quot;data&quot;: {}
 			});
 		},
-		&quot;onError&quot;: function(data) {
+		&quot;onError&quot;: function(data, requestState) {
 <span id='Echo-StreamServer-Controls-Submit-event-onPostError'>			/**
 </span>			 * @event onPostError
 			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
 			 * Triggered if submit operation failed.
 			 */
-			publish(&quot;Error&quot;, data);
+			publish(&quot;Error&quot;, data, requestState);
 		}
 	};
 <span id='Echo-StreamServer-Controls-Submit-event-onPostInit'>	/**
@@ -688,7 +691,7 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk}/images/info70.png); }' +
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk-assets}/images/info70.png); }' +
 	($.browser.msie ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +

@@ -134,7 +134,7 @@ plugin.init = function() {
  * 				&quot;visible&quot;: function() {
 					var item = this;
  * 					var user = item.user;
- * 					if (user.get(&quot;state&quot;) == &quot;Untouched&quot;) return true;
+ * 					if (user.get(&quot;state&quot;) === &quot;Untouched&quot;) return true;
  * 					return false;
  * 				}
  * 			}]
@@ -163,7 +163,7 @@ plugin.methods._assembleButton = function(action, control) {
 		item.get(&quot;buttons.&quot; + plugin.name + &quot;.&quot; + name + &quot;.element&quot;)
 			.empty()
 			.append(self.labels.get(operation + &quot;Processing&quot;, {&quot;type&quot;: type, &quot;marker&quot;: marker}));
-		var verb = type == &quot;tag&quot; ? operation.replace(/mark/g, &quot;tag&quot;) : operation;
+		var verb = type === &quot;tag&quot; ? operation.replace(/mark/g, &quot;tag&quot;) : operation;
 		var activity = {
 			&quot;verbs&quot;: [&quot;http://activitystrea.ms/schema/1.0/&quot; + verb],
 			&quot;targets&quot;: [{&quot;id&quot;: item.get(&quot;data.object.id&quot;)}],

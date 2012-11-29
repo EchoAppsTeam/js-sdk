@@ -28,6 +28,7 @@ if (Echo.Loader) return;
  */
 Echo.Loader = {
 <span id='Echo-Loader-property-version'>	&quot;version&quot;: &quot;&quot;,
+</span><span id='Echo-Loader-property-debug'>	&quot;debug&quot;: false,
 </span><span id='Echo-Loader-property-config'>	&quot;config&quot;: {
 </span>		&quot;cdnBaseURL&quot;: &quot;http://cdn.echoenabled.com/&quot;,
 		&quot;errorTimeout&quot;: 5000 // 5 sec
@@ -42,12 +43,19 @@ Echo.Loader = {
  *
  * @param {String} url
  * JavaScript or CSS stylesheet file URL.
+ *
+ * @param {Boolean} [devVersion=true]
+ * Specifies whether function should return dev version of the file or not,
+ * &lt;em&gt;false&lt;/em&gt; value is useful when we want to get URL to image because
+ * images don't have dev versions
  */
-Echo.Loader.getURL = function(url) {
+Echo.Loader.getURL = function(url, devVersion) {
+	if (typeof devVersion === &quot;undefined&quot;) devVersion = true;
 	return /^https?:\/\/|^\/\//.test(url)
 		? url
-		: url.replace(/{apps}/, Echo.Loader.config.cdnBaseURL + &quot;apps&quot;)
-			.replace(/{sdk}/, Echo.Loader.config.cdnBaseURL + &quot;sdk/v&quot; + Echo.Loader.version);
+		: Echo.Loader.config.cdnBaseURL + &quot;sdk/v&quot; + Echo.Loader.version +
+			(devVersion &amp;&amp; Echo.Loader.isDebug() ? &quot;/dev&quot; : &quot;&quot;) +
+			(!url || url.charAt(0) === &quot;/&quot; ? &quot;&quot; : &quot;/&quot;) + url;
 };
 <span id='Echo-Loader-static-method-init'>/**
 </span> * @static
@@ -163,15 +171,48 @@ Echo.Loader.override = function(canvasID, appID, config) {
 	overrides[canvasID][appID] = config;
 };
 
+<span id='Echo-Loader-static-method-isDebug'>/**
+</span> * @static
+ * Allows to identify if code should print logs, use non-minified versions of scripts, ...
+ *
+ * @return {Boolean}
+ */
+Echo.Loader.isDebug = function() {
+	return Echo.Loader.debug;
+};
+
+(function() {
+	if (Echo.Loader.debug) return;
+
+	var debug;
+	var _debugCookieName = &quot;echo-debug&quot;;
+	var options = {&quot;path&quot;: &quot;/&quot;};
+	var hashParts = window.location.hash.match(/echo.debug:(true|false)/);
+	if (hashParts &amp;&amp; hashParts.length) {
+		debug = hashParts[1];
+	}
+	if (typeof debug !== &quot;undefined&quot;) {
+		if (debug === &quot;true&quot;) {
+			Echo.Loader.debug = true;
+			Echo.Cookie.set(_debugCookieName, true, options);
+		} else {
+			Echo.Loader.debug = false;
+			Echo.Cookie.remove(_debugCookieName, options);
+		}
+		return;
+	}
+	Echo.Loader.debug = !!Echo.Cookie.get(_debugCookieName);
+})();
+
 Echo.Loader._initEnvironment = function(callback) {
 	var resources = [{
-		&quot;url&quot;: &quot;{sdk}/backplane.js&quot;,
+		&quot;url&quot;: &quot;backplane.js&quot;,
 		&quot;loaded&quot;: function() { return !!window.Backplane; }
 	}, {
-		&quot;url&quot;: &quot;{sdk}/third-party/jquery.pack.js&quot;,
+		&quot;url&quot;: &quot;third-party/jquery.pack.js&quot;,
 		&quot;loaded&quot;: function() { return !!Echo.jQuery; }
 	}, {
-		&quot;url&quot;: &quot;{sdk}/environment.pack.js&quot;,
+		&quot;url&quot;: &quot;environment.pack.js&quot;,
 		&quot;loaded&quot;: function() { return !!Echo.Utils; }
 	}];
 	Echo.Loader.download(resources, callback);

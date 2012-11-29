@@ -103,6 +103,10 @@ Echo.Control.create = function(manifest) {
 		prototype.templates = $.extend({}, prototype.templates, manifest.templates);
 	}
 
+	// define default language var values with the lowest priority available
+	var labels = $.extend({}, prototype.defaults.labels, manifest.labels);
+	Echo.Labels.set(labels, manifest.name, true);
+
 	constructor.manifest = manifest;
 
 	// define CSS class and prefix for the class
@@ -241,7 +245,8 @@ Echo.Control.prototype.defaults.config = {
 	 * Base URL of the Echo apps built on top of the JS SDK.
 	 */
 	&quot;cdnBaseURL&quot;: {
-		&quot;sdk&quot;: Echo.Loader.config.cdnBaseURL + &quot;sdk/v&quot; + Echo.Loader.version,
+		&quot;sdk&quot;: Echo.Loader.getURL(&quot;&quot;),
+		&quot;sdk-assets&quot;: Echo.Loader.getURL(&quot;&quot;, false),
 		&quot;apps&quot;: Echo.Loader.config.cdnBaseURL + &quot;apps&quot;
 	},
 	&quot;scriptLoadErrorTimeout&quot;: 5000, // 5 sec
@@ -252,7 +257,7 @@ Echo.Control.prototype.defaults.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	&quot;defaultAvatar&quot;: Echo.Loader.getURL(&quot;{sdk}/images/avatar-default.png&quot;)
+	&quot;defaultAvatar&quot;: Echo.Loader.getURL(&quot;images/avatar-default.png&quot;, false)
 };
 
 Echo.Control.prototype.defaults.labels = {
@@ -311,7 +316,71 @@ Echo.Control.prototype.defaults.labels = {
 <span id='Echo-Control-property-error_unknown'>	/**
 </span>	 * @echo_label
 	 */
-	&quot;error_unknown&quot;: &quot;(unknown) Unknown error.&quot;
+	&quot;error_unknown&quot;: &quot;(unknown) Unknown error.&quot;,
+<span id='Echo-Control-property-today'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;today&quot;: &quot;Today&quot;,
+<span id='Echo-Control-property-yesterday'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;yesterday&quot;: &quot;Yesterday&quot;,
+<span id='Echo-Control-property-lastWeek'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;lastWeek&quot;: &quot;Last Week&quot;,
+<span id='Echo-Control-property-lastMonth'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;lastMonth&quot;: &quot;Last Month&quot;,
+<span id='Echo-Control-property-secondAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;secondAgo&quot;: &quot;{number} Second Ago&quot;,
+<span id='Echo-Control-property-secondsAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;secondsAgo&quot;: &quot;{number} Seconds Ago&quot;,
+<span id='Echo-Control-property-minuteAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;minuteAgo&quot;: &quot;{number} Minute Ago&quot;,
+<span id='Echo-Control-property-minutesAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;minutesAgo&quot;: &quot;{number} Minutes Ago&quot;,
+<span id='Echo-Control-property-hourAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;hourAgo&quot;: &quot;{number} Hour Ago&quot;,
+<span id='Echo-Control-property-hoursAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;hoursAgo&quot;: &quot;{number} Hours Ago&quot;,
+<span id='Echo-Control-property-dayAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;dayAgo&quot;: &quot;{number} Day Ago&quot;,
+<span id='Echo-Control-property-daysAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;daysAgo&quot;: &quot;{number} Days Ago&quot;,
+<span id='Echo-Control-property-weekAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;weekAgo&quot;: &quot;{number} Week Ago&quot;,
+<span id='Echo-Control-property-weeksAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;weeksAgo&quot;: &quot;{number} Weeks Ago&quot;,
+<span id='Echo-Control-property-monthAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;monthAgo&quot;: &quot;{number} Month Ago&quot;,
+<span id='Echo-Control-property-monthsAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;monthsAgo&quot;: &quot;{number} Months Ago&quot;
 };
 
 <span id='Echo-Control-method-get'>/**
@@ -347,7 +416,7 @@ Echo.Control.prototype.get = function(key, defaults) {
  * The corresponding value which should be defined for the key.
  */
 Echo.Control.prototype.set = function(key, value) {
-	Echo.Utils.set(this, key, value);
+	return Echo.Utils.set(this, key, value);
 };
 
 <span id='Echo-Control-method-remove'>/**
@@ -607,6 +676,60 @@ Echo.Control.prototype.log = function(data) {
 	Echo.Utils.log($.extend(data, {&quot;component&quot;: this.name}));
 };
 
+<span id='Echo-Control-method-getRelativeTime'>/**
+</span> * Method to calculate the relative time passed since the given date and time.
+ *
+ * @param {Mixed} datetime
+ * The date to calculate how much time passed since that moment. The function recognizes
+ * the date in W3CDFT or UNIX timestamp formats.
+ *
+ * @return {String}
+ * String which represents the date and time in the relative format.
+ */
+Echo.Control.prototype.getRelativeTime = function(datetime) {
+	if (!datetime) return;
+	var self = this;
+	var ts = typeof datetime === &quot;string&quot;
+		? Echo.Utils.timestampFromW3CDTF(datetime)
+		: datetime;
+	if (!ts) return;
+	var d = new Date(ts * 1000);
+	var now = (new Date()).getTime();
+	var when;
+	var diff = Math.floor((now - d.getTime()) / 1000);
+	var dayDiff = Math.floor(diff / 86400);
+	var getAgo = function(ago, period) {
+		return self.labels.get(period + (ago === 1 ? &quot;&quot; : &quot;s&quot;) + &quot;Ago&quot;, {&quot;number&quot;: ago});
+	};
+
+	if (isNaN(dayDiff) || dayDiff &lt; 0 || dayDiff &gt;= 365) {
+		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+	} else if (diff &lt; 60) {
+		when = getAgo(diff, 'second');
+	} else if (diff &lt; 60 * 60) {
+		diff = Math.floor(diff / 60);
+		when = getAgo(diff, 'minute');
+	} else if (diff &lt; 60 * 60 * 24) {
+		diff = Math.floor(diff / (60 * 60));
+		when = getAgo(diff, 'hour');
+	} else if (diff &lt; 60 * 60 * 48) {
+		when = this.labels.get(&quot;yesterday&quot;);
+	} else if (dayDiff &lt; 7) {
+		when = getAgo(dayDiff, 'day');
+	} else if (dayDiff &lt; 14) {
+		when = this.labels.get(&quot;lastWeek&quot;);
+	} else if (dayDiff &lt; 30) {
+		diff =  Math.floor(dayDiff / 7);
+		when = getAgo(diff, 'week');
+	} else if (dayDiff &lt; 60) {
+		when = this.labels.get(&quot;lastMonth&quot;);
+	} else if (dayDiff &lt; 365) {
+		diff =  Math.floor(dayDiff / 31);
+		when = getAgo(diff, 'month');
+	}
+	return when;
+};
+
 Echo.Control.prototype._init = function(subsystems) {
 	var control = this;
 	if (!subsystems || !subsystems.length) return;
@@ -635,10 +758,10 @@ Echo.Control.prototype._initializers = {};
 Echo.Control.prototype._initializers.list = [
 	[&quot;vars&quot;,               [&quot;init&quot;, &quot;refresh&quot;]],
 	[&quot;config&quot;,             [&quot;init&quot;]],
+	[&quot;css&quot;,                [&quot;init&quot;]],
 	[&quot;events&quot;,             [&quot;init&quot;]],
 	[&quot;subscriptions&quot;,      [&quot;init&quot;]],
 	[&quot;labels&quot;,             [&quot;init&quot;]],
-	[&quot;css&quot;,                [&quot;init&quot;]],
 	[&quot;renderers&quot;,          [&quot;init&quot;, &quot;refresh&quot;]],
 	[&quot;view&quot;,               [&quot;init&quot;]],
 	[&quot;loading&quot;,            [&quot;init&quot;, &quot;refresh&quot;]],
@@ -825,19 +948,15 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 };
 
 Echo.Control.prototype._initializers.labels = function() {
-	var labels = $.extend({}, this.get(&quot;defaults.labels&quot;), this._manifest(&quot;labels&quot;));
-
-	// define default language var values with the lowest priority available
-	Echo.Labels.set(labels, this.name, true);
-
-	// define language var values passed within the config with the highest priority
 	return new Echo.Labels(this.config.get(&quot;labels&quot;), this.name);
 };
 
 Echo.Control.prototype._initializers.css = function() {
-	Echo.Utils.addCSS(this.substitute({&quot;template&quot;: this.baseCSS}), &quot;control&quot;);
 	this.config.get(&quot;target&quot;).addClass(this.cssClass);
-	if (this._manifest(&quot;css&quot;)) {
+	if (!Echo.Utils.hasCSS(&quot;control&quot;)) {
+		Echo.Utils.addCSS(this.substitute({&quot;template&quot;: this.baseCSS}), &quot;control&quot;);
+	}
+	if (this._manifest(&quot;css&quot;) &amp;&amp; !Echo.Utils.hasCSS(this.name)) {
 		Echo.Utils.addCSS(this.substitute({&quot;template&quot;: this._manifest(&quot;css&quot;)}), this.name);
 	}
 };
@@ -949,6 +1068,10 @@ Echo.Control.prototype._manifest = function(key) {
 
 Echo.Control.prototype._loadScripts = function(resources, callback) {
 	var control = this;
+	if (!resources || !resources.length) {
+		callback.call(control);
+		return;
+	}
 	resources = $.map(resources, function(resource) {
 		return $.extend(resource, {
 			&quot;url&quot;: control.substitute({&quot;template&quot;: resource.url})
@@ -1060,9 +1183,9 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
 	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk}/images/information.png); }' +
-	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk}/images/loading.gif); }' +
-	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk}/images/warning.gif); }';
+	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
+	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
+	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
 
 })(Echo.jQuery);
 </pre>

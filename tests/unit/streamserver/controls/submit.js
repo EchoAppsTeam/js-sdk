@@ -43,8 +43,7 @@ suite.prototype.tests.anonymousWorkflow = {
 					"name",
 					"content",
 					"validator",
-					"post",
-					"destroy"
+					"post"
 				], "cases");
 			}
 		});
@@ -68,8 +67,7 @@ suite.prototype.tests.loggedUserWorkflow = {
 				self.sequentialAsyncTests([
 					"user",
 					"content",
-					"post",
-					"destroy"
+					"post"
 				], "cases");
 			}
 		});
@@ -95,8 +93,7 @@ suite.prototype.tests.eventSubscriptions = {
 				self.sequentialAsyncTests([
 					"onInit",
 					"onComplete",
-					"onError",
-					"destroy"
+					"onError"
 				], "cases");
 			}
 		});
