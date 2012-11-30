@@ -2012,7 +2012,11 @@ item.renderers.wrapper = function(element) {
 item.renderers.avatar = function(element) {
 	var avatar = Echo.Utils.loadImage({
 		"image": this.get("data.actor.avatar"),
-		"defaultImage": this.config.get("defaultAvatar")
+		"defaultImage": this.config.get("defaultAvatar"),
+		"onload": function () {
+			var img = $(this);
+			img.addClass(img.width() > img.height() ? "echo-wide" : "echo-high");
+		}
 	});
 	return element.empty().append(avatar);
 };
@@ -2913,10 +2917,11 @@ item.css =
 	'.{class:modeSwitch} { float: right; width: 16px; height: 16px; background:url("{config:cdnBaseURL.sdk-assets}/images/curation/metadata/flip.png") no-repeat 0px 3px; }' +
 	'.{class:childrenMarker} { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }' + // This is magic "arrow up". Only color and margins could be changed
 	'.{class:container-root-thread} .{class:childrenMarker} { display: block; }' +
-	'.{class:avatar} { width: 48px; height: auto; max-height: 96px; overflow: hidden; line-height: 0; }' +
-	'.{class:avatar} img { width: 48px; height: auto; }' +
-	'.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; max-height: 48px; }' +
-	'.{class:children} .{class:avatar} img, .{class:childrenByCurrentActorLive} .{class:avatar} img { width: 24px; }' +
+	'.{class:avatar} { width: 48px; height: 48px; text-align: center; overflow: hidden; }' +
+	'.{class:avatar} img { max-width: 100%; max-height: 100%; }' +
+	'.{class:avatar} img.echo-wide { width: 100%; height: auto; }' +
+	'.{class:avatar} img.echo-high { width: auto; height: 100%; }' +
+	'.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; height: 24px; }' +
 	'.{class:authorName} { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }' +
 	'.{class:re} { font-weight: bold; }' +
 	'.{class:re} a:link, .{class:re} a:visited, .{class:re} a:active { text-decoration: none; }' +
