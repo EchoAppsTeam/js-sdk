@@ -165,6 +165,12 @@ module.exports = function(grunt) {
 				},
 				patcher: "loader"
 			},
+			"testlib": {
+				files: [
+					"<%= dirs.dist %>/tests/testlib.js"
+				],
+				patcher: "testurl"
+			},
 			"html": {
 				files: [
 					"<%= dirs.dist %>/demo/**/*.html",
@@ -262,7 +268,7 @@ module.exports = function(grunt) {
 				tasks = "copy:own-js copy:third-party-js assemble_bootstrap patch:loader min concat clean:third-party copy:build";
 				break;
 			case "final":
-				tasks = "copy:css copy:images copy:build copy:demo copy:tests copy:apps patch:html";
+				tasks = "copy:css copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
 				break;
 		}
 		grunt.task.run(tasks + " clean:build");
@@ -414,6 +420,13 @@ module.exports = function(grunt) {
 					/cdn\.echoenabled\.com(\/apps\/|\/")/g,
 					config.domain + "$1"
 				);
+			}
+			return src;
+		},
+		"testurl": function(src, config, version) {
+			var env = shared.config("env");
+			if ((env === "dev" || env === "test") && config && config.domain) {
+				src = src.replace(/echoappsteam\.github\.com\/js-sdk/, config.domain);
 			}
 			return src;
 		},
