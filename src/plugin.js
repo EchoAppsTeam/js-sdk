@@ -74,7 +74,7 @@ Echo.Plugin.create = function(manifest) {
 
 		this._init(["config"]);
 	});
-	var namespace = [manifest.component.name, "Plugins", manifest.name].join(".");
+	var namespace = Echo.Plugin._getClassName(manifest.name, manifest.component.name);
 
 	constructor.manifest = manifest;
 	constructor.dependencies = manifest.dependencies;
@@ -86,11 +86,8 @@ Echo.Plugin.create = function(manifest) {
 	if (manifest.methods) {
 		$.extend(constructor.prototype, manifest.methods);
 	}
-	Echo.Utils.set(
-		window,
-		Echo.Plugin._getClassName(manifest.name, manifest.component.name),
-		constructor
-	);
+
+	Echo.Utils.set(window, namespace, constructor);
 	return constructor;
 };
 
