@@ -2010,12 +2010,10 @@ item.renderers.wrapper = function(element) {
  * @echo_renderer
  */
 item.renderers.avatar = function(element) {
-	var size = this.depth ? 24 : 48;
 	var avatar = Echo.Utils.loadImage({
 		"image": this.get("data.actor.avatar"),
 		"defaultImage": this.config.get("defaultAvatar")
 	});
-	avatar.css({"width": size, "height": size});
 	return element.empty().append(avatar);
 };
 
@@ -2894,8 +2892,8 @@ for (var i = 0; i <= 20; i++) {
 
 item.css =
 	'.{class:content} { word-wrap: break-word; }' +
-	'.{class:container-root} { padding: 10px 0px; }' +
-	'.{class:container-root-thread} { padding: 10px 0px 0px 0px; }' +
+	'.{class:container-root} { padding: 10px 0px 10px 10px; }' +
+	'.{class:container-root-thread} { padding: 10px 0px 0px 10px; }' +
 	'.{class:container-child} { padding: 10px; margin: 0px 20px 2px 0px; }' +
 	'.{class:container-child-thread} { padding: 10px; margin: 0px 20px 2px 0px; }' +
 	'.{class:avatar-wrapper} { margin-right: -58px; float: left; position: relative; }' +
@@ -2915,8 +2913,10 @@ item.css =
 	'.{class:modeSwitch} { float: right; width: 16px; height: 16px; background:url("{config:cdnBaseURL.sdk-assets}/images/curation/metadata/flip.png") no-repeat 0px 3px; }' +
 	'.{class:childrenMarker} { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }' + // This is magic "arrow up". Only color and margins could be changed
 	'.{class:container-root-thread} .{class:childrenMarker} { display: block; }' +
-	'.{class:avatar} { width: 48px; height: 48px; }' +
-	'.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; height: 24px; }' +
+	'.{class:avatar} { width: 48px; height: auto; max-height: 96px; overflow: hidden; line-height: 0; }' +
+	'.{class:avatar} img { width: 48px; height: auto; }' +
+	'.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; max-height: 48px; }' +
+	'.{class:children} .{class:avatar} img, .{class:childrenByCurrentActorLive} .{class:avatar} img { width: 24px; }' +
 	'.{class:authorName} { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }' +
 	'.{class:re} { font-weight: bold; }' +
 	'.{class:re} a:link, .{class:re} a:visited, .{class:re} a:active { text-decoration: none; }' +
