@@ -804,14 +804,9 @@ Echo.Utils.loadImage = function(args) {
 	if (url !== args.defaultImage || $.browser.msie) {
 		img.one("load", function () {
 			if ($.browser.msie) {
-				setTimeout(function () {
-					img.addClass(img.width() < img.height() ? "echo-high" : "echo-wide");
-					$.isFunction(args.onload) && args.onload.call(this); /* call handler *after* class added */
-				}, 10);
+				img.addClass(this.width < this.height ? "echo-high" : "echo-wide");
 			}
-			else {
-				$.isFunction(args.onload) && args.onload.call(this);
-			}
+			$.isFunction(args.onload) && args.onload.apply(this, arguments);
 		});
 	}
 	return img.attr("src", url);
