@@ -2012,11 +2012,7 @@ item.renderers.wrapper = function(element) {
 item.renderers.avatar = function(element) {
 	var avatar = Echo.Utils.loadImage({
 		"image": this.get("data.actor.avatar"),
-		"defaultImage": this.config.get("defaultAvatar"),
-		"onload": function () {
-			var img = $(this);
-			img.addClass(img.width() > img.height() ? "echo-wide" : "echo-high");
-		}
+		"defaultImage": this.config.get("defaultAvatar")
 	});
 	return element.empty().append(avatar);
 };
@@ -2918,7 +2914,7 @@ item.css =
 	'.{class:childrenMarker} { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }' + // This is magic "arrow up". Only color and margins could be changed
 	'.{class:container-root-thread} .{class:childrenMarker} { display: block; }' +
 	'.{class:avatar} { width: 48px; height: 48px; text-align: center; overflow: hidden; }' +
-	'.{class:avatar} img { max-width: 100%; max-height: 100%; }' +
+	'.{class:avatar} img { max-width: 100%; max-height: 100%; width: auto; height: auto; }' +
 	'.{class:avatar} img.echo-wide { width: 100%; height: auto; }' +
 	'.{class:avatar} img.echo-high { width: auto; height: 100%; }' +
 	'.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; height: 24px; }' +

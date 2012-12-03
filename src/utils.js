@@ -797,11 +797,21 @@ Echo.Utils.loadImage = function(args) {
 	var url = args.image || args.defaultImage;
 	var img = $("<img>");
 	if (url !== args.defaultImage) {
-		img.one({
-			"error": args.onerror || function() {
-				$(this).attr("src", args.defaultImage);
-			},
-			"load": args.onload || $.noop
+		img.one("error", args.onerror || function() {
+			$(this).attr("src", args.defaultImage);
+		});
+	}
+	if (url !== args.defaultImage || $.browser.msie) {
+		img.one("load", function () {
+			if ($.browser.msie) {
+				setTimeout(function () {
+					img.addClass(img.width() < img.height() ? "echo-high" : "echo-wide");
+					$.isFunction(args.onload) && args.onload.call(this); /* call handler *after* class added */
+				}, 10);
+			}
+			else {
+				$.isFunction(args.onload) && args.onload.call(this);
+			}
 		});
 	}
 	return img.attr("src", url);
