@@ -1161,6 +1161,8 @@ Echo.Control.prototype.baseCSS =
 	'.echo-clickable { cursor: pointer; }' +
 	'.echo-relative { position: relative; }' +
 	'.echo-clear { clear: both; }' +
+	'.echo-image-stretched-horizontally { width: 100% !important; height: auto !important; }' +
+	'.echo-image-stretched-vertically { width: auto !important; height: 100% !important; }' +
 
 	// message classes
 	'.echo-control-message { padding: 15px 0px; text-align: center; }' +

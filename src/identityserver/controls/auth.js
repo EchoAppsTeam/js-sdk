@@ -307,8 +307,8 @@ auth.methods._appendSessionID = function(url) {
 auth.css =
 	".{class:logout} { float: right; }" +
 	".{class:userAnonymous} { text-align: right; }" +
-	".{class:avatar} { float: left; }" +
-	".{class:avatar} img { width: 24px; height: 24px; }" +
+	".{class:avatar} { float: left; width: 24px; height: 24px; text-align: center; overflow: hidden; }" +
+	".{class:avatar} img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }" +
 	".{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
 	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }";
 

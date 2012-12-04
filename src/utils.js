@@ -804,7 +804,7 @@ Echo.Utils.loadImage = function(args) {
 	if (url !== args.defaultImage || $.browser.msie) {
 		img.one("load", function () {
 			if ($.browser.msie) {
-				img.addClass(this.width < this.height ? "echo-high" : "echo-wide");
+				img.addClass(this.width < this.height ? "echo-image-stretched-vertically" : "echo-image-stretched-horizontally");
 			}
 			$.isFunction(args.onload) && args.onload.apply(this, arguments);
 		});

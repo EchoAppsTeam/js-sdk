@@ -651,8 +651,8 @@ submit.methods._prepareEventParams = function(params) {
 
 submit.css =
 	'.{class:header} { margin-bottom: 3px; }' +
-	'.{class:avatar} { float: left; margin-right: -48px; }' +
-	'.{class:avatar} img { width: 48px; height: 48px; }' +
+	'.{class:avatar} { float: left; margin-right: -48px; width: 48px; height: 48px; text-align: center; overflow: hidden; }' +
+	'.{class:avatar} img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
 	'.{class:fields} { width: 100%; float: left; }' +
 	'.{class:fields} input { width: 100%; }' +
 	'.{class:fieldsWrapper} { margin-left: 53px; }' +

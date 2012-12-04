@@ -517,7 +517,8 @@ item.methods.isYou = function() {
 };
 
 item.css =
-	'.{class:avatar} img { width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }' +
+	".{class:avatar} { display: inline-block; width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; text-align: center; overflow: hidden; }" +
+	".{class:avatar} img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }" +
 	'.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }' +
 	'.{class:container}, .{class:container} span { white-space: nowrap; }' +
 	'.{class:only-avatars} .{class:container} { white-space: normal; }';
