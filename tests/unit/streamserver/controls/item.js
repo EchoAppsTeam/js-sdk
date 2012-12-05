@@ -2,16 +2,16 @@
 
 var suite = Echo.Tests.Unit.Item = function() {
 	this.constructRenderersTest({
-		"instance" : {
-			"name" : "Echo.StreamServer.Controls.Stream.Item",
+		"instance": {
+			"name": "Echo.StreamServer.Controls.Stream.Item",
 			"config": {
 				"data": suite._itemData,
 				"parent": suite._streamConfigData
 			}
 		},
 		"config": {
-			"async"       : true,
-			"testTimeout" : 10000
+			"async": true,
+			"testTimeout": 10000
 		}
 	});
 };
@@ -36,9 +36,9 @@ suite.prototype.tests = {};
 suite.prototype.cases = {};
 
 suite.prototype.tests.commonWorkflow = {
-	"config" : {
-		"async"       : true,
-		"testTimeout" : 20000 // 20 secs
+	"config": {
+		"async": true,
+		"testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
 		var self = this;
@@ -192,9 +192,9 @@ suite.prototype.cases.expand = function(callback) {
 };
 
 suite.prototype.tests.testItemButtons = {
-	"config" : {
-		"async"       : true,
-		"testTimeout" : 20000 // 20 secs
+	"config": {
+		"async": true,
+		"testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
 		var self = this;
@@ -224,7 +224,7 @@ suite.prototype.tests.testItemButtons = {
 
 suite.prototype.cases.visibility = function(callback) {
 	var item = suite.item;
-	var buttons =[{
+	var buttons = [{
 		"name": "button1",
 		"label": "Button1",
 		"visible": true,
@@ -265,7 +265,7 @@ suite.prototype.cases.visibility = function(callback) {
 
 suite.prototype.cases.order = function(callback) {
 	var item = suite.item;
-	var buttons =[{
+	var buttons = [{
 		"name": "button1",
 		"label": "Button1",
 		"visible": true,
@@ -388,13 +388,13 @@ suite.prototype.tests.bodyRendererTest = {
 			"data": {
 				"object": {
 					"permalink": "http://google.com",
-					"content": "http://example.com http://google.com 2"
+					"content": "http://google.com/p1 http://example.com zz http://google.com<b>bold</b> http://google.com 2http://google.com"
 				},
 				"source": {
 					"name": "Reuters"
 				}
 			},
-			"expect": $('<a href="http://example.com">http://example.com</a>  2')
+			"expect": '<a href="http://google.com/p1">http://google.com/p1</a> <a href="http://example.com">http://example.com</a> zz <b>bold</b>  2'
 		}, {
 			"description": "source: Reuters, reTag: false",
 			"config": {
@@ -409,9 +409,9 @@ suite.prototype.tests.bodyRendererTest = {
 					"name": "Reuters"
 				}
 			},
-			"expect": $('<a href="http://example.com">http://example.com</a> <a href="http://google.com">http://google.com</a> 2')
+			"expect": '<a href="http://example.com">http://example.com</a> <a href="http://google.com">http://google.com</a> 2'
 		}, {
-			"description": "[newlines]",
+			"description": "contentTransformations: [newlines]",
 			"config": {
 				"contentTransformations": {
 					"text": ["newlines"],
@@ -424,9 +424,9 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": $('1 :) <b>$$<u>DD</u>$$<i>#88</i></b> 5#&nbsp;<br><a href="http://">#asd</a>&nbsp;<br><a href="http://ya.ru">http://ya.ru</a>&nbsp;<br>&nbsp;<br>http://google.com/#qwerty')
+			"expect": '1 :) <b>$$<u>DD</u>$$<i>#88</i></b> 5#&nbsp;<br><a href="http://">#asd</a>&nbsp;<br><a href="http://ya.ru">http://ya.ru</a>&nbsp;<br>&nbsp;<br>http://google.com/#qwerty'
 		}, {
-			"description": "[smileys, urls]",
+			"description": "contentTransformations: [smileys, urls]",
 			"config": {
 				"contentTransformations": {
 					"text": ["smileys", "urls"],
@@ -439,9 +439,9 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-				"expect": $('1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\n<a href="http://google.com/#qwerty">http://google.com/#qwerty</a>')
+				"expect": '1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\n<a href="http://google.com/#qwerty">http://google.com/#qwerty</a>'
 		}, {
-			"description": "[hashtags]",
+			"description": "contentTransformations: [hashtags]",
 			"config": {
 				"contentTransformations": {
 					"text": ["hashtags"],
@@ -454,9 +454,9 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": $('1 :) <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty')
+			"expect": '1 :) <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty'
 		}, {
-			"description": "[smileys, hashtags]",
+			"description": "contentTransformations: [smileys, hashtags]",
 			"config": {
 				"contentTransformations": {
 					"text": ["smileys", "hashtags"],
@@ -469,9 +469,9 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": $('1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty')
+			"expect": '1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty'
 		}, {
-			"description": "[hashtags, urls]",
+			"description": "contentTransformations: [hashtags, urls]",
 			"config": {
 				"contentTransformations": {
 					"text": ["hashtags", "urls"],
@@ -484,9 +484,9 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": $('1 :) <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\n<a href="http://google.com/#qwerty">http://google.com/#qwerty</a>')
+			"expect": '1 :) <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\n<a href="http://google.com/#qwerty">http://google.com/#qwerty</a>'
 		}, {
-			"description": "[smileys, hashtags, urls, newlines]",
+			"description": "contentTransformations: [smileys, hashtags, urls, newlines]",
 			"config": {
 				"contentTransformations": {
 					"text": ["smileys", "hashtags", "urls", "newlines"],
@@ -499,7 +499,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": $('1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#&nbsp;<br><a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>&nbsp;<br><a href="http://ya.ru">http://ya.ru</a>&nbsp;<br>&nbsp;<br><a href="http://google.com/#qwerty">http://google.com/#qwerty</a>')
+			"expect": '1 <img class="echo-streamserver-controls-stream-item-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-controls-stream-item-tag">88</span></i></b> 5#&nbsp;<br><a href="http://"><span class="echo-streamserver-controls-stream-item-tag">asd</span></a>&nbsp;<br><a href="http://ya.ru">http://ya.ru</a>&nbsp;<br>&nbsp;<br><a href="http://google.com/#qwerty">http://google.com/#qwerty</a>'
 		}, {
 			"description": "very high limits",
 			"config": {
@@ -522,7 +522,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"name": "Twitter"
 				}
 			},
-			"expect": $('1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788</a> <span class="echo-streamserver-controls-stream-item-tag">12345678901234567890</span>')
+			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788</a> <span class="echo-streamserver-controls-stream-item-tag">12345678901234567890</span>'
 		}, {
 			"description": "bodyLink: 20, tag: 10, body: no limit",
 			"config": {
@@ -542,7 +542,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentLimits
 				}
 			},
-			"expect": $('1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.go...</a> <span class="echo-streamserver-controls-stream-item-tag" title="12345678901234567890">1234567890...</span>')
+			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.go...</a> <span class="echo-streamserver-controls-stream-item-tag" title="12345678901234567890">1234567890...</span>'
 		}, {
 			"description": "bodyLink: 20, tag: 10, body: 50",
 			"config": {
@@ -562,7 +562,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentLimits
 				}
 			},
-			"expect": $('1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.go...</a> <span class="echo-streamserver-controls-stream-item-tag" title="12345678901234567890">1234</span>')
+			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.go...</a> <span class="echo-streamserver-controls-stream-item-tag" title="12345678901234567890">1234</span>'
 		}, {
 			"description": "bodyLink: 10, tag: 10, body: 20",
 			"config": {
@@ -582,7 +582,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentLimits
 				}
 			},
-			"expect": $('1234567890 <span>qwertyuio</span>')
+			"expect": '1234567890 <span>qwertyuio</span>'
 		}]);
 	}
 };
@@ -607,15 +607,9 @@ suite.prototype._runBodyCases = function(cases) {
 					"handler": function() {
 						var element = $(".echo-streamserver-controls-stream-item-body", self.config.target);
 						var target = element.find(".echo-streamserver-controls-stream-item-text");
-						var clone = target.clone(true, true);
-						var wrapped;
-						if (params.expect instanceof $) {
-							params.expect.wrapAll(clone);
-							self.jqueryObjectsEqual(target,
-								clone, params.description);
-						} else {
-							QUnit.equal(target.html(), params.expect, params.description);
-						}
+						var result = $("<div>").append(target.clone(true, true).contents());
+						var expect = $("<div>").append(params.expect);
+						self.jqueryObjectsEqual(result,	expect, params.description);
 					}
 				});
 				item.render();
