@@ -321,15 +321,6 @@ plugin.component.renderers.content = function(element) {
 	});
 };
 
-/**
- * @echo_renderer
- */
-plugin.component.renderers.avatar = function(element) {
-	var plugin = this, item = this.component;
-	element = item.parentRenderer("avatar", arguments);
-	return element;
-};
-
 (function() {
 
 /**
@@ -532,8 +523,7 @@ plugin.css =
 	'.{plugin.class} .{class:content} { padding-bottom: 0px; background: white; box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4); margin: 0px 5px 15px 5px; border: none; }' +
 	'.{plugin.class} .{class:authorName} { float: none; display: inline; margin-left: 0px; }' +
 	'.{plugin.class} .{class:body} { margin: 0px; }' +
-	'.{plugin.class} .{class:avatar} { float: left; width: 30px; height: 30px; padding-right: 10px; text-align: center; overflow: hidden; }' +
-	'.{plugin.class} .{class:avatar} img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
+	'.{plugin.class} .{class:avatar} { float: left; width: 30px; height: 30px; padding-right: 10px; }' +
 	'.{plugin.class} .{class:depth-1} { margin-left: 0px; border-bottom: none; }' +
 	'.{plugin.class} .{class:depth-1} .{class:authorName} { display: inline; font-size: 12px; }' +
 	'.{plugin.class} .{class:depth-0} { padding: 15px 15px 10px 15px; }' +
