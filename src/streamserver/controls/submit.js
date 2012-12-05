@@ -362,11 +362,12 @@ submit.renderers.text = function(element) {
  * @echo_renderer
  */
 submit.renderers.avatar = function(element) {
-	var avatar = Echo.Utils.loadImage({
+	this.placeImage({ 
+		"container": element,
 		"image": this.user.get("avatar"),
 		"defaultImage": this.config.get("defaultAvatar")
 	});
-	return element.empty().append(avatar);
+	return element;
 };
 
 /**
@@ -651,8 +652,7 @@ submit.methods._prepareEventParams = function(params) {
 
 submit.css =
 	'.{class:header} { margin-bottom: 3px; }' +
-	'.{class:avatar} { float: left; margin-right: -48px; width: 48px; height: 48px; text-align: center; overflow: hidden; }' +
-	'.{class:avatar} img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
+	'.{class:avatar} { float: left; margin-right: -48px; width: 48px; height: 48px; }' +
 	'.{class:fields} { width: 100%; float: left; }' +
 	'.{class:fields} input { width: 100%; }' +
 	'.{class:fieldsWrapper} { margin-left: 53px; }' +

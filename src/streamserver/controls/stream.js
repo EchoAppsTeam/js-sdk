@@ -2010,11 +2010,12 @@ item.renderers.wrapper = function(element) {
  * @echo_renderer
  */
 item.renderers.avatar = function(element) {
-	var avatar = Echo.Utils.loadImage({
+	this.placeImage({ 
+		"container": element,
 		"image": this.get("data.actor.avatar"),
 		"defaultImage": this.config.get("defaultAvatar")
 	});
-	return element.empty().append(avatar);
+	return element;
 };
 
 /**
@@ -2913,8 +2914,7 @@ item.css =
 	'.{class:modeSwitch} { float: right; width: 16px; height: 16px; background:url("{config:cdnBaseURL.sdk-assets}/images/curation/metadata/flip.png") no-repeat 0px 3px; }' +
 	'.{class:childrenMarker} { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }' + // This is magic "arrow up". Only color and margins could be changed
 	'.{class:container-root-thread} .{class:childrenMarker} { display: block; }' +
-	'.{class:avatar} { width: 48px; height: 48px; text-align: center; overflow: hidden; }' +
-	'.{class:avatar} img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
+	'.{class:avatar} { width: 48px; height: 48px; }' +
 	'.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; height: 24px; }' +
 	'.{class:authorName} { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }' +
 	'.{class:re} { font-weight: bold; }' +

@@ -796,19 +796,14 @@ Echo.Utils.isComponentDefined = function(name) {
 Echo.Utils.loadImage = function(args) {
 	var url = args.image || args.defaultImage;
 	var img = $("<img>");
-	if (url !== args.defaultImage) {
-		img.one("error", args.onerror || function() {
-			$(this).attr("src", args.defaultImage);
-		});
-	}
-	if (url !== args.defaultImage || $.browser.msie) {
-		img.one("load", function () {
-			if ($.browser.msie) {
-				img.addClass(this.width < this.height ? "echo-image-stretched-vertically" : "echo-image-stretched-horizontally");
+	img.one({
+		"error": args.onerror || function() {
+			if (args.defaultImage && url !== args.defaultImage) {
+				img.attr("src", args.defaultImage);
 			}
-			$.isFunction(args.onload) && args.onload.apply(this, arguments);
-		});
-	}
+		},
+		"load": args.onload || $.noop
+	});
 	return img.attr("src", url);
 };
 

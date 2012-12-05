@@ -229,10 +229,12 @@ auth.renderers.or = function(element) {
  * @echo_renderer
  */
 auth.renderers.avatar = function(element) {
-	return element.empty().append(Echo.Utils.loadImage({
+	this.placeImage({ 
+		"container": element,
 		"image": this.user.get("avatar"),
 		"defaultImage": this.config.get("defaultAvatar")
-	}));
+	});
+	return element;
 };
 
 /**
@@ -307,8 +309,7 @@ auth.methods._appendSessionID = function(url) {
 auth.css =
 	".{class:logout} { float: right; }" +
 	".{class:userAnonymous} { text-align: right; }" +
-	".{class:avatar} { float: left; width: 24px; height: 24px; text-align: center; overflow: hidden; }" +
-	".{class:avatar} img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }" +
+	".{class:avatar} { float: left; width: 24px; height: 24px; }" +
 	".{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
 	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }";
 

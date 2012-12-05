@@ -713,6 +713,55 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 	return when;
 };
 
+/**
+ * Method to place an image inside the container.
+ * 
+ * This method removes any container's content and creates a new image HTML element 
+ * inside the container. If the image is not available on the given URL then this function
+ * loads the default image that is passed as a defaultImage argument.
+ * 
+ * The method adds special classes to the container, and implements some
+ * workaround for IE in quirks mode.
+ * 
+ * @param {Object} args
+ * The object which contains attributes for the image.
+ * 
+  * @param {String} args.image
+ * The URL of the image to be loaded.
+ *
+ * @param {String} [args.defaultImage]
+ * The URL of the default image.
+ *
+ * @param {Function} [args.onload]
+ * The callback which fires when image is loaded.
+ *
+ * @param {Function} [args.onerror]
+ * The callback which fires when loading image fails.
+ * 
+ * @param {String} [args.position="fill"]
+ * The position of an image inside the container. The only "fill" is implemented now. 
+*/
+Echo.Control.prototype.placeImage = function (args) {
+	var position = args.position || "fill";
+	var image = Echo.Utils.loadImage({
+		"image": args.image,
+		"defaultImage": args.defaultImage,
+		"onerror": args.onerror,
+		"onload": function () {
+			if (document.compatMode !== "CSS1Compat") {
+				$(this).addClass(this.width < this.height 
+						? "echo-image-stretched-vertically" 
+						: "echo-image-stretched-horizontally");
+			}
+			$.isFunction(args.onload) && args.onload.apply(this, arguments);
+		}
+	});
+	args.container.empty().append(image).addClass("echo-image-container");
+	if (position === "fill") {
+		args.container.addClass("echo-image-position-fill");
+	}
+};
+
 Echo.Control.prototype._init = function(subsystems) {
 	var control = this;
 	if (!subsystems || !subsystems.length) return;
@@ -1161,8 +1210,10 @@ Echo.Control.prototype.baseCSS =
 	'.echo-clickable { cursor: pointer; }' +
 	'.echo-relative { position: relative; }' +
 	'.echo-clear { clear: both; }' +
-	'.echo-image-stretched-horizontally { width: 100% !important; height: auto !important; }' +
-	'.echo-image-stretched-vertically { width: auto !important; height: 100% !important; }' +
+	'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
+	'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
+	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
+	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
 
 	// message classes
 	'.echo-control-message { padding: 15px 0px; text-align: center; }' +

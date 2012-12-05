@@ -482,11 +482,11 @@ item.templates.main =
 item.renderers.avatar = function(element) {
 	var self = this;
 	if (this.config.get("avatar")) {
-		var img = Echo.Utils.loadImage({
+		this.placeImage({ 
+			"container": element,
 			"image": this.get("data.avatar"),
 			"defaultImage": this.config.get("defaultAvatar")
 		});
-		element.empty().append(img);
 		if (!this.config.get("text")) {
 			element.attr("title", this.get("data.title"));
 		}
@@ -517,8 +517,7 @@ item.methods.isYou = function() {
 };
 
 item.css =
-	".{class:avatar} { display: inline-block; width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; text-align: center; overflow: hidden; }" +
-	".{class:avatar} img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }" +
+	".{class:avatar} { display: inline-block; width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }" +
 	'.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }' +
 	'.{class:container}, .{class:container} span { white-space: nowrap; }' +
 	'.{class:only-avatars} .{class:container} { white-space: normal; }';
