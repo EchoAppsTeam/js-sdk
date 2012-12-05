@@ -273,7 +273,7 @@ Echo.Tests.Common.prototype.jqueryObjectsEqual = function(source, target, messag
 	expected = extract(source);
 
 	actual = extract(target);
-	QUnit.push(QUnit.equiv(actual, expected), actual, expected, message);
+	QUnit.deepEqual(actual, expected, message);
 };
 
 Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
