@@ -2711,7 +2711,6 @@ item.methods._sortButtons = function() {
 			_aggressiveSanitization,
 			_replaceLinkedHashtags,
 			_tags2meta,
-			_removeLinksToSelf,
 			_replacePlainHashtags,
 			_autoLinking,
 			_replaceSmileys,
@@ -2738,20 +2737,6 @@ item.methods._sortButtons = function() {
 	var _aggressiveSanitization = function(text, extra) {
 		if (extra.source && extra.source === "Twitter" && this.config.get("aggressiveSanitization")) {
 			text = "";
-		}
-		return [text, extra];
-	};
-
-	var _removeLinksToSelf = function(text, extra) {
-		if (extra.source && extra.source !== "jskit" && extra.source !== "echo") {
-			var url = this.depth
-				? this.get("data.target.id")
-				: this.config.get("reTag")
-					? this.get("data.object.permalink") || this.get("data.target.id")
-					: undefined;
-			if (url) {
-				text = text.replace(new RegExp(url, "g"), "");
-			}
 		}
 		return [text, extra];
 	};
@@ -2815,18 +2800,26 @@ item.methods._sortButtons = function() {
 
 	var _autoLinking = function(text, extra) {
 		extra.textBeforeAutoLinking = text;
-		var self = this;
-		if (extra.contentTransformations.urls) {
-			text = text.replace(new RegExp(_urlMatcher, "ig"), function($0, $1) {
-				return Echo.Utils.hyperlink({
-					"href": $1,
-					"caption": $1
-				}, {
-					"skipEscaping": true,
-					"openInNewWindow": extra.openLinksInNewWindow
-				});
-			});
+		var self = this, url;
+		if (extra.source && extra.source !== "jskit" && extra.source !== "echo") {
+			url = this.depth
+				? this.get("data.target.id")
+				: this.config.get("reTag")
+					? this.get("data.object.permalink") || this.get("data.target.id")
+					: undefined;
 		}
+		text = text.replace(new RegExp(_urlMatcher, "ig"), function($0, $1) {
+			// cut out URL to current item
+			if (url === $1) return "";
+			if (!extra.contentTransformations.urls) return $0;
+			return Echo.Utils.hyperlink({
+				"href": $1,
+				"caption": $1
+			}, {
+				"skipEscaping": true,
+				"openInNewWindow": extra.openLinksInNewWindow
+			});
+		});
 		return [text, extra];
 	};
 
