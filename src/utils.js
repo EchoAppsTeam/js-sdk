@@ -781,7 +781,7 @@ Echo.Utils.isComponentDefined = function(name) {
  * @param {String} args.image
  * The URL of the image to be loaded.
  *
- * @param {String} args.defaultImage
+ * @param {String} [args.defaultImage]
  * The URL of the default image.
  *
  * @param {Function} [args.onload]
