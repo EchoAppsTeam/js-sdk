@@ -537,6 +537,56 @@ suite.prototype.async.fakeImageTest = function(callback) {
 	$("#qunit-fixture").append(img);
 };
 
+suite.prototype.async.errorImageTest = function(callback) {
+	var url = Echo.Loader.getURL("images/avatar-default.png", false);
+	var img = Echo.Utils.loadImage({
+		"image": "http://example.com/fake.jpg",
+		"onerror": function() {
+			QUnit.ok(true, "Checking loadImage() method onerror handler call")
+			callback();
+		},
+		"onload": function() {
+			QUnit.ok(false, "Checking loadImage() method onerror handler call");
+			callback();
+		}
+	});
+	$("#qunit-fixture").append(img);
+};
+
+suite.prototype.async.emptyUrlImageTest = function(callback) {
+	var url = Echo.Loader.getURL("images/avatar-default.png", false);
+	var img = Echo.Utils.loadImage({
+		"image": "",
+		"defaultImage": url,
+		"onerror": function() {
+			QUnit.ok(false, "Checking loadImage() method with empty URL image");
+			callback();
+		},
+		"onload": function() {
+			QUnit.equal($(this).attr("src"), url, "Checking loadImage() method with empty URL image");
+			callback();
+		}
+	});
+	$("#qunit-fixture").append(img);
+};
+
+suite.prototype.async.nullUrlImageTest = function(callback) {
+	var url = Echo.Loader.getURL("images/avatar-default.png", false);
+	var img = Echo.Utils.loadImage({
+		"image": null,
+		"defaultImage": url,
+		"onerror": function() {
+			QUnit.ok(false, "Checking loadImage() method with null URL image");
+			callback();
+		},
+		"onload": function() {
+			QUnit.equal($(this).attr("src"), url, "Checking loadImage() method with null URL image");
+			callback();
+		}
+	});
+	$("#qunit-fixture").append(img);
+};
+
 var getTestFunctions = function() {
 	var result = [];
 	var functions = [
@@ -585,6 +635,9 @@ suite.prototype.tests.TestAsyncMethods = {
 		this.sequentialAsyncTests([
 			"simpleImageTest",
 			"fakeImageTest",
+   			"errorImageTest",
+   			"emptyUrlImageTest",
+   			"nullUrlImageTest",
 			"sequentialCallTest",
 			"parallelCallTest"
 		], "async");
