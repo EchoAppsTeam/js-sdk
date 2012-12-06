@@ -762,18 +762,7 @@ Echo.Control.prototype.placeImage = function(args) {
 						? "echo-image-stretched-vertically" 
 						: "echo-image-stretched-horizontally");
 			}
-			if ($.isFunction(args.onload)) {
-				if ($.browser.msie) {
-					var self = this, onloadArgs = arguments;
-					// wait for delayed changing of image's properties
-					setTimeout(function() {
-						args.onload.apply(self, onloadArgs);
-					}, 0);
-				}
-				else {
-					args.onload.apply(this, arguments);
-				}
-			}
+			$.isFunction(args.onload) && args.onload.apply(this, arguments);
 		}
 	});
 	args.container.empty().append(image);

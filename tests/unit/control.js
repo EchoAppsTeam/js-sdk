@@ -808,9 +808,13 @@ suite.prototype.async.placeImageContainerFillHorizontalTest = function(callback)
 					callback();
 				},
 				"onload": function() {
-					QUnit.deepEqual([this.width, this.height], [90, 30], 
-						"Checking placeImage() method for image area filling by a horizontal image");
-					callback();
+					var self = this;
+					// wait for image size affected in IE
+					setTimeout(function () {
+						QUnit.deepEqual([self.width, self.height], [90, 30], 
+							"Checking placeImage() method for image area filling by a horizontal image");
+						callback();
+					}, 0);
 				},
 				"position": "fill"
 			});
@@ -832,9 +836,13 @@ suite.prototype.async.placeImageContainerFillVerticalTest = function(callback) {
 					callback();
 				},
 				"onload": function() {
-					QUnit.deepEqual([this.width, this.height], [30, 90], 
-						"Checking placeImage() method for image area filling by a vertical image");
-					callback();
+					var self = this;
+					// wait for image size affected in IE
+					setTimeout(function () {
+						QUnit.deepEqual([self.width, self.height], [30, 90], 
+							"Checking placeImage() method for image area filling by a vertical image");
+						callback();
+					}, 0);
 				},
 				"position": "fill"
 			});
