@@ -11,7 +11,7 @@
             setTimeout( cb, 0 );
           }
         },
-        id = "yn" + +new Date,
+        id = "yn" + (+new Date()),
         ref, done, i;
 
     cb = internal ? yepnope.executeStack : ( cb || function(){} );
@@ -27,9 +27,8 @@
       link.setAttribute( i, attrs[ i ] );
     }
 
-    var isWebkit = ( 'webkitAppearance' in doc.documentElement.style );
+
     if ( ! err ) {
-      setTimeout(onload, timeout);
       ref = document.getElementsByTagName('base')[0] || document.getElementsByTagName('script')[0];
       ref.parentNode.insertBefore( link, ref );
       link.onload = onload;
@@ -40,7 +39,7 @@
             for(var j=0, k=sheets.length; j<k; j++) {
                 if(sheets[j].ownerNode.id == id) {
                     // this throws an exception, I believe, if not full loaded (was originally just "sheets[j].cssRules;")
-                    if (isWebkit || sheets[j].cssRules.length)
+                    if (sheets[j].cssRules.length)
                         return onload();
                 }
             }
