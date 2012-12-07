@@ -47,8 +47,10 @@ module.exports = function(grunt) {
 	var packs = {
 		"loader": {
 			"src": [
+				"third-party/yepnope/echo.yepnope.before.js",
 				"third-party/yepnope/yepnope.1.5.4.js",
 				"third-party/yepnope/yepnope.css.patched.js",
+				"third-party/yepnope/echo.yepnope.after.js",
 				"cookie.js",
 				"loader.js"
 			],

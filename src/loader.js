@@ -126,9 +126,9 @@ Echo.Loader.download = function(resources, callback, config) {
 		return false;
 	}
 	if (config.errorTimeout) {
-		yepnope.errorTimeout = config.errorTimeout;
+		Echo.yepnope.errorTimeout = config.errorTimeout;
 	}
-	yepnope({
+	Echo.yepnope({
 		"load": urls,
 		"complete": callback
 	});
