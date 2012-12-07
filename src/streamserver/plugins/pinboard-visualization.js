@@ -440,7 +440,7 @@ plugin.renderers.childBody = function(element) {
 		return element.empty();
 	}
 	var text = Echo.Utils.htmlTextTruncate(
-		item.get("data.object.content"),
+		Echo.Utils.stripTags(item.get("data.object.content")),
 		plugin.config.get("maxChildrenBodyCharacters"),
 		"..."
 	);
