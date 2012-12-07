@@ -635,9 +635,9 @@ suite.prototype.tests.TestAsyncMethods = {
 		this.sequentialAsyncTests([
 			"simpleImageTest",
 			"fakeImageTest",
-   			"errorImageTest",
-   			"emptyUrlImageTest",
-   			"nullUrlImageTest",
+			"errorImageTest",
+			"emptyUrlImageTest",
+			"nullUrlImageTest",
 			"sequentialCallTest",
 			"parallelCallTest"
 		], "async");

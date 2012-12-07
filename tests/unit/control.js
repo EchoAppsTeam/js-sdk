@@ -904,12 +904,12 @@ suite.prototype.tests.TestAsyncMethods = {
 			suite.createTestControl();
 			
 			var tests = [
-			             "placeImageContainerClassTest",
-			             "placeImageContainerFillClassTest",
-			             "placeImageContainerFillDefaultTest",
-			             "placeImageContainerFillHorizontalTest",
-			             "placeImageContainerFillVerticalTest"
-			    		];
+				"placeImageContainerClassTest",
+				"placeImageContainerFillClassTest",
+				"placeImageContainerFillDefaultTest",
+				"placeImageContainerFillHorizontalTest",
+				"placeImageContainerFillVerticalTest"
+			];
 			if (document.compatMode !== "CSS1Compat") {
 				tests = tests.concat(["horizontalImageQuirksModeTest", "verticalImageQuirksModeTest"])
 			}
