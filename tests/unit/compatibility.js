@@ -84,10 +84,8 @@
 			
 			QUnit.ok(!!Echo.yepnope, "Check if Echo's yepnope is loaded");
 			
-			QUnit.ok(!window.yepnope, "Check if global yepnope is not loaded");
-			
 			Echo.Loader.download([{"url": "https://cdnjs.cloudflare.com/ajax/libs/yepnope/1.5.4/yepnope.min.js"}], function () {
-				var prevYepnope = window.yepnope;
+				var globalYepnope = window.yepnope;
 				
 				QUnit.ok(!!window.yepnope, "Check if global yepnope has been loaded");
 				
@@ -96,7 +94,7 @@
 				
 				Echo.Loader.download([{"url": "loader.js"}], function () {
 					
-					QUnit.ok(prevYepnope === window.yepnope, 
+					QUnit.ok(globalYepnope === window.yepnope, 
 						"Check if global yepnope is not overwritten after Echo's yepnope has been loaded");
 					
 					window.yepnope = origYepnope;
