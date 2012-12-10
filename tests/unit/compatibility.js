@@ -72,6 +72,38 @@
 				self.config.target.append('<iframe src="unit/compatibility/' + key + '.html" name="' + val + '"></iframe>');
 			});
 		}
-	}
+	};
+
+	suite.prototype.tests.YepnopeNoConflict = {
+		"config": {
+			"async": true,
+			"testTimeout": 20000 // 20 secs
+		},
+		"check": function() {
+			var origYepnope = window.yepnope;
+			
+			QUnit.ok(!!Echo.yepnope, "Check if Echo's yepnope is loaded");
+			
+			QUnit.ok(!window.yepnope, "Check if global yepnope is not loaded");
+			
+			Echo.Loader.download([{"url": "https://cdnjs.cloudflare.com/ajax/libs/yepnope/1.5.4/yepnope.min.js"}], function () {
+				var prevYepnope = window.yepnope;
+				
+				QUnit.ok(!!window.yepnope, "Check if global yepnope has been loaded");
+				
+				QUnit.ok(Echo.yepnope !== window.yepnope,
+					"Check if global yepnope and Echo's yepnope are different objects");
+				
+				Echo.Loader.download([{"url": "loader.js"}], function () {
+					
+					QUnit.ok(prevYepnope === window.yepnope, 
+						"Check if global yepnope is not overwritten after Echo's yepnope has been loaded");
+					
+					window.yepnope = origYepnope;
+					QUnit.start();
+				});
+			});
+		}
+	};
 
 })(Echo.jQuery);
