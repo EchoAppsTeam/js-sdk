@@ -632,10 +632,10 @@ Echo.Utils.getVisibleColor = function(element) {
 
 /**
  * @static
- * Method to convert datetime value from W3C datetime format to timestamp.
+ * Method to convert datetime value from string representation to numeric timestamp.
  *
- *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // will return 886930050
- *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30.733Z"); // will return 886930050.733
+ *     Echo.Utils.getTimestamp("1998-02-08T09:27:30Z"); // will return 886930050
+ *     Echo.Utils.getTimestamp("1998-02-08T09:27:30.733Z"); // will return 886930050.733
  *
  * @param {String} datetime
  * String containing datetime value to be converted.
@@ -643,12 +643,14 @@ Echo.Utils.getVisibleColor = function(element) {
  * @return {Number}
  * UNIX timestamp.
  */
-Echo.Utils.timestampFromW3CDTF = function(datetime) {
-	if (!Echo.Utils.regexps.w3cdtf.test(datetime)) return;
+Echo.Utils.getTimestamp = function(datetime) {
 	var time = (new Date(datetime)).getTime();
 	if (isNaN(time)) {
 		var parts = ["year", "month", "day", "hours", "minutes", "seconds", "milliseconds"];
 		var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
+		if (!matches) {
+			return undefined;
+		}
 		var dt = Echo.Utils.foldl({}, parts, function(key, acc, id) {
 			acc[key] = +matches[id + 1] || 0;
 		});
