@@ -637,6 +637,12 @@ Echo.Utils.getVisibleColor = function(element) {
  *     Echo.Utils.getTimestamp("1998-02-08T09:27:30Z"); // will return 886930050
  *     Echo.Utils.getTimestamp("1998-02-08T09:27:30.733Z"); // will return 886930050.733
  *
+ * The method can correctly parse any date format supported by user's browser.
+ * However ISO 8601 format is understood independing of native support.
+ * See [W3C Note](http://www.w3.org/TR/NOTE-datetime) for description of supported ISO 8601 subset.
+ * Other suitable date formats are described in [RFC2822 Section 3.3](http://tools.ietf.org/html/rfc2822#page-14)
+ * and in [MSDN topic](http://msdn.microsoft.com/en-us/library/ff743760.aspx).
+ *
  * @param {String} datetime
  * String containing datetime value to be converted.
  *
@@ -644,7 +650,7 @@ Echo.Utils.getVisibleColor = function(element) {
  * UNIX timestamp.
  */
 Echo.Utils.getTimestamp = function(datetime) {
-	var time = (new Date(datetime)).getTime();
+	var time = Date.parse(datetime);
 	if (isNaN(time)) {
 		var parts = ["year", "month", "day", "hours", "minutes", "seconds", "milliseconds"];
 		var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
