@@ -408,7 +408,7 @@ Echo.Tests.Stats = {
 	},
 	"getFunctionNames": function(namespace, prefix) {
 		var stats = Echo.Tests.Stats;
-		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.API.Transports.WebSocket"];
+		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope", "Echo.API.Transports.WebSocket"];
 		var isNotLteIE7 = !($.browser.msie && $.browser.version <= 7);
 		// browser-specific ignore
 		$.map(["WebSocket", "AJAX", "XDomainRequest", "JSONP"], function(transport) {
