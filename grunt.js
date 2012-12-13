@@ -402,12 +402,13 @@ module.exports = function(grunt) {
 	grunt.registerHelper("echo_yepnope_wrapper", function(filepath) {
 		var lines = [
 			"if (!window.Echo) window.Echo = {};",
-			"window._yepnope = window.yepnope;",
+			"Echo._yepnope = window.yepnope;",
 			"if (!Echo.yepnope) {",
-			grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)),
+			grunt.task.directive(filepath, grunt.file.read),
 			"Echo.yepnope = window.yepnope;",
 			"Echo.yepnope.injectCss = undefined;",
-			"window.yepnope = window._yepnope;",
+			"window.yepnope = Echo._yepnope;",
+			"delete Echo._yepnope;",
 			"}",
 			""
 		];
@@ -418,7 +419,7 @@ module.exports = function(grunt) {
 		var lines = [
 			"(function(yepnope) {",
 			"if (!yepnope.injectCss) {",
-			grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)),
+			grunt.task.directive(filepath, grunt.file.read),
 			"}",
 			"})(Echo.yepnope);",
 			""
