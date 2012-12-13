@@ -118,15 +118,13 @@ Echo.Loader.download = function(resources, callback, config) {
 		var res = resources[i];
 		if (!queued[res.url] && (!res.loaded || !res.loaded())) {
 			queued[res.url] = true;
-			urls.push(Echo.Loader.getURL(res.url));
+			urls.push("timeout=" + (config.errorTimeout || Echo.Loader.config.errorTimeout) + "!"
+					+ Echo.Loader.getURL(res.url));
 		}
 	}
 	if (!urls.length) {
 		callback();
 		return false;
-	}
-	if (config.errorTimeout) {
-		Echo.yepnope.errorTimeout = config.errorTimeout;
 	}
 	Echo.yepnope({
 		"load": urls,
