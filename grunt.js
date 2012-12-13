@@ -47,10 +47,8 @@ module.exports = function(grunt) {
 	var packs = {
 		"loader": {
 			"src": [
-				"third-party/yepnope/echo.yepnope.before.js",
-				"third-party/yepnope/yepnope.1.5.4.js",
-				"third-party/yepnope/yepnope.css.patched.js",
-				"third-party/yepnope/echo.yepnope.after.js",
+				"<echo_yepnope_wrapper:third-party/yepnope/yepnope.1.5.4.js>",
+				"<echo_yepnope_injectcss_wrapper:third-party/yepnope/yepnope.css.patched.js>",
 				"cookie.js",
 				"loader.js"
 			],
@@ -397,6 +395,33 @@ module.exports = function(grunt) {
 			"",
 			grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)),
 			"})(Echo.jQuery);"
+		];
+		return lines.join(shared.config("build.stage") === "min" ? "" : "\n");
+	});
+
+	grunt.registerHelper("echo_yepnope_wrapper", function(filepath) {
+		var lines = [
+			"if (!window.Echo) window.Echo = {};",
+			"window._yepnope = window.yepnope;",
+			"if (!Echo.yepnope) {",
+			grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)),
+			"Echo.yepnope = window.yepnope;",
+			"Echo.yepnope.injectCss = undefined;",
+			"window.yepnope = window._yepnope;",
+			"}",
+			""
+		];
+		return lines.join(shared.config("build.stage") === "min" ? "" : "\n");
+	});
+
+	grunt.registerHelper("echo_yepnope_injectcss_wrapper", function(filepath) {
+		var lines = [
+			"(function(yepnope) {",
+			"if (!yepnope.injectCss) {",
+			grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)),
+			"}",
+			"})(Echo.yepnope);",
+			""
 		];
 		return lines.join(shared.config("build.stage") === "min" ? "" : "\n");
 	});
