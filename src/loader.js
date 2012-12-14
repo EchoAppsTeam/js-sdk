@@ -295,7 +295,7 @@ Echo.Loader._initApplications = function(canvas) {
 	var resources = [];
 	Echo.jQuery.each(canvas.config.apps, function(id, app) {
 		app.config = app.config || {};
-		if (!app.component || !app.script || !app.id) {
+		if (!app.component || !(app.script || app.scripts && app.scripts.dev && app.scripts.prod) || !app.id) {
 			Echo.Loader._error({
 				"args": {"app": app},
 				"code": "incomplete_app_config",
@@ -307,7 +307,7 @@ Echo.Loader._initApplications = function(canvas) {
 		app.config.user = canvas.config.user;
 		app.config.target = Echo.Loader._createApplicationTarget(app);
 		resources.push({
-			"url": app.script,
+			"url": app.scripts && (Echo.Loader.isDebug() ? app.scripts.dev : app.scripts.prod) || app.script,
 			"loaded": function() {
 				return Echo.Utils.isComponentDefined(app.component);
 			}
