@@ -562,7 +562,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentLimits
 				}
 			},
-			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.go...</a> <span class="echo-streamserver-controls-stream-item-tag" title="12345678901234567890">1234</span>'
+			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.go...</a> <span class="echo-streamserver-controls-stream-item-tag" title="12345678901234567890">1234567890</span>'
 		}, {
 			"description": "bodyLink: 10, tag: 10, body: 20",
 			"config": {
@@ -582,7 +582,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentLimits
 				}
 			},
-			"expect": '1234567890 <span>qwertyuio</span>'
+			"expect": '1234567890 <span>qwertyuiop</span>'
 		}]);
 	}
 };
