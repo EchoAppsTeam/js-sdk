@@ -271,24 +271,70 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.equal(Echo.Utils.getTimestamp("1994-11-0508-15:30"), undefined,
 			"Checking getTimestamp() method with incorrect input value");
 
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>some_content</div>", 10), "<div>some_conte</div>",
-			"Checking htmlTextTruncate() method");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>content</div>", 10), "<div>content</div>",
-			"Checking htmlTextTruncate() method with short HTML content");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div><span>some</span>_content</div>", 10),"<div><span>some</span>_conte</div>",
-			"Checking htmlTextTruncate() method with nested HTML tags");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>some_content</div>", 10, "_postfix"), "<div>some_conte_postfix</div>",
-			"Checking htmlTextTruncate() method with postfix param");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>some&nbsp;content</div>", 10), "<div>some&nbsp;conten</div>",
-			"Checking htmlTextTruncate() method with special character");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>123456", 5, "", true), "<div>12345</div>",
-			"Checking htmlTextTruncate() method with forceClosingTabs = true");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>123456", 5, "", false), "<div>12345</div>",
-			"Checking htmlTextTruncate() method with forceClosingTabs = false");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>12345", 5, "", true), "<div>12345</div>",
-			"Checking htmlTextTruncate() method with forceClosingTabs = true and no truncation");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>12345", 5, "", false), "<div>12345",
-			"Checking htmlTextTruncate() method with forceClosingTabs = false and no truncation");
+		var htmlToTruncate = '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i> and <a href="domain.com" class="link">link</a></u></b> <span>qwerty</b>asdf</span></div>';
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 3), '<div class="some-class">some</div>',
+			"Checking htmlTextTruncate(): cut at the middle of first word");
++
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 10), '<div class="some-class">some<br>longword</div>',
+			"Checking htmlTextTruncate(): cut at the middle of second word");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 10, "_postfix"), '<div class="some-class">some<br>longword_postfix</div>',
+			"Checking htmlTextTruncate(): with postfix");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 13), '<div class="some-class">some<br>longword &copy;</div>',
+			"Checking htmlTextTruncate(): cut before html special character");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 15), '<div class="some-class">some<br>longword &copy;,</div>',
+			"Checking htmlTextTruncate(): cut after comma");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 19), '<div class="some-class">some<br>longword &copy;, &amp;amp</div>',
+			"Checking htmlTextTruncate(): cut at the middle of word");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 22), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b></b></div>',
+			"Checking htmlTextTruncate(): cut after space");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 26), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u></u></b></div>',
+			"Checking htmlTextTruncate(): cut between word and closing tag");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 37), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_</u></b></div>',
+			"Checking htmlTextTruncate(): cut between word and underscore");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 37, "..."), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_...</u></b></div>',
+			"Checking htmlTextTruncate(): cut between word and underscore with postfix");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 38), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i></i></u></b></div>',
+			"Checking htmlTextTruncate(): cut after underscore");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 40), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i></u></b></div>',
+			"Checking htmlTextTruncate(): cut at the middle of word");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 42), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i></u></b></div>',
+			"Checking htmlTextTruncate(): cut before closing tag");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 49), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i> and <a href=\"domain.com\" class=\"link\">link</a></u></b></div>',
+			"Checking htmlTextTruncate(): cut at the middle of the link");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 4), '<div class="some-class">some<br></div>',
+			"Checking htmlTextTruncate(): cut before standalone tag");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 5), '<div class="some-class">some<br>longword</div>',
+			"Checking htmlTextTruncate(): cut after standalone tag");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate), htmlToTruncate, "Checking htmlTextTruncate(): without 'limit' parameter");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 60), htmlToTruncate,
+			"Checking htmlTextTruncate(): with wrong html code");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 100), htmlToTruncate,
+			"Checking htmlTextTruncate(): without cutting (text.length < limit)");
+
+		var htmlToTruncate = '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i> and <a href="domain.com" class="link">link</a></u></b> <span>qwerty asdf</span>';
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 62), htmlToTruncate + "</div>",
+			"Checking htmlTextTruncate(): cut at the last word");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 70, "", true), htmlToTruncate + '</div>',
+			"Checking htmlTextTruncate(): with forceClosingTags = true");
 
 		QUnit.ok(typeof Echo.Utils.getUniqueString() == "string", "getUniqueString() really returns string");
 		var strings = [];

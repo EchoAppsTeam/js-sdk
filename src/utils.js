@@ -444,14 +444,13 @@ Echo.Utils.objectToJSON = function(obj) {
  * Method to truncate HTML text.
  *
  * This function truncates HTML contents preserving the right HTML structure
- * and without truncating tags.
+ * and without truncating tags. If truncation hits the middle of the word, the word
+ * itself is preserved and truncation starts right after this word.
  *
- *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>123456</div>", 5, "12345"); // will return "<div>1234512345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "", true); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>123456", 5, "", false); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "", true); // will return "<div>12345</div>"
- *     Echo.Utils.htmlTextTruncate("<div>12345", 5, "", false); // will return "<div>12345"
+ *     Echo.Utils.htmlTextTruncate("Welcome to Echo SDK", 5, "..."); // will return "Welcome..."
+ *     Echo.Utils.htmlTextTruncate("<div>Welcome to Echo SDK", 5, "", true); // will return "<div>Welcome</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>Welcome to Echo SDK</div>", 3, "...", true); // will return "<div>Welcome...</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>Welcome to Echo SDK</div>", 17, "...", true); // will return "<div>Welcome to Echo SDK</div>"
  *
  * @param {String} text
  * The string to be truncated.
@@ -474,6 +473,8 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	if (!limit || text.length < limit) return text;
 
 	var tags = [], count = 0, finalPos = 0;
+	var wordRegex = /(\w)+/;
+	var htmlSpecialCharRegex = /^(\S)+;/;
 	if (!this.cache.standaloneTags) {
 		this.cache.standaloneTags =
 			Echo.Utils.foldl(
@@ -489,23 +490,25 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 			var tail = text.indexOf(">", i);
 			if (tail < 0) return text;
 			var source = text.substring(i + 1, tail);
-			var tag = {"name": "", "closing": false};
+			var tag = "";
+			var isTagClosing = false;
 			if (source.charAt(0) === "/") {
-				tag.closing = true;
+				isTagClosing = true;
 				source = source.substring(1);
 			}
-			tag.name = source.match(/(\w)+/)[0];
-			if (tag.closing) {
+			tag = source.match(wordRegex)[0];
+			if (isTagClosing) {
 				var current = tags.pop();
-				if (!current || current.name !== tag.name) return text;
-			} else if (!this.cache.standaloneTags[tag.name]) {
+				if (!current || current !== tag) return text;
+			} else if (!this.cache.standaloneTags[tag]) {
 				tags.push(tag);
 			}
 			i = tail;
-		} else if (symbol === "&" && text.substring(i).match(/^(\S)+;/)) {
+		} else if (symbol === "&" && text.substring(i).match(htmlSpecialCharRegex)) {
 			i = text.indexOf(";", i);
+			count++;
 		} else {
-			if (count === limit) {
+			if (count >= limit) {
 				finalPos = i;
 				break;
 			}
@@ -514,10 +517,16 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	}
 	if (finalPos || forceClosingTags) {
 		if (finalPos) {
-			text = text.substring(0, finalPos) + (postfix || "");
+			var cut = text.substring(finalPos - 1, text.length - 1).match(/^\w+/);
+			if (cut) {
+				finalPos += cut[0].length - 1;
+			}
+			if (finalPos !== text.length - 1) {
+				text = text.substring(0, finalPos) + (postfix || "");
+			}
 		}
 		for (var i = tags.length - 1; i >= 0; i--) {
-			text += "</" + tags[i].name + ">";
+			text += "</" + tags[i] + ">";
 		}
 	}
 	return text;
