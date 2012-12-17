@@ -643,8 +643,8 @@ Echo.Utils.getVisibleColor = function(element) {
  * @static
  * Method to convert datetime value from string representation to numeric timestamp.
  *
- *     Echo.Utils.getTimestamp("1998-02-08T09:27:30Z"); // will return 886930050
- *     Echo.Utils.getTimestamp("1998-02-08T09:27:30.733Z"); // will return 886930050.733
+ *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // will return 886930050
+ *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30.733Z"); // will return 886930050.733
  *
  * The method can correctly parse any date format supported by user's browser.
  * However ISO 8601 format is understood independing of native support.
@@ -658,7 +658,7 @@ Echo.Utils.getVisibleColor = function(element) {
  * @return {Number}
  * UNIX timestamp.
  */
-Echo.Utils.getTimestamp = function(datetime) {
+Echo.Utils.timestampFromW3CDTF = function(datetime) {
 	var time = Date.parse(datetime);
 	if (isNaN(time)) {
 		var parts = ["year", "month", "day", "hours", "minutes", "seconds", "milliseconds"];

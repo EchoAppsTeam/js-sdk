@@ -196,7 +196,7 @@ plugin.renderers.editedDate = function(element) {
 	var published = this.component.get("data.object.published");
 	if (!published) return element.empty();
 
-	var date = new Date(Echo.Utils.getTimestamp(published) * 1000);
+	var date = new Date(Echo.Utils.timestampFromW3CDTF(published) * 1000);
 	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
 };
 

@@ -30,7 +30,7 @@ suite.prototype.info = {
 		"set",
 		"stripTags",
 		"substitute", // covered within the Control and Plugin tests
-		"getTimestamp"
+		"timestampFromW3CDTF"
 	]
 };
 
@@ -230,46 +230,46 @@ suite.prototype.tests.TestDataMethods = {
 			"fragment": ""
 		}, "Checking parseURL() method with some undefined fields");
 
-		QUnit.equal(Echo.Utils.getTimestamp("1994-11-05T08:15:30Z"), 784023330,
-			"Checking getTimestamp() method");
-		QUnit.equal(Echo.Utils.getTimestamp("1994-11-05T08:15:30+01:30"), 784017930,
-			"Checking getTimestamp() method with timezone offset");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-11-09T11:32:23.726Z"), 1352460743.726,
-			"Checking getTimestamp() method with milliseconds");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-11-09T11:32:23.726+01:00"), 1352457143.726,
-			"Checking getTimestamp() method with timezone offset and millisecond");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-11-09T11:32:23.726-01:00"), 1352464343.726,
-			"Checking getTimestamp() method with negative timezone offset and milliseconds");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-11-09"), 1352419200,
-			"Checking getTimestamp() method with just date defined");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-11"), 1351728000,
-			"Checking getTimestamp() method with year and month defined");
-		QUnit.equal(Echo.Utils.getTimestamp("2012"), 1325376000,
-			"Checking getTimestamp() method with just year defined");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-01-01"), 1325376000,
-			"Checking getTimestamp() method with boundary values of the year and month (min both)");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-12-01"), 1354320000,
-			"Checking getTimestamp() method with boundary values of the year and month (month max, date min)");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-12-31"), 1356912000,
-			"Checking getTimestamp() method with boundary values of the year and month (max both)");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-01-01T00:00:00.000Z"), 1325376000,
-			"Checking getTimestamp() method with boundary values (min time)");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-01-01T00:00:00.000+00:00"), 1325376000,
-			"Checking getTimestamp() method with boundary values (min time) and timezone offset");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-12-31T23:59:59.999Z"), 1356998399.999,
-			"Checking getTimestamp() method with boundary values of the year and month (max time)");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-12-31T23:59:59.999-00:00"), 1356998399.999,
-			"Checking getTimestamp() method with boundary values of the year and month (max time) and negative zero timzone offset");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-01-01T00:00:00.000-01:45"), 1325382300,
-			"Checking getTimestamp() method with boundary values (min time) and negative timezone offset");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-01-01T00:00:00.000+01:45"), 1325369700,
-			"Checking getTimestamp() method with boundary values (min time) and positive timezone offset");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-12-31T23:59:59.999-23:59"), 1357084739.999,
-			"Checking getTimestamp() method with boundary values of the year and month (max time) and negative timezone offset");
-		QUnit.equal(Echo.Utils.getTimestamp("2012-12-31T23:59:59.999+23:59"), 1356912059.999,
-			"Checking getTimestamp() method with boundary values of the year and month (max time) and positive timezone offset");
-		QUnit.equal(Echo.Utils.getTimestamp("1994-11-0508-15:30"), undefined,
-			"Checking getTimestamp() method with incorrect input value");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-05T08:15:30Z"), 784023330,
+			"Checking timestampFromW3CDTF() method");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-05T08:15:30+01:30"), 784017930,
+			"Checking timestampFromW3CDTF() method with timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09T11:32:23.726Z"), 1352460743.726,
+			"Checking timestampFromW3CDTF() method with milliseconds");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09T11:32:23.726+01:00"), 1352457143.726,
+			"Checking timestampFromW3CDTF() method with timezone offset and millisecond");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09T11:32:23.726-01:00"), 1352464343.726,
+			"Checking timestampFromW3CDTF() method with negative timezone offset and milliseconds");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11-09"), 1352419200,
+			"Checking timestampFromW3CDTF() method with just date defined");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-11"), 1351728000,
+			"Checking timestampFromW3CDTF() method with year and month defined");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012"), 1325376000,
+			"Checking timestampFromW3CDTF() method with just year defined");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-01-01"), 1325376000,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (min both)");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-01"), 1354320000,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (month max, date min)");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-31"), 1356912000,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (max both)");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-01-01T00:00:00.000Z"), 1325376000,
+			"Checking timestampFromW3CDTF() method with boundary values (min time)");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-01-01T00:00:00.000+00:00"), 1325376000,
+			"Checking timestampFromW3CDTF() method with boundary values (min time) and timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-31T23:59:59.999Z"), 1356998399.999,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (max time)");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-31T23:59:59.999-00:00"), 1356998399.999,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (max time) and negative zero timzone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-01-01T00:00:00.000-01:45"), 1325382300,
+			"Checking timestampFromW3CDTF() method with boundary values (min time) and negative timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-01-01T00:00:00.000+01:45"), 1325369700,
+			"Checking timestampFromW3CDTF() method with boundary values (min time) and positive timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-31T23:59:59.999-23:59"), 1357084739.999,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (max time) and negative timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("2012-12-31T23:59:59.999+23:59"), 1356912059.999,
+			"Checking timestampFromW3CDTF() method with boundary values of the year and month (max time) and positive timezone offset");
+		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-0508-15:30"), undefined,
+			"Checking timestampFromW3CDTF() method with incorrect input value");
 
 		var htmlToTruncate = '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i> and <a href="domain.com" class="link">link</a></u></b> <span>qwerty</b>asdf</span></div>';
 		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 3), '<div class="some-class">some</div>',

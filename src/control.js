@@ -673,7 +673,7 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 	if (!datetime) return;
 	var self = this;
 	var ts = typeof datetime === "string"
-		? Echo.Utils.getTimestamp(datetime)
+		? Echo.Utils.timestampFromW3CDTF(datetime)
 		: datetime;
 	if (!ts) return;
 	var d = new Date(ts * 1000);

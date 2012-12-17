@@ -1456,7 +1456,7 @@ stream.methods._updateItem = function(entry) {
 	var accRelatedSortOrder = sortOrder.match(/replies|likes|flags/);
 	var acc = accRelatedSortOrder && this._getRespectiveAccumulator(item, sortOrder);
 	if (item.data.object.published !== entry.object.published) {
-		item.set("timestamp", Echo.Utils.getTimestamp(entry.object.published));
+		item.set("timestamp", Echo.Utils.timestampFromW3CDTF(entry.object.published));
 		item.set("forceInject", true);
 	}
 	$.extend(item.data, entry);
@@ -1620,7 +1620,7 @@ var item = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item");
 if (Echo.Control.isDefined(item)) return;
 
 item.init = function() {
-	this.timestamp = Echo.Utils.getTimestamp(this.get("data.object.published"));
+	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get("data.object.published"));
 	this.ready();
 };
 
