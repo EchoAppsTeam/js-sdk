@@ -114,12 +114,12 @@ Echo.Loader.download = function(resources, callback, config) {
 
 	var urls = [];
 	var queued = Echo.Loader.vars.queued;
+	var urlPrefix = "timeout=" + (config.errorTimeout || Echo.Loader.config.errorTimeout) + "!";
 	for (var i = 0; i < resources.length; i++) {
 		var res = resources[i];
 		if (!queued[res.url] && (!res.loaded || !res.loaded())) {
 			queued[res.url] = true;
-			urls.push("timeout=" + (config.errorTimeout || Echo.Loader.config.errorTimeout) + "!"
-					+ Echo.Loader.getURL(res.url));
+			urls.push(urlPrefix + Echo.Loader.getURL(res.url));
 		}
 	}
 	if (!urls.length) {
