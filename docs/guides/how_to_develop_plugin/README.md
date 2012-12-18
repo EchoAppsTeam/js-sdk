@@ -270,7 +270,7 @@ There are lots of events going on during the control and plugin life. The list o
 
 ## Dependencies
 
-If the plugin depends on some other external component/library, it's possible to define the dependencies list for the plugin. In this case the engine will download the dependencies first and launch the plugin after that. The dependency is an object with the "url" and the "loaded" fields. The "url" field contains the resource URL and the "loaded" field should be defined as a function which returns 'true' or 'false' and indicate whether the resource should be downloaded or not. Example:
+If the plugin depends on some other external component/library, it's possible to define the dependencies list for the plugin. In this case the engine will download the dependencies first and launch the plugin after that. The dependency is an object with the "url" and one of the "control", "plugin", "app" or "loaded" fields. In the "control", "plugin", "app" fields you should specify the component name. If the component you have specified is not loaded yet, resource you have specified in the "url" will be downloaded. If you need to specify more complex conditions to load resource, you can use the "loaded" field instead. The "loaded" field should be defined as a function which returns 'true' or 'false' and indicate whether the resource should be downloaded or not. Example:
 
 	@example
 	plugin.dependencies = [{
@@ -278,7 +278,7 @@ If the plugin depends on some other external component/library, it's possible to
 		"url": "http://platform.twitter.com/widgets.js"
 	}];
 
-You can define the CSS stylesheets as a dependency as well, in this case the "loaded" function might be omitted.
+You can define the CSS stylesheets as a dependency as well, in this case the "loaded" ("control", "plugin" or "app") parameter might be omitted.
 
 ## Plugin installation
 

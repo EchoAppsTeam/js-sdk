@@ -195,6 +195,14 @@ suite.prototype.cases.basicOperations = function(callback) {
 		}
 		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
 
+		QUnit.ok(Echo.Tests.Dependencies.Control.dep6, "Checking if dependency loaded using 'control' condition");
+		QUnit.ok(Echo.Tests.Dependencies.Control.dep7, "Checking if dependency loaded using 'plugin' condition");
+		QUnit.ok(Echo.Tests.Dependencies.Control.dep8, "Checking if dependency loaded using 'app' condition");
+
+		QUnit.ok(!Echo.Tests.Dependencies.Control.dep9, "Checking if dependency is not loading if 'control' already loaded");
+		QUnit.ok(!Echo.Tests.Dependencies.Control.dep10, "Checking if dependency is not loading if 'plugin' already loaded");
+		QUnit.ok(!Echo.Tests.Dependencies.Control.dep11, "Checking if dependency is not loading if 'app' already loaded");
+
 		try {
 			// checking log() calls with invalid params
 			this.log();
@@ -1120,13 +1128,28 @@ suite.getControlManifest = function(name, config) {
 		"label3": "label3 value"
 	};
 
-	var addDependency = function(n) {
-		manifest.dependencies.push({
-			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep." + n + ".js",
-			"loaded": function() { return !!Echo.Tests.Dependencies.Control["dep" + n]; }
-		});
+	var addDependency = function(n, params) {
+		var dependency = {
+			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep." + n + ".js"
+		};
+		if (typeof params === "object") {
+			dependency = $.extend(dependency, params);
+		} else {
+			dependency.loaded = function() { return !!Echo.Tests.Dependencies.Control["dep" + n]; };
+		}
+		manifest.dependencies.push(dependency);
 	};
 	for (var i = 1; i < 6; i++) addDependency(i);
+
+	Echo.Tests.Unit.App.createApp("Echo.Apps.MyTestApp");
+	addDependency(6, {"control": "Echo.StreamServer.Controls.MyNotExistsTestControl"});
+	addDependency(7, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyNotExistsTestPlugin"});
+	addDependency(8, {"app": "Echo.Apps.MyNotExistsTestApp"});
+
+	addDependency(9, {"control": "Echo.StreamServer.Controls.MyTestControl"});
+	addDependency(10, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyPlugin"});
+	addDependency(11, {"app": "Echo.Apps.MyTestApp"});
+
 
 	manifest.init = function() {
 		this.render();

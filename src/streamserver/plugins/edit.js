@@ -43,7 +43,7 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	"loaded": function() { return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit"); },
+	"control": "Echo.StreamServer.Controls.Submit",
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
 

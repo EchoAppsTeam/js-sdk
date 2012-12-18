@@ -129,11 +129,15 @@ Echo.Plugin.manifest = function(name, component) {
  * Checks if plugin is already defined.
  *
  * @param {Object} manifest
- * Plugin manifest.
+ * Plugin manifest or plugin name.
  *
  * @return {Boolean}
  */
 Echo.Plugin.isDefined = function(manifest) {
+	if (typeof manifest === "string") {
+		var component = Echo.Utils.get(window, manifest);
+		return !!(component && component.manifest);
+	}
 	return !!Echo.Plugin.getClass(manifest.name, manifest.component.name);
 };
 

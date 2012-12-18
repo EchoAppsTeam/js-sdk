@@ -86,6 +86,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 		// checking if we have class before it was defined
 		QUnit.ok(!Echo.Plugin.isDefined(manifest),
 			"Checking if the plugin class was defined (via isDefined static method), before actual plugin definition");
+		QUnit.ok(!Echo.Plugin.isDefined(Echo.Plugin._getClassName(manifest.name, manifest.component.name)),
+			"Checking if the plugin class was defined(via isDefined static method with plugin name as a parameter), before actual plugin definition");
 		QUnit.ok(!Echo.Plugin.getClass(manifest.name, manifest.component.name),
 			"Checking if we have a reference to the plugin class (via getClass static method), before actual plugin definition");
 
@@ -95,6 +97,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 		// checking if we have class after class definition
 		QUnit.ok(Echo.Plugin.isDefined(manifest),
 			"Checking if the plugin class was defined (via isDefined static method), after class definition");
+		QUnit.ok(Echo.Plugin.isDefined(Echo.Plugin._getClassName(manifest.name, manifest.component.name)),
+			"Checking if the plugin class was defined (via isDefined static method with plugin name as a parameter), after class definition");
 		QUnit.ok(!!Echo.Plugin.getClass(manifest.name, manifest.component.name),
 			"Checking if we have a reference to the plugin class (via getClass static method), before actual plugin definition");
 
@@ -201,6 +205,14 @@ suite.prototype.cases.basicOperations = function(callback) {
 			if (!Echo.Tests.Dependencies.Plugin["dep" + i]) result = false;
 		}
 		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
+
+		QUnit.ok(Echo.Tests.Dependencies.Plugin.dep6, "Checking if dependency loaded using 'control' condition");
+		QUnit.ok(Echo.Tests.Dependencies.Plugin.dep7, "Checking if dependency loaded using 'plugin' condition");
+		QUnit.ok(Echo.Tests.Dependencies.Plugin.dep8, "Checking if dependency loaded using 'app' condition");
+
+		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep9, "Checking if dependency is not loading if 'control' already loaded");
+		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep10, "Checking if dependency is not loading if 'plugin' already loaded");
+		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep11, "Checking if dependency is not loading if 'app' already loaded");
 
 		try {
 			// checking log() calls with invalid params
@@ -719,13 +731,27 @@ suite.getPluginManifest = function(name, component) {
 		"label3": "plugin label3 value"
 	};
 
-	var addDependency = function(n) {
-		manifest.dependencies.push({
-			"url": Echo.Tests.baseURL + "tests/unit/dependencies/plugin.dep." + n + ".js",
-			"loaded": function() { return !!Echo.Tests.Dependencies.Plugin["dep" + n]; }
-		});
+	var addDependency = function(n, params) {
+		var dependency = {
+			"url": Echo.Tests.baseURL + "tests/unit/dependencies/plugin.dep." + n + ".js"
+		};
+		if (typeof params === "object") {
+			dependency = $.extend(dependency, params);
+		} else {
+			dependency.loaded = function() { return !!Echo.Tests.Dependencies.Plugin["dep" + n]; };
+		}
+		manifest.dependencies.push(dependency);
 	};
 	for (var i = 1; i < 6; i++) addDependency(i);
+
+	Echo.Tests.Unit.App.createApp("Echo.Apps.MyTestApp");
+	addDependency(6, {"control": "Echo.StreamServer.Controls.MyNotExistsTestControl"});
+	addDependency(7, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyNotExistsTestPlugin"});
+	addDependency(8, {"app": "Echo.Apps.MyNotExistsTestApp"});
+
+	addDependency(9, {"control": "Echo.StreamServer.Controls.MyTestControl"});
+	addDependency(10, {"plugin": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like"});
+	addDependency(11, {"app": "Echo.Apps.MyTestApp"});
 
 	manifest.init = function() {
 		var plugin = this;
