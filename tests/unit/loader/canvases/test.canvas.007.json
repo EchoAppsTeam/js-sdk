@@ -8,12 +8,12 @@
     "apps": [{
         "id": "test.apps.scripts",
         "scripts": {
-			"dev": "../../../tests/unit/loader/scripts/scripts.dev.js",
-			"prod": "../../tests/unit/loader/scripts/scripts.prod.js"
-		},
+            "dev": "../../../tests/unit/loader/scripts/scripts.dev.js",
+            "prod": "../../tests/unit/loader/scripts/scripts.prod.js"
+        },
         "component": "Echo.Tests.Controls.TestControl",
         "config": {
             "appkey": "test.aboutecho.com"
-		}
+        }
     }]
 }
