@@ -170,7 +170,7 @@ If the application depends on some other external component/library (including o
 				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
 		},
 		"url": "streamserver.pack.js"
-	} , {
+	}, {
 		"control": "Echo.IdentityServer.Controls.Auth",
 		"url": "identityserver.pack.js"
 	}];

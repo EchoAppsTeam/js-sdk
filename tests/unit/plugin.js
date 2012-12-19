@@ -83,13 +83,12 @@ suite.prototype.tests.PublicInterfaceTests = {
 		// create test control
 		suite.control().createTestControl();
 
-		// checking what we haven't class before it was defined
 		QUnit.ok(!Echo.Plugin.isDefined(manifest),
-			"Checking what the plugin class isn't defined (via isDefined static method), before actual plugin definition");
+			"Checking that the plugin class isn't defined (via isDefined static method), before actual plugin definition");
 		QUnit.ok(!Echo.Plugin.isDefined(Echo.Plugin._getClassName(manifest.name, manifest.component.name)),
-			"Checking what the plugin class isn't defined(via isDefined static method with plugin name as a parameter), before actual plugin definition");
+			"Checking that the plugin class isn't defined(via isDefined static method with plugin name as a parameter), before actual plugin definition");
 		QUnit.ok(!Echo.Plugin.getClass(manifest.name, manifest.component.name),
-			"Checking what we haven't a reference to the plugin class (via getClass static method), before actual plugin definition");
+			"Checking that we haven't a reference to the plugin class (via getClass static method), before actual plugin definition");
 
 		// create plugin class out of manifest
 		suite.createTestPlugin(manifest.name, manifest.component.name);
