@@ -1112,9 +1112,14 @@ Echo.Control.prototype._loadScripts = function(resources, callback) {
 	}
 	resources = $.map(resources, function(resource) {
 		if (!resource.loaded) {
-			var key = resource.app && "App" || resource.control && "Control" || resource.plugin && "Plugin";
+			var key = resource.app && "App" ||
+				resource.control && "Control" ||
+				resource.plugin && "Plugin";
+
 			if (key) {
-				resource.loaded = function() { return Echo[key].isDefined(resource[key.toLowerCase()]); };
+				resource.loaded = function() {
+					return Echo[key].isDefined(resource[key.toLowerCase()]);
+				};
 			}
 		}
 		return $.extend(resource, {
