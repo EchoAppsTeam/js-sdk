@@ -1114,13 +1114,10 @@ Echo.Control.prototype._loadScripts = function(resources, callback) {
 		if (!resource.loaded) {
 			if (resource.app) {
 				resource.loaded = function() { return Echo.App.isDefined(resource.app); };
-
 			} else if (resource.control) {
 				resource.loaded = function() { return Echo.Control.isDefined(resource.control); };
-
 			} else if (resource.plugin) {
 				resource.loaded = function() { return Echo.Plugin.isDefined(resource.plugin); };
-
 			}
 		}
 		return $.extend(resource, {

@@ -1150,7 +1150,6 @@ suite.getControlManifest = function(name, config) {
 	addDependency(10, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyPlugin"});
 	addDependency(11, {"app": "Echo.Apps.MyTestApp"});
 
-
 	manifest.init = function() {
 		this.render();
 		this.ready();

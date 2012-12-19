@@ -128,7 +128,7 @@ Echo.Plugin.manifest = function(name, component) {
  * @static
  * Checks if plugin is already defined.
  *
- * @param {Object} manifest
+ * @param {Object|String} manifest
  * Plugin manifest or plugin name.
  *
  * @return {Boolean}

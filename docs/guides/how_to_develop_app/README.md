@@ -164,15 +164,16 @@ To make the UI look nice, we should add some CSS rules. There is a special place
 If the application depends on some other external component/library (including other Echo components), it's possible to define the dependencies list for the application. In this case the SDK engine will download the dependencies first and launch the application after that. The dependency is an object with the "url" and one of the "control", "plugin", "app" or "loaded" fields. In the "control", "plugin", "app" fields you should specify the component name. If the component you have specified is not loaded yet, resource you have specified in the "url" will be downloaded. If you need to specify more complex conditions to load resource, you can use the "loaded" field instead. The "loaded" field should be defined as a function which returns 'true' or 'false' and indicate whether the resource should be downloaded or not. Example:
 
 	@example
-	Comments.dependencies = [
-		{"loaded": function() {
+	Comments.dependencies = [{
+		"loaded": function() {
 			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
 				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
-		}, "url": "streamserver.pack.js"},
-
-		{"control": "Echo.IdentityServer.Controls.Auth",
-		"url": "identityserver.pack.js"}
-	];
+		},
+		"url": "streamserver.pack.js"
+	} , {
+		"control": "Echo.IdentityServer.Controls.Auth",
+		"url": "identityserver.pack.js"
+	}];
 
 ## Events
 
@@ -248,15 +249,16 @@ Note: in order to configure internal Echo Controls and Plugins used in the appli
 
 	if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
 
-	Comments.dependencies = [
-		{"loaded": function() {
+	Comments.dependencies = [{
+		"loaded": function() {
 			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
 				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
-		}, "url": "streamserver.pack.js"},
-
-		{"control": "Echo.IdentityServer.Controls.Auth",
-		"url": "identityserver.pack.js"}
-	];
+		},
+		"url": "streamserver.pack.js"
+	}, {
+		"control": "Echo.IdentityServer.Controls.Auth",
+		"url": "identityserver.pack.js"
+	}];
 
 	Comments.config = {
 		"submitFormPosition": "top" // top | bottom
