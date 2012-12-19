@@ -1112,12 +1112,9 @@ Echo.Control.prototype._loadScripts = function(resources, callback) {
 	}
 	resources = $.map(resources, function(resource) {
 		if (!resource.loaded) {
-			if (resource.app) {
-				resource.loaded = function() { return Echo.App.isDefined(resource.app); };
-			} else if (resource.control) {
-				resource.loaded = function() { return Echo.Control.isDefined(resource.control); };
-			} else if (resource.plugin) {
-				resource.loaded = function() { return Echo.Plugin.isDefined(resource.plugin); };
+			var key = resource.app && "App" || resource.control && "Control" || resource.plugin && "Plugin";
+			if (key) {
+				resource.loaded = function() { return Echo[key].isDefined(resource[key.toLowerCase()]); };
 			}
 		}
 		return $.extend(resource, {
