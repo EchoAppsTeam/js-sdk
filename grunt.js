@@ -101,8 +101,11 @@ module.exports = function(grunt) {
 				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-scrollspy.js>",
 				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-tab.js>",
 				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-typeahead.js>",
+
 				"third-party/bootstrap/plugins/echo-modal.js",
 				"third-party/bootstrap/plugins/echo-button.js",
+				"third-party/bootstrap/plugins/echo-dropdown.js",
+				"third-party/bootstrap/plugins/echo-tabs.js",
 			],
 			"dest": "third-party/bootstrap.pack.js"
 		}
