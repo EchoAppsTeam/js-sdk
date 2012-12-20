@@ -62,6 +62,9 @@ plugin.config = {
 	 * @cfg {String} [identityManager.login.url]
 	 * Specifies the URL to be opened as an auth handler
 	 *
+	 * @cfg {String} [identityManager.login.title]
+	 * Specifies the Title of the auth modal dialog
+	 *
 	 * @cfg {Object} [identityManager.signup]
 	 * Encapsulates data for signup workflow
 	 *
@@ -74,6 +77,9 @@ plugin.config = {
 	 * @cfg {String} [identityManager.signup.url]
 	 * Specifies the URL to be opened as an auth handler
 	 *
+	 * @cfg {String} [identityManager.signup.title]
+	 * Specifies the Title of the auth modal dialog
+	 *
 	 * @cfg {Object} [identityManager.edit]
 	 * Encapsulates data for edit workflow
 	 *
@@ -85,8 +91,12 @@ plugin.config = {
 	 *
 	 * @cfg {String} [identityManager.edit.url]
 	 * Specifies the URL to be opened as an auth handler
+	 *
+	 * @cfg {String} [identityManager.edit.title]
+	 * Specifies the Title of the auth modal dialog
 	 */
 	"identityManager": {},
+
 	/**
 	 * @cfg {String} submitPermissions
 	 * Specifies the permitted commenting modes.
