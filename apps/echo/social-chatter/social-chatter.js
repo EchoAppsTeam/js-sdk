@@ -138,7 +138,7 @@ SocialChatter.dependencies = [
 
 	{"loaded": function() {
 		return !!$.fn.echoButton;
-	}, "url": "{config:cdnBaseURL.sdk}/third-party/bootstrap/plugins/echo-button.js"},
+	}, "url": "{config:cdnBaseURL.sdk}/third-party/bootstrap.pack.js"},
 
 	{"loaded": function() {
 		var isLoaded;

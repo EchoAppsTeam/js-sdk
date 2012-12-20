@@ -89,7 +89,20 @@ module.exports = function(grunt) {
 		},
 		"third-party/bootstrap": {
 			"src": [
-				"third-party/bootstrap/*.js"
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-affix.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-alert.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-button.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-modal.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-carousel.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-collapse.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-dropdown.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-tooltip.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-popover.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-scrollspy.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-tab.js>",
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-typeahead.js>",
+				"third-party/bootstrap/plugins/echo-modal.js",
+				"third-party/bootstrap/plugins/echo-button.js",
 			],
 			"dest": "third-party/bootstrap.pack.js"
 		}
@@ -147,7 +160,7 @@ module.exports = function(grunt) {
 			"third-party": [
 				"<%= dirs.build %>/third-party/yepnope",
 				"<%= dirs.build %>/third-party/jquery",
-				"<%= dirs.build %>/third-party/bootstrap/!(echo-)*.js"
+				"<%= dirs.build %>/third-party/bootstrap!(.pack)*"
 			],
 			all: [
 				"<%= dirs.dist %>",
@@ -260,12 +273,12 @@ module.exports = function(grunt) {
 		switch (stage) {
 			case "dev":
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js assemble_bootstrap patch:loader concat clean:third-party copy:build";
+				tasks = "copy:own-js copy:third-party-js patch:loader concat clean:third-party copy:build";
 				break;
 			case "min":
 				_makeMinSpec();
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js assemble_bootstrap patch:loader min concat clean:third-party copy:build";
+				tasks = "copy:own-js copy:third-party-js patch:loader min concat clean:third-party copy:build";
 				break;
 			case "final":
 				tasks = "copy:css copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
@@ -306,78 +319,6 @@ module.exports = function(grunt) {
 		}
 	});
 
-	grunt.registerMultiTask("assemble_bootstrap", "Assemble bootstrap files", function() {
-		grunt.log.write("Assembling \"" + this.target + "\"...");
-
-		var inputPath = grunt.config.process("dirs.src") + "/third-party/bootstrap/";
-		var outputPath = grunt.config.process("dirs.build") + "/third-party/bootstrap/";
-		var eol = grunt.utils.normalizelf(grunt.utils.linefeed);
-		var config = grunt.file.readJSON("config/grunt/config.ui.json");
-
-		var makeCSS = function(arLess, callback) {
-			var output = arguments[2] || [];
-			if (arLess.length) {
-				var item = arLess.shift();
-				grunt.helper("less", item.less, {}, function(css) {
-					output.push(grunt.helper("bootstrap_css_wrapper", css, item.key));
-					makeCSS(arLess, callback, output);
-				});
-			} else {
-				callback && callback(output);
-			}
-		};
-
-		var files = grunt.file.expandFiles(this.file.src);
-		var baseLess = files.map(function(control) {
-			return grunt.task.directive(control, grunt.file.read);
-		}).join(eol);
-
-		config.controls.map(function(control) {
-			var outputFile = outputPath + control.output;
-			var js = [];
-			var less = [];
-
-			control.input.map(function(inputFile) {
-				if (_.isArray(inputFile)) {
-					var params = inputFile[1];
-					inputFile = inputFile[0];
-					js.push([
-						'(function(){',
-						'if (Echo.Utils.get(Echo.jQuery, "' + params.check + '")) return;',
-						grunt.task.directive(inputPath + inputFile, grunt.file.read).replace("window.jQuery", "Echo.jQuery"),
-						'})();'
-					].join(eol));
-				} else {
-					var type = (inputFile.match(/\.([a-z]+)$/) || [])[1];
-					if (type === "less") {
-						less.push({
-							"key": inputFile,
-							"less": [
-								".echo-sdk-ui {",
-								baseLess,
-								grunt.task.directive(inputPath + inputFile, grunt.file.read),
-								"}"
-							].join(eol)
-						});
-					} else if (type === "js") {
-						js.push(
-							grunt.task.directive(inputPath + inputFile, grunt.file.read)
-						);
-					}
-				}
-			});
-
-			makeCSS(less, function(css) {
-				grunt.file.write(outputFile, js.join(eol) + css.join(eol));
-			});
-		});
-
-		if (this.errorCount) {
-			return false;
-		}
-		grunt.log.ok();
-	});
-
 	// shared
 
 	grunt.registerHelper("bootstrap_css_wrapper", function(css, id) {
@@ -386,6 +327,18 @@ module.exports = function(grunt) {
 				.replace(/(url\(")\.\.([/a-z-.]+)("\))/ig, "$1' + Echo.Loader.getURL(\"third-party/bootstrap$2\", false) + '$3");
 
 		return "Echo.Utils.addCSS('" + css + "', '" + id + "');\n";
+	});
+
+	grunt.registerHelper("bootstrap_js_wrapper", function(filepath) {
+		var component = filepath.match(/bootstrap-([\w]+)\.js/);
+		var lines = [grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)).replace("window.jQuery", "Echo.jQuery")];
+		if (component) {
+			var lines = ['(function(){',
+						'if (Echo.Utils.get(Echo.jQuery, "fn.' + component[1] + '")) return;',
+							lines[0],
+						'})();'];
+		}
+		return lines.join(shared.config("build.stage") === "min" ? "" : "\n");
 	});
 
 	grunt.registerHelper("echo_wrapper", function(filepath) {
@@ -493,9 +446,6 @@ module.exports = function(grunt) {
 			versions[name][isMinified ? "min" : "dev"] = filename;
 		});
 		thirdPartySrc = _.keys(versions);
-		thirdPartySrc = _.reject(thirdPartySrc, function(name) {
-			return /bootstrap/.test(name);
-		});
 	};
 
 	function _chooseFile(name, dir, target, stage) {
