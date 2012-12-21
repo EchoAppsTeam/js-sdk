@@ -215,8 +215,7 @@ submit.dependencies = [{
 	"loaded": function() { return !!Echo.jQuery.echoButton; },
 	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap.pack.js"
 }, {
-	"loaded": function() { return !!Echo.jQuery.echoModal; },
-	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap.pack.js"
+	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap.pack.css"
 }];
 
 submit.labels = {

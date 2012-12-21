@@ -115,6 +115,8 @@ auth.config = {
 auth.dependencies = [{
 	"loaded": function() { return !!Echo.jQuery.echoModal; },
 	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap.pack.js"
+}, {
+	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap.pack.css"
 }];
 
 auth.vars = {

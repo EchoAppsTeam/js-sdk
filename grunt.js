@@ -25,6 +25,10 @@ module.exports = function(grunt) {
 			"css": [
 				"<%= dirs.src %>/**/*.css"
 			],
+			"bootstrap": [
+				"<%= dirs.src %>/third-party/bootstrap/**/*.js",
+				"<%= dirs.src %>/third-party/bootstrap/**/*.less"
+			],
 			"images": [
 				"<%= dirs.src %>/**/*.png",
 				"<%= dirs.src %>/**/*.jpg",
@@ -101,11 +105,10 @@ module.exports = function(grunt) {
 				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-scrollspy.js>",
 				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-tab.js>",
 				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-typeahead.js>",
-
 				"third-party/bootstrap/plugins/echo-modal.js",
 				"third-party/bootstrap/plugins/echo-button.js",
 				"third-party/bootstrap/plugins/echo-dropdown.js",
-				"third-party/bootstrap/plugins/echo-tabs.js",
+				"third-party/bootstrap/plugins/echo-tabs.js"
 			],
 			"dest": "third-party/bootstrap.pack.js"
 		}
@@ -170,6 +173,22 @@ module.exports = function(grunt) {
 				"<config:clean.build>"
 			]
 		},
+		mincss: {
+			bootstrap: {
+				src: ["<%= dirs.build %>/third-party/bootstrap.pack.css"],
+				dest: "<%= dirs.build %>/third-party/bootstrap.pack.css"
+			}
+		},
+		less: {
+			bootstrap: {
+				options: {
+					paths: [dirs.build + "/third-party/bootstrap/less"]
+				},
+				files: {
+					"<%= dirs.build %>/third-party/bootstrap.pack.css": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"]
+				}
+			}
+		},
 		patch: {
 			"loader": {
 				files: {
@@ -193,13 +212,19 @@ module.exports = function(grunt) {
 					"<%= dirs.dist %>/tests/**/*.html"
 				],
 				patcher: "url"
+			},
+			"bootstrap-less": {
+				files: [
+					"<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"
+				],
+				patcher: "bootstrap-less"
+			},
+			"bootstrap-css": {
+				files: [
+					"<%= dirs.build %>/third-party/bootstrap.pack.css"
+				],
+				patcher: "bootstrap-css"
 			}
-		},
-		assemble_bootstrap: {
-			"third-party/bootstrap/css": [
-				"<%= dirs.src %>/third-party/bootstrap/less/variables.less",
-				"<%= dirs.src %>/third-party/bootstrap/less/mixins.less"
-			]
 		},
 		copy: {},
 		min: {},
@@ -276,12 +301,12 @@ module.exports = function(grunt) {
 		switch (stage) {
 			case "dev":
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js patch:loader concat clean:third-party copy:build";
+				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less less:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
 				break;
 			case "min":
 				_makeMinSpec();
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js patch:loader min concat clean:third-party copy:build";
+				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less less:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
 				break;
 			case "final":
 				tasks = "copy:css copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
@@ -324,22 +349,13 @@ module.exports = function(grunt) {
 
 	// shared
 
-	grunt.registerHelper("bootstrap_css_wrapper", function(css, id) {
-		css = grunt.helper("mincss", css)
-				.replace(/'/g, "\\'")
-				.replace(/(url\(")\.\.([/a-z-.]+)("\))/ig, "$1' + Echo.Loader.getURL(\"third-party/bootstrap$2\", false) + '$3");
-
-		return "Echo.Utils.addCSS('" + css + "', '" + id + "');\n";
-	});
-
 	grunt.registerHelper("bootstrap_js_wrapper", function(filepath) {
 		var component = filepath.match(/bootstrap-([\w]+)\.js/);
 		var lines = [grunt.helper("strip_banner", grunt.task.directive(filepath, grunt.file.read)).replace("window.jQuery", "Echo.jQuery")];
 		if (component) {
-			var lines = ['(function(){',
-						'if (Echo.Utils.get(Echo.jQuery, "fn.' + component[1] + '")) return;',
-							lines[0],
-						'})();'];
+			lines = ['(function(){',
+				'if (Echo.Utils.get(Echo.jQuery, "fn.' + component[1] + '")) return;']
+				.concat(lines, ['})();']);
 		}
 		return lines.join(shared.config("build.stage") === "min" ? "" : "\n");
 	});
@@ -422,6 +438,19 @@ module.exports = function(grunt) {
 				// and not patching already built ones during release
 				src = src.replace(/("?debug"?: ?).*?(,)/, '$1' + (shared.config("build.stage") === "dev") + '$2');
 			}
+			return src;
+		},
+		"bootstrap-css": function(src, config) {
+			var env = shared.config("env");
+			var domain = (env === "dev" || env === "test") && config && config.domain || "http://cdn.echoenabled.com";
+			return src
+				.replace(/'/g, "\\'")
+				.replace(/(url\(")\.\.([/a-z-.]+"\))/ig, "$1" + domain + "/third-party/bootstrap$2");
+		},
+		"bootstrap-less": function(src) {
+			var eol = grunt.utils.normalizelf(grunt.utils.linefeed);
+			src = src.replace(/(\*\/)/, "$1" + eol + ".echo-sdk-ui {" + eol);
+			src += eol + "}";
 			return src;
 		}
 	};
@@ -511,6 +540,14 @@ module.exports = function(grunt) {
 					"<%= dirs.build %>": thirdPartySrc.map(function(name) {
 						return _chooseFile(name, "<%= dirs.src %>", target, stage);
 					})
+				},
+				"options": {
+					"basePath": "<config:dirs.src>"
+				}
+			};
+			spec["bootstrap"] = {
+				"files": {
+					"<%= dirs.build %>": grunt.config("sources." + target + ".bootstrap")
 				},
 				"options": {
 					"basePath": "<config:dirs.src>"
