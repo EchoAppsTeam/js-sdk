@@ -987,30 +987,40 @@ Echo.Utils.capitalize = function(string) {
  */
 Echo.Utils.substitute = function(args) {
 	var utils = this;
+	var template = args.template;
 	var substitutions = {
 		"data": function(key, defaults) {
 			return utils.get(args.data, key, defaults);
 		}
 	};
-	var instructions = $.extend(substitutions, args.instructions);
-	var regex = utils.regexps.templateSubstitution;
-	var template = args.template;
+	var instructions = args.instructions
+		? $.extend(substitutions, args.instructions)
+		: substitutions;
+
+	if (typeof utils.cache.regexps === "undefined") {
+		var regex = utils.regexps.templateSubstitution;
+		utils.cache.regexps = {
+			"strict": new RegExp("^" + regex + "$", "i"),
+			"single": new RegExp(regex, "i"),
+			"multiple": new RegExp(regex, "ig")
+		};
+	}
 
 	// checking if we need to execute in a strict mode,
 	// i.e. whether to keep the substitution value type or not
-	if (args.strict && (new RegExp("^" + regex + "$", "i")).test(template)) {
-		var match = new RegExp(regex, "i").exec(template);
+	if (args.strict && utils.cache.regexps.strict.test(template)) {
+		var match = utils.cache.regexps.single.exec(template);
 		if (match && match[1] && instructions[match[1]]) {
 			return instructions[match[1]](match[2]);
 		}
 	}
 
 	// perform regular string substitution
-	return template.replace(new RegExp(regex, "ig"), function(match, key, value) {
+	return template.replace(utils.cache.regexps.multiple, function(match, key, value) {
 		if (!instructions[key]) return match;
 		var result = instructions[key](value, "");
-		var allowedTypes = ["number", "string", "boolean"];
-		return ~$.inArray(typeof result, allowedTypes) ? result : "";
+		var allowed = {"number": true, "string": true, "boolean": true};
+		return allowed[typeof result] ? result : "";
 	});
 };
 

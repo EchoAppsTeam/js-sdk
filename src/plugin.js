@@ -298,25 +298,11 @@ Echo.Plugin.prototype.parentRenderer = function() {
  */
 Echo.Plugin.prototype.substitute = function(args) {
 	var plugin = this;
-	return plugin.component.substitute($.extend(args, {
-		"instructions": {
-			"plugin.label": function(key) {
-				return plugin.labels.get(key, "");
-			},
-			"plugin.class": function(key) {
-				return key ? plugin.cssPrefix + key : plugin.cssClass;
-			},
-			"plugin.data": function(key) {
-				return "{self:plugins." + plugin.name + ".data." + key + "}";
-			},
-			"plugin.self": function(key) {
-				return "{self:plugins." + plugin.name + "." + key + "}";
-			},
-			"plugin.config": function(key) {
-				return plugin.config.get(key, "");
-			}
-		}
-	}));
+	var instructions = this._getSubstitutionInstructions();
+	args.instructions = args.instructions
+		? $.extend(instructions, args.instructions)
+		: instructions;
+	return plugin.component.substitute(args);
 };
 
 /**
@@ -425,6 +411,27 @@ Echo.Plugin.prototype._initializers.view = function() {
 
 Echo.Plugin.prototype._initializers.launcher = function() {
 	this._manifest("init").call(this);
+};
+
+Echo.Plugin.prototype._getSubstitutionInstructions = function() {
+	var plugin = this;
+	return {
+		"plugin.label": function(key) {
+			return plugin.labels.get(key, "");
+		},
+		"plugin.class": function(key) {
+			return key ? plugin.cssPrefix + key : plugin.cssClass;
+		},
+		"plugin.data": function(key) {
+			return "{self:plugins." + plugin.name + ".data." + key + "}";
+		},
+		"plugin.self": function(key) {
+			return "{self:plugins." + plugin.name + "." + key + "}";
+		},
+		"plugin.config": function(key) {
+			return plugin.config.get(key, "");
+		}
+	};
 };
 
 Echo.Plugin._getClassName = function(name, component) {

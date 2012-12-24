@@ -447,7 +447,9 @@ Echo.Control.prototype.render = function() {
 Echo.Control.prototype.substitute = function(args) {
 	var instructions = this._getSubstitutionInstructions();
 	args.data = args.data || this.get("data");
-	args.instructions = $.extend(instructions, args.instructions);
+	args.instructions = args.instructions
+		? $.extend(instructions, args.instructions)
+		: instructions;
 	return Echo.Utils.substitute(args);
 };
 
