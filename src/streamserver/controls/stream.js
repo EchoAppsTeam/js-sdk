@@ -1442,6 +1442,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"parent": parentConfig,
 		"plugins": this.config.get("plugins"),
 		"data": this._normalizeEntry(entry),
+		"user": this.user,
 		"live": isLive,
 		"ready": callback
 	}, parentConfig.item);
