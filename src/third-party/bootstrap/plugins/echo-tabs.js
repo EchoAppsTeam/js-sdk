@@ -58,7 +58,7 @@ Tabs.prototype.has = function(id) {
 Tabs.prototype.update = function(id, config) {
 	this.element.find("a[href=#" + id + "]")
 		.html(config.label)
-		.addClass(config.class || "");
+		.addClass(config["class"] || "");
 };
 
 Tabs.prototype.show = function(id) {

@@ -24,7 +24,7 @@ var dropdownParams = {
 			Echo.Tests.Unit.Dropdown._testHandler2 = true;
 		},
 		"icon": undefined
-	}],
+	}]
 };
 
 suite.prototype.tests.commonWorkflow = {
