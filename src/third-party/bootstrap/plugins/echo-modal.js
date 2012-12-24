@@ -70,7 +70,7 @@ Modal.prototype._render = function() {
 				el.addClass(button.extraClass);
 			}
 			el.click(function() {
-				button.handler && button.handler();
+				button.handler && button.handler.call(this);
 			});
 			el.appendTo(footer);
 		});

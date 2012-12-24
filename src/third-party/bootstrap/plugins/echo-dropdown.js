@@ -49,7 +49,7 @@ Dropdown.prototype._assembleEntries = function(entries, container) {
 	$.map(entries || [], function(entry) {
 		var item = $("<a role='button' class='echo-clickable' />")
 			.click(function() {
-				entry.handler && entry.handler({
+				entry.handler && entry.handler.call(this, {
 					"title": entry.title
 				});
 			});
