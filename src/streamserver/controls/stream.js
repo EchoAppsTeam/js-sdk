@@ -1437,7 +1437,6 @@ stream.methods._isItemInList = function(item, items) {
 };
 
 stream.methods._initItem = function(entry, isLive, callback) {
-	var self = this;
 	var parentConfig = this.config.getAsHash();
 	var config = $.extend(true, {}, {
 		"target": $("<div>"),
@@ -1449,7 +1448,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"live": isLive,
 		"ready": callback
 	}, parentConfig.item);
-	delete parentConfig.item;
+	delete config.parent.item;
 	return new Echo.StreamServer.Controls.Stream.Item(config);
 };
 
