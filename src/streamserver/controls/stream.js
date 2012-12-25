@@ -239,6 +239,9 @@ stream.config.normalizer = {
 	"safeHTML": function(value) {
 		return "off" !== value;
 	},
+	"showFlags": function(value) {
+		return "off" !== value;
+	},
 	"state": function(object) {
 		object["toggleBy"] =  object["toggleBy"] === "mouseover" && Echo.Utils.isMobileDevice()
 			? "button"
@@ -854,7 +857,7 @@ stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 };
 
 stream.methods._extractPresentationConfig = function(data) {
-	var keys = ["sortOrder", "itemsPerPage", "safeHTML"];
+	var keys = ["sortOrder", "itemsPerPage", "safeHTML", "showFlags"];
 	return Echo.Utils.foldl({}, keys, function(key, acc) {
 		if (typeof data[key] !== "undefined") {
 			acc[key] = data[key];
@@ -1933,8 +1936,8 @@ item.renderers.container = function(element) {
 	);
 	var switchClasses = function(action) {
 		$.map(self.buttonsOrder, function(name) {
-			if (!self.get("buttons." + name + ".element")) return;
 			var clickables = self.get("buttons." + name + ".clickableElements");
+			if (!self.get("buttons." + name + ".element") || !clickables) return;
 			clickables[action + "Class"]("echo-linkColor");
 		});
 	};
@@ -2374,6 +2377,8 @@ item.renderers._button = function(element, extra) {
 		"name": extra.name
 	};
 	var button = $(this.substitute({"template": template, "data": data}));
+	if (!extra.clickable) return element.append(button);
+
 	var clickables = $(".echo-clickable", button);
 	if (!clickables.length) {
 		clickables = button;
@@ -2652,6 +2657,9 @@ item.methods._assembleButtons = function() {
 			};
 			data.label = data.label || data.name;
 			data.plugin = plugin;
+			if (typeof data.clickable === "undefined") {
+				data.clickable = true;
+			}
 			if (typeof data.visible === "undefined") {
 				data.visible = true;
 			}

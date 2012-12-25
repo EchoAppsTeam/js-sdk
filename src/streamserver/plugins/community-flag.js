@@ -47,6 +47,10 @@ plugin.labels = {
 	/**
 	 * @echo_label
 	 */
+	"flagged": "Flagged",
+	/**
+	 * @echo_label
+	 */
 	"flaggedThis": " flagged this.",
 	/**
 	 * @echo_label
@@ -135,6 +139,10 @@ plugin.methods._assembleButton = function(name) {
 					"state": "Complete",
 					"response": response
 				});
+				if (name === "Flag" && !item.config.get("parent.showFlags")) {
+					plugin.set("flagged", true);
+					item.view.render({"name": "buttons"});
+				}
 				plugin.requestDataRefresh();
 			},
 			"onError": function(response) {
@@ -163,14 +171,22 @@ plugin.methods._assembleButton = function(name) {
 		var flags = item.get("data.object.flags");
 		var label = plugin.labels.get(name.toLowerCase() + "Control");
 		var action = plugin._myFlags(flags).length > 0 ? "Unflag" : "Flag";
-		return {
+		var flagged = name === "Flag" && !item.config.get("parent.showFlags") && plugin.get("flagged");
+		var data = {
 			"name": name,
-			"label": '<span class="echo-clickable">' + label + '</span>' +
-				(item.user.is("admin") && flags.length ? " (" + flags.length + ")" : ""),
+			"label": !flagged
+				? '<span class="echo-clickable">' + label + '</span>' +
+				(item.user.is("admin") && flags.length ? " (" + flags.length + ")" : "")
+				: plugin.labels.get("flagged"),
 			"visible": item.user.is("logged") && action === name,
+			"clickable": !flagged,
 			"once": true,
 			"callback": callback
 		};
+		if (flagged) {
+			data.template = '<span>{data:label}</span>';
+		}
+		return data;
 	};
 };
 
