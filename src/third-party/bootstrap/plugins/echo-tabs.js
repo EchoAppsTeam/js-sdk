@@ -12,7 +12,7 @@ var Tabs = function(element, config) {
 };
 
 Tabs.prototype.getPanels = function() {
-	var id = $("a:first", this.element).attr("href");
+	var id = $("a:first", this.element);
 	return $(id).parent();
 };
 
@@ -23,19 +23,19 @@ Tabs.prototype._initEvents = function(config) {
 };
 
 Tabs.prototype.disable = function(id) {
-	this.element.find("a[href=#" + id + "]")
+	this.element.find("a[href='#" + id + "']")
 		.removeAttr("data-toggle")
 		.addClass("disabled");
 };
 
 Tabs.prototype.enable = function(id) {
-	this.element.find("a[href=#" + id + "]")
+	this.element.find("a[href='#" + id + "']")
 		.attr("data-toggle", "tabs")
 		.removeClass("disabled");
 };
 
 Tabs.prototype.remove = function(id) {
-	this.element.find("a[href=#" + id + "]").remove();
+	this.element.find("a[href='#" + id + "']").remove();
 };
 
 Tabs.prototype.add = function(tabConfig, panel) {
@@ -48,21 +48,21 @@ Tabs.prototype.add = function(tabConfig, panel) {
 };
 
 Tabs.prototype.get = function(id) {
-	return this.element.find("a[href=#" + id + "]");
+	return this.element.find("a[href='#" + id + "']");
 };
 
 Tabs.prototype.has = function(id) {
-	return !!this.element.has("a[href=#" + id + "]").length;
+	return !!this.element.has("a[href='#" + id + "']").length;
 };
 
 Tabs.prototype.update = function(id, config) {
-	this.element.find("a[href=#" + id + "]")
+	this.element.find("a[href='#" + id + "']")
 		.html(config.label)
 		.addClass(config["class"] || "");
 };
 
 Tabs.prototype.show = function(id) {
-	this.element.find("a[href=#" + id + "]").tab("show");
+	this.element.find("a[href='#" + id + "']").tab("show");
 };
 
 $.fn.echoTabs = function() {
