@@ -54,7 +54,7 @@ var Button = function(element, params) {
   * Method to update button label, icon and availability.
   *
   * This method allows to change the button label, icon and availability.
-  * If some of attributes of params object is ommited, empty strings will
+  * If some of attributes of params object is omitted, empty strings will
   * be used for string values and false for boolean value.
   *
   * @param {Object} params

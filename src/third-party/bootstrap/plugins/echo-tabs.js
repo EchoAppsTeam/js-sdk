@@ -28,7 +28,7 @@ var Tabs = function(element, config) {
  * Method to get a DOM element which contains panels.
  *
  * @return {HTMLElement}
- * DOM element which contains panels
+ * DOM element which contains panels.
 */
 Tabs.prototype.getPanels = function() {
 	return this.panels;
@@ -44,7 +44,7 @@ Tabs.prototype._initEvents = function(config) {
  * Method to disable tab.
  *
  * @param {String} id
- * Tab id which should be diabled
+ * Tab id which should be disabled.
 */
 Tabs.prototype.disable = function(id) {
 	this.element.find("a[href='#" + id + "']")
@@ -87,7 +87,7 @@ Tabs.prototype.remove = function(id) {
  * Tab label which should be displayed.
  *
  * @param {HTMLElement} panel
- * HTMLElement which contains the tab content
+ * HTML Element which contains the tab content
 */
 Tabs.prototype.add = function(tabConfig, panel) {
 	tabConfig = tabConfig || {};
@@ -132,7 +132,7 @@ Tabs.prototype.has = function(id) {
  * The tab id.
  *
  * @param {Object} config
- * Tab config.
+ * Tab configuration.
  *
  * @param {String} config.label
  * Tab label.

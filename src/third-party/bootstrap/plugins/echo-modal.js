@@ -6,66 +6,98 @@ if ($.echoModal) return;
 
 /**
  * @class Echo.jQuery.echoModal
- * Class wrapper for bootstrap-modal
+ * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#modals" target="_blank">bootstrap-modal</a>.
+ * It contains logic to automatically build HTML code required for bootstrap-modal.
+ * I.E. you can pass the necessary parameters to the $.echoModal function and
+ * modal dialog HTML element will be build automatically.
  *
- * @alias plugin.Echo.jQuery.modal
+ * Example:
+ * 	var myModal = $.echoModal({
+ * 		"show": true,
+ * 		"backdrop": true,
+ * 		 "keyboard": true,
+ * 		 "closeButton": true,
+ * 		 "remote": false,
+ * 		 "extraClass": "",
+ * 		 "data": {
+ * 			 "title": "Modal title",
+ * 			 "body": "<b>Modal body</b>",
+ * 			 "buttons": [{
+ * 				 "title": "Button1",
+ * 				 "extraClass": "echo-button1-class",
+ * 				 "handler": function() {}
+ * 			 }, {
+ * 				 "title": "Button2",
+ * 				 "extraClass": "echo-button2-class",
+ * 				 "handler": function() {}
+ * 			 }]
+ * 		 },
+ * 		 "width": "400",
+ * 		 "height": "500",
+ * 		 "padding": "10",
+ * 		 "footer": true,
+ * 		 "header": true,
+ * 		 "fade": true
+ * 	});
  *
  * @constructor
- * Creates a new modal dialog.
+ * Creates a new modal dialog and show it if config.show parameter is true.
  *
  * @param {Object} config
  * Modal configuration.
  *
  * @param {Boolean} [config.show=false]
- * Show modal right after it is created.
+ * Show modal dialog right after it is created.
  *
  * @param {Boolean} [config.backdrop=true]
- * Show the backdrop.
+ * Show the semi-transparent backdrop underneath the modal dialog box.
  *
  * @param {Boolean} [config.keyboard=true]
- * Closes the modal when escape key is pressed.
+ * Close the modal dialog if the "Esc"(escape) key is pressed on the keyboard.
  *
  * @param {Boolean} [config.closeButton=true]
- * Display close button.
+ * Show the close ("X") icon in the top right corner of the dialog box.
  *
  * @param {String} [config.remote=false]
  * Remote URL.
- * If a remote url is provided, content will be loaded via jQuery's load method and injected into the modal body.
+ * If a remote URL is provided, content will be loaded via jQuery load method and injected into the modal dialog body.
  *
  * @param {String} [config.extraClass=""]
- * Custom class name which should be added to the modal conainer.
+ * Custom class name which should be added to the modal dialog container.
  *
  * @param {Object} config.data
  *
  * @param {String} config.data.title
- * Modal title.
+ * Modal dialog title.
  *
  * @param {String} config.data.body
- * Modal body.
+ * Modal dialog body.
  *
  * @param {Array} config.data.buttons
- * Array of objects with the following fields:
+ * You can specify the custom buttons in this parameter which should be displayed in the modal footer.
+ * Each array element is the object with the following parameters:
  * 	title      - button title
  * 	extraClass - custom class name which will be added to the button
  * 	handler    - function which will be called when button is clicked.
  *
- * @param {Integer} [config.width=null]
- * Modal width.
+ * @param {Number} [config.width=null]
+ * Modal dialog width.
  *
- * @param {Integer} [config.height=null]
- * Modal height.
+ * @param {Number} [config.height=null]
+ * Modal dialog height.
  *
- * @param {Integer} [config.padding=null]
- * Modal padding.
+ * @param {Number} [config.padding=null]
+ * Modal dialog padding.
  *
  * @param {Boolean} [config.footer=true]
- * Display footer.
+ * Display modal dialog footer.
+ * Should be true if you want to display custom buttons.
  *
  * @param {Boolean} [config.header=true]
- * Display header
+ * Display modal header
  *
  * @param {Boolean} [config.fade=false]
- * Apply a css fade transition.
+ * Apply a CSS fade transition.
 */
 $.echoModal = function() {
 	return new Modal(arguments[0]);
@@ -209,9 +241,8 @@ Modal.prototype._addSection = function(css, content) {
 };
 
 /**
- * Method to show modal.
- *
- * This method allows to hide modal.
+ * Allows to hide modal dialog.
+ * 	myModal.show();
 */
 Modal.prototype.show = function() {
 	this._render();
@@ -219,9 +250,8 @@ Modal.prototype.show = function() {
 };
 
 /**
- * Method to remove modal.
- *
- * This method allows to completely remove the modal element from the page.
+ * Allows to completely remove the modal dialog element from the page.
+ * 	myModal.remove();
 */
 Modal.prototype.remove = function() {
 	if (this.rendered) {
@@ -233,9 +263,8 @@ Modal.prototype.remove = function() {
 };
 
 /**
- * Method to hide modal.
- *
- * This method allows to hide modal.
+ * Allows to hide existing modal dialog.
+ * 	myModal.hide();
 */
 Modal.prototype.hide = function() {
 	if (this.rendered) {
