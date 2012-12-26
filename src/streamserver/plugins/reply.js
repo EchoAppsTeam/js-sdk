@@ -304,7 +304,7 @@ plugin.css =
 	".{plugin.class:compactContent} input.{plugin.class:compactField} { width: 100%; border: none; }" +
 	'.{plugin.class:compactContent} input.{plugin.class:compactField}[type="text"] { width: 100%; border: none; margin: 0px; padding: 0px; }' +
 	($.browser.webkit ?
-		'.{plugin.class:compactContent} input { outline: none; }' : '');
+		'.{plugin.class:compactContent} input.{plugin.class:compactField} { outline: none; width: 100%;}' : '');
 
 Echo.Plugin.create(plugin);
 
