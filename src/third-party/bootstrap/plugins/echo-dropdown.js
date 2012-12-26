@@ -4,6 +4,25 @@ var $ = jQuery;
 
 if ($.fn.echoDropdown) return;
 
+/**
+ * @class Echo.jQuery.fn.echoDropdown
+ * Class wrapper for bootstrap-dropdown
+ *
+ * @constructor
+ * Creates a new modal dialog.
+ *
+ * @param {Object} params
+ * Dropdown parameters.
+ *
+ * @param {String} params.title
+ * Dropdown title.
+ *
+ * @param {Array} params.entries
+ * Array of objects with the following fields:
+ * 	title   - entry title
+ * 	handler - function which will be called when entry is selected
+ * 	icon    - Url for the icon.
+*/
 $.fn.echoDropdown = function() {
 	var args = arguments;
 	return this.each(function(){
@@ -23,6 +42,12 @@ var Dropdown = function(element, params) {
 	this._assembleEntries(params.entries, dropdown);
 };
 
+/**
+ * This method allows to change dropdown title
+ *
+ * @param {String} title
+ * Dropdown title.
+*/
 Dropdown.prototype.setTitle = function(title) {
 	$(".dropdown-toggle", this.element).empty().append(title);
 };

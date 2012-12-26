@@ -4,6 +4,25 @@ var $ = jQuery;
 
 if ($.fn.echoButton) return;
 
+/**
+ * @class Echo.jQuery.fn.echoButton
+ * Class wrapper for bootstrap-button
+ *
+ * @constructor
+ * Creates a button.
+ *
+ * @param {Object} params
+ * Button parameters.
+ *
+ * @param {String} params.label
+ * Button label.
+ *
+ * @param {String} [params.icon]
+ * URL for the icon.
+ *
+ * @param {Boolean} [params.disabled=false]
+ * Specifies whether the button disabled.
+*/
 $.fn.echoButton = function() {
 	var args  = arguments;
 	return this.each(function(){
@@ -31,6 +50,25 @@ var Button = function(element, params) {
 	});
 };
 
+/**
+  * Method to update button label, icon and availability.
+  *
+  * This method allows to change the button label, icon and availability.
+  * If some of attributes of params object is ommited, empty strings will
+  * be used for string values and false for boolean value.
+  *
+  * @param {Object} params
+  * Button parameters to be replaced.
+  *
+  * @param {String} params.label
+  * Button label
+  *
+  * @param {String} [params.icon]
+  * Icon URL which should be shown on the button
+  *
+  * @param {Boolean} [params.disabled=false]
+  * Specifies whether the button disabled.
+*/
 Button.prototype.update = function(params) {
 	params = params || {};
 	this.label = params.label || "";
