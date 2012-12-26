@@ -658,12 +658,14 @@ submit.css =
 	'.{class:fields} input { width: 100%; }' +
 	'.{class:fieldsWrapper} { margin-left: 53px; }' +
 	'.{class:nameContainer} { margin: 1px 0px 4px 0px; padding: 0px 2px 1px 3px; background-color: #fff; }' +
-	'.{class:name} { font-size: 14px; font-weight: bold; border: none; }' +
+	'.{class:nameContainer} input.{class:name} { font-size: 14px; font-weight: bold; border: none; width: 100%;}' +
+	'.{class:fieldsWrapper} input.{class:name}[type="text"] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; }' +
 	'.{class:urlContainer} { padding: 0px 2px 1px 3px; background-color: #fff; }' +
-	'.{class:url} { height: 19px; border: none; }' +
+	'.{class:urlContainer} input.{class:url} { height: 19px; border: none; width: 100%; margin-bottom: 0px;}' +
+	'.{class:fieldsWrapper} input.{class:url}[type="text"] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; }' +
 	'.{class:author} { font-weight: bold; }' +
 	'.{class:content} { padding: 5px 5px 5px 6px; background-color: #fff; }' +
-	'.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none ; }' +
+	'.{class:content} textarea.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none ; }' +
 	'.{class:text} input { width: 100%; border: none; }' +
 	'.{class:metadataContainer} { margin-top: 6px; }' +
 	'.{class:metadataLabel} { float: left; width: 50px; margin-right: -50px; text-align: right; line-height: 22px; }' +
