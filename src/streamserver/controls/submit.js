@@ -212,7 +212,7 @@ submit.vars = {
 };
 
 submit.dependencies = [{
-	"loaded": function() { return !!Echo.jQuery.echoButton; },
+	"loaded": function() { return !!Echo.GUI; },
 	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap.pack.css"
@@ -398,17 +398,19 @@ submit.renderers.postButton = function(element) {
 	var self = this;
 	var states = {
 		"normal": {
+			"target": element,
 			"icon": false,
 			"disabled": false,
 			"label": this.labels.get("post")
 		},
 		"posting": {
+			"target": element,
 			"icon": this.config.get("cdnBaseURL.sdk-assets") + "/images/loading.gif",
 			"disabled": true,
 			"label": this.labels.get("posting")
 		}
 	};
-	element.empty().echoButton(states.normal);
+	Echo.GUI.button(states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
@@ -423,7 +425,7 @@ submit.renderers.postButton = function(element) {
 		subscriptions[topic] = self.events.subscribe({
 			"topic": topic,
 			"handler": function(topic, params) {
-				element.echoButton("update", state);
+				Echo.GUI.button("update", state);
 				if (callback) callback(params);
 			}
 		});
@@ -604,7 +606,7 @@ submit.methods._showError = function(data) {
 		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
 	var popup = this._assembleErrorPopup(message);
 
-	$.echoModal({
+	Echo.GUI.modal({
 		"data": {
 			"body": popup.content
 		},

@@ -3,7 +3,7 @@
 var suite = Echo.Tests.Unit.Dropdown = function() {};
 
 suite.prototype.info = {
-	"className": "Echo.jQuery.echoDropdown",
+	"className": "Echo.GUI.dropdown",
 	"functions": []
 };
 
@@ -38,7 +38,8 @@ suite.prototype.tests.commonWorkflow = {
 			$(target).empty();
 
 			var element = $("<div>").appendTo(target);
-			element.echoDropdown(dropdownParams);
+			dropdownParams.target = element;
+			Echo.GUI.dropdown(dropdownParams);
 
 			var dropdownTitle = element.find(".dropdown-toggle").html();
 			var dropdownEntries =  element.find(".dropdown-menu li a");
@@ -60,7 +61,7 @@ suite.prototype.tests.commonWorkflow = {
 			secondEntry.click();
 			QUnit.ok(Echo.Tests.Unit.Dropdown._testHandler1 && Echo.Tests.Unit.Dropdown._testHandler2, "Check second entry handler");
 
-			element.echoDropdown("setTitle", "newTitle");
+			Echo.GUI.dropdown("setTitle", {"target": element, "title": "newTitle"});
 			dropdownTitle = element.find(".dropdown-toggle").html();
 			QUnit.ok(dropdownTitle === "newTitle", "Check that title is changed after setTitle() method called");
 

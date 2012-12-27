@@ -2,21 +2,40 @@
 
 var $ = jQuery;
 
-if ($.fn.echoTabs) return;
+if (!window.Echo) window.Echo = {};
+
+if (!Echo.GUI) Echo.GUI = {};
+
+if (Echo.GUI.tabs) return;
 
 /**
- * @class Echo.jQuery.fn.echoTabs
- * Class wrapper for bootstrap-tabs
+ * @class Echo.GUI.tabs
+ * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#tabs" target="_blank">bootstrap-tab.js</a>.
+ * The tabs HTML code automatically builds depending on parameters you have passed to the constructor.
+ *
+ * Example:
+ * 	var myTabs = Echo.GUI.tabs({
+ * 		"target": ".css-selector",
+ * 		"show": function() {}
+ * 	});
+ * 	myTabs.add({"target": ".css-selector", "id": "tab1", "label": "Tab label"});
  *
  * @constructor
- * Creates a new tabs.
+ * Creates a new tabs in the container you have passed in the "params.target".
  *
  * @param {Object} config
  * Tabs configuration.
  *
+ * @param {Mixed} params.target
+ * Container which should contains the tabs.
+ * This parameter can be several types:
+ *  - CSS selector (ex: "css-selector")
+ *  - HTMLElement (ex: document.getElementById("some-element-id"))
+ *  - jQuery object (ex: $(".css-selector"))
+ *
  * @param {Function} [config.show]
  * Function which will be called when tab is shown.
-*/
+ */
 var Tabs = function(element, config) {
 	this.config = config || {};
 	this.element = $(element);
@@ -29,7 +48,7 @@ var Tabs = function(element, config) {
  *
  * @return {HTMLElement}
  * DOM element which contains panels.
-*/
+ */
 Tabs.prototype.getPanels = function() {
 	return this.panels;
 };
@@ -45,7 +64,7 @@ Tabs.prototype._initEvents = function(config) {
  *
  * @param {String} id
  * Tab id which should be disabled.
-*/
+ */
 Tabs.prototype.disable = function(id) {
 	this.element.find("a[href='#" + id + "']")
 		.removeAttr("data-toggle")
@@ -56,8 +75,8 @@ Tabs.prototype.disable = function(id) {
  * Method to enable tab.
  *
  * @param {String} id
- * Tab id which should be enabled
-*/
+ * Tab id which should be enabled.
+ */
 Tabs.prototype.enable = function(id) {
 	this.element.find("a[href='#" + id + "']")
 		.attr("data-toggle", "tabs")
@@ -68,8 +87,8 @@ Tabs.prototype.enable = function(id) {
  * Method to remove tab.
  *
  * @param {String} id
- * Tab id which should be removed
-*/
+ * Tab id which should be removed.
+ */
 Tabs.prototype.remove = function(id) {
 	this.element.find("a[href='#" + id + "']").remove();
 };
@@ -87,8 +106,8 @@ Tabs.prototype.remove = function(id) {
  * Tab label which should be displayed.
  *
  * @param {HTMLElement} panel
- * HTML Element which contains the tab content
-*/
+ * HTML Element which contains the tab content.
+ */
 Tabs.prototype.add = function(tabConfig, panel) {
 	tabConfig = tabConfig || {};
 	var tab = $('<li><a data-toggle="tab" href="#' + tabConfig.id + '">' + tabConfig.label  + '</a></li>');
@@ -106,13 +125,13 @@ Tabs.prototype.add = function(tabConfig, panel) {
  *
  * @return {HTMLElement}
  * DOM element which contains the tab.
-*/
+ */
 Tabs.prototype.get = function(id) {
 	return this.element.find("a[href='#" + id + "']");
 };
 
 /**
- * Method to check whether the tab is already exists.
+ * Method to check whether the tab with specified id is already exists.
  *
  * @param {String} id
  * Tab id.
@@ -120,7 +139,7 @@ Tabs.prototype.get = function(id) {
  * @return {Boolean}
  * true if tab with specific id exists,
  * false otherwise.
-*/
+ */
 Tabs.prototype.has = function(id) {
 	return !!this.element.has("a[href='#" + id + "']").length;
 };
@@ -138,8 +157,8 @@ Tabs.prototype.has = function(id) {
  * Tab label.
  *
  * @param {String} [config.class]
- * class name to be added to the tab element
-*/
+ * Class name to be added to the tab element.
+ */
 Tabs.prototype.update = function(id, config) {
 	this.element.find("a[href='#" + id + "']")
 		.html(config.label)
@@ -147,29 +166,38 @@ Tabs.prototype.update = function(id, config) {
 };
 
 /**
- * Method to show specific tab.
+ * Method to show tab with specific id.
  *
  * @param {String} id
  * Tab id which should be shown.
-*/
+ */
 Tabs.prototype.show = function(id) {
 	this.element.find("a[href='#" + id + "']").tab("show");
 };
 
-$.fn.echoTabs = function() {
+Echo.GUI.tabs = function() {
 	var args  = arguments;
-	return this.each(function(){
-		var data = $(this).data('echoTabs');
-		var config = typeof args[0] === "object" && args[0];
-		if (!data) {
-			$(this).data('echoTabs', (data = new Tabs(this, config)));
-		}
-		if (typeof args[0] === "string") {
-			data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
-		}
-	});
+
+	var params = (typeof args[0] === "string")
+		? args[1] || {}
+		: args[0];
+
+	if (typeof params.target === "undefined") return;
+
+	var elements = params.target instanceof Echo.jQuery
+		? params.target
+		: $(params.target);
+
+	var data = $(elements[0]).data("echoTabs");
+	if (!data || typeof args[0] === "object") {
+		elements.data("echoTabs", (data = new Tabs(elements, args[0])));
+	}
+	if (typeof args[0] === "string") {
+		data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
+	}
+	return data;
 };
 
-$.fn.echoTabs.Contructor = Tabs;
+Echo.GUI.tabs.Contructor = Tabs;
 
 })(Echo.jQuery);

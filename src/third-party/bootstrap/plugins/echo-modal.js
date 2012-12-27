@@ -2,17 +2,21 @@
 
 var $ = jQuery;
 
-if ($.echoModal) return;
+if (!window.Echo) window.Echo = {};
+
+if (!Echo.GUI) Echo.GUI = {};
+
+if (Echo.GUI.modal) return;
 
 /**
- * @class Echo.jQuery.echoModal
+ * @class Echo.GUI.modal
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#modals" target="_blank">bootstrap-modal.js</a>.
  * It contains logic to automatically build HTML code required for bootstrap-modal.
- * I.E. you can pass the necessary parameters to the $.echoModal function and
+ * I.E. you can pass the necessary parameters to the Echo.GUI.modal constructor and
  * modal dialog HTML element will be build automatically.
  *
  * Example:
- * 	var myModal = $.echoModal({
+ * 	var myModal = Echo.GUI.modal({
  * 		"show": true,
  * 		"backdrop": true,
  * 		 "keyboard": true,
@@ -56,7 +60,7 @@ if ($.echoModal) return;
  * Defines whether modal dialog should be closed if the "Esc"(escape) key is pressed on the keyboard.
  *
  * @param {Boolean} [config.closeButton=true]
- * Defines whether the the close ("X") icon in the top right corner of the dialog box should be shown.
+ * Defines whether the close ("X") icon in the top right corner of the dialog box should be shown.
  *
  * @param {String} [config.remote=false]
  * Remote URL.
@@ -98,8 +102,8 @@ if ($.echoModal) return;
  *
  * @param {Boolean} [config.fade=false]
  * Apply a CSS fade transition.
-*/
-$.echoModal = function() {
+ */
+Echo.GUI.modal = function() {
 	return new Modal(arguments[0]);
 };
 var Modal = function(config) {
@@ -243,7 +247,7 @@ Modal.prototype._addSection = function(css, content) {
 /**
  * Shows the modal dialog.
  * 	myModal.show();
-*/
+ */
 Modal.prototype.show = function() {
 	this._render();
 	this.element.modal("show");
@@ -252,7 +256,7 @@ Modal.prototype.show = function() {
 /**
  * Hides the modal dialog and removes the dialog instance.
  * 	myModal.remove();
-*/
+ */
 Modal.prototype.remove = function() {
 	if (this.rendered) {
 		this.rendered = false;
@@ -265,7 +269,7 @@ Modal.prototype.remove = function() {
 /**
  * Hides the modal dialog.
  * 	myModal.hide();
-*/
+ */
 Modal.prototype.hide = function() {
 	if (this.rendered) {
 		this.element.modal("hide");

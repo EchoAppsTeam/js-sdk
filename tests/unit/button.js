@@ -3,7 +3,7 @@
 var suite = Echo.Tests.Unit.Button = function() {};
 
 suite.prototype.info = {
-	"className": "Echo.Button",
+	"className": "Echo.GUI.Button",
 	"functions": []
 };
 
@@ -20,7 +20,8 @@ suite.prototype.tests.commonWorkflow = {
 			$(target).empty();
 
 			var element = $("<button>").appendTo(target);
-			element.echoButton({
+			Echo.GUI.button({
+				"target": element,
 				"label": "FirstLabel"
 			});
 			QUnit.ok($(target).html().match(/FirstLabel/),
@@ -31,7 +32,8 @@ suite.prototype.tests.commonWorkflow = {
 				"Checking that icon CSS class is not added by default");
 
 			var loadingIcon = Echo.Loader.getURL("images/loading.gif", false);
-			element.echoButton("update", {
+			Echo.GUI.button("update", {
+				"target": element,
 				"label": "SecondLabel",
 				"disabled": true,
 				"icon": loadingIcon
@@ -46,19 +48,19 @@ suite.prototype.tests.commonWorkflow = {
 			QUnit.ok($(target).html().match(/icon/) && $(target).html().match(backgroundRegExp),
 				"Checking that background icon is added to element after update() method");
 
-			element.echoButton("update", {"label": "ThirdLabel"});
+			Echo.GUI.button("update", {"target": element, "label": "ThirdLabel"});
 			QUnit.ok(!$(target).html().match(/SecondLabel/) && $(target).html().match(/ThirdLabel/),
 				"Checking that label is changed after updating 'label' field");
-			element.echoButton("update", {"disabled": false});
+			Echo.GUI.button("update", {"target": element, "disabled": false});
 			QUnit.ok(!element.attr('disabled'),
 				"Checking that button is enabled after updating 'disabled' field");
-			element.echoButton("update", {"icon": false});
+			Echo.GUI.button("update", {"target": element, "icon": false});
 			QUnit.ok(!$(target).html().match(/icon/) && !$(target).html().match(backgroundRegExp),
 				"Checking that background icon is not added to element after updating 'icon' field");
 			$(target).empty();
 
 			element = $('<button disabled="disabled">ClickMe</button>').appendTo(target);
-			element.echoButton();
+			Echo.GUI.button({"target": element});
 			QUnit.ok($(target).html().match(/ClickMe/),
 				 "Checking that label value is taken from the element");
 			QUnit.ok(element.attr('disabled'),

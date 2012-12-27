@@ -3,7 +3,7 @@
 var suite = Echo.Tests.Unit.Modal = function() {};
 
 suite.prototype.info = {
-	"className": "Echo.jQuery.echoModal",
+	"className": "Echo.GUI.modal",
 	"functions": []
 };
 
@@ -49,7 +49,7 @@ suite.prototype.tests.commonWorkflow = {
 		var _suite = this;
 		var check = function() {
 			Echo.Utils.addCSS(".echo-hide { display: none; }", "echo-hide");
-			var modal = $.echoModal(modalParams);
+			var modal = Echo.GUI.modal(modalParams);
 
 			QUnit.ok($(".echo-sdk-ui .modal").length, "Check that modal is available");
 
