@@ -6,7 +6,7 @@ if ($.echoModal) return;
 
 /**
  * @class Echo.jQuery.echoModal
- * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#modals" target="_blank">bootstrap-modal</a>.
+ * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#modals" target="_blank">bootstrap-modal.js</a>.
  * It contains logic to automatically build HTML code required for bootstrap-modal.
  * I.E. you can pass the necessary parameters to the $.echoModal function and
  * modal dialog HTML element will be build automatically.
@@ -41,22 +41,22 @@ if ($.echoModal) return;
  * 	});
  *
  * @constructor
- * Creates a new modal dialog and show it if config.show parameter is true.
+ * Creates a new modal dialog. The dialog can be created in visible or hidden (default) modes. In order to initialize the modal dialog instance in visible state, the "config.show" parameter should be defined as 'true' (JS boolean) during the constructor call. For the modal dialogs hidden by default the "show" function can be applied to reveal it when appropriate.
  *
  * @param {Object} config
  * Modal configuration.
  *
  * @param {Boolean} [config.show=false]
- * Show modal dialog right after it is created.
+ * Defines whether the modal dialog should be displayed right after it is created. 
  *
  * @param {Boolean} [config.backdrop=true]
- * Show the semi-transparent backdrop underneath the modal dialog box.
+ * Defines whether the semi-transparent backdrop underneath the modal dialog box should be displayed.
  *
  * @param {Boolean} [config.keyboard=true]
- * Close the modal dialog if the "Esc"(escape) key is pressed on the keyboard.
+ * Defines whether modal dialog should be closed if the "Esc"(escape) key is pressed on the keyboard.
  *
  * @param {Boolean} [config.closeButton=true]
- * Show the close ("X") icon in the top right corner of the dialog box.
+ * Defines whether the the close ("X") icon in the top right corner of the dialog box should be shown.
  *
  * @param {String} [config.remote=false]
  * Remote URL.
@@ -68,16 +68,16 @@ if ($.echoModal) return;
  * @param {Object} config.data
  *
  * @param {String} config.data.title
- * Modal dialog title.
+ * Modal dialog title (can contain HTML tags).
  *
  * @param {String} config.data.body
- * Modal dialog body.
+ * The main content of the dialog (can contain HTML tags).
  *
  * @param {Array} config.data.buttons
  * You can specify the custom buttons in this parameter which should be displayed in the modal footer.
  * Each array element is the object with the following parameters:
- * 	title      - button title
- * 	extraClass - custom class name which will be added to the button
+ * 	title      - button title.
+ * 	extraClass - custom class name which will be added to the button.
  * 	handler    - function which will be called when button is clicked.
  *
  * @param {Number} [config.width=null]
@@ -94,7 +94,7 @@ if ($.echoModal) return;
  * Should be true if you want to display custom buttons.
  *
  * @param {Boolean} [config.header=true]
- * Display modal header
+ * Display modal header.
  *
  * @param {Boolean} [config.fade=false]
  * Apply a CSS fade transition.
@@ -241,7 +241,7 @@ Modal.prototype._addSection = function(css, content) {
 };
 
 /**
- * Allows to hide modal dialog.
+ * Shows the modal dialog.
  * 	myModal.show();
 */
 Modal.prototype.show = function() {
@@ -250,7 +250,7 @@ Modal.prototype.show = function() {
 };
 
 /**
- * Allows to completely remove the modal dialog element from the page.
+ * Hides the modal dialog and removes the dialog instance.
  * 	myModal.remove();
 */
 Modal.prototype.remove = function() {
@@ -263,7 +263,7 @@ Modal.prototype.remove = function() {
 };
 
 /**
- * Allows to hide existing modal dialog.
+ * Hides the modal dialog.
  * 	myModal.hide();
 */
 Modal.prototype.hide = function() {
