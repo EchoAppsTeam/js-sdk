@@ -33,45 +33,40 @@ suite.prototype.tests.commonWorkflow = {
 	},
 	"check": function() {
 		
-		var check = function() {
-			var target = document.getElementById("qunit-fixture");
-			$(target).empty();
+		var target = document.getElementById("qunit-fixture");
+		$(target).empty();
 
-			var element = $("<div>").appendTo(target);
-			dropdownParams.target = element;
-			var dropdown = new Echo.GUI.Dropdown(dropdownParams);
+		var element = $("<div>").appendTo(target);
+		dropdownParams.target = element;
+		var dropdown = new Echo.GUI.Dropdown(dropdownParams);
 
-			var dropdownTitle = element.find(".dropdown-toggle").html();
-			var dropdownEntries =  element.find(".dropdown-menu li a");
-			var firstEntry = $(element.find(".dropdown-menu li a")[0]);
-			var secondEntry = $(element.find(".dropdown-menu li a")[1]);
+		var dropdownTitle = element.find(".dropdown-toggle").html();
+		var dropdownEntries =  element.find(".dropdown-menu li a");
+		var firstEntry = $(element.find(".dropdown-menu li a")[0]);
+		var secondEntry = $(element.find(".dropdown-menu li a")[1]);
 
-			QUnit.ok(dropdownTitle === dropdownParams.title, "Check that title is displayed");
+		QUnit.ok(dropdownTitle === dropdownParams.title, "Check that title is displayed");
 
-			QUnit.ok(dropdownEntries.length === dropdownParams.entries.length, "Check entries count");
+		QUnit.ok(dropdownEntries.length === dropdownParams.entries.length, "Check entries count");
 
-			QUnit.ok(firstEntry.html() === dropdownParams.entries[0].title
-					&& secondEntry.html() === dropdownParams.entries[1].title, "Check entries title");
+		QUnit.ok(firstEntry.html() === dropdownParams.entries[0].title
+				&& secondEntry.html() === dropdownParams.entries[1].title, "Check entries title");
 
-			QUnit.ok(firstEntry.css("background-image").indexOf(testIconUrl) >= 0, "Check that icon added");
+		QUnit.ok(firstEntry.css("background-image").indexOf(testIconUrl) >= 0, "Check that icon added");
 
-			firstEntry.click();
-			QUnit.ok(Echo.Tests.Unit.Dropdown._testHandler1 && !Echo.Tests.Unit.Dropdown._testHandler2, "Check first entry handler");
+		firstEntry.click();
+		QUnit.ok(Echo.Tests.Unit.Dropdown._testHandler1 && !Echo.Tests.Unit.Dropdown._testHandler2, "Check first entry handler");
 
-			secondEntry.click();
-			QUnit.ok(Echo.Tests.Unit.Dropdown._testHandler1 && Echo.Tests.Unit.Dropdown._testHandler2, "Check second entry handler");
+		secondEntry.click();
+		QUnit.ok(Echo.Tests.Unit.Dropdown._testHandler1 && Echo.Tests.Unit.Dropdown._testHandler2, "Check second entry handler");
 
-			dropdown.setTitle("newTitle");
-			dropdownTitle = element.find(".dropdown-toggle").html();
-			QUnit.ok(dropdownTitle === "newTitle", "Check that title is changed after setTitle() method called");
+		dropdown.setTitle("newTitle");
+		dropdownTitle = element.find(".dropdown-toggle").html();
+		QUnit.ok(dropdownTitle === "newTitle", "Check that title is changed after setTitle() method called");
 
-			$(target).empty();
-			QUnit.start();
-		};
+		$(target).empty();
+		QUnit.start();
 		
-		Echo.Loader.download([{
-			"url": "gui.pack.js"
-		}], check);
 	}
 };
 
