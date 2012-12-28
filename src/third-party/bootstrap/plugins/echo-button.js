@@ -18,7 +18,7 @@ if (Echo.GUI.Button) return;
  * 		"target": ".css-selector",
  * 		"label": "Button label",
  * 		"icon": "http://example.com/icon.png",
- * 		"disabled": true,
+ * 		"disabled": true
  * 	});
  *
  * @constructor
@@ -54,7 +54,7 @@ Echo.GUI.Button = function(config) {
 	config.disabled = config.disabled || !!this.element.attr("disabled");
 
 	this.element.empty();
-	$("<div>").appendTo(this.element).addClass("echo-label");
+	$('<div class="echo-label">').appendTo(this.element);
 	this.update({
 		"label": config.label,
 		"icon": config.icon || "",
