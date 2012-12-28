@@ -20,7 +20,7 @@ suite.prototype.tests.commonWorkflow = {
 			$(target).empty();
 
 			var element = $("<button>").appendTo(target);
-			Echo.GUI.button({
+			Echo.GUI.Button({
 				"target": element,
 				"label": "FirstLabel"
 			});
@@ -32,7 +32,7 @@ suite.prototype.tests.commonWorkflow = {
 				"Checking that icon CSS class is not added by default");
 
 			var loadingIcon = Echo.Loader.getURL("images/loading.gif", false);
-			Echo.GUI.button("update", {
+			Echo.GUI.Button("update", {
 				"target": element,
 				"label": "SecondLabel",
 				"disabled": true,
@@ -48,19 +48,19 @@ suite.prototype.tests.commonWorkflow = {
 			QUnit.ok($(target).html().match(/icon/) && $(target).html().match(backgroundRegExp),
 				"Checking that background icon is added to element after update() method");
 
-			Echo.GUI.button("update", {"target": element, "label": "ThirdLabel"});
+			Echo.GUI.Button("update", {"target": element, "label": "ThirdLabel"});
 			QUnit.ok(!$(target).html().match(/SecondLabel/) && $(target).html().match(/ThirdLabel/),
 				"Checking that label is changed after updating 'label' field");
-			Echo.GUI.button("update", {"target": element, "disabled": false});
+			Echo.GUI.Button("update", {"target": element, "disabled": false});
 			QUnit.ok(!element.attr('disabled'),
 				"Checking that button is enabled after updating 'disabled' field");
-			Echo.GUI.button("update", {"target": element, "icon": false});
+			Echo.GUI.Button("update", {"target": element, "icon": false});
 			QUnit.ok(!$(target).html().match(/icon/) && !$(target).html().match(backgroundRegExp),
 				"Checking that background icon is not added to element after updating 'icon' field");
 			$(target).empty();
 
 			element = $('<button disabled="disabled">ClickMe</button>').appendTo(target);
-			Echo.GUI.button({"target": element});
+			Echo.GUI.Button({"target": element});
 			QUnit.ok($(target).html().match(/ClickMe/),
 				 "Checking that label value is taken from the element");
 			QUnit.ok(element.attr('disabled'),

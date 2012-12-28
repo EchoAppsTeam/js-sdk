@@ -6,15 +6,15 @@ if (!window.Echo) window.Echo = {};
 
 if (!Echo.GUI) Echo.GUI = {};
 
-if (Echo.GUI.tabs) return;
+if (Echo.GUI.Tabs) return;
 
 /**
- * @class Echo.GUI.tabs
+ * @class Echo.GUI.Tabs
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#tabs" target="_blank">bootstrap-tab.js</a>.
  * The tabs HTML code automatically builds depending on parameters you have passed to the constructor.
  *
  * Example:
- * 	var myTabs = Echo.GUI.tabs({
+ * 	var myTabs = Echo.GUI.Tabs({
  * 		"target": ".css-selector",
  * 		"show": function() {}
  * 	});
@@ -175,7 +175,7 @@ Tabs.prototype.show = function(id) {
 	this.element.find("a[data-item='" + id + "']").tab("show");
 };
 
-Echo.GUI.tabs = function() {
+Echo.GUI.Tabs = function() {
 	var args  = arguments;
 
 	var params = (typeof args[0] === "string")
@@ -198,6 +198,6 @@ Echo.GUI.tabs = function() {
 	return data;
 };
 
-Echo.GUI.tabs.Contructor = Tabs;
+Echo.GUI.Tabs.Contructor = Tabs;
 
 })(Echo.jQuery);

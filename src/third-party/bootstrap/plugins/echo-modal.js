@@ -6,17 +6,17 @@ if (!window.Echo) window.Echo = {};
 
 if (!Echo.GUI) Echo.GUI = {};
 
-if (Echo.GUI.modal) return;
+if (Echo.GUI.Modal) return;
 
 /**
- * @class Echo.GUI.modal
+ * @class Echo.GUI.Modal
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#modals" target="_blank">bootstrap-modal.js</a>.
  * It contains logic to automatically build HTML code required for bootstrap-modal.
- * I.E. you can pass the necessary parameters to the Echo.GUI.modal constructor and
+ * I.E. you can pass the necessary parameters to the Echo.GUI.Modal constructor and
  * modal dialog HTML element will be build automatically.
  *
  * Example:
- * 	var myModal = Echo.GUI.modal({
+ * 	var myModal = Echo.GUI.Modal({
  * 		"show": true,
  * 		"backdrop": true,
  * 		 "keyboard": true,
@@ -103,7 +103,7 @@ if (Echo.GUI.modal) return;
  * @param {Boolean} [config.fade=false]
  * Apply a CSS fade transition.
  */
-Echo.GUI.modal = function() {
+Echo.GUI.Modal = function() {
 	return new Modal(arguments[0]);
 };
 var Modal = function(config) {

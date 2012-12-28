@@ -6,15 +6,15 @@ if (!window.Echo) window.Echo = {};
 
 if (!Echo.GUI) Echo.GUI = {};
 
-if (Echo.GUI.button) return;
+if (Echo.GUI.Button) return;
 
 /**
- * @class Echo.GUI.button
+ * @class Echo.GUI.Button
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#buttons" target="_blank">bootstrap-button.js</a>.
  * The button HTML code automatically builds depending on parameters you have passed to the constructor.
  *
  * Example:
- * 	Echo.GUI.button({
+ * 	Echo.GUI.Button({
  * 		"target": ".css-selector",
  * 		"label": "Button label",
  * 		"icon": "http://example.com/icon.png",
@@ -24,7 +24,7 @@ if (Echo.GUI.button) return;
  * The class methods can be called through constructor. In this case the method name should be passed in the first parameter.
  *
  * Example:
- * 	Echo.GUI.button("update", {"target": ".css-selector", "label": "New label"});
+ * 	Echo.GUI.Button("update", {"target": ".css-selector", "label": "New label"});
  *
  * @constructor
  * Creates a button in the container you have passed in the "params.target".
@@ -48,7 +48,7 @@ if (Echo.GUI.button) return;
  * @param {Boolean} [params.disabled=false]
  * Specifies whether the button should be disabled.
  */
-Echo.GUI.button = function() {
+Echo.GUI.Button = function() {
 	var args  = arguments;
 
 	var params = (typeof args[0] === "string")

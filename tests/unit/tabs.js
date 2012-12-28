@@ -3,7 +3,7 @@
 var suite = Echo.Tests.Unit.Tabs = function() {};
 
 suite.prototype.info = {
-	"className": "Echo.GUI.tabs",
+	"className": "Echo.GUI.Tabs",
 	"functions": []
 };
 
@@ -27,7 +27,7 @@ suite.prototype.tests.commonWorkflow = {
 
 			var element = $("<div>").appendTo(target);
 			tabsParams.target = element;
-			var echoTabs = Echo.GUI.tabs(tabsParams);
+			var echoTabs = Echo.GUI.Tabs(tabsParams);
 
 			var testTabs = [{
 				"id": "tab1",

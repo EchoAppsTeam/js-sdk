@@ -267,7 +267,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 		});
 	} else {
 		return element.on("click", function() {
-			self.modal = Echo.GUI.modal({
+			self.modal = Echo.GUI.Modal({
 				"data": {
 					"title": self.config.get("identityManager." + type + ".title")
 				},

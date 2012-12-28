@@ -6,15 +6,15 @@ if (!window.Echo) window.Echo = {};
 
 if (!Echo.GUI) Echo.GUI = {};
 
-if (Echo.GUI.dropdown) return;
+if (Echo.GUI.Dropdown) return;
 
 /**
- * @class Echo.GUI.dropdown
+ * @class Echo.GUI.Dropdown
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#dropdowns" target="_blank">bootstrap-dropdown.js</a>.
  * The dropdown HTML code automatically builds depending on parameters you have passed to the constructor.
  *
  * Example:
- * 	Echo.GUI.dropdown({
+ * 	Echo.GUI.Dropdown({
  * 		"target": ".css-selector",
  * 	    "title": "Dropdown title",
  * 		"entries": [{
@@ -29,7 +29,7 @@ if (Echo.GUI.dropdown) return;
  * The class methods can be called through constructor. In this case the method name should be passed in the first parameter.
  *
  * Example:
- * 	Echo.GUI.dropdown("update", {"target": ".css-selector", "label": "New label"});
+ * 	Echo.GUI.Dropdown("update", {"target": ".css-selector", "label": "New label"});
  *
  * @constructor
  * Creates a new dropdown in the container you have passed in the "params.target".
@@ -54,7 +54,7 @@ if (Echo.GUI.dropdown) return;
  * 	handler - function which will be called when entry is selected
  * 	icon    - URL for the icon.
  */
-Echo.GUI.dropdown = function() {
+Echo.GUI.Dropdown = function() {
 	var args = arguments;
 
 	var params = (typeof args[0] === "string")
