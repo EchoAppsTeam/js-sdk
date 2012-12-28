@@ -49,7 +49,7 @@ suite.prototype.tests.commonWorkflow = {
 		var _suite = this;
 		var check = function() {
 			Echo.Utils.addCSS(".echo-hide { display: none; }", "echo-hide");
-			var modal = Echo.GUI.Modal(modalParams);
+			var modal = new Echo.GUI.Modal(modalParams);
 
 			QUnit.ok($(".echo-sdk-ui .modal").length, "Check that modal is available");
 

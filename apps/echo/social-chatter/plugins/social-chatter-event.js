@@ -188,7 +188,7 @@ plugin.renderers.eventButton = function(element) {
 		return element.detach();
 	}
 	var self = this;
-	Echo.GUI.Button({
+	new Echo.GUI.Button({
 		"target": element,
 		"label": this.labels.get(this.event.getStatus() + "EventOpen")
 	});

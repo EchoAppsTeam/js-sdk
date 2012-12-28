@@ -14,7 +14,7 @@ if (Echo.GUI.Dropdown) return;
  * The dropdown HTML code automatically builds depending on parameters you have passed to the constructor.
  *
  * Example:
- * 	Echo.GUI.Dropdown({
+ * 	var dropdown = new Echo.GUI.Dropdown({
  * 		"target": ".css-selector",
  * 	    "title": "Dropdown title",
  * 		"entries": [{
@@ -26,11 +26,6 @@ if (Echo.GUI.Dropdown) return;
  * 		}]
  * 	});
  *
- * The class methods can be called through constructor. In this case the method name should be passed in the first parameter.
- *
- * Example:
- * 	Echo.GUI.Dropdown("update", {"target": ".css-selector", "label": "New label"});
- *
  * @constructor
  * Creates a new dropdown in the container you have passed in the "params.target".
  *
@@ -40,9 +35,9 @@ if (Echo.GUI.Dropdown) return;
  * @param {Mixed} params.target
  * Container which should contains the dropdown.
  * This parameter can be several types:
- *  - CSS selector (ex: ".css-selector")
- *  - HTMLElement (ex: document.getElementById("some-element-id"))
- *  - jQuery object (ex: $(".css-selector"))
+ * 	- CSS selector (ex: ".css-selector")
+ * 	- HTMLElement (ex: document.getElementById("some-element-id"))
+ * 	- jQuery object (ex: $(".css-selector"))
  *
  * @param {String} params.title
  * Dropdown title.
@@ -54,55 +49,30 @@ if (Echo.GUI.Dropdown) return;
  * 	handler - function which will be called when entry is selected
  * 	icon    - URL for the icon.
  */
-Echo.GUI.Dropdown = function() {
-	var args = arguments;
+Echo.GUI.Dropdown = function(params) {
+	if (!params || typeof params.target === "undefined") return;
 
-	var params = (typeof args[0] === "string")
-		? args[1] || {}
-		: args[0];
-
-	if (typeof params.target === "undefined") return;
-
-	var elements = params.target instanceof Echo.jQuery
+	this.element = params.target instanceof Echo.jQuery
 		? params.target
 		: $(params.target);
 
-	var data = $(elements[0]).data("echoDropdown");
-	if (!data || typeof args[0] === "object") {
-		elements.data("echoDropdown", (data = new Dropdown(elements, args[0])));
-	}
-	if (typeof args[0] === "string") {
-		data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
-	}
-	return data;
-};
-
-var Dropdown = function(element, params) {
-	this.element = $(element);
 	var dropdown = this._assembleContainer(params);
 	this._assembleEntries(params.entries, dropdown);
 };
 
 /**
- * This method allows to change dropdown title
+ * This method allows to change dropdown title.
  *
  * @param {Object} params
- *
- * @param {Mixed} [params.target]
- * Container which should contains the dropdown.
- * You should specify this parameter if you call this method from constructor.
  *
  * @param {String} params.title
  * Dropdown title.
  */
-Dropdown.prototype.setTitle = function(params) {
-	var title = typeof params === "string"
-		? params
-		: params.title;
+Echo.GUI.Dropdown.prototype.setTitle = function(title) {
 	$(".dropdown-toggle", this.element).empty().append(title);
 };
 
-Dropdown.prototype._assembleContainer = function(params) {
+Echo.GUI.Dropdown.prototype._assembleContainer = function(params) {
 	var container = $("<ul>").addClass("nav")
 		.appendTo(this.element);
 	var dropdown = $("<li>")
@@ -117,7 +87,7 @@ Dropdown.prototype._assembleContainer = function(params) {
 	return dropdown;
 };
 
-Dropdown.prototype._assembleEntries = function(entries, container) {
+Echo.GUI.Dropdown.prototype._assembleEntries = function(entries, container) {
 	var menu = $("<ul>").addClass("dropdown-menu")
 		.attr("role", "menu")
 		.appendTo(container);

@@ -14,11 +14,11 @@ if (Echo.GUI.Tabs) return;
  * The tabs HTML code automatically builds depending on parameters you have passed to the constructor.
  *
  * Example:
- * 	var myTabs = Echo.GUI.Tabs({
+ * 	var myTabs = new Echo.GUI.Tabs({
  * 		"target": ".css-selector",
  * 		"show": function() {}
  * 	});
- * 	myTabs.add({"target": ".css-selector", "id": "tab1", "label": "Tab label"});
+ * 	myTabs.add({"id": "tab1", "label": "Tab label"});
  *
  * @constructor
  * Creates a new tabs in the container you have passed in the "params.target".
@@ -36,10 +36,15 @@ if (Echo.GUI.Tabs) return;
  * @param {Function} [config.show]
  * Function which will be called when tab is shown.
  */
-var Tabs = function(element, config) {
+Echo.GUI.Tabs = function(config) {
 	this.config = config || {};
-	this.element = $(element);
-	this.panels = config.panels || $("<div>");
+	if (typeof this.config.target === "undefined") return;
+
+	this.element = config.target instanceof Echo.jQuery
+		? config.target
+		: $(config.target);
+
+	this.panels = this.config.panels || $("<div>");
 	this._initEvents(this.config);
 };
 
@@ -49,11 +54,11 @@ var Tabs = function(element, config) {
  * @return {HTMLElement}
  * DOM element which contains panels.
  */
-Tabs.prototype.getPanels = function() {
+Echo.GUI.Tabs.prototype.getPanels = function() {
 	return this.panels;
 };
 
-Tabs.prototype._initEvents = function(config) {
+Echo.GUI.Tabs.prototype._initEvents = function(config) {
 	this.element.find('a[data-toggle=tab]').each(function(i, el) {
 		$(el).on("show", config.show || function() {});
 	});
@@ -65,7 +70,7 @@ Tabs.prototype._initEvents = function(config) {
  * @param {String} id
  * Tab id which should be disabled.
  */
-Tabs.prototype.disable = function(id) {
+Echo.GUI.Tabs.prototype.disable = function(id) {
 	this.element.find("a[data-item='" + id + "']")
 		.removeAttr("data-toggle")
 		.addClass("disabled");
@@ -77,7 +82,7 @@ Tabs.prototype.disable = function(id) {
  * @param {String} id
  * Tab id which should be enabled.
  */
-Tabs.prototype.enable = function(id) {
+Echo.GUI.Tabs.prototype.enable = function(id) {
 	this.element.find("a[data-item='" + id + "']")
 		.attr("data-toggle", "tabs")
 		.removeClass("disabled");
@@ -89,7 +94,7 @@ Tabs.prototype.enable = function(id) {
  * @param {String} id
  * Tab id which should be removed.
  */
-Tabs.prototype.remove = function(id) {
+Echo.GUI.Tabs.prototype.remove = function(id) {
 	this.element.find("a[data-item='" + id + "']").remove();
 };
 
@@ -108,7 +113,7 @@ Tabs.prototype.remove = function(id) {
  * @param {HTMLElement} panel
  * HTML Element which contains the tab content.
  */
-Tabs.prototype.add = function(tabConfig, panel) {
+Echo.GUI.Tabs.prototype.add = function(tabConfig, panel) {
 	tabConfig = tabConfig || {};
 	var tab = $('<li><a data-toggle="tab" href="#' + tabConfig.id + '" data-item="' + tabConfig.id + '">' + tabConfig.label  + '</a></li>');
 	$("a[data-toggle=tab]", tab).on("show", this.config.show);
@@ -126,7 +131,7 @@ Tabs.prototype.add = function(tabConfig, panel) {
  * @return {HTMLElement}
  * DOM element which contains the tab.
  */
-Tabs.prototype.get = function(id) {
+Echo.GUI.Tabs.prototype.get = function(id) {
 	return this.element.find("a[data-item='" + id + "']");
 };
 
@@ -140,7 +145,7 @@ Tabs.prototype.get = function(id) {
  * true if tab with specific id exists,
  * false otherwise.
  */
-Tabs.prototype.has = function(id) {
+Echo.GUI.Tabs.prototype.has = function(id) {
 	return !!this.element.has("a[data-item='" + id + "']").length;
 };
 
@@ -159,7 +164,7 @@ Tabs.prototype.has = function(id) {
  * @param {String} [config.class]
  * Class name to be added to the tab element.
  */
-Tabs.prototype.update = function(id, config) {
+Echo.GUI.Tabs.prototype.update = function(id, config) {
 	this.element.find("a[data-item='" + id + "']")
 		.html(config.label)
 		.addClass(config["class"] || "");
@@ -171,33 +176,8 @@ Tabs.prototype.update = function(id, config) {
  * @param {String} id
  * Tab id which should be shown.
  */
-Tabs.prototype.show = function(id) {
+Echo.GUI.Tabs.prototype.show = function(id) {
 	this.element.find("a[data-item='" + id + "']").tab("show");
 };
-
-Echo.GUI.Tabs = function() {
-	var args  = arguments;
-
-	var params = (typeof args[0] === "string")
-		? args[1] || {}
-		: args[0];
-
-	if (typeof params.target === "undefined") return;
-
-	var elements = params.target instanceof Echo.jQuery
-		? params.target
-		: $(params.target);
-
-	var data = $(elements[0]).data("echoTabs");
-	if (!data || typeof args[0] === "object") {
-		elements.data("echoTabs", (data = new Tabs(elements, args[0])));
-	}
-	if (typeof args[0] === "string") {
-		data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
-	}
-	return data;
-};
-
-Echo.GUI.Tabs.Contructor = Tabs;
 
 })(Echo.jQuery);

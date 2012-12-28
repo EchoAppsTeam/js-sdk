@@ -410,7 +410,7 @@ submit.renderers.postButton = function(element) {
 			"label": this.labels.get("posting")
 		}
 	};
-	Echo.GUI.Button(states.normal);
+	var postButton = new Echo.GUI.Button(states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
@@ -425,7 +425,7 @@ submit.renderers.postButton = function(element) {
 		subscriptions[topic] = self.events.subscribe({
 			"topic": topic,
 			"handler": function(topic, params) {
-				Echo.GUI.Button("update", state);
+				postButton.update(state);
 				if (callback) callback(params);
 			}
 		});
@@ -606,7 +606,7 @@ submit.methods._showError = function(data) {
 		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
 	var popup = this._assembleErrorPopup(message);
 
-	Echo.GUI.Modal({
+	new Echo.GUI.Modal({
 		"data": {
 			"body": popup.content
 		},

@@ -14,17 +14,12 @@ if (Echo.GUI.Button) return;
  * The button HTML code automatically builds depending on parameters you have passed to the constructor.
  *
  * Example:
- * 	Echo.GUI.Button({
+ * 	var button = new Echo.GUI.Button({
  * 		"target": ".css-selector",
  * 		"label": "Button label",
  * 		"icon": "http://example.com/icon.png",
  * 		"disabled": true,
  * 	});
- *
- * The class methods can be called through constructor. In this case the method name should be passed in the first parameter.
- *
- * Example:
- * 	Echo.GUI.Button("update", {"target": ".css-selector", "label": "New label"});
  *
  * @constructor
  * Creates a button in the container you have passed in the "params.target".
@@ -48,44 +43,22 @@ if (Echo.GUI.Button) return;
  * @param {Boolean} [params.disabled=false]
  * Specifies whether the button should be disabled.
  */
-Echo.GUI.Button = function() {
-	var args  = arguments;
+Echo.GUI.Button = function(params) {
+	if (!params || typeof params.target === "undefined") return;
 
-	var params = (typeof args[0] === "string")
-		? args[1] || {}
-		: args[0];
-
-	if (typeof params.target === "undefined") return;
-
-	var elements = params.target instanceof Echo.jQuery
+	this.element = params.target instanceof Echo.jQuery
 		? params.target
 		: $(params.target);
 
-	var data = $(elements[0]).data("echoButton");
-	if (!data || typeof args[0] === "object") {
-		elements.data("echoButton", (data = new Button(elements, args[0])));
-	}
-	if (typeof args[0] === "string") {
-		data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
-	}
-	return data;
-};
+	params.label = params.label || this.element.text();
+	params.disabled = params.disabled || !!this.element.attr("disabled");
 
-var Button = function(element, params) {
-	params = params || {};
-
-	this.element = $(element);
-	if (element.hasClass("echo-sdk-button")) {
-		element.empty();
-	}
-	this.element.addClass("echo-sdk-button");
-	$("<div>").appendTo(element).addClass("echo-label").css({
-		"float": "left"
-	});
+	this.element.empty();
+	$("<div>").appendTo(this.element).addClass("echo-label");
 	this.update({
-		"label": params.label || this.element.text(),
+		"label": params.label,
 		"icon": params.icon || "",
-		"disabled": params.disabled || !!this.element.attr('disabled')
+		"disabled": params.disabled
 	});
 };
 
@@ -99,10 +72,6 @@ var Button = function(element, params) {
  * @param {Object} params
  * Button parameters to be replaced.
  *
- * @param {Mixed} [params.target]
- * Container which should contains the button.
- * You should specify this parameter if you call this method from constructor.
- *
  * @param {String} params.label
  * Button label
  *
@@ -112,7 +81,7 @@ var Button = function(element, params) {
  * @param {Boolean} [params.disabled=false]
  * Specifies whether the button disabled.
  */
-Button.prototype.update = function(params) {
+Echo.GUI.Button.prototype.update = function(params) {
 	params = params || {};
 	this.label = params.label || "";
 	this.icon = params.icon || "";
@@ -120,7 +89,7 @@ Button.prototype.update = function(params) {
 	this._render();
 };
 
-Button.prototype._render = function() {
+Echo.GUI.Button.prototype._render = function() {
 	$(".echo-label", this.element).text(this.label);
 	var iconElement = $(".echo-icon", this.element);
 	var setBackground = function(element, icon) {
@@ -130,13 +99,7 @@ Button.prototype._render = function() {
 	};
 	if (this.icon) {
 		if (!iconElement.length) {
-			iconElement = $("<div>").addClass("echo-icon").prependTo(this.element).css({
-				"height": 16,
-				"width": 16,
-				"float": "left",
-				"margin-right": 2,
-				"margin-top": 2
-			});
+			iconElement = $("<div>").addClass("echo-icon").prependTo(this.element);
 		}
 		setBackground(iconElement, this.icon);
 	} else {
@@ -145,4 +108,8 @@ Button.prototype._render = function() {
 	this.element.attr("disabled", this.disabled);
 };
 
+Echo.Utils.addCSS(
+	".btn .echo-label {float: left;}" +
+	".btn .echo-icon {height: 16px; width: 16px; float: left; margin-right: 2px; margin-top: 2px;}",
+    "echo-button-plugin");
 })(Echo.jQuery);

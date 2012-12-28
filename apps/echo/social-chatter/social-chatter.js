@@ -566,7 +566,7 @@ SocialChatter.views.PublicEvent.renderers.countdown = function(element) {
 SocialChatter.views.EventsList.renderers.eventSubmitLabel = function(element) {
 	var self = this;
 	if (this.user.is("admin") && !this.user.any("role", ["vip"])) {
-		Echo.GUI.Button({
+		new Echo.GUI.Button({
 			"target": element,
 			"label": this.labels.get("scheduleEvent")
 		});

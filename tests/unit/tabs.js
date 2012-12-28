@@ -27,7 +27,7 @@ suite.prototype.tests.commonWorkflow = {
 
 			var element = $("<div>").appendTo(target);
 			tabsParams.target = element;
-			var echoTabs = Echo.GUI.Tabs(tabsParams);
+			var echoTabs = new Echo.GUI.Tabs(tabsParams);
 
 			var testTabs = [{
 				"id": "tab1",

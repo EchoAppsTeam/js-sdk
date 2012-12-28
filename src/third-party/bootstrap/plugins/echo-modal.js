@@ -16,7 +16,7 @@ if (Echo.GUI.Modal) return;
  * modal dialog HTML element will be build automatically.
  *
  * Example:
- * 	var myModal = Echo.GUI.Modal({
+ * 	var myModal = new Echo.GUI.Modal({
  * 		"show": true,
  * 		"backdrop": true,
  * 		 "keyboard": true,
@@ -103,10 +103,7 @@ if (Echo.GUI.Modal) return;
  * @param {Boolean} [config.fade=false]
  * Apply a CSS fade transition.
  */
-Echo.GUI.Modal = function() {
-	return new Modal(arguments[0]);
-};
-var Modal = function(config) {
+Echo.GUI.Modal = function(config) {
 	this.config = $.extend({
 		"show": false,
 		"backdrop": true,
@@ -128,7 +125,7 @@ var Modal = function(config) {
 	}
 };
 
-Modal.prototype._render = function() {
+Echo.GUI.Modal.prototype._render = function() {
 	var self = this;
 
 	if (this.rendered) return;
@@ -235,7 +232,7 @@ Modal.prototype._render = function() {
 	$(document).off('focusin.modal');
 };
 
-Modal.prototype._addSection = function(css, content) {
+Echo.GUI.Modal.prototype._addSection = function(css, content) {
 	var element = $("<div>");
 	element.addClass(css).appendTo(this.element);
 	if (content) {
@@ -248,7 +245,7 @@ Modal.prototype._addSection = function(css, content) {
  * Shows the modal dialog.
  * 	myModal.show();
  */
-Modal.prototype.show = function() {
+Echo.GUI.Modal.prototype.show = function() {
 	this._render();
 	this.element.modal("show");
 };
@@ -257,7 +254,7 @@ Modal.prototype.show = function() {
  * Hides the modal dialog and removes the dialog instance.
  * 	myModal.remove();
  */
-Modal.prototype.remove = function() {
+Echo.GUI.Modal.prototype.remove = function() {
 	if (this.rendered) {
 		this.rendered = false;
 		this.backdrop && this.backdrop.remove();
@@ -270,7 +267,7 @@ Modal.prototype.remove = function() {
  * Hides the modal dialog.
  * 	myModal.hide();
  */
-Modal.prototype.hide = function() {
+Echo.GUI.Modal.prototype.hide = function() {
 	if (this.rendered) {
 		this.element.modal("hide");
 	}
