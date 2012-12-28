@@ -21,12 +21,12 @@ if (Echo.GUI.Tabs) return;
  * 	myTabs.add({"id": "tab1", "label": "Tab label"});
  *
  * @constructor
- * Creates a new tabs in the container you have passed in the "params.target".
+ * Creates a new tabs in the container you have passed in the "config.target".
  *
  * @param {Object} config
  * Tabs configuration.
  *
- * @param {Mixed} params.target
+ * @param {Mixed} config.target
  * Container which should contains the tabs.
  * This parameter can be several types:
  *  - CSS selector (ex: "css-selector")
@@ -45,7 +45,7 @@ Echo.GUI.Tabs = function(config) {
 		: $(config.target);
 
 	this.panels = this.config.panels || $("<div>");
-	this._initEvents(this.config);
+	this._init(this.config);
 };
 
 /**
@@ -58,7 +58,8 @@ Echo.GUI.Tabs.prototype.getPanels = function() {
 	return this.panels;
 };
 
-Echo.GUI.Tabs.prototype._initEvents = function(config) {
+Echo.GUI.Tabs.prototype._init = function(config) {
+	this.element.addClass("nav nav-tabs");
 	this.element.find('a[data-toggle=tab]').each(function(i, el) {
 		$(el).on("show", config.show || function() {});
 	});

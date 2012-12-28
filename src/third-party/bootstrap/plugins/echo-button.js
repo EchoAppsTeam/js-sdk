@@ -22,43 +22,43 @@ if (Echo.GUI.Button) return;
  * 	});
  *
  * @constructor
- * Creates a button in the container you have passed in the "params.target".
+ * Creates a button in the container you have passed in the "config.target".
  *
- * @param {Object} params
+ * @param {Object} config
  * Button parameters.
  *
- * @param {Mixed} params.target
+ * @param {Mixed} config.target
  * Container which should contains the button.
  * This parameter can be several types:
  * 	- CSS selector (ex: ".css-selector")
  * 	- HTMLElement (ex: document.getElementById("some-element-id"))
  * 	- jQuery object (ex: $(".css-selector"))
  *
- * @param {String} params.label
+ * @param {String} config.label
  * Button label.
  *
- * @param {String} [params.icon]
+ * @param {String} [config.icon]
  * URL for the icon which should be displayed near the label.
  *
- * @param {Boolean} [params.disabled=false]
+ * @param {Boolean} [config.disabled=false]
  * Specifies whether the button should be disabled.
  */
-Echo.GUI.Button = function(params) {
-	if (!params || typeof params.target === "undefined") return;
+Echo.GUI.Button = function(config) {
+	if (!config || typeof config.target === "undefined") return;
 
-	this.element = params.target instanceof Echo.jQuery
-		? params.target
-		: $(params.target);
+	this.element = config.target instanceof Echo.jQuery
+		? config.target
+		: $(config.target);
 
-	params.label = params.label || this.element.text();
-	params.disabled = params.disabled || !!this.element.attr("disabled");
+	config.label = config.label || this.element.text();
+	config.disabled = config.disabled || !!this.element.attr("disabled");
 
 	this.element.empty();
 	$("<div>").appendTo(this.element).addClass("echo-label");
 	this.update({
-		"label": params.label,
-		"icon": params.icon || "",
-		"disabled": params.disabled
+		"label": config.label,
+		"icon": config.icon || "",
+		"disabled": config.disabled
 	});
 };
 

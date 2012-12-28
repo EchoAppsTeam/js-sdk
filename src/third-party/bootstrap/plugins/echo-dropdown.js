@@ -27,45 +27,43 @@ if (Echo.GUI.Dropdown) return;
  * 	});
  *
  * @constructor
- * Creates a new dropdown in the container you have passed in the "params.target".
+ * Creates a new dropdown in the container you have passed in the "config.target".
  *
- * @param {Object} params
+ * @param {Object} config
  * Dropdown parameters.
  *
- * @param {Mixed} params.target
+ * @param {Mixed} config.target
  * Container which should contains the dropdown.
  * This parameter can be several types:
  * 	- CSS selector (ex: ".css-selector")
  * 	- HTMLElement (ex: document.getElementById("some-element-id"))
  * 	- jQuery object (ex: $(".css-selector"))
  *
- * @param {String} params.title
+ * @param {String} config.title
  * Dropdown title.
  *
- * @param {Array} params.entries
+ * @param {Array} config.entries
  * Array of the dropdown entries.
  * Each entry is the object with the following parameters:
  * 	title   - entry title
  * 	handler - function which will be called when entry is selected
  * 	icon    - URL for the icon.
  */
-Echo.GUI.Dropdown = function(params) {
-	if (!params || typeof params.target === "undefined") return;
+Echo.GUI.Dropdown = function(config) {
+	if (!config || typeof config.target === "undefined") return;
 
-	this.element = params.target instanceof Echo.jQuery
-		? params.target
-		: $(params.target);
+	this.element = config.target instanceof Echo.jQuery
+		? config.target
+		: $(config.target);
 
-	var dropdown = this._assembleContainer(params);
-	this._assembleEntries(params.entries, dropdown);
+	var dropdown = this._assembleContainer(config);
+	this._assembleEntries(config.entries, dropdown);
 };
 
 /**
  * This method allows to change dropdown title.
  *
- * @param {Object} params
- *
- * @param {String} params.title
+ * @param {String} title
  * Dropdown title.
  */
 Echo.GUI.Dropdown.prototype.setTitle = function(title) {
