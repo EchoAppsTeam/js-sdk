@@ -75,6 +75,9 @@ var Button = function(element, params) {
 	params = params || {};
 
 	this.element = $(element);
+	if (element.hasClass("echo-sdk-button")) {
+		element.empty();
+	}
 	this.element.addClass("echo-sdk-button");
 	$("<div>").appendTo(element).addClass("echo-label").css({
 		"float": "left"
