@@ -27,8 +27,7 @@ suite.prototype.tests.commonWorkflow = {
 
 			var element = $("<div>").appendTo(target);
 			tabsParams.target = element;
-			Echo.GUI.tabs(tabsParams);
-			var echoTabs = element.data("echoTabs");
+			var echoTabs = Echo.GUI.tabs(tabsParams);
 
 			var testTabs = [{
 				"id": "tab1",
@@ -82,7 +81,7 @@ suite.prototype.tests.commonWorkflow = {
 		};
 		
 		Echo.Loader.download([{
-			"url": "third-party/bootstrap.pack.js"
+			"url": "gui.pack.js"
 		}], check);
 	}
 };

@@ -66,7 +66,7 @@ Tabs.prototype._initEvents = function(config) {
  * Tab id which should be disabled.
  */
 Tabs.prototype.disable = function(id) {
-	this.element.find("a[href='#" + id + "']")
+	this.element.find("a[data-item='" + id + "']")
 		.removeAttr("data-toggle")
 		.addClass("disabled");
 };
@@ -78,7 +78,7 @@ Tabs.prototype.disable = function(id) {
  * Tab id which should be enabled.
  */
 Tabs.prototype.enable = function(id) {
-	this.element.find("a[href='#" + id + "']")
+	this.element.find("a[data-item='" + id + "']")
 		.attr("data-toggle", "tabs")
 		.removeClass("disabled");
 };
@@ -90,7 +90,7 @@ Tabs.prototype.enable = function(id) {
  * Tab id which should be removed.
  */
 Tabs.prototype.remove = function(id) {
-	this.element.find("a[href='#" + id + "']").remove();
+	this.element.find("a[data-item='" + id + "']").remove();
 };
 
 /**
@@ -110,7 +110,7 @@ Tabs.prototype.remove = function(id) {
  */
 Tabs.prototype.add = function(tabConfig, panel) {
 	tabConfig = tabConfig || {};
-	var tab = $('<li><a data-toggle="tab" href="#' + tabConfig.id + '">' + tabConfig.label  + '</a></li>');
+	var tab = $('<li><a data-toggle="tab" href="#' + tabConfig.id + '" data-item="' + tabConfig.id + '">' + tabConfig.label  + '</a></li>');
 	$("a[data-toggle=tab]", tab).on("show", this.config.show);
 	this.element.append(tab);
 	this.panels.append(panel);
@@ -127,7 +127,7 @@ Tabs.prototype.add = function(tabConfig, panel) {
  * DOM element which contains the tab.
  */
 Tabs.prototype.get = function(id) {
-	return this.element.find("a[href='#" + id + "']");
+	return this.element.find("a[data-item='" + id + "']");
 };
 
 /**
@@ -141,7 +141,7 @@ Tabs.prototype.get = function(id) {
  * false otherwise.
  */
 Tabs.prototype.has = function(id) {
-	return !!this.element.has("a[href='#" + id + "']").length;
+	return !!this.element.has("a[data-item='" + id + "']").length;
 };
 
 /**
@@ -160,7 +160,7 @@ Tabs.prototype.has = function(id) {
  * Class name to be added to the tab element.
  */
 Tabs.prototype.update = function(id, config) {
-	this.element.find("a[href='#" + id + "']")
+	this.element.find("a[data-item='" + id + "']")
 		.html(config.label)
 		.addClass(config["class"] || "");
 };
@@ -172,7 +172,7 @@ Tabs.prototype.update = function(id, config) {
  * Tab id which should be shown.
  */
 Tabs.prototype.show = function(id) {
-	this.element.find("a[href='#" + id + "']").tab("show");
+	this.element.find("a[data-item='" + id + "']").tab("show");
 };
 
 Echo.GUI.tabs = function() {

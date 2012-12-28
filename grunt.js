@@ -110,7 +110,7 @@ module.exports = function(grunt) {
 				"third-party/bootstrap/plugins/echo-dropdown.js",
 				"third-party/bootstrap/plugins/echo-tabs.js"
 			],
-			"dest": "third-party/bootstrap.pack.js"
+			"dest": "gui.pack.js"
 		}
 	};
 

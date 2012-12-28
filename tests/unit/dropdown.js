@@ -70,7 +70,7 @@ suite.prototype.tests.commonWorkflow = {
 		};
 		
 		Echo.Loader.download([{
-			"url": "third-party/bootstrap.pack.js"
+			"url": "gui.pack.js"
 		}], check);
 	}
 };
