@@ -29,9 +29,9 @@ if (Echo.GUI.Tabs) return;
  * @param {Mixed} config.target
  * Container which should contains the tabs.
  * This parameter can be several types:
- *  - CSS selector (ex: "css-selector")
- *  - HTMLElement (ex: document.getElementById("some-element-id"))
- *  - jQuery object (ex: $(".css-selector"))
+ * 	- CSS selector (ex: "css-selector")
+ * 	- HTMLElement (ex: document.getElementById("some-element-id"))
+ * 	- jQuery object (ex: $(".css-selector"))
  *
  * @param {HTMLElement} [config.panels]
  * Container which contains the panels.

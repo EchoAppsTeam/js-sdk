@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Modal = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI.Modal",
-	"functions": []
+	"functions": ["show", "remove", "hide"]
 };
 
 suite.prototype.tests = {};

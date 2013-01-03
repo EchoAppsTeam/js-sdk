@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Dropdown = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI.Dropdown",
-	"functions": []
+	"functions": ["setTitle"]
 };
 
 suite.prototype.tests = {};

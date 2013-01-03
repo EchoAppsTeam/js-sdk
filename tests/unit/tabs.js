@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Tabs = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI.Tabs",
-	"functions": []
+	"functions": ["getPanels", "disable", "enable", "remove", "add", "get", "has", "update", "show"]
 };
 
 suite.prototype.tests = {};
