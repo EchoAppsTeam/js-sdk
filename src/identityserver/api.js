@@ -19,6 +19,15 @@ Echo.IdentityServer.API = {};
  * @param {Object} config Configuration data.
  */
 Echo.IdentityServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
+	if (!config.data.appkey) {
+		Echo.Utils.log({
+			"type": "error",
+			"component": "Echo.IdentityServer.API",
+			"message": "Unable to initialize API request, appkey is invalid",
+			"args": {"config": config}
+		});
+		return {};
+	}
 	config = $.extend({
 		/**
 		 * @cfg {Function} [onData] Callback called after API request succeded.

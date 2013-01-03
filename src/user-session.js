@@ -198,7 +198,7 @@ Echo.UserSession.logout = function(callback) {
 };
 
 Echo.UserSession._construct = function(config) {
-	if (!config || !config.appkey) {
+	if (!config) {
 		Echo.Utils.log({
 			"type": "error",
 			"component": "Echo.UserSession",

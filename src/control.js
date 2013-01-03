@@ -62,7 +62,7 @@ Echo.Control.create = function(manifest) {
 	var constructor = Echo.Utils.inherit(parent, function(config) {
 
 		// perform basic validation of incoming params
-		if (!config || !config.target || !config.appkey) {
+		if (!config || !config.target) {
 			Echo.Utils.log({
 				"type": "error",
 				"component": manifest.name,
@@ -175,9 +175,10 @@ Echo.Control.prototype.defaults.config = {
 	 */
 	"target": undefined,
 	/**
-	 * @cfg {String} appkey (required)
-	 * Specifies the customer application key. You can use the "test.echoenabled.com"
-	 * appkey for testing purposes.
+	 * @cfg {String} appkey
+	 * Specifies the customer application key. You should specify this parameter
+	 * if your control uses StreamServer or IdentityServer API requests.
+	 * You can use the "test.echoenabled.com" appkey for testing purposes.
 	 */
 	"appkey": "",
 	/**
