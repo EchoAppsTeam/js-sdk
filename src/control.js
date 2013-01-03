@@ -146,6 +146,50 @@ Echo.Control.isDefined = function(manifest) {
 	return !!(component && component.manifest);
 };
 
+/**
+ * @static
+ * Update control initializers.
+ *
+ * @param {Object} rule
+ *
+ * @param {Array} signature
+ *
+ * @param {Function} fn
+ */
+Echo.Control.updateInitializers = function(rule, signature, fn) {
+	rule = rule || {};
+	var name;
+	var list = this.prototype._initializers.list.slice(0);
+	var getInitializerIndex = function(name) {
+		var index = -1;
+		if (!name) {
+			return list.length;
+		}
+		$.each(list, function(i, initializer) {
+			if (initializer[0] === name) {
+				index = i;
+				return false;
+			}
+		});
+		return index;
+	};
+	if (rule.remove) {
+		list.splice(getInitializerIndex(rule.remove));
+	} else {
+		list.splice(function(idx) {
+			return ~idx
+				? (!idx && rule.before ? 0 : rule.after ? ++idx : idx)
+				: idx;
+		}(getInitializerIndex(rule.after || rule.before)), 0, signature);
+	}
+	this.prototype._initializers = $.extend({}, this.prototype._initializers);
+	if ($.isFunction(fn)) {
+		name = signature && signature[0] && signature[0].split(":")[0];
+		this.prototype._initializers[name] = fn;
+	}
+	this.prototype._initializers.list = list;
+};
+
 Echo.Control.prototype.templates = {"message": {}};
 
 Echo.Control.prototype.templates.message.compact =
