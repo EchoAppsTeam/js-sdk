@@ -41,23 +41,29 @@ if (Echo.GUI.Tabs) return;
  * Function which will be called when tab is shown.
  */
 Echo.GUI.Tabs = function(config) {
-	this.config = config || {};
-	if (typeof this.config.target === "undefined") return;
+	if (!config || !config.target) return;
 
-	var container = config.target instanceof Echo.jQuery
-		? config.target
-		: $(config.target);
+	this.config = $.extend({
+		"panels": "<div>",
+		"show": function() {}
+	}, config);
+	this.config.panels = $(this.config.panels);
 
-	container.empty().addClass("echo-sdk-ui");
-	this.element = $('<ul class="nav nav-tabs">').appendTo(container);
-
-	this.panels = $(this.config.panels || "<div>");
-	this.panels.addClass("tab-content");
-	if (this.panels.parent().length === 0) {
-		container.append(this.panels);
-	}
-	this._init(this.config);
+	this._render();
 };
+
+Echo.GUI.Tabs.prototype._render = function() {
+	this.config.target.empty();
+
+	this.config.target.append($('<ul class="nav nav-tabs">'));
+
+	this.config.panels.addClass("tab-content");
+	if (this.config.panels.parent().length === 0) {
+		this.config.target.append(this.config.panels);
+	}
+
+	this.config.target.find('a[data-toggle=tab]').on("show", this.config.show);
+}
 
 /**
  * Method to get a DOM element which contains panels.
@@ -66,13 +72,7 @@ Echo.GUI.Tabs = function(config) {
  * DOM element which contains panels.
  */
 Echo.GUI.Tabs.prototype.getPanels = function() {
-	return this.panels;
-};
-
-Echo.GUI.Tabs.prototype._init = function(config) {
-	this.element.find('a[data-toggle=tab]').each(function(i, el) {
-		$(el).on("show", config.show || function() {});
-	});
+	return this.config.panels;
 };
 
 /**
@@ -82,7 +82,7 @@ Echo.GUI.Tabs.prototype._init = function(config) {
  * Tab id which should be disabled.
  */
 Echo.GUI.Tabs.prototype.disable = function(id) {
-	this.element.find("a[data-item='" + id + "']")
+	this.config.target.find("a[data-item='" + id + "']")
 		.removeAttr("data-toggle")
 		.addClass("disabled");
 };
@@ -94,7 +94,7 @@ Echo.GUI.Tabs.prototype.disable = function(id) {
  * Tab id which should be enabled.
  */
 Echo.GUI.Tabs.prototype.enable = function(id) {
-	this.element.find("a[data-item='" + id + "']")
+	this.config.target.find("a[data-item='" + id + "']")
 		.attr("data-toggle", "tab")
 		.removeClass("disabled");
 };
@@ -106,8 +106,8 @@ Echo.GUI.Tabs.prototype.enable = function(id) {
  * Tab id which should be removed.
  */
 Echo.GUI.Tabs.prototype.remove = function(id) {
-	this.element.find("a[data-item='" + id + "']").remove();
-	this.panels.find("[id='" + id + "']").remove();
+	this.config.target.find("a[data-item='" + id + "']").remove();
+	this.config.panels.find("[id='" + id + "']").remove();
 };
 
 /**
@@ -129,15 +129,15 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig, panel) {
 	tabConfig = tabConfig || {};
 	var tab = $('<li><a data-toggle="tab" href="#' + tabConfig.id + '" data-item="' + tabConfig.id + '">' + tabConfig.label  + '</a></li>');
 	$("a[data-toggle=tab]", tab).on("show", this.config.show);
-	this.element.append(tab);
+	this.config.target.append(tab);
 
 	if (panel) {
 		if (panel.attr("id") !== tabConfig.id.toString()) {
 			panel.attr("id", tabConfig.id);
 		}
-		this.panels.append(panel.addClass("tab-pane"));
+		this.config.panels.append(panel.addClass("tab-pane"));
 	}
-	return this.element;
+	return this.config.target;
 };
 
 /**
@@ -150,7 +150,7 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig, panel) {
  * DOM element which contains the tab.
  */
 Echo.GUI.Tabs.prototype.get = function(id) {
-	return this.element.find("a[data-item='" + id + "']");
+	return this.config.target.find("a[data-item='" + id + "']");
 };
 
 /**
@@ -164,7 +164,7 @@ Echo.GUI.Tabs.prototype.get = function(id) {
  * false otherwise.
  */
 Echo.GUI.Tabs.prototype.has = function(id) {
-	return !!this.element.has("a[data-item='" + id + "']").length;
+	return !!this.config.target.has("a[data-item='" + id + "']").length;
 };
 
 /**
@@ -186,8 +186,8 @@ Echo.GUI.Tabs.prototype.has = function(id) {
  * Class name to be added to the tab element.
  */
 Echo.GUI.Tabs.prototype.update = function(id, config) {
-	config.content && this.panels.find("[id='" + id + "']").html(config.content);
-	this.element.find("a[data-item='" + id + "']")
+	config.content && this.config.panels.find("[id='" + id + "']").html(config.content);
+	this.config.target.find("a[data-item='" + id + "']")
 		.html(config.label)
 		.addClass(config["class"] || "");
 };
@@ -199,7 +199,7 @@ Echo.GUI.Tabs.prototype.update = function(id, config) {
  * Tab id which should be shown.
  */
 Echo.GUI.Tabs.prototype.show = function(id) {
-	this.element.find("a[data-item='" + id + "']").tab("show");
+	this.config.target.find("a[data-item='" + id + "']").tab("show");
 };
 
 })(Echo.jQuery);

@@ -125,28 +125,23 @@ Echo.GUI.Modal = function(config) {
 	}
 };
 
-Echo.GUI.Modal.prototype._render = function() {
-	var self = this;
-
-	if (this.rendered) return;
-
-	this.rendered = true;
-	this.element = $('<div class="modal" role="dialog" tabindex="-1">');
-
-	if (this.config.fade) {
-		this.element.addClass("fade");
-	} else {
-		this.element.addClass("hide");
-	}
-
+Echo.GUI.Modal.prototype._assembleHeader = function() {
 	if (this.config.header) {
 		var header = this._addSection("modal-header", $("<h3>").append(this.config.data.title));
+		if (this.config.closeButton) {
+			$('<button aria-hidden="true" data-dismiss="modal" class="close" type="button">')
+				.append("&times;").prependTo(header);
+		}
 	}
+}
 
+Echo.GUI.Modal.prototype._assembleBody = function() {
+	var self = this;
 	var body = this._addSection("modal-body", this.config.data.body);
-
-	if (this.config.footer) {
-		var footer = this._addSection("modal-footer");
+	if (this.config.href) {
+		this.element.one("shown", function() {
+			body.append('<iframe src="' + self.config.href + '" id="" name="" class="echo-modal-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>');
+		});
 	}
 	if (this.config.width !== null) {
 		this.element.width(this.config.width)
@@ -158,25 +153,34 @@ Echo.GUI.Modal.prototype._render = function() {
 	if (this.config.padding !== null) {
 		body.css("padding", this.config.padding);
 	}
-	if (this.config.footer && this.config.data.buttons) {
-		$.map(this.config.data.buttons, function(button) {
-			var el = $("<button>").addClass("btn").append(button.title);
-			if (button.extraClass) {
-				el.addClass(button.extraClass);
-			}
-			el.click(function() {
-				button.handler && button.handler.call(this);
-			});
-			el.appendTo(footer);
-		});
-	}
 	if (this.config.extraClass) {
 		this.element.addClass(this.config.extraClass);
 	}
+}
 
-	if (this.config.backdrop) {
-		if (this.config.fade) {
-			this.element.on("show", function() {
+Echo.GUI.Modal.prototype._assembleFooter = function() {
+	if (this.config.footer) {
+		var footer = this._addSection("modal-footer");
+		if (this.config.data.buttons) {
+			$.map(this.config.data.buttons, function(button) {
+				var el = $("<button>").addClass("btn").append(button.title);
+				if (button.extraClass) {
+					el.addClass(button.extraClass);
+				}
+				el.click(function() {
+					button.handler && button.handler.call(this);
+				});
+				el.appendTo(footer);
+			});
+		}
+	}
+}
+
+Echo.GUI.Modal.prototype._assembleBackdrop = function() {
+	var self = this;
+	if (self.config.backdrop) {
+		if (self.config.fade) {
+			self.element.on("show", function() {
 				var modal = self.element.data('modal');
 				var shown = modal.isShown;
 				var backdrop = modal.options.backdrop;
@@ -190,18 +194,34 @@ Echo.GUI.Modal.prototype._render = function() {
 				self.backdrop = modal.$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
 			});
 		} else {
-			this.element.on("shown", function() {
+			self.element.on("shown", function() {
 				self.backdrop = self.element.data('modal').$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
 			});
 		}
+		// we used manual control for backdrop if fade is true
+		if (self.config.fade) {
+			self.config.backdrop = false;
+		}
 	}
+}
+
+Echo.GUI.Modal.prototype._render = function() {
+	var self = this;
+
+	if (this.rendered) return;
+
+	this.rendered = true;
+	var css = this.config.fade ? "fade" : "hide";
+	this.element = $('<div class="modal ' + css + '" role="dialog" tabindex="-1">');
+
+	this._assembleHeader();
+	this._assembleBody();
+	this._assembleFooter();
+	this._assembleBackdrop();
+
 	this.element.on("hidden", function() {
 		self.remove();
 	});
-	if (this.config.header && this.config.closeButton) {
-		$('<button aria-hidden="true" data-dismiss="modal" class="close" type="button">')
-			.append("&times;").prependTo(header);
-	}
 	if ($.isFunction(this.config.onHide)) {
 		this.element.on("hide", function() {
 			self.config.onHide.call(self, self.element);
@@ -213,17 +233,6 @@ Echo.GUI.Modal.prototype._render = function() {
 		});
 	}
 
-	if (this.config.href) {
-		this.element.one("shown", function() {
-			body.append('<iframe src="' + self.config.href + '" id="" name="" class="echo-modal-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>');
-		});
-	}
-
-	// we used manual control for backdrop if fade is true
-	if (this.config.backdrop && this.config.fade) {
-		this.config.backdrop = false;
-	}
-
 	this.element.appendTo("body")
 		.wrap("<div class='echo-sdk-ui'>")
 		.modal(this.config);
@@ -233,12 +242,12 @@ Echo.GUI.Modal.prototype._render = function() {
 };
 
 Echo.GUI.Modal.prototype._addSection = function(css, content) {
-	var element = $("<div>");
-	element.addClass(css).appendTo(this.element);
+	var section = $('<div class="' + css + '">');
+	this.element.append(section);
 	if (content) {
-		element.append($.isFunction(content) ? content(element) : content);
+		section.append(Echo.Utils.invoke(content));
 	}
-	return element;
+	return section;
 };
 
 /**

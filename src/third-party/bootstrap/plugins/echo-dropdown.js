@@ -50,15 +50,22 @@ if (Echo.GUI.Dropdown) return;
  * 	icon    - URL for the icon.
  */
 Echo.GUI.Dropdown = function(config) {
-	if (!config || typeof config.target === "undefined") return;
+	if (!config || !config.target) return;
 
-	this.element = config.target instanceof Echo.jQuery
-		? config.target
-		: $(config.target);
+	config.target = $(config.target);
 
-	var dropdown = this._assembleContainer(config);
-	this._assembleEntries(config.entries, dropdown);
+	this.config = $.extend({
+		"title": "",
+		"entries": []
+	}, config);
+
+	this._render();
 };
+
+Echo.GUI.Dropdown.prototype._render = function() {
+	this.config.target.empty();
+	this._assembleEntries(this._assembleContainer());
+}
 
 /**
  * This method allows to change dropdown title.
@@ -67,34 +74,31 @@ Echo.GUI.Dropdown = function(config) {
  * Dropdown title.
  */
 Echo.GUI.Dropdown.prototype.setTitle = function(title) {
-	$(".dropdown-toggle", this.element).empty().append(title);
+	this.config.title = title;
+	this._render();
 };
 
-Echo.GUI.Dropdown.prototype._assembleContainer = function(params) {
-	var container = $("<ul>").addClass("nav")
-		.appendTo(this.element);
-	var dropdown = $("<li>")
-		.addClass("dropdown")
-		.appendTo(container);
-	$("<a>").addClass("dropdown-toggle")
-		.attr("data-toggle", "dropdown")
-		.attr("role", "button")
-		.attr("href", "#")
-		.append(params.title)
-		.appendTo(dropdown);
+Echo.GUI.Dropdown.prototype._assembleContainer = function() {
+	 var template =
+		'<li class="dropdown">' +
+			'<a class="dropdown-toggle" data-toggle="dropdown" role="button" href="#">' +
+				this.config.title +
+			'</a>' +
+		'</li>';
+	var dropdown = $(template);
+	this.config.target.append($('<ul class="nav">').append(dropdown));
+
 	return dropdown;
 };
 
-Echo.GUI.Dropdown.prototype._assembleEntries = function(entries, container) {
-	var menu = $("<ul>").addClass("dropdown-menu")
-		.attr("role", "menu")
-		.appendTo(container);
-	$.map(entries || [], function(entry) {
+Echo.GUI.Dropdown.prototype._assembleEntries = function(container) {
+	var menu = $('<ul class="dropdown-menu" role="menu">');
+	container.append(menu);
+
+	$.map(this.config.entries || [], function(entry) {
 		var item = $("<a role='button' class='echo-clickable' />")
 			.click(function() {
-				entry.handler && entry.handler.call(this, {
-					"title": entry.title
-				});
+				entry.handler && entry.handler.call(this, entry);
 			});
 		if (entry.icon) {
 			item.css({
@@ -104,7 +108,8 @@ Echo.GUI.Dropdown.prototype._assembleEntries = function(entries, container) {
 				"padding-left": 32
 			});
 		}
-		item.append(entry.title).appendTo(($("<li>").appendTo(menu)));
+		menu.append($("<li>").append(item.append(entry.title)));
+		item.html(entry.title).appendTo(($("<li>").appendTo(menu)));
 	});
 	return menu;
 };
