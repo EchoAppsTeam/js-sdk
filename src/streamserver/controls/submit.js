@@ -667,7 +667,8 @@ submit.css =
 	'.{class:fieldsWrapper} input.{class:url}[type="text"] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; }' +
 	'.{class:author} { font-weight: bold; }' +
 	'.{class:content} { padding: 5px 5px 5px 6px; background-color: #fff; }' +
-	'.{class:content} textarea.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none ; }' +
+	'.{class:content} textarea.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none; box-shadow: none;}' +
+	'.{class:content} textarea.{class:textArea}:focus { box-shadow: none;}' +
 	'.{class:text} input { width: 100%; border: none; }' +
 	'.{class:metadataContainer} { margin-top: 6px; }' +
 	'.{class:metadataLabel} { float: left; width: 50px; margin-right: -50px; text-align: right; line-height: 22px; }' +
