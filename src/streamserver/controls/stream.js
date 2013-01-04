@@ -27,9 +27,8 @@ var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 if (Echo.Control.isDefined(stream)) return;
 
 stream.init = function() {
-	if (!this.checkAppKey()) {
-		return;
-	}
+	if (!this._checkAppKey()) return;
+
 	this._recalcEffectsTimeouts();
 
 	// define default stream state based on the config parameters

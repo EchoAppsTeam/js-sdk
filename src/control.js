@@ -1033,6 +1033,7 @@ Echo.Control.prototype._initializers.user = function(callback) {
 	var control = this;
 	if (!this.config.get("appkey")) {
 		callback.call(control);
+		return;
 	}
 	if (this.config.get("user")) {
 		this.user = this.config.get("user");
@@ -1222,14 +1223,9 @@ Echo.Control.prototype._domTransformer = function(args) {
 	return args.dom;
 };
 
-Echo.Control.prototype.checkAppKey = function() {
+Echo.Control.prototype._checkAppKey = function() {
 	if (!this.config.get("appkey")) {
-		this.showError({
-			"errorCode": "incorrect_appkey"
-		}, {
-			"critical": true,
-			"target": this.config.get("target")
-		});
+		this.showError({"errorCode": "incorrect_appkey"}, {"critical": true});
 		return false;
 	}
 	return true;

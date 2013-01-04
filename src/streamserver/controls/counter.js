@@ -27,9 +27,8 @@ var counter = Echo.Control.manifest("Echo.StreamServer.Controls.Counter");
 if (Echo.Control.isDefined(counter)) return;
 
 counter.init = function() {
-	if (!this.checkAppKey()) {
-		return;
-	}
+	if (!this._checkAppKey()) return;
+
 	// data can be defined explicitly
 	// in this case we do not make API requests
 	// TODO: no live updates for now if data is passed as a config value
