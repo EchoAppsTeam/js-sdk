@@ -19,15 +19,6 @@ Echo.StreamServer.API = {};
  * @param {Object} config Configuration data.
  */
 Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
-	if (!config.data.appkey) {
-		Echo.Utils.log({
-			"type": "error",
-			"component": "Echo.StreamServer.API",
-			"message": "Unable to initialize API request, appkey is invalid",
-			"args": {"config": config}
-		});
-		return {};
-	}
 	config = $.extend({
 		/**
 		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.

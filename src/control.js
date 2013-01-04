@@ -1031,6 +1031,9 @@ Echo.Control.prototype._initializers.dependencies = function(callback) {
 
 Echo.Control.prototype._initializers.user = function(callback) {
 	var control = this;
+	if (!this.config.get("appkey")) {
+		callback.call(control);
+	}
 	if (this.config.get("user")) {
 		this.user = this.config.get("user");
 		callback.call(control);
@@ -1218,6 +1221,19 @@ Echo.Control.prototype._domTransformer = function(args) {
 	$(anchor, args.dom)[action](content);
 	return args.dom;
 };
+
+Echo.Control.prototype.checkAppKey = function() {
+	if (!this.config.get("appkey")) {
+		this.showError({
+			"errorCode": "incorrect_appkey"
+		}, {
+			"critical": true,
+			"target": this.config.get("target")
+		});
+		return false;
+	}
+	return true;
+}
 
 Echo.Control.prototype.baseCSS =
 	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +

@@ -106,7 +106,7 @@ plugin.config = {
 };
 
 plugin.enabled = function() {
-	return (this.component.user.get("sessionID") &&
+	return (this.component.user && this.component.user.get("sessionID") &&
 		this.config.get("identityManager.login") &&
 		this.config.get("identityManager.signup"));
 };
