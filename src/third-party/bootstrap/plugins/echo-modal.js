@@ -71,11 +71,13 @@ if (Echo.GUI.Modal) return;
  *
  * @param {Object} config.data
  *
- * @param {String} config.data.title
+ * @param {String|Function} config.data.title
  * Modal dialog title (can contain HTML tags).
+ * If function passed in this parameter, the function result will be used.
  *
- * @param {String} config.data.body
+ * @param {String|Function} config.data.body
  * The main content of the dialog (can contain HTML tags).
+ * If function passed in this parameter, the function result will be used.
  *
  * @param {Array} config.data.buttons
  * You can specify the custom buttons in this parameter which should be displayed in the modal footer.
@@ -159,6 +161,7 @@ Echo.GUI.Modal.prototype._assembleBody = function() {
 }
 
 Echo.GUI.Modal.prototype._assembleFooter = function() {
+	var self = this;
 	if (this.config.footer) {
 		var footer = this._addSection("modal-footer");
 		if (this.config.data.buttons) {
@@ -168,7 +171,7 @@ Echo.GUI.Modal.prototype._assembleFooter = function() {
 					el.addClass(button.extraClass);
 				}
 				el.click(function() {
-					button.handler && button.handler.call(this);
+					button.handler && button.handler.call(self, this);
 				});
 				el.appendTo(footer);
 			});
@@ -281,10 +284,5 @@ Echo.GUI.Modal.prototype.hide = function() {
 		this.element.modal("hide");
 	}
 };
-
-Echo.Utils.addCSS(
-	".echo-sdk-ui .modal-header { min-height: 20px; }" +
-	".echo-modal-iframe { display: block; width: 100%; height: 100%; }",
-"echo-modal-plugin");
 
 })(Echo.jQuery);

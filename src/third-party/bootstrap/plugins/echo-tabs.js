@@ -53,6 +53,7 @@ Echo.GUI.Tabs = function(config) {
 };
 
 Echo.GUI.Tabs.prototype._render = function() {
+	var self = this;
 	this.config.target.empty();
 
 	this.config.target.append($('<ul class="nav nav-tabs">'));
@@ -62,8 +63,10 @@ Echo.GUI.Tabs.prototype._render = function() {
 		this.config.target.append(this.config.panels);
 	}
 
-	this.config.target.find('a[data-toggle=tab]').on("show", this.config.show);
-}
+	this.config.target.find('a[data-toggle=tab]').on("show", function() {
+		self.config.show.call(self, this);
+	});
+};
 
 /**
  * Method to get a DOM element which contains panels.
@@ -126,9 +129,12 @@ Echo.GUI.Tabs.prototype.remove = function(id) {
  * HTML Element which contains the tab content.
  */
 Echo.GUI.Tabs.prototype.add = function(tabConfig, panel) {
+	var self = this;
 	tabConfig = tabConfig || {};
 	var tab = $('<li><a data-toggle="tab" href="#' + tabConfig.id + '" data-item="' + tabConfig.id + '">' + tabConfig.label  + '</a></li>');
-	$("a[data-toggle=tab]", tab).on("show", this.config.show);
+	$("a[data-toggle=tab]", tab).on("show", function() {
+		self.config.show.call(self, this);
+	});
 	this.config.target.append(tab);
 
 	if (panel) {

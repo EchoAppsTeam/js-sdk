@@ -1,0 +1,6 @@
+.echo-sdk-ui .dropdown-menu li a,
+.echo-sdk-ui .dropdown-menu li a:hover {
+	background-repeat: no-repeat;
+	background-position: 10px 5px;
+	padding-left: 32px;
+}

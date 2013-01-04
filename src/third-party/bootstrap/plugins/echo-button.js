@@ -11,8 +11,7 @@ if (Echo.GUI.Button) return;
 /**
  * @class Echo.GUI.Button
  * The class provides an interface to assemble the Bootstrap component
- * dynamically, based on the JSON config structure rather than static
- * HTML code.
+ * dynamically, based on the JS Object rather than static HTML code.
  *
  * Example:
  * 	var button = new Echo.GUI.Button({
@@ -73,7 +72,7 @@ Echo.GUI.Button.prototype._render = function() {
 		iconElement.remove();
 	}
 	this.config.target.attr("disabled", this.config.disabled);
-}
+};
 
 /**
  * Method to update button label, icon and availability.
@@ -99,10 +98,5 @@ Echo.GUI.Button.prototype.update = function(params) {
 
 	this._render();
 };
-
-Echo.Utils.addCSS(
-	".btn .echo-label { float: left; }" +
-	".btn .echo-icon { height: 16px; width: 16px; float: left; margin-right: 2px; margin-top: 2px; }",
-	"echo-button-plugin");
 
 })(Echo.jQuery);

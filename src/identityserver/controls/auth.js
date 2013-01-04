@@ -116,7 +116,7 @@ auth.dependencies = [{
 	"loaded": function() { return !!Echo.GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
-	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap.pack.css"
+	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
 }];
 
 auth.vars = {

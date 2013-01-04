@@ -17,6 +17,7 @@ if (Echo.GUI.Dropdown) return;
  * 	var dropdown = new Echo.GUI.Dropdown({
  * 		"target": ".css-selector",
  * 	    "title": "Dropdown title",
+ * 	    "extraClass": "nav",
  * 		"entries": [{
  * 			"title": "entry1",
  * 			"handler": function() {},
@@ -39,6 +40,9 @@ if (Echo.GUI.Dropdown) return;
  * 	- HTMLElement (ex: document.getElementById("some-element-id"))
  * 	- jQuery object (ex: $(".css-selector"))
  *
+ * @param {String} config.extraClass
+ * Custom class name which should be added to the dropdown.
+ *
  * @param {String} config.title
  * Dropdown title.
  *
@@ -47,7 +51,7 @@ if (Echo.GUI.Dropdown) return;
  * Each entry is the object with the following parameters:
  * 	title   - entry title
  * 	handler - function which will be called when entry is selected
- * 	icon    - URL for the icon.
+ * 	icon    - URL for the icon. Icon size should be 16x16 pixels.
  */
 Echo.GUI.Dropdown = function(config) {
 	if (!config || !config.target) return;
@@ -65,7 +69,7 @@ Echo.GUI.Dropdown = function(config) {
 Echo.GUI.Dropdown.prototype._render = function() {
 	this.config.target.empty();
 	this._assembleEntries(this._assembleContainer());
-}
+};
 
 /**
  * This method allows to change dropdown title.
@@ -86,7 +90,7 @@ Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 			'</a>' +
 		'</li>';
 	var dropdown = $(template);
-	this.config.target.append($('<ul class="nav">').append(dropdown));
+	this.config.target.append($('<ul class="' + this.config.extraClass + '">').append(dropdown));
 
 	return dropdown;
 };
@@ -102,14 +106,10 @@ Echo.GUI.Dropdown.prototype._assembleEntries = function(container) {
 			});
 		if (entry.icon) {
 			item.css({
-				"background-image": "url(" + entry.icon + ")",
-				"background-repeat": "no-repeat",
-				"background-position": "10px 5px",
-				"padding-left": 32
+				"background-image": "url(" + entry.icon + ")"
 			});
 		}
 		menu.append($("<li>").append(item.append(entry.title)));
-		item.html(entry.title).appendTo(($("<li>").appendTo(menu)));
 	});
 	return menu;
 };

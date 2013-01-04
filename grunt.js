@@ -27,6 +27,7 @@ module.exports = function(grunt) {
 			],
 			"bootstrap": [
 				"<%= dirs.src %>/third-party/bootstrap/**/*.js",
+				"<%= dirs.src %>/third-party/bootstrap/**/*.css",
 				"<%= dirs.src %>/third-party/bootstrap/**/*.less"
 			],
 			"images": [
@@ -175,8 +176,8 @@ module.exports = function(grunt) {
 		},
 		mincss: {
 			bootstrap: {
-				src: ["<%= dirs.build %>/third-party/bootstrap.pack.css"],
-				dest: "<%= dirs.build %>/third-party/bootstrap.pack.css"
+				src: ["<%= dirs.build %>/gui.pack.css"],
+				dest: "<%= dirs.build %>/gui.pack.css"
 			}
 		},
 		less: {
@@ -185,7 +186,7 @@ module.exports = function(grunt) {
 					paths: [dirs.build + "/third-party/bootstrap/less"]
 				},
 				files: {
-					"<%= dirs.build %>/third-party/bootstrap.pack.css": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"]
+					"<%= dirs.build %>/gui.pack.css": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less", "<%= dirs.build %>/third-party/bootstrap/plugins/*.css"]
 				}
 			}
 		},
@@ -221,7 +222,7 @@ module.exports = function(grunt) {
 			},
 			"bootstrap-css": {
 				files: [
-					"<%= dirs.build %>/third-party/bootstrap.pack.css"
+					"<%= dirs.build %>/gui.pack.css"
 				],
 				patcher: "bootstrap-css"
 			}
