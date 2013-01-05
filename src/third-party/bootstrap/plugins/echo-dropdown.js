@@ -16,8 +16,8 @@ if (Echo.GUI.Dropdown) return;
  * Example:
  * 	var dropdown = new Echo.GUI.Dropdown({
  * 		"target": ".css-selector",
- * 	    "title": "Dropdown title",
- * 	    "extraClass": "nav",
+ * 		"title": "Dropdown title",
+ * 		"extraClass": "nav",
  * 		"entries": [{
  * 			"title": "entry1",
  * 			"handler": function() {},
@@ -58,15 +58,29 @@ Echo.GUI.Dropdown = function(config) {
 
 	config.target = $(config.target);
 
-	this.config = $.extend({
+	this.config = {
 		"title": "",
 		"entries": []
-	}, config);
-
-	this._render();
+	};
+	this.update(config);
 };
 
-Echo.GUI.Dropdown.prototype._render = function() {
+/**
+ * This method updates config and re-assemble HTML code of the dropdown.
+ *
+ * It can be called with the same parameters as a {@link Echo.GUI.Dropdown#constructor}
+ * except config.target.
+ */
+Echo.GUI.Dropdown.prototype.update = function(config) {
+	this.config = $.extend(true, this.config, config);
+	this.refresh();
+};
+
+/**
+ * This method re-assemble the dropdown HTML code and
+ * append it to the target.
+ */
+Echo.GUI.Dropdown.prototype.refresh = function() {
 	this.config.target.empty();
 	this._assembleEntries(this._assembleContainer());
 };
@@ -79,7 +93,7 @@ Echo.GUI.Dropdown.prototype._render = function() {
  */
 Echo.GUI.Dropdown.prototype.setTitle = function(title) {
 	this.config.title = title;
-	this._render();
+	this.refresh();
 };
 
 Echo.GUI.Dropdown.prototype._assembleContainer = function() {
@@ -90,7 +104,7 @@ Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 			'</a>' +
 		'</li>';
 	var dropdown = $(template);
-	this.config.target.append($('<ul class="' + this.config.extraClass + '">').append(dropdown));
+	this.config.target.append($('<ul class="' + (this.config.extraClass || "") + '">').append(dropdown));
 
 	return dropdown;
 };
@@ -105,6 +119,7 @@ Echo.GUI.Dropdown.prototype._assembleEntries = function(container) {
 				entry.handler && entry.handler.call(this, entry);
 			});
 		if (entry.icon) {
+			item.addClass("icon");
 			item.css({
 				"background-image": "url(" + entry.icon + ")"
 			});

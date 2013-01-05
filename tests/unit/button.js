@@ -5,6 +5,7 @@ var suite = Echo.Tests.Unit.Button = function() {};
 suite.prototype.info = {
 	"className": "Echo.GUI.Button",
 	"functions": [
+		"refresh",
 		"update"
 	]
 };
@@ -42,6 +43,11 @@ suite.prototype.tests.commonWorkflow = {
 			"Checking that label is changed after update() method");
 		QUnit.ok(element.attr('disabled'),
 			"Checking that button is disabled after update() method");
+
+		$(".echo-label", element).html("NewLabel");
+		button.refresh();
+		QUnit.ok($(".echo-label", element).html() === "SecondLabel",
+			"Checking refresh() method");
 
 		var backgroundRegExp = new RegExp(".*background(-image)?:.*" + loadingIcon, "i");
 

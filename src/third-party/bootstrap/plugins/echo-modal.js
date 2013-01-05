@@ -106,7 +106,7 @@ if (Echo.GUI.Modal) return;
  * Apply a CSS fade transition.
  */
 Echo.GUI.Modal = function(config) {
-	this.config = $.extend({
+	this.config = {
 		"show": false,
 		"backdrop": true,
 		"keyboard": true,
@@ -120,10 +120,92 @@ Echo.GUI.Modal = function(config) {
 		"footer": true,
 		"header": true,
 		"fade": false
-	}, config);
+	};
+	this.update(config);
+};
 
-	if (this.config.show) {
-		this._render();
+/**
+ * This method updates config and re-assemble HTML code of the modal.
+ *
+ * It can be called with the same parameters as a {@link Echo.GUI.Modal#constructor}
+ */
+Echo.GUI.Modal.prototype.update = function(config) {
+	this.config = $.extend(true, this.config || {}, config);
+	this.refresh();
+};
+
+/**
+ * This method re-assemble the modal dialog HTML code and
+ * append it to the target.
+ */
+Echo.GUI.Modal.prototype.refresh = function() {
+	var self = this;
+	if (!this.config.show) return;
+	if (this.rendered) this.remove();
+
+	this.rendered = true;
+	var css = this.config.fade ? "fade" : "hide";
+	this.element = this.element || $('<div class="modal ' + css + '" role="dialog" tabindex="-1">');
+	this.element.empty();
+
+	this._assembleHeader();
+	this._assembleBody();
+	this._assembleFooter();
+	this._assembleBackdrop();
+
+	this.element.on("hidden", function() {
+		self.remove();
+	});
+	if ($.isFunction(this.config.onHide)) {
+		this.element.on("hide", function() {
+			self.config.onHide.call(self, self.element);
+		});
+	}
+	if ($.isFunction(this.config.onShow)) {
+		this.element.on("shown", function() {
+			self.config.onShow.call(self, self.element);
+		});
+	}
+
+	this.element.appendTo("body")
+		.wrap("<div class='echo-sdk-ui'>")
+		.modal(this.config);
+
+	// if we try show few modals in one time, then event "focusin.modal" be called infinity times
+	$(document).off('focusin.modal');
+};
+
+/**
+ * Shows the modal dialog.
+ *  myModal.show();
+ */
+Echo.GUI.Modal.prototype.show = function() {
+	this.config.show = true;
+	this.refresh();
+};
+
+/**
+ * Hides the modal dialog and removes the dialog instance.
+ *  myModal.remove();
+ */
+Echo.GUI.Modal.prototype.remove = function() {
+	if (this.rendered) {
+		this.element.modal("hide");
+		this.rendered = false;
+		this.backdrop && this.backdrop.remove();
+		this.element.find('iframe').hide().attr('src', '//about:blank').end().empty();
+		this.element.unwrap().remove();
+	}
+};
+
+/**
+ * Hides the modal dialog.
+ *  myModal.hide();
+ */
+Echo.GUI.Modal.prototype.hide = function() {
+	this.config.show = false;
+	if (this.rendered) {
+		this.element.modal("hide");
 	}
 };
 
@@ -187,6 +269,7 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 				var modal = self.element.data('modal');
 				var shown = modal.isShown;
 				var backdrop = modal.options.backdrop;
+				if (backdrop) return;
 
 				modal.options.backdrop = true;
 				modal.isShown = true;
@@ -208,42 +291,6 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 	}
 }
 
-Echo.GUI.Modal.prototype._render = function() {
-	var self = this;
-
-	if (this.rendered) return;
-
-	this.rendered = true;
-	var css = this.config.fade ? "fade" : "hide";
-	this.element = $('<div class="modal ' + css + '" role="dialog" tabindex="-1">');
-
-	this._assembleHeader();
-	this._assembleBody();
-	this._assembleFooter();
-	this._assembleBackdrop();
-
-	this.element.on("hidden", function() {
-		self.remove();
-	});
-	if ($.isFunction(this.config.onHide)) {
-		this.element.on("hide", function() {
-			self.config.onHide.call(self, self.element);
-		});
-	}
-	if ($.isFunction(this.config.onShow)) {
-		this.element.on("shown", function() {
-			self.config.onShow.call(self, self.element);
-		});
-	}
-
-	this.element.appendTo("body")
-		.wrap("<div class='echo-sdk-ui'>")
-		.modal(this.config);
-
-	// if we try show few modals in one time, then event "focusin.modal" be called infinity times
-	$(document).off('focusin.modal');
-};
-
 Echo.GUI.Modal.prototype._addSection = function(css, content) {
 	var section = $('<div class="' + css + '">');
 	this.element.append(section);
@@ -251,38 +298,6 @@ Echo.GUI.Modal.prototype._addSection = function(css, content) {
 		section.append(Echo.Utils.invoke(content));
 	}
 	return section;
-};
-
-/**
- * Shows the modal dialog.
- * 	myModal.show();
- */
-Echo.GUI.Modal.prototype.show = function() {
-	this._render();
-	this.element.modal("show");
-};
-
-/**
- * Hides the modal dialog and removes the dialog instance.
- * 	myModal.remove();
- */
-Echo.GUI.Modal.prototype.remove = function() {
-	if (this.rendered) {
-		this.rendered = false;
-		this.backdrop && this.backdrop.remove();
-		this.element.find('iframe').hide().attr('src', '//about:blank').end().empty();
-		this.element.unwrap().remove();
-	}
-};
-
-/**
- * Hides the modal dialog.
- * 	myModal.hide();
- */
-Echo.GUI.Modal.prototype.hide = function() {
-	if (this.rendered) {
-		this.element.modal("hide");
-	}
 };
 
 })(Echo.jQuery);

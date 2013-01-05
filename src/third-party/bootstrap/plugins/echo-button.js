@@ -47,56 +47,42 @@ Echo.GUI.Button = function(config) {
 	if (!config || !config.target) return;
 	config.target = $(config.target);
 
-	this.config = $.extend({
+	this.config = {
 		"label": config.target.html(),
 		"disabled": !!config.target.attr("disabled")
-	}, config);
-
-	this._render();
+	};
+	this.update(config);
 };
 
-Echo.GUI.Button.prototype._render = function() {
+/**
+ * This method updates config and re-assemble HTML code of the button.
+ *
+ * It can be called with the same parameters as a {@link Echo.GUI.Button#constructor}
+ * except config.target.
+ */
+Echo.GUI.Button.prototype.update = function(config) {
+	this.config = $.extend(true, this.config, config);
+	this.refresh();
+};
+
+/**
+ * This method re-assemble the button HTML code and
+ * append it to the target.
+ */
+Echo.GUI.Button.prototype.refresh = function() {
 	this.config.target.empty().append('<div class="echo-label">');
 
 	$(".echo-label", this.config.target).text(this.config.label || "");
 	var iconElement = $(".echo-icon", this.config.target);
-	var setBackground = function(element, icon) {
-		element.css({"background": "no-repeat center url(" + icon + ")"});
-	};
 	if (this.config.icon) {
 		if (!iconElement.length) {
 			iconElement = $("<div>").addClass("echo-icon").prependTo(this.config.target);
 		}
-		setBackground(iconElement, this.config.icon);
+		iconElement.css({"background": "no-repeat center url(" + this.config.icon + ")"});
 	} else {
 		iconElement.remove();
 	}
 	this.config.target.attr("disabled", this.config.disabled);
-};
-
-/**
- * Method to update button label, icon and availability.
- *
- * This method allows to change the button label, icon and availability.
- * If some of attributes of params object is omitted, empty strings will
- * be used for string values and false for boolean value.
- *
- * @param {Object} params
- * Button parameters to be replaced.
- *
- * @param {String} params.label
- * Button label
- *
- * @param {String} [params.icon]
- * URL for the icon which should be displayed near the label.
- *
- * @param {Boolean} [params.disabled=false]
- * Specifies whether the button disabled.
- */
-Echo.GUI.Button.prototype.update = function(params) {
-	this.config = $.extend(this.config, params);
-
-	this._render();
 };
 
 })(Echo.jQuery);

@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Modal = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI.Modal",
-	"functions": ["show", "remove", "hide"]
+	"functions": ["show", "remove", "hide", "refresh", "update"]
 };
 
 suite.prototype.tests = {};
@@ -84,6 +84,23 @@ suite.prototype.tests.commonWorkflow = {
 		QUnit.ok(buttonsTest, "Check that custom buttons is displayed");
 
 		QUnit.ok(modalElement.hasClass("fade"), "Check the modal fade");
+
+		$(".modal-header h3", modalElement).html("Some Title");
+		modal.refresh();
+		QUnit.ok($(".modal-header h3", modalElement).html() === modalParams.data.title, "Check refresh() method");
+
+		modal.update({
+			"extraClass": "upd-echo-hide",
+			"data": {
+				"title": "upd-title",
+				"body": "upd_body"
+			},
+			"width": "400"
+		});
+		QUnit.ok(modalElement.hasClass("upd-echo-hide")
+				&& $(".modal-header h3", modalElement).html() === "upd-title"
+				&& $(".modal-body", modalElement).html() === "upd_body"
+				&& modalElement.width() === 400, "Check update() method");
 
 		modal.hide();
 		QUnit.ok(!$(".modal").length, "Check hide() method");

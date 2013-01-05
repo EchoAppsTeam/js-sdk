@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Dropdown = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI.Dropdown",
-	"functions": ["setTitle"]
+	"functions": ["setTitle", "refresh", "update"]
 };
 
 suite.prototype.tests = {};
@@ -63,6 +63,20 @@ suite.prototype.tests.commonWorkflow = {
 		dropdown.setTitle("newTitle");
 		dropdownTitle = element.find(".dropdown-toggle").html();
 		QUnit.ok(dropdownTitle === "newTitle", "Check that title is changed after setTitle() method called");
+
+		$("a.dropdown-toggle", element).html("Some title");
+		dropdown.refresh();
+		QUnit.ok($("a.dropdown-toggle", element).html() === "newTitle", "Check refresh() method");
+
+		dropdown.update({
+				"extraClass": "upd-extra-class",
+				"title": "upd-title",
+				"entries": [{"title": "upd-title1"}, {"title": "upd-title2"}]
+			});
+		QUnit.ok($(".dropdown-toggle", element).html() === "upd-title"
+				&& $(".upd-extra-class", element).length
+				&& $(".echo-clickable:first", element).html() === "upd-title1"
+				&& $(".echo-clickable:last", element).html() === "upd-title2", "Check update() method");
 
 		$(target).empty();
 		QUnit.start();
