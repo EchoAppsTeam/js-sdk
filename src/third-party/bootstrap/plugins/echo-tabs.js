@@ -19,16 +19,15 @@ if (Echo.GUI.Tabs) return;
  * 		"entries": [{
  * 			"id": "tab1",
  * 			"label": "Tab 1",
- * 			"panel": $(".css-selector"),
+ * 			"panel": $(".panel-css-selector"),
  * 			"extraClass": "extra-class"
  * 		}, {
  * 			"id": "tab2",
  * 			"label": "Tab 2",
- * 			"panel": $(".css-selector2"),
+ * 			"panel": $(".panel-css-selector2"),
  * 		}],
  * 		"show": function() {}
  * 	});
- * 	myTabs.add({"id": "tab1", "label": "Tab label"});
  *
  * @constructor
  * Creates a new tabs in the container you have passed in the "config.target".
