@@ -64,6 +64,7 @@ Echo.GUI.Tabs = function(config) {
 	this.config = $.extend(true, {}, {
 		"panels": "<div>",
 		"entries": [],
+		"extraClass": "",
 		"show": function() {}
 	}, config);
 	this.config.panels = $(this.config.panels);
@@ -77,24 +78,38 @@ Echo.GUI.Tabs = function(config) {
  * append it to the target.
  */
 Echo.GUI.Tabs.prototype.refresh = function() {
-	var self = this;
-	this.config.target.empty();
-	this.config.target.empty();
+	if (!this.config.target) return;
+
+	var self = this,
+		entries = this.config.entries,
+		panels = this.config.panels,
+		target = this.config.target;
+
+	target.empty();
+	target.empty();
 
 	this.tabsContainer = $('<ul class="nav nav-tabs">');
-	this.config.target.append(this.tabsContainer);
+	target.append(this.tabsContainer);
 
-	this.config.panels.addClass("tab-content");
-	if (this.config.panels.parent().length === 0) {
-		this.config.target.append(this.config.panels);
+	panels.addClass("tab-content");
+	if (panels.parent().length === 0) {
+		target.append(panels);
 	}
 
-	if (this.config.entries.length) {
-		for (var i =0; i < this.config.entries.length; i++) {
-			this.add(this.config.entries[i]);
+	if (entries.length) {
+		for (var i =0; i < entries.length; i++) {
+			this.add(entries[i]);
 		}
 	}
 };
+
+/**
+ * Hides the tabs and removes it's instance.
+ */
+Echo.GUI.Tabs.prototype.destroy = function() {
+	this.config.target.empty();
+	delete this.config.target;
+}
 
 /**
  * Method to get a DOM element which contains panels.
@@ -176,10 +191,9 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	var self = this;
 	if (!tabConfig || !tabConfig.id) return;
 
-	tabConfig = tabConfig || {};
 	var attrs = [
 		(tabConfig.disabled ? ' class="disabled"' : ' data-toggle="tab"'),
-		'class="' + (tabConfig.extraClass || "") + '"',
+		'class="' + tabConfig.extraClass + '"',
 		'href="#' + tabConfig.id + '"',
 		'data-item="' + tabConfig.id + '"'
 	];
@@ -239,7 +253,7 @@ Echo.GUI.Tabs.prototype.update = function(id, config) {
 		config.content && this.config.panels.find("[id='" + id + "']").html(config.content);
 		this.config.target.find("a[data-item='" + id + "']")
 			.html(config.label)
-			.addClass(config["extraClass"] || "");
+			.addClass(config.extraClass);
 	}
 };
 

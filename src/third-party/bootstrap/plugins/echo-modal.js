@@ -130,7 +130,7 @@ Echo.GUI.Modal = function(config) {
  * It can be called with the same parameters as a {@link Echo.GUI.Modal#constructor}
  */
 Echo.GUI.Modal.prototype.update = function(config) {
-	this.config = $.extend(true, this.config || {}, config);
+	this.config = $.extend(true, this.config, config);
 	this.refresh();
 };
 
@@ -141,7 +141,7 @@ Echo.GUI.Modal.prototype.update = function(config) {
 Echo.GUI.Modal.prototype.refresh = function() {
 	var self = this;
 	if (!this.config.show) return;
-	if (this.rendered) this.remove();
+	if (this.rendered) this.destroy();
 
 	this.rendered = true;
 	var css = this.config.fade ? "fade" : "hide";
@@ -154,7 +154,7 @@ Echo.GUI.Modal.prototype.refresh = function() {
 	this._assembleBackdrop();
 
 	this.element.on("hidden", function() {
-		self.remove();
+		self.destroy();
 	});
 	if ($.isFunction(this.config.onHide)) {
 		this.element.on("hide", function() {
@@ -180,15 +180,14 @@ Echo.GUI.Modal.prototype.refresh = function() {
  *  myModal.show();
  */
 Echo.GUI.Modal.prototype.show = function() {
-	this.config.show = true;
 	this.refresh();
 };
 
 /**
  * Hides the modal dialog and removes the dialog instance.
- *  myModal.remove();
+ *  myModal.destroy();
  */
-Echo.GUI.Modal.prototype.remove = function() {
+Echo.GUI.Modal.prototype.destroy = function() {
 	if (this.rendered) {
 		this.element.modal("hide");
 		this.rendered = false;
@@ -203,7 +202,6 @@ Echo.GUI.Modal.prototype.remove = function() {
  *  myModal.hide();
  */
 Echo.GUI.Modal.prototype.hide = function() {
-	this.config.show = false;
 	if (this.rendered) {
 		this.element.modal("hide");
 	}

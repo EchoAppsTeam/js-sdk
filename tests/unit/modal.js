@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Modal = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI.Modal",
-	"functions": ["show", "remove", "hide", "refresh", "update"]
+	"functions": ["show", "destroy", "hide", "refresh", "update"]
 };
 
 suite.prototype.tests = {};
@@ -109,8 +109,8 @@ suite.prototype.tests.commonWorkflow = {
 		$(".modal").hide();
 		QUnit.ok($(".modal").length, "Check show() method");
 
-		modal.remove();
-		QUnit.ok(!$(".modal").length, "Check remove() method");
+		modal.destroy();
+		QUnit.ok(!$(".modal").length, "Check destroy() method");
 
 		QUnit.start();
 		

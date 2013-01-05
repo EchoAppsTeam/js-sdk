@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Tabs = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI.Tabs",
-	"functions": ["getPanels", "disable", "enable", "remove", "add", "get", "has", "update", "show", "refresh"]
+	"functions": ["getPanels", "disable", "enable", "remove", "add", "get", "has", "update", "show", "refresh", "destroy"]
 };
 
 suite.prototype.tests = {};
@@ -93,6 +93,9 @@ suite.prototype.tests.commonWorkflow = {
 		$("a[data-item='tab2']", element).html("Some label");
 		echoTabs.refresh();
 		QUnit.ok($("a[data-item='tab2']", element).html() === "New label", "Check refresh() method");
+
+		echoTabs.destroy();
+		QUnit.ok(element.is(":empty"), "Check destroy() method");
 
 		$(target).empty();
 		QUnit.start();

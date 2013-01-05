@@ -6,7 +6,8 @@ suite.prototype.info = {
 	"className": "Echo.GUI.Button",
 	"functions": [
 		"refresh",
-		"update"
+		"update",
+		"destroy"
 	]
 };
 
@@ -66,11 +67,15 @@ suite.prototype.tests.commonWorkflow = {
 		$(target).empty();
 
 		element = $('<button disabled="disabled">ClickMe</button>').appendTo(target);
-		new Echo.GUI.Button({"target": element});
+		button = new Echo.GUI.Button({"target": element});
 		QUnit.ok($(target).html().match(/ClickMe/),
 			 "Checking that label value is taken from the element");
+
 		QUnit.ok(element.attr('disabled'),
 			"Checking that disabled value is taken from the element");
+
+		button.destroy();
+		QUnit.ok(element.is(":empty"), "Checking destroy() method");
 
 		$(target).empty();
 		QUnit.start();

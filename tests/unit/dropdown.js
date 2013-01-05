@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Dropdown = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI.Dropdown",
-	"functions": ["setTitle", "refresh", "update"]
+	"functions": ["setTitle", "refresh", "update", "destroy"]
 };
 
 suite.prototype.tests = {};
@@ -66,7 +66,7 @@ suite.prototype.tests.commonWorkflow = {
 
 		$("a.dropdown-toggle", element).html("Some title");
 		dropdown.refresh();
-		QUnit.ok($("a.dropdown-toggle", element).html() === "newTitle", "Check refresh() method");
+		QUnit.ok($("a.dropdown-toggle", element).html() === dropdownParams.title, "Check refresh() method");
 
 		dropdown.update({
 				"extraClass": "upd-extra-class",
@@ -77,6 +77,9 @@ suite.prototype.tests.commonWorkflow = {
 				&& $(".upd-extra-class", element).length
 				&& $(".echo-clickable:first", element).html() === "upd-title1"
 				&& $(".echo-clickable:last", element).html() === "upd-title2", "Check update() method");
+
+		dropdown.destroy();
+		QUnit.ok(element.is(":empty"), "Check destroy() method");
 
 		$(target).empty();
 		QUnit.start();

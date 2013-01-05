@@ -66,13 +66,23 @@ Echo.GUI.Button.prototype.update = function(config) {
 };
 
 /**
+ * Hides the button and removes it's instance.
+ */
+Echo.GUI.Button.prototype.destroy = function() {
+	this.config.target.empty();
+	delete this.config.target;
+}
+
+/**
  * This method re-assemble the button HTML code and
  * append it to the target.
  */
 Echo.GUI.Button.prototype.refresh = function() {
+	if (!this.config.target) return;
+
 	this.config.target.empty().append('<div class="echo-label">');
 
-	$(".echo-label", this.config.target).text(this.config.label || "");
+	$(".echo-label", this.config.target).text(this.config.label);
 	var iconElement = $(".echo-icon", this.config.target);
 	if (this.config.icon) {
 		if (!iconElement.length) {

@@ -23,7 +23,7 @@ if (Echo.GUI.Dropdown) return;
  * 			"handler": function() {},
  * 			"icon": "http://example.com/icon.png"
  * 		}, {
- * 			"title": "entry2",
+ * 			"title": "entry2"
  * 		}]
  * 	});
  *
@@ -60,6 +60,7 @@ Echo.GUI.Dropdown = function(config) {
 
 	this.config = {
 		"title": "",
+		"extraClass": "",
 		"entries": []
 	};
 	this.update(config);
@@ -77,10 +78,20 @@ Echo.GUI.Dropdown.prototype.update = function(config) {
 };
 
 /**
+ * Hides the dropdown and removes it's instance.
+ */
+Echo.GUI.Dropdown.prototype.destroy = function() {
+	this.config.target.empty();
+	delete this.config.target;
+}
+
+/**
  * This method re-assemble the dropdown HTML code and
  * append it to the target.
  */
 Echo.GUI.Dropdown.prototype.refresh = function() {
+	if (!this.config.target) return;
+
 	this.config.target.empty();
 	this._assembleEntries(this._assembleContainer());
 };
@@ -92,8 +103,7 @@ Echo.GUI.Dropdown.prototype.refresh = function() {
  * Dropdown title.
  */
 Echo.GUI.Dropdown.prototype.setTitle = function(title) {
-	this.config.title = title;
-	this.refresh();
+	$(".dropdown-toggle", this.config.target).empty().append(title);
 };
 
 Echo.GUI.Dropdown.prototype._assembleContainer = function() {
@@ -104,7 +114,7 @@ Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 			'</a>' +
 		'</li>';
 	var dropdown = $(template);
-	this.config.target.append($('<ul class="' + (this.config.extraClass || "") + '">').append(dropdown));
+	this.config.target.append($('<ul class="' + this.config.extraClass + '">').append(dropdown));
 
 	return dropdown;
 };
@@ -113,7 +123,7 @@ Echo.GUI.Dropdown.prototype._assembleEntries = function(container) {
 	var menu = $('<ul class="dropdown-menu" role="menu">');
 	container.append(menu);
 
-	$.map(this.config.entries || [], function(entry) {
+	$.map(this.config.entries, function(entry) {
 		var item = $("<a role='button' class='echo-clickable' />")
 			.click(function() {
 				entry.handler && entry.handler.call(this, entry);
