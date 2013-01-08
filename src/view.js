@@ -143,7 +143,9 @@ Echo.View.prototype.render = function(args) {
 
 	// merge renderers passed into the "render" function
 	// and the ones defined in the view config during initialization
-	$.extend(this.renderers, args.renderers);
+	if (args.renderers) {
+		$.extend(this.renderers, args.renderers);
+	}
 
 	// render specific element (recursively if specified)
 	if (args.name) {
@@ -193,11 +195,13 @@ Echo.View.prototype.fork = function(config) {
 Echo.View.prototype._render = {};
 
 Echo.View.prototype._render.element = function(args) {
-	return this._hasRenderer(args.name)
-		? this._getRenderer(args.name)(args.target, args.extra)
-		// no renderer found - nothing to render,
-		// return non-modified target in this case
-		: args.target;
+	return this.config.renderer
+		? this.config.renderer(args)
+		: this._hasRenderer(args.name)
+			? this._getRenderer(args.name)(args.target, args.extra)
+			// no renderer found - nothing to render,
+			// return non-modified target in this case
+			: args.target;
 };
 
 Echo.View.prototype._render.recursive = function(args) {
@@ -261,7 +265,7 @@ Echo.View.prototype._getRenderer = function(name) {
 };
 
 Echo.View.prototype._hasRenderer = function(name) {
-	return !!this._getRenderer(name);
+	return this.config.renderer ? true : !!this._getRenderer(name);
 };
 
 Echo.View.prototype._getRenderableElements = function(container) {

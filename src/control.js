@@ -85,6 +85,7 @@ Echo.Control.create = function(manifest) {
 	if (manifest.templates) {
 		prototype.templates = $.extend({}, prototype.templates, manifest.templates);
 	}
+	prototype.renderers = manifest.renderers || {};
 
 	// define default language var values with the lowest priority available
 	var labels = $.extend({}, prototype.defaults.labels, manifest.labels);
@@ -206,8 +207,7 @@ Echo.Control.prototype.defaults = {};
 
 Echo.Control.prototype.defaults.vars = {
 	"plugins": {},
-	"extension": {"template": []},
-	"renderers": {},
+	"extension": {"template": [], "renderers": {}},
 	"parentRenderers": {},
 	"subscriptionIDs": {}
 };
@@ -691,12 +691,13 @@ Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
  * Renderer function to be applied.
  */
 Echo.Control.prototype.extendRenderer = function(name, renderer) {
-	var control = this;
-	var _renderer = this.renderers[name];
-	this.renderers[name] = $.proxy(function(element) {
-		this.parentRenderers[name] = _renderer;
-		return renderer.apply(this, arguments);
-	}, control);
+       var control = this;
+       var extension = this.extension.renderers;
+       var _renderer = extension[name] || this.renderers[name];
+       extension[name] = function() {
+               control.parentRenderers[name] = _renderer;
+               return renderer.apply(control, arguments);
+       };
 };
 
 /**
@@ -863,7 +864,6 @@ Echo.Control.prototype._initializers.list = [
 	["events",             ["init"]],
 	["subscriptions",      ["init"]],
 	["labels",             ["init"]],
-	["renderers",          ["init", "refresh"]],
 	["view",               ["init"]],
 	["loading",            ["init", "refresh"]],
 	["dependencies:async", ["init"]],
@@ -1062,18 +1062,18 @@ Echo.Control.prototype._initializers.css = function() {
 	}
 };
 
-Echo.Control.prototype._initializers.renderers = function() {
-	var control = this;
-	$.each(control._manifest("renderers"), function() {
-		control.extendRenderer.apply(control, arguments);
-	});
-};
-
 Echo.Control.prototype._initializers.view = function() {
+	var control = this;
 	return new Echo.View({
 		"data": this.get("data"),
 		"cssPrefix": this.get("cssPrefix"),
-		"renderers": this.get("renderers"),
+		"renderer": function(args) {
+			var renderer = control.extension.renderers[args.name] ||
+					control.renderers[args.name];
+			return renderer
+				? renderer.call(control, args.target, args.extra)
+				: args.target;
+		},
 		"substitutions": this._getSubstitutionInstructions()
 	});
 };
