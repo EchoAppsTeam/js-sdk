@@ -691,13 +691,13 @@ Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
  * Renderer function to be applied.
  */
 Echo.Control.prototype.extendRenderer = function(name, renderer) {
-       var control = this;
-       var extension = this.extension.renderers;
-       var _renderer = extension[name] || this.renderers[name];
-       extension[name] = function() {
-               control.parentRenderers[name] = _renderer;
-               return renderer.apply(control, arguments);
-       };
+	var control = this;
+	var extension = this.extension.renderers;
+	var _renderer = extension[name] || this.renderers[name];
+	extension[name] = function() {
+		control.parentRenderers[name] = _renderer;
+		return renderer.apply(control, arguments);
+	};
 };
 
 /**
