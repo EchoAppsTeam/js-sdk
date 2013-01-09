@@ -35,11 +35,9 @@ suite.prototype.tests.commonWorkflow = {
 			"Checking that icon CSS class is not added by default");
 
 		var loadingIcon = Echo.Loader.getURL("images/loading.gif", false);
-		button.set({
-			"label": "SecondLabel",
-			"disabled": true,
-			"icon": loadingIcon
-		});
+		button.config.set("label", "SecondLabel");
+		button.config.set("disabled", true);
+		button.config.set("icon", loadingIcon);
 		button.refresh();
 
 		QUnit.ok(!$(target).html().match(/FirstLabel/) && $(target).html().match(/SecondLabel/),
@@ -57,17 +55,17 @@ suite.prototype.tests.commonWorkflow = {
 		QUnit.ok($(target).html().match(/icon/) && $(target).html().match(backgroundRegExp),
 			"Checking that background icon is added to element after set() method call");
 
-		button.set("label", "ThirdLabel");
+		button.config.set("label", "ThirdLabel");
 		button.refresh();
 		QUnit.ok(!$(target).html().match(/SecondLabel/) && $(target).html().match(/ThirdLabel/),
 			"Checking that label is changed after updating 'label' field");
 
-		button.set("disabled", false);
+		button.config.set("disabled", false);
 		button.refresh();
 		QUnit.ok(!element.attr('disabled'),
 			"Checking that button is enabled after updating 'disabled' field");
 
-		button.set("icon", false);
+		button.config.set("icon", false);
 		button.refresh();
 		QUnit.ok(!$(target).html().match(/icon/) && !$(target).html().match(backgroundRegExp),
 			"Checking that background icon is not added to element after updating 'icon' field");

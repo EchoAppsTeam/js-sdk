@@ -92,7 +92,7 @@ suite.prototype.tests.commonWorkflow = {
 
 		$("a[data-item='tab2']", element).html("Some label");
 		echoTabs.refresh();
-		QUnit.ok($("a[data-item='tab2']", element).html() === "New label", "Check refresh() method");
+		QUnit.ok($("a[data-item='tab2']", element).html() === tabsParams.entries[1].label, "Check refresh() method");
 
 		echoTabs.destroy();
 		QUnit.ok(element.is(":empty"), "Check destroy() method");

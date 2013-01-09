@@ -29,20 +29,21 @@ if (Echo.GUI.Tabs) return;
  * 		"show": function() {}
  * 	});
  *
+ * @extends Echo.GUI
  * @constructor
  * Creates a new tabs in the container you have passed in the "config.target".
  *
  * @param {Object} config
  * Tabs configuration.
  *
- * @param {Mixed} config.target
+ * @cfg {Mixed} target
  * Container which should contains the tabs.
  * This parameter can be several types:
  * 	- CSS selector (ex: "css-selector")
  * 	- HTMLElement (ex: document.getElementById("some-element-id"))
  * 	- jQuery object (ex: $(".css-selector"))
  *
- * @param {Array} [config.entries]
+ * @cfg {Array} [entries]
  * Array of entries (tabs).
  * Each entry is the JS object with the following parameters:
  * 	id         - Tab id.
@@ -51,39 +52,33 @@ if (Echo.GUI.Tabs) return;
  * 	disabled   - Specifies whether the tab disabled.
  * 	extraClass - Class name to be added to the tab element.
  *
- * @param {HTMLElement} [config.panels]
+ * @cfg {HTMLElement} [panels]
  * Container which contains the panels.
  * If this parameter is not specified, the container will be created.
  *
- * @param {Function} [config.show]
+ * @cfg {Function} [show]
  * Function which will be called when tab is shown.
  */
-Echo.GUI.Tabs = function(config) {
+Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 	if (!config || !config.target) return;
 
-	this.config = $.extend(true, {}, {
-		"panels": "<div>",
+	config.target = $(config.target);
+	config.panels = config.panels ? $(config.panels) : $("<div>");
+
+	Echo.GUI.call(this, config, {
 		"entries": [],
 		"extraClass": "",
 		"show": function() {}
-	}, config);
-	this.config.panels = $(this.config.panels);
-	this.config.target = $(this.config.target);
+	});
+});
 
-	this.refresh();
-};
-
-/**
- * This method re-assemble the tabs HTML code and
- * append it to the target.
- */
 Echo.GUI.Tabs.prototype.refresh = function() {
-	if (!this.config.target) return;
-
 	var self = this,
-		entries = this.config.entries,
-		panels = this.config.panels,
-		target = this.config.target;
+		entries = this.config.get("entries"),
+		panels = this.config.get("panels"),
+		target = this.config.get("target");
+
+	if (!target) return;
 
 	target.empty();
 	target.empty();
@@ -104,21 +99,13 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 };
 
 /**
- * Hides the tabs and removes it's instance.
- */
-Echo.GUI.Tabs.prototype.destroy = function() {
-	this.config.target.empty();
-	delete this.config.target;
-};
-
-/**
  * Method to get a DOM element which contains panels.
  *
  * @return {HTMLElement}
  * DOM element which contains panels.
  */
 Echo.GUI.Tabs.prototype.getPanels = function() {
-	return this.config.panels;
+	return this.config.get("panels");
 };
 
 /**
@@ -130,8 +117,7 @@ Echo.GUI.Tabs.prototype.getPanels = function() {
 Echo.GUI.Tabs.prototype.disable = function(id) {
 	var tabIndex = this._getTabIndex(id);
 	if (~tabIndex) {
-		this.config.entries[tabIndex].disabled = true;
-		this.config.target.find("a[data-item='" + id + "']")
+		this.config.get("target").find("a[data-item='" + id + "']")
 		.removeAttr("data-toggle")
 		.addClass("disabled");
 	}
@@ -146,8 +132,7 @@ Echo.GUI.Tabs.prototype.disable = function(id) {
 Echo.GUI.Tabs.prototype.enable = function(id) {
 	var tabIndex = this._getTabIndex(id);
 	if (~tabIndex) {
-		this.config.entries[tabIndex].disabled = false;
-		this.config.target.find("a[data-item='" + id + "']")
+		this.config.get("target").find("a[data-item='" + id + "']")
 			.attr("data-toggle", "tab")
 			.removeClass("disabled");
 	}
@@ -162,9 +147,9 @@ Echo.GUI.Tabs.prototype.enable = function(id) {
 Echo.GUI.Tabs.prototype.remove = function(id) {
 	var tabIndex = this._getTabIndex(id);
 	if (~tabIndex) {
-		this.config.entries.splice(tabIndex, 1);
-		this.config.target.find("a[data-item='" + id + "']").remove();
-		this.config.panels.find("[id='" + id + "']").remove();
+		this.config.get("entries").splice(tabIndex, 1);
+		this.config.get("target").find("a[data-item='" + id + "']").remove();
+		this.config.get("panels").find("[id='" + id + "']").remove();
 	}
 };
 
@@ -180,7 +165,7 @@ Echo.GUI.Tabs.prototype.remove = function(id) {
  * @param {String} tabConfig.label
  * Tab label which should be displayed.
  *
- * @param {HTMLElement} tabConfig.disabled
+ * @param {Boolean} tabConfig.disabled
  * Specifies whether the tab disabled.
  *
  * @param {HTMLElement} tabConfig.panel
@@ -200,7 +185,7 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	var tab = $('<li><a' + attrs.join(" ") + '>' + tabConfig.label  + '</a></li>');
 
 	$("a", tab).on("show", function() {
-		self.config.show.call(self, this);
+		self.config.get("show").call(self, this);
 	});
 	this.tabsContainer.append(tab);
 
@@ -208,9 +193,9 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 		if (tabConfig.panel.attr("id") !== tabConfig.id.toString()) {
 			tabConfig.panel.attr("id", tabConfig.id);
 		}
-		this.config.panels.append(tabConfig.panel.addClass("tab-pane"));
+		this.config.get("panels").append(tabConfig.panel.addClass("tab-pane"));
 	}
-	return this.config.target;
+	return this.config.get("target");
 };
 
 /**
@@ -223,7 +208,7 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
  * DOM element which contains the tab.
  */
 Echo.GUI.Tabs.prototype.get = function(id) {
-	return this.config.target.find("a[data-item='" + id + "']");
+	return this.config.get("target").find("a[data-item='" + id + "']");
 };
 
 /**
@@ -237,21 +222,32 @@ Echo.GUI.Tabs.prototype.get = function(id) {
  * false otherwise.
  */
 Echo.GUI.Tabs.prototype.has = function(id) {
-	return !!this.config.target.has("a[data-item='" + id + "']").length;
+	return !!this.config.get("target").has("a[data-item='" + id + "']").length;
 };
 
 /**
- * This method updates config and re-assemble HTML code of the tabs.
+ * This method updates the tab according the tab config.
  *
- * It can be called with the same parameters as a {@link Echo.GUI.Tabs#constructor}
- * except config.target.
+ * @param {String} id
+ * Tab id which should be updated.
+ *
+ * @param {Object} config
+ * Tab configuration.
+ *
+ * @param {String} config.label
+ * Tab id.
+ *
+ * @param {String} config.extraClass
+ * Class name to be added to the tab element.
+ *
+ * @param {String} config.content
+ * Content of the tab (can contain HTML tags).
  */
 Echo.GUI.Tabs.prototype.update = function(id, config) {
 	var tabIndex = this._getTabIndex(id);
 	if (~tabIndex) {
-		this.config.entries[tabIndex] = $.extend(this.config.entries[tabIndex], config);
-		config.content && this.config.panels.find("[id='" + id + "']").html(config.content);
-		this.config.target.find("a[data-item='" + id + "']")
+		config.content && this.config.get("panels").find("[id='" + id + "']").html(config.content);
+		this.config.get("target").find("a[data-item='" + id + "']")
 			.html(config.label)
 			.addClass(config.extraClass);
 	}
@@ -264,12 +260,12 @@ Echo.GUI.Tabs.prototype.update = function(id, config) {
  * Tab id which should be shown.
  */
 Echo.GUI.Tabs.prototype.show = function(id) {
-	this.config.target.find("a[data-item='" + id + "']").tab("show");
+	this.config.get("target").find("a[data-item='" + id + "']").tab("show");
 };
 
 Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
-	for (var i = 0; i < this.config.entries.length; i++) {
-		if (this.config.entries[i].id === id) {
+	for (var i = 0; i < this.config.get("entries").length; i++) {
+		if (this.config.get("entries")[i].id === id) {
 			return i;
 		}
 	}

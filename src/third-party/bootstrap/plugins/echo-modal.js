@@ -45,68 +45,68 @@ if (Echo.GUI.Modal) return;
  * 	});
  *
  * @constructor
- * Creates a new modal dialog. The dialog can be created in visible or hidden (default) modes. In order to initialize the modal dialog instance in visible state, the "config.show" parameter should be defined as 'true' (JS boolean) during the constructor call. For the modal dialogs hidden by default the "show" function can be applied to reveal it when appropriate.
+ * Creates a new modal dialog. The dialog can be created in visible or hidden (default) modes. In order to initialize the modal dialog instance in visible state, the "show" parameter should be defined as 'true' (JS boolean) during the constructor call. For the modal dialogs hidden by default the "show" function can be applied to reveal it when appropriate.
  *
  * @param {Object} config
  * Modal configuration.
  *
- * @param {Boolean} [config.show=false]
+ * @cfg {Boolean} [show=false]
  * Defines whether the modal dialog should be displayed right after it is created. 
  *
- * @param {Boolean} [config.backdrop=true]
+ * @cfg {Boolean} [backdrop=true]
  * Defines whether the semi-transparent backdrop underneath the modal dialog box should be displayed.
  *
- * @param {Boolean} [config.keyboard=true]
+ * @cfg {Boolean} [keyboard=true]
  * Defines whether modal dialog should be closed if the "Esc"(escape) key is pressed on the keyboard.
  *
- * @param {Boolean} [config.closeButton=true]
+ * @cfg {Boolean} [closeButton=true]
  * Defines whether the close ("X") icon in the top right corner of the dialog box should be shown.
  *
- * @param {String} [config.remote=false]
+ * @cfg {String} [remote=false]
  * Remote URL.
  * If a remote URL is provided, content will be loaded via jQuery load method and injected into the modal dialog body.
  *
- * @param {String} [config.extraClass=""]
+ * @cfg {String} [extraClass=""]
  * Custom class name which should be added to the modal dialog container.
  *
- * @param {Object} config.data
+ * @cfg {Object} data
  *
- * @param {String|Function} config.data.title
+ * @cfg {String|Function} data.title
  * Modal dialog title (can contain HTML tags).
  * If function passed in this parameter, the function result will be used.
  *
- * @param {String|Function} config.data.body
+ * @cfg {String|Function} data.body
  * The main content of the dialog (can contain HTML tags).
  * If function passed in this parameter, the function result will be used.
  *
- * @param {Array} config.data.buttons
+ * @cfg {Array} data.buttons
  * You can specify the custom buttons in this parameter which should be displayed in the modal footer.
  * Each array element is the object with the following parameters:
  * 	title      - button title.
  * 	extraClass - custom class name which will be added to the button.
  * 	handler    - function which will be called when button is clicked.
  *
- * @param {Number} [config.width=null]
+ * @cfg {Number} [width=null]
  * Modal dialog width.
  *
- * @param {Number} [config.height=null]
+ * @cfg {Number} [height=null]
  * Modal dialog height.
  *
- * @param {Number} [config.padding=null]
+ * @cfg {Number} [padding=null]
  * Modal dialog padding.
  *
- * @param {Boolean} [config.footer=true]
+ * @cfg {Boolean} [footer=true]
  * Display modal dialog footer.
  * Should be true if you want to display custom buttons.
  *
- * @param {Boolean} [config.header=true]
+ * @cfg {Boolean} [header=true]
  * Display modal header.
  *
- * @param {Boolean} [config.fade=false]
+ * @cfg {Boolean} [fade=false]
  * Apply a CSS fade transition.
  */
-Echo.GUI.Modal = function(config) {
-	this.config = {
+Echo.GUI.Modal = Echo.Utils.inherit(Echo.GUI, function(config) {
+	Echo.GUI.call(this, config, {
 		"show": false,
 		"backdrop": true,
 		"keyboard": true,
@@ -120,31 +120,17 @@ Echo.GUI.Modal = function(config) {
 		"footer": true,
 		"header": true,
 		"fade": false
-	};
-	this.update(config);
-};
+	});
+});
 
-/**
- * This method updates config and re-assemble HTML code of the modal.
- *
- * It can be called with the same parameters as a {@link Echo.GUI.Modal#constructor}
- */
-Echo.GUI.Modal.prototype.update = function(config) {
-	this.config = $.extend(true, this.config, config);
-	this.refresh();
-};
-
-/**
- * This method re-assemble the modal dialog HTML code and
- * append it to the target.
- */
 Echo.GUI.Modal.prototype.refresh = function() {
 	var self = this;
-	if (!this.config.show) return;
+	if (!this.config.get("show") && !this._forceShow) return;
+	this.forceShow = false;
 	if (this.rendered) this.destroy();
 
 	this.rendered = true;
-	var css = this.config.fade ? "fade" : "hide";
+	var css = this.config.get("fade") ? "fade" : "hide";
 	this.element = this.element || $('<div class="modal ' + css + '" role="dialog" tabindex="-1">');
 	this.element.empty();
 
@@ -156,14 +142,14 @@ Echo.GUI.Modal.prototype.refresh = function() {
 	this.element.on("hidden", function() {
 		self.destroy();
 	});
-	if ($.isFunction(this.config.onHide)) {
+	if ($.isFunction(this.config.get("onHide"))) {
 		this.element.on("hide", function() {
-			self.config.onHide.call(self, self.element);
+			self.config.get("onHide").call(self, self.element);
 		});
 	}
-	if ($.isFunction(this.config.onShow)) {
+	if ($.isFunction(this.config.get("onShow"))) {
 		this.element.on("shown", function() {
-			self.config.onShow.call(self, self.element);
+			self.config.get("onShow").call(self, self.element);
 		});
 	}
 
@@ -177,9 +163,10 @@ Echo.GUI.Modal.prototype.refresh = function() {
 
 /**
  * Shows the modal dialog.
- *  myModal.show();
+ * 	myModal.show();
  */
 Echo.GUI.Modal.prototype.show = function() {
+	this._forceShow = true;
 	this.refresh();
 };
 
@@ -199,7 +186,7 @@ Echo.GUI.Modal.prototype.destroy = function() {
 
 /**
  * Hides the modal dialog.
- *  myModal.hide();
+ * 	myModal.hide();
  */
 Echo.GUI.Modal.prototype.hide = function() {
 	if (this.rendered) {
@@ -208,9 +195,9 @@ Echo.GUI.Modal.prototype.hide = function() {
 };
 
 Echo.GUI.Modal.prototype._assembleHeader = function() {
-	if (this.config.header) {
-		var header = this._addSection("modal-header", $("<h3>").append(this.config.data.title));
-		if (this.config.closeButton) {
+	if (this.config.get("header")) {
+		var header = this._addSection("modal-header", $("<h3>").append(this.config.get("data").title));
+		if (this.config.get("closeButton")) {
 			$('<button aria-hidden="true" data-dismiss="modal" class="close" type="button">')
 				.append("&times;").prependTo(header);
 		}
@@ -219,33 +206,33 @@ Echo.GUI.Modal.prototype._assembleHeader = function() {
 
 Echo.GUI.Modal.prototype._assembleBody = function() {
 	var self = this;
-	var body = this._addSection("modal-body", this.config.data.body);
-	if (this.config.href) {
+	var body = this._addSection("modal-body", this.config.get("data").body);
+	if (this.config.get("href")) {
 		this.element.one("shown", function() {
-			body.append('<iframe src="' + self.config.href + '" id="" name="" class="echo-modal-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>');
+			body.append('<iframe src="' + self.config.get("href") + '" id="" name="" class="echo-modal-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>');
 		});
 	}
-	if (this.config.width !== null) {
-		this.element.width(this.config.width)
-			.css({"margin-left": this.config.width * -0.5});
+	if (this.config.get("width") !== null) {
+		this.element.width(this.config.get("width"))
+			.css({"margin-left": this.config.get("width") * -0.5});
 	}
-	if (this.config.height !== null) {
-		body.height(this.config.height);
+	if (this.config.get("height") !== null) {
+		body.height(this.config.get("height"));
 	}
-	if (this.config.padding !== null) {
-		body.css("padding", this.config.padding);
+	if (this.config.get("padding") !== null) {
+		body.css("padding", this.config.get("padding"));
 	}
-	if (this.config.extraClass) {
-		this.element.addClass(this.config.extraClass);
+	if (this.config.get("extraClass")) {
+		this.element.addClass(this.config.get("extraClass"));
 	}
 }
 
 Echo.GUI.Modal.prototype._assembleFooter = function() {
 	var self = this;
-	if (this.config.footer) {
+	if (this.config.get("footer")) {
 		var footer = this._addSection("modal-footer");
-		if (this.config.data.buttons) {
-			$.map(this.config.data.buttons, function(button) {
+		if (this.config.get("data").buttons) {
+			$.map(this.config.get("data").buttons, function(button) {
 				var el = $("<button>").addClass("btn").append(button.title);
 				if (button.extraClass) {
 					el.addClass(button.extraClass);
@@ -261,13 +248,12 @@ Echo.GUI.Modal.prototype._assembleFooter = function() {
 
 Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 	var self = this;
-	if (self.config.backdrop) {
-		if (self.config.fade) {
+	if (self.config.get("backdrop")) {
+		if (self.config.get("fade")) {
 			self.element.on("show", function() {
 				var modal = self.element.data('modal');
 				var shown = modal.isShown;
 				var backdrop = modal.options.backdrop;
-				if (backdrop) return;
 
 				modal.options.backdrop = true;
 				modal.isShown = true;
@@ -283,8 +269,8 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 			});
 		}
 		// we used manual control for backdrop if fade is true
-		if (self.config.fade) {
-			self.config.backdrop = false;
+		if (self.config.get("fade")) {
+			self.config.set("backdrop", false);
 		}
 	}
 }

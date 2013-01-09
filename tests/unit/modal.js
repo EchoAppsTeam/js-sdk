@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Modal = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI.Modal",
-	"functions": ["show", "destroy", "hide", "refresh", "update"]
+	"functions": ["show", "destroy", "hide", "refresh"]
 };
 
 suite.prototype.tests = {};
@@ -89,18 +89,16 @@ suite.prototype.tests.commonWorkflow = {
 		modal.refresh();
 		QUnit.ok($(".modal-header h3", modalElement).html() === modalParams.data.title, "Check refresh() method");
 
-		modal.update({
-			"extraClass": "upd-echo-hide",
-			"data": {
-				"title": "upd-title",
-				"body": "upd_body"
-			},
-			"width": "400"
-		});
+		modal.config.set("extraClass", "upd-echo-hide");
+		modal.config.set("data.title", "upd-title");
+		modal.config.set("data.body", "upd_body");
+		modal.config.set("width", "400");
+		modal.refresh();
+
 		QUnit.ok(modalElement.hasClass("upd-echo-hide")
 				&& $(".modal-header h3", modalElement).html() === "upd-title"
 				&& $(".modal-body", modalElement).html() === "upd_body"
-				&& modalElement.width() === 400, "Check update() method");
+				&& modalElement.width() === 400, "Check set() method");
 
 		modal.hide();
 		QUnit.ok(!$(".modal").length, "Check hide() method");

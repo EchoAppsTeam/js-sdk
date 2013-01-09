@@ -68,11 +68,10 @@ suite.prototype.tests.commonWorkflow = {
 		dropdown.refresh();
 		QUnit.ok($("a.dropdown-toggle", element).html() === dropdownParams.title, "Check refresh() method");
 
-		dropdown.update({
-				"extraClass": "upd-extra-class",
-				"title": "upd-title",
-				"entries": [{"title": "upd-title1"}, {"title": "upd-title2"}]
-			});
+		dropdown.config.set("extraClass", "upd-extra-class");
+		dropdown.config.set("title", "upd-title");
+		dropdown.config.set("entries", [{"title": "upd-title1"}, {"title": "upd-title2"}]);
+		dropdown.refresh();
 		QUnit.ok($(".dropdown-toggle", element).html() === "upd-title"
 				&& $(".upd-extra-class", element).length
 				&& $(".echo-clickable:first", element).html() === "upd-title1"

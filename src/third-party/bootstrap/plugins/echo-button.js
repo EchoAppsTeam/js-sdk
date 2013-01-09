@@ -45,17 +45,14 @@ if (!Echo.GUI || Echo.GUI.Button) return;
 Echo.GUI.Button = Echo.Utils.inherit(Echo.GUI, function(config) {
 	if (!config || !config.target) return;
 
-	Echo.GUI.call(this, config);
-});
-
-Echo.GUI.Button.prototype._getDefaultConfig = function(config) {
-	return {
+	config.target = $(config.target);
+	Echo.GUI.call(this, config, {
 		"label": config.target.html(),
 		"disabled": !!config.target.attr("disabled")
-	};
-};
+	});
+});
 
-Echo.GUI.Button.prototype._build = function() {
+Echo.GUI.Button.prototype.refresh = function() {
 	var target = this.config.get("target");
 
 	target.empty().append('<div class="echo-label">');
@@ -72,4 +69,5 @@ Echo.GUI.Button.prototype._build = function() {
 	}
 	target.attr("disabled", this.config.get("disabled"));
 };
+
 })(Echo.jQuery);
