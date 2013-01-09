@@ -109,7 +109,7 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 Echo.GUI.Tabs.prototype.destroy = function() {
 	this.config.target.empty();
 	delete this.config.target;
-}
+};
 
 /**
  * Method to get a DOM element which contains panels.

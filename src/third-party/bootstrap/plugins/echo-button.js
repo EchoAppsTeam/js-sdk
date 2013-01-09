@@ -4,9 +4,7 @@ var $ = jQuery;
 
 if (!window.Echo) window.Echo = {};
 
-if (!Echo.GUI) Echo.GUI = {};
-
-if (Echo.GUI.Button) return;
+if (!Echo.GUI || Echo.GUI.Button) return;
 
 /**
  * @class Echo.GUI.Button
@@ -20,79 +18,58 @@ if (Echo.GUI.Button) return;
  * 		"icon": "http://example.com/icon.png",
  * 		"disabled": true
  * 	});
+ * @extends Echo.GUI
  *
  * @constructor
  * Creates a button in the container you have passed in the "config.target".
  *
  * @param {Object} config
- * Button parameters.
+ * Button configuration data.
  *
- * @param {Mixed} config.target
+ * @cfg {Mixed} target
  * Container which should contains the button.
  * This parameter can be several types:
  * 	- CSS selector (ex: ".css-selector")
  * 	- HTMLElement (ex: document.getElementById("some-element-id"))
  * 	- jQuery object (ex: $(".css-selector"))
  *
- * @param {String} config.label
+ * @cfg {String} label
  * Button label.
  *
- * @param {String} [config.icon]
+ * @cfg {String} [icon]
  * URL for the icon which should be displayed near the label.
  *
- * @param {Boolean} [config.disabled=false]
+ * @cfg {Boolean} [disabled=false]
  * Specifies whether the button should be disabled.
  */
-Echo.GUI.Button = function(config) {
+Echo.GUI.Button = Echo.Utils.inherit(Echo.GUI, function(config) {
 	if (!config || !config.target) return;
-	config.target = $(config.target);
 
-	this.config = {
+	Echo.GUI.call(this, config);
+});
+
+Echo.GUI.Button.prototype._getDefaultConfig = function(config) {
+	return {
 		"label": config.target.html(),
 		"disabled": !!config.target.attr("disabled")
 	};
-	this.update(config);
 };
 
-/**
- * This method updates config and re-assemble HTML code of the button.
- *
- * It can be called with the same parameters as a {@link Echo.GUI.Button#constructor}
- * except config.target.
- */
-Echo.GUI.Button.prototype.update = function(config) {
-	this.config = $.extend(true, this.config, config);
-	this.refresh();
-};
+Echo.GUI.Button.prototype._build = function() {
+	var target = this.config.get("target");
 
-/**
- * Hides the button and removes it's instance.
- */
-Echo.GUI.Button.prototype.destroy = function() {
-	this.config.target.empty();
-	delete this.config.target;
-}
+	target.empty().append('<div class="echo-label">');
 
-/**
- * This method re-assemble the button HTML code and
- * append it to the target.
- */
-Echo.GUI.Button.prototype.refresh = function() {
-	if (!this.config.target) return;
-
-	this.config.target.empty().append('<div class="echo-label">');
-
-	$(".echo-label", this.config.target).text(this.config.label);
-	var iconElement = $(".echo-icon", this.config.target);
-	if (this.config.icon) {
+	$(".echo-label", target).text(this.config.get("label"));
+	var iconElement = $(".echo-icon", target);
+	if (this.config.get("icon")) {
 		if (!iconElement.length) {
-			iconElement = $("<div>").addClass("echo-icon").prependTo(this.config.target);
+			iconElement = $("<div>").addClass("echo-icon").prependTo(target);
 		}
-		iconElement.css({"background": "no-repeat center url(" + this.config.icon + ")"});
+		iconElement.css({"background": "no-repeat center url(" + this.config.get("icon") + ")"});
 	} else {
 		iconElement.remove();
 	}
-	this.config.target.attr("disabled", this.config.disabled);
+	target.attr("disabled", this.config.get("disabled"));
 };
-
 })(Echo.jQuery);

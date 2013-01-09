@@ -83,7 +83,7 @@ Echo.GUI.Dropdown.prototype.update = function(config) {
 Echo.GUI.Dropdown.prototype.destroy = function() {
 	this.config.target.empty();
 	delete this.config.target;
-}
+};
 
 /**
  * This method re-assemble the dropdown HTML code and
