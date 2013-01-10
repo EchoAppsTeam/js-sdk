@@ -383,8 +383,8 @@ $.map(["Echo.StreamServer.Controls.Stream.Item.onRerender",
 });
 
 $.map(["Echo.StreamServer.Controls.Submit.onRender",
-	"Echo.StreamServer.Controls.Submit.onEditError",
-	"Echo.StreamServer.Controls.Submit.onEditComplete",
+	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError",
+	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete",
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse"], function(event) {
 	plugin.events[event] = function(topic, args) {
 		var plugin = this;

@@ -244,7 +244,7 @@ Echo.Tests.Events.contracts = {
 //			"verb": "post"
 		}
 	},
-	"Echo.StreamServer.Controls.Submit.onEditInit": {
+	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit": {
 		"target": $("<div>"),
 		"targetURL": "",
 		"data": {

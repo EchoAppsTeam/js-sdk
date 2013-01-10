@@ -29,9 +29,10 @@ plugin.init = function() {
 };
 
 $.map(["Complete", "Error"], function(action) {
-	plugin.events["Echo.StreamServer.Controls.Submit.onEdit" + action] = function(topic, args) {
-		this.component.render();
-	}
+	plugin.events["Echo.StreamServer.Controls.Submit.Plugins.Edit.onEdit" + action] =
+		function(topic, args) {
+			this.component.render();
+		}
 });
 
 plugin.labels = {
@@ -156,14 +157,12 @@ plugin.labels = {
  */
 $.map(["Init", "Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.onPost" + action] = function(topic, args) {
-		var component = this.component;
 		if (action === "Init") {
 			args.postData.content = this._prepareContent();
 		}
-		component.events.publish({
+		this.events.publish({
 			"data": args,
-			"topic": "onEdit" + action,
-			"context": component.config.get("parent.context")
+			"topic": "onEdit" + action
 		});
 	};
 });
@@ -204,14 +203,10 @@ plugin.renderers.editedDate = function(element) {
  * @echo_renderer
  */
 plugin.renderers.cancelButton = function(element) {
-	var plugin = this, component = plugin.component;
-	var handler = function() {
-		component.events.publish({
-			"topic": "onEditError",
-			"context": component.config.get("parent.context")
-		});
-	};
-	return element.click(handler);
+	var plugin = this;
+	return element.click(function() {
+		plugin.events.publish({"topic": "onEditError"});
+	});
 };
 
 plugin.methods._prepareContent = function() {
