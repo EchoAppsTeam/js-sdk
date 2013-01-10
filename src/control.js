@@ -98,17 +98,6 @@ Echo.Control.create = function(manifest) {
 	return constructor;
 };
 
-Echo.Control._merge = function(parent, manifest) {
-	var _manifest = parent && parent.manifest || Echo.Control._manifest;
-
-	// parent class doesn't have manifest defined -
-	// nothing to merge, return original manifest
-	if (!_manifest) return manifest;
-
-	// TODO: need to develop proper manifests merging process
-	return $.extend(true, {}, _manifest, manifest);
-};
-
 /**
  * @static
  * Method returning common manifest structure.
@@ -877,6 +866,17 @@ Echo.Control.prototype._initializers.ready = function() {
 
 Echo.Control.prototype._initializers.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
+};
+
+Echo.Control._merge = function(parent, manifest) {
+	var _manifest = parent && parent.manifest || Echo.Control._manifest;
+
+	// parent class doesn't have manifest defined -
+	// nothing to merge, return original manifest
+	if (!_manifest) return manifest;
+
+	// TODO: need to develop proper manifests merging process
+	return $.extend(true, {}, _manifest, manifest);
 };
 
 Echo.Control.prototype._getSubstitutionInstructions = function() {
