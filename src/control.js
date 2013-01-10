@@ -58,14 +58,15 @@ Echo.Control.create = function(manifest) {
 	// prevent multiple re-definitions
 	if (Echo.Control.isDefined(manifest)) return control;
 
-	var parent = manifest.inherits || Echo.Control;
-	var constructor = Echo.Utils.inherit(parent, function(config) {
+	var _manifest = Echo.Control._merge(manifest.inherits, manifest);
+
+	var constructor = Echo.Utils.inherit(Echo.Control, function(config) {
 
 		// perform basic validation of incoming params
 		if (!config || !config.target) {
 			Echo.Utils.log({
 				"type": "error",
-				"component": manifest.name,
+				"component": _manifest.name,
 				"message": "Unable to initialize control, config is invalid",
 				"args": {"config": config}
 			});
@@ -73,32 +74,39 @@ Echo.Control.create = function(manifest) {
 		}
 
 		this.data = config.data || {};
-		this.name = manifest.name;
+		this.name = _manifest.name;
 		this.config = config;
 		this._init(this._initializers.get("init"));
 	});
 
 	var prototype = constructor.prototype;
-	if (manifest.methods) {
-		$.extend(prototype, manifest.methods);
+	if (_manifest.methods) {
+		$.extend(prototype, _manifest.methods);
 	}
-	if (manifest.templates) {
-		prototype.templates = $.extend({}, prototype.templates, manifest.templates);
-	}
-	prototype.renderers = manifest.renderers || {};
+	prototype.templates = _manifest.templates;
+	prototype.renderers = _manifest.renderers;
+	constructor.manifest = _manifest;
 
 	// define default language var values with the lowest priority available
-	var labels = $.extend({}, prototype.defaults.labels, manifest.labels);
-	Echo.Labels.set(labels, manifest.name, true);
-
-	constructor.manifest = manifest;
+	Echo.Labels.set(_manifest.labels, _manifest.name, true);
 
 	// define CSS class and prefix for the class
-	prototype.cssClass = manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
+	prototype.cssClass = _manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 	prototype.cssPrefix = prototype.cssClass + "-";
 
-	Echo.Utils.set(window, manifest.name, $.extend(constructor, control));
+	Echo.Utils.set(window, _manifest.name, $.extend(constructor, control));
 	return constructor;
+};
+
+Echo.Control._merge = function(parent, manifest) {
+	var _manifest = parent && parent.manifest || Echo.Control._manifest;
+
+	// parent class doesn't have manifest defined -
+	// nothing to merge, return original manifest
+	if (!_manifest) return manifest;
+
+	// TODO: need to develop proper manifests merging process
+	return $.extend(true, {}, _manifest, manifest);
 };
 
 /**
@@ -147,50 +155,6 @@ Echo.Control.isDefined = function(manifest) {
 	return !!(component && component.manifest);
 };
 
-/**
- * @static
- * Update control initializers.
- *
- * @param {Object} rule
- *
- * @param {Array} signature
- *
- * @param {Function} fn
- */
-Echo.Control.updateInitializers = function(rule, signature, fn) {
-	rule = rule || {};
-	var name;
-	var list = this.prototype._initializers.list.slice(0);
-	var getInitializerIndex = function(name) {
-		var index = -1;
-		if (!name) {
-			return list.length;
-		}
-		$.each(list, function(i, initializer) {
-			if (initializer[0] === name) {
-				index = i;
-				return false;
-			}
-		});
-		return index;
-	};
-	if (rule.remove) {
-		list.splice(getInitializerIndex(rule.remove));
-	} else {
-		list.splice(function(idx) {
-			return ~idx
-				? (!idx && rule.before ? 0 : rule.after ? ++idx : idx)
-				: idx;
-		}(getInitializerIndex(rule.after || rule.before)), 0, signature);
-	}
-	this.prototype._initializers = $.extend({}, this.prototype._initializers);
-	if ($.isFunction(fn)) {
-		name = signature && signature[0] && signature[0].split(":")[0];
-		this.prototype._initializers[name] = fn;
-	}
-	this.prototype._initializers.list = list;
-};
-
 Echo.Control.prototype.templates = {"message": {}};
 
 Echo.Control.prototype.templates.message.compact =
@@ -202,214 +166,6 @@ Echo.Control.prototype.templates.message.full =
 			'{data:message}' +
 		'</span>' +
 	'</div>';
-
-Echo.Control.prototype.defaults = {};
-
-Echo.Control.prototype.defaults.vars = {
-	"plugins": {},
-	"extension": {"template": [], "renderers": {}},
-	"parentRenderers": {},
-	"subscriptionIDs": {}
-};
-
-Echo.Control.prototype.defaults.config = {
-	/**
-	 * @cfg {String} target(required)
-	 * Specifies the DOM element where the control will be displayed.
-	 */
-	"target": undefined,
-	/**
-	 * @cfg {String} appkey
-	 * Specifies the customer application key. You should specify this parameter
-	 * if your control uses StreamServer or IdentityServer API requests.
-	 * You can use the "test.echoenabled.com" appkey for testing purposes.
-	 */
-	"appkey": "",
-	/**
-	 * @cfg {Object} labels
-	 * Specifies the set of language variables defined for this particular control.
-	 */
-	"labels": {},
-	/**
-	 * @cfg {String} [apiBaseURL="api.echoenabled.com/v1/"]
-	 * URL prefix for all API requests
-	 */
-	"apiBaseURL": "api.echoenabled.com/v1/",
-	/**
-	 * @cfg {String} [submissionProxyURL="apps.echoenabled.com/v2/esp/activity/"]
-	 * URL prefix for requests to Echo Submission Proxy
-	 */
-	"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
-	/**
-	 * @cfg {Object} [infoMessages]
-	 * Customizes the look and feel of info messages, for example "loading" and "error".
-	 *
-	 * @cfg {Boolean} [infoMessages.enabled=true]
-	 * Specifies if info messages should be rendered.
-	 *
-	 * @cfg {String} [infoMessages.layout="full"]
-	 * Specifies the layout of the info message. By default can be set to "compact" or "full".
-	 *
-	 *     "infoMessages": {
-	 *         "enabled": true,
-	 *         "layout": "full"
-	 *     }
-	 */
-	"infoMessages": {
-		"enabled": true,
-		"layout": "full"
-	},
-	/**
-	 * @cfg {Object} [cdnBaseURL]
-	 * A set of key/value pairs to define CDN base URLs for different components.
-	 * The values are used as URL prefixes for all static files, such as scripts,
-	 * stylesheets, images etc. You can add your own CDN base URL and use it anywhere
-	 * when the configuration object is available.
-	 *
-	 * @cfg {String} [cdnBaseURL.sdk]
-	 * Base URL of the SDK CDN location used for the main SDK resources.
-	 *
-	 * @cfg {String} [cdnBaseURL.apps]
-	 * Base URL of the Echo apps built on top of the JS SDK.
-	 */
-	"cdnBaseURL": {
-		"sdk": Echo.Loader.getURL(""),
-		"sdk-assets": Echo.Loader.getURL("", false),
-		"apps": Echo.Loader.config.cdnBaseURL + "apps"
-	},
-	"scriptLoadErrorTimeout": 5000, // 5 sec
-	"query": "",
-	/**
-	 * @cfg {String} [defaultAvatar]
-	 * Default avatar URL which will be used for the user in
-	 * case there is no avatar information defined in the user
-	 * profile. Also used for anonymous users.
-	 */
-	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false)
-};
-
-Echo.Control.prototype.defaults.labels = {
-	/**
-	 * @echo_label
-	 */
-	"loading": "Loading...",
-	/**
-	 * @echo_label
-	 */
-	"retrying": "Retrying...",
-	/**
-	 * @echo_label
-	 */
-	"error_busy": "Loading. Please wait...",
-	/**
-	 * @echo_label
-	 */
-	"error_timeout": "Loading. Please wait...",
-	/**
-	 * @echo_label
-	 */
-	"error_waiting": "Loading. Please wait...",
-	/**
-	 * @echo_label
-	 */
-	"error_view_limit": "View creation rate limit has been exceeded. Retrying in {seconds} seconds...",
-	/**
-	 * @echo_label
-	 */
-	"error_view_update_capacity_exceeded": "This stream is momentarily unavailable due to unusually high activity. Retrying in {seconds} seconds...",
-	/**
-	 * @echo_label
-	 */
-	"error_result_too_large": "(result_too_large) The search result is too large.",
-	/**
-	 * @echo_label
-	 */
-	"error_wrong_query": "(wrong_query) Incorrect or missing query parameter.",
-	/**
-	 * @echo_label
-	 */
-	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
-	/**
-	 * @echo_label
-	 */
-	"error_internal_error": "(internal_error) Unknown server error.",
-	/**
-	 * @echo_label
-	 */
-	"error_quota_exceeded": "(quota_exceeded) Required more quota than is available.",
-	/**
-	 * @echo_label
-	 */
-	"error_incorrect_user_id": "(incorrect_user_id) Incorrect user specified in User ID predicate.",
-	/**
-	 * @echo_label
-	 */
-	"error_unknown": "(unknown) Unknown error.",
-	/**
-	 * @echo_label
-	 */
-	"today": "Today",
-	/**
-	 * @echo_label
-	 */
-	"yesterday": "Yesterday",
-	/**
-	 * @echo_label
-	 */
-	"lastWeek": "Last Week",
-	/**
-	 * @echo_label
-	 */
-	"lastMonth": "Last Month",
-	/**
-	 * @echo_label
-	 */
-	"secondAgo": "{number} Second Ago",
-	/**
-	 * @echo_label
-	 */
-	"secondsAgo": "{number} Seconds Ago",
-	/**
-	 * @echo_label
-	 */
-	"minuteAgo": "{number} Minute Ago",
-	/**
-	 * @echo_label
-	 */
-	"minutesAgo": "{number} Minutes Ago",
-	/**
-	 * @echo_label
-	 */
-	"hourAgo": "{number} Hour Ago",
-	/**
-	 * @echo_label
-	 */
-	"hoursAgo": "{number} Hours Ago",
-	/**
-	 * @echo_label
-	 */
-	"dayAgo": "{number} Day Ago",
-	/**
-	 * @echo_label
-	 */
-	"daysAgo": "{number} Days Ago",
-	/**
-	 * @echo_label
-	 */
-	"weekAgo": "{number} Week Ago",
-	/**
-	 * @echo_label
-	 */
-	"weeksAgo": "{number} Weeks Ago",
-	/**
-	 * @echo_label
-	 */
-	"monthAgo": "{number} Month Ago",
-	/**
-	 * @echo_label
-	 */
-	"monthsAgo": "{number} Months Ago"
-};
 
 /**
  * Accessor method to get specific field.
@@ -887,38 +643,18 @@ Echo.Control.prototype._initializers.vars = function() {
 	// but we need to avoid any references to the default var objects,
 	// thus we copy and recursively merge default values separately
 	// and apply default values to the given instance non-recursively
-	$.extend(this, $.extend(true, {}, this.defaults.vars, this._manifest("vars")));
+	$.extend(this, $.extend(true, {}, this._manifest("vars")));
 };
 
 Echo.Control.prototype._initializers.config = function() {
-	var control = this;
-	var _normalizer = {};
-	var data = this.config;
-	_normalizer.target = $;
-	_normalizer.plugins = function(list) {
-		var data = Echo.Utils.foldl({"hash": {}, "order": []}, list || [],
-			function(plugin, acc) {
-				var pos = $.inArray(plugin.name, acc.order);
-				if (pos >= 0) {
-					acc.order.splice(pos, 1);
-				}
-				acc.order.push(plugin.name);
-				acc.hash[plugin.name] = plugin;
-			});
-		this.set("pluginsOrder", data.order);
-		return data.hash;
-	};
-	_normalizer.defaultAvatar = function(url) {
-		return Echo.Loader.getURL(url);
-	};
-	data = $.extend({"plugins": []}, data || {});
-	var defaults = $.extend(true, {}, this.get("defaults.config"), {
-		"context": (data.parent ? data.parent.context + "/" : "") + Echo.Utils.getUniqueString()
-	}, this._manifest("config") || {});
+	var control = this, parent = this.config.parent;
+	var context = (parent ? parent.context + "/" : "") + Echo.Utils.getUniqueString();
+	var defaults = $.extend(true, {"context": context}, this._manifest("config"));
 	var normalizer = this._manifest("config").normalizer;
-	return new Echo.Configuration(data, defaults, function(key, value) {
-		var handler = normalizer && normalizer[key] || _normalizer && _normalizer[key];
-		return handler ? handler.call(this, value, control) : value;
+	return new Echo.Configuration(this.config, defaults, function(key, value) {
+		return normalizer && normalizer[key]
+			? normalizer[key].call(this, value, control)
+			: value;
 	});
 };
 
@@ -1306,5 +1042,268 @@ Echo.Control.prototype.baseCSS =
 	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
 	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
 	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
+
+})(Echo.jQuery);
+
+// default manifest declaration
+
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery, manifest = {};
+
+manifest.vars = {
+	"plugins": {},
+	"extension": {"template": [], "renderers": {}},
+	"parentRenderers": {},
+	"subscriptionIDs": {}
+};
+
+manifest.config = {
+	/**
+	 * @cfg {String} target(required)
+	 * Specifies the DOM element where the control will be displayed.
+	 */
+	"target": undefined,
+
+	/**
+	 * @cfg {String} appkey
+	 * Specifies the customer application key. You should specify this parameter
+	 * if your control uses StreamServer or IdentityServer API requests.
+	 * You can use the "test.echoenabled.com" appkey for testing purposes.
+	 */
+	"appkey": "",
+
+	/**
+	 * @cfg {Object} labels
+	 * Specifies the set of language variables defined for this particular control.
+	 */
+	"labels": {},
+
+	/**
+	 * @cfg {String} [apiBaseURL="api.echoenabled.com/v1/"]
+	 * URL prefix for all API requests
+	 */
+	"apiBaseURL": "api.echoenabled.com/v1/",
+
+	/**
+	 * @cfg {String} [submissionProxyURL="apps.echoenabled.com/v2/esp/activity/"]
+	 * URL prefix for requests to Echo Submission Proxy
+	 */
+	"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
+
+	/**
+	 * @cfg {Object} [infoMessages]
+	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 *
+	 * @cfg {Boolean} [infoMessages.enabled=true]
+	 * Specifies if info messages should be rendered.
+	 *
+	 * @cfg {String} [infoMessages.layout="full"]
+	 * Specifies the layout of the info message. By default can be set to "compact" or "full".
+	 *
+	 *     "infoMessages": {
+	 *         "enabled": true,
+	 *         "layout": "full"
+	 *     }
+	 */
+	"infoMessages": {
+		"enabled": true,
+		"layout": "full"
+	},
+
+	/**
+	 * @cfg {Object} [cdnBaseURL]
+	 * A set of the key/value pairs to define CDN base URLs for different components.
+	 * The values are used as the URL prefixes for all static files, such as scripts,
+	 * stylesheets, images etc. You can add your own CDN base URL and use it anywhere
+	 * when the configuration object is available.
+	 *
+	 * @cfg {String} [cdnBaseURL.sdk]
+	 * Base URL of the SDK CDN location used for the main SDK resources.
+	 *
+	 * @cfg {String} [cdnBaseURL.apps]
+	 * Base URL of the Echo apps built on top of the JS SDK.
+	 */
+	"cdnBaseURL": {
+		"sdk": Echo.Loader.getURL(""),
+		"sdk-assets": Echo.Loader.getURL("", false),
+		"apps": Echo.Loader.config.cdnBaseURL + "apps"
+	},
+
+	/**
+	 * @cfg {Array} [plugins]
+	 * The list of the plugins to be added to the control instance.
+	 * Each plugin is represented as the JS object with the "name" field.
+	 * Other plugin parameters should be added to the same JS object.
+	 */
+	"plugins": [],
+
+	"scriptLoadErrorTimeout": 5000, // 5 sec
+	"query": "",
+
+	/**
+	 * @cfg {String} [defaultAvatar]
+	 * Default avatar URL which will be used for the user in
+	 * case there is no avatar information defined in the user
+	 * profile. Also used for anonymous users.
+	 */
+	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false)
+};
+
+manifest.config.normalizer = {
+	"target": $,
+	"plugins": function(list) {
+		var data = Echo.Utils.foldl({"hash": {}, "order": []}, list || [],
+			function(plugin, acc) {
+				var pos = $.inArray(plugin.name, acc.order);
+				if (pos >= 0) {
+					acc.order.splice(pos, 1);
+				}
+				acc.order.push(plugin.name);
+				acc.hash[plugin.name] = plugin;
+			});
+		this.set("pluginsOrder", data.order);
+		return data.hash;
+	},
+	"defaultAvatar": Echo.Loader.getURL
+};
+
+manifest.labels = {
+	/**
+	 * @echo_label
+	 */
+	"loading": "Loading...",
+	/**
+	 * @echo_label
+	 */
+	"retrying": "Retrying...",
+	/**
+	 * @echo_label
+	 */
+	"error_busy": "Loading. Please wait...",
+	/**
+	 * @echo_label
+	 */
+	"error_timeout": "Loading. Please wait...",
+	/**
+	 * @echo_label
+	 */
+	"error_waiting": "Loading. Please wait...",
+	/**
+	 * @echo_label
+	 */
+	"error_view_limit": "View creation rate limit has been exceeded. Retrying in {seconds} seconds...",
+	/**
+	 * @echo_label
+	 */
+	"error_view_update_capacity_exceeded": "This stream is momentarily unavailable due to unusually high activity. Retrying in {seconds} seconds...",
+	/**
+	 * @echo_label
+	 */
+	"error_result_too_large": "(result_too_large) The search result is too large.",
+	/**
+	 * @echo_label
+	 */
+	"error_wrong_query": "(wrong_query) Incorrect or missing query parameter.",
+	/**
+	 * @echo_label
+	 */
+	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
+	/**
+	 * @echo_label
+	 */
+	"error_internal_error": "(internal_error) Unknown server error.",
+	/**
+	 * @echo_label
+	 */
+	"error_quota_exceeded": "(quota_exceeded) Required more quota than is available.",
+	/**
+	 * @echo_label
+	 */
+	"error_incorrect_user_id": "(incorrect_user_id) Incorrect user specified in User ID predicate.",
+	/**
+	 * @echo_label
+	 */
+	"error_unknown": "(unknown) Unknown error.",
+	/**
+	 * @echo_label
+	 */
+	"today": "Today",
+	/**
+	 * @echo_label
+	 */
+	"yesterday": "Yesterday",
+	/**
+	 * @echo_label
+	 */
+	"lastWeek": "Last Week",
+	/**
+	 * @echo_label
+	 */
+	"lastMonth": "Last Month",
+	/**
+	 * @echo_label
+	 */
+	"secondAgo": "{number} Second Ago",
+	/**
+	 * @echo_label
+	 */
+	"secondsAgo": "{number} Seconds Ago",
+	/**
+	 * @echo_label
+	 */
+	"minuteAgo": "{number} Minute Ago",
+	/**
+	 * @echo_label
+	 */
+	"minutesAgo": "{number} Minutes Ago",
+	/**
+	 * @echo_label
+	 */
+	"hourAgo": "{number} Hour Ago",
+	/**
+	 * @echo_label
+	 */
+	"hoursAgo": "{number} Hours Ago",
+	/**
+	 * @echo_label
+	 */
+	"dayAgo": "{number} Day Ago",
+	/**
+	 * @echo_label
+	 */
+	"daysAgo": "{number} Days Ago",
+	/**
+	 * @echo_label
+	 */
+	"weekAgo": "{number} Week Ago",
+	/**
+	 * @echo_label
+	 */
+	"weeksAgo": "{number} Weeks Ago",
+	/**
+	 * @echo_label
+	 */
+	"monthAgo": "{number} Month Ago",
+	/**
+	 * @echo_label
+	 */
+	"monthsAgo": "{number} Months Ago"
+};
+
+manifest.templates = {"message": {}};
+
+manifest.templates.message.compact =
+	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}"></span>';
+
+manifest.templates.message.full =
+	'<div class="echo-control-message {class:messageText}">' +
+		'<span class="echo-control-message-icon echo-control-message-{data:type} {class:messageIcon}">' +
+			'{data:message}' +
+		'</span>' +
+	'</div>';
+
+Echo.Control._manifest = manifest;
 
 })(Echo.jQuery);
