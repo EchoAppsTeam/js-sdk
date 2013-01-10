@@ -875,9 +875,44 @@ Echo.Control._merge = function(parent, manifest) {
 	// nothing to merge, return original manifest
 	if (!_manifest) return manifest;
 
-	// TODO: need to develop proper manifests merging process
-	return $.extend(true, {}, _manifest, manifest);
+	return $.extend(
+		true,
+		{},
+		_manifest,
+		Echo.Utils.foldl({}, manifest, function(val, acc, name) {
+			acc[name] = name in _manifest && Echo.Control._merge[name]
+				? Echo.Control._merge[name](_manifest[name], val)
+				: val;
+		})
+	);
 };
+
+Echo.Control._merge.dependencies = function(parentDeps, ownDeps) {
+	return parentDeps.concat(ownDeps);
+};
+
+Echo.Control._merge.methods = function(parentMethods, ownMethods) {
+	return Echo.Utils.foldl({}, ownMethods, function(method, acc, name) {
+		if (name in parentMethods) {
+			acc[name] = function() {
+				var tmp = this.parent;
+				this.parent = parentMethods[name];
+				var ret = method.apply(this, arguments);
+				this.parent = tmp;
+				return ret;
+			};
+		}
+	});
+};
+
+$.map(["init", "destroy"], function(name) {
+	Echo.Control._merge[name] = function(parent, own) {
+		return function() {
+			this["parent" + Echo.Utils.capitalize(name)] = parent;
+			own.apply(this, arguments);
+		};
+	};
+});
 
 Echo.Control.prototype._getSubstitutionInstructions = function() {
 	var control = this;
