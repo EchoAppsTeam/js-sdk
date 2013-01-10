@@ -73,12 +73,11 @@ Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 });
 
 Echo.GUI.Tabs.prototype.refresh = function() {
-	var self = this,
-		entries = this.config.get("entries"),
-		panels = this.config.get("panels"),
-		target = this.config.get("target");
+	var self = this;
+	var entries = this.config.get("entries");
+	var panels = this.config.get("panels");
+	var target = this.config.get("target");
 
-	target.empty();
 	target.empty();
 
 	this.tabsContainer = $('<ul class="nav nav-tabs">');
@@ -90,7 +89,7 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 	}
 
 	if (entries.length) {
-		for (var i =0; i < entries.length; i++) {
+		for (var i = 0; i < entries.length; i++) {
 			this.add(entries[i]);
 		}
 	}

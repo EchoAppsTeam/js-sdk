@@ -119,6 +119,8 @@ Echo.GUI.Modal = Echo.Utils.inherit(Echo.GUI, function(config) {
 		"padding": null,
 		"footer": true,
 		"header": true,
+		"onHide": function() {},
+		"onShow": function() {},
 		"fade": false
 	});
 });
@@ -142,16 +144,12 @@ Echo.GUI.Modal.prototype.refresh = function() {
 	this.element.on("hidden", function() {
 		self.destroy();
 	});
-	if ($.isFunction(this.config.get("onHide"))) {
-		this.element.on("hide", function() {
-			self.config.get("onHide").call(self, self.element);
-		});
-	}
-	if ($.isFunction(this.config.get("onShow"))) {
-		this.element.on("shown", function() {
-			self.config.get("onShow").call(self, self.element);
-		});
-	}
+	this.element.on("hide", function() {
+		self.config.get("onHide").call(self, self.element);
+	});
+	this.element.on("shown", function() {
+		self.config.get("onShow").call(self, self.element);
+	});
 
 	this.element.appendTo("body")
 		.wrap("<div class='echo-sdk-ui'>")
