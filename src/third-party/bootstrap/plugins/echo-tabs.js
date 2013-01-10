@@ -78,8 +78,6 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 		panels = this.config.get("panels"),
 		target = this.config.get("target");
 
-	if (!target) return;
-
 	target.empty();
 	target.empty();
 

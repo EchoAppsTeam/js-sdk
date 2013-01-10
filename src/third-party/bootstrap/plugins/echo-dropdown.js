@@ -66,8 +66,6 @@ Echo.GUI.Dropdown = Echo.Utils.inherit(Echo.GUI, function(config) {
 });
 
 Echo.GUI.Dropdown.prototype.refresh = function() {
-	if (!this.config.get("target")) return;
-
 	this.config.get("target").empty();
 	this._assembleEntries(this._assembleContainer());
 };
