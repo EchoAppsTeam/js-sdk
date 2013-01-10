@@ -29,6 +29,8 @@ var pile = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile");
 if (Echo.Control.isDefined(pile)) return;
 
 pile.init = function() {
+	if (!this._checkAppKey()) return;
+
 	// data can be defined explicitly
 	// in this case we do not make API requests
 	if ($.isEmptyObject(this.get("data"))) {

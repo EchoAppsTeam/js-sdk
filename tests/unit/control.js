@@ -285,10 +285,6 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if 'false' is returned if no config is passed");
 
-	result = new definition({"target": $("div")});
-	QUnit.ok($.isEmptyObject(result),
-		"Checking if empty object is returned if no appkey is passed in config");
-
 	result = new definition({"appkey": "test.echoenabled.com"});
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if empty object is returned if no target is passed in config");
