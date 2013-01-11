@@ -45,7 +45,7 @@ Echo.Loader.getURL = function(url, devVersion) {
  * Function to initialize canvases on the page.
  *
  * @param {Object} [config]
- * Object which defines an initialization config parameters
+ * Object which defines the initialization of config parameters
  *
  * @param {Mixed} [config.canvases]
  * Array of jQuery elements or a single jQuery element, which represents a
@@ -87,9 +87,9 @@ Echo.Loader.init = function(config) {
  * JavaScript or CSS stylesheet file URL.
  *
  * @param {Function} resources.loaded
- * Function for check whether the script was loaded. This function must return
- * boolean value which indicates whether the resource was already loaded on the
- * page or not. If the resource was already loaded - no download is performed
+ * Function used to check whether the script was loaded. This function must return
+ * the boolean value which indicates whether the resource was already loaded on the
+ * page or not. If the resource has already been loaded - no download is performed
  * and the callback is called immediately.
  *
  * @param {Function} [callback]
@@ -154,7 +154,9 @@ Echo.Loader.override = function(canvasID, appID, config) {
 
 /**
  * @static
- * Allows to identify if code should print logs, use non-minified versions of scripts, ...
+ * Allows to identify if the debug mode is enabled for Echo environment
+ * on the page (i.e whether the logs should be printed in console,
+ * non-minified versions of scripts should be used)
  *
  * @return {Boolean}
  */

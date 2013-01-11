@@ -43,12 +43,12 @@ plugin.init = function() {
 plugin.config = {
 	/**
 	 * @cfg {Object} identityManager The list of handlers for login, edit
-	 * and signup action. If some action is ommited then it will not be
-	 * available for users in the Auth control. Each handler accepts `sessionID`
+	 * and signup actions. If some action is omitted then it will not be
+	 * available for users in the Auth control. Each handler accepts sessionID
 	 * as GET parameter. This parameter is necessary for communication with
-	 * Backplane server. When handler finishes working it constructs the
+	 * the Backplane server. When the handler finishes working it constructs the
 	 * corresponding Backplane message (for login, signup or user data update)
-	 *  and sends this message to Backplane server.
+	 * and sends this message to the Backplane server.
 	 *
 	 * @cfg {Object} [identityManager.login]
 	 * Encapsulates data for login workflow

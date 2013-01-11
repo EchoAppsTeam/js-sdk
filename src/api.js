@@ -410,8 +410,8 @@ Echo.API.Request = function(config) {
 		"method": "GET",
 		/**
 		 * @cfg {Number} [timeout]
-		 * Specifies the number of seconds after which onError callback will be
-		 * called if API request failed.
+		 * Specifies the number of seconds after which the onError callback
+		 * is called if the API request failed.
 		 */
 		"timeout": 30
 	});
@@ -424,7 +424,7 @@ Echo.API.Request.prototype._isSecureRequest = function() {
 };
 
 /**
- * Method performing api request using given parameters.
+ * Method performing the API request using the given parameters.
  *
  * @param {Object} [args] Request parameters.
  * @param {Boolean} [args.force] Flag to initiate aggressive polling.

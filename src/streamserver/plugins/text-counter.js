@@ -30,8 +30,8 @@ if (Echo.Plugin.isDefined(plugin)) return;
 /**
  * @cfg {String} label
  * Specifies the custom label for the counter. Parameter string is
- * a template that has several placeholders. Placeholder is some
- * word wrapped with the curly brackets. It supports the following
+ * a template that has several placeholders. A placeholder is a
+ * word wrapped in curly brackets. It supports the following
  * list of placeholder words:
  *
  * + limit - The number from the limit parameter. 

@@ -1632,17 +1632,17 @@ item.init = function() {
 item.config = {
 	/**
 	 * @cfg {Boolean} aggressiveSanitization
-	 * If this parameter value is set to `true`, the entire item body will
-	 * be replaced with "I just shared this on Twitter..." text in the 
-	 * stream if the item came from Twitter.
+	 * If this parameter value is set to true, the entire item body will
+	 * be replaced with the "I just shared this on Twitter..." text in the
+	 * stream in case the item came from Twitter.
 	 */
 	"aggressiveSanitization": false,
 	"buttonsOrder": undefined,
 	/**
 	 * @cfg {Object} contentTransformations
-	 * Specifies allowed item's content transformations for each content type.
+	 * Specifies the allowed item's content transformations for each content type.
 	 * Contains a hash where keys are content types and values are arrays with
-	 * formatting options enabled for given content type. Available options are:
+	 * formatting options enabled for the given content type. Available options are:
 	 *
 	 * + smileys - replaces textual smileys with images
 	 * + hashtags - highlights hashtags in text
@@ -1715,7 +1715,7 @@ item.config = {
 	/**
 	 * @cfg {Boolean} [optimizedContext=true]
 	 * Allows to configure the context mode of the "reTag" section of an item.
-	 * If set to true the context is turned into optimized mode. "reTag" section
+	 * If set to true the context is turned into optimized mode. The "reTag" section
 	 * contains only one hyperlink in this case (the same current domain is a priority).
 	 * Otherwise all hyperlinks in the item body will be resolved and converted into reTags.
 	 */
@@ -2424,7 +2424,7 @@ item.renderers._viaText = function(element, extra) {
 };
 
 /**
- * Method checking if item has more children.
+ * Method checking if the item has more children.
  *
  * @return {Boolean}
  */

@@ -13,7 +13,7 @@ Echo.Plugin = function() {};
 
 /**
  * @static
- * Function which creates a plugin object using it manifest declaration.
+ * Function which creates a plugin JS class using its manifest declaration.
  *
  * @param {Object} manifest
  * Specifies the plugin interface in the predefined way.
@@ -93,13 +93,13 @@ Echo.Plugin.create = function(manifest) {
 
 /**
  * @static
- * Method returning common manifest structure.
+ * This method returns common manifest structure.
  *
  * @param {String} name
  * Specifies plugin name.
  *
  * @param {String} component
- * Specifies component name to be extended.
+ * Specifies the component name to be extended.
  *
  * @return {Object}
  * Basic plugin manifest declaration.
@@ -126,7 +126,7 @@ Echo.Plugin.manifest = function(name, component) {
 
 /**
  * @static
- * Checks if plugin is already defined.
+ * Checks if the plugin is already defined.
  *
  * @param {Object|String} manifest
  * Plugin manifest or plugin name.
@@ -306,8 +306,8 @@ Echo.Plugin.prototype.substitute = function(args) {
 };
 
 /**
- * Method publishes the internal event to make current state invalid.
- * It triggers data refresh.
+ * Method publishes the internal event to make the current state invalid.
+ * It triggers the data refresh.
  */
 Echo.Plugin.prototype.requestDataRefresh = function() {
 	Echo.Events.publish({

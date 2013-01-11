@@ -156,12 +156,12 @@ plugin.methods._sendActivity = function(name, item, actor) {
 		/**
 		 * @event onLikeError
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeError
-		 * Triggered when the Like operation was failed.
+		 * Triggered when the Like operation failed.
 		 */
 		/**
 		 * @event onUnlikeError
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeError
-		 * Triggered when the reverse Like operation was failed.
+		 * Triggered when the reverse Like operation failed.
 		 */
 		plugin._publishEventComplete({
 			"name": name,

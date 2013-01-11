@@ -10,7 +10,7 @@ if (Echo.Utils.isComponentDefined("Echo.UserSession")) return;
  * @class Echo.UserSession
  * Class implements the interface to work with the user object.
  * The Echo.UserSession class is used in pretty much all applications
- * built in top of Echo JS SDK.
+ * built on top of the Echo JS SDK.
  *
  * @constructor
  * Class constructor which accepts the object which represents the
@@ -93,7 +93,7 @@ Echo.UserSession.get = function(key, defaults) {
  *
  * The argument of the function defines the condition which should be checked.
  * The list of built-in conditions is pre-defined. For instance, you can check
- * if the used is logged in or not by passing the "logged" string as the function
+ * if the user is logged in or not by passing the "logged" string as the function
  * value.
  *
  * @param {String} key

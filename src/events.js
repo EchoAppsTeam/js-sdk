@@ -7,11 +7,11 @@ if (Echo.Utils.isComponentDefined("Echo.Events")) return;
 
 /**
  * @class Echo.Events
- * Library for exchanging messages between components on the page. It also
- * provides external interface for users to subscribe to a certain events
+ * Library for exchanging messages between the components on the page. It also
+ * provides the external interface for users to subscribe to certain events
  * (like "app was rendered", "user logged in", etc).
  *
- * Contexts used in this library are complex identifiers constructed using the following rules:
+ * The contexts used in this library are complex identifiers constructed using the following rules:
  *     <contextId> :: "<id>" or "<parentContextID>/<id>", where
  *     <id> :: some unique identifier assigned to component
  *     <parentContextID> :: "<contextID>"
@@ -160,7 +160,7 @@ Echo.Events.unsubscribe = function(params) {
  * AND executed for the current context.
  *
  * @param {Boolean} [params.global=true]
- * Specifies whether the event should be also published to "global" context or not.
+ * Specifies whether the event should also be published to the "global" context or not.
  */
 Echo.Events.publish = function(params) {
 	params = $.extend({

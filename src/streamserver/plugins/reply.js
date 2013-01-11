@@ -5,7 +5,7 @@ var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
- * Adds extra button Reply to each root item in the Echo Stream control.
+ * Adds extra “Reply” button to each root item in the Echo Stream control.
  * Integrates Echo Submit control and provides the ability to submit
  * replies to the posted items.
  *

@@ -58,10 +58,10 @@ submit.config = {
 	/**
 	 * @cfg {Array} markers
 	 * This parameter is used to attach the markers metadata to the item
-	 * during the item submission. The format of the value is the array 
-	 * with the string values. Markers will be also displayed in the "Markers"
+	 * during the item submission. The format of the value is the array
+	 * with the string values. Markers will also be displayed in the "Markers"
 	 * field in the Submit form UI for Moderators and Administrators.
-	 * For non-admin users the markers value will be submitted along with the
+	 * For non-admin users the markers value will be submitted along with
 	 * other item content when the "Post" button is pressed.
 	 *
 	 * 	new Echo.StreamServer.Controls.Submit({
@@ -153,9 +153,9 @@ submit.config = {
 	"actionString": "Type your comment here...",
 	/**
 	 * @cfg {Number} postingTimeout
-	 * Is used to specify the number of seconds after which Submit Form will show
-	 * timeout error dialog if the server does not return anything. If the parameter
-	 * value is 0 then the mentioned dialog won't never be shown.
+	 * Is used to specify the number of seconds after which the Submit Form will show
+	 * the timeout error dialog if the server does not return anything. If the parameter
+	 * value is 0 then the mentioned dialog will never be shown.
 	 *
 	 * 	new Echo.StreamServer.Controls.Submit({
 	 * 		...
@@ -551,7 +551,7 @@ submit.methods.highlightMandatory = function(element) {
 };
 
 /**
- * Method adds custom validator to check posting possibility
+ * This Method adds a custom validator to check the posting possibility.
  */
 submit.methods.addPostValidator = function(validator, priority) {
 	this.validators[priority === "low" ? "push" : "unshift"](validator);

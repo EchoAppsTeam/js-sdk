@@ -111,14 +111,14 @@ Echo.Utils.addCSS = function(cssCode, id) {
  * Method to check whether the given set of CSS rules was already added into the page.
  *
  * This function might be used in conjunction with the Echo.Utils.addCSS function
- * to check a certain conditions before adding new styles.
+ * to check certain conditions before adding new styles.
  *
  * @param {String} id
  * Unique identity string of the CSS styles set.
  *
  * @return {Boolean}
- * true if the given CSS styles set was already added into the page previously,
- * false - otherwise.
+ * ‘true’ if the given CSS styles set was previously added into the page,
+ * otherwise ‘false’.
  */
 Echo.Utils.hasCSS = function(id) {
 	return this.cache.cssStyles
@@ -354,9 +354,9 @@ Echo.Utils._prepareFieldAccessKey = function(key) {
  *
  *     Echo.Utils.htmlize("special characters: &<>"); // will return "special characters: &amp;&lt;&gt;"
  *
- * Note: the function works with the "string" type argument only. If the value with
- * type different from "string" is passed to the function, the same value would be
- * returned with no changes.
+ * Note: the function works with the "string" type argument only.
+ * If the type of the value passed to the function differs from the "string" type,
+ * the same value is returned with no changes.
  *
  * @param {String} text
  * The string to be converted.
@@ -372,7 +372,7 @@ Echo.Utils.htmlize = function(text) {
  * @static
  * Method to convert JavaScript value to JavaScript Object Notation (JSON) string.
  *
- * Methods converts JavaScript object to JSON string.
+ * These methods convert JavaScript object to JSON string. 
  * This function uses JSON.stringify() method if it is available in the browser.
  *
  *     Echo.Utils.objectToJSON(null); // will return 'null'
@@ -462,9 +462,9 @@ Echo.Utils.objectToJSON = function(obj) {
  * The string to be added to truncated string.
  *
  * @param {Boolean} forceClosingTags
- * This parameter takes affect only when no truncation was performed. Otherwise
- * (when the content was truncated) the function restores HTML structure
- * regardless the forseClosingTags parameter value.
+ * This parameter takes effect only when no truncation was performed. Otherwise
+ * (when the content was truncated) the function restores the HTML structure
+ * regardless of the forseClosingTags parameter value.
  *
  * @return {String}
  * Truncated string.
@@ -710,10 +710,10 @@ Echo.Utils.isMobileDevice = function() {
 
 /**
  * @static
- * Method returning unique random string.
+ * Method returning a unique random string.
  *
- * This function returns unique string is the number of milliseconds between
- * midnight January 1, 1970 (GMT) to current time plus random number.
+ * This function returns a unique string specifying the number of milliseconds between
+ * midnight January 1, 1970 (GMT) and the current time plus a random number.
  *
  *     Echo.Utils.getUniqueString(); // will return something like "134086853327622290480640764643"
  *
@@ -948,7 +948,7 @@ Echo.Utils.sequentialCall = function(actions, callback) {
 
 /**
  * @static
- * Function to Replacement of first character in the words with uppercase character
+ * Function used to replace the first character in the words with the uppercase character.
  *
  * @param {String} string
  * String of some words
@@ -961,7 +961,7 @@ Echo.Utils.capitalize = function(string) {
 
 /**
  * @static
- * Templater function which compiles given template using the provided data.
+ * Templater function which compiles the given template using the provided data.
  *
  * Function can be used widely for html templates processing or any other action
  * requiring string interspersion.
@@ -977,7 +977,7 @@ Echo.Utils.capitalize = function(string) {
  *
  * @param {Boolean} [args.strict]
  * Specifies whether the template should be replaced with the corresponding value,
- * preserving replacement value type.
+ * preserving the replacement value type.
  *
  * @param {Object} [args.instructions]
  * Object containing the list of extra instructions to be applied during template compilation.
@@ -1027,7 +1027,7 @@ Echo.Utils.substitute = function(args) {
 /**
  * @static
  * Function which checks if the value passed as a first argument is a function and executes
- * it in given context. If the first argument has different type, it's returned as is.
+ * it in the given context. If the first argument has different type, it's returned as is.
  *
  * @param {Mixed} mixed
  * The value which should be checked and executed in case of a function type.

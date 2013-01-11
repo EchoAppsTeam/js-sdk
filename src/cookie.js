@@ -37,7 +37,7 @@ Echo.Cookie.get = function(name) {
 
 /**
  * @static
- * Method to set particular cookie in browser.
+ * Method to set a particular cookie in the browser.
  *
  * @param {String} name
  * Cookie name.
@@ -48,13 +48,13 @@ Echo.Cookie.get = function(name) {
  * @param {Object} options
  *
  * @param {Number} [options.expires]
- * Number of days in what cookie will expire.
+ * Number of days in which the cookie expires.
  *
  * @param {String} [options.path]
- * Path to the page which cookie is applied to.
+ * Path to the page which the cookie is applied to.
  *
  * @param {String} [options.domain]
- * Domain for which cookie is applied to.
+ * Domain for which the cookie is applied to.
  *
  * @param {Boolean} [options.secure=false]
  * Specifies if this cookie should be secure or not.

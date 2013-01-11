@@ -77,10 +77,10 @@ pile.config = {
 	 * Customizes the FacePile item
 	 *
 	 * @cfg {Boolean} item.avatar
-	 * Specifies if user avatar should be rendered within the FacePile item.
+	 * Specifies if the user avatar should be rendered within the FacePile item.
 	 *
 	 * @cfg {Boolean} item.text
-	 * Specifies if user name should be rendered within the FacePile item.
+	 * Specifies if the user name should be rendered within the FacePile item.
 	 */
 	"item": {
 		"avatar": true,

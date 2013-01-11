@@ -265,9 +265,9 @@ plugin.config = {
 	"maxChildrenBodyCharacters": 50,
 	/**
 	 * @cfg {Function} mediaSelector
-	 * Allows to define the function with the custom rules for the media content
-	 * extraction from the item content. The value of this parameter is function
-	 * which accepts the item content (string) as a first argument and should
+	 * Allows to define the function with custom rules for the media content
+	 * extraction from the item content. The value of this parameter is a function
+	 * which accepts the item content (string) as the first argument and should
 	 * return the jQuery element with the list of the DOM elements which are
 	 * considered to be the media content of this item.
 	 * 
@@ -287,8 +287,8 @@ plugin.config = {
 	 * Allows to define extra CSS class to the item based on the item length.
 	 * The value of this parameter is the JS object with the CSS classes as
 	 * the keys and the item text length ranges as values. Multiple CSS classes
-	 * might be applied to the item if the item text length satisfies several
-	 * conditions simultaneously.
+	 * might be applied to the item if the item text length meets several
+	 * criteria simultaneously.
 	 */
 	"itemCSSClassByContentLength": {
 		"echo-streamserver-controls-stream-item-smallSizeContent": [0, 69],
@@ -296,8 +296,8 @@ plugin.config = {
 	},
 	/**
 	 * @cfg {Object} gallery
-	 * Allows is a proxy for the mini media gallery class, initialized for the
-	 * item in case the media content was found in its content.
+	 * Allows to proxy the parameters for the mini Media Gallery class,
+	 * initialized for the item in case any media content was found in its body. 
 	 */
 	"gallery": {
 		"resizeDuration": 250

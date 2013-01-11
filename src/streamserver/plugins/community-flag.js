@@ -36,8 +36,8 @@ plugin.init = function() {
 plugin.config = {
 	/**
 	 * @cfg {Boolean} showUsers
-	 * Specifies the visibility of list of users who flagged particular
-	 * item. Note that the list is only visible for the users with the
+	 * Specifies the visibility of the list of users who flagged a particular
+	 * item. Note that the list is only visible for the users with
 	 * administrative privileges.
 	 */
 	"showUsers": true
@@ -149,12 +149,12 @@ plugin.methods._assembleButton = function(name) {
 				/**
 				 * @event onFlagError
 				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagError
-				 * Triggered if flag operation was failed.
+				 * Triggered if flag operation failed.
 				 */
 				/**
 				 * @event onUnFlagError
 				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagError
-				 * Triggered if reverse flag operation was failed.
+				 * Triggered if reverse flag operation failed.
 				 */
 				plugin._publishEventComplete({
 					"name": name,

@@ -217,8 +217,8 @@ Echo.Control.prototype.defaults.config = {
 	},
 	/**
 	 * @cfg {Object} [cdnBaseURL]
-	 * A set of the key/value pairs to define CDN base URLs for different components.
-	 * The values are used as the URL prefixes for all static files, such as scripts,
+	 * A set of key/value pairs to define CDN base URLs for different components.
+	 * The values are used as URL prefixes for all static files, such as scripts,
 	 * stylesheets, images etc. You can add your own CDN base URL and use it anywhere
 	 * when the configuration object is available.
 	 *
@@ -404,7 +404,7 @@ Echo.Control.prototype.set = function(key, value) {
 };
 
 /**
- * Method to remove specific object field.
+ * Method to remove a specific object field.
  *
  * This function allows to remove the value associated with the given key.
  * If the key contains a complex structure (such as objects or arrays),
@@ -414,7 +414,7 @@ Echo.Control.prototype.set = function(key, value) {
  * Specifies the key which should be removed from the object.
  *
  * @return {Boolean}
- * The boolean value which indicates that value by key exists and removed.
+ * Indicates that the value associated with the given key was removed.
  */
 Echo.Control.prototype.remove = function(key) {
 	return Echo.Utils.remove(this, key);
@@ -422,7 +422,7 @@ Echo.Control.prototype.remove = function(key) {
 
 /**
  * Rendering function which prepares the DOM representation of the control
- * and appends it to the control target element. This function also used to
+ * and appends it to the control target element. This function is also used to
  * re-render the control.
  *
  * @return {Object}
@@ -497,7 +497,7 @@ Echo.Control.prototype.destroy = function(config) {
 };
 
 /**
- * Method checks if control was initialized from another control.
+ * Method checks if the control was initialized from another control.
  *
  * @return {Boolean}
  */
@@ -594,8 +594,8 @@ Echo.Control.prototype.template = function() {
 };
 
 /**
- * Method to call parent renderer function, which was extended using
- * Echo.Control.extendRenderer function.
+ * Method to call the parent renderer function, which was extended using
+ * the Echo.Control.extendRenderer function.
  *
  * @param {String} name
  * Renderer name.
@@ -614,7 +614,7 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
 };
 
 /**
- * Method to extend the template of particular control.
+ * Method to extend the template of the particular control.
  *
  * @param {String} action
  * One of the following actions:

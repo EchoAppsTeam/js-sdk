@@ -18,7 +18,7 @@ Echo.App = Echo.Utils.inherit(Echo.Control);
 /**
  * @static
  * @method
- * Function which creates a application object using it manifest declaration.
+ * The function which creates an application JS class using its manifest declaration.
  *
  * @param {Object} manifest
  * Specifies the application interface in the predefined way.
@@ -61,7 +61,7 @@ Echo.App.create = Echo.Control.create;
 /**
  * @static
  * @method
- * Method returning common manifest structure for a application.
+ * Method returning the common manifest structure for an application.
  *
  * @param {String} name
  * App name.
@@ -136,23 +136,23 @@ Echo.App.prototype.initComponent = function(componentSpec) {
 };
 
 /**
- * Method to retrieve initialized component by id.
+ * Method to retrieve the initialized component by id.
  *
  * @param {String} id
  * Id of the component to be retrieved.
  *
  * @return {Object}
  * The link to the corresponding component or 'undefined'
- * in case no control with the given id found.
+ * in case no control with the given id was found.
  */
 Echo.App.prototype.getComponent = function(id) {
 	return this.get("components." + id);
 };
 
 /**
- * Method to destroy nested component by id. If component defined,
- * then will be called "destroy" method of the nested component
- * and the ref removing from the inner container "components".
+ * Method to destroy a nested component by id. If the component is defined,
+ * then the "destroy" method of the nested component is called
+ * and the reference is removed from the inner "components" container.
  *
  * @param {String} id
  * Id of the component to be removed.
@@ -166,10 +166,10 @@ Echo.App.prototype.destroyComponent = function(id) {
 };
 
 /**
- * Method to destroy all defined nested components but ids in the exception list.
+ * Method to destroy all defined nested components by their ids in the exception list.
  *
- * Method can accept one parameter which specifies the exception
- * nested component ids list. If list is omit or empty, then method destroys
+ * Method can accept one parameter which specifies the nested exception
+ * component ids list. If the list is omitted or empty, then the method destroys
  * all defined nested components.
  *
  * @param {Array} [exceptions]

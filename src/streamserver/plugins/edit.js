@@ -5,10 +5,10 @@ var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Edit
- * Adds extra button Edit to each item in the Echo Stream control
+ * Adds extra “Edit” button to each item in the Echo Stream control
  * which allows to edit the content and some metadata of the item.
- * This button will appear either for the users with the
- * administrative privileges or for editing personal comments.
+ * This button will appear either for the users with
+ * administrative privileges or for editing of personal comments.
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),

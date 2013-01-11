@@ -348,37 +348,37 @@ plugin.methods._publishCompleteActionEvent = function(args) {
 	/**
 	 * @event onApproveError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError
-	 * Triggered if "Approve" operation was failed.
+	 * Triggered if "Approve" operation failed.
 	 */
 	/**
 	 * @event onSpamError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError
-	 * Triggered if "Spam" operation was failed.
+	 * Triggered if "Spam" operation failed.
 	 */
 	/**
 	 * @event onDeleteError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteError
-	 * Triggered if "Delete" operation was failed.
+	 * Triggered if "Delete" operation failed.
 	 */
 	/**
 	 * @event onUntouchError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError
-	 * Triggered if "Untouch" operation was failed.
+	 * Triggered if "Untouch" operation failed.
 	 */
 	/**
 	 * @event onBanError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError
-	 * Triggered if "Ban" operation was failed.
+	 * Triggered if "Ban" operation failed.
 	 */
 	/**
 	 * @event onUnBanError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanError
-	 * Triggered if "UnBan" operation was failed.
+	 * Triggered if "UnBan" operation failed.
 	 */
 	/**
 	 * @event onUserPermissionsError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsError
-	 * Triggered if "UserPermissions" operation was failed.
+	 * Triggered if "UserPermissions" operation failed.
 	 */
 	this.events.publish({
 		"topic": "on" + args.name + args.state,
