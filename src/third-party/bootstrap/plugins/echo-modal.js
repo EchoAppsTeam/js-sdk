@@ -11,9 +11,11 @@ if (Echo.GUI.Modal) return;
 /**
  * @class Echo.GUI.Modal
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#modals" target="_blank">bootstrap-modal.js</a>.
- * It contains logic to automatically build HTML code required for bootstrap-modal.
- * I.E. you can pass the necessary parameters to the Echo.GUI.Modal constructor and
- * modal dialog HTML element will be build automatically.
+ * The Echo.GUI.Modal class provides a simplified interface to work with the
+ * Bootstrap Modal JS class.
+ * Echo wrapper assembles the HTML code required for Bootstrap Modal JS class
+ * based on the parameters specified in the config and initializes
+ * the corresponding Bootstrap JS class.
  *
  * Example:
  * 	var myModal = new Echo.GUI.Modal({

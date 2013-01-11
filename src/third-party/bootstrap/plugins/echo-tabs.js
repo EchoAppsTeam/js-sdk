@@ -11,7 +11,11 @@ if (Echo.GUI.Tabs) return;
 /**
  * @class Echo.GUI.Tabs
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#tabs" target="_blank">bootstrap-tab.js</a>.
- * The tabs HTML code automatically builds depending on parameters you have passed to the constructor.
+ * The Echo.GUI.Tabs class provides a simplified interface to work with
+ * the Bootstrap Tabs JS class.
+ * Echo wrapper assembles the HTML code required for Bootstrap Tabs JS class
+ * based on the parameters specified in the config and initializes
+ * the corresponding Bootstrap JS class.
  *
  * Example:
  * 	var myTabs = new Echo.GUI.Tabs({
@@ -37,8 +41,8 @@ if (Echo.GUI.Tabs) return;
  * Tabs configuration.
  *
  * @cfg {Mixed} target
- * Container which should contains the tabs.
- * This parameter can be several types:
+ * The container where the tabs should be located.
+ * This parameter can have several types:
  * 	- CSS selector (ex: "css-selector")
  * 	- HTMLElement (ex: document.getElementById("some-element-id"))
  * 	- jQuery object (ex: $(".css-selector"))
@@ -209,7 +213,7 @@ Echo.GUI.Tabs.prototype.get = function(id) {
 };
 
 /**
- * Method to check whether the tab with specified id is already exists.
+ * Method to check whether the tab with specified id already exists.
  *
  * @param {String} id
  * Tab id.
@@ -223,7 +227,7 @@ Echo.GUI.Tabs.prototype.has = function(id) {
 };
 
 /**
- * This method updates the tab according the tab config.
+ * This method updates the tab according to the tab config.
  *
  * @param {String} id
  * Tab id which should be updated.

@@ -21,8 +21,8 @@ Echo.GUI = function(config, defaultConfig) {
 };
 
 /**
- * This method re-assemble the component HTML code and
- * append it to the target.
+ * This method re-assembles the component HTML code and
+ * appends it to the target.
  */
 Echo.GUI.prototype.refresh = function() {
 };

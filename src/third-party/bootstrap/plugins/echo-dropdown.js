@@ -11,7 +11,11 @@ if (Echo.GUI.Dropdown) return;
 /**
  * @class Echo.GUI.Dropdown
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#dropdowns" target="_blank">bootstrap-dropdown.js</a>.
- * The dropdown HTML code automatically builds depending on parameters you have passed to the constructor.
+ * The Echo.GUI.Dropdown class provides a simplified interface to work with the
+ * Bootstrap Dropdown JS class.
+ * Echo wrapper assembles the HTML code required for Bootstrap Dropdown JS class
+ * based on the parameters specified in the config and initializes
+ * the corresponding Bootstrap JS class.
  *
  * Example:
  * 	var dropdown = new Echo.GUI.Dropdown({
@@ -35,8 +39,8 @@ if (Echo.GUI.Dropdown) return;
  * Dropdown parameters.
  *
  * @cfg {Mixed} target
- * Container which should contains the dropdown.
- * This parameter can be several types:
+ * The container where the dropdown should be located.
+ * This parameter can have several types:
  * 	- CSS selector (ex: ".css-selector")
  * 	- HTMLElement (ex: document.getElementById("some-element-id"))
  * 	- jQuery object (ex: $(".css-selector"))

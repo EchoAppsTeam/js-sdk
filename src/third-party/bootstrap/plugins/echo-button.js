@@ -8,8 +8,12 @@ if (!Echo.GUI || Echo.GUI.Button) return;
 
 /**
  * @class Echo.GUI.Button
- * The class provides an interface to assemble the Bootstrap component
- * dynamically, based on the JS Object rather than static HTML code.
+ * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#buttons">bootstrap-button.js</a>.
+ * The Echo.GUI.Dropdown class provides a simplified interface to work with the
+ * Bootstrap Button JS class.
+ * Echo wrapper assembles the HTML code required for Bootstrap Button JS class
+ * based on the parameters specified in the config and initializes
+ * the corresponding Bootstrap JS class.
  *
  * Example:
  * 	var button = new Echo.GUI.Button({
@@ -21,14 +25,14 @@ if (!Echo.GUI || Echo.GUI.Button) return;
  * @extends Echo.GUI
  *
  * @constructor
- * Creates a button in the container you have passed in the "config.target".
+ * Creates a button inside the container defined in the “target" config parameter.
  *
  * @param {Object} config
  * Button configuration data.
  *
  * @cfg {Mixed} target
- * Container which should contains the button.
- * This parameter can be several types:
+ * The container where the button should be located.
+ * This parameter can have several types
  * 	- CSS selector (ex: ".css-selector")
  * 	- HTMLElement (ex: document.getElementById("some-element-id"))
  * 	- jQuery object (ex: $(".css-selector"))
