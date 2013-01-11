@@ -19,7 +19,7 @@ Echo.GUI = function(config, defaultConfig) {
 
 	config.target = !defaultConfig.targetless && $(config.target);
 
-	this.config = new Echo.Configuration($.extend(true, {}, config), defaultConfig);
+	this.config = new Echo.Configuration(config, defaultConfig);
 	this.refresh();
 };
 

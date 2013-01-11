@@ -143,12 +143,7 @@ Echo.GUI.Tabs.prototype.enable = function(id) {
  * Tab id which should be removed.
  */
 Echo.GUI.Tabs.prototype.remove = function(id) {
-	var tabIndex = this._getTabIndex(id);
-	if (~tabIndex) {
-		this.config.get("entries").splice(tabIndex, 1);
-		this.config.get("target").find("a[data-item='" + id + "']").remove();
-		this.config.get("panels").find("[id='" + id + "']").remove();
-	}
+	this.config.get("target").find("a[data-item='" + id + "']").remove();
 };
 
 /**
