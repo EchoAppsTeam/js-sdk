@@ -59,9 +59,6 @@ if (Echo.GUI.Dropdown) return;
  * 	icon    - URL for the icon. Icon size should be 16x16 pixels.
  */
 Echo.GUI.Dropdown = Echo.Utils.inherit(Echo.GUI, function(config) {
-	if (!config || !config.target) return;
-
-	config.target = $(config.target);
 	Echo.GUI.call(this, config, {
 		"title": "",
 		"extraClass": "",

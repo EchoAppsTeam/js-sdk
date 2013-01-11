@@ -14,7 +14,10 @@ if (Echo.GUI) return;
  * GUI component configuration.
  */
 Echo.GUI = function(config, defaultConfig) {
-	if (!config) return;
+	// exit if config is missing or the target is undefined
+	if (!config || !(config.target || defaultConfig.targetless)) return;
+
+	config.target = !defaultConfig.targetless && $(config.target);
 
 	this.config = new Echo.Configuration($.extend(true, {}, config), defaultConfig);
 	this.refresh();

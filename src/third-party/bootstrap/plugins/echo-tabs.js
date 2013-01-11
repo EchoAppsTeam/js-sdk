@@ -64,9 +64,6 @@ if (Echo.GUI.Tabs) return;
  * Function which will be called when tab is shown.
  */
 Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
-	if (!config || !config.target) return;
-
-	config.target = $(config.target);
 	config.panels = config.panels ? $(config.panels) : $("<div>");
 
 	Echo.GUI.call(this, config, {

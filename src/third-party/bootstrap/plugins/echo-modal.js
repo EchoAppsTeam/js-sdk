@@ -109,6 +109,7 @@ if (Echo.GUI.Modal) return;
  */
 Echo.GUI.Modal = Echo.Utils.inherit(Echo.GUI, function(config) {
 	Echo.GUI.call(this, config, {
+		"targetless": true,
 		"show": false,
 		"backdrop": true,
 		"keyboard": true,

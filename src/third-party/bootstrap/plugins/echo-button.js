@@ -47,9 +47,6 @@ if (!Echo.GUI || Echo.GUI.Button) return;
  * Specifies whether the button should be disabled.
  */
 Echo.GUI.Button = Echo.Utils.inherit(Echo.GUI, function(config) {
-	if (!config || !config.target) return;
-
-	config.target = $(config.target);
 	Echo.GUI.call(this, config, {
 		"label": config.target.html(),
 		"disabled": !!config.target.attr("disabled")
