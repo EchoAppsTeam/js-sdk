@@ -102,6 +102,28 @@ _userSession.init = {
 	}
 };
 
+var _plugins = {};
+
+_plugins.Edit = {};
+
+_plugins.Edit.onEdit = {
+	"target": $("<div>"),
+	"targetURL": "",
+	"data": {
+		"entries": [],
+		"id": "",
+		"updated": ""
+	},
+	"postData": {
+		"verb": "update|mark|unmark|tag|untag",
+		"target": "",
+		"markers": "",
+		"tags": "",
+		"field": "",
+		"value": ""
+	}
+};
+
 Echo.Tests.Events = Echo.Tests.Events || {};
 
 Echo.Tests.Events.contracts = {
@@ -244,23 +266,9 @@ Echo.Tests.Events.contracts = {
 //			"verb": "post"
 		}
 	},
-	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit": {
-		"target": $("<div>"),
-		"targetURL": "",
-		"data": {
-			"entries": [],
-			"id": "",
-			"updated": ""
-		},
-		"postData": {
-			"verb": "update|mark|unmark|tag|untag",
-			"target": "",
-			"markers": "",
-			"tags": "",
-			"field": "",
-			"value": ""
-		}
-	},
+	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit": _plugins.Edit.onEdit,
+	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete": _plugins.Edit.onEdit,
+	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError": _plugins.Edit.onEdit,
 	"Echo.StreamServer.Controls.Counter.onUpdate": {
 		"target": $("<div>"),
 		"query": "",
