@@ -636,15 +636,14 @@ Echo.Control.prototype._initializers.vars = function() {
 };
 
 Echo.Control.prototype._initializers.config = function() {
-	var control = this, parent = this.config.parent;
-	var context = (parent ? parent.context + "/" : "") + Echo.Utils.getUniqueString();
-	var defaults = $.extend(true, {"context": context}, this._manifest("config"));
+	var control = this;
 	var normalizer = this._manifest("config").normalizer;
-	return new Echo.Configuration(this.config, defaults, function(key, value) {
-		return normalizer && normalizer[key]
-			? normalizer[key].call(this, value, control)
-			: value;
-	});
+	return new Echo.Configuration(this.config, this._manifest("config"),
+		function(key, value) {
+			return normalizer && normalizer[key]
+				? normalizer[key].call(this, value, control)
+				: value;
+		});
 };
 
 Echo.Control.prototype._initializers.events = function() {
@@ -1174,6 +1173,7 @@ manifest.config = {
 	 */
 	"plugins": [],
 
+	"context": "",
 	"scriptLoadErrorTimeout": 5000, // 5 sec
 	"query": "",
 
@@ -1201,6 +1201,7 @@ manifest.config.normalizer = {
 		this.set("pluginsOrder", data.order);
 		return data.hash;
 	},
+	"context": Echo.Events.newContextId,
 	"defaultAvatar": Echo.Loader.getURL
 };
 
