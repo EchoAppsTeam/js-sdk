@@ -188,7 +188,7 @@ Echo.Events.publish = function(params) {
  * If this parameter is defined, the nested context ID is generated.
  *
  * @return {String}
- * Unique context ID identifier.
+ * Unique context identifier.
  */
 Echo.Events.newContextId = function(parentContextId) {
 	return (parentContextId ? parentContextId + "/" : "") + Echo.Utils.getUniqueString();
