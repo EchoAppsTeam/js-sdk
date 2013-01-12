@@ -19,10 +19,10 @@ if (Echo.Utils.isComponentDefined("Echo.Events")) return;
 Echo.Events = {};
 
 /**
+ * @static
  * Function allowing to subscribe to an event with a specific callback function
  * and topic.
  *
- * @static
  * @param {Object} params
  * Configuration parameters object with the following fields:
  *
@@ -72,9 +72,9 @@ Echo.Events.subscribe = function(params) {
 };
 
 /**
+ * @static
  * Function allowing to unsubscribe from an event.
  *
- * @static
  * @param {Object} params
  * Configuration parameters object with the following fields:
  *
@@ -137,9 +137,9 @@ Echo.Events.unsubscribe = function(params) {
 };
 
 /**
+ * @static
  * Function allowing to publish an event providing arbitrary data.
  *
- * @static
  * @param {Object} params
  * Configuration parameters object with the following fields:
  *
@@ -177,6 +177,21 @@ Echo.Events.publish = function(params) {
 		params.context = "global";
 		Echo.Events.publish(params);
 	}
+};
+
+/**
+ * @static
+ * Generates a string which represents new unique context ID to be used for subscriptions.
+ *
+ * @param {String} [parentContextId]
+ * Optional parameter which specifies the parent object context ID.
+ * If this parameter is defined, the nested context ID is generated.
+ *
+ * @return {String}
+ * Unique context ID identifier.
+ */
+Echo.Events.newContextId = function(parentContextId) {
+	return (parentContextId ? parentContextId + "/" : "") + Echo.Utils.getUniqueString();
 };
 
 var _lastHandlerResult = {}, _dataByHandlerId = {};

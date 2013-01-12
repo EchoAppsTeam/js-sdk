@@ -157,6 +157,31 @@ suite.prototype.tests.PublicMethods = {
 		QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", context \"a2\")");
 		publish({"topic": "X.test", "context": "a2", "global": false});
 		QUnit.deepEqual(published, [], "Publish: handlers order (topic \"X\", context \"a2\", not global event)");
+
+		// checking Echo.Events.newContextId...
+		var contextId = Echo.Events.newContextId();
+		QUnit.equal(typeof contextId, "string",
+			"Making sure that the context ID has string typed value");
+
+		var nestedContextId = Echo.Events.newContextId(contextId);
+		QUnit.equal(typeof nestedContextId, "string",
+			"Checking whether the nested context ID has a string typed value as well");
+
+		QUnit.ok(nestedContextId.indexOf(contextId) > -1,
+			"Checking if the main context is a part of the nested context ID");
+
+		var ctxs = [], ctxById = {}, hasDuplicates = false;
+		for (var i = 0; i < 10000; i++) {
+			var ctx = Echo.Events.newContextId();
+			if (ctx in ctxById) {
+				hasDuplicates = true;
+				break;
+			}
+			ctxs.push(ctx);
+			ctxById[ctx] = true;
+		}
+		QUnit.ok(!hasDuplicates,
+			"Checking if the 'newContextId' function always produces random values")
 	}
 };
 
