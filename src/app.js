@@ -233,7 +233,8 @@ Echo.App.prototype._mergeSpecsByName = function(specs) {
 
 Echo.App.prototype._normalizeComponentConfig = function(config) {
 	var self = this;
-	Echo.Utils.foldl(config, ["appkey", "apiBaseURL", "submissionProxyURL"], function(key, acc) {
+	var fields = ["appkey", "context", "apiBaseURL", "submissionProxyURL"];
+	Echo.Utils.foldl(config, fields, function(key, acc) {
 		acc[key] = acc[key] || self.config.get(key);
 	});
 	var normalize = function(value) {

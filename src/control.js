@@ -1201,6 +1201,12 @@ manifest.config.normalizer = {
 		this.set("pluginsOrder", data.order);
 		return data.hash;
 	},
+	// the context normalizer takes the context which is passed
+	// from the outside and treats it as the parent context by passing
+	// it into the Echo.Events.newContextId function, which generates
+	// the nested context out of it. Note: the parent "context" for the control
+	// is defined within the Echo.Plugin.Config.prototype.assemble and
+	// Echo.App.prototype._normalizeComponentConfig functions.
 	"context": Echo.Events.newContextId,
 	"defaultAvatar": Echo.Loader.getURL
 };
