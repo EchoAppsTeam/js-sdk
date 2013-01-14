@@ -365,6 +365,7 @@ pile.methods._initItem = function(entry, callback) {
 		"appkey": this.config.get("appkey"),
 		"parent": this.config.getAsHash(),
 		"plugins": this.config.get("plugins"),
+		"context": this.config.get("context"),
 		"data": entry.actor,
 		"user": this.user,
 		"ready": callback

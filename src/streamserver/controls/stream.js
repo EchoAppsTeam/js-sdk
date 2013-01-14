@@ -1445,6 +1445,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"appkey": this.config.get("appkey"),
 		"parent": parentConfig,
 		"plugins": this.config.get("plugins"),
+		"context": this.config.get("context"),
 		"data": this._normalizeEntry(entry),
 		"user": this.user,
 		"live": isLive,
@@ -1750,15 +1751,6 @@ item.config.normalizer = {
 			);
 		});
 		return object;
-	}
-};
-
-item.config.normalizer = {
-	"context": function(value, item) {
-		var parent = item.config.parent;
-		return parent
-			? Echo.Events.newContextId(parent.context)
-			: (value ? value : Echo.Events.newContextId());
 	}
 };
 
