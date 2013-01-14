@@ -887,10 +887,6 @@ Echo.Control._merge = function(parent, manifest) {
 	);
 };
 
-Echo.Control._merge.dependencies = function(parentDeps, ownDeps) {
-	return parentDeps.concat(ownDeps);
-};
-
 (function()  {
 
 var wrapper = function(parent, own) {
@@ -903,12 +899,16 @@ var wrapper = function(parent, own) {
 	};
 };
 
-Echo.Control._merge.methods = function(parentMethods, ownMethods) {
-	return Echo.Utils.foldl({}, ownMethods, function(method, acc, name) {
-		if (name in parentMethods) {
-			acc[name] = wrapper(parentMethods[name], method);
+Echo.Control._merge.methods = function(parent, own) {
+	return Echo.Utils.foldl({}, own, function(method, acc, name) {
+		if (name in parent) {
+			acc[name] = wrapper(parent[name], method);
 		}
 	});
+};
+
+Echo.Control._merge.dependencies = function(parent, own) {
+	return parent.concat(own);
 };
 
 $.map(["init", "destroy"], function(name) {
