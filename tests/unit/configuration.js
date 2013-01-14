@@ -177,15 +177,44 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.equal(config.get("key9"), original["key9"],
 			"Checking if the default config jQuery values were overriden correctly (key undefined)");
 		QUnit.equal(config.get("key10"), overrides["key10"],
-			"Checking if the default configuration not override undefined key");
+			"Checking if the default configuration do not override undefined key");
 		QUnit.equal(config.get("key11"), overrides["key11"],
-			"Checking if the default configuration not override null key");
+			"Checking if the default configuration do not override null key");
 		QUnit.deepEqual(config.get("key12"), original["key12"],
 			"Checking if the default config values were merged correctly with empty object");
 		QUnit.deepEqual(config.get("key13"), {"b": 3, "c": 2},
 			"Checking if the default config values were merged correctly with non empty object");
 		QUnit.equal(config.get("key14"), overrides["key14"],
-			"Checking if the default configuration not override undefined key (default key is object)");
+			"Checking if the default configuration do not override undefined key (default key is object)");
+
+		// checking if the config update doesn't affect incoming data...
+		var incoming = {};
+		incoming.defaults = {
+			"int": 1,
+			"arr": [{"arr_key1": 1}, {"arr_key2": {"sub_key2": 10}}],
+			"obj": {"obj_key1": "obj_key1_value", "obj_key2": {"key": false}},
+			"str": "string value"
+		};
+		incoming.override = {
+			"int": 15,
+			"arr": [{"arr_key1": 50}, {"arr_key2": {}}, {"arr_key3": "some string"}],
+			"obj": {"obj_key1": "obj_key1_value_override"},
+			"str": "string value override"
+		};
+		var snapshot = {
+			"defaults": $.extend(true, {}, incoming.defaults),
+			"override": $.extend(true, {}, incoming.override)
+		};
+		var config = new Echo.Configuration(incoming.override, incoming.defaults);
+		config.set("int", 75);
+		config.set("str", "new string");
+		config.get("arr")[0].arr_key1 = 100;
+		config.set("obj.obj_key1", "new value");
+		QUnit.deepEqual(incoming.defaults, snapshot.defaults,
+			"Checking whether the incoming defaults data is not affected after config.set operation");
+		QUnit.deepEqual(incoming.override, snapshot.override,
+			"Checking whether the incoming overrides data is not affected after config.set operation");
+
 	}
 };
 

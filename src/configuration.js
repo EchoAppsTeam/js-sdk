@@ -32,17 +32,10 @@ if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
  * Reference to the given Echo.Configuration class instance.
  */
 Echo.Configuration = function(master, slave, normalizer) {
-	var self = this;
-	this.normalize = normalizer || function(key, value) { return value; };
 	this.data = {};
 	this.cache = {};
-	if (!slave && !normalizer) {
-		this.data = master;
-	} else {
-		$.each(this._merge(master, slave), function(key, value) {
-			self.set(key, value);
-		});
-	}
+	this.normalize = normalizer || function(key, value) { return value; };
+	$.each(this._merge(master, slave), $.proxy(this.set, this));
 };
 
 /**
@@ -89,12 +82,11 @@ Echo.Configuration.prototype.get = function(key, defaults) {
  * The corresponding value which should be defined for the key.
  */
 Echo.Configuration.prototype.set = function(key, value) {
-	var keys = key.split(".");
 	delete this.cache[key];
 	if (typeof value === "object") {
 		this._clearCacheByPrefix(key);
 	}
-	Echo.Utils.set(this.data, key, this.normalize(keys.pop(), value));
+	Echo.Utils.set(this.data, key, this.normalize(key.split(".").pop(), value));
 };
 
 /**
@@ -127,10 +119,7 @@ Echo.Configuration.prototype.remove = function(key) {
  * The corresponding value which should be defined for the key.
  */
 Echo.Configuration.prototype.extend = function(extra) {
-	var self = this;
-	$.each(extra, function(key, value) {
-		self.set(key, value);
-	});
+	$.each(extra, $.proxy(this.set, this));
 };
 
 /**
@@ -156,19 +145,26 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 };
 
 Echo.Configuration.prototype._merge = function(master, slave) {
-	var self = this, target = {}, src, options;
+	var self = this, target, src, options;
 
 	for (var i = 0; i < arguments.length; i++) {
 		options = arguments[i];
 		if ($.isPlainObject(options)) {
+			target = target || {};
 			$.each(options, function(name, copy) {
 				src = target[name];
 				if ($.isPlainObject(src)) {
 					target[name] = self._merge(src, copy);
 				} else if (!target.hasOwnProperty(name)) {
-					target[name] = copy;
+					target[name] = self._merge(copy);
 				}
 			});
+		} else if ($.isArray(options)) {
+			target = $.map(options, function(option) {
+				return self._merge(option);
+			});
+		} else {
+			target = options;
 		}
 	}
 	return target;
