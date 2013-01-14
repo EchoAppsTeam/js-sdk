@@ -22,6 +22,13 @@ Echo.GUI = function(config, defaultConfig) {
 	this.config = new Echo.Configuration(config, defaultConfig);
 	this.refresh();
 };
+/**
+ * @property {Echo.Configuration} config
+ * After component is created, you can change the config object through this property.
+ * For example:
+ * 	component.config.set("some-config-parameter", "new-value");
+ * 	component.refresh();
+ */
 
 /**
  * This method re-assembles the component HTML code and
