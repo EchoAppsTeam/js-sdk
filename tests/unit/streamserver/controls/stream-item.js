@@ -355,6 +355,10 @@ suite.prototype.cases.destroy = function(callback) {
 };
 
 suite.prototype.tests.bodyRendererTest = {
+	"config": {
+		"async": true,
+		"testTimeout": 10000
+	},
 	"check": function() {
 		var contentTransform = '1 :) <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty';
 		var contentLimits = '1234567890 <span>qwertyuiop</span> https://encrypted.google.com/#sclient=psy&hl=en&source=hp&q=something&pbx=1&oq=something&aq=f&aqi=g5&aql=1&gs_sm=e&gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&bav=on.2,or.r_gc.r_pw.&fp=d31248080af7dd23&biw=1440&bih=788 #12345678901234567890';
@@ -594,29 +598,37 @@ suite.prototype._runBodyCases = function(cases) {
 			'<span class="echo-streamserver-controls-stream-item-text"></span>' +
 			'<span class="echo-streamserver-controls-stream-item-textEllipses">...</span>' +
 			'<span class="echo-streamserver-controls-stream-item-textToggleTruncated"></span>' +
-		+ '</div>';	
-	$.each(cases, function(i, params) {
-		new Echo.StreamServer.Controls.Stream.Item($.extend({
-			"target": self.config.target,
-			"appkey": self.config.appkey,
-			"parent": suite._streamConfigData,
-			"ready": function() {
-				var item = this;
-				item.events.subscribe({
-					"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
-					"handler": function() {
-						var element = $(".echo-streamserver-controls-stream-item-body", self.config.target);
-						var target = element.find(".echo-streamserver-controls-stream-item-text");
-						var result = $("<div>").append(target.clone(true, true).contents());
-						var expect = $("<div>").append(params.expect);
-						self.jqueryObjectsEqual(result,	expect, params.description);
-					}
-				});
-				item.render();
-			},
-			"data": _normalizeEntry($.extend(true, {}, suite._itemData, params.data))
-		}, params.config));
-	});
+		+ '</div>';
+	var checker = function(params, config) {
+		var element = $(".echo-streamserver-controls-stream-item-body", config.target);
+		var target = element.find(".echo-streamserver-controls-stream-item-text");
+		var result = $("<div>").append(target.clone(true, true).contents());
+		var expect = $("<div>").append(params.expect);
+		self.jqueryObjectsEqual(result,	expect, params.description);
+	};
+	var generate = function(params) {
+		return function(callback) {
+			new Echo.StreamServer.Controls.Stream.Item($.extend({
+				"target": self.config.target,
+				"appkey": self.config.appkey,
+				"parent": suite._streamConfigData,
+				"context": suite._streamConfigData.context,
+				"ready": function() {
+					var item = this;
+					item.events.subscribe({
+						"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
+						"handler": function() {
+							checker(params, self.config);
+							callback();
+						}
+					});
+					item.render();
+				},
+				"data": _normalizeEntry($.extend(true, {}, suite._itemData, params.data))
+			}, params.config));
+		};
+	};
+	this.sequentialAsyncTests($.map(cases, $.proxy(generate, {})));
 };
 
 // almost copy of Echo.StreamServer.Controls.Stream.prototype._normalizeEntry()
@@ -719,6 +731,7 @@ suite._streamConfigData = {
 		"itemsSlideTimeout": 600,
 		"maxDepth": 1
 	},
+	"context": Echo.Events.newContextId(),
 	"fadeTimeout": 2800,
 	"flashColor": "#ffff99",
 	"itemsPerPage": 15,
