@@ -94,7 +94,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"labelsOverriding",
 			"refresh",
 			"destroyCalled",
-			"destroyBroadcasting"
+			"destroyBroadcasting",
+			"manifestBaseInheritance"
 		], "cases");
 
 	}
@@ -744,6 +745,113 @@ suite.prototype.cases.destroyBroadcasting = function(callback) {
 	initControls();
 };
 
+suite.prototype.cases.manifestBaseInheritance = function(callback) {
+	var initVar = "",
+		destroyVar = "";
+	var parentManifest = {
+		"name": "Echo.Control1",
+		"vars": {
+			"someVar": 1,
+			"someVar2": 2
+		},
+		"config": {
+			"someProps": {
+				"prop1": 1,
+				"prop2": 2,
+				"prop3": {
+					"prop3_1": 1
+				}
+			},
+			"someProp": "someVal"
+		},
+		"label": {
+			"someLabel": "some label text"
+		},
+		"events": {
+			"parentEvent": function() { return "parent event"; }
+		},
+		"methods": {
+			"method1": function() { return "method1"; },
+			"method2": function() { return "method2"; }
+		},
+		"renderers": {
+			"someRenderer": function(el) { return el; }
+		},
+		"templates": {
+			"main": '<div class="{class:container}"><div class="{class:someRenerer}"></div></div>'
+		},
+		"dependencies": [],
+		"init": function() {
+			initVar += "a parent init";
+			this.ready();
+		},
+		"destroy": function() {
+			destroyVar += "I'm a parent destroy";
+		}
+	};
+	var control = Echo.Control.create(
+		$.extend(true, suite.getControlManifest("Echo.Control1"), parentManifest)
+	);
+	var child1Manifest = {
+		"name": "Echo.Control1_Child1",
+		"inherits": Echo.Control1,
+		"vars": {
+			"someVar": "overrides by child1"
+		},
+		"config": {
+			"someProps": {
+				"prop3": {
+					"prop3_2": 2
+				}
+			},
+			"someProp": "overrides by child1"
+		},
+		"events": {
+			"child1Event": function() { return "child1 event"; }
+		},
+		"methods": {
+			"method1": function() {
+				return this.parent() + " method1_child_1"
+			}
+		},
+		"dependencies": [{
+			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep.child.js",
+			"loaded": function() { return !!Echo.Tests.Dependencies.Control.depChild; }
+		}],
+		"init": function() {
+			initVar += "I'm a child init and ";
+			this.parent();
+		},
+		"destroy": function() {
+			this.parent();
+			destroyVar += " and a child destroy";
+		}
+	};
+	var child = Echo.Control.create(
+		$.extend(true, suite.getControlManifest("Echo.Control1_Child1"), child1Manifest)
+	);
+	suite.initTestControl({
+		"ready": function() {
+			QUnit.strictEqual(initVar, "I'm a child init and a parent init", "Check init parent function executed");
+			QUnit.deepEqual(this.config.get("someProps"), {
+				"prop1": 1,
+				"prop2": 2,
+				"prop3": {
+					"prop3_1": 1,
+					"prop3_2": 2
+				}
+			}, "Check config props inheritance");
+			QUnit.strictEqual(this.someVar, "overrides by child1", "Check var overrides by child");
+			QUnit.strictEqual(this.config.get("someProp"), "overrides by child1", "Check config property overrides by child");
+			QUnit.strictEqual(this.method1(), "method1 method1_child_1", "Check parent method executed");
+			QUnit.strictEqual(this.method2(), "method2", "Check method inherited without override");
+			this.destroy();
+			QUnit.strictEqual(destroyVar, "I'm a parent destroy and a child destroy", "Check destroy parent function executed");
+			callback && callback();
+		}
+	}, "Echo.Control1_Child1");
+};
+
 suite.prototype.async = {};
 
 suite.prototype.async.placeImageContainerClassTest = function(callback) {
@@ -1119,6 +1227,15 @@ suite.getControlManifest = function(name, config) {
 	var manifest = Echo.Control.manifest(name || suite.getTestControlClassName());
 
 	manifest.config = $.extend(true, {}, suite.data.config);
+
+	manifest.config.normalizer = {
+		"context": function(val, ctrl) {
+			var parent = ctrl.config.parent;
+			return parent
+				? Echo.Events.newContextId(parent.context)
+				: val ? val : Echo.Events.newContextId();
+		}
+	};
 
 	// copy vars from config
 	manifest.vars = $.extend(true, {}, manifest.config);

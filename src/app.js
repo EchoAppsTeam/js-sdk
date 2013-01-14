@@ -197,6 +197,10 @@ Echo.App.prototype.destroyComponents = function(exceptions) {
 
 // private interface
 
+Echo.App._merge = Echo.Control._merge;
+
+Echo.App._manifest = Echo.Control._manifest;
+
 Echo.App.prototype._mergeSpecsByName = function(specs) {
 	var self = this;
 	var getSpecIndex = function(spec, specs) {

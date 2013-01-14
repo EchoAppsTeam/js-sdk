@@ -1753,6 +1753,15 @@ item.config.normalizer = {
 	}
 };
 
+item.config.normalizer = {
+	"context": function(value, item) {
+		var parent = item.config.parent;
+		return parent
+			? Echo.Events.newContextId(parent.context)
+			: (value ? value : Echo.Events.newContextId());
+	}
+};
+
 item.vars = {
 	"age": undefined,
 	"children": [],

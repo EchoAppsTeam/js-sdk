@@ -58,9 +58,9 @@ Echo.Control.create = function(manifest) {
 	// prevent multiple re-definitions
 	if (Echo.Control.isDefined(manifest)) return control;
 
-	var _manifest = Echo.Control._merge(manifest.inherits, manifest);
+	var _manifest = this._merge(manifest.inherits, manifest);
 
-	var constructor = Echo.Utils.inherit(Echo.Control, function(config) {
+	var constructor = Echo.Utils.inherit(this, function(config) {
 
 		// perform basic validation of incoming params
 		if (!config || !config.target) {
@@ -85,7 +85,7 @@ Echo.Control.create = function(manifest) {
 	}
 	prototype.templates = _manifest.templates;
 	prototype.renderers = _manifest.renderers;
-	constructor.manifest = _manifest;
+	constructor._manifest = _manifest;
 
 	// define default language var values with the lowest priority available
 	Echo.Labels.set(_manifest.labels, _manifest.name, true);
@@ -141,7 +141,7 @@ Echo.Control.isDefined = function(manifest) {
 		? manifest
 		: manifest.name;
 	var component = Echo.Utils.get(window, name);
-	return !!(component && component.manifest);
+	return !!(component && component._manifest);
 };
 
 Echo.Control.prototype.templates = {"message": {}};
@@ -868,7 +868,8 @@ Echo.Control.prototype._initializers.refresh = function() {
 };
 
 Echo.Control._merge = function(parent, manifest) {
-	var _manifest = parent && parent.manifest || Echo.Control._manifest;
+	var ctx = this;
+	var _manifest = parent && parent._manifest || ctx._manifest;
 
 	// parent class doesn't have manifest defined -
 	// nothing to merge, return original manifest
@@ -879,8 +880,8 @@ Echo.Control._merge = function(parent, manifest) {
 		{},
 		_manifest,
 		Echo.Utils.foldl({}, manifest, function(val, acc, name) {
-			acc[name] = name in _manifest && Echo.Control._merge[name]
-				? Echo.Control._merge[name](_manifest[name], val)
+			acc[name] = name in _manifest && ctx._merge[name]
+				? ctx._merge[name](_manifest[name], val)
 				: val;
 		})
 	);
@@ -890,28 +891,31 @@ Echo.Control._merge.dependencies = function(parentDeps, ownDeps) {
 	return parentDeps.concat(ownDeps);
 };
 
+(function()  {
+
+var wrapper = function(parent, own) {
+	return function() {
+		var tmp = this.parent;
+		this.parent = parent;
+		var ret = own.apply(this, arguments);
+		this.parent = tmp;
+		return ret;
+	};
+};
+
 Echo.Control._merge.methods = function(parentMethods, ownMethods) {
 	return Echo.Utils.foldl({}, ownMethods, function(method, acc, name) {
 		if (name in parentMethods) {
-			acc[name] = function() {
-				var tmp = this.parent;
-				this.parent = parentMethods[name];
-				var ret = method.apply(this, arguments);
-				this.parent = tmp;
-				return ret;
-			};
+			acc[name] = wrapper(parentMethods[name], method);
 		}
 	});
 };
 
 $.map(["init", "destroy"], function(name) {
-	Echo.Control._merge[name] = function(parent, own) {
-		return function() {
-			this["parent" + Echo.Utils.capitalize(name)] = parent;
-			own.apply(this, arguments);
-		};
-	};
+	Echo.Control._merge[name] = wrapper;
 });
+
+}());
 
 Echo.Control.prototype._getSubstitutionInstructions = function() {
 	var control = this;
@@ -937,7 +941,7 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 Echo.Control.prototype._manifest = function(key) {
 	var component = Echo.Utils.getComponent(this.name);
 	return component
-		? key ? component.manifest[key] : component.manifest
+		? key ? component._manifest[key] : component._manifest
 		: undefined;
 };
 
@@ -1090,7 +1094,8 @@ manifest.vars = {
 	"plugins": {},
 	"extension": {"template": [], "renderers": {}},
 	"parentRenderers": {},
-	"subscriptionIDs": {}
+	"subscriptionIDs": {},
+	"parent": function() {}
 };
 
 manifest.config = {

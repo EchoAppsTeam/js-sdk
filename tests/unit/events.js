@@ -40,7 +40,7 @@ var suite = Echo.Tests.Unit.Events = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.Events",
-	"functions": ["subscribe", "unsubscribe", "publish"]
+	"functions": ["subscribe", "unsubscribe", "publish", "newContextId"]
 };
 
 suite.prototype.tests = {};
