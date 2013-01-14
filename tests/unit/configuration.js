@@ -112,6 +112,14 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.equal(original["key6"].length, 5,
 			"Check if the orginal array remains the same");
 
+		QUnit.deepEqual(this.data.overrides["key6"], overrides["key6"],
+			"Check the overrides array doesn't changed");
+
+		config.get("key6").pop();
+		config.get("key6")[1] = 9;
+		QUnit.ok(overrides["key6"].length === 2 && overrides["key6"][1] === 9,
+			"Check if the overrides array changes when config parameter changed.");
+
 		config.set("key2.key2-2.key2-2-1", "New value");
 		QUnit.equal(config.get("key2.key2-2.key2-2-1"), "New value",
 			"Checking nested keys assignment");
