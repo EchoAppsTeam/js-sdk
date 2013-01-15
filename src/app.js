@@ -95,44 +95,39 @@ Echo.App.isDefined = Echo.Control.isDefined;
  * is constructed by merging the following 2 objects:
  *
  * + this instance config
- * + componentSpec parameter if it's provided
+ * + spec parameter if it's provided
  *
- * @param {Object} componentSpec
+ * @param {Object} spec
  *
- * @param {String} componentSpec.id
+ * @param {String} spec.id
  * Nested component id.
  *
- * @param {String} componentSpec.component
+ * @param {String} spec.component
  * Constructor name for the nested component like "Echo.StreamServer.Control.Stream".
  *
- * @param {Object} [componentSpec.config]
+ * @param {Object} [spec.config]
  * Configuration object for the nested component.
  */
-Echo.App.prototype.initComponent = function(componentSpec) {
-	this.destroyComponent(componentSpec.id);
-	componentSpec.config = componentSpec.config || {};
+Echo.App.prototype.initComponent = function(spec) {
+	this.destroyComponent(spec.id);
+	spec.config = spec.config || {};
 	if (this.user) {
-		componentSpec.config.user = this.user;
+		spec.config.user = this.user;
 	}
-	componentSpec.config.parent = componentSpec.config.parent || this.config.getAsHash();
-	if (componentSpec.config.parent.components) {
-		delete componentSpec.config.parent.components;
+	spec.config.parent = spec.config.parent || this.config.getAsHash();
+	if (spec.config.parent.components) {
+		delete spec.config.parent.components;
 	}
-	componentSpec.config.plugins = this._mergeSpecsByName(
-		$.extend(true, [], this.config.get("components." + componentSpec.id + ".plugins", [])),
-		componentSpec.config.plugins || []
+	spec.config.plugins = this._mergeSpecsByName(
+		$.extend(true, [], this.config.get("components." + spec.id + ".plugins", [])),
+		spec.config.plugins || []
 	);
-	componentSpec.config = this._normalizeComponentConfig(
-		$.extend(
-			true,
-			{},
-			this.config.get("components." + componentSpec.id, {}),
-			componentSpec.config
-		)
+	spec.config = this._normalizeComponentConfig(
+		$.extend(true, {}, this.config.get("components." + spec.id, {}), spec.config)
 	);
-	var Component = Echo.Utils.getComponent(componentSpec.component);
-	this.set("components." + componentSpec.id, new Component(componentSpec.config));
-	return this.getComponent(componentSpec.id);
+	var Component = Echo.Utils.getComponent(spec.component);
+	this.set("components." + spec.id, new Component(spec.config));
+	return this.getComponent(spec.id);
 };
 
 /**
