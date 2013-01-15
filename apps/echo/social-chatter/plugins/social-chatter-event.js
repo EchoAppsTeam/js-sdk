@@ -188,7 +188,8 @@ plugin.renderers.eventButton = function(element) {
 		return element.detach();
 	}
 	var self = this;
-	element.echoButton({
+	new Echo.GUI.Button({
+		"target": element,
 		"label": this.labels.get(this.event.getStatus() + "EventOpen")
 	});
 	return element.addClass("btn btn-small").click(function() {

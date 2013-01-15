@@ -301,9 +301,10 @@ plugin.methods._getSubmitData = function() {
 plugin.css = 
 	".{plugin.class:compactContent} { padding: 5px 5px 5px 6px; background-color: #fff; }" +
 	".{plugin.class:compactBorder} { border: 1px solid #d2d2d2; }" +
-	".{plugin.class:compactField} { width: 100%; border: none; }" +
+	".{plugin.class:compactContent} input.{plugin.class:compactField} { width: 100%; border: none; }" +
+	'.{plugin.class:compactContent} input.{plugin.class:compactField}[type="text"] { width: 100%; border: none; margin: 0px; padding: 0px; }' +
 	($.browser.webkit ?
-		'.{plugin.class:compactContent} input { outline: none; }' : '');
+		'.{plugin.class:compactContent} input.{plugin.class:compactField} { outline: none; width: 100%;}' : '');
 
 Echo.Plugin.create(plugin);
 

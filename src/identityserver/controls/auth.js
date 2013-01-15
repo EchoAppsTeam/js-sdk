@@ -113,8 +113,10 @@ auth.config = {
 };
 
 auth.dependencies = [{
-	"loaded": function() { return !!Echo.jQuery.echoModal; },
-	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-modal.js"
+	"loaded": function() { return !!Echo.GUI; },
+	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
+}, {
+	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
 }];
 
 auth.vars = {
@@ -265,7 +267,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 		});
 	} else {
 		return element.on("click", function() {
-			self.modal = $.echoModal({
+			self.modal = new Echo.GUI.Modal({
 				"data": {
 					"title": self.config.get("identityManager." + type + ".title")
 				},

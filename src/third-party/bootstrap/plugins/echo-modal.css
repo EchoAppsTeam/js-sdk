@@ -1,0 +1,8 @@
+.echo-sdk-ui .modal-header {
+	min-height: 20px;
+}
+.echo-sdk-ui .echo-modal-iframe {
+	display: block;
+	width: 100%;
+	height: 100%;
+}

@@ -212,11 +212,10 @@ submit.vars = {
 };
 
 submit.dependencies = [{
-	"loaded": function() { return !!Echo.jQuery.echoButton; },
-	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-button.js"
+	"loaded": function() { return !!Echo.GUI; },
+	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
-	"loaded": function() { return !!Echo.jQuery.echoModal; },
-	"url": "{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-modal.js"
+	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
 }];
 
 submit.labels = {
@@ -399,17 +398,19 @@ submit.renderers.postButton = function(element) {
 	var self = this;
 	var states = {
 		"normal": {
+			"target": element,
 			"icon": false,
 			"disabled": false,
 			"label": this.labels.get("post")
 		},
 		"posting": {
+			"target": element,
 			"icon": this.config.get("cdnBaseURL.sdk-assets") + "/images/loading.gif",
 			"disabled": true,
 			"label": this.labels.get("posting")
 		}
 	};
-	element.empty().echoButton(states.normal);
+	var postButton = new Echo.GUI.Button(states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
@@ -424,7 +425,10 @@ submit.renderers.postButton = function(element) {
 		subscriptions[topic] = self.events.subscribe({
 			"topic": topic,
 			"handler": function(topic, params) {
-				element.echoButton("update", state);
+				Echo.Utils.foldl([], state, function(key, acc, id) {
+					postButton.config.set(id, key);
+				});
+				postButton.refresh();
 				if (callback) callback(params);
 			}
 		});
@@ -605,7 +609,7 @@ submit.methods._showError = function(data) {
 		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
 	var popup = this._assembleErrorPopup(message);
 
-	$.echoModal({
+	new Echo.GUI.Modal({
 		"data": {
 			"body": popup.content
 		},
@@ -659,12 +663,15 @@ submit.css =
 	'.{class:fields} input { width: 100%; }' +
 	'.{class:fieldsWrapper} { margin-left: 53px; }' +
 	'.{class:nameContainer} { margin: 1px 0px 4px 0px; padding: 0px 2px 1px 3px; background-color: #fff; }' +
-	'.{class:name} { font-size: 14px; font-weight: bold; border: none; }' +
+	'.{class:nameContainer} input.{class:name} { font-size: 14px; font-weight: bold; border: none; width: 100%;}' +
+	'.{class:fieldsWrapper} input.{class:name}[type="text"] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; }' +
 	'.{class:urlContainer} { padding: 0px 2px 1px 3px; background-color: #fff; }' +
-	'.{class:url} { height: 19px; border: none; }' +
+	'.{class:urlContainer} input.{class:url} { height: 19px; border: none; width: 100%; margin-bottom: 0px;}' +
+	'.{class:fieldsWrapper} input.{class:url}[type="text"] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; }' +
 	'.{class:author} { font-weight: bold; }' +
 	'.{class:content} { padding: 5px 5px 5px 6px; background-color: #fff; }' +
-	'.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none ; }' +
+	'.{class:content} textarea.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none; box-shadow: none; }' +
+	'.{class:content} textarea.{class:textArea}:focus { box-shadow: none; }' +
 	'.{class:text} input { width: 100%; border: none; }' +
 	'.{class:metadataContainer} { margin-top: 6px; }' +
 	'.{class:metadataLabel} { float: left; width: 50px; margin-right: -50px; text-align: right; line-height: 22px; }' +

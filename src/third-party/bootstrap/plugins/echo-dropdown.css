@@ -1,0 +1,6 @@
+.echo-sdk-ui .dropdown-menu a.icon,
+.echo-sdk-ui .dropdown-menu a.icon:hover {
+	background-repeat: no-repeat;
+	background-position: 10px 5px;
+	padding-left: 32px;
+}
