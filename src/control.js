@@ -637,8 +637,9 @@ Echo.Control.prototype._initializers.vars = function() {
 
 Echo.Control.prototype._initializers.config = function() {
 	var control = this;
-	var normalizer = this._manifest("config").normalizer;
-	return new Echo.Configuration(this.config, this._manifest("config"),
+	var manifestConfig = $.extend(true, {}, this._manifest("config") || {});
+	var normalizer = manifestConfig.normalizer;
+	return new Echo.Configuration(this.config, manifestConfig,
 		function(key, value) {
 			return normalizer && normalizer[key]
 				? normalizer[key].call(this, value, control)
