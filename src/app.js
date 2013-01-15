@@ -232,9 +232,12 @@ Echo.App.prototype._mergeSpecsByName = function(specs) {
 
 Echo.App.prototype._normalizeComponentConfig = function(config) {
 	var self = this;
-	var fields = ["appkey", "context", "apiBaseURL", "submissionProxyURL"];
-	Echo.Utils.foldl(config, fields, function(key, acc) {
-		acc[key] = acc[key] || self.config.get(key);
+	// extend the config with the default fields from manifest
+	Echo.Utils.foldl(config, this._manifest("config"), function(value, acc, key) {
+		// do not override existing values in data
+		if (typeof acc[key] === "undefined") {
+			acc[key] = self.config.get(key);
+		}
 	});
 	var normalize = function(value) {
 		if (typeof value === "string") {
