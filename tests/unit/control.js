@@ -748,6 +748,18 @@ suite.prototype.cases.destroyBroadcasting = function(callback) {
 suite.prototype.cases.manifestBaseInheritance = function(callback) {
 	var initVar = "",
 		destroyVar = "";
+	var eventsChecker = {
+		"parentEvent": 0,
+		"child1Event": 0,
+		"commonEvent": 0
+	};
+	var ctx = Echo.Events.newContextId();
+	var publish = function(topic) {
+		Echo.Events.publish({
+			"topic": topic,
+			"context": ctx
+		});
+	};
 	var parentManifest = {
 		"name": "Echo.Control1",
 		"vars": {
@@ -768,7 +780,8 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"someLabel": "some label text"
 		},
 		"events": {
-			"parentEvent": function() { return "parent event"; }
+			"parentEvent": function(topic) { eventsChecker[topic]++; },
+			"commonEvent": function(topic) { eventsChecker[topic] = ++eventsChecker[topic] + " parent handler"; }
 		},
 		"methods": {
 			"method1": function() { return "method1"; },
@@ -807,7 +820,9 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"someProp": "overrides by child1"
 		},
 		"events": {
-			"child1Event": function() { return "child1 event"; }
+			"child1Event": function(topic) { eventsChecker[topic]++; },
+			"commonEvent": function(topic) { eventsChecker[topic]++; },
+			"parentEvent": function(topic) { eventsChecker[topic]++; return {"stop": ["bubble", "propagation"]}; }
 		},
 		"methods": {
 			"method1": function() {
@@ -831,6 +846,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		$.extend(true, suite.getControlManifest("Echo.Control1_Child1"), child1Manifest)
 	);
 	suite.initTestControl({
+		"context": ctx,
 		"ready": function() {
 			QUnit.strictEqual(initVar, "I'm a child init and a parent init", "Check init parent function executed");
 			QUnit.deepEqual(this.config.get("someProps"), {
@@ -845,6 +861,12 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			QUnit.strictEqual(this.config.get("someProp"), "overrides by child1", "Check config property overrides by child");
 			QUnit.strictEqual(this.method1(), "method1 method1_child_1", "Check parent method executed");
 			QUnit.strictEqual(this.method2(), "method2", "Check method inherited without override");
+			publish("child1Event");
+			publish("commonEvent");
+			publish("parentEvent");
+			QUnit.equal(eventsChecker.parentEvent, 1, "Check parent event propagation stop");
+			QUnit.equal(eventsChecker.child1Event, 1, "Check child event normal publish/subscribe");
+			QUnit.strictEqual(eventsChecker.commonEvent, "2 parent handler", "Check common event normal publish/subscribe and queue");
 			this.destroy();
 			QUnit.strictEqual(destroyVar, "I'm a parent destroy and a child destroy", "Check destroy parent function executed");
 			callback && callback();

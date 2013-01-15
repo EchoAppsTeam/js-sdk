@@ -683,9 +683,14 @@ Echo.Control.prototype._initializers.events = function() {
 
 Echo.Control.prototype._initializers.subscriptions = function() {
 	var control = this;
-	$.each(control._manifest("events"), function(topic, data) {
-		data = $.isFunction(data) ? {"handler": data} : data;
-		control.events.subscribe($.extend({"topic": topic}, data));
+	$.each(control._manifest("events"), function subscribe(topic, data) {
+		if ($.isArray(data) && data.length) {
+			subscribe(topic, data.shift());
+			data.length && subscribe(topic, data);
+		} else {
+			data = $.isFunction(data) ? {"handler": data} : data;
+			control.events.subscribe($.extend({"topic": topic}, data));
+		}
 	});
 
 	// we need two subscriptions here, because the "Echo.Control.onDataInvalidate" event
@@ -909,6 +914,14 @@ Echo.Control._merge.methods = function(parent, own) {
 
 Echo.Control._merge.dependencies = function(parent, own) {
 	return parent.concat(own);
+};
+
+Echo.Control._merge.events = function(parent, own) {
+	return Echo.Utils.foldl({}, own, function(data, acc, topic) {
+		acc[topic] = topic in parent
+			? [data, parent[topic]]
+			: data;
+	});
 };
 
 $.map(["init", "destroy"], function(name) {
