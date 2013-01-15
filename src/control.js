@@ -907,14 +907,18 @@ var wrapper = function(parent, own) {
 
 Echo.Control._merge.methods = function(parent, own) {
 	return Echo.Utils.foldl({}, own, function(method, acc, name) {
-		if (name in parent) {
-			acc[name] = wrapper(parent[name], method);
-		}
+		acc[name] = name in parent
+			? wrapper(parent[name], method)
+			: method;
 	});
 };
 
 Echo.Control._merge.dependencies = function(parent, own) {
 	return parent.concat(own);
+};
+
+Echo.Control._merge.css = function(parent, own) {
+	return parent + own;
 };
 
 Echo.Control._merge.events = function(parent, own) {

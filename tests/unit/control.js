@@ -791,16 +791,18 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"someRenderer": function(el) { return el; }
 		},
 		"templates": {
-			"main": '<div class="{class:container}"><div class="{class:someRenerer}"></div></div>'
+			"main": '<div class="{class:container}"><div class="{class:someRenderer}"></div></div>'
 		},
 		"dependencies": [],
 		"init": function() {
 			initVar += "a parent init";
+			this.render();
 			this.ready();
 		},
 		"destroy": function() {
 			destroyVar += "I'm a parent destroy";
-		}
+		},
+		"css": ".{class:container} { width: 50px; }.{class:someRenderer} { width: 10px; }"
 	};
 	var control = Echo.Control.create(
 		$.extend(true, suite.getControlManifest("Echo.Control1"), parentManifest)
@@ -827,6 +829,9 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"methods": {
 			"method1": function() {
 				return this.parent() + " method1_child_1"
+			},
+			"child1Method": function() {
+				return "child1 method"
 			}
 		},
 		"dependencies": [{
@@ -840,13 +845,15 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"destroy": function() {
 			this.parent();
 			destroyVar += " and a child destroy";
-		}
+		},
+		"css": ".{class:someRenderer} { width: 5px; }"
 	};
 	var child = Echo.Control.create(
-		$.extend(true, suite.getControlManifest("Echo.Control1_Child1"), child1Manifest)
+		child1Manifest
 	);
 	suite.initTestControl({
 		"context": ctx,
+		"target": $("#qunit-fixture"),
 		"ready": function() {
 			QUnit.strictEqual(initVar, "I'm a child init and a parent init", "Check init parent function executed");
 			QUnit.deepEqual(this.config.get("someProps"), {
@@ -861,6 +868,8 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			QUnit.strictEqual(this.config.get("someProp"), "overrides by child1", "Check config property overrides by child");
 			QUnit.strictEqual(this.method1(), "method1 method1_child_1", "Check parent method executed");
 			QUnit.strictEqual(this.method2(), "method2", "Check method inherited without override");
+			QUnit.strictEqual(this.child1Method(), "child1 method", "Check own method exists");
+			QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css concatination");
 			publish("child1Event");
 			publish("commonEvent");
 			publish("parentEvent");
