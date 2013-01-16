@@ -86,6 +86,7 @@ module.exports = function(grunt) {
 			"src": [
 				"third-party/jquery/jquery.js",
 				"third-party/jquery/echo.jquery.noconflict.js",
+				"third-party/jquery/echo.jquery.browser.js",
 				"<echo_wrapper:third-party/jquery/jquery.ihint.js>",
 				"<echo_wrapper:third-party/jquery/jquery.viewport.js>",
 				"<echo_wrapper:third-party/jquery/jquery.isotope.js>"
