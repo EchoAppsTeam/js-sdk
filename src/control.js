@@ -881,16 +881,12 @@ Echo.Control._merge = function(parent, manifest) {
 	// nothing to merge, return original manifest
 	if (!_manifest) return manifest;
 
-	return $.extend(
-		true,
-		{},
-		_manifest,
-		Echo.Utils.foldl({}, manifest, function(val, acc, name) {
-			acc[name] = name in _manifest && ctx._merge[name]
-				? ctx._merge[name](_manifest[name], val)
-				: val;
-		})
-	);
+	var merged = Echo.Utils.foldl({}, manifest, function(val, acc, name) {
+		acc[name] = name in _manifest && ctx._merge[name]
+			? ctx._merge[name](_manifest[name], val)
+			: val;
+	});
+	return $.extend(true, {}, _manifest, merged);
 };
 
 (function()  {
@@ -1224,6 +1220,7 @@ manifest.config.normalizer = {
 		this.set("pluginsOrder", data.order);
 		return data.hash;
 	},
+
 	// the context normalizer takes the context which is passed
 	// from the outside and treats it as the parent context by passing
 	// it into the Echo.Events.newContextId function, which generates
@@ -1231,6 +1228,7 @@ manifest.config.normalizer = {
 	// is defined within the Echo.Plugin.Config.prototype.assemble and
 	// Echo.App.prototype._normalizeComponentConfig functions.
 	"context": Echo.Events.newContextId,
+
 	"defaultAvatar": Echo.Loader.getURL
 };
 
