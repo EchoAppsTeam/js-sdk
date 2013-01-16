@@ -1,6 +1,6 @@
 (function($) {
 
-$.uaMatch = function( ua ) {
+var uaMatch = function( ua ) {
 	ua = ua.toLowerCase();
 
 	var match = /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
@@ -16,8 +16,8 @@ $.uaMatch = function( ua ) {
 	};
 };
 
-matched = $.uaMatch( navigator.userAgent );
-browser = {};
+var matched = uaMatch( navigator.userAgent );
+var browser = {};
 
 if ( matched.browser ) {
 	browser[ matched.browser ] = true;
