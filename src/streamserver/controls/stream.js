@@ -1593,7 +1593,7 @@ stream.css =
 	'.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }' +
 	'.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
 	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }' +
-	($.browser.msie
+	(Echo.Utils.browser().msie
 		? '.{class:state-picture} { vertical-align: middle; }' +
 		'.{class:container} { zoom: 1; }'
 		: ''
@@ -2273,7 +2273,7 @@ item.renderers.expandChildren = function(element, extra) {
 		// element with the "height: 0px" is renderered like it doesn't have
 		// the height property at all. Thus we set the "height: 1px" as the final value
 		// for the animate function and simply hide element when the animation is done.
-		if ($.browser.msie && document.compatMode !== "CSS1Compat") {
+		if (Echo.Utils.browser().msie && document.compatMode !== "CSS1Compat") {
 			element.animate({
 				"height": "1px",
 				"marginTop": "hide",
@@ -2940,7 +2940,7 @@ item.css =
 	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url("{config:cdnBaseURL.sdk-assets}/images/loading.gif"); }' +
 	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
 	itemDepthRules.join("\n") +
-	($.browser.msie
+	(Echo.Utils.browser().msie
 		? '.{class:childrenMarker} { font-size: 1px; line-height: 1px; }' +
 		'.{class:blocker-backdrop}, .{class:blocker-message} { filter:alpha(opacity=70); }' +
 		'.{class:content}, .{class:container}, .{class:subwrapper} { zoom: 1; }' +

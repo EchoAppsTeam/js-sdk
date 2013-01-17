@@ -1045,4 +1045,62 @@ Echo.Utils.invoke = function(mixed, context) {
 		: mixed;
 };
 
+/**
+ * @static
+ * This method returns information about the web browser that is accessing the page,
+ * as reported by the browser itself (trough User-Agent HTTP header).  
+ * The returned object can contains flags for each of the four most prevalent browser
+ * classes (Internet Explorer, Mozilla, Webkit, and Opera) as well as version information.  
+ * Available flags are:
+ * 	* webkit
+ * 	* safari
+ * 	* opera
+ * 	* msie
+ * 	* mozilla
+ *
+ * @param {String} [userAgent]
+ * If this parameter is passed, it will be used instead navigator.userAgent.
+ *
+ * @return {Object}
+ * Plain object which contains flags as well as version information
+ * or empty object if the browser identify failed.
+ * For example:
+ * 	{
+ * 		"mozilla": true,
+ * 		"version": "18.0"
+ * 	}
+ */
+Echo.Utils.browser = function(userAgent) {
+	if (userAgent || !this.cache.browser) {
+		var ua = userAgent && userAgent.toLowerCase() || navigator.userAgent.toLowerCase();
+		var match = /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
+			/(webkit)[ \/]([\w.]+)/.exec( ua ) ||
+			/(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
+			/(msie) ([\w.]+)/.exec( ua ) ||
+			ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
+			[];
+
+		var matched = {
+			browser: match[ 1 ] || "",
+			version: match[ 2 ] || "0"
+		};
+		var browser = {};
+
+		if ( matched.browser ) {
+			browser[ matched.browser ] = true;
+			browser.version = matched.version;
+		}
+
+		// Chrome is Webkit, but Webkit is also Safari.
+		if ( browser.chrome ) {
+			browser.webkit = true;
+		} else if ( browser.webkit ) {
+			browser.safari = true;
+		}
+
+		this.cache.browser = browser;
+	}
+	return this.cache.browser;
+};
+
 })(Echo.jQuery);
