@@ -107,6 +107,17 @@ suite.prototype.cases.onError_more_than = function(callback) {
 		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
 		"once"    : true,
 		"handler" : function(topic, params) {
+			params = params || {};
+			if (params.data && params.data.errorCode === "waiting") {
+				var data = {
+					"errorCode": "more_than",
+					"result": "error",
+					"errorMessage": 5000
+				};
+				params.data = data;
+				this._error(data, {"critical": true});
+				this.unsubscribe({"topic": "onError"});
+			}
 			QUnit.deepEqual(
 				params.data,
 				{
