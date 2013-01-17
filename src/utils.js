@@ -1058,6 +1058,10 @@ Echo.Utils.invoke = function(mixed, context) {
  * 	* msie
  * 	* mozilla
  *
+ * This method copies the jQuery.browser property behavior which has been removed
+ * from jQuery since 1.9 version:  
+ * <a href="http://api.jquery.com/jQuery.browser/" target="_blank">http://api.jquery.com/jQuery.browser/</a>
+ *
  * @param {String} [userAgent]
  * If this parameter is passed, it will be used instead navigator.userAgent.
  *
@@ -1073,28 +1077,28 @@ Echo.Utils.invoke = function(mixed, context) {
 Echo.Utils.browser = function(userAgent) {
 	if (userAgent || !this.cache.browser) {
 		var ua = userAgent && userAgent.toLowerCase() || navigator.userAgent.toLowerCase();
-		var match = /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
-			/(webkit)[ \/]([\w.]+)/.exec( ua ) ||
-			/(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
-			/(msie) ([\w.]+)/.exec( ua ) ||
-			ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
-			[];
+		var match = /(chrome)[ \/]([\w.]+)/.exec(ua)
+			|| /(webkit)[ \/]([\w.]+)/.exec( ua )
+			|| /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua)
+			|| /(msie) ([\w.]+)/.exec(ua)
+			|| ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua)
+			|| [];
 
 		var matched = {
-			browser: match[ 1 ] || "",
-			version: match[ 2 ] || "0"
+			browser: match[1] || "",
+			version: match[2] || "0"
 		};
 		var browser = {};
 
-		if ( matched.browser ) {
-			browser[ matched.browser ] = true;
+		if (matched.browser) {
+			browser[matched.browser] = true;
 			browser.version = matched.version;
 		}
 
 		// Chrome is Webkit, but Webkit is also Safari.
-		if ( browser.chrome ) {
+		if (browser.chrome) {
 			browser.webkit = true;
-		} else if ( browser.webkit ) {
+		} else if (browser.webkit) {
 			browser.safari = true;
 		}
 
