@@ -105,7 +105,6 @@ suite.prototype.cases.onError_more_than = function(callback) {
 	var self = this;
 	suite.counter.events.subscribe({
 		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
-		"once"    : true,
 		"handler" : function(topic, params) {
 			params = params || {};
 			if (params.data && params.data.errorCode === "waiting") {
@@ -116,7 +115,7 @@ suite.prototype.cases.onError_more_than = function(callback) {
 				};
 				params.data = data;
 				this._error(data, {"critical": true});
-				this.unsubscribe({"topic": "onError"});
+				return;
 			}
 			QUnit.deepEqual(
 				params.data,
@@ -126,6 +125,9 @@ suite.prototype.cases.onError_more_than = function(callback) {
 					"errorMessage" : 5000
 				},
 				'Checking the restrictions of the count API. Error: "more_than"');
+			this.events.unsubscribe({
+				"topic": "Echo.StreamServer.Controls.Counter.onError"
+			});
 		}
 	});
 	suite.counter.events.subscribe({
