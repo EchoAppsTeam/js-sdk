@@ -30,6 +30,7 @@ suite.prototype.info = {
 		"isDefined",
 		"getRelativeTime",
 		"placeImage",
+		"checkAppKey",
 
 		// functions below are covered
 		// within the Plugin component test
@@ -288,7 +289,15 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	result = new definition({"appkey": "test.echoenabled.com"});
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if empty object is returned if no target is passed in config");
-	
+
+	result = new definition({"target": $("<div>")});
+	var html = result.config.get("target").html();
+	QUnit.ok(/incorrect_appkey/.test(html),
+		"Checking if the error message is produced once the control is initialized without the appkey defined (validating the \"checkAppKey\" function)");
+	QUnit.ok(/echo-control-message-error/.test(html),
+		"Checking if the error message contains the necessary CSS class once the control is initialized without the appkey defined (validating the \"checkAppKey\" function)");
+	result.destroy();
+
 	callback && callback();
 };
 
@@ -1147,6 +1156,7 @@ suite.getControlManifest = function(name, config) {
 	addDependency(11, {"app": "Echo.Apps.MyTestApp"});
 
 	manifest.init = function() {
+		if (!this.checkAppKey()) return;
 		this.render();
 		this.ready();
 	};

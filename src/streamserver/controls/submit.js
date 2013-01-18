@@ -27,7 +27,7 @@ var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
 if (Echo.Control.isDefined(submit)) return;
 
 submit.init = function() {
-	if (!this._checkAppKey()) return;
+	if (!this.checkAppKey()) return;
 
 	var self = this;
 	this.addPostValidator(function() {

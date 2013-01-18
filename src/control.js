@@ -771,6 +771,22 @@ Echo.Control.prototype.placeImage = function(args) {
 	args.container.empty().append(image);
 };
 
+/**
+ * Method to check the presense of the "appkey" configuration parameter and render
+ * the error message (inside the element specified as the "target" in the control
+ * configuration) in case the "appkey" is missing in the config.
+ *
+ * @return {Boolean}
+ * The boolean result of the "appkey" config parameter check.
+ */
+Echo.Control.prototype.checkAppKey = function() {
+	if (!this.config.get("appkey")) {
+		this.showError({"errorCode": "incorrect_appkey"}, {"critical": true});
+		return false;
+	}
+	return true;
+};
+
 Echo.Control.prototype._init = function(subsystems) {
 	var control = this;
 	if (!subsystems || !subsystems.length) return;
@@ -1222,14 +1238,6 @@ Echo.Control.prototype._domTransformer = function(args) {
 	$(anchor, args.dom)[action](content);
 	return args.dom;
 };
-
-Echo.Control.prototype._checkAppKey = function() {
-	if (!this.config.get("appkey")) {
-		this.showError({"errorCode": "incorrect_appkey"}, {"critical": true});
-		return false;
-	}
-	return true;
-}
 
 Echo.Control.prototype.baseCSS =
 	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +

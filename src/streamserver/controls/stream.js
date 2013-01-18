@@ -27,7 +27,7 @@ var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 if (Echo.Control.isDefined(stream)) return;
 
 stream.init = function() {
-	if (!this._checkAppKey()) return;
+	if (!this.checkAppKey()) return;
 
 	this._recalcEffectsTimeouts();
 
