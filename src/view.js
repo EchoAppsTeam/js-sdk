@@ -29,20 +29,24 @@ if (Echo.Utils.isComponentDefined("Echo.View")) return;
  *
  * @param {Function} [config.renderer]
  * Function to be applied for each element in the view elements collection.
- * The function argument is a JS object with the following fields:
- *
- * + "name" - name of the renderer specific for the current element
- * + "target" - reference to jQuery object which represents the current element
- * + "extra" - the JS object with the set of extra parameters required to process
- * the current element
- *
- * The "renderer" function must return the value of the "target" field of the incoming object.
  *
  * Additional notes:
  *
  * + if this parameter is defined, the "renderers" config field value will be ignored
  * + this function is for advanced use only, for most cases you should use the "renderers"
  * object instead
+ *
+ * @param {String} config.renderer.name
+ * Name of the renderer specific for the current element
+ *
+ * @param {HTMLElement} config.renderer.target
+ * Reference to jQuery object which represents the current element
+ *
+ * @param {Object} [config.renderer.extra]
+ * The JS object with the set of extra parameters required to process
+ * the current element
+ *
+ * The "renderer" function must return the value of the "target" field of the incoming object.
  *
  * @param {Object} [config.substitutions]
  * Object containing the list of extra instructions to be applied during template compilation.

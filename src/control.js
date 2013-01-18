@@ -874,16 +874,16 @@ Echo.Control.prototype._initializers.refresh = function() {
 };
 
 Echo.Control._merge = function(parent, manifest) {
-	var ctx = this;
-	var _manifest = parent && parent._manifest || ctx._manifest;
+	var self = this;
+	var _manifest = parent && parent._manifest || this._manifest;
 
 	// parent class doesn't have manifest defined -
 	// nothing to merge, return original manifest
 	if (!_manifest) return manifest;
 
 	var merged = Echo.Utils.foldl({}, manifest, function(val, acc, name) {
-		acc[name] = name in _manifest && ctx._merge[name]
-			? ctx._merge[name](_manifest[name], val)
+		acc[name] = name in _manifest && self._merge[name]
+			? self._merge[name](_manifest[name], val)
 			: val;
 	});
 	return $.extend(true, {}, _manifest, merged);
