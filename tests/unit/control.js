@@ -884,7 +884,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			$.map(this._manifest("css"), function(spec) {
 				actualIDs.push(spec.id);
 			});
-			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expexted CSS rule groups present in the final manifest");
+			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expected CSS rule groups present in the final manifest");
 			callback && callback();
 		}
 	}, "Echo.Control1_Child1");
