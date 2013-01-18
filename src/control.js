@@ -889,9 +889,7 @@ Echo.Control._merge = function(parent, manifest) {
 	return $.extend(true, {}, _manifest, merged);
 };
 
-(function()  {
-
-var wrapper = function(parent, own) {
+var _wrapper = function(parent, own) {
 	return function() {
 		var tmp = this.parent;
 		this.parent = parent;
@@ -904,7 +902,7 @@ var wrapper = function(parent, own) {
 Echo.Control._merge.methods = function(parent, own) {
 	return Echo.Utils.foldl({}, own, function(method, acc, name) {
 		acc[name] = name in parent
-			? wrapper(parent[name], method)
+			? _wrapper(parent[name], method)
 			: method;
 	});
 };
@@ -926,10 +924,8 @@ Echo.Control._merge.events = function(parent, own) {
 };
 
 $.map(["init", "destroy"], function(name) {
-	Echo.Control._merge[name] = wrapper;
+	Echo.Control._merge[name] = _wrapper;
 });
-
-}());
 
 Echo.Control.prototype._getSubstitutionInstructions = function() {
 	var control = this;
