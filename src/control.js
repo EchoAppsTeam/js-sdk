@@ -783,13 +783,12 @@ Echo.Control.prototype._initializers.labels = function() {
 };
 
 Echo.Control.prototype._initializers.css = function() {
+	var self = this;
 	this.config.get("target").addClass(this.cssClass);
-	if (!Echo.Utils.hasCSS("control")) {
-		Echo.Utils.addCSS(this.substitute({"template": this.baseCSS}), "control");
-	}
-	if (this._manifest("css") && !Echo.Utils.hasCSS(this.name)) {
-		Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), this.name);
-	}
+	$.map(this._manifest("css"), function(spec) {
+		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
+		Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
+	});
 };
 
 Echo.Control.prototype._initializers.view = function() {
@@ -876,14 +875,9 @@ Echo.Control.prototype._initializers.refresh = function() {
 Echo.Control._merge = function(parent, manifest) {
 	var self = this;
 	var _manifest = parent && parent._manifest || this._manifest;
-
-	// parent class doesn't have manifest defined -
-	// nothing to merge, return original manifest
-	if (!_manifest) return manifest;
-
 	var merged = Echo.Utils.foldl({}, manifest, function(val, acc, name) {
 		acc[name] = name in _manifest && self._merge[name]
-			? self._merge[name](_manifest[name], val)
+			? self._merge[name](_manifest[name], val, _manifest, manifest)
 			: val;
 	});
 	return $.extend(true, {}, _manifest, merged);
@@ -911,8 +905,11 @@ Echo.Control._merge.dependencies = function(parent, own) {
 	return parent.concat(own);
 };
 
-Echo.Control._merge.css = function(parent, own) {
-	return parent + own;
+Echo.Control._merge.css = function(parent, own, parentManifest, ownManifest) {
+	return [
+		{"id": parentManifest.name, "code": parent},
+		{"id": ownManifest.name, "code": own}
+	];
 };
 
 Echo.Control._merge.events = function(parent, own) {
@@ -1067,30 +1064,6 @@ Echo.Control.prototype._domTransformer = function(args) {
 	return args.dom;
 };
 
-Echo.Control.prototype.baseCSS =
-	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
-	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
-	'.echo-primaryColor { color: #3A3A3A; }' +
-	'.echo-secondaryColor { color: #C6C6C6; }' +
-	'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
-	'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
-	'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
-	'.echo-clickable { cursor: pointer; }' +
-	'.echo-relative { position: relative; }' +
-	'.echo-clear { clear: both; }' +
-	'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
-	'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
-	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
-	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
-
-	// message classes
-	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
-	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
-	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
-	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
-	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
-
 })(Echo.jQuery);
 
 // default manifest declaration
@@ -1099,6 +1072,8 @@ Echo.Control.prototype.baseCSS =
 "use strict";
 
 var $ = jQuery, manifest = {};
+
+manifest.name = "Echo.Control";
 
 manifest.vars = {
 	"plugins": {},
@@ -1362,6 +1337,30 @@ manifest.templates.message.full =
 			'{data:message}' +
 		'</span>' +
 	'</div>';
+
+manifest.css =
+	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
+	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
+	'.echo-primaryColor { color: #3A3A3A; }' +
+	'.echo-secondaryColor { color: #C6C6C6; }' +
+	'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
+	'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
+	'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
+	'.echo-clickable { cursor: pointer; }' +
+	'.echo-relative { position: relative; }' +
+	'.echo-clear { clear: both; }' +
+	'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
+	'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
+	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
+	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
+
+	// message classes
+	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
+	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
+	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
+	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
+	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
+	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
 
 Echo.Control._manifest = manifest;
 
