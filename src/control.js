@@ -1186,7 +1186,7 @@ manifest.config = {
 	 * Each plugin is represented as the JS object with the "name" field.
 	 * Other plugin parameters should be added to the same JS object.
 	 */
-	"plugins": [],
+	"plugins": {},
 
 	"context": "",
 	"scriptLoadErrorTimeout": 5000, // 5 sec
