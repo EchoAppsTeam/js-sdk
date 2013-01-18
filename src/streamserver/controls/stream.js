@@ -1445,6 +1445,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"appkey": this.config.get("appkey"),
 		"parent": parentConfig,
 		"plugins": this.config.get("plugins"),
+		"context": this.config.get("context"),
 		"data": this._normalizeEntry(entry),
 		"user": this.user,
 		"live": isLive,

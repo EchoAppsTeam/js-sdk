@@ -94,7 +94,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"labelsOverriding",
 			"refresh",
 			"destroyCalled",
-			"destroyBroadcasting"
+			"destroyBroadcasting",
+			"manifestBaseInheritance"
 		], "cases");
 
 	}
@@ -744,6 +745,144 @@ suite.prototype.cases.destroyBroadcasting = function(callback) {
 	initControls();
 };
 
+suite.prototype.cases.manifestBaseInheritance = function(callback) {
+	var initVar = "",
+		destroyVar = "";
+	var eventsChecker = {
+		"parentEvent": 0,
+		"child1Event": 0,
+		"commonEvent": 0
+	};
+	var ctx = Echo.Events.newContextId();
+	var publish = function(topic) {
+		Echo.Events.publish({
+			"topic": topic,
+			"context": ctx
+		});
+	};
+	var parentManifest = {
+		"name": "Echo.Control1",
+		"vars": {
+			"someVar": 1,
+			"someVar2": 2
+		},
+		"config": {
+			"someProps": {
+				"prop1": 1,
+				"prop2": 2,
+				"prop3": {
+					"prop3_1": 1
+				}
+			},
+			"someProp": "someVal"
+		},
+		"label": {
+			"someLabel": "some label text"
+		},
+		"events": {
+			"parentEvent": function(topic) { eventsChecker[topic]++; },
+			"commonEvent": function(topic) { eventsChecker[topic] = ++eventsChecker[topic] + " parent handler"; }
+		},
+		"methods": {
+			"method1": function() { return "method1"; },
+			"method2": function() { return "method2"; }
+		},
+		"renderers": {
+			"someRenderer": function(el) { return el; }
+		},
+		"templates": {
+			"main": '<div class="{class:container}"><div class="{class:someRenderer}"></div></div>'
+		},
+		"dependencies": [],
+		"init": function() {
+			initVar += "a parent init";
+			this.render();
+			this.ready();
+		},
+		"destroy": function() {
+			destroyVar += "I'm a parent destroy";
+		},
+		"css": ".{class:container} { width: 50px; }.{class:someRenderer} { width: 10px; }"
+	};
+	var control = Echo.Control.create(
+		$.extend(true, suite.getControlManifest("Echo.Control1"), parentManifest)
+	);
+	var child1Manifest = {
+		"name": "Echo.Control1_Child1",
+		"inherits": Echo.Control1,
+		"vars": {
+			"someVar": "overrides by child1"
+		},
+		"config": {
+			"someProps": {
+				"prop3": {
+					"prop3_2": 2
+				}
+			},
+			"someProp": "overrides by child1"
+		},
+		"events": {
+			"child1Event": function(topic) { eventsChecker[topic]++; },
+			"commonEvent": function(topic) { eventsChecker[topic]++; },
+			"parentEvent": function(topic) { eventsChecker[topic]++; return {"stop": ["bubble", "propagation"]}; }
+		},
+		"methods": {
+			"method1": function() {
+				return this.parent() + " method1_child_1"
+			},
+			"child1Method": function() {
+				return "child1 method"
+			}
+		},
+		"dependencies": [{
+			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep.child.js",
+			"loaded": function() { return !!Echo.Tests.Dependencies.Control.depChild; }
+		}],
+		"init": function() {
+			initVar += "I'm a child init and ";
+			this.parent();
+		},
+		"destroy": function() {
+			this.parent();
+			destroyVar += " and a child destroy";
+		},
+		"css": ".{class:someRenderer} { width: 5px; }"
+	};
+	var child = Echo.Control.create(
+		child1Manifest
+	);
+	suite.initTestControl({
+		"context": ctx,
+		"target": $("#qunit-fixture"),
+		"ready": function() {
+			QUnit.strictEqual(initVar, "I'm a child init and a parent init", "Check init parent function executed");
+			QUnit.deepEqual(this.config.get("someProps"), {
+				"prop1": 1,
+				"prop2": 2,
+				"prop3": {
+					"prop3_1": 1,
+					"prop3_2": 2
+				}
+			}, "Check config props inheritance");
+			QUnit.strictEqual(this.someVar, "overrides by child1", "Check var overrides by child");
+			QUnit.strictEqual(this.config.get("someProp"), "overrides by child1", "Check config property overrides by child");
+			QUnit.strictEqual(this.method1(), "method1 method1_child_1", "Check parent method executed");
+			QUnit.strictEqual(this.method2(), "method2", "Check method inherited without override");
+			QUnit.strictEqual(this.child1Method(), "child1 method", "Check own method exists");
+			QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css concatination");
+			publish("child1Event");
+			publish("commonEvent");
+			publish("parentEvent");
+			QUnit.equal(eventsChecker.parentEvent, 1, "Check parent event propagation stop");
+			QUnit.equal(eventsChecker.child1Event, 1, "Check child event normal publish/subscribe");
+			QUnit.strictEqual(eventsChecker.commonEvent, "2 parent handler", "Check common event normal publish/subscribe and queue");
+			this.destroy();
+			QUnit.strictEqual(destroyVar, "I'm a parent destroy and a child destroy", "Check destroy parent function executed");
+			callback && callback();
+		}
+	}, "Echo.Control1_Child1");
+};
+
 suite.prototype.async = {};
 
 suite.prototype.async.placeImageContainerClassTest = function(callback) {
@@ -1119,6 +1258,15 @@ suite.getControlManifest = function(name, config) {
 	var manifest = Echo.Control.manifest(name || suite.getTestControlClassName());
 
 	manifest.config = $.extend(true, {}, suite.data.config);
+
+	manifest.config.normalizer = {
+		"context": function(val, ctrl) {
+			var parent = ctrl.config.parent;
+			return parent
+				? Echo.Events.newContextId(parent.context)
+				: val ? val : Echo.Events.newContextId();
+		}
+	};
 
 	// copy vars from config
 	manifest.vars = $.extend(true, {}, manifest.config);

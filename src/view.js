@@ -27,6 +27,30 @@ if (Echo.Utils.isComponentDefined("Echo.View")) return;
  * Object which specifies a set of renderers which should be applied during the template
  * rendering. The name of the element is used as a key, the renderer function as the value.
  *
+ * @param {Function} [config.renderer]
+ * Function to be applied for each element in the view elements collection.
+ *
+ * The "renderer" function must return the value of the "target" field of the incoming object.
+ *
+ * Additional notes:
+ *
+ * + if this parameter is defined, the "renderers" config field value will be ignored
+ * + this function is for advanced use only, for most cases you should use the "renderers"
+ * object instead
+ *
+ * @param {Object} config.renderer.args
+ * Object which contains renderer specific information.
+ *
+ * @param {String} config.renderer.args.name
+ * Name of the renderer specific for the current element
+ *
+ * @param {HTMLElement} config.renderer.args.target
+ * Reference to jQuery object which represents the current element
+ *
+ * @param {Object} [config.renderer.args.extra]
+ * The JS object with the set of extra parameters required to process
+ * the current element
+ *
  * @param {Object} [config.substitutions]
  * Object containing the list of extra instructions to be applied during template compilation.
  *
@@ -143,7 +167,9 @@ Echo.View.prototype.render = function(args) {
 
 	// merge renderers passed into the "render" function
 	// and the ones defined in the view config during initialization
-	$.extend(this.renderers, args.renderers);
+	if (args.renderers) {
+		$.extend(this.renderers, args.renderers);
+	}
 
 	// render specific element (recursively if specified)
 	if (args.name) {
@@ -193,11 +219,13 @@ Echo.View.prototype.fork = function(config) {
 Echo.View.prototype._render = {};
 
 Echo.View.prototype._render.element = function(args) {
-	return this._hasRenderer(args.name)
-		? this._getRenderer(args.name)(args.target, args.extra)
-		// no renderer found - nothing to render,
-		// return non-modified target in this case
-		: args.target;
+	return this.config.renderer
+		? this.config.renderer(args)
+		: this._hasRenderer(args.name)
+			? this._getRenderer(args.name)(args.target, args.extra)
+			// no renderer found - nothing to render,
+			// return non-modified target in this case
+			: args.target;
 };
 
 Echo.View.prototype._render.recursive = function(args) {
@@ -261,7 +289,7 @@ Echo.View.prototype._getRenderer = function(name) {
 };
 
 Echo.View.prototype._hasRenderer = function(name) {
-	return !!this._getRenderer(name);
+	return this.config.renderer ? true : !!this._getRenderer(name);
 };
 
 Echo.View.prototype._getRenderableElements = function(container) {

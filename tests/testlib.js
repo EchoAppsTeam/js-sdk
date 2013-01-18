@@ -282,7 +282,7 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 		if (!instance.view.rendered()) {
 			instance.render();
 		}
-		$.each(instance.view.renderers, function(name, renderer) {
+		$.each(instance.renderers, function(name, renderer) {
 			self.info.functions.push("renderers." + name);
 			var element = instance.view.get(name);
 			if (!element) {

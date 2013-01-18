@@ -508,7 +508,7 @@ Echo.Plugin.Config.prototype.remove = function(key) {
  */
 Echo.Plugin.Config.prototype.assemble = function(data) {
 	var config = this.plugin.component.config;
-	var defaults = this.plugin.component.get("defaults.config");
+	var defaults = this.plugin.component._manifest("config");
 	data = data || {};
 	data.user = this.plugin.component.user;
 	data.parent = config.getAsHash();
