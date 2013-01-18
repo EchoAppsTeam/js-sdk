@@ -580,6 +580,14 @@ var $ = jQuery;
  * gallery inside the item UI. You can find UI example of the plugin
  * <a href="http://echosandbox.com/use-cases/pinboard-visualization/">here</a>.
  *
+ * __Note__: the "PinboardVisualization" plugin is not included into the
+ * StreamServer JS package (streamserver.pack.js). Please include the
+ * scripts below (production and development versions respectively) to
+ * load the "PinboardVisualization" plugin:
+ *
+ * http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js  
+ * http://cdn.echoenabled.com/sdk/v3/dev/streamserver/plugins/pinboard-visualization.js
+ *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "test.echoenabled.com",

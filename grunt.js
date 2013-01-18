@@ -87,10 +87,15 @@ module.exports = function(grunt) {
 				"third-party/jquery/jquery.js",
 				"third-party/jquery/echo.jquery.noconflict.js",
 				"<echo_wrapper:third-party/jquery/jquery.ihint.js>",
-				"<echo_wrapper:third-party/jquery/jquery.viewport.js>",
-				"<echo_wrapper:third-party/jquery/jquery.isotope.js>"
+				"<echo_wrapper:third-party/jquery/jquery.viewport.js>"
 			],
 			"dest": "third-party/jquery.pack.js"
+		},
+		"third-party/jquery/jquery.isotope.min.js": {
+			"src": [
+				"<echo_wrapper:third-party/jquery/jquery.isotope.min.js>"
+			],
+			"dest": "third-party/jquery/jquery.isotope.min.js"
 		},
 		"third-party/bootstrap": {
 			"src": [
@@ -122,7 +127,7 @@ module.exports = function(grunt) {
 			"dest": name + "/controls.pack.js"
 		};
 		packs[name + "/plugins"] = {
-			"src": [name + "/plugins/*.js"],
+			"src": [name + "/plugins/!(pinboard-visualization).js"],
 			"dest": name + "/plugins.pack.js"
 		};
 		packs[name] = {
@@ -167,8 +172,8 @@ module.exports = function(grunt) {
 			],
 			"third-party": [
 				"<%= dirs.build %>/third-party/yepnope",
-				"<%= dirs.build %>/third-party/jquery",
-				"<%= dirs.build %>/third-party/bootstrap!(.pack)*"
+				"<%= dirs.build %>/third-party/bootstrap!(.pack)*",
+				"<%= dirs.build %>/third-party/jquery/!(jquery.isotope.min).js"
 			],
 			all: [
 				"<%= dirs.dist %>",
