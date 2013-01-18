@@ -295,7 +295,7 @@ Echo.View.prototype._hasRenderer = function(name) {
 Echo.View.prototype._getRenderableElements = function(container) {
 	var view = this, elements = {};
 	var isRenderer = new RegExp(this.config.cssPrefix + "(.*)$");
-	container.find("*").andSelf().each(function(i, element) {
+	container.find("*").addBack().each(function(i, element) {
 		if (!element.className) {
 			return;
 		}

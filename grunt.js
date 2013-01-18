@@ -25,6 +25,11 @@ module.exports = function(grunt) {
 			"css": [
 				"<%= dirs.src %>/!(third-party)**/*.css"
 			],
+			"bootstrap": [
+				"<%= dirs.src %>/third-party/bootstrap/**/*.js",
+				"<%= dirs.src %>/third-party/bootstrap/**/*.css",
+				"<%= dirs.src %>/third-party/bootstrap/**/*.less"
+			],
 			"images": [
 				"<%= dirs.src %>/**/*.png",
 				"<%= dirs.src %>/**/*.jpg",
@@ -542,6 +547,14 @@ module.exports = function(grunt) {
 					"<%= dirs.build %>": thirdPartySrc.map(function(name) {
 						return _chooseFile(name, "<%= dirs.src %>", target, stage);
 					})
+				},
+				"options": {
+					"basePath": "<config:dirs.src>"
+				}
+			};
+			spec["bootstrap"] = {
+				"files": {
+					"<%= dirs.build %>": grunt.config("sources." + target + ".bootstrap")
 				},
 				"options": {
 					"basePath": "<config:dirs.src>"

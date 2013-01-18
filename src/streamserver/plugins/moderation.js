@@ -625,7 +625,7 @@ plugin.methods._getNextRole = function(role) {
 
 plugin.css = function() {
 	var msieCss = "";
-	if ($.browser.msie) {
+	if (Echo.Utils._browser().msie) {
 		msieCss =
 			'.{plugin.class:status} { zoom: 1; }';
 	}
