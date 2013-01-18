@@ -878,6 +878,13 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			QUnit.strictEqual(eventsChecker.commonEvent, "2 parent handler", "Check common event normal publish/subscribe and queue");
 			this.destroy();
 			QUnit.strictEqual(destroyVar, "I'm a parent destroy and a child destroy", "Check destroy parent function executed");
+			QUnit.equal(this._manifest("css").length, 3, "Making sure that the 'css' field has the expected length after the inheritance");
+			var actualIDs = [];
+			var expectedIDs = ["Echo.Control", "Echo.Control1", "Echo.Control1_Child1"];
+			$.map(this._manifest("css"), function(spec) {
+				actualIDs.push(spec.id);
+			});
+			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expexted CSS rule groups present in the final manifest");
 			callback && callback();
 		}
 	}, "Echo.Control1_Child1");

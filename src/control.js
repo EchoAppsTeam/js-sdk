@@ -906,10 +906,10 @@ Echo.Control._merge.dependencies = function(parent, own) {
 };
 
 Echo.Control._merge.css = function(parent, own, parentManifest, ownManifest) {
-	return [
-		{"id": parentManifest.name, "code": parent},
-		{"id": ownManifest.name, "code": own}
-	];
+	var normalize = function(id, code) {
+		return $.isArray(code) ? code : [{"id": id, "code": code}];
+	};
+	return normalize(parentManifest.name, parent).concat(normalize(ownManifest.name, own));
 };
 
 Echo.Control._merge.events = function(parent, own) {
