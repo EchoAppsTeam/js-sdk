@@ -23,12 +23,7 @@ module.exports = function(grunt) {
 				"<%= dirs.src %>/!(third-party)/**/*.js"
 			],
 			"css": [
-				"<%= dirs.src %>/**/*.css"
-			],
-			"bootstrap": [
-				"<%= dirs.src %>/third-party/bootstrap/**/*.js",
-				"<%= dirs.src %>/third-party/bootstrap/**/*.css",
-				"<%= dirs.src %>/third-party/bootstrap/**/*.less"
+				"<%= dirs.src %>/!(third-party)**/*.css"
 			],
 			"images": [
 				"<%= dirs.src %>/**/*.png",
@@ -172,7 +167,7 @@ module.exports = function(grunt) {
 			],
 			"third-party": [
 				"<%= dirs.build %>/third-party/yepnope",
-				"<%= dirs.build %>/third-party/bootstrap!(.pack)*",
+				"<%= dirs.build %>/third-party/bootstrap",
 				"<%= dirs.build %>/third-party/jquery/!(jquery.isotope.min).js"
 			],
 			all: [
@@ -189,10 +184,10 @@ module.exports = function(grunt) {
 		less: {
 			bootstrap: {
 				options: {
-					paths: [dirs.build + "/third-party/bootstrap/less"]
+					paths: [dirs.src + "/third-party/bootstrap/less"]
 				},
 				files: {
-					"<%= dirs.build %>/gui.pack.css": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less", "<%= dirs.build %>/third-party/bootstrap/plugins/*.css"]
+					"<%= dirs.build %>/gui.pack.css": ["<%= dirs.src %>/third-party/bootstrap/less/bootstrap.less", "<%= dirs.src %>/third-party/bootstrap/plugins/*.css"]
 				}
 			}
 		},
@@ -308,12 +303,12 @@ module.exports = function(grunt) {
 		switch (stage) {
 			case "dev":
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less less:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
+				tasks = "copy:own-js copy:third-party-js patch:bootstrap-less less:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
 				break;
 			case "min":
 				_makeMinSpec();
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less less:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
+				tasks = "copy:own-js copy:third-party-js patch:bootstrap-less less:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
 				break;
 			case "final":
 				tasks = "copy:css copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
