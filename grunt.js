@@ -547,14 +547,6 @@ module.exports = function(grunt) {
 					"basePath": "<config:dirs.src>"
 				}
 			};
-			spec["bootstrap"] = {
-				"files": {
-					"<%= dirs.build %>": grunt.config("sources." + target + ".bootstrap")
-				},
-				"options": {
-					"basePath": "<config:dirs.src>"
-				}
-			};
 		}
 		spec["build"] = {
 			"files": {},
