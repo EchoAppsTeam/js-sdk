@@ -104,7 +104,7 @@ Echo.API.Transports.AJAX.prototype.abort = function() {
 };
 
 Echo.API.Transports.AJAX.available = function() {
-	var browser = Echo.Utils.browser();
+	var browser = Echo.Utils._browser();
 	return !browser.msie || browser.msie && browser.version >= 10;
 };
 
@@ -215,7 +215,7 @@ Echo.API.Transports.XDomainRequest.available = function(config) {
 	var transportSpecAvailability = /^get|post$/i.test(config.method)
 		&& /^https?/.test(schema)
 		&& document.location.protocol === schema;
-	var browser = Echo.Utils.browser();
+	var browser = Echo.Utils._browser();
 	return browser.msie
 		&& ~$.inArray(parseInt(browser.version), [8, 9])
 		&& transportSpecAvailability;

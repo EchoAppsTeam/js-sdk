@@ -210,7 +210,7 @@ Echo.GUI.Modal.prototype._assembleBody = function() {
 	var body = this._addSection("modal-body", this.config.get("data").body);
 	if (this.config.get("href")) {
 		this.element.one("shown", function() {
-			body.append('<iframe src="' + self.config.get("href") + '" id="" name="" class="echo-modal-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + (Echo.Utils.browser().msie ? ' allowtransparency="true"' : '') + '></iframe>');
+			body.append('<iframe src="' + self.config.get("href") + '" id="" name="" class="echo-modal-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + (Echo.Utils._browser().msie ? ' allowtransparency="true"' : '') + '></iframe>');
 		});
 	}
 	if (this.config.get("width") !== null) {

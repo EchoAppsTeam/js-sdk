@@ -16,7 +16,7 @@ var mediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item
 if (Echo.Control.isDefined(mediaGallery)) return;
 
 var _isPreIE9 = function() {
-	var browser = Echo.Utils.browser();
+	var browser = Echo.Utils._browser();
 	return (browser.msie && browser.version < 9 && document.documentMode && document.documentMode < 9);
 };
 
@@ -236,7 +236,7 @@ var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Co
 if (Echo.Plugin.isDefined(plugin)) return;
 
 var _isPreIE9 = function() {
-	var browser = Echo.Utils.browser();
+	var browser = Echo.Utils._browser();
 	return (browser.msie && browser.version < 9 && document.documentMode && document.documentMode < 9);
 };
 
@@ -607,13 +607,13 @@ plugin.config = {
 	"isotope": {
 		"animationOptions": {
 			// change duration for mozilla browsers
-			"duration": Echo.Utils.browser().mozilla || Echo.Utils.browser().msie ? 0 : 2750,
+			"duration": Echo.Utils._browser().mozilla || Echo.Utils._browser().msie ? 0 : 2750,
 			"easing": "linear",
 			"queue": false
 		},
 		// use only jQuery engine for animation in mozilla browsers
 		// due to the issues with video display with CSS transitions
-		"animationEngine": Echo.Utils.browser().mozilla || Echo.Utils.browser().msie ? "jquery" : "best-available"
+		"animationEngine": Echo.Utils._browser().mozilla || Echo.Utils._browser().msie ? "jquery" : "best-available"
 	}
 };
 

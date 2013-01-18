@@ -339,7 +339,7 @@ suite.prototype.tests.TestDataMethods = {
 
 		QUnit.ok(typeof Echo.Utils.getUniqueString() == "string", "getUniqueString() really returns string");
 
-		// Checking Echo.Utils.browser() method
+		// Checking Echo.Utils._browser() method
 		var _origUserAgent = navigator.userAgent;
 		var browsers = [{
 			"title": "Firefox 18.0",
@@ -364,8 +364,8 @@ suite.prototype.tests.TestDataMethods = {
 		}];
 
 		for (var i = 0; i < browsers.length; i++) {
-			var result = Echo.Utils.browser(browsers[i].userAgent);
-			QUnit.deepEqual(browsers[i].result, result, "Checking Echo.Utils.browser() method: " + browsers[i].title);
+			var result = Echo.Utils._browser(browsers[i].userAgent);
+			QUnit.deepEqual(browsers[i].result, result, "Checking Echo.Utils._browser() method: " + browsers[i].title);
 		}
 
 		var strings = [];
@@ -432,7 +432,7 @@ suite.prototype.tests.TestDataMethods = {
 		};
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key:value}"),
 			["{key:value}", "key", "value"], "Checking templateSubstitution regexp with one key-value pair");
-		var browser = Echo.Utils.browser();
+		var browser = Echo.Utils._browser();
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key}"),
 			["{key}", "key", (browser.msie && browser.version <= 8 || browser.msie && document.compatMode === "BackCompat" ? "" : undefined)], "Checking templateSubstitution regexp with key and empty value");
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("string without template"),

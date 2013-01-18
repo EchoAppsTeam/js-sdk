@@ -1045,36 +1045,21 @@ Echo.Utils.invoke = function(mixed, context) {
 		: mixed;
 };
 
-/**
- * @static
- * This method returns information about the web browser that is accessing the page,
- * as reported by the browser itself (trough User-Agent HTTP header).  
- * The returned object can contains flags for each of the four most prevalent browser
- * classes (Internet Explorer, Mozilla, Webkit, and Opera) as well as version information.  
- * Available flags are:
- * 	* webkit
- * 	* safari
- * 	* opera
- * 	* msie
- * 	* mozilla
+/*
+ * This method returns information about the web browser that is accessing the page, 
+ * as reported by the browser itself (trough User-Agent HTTP header).
  *
  * This method copies the jQuery.browser property behavior which has been removed
- * from jQuery since 1.9 version:  
- * <a href="http://api.jquery.com/jQuery.browser/" target="_blank">http://api.jquery.com/jQuery.browser/</a>
+ * from jQuery since 1.9 version:
+ * http://api.jquery.com/jQuery.browser/
  *
- * @param {String} [userAgent]
- * If this parameter is passed, it will be used instead navigator.userAgent.
+ * The method has been added for compatibility with new jQuery version and we
+ * do not recommend to use it as it can be removed in the future.
  *
- * @return {Object}
- * Plain object which contains flags as well as version information
- * or empty object if the browser identify failed.
- * For example:
- * 	{
- * 		"mozilla": true,
- * 		"version": "18.0"
- * 	}
+ * Please refer to the jQuery upgrade-guide (http://jquery.com/upgrade-guide/1.9/#jquery-browser-removed)
+ * for more information.
  */
-Echo.Utils.browser = function(userAgent) {
+Echo.Utils._browser = function(userAgent) {
 	if (userAgent || !this.cache.browser) {
 		var ua = userAgent && userAgent.toLowerCase() || navigator.userAgent.toLowerCase();
 		var match = /(chrome)[ \/]([\w.]+)/.exec(ua)
