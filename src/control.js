@@ -637,12 +637,11 @@ Echo.Control.prototype._initializers.vars = function() {
 
 Echo.Control.prototype._initializers.config = function() {
 	var control = this;
-	var manifestConfig = $.extend(true, {}, this._manifest("config") || {});
-	var normalizer = manifestConfig.normalizer;
-	return new Echo.Configuration(this.config, manifestConfig,
+	var config = this._manifest("config");
+	return new Echo.Configuration(this.config, config,
 		function(key, value) {
-			return normalizer && normalizer[key]
-				? normalizer[key].call(this, value, control)
+			return config.normalizer && config.normalizer[key]
+				? config.normalizer[key].call(this, value, control)
 				: value;
 		});
 };
