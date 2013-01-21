@@ -1337,29 +1337,31 @@ manifest.templates.message.full =
 		'</span>' +
 	'</div>';
 
-manifest.css =
-	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
-	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
-	'.echo-primaryColor { color: #3A3A3A; }' +
-	'.echo-secondaryColor { color: #C6C6C6; }' +
-	'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
-	'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
-	'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
-	'.echo-clickable { cursor: pointer; }' +
-	'.echo-relative { position: relative; }' +
-	'.echo-clear { clear: both; }' +
-	'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
-	'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
-	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
-	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
+manifest.css = [{
+	"id": "Echo.Control",
+	"code": '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
+		'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
+		'.echo-primaryColor { color: #3A3A3A; }' +
+		'.echo-secondaryColor { color: #C6C6C6; }' +
+		'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
+		'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
+		'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
+		'.echo-clickable { cursor: pointer; }' +
+		'.echo-relative { position: relative; }' +
+		'.echo-clear { clear: both; }' +
+		'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
+		'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
+		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
+		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
 
-	// message classes
-	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
-	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
-	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
-	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
-	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
+		// message classes
+		'.echo-control-message { padding: 15px 0px; text-align: center; }' +
+		'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
+		'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
+		'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
+		'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
+		'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }'
+}];
 
 Echo.Control._manifest = manifest;
 
