@@ -805,7 +805,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"css": ".{class:container} { width: 50px; }.{class:someRenderer} { width: 10px; }"
 	};
 	var control = Echo.Control.create(
-		$.extend(true, suite.getControlManifest("Echo.Control1"), parentManifest)
+		parentManifest
 	);
 	var child1Manifest = {
 		"name": "Echo.Control1_Child1",
@@ -880,9 +880,11 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			QUnit.strictEqual(destroyVar, "I'm a parent destroy and a child destroy", "Check destroy parent function executed");
 			QUnit.equal(this._manifest("css").length, 3, "Making sure that the 'css' field has the expected length after the inheritance");
 			var actualIDs = [];
-			var expectedIDs = ["Echo.Control", "Echo.Control1", "Echo.Control1_Child1"];
-			$.map(this._manifest("css"), function(spec) {
-				actualIDs.push(spec.id);
+			var expectedIDs = [{"Echo.Control": true}, {"Echo.Control1": true}, {"Echo.Control1_Child1": true}];
+			$.map(["Echo.Control", "Echo.Control1", "Echo.Control1_Child1"], function(id) {
+				var spec = {};
+				spec[id] = Echo.Utils.hasCSS(id);
+				actualIDs.push(spec);
 			});
 			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expected CSS rule groups present in the final manifest");
 			callback && callback();

@@ -58,7 +58,7 @@ Echo.Control.create = function(manifest) {
 	// prevent multiple re-definitions
 	if (Echo.Control.isDefined(manifest)) return control;
 
-	var _manifest = this._merge(manifest.inherits, manifest);
+	var _manifest = this._merge(manifest);
 
 	var constructor = Echo.Utils.inherit(this, function(config) {
 
@@ -783,8 +783,49 @@ Echo.Control.prototype._initializers.labels = function() {
 
 Echo.Control.prototype._initializers.css = function() {
 	var self = this;
+	var css = this._manifest("css");
+	var parent = this._manifest("inherits");
+	// we should detect multiple re-definition of the
+	// css rules in case our class was inherited from another
+	css = typeof css === "string"
+		? [{"id": this.name, "code": css}]
+		: $.isArray(css)
+			? function normalize(css, parent, name) {
+				css = $.extend(true, [], css);
+				var code = css.pop();
+				var l = css.length;
+				var result = [{
+					"id": name,
+					"code": code
+				}];
+				if (l && parent) {
+					result.unshift({
+						"id": parent._manifest.name,
+						"code": css.pop()
+					});
+				}
+				// Recursively run onto _manifest parent object to detect
+				// css containers there
+				if (parent
+					&& parent._manifest
+					&& parent._manifest.inherits
+					&& parent._manifest.inherits._manifest) {
+					var _parent = parent._manifest.inherits;
+					var _css = _parent._manifest.css;
+					if (typeof _css === "string") {
+						result.unshift({
+							"id": _parent._manifest.name,
+							"code": _css
+						});
+					} else if ($.isArray(_css)) {
+						normalize(_css, _parent, _parent._manifest.name);
+					}
+				}
+				return result;
+			}(css, parent, self.name)
+			: [];
 	this.config.get("target").addClass(this.cssClass);
-	$.map(this._manifest("css"), function(spec) {
+	$.map(css, function(spec) {
 		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
 		Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 	});
@@ -871,12 +912,13 @@ Echo.Control.prototype._initializers.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
 };
 
-Echo.Control._merge = function(parent, manifest) {
+Echo.Control._merge = function(manifest) {
 	var self = this;
+	var parent = manifest.inherits;
 	var _manifest = parent && parent._manifest || this._manifest;
 	var merged = Echo.Utils.foldl({}, manifest, function(val, acc, name) {
 		acc[name] = name in _manifest && self._merge[name]
-			? self._merge[name](_manifest[name], val, _manifest, manifest)
+			? self._merge[name](_manifest[name], val)
 			: val;
 	});
 	return $.extend(true, {}, _manifest, merged);
@@ -904,11 +946,11 @@ Echo.Control._merge.dependencies = function(parent, own) {
 	return parent.concat(own);
 };
 
-Echo.Control._merge.css = function(parent, own, parentManifest, ownManifest) {
-	var normalize = function(id, code) {
-		return $.isArray(code) ? code : [{"id": id, "code": code}];
+Echo.Control._merge.css = function(parent, own) {
+	var normalize = function(code) {
+		return $.isArray(code) ? code : [code];
 	};
-	return normalize(parentManifest.name, parent).concat(normalize(ownManifest.name, own));
+	return normalize(parent).concat(normalize(own));
 };
 
 Echo.Control._merge.events = function(parent, own) {
@@ -1325,6 +1367,8 @@ manifest.labels = {
 	"monthsAgo": "{number} Months Ago"
 };
 
+manifest.inherits = Echo.Control;
+
 manifest.templates = {"message": {}};
 
 manifest.templates.message.compact =
@@ -1337,9 +1381,7 @@ manifest.templates.message.full =
 		'</span>' +
 	'</div>';
 
-manifest.css = [{
-	"id": "Echo.Control",
-	"code": '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
+manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 		'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
 		'.echo-primaryColor { color: #3A3A3A; }' +
 		'.echo-secondaryColor { color: #C6C6C6; }' +
@@ -1360,8 +1402,7 @@ manifest.css = [{
 		'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
 		'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
 		'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
-		'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }'
-}];
+		'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
 
 Echo.Control._manifest = manifest;
 
