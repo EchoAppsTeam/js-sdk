@@ -826,7 +826,7 @@ Echo.Utils.loadImage = function(args) {
 
 /**
  * @static
- * Creates the HTML <a> tag with the provided attribute names/values
+ * Creates the HTML \<a> tag with the provided attribute names/values
  *
  * @param {Object} data
  * Hyperlink tag attribute key/value pairs, some of them are:
@@ -850,7 +850,7 @@ Echo.Utils.loadImage = function(args) {
  * Specifies whether href value should be htmlized or not.
  *
  * @return {String}
- * HTML string for <a> tag.
+ * HTML string for \<a> tag.
  */
 Echo.Utils.hyperlink = function(data, options) {
 	data = $.extend({}, data);
