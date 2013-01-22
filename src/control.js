@@ -58,7 +58,7 @@ Echo.Control.create = function(manifest) {
 	// prevent multiple re-definitions
 	if (Echo.Control.isDefined(manifest)) return control;
 
-	var _manifest = this._merge(manifest);
+	var _manifest = this._merge(manifest, manifest.inherits && manifest.inherits._manifest);
 
 	var constructor = Echo.Utils.inherit(this, function(config) {
 
@@ -783,49 +783,8 @@ Echo.Control.prototype._initializers.labels = function() {
 
 Echo.Control.prototype._initializers.css = function() {
 	var self = this;
-	var css = this._manifest("css");
-	var parent = this._manifest("inherits");
-	// we should detect multiple re-definition of the
-	// css rules in case our class was inherited from another
-	css = typeof css === "string"
-		? [{"id": this.name, "code": css}]
-		: $.isArray(css)
-			? function normalize(css, parent, name) {
-				css = $.extend(true, [], css);
-				var code = css.pop();
-				var l = css.length;
-				var result = [{
-					"id": name,
-					"code": code
-				}];
-				if (l && parent) {
-					result.unshift({
-						"id": parent._manifest.name,
-						"code": css.pop()
-					});
-				}
-				// Recursively run onto _manifest parent object to detect
-				// css containers there
-				if (parent
-					&& parent._manifest
-					&& parent._manifest.inherits
-					&& parent._manifest.inherits._manifest) {
-					var _parent = parent._manifest.inherits;
-					var _css = _parent._manifest.css;
-					if (typeof _css === "string") {
-						result.unshift({
-							"id": _parent._manifest.name,
-							"code": _css
-						});
-					} else if ($.isArray(_css)) {
-						normalize(_css, _parent, _parent._manifest.name);
-					}
-				}
-				return result;
-			}(css, parent, self.name)
-			: [];
 	this.config.get("target").addClass(this.cssClass);
-	$.map(css, function(spec) {
+	$.map(this._manifest("css"), function(spec) {
 		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
 		Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 	});
@@ -912,16 +871,22 @@ Echo.Control.prototype._initializers.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
 };
 
-Echo.Control._merge = function(manifest) {
+Echo.Control._merge = function(manifest, parentManifest) {
 	var self = this;
-	var parent = manifest.inherits;
-	var _manifest = parent && parent._manifest || this._manifest;
+	parentManifest = parentManifest || this._manifest;
+	// normalize CSS definition before merging to have the same format
+	var normalizeCSS = function(manifest) {
+		manifest.css = manifest.css || "";
+		return $.isArray(manifest.css) ? manifest.css : [{"id": manifest.name, "code": manifest.css}];
+	};
+	manifest.css = normalizeCSS(manifest);
+	parentManifest.css = normalizeCSS(parentManifest);
 	var merged = Echo.Utils.foldl({}, manifest, function(val, acc, name) {
-		acc[name] = name in _manifest && self._merge[name]
-			? self._merge[name](_manifest[name], val)
+		acc[name] = name in parentManifest && self._merge[name]
+			? self._merge[name](parentManifest[name], val)
 			: val;
 	});
-	return $.extend(true, {}, _manifest, merged);
+	return $.extend(true, {}, parentManifest, merged);
 };
 
 var _wrapper = function(parent, own) {
@@ -947,10 +912,7 @@ Echo.Control._merge.dependencies = function(parent, own) {
 };
 
 Echo.Control._merge.css = function(parent, own) {
-	var normalize = function(code) {
-		return $.isArray(code) ? code : [code];
-	};
-	return normalize(parent).concat(normalize(own));
+	return parent.concat(own);
 };
 
 Echo.Control._merge.events = function(parent, own) {

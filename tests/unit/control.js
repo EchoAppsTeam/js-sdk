@@ -804,9 +804,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"css": ".{class:container} { width: 50px; }.{class:someRenderer} { width: 10px; }"
 	};
-	var control = Echo.Control.create(
-		parentManifest
-	);
+	var control = Echo.Control.create(parentManifest);
 	var child1Manifest = {
 		"name": "Echo.Control1_Child1",
 		"inherits": Echo.Control1,
@@ -848,9 +846,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"css": ".{class:someRenderer} { width: 5px; }"
 	};
-	var child = Echo.Control.create(
-		child1Manifest
-	);
+	var child = Echo.Control.create(child1Manifest);
 	suite.initTestControl({
 		"context": ctx,
 		"target": $("#qunit-fixture"),
