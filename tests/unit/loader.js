@@ -268,6 +268,7 @@ suite.prototype.tests.canvasesInitializationTests = {
 			"double-initialization-prevention",
 			"different-initialization-schemas",
 			"multiple-apps-canvas",
+			"app-initialization",
 			"app-config-overrides"
 		], function(name) {
 			return self.loaderIframeTest(name);
