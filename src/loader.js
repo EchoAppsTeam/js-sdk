@@ -55,7 +55,7 @@ Echo.Loader.getURL = function(url, devVersion) {
  * @param {Object} [config.target]
  * Target element where Echo Loader should look for the canvases if no
  * canvases were passed in the "config.canvases" field.
-*/
+ */
 Echo.Loader.init = function(config) {
 	config = config || {};
 	Echo.Loader._initEnvironment(function() {
@@ -187,6 +187,84 @@ Echo.Loader.isDebug = function() {
 	Echo.Loader.debug = !!Echo.Cookie.get(_debugCookieName);
 })();
 
+/**
+ * @static
+ * Function to initialize application on the page. The function performs the following actions:
+ *
+ * + initializes Echo JavaScript environment (if it was not initialized yet)
+ * + establishes the Backplane connection (if app.backplane is defined)
+ * + establishes Echo User session on the page (if app.config.appkey is defined)
+ * + downloads the application script
+ * + calls the app JavaScript class constructor which handles further application initialization
+ *
+ * @param {Object} app
+ * Object which defines the base app configuration.
+ *
+ * @param {String} app.component
+ * The name of the JavaScript app class which should be initialized.
+ *
+ * @param {String} app.script
+ * Appliction JavaScript class script URL.
+ *
+ * @param {Object} [app.scripts]
+ * Object which specifies the location (URL) of the production (minified) and development
+ * (non-minified) versions of the app JavaScript class code. The "prod" and "dev" keys
+ * should be used in order to specify the production and development URLs respectively.
+ *
+ * @param {Object} [app.backplane]
+ * Object which contains the data to be passed into the Backplane.init call.
+ *
+ * @param {Object} [app.config]
+ * Parameters to be passed into the application constructor during its initialization.
+ */
+Echo.Loader.initApplication = function(app) {
+	app = app || {};
+	app.config = app.config || {};
+	var script = Echo.Loader._getAppScriptURL(app);
+
+	if (!script || !app.component) {
+		Echo.Loader._error({
+			"args": {"app": app},
+			"code": "invalid_app_config",
+			"message": "Invalid config passed into the initApplication function"
+		});
+		return;
+	}
+
+	var initUser = function(callback) {
+		if (!app.config.appkey) {
+			callback();
+			return;
+		}
+		Echo.Loader._initUser(app.config, function() { callback && callback(this); });
+	};
+	Echo.Loader._initEnvironment(function() {
+		Echo.Loader._initBackplane(app.backplane, function() {
+			initUser(function(user) {
+				Echo.Loader.download([{
+					"url": script,
+					"loaded": function() {
+						return Echo.Utils.isComponentDefined(app.component);
+					}
+				}], function() {
+					var Application = Echo.Utils.getComponent(app.component);
+					if (!Application) {
+						Echo.Loader._error({
+							"args": {"app": app},
+							"code": "no_suitable_app_class",
+							"message": "Unable to init an app, " +
+									"no suitable class found"
+						});
+						return;
+					}
+					app.config.user = user;
+					new Application(app.config);
+				}, {"errorTimeout": Echo.Loader.config.errorTimeout});
+			});
+		});
+	});
+};
+
 Echo.Loader._initEnvironment = function(callback) {
 	var resources = [{
 		"url": "backplane.js",
@@ -296,10 +374,7 @@ Echo.Loader._initUser = function(canvas, callback) {
 Echo.Loader._initApplications = function(canvas) {
 	var resources = [];
 	Echo.jQuery.each(canvas.config.apps, function(id, app) {
-		app.config = app.config || {};
-		var script = app.scripts && app.scripts.dev && app.scripts.prod
-			? app.scripts[Echo.Loader.isDebug() ? "dev" : "prod"]
-			: app.script;
+		var script = Echo.Loader._getAppScriptURL(app);
 		if (!app.component || !script || !app.id) {
 			Echo.Loader._error({
 				"args": {"app": app},
@@ -309,6 +384,7 @@ Echo.Loader._initApplications = function(canvas) {
 			return;
 		}
 
+		app.config = app.config || {};
 		app.config.user = canvas.config.user;
 		app.config.target = Echo.Loader._createApplicationTarget(app);
 		resources.push({
@@ -338,6 +414,12 @@ Echo.Loader._initApplications = function(canvas) {
 	}, {
 		"errorTimeout": Echo.Loader.config.errorTimeout
 	});
+};
+
+Echo.Loader._getAppScriptURL = function(config) {
+	return config.scripts && config.scripts.dev && config.scripts.prod
+		? config.scripts[Echo.Loader.isDebug() ? "dev" : "prod"]
+		: config.script;
 };
 
 Echo.Loader._createApplicationTarget = function(config) {
