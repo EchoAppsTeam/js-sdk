@@ -17,7 +17,9 @@ Echo.Loader = {
 		"errorTimeout": 5000 // 5 sec
 	},
 	"overrides": {},
-	"vars": {}
+	"vars": {
+		"state": {"resources": {}, "queue": []}
+	}
 };
 
 /**
@@ -104,31 +106,65 @@ Echo.Loader.init = function(config) {
  *
  */
 Echo.Loader.download = function(resources, callback, config) {
-	resources = resources || [];
 	config = config || {};
 	callback = callback || function() {};
+	resources = resources || [];
 
-	if (!Echo.Loader.vars.queued) {
-		Echo.Loader.vars.queued = {};
-	}
+	var state = Echo.Loader.vars.state;
+	var isReady = function(resource) {
+		var url = Echo.Loader.getURL(resource.url);
+		return (resource.loaded && resource.loaded()) ||
+			(state.resources[url] && state.resources[url] === "ready");
+	};
+	var invokeQueue = function() {
+		var callbacks = [];
+		// Important note: we should *not* execute callbacks
+		// while iterating through the queue. We need to update
+		// the queue first and only after that execute the callbacks,
+		// because there might be calls to "Echo.Loader.download" function
+		// which can interfere with the current queue state.
+		state.queue = Echo.Loader._map(state.queue, function(item) {
+			var ready = true;
+			Echo.Loader._map(item.resources, function(resource) {
+				ready = isReady(resource);
+				return ready;
+			});
+			if (ready) {
+				callbacks.push(item.callback);
+				return;
+			}
+			return item;
+		});
+		Echo.Loader._map(callbacks, function(_callback) { _callback(); });
+	};
 
-	var urls = [];
-	var queued = Echo.Loader.vars.queued;
-	var urlPrefix = "timeout=" + (config.errorTimeout || Echo.Loader.config.errorTimeout) + "!";
-	for (var i = 0; i < resources.length; i++) {
-		var res = resources[i];
-		if (!queued[res.url] && (!res.loaded || !res.loaded())) {
-			queued[res.url] = true;
-			urls.push(urlPrefix + Echo.Loader.getURL(res.url));
+	state.queue.push({"resources": resources, "callback": callback});
+
+	var urls = Echo.Loader._map(resources, function(resource) {
+		var url = Echo.Loader.getURL(resource.url);
+		if (!isReady(resource) && state.resources[url] !== "loading") {
+			state.resources[url] = "loading";
+			return url;
 		}
-	}
+	});
+
+	// invoke queued handler in case all requested resources
+	// are ready by the time the "download" function is called
 	if (!urls.length) {
-		callback();
-		return false;
+		invokeQueue();
+		return;
 	}
+
+	var prefix = "timeout=" + (config.errorTimeout || Echo.Loader.config.errorTimeout) + "!";
 	Echo.yepnope({
-		"load": urls,
-		"complete": callback
+		"load": Echo.Loader._map(urls, function(url) { return prefix + url; }),
+		"complete": function() {
+			// mark all loaded scripts as "ready"
+			Echo.Loader._map(urls, function(url) {
+				state.resources[url] = "ready";
+			});
+			invokeQueue();
+		}
 	});
 };
 
@@ -263,6 +299,19 @@ Echo.Loader.initApplication = function(app) {
 			});
 		});
 	});
+};
+
+// implementation of the "map" function for the cases when jQuery is not loaded yet
+Echo.Loader._map = function(list, iterator) {
+	var result = [];
+	if (list && list.length && iterator) {
+		for (var i = 0; i < list.length; i++) {
+			var value = iterator(list[i], i);
+			if (value === false) break; // jQuery-like convention
+			if (typeof value !== "undefined") result.push(value);
+		}
+	}
+	return result;
 };
 
 Echo.Loader._initEnvironment = function(callback) {
