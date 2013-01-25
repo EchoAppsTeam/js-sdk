@@ -60,7 +60,7 @@ Echo.Loader.getURL = function(url, devVersion) {
  */
 Echo.Loader.init = function(config) {
 	config = config || {};
-	Echo.Loader._initEnvironment(function() {
+	Echo.Loader.initEnvironment(function() {
 		var canvases = config.canvases;
 
 		// convert a single canvas to the 1-element array
@@ -274,7 +274,7 @@ Echo.Loader.initApplication = function(app) {
 		}
 		Echo.Loader._initUser(app.config, function() { callback && callback(this); });
 	};
-	Echo.Loader._initEnvironment(function() {
+	Echo.Loader.initEnvironment(function() {
 		Echo.Loader._initBackplane(app.backplane, function() {
 			initUser(function(user) {
 				Echo.Loader.download([{
@@ -301,20 +301,15 @@ Echo.Loader.initApplication = function(app) {
 	});
 };
 
-// implementation of the "map" function for the cases when jQuery is not loaded yet
-Echo.Loader._map = function(list, iterator) {
-	var result = [];
-	if (list && list.length && iterator) {
-		for (var i = 0; i < list.length; i++) {
-			var value = iterator(list[i], i);
-			if (value === false) break; // jQuery-like convention
-			if (typeof value !== "undefined") result.push(value);
-		}
-	}
-	return result;
-};
-
-Echo.Loader._initEnvironment = function(callback) {
+/**
+ * @static
+ * Function to initialize Echo environment on the page by downloading Backplane lib,
+ * jQuery library with the necessary dependencies and the base Echo classes.
+ *
+ * @param {Function} [callback]
+ * Callback function which should be called as soon as Echo environment is ready.
+ */
+Echo.Loader.initEnvironment = function(callback) {
 	if (Echo.Loader.vars.isEnvironmentReady) {
 		callback && callback();
 		return;
@@ -333,6 +328,19 @@ Echo.Loader._initEnvironment = function(callback) {
 		Echo.Loader.vars.isEnvironmentReady = true;
 		callback && callback();
 	});
+};
+
+// implementation of the "map" function for the cases when jQuery is not loaded yet
+Echo.Loader._map = function(list, iterator) {
+	var result = [];
+	if (list && list.length && iterator) {
+		for (var i = 0; i < list.length; i++) {
+			var value = iterator(list[i], i);
+			if (value === false) break; // jQuery-like convention
+			if (typeof value !== "undefined") result.push(value);
+		}
+	}
+	return result;
 };
 
 Echo.Loader._initCanvases = function(canvases) {
