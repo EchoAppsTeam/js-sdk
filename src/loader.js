@@ -315,6 +315,10 @@ Echo.Loader._map = function(list, iterator) {
 };
 
 Echo.Loader._initEnvironment = function(callback) {
+	if (Echo.Loader.vars.isEnvironmentReady) {
+		callback && callback();
+		return;
+	}
 	var resources = [{
 		"url": "backplane.js",
 		"loaded": function() { return !!window.Backplane; }
@@ -325,7 +329,10 @@ Echo.Loader._initEnvironment = function(callback) {
 		"url": "environment.pack.js",
 		"loaded": function() { return !!Echo.Utils; }
 	}];
-	Echo.Loader.download(resources, callback);
+	Echo.Loader.download(resources, function() {
+		Echo.Loader.vars.isEnvironmentReady = true;
+		callback && callback();
+	});
 };
 
 Echo.Loader._initCanvases = function(canvases) {
