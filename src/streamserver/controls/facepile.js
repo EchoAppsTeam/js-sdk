@@ -522,7 +522,7 @@ item.methods.isYou = function() {
 item.css =
 	".{class:avatar} { display: inline-block; width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }" +
 	'.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }' +
-	'.{class:container}, .{class:container} span { white-space: nowrap; }' +
+	'.{class:container}, .{class:container} span { white-space: nowrap; display: inline-block; }' +
 	'.{class:only-avatars} .{class:container} { white-space: normal; }';
 
 Echo.Control.create(item);
