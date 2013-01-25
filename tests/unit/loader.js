@@ -11,6 +11,7 @@ suite.prototype.info = {
 	"className": "Echo.Loader",
 	"functions": [
 		"init",
+		"initApplication",
 		"isDebug",
 		"download",
 		"override",
