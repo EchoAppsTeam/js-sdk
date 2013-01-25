@@ -12,6 +12,7 @@ suite.prototype.info = {
 	"functions": [
 		"init",
 		"initApplication",
+		"initEnvironment",
 		"isDebug",
 		"download",
 		"override",
@@ -22,6 +23,8 @@ suite.prototype.info = {
 suite.prototype.tests = {};
 
 suite.prototype.cases = {};
+
+suite.prototype.initEnvironmentCases = {};
 
 // checking resources downloading mechanisms
 
@@ -101,6 +104,42 @@ suite.prototype.tests.urlConvertingTests = {
 		);
 		Echo.Loader.debug = debug;
 	}
+};
+
+suite.prototype.tests.environmentInitializationTests = {
+	"config": {
+		"async": true,
+		"testTimeout": 15000
+	},
+	"check": function() {
+		this.sequentialAsyncTests([
+			"emptyCallback",
+			"environmentCheck"
+		], "initEnvironmentCases");
+	}
+};
+
+suite.prototype.initEnvironmentCases.emptyCallback = function(callback) {
+	try {
+		Echo.Loader.initEnvironment();
+		QUnit.ok(true, "Checking if the 'callback' param is optional (no errors produced)");
+	} catch(e) {
+		QUnit.ok(false, "Calling 'initEnvironment' with no callback produced JS error...");
+	}
+	callback();
+};
+
+suite.prototype.initEnvironmentCases.environmentCheck = function(callback) {
+	Echo.Loader.initEnvironment(function() {
+		QUnit.ok(true, "Checking if the callback is being fired as soon as the environment is ready.");
+		QUnit.ok(!!window.Backplane && !!Echo.Control && Echo.jQuery,
+			"Checking if the callback is being fired as soon as the environment is ready.");
+		var state = $.extend(true, {}, Echo.Loader.vars.state);
+		Echo.Loader.initEnvironment();
+		QUnit.deepEqual(state, Echo.Loader.vars.state,
+			"Checking if the second 'initEnvironment' function call doesn't produce any downloading requests");
+		callback();
+	});
 };
 
 suite.prototype.cases.invalidParameters = function(callback) {
