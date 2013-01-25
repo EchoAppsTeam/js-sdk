@@ -43,7 +43,8 @@ suite.prototype.tests.resourceDownloadingTests = {
 			"alreadyLoadedScripts",
 			"validScriptsLoading",
 			"validAndInvalidScriptsMix",
-			"loadingSameScriptMultipleTimes"
+			"loadingSameScriptMultipleTimes",
+			"fireSameScriptLoadingMultipleTimes"
 		], "cases");
 	}
 };
@@ -291,6 +292,38 @@ suite.prototype.cases.loadingSameScriptMultipleTimes = function(callback) {
 		QUnit.ok(true, "Checking the situation when the same script is loaded multiple times (checking if the callback is executed)");
 		callback();
 	});
+};
+
+suite.prototype.cases.fireSameScriptLoadingMultipleTimes = function(callback) {
+	var resources = [{
+		"url": Echo.Tests.baseURL + "tests/unit/loader/scripts/check-multiple-downloads.js"
+	}];
+	var count = 0;
+	var check = function() {
+		return Echo.Control.isDefined("Echo.Tests.Controls.TestMultipleDownloads");
+	};
+	var maybeExecuteCallback = function() {
+		if (++count === 3) callback();
+	};
+	Echo.Loader.download(resources, function() {
+		QUnit.ok(check(), "Checking if the control is defined after the first download");
+		maybeExecuteCallback();
+	});
+	Echo.Loader.download(resources, function() {
+		QUnit.ok(check(), "Checking if the control is defined after the second (parallel) download");
+		maybeExecuteCallback();
+	});
+	Echo.Loader.download(resources, function() {
+		Echo.Loader.download(resources, function() {
+			Echo.Loader.download(resources, function() {
+				QUnit.ok(check(),
+					"Checking if the 'download' functions can be executed within the previous 'download' function calls");
+				maybeExecuteCallback();
+			});
+		});
+	});
+
+	Echo.Tests.Controls.TestMultipleDownloads
 };
 
 // checking canvases initialization scenarios
