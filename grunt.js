@@ -450,9 +450,7 @@ module.exports = function(grunt) {
 		"bootstrap-css": function(src, config) {
 			var env = shared.config("env");
 			var domain = (env === "dev" || env === "test") && config && config.domain || "http://cdn.echoenabled.com";
-			return src
-				.replace(/'/g, "\\'")
-				.replace(/(url\(")\.\.([/a-z-.]+"\))/ig, "$1" + domain + "/third-party/bootstrap$2");
+			return src.replace(/(url\(")\.\.([/a-z-.]+"\))/ig, "$1" + ((shared.config("build.stage") === "dev") ? "../" : "") + "third-party/bootstrap$2");
 		},
 		"bootstrap-less": function(src) {
 			var eol = grunt.utils.normalizelf(grunt.utils.linefeed);
