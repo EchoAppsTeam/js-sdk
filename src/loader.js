@@ -333,12 +333,14 @@ Echo.Loader._map = function(list, iterator) {
 
 Echo.Loader._areResourcesReady = function(resources) {
 	var state = Echo.Loader.vars.state;
-	var readyResources = Echo.Loader._map(resources, function(resource) {
+	var resourceReadyFlags = Echo.Loader._map(resources, function(resource) {
 		var url = Echo.Loader.getURL(resource.url);
+		// the 'true' flag will be added into the
+		// result array only when resource is ready
 		return (resource.loaded && resource.loaded()) ||
 			(state.resources[url] && state.resources[url] === "ready");
 	});
-	return resources.length === readyResources.length;
+	return resources.length === resourceReadyFlags.length;
 };
 
 Echo.Loader._initCanvases = function(canvases) {
