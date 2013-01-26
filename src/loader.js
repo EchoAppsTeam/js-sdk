@@ -271,7 +271,7 @@ Echo.Loader.initApplication = function(app) {
 				Echo.Loader.download([{
 					"url": script,
 					"loaded": function() {
-						return Echo.Utils.isComponentDefined(app.component);
+						return Echo.Control.isDefined(app.component);
 					}
 				}], function() {
 					var Application = Echo.Utils.getComponent(app.component);
