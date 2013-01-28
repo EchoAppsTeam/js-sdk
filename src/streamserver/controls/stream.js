@@ -1573,7 +1573,6 @@ stream.methods._normalizeEntry = function(entry) {
 	entry.provider = entry.provider || {};
 	entry.unique = entry.object.id + entry.target.conversationID;
 	entry.parentUnique = entry.target.id + entry.target.conversationID;
-	entry.hasMoreChildren = entry.hasMoreChildren || "false";
 	return entry;
 };
 
