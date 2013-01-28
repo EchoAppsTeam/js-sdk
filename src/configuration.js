@@ -163,7 +163,7 @@ Echo.Configuration.prototype._merge = function(master, slave) {
 			target = $.map(options, function(option) {
 				return self._merge(option);
 			});
-		} else if (typeof options !== "undefined") {
+		} else if (typeof target === "undefined" && typeof options !== "undefined") {
 			target = options;
 		}
 	}

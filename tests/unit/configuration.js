@@ -35,7 +35,9 @@ suite.prototype.data = {
 		"key11": true,
 		"key12": {"a": 1, "b": 2},
 		"key13": {"b": 1, "c": 2},
-		"key14": {"a": 1, "b": 2}
+		"key14": {"a": 1, "b": 2},
+		"key15": "key15.value",
+		"key16": {"key16.a": "value.a", "key16.b": "value.b"}
 	},
 	"overrides": { // master values
 		"key2": {
@@ -50,7 +52,9 @@ suite.prototype.data = {
 		"key11": null,
 		"key12": {},
 		"key13": {"b": 3},
-		"key14": undefined
+		"key14": undefined,
+		"key15": {"key15.a": "value.a", "key15.b": "value.b"},
+		"key16": "key16.value"
 	}
 };
 
@@ -207,6 +211,11 @@ suite.prototype.checkBasicOperations = function(args, note) {
 			note + " Checking if the default config values were merged correctly with non empty object");
 		QUnit.equal(config.get("key14"), overrides["key14"],
 			note + " Checking if the default configuration do not override undefined key (default key is object)");
+
+		QUnit.deepEqual(config.get("key15"), {"key15.a": "value.a", "key15.b": "value.b"},
+			note + " Checking if the default configuration was overridden by the new value with different type (object overrides string)");
+		QUnit.equal(config.get("key16"), "key16.value",
+			note + " Checking if the default configuration was overridden by the new value with different type (string overrides object)");
 	}
 };
 
