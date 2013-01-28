@@ -30,7 +30,6 @@ plugin.init = function() {
 	$.each(actions, function(i, action) {
 		var buttons = plugin.actionButtons[action];
 		if (buttons && $.isArray(buttons)) {
-			if (item.get("data.actor.id") === Echo.UserSession._getDefaultConfig()["fakeIdentityURL"]) return;
 			$.each(buttons, function(j, button) {
 				item.addButtonSpec("Moderation", self["_assemble" + Echo.Utils.capitalize(action) + "Button"](button));
 			});
@@ -510,7 +509,7 @@ plugin.methods._assembleBanButton = function(action) {
 	return function() {
 		var item = this;
 		var isBanned = self._isUserBanned();
-		var visible = item.get("data.actor.id") !== item.user.get("fakeIdentityURL") &&
+		var visible = item.get("data.actor.id") !== item.user.config.get("fakeIdentityURL") &&
 			isBanned ^ (action === "Ban");
 		return {
 			"name": action,
@@ -580,8 +579,7 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		return {
 			"name": action,
 			"label": label,
-			// FIXME: add fakeIdentityURL to UserSession
-			"visible": item.get("data.actor.id") !== item.user.get("fakeIdentityURL") &&
+			"visible": item.get("data.actor.id") !== item.user.config.get("fakeIdentityURL") &&
 				item.user.any("roles", ["administrator"]),
 			"callback": callback,
 			"once": true
