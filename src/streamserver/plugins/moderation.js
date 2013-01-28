@@ -30,6 +30,7 @@ plugin.init = function() {
 	$.each(actions, function(i, action) {
 		var buttons = plugin.actionButtons[action];
 		if (buttons && $.isArray(buttons)) {
+			if (item.get("data.actor.id") === Echo.UserSession._getDefaultConfig()["fakeIdentityURL"]) return;
 			$.each(buttons, function(j, button) {
 				item.addButtonSpec("Moderation", self["_assemble" + Echo.Utils.capitalize(action) + "Button"](button));
 			});
