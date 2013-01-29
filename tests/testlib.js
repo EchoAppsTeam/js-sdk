@@ -408,11 +408,11 @@ Echo.Tests.Stats = {
 	},
 	"getFunctionNames": function(namespace, prefix) {
 		var stats = Echo.Tests.Stats;
-		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope", "Echo.API.Transports.WebSocket"];
+		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope"];
 		var browser = Echo.Utils._browser();
 		var isNotLteIE7 = !(browser.msie && browser.version <= 7);
 		// browser-specific ignore
-		$.map(["WebSocket", "AJAX", "XDomainRequest", "JSONP"], function(transport) {
+		$.map(["AJAX", "XDomainRequest", "JSONP"], function(transport) {
 			if (!Echo.API.Transports[transport].available() || isNotLteIE7 && transport === "JSONP") {
 				ignoreList.push("Echo.API.Transports." + transport);
 			}
