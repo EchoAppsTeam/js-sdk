@@ -54,15 +54,18 @@ exports.init = function(grunt) {
 			version = _.trim(version);
 			if (version < versions.grunt) {
 				failed = true;
-				grunt.log.writeln("grunt version is " + version.red + " but must be at least " + versions.grunt.green + ". Update it by running command `" + "sudo npm update -g grunt".yellow + "`.");
+				grunt.log.writeln("grunt version is " + version.red + " but must be " + versions.grunt.green + ". Update it by running command `" + ("sudo npm install -g grunt@" + versions.grunt).yellow + "`.");
 			} else {
 				grunt.log.ok();
 			}
 			self.exec("jsduck --version | awk '{ print $2; }'", function(version) {
 				version = _.trim(version);
-				if (version < versions.jsduck) {
+				if (!version) {
 					failed = true;
-					grunt.log.writeln("jsduck version is " + version.red + " but must be at least " + versions.jsduck.green + ". Update it by running command `" + "sudo gem update jsduck".yellow + "`.").cyan;
+					grunt.log.writeln("jsduck is not installed. Install it by running command `" + ("sudo gem install jsduck -v " + versions.jsduck).yellow + "`.").cyan;
+				} else if (version < versions.jsduck) {
+					failed = true;
+					grunt.log.writeln("jsduck version is " + version.red + " but must be " + versions.jsduck.green + ". Update it by running command `" + ("sudo gem install jsduck -v " + versions.jsduck).yellow + "`.").cyan;
 				} else {
 					grunt.log.ok();
 				}
