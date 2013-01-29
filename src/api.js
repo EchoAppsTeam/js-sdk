@@ -299,47 +299,6 @@ Echo.API.Transports.JSONP.available = function() {
 };
 
 /**
- * @class Echo.API.Transports.WebSocket
- * @extends Echo.API.Transport
- */
-Echo.API.Transports.WebSocket = utils.inherit(Echo.API.Transport, function(config) {
-	return Echo.API.Transports.WebSocket.parent.constructor.apply(this, arguments);
-});
-
-Echo.API.Transports.WebSocket.prototype._getScheme = function() {
-	return this.config.get("secure") ? "wss:" : "ws:";
-};
-
-Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
-	var self = this;
-	var socket = new (window.WebSocket || window.MozWebSocket)(this._prepareURL());
-	socket.onmessage = function(event) {
-		self.config.get("onData")($.parseJSON(event.data));
-	};
-	socket.onopen = this.config.get("onOpen");
-	socket.onclose = this.config.get("onClose");
-	socket.onerror = function(errorResponse, requestParams) {
-		errorResponse = self._wrapErrorResponse(errorResponse);
-		self.config.get("onError")(errorResponse, requestParams);
-	};
-	return socket;
-};
-
-Echo.API.Transports.WebSocket.prototype.send = function(params) {
-	this.transportObject.send(utils.objectToJSON(params));
-};
-
-Echo.API.Transports.WebSocket.prototype.abort = function() {
-	this.config.get("onClose")();
-};
-
-Echo.API.Transports.WebSocket.available = function() {
-	// FIXME: fix when server will support Web Sockets
-	return false;
-	//return ("WebSocket" in window || "MozWebSocket" in window);
-};
-
-/**
  * @class Echo.API.Request
  * Class implementing API requests logic on the transport layer.
  */
@@ -483,7 +442,7 @@ Echo.API.Request.prototype._getTransport = function() {
 		? userDefinedTransport
 		: function() {
 			var transport;
-			$.each(["WebSocket", "AJAX", "XDomainRequest", "JSONP"], function(i, name) {
+			$.each(["AJAX", "XDomainRequest", "JSONP"], function(i, name) {
 				var available = Echo.API.Transports[name].available({
 					"URL": self.config.get("apiBaseURL"),
 					"method": self.config.get("method")
