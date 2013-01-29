@@ -162,8 +162,8 @@ module.exports = function(grunt) {
 		},
 		check: {
 			versions: {
-				jsduck: "4.2.0",
-				grunt: "v0.3.16"
+				jsduck: "4.6.1",
+				grunt: "v0.3.17"
 			}
 		},
 		clean: {
