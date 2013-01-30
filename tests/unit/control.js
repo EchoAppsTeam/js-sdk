@@ -896,7 +896,7 @@ suite.prototype.async.placeImageContainerClassTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "/tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -916,7 +916,7 @@ suite.prototype.async.placeImageContainerFillClassTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "/tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -937,7 +937,7 @@ suite.prototype.async.placeImageContainerFillDefaultTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "/tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -959,7 +959,7 @@ suite.prototype.async.placeImageContainerFillHorizontalTest = function(callback)
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "/tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -987,7 +987,7 @@ suite.prototype.async.placeImageContainerFillVerticalTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Loader.getURL("../../tests/unit/loadimage/avatar-vertical-100x300.png", false),
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-vertical-100x300.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
 					callback();
@@ -1013,7 +1013,7 @@ suite.prototype.async.horizontalImageQuirksModeTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "/tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -1035,7 +1035,7 @@ suite.prototype.async.verticalImageQuirksModeTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Loader.getURL("../../tests/unit/loadimage/avatar-vertical-100x300.png", false),
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-vertical-100x300.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
 					callback();
