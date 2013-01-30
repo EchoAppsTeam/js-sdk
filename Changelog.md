@@ -1,5 +1,85 @@
 # Echo JS SDK CHANGELOG:
 
+## v3.0.5 - Jan 30, 2013
+
+* We’ve **moved Echo Bootstrap plugin wrappers into the Echo.GUI scope**. The $.echoButton and $.echoModal functions have been removed and you should use Echo.GUI.Button and Echo.GUI.Modal classes instead. In addition to the Button and Modal wrappers we also released a few other wrappers which should help you to work with Bootstrap components. The Echo.GUI classes description can be found in the documentation center:
+
+  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI)
+
+* All the Twitter Bootstrap JS files with the Echo.GUI components are now packed into the “gui.pack.js” file. All the CSS rules (Bootstrap and Echo.GUI components) are packed into the “gui.pack.css”. Please make sure to include these files into dependencies if your plugins or apps use Bootstrap components.
+
+* **jQuery was upgraded from 1.8.2 to 1.9.0 version.** This jQuery upgrade is not fully backwards-compatible by itself. You can find the details about the jQuery 1.9 release with the list of the things which were changed or deprecated here:
+
+  [http://jquery.com/upgrade-guide/1.9/](http://jquery.com/upgrade-guide/1.9/)
+
+* The **“PinboardVisualization” plugin was moved** out of the main StreamServer JS package (streamserver.pack.js) in order to reduce the size of the package. Now the following plugin script should be included directly into the page source to load the “PinboardVisualization” Stream plugin:
+  http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js
+
+  More information about the “PinboardVisualization” plugin can be found in our docs center:
+
+  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization)
+
+* The **events produced by the "Edit" plugin** contained incomplete event names, the "Plugins.Edit" part was missing. The event names generation was fixed and now the proper events are being fired by the "Edit" plugin. If you use subscriptions to the “Edit” plugin events, please update the corresponding code to subscribe using the new event names. More information about the "Edit" plugin itself and the events produced can be found in our docs center:
+
+  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit)
+
+* The **“appkey” validation was moved** from the base Echo.Control to the specific controls which require “appkey” as a mandatory parameter. Now if your app or control doesn’t require an “appkey” (doesn’t interact with StreamServer or IdentityServer directly), the “appkey” can be omitted in the configuration. For you convenience if you need to check the “appkey”, we added the “checkAppKey” function into the Echo.Control class, so your control or application will have access to this function using the “this” property of the class instance. More information about the “checkAppKey” function can be found in our docs center:
+
+  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-method-checkAppKey](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-method-checkAppKey)
+
+* The internal logic of the base **Echo.Control class was updated** to consume less memory while creating a JS class from the manifest declaration. In addition to that the logic of the JS class generation was updated to allow multi-level inheritance based on the manifests overrides.
+
+* The **Echo.Loader.initApplication function was added** to provide the unified way of apps initialization on the page. The function performs initial preparations and initializes the app instance. More information about the function can be found in our docs center:  
+
+  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication)
+
+* **Twitter Bootstrap was upgraded** from 2.2.1 to 2.2.2 version. Bootstrap release notes can be found [here](http://blog.getbootstrap.com/2012/12/08/bootstrap-2-2-2-released/).
+* **QUnit library was upgraded** from 1.10.0 to 1.11.0 version. The QUnit lib changelog can be found [here](https://github.com/jquery/qunit/blob/v1.11.0/History.md).
+
+* **Isotope library** ([http://isotope.metafizzy.co](http://isotope.metafizzy.co)) which is used to power the PinboardVisualization mechanics **was upgraded** from 1.5.21 to 1.5.25 version.
+
+* The **dependencies definition was simplified**. We’ve added an ability to specify the plugin/app/control name instead of the "loaded" function as a part of the dependency object. The “loaded” function was also preserved. You can see the examples here:
+
+  [http://echoappsteam.github.com/js-sdk/docs/#!/guide/howtodevelop_app-section-7](http://echoappsteam.github.com/js-sdk/docs/#!/guide/howtodevelop_app-section-7)
+
+* The internal mechanics of the **Echo.Utils.timestampFromW3CDTF method was slightly updated**. Now this method can convert any string representation of a date supported by the browser. If the ISO representation is not supported (e.g. in IE8, in IE9 in quirks mode, in Safari on a date with reduced precision) then the Echo.Utils.timestampFromW3CDTF will parse that date string as it did before.
+
+* The **child nodes rendering logic was updated** (in case the PinboardVisualization plugin is enabled for the Stream). By design only root nodes can be the source of the media content, thus all HTML tags are stripped out from the child nodes. More details about the PinboardVisualization plugin can be found in our docs:
+
+  [http://wiki.aboutecho.com/w/page/30181308/Echo%20Application%20-%20Echo%20Stream%20Client#Plugins.PinboardVisualization](http://wiki.aboutecho.com/w/page/30181308/Echo%20Application%20-%20Echo%20Stream%20Client#Plugins.PinboardVisualization)
+
+* The **Echo.Utils.htmlTextTruncate function behavior was changed**. Now if the truncation hits the middle of the word, the word itself is preserved and truncation starts right after this word to improve the text readability.
+
+* The **YepNope library** ([www.yepnopejs.com](http://www.yepnopejs.com)) which we use to download dependencies for controls, apps and plugins was moved under the local Echo scope to avoid conflicts in case another version of the loader exists on the page.
+
+* The **Echo.Configuration class logic was updated** to prevent incoming data damaging during the operations with the config instance. In some cases when you assign the data to the config field, the incoming object was also modified. Now the Echo.Configuration class instance works with the copy of the incoming data, thus leaving incoming data untouched.
+
+* The logic of the **Echo.App class was updated** in order to proxy the configuration parameters into the internal applications initialized using the "initComponent" function. Now the Echo.App class tries to populate the current instance configuration based on the default manifest config keys and the parent object config values.
+
+* The contract of the **Echo.Plugin.isDefined function was updated**. In addition to the plugin manifest definition, the function can also accept the full name of the plugin to check if the plugin was already defined. Now the Echo.App.isDefined, Echo.Plugin.isDefined and Echo.Control.isDefined has the same contract.
+
+* The **Echo.Loader.initEnvironment function became public**. The function helps to initialize Echo JS environment on the page by downloading the necessary scripts. More information about the function can be found in our docs center:
+
+  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initEnvironment](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initEnvironment)
+
+* The internal logic of the **Echo.Loader.download function was updated** to handle the various cases of multiple resource loading, nested execution of the same function from the callback, same resource multiple loading, etc. More information about the Echo.Loader.download function can be found in our docs center:
+
+  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-download](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-download)
+
+* We’ve **changed the avatars display rules** in our components. Prior to this change we supported square avatars only and this could result in distortion of non-square images. This limitation is now removed and the avatar is shrinked proportionally, so the image is displayed without any deformation.
+
+  The Echo.Utils.loadImage and Echo.Control.placeImage methods were also modified. The Echo.Control.placeImage method now positions and shrinks the avatar correctly inside the given container. We recommend you to use that method when you need to insert images of different sizes and proportions into container with fixed dimensions.
+
+  A detailed description of these functions can be found in our documentation center:
+
+  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage)
+  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-method-placeImage](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage)
+
+* The context generation machinery became a part of the Echo.Events library interface. You can call the **Echo.Events.newContextId function to generate a new unique context ID string**. The function also supports generation of the nested contexts (the parent context should be passed as a first argument). More information about the function can be found in our docs center:
+
+  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Events-static-method-newContextId](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Events-static-method-newContextId)
+
+
 ## v3.0.4 - Nov 29, 2012
 
 - The most important update which we performed within this release is the minification of the JS
