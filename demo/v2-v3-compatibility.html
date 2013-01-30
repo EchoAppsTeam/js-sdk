@@ -19,7 +19,7 @@
             "serverBaseURL": "http://api.echoenabled.com/v1",
             "busName": "jskit"
         });
-        var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
+        var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
     </script>
 </head>
 <body>
@@ -160,7 +160,7 @@
                 new Echo.StreamServer.Controls.Stream({
                     "target": document.getElementById("stream-v3"),
                     "query": "childrenof:http://example.com/* itemsPerPage:1",
-                    "appkey": "test.js-kit.com",
+                    "appkey": "test.aboutecho.com",
                     "item": {
                         "viaLabel": { "icon": true, "text": true }
                     },
@@ -227,7 +227,7 @@
             <script type="text/javascript">
                 new Echo.StreamServer.Controls.Submit({
                     "target": document.getElementById("submit-form-v3"),
-                    "appkey": "test.js-kit.com",
+                    "appkey": "test.aboutecho.com",
                     "targetURL": "http://example.com/test-js-sdk",
                     "plugins": [{
                         "name": "FormAuth",

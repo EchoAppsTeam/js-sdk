@@ -87,7 +87,7 @@
 		}, function(data) {
 			new Echo.StreamServer.Controls.FacePile({
 				"target": document.getElementById("ulist-s1"),
-				"appkey": "test.js-kit.com",
+				"appkey": "test.aboutecho.com",
 				"data": {"entries": data.entries},
 				"initialUsersCount": 5,
 				"suffixText": " commented on aboutecho.com",
@@ -96,7 +96,7 @@
 
 			new Echo.StreamServer.Controls.FacePile({
 				"target": document.getElementById("ulist-s2"),
-				"appkey": "test.js-kit.com",
+				"appkey": "test.aboutecho.com",
 				"data": {"itemsPerPage": 3, "entries": data.entries},
 				"totalUsersCount": 100,
 				"item": {"avatar": false, "text": true}
@@ -104,7 +104,7 @@
 
 			new Echo.StreamServer.Controls.FacePile({
 				"target": document.getElementById("ulist-s3"),
-				"appkey": "test.js-kit.com",
+				"appkey": "test.aboutecho.com",
 				"data": {"itemsPerPage": 6, "entries": data.entries},
 				"item": {"avatar": true, "text": false}
 			});

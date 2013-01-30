@@ -11,7 +11,7 @@ var $ = jQuery;
  * 	new Echo.StreamServer.Controls.Submit({
  * 		"target": document.getElementById("submit"),
  * 		"targetURL": "http://example.com/submit",
- * 		"appkey": "test.js-kit.com",
+ * 		"appkey": "test.aboutecho.com",
  * 	});
  *
  * @extends Echo.Control
