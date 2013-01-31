@@ -75,14 +75,15 @@ Echo.Control.create = function(manifest) {
 	// prevent multiple re-definitions
 	if (Echo.Control.isDefined(manifest)) return control;
 
-	var parent = manifest.inherits || Echo.Control;
-	var constructor = Echo.Utils.inherit(parent, function(config) {
+	var _manifest = this._merge(manifest, manifest.inherits &amp;&amp; manifest.inherits._manifest);
+
+	var constructor = Echo.Utils.inherit(this, function(config) {
 
 		// perform basic validation of incoming params
-		if (!config || !config.target || !config.appkey) {
+		if (!config || !config.target) {
 			Echo.Utils.log({
 				&quot;type&quot;: &quot;error&quot;,
-				&quot;component&quot;: manifest.name,
+				&quot;component&quot;: _manifest.name,
 				&quot;message&quot;: &quot;Unable to initialize control, config is invalid&quot;,
 				&quot;args&quot;: {&quot;config&quot;: config}
 			});
@@ -90,30 +91,27 @@ Echo.Control.create = function(manifest) {
 		}
 
 		this.data = config.data || {};
-		this.name = manifest.name;
+		this.name = _manifest.name;
 		this.config = config;
 		this._init(this._initializers.get(&quot;init&quot;));
 	});
 
 	var prototype = constructor.prototype;
-	if (manifest.methods) {
-		$.extend(prototype, manifest.methods);
+	if (_manifest.methods) {
+		$.extend(prototype, _manifest.methods);
 	}
-	if (manifest.templates) {
-		prototype.templates = $.extend({}, prototype.templates, manifest.templates);
-	}
+	prototype.templates = _manifest.templates;
+	prototype.renderers = _manifest.renderers;
+	constructor._manifest = _manifest;
 
 	// define default language var values with the lowest priority available
-	var labels = $.extend({}, prototype.defaults.labels, manifest.labels);
-	Echo.Labels.set(labels, manifest.name, true);
-
-	constructor.manifest = manifest;
+	Echo.Labels.set(_manifest.labels, _manifest.name, true);
 
 	// define CSS class and prefix for the class
-	prototype.cssClass = manifest.name.toLowerCase().replace(/-/g, &quot;&quot;).replace(/\./g, &quot;-&quot;);
+	prototype.cssClass = _manifest.name.toLowerCase().replace(/-/g, &quot;&quot;).replace(/\./g, &quot;-&quot;);
 	prototype.cssPrefix = prototype.cssClass + &quot;-&quot;;
 
-	Echo.Utils.set(window, manifest.name, $.extend(constructor, control));
+	Echo.Utils.set(window, _manifest.name, $.extend(constructor, control));
 	return constructor;
 };
 
@@ -160,7 +158,7 @@ Echo.Control.isDefined = function(manifest) {
 		? manifest
 		: manifest.name;
 	var component = Echo.Utils.get(window, name);
-	return !!(component &amp;&amp; component.manifest);
+	return !!(component &amp;&amp; component._manifest);
 };
 
 Echo.Control.prototype.templates = {&quot;message&quot;: {}};
@@ -175,43 +173,969 @@ Echo.Control.prototype.templates.message.full =
 		'&lt;/span&gt;' +
 	'&lt;/div&gt;';
 
-Echo.Control.prototype.defaults = {};
-
-Echo.Control.prototype.defaults.vars = {
-	&quot;plugins&quot;: {},
-	&quot;extension&quot;: {&quot;template&quot;: []},
-	&quot;renderers&quot;: {},
-	&quot;parentRenderers&quot;: {},
-	&quot;subscriptionIDs&quot;: {}
+<span id='Echo-Control-method-get'>/**
+</span> * Accessor method to get specific field.
+ *
+ * This function returns the corresponding value of the given key
+ * or the default value if specified in the second argument.
+ *
+ * @param {String} key
+ * Defines the key for data extraction.
+ *
+ * @param {Object} [defaults]
+ * Default value if no corresponding key was found in the config.
+ * Note: only the 'undefined' JS statement triggers the default value usage.
+ * The false, null, 0, [] are considered as a proper value.
+ *
+ * @return {Mixed}
+ * The corresponding value found in the object.
+ */
+Echo.Control.prototype.get = function(key, defaults) {
+	return Echo.Utils.get(this, key, defaults);
 };
 
-Echo.Control.prototype.defaults.config = {
+<span id='Echo-Control-method-set'>/**
+</span> * Setter method to define specific object value.
+ *
+ * This function allows to define the value for the corresponding object field.
+ *
+ * @param {String} key
+ * Defines the key where the given data should be stored.
+ *
+ * @param {Mixed} value
+ * The corresponding value which should be defined for the key.
+ */
+Echo.Control.prototype.set = function(key, value) {
+	return Echo.Utils.set(this, key, value);
+};
+
+<span id='Echo-Control-method-remove'>/**
+</span> * Method to remove a specific object field.
+ *
+ * This function allows to remove the value associated with the given key.
+ * If the key contains a complex structure (such as objects or arrays),
+ * it will be removed as well.
+ *
+ * @param {String} key
+ * Specifies the key which should be removed from the object.
+ *
+ * @return {Boolean}
+ * Indicates that the value associated with the given key was removed.
+ */
+Echo.Control.prototype.remove = function(key) {
+	return Echo.Utils.remove(this, key);
+};
+
+<span id='Echo-Control-method-render'>/**
+</span> * Rendering function which prepares the DOM representation of the control
+ * and appends it to the control target element. This function is also used to
+ * re-render the control.
+ *
+ * @return {Object}
+ * Control DOM representation
+ */
+Echo.Control.prototype.render = function() {
+	var view = this.view;
+	var topic = view.rendered() ? &quot;onRerender&quot; : &quot;onRender&quot;;
+	if (!this.dependent() &amp;&amp; !view.rendered()) {
+		this.config.get(&quot;target&quot;).addClass(&quot;echo-sdk-ui&quot;);
+	}
+	var content = view.render({
+		&quot;template&quot;: this._compileTemplate()
+	});
+	this.config.get(&quot;target&quot;).empty().append(content);
+	this.events.publish({&quot;topic&quot;: topic});
+	return content;
+};
+
+<span id='Echo-Control-method-substitute'>/**
+</span> * @inheritdoc Echo.Utils#substitute
+ */
+Echo.Control.prototype.substitute = function(args) {
+	var instructions = this._getSubstitutionInstructions();
+	args.data = args.data || this.get(&quot;data&quot;);
+	args.instructions = args.instructions
+		? $.extend(instructions, args.instructions)
+		: instructions;
+	return Echo.Utils.substitute(args);
+};
+
+<span id='Echo-Control-method-invoke'>/**
+</span> * @inheritdoc Echo.Utils#invoke
+ */
+Echo.Control.prototype.invoke = function(mixed, context) {
+	return Echo.Utils.invoke(mixed, context || this);
+};
+
+<span id='Echo-Control-method-refresh'>/**
+</span> * Basic method to reinitialize control.
+ *
+ * Function can be overriden by class descendants implying specific logic.
+ */
+Echo.Control.prototype.refresh = function() {
+
+	// destroy all nested controls, but preserve self
+	this.destroy({&quot;self&quot;: false});
+
+	// restore originally defined data
+	this.set(&quot;data&quot;, this.config.get(&quot;data&quot;, {}));
+
+	this._init(this._initializers.get(&quot;refresh&quot;));
+};
+
+<span id='Echo-Control-method-ready'>/**
+</span> * @method ready
+ * Should be called in the &quot;init&quot; function of the control manifest to
+ * show that the control was initialized. Basically it is the indicator
+ * of the control to be ready and operable.
+ */
+
+<span id='Echo-Control-method-destroy'>/**
+</span> * Unified method to destroy control.
+ */
+Echo.Control.prototype.destroy = function(config) {
+	Echo.Events.publish({
+		&quot;topic&quot;: &quot;Echo.Control.onDestroy&quot;,
+		&quot;bubble&quot;: false,
+		&quot;context&quot;: this.config.get(&quot;context&quot;),
+		&quot;data&quot;: $.extend({&quot;producer&quot;: this, &quot;self&quot;: true}, config)
+	});
+};
+
+<span id='Echo-Control-method-dependent'>/**
+</span> * Method checks if the control was initialized from another control.
+ *
+ * @return {Boolean}
+ */
+Echo.Control.prototype.dependent = function() {
+	return !!this.config.get(&quot;parent&quot;);
+};
+
+<span id='Echo-Control-method-showMessage'>/**
+</span> * Renders info message in the target container.
+ *
+ * @param {Object} data
+ * Object containing info message information.
+ *
+ * @param {String} [data.layout]
+ * Specifies the type of message layout. Can be set to &quot;compact&quot; or &quot;full&quot;.
+ *
+ * @param {HTMLElement} [data.target]
+ * Specifies the target container.
+ */
+Echo.Control.prototype.showMessage = function(data) {
+	if (!this.config.get(&quot;infoMessages.enabled&quot;)) return;
+	var target = data.target || this.config.get(&quot;target&quot;);
+	var layout = data.layout || this.config.get(&quot;infoMessages.layout&quot;);
+	var view = this.view.fork();
+	target.empty().append(view.render({
+		&quot;data&quot;: data,
+		&quot;template&quot;: this.templates.message[layout]
+	}));
+};
+
+<span id='Echo-Control-method-showError'>/**
+</span> * Renders error message in the target container.
+ *
+ * @param {Object} data
+ * Object containing error message information.
+ *
+ * @param {Object} options
+ * Object containing display options.
+ */
+Echo.Control.prototype.showError = function(data, options) {
+	var self = this;
+	if (typeof options.retryIn === &quot;undefined&quot;) {
+		var label = this.labels.get(&quot;error_&quot; + data.errorCode);
+		var message = label === &quot;error_&quot; + data.errorCode
+			? &quot;(&quot; + data.errorCode + &quot;) &quot; + (data.errorMessage || &quot;&quot;)
+			: label;
+		this.showMessage({
+			&quot;type&quot;: options.critical ? &quot;error&quot; : &quot;loading&quot;,
+			&quot;message&quot;: message,
+			&quot;target&quot;: options.target
+		});
+	} else if (!options.retryIn &amp;&amp; options.request.retryTimer) {
+		this.showMessage({
+			&quot;type&quot;: &quot;loading&quot;,
+			&quot;message&quot;: this.labels.get(&quot;retrying&quot;),
+			&quot;target&quot;: options.target
+		});
+	} else {
+		var secondsLeft = options.retryIn / 1000;
+		var ticker = function() {
+			if (!secondsLeft) {
+				return;
+			}
+			var label = self.labels.get(&quot;error_&quot; + data.errorCode, {&quot;seconds&quot;: secondsLeft--});
+			self.showMessage({
+				&quot;type&quot;: &quot;loading&quot;,
+				&quot;message&quot;: label,
+				&quot;target&quot;: options.target
+			});
+		};
+		options.request.retryTimer = setInterval(ticker, 1000);
+		ticker();
+	}
+};
+
+<span id='Echo-Control-method-getPlugin'>/**
+</span> * Accessor function allowing to obtain the plugin by its name.
+ *
+ * @param {String} name
+ * Specifies plugin name.
+ *
+ * @return {Object}
+ * Instance of the corresponding plugin.
+ */
+Echo.Control.prototype.getPlugin = function(name) {
+	return this.plugins[name];
+};
+
+<span id='Echo-Control-method-template'>/**
+</span> * Method to get the control template during rendering procedure. Can be overriden.
+ */
+Echo.Control.prototype.template = function() {
+	return this.invoke(this.templates.main);
+};
+
+<span id='Echo-Control-method-parentRenderer'>/**
+</span> * Method to call the parent renderer function, which was extended using
+ * the Echo.Control.extendRenderer function.
+ *
+ * @param {String} name
+ * Renderer name.
+ *
+ * @param {Object} args
+ * Arguments to be proxied to the parent renderer from the overriden one.
+ *
+ * @return {HTMLElement}
+ * Result of parent renderer function call.
+ */
+Echo.Control.prototype.parentRenderer = function(name, args) {
+	var renderer = this.parentRenderers[name];
+	return renderer
+		? renderer.apply(this, args)
+		: args[0]; // return DOM element
+};
+
+<span id='Echo-Control-method-extendTemplate'>/**
+</span> * Method to extend the template of the particular control.
+ *
+ * @param {String} action
+ * One of the following actions:
+ *
+ * + &quot;insertBefore&quot;
+ * + &quot;insertAfter&quot;
+ * + &quot;insertAsFirstChild&quot;
+ * + &quot;insertAsLastChild&quot;
+ * + &quot;replace&quot;
+ * + &quot;remove&quot;
+ *
+ * @param {String} anchor
+ * Element name which is a subject of a transformation application.
+ *
+ * @param {String} [html]
+ * The content of a transformation to be applied.
+ * This param is required for all actions except &quot;remove&quot;.
+ */
+Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
+	this.extension.template.push({&quot;action&quot;: action, &quot;anchor&quot;: anchor, &quot;html&quot;: html});
+};
+
+/*
+ * Method extending the paticular renderer with defined function.
+ *
+ * @param {String} name
+ * Renderer name to be extended.
+ *
+ * @param {Function} renderer
+ * Renderer function to be applied.
+ */
+Echo.Control.prototype.extendRenderer = function(name, renderer) {
+	var control = this;
+	var extension = this.extension.renderers;
+	var _renderer = extension[name] || this.renderers[name];
+	extension[name] = function() {
+		control.parentRenderers[name] = _renderer;
+		return renderer.apply(control, arguments);
+	};
+};
+
+<span id='Echo-Control-method-log'>/**
+</span> * @inheritdoc Echo.Utils#log
+ */
+Echo.Control.prototype.log = function(data) {
+	Echo.Utils.log($.extend(data, {&quot;component&quot;: this.name}));
+};
+
+<span id='Echo-Control-method-getRelativeTime'>/**
+</span> * Method to calculate the relative time passed since the given date and time.
+ *
+ * @param {Mixed} datetime
+ * The date to calculate how much time passed since that moment. The function recognizes
+ * the date in W3CDFT or UNIX timestamp formats.
+ *
+ * @return {String}
+ * String which represents the date and time in the relative format.
+ */
+Echo.Control.prototype.getRelativeTime = function(datetime) {
+	if (!datetime) return;
+	var self = this;
+	var ts = typeof datetime === &quot;string&quot;
+		? Echo.Utils.timestampFromW3CDTF(datetime)
+		: datetime;
+	if (!ts) return;
+	var d = new Date(ts * 1000);
+	var now = (new Date()).getTime();
+	var when;
+	var diff = Math.floor((now - d.getTime()) / 1000);
+	var dayDiff = Math.floor(diff / 86400);
+	var getAgo = function(ago, period) {
+		return self.labels.get(period + (ago === 1 ? &quot;&quot; : &quot;s&quot;) + &quot;Ago&quot;, {&quot;number&quot;: ago});
+	};
+
+	if (isNaN(dayDiff) || dayDiff &lt; 0 || dayDiff &gt;= 365) {
+		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+	} else if (diff &lt; 60) {
+		when = getAgo(diff, 'second');
+	} else if (diff &lt; 60 * 60) {
+		diff = Math.floor(diff / 60);
+		when = getAgo(diff, 'minute');
+	} else if (diff &lt; 60 * 60 * 24) {
+		diff = Math.floor(diff / (60 * 60));
+		when = getAgo(diff, 'hour');
+	} else if (diff &lt; 60 * 60 * 48) {
+		when = this.labels.get(&quot;yesterday&quot;);
+	} else if (dayDiff &lt; 7) {
+		when = getAgo(dayDiff, 'day');
+	} else if (dayDiff &lt; 14) {
+		when = this.labels.get(&quot;lastWeek&quot;);
+	} else if (dayDiff &lt; 30) {
+		diff =  Math.floor(dayDiff / 7);
+		when = getAgo(diff, 'week');
+	} else if (dayDiff &lt; 60) {
+		when = this.labels.get(&quot;lastMonth&quot;);
+	} else if (dayDiff &lt; 365) {
+		diff =  Math.floor(dayDiff / 31);
+		when = getAgo(diff, 'month');
+	}
+	return when;
+};
+
+<span id='Echo-Control-method-placeImage'>/**
+</span> * Method to place an image inside the container.
+ * 
+ * This method removes any container's content and creates a new image HTML element 
+ * inside the container. If the image is not available on the given URL then this function
+ * loads the default image that is passed as a defaultImage argument.
+ * 
+ * The method adds special classes to the container, and implements some
+ * workaround for IE in quirks mode.
+ * 
+ * @param {Object} args
+ * The object which contains attributes for the image.
+ * 
+ * @param {HTMLElement} args.container
+ * Specifies the target container.
+ *
+ * @param {String} args.image
+ * The URL of the image to be loaded.
+ *
+ * @param {String} [args.defaultImage]
+ * The URL of the default image.
+ *
+ * @param {Function} [args.onload]
+ * The callback which fires when image is loaded.
+ *
+ * @param {Function} [args.onerror]
+ * The callback which fires when loading image fails.
+ * 
+ * @param {String} [args.position=&quot;fill&quot;]
+ * The position of an image inside the container. The only &quot;fill&quot; is implemented now. 
+*/
+Echo.Control.prototype.placeImage = function(args) {
+	var position = args.position || &quot;fill&quot;;
+	
+	args.container.addClass(&quot;echo-image-container&quot;);
+	if (position === &quot;fill&quot;) {
+		args.container.addClass(&quot;echo-image-position-fill&quot;);
+	}
+	
+	var image = Echo.Utils.loadImage({
+		&quot;image&quot;: args.image,
+		&quot;defaultImage&quot;: args.defaultImage,
+		&quot;onerror&quot;: args.onerror,
+		&quot;onload&quot;: function () {
+			if (document.compatMode !== &quot;CSS1Compat&quot;) {
+				$(this).addClass(this.width &lt; this.height 
+						? &quot;echo-image-stretched-vertically&quot; 
+						: &quot;echo-image-stretched-horizontally&quot;);
+			}
+			$.isFunction(args.onload) &amp;&amp; args.onload.apply(this, arguments);
+		}
+	});
+	args.container.empty().append(image);
+};
+
+<span id='Echo-Control-method-checkAppKey'>/**
+</span> * Method to check the presense of the &quot;appkey&quot; configuration parameter and render
+ * the error message (inside the element specified as the &quot;target&quot; in the control
+ * configuration) in case the &quot;appkey&quot; is missing in the config.
+ *
+ * @return {Boolean}
+ * The boolean result of the &quot;appkey&quot; config parameter check.
+ */
+Echo.Control.prototype.checkAppKey = function() {
+	if (!this.config.get(&quot;appkey&quot;)) {
+		this.showError({&quot;errorCode&quot;: &quot;incorrect_appkey&quot;}, {&quot;critical&quot;: true});
+		return false;
+	}
+	return true;
+};
+
+Echo.Control.prototype._init = function(subsystems) {
+	var control = this;
+	if (!subsystems || !subsystems.length) return;
+	var func = subsystems.shift();
+	var parts = func.split(&quot;:&quot;);
+	var subsystem = {
+		&quot;name&quot;: parts[0],
+		&quot;init&quot;: control._initializers[parts[0]],
+		&quot;type&quot;: parts[1] || &quot;sync&quot;
+	};
+	if (subsystem.type === &quot;sync&quot;) {
+		var result = subsystem.init.call(control);
+		if (typeof result !== &quot;undefined&quot;) {
+			control[subsystem.name] = result;
+		}
+		control._init(subsystems);
+	} else {
+		subsystem.init.call(control, function() {
+			control._init(subsystems);
+		});
+	}
+};
+
+Echo.Control.prototype._initializers = {};
+
+Echo.Control.prototype._initializers.list = [
+	[&quot;vars&quot;,               [&quot;init&quot;, &quot;refresh&quot;]],
+	[&quot;config&quot;,             [&quot;init&quot;]],
+	[&quot;css&quot;,                [&quot;init&quot;]],
+	[&quot;events&quot;,             [&quot;init&quot;]],
+	[&quot;subscriptions&quot;,      [&quot;init&quot;]],
+	[&quot;labels&quot;,             [&quot;init&quot;]],
+	[&quot;view&quot;,               [&quot;init&quot;]],
+	[&quot;loading&quot;,            [&quot;init&quot;, &quot;refresh&quot;]],
+	[&quot;dependencies:async&quot;, [&quot;init&quot;]],
+	[&quot;user:async&quot;,         [&quot;init&quot;, &quot;refresh&quot;]],
+	[&quot;plugins:async&quot;,      [&quot;init&quot;, &quot;refresh&quot;]],
+	[&quot;init:async&quot;,         [&quot;init&quot;, &quot;refresh&quot;]],
+	[&quot;ready&quot;,              [&quot;init&quot;]],
+	[&quot;refresh&quot;,            [&quot;refresh&quot;]]
+];
+
+Echo.Control.prototype._initializers.get = function(action) {
+	return Echo.Utils.foldl([], this.list, function(initializer, acc) {
+		if (~$.inArray(action, initializer[1])) {
+			acc.push(initializer[0]);
+		}
+	});
+};
+
+Echo.Control.prototype._initializers.vars = function() {
+	// we need to apply default field values to the control,
+	// but we need to avoid any references to the default var objects,
+	// thus we copy and recursively merge default values separately
+	// and apply default values to the given instance non-recursively
+	$.extend(this, $.extend(true, {}, this._manifest(&quot;vars&quot;)));
+};
+
+Echo.Control.prototype._initializers.config = function() {
+	var control = this;
+	var config = this._manifest(&quot;config&quot;);
+	return new Echo.Configuration(this.config, config,
+		function(key, value) {
+			return config.normalizer &amp;&amp; config.normalizer[key]
+				? config.normalizer[key].call(this, value, control)
+				: value;
+		});
+};
+
+Echo.Control.prototype._initializers.events = function() {
+	var control = this;
+	var prepare = function(params) {
+		params.context = params.context || control.config.get(&quot;context&quot;);
+		if (params.handler) {
+			params.handler = $.proxy(params.handler, control);
+		}
+		return params;
+	};
+	return {
+		&quot;publish&quot;: function(params) {
+			params.topic = control.name + &quot;.&quot; + params.topic;
+			params.data = params.data || {};
+
+			// process data through the normalization function if defined
+			if (control._prepareEventParams) {
+				params.data = control._prepareEventParams(params.data);
+			}
+
+			Echo.Events.publish(prepare(params));
+		},
+		&quot;subscribe&quot;: function(params) {
+			var handlerId = Echo.Events.subscribe(prepare(params));
+			control.subscriptionIDs[handlerId] = true;
+			return handlerId;
+		},
+		&quot;unsubscribe&quot;: function(params) {
+			if (params &amp;&amp; params.handlerId) {
+				delete control.subscriptionIDs[params.handlerId];
+			}
+			Echo.Events.unsubscribe(prepare(params));
+		}
+	};
+};
+
+Echo.Control.prototype._initializers.subscriptions = function() {
+	var control = this;
+	$.each(control._manifest(&quot;events&quot;), function subscribe(topic, data) {
+		if ($.isArray(data) &amp;&amp; data.length) {
+			subscribe(topic, data.shift());
+			data.length &amp;&amp; subscribe(topic, data);
+		} else {
+			data = $.isFunction(data) ? {&quot;handler&quot;: data} : data;
+			control.events.subscribe($.extend({&quot;topic&quot;: topic}, data));
+		}
+	});
+
+	// we need two subscriptions here, because the &quot;Echo.Control.onDataInvalidate&quot; event
+	// may be published by the nested controls (in this case the event is not broadcasted
+	// to the &quot;global&quot; context) and by the standalone control to notify other controls
+	// (not related directly) about the need to invalidate the data (in this case
+	// the &quot;global&quot; context is used)
+	$.map([&quot;global&quot;, control.config.get(&quot;context&quot;)], function(context) {
+		control.events.subscribe({
+			&quot;topic&quot;: &quot;Echo.Control.onDataInvalidate&quot;,
+			&quot;context&quot;: context,
+			&quot;handler&quot;: function() {
+				if (control.get(&quot;request&quot;)) {
+					control.get(&quot;request&quot;).send({&quot;force&quot;: true});
+				}
+			}
+		});
+	});
+
+	// call &quot;ready&quot; callback after the control was rendered
+	// note: &quot;ready&quot; callback is executed only once!
+	if (control.config.get(&quot;ready&quot;)) {
+		control.events.subscribe({
+			&quot;topic&quot;: control.name + &quot;.onReady&quot;,
+			&quot;once&quot;: true,
+			&quot;handler&quot;: function() {
+				control.config.get(&quot;ready&quot;).call(control);
+			}
+		});
+	}
+
+	// register destroy handlers
+	control.events.subscribe({
+		&quot;topic&quot;: &quot;Echo.Control.onDestroy&quot;,
+		&quot;handler&quot;: function(topic, data) {
+			var isProducer = control.config.get(&quot;context&quot;) ===
+						data.producer.config.get(&quot;context&quot;);
+			// destroy plugins
+			$.map(control.config.get(&quot;pluginsOrder&quot;), function(name) {
+				var plugin = control.plugins[name];
+				if (plugin &amp;&amp; plugin.destroy) {
+					plugin.destroy();
+				}
+			});
+
+			// apply control-specific logic
+			if (control._manifest(&quot;destroy&quot;)) {
+				control._manifest(&quot;destroy&quot;).call(control, data.producer);
+			}
+
+			// abort and cleanup data request machinery
+			var request = control.get(&quot;request&quot;);
+			if (request) {
+				request.abort();
+				control.remove(&quot;request&quot;);
+			}
+
+			// a. keep subscriptions in case of refresh (if &quot;self&quot; is false)
+			// b. unsubscribe from all events when:
+			//     - we want to destroy the whole control
+			//     - the control is a dependent one
+			if (data.self || !isProducer) {
+				$.each(control.subscriptionIDs, function(handlerId) {
+					control.events.unsubscribe({&quot;handlerId&quot;: handlerId});
+				});
+			}
+
+			// cleanup the target element of the control
+			// which produced the current &quot;destroy&quot; action
+			if (isProducer) {
+				control.config.get(&quot;target&quot;).empty();
+			}
+		}
+	});
+
+	// subscribe all root level controls to the user login/logout event
+	// and call the &quot;refresh&quot; control method
+	if (!control.dependent()) {
+		control.events.subscribe({
+			&quot;topic&quot;: &quot;Echo.UserSession.onInvalidate&quot;,
+			&quot;context&quot;: &quot;global&quot;,
+			&quot;handler&quot;: control.refresh
+		});
+	}
+};
+
+Echo.Control.prototype._initializers.labels = function() {
+	return new Echo.Labels(this.config.get(&quot;labels&quot;), this.name);
+};
+
+Echo.Control.prototype._initializers.css = function() {
+	var self = this;
+	this.config.get(&quot;target&quot;).addClass(this.cssClass);
+	$.map(this._manifest(&quot;css&quot;), function(spec) {
+		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
+		Echo.Utils.addCSS(self.substitute({&quot;template&quot;: spec.code}), spec.id);
+	});
+};
+
+Echo.Control.prototype._initializers.view = function() {
+	var control = this;
+	return new Echo.View({
+		&quot;data&quot;: this.get(&quot;data&quot;),
+		&quot;cssPrefix&quot;: this.get(&quot;cssPrefix&quot;),
+		&quot;renderer&quot;: function(args) {
+			var renderer = control.extension.renderers[args.name] ||
+					control.renderers[args.name];
+			return renderer
+				? renderer.call(control, args.target, args.extra)
+				: args.target;
+		},
+		&quot;substitutions&quot;: this._getSubstitutionInstructions()
+	});
+};
+
+Echo.Control.prototype._initializers.loading = function() {
+	this.showMessage({
+		&quot;type&quot;: &quot;loading&quot;,
+		&quot;message&quot;: this.labels.get(&quot;loading&quot;)
+	});
+};
+
+Echo.Control.prototype._initializers.dependencies = function(callback) {
+	this._loadScripts(this._manifest(&quot;dependencies&quot;), callback);
+};
+
+Echo.Control.prototype._initializers.user = function(callback) {
+	var control = this;
+	if (!this.config.get(&quot;appkey&quot;)) {
+		callback.call(control);
+		return;
+	}
+	if (this.config.get(&quot;user&quot;)) {
+		this.user = this.config.get(&quot;user&quot;);
+		callback.call(control);
+	} else {
+		Echo.UserSession({
+			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
+			&quot;ready&quot;: function() {
+				control.user = this;
+				callback.call(control);
+			}
+		});
+	}
+};
+
+Echo.Control.prototype._initializers.plugins = function(callback) {
+	var control = this;
+	this._loadPluginScripts(function() {
+		$.map(control.config.get(&quot;pluginsOrder&quot;), function(name) {
+			var Plugin = Echo.Plugin.getClass(name, control.name);
+			if (Plugin) {
+				var instance = new Plugin({&quot;component&quot;: control});
+				if (instance.enabled()) {
+					instance.init();
+					control.plugins[name] = instance;
+				}
+			}
+		});
+		callback.call(control);
+	});
+};
+
+Echo.Control.prototype._initializers.init = function(callback) {
+
+	// this function should be called inside the &quot;init&quot; function
+	// to indicate that the control was initialized and is now ready
+	this.ready = callback;
+
+	this._manifest(&quot;init&quot;).call(this);
+};
+
+Echo.Control.prototype._initializers.ready = function() {
+	this.events.publish({&quot;topic&quot;: &quot;onReady&quot;});
+};
+
+Echo.Control.prototype._initializers.refresh = function() {
+	this.events.publish({&quot;topic&quot;: &quot;onRefresh&quot;});
+};
+
+Echo.Control._merge = function(manifest, parentManifest) {
+	var self = this;
+	parentManifest = parentManifest || this._manifest;
+	// normalize CSS definition before merging to have the same format
+	var normalizeCSS = function(manifest) {
+		manifest.css = manifest.css || &quot;&quot;;
+		return $.isArray(manifest.css) ? manifest.css : [{&quot;id&quot;: manifest.name, &quot;code&quot;: manifest.css}];
+	};
+	manifest.css = normalizeCSS(manifest);
+	parentManifest.css = normalizeCSS(parentManifest);
+	var merged = Echo.Utils.foldl({}, manifest, function(val, acc, name) {
+		acc[name] = name in parentManifest &amp;&amp; self._merge[name]
+			? self._merge[name](parentManifest[name], val)
+			: val;
+	});
+	return $.extend(true, {}, parentManifest, merged);
+};
+
+var _wrapper = function(parent, own) {
+	return function() {
+		var tmp = this.parent;
+		this.parent = parent;
+		var ret = own.apply(this, arguments);
+		this.parent = tmp;
+		return ret;
+	};
+};
+
+Echo.Control._merge.methods = function(parent, own) {
+	return Echo.Utils.foldl({}, own, function(method, acc, name) {
+		acc[name] = name in parent
+			? _wrapper(parent[name], method)
+			: method;
+	});
+};
+
+Echo.Control._merge.dependencies = function(parent, own) {
+	return parent.concat(own);
+};
+
+Echo.Control._merge.css = function(parent, own) {
+	return parent.concat(own);
+};
+
+Echo.Control._merge.events = function(parent, own) {
+	return Echo.Utils.foldl({}, own, function(data, acc, topic) {
+		acc[topic] = topic in parent
+			? [data, parent[topic]]
+			: data;
+	});
+};
+
+$.map([&quot;init&quot;, &quot;destroy&quot;], function(name) {
+	Echo.Control._merge[name] = _wrapper;
+});
+
+Echo.Control.prototype._getSubstitutionInstructions = function() {
+	var control = this;
+	return {
+		&quot;class&quot;: function(key) {
+			return key ? control.cssPrefix + key : control.cssClass;
+		},
+		&quot;label&quot;: function(key, defaults) {
+			return control.labels.get(key, defaults);
+		},
+		&quot;self&quot;: function(key, defaults) {
+			var value = control.invoke(Echo.Utils.get(control, key));
+			return typeof value === &quot;undefined&quot;
+				? Echo.Utils.get(control.data, key, defaults)
+				: value;
+		},
+		&quot;config&quot;: function(key, defaults) {
+			return control.invoke(control.config.get(key, defaults));
+		}
+	};
+};
+
+Echo.Control.prototype._manifest = function(key) {
+	var component = Echo.Utils.getComponent(this.name);
+	return component
+		? key ? component._manifest[key] : component._manifest
+		: undefined;
+};
+
+Echo.Control.prototype._loadScripts = function(resources, callback) {
+	var control = this;
+	if (!resources || !resources.length) {
+		callback.call(control);
+		return;
+	}
+	resources = $.map(resources, function(resource) {
+		if (!resource.loaded) {
+			var key = resource.app &amp;&amp; &quot;App&quot; ||
+				resource.control &amp;&amp; &quot;Control&quot; ||
+				resource.plugin &amp;&amp; &quot;Plugin&quot;;
+
+			if (key) {
+				resource.loaded = function() {
+					return Echo[key].isDefined(resource[key.toLowerCase()]);
+				};
+			}
+		}
+		return $.extend(resource, {
+			&quot;url&quot;: control.substitute({&quot;template&quot;: resource.url})
+		});
+	});
+	Echo.Loader.download(resources, function() {
+		callback.call(control);
+	}, {
+		&quot;errorTimeout&quot;: control.config.get(&quot;scriptLoadErrorTimeout&quot;)
+	});
+};
+
+Echo.Control.prototype._loadPluginScripts = function(callback) {
+	var control = this;
+	var plugins = this.config.get(&quot;pluginsOrder&quot;);
+
+	var iterators = {
+		&quot;plugins&quot;: function(name, plugin) {
+			// check if a script URL is defined for the plugin
+			var url = &quot;plugins.&quot; + name + &quot;.url&quot;;
+			if (!plugin &amp;&amp; control.config.get(url)) {
+				return [{
+					&quot;url&quot;: control.config.get(url),
+					&quot;loaded&quot;: function() {
+						return !!Echo.Plugin.getClass(name, control.name);
+					}
+				}];
+			}
+		},
+		&quot;dependencies&quot;: function(name, plugin) {
+			return plugin &amp;&amp; plugin.dependencies;
+		}
+	};
+	var get = function(type) {
+		return Echo.Utils.foldl([], plugins, function(name, acc) {
+			var plugin = Echo.Plugin.getClass(name, control.name);
+			var scripts = iterators[type](name, plugin);
+			if ($.isArray(scripts) &amp;&amp; scripts.length) {
+				return acc.concat(scripts);
+			}
+		});
+	};
+
+	control._loadScripts(get(&quot;plugins&quot;), function() {
+		control._loadScripts(get(&quot;dependencies&quot;), callback);
+	});
+};
+
+Echo.Control.prototype._compileTemplate = function() {
+	var control = this;
+	var data = this.get(&quot;data&quot;, {});
+	var transformations = this.extension.template;
+	var processed = control.substitute({
+		&quot;data&quot;: data,
+		&quot;template&quot;: this.invoke(this.template)
+	});
+	var dom = $(&quot;&lt;div/&gt;&quot;).html(processed);
+	if (transformations &amp;&amp; transformations.length) {
+		$.map(transformations, function(transformation) {
+			dom = control._domTransformer({
+				&quot;dom&quot;: dom,
+				&quot;data&quot;: data,
+				&quot;transformation&quot;: transformation
+			});
+		});
+	}
+	return $(dom.html());
+};
+
+Echo.Control.prototype._domTransformer = function(args) {
+	var classify = {
+		&quot;insertBefore&quot;: &quot;before&quot;,
+		&quot;insertAfter&quot;: &quot;after&quot;,
+		&quot;insertAsFirstChild&quot;: &quot;prepend&quot;,
+		&quot;insertAsLastChild&quot;: &quot;append&quot;,
+		&quot;replace&quot;: &quot;replaceWith&quot;,
+		&quot;remove&quot;: &quot;remove&quot;
+	};
+	var action = classify[args.transformation.action];
+	if (!action) {
+		return args.dom;
+	}
+	var content;
+	var html = args.transformation.html;
+	var anchor = &quot;.&quot; + this.get(&quot;cssPrefix&quot;) + args.transformation.anchor;
+	if (html) {
+		content = this.substitute({
+			&quot;data&quot;: args.data,
+			&quot;template&quot;: html
+		});
+	}
+	$(anchor, args.dom)[action](content);
+	return args.dom;
+};
+
+})(Echo.jQuery);
+
+// default manifest declaration
+
+(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery, manifest = {};
+
+manifest.name = &quot;Echo.Control&quot;;
+
+manifest.vars = {
+	&quot;plugins&quot;: {},
+	&quot;extension&quot;: {&quot;template&quot;: [], &quot;renderers&quot;: {}},
+	&quot;parentRenderers&quot;: {},
+	&quot;subscriptionIDs&quot;: {},
+	&quot;parent&quot;: function() {}
+};
+
+manifest.config = {
 <span id='Echo-Control-cfg-target'>	/**
 </span>	 * @cfg {String} target(required)
 	 * Specifies the DOM element where the control will be displayed.
 	 */
 	&quot;target&quot;: undefined,
+
 <span id='Echo-Control-cfg-appkey'>	/**
-</span>	 * @cfg {String} appkey (required)
-	 * Specifies the customer application key. You can use the &quot;test.echoenabled.com&quot;
-	 * appkey for testing purposes.
+</span>	 * @cfg {String} appkey
+	 * Specifies the customer application key. You should specify this parameter
+	 * if your control uses StreamServer or IdentityServer API requests.
+	 * You can use the &quot;test.echoenabled.com&quot; appkey for testing purposes.
 	 */
 	&quot;appkey&quot;: &quot;&quot;,
+
 <span id='Echo-Control-cfg-labels'>	/**
 </span>	 * @cfg {Object} labels
 	 * Specifies the set of language variables defined for this particular control.
 	 */
 	&quot;labels&quot;: {},
+
 <span id='Echo-Control-cfg-apiBaseURL'>	/**
 </span>	 * @cfg {String} [apiBaseURL=&quot;api.echoenabled.com/v1/&quot;]
 	 * URL prefix for all API requests
 	 */
 	&quot;apiBaseURL&quot;: &quot;api.echoenabled.com/v1/&quot;,
+
 <span id='Echo-Control-cfg-submissionProxyURL'>	/**
 </span>	 * @cfg {String} [submissionProxyURL=&quot;apps.echoenabled.com/v2/esp/activity/&quot;]
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
 	&quot;submissionProxyURL&quot;: &quot;apps.echoenabled.com/v2/esp/activity/&quot;,
+
 <span id='Echo-Control-cfg-infoMessages'>	/**
 </span>	 * @cfg {Object} [infoMessages]
 	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
@@ -231,6 +1155,7 @@ Echo.Control.prototype.defaults.config = {
 		&quot;enabled&quot;: true,
 		&quot;layout&quot;: &quot;full&quot;
 	},
+
 <span id='Echo-Control-cfg-cdnBaseURL'>	/**
 </span>	 * @cfg {Object} [cdnBaseURL]
 	 * A set of the key/value pairs to define CDN base URLs for different components.
@@ -249,8 +1174,19 @@ Echo.Control.prototype.defaults.config = {
 		&quot;sdk-assets&quot;: Echo.Loader.getURL(&quot;&quot;, false),
 		&quot;apps&quot;: Echo.Loader.config.cdnBaseURL + &quot;apps&quot;
 	},
+
+<span id='Echo-Control-cfg-plugins'>	/**
+</span>	 * @cfg {Array} [plugins]
+	 * The list of the plugins to be added to the control instance.
+	 * Each plugin is represented as the JS object with the &quot;name&quot; field.
+	 * Other plugin parameters should be added to the same JS object.
+	 */
+	&quot;plugins&quot;: {},
+
+	&quot;context&quot;: &quot;&quot;,
 	&quot;scriptLoadErrorTimeout&quot;: 5000, // 5 sec
 	&quot;query&quot;: &quot;&quot;,
+
 <span id='Echo-Control-cfg-defaultAvatar'>	/**
 </span>	 * @cfg {String} [defaultAvatar]
 	 * Default avatar URL which will be used for the user in
@@ -260,7 +1196,34 @@ Echo.Control.prototype.defaults.config = {
 	&quot;defaultAvatar&quot;: Echo.Loader.getURL(&quot;images/avatar-default.png&quot;, false)
 };
 
-Echo.Control.prototype.defaults.labels = {
+manifest.config.normalizer = {
+	&quot;target&quot;: $,
+	&quot;plugins&quot;: function(list) {
+		var data = Echo.Utils.foldl({&quot;hash&quot;: {}, &quot;order&quot;: []}, list || [],
+			function(plugin, acc) {
+				var pos = $.inArray(plugin.name, acc.order);
+				if (pos &gt;= 0) {
+					acc.order.splice(pos, 1);
+				}
+				acc.order.push(plugin.name);
+				acc.hash[plugin.name] = plugin;
+			});
+		this.set(&quot;pluginsOrder&quot;, data.order);
+		return data.hash;
+	},
+
+	// the context normalizer takes the context which is passed
+	// from the outside and treats it as the parent context by passing
+	// it into the Echo.Events.newContextId function, which generates
+	// the nested context out of it. Note: the parent &quot;context&quot; for the control
+	// is defined within the Echo.Plugin.Config.prototype.assemble and
+	// Echo.App.prototype._normalizeComponentConfig functions.
+	&quot;context&quot;: Echo.Events.newContextId,
+
+	&quot;defaultAvatar&quot;: Echo.Loader.getURL
+};
+
+manifest.labels = {
 <span id='Echo-Control-property-loading'>	/**
 </span>	 * @echo_label
 	 */
@@ -383,809 +1346,44 @@ Echo.Control.prototype.defaults.labels = {
 	&quot;monthsAgo&quot;: &quot;{number} Months Ago&quot;
 };
 
-<span id='Echo-Control-method-get'>/**
-</span> * Accessor method to get specific field.
- *
- * This function returns the corresponding value of the given key
- * or the default value if specified in the second argument.
- *
- * @param {String} key
- * Defines the key for data extraction.
- *
- * @param {Object} [defaults]
- * Default value if no corresponding key was found in the config.
- * Note: only the 'undefined' JS statement triggers the default value usage.
- * The false, null, 0, [] are considered as a proper value.
- *
- * @return {Mixed}
- * The corresponding value found in the object.
- */
-Echo.Control.prototype.get = function(key, defaults) {
-	return Echo.Utils.get(this, key, defaults);
-};
+manifest.inherits = Echo.Control;
 
-<span id='Echo-Control-method-set'>/**
-</span> * Setter method to define specific object value.
- *
- * This function allows to define the value for the corresponding object field.
- *
- * @param {String} key
- * Defines the key where the given data should be stored.
- *
- * @param {Mixed} value
- * The corresponding value which should be defined for the key.
- */
-Echo.Control.prototype.set = function(key, value) {
-	return Echo.Utils.set(this, key, value);
-};
+manifest.templates = {&quot;message&quot;: {}};
 
-<span id='Echo-Control-method-remove'>/**
-</span> * Method to remove specific object field.
- *
- * This function allows to remove the value associated with the given key.
- * If the key contains a complex structure (such as objects or arrays),
- * it will be removed as well.
- *
- * @param {String} key
- * Specifies the key which should be removed from the object.
- *
- * @return {Boolean}
- * The boolean value which indicates that value by key exists and removed.
- */
-Echo.Control.prototype.remove = function(key) {
-	return Echo.Utils.remove(this, key);
-};
+manifest.templates.message.compact =
+	'&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&amp;nbsp;&lt;/span&gt;';
 
-<span id='Echo-Control-method-render'>/**
-</span> * Rendering function which prepares the DOM representation of the control
- * and appends it to the control target element. This function also used to
- * re-render the control.
- *
- * @return {Object}
- * Control DOM representation
- */
-Echo.Control.prototype.render = function() {
-	var view = this.view;
-	var topic = view.rendered() ? &quot;onRerender&quot; : &quot;onRender&quot;;
-	if (!this.dependent() &amp;&amp; !view.rendered()) {
-		this.config.get(&quot;target&quot;).addClass(&quot;echo-sdk-ui&quot;);
-	}
-	var content = view.render({
-		&quot;template&quot;: this._compileTemplate()
-	});
-	this.config.get(&quot;target&quot;).empty().append(content);
-	this.events.publish({&quot;topic&quot;: topic});
-	return content;
-};
+manifest.templates.message.full =
+	'&lt;div class=&quot;echo-control-message {class:messageText}&quot;&gt;' +
+		'&lt;span class=&quot;echo-control-message-icon echo-control-message-{data:type} {class:messageIcon}&quot;&gt;' +
+			'{data:message}' +
+		'&lt;/span&gt;' +
+	'&lt;/div&gt;';
 
-<span id='Echo-Control-method-substitute'>/**
-</span> * @inheritdoc Echo.Utils#substitute
- */
-Echo.Control.prototype.substitute = function(args) {
-	var instructions = this._getSubstitutionInstructions();
-	args.data = args.data || this.get(&quot;data&quot;);
-	args.instructions = $.extend(instructions, args.instructions);
-	return Echo.Utils.substitute(args);
-};
+manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
+		'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
+		'.echo-primaryColor { color: #3A3A3A; }' +
+		'.echo-secondaryColor { color: #C6C6C6; }' +
+		'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
+		'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
+		'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
+		'.echo-clickable { cursor: pointer; }' +
+		'.echo-relative { position: relative; }' +
+		'.echo-clear { clear: both; }' +
+		'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
+		'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
+		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
+		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
 
-<span id='Echo-Control-method-invoke'>/**
-</span> * @inheritdoc Echo.Utils#invoke
- */
-Echo.Control.prototype.invoke = function(mixed, context) {
-	return Echo.Utils.invoke(mixed, context || this);
-};
+		// message classes
+		'.echo-control-message { padding: 15px 0px; text-align: center; }' +
+		'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
+		'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
+		'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
+		'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
+		'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
 
-<span id='Echo-Control-method-refresh'>/**
-</span> * Basic method to reinitialize control.
- *
- * Function can be overriden by class descendants implying specific logic.
- */
-Echo.Control.prototype.refresh = function() {
-
-	// destroy all nested controls, but preserve self
-	this.destroy({&quot;self&quot;: false});
-
-	// restore originally defined data
-	this.set(&quot;data&quot;, this.config.get(&quot;data&quot;, {}));
-
-	this._init(this._initializers.get(&quot;refresh&quot;));
-};
-
-<span id='Echo-Control-method-ready'>/**
-</span> * @method ready
- * Should be called in the &quot;init&quot; function of the control manifest to
- * show that the control was initialized. Basically it is the indicator
- * of the control to be ready and operable.
- */
-
-<span id='Echo-Control-method-destroy'>/**
-</span> * Unified method to destroy control.
- */
-Echo.Control.prototype.destroy = function(config) {
-	Echo.Events.publish({
-		&quot;topic&quot;: &quot;Echo.Control.onDestroy&quot;,
-		&quot;bubble&quot;: false,
-		&quot;context&quot;: this.config.get(&quot;context&quot;),
-		&quot;data&quot;: $.extend({&quot;producer&quot;: this, &quot;self&quot;: true}, config)
-	});
-};
-
-<span id='Echo-Control-method-dependent'>/**
-</span> * Method checks if control was initialized from another control.
- *
- * @return {Boolean}
- */
-Echo.Control.prototype.dependent = function() {
-	return !!this.config.get(&quot;parent&quot;);
-};
-
-<span id='Echo-Control-method-showMessage'>/**
-</span> * Renders info message in the target container.
- *
- * @param {Object} data
- * Object containing info message information.
- *
- * @param {String} [data.layout]
- * Specifies the type of message layout. Can be set to &quot;compact&quot; or &quot;full&quot;.
- *
- * @param {HTMLElement} [data.target]
- * Specifies the target container.
- */
-Echo.Control.prototype.showMessage = function(data) {
-	if (!this.config.get(&quot;infoMessages.enabled&quot;)) return;
-	var target = data.target || this.config.get(&quot;target&quot;);
-	var layout = data.layout || this.config.get(&quot;infoMessages.layout&quot;);
-	var view = this.view.fork();
-	target.empty().append(view.render({
-		&quot;data&quot;: data,
-		&quot;template&quot;: this.templates.message[layout]
-	}));
-};
-
-<span id='Echo-Control-method-showError'>/**
-</span> * Renders error message in the target container.
- *
- * @param {Object} data
- * Object containing error message information.
- *
- * @param {Object} options
- * Object containing display options.
- */
-Echo.Control.prototype.showError = function(data, options) {
-	var self = this;
-	if (typeof options.retryIn === &quot;undefined&quot;) {
-		var label = this.labels.get(&quot;error_&quot; + data.errorCode);
-		var message = label === &quot;error_&quot; + data.errorCode
-			? &quot;(&quot; + data.errorCode + &quot;) &quot; + (data.errorMessage || &quot;&quot;)
-			: label;
-		this.showMessage({
-			&quot;type&quot;: options.critical ? &quot;error&quot; : &quot;loading&quot;,
-			&quot;message&quot;: message,
-			&quot;target&quot;: options.target
-		});
-	} else if (!options.retryIn &amp;&amp; options.request.retryTimer) {
-		this.showMessage({
-			&quot;type&quot;: &quot;loading&quot;,
-			&quot;message&quot;: this.labels.get(&quot;retrying&quot;),
-			&quot;target&quot;: options.target
-		});
-	} else {
-		var secondsLeft = options.retryIn / 1000;
-		var ticker = function() {
-			if (!secondsLeft) {
-				return;
-			}
-			var label = self.labels.get(&quot;error_&quot; + data.errorCode, {&quot;seconds&quot;: secondsLeft--});
-			self.showMessage({
-				&quot;type&quot;: &quot;loading&quot;,
-				&quot;message&quot;: label,
-				&quot;target&quot;: options.target
-			});
-		};
-		options.request.retryTimer = setInterval(ticker, 1000);
-		ticker();
-	}
-};
-
-<span id='Echo-Control-method-getPlugin'>/**
-</span> * Accessor function allowing to obtain the plugin by its name.
- *
- * @param {String} name
- * Specifies plugin name.
- *
- * @return {Object}
- * Instance of the corresponding plugin.
- */
-Echo.Control.prototype.getPlugin = function(name) {
-	return this.plugins[name];
-};
-
-<span id='Echo-Control-method-template'>/**
-</span> * Method to get the control template during rendering procedure. Can be overriden.
- */
-Echo.Control.prototype.template = function() {
-	return this.invoke(this.templates.main);
-};
-
-<span id='Echo-Control-method-parentRenderer'>/**
-</span> * Method to call parent renderer function, which was extended using
- * Echo.Control.extendRenderer function.
- *
- * @param {String} name
- * Renderer name.
- *
- * @param {Object} args
- * Arguments to be proxied to the parent renderer from the overriden one.
- *
- * @return {HTMLElement}
- * Result of parent renderer function call.
- */
-Echo.Control.prototype.parentRenderer = function(name, args) {
-	var renderer = this.parentRenderers[name];
-	return renderer
-		? renderer.apply(this, args)
-		: args[0]; // return DOM element
-};
-
-<span id='Echo-Control-method-extendTemplate'>/**
-</span> * Method to extend the template of particular control.
- *
- * @param {String} action
- * One of the following actions:
- *
- * + &quot;insertBefore&quot;
- * + &quot;insertAfter&quot;
- * + &quot;insertAsFirstChild&quot;
- * + &quot;insertAsLastChild&quot;
- * + &quot;replace&quot;
- * + &quot;remove&quot;
- *
- * @param {String} anchor
- * Element name which is a subject of a transformation application.
- *
- * @param {String} [html]
- * The content of a transformation to be applied.
- * This param is required for all actions except &quot;remove&quot;.
- */
-Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
-	this.extension.template.push({&quot;action&quot;: action, &quot;anchor&quot;: anchor, &quot;html&quot;: html});
-};
-
-/*
- * Method extending the paticular renderer with defined function.
- *
- * @param {String} name
- * Renderer name to be extended.
- *
- * @param {Function} renderer
- * Renderer function to be applied.
- */
-Echo.Control.prototype.extendRenderer = function(name, renderer) {
-	var control = this;
-	var _renderer = this.renderers[name];
-	this.renderers[name] = $.proxy(function(element) {
-		this.parentRenderers[name] = _renderer;
-		return renderer.apply(this, arguments);
-	}, control);
-};
-
-<span id='Echo-Control-method-log'>/**
-</span> * @inheritdoc Echo.Utils#log
- */
-Echo.Control.prototype.log = function(data) {
-	Echo.Utils.log($.extend(data, {&quot;component&quot;: this.name}));
-};
-
-<span id='Echo-Control-method-getRelativeTime'>/**
-</span> * Method to calculate the relative time passed since the given date and time.
- *
- * @param {Mixed} datetime
- * The date to calculate how much time passed since that moment. The function recognizes
- * the date in W3CDFT or UNIX timestamp formats.
- *
- * @return {String}
- * String which represents the date and time in the relative format.
- */
-Echo.Control.prototype.getRelativeTime = function(datetime) {
-	if (!datetime) return;
-	var self = this;
-	var ts = typeof datetime === &quot;string&quot;
-		? Echo.Utils.timestampFromW3CDTF(datetime)
-		: datetime;
-	if (!ts) return;
-	var d = new Date(ts * 1000);
-	var now = (new Date()).getTime();
-	var when;
-	var diff = Math.floor((now - d.getTime()) / 1000);
-	var dayDiff = Math.floor(diff / 86400);
-	var getAgo = function(ago, period) {
-		return self.labels.get(period + (ago === 1 ? &quot;&quot; : &quot;s&quot;) + &quot;Ago&quot;, {&quot;number&quot;: ago});
-	};
-
-	if (isNaN(dayDiff) || dayDiff &lt; 0 || dayDiff &gt;= 365) {
-		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
-	} else if (diff &lt; 60) {
-		when = getAgo(diff, 'second');
-	} else if (diff &lt; 60 * 60) {
-		diff = Math.floor(diff / 60);
-		when = getAgo(diff, 'minute');
-	} else if (diff &lt; 60 * 60 * 24) {
-		diff = Math.floor(diff / (60 * 60));
-		when = getAgo(diff, 'hour');
-	} else if (diff &lt; 60 * 60 * 48) {
-		when = this.labels.get(&quot;yesterday&quot;);
-	} else if (dayDiff &lt; 7) {
-		when = getAgo(dayDiff, 'day');
-	} else if (dayDiff &lt; 14) {
-		when = this.labels.get(&quot;lastWeek&quot;);
-	} else if (dayDiff &lt; 30) {
-		diff =  Math.floor(dayDiff / 7);
-		when = getAgo(diff, 'week');
-	} else if (dayDiff &lt; 60) {
-		when = this.labels.get(&quot;lastMonth&quot;);
-	} else if (dayDiff &lt; 365) {
-		diff =  Math.floor(dayDiff / 31);
-		when = getAgo(diff, 'month');
-	}
-	return when;
-};
-
-Echo.Control.prototype._init = function(subsystems) {
-	var control = this;
-	if (!subsystems || !subsystems.length) return;
-	var func = subsystems.shift();
-	var parts = func.split(&quot;:&quot;);
-	var subsystem = {
-		&quot;name&quot;: parts[0],
-		&quot;init&quot;: control._initializers[parts[0]],
-		&quot;type&quot;: parts[1] || &quot;sync&quot;
-	};
-	if (subsystem.type === &quot;sync&quot;) {
-		var result = subsystem.init.call(control);
-		if (typeof result !== &quot;undefined&quot;) {
-			control[subsystem.name] = result;
-		}
-		control._init(subsystems);
-	} else {
-		subsystem.init.call(control, function() {
-			control._init(subsystems);
-		});
-	}
-};
-
-Echo.Control.prototype._initializers = {};
-
-Echo.Control.prototype._initializers.list = [
-	[&quot;vars&quot;,               [&quot;init&quot;, &quot;refresh&quot;]],
-	[&quot;config&quot;,             [&quot;init&quot;]],
-	[&quot;css&quot;,                [&quot;init&quot;]],
-	[&quot;events&quot;,             [&quot;init&quot;]],
-	[&quot;subscriptions&quot;,      [&quot;init&quot;]],
-	[&quot;labels&quot;,             [&quot;init&quot;]],
-	[&quot;renderers&quot;,          [&quot;init&quot;, &quot;refresh&quot;]],
-	[&quot;view&quot;,               [&quot;init&quot;]],
-	[&quot;loading&quot;,            [&quot;init&quot;, &quot;refresh&quot;]],
-	[&quot;dependencies:async&quot;, [&quot;init&quot;]],
-	[&quot;user:async&quot;,         [&quot;init&quot;, &quot;refresh&quot;]],
-	[&quot;plugins:async&quot;,      [&quot;init&quot;, &quot;refresh&quot;]],
-	[&quot;init:async&quot;,         [&quot;init&quot;, &quot;refresh&quot;]],
-	[&quot;ready&quot;,              [&quot;init&quot;]],
-	[&quot;refresh&quot;,            [&quot;refresh&quot;]]
-];
-
-Echo.Control.prototype._initializers.get = function(action) {
-	return Echo.Utils.foldl([], this.list, function(initializer, acc) {
-		if (~$.inArray(action, initializer[1])) {
-			acc.push(initializer[0]);
-		}
-	});
-};
-
-Echo.Control.prototype._initializers.vars = function() {
-	// we need to apply default field values to the control,
-	// but we need to avoid any references to the default var objects,
-	// thus we copy and recursively merge default values separately
-	// and apply default values to the given instance non-recursively
-	$.extend(this, $.extend(true, {}, this.defaults.vars, this._manifest(&quot;vars&quot;)));
-};
-
-Echo.Control.prototype._initializers.config = function() {
-	var control = this;
-	var _normalizer = {};
-	var data = this.config;
-	_normalizer.target = $;
-	_normalizer.plugins = function(list) {
-		var data = Echo.Utils.foldl({&quot;hash&quot;: {}, &quot;order&quot;: []}, list || [],
-			function(plugin, acc) {
-				var pos = $.inArray(plugin.name, acc.order);
-				if (pos &gt;= 0) {
-					acc.order.splice(pos, 1);
-				}
-				acc.order.push(plugin.name);
-				acc.hash[plugin.name] = plugin;
-			});
-		this.set(&quot;pluginsOrder&quot;, data.order);
-		return data.hash;
-	};
-	_normalizer.defaultAvatar = function(url) {
-		return Echo.Loader.getURL(url);
-	};
-	data = $.extend({&quot;plugins&quot;: []}, data || {});
-	var defaults = $.extend(true, {}, this.get(&quot;defaults.config&quot;), {
-		&quot;context&quot;: (data.parent ? data.parent.context + &quot;/&quot; : &quot;&quot;) + Echo.Utils.getUniqueString()
-	}, this._manifest(&quot;config&quot;) || {});
-	var normalizer = this._manifest(&quot;config&quot;).normalizer;
-	return new Echo.Configuration(data, defaults, function(key, value) {
-		var handler = normalizer &amp;&amp; normalizer[key] || _normalizer &amp;&amp; _normalizer[key];
-		return handler ? handler.call(this, value, control) : value;
-	});
-};
-
-Echo.Control.prototype._initializers.events = function() {
-	var control = this;
-	var prepare = function(params) {
-		params.context = params.context || control.config.get(&quot;context&quot;);
-		if (params.handler) {
-			params.handler = $.proxy(params.handler, control);
-		}
-		return params;
-	};
-	return {
-		&quot;publish&quot;: function(params) {
-			params.topic = control.name + &quot;.&quot; + params.topic;
-			params.data = params.data || {};
-
-			// process data through the normalization function if defined
-			if (control._prepareEventParams) {
-				params.data = control._prepareEventParams(params.data);
-			}
-
-			Echo.Events.publish(prepare(params));
-		},
-		&quot;subscribe&quot;: function(params) {
-			var handlerId = Echo.Events.subscribe(prepare(params));
-			control.subscriptionIDs[handlerId] = true;
-			return handlerId;
-		},
-		&quot;unsubscribe&quot;: function(params) {
-			if (params &amp;&amp; params.handlerId) {
-				delete control.subscriptionIDs[params.handlerId];
-			}
-			Echo.Events.unsubscribe(prepare(params));
-		}
-	};
-};
-
-Echo.Control.prototype._initializers.subscriptions = function() {
-	var control = this;
-	$.each(control._manifest(&quot;events&quot;), function(topic, data) {
-		data = $.isFunction(data) ? {&quot;handler&quot;: data} : data;
-		control.events.subscribe($.extend({&quot;topic&quot;: topic}, data));
-	});
-
-	// we need two subscriptions here, because the &quot;Echo.Control.onDataInvalidate&quot; event
-	// may be published by the nested controls (in this case the event is not broadcasted
-	// to the &quot;global&quot; context) and by the standalone control to notify other controls
-	// (not related directly) about the need to invalidate the data (in this case
-	// the &quot;global&quot; context is used)
-	$.map([&quot;global&quot;, control.config.get(&quot;context&quot;)], function(context) {
-		control.events.subscribe({
-			&quot;topic&quot;: &quot;Echo.Control.onDataInvalidate&quot;,
-			&quot;context&quot;: context,
-			&quot;handler&quot;: function() {
-				if (control.get(&quot;request&quot;)) {
-					control.get(&quot;request&quot;).send({&quot;force&quot;: true});
-				}
-			}
-		});
-	});
-
-	// call &quot;ready&quot; callback after the control was rendered
-	// note: &quot;ready&quot; callback is executed only once!
-	if (control.config.get(&quot;ready&quot;)) {
-		control.events.subscribe({
-			&quot;topic&quot;: control.name + &quot;.onReady&quot;,
-			&quot;once&quot;: true,
-			&quot;handler&quot;: function() {
-				control.config.get(&quot;ready&quot;).call(control);
-			}
-		});
-	}
-
-	// register destroy handlers
-	control.events.subscribe({
-		&quot;topic&quot;: &quot;Echo.Control.onDestroy&quot;,
-		&quot;handler&quot;: function(topic, data) {
-			var isProducer = control.config.get(&quot;context&quot;) ===
-						data.producer.config.get(&quot;context&quot;);
-			// destroy plugins
-			$.map(control.config.get(&quot;pluginsOrder&quot;), function(name) {
-				var plugin = control.plugins[name];
-				if (plugin &amp;&amp; plugin.destroy) {
-					plugin.destroy();
-				}
-			});
-
-			// apply control-specific logic
-			if (control._manifest(&quot;destroy&quot;)) {
-				control._manifest(&quot;destroy&quot;).call(control, data.producer);
-			}
-
-			// abort and cleanup data request machinery
-			var request = control.get(&quot;request&quot;);
-			if (request) {
-				request.abort();
-				control.remove(&quot;request&quot;);
-			}
-
-			// a. keep subscriptions in case of refresh (if &quot;self&quot; is false)
-			// b. unsubscribe from all events when:
-			//     - we want to destroy the whole control
-			//     - the control is a dependent one
-			if (data.self || !isProducer) {
-				$.each(control.subscriptionIDs, function(handlerId) {
-					control.events.unsubscribe({&quot;handlerId&quot;: handlerId});
-				});
-			}
-
-			// cleanup the target element of the control
-			// which produced the current &quot;destroy&quot; action
-			if (isProducer) {
-				control.config.get(&quot;target&quot;).empty();
-			}
-		}
-	});
-
-	// subscribe all root level controls to the user login/logout event
-	// and call the &quot;refresh&quot; control method
-	if (!control.dependent()) {
-		control.events.subscribe({
-			&quot;topic&quot;: &quot;Echo.UserSession.onInvalidate&quot;,
-			&quot;context&quot;: &quot;global&quot;,
-			&quot;handler&quot;: control.refresh
-		});
-	}
-};
-
-Echo.Control.prototype._initializers.labels = function() {
-	return new Echo.Labels(this.config.get(&quot;labels&quot;), this.name);
-};
-
-Echo.Control.prototype._initializers.css = function() {
-	this.config.get(&quot;target&quot;).addClass(this.cssClass);
-	if (!Echo.Utils.hasCSS(&quot;control&quot;)) {
-		Echo.Utils.addCSS(this.substitute({&quot;template&quot;: this.baseCSS}), &quot;control&quot;);
-	}
-	if (this._manifest(&quot;css&quot;) &amp;&amp; !Echo.Utils.hasCSS(this.name)) {
-		Echo.Utils.addCSS(this.substitute({&quot;template&quot;: this._manifest(&quot;css&quot;)}), this.name);
-	}
-};
-
-Echo.Control.prototype._initializers.renderers = function() {
-	var control = this;
-	$.each(control._manifest(&quot;renderers&quot;), function() {
-		control.extendRenderer.apply(control, arguments);
-	});
-};
-
-Echo.Control.prototype._initializers.view = function() {
-	return new Echo.View({
-		&quot;data&quot;: this.get(&quot;data&quot;),
-		&quot;cssPrefix&quot;: this.get(&quot;cssPrefix&quot;),
-		&quot;renderers&quot;: this.get(&quot;renderers&quot;),
-		&quot;substitutions&quot;: this._getSubstitutionInstructions()
-	});
-};
-
-Echo.Control.prototype._initializers.loading = function() {
-	this.showMessage({
-		&quot;type&quot;: &quot;loading&quot;,
-		&quot;message&quot;: this.labels.get(&quot;loading&quot;)
-	});
-};
-
-Echo.Control.prototype._initializers.dependencies = function(callback) {
-	this._loadScripts(this._manifest(&quot;dependencies&quot;), callback);
-};
-
-Echo.Control.prototype._initializers.user = function(callback) {
-	var control = this;
-	if (this.config.get(&quot;user&quot;)) {
-		this.user = this.config.get(&quot;user&quot;);
-		callback.call(control);
-	} else {
-		Echo.UserSession({
-			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
-			&quot;ready&quot;: function() {
-				control.user = this;
-				callback.call(control);
-			}
-		});
-	}
-};
-
-Echo.Control.prototype._initializers.plugins = function(callback) {
-	var control = this;
-	this._loadPluginScripts(function() {
-		$.map(control.config.get(&quot;pluginsOrder&quot;), function(name) {
-			var Plugin = Echo.Plugin.getClass(name, control.name);
-			if (Plugin) {
-				var instance = new Plugin({&quot;component&quot;: control});
-				if (instance.enabled()) {
-					instance.init();
-					control.plugins[name] = instance;
-				}
-			}
-		});
-		callback.call(control);
-	});
-};
-
-Echo.Control.prototype._initializers.init = function(callback) {
-
-	// this function should be called inside the &quot;init&quot; function
-	// to indicate that the control was initialized and is now ready
-	this.ready = callback;
-
-	this._manifest(&quot;init&quot;).call(this);
-};
-
-Echo.Control.prototype._initializers.ready = function() {
-	this.events.publish({&quot;topic&quot;: &quot;onReady&quot;});
-};
-
-Echo.Control.prototype._initializers.refresh = function() {
-	this.events.publish({&quot;topic&quot;: &quot;onRefresh&quot;});
-};
-
-Echo.Control.prototype._getSubstitutionInstructions = function() {
-	var control = this;
-	return {
-		&quot;class&quot;: function(key) {
-			return key ? control.cssPrefix + key : control.cssClass;
-		},
-		&quot;label&quot;: function(key, defaults) {
-			return control.labels.get(key, defaults);
-		},
-		&quot;self&quot;: function(key, defaults) {
-			var value = control.invoke(Echo.Utils.get(control, key));
-			return typeof value === &quot;undefined&quot;
-				? Echo.Utils.get(control.data, key, defaults)
-				: value;
-		},
-		&quot;config&quot;: function(key, defaults) {
-			return control.invoke(control.config.get(key, defaults));
-		}
-	};
-};
-
-Echo.Control.prototype._manifest = function(key) {
-	var component = Echo.Utils.getComponent(this.name);
-	return component
-		? key ? component.manifest[key] : component.manifest
-		: undefined;
-};
-
-Echo.Control.prototype._loadScripts = function(resources, callback) {
-	var control = this;
-	if (!resources || !resources.length) {
-		callback.call(control);
-		return;
-	}
-	resources = $.map(resources, function(resource) {
-		return $.extend(resource, {
-			&quot;url&quot;: control.substitute({&quot;template&quot;: resource.url})
-		});
-	});
-	Echo.Loader.download(resources, function() {
-		callback.call(control);
-	}, {
-		&quot;errorTimeout&quot;: control.config.get(&quot;scriptLoadErrorTimeout&quot;)
-	});
-};
-
-Echo.Control.prototype._loadPluginScripts = function(callback) {
-	var control = this;
-	var plugins = this.config.get(&quot;pluginsOrder&quot;);
-
-	var iterators = {
-		&quot;plugins&quot;: function(name, plugin) {
-			// check if a script URL is defined for the plugin
-			var url = &quot;plugins.&quot; + name + &quot;.url&quot;;
-			if (!plugin &amp;&amp; control.config.get(url)) {
-				return [{
-					&quot;url&quot;: control.config.get(url),
-					&quot;loaded&quot;: function() {
-						return !!Echo.Plugin.getClass(name, control.name);
-					}
-				}];
-			}
-		},
-		&quot;dependencies&quot;: function(name, plugin) {
-			return plugin &amp;&amp; plugin.dependencies;
-		}
-	};
-	var get = function(type) {
-		return Echo.Utils.foldl([], plugins, function(name, acc) {
-			var plugin = Echo.Plugin.getClass(name, control.name);
-			var scripts = iterators[type](name, plugin);
-			if ($.isArray(scripts) &amp;&amp; scripts.length) {
-				return acc.concat(scripts);
-			}
-		});
-	};
-
-	control._loadScripts(get(&quot;plugins&quot;), function() {
-		control._loadScripts(get(&quot;dependencies&quot;), callback);
-	});
-};
-
-Echo.Control.prototype._compileTemplate = function() {
-	var control = this;
-	var data = this.get(&quot;data&quot;, {});
-	var transformations = this.extension.template;
-	var processed = control.substitute({
-		&quot;data&quot;: data,
-		&quot;template&quot;: this.invoke(this.template)
-	});
-	var dom = $(&quot;&lt;div/&gt;&quot;).html(processed);
-	if (transformations &amp;&amp; transformations.length) {
-		$.map(transformations, function(transformation) {
-			dom = control._domTransformer({
-				&quot;dom&quot;: dom,
-				&quot;data&quot;: data,
-				&quot;transformation&quot;: transformation
-			});
-		});
-	}
-	return $(dom.html());
-};
-
-Echo.Control.prototype._domTransformer = function(args) {
-	var classify = {
-		&quot;insertBefore&quot;: &quot;before&quot;,
-		&quot;insertAfter&quot;: &quot;after&quot;,
-		&quot;insertAsFirstChild&quot;: &quot;prepend&quot;,
-		&quot;insertAsLastChild&quot;: &quot;append&quot;,
-		&quot;replace&quot;: &quot;replaceWith&quot;,
-		&quot;remove&quot;: &quot;remove&quot;
-	};
-	var action = classify[args.transformation.action];
-	if (!action) {
-		return args.dom;
-	}
-	var content;
-	var html = args.transformation.html;
-	var anchor = &quot;.&quot; + this.get(&quot;cssPrefix&quot;) + args.transformation.anchor;
-	if (html) {
-		content = this.substitute({
-			&quot;data&quot;: args.data,
-			&quot;template&quot;: html
-		});
-	}
-	$(anchor, args.dom)[action](content);
-	return args.dom;
-};
-
-Echo.Control.prototype.baseCSS =
-	'.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
-	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
-	'.echo-primaryColor { color: #3A3A3A; }' +
-	'.echo-secondaryColor { color: #C6C6C6; }' +
-	'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
-	'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
-	'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
-	'.echo-clickable { cursor: pointer; }' +
-	'.echo-relative { position: relative; }' +
-	'.echo-clear { clear: both; }' +
-
-	// message classes
-	'.echo-control-message { padding: 15px 0px; text-align: center; }' +
-	'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
-	'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
-	'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
-	'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
+Echo.Control._manifest = manifest;
 
 })(Echo.jQuery);
 </pre>

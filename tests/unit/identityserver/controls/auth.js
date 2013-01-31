@@ -56,7 +56,7 @@ suite.prototype.tests.loggedInUser = {
 			// case: user avatar isn't available
 			this.user.set("avatar", "");
 			this.refresh();
-			QUnit.equal(this.defaults.config.defaultAvatar, getRenderedAvatar(), "Checking if default avatar is rendered");
+			QUnit.equal(this._manifest("config").defaultAvatar, getRenderedAvatar(), "Checking if default avatar is rendered");
 			var avatar = Echo.Loader.getURL("images/info70.png", false);
 			// case: user avatar isn't available and defaultAvatar was setted
 			this.config.set("defaultAvatar", avatar);

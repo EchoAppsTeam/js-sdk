@@ -22,7 +22,7 @@ var $ = jQuery;
 
 <span id='Echo-IdentityServer-Controls-Auth-method-constructor'><span id='Echo-IdentityServer-Controls-Auth'>/**
 </span></span> * @class Echo.IdentityServer.Controls.Auth
- * Echo Auth control displays user login status and allows to sign in using
+ * Echo Auth control displays the user login status and allows to sign in using
  * different social identities.
  *
  * 	var identityManager = {
@@ -130,8 +130,10 @@ auth.config = {
 };
 
 auth.dependencies = [{
-	&quot;loaded&quot;: function() { return !!Echo.jQuery.echoModal; },
-	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-modal.js&quot;
+	&quot;loaded&quot;: function() { return !!Echo.GUI; },
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/gui.pack.js&quot;
+}, {
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/gui.pack.css&quot;
 }];
 
 auth.vars = {
@@ -246,10 +248,12 @@ auth.renderers.or = function(element) {
 </span> * @echo_renderer
  */
 auth.renderers.avatar = function(element) {
-	return element.empty().append(Echo.Utils.loadImage({
+	this.placeImage({ 
+		&quot;container&quot;: element,
 		&quot;image&quot;: this.user.get(&quot;avatar&quot;),
 		&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)
-	}));
+	});
+	return element;
 };
 
 <span id='Echo-IdentityServer-Controls-Auth-method-name'>/**
@@ -280,7 +284,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 		});
 	} else {
 		return element.on(&quot;click&quot;, function() {
-			self.modal = $.echoModal({
+			self.modal = new Echo.GUI.Modal({
 				&quot;data&quot;: {
 					&quot;title&quot;: self.config.get(&quot;identityManager.&quot; + type + &quot;.title&quot;)
 				},
@@ -324,8 +328,7 @@ auth.methods._appendSessionID = function(url) {
 auth.css =
 	&quot;.{class:logout} { float: right; }&quot; +
 	&quot;.{class:userAnonymous} { text-align: right; }&quot; +
-	&quot;.{class:avatar} { float: left; }&quot; +
-	&quot;.{class:avatar} img { width: 24px; height: 24px; }&quot; +
+	&quot;.{class:avatar} { float: left; width: 24px; height: 24px; }&quot; +
 	&quot;.{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }&quot; +
 	&quot;.{class:edit} { float: left; margin: 6px 0px 0px 12px; }&quot;;
 

@@ -15,83 +15,274 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">
-var Tabs = function(element, config) {
-	this.config = config || {};
-	this.element = $(element);
-	this.panels = config.panels || this.getPanels();
-	this._initEvents(this.config);
-};
+  <pre class="prettyprint lang-js">(function(jQuery) {
 
-Tabs.prototype.getPanels = function() {
-	var id = $(&quot;a:first&quot;, this.element).attr(&quot;href&quot;);
-	return $(id).parent();
-};
+var $ = jQuery;
 
-Tabs.prototype._initEvents = function(config) {
-	this.element.find('a[data-toggle=tab]').each(function(i, el) {
-		$(el).on(&quot;show&quot;, config.show || function() {});
+if (!window.Echo) window.Echo = {};
+
+if (!Echo.GUI) Echo.GUI = {};
+
+if (Echo.GUI.Tabs) return;
+
+<span id='Echo-GUI-Tabs-method-constructor'><span id='Echo-GUI-Tabs-cfg-show'><span id='Echo-GUI-Tabs-cfg-panels'><span id='Echo-GUI-Tabs-cfg-entries'><span id='Echo-GUI-Tabs-cfg-target'><span id='Echo-GUI-Tabs'>/**
+</span></span></span></span></span></span> * @class Echo.GUI.Tabs
+ * Class wrapper for &lt;a href=&quot;http://twitter.github.com/bootstrap/javascript.html#tabs&quot; target=&quot;_blank&quot;&gt;bootstrap-tab.js&lt;/a&gt;.
+ * The Echo.GUI.Tabs class provides a simplified interface to work with
+ * the Bootstrap Tabs JS class.
+ * Echo wrapper assembles the HTML code required for Bootstrap Tabs JS class
+ * based on the parameters specified in the config and initializes
+ * the corresponding Bootstrap JS class.
+ *
+ * Example:
+ * 	var myTabs = new Echo.GUI.Tabs({
+ * 		&quot;target&quot;: &quot;.css-selector&quot;,
+ * 		&quot;entries&quot;: [{
+ * 			&quot;id&quot;: &quot;tab1&quot;,
+ * 			&quot;label&quot;: &quot;Tab 1&quot;,
+ * 			&quot;panel&quot;: $(&quot;.panel-css-selector&quot;),
+ * 			&quot;extraClass&quot;: &quot;extra-class&quot;
+ * 		}, {
+ * 			&quot;id&quot;: &quot;tab2&quot;,
+ * 			&quot;label&quot;: &quot;Tab 2&quot;,
+ * 			&quot;panel&quot;: $(&quot;.panel-css-selector2&quot;),
+ * 		}],
+ * 		&quot;show&quot;: function() {}
+ * 	});
+ *
+ * @extends Echo.GUI
+ * @constructor
+ * Creates a new tabs in the container you have passed in the &quot;config.target&quot;.
+ *
+ * @param {Object} config
+ * Tabs configuration.
+ *
+ * @cfg {Mixed} target
+ * The container where the tabs should be located.
+ * This parameter can have several types:
+ * 	- CSS selector (ex: &quot;css-selector&quot;)
+ * 	- HTMLElement (ex: document.getElementById(&quot;some-element-id&quot;))
+ * 	- jQuery object (ex: $(&quot;.css-selector&quot;))
+ *
+ * @cfg {Array} [entries]
+ * Array of entries (tabs).
+ * Each entry is the JS object with the following parameters:
+ * 	id         - Tab id.
+ * 	label      - Tab label.
+ * 	panel      - HTML Element which contains tab content.
+ * 	disabled   - Specifies whether the tab disabled.
+ * 	extraClass - Class name to be added to the tab element.
+ *
+ * @cfg {HTMLElement} [panels]
+ * Container which contains the panels.
+ * If this parameter is not specified, the container will be created.
+ *
+ * @cfg {Function} [show]
+ * Function which will be called when tab is shown.
+ */
+Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
+	config.panels = config.panels ? $(config.panels) : $(&quot;&lt;div&gt;&quot;);
+
+	Echo.GUI.call(this, config, {
+		&quot;entries&quot;: [],
+		&quot;extraClass&quot;: &quot;&quot;,
+		&quot;show&quot;: function() {}
 	});
+});
+
+Echo.GUI.Tabs.prototype.refresh = function() {
+	var self = this;
+	var entries = this.config.get(&quot;entries&quot;);
+	var panels = this.config.get(&quot;panels&quot;);
+	var target = this.config.get(&quot;target&quot;);
+
+	target.empty();
+
+	this.tabsContainer = $('&lt;ul class=&quot;nav nav-tabs&quot;&gt;');
+	target.append(this.tabsContainer);
+
+	panels.addClass(&quot;tab-content&quot;);
+	if (panels.parent().length === 0) {
+		target.append(panels);
+	}
+
+	if (entries.length) {
+		for (var i = 0; i &lt; entries.length; i++) {
+			this.add(entries[i]);
+		}
+	}
 };
 
-Tabs.prototype.disable = function(id) {
-	this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;)
+<span id='Echo-GUI-Tabs-method-getPanels'>/**
+</span> * Method to get a DOM element which contains panels.
+ *
+ * @return {HTMLElement}
+ * DOM element which contains panels.
+ */
+Echo.GUI.Tabs.prototype.getPanels = function() {
+	return this.config.get(&quot;panels&quot;);
+};
+
+<span id='Echo-GUI-Tabs-method-disable'>/**
+</span> * Method to disable tab.
+ *
+ * @param {String} id
+ * Tab id which should be disabled.
+ */
+Echo.GUI.Tabs.prototype.disable = function(id) {
+	var tabIndex = this._getTabIndex(id);
+	if (~tabIndex) {
+		this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;)
 		.removeAttr(&quot;data-toggle&quot;)
 		.addClass(&quot;disabled&quot;);
+	}
 };
 
-Tabs.prototype.enable = function(id) {
-	this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;)
-		.attr(&quot;data-toggle&quot;, &quot;tabs&quot;)
-		.removeClass(&quot;disabled&quot;);
+<span id='Echo-GUI-Tabs-method-enable'>/**
+</span> * Method to enable tab.
+ *
+ * @param {String} id
+ * Tab id which should be enabled.
+ */
+Echo.GUI.Tabs.prototype.enable = function(id) {
+	var tabIndex = this._getTabIndex(id);
+	if (~tabIndex) {
+		this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;)
+			.attr(&quot;data-toggle&quot;, &quot;tab&quot;)
+			.removeClass(&quot;disabled&quot;);
+	}
 };
 
-Tabs.prototype.remove = function(id) {
-	this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;).remove();
+<span id='Echo-GUI-Tabs-method-remove'>/**
+</span> * Method to remove tab.
+ *
+ * @param {String} id
+ * Tab id which should be removed.
+ */
+Echo.GUI.Tabs.prototype.remove = function(id) {
+	this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;).remove();
 };
 
-Tabs.prototype.add = function(tabConfig, panel) {
-	tabConfig = tabConfig || {};
-	var tab = $('&lt;li&gt;&lt;a data-toggle=&quot;tab&quot; href=&quot;#' + tabConfig.id + '&quot;&gt;' + tabConfig.label  + '&lt;/a&gt;&lt;/li&gt;');
-	$(&quot;a[data-toggle=tab]&quot;, tab).on(&quot;show&quot;, this.config.show);
-	this.element.append(tab);
-	this.panels.append(panel);
-	return this.element;
-};
+<span id='Echo-GUI-Tabs-method-add'>/**
+</span> * Method to add tab.
+ *
+ * @param {Object} tabConfig
+ * Tab configuration.
+ *
+ * @param {String} tabConfig.id
+ * Tab id.
+ *
+ * @param {String} tabConfig.label
+ * Tab label which should be displayed.
+ *
+ * @param {Boolean} tabConfig.disabled
+ * Specifies whether the tab disabled.
+ *
+ * @param {HTMLElement} tabConfig.panel
+ * HTML Element which contains the tab content.
+ *
+ */
+Echo.GUI.Tabs.prototype.add = function(tabConfig) {
+	var self = this;
+	if (!tabConfig || !tabConfig.id) return;
 
-Tabs.prototype.get = function(id) {
-	return this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;);
-};
+	var attrs = [
+		(tabConfig.disabled ? ' class=&quot;disabled&quot;' : ' data-toggle=&quot;tab&quot;'),
+		'class=&quot;' + tabConfig.extraClass + '&quot;',
+		'href=&quot;#' + tabConfig.id + '&quot;',
+		'data-item=&quot;' + tabConfig.id + '&quot;'
+	];
+	var tab = $('&lt;li&gt;&lt;a' + attrs.join(&quot; &quot;) + '&gt;' + tabConfig.label  + '&lt;/a&gt;&lt;/li&gt;');
 
-Tabs.prototype.has = function(id) {
-	return !!this.element.has(&quot;a[href=#&quot; + id + &quot;]&quot;).length;
-};
-
-Tabs.prototype.update = function(id, config) {
-	this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;)
-		.html(config.label)
-		.addClass(config.class || &quot;&quot;);
-};
-
-Tabs.prototype.show = function(id) {
-	this.element.find(&quot;a[href=#&quot; + id + &quot;]&quot;).tab(&quot;show&quot;);
-};
-
-$.fn.echoTabs = function() {
-	var args  = arguments;
-	return this.each(function(){
-		var data = $(this).data('echoTabs');
-		var config = typeof args[0] === &quot;object&quot; &amp;&amp; args[0];
-		if (!data) {
-			$(this).data('echoTabs', (data = new Tabs(this, config)));
-		}
-		if (typeof args[0] === &quot;string&quot;) {
-			data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
-		}
+	$(&quot;a&quot;, tab).on(&quot;show&quot;, function() {
+		self.config.get(&quot;show&quot;).call(self, this);
 	});
+	this.tabsContainer.append(tab);
+
+	if (tabConfig.panel) {
+		if (tabConfig.panel.attr(&quot;id&quot;) !== tabConfig.id.toString()) {
+			tabConfig.panel.attr(&quot;id&quot;, tabConfig.id);
+		}
+		this.config.get(&quot;panels&quot;).append(tabConfig.panel.addClass(&quot;tab-pane&quot;));
+	}
+	return this.config.get(&quot;target&quot;);
 };
 
-$.fn.echoTabs.Contructor = Tabs;
+<span id='Echo-GUI-Tabs-method-get'>/**
+</span> * Method to get tab DOM element.
+ *
+ * @param {String} id
+ * Tab id.
+ *
+ * @return {HTMLElement}
+ * DOM element which contains the tab.
+ */
+Echo.GUI.Tabs.prototype.get = function(id) {
+	return this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;);
+};
+
+<span id='Echo-GUI-Tabs-method-has'>/**
+</span> * Method to check whether the tab with specified id already exists.
+ *
+ * @param {String} id
+ * Tab id.
+ *
+ * @return {Boolean}
+ * true if tab with specific id exists,
+ * false otherwise.
+ */
+Echo.GUI.Tabs.prototype.has = function(id) {
+	return !!this.config.get(&quot;target&quot;).has(&quot;a[data-item='&quot; + id + &quot;']&quot;).length;
+};
+
+<span id='Echo-GUI-Tabs-method-update'>/**
+</span> * This method updates the tab according to the tab config.
+ *
+ * @param {String} id
+ * Tab id which should be updated.
+ *
+ * @param {Object} config
+ * Tab configuration.
+ *
+ * @param {String} config.label
+ * Tab id.
+ *
+ * @param {String} config.extraClass
+ * Class name to be added to the tab element.
+ *
+ * @param {String} config.content
+ * Content of the tab (can contain HTML tags).
+ */
+Echo.GUI.Tabs.prototype.update = function(id, config) {
+	var tabIndex = this._getTabIndex(id);
+	if (~tabIndex) {
+		config.content &amp;&amp; this.config.get(&quot;panels&quot;).find(&quot;[id='&quot; + id + &quot;']&quot;).html(config.content);
+		this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;)
+			.html(config.label)
+			.addClass(config.extraClass);
+	}
+};
+
+<span id='Echo-GUI-Tabs-method-show'>/**
+</span> * Method to show tab with specific id.
+ *
+ * @param {String} id
+ * Tab id which should be shown.
+ */
+Echo.GUI.Tabs.prototype.show = function(id) {
+	this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;).tab(&quot;show&quot;);
+};
+
+Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
+	for (var i = 0; i &lt; this.config.get(&quot;entries&quot;).length; i++) {
+		if (this.config.get(&quot;entries&quot;)[i].id === id) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+})(Echo.jQuery);
 </pre>
 </body>
 </html>

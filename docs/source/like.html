@@ -73,7 +73,7 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	&quot;loaded&quot;: function() { return Echo.Control.isDefined(&quot;Echo.StreamServer.Controls.FacePile&quot;); },
+	&quot;control&quot;: &quot;Echo.StreamServer.Controls.FacePile&quot;,
 	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/streamserver.pack.js&quot;
 }];
 
@@ -173,12 +173,12 @@ plugin.methods._sendActivity = function(name, item, actor) {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-event-onLikeError'>		/**
 </span>		 * @event onLikeError
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeError
-		 * Triggered when the Like operation was failed.
+		 * Triggered when the Like operation failed.
 		 */
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-event-onUnlikeError'>		/**
 </span>		 * @event onUnlikeError
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeError
-		 * Triggered when the reverse Like operation was failed.
+		 * Triggered when the reverse Like operation failed.
 		 */
 		plugin._publishEventComplete({
 			&quot;name&quot;: name,
@@ -230,7 +230,7 @@ plugin.methods._assembleButton = function(name) {
 plugin.css =
 	'.{plugin.class:likedBy} { background: url({config:cdnBaseURL.sdk-assets}/images/likes.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
 	'.{plugin.class:highlight} { line-height: 23px; }' +
-	($.browser.msie ?
+	(Echo.Utils._browser().msie ?
 		'.{plugin.class:highlight} span { vertical-align: middle; }' +
 		'.{plugin.class:likedBy} { background-position: 0px 2px; }'
 		: ''

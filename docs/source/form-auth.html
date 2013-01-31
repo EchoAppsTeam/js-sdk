@@ -60,12 +60,12 @@ plugin.init = function() {
 plugin.config = {
 <span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-cfg-identityManager'>	/**
 </span>	 * @cfg {Object} identityManager The list of handlers for login, edit
-	 * and signup action. If some action is ommited then it will not be
-	 * available for users in the Auth control. Each handler accepts `sessionID`
+	 * and signup actions. If some action is omitted then it will not be
+	 * available for users in the Auth control. Each handler accepts sessionID
 	 * as GET parameter. This parameter is necessary for communication with
-	 * Backplane server. When handler finishes working it constructs the
+	 * the Backplane server. When the handler finishes working it constructs the
 	 * corresponding Backplane message (for login, signup or user data update)
-	 *  and sends this message to Backplane server.
+	 * and sends this message to the Backplane server.
 	 *
 	 * @cfg {Object} [identityManager.login]
 	 * Encapsulates data for login workflow
@@ -79,6 +79,9 @@ plugin.config = {
 	 * @cfg {String} [identityManager.login.url]
 	 * Specifies the URL to be opened as an auth handler
 	 *
+	 * @cfg {String} [identityManager.login.title]
+	 * Specifies the Title of the auth modal dialog
+	 *
 	 * @cfg {Object} [identityManager.signup]
 	 * Encapsulates data for signup workflow
 	 *
@@ -91,6 +94,9 @@ plugin.config = {
 	 * @cfg {String} [identityManager.signup.url]
 	 * Specifies the URL to be opened as an auth handler
 	 *
+	 * @cfg {String} [identityManager.signup.title]
+	 * Specifies the Title of the auth modal dialog
+	 *
 	 * @cfg {Object} [identityManager.edit]
 	 * Encapsulates data for edit workflow
 	 *
@@ -102,8 +108,12 @@ plugin.config = {
 	 *
 	 * @cfg {String} [identityManager.edit.url]
 	 * Specifies the URL to be opened as an auth handler
+	 *
+	 * @cfg {String} [identityManager.edit.title]
+	 * Specifies the Title of the auth modal dialog
 	 */
 	&quot;identityManager&quot;: {},
+
 <span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-cfg-submitPermissions'>	/**
 </span>	 * @cfg {String} submitPermissions
 	 * Specifies the permitted commenting modes.
@@ -113,7 +123,7 @@ plugin.config = {
 };
 
 plugin.enabled = function() {
-	return (this.component.user.get(&quot;sessionID&quot;) &amp;&amp;
+	return (this.component.user &amp;&amp; this.component.user.get(&quot;sessionID&quot;) &amp;&amp;
 		this.config.get(&quot;identityManager.login&quot;) &amp;&amp;
 		this.config.get(&quot;identityManager.signup&quot;));
 };
@@ -126,7 +136,7 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	&quot;loaded&quot;: function() { return Echo.Control.isDefined(&quot;Echo.IdentityServer.Controls.Auth&quot;); },
+	&quot;control&quot;: &quot;Echo.IdentityServer.Controls.Auth&quot;,
 	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/identityserver.pack.js&quot;
 }];
 

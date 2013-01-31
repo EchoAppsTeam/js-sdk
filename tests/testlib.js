@@ -273,7 +273,7 @@ Echo.Tests.Common.prototype.jqueryObjectsEqual = function(source, target, messag
 	expected = extract(source);
 
 	actual = extract(target);
-	QUnit.push(QUnit.equiv(actual, expected), actual, expected, message);
+	QUnit.deepEqual(actual, expected, message);
 };
 
 Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
@@ -282,7 +282,7 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 		if (!instance.view.rendered()) {
 			instance.render();
 		}
-		$.each(instance.view.renderers, function(name, renderer) {
+		$.each(instance.renderers, function(name, renderer) {
 			self.info.functions.push("renderers." + name);
 			var element = instance.view.get(name);
 			if (!element) {
@@ -408,10 +408,11 @@ Echo.Tests.Stats = {
 	},
 	"getFunctionNames": function(namespace, prefix) {
 		var stats = Echo.Tests.Stats;
-		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.API.Transports.WebSocket"];
-		var isNotLteIE7 = !($.browser.msie && $.browser.version <= 7);
+		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope"];
+		var browser = Echo.Utils._browser();
+		var isNotLteIE7 = !(browser.msie && browser.version <= 7);
 		// browser-specific ignore
-		$.map(["WebSocket", "AJAX", "XDomainRequest", "JSONP"], function(transport) {
+		$.map(["AJAX", "XDomainRequest", "JSONP"], function(transport) {
 			if (!Echo.API.Transports[transport].available() || isNotLteIE7 && transport === "JSONP") {
 				ignoreList.push("Echo.API.Transports." + transport);
 			}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.GUI) return;
+
+<span id='Echo-GUI-method-constructor'><span id='Echo-GUI'>/**
+</span></span> * @class Echo.GUI
+ * Foundation class implementing core logic for GUI components.
+ *
+ * @constructor
+ * @param {Object} config
+ * GUI component configuration.
+ */
+Echo.GUI = function(config, defaultConfig) {
+	// exit if config is missing or the target is undefined
+	if (!config || !(config.target || defaultConfig.targetless)) return;
+
+	config.target = !defaultConfig.targetless &amp;&amp; $(config.target);
+
+	this.config = new Echo.Configuration(config, defaultConfig);
+	this.refresh();
+};
+<span id='Echo-GUI-property-config'>/**
+</span> * @property {Echo.Configuration} config
+ * As soon as the component is created, you can change its config using
+ * this property.
+ * For example:
+ * 	component.config.set(&quot;some-config-parameter&quot;, &quot;new-value&quot;);
+ * 	component.refresh();
+ */
+
+<span id='Echo-GUI-method-refresh'>/**
+</span> * This method re-assembles the component HTML code and
+ * appends it to the target.
+ */
+Echo.GUI.prototype.refresh = function() {
+};
+
+<span id='Echo-GUI-method-destroy'>/**
+</span> * Hides the component and removes it's instance.
+ */
+Echo.GUI.prototype.destroy = function() {
+	this.config.get(&quot;target&quot;) &amp;&amp; this.config.get(&quot;target&quot;).empty();
+	this.config.remove(&quot;target&quot;);
+};
+
+})(Echo.jQuery);
+</pre>
+</body>
+</html>

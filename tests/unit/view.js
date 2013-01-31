@@ -143,6 +143,21 @@ suite.prototype.tests.PublicInterfaceTests = {
 		});
 		checks(view, "[renderers in render function]");
 
+		// same set of renderers applied via "renderer" function in config
+		var view = new Echo.View({
+			"cssPrefix": "echo-",
+			"renderer": function(args) {
+				if (suite.renderers[args.name]) {
+					suite.renderers[args.name](args.target, args.extra);
+				}
+				return args.target;
+			}
+		});
+		view.render({
+			"template": suite.templates.simple
+		});
+		checks(view, "[renderer function]");
+
 		// check with substitutions
 		var view = new Echo.View({
 			"cssPrefix": "echo-",

@@ -28,7 +28,7 @@ var $ = jQuery;
  * 	var stream = new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;stream&quot;),
  * 		&quot;query&quot;: &quot;childrenof:http://example.com/js-sdk&quot;,
- * 		&quot;appkey&quot;: &quot;test.js-kit.com&quot;
+ * 		&quot;appkey&quot;: &quot;test.aboutechoe.com&quot;
  * 	});
  *
  * @extends Echo.Control
@@ -44,6 +44,8 @@ var stream = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream&quot;
 if (Echo.Control.isDefined(stream)) return;
 
 stream.init = function() {
+	if (!this.checkAppKey()) return;
+
 	this._recalcEffectsTimeouts();
 
 	// define default stream state based on the config parameters
@@ -254,6 +256,9 @@ stream.config = {
 
 stream.config.normalizer = {
 	&quot;safeHTML&quot;: function(value) {
+		return &quot;off&quot; !== value;
+	},
+	&quot;showFlags&quot;: function(value) {
 		return &quot;off&quot; !== value;
 	},
 	&quot;state&quot;: function(object) {
@@ -871,7 +876,7 @@ stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 };
 
 stream.methods._extractPresentationConfig = function(data) {
-	var keys = [&quot;sortOrder&quot;, &quot;itemsPerPage&quot;, &quot;safeHTML&quot;];
+	var keys = [&quot;sortOrder&quot;, &quot;itemsPerPage&quot;, &quot;safeHTML&quot;, &quot;showFlags&quot;];
 	return Echo.Utils.foldl({}, keys, function(key, acc) {
 		if (typeof data[key] !== &quot;undefined&quot;) {
 			acc[key] = data[key];
@@ -1451,18 +1456,19 @@ stream.methods._isItemInList = function(item, items) {
 };
 
 stream.methods._initItem = function(entry, isLive, callback) {
-	var self = this;
 	var parentConfig = this.config.getAsHash();
 	var config = $.extend(true, {}, {
 		&quot;target&quot;: $(&quot;&lt;div&gt;&quot;),
 		&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
 		&quot;parent&quot;: parentConfig,
 		&quot;plugins&quot;: this.config.get(&quot;plugins&quot;),
+		&quot;context&quot;: this.config.get(&quot;context&quot;),
 		&quot;data&quot;: this._normalizeEntry(entry),
+		&quot;user&quot;: this.user,
 		&quot;live&quot;: isLive,
 		&quot;ready&quot;: callback
 	}, parentConfig.item);
-	delete parentConfig.item;
+	delete config.parent.item;
 	return new Echo.StreamServer.Controls.Stream.Item(config);
 };
 
@@ -1584,7 +1590,6 @@ stream.methods._normalizeEntry = function(entry) {
 	entry.provider = entry.provider || {};
 	entry.unique = entry.object.id + entry.target.conversationID;
 	entry.parentUnique = entry.target.id + entry.target.conversationID;
-	entry.hasMoreChildren = entry.hasMoreChildren || &quot;false&quot;;
 	return entry;
 };
 
@@ -1605,7 +1610,7 @@ stream.css =
 	'.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }' +
 	'.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
 	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }' +
-	($.browser.msie
+	(Echo.Utils._browser().msie
 		? '.{class:state-picture} { vertical-align: middle; }' +
 		'.{class:container} { zoom: 1; }'
 		: ''
@@ -1644,17 +1649,17 @@ item.init = function() {
 item.config = {
 <span id='Echo-StreamServer-Controls-Stream-Item-cfg-aggressiveSanitization'>	/**
 </span>	 * @cfg {Boolean} aggressiveSanitization
-	 * If this parameter value is set to `true`, the entire item body will
-	 * be replaced with &quot;I just shared this on Twitter...&quot; text in the 
-	 * stream if the item came from Twitter.
+	 * If this parameter value is set to true, the entire item body will
+	 * be replaced with the &quot;I just shared this on Twitter...&quot; text in the
+	 * stream in case the item came from Twitter.
 	 */
 	&quot;aggressiveSanitization&quot;: false,
 	&quot;buttonsOrder&quot;: undefined,
 <span id='Echo-StreamServer-Controls-Stream-Item-cfg-contentTransformations'>	/**
 </span>	 * @cfg {Object} contentTransformations
-	 * Specifies allowed item's content transformations for each content type.
+	 * Specifies the allowed item's content transformations for each content type.
 	 * Contains a hash where keys are content types and values are arrays with
-	 * formatting options enabled for given content type. Available options are:
+	 * formatting options enabled for the given content type. Available options are:
 	 *
 	 * + smileys - replaces textual smileys with images
 	 * + hashtags - highlights hashtags in text
@@ -1727,7 +1732,7 @@ item.config = {
 <span id='Echo-StreamServer-Controls-Stream-Item-cfg-optimizedContext'>	/**
 </span>	 * @cfg {Boolean} [optimizedContext=true]
 	 * Allows to configure the context mode of the &quot;reTag&quot; section of an item.
-	 * If set to true the context is turned into optimized mode. &quot;reTag&quot; section
+	 * If set to true the context is turned into optimized mode. The &quot;reTag&quot; section
 	 * contains only one hyperlink in this case (the same current domain is a priority).
 	 * Otherwise all hyperlinks in the item body will be resolved and converted into reTags.
 	 */
@@ -1949,8 +1954,8 @@ item.renderers.container = function(element) {
 	);
 	var switchClasses = function(action) {
 		$.map(self.buttonsOrder, function(name) {
-			if (!self.get(&quot;buttons.&quot; + name + &quot;.element&quot;)) return;
 			var clickables = self.get(&quot;buttons.&quot; + name + &quot;.clickableElements&quot;);
+			if (!self.get(&quot;buttons.&quot; + name + &quot;.element&quot;) || !clickables) return;
 			clickables[action + &quot;Class&quot;](&quot;echo-linkColor&quot;);
 		});
 	};
@@ -2027,13 +2032,12 @@ item.renderers.wrapper = function(element) {
 </span> * @echo_renderer
  */
 item.renderers.avatar = function(element) {
-	var size = this.depth ? 24 : 48;
-	var avatar = Echo.Utils.loadImage({
+	this.placeImage({ 
+		&quot;container&quot;: element,
 		&quot;image&quot;: this.get(&quot;data.actor.avatar&quot;),
 		&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)
 	});
-	avatar.css({&quot;width&quot;: size, &quot;height&quot;: size});
-	return element.empty().append(avatar);
+	return element;
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-method-children'>/**
@@ -2286,7 +2290,7 @@ item.renderers.expandChildren = function(element, extra) {
 		// element with the &quot;height: 0px&quot; is renderered like it doesn't have
 		// the height property at all. Thus we set the &quot;height: 1px&quot; as the final value
 		// for the animate function and simply hide element when the animation is done.
-		if ($.browser.msie &amp;&amp; document.compatMode !== &quot;CSS1Compat&quot;) {
+		if (Echo.Utils._browser().msie &amp;&amp; document.compatMode !== &quot;CSS1Compat&quot;) {
 			element.animate({
 				&quot;height&quot;: &quot;1px&quot;,
 				&quot;marginTop&quot;: &quot;hide&quot;,
@@ -2391,6 +2395,8 @@ item.renderers._button = function(element, extra) {
 		&quot;name&quot;: extra.name
 	};
 	var button = $(this.substitute({&quot;template&quot;: template, &quot;data&quot;: data}));
+	if (!extra.clickable) return element.append(button);
+
 	var clickables = $(&quot;.echo-clickable&quot;, button);
 	if (!clickables.length) {
 		clickables = button;
@@ -2435,7 +2441,7 @@ item.renderers._viaText = function(element, extra) {
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-method-hasMoreChildren'>/**
-</span> * Method checking if item has more children.
+</span> * Method checking if the item has more children.
  *
  * @return {Boolean}
  */
@@ -2669,6 +2675,9 @@ item.methods._assembleButtons = function() {
 			};
 			data.label = data.label || data.name;
 			data.plugin = plugin;
+			if (typeof data.clickable === &quot;undefined&quot;) {
+				data.clickable = true;
+			}
 			if (typeof data.visible === &quot;undefined&quot;) {
 				data.visible = true;
 			}
@@ -2729,7 +2738,6 @@ item.methods._sortButtons = function() {
 			_aggressiveSanitization,
 			_replaceLinkedHashtags,
 			_tags2meta,
-			_removeLinksToSelf,
 			_replacePlainHashtags,
 			_autoLinking,
 			_replaceSmileys,
@@ -2756,20 +2764,6 @@ item.methods._sortButtons = function() {
 	var _aggressiveSanitization = function(text, extra) {
 		if (extra.source &amp;&amp; extra.source === &quot;Twitter&quot; &amp;&amp; this.config.get(&quot;aggressiveSanitization&quot;)) {
 			text = &quot;&quot;;
-		}
-		return [text, extra];
-	};
-
-	var _removeLinksToSelf = function(text, extra) {
-		if (extra.source &amp;&amp; extra.source !== &quot;jskit&quot; &amp;&amp; extra.source !== &quot;echo&quot;) {
-			var url = this.depth
-				? this.get(&quot;data.target.id&quot;)
-				: this.config.get(&quot;reTag&quot;)
-					? this.get(&quot;data.object.permalink&quot;) || this.get(&quot;data.target.id&quot;)
-					: undefined;
-			if (url) {
-				text = text.replace(new RegExp(url, &quot;g&quot;), &quot;&quot;);
-			}
 		}
 		return [text, extra];
 	};
@@ -2833,18 +2827,26 @@ item.methods._sortButtons = function() {
 
 	var _autoLinking = function(text, extra) {
 		extra.textBeforeAutoLinking = text;
-		var self = this;
-		if (extra.contentTransformations.urls) {
-			text = text.replace(new RegExp(_urlMatcher, &quot;ig&quot;), function($0, $1) {
-				return Echo.Utils.hyperlink({
-					&quot;href&quot;: $1,
-					&quot;caption&quot;: $1
-				}, {
-					&quot;skipEscaping&quot;: true,
-					&quot;openInNewWindow&quot;: extra.openLinksInNewWindow
-				});
-			});
+		var self = this, url;
+		if (extra.source &amp;&amp; extra.source !== &quot;jskit&quot; &amp;&amp; extra.source !== &quot;echo&quot;) {
+			url = this.depth
+				? this.get(&quot;data.target.id&quot;)
+				: this.config.get(&quot;reTag&quot;)
+					? this.get(&quot;data.object.permalink&quot;) || this.get(&quot;data.target.id&quot;)
+					: undefined;
 		}
+		text = text.replace(new RegExp(_urlMatcher, &quot;ig&quot;), function($0, $1) {
+			// cut out URL to current item
+			if (url === $1) return &quot;&quot;;
+			if (!extra.contentTransformations.urls) return $0;
+			return Echo.Utils.hyperlink({
+				&quot;href&quot;: $1,
+				&quot;caption&quot;: $1
+			}, {
+				&quot;skipEscaping&quot;: true,
+				&quot;openInNewWindow&quot;: extra.openLinksInNewWindow
+			});
+		});
 		return [text, extra];
 	};
 
@@ -2911,8 +2913,8 @@ for (var i = 0; i &lt;= 20; i++) {
 
 item.css =
 	'.{class:content} { word-wrap: break-word; }' +
-	'.{class:container-root} { padding: 10px 0px; }' +
-	'.{class:container-root-thread} { padding: 10px 0px 0px 0px; }' +
+	'.{class:container-root} { padding: 10px 0px 10px 10px; }' +
+	'.{class:container-root-thread} { padding: 10px 0px 0px 10px; }' +
 	'.{class:container-child} { padding: 10px; margin: 0px 20px 2px 0px; }' +
 	'.{class:container-child-thread} { padding: 10px; margin: 0px 20px 2px 0px; }' +
 	'.{class:avatar-wrapper} { margin-right: -58px; float: left; position: relative; }' +
@@ -2955,7 +2957,7 @@ item.css =
 	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url(&quot;{config:cdnBaseURL.sdk-assets}/images/loading.gif&quot;); }' +
 	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
 	itemDepthRules.join(&quot;\n&quot;) +
-	($.browser.msie
+	(Echo.Utils._browser().msie
 		? '.{class:childrenMarker} { font-size: 1px; line-height: 1px; }' +
 		'.{class:blocker-backdrop}, .{class:blocker-message} { filter:alpha(opacity=70); }' +
 		'.{class:content}, .{class:container}, .{class:subwrapper} { zoom: 1; }' +

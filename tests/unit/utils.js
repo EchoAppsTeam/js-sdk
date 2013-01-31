@@ -30,6 +30,7 @@ suite.prototype.info = {
 		"set",
 		"stripTags",
 		"substitute", // covered within the Control and Plugin tests
+		"browser",
 		"timestampFromW3CDTF"
 	]
 };
@@ -271,26 +272,102 @@ suite.prototype.tests.TestDataMethods = {
 		QUnit.equal(Echo.Utils.timestampFromW3CDTF("1994-11-0508-15:30"), undefined,
 			"Checking timestampFromW3CDTF() method with incorrect input value");
 
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>some_content</div>", 10), "<div>some_conte</div>",
-			"Checking htmlTextTruncate() method");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>content</div>", 10), "<div>content</div>",
-			"Checking htmlTextTruncate() method with short HTML content");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div><span>some</span>_content</div>", 10),"<div><span>some</span>_conte</div>",
-			"Checking htmlTextTruncate() method with nested HTML tags");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>some_content</div>", 10, "_postfix"), "<div>some_conte_postfix</div>",
-			"Checking htmlTextTruncate() method with postfix param");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>some&nbsp;content</div>", 10), "<div>some&nbsp;conten</div>",
-			"Checking htmlTextTruncate() method with special character");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>123456", 5, "", true), "<div>12345</div>",
-			"Checking htmlTextTruncate() method with forceClosingTabs = true");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>123456", 5, "", false), "<div>12345</div>",
-			"Checking htmlTextTruncate() method with forceClosingTabs = false");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>12345", 5, "", true), "<div>12345</div>",
-			"Checking htmlTextTruncate() method with forceClosingTabs = true and no truncation");
-		QUnit.equal(Echo.Utils.htmlTextTruncate("<div>12345", 5, "", false), "<div>12345",
-			"Checking htmlTextTruncate() method with forceClosingTabs = false and no truncation");
+		var htmlToTruncate = '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i> and <a href="domain.com" class="link">link</a></u></b> <span>qwerty</b>asdf</span></div>';
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 3), '<div class="some-class">some</div>',
+			"Checking htmlTextTruncate(): cut at the middle of first word");
++
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 10), '<div class="some-class">some<br>longword</div>',
+			"Checking htmlTextTruncate(): cut at the middle of second word");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 10, "_postfix"), '<div class="some-class">some<br>longword_postfix</div>',
+			"Checking htmlTextTruncate(): with postfix");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 13), '<div class="some-class">some<br>longword &copy;</div>',
+			"Checking htmlTextTruncate(): cut before html special character");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 15), '<div class="some-class">some<br>longword &copy;,</div>',
+			"Checking htmlTextTruncate(): cut after comma");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 19), '<div class="some-class">some<br>longword &copy;, &amp;amp</div>',
+			"Checking htmlTextTruncate(): cut at the middle of word");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 22), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b></b></div>',
+			"Checking htmlTextTruncate(): cut after space");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 26), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u></u></b></div>',
+			"Checking htmlTextTruncate(): cut between word and closing tag");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 37), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_</u></b></div>',
+			"Checking htmlTextTruncate(): cut between word and underscore");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 37, "..."), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_...</u></b></div>',
+			"Checking htmlTextTruncate(): cut between word and underscore with postfix");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 38), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i></i></u></b></div>',
+			"Checking htmlTextTruncate(): cut after underscore");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 40), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i></u></b></div>',
+			"Checking htmlTextTruncate(): cut at the middle of word");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 42), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i></u></b></div>',
+			"Checking htmlTextTruncate(): cut before closing tag");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 49), '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i> and <a href=\"domain.com\" class=\"link\">link</a></u></b></div>',
+			"Checking htmlTextTruncate(): cut at the middle of the link");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 4), '<div class="some-class">some<br></div>',
+			"Checking htmlTextTruncate(): cut before standalone tag");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 5), '<div class="some-class">some<br>longword</div>',
+			"Checking htmlTextTruncate(): cut after standalone tag");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate), htmlToTruncate, "Checking htmlTextTruncate(): without 'limit' parameter");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 60), htmlToTruncate,
+			"Checking htmlTextTruncate(): with wrong html code");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 100), htmlToTruncate,
+			"Checking htmlTextTruncate(): without cutting (text.length < limit)");
+
+		var htmlToTruncate = '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i> and <a href="domain.com" class="link">link</a></u></b> <span>qwerty asdf</span>';
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 62), htmlToTruncate + "</div>",
+			"Checking htmlTextTruncate(): cut at the last word");
+
+		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 70, "", true), htmlToTruncate + '</div>',
+			"Checking htmlTextTruncate(): with forceClosingTags = true");
 
 		QUnit.ok(typeof Echo.Utils.getUniqueString() == "string", "getUniqueString() really returns string");
+
+		// Checking Echo.Utils._browser() method
+		var _origUserAgent = navigator.userAgent;
+		var browsers = [{
+			"title": "Firefox 18.0",
+			"userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:18.0) Gecko/20100101 Firefox/18.0",
+			"result": {"mozilla": true, "version": "18.0"}
+		}, {
+			"title": "Chrome 23.0",
+			"userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11",
+			"result": {"chrome": true, "webkit": true, "version": "23.0.1271.97"}
+		}, {
+			"title": "IE 7",
+			"userAgent": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C)",
+			"result": {"msie": true, "version": "7.0"}
+		}, {
+			"title": "IE 8",
+			"userAgent": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C)",
+			"result": {"msie": true, "version": "8.0"}
+		}, {
+			"title": "IE 9",
+			"userAgent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)",
+			"result": {"msie": true, "version": "9.0"}
+		}];
+
+		for (var i = 0; i < browsers.length; i++) {
+			var result = Echo.Utils._browser(browsers[i].userAgent);
+			QUnit.deepEqual(browsers[i].result, result, "Checking Echo.Utils._browser() method: " + browsers[i].title);
+		}
+
 		var strings = [];
 		for (var i = 0; i < 5; i++) {
 			strings.push(Echo.Utils.getUniqueString());
@@ -355,8 +432,9 @@ suite.prototype.tests.TestDataMethods = {
 		};
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key:value}"),
 			["{key:value}", "key", "value"], "Checking templateSubstitution regexp with one key-value pair");
+		var browser = Echo.Utils._browser();
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key}"),
-			["{key}", "key", ($.browser.msie && $.browser.version <= 8 || $.browser.msie && document.compatMode === "BackCompat" ? "" : undefined)], "Checking templateSubstitution regexp with key and empty value");
+			["{key}", "key", (browser.msie && browser.version <= 8 || browser.msie && document.compatMode === "BackCompat" ? "" : undefined)], "Checking templateSubstitution regexp with key and empty value");
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("string without template"),
 			null, "Checking templateSubstitution regexp with fake string as parameter");
 		var regexp = new RegExp(Echo.Utils.regexps.templateSubstitution, "g");
@@ -537,6 +615,56 @@ suite.prototype.async.fakeImageTest = function(callback) {
 	$("#qunit-fixture").append(img);
 };
 
+suite.prototype.async.errorImageTest = function(callback) {
+	var url = Echo.Loader.getURL("images/avatar-default.png", false);
+	var img = Echo.Utils.loadImage({
+		"image": "http://example.com/fake.jpg",
+		"onerror": function() {
+			QUnit.ok(true, "Checking loadImage() method onerror handler call")
+			callback();
+		},
+		"onload": function() {
+			QUnit.ok(false, "Checking loadImage() method onerror handler call");
+			callback();
+		}
+	});
+	$("#qunit-fixture").append(img);
+};
+
+suite.prototype.async.emptyUrlImageTest = function(callback) {
+	var url = Echo.Loader.getURL("images/avatar-default.png", false);
+	var img = Echo.Utils.loadImage({
+		"image": "",
+		"defaultImage": url,
+		"onerror": function() {
+			QUnit.ok(false, "Checking loadImage() method with empty URL image");
+			callback();
+		},
+		"onload": function() {
+			QUnit.equal($(this).attr("src"), url, "Checking loadImage() method with empty URL image");
+			callback();
+		}
+	});
+	$("#qunit-fixture").append(img);
+};
+
+suite.prototype.async.nullUrlImageTest = function(callback) {
+	var url = Echo.Loader.getURL("images/avatar-default.png", false);
+	var img = Echo.Utils.loadImage({
+		"image": null,
+		"defaultImage": url,
+		"onerror": function() {
+			QUnit.ok(false, "Checking loadImage() method with null URL image");
+			callback();
+		},
+		"onload": function() {
+			QUnit.equal($(this).attr("src"), url, "Checking loadImage() method with null URL image");
+			callback();
+		}
+	});
+	$("#qunit-fixture").append(img);
+};
+
 var getTestFunctions = function() {
 	var result = [];
 	var functions = [
@@ -585,6 +713,9 @@ suite.prototype.tests.TestAsyncMethods = {
 		this.sequentialAsyncTests([
 			"simpleImageTest",
 			"fakeImageTest",
+			"errorImageTest",
+			"emptyUrlImageTest",
+			"nullUrlImageTest",
 			"sequentialCallTest",
 			"parallelCallTest"
 		], "async");

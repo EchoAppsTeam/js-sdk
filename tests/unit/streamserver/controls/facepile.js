@@ -23,8 +23,7 @@ var suite = Echo.Tests.Unit.FacePile = function() {
 suite.prototype.info = {
 	"className" : data.instance.name,
 	"functions" : [
-		"getVisibleUsersCount",
-		"Item.isYou"
+		"getVisibleUsersCount"
 	]
 };
 

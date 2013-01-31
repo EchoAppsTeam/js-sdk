@@ -121,7 +121,8 @@ Echo.API.Transports.AJAX.prototype.abort = function() {
 };
 
 Echo.API.Transports.AJAX.available = function() {
-	return !$.browser.msie || $.browser.msie &amp;&amp; $.browser.version &gt;= 10;
+	var browser = Echo.Utils._browser();
+	return !browser.msie || browser.msie &amp;&amp; browser.version &gt;= 10;
 };
 
 <span id='Echo-API-Transports-XDomainRequest'>/**
@@ -231,8 +232,9 @@ Echo.API.Transports.XDomainRequest.available = function(config) {
 	var transportSpecAvailability = /^get|post$/i.test(config.method)
 		&amp;&amp; /^https?/.test(schema)
 		&amp;&amp; document.location.protocol === schema;
-	return $.browser.msie
-		&amp;&amp; ~$.inArray(parseInt($.browser.version), [8, 9])
+	var browser = Echo.Utils._browser();
+	return browser.msie
+		&amp;&amp; ~$.inArray(parseInt(browser.version), [8, 9])
 		&amp;&amp; transportSpecAvailability;
 };
 
@@ -313,47 +315,6 @@ Echo.API.Transports.JSONP.available = function() {
 	return true;
 };
 
-<span id='Echo-API-Transports-WebSocket'>/**
-</span> * @class Echo.API.Transports.WebSocket
- * @extends Echo.API.Transport
- */
-Echo.API.Transports.WebSocket = utils.inherit(Echo.API.Transport, function(config) {
-	return Echo.API.Transports.WebSocket.parent.constructor.apply(this, arguments);
-});
-
-Echo.API.Transports.WebSocket.prototype._getScheme = function() {
-	return this.config.get(&quot;secure&quot;) ? &quot;wss:&quot; : &quot;ws:&quot;;
-};
-
-Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
-	var self = this;
-	var socket = new (window.WebSocket || window.MozWebSocket)(this._prepareURL());
-	socket.onmessage = function(event) {
-		self.config.get(&quot;onData&quot;)($.parseJSON(event.data));
-	};
-	socket.onopen = this.config.get(&quot;onOpen&quot;);
-	socket.onclose = this.config.get(&quot;onClose&quot;);
-	socket.onerror = function(errorResponse, requestParams) {
-		errorResponse = self._wrapErrorResponse(errorResponse);
-		self.config.get(&quot;onError&quot;)(errorResponse, requestParams);
-	};
-	return socket;
-};
-
-Echo.API.Transports.WebSocket.prototype.send = function(params) {
-	this.transportObject.send(utils.objectToJSON(params));
-};
-
-Echo.API.Transports.WebSocket.prototype.abort = function() {
-	this.config.get(&quot;onClose&quot;)();
-};
-
-Echo.API.Transports.WebSocket.available = function() {
-	// FIXME: fix when server will support Web Sockets
-	return false;
-	//return (&quot;WebSocket&quot; in window || &quot;MozWebSocket&quot; in window);
-};
-
 <span id='Echo-API-Request'>/**
 </span> * @class Echo.API.Request
  * Class implementing API requests logic on the transport layer.
@@ -427,8 +388,8 @@ Echo.API.Request = function(config) {
 		&quot;method&quot;: &quot;GET&quot;,
 <span id='Echo-API-Request-cfg-timeout'>		/**
 </span>		 * @cfg {Number} [timeout]
-		 * Specifies the number of seconds after which onError callback will be
-		 * called if API request failed.
+		 * Specifies the number of seconds after which the onError callback
+		 * is called if the API request failed.
 		 */
 		&quot;timeout&quot;: 30
 	});
@@ -441,7 +402,7 @@ Echo.API.Request.prototype._isSecureRequest = function() {
 };
 
 <span id='Echo-API-Request-method-send'>/**
-</span> * Method performing api request using given parameters.
+</span> * Method performing the API request using the given parameters.
  *
  * @param {Object} [args] Request parameters.
  * @param {Boolean} [args.force] Flag to initiate aggressive polling.
@@ -498,7 +459,7 @@ Echo.API.Request.prototype._getTransport = function() {
 		? userDefinedTransport
 		: function() {
 			var transport;
-			$.each([&quot;WebSocket&quot;, &quot;AJAX&quot;, &quot;XDomainRequest&quot;, &quot;JSONP&quot;], function(i, name) {
+			$.each([&quot;AJAX&quot;, &quot;XDomainRequest&quot;, &quot;JSONP&quot;], function(i, name) {
 				var available = Echo.API.Transports[name].available({
 					&quot;URL&quot;: self.config.get(&quot;apiBaseURL&quot;),
 					&quot;method&quot;: self.config.get(&quot;method&quot;)

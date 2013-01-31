@@ -19,65 +19,114 @@
 
 var $ = jQuery;
 
-if ($.fn.echoDropdown) return;
+if (!window.Echo) window.Echo = {};
 
-$.fn.echoDropdown = function() {
-	var args = arguments;
-	return this.each(function(){
-		var data = $(this).data(&quot;echoDropdown&quot;);
-		if (!data || typeof args[0] === &quot;object&quot;) {
-			$(this).data(&quot;echoDropdown&quot;, (data = new Dropdown(this, args[0])));
-		}
-		if (typeof args[0] === &quot;string&quot;) {
-			data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
-		}
+if (!Echo.GUI) Echo.GUI = {};
+
+if (Echo.GUI.Dropdown) return;
+
+<span id='Echo-GUI-Dropdown-method-constructor'><span id='Echo-GUI-Dropdown-cfg-entries'><span id='Echo-GUI-Dropdown-cfg-title'><span id='Echo-GUI-Dropdown-cfg-extraClass'><span id='Echo-GUI-Dropdown-cfg-target'><span id='Echo-GUI-Dropdown'>/**
+</span></span></span></span></span></span> * @class Echo.GUI.Dropdown
+ * Class wrapper for &lt;a href=&quot;http://twitter.github.com/bootstrap/javascript.html#dropdowns&quot; target=&quot;_blank&quot;&gt;bootstrap-dropdown.js&lt;/a&gt;.
+ * The Echo.GUI.Dropdown class provides a simplified interface to work with the
+ * Bootstrap Dropdown JS class.
+ * Echo wrapper assembles the HTML code required for Bootstrap Dropdown JS class
+ * based on the parameters specified in the config and initializes
+ * the corresponding Bootstrap JS class.
+ *
+ * Example:
+ * 	var dropdown = new Echo.GUI.Dropdown({
+ * 		&quot;target&quot;: &quot;.css-selector&quot;,
+ * 		&quot;title&quot;: &quot;Dropdown title&quot;,
+ * 		&quot;extraClass&quot;: &quot;nav&quot;,
+ * 		&quot;entries&quot;: [{
+ * 			&quot;title&quot;: &quot;entry1&quot;,
+ * 			&quot;handler&quot;: function() {},
+ * 			&quot;icon&quot;: &quot;http://example.com/icon.png&quot;
+ * 		}, {
+ * 			&quot;title&quot;: &quot;entry2&quot;
+ * 		}]
+ * 	});
+ *
+ * @extends Echo.GUI
+ * @constructor
+ * Creates a new dropdown in the container you have passed in the &quot;config.target&quot;.
+ *
+ * @param {Object} config
+ * Dropdown parameters.
+ *
+ * @cfg {Mixed} target
+ * The container where the dropdown should be located.
+ * This parameter can have several types:
+ * 	- CSS selector (ex: &quot;.css-selector&quot;)
+ * 	- HTMLElement (ex: document.getElementById(&quot;some-element-id&quot;))
+ * 	- jQuery object (ex: $(&quot;.css-selector&quot;))
+ *
+ * @cfg {String} extraClass
+ * Custom class name which should be added to the dropdown.
+ *
+ * @cfg {String} title
+ * Dropdown title.
+ *
+ * @cfg {Array} entries
+ * Array of the dropdown entries.
+ * Each entry is the object with the following parameters:
+ * 	title   - entry title
+ * 	handler - function which will be called when entry is selected
+ * 	icon    - URL for the icon. Icon size should be 16x16 pixels.
+ */
+Echo.GUI.Dropdown = Echo.Utils.inherit(Echo.GUI, function(config) {
+	Echo.GUI.call(this, config, {
+		&quot;title&quot;: &quot;&quot;,
+		&quot;extraClass&quot;: &quot;&quot;,
+		&quot;entries&quot;: []
 	});
+});
+
+Echo.GUI.Dropdown.prototype.refresh = function() {
+	this.config.get(&quot;target&quot;).empty();
+	this._assembleEntries(this._assembleContainer());
 };
 
-var Dropdown = function(element, params) {
-	this.element = $(element);
-	var dropdown = this._assembleContainer(params);
-	this._assembleEntries(params.entries, dropdown);
+<span id='Echo-GUI-Dropdown-method-setTitle'>/**
+</span> * This method allows to change dropdown title.
+ *
+ * @param {String} title
+ * Dropdown title.
+ */
+Echo.GUI.Dropdown.prototype.setTitle = function(title) {
+	$(&quot;.dropdown-toggle&quot;, this.config.get(&quot;target&quot;)).empty().append(title);
 };
 
-Dropdown.prototype.setTitle = function(title) {
-	$(&quot;.dropdown-toggle&quot;, this.element).empty().append(title);
+Echo.GUI.Dropdown.prototype._assembleContainer = function() {
+	 var template =
+		'&lt;li class=&quot;dropdown&quot;&gt;' +
+			'&lt;a class=&quot;dropdown-toggle&quot; data-toggle=&quot;dropdown&quot; role=&quot;button&quot; href=&quot;#&quot;&gt;' +
+				this.config.get(&quot;title&quot;) +
+			'&lt;/a&gt;' +
+		'&lt;/li&gt;';
+	var dropdown = $(template);
+	this.config.get(&quot;target&quot;).append($('&lt;ul class=&quot;' + this.config.get(&quot;extraClass&quot;) + '&quot;&gt;').append(dropdown));
+
+	return dropdown;
 };
 
-Dropdown.prototype._assembleContainer = function(params) {
-	var container = $(&quot;&lt;ul&gt;&quot;).addClass(&quot;nav&quot;)
-		.appendTo(this.element);
-	var dropdown = $(&quot;&lt;li&gt;&quot;)
-		.addClass(&quot;dropdown&quot;)
-		.appendTo(container);
-	$(&quot;&lt;a&gt;&quot;).addClass(&quot;dropdown-toggle&quot;)
-		.attr(&quot;data-toggle&quot;, &quot;dropdown&quot;)
-		.attr(&quot;role&quot;, &quot;button&quot;)
-		.attr(&quot;href&quot;, &quot;#&quot;)
-		.append(params.title)
-		.appendTo(dropdown);
-	return dropdown;	
-};
+Echo.GUI.Dropdown.prototype._assembleEntries = function(container) {
+	var menu = $('&lt;ul class=&quot;dropdown-menu&quot; role=&quot;menu&quot;&gt;');
+	container.append(menu);
 
-Dropdown.prototype._assembleEntries = function(entries, container) {
-	var menu = $(&quot;&lt;ul&gt;&quot;).addClass(&quot;dropdown-menu&quot;)
-		.attr(&quot;role&quot;, &quot;menu&quot;)
-		.appendTo(container);
-	$.map(entries || [], function(entry) {
-		$(&quot;&lt;a role='button' class='echo-clickable' /&gt;&quot;)
-			.css({
-				&quot;background-image&quot;: &quot;url(&quot; + entry.icon + &quot;)&quot;,
-				&quot;background-repeat&quot;: &quot;no-repeat&quot;,
-				&quot;background-position&quot;: &quot;10px 5px&quot;,
-				&quot;padding-left&quot;: 32
-			})
-			.append(entry.title)
+	$.map(this.config.get(&quot;entries&quot;), function(entry) {
+		var item = $(&quot;&lt;a role='button' class='echo-clickable' /&gt;&quot;)
 			.click(function() {
-				entry.handler &amp;&amp; entry.handler({
-					&quot;title&quot;: entry.title
-				});
-			})
-			.appendTo(($(&quot;&lt;li&gt;&quot;).appendTo(menu)));
+				entry.handler &amp;&amp; entry.handler.call(this, entry);
+			});
+		if (entry.icon) {
+			item.addClass(&quot;icon&quot;);
+			item.css({
+				&quot;background-image&quot;: &quot;url(&quot; + entry.icon + &quot;)&quot;
+			});
+		}
+		menu.append($(&quot;&lt;li&gt;&quot;).append(item.append(entry.title)));
 	});
 	return menu;
 };

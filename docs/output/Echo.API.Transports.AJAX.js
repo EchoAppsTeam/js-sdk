@@ -79,8 +79,8 @@ Ext.data.JsonP.Echo_API_Transports_AJAX({
     "Echo.API.Transport"
   ],
   "subclasses": [
-    "Echo.API.Transports.XDomainRequest",
-    "Echo.API.Transports.JSONP"
+    "Echo.API.Transports.JSONP",
+    "Echo.API.Transports.XDomainRequest"
   ],
   "mixedInto": [
 

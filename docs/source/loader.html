@@ -34,8 +34,10 @@ Echo.Loader = {
 		&quot;errorTimeout&quot;: 5000 // 5 sec
 	},
 <span id='Echo-Loader-property-overrides'>	&quot;overrides&quot;: {},
-</span><span id='Echo-Loader-property-vars'>	&quot;vars&quot;: {}
-</span>};
+</span><span id='Echo-Loader-property-vars'>	&quot;vars&quot;: {
+</span>		&quot;state&quot;: {&quot;resources&quot;: {}, &quot;queue&quot;: []}
+	}
+};
 
 <span id='Echo-Loader-static-method-getURL'>/**
 </span> * @static
@@ -62,7 +64,7 @@ Echo.Loader.getURL = function(url, devVersion) {
  * Function to initialize canvases on the page.
  *
  * @param {Object} [config]
- * Object which defines an initialization config parameters
+ * Object which defines the initialization of config parameters
  *
  * @param {Mixed} [config.canvases]
  * Array of jQuery elements or a single jQuery element, which represents a
@@ -72,10 +74,10 @@ Echo.Loader.getURL = function(url, devVersion) {
  * @param {Object} [config.target]
  * Target element where Echo Loader should look for the canvases if no
  * canvases were passed in the &quot;config.canvases&quot; field.
-*/
+ */
 Echo.Loader.init = function(config) {
 	config = config || {};
-	Echo.Loader._initEnvironment(function() {
+	Echo.Loader.initEnvironment(function() {
 		var canvases = config.canvases;
 
 		// convert a single canvas to the 1-element array
@@ -104,9 +106,9 @@ Echo.Loader.init = function(config) {
  * JavaScript or CSS stylesheet file URL.
  *
  * @param {Function} resources.loaded
- * Function for check whether the script was loaded. This function must return
- * boolean value which indicates whether the resource was already loaded on the
- * page or not. If the resource was already loaded - no download is performed
+ * Function used to check whether the script was loaded. This function must return
+ * the boolean value which indicates whether the resource was already loaded on the
+ * page or not. If the resource has already been loaded - no download is performed
  * and the callback is called immediately.
  *
  * @param {Function} [callback]
@@ -121,33 +123,56 @@ Echo.Loader.init = function(config) {
  *
  */
 Echo.Loader.download = function(resources, callback, config) {
-	resources = resources || [];
 	config = config || {};
 	callback = callback || function() {};
+	resources = resources || [];
 
-	if (!Echo.Loader.vars.queued) {
-		Echo.Loader.vars.queued = {};
-	}
+	var state = Echo.Loader.vars.state;
+	var invokeCallbacks = function() {
+		var callbacks = [];
+		// Important note: we should *not* execute callbacks
+		// while iterating through the queue. We need to update
+		// the queue first and only after that execute the callbacks,
+		// because there might be calls to &quot;Echo.Loader.download&quot; function
+		// which can interfere with the current queue state.
+		state.queue = Echo.Loader._map(state.queue, function(item) {
+			if (Echo.Loader._areResourcesReady(item.resources)) {
+				callbacks.push(item.callback);
+				return; // do *not* put this resource back into the queue
+			}
+			return item;
+		});
+		Echo.Loader._map(callbacks, function(_callback) { _callback(); });
+	};
 
-	var urls = [];
-	var queued = Echo.Loader.vars.queued;
-	for (var i = 0; i &lt; resources.length; i++) {
-		var res = resources[i];
-		if (!queued[res.url] &amp;&amp; (!res.loaded || !res.loaded())) {
-			queued[res.url] = true;
-			urls.push(Echo.Loader.getURL(res.url));
+	state.queue.push({&quot;resources&quot;: resources, &quot;callback&quot;: callback});
+
+	var urls = Echo.Loader._map(resources, function(resource) {
+		var url = Echo.Loader.getURL(resource.url);
+		if (!Echo.Loader._areResourcesReady([resource]) &amp;&amp;
+			state.resources[url] !== &quot;loading&quot;) {
+				state.resources[url] = &quot;loading&quot;;
+				return url;
 		}
-	}
+	});
+
+	// invoke queued handler in case all requested resources
+	// are ready by the time the &quot;download&quot; function is called
 	if (!urls.length) {
-		callback();
-		return false;
+		invokeCallbacks();
+		return;
 	}
-	if (config.errorTimeout) {
-		yepnope.errorTimeout = config.errorTimeout;
-	}
-	yepnope({
-		&quot;load&quot;: urls,
-		&quot;complete&quot;: callback
+
+	var prefix = &quot;timeout=&quot; + (config.errorTimeout || Echo.Loader.config.errorTimeout) + &quot;!&quot;;
+	Echo.yepnope({
+		&quot;load&quot;: Echo.Loader._map(urls, function(url) { return prefix + url; }),
+		&quot;complete&quot;: function() {
+			// mark all loaded scripts as &quot;ready&quot;
+			Echo.Loader._map(urls, function(url) {
+				state.resources[url] = &quot;ready&quot;;
+			});
+			invokeCallbacks();
+		}
 	});
 };
 
@@ -173,7 +198,9 @@ Echo.Loader.override = function(canvasID, appID, config) {
 
 <span id='Echo-Loader-static-method-isDebug'>/**
 </span> * @static
- * Allows to identify if code should print logs, use non-minified versions of scripts, ...
+ * Allows to identify if the debug mode is enabled for Echo environment
+ * on the page (i.e whether the logs should be printed in console,
+ * non-minified versions of scripts should be used)
  *
  * @return {Boolean}
  */
@@ -204,7 +231,93 @@ Echo.Loader.isDebug = function() {
 	Echo.Loader.debug = !!Echo.Cookie.get(_debugCookieName);
 })();
 
-Echo.Loader._initEnvironment = function(callback) {
+<span id='Echo-Loader-static-method-initApplication'>/**
+</span> * @static
+ * Function to initialize application on the page. The function performs the following actions:
+ *
+ * + initializes Echo JavaScript environment (if it was not initialized yet)
+ * + establishes the Backplane connection (if app.backplane is defined)
+ * + establishes Echo User session on the page (if app.config.appkey is defined)
+ * + downloads the application script
+ * + calls the app JavaScript class constructor which handles further application initialization
+ *
+ * @param {Object} app
+ * Object which defines the base app configuration.
+ *
+ * @param {String} app.component
+ * The name of the JavaScript app class which should be initialized.
+ *
+ * @param {String} app.script
+ * Appliction JavaScript class script URL.
+ *
+ * @param {Object} [app.scripts]
+ * Object which specifies the location (URL) of the production (minified) and development
+ * (non-minified) versions of the app JavaScript class code. The &quot;prod&quot; and &quot;dev&quot; keys
+ * should be used in order to specify the production and development URLs respectively.
+ *
+ * @param {Object} [app.backplane]
+ * Object which contains the data to be passed into the Backplane.init call.
+ *
+ * @param {Object} [app.config]
+ * Parameters to be passed into the application constructor during its initialization.
+ */
+Echo.Loader.initApplication = function(app) {
+	app = app || {};
+	app.config = app.config || {};
+	var script = Echo.Loader._getAppScriptURL(app);
+
+	if (!script || !app.component) {
+		Echo.Loader._error({
+			&quot;args&quot;: {&quot;app&quot;: app},
+			&quot;code&quot;: &quot;invalid_app_config&quot;,
+			&quot;message&quot;: &quot;Invalid config passed into the initApplication function&quot;
+		});
+		return;
+	}
+
+	var initUser = function(callback) {
+		if (!app.config.appkey) {
+			callback();
+			return;
+		}
+		Echo.Loader._initUser(app.config, function() { callback &amp;&amp; callback(this); });
+	};
+	Echo.Loader.initEnvironment(function() {
+		Echo.Loader._initBackplane(app.backplane, function() {
+			initUser(function(user) {
+				Echo.Loader.download([{
+					&quot;url&quot;: script,
+					&quot;loaded&quot;: function() {
+						return Echo.Control.isDefined(app.component);
+					}
+				}], function() {
+					var Application = Echo.Utils.getComponent(app.component);
+					if (!Application) {
+						Echo.Loader._error({
+							&quot;args&quot;: {&quot;app&quot;: app},
+							&quot;code&quot;: &quot;no_suitable_app_class&quot;,
+							&quot;message&quot;: &quot;Unable to init an app, &quot; +
+									&quot;no suitable class found&quot;
+						});
+						return;
+					}
+					app.config.user = user;
+					new Application(app.config);
+				}, {&quot;errorTimeout&quot;: Echo.Loader.config.errorTimeout});
+			});
+		});
+	});
+};
+
+<span id='Echo-Loader-static-method-initEnvironment'>/**
+</span> * @static
+ * Function to initialize Echo environment on the page by downloading Backplane lib,
+ * jQuery library with the necessary dependencies and the base Echo classes.
+ *
+ * @param {Function} [callback]
+ * Callback function which should be called as soon as Echo environment is ready.
+ */
+Echo.Loader.initEnvironment = function(callback) {
 	var resources = [{
 		&quot;url&quot;: &quot;backplane.js&quot;,
 		&quot;loaded&quot;: function() { return !!window.Backplane; }
@@ -215,7 +328,36 @@ Echo.Loader._initEnvironment = function(callback) {
 		&quot;url&quot;: &quot;environment.pack.js&quot;,
 		&quot;loaded&quot;: function() { return !!Echo.Utils; }
 	}];
+	if (Echo.Loader._areResourcesReady(resources)) {
+		callback &amp;&amp; callback();
+		return;
+	}
 	Echo.Loader.download(resources, callback);
+};
+
+// implementation of the &quot;map&quot; function for the cases when jQuery is not loaded yet
+Echo.Loader._map = function(list, iterator) {
+	var result = [];
+	if (list &amp;&amp; list.length &amp;&amp; iterator) {
+		for (var i = 0; i &lt; list.length; i++) {
+			var value = iterator(list[i], i);
+			if (value === false) break; // jQuery-like convention
+			if (typeof value !== &quot;undefined&quot;) result.push(value);
+		}
+	}
+	return result;
+};
+
+Echo.Loader._areResourcesReady = function(resources) {
+	var state = Echo.Loader.vars.state;
+	var resourceReadyFlags = Echo.Loader._map(resources, function(resource) {
+		var url = Echo.Loader.getURL(resource.url);
+		// the 'true' flag will be added into the
+		// result array only when resource is ready
+		return (resource.loaded &amp;&amp; resource.loaded()) ||
+			(state.resources[url] &amp;&amp; state.resources[url] === &quot;ready&quot;);
+	});
+	return resources.length === resourceReadyFlags.length;
 };
 
 Echo.Loader._initCanvases = function(canvases) {
@@ -313,8 +455,8 @@ Echo.Loader._initUser = function(canvas, callback) {
 Echo.Loader._initApplications = function(canvas) {
 	var resources = [];
 	Echo.jQuery.each(canvas.config.apps, function(id, app) {
-		app.config = app.config || {};
-		if (!app.component || !app.script || !app.id) {
+		var script = Echo.Loader._getAppScriptURL(app);
+		if (!app.component || !script || !app.id) {
 			Echo.Loader._error({
 				&quot;args&quot;: {&quot;app&quot;: app},
 				&quot;code&quot;: &quot;incomplete_app_config&quot;,
@@ -323,10 +465,11 @@ Echo.Loader._initApplications = function(canvas) {
 			return;
 		}
 
+		app.config = app.config || {};
 		app.config.user = canvas.config.user;
 		app.config.target = Echo.Loader._createApplicationTarget(app);
 		resources.push({
-			&quot;url&quot;: app.script,
+			&quot;url&quot;: script,
 			&quot;loaded&quot;: function() {
 				return Echo.Utils.isComponentDefined(app.component);
 			}
@@ -352,6 +495,12 @@ Echo.Loader._initApplications = function(canvas) {
 	}, {
 		&quot;errorTimeout&quot;: Echo.Loader.config.errorTimeout
 	});
+};
+
+Echo.Loader._getAppScriptURL = function(config) {
+	return config.scripts &amp;&amp; config.scripts.dev &amp;&amp; config.scripts.prod
+		? config.scripts[Echo.Loader.isDebug() ? &quot;dev&quot; : &quot;prod&quot;]
+		: config.script;
 };
 
 Echo.Loader._createApplicationTarget = function(config) {

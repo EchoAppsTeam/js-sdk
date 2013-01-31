@@ -365,37 +365,37 @@ plugin.methods._publishCompleteActionEvent = function(args) {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onApproveError'>	/**
 </span>	 * @event onApproveError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError
-	 * Triggered if &quot;Approve&quot; operation was failed.
+	 * Triggered if &quot;Approve&quot; operation failed.
 	 */
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onSpamError'>	/**
 </span>	 * @event onSpamError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError
-	 * Triggered if &quot;Spam&quot; operation was failed.
+	 * Triggered if &quot;Spam&quot; operation failed.
 	 */
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onDeleteError'>	/**
 </span>	 * @event onDeleteError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteError
-	 * Triggered if &quot;Delete&quot; operation was failed.
+	 * Triggered if &quot;Delete&quot; operation failed.
 	 */
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUntouchError'>	/**
 </span>	 * @event onUntouchError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError
-	 * Triggered if &quot;Untouch&quot; operation was failed.
+	 * Triggered if &quot;Untouch&quot; operation failed.
 	 */
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onBanError'>	/**
 </span>	 * @event onBanError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError
-	 * Triggered if &quot;Ban&quot; operation was failed.
+	 * Triggered if &quot;Ban&quot; operation failed.
 	 */
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUnBanError'>	/**
 </span>	 * @event onUnBanError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanError
-	 * Triggered if &quot;UnBan&quot; operation was failed.
+	 * Triggered if &quot;UnBan&quot; operation failed.
 	 */
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUserPermissionsError'>	/**
 </span>	 * @event onUserPermissionsError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsError
-	 * Triggered if &quot;UserPermissions&quot; operation was failed.
+	 * Triggered if &quot;UserPermissions&quot; operation failed.
 	 */
 	this.events.publish({
 		&quot;topic&quot;: &quot;on&quot; + args.name + args.state,
@@ -526,7 +526,7 @@ plugin.methods._assembleBanButton = function(action) {
 	return function() {
 		var item = this;
 		var isBanned = self._isUserBanned();
-		var visible = item.get(&quot;data.actor.id&quot;) !== item.user.get(&quot;fakeIdentityURL&quot;) &amp;&amp;
+		var visible = item.get(&quot;data.actor.id&quot;) !== item.user.config.get(&quot;fakeIdentityURL&quot;) &amp;&amp;
 			isBanned ^ (action === &quot;Ban&quot;);
 		return {
 			&quot;name&quot;: action,
@@ -596,8 +596,7 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		return {
 			&quot;name&quot;: action,
 			&quot;label&quot;: label,
-			// FIXME: add fakeIdentityURL to UserSession
-			&quot;visible&quot;: item.get(&quot;data.actor.id&quot;) !== item.user.get(&quot;fakeIdentityURL&quot;) &amp;&amp;
+			&quot;visible&quot;: item.get(&quot;data.actor.id&quot;) !== item.user.config.get(&quot;fakeIdentityURL&quot;) &amp;&amp;
 				item.user.any(&quot;roles&quot;, [&quot;administrator&quot;]),
 			&quot;callback&quot;: callback,
 			&quot;once&quot;: true
@@ -642,7 +641,7 @@ plugin.methods._getNextRole = function(role) {
 
 plugin.css = function() {
 	var msieCss = &quot;&quot;;
-	if ($.browser.msie) {
+	if (Echo.Utils._browser().msie) {
 		msieCss =
 			'.{plugin.class:status} { zoom: 1; }';
 	}

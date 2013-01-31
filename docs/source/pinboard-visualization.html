@@ -33,7 +33,8 @@ var mediaGallery = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream
 if (Echo.Control.isDefined(mediaGallery)) return;
 
 var _isPreIE9 = function() {
-	return ($.browser.msie &amp;&amp; $.browser.version &lt; 9 &amp;&amp; document.documentMode &amp;&amp; document.documentMode &lt; 9);
+	var browser = Echo.Utils._browser();
+	return (browser.msie &amp;&amp; browser.version &lt; 9 &amp;&amp; document.documentMode &amp;&amp; document.documentMode &lt; 9);
 };
 
 mediaGallery.labels = {
@@ -252,7 +253,8 @@ var plugin = Echo.Plugin.manifest(&quot;PinboardVisualization&quot;, &quot;Echo.
 if (Echo.Plugin.isDefined(plugin)) return;
 
 var _isPreIE9 = function() {
-	return ($.browser.msie &amp;&amp; $.browser.version &lt; 9 &amp;&amp; document.documentMode &amp;&amp; document.documentMode &lt; 9);
+	var browser = Echo.Utils._browser();
+	return (browser.msie &amp;&amp; browser.version &lt; 9 &amp;&amp; document.documentMode &amp;&amp; document.documentMode &lt; 9);
 };
 
 plugin.init = function() {
@@ -282,9 +284,9 @@ plugin.config = {
 	&quot;maxChildrenBodyCharacters&quot;: 50,
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-cfg-mediaSelector'>	/**
 </span>	 * @cfg {Function} mediaSelector
-	 * Allows to define the function with the custom rules for the media content
-	 * extraction from the item content. The value of this parameter is function
-	 * which accepts the item content (string) as a first argument and should
+	 * Allows to define the function with custom rules for the media content
+	 * extraction from the item content. The value of this parameter is a function
+	 * which accepts the item content (string) as the first argument and should
 	 * return the jQuery element with the list of the DOM elements which are
 	 * considered to be the media content of this item.
 	 * 
@@ -304,8 +306,8 @@ plugin.config = {
 	 * Allows to define extra CSS class to the item based on the item length.
 	 * The value of this parameter is the JS object with the CSS classes as
 	 * the keys and the item text length ranges as values. Multiple CSS classes
-	 * might be applied to the item if the item text length satisfies several
-	 * conditions simultaneously.
+	 * might be applied to the item if the item text length meets several
+	 * criteria simultaneously.
 	 */
 	&quot;itemCSSClassByContentLength&quot;: {
 		&quot;echo-streamserver-controls-stream-item-smallSizeContent&quot;: [0, 69],
@@ -313,8 +315,8 @@ plugin.config = {
 	},
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-cfg-gallery'>	/**
 </span>	 * @cfg {Object} gallery
-	 * Allows is a proxy for the mini media gallery class, initialized for the
-	 * item in case the media content was found in its content.
+	 * Allows to proxy the parameters for the mini Media Gallery class,
+	 * initialized for the item in case any media content was found in its body. 
 	 */
 	&quot;gallery&quot;: {
 		&quot;resizeDuration&quot;: 250
@@ -336,19 +338,6 @@ plugin.component.renderers.content = function(element) {
 	return item.parentRenderer('content', arguments).css({
 		&quot;width&quot;: parseInt(plugin.config.get(&quot;columnWidth&quot;))
 	});
-};
-
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-avatar'>/**
-</span> * @echo_renderer
- */
-plugin.component.renderers.avatar = function(element) {
-	var plugin = this, item = this.component;
-	element = item.parentRenderer(&quot;avatar&quot;, arguments);
-	$(&quot;:first-child&quot;, element).css({
-		&quot;width&quot;: 30,
-		&quot;height&quot;: 30
-	});
-	return element;
 };
 
 (function() {
@@ -413,8 +402,8 @@ $.map([&quot;Echo.StreamServer.Controls.Stream.Item.onRerender&quot;,
 });
 
 $.map([&quot;Echo.StreamServer.Controls.Submit.onRender&quot;,
-	&quot;Echo.StreamServer.Controls.Submit.onEditError&quot;,
-	&quot;Echo.StreamServer.Controls.Submit.onEditComplete&quot;,
+	&quot;Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError&quot;,
+	&quot;Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete&quot;,
 	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse&quot;], function(event) {
 	plugin.events[event] = function(topic, args) {
 		var plugin = this;
@@ -470,7 +459,7 @@ plugin.renderers.childBody = function(element) {
 		return element.empty();
 	}
 	var text = Echo.Utils.htmlTextTruncate(
-		item.get(&quot;data.object.content&quot;),
+		Echo.Utils.stripTags(item.get(&quot;data.object.content&quot;)),
 		plugin.config.get(&quot;maxChildrenBodyCharacters&quot;),
 		&quot;...&quot;
 	);
@@ -610,6 +599,14 @@ var $ = jQuery;
  * gallery inside the item UI. You can find UI example of the plugin
  * &lt;a href=&quot;http://echosandbox.com/use-cases/pinboard-visualization/&quot;&gt;here&lt;/a&gt;.
  *
+ * __Note__: the &quot;PinboardVisualization&quot; plugin is not included into the
+ * StreamServer JS package (streamserver.pack.js). Please include the
+ * scripts below (production and development versions respectively) to
+ * load the &quot;PinboardVisualization&quot; plugin:
+ *
+ * http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js  
+ * http://cdn.echoenabled.com/sdk/v3/dev/streamserver/plugins/pinboard-visualization.js
+ *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
  * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
@@ -635,13 +632,13 @@ plugin.config = {
 	&quot;isotope&quot;: {
 		&quot;animationOptions&quot;: {
 			// change duration for mozilla browsers
-			&quot;duration&quot;: $.browser.mozilla || $.browser.msie ? 0 : 2750,
+			&quot;duration&quot;: Echo.Utils._browser().mozilla || Echo.Utils._browser().msie ? 0 : 2750,
 			&quot;easing&quot;: &quot;linear&quot;,
 			&quot;queue&quot;: false
 		},
 		// use only jQuery engine for animation in mozilla browsers
 		// due to the issues with video display with CSS transitions
-		&quot;animationEngine&quot;: $.browser.mozilla || $.browser.msie ? &quot;jquery&quot; : &quot;best-available&quot;
+		&quot;animationEngine&quot;: Echo.Utils._browser().mozilla || Echo.Utils._browser().msie ? &quot;jquery&quot; : &quot;best-available&quot;
 	}
 };
 

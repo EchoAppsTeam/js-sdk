@@ -46,6 +46,8 @@ var pile = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.FacePile&quot;
 if (Echo.Control.isDefined(pile)) return;
 
 pile.init = function() {
+	if (!this.checkAppKey()) return;
+
 	// data can be defined explicitly
 	// in this case we do not make API requests
 	if ($.isEmptyObject(this.get(&quot;data&quot;))) {
@@ -92,10 +94,10 @@ pile.config = {
 	 * Customizes the FacePile item
 	 *
 	 * @cfg {Boolean} item.avatar
-	 * Specifies if user avatar should be rendered within the FacePile item.
+	 * Specifies if the user avatar should be rendered within the FacePile item.
 	 *
 	 * @cfg {Boolean} item.text
-	 * Specifies if user name should be rendered within the FacePile item.
+	 * Specifies if the user name should be rendered within the FacePile item.
 	 */
 	&quot;item&quot;: {
 		&quot;avatar&quot;: true,
@@ -380,6 +382,7 @@ pile.methods._initItem = function(entry, callback) {
 		&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
 		&quot;parent&quot;: this.config.getAsHash(),
 		&quot;plugins&quot;: this.config.get(&quot;plugins&quot;),
+		&quot;context&quot;: this.config.get(&quot;context&quot;),
 		&quot;data&quot;: entry.actor,
 		&quot;user&quot;: this.user,
 		&quot;ready&quot;: callback
@@ -499,11 +502,11 @@ item.templates.main =
 item.renderers.avatar = function(element) {
 	var self = this;
 	if (this.config.get(&quot;avatar&quot;)) {
-		var img = Echo.Utils.loadImage({
+		this.placeImage({ 
+			&quot;container&quot;: element,
 			&quot;image&quot;: this.get(&quot;data.avatar&quot;),
 			&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)
 		});
-		element.empty().append(img);
 		if (!this.config.get(&quot;text&quot;)) {
 			element.attr(&quot;title&quot;, this.get(&quot;data.title&quot;));
 		}
@@ -534,9 +537,9 @@ item.methods.isYou = function() {
 };
 
 item.css =
-	'.{class:avatar} img { width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }' +
+	&quot;.{class:avatar} { display: inline-block; width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }&quot; +
 	'.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }' +
-	'.{class:container}, .{class:container} span { white-space: nowrap; }' +
+	'.{class:container}, .{class:container} span { white-space: nowrap; display: inline-block; }' +
 	'.{class:only-avatars} .{class:container} { white-space: normal; }';
 
 Echo.Control.create(item);

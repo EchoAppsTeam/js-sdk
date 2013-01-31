@@ -22,10 +22,10 @@ var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Edit'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Edit
- * Adds extra button Edit to each item in the Echo Stream control
+ * Adds extra “Edit” button to each item in the Echo Stream control
  * which allows to edit the content and some metadata of the item.
- * This button will appear either for the users with the
- * administrative privileges or for editing personal comments.
+ * This button will appear either for the users with
+ * administrative privileges or for editing of personal comments.
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
@@ -46,9 +46,10 @@ plugin.init = function() {
 };
 
 $.map([&quot;Complete&quot;, &quot;Error&quot;], function(action) {
-	plugin.events[&quot;Echo.StreamServer.Controls.Submit.onEdit&quot; + action] = function(topic, args) {
-		this.component.render();
-	}
+	plugin.events[&quot;Echo.StreamServer.Controls.Submit.Plugins.Edit.onEdit&quot; + action] =
+		function(topic, args) {
+			this.component.render();
+		}
 });
 
 plugin.labels = {
@@ -60,7 +61,7 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	&quot;loaded&quot;: function() { return Echo.Control.isDefined(&quot;Echo.StreamServer.Controls.Submit&quot;); },
+	&quot;control&quot;: &quot;Echo.StreamServer.Controls.Submit&quot;,
 	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/streamserver.pack.js&quot;
 }];
 
@@ -173,14 +174,12 @@ plugin.labels = {
  */
 $.map([&quot;Init&quot;, &quot;Complete&quot;, &quot;Error&quot;], function(action) {
 	plugin.events[&quot;Echo.StreamServer.Controls.Submit.onPost&quot; + action] = function(topic, args) {
-		var component = this.component;
 		if (action === &quot;Init&quot;) {
 			args.postData.content = this._prepareContent();
 		}
-		component.events.publish({
+		this.events.publish({
 			&quot;data&quot;: args,
-			&quot;topic&quot;: &quot;onEdit&quot; + action,
-			&quot;context&quot;: component.config.get(&quot;parent.context&quot;)
+			&quot;topic&quot;: &quot;onEdit&quot; + action
 		});
 	};
 });
@@ -221,14 +220,10 @@ plugin.renderers.editedDate = function(element) {
 </span> * @echo_renderer
  */
 plugin.renderers.cancelButton = function(element) {
-	var plugin = this, component = plugin.component;
-	var handler = function() {
-		component.events.publish({
-			&quot;topic&quot;: &quot;onEditError&quot;,
-			&quot;context&quot;: component.config.get(&quot;parent.context&quot;)
-		});
-	};
-	return element.click(handler);
+	var plugin = this;
+	return element.click(function() {
+		plugin.events.publish({&quot;topic&quot;: &quot;onEditError&quot;});
+	});
 };
 
 plugin.methods._prepareContent = function() {

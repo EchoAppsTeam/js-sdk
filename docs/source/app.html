@@ -35,7 +35,7 @@ Echo.App = Echo.Utils.inherit(Echo.Control);
 <span id='Echo-App-static-method-create'>/**
 </span> * @static
  * @method
- * Function which creates a application object using it manifest declaration.
+ * The function which creates an application JS class using its manifest declaration.
  *
  * @param {Object} manifest
  * Specifies the application interface in the predefined way.
@@ -78,7 +78,7 @@ Echo.App.create = Echo.Control.create;
 <span id='Echo-App-static-method-manifest'>/**
 </span> * @static
  * @method
- * Method returning common manifest structure for a application.
+ * Method returning the common manifest structure for an application.
  *
  * @param {String} name
  * App name.
@@ -112,64 +112,59 @@ Echo.App.isDefined = Echo.Control.isDefined;
  * is constructed by merging the following 2 objects:
  *
  * + this instance config
- * + componentSpec parameter if it's provided
+ * + spec parameter if it's provided
  *
- * @param {Object} componentSpec
+ * @param {Object} spec
  *
- * @param {String} componentSpec.id
+ * @param {String} spec.id
  * Nested component id.
  *
- * @param {String} componentSpec.component
+ * @param {String} spec.component
  * Constructor name for the nested component like &quot;Echo.StreamServer.Control.Stream&quot;.
  *
- * @param {Object} [componentSpec.config]
+ * @param {Object} [spec.config]
  * Configuration object for the nested component.
  */
-Echo.App.prototype.initComponent = function(componentSpec) {
-	this.destroyComponent(componentSpec.id);
-	componentSpec.config = componentSpec.config || {};
+Echo.App.prototype.initComponent = function(spec) {
+	this.destroyComponent(spec.id);
+	spec.config = spec.config || {};
 	if (this.user) {
-		componentSpec.config.user = this.user;
+		spec.config.user = this.user;
 	}
-	componentSpec.config.parent = componentSpec.config.parent || this.config.getAsHash();
-	if (componentSpec.config.parent.components) {
-		delete componentSpec.config.parent.components;
+	spec.config.parent = spec.config.parent || this.config.getAsHash();
+	if (spec.config.parent.components) {
+		delete spec.config.parent.components;
 	}
-	componentSpec.config.plugins = this._mergeSpecsByName(
-		$.extend(true, [], this.config.get(&quot;components.&quot; + componentSpec.id + &quot;.plugins&quot;, [])),
-		componentSpec.config.plugins || []
+	spec.config.plugins = this._mergeSpecsByName(
+		$.extend(true, [], this.config.get(&quot;components.&quot; + spec.id + &quot;.plugins&quot;, [])),
+		spec.config.plugins || []
 	);
-	componentSpec.config = this._normalizeComponentConfig(
-		$.extend(
-			true,
-			{},
-			this.config.get(&quot;components.&quot; + componentSpec.id, {}),
-			componentSpec.config
-		)
+	spec.config = this._normalizeComponentConfig(
+		$.extend(true, {}, this.config.get(&quot;components.&quot; + spec.id, {}), spec.config)
 	);
-	var Component = Echo.Utils.getComponent(componentSpec.component);
-	this.set(&quot;components.&quot; + componentSpec.id, new Component(componentSpec.config));
-	return this.getComponent(componentSpec.id);
+	var Component = Echo.Utils.getComponent(spec.component);
+	this.set(&quot;components.&quot; + spec.id, new Component(spec.config));
+	return this.getComponent(spec.id);
 };
 
 <span id='Echo-App-method-getComponent'>/**
-</span> * Method to retrieve initialized component by id.
+</span> * Method to retrieve the initialized component by id.
  *
  * @param {String} id
  * Id of the component to be retrieved.
  *
  * @return {Object}
  * The link to the corresponding component or 'undefined'
- * in case no control with the given id found.
+ * in case no control with the given id was found.
  */
 Echo.App.prototype.getComponent = function(id) {
 	return this.get(&quot;components.&quot; + id);
 };
 
 <span id='Echo-App-method-destroyComponent'>/**
-</span> * Method to destroy nested component by id. If component defined,
- * then will be called &quot;destroy&quot; method of the nested component
- * and the ref removing from the inner container &quot;components&quot;.
+</span> * Method to destroy a nested component by id. If the component is defined,
+ * then the &quot;destroy&quot; method of the nested component is called
+ * and the reference is removed from the inner &quot;components&quot; container.
  *
  * @param {String} id
  * Id of the component to be removed.
@@ -183,10 +178,10 @@ Echo.App.prototype.destroyComponent = function(id) {
 };
 
 <span id='Echo-App-method-destroyComponents'>/**
-</span> * Method to destroy all defined nested components but ids in the exception list.
+</span> * Method to destroy all defined nested components by their ids in the exception list.
  *
- * Method can accept one parameter which specifies the exception
- * nested component ids list. If list is omit or empty, then method destroys
+ * Method can accept one parameter which specifies the nested exception
+ * component ids list. If the list is omitted or empty, then the method destroys
  * all defined nested components.
  *
  * @param {Array} [exceptions]
@@ -213,6 +208,10 @@ Echo.App.prototype.destroyComponents = function(exceptions) {
 };
 
 // private interface
+
+Echo.App._merge = Echo.Control._merge;
+
+Echo.App._manifest = Echo.Control._manifest;
 
 Echo.App.prototype._mergeSpecsByName = function(specs) {
 	var self = this;
@@ -250,8 +249,12 @@ Echo.App.prototype._mergeSpecsByName = function(specs) {
 
 Echo.App.prototype._normalizeComponentConfig = function(config) {
 	var self = this;
-	Echo.Utils.foldl(config, [&quot;appkey&quot;, &quot;apiBaseURL&quot;, &quot;submissionProxyURL&quot;], function(key, acc) {
-		acc[key] = acc[key] || self.config.get(key);
+	// extend the config with the default fields from manifest
+	Echo.Utils.foldl(config, this._manifest(&quot;config&quot;), function(value, acc, key) {
+		// do not override existing values in data
+		if (typeof acc[key] === &quot;undefined&quot;) {
+			acc[key] = self.config.get(key);
+		}
 	});
 	var normalize = function(value) {
 		if (typeof value === &quot;string&quot;) {

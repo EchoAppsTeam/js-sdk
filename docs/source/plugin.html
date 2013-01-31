@@ -30,7 +30,7 @@ Echo.Plugin = function() {};
 
 <span id='Echo-Plugin-static-method-create'>/**
 </span> * @static
- * Function which creates a plugin object using it manifest declaration.
+ * Function which creates a plugin JS class using its manifest declaration.
  *
  * @param {Object} manifest
  * Specifies the plugin interface in the predefined way.
@@ -91,7 +91,7 @@ Echo.Plugin.create = function(manifest) {
 
 		this._init([&quot;config&quot;]);
 	});
-	var namespace = [manifest.component.name, &quot;Plugins&quot;, manifest.name].join(&quot;.&quot;);
+	var namespace = Echo.Plugin._getClassName(manifest.name, manifest.component.name);
 
 	constructor.manifest = manifest;
 	constructor.dependencies = manifest.dependencies;
@@ -103,23 +103,20 @@ Echo.Plugin.create = function(manifest) {
 	if (manifest.methods) {
 		$.extend(constructor.prototype, manifest.methods);
 	}
-	Echo.Utils.set(
-		window,
-		Echo.Plugin._getClassName(manifest.name, manifest.component.name),
-		constructor
-	);
+
+	Echo.Utils.set(window, namespace, constructor);
 	return constructor;
 };
 
 <span id='Echo-Plugin-static-method-manifest'>/**
 </span> * @static
- * Method returning common manifest structure.
+ * This method returns common manifest structure.
  *
  * @param {String} name
  * Specifies plugin name.
  *
  * @param {String} component
- * Specifies component name to be extended.
+ * Specifies the component name to be extended.
  *
  * @return {Object}
  * Basic plugin manifest declaration.
@@ -146,14 +143,18 @@ Echo.Plugin.manifest = function(name, component) {
 
 <span id='Echo-Plugin-static-method-isDefined'>/**
 </span> * @static
- * Checks if plugin is already defined.
+ * Checks if the plugin is already defined.
  *
- * @param {Object} manifest
- * Plugin manifest.
+ * @param {Object|String} manifest
+ * Plugin manifest or plugin name.
  *
  * @return {Boolean}
  */
 Echo.Plugin.isDefined = function(manifest) {
+	if (typeof manifest === &quot;string&quot;) {
+		var component = Echo.Utils.get(window, manifest);
+		return !!(component &amp;&amp; component.manifest);
+	}
 	return !!Echo.Plugin.getClass(manifest.name, manifest.component.name);
 };
 
@@ -314,30 +315,16 @@ Echo.Plugin.prototype.parentRenderer = function() {
  */
 Echo.Plugin.prototype.substitute = function(args) {
 	var plugin = this;
-	return plugin.component.substitute($.extend(args, {
-		&quot;instructions&quot;: {
-			&quot;plugin.label&quot;: function(key) {
-				return plugin.labels.get(key, &quot;&quot;);
-			},
-			&quot;plugin.class&quot;: function(key) {
-				return key ? plugin.cssPrefix + key : plugin.cssClass;
-			},
-			&quot;plugin.data&quot;: function(key) {
-				return &quot;{self:plugins.&quot; + plugin.name + &quot;.data.&quot; + key + &quot;}&quot;;
-			},
-			&quot;plugin.self&quot;: function(key) {
-				return &quot;{self:plugins.&quot; + plugin.name + &quot;.&quot; + key + &quot;}&quot;;
-			},
-			&quot;plugin.config&quot;: function(key) {
-				return plugin.config.get(key, &quot;&quot;);
-			}
-		}
-	}));
+	var instructions = this._getSubstitutionInstructions();
+	args.instructions = args.instructions
+		? $.extend(instructions, args.instructions)
+		: instructions;
+	return plugin.component.substitute(args);
 };
 
 <span id='Echo-Plugin-method-requestDataRefresh'>/**
-</span> * Method publishes the internal event to make current state invalid.
- * It triggers data refresh.
+</span> * Method publishes the internal event to make the current state invalid.
+ * It triggers the data refresh.
  */
 Echo.Plugin.prototype.requestDataRefresh = function() {
 	Echo.Events.publish({
@@ -443,6 +430,27 @@ Echo.Plugin.prototype._initializers.launcher = function() {
 	this._manifest(&quot;init&quot;).call(this);
 };
 
+Echo.Plugin.prototype._getSubstitutionInstructions = function() {
+	var plugin = this;
+	return {
+		&quot;plugin.label&quot;: function(key) {
+			return plugin.labels.get(key, &quot;&quot;);
+		},
+		&quot;plugin.class&quot;: function(key) {
+			return key ? plugin.cssPrefix + key : plugin.cssClass;
+		},
+		&quot;plugin.data&quot;: function(key) {
+			return &quot;{self:plugins.&quot; + plugin.name + &quot;.data.&quot; + key + &quot;}&quot;;
+		},
+		&quot;plugin.self&quot;: function(key) {
+			return &quot;{self:plugins.&quot; + plugin.name + &quot;.&quot; + key + &quot;}&quot;;
+		},
+		&quot;plugin.config&quot;: function(key) {
+			return plugin.config.get(key, &quot;&quot;);
+		}
+	};
+};
+
 Echo.Plugin._getClassName = function(name, component) {
 	return name &amp;&amp; component ? component + &quot;.Plugins.&quot; + name : undefined;
 };
@@ -517,10 +525,11 @@ Echo.Plugin.Config.prototype.remove = function(key) {
  */
 Echo.Plugin.Config.prototype.assemble = function(data) {
 	var config = this.plugin.component.config;
-	var defaults = this.plugin.component.get(&quot;defaults.config&quot;);
+	var defaults = this.plugin.component._manifest(&quot;config&quot;);
 	data = data || {};
-	data.plugins = this.plugin.config.get(&quot;nestedPlugins&quot;, []);
+	data.user = this.plugin.component.user;
 	data.parent = config.getAsHash();
+	data.plugins = this.plugin.config.get(&quot;nestedPlugins&quot;, []);
 
 	// copy default field values from parent control
 	Echo.Utils.foldl(data, defaults, function(value, acc, key) {

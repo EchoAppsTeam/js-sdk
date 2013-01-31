@@ -116,7 +116,7 @@ suite.prototype.tests.testMethods = {
 					"Checking that highlightMandatory() returns true if element is empty");
 				QUnit.ok(content.parent().hasClass(mandatoryCSS),
 					"Checking that highlightMandatory() adds css class to element parent");
-				content.focus();
+				content.triggerHandler("focus");
 				QUnit.ok(!content.parent().hasClass(mandatoryCSS),
 					"Checking that highlightMandatory() removes css class from element parent after focus event");
 				content.val("TestContent");

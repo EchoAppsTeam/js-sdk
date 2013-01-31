@@ -128,14 +128,14 @@ Echo.Utils.addCSS = function(cssCode, id) {
  * Method to check whether the given set of CSS rules was already added into the page.
  *
  * This function might be used in conjunction with the Echo.Utils.addCSS function
- * to check a certain conditions before adding new styles.
+ * to check certain conditions before adding new styles.
  *
  * @param {String} id
  * Unique identity string of the CSS styles set.
  *
  * @return {Boolean}
- * true if the given CSS styles set was already added into the page previously,
- * false - otherwise.
+ * ‘true’ if the given CSS styles set was previously added into the page,
+ * otherwise ‘false’.
  */
 Echo.Utils.hasCSS = function(id) {
 	return this.cache.cssStyles
@@ -371,9 +371,9 @@ Echo.Utils._prepareFieldAccessKey = function(key) {
  *
  *     Echo.Utils.htmlize(&quot;special characters: &amp;&lt;&gt;&quot;); // will return &quot;special characters: &amp;amp;&amp;lt;&amp;gt;&quot;
  *
- * Note: the function works with the &quot;string&quot; type argument only. If the value with
- * type different from &quot;string&quot; is passed to the function, the same value would be
- * returned with no changes.
+ * Note: the function works with the &quot;string&quot; type argument only.
+ * If the type of the value passed to the function differs from the &quot;string&quot; type,
+ * the same value is returned with no changes.
  *
  * @param {String} text
  * The string to be converted.
@@ -389,7 +389,7 @@ Echo.Utils.htmlize = function(text) {
 </span> * @static
  * Method to convert JavaScript value to JavaScript Object Notation (JSON) string.
  *
- * Methods converts JavaScript object to JSON string.
+ * These methods convert JavaScript object to JSON string. 
  * This function uses JSON.stringify() method if it is available in the browser.
  *
  *     Echo.Utils.objectToJSON(null); // will return 'null'
@@ -461,14 +461,13 @@ Echo.Utils.objectToJSON = function(obj) {
  * Method to truncate HTML text.
  *
  * This function truncates HTML contents preserving the right HTML structure
- * and without truncating tags.
+ * and without truncating tags. If truncation hits the middle of the word, the word
+ * itself is preserved and truncation starts right after this word.
  *
- *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;123456&lt;/div&gt;&quot;, 5); // will return &quot;&lt;div&gt;12345&lt;/div&gt;&quot;
- *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;123456&lt;/div&gt;&quot;, 5, &quot;12345&quot;); // will return &quot;&lt;div&gt;1234512345&lt;/div&gt;&quot;
- *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;123456&quot;, 5, &quot;&quot;, true); // will return &quot;&lt;div&gt;12345&lt;/div&gt;&quot;
- *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;123456&quot;, 5, &quot;&quot;, false); // will return &quot;&lt;div&gt;12345&lt;/div&gt;&quot;
- *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;12345&quot;, 5, &quot;&quot;, true); // will return &quot;&lt;div&gt;12345&lt;/div&gt;&quot;
- *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;12345&quot;, 5, &quot;&quot;, false); // will return &quot;&lt;div&gt;12345&quot;
+ *     Echo.Utils.htmlTextTruncate(&quot;Welcome to Echo SDK&quot;, 5, &quot;...&quot;); // will return &quot;Welcome...&quot;
+ *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;Welcome to Echo SDK&quot;, 5, &quot;&quot;, true); // will return &quot;&lt;div&gt;Welcome&lt;/div&gt;&quot;
+ *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;Welcome to Echo SDK&lt;/div&gt;&quot;, 3, &quot;...&quot;, true); // will return &quot;&lt;div&gt;Welcome...&lt;/div&gt;&quot;
+ *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;Welcome to Echo SDK&lt;/div&gt;&quot;, 17, &quot;...&quot;, true); // will return &quot;&lt;div&gt;Welcome to Echo SDK&lt;/div&gt;&quot;
  *
  * @param {String} text
  * The string to be truncated.
@@ -480,9 +479,9 @@ Echo.Utils.objectToJSON = function(obj) {
  * The string to be added to truncated string.
  *
  * @param {Boolean} forceClosingTags
- * This parameter takes affect only when no truncation was performed. Otherwise
- * (when the content was truncated) the function restores HTML structure
- * regardless the forseClosingTags parameter value.
+ * This parameter takes effect only when no truncation was performed. Otherwise
+ * (when the content was truncated) the function restores the HTML structure
+ * regardless of the forseClosingTags parameter value.
  *
  * @return {String}
  * Truncated string.
@@ -491,6 +490,8 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	if (!limit || text.length &lt; limit) return text;
 
 	var tags = [], count = 0, finalPos = 0;
+	var wordRegex = /(\w)+/;
+	var htmlSpecialCharRegex = /^(\S)+;/;
 	if (!this.cache.standaloneTags) {
 		this.cache.standaloneTags =
 			Echo.Utils.foldl(
@@ -506,23 +507,25 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 			var tail = text.indexOf(&quot;&gt;&quot;, i);
 			if (tail &lt; 0) return text;
 			var source = text.substring(i + 1, tail);
-			var tag = {&quot;name&quot;: &quot;&quot;, &quot;closing&quot;: false};
+			var tag = &quot;&quot;;
+			var isTagClosing = false;
 			if (source.charAt(0) === &quot;/&quot;) {
-				tag.closing = true;
+				isTagClosing = true;
 				source = source.substring(1);
 			}
-			tag.name = source.match(/(\w)+/)[0];
-			if (tag.closing) {
+			tag = source.match(wordRegex)[0];
+			if (isTagClosing) {
 				var current = tags.pop();
-				if (!current || current.name !== tag.name) return text;
-			} else if (!this.cache.standaloneTags[tag.name]) {
+				if (!current || current !== tag) return text;
+			} else if (!this.cache.standaloneTags[tag]) {
 				tags.push(tag);
 			}
 			i = tail;
-		} else if (symbol === &quot;&amp;&quot; &amp;&amp; text.substring(i).match(/^(\S)+;/)) {
+		} else if (symbol === &quot;&amp;&quot; &amp;&amp; text.substring(i).match(htmlSpecialCharRegex)) {
 			i = text.indexOf(&quot;;&quot;, i);
+			count++;
 		} else {
-			if (count === limit) {
+			if (count &gt;= limit) {
 				finalPos = i;
 				break;
 			}
@@ -531,10 +534,16 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	}
 	if (finalPos || forceClosingTags) {
 		if (finalPos) {
-			text = text.substring(0, finalPos) + (postfix || &quot;&quot;);
+			var cut = text.substring(finalPos - 1, text.length - 1).match(/^\w+/);
+			if (cut) {
+				finalPos += cut[0].length - 1;
+			}
+			if (finalPos !== text.length - 1) {
+				text = text.substring(0, finalPos) + (postfix || &quot;&quot;);
+			}
 		}
 		for (var i = tags.length - 1; i &gt;= 0; i--) {
-			text += &quot;&lt;/&quot; + tags[i].name + &quot;&gt;&quot;;
+			text += &quot;&lt;/&quot; + tags[i] + &quot;&gt;&quot;;
 		}
 	}
 	return text;
@@ -649,10 +658,16 @@ Echo.Utils.getVisibleColor = function(element) {
 
 <span id='Echo-Utils-static-method-timestampFromW3CDTF'>/**
 </span> * @static
- * Method to convert datetime value from W3C datetime format to timestamp.
+ * Method to convert datetime value from string representation to numeric timestamp.
  *
  *     Echo.Utils.timestampFromW3CDTF(&quot;1998-02-08T09:27:30Z&quot;); // will return 886930050
  *     Echo.Utils.timestampFromW3CDTF(&quot;1998-02-08T09:27:30.733Z&quot;); // will return 886930050.733
+ *
+ * The method can correctly parse any date format supported by user's browser.
+ * However ISO 8601 format is understood independing of native support.
+ * See [W3C Note](http://www.w3.org/TR/NOTE-datetime) for description of supported ISO 8601 subset.
+ * Other suitable date formats are described in [RFC2822 Section 3.3](http://tools.ietf.org/html/rfc2822#page-14)
+ * and in [MSDN topic](http://msdn.microsoft.com/en-us/library/ff743760.aspx).
  *
  * @param {String} datetime
  * String containing datetime value to be converted.
@@ -661,11 +676,13 @@ Echo.Utils.getVisibleColor = function(element) {
  * UNIX timestamp.
  */
 Echo.Utils.timestampFromW3CDTF = function(datetime) {
-	if (!Echo.Utils.regexps.w3cdtf.test(datetime)) return;
-	var time = (new Date(datetime)).getTime();
+	var time = Date.parse(datetime);
 	if (isNaN(time)) {
 		var parts = [&quot;year&quot;, &quot;month&quot;, &quot;day&quot;, &quot;hours&quot;, &quot;minutes&quot;, &quot;seconds&quot;, &quot;milliseconds&quot;];
 		var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
+		if (!matches) {
+			return undefined;
+		}
 		var dt = Echo.Utils.foldl({}, parts, function(key, acc, id) {
 			acc[key] = +matches[id + 1] || 0;
 		});
@@ -710,10 +727,10 @@ Echo.Utils.isMobileDevice = function() {
 
 <span id='Echo-Utils-static-method-getUniqueString'>/**
 </span> * @static
- * Method returning unique random string.
+ * Method returning a unique random string.
  *
- * This function returns unique string is the number of milliseconds between
- * midnight January 1, 1970 (GMT) to current time plus random number.
+ * This function returns a unique string specifying the number of milliseconds between
+ * midnight January 1, 1970 (GMT) and the current time plus a random number.
  *
  *     Echo.Utils.getUniqueString(); // will return something like &quot;134086853327622290480640764643&quot;
  *
@@ -798,7 +815,7 @@ Echo.Utils.isComponentDefined = function(name) {
  * @param {String} args.image
  * The URL of the image to be loaded.
  *
- * @param {String} args.defaultImage
+ * @param {String} [args.defaultImage]
  * The URL of the default image.
  *
  * @param {Function} [args.onload]
@@ -813,20 +830,20 @@ Echo.Utils.isComponentDefined = function(name) {
 Echo.Utils.loadImage = function(args) {
 	var url = args.image || args.defaultImage;
 	var img = $(&quot;&lt;img&gt;&quot;);
-	if (url !== args.defaultImage) {
-		img.one({
-			&quot;error&quot;: args.onerror || function() {
-				$(this).attr(&quot;src&quot;, args.defaultImage);
-			},
-			&quot;load&quot;: args.onload || $.noop
-		});
-	}
+	img.one({
+		&quot;error&quot;: args.onerror || function() {
+			if (args.defaultImage &amp;&amp; url !== args.defaultImage) {
+				img.attr(&quot;src&quot;, args.defaultImage);
+			}
+		},
+		&quot;load&quot;: args.onload || $.noop
+	});
 	return img.attr(&quot;src&quot;, url);
 };
 
 <span id='Echo-Utils-static-method-hyperlink'>/**
 </span> * @static
- * Creates the HTML &lt;a&gt; tag with the provided attribute names/values
+ * Creates the HTML \&lt;a&gt; tag with the provided attribute names/values
  *
  * @param {Object} data
  * Hyperlink tag attribute key/value pairs, some of them are:
@@ -850,7 +867,7 @@ Echo.Utils.loadImage = function(args) {
  * Specifies whether href value should be htmlized or not.
  *
  * @return {String}
- * HTML string for &lt;a&gt; tag.
+ * HTML string for \&lt;a&gt; tag.
  */
 Echo.Utils.hyperlink = function(data, options) {
 	data = $.extend({}, data);
@@ -948,7 +965,7 @@ Echo.Utils.sequentialCall = function(actions, callback) {
 
 <span id='Echo-Utils-static-method-capitalize'>/**
 </span> * @static
- * Function to Replacement of first character in the words with uppercase character
+ * Function used to replace the first character in the words with the uppercase character.
  *
  * @param {String} string
  * String of some words
@@ -961,7 +978,7 @@ Echo.Utils.capitalize = function(string) {
 
 <span id='Echo-Utils-static-method-substitute'>/**
 </span> * @static
- * Templater function which compiles given template using the provided data.
+ * Templater function which compiles the given template using the provided data.
  *
  * Function can be used widely for html templates processing or any other action
  * requiring string interspersion.
@@ -977,7 +994,7 @@ Echo.Utils.capitalize = function(string) {
  *
  * @param {Boolean} [args.strict]
  * Specifies whether the template should be replaced with the corresponding value,
- * preserving replacement value type.
+ * preserving the replacement value type.
  *
  * @param {Object} [args.instructions]
  * Object containing the list of extra instructions to be applied during template compilation.
@@ -987,37 +1004,47 @@ Echo.Utils.capitalize = function(string) {
  */
 Echo.Utils.substitute = function(args) {
 	var utils = this;
+	var template = args.template;
 	var substitutions = {
 		&quot;data&quot;: function(key, defaults) {
 			return utils.get(args.data, key, defaults);
 		}
 	};
-	var instructions = $.extend(substitutions, args.instructions);
-	var regex = utils.regexps.templateSubstitution;
-	var template = args.template;
+	var instructions = args.instructions
+		? $.extend(substitutions, args.instructions)
+		: substitutions;
+
+	if (typeof utils.cache.regexps === &quot;undefined&quot;) {
+		var regex = utils.regexps.templateSubstitution;
+		utils.cache.regexps = {
+			&quot;strict&quot;: new RegExp(&quot;^&quot; + regex + &quot;$&quot;, &quot;i&quot;),
+			&quot;single&quot;: new RegExp(regex, &quot;i&quot;),
+			&quot;multiple&quot;: new RegExp(regex, &quot;ig&quot;)
+		};
+	}
 
 	// checking if we need to execute in a strict mode,
 	// i.e. whether to keep the substitution value type or not
-	if (args.strict &amp;&amp; (new RegExp(&quot;^&quot; + regex + &quot;$&quot;, &quot;i&quot;)).test(template)) {
-		var match = new RegExp(regex, &quot;i&quot;).exec(template);
+	if (args.strict &amp;&amp; utils.cache.regexps.strict.test(template)) {
+		var match = utils.cache.regexps.single.exec(template);
 		if (match &amp;&amp; match[1] &amp;&amp; instructions[match[1]]) {
 			return instructions[match[1]](match[2]);
 		}
 	}
 
 	// perform regular string substitution
-	return template.replace(new RegExp(regex, &quot;ig&quot;), function(match, key, value) {
+	return template.replace(utils.cache.regexps.multiple, function(match, key, value) {
 		if (!instructions[key]) return match;
 		var result = instructions[key](value, &quot;&quot;);
-		var allowedTypes = [&quot;number&quot;, &quot;string&quot;, &quot;boolean&quot;];
-		return ~$.inArray(typeof result, allowedTypes) ? result : &quot;&quot;;
+		var allowed = {&quot;number&quot;: true, &quot;string&quot;: true, &quot;boolean&quot;: true};
+		return allowed[typeof result] ? result : &quot;&quot;;
 	});
 };
 
 <span id='Echo-Utils-static-method-invoke'>/**
 </span> * @static
  * Function which checks if the value passed as a first argument is a function and executes
- * it in given context. If the first argument has different type, it's returned as is.
+ * it in the given context. If the first argument has different type, it's returned as is.
  *
  * @param {Mixed} mixed
  * The value which should be checked and executed in case of a function type.
@@ -1033,6 +1060,53 @@ Echo.Utils.invoke = function(mixed, context) {
 	return $.isFunction(mixed)
 		? context ? mixed.call(context) : mixed()
 		: mixed;
+};
+
+/*
+ * This method returns information about the web browser that is accessing the page, 
+ * as reported by the browser itself (trough User-Agent HTTP header).
+ *
+ * This method copies the jQuery.browser property behavior which has been removed
+ * from jQuery since 1.9 version:
+ * http://api.jquery.com/jQuery.browser/
+ *
+ * The method has been added for compatibility with new jQuery version and we
+ * do not recommend to use it as it can be removed in the future.
+ *
+ * Please refer to the jQuery upgrade-guide (http://jquery.com/upgrade-guide/1.9/#jquery-browser-removed)
+ * for more information.
+ */
+Echo.Utils._browser = function(userAgent) {
+	if (userAgent || !this.cache.browser) {
+		var ua = userAgent &amp;&amp; userAgent.toLowerCase() || navigator.userAgent.toLowerCase();
+		var match = /(chrome)[ \/]([\w.]+)/.exec(ua)
+			|| /(webkit)[ \/]([\w.]+)/.exec( ua )
+			|| /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua)
+			|| /(msie) ([\w.]+)/.exec(ua)
+			|| ua.indexOf(&quot;compatible&quot;) &lt; 0 &amp;&amp; /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua)
+			|| [];
+
+		var matched = {
+			browser: match[1] || &quot;&quot;,
+			version: match[2] || &quot;0&quot;
+		};
+		var browser = {};
+
+		if (matched.browser) {
+			browser[matched.browser] = true;
+			browser.version = matched.version;
+		}
+
+		// Chrome is Webkit, but Webkit is also Safari.
+		if (browser.chrome) {
+			browser.webkit = true;
+		} else if (browser.webkit) {
+			browser.safari = true;
+		}
+
+		this.cache.browser = browser;
+	}
+	return this.cache.browser;
 };
 
 })(Echo.jQuery);

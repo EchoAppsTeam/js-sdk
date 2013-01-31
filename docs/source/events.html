@@ -24,11 +24,11 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.Events&quot;)) return;
 
 <span id='Echo-Events'>/**
 </span> * @class Echo.Events
- * Library for exchanging messages between components on the page. It also
- * provides external interface for users to subscribe to a certain events
+ * Library for exchanging messages between the components on the page. It also
+ * provides the external interface for users to subscribe to certain events
  * (like &quot;app was rendered&quot;, &quot;user logged in&quot;, etc).
  *
- * Contexts used in this library are complex identifiers constructed using the following rules:
+ * The contexts used in this library are complex identifiers constructed using the following rules:
  *     &lt;contextId&gt; :: &quot;&lt;id&gt;&quot; or &quot;&lt;parentContextID&gt;/&lt;id&gt;&quot;, where
  *     &lt;id&gt; :: some unique identifier assigned to component
  *     &lt;parentContextID&gt; :: &quot;&lt;contextID&gt;&quot;
@@ -36,10 +36,10 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.Events&quot;)) return;
 Echo.Events = {};
 
 <span id='Echo-Events-static-method-subscribe'>/**
-</span> * Function allowing to subscribe to an event with a specific callback function
+</span> * @static
+ * Function allowing to subscribe to an event with a specific callback function
  * and topic.
  *
- * @static
  * @param {Object} params
  * Configuration parameters object with the following fields:
  *
@@ -89,9 +89,9 @@ Echo.Events.subscribe = function(params) {
 };
 
 <span id='Echo-Events-static-method-unsubscribe'>/**
-</span> * Function allowing to unsubscribe from an event.
+</span> * @static
+ * Function allowing to unsubscribe from an event.
  *
- * @static
  * @param {Object} params
  * Configuration parameters object with the following fields:
  *
@@ -154,9 +154,9 @@ Echo.Events.unsubscribe = function(params) {
 };
 
 <span id='Echo-Events-static-method-publish'>/**
-</span> * Function allowing to publish an event providing arbitrary data.
+</span> * @static
+ * Function allowing to publish an event providing arbitrary data.
  *
- * @static
  * @param {Object} params
  * Configuration parameters object with the following fields:
  *
@@ -177,7 +177,7 @@ Echo.Events.unsubscribe = function(params) {
  * AND executed for the current context.
  *
  * @param {Boolean} [params.global=true]
- * Specifies whether the event should be also published to &quot;global&quot; context or not.
+ * Specifies whether the event should also be published to the &quot;global&quot; context or not.
  */
 Echo.Events.publish = function(params) {
 	params = $.extend({
@@ -194,6 +194,21 @@ Echo.Events.publish = function(params) {
 		params.context = &quot;global&quot;;
 		Echo.Events.publish(params);
 	}
+};
+
+<span id='Echo-Events-static-method-newContextId'>/**
+</span> * @static
+ * Generates a string which represents new unique context ID to be used for subscriptions.
+ *
+ * @param {String} [parentContextId]
+ * Optional parameter which specifies the parent object context ID.
+ * If this parameter is defined, the nested context ID is generated.
+ *
+ * @return {String}
+ * Unique context identifier.
+ */
+Echo.Events.newContextId = function(parentContextId) {
+	return (parentContextId ? parentContextId + &quot;/&quot; : &quot;&quot;) + Echo.Utils.getUniqueString();
 };
 
 var _lastHandlerResult = {}, _dataByHandlerId = {};

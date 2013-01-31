@@ -19,66 +19,73 @@
 
 var $ = jQuery;
 
-if ($.fn.echoButton) return;
+if (!window.Echo) window.Echo = {};
 
-$.fn.echoButton = function() {
-	var args  = arguments;
-	return this.each(function(){
-		var data = $(this).data(&quot;echoButton&quot;);
-		if (!data || typeof args[0] === &quot;object&quot;) {
-			$(this).data(&quot;echoButton&quot;, (data = new Button(this, args[0])));
-		}
-		if (typeof args[0] === &quot;string&quot;) {
-			data[args[0]].apply(data, Array.prototype.slice.call(args, 1));
-		}
+if (!Echo.GUI || Echo.GUI.Button) return;
+
+<span id='Echo-GUI-Button-method-constructor'><span id='Echo-GUI-Button-cfg-disabled'><span id='Echo-GUI-Button-cfg-icon'><span id='Echo-GUI-Button-cfg-label'><span id='Echo-GUI-Button-cfg-target'><span id='Echo-GUI-Button'>/**
+</span></span></span></span></span></span> * @class Echo.GUI.Button
+ * Class wrapper for &lt;a href=&quot;http://twitter.github.com/bootstrap/javascript.html#buttons&quot;&gt;bootstrap-button.js&lt;/a&gt;.
+ * The Echo.GUI.Dropdown class provides a simplified interface to work with the
+ * Bootstrap Button JS class.
+ * Echo wrapper assembles the HTML code required for Bootstrap Button JS class
+ * based on the parameters specified in the config and initializes
+ * the corresponding Bootstrap JS class.
+ *
+ * Example:
+ * 	var button = new Echo.GUI.Button({
+ * 		&quot;target&quot;: &quot;.css-selector&quot;,
+ * 		&quot;label&quot;: &quot;Button label&quot;,
+ * 		&quot;icon&quot;: &quot;http://example.com/icon.png&quot;,
+ * 		&quot;disabled&quot;: true
+ * 	});
+ * @extends Echo.GUI
+ *
+ * @constructor
+ * Creates a button inside the container defined in the “target&quot; config parameter.
+ *
+ * @param {Object} config
+ * Button configuration data.
+ *
+ * @cfg {Mixed} target
+ * The container where the button should be located.
+ * This parameter can have several types
+ * 	- CSS selector (ex: &quot;.css-selector&quot;)
+ * 	- HTMLElement (ex: document.getElementById(&quot;some-element-id&quot;))
+ * 	- jQuery object (ex: $(&quot;.css-selector&quot;))
+ *
+ * @cfg {String} label
+ * Button label.
+ *
+ * @cfg {String} [icon]
+ * URL for the icon which should be displayed near the label.
+ *
+ * @cfg {Boolean} [disabled=false]
+ * Specifies whether the button should be disabled.
+ */
+Echo.GUI.Button = Echo.Utils.inherit(Echo.GUI, function(config) {
+	Echo.GUI.call(this, config, {
+		&quot;label&quot;: config.target.html(),
+		&quot;disabled&quot;: !!config.target.attr(&quot;disabled&quot;)
 	});
-};
+});
 
-var Button = function(element, params) {
-	params = params || {};
-	this.element = $(element);
-	this.element.addClass(&quot;echo-sdk-button&quot;);
-	$(&quot;&lt;div&gt;&quot;).appendTo(element).addClass(&quot;echo-label&quot;).css({
-		&quot;float&quot;: &quot;left&quot;
-	});
-	this.update({
-		&quot;label&quot;: params.label || this.element.text(),
-		&quot;icon&quot;: params.icon || &quot;&quot;,
-		&quot;disabled&quot;: params.disabled || !!this.element.attr('disabled')
-	});
-};
+Echo.GUI.Button.prototype.refresh = function() {
+	var target = this.config.get(&quot;target&quot;);
 
-Button.prototype.update = function(params) {
-	params = params || {};
-	this.label = params.label || &quot;&quot;;
-	this.icon = params.icon || &quot;&quot;;
-	this.disabled = params.disabled || false;
-	this._render();
-};
+	target.empty().append('&lt;div class=&quot;echo-label&quot;&gt;');
 
-Button.prototype._render = function() {
-	$(&quot;.echo-label&quot;, this.element).text(this.label);
-	var iconElement = $(&quot;.echo-icon&quot;, this.element);
-	var setBackground = function(element, icon) {
-		element.css({
-			&quot;background&quot; : &quot;no-repeat center url(&quot; + icon + &quot;)&quot;
-		});
-	};
-	if (this.icon) {
+	$(&quot;.echo-label&quot;, target).text(this.config.get(&quot;label&quot;));
+	var iconElement = $(&quot;.echo-icon&quot;, target);
+	if (this.config.get(&quot;icon&quot;)) {
 		if (!iconElement.length) {
-			iconElement = $(&quot;&lt;div&gt;&quot;).addClass(&quot;echo-icon&quot;).prependTo(this.element).css({
-				&quot;height&quot;: 16,
-				&quot;width&quot;: 16,
-				&quot;float&quot;: &quot;left&quot;,
-				&quot;margin-right&quot;: 2,
-				&quot;margin-top&quot;: 2
-			});
+			iconElement = $(&quot;&lt;div&gt;&quot;).addClass(&quot;echo-icon&quot;).prependTo(target);
 		}
-		setBackground(iconElement, this.icon);
+		iconElement.css({&quot;background&quot;: &quot;no-repeat center url(&quot; + this.config.get(&quot;icon&quot;) + &quot;)&quot;});
 	} else {
 		iconElement.remove();
 	}
-	this.element.attr(&quot;disabled&quot;, this.disabled);
+	target.attr(&quot;disabled&quot;, this.config.get(&quot;disabled&quot;));
 };
 
 })(Echo.jQuery);

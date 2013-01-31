@@ -29,6 +29,8 @@ suite.prototype.info = {
 		"render",
 		"isDefined",
 		"getRelativeTime",
+		"placeImage",
+		"checkAppKey",
 
 		// functions below are covered
 		// within the Plugin component test
@@ -92,7 +94,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"labelsOverriding",
 			"refresh",
 			"destroyCalled",
-			"destroyBroadcasting"
+			"destroyBroadcasting",
+			"manifestBaseInheritance"
 		], "cases");
 
 	}
@@ -194,6 +197,14 @@ suite.prototype.cases.basicOperations = function(callback) {
 		}
 		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
 
+		QUnit.ok(Echo.Tests.Dependencies.Control.dep6, "Checking if dependency loaded using 'control' condition");
+		QUnit.ok(Echo.Tests.Dependencies.Control.dep7, "Checking if dependency loaded using 'plugin' condition");
+		QUnit.ok(Echo.Tests.Dependencies.Control.dep8, "Checking if dependency loaded using 'app' condition");
+
+		QUnit.ok(!Echo.Tests.Dependencies.Control.dep9, "Checking if dependency is not loading if 'control' already loaded");
+		QUnit.ok(!Echo.Tests.Dependencies.Control.dep10, "Checking if dependency is not loading if 'plugin' already loaded");
+		QUnit.ok(!Echo.Tests.Dependencies.Control.dep11, "Checking if dependency is not loading if 'app' already loaded");
+
 		try {
 			// checking log() calls with invalid params
 			this.log();
@@ -276,14 +287,18 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if 'false' is returned if no config is passed");
 
-	result = new definition({"target": $("div")});
-	QUnit.ok($.isEmptyObject(result),
-		"Checking if empty object is returned if no appkey is passed in config");
-
 	result = new definition({"appkey": "test.echoenabled.com"});
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if empty object is returned if no target is passed in config");
-	
+
+	result = new definition({"target": $("<div>")});
+	var html = result.config.get("target").html();
+	QUnit.ok(/incorrect_appkey/.test(html),
+		"Checking if the error message is produced once the control is initialized without the appkey defined (validating the \"checkAppKey\" function)");
+	QUnit.ok(/echo-control-message-error/.test(html),
+		"Checking if the error message contains the necessary CSS class once the control is initialized without the appkey defined (validating the \"checkAppKey\" function)");
+	result.destroy();
+
 	callback && callback();
 };
 
@@ -730,6 +745,336 @@ suite.prototype.cases.destroyBroadcasting = function(callback) {
 	initControls();
 };
 
+suite.prototype.cases.manifestBaseInheritance = function(callback) {
+	var initVar = "",
+		destroyVar = "";
+	var eventsChecker = {
+		"parentEvent": 0,
+		"child1Event": 0,
+		"commonEvent": 0
+	};
+	var ctx = Echo.Events.newContextId();
+	var publish = function(topic) {
+		Echo.Events.publish({
+			"topic": topic,
+			"context": ctx
+		});
+	};
+	var parentManifest = {
+		"name": "Echo.Control1",
+		"vars": {
+			"someVar": 1,
+			"someVar2": 2
+		},
+		"config": {
+			"someProps": {
+				"prop1": 1,
+				"prop2": 2,
+				"prop3": {
+					"prop3_1": 1
+				}
+			},
+			"someProp": "someVal"
+		},
+		"label": {
+			"someLabel": "some label text"
+		},
+		"events": {
+			"parentEvent": function(topic) { eventsChecker[topic]++; },
+			"commonEvent": function(topic) { eventsChecker[topic] = ++eventsChecker[topic] + " parent handler"; }
+		},
+		"methods": {
+			"method1": function() { return "method1"; },
+			"method2": function() { return "method2"; }
+		},
+		"renderers": {
+			"someRenderer": function(el) { return el; }
+		},
+		"templates": {
+			"main": '<div class="{class:container}"><div class="{class:someRenderer}"></div></div>'
+		},
+		"dependencies": [],
+		"init": function() {
+			initVar += "a parent init";
+			this.render();
+			this.ready();
+		},
+		"destroy": function() {
+			destroyVar += "I'm a parent destroy";
+		},
+		"css": ".{class:container} { width: 50px; }.{class:someRenderer} { width: 10px; }"
+	};
+	var control = Echo.Control.create(parentManifest);
+	var child1Manifest = {
+		"name": "Echo.Control1_Child1",
+		"inherits": Echo.Control1,
+		"vars": {
+			"someVar": "overrides by child1"
+		},
+		"config": {
+			"someProps": {
+				"prop3": {
+					"prop3_2": 2
+				}
+			},
+			"someProp": "overrides by child1"
+		},
+		"events": {
+			"child1Event": function(topic) { eventsChecker[topic]++; },
+			"commonEvent": function(topic) { eventsChecker[topic]++; },
+			"parentEvent": function(topic) { eventsChecker[topic]++; return {"stop": ["bubble", "propagation"]}; }
+		},
+		"methods": {
+			"method1": function() {
+				return this.parent() + " method1_child_1"
+			},
+			"child1Method": function() {
+				return "child1 method"
+			}
+		},
+		"dependencies": [{
+			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep.child.js",
+			"loaded": function() { return !!Echo.Tests.Dependencies.Control.depChild; }
+		}],
+		"init": function() {
+			initVar += "I'm a child init and ";
+			this.parent();
+		},
+		"destroy": function() {
+			this.parent();
+			destroyVar += " and a child destroy";
+		},
+		"css": ".{class:someRenderer} { width: 5px; }"
+	};
+	var child = Echo.Control.create(child1Manifest);
+	suite.initTestControl({
+		"context": ctx,
+		"target": $("#qunit-fixture"),
+		"ready": function() {
+			QUnit.strictEqual(initVar, "I'm a child init and a parent init", "Check init parent function executed");
+			QUnit.deepEqual(this.config.get("someProps"), {
+				"prop1": 1,
+				"prop2": 2,
+				"prop3": {
+					"prop3_1": 1,
+					"prop3_2": 2
+				}
+			}, "Check config props inheritance");
+			QUnit.strictEqual(this.someVar, "overrides by child1", "Check var overrides by child");
+			QUnit.strictEqual(this.config.get("someProp"), "overrides by child1", "Check config property overrides by child");
+			QUnit.strictEqual(this.method1(), "method1 method1_child_1", "Check parent method executed");
+			QUnit.strictEqual(this.method2(), "method2", "Check method inherited without override");
+			QUnit.strictEqual(this.child1Method(), "child1 method", "Check own method exists");
+			QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css concatination");
+			publish("child1Event");
+			publish("commonEvent");
+			publish("parentEvent");
+			QUnit.equal(eventsChecker.parentEvent, 1, "Check parent event propagation stop");
+			QUnit.equal(eventsChecker.child1Event, 1, "Check child event normal publish/subscribe");
+			QUnit.strictEqual(eventsChecker.commonEvent, "2 parent handler", "Check common event normal publish/subscribe and queue");
+			this.destroy();
+			QUnit.strictEqual(destroyVar, "I'm a parent destroy and a child destroy", "Check destroy parent function executed");
+			QUnit.equal(this._manifest("css").length, 3, "Making sure that the 'css' field has the expected length after the inheritance");
+			var actualIDs = [];
+			var expectedIDs = [{"Echo.Control": true}, {"Echo.Control1": true}, {"Echo.Control1_Child1": true}];
+			$.map(["Echo.Control", "Echo.Control1", "Echo.Control1_Child1"], function(id) {
+				var spec = {};
+				spec[id] = Echo.Utils.hasCSS(id);
+				actualIDs.push(spec);
+			});
+			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expected CSS rule groups present in the final manifest");
+			callback && callback();
+		}
+	}, "Echo.Control1_Child1");
+};
+
+suite.prototype.async = {};
+
+suite.prototype.async.placeImageContainerClassTest = function(callback) {
+	var container = $("<div id=\"place-image-container-class\"/>").appendTo($("#qunit-fixture"));
+	suite.initTestControl({
+		"ready": function() {
+			this.placeImage({
+				"container": container,
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"onerror": function() {
+					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
+					callback();
+				},
+				"onload": function() {
+					QUnit.ok(container.hasClass("echo-image-container"), "Checking placeImage() method for image class adding");
+					callback();
+				}
+			});
+		}
+	});
+};
+
+suite.prototype.async.placeImageContainerFillClassTest = function(callback) {
+	var container = $("<div id=\"place-image-container-fill-class\"/>").appendTo($("#qunit-fixture"));
+	suite.initTestControl({
+		"ready": function() {
+			this.placeImage({
+				"container": container,
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"onerror": function() {
+					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
+					callback();
+				},
+				"onload": function() {
+					QUnit.ok(container.hasClass("echo-image-position-fill"), "Checking placeImage() method for image area filling class adding");
+					callback();
+				},
+				"position": "fill"
+			});
+		}
+	});
+};
+
+suite.prototype.async.placeImageContainerFillDefaultTest = function(callback) {
+	var container = $("<div id=\"place-image-container-fill-default-class\"/>").appendTo($("#qunit-fixture"));
+	suite.initTestControl({
+		"ready": function() {
+			this.placeImage({
+				"container": container,
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"onerror": function() {
+					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
+					callback();
+				},
+				"onload": function() {
+					QUnit.ok(container.hasClass("echo-image-position-fill"), "Checking placeImage() method for whether image container filling class is default");
+					callback();
+				}
+			});
+		}
+	});
+};
+
+suite.prototype.async.placeImageContainerFillHorizontalTest = function(callback) {
+	var container = $("<div id=\"place-image-container-fill-horizontal\"/>")
+		.appendTo($("#qunit-fixture"))
+		.css({ "width": "90px", "height": "90px" });
+	suite.initTestControl({
+		"ready": function() {
+			this.placeImage({
+				"container": container,
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"onerror": function() {
+					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
+					callback();
+				},
+				"onload": function() {
+					var self = this;
+					// wait for image size affected in IE
+					setTimeout(function () {
+						QUnit.deepEqual([self.width, self.height], [90, 30], 
+							"Checking placeImage() method for image area filling by a horizontal image");
+						callback();
+					}, 0);
+				},
+				"position": "fill"
+			});
+		}
+	});
+};
+
+suite.prototype.async.placeImageContainerFillVerticalTest = function(callback) {
+	var container = $("<div id=\"place-image-container-fill-vertical\"/>")
+		.appendTo($("#qunit-fixture"))
+		.css({ "width": "90px", "height": "90px" });
+	suite.initTestControl({
+		"ready": function() {
+			this.placeImage({
+				"container": container,
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-vertical-100x300.png",
+				"onerror": function() {
+					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
+					callback();
+				},
+				"onload": function() {
+					var self = this;
+					// wait for image size affected in IE
+					setTimeout(function () {
+						QUnit.deepEqual([self.width, self.height], [30, 90], 
+							"Checking placeImage() method for image area filling by a vertical image");
+						callback();
+					}, 0);
+				},
+				"position": "fill"
+			});
+		}
+	});
+};
+
+suite.prototype.async.horizontalImageQuirksModeTest = function(callback) {
+	var container = $("<div id=\"place-image-horizontal-quirks\"/>").appendTo($("#qunit-fixture"));
+	suite.initTestControl({
+		"ready": function() {
+			this.placeImage({
+				"container": container,
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"onerror": function() {
+					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
+					callback();
+				},
+				"onload": function() {
+					QUnit.ok($(this).hasClass("echo-image-stretched-horizontally"),
+						"Checking placeImage() method for horizontal stretching class in compatible mode");
+					callback();
+				},
+				"position": "fill"
+			});
+		}
+	});
+};
+
+suite.prototype.async.verticalImageQuirksModeTest = function(callback) {
+	var container = $("<div id=\"place-image-vertical-quirks\"/>").appendTo($("#qunit-fixture"));
+	suite.initTestControl({
+		"ready": function() {
+			this.placeImage({
+				"container": container,
+				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-vertical-100x300.png",
+				"onerror": function() {
+					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
+					callback();
+				},
+				"onload": function() {
+					QUnit.ok($(this).hasClass("echo-image-stretched-vertically"),
+						"Checking placeImage() method for vertical stretching class in compatible mode");
+					callback();
+				},
+				"position": "fill"
+			});
+		}
+	});
+};
+
+suite.prototype.tests.TestAsyncMethods = {
+		"config": {
+			"async": true,
+			"user": {"status": "anonymous"},
+			"testTimeout": 10000
+		},
+		"check": function() {
+			suite.createTestControl();
+			
+			var tests = [
+				"placeImageContainerClassTest",
+				"placeImageContainerFillClassTest",
+				"placeImageContainerFillDefaultTest",
+				"placeImageContainerFillHorizontalTest",
+				"placeImageContainerFillVerticalTest"
+			];
+			if (document.compatMode !== "CSS1Compat") {
+				tests = tests.concat(["horizontalImageQuirksModeTest", "verticalImageQuirksModeTest"])
+			}
+			this.sequentialAsyncTests(tests, "async");
+		}
+	};
+
+
 // data required to perform tests
 
 suite.data = {};
@@ -919,6 +1264,15 @@ suite.getControlManifest = function(name, config) {
 
 	manifest.config = $.extend(true, {}, suite.data.config);
 
+	manifest.config.normalizer = {
+		"context": function(val, ctrl) {
+			var parent = ctrl.config.parent;
+			return parent
+				? Echo.Events.newContextId(parent.context)
+				: val ? val : Echo.Events.newContextId();
+		}
+	};
+
 	// copy vars from config
 	manifest.vars = $.extend(true, {}, manifest.config);
 
@@ -932,15 +1286,30 @@ suite.getControlManifest = function(name, config) {
 		"label3": "label3 value"
 	};
 
-	var addDependency = function(n) {
-		manifest.dependencies.push({
-			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep." + n + ".js",
-			"loaded": function() { return !!Echo.Tests.Dependencies.Control["dep" + n]; }
-		});
+	var addDependency = function(n, params) {
+		var dependency = {
+			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep." + n + ".js"
+		};
+		if (typeof params === "object") {
+			dependency = $.extend(dependency, params);
+		} else {
+			dependency.loaded = function() { return !!Echo.Tests.Dependencies.Control["dep" + n]; };
+		}
+		manifest.dependencies.push(dependency);
 	};
 	for (var i = 1; i < 6; i++) addDependency(i);
 
+	Echo.Tests.Unit.App.createApp("Echo.Apps.MyTestApp");
+	addDependency(6, {"control": "Echo.StreamServer.Controls.MyNotExistsTestControl"});
+	addDependency(7, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyNotExistsTestPlugin"});
+	addDependency(8, {"app": "Echo.Apps.MyNotExistsTestApp"});
+
+	addDependency(9, {"control": "Echo.StreamServer.Controls.MyTestControl"});
+	addDependency(10, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyPlugin"});
+	addDependency(11, {"app": "Echo.Apps.MyTestApp"});
+
 	manifest.init = function() {
+		if (!this.checkAppKey()) return;
 		this.render();
 		this.ready();
 	};

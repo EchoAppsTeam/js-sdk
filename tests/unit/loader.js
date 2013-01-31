@@ -11,6 +11,8 @@ suite.prototype.info = {
 	"className": "Echo.Loader",
 	"functions": [
 		"init",
+		"initApplication",
+		"initEnvironment",
 		"isDebug",
 		"download",
 		"override",
@@ -21,6 +23,8 @@ suite.prototype.info = {
 suite.prototype.tests = {};
 
 suite.prototype.cases = {};
+
+suite.prototype.initEnvironmentCases = {};
 
 // checking resources downloading mechanisms
 
@@ -39,7 +43,8 @@ suite.prototype.tests.resourceDownloadingTests = {
 			"alreadyLoadedScripts",
 			"validScriptsLoading",
 			"validAndInvalidScriptsMix",
-			"loadingSameScriptMultipleTimes"
+			"loadingSameScriptMultipleTimes",
+			"fireSameScriptLoadingMultipleTimes"
 		], "cases");
 	}
 };
@@ -100,6 +105,42 @@ suite.prototype.tests.urlConvertingTests = {
 		);
 		Echo.Loader.debug = debug;
 	}
+};
+
+suite.prototype.tests.environmentInitializationTests = {
+	"config": {
+		"async": true,
+		"testTimeout": 15000
+	},
+	"check": function() {
+		this.sequentialAsyncTests([
+			"emptyCallback",
+			"environmentCheck"
+		], "initEnvironmentCases");
+	}
+};
+
+suite.prototype.initEnvironmentCases.emptyCallback = function(callback) {
+	try {
+		Echo.Loader.initEnvironment();
+		QUnit.ok(true, "Checking if the 'callback' param is optional (no errors produced)");
+	} catch(e) {
+		QUnit.ok(false, "Calling 'initEnvironment' with no callback produced JS error...");
+	}
+	callback();
+};
+
+suite.prototype.initEnvironmentCases.environmentCheck = function(callback) {
+	Echo.Loader.initEnvironment(function() {
+		QUnit.ok(true, "Checking if the callback is being fired as soon as the environment is ready.");
+		QUnit.ok(!!window.Backplane && !!Echo.Control && Echo.jQuery,
+			"Checking if the callback is being fired as soon as the environment is ready.");
+		var state = $.extend(true, {}, Echo.Loader.vars.state);
+		Echo.Loader.initEnvironment();
+		QUnit.deepEqual(state, Echo.Loader.vars.state,
+			"Checking if the second 'initEnvironment' function call doesn't produce any downloading requests");
+		callback();
+	});
 };
 
 suite.prototype.cases.invalidParameters = function(callback) {
@@ -253,6 +294,38 @@ suite.prototype.cases.loadingSameScriptMultipleTimes = function(callback) {
 	});
 };
 
+suite.prototype.cases.fireSameScriptLoadingMultipleTimes = function(callback) {
+	var resources = [{
+		"url": Echo.Tests.baseURL + "tests/unit/loader/scripts/check-multiple-downloads.js"
+	}];
+	var count = 0;
+	var check = function() {
+		return Echo.Control.isDefined("Echo.Tests.Controls.TestMultipleDownloads");
+	};
+	var maybeExecuteCallback = function() {
+		if (++count === 3) callback();
+	};
+	Echo.Loader.download(resources, function() {
+		QUnit.ok(check(), "Checking if the control is defined after the first download");
+		maybeExecuteCallback();
+	});
+	Echo.Loader.download(resources, function() {
+		QUnit.ok(check(), "Checking if the control is defined after the second (parallel) download");
+		maybeExecuteCallback();
+	});
+	Echo.Loader.download(resources, function() {
+		Echo.Loader.download(resources, function() {
+			Echo.Loader.download(resources, function() {
+				QUnit.ok(check(),
+					"Checking if the 'download' functions can be executed within the previous 'download' function calls");
+				maybeExecuteCallback();
+			});
+		});
+	});
+
+	Echo.Tests.Controls.TestMultipleDownloads
+};
+
 // checking canvases initialization scenarios
 
 suite.prototype.tests.canvasesInitializationTests = {
@@ -268,6 +341,7 @@ suite.prototype.tests.canvasesInitializationTests = {
 			"double-initialization-prevention",
 			"different-initialization-schemas",
 			"multiple-apps-canvas",
+			"app-initialization",
 			"app-config-overrides"
 		], function(name) {
 			return self.loaderIframeTest(name);
@@ -287,6 +361,42 @@ suite.prototype.loaderIframeTest = function(name) {
 		iframe.attr("src", "unit/loader/pages/" + name + ".html");
 	};
 };
+
+/*
+ * TODO fix relative URLs in tests/unit/loader/canvases/test.canvas.007.json
+suite.prototype.tests.canvasesScriptsLoadingTest = {
+	"config": {
+		"async": true,
+		"testTimeout": 5000
+	},
+	"check": function() {
+		var self = this;
+		var debug = Echo.Loader.debug;
+
+		$("#qunit-fixture").append("<div class=\"echo-canvas\" data-appkey=\"test.echoenabled.com\" data-canvas-id=\"test.canvas.007\"></div>");
+
+		Echo.Loader.override("test.canvas.007", "test.apps.scripts", {"ready": function() {
+			this.destroy();
+			QUnit.ok(Echo.Variables.TestControl === "development", "Check if development version of application script was loaded");
+
+			Echo.Loader.debug = false;
+			delete window.Echo.Tests.Controls.TestControl;
+			$("#qunit-fixture").empty().append("<div class=\"echo-canvas\" data-appkey=\"test.echoenabled.com\" data-canvas-id=\"test.canvas.007\"></div>");
+			Echo.Loader.override("test.canvas.007", "test.apps.scripts", {"ready": function() {
+				this.destroy();
+				QUnit.ok(Echo.Variables.TestControl === "production", "Check if production version of application script was loaded");
+
+				Echo.Loader.debug = debug;
+				delete window.Echo.Tests.Controls.TestControl;
+
+				QUnit.start();
+			}});
+			Echo.Loader.init({ "target": $("#qunit-fixture") });
+		}});
+		Echo.Loader.init({ "target": $("#qunit-fixture") });
+	}
+};
+*/
 
 // static interface with utils functions (to be accessible within nested iframes)
 

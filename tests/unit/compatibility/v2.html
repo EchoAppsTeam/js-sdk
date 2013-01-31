@@ -11,7 +11,7 @@
         var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
         var apps = {
             "Stream": {
-                "query": "childrenof:http://example.com/* itemsPerPage:1",
+                "query": "childrenof:http://example.com/js-sdk itemsPerPage:1",
                 "viaLabel": { "icon": true, "text": true },
                 "plugins": [{
                     "name": "TwitterIntents"
@@ -72,10 +72,10 @@
                 }]
             },
             "Counter": {
-                "query": "childrenof:http://example.com/*"
+                "query": "childrenof:http://example.com/js-sdk"
             },
             "UserList": {
-                "query": "childrenof:http://example.com/*",
+                "query": "childrenof:http://example.com/js-sdk",
                 "suffixText": " commented on aboutecho.com",
                 "item": {"avatar": true, "text": true}
             }

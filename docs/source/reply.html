@@ -22,7 +22,7 @@ var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
- * Adds extra button Reply to each root item in the Echo Stream control.
+ * Adds extra “Reply” button to each root item in the Echo Stream control.
  * Integrates Echo Submit control and provides the ability to submit
  * replies to the posted items.
  *
@@ -78,7 +78,7 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	&quot;loaded&quot;: function() { return Echo.Control.isDefined(&quot;Echo.StreamServer.Controls.Submit&quot;); },
+	&quot;control&quot;: &quot;Echo.StreamServer.Controls.Submit&quot;,
 	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/streamserver.pack.js&quot;
 }];
 
@@ -318,9 +318,10 @@ plugin.methods._getSubmitData = function() {
 plugin.css = 
 	&quot;.{plugin.class:compactContent} { padding: 5px 5px 5px 6px; background-color: #fff; }&quot; +
 	&quot;.{plugin.class:compactBorder} { border: 1px solid #d2d2d2; }&quot; +
-	&quot;.{plugin.class:compactField} { width: 100%; border: none; }&quot; +
-	($.browser.webkit ?
-		'.{plugin.class:compactContent} input { outline: none; }' : '');
+	&quot;.{plugin.class:compactContent} input.{plugin.class:compactField} { width: 100%; border: none; }&quot; +
+	'.{plugin.class:compactContent} input.{plugin.class:compactField}[type=&quot;text&quot;] { width: 100%; border: none; margin: 0px; padding: 0px; }' +
+	(Echo.Utils._browser().webkit ?
+		'.{plugin.class:compactContent} input.{plugin.class:compactField} { outline: none; width: 100%;}' : '');
 
 Echo.Plugin.create(plugin);
 

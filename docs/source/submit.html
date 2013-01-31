@@ -28,7 +28,7 @@ var $ = jQuery;
  * 	new Echo.StreamServer.Controls.Submit({
  * 		&quot;target&quot;: document.getElementById(&quot;submit&quot;),
  * 		&quot;targetURL&quot;: &quot;http://example.com/submit&quot;,
- * 		&quot;appkey&quot;: &quot;test.js-kit.com&quot;,
+ * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
  * 	});
  *
  * @extends Echo.Control
@@ -44,6 +44,8 @@ var submit = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Submit&quot;
 if (Echo.Control.isDefined(submit)) return;
 
 submit.init = function() {
+	if (!this.checkAppKey()) return;
+
 	var self = this;
 	this.addPostValidator(function() {
 		var valid = true;
@@ -73,10 +75,10 @@ submit.config = {
 <span id='Echo-StreamServer-Controls-Submit-cfg-markers'>	/**
 </span>	 * @cfg {Array} markers
 	 * This parameter is used to attach the markers metadata to the item
-	 * during the item submission. The format of the value is the array 
-	 * with the string values. Markers will be also displayed in the &quot;Markers&quot;
+	 * during the item submission. The format of the value is the array
+	 * with the string values. Markers will also be displayed in the &quot;Markers&quot;
 	 * field in the Submit form UI for Moderators and Administrators.
-	 * For non-admin users the markers value will be submitted along with the
+	 * For non-admin users the markers value will be submitted along with
 	 * other item content when the &quot;Post&quot; button is pressed.
 	 *
 	 * 	new Echo.StreamServer.Controls.Submit({
@@ -168,9 +170,9 @@ submit.config = {
 	&quot;actionString&quot;: &quot;Type your comment here...&quot;,
 <span id='Echo-StreamServer-Controls-Submit-cfg-postingTimeout'>	/**
 </span>	 * @cfg {Number} postingTimeout
-	 * Is used to specify the number of seconds after which Submit Form will show
-	 * timeout error dialog if the server does not return anything. If the parameter
-	 * value is 0 then the mentioned dialog won't never be shown.
+	 * Is used to specify the number of seconds after which the Submit Form will show
+	 * the timeout error dialog if the server does not return anything. If the parameter
+	 * value is 0 then the mentioned dialog will never be shown.
 	 *
 	 * 	new Echo.StreamServer.Controls.Submit({
 	 * 		...
@@ -227,11 +229,10 @@ submit.vars = {
 };
 
 submit.dependencies = [{
-	&quot;loaded&quot;: function() { return !!Echo.jQuery.echoButton; },
-	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-button.js&quot;
+	&quot;loaded&quot;: function() { return !!Echo.GUI; },
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/gui.pack.js&quot;
 }, {
-	&quot;loaded&quot;: function() { return !!Echo.jQuery.echoModal; },
-	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/third-party/bootstrap/echo-modal.js&quot;
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/gui.pack.css&quot;
 }];
 
 submit.labels = {
@@ -379,11 +380,12 @@ submit.renderers.text = function(element) {
 </span> * @echo_renderer
  */
 submit.renderers.avatar = function(element) {
-	var avatar = Echo.Utils.loadImage({
+	this.placeImage({ 
+		&quot;container&quot;: element,
 		&quot;image&quot;: this.user.get(&quot;avatar&quot;),
 		&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)
 	});
-	return element.empty().append(avatar);
+	return element;
 };
 
 <span id='Echo-StreamServer-Controls-Submit-method-name'>/**
@@ -413,17 +415,19 @@ submit.renderers.postButton = function(element) {
 	var self = this;
 	var states = {
 		&quot;normal&quot;: {
+			&quot;target&quot;: element,
 			&quot;icon&quot;: false,
 			&quot;disabled&quot;: false,
 			&quot;label&quot;: this.labels.get(&quot;post&quot;)
 		},
 		&quot;posting&quot;: {
+			&quot;target&quot;: element,
 			&quot;icon&quot;: this.config.get(&quot;cdnBaseURL.sdk-assets&quot;) + &quot;/images/loading.gif&quot;,
 			&quot;disabled&quot;: true,
 			&quot;label&quot;: this.labels.get(&quot;posting&quot;)
 		}
 	};
-	element.empty().echoButton(states.normal);
+	var postButton = new Echo.GUI.Button(states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
@@ -438,7 +442,10 @@ submit.renderers.postButton = function(element) {
 		subscriptions[topic] = self.events.subscribe({
 			&quot;topic&quot;: topic,
 			&quot;handler&quot;: function(topic, params) {
-				element.echoButton(&quot;update&quot;, state);
+				Echo.Utils.foldl([], state, function(key, acc, id) {
+					postButton.config.set(id, key);
+				});
+				postButton.refresh();
 				if (callback) callback(params);
 			}
 		});
@@ -565,7 +572,7 @@ submit.methods.highlightMandatory = function(element) {
 };
 
 <span id='Echo-StreamServer-Controls-Submit-method-addPostValidator'>/**
-</span> * Method adds custom validator to check posting possibility
+</span> * This Method adds a custom validator to check the posting possibility.
  */
 submit.methods.addPostValidator = function(validator, priority) {
 	this.validators[priority === &quot;low&quot; ? &quot;push&quot; : &quot;unshift&quot;](validator);
@@ -619,7 +626,7 @@ submit.methods._showError = function(data) {
 		: this.labels.get(&quot;postingFailed&quot;, {&quot;error&quot;: data.errorMessage || data.errorCode});
 	var popup = this._assembleErrorPopup(message);
 
-	$.echoModal({
+	new Echo.GUI.Modal({
 		&quot;data&quot;: {
 			&quot;body&quot;: popup.content
 		},
@@ -668,18 +675,20 @@ submit.methods._prepareEventParams = function(params) {
 
 submit.css =
 	'.{class:header} { margin-bottom: 3px; }' +
-	'.{class:avatar} { float: left; margin-right: -48px; }' +
-	'.{class:avatar} img { width: 48px; height: 48px; }' +
+	'.{class:avatar} { float: left; margin-right: -48px; width: 48px; height: 48px; }' +
 	'.{class:fields} { width: 100%; float: left; }' +
 	'.{class:fields} input { width: 100%; }' +
 	'.{class:fieldsWrapper} { margin-left: 53px; }' +
 	'.{class:nameContainer} { margin: 1px 0px 4px 0px; padding: 0px 2px 1px 3px; background-color: #fff; }' +
-	'.{class:name} { font-size: 14px; font-weight: bold; border: none; }' +
+	'.{class:nameContainer} input.{class:name} { font-size: 14px; font-weight: bold; border: none; width: 100%;}' +
+	'.{class:fieldsWrapper} input.{class:name}[type=&quot;text&quot;] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; }' +
 	'.{class:urlContainer} { padding: 0px 2px 1px 3px; background-color: #fff; }' +
-	'.{class:url} { height: 19px; border: none; }' +
+	'.{class:urlContainer} input.{class:url} { height: 19px; border: none; width: 100%; margin-bottom: 0px;}' +
+	'.{class:fieldsWrapper} input.{class:url}[type=&quot;text&quot;] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; }' +
 	'.{class:author} { font-weight: bold; }' +
 	'.{class:content} { padding: 5px 5px 5px 6px; background-color: #fff; }' +
-	'.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none ; }' +
+	'.{class:content} textarea.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none; box-shadow: none; }' +
+	'.{class:content} textarea.{class:textArea}:focus { box-shadow: none; }' +
 	'.{class:text} input { width: 100%; border: none; }' +
 	'.{class:metadataContainer} { margin-top: 6px; }' +
 	'.{class:metadataLabel} { float: left; width: 50px; margin-right: -50px; text-align: right; line-height: 22px; }' +
@@ -692,14 +701,14 @@ submit.css =
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
 	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk-assets}/images/info70.png); }' +
-	($.browser.msie ?
+	(Echo.Utils._browser().msie ?
 		'.{class:container} { zoom: 1; }' +
 		'.{class:body} { zoom: 1; }' +
 		'.{class:header} { zoom: 1; }' +
 		'.{class:content} { zoom: 1; }' +
 		'.{class:markersContainer} { zoom: 1; }' +
 		'.{class:tagsContainer} { zoom: 1; }' : '') +
-	($.browser.webkit ?
+	(Echo.Utils._browser().webkit ?
 		// get rid of extra gray line inside input elements on iOS
 		'.{class:container} input { background-position: 0px; }' +
 		'.{class:container} textarea { background-position: 0px; }' +
