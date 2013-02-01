@@ -611,6 +611,11 @@ plugin.config = {
 	 * rendering engine. The possible config values can be found at the Isotope
 	 * plugin homepage (http://isotope.metafizzy.co/). It's NOT recommended to
 	 * change the settings of the Isotope unless it's really required.
+	 *
+	 *__Note__: the Isotope JS library doesn't work in IE <a href="http://en.wikipedia.org/wiki/Quirks_mode">quirks mode</a>.
+	 * Due to this fact you should declare the necessary <a href="http://en.wikipedia.org/wiki/DOCTYPE">\<DOCTYPE\></a>
+	 * on the page. We recommend to use a
+	 * <a href="http://en.wikipedia.org/wiki/DOCTYPE#HTML5_DTD-less_DOCTYPE">HTML5 DOCTYPE</a> declaration.
 	 */
 	"isotope": {
 		"animationOptions": {
