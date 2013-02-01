@@ -434,7 +434,7 @@ module.exports = function(grunt) {
 		"testurl": function(src, config, version) {
 			var env = shared.config("env");
 			if ((env === "dev" || env === "test") && config && config.domain) {
-				src = src.replace(/echoappsteam\.github\.com\/js-sdk/, config.domain);
+				src = src.replace(/echoappsteam\.github\.com\/js-sdk/, config.domainTests || config.domain);
 			}
 			return src;
 		},
