@@ -322,8 +322,6 @@ suite.prototype.cases.fireSameScriptLoadingMultipleTimes = function(callback) {
 			});
 		});
 	});
-
-	Echo.Tests.Controls.TestMultipleDownloads
 };
 
 // checking canvases initialization scenarios
