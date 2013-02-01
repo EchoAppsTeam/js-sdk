@@ -785,7 +785,8 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"methods": {
 			"method1": function() { return "method1"; },
-			"method2": function() { return "method2"; }
+			"method2": function() { return "method2"; },
+			"method3": function() { return "method3"; }
 		},
 		"renderers": {
 			"someRenderer": function(el) { return el; }
@@ -847,6 +848,15 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"css": ".{class:someRenderer} { width: 5px; }"
 	};
 	var child = Echo.Control.create(child1Manifest);
+	var child2 = Echo.Control.create({
+		"name": "Echo.Control1_Child2",
+		"methods": {
+			"method2": function() {
+				return this.parent() + " method2_child_2"
+			}
+		},
+		"inherits": Echo.Utils.getComponent("Echo.Control1_Child1")
+	});
 	suite.initTestControl({
 		"context": ctx,
 		"target": $("#qunit-fixture"),
@@ -863,7 +873,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			QUnit.strictEqual(this.someVar, "overrides by child1", "Check var overrides by child");
 			QUnit.strictEqual(this.config.get("someProp"), "overrides by child1", "Check config property overrides by child");
 			QUnit.strictEqual(this.method1(), "method1 method1_child_1", "Check parent method executed");
-			QUnit.strictEqual(this.method2(), "method2", "Check method inherited without override");
+			QUnit.strictEqual(this.method3(), "method3", "Check method inherited without override");
 			QUnit.strictEqual(this.child1Method(), "child1 method", "Check own method exists");
 			QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css concatination");
 			publish("child1Event");
@@ -883,7 +893,16 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 				actualIDs.push(spec);
 			});
 			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expected CSS rule groups present in the final manifest");
-			callback && callback();
+			suite.initTestControl({
+				"context": ctx,
+				"target": $("<div>"),
+				"ready": function() {
+					QUnit.strictEqual(this.method2(), "method2 method2_child_2", "Check parent method executed (second inheritance level; child2 -> parent() -> control)");
+					QUnit.strictEqual(this.child1Method(), "child1 method", "Check parent method executed (child2 -> child1)");
+					QUnit.strictEqual(this.method3(), "method3", "Check parent method executed (child2 -> control)");
+					callback && callback();
+				}
+			}, "Echo.Control1_Child2");
 		}
 	}, "Echo.Control1_Child1");
 };
