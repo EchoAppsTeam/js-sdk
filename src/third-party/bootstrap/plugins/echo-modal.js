@@ -154,6 +154,10 @@ Echo.GUI.Modal.prototype.refresh = function() {
 		self.config.get("onShow").call(self, self.element);
 	});
 
+	this.config.get("fade") && $.support.transition && this.element.one($.support.transition.end, function() {
+		self.element.focus().trigger("shown");
+	});
+
 	this.element.appendTo("body")
 		.wrap("<div class='echo-sdk-ui'>")
 		.modal(this.config);
@@ -261,6 +265,8 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 				modal.backdrop(function(){});
 				modal.isShown = shown;
 				modal.options.backdrop = backdrop;
+
+				self.element.addClass("in");
 
 				self.backdrop = modal.$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
 			});

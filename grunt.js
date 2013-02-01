@@ -99,6 +99,7 @@ module.exports = function(grunt) {
 		},
 		"third-party/bootstrap": {
 			"src": [
+				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-transition.js>",
 				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-affix.js>",
 				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-alert.js>",
 				"<bootstrap_js_wrapper:third-party/bootstrap/js/bootstrap-button.js>",
