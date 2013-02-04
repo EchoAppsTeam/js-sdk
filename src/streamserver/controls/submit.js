@@ -425,10 +425,7 @@ submit.renderers.postButton = function(element) {
 		subscriptions[topic] = self.events.subscribe({
 			"topic": topic,
 			"handler": function(topic, params) {
-				Echo.Utils.foldl([], state, function(key, acc, id) {
-					postButton.config.set(id, key);
-				});
-				postButton.refresh();
+				postButton.setState(state);
 				if (callback) callback(params);
 			}
 		});

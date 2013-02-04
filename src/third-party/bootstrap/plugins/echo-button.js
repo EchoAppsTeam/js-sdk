@@ -53,6 +53,14 @@ Echo.GUI.Button = Echo.Utils.inherit(Echo.GUI, function(config) {
 	});
 });
 
+Echo.GUI.Button.prototype.setState = function(config) {
+	var self = this;
+	$.each(config, function(k, v) {
+		self.config.set(k, v);
+	});
+	this.refresh();
+};
+
 Echo.GUI.Button.prototype.refresh = function() {
 	var target = this.config.get("target");
 
