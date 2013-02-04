@@ -55,8 +55,7 @@ suite.prototype.tests.commonWorkflow = {
 		QUnit.ok($(target).html().match(/icon/) && $(target).html().match(backgroundRegExp),
 			"Checking that background icon is added to element after set() method call");
 
-		button.config.set("label", "ThirdLabel");
-		button.refresh();
+		button.setState({"label": "ThirdLabel"});
 		QUnit.ok(!$(target).html().match(/SecondLabel/) && $(target).html().match(/ThirdLabel/),
 			"Checking that label is changed after updating 'label' field");
 

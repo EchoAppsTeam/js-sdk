@@ -53,6 +53,10 @@ Echo.GUI.Button = Echo.Utils.inherit(Echo.GUI, function(config) {
 	});
 });
 
+/**
+ * Allows to repaint the button using arbitrary values for configuration
+ * parameters from #constructor
+ */
 Echo.GUI.Button.prototype.setState = function(config) {
 	var self = this;
 	$.each(config, function(k, v) {
