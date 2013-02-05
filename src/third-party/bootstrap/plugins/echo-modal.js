@@ -183,7 +183,7 @@ Echo.GUI.Modal.prototype.destroy = function() {
 		this.backdrop && this.backdrop.remove();
 		this.element.find('iframe').hide().attr('src', '//about:blank').end().empty();
 		this.element.unwrap().remove();
-		this.config.get("onHide").call(self, self.element);
+		this.config.get("onHide").call(this, this.element);
 	}
 };
 
