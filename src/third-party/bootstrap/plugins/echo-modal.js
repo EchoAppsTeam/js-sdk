@@ -147,9 +147,6 @@ Echo.GUI.Modal.prototype.refresh = function() {
 	this.element.on("hidden", function() {
 		self.destroy();
 	});
-	this.element.on("hide", function() {
-		self.config.get("onHide").call(self, self.element);
-	});
 	this.element.on("shown", function() {
 		self.config.get("onShow").call(self, self.element);
 	});
@@ -186,6 +183,7 @@ Echo.GUI.Modal.prototype.destroy = function() {
 		this.backdrop && this.backdrop.remove();
 		this.element.find('iframe').hide().attr('src', '//about:blank').end().empty();
 		this.element.unwrap().remove();
+		this.config.get("onHide").call(self, self.element);
 	}
 };
 
