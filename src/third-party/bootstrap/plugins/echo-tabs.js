@@ -68,7 +68,6 @@ Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 
 	Echo.GUI.call(this, config, {
 		"entries": [],
-		"extraClass": "",
 		"show": function() {}
 	});
 });
@@ -171,10 +170,12 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 
 	var attrs = [
 		(tabConfig.disabled ? ' class="disabled"' : ' data-toggle="tab"'),
-		'class="' + tabConfig.extraClass + '"',
 		'href="#' + tabConfig.id + '"',
 		'data-item="' + tabConfig.id + '"'
 	];
+	if (tabConfig.extraClass) {
+		attrs.push('class="' + tabConfig.extraClass + '"');
+	}
 	var tab = $('<li><a' + attrs.join(" ") + '>' + tabConfig.label  + '</a></li>');
 
 	$("a", tab).on("show", function() {
