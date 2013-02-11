@@ -2925,6 +2925,9 @@ item.css =
 	'.{class:re} a:hover { text-decoration: underline; }' +
 	'.{class:body} { padding-top: 4px; }' +
 	'.{class:buttons} { float: left; margin-left: 3px; }' +
+	'.{class:buttons} a.{class:button} { color: #C6C6C6; }' +
+	'.{class:buttons} a.{class:button}.echo-linkColor { color: #476CB8; text-decoration: none; }' +
+	'.{class:buttons} a.{class:button}:hover { color: #476CB8; text-decoration: none; }' +
 	'.{class:sourceIcon} { float: left; height: 16px; width: 16px; margin-right: 5px; border: 0px; }' +
 	'.{class:date}, .{class:from}, .{class:via} { float: left; }' +
 	'.{class:from} a, .{class:via} a { text-decoration: none; color: #C6C6C6; }' +
