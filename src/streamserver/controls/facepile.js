@@ -429,8 +429,7 @@ pile.methods._intersperse = function(object, separator) {
 pile.css = 
 	'.{class:container} { line-height: 20px; vertical-align: middle; }' +
 	'.{class:more} { white-space: nowrap; }' +
-	'.{class:more}.echo-linkColor a { color: #476CB8; text-decoration: underline; }' +
-	'.{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }' +
+	'.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }' +
 	'.{class:more} .echo-control-message-icon { display: inline; margin: 0px 5px; }';
 
 Echo.Control.create(pile);
