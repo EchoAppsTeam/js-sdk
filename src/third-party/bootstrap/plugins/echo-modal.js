@@ -130,8 +130,6 @@ Echo.GUI.Modal = Echo.Utils.inherit(Echo.GUI, function(config) {
 
 Echo.GUI.Modal.prototype.refresh = function() {
 	var self = this;
-	if (!this.config.get("show") && !this._forceShow) return;
-	this.forceShow = false;
 	if (this.rendered) this.destroy();
 
 	this.rendered = true;
@@ -157,7 +155,7 @@ Echo.GUI.Modal.prototype.refresh = function() {
 
 	this.element.appendTo("body")
 		.wrap("<div class='echo-sdk-ui'>")
-		.modal(this.config);
+		.modal(this.config.getAsHash());
 
 	// if we try show few modals in one time, then event "focusin.modal" be called infinity times
 	$(document).off('focusin.modal');
@@ -168,8 +166,7 @@ Echo.GUI.Modal.prototype.refresh = function() {
  * 	myModal.show();
  */
 Echo.GUI.Modal.prototype.show = function() {
-	this._forceShow = true;
-	this.refresh();
+	this.element.modal("show");
 };
 
 /**
