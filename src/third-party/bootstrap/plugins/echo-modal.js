@@ -284,7 +284,7 @@ Echo.GUI.Modal.prototype._addSection = function(css, content) {
 	var section = $('<div class="' + css + '">');
 	this.element.append(section);
 	if (content) {
-		section.append(Echo.Utils.invoke(content));
+		section.append($.isFunction(content) ? content(section) : content);
 	}
 	return section;
 };
