@@ -19,8 +19,13 @@ var tabsParams = {
 			"id": "tab2",
 			"label": "Test tab2",
 			"disabled": true,
-			"panel": $("<div><i>Tab2 content</i></div>")
+			"panel": $("<div><i>Tab2 content</i></div>"),
+			"data": {
+				"key": "value"
+			}
 	}],
+	"idPrefix": "test-tabs-",
+	"classPrefix": "test-tabs-",
 	"show": function(t) {
 		Echo.Tests.Unit.Tabs._showHandler = true;
 	}
@@ -31,7 +36,6 @@ suite.prototype.tests.commonWorkflow = {
 		"async": true
 	},
 	"check": function() {
-		
 		var target = document.getElementById("qunit-fixture");
 		$(target).empty();
 
@@ -40,13 +44,17 @@ suite.prototype.tests.commonWorkflow = {
 		var echoTabs = new Echo.GUI.Tabs(tabsParams);
 
 		QUnit.ok($(".tab-content", element).length, "Check that panels container created");
+		QUnit.ok($(".tab-content", element).hasClass(tabsParams.classPrefix + "panels"), "Check that panels container has appropriate class");
+		QUnit.ok($(".nav-tabs", element).hasClass(tabsParams.classPrefix + "header"), "Check that tabs container has appropriate class");
 
 		var tab1 = $("a:first", element);
 		var tab2 = $("a:last", element);
 		QUnit.ok(tab1.length && tab2.length, "Check add() method");
+		QUnit.equal(tab1.attr("href"), "#" + tabsParams.idPrefix + tabsParams.entries[0].id, "Check that 'idPrefix' configuration option works (tab)");
 
-		var panel1 = echoTabs.getPanels().find("div[id='" + tabsParams.entries[0].id + "']");
-		var panel2 = echoTabs.getPanels().find("div[id='" + tabsParams.entries[1].id + "']");
+		var panel1 = echoTabs._getPanel(tabsParams.entries[0].id);
+		var panel2 = echoTabs._getPanel(tabsParams.entries[1].id);
+		QUnit.equal(panel1.attr("id"), tabsParams.idPrefix + tabsParams.entries[0].id, "Check that 'idPrefix' configuration option works (panel)");
 		this.jqueryObjectsEqual(
 			$(panel1.html()),
 			$(tabsParams.entries[0].panel.html()),
@@ -64,27 +72,27 @@ suite.prototype.tests.commonWorkflow = {
 		);
 
 		QUnit.ok(
-			tab1.hasClass("extra-class") && !tab2.hasClass("extra-class"),
+			tab1.parent().hasClass("extra-class") && !tab2.parent().hasClass("extra-class"),
 			"Check that extraClass has been added"
 		);
 
 		QUnit.ok(echoTabs.getPanels().length, "Check getPanels() method");
 
 		QUnit.ok(
-			tab2.hasClass("disabled") && !tab1.hasClass("disabled"),
+			tab2.parent().hasClass("disabled") && !tab1.parent().hasClass("disabled"),
 			"Check that disabled class has been added"
 		);
 		echoTabs.enable("tab2");
 
 		echoTabs.disable(tabsParams.entries[0].id);
 		QUnit.ok(
-			tab1.hasClass("disabled") && !tab2.hasClass("disabled"),
+			tab1.parent().hasClass("disabled") && !tab2.parent().hasClass("disabled"),
 			"Check disable() method"
 		);
 
 		echoTabs.enable(tabsParams.entries[0].id);
 		QUnit.ok(
-			!tab1.hasClass("disabled") && !tab2.hasClass("disabled"),
+			!tab1.parent().hasClass("disabled") && !tab2.parent().hasClass("disabled"),
 			"Check enable() method"
 		);
 
@@ -103,14 +111,15 @@ suite.prototype.tests.commonWorkflow = {
 		);
 
 		echoTabs.show(tabsParams.entries[1].id);
-		QUnit.ok(tab2.parent().hasClass("active"), "Check show() method");
+		QUnit.ok(tab2.parent().hasClass("active"), "Check show() method (tab)");
+		QUnit.ok(panel2.hasClass("active"), "Check show() method (panel)");
 
 		QUnit.ok(Echo.Tests.Unit.Tabs._showHandler, "Check 'show' event handler");
 
 		echoTabs.update(tabsParams.entries[1].id, {"label": "New label", "extraClass": "echo-hide", "content": "New content"});
 		QUnit.ok(
 			tab2.html() === "New label" && tab2.hasClass("echo-hide") &&
-				echoTabs.getPanels().find("div[id='" + tabsParams.entries[1].id  + "']").html() === "New content",
+				echoTabs._getPanel(tabsParams.entries[1].id).html() === "New content",
 			"Check update() method"
 		);
 
