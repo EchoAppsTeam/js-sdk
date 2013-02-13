@@ -74,10 +74,10 @@ if (Echo.GUI.Tabs) return;
  * Container which contains the panels.
  * If this parameter is not specified, the container will be created.
  *
- * @cfg {String} [classPrefix="echo-tabs"]
+ * @cfg {String} [classPrefix="echo-tabs-"]
  * String to be added as a prefix to the tab components.
- * Element with tabs will get "_classPrefix_-header" class name
- * and element with panels will get "_classPrefix_-panels" class.
+ * Element with tabs will get "**\<classPrefix\>**header" class name
+ * and element with panels will get "**\<classPrefix\>**panels" class.
  *
  * @cfg {Function} [show]
  * Function which will be called when tab is shown.
@@ -91,7 +91,7 @@ Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 	Echo.GUI.call(this, config, {
 		"entries": [],
 		"idPrefix": "",
-		"classPrefix": "echo-tabs",
+		"classPrefix": "echo-tabs-",
 		"show": function() {}
 	});
 });
@@ -103,10 +103,10 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 
 	target.empty();
 
-	this.tabsContainer = $('<ul class="nav nav-tabs ' + this.config.get("classPrefix") + '-header">');
+	this.tabsContainer = $('<ul class="nav nav-tabs ' + this.config.get("classPrefix") + 'header">');
 	target.append(this.tabsContainer);
 
-	panels.addClass("tab-content " + this.config.get("classPrefix") + "-panels");
+	panels.addClass("tab-content " + this.config.get("classPrefix") + "panels");
 	if (panels.parent().length === 0) {
 		target.append(panels);
 	}
