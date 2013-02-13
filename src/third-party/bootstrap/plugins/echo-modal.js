@@ -154,11 +154,11 @@ Echo.GUI.Modal.prototype.refresh = function() {
 	});
 
 	this.element.appendTo("body")
-		.wrap("<div class='echo-sdk-ui'>")
+		.wrap('<div class="echo-sdk-ui">')
 		.modal(this.config.getAsHash());
 
 	// if we try show few modals in one time, then event "focusin.modal" be called infinity times
-	$(document).off('focusin.modal');
+	$(document).off("focusin.modal");
 };
 
 /**
@@ -178,7 +178,7 @@ Echo.GUI.Modal.prototype.destroy = function() {
 		this.element.modal("hide");
 		this.rendered = false;
 		this.backdrop && this.backdrop.remove();
-		this.element.find('iframe').hide().attr('src', '//about:blank').end().empty();
+		this.element.find("iframe").hide().attr("src", "//about:blank").end().empty();
 		this.element.unwrap().remove();
 		this.config.get("onHide").call(this, this.element);
 	}
@@ -251,7 +251,7 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 	if (self.config.get("backdrop")) {
 		if (self.config.get("fade")) {
 			self.element.on("show", function() {
-				var modal = self.element.data('modal');
+				var modal = self.element.data("modal");
 				var shown = modal.isShown;
 				var backdrop = modal.options.backdrop;
 
@@ -263,11 +263,11 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 
 				self.element.addClass("in");
 
-				self.backdrop = modal.$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
+				self.backdrop = modal.$backdrop.wrap('<div class="echo-sdk-ui">').parent();
 			});
 		} else {
 			self.element.on("shown", function() {
-				self.backdrop = self.element.data('modal').$backdrop.wrap("<div class='echo-sdk-ui'>").parent();
+				self.backdrop = self.element.data("modal").$backdrop.wrap('<div class="echo-sdk-ui">').parent();
 			});
 		}
 		// we used manual control for backdrop if fade is true
