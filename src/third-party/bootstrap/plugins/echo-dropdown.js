@@ -51,12 +51,16 @@ if (Echo.GUI.Dropdown) return;
  * @cfg {String} title
  * Dropdown title.
  *
+ * @cfg {String} [icon]
+ * URL for the icon which will be displayed near the dropdown title.
+ *
  * @cfg {Array} entries
  * Array of the dropdown entries.
  * Each entry is the object with the following parameters:
  * 	title   - entry title
  * 	handler - function which will be called when entry is selected
  * 	icon    - URL for the icon. Icon size should be 16x16 pixels.
+ * 	entries - Array of nested entries.
  */
 Echo.GUI.Dropdown = Echo.Utils.inherit(Echo.GUI, function(config) {
 	Echo.GUI.call(this, config, {
@@ -68,7 +72,8 @@ Echo.GUI.Dropdown = Echo.Utils.inherit(Echo.GUI, function(config) {
 
 Echo.GUI.Dropdown.prototype.refresh = function() {
 	this.config.get("target").empty();
-	this._assembleEntries(this._assembleContainer());
+	this._container = this._assembleContainer();
+	this._assembleEntries(this._container);
 };
 
 /**
@@ -81,6 +86,17 @@ Echo.GUI.Dropdown.prototype.setTitle = function(title) {
 	$(".dropdown-toggle", this.config.get("target")).empty().append(title);
 };
 
+/**
+ * This method allows to re-assemble dropdown entries.
+ *
+ * @param {Array} entries
+ */
+Echo.GUI.Dropdown.prototype.updateEntries = function(entries) {
+	this.config.set("entries", entries);
+	$(".dropdown-menu", this.config.get("target")).remove();
+	this._assembleEntries(this._container);
+};
+
 Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 	 var template =
 		'<li class="dropdown">' +
@@ -89,16 +105,23 @@ Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 			'</a>' +
 		'</li>';
 	var dropdown = $(template);
+	if (this.config.get("icon")) {
+		$(".dropdown-toggle", dropdown)
+			.css("background", "no-repeat url(" + this.config.get("icon") + ") 3px 0px")
+			.css("padding-left", "23px");
+	}
 	this.config.get("target").append($('<ul class="' + this.config.get("extraClass") + '">').append(dropdown));
 
 	return dropdown;
 };
 
-Echo.GUI.Dropdown.prototype._assembleEntries = function(container) {
+Echo.GUI.Dropdown.prototype._assembleEntries = function(container, entries) {
+	var self = this;
 	var menu = $('<ul class="dropdown-menu" role="menu">');
 	container.append(menu);
 
-	$.map(this.config.get("entries"), function(entry) {
+	entries = entries || this.config.get("entries");
+	$.map(entries, function(entry) {
 		var item = $("<a role='button' class='echo-clickable' />")
 			.click(function() {
 				entry.handler && entry.handler.call(this, entry);
@@ -109,7 +132,12 @@ Echo.GUI.Dropdown.prototype._assembleEntries = function(container) {
 				"background-image": "url(" + entry.icon + ")"
 			});
 		}
-		menu.append($("<li>").append(item.append(entry.title)));
+		var li = $("<li>").appendTo(menu);
+		item.append(entry.title).appendTo( li );
+		if (entry.entries) {
+			li.addClass("dropdown-submenu");
+			self._assembleEntries(li, entry.entries);
+		}
 	});
 	return menu;
 };
