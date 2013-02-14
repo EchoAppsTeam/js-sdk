@@ -108,7 +108,11 @@ Echo.Loader.init = function(config) {
 Echo.Loader.download = function(resources, callback, config) {
 	config = config || {};
 	callback = callback || function() {};
-	resources = resources || [];
+
+	if (!resources || !resources.length) {
+		callback();
+		return;
+	}
 
 	var state = Echo.Loader.vars.state;
 	var invokeCallbacks = function() {
