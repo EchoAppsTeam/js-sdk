@@ -32,9 +32,7 @@ Echo.Tests.runTests = function() {
 		// TODO: register single callback for all test framework
 		// (now one callback for each suite so they are called all after each test is finished)
 		QUnit.testDone(function(data) {
-			if (data.module != normalizedName) {
-				return;
-			}
+			if (data.module !== normalizedName) return;
 			$.each(suite.info.functions, function(i, name) {
 				Echo.Tests.Stats.functions.tested[suite.info.className + "." + name] = true;
 			});
@@ -71,7 +69,8 @@ Echo.Tests.Common.prototype.run = function() {
 		if (test.instance && !$.isFunction(test.instance)) {
 			test.config.async = true;
 		}
-		test.config.user = test.config.user || {"status": "anonymous"};
+		test.config.user = test.config.user || {};
+		test.config.user.status = test.config.user.status || "anonymous";
 		var check = function(instance) {
 			if (!test.config.async) {
 				test.check.call(self, instance);
@@ -190,14 +189,14 @@ Echo.Tests.Common.prototype.executePluginRenderersTest = function(plugin) {
 		var renderers = forComponent ? plugin._manifest("component").renderers : plugin._manifest("renderers");
 		$.each(renderers, function(name, renderer) {
 			// don't test private renderer
-			if (name.charAt(0) == "_") return true;
+			if (name.charAt(0) === "_") return true;
 
 			self.info.functions.push((forComponent ? "component." : "") + "renderers." + name);
 			var element = forComponent ? plugin.component.view.get(name) : plugin.view.get(name);
 			var oldElement = element.clone();
 			var renderedElement = renderer.call(plugin, element);
-			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
-			QUnit.ok(renderedElement.jquery == oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
+			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length === 1, "Renderer \"" + name + "\": check contract");
+			QUnit.ok(renderedElement.jquery === oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
 			QUnit.equal(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element");
 		});
 	};
@@ -291,8 +290,8 @@ Echo.Tests.Common.prototype.constructRenderersTest = function(data) {
 			}
 			var oldElement = element.clone();
 			var renderedElement = instance.view.render({"name": name});
-			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length == 1, "Renderer \"" + name + "\": check contract");
-			QUnit.ok(renderedElement.jquery == oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
+			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length === 1, "Renderer \"" + name + "\": check contract");
+			QUnit.ok(renderedElement.jquery === oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering");
 			QUnit.deepEqual(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element");
 		});
 		if (data.config.async) {
@@ -325,7 +324,7 @@ Echo.Tests.Common.prototype.logoutTestUser = function(callback) {
 Echo.Tests.Common.prototype.prepareEnvironment = function(test, callback) {
 	var self = this;
 	this.cleanupEnvironment(function() {
-		if (test.config.user.status == "anonymous") {
+		if (test.config.user.status === "anonymous") {
 			callback();
 			return;
 		}
@@ -398,8 +397,9 @@ Echo.Tests.Stats = {
 			}
 			funcs.executed[fullName]++;
 			var r = func.apply(this, arguments);
-			if (typeof r != "undefined") return r;
+			if (typeof r !== "undefined") return r;
 		};
+		// in case function has some properties itself we need to copy them to the wrapped version
 		$.each(func, function(key, value) {
 			if (func.hasOwnProperty(key)) {
 				parentObject[name][key] = value;
@@ -423,23 +423,23 @@ Echo.Tests.Stats = {
 				var isValidForTesting =
 					$.inArray(prefix + name, ignoreList) < 0 &&
 					parentObject.hasOwnProperty(name) &&
-					typeof value != "string" &&
-					typeof value != "undefined" &&
+					typeof value !== "string" &&
+					typeof value !== "undefined" &&
 					!$.isArray(value) &&
-					name != "cache" &&
-					name != "manifest" &&
-					name != "constructor" &&
-					name != "parent";
+					name !== "cache" &&
+					name !== "manifest" &&
+					name !== "constructor" &&
+					name !== "parent";
 
 				if (!isValidForTesting) return;
 
 				// check if function is "private" (they start with "_" symbol)
-				var isInternal = name.charAt(0) == "_";
+				var isInternal = name.charAt(0) === "_";
 
 				// wrap all functions except constructors and "private" functions
 				var isFunctionValidForTesting =
-					typeof value == "function" &&
-					name.charAt(0).toUpperCase() != name.charAt(0) &&
+					typeof value === "function" &&
+					name.charAt(0).toUpperCase() !== name.charAt(0) &&
 					!isInternal;
 
 				if (isFunctionValidForTesting) {
@@ -453,7 +453,7 @@ Echo.Tests.Stats = {
 			});
 		});
 	},
-	initEventsSpy: function() {
+	"initEventsSpy": function() {
 		var eventPublish = Echo.Events.publish;
 		var eventSubscribe = Echo.Events.subscribe;
 		var events = Echo.Tests.Stats.lists.events;
@@ -466,7 +466,7 @@ Echo.Tests.Stats = {
 
 		Echo.Events.subscribe = function(params) {
 			if (!testRegExp.test(params.topic)) {
-				if ($.type(events.subscribed[params.topic]) == "undefined") {
+				if ($.type(events.subscribed[params.topic]) === "undefined") {
 					events.subscribed[params.topic] = {
 						"count": 0
 					};
@@ -478,7 +478,7 @@ Echo.Tests.Stats = {
 
 		Echo.Events.publish = function(params) {
 			if (!testRegExp.test(params.topic)) {
-				if ($.type(events.published[params.topic]) == "undefined") {
+				if ($.type(events.published[params.topic]) === "undefined") {
 					events.published[params.topic] = {
 						"count": 0,
 						"status": "succeeded",
@@ -502,8 +502,7 @@ Echo.Tests.Stats = {
 			return eventPublish(params);
 		}
 	},
-	stopEventsSpy: function() {
-
+	"stopEventsSpy": function() {
 	},
 	"prepare": function() {
 		Echo.Tests.Stats.getFunctionNames(Echo, "Echo.");
@@ -539,7 +538,7 @@ Echo.Tests.Stats = {
 		var totalContract = 0;
 		eventGroups["notexecuted"] = $.map(Echo.Tests.Events.contracts, function(_val, topic) {
 			totalContract++;
-			if ($.inArray(topic, eventGroups["published"]) == -1) {
+			if ($.inArray(topic, eventGroups["published"]) === -1) {
 				return topic;
 			}
 		});
@@ -547,14 +546,14 @@ Echo.Tests.Stats = {
 		var getEventsCount = function(type, expectedValue, isEquiv) {
 			var isOk;
 			var check = function(expected) {
-				if ($.type(expected) == "string") {
+				if ($.type(expected) === "string") {
 					if( isEquiv ) {
 						isOk = QUnit.equiv(eventGroups[type], eventGroups[expected])
 					} else {
-						isOk = eventGroups[type].length == eventGroups[expected].length;
+						isOk = eventGroups[type].length === eventGroups[expected].length;
 					}
 				} else {
-					isOk = eventGroups[type].length == expected;
+					isOk = eventGroups[type].length === expected;
 				}
 				return isOk;
 			};
@@ -574,18 +573,18 @@ Echo.Tests.Stats = {
 
 		$("#qunit-testresult").append(
 			'<div class="echo-tests-stats">' +
-				'<div class="echo-tests-coverage">' +
+				'<div class="echo-tests-coverage-functions">' +
 				'<h3>Code coverage analysis</h3> ' +
 				'<p>Total functions count: <b>' + all + '</b></p> ' +
 				Echo.Utils.foldl([], Echo.Tests.Stats.labels.coverage, function(label, acc, type) {
 					var css = "red";
 					var isBadType = /^not/.test(type);
-					if (isBadType && !lists[type].length || !isBadType && lists[type].length == all) {
+					if (isBadType && !lists[type].length || !isBadType && lists[type].length === all) {
 						css = "green";
 					}
 					acc.push('<p>' + label + ': <b class="' + css + '">' + lists[type].length + ' (' + (Math.round(1000 * lists[type].length / all) / 10) + '%)</b> [<a class="echo-clickable" data-type="' + type + '">view list</a>]</p> ');
 				}).join("") +
-				'</div><div class="echo-tests-events">' +
+				'</div><div class="echo-tests-coverage-events">' +
 					'<h3>Events analysis</h3> ' +
 					'<p>Total contract defined: <b>' + totalContract + '</b></p> ' +
 					'<p>Published / Subscribed: ' + getEventsCount("published", [totalContract, "subscribed"], true) + ' / ' + getEventsCount("subscribed", [totalContract, "published"], true) + ' | [<a class="echo-clickable" data-type="diff">show diff</a>]</p>' +
@@ -597,11 +596,11 @@ Echo.Tests.Stats = {
 			'</div>'
 		);
 
-		$(".echo-tests-events a").click(function() {
+		$(".echo-tests-coverage-events a").click(function() {
 			Echo.Tests.Stats.showInfoList($(this).attr("data-type"), "event");
 		});
 
-		$(".echo-tests-coverage a").click(function() {
+		$(".echo-tests-coverage-functions a").click(function() {
 			Echo.Tests.Stats.showInfoList($(this).attr("data-type"), "coverage");
 		});
 	},
@@ -609,17 +608,17 @@ Echo.Tests.Stats = {
 		var el = $(".echo-tests-stats-info");
 		var eventGroups = Echo.Tests.Stats.lists.eventGroups;
 		var events = Echo.Tests.Stats.lists.events;
-		this.isListVisible = !(this.isListVisible && this.lastListType == prefix + "-" + type);
+		this.isListVisible = !(this.isListVisible && this.lastListType === prefix + "-" + type);
 		if (this.isListVisible) {
 			var html = "",data = [];
 			switch(prefix) {
 				case "event":
-					if (type == "diff") {
+					if (type === "diff") {
 						var getDiff = function(o, n, title) {
 							var html = "";
 
 							$.map(eventGroups[o], function(val) {
-								if ($.inArray(val, eventGroups[n]) == -1) {
+								if ($.inArray(val, eventGroups[n]) === -1) {
 									html += "<li>" + val + "</li>";
 								}
 							});
@@ -638,24 +637,24 @@ Echo.Tests.Stats = {
 					} else {
 						$.map(eventGroups[type], function(topic) {
 							var getTextCount = function(count) {
-								return count == 1 ? "once" : count + " times"
+								return count === 1 ? "once" : count + " times"
 							};
 
-							if (type == "subscribed") {
+							if (type === "subscribed") {
 								html += '<li>' + topic + ': <span>( subscribed <b>' + getTextCount(events.subscribed[topic].count) + '</b> )</span></li>';
 							} else {
-								if ($.type(events.published[topic]) == "undefined") {
+								if ($.type(events.published[topic]) === "undefined") {
 									html += '<li>' + topic + '</li>';
 								} else {
 									html += '<li>' + topic;
-									if (type == "failed") {
+									if (type === "failed") {
 										html += ' <span>( failed <b>' + getTextCount(events.published[topic].data.length) + '</b> out of <b>' + getTextCount(events.published[topic].count) + '</b> )</span>';
 									} else {
 										html += ' <span>( published <b>' + getTextCount(events.published[topic].count)  + '</b> )</span>';
 									}
 
-									if( type == "notcovered" || type == "failed") {
-										html +=	' [<a class="echo-clickable" data-type="' + topic + '">view data</a>] <div class="echo-event-data">' + '</div>';
+									if( type === "notcovered" || type === "failed") {
+										html +=	' [<a class="echo-clickable" data-type="' + topic + '">view data</a>] <div class="echo-tests-event-data">' + '</div>';
 									}
 									html +=	'</li>';
 								}
@@ -674,12 +673,12 @@ Echo.Tests.Stats = {
 					break;
 			}
 
-			el.show().html("<b>" + (Echo.Tests.Stats.labels[prefix][type] || "") + "</b><br>" + html);
+			el.html("<b>" + (Echo.Tests.Stats.labels[prefix][type] || "") + "</b><br>" + html).show();
 
-			if (prefix == "event") {
+			if (prefix === "event") {
 				el.find(".echo-clickable").click(function() {
-					var dataTag = $(this).parent().find(".echo-event-data");
-					if (dataTag.html() == "") {
+					var dataTag = $(this).parent().find(".echo-tests-event-data");
+					if (dataTag.html() === "") {
 						var data = $.map(events.published[$(this).attr("data-type")].data, function(val) {
 							return '<pre>' + QUnit.jsDump.parse(_prepareEventData(val)) + '</pre>';
 						});
@@ -707,13 +706,13 @@ Echo.Utils.addCSS(
 	'.echo-tests-stats p .red { color: red; }' +
 	'.echo-tests-stats .echo-clickable { text-decoration: underline; cursor: pointer; }' +
 	'.echo-tests-stats-info { display: none; background: #b9d9dd; margin-top: 10px; padding: 5px 10px; }' +
-	'.echo-event-data { color: black; display: none; }' +
-	'.echo-event-data pre { border: 1px dashed #999999;	padding: 10px; background: #B0D0D0; }' +
 	'.echo-tests-stats-info span { color: #555555; }' +
-	'.echo-tests-coverage, .echo-tests-events { float: left; width: 400px; }' +
-	'.echo-clear { clear: both; }' +
 	'.echo-tests-stats-info del {background: #E0F2BE; color: #374E0C; text-decoration: none;}' +
-	'.echo-tests-stats-info ins {background: #FFCACA;	color: #550000; text-decoration: none;}'
+	'.echo-tests-stats-info ins {background: #FFCACA; color: #550000; text-decoration: none;}' +
+	'.echo-tests-event-data { color: black; display: none; }' +
+	'.echo-tests-event-data pre { border: 1px dashed #999999; padding: 10px; background: #B0D0D0; }' +
+	'.echo-tests-coverage-functions, .echo-tests-coverage-events { float: left; width: 400px; }' +
+	'.echo-clear { clear: both; }'
 , "echo-tests");
 
 // No reordering tests, they will run one by one
@@ -721,14 +720,9 @@ QUnit.config.reorder = false;
 
 QUnit.begin(function() {
 	Echo.Tests.Stats.prepare();
-	//TODO: check if we need it later
-	// Override function so that test suite couldn't execute next test
-	// before all data for the current one was not loaded yet
-	
 });
 
 QUnit.done(function() {
-
 	// stop Backplane requests
 	Backplane.initialized = false;
 
@@ -744,13 +738,13 @@ var _checkContract = function(origin, template, isRecursive) {
 			if (result) return false;
 		});
 	} else {
-		if ($.type(template) == $.type(origin)) {
+		if ($.type(template) === $.type(origin)) {
 			if ($.isPlainObject(template)) {
 				$.each(template, function(i) {
-					if (origin.hasOwnProperty(i) && $.type(template[i]) == "function") {
+					if (origin.hasOwnProperty(i) && $.type(template[i]) === "function") {
 						result = template[i](origin[i]);
 					} else {
-						if (origin.hasOwnProperty(i) && $.type(template[i]) == $.type(origin[i])) {
+						if (origin.hasOwnProperty(i) && $.type(template[i]) === $.type(origin[i])) {
 							if ($.isPlainObject(template[i])) {
 								result =  _checkContract(origin[i], template[i], true);
 							}
@@ -774,7 +768,7 @@ var _checkContract = function(origin, template, isRecursive) {
 
 var _prepareEventData = function(obj, level) {
 	level = level || 0;
-	if (($.type(obj) == "object" || $.type(obj) == "array")) {
+	if (($.type(obj) === "object" || $.type(obj) === "array")) {
 		if (obj.tagName || obj.jquery) {
 			obj = "[object DOM]";
 		} else if (level <= 2) {
@@ -786,10 +780,6 @@ var _prepareEventData = function(obj, level) {
 		}
 	}
 	return obj;
-};
-
-QUnit.checkContract = function(actual, expected, message) {
-	QUnit.push(_checkContract(actual, expected), _prepareEventData(actual), _prepareEventData(expected), message);
 };
 
 })(Echo.jQuery);
