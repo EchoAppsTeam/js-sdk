@@ -24,7 +24,8 @@
   ],
   "dependencies": {
     "grunt-contrib": "~0.1.7",
-    "ftp": "~0.1.5"
+    "ftp": "~0.1.5",
+    "recess": "1.0.3"
   },
   "keywords": []
 }

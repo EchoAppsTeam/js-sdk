@@ -2,6 +2,7 @@ module.exports = function(grunt) {
 	"use strict";
 
 	var shared = require("./tools/grunt/lib.js").init(grunt);
+	var recess = require('recess');
 
 	var _ = grunt.utils._;
 	var path = require("path");
@@ -187,7 +188,7 @@ module.exports = function(grunt) {
 				dest: "<%= dirs.build %>/gui.pack.css"
 			}
 		},
-		less: {
+		recess: {
 			bootstrap: {
 				options: {
 					paths: [dirs.build + "/third-party/bootstrap/less"]
@@ -309,12 +310,12 @@ module.exports = function(grunt) {
 		switch (stage) {
 			case "dev":
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less less:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
+				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
 				break;
 			case "min":
 				_makeMinSpec();
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less less:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
+				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
 				break;
 			case "final":
 				tasks = "copy:css copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
@@ -346,6 +347,30 @@ module.exports = function(grunt) {
 	grunt.registerTask("docs", function() {
 		var done = this.async();
 		grunt.helper("make_docs", done);
+	});
+
+	grunt.registerMultiTask("recess", "Compile LESS files to CSS through Twitter Recess tool", function(task) {
+		var async = grunt.util.async;
+		var done = this.async();
+		var options = grunt.helper("options", this);
+		this.files = this.files || grunt.helper("normalizeMultiTaskFiles", this.data, this.target);
+
+		var srcFiles;
+
+		async.forEachSeries(this.files, function(file, next) {
+			srcFiles = grunt.file.expandFiles(file.src);
+			async.concatSeries(srcFiles, function(srcFile, nextConcat) {
+				recess(srcFile, { compile: true }, function (err, res) {
+					nextConcat(null, res.output);
+				});
+			}, function(err, css) {
+				grunt.file.write(file.dest, css.join("\n") || "");
+				grunt.log.writeln("File '" + file.dest + "' created.");
+				next();
+			});
+		}, function() {
+			done();
+		});
 	});
 
 	grunt.registerMultiTask("check", "Different checks (versions, pre-release, post-release, ...)", function() {
