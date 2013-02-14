@@ -270,10 +270,10 @@ submit.templates.main =
 				'<div class="{class:fields}">' +
 					'<div class="{class:fieldsWrapper}">' +
 						'<div class="{class:nameContainer} {class:border}">' +
-							'<input class="{class:name} echo-primaryFont echo-primaryColor">' +
+							'<input type="text" class="{class:name} echo-primaryFont echo-primaryColor" />' +
 						'</div>' +
 						'<div class="{class:urlContainer} {class:border}">' +
-							'<input class="{class:url} echo-primaryFont echo-primaryColor">' +
+							'<input type="text" class="{class:url} echo-primaryFont echo-primaryColor" />' +
 						'</div>' +
 					'</div>' +
 				'</div>' +
@@ -288,7 +288,7 @@ submit.templates.main =
 				'<div class="{class:metadataLabel}">{label:markers}</div>' +
 				'<div class="{class:metadataWrapper}">' +
 					'<div class="{class:metadataSubwrapper} {class:border} ">' +
-						'<input class="{class:markers} echo-primaryFont">' +
+						'<input type="text" class="{class:markers} echo-primaryFont" />' +
 					'</div>' +
 				'</div>' +
 				'<div class="echo-clear"></div>' +
@@ -297,7 +297,7 @@ submit.templates.main =
 				'<div class="{class:metadataLabel}">{label:tags}</div>' +
 				'<div class="{class:metadataWrapper}">' +
 					'<div class="{class:metadataSubwrapper} {class:border} ">' +
-						'<input class="{class:tags} {class:border} echo-primaryFont">' +
+						'<input type="text" class="{class:tags} {class:border} echo-primaryFont" />' +
 					'</div>' +
 				'</div>' +
 				'<div class="echo-clear"></div>' +
@@ -661,20 +661,28 @@ submit.css =
 	'.{class:fieldsWrapper} { margin-left: 53px; }' +
 	'.{class:nameContainer} { margin: 1px 0px 4px 0px; padding: 0px 2px 1px 3px; background-color: #fff; }' +
 	'.{class:nameContainer} input.{class:name} { font-size: 14px; font-weight: bold; border: none; width: 100%;}' +
-	'.{class:fieldsWrapper} input.{class:name}[type="text"] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; }' +
+	'.{class:fieldsWrapper} input.{class:name}[type="text"] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; outline: 0; box-shadow: none; }' +
+	'.{class:fieldsWrapper} input.{class:name}[type="text"]:focus { outline: 0; box-shadow: none;  }' +
 	'.{class:urlContainer} { padding: 0px 2px 1px 3px; background-color: #fff; }' +
 	'.{class:urlContainer} input.{class:url} { height: 19px; border: none; width: 100%; margin-bottom: 0px;}' +
-	'.{class:fieldsWrapper} input.{class:url}[type="text"] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; }' +
+	'.{class:fieldsWrapper} input.{class:url}[type="text"] { width: 100%; margin-bottom: 0px; border: none; padding: 0px; outline: 0; box-shadow: none;  }' +
+	'.{class:fieldsWrapper} input.{class:url}[type="text"]:focus { outline: 0; box-shadow: none; }' +
+	'.{class:fieldsWrapper} input.{class:url}[type="text"].echo-secondaryColor,' +
+	'.{class:fieldsWrapper} input.{class:name}[type="text"].echo-secondaryColor,' +
+	'.{class:content} textarea.{class:textArea}.echo-secondaryColor,' +
+	'.{class:container} .{class:metadataSubwrapper} input.echo-secondaryColor[type="text"]' +
+		' { color: #C6C6C6 }' +
 	'.{class:author} { font-weight: bold; }' +
 	'.{class:content} { padding: 5px 5px 5px 6px; background-color: #fff; }' +
-	'.{class:content} textarea.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none; box-shadow: none; }' +
-	'.{class:content} textarea.{class:textArea}:focus { box-shadow: none; }' +
+	'.{class:content} textarea.{class:textArea} { width: 100%; height: 102px; padding: 0px; margin: 0px; border: none; resize:none; box-shadow: none; outline: 0; }' +
+	'.{class:content} textarea.{class:textArea}:focus { outline: 0; box-shadow: none; }' +
 	'.{class:text} input { width: 100%; border: none; }' +
 	'.{class:metadataContainer} { margin-top: 6px; }' +
 	'.{class:metadataLabel} { float: left; width: 50px; margin-right: -50px; text-align: right; line-height: 22px; }' +
 	'.{class:metadataWrapper} { float: left; width: 100%; }' +
 	'.{class:metadataSubwrapper} { margin-left: 55px; padding: 2px 2px 2px 3px; background-color: #fff; }' +
-	'.{class:metadataSubwrapper} input { width: 100%; border: none; }' +
+	'.{class:container} .{class:metadataSubwrapper} input[type="text"] { width: 100%; border: 0; padding: 0px; outline: 0; box-shadow: none; margin-bottom: 0px; }' +
+	'.{class:container} .{class:metadataSubwrapper} input[type="text"]:focus { outline: 0; box-shadow: none; }' +
 	'.{class:controls} { margin-top: 5px; }' +
 	'.{class:postContainer} { float: right; }' +
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
@@ -691,11 +699,7 @@ submit.css =
 	(Echo.Utils._browser().webkit ?
 		// get rid of extra gray line inside input elements on iOS
 		'.{class:container} input { background-position: 0px; }' +
-		'.{class:container} textarea { background-position: 0px; }' +
-		'.{class:textArea} { outline: none; }' +
-		'.{class:name} { outline: none; }' +
-		'.{class:url} { outline: none; }' +
-		'.{class:metadataSubwrapper} input { outline: none; }' : '');
+		'.{class:container} textarea { background-position: 0px; }' : '');
 
 Echo.Control.create(submit);
 
