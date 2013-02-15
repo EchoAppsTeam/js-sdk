@@ -52,7 +52,7 @@ if (Echo.GUI.Dropdown) return;
  * Dropdown title.
  *
  * @cfg {String} [icon]
- * URL for the icon which will be displayed near the dropdown title.
+ * URL of the 14x14px icon to be displayed near the dropdown title.
  *
  * @cfg {Array} entries
  * Array of the dropdown entries.
@@ -73,7 +73,7 @@ Echo.GUI.Dropdown = Echo.Utils.inherit(Echo.GUI, function(config) {
 Echo.GUI.Dropdown.prototype.refresh = function() {
 	this.config.get("target").empty();
 	this._container = this._assembleContainer();
-	this._assembleEntries(this._container);
+	this._assembleEntries(this._container, this.config.get("entries"));
 };
 
 /**
@@ -94,7 +94,7 @@ Echo.GUI.Dropdown.prototype.setTitle = function(title) {
 Echo.GUI.Dropdown.prototype.updateEntries = function(entries) {
 	this.config.set("entries", entries);
 	$(".dropdown-menu", this.config.get("target")).remove();
-	this._assembleEntries(this._container);
+	this._assembleEntries(this._container, entries);
 };
 
 Echo.GUI.Dropdown.prototype._assembleContainer = function() {
@@ -120,7 +120,6 @@ Echo.GUI.Dropdown.prototype._assembleEntries = function(container, entries) {
 	var menu = $('<ul class="dropdown-menu" role="menu">');
 	container.append(menu);
 
-	entries = entries || this.config.get("entries");
 	$.map(entries, function(entry) {
 		var item = $("<a role='button' class='echo-clickable' />")
 			.click(function() {
@@ -133,7 +132,7 @@ Echo.GUI.Dropdown.prototype._assembleEntries = function(container, entries) {
 			});
 		}
 		var li = $("<li>").appendTo(menu);
-		item.append(entry.title).appendTo( li );
+		item.append(entry.title).appendTo(li);
 		if (entry.entries) {
 			li.addClass("dropdown-submenu");
 			self._assembleEntries(li, entry.entries);
