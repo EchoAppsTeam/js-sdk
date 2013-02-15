@@ -213,7 +213,7 @@ Echo.GUI.Modal.prototype._assembleBody = function() {
 			if (typeof iframe.get(0).allowTransparency !== "undefined") {
 				iframe.attr("allowTransparency", "true");
 			}
-			body.append( iframe );
+			body.append(iframe);
 		});
 	}
 	if (this.config.get("width") !== null) {

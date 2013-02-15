@@ -595,6 +595,17 @@ var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Co
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
+var ua = navigator.userAgent.toLowerCase();
+var isMozillaBrowser = !!(
+		!~ua.indexOf("chrome")
+		&& !~ua.indexOf("webkit")
+		&& !~ua.indexOf("opera")
+		&& (
+			/(msie) ([\w.]+)/.exec(ua)
+			|| ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua)
+		)
+	);
+
 plugin.config = {
 	/**
 	 * @cfg {Object} isotope
@@ -611,13 +622,13 @@ plugin.config = {
 	"isotope": {
 		"animationOptions": {
 			// change duration for mozilla browsers
-			"duration": 0,
+			"duration": isMozillaBrowser ? 0 : 2750,
 			"easing": "linear",
 			"queue": false
 		},
 		// use only jQuery engine for animation in mozilla browsers
 		// due to the issues with video display with CSS transitions
-		"animationEngine": "best-available"
+		"animationEngine": isMozillaBrowser ? "jquery" : "best-available"
 	}
 };
 

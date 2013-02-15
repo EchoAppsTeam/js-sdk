@@ -1045,16 +1045,15 @@ Echo.Utils.invoke = function(mixed, context) {
 		: mixed;
 };
 
-Echo.Utils._checkCompatMode = function() {
-	if (!this.cache.compatMode) {
-		this.cache.compatMode = document.compatMode;
-		if (this.cache.compatMode === "BackCompat") {
-			Echo.Utils.log({
-				"type": "error",
-				"message": "JS-SDK is not compatible with quirks mode."
-			});
-		}
-	}
-};
+/*
+ * JS SDK cannot properly display all UI elements in quirks mode
+ * since twitter bootstrap doesn't support it.
+*/
+if (document.compatMode === "BackCompat") {
+	Echo.Utils.log({
+		"type": "error",
+		"message": "Quirks mode is not supported by JS SDK. Please make sure that the page has valid doctype."
+	});
+}
 
 })(Echo.jQuery);

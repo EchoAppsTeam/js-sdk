@@ -864,7 +864,6 @@ Echo.Control.prototype._initializers.init = function(callback) {
 };
 
 Echo.Control.prototype._initializers.ready = function() {
-	Echo.Utils._checkCompatMode();
 	this.events.publish({"topic": "onReady"});
 };
 
