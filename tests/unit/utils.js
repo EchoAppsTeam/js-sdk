@@ -339,35 +339,6 @@ suite.prototype.tests.TestDataMethods = {
 
 		QUnit.ok(typeof Echo.Utils.getUniqueString() == "string", "getUniqueString() really returns string");
 
-		// Checking Echo.Utils._browser() method
-		var _origUserAgent = navigator.userAgent;
-		var browsers = [{
-			"title": "Firefox 18.0",
-			"userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:18.0) Gecko/20100101 Firefox/18.0",
-			"result": {"mozilla": true, "version": "18.0"}
-		}, {
-			"title": "Chrome 23.0",
-			"userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11",
-			"result": {"chrome": true, "webkit": true, "version": "23.0.1271.97"}
-		}, {
-			"title": "IE 7",
-			"userAgent": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C)",
-			"result": {"msie": true, "version": "7.0"}
-		}, {
-			"title": "IE 8",
-			"userAgent": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C)",
-			"result": {"msie": true, "version": "8.0"}
-		}, {
-			"title": "IE 9",
-			"userAgent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)",
-			"result": {"msie": true, "version": "9.0"}
-		}];
-
-		for (var i = 0; i < browsers.length; i++) {
-			var result = Echo.Utils._browser(browsers[i].userAgent);
-			QUnit.deepEqual(browsers[i].result, result, "Checking Echo.Utils._browser() method: " + browsers[i].title);
-		}
-
 		var strings = [];
 		for (var i = 0; i < 5; i++) {
 			strings.push(Echo.Utils.getUniqueString());
@@ -432,7 +403,7 @@ suite.prototype.tests.TestDataMethods = {
 		};
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key:value}"),
 			["{key:value}", "key", "value"], "Checking templateSubstitution regexp with one key-value pair");
-		var browser = Echo.Utils._browser();
+		var browser = Echo.Tests.browser;
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key}"),
 			["{key}", "key", (browser.msie && browser.version <= 8 || browser.msie && document.compatMode === "BackCompat" ? "" : undefined)], "Checking templateSubstitution regexp with key and empty value");
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("string without template"),

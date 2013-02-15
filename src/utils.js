@@ -1045,51 +1045,16 @@ Echo.Utils.invoke = function(mixed, context) {
 		: mixed;
 };
 
-/*
- * This method returns information about the web browser that is accessing the page, 
- * as reported by the browser itself (trough User-Agent HTTP header).
- *
- * This method copies the jQuery.browser property behavior which has been removed
- * from jQuery since 1.9 version:
- * http://api.jquery.com/jQuery.browser/
- *
- * The method has been added for compatibility with new jQuery version and we
- * do not recommend to use it as it can be removed in the future.
- *
- * Please refer to the jQuery upgrade-guide (http://jquery.com/upgrade-guide/1.9/#jquery-browser-removed)
- * for more information.
- */
-Echo.Utils._browser = function(userAgent) {
-	if (userAgent || !this.cache.browser) {
-		var ua = userAgent && userAgent.toLowerCase() || navigator.userAgent.toLowerCase();
-		var match = /(chrome)[ \/]([\w.]+)/.exec(ua)
-			|| /(webkit)[ \/]([\w.]+)/.exec( ua )
-			|| /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua)
-			|| /(msie) ([\w.]+)/.exec(ua)
-			|| ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua)
-			|| [];
-
-		var matched = {
-			browser: match[1] || "",
-			version: match[2] || "0"
-		};
-		var browser = {};
-
-		if (matched.browser) {
-			browser[matched.browser] = true;
-			browser.version = matched.version;
+Echo.Utils._checkCompatMode = function() {
+	if (!this.cache.compatMode) {
+		this.cache.compatMode = document.compatMode;
+		if (this.cache.compatMode === "BackCompat") {
+			Echo.Utils.log({
+				"type": "error",
+				"message": "JS-SDK is not compatible with quirks mode."
+			});
 		}
-
-		// Chrome is Webkit, but Webkit is also Safari.
-		if (browser.chrome) {
-			browser.webkit = true;
-		} else if (browser.webkit) {
-			browser.safari = true;
-		}
-
-		this.cache.browser = browser;
 	}
-	return this.cache.browser;
 };
 
 })(Echo.jQuery);

@@ -623,11 +623,6 @@ plugin.methods._getNextRole = function(role) {
 };
 
 plugin.css = function() {
-	var msieCss = "";
-	if (Echo.Utils._browser().msie) {
-		msieCss =
-			'.{plugin.class:status} { zoom: 1; }';
-	}
 	return '.{plugin.class:status} { width: 48px; height: 24px; }' +
 		'.{plugin.class:status-child} { width: 24px; height: 24px; }' +
 		'.{plugin.class:statusIcon} { float: right; margin: 4px; width: 16px; height: 16px; }' +
@@ -646,7 +641,7 @@ plugin.css = function() {
 		// status icons
 		$.map(plugin.statuses, function(name) {
 			return '.{plugin.class:status-icon-' + name + '} { background: url({config:cdnBaseURL.sdk-assets}/images/curation/status/' + name.toLowerCase() + '.png) no-repeat; }';
-		}).join("") + msieCss;
+		}).join("");
 }();
 
 Echo.Plugin.create(plugin);

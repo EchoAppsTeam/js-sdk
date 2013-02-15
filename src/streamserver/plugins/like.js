@@ -212,12 +212,7 @@ plugin.methods._assembleButton = function(name) {
 
 plugin.css =
 	'.{plugin.class:likedBy} { background: url({config:cdnBaseURL.sdk-assets}/images/likes.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
-	'.{plugin.class:highlight} { line-height: 23px; }' +
-	(Echo.Utils._browser().msie ?
-		'.{plugin.class:highlight} span { vertical-align: middle; }' +
-		'.{plugin.class:likedBy} { background-position: 0px 2px; }'
-		: ''
-	);
+	'.{plugin.class:highlight} { line-height: 23px; }';
 
 Echo.Plugin.create(plugin);
 

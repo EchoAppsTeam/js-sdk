@@ -209,7 +209,11 @@ Echo.GUI.Modal.prototype._assembleBody = function() {
 	var body = this._addSection("modal-body", this.config.get("data").body);
 	if (this.config.get("href")) {
 		this.element.one("shown", function() {
-			body.append('<iframe src="' + self.config.get("href") + '" id="" name="" class="echo-modal-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + (Echo.Utils._browser().msie ? ' allowtransparency="true"' : '') + '></iframe>');
+			var iframe = $('<iframe src="' + self.config.get("href") + '" id="" name="" class="echo-modal-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
+			if (typeof iframe.get(0).allowTransparency !== "undefined") {
+				iframe.attr("allowTransparency", "true");
+			}
+			body.append( iframe );
 		});
 	}
 	if (this.config.get("width") !== null) {

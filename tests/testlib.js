@@ -12,6 +12,36 @@ var _initializers = {};
 
 Echo.Tests.baseURL = "http://echoappsteam.github.com/js-sdk/";
 
+(function(){
+	var ua = navigator.userAgent.toLowerCase();
+	var match = /(chrome)[ \/]([\w.]+)/.exec(ua)
+		|| /(webkit)[ \/]([\w.]+)/.exec( ua )
+		|| /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua)
+		|| /(msie) ([\w.]+)/.exec(ua)
+		|| ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua)
+		|| [];
+
+	var matched = {
+		browser: match[1] || "",
+		version: match[2] || "0"
+	};
+	var browser = {};
+
+	if (matched.browser) {
+		browser[matched.browser] = true;
+		browser.version = matched.version;
+	}
+
+	// Chrome is Webkit, but Webkit is also Safari.
+	if (browser.chrome) {
+		browser.webkit = true;
+	} else if (browser.webkit) {
+		browser.safari = true;
+	}
+
+	Echo.Tests.browser = browser;
+})();
+
 Echo.Tests.runTests = function() {
 	Backplane.init({
 		"serverBaseURL" : "http://api.echoenabled.com/v1",
@@ -409,8 +439,7 @@ Echo.Tests.Stats = {
 	"getFunctionNames": function(namespace, prefix) {
 		var stats = Echo.Tests.Stats;
 		var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope"];
-		var browser = Echo.Utils._browser();
-		var isNotLteIE7 = !(browser.msie && browser.version <= 7);
+		var isNotLteIE7 = !(Echo.Tests.browser && Echo.Tests.browser.version <= 7);
 		// browser-specific ignore
 		$.map(["AJAX", "XDomainRequest", "JSONP"], function(transport) {
 			if (!Echo.API.Transports[transport].available() || isNotLteIE7 && transport === "JSONP") {

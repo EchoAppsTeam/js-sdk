@@ -15,11 +15,6 @@ var mediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item
 
 if (Echo.Control.isDefined(mediaGallery)) return;
 
-var _isPreIE9 = function() {
-	var browser = Echo.Utils._browser();
-	return (browser.msie && browser.version < 9 && document.documentMode && document.documentMode < 9);
-};
-
 mediaGallery.labels = {
 	"mediaIsNotAvailable": "<i>Media is not avaiable at this moment...</i>"
 };
@@ -211,8 +206,7 @@ mediaGallery.css =
 	'.{class:controls} { text-align: center; margin-top: 10px; }' +
 	'.{class:control} { display: inline-block; width: 8px; height: 8px; font-size: 0px; line-height: 8px; outline: none; border-radius: 4px; vertical-align: middle; margin-left: 8px; cursor: pointer; background-color: #c6c6c6; text-decoration: none; transition: all .2s ease-in 0; -moz-transition-property: all; -moz-transition-duration: .2s; -moz-transition-timing-function: ease-in; -moz-transition-delay: 0; -webkit-transition-property: all; -webkit-transition-duration: .2s; -webkit-transition-timing-function: ease-in; -webkit-transition-delay: 0; }' +
 	'.{class:control}:hover { background-color: #ee7b11; }' +
-	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }' +
-	(_isPreIE9() ? '.{class} { display: inline; zoom: 1; }' : '');
+	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }';
 
 Echo.Control.create(mediaGallery);
 	
@@ -234,11 +228,6 @@ var $ = jQuery;
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
-
-var _isPreIE9 = function() {
-	var browser = Echo.Utils._browser();
-	return (browser.msie && browser.version < 9 && document.documentMode && document.documentMode < 9);
-};
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -563,7 +552,9 @@ plugin.css =
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-userInfoWrapper {  margin: 5px 0px; }' +
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
 	'.{plugin.class} .{class:plugin-Moderation-status}  { width: 30px; clear: both; }' +
-	(_isPreIE9() ? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }' : '');
+	((typeof document.createElement("div").style.boxShadow === "undefined")
+		? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }'
+		: '');
 	
 Echo.Plugin.create(plugin);
 
@@ -620,13 +611,13 @@ plugin.config = {
 	"isotope": {
 		"animationOptions": {
 			// change duration for mozilla browsers
-			"duration": Echo.Utils._browser().mozilla || Echo.Utils._browser().msie ? 0 : 2750,
+			"duration": 0,
 			"easing": "linear",
 			"queue": false
 		},
 		// use only jQuery engine for animation in mozilla browsers
 		// due to the issues with video display with CSS transitions
-		"animationEngine": Echo.Utils._browser().mozilla || Echo.Utils._browser().msie ? "jquery" : "best-available"
+		"animationEngine": "best-available"
 	}
 };
 

@@ -1592,12 +1592,7 @@ stream.css =
 	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
 	'.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }' +
 	'.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
-	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }' +
-	(Echo.Utils._browser().msie
-		? '.{class:state-picture} { vertical-align: middle; }' +
-		'.{class:container} { zoom: 1; }'
-		: ''
-	);
+	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }';
 
 Echo.Control.create(stream);
 
@@ -2269,26 +2264,7 @@ item.renderers.expandChildren = function(element, extra) {
 		return element;
 	}
 	if (!this.hasMoreChildren()) {
-		// IE in Quirks mode can't handle elements with the "height: 0px" correctly,
-		// element with the "height: 0px" is renderered like it doesn't have
-		// the height property at all. Thus we set the "height: 1px" as the final value
-		// for the animate function and simply hide element when the animation is done.
-		if (Echo.Utils._browser().msie && document.compatMode !== "CSS1Compat") {
-			element.animate({
-				"height": "1px",
-				"marginTop": "hide",
-				"marginBottom": "hide",
-				"paddingTop": "hide",
-				"paddingBottom": "hide"
-			}, {
-				"duration": this.config.get("children.moreButtonSlideTimeout"),
-				"complete": function() {
-					element.hide();
-				}
-			});
-		} else {
-			element.slideUp(this.config.get("children.moreButtonSlideTimeout"));
-		}
+		element.slideUp(this.config.get("children.moreButtonSlideTimeout"));
 		return element;
 	}
 	extra = extra || {};
@@ -2941,14 +2917,7 @@ item.css =
 	'.{class:expandChildren} .echo-message-icon { background: url("{config:cdnBaseURL.sdk-assets}/images/whirlpool.png") no-repeat 5px 4px; }' +
 	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url("{config:cdnBaseURL.sdk-assets}/images/loading.gif"); }' +
 	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
-	itemDepthRules.join("\n") +
-	(Echo.Utils._browser().msie
-		? '.{class:childrenMarker} { font-size: 1px; line-height: 1px; }' +
-		'.{class:blocker-backdrop}, .{class:blocker-message} { filter:alpha(opacity=70); }' +
-		'.{class:content}, .{class:container}, .{class:subwrapper} { zoom: 1; }' +
-		'.{class:avatar-wrapper} { position: static; }'
-		: ''
-	);
+	itemDepthRules.join("\n");
 
 Echo.Control.create(item);
 
