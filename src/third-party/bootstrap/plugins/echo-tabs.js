@@ -49,7 +49,14 @@ if (Echo.GUI.Tabs) return;
  * 	- jQuery object (ex: $(".css-selector"))
  *
  * @cfg {String} idPrefix
- * Used internally to create unique ids across the page.
+ * Prefix which helps to make the tab id unique across the page.
+ * Every Echo.GUI.Tabs instance should have its own unique prefix.
+ * Examples: "my-tabs-section", "my-product-tabs".
+ *
+ * @cfg {Boolean} [noRandomId=false]
+ * By default tab ids have random part to prevent interference of several
+ * instances of the *same* application on the page. Setting this parameter to `true` will
+ * remove random part so it should be used with care.
  *
  * @cfg {Array} [entries]
  * Array of entries (tabs).
@@ -65,7 +72,7 @@ if (Echo.GUI.Tabs) return;
  * If this parameter is not specified, the container will be created.
  *
  * @cfg {Boolean} [entries.disabled]
- * Specifies whether the tab disabled.
+ * Specifies whether the tab is disabled.
  *
  * @cfg {String} [entries.extraClass]
  * Class name to be added to the tab element.
@@ -91,6 +98,7 @@ Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 	Echo.GUI.call(this, config, {
 		"entries": [],
 		"idPrefix": "",
+		"noRandomId": false,
 		"classPrefix": "echo-tabs-",
 		"show": function() {}
 	});
@@ -102,6 +110,8 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 	var target = this.config.get("target");
 
 	target.empty();
+
+	this._randomId = this.config.get("noRandomId") ? "" : "-" + Echo.Utils.getUniqueString();
 
 	this.tabsContainer = $('<ul class="nav nav-tabs ' + this.config.get("classPrefix") + 'header">');
 	target.append(this.tabsContainer);
@@ -156,7 +166,7 @@ Echo.GUI.Tabs.prototype.enable = function(id) {
 	if (~tabIndex) {
 		this.get(id)
 			.attr("data-toggle", "tab")
-			.attr("href", "#" + this.config.get("idPrefix") + id)
+			.attr("href", "#" + this._getTabFullId(id))
 			.parent().removeClass("disabled");
 	}
 };
@@ -194,7 +204,7 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	var self = this;
 	if (!tabConfig || !tabConfig.id) return this.config.get("target");
 
-	var fullId = this.config.get("idPrefix") + tabConfig.id;
+	var fullId = this._getTabFullId(tabConfig.id);
 	var classes = tabConfig.disabled ? "disabled" : "";
 	if (tabConfig.extraClass) {
 		classes += " " + tabConfig.extraClass;
@@ -247,8 +257,8 @@ Echo.GUI.Tabs.prototype.get = function(id) {
  * Tab id.
  *
  * @return {Boolean}
- * true if tab with specific id exists,
- * false otherwise.
+ * `true` if tab with specific id exists,
+ * `false` otherwise.
  */
 Echo.GUI.Tabs.prototype.has = function(id) {
 	return !!this.config.get("target").has("a[data-item='" + id + "']").length;
@@ -302,7 +312,11 @@ Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
 }
 
 Echo.GUI.Tabs.prototype._getPanel = function(id) {
-	return this.getPanels().find("#" + this.config.get("idPrefix") + id);
+	return this.getPanels().find("#" + this._getTabFullId(id));
+};
+
+Echo.GUI.Tabs.prototype._getTabFullId = function(id) {
+	return this.config.get("idPrefix") + id + this._randomId;
 };
 
 })(Echo.jQuery);

@@ -50,11 +50,11 @@ suite.prototype.tests.commonWorkflow = {
 		var tab1 = $("a:first", element);
 		var tab2 = $("a:last", element);
 		QUnit.ok(tab1.length && tab2.length, "Check add() method");
-		QUnit.equal(tab1.attr("href"), "#" + tabsParams.idPrefix + tabsParams.entries[0].id, "Check that 'idPrefix' configuration option works (tab)");
+		QUnit.equal(tab1.attr("href"), "#" + echoTabs._getTabFullId(tabsParams.entries[0].id), "Check that 'idPrefix' configuration option works (tab)");
 
 		var panel1 = echoTabs._getPanel(tabsParams.entries[0].id);
 		var panel2 = echoTabs._getPanel(tabsParams.entries[1].id);
-		QUnit.equal(panel1.attr("id"), tabsParams.idPrefix + tabsParams.entries[0].id, "Check that 'idPrefix' configuration option works (panel)");
+		QUnit.equal(panel1.attr("id"), echoTabs._getTabFullId(tabsParams.entries[0].id), "Check that 'idPrefix' configuration option works (panel)");
 		this.jqueryObjectsEqual(
 			$(panel1.html()),
 			$(tabsParams.entries[0].panel.html()),
