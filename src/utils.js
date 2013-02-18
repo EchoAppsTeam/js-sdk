@@ -1045,14 +1045,14 @@ Echo.Utils.invoke = function(mixed, context) {
 		: mixed;
 };
 
-/*
- * JS SDK cannot properly display all UI elements in quirks mode
- * since twitter bootstrap doesn't support it.
-*/
+
+// JS SDK can't guarantee proper UI elements rendering in quirks mode
+// because the UI Framework (Twitter Bootstrap) doesn't support this mode.
+// Adding the message about that to the browser console to let the user know.
 if (document.compatMode === "BackCompat") {
 	Echo.Utils.log({
 		"type": "error",
-		"message": "Quirks mode is not supported by JS SDK. Please make sure that the page has valid doctype."
+		"message": "Quirks mode is not supported by JS SDK. Please make sure that the page has a valid doctype."
 	});
 }
 
