@@ -275,7 +275,7 @@ suite.prototype.tests.TestDataMethods = {
 		var htmlToTruncate = '<div class="some-class">some<br>longword &copy;, &amp;amp; <b>bold<u>_underlined_<i>word</i> and <a href="domain.com" class="link">link</a></u></b> <span>qwerty</b>asdf</span></div>';
 		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 3), '<div class="some-class">some</div>',
 			"Checking htmlTextTruncate(): cut at the middle of first word");
-+
+
 		QUnit.equal(Echo.Utils.htmlTextTruncate(htmlToTruncate, 10), '<div class="some-class">some<br>longword</div>',
 			"Checking htmlTextTruncate(): cut at the middle of second word");
 
