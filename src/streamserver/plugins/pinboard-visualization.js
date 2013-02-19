@@ -295,6 +295,10 @@ plugin.config = {
 	}
 };
 
+plugin.enabled = function() {
+	return document.compatMode !== "BackCompat"
+};
+
 plugin.labels = {
 	/**
 	 * @echo_label
@@ -630,6 +634,10 @@ plugin.config = {
 		// due to the issues with video display with CSS transitions
 		"animationEngine": isMozillaBrowser ? "jquery" : "best-available"
 	}
+};
+
+plugin.enabled = function() {
+	return document.compatMode !== "BackCompat"
 };
 
 plugin.dependencies = [{
