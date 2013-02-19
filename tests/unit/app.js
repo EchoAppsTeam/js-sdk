@@ -31,13 +31,13 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"methods": {},
 			"renderers": {},
 			"templates": {},
-			"dependencies": [],
-			"destroy": undefined
+			"dependencies": []
 		};
 		var _manifest = Echo.App.manifest(manifest.name);
 		QUnit.ok(!!_manifest.init,
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
+		delete _manifest.destroy;
 		delete _manifest.inherits;
 
 		QUnit.deepEqual(manifest, _manifest,

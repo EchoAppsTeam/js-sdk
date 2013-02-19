@@ -123,7 +123,7 @@ Echo.Control.manifest = function(name) {
 			this.render();
 			this.ready();
 		},
-		"destroy": undefined
+		"destroy": function() {}
 	};
 };
 

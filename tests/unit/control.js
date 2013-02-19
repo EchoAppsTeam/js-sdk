@@ -60,16 +60,15 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"methods": {},
 			"renderers": {},
 			"templates": {},
-			"dependencies": [],
-			"destroy": undefined
+			"dependencies": []
 		};
 
 		var _manifest = Echo.Control.manifest(manifest.name);
 		QUnit.ok(!!_manifest.init,
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
-		QUnit.deepEqual(manifest, _manifest,
-			"Checking the \"manifest\" function output");
+		delete _manifest.destroy;
+		QUnit.deepEqual(manifest, _manifest, "Checking the \"manifest\" function output");
 
 		// checking if we have class before it was defined
 		QUnit.ok(!Echo.Control.isDefined(manifest),

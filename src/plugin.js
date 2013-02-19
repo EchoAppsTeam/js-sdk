@@ -119,8 +119,8 @@ Echo.Plugin.manifest = function(name, component) {
 		"templates": {},
 		"dependencies": [],
 		"enabled": function() { return true; },
-		"init": function(){},
-		"destroy": undefined
+		"init": function() {},
+		"destroy": function() {}
 	};
 };
 
