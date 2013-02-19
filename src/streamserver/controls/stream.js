@@ -2773,7 +2773,7 @@ item.methods._sortButtons = function() {
 
 	var _normalizeLinks = function(text, extra) {
 		text = text.replace(/(<a\s+[^>]*>)(.*?)(<\/a>)/ig, function($0, $1, $2, $3) {
-			if (new RegExp("^" + _urlMatcher + "$").test($2)) {
+			if (new RegExp("^" + _urlMatcher + "$", "i").test($2)) {
 				$2 = $2.length > extra.limits.maxBodyLinkLength ? $2.substring(0, extra.limits.maxBodyLinkLength) + "..." : $2;
 			}
 			if (extra.openLinksInNewWindow && !/\s+target=("[^<>"]*"|'[^<>']*'|\w+)/.test($1)) {
