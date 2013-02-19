@@ -239,7 +239,7 @@ pile.methods._request = function() {
 			"onError": function(data, extra) {
 				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
 				if (needShowError) {
-					self.showMessage({"type": "error", "data": data});
+					self.showError(data, {"critical": extra.critical});
 				}
 			},
 			"onData": function(data, extra) {
