@@ -758,40 +758,42 @@ QUnit.done(function() {
 	Echo.Tests.Stats.show();
 });
 
-// Extending QUnit lib to have an ability to verify function contract
-var _checkContract = function(origin, template, isRecursive) {
-	var result = true;
-	if (!isRecursive && $.isArray(template)) {
-		$.each(template, function(i, value) {
-			result = _checkContract(origin, value, true);
+var _checkContract = function(actual, expected) {
+	var result;
+
+	// event has several expected results so let's match against one of them
+	if ($.isArray(expected)) {
+		$.each(expected, function(i, sample) {
+			result = _checkContract(actual, sample);
+			// result matches with the sample, no need to match against others
 			if (result) return false;
 		});
-	} else {
-		if ($.type(template) === $.type(origin)) {
-			if ($.isPlainObject(template)) {
-				$.each(template, function(i) {
-					if (origin.hasOwnProperty(i) && $.type(template[i]) === "function") {
-						result = template[i](origin[i]);
-					} else {
-						if (origin.hasOwnProperty(i) && $.type(template[i]) === $.type(origin[i])) {
-							if ($.isPlainObject(template[i])) {
-								result =  _checkContract(origin[i], template[i], true);
-							}
-						} else {
-							result = false;
-						}
-					}
-					if (!result)
-						return result;
-				});
-				if ($.isEmptyObject(template) && !$.isEmptyObject(origin)) {
-					result = false;
-				}
+		return result;
+	}
+
+	// event has exactly one expected result
+	result = true;
+	$.each(expected, function(i) {
+		// actual data must have expected property otherwise it's a fail
+		if (actual.hasOwnProperty(i)) {
+
+			// sample is the type we should match with (easiest case)
+			if ($.type(expected[i]) === "string") {
+				result = $.type(actual[i]) === expected[i];
+
+			// we have a function to compare values
+			} else if ($.type(expected[i]) === "function") {
+				result = expected[i](actual[i]);
+
+			// we expect a complex object so let's compare recursively
+			} else {
+				result = _checkContract(actual[i], expected[i]);
 			}
 		} else {
 			result = false;
 		}
-	}
+		if (!result) return result; // break
+	});
 	return result;
 };
 
@@ -805,7 +807,7 @@ var _prepareEventData = function(obj, level) {
 				obj[key] = _prepareEventData(obj[key], level+1);
 			});
 		} else {
-			obj = obj.toString();
+			obj = $.type(obj) === "array" ? [] : {};
 		}
 	}
 	return obj;
