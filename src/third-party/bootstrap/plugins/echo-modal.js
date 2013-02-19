@@ -45,6 +45,7 @@ if (Echo.GUI.Modal) return;
  * 		 "header": true,
  * 		 "fade": true
  * 	});
+ * @extends Echo.GUI
  *
  * @constructor
  * Creates a new modal dialog. The dialog can be created in visible or hidden (default) modes. In order to initialize the modal dialog instance in visible state, the "show" parameter should be defined as 'true' (JS boolean) during the constructor call. For the modal dialogs hidden by default the "show" function can be applied to reveal it when appropriate.
