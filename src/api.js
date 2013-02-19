@@ -9,9 +9,6 @@ Echo.API = {"Transports": {}, "Request": {}};
 
 var utils = Echo.Utils;
 
-/**
- * @class Echo.API.Transport
- */
 Echo.API.Transport = function(config) {
 	this.config = new Echo.Configuration(config, {
 		"data": {},
@@ -42,10 +39,6 @@ Echo.API.Transport.prototype._prepareURL = function() {
 	return this._getScheme() + "//" + this.config.get("uri");
 };
 
-/**
- * @class Echo.API.Transports.AJAX
- * @extends Echo.API.Transport
- */
 Echo.API.Transports.AJAX = utils.inherit(Echo.API.Transport, function(config) {
 	config = $.extend({
 		"method": "get"
@@ -107,10 +100,6 @@ Echo.API.Transports.AJAX.available = function() {
 	return $.support.cors;
 };
 
-/**
- * @class Echo.API.Transports.XDomainRequest
- * @extends Echo.API.Transports.AJAX
- */
 Echo.API.Transports.XDomainRequest = utils.inherit(Echo.API.Transports.AJAX, function() {
 	return Echo.API.Transports.XDomainRequest.parent.constructor.apply(this, arguments);
 });
@@ -218,10 +207,6 @@ Echo.API.Transports.XDomainRequest.available = function(config) {
 		&& transportSpecAvailability;
 };
 
-/**
- * @class Echo.API.Transports.JSONP
- * @extends Echo.API.Transports.AJAX
- */
 Echo.API.Transports.JSONP = utils.inherit(Echo.API.Transports.AJAX, function(config) {
 	return Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
 });
