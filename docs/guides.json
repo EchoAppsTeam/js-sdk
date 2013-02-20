@@ -13,6 +13,11 @@
 				"description": "Terminology guide and the set of the useful tips about the JS SDK architecture."
 			},
 			{
+				"name": "technical_specification",
+				"title": "Technical specification",
+				"description": "JS SDK technical specification."
+			},
+			{
 				"name": "how_to_develop_control",
 				"title": "How to develop a control",
 				"description": "Control development hands-on guide."
