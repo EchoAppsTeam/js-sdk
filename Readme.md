@@ -1,6 +1,6 @@
-# Echo JS SDK
+# Echo JS SDK v3
 
-Javascript SDK for Echo applications
+Javascript SDK for building Apps powered by Echo Cloud Services
 
 ## Installation instructions
 0. Switch to root user.
