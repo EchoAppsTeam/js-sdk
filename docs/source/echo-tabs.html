@@ -25,8 +25,8 @@ if (!Echo.GUI) Echo.GUI = {};
 
 if (Echo.GUI.Tabs) return;
 
-<span id='Echo-GUI-Tabs-method-constructor'><span id='Echo-GUI-Tabs-cfg-show'><span id='Echo-GUI-Tabs-cfg-panels'><span id='Echo-GUI-Tabs-cfg-entries'><span id='Echo-GUI-Tabs-cfg-target'><span id='Echo-GUI-Tabs'>/**
-</span></span></span></span></span></span> * @class Echo.GUI.Tabs
+<span id='Echo-GUI-Tabs-method-constructor'><span id='Echo-GUI-Tabs-cfg-show'><span id='Echo-GUI-Tabs-cfg-classPrefix'><span id='Echo-GUI-Tabs-cfg-panels'><span id='Echo-GUI-Tabs-cfg-entries'><span id='Echo-GUI-Tabs-cfg-noRandomId'><span id='Echo-GUI-Tabs-cfg-idPrefix'><span id='Echo-GUI-Tabs-cfg-target'><span id='Echo-GUI-Tabs'>/**
+</span></span></span></span></span></span></span></span></span> * @class Echo.GUI.Tabs
  * Class wrapper for &lt;a href=&quot;http://twitter.github.com/bootstrap/javascript.html#tabs&quot; target=&quot;_blank&quot;&gt;bootstrap-tab.js&lt;/a&gt;.
  * The Echo.GUI.Tabs class provides a simplified interface to work with
  * the Bootstrap Tabs JS class.
@@ -47,6 +47,7 @@ if (Echo.GUI.Tabs) return;
  * 			&quot;label&quot;: &quot;Tab 2&quot;,
  * 			&quot;panel&quot;: $(&quot;.panel-css-selector2&quot;),
  * 		}],
+ * 		&quot;extraClass&quot;: &quot;extra-class&quot;
  * 		&quot;show&quot;: function() {}
  * 	});
  *
@@ -64,44 +65,75 @@ if (Echo.GUI.Tabs) return;
  * 	- HTMLElement (ex: document.getElementById(&quot;some-element-id&quot;))
  * 	- jQuery object (ex: $(&quot;.css-selector&quot;))
  *
+ * @cfg {String} idPrefix
+ * Prefix which helps to make the tab id unique across the page.
+ * Every Echo.GUI.Tabs instance should have its own unique prefix.
+ * Examples: &quot;my-tabs-section&quot;, &quot;my-product-tabs&quot;.
+ *
+ * @cfg {Boolean} [noRandomId=false]
+ * By default tab ids have random part to prevent interference of several
+ * instances of the *same* application on the page. Setting this parameter to `true` will
+ * remove random part so it should be used with care.
+ *
  * @cfg {Array} [entries]
  * Array of entries (tabs).
- * Each entry is the JS object with the following parameters:
- * 	id         - Tab id.
- * 	label      - Tab label.
- * 	panel      - HTML Element which contains tab content.
- * 	disabled   - Specifies whether the tab disabled.
- * 	extraClass - Class name to be added to the tab element.
+
+ * @cfg {String} entries.id
+ * Tab id.
+ *
+ * @cfg {String} entries.label
+ * Tab label.
+ *
+ * @cfg {Mixed} [entries.panel]
+ * HTML element which contains tab content.
+ * If this parameter is not specified, the container will be created.
+ *
+ * @cfg {Boolean} [entries.disabled]
+ * Specifies whether the tab is disabled.
+ *
+ * @cfg {String} [entries.extraClass]
+ * Class name to be added to the tab element.
  *
  * @cfg {HTMLElement} [panels]
  * Container which contains the panels.
  * If this parameter is not specified, the container will be created.
  *
+ * @cfg {String} [classPrefix=&quot;echo-tabs-&quot;]
+ * String to be added as a prefix to the tab components.
+ * Element with tabs will get &quot;**\&lt;classPrefix\&gt;**header&quot; class name
+ * and element with panels will get &quot;**\&lt;classPrefix\&gt;**panels&quot; class.
+ *
  * @cfg {Function} [show]
  * Function which will be called when tab is shown.
+ *
+ * @cfg {String} show.id
+ * Id of selected tab.
  */
 Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 	config.panels = config.panels ? $(config.panels) : $(&quot;&lt;div&gt;&quot;);
 
 	Echo.GUI.call(this, config, {
 		&quot;entries&quot;: [],
-		&quot;extraClass&quot;: &quot;&quot;,
+		&quot;idPrefix&quot;: &quot;&quot;,
+		&quot;noRandomId&quot;: false,
+		&quot;classPrefix&quot;: &quot;echo-tabs-&quot;,
 		&quot;show&quot;: function() {}
 	});
 });
 
 Echo.GUI.Tabs.prototype.refresh = function() {
-	var self = this;
 	var entries = this.config.get(&quot;entries&quot;);
 	var panels = this.config.get(&quot;panels&quot;);
 	var target = this.config.get(&quot;target&quot;);
 
 	target.empty();
 
-	this.tabsContainer = $('&lt;ul class=&quot;nav nav-tabs&quot;&gt;');
+	this._randomId = this.config.get(&quot;noRandomId&quot;) ? &quot;&quot; : &quot;-&quot; + Echo.Utils.getUniqueString();
+
+	this.tabsContainer = $('&lt;ul class=&quot;nav nav-tabs ' + this.config.get(&quot;classPrefix&quot;) + 'header&quot;&gt;');
 	target.append(this.tabsContainer);
 
-	panels.addClass(&quot;tab-content&quot;);
+	panels.addClass(&quot;tab-content &quot; + this.config.get(&quot;classPrefix&quot;) + &quot;panels&quot;);
 	if (panels.parent().length === 0) {
 		target.append(panels);
 	}
@@ -110,6 +142,7 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 		for (var i = 0; i &lt; entries.length; i++) {
 			this.add(entries[i]);
 		}
+		this.show(entries[this.config.get(&quot;selected&quot;, 0)].id);
 	}
 };
 
@@ -132,9 +165,10 @@ Echo.GUI.Tabs.prototype.getPanels = function() {
 Echo.GUI.Tabs.prototype.disable = function(id) {
 	var tabIndex = this._getTabIndex(id);
 	if (~tabIndex) {
-		this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;)
-		.removeAttr(&quot;data-toggle&quot;)
-		.addClass(&quot;disabled&quot;);
+		this.get(id)
+			.removeAttr(&quot;data-toggle&quot;)
+			.removeAttr(&quot;href&quot;)
+			.parent().addClass(&quot;disabled&quot;);
 	}
 };
 
@@ -147,9 +181,10 @@ Echo.GUI.Tabs.prototype.disable = function(id) {
 Echo.GUI.Tabs.prototype.enable = function(id) {
 	var tabIndex = this._getTabIndex(id);
 	if (~tabIndex) {
-		this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;)
+		this.get(id)
 			.attr(&quot;data-toggle&quot;, &quot;tab&quot;)
-			.removeClass(&quot;disabled&quot;);
+			.attr(&quot;href&quot;, &quot;#&quot; + this._getTabFullId(id))
+			.parent().removeClass(&quot;disabled&quot;);
 	}
 };
 
@@ -160,7 +195,7 @@ Echo.GUI.Tabs.prototype.enable = function(id) {
  * Tab id which should be removed.
  */
 Echo.GUI.Tabs.prototype.remove = function(id) {
-	this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;).remove();
+	this.get(id).remove();
 };
 
 <span id='Echo-GUI-Tabs-method-add'>/**
@@ -184,27 +219,38 @@ Echo.GUI.Tabs.prototype.remove = function(id) {
  */
 Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	var self = this;
-	if (!tabConfig || !tabConfig.id) return;
+	if (!tabConfig || !tabConfig.id) return this.config.get(&quot;target&quot;);
 
-	var attrs = [
-		(tabConfig.disabled ? ' class=&quot;disabled&quot;' : ' data-toggle=&quot;tab&quot;'),
-		'class=&quot;' + tabConfig.extraClass + '&quot;',
-		'href=&quot;#' + tabConfig.id + '&quot;',
-		'data-item=&quot;' + tabConfig.id + '&quot;'
-	];
-	var tab = $('&lt;li&gt;&lt;a' + attrs.join(&quot; &quot;) + '&gt;' + tabConfig.label  + '&lt;/a&gt;&lt;/li&gt;');
+	var fullId = this._getTabFullId(tabConfig.id);
+	var classes = tabConfig.disabled ? &quot;disabled&quot; : &quot;&quot;;
+	if (tabConfig.extraClass) {
+		classes += &quot; &quot; + tabConfig.extraClass;
+	}
+	var attrs = 'data-item=&quot;' + tabConfig.id + '&quot;';
+	if (!tabConfig.disabled) {
+		attrs += ' href=&quot;#' + fullId + '&quot; data-toggle=&quot;tab&quot;';
+	}
+	var tab = $('&lt;li' + (classes ? ' class=&quot;' + classes + '&quot;' : '') +'&gt;&lt;a ' + attrs + '&gt;' + tabConfig.label  + '&lt;/a&gt;&lt;/li&gt;');
 
-	$(&quot;a&quot;, tab).on(&quot;show&quot;, function() {
-		self.config.get(&quot;show&quot;).call(self, this);
+	var a = $(&quot;a&quot;, tab);
+	a.on(&quot;show&quot;, function() {
+		self.config.get(&quot;show&quot;).call(self,
+			$(this),
+			self._getPanel(tabConfig.id),
+			tabConfig.id,
+			self._getTabIndex(tabConfig.id)
+		);
+	});
+	$.each(tabConfig.data || {}, function(k, v) {
+		a.data(k, v);
 	});
 	this.tabsContainer.append(tab);
 
-	if (tabConfig.panel) {
-		if (tabConfig.panel.attr(&quot;id&quot;) !== tabConfig.id.toString()) {
-			tabConfig.panel.attr(&quot;id&quot;, tabConfig.id);
-		}
-		this.config.get(&quot;panels&quot;).append(tabConfig.panel.addClass(&quot;tab-pane&quot;));
+	tabConfig.panel = tabConfig.panel ? $(tabConfig.panel) : $(&quot;&lt;div&gt;&quot;);
+	if (tabConfig.panel.attr(&quot;id&quot;) !== fullId) {
+		tabConfig.panel.attr(&quot;id&quot;, fullId);
 	}
+	this.config.get(&quot;panels&quot;).append(tabConfig.panel.addClass(&quot;tab-pane&quot;));
 	return this.config.get(&quot;target&quot;);
 };
 
@@ -228,8 +274,8 @@ Echo.GUI.Tabs.prototype.get = function(id) {
  * Tab id.
  *
  * @return {Boolean}
- * true if tab with specific id exists,
- * false otherwise.
+ * `true` if tab with specific id exists,
+ * `false` otherwise.
  */
 Echo.GUI.Tabs.prototype.has = function(id) {
 	return !!this.config.get(&quot;target&quot;).has(&quot;a[data-item='&quot; + id + &quot;']&quot;).length;
@@ -245,7 +291,7 @@ Echo.GUI.Tabs.prototype.has = function(id) {
  * Tab configuration.
  *
  * @param {String} config.label
- * Tab id.
+ * Tab label.
  *
  * @param {String} config.extraClass
  * Class name to be added to the tab element.
@@ -256,10 +302,8 @@ Echo.GUI.Tabs.prototype.has = function(id) {
 Echo.GUI.Tabs.prototype.update = function(id, config) {
 	var tabIndex = this._getTabIndex(id);
 	if (~tabIndex) {
-		config.content &amp;&amp; this.config.get(&quot;panels&quot;).find(&quot;[id='&quot; + id + &quot;']&quot;).html(config.content);
-		this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;)
-			.html(config.label)
-			.addClass(config.extraClass);
+		config.content &amp;&amp; this._getPanel(id).html(config.content);
+		this.get(id).html(config.label).addClass(config.extraClass);
 	}
 };
 
@@ -270,7 +314,9 @@ Echo.GUI.Tabs.prototype.update = function(id, config) {
  * Tab id which should be shown.
  */
 Echo.GUI.Tabs.prototype.show = function(id) {
-	this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;).tab(&quot;show&quot;);
+	this.get(id).tab(&quot;show&quot;);
+	// sometimes panel is in detached DOM so we explicitly activate it
+	this._getPanel(id).addClass(&quot;active&quot;);
 };
 
 Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
@@ -281,6 +327,14 @@ Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
 	}
 	return -1;
 }
+
+Echo.GUI.Tabs.prototype._getPanel = function(id) {
+	return this.getPanels().find(&quot;#&quot; + this._getTabFullId(id));
+};
+
+Echo.GUI.Tabs.prototype._getTabFullId = function(id) {
+	return this.config.get(&quot;idPrefix&quot;) + id + this._randomId;
+};
 
 })(Echo.jQuery);
 </pre>

@@ -6,7 +6,7 @@ suite.prototype.info = {
 	"className": "Echo.GUI.Button",
 	"functions": [
 		"refresh",
-		"update",
+		"setState",
 		"destroy"
 	]
 };
@@ -35,15 +35,18 @@ suite.prototype.tests.commonWorkflow = {
 			"Checking that icon CSS class is not added by default");
 
 		var loadingIcon = Echo.Loader.getURL("images/loading.gif", false);
-		button.config.set("label", "SecondLabel");
-		button.config.set("disabled", true);
-		button.config.set("icon", loadingIcon);
+		button.setState({
+			"target": element,
+			"icon": loadingIcon,
+			"disabled": true,
+			"label": "SecondLabel"
+		});
 		button.refresh();
 
 		QUnit.ok(!$(target).html().match(/FirstLabel/) && $(target).html().match(/SecondLabel/),
 			"Checking that label is changed after set() method call");
 		QUnit.ok(element.attr('disabled'),
-			"Checking that button is disabledi after set() method call");
+			"Checking that button is disabled after set() method call");
 
 		$(".echo-label", element).html("NewLabel");
 		button.refresh();
@@ -55,8 +58,7 @@ suite.prototype.tests.commonWorkflow = {
 		QUnit.ok($(target).html().match(/icon/) && $(target).html().match(backgroundRegExp),
 			"Checking that background icon is added to element after set() method call");
 
-		button.config.set("label", "ThirdLabel");
-		button.refresh();
+		button.setState({"label": "ThirdLabel"});
 		QUnit.ok(!$(target).html().match(/SecondLabel/) && $(target).html().match(/ThirdLabel/),
 			"Checking that label is changed after updating 'label' field");
 

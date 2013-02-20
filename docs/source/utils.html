@@ -1062,52 +1062,16 @@ Echo.Utils.invoke = function(mixed, context) {
 		: mixed;
 };
 
-/*
- * This method returns information about the web browser that is accessing the page, 
- * as reported by the browser itself (trough User-Agent HTTP header).
- *
- * This method copies the jQuery.browser property behavior which has been removed
- * from jQuery since 1.9 version:
- * http://api.jquery.com/jQuery.browser/
- *
- * The method has been added for compatibility with new jQuery version and we
- * do not recommend to use it as it can be removed in the future.
- *
- * Please refer to the jQuery upgrade-guide (http://jquery.com/upgrade-guide/1.9/#jquery-browser-removed)
- * for more information.
- */
-Echo.Utils._browser = function(userAgent) {
-	if (userAgent || !this.cache.browser) {
-		var ua = userAgent &amp;&amp; userAgent.toLowerCase() || navigator.userAgent.toLowerCase();
-		var match = /(chrome)[ \/]([\w.]+)/.exec(ua)
-			|| /(webkit)[ \/]([\w.]+)/.exec( ua )
-			|| /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua)
-			|| /(msie) ([\w.]+)/.exec(ua)
-			|| ua.indexOf(&quot;compatible&quot;) &lt; 0 &amp;&amp; /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua)
-			|| [];
 
-		var matched = {
-			browser: match[1] || &quot;&quot;,
-			version: match[2] || &quot;0&quot;
-		};
-		var browser = {};
-
-		if (matched.browser) {
-			browser[matched.browser] = true;
-			browser.version = matched.version;
-		}
-
-		// Chrome is Webkit, but Webkit is also Safari.
-		if (browser.chrome) {
-			browser.webkit = true;
-		} else if (browser.webkit) {
-			browser.safari = true;
-		}
-
-		this.cache.browser = browser;
-	}
-	return this.cache.browser;
-};
+// JS SDK can't guarantee proper UI elements rendering in quirks mode
+// because the UI Framework (Twitter Bootstrap) doesn't support this mode.
+// Adding the message about that to the browser console to let the user know.
+if (document.compatMode === &quot;BackCompat&quot;) {
+	Echo.Utils.log({
+		&quot;type&quot;: &quot;error&quot;,
+		&quot;message&quot;: &quot;Quirks mode is not supported by JS SDK. Please make sure that the page has a valid doctype.&quot;
+	});
+}
 
 })(Echo.jQuery);
 </pre>

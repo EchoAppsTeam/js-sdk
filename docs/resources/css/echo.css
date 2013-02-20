@@ -108,3 +108,25 @@ div#north-region {
 .welcome-page div.section {
 	margin: 0 0 20px;
 }
+
+.class-overview .hierarchy {
+    width: 30px;
+    height: 24px;
+    background-image: url("../images/example-icons.png");
+    background-position: -24px -109px;
+    background-repeat: no-repeat;
+}
+
+.class-overview .hierarchy:hover {
+    width: auto;
+    height: auto;
+    background-image: none;
+}
+
+.class-overview .hierarchy * {
+    display: none;
+}
+
+.class-overview .hierarchy:hover * {
+    display: inherit;
+}

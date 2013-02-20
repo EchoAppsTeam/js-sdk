@@ -60,16 +60,15 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"methods": {},
 			"renderers": {},
 			"templates": {},
-			"dependencies": [],
-			"destroy": undefined
+			"dependencies": []
 		};
 
 		var _manifest = Echo.Control.manifest(manifest.name);
 		QUnit.ok(!!_manifest.init,
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
-		QUnit.deepEqual(manifest, _manifest,
-			"Checking the \"manifest\" function output");
+		delete _manifest.destroy;
+		QUnit.deepEqual(manifest, _manifest, "Checking the \"manifest\" function output");
 
 		// checking if we have class before it was defined
 		QUnit.ok(!Echo.Control.isDefined(manifest),
@@ -749,9 +748,9 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 	var initVar = "",
 		destroyVar = "";
 	var eventsChecker = {
-		"parentEvent": 0,
-		"child1Event": 0,
-		"commonEvent": 0
+		"parentTestEvent": 0,
+		"child1TestEvent": 0,
+		"commonTestEvent": 0
 	};
 	var ctx = Echo.Events.newContextId();
 	var publish = function(topic) {
@@ -761,7 +760,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		});
 	};
 	var parentManifest = {
-		"name": "Echo.Control1",
+		"name": "Echo.TestControl1",
 		"vars": {
 			"someVar": 1,
 			"someVar2": 2
@@ -780,12 +779,13 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"someLabel": "some label text"
 		},
 		"events": {
-			"parentEvent": function(topic) { eventsChecker[topic]++; },
-			"commonEvent": function(topic) { eventsChecker[topic] = ++eventsChecker[topic] + " parent handler"; }
+			"parentTestEvent": function(topic) { eventsChecker[topic]++; },
+			"commonTestEvent": function(topic) { eventsChecker[topic] = ++eventsChecker[topic] + " parent handler"; }
 		},
 		"methods": {
 			"method1": function() { return "method1"; },
-			"method2": function() { return "method2"; }
+			"method2": function() { return "method2"; },
+			"method3": function() { return "method3"; }
 		},
 		"renderers": {
 			"someRenderer": function(el) { return el; }
@@ -806,8 +806,8 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 	};
 	var control = Echo.Control.create(parentManifest);
 	var child1Manifest = {
-		"name": "Echo.Control1_Child1",
-		"inherits": Echo.Control1,
+		"name": "Echo.TestControl1_Child1",
+		"inherits": Echo.TestControl1,
 		"vars": {
 			"someVar": "overrides by child1"
 		},
@@ -820,9 +820,9 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"someProp": "overrides by child1"
 		},
 		"events": {
-			"child1Event": function(topic) { eventsChecker[topic]++; },
-			"commonEvent": function(topic) { eventsChecker[topic]++; },
-			"parentEvent": function(topic) { eventsChecker[topic]++; return {"stop": ["bubble", "propagation"]}; }
+			"child1TestEvent": function(topic) { eventsChecker[topic]++; },
+			"commonTestEvent": function(topic) { eventsChecker[topic]++; },
+			"parentTestEvent": function(topic) { eventsChecker[topic]++; return {"stop": ["bubble", "propagation"]}; }
 		},
 		"methods": {
 			"method1": function() {
@@ -842,11 +842,36 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"destroy": function() {
 			this.parent();
-			destroyVar += " and a child destroy";
+			destroyVar += " and a child destroy. ";
 		},
 		"css": ".{class:someRenderer} { width: 5px; }"
 	};
 	var child = Echo.Control.create(child1Manifest);
+	var child2 = Echo.Control.create({
+		"name": "Echo.TestControl1_Child2",
+		"inherits": Echo.Utils.getComponent("Echo.TestControl1")
+	});
+	var child2_child3 = Echo.Control.create({
+		"name": "Echo.TestControl1_Child2_Child3",
+		"inherits": Echo.Utils.getComponent("Echo.TestControl1_Child2"),
+		"init": function() {
+			initVar += " and I'm child3 init and ";
+			this.parent();
+		},
+		"destroy": function() {
+			this.parent();
+			destroyVar += " and a child3 destroy.";
+		}
+	});
+	var child1_child2 = Echo.Control.create({
+		"name": "Echo.TestControl1_Child1_Child2",
+		"methods": {
+			"method2": function() {
+				return this.parent() + " method2_child_2"
+			}
+		},
+		"inherits": Echo.Utils.getComponent("Echo.TestControl1_Child1")
+	});
 	suite.initTestControl({
 		"context": ctx,
 		"target": $("#qunit-fixture"),
@@ -863,29 +888,47 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			QUnit.strictEqual(this.someVar, "overrides by child1", "Check var overrides by child");
 			QUnit.strictEqual(this.config.get("someProp"), "overrides by child1", "Check config property overrides by child");
 			QUnit.strictEqual(this.method1(), "method1 method1_child_1", "Check parent method executed");
-			QUnit.strictEqual(this.method2(), "method2", "Check method inherited without override");
+			QUnit.strictEqual(this.method3(), "method3", "Check method inherited without override");
 			QUnit.strictEqual(this.child1Method(), "child1 method", "Check own method exists");
 			QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css concatination");
-			publish("child1Event");
-			publish("commonEvent");
-			publish("parentEvent");
-			QUnit.equal(eventsChecker.parentEvent, 1, "Check parent event propagation stop");
-			QUnit.equal(eventsChecker.child1Event, 1, "Check child event normal publish/subscribe");
-			QUnit.strictEqual(eventsChecker.commonEvent, "2 parent handler", "Check common event normal publish/subscribe and queue");
+			publish("child1TestEvent");
+			publish("commonTestEvent");
+			publish("parentTestEvent");
+			QUnit.equal(eventsChecker.parentTestEvent, 1, "Check parent event propagation stop");
+			QUnit.equal(eventsChecker.child1TestEvent, 1, "Check child event normal publish/subscribe");
+			QUnit.strictEqual(eventsChecker.commonTestEvent, "2 parent handler", "Check common event normal publish/subscribe and queue");
 			this.destroy();
-			QUnit.strictEqual(destroyVar, "I'm a parent destroy and a child destroy", "Check destroy parent function executed");
+			QUnit.strictEqual(destroyVar, "I'm a parent destroy and a child destroy. ", "Check destroy parent function executed");
 			QUnit.equal(this._manifest("css").length, 3, "Making sure that the 'css' field has the expected length after the inheritance");
 			var actualIDs = [];
-			var expectedIDs = [{"Echo.Control": true}, {"Echo.Control1": true}, {"Echo.Control1_Child1": true}];
-			$.map(["Echo.Control", "Echo.Control1", "Echo.Control1_Child1"], function(id) {
+			var expectedIDs = [{"Echo.Control": true}, {"Echo.TestControl1": true}, {"Echo.TestControl1_Child1": true}];
+			$.map(["Echo.Control", "Echo.TestControl1", "Echo.TestControl1_Child1"], function(id) {
 				var spec = {};
 				spec[id] = Echo.Utils.hasCSS(id);
 				actualIDs.push(spec);
 			});
 			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expected CSS rule groups present in the final manifest");
-			callback && callback();
+			suite.initTestControl({
+				"context": ctx,
+				"target": $("<div>"),
+				"ready": function() {
+					QUnit.strictEqual(initVar, "I'm a child init and a parent init and I'm child3 init and a parent init", "Check init function (jumping one level to parent)");
+					this.destroy();
+					QUnit.strictEqual(destroyVar, "I'm a parent destroy and a child destroy. I'm a parent destroy and a child3 destroy.", "Check destroy function (jumping one level to parent)");
+					suite.initTestControl({
+						"context": ctx,
+						"target": $("<div>"),
+						"ready": function() {
+							QUnit.strictEqual(this.method2(), "method2 method2_child_2", "Check parent method executed (second inheritance level; child2 -> parent() -> control)");
+							QUnit.strictEqual(this.child1Method(), "child1 method", "Check parent method executed (child2 -> child1)");
+							QUnit.strictEqual(this.method3(), "method3", "Check parent method executed (child2 -> control)");
+							callback && callback();
+						}
+					}, "Echo.TestControl1_Child1_Child2");
+				}
+			}, "Echo.TestControl1_Child2_Child3");
 		}
-	}, "Echo.Control1_Child1");
+	}, "Echo.TestControl1_Child1");
 };
 
 suite.prototype.async = {};

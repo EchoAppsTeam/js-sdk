@@ -2,62 +2,62 @@
 
 var _stream = {};
 _stream.render = {
-	"query": "",
-	"target": $("<div>")
+	"query": "string",
+	"target": "object"
 };
 
 _stream.onItemReceive = {
-	"query": "",
-	"target": $("<div>"),
+	"query": "string",
+	"target": "object",
 	"item": {
 		"data": {
-			"id": "",
-			"unique": "",
+			"id": "string",
+			"unique": "string",
 			"target": {
-				"conversationID": ""
+				"conversationID": "string"
 			},
-			"verbs": [],
+			"verbs": "array",
 			"provider": {
-				"icon": "",
-				"name": "",
-				"uri": ""
+				"icon": "string",
+				"name": "string",
+				"uri": "string"
 			},
-			"normalized": true
+			"normalized": "boolean"
 		}
 	}
 };
+
 _stream.item = {
-	"query": "",
-	"target": $("<div>"),
+	"query": "string",
+	"target": "object",
 	"item": {
 		"data": {
-			"id": "",
-			"unique": "",
+			"id": "string",
+			"unique": "string",
 			"target": {
-				"conversationID": ""
+				"conversationID": "string"
 			},
-			"verbs": [],
+			"verbs": "array",
 			"provider": {
-				"icon": "",
-				"name": "",
-				"uri": ""
+				"icon": "string",
+				"name": "string",
+				"uri": "string"
 			},
-			"hasMoreChildren": "",
-			"normalized": true
+			"normalized": "boolean"
 		},
-		"target": $("<div>")
+		"target": "object"
 	}
 };
 
 _stream.items = {
-	"query": "",
-	"target": $("<div>"),
+	"query": "string",
+	"target": "object",
 	"item": {
-		"target": $("<div>"),
+		"target": "object",
 		"data": {
-			"entries": [],
-			"id": "",
-			"updated": ""
+			"entries": "array",
+			"id": "string",
+			"updated": "string"
 		}
 	}
 };
@@ -66,39 +66,39 @@ var _submit = {};
 _submit.onRerender = {
 	"data": {
 		"object": {
-			"content": "",
-			"tags": [],
-			"markers": []
+			"content": "string",
+			"tags": "array",
+			"markers": "array"
 		}
 	},
-	"target": $("<div>"),
-	"targetURL": ""
+	"target": "object",
+	"targetURL": "string"
 };
 
 _submit.expand = {
-	"target": $("<div>"),
-	"targetURL": "",
+	"target": "object",
+	"targetURL": "string",
 	"data": {
-		"entries": [],
-		"id": "",
-		"updated": ""
+		"entries": "array",
+		"id": "string",
+		"updated": "string"
 	}
 };
 
 var _userSession = {};
 _userSession.init = {
 	"echo": {
-		"roles": [],
-		"state": "",
-		"markers": []
+		"roles": "array",
+		"state": "string",
+		"markers": "array"
 	},
 	"poco": {
 		"entry": {
-			"accounts": []
+			"accounts": "array"
 		},
-		"startIndex": 0,
-		"itemsPerPage": 0,
-		"totalResults": 0
+		"startIndex": "number",
+		"itemsPerPage": "number",
+		"totalResults": "number"
 	}
 };
 
@@ -107,20 +107,20 @@ var _plugins = {};
 _plugins.Edit = {};
 
 _plugins.Edit.onEdit = {
-	"target": $("<div>"),
-	"targetURL": "",
+	"target": "object",
+	"targetURL": "string",
 	"data": {
-		"entries": [],
-		"id": "",
-		"updated": ""
+		"entries": "array",
+		"id": "string",
+		"updated": "string"
 	},
 	"postData": {
 		"verb": "update|mark|unmark|tag|untag",
-		"target": "",
-		"markers": "",
-		"tags": "",
-		"field": "",
-		"value": ""
+		"target": "string",
+		"markers": "string",
+		"tags": "string",
+		"field": "string",
+		"value": "string"
 	}
 };
 
@@ -137,72 +137,70 @@ Echo.Tests.Events.contracts = {
 	"Echo.StreamServer.Controls.Stream.Item.onReady": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onReady": _stream.render,
 	"Echo.StreamServer.Controls.Stream.Item.onAdd": _stream.item,
+	"Echo.StreamServer.Controls.Stream.Item.onDelete": _stream.item,
 	"Echo.StreamServer.Controls.Stream.Item.onChildrenExpand": {
 		"data": {
-			"id": ""
+			"id": "string"
 		},
-		"target": $("<div>"),
-		"query": "",
+		"target": "object",
+		"query": "string",
 		"item": {
 			"data": {
-				"id": "",
-				"verbs": [],
-				"targets": [],
-				"postedTime": "",
-				"normalized": true,
+				"id": "string",
+				"verbs": "array",
+				"targets": "array",
+				"postedTime": "string",
+				"normalized": "boolean",
 				"target": {
-					"id": "",
-					"conversationID": ""
+					"id": "string",
+					"conversationID": "string"
 				},
-				"unique": ""
+				"unique": "string"
 			},
-			"target": $("<div>")
+			"target": "object"
 		}
 	},
 	"Echo.StreamServer.Controls.Stream.Item.onButtonClick": {
-		"name": "",
-		"plugin": "",
+		"name": "string",
+		"plugin": "string",
 		"item": {
 			"data": {
-				"id": "",
-				"verbs": [],
-				"targets": [],
-				"postedTime": "",
-				"normalized": true,
+				"id": "string",
+				"verbs": "array",
+				"targets": "array",
+				"postedTime": "string",
+				"normalized": "boolean",
 				"target": {
-					"id": "",
-					"conversationID": ""
+					"id": "string",
+					"conversationID": "string"
 				},
-				"unique": ""
+				"unique": "string"
 			},
-			"target": $("<div>")
+			"target": "object"
 		},
-		"target": $("<div>"),
-		"query": "query_string"
+		"target": "object",
+		"query": "string"
 	},
 
 	"Echo.StreamServer.Controls.Stream.onItemReceive": _stream.onItemReceive,
 	"Echo.StreamServer.Controls.Stream.Item.onRerender": _stream.item,
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView": {
-		"action": "",
-		"priority": "",
-		"handler": function() { return true; },
-		"target": $("<div>"),
-		"query": "",
+		"target": "object",
+		"query": "string",
 		"item": {
 			"data": {
-				"id": "",
-				"verbs": [],
-				"targets": [],
-				"postedTime": "",
-				"normalized": true,
+				"id": "string",
+				"verbs": "array",
+				"targets": "array",
+				"postedTime": "string",
+				"normalized": "boolean",
 				"target": {
-					"id": "",
-					"conversationID": ""
+					"id": "string",
+					"conversationID": "string"
 				},
-				"unique": ""
+				"unique": "string"
 			},
-			"target": $("<div>")
+			"target": "object"
 		}
 	},
 
@@ -226,91 +224,91 @@ Echo.Tests.Events.contracts = {
 	"Echo.StreamServer.Controls.Submit.onCollapse": _submit.expand,
 
 	"Echo.StreamServer.Controls.Submit.onRender": {
-		"target": $("<div>"),
-		"targetURL": "",
+		"target": "object",
+		"targetURL": "string",
 		"data": {}
 	},
 	"Echo.StreamServer.Controls.Stream.onDataReceive": {
 		"entries": function(value) {
-			return $.isArray(value) && value[0] && $.type(value[0].normalized) !== "undefined";
+			return $.isArray(value) && value[0] && $.type(value[0].normalized) === "boolean";
 		},
-		"type": "initial",
-		"query": "",
-		"target": $("<div>")
+		"type": "string",
+		"query": "string",
+		"target": "object"
 	},
 	"Echo.StreamServer.Controls.Submit.onPostInit": {
-		"target": $("<div>"),
-		"targetURL": "",
+		"target": "object",
+		"targetURL": "string",
 		"data": {},
 		"postData": {
-			"content": [],
-			"appkey": "",
-			"sessionID": ""
+			"content": "array",
+			"appkey": "string",
+			"sessionID": "string"
 		}
 	},
 	// TODO: revisit contract later
 	"Echo.StreamServer.Controls.Submit.onPostComplete": {
-		"target": $("<div>"),
-		"targetURL": "",
+		"target": "object",
+		"targetURL": "string",
 		"data": {},
 		"postData": {
-			"content": [],
-			"appkey": "",
-			"sessionID": ""
-//			"avatar": "",
-//			"markers": "",
-//			"name": "",
-//			"tags": "",
-//			"target": "",
-//			"url": "",
-//			"verb": "post"
+			"content": "array",
+			"appkey": "string",
+			"sessionID": "string"
+//			"avatar": "string",
+//			"markers": "string",
+//			"name": "string",
+//			"tags": "string",
+//			"target": "string",
+//			"url": "string",
+//			"verb": "string"
 		}
 	},
 	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit": _plugins.Edit.onEdit,
 	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete": _plugins.Edit.onEdit,
 	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError": _plugins.Edit.onEdit,
 	"Echo.StreamServer.Controls.Counter.onUpdate": {
-		"target": $("<div>"),
-		"query": "",
+		"target": "object",
+		"query": "string",
 		"data": {
-			"count": 0
+			"count": "number"
 		}
 	},
 	"Echo.Control.onDestroy": {
-		"self": true,
+		"self": "boolean",
 		"producer": {
-			"name": ""
+			"name": "string"
 		}
 	},
 	"Echo.StreamServer.Controls.Submit.onReady": {
 		"data": {},
-		"target": $("<div>"),
-		"targetURL": ""
+		"target": "object",
+		"targetURL": "string"
 	},
 	"Echo.StreamServer.Controls.Counter.onError": {
 		"data": {
-			"result": "",
-			"errorCode": "",
+			"result": "string",
+			"errorCode": "string",
 			"errorMessage": function(value) {
-				return (typeof value == "number" || typeof value == "string");
+				return ($.type(value) === "number" || $.type(value) === "string");
 			}
 		},
-		"query": "",
-		"target": $("<div>")
+		"query": "string",
+		"target": "object"
 	},
 	"Echo.StreamServer.Controls.Submit.onPostError": {
 		"postData": {
-			"result": "",
-			"errorCode": "",
-			"errorMessage": ""
+			"result": "string",
+			"errorCode": "string",
+			"errorMessage": "string"
 		},
 		"data": {},
-		"target": $("<div>"),
-		"targetURL": ""
+		"target": "object",
+		"targetURL": "string"
 	},
 	"Echo.Loader.onError": {
-		"code": "",
-		"message": ""
+		"code": "string",
+		"message": "string"
 	},
 	"Echo.StreamServer.Controls.FacePile.Item.onRender": {},
 	"Echo.StreamServer.Controls.FacePile.Item.onReady": {},

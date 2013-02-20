@@ -62,6 +62,7 @@ if (Echo.GUI.Modal) return;
  * 		 &quot;header&quot;: true,
  * 		 &quot;fade&quot;: true
  * 	});
+ * @extends Echo.GUI
  *
  * @constructor
  * Creates a new modal dialog. The dialog can be created in visible or hidden (default) modes. In order to initialize the modal dialog instance in visible state, the &quot;show&quot; parameter should be defined as 'true' (JS boolean) during the constructor call. For the modal dialogs hidden by default the &quot;show&quot; function can be applied to reveal it when appropriate.
@@ -147,8 +148,6 @@ Echo.GUI.Modal = Echo.Utils.inherit(Echo.GUI, function(config) {
 
 Echo.GUI.Modal.prototype.refresh = function() {
 	var self = this;
-	if (!this.config.get(&quot;show&quot;) &amp;&amp; !this._forceShow) return;
-	this.forceShow = false;
 	if (this.rendered) this.destroy();
 
 	this.rendered = true;
@@ -164,19 +163,20 @@ Echo.GUI.Modal.prototype.refresh = function() {
 	this.element.on(&quot;hidden&quot;, function() {
 		self.destroy();
 	});
-	this.element.on(&quot;hide&quot;, function() {
-		self.config.get(&quot;onHide&quot;).call(self, self.element);
-	});
 	this.element.on(&quot;shown&quot;, function() {
 		self.config.get(&quot;onShow&quot;).call(self, self.element);
 	});
 
+	this.config.get(&quot;fade&quot;) &amp;&amp; $.support.transition &amp;&amp; this.element.one($.support.transition.end, function() {
+		self.element.focus().trigger(&quot;shown&quot;);
+	});
+
 	this.element.appendTo(&quot;body&quot;)
-		.wrap(&quot;&lt;div class='echo-sdk-ui'&gt;&quot;)
-		.modal(this.config);
+		.wrap('&lt;div class=&quot;echo-sdk-ui&quot;&gt;')
+		.modal(this.config.getAsHash());
 
 	// if we try show few modals in one time, then event &quot;focusin.modal&quot; be called infinity times
-	$(document).off('focusin.modal');
+	$(document).off(&quot;focusin.modal&quot;);
 };
 
 <span id='Echo-GUI-Modal-method-show'>/**
@@ -184,8 +184,7 @@ Echo.GUI.Modal.prototype.refresh = function() {
  * 	myModal.show();
  */
 Echo.GUI.Modal.prototype.show = function() {
-	this._forceShow = true;
-	this.refresh();
+	this.element.modal(&quot;show&quot;);
 };
 
 <span id='Echo-GUI-Modal-method-destroy'>/**
@@ -197,8 +196,9 @@ Echo.GUI.Modal.prototype.destroy = function() {
 		this.element.modal(&quot;hide&quot;);
 		this.rendered = false;
 		this.backdrop &amp;&amp; this.backdrop.remove();
-		this.element.find('iframe').hide().attr('src', '//about:blank').end().empty();
+		this.element.find(&quot;iframe&quot;).hide().attr(&quot;src&quot;, &quot;//about:blank&quot;).end().empty();
 		this.element.unwrap().remove();
+		this.config.get(&quot;onHide&quot;).call(this, this.element);
 	}
 };
 
@@ -227,7 +227,11 @@ Echo.GUI.Modal.prototype._assembleBody = function() {
 	var body = this._addSection(&quot;modal-body&quot;, this.config.get(&quot;data&quot;).body);
 	if (this.config.get(&quot;href&quot;)) {
 		this.element.one(&quot;shown&quot;, function() {
-			body.append('&lt;iframe src=&quot;' + self.config.get(&quot;href&quot;) + '&quot; id=&quot;&quot; name=&quot;&quot; class=&quot;echo-modal-iframe&quot; frameborder=&quot;0&quot; vspace=&quot;0&quot; hspace=&quot;0&quot; webkitAllowFullScreen mozallowfullscreen allowFullScreen' + (Echo.Utils._browser().msie ? ' allowtransparency=&quot;true&quot;' : '') + '&gt;&lt;/iframe&gt;');
+			var iframe = $('&lt;iframe src=&quot;' + self.config.get(&quot;href&quot;) + '&quot; id=&quot;&quot; name=&quot;&quot; class=&quot;echo-modal-iframe&quot; frameborder=&quot;0&quot; vspace=&quot;0&quot; hspace=&quot;0&quot; webkitAllowFullScreen mozallowfullscreen allowFullScreen&gt;&lt;/iframe&gt;');
+			if (typeof iframe.get(0).allowTransparency !== &quot;undefined&quot;) {
+				iframe.attr(&quot;allowTransparency&quot;, &quot;true&quot;);
+			}
+			body.append(iframe);
 		});
 	}
 	if (this.config.get(&quot;width&quot;) !== null) {
@@ -269,7 +273,7 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 	if (self.config.get(&quot;backdrop&quot;)) {
 		if (self.config.get(&quot;fade&quot;)) {
 			self.element.on(&quot;show&quot;, function() {
-				var modal = self.element.data('modal');
+				var modal = self.element.data(&quot;modal&quot;);
 				var shown = modal.isShown;
 				var backdrop = modal.options.backdrop;
 
@@ -279,11 +283,13 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 				modal.isShown = shown;
 				modal.options.backdrop = backdrop;
 
-				self.backdrop = modal.$backdrop.wrap(&quot;&lt;div class='echo-sdk-ui'&gt;&quot;).parent();
+				self.element.addClass(&quot;in&quot;);
+
+				self.backdrop = modal.$backdrop.wrap('&lt;div class=&quot;echo-sdk-ui&quot;&gt;').parent();
 			});
 		} else {
 			self.element.on(&quot;shown&quot;, function() {
-				self.backdrop = self.element.data('modal').$backdrop.wrap(&quot;&lt;div class='echo-sdk-ui'&gt;&quot;).parent();
+				self.backdrop = self.element.data(&quot;modal&quot;).$backdrop.wrap('&lt;div class=&quot;echo-sdk-ui&quot;&gt;').parent();
 			});
 		}
 		// we used manual control for backdrop if fade is true
@@ -297,7 +303,7 @@ Echo.GUI.Modal.prototype._addSection = function(css, content) {
 	var section = $('&lt;div class=&quot;' + css + '&quot;&gt;');
 	this.element.append(section);
 	if (content) {
-		section.append(Echo.Utils.invoke(content));
+		section.append($.isFunction(content) ? content(section) : content);
 	}
 	return section;
 };

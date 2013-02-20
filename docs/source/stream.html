@@ -1609,12 +1609,7 @@ stream.css =
 	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
 	'.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }' +
 	'.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
-	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }' +
-	(Echo.Utils._browser().msie
-		? '.{class:state-picture} { vertical-align: middle; }' +
-		'.{class:container} { zoom: 1; }'
-		: ''
-	);
+	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }';
 
 Echo.Control.create(stream);
 
@@ -2286,26 +2281,7 @@ item.renderers.expandChildren = function(element, extra) {
 		return element;
 	}
 	if (!this.hasMoreChildren()) {
-		// IE in Quirks mode can't handle elements with the &quot;height: 0px&quot; correctly,
-		// element with the &quot;height: 0px&quot; is renderered like it doesn't have
-		// the height property at all. Thus we set the &quot;height: 1px&quot; as the final value
-		// for the animate function and simply hide element when the animation is done.
-		if (Echo.Utils._browser().msie &amp;&amp; document.compatMode !== &quot;CSS1Compat&quot;) {
-			element.animate({
-				&quot;height&quot;: &quot;1px&quot;,
-				&quot;marginTop&quot;: &quot;hide&quot;,
-				&quot;marginBottom&quot;: &quot;hide&quot;,
-				&quot;paddingTop&quot;: &quot;hide&quot;,
-				&quot;paddingBottom&quot;: &quot;hide&quot;
-			}, {
-				&quot;duration&quot;: this.config.get(&quot;children.moreButtonSlideTimeout&quot;),
-				&quot;complete&quot;: function() {
-					element.hide();
-				}
-			});
-		} else {
-			element.slideUp(this.config.get(&quot;children.moreButtonSlideTimeout&quot;));
-		}
+		element.slideUp(this.config.get(&quot;children.moreButtonSlideTimeout&quot;));
 		return element;
 	}
 	extra = extra || {};
@@ -2814,7 +2790,7 @@ item.methods._sortButtons = function() {
 
 	var _normalizeLinks = function(text, extra) {
 		text = text.replace(/(&lt;a\s+[^&gt;]*&gt;)(.*?)(&lt;\/a&gt;)/ig, function($0, $1, $2, $3) {
-			if (new RegExp(&quot;^&quot; + _urlMatcher + &quot;$&quot;).test($2)) {
+			if (new RegExp(&quot;^&quot; + _urlMatcher + &quot;$&quot;, &quot;i&quot;).test($2)) {
 				$2 = $2.length &gt; extra.limits.maxBodyLinkLength ? $2.substring(0, extra.limits.maxBodyLinkLength) + &quot;...&quot; : $2;
 			}
 			if (extra.openLinksInNewWindow &amp;&amp; !/\s+target=(&quot;[^&lt;&gt;&quot;]*&quot;|'[^&lt;&gt;']*'|\w+)/.test($1)) {
@@ -2942,6 +2918,8 @@ item.css =
 	'.{class:re} a:hover { text-decoration: underline; }' +
 	'.{class:body} { padding-top: 4px; }' +
 	'.{class:buttons} { float: left; margin-left: 3px; }' +
+	'.{class:buttons} a.{class:button} { color: #C6C6C6; }' +
+	'.{class:buttons} a.{class:button}.echo-linkColor, .{class:buttons} a.{class:button}:hover { color: #476CB8; text-decoration: none; }' +
 	'.{class:sourceIcon} { float: left; height: 16px; width: 16px; margin-right: 5px; border: 0px; }' +
 	'.{class:date}, .{class:from}, .{class:via} { float: left; }' +
 	'.{class:from} a, .{class:via} a { text-decoration: none; color: #C6C6C6; }' +
@@ -2956,14 +2934,7 @@ item.css =
 	'.{class:expandChildren} .echo-message-icon { background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/whirlpool.png&quot;) no-repeat 5px 4px; }' +
 	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url(&quot;{config:cdnBaseURL.sdk-assets}/images/loading.gif&quot;); }' +
 	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
-	itemDepthRules.join(&quot;\n&quot;) +
-	(Echo.Utils._browser().msie
-		? '.{class:childrenMarker} { font-size: 1px; line-height: 1px; }' +
-		'.{class:blocker-backdrop}, .{class:blocker-message} { filter:alpha(opacity=70); }' +
-		'.{class:content}, .{class:container}, .{class:subwrapper} { zoom: 1; }' +
-		'.{class:avatar-wrapper} { position: static; }'
-		: ''
-	);
+	itemDepthRules.join(&quot;\n&quot;);
 
 Echo.Control.create(item);
 

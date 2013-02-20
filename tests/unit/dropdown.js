@@ -4,7 +4,7 @@ var suite = Echo.Tests.Unit.Dropdown = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI.Dropdown",
-	"functions": ["setTitle", "refresh", "update", "destroy"]
+	"functions": ["setTitle", "refresh", "update", "destroy", "updateEntries"]
 };
 
 suite.prototype.tests = {};
@@ -12,12 +12,24 @@ suite.prototype.tests = {};
 var testIconUrl = "images/loading.gif";
 var dropdownParams = {
 	"title": "TestTitle",
+	"icon": Echo.Loader.getURL(testIconUrl, false),
 	"entries": [{
 		"title": "entry1",
 		"handler": function() {
 			Echo.Tests.Unit.Dropdown._testHandler1 = true;
 		},
-		"icon": Echo.Loader.getURL(testIconUrl, false)
+		"icon": Echo.Loader.getURL(testIconUrl, false),
+		"entries": [{
+			"title": "entry1.1",
+			"handler": function() {
+				Echo.Tests.Unit.Dropdown._testHandler11 = true;
+			}
+		}, {
+			"title": "entry2.2",
+			"handler": function() {
+				Echo.Tests.Unit.Dropdown._testHandler12 = true;
+			}
+		}]
 	}, {
 		"title": "entry2",
 		"handler": function() {
@@ -41,9 +53,10 @@ suite.prototype.tests.commonWorkflow = {
 		var dropdown = new Echo.GUI.Dropdown(dropdownParams);
 
 		var dropdownTitle = element.find(".dropdown-toggle").html();
-		var dropdownEntries =  element.find(".dropdown-menu li a");
-		var firstEntry = $(element.find(".dropdown-menu li a")[0]);
-		var secondEntry = $(element.find(".dropdown-menu li a")[1]);
+		var dropdownEntries = element.find("li.dropdown > ul.dropdown-menu > li > a");
+		var firstEntry = $(dropdownEntries[0]);
+		var secondEntry = $(dropdownEntries[1]);
+		var nestedEntries = firstEntry.parent().find("ul li a");
 
 		QUnit.ok(dropdownTitle === dropdownParams.title, "Check that title is displayed");
 
@@ -52,7 +65,20 @@ suite.prototype.tests.commonWorkflow = {
 		QUnit.ok(firstEntry.html() === dropdownParams.entries[0].title
 				&& secondEntry.html() === dropdownParams.entries[1].title, "Check entries title");
 
-		QUnit.ok(firstEntry.css("background-image").indexOf(testIconUrl) >= 0, "Check that icon added");
+		QUnit.ok(nestedEntries.length === dropdownParams.entries[0].entries.length, "Check nested entries count");
+
+		QUnit.ok(element.find("ul > li.dropdown > a").css("background-image").indexOf(testIconUrl) >= 0, "Check that dropdown icon added");
+
+		$(nestedEntries[0]).click();
+		QUnit.ok(Echo.Tests.Unit.Dropdown._testHandler11 && !Echo.Tests.Unit.Dropdown._testHandler22, "Check first nested entry handler");
+
+		$(nestedEntries[1]).click();
+		QUnit.ok(Echo.Tests.Unit.Dropdown._testHandler11 && Echo.Tests.Unit.Dropdown._testHandler12, "Check second nested entry handler");
+
+		QUnit.ok($(nestedEntries[0]).html() === dropdownParams.entries[0].entries[0].title
+				&& $(nestedEntries[1]).html() === dropdownParams.entries[0].entries[1].title, "Check nested entries title");
+
+		QUnit.ok(firstEntry.css("background-image").indexOf(testIconUrl) >= 0, "Check that entry icon added");
 
 		firstEntry.click();
 		QUnit.ok(Echo.Tests.Unit.Dropdown._testHandler1 && !Echo.Tests.Unit.Dropdown._testHandler2, "Check first entry handler");
@@ -76,6 +102,22 @@ suite.prototype.tests.commonWorkflow = {
 				&& $(".upd-extra-class", element).length
 				&& $(".echo-clickable:first", element).html() === "upd-title1"
 				&& $(".echo-clickable:last", element).html() === "upd-title2", "Check update() method");
+
+		var updatedEntries = [{
+			"title": "Updated entry 1"
+		}, {
+			"title": "Updated entry 2"
+		}, {
+			"title": "Updated entry 3"
+		}];
+		dropdown.updateEntries(updatedEntries);
+		var entries = element.find("li.dropdown > ul.dropdown-menu > li > a");
+
+		var isEntriesUpdated = entries.length === updatedEntries.length;
+		isEntriesUpdated && $.each(updatedEntries, function(entry, k) {
+			if (entry.title !== $(entries[k]).html()) isEntriesUpdated = false;
+		});
+		QUnit.ok(isEntriesUpdated , "Check updateEntries() method");
 
 		dropdown.destroy();
 		QUnit.ok(element.is(":empty"), "Check destroy() method");

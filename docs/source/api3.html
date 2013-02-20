@@ -26,9 +26,6 @@ Echo.API = {&quot;Transports&quot;: {}, &quot;Request&quot;: {}};
 
 var utils = Echo.Utils;
 
-<span id='Echo-API-Transport'>/**
-</span> * @class Echo.API.Transport
- */
 Echo.API.Transport = function(config) {
 	this.config = new Echo.Configuration(config, {
 		&quot;data&quot;: {},
@@ -59,10 +56,6 @@ Echo.API.Transport.prototype._prepareURL = function() {
 	return this._getScheme() + &quot;//&quot; + this.config.get(&quot;uri&quot;);
 };
 
-<span id='Echo-API-Transports-AJAX'>/**
-</span> * @class Echo.API.Transports.AJAX
- * @extends Echo.API.Transport
- */
 Echo.API.Transports.AJAX = utils.inherit(Echo.API.Transport, function(config) {
 	config = $.extend({
 		&quot;method&quot;: &quot;get&quot;
@@ -121,14 +114,9 @@ Echo.API.Transports.AJAX.prototype.abort = function() {
 };
 
 Echo.API.Transports.AJAX.available = function() {
-	var browser = Echo.Utils._browser();
-	return !browser.msie || browser.msie &amp;&amp; browser.version &gt;= 10;
+	return $.support.cors;
 };
 
-<span id='Echo-API-Transports-XDomainRequest'>/**
-</span> * @class Echo.API.Transports.XDomainRequest
- * @extends Echo.API.Transports.AJAX
- */
 Echo.API.Transports.XDomainRequest = utils.inherit(Echo.API.Transports.AJAX, function() {
 	return Echo.API.Transports.XDomainRequest.parent.constructor.apply(this, arguments);
 });
@@ -232,16 +220,10 @@ Echo.API.Transports.XDomainRequest.available = function(config) {
 	var transportSpecAvailability = /^get|post$/i.test(config.method)
 		&amp;&amp; /^https?/.test(schema)
 		&amp;&amp; document.location.protocol === schema;
-	var browser = Echo.Utils._browser();
-	return browser.msie
-		&amp;&amp; ~$.inArray(parseInt(browser.version), [8, 9])
+	return &quot;XDomainRequest&quot; in window
 		&amp;&amp; transportSpecAvailability;
 };
 
-<span id='Echo-API-Transports-JSONP'>/**
-</span> * @class Echo.API.Transports.JSONP
- * @extends Echo.API.Transports.AJAX
- */
 Echo.API.Transports.JSONP = utils.inherit(Echo.API.Transports.AJAX, function(config) {
 	return Echo.API.Transports.JSONP.parent.constructor.apply(this, arguments);
 });

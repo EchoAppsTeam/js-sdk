@@ -16,7 +16,7 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js">/* =============================================================
- * bootstrap-scrollspy.js v2.2.2
+ * bootstrap-scrollspy.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#scrollspy
  * =============================================================
  * Copyright 2012 Twitter, Inc.
@@ -76,7 +76,7 @@
               , $href = /^#\w/.test(href) &amp;&amp; $(href)
             return ( $href
               &amp;&amp; $href.length
-              &amp;&amp; [[ $href.position().top + self.$scrollElement.scrollTop(), href ]] ) || null
+              &amp;&amp; [[ $href.position().top + (!$.isWindow(self.$scrollElement.get(0)) &amp;&amp; self.$scrollElement.scrollTop()), href ]] ) || null
           })
           .sort(function (a, b) { return a[0] - b[0] })
           .each(function () {

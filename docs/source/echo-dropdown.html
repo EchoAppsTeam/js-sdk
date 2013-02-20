@@ -25,8 +25,8 @@ if (!Echo.GUI) Echo.GUI = {};
 
 if (Echo.GUI.Dropdown) return;
 
-<span id='Echo-GUI-Dropdown-method-constructor'><span id='Echo-GUI-Dropdown-cfg-entries'><span id='Echo-GUI-Dropdown-cfg-title'><span id='Echo-GUI-Dropdown-cfg-extraClass'><span id='Echo-GUI-Dropdown-cfg-target'><span id='Echo-GUI-Dropdown'>/**
-</span></span></span></span></span></span> * @class Echo.GUI.Dropdown
+<span id='Echo-GUI-Dropdown-method-constructor'><span id='Echo-GUI-Dropdown-cfg-entries'><span id='Echo-GUI-Dropdown-cfg-icon'><span id='Echo-GUI-Dropdown-cfg-title'><span id='Echo-GUI-Dropdown-cfg-extraClass'><span id='Echo-GUI-Dropdown-cfg-target'><span id='Echo-GUI-Dropdown'>/**
+</span></span></span></span></span></span></span> * @class Echo.GUI.Dropdown
  * Class wrapper for &lt;a href=&quot;http://twitter.github.com/bootstrap/javascript.html#dropdowns&quot; target=&quot;_blank&quot;&gt;bootstrap-dropdown.js&lt;/a&gt;.
  * The Echo.GUI.Dropdown class provides a simplified interface to work with the
  * Bootstrap Dropdown JS class.
@@ -68,12 +68,16 @@ if (Echo.GUI.Dropdown) return;
  * @cfg {String} title
  * Dropdown title.
  *
+ * @cfg {String} [icon]
+ * URL of the 14x14px icon to be displayed near the dropdown title.
+ *
  * @cfg {Array} entries
  * Array of the dropdown entries.
  * Each entry is the object with the following parameters:
  * 	title   - entry title
  * 	handler - function which will be called when entry is selected
  * 	icon    - URL for the icon. Icon size should be 16x16 pixels.
+ * 	entries - Array of nested entries.
  */
 Echo.GUI.Dropdown = Echo.Utils.inherit(Echo.GUI, function(config) {
 	Echo.GUI.call(this, config, {
@@ -85,7 +89,8 @@ Echo.GUI.Dropdown = Echo.Utils.inherit(Echo.GUI, function(config) {
 
 Echo.GUI.Dropdown.prototype.refresh = function() {
 	this.config.get(&quot;target&quot;).empty();
-	this._assembleEntries(this._assembleContainer());
+	this._container = this._assembleContainer();
+	this._assembleEntries(this._container, this.config.get(&quot;entries&quot;));
 };
 
 <span id='Echo-GUI-Dropdown-method-setTitle'>/**
@@ -98,6 +103,17 @@ Echo.GUI.Dropdown.prototype.setTitle = function(title) {
 	$(&quot;.dropdown-toggle&quot;, this.config.get(&quot;target&quot;)).empty().append(title);
 };
 
+<span id='Echo-GUI-Dropdown-method-updateEntries'>/**
+</span> * This method allows to re-assemble dropdown entries.
+ *
+ * @param {Array} entries
+ */
+Echo.GUI.Dropdown.prototype.updateEntries = function(entries) {
+	this.config.set(&quot;entries&quot;, entries);
+	$(&quot;.dropdown-menu&quot;, this.config.get(&quot;target&quot;)).remove();
+	this._assembleEntries(this._container, entries);
+};
+
 Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 	 var template =
 		'&lt;li class=&quot;dropdown&quot;&gt;' +
@@ -106,16 +122,22 @@ Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 			'&lt;/a&gt;' +
 		'&lt;/li&gt;';
 	var dropdown = $(template);
+	if (this.config.get(&quot;icon&quot;)) {
+		$(&quot;.dropdown-toggle&quot;, dropdown)
+			.css(&quot;background&quot;, &quot;no-repeat url(&quot; + this.config.get(&quot;icon&quot;) + &quot;) 3px 0px&quot;)
+			.css(&quot;padding-left&quot;, &quot;23px&quot;);
+	}
 	this.config.get(&quot;target&quot;).append($('&lt;ul class=&quot;' + this.config.get(&quot;extraClass&quot;) + '&quot;&gt;').append(dropdown));
 
 	return dropdown;
 };
 
-Echo.GUI.Dropdown.prototype._assembleEntries = function(container) {
+Echo.GUI.Dropdown.prototype._assembleEntries = function(container, entries) {
+	var self = this;
 	var menu = $('&lt;ul class=&quot;dropdown-menu&quot; role=&quot;menu&quot;&gt;');
 	container.append(menu);
 
-	$.map(this.config.get(&quot;entries&quot;), function(entry) {
+	$.map(entries, function(entry) {
 		var item = $(&quot;&lt;a role='button' class='echo-clickable' /&gt;&quot;)
 			.click(function() {
 				entry.handler &amp;&amp; entry.handler.call(this, entry);
@@ -126,7 +148,12 @@ Echo.GUI.Dropdown.prototype._assembleEntries = function(container) {
 				&quot;background-image&quot;: &quot;url(&quot; + entry.icon + &quot;)&quot;
 			});
 		}
-		menu.append($(&quot;&lt;li&gt;&quot;).append(item.append(entry.title)));
+		var li = $(&quot;&lt;li&gt;&quot;).appendTo(menu);
+		item.append(entry.title).appendTo(li);
+		if (entry.entries) {
+			li.addClass(&quot;dropdown-submenu&quot;);
+			self._assembleEntries(li, entry.entries);
+		}
 	});
 	return menu;
 };

@@ -32,11 +32,6 @@ var mediaGallery = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream
 
 if (Echo.Control.isDefined(mediaGallery)) return;
 
-var _isPreIE9 = function() {
-	var browser = Echo.Utils._browser();
-	return (browser.msie &amp;&amp; browser.version &lt; 9 &amp;&amp; document.documentMode &amp;&amp; document.documentMode &lt; 9);
-};
-
 mediaGallery.labels = {
 	&quot;mediaIsNotAvailable&quot;: &quot;&lt;i&gt;Media is not avaiable at this moment...&lt;/i&gt;&quot;
 };
@@ -228,8 +223,7 @@ mediaGallery.css =
 	'.{class:controls} { text-align: center; margin-top: 10px; }' +
 	'.{class:control} { display: inline-block; width: 8px; height: 8px; font-size: 0px; line-height: 8px; outline: none; border-radius: 4px; vertical-align: middle; margin-left: 8px; cursor: pointer; background-color: #c6c6c6; text-decoration: none; transition: all .2s ease-in 0; -moz-transition-property: all; -moz-transition-duration: .2s; -moz-transition-timing-function: ease-in; -moz-transition-delay: 0; -webkit-transition-property: all; -webkit-transition-duration: .2s; -webkit-transition-timing-function: ease-in; -webkit-transition-delay: 0; }' +
 	'.{class:control}:hover { background-color: #ee7b11; }' +
-	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }' +
-	(_isPreIE9() ? '.{class} { display: inline; zoom: 1; }' : '');
+	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }';
 
 Echo.Control.create(mediaGallery);
 	
@@ -251,11 +245,6 @@ var $ = jQuery;
 var plugin = Echo.Plugin.manifest(&quot;PinboardVisualization&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
 if (Echo.Plugin.isDefined(plugin)) return;
-
-var _isPreIE9 = function() {
-	var browser = Echo.Utils._browser();
-	return (browser.msie &amp;&amp; browser.version &lt; 9 &amp;&amp; document.documentMode &amp;&amp; document.documentMode &lt; 9);
-};
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -321,6 +310,10 @@ plugin.config = {
 	&quot;gallery&quot;: {
 		&quot;resizeDuration&quot;: 250
 	}
+};
+
+plugin.enabled = function() {
+	return document.compatMode !== &quot;BackCompat&quot;
 };
 
 plugin.labels = {
@@ -580,7 +573,9 @@ plugin.css =
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-userInfoWrapper {  margin: 5px 0px; }' +
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
 	'.{plugin.class} .{class:plugin-Moderation-status}  { width: 30px; clear: both; }' +
-	(_isPreIE9() ? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }' : '');
+	((typeof document.createElement(&quot;div&quot;).style.boxShadow === &quot;undefined&quot;)
+		? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }'
+		: '');
 	
 Echo.Plugin.create(plugin);
 
@@ -621,6 +616,17 @@ var plugin = Echo.Plugin.manifest(&quot;PinboardVisualization&quot;, &quot;Echo.
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
+var ua = navigator.userAgent.toLowerCase();
+var isMozillaBrowser = !!(
+		!~ua.indexOf(&quot;chrome&quot;)
+		&amp;&amp; !~ua.indexOf(&quot;webkit&quot;)
+		&amp;&amp; !~ua.indexOf(&quot;opera&quot;)
+		&amp;&amp; (
+			/(msie) ([\w.]+)/.exec(ua)
+			|| ua.indexOf(&quot;compatible&quot;) &lt; 0 &amp;&amp; /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua)
+		)
+	);
+
 plugin.config = {
 <span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization-cfg-isotope'>	/**
 </span>	 * @cfg {Object} isotope
@@ -628,18 +634,27 @@ plugin.config = {
 	 * rendering engine. The possible config values can be found at the Isotope
 	 * plugin homepage (http://isotope.metafizzy.co/). It's NOT recommended to
 	 * change the settings of the Isotope unless it's really required.
+	 *
+	 *__Note__: the Isotope JS library doesn't work in IE &lt;a href=&quot;http://en.wikipedia.org/wiki/Quirks_mode&quot;&gt;quirks mode&lt;/a&gt;.
+	 * Due to this fact you should declare the necessary &lt;a href=&quot;http://en.wikipedia.org/wiki/DOCTYPE&quot;&gt;\&lt;DOCTYPE\&gt;&lt;/a&gt;
+	 * on the page. We recommend to use a
+	 * &lt;a href=&quot;http://en.wikipedia.org/wiki/DOCTYPE#HTML5_DTD-less_DOCTYPE&quot;&gt;HTML5 DOCTYPE&lt;/a&gt; declaration.
 	 */
 	&quot;isotope&quot;: {
 		&quot;animationOptions&quot;: {
 			// change duration for mozilla browsers
-			&quot;duration&quot;: Echo.Utils._browser().mozilla || Echo.Utils._browser().msie ? 0 : 2750,
+			&quot;duration&quot;: isMozillaBrowser ? 0 : 2750,
 			&quot;easing&quot;: &quot;linear&quot;,
 			&quot;queue&quot;: false
 		},
 		// use only jQuery engine for animation in mozilla browsers
 		// due to the issues with video display with CSS transitions
-		&quot;animationEngine&quot;: Echo.Utils._browser().mozilla || Echo.Utils._browser().msie ? &quot;jquery&quot; : &quot;best-available&quot;
+		&quot;animationEngine&quot;: isMozillaBrowser ? &quot;jquery&quot; : &quot;best-available&quot;
 	}
+};
+
+plugin.enabled = function() {
+	return document.compatMode !== &quot;BackCompat&quot;
 };
 
 plugin.dependencies = [{

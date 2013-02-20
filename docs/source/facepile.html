@@ -256,7 +256,7 @@ pile.methods._request = function() {
 			&quot;onError&quot;: function(data, extra) {
 				var needShowError = typeof extra.critical === &quot;undefined&quot; || extra.critical || extra.requestType === &quot;initial&quot;;
 				if (needShowError) {
-					self.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data});
+					self.showError(data, {&quot;critical&quot;: extra.critical});
 				}
 			},
 			&quot;onData&quot;: function(data, extra) {
@@ -446,6 +446,7 @@ pile.methods._intersperse = function(object, separator) {
 pile.css = 
 	'.{class:container} { line-height: 20px; vertical-align: middle; }' +
 	'.{class:more} { white-space: nowrap; }' +
+	'.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }' +
 	'.{class:more} .echo-control-message-icon { display: inline; margin: 0px 5px; }';
 
 Echo.Control.create(pile);

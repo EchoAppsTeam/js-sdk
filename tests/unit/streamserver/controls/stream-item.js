@@ -587,6 +587,19 @@ suite.prototype.tests.bodyRendererTest = {
 				}
 			},
 			"expect": '1234567890 <span>qwertyuiop</span>'
+		}, {
+			"description": "bodyLink: 20, truncate urls with capital letters",
+			"config": {
+				"limits": {
+					"maxBodyLinkLength": 20
+				}
+			},
+			"data": {
+				"object": {
+					"content": 'http://domain.com/CAPITAL_LETTERS_in_path'
+				}
+			},
+			"expect": '<a href="http://domain.com/CAPITAL_LETTERS_in_path">http://domain.com/CA...</a>'
 		}]);
 	}
 };
