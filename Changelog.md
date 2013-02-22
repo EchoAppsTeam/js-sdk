@@ -1,5 +1,35 @@
 # Echo JS SDK CHANGELOG:
 
+## v3.0.6 - Feb 20, 2013
+
+* **the quirks browser mode is no longer supported**, more information is available [here](http://echoappsteam.github.com/js-sdk/docs/#!/guide/technical_specification-section-1).
+
+* several additional **configuration parameters were added to Echo.GUI.Tabs** component. More information about the Tabs library can be found [in our documentation center](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI.Tabs).
+
+* new **setState method was added into Echo.GUI.Button** component, more information is available [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI.Button-method-setState).
+
+* a **few bugs were fixed in the Echo.GUI.Modal** component which caused malfunctioning in some cases.
+
+* we have added the **ability to set nested entries for Echo.GUI.Dropdown** component. **Separate icons can be specified** for the dropdown itself as well as for each entry. For more information please visit [our documentation center](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI.Dropdown).
+
+* the **Bootstrap transitions plugin was included** into the Echo.GUI package. More information about this plugin can be found [here](http://twitter.github.com/bootstrap/javascript.html#transitions).
+
+* **Twitter Bootstrap was upgraded** from 2.2.2 to 2.3.0 version. More information about the Bootstrap updates is available [here](http://blog.getbootstrap.com/2013/02/07/bootstrap-2-3-released/).
+
+* **jQuery was upgraded** from 1.9.0 to 1.9.1 version. The corresponding jQuery release notes are available [here](http://blog.jquery.com/2013/02/04/jquery-1-9-1-released/).
+
+* the SDK code was updated to comply with the latest **jQuery trends** in terms of **checking feature support in the browser** vs checking the browser and its version.
+
+* the **Echo.Loader.download** function is now checking the case when **no resources for downloading have been passed**. In this case the callback is now fired immediately.
+
+* the **input fields of the Submit form** instantiated inside the Reply plugin **were misaligned** when used in conjunction with the PinboardVisualization plugin. We performed some CSS updates to fix the problem.
+
+* the **Stream control UI links** such as item controls or the “Re” tag links **changed their styles** when the “gui.pack.css” was included into the page source. Extra CSS rules were added to prevent this.
+
+* the **logic of the static manifest declarations merging** (in case of inheritance) was updated to check the situation when the function is defined in child manifest and undefined in parent manifest, which caused the problems while calling the parent function.
+
+* the **PinboardVisualization plugin is no longer available in quirks browser mode** due to the fact that the Isotope library used for visualization mechanics doesn’t support the quirks mode at all. The plugin will automatically be disabled if the page works in quirks mode.
+
 ## v3.0.5 - Jan 30, 2013
 
 * We’ve **moved Echo Bootstrap plugin wrappers into the Echo.GUI scope**. The $.echoButton and $.echoModal functions have been removed and you should use Echo.GUI.Button and Echo.GUI.Modal classes instead. In addition to the Button and Modal wrappers we also released a few other wrappers which should help you to work with Bootstrap components. The Echo.GUI classes description can be found in the documentation center:

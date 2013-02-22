@@ -1,9 +1,10 @@
 (function($) {
 
-var suite = Echo.Tests.Unit.gui = function() {};
+var suite = Echo.Tests.Unit.GUI = function() {};
 
 suite.prototype.info = {
 	"className": "Echo.GUI",
+	"suiteName": "GUI",
 	"functions": [
 		"refresh",
 		"destroy"
