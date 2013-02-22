@@ -141,17 +141,29 @@ stream.config = {
 
 	/**
 	 * @cfg {Object} liveUpdates
-	 * Configuration options for liveUpdates.
+	 * Live updating machinery configuration.
 	 *
 	 * @cfg {Boolean} liveUpdates.enabled
-	 * Parameter to enable/disable receiving live updates by control.
+	 * Parameter to enable/disable live updates receiving by the control.
+	 *
+	 * @cfg {String} liveUpdates.transport
+	 * Preferred live updates receiveing machinery transport.
+	 * The following transports are supported:
+	 *
+	 * + "polling" - periodic requests to check for updates
+	 * + "websockets" - transport based on the WebSocket technology.
+	 *
+	 * If the end user's browser doesn't support the WebSockets technology,
+	 * the "polling" transport will be used as a fallback.
 	 *
 	 * @cfg {Number} liveUpdates.timeout
 	 * Timeout between live updates requests (in seconds).
 	 */
 	"liveUpdates": {
+		"transport": "polling", // or "websockets"
 		"enabled": true,
-		"timeout": 10
+		"timeout": 10,
+		"serverPingInterval": 30
 	},
 
 	/**
@@ -612,8 +624,7 @@ stream.methods._requestInitialItems = function() {
 		this.request = Echo.StreamServer.API.request({
 			"endpoint": "search",
 			"apiBaseURL": this.config.get("apiBaseURL"),
-			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
-			"recurring": this.config.get("liveUpdates.enabled"),
+			"liveUpdates": this.config.get("liveUpdates"),
 			"data": {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")

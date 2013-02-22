@@ -11,47 +11,88 @@ Echo.StreamServer.API = {};
 
 /**
  * @class Echo.StreamServer.API.Request
- * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/19987923/FrontPage" target="_blank">Echo StreamServer API</a>
+ * Class implements the interaction with the
+ * <a href="http://wiki.aboutecho.com" target="_blank">Echo StreamServer API</a>
+ *
  * @extends Echo.API.Request
  *
  * @constructor
  * Constructor initializing class using configuration data.
+ *
  * @param {Object} config Configuration data.
  */
 Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
-	config = $.extend({
+	var timeout = config && config.liveUpdates && config.liveUpdates.timeout;
+	config = $.extend(true, {
 		/**
-		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
+		 * @cfg {Object} liveUpdates
+		 * Live updating machinery configuration.
+		 *
+		 * @cfg {Boolean} liveUpdates.enabled
+		 * Parameter to enable/disable live updates receiving by the control.
+		 *
+		 * @cfg {String} liveUpdates.transport
+		 * Preferred live updates receiveing machinery transport.
+		 * The following transports are supported:
+		 *
+		 * + "polling" - periodic requests to check for updates
+		 * + "websockets" - transport based on the WebSocket technology.
+		 *
+		 * If the end user's browser doesn't support the WebSockets technology,
+		 * the "polling" transport will be used as a fallback.
+		 *
+		 * @cfg {Number} liveUpdates.timeout
+		 * Timeout between live updates requests (in seconds).
 		 */
-		"liveUpdatesTimeout": 5,
+		"liveUpdates": {
+			"transport": "polling", // or "websockets"
+			"enabled": true,
+			"polling": {
+				"timeout": timeout || 5 // backwards compatibility
+			},
+			"websockets": {
+				"maxConnectRetries": 3,
+				"serverPingInterval": 30
+			}
+		},
+
 		/**
-		 * @cfg {Boolean} [skipInitialRequest] Flag allowing to skip the initial request but continue performing live updates requests.
+		 * @cfg {Boolean} [skipInitialRequest]
+		 * Flag allowing to skip the initial request but continue performing
+		 * live updates requests.
 		 */
 		"skipInitialRequest": false,
+
 		/**
-		 * @cfg {Boolean} [recurring] Specifies that the live updates are enabled.
-		 */
-		"recurring": false,
-		/**
-		 * @cfg {String} [itemURIPattern] Specifies the item id pattern.
+		 * @cfg {String} [itemURIPattern]
+		 * Specifies the item id pattern.
 		 */
 		"itemURIPattern": undefined,
+
 		/**
-		 * @cfg {Function} [onData] Callback called after API request succeded.
+		 * @cfg {Function} [onData]
+		 * Callback called after API request succeded.
 		 */
 		"onData": function() {},
+
 		/**
-		 * @cfg {Function} [onError] Callback called after API request failed. 
+		 * @cfg {Function} [onError]
+		 * Callback called after API request failed.
 		 */
 		"onError": function() {},
+
 		/**
-		 * @cfg {Function} [onOpen] Callback called before sending an API request.
+		 * @cfg {Function} [onOpen]
+		 * Callback called before sending an API request.
 		 */
 		"onOpen": function() {},
+
 		/**
-		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
+		 * @cfg {String} [submissionProxyURL]
+		 * Specifes the URL to the submission proxy service.
 		 */
 		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity"
+
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = "initial"; // initial | secondary
@@ -70,8 +111,9 @@ Echo.StreamServer.API.Request.prototype.abort = function() {
 	}
 };
 
-Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.prototype._count = function(force) {
-	if (this.config.get("recurring")) {
+Echo.StreamServer.API.Request.prototype._count =
+Echo.StreamServer.API.Request.prototype._search = function(force) {
+	if (this.config.get("liveUpdates.enabled")) {
 		if (!this.liveUpdates) {
 			this._initLiveUpdates();
 		}
@@ -79,6 +121,57 @@ Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.
 		return;
 	}
 	this.request();
+};
+
+// WebSockets machinery...
+
+Echo.StreamServer.API.Request.prototype._wsAvailable = function() {
+	return this.config.get("endpoint") === "search" &&
+		this.config.get("liveUpdates.transport") === "websockets" &&
+		Echo.API.Transports.WebSocket.available();
+};
+
+Echo.StreamServer.API.Request.prototype._wsEstablish = function() {
+	var self = this;
+
+	if (this.liveUpdates.socket) return;
+
+	this.liveUpdates.socket = new Echo.API.Transports.WebSocket($.extend({
+//		"uri": "live." + this.config.get("apiBaseURL") + "/ws",
+		"uri": "localhost:8080",
+		"onOpen": function() {
+			// subscribe to the events for the current search query
+			self.liveUpdates.socket.send({
+				"event": "subscribe/request",
+				"data": self.config.get("data")
+			});
+		},
+		"onClose": function() {
+			// switch to polling when WebSocket connection is closed
+			if (self.liveUpdates.transport !== "polling") {
+				self.liveUpdates.transport = "polling";
+				self._startLiveUpdates();
+			}
+		},
+		"onData": function(response) {
+			if (!response || !response.event) return;
+			switch (response.event) {
+				case "subscribe/confirmed":
+					self.liveUpdates.transport = "websockets";
+					self._stopLiveUpdates("polling");
+					break;
+				case "update":
+					self.config.get("onData")(response.data);
+					break;
+			}
+		}
+	}, this.config.get("liveUpdates.websockets")));
+};
+
+Echo.StreamServer.API.Request.prototype._wsEstablished = function() {
+	var updates = this.liveUpdates;
+	return updates && updates.transport === "websockets" &&
+		updates.socket && updates.socket.connected();
 };
 
 Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
@@ -91,9 +184,7 @@ Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(c
 			delete self.retryTimer;
 		},
 		"onData": function(response, requestParams) {
-			self._onData(response, {
-				"requestType": self.requestType
-			}, _config);
+			self._onData(response, {"requestType": self.requestType}, _config);
 		},
 		"onError": function(responseError, requestParams) {
 			self._onError(responseError, requestParams, _config);
@@ -108,9 +199,7 @@ Echo.StreamServer.API.Request.prototype._onData = function(response, requestPara
 	}
 	Echo.StreamServer.API.Request.parent._onData.apply(this, arguments);
 	if (response.result === "error") {
-		this._handleErrorResponse(response, {
-			"callback": config.onError
-		});
+		this._handleErrorResponse(response, {"callback": config.onError});
 		return;
 	}
 	config.onData(response, requestParams);
@@ -128,17 +217,12 @@ Echo.StreamServer.API.Request.prototype._onData = function(response, requestPara
 
 Echo.StreamServer.API.Request.prototype._onError = function(responseError, requestParams, config) {
 	this.constructor.parent._onError.apply(this, arguments);
-	this._handleErrorResponse(responseError, {
-		"callback": config.onError
-	});
+	this._handleErrorResponse(responseError, {"callback": config.onError});
 };
 
 Echo.StreamServer.API.Request.prototype._submit = function() {
-	this.request(
-		$.extend({}, this.config.get("data"), {
-			"content": Echo.Utils.objectToJSON(this._AS2KVL(this.config.get("data.content")))
-		})
-	);
+	var content = Echo.Utils.objectToJSON(this._AS2KVL(this.config.get("data.content")));
+	this.request($.extend({}, this.config.get("data"), {"content": content}));
 };
 
 Echo.StreamServer.API.Request.prototype._prepareURI = function() {
@@ -156,10 +240,12 @@ Echo.StreamServer.API.Request.prototype._getTransport = function() {
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {
 	var self = this;
 	this.liveUpdates = {
-		"originalTimeout": this.config.get("liveUpdatesTimeout"),
+		"transport": "polling",
+		"originalTimeout": this.config.get("liveUpdates.polling.timeout"),
 		"timers": {},
 		"timeouts": [],
 		"responseHandler": function(data) {
+			if (self._wsEstablished()) return;
 			self._changeLiveUpdatesTimeout(data);
 		}
 	};
@@ -169,14 +255,15 @@ Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(dat
 	var self = this;
 	// backwards compatibility
 	if (typeof data === "string") {
-		data = {"liveUpdatesTimeout": data};
+		data = {"liveUpdates.polling.timeout": data};
 	}
 	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
+	var key = "liveUpdates.polling.timeout";
 	var applyServerDefinedTimeout = function(timeout) {
-		if (!timeout && self.liveUpdates.originalTimeout != self.config.get("liveUpdatesTimeout")) {
-			self.config.set("liveUpdatesTimeout", self.liveUpdates.originalTimeout);
-		} else if (timeout && timeout > self.config.get("liveUpdatesTimeout")) {
-			self.config.set("liveUpdatesTimeout", timeout);
+		if (!timeout && self.liveUpdates.originalTimeout != self.config.get(key)) {
+			self.config.set(key, self.liveUpdates.originalTimeout);
+		} else if (timeout && timeout > self.config.get(key)) {
+			self.config.set(key, timeout);
 		}
 	};
 	var hasNewData = function(data) {
@@ -187,7 +274,7 @@ Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(dat
 		applyServerDefinedTimeout(data.liveUpdatesTimeout);
 		return;
 	}
-	var currentTimeout = this.config.get("liveUpdatesTimeout");
+	var currentTimeout = this.config.get(key);
 	var since = parseInt(this.nextSince);
 	var currentTime = Math.floor((new Date()).getTime() / 1000);
 	// calculate the delay before starting next request:
@@ -202,23 +289,37 @@ Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(dat
 	if (timeout > this.liveUpdates.originalTimeout) {
 		timeout = this.liveUpdates.originalTimeout;
 	}
-	this.config.set("liveUpdatesTimeout", timeout);
+	this.config.set(key, timeout);
 	// if timeout remains the same, take server side value into account
 	if (timeout === this.liveUpdates.originalTimeout) {
 		applyServerDefinedTimeout(data.liveUpdatesTimeout);
 	}
 };
 
-Echo.StreamServer.API.Request.prototype._stopLiveUpdates = function() {
-	if (this.liveUpdates.timers.regular) {
+Echo.StreamServer.API.Request.prototype._stopLiveUpdates = function(transport) {
+	if ((!transport || transport === "polling") && this.liveUpdates.timers.regular) {
 		clearTimeout(this.liveUpdates.timers.regular);
+	}
+	if ((!transport || transport === "websockets") && this._wsEstablished()) {
+		this.liveUpdates.socket.send({
+			"event": "unsubscribe/request",
+			"data": this.config.get("data")
+		});
+		this.liveUpdates.socket.abort();
 	}
 };
 
 Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 	var self = this;
-	if (!this.liveUpdates) return;
-	this._stopLiveUpdates();
+	if (!this.liveUpdates || this._wsEstablished()) return;
+
+	// trying to upgrade live update connection to WebSockets
+	// if supported and requested in the request config
+	if (this._wsAvailable() && !this._wsEstablished()) {
+		this._wsEstablish();
+	}
+
+	this._stopLiveUpdates("polling");
 	if (force) {
 		// if live updates requests were forced after some operation, we will
 		// perform 3 attempts to get live updates: immediately, in 1 second
@@ -227,26 +328,30 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 	}
 	var timeout = this.liveUpdates.timeouts.length
 		? this.liveUpdates.timeouts.shift()
-		: this.config.get("liveUpdatesTimeout");
+		: this.config.get("liveUpdates.polling.timeout");
 	if (this.requestType === "initial" && !this.config.get("skipInitialRequest")) {
 		this.request();
 		return;
 	} else if (this.requestType === "initial") {
-		this.config.get("onData")({}, {
-			"requestType": this.requestType
-		});
+		this.config.get("onData")({}, {"requestType": this.requestType});
 		this.requestType = "secondary";
 		return;
 	}
 	this.liveUpdates.timers.regular = setTimeout(function() {
-		self.request({
-			"since": self.nextSince 
-		});
+		self.request({"since": self.nextSince});
 	}, timeout * 1000);
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
-	var errorCodes = ["waiting", "timeout", "busy", "view_limit", "view_update_capacity_exceeded", "connection_failure", "network_timeout"];
+	var errorCodes = [
+		"busy",
+		"waiting",
+		"timeout",
+		"view_limit",
+		"view_update_capacity_exceeded",
+		"connection_failure",
+		"network_timeout"
+	];
 	return data
 		&& this.config.get("endpoint") !== "submit"
 		&& ~$.inArray(data.errorCode, errorCodes);
@@ -358,7 +463,9 @@ Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
 		return strip(entry.verbs[0]);
 	};
 	var type = function(entry) {
-		return entry.object && entry.object.objectTypes ? entry.object.objectTypes[0] : undefined;
+		return entry.object && entry.object.objectTypes
+			? entry.object.objectTypes[0]
+			: undefined;
 	};
 	var post, meta = {"markers": "", "tags": ""};
 	$.map(entries, function(entry) {
