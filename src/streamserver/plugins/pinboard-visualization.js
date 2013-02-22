@@ -136,7 +136,7 @@ mediaGallery.methods._normalizeFlashContent = function(element) {
 		parts.fragment = parts.fragment ? "#" + parts.fragment : "";
 		parts.query = query ? "?" + query : "";
 		element.attr("src", this.substitute({
-			"template": "{Data:scheme}://{Data:domain}{Data:path}{Data:query}{Data:fragment}",
+			"template": "{data:scheme}://{data:domain}{data:path}{data:query}{data:fragment}",
 			"data": parts
 		}));
 	} else if (tagName === "embed") {
