@@ -28,7 +28,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * @cfg {Object} [liveUpdates]
 		 * Live updating machinery configuration.
 		 *
-		 * @cfg {Boolean} [liveUpdates.enabled=true]
+		 * @cfg {Boolean} [liveUpdates.enabled=false]
 		 * Parameter to enable/disable live updates.
 		 *
 		 * @cfg {String} [liveUpdates.transport="polling"]
