@@ -99,6 +99,11 @@ stream.config = {
 	"itemsPerPage": 15,
 
 	/**
+	 * @ignore
+	 */
+	"itemsRefreshInterval": 10,
+
+	/**
 	 * @cfg {Function} itemsComparator
 	 * Function allowing to specify custom items sorting rules. It is used to find
 	 * a correct place for a new item in the already existing list of items
@@ -243,8 +248,8 @@ stream.config = {
 	},
 
 	/**
-	 * @cfg {String} submissionProxyURL URL prefix for requests to
-	 * Submission Proxy subsystem.
+	 * @cfg {String} submissionProxyURL
+	 * Location (URL) of the Submission Proxy subsystem.
 	 */
 	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
 };
@@ -757,10 +762,7 @@ stream.methods._prepareEventParams = function(params) {
 };
 
 stream.methods._applyLiveUpdates = function(entries, callback) {
-	var self = this;
-	this._refreshItemsDate();
-	this._checkTimeframeSatisfy();
-	var data = {};
+	var self = this, data = {};
 	data.entries = $.map(entries || [], function(entry) {
 		return self._normalizeEntry(entry);
 	});
@@ -983,12 +985,24 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 			self.render();
 			self.ready();
 		})(roots);
+
+		// refresh items date and check if all items
+		// satisfy search query timeframe criteria (if any);
+		// cleanup interval if it was previously defined
+		if (self.itemsRefreshInterval) {
+			clearInterval(self.itemsRefreshInterval);
+		}
+		self.itemsRefreshInterval = setInterval(function() {
+			self._refreshItemsDate();
+			self._checkTimeframeSatisfy();
+		}, self.config.get("itemsRefreshInterval") * 1000);
 	});
 };
 
 stream.methods._checkTimeframeSatisfy = function() {
 	var self = this;
 	var timeframe = this.config.get("timeframe");
+	if (!timeframe || !timeframe.length) return; // no timeframes defined in the search query
 	var unsatisfying = Echo.Utils.foldl([], this.threads, function(thread, acc) {
 		var satisfy = Echo.Utils.foldl(true, timeframe, function(p, a) {
 			return a ? p(thread.get("timestamp")) : false;
