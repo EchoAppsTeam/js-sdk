@@ -1716,7 +1716,7 @@ item.config = {
 	 */
 	"optimizedContext": true,
 	/**
-	 * @cfg {Boolean} [retag=true]
+	 * @cfg {Boolean} [reTag=true]
 	 * Allows to show/hide the "reTag" section of an item.
 	 */
 	"reTag": true,
