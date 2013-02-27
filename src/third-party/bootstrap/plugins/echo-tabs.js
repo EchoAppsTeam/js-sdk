@@ -30,7 +30,8 @@ if (Echo.GUI.Tabs) return;
  * 			"label": "Tab 2",
  * 			"panel": $(".panel-css-selector2"),
  * 		}],
- * 		"extraClass": "extra-class"
+ * 		"extraClass": "extra-class",
+ * 		"select": function() {},
  * 		"show": function() {}
  * 	});
  *
@@ -86,11 +87,29 @@ if (Echo.GUI.Tabs) return;
  * Element with tabs will get "**\<classPrefix\>**header" class name
  * and element with panels will get "**\<classPrefix\>**panels" class.
  *
+ * @cfg {Function} [select]
+ * Function which will be called when tab is selected.
+ *
+ * @cfg {HTMLElement} select.tab
+ * Container which is the tab itself.
+ *
+ * @cfg {String} select.id
+ * Id of selected tab.
+ *
  * @cfg {Function} [show]
  * Function which will be called when tab is shown.
  *
+ * @cfg {HTMLElement} show.tab
+ * Container which is the tab itself.
+ *
+ * @cfg {HTMLElement} show.panel
+ * Container which is a panel related to the tab.
+ *
  * @cfg {String} show.id
- * Id of selected tab.
+ * Id of shown tab.
+ *
+ * @cfg {Number} show.index
+ * Numerical index of the tab.
  */
 Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 	config.panels = config.panels ? $(config.panels) : $("<div>");
@@ -100,6 +119,7 @@ Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 		"idPrefix": "",
 		"noRandomId": false,
 		"classPrefix": "echo-tabs-",
+		"select": function() {},
 		"show": function() {}
 	});
 });
@@ -223,7 +243,13 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 			tabConfig.id,
 			self._getTabIndex(tabConfig.id)
 		);
+	}).on("click.tab.data-api", function() {
+		self.config.get("select").call(self,
+			$(this),
+			tabConfig.id
+		);
 	});
+
 	$.each(tabConfig.data || {}, function(k, v) {
 		a.data(k, v);
 	});
