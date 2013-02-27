@@ -72,6 +72,15 @@ if (Echo.GUI.Modal) return;
  * @cfg {String} [extraClass=""]
  * Custom class name which should be added to the modal dialog container.
  *
+ * @cfg {String} [href]
+ * URL for the content which will be loaded to the body via iFrame.
+
+ * @cfg {String} [onShow]
+ * Callback function to be called when modal shown.
+ *
+ * @cfg {String} [onHide]
+ * Callback function to be called when modal hidden.
+ *
  * @cfg {Object} data
  *
  * @cfg {String|Function} data.title
