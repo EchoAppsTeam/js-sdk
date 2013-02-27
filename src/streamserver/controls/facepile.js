@@ -51,6 +51,7 @@ pile.config = {
 	 * provided `query` takes precedence over `data`.
 	 */
 	"data": undefined,
+
 	/**
 	 * @cfg {String} initialUsersCount
 	 * The number of users which will be shown when the FacePile is displayed
@@ -59,6 +60,7 @@ pile.config = {
 	 * using `data`.
 	 */
 	"initialUsersCount": undefined,
+
 	/**
 	 * @cfg {String} totalUsersCount
 	 * The total number of users for the FacePile. If it's not defined it defaults to
@@ -66,12 +68,15 @@ pile.config = {
 	 * only for the list created using `data`.
 	 */
 	"totalUsersCount": undefined,
+
 	"query": "",
+
 	/**
 	 * @cfg {String} suffixText
 	 * Specifies the text being appended to the end of Face Pile user's list.
 	 */
 	"suffixText": "",
+
 	/**
 	 * @cfg {Object} item
 	 * Customizes the FacePile item
@@ -86,6 +91,59 @@ pile.config = {
 		"avatar": true,
 		"text": true
 	},
+
+	/**
+	 * @cfg {Object} [liveUpdates]
+	 * Live updating machinery configuration.
+	 *
+	 * @cfg {Boolean} [liveUpdates.enabled=false]
+	 * Parameter to enable/disable live updates.
+	 *
+	 * @cfg {String} [liveUpdates.transport="polling"]
+	 * Preferred live updates receiveing machinery transport.
+	 * The following transports are supported:
+	 *
+	 * + "polling" - periodic requests to check for updates
+	 * + "websockets" - transport based on the WebSocket technology
+	 *
+	 * If the end user's browser doesn't support the WebSockets technology,
+	 * the "polling" transport will be used as a fallback.
+	 *
+	 * @cfg {Object} [liveUpdates.polling]
+	 * Object which contains the configuration specific to the "polling"
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.polling.timeout=10]
+	 * Timeout between the live updates requests (in seconds).
+	 *
+	 * @cfg {Object} [liveUpdates.websockets]
+	 * Object which contains the configuration specific to the "websockets"
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.websockets.maxConnectRetries=3]
+	 * Max connection retries for WebSocket transport. After the number of the
+	 * failed connection attempts specified in this parameter is reached, the
+	 * WebSocket transport is considered as non-supported: the client no longer
+	 * tries to use the WebSockets on the page and the polling transport is used
+	 * from now on.
+	 *
+	 * @cfg {Number} [liveUpdates.websockets.serverPingInterval=30]
+	 * The timeout (in seconds) between the client-server ping-pong requests
+	 * to keep the connection alive.
+	 */
+	"liveUpdates": {
+		"transport": "polling", // or "websockets"
+		"enabled": true,
+		"timeout": 10, // backwards compatibility
+		"polling": {
+			"timeout": 10
+		},
+		"websockets": {
+			"maxConnectRetries": 3,
+			"serverPingInterval": 30
+		}
+	},
+
 	/**
 	 * @cfg {String} infoMessages
 	 * Customizes the look and feel of info messages, for example "loading" and "error".
@@ -234,8 +292,7 @@ pile.methods._request = function() {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")
 			},
-			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
-			"recurring": this.config.get("liveUpdates.enabled"),
+			"liveUpdates": this.config.get("liveUpdates"),
 			"onError": function(data, extra) {
 				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
 				if (needShowError) {

@@ -65,20 +65,30 @@ counter.config = {
 	 * 	});
 	 */
 	"data": undefined,
+
 	/**
-	 * @cfg {Object} liveUpdates
-	 * Defines configurations for liveUpdates.
+	 * @cfg {Object} [liveUpdates]
+	 * Live updating machinery configuration (only the "polling" transport
+	 * is supported for the "count" API endpoint).
 	 *
-	 * @cfg {Boolean} liveUpdates.enabled
-	 * Parameter to enable/disable receiving live updates by control.
+	 * @cfg {Boolean} [liveUpdates.enabled=false]
+	 * Parameter to enable/disable live updates.
 	 *
-	 * @cfg {Number} liveUpdates.timeout
-	 * Specifies the timeout between live updates requests (in seconds).
+	 * @cfg {Object} [liveUpdates.polling]
+	 * Object which contains the configuration specific to the "polling"
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.polling.timeout=10]
+	 * Timeout between the live updates requests (in seconds).
 	 */
 	"liveUpdates": {
 		"enabled": true,
-		"timeout": 10
+		"timeout": 10, // backwards compatibility
+		"polling": {
+			"timeout": 10
+		}
 	},
+
 	/**
 	 * @cfg {String} infoMessages 
 	 * Customizes the look and feel of info messages, for example "loading" and "error".
@@ -97,8 +107,7 @@ counter.methods._request = function() {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")
 			},
-			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
-			"recurring": this.config.get("liveUpdates.enabled"),
+			"liveUpdates": this.config.get("liveUpdates"),
 			"onError": $.proxy(this._error, this),
 			"onData": $.proxy(this._update, this)
 		});

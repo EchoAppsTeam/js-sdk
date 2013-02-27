@@ -145,31 +145,57 @@ stream.config = {
 	"itemsComparator": undefined,
 
 	/**
-	 * @cfg {Object} liveUpdates
+	 * @cfg {Object} [liveUpdates]
 	 * Live updating machinery configuration.
 	 *
-	 * @cfg {Boolean} liveUpdates.enabled
-	 * Parameter to enable/disable live updates receiving by the control.
+	 * @cfg {Boolean} [liveUpdates.enabled=false]
+	 * Parameter to enable/disable live updates.
 	 *
-	 * @cfg {String} liveUpdates.transport
+	 * @cfg {String} [liveUpdates.transport="polling"]
 	 * Preferred live updates receiveing machinery transport.
 	 * The following transports are supported:
 	 *
 	 * + "polling" - periodic requests to check for updates
-	 * + "websockets" - transport based on the WebSocket technology.
+	 * + "websockets" - transport based on the WebSocket technology
 	 *
 	 * If the end user's browser doesn't support the WebSockets technology,
 	 * the "polling" transport will be used as a fallback.
 	 *
-	 * @cfg {Number} liveUpdates.timeout
-	 * Timeout between live updates requests (in seconds).
+	 * @cfg {Object} [liveUpdates.polling]
+	 * Object which contains the configuration specific to the "polling"
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.polling.timeout=10]
+	 * Timeout between the live updates requests (in seconds).
+	 *
+	 * @cfg {Object} [liveUpdates.websockets]
+	 * Object which contains the configuration specific to the "websockets"
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.websockets.maxConnectRetries=3]
+	 * Max connection retries for WebSocket transport. After the number of the
+	 * failed connection attempts specified in this parameter is reached, the
+	 * WebSocket transport is considered as non-supported: the client no longer
+	 * tries to use the WebSockets on the page and the polling transport is used
+	 * from now on.
+	 *
+	 * @cfg {Number} [liveUpdates.websockets.serverPingInterval=30]
+	 * The timeout (in seconds) between the client-server ping-pong requests
+	 * to keep the connection alive.
 	 */
 	"liveUpdates": {
 		"transport": "polling", // or "websockets"
 		"enabled": true,
-		"timeout": 10,
-		"serverPingInterval": 30
+		"timeout": 10, // backwards compatibility
+		"polling": {
+			"timeout": 10
+		},
+		"websockets": {
+			"maxConnectRetries": 3,
+			"serverPingInterval": 30
+		}
 	},
+
 
 	/**
 	 * @cfg {Boolean} openLinksInNewWindow
