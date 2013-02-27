@@ -162,9 +162,10 @@ Echo.StreamServer.API.Request.prototype._wsEstablish = function() {
 		"uri": "localhost:8080",
 		"onOpen": function() {
 			// subscribe to the events for the current search query
+			var data = {"method": self.config.get("endpoint")};
 			self.liveUpdates.socket.send({
 				"event": "subscribe/request",
-				"data": self.config.get("data")
+				"data": $.extend(data, self.config.get("data"))
 			});
 		},
 		"onClose": function() {
@@ -322,10 +323,7 @@ Echo.StreamServer.API.Request.prototype._stopLiveUpdates = function(transport) {
 		clearTimeout(this.liveUpdates.timers.regular);
 	}
 	if ((!transport || transport === "websockets") && this._wsEstablished()) {
-		this.liveUpdates.socket.send({
-			"event": "unsubscribe/request",
-			"data": this.config.get("data")
-		});
+		this.liveUpdates.socket.send({"event": "unsubscribe/request"});
 		this.liveUpdates.socket.abort();
 	}
 };
