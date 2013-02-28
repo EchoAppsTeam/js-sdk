@@ -513,7 +513,9 @@ item.renderers.title = function(element) {
 };
 
 /**
- * @echo_renderer
+ * Function to check if the item was posted by the current user.
+ *
+ * @return {Boolean}
  */
 item.methods.isYou = function() {
 	var id = this.get("data.id");
