@@ -35,12 +35,12 @@ plugin.init = function() {
 
 plugin.config = {
 	/**
-	 * @cfg {Boolean} showUsers
+	 * @cfg {Boolean} showUserList
 	 * Specifies the visibility of the list of users who flagged a particular
 	 * item. Note that the list is only visible for the users with
 	 * administrative privileges.
 	 */
-	"showUsers": true
+	"showUserList": true
 };
 
 plugin.labels = {
