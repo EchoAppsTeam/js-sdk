@@ -192,6 +192,8 @@ Echo.API.Transports.WebSocket.Socket.prototype.connect = function() {
 	// return in case we are connected or connection is in progress
 	if (this.connecting() || this.connected()) return;
 
+	this.state = "connecting";
+
 	this._clearTimers();
 
 	var uri = this.config.get("uri");
@@ -234,6 +236,8 @@ Echo.API.Transports.WebSocket.Socket.prototype._resetRetriesAttempts = function(
 Echo.API.Transports.WebSocket.Socket.prototype._clearTimers = function() {
 	this.timers.ping && clearInterval(this.timers.ping);
 	this.timers.pong && clearTimeout(this.timers.pong);
+	this.timers.reconnect && clearTimeout(this.timers.reconnect);
+	this.timers = {};
 };
 
 Echo.API.Transports.WebSocket.Socket.prototype._publish = function(topic, data, subscriptionId) {
@@ -277,9 +281,9 @@ Echo.API.Transports.WebSocket.Socket.prototype._tryReconnect = function() {
 	var self = this;
 	this.state = this.attemptsRemaining ? this.state : "disconnected";
 
-	// exit when connection is in progress (to prevent
+	// exit when the connection attempt is scheduled (to prevent
 	// multiple connections) or if no connection attempts left
-	if (this.connecting() || this.state === "disconnected") return;
+	if (this.timers.reconnect || this.state === "disconnected") return;
 
 	// if we were disconnected and try to connect again - decrease
 	// the retries counter to indicate several faile connection attempts in a row
@@ -288,7 +292,7 @@ Echo.API.Transports.WebSocket.Socket.prototype._tryReconnect = function() {
 	}
 
 	this.state = "connecting";
-	setTimeout(function() {
+	this.timers.reconnect = setTimeout(function() {
 		self.state = "init";
 		self.connect();
 	}, this.config.get("serverPingInterval") * 1000);

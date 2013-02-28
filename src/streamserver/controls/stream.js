@@ -196,7 +196,6 @@ stream.config = {
 		}
 	},
 
-
 	/**
 	 * @cfg {Boolean} openLinksInNewWindow
 	 * If this parameter value is set to true, each link will be opened
