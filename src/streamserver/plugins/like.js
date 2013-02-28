@@ -83,7 +83,7 @@ plugin.renderers.likedBy = function(element) {
 		? plugin.get("facePile").getVisibleUsersCount()
 		: likesPerPage;
 	var youLike = false;
-	var userId = item.user.get("id");
+	var userId = item.user.get("identityUrl");
 	var users = item.get("data.object.likes");
 	$.each(users, function(i, like) {
 		if (like.actor.id === userId) {
