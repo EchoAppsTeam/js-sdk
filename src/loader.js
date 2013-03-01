@@ -18,7 +18,9 @@ Echo.Loader = {
 	},
 	"overrides": {},
 	"vars": {
-		"state": {"resources": {}, "queue": []}
+		"state": {"resources": {}, "queue": []},
+		"processing": false,
+		"queue": []
 	}
 };
 
@@ -115,6 +117,7 @@ Echo.Loader.download = function(resources, callback, config) {
 	}
 
 	var state = Echo.Loader.vars.state;
+	var queue = Echo.Loader.vars.queue;
 	var invokeCallbacks = function() {
 		var callbacks = [];
 		// Important note: we should *not* execute callbacks
@@ -130,6 +133,14 @@ Echo.Loader.download = function(resources, callback, config) {
 			return item;
 		});
 		Echo.Loader._map(callbacks, function(_callback) { _callback(); });
+	};
+
+	var checkQueue = function() {
+		if (queue.length) {
+			Echo.yepnope(queue.shift());
+		} else {
+			Echo.Loader.vars.processing = false;
+		}
 	};
 
 	state.queue.push({"resources": resources, "callback": callback});
@@ -151,7 +162,7 @@ Echo.Loader.download = function(resources, callback, config) {
 	}
 
 	var prefix = "timeout=" + (config.errorTimeout || Echo.Loader.config.errorTimeout) + "!";
-	Echo.yepnope({
+	var data = {
 		"load": Echo.Loader._map(urls, function(url) { return prefix + url; }),
 		"complete": function() {
 			// mark all loaded scripts as "ready"
@@ -159,8 +170,20 @@ Echo.Loader.download = function(resources, callback, config) {
 				state.resources[url] = "ready";
 			});
 			invokeCallbacks();
+			checkQueue();
 		}
-	});
+	};
+
+	// Important note: we should *not* execute Echo.yepnope
+	// before last execution wasn't complete. See more
+	// information about issue on Github:
+	// https://github.com/SlexAxton/yepnope.js/issues/113
+	if (Echo.Loader.vars.processing) {
+		queue.push(data);
+	} else {
+		Echo.Loader.vars.processing = true;
+		Echo.yepnope(data);
+	}
 };
 
 /**
