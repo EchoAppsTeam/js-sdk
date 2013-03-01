@@ -24,7 +24,8 @@ module.exports = function(grunt) {
 				"<%= dirs.src %>/!(third-party)/**/*.js"
 			],
 			"css": [
-				"<%= dirs.src %>/!(third-party)**/*.css"
+				"<%= dirs.src %>/*.css",
+				"<%= dirs.src %>/!(third-party)/**/*.css"
 			],
 			"bootstrap": [
 				"<%= dirs.src %>/third-party/bootstrap/**/*.js",
@@ -120,6 +121,14 @@ module.exports = function(grunt) {
 				"third-party/bootstrap/plugins/echo-tabs.js"
 			],
 			"dest": "gui.pack.js"
+		},
+		"tests/harness": {
+			"src": [
+				"tests/qunit/qunit.js",
+				"tests/harness/runner.js",
+				"tests/harness/stats.js"
+			],
+			"dest": "tests/harness.js"
 		}
 	};
 
@@ -211,7 +220,7 @@ module.exports = function(grunt) {
 			},
 			"testlib": {
 				files: [
-					"<%= dirs.dist %>/tests/testlib.js"
+					"<%= dirs.dist %>/tests/config.js"
 				],
 				patcher: "testurl"
 			},
@@ -310,15 +319,15 @@ module.exports = function(grunt) {
 		switch (stage) {
 			case "dev":
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
+				tasks = "copy:css copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
 				break;
 			case "min":
 				_makeMinSpec();
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
+				tasks = "copy:css copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
 				break;
 			case "final":
-				tasks = "copy:css copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
+				tasks = "copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
 				break;
 		}
 		grunt.task.run(tasks + " clean:build");
@@ -537,16 +546,14 @@ module.exports = function(grunt) {
 		var stage = shared.config("build.stage");
 		var spec = {};
 		if (stage === "final") {
-			_.each(["css", "images"], function(type) {
-				spec[type] = {
-					"files": {
-						"<%= dirs.build %>": grunt.config("sources." + target + "." + type)
-					},
-					"options": {
-						"basePath": "<config:dirs.src>"
-					}
-				};
-			});
+			spec["images"] = {
+				"files": {
+					"<%= dirs.build %>": grunt.config("sources." + target + ".images")
+				},
+				"options": {
+					"basePath": "<config:dirs.src>"
+				}
+			};
 			_.each(["demo", "tests", "apps"], function(type) {
 				spec[type] = {
 					"files": {
@@ -558,6 +565,14 @@ module.exports = function(grunt) {
 				};
 			});
 		} else {
+			spec["css"] = {
+				"files": {
+					"<%= dirs.build %>": grunt.config("sources." + target + ".css")
+				},
+				"options": {
+					"basePath": "<config:dirs.src>"
+				}
+			};
 			spec["own-js"] = {
 				"files": {
 					"<%= dirs.build %>": grunt.config("sources." + target + ".own-js")

@@ -2,7 +2,6 @@
 <html>
 <head>
 	<title>Echo SDK v3 tests</title>
-	<link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen" />
 	<style>
 		body { margin: 0px; padding: 0px; }
 		#container { padding: 10px; width: 80%; background: #FFFFFF; border: 1px solid #FFFFFF; box-shadow: 0 4px 15px #666666; margin: 10px auto 0px auto; }
@@ -17,8 +16,9 @@
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js"></script>
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/identityserver.pack.js"></script>
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/gui.pack.js"></script>
-	<script type="text/javascript" src="qunit/qunit.js"></script>
-	<script type="text/javascript" src="testlib.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/tests/harness.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/tests/harness/suite.js"></script>
+	<script type="text/javascript" src="config.js"></script>
 	<script type="text/javascript" src="helpers/events.js"></script>
 	<script type="text/javascript" src="unit/compatibility.js"></script>
 	<script type="text/javascript" src="unit/events.js"></script>
@@ -58,16 +58,21 @@
 	<script type="text/javascript" src="unit/streamserver/plugins/moderation.js"></script>
 	<script type="text/javascript" src="unit/streamserver/plugins/twitter-intents.js"></script>
 	<script type="text/javascript" src="unit/identityserver/controls/auth.js"></script>
-	<script>
-		Echo.jQuery(document).ready(function() {
-			Echo.Tests.runTests();
+
+	<script type="text/javascript">
+		Echo.Tests.init({
+			"title": "Echo SDK v3 tests",
+			"backplane": {
+				"serverBaseURL" : "http://api.echoenabled.com/v1",
+				"busName": "jskit"
+			}
 		});
 	</script>
 </head>
 <body>
 	<div id="container">
 		<div id="echo-tests">
-			<h1 id="qunit-header">Echo SDK v3 tests</h1>
+			<h1 id="qunit-header"></h1>
 			<h2 id="qunit-banner"></h2>
 			<div id="qunit-testrunner-toolbar"></div>
 			<h2 id="qunit-userAgent"></h2>
