@@ -243,7 +243,7 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 			tabConfig.id,
 			self._getTabIndex(tabConfig.id)
 		);
-	}).on("click.tab.data-api", function() {
+	}).on("click.tab.data-api", ":not(.disabled):not(.active)", function() {
 		self.config.get("select").call(self,
 			$(this),
 			tabConfig.id
