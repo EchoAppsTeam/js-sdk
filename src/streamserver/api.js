@@ -159,7 +159,7 @@ Echo.StreamServer.API.Request.prototype._wsEstablish = function() {
 
 	this.liveUpdates.socket = new Echo.API.Transports.WebSocket($.extend({
 //		"uri": "live." + this.config.get("apiBaseURL") + "/ws",
-		"uri": "localhost:8080",
+		"uri": "live.echoenabled.com/v1/ws",
 		"onOpen": function() {
 			// subscribe to the events for the current search query
 			var data = {"method": self.config.get("endpoint")};

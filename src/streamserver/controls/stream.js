@@ -2272,12 +2272,8 @@ item.renderers.body = function(element) {
  * @echo_renderer
  */
 item.renderers.date = function(element) {
-	var age = this.getRelativeTime(this.timestamp);
-	if (age !== this.age) {
-		this.age = age;
-		element.html(this.age);
-	}
-	return element;
+	this.age = this.getRelativeTime(this.timestamp);
+	return element.html(this.age);
 };
 
 /**

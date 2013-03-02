@@ -116,7 +116,7 @@ Echo.API.Transports.WebSocket.prototype._init = function() {
 };
 
 Echo.API.Transports.WebSocket.prototype.send = function(event) {
-	event.subscription_id = event.subscription_id || this.unique;
+	event.subscription = event.subscription || this.unique;
 	return this.socket.send(event);
 };
 
@@ -197,7 +197,8 @@ Echo.API.Transports.WebSocket.Socket.prototype.connect = function() {
 	this._clearTimers();
 
 	var uri = this.config.get("uri");
-	this.socket = new Echo.API.Transports.WebSocket.Socket.Implementation(uri);
+	var implementation = Echo.API.Transports.WebSocket.Socket.Implementation;
+	this.socket = new implementation(uri, ["liveupdate.ws.echoenabled.com"]);
 	this.socket.onopen = function() {
 		// send ping immediately to make sure the server is responding
 		self._ping(function() {
@@ -212,7 +213,7 @@ Echo.API.Transports.WebSocket.Socket.prototype.connect = function() {
 	this.socket.onmessage = function(event) {
 		if (!event || !event.data) return;
 		var data = $.parseJSON(event.data);
-		self._publish("onData", data, data && data.subscription_id);
+		self._publish("onData", data, data && data.subscription);
 	};
 	this.socket.onclose = function() {
 		self._publish("onClose");
