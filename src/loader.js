@@ -20,7 +20,7 @@ Echo.Loader = {
 	"vars": {
 		"state": {"resources": {}, "queue": []},
 		"processing": false,
-		"queue": []
+		"syncQueue": []
 	}
 };
 
@@ -117,7 +117,7 @@ Echo.Loader.download = function(resources, callback, config) {
 	}
 
 	var state = Echo.Loader.vars.state;
-	var queue = Echo.Loader.vars.queue;
+	var syncQueue = Echo.Loader.vars.syncQueue;
 	var invokeCallbacks = function() {
 		var callbacks = [];
 		// Important note: we should *not* execute callbacks
@@ -135,11 +135,14 @@ Echo.Loader.download = function(resources, callback, config) {
 		Echo.Loader._map(callbacks, function(_callback) { _callback(); });
 	};
 
-	var checkQueue = function() {
-		if (queue.length) {
-			Echo.yepnope(queue.shift());
-		} else {
-			Echo.Loader.vars.processing = false;
+	// Important note: we should *not* execute another
+	// Echo.yepnope until last one is completed.
+	// See more information about the issue on Github:
+	// https://github.com/SlexAxton/yepnope.js/issues/113
+	var checkSyncQueue = function() {
+		if (!Echo.Loader.vars.processing && syncQueue.length) {
+			Echo.Loader.vars.processing = true;
+			Echo.yepnope(syncQueue.shift());
 		}
 	};
 
@@ -162,7 +165,7 @@ Echo.Loader.download = function(resources, callback, config) {
 	}
 
 	var prefix = "timeout=" + (config.errorTimeout || Echo.Loader.config.errorTimeout) + "!";
-	var data = {
+	syncQueue.push({
 		"load": Echo.Loader._map(urls, function(url) { return prefix + url; }),
 		"complete": function() {
 			// mark all loaded scripts as "ready"
@@ -170,20 +173,11 @@ Echo.Loader.download = function(resources, callback, config) {
 				state.resources[url] = "ready";
 			});
 			invokeCallbacks();
-			checkQueue();
+			Echo.Loader.vars.processing = false;
+			checkSyncQueue();
 		}
-	};
-
-	// Important note: we should *not* execute Echo.yepnope
-	// before last execution wasn't complete. See more
-	// information about issue on Github:
-	// https://github.com/SlexAxton/yepnope.js/issues/113
-	if (Echo.Loader.vars.processing) {
-		queue.push(data);
-	} else {
-		Echo.Loader.vars.processing = true;
-		Echo.yepnope(data);
-	}
+	});
+	checkSyncQueue();
 };
 
 /**
