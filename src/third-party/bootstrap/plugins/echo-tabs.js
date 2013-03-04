@@ -125,6 +125,7 @@ Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 });
 
 Echo.GUI.Tabs.prototype.refresh = function() {
+	var self = this;
 	var entries = this.config.get("entries");
 	var panels = this.config.get("panels");
 	var target = this.config.get("target");
@@ -147,6 +148,15 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 		}
 		this.show(entries[this.config.get("selected", 0)].id);
 	}
+
+	this.tabsContainer.on("click.tab.data-api", ':not(.active) > [data-toggle="tab"]', function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		self.config.get("select").call(self,
+			$(this),
+			$(this).data("item")
+		);
+	});
 };
 
 /**
@@ -242,11 +252,6 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 			self._getPanel(tabConfig.id),
 			tabConfig.id,
 			self._getTabIndex(tabConfig.id)
-		);
-	}).on("click.tab.data-api", '[data-toggle="tab"], [data-toggle="pill"]', function() {
-		self.config.get("select").call(self,
-			$(this),
-			tabConfig.id
 		);
 	});
 
