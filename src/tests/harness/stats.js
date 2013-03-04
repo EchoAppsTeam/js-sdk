@@ -12,13 +12,9 @@ Echo.Tests.Stats.markFunctionTested = function(fn) {
 	_coverage.functions.raw.tested[fn] = true;
 };
 
-QUnit.begin(function() {
-	_initStats();
-});
+QUnit.begin(_initStats);
 
-QUnit.done(function() {
-	_showStats();
-});
+QUnit.done(_showStats);
 
 // private stuff
 
@@ -69,21 +65,21 @@ _coverage.events = {
 	}
 };
 
-var _initStats = function() {
-	_getFunctionNames(Echo.Tests.Stats.root.object, Echo.Tests.Stats.root.namespace);
-	_startEventsSpy();
+function initStats() {
+	getFunctionNames(Echo.Tests.Stats.root.object, Echo.Tests.Stats.root.namespace);
+	startEventsSpy();
 };
 
-var _showStats = function() {
-	_stopEventsSpy();
-	_calculateFunctionsCoverage();
-	_calculateEventsCoverage();
-	_showCoverage();
+function showStats() {
+	stopEventsSpy();
+	calculateFunctionsCoverage();
+	calculateEventsCoverage();
+	showCoverage();
 };
 
 var _eventsPublish, _eventsSubscribe;
 
-var _startEventsSpy = function() {
+function startEventsSpy() {
 	if (!Echo.Tests.Events) return;
 
 	var events = _coverage.events.raw;
@@ -117,7 +113,7 @@ var _startEventsSpy = function() {
 
 			var data = $.extend(true, {}, params.data);
 			if (Echo.Tests.Events.contracts[params.topic]) {
-				if (_checkContract(params.data, Echo.Tests.Events.contracts[params.topic]) !== true) {
+				if (checkContract(params.data, Echo.Tests.Events.contracts[params.topic]) !== true) {
 					events.published[params.topic].status = "failed";
 					events.published[params.topic].data.push(data);
 				}
@@ -130,14 +126,14 @@ var _startEventsSpy = function() {
 	}
 };
 
-var _stopEventsSpy = function() {
+function stopEventsSpy() {
 	if (!Echo.Tests.Events) return;
 
 	Echo.Events.subscribe = _eventsSubscribe;
 	Echo.Events.publish = _eventsPublish;
 };
 
-var _wrapFunction = function(parentObject, func, name, prefix) {
+function wrapFunction(parentObject, func, name, prefix) {
 	var fullName = prefix + name;
 	var funcs = _coverage.functions.raw;
 	funcs.all[fullName] = true;
@@ -157,7 +153,7 @@ var _wrapFunction = function(parentObject, func, name, prefix) {
 	});
 };
 
-var _getFunctionNames = function(namespace, prefix) {
+function getFunctionNames(namespace, prefix) {
 	$.each([namespace, namespace.prototype], function(i, parentObject) {
 		if (!parentObject) return;
 		$.each(parentObject, function(name, value) {
@@ -166,25 +162,25 @@ var _getFunctionNames = function(namespace, prefix) {
 
 			// check if function is "private" (they start with "_" symbol)
 			var isInternal = name.charAt(0) === "_";
-		
+
 			// wrap all functions except constructors and "private" functions
 			var isFunctionValidForTesting =
 				typeof value === "function" &&
 				name.charAt(0).toUpperCase() !== name.charAt(0) &&
 				!isInternal;
-		
+
 			if (isFunctionValidForTesting) {
-				_wrapFunction(parentObject, value, name, prefix);
+				wrapFunction(parentObject, value, name, prefix);
 			}
 
 			if (!isInternal) {
-				_getFunctionNames(value, prefix + name + ".");
+				getFunctionNames(value, prefix + name + ".");
 			}
 		});
 	});
 };
 
-var _calculateFunctionsCoverage = function() {
+function calculateFunctionsCoverage() {
 	var raw = _coverage.functions.raw;
 	var processed = _coverage.functions.processed;
 	$.each(raw.all, function(name) {
@@ -194,7 +190,7 @@ var _calculateFunctionsCoverage = function() {
 	});
 };
 
-var _calculateEventsCoverage = function() {
+function calculateEventsCoverage() {
 	if (!Echo.Tests.Events) return;
 
 	var raw = _coverage.events.raw;
@@ -217,7 +213,7 @@ var _calculateEventsCoverage = function() {
 	});
 };
 
-var _getEventsCount = function(type, expectedValue, isEquiv) {
+function getEventsCount(type, expectedValue, isEquiv) {
 	var isOk, processed = _coverage.events.processed;
 	expectedValue = expectedValue || 0;
 
@@ -236,6 +232,8 @@ var _getEventsCount = function(type, expectedValue, isEquiv) {
 
 	if ($.isArray(expectedValue)) {
 		$.each(expectedValue, function(val) {
+			// if real value is not equal with ANY of a number of expected values
+			// then consider it failed and don't compare with other
 			return check(val);
 		});
 	} else {
@@ -245,7 +243,7 @@ var _getEventsCount = function(type, expectedValue, isEquiv) {
 	return '<b class="' + (isOk ? 'green' : 'red') + '">' + processed[type].length + '</b> [<a class="echo-clickable" data-type="' + type +'">view list</a>]';
 };
 
-var _showCoverage = function() {
+function showCoverage() {
 	var funcs = _coverage.functions;
 	var events = _coverage.events;
 	$("#qunit-testresult").append(
@@ -267,10 +265,10 @@ var _showCoverage = function() {
 				: '<div class="echo-tests-coverage-events">' +
 					'<h3>Events analysis</h3> ' +
 					'<p>Total contract defined: <b>' + events.processed.count + '</b></p> ' +
-					'<p>Published / Subscribed: ' + _getEventsCount("published", [events.processed.count, "subscribed"], true) + ' / ' + _getEventsCount("subscribed", [events.processed.count, "published"], true) + ' | [<a class="echo-clickable" data-type="diff">show diff</a>]</p>' +
-					'<p>Contract check succeeded / failed: ' + _getEventsCount("succeeded", "published") + ' / ' + _getEventsCount("failed", 0) + '</p>' +
-					'<p>Published but not defined: ' + _getEventsCount("notTested") + '</p>' +
-					'<p>Defined but not published: ' + _getEventsCount("notPublished") + '</p>' +
+					'<p>Published / Subscribed: ' + getEventsCount("published", [events.processed.count, "subscribed"], true) + ' / ' + getEventsCount("subscribed", [events.processed.count, "published"], true) + ' | [<a class="echo-clickable" data-type="diff">show diff</a>]</p>' +
+					'<p>Contract check succeeded / failed: ' + getEventsCount("succeeded", "published") + ' / ' + getEventsCount("failed", 0) + '</p>' +
+					'<p>Published but not defined: ' + getEventsCount("notTested") + '</p>' +
+					'<p>Defined but not published: ' + getEventsCount("notPublished") + '</p>' +
 				'</div>'
 			) +
 			'<div class="echo-clear"></div>' +
@@ -279,15 +277,15 @@ var _showCoverage = function() {
 	);
 
 	$(".echo-tests-coverage-events a").click(function() {
-		_showCoverageList($(this).data("type"), "events");
+		showCoverageList($(this).data("type"), "events");
 	});
 	$(".echo-tests-coverage-functions a").click(function() {
-		_showCoverageList($(this).data("type"), "functions");
+		showCoverageList($(this).data("type"), "functions");
 	});
 };
 
 var _isListVisible, _lastListType;
-var _showCoverageList = function(type, prefix) {
+function showCoverageList(type, prefix) {
 	var html = "", data = [];
 	var el = $(".echo-tests-stats-info");
 	var list = _coverage[prefix].processed[type];
@@ -356,11 +354,11 @@ var _showCoverageList = function(type, prefix) {
 					var dataTag = $(this).parent().find(".echo-tests-event-data");
 					if (dataTag.html() === "") {
 						var data = $.map(events.raw.published[$(this).data("topic")].data, function(val) {
-							return '<pre>' + QUnit.jsDump.parse(_prepareEventData(val)) + '</pre>';
+							return '<pre>' + QUnit.jsDump.parse(prepareEventData(val)) + '</pre>';
 						});
 						dataTag.html(data.join(""));
 					}
-		
+
 					if (dataTag.is(':hidden')) {
 						dataTag.show();
 					} else {
@@ -374,13 +372,13 @@ var _showCoverageList = function(type, prefix) {
 	}
 };
 
-var _checkContract = function(actual, expected) {
+function checkContract(actual, expected) {
 	var result;
 
 	// event has several expected results so let's match against one of them
 	if ($.isArray(expected)) {
 		$.each(expected, function(i, sample) {
-			result = _checkContract(actual, sample);
+			result = checkContract(actual, sample);
 			// result matches with the sample, no need to match against others
 			if (result) return false;
 		});
@@ -403,24 +401,24 @@ var _checkContract = function(actual, expected) {
 
 			// we expect a complex object so let's compare recursively
 			} else {
-				result = _checkContract(actual[i], expected[i]);
+				result = checkContract(actual[i], expected[i]);
 			}
 		} else {
 			result = false;
 		}
-		if (!result) return result; // break
+		return result; // break if it doesn't meet our expectations
 	});
 	return result;
 };
 
-var _prepareEventData = function(obj, level) {
+function prepareEventData(obj, level) {
 	level = level || 0;
 	if (($.type(obj) === "object" || $.type(obj) === "array")) {
 		if (obj.tagName || obj.jquery) {
 			obj = "[object DOM]";
 		} else if (level <= 2) {
 			$.each(obj, function(key) {
-				obj[key] = _prepareEventData(obj[key], level+1);
+				obj[key] = prepareEventData(obj[key], level + 1);
 			});
 		} else {
 			obj = $.type(obj) === "array" ? [] : {};

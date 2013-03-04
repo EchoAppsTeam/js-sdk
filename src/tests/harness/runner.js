@@ -14,7 +14,7 @@ Echo.Tests.init = function(config) {
 		$("#qunit-header").html(config.title);
 
 		config.backplane && Backplane.init(config.backplane);
-	
+
 		// hack for tests of Loader
 		window.onerror = function( message, file, line ) {
 			return /non-existing/.test(file);

@@ -75,9 +75,7 @@ Echo.Tests.Suite.prototype.sequentialAsyncTests = function(funcs, namespace) {
 	if (namespace && $.isPlainObject(this[namespace]) && $.isFunction(this[namespace].destroy)) {
 		funcs.push("destroy");
 	}
-	funcs.push(function() {
-		QUnit.start();
-	});
+	funcs.push(QUnit.start);
 	this.sequentialCall(funcs, namespace);
 };
 
