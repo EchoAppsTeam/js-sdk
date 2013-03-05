@@ -150,7 +150,6 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 	}
 
 	this.tabsContainer.on("click.tab.data-api", ':not(.active) > [data-toggle="tab"]', function(event) {
-		event.preventDefault();
 		self.config.get("select").call(self,
 			$(this),
 			$(this).data("item")
