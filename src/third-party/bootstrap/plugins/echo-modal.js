@@ -73,7 +73,7 @@ if (Echo.GUI.Modal) return;
  * Custom class name which should be added to the modal dialog container.
  *
  * @cfg {String} [href]
- * URL of the standalone page to be displayed inside the modal (loaded via <iframe>).
+ * URL of the standalone page to be displayed inside the modal (loaded via \<iframe>).
  *
  * @cfg {String} [onShow]
  * Callback function to be executed when the modal is opened.
@@ -159,10 +159,6 @@ Echo.GUI.Modal.prototype.refresh = function() {
 		self.config.get("onShow").call(self, self.element);
 	});
 
-	this.config.get("fade") && $.support.transition && this.element.one($.support.transition.end, function() {
-		self.element.focus().trigger("shown");
-	});
-
 	this.element.appendTo("body")
 		.wrap('<div class="echo-sdk-ui">')
 		.modal(this.config.getAsHash());
@@ -212,7 +208,7 @@ Echo.GUI.Modal.prototype._assembleHeader = function() {
 				.append("&times;").prependTo(header);
 		}
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._assembleBody = function() {
 	var self = this;
@@ -239,7 +235,7 @@ Echo.GUI.Modal.prototype._assembleBody = function() {
 	if (this.config.get("extraClass")) {
 		this.element.addClass(this.config.get("extraClass"));
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._assembleFooter = function() {
 	var self = this;
@@ -258,7 +254,7 @@ Echo.GUI.Modal.prototype._assembleFooter = function() {
 			});
 		}
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 	var self = this;
@@ -275,8 +271,6 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 				modal.isShown = shown;
 				modal.options.backdrop = backdrop;
 
-				self.element.addClass("in");
-
 				self.backdrop = modal.$backdrop.wrap('<div class="echo-sdk-ui">').parent();
 			});
 		} else {
@@ -289,7 +283,7 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 			self.config.set("backdrop", false);
 		}
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._addSection = function(css, content) {
 	var section = $('<div class="' + css + '">');

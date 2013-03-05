@@ -11,7 +11,7 @@ var $ = jQuery;
  * 	var stream = new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("stream"),
  * 		"query": "childrenof:http://example.com/js-sdk",
- * 		"appkey": "test.aboutechoe.com"
+ * 		"appkey": "test.aboutecho.com"
  * 	});
  *
  * @extends Echo.Control

@@ -142,6 +142,8 @@ module.exports = function(grunt) {
 		}
 		// we are pushing code to production so we must delete development configuration
 		delete config.domain;
+		delete config.domainTests;
+		var target = this.args.join(":");
 		// TODO: check if we have modified files, we must not release this
 		if (!this.args.length) {
 			var tasks = [
@@ -158,6 +160,20 @@ module.exports = function(grunt) {
 			shared.config("release", true);
 			grunt.task.run(tasks);
 			return;
+		} else if (target === "beta") {
+			var tasks = [
+				"default",
+				// XXX: this step do nothing, it's just needed to remove build info so that next step could patch correct loader files
+				"release:build-completed",
+				"patch:loader:beta",
+				"release:sdk:beta"
+			];
+			if (shared.config("env") === "production") {
+				tasks.push("release:purge");
+			}
+			shared.config("release", true);
+			grunt.task.run(tasks);
+			return;
 		}
 
 		if (!shared.config("release")) {
@@ -166,7 +182,6 @@ module.exports = function(grunt) {
 
 		// release step can't be build step at the same time
 		shared.config("build", null);
-		var target = this.args.join(":");
 		console.time(target.yellow);
 
 		var _complete = this.async();
@@ -190,6 +205,7 @@ module.exports = function(grunt) {
 				});
 				if (!uploads || !uploads.length) {
 					grunt.log.writeln("Nothing to upload for target ".yellow + target);
+					done();
 					return;
 				}
 				var auth = config.release.auth[shared.config("env") === "production" ? "cdn" : "sandbox"];

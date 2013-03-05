@@ -337,7 +337,7 @@ module.exports = function(grunt) {
 			src = patchers[self.data.patcher](
 				src,
 				config,
-				grunt.config("pkg." + (version === "stable" ? "version" : "majorVersion"))
+				grunt.config("pkg." + (version === "stable" ? "version" : "majorVersion")) + (version === "beta" ? ".beta" : "")
 			);
 			grunt.file.write(file, src);
 			grunt.log.ok();
@@ -468,7 +468,7 @@ module.exports = function(grunt) {
 				.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 			if (shared.config("build")) {
 				// patch debug field only when we are building files
-				// and not patching already built ones during release
+				// and do not patch already built ones during release
 				src = src.replace(/("?debug"?: ?).*?(,)/, '$1' + (shared.config("build.stage") === "dev") + '$2');
 			}
 			return src;
