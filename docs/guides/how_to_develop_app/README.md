@@ -71,7 +71,7 @@ Now everywhere in the application's code we'll be able to use the following call
 	@example
 	this.config.get("submitFormPosition"); // assuming that "this" points to the application instance
 
-to get the value of the "submitFormPosition" config parameter defined during the plugin installation or to access the default value otherwise. Note: the "this" var should point to the application instance.
+to get the value of the "submitFormPosition" config parameter defined during the app installation or to access the default value otherwise. Note: the "this" var should point to the application instance.
 
 ## Application template
 
@@ -117,7 +117,7 @@ Now we have placeholders for our Auth, Submit and Stream controls and we need th
 	Comments.renderers.auth = function(element) {
 		this.initComponent({
 			"id": "Auth",
-			"name": "Echo.IdentityServer.Controls.Auth",
+			"component": "Echo.IdentityServer.Controls.Auth",
 			"config": {
 				"appkey": null,
 				"target": element,
@@ -130,7 +130,7 @@ Now we have placeholders for our Auth, Submit and Stream controls and we need th
 	Comments.renderers.stream = function(element) {
 		this.initComponent({
 			"id": "Stream",
-			"name": "Echo.StreamServer.Controls.Stream",
+			"component": "Echo.StreamServer.Controls.Stream",
 			"config": {
 				"target": element
 			}
@@ -141,7 +141,7 @@ Now we have placeholders for our Auth, Submit and Stream controls and we need th
 	Comments.renderers.submit = function(element) {
 		this.initComponent({
 			"id": "Submit",
-			"name": "Echo.StreamServer.Controls.Submit",
+			"component": "Echo.StreamServer.Controls.Submit",
 			"config": {
 				"target": element,
 				"infoMessages": {"enabled": false}
@@ -169,10 +169,10 @@ If the application depends on some other external component/library (including o
 			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
 				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
 		},
-		"url": "streamserver.pack.js"
+		"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 	}, {
 		"control": "Echo.IdentityServer.Controls.Auth",
-		"url": "identityserver.pack.js"
+		"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
 	}];
 
 ## Events
@@ -287,7 +287,7 @@ Note: in order to configure internal Echo Controls and Plugins used in the appli
 	Comments.renderers.auth = function(element) {
 		this.initComponent({
 			"id": "Auth",
-			"name": "Echo.IdentityServer.Controls.Auth",
+			"component": "Echo.IdentityServer.Controls.Auth",
 			"config": {
 				"appkey": null,
 				"target": element,
@@ -300,7 +300,7 @@ Note: in order to configure internal Echo Controls and Plugins used in the appli
 	Comments.renderers.stream = function(element) {
 		this.initComponent({
 			"id": "Stream",
-			"name": "Echo.StreamServer.Controls.Stream",
+			"component": "Echo.StreamServer.Controls.Stream",
 			"config": {
 				"target": element
 			}
@@ -311,7 +311,7 @@ Note: in order to configure internal Echo Controls and Plugins used in the appli
 	Comments.renderers.submit = function(element) {
 		this.initComponent({
 			"id": "Submit",
-			"name": "Echo.StreamServer.Controls.Submit",
+			"component": "Echo.StreamServer.Controls.Submit",
 			"config": {
 				"target": element,
 				"infoMessages": {"enabled": false}
