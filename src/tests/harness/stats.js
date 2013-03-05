@@ -12,9 +12,9 @@ Echo.Tests.Stats.markFunctionTested = function(fn) {
 	_coverage.functions.raw.tested[fn] = true;
 };
 
-QUnit.begin(_initStats);
+QUnit.begin(initStats);
 
-QUnit.done(_showStats);
+QUnit.done(showStats);
 
 // private stuff
 
