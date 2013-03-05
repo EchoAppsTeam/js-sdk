@@ -48,6 +48,57 @@ suite.prototype.tests.resourceDownloadingTests = {
 		], "cases");
 	}
 };
+// This code reproduces the issue described here:
+// https://github.com/SlexAxton/yepnope.js/issues/113
+//
+// Test case: load a file via Echo.Loader.download and in its callback function
+// load some more files, one synchronously and one asynchronously
+// (or maybe more than one).
+//
+// Yepnope uses two-phase script loading mechanism: first preloads and then
+// executes it. The issue appears when asynchronous script is pushed to the stack
+// of scripts to be loaded and then synchronous script is preloaded but not
+// executed yet. In this test case yepnope tries to execute synchronous script
+// before it's fully preloaded.
+
+suite.prototype.tests.raceConditionTests = {
+	"config": {
+		"async": true,
+		"testTimeout": 15000
+	},
+	"check": function() {
+		var base = Echo.Tests.baseURL + "tests/unit/loader/scripts";
+
+		Echo.Loader.download([{"url": base + "/race-base.js"}], function() {
+			// we override insertJs function to be sure that
+			// preloading is finished before executing the script
+			var insertJs = Echo.yepnope.injectJs;
+			Echo.yepnope.injectJs = function () {
+				var self = this;
+				var arg = arguments;
+				setTimeout(function() {
+					insertJs.apply(self, arg);
+				}, 5000);
+			};
+
+			Echo.Loader.download([{"url": base + "/race-first.js"}], function() {
+				QUnit.ok(Echo.Variables.raceCondiotion.first,
+					"Check if first callback will be executed after complete loading of first script");
+			});
+
+			// asynchronous loading of this script affects internal state of yepnope
+			setTimeout(function() {
+				Echo.Loader.download([{"url": base + "/race-second.js"}], function() {
+					QUnit.ok(Echo.Variables.raceCondiotion.second,
+						"Check if second callback will be executed after complete loading of second script");
+					delete Echo.Variables.raceCondiotion;
+					Echo.yepnope.injectJs = insertJs;
+					QUnit.start();
+				});
+			}, 10);
+		});
+	}
+};
 
 suite.prototype.tests.urlConvertingTests = {
 	"check": function() {
@@ -58,7 +109,7 @@ suite.prototype.tests.urlConvertingTests = {
 			$.each(urls, function(i, spec) {
 				QUnit.ok(spec.expect === Echo.Loader.getURL(spec.data), "Checking URL conversion: '" + spec.data + "'");
 			});
-		};
+		}
 		var urls = {
 			"absolute": [{
 				"data": "//cdn/echoenabled.com/image.png",
