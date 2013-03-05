@@ -70,14 +70,14 @@ suite.prototype.tests.raceConditionTests = {
 		var base = Echo.Tests.baseURL + "tests/unit/loader/scripts";
 
 		Echo.Loader.download([{"url": base + "/race-base.js"}], function() {
-			// we override insertJs function to be sure that
+			// we override injectJs function to be sure that
 			// preloading is finished before executing the script
-			var insertJs = Echo.yepnope.injectJs;
+			var injectJs = Echo.yepnope.injectJs;
 			Echo.yepnope.injectJs = function () {
 				var self = this;
 				var arg = arguments;
 				setTimeout(function() {
-					insertJs.apply(self, arg);
+					injectJs.apply(self, arg);
 				}, 5000);
 			};
 
@@ -92,7 +92,7 @@ suite.prototype.tests.raceConditionTests = {
 					QUnit.ok(Echo.Variables.raceCondition.second,
 						"Check if second callback will be executed after complete loading of second script");
 					delete Echo.Variables.raceCondition;
-					Echo.yepnope.injectJs = insertJs;
+					Echo.yepnope.injectJs = injectJs;
 					QUnit.start();
 				});
 			}, 10);
