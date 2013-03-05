@@ -1,1 +1,1 @@
-Echo.Variables.raceCondiotion.first = true;
+Echo.Variables.raceCondition.first = true;

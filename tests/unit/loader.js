@@ -82,16 +82,16 @@ suite.prototype.tests.raceConditionTests = {
 			};
 
 			Echo.Loader.download([{"url": base + "/race-first.js"}], function() {
-				QUnit.ok(Echo.Variables.raceCondiotion.first,
+				QUnit.ok(Echo.Variables.raceCondition.first,
 					"Check if first callback will be executed after complete loading of first script");
 			});
 
 			// asynchronous loading of this script affects internal state of yepnope
 			setTimeout(function() {
 				Echo.Loader.download([{"url": base + "/race-second.js"}], function() {
-					QUnit.ok(Echo.Variables.raceCondiotion.second,
+					QUnit.ok(Echo.Variables.raceCondition.second,
 						"Check if second callback will be executed after complete loading of second script");
-					delete Echo.Variables.raceCondiotion;
+					delete Echo.Variables.raceCondition;
 					Echo.yepnope.injectJs = insertJs;
 					QUnit.start();
 				});

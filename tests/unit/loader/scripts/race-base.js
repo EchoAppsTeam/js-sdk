@@ -1,1 +1,1 @@
-Echo.Variables.raceCondiotion = {};
+Echo.Variables.raceCondition = {};
