@@ -82,14 +82,12 @@ The first steps is to prepare a template to represent the application UI. Due to
 	@example
 	Comments.templates.topSubmitFormPosition =
 		'<div class="{class:container}">' +
-			'<div class="{class:auth}"></div>' +
 			'<div class="{class:submit}"></div>' +
 			'<div class="{class:stream}"></div>' +
 		'</div>';
 
 	Comments.templates.bottomSubmitFormPosition =
 		'<div class="{class:container}">' +
-			'<div class="{class:auth}"></div>' +
 			'<div class="{class:stream}"></div>' +
 			'<div class="{class:submit}"></div>' +
 		'</div>';
@@ -111,22 +109,9 @@ Note: the template might be also represented by the function. In this case the f
 
 ## Adding renderers
 
-Now we have placeholders for our Auth, Submit and Stream controls and we need the logic to init the necessary applications in the right places and we'll employ renderers here. Application manifest specifies the location for the renderers, it's the "renderers" hash. This hash should contain the renderers for the elements added within the app templates. The set of renderers to initialize the controls may look like:
+Now we have placeholders for our Submit and Stream controls and we need the logic to init the necessary applications in the right places and we'll employ renderers here. Application manifest specifies the location for the renderers, it's the "renderers" hash. This hash should contain the renderers for the elements added within the app templates. The set of renderers to initialize the controls may look like:
 
 	@example
-	Comments.renderers.auth = function(element) {
-		this.initComponent({
-			"id": "Auth",
-			"component": "Echo.IdentityServer.Controls.Auth",
-			"config": {
-				"appkey": null,
-				"target": element,
-				"identityManager": "{config:identityManager}"
-			}
-		});
-		return element;
-	};
-
 	Comments.renderers.stream = function(element) {
 		this.initComponent({
 			"id": "Stream",
@@ -144,7 +129,11 @@ Now we have placeholders for our Auth, Submit and Stream controls and we need th
 			"component": "Echo.StreamServer.Controls.Submit",
 			"config": {
 				"target": element,
-				"infoMessages": {"enabled": false}
+				"infoMessages": {"enabled": false},
+				"plugins": [{
+					"name": "FormAuth",
+					"identityManager": "{config:identityManager}"
+				}]
 			}
 		});
 		return element;
@@ -170,9 +159,6 @@ If the application depends on some other external component/library (including o
 				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
 		},
 		"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
-	}, {
-		"control": "Echo.IdentityServer.Controls.Auth",
-		"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
 	}];
 
 ## Events
@@ -249,16 +235,12 @@ Note: in order to configure internal Echo Controls and Plugins used in the appli
 
 	if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
 
-	Comments.dependencies = [{
-		"loaded": function() {
+	Comments.dependencies = [
+		{"loaded": function() {
 			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
 				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
-		},
-		"url": "streamserver.pack.js"
-	}, {
-		"control": "Echo.IdentityServer.Controls.Auth",
-		"url": "identityserver.pack.js"
-	}];
+		}, "url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"}
+	];
 
 	Comments.config = {
 		"submitFormPosition": "top" // top | bottom
@@ -266,14 +248,12 @@ Note: in order to configure internal Echo Controls and Plugins used in the appli
 
 	Comments.templates.topSubmitFormPosition =
 		'<div class="{class:container}">' +
-			'<div class="{class:auth}"></div>' +
 			'<div class="{class:submit}"></div>' +
 			'<div class="{class:stream}"></div>' +
 		'</div>';
 
 	Comments.templates.bottomSubmitFormPosition =
 		'<div class="{class:container}">' +
-			'<div class="{class:auth}"></div>' +
 			'<div class="{class:stream}"></div>' +
 			'<div class="{class:submit}"></div>' +
 		'</div>';
@@ -282,19 +262,6 @@ Note: in order to configure internal Echo Controls and Plugins used in the appli
 		return this.templates[
 			this.config.get("submitFormPosition") + "SubmitFormPosition"
 		];
-	};
-
-	Comments.renderers.auth = function(element) {
-		this.initComponent({
-			"id": "Auth",
-			"component": "Echo.IdentityServer.Controls.Auth",
-			"config": {
-				"appkey": null,
-				"target": element,
-				"identityManager": "{config:identityManager}"
-			}
-		});
-		return element;
 	};
 
 	Comments.renderers.stream = function(element) {
@@ -314,7 +281,11 @@ Note: in order to configure internal Echo Controls and Plugins used in the appli
 			"component": "Echo.StreamServer.Controls.Submit",
 			"config": {
 				"target": element,
-				"infoMessages": {"enabled": false}
+				"infoMessages": {"enabled": false},
+				"plugins": [{
+					"name": "FormAuth",
+					"identityManager": "{config:identityManager}"
+				}]
 			}
 		});
 		return element;
@@ -325,3 +296,4 @@ Note: in order to configure internal Echo Controls and Plugins used in the appli
 	Echo.App.create(Comments);
 
 	})(Echo.jQuery);
+
