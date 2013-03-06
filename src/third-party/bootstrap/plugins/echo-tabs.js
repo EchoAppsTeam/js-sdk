@@ -149,7 +149,7 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 		this.show(entries[this.config.get("selected", 0)].id);
 	}
 
-	this.tabsContainer.on("click.tab.data-api", ':not(.active) > [data-toggle="tab"]', function(event) {
+	this.tabsContainer.on("click.tab.data-api", ':not(.active) > [data-toggle="tab"]', function() {
 		self.config.get("select").call(self,
 			$(this),
 			$(this).data("item")
