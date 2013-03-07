@@ -143,7 +143,7 @@ module.exports = function(grunt) {
 		// we are pushing code to production so we must delete development configuration
 		delete config.domain;
 		delete config.domainTests;
-		var target = this.args.join(":");
+		var target = this.args[0];
 		// TODO: check if we have modified files, we must not release this
 		if (!this.args.length) {
 			var tasks = [
@@ -154,7 +154,7 @@ module.exports = function(grunt) {
 				"release:apps"
 			];
 			if (shared.config("env") === "production") {
-				tasks.push("release:purge");
+				tasks.push("release:purge:SDK.latest,SDK.stable");
 			}
 			tasks.push("release:pages");
 			shared.config("release", true);
@@ -163,13 +163,13 @@ module.exports = function(grunt) {
 		} else if (target === "beta") {
 			var tasks = [
 				"default",
-				// XXX: this step do nothing, it's just needed to remove build info so that next step could patch correct loader files
+				// XXX: this step does nothing, it's just needed to remove build info so that next step could patch correct loader files
 				"release:build-completed",
 				"patch:loader:beta",
 				"release:sdk:beta"
 			];
 			if (shared.config("env") === "production") {
-				tasks.push("release:purge");
+				tasks.push("release:purge:SDK.beta");
 			}
 			shared.config("release", true);
 			grunt.task.run(tasks);
@@ -191,9 +191,10 @@ module.exports = function(grunt) {
 		};
 		var version = grunt.config("pkg.version");
 		var majorVersion = version.split(".")[0];
+		console.log(target);
 		switch (target) {
 			case "purge":
-				purgeCDN(["sdk", "apps"], config.release.purger, done);
+				purgeCDN(["sdk", "apps"], this.args.slice(1), config.release.purger, done);
 				break;
 			case "pages":
 				pushPages(done);
@@ -218,9 +219,9 @@ module.exports = function(grunt) {
 		}
 	});
 
-	function purgeCDN(paths, config, done) {
+	function purgeCDN(paths, labels, config, done) {
 		if (shared.config("debug")) {
-			console.log(arguments[0]);
+			console.log(arguments[0], arguments[1]);
 			done();
 			return;
 		}
@@ -237,7 +238,7 @@ module.exports = function(grunt) {
 					'<CreatePurgeRequest xmlns="http://www.llnw.com/Purge">' +
 					'<request>' +
 						'<EmailType>detail</EmailType>' +
-						'<EmailSubject>[JS-SDK] [Limelight] Code pushed to CDN</EmailSubject>' +
+						'<EmailSubject>[JS SDK] [Limelight] Code pushed to CDN (' + (labels || "manual purge") + ')</EmailSubject>' +
 						'<EmailTo>' + config.emailTo + '</EmailTo>' +
 						'<EmailCc>' + (config.emailCC || "") + '</EmailCc>' +
 						'<EmailBcc></EmailBcc>' +
