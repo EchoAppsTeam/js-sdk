@@ -80,7 +80,8 @@ module.exports = function(grunt) {
 				"view.js",
 				"control.js",
 				"app.js",
-				"plugin.js"
+				"plugin.js",
+				"canvas.js"
 			],
 			"dest": "environment.pack.js"
 		},
