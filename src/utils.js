@@ -143,10 +143,10 @@ Echo.Utils.hasCSS = function(id) {
  *         acc[key] = item;
  *     }); // hash will be {"key1": "value1"};
  *
- * @param {Object} acc
+ * @param {Object|Array} acc
  * Defines the initial accumulator.
  *
- * @param {Mixed} object
+ * @param {Object|Array} object
  * The object to be folded.
  *
  * @param {Function} callback
@@ -155,13 +155,13 @@ Echo.Utils.hasCSS = function(id) {
  * @param {Object} callback.item
  * The item of the object to iterate over.
  *
- * @param {Object} callback.acc
+ * @param {Object|Array} callback.acc
  * The object that accumulates items.
  *
  * @param {String} [callback.key]
  * Defines the key of iterated items.
  *
- * @return {Object}
+ * @return {Object|Array}
  * The resulting object
  */
 Echo.Utils.foldl = function(acc, object, callback) {
