@@ -405,10 +405,6 @@ Echo.API.Request.prototype.request = function(params) {
 	}
 };
 
-Echo.API.Request.prototype._onData = Echo.API.Request.prototype._onError = function(response) {
-	clearTimeout(this._timeoutId);
-};
-
 Echo.API.Request.prototype.abort = function() {
 	this.transport && this.transport.abort();
 };
@@ -448,9 +444,14 @@ Echo.API.Request.prototype._getTransport = function() {
 };
 
 Echo.API.Request.prototype._getHandlersByConfig = function() {
+	var self = this;
 	return utils.foldl({}, this.config.getAsHash(), function(value, acc, key) {
-		if (/^on[A-Z]/.test(key)) {
-			acc[key] = value;
+		var handler;
+		if (/^on[A-Z]/.test(key) && $.isFunction(value)) {
+			handler = key !== "onOpen"
+				? function() { clearTimeout(self._timeoutId); value.apply(null, arguments); }
+				: value;
+			acc[key] = handler;
 		}
 	});
 };
