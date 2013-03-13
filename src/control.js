@@ -804,7 +804,22 @@ Echo.Control.prototype._initializers.css = function() {
 	this.config.get("target").addClass(this.cssClass);
 	$.map(this._manifest("css"), function(spec) {
 		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
-		Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
+		if (spec.id !== self.name) {
+			var component = Echo.Utils.getComponent(spec.id);
+			component && Echo.Utils.addCSS(
+				Echo.Utils.substitute({
+					"template": spec.code,
+					"instructions": $.extend(self._getSubstitutionInstructions(), {
+						"class": function(key) {
+							var cssPrefix = component.prototype.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-") + "-";
+							return cssPrefix + key;
+						}
+					})
+				})
+			, spec.id);
+		} else {
+			Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
+		}
 	});
 };
 
@@ -950,6 +965,25 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 	return {
 		"class": function(key) {
 			return key ? control.cssPrefix + key : control.cssClass;
+		},
+		"parent.class": function(key) {
+			return key ? control.constructor.parent.cssPrefix + key : control.cssClass;
+		},
+		"parents.class": function(key) {
+			var value, parent;
+			if (key) {
+				parent = control.constructor.parent;
+				value = function get(parent, acc) {
+					if (parent && parent.cssPrefix) {
+						acc.unshift(parent.cssPrefix + key);
+						get(parent.constructor.parent, acc);
+					}
+					return acc;
+				}(parent, []).join(" ");
+			} else {
+				value = control.cssClass;
+			}
+			return value;
 		},
 		"label": function(key, defaults) {
 			return control.labels.get(key, defaults);
