@@ -906,7 +906,7 @@ Echo.Control.prototype._initializers.refresh = function() {
 
 Echo.Control._merge = function(manifest, parentManifest) {
 	var self = this;
-	parentManifest = parentManifest || this._manifest;
+	parentManifest = parentManifest || $.extend(true, Echo.Control.manifest(this._manifest.name), this._manifest);
 	// normalize CSS definition before merging to have the same format
 	var normalizeCSS = function(manifest) {
 		manifest.css = manifest.css || "";
