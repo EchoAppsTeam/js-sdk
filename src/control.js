@@ -74,7 +74,6 @@ Echo.Control.create = function(manifest) {
 		}
 
 		this.data = config.data || {};
-		this.name = _manifest.name;
 		this.config = config;
 		this._init(this._initializers.get("init"));
 	});
@@ -85,7 +84,11 @@ Echo.Control.create = function(manifest) {
 	}
 	prototype.templates = _manifest.templates;
 	prototype.renderers = _manifest.renderers;
+	prototype.name = _manifest.name;
 	constructor._manifest = _manifest;
+	if (manifest.inherits) {
+		constructor.parent = manifest.inherits.prototype;
+	}
 
 	// define default language var values with the lowest priority available
 	Echo.Labels.set(_manifest.labels, _manifest.name, true);
