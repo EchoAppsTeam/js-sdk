@@ -7,7 +7,6 @@ var canvas = Echo.Control.manifest("Echo.Canvas");
 
 if (Echo.Control.isDefined(canvas)) return;
 
-// TODO: take care of "destroy" and "refresh" functions (refresh calls init again...)
 canvas.init = function() {
 	var self = this, target = this.config.get("target");
 
@@ -72,6 +71,17 @@ canvas.init = function() {
 	});
 };
 
+canvas.destroy = function() {
+	$.map(this.get("apps"), $.proxy(this._destroyApp, this));
+	this.config.get("target").data("initialized", false);
+};
+
+canvas.events = {
+	"Echo.Canvas.onRefresh": function() {
+		this.config.get("target").data("initialized", false);
+	}
+};
+
 canvas.vars = {
 	"apps": []
 };
@@ -98,37 +108,45 @@ canvas.templates.app =
 canvas.renderers.container = function(element) {
 	var self = this;
 	$.map(this.get("data.apps"), function(app, id) {
-		var Application = Echo.Utils.getComponent(app.component);
-		if (!Application) {
-			self._error({
-				"args": {"app": app},
-				"code": "no_suitable_app_class",
-				"message": "Unable to init an app, no suitable JS class found"
-			});
-			return;
-		}
-
-		var view = self.view.fork();
-		element.append(view.render({
-			"data": app,
-			"template": self.templates.app
-		}));
-
-		// show|hide app header depending on the caption existance
-		view.get("appHeader")[app.caption ? "show" : "hide"]();
-
-		app.id = app.id || id;  // define app position in array as id if not specified
-		app.config = app.config || {};
-		app.config.user = self.config.get("user");
-		app.config.target = view.get("appBody");
-
-		var overrides = self.config.get("overrides", {})[app.id];
-		var config = overrides
-			? $.extend(true, app.config, overrides)
-			: app.config;
-		self.apps.push(new Application(config));
+		self._initApp(app, element, id);
 	});
 	return element;
+};
+
+canvas.methods._initApp = function(app, element, id) {
+	var Application = Echo.Utils.getComponent(app.component);
+	if (!Application) {
+		this._error({
+			"args": {"app": app},
+			"code": "no_suitable_app_class",
+			"message": "Unable to init an app, no suitable JS class found"
+		});
+		return;
+	}
+
+	var view = this.view.fork();
+	element.append(view.render({
+		"data": app,
+		"template": this.templates.app
+	}));
+
+	// show|hide app header depending on the caption existance
+	view.get("appHeader")[app.caption ? "show" : "hide"]();
+
+	app.id = app.id || id;  // define app position in array as id if not specified
+	app.config = app.config || {};
+	app.config.user = this.config.get("user");
+	app.config.target = view.get("appBody");
+
+	var overrides = this.config.get("overrides", {})[app.id];
+	var config = overrides
+		? $.extend(true, app.config, overrides)
+		: app.config;
+	this.apps.push(new Application(config));
+};
+
+canvas.methods._destroyApp = function(app) {
+	if (app) app.destroy();
 };
 
 canvas.methods._fetchConfig = function(callback) {
@@ -140,20 +158,19 @@ canvas.methods._fetchConfig = function(callback) {
 		callback(this.get("data"));
 		return;
 	}
-
-	$.ajax(this.config.get("storageURL") + this.config.get("id"), {
-		"crossDomain": true,
-		"dataType": "json",
-		"success": $.proxy(callback, this),
-		"error": function(response) {
+	(new Echo.API.Request({
+		"apiBaseURL": this.config.get("storageURL"),
+		"endpoint": this.config.get("id"),
+		"onData": $.proxy(callback, this),
+		"onError": function(response) {
 			self._error({
 				"args": response,
 				"code": "unable_to_retrieve_app_config",
 				"message": "Unable to retrieve Canvas config from the storage"
 			});
-			callback();
+			callback.call(self);
 		}
-	});
+	})).request();
 };
 
 canvas.methods._initBackplane = function(callback) {
