@@ -15,7 +15,7 @@ Echo.Loader = {
 	"debug": false,
 	"config": {
 		"cdnBaseURL": "http://cdn.echoenabled.com/",
-		"storageURL": "https://s3.amazonaws.com/echo-canvases/",
+		"storageURL": "http://s3.amazonaws.com/echo-canvases/",
 		"errorTimeout": 5000 // 5 sec
 	},
 	"canvases": [],  // Canvases list initialized on the page
