@@ -7,6 +7,21 @@ var canvas = Echo.Control.manifest("Echo.Canvas");
 
 if (Echo.Control.isDefined(canvas)) return;
 
+/**
+ * @class Echo.Canvas
+ * Class which implements Canvas mechanics on the client side.
+ * The instance of this class is created for each Canvas found on the page by
+ * the Echo.Loader. The instance of the class can also be created manually in
+ * case the Canvas data already exists on the page.
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * Canvas object constructor to initialize the Echo.Canvas instance
+ *
+ * @param {Object} config
+ * Configuration options
+ */
 canvas.init = function() {
 	var self = this, target = this.config.get("target");
 
@@ -69,14 +84,47 @@ canvas.init = function() {
 	});
 };
 
-// TODO: add docs for the config params
 canvas.config = {
+	/**
+	 * @cfg {String} [id]
+	 * Unique ID of the Canvas, used by the Echo.Canvas instance
+	 * to retrieve the data from the Canvases data storage.
+	 */
 	"id": undefined,
-	"data": undefined,
-	"target": undefined, // TODO: need to describe "data-appkey" & "data-canvas-id" in docs
-	"appkey": undefined,
+
+	/**
+	 * @cfg {Object} [data]
+	 * Object which contains the Canvas data in the format
+	 * used to store the Canvas config in the Canvas storage.
+	 */
+	"data": {},
+
+	/**
+	 * @cfg {String} target(required)
+	 * Specifies the DOM element where the control will be displayed.
+	 *
+	 * Note: if only the "target" config parameter is defined, the target DOM element
+	 * should contain the following HTML attributes:
+	 *
+	 * + "data-appkey" with the necessary appkey value
+	 * + "data-canvas-id" with the unique Canvas ID which should be initialized
+	 *
+	 * The values of the HTML parameters override the "appkey" and "id" parameter values
+	 * (respectively) passed via the Canvas config.
+	 */
+	"target": undefined,
+
+	"appkey": undefined,  // docs to be inherited from Echo.Control
+
+	/**
+	 * @cfg {Object} [overrides]
+	 * Object which contains the overrides applied for this Canvas on the page
+	 * via Echo.Loader.override function call.
+	 */
 	"overrides": {},
-	"storageURL": Echo.Loader.config.storageURL
+
+	"storageURL": Echo.Loader.config.storageURL  // no docs, not supposed
+						     // to be changed by the publishers
 };
 
 canvas.vars = {
@@ -84,7 +132,13 @@ canvas.vars = {
 };
 
 canvas.labels = {
+	/**
+	 * @echo_label
+	 */
 	"error_no_apps": "No applications defined for this canvas",
+	/**
+	 * @echo_label
+	 */
 	"error_no_config": "Unable to retrieve Canvas config"
 };
 
@@ -108,6 +162,9 @@ canvas.destroy = function() {
 	this.config.get("target").data("initialized", false);
 };
 
+/**
+ * @echo_renderer
+ */
 canvas.renderers.container = function(element) {
 	var self = this;
 	$.map(this.get("data.apps"), function(app, id) {
