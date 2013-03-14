@@ -24,13 +24,13 @@ if (Echo.Control.isDefined(canvas)) return;
  */
 canvas.init = function() {
 	var self = this, target = this.config.get("target");
+	var parent = $.proxy(this.parent, this);
 
 	// check if the canvas was already initialized
 	if (target.data("initialized")) {
 		this._error({
 			"args": {"target": target},
-			"code": "canvas_already_initialized",
-			"message": "Canvas has been initialized already"
+			"code": "canvas_already_initialized"
 		});
 		return;
 	}
@@ -47,8 +47,7 @@ canvas.init = function() {
 		!(this.config.get("id") && this.config.get("appkey"))) {
 			this._error({
 				"args": {"target": target},
-				"code": "invalid_canvas_config",
-				"message": "Canvas with invalid configuration found"
+				"code": "invalid_canvas_config"
 			});
 			return;
 	}
@@ -63,10 +62,7 @@ canvas.init = function() {
 			self._error({
 				"args": {"config": config, "target": target},
 				"code": "invalid_canvas_config",
-				"message": message
-			});
-			self.showMessage({
-				"type": "error",
+				"showError": true,
 				"message": message
 			});
 			return;
@@ -75,10 +71,7 @@ canvas.init = function() {
 		self._initBackplane(function() {
 			self._initUser(function(user) {
 				self.config.set("user", user);
-				self._loadAppResources(function() {
-					self.render();
-					self.ready();
-				});
+				self._loadAppResources(parent);
 			});
 		});
 	});
@@ -139,13 +132,27 @@ canvas.labels = {
 	/**
 	 * @echo_label
 	 */
-	"error_no_config": "Unable to retrieve Canvas config"
-};
-
-canvas.events = {
-	"Echo.Canvas.onRefresh": function() {
-		this.config.get("target").data("initialized", false);
-	}
+	"error_no_config": "Unable to retrieve Canvas config",
+	/**
+	 * @echo_label
+	 */
+	"error_no_suitable_app_class": "Unable to init an app, no suitable JS class found",
+	/**
+	 * @echo_label
+	 */
+	"error_unable_to_retrieve_app_config": "Unable to retrieve Canvas config from the storage",
+	/**
+	 * @echo_label
+	 */
+	"error_incomplete_app_config": "Unable to init an app, config is incomplete",
+	/**
+	 * @echo_label
+	 */
+	"error_canvas_already_initialized": "Canvas has been initialized already",
+	/**
+	 * @echo_label
+	 */
+	"error_invalid_canvas_config": "Canvas with invalid configuration found"
 };
 
 canvas.templates.main =
@@ -229,8 +236,7 @@ canvas.methods._fetchConfig = function(callback) {
 		"onError": function(response) {
 			self._error({
 				"args": response,
-				"code": "unable_to_retrieve_app_config",
-				"message": "Unable to retrieve Canvas config from the storage"
+				"code": "unable_to_retrieve_app_config"
 			});
 			callback.call(self);
 		}
@@ -246,18 +252,19 @@ canvas.methods._initBackplane = function(callback) {
 
 canvas.methods._initUser = function(callback) {
 	var user = this.config.get("user");
+	callback = callback || $.noop;
 
 	// do not init user if the instance already
 	// exists or the appkey is undefined
 	if (user || !this.config.get("appkey")) {
-		callback && callback(user);
+		callback(user);
 		return;
 	}
 
 	Echo.UserSession({
 		"appkey": this.config.get("appkey"),
 		"ready": function() {
-			callback && callback(this);
+			callback(this);
 		}
 	});
 };
@@ -279,8 +286,7 @@ canvas.methods._loadAppResources = function(callback) {
 		if (!app.component || !script || !(isManual || app.id)) {
 			self._error({
 				"args": {"app": app},
-				"code": "incomplete_app_config",
-				"message": "Unable to init an app, config is incomplete"
+				"code": "incomplete_app_config"
 			});
 			return;
 		}
@@ -295,21 +301,26 @@ canvas.methods._loadAppResources = function(callback) {
 };
 
 canvas.methods._getOverrides = function(target, spec) {
-	var overrides = {};
-	if (target && spec && spec.length) {
-		Echo.Utils.foldl(overrides, spec, function(item, acc) {
-			var complex = $.isArray(item);
-			var key = complex ? item[0] : item;
-			var value = target.data(complex ? item[1] : item);
-			if (typeof value !== "undefined") {
-				acc[key] = value;
-			}
-		});
-	}
-	return overrides;
+	return Echo.Utils.foldl({}, spec || [], function(item, acc) {
+		var complex = $.isArray(item);
+		var key = complex ? item[0] : item;
+		var value = target.data(complex ? item[1] : item);
+		if (typeof value !== "undefined") {
+			acc[key] = value;
+		}
+	});
 };
 
-canvas.methods._error = Echo.Loader._error;
+canvas.methods._error = function(args) {
+	args.message = args.message || this.labels.get("error_" + args.code);
+	Echo.Loader._error(args);
+	if (args.showError) {
+		this.showMessage({
+			"type": "error",
+			"message": args.message
+		});
+	}
+};
 
 Echo.Control.create(canvas);
 
