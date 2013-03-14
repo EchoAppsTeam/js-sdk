@@ -273,7 +273,7 @@ Echo.Loader.init = function(config) {
 			var target = $(canvas);
 			var instance = new Echo.Canvas({
 				"target": target,
-				"overrides": Echo.Loader.overrides[target.data("canvas-id")]
+				"overrides": Echo.Loader.overrides[target.data("canvas-id")] || {}
 			});
 			Echo.Loader.canvases.push(instance);
 		});

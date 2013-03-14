@@ -178,27 +178,31 @@ canvas.methods._initApp = function(app, element, id) {
 	if (!Application) {
 		this._error({
 			"args": {"app": app},
-			"code": "no_suitable_app_class",
-			"message": "Unable to init an app, no suitable JS class found"
+			"code": "no_suitable_app_class"
 		});
 		return;
 	}
 
-	var view = this.view.fork();
+	var view = this.view.fork({
+		"renderer": null,
+		"renderers": {
+			"appHeader": function(element) {
+				// show|hide app header depending on the caption existance
+				return element[app.caption ? "show" : "hide"]();
+			}
+		}
+	});
 	element.append(view.render({
 		"data": app,
 		"template": this.templates.app
 	}));
-
-	// show|hide app header depending on the caption existance
-	view.get("appHeader")[app.caption ? "show" : "hide"]();
 
 	app.id = app.id || id;  // define app position in array as id if not specified
 	app.config = app.config || {};
 	app.config.user = this.config.get("user");
 	app.config.target = view.get("appBody");
 
-	var overrides = this.config.get("overrides", {})[app.id];
+	var overrides = this.config.get("overrides")[app.id];
 	var config = overrides
 		? $.extend(true, app.config, overrides)
 		: app.config;
