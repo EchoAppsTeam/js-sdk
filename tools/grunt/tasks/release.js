@@ -194,7 +194,7 @@ module.exports = function(grunt) {
 		console.log(target);
 		switch (target) {
 			case "purge":
-				purgeCDN(["sdk", "apps"], this.args.slice(1), config.release.purger, done);
+				purgeCDN(["sdk", "apps"], this.args.slice(1).join(), config.release.purger, done);
 				break;
 			case "pages":
 				pushPages(done);
