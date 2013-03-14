@@ -44,9 +44,7 @@ canvas.init = function() {
 
 	this._fetchConfig(function(config) {
 		if (!config || !config.apps || !config.apps.length) {
-			var message = config
-				? "No applications defined for this canvas"
-				: "Unable to retrieve Canvas config";
+			var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
 			self._error({
 				"args": {"config": config, "target": target},
 				"code": "invalid_canvas_config",
@@ -71,21 +69,6 @@ canvas.init = function() {
 	});
 };
 
-canvas.destroy = function() {
-	$.map(this.get("apps"), $.proxy(this._destroyApp, this));
-	this.config.get("target").data("initialized", false);
-};
-
-canvas.events = {
-	"Echo.Canvas.onRefresh": function() {
-		this.config.get("target").data("initialized", false);
-	}
-};
-
-canvas.vars = {
-	"apps": []
-};
-
 // TODO: add docs for the config params
 canvas.config = {
 	"id": undefined,
@@ -96,6 +79,21 @@ canvas.config = {
 	"storageURL": Echo.Loader.config.storageURL
 };
 
+canvas.vars = {
+	"apps": []
+};
+
+canvas.labels = {
+	"error_no_apps": "No applications defined for this canvas",
+	"error_no_config": "Unable to retrieve Canvas config"
+};
+
+canvas.events = {
+	"Echo.Canvas.onRefresh": function() {
+		this.config.get("target").data("initialized", false);
+	}
+};
+
 canvas.templates.main =
 	'<div class="{class:container}"></div>';
 
@@ -104,6 +102,11 @@ canvas.templates.app =
 		'<div class="{class:appHeader}">{data:caption}</div>' +
 		'<div class="{class:appBody}"></div>' +
 	'</div>';
+
+canvas.destroy = function() {
+	$.map(this.get("apps"), $.proxy(this._destroyApp, this));
+	this.config.get("target").data("initialized", false);
+};
 
 canvas.renderers.container = function(element) {
 	var self = this;
