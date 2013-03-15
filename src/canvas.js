@@ -24,6 +24,8 @@ if (Echo.Control.isDefined(canvas)) return;
  */
 canvas.init = function() {
 	var self = this, target = this.config.get("target");
+	// parent init function takes care about init finalization (rendering
+	// and the "onReady" event firing)
 	var parent = $.proxy(this.parent, this);
 
 	// check if the canvas was already initialized
@@ -62,7 +64,7 @@ canvas.init = function() {
 			self._error({
 				"args": {"config": config, "target": target},
 				"code": "invalid_canvas_config",
-				"showError": true,
+				"renderError": true,
 				"message": message
 			});
 			return;
@@ -118,6 +120,19 @@ canvas.config = {
 
 	"storageURL": Echo.Loader.config.storageURL  // no docs, not supposed
 						     // to be changed by the publishers
+};
+
+canvas.config.normalizer = {
+	"storageURL": function(URL) {
+		var protocol = window.location.protocol;
+		var parts = Echo.Utils.parseURL(URL);
+		return Echo.Utils.substitute({
+			"template": "{data:scheme}//{data:domain}{data:path}{data:query}{data:fragment}",
+			"data": $.extend(parts, {
+				"scheme": /^https?/.test(protocol) ? protocol : "http:"
+			})
+		});
+	}
 };
 
 canvas.vars = {
@@ -314,7 +329,7 @@ canvas.methods._getOverrides = function(target, spec) {
 canvas.methods._error = function(args) {
 	args.message = args.message || this.labels.get("error_" + args.code);
 	Echo.Loader._error(args);
-	if (args.showError) {
+	if (args.renderError) {
 		this.showMessage({
 			"type": "error",
 			"message": args.message
