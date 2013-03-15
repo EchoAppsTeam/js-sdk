@@ -556,6 +556,9 @@ plugin.css =
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-userInfoWrapper {  margin: 5px 0px; }' +
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
 	'.{plugin.class} .{class:plugin-Moderation-status}  { width: 30px; clear: both; }' +
+	'.{plugin.class} .{class:plugin-TwitterIntents-tweetUserName}, .{plugin.class} .{class:authorName} { float: none; word-wrap: normal; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }' +
+	'.{plugin.class} .{class:plugin-TwitterIntents-tweetUserName} { margin-left: 0px; }' +
+	'.{class:plugin-TwitterIntents} .{plugin.class:childBody} { margin-left: 0; }' +
 	((typeof document.createElement("div").style.boxShadow === "undefined")
 		? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }'
 		: '');
