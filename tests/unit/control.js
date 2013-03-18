@@ -894,7 +894,6 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			QUnit.strictEqual(this.method3(), "method3", "Check method inherited without override");
 			QUnit.strictEqual(this.child1Method(), "child1 method", "Check own method exists");
 			QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css inherited base mechanics");
-			QUnit.ok
 			publish("child1TestEvent");
 			publish("commonTestEvent");
 			publish("parentTestEvent");
