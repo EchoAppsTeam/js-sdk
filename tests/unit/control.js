@@ -750,14 +750,16 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 	var eventsChecker = {
 		"parentTestEvent": 0,
 		"child1TestEvent": 0,
-		"commonTestEvent": 0
+		"commonTestEvent": 0,
+		"newEvent": 0,
+		"anotherNewEvent": 0
 	};
 	var ctx = Echo.Events.newContextId();
-	var publish = function(topic) {
-		Echo.Events.publish({
+	var publish = function(topic, args) {
+		Echo.Events.publish($.extend({
 			"topic": topic,
 			"context": ctx
-		});
+		}, args));
 	};
 	var parentManifest = {
 		"name": "Echo.TestControl1",
@@ -863,15 +865,32 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			destroyVar += " and a child3 destroy.";
 		}
 	});
+	var newEventCounter = function() { eventsChecker.newEvent++; };
 	var child1_child2 = Echo.Control.create({
 		"name": "Echo.TestControl1_Child1_Child2",
 		"methods": {
 			"method2": function() {
-				return this.parent() + " method2_child_2"
+				return this.parent() + " method2_child_2";
 			}
+		},
+		"events": {
+			"Echo.TestControl1_Child1_Child2.someNewEvent": newEventCounter,
+			"Echo.TestControl1_Child1.someNewEvent": newEventCounter,
+			"Echo.TestControl1.someNewEvent": newEventCounter
 		},
 		"inherits": Echo.Utils.getComponent("Echo.TestControl1_Child1")
 	});
+	var anotherEventCounter = function() { eventsChecker.anotherNewEvent++; };
+	var control2 = Echo.Control.create($.extend(true, {}, parentManifest, {
+		"name": "Echo.TestControl2",
+		"events": {
+			"Echo.TestControl2.anotherNewEvent": anotherEventCounter,
+			"Echo.TestControl1.anotherNewEvent": anotherEventCounter,
+			"Echo.TestControl1_Child1.anotherNewEvent": anotherEventCounter,
+			"Echo.TestControl1_Child1_Child2.anotherNewEvent": anotherEventCounter,
+			"Echo.TestControl1_Child2_Child3.anotherNewEvent": anotherEventCounter,
+		}
+	}));
 	suite.initTestControl({
 		"context": ctx,
 		"target": $("#qunit-fixture"),
@@ -919,12 +938,28 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 						"context": ctx,
 						"target": $("<div>"),
 						"ready": function() {
-							QUnit.strictEqual(this.method2(), "method2 method2_child_2", "Check parent method executed (second inheritance level; child2 -> parent() -> control)");
-							QUnit.strictEqual(this.child1Method(), "child1 method", "Check parent method executed (child2 -> child1)");
-							QUnit.strictEqual(this.method3(), "method3", "Check parent method executed (child2 -> control)");
-							callback && callback();
+							this.events.publish({
+								"topic": "anotherNewEvent",
+								"inhereted": true
+							});
+							QUnit.strictEqual(eventsChecker.anotherNewEvent, 1, "Check not inherited control publishing event with \"inherited\" flag doesn't publish any extra events");
+							suite.initTestControl({
+								"context": ctx,
+								"target": $("<div>"),
+								"ready": function() {
+									QUnit.strictEqual(this.method2(), "method2 method2_child_2", "Check parent method executed (second inheritance level; child2 -> parent() -> control)");
+									QUnit.strictEqual(this.child1Method(), "child1 method", "Check parent method executed (child2 -> child1)");
+									QUnit.strictEqual(this.method3(), "method3", "Check parent method executed (child2 -> control)");
+									this.events.publish({
+										"topic": "someNewEvent",
+										"inherited": true
+									});
+									QUnit.strictEqual(eventsChecker.newEvent, 3, "Check event publishing with the parents prefixes");
+									callback && callback();
+								}
+							}, "Echo.TestControl1_Child1_Child2");
 						}
-					}, "Echo.TestControl1_Child1_Child2");
+					}, "Echo.TestControl2");
 				}
 			}, "Echo.TestControl1_Child2_Child3");
 		}
