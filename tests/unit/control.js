@@ -874,9 +874,9 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			}
 		},
 		"events": {
-			"Echo.TestControl1_Child1_Child2.someNewEvent": newEventCounter,
-			"Echo.TestControl1_Child1.someNewEvent": newEventCounter,
-			"Echo.TestControl1.someNewEvent": newEventCounter
+			"Echo.TestControl1_Child1_Child2.someNewTestEvent": newEventCounter,
+			"Echo.TestControl1_Child1.someNewTestEvent": newEventCounter,
+			"Echo.TestControl1.someNewTestEvent": newEventCounter
 		},
 		"inherits": Echo.Utils.getComponent("Echo.TestControl1_Child1")
 	});
@@ -884,11 +884,11 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 	var control2 = Echo.Control.create($.extend(true, {}, parentManifest, {
 		"name": "Echo.TestControl2",
 		"events": {
-			"Echo.TestControl2.anotherNewEvent": anotherEventCounter,
-			"Echo.TestControl1.anotherNewEvent": anotherEventCounter,
-			"Echo.TestControl1_Child1.anotherNewEvent": anotherEventCounter,
-			"Echo.TestControl1_Child1_Child2.anotherNewEvent": anotherEventCounter,
-			"Echo.TestControl1_Child2_Child3.anotherNewEvent": anotherEventCounter,
+			"Echo.TestControl2.anotherNewTestEvent": anotherEventCounter,
+			"Echo.TestControl1.anotherNewTestEvent": anotherEventCounter,
+			"Echo.TestControl1_Child1.anotherNewTestEvent": anotherEventCounter,
+			"Echo.TestControl1_Child1_Child2.anotherNewTestEvent": anotherEventCounter,
+			"Echo.TestControl1_Child2_Child3.anotherNewTestEvent": anotherEventCounter,
 		}
 	}));
 	suite.initTestControl({
@@ -939,8 +939,8 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 						"target": $("<div>"),
 						"ready": function() {
 							this.events.publish({
-								"topic": "anotherNewEvent",
-								"inhereted": true
+								"topic": "anotherNewTestEvent",
+								"inherited": true
 							});
 							QUnit.strictEqual(eventsChecker.anotherNewEvent, 1, "Check not inherited control publishing event with \"inherited\" flag doesn't publish any extra events");
 							suite.initTestControl({
@@ -950,8 +950,10 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 									QUnit.strictEqual(this.method2(), "method2 method2_child_2", "Check parent method executed (second inheritance level; child2 -> parent() -> control)");
 									QUnit.strictEqual(this.child1Method(), "child1 method", "Check parent method executed (child2 -> child1)");
 									QUnit.strictEqual(this.method3(), "method3", "Check parent method executed (child2 -> control)");
+									// "someNewTestEvent" event published from "Echo.TestControl1Child1Child2" with the "inherited" flag
+									// so, events "Echo.TestControl1_Child1.someNewTestEvent" & "Echo.TestControl1.someNewTestEvent" should be published as well
 									this.events.publish({
-										"topic": "someNewEvent",
+										"topic": "someNewTestEvent",
 										"inherited": true
 									});
 									QUnit.strictEqual(eventsChecker.newEvent, 3, "Check event publishing with the parents prefixes");
