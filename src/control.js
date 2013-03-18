@@ -805,18 +805,17 @@ Echo.Control.prototype._initializers.css = function() {
 	$.map(this._manifest("css"), function(spec) {
 		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
 		if (spec.id !== self.name) {
-			var component = Echo.Utils.getComponent(spec.id);
+			var css, component = Echo.Utils.getComponent(spec.id);
 			if (component) {
-				Echo.Utils.addCSS(
-					self.substitute({
-						"template": spec.code,
-						"instructions": {
-							"class": function(key) {
-								return component.prototype.cssPrefix + key;
-							}
+				css = self.substitute({
+					"template": spec.code,
+					"instructions": {
+						"class": function(key) {
+							return component.prototype.cssPrefix + key;
 						}
-					})
-				, spec.id);
+					}
+				});
+				Echo.Utils.addCSS(css, spec.id);
 			}
 		} else {
 			Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
