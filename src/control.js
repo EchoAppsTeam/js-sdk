@@ -806,17 +806,18 @@ Echo.Control.prototype._initializers.css = function() {
 		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
 		if (spec.id !== self.name) {
 			var component = Echo.Utils.getComponent(spec.id);
-			component && Echo.Utils.addCSS(
-				Echo.Utils.substitute({
-					"template": spec.code,
-					"instructions": $.extend(self._getSubstitutionInstructions(), {
-						"class": function(key) {
-							var cssPrefix = component.prototype.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-") + "-";
-							return cssPrefix + key;
+			if (component) {
+				Echo.Utils.addCSS(
+					self.substitute({
+						"template": spec.code,
+						"instructions": {
+							"class": function(key) {
+								return component.prototype.cssPrefix + key;
+							}
 						}
 					})
-				})
-			, spec.id);
+				, spec.id);
+			}
 		} else {
 			Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 		}
@@ -966,10 +967,7 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 		"class": function(key) {
 			return key ? control.cssPrefix + key : control.cssClass;
 		},
-		"parent.class": function(key) {
-			return key ? control.constructor.parent.cssPrefix + key : control.cssClass;
-		},
-		"parents.class": function(key) {
+		"inherited.class": function(key) {
 			var value, parent;
 			if (key) {
 				parent = control.constructor.parent;

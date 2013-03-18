@@ -832,6 +832,9 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 				return "child1 method"
 			}
 		},
+		"templates": {
+			"main": '<div class="{inherited.class:container} {class:container}"><div class="{class:someRenderer}"></div></div>'
+		},
 		"dependencies": [{
 			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep.child.js",
 			"loaded": function() { return !!Echo.Tests.Dependencies.Control.depChild; }
@@ -890,7 +893,8 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			QUnit.strictEqual(this.method1(), "method1 method1_child_1", "Check parent method executed");
 			QUnit.strictEqual(this.method3(), "method3", "Check method inherited without override");
 			QUnit.strictEqual(this.child1Method(), "child1 method", "Check own method exists");
-			QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css concatination");
+			QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css inherited base mechanics");
+			QUnit.ok
 			publish("child1TestEvent");
 			publish("commonTestEvent");
 			publish("parentTestEvent");
@@ -922,6 +926,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 							QUnit.strictEqual(this.method2(), "method2 method2_child_2", "Check parent method executed (second inheritance level; child2 -> parent() -> control)");
 							QUnit.strictEqual(this.child1Method(), "child1 method", "Check parent method executed (child2 -> child1)");
 							QUnit.strictEqual(this.method3(), "method3", "Check parent method executed (child2 -> control)");
+							QUnit.strictEqual(this.view.get("container").attr("class"), "echo-testcontrol1-container echo-testcontrol1_child1-container echo-testcontrol1_child1_child2-container", "Check child inherited css substitution works");
 							callback && callback();
 						}
 					}, "Echo.TestControl1_Child1_Child2");
