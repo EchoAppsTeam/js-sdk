@@ -33,7 +33,8 @@ var $ = jQuery;
  * 	});
  *
  * <b>Note</b>: plugin must be at the very beginning of the plugin list to
- * work correctly.
+ * work correctly. If {@link Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization PinboardVisualization}
+ * plugin is also enabled in the Stream then this plugin must be placed right after it.
  *
  * <b>Note</b>: if TwitterIntents plugin is added to the stream then Reply and
  * Like plugins will be disabled for tweet items. Moreover Reply control is
