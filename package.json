@@ -3,10 +3,9 @@
   "title": "Echo JS SDK",
   "description": "Javascript SDK for Echo applications",
   "version": "3.0.6",
-  "homepage": "https://github.com/EchoAppsTeam/js-sdk",
+  "homepage": "http://echoappsteam.github.com/js-sdk/",
   "author": {
     "name": "Echo",
-    "email": "solutions@aboutecho.com",
     "url": "http://aboutecho.com"
   },
   "repository": {
