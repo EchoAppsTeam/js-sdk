@@ -63,7 +63,7 @@ plugin.init = function() {
 	// icon must be visible to show that the item is from Twitter
 	item.config.set("viaLabel.icon", true);
 
-	this.extendTemplate("insertBefore", "authorName", plugin.templates.permalink);
+	this.extendTemplate("insertBefore", "authorName", plugin.templates.date);
 	this.extendTemplate("insertAfter", "authorName", plugin.templates.username);
 
 	item.addButtonSpec(this.name, this._assembleButton("tweet"));
@@ -103,11 +103,11 @@ plugin.labels = {
 	/**
 	 * @echo_label
 	 */
-	"monthsAgo": "{date} {month}",
+	"monthsAgo": "{day} {month}",
 	/**
 	 * @echo_label
 	 */
-	"yearsAgo": "{date} {month} {year}",
+	"yearsAgo": "{day} {month} {year}",
 	/**
 	 * @echo_label
 	 */
@@ -115,51 +115,51 @@ plugin.labels = {
 	/**
 	 * @echo_label
 	 */
-	"m1": "Jan",
+	"month1": "Jan",
 	/**
 	 * @echo_label
 	 */
-	"m2": "Feb",
+	"month2": "Feb",
 	/**
 	 * @echo_label
 	 */
-	"m3": "Mar",
+	"month3": "Mar",
 	/**
 	 * @echo_label
 	 */
-	"m4": "Apr",
+	"month4": "Apr",
 	/**
 	 * @echo_label
 	 */
-	"m5": "May",
+	"month5": "May",
 	/**
 	 * @echo_label
 	 */
-	"m6": "Jun",
+	"month6": "Jun",
 	/**
 	 * @echo_label
 	 */
-	"m7": "Jul",
+	"month7": "Jul",
 	/**
 	 * @echo_label
 	 */
-	"m8": "Aug",
+	"month8": "Aug",
 	/**
 	 * @echo_label
 	 */
-	"m9": "Sep",
+	"month9": "Sep",
 	/**
 	 * @echo_label
 	 */
-	"m10": "Oct",
+	"month10": "Oct",
 	/**
 	 * @echo_label
 	 */
-	"m11": "Nov",
+	"month11": "Nov",
 	/**
 	 * @echo_label
 	 */
-	"m12": "Dec"
+	"month12": "Dec"
 };
 
 plugin.dependencies = [{
@@ -188,7 +188,7 @@ plugin.events = {
 
 plugin.templates = {
 	"username": '<div class="{plugin.class:tweetUserName}"></div>',
-	"permalink": '<div class="{plugin.class:tweetPermalink} echo-secondaryFont"></div>'
+	"date": '<div class="{plugin.class:tweetDate} echo-secondaryFont"></div>'
 };
 
 /**
@@ -199,14 +199,14 @@ plugin.component.renderers.authorName = function(element) {
 	return item.parentRenderer("authorName", arguments)
 		.removeClass("echo-linkColor")
 		.addClass(this.cssPrefix + "tweetScreenName").wrapInner(
-		Echo.Utils.hyperlink({
-			"caption": "",
-			"href": item.get("data.actor.id")
-		}, {
-			"openInNewWindow": item.config.get("openLinksInNewWindow"),
-			"skipEscaping": true
-		})
-	);
+			Echo.Utils.hyperlink({
+				"caption": "",
+				"href": item.get("data.actor.id")
+			}, {
+				"openInNewWindow": item.config.get("openLinksInNewWindow"),
+				"skipEscaping": true
+			})
+		);
 };
 
 /**
@@ -230,7 +230,7 @@ plugin.component.renderers.avatar = function(element) {
  */
 plugin.component.renderers.date = function(element) {
 	var item = this.component;
-	this.view.render({"name": "tweetPermalink"});
+	this.view.render({"name": "tweetDate"});
 	return item.parentRenderer("date", arguments);
 };
 
@@ -257,7 +257,7 @@ plugin.renderers.tweetUserName = function(element) {
 	}));
 };
 
-plugin.renderers.tweetPermalink = function(element) {
+plugin.renderers.tweetDate = function(element) {
 	var item = this.component;
 	return element.html(Echo.Utils.hyperlink({
 		"caption": this._getTweetTime(),
@@ -314,9 +314,9 @@ plugin.methods._getTweetTime = function(getFull) {
 		} else if(diff < 60 * 60 * 24) {
 			result = this.labels.get("hoursAgo", {"hours": Math.floor(diff / (60 * 60))});
 		} else if (diff < 60 * 60 * 24 * 365) {
-			result = this.labels.get("monthsAgo", {"date": d.getDate(), "month": this.labels.get("m" + (d.getMonth() + 1))});
+			result = this.labels.get("monthsAgo", {"day": d.getDate(), "month": this.labels.get("month" + (d.getMonth() + 1))});
 		} else {
-			result = this.labels.get("yearsAgo", {"date": d.getDate(), "month": this.labels.get("m" + (d.getMonth() + 1)), "year": d.getFullYear()});
+			result = this.labels.get("yearsAgo", {"day": d.getDate(), "month": this.labels.get("month" + (d.getMonth() + 1)), "year": d.getFullYear()});
 		}
 	}
 	return result;
@@ -329,13 +329,13 @@ plugin.methods._extractTwitterID = function() {
 };
 
 plugin.css =
-	".{class:avatar} a img { border: 0px; }" +
-	".{class:date} { display: none; }" +
-	".{class:buttons} .{class:button-delim}:first-child { display: none; }" +
-	".{class:data} a { text-decoration: none; }" +
-	".{class:data} a:hover { text-decoration: underline; }" +
-	".{class:footer} { padding-top: 5px; }" +
-	".{class:modeSwitch} { margin-left: 6px; }" +
+	".{plugin.class} .{class:avatar} a img { border: 0px; }" +
+	".{plugin.class} .{class:date} { display: none; }" +
+	".{plugin.class} .{class:buttons} .{class:button-delim}:first-child { display: none; }" +
+	".{plugin.class} .{class:data} a { text-decoration: none; }" +
+	".{plugin.class} .{class:data} a:hover { text-decoration: underline; }" +
+	".{plugin.class} .{class:footer} { padding-top: 5px; }" +
+	".{plugin.class} .{class:modeSwitch} { margin-left: 6px; }" +
 	".{plugin.class:userName} { float: left; font-size: 15px; font-weight: bold; }" +
 	".{plugin.css:screenName} { margin-left: 4px; font-size: 11px; font-weight: normal; padding-top: 1px; }" +
 	".{plugin.class:userName} a, .{plugin.class:tweetUserName} a, .{plugin.class:intentControl} { text-decoration: none; }" +
@@ -350,9 +350,9 @@ plugin.css =
 	".{plugin.class:twitterIcon} { float: left; margin-right: 3px; }" +
 	".{plugin.class:date} { text-decoration: none; color: #C6C6C6; }" +
 	".{plugin.class:tweetScreenName} a { text-decoration: none; color: #333333; }" +
-	".{plugin.class:tweetPermalink} a { text-decoration: none; }" +
-	".{plugin.class:tweetPermalink} a:hover { text-decoration: underline;  }" +
-	".{plugin.class:tweetPermalink} { float: right; }";
+	".{plugin.class:tweetDate} a { text-decoration: none; }" +
+	".{plugin.class:tweetDate} a:hover { text-decoration: underline;  }" +
+	".{plugin.class:tweetDate} { float: right; }";
 
 Echo.Plugin.create(plugin);
 
