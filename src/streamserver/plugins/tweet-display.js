@@ -200,7 +200,6 @@ plugin.component.renderers.authorName = function(element) {
 		.removeClass("echo-linkColor")
 		.addClass(this.cssPrefix + "tweetScreenName").wrapInner(
 			Echo.Utils.hyperlink({
-				"caption": "",
 				"href": item.get("data.actor.id")
 			}, {
 				"openInNewWindow": item.config.get("openLinksInNewWindow"),
@@ -216,8 +215,7 @@ plugin.component.renderers.avatar = function(element) {
 	var item = this.component;
 	return item.parentRenderer("avatar", arguments).wrap(
 		Echo.Utils.hyperlink({
-			"href": item.get("data.actor.id"),
-			"caption": ""
+			"href": item.get("data.actor.id")
 		}, {
 			"openInNewWindow": item.config.get("openLinksInNewWindow"),
 			"skipEscaping": true
