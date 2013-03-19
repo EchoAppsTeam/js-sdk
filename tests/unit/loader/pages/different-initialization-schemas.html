@@ -7,30 +7,30 @@
 
 	<div class="echo-canvas"
 		id="testcanvas"
-		data-canvas-id="test-canvas-002-1"
+		data-canvas-id="js-sdk-tests/test-canvas-002-1"
 		data-appkey="test.echoenabled.com">
 	</div>
 
 	<div class="echo-canvas"
-		id="test-canvas-002-2"
-		data-canvas-id="test-canvas-002-2"
+		id="js-sdk-tests/test-canvas-002-2"
+		data-canvas-id="js-sdk-tests/test-canvas-002-2"
 		data-appkey="test.echoenabled.com">
 	</div>
 
 	<div class="some-class echo-canvas"
-		data-canvas-id="test-canvas-002-3"
+		data-canvas-id="js-sdk-tests/test-canvas-002-3"
 		data-appkey="test.echoenabled.com">
 	</div>
 
 	<div class="canvases-container">
 		<div class="echo-canvas"
-			data-canvas-id="test-canvas-002-4"
+			data-canvas-id="js-sdk-tests/test-canvas-002-4"
 			data-appkey="test.echoenabled.com">
 		</div>
 	</div>
 
 	<div class="echo-canvas"
-		data-canvas-id="test-canvas-002-5"
+		data-canvas-id="js-sdk-tests/test-canvas-002-5"
 		data-appkey="test.echoenabled.com">
 	</div>
 
@@ -74,7 +74,7 @@
 				}});
 			};
 			for (var i = 0; i < 6; i++) {
-				waitForCompletion("test-canvas-002-" + i, "auth");
+				waitForCompletion("js-sdk-tests/test-canvas-002-" + i, "auth");
 			}
 
 			// canvases lookup in a given target
@@ -84,7 +84,7 @@
 
 			// passing HTML element as a canvas
 			Echo.Loader.init({
-				"canvases": document.getElementById("test-canvas-002-2")
+				"canvases": document.getElementById("js-sdk-tests/test-canvas-002-2")
 			});
 
 			// passing jQuery object (id lookup) as a canvas
