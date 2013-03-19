@@ -306,7 +306,7 @@ Echo.Tests.Events.contracts = {
 		"target": "object",
 		"targetURL": "string"
 	},
-	"Echo.Loader.onError": {
+	"Echo.Canvas.onError": {
 		"code": "string",
 		"message": "string"
 	},

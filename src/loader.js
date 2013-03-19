@@ -261,19 +261,11 @@ Echo.Loader.init = function(config) {
 		// we look for all canvases in the target ('document' by default)
 		canvases = canvases || $(".echo-canvas", config.target);
 
-		if (!canvases.length) {
-			Echo.Loader._error({
-				"code": "no_canvases_found",
-				"message": "No canvases found on the page..."
-			});
-			return;
-		}
-
-		$.map(canvases, function(canvas) {
+		$.map(canvases || [], function(canvas) {
 			var target = $(canvas);
 			var instance = new Echo.Canvas({
 				"target": target,
-				"overrides": Echo.Loader.overrides[target.data("canvas-id")] || {}
+				"overrides": Echo.Loader.overrides[target.data("canvasId")] || {}
 			});
 			Echo.Loader.canvases.push(instance);
 		});
@@ -312,14 +304,6 @@ Echo.Loader.init = function(config) {
  */
 Echo.Loader.initApplication = function(app) {
 	Echo.Loader.initEnvironment(function() {
-		if (!app || !app.config || !app.config.target) {
-			Echo.Loader._error({
-				"args": {"app": app},
-				"code": "invalid_app_config",
-				"message": "Invalid config passed into the initApplication function"
-			});
-			return;
-		}
 		var instance = new Echo.Canvas({
 			"target": app.config.target,
 			"data": { // as we receive if from the Canvas Storage
@@ -329,15 +313,6 @@ Echo.Loader.initApplication = function(app) {
 		});
 		Echo.Loader.canvases.push(instance);
 	});
-};
-
-Echo.Loader._error = function(data) {
-	if (!Echo.Events || !Echo.Utils || !Echo.jQuery) return;
-	Echo.Events.publish({
-		"topic": "Echo.Loader.onError",
-		"data": data
-	});
-	Echo.Utils.log(Echo.jQuery.extend(data, {"type": "error", "component": "Echo.Loader"}));
 };
 
 // implementation of the "map" function for the cases when jQuery is not loaded yet

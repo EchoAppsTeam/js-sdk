@@ -145,7 +145,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			},
 			"cssPrefix": "echo-new-"
 		});
-		QUnit.ok($.isFunction(view.renderers.header) && $.isFunction(view.renderers.body) && view.config.cssPrefix === "echo-", "Check forked view with overrided config is not affected a parent view instance");
+		QUnit.ok($.isFunction(view.renderers.header) && $.isFunction(view.renderers.body) && view.config.cssPrefix === "echo-", "Check that forked view with overridden config is not affected by the parent view instance");
 
 		view2.render({
 			"template": 

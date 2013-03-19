@@ -29,7 +29,7 @@ canvas.init = function() {
 	var parent = $.proxy(this.parent, this);
 
 	// check if the canvas was already initialized
-	if (target.data("initialized")) {
+	if (target.data("echo-canvas-initialized")) {
 		this._error({
 			"args": {"target": target},
 			"code": "canvas_already_initialized"
@@ -38,7 +38,7 @@ canvas.init = function() {
 	}
 
 	// extending Canvas config with the "id" and "appkey" defined in the target
-	var overrides = this._getOverrides(target, [["id", "canvas-id"], "appkey"]);
+	var overrides = this._getOverrides(target, ["id", "appkey"]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
@@ -55,8 +55,8 @@ canvas.init = function() {
 	}
 
 	// define initialized state for the canvas
-	// to prevent multiple initalization of the same canvas
-	target.data("initialized", true);
+	// to prevent multiple initialization of the same canvas
+	target.data("echo-canvas-initialized", true);
 
 	this._fetchConfig(function(config) {
 		if (!config || !config.apps || !config.apps.length) {
@@ -85,7 +85,6 @@ canvas.config = {
 	 * Unique ID of the Canvas, used by the Echo.Canvas instance
 	 * to retrieve the data from the Canvases data storage.
 	 */
-	"id": undefined,
 
 	/**
 	 * @cfg {Object} [data]
@@ -107,9 +106,11 @@ canvas.config = {
 	 * The values of the HTML parameters override the "appkey" and "id" parameter values
 	 * (respectively) passed via the Canvas config.
 	 */
-	"target": undefined,
 
-	"appkey": undefined,  // docs to be inherited from Echo.Control
+	/**
+	 * @cfg {String} appkey
+	 * @inheritdoc
+	 */
 
 	/**
 	 * @cfg {Object} [overrides]
@@ -118,6 +119,9 @@ canvas.config = {
 	 */
 	"overrides": {},
 
+	/**
+	 * @ignore
+	 */
 	"storageURL": Echo.Loader.config.storageURL  // no docs, not supposed
 						     // to be changed by the publishers
 };
@@ -181,7 +185,7 @@ canvas.templates.app =
 
 canvas.destroy = function() {
 	$.map(this.get("apps"), $.proxy(this._destroyApp, this));
-	this.config.get("target").data("initialized", false);
+	this.config.get("target").data("echo-canvas-initialized", false);
 };
 
 /**
@@ -317,18 +321,23 @@ canvas.methods._loadAppResources = function(callback) {
 
 canvas.methods._getOverrides = function(target, spec) {
 	return Echo.Utils.foldl({}, spec || [], function(item, acc) {
-		var complex = $.isArray(item);
-		var key = complex ? item[0] : item;
-		var value = target.data(complex ? item[1] : item);
+		var key = "canvas" + Echo.Utils.capitalize(item);
+		var value = target.data(key);
 		if (typeof value !== "undefined") {
-			acc[key] = value;
+			acc[item] = value;
 		}
 	});
 };
 
 canvas.methods._error = function(args) {
 	args.message = args.message || this.labels.get("error_" + args.code);
-	Echo.Loader._error(args);
+	if (Echo.Loader.isDebug()) {
+		Echo.Events.publish({
+			"topic": "Echo.Canvas.onError",
+			"data": args
+		});
+	}
+	Echo.Utils.log($.extend(args, {"type": "error", "component": "Echo.Canvas"}));
 	if (args.renderError) {
 		this.showMessage({
 			"type": "error",
