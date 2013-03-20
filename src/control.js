@@ -805,18 +805,18 @@ Echo.Control.prototype._initializers.css = function() {
 	$.map(this._manifest("css"), function(spec) {
 		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
 		if (spec.id !== self.name) {
-			var component = Echo.Utils.getComponent(spec.id);
-			component && Echo.Utils.addCSS(
-				Echo.Utils.substitute({
+			var css, component = Echo.Utils.getComponent(spec.id);
+			if (component) {
+				css = self.substitute({
 					"template": spec.code,
-					"instructions": $.extend(self._getSubstitutionInstructions(), {
+					"instructions": {
 						"class": function(key) {
-							var cssPrefix = component.prototype.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-") + "-";
-							return cssPrefix + key;
+							return component.prototype.cssPrefix + key;
 						}
-					})
-				})
-			, spec.id);
+					}
+				});
+				Echo.Utils.addCSS(css, spec.id);
+			}
 		} else {
 			Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 		}
@@ -966,10 +966,7 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 		"class": function(key) {
 			return key ? control.cssPrefix + key : control.cssClass;
 		},
-		"parent.class": function(key) {
-			return key ? control.constructor.parent.cssPrefix + key : control.cssClass;
-		},
-		"parents.class": function(key) {
+		"inherited.class": function(key) {
 			var value, parent;
 			if (key) {
 				parent = control.constructor.parent;
