@@ -883,6 +883,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"inherits": Echo.Utils.getComponent("Echo.TestControl1_Child1")
 	});
+	var anotherEventCounter = function() { eventsChecker.anotherNewEvent++; };
 	var control2 = Echo.Control.create($.extend(true, {}, parentManifest, {
 		"name": "Echo.TestControl2",
 		"templates": {
@@ -896,7 +897,6 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"Echo.TestControl1_Child2_Child3.anotherNewTestEvent": anotherEventCounter,
 		}
 	}));
-	var anotherEventCounter = function() { eventsChecker.anotherNewEvent++; };
 	suite.initTestControl({
 		"context": ctx,
 		"target": $("#qunit-fixture"),
