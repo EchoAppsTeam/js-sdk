@@ -422,7 +422,7 @@ suite.prototype.tests.canvasesScriptsLoadingTest = {
 		var self = this;
 		var debug = Echo.Loader.debug;
 
-		$("#qunit-fixture").append("<div class=\"echo-canvas\" data-appkey=\"test.echoenabled.com\" data-canvas-id=\"test.canvas.007\"></div>");
+		$("#qunit-fixture").append("<div class=\"echo-canvas\" data-canvas-appkey=\"test.echoenabled.com\" data-canvas-id=\"js-sdk-tests/test.canvas.007\"></div>");
 
 		Echo.Loader.override("test.canvas.007", "test.apps.scripts", {"ready": function() {
 			this.destroy();
@@ -430,7 +430,7 @@ suite.prototype.tests.canvasesScriptsLoadingTest = {
 
 			Echo.Loader.debug = false;
 			delete window.Echo.Tests.Controls.TestControl;
-			$("#qunit-fixture").empty().append("<div class=\"echo-canvas\" data-appkey=\"test.echoenabled.com\" data-canvas-id=\"test.canvas.007\"></div>");
+			$("#qunit-fixture").empty().append("<div class=\"echo-canvas\" data-canvas-appkey=\"test.echoenabled.com\" data-canvas-id=\"js-sdk-tests/test.canvas.007\"></div>");
 			Echo.Loader.override("test.canvas.007", "test.apps.scripts", {"ready": function() {
 				this.destroy();
 				QUnit.ok(Echo.Variables.TestControl === "production", "Check if production version of application script was loaded");
