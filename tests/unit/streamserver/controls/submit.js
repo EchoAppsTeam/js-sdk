@@ -67,6 +67,7 @@ suite.prototype.tests.loggedUserWorkflow = {
 				self.sequentialAsyncTests([
 					"user",
 					"content",
+					"markersAndTags",
 					"post"
 				], "cases");
 			}
@@ -166,6 +167,20 @@ suite.prototype.cases.content = function(callback) {
 	button.on("click", suite.postHandler).click();
 };
 
+suite.prototype.cases.markersAndTags = function(callback) {
+	var submit = suite.submit;
+	submit.config.set("markers", ["test-marker1", "test-marker2", "test-marker3"]);
+	submit.config.set("tags", ["test-tag1", "test-tag2", "test-tag3"]);
+	submit.render();
+	QUnit.strictEqual(submit.view.get("markers").val(), "test-marker1, test-marker2, test-marker3", "Check that markers were render in case of using values from the config");
+	QUnit.strictEqual(submit.view.get("tags").val(), "test-tag1, test-tag2, test-tag3", "Check that tags were render in case of using values from the config");
+	submit.set("data.object.markers", ["another-test-marker1", "another-test-marker2", "another-test-marker3"]);
+	submit.set("data.object.tags", ["another-test-tag1", "another-test-tag2", "another-test-tag3"]);
+	submit.render();
+	QUnit.strictEqual(submit.view.get("markers").val(), "another-test-marker1, another-test-marker2, another-test-marker3", "Check that markers were render in case of using values from the data.object");
+	QUnit.strictEqual(submit.view.get("tags").val(), "another-test-tag1, another-test-tag2, another-test-tag3", "Check that tags were render in case of using values from the data.object");
+	callback();
+};
 
 suite.prototype.cases.validator = function(callback) {
 	var submit = suite.submit;

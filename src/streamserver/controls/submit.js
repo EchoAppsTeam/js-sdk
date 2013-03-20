@@ -453,7 +453,7 @@ submit.renderers.postButton = function(element) {
 
 submit.renderers._metaFields = function(element, extra) {
 	var type = extra.type;
-	var data = this.get("data.object." + type) || [];
+	var data = this.get("data.object." + type, this.config.get(type));
 	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
 	return this.view.get(type).iHint({
 		"text": this.labels.get(type + "Hint"),
