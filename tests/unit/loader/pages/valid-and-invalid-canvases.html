@@ -10,27 +10,27 @@
 	<div class="echo-canvas" id="echo-canvas"></div>
 
 	<!-- missing appkey -->
-	<div class="echo-canvas" data-canvas-id="canvas.001"></div>
-	<div class="echo-canvas" data-canvas-id="canvas.002"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.001"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.002"></div>
 
 	<!-- missing canvas id-->
 	<div class="echo-canvas" data-appkey="canvas.003"></div>
 
 	<!-- all fields defined, but no config available for the canvas id specified -->
-	<div class="echo-canvas" data-canvas-id="canvas.004" data-appkey="test.echoenabled.com"></div>
-	<div class="echo-canvas" data-canvas-id="canvas.005" data-appkey="test.echoenabled.com"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.004" data-canvas-appkey="test.echoenabled.com"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.005" data-canvas-appkey="test.echoenabled.com"></div>
 
 	<!-- canvas with empty app list -->
-	<div class="echo-canvas" data-canvas-id="test.canvas.004" data-appkey="test.echoenabled.com"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-004" data-canvas-appkey="test.echoenabled.com"></div>
 
 	<!-- canvas with no app list and no Backplane config -->
-	<div class="echo-canvas" data-canvas-id="test.canvas.005" data-appkey="test.echoenabled.com"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-005" data-canvas-appkey="test.echoenabled.com"></div>
 
 	<!-- canvas with no configuration at all (empty JSON object) -->
-	<div class="echo-canvas" data-canvas-id="test.canvas.006" data-appkey="test.echoenabled.com"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-006" data-canvas-appkey="test.echoenabled.com"></div>
 
 	<!-- valid canvas with existing configuration -->
-	<div class="echo-canvas" data-canvas-id="test.canvas.001" data-appkey="test.echoenabled.com"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="test.echoenabled.com"></div>
 
 	<script>
 		// link Echo & QUnit objects from the parent window
@@ -45,14 +45,13 @@
 				"invalid": 10
 			};
 			var errors = {
-				"canvas_with_no_apps": [0, 3],
-				"invalid_canvas_config": [0, 5],
+				"invalid_canvas_config": [0, 8],
 				"unable_to_retrieve_app_config": [0, 2]
 			};
 
 			// check invalid canvases
 			var handlerId = Echo.Events.subscribe({
-				"topic": "Echo.Loader.onError",
+				"topic": "Echo.Canvas.onError",
 				"handler": function(topic, args) {
 					count.invalid--;
 					errors[args.code][0]++;
@@ -75,8 +74,8 @@
 					}
 				}});
 			};
-			waitForCompletion("test.canvas.001", "submit");
-			waitForCompletion("test.canvas.001", "stream");
+			waitForCompletion("js-sdk-tests/test-canvas-001", "submit");
+			waitForCompletion("js-sdk-tests/test-canvas-001", "stream");
 			Echo.Loader.init({"target": document.body});
 		};
 	</script>
