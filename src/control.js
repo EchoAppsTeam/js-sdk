@@ -660,14 +660,7 @@ Echo.Control.prototype._initializers.events = function() {
 	};
 	return {
 		"publish": function(params) {
-			var parent = control.constructor.parent;
-			var names = function get(parent, acc) {
-				if (parent && parent.name) {
-					acc.unshift(parent.name);
-					get(parent.constructor.parent, acc);
-				}
-				return acc;
-			}(parent, []);
+			var parent, names;
 
 			params.data = params.data || {};
 
@@ -675,13 +668,24 @@ Echo.Control.prototype._initializers.events = function() {
 			if (control._prepareEventParams) {
 				params.data = control._prepareEventParams(params.data);
 			}
-			$.map(names, function(name) {
-				Echo.Events.publish({
-					"topic": name + "." + params.topic,
-					"data": params.data,
-					"context": control.config.get("context")
+			// publish events with parents prefixes if appropriate flag provided
+			if (params.inherited) {
+				parent = control.constructor.parent;
+				names = function get(parent, acc) {
+					if (parent && parent.name) {
+						acc.unshift(parent.name);
+						get(parent.constructor.parent, acc);
+					}
+					return acc;
+				}(parent, []);
+				$.map(names, function(name) {
+					Echo.Events.publish({
+						"topic": name + "." + params.topic,
+						"data": params.data,
+						"context": control.config.get("context")
+					});
 				});
-			});
+			}
 			params.topic = control.name + "." + params.topic;
 			Echo.Events.publish(prepare(params));
 		},
