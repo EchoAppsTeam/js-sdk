@@ -276,8 +276,8 @@ Echo.Tests.Events.contracts = {
 	},
 	"Echo.Control.onDestroy": {
 		"self": "boolean",
-		"producer": {
-			"name": "string"
+		"producer": function(value) {
+			return value instanceof Echo.Control;
 		}
 	},
 	"Echo.StreamServer.Controls.Submit.onReady": {
