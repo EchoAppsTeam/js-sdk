@@ -1,6 +1,6 @@
 (function($) {
 
-	var suite = Echo.Tests.Unit.PluginsTwitterIntents = function() {
+	var suite = Echo.Tests.Unit.PluginsTweetDisplay = function() {
 		this.constructPluginRenderersTest({
 			"data": _streamData
 		});
@@ -9,8 +9,8 @@
 	suite.prototype.tests = {};
 
 	suite.prototype.info = {
-		"className": "Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents",
-		"suiteName": "TwitterIntents plugin",
+		"className": "Echo.StreamServer.Controls.Stream.Item.Plugins.TweetDisplay",
+		"suiteName": "TweetDisplay plugin",
 		"functions": []
 	};
 
@@ -24,7 +24,7 @@
 				"appkey": "test.js-kit.com",
 				"data": _streamData,
 				"plugins": [{
-					"name": "TwitterIntents"
+					"name": "TweetDisplay"
 				}, {
 					"name": "Reply"
 				}, {
@@ -33,11 +33,11 @@
 				"ready": function() {
 					$.map(this.items, function(item) {
 						if (item.data.source.name == "Twitter") {
-							QUnit.ok(item.plugins["TwitterIntents"] && !item.plugins["Reply"] && !item.plugins["Like"],
+							QUnit.ok(item.plugins["TweetDisplay"] && !item.plugins["Reply"] && !item.plugins["Like"],
 								"PluginReply and PluginLike disabled for tweet");
 						} else {
-							QUnit.ok(!item.plugins["TwitterIntents"] && item.plugins["Reply"] && item.plugins["Like"],
-								"TwitterIntents disabled for not tweet");
+							QUnit.ok(!item.plugins["TweetDisplay"] && item.plugins["Reply"] && item.plugins["Like"],
+								"TweetDisplay disabled for not tweet");
 						}
 					});
 					this.destroy();

@@ -4,11 +4,7 @@
 var $ = jQuery;
 
 /**
- * @deprecated
- * Twitter Intents Plugin is renamed to {@link Echo.StreamServer.Controls.Stream.Item.Plugins.TweetDisplay Tweet Display Plugin}.
- * Twitter Intents Plugin will be removed in the next version.
- *
- * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TweetDisplay
  * Adds the Twitter intents controls into the item UI and updates the
  * item UI to look and behave like a Twitter item. The item UI update includes:
  *
@@ -28,7 +24,7 @@ var $ = jQuery;
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "test.echoenabled.com",
  * 		"plugins": [{
- * 			"name": "TwitterIntents"
+ * 			"name": "TweetDisplay"
  * 		}]
  * 	});
  *
@@ -36,12 +32,12 @@ var $ = jQuery;
  * work correctly. If {@link Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization PinboardVisualization}
  * plugin is also enabled in the Stream then this plugin must be placed right after it.
  *
- * <b>Note</b>: if TwitterIntents plugin is added to the stream then Reply and
+ * <b>Note</b>: if TweetDisplay plugin is added to the stream then Reply and
  * Like plugins will be disabled for tweet items. Moreover Reply control is
  * renamed with Comment on non-tweet items to avoid possible confusion.
  *
  * #### Configuration
- * The TwitterIntents plugin configuration options include the following:
+ * The TweetDisplay plugin configuration options include the following:
  *
  * + enabled <br/>
  *   This parameter specifies if plugin is enabled during application initialization.
@@ -49,7 +45,7 @@ var $ = jQuery;
  *
  * @extends Echo.Plugin
  */
-var plugin = Echo.Plugin.manifest("TwitterIntents", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Echo.Plugin.manifest("TweetDisplay", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
