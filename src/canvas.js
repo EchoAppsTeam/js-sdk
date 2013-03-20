@@ -321,7 +321,7 @@ canvas.methods._loadAppResources = function(callback) {
 
 canvas.methods._getOverrides = function(target, spec) {
 	return Echo.Utils.foldl({}, spec || [], function(item, acc) {
-		var key = "canvas" + Echo.Utils.capitalize(item);
+		var key = "canvas-" + item;
 		var value = target.data(key);
 		if (typeof value !== "undefined") {
 			acc[item] = value;
