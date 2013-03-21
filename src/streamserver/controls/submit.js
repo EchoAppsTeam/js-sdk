@@ -531,6 +531,7 @@ submit.methods.post = function() {
 		"itemURIPattern": this.config.get("itemURIPattern"),
 		"submissionProxyURL": this.config.get("submissionProxyURL"),
 		"timeout": this.config.get("postingTimeout"),
+		"secure": this.config.get("useSecureAPI"),
 		"data": entry,
 		"onData": callbacks.onData,
 		"onError": callbacks.onError

@@ -99,6 +99,7 @@ counter.methods._request = function() {
 			},
 			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
 			"recurring": this.config.get("liveUpdates.enabled"),
+			"secure": this.config.get("useSecureAPI"),
 			"onError": $.proxy(this._error, this),
 			"onData": $.proxy(this._update, this)
 		});

@@ -567,6 +567,7 @@ stream.methods._requestChildrenItems = function(unique) {
 	var target = item.view.get("expandChildren");
 	var request = Echo.StreamServer.API.request({
 		"endpoint": "search",
+		"secure": this.config.get("useSecureAPI"),
 		"apiBaseURL": this.config.get("apiBaseURL"),
 		"data": {
 			"q": this._constructChildrenSearchQuery(item),
@@ -611,6 +612,7 @@ stream.methods._requestInitialItems = function() {
 	if (!this.request) {
 		this.request = Echo.StreamServer.API.request({
 			"endpoint": "search",
+			"secure": this.config.get("useSecureAPI"),
 			"apiBaseURL": this.config.get("apiBaseURL"),
 			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
 			"recurring": this.config.get("liveUpdates.enabled"),
@@ -651,6 +653,7 @@ stream.methods._requestMoreItems = function(element) {
 	if (!this.moreRequest) {
 		this.moreRequest = Echo.StreamServer.API.request({
 			"endpoint": "search",
+			"secure": this.config.get("useSecureAPI"),
 			"apiBaseURL": this.config.get("apiBaseURL"),
 			"onOpen": function() {
 				self.showError({}, {
@@ -1447,6 +1450,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"plugins": this.config.get("plugins"),
 		"context": this.config.get("context"),
 		"data": this._normalizeEntry(entry),
+		"useSecureAPI": this.config.get("useSecureAPI"),
 		"user": this.user,
 		"live": isLive,
 		"ready": callback

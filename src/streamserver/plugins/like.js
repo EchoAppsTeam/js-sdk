@@ -113,6 +113,7 @@ plugin.renderers.likedBy = function(element) {
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
+		"secure": this.component.config.get("useSecureAPI"),
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
 		"onData": callback,
 		"onError": errorCallback,
