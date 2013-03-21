@@ -101,16 +101,18 @@ suite.prototype.tests.commonWorkflow = {
 				&& modalElement.width() === 400, "Check set() method");
 
 		modal.hide();
-		setTimeout(function() {
+		modal.config.set("onHide", function() {
 			QUnit.ok(!$(".modal").length, "Check hide() method");
-		}, 1000)
+		});
 
 		modal.show();
 		$(".modal").hide();
 		QUnit.ok($(".modal").length, "Check show() method");
 
 		modal.destroy();
-		QUnit.ok(!$(".modal").length, "Check destroy() method");
+		modal.config.set("onHide", function() {
+			QUnit.ok(!$(".modal").length, "Check destroy() method");
+		});
 
 		QUnit.start();
 		
