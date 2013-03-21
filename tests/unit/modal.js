@@ -46,6 +46,7 @@ suite.prototype.tests.commonWorkflow = {
 		"async": true
 	},
 	"check": function() {
+		QUnit.expect(14);
 		Echo.Utils.addCSS(".echo-hide { display: none; }", "echo-hide");
 		var modal = new Echo.GUI.Modal(modalParams);
 
@@ -100,19 +101,19 @@ suite.prototype.tests.commonWorkflow = {
 				&& $(".modal-body", modalElement).html() === "upd_body"
 				&& modalElement.width() === 400, "Check set() method");
 
-		modal.hide();
 		modal.config.set("onHide", function() {
 			QUnit.ok(!$(".modal").length, "Check hide() method");
 		});
+		modal.hide();
 
 		modal.show();
 		$(".modal").hide();
 		QUnit.ok($(".modal").length, "Check show() method");
 
-		modal.destroy();
 		modal.config.set("onHide", function() {
 			QUnit.ok(!$(".modal").length, "Check destroy() method");
 		});
+		modal.destroy();
 
 		QUnit.start();
 		

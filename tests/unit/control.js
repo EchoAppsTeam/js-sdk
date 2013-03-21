@@ -894,7 +894,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"Echo.TestControl1.anotherNewTestEvent": anotherEventCounter,
 			"Echo.TestControl1_Child1.anotherNewTestEvent": anotherEventCounter,
 			"Echo.TestControl1_Child1_Child2.anotherNewTestEvent": anotherEventCounter,
-			"Echo.TestControl1_Child2_Child3.anotherNewTestEvent": anotherEventCounter,
+			"Echo.TestControl1_Child2_Child3.anotherNewTestEvent": anotherEventCounter
 		}
 	}));
 	suite.initTestControl({
