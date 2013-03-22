@@ -90,14 +90,12 @@ div#north-region {
 
 .welcome-page .img {
 	float: right;
-	width: 320px;
 }
 
 .welcome-page .copy {
 	float: left;
 	width: 550px;
 	padding-top: 30px;
-	padding-left: 130px;
 	padding-bottom: 40px;
 }
 
@@ -112,6 +110,7 @@ div#north-region {
 
 .welcome-page #sdk-welcome-logo {
 	width: 250px;
+	margin-right: -60px;
 }
 
 .welcome-page {
