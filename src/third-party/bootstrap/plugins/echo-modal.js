@@ -153,7 +153,7 @@ Echo.GUI.Modal.prototype.refresh = function() {
 	this._assembleBackdrop();
 
 	this.element.on("hidden", function() {
-		self.destroy();
+		self.config.get("onHide").call(self, self.element);
 	});
 	this.element.on("shown", function() {
 		self.config.get("onShow").call(self, self.element);
@@ -172,7 +172,9 @@ Echo.GUI.Modal.prototype.refresh = function() {
  * 	myModal.show();
  */
 Echo.GUI.Modal.prototype.show = function() {
-	this.element.modal("show");
+	this.rendered
+		? this.element.modal("show")
+		: this.refresh();
 };
 
 /**

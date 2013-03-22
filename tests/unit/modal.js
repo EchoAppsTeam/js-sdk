@@ -46,7 +46,7 @@ suite.prototype.tests.commonWorkflow = {
 		"async": true
 	},
 	"check": function() {
-		QUnit.expect(14);
+		QUnit.expect(16);
 		Echo.Utils.addCSS(".echo-hide { display: none; }", "echo-hide");
 		var modal = new Echo.GUI.Modal(modalParams);
 
@@ -101,22 +101,23 @@ suite.prototype.tests.commonWorkflow = {
 				&& $(".modal-body", modalElement).html() === "upd_body"
 				&& modalElement.width() === 400, "Check set() method");
 
+
+		QUnit.ok(!$(".modal").hasClass("hide"), "Check that element is visible");
 		modal.config.set("onHide", function() {
-			QUnit.ok(!$(".modal").length, "Check hide() method");
+			modal.config.set("onHide", function() {});
+			QUnit.ok(!$(".modal").hasClass("hide"), "Check hide() method");
+
+			modal.config.set("onShow", function() {
+				QUnit.ok(!$(".modal").hasClass("hide"), "Check show() method");
+				modal.destroy();
+				QUnit.ok(!$(".modal").length, "Check destroy() method");
+
+				QUnit.start();
+			});
+			modal.show();
+			$(".modal").hide(); // do not display modal dialog in the browser
 		});
 		modal.hide();
-
-		modal.show();
-		$(".modal").hide();
-		QUnit.ok($(".modal").length, "Check show() method");
-
-		modal.config.set("onHide", function() {
-			QUnit.ok(!$(".modal").length, "Check destroy() method");
-		});
-		modal.destroy();
-
-		QUnit.start();
-		
 	}
 };
 
