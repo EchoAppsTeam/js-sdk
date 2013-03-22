@@ -161,13 +161,18 @@ module.exports = function(grunt) {
 		meta: {
 			banner:
 				"/**\n" +
-				" * Copyright (c) 2006-<%= grunt.template.today(\"UTC:yyyy\") %> <%= pkg.author.name %>. All rights reserved.\n" +
-				" * You may copy and modify this script as long as the above copyright notice,\n" +
-				" * this condition and the following disclaimer is left intact.\n" +
-				" * This software is provided by the author \"AS IS\" and no warranties are\n" +
-				" * implied, including fitness for a particular purpose. In no event shall\n" +
-				" * the author be liable for any damages arising in any way out of the use\n" +
-				" * of this software, even if advised of the possibility of such damage.\n" +
+				" * Copyright 2012-<%= grunt.template.today(\"UTC:yyyy\") %> <%= pkg.author.name %>.\n" +
+   				" * Licensed under the Apache License, Version 2.0 (the \"License\");\n" +
+   				" * you may not use this file except in compliance with the License.\n" +
+   				" * You may obtain a copy of the License at\n" +
+				" *\n" +
+       			" * http://www.apache.org/licenses/LICENSE-2.0\n" +
+				" *\n" +
+   				" * Unless required by applicable law or agreed to in writing, software\n" +
+   				" * distributed under the License is distributed on an \"AS IS\" BASIS,\n" +
+   				" * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n" +
+   				" * See the License for the specific language governing permissions and\n" +
+   				" * limitations under the License.\n" +
 				" *\n" +
 				" * Version: <%= pkg.version %> (<%= grunt.template.today(\"UTC:yyyy-mm-dd HH:MM:ss Z\") %>)\n" +
 				" */"
