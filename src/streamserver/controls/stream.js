@@ -7,6 +7,7 @@ var $ = jQuery;
  * @class Echo.StreamServer.Controls.Stream
  * Echo Stream control which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">Echo Search API</a>
+ * and displays live updating search results in a standard ‘news feed’ style format.
  *
  * 	var stream = new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("stream"),

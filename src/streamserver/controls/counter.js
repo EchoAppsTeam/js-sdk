@@ -7,6 +7,7 @@ var $ = jQuery;
  * @class Echo.StreamServer.Controls.Counter
  * Echo Counter class which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
+ * and provides a simple live updating number.
  *
  * 	new Echo.StreamServer.Controls.Counter({
  * 		"target": document.getElementById("echo-counter"),

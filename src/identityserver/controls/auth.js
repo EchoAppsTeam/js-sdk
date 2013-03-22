@@ -5,8 +5,7 @@ var $ = jQuery;
 
 /**
  * @class Echo.IdentityServer.Controls.Auth
- * Echo Auth control displays the user login status and allows to sign in using
- * different social identities.
+ * Echo Auth control displays the user login status and allows them sign in using different social identities.
  *
  * 	var identityManager = {
  * 		"title": "Title of the auth area"

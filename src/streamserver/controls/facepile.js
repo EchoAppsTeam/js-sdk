@@ -5,7 +5,7 @@ var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.FacePile
- * Echo FacePile control displays users (actors) returned in any activity stream. 
+ * Echo FacePile control displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
  * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
  *
  * 	new Echo.StreamServer.Controls.FacePile({
