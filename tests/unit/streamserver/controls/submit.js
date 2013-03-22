@@ -68,7 +68,7 @@ suite.prototype.tests.loggedUserWorkflow = {
 					"user",
 					"content",
 					"post",
-					"markersAndTags",
+					"markersAndTags"
 				], "cases");
 			}
 		});
