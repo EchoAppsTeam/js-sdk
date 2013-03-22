@@ -161,7 +161,7 @@ module.exports = function(grunt) {
 		meta: {
 			banner:
 				"/**\n" +
-				" * Copyright (c) 2006-<%= grunt.template.today(\"UTC:yyyy\") %> <%= pkg.author.name %> <<%= pkg.author.email %>>. All rights reserved.\n" +
+				" * Copyright (c) 2006-<%= grunt.template.today(\"UTC:yyyy\") %> <%= pkg.author.name %>. All rights reserved.\n" +
 				" * You may copy and modify this script as long as the above copyright notice,\n" +
 				" * this condition and the following disclaimer is left intact.\n" +
 				" * This software is provided by the author \"AS IS\" and no warranties are\n" +
