@@ -213,9 +213,8 @@ Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
 };
 
 Echo.API.Transports.XDomainRequest.available = function(config) {
-	config = config || {&quot;URL&quot;: &quot;&quot;, &quot;method&quot;: &quot;&quot;};
-	var parts = config.URL &amp;&amp; utils.parseURL(config.URL) || {};
-	var scheme = parts.scheme || &quot;http:&quot;;
+	config = config || {&quot;method&quot;: &quot;&quot;, &quot;secure&quot;: false};
+	var scheme = config.secure ? &quot;https:&quot; : &quot;http:&quot;;
 	// XDomainRequests must be: GET or POST methods, HTTP or HTTPS protocol,
 	// and same scheme as calling page
 	var transportSpecAvailability = /^get|post$/i.test(config.method)
@@ -369,6 +368,12 @@ Echo.API.Request = function(config) {
 		 * Specifies the request method.
 		 */
 		&quot;method&quot;: &quot;GET&quot;,
+<span id='Echo-API-Request-cfg-secure'>		/**
+</span>		 * @cfg {Boolean} [secure]
+		 * There is a flag which indicates what protocol will be used in, secure or not.
+		 * If this parameter is not set, internally the lib will decide on the URL scheme.
+		 */
+		&quot;secure&quot;: false,
 <span id='Echo-API-Request-cfg-timeout'>		/**
 </span>		 * @cfg {Number} [timeout]
 		 * Specifies the number of seconds after which the onError callback
@@ -379,7 +384,9 @@ Echo.API.Request = function(config) {
 };
 
 Echo.API.Request.prototype._isSecureRequest = function() {
-	var parts = utils.parseURL(this.config.get(&quot;apiBaseURL&quot;));
+	var parts, secure = this.config.get(&quot;secure&quot;);
+	if (secure) return secure;
+	parts = utils.parseURL(this.config.get(&quot;apiBaseURL&quot;));
 	if (!parts.scheme) return false;
 	return /https|wss/.test(parts.scheme);
 };
@@ -440,7 +447,7 @@ Echo.API.Request.prototype._getTransport = function() {
 			var transport;
 			$.each([&quot;AJAX&quot;, &quot;XDomainRequest&quot;, &quot;JSONP&quot;], function(i, name) {
 				var available = Echo.API.Transports[name].available({
-					&quot;URL&quot;: self.config.get(&quot;apiBaseURL&quot;),
+					&quot;secure&quot;: self.config.get(&quot;secure&quot;),
 					&quot;method&quot;: self.config.get(&quot;method&quot;)
 				});
 				if (available) {

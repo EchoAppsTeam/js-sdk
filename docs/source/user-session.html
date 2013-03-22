@@ -268,6 +268,7 @@ Echo.UserSession._getDefaultConfig = function() {
 			&quot;logout&quot;: &quot;http://apps.echoenabled.com/v2/&quot;,
 			&quot;whoami&quot;: &quot;http://api.echoenabled.com/v1/users/&quot;
 		},
+		&quot;useSecureAPI&quot;: false,
 		&quot;fakeIdentityURL&quot;: &quot;http://js-kit.com/ECHO/user/fake_user&quot;
 	};
 };
@@ -275,6 +276,7 @@ Echo.UserSession._getDefaultConfig = function() {
 Echo.UserSession._logoutRequest = function(data, callback) {
 	(new Echo.API.Request({
 		&quot;apiBaseURL&quot;: this.config.get(&quot;endpoints.logout&quot;),
+		&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
 		&quot;endpoint&quot;: &quot;logout&quot;,
 		// FIXME: esp do not support request through pure AJAX request (needs a mandatory parameter 'callback').
 		&quot;transport&quot;: &quot;jsonp&quot;,
@@ -286,6 +288,7 @@ Echo.UserSession._logoutRequest = function(data, callback) {
 Echo.UserSession._whoamiRequest = function(data, callback) {
 	Echo.IdentityServer.API.request({
 		&quot;apiBaseURL&quot;: this.config.get(&quot;endpoints.whoami&quot;),
+		&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
 		&quot;endpoint&quot;: &quot;whoami&quot;,
 		&quot;onData&quot;: callback,
 		&quot;data&quot;: data

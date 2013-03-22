@@ -181,6 +181,7 @@ plugin.methods._assembleButton = function(action, control) {
 		});
 		Echo.StreamServer.API.request({
 			&quot;endpoint&quot;: &quot;submit&quot;,
+			&quot;secure&quot;: this.component.config.get(&quot;useSecureAPI&quot;),
 			&quot;submissionProxyURL&quot;: item.config.get(&quot;submissionProxyURL&quot;),
 			&quot;onData&quot;: function(response) {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onMarkComplete'>				/**

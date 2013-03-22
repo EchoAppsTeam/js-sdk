@@ -161,8 +161,7 @@ Echo.GUI.Modal.prototype.refresh = function() {
 
 	this.rendered = true;
 	var css = this.config.get(&quot;fade&quot;) ? &quot;fade&quot; : &quot;hide&quot;;
-	this.element = this.element || $('&lt;div class=&quot;modal ' + css + '&quot; role=&quot;dialog&quot; tabindex=&quot;-1&quot;&gt;');
-	this.element.empty();
+	this.element = $('&lt;div class=&quot;modal ' + css + '&quot; role=&quot;dialog&quot; tabindex=&quot;-1&quot;&gt;');
 
 	this._assembleHeader();
 	this._assembleBody();
@@ -189,7 +188,9 @@ Echo.GUI.Modal.prototype.refresh = function() {
  * 	myModal.show();
  */
 Echo.GUI.Modal.prototype.show = function() {
-	this.element.modal(&quot;show&quot;);
+	this.rendered
+		? this.element.modal(&quot;show&quot;)
+		: this.refresh();
 };
 
 <span id='Echo-GUI-Modal-method-destroy'>/**

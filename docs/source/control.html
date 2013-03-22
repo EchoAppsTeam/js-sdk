@@ -883,6 +883,7 @@ Echo.Control.prototype._initializers.user = function(callback) {
 	} else {
 		Echo.UserSession({
 			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
+			&quot;useSecureAPI&quot;: this.config.get(&quot;useSecureAPI&quot;),
 			&quot;ready&quot;: function() {
 				control.user = this;
 				callback.call(control);
@@ -1188,6 +1189,14 @@ manifest.config = {
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
 	&quot;submissionProxyURL&quot;: &quot;apps.echoenabled.com/v2/esp/activity/&quot;,
+
+<span id='Echo-Control-cfg-useSecureAPI'>	/**
+</span>	 * @cfg {Boolean} [useSecureAPI]
+	 * This parameter is used to specify the API request scheme.
+	 * If parameter is set to false or not specified, the API request object
+	 * will use the scheme used to retrieve the host page.
+	 */
+	&quot;useSecureAPI&quot;: false,
 
 <span id='Echo-Control-cfg-infoMessages'>	/**
 </span>	 * @cfg {Object} [infoMessages]

@@ -296,9 +296,9 @@ canvas.methods._initUser = function(callback) {
 		callback(user);
 		return;
 	}
-
 	Echo.UserSession({
 		&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
+		&quot;useSecureAPI&quot;: this.get(&quot;data.useSecureAPI&quot;, false),
 		&quot;ready&quot;: function() {
 			callback(this);
 		}

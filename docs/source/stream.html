@@ -584,6 +584,7 @@ stream.methods._requestChildrenItems = function(unique) {
 	var target = item.view.get(&quot;expandChildren&quot;);
 	var request = Echo.StreamServer.API.request({
 		&quot;endpoint&quot;: &quot;search&quot;,
+		&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
 		&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
 		&quot;data&quot;: {
 			&quot;q&quot;: this._constructChildrenSearchQuery(item),
@@ -628,6 +629,7 @@ stream.methods._requestInitialItems = function() {
 	if (!this.request) {
 		this.request = Echo.StreamServer.API.request({
 			&quot;endpoint&quot;: &quot;search&quot;,
+			&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
 			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
 			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdates.timeout&quot;),
 			&quot;recurring&quot;: this.config.get(&quot;liveUpdates.enabled&quot;),
@@ -668,6 +670,7 @@ stream.methods._requestMoreItems = function(element) {
 	if (!this.moreRequest) {
 		this.moreRequest = Echo.StreamServer.API.request({
 			&quot;endpoint&quot;: &quot;search&quot;,
+			&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
 			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
 			&quot;onOpen&quot;: function() {
 				self.showError({}, {
@@ -1464,6 +1467,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		&quot;plugins&quot;: this.config.get(&quot;plugins&quot;),
 		&quot;context&quot;: this.config.get(&quot;context&quot;),
 		&quot;data&quot;: this._normalizeEntry(entry),
+		&quot;useSecureAPI&quot;: this.config.get(&quot;useSecureAPI&quot;),
 		&quot;user&quot;: this.user,
 		&quot;live&quot;: isLive,
 		&quot;ready&quot;: callback
