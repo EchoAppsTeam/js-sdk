@@ -85,19 +85,33 @@ div#north-region {
 }
 
 .welcome-page .col p {
-	padding-right: 15px;
+	padding-right: 35px;
 }
 
 .welcome-page .img {
 	float: right;
-	width: 520px;
+	width: 320px;
 }
 
 .welcome-page .copy {
 	float: left;
-	width: 350px;
-	padding-top: 80px;
-	padding-left: 30px;
+	width: 550px;
+	padding-top: 30px;
+	padding-left: 130px;
+	padding-bottom: 40px;
+}
+
+.welcome-page .copy {
+	line-height: 22px;
+}
+
+.welcome-page .footer {
+	margin: 10px auto;
+	width: 500px;
+}
+
+.welcome-page #sdk-welcome-logo {
+	width: 250px;
 }
 
 .welcome-page {
