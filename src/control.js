@@ -1176,8 +1176,8 @@ manifest.config = {
 	/**
 	 * @cfg {Boolean} [useSecureAPI]
 	 * This parameter is used to specify the API request scheme.
-	 * If parameter is setting to false or not specified, the request object
-	 * will try to retrieve scheme from the request URL.
+	 * If parameter is set to false or not specified, the API request object
+	 * will use the scheme used to retrieve the host page.
 	 */
 	"useSecureAPI": false,
 
