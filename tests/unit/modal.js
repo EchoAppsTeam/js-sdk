@@ -52,7 +52,7 @@ suite.prototype.tests.commonWorkflow = {
 
 		QUnit.ok($(".echo-sdk-ui .modal").length, "Check that modal is available");
 
-		var modalElement = $($(".echo-sdk-ui .modal")[0]);
+		var modalElement = modal.element;
 		var modalBackdrop = $(".echo-sdk-ui .modal-backdrop")[0];
 
 		QUnit.ok(modalBackdrop, "Check that backdrop is displayed");
@@ -88,7 +88,7 @@ suite.prototype.tests.commonWorkflow = {
 
 		$(".modal-header h3", modalElement).html("Some Title");
 		modal.refresh();
-		QUnit.ok($(".modal-header h3", modalElement).html() === modalParams.data.title, "Check refresh() method");
+		QUnit.ok($(".echo-sdk-ui .modal .modal-header h3").html() === modalParams.data.title, "Check refresh() method");
 
 		modal.config.set("extraClass", "upd-echo-hide");
 		modal.config.set("data.title", "upd-title");
@@ -96,26 +96,26 @@ suite.prototype.tests.commonWorkflow = {
 		modal.config.set("width", "400");
 		modal.refresh();
 
+		var modalElement = modal.element;
 		QUnit.ok(modalElement.hasClass("upd-echo-hide")
 				&& $(".modal-header h3", modalElement).html() === "upd-title"
 				&& $(".modal-body", modalElement).html() === "upd_body"
 				&& modalElement.width() === 400, "Check set() method");
 
-
-		QUnit.ok(!$(".modal").hasClass("hide"), "Check that element is visible");
+		QUnit.ok($(".modal").length, "Check that element is visible");
 		modal.config.set("onHide", function() {
 			modal.config.set("onHide", function() {});
-			QUnit.ok(!$(".modal").hasClass("hide"), "Check hide() method");
+			QUnit.ok(!$(".modal").length, "Check hide() method");
 
 			modal.config.set("onShow", function() {
-				QUnit.ok(!$(".modal").hasClass("hide"), "Check show() method");
+				QUnit.ok($(".modal").length, "Check show() method");
 				modal.destroy();
 				QUnit.ok(!$(".modal").length, "Check destroy() method");
 
 				QUnit.start();
 			});
 			modal.show();
-			$(".modal").hide(); // do not display modal dialog in the browser
+			$(".modal").css("left", "-" + $(".modal").width() + "px"); // move modal dialog outside viewport
 		});
 		modal.hide();
 	}

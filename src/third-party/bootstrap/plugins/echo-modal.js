@@ -144,8 +144,7 @@ Echo.GUI.Modal.prototype.refresh = function() {
 
 	this.rendered = true;
 	var css = this.config.get("fade") ? "fade" : "hide";
-	this.element = this.element || $('<div class="modal ' + css + '" role="dialog" tabindex="-1">');
-	this.element.empty();
+	this.element = $('<div class="modal ' + css + '" role="dialog" tabindex="-1">');
 
 	this._assembleHeader();
 	this._assembleBody();
@@ -153,7 +152,7 @@ Echo.GUI.Modal.prototype.refresh = function() {
 	this._assembleBackdrop();
 
 	this.element.on("hidden", function() {
-		self.config.get("onHide").call(self, self.element);
+		self.destroy();
 	});
 	this.element.on("shown", function() {
 		self.config.get("onShow").call(self, self.element);
