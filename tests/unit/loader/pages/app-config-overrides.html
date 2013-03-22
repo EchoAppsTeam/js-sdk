@@ -5,7 +5,7 @@
 </head>
 <body>
 
-	<div class="echo-canvas" data-canvas-id="test.canvas.002" data-appkey="test.echoenabled.com"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002" data-canvas-appkey="test.echoenabled.com"></div>
 
 	<script>
 		// link Echo & QUnit objects from the parent window
@@ -14,7 +14,7 @@
 
 		// create "test" function which will be called within the parent window
 		window.test = function(callback) {
-			Echo.Loader.override("test.canvas.002", "auth", {
+			Echo.Loader.override("js-sdk-tests/test-canvas-002", "auth", {
 				"appkey": "test.js-kit.com",
 				"identityManager": {"logout": "test"},
 				"ready": function() {

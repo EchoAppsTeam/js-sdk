@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+var canvas = Echo.Control.manifest(&quot;Echo.Canvas&quot;);
+
+if (Echo.Control.isDefined(canvas)) return;
+
+<span id='Echo-Canvas-method-constructor'><span id='Echo-Canvas'>/**
+</span></span> * @class Echo.Canvas
+ * Class which implements Canvas mechanics on the client side.
+ * The instance of this class is created for each Canvas found on the page by
+ * the Echo.Loader. The instance of the class can also be created manually in
+ * case the Canvas data already exists on the page.
+ *
+ * @extends Echo.Control
+ *
+ * @constructor
+ * Canvas object constructor to initialize the Echo.Canvas instance
+ *
+ * @param {Object} config
+ * Configuration options
+ */
+canvas.init = function() {
+	var self = this, target = this.config.get(&quot;target&quot;);
+	// parent init function takes care about init finalization (rendering
+	// and the &quot;onReady&quot; event firing)
+	var parent = $.proxy(this.parent, this);
+
+	// check if the canvas was already initialized
+	if (target.data(&quot;echo-canvas-initialized&quot;)) {
+		this._error({
+			&quot;args&quot;: {&quot;target&quot;: target},
+			&quot;code&quot;: &quot;canvas_already_initialized&quot;
+		});
+		return;
+	}
+
+	// extending Canvas config with the &quot;id&quot; and &quot;appkey&quot; defined in the target
+	var overrides = this._getOverrides(target, [&quot;id&quot;, &quot;appkey&quot;]);
+	if (!$.isEmptyObject(overrides)) {
+		this.config.extend(overrides);
+	}
+
+	// exit if no &quot;id&quot; or &quot;appkey&quot; is defined for the canvas,
+	// skip this validation in case the &quot;data&quot; is defined explicitly in the config
+	if (!this._isManuallyConfigured() &amp;&amp;
+		!(this.config.get(&quot;id&quot;) &amp;&amp; this.config.get(&quot;appkey&quot;))) {
+			this._error({
+				&quot;args&quot;: {&quot;target&quot;: target},
+				&quot;code&quot;: &quot;invalid_canvas_config&quot;
+			});
+			return;
+	}
+
+	// define initialized state for the canvas
+	// to prevent multiple initialization of the same canvas
+	target.data(&quot;echo-canvas-initialized&quot;, true);
+
+	this._fetchConfig(function(config) {
+		if (!config || !config.apps || !config.apps.length) {
+			var message = self.labels.get(&quot;error_no_&quot; + (config ? &quot;apps&quot; : &quot;config&quot;));
+			self._error({
+				&quot;args&quot;: {&quot;config&quot;: config, &quot;target&quot;: target},
+				&quot;code&quot;: &quot;invalid_canvas_config&quot;,
+				&quot;renderError&quot;: true,
+				&quot;message&quot;: message
+			});
+			return;
+		}
+		self.set(&quot;data&quot;, config); // store Canvas data into the instance
+		self._initBackplane(function() {
+			self._initUser(function(user) {
+				self.config.set(&quot;user&quot;, user);
+				self._loadAppResources(parent);
+			});
+		});
+	});
+};
+
+canvas.config = {
+<span id='Echo-Canvas-cfg-id'>	/**
+</span>	 * @cfg {String} [id]
+	 * Unique ID of the Canvas, used by the Echo.Canvas instance
+	 * to retrieve the data from the Canvases data storage.
+	 */
+
+<span id='Echo-Canvas-cfg-data'>	/**
+</span>	 * @cfg {Object} [data]
+	 * Object which contains the Canvas data in the format
+	 * used to store the Canvas config in the Canvas storage.
+	 */
+	&quot;data&quot;: {},
+
+<span id='Echo-Canvas-cfg-target'>	/**
+</span>	 * @cfg {String} target(required)
+	 * Specifies the DOM element where the control will be displayed.
+	 *
+	 * Note: if only the &quot;target&quot; config parameter is defined, the target DOM element
+	 * should contain the following HTML attributes:
+	 *
+	 * + &quot;data-appkey&quot; with the necessary appkey value
+	 * + &quot;data-canvas-id&quot; with the unique Canvas ID which should be initialized
+	 *
+	 * The values of the HTML parameters override the &quot;appkey&quot; and &quot;id&quot; parameter values
+	 * (respectively) passed via the Canvas config.
+	 */
+
+<span id='Echo-Canvas-cfg-appkey'>	/**
+</span>	 * @cfg {String} appkey
+	 * @inheritdoc
+	 */
+
+<span id='Echo-Canvas-cfg-overrides'>	/**
+</span>	 * @cfg {Object} [overrides]
+	 * Object which contains the overrides applied for this Canvas on the page
+	 * via Echo.Loader.override function call.
+	 */
+	&quot;overrides&quot;: {},
+
+<span id='global-property-storageURL'>	/**
+</span>	 * @ignore
+	 */
+	&quot;storageURL&quot;: Echo.Loader.config.storageURL  // no docs, not supposed
+						     // to be changed by the publishers
+};
+
+canvas.config.normalizer = {
+	&quot;storageURL&quot;: function(URL) {
+		var protocol = window.location.protocol;
+		var parts = Echo.Utils.parseURL(URL);
+		return Echo.Utils.substitute({
+			&quot;template&quot;: &quot;{data:scheme}//{data:domain}{data:path}{data:query}{data:fragment}&quot;,
+			&quot;data&quot;: $.extend(parts, {
+				&quot;scheme&quot;: /^https?/.test(protocol) ? protocol : &quot;http:&quot;
+			})
+		});
+	}
+};
+
+canvas.vars = {
+	&quot;apps&quot;: []
+};
+
+canvas.labels = {
+<span id='Echo-Canvas-property-error_no_apps'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;error_no_apps&quot;: &quot;No applications defined for this canvas&quot;,
+<span id='Echo-Canvas-property-error_no_config'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;error_no_config&quot;: &quot;Unable to retrieve Canvas config&quot;,
+<span id='Echo-Canvas-property-error_no_suitable_app_class'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;error_no_suitable_app_class&quot;: &quot;Unable to init an app, no suitable JS class found&quot;,
+<span id='Echo-Canvas-property-error_unable_to_retrieve_app_config'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;error_unable_to_retrieve_app_config&quot;: &quot;Unable to retrieve Canvas config from the storage&quot;,
+<span id='Echo-Canvas-property-error_incomplete_app_config'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;error_incomplete_app_config&quot;: &quot;Unable to init an app, config is incomplete&quot;,
+<span id='Echo-Canvas-property-error_canvas_already_initialized'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;error_canvas_already_initialized&quot;: &quot;Canvas has been initialized already&quot;,
+<span id='Echo-Canvas-property-error_invalid_canvas_config'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;error_invalid_canvas_config&quot;: &quot;Canvas with invalid configuration found&quot;
+};
+
+canvas.templates.main =
+	'&lt;div class=&quot;{class:container}&quot;&gt;&lt;/div&gt;';
+
+canvas.templates.app =
+	'&lt;div class=&quot;{class:appContainer}&quot;&gt;' +
+		'&lt;div class=&quot;{class:appHeader}&quot;&gt;{data:caption}&lt;/div&gt;' +
+		'&lt;div class=&quot;{class:appBody}&quot;&gt;&lt;/div&gt;' +
+	'&lt;/div&gt;';
+
+canvas.destroy = function() {
+	$.map(this.get(&quot;apps&quot;), $.proxy(this._destroyApp, this));
+	this.config.get(&quot;target&quot;).data(&quot;echo-canvas-initialized&quot;, false);
+};
+
+<span id='Echo-Canvas-method-container'>/**
+</span> * @echo_renderer
+ */
+canvas.renderers.container = function(element) {
+	var self = this;
+	$.map(this.get(&quot;data.apps&quot;), function(app, id) {
+		self._initApp(app, element, id);
+	});
+	return element;
+};
+
+canvas.methods._initApp = function(app, element, id) {
+	var Application = Echo.Utils.getComponent(app.component);
+	if (!Application) {
+		this._error({
+			&quot;args&quot;: {&quot;app&quot;: app},
+			&quot;code&quot;: &quot;no_suitable_app_class&quot;
+		});
+		return;
+	}
+
+	var view = this.view.fork({
+		&quot;renderer&quot;: null,
+		&quot;renderers&quot;: {
+			&quot;appHeader&quot;: function(element) {
+				// show|hide app header depending on the caption existance
+				return element[app.caption ? &quot;show&quot; : &quot;hide&quot;]();
+			}
+		}
+	});
+	element.append(view.render({
+		&quot;data&quot;: app,
+		&quot;template&quot;: this.templates.app
+	}));
+
+	app.id = app.id || id;  // define app position in array as id if not specified
+	app.config = app.config || {};
+	app.config.user = this.config.get(&quot;user&quot;);
+	app.config.target = view.get(&quot;appBody&quot;);
+
+	var overrides = this.config.get(&quot;overrides&quot;)[app.id];
+	var config = overrides
+		? $.extend(true, app.config, overrides)
+		: app.config;
+	this.apps.push(new Application(config));
+};
+
+canvas.methods._destroyApp = function(app) {
+	if (app) app.destroy();
+};
+
+canvas.methods._fetchConfig = function(callback) {
+	var self = this;
+
+	// no need to perform server side request in case
+	// we already have all the data on the client side
+	if (this._isManuallyConfigured()) {
+		callback(this.get(&quot;data&quot;));
+		return;
+	}
+	(new Echo.API.Request({
+		&quot;apiBaseURL&quot;: this.config.get(&quot;storageURL&quot;),
+		&quot;endpoint&quot;: this.config.get(&quot;id&quot;),
+		&quot;onData&quot;: $.proxy(callback, this),
+		&quot;onError&quot;: function(response) {
+			self._error({
+				&quot;args&quot;: response,
+				&quot;code&quot;: &quot;unable_to_retrieve_app_config&quot;
+			});
+			callback.call(self);
+		}
+	})).request();
+};
+
+canvas.methods._initBackplane = function(callback) {
+	// Note: Backplane.init in v2 will be async,
+	// so we need a callback to execute after Backplane init
+	Backplane.init(this.get(&quot;data.backplane&quot;));
+	callback &amp;&amp; callback();
+};
+
+canvas.methods._initUser = function(callback) {
+	var user = this.config.get(&quot;user&quot;);
+	callback = callback || $.noop;
+
+	// do not init user if the instance already
+	// exists or the appkey is undefined
+	if (user || !this.config.get(&quot;appkey&quot;)) {
+		callback(user);
+		return;
+	}
+
+	Echo.UserSession({
+		&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
+		&quot;ready&quot;: function() {
+			callback(this);
+		}
+	});
+};
+
+canvas.methods._isManuallyConfigured = function() {
+	return !$.isEmptyObject(this.get(&quot;data&quot;));
+};
+
+canvas.methods._getAppScriptURL = function(config) {
+	return config.scripts &amp;&amp; config.scripts.dev &amp;&amp; config.scripts.prod
+		? config.scripts[Echo.Loader.isDebug() ? &quot;dev&quot; : &quot;prod&quot;]
+		: config.script;
+};
+
+canvas.methods._loadAppResources = function(callback) {
+	var self = this, resources = [], isManual = this._isManuallyConfigured();
+	$.map(this.get(&quot;data.apps&quot;), function(app) {
+		var script = self._getAppScriptURL(app);
+		if (!app.component || !script || !(isManual || app.id)) {
+			self._error({
+				&quot;args&quot;: {&quot;app&quot;: app},
+				&quot;code&quot;: &quot;incomplete_app_config&quot;
+			});
+			return;
+		}
+		resources.push({
+			&quot;url&quot;: script,
+			&quot;loaded&quot;: function() {
+				return Echo.Control.isDefined(app.component);
+			}
+		});
+	});
+	Echo.Loader.download(resources, callback);
+};
+
+canvas.methods._getOverrides = function(target, spec) {
+	return Echo.Utils.foldl({}, spec || [], function(item, acc) {
+		var key = &quot;canvas-&quot; + item;
+		var value = target.data(key);
+		if (typeof value !== &quot;undefined&quot;) {
+			acc[item] = value;
+		}
+	});
+};
+
+canvas.methods._error = function(args) {
+	args.message = args.message || this.labels.get(&quot;error_&quot; + args.code);
+	if (Echo.Loader.isDebug()) {
+		Echo.Events.publish({
+			&quot;topic&quot;: &quot;Echo.Canvas.onError&quot;,
+			&quot;data&quot;: args
+		});
+	}
+	Echo.Utils.log($.extend(args, {&quot;type&quot;: &quot;error&quot;, &quot;component&quot;: &quot;Echo.Canvas&quot;}));
+	if (args.renderError) {
+		this.showMessage({
+			&quot;type&quot;: &quot;error&quot;,
+			&quot;message&quot;: args.message
+		});
+	}
+};
+
+Echo.Control.create(canvas);
+
+})(Echo.jQuery);
+</pre>
+</body>
+</html>

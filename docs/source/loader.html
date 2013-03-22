@@ -24,18 +24,23 @@ if (Echo.Loader) return;
 
 <span id='Echo-Loader'>/**
 </span> * @class Echo.Loader
- * Static class which implements common mechanics for canvases loading.
+ * Static class which implements common mechanics for resources loading,
+ * Echo environment establishing and Canvases initialization mechanics.
  */
 Echo.Loader = {
 <span id='Echo-Loader-property-version'>	&quot;version&quot;: &quot;&quot;,
 </span><span id='Echo-Loader-property-debug'>	&quot;debug&quot;: false,
 </span><span id='Echo-Loader-property-config'>	&quot;config&quot;: {
 </span>		&quot;cdnBaseURL&quot;: &quot;http://cdn.echoenabled.com/&quot;,
+		&quot;storageURL&quot;: &quot;http://s3.amazonaws.com/echo-canvases/&quot;,
 		&quot;errorTimeout&quot;: 5000 // 5 sec
 	},
-<span id='Echo-Loader-property-overrides'>	&quot;overrides&quot;: {},
-</span><span id='Echo-Loader-property-vars'>	&quot;vars&quot;: {
-</span>		&quot;state&quot;: {&quot;resources&quot;: {}, &quot;queue&quot;: []}
+<span id='Echo-Loader-property-overrides'><span id='Echo-Loader-property-canvases'>	&quot;canvases&quot;: [],  // Canvases list initialized on the page
+</span></span><span id='Echo-Loader-property-vars'>	&quot;overrides&quot;: {},  // Canvas Apps overrides object
+</span>	&quot;vars&quot;: {
+		&quot;state&quot;: {&quot;resources&quot;: {}, &quot;queue&quot;: []},
+		&quot;processing&quot;: false,
+		&quot;syncQueue&quot;: []
 	}
 };
 
@@ -58,41 +63,6 @@ Echo.Loader.getURL = function(url, devVersion) {
 		: Echo.Loader.config.cdnBaseURL + &quot;sdk/v&quot; + Echo.Loader.version +
 			(devVersion &amp;&amp; Echo.Loader.isDebug() ? &quot;/dev&quot; : &quot;&quot;) +
 			(!url || url.charAt(0) === &quot;/&quot; ? &quot;&quot; : &quot;/&quot;) + url;
-};
-<span id='Echo-Loader-static-method-init'>/**
-</span> * @static
- * Function to initialize canvases on the page.
- *
- * @param {Object} [config]
- * Object which defines the initialization of config parameters
- *
- * @param {Mixed} [config.canvases]
- * Array of jQuery elements or a single jQuery element, which represents a
- * canvas target. If this param is omitted, Echo Loader will look for the
- * canvases in the DOM structure.
- *
- * @param {Object} [config.target]
- * Target element where Echo Loader should look for the canvases if no
- * canvases were passed in the &quot;config.canvases&quot; field.
- */
-Echo.Loader.init = function(config) {
-	config = config || {};
-	Echo.Loader.initEnvironment(function() {
-		var canvases = config.canvases;
-
-		// convert a single canvas to the 1-element array
-		// to keep the same contract below in the code
-		if (canvases &amp;&amp; !Echo.jQuery.isArray(canvases) &amp;&amp;
-			!(canvases instanceof Echo.jQuery)) {
-				canvases = [canvases];
-		}
-
-		// if no canvases defined during initialization,
-		// we look for all canvases in the target ('document' by default)
-		canvases = canvases || Echo.jQuery(&quot;.echo-canvas&quot;, config.target);
-
-		Echo.Loader._initCanvases(canvases);
-	});
 };
 
 <span id='Echo-Loader-static-method-download'>/**
@@ -132,6 +102,7 @@ Echo.Loader.download = function(resources, callback, config) {
 	}
 
 	var state = Echo.Loader.vars.state;
+	var syncQueue = Echo.Loader.vars.syncQueue;
 	var invokeCallbacks = function() {
 		var callbacks = [];
 		// Important note: we should *not* execute callbacks
@@ -147,6 +118,17 @@ Echo.Loader.download = function(resources, callback, config) {
 			return item;
 		});
 		Echo.Loader._map(callbacks, function(_callback) { _callback(); });
+	};
+
+	// Important note: we should *not* execute another
+	// Echo.yepnope until last one is completed.
+	// See more information about the issue on Github:
+	// https://github.com/SlexAxton/yepnope.js/issues/113
+	var checkSyncQueue = function() {
+		if (!Echo.Loader.vars.processing &amp;&amp; syncQueue.length) {
+			Echo.Loader.vars.processing = true;
+			Echo.yepnope(syncQueue.shift());
+		}
 	};
 
 	state.queue.push({&quot;resources&quot;: resources, &quot;callback&quot;: callback});
@@ -168,7 +150,7 @@ Echo.Loader.download = function(resources, callback, config) {
 	}
 
 	var prefix = &quot;timeout=&quot; + (config.errorTimeout || Echo.Loader.config.errorTimeout) + &quot;!&quot;;
-	Echo.yepnope({
+	syncQueue.push({
 		&quot;load&quot;: Echo.Loader._map(urls, function(url) { return prefix + url; }),
 		&quot;complete&quot;: function() {
 			// mark all loaded scripts as &quot;ready&quot;
@@ -176,28 +158,11 @@ Echo.Loader.download = function(resources, callback, config) {
 				state.resources[url] = &quot;ready&quot;;
 			});
 			invokeCallbacks();
+			Echo.Loader.vars.processing = false;
+			checkSyncQueue();
 		}
 	});
-};
-
-<span id='Echo-Loader-static-method-override'>/**
-</span> * @static
- * Function which provides an ability to override config parameters of the
- * specific application within the canvas.
- *
- * @param {String} canvasID
- * Canvas ID.
- *
- * @param {String} appID
- * Application ID inside the canvas.
- *
- * @param {Object} config
- * Object with the application config overrides.
- */
-Echo.Loader.override = function(canvasID, appID, config) {
-	var overrides = Echo.Loader.overrides;
-	overrides[canvasID] = overrides[canvasID] || {};
-	overrides[canvasID][appID] = config;
+	checkSyncQueue();
 };
 
 <span id='Echo-Loader-static-method-isDebug'>/**
@@ -235,6 +200,95 @@ Echo.Loader.isDebug = function() {
 	Echo.Loader.debug = !!Echo.Cookie.get(_debugCookieName);
 })();
 
+<span id='Echo-Loader-static-method-initEnvironment'>/**
+</span> * @static
+ * Function to initialize Echo environment on the page by downloading Backplane lib,
+ * jQuery library with the necessary dependencies and the base Echo classes.
+ *
+ * @param {Function} [callback]
+ * Callback function which should be called as soon as Echo environment is ready.
+ */
+Echo.Loader.initEnvironment = function(callback) {
+	var resources = [{
+		&quot;url&quot;: &quot;backplane.js&quot;,
+		&quot;loaded&quot;: function() { return !!window.Backplane; }
+	}, {
+		&quot;url&quot;: &quot;third-party/jquery.pack.js&quot;,
+		&quot;loaded&quot;: function() { return !!Echo.jQuery; }
+	}, {
+		&quot;url&quot;: &quot;environment.pack.js&quot;,
+		&quot;loaded&quot;: function() { return !!Echo.Utils; }
+	}];
+	if (Echo.Loader._areResourcesReady(resources)) {
+		callback &amp;&amp; callback();
+		return;
+	}
+	Echo.Loader.download(resources, callback);
+};
+
+<span id='Echo-Loader-static-method-override'>/**
+</span> * @static
+ * Function which provides an ability to override config parameters of the
+ * specific application within the canvas.
+ *
+ * @param {String} canvasID
+ * Canvas ID.
+ *
+ * @param {String} appID
+ * Application ID inside the canvas.
+ *
+ * @param {Object} config
+ * Object with the application config overrides.
+ */
+Echo.Loader.override = function(canvasID, appID, config) {
+	var overrides = Echo.Loader.overrides;
+	overrides[canvasID] = overrides[canvasID] || {};
+	overrides[canvasID][appID] = config;
+};
+
+<span id='Echo-Loader-static-method-init'>/**
+</span> * @static
+ * Function to initialize canvases on the page.
+ *
+ * @param {Object} [config]
+ * Object which defines the initialization of config parameters
+ *
+ * @param {Mixed} [config.canvases]
+ * Array of jQuery elements or a single jQuery element, which represents a
+ * canvas target. If this param is omitted, Echo Loader will look for the
+ * canvases in the DOM structure.
+ *
+ * @param {Object} [config.target]
+ * Target element where Echo Loader should look for the canvases if no
+ * canvases were passed in the &quot;config.canvases&quot; field.
+ */
+Echo.Loader.init = function(config) {
+	config = config || {};
+	Echo.Loader.initEnvironment(function() {
+		var $ = Echo.jQuery;
+		var canvases = config.canvases;
+
+		// convert a single canvas to the 1-element array
+		// to keep the same contract below in the code
+		if (canvases &amp;&amp; !$.isArray(canvases) &amp;&amp; !(canvases instanceof $)) {
+			canvases = [canvases];
+		}
+
+		// if no canvases defined during initialization,
+		// we look for all canvases in the target ('document' by default)
+		canvases = canvases || $(&quot;.echo-canvas&quot;, config.target);
+
+		$.map(canvases || [], function(canvas) {
+			var target = $(canvas);
+			var instance = new Echo.Canvas({
+				&quot;target&quot;: target,
+				&quot;overrides&quot;: Echo.Loader.overrides[target.data(&quot;canvas-id&quot;)] || {}
+			});
+			Echo.Loader.canvases.push(instance);
+		});
+	});
+};
+
 <span id='Echo-Loader-static-method-initApplication'>/**
 </span> * @static
  * Function to initialize application on the page. The function performs the following actions:
@@ -266,77 +320,16 @@ Echo.Loader.isDebug = function() {
  * Parameters to be passed into the application constructor during its initialization.
  */
 Echo.Loader.initApplication = function(app) {
-	app = app || {};
-	app.config = app.config || {};
-	var script = Echo.Loader._getAppScriptURL(app);
-
-	if (!script || !app.component) {
-		Echo.Loader._error({
-			&quot;args&quot;: {&quot;app&quot;: app},
-			&quot;code&quot;: &quot;invalid_app_config&quot;,
-			&quot;message&quot;: &quot;Invalid config passed into the initApplication function&quot;
-		});
-		return;
-	}
-
-	var initUser = function(callback) {
-		if (!app.config.appkey) {
-			callback();
-			return;
-		}
-		Echo.Loader._initUser(app.config, function() { callback &amp;&amp; callback(this); });
-	};
 	Echo.Loader.initEnvironment(function() {
-		Echo.Loader._initBackplane(app.backplane, function() {
-			initUser(function(user) {
-				Echo.Loader.download([{
-					&quot;url&quot;: script,
-					&quot;loaded&quot;: function() {
-						return Echo.Control.isDefined(app.component);
-					}
-				}], function() {
-					var Application = Echo.Utils.getComponent(app.component);
-					if (!Application) {
-						Echo.Loader._error({
-							&quot;args&quot;: {&quot;app&quot;: app},
-							&quot;code&quot;: &quot;no_suitable_app_class&quot;,
-							&quot;message&quot;: &quot;Unable to init an app, &quot; +
-									&quot;no suitable class found&quot;
-						});
-						return;
-					}
-					app.config.user = user;
-					new Application(app.config);
-				}, {&quot;errorTimeout&quot;: Echo.Loader.config.errorTimeout});
-			});
+		var instance = new Echo.Canvas({
+			&quot;target&quot;: app.config.target,
+			&quot;data&quot;: { // as we receive if from the Canvas Storage
+				&quot;apps&quot;: [app],
+				&quot;backplane&quot;: app.backplane
+			}
 		});
+		Echo.Loader.canvases.push(instance);
 	});
-};
-
-<span id='Echo-Loader-static-method-initEnvironment'>/**
-</span> * @static
- * Function to initialize Echo environment on the page by downloading Backplane lib,
- * jQuery library with the necessary dependencies and the base Echo classes.
- *
- * @param {Function} [callback]
- * Callback function which should be called as soon as Echo environment is ready.
- */
-Echo.Loader.initEnvironment = function(callback) {
-	var resources = [{
-		&quot;url&quot;: &quot;backplane.js&quot;,
-		&quot;loaded&quot;: function() { return !!window.Backplane; }
-	}, {
-		&quot;url&quot;: &quot;third-party/jquery.pack.js&quot;,
-		&quot;loaded&quot;: function() { return !!Echo.jQuery; }
-	}, {
-		&quot;url&quot;: &quot;environment.pack.js&quot;,
-		&quot;loaded&quot;: function() { return !!Echo.Utils; }
-	}];
-	if (Echo.Loader._areResourcesReady(resources)) {
-		callback &amp;&amp; callback();
-		return;
-	}
-	Echo.Loader.download(resources, callback);
 };
 
 // implementation of the &quot;map&quot; function for the cases when jQuery is not loaded yet
@@ -362,217 +355,6 @@ Echo.Loader._areResourcesReady = function(resources) {
 			(state.resources[url] &amp;&amp; state.resources[url] === &quot;ready&quot;);
 	});
 	return resources.length === resourceReadyFlags.length;
-};
-
-Echo.Loader._initCanvases = function(canvases) {
-	var collection = [];
-	Echo.jQuery.map(canvases, function(target) {
-		target = Echo.jQuery(target);
-
-		// check if the canvas was already initialized
-		if (target.data(&quot;initialized&quot;)) {
-			Echo.Loader._error({
-				&quot;args&quot;: {&quot;target&quot;: target},
-				&quot;code&quot;: &quot;canvas_already_initialized&quot;,
-				&quot;message&quot;: &quot;Canvas has been initialized already&quot;
-			});
-			return;
-		}
-
-		var id = target.data(&quot;canvas-id&quot;);
-		var appkey = target.data(&quot;appkey&quot;);
-
-		if (!id || !appkey) {
-			Echo.Loader._error({
-				&quot;args&quot;: {&quot;target&quot;: target},
-				&quot;code&quot;: &quot;invalid_canvas_config&quot;,
-				&quot;message&quot;: &quot;Canvas with invalid configuration found&quot;
-			});
-			return;
-		}
-
-		// define initialized state for the canvas
-		// to prevent multiple initalization of the same canvas
-		target.data(&quot;initialized&quot;, true);
-
-		collection.push({&quot;id&quot;: id, &quot;appkey&quot;: appkey, &quot;target&quot;: target});
-	});
-
-	if (!collection.length) {
-		Echo.Loader._error({
-			&quot;code&quot;: &quot;no_canvases_found&quot;,
-			&quot;message&quot;: &quot;No canvases found on the page...&quot;
-		});
-		return;
-	}
-
-	Echo.Loader._fetchCanvasConfigs(collection, function(configs) {
-		Echo.jQuery.each(collection, function(id, canvas) {
-			var config = configs[canvas.id];
-			if (!config) return;
-
-			// copy config object to prevent the same object
-			// sharing across multiple canvas instances
-			canvas.config = Echo.jQuery.extend(true, {}, configs[canvas.id]);
-
-			Echo.Loader._initCanvas(canvas);
-		});
-	});
-};
-
-Echo.Loader._initCanvas = function(canvas) {
-	if (!canvas.config.apps || !canvas.config.apps.length) {
-		Echo.Loader._error({
-			&quot;args&quot;: {&quot;canvas&quot;: canvas},
-			&quot;code&quot;: &quot;canvas_with_no_apps&quot;,
-			&quot;message&quot;: &quot;Canvas with no applications&quot;
-		});
-		return;
-	}
-	Echo.Loader._initBackplane(canvas.config.backplane, function() {
-		Echo.Loader._initUser(canvas, function() {
-			canvas.config.user = this;
-			Echo.Loader._initApplications(canvas);
-		});
-	});
-};
-
-Echo.Loader._initBackplane = function(config, callback) {
-	// note: Backplane.init in v2 will be async,
-	//       so we need a callback to execute after Backplane init
-	callback = callback || function(){};
-	if (!config) {
-		callback();
-		return;
-	}
-	Backplane.init(config);
-	callback();
-};
-
-Echo.Loader._initUser = function(canvas, callback) {
-	Echo.UserSession({
-		&quot;appkey&quot;: canvas.appkey,
-		&quot;ready&quot;: callback
-	});
-};
-
-Echo.Loader._initApplications = function(canvas) {
-	var resources = [];
-	Echo.jQuery.each(canvas.config.apps, function(id, app) {
-		var script = Echo.Loader._getAppScriptURL(app);
-		if (!app.component || !script || !app.id) {
-			Echo.Loader._error({
-				&quot;args&quot;: {&quot;app&quot;: app},
-				&quot;code&quot;: &quot;incomplete_app_config&quot;,
-				&quot;message&quot;: &quot;Unable to init an app, config is incomplete&quot;
-			});
-			return;
-		}
-
-		app.config = app.config || {};
-		app.config.user = canvas.config.user;
-		app.config.target = Echo.Loader._createApplicationTarget(app);
-		resources.push({
-			&quot;url&quot;: script,
-			&quot;loaded&quot;: function() {
-				return Echo.Utils.isComponentDefined(app.component);
-			}
-		});
-	});
-
-	Echo.Loader.download(resources, function() {
-		Echo.jQuery.each(canvas.config.apps, function(id, app) {
-			var Application = Echo.Utils.getComponent(app.component);
-			if (!Application) {
-				Echo.Loader._error({
-					&quot;args&quot;: {&quot;app&quot;: app},
-					&quot;code&quot;: &quot;no_suitable_app_class&quot;,
-					&quot;message&quot;: &quot;Unable to init an app, no suitable class found&quot;
-				});
-				return;
-			}
-			var overrides = (Echo.Loader.overrides[canvas.id] || {})[app.id] || {};
-			var config = Echo.jQuery.extend(true, app.config, overrides);
-			app.ref = new Application(config);
-			canvas.target.append(app.config.target);
-		});
-	}, {
-		&quot;errorTimeout&quot;: Echo.Loader.config.errorTimeout
-	});
-};
-
-Echo.Loader._getAppScriptURL = function(config) {
-	return config.scripts &amp;&amp; config.scripts.dev &amp;&amp; config.scripts.prod
-		? config.scripts[Echo.Loader.isDebug() ? &quot;dev&quot; : &quot;prod&quot;]
-		: config.script;
-};
-
-Echo.Loader._createApplicationTarget = function(config) {
-	// TODO: add more specific classname and may be id from canvas?
-	return Echo.jQuery('&lt;div class=&quot;echo-application&quot;&gt;&lt;/div&gt;');
-};
-
-Echo.Loader._fetchCanvasConfigs = function(canvases, callback) {
-	if (!canvases.length) return callback();
-	var processed = {};
-	var requests = Echo.Utils.foldl([], canvases, function(canvas, acc) {
-
-		// do not request config twice
-		if (processed[canvas.id]) return;
-
-		processed[canvas.id] = true;
-		acc.push({
-			&quot;id&quot;: canvas.id,
-			&quot;key&quot;: canvas.id,
-			&quot;public&quot;: true,
-			&quot;method&quot;: &quot;kvs/get&quot;
-		});
-	});
-	Echo.jQuery.get(&quot;http://api.echoenabled.com/v1/mux&quot;, {
-		&quot;appkey&quot;: canvases[0].appkey,
-		&quot;requests&quot;: Echo.Utils.objectToJSON(requests)
-	}, function(response) {
-		if (!response || response.result === &quot;error&quot;) {
-			Echo.Loader._error({
-				&quot;args&quot;: response,
-				&quot;code&quot;: &quot;unable_to_retrieve_app_config&quot;,
-				&quot;message&quot;: &quot;Unable to retrieve Canvas configs from AppServer&quot;
-			});
-			return;
-		}
-		var configs = Echo.Utils.foldl({}, response, function(data, acc, id) {
-			if (!data || data.result === &quot;error&quot;) {
-				Echo.Loader._error({
-					&quot;args&quot;: data,
-					&quot;code&quot;: &quot;unable_to_retrieve_app_config&quot;,
-					&quot;message&quot;: &quot;Unable to retrieve Canvas config from AppServer&quot;
-				});
-				return;
-			}
-			var config;
-			try {
-				config = Echo.jQuery.parseJSON(data.value);
-			} catch(exception) {
-				Echo.Loader._error({
-					&quot;args&quot;: [data, exception],
-					&quot;code&quot;: &quot;unable_to_parse_app_config&quot;,
-					&quot;message&quot;: &quot;Unable to parse JSON config&quot;
-				});
-			}
-			if (config) {
-				acc[id] = config;
-			}
-		});
-		callback(configs);
-	}, &quot;jsonp&quot;);
-};
-
-Echo.Loader._error = function(data) {
-	Echo.Events.publish({
-		&quot;topic&quot;: &quot;Echo.Loader.onError&quot;,
-		&quot;data&quot;: data
-	});
-	Echo.Utils.log(Echo.jQuery.extend(data, {&quot;type&quot;: &quot;error&quot;, &quot;component&quot;: &quot;Echo.Loader&quot;}));
 };
 
 })();

@@ -25,8 +25,8 @@ if (!Echo.GUI) Echo.GUI = {};
 
 if (Echo.GUI.Modal) return;
 
-<span id='Echo-GUI-Modal-method-constructor'><span id='Echo-GUI-Modal-cfg-fade'><span id='Echo-GUI-Modal-cfg-header'><span id='Echo-GUI-Modal-cfg-footer'><span id='Echo-GUI-Modal-cfg-padding'><span id='Echo-GUI-Modal-cfg-height'><span id='Echo-GUI-Modal-cfg-width'><span id='Echo-GUI-Modal-cfg-data'><span id='Echo-GUI-Modal-cfg-extraClass'><span id='Echo-GUI-Modal-cfg-remote'><span id='Echo-GUI-Modal-cfg-closeButton'><span id='Echo-GUI-Modal-cfg-keyboard'><span id='Echo-GUI-Modal-cfg-backdrop'><span id='Echo-GUI-Modal-cfg-show'><span id='Echo-GUI-Modal'>/**
-</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span> * @class Echo.GUI.Modal
+<span id='Echo-GUI-Modal-method-constructor'><span id='Echo-GUI-Modal-cfg-fade'><span id='Echo-GUI-Modal-cfg-header'><span id='Echo-GUI-Modal-cfg-footer'><span id='Echo-GUI-Modal-cfg-padding'><span id='Echo-GUI-Modal-cfg-height'><span id='Echo-GUI-Modal-cfg-width'><span id='Echo-GUI-Modal-cfg-data'><span id='Echo-GUI-Modal-cfg-onHide'><span id='Echo-GUI-Modal-cfg-onShow'><span id='Echo-GUI-Modal-cfg-href'><span id='Echo-GUI-Modal-cfg-extraClass'><span id='Echo-GUI-Modal-cfg-remote'><span id='Echo-GUI-Modal-cfg-closeButton'><span id='Echo-GUI-Modal-cfg-keyboard'><span id='Echo-GUI-Modal-cfg-backdrop'><span id='Echo-GUI-Modal-cfg-show'><span id='Echo-GUI-Modal'>/**
+</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span> * @class Echo.GUI.Modal
  * Class wrapper for &lt;a href=&quot;http://twitter.github.com/bootstrap/javascript.html#modals&quot; target=&quot;_blank&quot;&gt;bootstrap-modal.js&lt;/a&gt;.
  * The Echo.GUI.Modal class provides a simplified interface to work with the
  * Bootstrap Modal JS class.
@@ -88,6 +88,15 @@ if (Echo.GUI.Modal) return;
  *
  * @cfg {String} [extraClass=&quot;&quot;]
  * Custom class name which should be added to the modal dialog container.
+ *
+ * @cfg {String} [href]
+ * URL of the standalone page to be displayed inside the modal (loaded via \&lt;iframe&gt;).
+ *
+ * @cfg {String} [onShow]
+ * Callback function to be executed when the modal is opened.
+ *
+ * @cfg {String} [onHide]
+ * Callback function to be executed when the modal is closed.
  *
  * @cfg {Object} data
  *
@@ -167,10 +176,6 @@ Echo.GUI.Modal.prototype.refresh = function() {
 		self.config.get(&quot;onShow&quot;).call(self, self.element);
 	});
 
-	this.config.get(&quot;fade&quot;) &amp;&amp; $.support.transition &amp;&amp; this.element.one($.support.transition.end, function() {
-		self.element.focus().trigger(&quot;shown&quot;);
-	});
-
 	this.element.appendTo(&quot;body&quot;)
 		.wrap('&lt;div class=&quot;echo-sdk-ui&quot;&gt;')
 		.modal(this.config.getAsHash());
@@ -220,7 +225,7 @@ Echo.GUI.Modal.prototype._assembleHeader = function() {
 				.append(&quot;&amp;times;&quot;).prependTo(header);
 		}
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._assembleBody = function() {
 	var self = this;
@@ -247,7 +252,7 @@ Echo.GUI.Modal.prototype._assembleBody = function() {
 	if (this.config.get(&quot;extraClass&quot;)) {
 		this.element.addClass(this.config.get(&quot;extraClass&quot;));
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._assembleFooter = function() {
 	var self = this;
@@ -266,7 +271,7 @@ Echo.GUI.Modal.prototype._assembleFooter = function() {
 			});
 		}
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 	var self = this;
@@ -283,8 +288,6 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 				modal.isShown = shown;
 				modal.options.backdrop = backdrop;
 
-				self.element.addClass(&quot;in&quot;);
-
 				self.backdrop = modal.$backdrop.wrap('&lt;div class=&quot;echo-sdk-ui&quot;&gt;').parent();
 			});
 		} else {
@@ -297,7 +300,7 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 			self.config.set(&quot;backdrop&quot;, false);
 		}
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._addSection = function(css, content) {
 	var section = $('&lt;div class=&quot;' + css + '&quot;&gt;');

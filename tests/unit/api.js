@@ -35,10 +35,7 @@ suite.prototype.tests.PrivateInterfaceTests = {
 		});
 		QUnit.equal("api.echoenabled.com/v1/some_endpoint", req._prepareURI(), "Checking URI assembler for trnsport url");
 		var handlers = req._getHandlersByConfig();
-		QUnit.deepEqual({
-			"onSomeEvent": event1,
-			"onSomeEvent2": event2
-		}, handlers, "Checking that component can retrieve event handlers from config");
+		QUnit.ok("onSomeEvent" in handlers && "onSomeEvent2" in handlers, "Checking that component can retrieve event handlers from config");
 	}
 };
 

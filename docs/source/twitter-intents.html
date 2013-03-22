@@ -21,7 +21,11 @@
 var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents'>/**
-</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents
+</span> * @deprecated
+ * Twitter Intents Plugin is renamed to {@link Echo.StreamServer.Controls.Stream.Item.Plugins.TweetDisplay Tweet Display Plugin}.
+ * Twitter Intents Plugin will be removed in the next version.
+ *
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents
  * Adds the Twitter intents controls into the item UI and updates the
  * item UI to look and behave like a Twitter item. The item UI update includes:
  *
@@ -46,7 +50,8 @@ var $ = jQuery;
  * 	});
  *
  * &lt;b&gt;Note&lt;/b&gt;: plugin must be at the very beginning of the plugin list to
- * work correctly.
+ * work correctly. If {@link Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization PinboardVisualization}
+ * plugin is also enabled in the Stream then this plugin must be placed right after it.
  *
  * &lt;b&gt;Note&lt;/b&gt;: if TwitterIntents plugin is added to the stream then Reply and
  * Like plugins will be disabled for tweet items. Moreover Reply control is
@@ -76,8 +81,11 @@ plugin.init = function() {
 	item.config.set(&quot;contentTransformations&quot;, config);
 	item.config.set(&quot;plugins.Like.enabled&quot;, false);
 	item.config.set(&quot;plugins.Reply.enabled&quot;, false);
+	// icon must be visible to show that the item is from Twitter
+	item.config.set(&quot;viaLabel.icon&quot;, true);
 
-	this.extendTemplate(&quot;insertBefore&quot;, &quot;authorName&quot;, plugin.templates.username);
+	this.extendTemplate(&quot;insertBefore&quot;, &quot;authorName&quot;, plugin.templates.date);
+	this.extendTemplate(&quot;insertAfter&quot;, &quot;authorName&quot;, plugin.templates.username);
 
 	item.addButtonSpec(this.name, this._assembleButton(&quot;tweet&quot;));
 	item.addButtonSpec(this.name, this._assembleButton(&quot;retweet&quot;));
@@ -100,7 +108,79 @@ plugin.labels = {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-comment'>	/**
 </span>	 * @echo_label
 	 */
-	&quot;comment&quot;: &quot;Comment&quot;
+	&quot;comment&quot;: &quot;Comment&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-secondsAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;secondsAgo&quot;: &quot;{seconds}s&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-minutesAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;minutesAgo&quot;: &quot;{minutes}m&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-hoursAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;hoursAgo&quot;: &quot;{hours}h&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-monthsAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;monthsAgo&quot;: &quot;{day} {month}&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-yearsAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;yearsAgo&quot;: &quot;{day} {month} {year}&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-fullDate'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;fullDate&quot;: &quot;{time} - {date}&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month1'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month1&quot;: &quot;Jan&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month2'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month2&quot;: &quot;Feb&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month3'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month3&quot;: &quot;Mar&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month4'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month4&quot;: &quot;Apr&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month5'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month5&quot;: &quot;May&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month6'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month6&quot;: &quot;Jun&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month7'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month7&quot;: &quot;Jul&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month8'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month8&quot;: &quot;Aug&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month9'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month9&quot;: &quot;Sep&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month10'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month10&quot;: &quot;Oct&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month11'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month11&quot;: &quot;Nov&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-property-month12'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month12&quot;: &quot;Dec&quot;
 };
 
 plugin.dependencies = [{
@@ -127,7 +207,10 @@ plugin.events = {
 	}
 };
 
-plugin.templates.username = '&lt;div class=&quot;{plugin.class:tweetUserName} echo-linkColor&quot;&gt;&lt;/div&gt;';
+plugin.templates = {
+	&quot;username&quot;: '&lt;div class=&quot;{plugin.class:tweetUserName}&quot;&gt;&lt;/div&gt;',
+	&quot;date&quot;: '&lt;div class=&quot;{plugin.class:tweetDate} echo-secondaryFont&quot;&gt;&lt;/div&gt;'
+};
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-method-authorName'>/**
 </span> * @echo_renderer
@@ -136,7 +219,14 @@ plugin.component.renderers.authorName = function(element) {
 	var item = this.component;
 	return item.parentRenderer(&quot;authorName&quot;, arguments)
 		.removeClass(&quot;echo-linkColor&quot;)
-		.addClass(this.cssPrefix + &quot;tweetScreenName echo-secondaryColor&quot;);
+		.addClass(this.cssPrefix + &quot;tweetScreenName&quot;).wrapInner(
+			Echo.Utils.hyperlink({
+				&quot;href&quot;: item.get(&quot;data.actor.id&quot;)
+			}, {
+				&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
+				&quot;skipEscaping&quot;: true
+			})
+		);
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-method-avatar'>/**
@@ -146,8 +236,7 @@ plugin.component.renderers.avatar = function(element) {
 	var item = this.component;
 	return item.parentRenderer(&quot;avatar&quot;, arguments).wrap(
 		Echo.Utils.hyperlink({
-			&quot;href&quot;: item.get(&quot;data.actor.id&quot;),
-			&quot;caption&quot;: &quot;&quot;
+			&quot;href&quot;: item.get(&quot;data.actor.id&quot;)
 		}, {
 			&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
 			&quot;skipEscaping&quot;: true
@@ -160,16 +249,8 @@ plugin.component.renderers.avatar = function(element) {
  */
 plugin.component.renderers.date = function(element) {
 	var item = this.component;
-	return item.parentRenderer(&quot;date&quot;, arguments).wrap(
-		Echo.Utils.hyperlink({
-			&quot;caption&quot;: &quot;&quot;,
-			&quot;href&quot;: item.get(&quot;data.object.id&quot;),
-			&quot;class&quot;: this.cssPrefix + &quot;date&quot;
-		}, {
-			&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
-			&quot;skipEscaping&quot;: true
-		})
-	);
+	this.view.render({&quot;name&quot;: &quot;tweetDate&quot;});
+	return item.parentRenderer(&quot;date&quot;, arguments);
 };
 
 plugin.component.renderers._buttonsDelimiter = function(element) {
@@ -187,7 +268,21 @@ plugin.renderers.tweetUserName = function(element) {
 	var item = this.component;
 	return element.html(Echo.Utils.hyperlink({
 		&quot;href&quot;: item.get(&quot;data.actor.id&quot;),
-		&quot;caption&quot;: this._extractTwitterID()
+		&quot;caption&quot;: &quot;@&quot; + this._extractTwitterID(),
+		&quot;class&quot;: &quot;echo-secondaryFont echo-secondaryColor&quot;
+	}, {
+		&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
+		&quot;skipEscaping&quot;: true
+	}));
+};
+
+plugin.renderers.tweetDate = function(element) {
+	var item = this.component;
+	return element.html(Echo.Utils.hyperlink({
+		&quot;caption&quot;: this._getTweetTime(),
+		&quot;href&quot;: item.get(&quot;data.object.id&quot;),
+		&quot;class&quot;: &quot;echo-secondaryFont echo-secondaryColor&quot;,
+		&quot;title&quot;: this._getTweetTime(true)
 	}, {
 		&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
 		&quot;skipEscaping&quot;: true
@@ -222,6 +317,30 @@ plugin.methods._isTweet = function() {
 	return item.get(&quot;data.source.name&quot;) === &quot;Twitter&quot;;
 };
 
+plugin.methods._getTweetTime = function(getFull) {
+	var item = this.component;
+	var d = new Date(item.timestamp * 1000);
+	var now = (new Date()).getTime();
+	var diff = Math.floor((now - d.getTime()) / 1000);
+	var result;
+	if (getFull) {
+		result = this.labels.get(&quot;fullDate&quot;, {&quot;time&quot;: d.toLocaleTimeString(), &quot;date&quot;: d.toLocaleDateString()});
+	} else {
+		if (diff &lt; 60) {
+			result = this.labels.get(&quot;secondsAgo&quot;, {&quot;seconds&quot;: diff});
+		} else if(diff &lt; 60 * 60) {
+			result = this.labels.get(&quot;minutesAgo&quot;, {&quot;minutes&quot;: Math.floor(diff / 60)});
+		} else if(diff &lt; 60 * 60 * 24) {
+			result = this.labels.get(&quot;hoursAgo&quot;, {&quot;hours&quot;: Math.floor(diff / (60 * 60))});
+		} else if (diff &lt; 60 * 60 * 24 * 365) {
+			result = this.labels.get(&quot;monthsAgo&quot;, {&quot;day&quot;: d.getDate(), &quot;month&quot;: this.labels.get(&quot;month&quot; + (d.getMonth() + 1))});
+		} else {
+			result = this.labels.get(&quot;yearsAgo&quot;, {&quot;day&quot;: d.getDate(), &quot;month&quot;: this.labels.get(&quot;month&quot; + (d.getMonth() + 1)), &quot;year&quot;: d.getFullYear()});
+		}
+	}
+	return result;
+};
+
 plugin.methods._extractTwitterID = function() {
 	var item = this.component;
 	var match = item.get(&quot;data.actor.id&quot;).match(/twitter.com\/(.*)/);
@@ -229,7 +348,13 @@ plugin.methods._extractTwitterID = function() {
 };
 
 plugin.css =
-	&quot;.{class:avatar} a img { border: 0px; }&quot; +
+	&quot;.{plugin.class} .{class:avatar} a img { border: 0px; }&quot; +
+	&quot;.{plugin.class} .{class:date} { display: none; }&quot; +
+	&quot;.{plugin.class} .{class:buttons} .{class:button-delim}:first-child { display: none; }&quot; +
+	&quot;.{plugin.class} .{class:data} a { text-decoration: none; }&quot; +
+	&quot;.{plugin.class} .{class:data} a:hover { text-decoration: underline; }&quot; +
+	&quot;.{plugin.class} .{class:footer} { padding-top: 5px; }&quot; +
+	&quot;.{plugin.class} .{class:modeSwitch} { margin-left: 6px; }&quot; +
 	&quot;.{plugin.class:userName} { float: left; font-size: 15px; font-weight: bold; }&quot; +
 	&quot;.{plugin.css:screenName} { margin-left: 4px; font-size: 11px; font-weight: normal; padding-top: 1px; }&quot; +
 	&quot;.{plugin.class:userName} a, .{plugin.class:tweetUserName} a, .{plugin.class:intentControl} { text-decoration: none; }&quot; +
@@ -240,11 +365,13 @@ plugin.css =
 	&quot;.{plugin.class:activeButton} .{plugin.class:icon-tweet} { background-position: -16px -2px; }&quot; +
 	&quot;.{plugin.class:activeButton} .{plugin.class:icon-retweet} { background-position: -96px -2px; }&quot; +
 	&quot;.{plugin.class:activeButton} .{plugin.class:icon-favorite} { background-position: -48px -2px; }&quot; +
-	&quot;.{plugin.class:tweetUserName} { float: left; font-size: 15px; font-weight: bold; }&quot; +
+	&quot;.{plugin.class:tweetUserName} { margin-left: 4px; font-size: 15px; float: left; }&quot; +
 	&quot;.{plugin.class:twitterIcon} { float: left; margin-right: 3px; }&quot; +
 	&quot;.{plugin.class:date} { text-decoration: none; color: #C6C6C6; }&quot; +
-	&quot;.{plugin.class:date}:hover { color: #476CB8; }&quot; +
-	&quot;.{plugin.class:tweetScreenName} { font-size: 11px; font-weight: normal; margin-left: 4px; padding-top: 1px; }&quot;;
+	&quot;.{plugin.class:tweetScreenName} a { text-decoration: none; color: #333333; }&quot; +
+	&quot;.{plugin.class:tweetDate} a { text-decoration: none; }&quot; +
+	&quot;.{plugin.class:tweetDate} a:hover { text-decoration: underline;  }&quot; +
+	&quot;.{plugin.class:tweetDate} { float: right; }&quot;;
 
 Echo.Plugin.create(plugin);
 

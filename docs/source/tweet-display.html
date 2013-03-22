@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TweetDisplay
+ * Adds the Twitter intents controls into the item UI and updates the
+ * item UI to look and behave like a Twitter item. The item UI update includes:
+ *
+ * + by clicking on the avatar or the user name - the user account on Twitter
+ * will be opened;
+ * + the item timestamp transforms from a static field to a permanent item
+ * link on Twitter.
+ *
+ * More information about Twitter Intents is available on the page
+ * &lt;https://dev.twitter.com/docs/intents&gt;.
+ *
+ * #### How to use
+ * To enable this plugin should be taken add the corresponding section into the
+ * Echo Stream configuration parameter plugins:
+ *
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;TweetDisplay&quot;
+ * 		}]
+ * 	});
+ *
+ * &lt;b&gt;Note&lt;/b&gt;: plugin must be at the very beginning of the plugin list to
+ * work correctly. If {@link Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization PinboardVisualization}
+ * plugin is also enabled in the Stream then this plugin must be placed right after it.
+ *
+ * &lt;b&gt;Note&lt;/b&gt;: if TweetDisplay plugin is added to the stream then Reply and
+ * Like plugins will be disabled for tweet items. Moreover Reply control is
+ * renamed with Comment on non-tweet items to avoid possible confusion.
+ *
+ * #### Configuration
+ * The TweetDisplay plugin configuration options include the following:
+ *
+ * + enabled &lt;br/&gt;
+ *   This parameter specifies if plugin is enabled during application initialization.
+ *   See more [here](http://wiki.aboutecho.com/Client-Extensions-Framework#Enabling/disablingpluginsinrealtime).
+ *
+ * @extends Echo.Plugin
+ */
+var plugin = Echo.Plugin.manifest(&quot;TweetDisplay&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
+
+plugin.init = function() {
+	var item = this.component;
+
+	var config = item.config.get(&quot;contentTransformations&quot;);
+	$.map([&quot;text&quot;, &quot;html&quot;, &quot;xhtml&quot;], function(contentType) {
+		config[contentType].hashtags = false;
+	});
+
+	item.config.set(&quot;contentTransformations&quot;, config);
+	item.config.set(&quot;plugins.Like.enabled&quot;, false);
+	item.config.set(&quot;plugins.Reply.enabled&quot;, false);
+	// icon must be visible to show that the item is from Twitter
+	item.config.set(&quot;viaLabel.icon&quot;, true);
+
+	this.extendTemplate(&quot;insertBefore&quot;, &quot;authorName&quot;, plugin.templates.date);
+	this.extendTemplate(&quot;insertAfter&quot;, &quot;authorName&quot;, plugin.templates.username);
+
+	item.addButtonSpec(this.name, this._assembleButton(&quot;tweet&quot;));
+	item.addButtonSpec(this.name, this._assembleButton(&quot;retweet&quot;));
+	item.addButtonSpec(this.name, this._assembleButton(&quot;favorite&quot;));
+};
+
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-tweet'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;tweet&quot;: &quot;Reply&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-retweet'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;retweet&quot;: &quot;Retweet&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-favorite'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;favorite&quot;: &quot;Favorite&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-comment'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;comment&quot;: &quot;Comment&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-secondsAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;secondsAgo&quot;: &quot;{seconds}s&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-minutesAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;minutesAgo&quot;: &quot;{minutes}m&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-hoursAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;hoursAgo&quot;: &quot;{hours}h&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-monthsAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;monthsAgo&quot;: &quot;{day} {month}&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-yearsAgo'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;yearsAgo&quot;: &quot;{day} {month} {year}&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-fullDate'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;fullDate&quot;: &quot;{time} - {date}&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month1'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month1&quot;: &quot;Jan&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month2'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month2&quot;: &quot;Feb&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month3'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month3&quot;: &quot;Mar&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month4'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month4&quot;: &quot;Apr&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month5'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month5&quot;: &quot;May&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month6'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month6&quot;: &quot;Jun&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month7'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month7&quot;: &quot;Jul&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month8'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month8&quot;: &quot;Aug&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month9'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month9&quot;: &quot;Sep&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month10'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month10&quot;: &quot;Oct&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month11'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month11&quot;: &quot;Nov&quot;,
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month12'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;month12&quot;: &quot;Dec&quot;
+};
+
+plugin.dependencies = [{
+	&quot;loaded&quot;: function() { return !!window.twttr; },
+	&quot;url&quot;: &quot;http://platform.twitter.com/widgets.js&quot;
+}];
+
+plugin.enabled = function() {
+	return this._isTweet();
+};
+
+plugin.events = {
+	&quot;Echo.StreamServer.Controls.Stream.Item.onRender&quot;: function(topic, args) {
+		var activeClass = this.cssPrefix + &quot;activeButton&quot;;
+		var item = this.component;
+		$.map(item.buttons[this.name], function(name) {
+			name.element.unbind(&quot;click&quot;).unbind(&quot;mouseover mouseout&quot;)
+				.hover(
+					function() { name.element.addClass(activeClass); },
+					function() { name.element.removeClass(activeClass); }
+				);
+		});
+		window.twttr &amp;&amp; window.twttr.widgets &amp;&amp; window.twttr.widgets.load();
+	}
+};
+
+plugin.templates = {
+	&quot;username&quot;: '&lt;div class=&quot;{plugin.class:tweetUserName}&quot;&gt;&lt;/div&gt;',
+	&quot;date&quot;: '&lt;div class=&quot;{plugin.class:tweetDate} echo-secondaryFont&quot;&gt;&lt;/div&gt;'
+};
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-method-authorName'>/**
+</span> * @echo_renderer
+ */
+plugin.component.renderers.authorName = function(element) {
+	var item = this.component;
+	return item.parentRenderer(&quot;authorName&quot;, arguments)
+		.removeClass(&quot;echo-linkColor&quot;)
+		.addClass(this.cssPrefix + &quot;tweetScreenName&quot;).wrapInner(
+			Echo.Utils.hyperlink({
+				&quot;href&quot;: item.get(&quot;data.actor.id&quot;)
+			}, {
+				&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
+				&quot;skipEscaping&quot;: true
+			})
+		);
+};
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-method-avatar'>/**
+</span> * @echo_renderer
+ */
+plugin.component.renderers.avatar = function(element) {
+	var item = this.component;
+	return item.parentRenderer(&quot;avatar&quot;, arguments).wrap(
+		Echo.Utils.hyperlink({
+			&quot;href&quot;: item.get(&quot;data.actor.id&quot;)
+		}, {
+			&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
+			&quot;skipEscaping&quot;: true
+		})
+	);
+};
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-method-date'>/**
+</span> * @echo_renderer
+ */
+plugin.component.renderers.date = function(element) {
+	var item = this.component;
+	this.view.render({&quot;name&quot;: &quot;tweetDate&quot;});
+	return item.parentRenderer(&quot;date&quot;, arguments);
+};
+
+plugin.component.renderers._buttonsDelimiter = function(element) {
+	var item = this.component;
+	var posDelimiter = item.buttonSpecs[this.name].length;
+
+	return item.parentRenderer(&quot;_buttonsDelimiter&quot;, arguments)
+		.find(&quot;span[class*='button-delim']&quot;).eq(posDelimiter).text(&quot; | &quot;);
+};
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-method-tweetUserName'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.tweetUserName = function(element) {
+	var item = this.component;
+	return element.html(Echo.Utils.hyperlink({
+		&quot;href&quot;: item.get(&quot;data.actor.id&quot;),
+		&quot;caption&quot;: &quot;@&quot; + this._extractTwitterID(),
+		&quot;class&quot;: &quot;echo-secondaryFont echo-secondaryColor&quot;
+	}, {
+		&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
+		&quot;skipEscaping&quot;: true
+	}));
+};
+
+plugin.renderers.tweetDate = function(element) {
+	var item = this.component;
+	return element.html(Echo.Utils.hyperlink({
+		&quot;caption&quot;: this._getTweetTime(),
+		&quot;href&quot;: item.get(&quot;data.object.id&quot;),
+		&quot;class&quot;: &quot;echo-secondaryFont echo-secondaryColor&quot;,
+		&quot;title&quot;: this._getTweetTime(true)
+	}, {
+		&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
+		&quot;skipEscaping&quot;: true
+	}));
+};
+
+plugin.methods._assembleButton = function(name) {
+	var plugin = this, item = this.component;
+	var match = item.get(&quot;data.object.id&quot;).match(/\/(\d+)$/);
+	var id = match &amp;&amp; match[1];
+	return function() {
+		return {
+			&quot;name&quot;: name,
+			&quot;label&quot;: plugin.labels.get(name),
+			&quot;template&quot;: Echo.Utils.hyperlink({
+				&quot;href&quot;: &quot;https://twitter.com/intent/&quot; + name + &quot;?in_reply_to=&quot; + id + &quot;&amp;tweet_id=&quot; + id,
+				&quot;class&quot;: &quot;echo-clickable &quot; + plugin.cssPrefix + &quot;intentControl echo-secondaryColor&quot;,
+				&quot;caption&quot;:
+					'&lt;span class=&quot;' + plugin.cssPrefix + 'icon ' + plugin.cssPrefix + 'icon-{data:name}&quot;&gt;&amp;nbsp;&lt;/span&gt;' +
+					'&lt;span&gt;{data:label}&lt;/span&gt;'
+			}, {
+				&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
+				&quot;skipEscaping&quot;: true
+			}),
+			&quot;visible&quot;: id &amp;&amp; plugin._isTweet()
+		};
+	};
+};
+
+plugin.methods._isTweet = function() {
+	var item = this.component;
+	return item.get(&quot;data.source.name&quot;) === &quot;Twitter&quot;;
+};
+
+plugin.methods._getTweetTime = function(getFull) {
+	var item = this.component;
+	var d = new Date(item.timestamp * 1000);
+	var now = (new Date()).getTime();
+	var diff = Math.floor((now - d.getTime()) / 1000);
+	var result;
+	if (getFull) {
+		result = this.labels.get(&quot;fullDate&quot;, {&quot;time&quot;: d.toLocaleTimeString(), &quot;date&quot;: d.toLocaleDateString()});
+	} else {
+		if (diff &lt; 60) {
+			result = this.labels.get(&quot;secondsAgo&quot;, {&quot;seconds&quot;: diff});
+		} else if(diff &lt; 60 * 60) {
+			result = this.labels.get(&quot;minutesAgo&quot;, {&quot;minutes&quot;: Math.floor(diff / 60)});
+		} else if(diff &lt; 60 * 60 * 24) {
+			result = this.labels.get(&quot;hoursAgo&quot;, {&quot;hours&quot;: Math.floor(diff / (60 * 60))});
+		} else if (diff &lt; 60 * 60 * 24 * 365) {
+			result = this.labels.get(&quot;monthsAgo&quot;, {&quot;day&quot;: d.getDate(), &quot;month&quot;: this.labels.get(&quot;month&quot; + (d.getMonth() + 1))});
+		} else {
+			result = this.labels.get(&quot;yearsAgo&quot;, {&quot;day&quot;: d.getDate(), &quot;month&quot;: this.labels.get(&quot;month&quot; + (d.getMonth() + 1)), &quot;year&quot;: d.getFullYear()});
+		}
+	}
+	return result;
+};
+
+plugin.methods._extractTwitterID = function() {
+	var item = this.component;
+	var match = item.get(&quot;data.actor.id&quot;).match(/twitter.com\/(.*)/);
+	return match ? match[1] : item.get(&quot;data.actor.id&quot;);
+};
+
+plugin.css =
+	&quot;.{plugin.class} .{class:avatar} a img { border: 0px; }&quot; +
+	&quot;.{plugin.class} .{class:date} { display: none; }&quot; +
+	&quot;.{plugin.class} .{class:buttons} .{class:button-delim}:first-child { display: none; }&quot; +
+	&quot;.{plugin.class} .{class:data} a { text-decoration: none; }&quot; +
+	&quot;.{plugin.class} .{class:data} a:hover { text-decoration: underline; }&quot; +
+	&quot;.{plugin.class} .{class:footer} { padding-top: 5px; }&quot; +
+	&quot;.{plugin.class} .{class:modeSwitch} { margin-left: 6px; }&quot; +
+	&quot;.{plugin.class:userName} { float: left; font-size: 15px; font-weight: bold; }&quot; +
+	&quot;.{plugin.css:screenName} { margin-left: 4px; font-size: 11px; font-weight: normal; padding-top: 1px; }&quot; +
+	&quot;.{plugin.class:userName} a, .{plugin.class:tweetUserName} a, .{plugin.class:intentControl} { text-decoration: none; }&quot; +
+	&quot;.{plugin.class:icon} { width: 15px; height: 15px; display: inline-block; margin-right: 3px; background: url(https://si0.twimg.com/images/dev/cms/intents/icons/sprites/everything-spritev2.png) no-repeat; }&quot; +
+	&quot;.{plugin.class:icon-tweet} { background-position: 0px -2px; }&quot; +
+	&quot;.{plugin.class:icon-retweet} { background-position: -80px -2px; }&quot; +
+	&quot;.{plugin.class:icon-favorite} { background-position: -32px -2px; }&quot; +
+	&quot;.{plugin.class:activeButton} .{plugin.class:icon-tweet} { background-position: -16px -2px; }&quot; +
+	&quot;.{plugin.class:activeButton} .{plugin.class:icon-retweet} { background-position: -96px -2px; }&quot; +
+	&quot;.{plugin.class:activeButton} .{plugin.class:icon-favorite} { background-position: -48px -2px; }&quot; +
+	&quot;.{plugin.class:tweetUserName} { margin-left: 4px; font-size: 15px; float: left; }&quot; +
+	&quot;.{plugin.class:twitterIcon} { float: left; margin-right: 3px; }&quot; +
+	&quot;.{plugin.class:date} { text-decoration: none; color: #C6C6C6; }&quot; +
+	&quot;.{plugin.class:tweetScreenName} a { text-decoration: none; color: #333333; }&quot; +
+	&quot;.{plugin.class:tweetDate} a { text-decoration: none; }&quot; +
+	&quot;.{plugin.class:tweetDate} a:hover { text-decoration: underline;  }&quot; +
+	&quot;.{plugin.class:tweetDate} { float: right; }&quot;;
+
+Echo.Plugin.create(plugin);
+
+})(Echo.jQuery);
+</pre>
+</body>
+</html>

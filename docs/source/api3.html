@@ -214,12 +214,13 @@ Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
 
 Echo.API.Transports.XDomainRequest.available = function(config) {
 	config = config || {&quot;URL&quot;: &quot;&quot;, &quot;method&quot;: &quot;&quot;};
-	var schema = utils.parseURL(config.URL) &amp;&amp; utils.parseURL(config.URL).schema || &quot;http:&quot;;
+	var parts = config.URL &amp;&amp; utils.parseURL(config.URL) || {};
+	var scheme = parts.scheme || &quot;http:&quot;;
 	// XDomainRequests must be: GET or POST methods, HTTP or HTTPS protocol,
 	// and same scheme as calling page
 	var transportSpecAvailability = /^get|post$/i.test(config.method)
-		&amp;&amp; /^https?/.test(schema)
-		&amp;&amp; document.location.protocol === schema;
+		&amp;&amp; /^https?/.test(scheme)
+		&amp;&amp; document.location.protocol === scheme;
 	return &quot;XDomainRequest&quot; in window
 		&amp;&amp; transportSpecAvailability;
 };
@@ -422,10 +423,6 @@ Echo.API.Request.prototype.request = function(params) {
 	}
 };
 
-Echo.API.Request.prototype._onData = Echo.API.Request.prototype._onError = function(response) {
-	clearTimeout(this._timeoutId);
-};
-
 Echo.API.Request.prototype.abort = function() {
 	this.transport &amp;&amp; this.transport.abort();
 };
@@ -465,9 +462,14 @@ Echo.API.Request.prototype._getTransport = function() {
 };
 
 Echo.API.Request.prototype._getHandlersByConfig = function() {
+	var self = this;
 	return utils.foldl({}, this.config.getAsHash(), function(value, acc, key) {
-		if (/^on[A-Z]/.test(key)) {
-			acc[key] = value;
+		var handler;
+		if (/^on[A-Z]/.test(key) &amp;&amp; $.isFunction(value)) {
+			handler = key !== &quot;onOpen&quot;
+				? function() { clearTimeout(self._timeoutId); value.apply(null, arguments); }
+				: value;
+			acc[key] = handler;
 		}
 	});
 };

@@ -530,7 +530,9 @@ item.renderers.title = function(element) {
 };
 
 <span id='Echo-StreamServer-Controls-FacePile-Item-method-isYou'>/**
-</span> * @echo_renderer
+</span> * Function to check if the item was posted by the current user.
+ *
+ * @return {Boolean}
  */
 item.methods.isYou = function() {
 	var id = this.get(&quot;data.id&quot;);

@@ -228,7 +228,7 @@ Echo.View.prototype.render = function(args) {
  * New Echo.View class instance with the configuration params taken from the current instance.
  */
 Echo.View.prototype.fork = function(config) {
-	return new Echo.View($.extend(true, this.config, config));
+	return new Echo.View($.extend(true, {}, this.config, config));
 };
 
 // private functions

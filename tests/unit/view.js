@@ -135,6 +135,37 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"[fork with renderers] Checking if the body renderer was applied");
 		QUnit.equal(view.get("footer").html(), "Footer Renderer applied!",
 			"[fork with renderers] Checking if the footer renderer was applied");
+		var view2 = view.fork({
+			"renderers": {
+				"header": null,
+				"body": null,
+				"someRenderableElement": function(element) {
+					return element.html("Me someRenderableElement");
+				}
+			},
+			"cssPrefix": "echo-new-"
+		});
+		QUnit.ok($.isFunction(view.renderers.header) && $.isFunction(view.renderers.body) && view.config.cssPrefix === "echo-", "Check that forked view with overridden config is not affected by the parent view instance");
+
+		view2.render({
+			"template": 
+				'<div class="echo-new-container">' +
+					'<div class="echo-new-header"></div>' +
+					'<div class="echo-new-body"></div>' +
+					'<div class="echo-new-footer"></div>' +
+					'<div class="echo-new-someRenderableElement"></div>' +
+				'</div>'
+		});
+		
+		QUnit.strictEqual(view2.get("header").html(), "",
+			"[fork with new renderers object] Checking if the header renderer was overrided by new renderers object");
+		QUnit.equal(view2.get("body").html(), "",
+			"[fork with new renderers object] Checking if the body renderer was overrided by new renderers object");
+		QUnit.equal(view2.get("footer").html(), "Footer Renderer applied!",
+			"[fork with new renderers object, inherited renderer] Checking if the inherited footer renderer was applied");
+		QUnit.equal(view2.get("someRenderableElement").html(), "Me someRenderableElement",
+			"[fork with new renderers object] Checking if the someRenderable renderer was applied");
+		QUnit.ok(view2.get("someRenderableElement").hasClass("echo-new-someRenderableElement"), "Check forked view cssPrefix field was overrided and applied");
 
 		var view = new Echo.View({"cssPrefix": "echo-"});
 		view.render({

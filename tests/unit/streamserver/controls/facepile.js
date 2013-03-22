@@ -230,6 +230,7 @@ suite.prototype._checkActorsView = function(item, callback) {
 		"suffixText" : " commented on aboutecho.com",
 		"item"  : item,
 		"ready" : function() {
+			suite.pile = this;
 			$.each(item, function(key, value) {
 				var postfix = (key === "text") ? "title" : key;
 				var element = $(".echo-streamserver-controls-facepile-item-" + postfix, cfg.target).get(0);

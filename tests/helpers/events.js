@@ -276,8 +276,8 @@ Echo.Tests.Events.contracts = {
 	},
 	"Echo.Control.onDestroy": {
 		"self": "boolean",
-		"producer": {
-			"name": "string"
+		"producer": function(value) {
+			return value instanceof Echo.Control;
 		}
 	},
 	"Echo.StreamServer.Controls.Submit.onReady": {
@@ -306,7 +306,7 @@ Echo.Tests.Events.contracts = {
 		"target": "object",
 		"targetURL": "string"
 	},
-	"Echo.Loader.onError": {
+	"Echo.Canvas.onError": {
 		"code": "string",
 		"message": "string"
 	},
@@ -326,6 +326,10 @@ Echo.Tests.Events.contracts = {
 	"Echo.IdentityServer.Controls.Auth.onRender": {},
 	"Echo.IdentityServer.Controls.Auth.onReady": {},
 	"Echo.IdentityServer.Controls.Auth.onRerender": {},
-	"Echo.IdentityServer.Controls.Auth.onRefresh": {}
+	"Echo.IdentityServer.Controls.Auth.onRefresh": {},
+	"Echo.Canvas.onRender": {},
+	"Echo.Canvas.onReady": {},
+	"Echo.Canvas.onRerender": {},
+	"Echo.Canvas.onRefresh": {}
 };
 })(Echo.jQuery);

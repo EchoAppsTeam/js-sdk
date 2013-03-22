@@ -91,7 +91,6 @@ Echo.Control.create = function(manifest) {
 		}
 
 		this.data = config.data || {};
-		this.name = _manifest.name;
 		this.config = config;
 		this._init(this._initializers.get(&quot;init&quot;));
 	});
@@ -102,7 +101,11 @@ Echo.Control.create = function(manifest) {
 	}
 	prototype.templates = _manifest.templates;
 	prototype.renderers = _manifest.renderers;
+	prototype.name = _manifest.name;
 	constructor._manifest = _manifest;
+	if (manifest.inherits) {
+		constructor.parent = manifest.inherits.prototype;
+	}
 
 	// define default language var values with the lowest priority available
 	Echo.Labels.set(_manifest.labels, _manifest.name, true);
@@ -674,14 +677,33 @@ Echo.Control.prototype._initializers.events = function() {
 	};
 	return {
 		&quot;publish&quot;: function(params) {
-			params.topic = control.name + &quot;.&quot; + params.topic;
+			var parent, names;
+
 			params.data = params.data || {};
 
 			// process data through the normalization function if defined
 			if (control._prepareEventParams) {
 				params.data = control._prepareEventParams(params.data);
 			}
-
+			// publish events with parents prefixes if appropriate flag provided
+			if (params.inherited) {
+				parent = control.constructor.parent;
+				names = function get(parent, acc) {
+					if (parent &amp;&amp; parent.name) {
+						acc.unshift(parent.name);
+						get(parent.constructor.parent, acc);
+					}
+					return acc;
+				}(parent, []);
+				$.map(names, function(name) {
+					Echo.Events.publish({
+						&quot;topic&quot;: name + &quot;.&quot; + params.topic,
+						&quot;data&quot;: params.data,
+						&quot;context&quot;: control.config.get(&quot;context&quot;)
+					});
+				});
+			}
+			params.topic = control.name + &quot;.&quot; + params.topic;
 			Echo.Events.publish(prepare(params));
 		},
 		&quot;subscribe&quot;: function(params) {
@@ -803,7 +825,22 @@ Echo.Control.prototype._initializers.css = function() {
 	this.config.get(&quot;target&quot;).addClass(this.cssClass);
 	$.map(this._manifest(&quot;css&quot;), function(spec) {
 		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
-		Echo.Utils.addCSS(self.substitute({&quot;template&quot;: spec.code}), spec.id);
+		if (spec.id !== self.name) {
+			var css, component = Echo.Utils.getComponent(spec.id);
+			if (component) {
+				css = self.substitute({
+					&quot;template&quot;: spec.code,
+					&quot;instructions&quot;: {
+						&quot;class&quot;: function(key) {
+							return component.prototype.cssPrefix + key;
+						}
+					}
+				});
+				Echo.Utils.addCSS(css, spec.id);
+			}
+		} else {
+			Echo.Utils.addCSS(self.substitute({&quot;template&quot;: spec.code}), spec.id);
+		}
 	});
 };
 
@@ -890,7 +927,7 @@ Echo.Control.prototype._initializers.refresh = function() {
 
 Echo.Control._merge = function(manifest, parentManifest) {
 	var self = this;
-	parentManifest = parentManifest || this._manifest;
+	parentManifest = parentManifest || $.extend(true, Echo.Control.manifest(this._manifest.name), this._manifest);
 	// normalize CSS definition before merging to have the same format
 	var normalizeCSS = function(manifest) {
 		manifest.css = manifest.css || &quot;&quot;;
@@ -949,6 +986,22 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 	return {
 		&quot;class&quot;: function(key) {
 			return key ? control.cssPrefix + key : control.cssClass;
+		},
+		&quot;inherited.class&quot;: function(key) {
+			var value, parent;
+			if (key) {
+				parent = control.constructor.parent;
+				value = function get(parent, acc) {
+					if (parent &amp;&amp; parent.cssPrefix) {
+						acc.unshift(parent.cssPrefix + key);
+						get(parent.constructor.parent, acc);
+					}
+					return acc;
+				}(parent, []).join(&quot; &quot;);
+			} else {
+				value = control.cssClass;
+			}
+			return value;
 		},
 		&quot;label&quot;: function(key, defaults) {
 			return control.labels.get(key, defaults);
@@ -1351,7 +1404,7 @@ manifest.inherits = Echo.Control;
 manifest.templates = {&quot;message&quot;: {}};
 
 manifest.templates.message.compact =
-	'&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&amp;nbsp;&lt;/span&gt;';
+	'&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&lt;/span&gt;';
 
 manifest.templates.message.full =
 	'&lt;div class=&quot;echo-control-message {class:messageText}&quot;&gt;' +

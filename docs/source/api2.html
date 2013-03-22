@@ -123,7 +123,6 @@ Echo.StreamServer.API.Request.prototype._onData = function(response, requestPara
 	if (this.liveUpdates &amp;&amp; this.liveUpdates.responseHandler &amp;&amp; this.requestType === &quot;secondary&quot;) {
 		this.liveUpdates.responseHandler(response);
 	}
-	Echo.StreamServer.API.Request.parent._onData.apply(this, arguments);
 	if (response.result === &quot;error&quot;) {
 		this._handleErrorResponse(response, {
 			&quot;callback&quot;: config.onError
@@ -144,7 +143,6 @@ Echo.StreamServer.API.Request.prototype._onData = function(response, requestPara
 };
 
 Echo.StreamServer.API.Request.prototype._onError = function(responseError, requestParams, config) {
-	this.constructor.parent._onError.apply(this, arguments);
 	this._handleErrorResponse(responseError, {
 		&quot;callback&quot;: config.onError
 	});

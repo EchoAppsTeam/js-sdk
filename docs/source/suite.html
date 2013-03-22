@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+if (Echo.Tests.Suite) return;
+
+Echo.Tests.Suite = function() {
+	this.config = {
+		&quot;asyncTimeout&quot;: 500,
+		&quot;testTimeout&quot;: 5000,
+		&quot;target&quot;: $(&quot;#qunit-fixture&quot;),
+		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+		&quot;dataBaseLocation&quot;: &quot;http://example.com/js-sdk/&quot;
+	};
+};
+
+Echo.Tests.Suite.prototype.run = function() {
+	var self = this;
+	this.info = this.info || {};
+	this.info.functions = this.info.functions || [];
+	this.info.className = this.info.className || &quot;&quot;;
+	$.each(this.tests, function(name, test) {
+		test.config = test.config || {};
+		if (test.instance &amp;&amp; !$.isFunction(test.instance)) {
+			test.config.async = true;
+		}
+		test.config.user = test.config.user || {};
+		test.config.user.status = test.config.user.status || &quot;anonymous&quot;;
+		var check = function(instance) {
+			if (!test.config.async) {
+				test.check.call(self, instance);
+			} else {
+				setTimeout(function() {
+					test.check.call(self, instance);
+				}, test.config.asyncTimeout || self.config.asyncTimeout);
+			}
+		};
+		name = test.config.name || self.normalizeName(name);
+		if (test.config.description) {
+			name = name + &quot; (&quot; + test.config.description + &quot;)&quot;;
+		}
+		QUnit.test(name, function() {
+			// time in milliseconds after which test will time out
+			QUnit.config.testTimeout = test.config.testTimeout || self.config.testTimeout;
+			// we intentionally prevent next test execution
+			// allowing current test to complete or time out
+			QUnit.stop();
+			self._prepareEnvironment(test, function() {
+				if (!test.instance) {
+					check();
+					// we need to switch to the next test
+					// if it was NOT defined as async
+					if (!test.config.async) {
+						QUnit.start();
+					}
+				} else if ($.isFunction(test.instance)) {
+					check(test.instance());
+					QUnit.start();
+				} else {
+					var config = $.extend({
+						&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+						&quot;target&quot;: $(&quot;#qunit-fixture&quot;)
+					}, test.instance.config || {});
+					var component = Echo.Utils.getComponent(test.instance.name);
+					var instance = new component(config);
+					check(instance);
+				}
+			});
+		});
+	});
+};
+
+Echo.Tests.Suite.prototype.sequentialAsyncTests = function(funcs, namespace) {
+	if (namespace &amp;&amp; $.isPlainObject(this[namespace]) &amp;&amp; $.isFunction(this[namespace].destroy)) {
+		funcs.push(&quot;destroy&quot;);
+	}
+	funcs.push(function() {
+		QUnit.start();
+	});
+	this.sequentialCall(funcs, namespace);
+};
+
+Echo.Tests.Suite.prototype.sequentialCall = function(names, namespace) {
+	var self = this;
+	var recursive = function(list) {
+		if (!list.length) {
+			return;
+		}
+		var func = list.shift();
+		if (!$.isFunction(func)) {
+			func = (namespace ? self[namespace] : self)[func];
+		}
+		func.call(self, function() { recursive(list); });
+	};
+	recursive(names);
+};
+
+Echo.Tests.Suite.prototype.normalizeName = function(name, capitalize) {
+	return (!~name.search(/\W/g)
+		? name.replace(/[A-Z]|_/g, function(match, pos) {
+			var m = match.toLowerCase();
+			m = capitalize &amp;&amp; m.replace(/\b[a-z]/g, function(letter) {
+				return letter.toUpperCase();
+			}) || m;
+			return (pos ? &quot; &quot; : &quot;&quot;) + m;
+		})
+		: name);
+};
+
+Echo.Tests.Suite.prototype.constructPluginRenderersTest = function(config) {
+	var data = {
+		&quot;config&quot;: {&quot;async&quot;: true}
+	};
+	data.check = function(instance) {
+		var test = this;
+		var parts = this.info.className.split(&quot;.Plugins.&quot;);
+		var component = parts[0], plugin = parts[1];
+		var init = Echo.Tests.getComponentInitializer(component);
+		var defaults = {
+			&quot;appkey&quot;: this.config.appkey,
+			&quot;target&quot;: this.config.target,
+			&quot;dataBaseLocation&quot;: this.config.dataBaseLocation,
+			&quot;plugin&quot;: {&quot;name&quot;: plugin},
+			&quot;plugins&quot;: [],
+			&quot;ready&quot;: function() {
+				test.executePluginRenderersTest(this.getPlugin(plugin));
+				this.destroy();
+				QUnit.start();
+			}
+		};
+		var _config = new Echo.Configuration(config, defaults).getAsHash();
+		_config.plugins.push(_config.plugin);
+		init(_config);
+	};
+	this.tests.TestPluginRenderers = data;
+};
+
+Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
+	var self = this;
+	if (!plugin.component.view.rendered()) {
+		plugin.component.render();
+	}
+	var _check = function(forComponent) {
+		var renderers = forComponent ? plugin._manifest(&quot;component&quot;).renderers : plugin._manifest(&quot;renderers&quot;);
+		$.each(renderers, function(name, renderer) {
+			// don't test private renderer
+			if (name.charAt(0) === &quot;_&quot;) return true;
+
+			self.info.functions.push((forComponent ? &quot;component.&quot; : &quot;&quot;) + &quot;renderers.&quot; + name);
+			var element = forComponent ? plugin.component.view.get(name) : plugin.view.get(name);
+			var oldElement = element.clone();
+			var renderedElement = renderer.call(plugin, element);
+			QUnit.ok(renderedElement instanceof jQuery &amp;&amp; renderedElement.length === 1, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check contract&quot;);
+			QUnit.ok(renderedElement.jquery === oldElement.jquery, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check that element is still the same after second rendering&quot;);
+			QUnit.equal(renderedElement.children().length, oldElement.children().length, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check the number of children after second rendering of element&quot;);
+		});
+	};
+	_check(false);
+	_check(true);
+};
+
+
+/*
+The Idea of the function were took from https://github.com/jquery/jquery-ui/blob/master/tests/unit/testsuite.js
+Some functionality copied as is.
+*/
+Echo.Tests.Suite.prototype.jqueryObjectsEqual = function(source, target, message) {
+	var expected, actual;
+	var properties = [
+		&quot;disabled&quot;,
+		&quot;readOnly&quot;
+	];
+	var attributes = [
+		&quot;autocomplete&quot;,
+		&quot;aria-activedescendant&quot;,
+		&quot;aria-controls&quot;,
+		&quot;aria-describedby&quot;,
+		&quot;aria-disabled&quot;,
+		&quot;aria-expanded&quot;,
+		&quot;aria-haspopup&quot;,
+		&quot;aria-hidden&quot;,
+		&quot;aria-labelledby&quot;,
+		&quot;aria-pressed&quot;,
+		&quot;aria-selected&quot;,
+		&quot;aria-valuemax&quot;,
+		&quot;aria-valuemin&quot;,
+		&quot;aria-valuenow&quot;,
+		&quot;class&quot;,
+		&quot;href&quot;,
+		&quot;id&quot;,
+		&quot;nodeName&quot;,
+		&quot;role&quot;,
+		&quot;tabIndex&quot;,
+		&quot;src&quot;,
+		&quot;alt&quot;,
+		&quot;title&quot;
+	];
+	function extract(elem) {
+		if (!elem || !elem.length) {
+			QUnit.push(false, actual, expected,
+				&quot;jqueryObjectsEqual failed, can't extract the element, message was: &quot; + message);
+			return;
+		}
+
+		var children, result = {};
+		$.map(properties, function(attr) {
+			var value = elem.prop(attr);
+			result[attr] = typeof value !== &quot;undefined&quot; ? value : &quot;&quot;;
+		});
+		$.map(attributes, function(attr) {
+			var value = elem.attr(attr);
+			result[attr] = typeof value !== &quot;undefined&quot; ? value : &quot;&quot;;
+		});
+		result.events = $._data(elem[0], &quot;events&quot;);
+		result.data = $.extend({}, elem.data());
+		delete result.data[$.expando];
+		children = elem.children();
+		if (children.length) {
+			result.children = elem.children().map(function( ind ) {
+				return extract($(this));
+			}).get();
+		} else {
+			result.text = elem.text();
+		}
+		return result;
+	}
+	expected = extract(source);
+
+	actual = extract(target);
+	QUnit.deepEqual(actual, expected, message);
+};
+
+Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
+	var self = this;
+	data.check = function(instance) {
+		if (!instance.view.rendered()) {
+			instance.render();
+		}
+		$.each(instance.renderers, function(name, renderer) {
+			self.info.functions.push(&quot;renderers.&quot; + name);
+			var element = instance.view.get(name);
+			if (!element) {
+				QUnit.ok(true, &quot;Note: the test for the &quot; + &quot; \&quot;&quot; + name + &quot;\&quot;&quot; + &quot; renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template.&quot;);
+				return;
+			}
+			var oldElement = element.clone();
+			var renderedElement = instance.view.render({&quot;name&quot;: name});
+			QUnit.ok(renderedElement instanceof jQuery &amp;&amp; renderedElement.length === 1, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check contract&quot;);
+			QUnit.ok(renderedElement.jquery === oldElement.jquery, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check that element is still the same after second rendering&quot;);
+			QUnit.deepEqual(renderedElement.children().length, oldElement.children().length, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check the number of children after second rendering of element&quot;);
+		});
+		if (data.config.async) {
+			QUnit.start();
+		}
+	};
+	this.tests.TestRenderers = data;
+};
+
+Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
+	var user = Echo.UserSession($.extend({&quot;appkey&quot;: &quot;test.aboutecho.com&quot;}, config || {}));
+	if (user.is(&quot;logged&quot;)) {
+		callback &amp;&amp; callback();
+		return;
+	}
+	$.get(&quot;http://echosandbox.com/js-sdk/auth&quot;, {
+		&quot;action&quot;: &quot;login&quot;,
+		&quot;channel&quot;: Backplane.getChannelID(),
+		&quot;identityUrl&quot;: &quot;http://somedomain.com/users/fake_user&quot;
+	}, function() {
+		Echo.UserSession._onInit(callback);
+		Backplane.expectMessages(&quot;identity/ack&quot;);
+	}, &quot;jsonp&quot;);
+};
+
+Echo.Tests.Suite.prototype.logoutTestUser = function(callback) {
+	Echo.UserSession({&quot;appkey&quot;: &quot;test.aboutecho.com&quot;}).logout(callback);
+};
+
+Echo.Tests.Suite.prototype._prepareEnvironment = function(test, callback) {
+	var self = this;
+	this._cleanupEnvironment(function() {
+		if (test.config.user.status === &quot;anonymous&quot;) {
+			callback();
+			return;
+		}
+		self.loginTestUser(test.config.user, callback);
+	});
+};
+
+Echo.Tests.Suite.prototype._cleanupEnvironment = function(callback) {
+	//delete all event handlers in all contexts
+	Echo.Events._subscriptions = {};
+	Echo.Events._dataByHandlerId = {};
+
+	// clear qunit-fixture
+	$(&quot;#qunit-fixture&quot;).empty();
+
+	// logout user
+	this.logoutTestUser(callback);
+};
+
+})(Echo.jQuery);
+</pre>
+</body>
+</html>
