@@ -172,8 +172,8 @@ suite.prototype.cases.markersAndTags = function(callback) {
 		"target": this.config.target,
 		"appkey": "test.aboutecho.com",
 		"ready": function() {
-			QUnit.strictEqual(this.view.get("markers").val(), "", "Check that markers element value is empty string after initial rendering (do not defined data.object & config cases)");
-			QUnit.strictEqual(this.view.get("tags").val(), "", "Check that tags element value is empty string after initial rendering (do not defined data.object & config cases)");
+			QUnit.strictEqual(this.view.get("markers").val(), "", "Check that markers element value is empty string after initial rendering (not defined data.object & config cases)");
+			QUnit.strictEqual(this.view.get("tags").val(), "", "Check that tags element value is empty string after initial rendering (not defined data.object & config cases)");
 			this.config.set("markers", ["test-marker1", "test-marker2", "test-marker3"]);
 			this.config.set("tags", ["test-tag1", "test-tag2", "test-tag3"]);
 			this.view.render({"name": "tags"});
