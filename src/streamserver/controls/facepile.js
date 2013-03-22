@@ -236,6 +236,7 @@ pile.methods._request = function() {
 			},
 			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
 			"recurring": this.config.get("liveUpdates.enabled"),
+			"secure": this.config.get("useSecureAPI"),
 			"onError": function(data, extra) {
 				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
 				if (needShowError) {
@@ -259,6 +260,7 @@ pile.methods._requestMoreItems = function() {
 	}
 	var request = Echo.StreamServer.API.request({
 		"endpoint": "search",
+		"secure": this.config.get("useSecureAPI"),
 		"data": {
 			"q": query,
 			"appkey": this.config.get("appkey")
@@ -366,6 +368,7 @@ pile.methods._initItem = function(entry, callback) {
 		"parent": this.config.getAsHash(),
 		"plugins": this.config.get("plugins"),
 		"context": this.config.get("context"),
+		"useSecureAPI": this.config.get("useSecureAPI"),
 		"data": entry.actor,
 		"user": this.user,
 		"ready": callback

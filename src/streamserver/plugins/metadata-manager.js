@@ -164,6 +164,7 @@ plugin.methods._assembleButton = function(action, control) {
 		});
 		Echo.StreamServer.API.request({
 			"endpoint": "submit",
+			"secure": this.component.config.get("useSecureAPI"),
 			"submissionProxyURL": item.config.get("submissionProxyURL"),
 			"onData": function(response) {
 				/**

@@ -196,9 +196,8 @@ Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
 };
 
 Echo.API.Transports.XDomainRequest.available = function(config) {
-	config = config || {"URL": "", "method": ""};
-	var parts = config.URL && utils.parseURL(config.URL) || {};
-	var scheme = parts.scheme || "http:";
+	config = config || {"method": "", "secure": false};
+	var scheme = config.secure ? "https:" : "http:";
 	// XDomainRequests must be: GET or POST methods, HTTP or HTTPS protocol,
 	// and same scheme as calling page
 	var transportSpecAvailability = /^get|post$/i.test(config.method)
@@ -353,6 +352,12 @@ Echo.API.Request = function(config) {
 		 */
 		"method": "GET",
 		/**
+		 * @cfg {Boolean} [secure]
+		 * There is a flag which indicates what protocol will be used in, secure or not.
+		 * If this parameter is not set, internally the lib will decide on the URL scheme.
+		 */
+		"secure": false,
+		/**
 		 * @cfg {Number} [timeout]
 		 * Specifies the number of seconds after which the onError callback
 		 * is called if the API request failed.
@@ -362,7 +367,9 @@ Echo.API.Request = function(config) {
 };
 
 Echo.API.Request.prototype._isSecureRequest = function() {
-	var parts = utils.parseURL(this.config.get("apiBaseURL"));
+	var parts, secure = this.config.get("secure");
+	if (secure) return secure;
+	parts = utils.parseURL(this.config.get("apiBaseURL"));
 	if (!parts.scheme) return false;
 	return /https|wss/.test(parts.scheme);
 };
@@ -423,7 +430,7 @@ Echo.API.Request.prototype._getTransport = function() {
 			var transport;
 			$.each(["AJAX", "XDomainRequest", "JSONP"], function(i, name) {
 				var available = Echo.API.Transports[name].available({
-					"URL": self.config.get("apiBaseURL"),
+					"secure": self.config.get("secure"),
 					"method": self.config.get("method")
 				});
 				if (available) {
