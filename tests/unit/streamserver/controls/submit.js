@@ -67,8 +67,8 @@ suite.prototype.tests.loggedUserWorkflow = {
 				self.sequentialAsyncTests([
 					"user",
 					"content",
+					"post",
 					"markersAndTags",
-					"post"
 				], "cases");
 			}
 		});
@@ -168,20 +168,27 @@ suite.prototype.cases.content = function(callback) {
 };
 
 suite.prototype.cases.markersAndTags = function(callback) {
-	var submit = suite.submit;
-	submit.config.set("markers", ["test-marker1", "test-marker2", "test-marker3"]);
-	submit.config.set("tags", ["test-tag1", "test-tag2", "test-tag3"]);
-	submit.view.render({"name": "tags"});
-	submit.view.render({"name": "markers"});
-	QUnit.strictEqual(submit.view.get("markers").val(), "test-marker1, test-marker2, test-marker3", "Check that markers were render in case of using values from the config");
-	QUnit.strictEqual(submit.view.get("tags").val(), "test-tag1, test-tag2, test-tag3", "Check that tags were render in case of using values from the config");
-	submit.set("data.object.markers", ["another-test-marker1", "another-test-marker2", "another-test-marker3"]);
-	submit.set("data.object.tags", ["another-test-tag1", "another-test-tag2", "another-test-tag3"]);
-	submit.view.render({"name": "tags"});
-	submit.view.render({"name": "markers"});
-	QUnit.strictEqual(submit.view.get("markers").val(), "another-test-marker1, another-test-marker2, another-test-marker3", "Check that markers were render in case of using values from the data.object");
-	QUnit.strictEqual(submit.view.get("tags").val(), "another-test-tag1, another-test-tag2, another-test-tag3", "Check that tags were render in case of using values from the data.object");
-	callback();
+	new Echo.StreamServer.Controls.Submit({
+		"target": this.config.target,
+		"appkey": "test.aboutecho.com",
+		"ready": function() {
+			QUnit.strictEqual(this.view.get("markers").val(), "", "Check that markers element value is empty string after initial rendering (do not defined data.object & config cases)");
+			QUnit.strictEqual(this.view.get("tags").val(), "", "Check that tags element value is empty string after initial rendering (do not defined data.object & config cases)");
+			this.config.set("markers", ["test-marker1", "test-marker2", "test-marker3"]);
+			this.config.set("tags", ["test-tag1", "test-tag2", "test-tag3"]);
+			this.view.render({"name": "tags"});
+			this.view.render({"name": "markers"});
+			QUnit.strictEqual(this.view.get("markers").val(), "test-marker1, test-marker2, test-marker3", "Check that markers were render in case of using values from the config");
+			QUnit.strictEqual(this.view.get("tags").val(), "test-tag1, test-tag2, test-tag3", "Check that tags were render in case of using values from the config");
+			this.set("data.object.markers", ["another-test-marker1", "another-test-marker2", "another-test-marker3"]);
+			this.set("data.object.tags", ["another-test-tag1", "another-test-tag2", "another-test-tag3"]);
+			this.view.render({"name": "tags"});
+			this.view.render({"name": "markers"});
+			QUnit.strictEqual(this.view.get("markers").val(), "another-test-marker1, another-test-marker2, another-test-marker3", "Check that markers were render in case of using values from the data.object");
+			QUnit.strictEqual(this.view.get("tags").val(), "another-test-tag1, another-test-tag2, another-test-tag3", "Check that tags were render in case of using values from the data.object");
+			callback();
+		}
+	});
 };
 
 suite.prototype.cases.validator = function(callback) {
