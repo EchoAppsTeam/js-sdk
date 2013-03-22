@@ -13,10 +13,9 @@ div#header-content {
 }
 
 #loading span.title {
-	background: url("../images/echo-logo.png") no-repeat scroll transparent;
+	background: url("../images/echo-logo.png") no-repeat scroll transparent center;
 	left: -60px;
-	width: 300px;
-	height: 100px;
+	height: 150px;
 }
 
 #footer .policy {
