@@ -14,7 +14,8 @@
 <body>
 	<div id="container">
 		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Counter" target="_blank">Documentation</a></div>
-		<h1>Counter Demo</h1>
+		<h1>Counter Control Demo</h1>
+		<div class="description">Echo Counter encapsulates interaction with the Echo Count API and provides a simple live updating number.</div>
 		<div class="wrapper">
 			<div id="counter"></div>
 		</div>
@@ -27,6 +28,7 @@
 				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
 				return false;
 			});
+			Echo.jQuery("#container").addClass("embedded");
 		}
 	</script>
 	<!-- Client initialization -->

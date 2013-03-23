@@ -15,7 +15,8 @@
 <body>
 	<div id="container">
 		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit" target="_blank">Documentation</a></div>
-		<h1>Submit Demo</h1>
+		<h1>Submit Control Demo</h1>
+		<div class="description">Echo Submit control encapsulates interaction with the Echo Submit API and provides a simple 'submit/comment form' style interaction.</div>
 		<div class="wrapper">
 			<div id="submit"></div>
 		</div>
@@ -28,6 +29,7 @@
 				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
 				return false;
 			});
+			Echo.jQuery("#container").addClass("embedded");
 		}
 	</script>
 	<!-- Client initialization -->
@@ -36,23 +38,10 @@
 			"serverBaseURL": "http://api.echoenabled.com/v1",
 			"busName": "jskit"
 		});
-		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
 		new Echo.StreamServer.Controls.Submit({
 			"target": document.getElementById("submit"),
 			"appkey": "test.aboutecho.com",
-			"targetURL": "http://example.com/js-sdk",
-			"plugins": [{
-				"name": "FormAuth",
-				"submitPermissions": "forceLogin",
-				"identityManager": {
-					"login": identityManager,
-					"signup": identityManager
-				}
-			}, {
-				"name": "TextCounter",
-				"limit": 40,
-				"label": "You have typed {typed} chars, {left} chars left"
-			}]
+			"targetURL": "http://example.com/js-sdk"
 		});
 	</script>
 </body>

@@ -14,8 +14,8 @@
 <body>
 	<div id="container">
 		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.FacePile" target="_blank">Documentation</a></div>
-		<h1>Facepile Demo</h1>
-
+		<h1>FacePile Control Demo</h1>
+		<div class="description">Echo FacePile control displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.</div>
 		<div class="wrapper">
 			<h3>Dynamic lists (by "query")</h3>
 			<small>query: "childrenof:http://aboutecho.com/* itemsPerPage:N children:0"</small>
@@ -54,6 +54,7 @@
 				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
 				return false;
 			});
+			Echo.jQuery("#container").addClass("embedded");
 		}
 	</script>
 	<!-- Client initialization -->

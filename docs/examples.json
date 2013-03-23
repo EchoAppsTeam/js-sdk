@@ -1,72 +1,65 @@
 [
 	{
-		"title": "Controls Examples",
+		"title": "Control Examples",
 		"items": [
 			{
 				"name": "auth",
 				"title": "Auth",
-				"description": "",
+				"description": "Displays the user login status and allows them sign in using different social identities.",
 				"url": "auth.html",
-				"icon": "../docs/resources/images/default-guide.png",
-				"status": "new"
+				"icon": "../docs/resources/images/default-guide.png"
 			},
 			{
 				"name": "counter",
 				"text": "Counter",
-				"description": "",
+				"description": "Encapsulates interaction with the Echo Count API and provides a simple live updating number.",
 				"url": "counter.html",
-				"icon": "../docs/resources/images/default-guide.png",
-				"status": "new"
+				"icon": "../docs/resources/images/default-guide.png"
 			},
 			{
 				"name": "facepile",
-				"text": "Facepile",
-				"description": "",
+				"text": "FacePile",
+				"description": "Displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.",
 				"url": "facepile.html",
-				"icon": "../docs/resources/images/default-guide.png",
-				"status": "new"
+				"icon": "../docs/resources/images/default-guide.png"
 			},
 			{
 				"name": "stream",
 				"text": "Stream",
-				"description": "",
+				"description": "Encapsulates interaction with the Echo Search API and displays live updating search results in a standard 'news feed' style format.",
 				"url": "stream.html",
-				"icon": "../docs/resources/images/default-guide.png",
-				"status": "new"
+				"icon": "../docs/resources/images/default-guide.png"
 			},
 			{
 				"name": "submit",
 				"text": "Submit",
-				"description": "",
+				"description": "Encapsulates interaction with the Echo Submit API and provides a simple 'submit/comment form' style interaction.",
 				"url": "submit.html",
-				"icon": "../docs/resources/images/default-guide.png",
-				"status": "new"
+				"icon": "../docs/resources/images/default-guide.png"
 			}
 		]
 	},
 	{
-		"title": "Plugins Examples",
+		"title": "Plugin Examples",
 		"items": [
 			{
 				"name": "pinboard-visualization",
 				"title": "Pinboard Visualization",
 				"description": "",
 				"url": "pinboard.html",
-				"icon": "../docs/resources/images/default-guide.png",
-				"status": "new"
+				"icon": "../docs/resources/images/default-guide.png"
 			}
 		]
 	},
 	{
-		"title": "Apps Examples",
+		"title": "App Examples",
 		"items": [
 			{
 				"name": "comments-sample",
 				"title": "Comments sample",
 				"description": "Example of simple app",
 				"url": "apps/comments-sample/index.html",
-				"icon": "../docs/resources/images/default-guide.png",
-				"status": "new"
+				"icon": "../docs/resources/images/default-guide.png"
 			}
 		]
 	}

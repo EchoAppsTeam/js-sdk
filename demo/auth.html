@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-	<title>Auth Demo</title>
+	<title>Auth Control Demo</title>
 	<link rel="stylesheet" type="text/css" href="demo.css" />
 
 	<!-- Default scripts inclusion -->
@@ -12,9 +12,13 @@
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/identityserver.pack.js"></script>
 </head>
 <body>
+	<style>
+		.echo-identityserver-controls-auth-userAnonymous { text-align: left; }
+	</style>
 	<div id="container">
 		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth" target="_blank">Documentation</a></div>
-		<h1>Auth Demo</h1>
+		<h1>Auth Control Demo</h1>
+		<div class="description">Auth control displays the user login status and allows them sign in using different social identities.</div>
 		<div class="wrapper">
 			<div id="auth"></div>
 		</div>
@@ -27,6 +31,7 @@
 				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
 				return false;
 			});
+			Echo.jQuery("#container").addClass("embedded");
 		}
 	</script>
 	<!-- Client initialization -->
