@@ -1,6 +1,8 @@
 # How to develop a plugin
 
-Echo JS SDK provides the ability to extend the functionality of any Echo Control or an Application using the Plugins approach. This page will guide you through the steps of custom plugins creation.
+## Overview
+
+The Echo JS SDK provides the ability to extend the functionality of any Echo Control or Application using a Plugins approach. This page will guide you through the steps of custom plugins creation. For examples of existing plugins visit the [Examples Page](#!/example).
 
 ## Introduction
 

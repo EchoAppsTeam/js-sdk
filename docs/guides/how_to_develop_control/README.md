@@ -1,6 +1,8 @@
 # How to develop a control
 
-Echo JS SDK provides the ability to package a certain set of the discrete functionality allows into a JavaScript class which is called the *Control* in the SDK terminology. This page will guide you through the steps of custom control creation.
+## Overview
+
+Echo JS SDK provides the ability to package a certain set of discrete functionality into a JavaScript class which is called a Control. Controls are typically core interaction patterns like a submit form, stream client etc. Controls are then used by Applications to deliver a complete user experience. This page will guide you through the steps of custom control creation. For more examples of controls please visit the [Examples Page](#!/example).
 
 ## Introduction
 
@@ -448,4 +450,4 @@ Each bundled Echo control uses the same mechanisms described in this guide. Bund
 - [Stream](http://cdn.echoenabled.com/sdk/v3/streamserver/controls/stream.js)
 - [FacePile](http://cdn.echoenabled.com/sdk/v3/streamserver/controls/facepile.js)
 - [Submit](http://cdn.echoenabled.com/sdk/v3/streamserver/controls/submit.js)
-- and more (please look at Echo controls documentation pages)
+- and [more](#!/example)

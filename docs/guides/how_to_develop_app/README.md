@@ -1,12 +1,14 @@
 # How to develop an application
 
-Echo JS SDK allows to create complex applications based on Echo.App class. This page will guide you through the process of custom Application creation.
+## Overview
+
+The Echo JS SDK allows you to create complex applications based on the Echo.App class. This page will guide you through the process of developing an app using the SDK. For examples of existing apps visit the [Examples Page](#!/example).
 
 ## Introduction
 
-*Application* (or *App*) is an object with the predefined structure which incapsulates a certain business logic and allows to work with the set of Echo Controls and Echo Plugins as with the single component.
+*Application* (or *App*) is an object with a predefined structure which encapsulates a given set of business logic, Echo Controls and Echo Plugins as a discrete, end-to-end single user experience.
 
-Let's imagine that we want to create the application for posting and viewing comments on a website. For this purpose we'll use the [Stream](#!/api/Echo.StreamServer.Controls.Stream), the [Submit](#!/api/Echo.StreamServer.Controls.Submit) and the [Auth](#!/api/Echo.IdentityServer.Controls.Auth) controls and assemble them in one logical unit using the Echo Application approach.
+Let's imagine that we want to create the application for posting and viewing comments on a website. For this purpose we'll use the [Stream](#!/api/Echo.StreamServer.Controls.Stream) and the [Submit](#!/api/Echo.StreamServer.Controls.Submit) controls and assemble them in one logical unit using the Echo Application approach.
 
 ## Creating the Application skeleton
 
