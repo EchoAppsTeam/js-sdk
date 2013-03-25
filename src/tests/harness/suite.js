@@ -91,7 +91,19 @@ Echo.Tests.Suite.prototype.sequentialCall = function(names, namespace) {
 		if (!$.isFunction(func)) {
 			func = (namespace ? self[namespace] : self)[func];
 		}
-		func.call(self, function() { recursive(list); });
+		func.call(self, function() {
+			// NOTE: THIS IS A HACK. THIS TECHNIQUE COULD PROVIDE A BUGGY BEHAVIOUR WITH THE FUNCTION SEQUENCES.
+			// When we use recursion every "func" call stack save in the root call stack
+			// It means that every variables and other properties will accumulate in the root call stack
+			// Every engine has a inner call stack size dependent on OS and browser as well
+			// In some cases when we sequentially called lots of tests functions call root stack size
+			// growing up and overflowed.
+			// To avoid it we are wrapped every further recursive function into setTimeout which clear
+			// root call stack and executes the function in your own.
+			setTimeout(function() {
+				recursive(list);
+			}, 0);
+		});
 	};
 	recursive(names);
 };
