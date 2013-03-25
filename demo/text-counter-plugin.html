@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<title>Auth Control Demo</title>
+		<title>Text Counter Plugin Demo</title>
 		<link rel="stylesheet" type="text/css" href="demo.css" />
 		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
 		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
 	</head>
 <body>
-	<style>
-		.echo-identityserver-controls-auth-userAnonymous { text-align: left; }
-	</style>
 	<div id="container">
-		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth" target="_blank">Documentation</a></div>
-		<h1>Auth Control Demo</h1>
-		<div class="description">Auth control displays the user login status and allows them sign in using different social identities.</div>
+		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter" target="_blank">Documentation</a></div>
+		<h1>Text Counter Plugin Demo</h1>
+		<div class="description">Adds the character counter under the text field in the <a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit">Echo Submit control</a>. Allows to set the maximum length of the text to enter.
+
+</div>
 		<div class="wrapper">
-			<div id="auth"></div>
+			<div id="submit"></div>
 		</div>
 	</div>
 	<script>
@@ -31,26 +30,23 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		var identityManager = {
-			"width": 400,
-			"height": 240,
-			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-		};
         Echo.Loader.initApplication({ 
-            "script": "http://cdn.echoenabled.com/sdk/v3/identityserver.pack.js",
-            "component": "Echo.IdentityServer.Controls.Auth",
+            "script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+            "component": "Echo.StreamServer.Controls.Submit",
             "backplane": { 
                 "serverBaseURL": "http://api.echoenabled.com/v1",
                 "busName": "jskit"
             },
             "config": {
-                "target": document.getElementById("auth"),
+                "target": document.getElementById("submit"),
                 "appkey": "test.aboutecho.com",
                 "targetURL": "http://echosandbox.com/use-cases/commenting",
-				"identityManager": {
-					"login": identityManager,
-					"signup": identityManager
-				}
+				"plugins": [
+					{
+						"name": "TextCounter",
+						"limit": 140
+					}
+				]
             }
         }); 
 	</script>

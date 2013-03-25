@@ -1,17 +1,11 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-	<title>Submit Demo</title>
-	<link rel="stylesheet" type="text/css" href="demo.css" />
-
-	<!-- Default scripts inclusion -->
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/identityserver.pack.js"></script>
-</head>
+		<title>Submit Demo</title>
+		<link rel="stylesheet" type="text/css" href="demo.css" />
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+	</head>
 <body>
 	<div id="container">
 		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit" target="_blank">Documentation</a></div>
@@ -34,15 +28,19 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Backplane.init({
-			"serverBaseURL": "http://api.echoenabled.com/v1",
-			"busName": "jskit"
-		});
-		new Echo.StreamServer.Controls.Submit({
-			"target": document.getElementById("submit"),
-			"appkey": "test.aboutecho.com",
-			"targetURL": "http://example.com/js-sdk"
-		});
+        Echo.Loader.initApplication({ 
+            "script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+            "component": "Echo.StreamServer.Controls.Submit",
+            "backplane": { 
+                "serverBaseURL": "http://api.echoenabled.com/v1",
+                "busName": "jskit"
+            },
+            "config": {
+                "target": document.getElementById("submit"),
+                "appkey": "test.aboutecho.com",
+				"targetURL": "http://echosandbox.com/use-cases/commenting"
+            }
+        }); 
 	</script>
 </body>
 </html>

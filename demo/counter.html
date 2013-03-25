@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-	<title>Counter Demo</title>
-	<link rel="stylesheet" type="text/css" href="demo.css" />
-
-	<!-- Default scripts inclusion -->
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js"></script>
-</head>
+		<title>Counter Demo</title>
+		<link rel="stylesheet" type="text/css" href="demo.css" />
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+	</head>
 <body>
 	<div id="container">
 		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Counter" target="_blank">Documentation</a></div>
@@ -33,15 +28,19 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Backplane.init({
-			"serverBaseURL": "http://api.echoenabled.com/v1",
-			"busName": "jskit"
-		});
-		new Echo.StreamServer.Controls.Counter({
-			"target": document.getElementById("counter"),
-			"appkey": "test.aboutecho.com",
-			"query" : "childrenof:http://example.com/test/*"
-		});
+        Echo.Loader.initApplication({ 
+            "script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+            "component": "Echo.StreamServer.Controls.Counter",
+            "backplane": { 
+                "serverBaseURL": "http://api.echoenabled.com/v1",
+                "busName": "jskit"
+            },
+            "config": {
+				"target": document.getElementById("counter"),
+                "appkey": "test.aboutecho.com",
+				"query" : "childrenof:http://example.com/test/*"
+            }
+        }); 
 	</script>
 </body>
 </html>
