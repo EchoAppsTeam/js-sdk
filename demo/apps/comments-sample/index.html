@@ -6,24 +6,26 @@
 
 	<!-- Default scripts inclusion -->
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/apps/echo/comments-sample/comments-sample.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/apps/echo/comments-sample/plugins/stream-sorting-selector.js"></script>
 </head>
 <body>
 <div id="container">
 	<h1>CommentsSample Demo</h1>
 	<div class="wrapper">
-        <div id="comments-sample"></div>
-        <script type="text/javascript">
-			Backplane.init({
+		<div id="comments-sample"></div>
+	</div>
+	<script type="text/javascript">
+		if (window.parent.Docs) {
+			Echo.jQuery("#container").addClass("embedded");
+		}
+		Echo.Loader.initApplication({
+			"script": "http://cdn.echoenabled.com/apps/echo/comments-sample/comments-sample.js",
+			"component": "Echo.Apps.CommentsSample",
+			"backplane": {
 				"serverBaseURL": "http://api.echoenabled.com/v1",
 				"busName": "jskit"
-			});
-
-			new Echo.Apps.CommentsSample({
+			},
+			"config": {
 				"target": document.getElementById("comments-sample"),
 				"appkey": "test.aboutecho.com",
 				"apiBaseURL": "http://api.echoenabled.com/v1/",
@@ -38,7 +40,8 @@
 						}, {
 							"name": "Moderation"
 						}, {
-							"name": "StreamSortingSelector"
+							"name": "StreamSortingSelector",
+							"url": "http://cdn.echoenabled.com/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
 						}]
 					},
 					"Submit": {
@@ -48,18 +51,18 @@
 				"identityManager": {
 					"login": {
 						"width": 400,
-								"height": 250,
-								"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+						"height": 250,
+						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
 					},
 					"signup": {
 						"width": 400,
-								"height": 250,
-								"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+						"height": 250,
+						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
 					}
 				}
-			});
+			}
+		});
         </script>
-	</div>
 </div>
 </body>
 </html>

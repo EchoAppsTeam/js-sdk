@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide contains the definition of the terms widely used across different JS SDK areas, various development tips and description of the SDK concepts.
+This guide contains the definition of the terms used throughout the JS SDK docs, various development tips and a description of core SDK concepts.
 
 ## Terms
 

@@ -69,7 +69,12 @@ img {
 #documentation {
 	float: right;
 	font-size: 12px;
-	margin-top: 20px;
+	margin-top: 27px;
+}
+.description {
+	font-size: 13px;
+	margin: 0 0 15px;
+	line-height: 20px;
 }
 #container {
 	box-shadow: 0 4px 15px #666666;
@@ -78,6 +83,9 @@ img {
 	width: 640px;
 	padding: 0 20px 20px 20px;
 	margin: 50px auto 50px auto;
+}
+#container.embedded, .embedded .wrapper {
+	background: white;
 }
 .wrapper {
 	background: #F5F4EE;

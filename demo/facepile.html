@@ -1,21 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-	<title>Facepile Demo</title>
-	<link rel="stylesheet" type="text/css" href="demo.css" />
-
-	<!-- Default scripts inclusion -->
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js"></script>
-</head>
+		<title>Facepile Demo</title>
+		<link rel="stylesheet" type="text/css" href="demo.css" />
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+	</head>
 <body>
 	<div id="container">
 		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.FacePile" target="_blank">Documentation</a></div>
-		<h1>Facepile Demo</h1>
-
+		<h1>FacePile Control Demo</h1>
+		<div class="description">Echo FacePile control displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.</div>
 		<div class="wrapper">
 			<h3>Dynamic lists (by "query")</h3>
 			<small>query: "childrenof:http://aboutecho.com/* itemsPerPage:N children:0"</small>
@@ -54,38 +49,50 @@
 				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
 				return false;
 			});
+			Echo.jQuery("#container").addClass("embedded");
 		}
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		new Echo.StreamServer.Controls.FacePile({
+		var init = function(config) {
+			Echo.Loader.initApplication({ 
+				"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+				"component": "Echo.StreamServer.Controls.FacePile",
+				"backplane": { 
+					"serverBaseURL": "http://api.echoenabled.com/v1",
+					"busName": "jskit"
+				},
+				"config": config
+			}); 
+		};
+
+		init({
 			"target": document.getElementById("ulist-d1"),
 			"appkey": "test.aboutecho.com",
-			"query": "childrenof:http://aboutecho.com/* itemsPerPage:2 children:0",
+			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:2 children:0",
 			"suffixText": " commented on aboutecho.com",
 			"item": {"avatar": true, "text": true}
 		});
 
-		new Echo.StreamServer.Controls.FacePile({
+		init({
 			"target": document.getElementById("ulist-d2"),
 			"appkey": "test.aboutecho.com",
-			"query": "childrenof:http://aboutecho.com/* itemsPerPage:3 children:0",
+			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:3 children:0",
 			"item": {"avatar": false, "text": true}
 		});
 
-		new Echo.StreamServer.Controls.FacePile({
+		init({
 			"target": document.getElementById("ulist-d3"),
 			"appkey": "test.aboutecho.com",
-			"query": "childrenof:http://aboutecho.com/* itemsPerPage:6 children:0",
+			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:6 children:0",
 			"item": {"avatar": true, "text": false}
 		});
 
-
         Echo.jQuery.get("http://api.echoenabled.com/v1/search", {
-			"q": "childrenof:http://aboutecho.com/* itemsPerPage:100 children:0",
+			"q": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:100 children:0",
 			"appkey": "test.aboutecho.com"
 		}, function(data) {
-			new Echo.StreamServer.Controls.FacePile({
+			init({
 				"target": document.getElementById("ulist-s1"),
 				"appkey": "test.aboutecho.com",
 				"data": {"entries": data.entries},
@@ -94,7 +101,7 @@
 				"item": {"avatar": true, "text": true}
 			});
 
-			new Echo.StreamServer.Controls.FacePile({
+			init({
 				"target": document.getElementById("ulist-s2"),
 				"appkey": "test.aboutecho.com",
 				"data": {"itemsPerPage": 3, "entries": data.entries},
@@ -102,13 +109,14 @@
 				"item": {"avatar": false, "text": true}
 			});
 
-			new Echo.StreamServer.Controls.FacePile({
+			init({
 				"target": document.getElementById("ulist-s3"),
 				"appkey": "test.aboutecho.com",
 				"data": {"itemsPerPage": 6, "entries": data.entries},
 				"item": {"avatar": true, "text": false}
 			});
 		}, "jsonp");
+
 	</script>
 </body>
 </html>

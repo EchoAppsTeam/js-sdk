@@ -22,7 +22,7 @@ var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag
- * Adds extra buttons Flag/Unflag to each item in the Echo Stream
+ * Adds extra Flag/Unflag buttons to each item in the Echo Stream
  * control for the authenticated users. The item will receive the
  * CommunityFlagged state as soon as it is flagged by a certain number
  * of users. By default this number is 3, but it may be updated by
@@ -133,7 +133,7 @@ plugin.methods._assembleButton = function(name) {
 		};
 		var request = Echo.StreamServer.API.request({
 			&quot;endpoint&quot;: &quot;submit&quot;,
-			&quot;secure&quot;: this.component.config.get(&quot;useSecureAPI&quot;),
+			&quot;secure&quot;: item.config.get(&quot;useSecureAPI&quot;),
 			&quot;submissionProxyURL&quot;: plugin.config.get(&quot;submissionProxyURL&quot;, &quot;&quot;, true),
 			&quot;data&quot;: {
 				&quot;content&quot;: activity,
