@@ -78,7 +78,7 @@
 			{
 				"name": "comments-sample",
 				"title": "Comments sample",
-				"description": "Example of a simple app",
+				"description": "Example of a simple app built using the \"How to develop an app\" guide.",
 				"url": "apps/comments-sample/index.html",
 				"icon": "../docs/resources/images/default-guide.png"
 			}
