@@ -74,6 +74,7 @@ img {
 .description {
 	font-size: 13px;
 	margin: 0 0 15px;
+	line-height: 20px;
 }
 #container {
 	box-shadow: 0 4px 15px #666666;

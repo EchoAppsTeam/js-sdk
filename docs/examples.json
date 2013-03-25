@@ -59,7 +59,7 @@
 			{
 				"name": "community-flag-plugin",
 				"title": "CommunityFlag",
-				"description": "Adds extra Flag/Unflag buttons to each item in the Echo Stream control for authenticated users.",
+				"description": "The plugin adds extra Flag/Unflag buttons to each item in the Echo Stream control for authenticated users.",
 				"url": "community-flag-plugin.html",
 				"icon": "../docs/resources/images/default-guide.png"
 			},
