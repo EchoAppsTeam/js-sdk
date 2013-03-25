@@ -1754,7 +1754,6 @@ item.config.normalizer = {
 };
 
 item.vars = {
-	"age": undefined,
 	"children": [],
 	"depth": 0,
 	"threading": false,
@@ -1892,7 +1891,7 @@ item.methods.template = function() {
  * @echo_renderer
  */
 item.renderers.authorName = function(element) {
-	return element.append(this.get("data.actor.title") || this.labels.get("guest"));
+	return element.html(this.get("data.actor.title") || this.labels.get("guest"));
 };
 
 /**
@@ -2227,12 +2226,7 @@ item.renderers.body = function(element) {
  * @echo_renderer
  */
 item.renderers.date = function(element) {
-	var age = this.getRelativeTime(this.timestamp);
-	if (age !== this.age) {
-		this.age = age;
-		element.html(this.age);
-	}
-	return element;
+	return element.html(this.getRelativeTime(this.timestamp));
 };
 
 /**
