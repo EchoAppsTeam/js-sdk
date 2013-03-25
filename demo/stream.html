@@ -1,16 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
+<head>
 	<title>Stream Demo</title>
 	<link rel="stylesheet" type="text/css" href="demo.css" />
-
-	<!-- Default scripts inclusion -->
 	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/identityserver.pack.js"></script>
 </head>
 <body>
 	<div id="container">
@@ -34,17 +27,19 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Backplane.init({
-			"serverBaseURL": "http://api.echoenabled.com/v1",
-			"busName": "jskit"
-		});
-		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
-
-		var stream = new Echo.StreamServer.Controls.Stream({
-			"target": document.getElementById("stream"),
-			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:10 state:Untouched,ModeratorApproved children:2 state:Untouched,ModeratorApproved",
-			"appkey": "test.aboutecho.com",
-			"item": {"reTag": false}
+		Echo.Loader.initApplication({
+			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+			"component": "Echo.StreamServer.Controls.Stream",
+			"backplane": {
+				"serverBaseURL": "http://api.echoenabled.com/v1",
+				"busName": "jskit"
+			},
+			"config": {
+				"target": document.getElementById("stream"),
+				"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:10 state:Untouched,ModeratorApproved children:2 state:Untouched,ModeratorApproved",
+				"appkey": "test.aboutecho.com",
+				"item": {"reTag": false}
+			}
 		});
 	</script>
 </body>
