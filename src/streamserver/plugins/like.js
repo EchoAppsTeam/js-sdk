@@ -5,8 +5,8 @@ var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Like
- * Adds extra controls Like/Unlike to each item in the Echo Stream control.
- * Note that these controls will appear only for authenticated users.
+ * Adds extra Like/Unlike buttons to each item in the Echo Stream
+ * control for authenticated users.
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),

@@ -10,12 +10,12 @@
 			{
 				"name": "terminology",
 				"title": "Terminology and dev tips",
-				"description": "Terminology guide and the set of the useful tips about the JS SDK architecture."
+				"description": "This guide contains the definition of the terms used throughout the JS SDK docs, various development tips and a description of core SDK concepts."
 			},
 			{
 				"name": "technical_specification",
 				"title": "Technical specification",
-				"description": "JS SDK technical specification."
+				"description": "This document contains technical limitations, browser support and design principles and technology choices of the SDK."
 			},
 			{
 				"name": "how_to_develop_control",

@@ -43,10 +43,31 @@
 		"title": "Plugin Examples",
 		"items": [
 			{
-				"name": "pinboard-visualization",
-				"title": "Pinboard Visualization",
-				"description": "",
-				"url": "pinboard.html",
+				"name": "reply-plugin",
+				"title": "Reply",
+				"description": "The plugin adds extra “Reply” button to each item in the Stream control. Integrates Submit control and provides the ability to reply to the posted items.",
+				"url": "reply-plugin.html",
+				"icon": "../docs/resources/images/default-guide.png"
+			},
+			{
+				"name": "like-plugin",
+				"title": "Like",
+				"description": "The plugin adds extra Like/Unlike controls to each item in the Stream control for authenticated users.",
+				"url": "like-plugin.html",
+				"icon": "../docs/resources/images/default-guide.png"
+			},
+			{
+				"name": "community-flag-plugin",
+				"title": "CommunityFlag",
+				"description": "Adds extra Flag/Unflag buttons to each item in the Echo Stream control for authenticated users.",
+				"url": "community-flag-plugin.html",
+				"icon": "../docs/resources/images/default-guide.png"
+			},
+			{
+				"name": "text-counter-plugin",
+				"title": "TextCounter",
+				"description": "The plugin adds the character counter under the text field in the Submit control. Allows to set the maximum length of the text to enter.",
+				"url": "text-counter-plugin.html",
 				"icon": "../docs/resources/images/default-guide.png"
 			}
 		]
@@ -57,7 +78,7 @@
 			{
 				"name": "comments-sample",
 				"title": "Comments sample",
-				"description": "Example of simple app",
+				"description": "Example of a simple app",
 				"url": "apps/comments-sample/index.html",
 				"icon": "../docs/resources/images/default-guide.png"
 			}
