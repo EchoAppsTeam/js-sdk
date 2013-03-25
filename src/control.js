@@ -682,6 +682,7 @@ Echo.Control.prototype._initializers.events = function() {
 					Echo.Events.publish({
 						"topic": name + "." + params.topic,
 						"data": params.data,
+						"global": false,
 						"context": control.config.get("context")
 					});
 				});

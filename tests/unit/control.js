@@ -897,6 +897,11 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"Echo.TestControl1_Child2_Child3.anotherNewTestEvent": anotherEventCounter
 		}
 	}));
+	// identify that event don't published globaly
+	Echo.Events.subscribe({
+		"topic": "Echo.TestControl1.someNewTestEvent",
+		"handler": newEventCounter
+	});
 	suite.initTestControl({
 		"context": ctx,
 		"target": $("#qunit-fixture"),
