@@ -302,7 +302,7 @@ plugin.methods._changeItemStatus = function(status) {
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
-		"secure": this.component.config.get("useSecureAPI"),
+		"secure": this.config.get("useSecureAPI", false, true),
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
 		"onData": callback,
 		"onError": errorCallback,
@@ -457,7 +457,7 @@ plugin.methods._sendUserUpdate = function(config) {
 	var item = this.component;
 	Echo.IdentityServer.API.request({
 		"endpoint": "update",
-		"secure": this.component.config.get("useSecureAPI"),
+		"secure": this.config.get("useSecureAPI", false, true),
 		"data": {
 			"content": {
 				"field": config.field,
