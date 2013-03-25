@@ -7,7 +7,8 @@ var suite = Echo.Tests.Unit.Canvas = function() {
 			"config": {
 				"data": {
 					"apps": []
-				}
+				},
+				"ready": $.noop
 			}
 		},
 		"config": {
