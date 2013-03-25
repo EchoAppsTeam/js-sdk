@@ -14,14 +14,13 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 
 # Installation instructions
 
-0. Switch to root user.
-1. Go to http://nodejs.org/download/.
-2. Download and install package for your OS using instructions from the link "Installing from package managers" below the package list.
-3. npm install -g grunt
-4. npm install
-5. Now you can use 'grunt' command to build the project
-6. Install ruby, rubygems, yaml.
-7. gem install jsduck
+0. Clone this repository.
+1. Download and install NodeJS and npm from [http://nodejs.org](http://nodejs.org) (either from package or the source).
+2. sudo npm install -g grunt@0.3.17
+3. Run the following command in the project directory: npm install
+4. Now you can use 'grunt' command to build the project
+5. Install ruby, rubygems, yaml.
+6. gem install jsduck
 
 # Bug tracker
 We’re using the standard [GitHub Bug Tracker](https://github.com/EchoAppsTeam/js-sdk/issues) for tracking of issues and feature requests.
