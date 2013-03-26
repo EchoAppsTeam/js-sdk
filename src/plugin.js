@@ -221,7 +221,15 @@ Echo.Plugin.prototype.invoke = function(mixed, context) {
 };
 
 /**
- * Enables the plugin.
+ * Method to enable the plugin.
+ * The plugin becomes enabled for the current control instance and
+ * the update can also be reflected in the config (if the "global"
+ * flag is defined during the function invocation) to enable it
+ * for other controls which use the same config parameters.
+ *
+ * @param {Boolean} [global]
+ * Specifies if the plugin should be enabled in the config. By default
+ * the function enables the plugin for the current control instance only.
  */
 Echo.Plugin.prototype.enable = function(global) {
 	global && this.config.set("enabled", true);
@@ -229,7 +237,15 @@ Echo.Plugin.prototype.enable = function(global) {
 };
 
 /**
- * Disables the plugin.
+ * Method to disable the plugin.
+ * The plugin becomes disabled for the current control instance and
+ * the update can also be reflected in the config (if the "global"
+ * flag is defined during the function invocation) to disable it
+ * for other controls which use the same config parameters.
+ *
+ * @param {Boolean} [global]
+ * Specifies if the plugin should be disabled in the config. By default
+ * the function disables the plugin for the current control instance only.
  */
 Echo.Plugin.prototype.disable = function(global) {
 	global && this.config.set("enabled", false);
