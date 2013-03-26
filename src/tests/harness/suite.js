@@ -149,16 +149,9 @@ Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
 	var check = function(forComponent) {
 		var renderers = forComponent ? plugin._manifest("component").renderers : plugin._manifest("renderers");
 		var checker = function(name, element, suffix) {
-			suffix = suffix || "";
 			var oldElement = element.clone(true, true);
 			var renderedElement = renderers[name].call(plugin, element);
-			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length === 1, "Renderer \"" + name + "\": check contract" + suffix);
-			QUnit.ok(renderedElement.jquery === oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering" + suffix);
-			QUnit.equal(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element" + suffix);
-			// this variable contains regexp that will test rendered element
-			// use case is renderer function has side effects (ex. date computation, random values etc)
-			var template = oldElement.text().toLowerCase().replace(/([^\w\s])/g, "\\$1").replace(/\d+/g, "\\d+");
-			QUnit.ok((new RegExp(template)).test(renderedElement.text().toLowerCase()), "Element \"" + name + "\": check text containing after rendering" + suffix);
+			self._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
 		};
 		$.each(renderers, function(name, renderer) {
 			// don't test private renderer
@@ -259,20 +252,13 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 			instance.render();
 		}
 		var checker = function(name, element, suffix) {
-			suffix = suffix || "";
 			if (!element) {
 				QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template." + suffix);
 				return;
 			}
 			var oldElement = element.clone(true, true);
 			var renderedElement = instance.view.render({"name": name});
-			QUnit.ok(renderedElement instanceof jQuery && renderedElement.length === 1, "Renderer \"" + name + "\": check contract" + suffix);
-			QUnit.ok(renderedElement.jquery === oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering" + suffix);
-			QUnit.strictEqual(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element" + suffix);
-			// this variable contains regexp that will test rendered element
-			// use case is renderer function has side effects (ex. date computation, random values etc)
-			var template = oldElement.text().toLowerCase().replace(/([^\w\s])/g, "\\$1").replace(/\d+/g, "\\d+");
-			QUnit.ok((new RegExp(template)).test(renderedElement.text().toLowerCase()), "Element \"" + name + "\": check text containing after rendering" + suffix);
+			self._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
 		};
 		$.each(instance.renderers, function(name, renderer) {
 			self.info.functions.push("renderers." + name);
@@ -310,6 +296,17 @@ Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
 
 Echo.Tests.Suite.prototype.logoutTestUser = function(callback) {
 	Echo.UserSession({"appkey": "test.aboutecho.com"}).logout(callback);
+};
+
+Echo.Tests.Suite.prototype._testElementsConsistencyAfterRendering = function(name, oldElement, renderedElement, assertionTextSuffix) {
+	assertionTextSuffix = assertionTextSuffix || "";
+	QUnit.ok(renderedElement instanceof jQuery && renderedElement.length === 1, "Renderer \"" + name + "\": check contract" + assertionTextSuffix);
+	QUnit.ok(renderedElement.jquery === oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering" + assertionTextSuffix);
+	QUnit.equal(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element" + assertionTextSuffix);
+	// this variable contains regexp that will test rendered element
+	// use case is renderer function has side effects (ex. date computation, random values etc)
+	var template = oldElement.text().toLowerCase().replace(/([^\w\s])/g, "\\$1").replace(/\d+/g, "\\d+");
+	QUnit.ok((new RegExp(template)).test(renderedElement.text().toLowerCase()), "Element \"" + name + "\": check that text representation of the element is still the same after second rendering" + assertionTextSuffix);
 };
 
 Echo.Tests.Suite.prototype._prepareEnvironment = function(test, callback) {
