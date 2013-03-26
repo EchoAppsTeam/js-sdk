@@ -897,7 +897,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"Echo.TestControl1_Child2_Child3.anotherNewTestEvent": anotherEventCounter
 		}
 	}));
-	// identify that event don't published globaly
+	// identify that event will not be published globally
 	Echo.Events.subscribe({
 		"topic": "Echo.TestControl1.someNewTestEvent",
 		"handler": newEventCounter
