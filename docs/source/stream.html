@@ -1771,7 +1771,6 @@ item.config.normalizer = {
 };
 
 item.vars = {
-	&quot;age&quot;: undefined,
 	&quot;children&quot;: [],
 	&quot;depth&quot;: 0,
 	&quot;threading&quot;: false,
@@ -1909,7 +1908,7 @@ item.methods.template = function() {
 </span> * @echo_renderer
  */
 item.renderers.authorName = function(element) {
-	return element.append(this.get(&quot;data.actor.title&quot;) || this.labels.get(&quot;guest&quot;));
+	return element.html(this.get(&quot;data.actor.title&quot;) || this.labels.get(&quot;guest&quot;));
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-method-markers'>/**
@@ -2244,12 +2243,7 @@ item.renderers.body = function(element) {
 </span> * @echo_renderer
  */
 item.renderers.date = function(element) {
-	var age = this.getRelativeTime(this.timestamp);
-	if (age !== this.age) {
-		this.age = age;
-		element.html(this.age);
-	}
-	return element;
+	return element.html(this.getRelativeTime(this.timestamp));
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-method-expandChildrenLabel'>/**

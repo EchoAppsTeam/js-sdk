@@ -133,7 +133,7 @@ plugin.methods._assembleButton = function(name) {
 		};
 		var request = Echo.StreamServer.API.request({
 			&quot;endpoint&quot;: &quot;submit&quot;,
-			&quot;secure&quot;: item.config.get(&quot;useSecureAPI&quot;),
+			&quot;secure&quot;: plugin.config.get(&quot;useSecureAPI&quot;, false, true),
 			&quot;submissionProxyURL&quot;: plugin.config.get(&quot;submissionProxyURL&quot;, &quot;&quot;, true),
 			&quot;data&quot;: {
 				&quot;content&quot;: activity,

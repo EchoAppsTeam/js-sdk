@@ -77,11 +77,16 @@ Echo.Tests.Suite.prototype.run = function() {
 				} else {
 					var config = $.extend({
 						&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
-						&quot;target&quot;: $(&quot;#qunit-fixture&quot;)
+						&quot;target&quot;: $(&quot;#qunit-fixture&quot;),
+						&quot;ready&quot;: function() {
+							check(this);
+						}
 					}, test.instance.config || {});
 					var component = Echo.Utils.getComponent(test.instance.name);
 					var instance = new component(config);
-					check(instance);
+					if (test.instance.config &amp;&amp; test.instance.config.ready) {
+						check(instance);
+					}
 				}
 			});
 		});
@@ -108,7 +113,19 @@ Echo.Tests.Suite.prototype.sequentialCall = function(names, namespace) {
 		if (!$.isFunction(func)) {
 			func = (namespace ? self[namespace] : self)[func];
 		}
-		func.call(self, function() { recursive(list); });
+		func.call(self, function() {
+			// NOTE: THIS IS A HACK. THIS TECHNIQUE COULD PROVIDE A BUGGY BEHAVIOUR WITH THE FUNCTION SEQUENCES.
+			// When we use recursion every &quot;func&quot; call stack save in the root call stack
+			// It means that every variables and other properties will accumulate in the root call stack
+			// Every engine has a inner call stack size dependent on OS and browser as well
+			// In some cases when we sequentially called lots of tests functions call root stack size
+			// growing up and overflowed.
+			// To avoid it we are wrapped every further recursive function into setTimeout which clear
+			// root call stack and executes the function in your own.
+			setTimeout(function() {
+				recursive(list);
+			}, 0);
+		});
 	};
 	recursive(names);
 };
@@ -158,23 +175,32 @@ Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
 	if (!plugin.component.view.rendered()) {
 		plugin.component.render();
 	}
-	var _check = function(forComponent) {
+	var check = function(forComponent) {
 		var renderers = forComponent ? plugin._manifest(&quot;component&quot;).renderers : plugin._manifest(&quot;renderers&quot;);
+		var checker = function(name, element, suffix) {
+			var oldElement = element.clone(true, true);
+			var renderedElement = renderers[name].call(plugin, element);
+			self._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
+		};
 		$.each(renderers, function(name, renderer) {
 			// don't test private renderer
 			if (name.charAt(0) === &quot;_&quot;) return true;
 
 			self.info.functions.push((forComponent ? &quot;component.&quot; : &quot;&quot;) + &quot;renderers.&quot; + name);
-			var element = forComponent ? plugin.component.view.get(name) : plugin.view.get(name);
-			var oldElement = element.clone();
-			var renderedElement = renderer.call(plugin, element);
-			QUnit.ok(renderedElement instanceof jQuery &amp;&amp; renderedElement.length === 1, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check contract&quot;);
-			QUnit.ok(renderedElement.jquery === oldElement.jquery, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check that element is still the same after second rendering&quot;);
-			QUnit.equal(renderedElement.children().length, oldElement.children().length, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check the number of children after second rendering of element&quot;);
+			checker(name, forComponent ? plugin.component.view.get(name) : plugin.view.get(name));
+		});
+		var oldElements = Echo.Utils.foldl({}, plugin.component.view._elements, function(element, acc, name) {
+			acc[name] = element.clone(true, true);
+		});
+		plugin.component.render();
+		$.each(renderers, function(name) {
+			// don't test private renderer
+			if (name.charAt(0) === &quot;_&quot;) return true;
+			checker(name, oldElements[(forComponent ? plugin.component.cssPrefix : plugin.cssPrefix) + name], &quot; (recursive rerendering case)&quot;);
 		});
 	};
-	_check(false);
-	_check(true);
+	check(false);
+	check(true);
 };
 
 
@@ -254,18 +280,25 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 		if (!instance.view.rendered()) {
 			instance.render();
 		}
-		$.each(instance.renderers, function(name, renderer) {
-			self.info.functions.push(&quot;renderers.&quot; + name);
-			var element = instance.view.get(name);
+		var checker = function(name, element, suffix) {
 			if (!element) {
-				QUnit.ok(true, &quot;Note: the test for the &quot; + &quot; \&quot;&quot; + name + &quot;\&quot;&quot; + &quot; renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template.&quot;);
+				QUnit.ok(true, &quot;Note: the test for the &quot; + &quot; \&quot;&quot; + name + &quot;\&quot;&quot; + &quot; renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template.&quot; + suffix);
 				return;
 			}
-			var oldElement = element.clone();
+			var oldElement = element.clone(true, true);
 			var renderedElement = instance.view.render({&quot;name&quot;: name});
-			QUnit.ok(renderedElement instanceof jQuery &amp;&amp; renderedElement.length === 1, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check contract&quot;);
-			QUnit.ok(renderedElement.jquery === oldElement.jquery, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check that element is still the same after second rendering&quot;);
-			QUnit.deepEqual(renderedElement.children().length, oldElement.children().length, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check the number of children after second rendering of element&quot;);
+			self._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
+		};
+		$.each(instance.renderers, function(name, renderer) {
+			self.info.functions.push(&quot;renderers.&quot; + name);
+			checker(name, instance.view.get(name));
+		});
+		var oldElements = Echo.Utils.foldl({}, instance.view._elements, function(element, acc, name) {
+			acc[name] = element.clone(true, true);
+		});
+		instance.render();
+		$.each(instance.renderers, function(name, element) {
+			checker(name, oldElements[instance.cssPrefix + name], &quot; (recursive rerendering case)&quot;);
 		});
 		if (data.config.async) {
 			QUnit.start();
@@ -292,6 +325,17 @@ Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
 
 Echo.Tests.Suite.prototype.logoutTestUser = function(callback) {
 	Echo.UserSession({&quot;appkey&quot;: &quot;test.aboutecho.com&quot;}).logout(callback);
+};
+
+Echo.Tests.Suite.prototype._testElementsConsistencyAfterRendering = function(name, oldElement, renderedElement, assertionTextSuffix) {
+	assertionTextSuffix = assertionTextSuffix || &quot;&quot;;
+	QUnit.ok(renderedElement instanceof jQuery &amp;&amp; renderedElement.length === 1, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check contract&quot; + assertionTextSuffix);
+	QUnit.ok(renderedElement.jquery === oldElement.jquery, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check that element is still the same after second rendering&quot; + assertionTextSuffix);
+	QUnit.equal(renderedElement.children().length, oldElement.children().length, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check the number of children after second rendering of element&quot; + assertionTextSuffix);
+	// this variable contains regexp that will test rendered element
+	// use case is renderer function has side effects (ex. date computation, random values etc)
+	var template = oldElement.text().toLowerCase().replace(/([^\w\s])/g, &quot;\\$1&quot;).replace(/\d+/g, &quot;\\d+&quot;);
+	QUnit.ok((new RegExp(template)).test(renderedElement.text().toLowerCase()), &quot;Element \&quot;&quot; + name + &quot;\&quot;: check that text representation of the element is still the same after second rendering&quot; + assertionTextSuffix);
 };
 
 Echo.Tests.Suite.prototype._prepareEnvironment = function(test, callback) {

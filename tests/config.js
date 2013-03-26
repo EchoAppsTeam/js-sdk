@@ -8,15 +8,16 @@ Echo.Tests.Stats.root = {
 	"namespace": "Echo."
 };
 
+// browser-specific ignore
+var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope"];
+var isNotLteIE7 = !(Echo.Tests.browser && Echo.Tests.browser.version <= 7);
+$.map(["AJAX", "XDomainRequest", "JSONP"], function(transport) {
+	if (!Echo.API.Transports[transport].available() || isNotLteIE7 && transport === "JSONP") {
+		ignoreList.push("Echo.API.Transports." + transport);
+	}
+});
+
 Echo.Tests.Stats.isValidForTesting = function(parentObject, prefix, name, value) {
-	var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope"];
-	var isNotLteIE7 = !(Echo.Tests.browser && Echo.Tests.browser.version <= 7);
-	// browser-specific ignore
-	$.map(["AJAX", "XDomainRequest", "JSONP"], function(transport) {
-		if (!Echo.API.Transports[transport].available() || isNotLteIE7 && transport === "JSONP") {
-			ignoreList.push("Echo.API.Transports." + transport);
-		}
-	});
 	return $.inArray(prefix + name, ignoreList) < 0 &&
 		parentObject.hasOwnProperty(name) &&
 		typeof value !== "string" &&
