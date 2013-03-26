@@ -64,13 +64,7 @@ _stream.items = {
 
 var _submit = {};
 _submit.onRerender = {
-	"data": {
-		"object": {
-			"content": "string",
-			"tags": "array",
-			"markers": "array"
-		}
-	},
+	"data": {},
 	"target": "object",
 	"targetURL": "string"
 };
