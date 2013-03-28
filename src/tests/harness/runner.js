@@ -6,8 +6,11 @@ var $ = jQuery;
 if (!window.Echo) window.Echo = {};
 if (!Echo.Tests) Echo.Tests = {"Unit": {}};
 
-// No reordering tests, they will run one by one
+// tests will run in the order they were added
 QUnit.config.reorder = false;
+
+// don't execute tests automatically, we will do it manually later
+QUnit.config.autostart = false;
 
 Echo.Tests.init = function(config) {
 	$(function() {
@@ -43,6 +46,7 @@ Echo.Tests.runTests = function() {
 		});
 		suite.run();
 	});
+	QUnit.start();
 };
 
 (function(){
