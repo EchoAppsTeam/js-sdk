@@ -257,7 +257,6 @@ canvas.methods._fetchConfig = function(callback) {
 				"args": response,
 				"code": "unable_to_retrieve_app_config"
 			});
-			callback.call(self);
 		}
 	})).request();
 };
