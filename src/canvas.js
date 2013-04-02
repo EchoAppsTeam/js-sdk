@@ -76,6 +76,12 @@ canvas.init = function() {
 				self._loadAppResources(parent);
 			});
 		});
+	}, function(response) {
+		self._error({
+			"args": response,
+			"code": "unable_to_retrieve_app_config",
+			"renderError": true
+		});
 	});
 };
 
@@ -239,25 +245,18 @@ canvas.methods._destroyApp = function(app) {
 	if (app) app.destroy();
 };
 
-canvas.methods._fetchConfig = function(callback) {
-	var self = this;
-
+canvas.methods._fetchConfig = function(success, error) {
 	// no need to perform server side request in case
 	// we already have all the data on the client side
 	if (this._isManuallyConfigured()) {
-		callback(this.get("data"));
+		success.call(this, this.get("data"));
 		return;
 	}
 	(new Echo.API.Request({
 		"apiBaseURL": this.config.get("storageURL"),
 		"endpoint": this.config.get("id"),
-		"onData": $.proxy(callback, this),
-		"onError": function(response) {
-			self._error({
-				"args": response,
-				"code": "unable_to_retrieve_app_config"
-			});
-		}
+		"onData": $.proxy(success, this),
+		"onError": $.proxy(error, this)
 	})).request();
 };
 
