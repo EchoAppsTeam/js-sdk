@@ -306,6 +306,7 @@ Echo.Loader.initApplication = function(app) {
 	Echo.Loader.initEnvironment(function() {
 		var instance = new Echo.Canvas({
 			"target": app.config.target,
+			"useSecureAPI": app.config.useSecureAPI || false,
 			"data": { // as we receive if from the Canvas Storage
 				"apps": [app],
 				"backplane": app.backplane
