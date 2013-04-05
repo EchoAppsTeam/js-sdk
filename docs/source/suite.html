@@ -27,7 +27,7 @@ Echo.Tests.Suite = function() {
 		&quot;asyncTimeout&quot;: 500,
 		&quot;testTimeout&quot;: 5000,
 		&quot;target&quot;: $(&quot;#qunit-fixture&quot;),
-		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+		&quot;appkey&quot;: &quot;echo.jssdk.tests.aboutecho.com&quot;,
 		&quot;dataBaseLocation&quot;: &quot;http://example.com/js-sdk/&quot;
 	};
 };
@@ -76,7 +76,7 @@ Echo.Tests.Suite.prototype.run = function() {
 					QUnit.start();
 				} else {
 					var config = $.extend({
-						&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+						&quot;appkey&quot;: &quot;echo.jssdk.tests.aboutecho.com&quot;,
 						&quot;target&quot;: $(&quot;#qunit-fixture&quot;),
 						&quot;ready&quot;: function() {
 							check(this);
@@ -308,7 +308,7 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 };
 
 Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
-	var user = Echo.UserSession($.extend({&quot;appkey&quot;: &quot;test.aboutecho.com&quot;}, config || {}));
+	var user = Echo.UserSession($.extend({&quot;appkey&quot;: &quot;echo.jssdk.tests.aboutecho.com&quot;}, config || {}));
 	if (user.is(&quot;logged&quot;)) {
 		callback &amp;&amp; callback();
 		return;
@@ -324,7 +324,7 @@ Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
 };
 
 Echo.Tests.Suite.prototype.logoutTestUser = function(callback) {
-	Echo.UserSession({&quot;appkey&quot;: &quot;test.aboutecho.com&quot;}).logout(callback);
+	Echo.UserSession({&quot;appkey&quot;: &quot;echo.jssdk.tests.aboutecho.com&quot;}).logout(callback);
 };
 
 Echo.Tests.Suite.prototype._testElementsConsistencyAfterRendering = function(name, oldElement, renderedElement, assertionTextSuffix) {

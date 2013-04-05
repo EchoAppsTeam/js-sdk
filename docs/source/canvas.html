@@ -93,6 +93,12 @@ canvas.init = function() {
 				self._loadAppResources(parent);
 			});
 		});
+	}, function(response) {
+		self._error({
+			&quot;args&quot;: response,
+			&quot;code&quot;: &quot;unable_to_retrieve_app_config&quot;,
+			&quot;renderError&quot;: true
+		});
 	});
 };
 
@@ -256,26 +262,18 @@ canvas.methods._destroyApp = function(app) {
 	if (app) app.destroy();
 };
 
-canvas.methods._fetchConfig = function(callback) {
-	var self = this;
-
+canvas.methods._fetchConfig = function(success, error) {
 	// no need to perform server side request in case
 	// we already have all the data on the client side
 	if (this._isManuallyConfigured()) {
-		callback(this.get(&quot;data&quot;));
+		success.call(this, this.get(&quot;data&quot;));
 		return;
 	}
 	(new Echo.API.Request({
 		&quot;apiBaseURL&quot;: this.config.get(&quot;storageURL&quot;),
 		&quot;endpoint&quot;: this.config.get(&quot;id&quot;),
-		&quot;onData&quot;: $.proxy(callback, this),
-		&quot;onError&quot;: function(response) {
-			self._error({
-				&quot;args&quot;: response,
-				&quot;code&quot;: &quot;unable_to_retrieve_app_config&quot;
-			});
-			callback.call(self);
-		}
+		&quot;onData&quot;: $.proxy(success, this),
+		&quot;onError&quot;: $.proxy(error, this)
 	})).request();
 };
 

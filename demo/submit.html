@@ -28,20 +28,19 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-        Echo.Loader.initApplication({ 
-            "script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
-            "component": "Echo.StreamServer.Controls.Submit",
-            "backplane": { 
-                "serverBaseURL": "http://api.echoenabled.com/v1",
-                "busName": "jskit"
-            },
-            "config": {
-                "target": document.getElementById("submit"),
-                "appkey": "test.aboutecho.com",
+		Echo.Loader.initApplication({
+			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+			"component": "Echo.StreamServer.Controls.Submit",
+			"backplane": {
+				"serverBaseURL": "http://api.echoenabled.com/v1",
+				"busName": "jskit"
+			},
+			"config": {
+				"target": document.getElementById("submit"),
+				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"targetURL": "http://echosandbox.com/use-cases/commenting"
-            }
-        }); 
+			}
+		});
 	</script>
 </body>
 </html>
-

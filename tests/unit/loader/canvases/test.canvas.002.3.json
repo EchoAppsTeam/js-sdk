@@ -10,7 +10,7 @@
         "script": "identityserver.pack.js",
         "component": "Echo.IdentityServer.Controls.Auth",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
                 "login": {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="},
                 "signup": {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="}

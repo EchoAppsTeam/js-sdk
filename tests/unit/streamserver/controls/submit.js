@@ -36,7 +36,7 @@ suite.prototype.tests.anonymousWorkflow = {
 		var self = this;
 		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"ready": function() {
 				suite.submit = this;
 				self.sequentialAsyncTests([
@@ -60,7 +60,7 @@ suite.prototype.tests.loggedUserWorkflow = {
 		var self = this;
 		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
 			"ready": function() {
 				suite.submit = this;
@@ -85,7 +85,7 @@ suite.prototype.tests.eventSubscriptions = {
 		var self = this;
 		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
 			"ready": function() {
 				suite.submit = this;
@@ -108,7 +108,7 @@ suite.prototype.tests.testMethods = {
 	"check": function() {
 		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
 			"ready": function() {
 				var content = this.view.get("text");
@@ -170,7 +170,7 @@ suite.prototype.cases.content = function(callback) {
 suite.prototype.cases.markersAndTags = function(callback) {
 	new Echo.StreamServer.Controls.Submit({
 		"target": this.config.target,
-		"appkey": "test.aboutecho.com",
+		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
 			QUnit.strictEqual(this.view.get("markers").val(), "", "Check that markers element value is empty string after initial rendering (not defined data.object & config cases)");
 			QUnit.strictEqual(this.view.get("tags").val(), "", "Check that tags element value is empty string after initial rendering (not defined data.object & config cases)");

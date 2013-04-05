@@ -32,7 +32,7 @@ suite.prototype.tests.commonWorkflow = {
 	"check": function() {
 		var self = this;
 		var target = $("#qunit-fixture");
-		target.append($('<div id="echo-canvas" data-canvas-appkey="test.aboutecho.com" data-canvas-id="js-sdk-tests/test-canvas-001"></div>'));
+		target.append($('<div id="echo-canvas" data-canvas-appkey="echo.jssdk.tests.aboutecho.com" data-canvas-id="js-sdk-tests/test-canvas-001"></div>'));
 		new Echo.Canvas({
 			"target": $("#echo-canvas"),
 			"ready": function() {

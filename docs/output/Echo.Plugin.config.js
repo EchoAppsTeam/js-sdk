@@ -76,7 +76,7 @@ Ext.data.JsonP.Echo_Plugin_config({
 
     ]
   },
-  "linenr": 441,
+  "linenr": 457,
   "files": [
     {
       "filename": "plugin.js",
