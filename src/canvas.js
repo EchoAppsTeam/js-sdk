@@ -247,6 +247,10 @@ canvas.methods._loadAppResources = function(callback) {
 
 canvas.methods._getOverrides = function(target, spec) {
 	return Echo.Utils.foldl({}, spec || [], function(item, acc) {
+		// We should convert spec item to lower case because of jQuery
+		// HTML5 data attributes implementation http://api.jquery.com/data/#data-html5
+		// Since we have config keys in camel case representation like "useSecureAPI",
+		// we should follow to these rules.
 		var key = "canvas-" + item.toLowerCase();
 		var value = target.data(key);
 		if (typeof value !== "undefined") {
