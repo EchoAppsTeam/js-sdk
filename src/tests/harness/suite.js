@@ -10,7 +10,7 @@ Echo.Tests.Suite = function() {
 		"asyncTimeout": 500,
 		"testTimeout": 5000,
 		"target": $("#qunit-fixture"),
-		"appkey": "test.aboutecho.com",
+		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"dataBaseLocation": "http://example.com/js-sdk/"
 	};
 };
@@ -59,7 +59,7 @@ Echo.Tests.Suite.prototype.run = function() {
 					QUnit.start();
 				} else {
 					var config = $.extend({
-						"appkey": "test.aboutecho.com",
+						"appkey": "echo.jssdk.tests.aboutecho.com",
 						"target": $("#qunit-fixture"),
 						"ready": function() {
 							check(this);
@@ -291,7 +291,7 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 };
 
 Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
-	var user = Echo.UserSession($.extend({"appkey": "test.aboutecho.com"}, config || {}));
+	var user = Echo.UserSession($.extend({"appkey": "echo.jssdk.tests.aboutecho.com"}, config || {}));
 	if (user.is("logged")) {
 		callback && callback();
 		return;
@@ -307,7 +307,7 @@ Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
 };
 
 Echo.Tests.Suite.prototype.logoutTestUser = function(callback) {
-	Echo.UserSession({"appkey": "test.aboutecho.com"}).logout(callback);
+	Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"}).logout(callback);
 };
 
 Echo.Tests.Suite.prototype._testElementsConsistencyAfterRendering = function(name, oldElement, renderedElement, assertionTextSuffix) {

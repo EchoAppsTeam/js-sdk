@@ -10,7 +10,7 @@
         "script": "http://marketplace1.ul.js-kit.com/draft/loader/apps/social-chatter/manifest.js",
         "component": "Echo.SocialChatter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.demo.aboutecho.com",
             "eventsTargetURL": "http://echosandbox.com/green-room-events",
             "trendedItemScope": "http://reuters.com",
             "trendCount": 20,

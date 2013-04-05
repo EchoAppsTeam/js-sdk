@@ -286,7 +286,7 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if 'false' is returned if no config is passed");
 
-	result = new definition({"appkey": "test.echoenabled.com"});
+	result = new definition({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if empty object is returned if no target is passed in config");
 
@@ -461,7 +461,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		var errorRequest = new Echo.API.Request({
 			"endpoint": "search",
 			"data": {
-				"appkey": "test.aboutecho.com",
+				"appkey": "echo.jssdk.tests.aboutecho.com",
 				"q": "unsupported query"
 			},
 			"onData": function(response) {},
@@ -1342,7 +1342,7 @@ suite.initTestControl = function(config, name) {
 	var definition = suite.getTestControlClass(name);
 	new definition($.extend({
 		"target": $("<div></div>"),
-		"appkey": "test.echoenabled.com"
+		"appkey": "echo.jssdk.tests.aboutecho.com"
 	}, config));
 };
 

@@ -13,7 +13,7 @@
         },
         "component": "Echo.Tests.Controls.TestControl",
         "config": {
-            "appkey": "test.aboutecho.com"
+            "appkey": "echo.jssdk.tests.aboutecho.com"
         }
     }]
 }

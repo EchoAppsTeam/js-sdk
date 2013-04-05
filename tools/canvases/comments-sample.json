@@ -10,7 +10,7 @@
         "script": "http://cdn.echoenabled.com/apps/echo/comments-sample/comments-sample.js",
         "component": "Echo.Apps.CommentsSample",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.demo.aboutecho.com",
             "apiBaseURL": "http://api.echoenabled.com/v1/",
             "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
 			"components": {

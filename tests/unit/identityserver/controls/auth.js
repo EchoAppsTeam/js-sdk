@@ -68,7 +68,7 @@ suite.prototype.tests.loggedInUser = {
 
 		new Echo.IdentityServer.Controls.Auth({
 			"target": target,
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"identityManager": {
 				"login": identityManager,
 				"signup": identityManager
@@ -102,7 +102,7 @@ suite.prototype.tests.anonymousUser = {
 		});
 		new Echo.IdentityServer.Controls.Auth({
 			"target": target,
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"identityManager": {
 				"login": identityManager,
 				"signup": identityManager

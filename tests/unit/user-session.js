@@ -36,7 +36,7 @@ suite.prototype.tests.LoggedInUserChecks = {
 		"testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
-		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+		var user = Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
 		var identity = "http://somedomain.com/users/fake_user";
 
 		QUnit.ok(user.is("logged"),
@@ -77,7 +77,7 @@ suite.prototype.tests.AnonymousUserChecks = {
 		"testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
-		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+		var user = Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
 
 		QUnit.ok(!user.is("logged"),
 			"Check if the user is not logged in using user.is(\"logged\") function");
@@ -156,7 +156,7 @@ suite.prototype.checkBasicOperations = function(user) {
 	QUnit.equal(user.has("identity", identity), user._hasIdentity(identity),
 		"Checking delegation using user.has(\"identity\", \"...\") function");
 
-	Echo.UserSession({"appkey": "test.aboutecho.com", "ready": function() {
+	Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com", "ready": function() {
 		QUnit.ok(true, "Checking if the \"ready\" callback is executed after class init");
 	}});
 };

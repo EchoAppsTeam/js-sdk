@@ -10,7 +10,7 @@
         "script": "http://cdn.echoenabled.com/apps/echo/social-chatter/social-chatter.js",
         "component": "Echo.Apps.SocialChatter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.demo.aboutecho.com",
             "apiBaseURL": "http://api.echoenabled.com/v1/",
             "submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
             "eventsTargetURL": "http://echosandbox.com/green-room-events-local/test",
