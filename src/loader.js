@@ -5,6 +5,8 @@ if (!window.Echo) window.Echo = {};
 
 if (Echo.Loader) return;
 
+var protocol = /^https?/.test(window.location.protocol) ? window.location.protocol : "http:";
+
 /**
  * @class Echo.Loader
  * Static class which implements common mechanics for resources loading,
@@ -14,8 +16,8 @@ Echo.Loader = {
 	"version": "",
 	"debug": false,
 	"config": {
-		"cdnBaseURL": normalizeURL("http://cdn.echoenabled.com/"),
-		"storageURL": normalizeURL("http://s3.amazonaws.com/echo-canvases/"),
+		"cdnBaseURL": protocol + "//cdn.echoenabled.com/",
+		"storageURL": protocol + "//s3.amazonaws.com/echo-canvases/",
 		"errorTimeout": 5000 // 5 sec
 	},
 	"canvases": [],  // Canvases list initialized on the page
@@ -42,7 +44,7 @@ Echo.Loader = {
 Echo.Loader.getURL = function(url, devVersion) {
 	if (typeof devVersion === "undefined") devVersion = true;
 	return /^https?:\/\/|^\/\//.test(url)
-		? Echo.Loader._normalizeURL(url)
+		? url
 		: Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version +
 			(devVersion && Echo.Loader.isDebug() ? "/dev" : "") +
 			(!url || url.charAt(0) === "/" ? "" : "/") + url;
@@ -338,15 +340,6 @@ Echo.Loader._areResourcesReady = function(resources) {
 			(state.resources[url] && state.resources[url] === "ready");
 	});
 	return resources.length === resourceReadyFlags.length;
-};
-
-Echo.Loader._normalizeURL = normalizeURL;
-
-function normalizeURL(URL) {
-	var protocol = window.location.protocol;
-	return URL.replace(/^([^:\/\?#]+:)?((\/\/)?.*)/, function($0, $1, $2, $3) {
-		return (/^https?/.test(protocol) ? protocol : "http:") + ($3 ? "" : "//") + $2;
-	});
 };
 
 })();
