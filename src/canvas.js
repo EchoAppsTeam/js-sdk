@@ -37,17 +37,6 @@ canvas.init = function() {
 		return;
 	}
 
-	// exit if no "id" or "appkey" is defined for the canvas,
-	// skip this validation in case the "data" is defined explicitly in the config
-	if (!this._isManuallyConfigured() &&
-		!(this.config.get("id") && this.config.get("appkey"))) {
-			this._error({
-				"args": {"target": target},
-				"code": "invalid_canvas_config"
-			});
-			return;
-	}
-
 	// define initialized state for the canvas
 	// to prevent multiple initialization of the same canvas
 	target.data("echo-canvas-initialized", true);
@@ -283,6 +272,7 @@ $.each(list, function(i, spec) {
 
 initializers.fetchConfig = function(callback) {
 	var self = this, target = this.config.get("target");
+	var isManual = this._isManuallyConfigured();
 
 	// extending Canvas config with the "id" and "appkey" defined in the target
 	var overrides = this._getOverrides(target, ["id", "appkey", "useSecureAPI"]);
@@ -290,9 +280,20 @@ initializers.fetchConfig = function(callback) {
 		this.config.extend(overrides);
 	}
 
+	// exit if no "id" or "appkey" is defined for the canvas,
+	// skip this validation in case the "data" is defined explicitly in the config
+	if (!isManual &&
+		!(this.config.get("id") && this.config.get("appkey"))) {
+			this._error({
+				"args": {"target": target},
+				"code": "invalid_canvas_config"
+			});
+			return;
+	}
+
 	// no need to perform server side request in case
 	// we already have all the data on the client side
-	if (this._isManuallyConfigured()) {
+	if (isManual) {
 		callback.call(this);
 		return;
 	}
@@ -320,7 +321,6 @@ initializers.fetchConfig = function(callback) {
 				"code": "unable_to_retrieve_app_config",
 				"renderError": true
 			});
-			callback.call(self);
 		}
 	})).request();
 };
