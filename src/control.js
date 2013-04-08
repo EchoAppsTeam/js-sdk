@@ -481,8 +481,10 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 		return self.labels.get(period + (ago === 1 ? "" : "s") + "Ago", {"number": ago});
 	};
 
-	if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 365) {
+	if (isNaN(dayDiff) || dayDiff >= 365) {
 		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+	} else if (diff < 5) {
+		when = this.labels.get("justNow");
 	} else if (diff < 60) {
 		when = getAgo(diff, 'second');
 	} else if (diff < 60 * 60) {
@@ -1330,6 +1332,10 @@ manifest.labels = {
 	 * @echo_label
 	 */
 	"today": "Today",
+	/**
+	 * @echo_label
+	 */
+	"justNow": "just now",
 	/**
 	 * @echo_label
 	 */
