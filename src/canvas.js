@@ -132,19 +132,6 @@ canvas.config = {
 						     // to be changed by the publishers
 };
 
-canvas.config.normalizer = {
-	"storageURL": function(URL) {
-		var protocol = window.location.protocol;
-		var parts = Echo.Utils.parseURL(URL);
-		return Echo.Utils.substitute({
-			"template": "{data:scheme}//{data:domain}{data:path}{data:query}{data:fragment}",
-			"data": $.extend(parts, {
-				"scheme": /^https?/.test(protocol) ? protocol : "http:"
-			})
-		});
-	}
-};
-
 canvas.vars = {
 	"apps": []
 };

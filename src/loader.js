@@ -5,6 +5,8 @@ if (!window.Echo) window.Echo = {};
 
 if (Echo.Loader) return;
 
+var protocol = /^https?/.test(window.location.protocol) ? window.location.protocol : "http:";
+
 /**
  * @class Echo.Loader
  * Static class which implements common mechanics for resources loading,
@@ -14,8 +16,8 @@ Echo.Loader = {
 	"version": "",
 	"debug": false,
 	"config": {
-		"cdnBaseURL": "http://cdn.echoenabled.com/",
-		"storageURL": "http://s3.amazonaws.com/echo-canvases/",
+		"cdnBaseURL": protocol + "//cdn.echoenabled.com/",
+		"storageURL": protocol + "//s3.amazonaws.com/echo-canvases/",
 		"errorTimeout": 5000 // 5 sec
 	},
 	"canvases": [],  // Canvases list initialized on the page
