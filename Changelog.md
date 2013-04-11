@@ -1,5 +1,37 @@
 # Echo JS SDK CHANGELOG:
 
+## v3.0.7 - Apr 11, 2013
+
+* Sometimes when the item was updated, the **item timestamp field was missing** in the UI. The problem was fixed and as a part of the fix we removed the “age” field (which was no longer used) from the Echo.StreamServer.Controls.Stream.Item class instance. Since the field existed for internal usage only, it should not affect the code written on top of the SDK. Anyway if you used the “age” field references in your code, make sure that the corresponding code is rewritten accordingly.
+
+* The Echo.Canvas abstraction was added to work with the application deployments. The abstraction is used primarily in the **Echo.Loader.initApplication** function at this moment to init applications, but it will also be widely used later for other app deployment scenarios. The corresponding code of the Echo.Loader class was refactored to work with the Echo.Canvas abstraction. Note: we do not recommend the Echo.Canvas abstraction usage directly for now, please use the Echo.Loader.initApplication function instead. More information about the Echo.Loader.initApplication function can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication).
+
+* The **Twitter Bootstrap UI framework** was upgraded from 2.3.0 to 2.3.1 version. The framework changelog is available [here](https://github.com/twitter/bootstrap/blob/master/CHANGELOG.md).
+
+* The **"PinboardVisualization" plugin** was handling the YouTube video URLs in the item content incorrectly, which prevented videos from appearing in the item UI. Now the URLs processing was updated and the videos should appear in the item UI properly.
+
+* There was a mismatch between the “show user list” option names used in the **"CommunityFlag" plugin** code, the plugin default config object and docs. The [config and docs](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-cfg-showUserList) are now synced.
+
+* Incorrect detection of the current user id in the **"Like" plugin** caused invalid label in the Stream item UI for the likes submitted by the current user. The user id detection is now fixed.
+
+* The "itemURIPattern" configuration parameter was ignored by the **Submit control** during the item submission. Now the Submit control is passing the "itemURIPattern" parameter value into the API machinery which takes care of sending the data to the server side. More information about the "itemURIPattern" can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-cfg-itemURIPattern).
+
+* We introduced the new parameter called "useSecureAPI" to all classes based on the Echo.Control or Echo.App class. This parameter is designed to specify the API request scheme (HTTP or HTTPS). More information about the “useSecureAPI” parameter can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-cfg-useSecureAPI).
+
+* The **“tags” and “markers” parameter values defined in the Submit control config were ignored** while building the UI for administrators/moderators. The issue was fixed and now the Submit control takes the config values into account.
+
+* When the **Echo.API.Request** class was used directly (without any wrappers like Echo.StreamServer.API.Request, etc), the module was acting incorrectly in case of errors, since the part of the logic existed in the wrappers only. The necessary logic was moved into the base class now to handle the error responses better.
+
+* Under a certain condition the **“onShow” callback in the Echo.GUI.Modal class instance was called twice**. The Echo.GUI.Modal logic was updated to suppress the excessive callback function execution.
+
+* Sometimes the **Echo.Loader.download** function callback was executed before the resources downloading was complete (in case the next scripts chunk downloading had started before the previous chunk was loaded). The issue is originally coming from the [YepNope](http://yepnopejs.com/) loader we use for loading the resources (the corresponding ticket in their [bugtracker](https://github.com/SlexAxton/yepnope.js/issues/113)). We added the logic to avoid the described situation.
+
+* The **HTTP protocol was used by the Echo.Loader class** to download Echo environment scripts on HTTPS pages which caused security warnings in a browser. Now the Echo.Loader detects the page protocol and requests the dependencies using either HTTP or HTTPS.
+
+* The **“TwitterIntents” plugin was renamed to “TweetDisplay”**. The “TwitterIntents” plugin is still available, but it was marked as deprecated and will be removed during the next (v3.0.8) SDK release. If you use this plugin, **please update the plugin name** in your installations. The tweets appearance was also updated to comply with the latest Twitter display requirements.
+
+* The **“select” event has been added into the Echo.GUI.Tabs** class. The event is triggered when the user clicks on the non-disabled, but inactive (not selected) tab. More info about the “select” event can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI.Tabs-cfg-select).
+
 ## v3.0.6 - Feb 20, 2013
 
 * **the quirks browser mode is no longer supported**, more information is available [here](http://echoappsteam.github.com/js-sdk/docs/#!/guide/technical_specification-section-1).
