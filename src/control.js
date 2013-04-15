@@ -481,9 +481,9 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 		return self.labels.get(period + (ago === 1 ? "" : "s") + "Ago", {"number": ago});
 	};
 
-	if (isNaN(dayDiff) || dayDiff >= 365) {
+	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
 		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
-	} else if (diff < 5) {
+	} else if (diff < 10) {
 		when = this.labels.get("justNow");
 	} else if (diff < 60) {
 		when = getAgo(diff, 'second');
