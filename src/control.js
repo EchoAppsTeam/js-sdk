@@ -1335,7 +1335,7 @@ manifest.labels = {
 	/**
 	 * @echo_label
 	 */
-	"justNow": "just now",
+	"justNow": "Just now",
 	/**
 	 * @echo_label
 	 */
