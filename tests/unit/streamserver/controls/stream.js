@@ -54,7 +54,8 @@ suite.prototype.tests.commonWorkflow = {
 					"addRootItem",
 					"queueActivityTesting",
 					"addChildItem",
-					"moreButton"
+					"moreButton",
+					"predefinedData"
 				], "cases");
 			}
 		});
@@ -232,6 +233,97 @@ suite.prototype.cases.moreButton = function(callback) {
 	$(".echo-streamserver-controls-stream-more", target).click();
 };
 
+suite.prototype.cases.predefinedData = function(callback) {
+	var stream = new Echo.StreamServer.Controls.Stream({
+		"target": $(document.getElementById("qunit-fixture")).empty(),
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"query": "childrenof:http://example.com/js-sdk/ itemsPerPage:1 children:0",
+		"data": {
+			"id": "http://api.echoenabled.com/v1/search?q=childrenof:http://example.com/js-sdk/%20itemsPerPage:1%20children:0",
+			"updated": "2013-04-18T17:32:18Z",
+			"hasMoreChildren": "true",
+			"sortOrder": "reverseChronological",
+			"showFlags": "on",
+			"safeHTML": "aggressive",
+			"itemsPerPage": "1",
+			"children": {
+				"maxDepth": "0",
+				"sortOrder": "reverseChronological",
+				"itemsPerPage": "2",
+				"filter": "()"
+			},
+			"nextPageAfter": "1366306330.049437",
+			"nextSince": "1366306549.849118",
+			"liveUpdatesTimeout": "0",
+			"entries": [
+				{
+					"id": "http://js-kit.com/activities/post/b126c90795f59b805db2cd73a62761c3",
+					"actor": {
+						"links": [],
+						"objectTypes": [
+							"http://activitystrea.ms/schema/1.0/person"
+						],
+						"id": "http://js-kit.com/ECHO/user/fake_user",
+						"title": "another.john.doe",
+						"status": "ModeratorBanned",
+						"markers": [],
+						"roles": [
+							"administrator",
+							"moderator"
+						]
+					},
+					"object": {
+						"id": "http://example.com/ECHO/item/1366306330-580-88",
+						"objectTypes": [
+							"http://activitystrea.ms/schema/1.0/comment"
+						],
+						"permalink": "",
+						"context": [
+							{
+								"uri": "http://example.com/js-sdk/"
+							}
+						],
+						"content": "TestContent by another.john.doe",
+						"content_type": "html",
+						"status": "SystemFlagged",
+						"markers": [
+							"spam.impermium"
+						],
+						"published": "2013-04-18T17:32:10Z"
+					},
+					"source": {
+						"name": "jskit",
+						"uri": "http://aboutecho.com/",
+						"icon": "http://cdn.js-kit.com/images/echo.png"
+					},
+					"provider": {
+						"name": "echo",
+						"uri": "http://aboutecho.com/",
+						"icon": "http://cdn.js-kit.com/images/echo.png"
+					},
+					"verbs": [
+						"http://activitystrea.ms/schema/1.0/post"
+					],
+					"postedTime": "2013-04-18T17:32:10Z",
+					"targets": [
+						{
+							"id": "http://example.com/js-sdk/",
+							"conversationID": "http://example.com/ECHO/item/1366306330-580-88"
+						}
+					],
+					"pageAfter": "1366306330.049437",
+					"hasMoreChildren": "false"
+				}
+			]
+			},
+		"ready": function() {
+			QUnit.ok(this.request instanceof Echo.API.Request && this.request.config.get("recurring") === this.config.get("liveUpdates.enabled"), "Check that stream initializing with the pre-defined data inits a request object as well");
+			this.destroy();
+			callback();
+		}
+	});
+};
+
 suite.prototype.cases.destroy = function(callback) {
 	if (suite.stream) suite.stream.destroy();
 	callback();
@@ -243,15 +335,15 @@ suite.prototype._preparePostEntry = function(params) {
 		"sessionID": Backplane.getChannelID(),
 		"content": [{
 			"actor": {
-				"objectTypes": [ "http://activitystrea.ms/schema/1.0/person" ],
+				"objectTypes": ["http://activitystrea.ms/schema/1.0/person"],
 				"name": params.username
 			},
 			"object": {
-				"objectTypes": [ "http://activitystrea.ms/schema/1.0/comment"],
+				"objectTypes": ["http://activitystrea.ms/schema/1.0/comment"],
 				"content": params.content
 			},
 			"source": {},
-			"verbs": [ "http://activitystrea.ms/schema/1.0/post" ],
+			"verbs": ["http://activitystrea.ms/schema/1.0/post"],
 			"targets": [{
 				"id": params.targetId
 			}]
