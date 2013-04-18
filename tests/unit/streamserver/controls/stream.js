@@ -234,7 +234,7 @@ suite.prototype.cases.moreButton = function(callback) {
 };
 
 suite.prototype.cases.predefinedData = function(callback) {
-	var stream = new Echo.StreamServer.Controls.Stream({
+	new Echo.StreamServer.Controls.Stream({
 		"target": $(document.getElementById("qunit-fixture")).empty(),
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"query": "childrenof:http://example.com/js-sdk/ itemsPerPage:1 children:0",
@@ -317,9 +317,17 @@ suite.prototype.cases.predefinedData = function(callback) {
 			]
 			},
 		"ready": function() {
+			var self = this;
 			QUnit.ok(this.request instanceof Echo.API.Request && this.request.config.get("recurring") === this.config.get("liveUpdates.enabled"), "Check that stream initializing with the pre-defined data inits a request object as well");
-			this.destroy();
-			callback();
+			this.events.subscribe({
+				"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
+				"once": true,
+				"handler": function(topic, data) {
+					QUnit.ok(true, "Check that \"onDataReceive\" event was fired (predefined data set case)");
+					self.destroy();
+					callback();
+				}
+			});
 		}
 	});
 };
