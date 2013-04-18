@@ -67,6 +67,9 @@ stream.init = function() {
 
 	if (this.config.get("data")) {
 		this._handleInitialResponse(this.config.get("data"));
+		this.request.send({
+			"skipInitialRequest": true
+		});
 	} else {
 		this.request.send();
 	}
