@@ -12,4 +12,12 @@ Key components used in the SDK (such as Bootstrap UI Framework and Isotope libra
 
 ## Browser support
 
-More information is coming soon, please check back later...
+Echo JS SDK is tested against new non-beta versions of the browsers listed below (within 2 weeks of their respective official release dates):
+
++ Firefox (latest version) on Windows and Mac OS X
++ Safari (latest version) on Windows and Mac OS X
++ Chrome (latest version) on Windows and Mac OS X
++ Internet Explorer 8, 9 and 10 on Windows
++ Mobile Safari on iPad and iPhone
++ Native Browser on Android
+
