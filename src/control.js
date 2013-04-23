@@ -481,14 +481,8 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 		return self.labels.get(period + (ago === 1 ? "" : "s") + "Ago", {"number": ago});
 	};
 
-	// we display the "Just now" text in order to mitigate the clock inaccuracy
-	// when the time difference between the current and the given time is
-	// less than 10 seconds or if the given date is "from the future" but
-	// within the 60 seconds range
-	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
+	if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 365) {
 		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
-	} else if (diff < 10) {
-		when = this.labels.get("justNow");
 	} else if (diff < 60) {
 		when = getAgo(diff, 'second');
 	} else if (diff < 60 * 60) {
@@ -1336,10 +1330,6 @@ manifest.labels = {
 	 * @echo_label
 	 */
 	"today": "Today",
-	/**
-	 * @echo_label
-	 */
-	"justNow": "Just now",
 	/**
 	 * @echo_label
 	 */
