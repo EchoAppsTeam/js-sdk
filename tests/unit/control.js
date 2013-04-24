@@ -94,7 +94,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"refresh",
 			"destroyCalled",
 			"destroyBroadcasting",
-			"manifestBaseInheritance"
+			"manifestBaseInheritance",
+			"inheritedEvent"
 		], "cases");
 
 	}
@@ -745,6 +746,84 @@ suite.prototype.cases.destroyBroadcasting = function(callback) {
 		});
 	};
 	initControls();
+};
+
+suite.prototype.cases.inheritedEvent = function(callback) {
+	var self = this, s = "";
+	var handler = function(topic) { s += this.name; };
+	var initControl = function(manifest, ctx, ready) {
+		var d = $.Deferred();
+		ready = ready || $.noop;
+		Echo.Control.create(
+			$.extend({
+				"templates": {
+					"main": "<div></div>"
+				}
+			}, manifest)
+		);
+		suite.initTestControl({
+			"context": ctx,
+			"ready": function() {
+				ready.apply(this, arguments);
+				d.resolve(this);
+			}
+		}, manifest.name);
+		return d.promise();
+	};
+	var connector = function() {
+		var args = Array.prototype.slice.call(arguments);
+		return function(prev) {
+			args.splice(1, 0, prev.config.get("context"));
+			return initControl.apply(null, args);
+		};
+	};
+	initControl({
+		"name": "Echo.Test.Parent",
+		"events": {
+			"Echo.Test.Child1.onEvent": handler
+		}
+	})
+	.pipe(
+		connector({
+			"name": "Echo.Test.Child1",
+			"inherits": Echo.Utils.getComponent("Echo.Test.Parent")
+		})
+	)
+	.pipe(
+		connector({
+			"name": "Echo.Test.Child1.Child1",
+			"inherits": Echo.Utils.getComponent("Echo.Test.Child1")
+		})
+	)
+	.pipe(function(prev) {
+		return initControl({
+			"name": "Echo.Test.SomeControl",
+			"events": {
+				"Echo.Test.Child1.onEvent": handler
+			}
+		}, prev.config.get("context"), function() {
+			prev.events.publish({
+				"topic": "onEvent",
+				"inherited": true
+			});
+			QUnit.strictEqual(s, "Echo.Test.Child1.Child1Echo.Test.Child1Echo.Test.ParentEcho.Test.SomeControl", "Check that inherited event published with the default params");
+			s = "";
+			prev.events.publish({
+				"topic": "onEvent",
+				"bubble": false,
+				"inherited": true
+			});
+			QUnit.strictEqual(s, "Echo.Test.Child1.Child1Echo.Test.SomeControl", "Check that inherited event published with the appropriate params (bubble: false)");
+			s = "";
+			prev.events.publish({
+				"topic": "onEvent",
+				"propagation": false,
+				"inherited": true
+			});
+			QUnit.strictEqual(s, "Echo.Test.Child1.Child1Echo.Test.Child1Echo.Test.Parent", "Check that inherited event published with the appropriate params (propagation: false)");
+			callback();
+		});
+	});
 };
 
 suite.prototype.cases.manifestBaseInheritance = function(callback) {
