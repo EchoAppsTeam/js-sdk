@@ -51,7 +51,11 @@ stream.init = function() {
 			}
 		},
 		"onData": function(data, options) {
+			var definedData = self.get("data");
 			if (options.requestType === "initial") {
+				if (definedData && !$.isEmptyObject(definedData)) {
+					data = definedData;
+				}
 				self._handleInitialResponse(data);
 			} else {
 				self._handleLiveUpdatesResponse(data);
@@ -297,7 +301,7 @@ stream.vars = {
 	"hasInitialData": false,
 	"items": {},   // items by unique key hash
 	"threads": [], // items tree
-	"lastRequest": undefined,
+	"lastRequest": null,
 	"request": null,
 	"moreRequest": null
 };

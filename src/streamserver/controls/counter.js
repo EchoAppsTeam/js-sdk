@@ -30,14 +30,16 @@ if (Echo.Control.isDefined(counter)) return;
 counter.init = function() {
 	if (!this.checkAppKey()) return;
 
-	// data can be defined explicitly
-	// in this case we do not make API requests
-	// TODO: no live updates for now if data is passed as a config value
+	this._request();
 	if ($.isEmptyObject(this.get("data"))) {
-		this._request();
+		this.request.send();
 	} else {
 		this.render();
 		this.ready();
+		this._update(this.get("data"));
+		this.request.send({
+			"skipInitialRequest": true
+		});
 	}
 };
 
@@ -90,7 +92,7 @@ counter.config = {
 counter.templates.main = "<span>{data:count}</span>";
 
 counter.methods._request = function() {
-	var request = this.get("request");
+	var self = this, request = this.get("request");
 	if (!request) {
 		request = Echo.StreamServer.API.request({
 			"endpoint": "count",
@@ -102,11 +104,15 @@ counter.methods._request = function() {
 			"recurring": this.config.get("liveUpdates.enabled"),
 			"secure": this.config.get("useSecureAPI"),
 			"onError": $.proxy(this._error, this),
-			"onData": $.proxy(this._update, this)
+			"onData": function(data, options) {
+				if (self.get("data") && options.requestType === "initial") {
+					return;
+				}
+				self._update(data);
+			}
 		});
 		this.set("request", request);
 	}
-	request.send();
 };
 
 counter.methods._update = function(data) {
