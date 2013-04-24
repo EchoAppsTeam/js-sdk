@@ -319,11 +319,19 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("images/info70.png", false),
 			"Checking if object parameter was overridden and was normalized (checking defaultAvatar key)");
 
+		// checking the way we work with the "data" config field
+		suite.data.config.data.extraKey = "extraKey value";
+		QUnit.equal(suite.data.config.data.extraKey, this.config.get("data.extraKey"),
+			"Checking if the \"data\" inside the config remains untouched, " +
+			"because it points to the same object (we do not copy \"data\")");
+		delete suite.data.config.data.extraKey;
+
 		this.destroy();
 
 		callback && callback();
 	};
 	suite.initTestControl({
+		"data": suite.data.config.data,
 		"objectParam": {"param1": "param1.override", "param2": undefined},
 		"myTestParam": "test value",
 		"undefinedParam": "undefinedParam replacement",

@@ -58,6 +58,9 @@ counter.config = {
 	/**
 	 * @cfg {Object} data
 	 * Specifies predefined items count which should be displayed by the application.
+	 * Counter control works with the data format used by the "count" API endpoint.
+	 * More information about the data format can be found
+	 * <a href="http://wiki.aboutecho.com/API-method-count#ResponseFormat" target="_blank">here</a>.
 	 *
 	 * 	new Echo.Counter({
 	 * 		...
