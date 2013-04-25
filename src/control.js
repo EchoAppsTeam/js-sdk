@@ -653,7 +653,9 @@ Echo.Control.prototype._initializers.config = function() {
 	// it via Echo.Configuration abstraction to avoid heavy operations
 	// such as iterating through the object recursively to create a copy
 	// of the object, we use the "data" object as is. As soon as the instance
-	// of the Echo.Configuration is created, we put the "data" back
+	// of the Echo.Configuration is created, we put the "data" back into the
+	// original object which we received via control config (to avoid object
+	// damaging) and into the config class instance
 	delete this.config.data;
 
 	var instance = new Echo.Configuration(this.config, config,
