@@ -318,16 +318,9 @@ suite.prototype.cases.predefinedData = function(callback) {
 			},
 		"ready": function() {
 			var self = this;
-			QUnit.ok(this.request instanceof Echo.API.Request && this.request.config.get("recurring") === this.config.get("liveUpdates.enabled"), "Check that stream initializing with the pre-defined data inits a request object as well");
-			this.events.subscribe({
-				"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
-				"once": true,
-				"handler": function(topic, data) {
-					QUnit.ok(true, "Check that \"onDataReceive\" event was fired (predefined data set case)");
-					self.destroy();
-					callback();
-				}
-			});
+			QUnit.ok(this.request instanceof Echo.API.Request, "Check that stream initializing with the pre-defined data inits a request object as well");
+			QUnit.strictEqual(this.request.config.get("recurring"), this.config.get("liveUpdates.enabled"), "Check that stream initializing with the pre-defined data inits a request object with the proper options");
+			callback();
 		}
 	});
 };

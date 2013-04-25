@@ -51,11 +51,7 @@ stream.init = function() {
 			}
 		},
 		"onData": function(data, options) {
-			var definedData = self.get("data");
 			if (options.requestType === "initial") {
-				if (definedData && !$.isEmptyObject(definedData)) {
-					data = definedData;
-				}
 				self._handleInitialResponse(data);
 			} else {
 				self._handleLiveUpdatesResponse(data);

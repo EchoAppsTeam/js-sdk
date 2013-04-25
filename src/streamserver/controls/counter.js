@@ -30,13 +30,12 @@ if (Echo.Control.isDefined(counter)) return;
 counter.init = function() {
 	if (!this.checkAppKey()) return;
 
-	this._request();
+	this.request = this._getRequestObject();
 	if ($.isEmptyObject(this.get("data"))) {
 		this.request.send();
 	} else {
 		this.render();
 		this.ready();
-		this._update(this.get("data"));
 		this.request.send({
 			"skipInitialRequest": true
 		});
@@ -91,10 +90,9 @@ counter.config = {
 
 counter.templates.main = "<span>{data:count}</span>";
 
-counter.methods._request = function() {
-	var self = this, request = this.get("request");
-	if (!request) {
-		request = Echo.StreamServer.API.request({
+counter.methods._getRequestObject = function(overrides) {
+	return Echo.StreamServer.API.request(
+		$.extend(true, {
 			"endpoint": "count",
 			"data": {
 				"q": this.config.get("query"),
@@ -104,18 +102,12 @@ counter.methods._request = function() {
 			"recurring": this.config.get("liveUpdates.enabled"),
 			"secure": this.config.get("useSecureAPI"),
 			"onError": $.proxy(this._error, this),
-			"onData": function(data, options) {
-				if (self.get("data") && options.requestType === "initial") {
-					return;
-				}
-				self._update(data);
-			}
-		});
-		this.set("request", request);
-	}
+			"onData": $.proxy(this._handleResponse, this)
+		}, overrides)
+	);
 };
 
-counter.methods._update = function(data) {
+counter.methods._maybeUpdate = function(data) {
 	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
 		this.events.publish({
 			"topic": "onUpdate",
@@ -127,6 +119,12 @@ counter.methods._update = function(data) {
 		});
 		this.set("data", data);
 		this.render();
+	}
+};
+
+counter.methods._handleResponse = function(data, options) {
+	this._maybeUpdate(data);
+	if (options.requestType === "initial") {
 		this.ready();
 	}
 };
