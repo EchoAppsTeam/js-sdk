@@ -306,7 +306,7 @@ submit.templates.main =
 		'</div>' +
 		'<div class="{class:controls}">' +
 			'<div class="{class:postContainer}">' +
-				'<div class="{class:postButton} btn echo-primaryFont"></div>' +
+				'<div class="btn echo-primaryFont {class:postButton}"></div>' +
 			'</div>' +
 			'<div class="echo-clear"></div>' +
 		'</div>' +
