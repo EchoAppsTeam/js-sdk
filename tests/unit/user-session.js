@@ -179,62 +179,46 @@ suite.prototype.tests.ErrorHandlingChecks = {
 };
 
 suite.prototype.cases.missingAppkey = function(callback) {
-	try {
-		this._resetUserSession();
-		Echo.UserSession({
-			"ready": function() {
-				QUnit.ok(true,
-					"Checking if the \"ready\" callback " +
-					"is executed even when the appkey is missing");
-				QUnit.ok(!this.is("logged"),
-					"Checking if the UserSession object initialized " +
-					"with no appkey is considered as anonymous user");
-				callback();
-			}
-		});
-	} catch(e) {
-		QUnit.ok(false, "UserSession object with missing appkey produces JS error!");
-		callback();
-	}
+	this._resetUserSession();
+	Echo.UserSession({
+		"ready": function() {
+			QUnit.ok(true,
+				"Checking if the \"ready\" callback " +
+				"is executed even when the appkey is missing");
+			QUnit.ok(!this.is("logged"),
+				"Checking if the UserSession object initialized " +
+				"with no appkey is considered as anonymous user");
+			callback();
+		}
+	});
 };
 
 suite.prototype.cases.invalidAppkey = function(callback) {
-	try {
-		this._resetUserSession();
-		Echo.UserSession({
-			"appkey": "invalid.appkey.sdk.test",
-			"ready": function() {
-				QUnit.ok(!this.is("logged"),
-					"Checking if the UserSession object initialized " +
-					"using invalid appkey is considered as anonymous user");
-				callback();
-			}
-		});
-	} catch(e) {
-		QUnit.ok(false, "UserSession object with invalid appkey produces JS error!");
-		callback();
-	}
+	this._resetUserSession();
+	Echo.UserSession({
+		"appkey": "invalid.appkey.sdk.test",
+		"ready": function() {
+			QUnit.ok(!this.is("logged"),
+				"Checking if the UserSession object initialized " +
+				"using invalid appkey is considered as anonymous user");
+			callback();
+		}
+	});
 };
 
 suite.prototype.cases.noBackplaneInitialized = function(callback) {
-	try {
-		Backplane.initialized = false;
-		this._resetUserSession();
-		Echo.UserSession({
-			"appkey": "echo.jssdk.tests.aboutecho.com",
-			"ready": function() {
-				QUnit.ok(!this.is("logged"),
-					"Checking if the UserSession object initialized " +
-					"with Backplane inactive is considered as anonymous user");
-				Backplane.initialized = true;
-				callback();
-			}
-		});
-	} catch(e) {
-		QUnit.ok(false, "UserSession with no Backplane produces JS error!");
-		Backplane.initialized = true;
-		callback();
-	}
+	Backplane.initialized = false;
+	this._resetUserSession();
+	Echo.UserSession({
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"ready": function() {
+			QUnit.ok(!this.is("logged"),
+				"Checking if the UserSession object initialized " +
+				"with Backplane inactive is considered as anonymous user");
+			Backplane.initialized = true;
+			callback();
+		}
+	});
 };
 
 // private functions

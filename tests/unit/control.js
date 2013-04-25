@@ -322,7 +322,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		// checking the way we work with the "data" config field
 		suite.data.config.data.extraKey = "extraKey value";
 		QUnit.equal(suite.data.config.data.extraKey, this.config.get("data.extraKey"),
-			"Checking if the \"data\" key inside the config points to original "
+			"Checking if the \"data\" key inside the config points to original " +
 			"object which we received in the config (we do not copy the \"data\" object)");
 		delete suite.data.config.data.extraKey;
 

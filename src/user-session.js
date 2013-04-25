@@ -268,14 +268,14 @@ Echo.UserSession._logoutRequest = function(data, callback) {
 	})).request();
 };
 
-Echo.UserSession._whoamiRequest = function(data, callback) {
+Echo.UserSession._whoamiRequest = function(args) {
 	Echo.IdentityServer.API.request({
 		"apiBaseURL": this.config.get("endpoints.whoami"),
 		"secure": this.config.get("useSecureAPI"),
 		"endpoint": "whoami",
-		"onData": callback,
-		"onError": callback,
-		"data": data
+		"onData": args.onData,
+		"onError": args.onError,
+		"data": args.data
 	}).send();
 };
 
@@ -351,24 +351,10 @@ Echo.UserSession._init = function(callback) {
 	var user = this;
 	user.state = "waiting";
 	var handler = function(data) {
-		data = data || {};
-		var isError = data.result === "error";
-
-		// user is not logged in or we received
-		// error response from IdentityServer API
-		if (isError || data.result === "session_not_found") {
-			if (isError) {
-				Echo.Utils.log({
-					"type": "error",
-					"component": "Echo.UserSession",
-					"args": {"data": data},
-					"message": "Unable to initialize user session, " +
-						"error response from IdentityServer API received"
-				});
-			}
+		// user is not logged in
+		if (!data || data.result && data.result === "session_not_found") {
 			data = {};
 		}
-
 		user.state = "ready";
 		user._reset(data);
 		/**
@@ -424,9 +410,22 @@ Echo.UserSession._init = function(callback) {
 	};
 	if (user.get("sessionID")) {
 		user._whoamiRequest({
-			"appkey": user.config.get("appkey"),
-			"sessionID": user.get("sessionID")
-		}, handler);
+			"data": {
+				"appkey": user.config.get("appkey"),
+				"sessionID": user.get("sessionID")
+			},
+			"onData": handler,
+			"onError": function(response) {
+				Echo.Utils.log({
+					"type": "error",
+					"component": "Echo.UserSession",
+					"args": {"response": response},
+					"message": "Unable to initialize user session, " +
+						"error response from IdentityServer API received"
+				});
+				handler();
+			}
+		});
 	} else {
 		handler();
 	}
