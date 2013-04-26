@@ -18,7 +18,7 @@ suite.prototype.info = {
 };
 
 suite.prototype.params = {
-	"appkey": "test.aboutecho.com",
+	"appkey": "echo.jssdk.tests.aboutecho.com",
 	"q": "childrenof:http://example.com/sdk/test-target/" + Echo.Utils.getUniqueString() + " children:1"
 };
 

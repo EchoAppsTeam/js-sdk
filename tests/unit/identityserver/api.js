@@ -30,7 +30,7 @@ suite.prototype.tests.PublicWorkflowTests = {
 suite.prototype.cases = {};
 
 suite.prototype.cases.simpleWhoamiRequest = function(callback) {
-	var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+	var user = Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	Echo.IdentityServer.API.request({
 		"endpoint": "whoami",
 		"apiBaseURL": "http://api.echoenabled.com/v1/users/",
@@ -50,7 +50,7 @@ suite.prototype.cases.simpleWhoamiRequest = function(callback) {
 };
 
 suite.prototype.cases.simpleUserUpdateRequest = function(callback) {
-	var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+	var user = Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	var states = ["Untouched", "ModeratorApproved", "ModeratorBanned", "ModeratorDeleted"];
 	var identityURL = "http://example.com/some_path/test-user/";
 	var state = states[Math.floor(Math.random() * states.length)];
@@ -64,7 +64,7 @@ suite.prototype.cases.simpleUserUpdateRequest = function(callback) {
 				"identityURL": identityURL,
 				"username": "TestUserName"
 			},
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"sessionID": user.get("sessionID")
 		},
 		"onData": function(response) {

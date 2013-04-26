@@ -37,46 +37,10 @@ canvas.init = function() {
 		return;
 	}
 
-	// extending Canvas config with the "id" and "appkey" defined in the target
-	var overrides = this._getOverrides(target, ["id", "appkey"]);
-	if (!$.isEmptyObject(overrides)) {
-		this.config.extend(overrides);
-	}
-
-	// exit if no "id" or "appkey" is defined for the canvas,
-	// skip this validation in case the "data" is defined explicitly in the config
-	if (!this._isManuallyConfigured() &&
-		!(this.config.get("id") && this.config.get("appkey"))) {
-			this._error({
-				"args": {"target": target},
-				"code": "invalid_canvas_config"
-			});
-			return;
-	}
-
 	// define initialized state for the canvas
 	// to prevent multiple initialization of the same canvas
 	target.data("echo-canvas-initialized", true);
-
-	this._fetchConfig(function(config) {
-		if (!config || !config.apps || !config.apps.length) {
-			var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
-			self._error({
-				"args": {"config": config, "target": target},
-				"code": "invalid_canvas_config",
-				"renderError": true,
-				"message": message
-			});
-			return;
-		}
-		self.set("data", config); // store Canvas data into the instance
-		self._initBackplane(function() {
-			self._initUser(function(user) {
-				self.config.set("user", user);
-				self._loadAppResources(parent);
-			});
-		});
-	});
+	this._loadAppResources(parent);
 };
 
 canvas.config = {
@@ -124,19 +88,6 @@ canvas.config = {
 	 */
 	"storageURL": Echo.Loader.config.storageURL  // no docs, not supposed
 						     // to be changed by the publishers
-};
-
-canvas.config.normalizer = {
-	"storageURL": function(URL) {
-		var protocol = window.location.protocol;
-		var parts = Echo.Utils.parseURL(URL);
-		return Echo.Utils.substitute({
-			"template": "{data:scheme}//{data:domain}{data:path}{data:query}{data:fragment}",
-			"data": $.extend(parts, {
-				"scheme": /^https?/.test(protocol) ? protocol : "http:"
-			})
-		});
-	}
 };
 
 canvas.vars = {
@@ -239,54 +190,6 @@ canvas.methods._destroyApp = function(app) {
 	if (app) app.destroy();
 };
 
-canvas.methods._fetchConfig = function(callback) {
-	var self = this;
-
-	// no need to perform server side request in case
-	// we already have all the data on the client side
-	if (this._isManuallyConfigured()) {
-		callback(this.get("data"));
-		return;
-	}
-	(new Echo.API.Request({
-		"apiBaseURL": this.config.get("storageURL"),
-		"endpoint": this.config.get("id"),
-		"onData": $.proxy(callback, this),
-		"onError": function(response) {
-			self._error({
-				"args": response,
-				"code": "unable_to_retrieve_app_config"
-			});
-		}
-	})).request();
-};
-
-canvas.methods._initBackplane = function(callback) {
-	// Note: Backplane.init in v2 will be async,
-	// so we need a callback to execute after Backplane init
-	Backplane.init(this.get("data.backplane"));
-	callback && callback();
-};
-
-canvas.methods._initUser = function(callback) {
-	var user = this.config.get("user");
-	callback = callback || $.noop;
-
-	// do not init user if the instance already
-	// exists or the appkey is undefined
-	if (user || !this.config.get("appkey")) {
-		callback(user);
-		return;
-	}
-	Echo.UserSession({
-		"appkey": this.config.get("appkey"),
-		"useSecureAPI": this.get("data.useSecureAPI", false),
-		"ready": function() {
-			callback(this);
-		}
-	});
-};
-
 canvas.methods._isManuallyConfigured = function() {
 	return !$.isEmptyObject(this.get("data"));
 };
@@ -320,7 +223,11 @@ canvas.methods._loadAppResources = function(callback) {
 
 canvas.methods._getOverrides = function(target, spec) {
 	return Echo.Utils.foldl({}, spec || [], function(item, acc) {
-		var key = "canvas-" + item;
+		// We should convert spec item to lower case because of jQuery
+		// HTML5 data attributes implementation http://api.jquery.com/data/#data-html5
+		// Since we have config keys in camel case representation like "useSecureAPI",
+		// we should follow to these rules.
+		var key = "canvas-" + item.toLowerCase();
 		var value = target.data(key);
 		if (typeof value !== "undefined") {
 			acc[item] = value;
@@ -346,5 +253,85 @@ canvas.methods._error = function(args) {
 };
 
 Echo.Control.create(canvas);
+
+// Echo.Canvas class initialization logic requires additional initializers.
+// Before user initialization we should fetch canvas config from the server
+// and init a backplane mechanism. According to it we should extend default
+// control initializers list with own ones.
+var initializers = $.extend(true, {}, Echo.Canvas.prototype._initializers);
+
+var list = initializers.list;
+
+$.each(list, function(i, spec) {
+	if (spec[0] === "user:async") {
+		list.splice(i, 0, ["fetchConfig:async", ["init", "refresh"]]);
+		list.splice(i + 1, 0, ["initBackplane:async", ["init", "refresh"]]);
+		return false;
+	}
+});
+
+initializers.fetchConfig = function(callback) {
+	var self = this, target = this.config.get("target");
+	var isManual = this._isManuallyConfigured();
+
+	// extending Canvas config with the "id" and "appkey" defined in the target
+	var overrides = this._getOverrides(target, ["id", "appkey", "useSecureAPI"]);
+	if (!$.isEmptyObject(overrides)) {
+		this.config.extend(overrides);
+	}
+
+	// exit if no "id" or "appkey" is defined for the canvas,
+	// skip this validation in case the "data" is defined explicitly in the config
+	if (!isManual &&
+		!(this.config.get("id") && this.config.get("appkey"))) {
+			this._error({
+				"args": {"target": target},
+				"code": "invalid_canvas_config"
+			});
+			return;
+	}
+
+	// no need to perform server side request in case
+	// we already have all the data on the client side
+	if (isManual) {
+		callback.call(this);
+		return;
+	}
+	(new Echo.API.Request({
+		"apiBaseURL": this.config.get("storageURL"),
+		"secure": this.config.get("useSecureAPI"),
+		"endpoint": this.config.get("id"),
+		"onData": function(config) {
+			if (!config || !config.apps || !config.apps.length) {
+				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
+				self._error({
+					"args": {"config": config, "target": target},
+					"code": "invalid_canvas_config",
+					"renderError": true,
+					"message": message
+				});
+				return;
+			}
+			self.set("data", config); // store Canvas data into the instance
+			callback.call(self);
+		},
+		"onError": function(response) {
+			self._error({
+				"args": response,
+				"code": "unable_to_retrieve_app_config",
+				"renderError": true
+			});
+		}
+	})).request();
+};
+
+initializers.initBackplane = function(callback) {
+	// Note: Backplane.init in v2 will be async,
+	// so we need a callback to execute after Backplane init
+	Backplane.init(this.get("data.backplane"));
+	callback.call(this);
+};
+
+Echo.Canvas.prototype._initializers = initializers;
 
 })(Echo.jQuery);

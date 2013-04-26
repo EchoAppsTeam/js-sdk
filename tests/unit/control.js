@@ -229,8 +229,11 @@ suite.prototype.cases.basicOperations = function(callback) {
 			[0, undefined, "zero as a value"],
 			["some-random-string", undefined, "random string"],
 			[false, undefined, "boolean 'false'"],
-			[now - 1, "1 Second Ago", "second ago"],
-			[now - 5, "5 Seconds Ago", "seconds ago"],
+			[now + 60, "Just now", "date/time \"from the future\""],
+			[now - 0, "Just now", "Just now"],
+			[now - 4, "Just now", "less than 5 seconds ago"],
+			[now - 9, "Just now", "less than 10 seconds ago"],
+			[now - 10, "10 Seconds Ago", "10 seconds ago"],
 			[now - 1 * 60, "1 Minute Ago", "minute ago"],
 			[now - 3 * 60, "3 Minutes Ago", "minutes ago"],
 			[now - 1 * 60 * 60, "1 Hour Ago", "hour ago"],
@@ -286,7 +289,7 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if 'false' is returned if no config is passed");
 
-	result = new definition({"appkey": "test.echoenabled.com"});
+	result = new definition({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if empty object is returned if no target is passed in config");
 
@@ -461,7 +464,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		var errorRequest = new Echo.API.Request({
 			"endpoint": "search",
 			"data": {
-				"appkey": "test.aboutecho.com",
+				"appkey": "echo.jssdk.tests.aboutecho.com",
 				"q": "unsupported query"
 			},
 			"onData": function(response) {},
@@ -1342,7 +1345,7 @@ suite.initTestControl = function(config, name) {
 	var definition = suite.getTestControlClass(name);
 	new definition($.extend({
 		"target": $("<div></div>"),
-		"appkey": "test.echoenabled.com"
+		"appkey": "echo.jssdk.tests.aboutecho.com"
 	}, config));
 };
 

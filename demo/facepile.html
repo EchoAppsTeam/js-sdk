@@ -68,7 +68,7 @@
 
 		init({
 			"target": document.getElementById("ulist-d1"),
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.demo.aboutecho.com",
 			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:2 children:0",
 			"suffixText": " commented on aboutecho.com",
 			"item": {"avatar": true, "text": true}
@@ -76,25 +76,25 @@
 
 		init({
 			"target": document.getElementById("ulist-d2"),
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.demo.aboutecho.com",
 			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:3 children:0",
 			"item": {"avatar": false, "text": true}
 		});
 
 		init({
 			"target": document.getElementById("ulist-d3"),
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.demo.aboutecho.com",
 			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:6 children:0",
 			"item": {"avatar": true, "text": false}
 		});
 
         Echo.jQuery.get("http://api.echoenabled.com/v1/search", {
 			"q": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:100 children:0",
-			"appkey": "test.aboutecho.com"
+			"appkey": "echo.jssdk.demo.aboutecho.com"
 		}, function(data) {
 			init({
 				"target": document.getElementById("ulist-s1"),
-				"appkey": "test.aboutecho.com",
+				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"data": {"entries": data.entries},
 				"initialUsersCount": 5,
 				"suffixText": " commented on aboutecho.com",
@@ -103,7 +103,7 @@
 
 			init({
 				"target": document.getElementById("ulist-s2"),
-				"appkey": "test.aboutecho.com",
+				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"data": {"itemsPerPage": 3, "entries": data.entries},
 				"totalUsersCount": 100,
 				"item": {"avatar": false, "text": true}
@@ -111,7 +111,7 @@
 
 			init({
 				"target": document.getElementById("ulist-s3"),
-				"appkey": "test.aboutecho.com",
+				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"data": {"itemsPerPage": 6, "entries": data.entries},
 				"item": {"avatar": true, "text": false}
 			});

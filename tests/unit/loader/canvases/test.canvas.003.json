@@ -10,7 +10,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/1"
         }
     }, {
@@ -18,7 +18,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/2"
         }
     }, {
@@ -26,7 +26,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/3"
         }
     }, {
@@ -34,7 +34,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/4"
         }
     }, {
@@ -42,7 +42,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/5"
         }
     }, {
@@ -50,7 +50,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/6"
         }
     }, {
@@ -58,7 +58,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/7"
         }
     }, {
@@ -66,7 +66,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/8"
         }
     }, {
@@ -74,7 +74,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/9"
         }
     }, {
@@ -82,7 +82,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/10"
         }
     }, {
@@ -90,7 +90,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/11"
         }
     }, {
@@ -98,7 +98,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/12"
         }
     }, {
@@ -106,7 +106,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/13"
         }
     }, {
@@ -114,7 +114,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/14"
         }
     }, {
@@ -122,7 +122,7 @@
         "script": "streamserver.pack.js",
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
-            "appkey": "test.aboutecho.com",
+            "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/counter/15"
         }
     }]
