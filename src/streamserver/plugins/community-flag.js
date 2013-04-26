@@ -127,12 +127,12 @@ plugin.methods._assembleButton = function(name) {
 			"onData": function(response) {
 				/**
 				 * @event onFlagComplete
-				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagComplete
+				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagComplete
 				 * Triggered if flag operation was completed.
 				 */
 				/**
-				 * @event onUnFlagComplete
-				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagComplete
+				 * @event onUnflagComplete
+				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnflagComplete
 				 * Triggered if reverse flag operation was completed.
 				 */
 				plugin._publishEventComplete({
@@ -149,12 +149,12 @@ plugin.methods._assembleButton = function(name) {
 			"onError": function(response) {
 				/**
 				 * @event onFlagError
-				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagError
+				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagError
 				 * Triggered if flag operation failed.
 				 */
 				/**
-				 * @event onUnFlagError
-				 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnFlagError
+				 * @event onUnflagError
+				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnflagError
 				 * Triggered if reverse flag operation failed.
 				 */
 				plugin._publishEventComplete({
