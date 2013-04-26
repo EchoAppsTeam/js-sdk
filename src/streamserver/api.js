@@ -231,7 +231,6 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 		return;
 	} else if (this.requestType === "initial") {
 		this.requestType = "secondary";
-		return;
 	}
 	this.liveUpdates.timers.regular = setTimeout(function() {
 		self.request({

@@ -237,6 +237,9 @@ suite.prototype.cases.predefinedData = function(callback) {
 	new Echo.StreamServer.Controls.Stream({
 		"target": $(document.getElementById("qunit-fixture")).empty(),
 		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"liveUpdates": {
+			"enabled": false
+		},
 		"query": "childrenof:http://example.com/js-sdk/ itemsPerPage:1 children:0",
 		"data": {
 			"id": "http://api.echoenabled.com/v1/search?q=childrenof:http://example.com/js-sdk/%20itemsPerPage:1%20children:0",
