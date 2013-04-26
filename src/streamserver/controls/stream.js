@@ -68,7 +68,12 @@ stream.init = function() {
 	if (this.config.get("data")) {
 		this._handleInitialResponse(this.config.get("data"));
 		this.request.send({
-			"skipInitialRequest": true
+			"skipInitialRequest": true,
+			"data": {
+				"q": this.config.get("query"),
+				"appkey": this.config.get("appkey"),
+				"since": this.get("data.nextSince")
+			}
 		});
 	} else {
 		this.request.send();
