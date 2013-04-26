@@ -65,14 +65,15 @@ stream.init = function() {
 		: this.config.get("liveUpdates.enabled") ? "live" : "paused";
 	this.activities.state = state;
 
-	if (this.config.get("data")) {
-		this._handleInitialResponse(this.config.get("data"));
+	var data = this.get("data");
+	if (data) {
+		this._handleInitialResponse(data);
 		this.request.send({
 			"skipInitialRequest": true,
 			"data": {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey"),
-				"since": this.get("data.nextSince")
+				"since": data.nextSince
 			}
 		});
 	} else {
