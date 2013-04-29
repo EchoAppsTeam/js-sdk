@@ -314,8 +314,7 @@ stream.labels = {
 
 stream.events = {
 	"Echo.StreamServer.Controls.Stream.onItemsRenderComplete": function() {
-		this.view.get("more").show();
-		this.itemsRenderComplete = true;
+		this.view.render({"name": "more"});
 		this._executeNextActivity();
 	},
 	"Echo.StreamServer.Controls.Stream.Item.onAdd": function(topic, data) {
@@ -934,6 +933,7 @@ stream.methods._appendRootItems = function(items, container) {
 				renderer(index);
 			}
 		} else {
+			self.itemsRenderComplete = true;
 			self.events.publish({
 				"topic": "onItemsRenderComplete",
 				"global": false,
