@@ -28,6 +28,14 @@ plugin.init = function() {
 	this.component.addButtonSpec("Like", this._assembleButton("Unlike"));
 };
 
+plugin.config = {
+	/**
+	 * @cfg {Boolean} asyncFacePileRendering
+	 *  This parameter is used to enable rendering of FacePile in async mode
+	 */
+	"asyncFacePileRendering": false
+};
+
 plugin.labels = {
 	/**
 	 * @echo_label
@@ -105,8 +113,16 @@ plugin.renderers.likedBy = function(element) {
 	if (item.user.is("admin")) {
 		element.addClass(plugin.cssPrefix + "highlight");
 	}
-	var facePile = new Echo.StreamServer.Controls.FacePile(config);
-	plugin.set("facePile", facePile);
+	if (this.config.get("asyncFacePileRendering")) {
+		setTimeout(function() {
+			var facePile = new Echo.StreamServer.Controls.FacePile(config);
+			plugin.set("facePile", facePile);
+		}, 0);
+	} else {
+		var facePile = new Echo.StreamServer.Controls.FacePile(config);
+		plugin.set("facePile", facePile);
+	}
+
 	return element.show();
 };
 
