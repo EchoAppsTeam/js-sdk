@@ -31,7 +31,7 @@ plugin.init = function() {
 plugin.config = {
 	/**
 	 * @cfg {Boolean} asyncFacePileRendering
-	 *  This parameter is used to enable rendering of FacePile in async mode
+	 * This parameter is used to enable FacePile control rendering in async mode.
 	 */
 	"asyncFacePileRendering": false
 };
@@ -114,16 +114,16 @@ plugin.renderers.likedBy = function(element) {
 		element.addClass(plugin.cssPrefix + "highlight");
 	}
 	if (this.config.get("asyncFacePileRendering")) {
-		setTimeout(function() {
-			var facePile = new Echo.StreamServer.Controls.FacePile(config);
-			plugin.set("facePile", facePile);
-		}, 0);
+		setTimeout($.proxy(this._initFacePile, this, config), 0);
 	} else {
-		var facePile = new Echo.StreamServer.Controls.FacePile(config);
-		plugin.set("facePile", facePile);
+		this._initFacePile(config);
 	}
-
 	return element.show();
+};
+
+plugin.methods._initFacePile = function(config) {
+	var facePile = new Echo.StreamServer.Controls.FacePile(config);
+	this.set("facePile", facePile);
 };
 
 plugin.methods._sendRequest = function(data, callback, errorCallback) {

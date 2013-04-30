@@ -239,7 +239,9 @@ stream.config = {
 
 	/**
 	 * @cfg {Boolean} asyncItemRendering
-	 * This parameter is used to enable rendering of items in async mode
+	 * This parameter is used to enable Stream root items rendering in async mode during
+	 * the first Stream control initialization and when extra items are received after
+	 * the "More" button click.
 	 */
 	"asyncItemsRendering": false
 };
@@ -313,7 +315,7 @@ stream.labels = {
 };
 
 stream.events = {
-	"Echo.StreamServer.Controls.Stream.onItemsRenderComplete": function() {
+	"Echo.StreamServer.Controls.Stream.itemsRenderingComplete": function() {
 		this.view.render({"name": "more"});
 		this._executeNextActivity();
 	},
@@ -492,7 +494,7 @@ stream.renderers.more = function(element) {
 		return element.empty().hide();
 	}
 	if (!this.itemsRenderComplete) {
-		element.hide()
+		element.hide();
 	} else {
 		element.show();
 	}
@@ -935,10 +937,10 @@ stream.methods._appendRootItems = function(items, container) {
 		} else {
 			self.itemsRenderComplete = true;
 			self.events.publish({
-				"topic": "onItemsRenderComplete",
+				"topic": "itemsRenderingComplete",
 				"global": false,
 				"propagation": false
-			})
+			});
 		}
 	})();
 };
@@ -1490,7 +1492,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 	}, parentConfig.item);
 	delete config.parent.item;
 	if (this.config.get("asyncItemsRendering")) {
-		setTimeout(function() { new Echo.StreamServer.Controls.Stream.Item(config) }, 0);
+		setTimeout(function() { new Echo.StreamServer.Controls.Stream.Item(config); }, 0);
 	} else {
 		new Echo.StreamServer.Controls.Stream.Item(config);
 	}
