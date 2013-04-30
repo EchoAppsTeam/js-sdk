@@ -65,7 +65,7 @@ stream.init = function() {
 		: this.config.get("liveUpdates.enabled") ? "live" : "paused";
 	this.activities.state = state;
 
-	var data = this.get("data");
+	var data = this.config.get("data");
 	if (data) {
 		this._handleInitialResponse(data);
 		this.request.send({
@@ -321,7 +321,7 @@ stream.vars = {
 	"threads": [], // items tree
 	"lastRequest": null,
 	"request": null,
-	"moreRequest": null
+	"moreRequest": null,
 	"itemsRenderingComplete": false
 };
 
