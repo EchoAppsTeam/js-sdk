@@ -315,7 +315,7 @@ stream.labels = {
 };
 
 stream.events = {
-	"Echo.StreamServer.Controls.Stream.oItemsRenderingComplete": function() {
+	"Echo.StreamServer.Controls.Stream.onItemsRenderingComplete": function() {
 		this.view.render({"name": "more"});
 		this._executeNextActivity();
 	},
