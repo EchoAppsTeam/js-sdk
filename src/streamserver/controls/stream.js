@@ -271,7 +271,7 @@ stream.config = {
 	 * @cfg {String} submissionProxyURL URL prefix for requests to
 	 * Submission Proxy subsystem.
 	 */
-	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
 
 	/**
 	 * @cfg {Object} data
@@ -280,6 +280,14 @@ stream.config = {
 	 * More information about the data format can be found
 	 * <a href="http://wiki.aboutecho.com/API-method-search#ResponseFormat" target="_blank">here</a>.
 	 */
+
+	/**
+	 * @cfg {Boolean} asyncItemRendering
+	 * This parameter is used to enable Stream root items rendering in async mode during
+	 * the first Stream control initialization and when extra items are received after
+	 * the "More" button click.
+	 */
+	"asyncItemsRendering": false
 };
 
 stream.config.normalizer = {
@@ -314,6 +322,7 @@ stream.vars = {
 	"lastRequest": null,
 	"request": null,
 	"moreRequest": null
+	"itemsRenderingComplete": false
 };
 
 stream.labels = {
@@ -352,6 +361,10 @@ stream.labels = {
 };
 
 stream.events = {
+	"Echo.StreamServer.Controls.Stream.onItemsRenderingComplete": function() {
+		this.view.render({"name": "more"});
+		this._executeNextActivity();
+	},
 	"Echo.StreamServer.Controls.Stream.Item.onAdd": function(topic, data) {
 		var self = this;
 		var item = this.items[data.item.data.unique];
@@ -526,9 +539,13 @@ stream.renderers.more = function(element) {
 	if (this.isViewComplete || !this.threads.length) {
 		return element.empty().hide();
 	}
+	if (!this.itemsRenderingComplete) {
+		element.hide();
+	} else {
+		element.show();
+	}
 	return element.empty()
 		.append(this.labels.get("more"))
-		.show()
 		.off("click")
 		.one("click", function() {
 			/**
@@ -903,11 +920,28 @@ stream.methods._getRespectiveAccumulator = function(item, sort) {
 };
 
 stream.methods._appendRootItems = function(items, container) {
+	var self = this;
 	if (!items || !items.length) return;
-	$.map(items, function(item) {
-		container.append(item.config.get("target"));
-		item.render();
-	});
+	this.itemsRenderingComplete = false;
+	(function renderer(index) {
+		index = index || 0;
+		container.append(items[index].config.get("target"));
+		items[index].render();
+		if (items.length > ++index) {
+			if (self.config.get("asyncItemsRendering")) {
+				setTimeout($.proxy(renderer, self, index), 0);
+			} else {
+				renderer(index);
+			}
+		} else {
+			self.itemsRenderingComplete = true;
+			self.events.publish({
+				"topic": "onItemsRenderingComplete",
+				"global": false,
+				"propagation": false
+			});
+		}
+	})();
 };
 
 stream.methods._constructChildrenSearchQuery = function(item) {
@@ -1067,7 +1101,7 @@ stream.methods._executeNextActivity = function() {
 		acts.state = "paused";
 	}
 
-	if (acts.animations > 0 ||
+	if (acts.animations > 0 || !this.itemsRenderingComplete ||
 			!acts.queue.length ||
 			this.config.get("liveUpdates.enabled") &&
 			acts.state === "paused" &&
@@ -1469,7 +1503,11 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"ready": callback
 	}, parentConfig.item);
 	delete config.parent.item;
-	return new Echo.StreamServer.Controls.Stream.Item(config);
+	if (this.config.get("asyncItemsRendering")) {
+		setTimeout(function() { new Echo.StreamServer.Controls.Stream.Item(config); }, 0);
+	} else {
+		new Echo.StreamServer.Controls.Stream.Item(config);
+	}
 };
 
 stream.methods._updateItem = function(entry) {
