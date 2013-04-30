@@ -689,6 +689,7 @@ Echo.Control.prototype._initializers.events = function() {
 			if (control._prepareEventParams) {
 				params.data = control._prepareEventParams(params.data);
 			}
+			params = prepare(params);
 			// publish events with parents prefixes if appropriate flag provided
 			if (params.inherited) {
 				parent = control.constructor.parent;
@@ -700,16 +701,16 @@ Echo.Control.prototype._initializers.events = function() {
 					return acc;
 				}(parent, []);
 				$.map(names, function(name) {
-					Echo.Events.publish({
-						"topic": name + "." + params.topic,
-						"data": params.data,
-						"global": false,
-						"context": control.config.get("context")
-					});
+					Echo.Events.publish(
+						$.extend({}, params, {
+							"topic": name + "." + params.topic,
+							"global": false
+						})
+					);
 				});
 			}
 			params.topic = control.name + "." + params.topic;
-			Echo.Events.publish(prepare(params));
+			Echo.Events.publish(params);
 		},
 		"subscribe": function(params) {
 			var handlerId = Echo.Events.subscribe(prepare(params));
