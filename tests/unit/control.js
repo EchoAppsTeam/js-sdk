@@ -970,7 +970,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 								"context": ctx,
 								"target": $("<div>"),
 								"ready": function() {
-									QUnit.strictEqual(this.method2(), "method2 method2_child_2", "Check parent method executed (second inheritance level; child2 -> parent() -> control)");
+									QUnit.strictEqual(this.method2(), "undefined method2_child_2", "Check that parent method is not available (second inheritance level; child2 -> parent() -> control)");
 									QUnit.strictEqual(this.child1Method(), "child1 method", "Check parent method executed (child2 -> child1)");
 									QUnit.strictEqual(this.method3(), "method3", "Check parent method executed (child2 -> control)");
 									QUnit.strictEqual(this.view.get("container").attr("class"), "echo-testcontrol1-container echo-testcontrol1_child1-container echo-testcontrol1_child1_child2-container", "Check child inherited css substitution works");
