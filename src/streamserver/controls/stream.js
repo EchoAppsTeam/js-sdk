@@ -276,7 +276,7 @@ stream.vars = {
 	"items": {},   // items by unique key hash
 	"threads": [], // items tree
 	"lastRequest": undefined,
-	"itemsRenderComplete": false
+	"itemsRenderingComplete": false
 };
 
 stream.labels = {
@@ -315,7 +315,7 @@ stream.labels = {
 };
 
 stream.events = {
-	"Echo.StreamServer.Controls.Stream.itemsRenderingComplete": function() {
+	"Echo.StreamServer.Controls.Stream.oItemsRenderingComplete": function() {
 		this.view.render({"name": "more"});
 		this._executeNextActivity();
 	},
@@ -493,7 +493,7 @@ stream.renderers.more = function(element) {
 	if (this.isViewComplete || !this.threads.length) {
 		return element.empty().hide();
 	}
-	if (!this.itemsRenderComplete) {
+	if (!this.itemsRenderingComplete) {
 		element.hide();
 	} else {
 		element.show();
@@ -923,7 +923,7 @@ stream.methods._getRespectiveAccumulator = function(item, sort) {
 stream.methods._appendRootItems = function(items, container) {
 	var self = this;
 	if (!items || !items.length) return;
-	this.itemsRenderComplete = false;
+	this.itemsRenderingComplete = false;
 	(function renderer(index) {
 		index = index || 0;
 		container.append(items[index].config.get("target"));
@@ -935,9 +935,9 @@ stream.methods._appendRootItems = function(items, container) {
 				renderer(index);
 			}
 		} else {
-			self.itemsRenderComplete = true;
+			self.itemsRenderingComplete = true;
 			self.events.publish({
-				"topic": "itemsRenderingComplete",
+				"topic": "onItemsRenderingComplete",
 				"global": false,
 				"propagation": false
 			});
@@ -1089,7 +1089,7 @@ stream.methods._executeNextActivity = function() {
 		acts.state = "paused";
 	}
 
-	if (acts.animations > 0 || !this.itemsRenderComplete ||
+	if (acts.animations > 0 || !this.itemsRenderingComplete ||
 			!acts.queue.length ||
 			this.config.get("liveUpdates.enabled") &&
 			acts.state === "paused" &&

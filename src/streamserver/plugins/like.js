@@ -122,8 +122,7 @@ plugin.renderers.likedBy = function(element) {
 };
 
 plugin.methods._initFacePile = function(config) {
-	var facePile = new Echo.StreamServer.Controls.FacePile(config);
-	this.set("facePile", facePile);
+	this.set("facePile", new Echo.StreamServer.Controls.FacePile(config));
 };
 
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
