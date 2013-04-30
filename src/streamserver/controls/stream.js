@@ -28,20 +28,56 @@ var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 if (Echo.Control.isDefined(stream)) return;
 
 stream.init = function() {
+	var self = this;
 	if (!this.checkAppKey()) return;
 
 	this._recalcEffectsTimeouts();
+	this.request = this._getRequestObject({
+		"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
+		"recurring": this.config.get("liveUpdates.enabled"),
+		"onOpen": function(data, options) {
+			if (options.requestType === "initial") {
+				self.showError({}, {
+					"retryIn": 0,
+					"request": self.request
+				});
+			}
+		},
+		"onError": function(data, options) {
+			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+				self.showError(data, $.extend(options, {
+					"request": self.request
+				}));
+			}
+		},
+		"onData": function(data, options) {
+			if (options.requestType === "initial") {
+				self._handleInitialResponse(data);
+			} else {
+				self._handleLiveUpdatesResponse(data);
+			}
+		}
+	});
 
 	// define default stream state based on the config parameters
 	var state = this.config.get("state.layout") === "full"
 		? "paused"
-		: this.config.get("liveUpdates.enabled") ? "live" : "paused"
+		: this.config.get("liveUpdates.enabled") ? "live" : "paused";
 	this.activities.state = state;
 
-	if (this.config.get("data")) {
-		this._handleInitialResponse(this.config.get("data"));
+	var data = this.get("data");
+	if (data) {
+		this._handleInitialResponse(data);
+		this.request.send({
+			"skipInitialRequest": true,
+			"data": {
+				"q": this.config.get("query"),
+				"appkey": this.config.get("appkey"),
+				"since": data.nextSince
+			}
+		});
 	} else {
-		this._requestInitialItems();
+		this.request.send();
 	}
 };
 
@@ -275,7 +311,9 @@ stream.vars = {
 	"hasInitialData": false,
 	"items": {},   // items by unique key hash
 	"threads": [], // items tree
-	"lastRequest": undefined
+	"lastRequest": null,
+	"request": null,
+	"moreRequest": null
 };
 
 stream.labels = {
@@ -574,13 +612,9 @@ stream.methods._requestChildrenItems = function(unique) {
 	var self = this;
 	var item = this.items[unique];
 	var target = item.view.get("expandChildren");
-	var request = Echo.StreamServer.API.request({
-		"endpoint": "search",
-		"secure": this.config.get("useSecureAPI"),
-		"apiBaseURL": this.config.get("apiBaseURL"),
+	var request = this._getRequestObject({
 		"data": {
-			"q": this._constructChildrenSearchQuery(item),
-			"appkey": this.config.get("appkey")
+			"q": this._constructChildrenSearchQuery(item)
 		},
 		"onOpen": function() {
 			self.showError({}, {
@@ -616,54 +650,11 @@ stream.methods._requestChildrenItems = function(unique) {
 	request.send();
 };
 
-stream.methods._requestInitialItems = function() {
-	var self = this;
-	if (!this.request) {
-		this.request = Echo.StreamServer.API.request({
-			"endpoint": "search",
-			"secure": this.config.get("useSecureAPI"),
-			"apiBaseURL": this.config.get("apiBaseURL"),
-			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
-			"recurring": this.config.get("liveUpdates.enabled"),
-			"data": {
-				"q": this.config.get("query"),
-				"appkey": this.config.get("appkey")
-			},
-			"onOpen": function(data, options) {
-				if (options.requestType === "initial") {
-					self.showError({}, {
-						"retryIn": 0,
-						"request": self.request
-					});
-				}
-			},
-			"onError": function(data, options) {
-				if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-					self.showError(data, $.extend(options, {
-						"request": self.request
-					}));
-				}
-			},
-			"onData": function(data, options) {
-				if (options.requestType === "initial") {
-					self._handleInitialResponse(data);
-				} else {
-					self._handleLiveUpdatesResponse(data);
-				}
-			}
-		});
-	}
-	this.request.send();
-};
-
 stream.methods._requestMoreItems = function(element) {
 	var self = this;
 	this.lastRequest = {"initial": false};
 	if (!this.moreRequest) {
-		this.moreRequest = Echo.StreamServer.API.request({
-			"endpoint": "search",
-			"secure": this.config.get("useSecureAPI"),
-			"apiBaseURL": this.config.get("apiBaseURL"),
+		this.moreRequest = this._getRequestObject({
 			"onOpen": function() {
 				self.showError({}, {
 					"retryIn": 0,
@@ -1012,6 +1003,19 @@ stream.methods._handleLiveUpdatesResponse = function(data) {
 		self.view.render({"name": "state"});
 		self._executeNextActivity();
 	});
+};
+
+stream.methods._getRequestObject = function(overrides) {
+	var config = $.extend(true, {
+		"endpoint": "search",
+		"secure": this.config.get("useSecureAPI"),
+		"apiBaseURL": this.config.get("apiBaseURL"),
+		"data": {
+			"q": this.config.get("query"),
+			"appkey": this.config.get("appkey")
+		}
+	}, overrides);
+	return Echo.StreamServer.API.request(config);
 };
 
 stream.methods._recalcEffectsTimeouts = function() {
