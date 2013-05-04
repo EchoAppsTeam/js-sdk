@@ -126,6 +126,7 @@ Echo.Tests.Events.contracts = {
 
 	"Echo.StreamServer.Controls.Stream.onRender": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onRerender": _stream.render,
+	"Echo.StreamServer.Controls.Stream.onItemsRenderingComplete": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onMoreButtonPress": _stream.render,
 	"Echo.StreamServer.Controls.Stream.Item.onRender": _stream.onItemReceive,
 	"Echo.StreamServer.Controls.Stream.Item.onReady": _stream.render,
