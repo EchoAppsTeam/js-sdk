@@ -282,7 +282,7 @@ stream.config = {
 	 */
 
 	/**
-	 * @cfg {Boolean} asyncItemRendering
+	 * @cfg {Boolean} asyncItemsRendering
 	 * This parameter is used to enable Stream root items rendering in async mode during
 	 * the first Stream control initialization and when extra items are received after
 	 * the "More" button click.

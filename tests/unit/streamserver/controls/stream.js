@@ -62,6 +62,31 @@ suite.prototype.tests.commonWorkflow = {
 	}
 };
 
+suite.prototype.tests.asyncRenderers = {
+	"config": {
+		"async": true,
+		"testTimeout": 10000
+	},
+	"check": function() {
+		var self = this;
+		new Echo.StreamServer.Controls.Stream({
+			"target": this.config.target,
+			"appkey": this.config.appkey,
+			"liveUpdates": {
+				"timeout": 3
+			},
+			"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:10",
+			"ready": function() {
+				var target = this.config.get("target");
+				suite.stream = this;
+				self.sequentialAsyncTests([
+					"asyncItemsRendering",
+					"asyncItemsAndLiveUpdate"
+				], "cases");
+			}
+		});
+	}
+};
 suite.prototype.cases = {};
 
 suite.prototype.cases.addRootItem = function(callback) {
@@ -206,6 +231,69 @@ suite.prototype.cases.addChildItem = function(callback) {
 		}
 	});
 	var request = new Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"data": entry
+	});
+	request.send();
+};
+
+suite.prototype.cases.asyncItemsRendering = function(callback) {
+	var stream = suite.stream;
+	var self = this;
+	var oldElement = stream.view.get("body").clone(true, true);
+	stream.config.set("asyncItemsRendering", true);
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.onItemsRenderingComplete",
+		"once": true,
+		"handler": function() {
+			self._testElementsConsistencyAfterRendering("body", oldElement, stream.view.get("body"));
+			QUnit.ok(stream.view.get("more").is(":visible"),
+				"Checking if \"more\" button is showed after complete render of items");
+			stream.config.set("asyncItemsRendering", false);
+			callback();
+		}
+	});
+	stream.render();
+};
+
+suite.prototype.cases.asyncItemsAndLiveUpdate = function(callback) {
+	var stream = suite.stream;
+	var entry = this._preparePostEntry({
+		"username": "john.doe",
+		"content": "TestContent",
+		"targetId": this.config.dataBaseLocation
+	});
+	var itemsCount = stream.threads.length;
+
+	stream.config.set("asyncItemsRendering", true);
+
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
+		"once": true,
+		"handler": function(topic, args) {
+			QUnit.ok(!itemsCount, "Check if item that was received via LiveUpdate is rendered after complete rendering of body");
+			stream.config.set("asyncItemsRendering", false);
+			callback();
+		}
+	});
+	var handlerId = stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
+		"handler": function(topic, args) {
+			if (--itemsCount === 0) {
+				stream.events.unsubscribe({
+					"handlerId": handlerId
+				});
+			}
+		}
+	});
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
+		"once": true,
+		"handler": function(topic, args) {
+			stream.view.render({"name": "body"});
+		}
+	});
+	var request = Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"data": entry
 	});
