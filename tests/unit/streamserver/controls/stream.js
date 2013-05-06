@@ -63,8 +63,8 @@ suite.prototype.tests.commonWorkflow = {
 
 suite.prototype.tests.asyncRenderers = {
 	"config": {
-		"async"       : true,
-		"testTimeout" : 10000
+		"async": true,
+		"testTimeout": 10000
 	},
 	"check": function() {
 		var self = this;
