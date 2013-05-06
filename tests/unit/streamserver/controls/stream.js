@@ -262,7 +262,7 @@ suite.prototype.cases.asyncItemsAndLiveUpdate = function(callback) {
 		"content": "TestContent",
 		"targetId": this.config.dataBaseLocation
 	});
-	var itemsCount = $.map(stream.items, function(_, i) { return i; }).length;
+	var itemsCount = stream.threads.length;
 
 	stream.config.set("asyncItemsRendering", true);
 
