@@ -44,6 +44,11 @@ pile.init = function() {
 
 pile.config = {
 	/**
+	 * @cfg defaultAvatar
+	 * @hide
+	 */
+
+	/**
 	 * @cfg {Object} data
 	 * Specifies static data for the face pile. It has the same format as returned
 	 * by the <a href="http://wiki.aboutecho.com/API-method-search#ResponseFormat" target="_blank">
