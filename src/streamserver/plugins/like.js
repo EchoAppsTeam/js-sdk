@@ -244,6 +244,7 @@ var $ = jQuery;
  * Adds extra controls to items in the Echo FacePile control.
  *
  * @extends Echo.Plugin
+ * @private
  */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
 
