@@ -200,12 +200,6 @@ stream.config = {
 	"openLinksInNewWindow": false,
 
 	/**
-	 * @cfg {String} providerIcon
-	 * Specifies the URL to the icon representing data provider.
-	 */
-	"providerIcon": Echo.Loader.getURL("images/favicons/comments.png", false),
-
-	/**
 	 * @cfg {Number} slideTimeout
 	 * Specifies the duration of the sliding animation (in milliseconds)
 	 * when an item comes to a stream as a live update.
@@ -1774,6 +1768,13 @@ item.config = {
 	 * @cfg {Boolean} [reTag=true]
 	 * Allows to show/hide the "reTag" section of an item.
 	 */
+
+	/**
+	 * @cfg {String} providerIcon
+	 * Specifies the URL to the icon representing data provider.
+	 */
+	"providerIcon": Echo.Loader.getURL("images/favicons/comments.png", false),
+
 	"reTag": true,
 	/**
 	 * @cfg {Object} [viaLabel]
@@ -2192,8 +2193,10 @@ item.renderers.sourceIcon = function(element) {
 	element.hide()
 		.attr("src", Echo.Utils.htmlize(url))
 		.one("error", function() { element.hide(); })
-		.wrap(Echo.Utils.hyperlink(data, config));
-	return element.show();
+		.one("load", function() {
+			element.show().wrap(Echo.Utils.hyperlink(data, config));
+		});
+	return element;
 };
 
 /**
