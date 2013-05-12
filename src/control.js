@@ -60,7 +60,7 @@ Echo.Control.create = function(manifest) {
 
 	var _manifest = this._merge(manifest, manifest.inherits && manifest.inherits._manifest);
 
-	var constructor = Echo.Utils.inherit(_manifest.inherits, function(config) {
+	var constructor = Echo.Utils.inherit(this, function(config) {
 
 		// perform basic validation of incoming params
 		if (!config || !config.target) {
@@ -86,6 +86,9 @@ Echo.Control.create = function(manifest) {
 	prototype.renderers = _manifest.renderers;
 	prototype.name = _manifest.name;
 	constructor._manifest = _manifest;
+	if (manifest.inherits) {
+		constructor.parent = manifest.inherits.prototype;
+	}
 
 	// define default language var values with the lowest priority available
 	Echo.Labels.set(_manifest.labels, _manifest.name, true);
@@ -942,13 +945,12 @@ Echo.Control._merge = function(manifest, parentManifest) {
 	};
 	manifest.css = normalizeCSS(manifest);
 	parentManifest.css = normalizeCSS(parentManifest);
-	return Echo.Utils.foldl($.extend(true, {}, parentManifest), manifest, function(val, acc, name) {
+	var merged = Echo.Utils.foldl({}, manifest, function(val, acc, name) {
 		acc[name] = name in parentManifest && self._merge[name]
 			? self._merge[name](parentManifest[name], val)
-			: $.isPlainObject(val) && $.isPlainObject(parentManifest[name])
-				? $.extend(true, {}, parentManifest[name], val)
-				: val;
+			: val;
 	});
+	return $.extend(true, {}, parentManifest, merged);
 };
 
 var _wrapper = function(parent, own) {
