@@ -250,13 +250,10 @@ Echo.Tests.Events.contracts = {
 			"content": "array",
 			"appkey": "string",
 			"sessionID": "string"
-//			"avatar": "string",
-//			"markers": "string",
-//			"name": "string",
-//			"tags": "string",
-//			"target": "string",
-//			"url": "string",
-//			"verb": "string"
+		},
+		"request": {
+			"state": "object",
+			"response": "object"
 		}
 	},
 	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit": _plugins.Edit.onEdit,
@@ -293,9 +290,17 @@ Echo.Tests.Events.contracts = {
 	},
 	"Echo.StreamServer.Controls.Submit.onPostError": {
 		"postData": {
-			"result": "string",
-			"errorCode": "string",
-			"errorMessage": "string"
+			"content": "array",
+			"appkey": "string",
+			"sessionID": "string"
+		},
+		"request": {
+			"state": "object",
+			"response": {
+				"result": "string",
+				"errorCode": "string",
+				"errorMessage": "string"
+			}
 		},
 		"data": {},
 		"target": "object",

@@ -224,9 +224,20 @@ suite.prototype.cases.post = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Submit.onPostComplete",
 		"once": true,
 		"handler": function(topic, params) {
-			QUnit.equal(name.val(), "TestName", "Checking that name is saved after posting");
-			QUnit.equal(url.val(), "TestURL", "Checking that URL is saved after posting");
-			QUnit.ok(!text.val(), "Checking that content is cleared after posting");
+			QUnit.equal(name.val(),
+				"TestName", "Checking that name is saved after posting");
+			QUnit.equal(url.val(),
+				"TestURL", "Checking that URL is saved after posting");
+			QUnit.ok(!text.val(),
+				"Checking that content is cleared after posting");
+			QUnit.ok(params.request.response && !$.isEmptyObject(params.request.response),
+				"Checking if the server response is available via " +
+				"Echo.StreamServer.Controls.Submit.onPostComplete " +
+				"event handler arguments");
+			QUnit.ok(!!params.request.response.objectID,
+				"Checking if the object.id is accessible via " +
+				"Echo.StreamServer.Controls.Submit.onPostComplete " +
+				"event handler arguments");
 			callback();
 		}
 	});
@@ -324,8 +335,13 @@ suite.prototype.cases.onError = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Submit.onPostError",
 		"once": true,
 		"handler": function(topic, params) {
-			QUnit.equal(params.postData.result, "error",
-				"Checking that postData.result is 'error' in onPostError handler");
+			QUnit.ok(params.request.response && !$.isEmptyObject(params.request.response),
+				"Checking if the server response is available via " +
+				"Echo.StreamServer.Controls.Submit.onPostComplete " +
+				"event handler arguments");
+			QUnit.equal(params.request.response.result, "error",
+				"Checking if the server response correspond to the event " +
+				"fired (which is Echo.StreamServer.Controls.Submit.onPostError)");
 			callback();
 		}
 	});

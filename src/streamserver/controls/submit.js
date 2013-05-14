@@ -439,7 +439,8 @@ submit.renderers.postButton = function(element) {
 		self.view.render({"name": "markers"});
 	});
 	subscribe("Error", states.normal, function(params) {
-		if (params.extra && params.extra.critical) {
+		var request = params.request || {};
+		if (request.state && request.state.critical) {
 			self._showError(params.postData);
 		}
 	});
@@ -469,13 +470,18 @@ submit.renderers._metaFields = function(element, extra) {
  */
 submit.methods.post = function() {
 	var self = this;
-	var publish = function(phase, data, requestState) {
-		requestState = requestState || {};
-		var params = {
+	var publish = function(phase, data, responseBody, requestState) {
+		var args = {
 			"topic": "onPost" + phase,
-			"data": {"postData": data, "extra": requestState}
+			"data": {"postData": data}
 		};
-		self.events.publish(params);
+		if (requestState || responseBody) {
+			args.data.request = {
+				"state": requestState,
+				"response": responseBody
+			};
+		}
+		self.events.publish(args);
 	};
 	var postType = this.config.get("type", this._getASURL("comment"));
 	var content = [].concat(
@@ -492,13 +498,14 @@ submit.methods.post = function() {
 		entry["target-query"] = this.config.get("targetQuery");
 	}
 	var callbacks = {
-		"onData": function(data) {
+		"onData": function(response, state) {
 			/**
 			 * @event onPostComplete
 			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete
 			 * Triggered when the submit operation is finished.
 			 */
-			publish("Complete", entry);
+			publish("Complete", entry, response, state);
+
 			/**
 			 * @event onDataInvalidate
 			 * @echo_event Echo.Control.onDataInvalidate
@@ -511,13 +518,13 @@ submit.methods.post = function() {
 				"data": {}
 			});
 		},
-		"onError": function(data, requestState) {
+		"onError": function(response, state) {
 			/**
 			 * @event onPostError
 			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
 			 * Triggered if submit operation failed.
 			 */
-			publish("Error", data, requestState);
+			publish("Error", entry, response, state);
 		}
 	};
 	/**
