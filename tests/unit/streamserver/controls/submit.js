@@ -337,10 +337,10 @@ suite.prototype.cases.onError = function(callback) {
 		"handler": function(topic, params) {
 			QUnit.ok(params.request.response && !$.isEmptyObject(params.request.response),
 				"Checking if the server response is available via " +
-				"Echo.StreamServer.Controls.Submit.onPostComplete " +
+				"Echo.StreamServer.Controls.Submit.onPostError " +
 				"event handler arguments");
 			QUnit.equal(params.request.response.result, "error",
-				"Checking if the server response correspond to the event " +
+				"Checking if the server response corresponds to the event " +
 				"fired (which is Echo.StreamServer.Controls.Submit.onPostError)");
 			callback();
 		}
