@@ -149,7 +149,7 @@ Echo.Events.unsubscribe = function(params) {
  * @param {String} [params.context]
  * Unique identifier for inter-component communication.
  *
- * @param {String} [params.data]
+ * @param {Object} [params.data]
  * Some data object.
  *
  * @param {Boolean} [params.bubble=true]
