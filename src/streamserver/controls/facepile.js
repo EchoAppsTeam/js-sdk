@@ -44,11 +44,17 @@ pile.init = function() {
 
 pile.config = {
 	/**
+	 * @cfg defaultAvatar
+	 * @hide
+	 */
+
+	/**
 	 * @cfg {Object} data
-	 * Specifies static data for the list. It has the same format as returned
-	 * by the search API endpoint. If the `data` parameter is provided then the
-	 * `query` parameter should be omitted. If `data` and `query` parameters are both
-	 * provided `query` takes precedence over `data`.
+	 * Specifies static data for the face pile. It has the same format as returned
+	 * by the <a href="http://wiki.aboutecho.com/API-method-search#ResponseFormat" target="_blank">
+	 * "search" API endpoint</a>. If the "data" parameter is provided then the
+	 * "query" parameter should be omitted. If "data" and "query" parameters are both
+	 * provided "query" takes precedence over "data".
 	 */
 	"data": undefined,
 	/**

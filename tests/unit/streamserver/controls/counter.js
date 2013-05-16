@@ -27,6 +27,8 @@ suite.prototype.tests.staticWorkflow = {
 				suite.counter = this;
 				QUnit.ok(target.html().match(count),
 					'Checking the static usecase rendering');
+				QUnit.ok(this.request instanceof Echo.API.Request, "Check that counter initializing with the pre-defined data inits a request object as well");
+				QUnit.strictEqual(this.request.config.get("recurring"), this.config.get("liveUpdates.enabled"), "Check that counter initializing with the pre-defined data inits a request object with the proper options");
 				self.sequentialAsyncTests([
 					"staticInit",
 					"staticRefresh"

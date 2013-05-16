@@ -641,12 +641,30 @@ Echo.Control.prototype._initializers.vars = function() {
 Echo.Control.prototype._initializers.config = function() {
 	var control = this;
 	var config = this._manifest("config");
-	return new Echo.Configuration(this.config, config,
+	var data = this.config.data;
+
+	// we remove the data from the config object before processing
+	// it via Echo.Configuration abstraction to avoid heavy operations
+	// such as iterating through the object recursively to create a copy
+	// of the object, we use the "data" object as is. As soon as the instance
+	// of the Echo.Configuration is created, we put the "data" back into the
+	// original object which we received via control config (to avoid object
+	// damaging) and into the config class instance
+	delete this.config.data;
+
+	var instance = new Echo.Configuration(this.config, config,
 		function(key, value) {
 			return config.normalizer && config.normalizer[key]
 				? config.normalizer[key].call(this, value, control)
 				: value;
 		});
+
+	// put the data back into the original object
+	// and the Echo.Configuration class instance
+	this.config.data = data;
+	instance.set("data", data);
+
+	return instance;
 };
 
 Echo.Control.prototype._initializers.events = function() {
@@ -668,6 +686,7 @@ Echo.Control.prototype._initializers.events = function() {
 			if (control._prepareEventParams) {
 				params.data = control._prepareEventParams(params.data);
 			}
+			params = prepare(params);
 			// publish events with parents prefixes if appropriate flag provided
 			if (params.inherited) {
 				parent = control.constructor.parent;
@@ -679,16 +698,16 @@ Echo.Control.prototype._initializers.events = function() {
 					return acc;
 				}(parent, []);
 				$.map(names, function(name) {
-					Echo.Events.publish({
-						"topic": name + "." + params.topic,
-						"data": params.data,
-						"global": false,
-						"context": control.config.get("context")
-					});
+					Echo.Events.publish(
+						$.extend({}, params, {
+							"topic": name + "." + params.topic,
+							"global": false
+						})
+					);
 				});
 			}
 			params.topic = control.name + "." + params.topic;
-			Echo.Events.publish(prepare(params));
+			Echo.Events.publish(params);
 		},
 		"subscribe": function(params) {
 			var handlerId = Echo.Events.subscribe(prepare(params));

@@ -261,20 +261,21 @@ Echo.UserSession._logoutRequest = function(data, callback) {
 		"apiBaseURL": this.config.get("endpoints.logout"),
 		"secure": this.config.get("useSecureAPI"),
 		"endpoint": "logout",
-		// FIXME: esp do not support request through pure AJAX request (needs a mandatory parameter 'callback').
+		// FIXME: "logout" endpoint supports only JSONP request type
 		"transport": "jsonp",
 		"onData": callback,
 		"data": data
 	})).request();
 };
 
-Echo.UserSession._whoamiRequest = function(data, callback) {
+Echo.UserSession._whoamiRequest = function(args) {
 	Echo.IdentityServer.API.request({
 		"apiBaseURL": this.config.get("endpoints.whoami"),
 		"secure": this.config.get("useSecureAPI"),
 		"endpoint": "whoami",
-		"onData": callback,
-		"data": data
+		"onData": args.onData,
+		"onError": args.onError,
+		"data": args.data
 	}).send();
 };
 
@@ -409,9 +410,22 @@ Echo.UserSession._init = function(callback) {
 	};
 	if (user.get("sessionID")) {
 		user._whoamiRequest({
-			"appkey": user.config.get("appkey"),
-			"sessionID": user.get("sessionID")
-		}, handler);
+			"data": {
+				"appkey": user.config.get("appkey"),
+				"sessionID": user.get("sessionID")
+			},
+			"onData": handler,
+			"onError": function(response) {
+				Echo.Utils.log({
+					"type": "error",
+					"component": "Echo.UserSession",
+					"args": {"response": response},
+					"message": "Unable to initialize user session, " +
+						"error response from IdentityServer API received"
+				});
+				handler();
+			}
+		});
 	} else {
 		handler();
 	}

@@ -54,13 +54,39 @@ suite.prototype.tests.commonWorkflow = {
 					"addRootItem",
 					"queueActivityTesting",
 					"addChildItem",
-					"moreButton"
+					"moreButton",
+					"predefinedData"
 				], "cases");
 			}
 		});
 	}
 };
 
+suite.prototype.tests.asyncRenderers = {
+	"config": {
+		"async": true,
+		"testTimeout": 10000
+	},
+	"check": function() {
+		var self = this;
+		new Echo.StreamServer.Controls.Stream({
+			"target": this.config.target,
+			"appkey": this.config.appkey,
+			"liveUpdates": {
+				"timeout": 3
+			},
+			"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:10",
+			"ready": function() {
+				var target = this.config.get("target");
+				suite.stream = this;
+				self.sequentialAsyncTests([
+					"asyncItemsRendering",
+					"asyncItemsAndLiveUpdate"
+				], "cases");
+			}
+		});
+	}
+};
 suite.prototype.cases = {};
 
 suite.prototype.cases.addRootItem = function(callback) {
@@ -211,6 +237,69 @@ suite.prototype.cases.addChildItem = function(callback) {
 	request.send();
 };
 
+suite.prototype.cases.asyncItemsRendering = function(callback) {
+	var stream = suite.stream;
+	var self = this;
+	var oldElement = stream.view.get("body").clone(true, true);
+	stream.config.set("asyncItemsRendering", true);
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.onItemsRenderingComplete",
+		"once": true,
+		"handler": function() {
+			self._testElementsConsistencyAfterRendering("body", oldElement, stream.view.get("body"));
+			QUnit.ok(stream.view.get("more").is(":visible"),
+				"Checking if \"more\" button is showed after complete render of items");
+			stream.config.set("asyncItemsRendering", false);
+			callback();
+		}
+	});
+	stream.render();
+};
+
+suite.prototype.cases.asyncItemsAndLiveUpdate = function(callback) {
+	var stream = suite.stream;
+	var entry = this._preparePostEntry({
+		"username": "john.doe",
+		"content": "TestContent",
+		"targetId": this.config.dataBaseLocation
+	});
+	var itemsCount = stream.threads.length;
+
+	stream.config.set("asyncItemsRendering", true);
+
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
+		"once": true,
+		"handler": function(topic, args) {
+			QUnit.ok(!itemsCount, "Check if item that was received via LiveUpdate is rendered after complete rendering of body");
+			stream.config.set("asyncItemsRendering", false);
+			callback();
+		}
+	});
+	var handlerId = stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
+		"handler": function(topic, args) {
+			if (--itemsCount === 0) {
+				stream.events.unsubscribe({
+					"handlerId": handlerId
+				});
+			}
+		}
+	});
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
+		"once": true,
+		"handler": function(topic, args) {
+			stream.view.render({"name": "body"});
+		}
+	});
+	var request = Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"data": entry
+	});
+	request.send();
+};
+
 suite.prototype.cases.moreButton = function(callback) {
 	var stream = suite.stream;
 	var target = this.config.target;
@@ -232,6 +321,101 @@ suite.prototype.cases.moreButton = function(callback) {
 	$(".echo-streamserver-controls-stream-more", target).click();
 };
 
+suite.prototype.cases.predefinedData = function(callback) {
+	new Echo.StreamServer.Controls.Stream({
+		"target": $(document.getElementById("qunit-fixture")).empty(),
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"liveUpdates": {
+			"enabled": false
+		},
+		"query": "childrenof:http://example.com/js-sdk/ itemsPerPage:1 children:0",
+		"data": {
+			"id": "http://api.echoenabled.com/v1/search?q=childrenof:http://example.com/js-sdk/%20itemsPerPage:1%20children:0",
+			"updated": "2013-04-18T17:32:18Z",
+			"hasMoreChildren": "true",
+			"sortOrder": "reverseChronological",
+			"showFlags": "on",
+			"safeHTML": "aggressive",
+			"itemsPerPage": "1",
+			"children": {
+				"maxDepth": "0",
+				"sortOrder": "reverseChronological",
+				"itemsPerPage": "2",
+				"filter": "()"
+			},
+			"nextPageAfter": "1366306330.049437",
+			"nextSince": "1366306549.849118",
+			"liveUpdatesTimeout": "0",
+			"entries": [
+				{
+					"id": "http://js-kit.com/activities/post/b126c90795f59b805db2cd73a62761c3",
+					"actor": {
+						"links": [],
+						"objectTypes": [
+							"http://activitystrea.ms/schema/1.0/person"
+						],
+						"id": "http://js-kit.com/ECHO/user/fake_user",
+						"title": "another.john.doe",
+						"status": "ModeratorBanned",
+						"markers": [],
+						"roles": [
+							"administrator",
+							"moderator"
+						]
+					},
+					"object": {
+						"id": "http://example.com/ECHO/item/1366306330-580-88",
+						"objectTypes": [
+							"http://activitystrea.ms/schema/1.0/comment"
+						],
+						"permalink": "",
+						"context": [
+							{
+								"uri": "http://example.com/js-sdk/"
+							}
+						],
+						"content": "TestContent by another.john.doe",
+						"content_type": "html",
+						"status": "SystemFlagged",
+						"markers": [
+							"spam.impermium"
+						],
+						"published": "2013-04-18T17:32:10Z"
+					},
+					"source": {
+						"name": "jskit",
+						"uri": "http://aboutecho.com/",
+						"icon": "http://cdn.js-kit.com/images/echo.png"
+					},
+					"provider": {
+						"name": "echo",
+						"uri": "http://aboutecho.com/",
+						"icon": "http://cdn.js-kit.com/images/echo.png"
+					},
+					"verbs": [
+						"http://activitystrea.ms/schema/1.0/post"
+					],
+					"postedTime": "2013-04-18T17:32:10Z",
+					"targets": [
+						{
+							"id": "http://example.com/js-sdk/",
+							"conversationID": "http://example.com/ECHO/item/1366306330-580-88"
+						}
+					],
+					"pageAfter": "1366306330.049437",
+					"hasMoreChildren": "false"
+				}
+			]
+			},
+		"ready": function() {
+			var self = this;
+			QUnit.ok(this.request instanceof Echo.API.Request, "Check that stream initializing with the pre-defined data inits a request object as well");
+			QUnit.strictEqual(this.request.config.get("recurring"), this.config.get("liveUpdates.enabled"), "Check that stream initializing with the pre-defined data inits a request object with the proper options");
+			callback();
+		}
+	});
+};
+
 suite.prototype.cases.destroy = function(callback) {
 	if (suite.stream) suite.stream.destroy();
 	callback();
@@ -243,15 +427,15 @@ suite.prototype._preparePostEntry = function(params) {
 		"sessionID": Backplane.getChannelID(),
 		"content": [{
 			"actor": {
-				"objectTypes": [ "http://activitystrea.ms/schema/1.0/person" ],
+				"objectTypes": ["http://activitystrea.ms/schema/1.0/person"],
 				"name": params.username
 			},
 			"object": {
-				"objectTypes": [ "http://activitystrea.ms/schema/1.0/comment"],
+				"objectTypes": ["http://activitystrea.ms/schema/1.0/comment"],
 				"content": params.content
 			},
 			"source": {},
-			"verbs": [ "http://activitystrea.ms/schema/1.0/post" ],
+			"verbs": ["http://activitystrea.ms/schema/1.0/post"],
 			"targets": [{
 				"id": params.targetId
 			}]

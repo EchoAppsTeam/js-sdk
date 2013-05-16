@@ -30,14 +30,15 @@ if (Echo.Control.isDefined(counter)) return;
 counter.init = function() {
 	if (!this.checkAppKey()) return;
 
-	// data can be defined explicitly
-	// in this case we do not make API requests
-	// TODO: no live updates for now if data is passed as a config value
+	this.request = this._getRequestObject();
 	if ($.isEmptyObject(this.get("data"))) {
-		this._request();
+		this.request.send();
 	} else {
 		this.render();
 		this.ready();
+		this.request.send({
+			"skipInitialRequest": true
+		});
 	}
 };
 
@@ -58,6 +59,9 @@ counter.config = {
 	/**
 	 * @cfg {Object} data
 	 * Specifies predefined items count which should be displayed by the application.
+	 * Counter control works with the data format used by the "count" API endpoint.
+	 * More information about the data format can be found
+	 * <a href="http://wiki.aboutecho.com/API-method-count#ResponseFormat" target="_blank">here</a>.
 	 *
 	 * 	new Echo.Counter({
 	 * 		...
@@ -89,10 +93,9 @@ counter.config = {
 
 counter.templates.main = "<span>{data:count}</span>";
 
-counter.methods._request = function() {
-	var request = this.get("request");
-	if (!request) {
-		request = Echo.StreamServer.API.request({
+counter.methods._getRequestObject = function(overrides) {
+	return Echo.StreamServer.API.request(
+		$.extend(true, {
 			"endpoint": "count",
 			"data": {
 				"q": this.config.get("query"),
@@ -102,14 +105,12 @@ counter.methods._request = function() {
 			"recurring": this.config.get("liveUpdates.enabled"),
 			"secure": this.config.get("useSecureAPI"),
 			"onError": $.proxy(this._error, this),
-			"onData": $.proxy(this._update, this)
-		});
-		this.set("request", request);
-	}
-	request.send();
+			"onData": $.proxy(this._handleResponse, this)
+		}, overrides)
+	);
 };
 
-counter.methods._update = function(data) {
+counter.methods._maybeUpdate = function(data) {
 	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
 		this.events.publish({
 			"topic": "onUpdate",
@@ -121,6 +122,12 @@ counter.methods._update = function(data) {
 		});
 		this.set("data", data);
 		this.render();
+	}
+};
+
+counter.methods._handleResponse = function(data, options) {
+	this._maybeUpdate(data);
+	if (options.requestType === "initial") {
 		this.ready();
 	}
 };

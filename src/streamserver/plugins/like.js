@@ -28,6 +28,14 @@ plugin.init = function() {
 	this.component.addButtonSpec("Like", this._assembleButton("Unlike"));
 };
 
+plugin.config = {
+	/**
+	 * @cfg {Boolean} asyncFacePileRendering
+	 * This parameter is used to enable FacePile control rendering in async mode.
+	 */
+	"asyncFacePileRendering": false
+};
+
 plugin.labels = {
 	/**
 	 * @echo_label
@@ -105,9 +113,16 @@ plugin.renderers.likedBy = function(element) {
 	if (item.user.is("admin")) {
 		element.addClass(plugin.cssPrefix + "highlight");
 	}
-	var facePile = new Echo.StreamServer.Controls.FacePile(config);
-	plugin.set("facePile", facePile);
+	if (this.config.get("asyncFacePileRendering")) {
+		setTimeout($.proxy(this._initFacePile, this, config), 0);
+	} else {
+		this._initFacePile(config);
+	}
 	return element.show();
+};
+
+plugin.methods._initFacePile = function(config) {
+	this.set("facePile", new Echo.StreamServer.Controls.FacePile(config));
 };
 
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
@@ -229,6 +244,7 @@ var $ = jQuery;
  * Adds extra controls to items in the Echo FacePile control.
  *
  * @extends Echo.Plugin
+ * @private
  */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
 

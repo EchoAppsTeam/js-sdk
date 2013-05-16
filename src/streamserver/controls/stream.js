@@ -28,20 +28,56 @@ var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 if (Echo.Control.isDefined(stream)) return;
 
 stream.init = function() {
+	var self = this;
 	if (!this.checkAppKey()) return;
 
 	this._recalcEffectsTimeouts();
+	this.request = this._getRequestObject({
+		"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
+		"recurring": this.config.get("liveUpdates.enabled"),
+		"onOpen": function(data, options) {
+			if (options.requestType === "initial") {
+				self.showError({}, {
+					"retryIn": 0,
+					"request": self.request
+				});
+			}
+		},
+		"onError": function(data, options) {
+			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+				self.showError(data, $.extend(options, {
+					"request": self.request
+				}));
+			}
+		},
+		"onData": function(data, options) {
+			if (options.requestType === "initial") {
+				self._handleInitialResponse(data);
+			} else {
+				self._handleLiveUpdatesResponse(data);
+			}
+		}
+	});
 
 	// define default stream state based on the config parameters
 	var state = this.config.get("state.layout") === "full"
 		? "paused"
-		: this.config.get("liveUpdates.enabled") ? "live" : "paused"
+		: this.config.get("liveUpdates.enabled") ? "live" : "paused";
 	this.activities.state = state;
 
-	if (this.config.get("data")) {
-		this._handleInitialResponse(this.config.get("data"));
+	var data = this.config.get("data");
+	if (data) {
+		this._handleInitialResponse(data);
+		this.request.send({
+			"skipInitialRequest": true,
+			"data": {
+				"q": this.config.get("query"),
+				"appkey": this.config.get("appkey"),
+				"since": data.nextSince
+			}
+		});
 	} else {
-		this._requestInitialItems();
+		this.request.send();
 	}
 };
 
@@ -164,12 +200,6 @@ stream.config = {
 	"openLinksInNewWindow": false,
 
 	/**
-	 * @cfg {String} providerIcon
-	 * Specifies the URL to the icon representing data provider.
-	 */
-	"providerIcon": Echo.Loader.getURL("images/favicons/comments.png", false),
-
-	/**
 	 * @cfg {Number} slideTimeout
 	 * Specifies the duration of the sliding animation (in milliseconds)
 	 * when an item comes to a stream as a live update.
@@ -235,7 +265,23 @@ stream.config = {
 	 * @cfg {String} submissionProxyURL URL prefix for requests to
 	 * Submission Proxy subsystem.
 	 */
-	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+
+	/**
+	 * @cfg {Object} data
+	 * Specifies predefined items data which should be rendered by the application.
+	 * Stream control works with the data format used by the "search" API endpoint.
+	 * More information about the data format can be found
+	 * <a href="http://wiki.aboutecho.com/API-method-search#ResponseFormat" target="_blank">here</a>.
+	 */
+
+	/**
+	 * @cfg {Boolean} asyncItemsRendering
+	 * This parameter is used to enable Stream root items rendering in async mode during
+	 * the first Stream control initialization and when extra items are received after
+	 * the "More" button click.
+	 */
+	"asyncItemsRendering": false
 };
 
 stream.config.normalizer = {
@@ -267,7 +313,10 @@ stream.vars = {
 	"hasInitialData": false,
 	"items": {},   // items by unique key hash
 	"threads": [], // items tree
-	"lastRequest": undefined
+	"lastRequest": null,
+	"request": null,
+	"moreRequest": null,
+	"itemsRenderingComplete": false
 };
 
 stream.labels = {
@@ -306,6 +355,10 @@ stream.labels = {
 };
 
 stream.events = {
+	"Echo.StreamServer.Controls.Stream.onItemsRenderingComplete": function() {
+		this.view.render({"name": "more"});
+		this._executeNextActivity();
+	},
 	"Echo.StreamServer.Controls.Stream.Item.onAdd": function(topic, data) {
 		var self = this;
 		var item = this.items[data.item.data.unique];
@@ -480,9 +533,13 @@ stream.renderers.more = function(element) {
 	if (this.isViewComplete || !this.threads.length) {
 		return element.empty().hide();
 	}
+	if (!this.itemsRenderingComplete) {
+		element.hide();
+	} else {
+		element.show();
+	}
 	return element.empty()
 		.append(this.labels.get("more"))
-		.show()
 		.off("click")
 		.one("click", function() {
 			/**
@@ -566,13 +623,9 @@ stream.methods._requestChildrenItems = function(unique) {
 	var self = this;
 	var item = this.items[unique];
 	var target = item.view.get("expandChildren");
-	var request = Echo.StreamServer.API.request({
-		"endpoint": "search",
-		"secure": this.config.get("useSecureAPI"),
-		"apiBaseURL": this.config.get("apiBaseURL"),
+	var request = this._getRequestObject({
 		"data": {
-			"q": this._constructChildrenSearchQuery(item),
-			"appkey": this.config.get("appkey")
+			"q": this._constructChildrenSearchQuery(item)
 		},
 		"onOpen": function() {
 			self.showError({}, {
@@ -608,54 +661,11 @@ stream.methods._requestChildrenItems = function(unique) {
 	request.send();
 };
 
-stream.methods._requestInitialItems = function() {
-	var self = this;
-	if (!this.request) {
-		this.request = Echo.StreamServer.API.request({
-			"endpoint": "search",
-			"secure": this.config.get("useSecureAPI"),
-			"apiBaseURL": this.config.get("apiBaseURL"),
-			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
-			"recurring": this.config.get("liveUpdates.enabled"),
-			"data": {
-				"q": this.config.get("query"),
-				"appkey": this.config.get("appkey")
-			},
-			"onOpen": function(data, options) {
-				if (options.requestType === "initial") {
-					self.showError({}, {
-						"retryIn": 0,
-						"request": self.request
-					});
-				}
-			},
-			"onError": function(data, options) {
-				if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-					self.showError(data, $.extend(options, {
-						"request": self.request
-					}));
-				}
-			},
-			"onData": function(data, options) {
-				if (options.requestType === "initial") {
-					self._handleInitialResponse(data);
-				} else {
-					self._handleLiveUpdatesResponse(data);
-				}
-			}
-		});
-	}
-	this.request.send();
-};
-
 stream.methods._requestMoreItems = function(element) {
 	var self = this;
 	this.lastRequest = {"initial": false};
 	if (!this.moreRequest) {
-		this.moreRequest = Echo.StreamServer.API.request({
-			"endpoint": "search",
-			"secure": this.config.get("useSecureAPI"),
-			"apiBaseURL": this.config.get("apiBaseURL"),
+		this.moreRequest = this._getRequestObject({
 			"onOpen": function() {
 				self.showError({}, {
 					"retryIn": 0,
@@ -904,11 +914,28 @@ stream.methods._getRespectiveAccumulator = function(item, sort) {
 };
 
 stream.methods._appendRootItems = function(items, container) {
+	var self = this;
 	if (!items || !items.length) return;
-	$.map(items, function(item) {
-		container.append(item.config.get("target"));
-		item.render();
-	});
+	this.itemsRenderingComplete = false;
+	(function renderer(index) {
+		index = index || 0;
+		container.append(items[index].config.get("target"));
+		items[index].render();
+		if (items.length > ++index) {
+			if (self.config.get("asyncItemsRendering")) {
+				setTimeout($.proxy(renderer, self, index), 0);
+			} else {
+				renderer(index);
+			}
+		} else {
+			self.itemsRenderingComplete = true;
+			self.events.publish({
+				"topic": "onItemsRenderingComplete",
+				"global": false,
+				"propagation": false
+			});
+		}
+	})();
 };
 
 stream.methods._constructChildrenSearchQuery = function(item) {
@@ -1006,6 +1033,19 @@ stream.methods._handleLiveUpdatesResponse = function(data) {
 	});
 };
 
+stream.methods._getRequestObject = function(overrides) {
+	var config = $.extend(true, {
+		"endpoint": "search",
+		"secure": this.config.get("useSecureAPI"),
+		"apiBaseURL": this.config.get("apiBaseURL"),
+		"data": {
+			"q": this.config.get("query"),
+			"appkey": this.config.get("appkey")
+		}
+	}, overrides);
+	return Echo.StreamServer.API.request(config);
+};
+
 stream.methods._recalcEffectsTimeouts = function() {
 	// recalculating timeouts based on amount of items in activities queue
 	var s = this;
@@ -1055,7 +1095,7 @@ stream.methods._executeNextActivity = function() {
 		acts.state = "paused";
 	}
 
-	if (acts.animations > 0 ||
+	if (acts.animations > 0 || !this.itemsRenderingComplete ||
 			!acts.queue.length ||
 			this.config.get("liveUpdates.enabled") &&
 			acts.state === "paused" &&
@@ -1457,7 +1497,11 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"ready": callback
 	}, parentConfig.item);
 	delete config.parent.item;
-	return new Echo.StreamServer.Controls.Stream.Item(config);
+	if (this.config.get("asyncItemsRendering")) {
+		setTimeout(function() { new Echo.StreamServer.Controls.Stream.Item(config); }, 0);
+	} else {
+		new Echo.StreamServer.Controls.Stream.Item(config);
+	}
 };
 
 stream.methods._updateItem = function(entry) {
@@ -1724,6 +1768,13 @@ item.config = {
 	 * @cfg {Boolean} [reTag=true]
 	 * Allows to show/hide the "reTag" section of an item.
 	 */
+
+	/**
+	 * @cfg {String} providerIcon
+	 * Specifies the URL to the icon representing data provider.
+	 */
+	"providerIcon": Echo.Loader.getURL("images/favicons/comments.png", false),
+
 	"reTag": true,
 	/**
 	 * @cfg {Object} [viaLabel]
@@ -2142,8 +2193,10 @@ item.renderers.sourceIcon = function(element) {
 	element.hide()
 		.attr("src", Echo.Utils.htmlize(url))
 		.one("error", function() { element.hide(); })
-		.wrap(Echo.Utils.hyperlink(data, config));
-	return element.show();
+		.one("load", function() {
+			element.show().wrap(Echo.Utils.hyperlink(data, config));
+		});
+	return element;
 };
 
 /**
