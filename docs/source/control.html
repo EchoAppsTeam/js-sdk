@@ -498,14 +498,8 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 		return self.labels.get(period + (ago === 1 ? &quot;&quot; : &quot;s&quot;) + &quot;Ago&quot;, {&quot;number&quot;: ago});
 	};
 
-	// we display the &quot;Just now&quot; text in order to mitigate the clock inaccuracy
-	// when the time difference between the current and the given time is
-	// less than 10 seconds or if the given date is &quot;from the future&quot; but
-	// within the 60 seconds range
-	if (isNaN(dayDiff) || diff &lt; -60 || dayDiff &gt;= 365) {
+	if (isNaN(dayDiff) || dayDiff &lt; 0 || dayDiff &gt;= 365) {
 		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
-	} else if (diff &lt; 10) {
-		when = this.labels.get(&quot;justNow&quot;);
 	} else if (diff &lt; 60) {
 		when = getAgo(diff, 'second');
 	} else if (diff &lt; 60 * 60) {
@@ -664,12 +658,30 @@ Echo.Control.prototype._initializers.vars = function() {
 Echo.Control.prototype._initializers.config = function() {
 	var control = this;
 	var config = this._manifest(&quot;config&quot;);
-	return new Echo.Configuration(this.config, config,
+	var data = this.config.data;
+
+	// we remove the data from the config object before processing
+	// it via Echo.Configuration abstraction to avoid heavy operations
+	// such as iterating through the object recursively to create a copy
+	// of the object, we use the &quot;data&quot; object as is. As soon as the instance
+	// of the Echo.Configuration is created, we put the &quot;data&quot; back into the
+	// original object which we received via control config (to avoid object
+	// damaging) and into the config class instance
+	delete this.config.data;
+
+	var instance = new Echo.Configuration(this.config, config,
 		function(key, value) {
 			return config.normalizer &amp;&amp; config.normalizer[key]
 				? config.normalizer[key].call(this, value, control)
 				: value;
 		});
+
+	// put the data back into the original object
+	// and the Echo.Configuration class instance
+	this.config.data = data;
+	instance.set(&quot;data&quot;, data);
+
+	return instance;
 };
 
 Echo.Control.prototype._initializers.events = function() {
@@ -691,6 +703,7 @@ Echo.Control.prototype._initializers.events = function() {
 			if (control._prepareEventParams) {
 				params.data = control._prepareEventParams(params.data);
 			}
+			params = prepare(params);
 			// publish events with parents prefixes if appropriate flag provided
 			if (params.inherited) {
 				parent = control.constructor.parent;
@@ -702,16 +715,16 @@ Echo.Control.prototype._initializers.events = function() {
 					return acc;
 				}(parent, []);
 				$.map(names, function(name) {
-					Echo.Events.publish({
-						&quot;topic&quot;: name + &quot;.&quot; + params.topic,
-						&quot;data&quot;: params.data,
-						&quot;global&quot;: false,
-						&quot;context&quot;: control.config.get(&quot;context&quot;)
-					});
+					Echo.Events.publish(
+						$.extend({}, params, {
+							&quot;topic&quot;: name + &quot;.&quot; + params.topic,
+							&quot;global&quot;: false
+						})
+					);
 				});
 			}
 			params.topic = control.name + &quot;.&quot; + params.topic;
-			Echo.Events.publish(prepare(params));
+			Echo.Events.publish(params);
 		},
 		&quot;subscribe&quot;: function(params) {
 			var handlerId = Echo.Events.subscribe(prepare(params));
@@ -1353,10 +1366,6 @@ manifest.labels = {
 </span>	 * @echo_label
 	 */
 	&quot;today&quot;: &quot;Today&quot;,
-<span id='Echo-Control-property-justNow'>	/**
-</span>	 * @echo_label
-	 */
-	&quot;justNow&quot;: &quot;Just now&quot;,
 <span id='Echo-Control-property-yesterday'>	/**
 </span>	 * @echo_label
 	 */

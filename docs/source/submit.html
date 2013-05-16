@@ -323,7 +323,7 @@ submit.templates.main =
 		'&lt;/div&gt;' +
 		'&lt;div class=&quot;{class:controls}&quot;&gt;' +
 			'&lt;div class=&quot;{class:postContainer}&quot;&gt;' +
-				'&lt;button class=&quot;{class:postButton} btn echo-primaryFont&quot;&gt;&lt;/button&gt;' +
+				'&lt;div class=&quot;btn echo-primaryFont {class:postButton}&quot;&gt;&lt;/div&gt;' +
 			'&lt;/div&gt;' +
 			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
 		'&lt;/div&gt;' +
@@ -456,7 +456,8 @@ submit.renderers.postButton = function(element) {
 		self.view.render({&quot;name&quot;: &quot;markers&quot;});
 	});
 	subscribe(&quot;Error&quot;, states.normal, function(params) {
-		if (params.extra &amp;&amp; params.extra.critical) {
+		var request = params.request || {};
+		if (request.state &amp;&amp; request.state.critical) {
 			self._showError(params.postData);
 		}
 	});
@@ -486,13 +487,18 @@ submit.renderers._metaFields = function(element, extra) {
  */
 submit.methods.post = function() {
 	var self = this;
-	var publish = function(phase, data, requestState) {
-		requestState = requestState || {};
-		var params = {
+	var publish = function(phase, data, responseBody, requestState) {
+		var args = {
 			&quot;topic&quot;: &quot;onPost&quot; + phase,
-			&quot;data&quot;: {&quot;postData&quot;: data, &quot;extra&quot;: requestState}
+			&quot;data&quot;: {&quot;postData&quot;: data}
 		};
-		self.events.publish(params);
+		if (requestState || responseBody) {
+			args.data.request = {
+				&quot;state&quot;: requestState,
+				&quot;response&quot;: responseBody
+			};
+		}
+		self.events.publish(args);
 	};
 	var postType = this.config.get(&quot;type&quot;, this._getASURL(&quot;comment&quot;));
 	var content = [].concat(
@@ -509,13 +515,14 @@ submit.methods.post = function() {
 		entry[&quot;target-query&quot;] = this.config.get(&quot;targetQuery&quot;);
 	}
 	var callbacks = {
-		&quot;onData&quot;: function(data) {
+		&quot;onData&quot;: function(response, state) {
 <span id='Echo-StreamServer-Controls-Submit-event-onPostComplete'>			/**
 </span>			 * @event onPostComplete
 			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete
 			 * Triggered when the submit operation is finished.
 			 */
-			publish(&quot;Complete&quot;, entry);
+			publish(&quot;Complete&quot;, entry, response, state);
+
 <span id='Echo-StreamServer-Controls-Submit-event-onDataInvalidate'>			/**
 </span>			 * @event onDataInvalidate
 			 * @echo_event Echo.Control.onDataInvalidate
@@ -528,13 +535,13 @@ submit.methods.post = function() {
 				&quot;data&quot;: {}
 			});
 		},
-		&quot;onError&quot;: function(data, requestState) {
+		&quot;onError&quot;: function(response, state) {
 <span id='Echo-StreamServer-Controls-Submit-event-onPostError'>			/**
 </span>			 * @event onPostError
 			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
 			 * Triggered if submit operation failed.
 			 */
-			publish(&quot;Error&quot;, data, requestState);
+			publish(&quot;Error&quot;, entry, response, state);
 		}
 	};
 <span id='Echo-StreamServer-Controls-Submit-event-onPostInit'>	/**

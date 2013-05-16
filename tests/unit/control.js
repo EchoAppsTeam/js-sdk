@@ -94,7 +94,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"refresh",
 			"destroyCalled",
 			"destroyBroadcasting",
-			"manifestBaseInheritance"
+			"manifestBaseInheritance",
+			"inheritedEvent"
 		], "cases");
 
 	}
@@ -229,11 +230,8 @@ suite.prototype.cases.basicOperations = function(callback) {
 			[0, undefined, "zero as a value"],
 			["some-random-string", undefined, "random string"],
 			[false, undefined, "boolean 'false'"],
-			[now + 60, "Just now", "date/time \"from the future\""],
-			[now - 0, "Just now", "Just now"],
-			[now - 4, "Just now", "less than 5 seconds ago"],
-			[now - 9, "Just now", "less than 10 seconds ago"],
-			[now - 10, "10 Seconds Ago", "10 seconds ago"],
+			[now - 1, "1 Second Ago", "second ago"],
+			[now - 5, "5 Seconds Ago", "seconds ago"],
 			[now - 1 * 60, "1 Minute Ago", "minute ago"],
 			[now - 3 * 60, "3 Minutes Ago", "minutes ago"],
 			[now - 1 * 60 * 60, "1 Hour Ago", "hour ago"],
@@ -319,11 +317,19 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("images/info70.png", false),
 			"Checking if object parameter was overridden and was normalized (checking defaultAvatar key)");
 
+		// checking the way we work with the "data" config field
+		suite.data.config.data.extraKey = "extraKey value";
+		QUnit.equal(suite.data.config.data.extraKey, this.config.get("data.extraKey"),
+			"Checking if the \"data\" key inside the config points to original " +
+			"object which we received in the config (we do not copy the \"data\" object)");
+		delete suite.data.config.data.extraKey;
+
 		this.destroy();
 
 		callback && callback();
 	};
 	suite.initTestControl({
+		"data": suite.data.config.data,
 		"objectParam": {"param1": "param1.override", "param2": undefined},
 		"myTestParam": "test value",
 		"undefinedParam": "undefinedParam replacement",
@@ -745,6 +751,84 @@ suite.prototype.cases.destroyBroadcasting = function(callback) {
 		});
 	};
 	initControls();
+};
+
+suite.prototype.cases.inheritedEvent = function(callback) {
+	var self = this, s = "";
+	var handler = function(topic) { s += this.name; };
+	var initControl = function(manifest, ctx, ready) {
+		var d = $.Deferred();
+		ready = ready || $.noop;
+		Echo.Control.create(
+			$.extend({
+				"templates": {
+					"main": "<div></div>"
+				}
+			}, manifest)
+		);
+		suite.initTestControl({
+			"context": ctx,
+			"ready": function() {
+				ready.apply(this, arguments);
+				d.resolve(this);
+			}
+		}, manifest.name);
+		return d.promise();
+	};
+	var connector = function() {
+		var args = Array.prototype.slice.call(arguments);
+		return function(prev) {
+			args.splice(1, 0, prev.config.get("context"));
+			return initControl.apply(null, args);
+		};
+	};
+	initControl({
+		"name": "Echo.Test.Parent",
+		"events": {
+			"Echo.Test.Child1.onEvent": handler
+		}
+	})
+	.pipe(
+		connector({
+			"name": "Echo.Test.Child1",
+			"inherits": Echo.Utils.getComponent("Echo.Test.Parent")
+		})
+	)
+	.pipe(
+		connector({
+			"name": "Echo.Test.Child1.Child1",
+			"inherits": Echo.Utils.getComponent("Echo.Test.Child1")
+		})
+	)
+	.pipe(function(prev) {
+		return initControl({
+			"name": "Echo.Test.SomeControl",
+			"events": {
+				"Echo.Test.Child1.onEvent": handler
+			}
+		}, prev.config.get("context"), function() {
+			prev.events.publish({
+				"topic": "onEvent",
+				"inherited": true
+			});
+			QUnit.strictEqual(s, "Echo.Test.Child1.Child1Echo.Test.Child1Echo.Test.ParentEcho.Test.SomeControl", "Check that inherited event published with the default params");
+			s = "";
+			prev.events.publish({
+				"topic": "onEvent",
+				"bubble": false,
+				"inherited": true
+			});
+			QUnit.strictEqual(s, "Echo.Test.Child1.Child1Echo.Test.SomeControl", "Check that inherited event published with the appropriate params (bubble: false)");
+			s = "";
+			prev.events.publish({
+				"topic": "onEvent",
+				"propagation": false,
+				"inherited": true
+			});
+			QUnit.strictEqual(s, "Echo.Test.Child1.Child1Echo.Test.Child1Echo.Test.Parent", "Check that inherited event published with the appropriate params (propagation: false)");
+			callback();
+		});
+	});
 };
 
 suite.prototype.cases.manifestBaseInheritance = function(callback) {

@@ -39,6 +39,21 @@ suite.prototype.cases.simpleSearchRequest = function(callback) {
 	}).send();
 };
 
+suite.prototype.cases.skipInitialRequest = function(callback) {
+	var request = Echo.StreamServer.API.request({
+		"endpoint": "search",
+		"data": $.extend({}, this.params),
+		"recurring": true,
+		"skipInitialRequest": true,
+		"onData": function(data, options) {
+			QUnit.strictEqual(options.requestType, "secondary", "Check if the \"onData\" handler wasn't executed in the \"skipInitialRequest\" case");
+			request.abort();
+			callback();
+		}
+	});
+	request.send();
+};
+
 suite.prototype.cases.searchRequestWithError = function(callback) {
 	Echo.StreamServer.API.request({
 		"endpoint": "search",
@@ -148,6 +163,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 	"check": function() {
 		var sequentialTests = [
 			"simpleSearchRequest",
+			"skipInitialRequest",
 			"requestWithAbort",
 			"checkLiveUpdate",
 			"simpleLiveUpdatesRequest"

@@ -45,6 +45,14 @@ plugin.init = function() {
 	this.component.addButtonSpec(&quot;Like&quot;, this._assembleButton(&quot;Unlike&quot;));
 };
 
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-cfg-asyncFacePileRendering'>	/**
+</span>	 * @cfg {Boolean} asyncFacePileRendering
+	 * This parameter is used to enable FacePile control rendering in async mode.
+	 */
+	&quot;asyncFacePileRendering&quot;: false
+};
+
 plugin.labels = {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-property-likeThis'>	/**
 </span>	 * @echo_label
@@ -122,9 +130,16 @@ plugin.renderers.likedBy = function(element) {
 	if (item.user.is(&quot;admin&quot;)) {
 		element.addClass(plugin.cssPrefix + &quot;highlight&quot;);
 	}
-	var facePile = new Echo.StreamServer.Controls.FacePile(config);
-	plugin.set(&quot;facePile&quot;, facePile);
+	if (this.config.get(&quot;asyncFacePileRendering&quot;)) {
+		setTimeout($.proxy(this._initFacePile, this, config), 0);
+	} else {
+		this._initFacePile(config);
+	}
 	return element.show();
+};
+
+plugin.methods._initFacePile = function(config) {
+	this.set(&quot;facePile&quot;, new Echo.StreamServer.Controls.FacePile(config));
 };
 
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
@@ -246,6 +261,7 @@ var $ = jQuery;
  * Adds extra controls to items in the Echo FacePile control.
  *
  * @extends Echo.Plugin
+ * @private
  */
 var plugin = Echo.Plugin.manifest(&quot;Like&quot;, &quot;Echo.StreamServer.Controls.FacePile.Item&quot;);
 

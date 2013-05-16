@@ -60,12 +60,18 @@ pile.init = function() {
 };
 
 pile.config = {
+<span id='Echo-StreamServer-Controls-FacePile-cfg-defaultAvatar'>	/**
+</span>	 * @cfg defaultAvatar
+	 * @hide
+	 */
+
 <span id='Echo-StreamServer-Controls-FacePile-cfg-data'>	/**
 </span>	 * @cfg {Object} data
-	 * Specifies static data for the list. It has the same format as returned
-	 * by the search API endpoint. If the `data` parameter is provided then the
-	 * `query` parameter should be omitted. If `data` and `query` parameters are both
-	 * provided `query` takes precedence over `data`.
+	 * Specifies static data for the face pile. It has the same format as returned
+	 * by the &lt;a href=&quot;http://wiki.aboutecho.com/API-method-search#ResponseFormat&quot; target=&quot;_blank&quot;&gt;
+	 * &quot;search&quot; API endpoint&lt;/a&gt;. If the &quot;data&quot; parameter is provided then the
+	 * &quot;query&quot; parameter should be omitted. If &quot;data&quot; and &quot;query&quot; parameters are both
+	 * provided &quot;query&quot; takes precedence over &quot;data&quot;.
 	 */
 	&quot;data&quot;: undefined,
 <span id='Echo-StreamServer-Controls-FacePile-cfg-initialUsersCount'>	/**

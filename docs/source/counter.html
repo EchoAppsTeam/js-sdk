@@ -47,14 +47,15 @@ if (Echo.Control.isDefined(counter)) return;
 counter.init = function() {
 	if (!this.checkAppKey()) return;
 
-	// data can be defined explicitly
-	// in this case we do not make API requests
-	// TODO: no live updates for now if data is passed as a config value
+	this.request = this._getRequestObject();
 	if ($.isEmptyObject(this.get(&quot;data&quot;))) {
-		this._request();
+		this.request.send();
 	} else {
 		this.render();
 		this.ready();
+		this.request.send({
+			&quot;skipInitialRequest&quot;: true
+		});
 	}
 };
 
@@ -75,6 +76,9 @@ counter.config = {
 <span id='Echo-StreamServer-Controls-Counter-cfg-data'>	/**
 </span>	 * @cfg {Object} data
 	 * Specifies predefined items count which should be displayed by the application.
+	 * Counter control works with the data format used by the &quot;count&quot; API endpoint.
+	 * More information about the data format can be found
+	 * &lt;a href=&quot;http://wiki.aboutecho.com/API-method-count#ResponseFormat&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
 	 *
 	 * 	new Echo.Counter({
 	 * 		...
@@ -106,10 +110,9 @@ counter.config = {
 
 counter.templates.main = &quot;&lt;span&gt;{data:count}&lt;/span&gt;&quot;;
 
-counter.methods._request = function() {
-	var request = this.get(&quot;request&quot;);
-	if (!request) {
-		request = Echo.StreamServer.API.request({
+counter.methods._getRequestObject = function(overrides) {
+	return Echo.StreamServer.API.request(
+		$.extend(true, {
 			&quot;endpoint&quot;: &quot;count&quot;,
 			&quot;data&quot;: {
 				&quot;q&quot;: this.config.get(&quot;query&quot;),
@@ -119,14 +122,12 @@ counter.methods._request = function() {
 			&quot;recurring&quot;: this.config.get(&quot;liveUpdates.enabled&quot;),
 			&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
 			&quot;onError&quot;: $.proxy(this._error, this),
-			&quot;onData&quot;: $.proxy(this._update, this)
-		});
-		this.set(&quot;request&quot;, request);
-	}
-	request.send();
+			&quot;onData&quot;: $.proxy(this._handleResponse, this)
+		}, overrides)
+	);
 };
 
-counter.methods._update = function(data) {
+counter.methods._maybeUpdate = function(data) {
 	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
 		this.events.publish({
 			&quot;topic&quot;: &quot;onUpdate&quot;,
@@ -138,6 +139,12 @@ counter.methods._update = function(data) {
 		});
 		this.set(&quot;data&quot;, data);
 		this.render();
+	}
+};
+
+counter.methods._handleResponse = function(data, options) {
+	this._maybeUpdate(data);
+	if (options.requestType === &quot;initial&quot;) {
 		this.ready();
 	}
 };

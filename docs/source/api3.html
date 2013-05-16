@@ -385,10 +385,10 @@ Echo.API.Request = function(config) {
 
 Echo.API.Request.prototype._isSecureRequest = function() {
 	var parts, secure = this.config.get(&quot;secure&quot;);
+	var re = /https|wss/;
 	if (secure) return secure;
 	parts = utils.parseURL(this.config.get(&quot;apiBaseURL&quot;));
-	if (!parts.scheme) return false;
-	return /https|wss/.test(parts.scheme);
+	return re.test(window.location.protocol) || re.test(parts.scheme);
 };
 
 <span id='Echo-API-Request-method-send'>/**

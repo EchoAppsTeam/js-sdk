@@ -254,12 +254,24 @@ canvas.methods._getOverrides = function(target, spec) {
 
 canvas.methods._error = function(args) {
 	args.message = args.message || this.labels.get(&quot;error_&quot; + args.code);
-	if (Echo.Loader.isDebug()) {
-		Echo.Events.publish({
-			&quot;topic&quot;: &quot;Echo.Canvas.onError&quot;,
-			&quot;data&quot;: args
-		});
-	}
+
+<span id='Echo-Canvas-event-onError'>	/**
+</span>	 * @event onError
+	 * @echo_event Echo.Canvas.onError
+	 * Event which is triggered in case of errors such as invalid configuration,
+	 * problems fetching the data from the server side, etc.
+	 *
+	 * @param {String} topic
+	 * Name of the event produced.
+	 *
+	 * @param {Object} data
+	 * Object which contains debug information regarding the error.
+	 */
+	Echo.Events.publish({
+		&quot;topic&quot;: &quot;Echo.Canvas.onError&quot;,
+		&quot;data&quot;: args
+	});
+
 	Echo.Utils.log($.extend(args, {&quot;type&quot;: &quot;error&quot;, &quot;component&quot;: &quot;Echo.Canvas&quot;}));
 	if (args.renderError) {
 		this.showMessage({

@@ -45,20 +45,56 @@ var stream = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream&quot;
 if (Echo.Control.isDefined(stream)) return;
 
 stream.init = function() {
+	var self = this;
 	if (!this.checkAppKey()) return;
 
 	this._recalcEffectsTimeouts();
+	this.request = this._getRequestObject({
+		&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdates.timeout&quot;),
+		&quot;recurring&quot;: this.config.get(&quot;liveUpdates.enabled&quot;),
+		&quot;onOpen&quot;: function(data, options) {
+			if (options.requestType === &quot;initial&quot;) {
+				self.showError({}, {
+					&quot;retryIn&quot;: 0,
+					&quot;request&quot;: self.request
+				});
+			}
+		},
+		&quot;onError&quot;: function(data, options) {
+			if (typeof options.critical === &quot;undefined&quot; || options.critical || options.requestType === &quot;initial&quot;) {
+				self.showError(data, $.extend(options, {
+					&quot;request&quot;: self.request
+				}));
+			}
+		},
+		&quot;onData&quot;: function(data, options) {
+			if (options.requestType === &quot;initial&quot;) {
+				self._handleInitialResponse(data);
+			} else {
+				self._handleLiveUpdatesResponse(data);
+			}
+		}
+	});
 
 	// define default stream state based on the config parameters
 	var state = this.config.get(&quot;state.layout&quot;) === &quot;full&quot;
 		? &quot;paused&quot;
-		: this.config.get(&quot;liveUpdates.enabled&quot;) ? &quot;live&quot; : &quot;paused&quot;
+		: this.config.get(&quot;liveUpdates.enabled&quot;) ? &quot;live&quot; : &quot;paused&quot;;
 	this.activities.state = state;
 
-	if (this.config.get(&quot;data&quot;)) {
-		this._handleInitialResponse(this.config.get(&quot;data&quot;));
+	var data = this.config.get(&quot;data&quot;);
+	if (data) {
+		this._handleInitialResponse(data);
+		this.request.send({
+			&quot;skipInitialRequest&quot;: true,
+			&quot;data&quot;: {
+				&quot;q&quot;: this.config.get(&quot;query&quot;),
+				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
+				&quot;since&quot;: data.nextSince
+			}
+		});
 	} else {
-		this._requestInitialItems();
+		this.request.send();
 	}
 };
 
@@ -180,12 +216,6 @@ stream.config = {
 	 */
 	&quot;openLinksInNewWindow&quot;: false,
 
-<span id='Echo-StreamServer-Controls-Stream-cfg-providerIcon'>	/**
-</span>	 * @cfg {String} providerIcon
-	 * Specifies the URL to the icon representing data provider.
-	 */
-	&quot;providerIcon&quot;: Echo.Loader.getURL(&quot;images/favicons/comments.png&quot;, false),
-
 <span id='Echo-StreamServer-Controls-Stream-cfg-slideTimeout'>	/**
 </span>	 * @cfg {Number} slideTimeout
 	 * Specifies the duration of the sliding animation (in milliseconds)
@@ -252,7 +282,23 @@ stream.config = {
 </span>	 * @cfg {String} submissionProxyURL URL prefix for requests to
 	 * Submission Proxy subsystem.
 	 */
-	&quot;submissionProxyURL&quot;: &quot;http://apps.echoenabled.com/v2/esp/activity&quot;
+	&quot;submissionProxyURL&quot;: &quot;http://apps.echoenabled.com/v2/esp/activity&quot;,
+
+<span id='Echo-StreamServer-Controls-Stream-cfg-data'>	/**
+</span>	 * @cfg {Object} data
+	 * Specifies predefined items data which should be rendered by the application.
+	 * Stream control works with the data format used by the &quot;search&quot; API endpoint.
+	 * More information about the data format can be found
+	 * &lt;a href=&quot;http://wiki.aboutecho.com/API-method-search#ResponseFormat&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
+	 */
+
+<span id='Echo-StreamServer-Controls-Stream-cfg-asyncItemsRendering'>	/**
+</span>	 * @cfg {Boolean} asyncItemsRendering
+	 * This parameter is used to enable Stream root items rendering in async mode during
+	 * the first Stream control initialization and when extra items are received after
+	 * the &quot;More&quot; button click.
+	 */
+	&quot;asyncItemsRendering&quot;: false
 };
 
 stream.config.normalizer = {
@@ -284,7 +330,10 @@ stream.vars = {
 	&quot;hasInitialData&quot;: false,
 	&quot;items&quot;: {},   // items by unique key hash
 	&quot;threads&quot;: [], // items tree
-	&quot;lastRequest&quot;: undefined
+	&quot;lastRequest&quot;: null,
+	&quot;request&quot;: null,
+	&quot;moreRequest&quot;: null,
+	&quot;itemsRenderingComplete&quot;: false
 };
 
 stream.labels = {
@@ -323,6 +372,10 @@ stream.labels = {
 };
 
 stream.events = {
+	&quot;Echo.StreamServer.Controls.Stream.onItemsRenderingComplete&quot;: function() {
+		this.view.render({&quot;name&quot;: &quot;more&quot;});
+		this._executeNextActivity();
+	},
 	&quot;Echo.StreamServer.Controls.Stream.Item.onAdd&quot;: function(topic, data) {
 		var self = this;
 		var item = this.items[data.item.data.unique];
@@ -497,9 +550,13 @@ stream.renderers.more = function(element) {
 	if (this.isViewComplete || !this.threads.length) {
 		return element.empty().hide();
 	}
+	if (!this.itemsRenderingComplete) {
+		element.hide();
+	} else {
+		element.show();
+	}
 	return element.empty()
 		.append(this.labels.get(&quot;more&quot;))
-		.show()
 		.off(&quot;click&quot;)
 		.one(&quot;click&quot;, function() {
 <span id='Echo-StreamServer-Controls-Stream-event-onMoreButtonPress'>			/**
@@ -583,13 +640,9 @@ stream.methods._requestChildrenItems = function(unique) {
 	var self = this;
 	var item = this.items[unique];
 	var target = item.view.get(&quot;expandChildren&quot;);
-	var request = Echo.StreamServer.API.request({
-		&quot;endpoint&quot;: &quot;search&quot;,
-		&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
-		&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
+	var request = this._getRequestObject({
 		&quot;data&quot;: {
-			&quot;q&quot;: this._constructChildrenSearchQuery(item),
-			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
+			&quot;q&quot;: this._constructChildrenSearchQuery(item)
 		},
 		&quot;onOpen&quot;: function() {
 			self.showError({}, {
@@ -625,54 +678,11 @@ stream.methods._requestChildrenItems = function(unique) {
 	request.send();
 };
 
-stream.methods._requestInitialItems = function() {
-	var self = this;
-	if (!this.request) {
-		this.request = Echo.StreamServer.API.request({
-			&quot;endpoint&quot;: &quot;search&quot;,
-			&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
-			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
-			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdates.timeout&quot;),
-			&quot;recurring&quot;: this.config.get(&quot;liveUpdates.enabled&quot;),
-			&quot;data&quot;: {
-				&quot;q&quot;: this.config.get(&quot;query&quot;),
-				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
-			},
-			&quot;onOpen&quot;: function(data, options) {
-				if (options.requestType === &quot;initial&quot;) {
-					self.showError({}, {
-						&quot;retryIn&quot;: 0,
-						&quot;request&quot;: self.request
-					});
-				}
-			},
-			&quot;onError&quot;: function(data, options) {
-				if (typeof options.critical === &quot;undefined&quot; || options.critical || options.requestType === &quot;initial&quot;) {
-					self.showError(data, $.extend(options, {
-						&quot;request&quot;: self.request
-					}));
-				}
-			},
-			&quot;onData&quot;: function(data, options) {
-				if (options.requestType === &quot;initial&quot;) {
-					self._handleInitialResponse(data);
-				} else {
-					self._handleLiveUpdatesResponse(data);
-				}
-			}
-		});
-	}
-	this.request.send();
-};
-
 stream.methods._requestMoreItems = function(element) {
 	var self = this;
 	this.lastRequest = {&quot;initial&quot;: false};
 	if (!this.moreRequest) {
-		this.moreRequest = Echo.StreamServer.API.request({
-			&quot;endpoint&quot;: &quot;search&quot;,
-			&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
-			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
+		this.moreRequest = this._getRequestObject({
 			&quot;onOpen&quot;: function() {
 				self.showError({}, {
 					&quot;retryIn&quot;: 0,
@@ -921,11 +931,28 @@ stream.methods._getRespectiveAccumulator = function(item, sort) {
 };
 
 stream.methods._appendRootItems = function(items, container) {
+	var self = this;
 	if (!items || !items.length) return;
-	$.map(items, function(item) {
-		container.append(item.config.get(&quot;target&quot;));
-		item.render();
-	});
+	this.itemsRenderingComplete = false;
+	(function renderer(index) {
+		index = index || 0;
+		container.append(items[index].config.get(&quot;target&quot;));
+		items[index].render();
+		if (items.length &gt; ++index) {
+			if (self.config.get(&quot;asyncItemsRendering&quot;)) {
+				setTimeout($.proxy(renderer, self, index), 0);
+			} else {
+				renderer(index);
+			}
+		} else {
+			self.itemsRenderingComplete = true;
+			self.events.publish({
+				&quot;topic&quot;: &quot;onItemsRenderingComplete&quot;,
+				&quot;global&quot;: false,
+				&quot;propagation&quot;: false
+			});
+		}
+	})();
 };
 
 stream.methods._constructChildrenSearchQuery = function(item) {
@@ -1023,6 +1050,19 @@ stream.methods._handleLiveUpdatesResponse = function(data) {
 	});
 };
 
+stream.methods._getRequestObject = function(overrides) {
+	var config = $.extend(true, {
+		&quot;endpoint&quot;: &quot;search&quot;,
+		&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
+		&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
+		&quot;data&quot;: {
+			&quot;q&quot;: this.config.get(&quot;query&quot;),
+			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
+		}
+	}, overrides);
+	return Echo.StreamServer.API.request(config);
+};
+
 stream.methods._recalcEffectsTimeouts = function() {
 	// recalculating timeouts based on amount of items in activities queue
 	var s = this;
@@ -1072,7 +1112,7 @@ stream.methods._executeNextActivity = function() {
 		acts.state = &quot;paused&quot;;
 	}
 
-	if (acts.animations &gt; 0 ||
+	if (acts.animations &gt; 0 || !this.itemsRenderingComplete ||
 			!acts.queue.length ||
 			this.config.get(&quot;liveUpdates.enabled&quot;) &amp;&amp;
 			acts.state === &quot;paused&quot; &amp;&amp;
@@ -1474,7 +1514,11 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		&quot;ready&quot;: callback
 	}, parentConfig.item);
 	delete config.parent.item;
-	return new Echo.StreamServer.Controls.Stream.Item(config);
+	if (this.config.get(&quot;asyncItemsRendering&quot;)) {
+		setTimeout(function() { new Echo.StreamServer.Controls.Stream.Item(config); }, 0);
+	} else {
+		new Echo.StreamServer.Controls.Stream.Item(config);
+	}
 };
 
 stream.methods._updateItem = function(entry) {
@@ -1741,6 +1785,13 @@ item.config = {
 </span>	 * @cfg {Boolean} [reTag=true]
 	 * Allows to show/hide the &quot;reTag&quot; section of an item.
 	 */
+
+<span id='Echo-StreamServer-Controls-Stream-Item-cfg-providerIcon'>	/**
+</span>	 * @cfg {String} providerIcon
+	 * Specifies the URL to the icon representing data provider.
+	 */
+	&quot;providerIcon&quot;: Echo.Loader.getURL(&quot;images/favicons/comments.png&quot;, false),
+
 	&quot;reTag&quot;: true,
 <span id='Echo-StreamServer-Controls-Stream-Item-cfg-viaLabel'>	/**
 </span>	 * @cfg {Object} [viaLabel]
@@ -2159,8 +2210,10 @@ item.renderers.sourceIcon = function(element) {
 	element.hide()
 		.attr(&quot;src&quot;, Echo.Utils.htmlize(url))
 		.one(&quot;error&quot;, function() { element.hide(); })
-		.wrap(Echo.Utils.hyperlink(data, config));
-	return element.show();
+		.one(&quot;load&quot;, function() {
+			element.show().wrap(Echo.Utils.hyperlink(data, config));
+		});
+	return element;
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-method-via'>/**
