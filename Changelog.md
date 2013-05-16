@@ -1,5 +1,25 @@
 # Echo JS SDK CHANGELOG:
 
+## v3.0.8 - May 16, 2013
+
+* The "ready" callback was not executed in case an incorrect appkey was specified during the **Echo.UserSession initialization**. As a result, Control or App initialization was stopped on the user creation step. Now the Echo.UserSession initialized with an invalid appkey is considered as an anonymous user (the "ready" callback is being executed).
+
+* Internal logic of the **Echo.Control class** was updated to prevent the "data" configuration parameter from being pointlessly processed by the Echo.Configuration class during Control or App initialization. This improves the **performance of Controls/Apps** in case the "data" parameter is passed in the config. This update also improves the Stream control performance due to the fact that the "data" parameter is used to initialize the Item instances (Stream passes the data to the Item class via the "data" config parameter).
+
+* We added the **"asyncItemsRendering" config option for the Stream control** to trigger the asynchronous items rendering. The option is disabled by default, so the Stream control acts exactly the same. This option is highly recommended for the Streams with the amount of items (roots + children) over 50 on a single Stream page or in case the items contain the UGC content such as images, videos, etc. More information about this option is available in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-asyncItemsRendering).
+
+* The **"Echo.Canvas.onError" event** was added into the Echo.Canvas class to provide the ability to handle errors outside of the class if needed. More information about the error can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-event-onError).
+
+* The **"Post" button** HTML element was changed from \<button> to \<div> to avoid problems when the **Submit control** is installed into the target inside the \<form> element (for example, the button click triggers the \<form> submission in Firefox browser).
+
+* **Echo.API.Request** class logic was updated to use secure (HTTPS) protocol for Echo API endpoint requests in case the "secure" config parameter is set to false or undefined. More information about the "secure" option can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.API.Request-cfg-secure).
+
+* **Stream and Counter controls** logic which handles the pre-defined data case (passed via the "data" config parameter) was updated to execute live update requests as we normally do for the regular case when the initial data is being requested from the server side.
+
+* The **"getRelativeTime" function of the Echo.Control class** was updated to display the "Just now" text instead of "N seconds" in case the time passed into the function differs from the current time by less than 10 seconds. More info about this function can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-method-getRelativeTime).
+
+* The **"Echo.StreamServer.Controls.Submit.onPostComplete" and "Echo.StreamServer.Controls.Submit.onPostError" event contracts were extended** to include the server side API response as a part of the callback handler arguments. More information about the events can be found in our Documentation Center using the following links: [onPostComplete](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-event-onPostComplete) event, [onPostError](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-event-onPostError) event.
+
 ## v3.0.7 - Apr 11, 2013
 
 * Sometimes when the item was updated, the **item timestamp field was missing** in the UI. The problem was fixed and as a part of the fix we removed the “age” field (which was no longer used) from the Echo.StreamServer.Controls.Stream.Item class instance. Since the field existed for internal usage only, it should not affect the code written on top of the SDK. Anyway if you used the “age” field references in your code, make sure that the corresponding code is rewritten accordingly.
