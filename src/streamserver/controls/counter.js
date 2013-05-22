@@ -134,6 +134,7 @@ counter.methods._getRequestObject = function(overrides) {
 			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
 			"recurring": this.config.get("liveUpdates.enabled"),
 			"secure": this.config.get("useSecureAPI"),
+			"apiBaseURL": this.config.get("apiBaseURL"),
 			"onError": $.proxy(this._error, this),
 			"onData": $.proxy(this._handleResponse, this)
 		}, overrides)
