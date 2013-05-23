@@ -32,7 +32,8 @@ if (Echo.GUI.Tabs) return;
  * 		}],
  * 		"extraClass": "extra-class",
  * 		"select": function() {},
- * 		"show": function() {}
+ * 		"show": function() {},
+ * 		"shown": function() {}
  * 	});
  *
  * 	// add a new tab
@@ -108,7 +109,11 @@ if (Echo.GUI.Tabs) return;
  * Id of selected tab.
  *
  * @cfg {Function} [show]
- * Function which will be called when tab is shown.
+ * Function which will be called when tab is show,
+ * but before the new tab has been shown.
+ *
+ * @cfg {Function} [shown]
+ * Function which will be called after a tab has been shown.
  *
  * @cfg {HTMLElement} show.tab
  * Container which is the tab itself.
@@ -131,7 +136,8 @@ Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 		"noRandomId": false,
 		"classPrefix": "echo-tabs-",
 		"select": function() {},
-		"show": function() {}
+		"show": function() {},
+		"shown": function() {}
 	});
 });
 
@@ -257,6 +263,14 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	var a = $("a", tab);
 	a.on("show", function() {
 		self.config.get("show").call(self,
+			$(this),
+			self._getPanel(tabConfig.id),
+			tabConfig.id,
+			self._getTabIndex(tabConfig.id)
+		);
+	});
+	a.on("shown", function() {
+		self.config.get("shown").call(self,
 			$(this),
 			self._getPanel(tabConfig.id),
 			tabConfig.id,
