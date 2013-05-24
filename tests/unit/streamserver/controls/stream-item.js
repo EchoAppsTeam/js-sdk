@@ -362,6 +362,7 @@ suite.prototype.tests.bodyRendererTest = {
 	"check": function() {
 		var contentTransform = '1 :) <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty';
 		var contentLimits = '1234567890 <span>qwertyuiop</span> https://encrypted.google.com/#sclient=psy&hl=en&source=hp&q=something&pbx=1&oq=something&aq=f&aqi=g5&aql=1&gs_sm=e&gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&bav=on.2,or.r_gc.r_pw.&fp=d31248080af7dd23&biw=1440&bih=788 #12345678901234567890';
+		var contentMultiline = '1<br>\n2\n3\n4\n5<br>6<br>7<br>8\n<br>9<br>\n0';
 		this._runBodyCases([{
 			"description": "source: Twitter, aggressiveSanitization: true",
 			"config": {
@@ -600,6 +601,42 @@ suite.prototype.tests.bodyRendererTest = {
 				}
 			},
 			"expect": '<a href="http://domain.com/CAPITAL_LETTERS_in_path">http://domain.com/CA...</a>'
+		}, {
+			"description": "multiline content with line limits: counting by \"\\n\" symbol",
+			"config": {
+				"limits": {
+					"maxBodyLines": 5
+				},
+				"contentTransformations": {
+					"text": [],
+					"html": [],
+					"xhtml": []
+				}
+			},
+			"data": {
+				"object": {
+					"content": contentMultiline
+				}
+			},
+			"expect": '1<br>\n2\n3\n4\n5<br>6<br>7<br>8'
+		}, {
+			"description": "multiline content with line limits: counting by <br>",
+			"config": {
+				"limits": {
+					"maxBodyLines": 5
+				},
+				"contentTransformations": {
+					"text": ["newlines"],
+					"html": ["newlines"],
+					"xhtml": []
+				}
+			},
+			"data": {
+				"object": {
+					"content": contentMultiline
+				}
+			},
+			"expect": '1<br>&nbsp;<br>2&nbsp;<br>3&nbsp;<br>4&nbsp;'
 		}]);
 	}
 };

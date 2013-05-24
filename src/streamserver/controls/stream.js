@@ -2947,7 +2947,7 @@ item.methods._sortButtons = function() {
 		if ((extra.limits.maxBodyCharacters || extra.limits.maxBodyLines) && !this.textExpanded) {
 			if (extra.limits.maxBodyLines) {
 				var splitter = extra.contentTransformations.newlines ? "<br>" : "\n";
-				var chunks = result.split(splitter);
+				var chunks = text.split(splitter);
 				if (chunks.length > extra.limits.maxBodyLines) {
 					text = chunks.splice(0, extra.limits.maxBodyLines).join(splitter);
 					truncated = true;
