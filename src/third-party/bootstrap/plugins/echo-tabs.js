@@ -109,11 +109,10 @@ if (Echo.GUI.Tabs) return;
  * Id of selected tab.
  *
  * @cfg {Function} [show]
- * Function which will be called when tab is show,
- * but before the new tab has been shown.
+ * Function to be called before the active tab panel is displayed.
  *
  * @cfg {Function} [shown]
- * Function which will be called after a tab has been shown.
+ * Function to be called as soon as the active tab is displayed.
  *
  * @cfg {HTMLElement} show.tab
  * Container which is the tab itself.

@@ -41,7 +41,7 @@ var tabsParams = {
 	},
 	"shown": function() {
 		eventsCount.inc("shown");
-		QUnit.ok(eventsCount.get("show") === eventsCount.get("shown"), "Check what 'shown' event was fired after 'show'");
+		QUnit.ok(eventsCount.get("show") === eventsCount.get("shown"), "Check that 'shown' event was fired after 'show'");
 	}
 };
 
@@ -133,9 +133,9 @@ suite.prototype.tests.commonWorkflow = {
 		QUnit.ok(tab2.parent().hasClass("active"), "Check show() method (tab)");
 		QUnit.ok(panel2.hasClass("active"), "Check show() method (panel)");
 
-		QUnit.ok(showEventsCount === eventsCount.get("show") - 1, "Check what 'show' handler was called");
+		QUnit.ok(showEventsCount === eventsCount.get("show") - 1, "Check that 'show' handler was called");
 
-		QUnit.ok(shownEventsCount === eventsCount.get("shown") - 1, "Check what 'shown' handler was called");
+		QUnit.ok(shownEventsCount === eventsCount.get("shown") - 1, "Check that 'shown' handler was called");
 
 		echoTabs.update(tabsParams.entries[1].id, {"label": "New label", "extraClass": "echo-hide", "content": "New content"});
 		QUnit.ok(
