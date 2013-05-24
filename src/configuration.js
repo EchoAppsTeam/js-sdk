@@ -49,11 +49,14 @@ if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
  * @return {Object}
  * Reference to the given Echo.Configuration class instance.
  */
-Echo.Configuration = function(master, slave, normalizer) {
+
+// IMPORTANT: "keepRefs" parameter remains private for now. Get rid of
+//            this parameter after more complex optimization within F:1336
+Echo.Configuration = function(master, slave, normalizer, keepRefs) {
 	this.data = {};
 	this.cache = {};
 	this.normalize = normalizer || function(key, value) { return value; };
-	$.each(this._merge(master, slave), $.proxy(this.set, this));
+	$.each(this._merge(master, slave, keepRefs), $.proxy(this.set, this));
 };
 
 /**
@@ -162,16 +165,20 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	});
 };
 
-Echo.Configuration.prototype._merge = function(master, slave) {
+Echo.Configuration.prototype._merge = function(master, slave, keepRefs) {
 	var self = this, target, src, options;
-
-	for (var i = 0; i < arguments.length; i++) {
-		options = arguments[i];
+	var inputs = [master, slave];
+	for (var i = 0; i < inputs.length; i++) {
+		options = inputs[i];
 		if ($.isPlainObject(options)) {
 			target = target || {};
 			$.each(options, function(name, copy) {
 				src = target[name];
-				if ($.isPlainObject(src)) {
+				if (keepRefs && keepRefs[name]) {
+					if (!target.hasOwnProperty(name)) {
+						target[name] = copy;
+					}
+				} else if ($.isPlainObject(src)) {
 					target[name] = self._merge(src, copy);
 				} else if (!target.hasOwnProperty(name)) {
 					target[name] = self._merge(copy);

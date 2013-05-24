@@ -349,6 +349,7 @@ stream.vars = {
 		"lastState": "", // live0 | pausedN
 		"animations": 0
 	},
+	"itemParentConfig": undefined,
 	"hasInitialData": false,
 	"items": {},   // items by unique key hash
 	"threads": [], // items tree
@@ -1518,25 +1519,29 @@ stream.methods._isItemInList = function(item, items) {
 };
 
 stream.methods._initItem = function(entry, isLive, callback) {
-	var parentConfig = this.config.getAsHash();
-	var config = $.extend(true, {}, {
+	// there is no need to create a clone of the parent config every time,
+	// we can do it only once and pass it into all Item constructor calls
+	if (!this.itemParentConfig) {
+		this.itemParentConfig = this.config.getAsHash();
+	}
+	var config = $.extend({
 		"target": $("<div>"),
 		"appkey": this.config.get("appkey"),
-		"parent": parentConfig,
 		"plugins": this.config.get("plugins"),
 		"context": this.config.get("context"),
-		"data": this._normalizeEntry(entry),
 		"useSecureAPI": this.config.get("useSecureAPI"),
 		"user": this.user,
 		"live": isLive,
 		"ready": callback
-	}, parentConfig.item);
-	delete config.parent.item;
-	if (this.config.get("asyncItemsRendering")) {
-		setTimeout(function() { new Echo.StreamServer.Controls.Stream.Item(config); }, 0);
-	} else {
-		new Echo.StreamServer.Controls.Stream.Item(config);
-	}
+	}, this.itemParentConfig.item);
+
+	// assign parent config and data outside
+	// of the $.extend call for performance reasons
+	config.parent = this.itemParentConfig;
+	config.data = this._normalizeEntry(entry);
+
+	var init = function() { new Echo.StreamServer.Controls.Stream.Item(config); };
+	this.config.get("asyncItemsRendering") ? setTimeout(init, 0) : init();
 };
 
 stream.methods._updateItem = function(entry) {
