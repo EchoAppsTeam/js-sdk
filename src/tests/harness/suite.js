@@ -245,12 +245,13 @@ Echo.Tests.Suite.prototype.jqueryObjectsEqual = function(source, target, message
 		result.events = $._data(elem[0], "events");
 		result.data = $.extend({}, elem.data());
 		delete result.data[$.expando];
-		children = elem.children();
+		children = elem.contents();
 		if (children.length) {
-			result.children = elem.children().map(function( ind ) {
+			result.children = children.map(function( ind ) {
 				return extract($(this));
 			}).get();
 		} else {
+			result.tagName = elem.prop("tagName");
 			result.text = elem.text();
 		}
 		return result;
