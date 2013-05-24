@@ -232,11 +232,15 @@ Echo.Tests.Suite.prototype.jqueryObjectsEqual = function(source, target, message
 		var children, result = {};
 		$.map(properties, function(attr) {
 			var value = elem.prop(attr);
-			result[attr] = typeof value !== "undefined" ? value : "";
+			if (typeof value !== "undefined") {
+				result[attr] = value;
+			}
 		});
 		$.map(attributes, function(attr) {
 			var value = elem.attr(attr);
-			result[attr] = typeof value !== "undefined" ? value : "";
+			if (typeof value !== "undefined") {
+				result[attr] = value;
+			}
 		});
 		result.events = $._data(elem[0], "events");
 		result.data = $.extend({}, elem.data());
