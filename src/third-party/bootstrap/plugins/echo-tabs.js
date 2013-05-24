@@ -261,21 +261,15 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	var tab = $('<li' + (classes ? ' class="' + classes + '"' : '') +'><a ' + attrs + '>' + tabConfig.label  + '</a></li>');
 
 	var a = $("a", tab);
-	a.on("show", function() {
-		self.config.get("show").call(self,
-			$(this),
-			self._getPanel(tabConfig.id),
-			tabConfig.id,
-			self._getTabIndex(tabConfig.id)
-		);
-	});
-	a.on("shown", function() {
-		self.config.get("shown").call(self,
-			$(this),
-			self._getPanel(tabConfig.id),
-			tabConfig.id,
-			self._getTabIndex(tabConfig.id)
-		);
+	$.map(["show", "shown"], function(event) {
+		a.on(event, function() {
+			self.config.get(event).call(self,
+				$(this),
+				self._getPanel(tabConfig.id),
+				tabConfig.id,
+				self._getTabIndex(tabConfig.id)
+			);
+		});
 	});
 
 	$.each(tabConfig.data || {}, function(k, v) {
@@ -357,8 +351,9 @@ Echo.GUI.Tabs.prototype.show = function(id) {
 };
 
 Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
-	for (var i = 0; i < this.config.get("entries").length; i++) {
-		if (this.config.get("entries")[i].id === id) {
+	var entries = this.config.get("entries");
+	for (var i = 0; i < entries.length; i++) {
+		if (entries[i].id === id) {
 			return i;
 		}
 	}
