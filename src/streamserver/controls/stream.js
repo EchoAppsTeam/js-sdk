@@ -1741,6 +1741,7 @@ item.config = {
 	 */
 	"aggressiveSanitization": false,
 	"buttonsOrder": undefined,
+
 	/**
 	 * @cfg {Object} contentTransformations
 	 * Specifies the allowed item's content transformations for each content type.
@@ -1757,6 +1758,7 @@ item.config = {
 		"html": ["smileys", "hashtags", "urls", "newlines"],
 		"xhtml": ["smileys", "hashtags", "urls"]
 	},
+
 	/**
 	 * @cfg {String} infoMessages
 	 * Customizes the look and feel of info messages,
@@ -1765,6 +1767,7 @@ item.config = {
 	"infoMessages": {
 		"enabled": false
 	},
+
 	/**
 	 * @cfg {Object} limits
 	 * Defines the limits for different metrics.
@@ -1815,6 +1818,7 @@ item.config = {
 		"maxReTitleLength": 143,
 		"maxTagLength": 16
 	},
+
 	/**
 	 * @cfg {Boolean} [optimizedContext=true]
 	 * Allows to configure the context mode of the "reTag" section of an item.
@@ -1823,10 +1827,6 @@ item.config = {
 	 * Otherwise all hyperlinks in the item body will be resolved and converted into reTags.
 	 */
 	"optimizedContext": true,
-	/**
-	 * @cfg {Boolean} [reTag=true]
-	 * Allows to show/hide the "reTag" section of an item.
-	 */
 
 	/**
 	 * @cfg {String} providerIcon
@@ -1834,7 +1834,12 @@ item.config = {
 	 */
 	"providerIcon": Echo.Loader.getURL("images/favicons/comments.png", false),
 
+	/**
+	 * @cfg {Boolean} [reTag=true]
+	 * Allows to show/hide the "reTag" section of an item.
+	 */
 	"reTag": true,
+
 	/**
 	 * @cfg {Object} [viaLabel]
 	 * Allows to show/hide parts or the whole "via" tag. Contains a hash with two keys
