@@ -56,7 +56,7 @@ Echo.Configuration = function(master, slave, normalizer, keepRefsFor) {
 	this.data = {};
 	this.cache = {};
 	this.normalize = normalizer || function(key, value) { return value; };
-	$.each(this._merge(master, slave, keepRefsFor), $.proxy(this.set, this));
+	$.each(this._merge(master, slave, keepRefsFor), $.proxy(this._set, this));
 };
 
 /**
@@ -107,7 +107,7 @@ Echo.Configuration.prototype.set = function(key, value) {
 	if (typeof value === "object") {
 		this._clearCacheByPrefix(key);
 	}
-	Echo.Utils.set(this.data, key, this.normalize(key.split(".").pop(), value));
+	this._set(key, value);
 };
 
 /**
@@ -152,6 +152,10 @@ Echo.Configuration.prototype.extend = function(extra) {
  */
 Echo.Configuration.prototype.getAsHash = function() {
 	return $.extend({}, this.data);
+};
+
+Echo.Configuration.prototype._set = function(key, value) {
+	Echo.Utils.set(this.data, key, this.normalize(key.split(".").pop(), value));
 };
 
 Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
