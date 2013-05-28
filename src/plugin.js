@@ -544,7 +544,9 @@ Echo.Plugin.Config.prototype.assemble = function(data) {
 			acc[key] = config.get(key);
 		}
 	});
-	return (new Echo.Configuration(data, this.plugin.config.get())).getAsHash();
+	var keepRefsFor = {"data": true, "parent": true};
+	var instance = new Echo.Configuration(data, this.plugin.config.get(), undefined, keepRefsFor);
+	return instance.getAsHash();
 };
 
 Echo.Plugin.Config.prototype._normalize = function(key) {

@@ -645,30 +645,12 @@ Echo.Control.prototype._initializers.vars = function() {
 Echo.Control.prototype._initializers.config = function() {
 	var control = this;
 	var config = this._manifest("config");
-	var data = this.config.data;
-
-	// we remove the data from the config object before processing
-	// it via Echo.Configuration abstraction to avoid heavy operations
-	// such as iterating through the object recursively to create a copy
-	// of the object, we use the "data" object as is. As soon as the instance
-	// of the Echo.Configuration is created, we put the "data" back into the
-	// original object which we received via control config (to avoid object
-	// damaging) and into the config class instance
-	delete this.config.data;
-
-	var instance = new Echo.Configuration(this.config, config,
-		function(key, value) {
-			return config.normalizer && config.normalizer[key]
-				? config.normalizer[key].call(this, value, control)
-				: value;
-		});
-
-	// put the data back into the original object
-	// and the Echo.Configuration class instance
-	this.config.data = data;
-	instance.set("data", data);
-
-	return instance;
+	var normalizer = function(key, value) {
+		return config.normalizer && config.normalizer[key]
+			? config.normalizer[key].call(this, value, control)
+			: value;
+	};
+	return new Echo.Configuration(this.config, config, normalizer, {"data": true, "parent": true});
 };
 
 Echo.Control.prototype._initializers.events = function() {
