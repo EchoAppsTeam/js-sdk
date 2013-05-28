@@ -50,13 +50,13 @@ if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
  * Reference to the given Echo.Configuration class instance.
  */
 
-// IMPORTANT: "keepRefs" parameter remains private for now. Get rid of
+// IMPORTANT: "keepRefsFor" parameter remains private for now. Get rid of
 //            this parameter after more complex optimization within F:1336
-Echo.Configuration = function(master, slave, normalizer, keepRefs) {
+Echo.Configuration = function(master, slave, normalizer, keepRefsFor) {
 	this.data = {};
 	this.cache = {};
 	this.normalize = normalizer || function(key, value) { return value; };
-	$.each(this._merge(master, slave, keepRefs), $.proxy(this.set, this));
+	$.each(this._merge(master, slave, keepRefsFor), $.proxy(this.set, this));
 };
 
 /**
@@ -165,7 +165,7 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	});
 };
 
-Echo.Configuration.prototype._merge = function(master, slave, keepRefs) {
+Echo.Configuration.prototype._merge = function(master, slave, keepRefsFor) {
 	var self = this, target, src, options;
 	var inputs = [master, slave];
 	for (var i = 0; i < inputs.length; i++) {
@@ -174,7 +174,7 @@ Echo.Configuration.prototype._merge = function(master, slave, keepRefs) {
 			target = target || {};
 			$.each(options, function(name, copy) {
 				src = target[name];
-				if (keepRefs && keepRefs[name]) {
+				if (keepRefsFor && keepRefsFor[name]) {
 					if (!target.hasOwnProperty(name)) {
 						target[name] = copy;
 					}
