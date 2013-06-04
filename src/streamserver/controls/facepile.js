@@ -10,13 +10,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.FacePile({
  * 		"target": document.getElementById("echo-facepile"),
- * 		"appkey": "test.aboutecho.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"query": "childrenof:http://example.com/* itemsPerPage:2 children:0",
  * 		"suffixText": " commented on aboutecho.com",
  * 		"item": {"avatar": true, "text": true}
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * FacePile constructor initializing Echo.StreamServer.Controls.FacePile class
@@ -27,6 +33,27 @@ var $ = jQuery;
 var pile = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile");
 
 if (Echo.Control.isDefined(pile)) return;
+
+/** @hide @cfg defaultAvatar */
+/** @hide @cfg submissionProxyURL */
+/** @hide @method placeImage */
+/** @hide @method getRelativeTime */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
 
 pile.init = function() {
 	if (!this.checkAppKey()) return;
@@ -44,11 +71,6 @@ pile.init = function() {
 
 pile.config = {
 	/**
-	 * @cfg defaultAvatar
-	 * @hide
-	 */
-
-	/**
 	 * @cfg {Object} data
 	 * Specifies static data for the face pile. It has the same format as returned
 	 * by the <a href="http://wiki.aboutecho.com/API-method-search#ResponseFormat" target="_blank">
@@ -57,6 +79,7 @@ pile.config = {
 	 * provided "query" takes precedence over "data".
 	 */
 	"data": undefined,
+
 	/**
 	 * @cfg {String} initialUsersCount
 	 * The number of users which will be shown when the FacePile is displayed
@@ -65,6 +88,7 @@ pile.config = {
 	 * using `data`.
 	 */
 	"initialUsersCount": undefined,
+
 	/**
 	 * @cfg {String} totalUsersCount
 	 * The total number of users for the FacePile. If it's not defined it defaults to
@@ -72,12 +96,28 @@ pile.config = {
 	 * only for the list created using `data`.
 	 */
 	"totalUsersCount": undefined,
+
+	/**
+	 * @cfg {String} query
+	 * Specifies the search query to generate the necessary data set.
+	 * It must be constructed according to the
+	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
+	 * method specification.
+	 *
+	 * 	new Echo.StreamServer.Controls.FacePile({
+	 * 		"target": document.getElementById("echo-facepile"),
+	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
+	 * 		"query" : "childrenof:http://example.com/test/*"
+	 * 	});
+	 */
 	"query": "",
+
 	/**
 	 * @cfg {String} suffixText
 	 * Specifies the text being appended to the end of Face Pile user's list.
 	 */
 	"suffixText": "",
+
 	/**
 	 * @cfg {Object} item
 	 * Customizes the FacePile item
@@ -92,6 +132,7 @@ pile.config = {
 		"avatar": true,
 		"text": true
 	},
+
 	/**
 	 * @cfg {String} infoMessages
 	 * Customizes the look and feel of info messages, for example "loading" and "error".
@@ -456,6 +497,9 @@ var $ = jQuery;
  *
  * @extends Echo.Control
  *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
+ *
  * @constructor
  * FacePile.Item constructor initializing Echo.StreamServer.Controls.FacePile.Item class
  *
@@ -465,6 +509,44 @@ var $ = jQuery;
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile.Item");
 
 if (Echo.Control.isDefined(item)) return;
+
+/** @hide @cfg appkey */
+/** @hide @cfg plugins */
+/** @hide @cfg submissionProxyURL */
+/** @hide @method checkAppKey */
+/** @hide @method placeImage */
+/** @hide @method dependent */
+/** @hide @method getRelativeTime */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
+/** @hide @echo_label loading */
+/** @hide @echo_label retrying */
+/** @hide @echo_label error_busy */
+/** @hide @echo_label error_timeout */
+/** @hide @echo_label error_waiting */
+/** @hide @echo_label error_view_limit */
+/** @hide @echo_label error_view_update_capacity_exceeded */
+/** @hide @echo_label error_result_too_large */
+/** @hide @echo_label error_wrong_query */
+/** @hide @echo_label error_incorrect_appkey */
+/** @hide @echo_label error_internal_error */
+/** @hide @echo_label error_quota_exceeded */
+/** @hide @echo_label error_incorrect_user_id */
+/** @hide @echo_label error_unknown */
 
 item.config = {
 	/**

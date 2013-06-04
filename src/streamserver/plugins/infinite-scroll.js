@@ -10,13 +10,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "InfiniteScroll"
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest("InfiniteScroll", "Echo.StreamServer.Controls.Stream");
 

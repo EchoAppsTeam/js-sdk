@@ -11,6 +11,48 @@ if (Echo.Utils.isComponentDefined("Echo.View")) return;
  * In addition to the rendering facilities, this class maintains the list of elements within
  * the given view ("view elements collection") and provides the interface to access/update them.
  *
+ * Example:
+ *		var view = new Echo.View({
+ *			"cssPrefix": "some-prefix-",
+ *			"renderers": {
+ *				"header": function(element) {
+ *					// will return element as is
+ *					return element;
+ *				}
+ *			},
+ *			"template": '<div class="some-prefix-container">' +
+ *				'<div class="some-prefix-header">{data:header}</div>' +
+ *				'<div class="some-prefix-content">{data:content}</div>' +
+ *			'</div>',
+ *			"data": {
+ *				"header": "Header text",
+ *				"content": "Content text"
+ *			}
+ *		});
+ *
+ *		view.render(); // will render the corresponding template
+ *		view.get("content"); // will return a jquery object with the className "some-prefix-content"
+ *		view.get("header").text(); // will return "Header text"
+ *		view.set("footer", $('<div class="some-prefix-footer">'));
+ *
+ *		// will place the "footer" element after "content" element in the view
+ *		view.get("footer").insertAfter(view.get("content"));
+ *
+ *		var view2 = view.fork({
+ *			"renderers": {
+ *				"content": function(element) {
+ *					return element.addClass("some-external-className");
+ *				}
+ *			}
+ *		});
+ *
+ *		view2.render();
+ *		view2 === view; // will return false
+ *		view2.get("content").attr("class"); // will return "some-prefix-content some-external-className"
+ *		view.get("content").attr("class"); // will return "some-prefix-content"
+ *
+ * @package environment.pack.js
+ *
  * @constructor
  * Class constructor encapsulating templates rendering and renderers application mechanics.
  *

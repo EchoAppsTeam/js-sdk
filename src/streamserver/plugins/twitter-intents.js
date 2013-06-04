@@ -4,50 +4,13 @@
 var $ = jQuery;
 
 /**
- * @deprecated
- * Twitter Intents Plugin is renamed to {@link Echo.StreamServer.Controls.Stream.Item.Plugins.TweetDisplay Tweet Display Plugin}.
- * Twitter Intents Plugin will be removed in the next version.
- *
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TwitterIntents
- * Adds the Twitter intents controls into the item UI and updates the
- * item UI to look and behave like a Twitter item. The item UI update includes:
- *
- * + by clicking on the avatar or the user name - the user account on Twitter
- * will be opened;
- * + the item timestamp transforms from a static field to a permanent item
- * link on Twitter.
- *
- * More information about Twitter Intents is available on the page
- * <https://dev.twitter.com/docs/intents>.
- *
- * #### How to use
- * To enable this plugin should be taken add the corresponding section into the
- * Echo Stream configuration parameter plugins:
- *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
- * 		"plugins": [{
- * 			"name": "TwitterIntents"
- * 		}]
- * 	});
- *
- * <b>Note</b>: plugin must be at the very beginning of the plugin list to
- * work correctly. If {@link Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization PinboardVisualization}
- * plugin is also enabled in the Stream then this plugin must be placed right after it.
- *
- * <b>Note</b>: if TwitterIntents plugin is added to the stream then Reply and
- * Like plugins will be disabled for tweet items. Moreover Reply control is
- * renamed with Comment on non-tweet items to avoid possible confusion.
- *
- * #### Configuration
- * The TwitterIntents plugin configuration options include the following:
- *
- * + enabled <br/>
- *   This parameter specifies if plugin is enabled during application initialization.
- *   See more [here](http://wiki.aboutecho.com/Client-Extensions-Framework#Enabling/disablingpluginsinrealtime).
  *
  * @extends Echo.Plugin
+ *
+ * @deprecated
+ * This plugin is renamed to {@link Echo.StreamServer.Controls.Stream.Item.Plugins.TweetDisplay Tweet Display Plugin}
+ * and will be removed in one of the upcoming versions.
  */
 var plugin = Echo.Plugin.manifest("TwitterIntents", "Echo.StreamServer.Controls.Stream.Item");
 

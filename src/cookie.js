@@ -13,6 +13,18 @@ var _decode = function(s) {
 /**
  * @class Echo.Cookie
  * Library to work with cookies
+ *
+ * Example:
+ *
+ *     Echo.Cookie.set("key", "value");
+ *     Echo.Cookie.get("key"); // returns "value"
+ *
+ *     Echo.Cookie.remove("key");
+ *     Echo.Cookie.get("key"); // returns "undefined"
+ *
+ *     Echo.Cookie.set("key2", "value2", {"expires": 7}); // this cookie expires in 7 days
+ *
+ * @package loader.js
  */
 Echo.Cookie = {};
 

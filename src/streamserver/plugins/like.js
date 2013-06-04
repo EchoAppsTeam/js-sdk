@@ -10,13 +10,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "Like"
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Item");
 
@@ -153,12 +159,10 @@ plugin.methods._sendActivity = function(name, item, actor) {
 		"target-query": item.config.get("parent.query")
 	}, function(response) {
 		/**
-		 * @event onLikeComplete
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeComplete
 		 * Triggered when the Like operation is finished.
 		 */
 		/**
-		 * @event onUnlikeComplete
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete
 		 * Triggered when the reverse Like operation is finished.
 		 */
@@ -170,12 +174,10 @@ plugin.methods._sendActivity = function(name, item, actor) {
 		plugin.requestDataRefresh();
 	}, function(response) {
 		/**
-		 * @event onLikeError
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeError
 		 * Triggered when the Like operation failed.
 		 */
 		/**
-		 * @event onUnlikeError
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeError
 		 * Triggered when the reverse Like operation failed.
 		 */
@@ -285,7 +287,6 @@ plugin.renderers.adminUnlike = function(element) {
 	return element.one("click", function() {
 		item.view.get("container").css("opacity", 0.3);
 		/**
-		 * @event onUnlike
 		 * @echo_event Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike
 		 * Triggered when the item is "unliked" by admin on behalf of a user.
 		 */

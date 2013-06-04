@@ -10,13 +10,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "Moderation"
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest("Moderation", "Echo.StreamServer.Controls.Stream.Item");
 
@@ -46,7 +52,7 @@ plugin.config = {
 	 *
 	 *     new Echo.StreamServer.Controls.Stream({
 	 *         "target": document.getElementById("echo-stream"),
-	 *         "appkey": "test.echoenabled.com",
+	 *         "appkey": "echo.jssdk.demo.aboutecho.com",
 	 *         "plugins": [{
 	 *             "name": "Moderation"
 	 *             "removePersonalItemsAllowed": true
@@ -70,14 +76,16 @@ plugin.config = {
 	 * @cfg {Array} userActions
 	 * Defines the list of user specific actions to be added to the Echo Stream Item.
 	 *
+	 * The following actions are available: `ban`, `permissions`
+	 *
 	 * 	new Echo.StreamServer.Controls.Stream({
 	 * 		"target": document.getElementById("echo-stream"),
-	 * 		"appkey": "test.echoenabled.com",
+	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"plugins": [{
 	 * 			"name": "Moderation"
 	 * 			"userActions": ["ban", "permissions"],
 	 * 		}]
-	 * });
+	 * 	});
 	 */
 	"userActions": ["ban", "permissions"],
 
@@ -85,9 +93,11 @@ plugin.config = {
 	 * @cfg {Array} itemActions
 	 * Defines the list of item specific actions to be added to the Echo Stream Item.
 	 *
+	 * The following actions are available: `approve`, `spam`, `delete`, `untouch`
+	 *
 	 * 	new Echo.StreamServer.Controls.Stream({
 	 * 		"target": document.getElementById("echo-stream"),
-	 * 		"appkey": "test.echoenabled.com",
+	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"plugins": [{
 	 * 			"name": "Moderation"
 	 * 			"itemActions": ["approve", "spam", "delete", "untouch"]
@@ -312,72 +322,58 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 
 plugin.methods._publishCompleteActionEvent = function(args) {
 	/**
-	 * @event onApproveComplete
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveComplete
 	 * Triggered if "Approve" operation was completed.
 	 */
 	/**
-	 * @event onSpamComplete
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamComplete
 	 * Triggered if "Spam" operation was completed.
 	 */
 	/**
-	 * @event onDeleteComplete
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete
 	 * Triggered if "Delete" operation was completed.
 	 */
 	/**
-	 * @event onUntouchComplete
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete
 	 * Triggered if "Untouch" operation was completed.
 	 */
 	/**
-	 * @event onBanComplete
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanComplete
 	 * Triggered if "Ban" operation was completed.
 	 */
 	/**
-	 * @event onUnBanComplete
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete
 	 * Triggered if "UnBan" operation was completed.
 	 */
 	/**
-	 * @event onUserPermissionsComplete
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete
 	 * Triggered if "UserPermissions" operation was completed.
 	 */
 	/**
-	 * @event onApproveError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError
 	 * Triggered if "Approve" operation failed.
 	 */
 	/**
-	 * @event onSpamError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError
 	 * Triggered if "Spam" operation failed.
 	 */
 	/**
-	 * @event onDeleteError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteError
 	 * Triggered if "Delete" operation failed.
 	 */
 	/**
-	 * @event onUntouchError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError
 	 * Triggered if "Untouch" operation failed.
 	 */
 	/**
-	 * @event onBanError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError
 	 * Triggered if "Ban" operation failed.
 	 */
 	/**
-	 * @event onUnBanError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanError
 	 * Triggered if "UnBan" operation failed.
 	 */
 	/**
-	 * @event onUserPermissionsError
 	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsError
 	 * Triggered if "UserPermissions" operation failed.
 	 */

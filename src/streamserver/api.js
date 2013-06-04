@@ -12,7 +12,26 @@ Echo.StreamServer.API = {};
 /**
  * @class Echo.StreamServer.API.Request
  * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/19987923/FrontPage" target="_blank">Echo StreamServer API</a>
+ *
+ *     var request = Echo.StreamServer.API.request({
+ *         "endpoint": "search",
+ *         "data": {
+ *             "q": "childrenof: http://example.com/js-sdk",
+ *             "appkey": "echo.jssdk.demo.aboutecho.com"
+ *         },
+ *         "onData": function(data, extra) {
+ *             // handle successful request here...
+ *         },
+ *         "onError": function(data, extra) {
+ *             // handle failed request here...
+ *         }
+ *     });
+ *
+ *     request.send();
+ *
  * @extends Echo.API.Request
+ *
+ * @package api.pack.js
  *
  * @constructor
  * Constructor initializing class using configuration data.
@@ -20,6 +39,14 @@ Echo.StreamServer.API = {};
  */
 Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
 	config = $.extend({
+		/**
+		 * @cfg {String} [endpoint] Specifies the API endpoint. The following endpoints are available:
+		 *
+		 *  + "submit"
+		 *  + "search"
+		 *  + "count"
+		 *
+		 */
 		/**
 		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
 		 */

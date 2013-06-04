@@ -14,6 +14,8 @@ if (Echo.Control.isDefined(canvas)) return;
  * the Echo.Loader. The instance of the class can also be created manually in
  * case the Canvas data already exists on the page.
  *
+ * @package environment.pack.js
+ *
  * @extends Echo.Control
  *
  * @constructor
@@ -22,6 +24,39 @@ if (Echo.Control.isDefined(canvas)) return;
  * @param {Object} config
  * Configuration options
  */
+
+/** @hide @method getRelativeTime */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
+/** @hide @echo_label loading */
+/** @hide @echo_label retrying */
+/** @hide @echo_label error_busy */
+/** @hide @echo_label error_timeout */
+/** @hide @echo_label error_waiting */
+/** @hide @echo_label error_view_limit */
+/** @hide @echo_label error_view_update_capacity_exceeded */
+/** @hide @echo_label error_result_too_large */
+/** @hide @echo_label error_wrong_query */
+/** @hide @echo_label error_incorrect_appkey */
+/** @hide @echo_label error_internal_error */
+/** @hide @echo_label error_quota_exceeded */
+/** @hide @echo_label error_incorrect_user_id */
+/** @hide @echo_label error_unknown */
+
 canvas.init = function() {
 	var self = this, target = this.config.get("target");
 	// parent init function takes care about init finalization (rendering
@@ -239,7 +274,6 @@ canvas.methods._error = function(args) {
 	args.message = args.message || this.labels.get("error_" + args.code);
 
 	/**
-	 * @event onError
 	 * @echo_event Echo.Canvas.onError
 	 * Event which is triggered in case of errors such as invalid configuration,
 	 * problems fetching the data from the server side, etc.

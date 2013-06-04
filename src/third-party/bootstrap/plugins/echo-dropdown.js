@@ -31,36 +31,52 @@ if (Echo.GUI.Dropdown) return;
  * 		}]
  * 	});
  *
+ * 	// Change the dropdown title
+ * 	dropdown.setTitle("New dropdown title");
+ *
+ * 	// Update the dropdown entities
+ * 	dropdown.updateEntries([{
+ * 		"title": "New entry",
+ * 		"handler": function() {}
+ * 	}, {
+ * 		"title": "New entry 2"
+ * 	}]);
+ *
  * @extends Echo.GUI
+ *
+ * @package gui.pack.js
+ *
  * @constructor
  * Creates a new dropdown in the container you have passed in the "config.target".
  *
  * @param {Object} config
  * Dropdown parameters.
  *
- * @cfg {Mixed} target
+ * @cfg {Mixed} target(required)
  * The container where the dropdown should be located.
  * This parameter can have several types:
- * 	- CSS selector (ex: ".css-selector")
- * 	- HTMLElement (ex: document.getElementById("some-element-id"))
- * 	- jQuery object (ex: $(".css-selector"))
  *
- * @cfg {String} extraClass
+ * + CSS selector (ex: ".css-selector")
+ * + HTMLElement (ex: document.getElementById("some-element-id"))
+ * + jQuery object (ex: $(".css-selector"))
+ *
+ * @cfg {String} [extraClass=""]
  * Custom class name which should be added to the dropdown.
  *
- * @cfg {String} title
+ * @cfg {String} [title=""]
  * Dropdown title.
  *
- * @cfg {String} [icon]
+ * @cfg {String} [icon=""]
  * URL of the 14x14px icon to be displayed near the dropdown title.
  *
- * @cfg {Array} entries
+ * @cfg {Array} [entries=[]]
  * Array of the dropdown entries.
  * Each entry is the object with the following parameters:
- * 	title   - entry title
- * 	handler - function which will be called when entry is selected
- * 	icon    - URL for the icon. Icon size should be 16x16 pixels.
- * 	entries - Array of nested entries.
+ *
+ * + title - entry title
+ * + handler - function which will be called when entry is selected
+ * + icon - URL for the icon. Icon size should be 16x16 pixels.
+ * + entries - Array of nested entries.
  */
 Echo.GUI.Dropdown = Echo.Utils.inherit(Echo.GUI, function(config) {
 	Echo.GUI.call(this, config, {
@@ -90,6 +106,8 @@ Echo.GUI.Dropdown.prototype.setTitle = function(title) {
  * This method allows to re-assemble dropdown entries.
  *
  * @param {Array} entries
+ * Array of the dropdown entries. The structure of this array is the same as in
+ * {@link #cfg-entries entries} config parameter.
  */
 Echo.GUI.Dropdown.prototype.updateEntries = function(entries) {
 	this.config.set("entries", entries);

@@ -12,10 +12,16 @@ var $ = jQuery;
  * 	var stream = new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("stream"),
  * 		"query": "childrenof:http://example.com/js-sdk",
- * 		"appkey": "test.aboutecho.com"
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com"
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * Stream constructor initializing Echo.StreamServer.Controls.Stream class
@@ -26,6 +32,24 @@ var $ = jQuery;
 var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 
 if (Echo.Control.isDefined(stream)) return;
+
+/** @hide @method placeImage */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
 
 stream.init = function() {
 	var self = this;
@@ -82,6 +106,21 @@ stream.init = function() {
 };
 
 stream.config = {
+	/**
+	 * @cfg {String} query
+	 * Specifies the search query to generate the necessary data set.
+	 * It must be constructed according to the
+	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
+	 * method specification.
+	 *
+	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 		"target": document.getElementById("echo-stream"),
+	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
+	 * 		"query" : "childrenof:http://example.com/test/*"
+	 * 	});
+	 */
+	"query": "",
+
 	/**
 	 * @cfg {Object} children
 	 * Specifies the children pagination feature behavior.
@@ -543,7 +582,6 @@ stream.renderers.more = function(element) {
 		.off("click")
 		.one("click", function() {
 			/**
-			 * @event onMoreButtonPress
 			 * @echo_event Echo.StreamServer.Controls.Stream.onMoreButtonPress
 			 * Triggered when the "more" button is pressed.
 			 */
@@ -707,7 +745,6 @@ stream.methods._onDataReceive = function(data, type, callback) {
 	var self = this;
 	var items = {};
 	/**
-	 * @event onDataReceive
 	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
 	 * Triggered when new data is received.
 	 *
@@ -804,7 +841,6 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 
 					if (satisfies || item.get("byCurrentUser")) {
 						/**
-						 * @event onItemReceive
 						 * @echo_event Echo.StreamServer.Controls.Stream.onItemReceive
 						 * Triggered when new item is received.
 						 */
@@ -1161,7 +1197,6 @@ stream.methods._spotUpdates.replace = function(item, options) {
 	if (item && item.view.rendered()) {
 		item.view.render({"name": "container", "recursive": true});
 		/**
-		 * @event onRerender
 		 * @member Echo.StreamServer.Controls.Stream.Item
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onRerender
 		 * Triggered when the item is rerendered.
@@ -1658,6 +1693,9 @@ var $ = jQuery;
  *
  * @extends Echo.Control
  *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
+ *
  * @constructor
  * Item constructor initializing Echo.StreamServer.Controls.Stream.Item class
  *
@@ -1667,6 +1705,27 @@ var $ = jQuery;
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Control.isDefined(item)) return;
+
+/** @hide @cfg appkey */
+/** @hide @cfg defaultAvatar */
+/** @hide @cfg plugins */
+/** @hide @cfg submissionProxyURL */
+/** @hide @method placeImage */
+/** @hide @method dependent */
+/** @hide @echo_label loading */
+/** @hide @echo_label retrying */
+/** @hide @echo_label error_busy */
+/** @hide @echo_label error_timeout */
+/** @hide @echo_label error_waiting */
+/** @hide @echo_label error_view_limit */
+/** @hide @echo_label error_view_update_capacity_exceeded */
+/** @hide @echo_label error_result_too_large */
+/** @hide @echo_label error_wrong_query */
+/** @hide @echo_label error_incorrect_appkey */
+/** @hide @echo_label error_internal_error */
+/** @hide @echo_label error_quota_exceeded */
+/** @hide @echo_label error_incorrect_user_id */
+/** @hide @echo_label error_unknown */
 
 item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get("data.object.published"));
@@ -2331,7 +2390,6 @@ item.renderers.expandChildren = function(element, extra) {
 				"extra": {"state": "loading"}
 			});
 			/**
-			 * @event onChildrenExpand
 			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onChildrenExpand
 			 * Triggered when the children block is expanded.
 			 */
@@ -2357,12 +2415,10 @@ item.renderers._childrenContainer = function(element, config) {
 		}
 		if (child.deleted || child.added) {
 			/**
-			 * @event onDelete
 			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onDelete
 			 * Triggered when the child item is deleted.
 			 */
 			/**
-			 * @event onAdd
 			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onAdd
 			 * Triggered when the child item is added.
 			 */
@@ -2668,7 +2724,6 @@ item.methods._assembleButtons = function() {
 			data.callback = function() {
 				callback.call(self);
 				/**
-				 * @event onButtonClick 
 				 * @echo_event Echo.StreamServer.Controls.Stream.Item.onButtonClick
 				 * Triggered when the item control button is clicked.
 				 */

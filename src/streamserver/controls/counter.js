@@ -11,11 +11,17 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Counter({
  * 		"target": document.getElementById("echo-counter"),
- * 		"appkey": "test.aboutecho.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"query" : "childrenof:http://example.com/test/*"
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * Counter constructor initializing Echo.StreamServer.Controls.Counter class
@@ -26,6 +32,30 @@ var $ = jQuery;
 var counter = Echo.Control.manifest("Echo.StreamServer.Controls.Counter");
 
 if (Echo.Control.isDefined(counter)) return;
+
+/** @hide @cfg defaultAvatar */
+/** @hide @cfg labels */
+/** @hide @cfg submissionProxyURL */
+/** @hide @method getPlugin */
+/** @hide @method getRelativeTime */
+/** @hide @method parentRenderer */
+/** @hide @method placeImage */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
 
 counter.init = function() {
 	if (!this.checkAppKey()) return;
@@ -52,7 +82,7 @@ counter.config = {
 	 *
 	 * 	new Echo.StreamServer.Controls.Counter({
 	 * 		"target": document.getElementById("echo-counter"),
-	 * 		"appkey": "test.aboutecho.com",
+	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"query" : "childrenof:http://example.com/test/*"
 	 * 	});
 	 */

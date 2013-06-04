@@ -133,7 +133,7 @@ module.exports = function(grunt) {
 		}
 	};
 
-	_.each(["streamserver", "identityserver", "appserver"], function(name) {
+	_.each(["streamserver", "identityserver"], function(name) {
 		packs[name + "/controls"] = {
 			"src": [name + "/controls/*.js"],
 			"dest": name + "/controls.pack.js"
@@ -179,7 +179,7 @@ module.exports = function(grunt) {
 		},
 		check: {
 			versions: {
-				jsduck: "4.6.1",
+				jsduck: "5.0.0.beta2",
 				grunt: "v0.3.17"
 			}
 		},

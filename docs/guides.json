@@ -5,32 +5,57 @@
 			{
 				"name": "overview",
 				"title": "High-level overview",
-				"description": "The high-level overview of Echo JS SDK and its components."
+				"description": "The high-level overview of Echo JS SDK and its components"
 			},
 			{
 				"name": "terminology",
 				"title": "Terminology and dev tips",
-				"description": "This guide contains the definition of the terms used throughout the JS SDK docs, various development tips and a description of core SDK concepts."
+				"description": "This guide contains the definition of the terms used throughout the JS SDK docs, various development tips and a description of core SDK concepts"
 			},
 			{
 				"name": "technical_specification",
 				"title": "Technical specification",
-				"description": "This document contains technical limitations, browser support and design principles and technology choices of the SDK."
+				"description": "This document contains technical limitations, browser support and design principles and technology choices of the SDK"
 			},
 			{
 				"name": "how_to_develop_control",
-				"title": "How to develop a control",
-				"description": "Control development hands-on guide."
+				"title": "How to develop a Control",
+				"description": "Control development hands-on guide"
 			},
 			{
 				"name": "how_to_develop_plugin",
-				"title": "How to develop a plugin",
-				"description": "Plugin development hands-on guide."
+				"title": "How to develop a Plugin",
+				"description": "Plugin development hands-on guide"
 			},
 			{
 				"name": "how_to_develop_app",
-				"title": "How to develop an app",
-				"description": "Application development hands-on guide."
+				"title": "How to develop an App",
+				"description": "Application development hands-on guide"
+			},
+			{
+				"name": "how_to_use_template_placeholders",
+				"title": "How to use template placeholders",
+				"description": "This document describes how to work with template placeholders"
+			},
+			{
+				"name": "how_to_extend_templates",
+				"title": "How to extend templates",
+				"description": "This document describes how to extend Controls and Applications templates"
+			},
+			{
+				"name": "how_to_work_with_labels",
+				"title": "How to work with text labels",
+				"description": "Working with text labels in Echo JS SDK"
+			},
+			{
+				"name": "how_to_initialize_components",
+				"title": "How to initialize Echo components",
+				"description": "This document describes the initialization mechanics of the Echo JS SDK components"
+			},
+			{
+				"name": "dependency_management",
+				"title": "Dependency management",
+				"description": "This document describes the dependency management feature of Echo JS SDK"
 			}
 		]
 	}

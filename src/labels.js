@@ -16,13 +16,28 @@ if (Echo.Utils.isComponentDefined("Echo.Labels")) return;
  * Static methods should be used for general language variable
  * definition and localization purposes.
  *
- * @constructor
- * Constructor of class encapsulating language variable mechanics.
+ * Example:
  *
- *     new Echo.Labels({
+ *     var labels = new Echo.Labels({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream");
+ *
+ *     labels.get("live"); // returns "Live"
+ *     labels.get("paused"); // returns "Paused"
+ *
+ *     labels.set({
+ *         "live": "Live...",
+ *         "paused": "Paused..."
+ *     });
+ *
+ *     labels.get("live"); // returns "Live..."
+ *     labels.get("paused"); // returns "Paused..."
+ *
+ * @package environment.pack.js
+ *
+ * @constructor
+ * Constructor of class encapsulating language variable mechanics.
  *
  * @param {Object} labels
  * Flat object containing the list of language variables to be initialized.
@@ -46,7 +61,7 @@ Echo.Labels = function(labels, namespace) {
 /**
  * Method to access specific language variable within the scope of a particular component instance.
  *
- * Function will return the language variable value corresponding to this instance.
+ * Function returns the language variable value corresponding to this instance.
  * If current instance doesn't contain this particular language variable
  * it will fall back to the global language variable list.
  *
@@ -55,8 +70,8 @@ Echo.Labels = function(labels, namespace) {
  *         "paused": "Paused"
  *     }, "Stream");
  *
- *     labels.get("live"); // will return "Live"
- *     labels.get("paused"); // will return "Paused"
+ *     labels.get("live"); // returns "Live"
+ *     labels.get("paused"); // returns "Paused"
  *
  * @param {String} name
  * Language variable name.
@@ -89,16 +104,16 @@ Echo.Labels.prototype.get = function(name, data) {
  *         "paused": "Paused"
  *     }, "Stream");
  *
- *     labels.get("live"); // will return "Live"
- *     labels.get("paused"); // will return "Paused"
+ *     labels.get("live"); // returns "Live"
+ *     labels.get("paused"); // returns "Paused"
  *
  *     labels.set({
  *         "live": "Live...",
  *         "paused": "Paused..."
  *     });
  *
- *     labels.get("live"); // will return "Live..."
- *     labels.get("paused"); // will return "Paused..."
+ *     labels.get("live"); // returns "Live..."
+ *     labels.get("paused"); // returns "Paused..."
  *
  * @param {Object} labels
  * Flat object containing the list of language variables to be added/overriden.
@@ -127,24 +142,24 @@ Echo.Labels.prototype.set = function(labels) {
  *         "paused": "Paused"
  *     }, "Stream"); // setting custom labels
  *
- *     Echo.Labels.get("live", "Stream"); // will return "Live"
- *     Echo.Labels.get("paused", "Stream"); // will return "Paused"
+ *     Echo.Labels.get("live", "Stream"); // returns "Live"
+ *     Echo.Labels.get("paused", "Stream"); // returns "Paused"
  *
  *     Echo.Labels.set({
  *         "live": "Live...",
  *         "paused": "Paused..."
  *     }, "Stream", true); // setting default labels
  *
- *     Echo.Labels.get("live", "Stream"); // will return "Live" (custom label is not overridden by default)
- *     Echo.Labels.get("paused", "Stream"); // will return "Paused" (custom label is not overridden by default)
+ *     Echo.Labels.get("live", "Stream"); // returns "Live" (custom label is not overridden by default)
+ *     Echo.Labels.get("paused", "Stream"); // returns "Paused" (custom label is not overridden by default)
  *
  *     Echo.Labels.set({
  *         "live": "Live label",
  *         "paused": "Paused label"
  *     }, "Stream"); // overriding custom labels
  *
- *     Echo.Labels.get("live", "Stream"); // will return "Live label"
- *     Echo.Labels.get("paused", "Stream"); // will return "Paused label"
+ *     Echo.Labels.get("live", "Stream"); // returns "Live label"
+ *     Echo.Labels.get("paused", "Stream"); // returns "Paused label"
  *
  * @param {Object} labels
  * Object containing the list of language variables.
@@ -168,7 +183,7 @@ Echo.Labels.set = function(labels, namespace, isDefault) {
  * Function returning the language variable value by its name from the global
  * language variable list.
  *
- * Function will return the language variable value from the global language
+ * Function returns the language variable value from the global language
  * variable list. It also takes into consideration the localized values.
  * If value of the particular language variable is not found in the localization
  * list it will fall back to the default language variable value.
@@ -178,8 +193,8 @@ Echo.Labels.set = function(labels, namespace, isDefault) {
  *         "paused": "Paused"
  *     }, "Stream");
  *
- *     Echo.Labels.get("live", "Stream"); // will return "Live"
- *     Echo.Labels.get("Stream.paused"); // will return "Paused"
+ *     Echo.Labels.get("live", "Stream"); // returns "Live"
+ *     Echo.Labels.get("Stream.paused"); // returns "Paused"
  *
  * @param {String} name
  * Language variable name.

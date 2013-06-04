@@ -15,6 +15,23 @@ if (Echo.Utils.isComponentDefined("Echo.Events")) return;
  *     <contextId> :: "<id>" or "<parentContextID>/<id>", where
  *     <id> :: some unique identifier assigned to component
  *     <parentContextID> :: "<contextID>"
+ *
+ * Example:
+ *
+ * 	// Subscribe to the event.
+ * 	Echo.Events.subscribe({
+ * 		"topic": "Echo.UserSession.onInvalidate",
+ * 		"context": "global",
+ * 		"handler": control.refresh
+ * 	});
+ *
+ * 	// And then publish event:
+ * 	Echo.Events.publish({
+ * 		"topic": "Echo.UserSession.onInvalidate",
+ * 		"data": user.is("logged") ? user.data : {}
+ * 	});
+ *
+ * @package environment.pack.js
  */
 Echo.Events = {};
 

@@ -12,13 +12,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "MetadataManager"
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
@@ -57,7 +63,7 @@ plugin.init = function() {
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "MetadataManager"
  * 			"controls": [{
@@ -72,7 +78,7 @@ plugin.init = function() {
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "MetadataManager"
  * 			"controls": [{
@@ -87,7 +93,7 @@ plugin.init = function() {
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "MetadataManager"
  * 			"controls": [{
@@ -107,7 +113,7 @@ plugin.init = function() {
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "MetadataManager"
  * 			"controls": [{
@@ -168,12 +174,10 @@ plugin.methods._assembleButton = function(action, control) {
 			"submissionProxyURL": item.config.get("submissionProxyURL"),
 			"onData": function(response) {
 				/**
-				* @event onMarkComplete
 				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkComplete
 				* Triggered when the Mark action is finished.
 				*/
 				/**
-				* @event onUnmarkComplete
 				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarComplete
 				* Triggered when the Unmark action is finished.
 				*/
@@ -182,12 +186,10 @@ plugin.methods._assembleButton = function(action, control) {
 			},
 			"onError": function(response) {
 				/**
-				* @event onMarkError
 				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkError
 				* Triggered when the Mark action completed with error.
 				*/
 				/**
-				* @event onUnmarkError
 				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarError
 				* Triggered when the Unmark action completed with error.
 				*/

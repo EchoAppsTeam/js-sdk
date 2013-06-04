@@ -12,7 +12,27 @@ Echo.IdentityServer.API = {};
 /**
  * @class Echo.IdentityServer.API.Request
  * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/35104702/API-section-users" target="_blank">Echo Users API</a> 
+ *
+ *     var request = Echo.IdentityServer.API.request({
+ *         "endpoint": "whoami",
+ *         "apiBaseURL": "http://api.echoenabled.com/v1/users/",
+ *         "data": {
+ *             "appkey": "echo.jssdk.demo.aboutecho.com",
+ *             "sessionID": "http://api.echoenabled.com/v1/bus/jskit/channel/137025938529801703"
+ *         },
+ *         "onData": function(data, extra) {
+ *             // handle successful request here...
+ *         },
+ *         "onError": function(data, extra) {
+ *             // handle failed request here...
+ *         }
+ *     });
+ *
+ *     request.send();
+ *
  * @extends Echo.API.Request
+ *
+ * @package api.pack.js
  *
  * @constructor
  * Constructor initializing class using configuration data.
@@ -20,6 +40,9 @@ Echo.IdentityServer.API = {};
  */
 Echo.IdentityServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
 	config = $.extend({
+		/**
+		 * @cfg {String} [endpoint] Specifies the API endpoint. The only "whoami" endpoint is implemented now.
+		 */
 		/**
 		 * @cfg {Function} [onData] Callback called after API request succeded.
 		 */

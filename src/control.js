@@ -6,6 +6,10 @@ var $ = jQuery;
 /**
  * @class Echo.Control
  * Foundation class implementing core logic to create controls and manipulate with them.
+ *
+ * You can find instructions on how to create your control in the ["How to develop a control"](#!/guide/how_to_develop_control) guide.
+ *
+ * @package environment.pack.js
  */
 Echo.Control = function() {};
 
@@ -409,7 +413,7 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
  * Method to extend the template of the particular control.
  *
  * @param {String} action
- * One of the following actions:
+ * The following actions are available:
  *
  * + "insertBefore"
  * + "insertAfter"
@@ -1171,7 +1175,7 @@ manifest.config = {
 	 * @cfg {String} appkey
 	 * Specifies the customer application key. You should specify this parameter
 	 * if your control uses StreamServer or IdentityServer API requests.
-	 * You can use the "test.echoenabled.com" appkey for testing purposes.
+	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
 	 */
 	"appkey": "",
 
@@ -1290,123 +1294,123 @@ manifest.config.normalizer = {
 
 manifest.labels = {
 	/**
-	 * @echo_label
+	 * @echo_label loading
 	 */
 	"loading": "Loading...",
 	/**
-	 * @echo_label
+	 * @echo_label retrying
 	 */
 	"retrying": "Retrying...",
 	/**
-	 * @echo_label
+	 * @echo_label error_busy
 	 */
 	"error_busy": "Loading. Please wait...",
 	/**
-	 * @echo_label
+	 * @echo_label error_timeout
 	 */
 	"error_timeout": "Loading. Please wait...",
 	/**
-	 * @echo_label
+	 * @echo_label error_waiting
 	 */
 	"error_waiting": "Loading. Please wait...",
 	/**
-	 * @echo_label
+	 * @echo_label error_view_limit
 	 */
 	"error_view_limit": "View creation rate limit has been exceeded. Retrying in {seconds} seconds...",
 	/**
-	 * @echo_label
+	 * @echo_label error_view_update_capacity_exceeded
 	 */
 	"error_view_update_capacity_exceeded": "This stream is momentarily unavailable due to unusually high activity. Retrying in {seconds} seconds...",
 	/**
-	 * @echo_label
+	 * @echo_label error_result_too_large
 	 */
 	"error_result_too_large": "(result_too_large) The search result is too large.",
 	/**
-	 * @echo_label
+	 * @echo_label error_wrong_query
 	 */
 	"error_wrong_query": "(wrong_query) Incorrect or missing query parameter.",
 	/**
-	 * @echo_label
+	 * @echo_label error_incorrect_appkey
 	 */
 	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
 	/**
-	 * @echo_label
+	 * @echo_label error_internal_error
 	 */
 	"error_internal_error": "(internal_error) Unknown server error.",
 	/**
-	 * @echo_label
+	 * @echo_label error_quota_exceeded
 	 */
 	"error_quota_exceeded": "(quota_exceeded) Required more quota than is available.",
 	/**
-	 * @echo_label
+	 * @echo_label error_incorrect_user_id
 	 */
 	"error_incorrect_user_id": "(incorrect_user_id) Incorrect user specified in User ID predicate.",
 	/**
-	 * @echo_label
+	 * @echo_label error_unknown
 	 */
 	"error_unknown": "(unknown) Unknown error.",
 	/**
-	 * @echo_label
+	 * @echo_label today
 	 */
 	"today": "Today",
 	/**
-	 * @echo_label
+	 * @echo_label yesterday
 	 */
 	"yesterday": "Yesterday",
 	/**
-	 * @echo_label
+	 * @echo_label lastWeek
 	 */
 	"lastWeek": "Last Week",
 	/**
-	 * @echo_label
+	 * @echo_label lastMonth
 	 */
 	"lastMonth": "Last Month",
 	/**
-	 * @echo_label
+	 * @echo_label secondAgo
 	 */
 	"secondAgo": "{number} Second Ago",
 	/**
-	 * @echo_label
+	 * @echo_label secondsAgo
 	 */
 	"secondsAgo": "{number} Seconds Ago",
 	/**
-	 * @echo_label
+	 * @echo_label minuteAgo
 	 */
 	"minuteAgo": "{number} Minute Ago",
 	/**
-	 * @echo_label
+	 * @echo_label minutesAgo
 	 */
 	"minutesAgo": "{number} Minutes Ago",
 	/**
-	 * @echo_label
+	 * @echo_label hourAgo
 	 */
 	"hourAgo": "{number} Hour Ago",
 	/**
-	 * @echo_label
+	 * @echo_label hoursAgo
 	 */
 	"hoursAgo": "{number} Hours Ago",
 	/**
-	 * @echo_label
+	 * @echo_label dayAgo
 	 */
 	"dayAgo": "{number} Day Ago",
 	/**
-	 * @echo_label
+	 * @echo_label daysAgo
 	 */
 	"daysAgo": "{number} Days Ago",
 	/**
-	 * @echo_label
+	 * @echo_label weekAgo
 	 */
 	"weekAgo": "{number} Week Ago",
 	/**
-	 * @echo_label
+	 * @echo_label weeksAgo
 	 */
 	"weeksAgo": "{number} Weeks Ago",
 	/**
-	 * @echo_label
+	 * @echo_label monthAgo
 	 */
 	"monthAgo": "{number} Month Ago",
 	/**
-	 * @echo_label
+	 * @echo_label monthsAgo
 	 */
 	"monthsAgo": "{number} Months Ago"
 };

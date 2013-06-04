@@ -8,6 +8,10 @@ if (Echo.Utils.isComponentDefined("Echo.Plugin")) return;
 /**
  * @class Echo.Plugin
  * Foundation class implementing core logic to create plugins and manipulate with them.
+ *
+ * Please visit [this page](#!/guide/how_to_develop_plugin) to learn more about developing plugins
+ *
+ * @package environment.pack.js
  */
 Echo.Plugin = function() {};
 
@@ -256,7 +260,7 @@ Echo.Plugin.prototype.disable = function(global) {
  * Method to extend the template of particular component.
  *
  * @param {String} action
- * One of the following actions:
+ * The following actions are available:
  *
  * + "insertBefore"
  * + "insertAfter"
@@ -455,8 +459,11 @@ Echo.Plugin._getClassName = function(name, component) {
 };
 
 /**
- * @class Echo.Plugin.config
+ * @class Echo.Plugin.Config
  * Echo Plugin interlayer for Echo.Configuration utilization.
+ *
+ * @private
+ * @package environment.pack.js
  */
 Echo.Plugin._defineNestedClass("Config");
 
@@ -545,8 +552,11 @@ Echo.Plugin.Config.prototype._normalize = function(key) {
 };
 
 /**
- * @class Echo.Plugin.events
+ * @class Echo.Plugin.Events
  * Echo Plugin interlayer for Echo.Events utilization
+ *
+ * @private
+ * @package environment.pack.js
  */
 Echo.Plugin._defineNestedClass("Events");
 

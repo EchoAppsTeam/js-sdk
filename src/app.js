@@ -11,6 +11,10 @@ if (Echo.Utils.isComponentDefined("Echo.App")) return;
  * @class Echo.App
  * Foundation class implementing core logic to create applications.
  *
+ * You can find instructions on how to build your application in the ["How to develop an app"](#!/guide/how_to_develop_app) guide.
+ *
+ * @package environment.pack.js
+ *
  * @extends Echo.Control
  */
 Echo.App = Echo.Utils.inherit(Echo.Control);

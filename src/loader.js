@@ -11,17 +11,25 @@ var protocol = /^https?/.test(window.location.protocol) ? window.location.protoc
  * @class Echo.Loader
  * Static class which implements common mechanics for resources loading,
  * Echo environment establishing and Canvases initialization mechanics.
+ *
+ * @package loader.js
  */
 Echo.Loader = {
+	/** @private @readonly */
 	"version": "",
+	/** @ignore */
 	"debug": false,
+	/** @private */
 	"config": {
 		"cdnBaseURL": protocol + "//cdn.echoenabled.com/",
 		"storageURL": protocol + "//s3.amazonaws.com/echo-canvases/",
 		"errorTimeout": 5000 // 5 sec
 	},
+	/** @ignore */
 	"canvases": [],  // Canvases list initialized on the page
+	/** @ignore */
 	"overrides": {},  // Canvas Apps overrides object
+	/** @ignore */
 	"vars": {
 		"state": {"resources": {}, "queue": []},
 		"processing": false,

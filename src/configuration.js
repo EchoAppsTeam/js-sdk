@@ -9,7 +9,25 @@ if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
  * @class Echo.Configuration
  * Class implements the interface for convenient work with different
  * configurations. The Echo.Configuration class is used in various
- *places of Echo JS SDK components.
+ * places of Echo JS SDK components.
+ *
+ * Example:
+ *
+ *     var config = new Echo.Configuration({
+ *         "key1": "value1",
+ *         "key2": {
+ *             "key3": "value3"
+ *         }
+ *     });
+ *
+ *     config.get("key1"); // returns "value1"
+ *     config.set("key1", "new_value1");
+ *
+ *     config.get("key1"); // returns "new_value1"
+ *
+ *     config.get("key2.key3"); // returns "value3"
+ *
+ * @package environment.pack.js
  *
  * @constructor
  * Class constructor, which accepts user defined and default configuration

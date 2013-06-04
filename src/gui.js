@@ -9,6 +9,8 @@ if (Echo.GUI) return;
  * @class Echo.GUI
  * Foundation class implementing core logic for GUI components.
  *
+ * @package gui.pack.js
+ *
  * @constructor
  * @param {Object} config
  * GUI component configuration.

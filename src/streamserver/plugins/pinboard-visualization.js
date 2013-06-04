@@ -9,16 +9,61 @@ var $ = jQuery;
  * flash objects, etc). 
  *
  * @extends Echo.Control
+ *
+ * @package streamserver/plugins/pinboard-visualization.js
  */
 
 var mediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item.MediaGallery");
 
 if (Echo.Control.isDefined(mediaGallery)) return;
 
+/** @hide @method getRelativeTime */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
+/** @hide @echo_label loading */
+/** @hide @echo_label retrying */
+/** @hide @echo_label error_busy */
+/** @hide @echo_label error_timeout */
+/** @hide @echo_label error_waiting */
+/** @hide @echo_label error_view_limit */
+/** @hide @echo_label error_view_update_capacity_exceeded */
+/** @hide @echo_label error_result_too_large */
+/** @hide @echo_label error_wrong_query */
+/** @hide @echo_label error_incorrect_appkey */
+/** @hide @echo_label error_internal_error */
+/** @hide @echo_label error_quota_exceeded */
+/** @hide @echo_label error_incorrect_user_id */
+/** @hide @echo_label error_unknown */
+
 mediaGallery.labels = {
 	"mediaIsNotAvailable": "<i>Media is not avaiable at this moment...</i>"
 };
 
+/**
+ * @cfg {Number} resizeDuration
+ * Duration of the resize animation media content
+ *
+ * @cfg {Array} elements
+ * List of the jQuery elements which will be displayed (media content)
+ *
+ * @cfg {Object} item
+ * An instance of the Echo.StreamServer.Controls.Stream.Item object
+ * which may use its state for some reasons (context, data, etc)
+ */
 mediaGallery.config = {
 	"resizeDuration": 250,
 	"elements": [],
@@ -63,7 +108,6 @@ mediaGallery.renderers.controls = function(element) {
 		var itemContainer = $('<div></div>').append(element).addClass(itemClass);
 		var showCurrentMedia = function() {
 			/**
-			 * @event onLoadMedia
 			 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia
 			 * Triggered when corresponding media is loaded.
 			 */
@@ -79,7 +123,6 @@ mediaGallery.renderers.controls = function(element) {
 				"height": itemContainer.height()
 			}, self.config.get("resizeDuration"), function() {
 				/**
-				 * @event onResize
 				 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize
 				 * Triggered when corresponding media is resized.
 				 */
@@ -89,7 +132,6 @@ mediaGallery.renderers.controls = function(element) {
 				itemContainer.fadeIn(function() {
 					self.currentIndex = i;
 					/**
-					 * @event onChangeMedia
 					 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia
 					 * Triggered when media is changed.
 					 */
@@ -218,11 +260,28 @@ Echo.Control.create(mediaGallery);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Stream.Item control into a
  * pinboard-style block.
  *
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"query": "childrenof:http://example.com/js-sdk",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
+ * 		"plugins": [{
+ * 			"name": "PinboardVisualization",
+ * 			"columnWidth": 100,
+ * 			"gallery": {"resizeDuration": 550}
+ * 		}]
+ * 	});
+ *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @private
+ * @package streamserver/plugins/pinboard-visualization.js
  */
 
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream.Item");
@@ -319,8 +378,7 @@ plugin.component.renderers.content = function(element) {
 (function() {
 
 /**
- * @event onChangeView
- * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.onChangeView
+ * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView
  * Triggered if the view was changed.
  */
 var publish = function(force) {
@@ -579,7 +637,7 @@ Echo.Plugin.create(plugin);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization
+ * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Echo Stream Client visualization
  * into a pinboard-style representation. The plugin extracts all media (such as
  * images, videos, etc) from the item content and assembles the mini media
@@ -596,13 +654,18 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "PinboardVisualization"
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins/pinboard-visualization.js
  */
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream");
 
@@ -624,7 +687,7 @@ plugin.config = {
 	 * @cfg {Object} isotope
 	 * Allows to configure the Isotope jQuery plugin, used by the plugin as the
 	 * rendering engine. The possible config values can be found at the Isotope
-	 * plugin homepage (http://isotope.metafizzy.co/). It's NOT recommended to
+	 * plugin homepage ([http://isotope.metafizzy.co/](http://isotope.metafizzy.co/)). It's NOT recommended to
 	 * change the settings of the Isotope unless it's really required.
 	 *
 	 *__Note__: the Isotope JS library doesn't work in IE <a href="http://en.wikipedia.org/wiki/Quirks_mode">quirks mode</a>.

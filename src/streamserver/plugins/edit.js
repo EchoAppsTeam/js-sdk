@@ -12,13 +12,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "Edit"
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Stream.Item");
 
@@ -92,13 +98,17 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Submit({
  * 		"target": document.getElementById("echo-submit"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "Edit"
  * 		}]
  * 	});
  *
  * @extends Echo.Plugin
+ *
+ * @private
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Submit");
 
@@ -141,17 +151,14 @@ plugin.labels = {
 };
 
 /**
- * @event onEditInit
  * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit
  * Triggered when edit operation was started
  */
 /**
- * @event onEditComplete
  * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete
  * Triggered when edit operation is finished
  */
 /**
- * @event onEditError
  * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError
  * Triggered if edit operation failed
  */

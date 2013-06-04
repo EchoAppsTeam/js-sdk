@@ -15,27 +15,27 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 ## Main features
 
 ### JS API - Easier access to server-side APIs via the client side
-A well documented client-side API for interacting with the Echo Cloud Services quickly and easily right from the page using Javascript ([learn more](#!/api/Echo.API.Request)).
+A well documented client-side API for interacting with the Echo Cloud Services quickly and easily right from the page using Javascript ({@link Echo.API.Request learn more}).
 
 ### GUI Library - More consistent look and feel between apps
-Echo JS SDK 3.0 uses [Twitter Bootstrap](http://twitter.github.com/bootstrap/) as the new UI framework. By employing an industry-standard UI framework with well defined UI rules, should help the apps look stylish and consistent, yet provide a lot of room for customizations by our publishers ([learn more](#!api/Echo.GUI)).
+Echo JS SDK 3.0 uses [Twitter Bootstrap](http://twitter.github.com/bootstrap/) as the new UI framework. By employing an industry-standard UI framework with well defined UI rules, should help the apps look stylish and consistent, yet provide a lot of room for customizations by our publishers ({@link Echo.GUI learn more}).
 
 ### UI Controls - A Core set of Controls for common app/interaction patterns
 These controls quickly deliver core pieces of App UI based on common feature scenarios such as activity streams, submission, facepiles, counters and more.
 
-#### [Echo.StreamServer.Controls.Stream](#!/api/Echo.StreamServer.Controls.Stream)
+#### Echo.StreamServer.Controls.Stream
 Echo Stream control which encapsulates interaction with the Echo Search API and displays live updating search results in a standard ‘news feed’ style format.
 
-#### [Echo.StreamServer.Controls.Submit](#!/api/Echo.StreamServer.Controls.Submit)
+#### Echo.StreamServer.Controls.Submit
 Echo Submit control which encapsulates interaction with the Echo Submit API and provides a simple ‘submit/comment form’ style interaction.
 
-#### [Echo.StreamServer.Controls.Counter](#!/api/Echo.StreamServer.Controls.Counter)
+#### Echo.StreamServer.Controls.Counter
 Echo Counter class which encapsulates interaction with the Echo Count API and provides a simple live updating number.
 
-#### [Echo.StreamServer.Controls.FacePile](#!/api/Echo.StreamServer.Controls.FacePile)
+#### Echo.StreamServer.Controls.FacePile
 Echo FacePile control displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
 
-#### [Echo.IdentityServer.Controls.Auth](#!/api/Echo.IdentityServer.Controls.Auth)
+#### Echo.IdentityServer.Controls.Auth
 Echo Auth control displays the user login status and allows them sign in using different social identities.
 
 #### [Guide: Building a Control](#!/guide/how_to_develop_control)
@@ -58,7 +58,7 @@ Components build using this approach inherit a number of distinct advantages inc
 
 ### Echo Loader - Simplified dependency loading to reduce script conflicts and redundancies
 
-In order to minimize the footprint of JavaScript files on a given page (particularly important for SEO and mobile web) and avoid script conflicts the JS SDK provides a class which contains the logic for downloading appropriate JS and CSS dependencies (as described in the Component Manifest) on the fly ([learn more](#!/api/Echo.Loader)).
+In order to minimize the footprint of JavaScript files on a given page (particularly important for SEO and mobile web) and avoid script conflicts the JS SDK provides a class which contains the logic for downloading appropriate JS and CSS dependencies (as described in the Component Manifest) on the fly ({@link Echo.Loader learn more}).
 
 ## Other Features
 

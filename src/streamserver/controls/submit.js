@@ -12,10 +12,16 @@ var $ = jQuery;
  * 	new Echo.StreamServer.Controls.Submit({
  * 		"target": document.getElementById("submit"),
  * 		"targetURL": "http://example.com/submit",
- * 		"appkey": "test.aboutecho.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * Submit constructor initializing Echo.StreamServer.Controls.Submit class
@@ -26,6 +32,40 @@ var $ = jQuery;
 var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
 
 if (Echo.Control.isDefined(submit)) return;
+
+/** @hide @cfg apiBaseURL */
+/** @hide @method placeImage */
+/** @hide @method getRelativeTime */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
+/** @hide @echo_label loading */
+/** @hide @echo_label retrying */
+/** @hide @echo_label error_busy */
+/** @hide @echo_label error_timeout */
+/** @hide @echo_label error_waiting */
+/** @hide @echo_label error_view_limit */
+/** @hide @echo_label error_view_update_capacity_exceeded */
+/** @hide @echo_label error_result_too_large */
+/** @hide @echo_label error_wrong_query */
+/** @hide @echo_label error_incorrect_appkey */
+/** @hide @echo_label error_internal_error */
+/** @hide @echo_label error_quota_exceeded */
+/** @hide @echo_label error_incorrect_user_id */
+/** @hide @echo_label error_unknown */
 
 submit.init = function() {
 	if (!this.checkAppKey()) return;
@@ -500,14 +540,12 @@ submit.methods.post = function() {
 	var callbacks = {
 		"onData": function(response, state) {
 			/**
-			 * @event onPostComplete
 			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete
 			 * Triggered when the submit operation is finished.
 			 */
 			publish("Complete", entry, response, state);
 
 			/**
-			 * @event onDataInvalidate
 			 * @echo_event Echo.Control.onDataInvalidate
 			 * Triggered if dataset is changed.
 			 */
@@ -520,7 +558,6 @@ submit.methods.post = function() {
 		},
 		"onError": function(response, state) {
 			/**
-			 * @event onPostError
 			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
 			 * Triggered if submit operation failed.
 			 */
@@ -528,7 +565,6 @@ submit.methods.post = function() {
 		}
 	};
 	/**
-	 * @event onPostInit
 	 * @echo_event Echo.StreamServer.Controls.Submit.onPostInit
 	 * Triggered if submit operation was started.
 	 */
