@@ -29,7 +29,26 @@ Echo.StreamServer.API = {};
 <span id='Echo-StreamServer-API-Request-method-constructor'><span id='Echo-StreamServer-API-Request'>/**
 </span></span> * @class Echo.StreamServer.API.Request
  * Class implements the interaction with the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/19987923/FrontPage&quot; target=&quot;_blank&quot;&gt;Echo StreamServer API&lt;/a&gt;
+ *
+ *     var request = Echo.StreamServer.API.request({
+ *         &quot;endpoint&quot;: &quot;search&quot;,
+ *         &quot;data&quot;: {
+ *             &quot;q&quot;: &quot;childrenof: http://example.com/js-sdk&quot;,
+ *             &quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;
+ *         },
+ *         &quot;onData&quot;: function(data, extra) {
+ *             // handle successful request here...
+ *         },
+ *         &quot;onError&quot;: function(data, extra) {
+ *             // handle failed request here...
+ *         }
+ *     });
+ *
+ *     request.send();
+ *
  * @extends Echo.API.Request
+ *
+ * @package api.pack.js
  *
  * @constructor
  * Constructor initializing class using configuration data.
@@ -37,6 +56,14 @@ Echo.StreamServer.API = {};
  */
 Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
 	config = $.extend({
+<span id='Echo-StreamServer-API-Request-cfg-endpoint'>		/**
+</span>		 * @cfg {String} [endpoint] Specifies the API endpoint. The following endpoints are available:
+		 *
+		 *  + &quot;submit&quot;
+		 *  + &quot;search&quot;
+		 *  + &quot;count&quot;
+		 *
+		 */
 <span id='Echo-StreamServer-API-Request-cfg-liveUpdatesTimeout'>		/**
 </span>		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
 		 */

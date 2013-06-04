@@ -31,6 +31,8 @@ if (Echo.Control.isDefined(canvas)) return;
  * the Echo.Loader. The instance of the class can also be created manually in
  * case the Canvas data already exists on the page.
  *
+ * @package environment.pack.js
+ *
  * @extends Echo.Control
  *
  * @constructor
@@ -39,6 +41,39 @@ if (Echo.Control.isDefined(canvas)) return;
  * @param {Object} config
  * Configuration options
  */
+
+<span id='Echo-Canvas-method-getRelativeTime'>/** @hide @method getRelativeTime */
+</span><span id='Echo-Canvas-echo_label-today'>/** @hide @echo_label today */
+</span><span id='Echo-Canvas-echo_label-yesterday'>/** @hide @echo_label yesterday */
+</span><span id='Echo-Canvas-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
+</span><span id='Echo-Canvas-echo_label-lastMonth'>/** @hide @echo_label lastMonth */
+</span><span id='Echo-Canvas-echo_label-secondAgo'>/** @hide @echo_label secondAgo */
+</span><span id='Echo-Canvas-echo_label-secondsAgo'>/** @hide @echo_label secondsAgo */
+</span><span id='Echo-Canvas-echo_label-minuteAgo'>/** @hide @echo_label minuteAgo */
+</span><span id='Echo-Canvas-echo_label-minutesAgo'>/** @hide @echo_label minutesAgo */
+</span><span id='Echo-Canvas-echo_label-hourAgo'>/** @hide @echo_label hourAgo */
+</span><span id='Echo-Canvas-echo_label-hoursAgo'>/** @hide @echo_label hoursAgo */
+</span><span id='Echo-Canvas-echo_label-dayAgo'>/** @hide @echo_label dayAgo */
+</span><span id='Echo-Canvas-echo_label-daysAgo'>/** @hide @echo_label daysAgo */
+</span><span id='Echo-Canvas-echo_label-weekAgo'>/** @hide @echo_label weekAgo */
+</span><span id='Echo-Canvas-echo_label-weeksAgo'>/** @hide @echo_label weeksAgo */
+</span><span id='Echo-Canvas-echo_label-monthAgo'>/** @hide @echo_label monthAgo */
+</span><span id='Echo-Canvas-echo_label-monthsAgo'>/** @hide @echo_label monthsAgo */
+</span><span id='Echo-Canvas-echo_label-loading'>/** @hide @echo_label loading */
+</span><span id='Echo-Canvas-echo_label-retrying'>/** @hide @echo_label retrying */
+</span><span id='Echo-Canvas-echo_label-error_busy'>/** @hide @echo_label error_busy */
+</span><span id='Echo-Canvas-echo_label-error_timeout'>/** @hide @echo_label error_timeout */
+</span><span id='Echo-Canvas-echo_label-error_waiting'>/** @hide @echo_label error_waiting */
+</span><span id='Echo-Canvas-echo_label-error_view_limit'>/** @hide @echo_label error_view_limit */
+</span><span id='Echo-Canvas-echo_label-error_view_update_capacity_exceeded'>/** @hide @echo_label error_view_update_capacity_exceeded */
+</span><span id='Echo-Canvas-echo_label-error_result_too_large'>/** @hide @echo_label error_result_too_large */
+</span><span id='Echo-Canvas-echo_label-error_wrong_query'>/** @hide @echo_label error_wrong_query */
+</span><span id='Echo-Canvas-echo_label-error_incorrect_appkey'>/** @hide @echo_label error_incorrect_appkey */
+</span><span id='Echo-Canvas-echo_label-error_internal_error'>/** @hide @echo_label error_internal_error */
+</span><span id='Echo-Canvas-echo_label-error_quota_exceeded'>/** @hide @echo_label error_quota_exceeded */
+</span><span id='Echo-Canvas-echo_label-error_incorrect_user_id'>/** @hide @echo_label error_incorrect_user_id */
+</span><span id='Echo-Canvas-echo_label-error_unknown'>/** @hide @echo_label error_unknown */
+</span>
 canvas.init = function() {
 	var self = this, target = this.config.get(&quot;target&quot;);
 	// parent init function takes care about init finalization (rendering
@@ -112,31 +147,31 @@ canvas.vars = {
 };
 
 canvas.labels = {
-<span id='Echo-Canvas-property-error_no_apps'>	/**
+<span id='Echo-Canvas-echo_label-error_no_apps'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;error_no_apps&quot;: &quot;No applications defined for this canvas&quot;,
-<span id='Echo-Canvas-property-error_no_config'>	/**
+<span id='Echo-Canvas-echo_label-error_no_config'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;error_no_config&quot;: &quot;Unable to retrieve Canvas config&quot;,
-<span id='Echo-Canvas-property-error_no_suitable_app_class'>	/**
+<span id='Echo-Canvas-echo_label-error_no_suitable_app_class'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;error_no_suitable_app_class&quot;: &quot;Unable to init an app, no suitable JS class found&quot;,
-<span id='Echo-Canvas-property-error_unable_to_retrieve_app_config'>	/**
+<span id='Echo-Canvas-echo_label-error_unable_to_retrieve_app_config'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;error_unable_to_retrieve_app_config&quot;: &quot;Unable to retrieve Canvas config from the storage&quot;,
-<span id='Echo-Canvas-property-error_incomplete_app_config'>	/**
+<span id='Echo-Canvas-echo_label-error_incomplete_app_config'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;error_incomplete_app_config&quot;: &quot;Unable to init an app, config is incomplete&quot;,
-<span id='Echo-Canvas-property-error_canvas_already_initialized'>	/**
+<span id='Echo-Canvas-echo_label-error_canvas_already_initialized'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;error_canvas_already_initialized&quot;: &quot;Canvas has been initialized already&quot;,
-<span id='Echo-Canvas-property-error_invalid_canvas_config'>	/**
+<span id='Echo-Canvas-echo_label-error_invalid_canvas_config'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;error_invalid_canvas_config&quot;: &quot;Canvas with invalid configuration found&quot;
@@ -156,7 +191,7 @@ canvas.destroy = function() {
 	this.config.get(&quot;target&quot;).data(&quot;echo-canvas-initialized&quot;, false);
 };
 
-<span id='Echo-Canvas-method-container'>/**
+<span id='Echo-Canvas-echo_renderer-container'>/**
 </span> * @echo_renderer
  */
 canvas.renderers.container = function(element) {
@@ -255,9 +290,8 @@ canvas.methods._getOverrides = function(target, spec) {
 canvas.methods._error = function(args) {
 	args.message = args.message || this.labels.get(&quot;error_&quot; + args.code);
 
-<span id='Echo-Canvas-event-onError'>	/**
-</span>	 * @event onError
-	 * @echo_event Echo.Canvas.onError
+<span id='Echo-Canvas-echo_event-onError'>	/**
+</span>	 * @echo_event Echo.Canvas.onError
 	 * Event which is triggered in case of errors such as invalid configuration,
 	 * problems fetching the data from the server side, etc.
 	 *

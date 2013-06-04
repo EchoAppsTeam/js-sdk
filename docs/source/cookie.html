@@ -30,6 +30,18 @@ var _decode = function(s) {
 <span id='Echo-Cookie'>/**
 </span> * @class Echo.Cookie
  * Library to work with cookies
+ *
+ * Example:
+ *
+ *     Echo.Cookie.set(&quot;key&quot;, &quot;value&quot;);
+ *     Echo.Cookie.get(&quot;key&quot;); // returns &quot;value&quot;
+ *
+ *     Echo.Cookie.remove(&quot;key&quot;);
+ *     Echo.Cookie.get(&quot;key&quot;); // returns &quot;undefined&quot;
+ *
+ *     Echo.Cookie.set(&quot;key2&quot;, &quot;value2&quot;, {&quot;expires&quot;: 7}); // this cookie expires in 7 days
+ *
+ * @package loader.js
  */
 Echo.Cookie = {};
 

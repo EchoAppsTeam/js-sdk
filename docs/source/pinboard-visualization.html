@@ -26,16 +26,61 @@ var $ = jQuery;
  * flash objects, etc). 
  *
  * @extends Echo.Control
+ *
+ * @package streamserver/plugins/pinboard-visualization.js
  */
 
 var mediaGallery = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream.Item.MediaGallery&quot;);
 
 if (Echo.Control.isDefined(mediaGallery)) return;
 
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-method-getRelativeTime'>/** @hide @method getRelativeTime */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-today'>/** @hide @echo_label today */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-yesterday'>/** @hide @echo_label yesterday */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-lastMonth'>/** @hide @echo_label lastMonth */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-secondAgo'>/** @hide @echo_label secondAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-secondsAgo'>/** @hide @echo_label secondsAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-minuteAgo'>/** @hide @echo_label minuteAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-minutesAgo'>/** @hide @echo_label minutesAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-hourAgo'>/** @hide @echo_label hourAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-hoursAgo'>/** @hide @echo_label hoursAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-dayAgo'>/** @hide @echo_label dayAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-daysAgo'>/** @hide @echo_label daysAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-weekAgo'>/** @hide @echo_label weekAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-weeksAgo'>/** @hide @echo_label weeksAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-monthAgo'>/** @hide @echo_label monthAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-monthsAgo'>/** @hide @echo_label monthsAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-loading'>/** @hide @echo_label loading */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-retrying'>/** @hide @echo_label retrying */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_busy'>/** @hide @echo_label error_busy */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_timeout'>/** @hide @echo_label error_timeout */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_waiting'>/** @hide @echo_label error_waiting */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_view_limit'>/** @hide @echo_label error_view_limit */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_view_update_capacity_exceeded'>/** @hide @echo_label error_view_update_capacity_exceeded */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_result_too_large'>/** @hide @echo_label error_result_too_large */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_wrong_query'>/** @hide @echo_label error_wrong_query */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_incorrect_appkey'>/** @hide @echo_label error_incorrect_appkey */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_internal_error'>/** @hide @echo_label error_internal_error */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_quota_exceeded'>/** @hide @echo_label error_quota_exceeded */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_incorrect_user_id'>/** @hide @echo_label error_incorrect_user_id */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_unknown'>/** @hide @echo_label error_unknown */
+</span>
 mediaGallery.labels = {
 	&quot;mediaIsNotAvailable&quot;: &quot;&lt;i&gt;Media is not avaiable at this moment...&lt;/i&gt;&quot;
 };
 
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-cfg-resizeDuration'>/**
+</span> * @cfg {Number} resizeDuration
+ * Duration of the resize animation media content
+ *
+ * @cfg {Array} elements
+ * List of the jQuery elements which will be displayed (media content)
+ *
+ * @cfg {Object} item
+ * An instance of the Echo.StreamServer.Controls.Stream.Item object
+ * which may use its state for some reasons (context, data, etc)
+ */
 mediaGallery.config = {
 	&quot;resizeDuration&quot;: 250,
 	&quot;elements&quot;: [],
@@ -53,7 +98,7 @@ mediaGallery.templates.main =
 mediaGallery.templates.mediaError =
 	'&lt;span class=&quot;{class:itemErrorLoading}&quot;&gt;{label:mediaIsNotAvailable}&lt;/span&gt;';
 
-<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-method-controls'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_renderer-controls'>/**
 </span> * @echo_renderer
  */
 mediaGallery.renderers.controls = function(element) {
@@ -79,9 +124,8 @@ mediaGallery.renderers.controls = function(element) {
 		var isCurrentControl = (i === self.currentIndex);
 		var itemContainer = $('&lt;div&gt;&lt;/div&gt;').append(element).addClass(itemClass);
 		var showCurrentMedia = function() {
-<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-event-onLoadMedia'>			/**
-</span>			 * @event onLoadMedia
-			 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_event-onLoadMedia'>			/**
+</span>			 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia
 			 * Triggered when corresponding media is loaded.
 			 */
 			i === self.currentIndex &amp;&amp; itemContainer.css(&quot;display&quot;, &quot;block&quot;) &amp;&amp; publish(&quot;onLoadMedia&quot;);
@@ -95,9 +139,8 @@ mediaGallery.renderers.controls = function(element) {
 			itemsContainer.animate({
 				&quot;height&quot;: itemContainer.height()
 			}, self.config.get(&quot;resizeDuration&quot;), function() {
-<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-event-onResize'>				/**
-</span>				 * @event onResize
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_event-onResize'>				/**
+</span>				 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize
 				 * Triggered when corresponding media is resized.
 				 */
 				publish(&quot;onResize&quot;);
@@ -105,9 +148,8 @@ mediaGallery.renderers.controls = function(element) {
 			currentItem.fadeOut(function() {
 				itemContainer.fadeIn(function() {
 					self.currentIndex = i;
-<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-event-onChangeMedia'>					/**
-</span>					 * @event onChangeMedia
-					 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_event-onChangeMedia'>					/**
+</span>					 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia
 					 * Triggered when media is changed.
 					 */
 					publish(&quot;onChangeMedia&quot;);
@@ -234,12 +276,29 @@ Echo.Control.create(mediaGallery);
 
 var $ = jQuery;
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization'>/**
-</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Stream.Item control into a
  * pinboard-style block.
  *
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ * 		&quot;query&quot;: &quot;childrenof:http://example.com/js-sdk&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;PinboardVisualization&quot;,
+ * 			&quot;columnWidth&quot;: 100,
+ * 			&quot;gallery&quot;: {&quot;resizeDuration&quot;: 550}
+ * 		}]
+ * 	});
+ *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @private
+ * @package streamserver/plugins/pinboard-visualization.js
  */
 
 var plugin = Echo.Plugin.manifest(&quot;PinboardVisualization&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
@@ -257,21 +316,21 @@ plugin.dependencies = [{
 }];
 
 plugin.config = {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-cfg-columnWidth'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-cfg-columnWidth'>	/**
 </span>	 * @cfg {Number} columnWidth
 	 * Allows to define the width for one column in pixels, default width is 250px.
 	 * The amount of columns is calculated based on the width of the Echo Stream
 	 * Client container.
 	 */
 	&quot;columnWidth&quot;: 250,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-cfg-maxChildrenBodyCharacters'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-cfg-maxChildrenBodyCharacters'>	/**
 </span>	 * @cfg {Number} maxChildrenBodyCharacters
 	 * Allows to truncate the reply text displayed under the root item. Default
 	 * value is 50 characters. The value of this parameter should be integer and
 	 * represent the number of visible characters that need to be displayed.
 	 */
 	&quot;maxChildrenBodyCharacters&quot;: 50,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-cfg-mediaSelector'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-cfg-mediaSelector'>	/**
 </span>	 * @cfg {Function} mediaSelector
 	 * Allows to define the function with custom rules for the media content
 	 * extraction from the item content. The value of this parameter is a function
@@ -290,7 +349,7 @@ plugin.config = {
 		var dom = $(&quot;&lt;div&gt;&quot; + content + &quot;&lt;/div&gt;&quot;);
 		return $(&quot;img, video, embed, iframe&quot;, dom);
 	},
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-cfg-itemCSSClassByContentLength'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-cfg-itemCSSClassByContentLength'>	/**
 </span>	 * @cfg {Object} itemCSSClassByContentLength
 	 * Allows to define extra CSS class to the item based on the item length.
 	 * The value of this parameter is the JS object with the CSS classes as
@@ -302,7 +361,7 @@ plugin.config = {
 		&quot;echo-streamserver-controls-stream-item-smallSizeContent&quot;: [0, 69],
 		&quot;echo-streamserver-controls-stream-item-mediumSizeContent&quot;: [70, 120]
 	},
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-cfg-gallery'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-cfg-gallery'>	/**
 </span>	 * @cfg {Object} gallery
 	 * Allows to proxy the parameters for the mini Media Gallery class,
 	 * initialized for the item in case any media content was found in its body. 
@@ -317,13 +376,13 @@ plugin.enabled = function() {
 };
 
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-property-childrenMoreItems'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-echo_label-childrenMoreItems'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;childrenMoreItems&quot;: &quot;View more items...&quot;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-content'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-echo_renderer-content'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.content = function(element) {
@@ -335,9 +394,8 @@ plugin.component.renderers.content = function(element) {
 
 (function() {
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-event-onChangeView'>/**
-</span> * @event onChangeView
- * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.onChangeView
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-echo_event-onChangeView'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView
  * Triggered if the view was changed.
  */
 var publish = function(force) {
@@ -364,17 +422,17 @@ var getRenderer = function(name) {
 	};
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-property-container'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-echo_renderer-container'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.container = getRenderer(&quot;container&quot;);
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-property-expandChildren'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-echo_renderer-expandChildren'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.expandChildren = getRenderer(&quot;expandChildren&quot;);
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-textToggleTruncated'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-echo_renderer-textToggleTruncated'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.textToggleTruncated = function(element) {
@@ -430,7 +488,7 @@ plugin.events[&quot;Echo.StreamServer.Controls.Stream.Item.onRender&quot;] = fun
 
 })();
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-body'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-echo_renderer-body'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.body = function(element) {
@@ -443,7 +501,7 @@ plugin.component.renderers.body = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-childBody'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-echo_renderer-childBody'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.childBody = function(element) {
@@ -459,7 +517,7 @@ plugin.renderers.childBody = function(element) {
 	return element.empty().append(text);
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisulization-method-media'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-echo_renderer-media'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.media = function(element) {
@@ -595,8 +653,8 @@ Echo.Plugin.create(plugin);
 
 var $ = jQuery;
 
-<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization'>/**
-</span> * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization
+<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisualization'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Echo Stream Client visualization
  * into a pinboard-style representation. The plugin extracts all media (such as
  * images, videos, etc) from the item content and assembles the mini media
@@ -613,13 +671,18 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;PinboardVisualization&quot;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins/pinboard-visualization.js
  */
 var plugin = Echo.Plugin.manifest(&quot;PinboardVisualization&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
 
@@ -637,11 +700,11 @@ var isMozillaBrowser = !!(
 	);
 
 plugin.config = {
-<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisulization-cfg-isotope'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisualization-cfg-isotope'>	/**
 </span>	 * @cfg {Object} isotope
 	 * Allows to configure the Isotope jQuery plugin, used by the plugin as the
 	 * rendering engine. The possible config values can be found at the Isotope
-	 * plugin homepage (http://isotope.metafizzy.co/). It's NOT recommended to
+	 * plugin homepage ([http://isotope.metafizzy.co/](http://isotope.metafizzy.co/)). It's NOT recommended to
 	 * change the settings of the Isotope unless it's really required.
 	 *
 	 *__Note__: the Isotope JS library doesn't work in IE &lt;a href=&quot;http://en.wikipedia.org/wiki/Quirks_mode&quot;&gt;quirks mode&lt;/a&gt;.

@@ -29,10 +29,16 @@ var $ = jQuery;
  * 	var stream = new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;stream&quot;),
  * 		&quot;query&quot;: &quot;childrenof:http://example.com/js-sdk&quot;,
- * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * Stream constructor initializing Echo.StreamServer.Controls.Stream class
@@ -44,6 +50,24 @@ var stream = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream&quot;
 
 if (Echo.Control.isDefined(stream)) return;
 
+<span id='Echo-StreamServer-Controls-Stream-method-placeImage'>/** @hide @method placeImage */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-today'>/** @hide @echo_label today */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-yesterday'>/** @hide @echo_label yesterday */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-lastMonth'>/** @hide @echo_label lastMonth */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-secondAgo'>/** @hide @echo_label secondAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-secondsAgo'>/** @hide @echo_label secondsAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-minuteAgo'>/** @hide @echo_label minuteAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-minutesAgo'>/** @hide @echo_label minutesAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-hourAgo'>/** @hide @echo_label hourAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-hoursAgo'>/** @hide @echo_label hoursAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-dayAgo'>/** @hide @echo_label dayAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-daysAgo'>/** @hide @echo_label daysAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-weekAgo'>/** @hide @echo_label weekAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-weeksAgo'>/** @hide @echo_label weeksAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-monthAgo'>/** @hide @echo_label monthAgo */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-monthsAgo'>/** @hide @echo_label monthsAgo */
+</span>
 stream.init = function() {
 	var self = this;
 	if (!this.checkAppKey()) return;
@@ -99,6 +123,21 @@ stream.init = function() {
 };
 
 stream.config = {
+<span id='Echo-StreamServer-Controls-Stream-cfg-query'>	/**
+</span>	 * @cfg {String} query
+	 * Specifies the search query to generate the necessary data set.
+	 * It must be constructed according to the
+	 * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
+	 * method specification.
+	 *
+	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+	 * 		&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
+	 * 	});
+	 */
+	&quot;query&quot;: &quot;&quot;,
+
 <span id='Echo-StreamServer-Controls-Stream-cfg-children'>	/**
 </span>	 * @cfg {Object} children
 	 * Specifies the children pagination feature behavior.
@@ -337,35 +376,35 @@ stream.vars = {
 };
 
 stream.labels = {
-<span id='Echo-StreamServer-Controls-Stream-property-guest'>	/**
+<span id='Echo-StreamServer-Controls-Stream-echo_label-guest'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;guest&quot;: &quot;Guest&quot;,
-<span id='Echo-StreamServer-Controls-Stream-property-live'>	/**
+<span id='Echo-StreamServer-Controls-Stream-echo_label-live'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;live&quot;: &quot;Live&quot;,
-<span id='Echo-StreamServer-Controls-Stream-property-paused'>	/**
+<span id='Echo-StreamServer-Controls-Stream-echo_label-paused'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;paused&quot;: &quot;Paused&quot;,
-<span id='Echo-StreamServer-Controls-Stream-property-more'>	/**
+<span id='Echo-StreamServer-Controls-Stream-echo_label-more'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;more&quot;: &quot;More&quot;,
-<span id='Echo-StreamServer-Controls-Stream-property-emptyStream'>	/**
+<span id='Echo-StreamServer-Controls-Stream-echo_label-emptyStream'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;emptyStream&quot;: &quot;No items at this time...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-property-new'>	/**
+<span id='Echo-StreamServer-Controls-Stream-echo_label-new'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;new&quot;: &quot;new&quot;,
-<span id='Echo-StreamServer-Controls-Stream-property-newItem'>	/**
+<span id='Echo-StreamServer-Controls-Stream-echo_label-newItem'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;newItem&quot;: &quot;new item&quot;,
-<span id='Echo-StreamServer-Controls-Stream-property-newItems'>	/**
+<span id='Echo-StreamServer-Controls-Stream-echo_label-newItems'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;newItems&quot;: &quot;new items&quot;
@@ -424,7 +463,7 @@ stream.templates.main =
 		'&lt;/div&gt;' +
 	'&lt;/div&gt;';
 
-<span id='Echo-StreamServer-Controls-Stream-method-body'>/**
+<span id='Echo-StreamServer-Controls-Stream-echo_renderer-body'>/**
 </span> * @echo_renderer
  */
 stream.renderers.body = function(element) {
@@ -447,7 +486,7 @@ stream.renderers.body = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-method-content'>/**
+<span id='Echo-StreamServer-Controls-Stream-echo_renderer-content'>/**
 </span> * @echo_renderer
  */
 stream.renderers.content = function(element) {
@@ -462,7 +501,7 @@ stream.renderers.content = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-method-state'>/**
+<span id='Echo-StreamServer-Controls-Stream-echo_renderer-state'>/**
 </span> * @echo_renderer
  */
 stream.renderers.state = function(element) {
@@ -542,7 +581,7 @@ stream.renderers.state = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-method-more'>/**
+<span id='Echo-StreamServer-Controls-Stream-echo_renderer-more'>/**
 </span> * @echo_renderer
  */
 stream.renderers.more = function(element) {
@@ -559,9 +598,8 @@ stream.renderers.more = function(element) {
 		.append(this.labels.get(&quot;more&quot;))
 		.off(&quot;click&quot;)
 		.one(&quot;click&quot;, function() {
-<span id='Echo-StreamServer-Controls-Stream-event-onMoreButtonPress'>			/**
-</span>			 * @event onMoreButtonPress
-			 * @echo_event Echo.StreamServer.Controls.Stream.onMoreButtonPress
+<span id='Echo-StreamServer-Controls-Stream-echo_event-onMoreButtonPress'>			/**
+</span>			 * @echo_event Echo.StreamServer.Controls.Stream.onMoreButtonPress
 			 * Triggered when the &quot;more&quot; button is pressed.
 			 */
 			self.events.publish({&quot;topic&quot;: &quot;onMoreButtonPress&quot;});
@@ -723,9 +761,8 @@ stream.methods._requestMoreItems = function(element) {
 stream.methods._onDataReceive = function(data, type, callback) {
 	var self = this;
 	var items = {};
-<span id='Echo-StreamServer-Controls-Stream-event-onDataReceive'>	/**
-</span>	 * @event onDataReceive
-	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
+<span id='Echo-StreamServer-Controls-Stream-echo_event-onDataReceive'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
 	 * Triggered when new data is received.
 	 *
 	 * @param {String} topic
@@ -820,9 +857,8 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 					}
 
 					if (satisfies || item.get(&quot;byCurrentUser&quot;)) {
-<span id='Echo-StreamServer-Controls-Stream-event-onItemReceive'>						/**
-</span>						 * @event onItemReceive
-						 * @echo_event Echo.StreamServer.Controls.Stream.onItemReceive
+<span id='Echo-StreamServer-Controls-Stream-echo_event-onItemReceive'>						/**
+</span>						 * @echo_event Echo.StreamServer.Controls.Stream.onItemReceive
 						 * Triggered when new item is received.
 						 */
 						self.events.publish({
@@ -1177,9 +1213,8 @@ stream.methods._spotUpdates.replace = function(item, options) {
 	}
 	if (item &amp;&amp; item.view.rendered()) {
 		item.view.render({&quot;name&quot;: &quot;container&quot;, &quot;recursive&quot;: true});
-<span id='Echo-StreamServer-Controls-Stream-Item-event-onRerender'>		/**
-</span>		 * @event onRerender
-		 * @member Echo.StreamServer.Controls.Stream.Item
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_event-onRerender'>		/**
+</span>		 * @member Echo.StreamServer.Controls.Stream.Item
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onRerender
 		 * Triggered when the item is rerendered.
 		 */
@@ -1675,6 +1710,9 @@ var $ = jQuery;
  *
  * @extends Echo.Control
  *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
+ *
  * @constructor
  * Item constructor initializing Echo.StreamServer.Controls.Stream.Item class
  *
@@ -1685,6 +1723,27 @@ var item = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream.Item&qu
 
 if (Echo.Control.isDefined(item)) return;
 
+<span id='Echo-StreamServer-Controls-Stream-Item-cfg-appkey'>/** @hide @cfg appkey */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-cfg-defaultAvatar'>/** @hide @cfg defaultAvatar */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-cfg-plugins'>/** @hide @cfg plugins */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-cfg-submissionProxyURL'>/** @hide @cfg submissionProxyURL */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-method-placeImage'>/** @hide @method placeImage */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-method-dependent'>/** @hide @method dependent */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-loading'>/** @hide @echo_label loading */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-retrying'>/** @hide @echo_label retrying */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_busy'>/** @hide @echo_label error_busy */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_timeout'>/** @hide @echo_label error_timeout */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_waiting'>/** @hide @echo_label error_waiting */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_view_limit'>/** @hide @echo_label error_view_limit */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_view_update_capacity_exceeded'>/** @hide @echo_label error_view_update_capacity_exceeded */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_result_too_large'>/** @hide @echo_label error_result_too_large */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_wrong_query'>/** @hide @echo_label error_wrong_query */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_incorrect_appkey'>/** @hide @echo_label error_incorrect_appkey */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_internal_error'>/** @hide @echo_label error_internal_error */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_quota_exceeded'>/** @hide @echo_label error_quota_exceeded */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_incorrect_user_id'>/** @hide @echo_label error_incorrect_user_id */
+</span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_unknown'>/** @hide @echo_label error_unknown */
+</span>
 item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get(&quot;data.object.published&quot;));
 	this.ready();
@@ -1834,51 +1893,51 @@ item.vars = {
 };
 
 item.labels = {
-<span id='Echo-StreamServer-Controls-Stream-Item-property-defaultModeSwitchTitle'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-defaultModeSwitchTitle'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;defaultModeSwitchTitle&quot;: &quot;Switch to metadata view&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-guest'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-guest'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;guest&quot;: &quot;Guest&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-metadataModeSwitchTitle'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-metadataModeSwitchTitle'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;metadataModeSwitchTitle&quot;: &quot;Return to default view&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-sharedThisOn'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-sharedThisOn'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;sharedThisOn&quot;: &quot;I shared this on {service}...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-userID'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-userID'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;userID&quot;: &quot;User ID:&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-userIP'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-userIP'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;userIP&quot;: &quot;User IP:&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-textToggleTruncatedMore'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-textToggleTruncatedMore'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;textToggleTruncatedMore&quot;: &quot;more&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-textToggleTruncatedLess'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-textToggleTruncatedLess'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;textToggleTruncatedLess&quot;: &quot;less&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-fromLabel'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-fromLabel'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;fromLabel&quot;: &quot;from&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-viaLabel'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-viaLabel'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;viaLabel&quot;: &quot;via&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-childrenMoreItems'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-childrenMoreItems'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;childrenMoreItems&quot;: &quot;View more items&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-property-re'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_label-re'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;re&quot;: &quot;Re&quot;
@@ -1955,14 +2014,14 @@ item.methods.template = function() {
 	'&lt;/div&gt;';
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-authorName'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-authorName'>/**
 </span> * @echo_renderer
  */
 item.renderers.authorName = function(element) {
 	return element.html(this.get(&quot;data.actor.title&quot;) || this.labels.get(&quot;guest&quot;));
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-markers'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-markers'>/**
 </span> * @echo_renderer
  */
 item.renderers.markers = function(element) {
@@ -1973,7 +2032,7 @@ item.renderers.markers = function(element) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-tags'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-tags'>/**
 </span> * @echo_renderer
  */
 item.renderers.tags = function(element) {
@@ -1984,7 +2043,7 @@ item.renderers.tags = function(element) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-container'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-container'>/**
 </span> * @echo_renderer
  */
 item.renderers.container = function(element) {
@@ -2025,7 +2084,7 @@ item.renderers.container = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-metadata'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-metadata'>/**
 </span> * @echo_renderer
  */
 item.renderers.metadata = function(element) {
@@ -2045,7 +2104,7 @@ item.renderers.metadata = function(element) {
 	return element.hide();
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-modeSwitch'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-modeSwitch'>/**
 </span> * @echo_renderer
  */
 item.renderers.modeSwitch = function(element) {
@@ -2071,14 +2130,14 @@ item.renderers.modeSwitch = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-wrapper'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-wrapper'>/**
 </span> * @echo_renderer
  */
 item.renderers.wrapper = function(element) {
 	return element.addClass(this.cssPrefix + &quot;wrapper&quot; + (this.depth ? &quot;-child&quot; : &quot;-root&quot;));
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-avatar'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-avatar'>/**
 </span> * @echo_renderer
  */
 item.renderers.avatar = function(element) {
@@ -2090,7 +2149,7 @@ item.renderers.avatar = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-children'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-children'>/**
 </span> * @echo_renderer
  */
 item.renderers.children = function(element, config) {
@@ -2104,7 +2163,7 @@ item.renderers.children = function(element, config) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-childrenByCurrentActorLive'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-childrenByCurrentActorLive'>/**
 </span> * @echo_renderer
  */
 item.renderers.childrenByCurrentActorLive = function(element, config) {
@@ -2118,7 +2177,7 @@ item.renderers.childrenByCurrentActorLive = function(element, config) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-buttons'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-buttons'>/**
 </span> * @echo_renderer
  */
 item.renderers.buttons = function(element) {
@@ -2144,7 +2203,7 @@ item.renderers.buttons = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-re'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-re'>/**
 </span> * @echo_renderer
  */
 item.renderers.re = function(element) {
@@ -2195,7 +2254,7 @@ item.renderers.re = function(element) {
 	return element.empty().append(re).show();
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-sourceIcon'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-sourceIcon'>/**
 </span> * @echo_renderer
  */
 item.renderers.sourceIcon = function(element) {
@@ -2216,7 +2275,7 @@ item.renderers.sourceIcon = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-via'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-via'>/**
 </span> * @echo_renderer
  */
 item.renderers.via = function(element) {
@@ -2237,7 +2296,7 @@ item.renderers.via = function(element) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-from'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-from'>/**
 </span> * @echo_renderer
  */
 item.renderers.from = function(element) {
@@ -2251,7 +2310,7 @@ item.renderers.from = function(element) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-textToggleTruncated'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-textToggleTruncated'>/**
 </span> * @echo_renderer
  */
 item.renderers.textToggleTruncated = function(element) {
@@ -2266,7 +2325,7 @@ item.renderers.textToggleTruncated = function(element) {
 	);
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-body'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-body'>/**
 </span> * @echo_renderer
  */
 item.renderers.body = function(element) {
@@ -2292,14 +2351,14 @@ item.renderers.body = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-date'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-date'>/**
 </span> * @echo_renderer
  */
 item.renderers.date = function(element) {
 	return element.html(this.getRelativeTime(this.timestamp));
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-expandChildrenLabel'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-expandChildrenLabel'>/**
 </span> * @echo_renderer
  */
 item.renderers.expandChildrenLabel = function(element, extra) {
@@ -2324,7 +2383,7 @@ item.renderers.expandChildrenLabel = function(element, extra) {
 		.html(this.labels.get(states[extra.state].label));
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-method-expandChildren'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-expandChildren'>/**
 </span> * @echo_renderer
  */
 item.renderers.expandChildren = function(element, extra) {
@@ -2347,9 +2406,8 @@ item.renderers.expandChildren = function(element, extra) {
 				&quot;target&quot;: self.view.get(&quot;expandChildrenLabel&quot;),
 				&quot;extra&quot;: {&quot;state&quot;: &quot;loading&quot;}
 			});
-<span id='Echo-StreamServer-Controls-Stream-Item-event-onChildrenExpand'>			/**
-</span>			 * @event onChildrenExpand
-			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onChildrenExpand
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_event-onChildrenExpand'>			/**
+</span>			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onChildrenExpand
 			 * Triggered when the children block is expanded.
 			 */
 			self.events.publish({
@@ -2373,14 +2431,12 @@ item.renderers._childrenContainer = function(element, config) {
 			child.render();
 		}
 		if (child.deleted || child.added) {
-<span id='Echo-StreamServer-Controls-Stream-Item-event-onDelete'>			/**
-</span>			 * @event onDelete
-			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onDelete
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_event-onDelete'>			/**
+</span>			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onDelete
 			 * Triggered when the child item is deleted.
 			 */
-<span id='Echo-StreamServer-Controls-Stream-Item-event-onAdd'>			/**
-</span>			 * @event onAdd
-			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onAdd
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_event-onAdd'>			/**
+</span>			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onAdd
 			 * Triggered when the child item is added.
 			 */
 			child.events.publish({
@@ -2684,9 +2740,8 @@ item.methods._assembleButtons = function() {
 			var callback = data.callback || function() {};
 			data.callback = function() {
 				callback.call(self);
-<span id='Echo-StreamServer-Controls-Stream-Item-event-onButtonClick'>				/**
-</span>				 * @event onButtonClick 
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.onButtonClick
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_event-onButtonClick'>				/**
+</span>				 * @echo_event Echo.StreamServer.Controls.Stream.Item.onButtonClick
 				 * Triggered when the item control button is clicked.
 				 */
 				self.events.publish({

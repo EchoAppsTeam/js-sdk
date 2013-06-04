@@ -33,13 +33,28 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.Labels&quot;)) return;
  * Static methods should be used for general language variable
  * definition and localization purposes.
  *
- * @constructor
- * Constructor of class encapsulating language variable mechanics.
+ * Example:
  *
- *     new Echo.Labels({
+ *     var labels = new Echo.Labels({
  *         &quot;live&quot;: &quot;Live&quot;,
  *         &quot;paused&quot;: &quot;Paused&quot;
  *     }, &quot;Stream&quot;);
+ *
+ *     labels.get(&quot;live&quot;); // returns &quot;Live&quot;
+ *     labels.get(&quot;paused&quot;); // returns &quot;Paused&quot;
+ *
+ *     labels.set({
+ *         &quot;live&quot;: &quot;Live...&quot;,
+ *         &quot;paused&quot;: &quot;Paused...&quot;
+ *     });
+ *
+ *     labels.get(&quot;live&quot;); // returns &quot;Live...&quot;
+ *     labels.get(&quot;paused&quot;); // returns &quot;Paused...&quot;
+ *
+ * @package environment.pack.js
+ *
+ * @constructor
+ * Constructor of class encapsulating language variable mechanics.
  *
  * @param {Object} labels
  * Flat object containing the list of language variables to be initialized.
@@ -63,7 +78,7 @@ Echo.Labels = function(labels, namespace) {
 <span id='Echo-Labels-method-get'>/**
 </span> * Method to access specific language variable within the scope of a particular component instance.
  *
- * Function will return the language variable value corresponding to this instance.
+ * Function returns the language variable value corresponding to this instance.
  * If current instance doesn't contain this particular language variable
  * it will fall back to the global language variable list.
  *
@@ -72,8 +87,8 @@ Echo.Labels = function(labels, namespace) {
  *         &quot;paused&quot;: &quot;Paused&quot;
  *     }, &quot;Stream&quot;);
  *
- *     labels.get(&quot;live&quot;); // will return &quot;Live&quot;
- *     labels.get(&quot;paused&quot;); // will return &quot;Paused&quot;
+ *     labels.get(&quot;live&quot;); // returns &quot;Live&quot;
+ *     labels.get(&quot;paused&quot;); // returns &quot;Paused&quot;
  *
  * @param {String} name
  * Language variable name.
@@ -106,16 +121,16 @@ Echo.Labels.prototype.get = function(name, data) {
  *         &quot;paused&quot;: &quot;Paused&quot;
  *     }, &quot;Stream&quot;);
  *
- *     labels.get(&quot;live&quot;); // will return &quot;Live&quot;
- *     labels.get(&quot;paused&quot;); // will return &quot;Paused&quot;
+ *     labels.get(&quot;live&quot;); // returns &quot;Live&quot;
+ *     labels.get(&quot;paused&quot;); // returns &quot;Paused&quot;
  *
  *     labels.set({
  *         &quot;live&quot;: &quot;Live...&quot;,
  *         &quot;paused&quot;: &quot;Paused...&quot;
  *     });
  *
- *     labels.get(&quot;live&quot;); // will return &quot;Live...&quot;
- *     labels.get(&quot;paused&quot;); // will return &quot;Paused...&quot;
+ *     labels.get(&quot;live&quot;); // returns &quot;Live...&quot;
+ *     labels.get(&quot;paused&quot;); // returns &quot;Paused...&quot;
  *
  * @param {Object} labels
  * Flat object containing the list of language variables to be added/overriden.
@@ -144,24 +159,24 @@ Echo.Labels.prototype.set = function(labels) {
  *         &quot;paused&quot;: &quot;Paused&quot;
  *     }, &quot;Stream&quot;); // setting custom labels
  *
- *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live&quot;
- *     Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // will return &quot;Paused&quot;
+ *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // returns &quot;Live&quot;
+ *     Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // returns &quot;Paused&quot;
  *
  *     Echo.Labels.set({
  *         &quot;live&quot;: &quot;Live...&quot;,
  *         &quot;paused&quot;: &quot;Paused...&quot;
  *     }, &quot;Stream&quot;, true); // setting default labels
  *
- *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live&quot; (custom label is not overridden by default)
- *     Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // will return &quot;Paused&quot; (custom label is not overridden by default)
+ *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // returns &quot;Live&quot; (custom label is not overridden by default)
+ *     Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // returns &quot;Paused&quot; (custom label is not overridden by default)
  *
  *     Echo.Labels.set({
  *         &quot;live&quot;: &quot;Live label&quot;,
  *         &quot;paused&quot;: &quot;Paused label&quot;
  *     }, &quot;Stream&quot;); // overriding custom labels
  *
- *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live label&quot;
- *     Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // will return &quot;Paused label&quot;
+ *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // returns &quot;Live label&quot;
+ *     Echo.Labels.get(&quot;paused&quot;, &quot;Stream&quot;); // returns &quot;Paused label&quot;
  *
  * @param {Object} labels
  * Object containing the list of language variables.
@@ -185,7 +200,7 @@ Echo.Labels.set = function(labels, namespace, isDefault) {
  * Function returning the language variable value by its name from the global
  * language variable list.
  *
- * Function will return the language variable value from the global language
+ * Function returns the language variable value from the global language
  * variable list. It also takes into consideration the localized values.
  * If value of the particular language variable is not found in the localization
  * list it will fall back to the default language variable value.
@@ -195,8 +210,8 @@ Echo.Labels.set = function(labels, namespace, isDefault) {
  *         &quot;paused&quot;: &quot;Paused&quot;
  *     }, &quot;Stream&quot;);
  *
- *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // will return &quot;Live&quot;
- *     Echo.Labels.get(&quot;Stream.paused&quot;); // will return &quot;Paused&quot;
+ *     Echo.Labels.get(&quot;live&quot;, &quot;Stream&quot;); // returns &quot;Live&quot;
+ *     Echo.Labels.get(&quot;Stream.paused&quot;); // returns &quot;Paused&quot;
  *
  * @param {String} name
  * Language variable name.

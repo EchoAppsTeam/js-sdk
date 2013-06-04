@@ -27,13 +27,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;ItemAccumulatorDisplay&quot;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;ItemAccumulatorDisplay&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
@@ -51,15 +57,16 @@ plugin.config = {
  	 *
 	 * 	new Echo.StreamServer.Controls.Stream({
 	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
 	 * 		&quot;plugins&quot;: [{
 	 * 			&quot;name&quot;: &quot;ItemAccumulatorDisplay&quot;
 	 * 			&quot;countTickTimeout&quot;: 1,
 	 * 			&quot;accumulator&quot;: &quot;likesCount&quot; 
 	 * 		}]
-	 * });
+	 * 	});
 	 */
 	&quot;countTickTimeout&quot;: 1,
+
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay-cfg-accumulator'>	/**
 </span>	 * @cfg {String} accumulator
 	 * Specifies which item accumulator should be displayed. Supported values
@@ -70,7 +77,7 @@ plugin.config = {
 
 plugin.template = '&lt;div class=&quot;{plugin.class:accumulatorContainer}&quot;&gt;&lt;/div&gt;';
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay-method-accumulatorContainer'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay-echo_renderer-accumulatorContainer'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.accumulatorContainer = function(element) {

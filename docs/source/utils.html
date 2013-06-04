@@ -29,6 +29,8 @@ if (!Echo.Variables) Echo.Variables = {};
 <span id='Echo-Utils'>/**
 </span> * Static class implements common methods of data processing.
  * The Echo.Utils class is used in various places of Echo JS SDK components.
+ *
+ * @package environment.pack.js
  */
 
 Echo.Utils = {};
@@ -60,7 +62,7 @@ Echo.Utils.regexps = {
  *     Echo.Utils.addCSS(
  *         '.echo-class { font-size: 14px; }'
  *         , 'echo-class-id');
- *     // will return true and new CSS style will be added to style tag
+ *     // returns true because styles with id = 'echo-class-id' weren't added before
  *     // &lt;style&gt;
  *     //     .example-class { font-size: 12px; }
  *     //     .echo-class { font-size: 14px; }
@@ -69,7 +71,7 @@ Echo.Utils.regexps = {
  *     Echo.Utils.addCSS(
  *         '.echo-new-class { font-size: 16px; }'
  *         , 'echo-class-id');
- *     // will return false because styles with id = 'echo-class-id' were added before
+ *     // returns false because styles with id = 'echo-class-id' were added before
  *
  * @param {String} cssCode
  * Contains CSS styles to be added.
@@ -207,9 +209,9 @@ Echo.Utils.foldl = function(acc, object, callback) {
  *         }
  *     };
  *
- *     Echo.Utils.get(data, &quot;key1&quot;); // will return &quot;value1&quot;
- *     Echo.Utils.get(data, &quot;key2&quot;); // will return object {&quot;key2-1&quot;: &quot;value2-1&quot;}
- *     Echo.Utils.get(data, &quot;key2.key2-1&quot;); // will return &quot;value2-1&quot;
+ *     Echo.Utils.get(data, &quot;key1&quot;); // returns &quot;value1&quot;
+ *     Echo.Utils.get(data, &quot;key2&quot;); // returns object {&quot;key2-1&quot;: &quot;value2-1&quot;}
+ *     Echo.Utils.get(data, &quot;key2.key2-1&quot;); // returns &quot;value2-1&quot;
  *
  * @param {Object} obj
  * The source object where the value defined for the given key should be looked for.
@@ -278,10 +280,10 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
  *         }
  *     };
  *
- *     Echo.Utils.remove(data, &quot;key1&quot;); // will return true and key1 delete
- *     Echo.Utils.remove(data, &quot;key2&quot;); // will return true and key2 delete
- *     Echo.Utils.remove(data, &quot;key2.key2-2.key2-2-1&quot;); // will return true and obj.key2.key2-2 will return empty object
- *     Echo.Utils.remove(data, &quot;not_defined_key&quot;); // will return false
+ *     Echo.Utils.remove(data, &quot;key1&quot;); // returns true and key1 delete
+ *     Echo.Utils.remove(data, &quot;key2&quot;); // returns true and key2 delete
+ *     Echo.Utils.remove(data, &quot;key2.key2-2.key2-2-1&quot;); // returns true and obj.key2.key2-2 returns empty object
+ *     Echo.Utils.remove(data, &quot;not_defined_key&quot;); // returns false
  *
  * @param {Object} obj
  * Specifies the target object which should be updated.
@@ -369,7 +371,7 @@ Echo.Utils._prepareFieldAccessKey = function(key) {
  * HTML entities if they are to preserve their meanings. This function returns a
  * string with these conversions made.
  *
- *     Echo.Utils.htmlize(&quot;special characters: &amp;&lt;&gt;&quot;); // will return &quot;special characters: &amp;amp;&amp;lt;&amp;gt;&quot;
+ *     Echo.Utils.htmlize(&quot;special characters: &amp;&lt;&gt;&quot;); // returns &quot;special characters: &amp;amp;&amp;lt;&amp;gt;&quot;
  *
  * Note: the function works with the &quot;string&quot; type argument only.
  * If the type of the value passed to the function differs from the &quot;string&quot; type,
@@ -392,13 +394,13 @@ Echo.Utils.htmlize = function(text) {
  * These methods convert JavaScript object to JSON string. 
  * This function uses JSON.stringify() method if it is available in the browser.
  *
- *     Echo.Utils.objectToJSON(null); // will return 'null'
- *     Echo.Utils.objectToJSON(123); // will return '123'
- *     Echo.Utils.objectToJSON(Number.POSITIVE_INFINITY); // will return 'null'
- *     Echo.Utils.objectToJSON(&quot;string\n&quot;); // will return '&quot;string\n&quot;'
- *     Echo.Utils.objectToJSON(true); // will return true
- *     Echo.Utils.objectToJSON([&quot;value1&quot;, &quot;value2&quot;]); // will return '[&quot;value1&quot;,&quot;value2&quot;]'
- *     Echo.Utils.objectToJSON({&quot;k1&quot;: &quot;v1&quot;, &quot;k2&quot;: &quot;v2&quot;}); // will return '{&quot;k1&quot;:&quot;v1&quot;,&quot;k2&quot;:&quot;v2&quot;}'
+ *     Echo.Utils.objectToJSON(null); // returns 'null'
+ *     Echo.Utils.objectToJSON(123); // returns '123'
+ *     Echo.Utils.objectToJSON(Number.POSITIVE_INFINITY); // returns 'null'
+ *     Echo.Utils.objectToJSON(&quot;string\n&quot;); // returns '&quot;string\n&quot;'
+ *     Echo.Utils.objectToJSON(true); // returns true
+ *     Echo.Utils.objectToJSON([&quot;value1&quot;, &quot;value2&quot;]); // returns '[&quot;value1&quot;,&quot;value2&quot;]'
+ *     Echo.Utils.objectToJSON({&quot;k1&quot;: &quot;v1&quot;, &quot;k2&quot;: &quot;v2&quot;}); // returns '{&quot;k1&quot;:&quot;v1&quot;,&quot;k2&quot;:&quot;v2&quot;}'
  *
  * @param {Mixed} obj
  * The value to be converted.
@@ -464,10 +466,10 @@ Echo.Utils.objectToJSON = function(obj) {
  * and without truncating tags. If truncation hits the middle of the word, the word
  * itself is preserved and truncation starts right after this word.
  *
- *     Echo.Utils.htmlTextTruncate(&quot;Welcome to Echo SDK&quot;, 5, &quot;...&quot;); // will return &quot;Welcome...&quot;
- *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;Welcome to Echo SDK&quot;, 5, &quot;&quot;, true); // will return &quot;&lt;div&gt;Welcome&lt;/div&gt;&quot;
- *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;Welcome to Echo SDK&lt;/div&gt;&quot;, 3, &quot;...&quot;, true); // will return &quot;&lt;div&gt;Welcome...&lt;/div&gt;&quot;
- *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;Welcome to Echo SDK&lt;/div&gt;&quot;, 17, &quot;...&quot;, true); // will return &quot;&lt;div&gt;Welcome to Echo SDK&lt;/div&gt;&quot;
+ *     Echo.Utils.htmlTextTruncate(&quot;Welcome to Echo SDK&quot;, 5, &quot;...&quot;); // returns &quot;Welcome...&quot;
+ *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;Welcome to Echo SDK&quot;, 5, &quot;&quot;, true); // returns &quot;&lt;div&gt;Welcome&lt;/div&gt;&quot;
+ *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;Welcome to Echo SDK&lt;/div&gt;&quot;, 3, &quot;...&quot;, true); // returns &quot;&lt;div&gt;Welcome...&lt;/div&gt;&quot;
+ *     Echo.Utils.htmlTextTruncate(&quot;&lt;div&gt;Welcome to Echo SDK&lt;/div&gt;&quot;, 17, &quot;...&quot;, true); // returns &quot;&lt;div&gt;Welcome to Echo SDK&lt;/div&gt;&quot;
  *
  * @param {String} text
  * The string to be truncated.
@@ -555,7 +557,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  *
  * This function returns a string with all HTML tags stripped from the given string.
  *
- *     Echo.Utils.stripTags(&quot;&lt;div&gt;Content&lt;/div&gt;&quot;); // will return &quot;Content&quot;
+ *     Echo.Utils.stripTags(&quot;&lt;div&gt;Content&lt;/div&gt;&quot;); // returns &quot;Content&quot;
  *
  * Note: the function works with the &quot;string&quot; type argument only. If the value with
  * type different from &quot;string&quot; is passed to the function, the same value would be
@@ -581,7 +583,7 @@ Echo.Utils.stripTags = function(text) {
  *
  *     var url = &quot;http://domain.com/some/path/?query_string#hash_value&quot;;
  *     Echo.Utils.parseURL(url);
- *     // will return {
+ *     // returns {
  *     //     &quot;scheme&quot;: &quot;http&quot;,
  *     //     &quot;domain&quot;: &quot;domain.com&quot;,
  *     //     &quot;path&quot;: &quot;/some/path/&quot;
@@ -634,9 +636,9 @@ Echo.Utils.parseURL = function(url) {
  *             '&lt;div class=&quot;footer&quot;&gt;footer&lt;/div&gt;' +
  *         '&lt;/div&gt;';
  *
- *     Echo.Utils.getVisibleColor( $(&quot;.header&quot;, template) ); // will return &quot;rgb(0, 128, 0)&quot;
- *     Echo.Utils.getVisibleColor( $(&quot;.section1&quot;, template) ); // will return &quot;rgb(255, 0, 0)&quot;
- *     Echo.Utils.getVisibleColor( $(&quot;.footer&quot;, template) ); // will return &quot;transparent&quot;
+ *     Echo.Utils.getVisibleColor( $(&quot;.header&quot;, template) ); // returns &quot;rgb(0, 128, 0)&quot;
+ *     Echo.Utils.getVisibleColor( $(&quot;.section1&quot;, template) ); // returns &quot;rgb(255, 0, 0)&quot;
+ *     Echo.Utils.getVisibleColor( $(&quot;.footer&quot;, template) ); // returns &quot;transparent&quot;
  *
  * @param {HTMLElement} element
  * HTML element which visible color is being determined.
@@ -660,8 +662,8 @@ Echo.Utils.getVisibleColor = function(element) {
 </span> * @static
  * Method to convert datetime value from string representation to numeric timestamp.
  *
- *     Echo.Utils.timestampFromW3CDTF(&quot;1998-02-08T09:27:30Z&quot;); // will return 886930050
- *     Echo.Utils.timestampFromW3CDTF(&quot;1998-02-08T09:27:30.733Z&quot;); // will return 886930050.733
+ *     Echo.Utils.timestampFromW3CDTF(&quot;1998-02-08T09:27:30Z&quot;); // returns 886930050
+ *     Echo.Utils.timestampFromW3CDTF(&quot;1998-02-08T09:27:30.733Z&quot;); // returns 886930050.733
  *
  * The method can correctly parse any date format supported by user's browser.
  * However ISO 8601 format is understood independing of native support.
@@ -732,7 +734,7 @@ Echo.Utils.isMobileDevice = function() {
  * This function returns a unique string specifying the number of milliseconds between
  * midnight January 1, 1970 (GMT) and the current time plus a random number.
  *
- *     Echo.Utils.getUniqueString(); // will return something like &quot;134086853327622290480640764643&quot;
+ *     Echo.Utils.getUniqueString(); // returns something like &quot;134086853327622290480640764643&quot;
  *
  * @return {String}
  * Unique random string.

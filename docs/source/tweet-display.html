@@ -39,28 +39,27 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;TweetDisplay&quot;
  * 		}]
  * 	});
  *
  * &lt;b&gt;Note&lt;/b&gt;: plugin must be at the very beginning of the plugin list to
- * work correctly. If {@link Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization PinboardVisualization}
+ * work correctly. If {@link Echo.StreamServer.Controls.Stream.Plugins.PinboardVisualization PinboardVisualization}
  * plugin is also enabled in the Stream then this plugin must be placed right after it.
  *
  * &lt;b&gt;Note&lt;/b&gt;: if TweetDisplay plugin is added to the stream then Reply and
  * Like plugins will be disabled for tweet items. Moreover Reply control is
  * renamed with Comment on non-tweet items to avoid possible confusion.
  *
- * #### Configuration
- * The TweetDisplay plugin configuration options include the following:
- *
- * + enabled &lt;br/&gt;
- *   This parameter specifies if plugin is enabled during application initialization.
- *   See more [here](http://wiki.aboutecho.com/Client-Extensions-Framework#Enabling/disablingpluginsinrealtime).
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
  *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;TweetDisplay&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
@@ -89,91 +88,91 @@ plugin.init = function() {
 };
 
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-tweet'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-tweet'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;tweet&quot;: &quot;Reply&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-retweet'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-retweet'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;retweet&quot;: &quot;Retweet&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-favorite'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-favorite'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;favorite&quot;: &quot;Favorite&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-comment'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-comment'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;comment&quot;: &quot;Comment&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-secondsAgo'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-secondsAgo'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;secondsAgo&quot;: &quot;{seconds}s&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-minutesAgo'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-minutesAgo'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;minutesAgo&quot;: &quot;{minutes}m&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-hoursAgo'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-hoursAgo'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;hoursAgo&quot;: &quot;{hours}h&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-monthsAgo'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-monthsAgo'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;monthsAgo&quot;: &quot;{day} {month}&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-yearsAgo'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-yearsAgo'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;yearsAgo&quot;: &quot;{day} {month} {year}&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-fullDate'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-fullDate'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;fullDate&quot;: &quot;{time} - {date}&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month1'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month1'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month1&quot;: &quot;Jan&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month2'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month2'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month2&quot;: &quot;Feb&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month3'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month3'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month3&quot;: &quot;Mar&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month4'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month4'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month4&quot;: &quot;Apr&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month5'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month5'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month5&quot;: &quot;May&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month6'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month6'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month6&quot;: &quot;Jun&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month7'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month7'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month7&quot;: &quot;Jul&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month8'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month8'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month8&quot;: &quot;Aug&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month9'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month9'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month9&quot;: &quot;Sep&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month10'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month10'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month10&quot;: &quot;Oct&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month11'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month11'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month11&quot;: &quot;Nov&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-property-month12'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_label-month12'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;month12&quot;: &quot;Dec&quot;
@@ -208,7 +207,7 @@ plugin.templates = {
 	&quot;date&quot;: '&lt;div class=&quot;{plugin.class:tweetDate} echo-secondaryFont&quot;&gt;&lt;/div&gt;'
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-method-authorName'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_renderer-authorName'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.authorName = function(element) {
@@ -225,7 +224,7 @@ plugin.component.renderers.authorName = function(element) {
 		);
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-method-avatar'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_renderer-avatar'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.avatar = function(element) {
@@ -240,7 +239,7 @@ plugin.component.renderers.avatar = function(element) {
 	);
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-method-date'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_renderer-date'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.date = function(element) {
@@ -257,7 +256,7 @@ plugin.component.renderers._buttonsDelimiter = function(element) {
 		.find(&quot;span[class*='button-delim']&quot;).eq(posDelimiter).text(&quot; | &quot;);
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-method-tweetUserName'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TweetDisplay-echo_renderer-tweetUserName'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.tweetUserName = function(element) {

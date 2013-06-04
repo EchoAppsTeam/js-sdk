@@ -33,14 +33,20 @@ var $ = jQuery;
  *
  * 	new Echo.IdentityServer.Controls.Auth({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-auth&quot;),
- * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;identityManager&quot;: {
  * 			&quot;login&quot;: identityManager,
  * 			&quot;signup&quot;: identityManager
  * 		}
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package identityserver/controls.pack.js
+ * @package identityserver.pack.js
  *
  * @constructor
  * Auth constructor initializing Echo.IdentityServer.Controls.Auth class.
@@ -52,6 +58,40 @@ var auth = Echo.Control.manifest(&quot;Echo.IdentityServer.Controls.Auth&quot;);
 
 if (Echo.Control.isDefined(auth)) return;
 
+<span id='Echo-IdentityServer-Controls-Auth-cfg-submissionProxyURL'>/** @hide @cfg submissionProxyURL */
+</span><span id='Echo-IdentityServer-Controls-Auth-method-placeImage'>/** @hide @method placeImage */
+</span><span id='Echo-IdentityServer-Controls-Auth-method-getRelativeTime'>/** @hide @method getRelativeTime */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-today'>/** @hide @echo_label today */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-yesterday'>/** @hide @echo_label yesterday */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-lastMonth'>/** @hide @echo_label lastMonth */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-secondAgo'>/** @hide @echo_label secondAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-secondsAgo'>/** @hide @echo_label secondsAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-minuteAgo'>/** @hide @echo_label minuteAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-minutesAgo'>/** @hide @echo_label minutesAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-hourAgo'>/** @hide @echo_label hourAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-hoursAgo'>/** @hide @echo_label hoursAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-dayAgo'>/** @hide @echo_label dayAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-daysAgo'>/** @hide @echo_label daysAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-weekAgo'>/** @hide @echo_label weekAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-weeksAgo'>/** @hide @echo_label weeksAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-monthAgo'>/** @hide @echo_label monthAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-monthsAgo'>/** @hide @echo_label monthsAgo */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-loading'>/** @hide @echo_label loading */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-retrying'>/** @hide @echo_label retrying */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_busy'>/** @hide @echo_label error_busy */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_timeout'>/** @hide @echo_label error_timeout */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_waiting'>/** @hide @echo_label error_waiting */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_view_limit'>/** @hide @echo_label error_view_limit */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_view_update_capacity_exceeded'>/** @hide @echo_label error_view_update_capacity_exceeded */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_result_too_large'>/** @hide @echo_label error_result_too_large */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_wrong_query'>/** @hide @echo_label error_wrong_query */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_incorrect_appkey'>/** @hide @echo_label error_incorrect_appkey */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_internal_error'>/** @hide @echo_label error_internal_error */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_quota_exceeded'>/** @hide @echo_label error_quota_exceeded */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_incorrect_user_id'>/** @hide @echo_label error_incorrect_user_id */
+</span><span id='Echo-IdentityServer-Controls-Auth-echo_label-error_unknown'>/** @hide @echo_label error_unknown */
+</span>
 auth.config = {
 <span id='Echo-IdentityServer-Controls-Auth-cfg-identityManager'>	/**
 </span>	 * @cfg {Object} identityManager
@@ -71,7 +111,7 @@ auth.config = {
 	 *
 	 * 	new Echo.IdentityServer.Controls.Auth({
 	 * 		&quot;target&quot;: document.getElementById(&quot;echo-auth&quot;),
-	 * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
 	 * 		&quot;identityManager&quot;: {
 	 * 			&quot;login&quot;: identityManager,
 	 * 			&quot;signup&quot;: identityManager
@@ -140,27 +180,27 @@ auth.vars = {
 };
 
 auth.labels = {
-<span id='Echo-IdentityServer-Controls-Auth-property-edit'>	/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_label-edit'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;edit&quot;: &quot;Edit&quot;,
-<span id='Echo-IdentityServer-Controls-Auth-property-login'>	/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_label-login'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;login&quot;: &quot;Login&quot;,
-<span id='Echo-IdentityServer-Controls-Auth-property-logout'>	/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_label-logout'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;logout&quot;: &quot;Logout&quot;,
-<span id='Echo-IdentityServer-Controls-Auth-property-loggingOut'>	/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_label-loggingOut'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;loggingOut&quot;: &quot;Logging out...&quot;,
-<span id='Echo-IdentityServer-Controls-Auth-property-or'>	/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_label-or'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;or&quot;: &quot;or&quot;,
-<span id='Echo-IdentityServer-Controls-Auth-property-signup'>	/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_label-signup'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;signup&quot;: &quot;signup&quot;
@@ -199,7 +239,7 @@ auth.templates.logged =
 		'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
 	'&lt;/div&gt;';
 
-<span id='Echo-IdentityServer-Controls-Auth-method-logout'>/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_renderer-logout'>/**
 </span> * @echo_renderer
  */
 auth.renderers.logout = function(element) { 
@@ -210,28 +250,28 @@ auth.renderers.logout = function(element) {
 	});
 };
 
-<span id='Echo-IdentityServer-Controls-Auth-method-login'>/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_renderer-login'>/**
 </span> * @echo_renderer
  */
 auth.renderers.login = function(element) {
 	return this._assembleIdentityControl(&quot;login&quot;, element);
 };
 
-<span id='Echo-IdentityServer-Controls-Auth-method-edit'>/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_renderer-edit'>/**
 </span> * @echo_renderer
  */
 auth.renderers.edit = function(element) {
 	return this._assembleIdentityControl(&quot;edit&quot;, element);
 };
 
-<span id='Echo-IdentityServer-Controls-Auth-method-signup'>/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_renderer-signup'>/**
 </span> * @echo_renderer
  */
 auth.renderers.signup = function(element) {
 	return this._assembleIdentityControl(&quot;signup&quot;, element);
 };
 
-<span id='Echo-IdentityServer-Controls-Auth-method-or'>/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_renderer-or'>/**
 </span> * @echo_renderer
  */
 auth.renderers.or = function(element) {
@@ -243,7 +283,7 @@ auth.renderers.or = function(element) {
 	return element;
 };
 
-<span id='Echo-IdentityServer-Controls-Auth-method-avatar'>/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_renderer-avatar'>/**
 </span> * @echo_renderer
  */
 auth.renderers.avatar = function(element) {
@@ -255,7 +295,7 @@ auth.renderers.avatar = function(element) {
 	return element;
 };
 
-<span id='Echo-IdentityServer-Controls-Auth-method-name'>/**
+<span id='Echo-IdentityServer-Controls-Auth-echo_renderer-name'>/**
 </span> * @echo_renderer
  */
 auth.renderers.name = function(element) {

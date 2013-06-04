@@ -28,11 +28,17 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Counter({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-counter&quot;),
- * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * Counter constructor initializing Echo.StreamServer.Controls.Counter class
@@ -44,6 +50,30 @@ var counter = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Counter&quo
 
 if (Echo.Control.isDefined(counter)) return;
 
+<span id='Echo-StreamServer-Controls-Counter-cfg-defaultAvatar'>/** @hide @cfg defaultAvatar */
+</span><span id='Echo-StreamServer-Controls-Counter-cfg-labels'>/** @hide @cfg labels */
+</span><span id='Echo-StreamServer-Controls-Counter-cfg-submissionProxyURL'>/** @hide @cfg submissionProxyURL */
+</span><span id='Echo-StreamServer-Controls-Counter-method-getPlugin'>/** @hide @method getPlugin */
+</span><span id='Echo-StreamServer-Controls-Counter-method-getRelativeTime'>/** @hide @method getRelativeTime */
+</span><span id='Echo-StreamServer-Controls-Counter-method-parentRenderer'>/** @hide @method parentRenderer */
+</span><span id='Echo-StreamServer-Controls-Counter-method-placeImage'>/** @hide @method placeImage */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-today'>/** @hide @echo_label today */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-yesterday'>/** @hide @echo_label yesterday */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-lastMonth'>/** @hide @echo_label lastMonth */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-secondAgo'>/** @hide @echo_label secondAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-secondsAgo'>/** @hide @echo_label secondsAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-minuteAgo'>/** @hide @echo_label minuteAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-minutesAgo'>/** @hide @echo_label minutesAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-hourAgo'>/** @hide @echo_label hourAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-hoursAgo'>/** @hide @echo_label hoursAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-dayAgo'>/** @hide @echo_label dayAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-daysAgo'>/** @hide @echo_label daysAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-weekAgo'>/** @hide @echo_label weekAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-weeksAgo'>/** @hide @echo_label weeksAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-monthAgo'>/** @hide @echo_label monthAgo */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-monthsAgo'>/** @hide @echo_label monthsAgo */
+</span>
 counter.init = function() {
 	if (!this.checkAppKey()) return;
 
@@ -69,7 +99,7 @@ counter.config = {
 	 *
 	 * 	new Echo.StreamServer.Controls.Counter({
 	 * 		&quot;target&quot;: document.getElementById(&quot;echo-counter&quot;),
-	 * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
 	 * 		&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
 	 * 	});
 	 */

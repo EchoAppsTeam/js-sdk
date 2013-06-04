@@ -27,13 +27,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Submit({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;TextCounter&quot;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;TextCounter&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
 
@@ -71,12 +77,12 @@ plugin.events = {
 };
 
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-property-limited'>	/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-echo_label-limited'>	/**
 </span>	 * @echo_label
 	 * Label to show in the counter if maximum character limit is provided
 	 */
 	&quot;limited&quot;: &quot;{typed}/{left} characters&quot;,
-<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-property-unlimited'>	/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-echo_label-unlimited'>	/**
 </span>	 * @echo_label
 	 * Label to show in the counter if no character limit is provided
 	 */
@@ -86,7 +92,7 @@ plugin.labels = {
 plugin.templates.counter =
 	 '&lt;div class=&quot;{plugin.class:counterLabel} echo-primaryFont echo-primaryColor&quot;&gt;&lt;/div&gt;';
 
-<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-method-text'>/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-echo_renderer-text'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.text = function(element) {
@@ -108,7 +114,7 @@ plugin.component.renderers.text = function(element) {
 	return element.on(&quot;blur focus keyup keypress&quot;, handler);
 };
 
-<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-method-counterLabel'>/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-TextCounter-echo_renderer-counterLabel'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.counterLabel = function(element) {

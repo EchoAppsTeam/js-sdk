@@ -29,7 +29,27 @@ Echo.IdentityServer.API = {};
 <span id='Echo-IdentityServer-API-Request-method-constructor'><span id='Echo-IdentityServer-API-Request'>/**
 </span></span> * @class Echo.IdentityServer.API.Request
  * Class implements the interaction with the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/35104702/API-section-users&quot; target=&quot;_blank&quot;&gt;Echo Users API&lt;/a&gt; 
+ *
+ *     var request = Echo.IdentityServer.API.request({
+ *         &quot;endpoint&quot;: &quot;whoami&quot;,
+ *         &quot;apiBaseURL&quot;: &quot;http://api.echoenabled.com/v1/users/&quot;,
+ *         &quot;data&quot;: {
+ *             &quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *             &quot;sessionID&quot;: &quot;http://api.echoenabled.com/v1/bus/jskit/channel/137025938529801703&quot;
+ *         },
+ *         &quot;onData&quot;: function(data, extra) {
+ *             // handle successful request here...
+ *         },
+ *         &quot;onError&quot;: function(data, extra) {
+ *             // handle failed request here...
+ *         }
+ *     });
+ *
+ *     request.send();
+ *
  * @extends Echo.API.Request
+ *
+ * @package api.pack.js
  *
  * @constructor
  * Constructor initializing class using configuration data.
@@ -37,6 +57,9 @@ Echo.IdentityServer.API = {};
  */
 Echo.IdentityServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
 	config = $.extend({
+<span id='Echo-IdentityServer-API-Request-cfg-endpoint'>		/**
+</span>		 * @cfg {String} [endpoint] Specifies the API endpoint. The only &quot;whoami&quot; endpoint is implemented now.
+		 */
 <span id='Echo-IdentityServer-API-Request-cfg-onData'>		/**
 </span>		 * @cfg {Function} [onData] Callback called after API request succeded.
 		 */

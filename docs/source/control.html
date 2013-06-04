@@ -23,6 +23,10 @@ var $ = jQuery;
 <span id='Echo-Control'>/**
 </span> * @class Echo.Control
  * Foundation class implementing core logic to create controls and manipulate with them.
+ *
+ * You can find instructions on how to create your control in the [&quot;How to develop a control&quot;](#!/guide/how_to_develop_control) guide.
+ *
+ * @package environment.pack.js
  */
 Echo.Control = function() {};
 
@@ -426,7 +430,7 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
 </span> * Method to extend the template of the particular control.
  *
  * @param {String} action
- * One of the following actions:
+ * The following actions are available:
  *
  * + &quot;insertBefore&quot;
  * + &quot;insertAfter&quot;
@@ -1188,7 +1192,7 @@ manifest.config = {
 </span>	 * @cfg {String} appkey
 	 * Specifies the customer application key. You should specify this parameter
 	 * if your control uses StreamServer or IdentityServer API requests.
-	 * You can use the &quot;test.echoenabled.com&quot; appkey for testing purposes.
+	 * You can use the &quot;echo.jssdk.demo.aboutecho.com&quot; appkey for testing purposes.
 	 */
 	&quot;appkey&quot;: &quot;&quot;,
 
@@ -1306,124 +1310,124 @@ manifest.config.normalizer = {
 };
 
 manifest.labels = {
-<span id='Echo-Control-property-loading'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-loading'>	/**
+</span>	 * @echo_label loading
 	 */
 	&quot;loading&quot;: &quot;Loading...&quot;,
-<span id='Echo-Control-property-retrying'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-retrying'>	/**
+</span>	 * @echo_label retrying
 	 */
 	&quot;retrying&quot;: &quot;Retrying...&quot;,
-<span id='Echo-Control-property-error_busy'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_busy'>	/**
+</span>	 * @echo_label error_busy
 	 */
 	&quot;error_busy&quot;: &quot;Loading. Please wait...&quot;,
-<span id='Echo-Control-property-error_timeout'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_timeout'>	/**
+</span>	 * @echo_label error_timeout
 	 */
 	&quot;error_timeout&quot;: &quot;Loading. Please wait...&quot;,
-<span id='Echo-Control-property-error_waiting'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_waiting'>	/**
+</span>	 * @echo_label error_waiting
 	 */
 	&quot;error_waiting&quot;: &quot;Loading. Please wait...&quot;,
-<span id='Echo-Control-property-error_view_limit'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_view_limit'>	/**
+</span>	 * @echo_label error_view_limit
 	 */
 	&quot;error_view_limit&quot;: &quot;View creation rate limit has been exceeded. Retrying in {seconds} seconds...&quot;,
-<span id='Echo-Control-property-error_view_update_capacity_exceeded'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_view_update_capacity_exceeded'>	/**
+</span>	 * @echo_label error_view_update_capacity_exceeded
 	 */
 	&quot;error_view_update_capacity_exceeded&quot;: &quot;This stream is momentarily unavailable due to unusually high activity. Retrying in {seconds} seconds...&quot;,
-<span id='Echo-Control-property-error_result_too_large'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_result_too_large'>	/**
+</span>	 * @echo_label error_result_too_large
 	 */
 	&quot;error_result_too_large&quot;: &quot;(result_too_large) The search result is too large.&quot;,
-<span id='Echo-Control-property-error_wrong_query'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_wrong_query'>	/**
+</span>	 * @echo_label error_wrong_query
 	 */
 	&quot;error_wrong_query&quot;: &quot;(wrong_query) Incorrect or missing query parameter.&quot;,
-<span id='Echo-Control-property-error_incorrect_appkey'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_incorrect_appkey'>	/**
+</span>	 * @echo_label error_incorrect_appkey
 	 */
 	&quot;error_incorrect_appkey&quot;: &quot;(incorrect_appkey) Incorrect or missing appkey.&quot;,
-<span id='Echo-Control-property-error_internal_error'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_internal_error'>	/**
+</span>	 * @echo_label error_internal_error
 	 */
 	&quot;error_internal_error&quot;: &quot;(internal_error) Unknown server error.&quot;,
-<span id='Echo-Control-property-error_quota_exceeded'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_quota_exceeded'>	/**
+</span>	 * @echo_label error_quota_exceeded
 	 */
 	&quot;error_quota_exceeded&quot;: &quot;(quota_exceeded) Required more quota than is available.&quot;,
-<span id='Echo-Control-property-error_incorrect_user_id'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_incorrect_user_id'>	/**
+</span>	 * @echo_label error_incorrect_user_id
 	 */
 	&quot;error_incorrect_user_id&quot;: &quot;(incorrect_user_id) Incorrect user specified in User ID predicate.&quot;,
-<span id='Echo-Control-property-error_unknown'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-error_unknown'>	/**
+</span>	 * @echo_label error_unknown
 	 */
 	&quot;error_unknown&quot;: &quot;(unknown) Unknown error.&quot;,
-<span id='Echo-Control-property-today'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-today'>	/**
+</span>	 * @echo_label today
 	 */
 	&quot;today&quot;: &quot;Today&quot;,
-<span id='Echo-Control-property-yesterday'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-yesterday'>	/**
+</span>	 * @echo_label yesterday
 	 */
 	&quot;yesterday&quot;: &quot;Yesterday&quot;,
-<span id='Echo-Control-property-lastWeek'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-lastWeek'>	/**
+</span>	 * @echo_label lastWeek
 	 */
 	&quot;lastWeek&quot;: &quot;Last Week&quot;,
-<span id='Echo-Control-property-lastMonth'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-lastMonth'>	/**
+</span>	 * @echo_label lastMonth
 	 */
 	&quot;lastMonth&quot;: &quot;Last Month&quot;,
-<span id='Echo-Control-property-secondAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-secondAgo'>	/**
+</span>	 * @echo_label secondAgo
 	 */
 	&quot;secondAgo&quot;: &quot;{number} Second Ago&quot;,
-<span id='Echo-Control-property-secondsAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-secondsAgo'>	/**
+</span>	 * @echo_label secondsAgo
 	 */
 	&quot;secondsAgo&quot;: &quot;{number} Seconds Ago&quot;,
-<span id='Echo-Control-property-minuteAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-minuteAgo'>	/**
+</span>	 * @echo_label minuteAgo
 	 */
 	&quot;minuteAgo&quot;: &quot;{number} Minute Ago&quot;,
-<span id='Echo-Control-property-minutesAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-minutesAgo'>	/**
+</span>	 * @echo_label minutesAgo
 	 */
 	&quot;minutesAgo&quot;: &quot;{number} Minutes Ago&quot;,
-<span id='Echo-Control-property-hourAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-hourAgo'>	/**
+</span>	 * @echo_label hourAgo
 	 */
 	&quot;hourAgo&quot;: &quot;{number} Hour Ago&quot;,
-<span id='Echo-Control-property-hoursAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-hoursAgo'>	/**
+</span>	 * @echo_label hoursAgo
 	 */
 	&quot;hoursAgo&quot;: &quot;{number} Hours Ago&quot;,
-<span id='Echo-Control-property-dayAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-dayAgo'>	/**
+</span>	 * @echo_label dayAgo
 	 */
 	&quot;dayAgo&quot;: &quot;{number} Day Ago&quot;,
-<span id='Echo-Control-property-daysAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-daysAgo'>	/**
+</span>	 * @echo_label daysAgo
 	 */
 	&quot;daysAgo&quot;: &quot;{number} Days Ago&quot;,
-<span id='Echo-Control-property-weekAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-weekAgo'>	/**
+</span>	 * @echo_label weekAgo
 	 */
 	&quot;weekAgo&quot;: &quot;{number} Week Ago&quot;,
-<span id='Echo-Control-property-weeksAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-weeksAgo'>	/**
+</span>	 * @echo_label weeksAgo
 	 */
 	&quot;weeksAgo&quot;: &quot;{number} Weeks Ago&quot;,
-<span id='Echo-Control-property-monthAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-monthAgo'>	/**
+</span>	 * @echo_label monthAgo
 	 */
 	&quot;monthAgo&quot;: &quot;{number} Month Ago&quot;,
-<span id='Echo-Control-property-monthsAgo'>	/**
-</span>	 * @echo_label
+<span id='Echo-Control-echo_label-monthsAgo'>	/**
+</span>	 * @echo_label monthsAgo
 	 */
 	&quot;monthsAgo&quot;: &quot;{number} Months Ago&quot;
 };

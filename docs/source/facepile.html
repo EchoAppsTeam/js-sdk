@@ -27,13 +27,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.FacePile({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-facepile&quot;),
- * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;query&quot;: &quot;childrenof:http://example.com/* itemsPerPage:2 children:0&quot;,
  * 		&quot;suffixText&quot;: &quot; commented on aboutecho.com&quot;,
  * 		&quot;item&quot;: {&quot;avatar&quot;: true, &quot;text&quot;: true}
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * FacePile constructor initializing Echo.StreamServer.Controls.FacePile class
@@ -45,6 +51,27 @@ var pile = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.FacePile&quot;
 
 if (Echo.Control.isDefined(pile)) return;
 
+<span id='Echo-StreamServer-Controls-FacePile-cfg-defaultAvatar'>/** @hide @cfg defaultAvatar */
+</span><span id='Echo-StreamServer-Controls-FacePile-cfg-submissionProxyURL'>/** @hide @cfg submissionProxyURL */
+</span><span id='Echo-StreamServer-Controls-FacePile-method-placeImage'>/** @hide @method placeImage */
+</span><span id='Echo-StreamServer-Controls-FacePile-method-getRelativeTime'>/** @hide @method getRelativeTime */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-today'>/** @hide @echo_label today */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-yesterday'>/** @hide @echo_label yesterday */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-lastMonth'>/** @hide @echo_label lastMonth */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-secondAgo'>/** @hide @echo_label secondAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-secondsAgo'>/** @hide @echo_label secondsAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-minuteAgo'>/** @hide @echo_label minuteAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-minutesAgo'>/** @hide @echo_label minutesAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-hourAgo'>/** @hide @echo_label hourAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-hoursAgo'>/** @hide @echo_label hoursAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-dayAgo'>/** @hide @echo_label dayAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-daysAgo'>/** @hide @echo_label daysAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-weekAgo'>/** @hide @echo_label weekAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-weeksAgo'>/** @hide @echo_label weeksAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-monthAgo'>/** @hide @echo_label monthAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-monthsAgo'>/** @hide @echo_label monthsAgo */
+</span>
 pile.init = function() {
 	if (!this.checkAppKey()) return;
 
@@ -60,11 +87,6 @@ pile.init = function() {
 };
 
 pile.config = {
-<span id='Echo-StreamServer-Controls-FacePile-cfg-defaultAvatar'>	/**
-</span>	 * @cfg defaultAvatar
-	 * @hide
-	 */
-
 <span id='Echo-StreamServer-Controls-FacePile-cfg-data'>	/**
 </span>	 * @cfg {Object} data
 	 * Specifies static data for the face pile. It has the same format as returned
@@ -74,6 +96,7 @@ pile.config = {
 	 * provided &quot;query&quot; takes precedence over &quot;data&quot;.
 	 */
 	&quot;data&quot;: undefined,
+
 <span id='Echo-StreamServer-Controls-FacePile-cfg-initialUsersCount'>	/**
 </span>	 * @cfg {String} initialUsersCount
 	 * The number of users which will be shown when the FacePile is displayed
@@ -82,6 +105,7 @@ pile.config = {
 	 * using `data`.
 	 */
 	&quot;initialUsersCount&quot;: undefined,
+
 <span id='Echo-StreamServer-Controls-FacePile-cfg-totalUsersCount'>	/**
 </span>	 * @cfg {String} totalUsersCount
 	 * The total number of users for the FacePile. If it's not defined it defaults to
@@ -89,12 +113,28 @@ pile.config = {
 	 * only for the list created using `data`.
 	 */
 	&quot;totalUsersCount&quot;: undefined,
+
+<span id='Echo-StreamServer-Controls-FacePile-cfg-query'>	/**
+</span>	 * @cfg {String} query
+	 * Specifies the search query to generate the necessary data set.
+	 * It must be constructed according to the
+	 * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
+	 * method specification.
+	 *
+	 * 	new Echo.StreamServer.Controls.FacePile({
+	 * 		&quot;target&quot;: document.getElementById(&quot;echo-facepile&quot;),
+	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+	 * 		&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
+	 * 	});
+	 */
 	&quot;query&quot;: &quot;&quot;,
+
 <span id='Echo-StreamServer-Controls-FacePile-cfg-suffixText'>	/**
 </span>	 * @cfg {String} suffixText
 	 * Specifies the text being appended to the end of Face Pile user's list.
 	 */
 	&quot;suffixText&quot;: &quot;&quot;,
+
 <span id='Echo-StreamServer-Controls-FacePile-cfg-item'>	/**
 </span>	 * @cfg {Object} item
 	 * Customizes the FacePile item
@@ -109,6 +149,7 @@ pile.config = {
 		&quot;avatar&quot;: true,
 		&quot;text&quot;: true
 	},
+
 <span id='Echo-StreamServer-Controls-FacePile-cfg-infoMessages'>	/**
 </span>	 * @cfg {String} infoMessages
 	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
@@ -130,11 +171,11 @@ pile.vars = {
 };
 
 pile.labels = {
-<span id='Echo-StreamServer-Controls-FacePile-property-and'>	/**
+<span id='Echo-StreamServer-Controls-FacePile-echo_label-and'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;and&quot;: &quot;and&quot;,
-<span id='Echo-StreamServer-Controls-FacePile-property-more'>	/**
+<span id='Echo-StreamServer-Controls-FacePile-echo_label-more'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;more&quot;: &quot;more&quot;
@@ -147,7 +188,7 @@ pile.templates.main =
 		'&lt;span class=&quot;{class:suffixText}&quot;&gt;&lt;/span&gt;' +
 	'&lt;/span&gt;';
 
-<span id='Echo-StreamServer-Controls-FacePile-method-more'>/**
+<span id='Echo-StreamServer-Controls-FacePile-echo_renderer-more'>/**
 </span> * @echo_renderer
  */
 pile.renderers.more = function(element) {
@@ -174,7 +215,7 @@ pile.renderers.more = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-FacePile-method-actors'>/**
+<span id='Echo-StreamServer-Controls-FacePile-echo_renderer-actors'>/**
 </span> * @echo_renderer
  */
 pile.renderers.actors = function(element) {
@@ -222,7 +263,7 @@ pile.renderers.actors = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-FacePile-method-suffixText'>/**
+<span id='Echo-StreamServer-Controls-FacePile-echo_renderer-suffixText'>/**
 </span> * @echo_renderer
  */
 pile.renderers.suffixText = function(element) {
@@ -473,6 +514,9 @@ var $ = jQuery;
  *
  * @extends Echo.Control
  *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
+ *
  * @constructor
  * FacePile.Item constructor initializing Echo.StreamServer.Controls.FacePile.Item class
  *
@@ -483,6 +527,44 @@ var item = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.FacePile.Item&
 
 if (Echo.Control.isDefined(item)) return;
 
+<span id='Echo-StreamServer-Controls-FacePile-Item-cfg-appkey'>/** @hide @cfg appkey */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-cfg-plugins'>/** @hide @cfg plugins */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-cfg-submissionProxyURL'>/** @hide @cfg submissionProxyURL */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-method-checkAppKey'>/** @hide @method checkAppKey */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-method-placeImage'>/** @hide @method placeImage */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-method-dependent'>/** @hide @method dependent */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-method-getRelativeTime'>/** @hide @method getRelativeTime */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-today'>/** @hide @echo_label today */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-yesterday'>/** @hide @echo_label yesterday */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-lastMonth'>/** @hide @echo_label lastMonth */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-secondAgo'>/** @hide @echo_label secondAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-secondsAgo'>/** @hide @echo_label secondsAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-minuteAgo'>/** @hide @echo_label minuteAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-minutesAgo'>/** @hide @echo_label minutesAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-hourAgo'>/** @hide @echo_label hourAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-hoursAgo'>/** @hide @echo_label hoursAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-dayAgo'>/** @hide @echo_label dayAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-daysAgo'>/** @hide @echo_label daysAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-weekAgo'>/** @hide @echo_label weekAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-weeksAgo'>/** @hide @echo_label weeksAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-monthAgo'>/** @hide @echo_label monthAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-monthsAgo'>/** @hide @echo_label monthsAgo */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-loading'>/** @hide @echo_label loading */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-retrying'>/** @hide @echo_label retrying */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_busy'>/** @hide @echo_label error_busy */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_timeout'>/** @hide @echo_label error_timeout */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_waiting'>/** @hide @echo_label error_waiting */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_view_limit'>/** @hide @echo_label error_view_limit */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_view_update_capacity_exceeded'>/** @hide @echo_label error_view_update_capacity_exceeded */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_result_too_large'>/** @hide @echo_label error_result_too_large */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_wrong_query'>/** @hide @echo_label error_wrong_query */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_incorrect_appkey'>/** @hide @echo_label error_incorrect_appkey */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_internal_error'>/** @hide @echo_label error_internal_error */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_quota_exceeded'>/** @hide @echo_label error_quota_exceeded */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_incorrect_user_id'>/** @hide @echo_label error_incorrect_user_id */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-error_unknown'>/** @hide @echo_label error_unknown */
+</span>
 item.config = {
 <span id='Echo-StreamServer-Controls-FacePile-Item-cfg-infoMessages'>	/**
 </span>	 * @cfg {String} infoMessages
@@ -494,7 +576,7 @@ item.config = {
 };
 
 item.labels = {
-<span id='Echo-StreamServer-Controls-FacePile-Item-property-you'>	/**
+<span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-you'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;you&quot;: &quot;You&quot;
@@ -506,7 +588,7 @@ item.templates.main =
 		'&lt;span class=&quot;{class:title}&quot;&gt;{data:title}&lt;/span&gt;' +
 	'&lt;/span&gt;';
 
-<span id='Echo-StreamServer-Controls-FacePile-Item-method-avatar'>/**
+<span id='Echo-StreamServer-Controls-FacePile-Item-echo_renderer-avatar'>/**
 </span> * @echo_renderer
  */
 item.renderers.avatar = function(element) {
@@ -526,7 +608,7 @@ item.renderers.avatar = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-FacePile-Item-method-title'>/**
+<span id='Echo-StreamServer-Controls-FacePile-Item-echo_renderer-title'>/**
 </span> * @echo_renderer
  */
 item.renderers.title = function(element) {

@@ -8,15 +8,15 @@ This guide contains the definition of the terms used throughout the JS SDK docs,
 
 ### Manifest
 
-The unified structure which describes a certain application, control or a plugin is called a *manifest*. Each component type has a special "manifest" function ([Echo.Control.manifest](#!/api/Echo.Control-static-method-manifest), [Echo.Plugin.manifest](#!/api/Echo.Plugin-static-method-manifest), [Echo.App.manifest](#!/api/Echo.App-static-method-manifest)) to generate an empty *manifest* skeleton which can be filled in with the business logic. In addition to the "manifest" function, there is a set of "create" functions to turn static definition into the JS classes ([Echo.Control.create](#!/api/Echo.Control-static-method-create), [Echo.Plugin.create](#!/api/Echo.Plugin-static-method-create) and [Echo.App.create](#!/api/Echo.App-static-method-create)). More information about the use of the *manifest* can be found in the [Contol](#!/guide/how_to_develop_control), [Plugin](#!/guide/how_to_develop_plugin) or [App](#!/guide/how_to_develop_app) development guides.
+The unified structure which describes a certain application, control or a plugin is called a *manifest*. Each component type has a special "manifest" function (Echo.Control.manifest, Echo.Plugin.manifest, Echo.App.manifest) to generate an empty *manifest* skeleton which can be filled in with the business logic. In addition to the "manifest" function, there is a set of "create" functions to turn static definition into the JS classes (Echo.Control.create, Echo.Plugin.create and Echo.App.create). More information about the use of the *manifest* can be found in the [Contol](#!/guide/how_to_develop_control), [Plugin](#!/guide/how_to_develop_plugin) or [App](#!/guide/how_to_develop_app) development guides.
 
 ### Control
 
-*Control* is a JavaScript class with the pre-defined structure (generated out of the control manifest) which represents a certain set of discrete functionality. Control examples: [Stream control](#!/api/Echo.StreamServer.Controls.Stream), [Submit control](#!/api/Echo.StreamServer.Controls.Submit), [Auth control](#!/api/Echo.IdentityServer.Controls.Auth), etc. More information about the Controls development can be found in [the hands-on guide](#!/guide/how_to_develop_control).
+*Control* is a JavaScript class with the pre-defined structure (generated out of the control manifest) which represents a certain set of discrete functionality. Control examples: {@link Echo.StreamServer.Controls.Stream Stream control}, {@link Echo.StreamServer.Controls.Submit Submit control}, {@link Echo.IdentityServer.Controls.Auth Auth control}, etc. More information about the Controls development can be found in [the hands-on guide](#!/guide/how_to_develop_control).
 
 ### Plugin
 
-*Plugin* is a JavaScript class with the pre-defined structure (generated out of the plugin manifest) which extends a certain part of a Control or an App. Plugin examples: [Reply](#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply), [Edit](#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Edit), [Like](#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like). More information about the Plugins development can be found in [the hands-on guide](#!/guide/how_to_develop_plugin).
+*Plugin* is a JavaScript class with the pre-defined structure (generated out of the plugin manifest) which extends a certain part of a Control or an App. Plugin examples: {@link Echo.StreamServer.Controls.Stream.Item.Plugins.Reply Reply}, {@link Echo.StreamServer.Controls.Stream.Item.Plugins.Edit Edit}, {@link Echo.StreamServer.Controls.Stream.Item.Plugins.Like Like}. More information about the Plugins development can be found in [the hands-on guide](#!/guide/how_to_develop_plugin).
 
 ### Application (aka App)
 
@@ -26,23 +26,22 @@ The unified structure which describes a certain application, control or a plugin
 
 The appearance of an application can be considered as a composition of its visual components, which are in fact DOM elements with its own structure. Function which produces specific component or modifies it is called *Renderer* and is in fact the minimal entity in terms of Echo component visual design.
 
-## Creating a JavaScript closure for the components
+## Creating a JavaScript closure for the components and jQuery plugins
 
 Any Echo JS SDK component should be placed to a separate JS closure to provide a unique namespace for the component and avoid code intersection.
 
-	@example
 	(function(jQuery) {
 	"use strict";
 
 	var $ = jQuery;
 
-	// component code goes here
+	// component or jQuery plugin code goes here
 
 	})(Echo.jQuery);
 
 Due to the fact that Echo JS SDK uses a separate jQuery instance (available as Echo.jQuery), we pass the Echo.jQuery reference as the anonymous function argument and accept is as jQuery variable. In addition to that we add the $ variable and link it to the same jQuery reference. So inside the JS closure both "jQuery" and "$" vars are available, like on a regular page with the jQuery lib included.
 
-Also we add the directive to switch the JS code execution to the strict mode ("user strict"). It helps to avoid the mistakes (such as using the global vars in inappropriate places, etc) while developing the code + the code which works in the strict mode will be minified without any issues.
+Also we add the directive to switch the JS code execution to the strict mode (*"use strict"*). It helps to avoid the mistakes (such as using the global vars in inappropriate places, etc) while developing the code + the code which works in the strict mode will be minified without any issues.
 
 ## Rendering engine
 
@@ -52,7 +51,6 @@ Rendering is the process of transformation from declarative templates, css rules
 
 Echo HTML template is a HTML declarative structure with placeholders in curly brackets.
 
-	@example
 	var template =
 		'<span class="{class:container}">' +
 			'<span class="{class:avatar}">' +
@@ -74,7 +72,6 @@ There are several types of placeholders:
 
 Echo CSS template is a CSS declarative structure with placeholders in curly brackets.
 
-	@example
 	var css = 
 		'.{class:avatar} img { width: 16px; height: 16px; margin: 3px; }' +
 		'.{class:container}, .{class:container} span { white-space: nowrap; }' +
@@ -84,7 +81,6 @@ Echo CSS template is a CSS declarative structure with placeholders in curly brac
 
 Echo renderer function is a javascript function with fixed interface which produces or modifies the particular DOM element.
 
-	@example
 	var renderer = function(element) {
 		if (condition) {
 			element.empty().append(title));
@@ -100,12 +96,10 @@ All the files in the _http://cdn/echoenabled.com/sdk/v3/_ directory are minified
 By default all dependencies specified in the source code will be downloaded minified but there is a way to specify which version to download. Here it is:
 
 1. if page includes **/sdk/v3/dev/loader.js** then dev versions will be used else go to 2.
-2. if URL contains **echo.debug:true** or **echo.debug:false** after # (known as fragment/anchor) then we use:
+2. if URL contains **echo.debug:true** or **echo.debug:false** after # (known as fragment/anchor) then we save its value in the special **echo-debug** cookie and:
 
-    &bull; dev versions if **echo.debug:true**;<br>
-    &bull; min versions if **echo.debug:false**;<br>
-    &bull; go to 3. if nothing is provided.<br><br>
+    &bull; use dev versions if **echo.debug:true**;
+    &bull; use min versions if **echo.debug:false**;
+    &bull; go to 3 otherwise.<br><br>
 
-3. If cookie with the name **echo-debug** exists and its value is true then we use dev versions. Note that if **echo.debug:true** was in the URL earlier than this cookie will exist.
-
-
+3. If cookie with the name **echo-debug** exists and its value is _true_ then we use dev versions.

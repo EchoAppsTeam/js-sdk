@@ -29,13 +29,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;Edit&quot;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;Edit&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
@@ -53,7 +59,7 @@ $.map([&quot;Complete&quot;, &quot;Error&quot;], function(action) {
 });
 
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Edit-property-editButton'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Edit-echo_label-editButton'>	/**
 </span>	 * @echo_label
 	 * Label for the button in the item
 	 */
@@ -109,13 +115,17 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Submit({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;Edit&quot;
  * 		}]
  * 	});
  *
  * @extends Echo.Plugin
+ *
+ * @private
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;Edit&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
 
@@ -131,45 +141,42 @@ plugin.init = function() {
 };
 
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-createdBy'>	/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_label-createdBy'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;createdBy&quot;: &quot;Created by&quot;,
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-edit'>	/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_label-edit'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;edit&quot;: &quot;Edit&quot;,
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-on'>	/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_label-on'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;on&quot;: &quot;on&quot;,
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-post'>	/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_label-post'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;post&quot;: &quot;Update&quot;,
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-posting'>	/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_label-posting'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;posting&quot;: &quot;Updating...&quot;,
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-property-cancel'>	/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_label-cancel'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;cancel&quot;: &quot;cancel&quot;
 };
 
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-event-onEditInit'>/**
-</span> * @event onEditInit
- * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_event-onEditInit'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit
  * Triggered when edit operation was started
  */
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-event-onEditComplete'>/**
-</span> * @event onEditComplete
- * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_event-onEditComplete'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete
  * Triggered when edit operation is finished
  */
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-event-onEditError'>/**
-</span> * @event onEditError
- * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_event-onEditError'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError
  * Triggered if edit operation failed
  */
 $.map([&quot;Init&quot;, &quot;Complete&quot;, &quot;Error&quot;], function(action) {
@@ -197,7 +204,7 @@ plugin.templates.cancel =
 		'&lt;/a&gt;' +
 	'&lt;/div&gt;';
 
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-method-author'>/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_renderer-author'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.author = function(element) {
@@ -205,7 +212,7 @@ plugin.renderers.author = function(element) {
 	return element.text(component.get(&quot;data.actor.title&quot;) || component.labels.get(&quot;guest&quot;));
 };
 
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-method-editedDate'>/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_renderer-editedDate'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.editedDate = function(element) {
@@ -216,7 +223,7 @@ plugin.renderers.editedDate = function(element) {
 	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
 };
 
-<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-method-cancelButton'>/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_renderer-cancelButton'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.cancelButton = function(element) {

@@ -29,6 +29,12 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.UserSession&quot;)) return;
  * The Echo.UserSession class is used in pretty much all applications
  * built on top of the Echo JS SDK.
  *
+ * Example:
+ * 	var user = Echo.UserSession({&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;});
+ * 	user.is(&quot;logged&quot;); // returns true or false
+ *
+ * @package environment.pack.js
+ *
  * @constructor
  * Class constructor which accepts the object which represents the
  * configuration as the argument. The class is a singleton, i.e. one
@@ -59,7 +65,12 @@ Echo.UserSession = function(config) {
  * field in the user object.
  *
  * @param {String} key
- * Defines the key where the given data should be stored.
+ * Defines the key where the given data should be stored. The following keys are available:
+ *
+ * + &quot;name&quot;
+ * + &quot;roles&quot;
+ * + &quot;state&quot;
+ * + &quot;markers&quot;
  *
  * @param {Mixed} value
  * The corresponding value which should be defined for the key.
@@ -83,7 +94,17 @@ Echo.UserSession.set = function(key, value) {
  * default value if specified in the second argument.
  *
  * @param {String} key
- * Defines the key for which the value needs to be retrieved.
+ * Defines the key for which the value needs to be retrieved. The following keys are available:
+ *
+ * + &quot;avatar&quot;
+ * + &quot;name&quot;
+ * + &quot;sessionID&quot;
+ * + &quot;email&quot;
+ * + &quot;roles&quot;
+ * + &quot;state&quot;
+ * + &quot;markers&quot;
+ * + &quot;activeIdentities&quot;
+ * + &quot;identityUrl&quot;
  *
  * @param {Mixed} [defaults]
  * Default value if no corresponding key was found in the user object.
@@ -114,7 +135,10 @@ Echo.UserSession.get = function(key, defaults) {
  * value.
  *
  * @param {String} key
- * Defines the name of the condition to check.
+ * Defines the name of the condition to check. The following keys are available:
+ *
+ * + &quot;logged&quot;
+ * + &quot;admin&quot;
  *
  * @return (Boolean)
  * True or false if condition was met or not respectively.
@@ -131,7 +155,11 @@ Echo.UserSession.is = function(key) {
  * field.
  *
  * @param {String} key
- * Defines the name of the user object field.
+ * Defines the name of the user object field. The following keys are available:
+ *
+ * + &quot;identity&quot;
+ * + &quot;marker&quot;
+ * + &quot;role&quot;
  *
  * @param {Mixed} value
  * Defines the desired string or integer value.
@@ -159,7 +187,10 @@ Echo.UserSession.has = function(key, value) {
  * that the value of the second argument should be `Array`.
  *
  * @param {String} key
- * Defines the name of the user object field.
+ * Defines the name of the user object field. The following keys are available:
+ *
+ * + &quot;markers&quot;
+ * + &quot;roles&quot;
  *
  * @param {Array} values
  * Defines the set of values.
@@ -302,9 +333,8 @@ Echo.UserSession._listenEvents = function() {
 	user.backplaneSubscriptionID = Backplane.subscribe(function(message) {
 		if (message.type !== &quot;identity/ack&quot;) return;
 		user._init(function() {
-<span id='Echo-UserSession-event-onInvalidate'>			/**
-</span>			 * @event onInvalidate
-			 * @echo_event Echo.UserSession.onInvalidate
+<span id='Echo-UserSession-echo_event-onInvalidate'>			/**
+</span>			 * @echo_event Echo.UserSession.onInvalidate
 			 * Triggered after user has logged in or logged out.
 			 *
 			 * @param {String} topic
@@ -374,9 +404,8 @@ Echo.UserSession._init = function(callback) {
 		}
 		user.state = &quot;ready&quot;;
 		user._reset(data);
-<span id='Echo-UserSession-event-onInit'>		/**
-</span>		 * @event onInit
-		 * @echo_event Echo.UserSession.onInit
+<span id='Echo-UserSession-echo_event-onInit'>		/**
+</span>		 * @echo_event Echo.UserSession.onInit
 		 * Triggered when the user is initialized on the page.
 		 *
 		 * @param {String} topic

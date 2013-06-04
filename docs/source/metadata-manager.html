@@ -29,13 +29,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;MetadataManager&quot;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;MetadataManager&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
@@ -74,7 +80,7 @@ plugin.init = function() {
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;MetadataManager&quot;
  * 			&quot;controls&quot;: [{
@@ -89,7 +95,7 @@ plugin.init = function() {
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;MetadataManager&quot;
  * 			&quot;controls&quot;: [{
@@ -104,7 +110,7 @@ plugin.init = function() {
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;MetadataManager&quot;
  * 			&quot;controls&quot;: [{
@@ -124,7 +130,7 @@ plugin.init = function() {
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;MetadataManager&quot;
  * 			&quot;controls&quot;: [{
@@ -142,11 +148,11 @@ plugin.init = function() {
  * 	});
  */
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-property-markProcessing'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-echo_label-markProcessing'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;markProcessing&quot;: &quot;Adding {type} {marker}...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-property-unmarkProcessing'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-echo_label-unmarkProcessing'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;unmarkProcessing&quot;: &quot;Removing {type} {marker}...&quot;
@@ -184,28 +190,24 @@ plugin.methods._assembleButton = function(action, control) {
 			&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;, false, true),
 			&quot;submissionProxyURL&quot;: item.config.get(&quot;submissionProxyURL&quot;),
 			&quot;onData&quot;: function(response) {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onMarkComplete'>				/**
-</span>				* @event onMarkComplete
-				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-echo_event-onMarkComplete'>				/**
+</span>				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkComplete
 				* Triggered when the Mark action is finished.
 				*/
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onUnmarkComplete'>				/**
-</span>				* @event onUnmarkComplete
-				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-echo_event-onUnmarComplete'>				/**
+</span>				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarComplete
 				* Triggered when the Unmark action is finished.
 				*/
 				publishCompleteEvent(&quot;Complete&quot;, response);
 				self.requestDataRefresh();
 			},
 			&quot;onError&quot;: function(response) {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onMarkError'>				/**
-</span>				* @event onMarkError
-				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-echo_event-onMarkError'>				/**
+</span>				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onMarkError
 				* Triggered when the Mark action completed with error.
 				*/
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-event-onUnmarkError'>				/**
-</span>				* @event onUnmarkError
-				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-MetadataManager-echo_event-onUnmarError'>				/**
+</span>				* @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager.onUnmarError
 				* Triggered when the Unmark action completed with error.
 				*/
 				publishCompleteEvent(&quot;Error&quot;, response);

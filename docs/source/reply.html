@@ -28,13 +28,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;Reply&quot;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;Reply&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
@@ -59,10 +65,10 @@ plugin.config = {
 	 *
 	 * 	new Echo.StreamServer.Controls.Stream({
 	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
 	 * 		&quot;plugins&quot;: [{
-	 * 			&quot;name&quot;: &quot;Reply&quot;
-	 * 			&quot;actionString&quot;: &quot;Type your comment here...&quot;,
+	 * 			&quot;name&quot;: &quot;Reply&quot;,
+	 * 			&quot;actionString&quot;: &quot;Type your comment here...&quot;
 	 * 		}]
 	 * 	});
 	 */
@@ -70,7 +76,7 @@ plugin.config = {
 };
 
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-property-replyControl'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-echo_label-replyControl'>	/**
 </span>	 * @echo_label
 	 * Label for the button in the item
 	 */
@@ -110,7 +116,7 @@ plugin.templates.form =
 		'&lt;/div&gt;' +
 	'&lt;/div&gt;';
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-method-container'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-echo_renderer-container'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.container = function(element) {
@@ -124,7 +130,7 @@ plugin.component.renderers.container = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-method-children'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-echo_renderer-children'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.children = function(element) {
@@ -141,7 +147,7 @@ plugin.component.renderers.children = function(element) {
 	return item.parentRenderer(&quot;children&quot;, arguments);
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-method-submitForm'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-echo_renderer-submitForm'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.submitForm = function(element) {
@@ -151,7 +157,7 @@ plugin.renderers.submitForm = function(element) {
 	return this.get(&quot;expanded&quot;) ? element.show() : element.empty().hide();
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-method-compactForm'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-echo_renderer-compactForm'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.compactForm = function(element) {
@@ -165,7 +171,7 @@ plugin.renderers.compactForm = function(element) {
 	return element.hide();
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-method-compactField'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-echo_renderer-compactField'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.compactField = function(element) {
@@ -236,9 +242,8 @@ plugin.methods._hideSubmit = function() {
 	this.view.get(&quot;submitForm&quot;).empty();
 	this.view.render({&quot;name&quot;: &quot;compactForm&quot;});
 	item.view.render({&quot;name&quot;: &quot;container&quot;});
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onCollapse'>	/**
-</span>	 * @event onCollapse
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-echo_event-onCollapse'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
 	 * Triggered when the reply form is closed.
 	 */
 	this.events.publish({
@@ -251,9 +256,8 @@ plugin.methods._expand = function() {
 	this.set(&quot;expanded&quot;, true);
 	this.view.render({&quot;name&quot;: &quot;submitForm&quot;});
 	this.view.render({&quot;name&quot;: &quot;compactForm&quot;});
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-event-onExpand'>	/**
-</span>	 * @event onExpand
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply-echo_event-onExpand'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
 	 * Triggered when the reply form is expanded.
 	 */
 	this.events.publish({
@@ -337,13 +341,20 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;Reply&quot;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @private
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;Reply&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
 
@@ -351,9 +362,8 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.events = {
 	&quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand&quot;: function(topic, args) {
-<span id='Echo-StreamServer-Controls-Stream-Plugins-Reply-event-onFormExpand'>		/**
-</span>		 * @event onFormExpand
-		 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand
+<span id='Echo-StreamServer-Controls-Stream-Plugins-Reply-echo_event-onFormExpand'>		/**
+</span>		 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand
 		 * Triggered if reply form is expanded.
 		 */
 		this.events.publish({
@@ -380,14 +390,21 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Submit({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;Reply&quot;,
  * 			&quot;inReplyTo&quot;: data 
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @private
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;Reply&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
 

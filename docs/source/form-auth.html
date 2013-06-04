@@ -32,7 +32,7 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Submit({
  * 		&quot;target&quot;: document.getElementById(&quot;submit&quot;),
- * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;FormAuth&quot;,
  * 			&quot;submitPermissions&quot;: &quot;forceLogin&quot;,
@@ -43,7 +43,13 @@ var $ = jQuery;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;FormAuth&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
 
@@ -117,7 +123,10 @@ plugin.config = {
 <span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-cfg-submitPermissions'>	/**
 </span>	 * @cfg {String} submitPermissions
 	 * Specifies the permitted commenting modes.
-	 * The two options are: &quot;allowGuest&quot; and &quot;forceLogin&quot;.
+	 * The two options are:
+	 *
+	 * + &quot;allowGuest&quot; - allows to guest users submit an activity item (comment etc)
+	 * + &quot;forceLogin&quot; - submit permissions allowed only for logged in users
 	 */
 	&quot;submitPermissions&quot;: &quot;allowGuest&quot;
 };
@@ -129,7 +138,7 @@ plugin.enabled = function() {
 };
 
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-property-youMustBeLoggedIn'>	/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-echo_label-youMustBeLoggedIn'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;youMustBeLoggedIn&quot;: &quot;You must be logged in to comment&quot;
@@ -149,7 +158,7 @@ plugin.templates.forcedLogin =
 		'&lt;/span&gt;' +
 	'&lt;/div&gt;';
 
-<span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-method-header'>/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-echo_renderer-header'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.header = function(element) {
@@ -160,7 +169,7 @@ plugin.component.renderers.header = function(element) {
 	return plugin.parentRenderer(&quot;header&quot;, arguments);
 };
 
-<span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-method-container'>/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-echo_renderer-container'>/**
 </span> * @echo_renderer
  */
 plugin.component.renderers.container = function(element) {
@@ -174,7 +183,7 @@ plugin.component.renderers.container = function(element) {
 		.addClass(_class(plugin._userStatus()));
 };
 
-<span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-method-auth'>/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-echo_renderer-auth'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.auth = function(element) {

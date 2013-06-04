@@ -25,6 +25,10 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.Plugin&quot;)) return;
 <span id='Echo-Plugin'>/**
 </span> * @class Echo.Plugin
  * Foundation class implementing core logic to create plugins and manipulate with them.
+ *
+ * Please visit [this page](#!/guide/how_to_develop_plugin) to learn more about developing plugins
+ *
+ * @package environment.pack.js
  */
 Echo.Plugin = function() {};
 
@@ -273,7 +277,7 @@ Echo.Plugin.prototype.disable = function(global) {
 </span> * Method to extend the template of particular component.
  *
  * @param {String} action
- * One of the following actions:
+ * The following actions are available:
  *
  * + &quot;insertBefore&quot;
  * + &quot;insertAfter&quot;
@@ -471,13 +475,16 @@ Echo.Plugin._getClassName = function(name, component) {
 	return name &amp;&amp; component ? component + &quot;.Plugins.&quot; + name : undefined;
 };
 
-<span id='Echo-Plugin-config'>/**
-</span> * @class Echo.Plugin.config
+<span id='Echo-Plugin-Config'>/**
+</span> * @class Echo.Plugin.Config
  * Echo Plugin interlayer for Echo.Configuration utilization.
+ *
+ * @private
+ * @package environment.pack.js
  */
 Echo.Plugin._defineNestedClass(&quot;Config&quot;);
 
-<span id='Echo-Plugin-config-method-set'>/**
+<span id='Echo-Plugin-Config-method-set'>/**
 </span> * Setter method to define specific config field value.
  *
  * @param {String} key
@@ -490,7 +497,7 @@ Echo.Plugin.Config.prototype.set = function(key, value) {
 	this.plugin.component.config.set(this._normalize(key), value);
 };
 
-<span id='Echo-Plugin-config-method-get'>/**
+<span id='Echo-Plugin-Config-method-get'>/**
 </span> * Accessor method to get specific config field.
  *
  * @param {String} key
@@ -520,7 +527,7 @@ Echo.Plugin.Config.prototype.get = function(key, defaults, askParent) {
 		: value;
 };
 
-<span id='Echo-Plugin-config-method-remove'>/**
+<span id='Echo-Plugin-Config-method-remove'>/**
 </span> * Method to remove specific config field.
  *
  * @param {String} key
@@ -530,7 +537,7 @@ Echo.Plugin.Config.prototype.remove = function(key) {
 	this.plugin.component.config.remove(this._normalize(key));
 };
 
-<span id='Echo-Plugin-config-method-assemble'>/**
+<span id='Echo-Plugin-Config-method-assemble'>/**
 </span> * Method to assemble config for nested control based on the parent control config.
  *
  * @param {Object} data
@@ -561,13 +568,16 @@ Echo.Plugin.Config.prototype._normalize = function(key) {
 	return ([&quot;plugins&quot;, this.plugin.name].concat(key ? key : [])).join(&quot;.&quot;);
 };
 
-<span id='Echo-Plugin-events'>/**
-</span> * @class Echo.Plugin.events
+<span id='Echo-Plugin-Events'>/**
+</span> * @class Echo.Plugin.Events
  * Echo Plugin interlayer for Echo.Events utilization
+ *
+ * @private
+ * @package environment.pack.js
  */
 Echo.Plugin._defineNestedClass(&quot;Events&quot;);
 
-<span id='Echo-Plugin-events-method-publish'>/**
+<span id='Echo-Plugin-Events-method-publish'>/**
 </span> * @inheritdoc Echo.Events#publish
 */
 Echo.Plugin.Events.prototype.publish = function(params) {
@@ -575,7 +585,7 @@ Echo.Plugin.Events.prototype.publish = function(params) {
 	return this.plugin.component.events.publish(params);
 };
 
-<span id='Echo-Plugin-events-method-subscribe'>/**
+<span id='Echo-Plugin-Events-method-subscribe'>/**
 </span> * @inheritdoc Echo.Events#subscribe
 */
 Echo.Plugin.Events.prototype.subscribe = function(params) {
@@ -583,7 +593,7 @@ Echo.Plugin.Events.prototype.subscribe = function(params) {
 	return this.plugin.component.events.subscribe(params);
 };
 
-<span id='Echo-Plugin-events-method-unsubscribe'>/**
+<span id='Echo-Plugin-Events-method-unsubscribe'>/**
 </span> * @inheritdoc Echo.Events#unsubscribe
 */
 Echo.Plugin.Events.prototype.unsubscribe = function(params) {

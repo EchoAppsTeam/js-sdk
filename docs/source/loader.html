@@ -28,17 +28,25 @@ var protocol = /^https?/.test(window.location.protocol) ? window.location.protoc
 </span> * @class Echo.Loader
  * Static class which implements common mechanics for resources loading,
  * Echo environment establishing and Canvases initialization mechanics.
+ *
+ * @package loader.js
  */
 Echo.Loader = {
-<span id='Echo-Loader-property-version'>	&quot;version&quot;: &quot;&quot;,
-</span><span id='Echo-Loader-property-debug'>	&quot;debug&quot;: false,
-</span><span id='Echo-Loader-property-config'>	&quot;config&quot;: {
-</span>		&quot;cdnBaseURL&quot;: protocol + &quot;//cdn.echoenabled.com/&quot;,
+<span id='Echo-Loader-property-version'>	/** @private @readonly */
+</span>	&quot;version&quot;: &quot;&quot;,
+<span id='global-property-debug'>	/** @ignore */
+</span>	&quot;debug&quot;: false,
+<span id='Echo-Loader-property-config'>	/** @private */
+</span>	&quot;config&quot;: {
+		&quot;cdnBaseURL&quot;: protocol + &quot;//cdn.echoenabled.com/&quot;,
 		&quot;storageURL&quot;: protocol + &quot;//s3.amazonaws.com/echo-canvases/&quot;,
 		&quot;errorTimeout&quot;: 5000 // 5 sec
 	},
-<span id='Echo-Loader-property-overrides'><span id='Echo-Loader-property-canvases'>	&quot;canvases&quot;: [],  // Canvases list initialized on the page
-</span></span><span id='Echo-Loader-property-vars'>	&quot;overrides&quot;: {},  // Canvas Apps overrides object
+<span id='global-property-canvases'>	/** @ignore */
+</span>	&quot;canvases&quot;: [],  // Canvases list initialized on the page
+<span id='global-property-overrides'>	/** @ignore */
+</span>	&quot;overrides&quot;: {},  // Canvas Apps overrides object
+<span id='global-property-vars'>	/** @ignore */
 </span>	&quot;vars&quot;: {
 		&quot;state&quot;: {&quot;resources&quot;: {}, &quot;queue&quot;: []},
 		&quot;processing&quot;: false,

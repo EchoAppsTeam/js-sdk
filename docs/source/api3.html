@@ -300,6 +300,9 @@ Echo.API.Transports.JSONP.available = function() {
 <span id='Echo-API-Request'>/**
 </span> * @class Echo.API.Request
  * Class implementing API requests logic on the transport layer.
+ *
+ * @package api.pack.js
+ * @package environment.pack.js
  */
 /*
  * @constructor
@@ -360,12 +363,21 @@ Echo.API.Request = function(config) {
 		&quot;settings&quot;: {},
 <span id='Echo-API-Request-cfg-transport'>		/**
 </span>		 * @cfg {String} [transport]
-		 * Specifies the transport name.
+		 * Specifies the transport name. The following transports are available:
+		 *
+		 *  + &quot;ajax&quot;
+		 *  + &quot;jsonp&quot;
+		 *  + &quot;XDomainRequest&quot; (only supported in IE8+)
+		 *
 		 */
 		&quot;transport&quot;: &quot;ajax&quot;,
 <span id='Echo-API-Request-cfg-method'>		/**
 </span>		 * @cfg {String} [method]
-		 * Specifies the request method.
+		 * Specifies the request method. The following methods are available:
+		 *
+		 *  + &quot;GET&quot;
+		 *  + &quot;POST&quot;
+		 *
 		 */
 		&quot;method&quot;: &quot;GET&quot;,
 <span id='Echo-API-Request-cfg-secure'>		/**

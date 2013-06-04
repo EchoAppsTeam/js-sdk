@@ -29,10 +29,16 @@ var $ = jQuery;
  * 	new Echo.StreamServer.Controls.Submit({
  * 		&quot;target&quot;: document.getElementById(&quot;submit&quot;),
  * 		&quot;targetURL&quot;: &quot;http://example.com/submit&quot;,
- * 		&quot;appkey&quot;: &quot;test.aboutecho.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * Submit constructor initializing Echo.StreamServer.Controls.Submit class
@@ -44,6 +50,40 @@ var submit = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Submit&quot;
 
 if (Echo.Control.isDefined(submit)) return;
 
+<span id='Echo-StreamServer-Controls-Submit-cfg-apiBaseURL'>/** @hide @cfg apiBaseURL */
+</span><span id='Echo-StreamServer-Controls-Submit-method-placeImage'>/** @hide @method placeImage */
+</span><span id='Echo-StreamServer-Controls-Submit-method-getRelativeTime'>/** @hide @method getRelativeTime */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-today'>/** @hide @echo_label today */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-yesterday'>/** @hide @echo_label yesterday */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-lastMonth'>/** @hide @echo_label lastMonth */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-secondAgo'>/** @hide @echo_label secondAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-secondsAgo'>/** @hide @echo_label secondsAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-minuteAgo'>/** @hide @echo_label minuteAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-minutesAgo'>/** @hide @echo_label minutesAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-hourAgo'>/** @hide @echo_label hourAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-hoursAgo'>/** @hide @echo_label hoursAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-dayAgo'>/** @hide @echo_label dayAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-daysAgo'>/** @hide @echo_label daysAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-weekAgo'>/** @hide @echo_label weekAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-weeksAgo'>/** @hide @echo_label weeksAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-monthAgo'>/** @hide @echo_label monthAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-monthsAgo'>/** @hide @echo_label monthsAgo */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-loading'>/** @hide @echo_label loading */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-retrying'>/** @hide @echo_label retrying */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_busy'>/** @hide @echo_label error_busy */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_timeout'>/** @hide @echo_label error_timeout */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_waiting'>/** @hide @echo_label error_waiting */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_view_limit'>/** @hide @echo_label error_view_limit */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_view_update_capacity_exceeded'>/** @hide @echo_label error_view_update_capacity_exceeded */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_result_too_large'>/** @hide @echo_label error_result_too_large */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_wrong_query'>/** @hide @echo_label error_wrong_query */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_incorrect_appkey'>/** @hide @echo_label error_incorrect_appkey */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_internal_error'>/** @hide @echo_label error_internal_error */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_quota_exceeded'>/** @hide @echo_label error_quota_exceeded */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_incorrect_user_id'>/** @hide @echo_label error_incorrect_user_id */
+</span><span id='Echo-StreamServer-Controls-Submit-echo_label-error_unknown'>/** @hide @echo_label error_unknown */
+</span>
 submit.init = function() {
 	if (!this.checkAppKey()) return;
 
@@ -237,44 +277,44 @@ submit.dependencies = [{
 }];
 
 submit.labels = {
-<span id='Echo-StreamServer-Controls-Submit-property-markers'>	/**
+<span id='Echo-StreamServer-Controls-Submit-echo_label-markers'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;markers&quot;: &quot;Markers:&quot;,
-<span id='Echo-StreamServer-Controls-Submit-property-markersHint'>	/**
+<span id='Echo-StreamServer-Controls-Submit-echo_label-markersHint'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;markersHint&quot;: &quot;Marker1, marker2, marker3, ...&quot;,
-<span id='Echo-StreamServer-Controls-Submit-property-post'>	/**
+<span id='Echo-StreamServer-Controls-Submit-echo_label-post'>	/**
 </span>	 * @echo_label
 	 * Label for the button allowing to submit form
 	 */
 	&quot;post&quot;: &quot;Post&quot;,
-<span id='Echo-StreamServer-Controls-Submit-property-posting'>	/**
+<span id='Echo-StreamServer-Controls-Submit-echo_label-posting'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;posting&quot;: &quot;Posting...&quot;,
-<span id='Echo-StreamServer-Controls-Submit-property-postingFailed'>	/**
+<span id='Echo-StreamServer-Controls-Submit-echo_label-postingFailed'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;postingFailed&quot;: &quot;There was a server error while trying to submit your item. Please try again in a few minutes. &lt;b&gt;Error: \&quot;{error}\&quot;&lt;/b&gt;.&quot;,
-<span id='Echo-StreamServer-Controls-Submit-property-postingTimeout'>	/**
+<span id='Echo-StreamServer-Controls-Submit-echo_label-postingTimeout'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;postingTimeout&quot;: &quot;There was a network issue while trying to submit your item. Please try again in a few minutes.&quot;,
-<span id='Echo-StreamServer-Controls-Submit-property-tagsHint'>	/**
+<span id='Echo-StreamServer-Controls-Submit-echo_label-tagsHint'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;tagsHint&quot;: &quot;Tag1, tag2, tag3, ...&quot;,
-<span id='Echo-StreamServer-Controls-Submit-property-tags'>	/**
+<span id='Echo-StreamServer-Controls-Submit-echo_label-tags'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;tags&quot;: &quot;Tags:&quot;,
-<span id='Echo-StreamServer-Controls-Submit-property-yourName'>	/**
+<span id='Echo-StreamServer-Controls-Submit-echo_label-yourName'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;yourName&quot;: &quot;Your Name (required)&quot;,
-<span id='Echo-StreamServer-Controls-Submit-property-yourWebsiteOptional'>	/**
+<span id='Echo-StreamServer-Controls-Submit-echo_label-yourWebsiteOptional'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;yourWebsiteOptional&quot;: &quot;Your website (optional)&quot;
@@ -329,7 +369,7 @@ submit.templates.main =
 		'&lt;/div&gt;' +
 	'&lt;/div&gt;';
 
-<span id='Echo-StreamServer-Controls-Submit-method-tagsContainer'>/**
+<span id='Echo-StreamServer-Controls-Submit-echo_renderer-tagsContainer'>/**
 </span> * @echo_renderer
  */
 submit.renderers.tagsContainer = function(element) {
@@ -343,7 +383,7 @@ submit.renderers.tagsContainer = function(element) {
  */
 submit.renderers.markersContainer = submit.renderers.tagsContainer;
 
-<span id='Echo-StreamServer-Controls-Submit-method-markers'>/**
+<span id='Echo-StreamServer-Controls-Submit-echo_renderer-markers'>/**
 </span> * @echo_renderer
  */
 submit.renderers.markers = function(element) {
@@ -354,7 +394,7 @@ submit.renderers.markers = function(element) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Submit-method-tags'>/**
+<span id='Echo-StreamServer-Controls-Submit-echo_renderer-tags'>/**
 </span> * @echo_renderer
  */
 submit.renderers.tags = function(element) {
@@ -365,7 +405,7 @@ submit.renderers.tags = function(element) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Submit-method-text'>/**
+<span id='Echo-StreamServer-Controls-Submit-echo_renderer-text'>/**
 </span> * @echo_renderer
  */
 submit.renderers.text = function(element) {
@@ -377,7 +417,7 @@ submit.renderers.text = function(element) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Submit-method-avatar'>/**
+<span id='Echo-StreamServer-Controls-Submit-echo_renderer-avatar'>/**
 </span> * @echo_renderer
  */
 submit.renderers.avatar = function(element) {
@@ -389,7 +429,7 @@ submit.renderers.avatar = function(element) {
 	return element;
 };
 
-<span id='Echo-StreamServer-Controls-Submit-method-name'>/**
+<span id='Echo-StreamServer-Controls-Submit-echo_renderer-name'>/**
 </span> * @echo_renderer
  */
 submit.renderers.name = function(element) {
@@ -399,7 +439,7 @@ submit.renderers.name = function(element) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Submit-method-url'>/**
+<span id='Echo-StreamServer-Controls-Submit-echo_renderer-url'>/**
 </span> * @echo_renderer
  */
 submit.renderers.url = function(element) {
@@ -409,7 +449,7 @@ submit.renderers.url = function(element) {
 	});
 };
 
-<span id='Echo-StreamServer-Controls-Submit-method-postButton'>/**
+<span id='Echo-StreamServer-Controls-Submit-echo_renderer-postButton'>/**
 </span> * @echo_renderer
  */
 submit.renderers.postButton = function(element) {
@@ -516,16 +556,14 @@ submit.methods.post = function() {
 	}
 	var callbacks = {
 		&quot;onData&quot;: function(response, state) {
-<span id='Echo-StreamServer-Controls-Submit-event-onPostComplete'>			/**
-</span>			 * @event onPostComplete
-			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete
+<span id='Echo-StreamServer-Controls-Submit-echo_event-onPostComplete'>			/**
+</span>			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete
 			 * Triggered when the submit operation is finished.
 			 */
 			publish(&quot;Complete&quot;, entry, response, state);
 
-<span id='Echo-StreamServer-Controls-Submit-event-onDataInvalidate'>			/**
-</span>			 * @event onDataInvalidate
-			 * @echo_event Echo.Control.onDataInvalidate
+<span id='Echo-StreamServer-Controls-Submit-echo_event-onDataInvalidate'>			/**
+</span>			 * @echo_event Echo.Control.onDataInvalidate
 			 * Triggered if dataset is changed.
 			 */
 			// notify all widgets on the page about a new item posted
@@ -536,17 +574,15 @@ submit.methods.post = function() {
 			});
 		},
 		&quot;onError&quot;: function(response, state) {
-<span id='Echo-StreamServer-Controls-Submit-event-onPostError'>			/**
-</span>			 * @event onPostError
-			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
+<span id='Echo-StreamServer-Controls-Submit-echo_event-onPostError'>			/**
+</span>			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
 			 * Triggered if submit operation failed.
 			 */
 			publish(&quot;Error&quot;, entry, response, state);
 		}
 	};
-<span id='Echo-StreamServer-Controls-Submit-event-onPostInit'>	/**
-</span>	 * @event onPostInit
-	 * @echo_event Echo.StreamServer.Controls.Submit.onPostInit
+<span id='Echo-StreamServer-Controls-Submit-echo_event-onPostInit'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Submit.onPostInit
 	 * Triggered if submit operation was started.
 	 */
 	publish(&quot;Init&quot;, entry);

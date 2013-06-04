@@ -27,13 +27,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;Moderation&quot;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;Moderation&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
@@ -63,7 +69,7 @@ plugin.config = {
 	 *
 	 *     new Echo.StreamServer.Controls.Stream({
 	 *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 *         &quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+	 *         &quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
 	 *         &quot;plugins&quot;: [{
 	 *             &quot;name&quot;: &quot;Moderation&quot;
 	 *             &quot;removePersonalItemsAllowed&quot;: true
@@ -87,14 +93,16 @@ plugin.config = {
 </span>	 * @cfg {Array} userActions
 	 * Defines the list of user specific actions to be added to the Echo Stream Item.
 	 *
+	 * The following actions are available: `ban`, `permissions`
+	 *
 	 * 	new Echo.StreamServer.Controls.Stream({
 	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
 	 * 		&quot;plugins&quot;: [{
 	 * 			&quot;name&quot;: &quot;Moderation&quot;
 	 * 			&quot;userActions&quot;: [&quot;ban&quot;, &quot;permissions&quot;],
 	 * 		}]
-	 * });
+	 * 	});
 	 */
 	&quot;userActions&quot;: [&quot;ban&quot;, &quot;permissions&quot;],
 
@@ -102,9 +110,11 @@ plugin.config = {
 </span>	 * @cfg {Array} itemActions
 	 * Defines the list of item specific actions to be added to the Echo Stream Item.
 	 *
+	 * The following actions are available: `approve`, `spam`, `delete`, `untouch`
+	 *
 	 * 	new Echo.StreamServer.Controls.Stream({
 	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
 	 * 		&quot;plugins&quot;: [{
 	 * 			&quot;name&quot;: &quot;Moderation&quot;
 	 * 			&quot;itemActions&quot;: [&quot;approve&quot;, &quot;spam&quot;, &quot;delete&quot;, &quot;untouch&quot;]
@@ -126,115 +136,115 @@ plugin.events = {
 };
 
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-approveButton'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-approveButton'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;approveButton&quot;: &quot;Approve&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-deleteButton'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-deleteButton'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;deleteButton&quot;: &quot;Delete&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-spamButton'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-spamButton'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;spamButton&quot;: &quot;Spam&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-untouchButton'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-untouchButton'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;untouchButton&quot;: &quot;Untouch&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToCommunityFlagged'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-changingStatusToCommunityFlagged'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;changingStatusToCommunityFlagged&quot;: &quot;Flagging...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToModeratorApproved'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-changingStatusToModeratorApproved'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;changingStatusToModeratorApproved&quot;: &quot;Approving...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToModeratorDeleted'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-changingStatusToModeratorDeleted'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;changingStatusToModeratorDeleted&quot;: &quot;Deleting...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToUserDeleted'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-changingStatusToUserDeleted'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;changingStatusToUserDeleted&quot;: &quot;Deleting...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToUntouched'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-changingStatusToUntouched'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;changingStatusToUntouched&quot;: &quot;Untouching...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-changingStatusToModeratorFlagged'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-changingStatusToModeratorFlagged'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;changingStatusToModeratorFlagged&quot;: &quot;Marking as spam...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusCommunityFlagged'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-statusCommunityFlagged'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;statusCommunityFlagged&quot;: &quot;Flagged by Community&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusModeratorApproved'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-statusModeratorApproved'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;statusModeratorApproved&quot;: &quot;Approved by Moderator&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusModeratorDeleted'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-statusModeratorDeleted'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;statusModeratorDeleted&quot;: &quot;Deleted by Moderator&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusUserDeleted'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-statusUserDeleted'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;statusUserDeleted&quot;: &quot;Deleted by User&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusModeratorFlagged'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-statusModeratorFlagged'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;statusModeratorFlagged&quot;: &quot;Flagged by Moderator&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusSystemFlagged'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-statusSystemFlagged'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;statusSystemFlagged&quot;: &quot;Flagged by System&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-banUser'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-banUser'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;banUser&quot;: &quot;Ban User&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-unbanUser'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-unbanUser'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;unbanUser&quot;: &quot;Unban&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-userBanned'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-userBanned'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;userBanned&quot;: &quot;Banned User&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-processingAction'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-processingAction'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;processingAction&quot;: &quot;Setting up '{state}' user state...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-moderatorRole'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-moderatorRole'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;moderatorRole&quot;: &quot;Moderator&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-administratorRole'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-administratorRole'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;administratorRole&quot;: &quot;Administrator&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-userButton'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-userButton'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;userButton&quot;: &quot;Demote to User&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-moderatorButton'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-moderatorButton'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;moderatorButton&quot;: &quot;Promote to Moderator&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-administratorButton'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-administratorButton'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;administratorButton&quot;: &quot;Promote to Admin&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-setRoleAction'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-setRoleAction'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;setRoleAction&quot;: &quot;Setting up '{role}' role...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-unsetRoleAction'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-unsetRoleAction'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;unsetRoleAction&quot;: &quot;Removing '{role}' role...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-property-statusUntouched'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-statusUntouched'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;statusUntouched&quot;: &quot;New&quot;
@@ -252,7 +262,7 @@ plugin.templates.status =
 		'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
 	'&lt;/div&gt;';
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-method-status'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_renderer-status'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.status = function(element) {
@@ -268,7 +278,7 @@ plugin.renderers.status = function(element) {
 	return element.addClass(this.cssPrefix + &quot;status-&quot; + status);
 };
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-method-statusIcon'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_renderer-statusIcon'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.statusIcon = function(element) {
@@ -328,74 +338,60 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 };
 
 plugin.methods._publishCompleteActionEvent = function(args) {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onApproveComplete'>	/**
-</span>	 * @event onApproveComplete
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onApproveComplete'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveComplete
 	 * Triggered if &quot;Approve&quot; operation was completed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onSpamComplete'>	/**
-</span>	 * @event onSpamComplete
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onSpamComplete'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamComplete
 	 * Triggered if &quot;Spam&quot; operation was completed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onDeleteComplete'>	/**
-</span>	 * @event onDeleteComplete
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onDeleteComplete'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteComplete
 	 * Triggered if &quot;Delete&quot; operation was completed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUntouchComplete'>	/**
-</span>	 * @event onUntouchComplete
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onUntouchComplete'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchComplete
 	 * Triggered if &quot;Untouch&quot; operation was completed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onBanComplete'>	/**
-</span>	 * @event onBanComplete
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onBanComplete'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanComplete
 	 * Triggered if &quot;Ban&quot; operation was completed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUnBanComplete'>	/**
-</span>	 * @event onUnBanComplete
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onUnBanComplete'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanComplete
 	 * Triggered if &quot;UnBan&quot; operation was completed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUserPermissionsComplete'>	/**
-</span>	 * @event onUserPermissionsComplete
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onUserPermissionsComplete'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsComplete
 	 * Triggered if &quot;UserPermissions&quot; operation was completed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onApproveError'>	/**
-</span>	 * @event onApproveError
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onApproveError'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onApproveError
 	 * Triggered if &quot;Approve&quot; operation failed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onSpamError'>	/**
-</span>	 * @event onSpamError
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onSpamError'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onSpamError
 	 * Triggered if &quot;Spam&quot; operation failed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onDeleteError'>	/**
-</span>	 * @event onDeleteError
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onDeleteError'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onDeleteError
 	 * Triggered if &quot;Delete&quot; operation failed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUntouchError'>	/**
-</span>	 * @event onUntouchError
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onUntouchError'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUntouchError
 	 * Triggered if &quot;Untouch&quot; operation failed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onBanError'>	/**
-</span>	 * @event onBanError
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onBanError'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onBanError
 	 * Triggered if &quot;Ban&quot; operation failed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUnBanError'>	/**
-</span>	 * @event onUnBanError
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onUnBanError'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUnBanError
 	 * Triggered if &quot;UnBan&quot; operation failed.
 	 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-event-onUserPermissionsError'>	/**
-</span>	 * @event onUserPermissionsError
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_event-onUserPermissionsError'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation.onUserPermissionsError
 	 * Triggered if &quot;UserPermissions&quot; operation failed.
 	 */
 	this.events.publish({

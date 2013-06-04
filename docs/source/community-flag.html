@@ -32,13 +32,19 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;CommunityFlag&quot;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;CommunityFlag&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
 
@@ -61,27 +67,27 @@ plugin.config = {
 };
 
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-flagged'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_label-flagged'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;flagged&quot;: &quot;Flagged&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-flaggedThis'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_label-flaggedThis'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;flaggedThis&quot;: &quot; flagged this.&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-flagControl'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_label-flagControl'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;flagControl&quot;: &quot;Flag&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-unflagControl'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_label-unflagControl'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;unflagControl&quot;: &quot;Unflag&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-flagProcessing'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_label-flagProcessing'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;flagProcessing&quot;: &quot;Flagging...&quot;,
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-property-unflagProcessing'>	/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_label-unflagProcessing'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;unflagProcessing&quot;: &quot;Unflagging...&quot;
@@ -94,7 +100,7 @@ plugin.dependencies = [{
 
 plugin.template = '&lt;div class=&quot;{plugin.class:flaggedBy}&quot;&gt;&lt;/div&gt;';
 
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-method-flaggedBy'>/**
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_renderer-flaggedBy'>/**
 </span> * @echo_renderer
  */
 plugin.renderers.flaggedBy = function(element) {
@@ -142,14 +148,12 @@ plugin.methods._assembleButton = function(name) {
 				&quot;target-query&quot;: item.config.get(&quot;parent.query&quot;)
 			},
 			&quot;onData&quot;: function(response) {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-event-onFlagComplete'>				/**
-</span>				 * @event onFlagComplete
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_event-onFlagComplete'>				/**
+</span>				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagComplete
 				 * Triggered if flag operation was completed.
 				 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-event-onUnflagComplete'>				/**
-</span>				 * @event onUnflagComplete
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnflagComplete
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_event-onUnflagComplete'>				/**
+</span>				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnflagComplete
 				 * Triggered if reverse flag operation was completed.
 				 */
 				plugin._publishEventComplete({
@@ -164,14 +168,12 @@ plugin.methods._assembleButton = function(name) {
 				plugin.requestDataRefresh();
 			},
 			&quot;onError&quot;: function(response) {
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-event-onFlagError'>				/**
-</span>				 * @event onFlagError
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_event-onFlagError'>				/**
+</span>				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagError
 				 * Triggered if flag operation failed.
 				 */
-<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-event-onUnflagError'>				/**
-</span>				 * @event onUnflagError
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnflagError
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_event-onUnflagError'>				/**
+</span>				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnflagError
 				 * Triggered if reverse flag operation failed.
 				 */
 				plugin._publishEventComplete({

@@ -41,7 +41,7 @@ var $ = jQuery;
  * 	};
  * 	new Echo.StreamServer.Controls.Submit({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
- * 		&quot;appkey&quot;: &quot;test.echoenabled.com&quot;,
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;JanrainSharing&quot;,
  * 			&quot;appId&quot;: &quot;yourJanRainAppId&quot;,
@@ -54,7 +54,13 @@ var $ = jQuery;
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest(&quot;JanrainSharing&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
 
@@ -76,7 +82,8 @@ plugin.config = {
 	 * Configures the sharing dialog.
 	 *
 	 * @cfg {String} activity.sharePrompt
-	 * Caption of the textarea in the sharing dialog
+	 * Caption of the textarea in the sharing dialog.
+	 * Default value is the value of {@link #echo_label-sharePrompt} label
 	 *
 	 * @cfg {String} activity.shareContent
 	 * Content of the message which will be shared.
@@ -154,7 +161,7 @@ plugin.events = {
 };
 
 plugin.labels = {
-<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-property-sharePrompt'>	/**
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-echo_label-sharePrompt'>	/**
 </span>	 * @echo_label
 	 */
 	&quot;sharePrompt&quot;: &quot;Share your comment:&quot;

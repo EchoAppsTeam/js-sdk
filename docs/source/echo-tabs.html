@@ -52,23 +52,34 @@ if (Echo.GUI.Tabs) return;
  * 		&quot;show&quot;: function() {}
  * 	});
  *
+ * 	// add a new tab
+ * 	myTabs.add({&quot;id&quot;: &quot;tab3&quot;, &quot;label&quot;: &quot;Tab 3&quot;});
+ *
+ * 	// remove the second tab
+ * 	myTabs.remove(&quot;tab2&quot;);
+ *
  * @extends Echo.GUI
+ *
+ * @package gui.pack.js
+ *
  * @constructor
  * Creates a new tabs in the container you have passed in the &quot;config.target&quot;.
  *
  * @param {Object} config
  * Tabs configuration.
  *
- * @cfg {Mixed} target
+ * @cfg {Mixed} target (required)
  * The container where the tabs should be located.
  * This parameter can have several types:
- * 	- CSS selector (ex: &quot;css-selector&quot;)
- * 	- HTMLElement (ex: document.getElementById(&quot;some-element-id&quot;))
- * 	- jQuery object (ex: $(&quot;.css-selector&quot;))
  *
- * @cfg {String} idPrefix
+ * + CSS selector (ex: &quot;css-selector&quot;)
+ * + HTMLElement (ex: document.getElementById(&quot;some-element-id&quot;))
+ * + jQuery object (ex: $(&quot;.css-selector&quot;))
+ *
+ * @cfg {String} [idPrefix=&quot;&quot;]
  * Prefix which helps to make the tab id unique across the page.
  * Every Echo.GUI.Tabs instance should have its own unique prefix.
+ *
  * Examples: &quot;my-tabs-section&quot;, &quot;my-product-tabs&quot;.
  *
  * @cfg {Boolean} [noRandomId=false]
@@ -76,9 +87,9 @@ if (Echo.GUI.Tabs) return;
  * instances of the *same* application on the page. Setting this parameter to `true` will
  * remove random part so it should be used with care.
  *
- * @cfg {Array} [entries]
+ * @cfg {Array} [entries=[]]
  * Array of entries (tabs).
-
+ *
  * @cfg {String} entries.id
  * Tab id.
  *
