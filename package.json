@@ -23,8 +23,15 @@
   ],
   "dependencies": {
     "grunt-contrib": "~0.1.7",
+    "wd": "~0.0.3",
+    "q": "~0.9.3",
+    "request": "~2.21.0",
     "ftp": "~0.1.5",
-    "recess": "1.0.3"
+    "recess": "1.0.3",
+    "async": "~0.2.8"
   },
-  "keywords": []
+  "keywords": [],
+  "scripts": {
+     "test": "grunt ci --env=test"
+  }
 }

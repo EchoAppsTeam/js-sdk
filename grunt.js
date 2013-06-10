@@ -151,6 +151,54 @@ module.exports = function(grunt) {
 		};
 	});
 
+	var testPlatforms = {
+		"firefox": {
+			"browserName": "firefox",
+			"version": "21",
+			"platform": "Windows 7"
+		},
+		"chrome": {
+			"browserName": "chrome",
+			"version": "27",
+			"platform": "Windows 7"
+		},
+		"safari": {
+			"browserName": "safari",
+			"version": "6",
+			"platform": "OS X 10.8"
+		},
+		"ie8": {
+			"browserName": "internet explorer",
+			"version": "8",
+			"platform": "Windows 7"
+		},
+		"ie9": {
+			"browserName": "internet explorer",
+			"version": "9",
+			"platform": "Windows 7"
+		},
+		"ie10": {
+			"browserName": "internet explorer",
+			"version": "10",
+			"platform": "Windows 8"
+		},
+		"iphone": {
+			"browserName": "iphone",
+			"version": "6.0",
+			"platform": "OS X 10.8"
+		},
+		"ipad": {
+			"browserName": "ipad",
+			"version": "6.0",
+			"platform": "OS X 10.8"
+		},
+		"android": {
+			"browserName": "android",
+			"version": "4",
+			"platform": "Linux"
+		}
+	};
+
 	var _config = {
 		dirs: dirs,
 		sources: sources,
@@ -289,6 +337,44 @@ module.exports = function(grunt) {
 			codegen: {
 				ascii_only: true
 			}
+		},
+		server: {
+			port: 9001,
+			base: dirs.dist
+		},
+		saucelabs: {
+			local: {
+				options: {
+					meta: {
+						build: "local#" + Math.round(Math.random() * 5000),
+						name: "Local tests",
+						tags: ["local"]
+					},
+					timeouts: {
+						total: 1000 * 60 * 5, // 5min
+						checking: 5000
+					},
+					concurrency: 3, // SauceLabs provides 3 Parallel VMs for simultaneous tests
+					defaultPlatforms: ["firefox", "chrome", "ie9"],
+					platforms: testPlatforms
+				}
+			},
+			travis: {
+				options: {
+					meta: {
+						build: process.env["TRAVIS_BUILD_NUMBER"],
+						name: "Echo JS SDK",
+						tags: [process.env["TRAVIS_BRANCH"], "node.js v" + process.env["TRAVIS_NODE_VERSION"], "CI"]
+					},
+					timeouts: {
+						total: 1000 * 60 * 5, // 5min
+						checking: 5000
+					},
+					concurrency: 3, // SauceLabs provides 3 Parallel VMs for simultaneous tests
+					defaultPlatforms: ["firefox", "chrome", "safari", "ie8", "ie9", "ie10"],
+					platforms: testPlatforms
+				}
+			}
 		}
 	};
 
@@ -301,6 +387,9 @@ module.exports = function(grunt) {
 	grunt.loadTasks("tools/grunt/tasks");
 
 	grunt.registerTask("default", "check:versions clean:all build:sdk");
+	grunt.registerTask("test", "Execute tests", function() {
+		grunt.task.run(process.env["CI"] ? "server saucelabs:travis" : "saucelabs:local");
+	});
 
 	grunt.registerTask("build", "Go through all stages of building some target/system", function(target, stage) {
 		if (!stage) {
@@ -460,21 +549,27 @@ module.exports = function(grunt) {
 	var patchers = {
 		"url": function(src, config, version) {
 			var env = shared.config("env");
-			if ((env === "dev" || env === "test") && config && config.domain) {
+			var domain = process.env["CI"]
+				? "localhost:" + grunt.config("server.port")
+				: config && config.domain;
+			if ((env === "dev" || env === "test") && domain) {
 				src = src.replace(
 					/cdn\.echoenabled\.com(\/sdk\/v[\d\.]+\/)(?!dev)/g,
-					config.domain + "$1" + (env === "dev" ? "dev/" : "")
+					domain + "$1" + (env === "dev" ? "dev/" : "")
 				).replace(
 					/cdn\.echoenabled\.com(\/apps\/|\/")/g,
-					config.domain + "$1"
+					domain + "$1"
 				);
 			}
 			return src;
 		},
 		"testurl": function(src, config, version) {
 			var env = shared.config("env");
-			if ((env === "dev" || env === "test") && config && config.domain) {
-				src = src.replace(/echoappsteam\.github\.com\/js-sdk/, config.domainTests || config.domain);
+			var domain = process.env["CI"]
+				? "localhost:" + grunt.config("server.port")
+				: config && (config.domainTests || config.domain);
+			if ((env === "dev" || env === "test") && domain) {
+				src = src.replace(/echoappsteam\.github\.com\/js-sdk/, domain);
 			}
 			return src;
 		},
@@ -490,7 +585,6 @@ module.exports = function(grunt) {
 		},
 		"bootstrap-css": function(src, config) {
 			var env = shared.config("env");
-			var domain = (env === "dev" || env === "test") && config && config.domain || "http://cdn.echoenabled.com";
 			return src.replace(/(url\(")\.\.([/a-z-.]+"\))/ig, "$1" + ((shared.config("build.stage") === "dev") ? "../" : "") + "third-party/bootstrap$2");
 		},
 		"bootstrap-less": function(src) {
