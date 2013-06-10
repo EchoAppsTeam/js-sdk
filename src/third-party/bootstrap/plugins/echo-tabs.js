@@ -111,9 +111,6 @@ if (Echo.GUI.Tabs) return;
  * @cfg {Function} [show]
  * Function to be called before the active tab panel is displayed.
  *
- * @cfg {Function} [shown]
- * Function to be called as soon as the active tab is displayed.
- *
  * @cfg {HTMLElement} show.tab
  * Container which is the tab itself.
  *
@@ -125,6 +122,11 @@ if (Echo.GUI.Tabs) return;
  *
  * @cfg {Number} show.index
  * Numerical index of the tab.
+ *
+ * @cfg {Function} [shown]
+ * Function to be called as soon as the active tab is displayed.
+ *
+ * The parameters are passed to this function the same as in #show.
  */
 Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 	config.panels = config.panels ? $(config.panels) : $("<div>");
