@@ -308,7 +308,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 		return element.on("click", function() {
 			self.modal = new Echo.GUI.Modal({
 				"data": {
-					"title": self.config.get("identityManager." + type + ".title")
+					"title": data.title
 				},
 				"href": self._appendSessionID(data.url),
 				"width": parseInt(data.width),
