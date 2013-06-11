@@ -38,6 +38,9 @@ module.exports = function(grunt) {
 				"<%= dirs.src %>/**/*.gif"
 			]
 		},
+		"third-party-html": [
+			"<%= dirs.src %>/third-party/**/*.html"
+		],
 		"demo": ["demo/**/*"],
 		"tests": ["tests/**/*"],
 		"apps": ["apps/**/*"]
@@ -414,12 +417,12 @@ module.exports = function(grunt) {
 		switch (stage) {
 			case "dev":
 				_makeConcatSpec();
-				tasks = "copy:css copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
+				tasks = "copy:css copy:own-js copy:third-party-js copy:third-party-html copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
 				break;
 			case "min":
 				_makeMinSpec();
 				_makeConcatSpec();
-				tasks = "copy:css copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
+				tasks = "copy:css copy:own-js copy:third-party-js copy:third-party-html copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
 				break;
 			case "final":
 				tasks = "copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
@@ -688,6 +691,14 @@ module.exports = function(grunt) {
 					"<%= dirs.build %>": thirdPartySrc.map(function(name) {
 						return _chooseFile(name, "<%= dirs.src %>", target, stage);
 					})
+				},
+				"options": {
+					"basePath": "<config:dirs.src>"
+				}
+			};
+			spec["third-party-html"] = {
+				"files": {
+					"<%= dirs.build %>": grunt.config("sources.third-party-html")
 				},
 				"options": {
 					"basePath": "<config:dirs.src>"
