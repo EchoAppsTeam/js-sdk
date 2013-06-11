@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Janrain Auth Plugin Demo</title>
+		<link rel="stylesheet" type="text/css" href="demo.css" />
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+	</head>
+<body>
+	<div id="container">
+		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth" target="_blank">Documentation</a></div>
+		<h1>Janrain Auth Plugin Demo</h1>
+		<div class="description">Adds the possibility to login via Janrain providing only Janrain application name.</div>
+		<div class="wrapper">
+			<div id="submit"></div>
+		</div>
+	</div>
+	<script>
+		if (window.parent.Docs) {
+			var link = Echo.jQuery("#documentation > a");
+			link.on("click", function(e) {
+				e.preventDefault();
+				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
+				return false;
+			});
+			Echo.jQuery("#container").addClass("embedded");
+		}
+	</script>
+	<!-- Client initialization -->
+	<script type="text/javascript">
+		Echo.Loader.initApplication({
+			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+			"component": "Echo.StreamServer.Controls.Submit",
+			"backplane": {
+				"serverBaseURL": "http://api.echoenabled.com/v1",
+				"busName": "jskit"
+			},
+			"config": {
+				"target": document.getElementById("submit"),
+				"appkey": "echo.jssdk.demo.aboutecho.com",
+				"targetURL": "http://echosandbox.com/use-cases/commenting",
+				"plugins": [{
+					"name": "JanrainAuth",
+					"appId": "echo",
+					"width": 250,
+					"height": 100,
+					"extParams": {
+						"providersPerPage": 4,
+						"format": "two column"
+					},
+					"submitPermissions": "forceLogin"
+				}]
+			}
+		});
+	</script>
+</body>
+</html>

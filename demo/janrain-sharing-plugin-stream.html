@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Janrain Sharing Plugin for Stream Demo</title>
+	<link rel="stylesheet" type="text/css" href="demo.css" />
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+</head>
+<body>
+	<div id="container">
+		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.JanrainSharing" target="_blank">Documentation</a></div>
+		<h1>Janrain Sharing Plugin for Stream Demo</h1>
+		<div class="description">Plugin provides the ability to load Janrain sharing dialog clicking the "Share" button in the item.</div>
+		<div class="wrapper">
+			<div id="stream"></div>
+		</div>
+	</div>
+	<script>
+		if (window.parent.Docs) {
+			var link = Echo.jQuery("#documentation > a");
+			link.on("click", function(e) {
+				e.preventDefault();
+				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
+				return false;
+			});
+			Echo.jQuery("#container").addClass("embedded");
+		}
+	</script>
+	<!-- Client initialization -->
+	<script type="text/javascript">
+		Echo.Loader.initApplication({
+			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+			"component": "Echo.StreamServer.Controls.Stream",
+			"backplane": {
+				"serverBaseURL": "http://api.echoenabled.com/v1",
+				"busName": "jskit"
+			},
+			"config": {
+				"target": document.getElementById("stream"),
+				"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:10 state:Untouched,ModeratorApproved children:2 state:Untouched,ModeratorApproved",
+				"appkey": "echo.jssdk.demo.aboutecho.com",
+				"item": {"reTag": false},
+				"plugins": [{
+					"name": "JanrainSharing",
+					"appId": "echo",
+					"title": "Share it"
+				}]
+			}
+		});
+	</script>
+</body>
+</html>
