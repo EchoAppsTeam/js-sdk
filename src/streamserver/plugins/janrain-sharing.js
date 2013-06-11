@@ -5,40 +5,20 @@ var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing
- * Plugin provides the ability to load JanRain sharing dialog after
+ * Plugin provides the ability to load Janrain sharing dialog after
  * the item has been posted using the Echo Submit control.
- * Installation procedure also includes actions on Janrain side.
  *
- * Download the "rpx_xdcomm.html" file from the JanRain application
- * dashboard (the "Deployment" -> "Social Sharing" section) and
- * place it in the root directory of your website.
- *
- * Configure the list of the necessary social sharing providers
- * in the JanRain application dashboard
- * (the "Deployment" -> "Social Sharing" -> "Choose providers" section).
- *
- * 	var identityManager = {
- * 		"width": 400,
- * 		"height": 240,
- * 		"url": "http://example.com/auth"
- * 	};
  * 	new Echo.StreamServer.Controls.Submit({
  * 		"target": document.getElementById("echo-submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "JanrainSharing",
- * 			"appId": "yourJanRainAppId",
- * 			"xdReceiver": "http://your-domain.com/rpx_xdcomm.html",
- * 			"activity": {
- * 				"sharePrompt": "Share your comment:",
- * 				"shareContent": "I just commented '{content}' on {domain}",
- * 				"itemURL": "http://your-domain.com/this-page.html"
- * 			}
+ * 			"appId": "yourJanrainAppId"
  * 		}]
  * 	});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-2) guide.
  *
  * @extends Echo.Plugin
  *
@@ -49,20 +29,70 @@ var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
+plugin.init = function() {
+	if (!this._isLegacy()) {
+		this.extendTemplate("insertBefore", "postButton", plugin.templates.share);
+	}
+};
+
 plugin.config = {
 	/**
 	 * @cfg {String} appId
-	 * JanRain application ID. You can find the application ID
-	 *  in the JanRain application dashboard.
+	 * A string that identifies the application.
+	 * Available from Janrain Dashboard home page under "Application info."
+	 * (part of the app domain before rpxnow.com).
+	 * For example in https://echo.rpxnow.com appId is "echo"
 	 */
+	"appId": "",
+
 	/**
-	 * @cfg {String} xdReceiver
-	 * Full URL of the "rpx_xdcomm.html" file, downloaded from
-	 * the JanRain application dashboard.
+	 * @cfg {String} [title]
+	 * Title of the sharing modal dialog
+	 */
+	"title": "",
+
+	/**
+	 * @cfg {Number} [height]
+	 * Height of the sharing modal dialog
+	 */
+	"height": 420,
+
+	/**
+	 * @cfg {Number} [width]
+	 * Width of the sharing modal dialog
+	 */
+	"width": 655,
+
+	/**
+	 * @cfg {Object} [extParams]
+	 * Container for the options specific to Janrain Sharing widget.
+	 * Full list of available options can be found in the
+	 * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/sharing-widget-js-api/settings/" target="_blank">Sharing widget documentation</a>
+	 *
+	 * Example:
+	 * 	{
+	 * 		"shortenUrl": true
+	 * 		"title": "Some page title",
+	 * 		"description": "Some page description",
+	 * 		"image": "http://example.com/image.png"
+	 * 		// ...
+	 * 	}
+	 */
+	"extParams": {},
+
+	/**
+	 * @cfg {String} [xdReceiver]
+	 * Full URL of the "rpx_xdcomm.html" file. This file should be downloaded
+	 * from the JanRain application dashboard (the "Deployment" ->
+	 * "Social Sharing" section) and placed in the root directory of your website.
+	 * @deprecated
+	 * See <a href="http://developers.janrain.com/documentation/widgets/legacy-sign-in-widget/" target="_blank">Janrain notice</a>
 	 */
 	/**
 	 * @cfg {Object} activity
 	 * Configures the sharing dialog.
+	 * @deprecated
+	 * See <a href="http://developers.janrain.com/documentation/widgets/legacy-sign-in-widget/" target="_blank">Janrain notice</a>
 	 *
 	 * @cfg {String} activity.sharePrompt
 	 * Caption of the textarea in the sharing dialog.
@@ -110,36 +140,49 @@ plugin.config = {
 	 */
 	// actual limit is 140, reserving some space
 	// for ellipses and shortened link to the page
+	// these parameters are used _only_ in legacy mode (when xdReceiver is provided)
 	"maxLength": 120,
 	"reducedLength": 30,
 	"maxImagesCount": 5
 };
 
 plugin.enabled = function() {
-	return (this.config.get("appId") && this.config.get("xdReceiver"));
+	return this.config.get("appId");
 };
 
 plugin.dependencies = [{
-	"loaded": function() { return !!window.RPXNOW; },
-	"url": ("https:" === document.location.protocol ?
-		"https://" : "http://static.") + "rpxnow.com/js/lib/rpx.js"
+	"loaded": function() { return !!Echo.GUI; },
+	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
+}, {
+	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
+}, {
+	"control": "Echo.StreamServer.Controls.Submit",
+	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
 
+plugin.vars = {
+	"modal": null
+};
+
 plugin.events = {
+	"Echo.StreamServer.Controls.Submit.onPostInit": function(topic, args) {
+		if (this._isLegacy()) return;
+		this.set("needShare", this.view.get("shareCheckbox").prop("checked"));
+	},
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		var plugin = this;
-		RPXNOW.init({
-			"appId": plugin.config.get("appId"),
-			"xdReceiver": plugin.config.get("xdReceiver")
-		});
-		RPXNOW.loadAndRun(["Social"], function () {
-			var activity = new RPXNOW.Social.Activity(
-				plugin.config.get("activity.sharePrompt", plugin.labels.get("sharePrompt")),
-				plugin._prepareContent(args),
-				plugin.config.get("activity.itemURL", args.targetURL)
-			);
-			RPXNOW.Social.publishActivity(plugin._prepareActivity(activity));
-		});
+		if (plugin._isLegacy()) {
+			this._shareLegacy(args);
+			return;
+		}
+		if (!this.get("needShare")) return;
+		this.share(this._prepareData(args));
+	},
+	"Echo.UserSession.onInvalidate": {
+		"context": "global",
+		"handler": function() {
+			this.modal && this.modal.hide();
+		}
 	}
 };
 
@@ -147,10 +190,107 @@ plugin.labels = {
 	/**
 	 * @echo_label
 	 */
+	"share": "Share this comment",
+	/**
+	 * @echo_label
+	 * @deprecated
+	 */
 	"sharePrompt": "Share your comment:"
 };
 
-plugin.methods._prepareActivity = function(act) {
+plugin.templates.share =
+	'<div class="echo-secondaryFont {plugin.class:shareContainer}">' +
+		'<input type="checkbox" class="{plugin.class:shareCheckbox}">' +
+		'<span class="{plugin.class:shareLabel}">{plugin.label:share}</span>' +
+	'</div>';
+
+/**
+ * @method
+ * Shows Janrain sharing dialog
+ *
+ * @param {Object} data
+ * Arbitrary data that can be used while sharing the message.
+ * At least *data.object.content* should be provided.
+ * Full object structure might be found in the private method _prepareData below.
+ */
+plugin.methods.share = function(data) {
+	var plugin = this;
+	var extParams = $.extend(plugin.config.get("extParams"), {
+		"title": $("meta[property=\"og:title\"]").attr("content") || document.title,
+		"description": $("meta[property=\"og:description\"]").attr("content") || "",
+		"image": $("meta[property=\"og:image\"]").attr("content") || "",
+		"url": $("meta[property=\"og:url\"]").attr("content") || location.href.replace(/([#\?][^#\?]*)+$/, ""),
+		"message": Echo.Utils.stripTags(data.object.content)
+	});
+	var extParamsStr = encodeURIComponent(Echo.Utils.objectToJSON(extParams));
+
+	plugin.modal = new Echo.GUI.Modal({
+		"data": {
+			"title": plugin.config.get("title")
+		},
+		"href": plugin.component.config.get("cdnBaseURL.sdk") +
+			"/third-party/janrain/share.html?appId=" + plugin.config.get("appId") +
+			"&extParams=" + extParamsStr,
+		"width": plugin.config.get("width"),
+		"height": plugin.config.get("height"),
+		"padding": "0px",
+		"extraClass": plugin.cssPrefix + "modal",
+		"footer": false,
+		"fade": true,
+		"onHide": function() {
+			plugin.modal = null;
+		}
+	});
+	plugin.modal.show();
+};
+
+plugin.methods._prepareData = function(data) {
+	var item = data.postData.content[0];
+	return {
+		"origin": "submit",
+		"actor": {
+			"id": this.component.user.get("identityUrl"),
+			"name": item.actor.name,
+			"avatar": item.actor.avatar
+		},
+		"object": {
+			"id": data.request.response.objectID,
+			"content": item.object.content
+		},
+		"source": item.source,
+		"target": data.targetURL
+	};
+};
+
+plugin.methods._isLegacy = function() {
+	return this.config.get("xdReceiver");
+};
+
+plugin.methods._shareLegacy = function(args) {
+	var plugin = this;
+	Echo.Loader.download([{
+		"loaded": function() {
+			return !!window.RPXNOW;
+		},
+		"url": ("https:" === document.location.protocol ? "https://" : "http://static.") +
+			"rpxnow.com/js/lib/rpx.js"
+	}], function() {
+		RPXNOW.init({
+			"appId": plugin.config.get("appId"),
+			"xdReceiver": plugin.config.get("xdReceiver")
+		});
+		RPXNOW.loadAndRun(["Social"], function () {
+			var activity = new RPXNOW.Social.Activity(
+				plugin.config.get("activity.sharePrompt", plugin.labels.get("sharePrompt")),
+				plugin._prepareContentLegacy(args),
+				plugin.config.get("activity.itemURL", args.targetURL)
+			);
+			RPXNOW.Social.publishActivity(plugin._prepareActivityLegacy(activity));
+		});
+	});
+};
+
+plugin.methods._prepareActivityLegacy = function(act) {
 	var plugin = this;
 	var activity = act;
 	var handlers = {
@@ -182,7 +322,7 @@ plugin.methods._prepareActivity = function(act) {
 	return activity;
 };
 
-plugin.methods._prepareContent = function(args) {
+plugin.methods._prepareContentLegacy = function(args) {
 	var plugin = this;
 	var text = Echo.Utils.stripTags(args.postData.content[0].object.content);
 	var messagePattern = plugin.config.get("activity.shareContent");
@@ -215,6 +355,149 @@ plugin.methods._isReplyToTweet = function(data) {
 
 plugin.methods._getTweetAuthor = function(data) {
 	return data.actor.id.replace(/https?\:\/\/twitter\.com\//, "");
+};
+
+plugin.css =
+	'.{plugin.class:shareContainer} { display: inline-block; margin: 0px 15px 0px 0px; }' +
+	'.echo-sdk-ui .{plugin.class:shareContainer} input.{plugin.class:shareCheckbox} { margin: 0px; margin-right: 3px; padding: 0px; }' +
+	'.echo-sdk-ui .{plugin.class:modal} .modal-body { max-height: 420px; }';
+
+Echo.Plugin.create(plugin);
+
+})(Echo.jQuery);
+
+(function(jQuery) {
+"use strict";
+
+var $ = jQuery;
+
+/**
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.JanrainSharing
+ * Plugin provides the ability to load JanRain sharing dialog clicking
+ * the "Share" button in the item.
+ *
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
+ * 		"plugins": [{
+ * 			"name": "JanrainSharing",
+ * 			"appId": "yourJanrainAppId"
+ * 		}]
+ * 	});
+ *
+ * More information regarding the plugins installation can be found
+ * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-2) guide.
+ *
+ * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
+ */
+var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Stream.Item");
+
+if (Echo.Plugin.isDefined(plugin)) return;
+
+plugin.init = function() {
+	this.component.addButtonSpec("Share", this._assembleButton());
+};
+
+plugin.config = {
+	/**
+	 * @cfg {String} appId
+	 * A string that identifies the application.
+	 * Available from Janrain Dashboard home page under "Application info."
+	 * (part of the app domain before rpxnow.com).
+	 * For example in https://echo.rpxnow.com appId is "echo"
+	 */
+	"appId": "",
+
+	/**
+	 * @cfg {String} [title]
+	 * Title of the sharing modal dialog
+	 */
+	"title": "",
+
+	/**
+	 * @cfg {Number} [height]
+	 * Height of the sharing modal dialog
+	 */
+	"height": 420,
+
+	/**
+	 * @cfg {Number} [width]
+	 * Width of the sharing modal dialog
+	 */
+	"width": 655,
+
+	/**
+	 * @cfg {Object} [extParams]
+	 * Container for the options specific to Janrain Sharing widget.
+	 * Full list of available options can be found in the
+	 * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/sharing-widget-js-api/settings/" target="_blank">Sharing widget documentation</a>
+	 *
+	 * Example:
+	 * 	{
+	 * 		"shortenUrl": true,
+	 * 		"title": "Some page title",
+	 * 		"description": "Some page description",
+	 * 		"image": "http://example.com/image.png"
+	 * 		// ...
+	 * 	}
+	 */
+	"extParams": {}
+};
+
+plugin.enabled = function() {
+	return this.config.get("appId");
+};
+
+plugin.dependencies = [{
+	"loaded": function() { return !!Echo.GUI; },
+	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
+}, {
+	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
+}, {
+	"control": "Echo.StreamServer.Controls.Stream.Item",
+	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
+}];
+
+plugin.labels = {
+	"shareButton": "Share"
+};
+
+// let's copy this function from the related plugin for Submit Control
+plugin.methods.share = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype.share;
+
+plugin.methods._prepareData = function(item) {
+	return {
+		"origin": "item",
+		"actor": {
+			"id": item.actor.id,
+			"name": item.actor.title,
+			"avatar": item.actor.avatar
+		},
+		"object": {
+			"id": item.object.id,
+			"content": item.object.content
+		},
+		"source": item.source,
+		"target": item.target.id
+	};
+};
+
+plugin.methods._assembleButton = function() {
+	var plugin = this, item = this.component;
+	var callback = function() {
+		plugin.share(plugin._prepareData(item.get("data")));
+	};
+	return function() {
+		var item = this;
+		return {
+			"name": "Share",
+			"label": plugin.labels.get("shareButton"),
+			"callback": callback
+		};
+	};
 };
 
 Echo.Plugin.create(plugin);
