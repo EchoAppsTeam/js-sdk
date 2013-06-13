@@ -30,7 +30,7 @@ var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	if (!this._isLegacy()) {
+	if (!this._isLegacy() && !this.config.get("shareAlways")) {
 		this.extendTemplate("insertBefore", "postButton", plugin.templates.share);
 	}
 };
@@ -44,6 +44,15 @@ plugin.config = {
 	 * For example in https://echo.rpxnow.com appId is "echo"
 	 */
 	"appId": "",
+
+	/**
+	 * @cfg {Boolean} [shareAlways]
+	 * Specifies if the "Share this" checkbox should be visible so that users
+	 * could decide themselves if they want to share the posted content or not.
+	 * If this parameter value is set to *true* checkbox is hidden and
+	 * sharing popup always appears.
+	 */
+	"shareAlways": false,
 
 	/**
 	 * @cfg {String} [title]
@@ -164,7 +173,7 @@ plugin.vars = {
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostInit": function(topic, args) {
 		if (this._isLegacy()) return;
-		this.set("needShare", this.view.get("shareCheckbox").prop("checked"));
+		this.set("needShare", this.config.get("shareAlways") || this.view.get("shareCheckbox").prop("checked"));
 	},
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		var plugin = this;
