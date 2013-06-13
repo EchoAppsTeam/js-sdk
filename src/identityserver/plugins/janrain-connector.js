@@ -5,7 +5,7 @@ var $ = jQuery;
 
 /**
  * @class Echo.IdentityServer.Controls.Auth.Plugins.JanrainConnector
- * Adds the possibility to login via Janrain providing only Janrain application name.
+ * Janrain Social Sign-in Widget integration with Echo Auth Control.
  *
  * 	new Echo.IdentityServer.Controls.Auth({
  * 		"target": document.getElementById("auth"),
@@ -30,12 +30,12 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var plugin = this, component = this.component;
-	$.each(plugin.config.get("sections") || [], function(i, type) {
+	$.each(plugin.config.get("buttons", []), function(i, type) {
 		var identityManager = component.config.get("identityManager." + type, {});
-		var extParamsStr = encodeURIComponent(Echo.Utils.objectToJSON(plugin.config.get("extParams")));
+		var configStr = encodeURIComponent(Echo.Utils.objectToJSON(plugin.config.get("signinWidgetConfig")));
 		identityManager.url = component.config.get("cdnBaseURL.sdk") +
 			"/third-party/janrain/auth.html?appId=" + plugin.config.get("appId") +
-			"&extParams=" + extParamsStr + "&bpChannel=";
+			"&signinConfig=" + configStr + "&bpChannel=";
 		$.each(["title", "width", "height"], function(i, param) {
 			if (identityManager[param]) return;
 			identityManager[param] = plugin.config.get(param);
@@ -46,45 +46,45 @@ plugin.init = function() {
 
 plugin.config = {
 	/**
-	 * @cfg {String} appId
+	 * @cfg {String} appId (required)
 	 * A string that identifies the application.
-	 * Available from Janrain Dashboard home page under "Application info."
+	 * Available from Janrain Dashboard home page under "Application info"
 	 * (part of the app domain before rpxnow.com).
 	 * For example in https://echo.rpxnow.com appId is "echo"
 	 */
 	"appId": "",
 
 	/**
-	 * @cfg {String[]} [sections=["login"]]
-	 * A list of sections that should be rendered in the Auth Control. May include
+	 * @cfg {String[]} [buttons=["login"]]
+	 * A list of buttons that should be rendered in the Auth Control. May include
 	 * any of the following strings (order doesn't matter):
 	 *
 	 * + "login"
 	 * + "edit"
 	 * + "signup"
 	 */
-	"sections": ["login"],
+	"buttons": ["login"],
 
 	/**
 	 * @cfg {String} [title]
-	 * Title of the auth modal dialog
+	 * Title of the auth modal popup
 	 */
 	"title": "",
 
 	/**
 	 * @cfg {Number} [height]
-	 * Height of the visible auth area
+	 * Height of the visible area of the auth modal popup
 	 */
 	"height": 260,
 
 	/**
 	 * @cfg {Number} [width]
-	 * Width of the visible auth area
+	 * Width of the visible area of the auth modal popup
 	 */
 	"width": 420,
 
 	/**
-	 * @cfg {Object} [extParams]
+	 * @cfg {Object} [signinWidgetConfig]
 	 * Container for the options specific to Janrain Social Sign-in Widget.
 	 * Full list of available options can be found in the
 	 * <a href="http://developers.janrain.com/documentation/widgets/social-sign-in-widget/social-sign-in-widget-api/settings/" target="_blank">documentation</a>
@@ -96,7 +96,11 @@ plugin.config = {
 	 * 		// ...
 	 * 	}
 	 */
-	"extParams": {}
+	"signinWidgetConfig": {}
+};
+
+plugin.enabled = function() {
+	return this.config.get("appId") && this.config.get("buttons").length;
 };
 
 Echo.Plugin.create(plugin);

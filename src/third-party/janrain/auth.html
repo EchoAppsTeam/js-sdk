@@ -3,14 +3,15 @@
 <head>
 <style type="text/css">
 	#janrainEngageEmbed div.janrainContent { margin: 0px auto; }
-	/*.janrainSlideControllerMask { display: none; }*/
+	/* temporary fix */
+	.janrainSlideControllerMask { display: none; }
 </style>
 </head>
 <body>
 <div id="janrainEngageEmbed"></div>
 <script type="text/javascript">
 (function() {
-	var p, params = {}, extParams = {};
+	var p, params = {}, signinConfig = {};
 	var vars = window.location.search.substring(1).split("&");
 	for (var i = 0; i < vars.length; i++) {
 		var pair = vars[i].split("=");
@@ -37,11 +38,11 @@
 	};
 	if (window.JSON && JSON.parse) {
 		try {
-			extParams = JSON.parse(params.extParams);
+			signinConfig = JSON.parse(params.signinConfig);
 		} catch(e) {}
 	}
-	for (p in extParams) {
-		janrain.settings[p] = extParams[p];
+	for (p in signinConfig) {
+		janrain.settings[p] = signinConfig[p];
 	}
 	for (p in defaults) {
 		if (typeof janrain.settings[p] === "undefined") {

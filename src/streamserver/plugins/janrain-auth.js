@@ -5,7 +5,7 @@ var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth
- * Adds the possibility to login via Janrain providing only Janrain application name.
+ * Janrain Social Sign-in Widget integration with Echo Submit Control.
  *
  * 	new Echo.StreamServer.Controls.Submit({
  * 		"target": document.getElementById("submit"),
@@ -39,45 +39,45 @@ plugin.init = function() {
 
 plugin.config = {
 	/**
-	 * @cfg {String} appId
+	 * @cfg {String} appId (required)
 	 * A string that identifies the application.
-	 * Available from Janrain Dashboard home page under "Application info."
+	 * Available from Janrain Dashboard home page under "Application info"
 	 * (part of the app domain before rpxnow.com).
 	 * For example in https://echo.rpxnow.com appId is "echo"
 	 */
 	"appId": "",
 
 	/**
-	 * @cfg {String[]} [sections=["login"]]
-	 * A list of sections that should be rendered in the Auth Control. May include
+	 * @cfg {String[]} [buttons=["login"]]
+	 * A list of buttons that should be rendered in the Auth Control. May include
 	 * any of the following strings (order doesn't matter):
 	 *
 	 * + "login"
 	 * + "edit"
 	 * + "signup"
 	 */
-	"sections": ["login"],
+	"buttons": ["login"],
 
 	/**
 	 * @cfg {String} [title]
-	 * Title of the auth modal dialog
+	 * Title of the auth modal popup
 	 */
 	"title": "",
 
 	/**
 	 * @cfg {Number} [height]
-	 * Height of the visible auth area
+	 * Height of the visible area of the auth modal popup
 	 */
 	"height": 260,
 
 	/**
 	 * @cfg {Number} [width]
-	 * Width of the visible auth area
+	 * Width of the visible area of the auth modal popup
 	 */
 	"width": 420,
 
 	/**
-	 * @cfg {Object} [extParams]
+	 * @cfg {Object} [signinWidgetConfig]
 	 * Container for the options specific to Janrain Social Sign-in Widget.
 	 * Full list of available options can be found in the
 	 * <a href="http://developers.janrain.com/documentation/widgets/social-sign-in-widget/social-sign-in-widget-api/settings/" target="_blank">documentation</a>
@@ -89,7 +89,7 @@ plugin.config = {
 	 * 		// ...
 	 * 	}
 	 */
-	"extParams": {},
+	"signinWidgetConfig": {},
 
 	/**
 	 * @cfg {String} submitPermissions
@@ -103,7 +103,7 @@ plugin.config = {
 
 plugin.enabled = function() {
 	return this.component.user && this.component.user.get("sessionID") &&
-		this.config.get("appId") && this.config.get("sections").length;
+		this.config.get("appId") && this.config.get("buttons").length;
 };
 
 plugin.labels = {
@@ -156,7 +156,7 @@ plugin.component.renderers.container = function(element) {
  * @echo_renderer
  */
 plugin.renderers.auth = function(element) {
-	var plugin = this, fields = ["appId", "width", "height", "sections", "extParams"];
+	var plugin = this, fields = ["appId", "title", "width", "height", "buttons", "signinWidgetConfig"];
 	var janrainConnectorPlugin = Echo.Utils.foldl({"name": "JanrainConnector"}, fields, function(param, acc) {
 		if (plugin.config.get(param)) {
 			acc[param] = plugin.config.get(param);

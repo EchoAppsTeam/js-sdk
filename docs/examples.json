@@ -78,16 +78,9 @@
 				"icon": "../docs/resources/images/default-guide.png"
 			},
 			{
-				"name": "janrain-connector-plugin",
-				"title": "JanrainConnector",
-				"description": "Adds the possibility to login via Janrain providing only Janrain application name.",
-				"url": "janrain-connector-plugin.html",
-				"icon": "../docs/resources/images/default-guide.png"
-			},
-			{
 				"name": "janrain-auth-plugin",
 				"title": "JanrainAuth",
-				"description": "Adds the possibility to login via Janrain providing only Janrain application name.",
+				"description": "Janrain Social Sign-in Widget integration with Echo Submit Control.",
 				"url": "janrain-auth-plugin.html",
 				"icon": "../docs/resources/images/default-guide.png"
 			},

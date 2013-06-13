@@ -13,7 +13,7 @@ var $ = jQuery;
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "JanrainSharing",
- * 			"appId": "yourJanrainAppId"
+ * 			"appId": "echo"
  * 		}]
  * 	});
  *
@@ -37,9 +37,9 @@ plugin.init = function() {
 
 plugin.config = {
 	/**
-	 * @cfg {String} appId
+	 * @cfg {String} appId (required)
 	 * A string that identifies the application.
-	 * Available from Janrain Dashboard home page under "Application info."
+	 * Available from Janrain Dashboard home page under "Application info"
 	 * (part of the app domain before rpxnow.com).
 	 * For example in https://echo.rpxnow.com appId is "echo"
 	 */
@@ -64,7 +64,7 @@ plugin.config = {
 	"width": 655,
 
 	/**
-	 * @cfg {Object} [extParams]
+	 * @cfg {Object} [sharingWidgetConfig]
 	 * Container for the options specific to Janrain Sharing widget.
 	 * Full list of available options can be found in the
 	 * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/sharing-widget-js-api/settings/" target="_blank">Sharing widget documentation</a>
@@ -78,7 +78,7 @@ plugin.config = {
 	 * 		// ...
 	 * 	}
 	 */
-	"extParams": {},
+	"sharingWidgetConfig": {},
 
 	/**
 	 * @cfg {String} [xdReceiver]
@@ -155,9 +155,6 @@ plugin.dependencies = [{
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
-}, {
-	"control": "Echo.StreamServer.Controls.Submit",
-	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
 
 plugin.vars = {
@@ -176,7 +173,7 @@ plugin.events = {
 			return;
 		}
 		if (!this.get("needShare")) return;
-		this.share(this._prepareData(args));
+		this._share(this._prepareData(args));
 	},
 	"Echo.UserSession.onInvalidate": {
 		"context": "global",
@@ -204,25 +201,14 @@ plugin.templates.share =
 		'<span class="{plugin.class:shareLabel}">{plugin.label:share}</span>' +
 	'</div>';
 
-/**
- * @method
- * Shows Janrain sharing dialog
- *
- * @param {Object} data
- * Arbitrary data that can be used while sharing the message.
- * At least *data.object.content* should be provided.
- * Full object structure might be found in the private method _prepareData below.
- */
-plugin.methods.share = function(data) {
+plugin.methods._share = function(data) {
 	var plugin = this;
-	var extParams = $.extend(plugin.config.get("extParams"), {
-		"title": $("meta[property=\"og:title\"]").attr("content") || document.title,
-		"description": $("meta[property=\"og:description\"]").attr("content") || "",
-		"image": $("meta[property=\"og:image\"]").attr("content") || "",
-		"url": $("meta[property=\"og:url\"]").attr("content") || location.href.replace(/([#\?][^#\?]*)+$/, ""),
-		"message": Echo.Utils.stripTags(data.object.content)
-	});
-	var extParamsStr = encodeURIComponent(Echo.Utils.objectToJSON(extParams));
+	var sharingConfig = plugin.config.get("sharingWidgetConfig");
+	sharingConfig.title = sharingConfig.title || $("meta[property=\"og:title\"]").attr("content") || document.title;
+	sharingConfig.description = sharingConfig.description || $("meta[property=\"og:description\"]").attr("content") || "";
+	sharingConfig.image = sharingConfig.image || $("meta[property=\"og:image\"]").attr("content") || "";
+	sharingConfig.url = sharingConfig.url || $("meta[property=\"og:url\"]").attr("content") || location.href.replace(/([#\?][^#\?]*)+$/, "");
+	sharingConfig.message = sharingConfig.message || Echo.Utils.stripTags(data.object.content);
 
 	plugin.modal = new Echo.GUI.Modal({
 		"data": {
@@ -230,7 +216,7 @@ plugin.methods.share = function(data) {
 		},
 		"href": plugin.component.config.get("cdnBaseURL.sdk") +
 			"/third-party/janrain/share.html?appId=" + plugin.config.get("appId") +
-			"&extParams=" + extParamsStr,
+			"&sharingConfig=" + encodeURIComponent(Echo.Utils.objectToJSON(sharingConfig)),
 		"width": plugin.config.get("width"),
 		"height": plugin.config.get("height"),
 		"padding": "0px",
@@ -381,7 +367,7 @@ var $ = jQuery;
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "JanrainSharing",
- * 			"appId": "yourJanrainAppId"
+ * 			"appId": "echo"
  * 		}]
  * 	});
  *
@@ -403,9 +389,9 @@ plugin.init = function() {
 
 plugin.config = {
 	/**
-	 * @cfg {String} appId
+	 * @cfg {String} appId (required)
 	 * A string that identifies the application.
-	 * Available from Janrain Dashboard home page under "Application info."
+	 * Available from Janrain Dashboard home page under "Application info"
 	 * (part of the app domain before rpxnow.com).
 	 * For example in https://echo.rpxnow.com appId is "echo"
 	 */
@@ -430,7 +416,7 @@ plugin.config = {
 	"width": 655,
 
 	/**
-	 * @cfg {Object} [extParams]
+	 * @cfg {Object} [sharingWidgetConfig]
 	 * Container for the options specific to Janrain Sharing widget.
 	 * Full list of available options can be found in the
 	 * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/sharing-widget-js-api/settings/" target="_blank">Sharing widget documentation</a>
@@ -444,7 +430,7 @@ plugin.config = {
 	 * 		// ...
 	 * 	}
 	 */
-	"extParams": {}
+	"sharingWidgetConfig": {}
 };
 
 plugin.enabled = function() {
@@ -456,9 +442,6 @@ plugin.dependencies = [{
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
-}, {
-	"control": "Echo.StreamServer.Controls.Stream.Item",
-	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
 
 plugin.labels = {
@@ -466,7 +449,7 @@ plugin.labels = {
 };
 
 // let's copy this function from the related plugin for Submit Control
-plugin.methods.share = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype.share;
+plugin.methods._share = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._share;
 
 plugin.methods._prepareData = function(item) {
 	return {
@@ -488,7 +471,7 @@ plugin.methods._prepareData = function(item) {
 plugin.methods._assembleButton = function() {
 	var plugin = this, item = this.component;
 	var callback = function() {
-		plugin.share(plugin._prepareData(item.get("data")));
+		plugin._share(plugin._prepareData(item.get("data")));
 	};
 	return function() {
 		var item = this;

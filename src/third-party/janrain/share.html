@@ -4,7 +4,7 @@
 <div id="janrainEngageShare"></div>
 <script type="text/javascript">
 (function() {
-	var p, params = {}, extParams = {};
+	var p, params = {}, sharingConfig = {};
 	var vars = window.location.search.substring(1).split("&");
 	for (var i = 0; i < vars.length; i++) {
 		var pair = vars[i].split("=");
@@ -29,11 +29,11 @@
 	};
 	if (window.JSON && JSON.parse) {
 		try {
-			extParams = JSON.parse(params.extParams);
+			sharingConfig = JSON.parse(params.sharingConfig);
 		} catch(e) {}
 	}
-	for (p in extParams) {
-		janrain.settings.share[p] = extParams[p];
+	for (p in sharingConfig) {
+		janrain.settings.share[p] = sharingConfig[p];
 	}
 	for (p in defaults) {
 		if (typeof janrain.settings.share[p] === "undefined") {
