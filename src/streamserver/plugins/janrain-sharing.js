@@ -30,7 +30,7 @@ var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	if (!this._isLegacy() && !this.config.get("shareAlways")) {
+	if (!this._isLegacy() && !this.config.get("alwaysShare")) {
 		this.extendTemplate("insertBefore", "postButton", plugin.templates.share);
 	}
 };
@@ -46,31 +46,13 @@ plugin.config = {
 	"appId": "",
 
 	/**
-	 * @cfg {Boolean} [shareAlways]
+	 * @cfg {Boolean} [alwaysShare]
 	 * Specifies if the "Share this" checkbox should be visible so that users
 	 * could decide themselves if they want to share the posted content or not.
 	 * If this parameter value is set to *true* checkbox is hidden and
 	 * sharing popup always appears.
 	 */
-	"shareAlways": false,
-
-	/**
-	 * @cfg {String} [title]
-	 * Title of the sharing modal dialog
-	 */
-	"title": "",
-
-	/**
-	 * @cfg {Number} [height]
-	 * Height of the sharing modal dialog
-	 */
-	"height": 420,
-
-	/**
-	 * @cfg {Number} [width]
-	 * Width of the sharing modal dialog
-	 */
-	"width": 655,
+	"alwaysShare": false,
 
 	/**
 	 * @cfg {Object} [sharingWidgetConfig]
@@ -166,14 +148,10 @@ plugin.dependencies = [{
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
 }];
 
-plugin.vars = {
-	"modal": null
-};
-
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostInit": function(topic, args) {
 		if (this._isLegacy()) return;
-		this.set("needShare", this.config.get("shareAlways") || this.view.get("shareCheckbox").prop("checked"));
+		this.set("needShare", this.config.get("alwaysShare") || this.view.get("shareCheckbox").prop("checked"));
 	},
 	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
 		var plugin = this;
@@ -183,12 +161,6 @@ plugin.events = {
 		}
 		if (!this.get("needShare")) return;
 		this._share(this._prepareData(args));
-	},
-	"Echo.UserSession.onInvalidate": {
-		"context": "global",
-		"handler": function() {
-			this.modal && this.modal.hide();
-		}
 	}
 };
 
@@ -211,32 +183,60 @@ plugin.templates.share =
 	'</div>';
 
 plugin.methods._share = function(data) {
-	var plugin = this;
-	var sharingConfig = plugin.config.get("sharingWidgetConfig");
-	sharingConfig.title = sharingConfig.title || $("meta[property=\"og:title\"]").attr("content") || document.title;
-	sharingConfig.description = sharingConfig.description || $("meta[property=\"og:description\"]").attr("content") || "";
-	sharingConfig.image = sharingConfig.image || $("meta[property=\"og:image\"]").attr("content") || "";
-	sharingConfig.url = sharingConfig.url || $("meta[property=\"og:url\"]").attr("content") || location.href.replace(/([#\?][^#\?]*)+$/, "");
-	sharingConfig.message = sharingConfig.message || Echo.Utils.stripTags(data.object.content);
+	var url, plugin = this;
+	var callback = function() {
+		plugin.set("foreignConfig", $.extend(true, {}, janrain.engage.share.getState()));
+		plugin._showPopup(data);
+	};
+	if (plugin.get("janrainInitialized")) {
+		callback();
+		return;
+	}
+	this.set("janrainInitialized", true);
 
-	plugin.modal = new Echo.GUI.Modal({
-		"data": {
-			"title": plugin.config.get("title")
-		},
-		"href": plugin.component.config.get("cdnBaseURL.sdk") +
-			"/third-party/janrain/share.html?appId=" + plugin.config.get("appId") +
-			"&sharingConfig=" + encodeURIComponent(Echo.Utils.objectToJSON(sharingConfig)),
-		"width": plugin.config.get("width"),
-		"height": plugin.config.get("height"),
-		"padding": "0px",
-		"extraClass": plugin.cssPrefix + "modal",
-		"footer": false,
-		"fade": true,
-		"onHide": function() {
-			plugin.modal = null;
+	if (typeof window.janrain !== "object") window.janrain = {};
+	if (typeof janrain.settings !== "object") janrain.settings = {};
+	if (typeof janrain.settings.share !== "object") janrain.settings.share = {};
+	if (typeof janrain.settings.packages !== "object") janrain.settings.packages = [];
+	janrain.settings.packages.push("share");
+	// we can reach this line only after DOM is loaded so no need to use "onload" event
+	janrain.ready = true;
+
+	var foreignOnload = window.janrainShareOnload;
+	window.janrainShareOnload = function() {
+		// let the previous onload handler do its stuff first
+		if (foreignOnload) {
+			foreignOnload();
+			window.janrainShareOnload = foreignOnload;
 		}
+		callback();
+	};
+
+	url = "https:" === document.location.protocol
+		? "https://rpxnow.com/js/lib/" + plugin.config.get("appId") + "/widget.js"
+		: "http://widget-cdn.rpxnow.com/js/lib/" + plugin.config.get("appId") + "/widget.js";
+	Echo.Loader.download([{"url": url}]);
+};
+
+plugin.methods._showPopup = function(data) {
+	var image, plugin = this;
+	var share = janrain.engage.share;
+	var idx = janrain.events.onModalClose.addHandler(function() {
+		janrain.events.onModalClose.removeHandler(idx);
+		share.reset();
+		share.setState(plugin.get("foreignConfig"));
+		plugin.remove("foreignConfig");
 	});
-	plugin.modal.show();
+	var config = plugin.config.get("sharingWidgetConfig");
+	share.reset();
+	share.setState(config);
+	share.setTitle(config.title || $("meta[property=\"og:title\"]").attr("content") || document.title);
+	share.setDescription(config.description || $("meta[property=\"og:description\"]").attr("content") || "");
+	share.setMessage(config.message || Echo.Utils.stripTags(data.object.content));
+	share.setUrl(config.url || $("meta[property=\"og:url\"]").attr("content") || location.href.replace(/([#\?][^#\?]*)+$/, ""));
+	image = config.image || $("meta[property=\"og:image\"]").attr("content") || "";
+	image && share.setImage(image);
+	share.show();
 };
 
 plugin.methods._prepareData = function(data) {
@@ -354,8 +354,7 @@ plugin.methods._getTweetAuthor = function(data) {
 
 plugin.css =
 	'.{plugin.class:shareContainer} { display: inline-block; margin: 0px 15px 0px 0px; }' +
-	'.echo-sdk-ui .{plugin.class:shareContainer} input.{plugin.class:shareCheckbox} { margin: 0px; margin-right: 3px; padding: 0px; }' +
-	'.echo-sdk-ui .{plugin.class:modal} .modal-body { max-height: 420px; }';
+	'.echo-sdk-ui .{plugin.class:shareContainer} input.{plugin.class:shareCheckbox} { margin: 0px; margin-right: 3px; padding: 0px; }';
 
 Echo.Plugin.create(plugin);
 
@@ -407,24 +406,6 @@ plugin.config = {
 	"appId": "",
 
 	/**
-	 * @cfg {String} [title]
-	 * Title of the sharing modal dialog
-	 */
-	"title": "",
-
-	/**
-	 * @cfg {Number} [height]
-	 * Height of the sharing modal dialog
-	 */
-	"height": 420,
-
-	/**
-	 * @cfg {Number} [width]
-	 * Width of the sharing modal dialog
-	 */
-	"width": 655,
-
-	/**
 	 * @cfg {Object} [sharingWidgetConfig]
 	 * Container for the options specific to Janrain Sharing widget.
 	 * Full list of available options can be found in the
@@ -457,8 +438,9 @@ plugin.labels = {
 	"shareButton": "Share"
 };
 
-// let's copy this function from the related plugin for Submit Control
+// let's copy these functions from the related plugin for Submit Control
 plugin.methods._share = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._share;
+plugin.methods._showPopup = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._showPopup;
 
 plugin.methods._prepareData = function(item) {
 	return {
