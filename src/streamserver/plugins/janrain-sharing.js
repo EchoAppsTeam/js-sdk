@@ -17,6 +17,11 @@ var $ = jQuery;
  * 		}]
  * 	});
  *
+ * The plugin implementation takes into account
+ * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/" target="_blank">Janrain recommendation</a>
+ * for multiple widgets hosting so it should not interfere in any way with other
+ * sharing widgets on the page.
+ *
  * More information regarding the plugins installation can be found
  * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-2) guide.
  *
@@ -188,11 +193,11 @@ plugin.methods._share = function(data) {
 		plugin.set("foreignConfig", $.extend(true, {}, janrain.engage.share.getState()));
 		plugin._showPopup(data);
 	};
-	if (plugin.get("janrainInitialized")) {
+	if (window.janrain && janrain.engage && janrain.engage.share || plugin.get("janrainInitialized")) {
 		callback();
 		return;
 	}
-	this.set("janrainInitialized", true);
+	plugin.set("janrainInitialized", true);
 
 	if (typeof window.janrain !== "object") window.janrain = {};
 	if (typeof janrain.settings !== "object") janrain.settings = {};
@@ -378,6 +383,11 @@ var $ = jQuery;
  * 			"appId": "echo"
  * 		}]
  * 	});
+ *
+ * The plugin implementation takes into account
+ * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/" target="_blank">Janrain recommendation</a>
+ * for multiple widgets hosting so it should not interfere in any way with other
+ * sharing widgets on the page.
  *
  * More information regarding the plugins installation can be found
  * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-2) guide.
