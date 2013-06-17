@@ -17,10 +17,13 @@ var $ = jQuery;
  * 		}]
  * 	});
  *
- * The plugin implementation takes into account
+ * The plugin implementation employs the
  * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/" target="_blank">Janrain recommendation</a>
- * for multiple widgets hosting so it should not interfere in any way with other
- * sharing widgets on the page.
+ * of hosting multiple widgets to make sure that the Janrain widget initialized
+ * within the plugin doesn't interfere with other Janrain Sharing widgets on the
+ * same page. If you have other Janrain widgets installed on the page, please take
+ * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/" target="_blank">the recommendation</a>
+ * into account as well.
  *
  * More information regarding the plugins installation can be found
  * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-2) guide.
@@ -384,10 +387,13 @@ var $ = jQuery;
  * 		}]
  * 	});
  *
- * The plugin implementation takes into account
+ * The plugin implementation employs the
  * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/" target="_blank">Janrain recommendation</a>
- * for multiple widgets hosting so it should not interfere in any way with other
- * sharing widgets on the page.
+ * of hosting multiple widgets to make sure that the Janrain widget initialized
+ * within the plugin doesn't interfere with other Janrain Sharing widgets on the
+ * same page. If you have other Janrain widgets installed on the page, please take
+ * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/" target="_blank">the recommendation</a>
+ * into account as well.
  *
  * More information regarding the plugins installation can be found
  * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-2) guide.
