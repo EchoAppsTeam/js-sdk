@@ -468,7 +468,7 @@ module.exports = function(grunt) {
 			srcFiles = grunt.file.expandFiles(file.src);
 			async.concatSeries(srcFiles, function(srcFile, nextConcat) {
 				recess(srcFile, { compile: true }, function (err, res) {
-					nextConcat(null, res.output);
+					nextConcat(null, res[0].output[0]);
 				});
 			}, function(err, css) {
 				grunt.file.write(file.dest, css.join("\n") || "");
