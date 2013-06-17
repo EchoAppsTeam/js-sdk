@@ -49,6 +49,10 @@ div#north-region {
 	height: 100px;
 }
 
+.class-categories .section .left-column {
+	width: auto;
+}
+
 .class-categories .section .middle-column {
 	width: 500px;
 }

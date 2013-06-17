@@ -535,7 +535,7 @@ Echo.Plugin.Config.prototype.assemble = function(data) {
 	data = data || {};
 	data.user = this.plugin.component.user;
 	data.parent = config.getAsHash();
-	data.plugins = this.plugin.config.get("nestedPlugins", []);
+	data.plugins = (data.plugins || []).concat(this.plugin.config.get("nestedPlugins", []));
 
 	// copy default field values from parent control
 	Echo.Utils.foldl(data, defaults, function(value, acc, key) {
