@@ -1760,7 +1760,7 @@ item.config = {
 	 * + smileys - replaces textual smileys with images
 	 * + hashtags - highlights hashtags in text
 	 * + urls - highlights urls represented as plain text
-	 * + newlines - replaces newlines with <br> tags
+	 * + newlines - replaces newlines with \<br> tags
 	 */
 	"contentTransformations": {
 		"text": ["smileys", "hashtags", "urls", "newlines"],
@@ -1791,7 +1791,7 @@ item.config = {
 	 * this parameter should be integer and represents the number of lines
 	 * that need to be displayed. Note: the definition of "Line" here is the
 	 * sequence of characters separated by the "End Of Line" character
-	 * ("\n" for plain text or <br> for HTML format).
+	 * ("\n" for plain text or \<br> for HTML format).
 	 *
 	 * @cfg {Number} [limits.maxBodyLinkLength=50]
 	 * Allows to truncate the number of characters of the hyperlinks in the
