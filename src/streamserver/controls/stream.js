@@ -1714,6 +1714,10 @@ if (Echo.Control.isDefined(item)) return;
 /** @hide @cfg appkey */
 /** @hide @cfg defaultAvatar */
 /** @hide @cfg plugins */
+/** @hide @cfg target */
+/** @hide @cfg cdnBaseURL */
+/** @hide @cfg apiBaseURL */
+/** @hide @cfg useSecureAPI */
 /** @hide @cfg submissionProxyURL */
 /** @hide @method placeImage */
 /** @hide @method dependent */
