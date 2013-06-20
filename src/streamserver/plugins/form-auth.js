@@ -26,6 +26,12 @@ var $ = jQuery;
  * 		}]
  * 	});
  *
+ * Note: it is strongly recommended to use
+ * {@link Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth JanrainAuth} plugin
+ * in case of integration with Janrain authentication provider because it is
+ * based on the most current <a href="http://janrain.com/products/engage/social-login/" target="_blank">Janrain Social Login Widget</a>
+ * implementation.
+ *
  * More information regarding the plugins installation can be found
  * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
  *
