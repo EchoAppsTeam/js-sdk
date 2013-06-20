@@ -1,5 +1,42 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.9 - June 20, 2013
+
+* [JanrainAuth plugin](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth) for [Echo Submit Control](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit) is added to employ [Janrain Social Login Widget](http://janrain.com/products/engage/social-login/).
+  Now there is no need to include the "FormAuth" plugin and configure Janrain app URL, you can just include the "JanrainAuth" plugin instead of the "FormAuth" one and pass the Janrain app ID. The plugin takes care about the rest. It is based on the most current Janrain Login Widget implementation so it is recommended to use "JanrainAuth" plugin in case of integration with Janrain authentication provider. Note: the "FormAuth" plugin is still available as a part of the Echo JS SDK package for more complex integration cases.
+
+* [JanrainSharing plugin](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing) for [Echo Submit Control](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit) is added to employ [Janrain Social Sharing Widget](http://janrain.com/products/engage/social-sharing/).
+  As a part of the update we also added an ability to display the "Share this" checkbox near the "Post" button of the Submit form to let the user decide if the sharing popup should be opened or not. The visibility of the checkbox can be changed using the plugin configuration parameter. If the checkbox is not displayed, the sharing popup will appear automatically after a successful item submission.
+
+* [JanrainSharing plugin](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.JanrainSharing) for [Echo Stream Control](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream) is added to employ [Janrain Social Sharing Widget](http://janrain.com/products/engage/social-sharing/).
+  Long awaited feature was added into the Stream control: using the "JanrainSharing" plugin for the Stream, the "Share" button can be added into the Stream Item UI to provide the ability for the users to share items with their friends.
+
+* [JanrainConnector plugin](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth.Plugins.JanrainConnector) for [Echo Auth Control](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth) is added to employ [Janrain Social Login Widget](http://janrain.com/products/engage/social-login/).
+  This plugin provides the ability to enable the Janrain Social Login Widget functionality for the Echo Auth control.
+
+* The error code was missing in the popup which appeared in case the server returned an error response after the item submission via Submit form. Now the error message received from the server side is properly displayed to provide additional information for the user about the reason for the failed submission attempt.
+
+* The [maxBodyLines limits parameter](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item-cfg-limits) was handled by the Stream Item class a bit incorrectly which produced JavaScript errors in case the parameter was specified in the config. The issue was fixed to handle this parameter and truncate the Item content properly.
+
+* The way Echo controls and plugins deal with certain fields was optimized to exclude parent widget configuration processing in every internal component. In addition to that the Stream Item config assembling was optimized to avoid unnecessary data structures copying before the Item instance initialization. This should improve the Stream performance especially for the cases when it's initialized from static data (via "data" config parameter).
+
+* The "shown" callback was added to the Echo.GUI.Tabs class. The callback is being executed after the tab has been shown. More information about the callback can be found in the [Echo.GUI.Tabs documentation](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI.Tabs).
+
+* Twitter Bootstrap was upgraded from 2.3.1 to 2.3.2 version. More information about the Bootstrap updates is available [here](http://blog.getbootstrap.com/2013/05/17/bootstrap-2-3-2-released/).
+
+* jQuery was upgraded from 1.9.1 to 1.10.1 version. The corresponding jQuery release notes are available [here](http://blog.jquery.com/2013/05/24/jquery-1-10-0-and-2-0-1-released/) for version 1.10.0 and [here](http://blog.jquery.com/2013/05/30/jquery-1-10-1-and-2-0-2-released/) for version 1.10.1.
+
+* The Item UI was improved in case the "PinboardVisualization" plugin is installed for the Stream control. We've fixed the problem with Items border rendering (the border was missing) and improved the Stream rendering on mobile devices.
+
+* The following guides were added into our Documentation Center:
+  - [How to use template placeholders](http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_use_template_placeholders)
+  - [How to extend templates](http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_extend_templates)
+  - [How to work with text labels](http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_work_with_labels)
+  - [Dependency management in JS SDK](http://echoappsteam.github.io/js-sdk/docs/#!/guide/dependency_management)
+  - [How to initialize Echo components](http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_initialize_components)
+
+  The complete list of guides can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/guide).
+
 ## v3.0.8 - May 16, 2013
 
 * The "ready" callback was not executed in case an incorrect appkey was specified during the **Echo.UserSession initialization**. As a result, Control or App initialization was stopped on the user creation step. Now the Echo.UserSession initialized with an invalid appkey is considered as an anonymous user (the "ready" callback is being executed).
