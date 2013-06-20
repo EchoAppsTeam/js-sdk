@@ -18,19 +18,14 @@
 				"description": "This document contains technical limitations, browser support and design principles and technology choices of the SDK"
 			},
 			{
-				"name": "how_to_develop_control",
-				"title": "How to develop a Control",
-				"description": "Control development hands-on guide"
+				"name": "how_to_develop_app",
+				"title": "How to develop an App",
+				"description": "Application development hands-on guide"
 			},
 			{
 				"name": "how_to_develop_plugin",
 				"title": "How to develop a Plugin",
 				"description": "Plugin development hands-on guide"
-			},
-			{
-				"name": "how_to_develop_app",
-				"title": "How to develop an App",
-				"description": "Application development hands-on guide"
 			},
 			{
 				"name": "how_to_use_template_placeholders",
@@ -40,7 +35,7 @@
 			{
 				"name": "how_to_extend_templates",
 				"title": "How to extend templates",
-				"description": "This document describes how to extend Controls and Applications templates"
+				"description": "This document describes how to extend Application templates"
 			},
 			{
 				"name": "how_to_work_with_labels",

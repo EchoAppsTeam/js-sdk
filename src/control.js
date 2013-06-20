@@ -5,9 +5,9 @@ var $ = jQuery;
 
 /**
  * @class Echo.Control
- * Foundation class implementing core logic to create controls and manipulate with them.
- *
- * You can find instructions on how to create your control in the ["How to develop a control"](#!/guide/how_to_develop_control) guide.
+ * Foundation class implementing core logic to create controls and manipulate them.
+ * This is a base class for Echo.App class. You can find instructions on how to create
+ * your App in the ["How to develop an App"](#!/guide/how_to_develop_app) guide.
  *
  * @package environment.pack.js
  */

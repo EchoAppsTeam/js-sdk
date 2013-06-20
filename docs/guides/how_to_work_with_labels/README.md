@@ -34,37 +34,37 @@ in the application should be pushed to the storage using the static Echo.Labels.
 To access a particular language variable from the global storage the static accessor
 Echo.Labels.get method should be used.
 
-	// First let's add labels for MyControl into the global storage
+	// First let's add labels for MyApp into the global storage
 	Echo.Labels.set({
 		"label1": "Label 1",
 		"label2": "Label 2"
-	}, "MyLib.MyControl", true);
+	}, "MyLib.MyApp", true);
 	
-	Echo.Labels.get("label1", "MyLib.MyControl"); // => "Label 1"
+	Echo.Labels.get("label1", "MyLib.MyApp"); // => "Label 1"
 	
-	// Then add labels for another control
+	// Then add labels for another app
 	Echo.Labels.set({
 		"label1": "Another Label 1",
 		"label2": "Another Label 2"
-	}, "MyLib.MyControl2", true);
+	}, "MyLib.MyApp2", true);
 	
-	Echo.Labels.get("label1", "MyLib.MyControl"); // => "Label 1"
-	Echo.Labels.get("label1", "MyLib.MyControl2"); // => "Another Label 1"
+	Echo.Labels.get("label1", "MyLib.MyApp"); // => "Label 1"
+	Echo.Labels.get("label1", "MyLib.MyApp2"); // => "Another Label 1"
 	
 	// So add a label into the custom area
 	Echo.Labels.set({
 		"label2": "Label 2 custom"
-	}, "MyLib.MyControl");
+	}, "MyLib.MyApp");
 	
-	Echo.Labels.get("label1", "MyLib.MyControl"); // => "Label 1"
-	Echo.Labels.get("label2", "MyLib.MyControl"); // => "Label 2 custom"
+	Echo.Labels.get("label1", "MyLib.MyApp"); // => "Label 1"
+	Echo.Labels.get("label2", "MyLib.MyApp"); // => "Label 2 custom"
 	
 	// And also try to change the same label in the default area
 	Echo.Labels.set({
 		"label2": "Label 2 default"
-	}, "MyLib.MyControl", true);
+	}, "MyLib.MyApp", true);
 	
-	Echo.Labels.get("label2", "MyLib.MyControl"); // => "Label 2 custom"
+	Echo.Labels.get("label2", "MyLib.MyApp"); // => "Label 2 custom"
 
 ## Local storage
 
@@ -85,7 +85,7 @@ even if they will be created with the same namespace.
 	// In addition to the previous example let's instantiate a new local storage
 	var localLabels = new Echo.Labels({
 		"label1": "Local Label 1"
-	}, "MyLib.MyControl");
+	}, "MyLib.MyApp");
 
 	localLabels.get("label1"); // => "Local Label 1"
 	localLabels.get("label2"); // => "Label 2 custom"
@@ -93,7 +93,7 @@ even if they will be created with the same namespace.
 	// Then try to create another instance of the local storage
 	var localLabels2 = new Echo.Labels({
 		"label1": "Another Local Label 1"
-	}, "MyLib.MyControl");
+	}, "MyLib.MyApp");
 
 	localLabels2.get("label1"); // => "Another Local Label 1"
 	localLabels2.get("label2"); // => "Label 2 custom"
@@ -117,21 +117,20 @@ It will return us the 'Page 1 of 10' string value.
 
 ## Library utilization
 
-All controls, plugins and applications built on top of JS SDK support text labels by default.
+All apps and plugins built on top of JS SDK support text labels by default.
 Most likely you will not face any difficulties trying to create some text part
 of your interface. In some obvious use cases you even do not have to call Echo.Labels directly.
 
 ### Namespace
 
-The [control](#!/guide/how_to_develop_control)
-or [application](#!/guide/how_to_develop_app) name
+The [application](#!/guide/how_to_develop_app) name
 is used as a basic namespace for text labels. For the
 [plugin](#!/guide/how_to_develop_plugin) it will be
 extended with the parent component name: `<ComponentName>.Plugins.<PluginName>`.
 
 ### Default Labels
 
-When you are developing a new control, plugin or an application you can set
+When you are developing a new application or a plugin you can set
 the language variables list in the manifest section.
 
 	var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
@@ -141,7 +140,7 @@ the language variables list in the manifest section.
 		"allComments": "All Comments"
 	};
 
-Echo.Control which is the basic class for all controls and applications and Echo.Plugin
+Echo.App which is the basic class for all applications and Echo.Plugin
 for the plugins will do the backstage work to push the defined language variables into
 global storage default section.
 
@@ -166,7 +165,7 @@ of an application:
 		});
 	</script>
 
-Text labels in the control can be redefined this way:
+Text labels in the app can be redefined this way:
 
 	var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
 	// ...
