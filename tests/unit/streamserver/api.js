@@ -81,22 +81,18 @@ suite.prototype.cases.requestWithAbort = function(callback) {
 		}
 	});
 	req.send();
-	setTimeout(function() {
-		req.abort();
-	}, 50);
+	req.abort();
 };
 
 suite.prototype.cases.checkLiveUpdate = function(callback) {
 	var self = this;
 	var item = $.extend(true, {}, this.items.post);
 	var params = $.extend({}, this.params);
-	var target = this.params.q.replace(/childrenof:(http:\/\/\S+).*/, function($0, $1) {
-		return $1;
-	});
+	var target = this.params.q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
 	item.targets[0].id = target;
 	item.targets[0].conversationID = target;
 	item.object.id = target;
-	var cuReq = Echo.StreamServer.API.request({
+	var countReq = Echo.StreamServer.API.request({
 		"endpoint": "count",
 		"recurring": "true",
 		"onData": function(response) {
@@ -104,34 +100,35 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 				QUnit.equal(1, response.count, "Checking if live updates mechanism by count works correctly after posting");
 				callback();
 			}
-			cuReq.abort();
+			countReq.abort();
 		},
 		"data": $.extend({}, params)
 	});
-	var luReq = Echo.StreamServer.API.request({
-		"endpoint": "search",
-		"recurring": true,
-		"onData": function(response) {
-			if (response && response.entries && response.entries.length) {
-				QUnit.equal(response.entries[0].object.content, self.items.post.object.content, 
-					"Checking if the live update mechanism by search works correctly after posting");
-				cuReq.send({force: true});
-				luReq.abort();
-			}
-		},
-		"data": $.extend({}, params)
-	});
-	var sReq = Echo.StreamServer.API.request({
+	var submitReq = Echo.StreamServer.API.request({
 		"endpoint": "submit",
-		"onData": function(response) {
-			luReq.send({force: true});
-		},
 		"data": $.extend({}, params, {
 			content: item,
 			targetURL: target
 		})
 	});
-	sReq.send();
+	var liveUpdateReq = Echo.StreamServer.API.request({
+		"endpoint": "search",
+		"recurring": true,
+		"onData": function(response) {
+			if (liveUpdateReq.requestType === "initial") {
+				submitReq.send();
+			} else {
+				if (response && response.entries && response.entries.length) {
+					QUnit.equal(response.entries[0].object.content, self.items.post.object.content,
+						"Checking if the live update mechanism by search works correctly after posting");
+					countReq.send({force: true});
+					liveUpdateReq.abort();
+				}
+			}
+		},
+		"data": $.extend({}, params)
+	});
+	liveUpdateReq.send();
 };
 
 suite.prototype.cases.simpleLiveUpdatesRequest = function(callback) {

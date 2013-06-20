@@ -249,21 +249,26 @@ Echo.Tests.Suite.prototype.jqueryObjectsEqual = function(source, target, message
 		var children, result = {};
 		$.map(properties, function(attr) {
 			var value = elem.prop(attr);
-			result[attr] = typeof value !== &quot;undefined&quot; ? value : &quot;&quot;;
+			if (typeof value !== &quot;undefined&quot;) {
+				result[attr] = value;
+			}
 		});
 		$.map(attributes, function(attr) {
 			var value = elem.attr(attr);
-			result[attr] = typeof value !== &quot;undefined&quot; ? value : &quot;&quot;;
+			if (typeof value !== &quot;undefined&quot;) {
+				result[attr] = value;
+			}
 		});
 		result.events = $._data(elem[0], &quot;events&quot;);
 		result.data = $.extend({}, elem.data());
 		delete result.data[$.expando];
-		children = elem.children();
+		children = elem.contents();
 		if (children.length) {
-			result.children = elem.children().map(function( ind ) {
+			result.children = children.map(function( ind ) {
 				return extract($(this));
 			}).get();
 		} else {
+			result.tagName = elem.prop(&quot;tagName&quot;);
 			result.text = elem.text();
 		}
 		return result;

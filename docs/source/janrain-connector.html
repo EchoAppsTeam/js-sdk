@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+<span id='Echo-IdentityServer-Controls-Auth-Plugins-JanrainConnector'>/**
+</span> * @class Echo.IdentityServer.Controls.Auth.Plugins.JanrainConnector
+ * Janrain Social Sign-in Widget integration with Echo Auth Control.
+ *
+ * 	new Echo.IdentityServer.Controls.Auth({
+ * 		&quot;target&quot;: document.getElementById(&quot;auth&quot;),
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;JanrainConnector&quot;,
+ * 			&quot;appId&quot;: &quot;echo&quot;
+ * 		}]
+ * 	});
+ *
+ * More information regarding the plugins installation can be found
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-2) guide.
+ *
+ * @extends Echo.Plugin
+ *
+ * @package identityserver/plugins.pack.js
+ * @package identityserver.pack.js
+ */
+var plugin = Echo.Plugin.manifest(&quot;JanrainConnector&quot;, &quot;Echo.IdentityServer.Controls.Auth&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
+
+plugin.init = function() {
+	var plugin = this, component = this.component;
+	$.each(plugin.config.get(&quot;buttons&quot;, []), function(i, type) {
+		var identityManager = component.config.get(&quot;identityManager.&quot; + type, {});
+		var configStr = encodeURIComponent(Echo.Utils.objectToJSON(plugin.config.get(&quot;signinWidgetConfig&quot;)));
+		identityManager.url = component.config.get(&quot;cdnBaseURL.sdk&quot;) +
+			&quot;/third-party/janrain/auth.html?appId=&quot; + plugin.config.get(&quot;appId&quot;) +
+			&quot;&amp;signinConfig=&quot; + configStr + &quot;&amp;bpChannel=&quot;;
+		$.each([&quot;title&quot;, &quot;width&quot;, &quot;height&quot;], function(i, param) {
+			if (identityManager[param]) return;
+			identityManager[param] = plugin.config.get(param);
+		});
+		component.config.set(&quot;identityManager.&quot; + type, identityManager);
+	});
+};
+
+plugin.config = {
+<span id='Echo-IdentityServer-Controls-Auth-Plugins-JanrainConnector-cfg-appId'>	/**
+</span>	 * @cfg {String} appId (required)
+	 * A string that identifies the application.
+	 * Available from Janrain Dashboard home page under &quot;Application info&quot;
+	 * (part of the app domain before rpxnow.com).
+	 * For example in https://echo.rpxnow.com appId is &quot;echo&quot;
+	 */
+	&quot;appId&quot;: &quot;&quot;,
+
+<span id='Echo-IdentityServer-Controls-Auth-Plugins-JanrainConnector-cfg-buttons'>	/**
+</span>	 * @cfg {String[]} [buttons=[&quot;login&quot;]]
+	 * A list of buttons that should be rendered in the Auth Control. May include
+	 * any of the following strings (order doesn't matter):
+	 *
+	 * + &quot;login&quot;
+	 * + &quot;edit&quot;
+	 * + &quot;signup&quot;
+	 */
+	&quot;buttons&quot;: [&quot;login&quot;],
+
+<span id='Echo-IdentityServer-Controls-Auth-Plugins-JanrainConnector-cfg-title'>	/**
+</span>	 * @cfg {String} [title]
+	 * Title of the auth modal popup
+	 */
+	&quot;title&quot;: &quot;&quot;,
+
+<span id='Echo-IdentityServer-Controls-Auth-Plugins-JanrainConnector-cfg-height'>	/**
+</span>	 * @cfg {Number} [height]
+	 * Height of the visible area of the auth modal popup
+	 */
+	&quot;height&quot;: 260,
+
+<span id='Echo-IdentityServer-Controls-Auth-Plugins-JanrainConnector-cfg-width'>	/**
+</span>	 * @cfg {Number} [width]
+	 * Width of the visible area of the auth modal popup
+	 */
+	&quot;width&quot;: 420,
+
+<span id='Echo-IdentityServer-Controls-Auth-Plugins-JanrainConnector-cfg-signinWidgetConfig'>	/**
+</span>	 * @cfg {Object} [signinWidgetConfig]
+	 * Container for the options specific to Janrain Social Sign-in Widget.
+	 * Full list of available options can be found in the
+	 * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sign-in-widget/social-sign-in-widget-api/settings/&quot; target=&quot;_blank&quot;&gt;documentation&lt;/a&gt;
+	 *
+	 * Example:
+	 * 	{
+	 * 		&quot;providersPerPage&quot;: 4,
+	 * 		&quot;format&quot;: &quot;two column&quot;
+	 * 		// ...
+	 * 	}
+	 */
+	&quot;signinWidgetConfig&quot;: {}
+};
+
+plugin.enabled = function() {
+	return this.config.get(&quot;appId&quot;) &amp;&amp; this.config.get(&quot;buttons&quot;).length;
+};
+
+Echo.Plugin.create(plugin);
+
+})(Echo.jQuery);
+</pre>
+</body>
+</html>

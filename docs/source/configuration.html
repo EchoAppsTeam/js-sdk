@@ -66,11 +66,14 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.Configuration&quot;)) return;
  * @return {Object}
  * Reference to the given Echo.Configuration class instance.
  */
-Echo.Configuration = function(master, slave, normalizer) {
+
+// IMPORTANT: &quot;keepRefsFor&quot; parameter remains private for now. Get rid of
+//            this parameter after more complex optimization within F:1336
+Echo.Configuration = function(master, slave, normalizer, keepRefsFor) {
 	this.data = {};
 	this.cache = {};
 	this.normalize = normalizer || function(key, value) { return value; };
-	$.each(this._merge(master, slave), $.proxy(this.set, this));
+	$.each(this._merge(master, slave, keepRefsFor), $.proxy(this._set, this));
 };
 
 <span id='Echo-Configuration-method-get'>/**
@@ -121,7 +124,7 @@ Echo.Configuration.prototype.set = function(key, value) {
 	if (typeof value === &quot;object&quot;) {
 		this._clearCacheByPrefix(key);
 	}
-	Echo.Utils.set(this.data, key, this.normalize(key.split(&quot;.&quot;).pop(), value));
+	this._set(key, value);
 };
 
 <span id='Echo-Configuration-method-remove'>/**
@@ -168,6 +171,10 @@ Echo.Configuration.prototype.getAsHash = function() {
 	return $.extend({}, this.data);
 };
 
+Echo.Configuration.prototype._set = function(key, value) {
+	Echo.Utils.set(this.data, key, this.normalize(key.split(&quot;.&quot;).pop(), value));
+};
+
 Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	var self = this;
 	prefix += &quot;.&quot;;
@@ -179,16 +186,20 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	});
 };
 
-Echo.Configuration.prototype._merge = function(master, slave) {
+Echo.Configuration.prototype._merge = function(master, slave, keepRefsFor) {
 	var self = this, target, src, options;
-
-	for (var i = 0; i &lt; arguments.length; i++) {
-		options = arguments[i];
+	var inputs = [master, slave];
+	for (var i = 0; i &lt; inputs.length; i++) {
+		options = inputs[i];
 		if ($.isPlainObject(options)) {
 			target = target || {};
 			$.each(options, function(name, copy) {
 				src = target[name];
-				if ($.isPlainObject(src)) {
+				if (keepRefsFor &amp;&amp; keepRefsFor[name]) {
+					if (!target.hasOwnProperty(name)) {
+						target[name] = copy;
+					}
+				} else if ($.isPlainObject(src)) {
 					target[name] = self._merge(src, copy);
 				} else if (!target.hasOwnProperty(name)) {
 					target[name] = self._merge(copy);

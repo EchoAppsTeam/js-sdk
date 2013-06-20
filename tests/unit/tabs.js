@@ -9,6 +9,16 @@ suite.prototype.info = {
 
 suite.prototype.tests = {};
 
+var eventsCount = {
+	"get": function(name) {
+		return Echo.Tests.Unit.Tabs[name + "EventHandler"] || 0;
+	},
+	"inc": function(name) {
+		Echo.Tests.Unit.Tabs[name + "EventHandler"] = Echo.Tests.Unit.Tabs[name + "EventHandler"] || 0;
+		Echo.Tests.Unit.Tabs[name + "EventHandler"]++;
+	}
+};
+
 var tabsParams = {
 	"entries": [{
 			"id": "tab1",
@@ -26,8 +36,12 @@ var tabsParams = {
 	}],
 	"idPrefix": "test-tabs-",
 	"classPrefix": "test-tabs-",
-	"show": function(t) {
-		Echo.Tests.Unit.Tabs._showHandler = true;
+	"show": function() {
+		eventsCount.inc("show");
+	},
+	"shown": function() {
+		eventsCount.inc("shown");
+		QUnit.ok(eventsCount.get("show") === eventsCount.get("shown"), "Check that 'shown' event was fired after 'show'");
 	}
 };
 
@@ -38,6 +52,8 @@ suite.prototype.tests.commonWorkflow = {
 	"check": function() {
 		var target = document.getElementById("qunit-fixture");
 		$(target).empty();
+
+		QUnit.expect(27);
 
 		var element = $("<div>").appendTo(target);
 		tabsParams.target = element;
@@ -110,11 +126,16 @@ suite.prototype.tests.commonWorkflow = {
 			"Check has() method"
 		);
 
+		var showEventsCount  = eventsCount.get("show"),
+			shownEventsCount = eventsCount.get("shown");
+
 		echoTabs.show(tabsParams.entries[1].id);
 		QUnit.ok(tab2.parent().hasClass("active"), "Check show() method (tab)");
 		QUnit.ok(panel2.hasClass("active"), "Check show() method (panel)");
 
-		QUnit.ok(Echo.Tests.Unit.Tabs._showHandler, "Check 'show' event handler");
+		QUnit.ok(showEventsCount === eventsCount.get("show") - 1, "Check that 'show' handler was called");
+
+		QUnit.ok(shownEventsCount === eventsCount.get("shown") - 1, "Check that 'shown' handler was called");
 
 		echoTabs.update(tabsParams.entries[1].id, {"label": "New label", "extraClass": "echo-hide", "content": "New content"});
 		QUnit.ok(

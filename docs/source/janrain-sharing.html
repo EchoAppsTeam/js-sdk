@@ -22,40 +22,28 @@ var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing'>/**
 </span> * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing
- * Plugin provides the ability to load JanRain sharing dialog after
+ * Plugin provides the ability to load Janrain sharing dialog after
  * the item has been posted using the Echo Submit control.
- * Installation procedure also includes actions on Janrain side.
  *
- * Download the &quot;rpx_xdcomm.html&quot; file from the JanRain application
- * dashboard (the &quot;Deployment&quot; -&gt; &quot;Social Sharing&quot; section) and
- * place it in the root directory of your website.
- *
- * Configure the list of the necessary social sharing providers
- * in the JanRain application dashboard
- * (the &quot;Deployment&quot; -&gt; &quot;Social Sharing&quot; -&gt; &quot;Choose providers&quot; section).
- *
- * 	var identityManager = {
- * 		&quot;width&quot;: 400,
- * 		&quot;height&quot;: 240,
- * 		&quot;url&quot;: &quot;http://example.com/auth&quot;
- * 	};
  * 	new Echo.StreamServer.Controls.Submit({
  * 		&quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
  * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
  * 		&quot;plugins&quot;: [{
  * 			&quot;name&quot;: &quot;JanrainSharing&quot;,
- * 			&quot;appId&quot;: &quot;yourJanRainAppId&quot;,
- * 			&quot;xdReceiver&quot;: &quot;http://your-domain.com/rpx_xdcomm.html&quot;,
- * 			&quot;activity&quot;: {
- * 				&quot;sharePrompt&quot;: &quot;Share your comment:&quot;,
- * 				&quot;shareContent&quot;: &quot;I just commented '{content}' on {domain}&quot;,
- * 				&quot;itemURL&quot;: &quot;http://your-domain.com/this-page.html&quot;
- * 			}
+ * 			&quot;appId&quot;: &quot;echo&quot;
  * 		}]
  * 	});
  *
+ * The plugin implementation employs the
+ * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/&quot; target=&quot;_blank&quot;&gt;Janrain recommendation&lt;/a&gt;
+ * of hosting multiple widgets to make sure that the Janrain widget initialized
+ * within the plugin doesn't interfere with other Janrain Sharing widgets on the
+ * same page. If you have other Janrain widgets installed on the page, please take
+ * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/&quot; target=&quot;_blank&quot;&gt;the recommendation&lt;/a&gt;
+ * into account as well.
+ *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-2) guide.
  *
  * @extends Echo.Plugin
  *
@@ -66,20 +54,61 @@ var plugin = Echo.Plugin.manifest(&quot;JanrainSharing&quot;, &quot;Echo.StreamS
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
+plugin.init = function() {
+	if (!this._isLegacy() &amp;&amp; !this.config.get(&quot;alwaysShare&quot;)) {
+		this.extendTemplate(&quot;insertBefore&quot;, &quot;postButton&quot;, plugin.templates.share);
+	}
+};
+
 plugin.config = {
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-appId'>	/**
-</span>	 * @cfg {String} appId
-	 * JanRain application ID. You can find the application ID
-	 *  in the JanRain application dashboard.
+</span>	 * @cfg {String} appId (required)
+	 * A string that identifies the application.
+	 * Available from Janrain Dashboard home page under &quot;Application info&quot;
+	 * (part of the app domain before rpxnow.com).
+	 * For example in https://echo.rpxnow.com appId is &quot;echo&quot;
 	 */
+	&quot;appId&quot;: &quot;&quot;,
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-alwaysShare'>	/**
+</span>	 * @cfg {Boolean} [alwaysShare]
+	 * Specifies if the &quot;Share this&quot; checkbox should be visible so that users
+	 * could decide themselves if they want to share the posted content or not.
+	 * If this parameter value is set to *true* checkbox is hidden and
+	 * sharing popup always appears.
+	 */
+	&quot;alwaysShare&quot;: false,
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-sharingWidgetConfig'>	/**
+</span>	 * @cfg {Object} [sharingWidgetConfig]
+	 * Container for the options specific to Janrain Sharing widget.
+	 * Full list of available options can be found in the
+	 * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/sharing-widget-js-api/settings/&quot; target=&quot;_blank&quot;&gt;Sharing widget documentation&lt;/a&gt;
+	 *
+	 * Example:
+	 * 	{
+	 * 		&quot;shortenUrl&quot;: true
+	 * 		&quot;title&quot;: &quot;Some page title&quot;,
+	 * 		&quot;description&quot;: &quot;Some page description&quot;,
+	 * 		&quot;image&quot;: &quot;http://example.com/image.png&quot;
+	 * 		// ...
+	 * 	}
+	 */
+	&quot;sharingWidgetConfig&quot;: {},
+
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-xdReceiver'>	/**
-</span>	 * @cfg {String} xdReceiver
-	 * Full URL of the &quot;rpx_xdcomm.html&quot; file, downloaded from
-	 * the JanRain application dashboard.
+</span>	 * @cfg {String} [xdReceiver]
+	 * Full URL of the &quot;rpx_xdcomm.html&quot; file. This file should be downloaded
+	 * from the JanRain application dashboard (the &quot;Deployment&quot; -&gt;
+	 * &quot;Social Sharing&quot; section) and placed in the root directory of your website.
+	 * @deprecated
+	 * See &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/legacy-sign-in-widget/&quot; target=&quot;_blank&quot;&gt;Janrain notice&lt;/a&gt;
 	 */
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-cfg-activity'>	/**
 </span>	 * @cfg {Object} activity
 	 * Configures the sharing dialog.
+	 * @deprecated
+	 * See &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/legacy-sign-in-widget/&quot; target=&quot;_blank&quot;&gt;Janrain notice&lt;/a&gt;
 	 *
 	 * @cfg {String} activity.sharePrompt
 	 * Caption of the textarea in the sharing dialog.
@@ -127,24 +156,145 @@ plugin.config = {
 	 */
 	// actual limit is 140, reserving some space
 	// for ellipses and shortened link to the page
+	// these parameters are used _only_ in legacy mode (when xdReceiver is provided)
 	&quot;maxLength&quot;: 120,
 	&quot;reducedLength&quot;: 30,
 	&quot;maxImagesCount&quot;: 5
 };
 
 plugin.enabled = function() {
-	return (this.config.get(&quot;appId&quot;) &amp;&amp; this.config.get(&quot;xdReceiver&quot;));
+	return this.config.get(&quot;appId&quot;);
 };
 
 plugin.dependencies = [{
-	&quot;loaded&quot;: function() { return !!window.RPXNOW; },
-	&quot;url&quot;: (&quot;https:&quot; === document.location.protocol ?
-		&quot;https://&quot; : &quot;http://static.&quot;) + &quot;rpxnow.com/js/lib/rpx.js&quot;
+	&quot;loaded&quot;: function() { return !!Echo.GUI; },
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/gui.pack.js&quot;
+}, {
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/gui.pack.css&quot;
 }];
 
 plugin.events = {
+	&quot;Echo.StreamServer.Controls.Submit.onPostInit&quot;: function(topic, args) {
+		if (this._isLegacy()) return;
+		this.set(&quot;needShare&quot;, this.config.get(&quot;alwaysShare&quot;) || this.view.get(&quot;shareCheckbox&quot;).prop(&quot;checked&quot;));
+	},
 	&quot;Echo.StreamServer.Controls.Submit.onPostComplete&quot;: function(topic, args) {
 		var plugin = this;
+		if (plugin._isLegacy()) {
+			this._shareLegacy(args);
+			return;
+		}
+		if (!this.get(&quot;needShare&quot;)) return;
+		this._share(this._prepareData(args));
+	}
+};
+
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-echo_label-share'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;share&quot;: &quot;Share this comment&quot;,
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-echo_label-sharePrompt'>	/**
+</span>	 * @echo_label
+	 * @deprecated
+	 */
+	&quot;sharePrompt&quot;: &quot;Share your comment:&quot;
+};
+
+plugin.templates.share =
+	'&lt;div class=&quot;echo-secondaryFont {plugin.class:shareContainer}&quot;&gt;' +
+		'&lt;input type=&quot;checkbox&quot; class=&quot;{plugin.class:shareCheckbox}&quot;&gt;' +
+		'&lt;span class=&quot;{plugin.class:shareLabel}&quot;&gt;{plugin.label:share}&lt;/span&gt;' +
+	'&lt;/div&gt;';
+
+plugin.methods._share = function(data) {
+	var url, plugin = this;
+	var callback = function() {
+		plugin.set(&quot;foreignConfig&quot;, $.extend(true, {}, janrain.engage.share.getState()));
+		plugin._showPopup(data);
+	};
+	if (window.janrain &amp;&amp; janrain.engage &amp;&amp; janrain.engage.share || plugin.get(&quot;janrainInitialized&quot;)) {
+		callback();
+		return;
+	}
+	plugin.set(&quot;janrainInitialized&quot;, true);
+
+	if (typeof window.janrain !== &quot;object&quot;) window.janrain = {};
+	if (typeof janrain.settings !== &quot;object&quot;) janrain.settings = {};
+	if (typeof janrain.settings.share !== &quot;object&quot;) janrain.settings.share = {};
+	if (typeof janrain.settings.packages !== &quot;object&quot;) janrain.settings.packages = [];
+	janrain.settings.packages.push(&quot;share&quot;);
+	// we can reach this line only after DOM is loaded so no need to use &quot;onload&quot; event
+	janrain.ready = true;
+
+	var foreignOnload = window.janrainShareOnload;
+	window.janrainShareOnload = function() {
+		// let the previous onload handler do its stuff first
+		if (foreignOnload) {
+			foreignOnload();
+			window.janrainShareOnload = foreignOnload;
+		}
+		callback();
+	};
+
+	url = &quot;https:&quot; === document.location.protocol
+		? &quot;https://rpxnow.com/js/lib/&quot; + plugin.config.get(&quot;appId&quot;) + &quot;/widget.js&quot;
+		: &quot;http://widget-cdn.rpxnow.com/js/lib/&quot; + plugin.config.get(&quot;appId&quot;) + &quot;/widget.js&quot;;
+	Echo.Loader.download([{&quot;url&quot;: url}]);
+};
+
+plugin.methods._showPopup = function(data) {
+	var image, plugin = this;
+	var share = janrain.engage.share;
+	var idx = janrain.events.onModalClose.addHandler(function() {
+		janrain.events.onModalClose.removeHandler(idx);
+		share.reset();
+		share.setState(plugin.get(&quot;foreignConfig&quot;));
+		plugin.remove(&quot;foreignConfig&quot;);
+	});
+	var config = plugin.config.get(&quot;sharingWidgetConfig&quot;);
+	share.reset();
+	share.setState(config);
+	share.setTitle(config.title || $(&quot;meta[property=\&quot;og:title\&quot;]&quot;).attr(&quot;content&quot;) || document.title);
+	share.setDescription(config.description || $(&quot;meta[property=\&quot;og:description\&quot;]&quot;).attr(&quot;content&quot;) || &quot;&quot;);
+	share.setMessage(config.message || Echo.Utils.stripTags(data.object.content));
+	share.setUrl(config.url || $(&quot;meta[property=\&quot;og:url\&quot;]&quot;).attr(&quot;content&quot;) || location.href.replace(/([#\?][^#\?]*)+$/, &quot;&quot;));
+	image = config.image || $(&quot;meta[property=\&quot;og:image\&quot;]&quot;).attr(&quot;content&quot;) || &quot;&quot;;
+	image &amp;&amp; share.setImage(image);
+	share.show();
+};
+
+plugin.methods._prepareData = function(data) {
+	var item = data.postData.content[0];
+	return {
+		&quot;origin&quot;: &quot;submit&quot;,
+		&quot;actor&quot;: {
+			&quot;id&quot;: this.component.user.get(&quot;identityUrl&quot;),
+			&quot;name&quot;: item.actor.name,
+			&quot;avatar&quot;: item.actor.avatar
+		},
+		&quot;object&quot;: {
+			&quot;id&quot;: data.request.response.objectID,
+			&quot;content&quot;: item.object.content
+		},
+		&quot;source&quot;: item.source,
+		&quot;target&quot;: data.targetURL
+	};
+};
+
+plugin.methods._isLegacy = function() {
+	return this.config.get(&quot;xdReceiver&quot;);
+};
+
+plugin.methods._shareLegacy = function(args) {
+	var plugin = this;
+	Echo.Loader.download([{
+		&quot;loaded&quot;: function() {
+			return !!window.RPXNOW;
+		},
+		&quot;url&quot;: (&quot;https:&quot; === document.location.protocol ? &quot;https://&quot; : &quot;http://static.&quot;) +
+			&quot;rpxnow.com/js/lib/rpx.js&quot;
+	}], function() {
 		RPXNOW.init({
 			&quot;appId&quot;: plugin.config.get(&quot;appId&quot;),
 			&quot;xdReceiver&quot;: plugin.config.get(&quot;xdReceiver&quot;)
@@ -152,22 +302,15 @@ plugin.events = {
 		RPXNOW.loadAndRun([&quot;Social&quot;], function () {
 			var activity = new RPXNOW.Social.Activity(
 				plugin.config.get(&quot;activity.sharePrompt&quot;, plugin.labels.get(&quot;sharePrompt&quot;)),
-				plugin._prepareContent(args),
+				plugin._prepareContentLegacy(args),
 				plugin.config.get(&quot;activity.itemURL&quot;, args.targetURL)
 			);
-			RPXNOW.Social.publishActivity(plugin._prepareActivity(activity));
+			RPXNOW.Social.publishActivity(plugin._prepareActivityLegacy(activity));
 		});
-	}
+	});
 };
 
-plugin.labels = {
-<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainSharing-echo_label-sharePrompt'>	/**
-</span>	 * @echo_label
-	 */
-	&quot;sharePrompt&quot;: &quot;Share your comment:&quot;
-};
-
-plugin.methods._prepareActivity = function(act) {
+plugin.methods._prepareActivityLegacy = function(act) {
 	var plugin = this;
 	var activity = act;
 	var handlers = {
@@ -199,7 +342,7 @@ plugin.methods._prepareActivity = function(act) {
 	return activity;
 };
 
-plugin.methods._prepareContent = function(args) {
+plugin.methods._prepareContentLegacy = function(args) {
 	var plugin = this;
 	var text = Echo.Utils.stripTags(args.postData.content[0].object.content);
 	var messagePattern = plugin.config.get(&quot;activity.shareContent&quot;);
@@ -232,6 +375,136 @@ plugin.methods._isReplyToTweet = function(data) {
 
 plugin.methods._getTweetAuthor = function(data) {
 	return data.actor.id.replace(/https?\:\/\/twitter\.com\//, &quot;&quot;);
+};
+
+plugin.css =
+	'.{plugin.class:shareContainer} { display: inline-block; margin: 0px 15px 0px 0px; }' +
+	'.echo-sdk-ui .{plugin.class:shareContainer} input.{plugin.class:shareCheckbox} { margin: 0px; margin-right: 3px; padding: 0px; }';
+
+Echo.Plugin.create(plugin);
+
+})(Echo.jQuery);
+
+(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-JanrainSharing'>/**
+</span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.JanrainSharing
+ * Plugin provides the ability to load JanRain sharing dialog clicking
+ * the &quot;Share&quot; button in the item.
+ *
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;JanrainSharing&quot;,
+ * 			&quot;appId&quot;: &quot;echo&quot;
+ * 		}]
+ * 	});
+ *
+ * The plugin implementation employs the
+ * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/&quot; target=&quot;_blank&quot;&gt;Janrain recommendation&lt;/a&gt;
+ * of hosting multiple widgets to make sure that the Janrain widget initialized
+ * within the plugin doesn't interfere with other Janrain Sharing widgets on the
+ * same page. If you have other Janrain widgets installed on the page, please take
+ * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/&quot; target=&quot;_blank&quot;&gt;the recommendation&lt;/a&gt;
+ * into account as well.
+ *
+ * More information regarding the plugins installation can be found
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-2) guide.
+ *
+ * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
+ */
+var plugin = Echo.Plugin.manifest(&quot;JanrainSharing&quot;, &quot;Echo.StreamServer.Controls.Stream.Item&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
+
+plugin.init = function() {
+	this.component.addButtonSpec(&quot;Share&quot;, this._assembleButton());
+};
+
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-JanrainSharing-cfg-appId'>	/**
+</span>	 * @cfg {String} appId (required)
+	 * A string that identifies the application.
+	 * Available from Janrain Dashboard home page under &quot;Application info&quot;
+	 * (part of the app domain before rpxnow.com).
+	 * For example in https://echo.rpxnow.com appId is &quot;echo&quot;
+	 */
+	&quot;appId&quot;: &quot;&quot;,
+
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-JanrainSharing-cfg-sharingWidgetConfig'>	/**
+</span>	 * @cfg {Object} [sharingWidgetConfig]
+	 * Container for the options specific to Janrain Sharing widget.
+	 * Full list of available options can be found in the
+	 * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/sharing-widget-js-api/settings/&quot; target=&quot;_blank&quot;&gt;Sharing widget documentation&lt;/a&gt;
+	 *
+	 * Example:
+	 * 	{
+	 * 		&quot;shortenUrl&quot;: true,
+	 * 		&quot;title&quot;: &quot;Some page title&quot;,
+	 * 		&quot;description&quot;: &quot;Some page description&quot;,
+	 * 		&quot;image&quot;: &quot;http://example.com/image.png&quot;
+	 * 		// ...
+	 * 	}
+	 */
+	&quot;sharingWidgetConfig&quot;: {}
+};
+
+plugin.enabled = function() {
+	return this.config.get(&quot;appId&quot;);
+};
+
+plugin.dependencies = [{
+	&quot;loaded&quot;: function() { return !!Echo.GUI; },
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/gui.pack.js&quot;
+}, {
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/gui.pack.css&quot;
+}];
+
+plugin.labels = {
+	&quot;shareButton&quot;: &quot;Share&quot;
+};
+
+// let's copy these functions from the related plugin for Submit Control
+plugin.methods._share = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._share;
+plugin.methods._showPopup = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._showPopup;
+
+plugin.methods._prepareData = function(item) {
+	return {
+		&quot;origin&quot;: &quot;item&quot;,
+		&quot;actor&quot;: {
+			&quot;id&quot;: item.actor.id,
+			&quot;name&quot;: item.actor.title,
+			&quot;avatar&quot;: item.actor.avatar
+		},
+		&quot;object&quot;: {
+			&quot;id&quot;: item.object.id,
+			&quot;content&quot;: item.object.content
+		},
+		&quot;source&quot;: item.source,
+		&quot;target&quot;: item.target.id
+	};
+};
+
+plugin.methods._assembleButton = function() {
+	var plugin = this, item = this.component;
+	var callback = function() {
+		plugin._share(plugin._prepareData(item.get(&quot;data&quot;)));
+	};
+	return function() {
+		var item = this;
+		return {
+			&quot;name&quot;: &quot;Share&quot;,
+			&quot;label&quot;: plugin.labels.get(&quot;shareButton&quot;),
+			&quot;callback&quot;: callback
+		};
+	};
 };
 
 Echo.Plugin.create(plugin);

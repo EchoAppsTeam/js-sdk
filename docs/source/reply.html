@@ -111,7 +111,7 @@ plugin.templates.form =
 		'&lt;div class=&quot;{plugin.class:submitForm}&quot;&gt;&lt;/div&gt;' +
 		'&lt;div class=&quot;{plugin.class:compactForm}&quot;&gt;' +
 			'&lt;div class=&quot;{plugin.class:compactContent} {plugin.class:compactBorder}&quot;&gt;' +
-				'&lt;input class=&quot;{plugin.class:compactField} echo-primaryFont echo-secondaryColor&quot;&gt;' +
+				'&lt;input type=&quot;text&quot; class=&quot;{plugin.class:compactField} echo-primaryFont echo-secondaryColor&quot;&gt;' +
 			'&lt;/div&gt;' +
 		'&lt;/div&gt;' +
 	'&lt;/div&gt;';
@@ -322,8 +322,10 @@ plugin.methods._getSubmitData = function() {
 plugin.css = 
 	&quot;.{plugin.class:compactContent} { padding: 5px 5px 5px 6px; background-color: #fff; }&quot; +
 	&quot;.{plugin.class:compactBorder} { border: 1px solid #d2d2d2; }&quot; +
-	&quot;.{plugin.class:compactContent} input.{plugin.class:compactField} { width: 100%; border: none; }&quot; +
-	'.{plugin.class:compactContent} input.{plugin.class:compactField}[type=&quot;text&quot;] { width: 100%; border: none; margin: 0px; padding: 0px; }';
+	&quot;.{plugin.class:compactContent} input.{plugin.class:compactField}[type='text'].echo-secondaryColor { color: #C6C6C6 }&quot; +
+	&quot;.{plugin.class:compactContent} input.{plugin.class:compactField}[type='text'].echo-primaryFont { font-size: 12px; line-height: 16px; }&quot; +
+	&quot;.{plugin.class:compactContent} input.{plugin.class:compactField}[type='text'] { width: 100%; height: 16px; border: none; margin: 0px; padding: 0px; box-shadow: none; vertical-align: middle; }&quot; +
+	&quot;.{plugin.class:compactContent} input.{plugin.class:compactField}[type='text']:focus { outline: 0; box-shadow: none; }&quot;;
 
 Echo.Plugin.create(plugin);
 

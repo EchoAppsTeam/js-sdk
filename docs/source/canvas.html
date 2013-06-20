@@ -364,6 +364,7 @@ initializers.fetchConfig = function(callback) {
 		&quot;apiBaseURL&quot;: this.config.get(&quot;storageURL&quot;),
 		&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
 		&quot;endpoint&quot;: this.config.get(&quot;id&quot;),
+		&quot;data&quot;: { &quot;_&quot;: Math.random() },
 		&quot;onData&quot;: function(config) {
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get(&quot;error_no_&quot; + (config ? &quot;apps&quot; : &quot;config&quot;));

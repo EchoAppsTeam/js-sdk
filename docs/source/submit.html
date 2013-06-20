@@ -498,7 +498,7 @@ submit.renderers.postButton = function(element) {
 	subscribe(&quot;Error&quot;, states.normal, function(params) {
 		var request = params.request || {};
 		if (request.state &amp;&amp; request.state.critical) {
-			self._showError(params.postData);
+			self._showError(params);
 		}
 	});
 	this.posting.action = this.posting.action || function() {
@@ -663,10 +663,10 @@ submit.methods._getASURL = function(postfix) {
 submit.methods._showError = function(data) {
 	var self = this;
 	data = data || {};
-	var isNetworkTimeout = $.inArray(data.errorCode, [&quot;network_timeout&quot;, &quot;connection_failure&quot;]) &gt;= 0;
-	var message = isNetworkTimeout
+	var response = data.request &amp;&amp; data.request.response || {};
+	var message = $.inArray(response.errorCode, [&quot;network_timeout&quot;, &quot;connection_failure&quot;]) &gt;= 0
 		? this.labels.get(&quot;postingTimeout&quot;)
-		: this.labels.get(&quot;postingFailed&quot;, {&quot;error&quot;: data.errorMessage || data.errorCode});
+		: this.labels.get(&quot;postingFailed&quot;, {&quot;error&quot;: response.errorMessage || response.errorCode});
 	var popup = this._assembleErrorPopup(message);
 
 	new Echo.GUI.Modal({

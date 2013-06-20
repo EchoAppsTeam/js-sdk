@@ -31,4 +31,4 @@ Echo JS SDK is tested against new non-beta versions of the browsers listed below
 + Chrome (latest version) on Windows and Mac OS X
 + Internet Explorer 8, 9 and 10 on Windows
 + Mobile Safari on iPad and iPhone
-+ Native Browser on Android
++ Native Browser on Android 4+ version

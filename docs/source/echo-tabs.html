@@ -25,8 +25,8 @@ if (!Echo.GUI) Echo.GUI = {};
 
 if (Echo.GUI.Tabs) return;
 
-<span id='Echo-GUI-Tabs-method-constructor'><span id='Echo-GUI-Tabs-cfg-show'><span id='Echo-GUI-Tabs-cfg-select'><span id='Echo-GUI-Tabs-cfg-classPrefix'><span id='Echo-GUI-Tabs-cfg-panels'><span id='Echo-GUI-Tabs-cfg-entries'><span id='Echo-GUI-Tabs-cfg-noRandomId'><span id='Echo-GUI-Tabs-cfg-idPrefix'><span id='Echo-GUI-Tabs-cfg-target'><span id='Echo-GUI-Tabs'>/**
-</span></span></span></span></span></span></span></span></span></span> * @class Echo.GUI.Tabs
+<span id='Echo-GUI-Tabs-method-constructor'><span id='Echo-GUI-Tabs-cfg-shown'><span id='Echo-GUI-Tabs-cfg-show'><span id='Echo-GUI-Tabs-cfg-select'><span id='Echo-GUI-Tabs-cfg-classPrefix'><span id='Echo-GUI-Tabs-cfg-panels'><span id='Echo-GUI-Tabs-cfg-entries'><span id='Echo-GUI-Tabs-cfg-noRandomId'><span id='Echo-GUI-Tabs-cfg-idPrefix'><span id='Echo-GUI-Tabs-cfg-target'><span id='Echo-GUI-Tabs'>/**
+</span></span></span></span></span></span></span></span></span></span></span> * @class Echo.GUI.Tabs
  * Class wrapper for &lt;a href=&quot;http://twitter.github.com/bootstrap/javascript.html#tabs&quot; target=&quot;_blank&quot;&gt;bootstrap-tab.js&lt;/a&gt;.
  * The Echo.GUI.Tabs class provides a simplified interface to work with
  * the Bootstrap Tabs JS class.
@@ -49,7 +49,8 @@ if (Echo.GUI.Tabs) return;
  * 		}],
  * 		&quot;extraClass&quot;: &quot;extra-class&quot;,
  * 		&quot;select&quot;: function() {},
- * 		&quot;show&quot;: function() {}
+ * 		&quot;show&quot;: function() {},
+ * 		&quot;shown&quot;: function() {}
  * 	});
  *
  * 	// add a new tab
@@ -125,7 +126,7 @@ if (Echo.GUI.Tabs) return;
  * Id of selected tab.
  *
  * @cfg {Function} [show]
- * Function which will be called when tab is shown.
+ * Function to be called before the active tab panel is displayed.
  *
  * @cfg {HTMLElement} show.tab
  * Container which is the tab itself.
@@ -138,6 +139,11 @@ if (Echo.GUI.Tabs) return;
  *
  * @cfg {Number} show.index
  * Numerical index of the tab.
+ *
+ * @cfg {Function} [shown]
+ * Function to be called as soon as the active tab is displayed.
+ *
+ * The parameters are passed to this function the same as in #show.
  */
 Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 	config.panels = config.panels ? $(config.panels) : $(&quot;&lt;div&gt;&quot;);
@@ -148,7 +154,8 @@ Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 		&quot;noRandomId&quot;: false,
 		&quot;classPrefix&quot;: &quot;echo-tabs-&quot;,
 		&quot;select&quot;: function() {},
-		&quot;show&quot;: function() {}
+		&quot;show&quot;: function() {},
+		&quot;shown&quot;: function() {}
 	});
 });
 
@@ -272,13 +279,15 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	var tab = $('&lt;li' + (classes ? ' class=&quot;' + classes + '&quot;' : '') +'&gt;&lt;a ' + attrs + '&gt;' + tabConfig.label  + '&lt;/a&gt;&lt;/li&gt;');
 
 	var a = $(&quot;a&quot;, tab);
-	a.on(&quot;show&quot;, function() {
-		self.config.get(&quot;show&quot;).call(self,
-			$(this),
-			self._getPanel(tabConfig.id),
-			tabConfig.id,
-			self._getTabIndex(tabConfig.id)
-		);
+	$.map([&quot;show&quot;, &quot;shown&quot;], function(event) {
+		a.on(event, function() {
+			self.config.get(event).call(self,
+				$(this),
+				self._getPanel(tabConfig.id),
+				tabConfig.id,
+				self._getTabIndex(tabConfig.id)
+			);
+		});
 	});
 
 	$.each(tabConfig.data || {}, function(k, v) {
@@ -360,8 +369,9 @@ Echo.GUI.Tabs.prototype.show = function(id) {
 };
 
 Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
-	for (var i = 0; i &lt; this.config.get(&quot;entries&quot;).length; i++) {
-		if (this.config.get(&quot;entries&quot;)[i].id === id) {
+	var entries = this.config.get(&quot;entries&quot;);
+	for (var i = 0; i &lt; entries.length; i++) {
+		if (entries[i].id === id) {
 			return i;
 		}
 	}

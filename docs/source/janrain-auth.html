@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth'>/**
+</span> * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth
+ * Janrain Social Sign-in Widget integration with Echo Submit Control.
+ *
+ * 	new Echo.StreamServer.Controls.Submit({
+ * 		&quot;target&quot;: document.getElementById(&quot;submit&quot;),
+ * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ * 		&quot;plugins&quot;: [{
+ * 			&quot;name&quot;: &quot;JanrainAuth&quot;,
+ * 			&quot;submitPermissions&quot;: &quot;forceLogin&quot;,
+ * 			&quot;appId&quot;: &quot;echo&quot;
+ * 		}]
+ * 	});
+ *
+ * More information regarding the plugins installation can be found
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-2) guide.
+ *
+ * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
+ */
+var plugin = Echo.Plugin.manifest(&quot;JanrainAuth&quot;, &quot;Echo.StreamServer.Controls.Submit&quot;);
+
+if (Echo.Plugin.isDefined(plugin)) return;
+
+plugin.init = function() {
+	if (this._userStatus() === &quot;forcedLogin&quot;) {
+		this.extendTemplate(&quot;replace&quot;, &quot;header&quot;, plugin.templates.forcedLogin);
+	}
+	this.extendTemplate(&quot;insertBefore&quot;, &quot;header&quot;, plugin.templates.auth);
+	this.component.addPostValidator(this._validator());
+};
+
+plugin.config = {
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-cfg-appId'>	/**
+</span>	 * @cfg {String} appId (required)
+	 * A string that identifies the application.
+	 * Available from Janrain Dashboard home page under &quot;Application info&quot;
+	 * (part of the app domain before rpxnow.com).
+	 * For example in https://echo.rpxnow.com appId is &quot;echo&quot;
+	 */
+	&quot;appId&quot;: &quot;&quot;,
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-cfg-buttons'>	/**
+</span>	 * @cfg {String[]} [buttons=[&quot;login&quot;]]
+	 * A list of buttons that should be rendered in the Auth Control. May include
+	 * any of the following strings (order doesn't matter):
+	 *
+	 * + &quot;login&quot;
+	 * + &quot;edit&quot;
+	 * + &quot;signup&quot;
+	 */
+	&quot;buttons&quot;: [&quot;login&quot;],
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-cfg-title'>	/**
+</span>	 * @cfg {String} [title]
+	 * Title of the auth modal popup
+	 */
+	&quot;title&quot;: &quot;&quot;,
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-cfg-height'>	/**
+</span>	 * @cfg {Number} [height]
+	 * Height of the visible area of the auth modal popup
+	 */
+	&quot;height&quot;: 260,
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-cfg-width'>	/**
+</span>	 * @cfg {Number} [width]
+	 * Width of the visible area of the auth modal popup
+	 */
+	&quot;width&quot;: 420,
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-cfg-signinWidgetConfig'>	/**
+</span>	 * @cfg {Object} [signinWidgetConfig]
+	 * Container for the options specific to Janrain Social Sign-in Widget.
+	 * Full list of available options can be found in the
+	 * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sign-in-widget/social-sign-in-widget-api/settings/&quot; target=&quot;_blank&quot;&gt;documentation&lt;/a&gt;
+	 *
+	 * Example:
+	 * 	{
+	 * 		&quot;providersPerPage&quot;: 4,
+	 * 		&quot;format&quot;: &quot;two column&quot;
+	 * 		// ...
+	 * 	}
+	 */
+	&quot;signinWidgetConfig&quot;: {},
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-cfg-submitPermissions'>	/**
+</span>	 * @cfg {String} submitPermissions
+	 * Specifies the permitted commenting modes. The two options are possible:
+	 *
+	 * + &quot;allowGuest&quot; - allows to guest users submit an activity item (comment etc)
+	 * + &quot;forceLogin&quot; - submit permissions allowed only for logged in users
+	 */
+	&quot;submitPermissions&quot;: &quot;allowGuest&quot;
+};
+
+plugin.enabled = function() {
+	return this.component.user &amp;&amp; this.component.user.get(&quot;sessionID&quot;) &amp;&amp;
+		this.config.get(&quot;appId&quot;) &amp;&amp; this.config.get(&quot;buttons&quot;).length;
+};
+
+plugin.labels = {
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-echo_label-youMustBeLoggedIn'>	/**
+</span>	 * @echo_label
+	 */
+	&quot;youMustBeLoggedIn&quot;: &quot;You must be logged in to comment&quot;
+};
+
+plugin.dependencies = [{
+	&quot;control&quot;: &quot;Echo.IdentityServer.Controls.Auth&quot;,
+	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/identityserver.pack.js&quot;
+}];
+
+plugin.templates.auth = '&lt;div class=&quot;{plugin.class:auth}&quot;&gt;&lt;/div&gt;';
+
+plugin.templates.forcedLogin =
+	'&lt;div class=&quot;echo-primaryFont {class:header}&quot;&gt;' +
+		'&lt;span class=&quot;echo-secondaryColor {plugin.class:forcedLoginMessage}&quot;&gt;' +
+			'{plugin.label:youMustBeLoggedIn}' +
+		'&lt;/span&gt;' +
+	'&lt;/div&gt;';
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-echo_renderer-header'>/**
+</span> * @echo_renderer
+ */
+plugin.component.renderers.header = function(element) {
+	var plugin = this;
+	if (plugin._userStatus() === &quot;logged&quot;) {
+		return element.empty();
+	}
+	return plugin.parentRenderer(&quot;header&quot;, arguments);
+};
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-echo_renderer-container'>/**
+</span> * @echo_renderer
+ */
+plugin.component.renderers.container = function(element) {
+	var plugin = this;
+	plugin.parentRenderer(&quot;container&quot;, arguments);
+	var _class = function(postfix) {
+		return plugin.cssPrefix + postfix;
+	};
+	return element
+		.removeClass($.map([&quot;logged&quot;, &quot;anonymous&quot;, &quot;forcedLogin&quot;], _class).join(&quot; &quot;))
+		.addClass(_class(plugin._userStatus()));
+};
+
+<span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-echo_renderer-auth'>/**
+</span> * @echo_renderer
+ */
+plugin.renderers.auth = function(element) {
+	var plugin = this, fields = [&quot;appId&quot;, &quot;title&quot;, &quot;width&quot;, &quot;height&quot;, &quot;buttons&quot;, &quot;signinWidgetConfig&quot;];
+	var janrainConnectorPlugin = Echo.Utils.foldl({&quot;name&quot;: &quot;JanrainConnector&quot;}, fields, function(param, acc) {
+		if (plugin.config.get(param)) {
+			acc[param] = plugin.config.get(param);
+		}
+		return acc;
+	});
+	new Echo.IdentityServer.Controls.Auth(plugin.config.assemble({
+		&quot;target&quot;: element,
+		&quot;plugins&quot;: [janrainConnectorPlugin]
+	}));
+	return element;
+};
+
+plugin.methods._validator = function() {
+	var plugin = this, submit = this.component;
+	return function() {
+		if (!submit.user.is(&quot;logged&quot;) &amp;&amp; plugin._permissions() === &quot;forceLogin&quot;) {
+			plugin.view.get(&quot;forcedLoginMessage&quot;).addClass(plugin.cssPrefix + &quot;error&quot;);
+			return false;
+		}
+		return true;
+	}
+};
+
+plugin.methods._permissions = function() {
+	return this.config.get(&quot;submitPermissions&quot;);
+};
+
+plugin.methods._userStatus = function() {
+	return this.component.user.is(&quot;logged&quot;)
+		? &quot;logged&quot;
+		: this._permissions() === &quot;forceLogin&quot;
+			? &quot;forcedLogin&quot;
+			: &quot;anonymous&quot;;
+};
+
+plugin.css =
+	'.{plugin.class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }' +
+	'.{plugin.class:error} { color: red; }';
+
+Echo.Plugin.create(plugin);
+
+})(Echo.jQuery);
+</pre>
+</body>
+</html>

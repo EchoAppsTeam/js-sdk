@@ -301,6 +301,7 @@ pile.methods._request = function() {
 			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdates.timeout&quot;),
 			&quot;recurring&quot;: this.config.get(&quot;liveUpdates.enabled&quot;),
 			&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
+			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
 			&quot;onError&quot;: function(data, extra) {
 				var needShowError = typeof extra.critical === &quot;undefined&quot; || extra.critical || extra.requestType === &quot;initial&quot;;
 				if (needShowError) {
@@ -325,6 +326,7 @@ pile.methods._requestMoreItems = function() {
 	var request = Echo.StreamServer.API.request({
 		&quot;endpoint&quot;: &quot;search&quot;,
 		&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
+		&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
 		&quot;data&quot;: {
 			&quot;q&quot;: query,
 			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
