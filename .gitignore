@@ -8,3 +8,6 @@ node_modules
 npm-debug.log
 
 config/local.json
+
+sauce_connect.*
+tools/Sauce-Connect.jar

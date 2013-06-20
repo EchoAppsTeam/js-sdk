@@ -49,6 +49,13 @@ Echo.Tests.runTests = function() {
 	QUnit.start();
 };
 
+Echo.Tests.log = function() {
+	if (typeof Echo.Variables.testLogs === "undefined") {
+		Echo.Variables.testLogs = [];
+	}
+	Echo.Variables.testLogs.push(arguments);
+};
+
 (function(){
 	var ua = navigator.userAgent.toLowerCase();
 	var match = /(chrome)[ \/]([\w.]+)/.exec(ua)

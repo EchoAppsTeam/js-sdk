@@ -349,6 +349,7 @@ stream.vars = {
 		"lastState": "", // live0 | pausedN
 		"animations": 0
 	},
+	"itemParentConfig": undefined,
 	"hasInitialData": false,
 	"items": {},   // items by unique key hash
 	"threads": [], // items tree
@@ -1518,25 +1519,29 @@ stream.methods._isItemInList = function(item, items) {
 };
 
 stream.methods._initItem = function(entry, isLive, callback) {
-	var parentConfig = this.config.getAsHash();
-	var config = $.extend(true, {}, {
+	// there is no need to create a clone of the parent config every time,
+	// we can do it only once and pass it into all Item constructor calls
+	if (!this.itemParentConfig) {
+		this.itemParentConfig = this.config.getAsHash();
+	}
+	var config = $.extend({
 		"target": $("<div>"),
 		"appkey": this.config.get("appkey"),
-		"parent": parentConfig,
 		"plugins": this.config.get("plugins"),
 		"context": this.config.get("context"),
-		"data": this._normalizeEntry(entry),
 		"useSecureAPI": this.config.get("useSecureAPI"),
 		"user": this.user,
 		"live": isLive,
 		"ready": callback
-	}, parentConfig.item);
-	delete config.parent.item;
-	if (this.config.get("asyncItemsRendering")) {
-		setTimeout(function() { new Echo.StreamServer.Controls.Stream.Item(config); }, 0);
-	} else {
-		new Echo.StreamServer.Controls.Stream.Item(config);
-	}
+	}, this.itemParentConfig.item);
+
+	// assign parent config and data outside
+	// of the $.extend call for performance reasons
+	config.parent = this.itemParentConfig;
+	config.data = this._normalizeEntry(entry);
+
+	var init = function() { new Echo.StreamServer.Controls.Stream.Item(config); };
+	this.config.get("asyncItemsRendering") ? setTimeout(init, 0) : init();
 };
 
 stream.methods._updateItem = function(entry) {
@@ -1709,6 +1714,10 @@ if (Echo.Control.isDefined(item)) return;
 /** @hide @cfg appkey */
 /** @hide @cfg defaultAvatar */
 /** @hide @cfg plugins */
+/** @hide @cfg target */
+/** @hide @cfg cdnBaseURL */
+/** @hide @cfg apiBaseURL */
+/** @hide @cfg useSecureAPI */
 /** @hide @cfg submissionProxyURL */
 /** @hide @method placeImage */
 /** @hide @method dependent */
@@ -1741,6 +1750,7 @@ item.config = {
 	 */
 	"aggressiveSanitization": false,
 	"buttonsOrder": undefined,
+
 	/**
 	 * @cfg {Object} contentTransformations
 	 * Specifies the allowed item's content transformations for each content type.
@@ -1750,13 +1760,14 @@ item.config = {
 	 * + smileys - replaces textual smileys with images
 	 * + hashtags - highlights hashtags in text
 	 * + urls - highlights urls represented as plain text
-	 * + newlines - replaces newlines with <br> tags
+	 * + newlines - replaces newlines with \<br> tags
 	 */
 	"contentTransformations": {
 		"text": ["smileys", "hashtags", "urls", "newlines"],
 		"html": ["smileys", "hashtags", "urls", "newlines"],
 		"xhtml": ["smileys", "hashtags", "urls"]
 	},
+
 	/**
 	 * @cfg {String} infoMessages
 	 * Customizes the look and feel of info messages,
@@ -1765,6 +1776,7 @@ item.config = {
 	"infoMessages": {
 		"enabled": false
 	},
+
 	/**
 	 * @cfg {Object} limits
 	 * Defines the limits for different metrics.
@@ -1779,7 +1791,7 @@ item.config = {
 	 * this parameter should be integer and represents the number of lines
 	 * that need to be displayed. Note: the definition of "Line" here is the
 	 * sequence of characters separated by the "End Of Line" character
-	 * ("\n" for plain text or <br> for HTML format).
+	 * ("\n" for plain text or \<br> for HTML format).
 	 *
 	 * @cfg {Number} [limits.maxBodyLinkLength=50]
 	 * Allows to truncate the number of characters of the hyperlinks in the
@@ -1815,6 +1827,7 @@ item.config = {
 		"maxReTitleLength": 143,
 		"maxTagLength": 16
 	},
+
 	/**
 	 * @cfg {Boolean} [optimizedContext=true]
 	 * Allows to configure the context mode of the "reTag" section of an item.
@@ -1823,10 +1836,6 @@ item.config = {
 	 * Otherwise all hyperlinks in the item body will be resolved and converted into reTags.
 	 */
 	"optimizedContext": true,
-	/**
-	 * @cfg {Boolean} [reTag=true]
-	 * Allows to show/hide the "reTag" section of an item.
-	 */
 
 	/**
 	 * @cfg {String} providerIcon
@@ -1834,7 +1843,12 @@ item.config = {
 	 */
 	"providerIcon": Echo.Loader.getURL("images/favicons/comments.png", false),
 
+	/**
+	 * @cfg {Boolean} [reTag=true]
+	 * Allows to show/hide the "reTag" section of an item.
+	 */
 	"reTag": true,
+
 	/**
 	 * @cfg {Object} [viaLabel]
 	 * Allows to show/hide parts or the whole "via" tag. Contains a hash with two keys
@@ -2947,7 +2961,7 @@ item.methods._sortButtons = function() {
 		if ((extra.limits.maxBodyCharacters || extra.limits.maxBodyLines) && !this.textExpanded) {
 			if (extra.limits.maxBodyLines) {
 				var splitter = extra.contentTransformations.newlines ? "<br>" : "\n";
-				var chunks = result.split(splitter);
+				var chunks = text.split(splitter);
 				if (chunks.length > extra.limits.maxBodyLines) {
 					text = chunks.splice(0, extra.limits.maxBodyLines).join(splitter);
 					truncated = true;

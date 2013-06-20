@@ -16,6 +16,8 @@ QUnit.begin(initStats);
 
 QUnit.done(showStats);
 
+QUnit.log(testLogSpy);
+
 // private stuff
 
 var _coverage = {};
@@ -68,16 +70,37 @@ _coverage.events = {
 function initStats() {
 	getFunctionNames(Echo.Tests.Stats.root.object, Echo.Tests.Stats.root.namespace);
 	startEventsSpy();
-};
+}
 
-function showStats() {
+function showStats(results) {
+	exportStats(results);
 	stopEventsSpy();
 	calculateFunctionsCoverage();
 	calculateEventsCoverage();
 	showCoverage();
-};
+}
 
-var _eventsPublish, _eventsSubscribe;
+var _eventsPublish, _eventsSubscribe, _detailErrors = [];
+
+function testLogSpy(result) {
+	if (!result.result) {
+		_detailErrors.push({
+			"module": result.module,
+			"name": result.name,
+			"message": result.message,
+			"source": result.source,
+			"testNumber": this.config.current.testNumber
+		});
+	}
+}
+
+function exportStats(results) {
+	window.testResults = {
+		"qunit": results,
+		"detail": _detailErrors,
+		"logs": Echo.Variables.testLogs || []
+	};
+}
 
 function startEventsSpy() {
 	if (!Echo.Tests.Events) return;
@@ -124,14 +147,14 @@ function startEventsSpy() {
 		}
 		return _eventsPublish(params);
 	}
-};
+}
 
 function stopEventsSpy() {
 	if (!Echo.Tests.Events) return;
 
 	Echo.Events.subscribe = _eventsSubscribe;
 	Echo.Events.publish = _eventsPublish;
-};
+}
 
 function wrapFunction(parentObject, func, name, prefix) {
 	var fullName = prefix + name;
@@ -151,7 +174,7 @@ function wrapFunction(parentObject, func, name, prefix) {
 			parentObject[name][key] = value;
 		}
 	});
-};
+}
 
 function getFunctionNames(namespace, prefix) {
 	$.each([namespace, namespace.prototype], function(i, parentObject) {
@@ -178,7 +201,7 @@ function getFunctionNames(namespace, prefix) {
 			}
 		});
 	});
-};
+}
 
 function calculateFunctionsCoverage() {
 	var raw = _coverage.functions.raw;
@@ -188,7 +211,7 @@ function calculateFunctionsCoverage() {
 		processed[raw.tested[name] ? "tested" : "notTested"].push(name);
 		processed[raw.executed[name] ? "executed" : "notExecuted"].push(name);
 	});
-};
+}
 
 function calculateEventsCoverage() {
 	if (!Echo.Tests.Events) return;
@@ -211,7 +234,7 @@ function calculateEventsCoverage() {
 			return topic;
 		}
 	});
-};
+}
 
 function getEventsCount(type, expectedValue, isEquiv) {
 	var isOk, processed = _coverage.events.processed;
@@ -241,7 +264,7 @@ function getEventsCount(type, expectedValue, isEquiv) {
 	}
 
 	return '<b class="' + (isOk ? 'green' : 'red') + '">' + processed[type].length + '</b> [<a class="echo-clickable" data-type="' + type +'">view list</a>]';
-};
+}
 
 function showCoverage() {
 	var funcs = _coverage.functions;
@@ -282,7 +305,7 @@ function showCoverage() {
 	$(".echo-tests-coverage-functions a").click(function() {
 		showCoverageList($(this).data("type"), "functions");
 	});
-};
+}
 
 var _isListVisible, _lastListType;
 function showCoverageList(type, prefix) {
@@ -370,7 +393,7 @@ function showCoverageList(type, prefix) {
 	} else {
 		el.hide();
 	}
-};
+}
 
 function checkContract(actual, expected) {
 	var result;
@@ -409,7 +432,7 @@ function checkContract(actual, expected) {
 		return result; // break if it doesn't meet our expectations
 	});
 	return result;
-};
+}
 
 function prepareEventData(obj, level) {
 	level = level || 0;
@@ -425,7 +448,7 @@ function prepareEventData(obj, level) {
 		}
 	}
 	return obj;
-};
+}
 
 Echo.Utils.addCSS(
 	'.echo-tests-stats p { margin: 5px 0px 5px 20px; }' +

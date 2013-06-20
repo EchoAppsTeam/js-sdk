@@ -32,7 +32,8 @@ if (Echo.GUI.Tabs) return;
  * 		}],
  * 		"extraClass": "extra-class",
  * 		"select": function() {},
- * 		"show": function() {}
+ * 		"show": function() {},
+ * 		"shown": function() {}
  * 	});
  *
  * 	// add a new tab
@@ -108,7 +109,7 @@ if (Echo.GUI.Tabs) return;
  * Id of selected tab.
  *
  * @cfg {Function} [show]
- * Function which will be called when tab is shown.
+ * Function to be called before the active tab panel is displayed.
  *
  * @cfg {HTMLElement} show.tab
  * Container which is the tab itself.
@@ -121,6 +122,11 @@ if (Echo.GUI.Tabs) return;
  *
  * @cfg {Number} show.index
  * Numerical index of the tab.
+ *
+ * @cfg {Function} [shown]
+ * Function to be called as soon as the active tab is displayed.
+ *
+ * The parameters are passed to this function the same as in #show.
  */
 Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 	config.panels = config.panels ? $(config.panels) : $("<div>");
@@ -131,7 +137,8 @@ Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 		"noRandomId": false,
 		"classPrefix": "echo-tabs-",
 		"select": function() {},
-		"show": function() {}
+		"show": function() {},
+		"shown": function() {}
 	});
 });
 
@@ -255,13 +262,15 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	var tab = $('<li' + (classes ? ' class="' + classes + '"' : '') +'><a ' + attrs + '>' + tabConfig.label  + '</a></li>');
 
 	var a = $("a", tab);
-	a.on("show", function() {
-		self.config.get("show").call(self,
-			$(this),
-			self._getPanel(tabConfig.id),
-			tabConfig.id,
-			self._getTabIndex(tabConfig.id)
-		);
+	$.map(["show", "shown"], function(event) {
+		a.on(event, function() {
+			self.config.get(event).call(self,
+				$(this),
+				self._getPanel(tabConfig.id),
+				tabConfig.id,
+				self._getTabIndex(tabConfig.id)
+			);
+		});
 	});
 
 	$.each(tabConfig.data || {}, function(k, v) {
@@ -343,8 +352,9 @@ Echo.GUI.Tabs.prototype.show = function(id) {
 };
 
 Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
-	for (var i = 0; i < this.config.get("entries").length; i++) {
-		if (this.config.get("entries")[i].id === id) {
+	var entries = this.config.get("entries");
+	for (var i = 0; i < entries.length; i++) {
+		if (entries[i].id === id) {
 			return i;
 		}
 	}

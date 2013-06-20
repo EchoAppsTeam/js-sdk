@@ -535,7 +535,7 @@ Echo.Plugin.Config.prototype.assemble = function(data) {
 	data = data || {};
 	data.user = this.plugin.component.user;
 	data.parent = config.getAsHash();
-	data.plugins = this.plugin.config.get("nestedPlugins", []);
+	data.plugins = (data.plugins || []).concat(this.plugin.config.get("nestedPlugins", []));
 
 	// copy default field values from parent control
 	Echo.Utils.foldl(data, defaults, function(value, acc, key) {
@@ -544,7 +544,9 @@ Echo.Plugin.Config.prototype.assemble = function(data) {
 			acc[key] = config.get(key);
 		}
 	});
-	return (new Echo.Configuration(data, this.plugin.config.get())).getAsHash();
+	var keepRefsFor = {"data": true, "parent": true};
+	var instance = new Echo.Configuration(data, this.plugin.config.get(), undefined, keepRefsFor);
+	return instance.getAsHash();
 };
 
 Echo.Plugin.Config.prototype._normalize = function(key) {

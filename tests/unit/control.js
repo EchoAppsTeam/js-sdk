@@ -303,6 +303,7 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 };
 
 suite.prototype.cases.incomingConfigHandling = function(callback) {
+	var parentConfig = {"myParentParam": {"a": 1, "b": 2}};
 	var check = function() {
 		QUnit.equal(this.config.get("nullParam"), "nullParam replacement",
 			"Checking if null parameter was overridden during control init");
@@ -317,12 +318,21 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("images/info70.png", false),
 			"Checking if object parameter was overridden and was normalized (checking defaultAvatar key)");
 
-		// checking the way we work with the "data" config field
+		// IMPORTANT: Echo.Configuration architecture to be revisited within F:1336,
+		//            the approach employed below might also be changed as a result
+
+		// checking the way we work with the "data" and "parent" config fields
 		suite.data.config.data.extraKey = "extraKey value";
 		QUnit.equal(suite.data.config.data.extraKey, this.config.get("data.extraKey"),
 			"Checking if the \"data\" key inside the config points to original " +
 			"object which we received in the config (we do not copy the \"data\" object)");
 		delete suite.data.config.data.extraKey;
+
+		parentConfig.myParentParam.a = 10; // define new value for myParentParam.a
+		QUnit.deepEqual(parentConfig, this.config.get("parent"),
+			"Checking if the \"parent\" key inside the config points to original " +
+			"object which we received in the config (we do not copy the \"parent\" object)");
+		parentConfig.myParentParam.a = 1; // define original value for myParentParam.a
 
 		this.destroy();
 
@@ -335,6 +345,7 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		"undefinedParam": "undefinedParam replacement",
 		"nullParam": "nullParam replacement",
 		"defaultAvatar": Echo.Loader.getURL("images/info70.png", false),
+		"parent": parentConfig,
 		"ready": check
 	});
 };

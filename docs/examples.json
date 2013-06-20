@@ -69,6 +69,34 @@
 				"description": "The plugin adds the character counter under the text field in the Submit control. Allows to set the maximum length of the text to enter.",
 				"url": "text-counter-plugin.html",
 				"icon": "../docs/resources/images/default-guide.png"
+			},
+			{
+				"name": "pinboard-plugin",
+				"title": "PinboardVisualization",
+				"description": "",
+				"url": "pinboard.html",
+				"icon": "../docs/resources/images/default-guide.png"
+			},
+			{
+				"name": "janrain-auth-plugin",
+				"title": "JanrainAuth",
+				"description": "Janrain Social Sign-in Widget integration with Echo Submit Control.",
+				"url": "janrain-auth-plugin.html",
+				"icon": "../docs/resources/images/default-guide.png"
+			},
+			{
+				"name": "janrain-sharing-plugin-submit",
+				"title": "JanrainSharing for Submit",
+				"description": "Plugin provides the ability to load Janrain sharing dialog after the item has been posted using the Echo Submit control.",
+				"url": "janrain-sharing-plugin-submit.html",
+				"icon": "../docs/resources/images/default-guide.png"
+			},
+			{
+				"name": "janrain-sharing-plugin-stream",
+				"title": "JanrainSharing for Stream",
+				"description": "Plugin provides the ability to load Janrain sharing dialog clicking the \"Share\" button in the item.",
+				"url": "janrain-sharing-plugin-stream.html",
+				"icon": "../docs/resources/images/default-guide.png"
 			}
 		]
 	},
