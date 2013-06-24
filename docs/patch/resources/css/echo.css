@@ -147,23 +147,3 @@ div#north-region {
 .class-overview .hierarchy:hover * {
     display: inherit;
 }
-
-.class-overview .x-toolbar.member-links .icon-echo_event,  .class-overview .members .icon-echo_event {
-    background: url(../images/icons.png) no-repeat 0 -320px;
-}
-
-.class-overview .x-toolbar.member-links .icon-echo_renderer,  .class-overview .members .icon-echo_renderer {
-    background: url(../images/palette.png) no-repeat;
-}
-
-.class-overview .x-toolbar.member-links .icon-echo_label,  .class-overview .members .icon-echo_label {
-    background: url(../images/labels.png) no-repeat;
-}
-
-.class-overview .x-toolbar.member-links .icon-method,  .class-overview .members .icon-method {
-    background: url(../images/function.png) no-repeat;
-}
-
-.class-overview .x-toolbar.member-links .icon-cfg,  .class-overview .members .icon-cfg {
-    background-position: 0 -160px;
-}

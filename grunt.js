@@ -230,7 +230,7 @@ module.exports = function(grunt) {
 		},
 		check: {
 			versions: {
-				jsduck: "5.0.0.beta2",
+				jsduck: "5.0.0.beta3",
 				grunt: "v0.3.17"
 			}
 		},

@@ -9,6 +9,7 @@
 	"--examples-base-url": "../demo/",
 	"--ignore-global": true,
 	"--pretty-json": true,
+	"--no-ext4-events": true,
 	"--warnings": ["-no_doc", "-global", "-image_unused"],
 	"--welcome": "../../docs/welcome.html",
 	"--head-html": "<link type=\"text/css\" href=\"resources/css/echo.css\" rel=\"stylesheet\"><script>Docs.initEventTracking = function() { Ext.getCmp('north-region').setHeight(80); Ext.getCmp('north-region').items.first().setHeight(53); };</script>"
