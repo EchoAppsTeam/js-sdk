@@ -30,6 +30,72 @@ module Echo
 		end
 	end
 
+	class Template < JsDuck::Tag::MemberTag
+		def initialize
+			@tagname = :echo_template
+			@pattern = "echo_template"
+			@member_type = {
+				:title => "Templates",
+				:position => MEMBER_POS_METHOD + 0.1,
+				:icon => File.dirname(__FILE__) + "/../../docs/icons/template.png",
+			}
+		end
+
+		def parse_doc(scanner, position)
+			scanner.standard_tag({
+				:tagname => @tagname,
+				:type => false,
+				:name => false,
+				:default => true
+			})
+		end
+
+		def process_code(code)
+			h = super(code)
+			h[:type] = "String"
+			h[:renderers] = []
+			code[:default].scan(/\{(?:plugin.)?class:([^\}]+)\}/) {|name|
+				h[:renderers].push(name[0])
+			}
+			h
+		end
+
+		def to_html(member, cls)
+			existing_renderers = {}
+			# select explicitly defined :echo_renderer members
+			cls[:members].each {|tag|
+				if tag[:tagname] == :echo_renderer
+					existing_renderers[tag[:name]] = tag
+				end
+			}
+			# add implicit :echo_renderer members to the class
+			member[:renderers].each {|name|
+				next if existing_renderers[name]
+				tag = {
+					:tagname => :echo_renderer,
+					:name => name,
+					:files => member[:files],
+					:params => Echo::Renderer.generic_params,
+					:return => Echo::Renderer.generic_return,
+					:fires => false,
+					:id => "echo_renderer-" + name,
+					:owner => member[:owner]
+				}
+				cls[:members].push(tag)
+				existing_renderers[name] = tag
+			}
+			# generate HTML for all the renderer tags
+			member_link(member) + " : String" +
+			"<p>The following renderers are available for this template:" +
+				"<ul>" +
+					member[:renderers].sort().map {|name|
+						"<li><a href=\"#!/api/" + existing_renderers[name][:owner] + "-" + existing_renderers[name][:id] + "\">" + name + "</a></li>"
+					}.join("\n") +
+				"</ul>" +
+			"</p>"
+		end
+	end
+
 	class Renderer < JsDuck::Tag::MemberTag
 		def initialize
 			@tagname = :echo_renderer

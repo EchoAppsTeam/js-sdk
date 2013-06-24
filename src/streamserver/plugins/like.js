@@ -29,7 +29,7 @@ var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Ite
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	this.extendTemplate("insertAsLastChild", "data", plugin.template);
+	this.extendTemplate("insertAsLastChild", "data", plugin.templates.main);
 	this.component.addButtonSpec("Like", this._assembleButton("Like"));
 	this.component.addButtonSpec("Like", this._assembleButton("Unlike"));
 };
@@ -81,7 +81,10 @@ plugin.events = {
 	}
 };
 
-plugin.template = '<div class="{plugin.class:likedBy}"></div>';
+/**
+ * @echo_template
+ */
+plugin.templates.main = '<div class="{plugin.class:likedBy}"></div>';
 
 /**
  * @echo_renderer
@@ -253,7 +256,7 @@ var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.I
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	this.extendTemplate("insertAsLastChild", "container", plugin.template);
+	this.extendTemplate("insertAsLastChild", "container", plugin.templates.main);
 };
 
 plugin.labels = {
@@ -263,7 +266,10 @@ plugin.labels = {
 	"unlikeOnBehalf": "Unlike on behalf of this user"
 };
 
-plugin.template = '<img class="{plugin.class:adminUnlike}" src="{config:cdnBaseURL.sdk-assets}/images/container/closeWindow.png"" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
+/**
+ * @echo_template
+ */
+plugin.templates.main = '<img class="{plugin.class:adminUnlike}" src="{config:cdnBaseURL.sdk-assets}/images/container/closeWindow.png"" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
 
 /**
  * @echo_renderer

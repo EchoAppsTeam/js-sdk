@@ -233,12 +233,18 @@ plugin.labels = {
 	"statusUntouched": "New"
 };
 
+/**
+ * @echo_template
+ */
 plugin.templates.buttonLabels = {
 	"banned": '<span class="{plugin.class:button-state} {plugin.class:button-state-banned}">{plugin.label:userBanned}</span>' +
 		'(<span class="echo-clickable">{plugin.label:unbanUser}</span>)',
 	"unbanned": '<span class="echo-clickable">{plugin.label:banUser}</span>'
 };
 
+/**
+ * @echo_template
+ */
 plugin.templates.status =
 	'<div class="{plugin.class:status}">' +
 		'<div class="{plugin.class:statusIcon}"></div>' +

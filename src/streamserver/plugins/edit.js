@@ -174,12 +174,18 @@ $.map(["Init", "Complete", "Error"], function(action) {
 	};
 });
 
+/**
+ * @echo_template
+ */
 plugin.templates.header =
 	'<div class="{plugin.class:header} echo-primaryFont echo-primaryFont echo-primaryColor">' +
 		'{plugin.label:createdBy} <span class="{plugin.class:author}"></span> ' +
 		'{plugin.label:on} <span class="{plugin.class:editedDate}"></span>' +
 	'</div>';
 
+/**
+ * @echo_template
+ */
 plugin.templates.cancel =
 	'<div class="{plugin.class:cancelButtonContainer}">' +
 		'<a href="javascript:void(0);" class="{plugin.class:cancelButton} echo-primaryFont echo-clickable echo-linkColor">' +

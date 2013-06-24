@@ -118,8 +118,14 @@ plugin.dependencies = [{
 	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
 }];
 
+/**
+ * @echo_template
+ */
 plugin.templates.auth = '<div class="{plugin.class:auth}"></div>';
 
+/**
+ * @echo_template
+ */
 plugin.templates.forcedLogin =
 	'<div class="echo-primaryFont {class:header}">' +
 		'<span class="echo-secondaryColor {plugin.class:forcedLoginMessage}">' +

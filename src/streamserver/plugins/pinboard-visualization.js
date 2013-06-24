@@ -70,6 +70,9 @@ mediaGallery.config = {
 	"item": undefined
 };
 
+/**
+ * @echo_template
+ */
 mediaGallery.templates.main =
 	'<div class="{class:container}">' +
 		'<div class="{class:thumbnails}">' +
@@ -78,6 +81,9 @@ mediaGallery.templates.main =
 		'<div class="{class:controls}"></div>' +
 	'</div>';
 
+/**
+ * @echo_template
+ */
 mediaGallery.templates.mediaError =
 	'<span class="{class:itemErrorLoading}">{label:mediaIsNotAvailable}</span>';
 
@@ -290,7 +296,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this, item = this.component;
-	this.extendTemplate("replace", "container", plugin.template);
+	this.extendTemplate("replace", "container", plugin.templates.container);
 };
 
 plugin.dependencies = [{
@@ -530,7 +536,10 @@ plugin.methods._getCSSByLength = function(length) {
 	return Echo.Utils.foldl("", plugin.config.get("itemCSSClassByContentLength"), handler);
 };
 
-plugin.template =
+/**
+ * @echo_template
+ */
+plugin.templates.container =
 	'<div class="{class:container}">' +
 		'<div class="{class:header}">' +
 			'<div class="{class:avatar-wrapper}">' +

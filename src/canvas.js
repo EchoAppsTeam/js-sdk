@@ -160,9 +160,15 @@ canvas.labels = {
 	"error_invalid_canvas_config": "Canvas with invalid configuration found"
 };
 
+/**
+ * @echo_template
+ */
 canvas.templates.main =
 	'<div class="{class:container}"></div>';
 
+/**
+ * @echo_template
+ */
 canvas.templates.app =
 	'<div class="{class:appContainer}">' +
 		'<div class="{class:appHeader}">{data:caption}</div>' +

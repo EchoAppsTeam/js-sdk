@@ -198,6 +198,9 @@ auth.events = {
 	}
 };
 
+/**
+ * @echo_template
+ */
 auth.templates.anonymous =
 	'<div class="{class:userAnonymous}">' +
 		'<span class="{class:login} echo-linkColor echo-clickable">' +
@@ -209,6 +212,9 @@ auth.templates.anonymous =
 		'</span>' +
 	'</div>';
 
+/**
+ * @echo_template
+ */
 auth.templates.logged =
 	'<div class="{class:userLogged}">' +
 		'<div class="{class:avatar}"></div>' +

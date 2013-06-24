@@ -34,7 +34,7 @@ var plugin = Echo.Plugin.manifest("CommunityFlag", "Echo.StreamServer.Controls.S
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	this.extendTemplate("insertAsLastChild", "data", plugin.template);
+	this.extendTemplate("insertAsLastChild", "data", plugin.templates.main);
 	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Flag"));
 	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Unflag"));
 };
@@ -81,7 +81,10 @@ plugin.dependencies = [{
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
 
-plugin.template = '<div class="{plugin.class:flaggedBy}"></div>';
+/**
+ * @echo_template
+ */
+plugin.templates.main = '<div class="{plugin.class:flaggedBy}"></div>';
 
 /**
  * @echo_renderer
