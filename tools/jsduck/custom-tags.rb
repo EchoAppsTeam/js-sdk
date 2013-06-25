@@ -84,6 +84,13 @@ module Echo
 				cls[:members].push(tag)
 				existing_renderers[name] = tag
 			}
+
+			# XXX: remove all @echo_template tags to hide them for a while
+			# the next code block doesn't really work because of these lines
+			cls[:members].delete_if {|tag|
+				tag[:tagname] == :echo_template
+			}
+
 			# generate HTML for all the renderer tags
 			member_link(member) + " : String" +
 			"<p>The following renderers are available for this template:" +
