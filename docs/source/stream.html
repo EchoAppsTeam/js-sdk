@@ -452,6 +452,9 @@ stream.events = {
 	}
 };
 
+<span id='Echo-StreamServer-Controls-Stream-echo_template-main'>/**
+</span> * @echo_template
+ */
 stream.templates.main =
 	'&lt;div class=&quot;{class:container} echo-primaryFont echo-primaryBackgroundColor&quot;&gt;' +
 		'&lt;div class=&quot;{class:header}&quot;&gt;'+
@@ -765,9 +768,6 @@ stream.methods._onDataReceive = function(data, type, callback) {
 <span id='Echo-StreamServer-Controls-Stream-echo_event-onDataReceive'>	/**
 </span>	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
 	 * Triggered when new data is received.
-	 *
-	 * @param {String} topic
-	 * Name of the event to subscribe (ex: &quot;Echo.StreamServer.Controls.Stream&quot;)
 	 *
 	 * @param {Object} data
 	 * Object which is returned by the search API endpoint
@@ -1957,7 +1957,11 @@ item.labels = {
 	&quot;re&quot;: &quot;Re&quot;
 };
 
+
 item.templates.metadata = {
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_template-userID'>	/**
+</span>	 * @echo_template
+	 */
 	&quot;userID&quot;:
 		'&lt;div class=&quot;{class:metadata-userID}&quot;&gt;' +
 			'&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;' +
@@ -1965,6 +1969,9 @@ item.templates.metadata = {
 			'&lt;/span&gt;' +
 			'&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:actor.id}&lt;/span&gt;' +
 		'&lt;/div&gt;',
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_template-userIP'>	/**
+</span>	 * @echo_template
+	 */
 	&quot;userIP&quot;:
 		'&lt;div class=&quot;{class:metadata-userIP}&quot;&gt;' +
 			'&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;' +
@@ -1974,8 +1981,11 @@ item.templates.metadata = {
 		'&lt;/div&gt;'
 };
 
-item.methods.template = function() {
-	return '&lt;div class=&quot;{class:content}&quot;&gt;' +
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_template-mainHeader'>/**
+</span> * @echo_template
+ */
+item.templates.mainHeader =
+	'&lt;div class=&quot;{class:content}&quot;&gt;' +
 		'&lt;div class=&quot;{class:container}&quot;&gt;' +
 			'&lt;div class=&quot;{class:avatar-wrapper}&quot;&gt;' +
 				'&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;' +
@@ -2013,19 +2023,40 @@ item.methods.template = function() {
 			'&lt;/div&gt;' +
 			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
 			'&lt;div class=&quot;{class:childrenMarker}&quot;&gt;&lt;/div&gt;' +
-		'&lt;/div&gt;' +
-		(this.config.get(&quot;parent.children.sortOrder&quot;) === &quot;chronological&quot;
-			? '&lt;div class=&quot;{class:children}&quot;&gt;&lt;/div&gt;' +
-			'&lt;div class=&quot;{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable&quot;&gt;' +
-				'&lt;span class=&quot;{class:expandChildrenLabel} echo-message-icon&quot;&gt;&lt;/span&gt;' +
-			'&lt;/div&gt;'
-			: '&lt;div class=&quot;{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable&quot;&gt;' +
-				'&lt;span class=&quot;{class:expandChildrenLabel} echo-message-icon&quot;&gt;&lt;/span&gt;' +
-			'&lt;/div&gt;' +
-			'&lt;div class=&quot;{class:children}&quot;&gt;&lt;/div&gt;'
-		) +
+		'&lt;/div&gt;';
+
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_template-mainFooter'>/**
+</span> * @echo_template
+ */
+item.templates.mainFooter =
 		'&lt;div class=&quot;{class:childrenByCurrentActorLive}&quot;&gt;&lt;/div&gt;' +
 	'&lt;/div&gt;';
+
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_template-childrenTop'>/**
+</span> * @echo_template
+ */
+item.templates.childrenTop =
+	'&lt;div class=&quot;{class:children}&quot;&gt;&lt;/div&gt;' +
+	'&lt;div class=&quot;{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable&quot;&gt;' +
+		'&lt;span class=&quot;{class:expandChildrenLabel} echo-message-icon&quot;&gt;&lt;/span&gt;' +
+	'&lt;/div&gt;';
+
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_template-childrenBottom'>/**
+</span> * @echo_template
+ */
+item.templates.childrenBottom =
+	'&lt;div class=&quot;{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable&quot;&gt;' +
+		'&lt;span class=&quot;{class:expandChildrenLabel} echo-message-icon&quot;&gt;&lt;/span&gt;' +
+	'&lt;/div&gt;' +
+	'&lt;div class=&quot;{class:children}&quot;&gt;&lt;/div&gt;';
+
+item.methods.template = function() {
+	this.templates.mainHeader +
+	(this.config.get(&quot;parent.children.sortOrder&quot;) === &quot;chronological&quot;
+		? this.templates.childrenTop
+		: this.templates.childrenBottom
+	) +
+	this.templates.mainFooter
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-authorName'>/**

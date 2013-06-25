@@ -46,7 +46,7 @@ var plugin = Echo.Plugin.manifest(&quot;Like&quot;, &quot;Echo.StreamServer.Cont
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;data&quot;, plugin.template);
+	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;data&quot;, plugin.templates.main);
 	this.component.addButtonSpec(&quot;Like&quot;, this._assembleButton(&quot;Like&quot;));
 	this.component.addButtonSpec(&quot;Like&quot;, this._assembleButton(&quot;Unlike&quot;));
 };
@@ -98,7 +98,10 @@ plugin.events = {
 	}
 };
 
-plugin.template = '&lt;div class=&quot;{plugin.class:likedBy}&quot;&gt;&lt;/div&gt;';
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-echo_template-main'>/**
+</span> * @echo_template
+ */
+plugin.templates.main = '&lt;div class=&quot;{plugin.class:likedBy}&quot;&gt;&lt;/div&gt;';
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-echo_renderer-likedBy'>/**
 </span> * @echo_renderer
@@ -270,7 +273,7 @@ var plugin = Echo.Plugin.manifest(&quot;Like&quot;, &quot;Echo.StreamServer.Cont
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;container&quot;, plugin.template);
+	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;container&quot;, plugin.templates.main);
 };
 
 plugin.labels = {
@@ -280,7 +283,10 @@ plugin.labels = {
 	&quot;unlikeOnBehalf&quot;: &quot;Unlike on behalf of this user&quot;
 };
 
-plugin.template = '&lt;img class=&quot;{plugin.class:adminUnlike}&quot; src=&quot;{config:cdnBaseURL.sdk-assets}/images/container/closeWindow.png&quot;&quot; title=&quot;{plugin.label:unlikeOnBehalf}&quot; width=&quot;10&quot; height=&quot;9&quot;&gt;';
+<span id='Echo-StreamServer-Controls-FacePile-Item-Plugins-Like-echo_template-main'>/**
+</span> * @echo_template
+ */
+plugin.templates.main = '&lt;img class=&quot;{plugin.class:adminUnlike}&quot; src=&quot;{config:cdnBaseURL.sdk-assets}/images/container/closeWindow.png&quot;&quot; title=&quot;{plugin.label:unlikeOnBehalf}&quot; width=&quot;10&quot; height=&quot;9&quot;&gt;';
 
 <span id='Echo-StreamServer-Controls-FacePile-Item-Plugins-Like-echo_renderer-container'>/**
 </span> * @echo_renderer

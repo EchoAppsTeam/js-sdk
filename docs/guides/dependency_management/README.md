@@ -30,13 +30,13 @@ While developing an application (see the [“how to guide”](#!/guide/how_to_de
 
 	Comments.dependencies = [{
 		"loaded": function() {
-			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
-				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
+			return Echo.App.isDefined("Echo.StreamServer.Controls.Submit") &&
+				Echo.App.isDefined("Echo.StreamServer.Controls.Stream");
 		},
 		"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 	}];
 
-This code describes a single dependency which will be loaded only if there are no Stream and Submit Controls on the page already. More details on what happens in this example can be found [here](#!/guide/how_to_develop_app-section-8).
+This code describes a single dependency which will be loaded only if there are no Stream and Submit Apps on the page already. More details on what happens in this example can be found [here](#!/guide/how_to_develop_app-section-8).
 
 ## Specifying dependencies for a Plugin
 

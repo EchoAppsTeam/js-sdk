@@ -13,7 +13,7 @@
 	<div id="container">
 		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag" target="_blank">Documentation</a></div>
 		<h1>"CommunityFlag" Plugin Demo</h1>
-		<div class="description">Adds extra Flag/Unflag buttons to each item in the <a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream">Echo Stream control</a> for authenticated users. <br><br> Note: the Flag/Unflag buttons are available for authenticated users only. If you are not logged in, you can do it using <a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth" target="_blank">Echo Auth control</a> be low.</a></div>
+		<div class="description">Adds extra Flag/Unflag buttons to each item in the <a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream">Echo Stream app</a> for authenticated users. <br><br> Note: the Flag/Unflag buttons are available for authenticated users only. If you are not logged in, you can do it using <a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth" target="_blank">Echo Auth app</a> be low.</a></div>
 		<div class="wrapper">
 			<div id="auth"></div>
 		</div>
@@ -40,7 +40,7 @@
 		};
 		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
 
-		// init Auth control
+		// init Auth app
 		Echo.Loader.initApplication({
 			"script": "http://cdn.echoenabled.com/sdk/v3/identityserver.pack.js",
 			"component": "Echo.IdentityServer.Controls.Auth",
@@ -55,7 +55,7 @@
 			}
 		});
 
-		// init Stream control
+		// init Stream app
 		Echo.Loader.initApplication({
 			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
 			"component": "Echo.StreamServer.Controls.Stream",

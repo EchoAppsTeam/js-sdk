@@ -191,12 +191,18 @@ $.map([&quot;Init&quot;, &quot;Complete&quot;, &quot;Error&quot;], function(acti
 	};
 });
 
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_template-header'>/**
+</span> * @echo_template
+ */
 plugin.templates.header =
 	'&lt;div class=&quot;{plugin.class:header} echo-primaryFont echo-primaryFont echo-primaryColor&quot;&gt;' +
 		'{plugin.label:createdBy} &lt;span class=&quot;{plugin.class:author}&quot;&gt;&lt;/span&gt; ' +
 		'{plugin.label:on} &lt;span class=&quot;{plugin.class:editedDate}&quot;&gt;&lt;/span&gt;' +
 	'&lt;/div&gt;';
 
+<span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_template-cancel'>/**
+</span> * @echo_template
+ */
 plugin.templates.cancel =
 	'&lt;div class=&quot;{plugin.class:cancelButtonContainer}&quot;&gt;' +
 		'&lt;a href=&quot;javascript:void(0);&quot; class=&quot;{plugin.class:cancelButton} echo-primaryFont echo-clickable echo-linkColor&quot;&gt;' +

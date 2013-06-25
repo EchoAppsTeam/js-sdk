@@ -51,7 +51,7 @@ var plugin = Echo.Plugin.manifest(&quot;CommunityFlag&quot;, &quot;Echo.StreamSe
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;data&quot;, plugin.template);
+	this.extendTemplate(&quot;insertAsLastChild&quot;, &quot;data&quot;, plugin.templates.main);
 	this.component.addButtonSpec(&quot;CommunityFlag&quot;, this._assembleButton(&quot;Flag&quot;));
 	this.component.addButtonSpec(&quot;CommunityFlag&quot;, this._assembleButton(&quot;Unflag&quot;));
 };
@@ -98,7 +98,10 @@ plugin.dependencies = [{
 	&quot;url&quot;: &quot;{config:cdnBaseURL.sdk}/streamserver.pack.js&quot;
 }];
 
-plugin.template = '&lt;div class=&quot;{plugin.class:flaggedBy}&quot;&gt;&lt;/div&gt;';
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_template-main'>/**
+</span> * @echo_template
+ */
+plugin.templates.main = '&lt;div class=&quot;{plugin.class:flaggedBy}&quot;&gt;&lt;/div&gt;';
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_renderer-flaggedBy'>/**
 </span> * @echo_renderer

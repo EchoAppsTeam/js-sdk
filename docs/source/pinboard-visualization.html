@@ -87,6 +87,9 @@ mediaGallery.config = {
 	&quot;item&quot;: undefined
 };
 
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_template-main'>/**
+</span> * @echo_template
+ */
 mediaGallery.templates.main =
 	'&lt;div class=&quot;{class:container}&quot;&gt;' +
 		'&lt;div class=&quot;{class:thumbnails}&quot;&gt;' +
@@ -95,6 +98,9 @@ mediaGallery.templates.main =
 		'&lt;div class=&quot;{class:controls}&quot;&gt;&lt;/div&gt;' +
 	'&lt;/div&gt;';
 
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_template-mediaError'>/**
+</span> * @echo_template
+ */
 mediaGallery.templates.mediaError =
 	'&lt;span class=&quot;{class:itemErrorLoading}&quot;&gt;{label:mediaIsNotAvailable}&lt;/span&gt;';
 
@@ -307,7 +313,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this, item = this.component;
-	this.extendTemplate(&quot;replace&quot;, &quot;container&quot;, plugin.template);
+	this.extendTemplate(&quot;replace&quot;, &quot;container&quot;, plugin.templates.container);
 };
 
 plugin.dependencies = [{
@@ -547,7 +553,10 @@ plugin.methods._getCSSByLength = function(length) {
 	return Echo.Utils.foldl(&quot;&quot;, plugin.config.get(&quot;itemCSSClassByContentLength&quot;), handler);
 };
 
-plugin.template =
+<span id='Echo-StreamServer-Controls-Stream-Item-Plugins-PinboardVisualization-echo_template-container'>/**
+</span> * @echo_template
+ */
+plugin.templates.container =
 	'&lt;div class=&quot;{class:container}&quot;&gt;' +
 		'&lt;div class=&quot;{class:header}&quot;&gt;' +
 			'&lt;div class=&quot;{class:avatar-wrapper}&quot;&gt;' +

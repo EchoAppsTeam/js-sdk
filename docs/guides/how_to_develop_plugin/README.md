@@ -2,17 +2,17 @@
 
 ## Overview
 
-The Echo JS SDK provides the ability to extend the functionality of any Echo Control or Application using a Plugins approach. This page will guide you through the steps of custom plugins creation. For examples of existing plugins visit the [Examples Page](#!/example).
+The Echo JS SDK provides the ability to extend the functionality of any Echo Application using a Plugins approach. This page will guide you through the steps of custom plugins creation. For examples of existing plugins visit the [Examples Page](#!/example).
 
 ## Introduction
 
 Plugin is an object with the predefined structure which extends the default functionality of an application or its components.
 
-Let's imagine that we want to add the dropdown with the possible sorting options into the Stream control UI. As soon as the sorting order is selected, the Stream should be refreshed to reflect the user action.
+Let's imagine that we want to add the dropdown with the possible sorting options into the Stream app UI. As soon as the sorting order is selected, the Stream should be refreshed to reflect the user action.
 
 ## Creating the plugin skeleton
 
-First of all, let's prepare the JavaScript closure to allocate a separate namespace for our plugin's code. This step is common for all plugins, controls and apps built on top of the JS SDK. You can find the detailed information on how to create the JS closure in the ["Terminology and dev tips"](#!/guide/terminology-section-3) guide. So we have the following code as a starting point:
+First of all, let's prepare the JavaScript closure to allocate a separate namespace for our plugin's code. This step is common for all plugins and apps built on top of the JS SDK. You can find the detailed information on how to create the JS closure in the ["Terminology and dev tips"](#!/guide/terminology-section-3) guide. So we have the following code as a starting point:
 
 	(function(jQuery) {
 	"use strict";
@@ -38,13 +38,13 @@ Now let's add the plugin definition. Echo JS SDK contains a special Echo.Plugin 
 
 	})(Echo.jQuery);
 
-So we've called the Echo.Plugin.manifest function, passed the name of the plugin and the type of the control as arguments. We checked whether the plugin was already initialized or not, to avoid multiple plugin re-definitions in case the plugin script was included into the page source several times. After that we passed the manifest into the Echo.Plugin.create function to generate the plugin JS class out of the static declaration.
+So we've called the Echo.Plugin.manifest function, passed the name of the plugin and the type of the app as arguments. We checked whether the plugin was already initialized or not, to avoid multiple plugin re-definitions in case the plugin script was included into the page source several times. After that we passed the manifest into the Echo.Plugin.create function to generate the plugin JS class out of the static declaration.
 
 At that point we can consider the plugin skeleton ready and start adding the business logic into it.
 
 ## Plugin configuration
 
-Let's assume that we need a configuration parameter for our plugin to define the list of the sorting options we want to expose in the dropdown. Also we want to define a default value of the parameter in case it is omitted in the plugin configuration while installing it into the necessary Stream control. In order to do it we add the "config" object to the plugin manifest with the name of the config field as a key and a default as its value, so the code of the plugin will look like:
+Let's assume that we need a configuration parameter for our plugin to define the list of the sorting options we want to expose in the dropdown. Also we want to define a default value of the parameter in case it is omitted in the plugin configuration while installing it into the necessary Stream app. In order to do it we add the "config" object to the plugin manifest with the name of the config field as a key and a default as its value, so the code of the plugin will look like:
 
 	(function(jQuery) {
 	"use strict";
@@ -79,7 +79,7 @@ to get the value of the "order" config parameter defined during the plugin insta
 
 ## Adding helper methods
 
-Before we add the dropdown we need to understand which option should be marked as "active". For these purposes let's define the function which will extract the sort order out of the search query defined for the Stream control. There is a special place for the helper functions in the plugin definition: it's called the "methods" object. The method to extract the sorting order might look like:
+Before we add the dropdown we need to understand which option should be marked as "active". For these purposes let's define the function which will extract the sort order out of the search query defined for the Stream app. There is a special place for the helper functions in the plugin definition: it's called the "methods" object. The method to extract the sorting order might look like:
 
 	plugin.methods._getSortOrder = function() {
 		var stream = this.component;
@@ -92,7 +92,7 @@ Few important notes here:
 
 - we added the underscore before the name of the function to indicate that this function is private and nobody should call it outside the plugin's code
 
-- we refer to the Stream control using the "this.component" field. The reference to the parent component is always available inside the plugin
+- we refer to the Stream app using the "this.component" field. The reference to the parent component is always available inside the plugin
 
 - the "\_getSortOrder" function will be available in the plugin's code as "this.\_getSortOrder()", assuming that "this" points to the plugin instance
 
@@ -111,7 +111,7 @@ It makes sense to add the related helper function to define the new sorting orde
 		stream.refresh();
 	};
 
-The function looks a bit more complicated, but the main idea is to either replace the value of the "sortOrder" predicate or add the predicate with the necessary value to the beginning of the search query in case the "sortOrder" predicate was not defined. After the query update, the "refresh" function is called for the Stream control to fetch the data based on the new search query and rerender the UI.
+The function looks a bit more complicated, but the main idea is to either replace the value of the "sortOrder" predicate or add the predicate with the necessary value to the beginning of the search query in case the "sortOrder" predicate was not defined. After the query update, the "refresh" function is called for the Stream app to fetch the data based on the new search query and rerender the UI.
 
 ## Labels
 
@@ -137,9 +137,9 @@ The label text will be available in the plugin's code using the following constr
 	this.labels.get("sortOrderSelection"); // assuming that "this" points to the plugin instance
 
 
-## Extending control template
+## Extending app template
 
-Ok, now it's time to add the dropdown itself into the Stream control UI.
+Ok, now it's time to add the dropdown itself into the Stream app UI.
 
 The first steps is to prepare a template which should be appended into the Stream UI. Due to the fact that the template for our plugin is quite complex, we'll wrap the code to generate it into the function, for example as shown below:
 
@@ -181,7 +181,7 @@ In our example, we instructed the rendering engine to append the "sortOrderSelec
 
 The second step to make the dropdown appear in the UI is to define the rules to append the template.
 
-In order to specify the rules for the plugin template addition, we should call the {@link Echo.Plugin#extendTemplate "extendTemplate"} function of the plugin instance. Due to the fact that the final control view assembling is happening during its initialization, we need to call the function inside the "plugin.init" function as shown below:
+In order to specify the rules for the plugin template addition, we should call the {@link Echo.Plugin#extendTemplate "extendTemplate"} function of the plugin instance. Due to the fact that the final app view assembling is happening during its initialization, we need to call the function inside the "plugin.init" function as shown below:
 
 	plugin.init = function() {
 		this.extendTemplate("insertAsFirstChild", "header", plugin.template);
@@ -212,7 +212,7 @@ Note: the "renderers" hash contains the renderers for the elements added within 
 		return element;
 	};
 
-In this example we've accessed the "state" renderer of the Stream control.
+In this example we've accessed the "state" renderer of the Stream app.
 
 One more important note to keep in mind while overriding the existing renderers: you can control the order in which the renderer logic is executed, i.e. you can call the parent renderer and apply specific logic after that or you can add some manipulations and call the parent renderer. Calling the {@link Echo.Plugin#parentRenderer "parentRenderer"} function is extremely important when you extend some existing renderer to allow other plugins to execute their renderer extensions as well (in case multiple plugins extend the same renderer).
 
@@ -247,7 +247,7 @@ Another important aspect is events.
 
 Each Echo component is an independent part of the system and can communicate with each other on subscribe-publish basis. One application can subscribe to the expected event and the other application can publish it and the event data will be delivered to the subscribed applications. This model is very similar to the DOM events model when you can add event listener and perform some actions when a certain event is fired. All the events are powered by the Echo.Events library.
 
-There are lots of events going on during the control and plugin life. The list of the events for each component can be found on the respective page in the documentation. The plugin definition structure provides the interface to subscribe to the necessary events. The events subscriptions should be defined inside the "events" hash using the event name as a key and the event handler as a value, for example:
+There are lots of events going on during the app and plugin life. The list of the events for each component can be found on the respective page in the documentation. The plugin definition structure provides the interface to subscribe to the necessary events. The events subscriptions should be defined inside the "events" hash using the event name as a key and the event handler as a value, for example:
 
 	plugin.events = {
 		"Echo.StreamServer.Controls.Stream.onDataReceive": function(topic, args) {
@@ -257,18 +257,18 @@ There are lots of events going on during the control and plugin life. The list o
 
 ## Dependencies
 
-If the plugin depends on some other external component/library, it's possible to define the dependencies list for the plugin. In this case the engine will download the dependencies first and launch the plugin after that. The dependency is an object with the "url" and one of the "control", "plugin", "app" or "loaded" fields. In the "control", "plugin", "app" fields you should specify the component name. If the component you have specified is not loaded yet, resource you have specified in the "url" will be downloaded. If you need to specify more complex conditions to load resource, you can use the "loaded" field instead. The "loaded" field should be defined as a function which returns 'true' or 'false' and indicate whether the resource should be downloaded or not. Example:
+If the plugin depends on some other external component/library, it's possible to define the dependencies list for the plugin. In this case the engine will download the dependencies first and launch the plugin after that. The dependency is an object with the "url" and one of the "plugin", "app" or "loaded" fields. In the "plugin" and "app" fields you should specify the component name. If the component you have specified is not loaded yet, resource you have specified in the "url" will be downloaded. If you need to specify more complex conditions to load resource, you can use the "loaded" field instead. The "loaded" field should be defined as a function which returns 'true' or 'false' and indicate whether the resource should be downloaded or not. Example:
 
 	plugin.dependencies = [{
 		"loaded": function() { return !!window.twttr; },
 		"url": "http://platform.twitter.com/widgets.js"
 	}];
 
-You can define the CSS stylesheets as a dependency as well, in this case the "loaded" ("control", "plugin" or "app") parameter might be omitted.
+You can define the CSS stylesheets as a dependency as well, in this case the "loaded" ("plugin" or "app") parameter might be omitted.
 
 ## Plugin installation
 
-In order to install the plugin into the necessary control, the following steps should be taken:
+In order to install the plugin into the necessary app, the following steps should be taken:
 
 - the plugin script should be delivered to the client side (for example, using the &lt;script&gt; tag inclusion)
 
@@ -382,4 +382,4 @@ Each bundled Echo plugin uses the same mechanisms described in this guide. Bundl
 - [Like](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/like.js)
 - [Reply](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/reply.js)
 - [JanrainSharing](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/janrain-sharing.js)
-- and more (please look at Echo controls documentation pages)
+- and more (please look at Echo apps documentation pages)
