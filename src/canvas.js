@@ -72,8 +72,10 @@ canvas.init = function() {
 		return;
 	}
 
-	// apply our canvas id as a CSS class
-	target.addClass(Echo.Canvas.cssClassForCanvasId(this.config.get('id')));
+	// apply our canvas id as a CSS class if we aren't manually configured
+	if (this.config.get('id')) {
+		target.addClass(Echo.Canvas.cssClassForCanvasId(this.config.get('id')));
+	}
 
 	// define initialized state for the canvas
 	// to prevent multiple initialization of the same canvas

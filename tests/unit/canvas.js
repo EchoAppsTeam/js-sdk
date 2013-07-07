@@ -5,7 +5,6 @@ var suite = Echo.Tests.Unit.Canvas = function() {
 		"instance": {
 			"name": "Echo.Canvas",
 			"config": {
-				"id": "js-sdk-tests/test-canvas-002",
 				"data": {
 					"apps": []
 				},
