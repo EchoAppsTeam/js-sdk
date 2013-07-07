@@ -72,6 +72,11 @@ canvas.init = function() {
 		return;
 	}
 
+	// apply our canvas id as a CSS class if we aren't manually configured
+	if (this.config.get('id')) {
+		target.addClass(Echo.Canvas.cssClassForCanvasId(this.config.get('id')));
+	}
+
 	// define initialized state for the canvas
 	// to prevent multiple initialization of the same canvas
 	target.data("echo-canvas-initialized", true);
@@ -219,6 +224,7 @@ canvas.methods._initApp = function(app, element, id) {
 	app.config = app.config || {};
 	app.config.user = this.config.get("user");
 	app.config.target = view.get("appBody");
+	app.config.canvasId = this.config.get('id');
 
 	var overrides = this.config.get("overrides")[app.id];
 	var config = overrides
@@ -386,5 +392,9 @@ initializers.initBackplane = function(callback) {
 };
 
 Echo.Canvas.prototype._initializers = initializers;
+
+Echo.Canvas.cssClassForCanvasId = function(canvasId) {
+	return 'echo-canvas-' + canvasId.replace('/', '-');
+}
 
 })(Echo.jQuery);
