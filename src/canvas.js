@@ -121,8 +121,7 @@ canvas.config = {
 	/**
 	 * @ignore
 	 */
-	"storageURL": Echo.Loader.config.storageURL  // no docs, not supposed
-						     // to be changed by the publishers
+	"storage": "dev"
 };
 
 canvas.vars = {
@@ -321,7 +320,7 @@ initializers.fetchConfig = function(callback) {
 	var isManual = this._isManuallyConfigured();
 
 	// extending Canvas config with the "id" and "appkey" defined in the target
-	var overrides = this._getOverrides(target, ["id", "appkey", "useSecureAPI"]);
+	var overrides = this._getOverrides(target, ["id", "appkey", "useSecureAPI", "storage"]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
@@ -344,10 +343,10 @@ initializers.fetchConfig = function(callback) {
 		return;
 	}
 	(new Echo.API.Request({
-		"apiBaseURL": this.config.get("storageURL"),
+		"apiBaseURL": Echo.Loader.config.storageURL[this.config.get("storage")],
 		"secure": this.config.get("useSecureAPI"),
 		"endpoint": this.config.get("id"),
-		"data": { "_": Math.random() },
+		"data": {"_": Math.random()},
 		"onData": function(config) {
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
