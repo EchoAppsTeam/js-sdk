@@ -708,6 +708,10 @@ plugin.config = {
 	}
 };
 
+plugin.init = function() {
+	this.component.config.set("slideTimeout", 0);
+};
+
 plugin.enabled = function() {
 	return document.compatMode !== "BackCompat"
 };
