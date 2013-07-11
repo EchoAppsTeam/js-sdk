@@ -56,8 +56,8 @@ suite.prototype.tests.raceConditionTests = {
 	},
 	"check": function() {
 		this.sequentialAsyncTests([
-			"removingFirstNode",
-			"raceConditionTests"
+			"loadingRaceCondition",
+			"removingFirstNode"
 		], "cases");
 	}
 };
@@ -75,7 +75,7 @@ suite.prototype.tests.raceConditionTests = {
 // executed yet. In this test case yepnope tries to execute synchronous script
 // before it's fully preloaded.
 
-suite.prototype.cases.raceConditionTests = function(callback) {
+suite.prototype.cases.loadingRaceCondition = function(callback) {
 	var base = Echo.Tests.baseURL + "tests/unit/loader/scripts";
 
 	Echo.Loader.download([{"url": base + "/race-base.js"}], function() {
