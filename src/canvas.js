@@ -119,7 +119,19 @@ canvas.config = {
 	"overrides": {},
 
 	/**
-	 * @ignore
+	 * @cfg {String} [mode]
+	 * This parameter specifies the mode in which Canvas works.
+	 * There are two possible values which can be handled:
+	 *
+	 * + "dev" then Canvas will be working with the development configuration storage
+	 * + "prod" then Canvas will be working with the production configuration storage
+	 *
+	 * More information about defference between production and development configuration
+	 * storages and the following descriptions see [link](link)
+	 *
+	 * This parameter can be overridden by the specifying target DOM element attribute
+	 * "data-canvas-mode"
+	 * More information about HTML attributes of the target DOM element see [link](link)
 	 */
 	"mode": "dev"
 };
