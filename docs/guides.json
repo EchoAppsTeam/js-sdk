@@ -56,6 +56,11 @@
 				"name": "dependency_management",
 				"title": "Dependency management",
 				"description": "This document describes the dependency management feature of Echo JS SDK"
+			},
+			{
+				"name": "how_to_deploy_an_app_using_a_canvas",
+				"title": "How to deploy an App using a Canvas",
+				"description": "App deployment hands-on guide"
 			}
 		]
 	}

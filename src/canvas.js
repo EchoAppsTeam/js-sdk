@@ -121,17 +121,17 @@ canvas.config = {
 	/**
 	 * @cfg {String} [mode]
 	 * This parameter specifies the mode in which Canvas works.
-	 * There are two possible values which can be handled:
+	 * There are two possible values for this parameter:
 	 *
-	 * + "dev" then Canvas will be working with the development configuration storage
-	 * + "prod" then Canvas will be working with the production configuration storage
+	 * + "dev" - in this case the Canvas works with the development configuration storage
+	 * + "prod" - in this case the Canvas works with the production configuration storage
 	 *
 	 * More information about defference between production and development configuration
-	 * storages and the following descriptions see [link](link)
+	 * storages can be found in the ["How to deploy an App using a Canvas guide"](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 *
-	 * This parameter can be overridden by the specifying target DOM element attribute
-	 * "data-canvas-mode"
-	 * More information about HTML attributes of the target DOM element see [link](link)
+	 * The value of this parameter can be overridden by specifying the "data-canvas-mode"
+	 * target DOM element attribute.
+	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
 	"mode": "dev"
 };
