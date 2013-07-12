@@ -230,9 +230,14 @@ canvas.methods._isManuallyConfigured = function() {
 };
 
 canvas.methods._getAppScriptURL = function(config) {
-	return config.scripts && config.scripts.dev && config.scripts.prod
-		? config.scripts[Echo.Loader.isDebug() ? "dev" : "prod"]
-		: config.script;
+	if (!config.scripts) return config.script;
+	var isSecure, script = {
+		"dev": config.scripts.dev || config.scripts.prod,
+		"prod": config.scripts.prod || config.scripts.dev
+	}[Echo.Loader.isDebug() ? "dev" : "prod"];
+	if (typeof script === "string") return script;
+	isSecure = /^https/.test(window.location.protocol);
+	return script[isSecure ? "secure" : "regular"];
 };
 
 canvas.methods._loadAppResources = function(callback) {

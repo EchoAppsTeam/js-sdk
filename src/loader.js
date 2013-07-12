@@ -306,6 +306,18 @@ Echo.Loader.init = function(config) {
  * (non-minified) versions of the app JavaScript class code. The "prod" and "dev" keys
  * should be used in order to specify the production and development URLs respectively.
  *
+ * @param {String|Object} [app.scripts.prod]
+ * Location of the production (minified) version of the app JavaScript class code.
+ * If value represented by String type, then value retrieves as is.
+ * If value represeented by Object type, then value retrieves from the object with "regular"
+ * or "secure" keys. The "regular" key used for HTTP protocol and "secure" for the HTTPS.
+ *
+ * @param {String|Object} [app.scripts.dev]
+ * Location of the development (non-minified) version of the app JavaScript class code.
+ * If value represented by String type, then value retrieves as is.
+ * If value represeented by Object type, then value retrieves from the object with "regular"
+ * or "secure" keys. The "regular" key used for HTTP protocol and "secure" for the HTTPS.
+ *
  * @param {Object} [app.backplane]
  * Object which contains the data to be passed into the Backplane.init call.
  *
