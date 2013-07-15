@@ -65,14 +65,14 @@ suite.prototype.tests.getAppScript = {
 					"script": "some-url",
 					"scripts": {
 						"dev": "some-dev-url"
-					},
+					}
 				}), "some-dev-url", "Check if \"scripts\" field provided only \"dev\" URL, then it will be used for production too");
 				Echo.Loader.debug = true;
 				QUnit.strictEqual(this._getAppScriptURL({
 					"script": "some-url",
 					"scripts": {
 						"prod": "some-prod-url"
-					},
+					}
 				}), "some-prod-url", "Check if \"scripts\" field provided only \"prod\" URL, then it will be used for development too");
 				QUnit.strictEqual(this._getAppScriptURL({
 					"script": "some-url",
@@ -86,7 +86,7 @@ suite.prototype.tests.getAppScript = {
 					"script": "some-url",
 					"scripts": {
 						"dev": "some-dev-url"
-					},
+					}
 				}), "some-dev-url", "Check if \"scripts\" field provided only \"dev\" URL, then it will be used for production too");
 				QUnit.strictEqual(this._getAppScriptURL({
 					"script": "some-url",
