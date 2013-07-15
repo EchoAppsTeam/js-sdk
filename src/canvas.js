@@ -74,7 +74,8 @@ canvas.init = function() {
 
 	// define initialized state for the canvas
 	// to prevent multiple initialization of the same canvas
-	target.data("echo-canvas-initialized", true);
+	target.data("echo-canvas-initialized", true)
+		.addClass(this.get("cssPrefix") + "id-" + this.config.get("id").replace("/", "-"));
 	this._loadAppResources(parent);
 };
 
@@ -84,6 +85,7 @@ canvas.config = {
 	 * Unique ID of the Canvas, used by the Echo.Canvas instance
 	 * to retrieve the data from the Canvases data storage.
 	 */
+	"id": "",
 
 	/**
 	 * @cfg {Object} [data]
@@ -186,6 +188,7 @@ canvas.renderers.container = function(element) {
 };
 
 canvas.methods._initApp = function(app, element, id) {
+	var self = this;
 	var Application = Echo.Utils.getComponent(app.component);
 	if (!Application) {
 		this._error({
@@ -195,12 +198,21 @@ canvas.methods._initApp = function(app, element, id) {
 		return;
 	}
 
+	app.id = app.id || id;  // define app position in array as id if not specified
+	app.config = app.config || {};
+	app.config.user = this.config.get("user");
+	app.config.canvasId = this.config.get('id');
+
 	var view = this.view.fork({
 		"renderer": null,
 		"renderers": {
 			"appHeader": function(element) {
 				// show|hide app header depending on the caption existance
 				return element[app.caption ? "show" : "hide"]();
+			},
+			"appBody": function(element) {
+				var className = self.get("cssPrefix") + "appId-" + app.id;
+				return element.addClass(className);
 			}
 		}
 	});
@@ -209,9 +221,6 @@ canvas.methods._initApp = function(app, element, id) {
 		"template": this.templates.app
 	}));
 
-	app.id = app.id || id;  // define app position in array as id if not specified
-	app.config = app.config || {};
-	app.config.user = this.config.get("user");
 	app.config.target = view.get("appBody");
 
 	var overrides = this.config.get("overrides")[app.id];
