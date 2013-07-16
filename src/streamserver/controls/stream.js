@@ -989,7 +989,7 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 		"sortOrder": this.config.get("children.sortOrder"),
 		"childrenSortOrder": this.config.get("children.sortOrder"),
 		"pageAfter": pageAfter ? '"' + (pageAfter || 0) + '"' : undefined,
-		"safeHTML": this.config.get("safeHTML"),
+		"safeHTML": this.config.get("safeHTML")
 	}, function(value, acc, predicate) {
 		return acc += (typeof value !== "undefined"
 			? predicate + ":" + value + " "
