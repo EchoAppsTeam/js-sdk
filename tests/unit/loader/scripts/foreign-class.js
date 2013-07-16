@@ -1,0 +1,1 @@
+SomeForeignClass = function() {};
