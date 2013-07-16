@@ -74,8 +74,12 @@ canvas.init = function() {
 
 	// define initialized state for the canvas
 	// to prevent multiple initialization of the same canvas
-	target.data("echo-canvas-initialized", true)
-		.addClass(this.get("cssPrefix") + "id-" + this.config.get("id").replace("/", "-"));
+	target.data("echo-canvas-initialized", true);
+
+	// apply our canvas id as a CSS class if we aren't manually configured
+	if (this.config.get("id")) {
+		target.addClass(this.get("cssPrefix") + this.config.get("id").replace("/", "-"));
+	}
 	this._loadAppResources(parent);
 };
 
