@@ -391,7 +391,8 @@ suite.prototype.tests.canvasesInitializationTests = {
 			"different-initialization-schemas",
 			"multiple-apps-canvas",
 			"app-initialization",
-			"app-config-overrides"
+			"app-config-overrides",
+			"overrides-same-canvases"
 		], function(name) {
 			return self.loaderIframeTest(name);
 		}));

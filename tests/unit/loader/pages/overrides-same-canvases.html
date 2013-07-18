@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<base href="../../../../sdk">
+</head>
+<body>
+
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002#foo" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002#bar" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>
+
+	<script>
+		// link Echo & QUnit objects from the parent window
+		window.Echo =  window.parent.Echo;
+		window.QUnit = window.parent.QUnit;
+
+		// create "test" function which will be called within the parent window
+		window.test = function(callback) {
+			var ids = [
+				"js-sdk-tests/test-canvas-002#foo",
+				"js-sdk-tests/test-canvas-002#bar"
+			];
+			var count = ids.length;
+			Echo.jQuery.map(ids, function(canvasId) {
+				Echo.Loader.override(canvasId, "auth", {
+					"canvasId": canvasId,
+					"ready": function() {
+						QUnit.ok(this.config.get("canvasId") === canvasId,
+						"Check if the config value was updated by the \"override\" function call (case: overrides-same-canvases)");
+						this.destroy();
+						if (!--count) {
+							var first = getCanvasById(ids[0]);
+							var second = getCanvasById(ids[1]);
+							QUnit.ok(first.config.get("id") !== second.config.get("id"),
+								"Check if canvas instances have different canvas id (case: overrides-same-canvases)");
+							QUnit.equal(first.get("data.id"), second.get("data.id"),
+								"Check if canvas instances have a same canvas config that was downloaded from storage (case: overrides-same-canvases)");
+							callback();
+						}
+					}
+				});
+			});
+			var getCanvasById = function(canvasId) {
+				for (var i = 0; i < Echo.Loader.canvases.length; i++) {
+					if (Echo.Loader.canvases[i].config.get("id") === canvasId) {
+						return Echo.Loader.canvases[i];
+					}
+				}
+				return undefined;
+			};
+			Echo.Loader.init({"target": document.body});
+		};
+	</script>
+</body>
+</html>
