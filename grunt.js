@@ -527,7 +527,7 @@ module.exports = function(grunt) {
 
 	grunt.registerHelper("make_docs", function(callback) {
 		shared.exec("jsduck --version | awk '{ print $2; }'", function(version) {
-			var desiredVersion = "5.0.0.beta5";
+			var desiredVersion = "5.0.0";
 			var failed = false;
 			version = _.trim(version);
 			if (!version) {
