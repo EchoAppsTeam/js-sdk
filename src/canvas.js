@@ -218,7 +218,6 @@ canvas.methods._initApp = function(app, element, id) {
 	var config = overrides
 		? $.extend(true, app.config, overrides)
 		: app.config;
-
 	this.apps.push(new Application(config));
 };
 

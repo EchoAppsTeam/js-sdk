@@ -225,7 +225,18 @@ Echo.Loader.initEnvironment = function(callback) {
  * specific application within the canvas.
  *
  * @param {String} canvasID
- * Canvas ID.
+ * Canvas ID. Canvas ID may consists of two part are separated by "#".
+ * An example Canvas with CommentSample app looks like that:
+ *     <div class="echo-canvas" data-canvas-id="jskit/comments-sample" data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ * This example has the Canvas ID is consisted of one required part.
+ * If you would like to place multiple installations of the same Canvas
+ * on a page and you will need to override few configs of Canvas, simplest way will be
+ * to add second part to Canvas ID.
+ *
+ * Example:
+ *     <div class="echo-canvas" data-canvas-id="jskit/comments-sample#left-side" data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ *     <div class="echo-canvas" data-canvas-id="jskit/comments-sample#bottom-side" data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ * You will get different Canvas ID to will define different overrides of configs.
  *
  * @param {String} appID
  * Application ID inside the canvas.
