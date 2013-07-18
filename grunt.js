@@ -546,8 +546,6 @@ module.exports = function(grunt) {
 
 			var path = grunt.config("dirs.dist") + "/docs";
 			shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
-				// run jsduck without multi-processing because multi-processing
-				// can cause this issue: https://github.com/senchalabs/jsduck/issues/353
 				shared.exec("jsduck --config=config/jsduck/config.json", function() {
 					// copy Echo specific images and CSS to documentation directory
 					shared.exec("cp -r docs/patch/* " + path, callback);
