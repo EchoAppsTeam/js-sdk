@@ -532,7 +532,7 @@ module.exports = function(grunt) {
 			version = _.trim(version);
 			if (!version) {
 				failed = true;
-				grunt.log.writeln("jsduck is not installed. Install it by running command `" + ("sudo gem install jsduck -v " + desiredVersion).yellow + "`.").cyan;
+				grunt.log.writeln("jsduck is not installed. Install it by running command `" + ("gem install jsduck -v " + desiredVersion).yellow + "`.").cyan;
 			} else if (version !== desiredVersion) {
 				failed = true;
 				grunt.log.writeln("jsduck version is " + version.red + " but must be " + desiredVersion.green + ". Update it by running command `" + ("gem install jsduck -v " + desiredVersion).yellow + "`.").cyan;
