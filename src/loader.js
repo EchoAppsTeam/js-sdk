@@ -22,7 +22,10 @@ Echo.Loader = {
 	/** @private */
 	"config": {
 		"cdnBaseURL": protocol + "//cdn.echoenabled.com/",
-		"storageURL": protocol + "//s3.amazonaws.com/echo-canvases/",
+		"storageURL": {
+			"prod": protocol + "//dqspik3j3bxvu.cloudfront.net/",
+			"dev": protocol + "//s3.amazonaws.com/echo-canvases/"
+		},
 		"errorTimeout": 5000 // 5 sec
 	},
 	/** @ignore */

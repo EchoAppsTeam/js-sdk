@@ -125,10 +125,21 @@ canvas.config = {
 	"overrides": {},
 
 	/**
-	 * @ignore
+	 * @cfg {String} [mode]
+	 * This parameter specifies the mode in which Canvas works.
+	 * There are two possible values for this parameter:
+	 *
+	 * + "dev" - in this case the Canvas works with the development configuration storage
+	 * + "prod" - in this case the Canvas works with the production configuration storage
+	 *
+	 * More information about defference between production and development configuration
+	 * storages can be found in the ["How to deploy an App using a Canvas guide"](#!/guide/how_to_deploy_an_app_using_a_canvas)
+	 *
+	 * The value of this parameter can be overridden by specifying the "data-canvas-mode"
+	 * target DOM element attribute.
+	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
-	"storageURL": Echo.Loader.config.storageURL  // no docs, not supposed
-						     // to be changed by the publishers
+	"mode": "dev"
 };
 
 canvas.vars = {
@@ -340,7 +351,7 @@ initializers.fetchConfig = function(callback) {
 	var isManual = this._isManuallyConfigured();
 
 	// extending Canvas config with the "id" and "appkey" defined in the target
-	var overrides = this._getOverrides(target, ["id", "appkey", "useSecureAPI"]);
+	var overrides = this._getOverrides(target, ["id", "appkey", "useSecureAPI", "mode"]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
@@ -363,10 +374,10 @@ initializers.fetchConfig = function(callback) {
 		return;
 	}
 	(new Echo.API.Request({
-		"apiBaseURL": this.config.get("storageURL"),
+		"apiBaseURL": Echo.Loader.config.storageURL[this.config.get("mode")],
 		"secure": this.config.get("useSecureAPI"),
 		"endpoint": this.config.get("id"),
-		"data": { "_": Math.random() },
+		"data": this.config.get("mode") === "dev" ? {"_": Math.random()} : {},
 		"onData": function(config) {
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
