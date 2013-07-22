@@ -324,9 +324,6 @@ stream.config = {
 };
 
 stream.config.normalizer = {
-	"safeHTML": function(value) {
-		return "off" !== value;
-	},
 	"showFlags": function(value) {
 		return "off" !== value;
 	},
@@ -991,7 +988,8 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 		"itemsPerPage": additionalItems,
 		"sortOrder": this.config.get("children.sortOrder"),
 		"childrenSortOrder": this.config.get("children.sortOrder"),
-		"pageAfter": pageAfter ? '"' + (pageAfter || 0) + '"' : undefined
+		"pageAfter": pageAfter ? '"' + (pageAfter || 0) + '"' : undefined,
+		"safeHTML": this.config.get("safeHTML")
 	}, function(value, acc, predicate) {
 		return acc += (typeof value !== "undefined"
 			? predicate + ":" + value + " "
