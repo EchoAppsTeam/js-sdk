@@ -717,6 +717,13 @@ plugin.config = {
 	}
 };
 
+plugin.init = function() {
+	// display an item immediately (cancel the slide down animation)
+	// to let the Isotope library work with the final state of the DOM element
+	// representing the item, to avoid its incorrect positioning in the grid
+	this.component.config.set("slideTimeout", 0);
+};
+
 plugin.enabled = function() {
 	return document.compatMode !== "BackCompat"
 };
