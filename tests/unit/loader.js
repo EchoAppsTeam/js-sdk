@@ -403,6 +403,7 @@ suite.prototype.tests.canvasesInitializationTests = {
 			"different-initialization-schemas",
 			"multiple-apps-canvas",
 			"app-initialization",
+			"overrides-same-canvases",
 			"foreign-app-initialization",
 			"app-config-overrides"
 		], function(name) {
