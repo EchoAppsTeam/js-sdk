@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<base href="../../../../sdk">
+	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+</head>
+<body>
+	<script>
+		// link QUnit objects from the parent window
+		window.QUnit = window.parent.QUnit;
+		$ = Echo.jQuery;
+
+		// create "test" function which will be called within the parent window
+		window.test = function(callback) {
+			var script = $("<script>");
+			$(document.head).prepend(script);
+			$("<script>").on("load error", function( evt ) {
+					script.remove();
+					Echo.Loader.download([{
+						"url": window.parent.Echo.Tests.baseURL +
+							"tests/unit/loader/scripts/check-removing-first-script.js"
+					}], function() {
+						QUnit.ok(Echo.Variables.firstScriptRemoved,
+							"Check if removing of firstNode doesn't cause side effects");
+						callback();
+					});
+			}).appendTo(document.head).attr("src", "http://cdn.echoenabled.com/sdk/v3/loader.js");
+		};
+	</script>
+</body>
+</html>
