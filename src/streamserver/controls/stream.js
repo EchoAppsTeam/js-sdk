@@ -1761,9 +1761,9 @@ item.config = {
 	 * + newlines - replaces newlines with \<br> tags
 	 */
 	"contentTransformations": {
-		"text": ["smileys", "hashtags", "urls", "newlines"],
-		"html": ["smileys", "hashtags", "urls", "newlines"],
-		"xhtml": ["smileys", "hashtags", "urls"]
+		"text": ["smileys", "urls", "newlines"],
+		"html": ["smileys", "urls", "newlines"],
+		"xhtml": ["smileys", "urls"]
 	},
 
 	/**
