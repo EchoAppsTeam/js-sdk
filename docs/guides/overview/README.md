@@ -6,7 +6,7 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 
 - JS API - Easier access to server-side APIs via the client side
 - GUI Library - More consistent look and feel between apps (Bootstrap)
-- UI Controls - A Core set of UI Controls for common app/interaction patterns
+- UI Apps - A Core set of UI Apps for common app/interaction patterns
 - Component Manifest - Consistent app architecture for plugin extensibility, consistent configuration handling and app interoperability
 - Echo Loader - Simplified dependency loading to reduce script conflicts and redundancies
 - Configuration storage and overrides (coming soon)
@@ -20,25 +20,25 @@ A well documented client-side API for interacting with the Echo Cloud Services q
 ### GUI Library - More consistent look and feel between apps
 Echo JS SDK 3.0 uses [Twitter Bootstrap](http://twitter.github.com/bootstrap/) as the new UI framework. By employing an industry-standard UI framework with well defined UI rules, should help the apps look stylish and consistent, yet provide a lot of room for customizations by our publishers ({@link Echo.GUI learn more}).
 
-### UI Controls - A Core set of Controls for common app/interaction patterns
-These controls quickly deliver core pieces of App UI based on common feature scenarios such as activity streams, submission, facepiles, counters and more.
+### UI Apps - A Core set of Apps for common app/interaction patterns
+These apps quickly deliver core pieces of App UI based on common feature scenarios such as activity streams, submission, facepiles, counters and more.
 
 #### Echo.StreamServer.Controls.Stream
-Echo Stream control which encapsulates interaction with the Echo Search API and displays live updating search results in a standard ‘news feed’ style format.
+Echo Stream app which encapsulates interaction with the Echo Search API and displays live updating search results in a standard ‘news feed’ style format.
 
 #### Echo.StreamServer.Controls.Submit
-Echo Submit control which encapsulates interaction with the Echo Submit API and provides a simple ‘submit/comment form’ style interaction.
+Echo Submit app which encapsulates interaction with the Echo Submit API and provides a simple ‘submit/comment form’ style interaction.
 
 #### Echo.StreamServer.Controls.Counter
 Echo Counter class which encapsulates interaction with the Echo Count API and provides a simple live updating number.
 
 #### Echo.StreamServer.Controls.FacePile
-Echo FacePile control displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
+Echo FacePile app displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
 
 #### Echo.IdentityServer.Controls.Auth
-Echo Auth control displays the user login status and allows them sign in using different social identities.
+Echo Auth app displays the user login status and allows them sign in using different social identities.
 
-#### [Guide: Building a Control](#!/guide/how_to_develop_control)
+#### [Guide: Building an App](#!/guide/how_to_develop_app)
 
 ### Component Manifest - Consistent app architecture for plugin extensibility, consistent configuration handling and app interoperability
 
@@ -50,11 +50,9 @@ Components build using this approach inherit a number of distinct advantages inc
 - Supports for plugins that can modify the given component’s behavior.
 
 
-[Guide: Building a Control](#!/guide/how_to_develop_control)
+[Guide: Developing an App](#!/guide/how_to_develop_app)
 
 [Guide: Developing a Plugin](#!/guide/how_to_develop_plugin)
-
-[Guide: Developing an App](#!/guide/how_to_develop_app)
 
 ### Echo Loader - Simplified dependency loading to reduce script conflicts and redundancies
 

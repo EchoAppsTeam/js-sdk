@@ -89,6 +89,9 @@ plugin.events = {
 	}
 };
 
+/**
+ * @echo_template
+ */
 plugin.templates.form =
 	'<div class="{plugin.class:replyForm}">' +
 		'<div class="{plugin.class:submitForm}"></div>' +

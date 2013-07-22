@@ -47,33 +47,6 @@ exports.init = function(grunt) {
 		});
 	};
 
-	exports.checkVersions = function(versions, done) {
-		var self = this;
-		var failed = false;
-		this.exec("grunt --version | awk '{ print $2; }'", function(version) {
-			version = _.trim(version);
-			if (version < versions.grunt) {
-				failed = true;
-				grunt.log.writeln("grunt version is " + version.red + " but must be " + versions.grunt.green + ". Update it by running command `" + ("sudo npm install -g grunt@" + versions.grunt).yellow + "`.");
-			} else {
-				grunt.log.ok();
-			}
-			self.exec("jsduck --version | awk '{ print $2; }'", function(version) {
-				version = _.trim(version);
-				if (!version) {
-					failed = true;
-					grunt.log.writeln("jsduck is not installed. Install it by running command `" + ("sudo gem install jsduck -v " + versions.jsduck).yellow + "`.").cyan;
-				} else if (version < versions.jsduck) {
-					failed = true;
-					grunt.log.writeln("jsduck version is " + version.red + " but must be " + versions.jsduck.green + ". Update it by running command `" + ("gem install jsduck -v " + versions.jsduck).yellow + "`.").cyan;
-				} else {
-					grunt.log.ok();
-				}
-				done(!failed);
-			});
-		});
-	};
-
 	if (!initialized) {
 		initialized = true;
 

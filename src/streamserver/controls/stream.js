@@ -435,6 +435,9 @@ stream.events = {
 	}
 };
 
+/**
+ * @echo_template
+ */
 stream.templates.main =
 	'<div class="{class:container} echo-primaryFont echo-primaryBackgroundColor">' +
 		'<div class="{class:header}">'+
@@ -748,9 +751,6 @@ stream.methods._onDataReceive = function(data, type, callback) {
 	/**
 	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
 	 * Triggered when new data is received.
-	 *
-	 * @param {String} topic
-	 * Name of the event to subscribe (ex: "Echo.StreamServer.Controls.Stream")
 	 *
 	 * @param {Object} data
 	 * Object which is returned by the search API endpoint
@@ -1940,7 +1940,11 @@ item.labels = {
 	"re": "Re"
 };
 
+
 item.templates.metadata = {
+	/**
+	 * @echo_template
+	 */
 	"userID":
 		'<div class="{class:metadata-userID}">' +
 			'<span class="{class:metadata-title} {class:metadata-icon}">' +
@@ -1948,6 +1952,9 @@ item.templates.metadata = {
 			'</span>' +
 			'<span class="{class:metadata-value}">{data:actor.id}</span>' +
 		'</div>',
+	/**
+	 * @echo_template
+	 */
 	"userIP":
 		'<div class="{class:metadata-userIP}">' +
 			'<span class="{class:metadata-title} {class:metadata-icon}">' +
@@ -1957,8 +1964,11 @@ item.templates.metadata = {
 		'</div>'
 };
 
-item.methods.template = function() {
-	return '<div class="{class:content}">' +
+/**
+ * @echo_template
+ */
+item.templates.mainHeader =
+	'<div class="{class:content}">' +
 		'<div class="{class:container}">' +
 			'<div class="{class:avatar-wrapper}">' +
 				'<div class="{class:avatar}"></div>' +
@@ -1996,19 +2006,40 @@ item.methods.template = function() {
 			'</div>' +
 			'<div class="echo-clear"></div>' +
 			'<div class="{class:childrenMarker}"></div>' +
-		'</div>' +
-		(this.config.get("parent.children.sortOrder") === "chronological"
-			? '<div class="{class:children}"></div>' +
-			'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
-			'</div>'
-			: '<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
-			'</div>' +
-			'<div class="{class:children}"></div>'
-		) +
+		'</div>';
+
+/**
+ * @echo_template
+ */
+item.templates.mainFooter =
 		'<div class="{class:childrenByCurrentActorLive}"></div>' +
 	'</div>';
+
+/**
+ * @echo_template
+ */
+item.templates.childrenTop =
+	'<div class="{class:children}"></div>' +
+	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
+		'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
+	'</div>';
+
+/**
+ * @echo_template
+ */
+item.templates.childrenBottom =
+	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
+		'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
+	'</div>' +
+	'<div class="{class:children}"></div>';
+
+item.methods.template = function() {
+	this.templates.mainHeader +
+	(this.config.get("parent.children.sortOrder") === "chronological"
+		? this.templates.childrenTop
+		: this.templates.childrenBottom
+	) +
+	this.templates.mainFooter
 };
 
 /**

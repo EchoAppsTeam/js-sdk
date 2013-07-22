@@ -6,7 +6,7 @@ In Echo SDK we use templates in different subsystems a lot. The goal of this gui
 
 ## Placeholder structure
 
-Here is a quick example of the template (code is taken from Echo Counter control):
+Here is a quick example of the template (code is taken from Echo Counter app):
 
 	counter.templates.main = "<span>{data:count}</span>";
 
@@ -51,14 +51,14 @@ As a result, the `compiled` variable will have the following value:
 	<div>3</div>
 
 
-## Placeholders usage in Echo.Control
+## Placeholders usage in Echo.App
 
-While building your own control you can use the Echo.Control.substitute function available inside the control methods. This method utilizes the Echo.Utils.substitute function with a few Echo.Control-specific placeholders (or instructions).
+While building your own app you can use the Echo.App.substitute function available inside the app methods. This method utilizes the Echo.Utils.substitute function with a few Echo.App-specific placeholders (or instructions).
 
-The list of the placeholders supported inside the control functions can be found below. In examples below we assume that we operate inside the Echo.StreamServer.Controls.Stream.Item class. Here is the list:
+The list of the placeholders supported inside the app functions can be found below. In examples below we assume that we operate inside the Echo.StreamServer.Controls.Stream.Item class. Here is the list:
 
 - `{class:value}`
-  The placeholder will be replaced with the CSS class with the CSS prefix specific for the current control (based on the control name).
+  The placeholder will be replaced with the CSS class with the CSS prefix specific for the current app (based on the app name).
 
   For example, the following part of the template:
 
@@ -72,7 +72,7 @@ The list of the placeholders supported inside the control functions can be found
 
 
 - `{config:value}`
-  This placeholder is used to access the config of the given control. You can access the config field at any nested level using the "." to move to the next level. In the example below:
+  This placeholder is used to access the config of the given app. You can access the config field at any nested level using the "." to move to the next level. In the example below:
 
   		{
   			// ...
@@ -89,7 +89,7 @@ The list of the placeholders supported inside the control functions can be found
   		http://cdn.echoenabled.com/sdk/v3/gui.pack.js
 
 - `{data:value}`
-  The placeholder can be used to access the "data" attribute of a given control. The {data:...} placeholder also allows accessing the nested properties using the "." char to split the levels. For example, the following template:
+  The placeholder can be used to access the "data" attribute of a given app. The {data:...} placeholder also allows accessing the nested properties using the "." char to split the levels. For example, the following template:
   		<span class="{class:metadata-value}">{data:actor.id}</span>
 
   will be converted to:
@@ -97,7 +97,7 @@ The list of the placeholders supported inside the control functions can be found
   		<span class="echo-streamserver-controls-stream-item-metadata-value">http://twitter.com/user</span>
 
 - `{label:value}`
-  The placeholder is used to access the labels defined for the given control. Example template string:
+  The placeholder is used to access the labels defined for the given app. Example template string:
 
   		{label:userID} http://example.com/some-id
 
@@ -106,7 +106,7 @@ The list of the placeholders supported inside the control functions can be found
   		User ID: http://example.com/some-id
 
 - `{self:value}`
-  The placeholder is used to access the properties of a given control instance. Accessing the properties for the nesting level values is also supported (using "." char).
+  The placeholder is used to access the properties of a given app instance. Accessing the properties for the nesting level values is also supported (using "." char).
 
   For example the following string:
 
@@ -116,7 +116,7 @@ The list of the placeholders supported inside the control functions can be found
 
   		<div>0</div>
 
-You can use the placeholders described above in app/control/plugin templates, CSS code (defined in the `css` field in the manifest) and inside the dependency URLs (defined within the `dependencies` array in the manifest). More examples can be found in the [How to develop a Control](#!/guide/how_to_develop_control) guide.
+You can use the placeholders described above in an app and plugin templates, CSS code (defined in the `css` field in the manifest) and inside the dependency URLs (defined within the `dependencies` array in the manifest). More examples can be found in the [How to develop an App](#!/guide/how_to_develop_app) guide.
 
 ## Placeholders usage in Echo.Plugin
 
@@ -128,7 +128,7 @@ Echo.Plugin class also contains specific method (Echo.Plugin.substitute) to deal
 - `{plugin.label:value}`
 - `{plugin.self:value}`
 
-The placeholders have the same semantics as the placeholders defined for Echo.Control. Echo.Control-specific placeholders are also available when you work with the templates inside the plugin (these placeholders will access the given control properties).
+The placeholders have the same semantics as the placeholders defined for Echo.App. Echo.App-specific placeholders are also available when you work with the templates inside the plugin (these placeholders will access the given app properties).
 
 
 More examples of the placeholders can be found in our [documentation](#!/guide/how_to_develop_plugin) and in the source code of the existing plugins.

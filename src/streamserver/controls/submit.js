@@ -303,6 +303,9 @@ submit.labels = {
 	"yourWebsiteOptional": "Your website (optional)"
 };
 
+/**
+ * @echo_template
+ */
 submit.templates.main =
 	'<div class="{class:container}">' +
 		'<div class="{class:header}">' +

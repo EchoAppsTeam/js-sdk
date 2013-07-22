@@ -84,7 +84,7 @@ if (Echo.GUI.Modal) return;
  * Custom class name which should be added to the modal dialog container.
  *
  * @cfg {String} [href]
- * URL of the standalone page to be displayed inside the modal (loaded via \<iframe>).
+ * URL of the standalone page to be displayed inside the modal (loaded via &lt;iframe>).
  *
  * @cfg {Function} [onShow]
  * Callback function to be executed when the modal is opened.

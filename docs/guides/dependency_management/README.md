@@ -6,7 +6,7 @@ Modern browsers optimize their work with web resources in the many different way
 
 As a result developer can design and build their application architecture better by dividing it into several modules without caring much that a big number of files will affect application performance or responsiveness. It was [shown](http://blog.getify.com/labjs-why-not-just-concat/) that parallel downloading of small files leads to better performance comparing with downloading of a single big concatenated file.
 
-Usually Javascript files downloaded via \<script> tag block page rendering and parsing of other code. This mode is named synchronous loading. Asynchronous loading doesn’t block page activity which is obviously much better. Figures 1 and 2 below illustrate this difference between modes.
+Usually Javascript files downloaded via &lt;script> tag block page rendering and parsing of other code. This mode is named synchronous loading. Asynchronous loading doesn’t block page activity which is obviously much better. Figures 1 and 2 below illustrate this difference between modes.
 
 *Figure 1. Synchronous scripts loading*
 
@@ -30,13 +30,13 @@ While developing an application (see the [“how to guide”](#!/guide/how_to_de
 
 	Comments.dependencies = [{
 		"loaded": function() {
-			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
-				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
+			return Echo.App.isDefined("Echo.StreamServer.Controls.Submit") &&
+				Echo.App.isDefined("Echo.StreamServer.Controls.Stream");
 		},
 		"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 	}];
 
-This code describes a single dependency which will be loaded only if there are no Stream and Submit Controls on the page already. More details on what happens in this example can be found [here](#!/guide/how_to_develop_app-section-8).
+This code describes a single dependency which will be loaded only if there are no Stream and Submit Apps on the page already. More details on what happens in this example can be found [here](#!/guide/how_to_develop_app-section-8).
 
 ## Specifying dependencies for a Plugin
 

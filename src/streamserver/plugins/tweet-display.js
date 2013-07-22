@@ -186,7 +186,13 @@ plugin.events = {
 };
 
 plugin.templates = {
+	/**
+	 * @echo_template
+	 */
 	"username": '<div class="{plugin.class:tweetUserName}"></div>',
+	/**
+	 * @echo_template
+	 */
 	"date": '<div class="{plugin.class:tweetDate} echo-secondaryFont"></div>'
 };
 

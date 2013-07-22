@@ -72,6 +72,9 @@ plugin.labels = {
 	"unlimited": "{typed} characters"
 };
 
+/**
+ * @echo_template
+ */
 plugin.templates.counter =
 	 '<div class="{plugin.class:counterLabel} echo-primaryFont echo-primaryColor"></div>';
 

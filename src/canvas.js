@@ -75,6 +75,11 @@ canvas.init = function() {
 	// define initialized state for the canvas
 	// to prevent multiple initialization of the same canvas
 	target.data("echo-canvas-initialized", true);
+
+	// apply our canvas id as a CSS class if we aren't manually configured
+	if (this.config.get("id")) {
+		target.addClass(this.get("cssPrefix") + this.config.get("id").replace("/", "-"));
+	}
 	this._loadAppResources(parent);
 };
 
@@ -84,6 +89,7 @@ canvas.config = {
 	 * Unique ID of the Canvas, used by the Echo.Canvas instance
 	 * to retrieve the data from the Canvases data storage.
 	 */
+	"id": "",
 
 	/**
 	 * @cfg {Object} [data]
@@ -119,10 +125,21 @@ canvas.config = {
 	"overrides": {},
 
 	/**
-	 * @ignore
+	 * @cfg {String} [mode]
+	 * This parameter specifies the mode in which Canvas works.
+	 * There are two possible values for this parameter:
+	 *
+	 * + "dev" - in this case the Canvas works with the development configuration storage
+	 * + "prod" - in this case the Canvas works with the production configuration storage
+	 *
+	 * More information about defference between production and development configuration
+	 * storages can be found in the ["How to deploy an App using a Canvas guide"](#!/guide/how_to_deploy_an_app_using_a_canvas)
+	 *
+	 * The value of this parameter can be overridden by specifying the "data-canvas-mode"
+	 * target DOM element attribute.
+	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
-	"storageURL": Echo.Loader.config.storageURL  // no docs, not supposed
-						     // to be changed by the publishers
+	"mode": "dev"
 };
 
 canvas.vars = {
@@ -160,9 +177,15 @@ canvas.labels = {
 	"error_invalid_canvas_config": "Canvas with invalid configuration found"
 };
 
+/**
+ * @echo_template
+ */
 canvas.templates.main =
 	'<div class="{class:container}"></div>';
 
+/**
+ * @echo_template
+ */
 canvas.templates.app =
 	'<div class="{class:appContainer}">' +
 		'<div class="{class:appHeader}">{data:caption}</div>' +
@@ -186,6 +209,7 @@ canvas.renderers.container = function(element) {
 };
 
 canvas.methods._initApp = function(app, element, id) {
+	var self = this;
 	var Application = Echo.Utils.getComponent(app.component);
 	if (!Application) {
 		this._error({
@@ -195,12 +219,21 @@ canvas.methods._initApp = function(app, element, id) {
 		return;
 	}
 
+	app.id = app.id || id;  // define app position in array as id if not specified
+	app.config = app.config || {};
+	app.config.user = this.config.get("user");
+	app.config.canvasId = this.config.get('id');
+
 	var view = this.view.fork({
 		"renderer": null,
 		"renderers": {
 			"appHeader": function(element) {
 				// show|hide app header depending on the caption existance
 				return element[app.caption ? "show" : "hide"]();
+			},
+			"appBody": function(element) {
+				var className = self.get("cssPrefix") + "appId-" + app.id;
+				return element.addClass(className);
 			}
 		}
 	});
@@ -209,9 +242,6 @@ canvas.methods._initApp = function(app, element, id) {
 		"template": this.templates.app
 	}));
 
-	app.id = app.id || id;  // define app position in array as id if not specified
-	app.config = app.config || {};
-	app.config.user = this.config.get("user");
 	app.config.target = view.get("appBody");
 
 	var overrides = this.config.get("overrides")[app.id];
@@ -230,9 +260,14 @@ canvas.methods._isManuallyConfigured = function() {
 };
 
 canvas.methods._getAppScriptURL = function(config) {
-	return config.scripts && config.scripts.dev && config.scripts.prod
-		? config.scripts[Echo.Loader.isDebug() ? "dev" : "prod"]
-		: config.script;
+	if (!config.scripts) return config.script;
+	var isSecure, script = {
+		"dev": config.scripts.dev || config.scripts.prod,
+		"prod": config.scripts.prod || config.scripts.dev
+	}[Echo.Loader.isDebug() ? "dev" : "prod"];
+	if (typeof script === "string") return script;
+	isSecure = /^https/.test(window.location.protocol);
+	return script[isSecure ? "secure" : "regular"];
 };
 
 canvas.methods._loadAppResources = function(callback) {
@@ -321,7 +356,7 @@ initializers.fetchConfig = function(callback) {
 	var isManual = this._isManuallyConfigured();
 
 	// extending Canvas config with the "id" and "appkey" defined in the target
-	var overrides = this._getOverrides(target, ["id", "appkey", "useSecureAPI"]);
+	var overrides = this._getOverrides(target, ["id", "appkey", "useSecureAPI", "mode"]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
@@ -344,10 +379,10 @@ initializers.fetchConfig = function(callback) {
 		return;
 	}
 	(new Echo.API.Request({
-		"apiBaseURL": this.config.get("storageURL"),
+		"apiBaseURL": Echo.Loader.config.storageURL[this.config.get("mode")],
 		"secure": this.config.get("useSecureAPI"),
 		"endpoint": this.config.get("id").split("#")[0],
-		"data": { "_": Math.random() },
+		"data": this.config.get("mode") === "dev" ? {"_": Math.random()} : {},
 		"onData": function(config) {
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));

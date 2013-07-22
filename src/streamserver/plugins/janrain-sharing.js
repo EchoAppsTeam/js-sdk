@@ -184,6 +184,9 @@ plugin.labels = {
 	"sharePrompt": "Share your comment:"
 };
 
+/**
+ * @echo_template
+ */
 plugin.templates.share =
 	'<div class="echo-secondaryFont {plugin.class:shareContainer}">' +
 		'<input type="checkbox" class="{plugin.class:shareCheckbox}">' +

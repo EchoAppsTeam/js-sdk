@@ -1,6 +1,6 @@
 [
 	{
-		"title": "Control Examples",
+		"title": "App Examples",
 		"items": [
 			{
 				"name": "auth",
@@ -45,28 +45,28 @@
 			{
 				"name": "reply-plugin",
 				"title": "Reply",
-				"description": "The plugin adds extra “Reply” button to each item in the Stream control. Integrates Submit control and provides the ability to reply to the posted items.",
+				"description": "The plugin adds extra “Reply” button to each item in the Stream app. Integrates Submit app and provides the ability to reply to the posted items.",
 				"url": "reply-plugin.html",
 				"icon": "../docs/resources/images/default-guide.png"
 			},
 			{
 				"name": "like-plugin",
 				"title": "Like",
-				"description": "The plugin adds extra Like/Unlike controls to each item in the Stream control for authenticated users.",
+				"description": "The plugin adds extra Like/Unlike buttons to each item in the Stream app for authenticated users.",
 				"url": "like-plugin.html",
 				"icon": "../docs/resources/images/default-guide.png"
 			},
 			{
 				"name": "community-flag-plugin",
 				"title": "CommunityFlag",
-				"description": "The plugin adds extra Flag/Unflag buttons to each item in the Echo Stream control for authenticated users.",
+				"description": "The plugin adds extra Flag/Unflag buttons to each item in the Echo Stream app for authenticated users.",
 				"url": "community-flag-plugin.html",
 				"icon": "../docs/resources/images/default-guide.png"
 			},
 			{
 				"name": "text-counter-plugin",
 				"title": "TextCounter",
-				"description": "The plugin adds the character counter under the text field in the Submit control. Allows to set the maximum length of the text to enter.",
+				"description": "The plugin adds the character counter under the text field in the Submit app. Allows to set the maximum length of the text to enter.",
 				"url": "text-counter-plugin.html",
 				"icon": "../docs/resources/images/default-guide.png"
 			},
@@ -101,7 +101,7 @@
 		]
 	},
 	{
-		"title": "App Examples",
+		"title": "Demo App Examples",
 		"items": [
 			{
 				"name": "comments-sample",

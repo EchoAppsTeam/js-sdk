@@ -164,6 +164,9 @@ pile.labels = {
 	"more": "more"
 };
 
+/**
+ * @echo_template
+ */
 pile.templates.main =
 	'<span class="{class:container}">' +
 		'<span class="{class:actors}"></span>' +
@@ -567,6 +570,9 @@ item.labels = {
 	"you": "You"
 };
 
+/**
+ * @echo_template
+ */
 item.templates.main =
 	'<span class="{class:container}">' +
 		'<span class="{class:avatar}"></span>' +

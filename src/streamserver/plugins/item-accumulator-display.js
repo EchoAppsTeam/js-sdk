@@ -29,7 +29,7 @@ var plugin = Echo.Plugin.manifest("ItemAccumulatorDisplay", "Echo.StreamServer.C
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	this.extendTemplate("insertBefore", "modeSwitch", plugin.template);
+	this.extendTemplate("insertBefore", "modeSwitch", plugin.templates.main);
 };
 
 plugin.config = {
@@ -58,7 +58,10 @@ plugin.config = {
 	"accumulator": "repliesCount"
 };
 
-plugin.template = '<div class="{plugin.class:accumulatorContainer}"></div>';
+/**
+ * @echo_template
+ */
+plugin.templates.main = '<div class="{plugin.class:accumulatorContainer}"></div>';
 
 /**
  * @echo_renderer
