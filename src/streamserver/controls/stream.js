@@ -353,7 +353,7 @@ stream.vars = {
 	"lastRequest": null,
 	"request": null,
 	"moreRequest": null,
-	"itemsRenderingComplete": false
+	"itemsRenderingComplete": true
 };
 
 stream.labels = {
