@@ -228,18 +228,40 @@ Echo.Loader.initEnvironment = function(callback) {
  * specific application within the canvas.
  *
  * @param {String} canvasID
- * Canvas ID. Canvas ID may consists of two part are separated by "#".
- * An example Canvas with CommentSample app looks like that:
- *     <div class="echo-canvas" data-canvas-id="jskit/comments-sample" data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
- * This example has the Canvas ID is consisted of one required part.
- * If you would like to place multiple installations of the same Canvas
- * on a page and you will need to override few configs of Canvas, simplest way will be
- * to add second part to Canvas ID.
+ * Canvas ID. Canvas ID may consist of two parts separated by "#":
+ * the main mandatory Canvas identifier (located before the "#" char)
+ * and the optional unique identifier of the Canvas on a page
+ * (located after the "#" char). The unique page identifier (after the "#")
+ * is used in case you have multiple Canavses with the same primary ID on a page.
+ * In this case in order to have an ability to perform local overrides
+ * using the Echo.Loader.override function, you specify the unique id
+ * after the "#" char and use the full ID to perform the override.
+ * Here is an example of the Canvas ID without the unique part:
  *
- * Example:
- *     <div class="echo-canvas" data-canvas-id="jskit/comments-sample#left-side" data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
- *     <div class="echo-canvas" data-canvas-id="jskit/comments-sample#bottom-side" data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
- * You will get different Canvas ID to will define different overrides of configs.
+ *     <div class="echo-canvas"
+ *         data-canvas-id="jskit/comments-sample"
+ *         data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ *
+ * If you'd like to put multiple instances of the same Canvas on a page
+ * and you want to have an ability to perform local overrides using the
+ * Echo.Loader.override function, the Canvas ID should contain the unique part,
+ * for example:
+ *
+ *     <div class="echo-canvas"
+ *         data-canvas-id="jskit/comments-sample#left-side"
+ *         data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ *     <div class="echo-canvas"
+ *         data-canvas-id="jskit/comments-sample#right-side"
+ *         data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ *
+ * Where the "#left-side" and "#right-side" are the unique parts for
+ * the Canvases within this page. Now you can override the Canvas app
+ * settings using the following constructions:
+ *
+ *     Echo.Loader.override("jskit/comments-sample#left-side",
+ *         "AppInstanceID", { ... });
+ *     Echo.Loader.override("jskit/comments-sample#right-side",
+ *         "AppInstanceID", { ... });
  *
  * @param {String} appID
  * Application ID inside the canvas.

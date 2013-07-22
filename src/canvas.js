@@ -381,6 +381,9 @@ initializers.fetchConfig = function(callback) {
 	(new Echo.API.Request({
 		"apiBaseURL": Echo.Loader.config.storageURL[this.config.get("mode")],
 		"secure": this.config.get("useSecureAPI"),
+		// taking care of the Canvas unique identifier on the page,
+		// specified as "#XXX" in the Canvas ID. We don't need to send this
+		// unique page identifier, we send only the primary Canvas ID.
 		"endpoint": this.config.get("id").split("#")[0],
 		"data": this.config.get("mode") === "dev" ? {"_": Math.random()} : {},
 		"onData": function(config) {
