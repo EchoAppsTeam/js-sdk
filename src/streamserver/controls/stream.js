@@ -2034,7 +2034,7 @@ item.templates.childrenBottom =
 	'<div class="{class:children}"></div>';
 
 item.methods.template = function() {
-	this.templates.mainHeader +
+	return this.templates.mainHeader +
 	(this.config.get("parent.children.sortOrder") === "chronological"
 		? this.templates.childrenTop
 		: this.templates.childrenBottom
