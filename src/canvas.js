@@ -58,6 +58,7 @@ if (Echo.Control.isDefined(canvas)) return;
 /** @hide @echo_label error_unknown */
 
 canvas.init = function() {
+	var canvasId, cssClass;
 	var self = this, target = this.config.get("target");
 	// parent init function takes care about init finalization (rendering
 	// and the "onReady" event firing)
@@ -77,8 +78,19 @@ canvas.init = function() {
 	target.data("echo-canvas-initialized", true);
 
 	// apply our canvas id as a CSS class if we aren't manually configured
-	if (this.config.get("id")) {
-		target.addClass(this.get("cssPrefix") + this.config.get("id").replace("/", "-"));
+	canvasId = this.config.get("id");
+	if (canvasId) {
+		cssClass = function(prefix) {
+			var re = /[^a-z0-9]/ig;
+			var parts = canvasId.split("#");
+			var processing = function(s) { return prefix + s.replace(re, "-"); };
+			return parts[1]
+				// adding a primary canvas ID and unique page identifier
+				// as a CSS class if provided
+				? processing(parts[0]) + " " + processing(canvasId)
+				: processing(parts[0]);
+		}(this.get("cssPrefix"));
+		target.addClass(cssClass);
 	}
 	this._loadAppResources(parent);
 };
