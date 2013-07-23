@@ -82,8 +82,8 @@ canvas.init = function() {
 		ids = this._getIds();
 		// adding a primary canvas ID and unique page identifier
 		// as a CSS class if provided
-		cssClass = Echo.Utils.foldl("", ["main", "unique"], function(type, acc) {
-			type = "normalized" + Echo.Utils.capitalize(type);
+		cssClass = Echo.Utils.foldl("", ["Main", "Unique"], function(type, acc) {
+			type = "normalized" + type;
 			return (acc += ids[type] ? self.get("cssPrefix") + ids[type] + " " : "");
 		});
 		target.addClass(cssClass);
