@@ -404,7 +404,7 @@ initializers.fetchConfig = function(callback) {
 		// taking care of the Canvas unique identifier on the page,
 		// specified as "#XXX" in the Canvas ID. We don't need to send this
 		// unique page identifier, we send only the primary Canvas ID.
-		"endpoint": "endpoint": this._getIds().main,
+		"endpoint": this._getIds().main,
 		"data": this.config.get("mode") === "dev" ? {"_": Math.random()} : {},
 		"onData": function(config) {
 			if (!config || !config.apps || !config.apps.length) {
