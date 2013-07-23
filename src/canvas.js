@@ -79,11 +79,10 @@ canvas.init = function() {
 
 	// apply our canvas id as a CSS class if we aren't manually configured
 	if (this.config.get("id")) {
-		ids = this._getIds();
+		ids = this._getIds().normalized;
 		// adding a primary canvas ID and unique page identifier
 		// as a CSS class if provided
-		cssClass = Echo.Utils.foldl("", ["Main", "Unique"], function(type, acc) {
-			type = "normalized" + type;
+		cssClass = Echo.Utils.foldl("", ["main", "unique"], function(type, acc) {
 			return (acc += ids[type] ? self.get("cssPrefix") + ids[type] + " " : "");
 		});
 		target.addClass(cssClass);
@@ -343,13 +342,15 @@ canvas.methods._error = function(args) {
 
 canvas.methods._getIds = function() {
 	var id = this.config.get("id");
-	var parts = this.config.get("id").split("#");
+	var parts = id.split("#");
 	var normalize = function(s) { return s.replace(/[^a-z\d]/ig, "-"); };
 	return {
 		"unique": id,
 		"main": parts[0],
-		"normalizedUnique": normalize(id),
-		"normalizedMain": normalize(parts[0])
+		"normalized": {
+			"unique": normalize(id),
+			"main": normalize(parts[0])
+		}
 	};
 };
 
