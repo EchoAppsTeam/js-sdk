@@ -1,4 +1,3 @@
-//JS@ v1 MD5(Echo/Backplane.js) = 42a01253ae59800d3f0e9435a9a9e0eb
 window.Backplane = window.Backplane || {
 	"channelByBus": {},
 	"config": {},
