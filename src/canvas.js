@@ -58,7 +58,7 @@ if (Echo.Control.isDefined(canvas)) return;
 /** @hide @echo_label error_unknown */
 
 canvas.init = function() {
-	var canvasId, cssClass;
+	var ids, cssClass;
 	var self = this, target = this.config.get("target");
 	// parent init function takes care about init finalization (rendering
 	// and the "onReady" event firing)
@@ -78,18 +78,14 @@ canvas.init = function() {
 	target.data("echo-canvas-initialized", true);
 
 	// apply our canvas id as a CSS class if we aren't manually configured
-	canvasId = this.config.get("id");
-	if (canvasId) {
-		cssClass = function(prefix) {
-			var re = /[^a-z0-9]/ig;
-			var parts = canvasId.split("#");
-			var processing = function(s) { return prefix + s.replace(re, "-"); };
-			return parts[1]
-				// adding a primary canvas ID and unique page identifier
-				// as a CSS class if provided
-				? processing(parts[0]) + " " + processing(canvasId)
-				: processing(parts[0]);
-		}(this.get("cssPrefix"));
+	if (this.config.get("id")) {
+		ids = this._getIds();
+		// adding a primary canvas ID and unique page identifier
+		// as a CSS class if provided
+		cssClass = Echo.Utils.foldl("", ["main", "unique"], function(type, acc) {
+			type = "normalized" + Echo.Utils.capitalize(type);
+			return (acc += ids[type] ? self.get("cssPrefix") + ids[type] + " " : "");
+		});
 		target.addClass(cssClass);
 	}
 	this._loadAppResources(parent);
@@ -345,6 +341,18 @@ canvas.methods._error = function(args) {
 	}
 };
 
+canvas.methods._getIds = function() {
+	var id = this.config.get("id");
+	var parts = this.config.get("id").split("#");
+	var normalize = function(s) { return s.replace(/[^a-z\d]/ig, "-"); };
+	return {
+		"unique": id,
+		"main": parts[0],
+		"normalizedUnique": normalize(id),
+		"normalizedMain": normalize(parts[0])
+	};
+};
+
 Echo.Control.create(canvas);
 
 // Echo.Canvas class initialization logic requires additional initializers.
@@ -396,7 +404,7 @@ initializers.fetchConfig = function(callback) {
 		// taking care of the Canvas unique identifier on the page,
 		// specified as "#XXX" in the Canvas ID. We don't need to send this
 		// unique page identifier, we send only the primary Canvas ID.
-		"endpoint": this.config.get("id").split("#")[0],
+		"endpoint": "endpoint": this._getIds().main,
 		"data": this.config.get("mode") === "dev" ? {"_": Math.random()} : {},
 		"onData": function(config) {
 			if (!config || !config.apps || !config.apps.length) {
