@@ -13,8 +13,10 @@
 		// create "test" function which will be called within the parent window
 		window.test = function(callback) {
 			var script = $("<script>");
-			$(document.head).prepend(script);
-			$("<script>").on("load error", function( evt ) {
+			var head = $("head");
+			$(head).prepend(script);
+			$("<script>").on("load readystatechange", function() {
+					$(this).off("load readystatechange");
 					script.remove();
 					Echo.Loader.download([{
 						"url": window.parent.Echo.Tests.baseURL +
@@ -24,7 +26,10 @@
 							"Check if removing of firstNode doesn't cause side effects");
 						callback();
 					});
-			}).appendTo(document.head).attr("src", "http://cdn.echoenabled.com/sdk/v3/loader.js");
+			}).appendTo(head).attr({
+				"type": "text/javascript",
+				"src": "http://cdn.echoenabled.com/sdk/v3/loader.js"
+			});
 		};
 	</script>
 </body>
