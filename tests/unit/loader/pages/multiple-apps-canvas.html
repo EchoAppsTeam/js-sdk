@@ -5,7 +5,7 @@
 </head>
 <body>
 
-	<div class="echo-canvas" data-canvas-id="test.canvas.003" data-appkey="test.echoenabled.com"></div>
+	<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-003" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>
 
 	<script>
 		// link Echo & QUnit objects from the parent window
@@ -20,7 +20,6 @@
 
 					// destroy counter instance
 					this.destroy();
-
 					expecting--;
 					if (!expecting) {
 						QUnit.ok(true, "Checking if an expecting amount of Counter application were initialized (case: multiple-apps-canvas)");
@@ -29,7 +28,7 @@
 				}});
 			};
 			for (var i = 1; i <= expecting; i++) {
-				waitForCompletion("test.canvas.003", "test.counter." + i);
+				waitForCompletion("js-sdk-tests/test-canvas-003", "test.counter." + i);
 			}
 			Echo.Loader.init({"target": document.body});
 		};

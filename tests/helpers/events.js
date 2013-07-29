@@ -64,13 +64,7 @@ _stream.items = {
 
 var _submit = {};
 _submit.onRerender = {
-	"data": {
-		"object": {
-			"content": "string",
-			"tags": "array",
-			"markers": "array"
-		}
-	},
+	"data": {},
 	"target": "object",
 	"targetURL": "string"
 };
@@ -132,6 +126,7 @@ Echo.Tests.Events.contracts = {
 
 	"Echo.StreamServer.Controls.Stream.onRender": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onRerender": _stream.render,
+	"Echo.StreamServer.Controls.Stream.onItemsRenderingComplete": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onMoreButtonPress": _stream.render,
 	"Echo.StreamServer.Controls.Stream.Item.onRender": _stream.onItemReceive,
 	"Echo.StreamServer.Controls.Stream.Item.onReady": _stream.render,
@@ -255,13 +250,10 @@ Echo.Tests.Events.contracts = {
 			"content": "array",
 			"appkey": "string",
 			"sessionID": "string"
-//			"avatar": "string",
-//			"markers": "string",
-//			"name": "string",
-//			"tags": "string",
-//			"target": "string",
-//			"url": "string",
-//			"verb": "string"
+		},
+		"request": {
+			"state": "object",
+			"response": "object"
 		}
 	},
 	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit": _plugins.Edit.onEdit,
@@ -276,8 +268,8 @@ Echo.Tests.Events.contracts = {
 	},
 	"Echo.Control.onDestroy": {
 		"self": "boolean",
-		"producer": {
-			"name": "string"
+		"producer": function(value) {
+			return value instanceof Echo.Control;
 		}
 	},
 	"Echo.StreamServer.Controls.Submit.onReady": {
@@ -298,15 +290,23 @@ Echo.Tests.Events.contracts = {
 	},
 	"Echo.StreamServer.Controls.Submit.onPostError": {
 		"postData": {
-			"result": "string",
-			"errorCode": "string",
-			"errorMessage": "string"
+			"content": "array",
+			"appkey": "string",
+			"sessionID": "string"
+		},
+		"request": {
+			"state": "object",
+			"response": {
+				"result": "string",
+				"errorCode": "string",
+				"errorMessage": "string"
+			}
 		},
 		"data": {},
 		"target": "object",
 		"targetURL": "string"
 	},
-	"Echo.Loader.onError": {
+	"Echo.Canvas.onError": {
 		"code": "string",
 		"message": "string"
 	},
@@ -326,6 +326,10 @@ Echo.Tests.Events.contracts = {
 	"Echo.IdentityServer.Controls.Auth.onRender": {},
 	"Echo.IdentityServer.Controls.Auth.onReady": {},
 	"Echo.IdentityServer.Controls.Auth.onRerender": {},
-	"Echo.IdentityServer.Controls.Auth.onRefresh": {}
+	"Echo.IdentityServer.Controls.Auth.onRefresh": {},
+	"Echo.Canvas.onRender": {},
+	"Echo.Canvas.onReady": {},
+	"Echo.Canvas.onRerender": {},
+	"Echo.Canvas.onRefresh": {}
 };
 })(Echo.jQuery);

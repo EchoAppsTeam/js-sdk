@@ -7,14 +7,21 @@ var $ = jQuery;
  * @class Echo.StreamServer.Controls.Stream
  * Echo Stream control which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">Echo Search API</a>
+ * and displays live updating search results in a standard ‘news feed’ style format.
  *
  * 	var stream = new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("stream"),
  * 		"query": "childrenof:http://example.com/js-sdk",
- * 		"appkey": "test.aboutechoe.com"
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com"
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * Stream constructor initializing Echo.StreamServer.Controls.Stream class
@@ -26,25 +33,94 @@ var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 
 if (Echo.Control.isDefined(stream)) return;
 
+/** @hide @method placeImage */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
+
 stream.init = function() {
+	var self = this;
 	if (!this.checkAppKey()) return;
 
 	this._recalcEffectsTimeouts();
+	this.request = this._getRequestObject({
+		"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
+		"recurring": this.config.get("liveUpdates.enabled"),
+		"onOpen": function(data, options) {
+			if (options.requestType === "initial") {
+				self.showError({}, {
+					"retryIn": 0,
+					"request": self.request
+				});
+			}
+		},
+		"onError": function(data, options) {
+			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+				self.showError(data, $.extend(options, {
+					"request": self.request
+				}));
+			}
+		},
+		"onData": function(data, options) {
+			if (options.requestType === "initial") {
+				self._handleInitialResponse(data);
+			} else {
+				self._handleLiveUpdatesResponse(data);
+			}
+		}
+	});
 
 	// define default stream state based on the config parameters
 	var state = this.config.get("state.layout") === "full"
 		? "paused"
-		: this.config.get("liveUpdates.enabled") ? "live" : "paused"
+		: this.config.get("liveUpdates.enabled") ? "live" : "paused";
 	this.activities.state = state;
 
-	if (this.config.get("data")) {
-		this._handleInitialResponse(this.config.get("data"));
+	var data = this.config.get("data");
+	if (data) {
+		this._handleInitialResponse(data);
+		this.request.send({
+			"skipInitialRequest": true,
+			"data": {
+				"q": this.config.get("query"),
+				"appkey": this.config.get("appkey"),
+				"since": data.nextSince
+			}
+		});
 	} else {
-		this._requestInitialItems();
+		this.request.send();
 	}
 };
 
 stream.config = {
+	/**
+	 * @cfg {String} query
+	 * Specifies the search query to generate the necessary data set.
+	 * It must be constructed according to the
+	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
+	 * method specification.
+	 *
+	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 		"target": document.getElementById("echo-stream"),
+	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
+	 * 		"query" : "childrenof:http://example.com/test/*"
+	 * 	});
+	 */
+	"query": "",
+
 	/**
 	 * @cfg {Object} children
 	 * Specifies the children pagination feature behavior.
@@ -205,12 +281,6 @@ stream.config = {
 	"openLinksInNewWindow": false,
 
 	/**
-	 * @cfg {String} providerIcon
-	 * Specifies the URL to the icon representing data provider.
-	 */
-	"providerIcon": Echo.Loader.getURL("images/favicons/comments.png", false),
-
-	/**
 	 * @cfg {Number} slideTimeout
 	 * Specifies the duration of the sliding animation (in milliseconds)
 	 * when an item comes to a stream as a live update.
@@ -276,7 +346,23 @@ stream.config = {
 	 * @cfg {String} submissionProxyURL
 	 * Location (URL) of the Submission Proxy subsystem.
 	 */
-	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+
+	/**
+	 * @cfg {Object} data
+	 * Specifies predefined items data which should be rendered by the application.
+	 * Stream control works with the data format used by the "search" API endpoint.
+	 * More information about the data format can be found
+	 * <a href="http://wiki.aboutecho.com/API-method-search#ResponseFormat" target="_blank">here</a>.
+	 */
+
+	/**
+	 * @cfg {Boolean} asyncItemsRendering
+	 * This parameter is used to enable Stream root items rendering in async mode during
+	 * the first Stream control initialization and when extra items are received after
+	 * the "More" button click.
+	 */
+	"asyncItemsRendering": false
 };
 
 stream.config.normalizer = {
@@ -305,10 +391,14 @@ stream.vars = {
 		"lastState": "", // live0 | pausedN
 		"animations": 0
 	},
+	"itemParentConfig": undefined,
 	"hasInitialData": false,
 	"items": {},   // items by unique key hash
 	"threads": [], // items tree
-	"lastRequest": undefined
+	"lastRequest": null,
+	"request": null,
+	"moreRequest": null,
+	"itemsRenderingComplete": false
 };
 
 stream.labels = {
@@ -347,6 +437,10 @@ stream.labels = {
 };
 
 stream.events = {
+	"Echo.StreamServer.Controls.Stream.onItemsRenderingComplete": function() {
+		this.view.render({"name": "more"});
+		this._executeNextActivity();
+	},
 	"Echo.StreamServer.Controls.Stream.Item.onAdd": function(topic, data) {
 		var self = this;
 		var item = this.items[data.item.data.unique];
@@ -383,6 +477,9 @@ stream.events = {
 	}
 };
 
+/**
+ * @echo_template
+ */
 stream.templates.main =
 	'<div class="{class:container} echo-primaryFont echo-primaryBackgroundColor">' +
 		'<div class="{class:header}">'+
@@ -521,13 +618,16 @@ stream.renderers.more = function(element) {
 	if (this.isViewComplete || !this.threads.length) {
 		return element.empty().hide();
 	}
+	if (!this.itemsRenderingComplete) {
+		element.hide();
+	} else {
+		element.show();
+	}
 	return element.empty()
 		.append(this.labels.get("more"))
-		.show()
 		.off("click")
 		.one("click", function() {
 			/**
-			 * @event onMoreButtonPress
 			 * @echo_event Echo.StreamServer.Controls.Stream.onMoreButtonPress
 			 * Triggered when the "more" button is pressed.
 			 */
@@ -607,12 +707,9 @@ stream.methods._requestChildrenItems = function(unique) {
 	var self = this;
 	var item = this.items[unique];
 	var target = item.view.get("expandChildren");
-	var request = Echo.StreamServer.API.request({
-		"endpoint": "search",
-		"apiBaseURL": this.config.get("apiBaseURL"),
+	var request = this._getRequestObject({
 		"data": {
-			"q": this._constructChildrenSearchQuery(item),
-			"appkey": this.config.get("appkey")
+			"q": this._constructChildrenSearchQuery(item)
 		},
 		"onOpen": function() {
 			self.showError({}, {
@@ -690,9 +787,7 @@ stream.methods._requestMoreItems = function(element) {
 	var self = this;
 	this.lastRequest = {"initial": false};
 	if (!this.moreRequest) {
-		this.moreRequest = Echo.StreamServer.API.request({
-			"endpoint": "search",
-			"apiBaseURL": this.config.get("apiBaseURL"),
+		this.moreRequest = this._getRequestObject({
 			"onOpen": function() {
 				self.showError({}, {
 					"retryIn": 0,
@@ -734,12 +829,8 @@ stream.methods._onDataReceive = function(data, type, callback) {
 	var self = this;
 	var items = {};
 	/**
-	 * @event onDataReceive
 	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
 	 * Triggered when new data is received.
-	 *
-	 * @param {String} topic
-	 * Name of the event to subscribe (ex: "Echo.StreamServer.Controls.Stream")
 	 *
 	 * @param {Object} data
 	 * Object which is returned by the search API endpoint
@@ -828,7 +919,6 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 
 					if (satisfies || item.get("byCurrentUser")) {
 						/**
-						 * @event onItemReceive
 						 * @echo_event Echo.StreamServer.Controls.Stream.onItemReceive
 						 * Triggered when new item is received.
 						 */
@@ -938,11 +1028,28 @@ stream.methods._getRespectiveAccumulator = function(item, sort) {
 };
 
 stream.methods._appendRootItems = function(items, container) {
+	var self = this;
 	if (!items || !items.length) return;
-	$.map(items, function(item) {
-		container.append(item.config.get("target"));
-		item.render();
-	});
+	this.itemsRenderingComplete = false;
+	(function renderer(index) {
+		index = index || 0;
+		container.append(items[index].config.get("target"));
+		items[index].render();
+		if (items.length > ++index) {
+			if (self.config.get("asyncItemsRendering")) {
+				setTimeout($.proxy(renderer, self, index), 0);
+			} else {
+				renderer(index);
+			}
+		} else {
+			self.itemsRenderingComplete = true;
+			self.events.publish({
+				"topic": "onItemsRenderingComplete",
+				"global": false,
+				"propagation": false
+			});
+		}
+	})();
 };
 
 stream.methods._constructChildrenSearchQuery = function(item) {
@@ -1052,6 +1159,19 @@ stream.methods._handleLiveUpdatesResponse = function(data) {
 	});
 };
 
+stream.methods._getRequestObject = function(overrides) {
+	var config = $.extend(true, {
+		"endpoint": "search",
+		"secure": this.config.get("useSecureAPI"),
+		"apiBaseURL": this.config.get("apiBaseURL"),
+		"data": {
+			"q": this.config.get("query"),
+			"appkey": this.config.get("appkey")
+		}
+	}, overrides);
+	return Echo.StreamServer.API.request(config);
+};
+
 stream.methods._recalcEffectsTimeouts = function() {
 	// recalculating timeouts based on amount of items in activities queue
 	var s = this;
@@ -1101,7 +1221,7 @@ stream.methods._executeNextActivity = function() {
 		acts.state = "paused";
 	}
 
-	if (acts.animations > 0 ||
+	if (acts.animations > 0 || !this.itemsRenderingComplete ||
 			!acts.queue.length ||
 			this.config.get("liveUpdates.enabled") &&
 			acts.state === "paused" &&
@@ -1167,7 +1287,6 @@ stream.methods._spotUpdates.replace = function(item, options) {
 	if (item && item.view.rendered()) {
 		item.view.render({"name": "container", "recursive": true});
 		/**
-		 * @event onRerender
 		 * @member Echo.StreamServer.Controls.Stream.Item
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onRerender
 		 * Triggered when the item is rerendered.
@@ -1489,20 +1608,29 @@ stream.methods._isItemInList = function(item, items) {
 };
 
 stream.methods._initItem = function(entry, isLive, callback) {
-	var parentConfig = this.config.getAsHash();
-	var config = $.extend(true, {}, {
+	// there is no need to create a clone of the parent config every time,
+	// we can do it only once and pass it into all Item constructor calls
+	if (!this.itemParentConfig) {
+		this.itemParentConfig = this.config.getAsHash();
+	}
+	var config = $.extend({
 		"target": $("<div>"),
 		"appkey": this.config.get("appkey"),
-		"parent": parentConfig,
 		"plugins": this.config.get("plugins"),
 		"context": this.config.get("context"),
-		"data": this._normalizeEntry(entry),
+		"useSecureAPI": this.config.get("useSecureAPI"),
 		"user": this.user,
 		"live": isLive,
 		"ready": callback
-	}, parentConfig.item);
-	delete config.parent.item;
-	return new Echo.StreamServer.Controls.Stream.Item(config);
+	}, this.itemParentConfig.item);
+
+	// assign parent config and data outside
+	// of the $.extend call for performance reasons
+	config.parent = this.itemParentConfig;
+	config.data = this._normalizeEntry(entry);
+
+	var init = function() { new Echo.StreamServer.Controls.Stream.Item(config); };
+	this.config.get("asyncItemsRendering") ? setTimeout(init, 0) : init();
 };
 
 stream.methods._updateItem = function(entry) {
@@ -1659,6 +1787,9 @@ var $ = jQuery;
  *
  * @extends Echo.Control
  *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
+ *
  * @constructor
  * Item constructor initializing Echo.StreamServer.Controls.Stream.Item class
  *
@@ -1668,6 +1799,31 @@ var $ = jQuery;
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Control.isDefined(item)) return;
+
+/** @hide @cfg appkey */
+/** @hide @cfg defaultAvatar */
+/** @hide @cfg plugins */
+/** @hide @cfg target */
+/** @hide @cfg cdnBaseURL */
+/** @hide @cfg apiBaseURL */
+/** @hide @cfg useSecureAPI */
+/** @hide @cfg submissionProxyURL */
+/** @hide @method placeImage */
+/** @hide @method dependent */
+/** @hide @echo_label loading */
+/** @hide @echo_label retrying */
+/** @hide @echo_label error_busy */
+/** @hide @echo_label error_timeout */
+/** @hide @echo_label error_waiting */
+/** @hide @echo_label error_view_limit */
+/** @hide @echo_label error_view_update_capacity_exceeded */
+/** @hide @echo_label error_result_too_large */
+/** @hide @echo_label error_wrong_query */
+/** @hide @echo_label error_incorrect_appkey */
+/** @hide @echo_label error_internal_error */
+/** @hide @echo_label error_quota_exceeded */
+/** @hide @echo_label error_incorrect_user_id */
+/** @hide @echo_label error_unknown */
 
 item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get("data.object.published"));
@@ -1683,6 +1839,7 @@ item.config = {
 	 */
 	"aggressiveSanitization": false,
 	"buttonsOrder": undefined,
+
 	/**
 	 * @cfg {Object} contentTransformations
 	 * Specifies the allowed item's content transformations for each content type.
@@ -1692,13 +1849,14 @@ item.config = {
 	 * + smileys - replaces textual smileys with images
 	 * + hashtags - highlights hashtags in text
 	 * + urls - highlights urls represented as plain text
-	 * + newlines - replaces newlines with <br> tags
+	 * + newlines - replaces newlines with \<br> tags
 	 */
 	"contentTransformations": {
 		"text": ["smileys", "hashtags", "urls", "newlines"],
 		"html": ["smileys", "hashtags", "urls", "newlines"],
 		"xhtml": ["smileys", "hashtags", "urls"]
 	},
+
 	/**
 	 * @cfg {String} infoMessages
 	 * Customizes the look and feel of info messages,
@@ -1707,6 +1865,7 @@ item.config = {
 	"infoMessages": {
 		"enabled": false
 	},
+
 	/**
 	 * @cfg {Object} limits
 	 * Defines the limits for different metrics.
@@ -1721,7 +1880,7 @@ item.config = {
 	 * this parameter should be integer and represents the number of lines
 	 * that need to be displayed. Note: the definition of "Line" here is the
 	 * sequence of characters separated by the "End Of Line" character
-	 * ("\n" for plain text or <br> for HTML format).
+	 * ("\n" for plain text or \<br> for HTML format).
 	 *
 	 * @cfg {Number} [limits.maxBodyLinkLength=50]
 	 * Allows to truncate the number of characters of the hyperlinks in the
@@ -1757,6 +1916,7 @@ item.config = {
 		"maxReTitleLength": 143,
 		"maxTagLength": 16
 	},
+
 	/**
 	 * @cfg {Boolean} [optimizedContext=true]
 	 * Allows to configure the context mode of the "reTag" section of an item.
@@ -1765,11 +1925,19 @@ item.config = {
 	 * Otherwise all hyperlinks in the item body will be resolved and converted into reTags.
 	 */
 	"optimizedContext": true,
+
 	/**
-	 * @cfg {Boolean} [retag=true]
+	 * @cfg {String} providerIcon
+	 * Specifies the URL to the icon representing data provider.
+	 */
+	"providerIcon": Echo.Loader.getURL("images/favicons/comments.png", false),
+
+	/**
+	 * @cfg {Boolean} [reTag=true]
 	 * Allows to show/hide the "reTag" section of an item.
 	 */
 	"reTag": true,
+
 	/**
 	 * @cfg {Object} [viaLabel]
 	 * Allows to show/hide parts or the whole "via" tag. Contains a hash with two keys
@@ -1799,7 +1967,6 @@ item.config.normalizer = {
 };
 
 item.vars = {
-	"age": undefined,
 	"children": [],
 	"depth": 0,
 	"threading": false,
@@ -1862,7 +2029,11 @@ item.labels = {
 	"re": "Re"
 };
 
+
 item.templates.metadata = {
+	/**
+	 * @echo_template
+	 */
 	"userID":
 		'<div class="{class:metadata-userID}">' +
 			'<span class="{class:metadata-title} {class:metadata-icon}">' +
@@ -1870,6 +2041,9 @@ item.templates.metadata = {
 			'</span>' +
 			'<span class="{class:metadata-value}">{data:actor.id}</span>' +
 		'</div>',
+	/**
+	 * @echo_template
+	 */
 	"userIP":
 		'<div class="{class:metadata-userIP}">' +
 			'<span class="{class:metadata-title} {class:metadata-icon}">' +
@@ -1879,8 +2053,11 @@ item.templates.metadata = {
 		'</div>'
 };
 
-item.methods.template = function() {
-	return '<div class="{class:content}">' +
+/**
+ * @echo_template
+ */
+item.templates.mainHeader =
+	'<div class="{class:content}">' +
 		'<div class="{class:container}">' +
 			'<div class="{class:avatar-wrapper}">' +
 				'<div class="{class:avatar}"></div>' +
@@ -1918,26 +2095,47 @@ item.methods.template = function() {
 			'</div>' +
 			'<div class="echo-clear"></div>' +
 			'<div class="{class:childrenMarker}"></div>' +
-		'</div>' +
-		(this.config.get("parent.children.sortOrder") === "chronological"
-			? '<div class="{class:children}"></div>' +
-			'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
-			'</div>'
-			: '<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-				'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
-			'</div>' +
-			'<div class="{class:children}"></div>'
-		) +
+		'</div>';
+
+/**
+ * @echo_template
+ */
+item.templates.mainFooter =
 		'<div class="{class:childrenByCurrentActorLive}"></div>' +
 	'</div>';
+
+/**
+ * @echo_template
+ */
+item.templates.childrenTop =
+	'<div class="{class:children}"></div>' +
+	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
+		'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
+	'</div>';
+
+/**
+ * @echo_template
+ */
+item.templates.childrenBottom =
+	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
+		'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
+	'</div>' +
+	'<div class="{class:children}"></div>';
+
+item.methods.template = function() {
+	this.templates.mainHeader +
+	(this.config.get("parent.children.sortOrder") === "chronological"
+		? this.templates.childrenTop
+		: this.templates.childrenBottom
+	) +
+	this.templates.mainFooter
 };
 
 /**
  * @echo_renderer
  */
 item.renderers.authorName = function(element) {
-	return element.append(this.get("data.actor.title") || this.labels.get("guest"));
+	return element.html(this.get("data.actor.title") || this.labels.get("guest"));
 };
 
 /**
@@ -2188,8 +2386,10 @@ item.renderers.sourceIcon = function(element) {
 	element.hide()
 		.attr("src", Echo.Utils.htmlize(url))
 		.one("error", function() { element.hide(); })
-		.wrap(Echo.Utils.hyperlink(data, config));
-	return element.show();
+		.one("load", function() {
+			element.show().wrap(Echo.Utils.hyperlink(data, config));
+		});
+	return element;
 };
 
 /**
@@ -2273,7 +2473,7 @@ item.renderers.body = function(element) {
  */
 item.renderers.date = function(element) {
 	this.age = this.getRelativeTime(this.timestamp);
-	return element.html(this.age);
+	return element.html(this.getRelativeTime(this.timestamp));
 };
 
 /**
@@ -2325,7 +2525,6 @@ item.renderers.expandChildren = function(element, extra) {
 				"extra": {"state": "loading"}
 			});
 			/**
-			 * @event onChildrenExpand
 			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onChildrenExpand
 			 * Triggered when the children block is expanded.
 			 */
@@ -2351,12 +2550,10 @@ item.renderers._childrenContainer = function(element, config) {
 		}
 		if (child.deleted || child.added) {
 			/**
-			 * @event onDelete
 			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onDelete
 			 * Triggered when the child item is deleted.
 			 */
 			/**
-			 * @event onAdd
 			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onAdd
 			 * Triggered when the child item is added.
 			 */
@@ -2662,7 +2859,6 @@ item.methods._assembleButtons = function() {
 			data.callback = function() {
 				callback.call(self);
 				/**
-				 * @event onButtonClick 
 				 * @echo_event Echo.StreamServer.Controls.Stream.Item.onButtonClick
 				 * Triggered when the item control button is clicked.
 				 */
@@ -2886,7 +3082,7 @@ item.methods._sortButtons = function() {
 		if ((extra.limits.maxBodyCharacters || extra.limits.maxBodyLines) && !this.textExpanded) {
 			if (extra.limits.maxBodyLines) {
 				var splitter = extra.contentTransformations.newlines ? "<br>" : "\n";
-				var chunks = result.split(splitter);
+				var chunks = text.split(splitter);
 				if (chunks.length > extra.limits.maxBodyLines) {
 					text = chunks.splice(0, extra.limits.maxBodyLines).join(splitter);
 					truncated = true;

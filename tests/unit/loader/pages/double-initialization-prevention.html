@@ -5,7 +5,7 @@
 </head>
 <body>
 
-	<div class="echo-canvas" id="canvas" data-canvas-id="test.canvas.001" data-appkey="test.echoenabled.com"></div>
+	<div class="echo-canvas" id="canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>
 
 	<script>
 		// link Echo & QUnit objects from the parent window
@@ -17,21 +17,20 @@
 			var suite = Echo.Tests.Unit.Loader;
 			var count = {
 				"valid": 2,
-				"invalid": 6
+				"invalid": 3
 			};
 			var errors = {
-				"no_canvases_found": [0, 3],
 				"canvas_already_initialized": [0, 3]
 			};
 
 			// check multiple initialization
 			Echo.Events.subscribe({
-				"topic": "Echo.Loader.onError",
+				"topic": "Echo.Canvas.onError",
 				"handler": function(topic, args) {
 					count.invalid--;
 					errors[args.code][0]++;
 					if (!count.invalid) {
-						QUnit.ok(suite.eventsCountCheck(errors), "Checking if the Loader indicated multiple initialization attmpts (case: double-initialization-prevention)");
+						QUnit.ok(suite.eventsCountCheck(errors), "Checking if the Loader indicated multiple initialization attempts (case: double-initialization-prevention)");
 						if (!count.valid) callback();
 					}
 				}
@@ -47,8 +46,8 @@
 					}
 				}});
 			};
-			waitForCompletion("test.canvas.001", "submit");
-			waitForCompletion("test.canvas.001", "stream");
+			waitForCompletion("js-sdk-tests/test-canvas-001", "submit");
+			waitForCompletion("js-sdk-tests/test-canvas-001", "stream");
 
 			// multiple initialization attempts,
 			// we expect each canvas to be initialized only once

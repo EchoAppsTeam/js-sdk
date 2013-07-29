@@ -21,12 +21,14 @@ suite.prototype.tests.staticWorkflow = {
 		var count = 99;
 		new Echo.StreamServer.Controls.Counter({
 			"target" : target,
-			"appkey" : "test.aboutecho.com",
+			"appkey" : "echo.jssdk.tests.aboutecho.com",
 			"data"   : {"count": count},
 			"ready"  : function() {
 				suite.counter = this;
 				QUnit.ok(target.html().match(count),
 					'Checking the static usecase rendering');
+				QUnit.ok(this.request instanceof Echo.API.Request, "Check that counter initializing with the pre-defined data inits a request object as well");
+				QUnit.strictEqual(this.request.config.get("recurring"), this.config.get("liveUpdates.enabled"), "Check that counter initializing with the pre-defined data inits a request object with the proper options");
 				self.sequentialAsyncTests([
 					"staticInit",
 					"staticRefresh"
@@ -46,7 +48,7 @@ suite.prototype.tests.dynamicWorkflow = {
 		var self = this;
 		new Echo.StreamServer.Controls.Counter({
 			"target" : this.config.target,
-			"appkey" : "test.aboutecho.com",
+			"appkey" : "echo.jssdk.tests.aboutecho.com",
 			"query"  : "childrenof:http://example.com/*",
 			"ready"  : function() {
 				suite.counter = this;
@@ -209,7 +211,7 @@ suite.prototype.cases.onError_incorrect_appkey = function(callback) {
 
 suite.prototype.cases.onUpdate = function(callback) {
 	var self = this;
-	suite.counter.config.set("appkey", "test.aboutecho.com");
+	suite.counter.config.set("appkey", "echo.jssdk.tests.aboutecho.com");
 	suite.counter.events.subscribe({
 		"topic" : "Echo.StreamServer.Controls.Counter.onUpdate",
 		"once"  : true,

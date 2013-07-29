@@ -22,7 +22,16 @@ if (!Echo.GUI || Echo.GUI.Button) return;
  * 		"icon": "http://example.com/icon.png",
  * 		"disabled": true
  * 	});
+ *
+ * 	// Change the button title
+ * 	button.setState({"label": "New button label"});
+ *
+ * 	// Destroy the button
+ * 	button.destroy();
+ *
  * @extends Echo.GUI
+ *
+ * @package gui.pack.js
  *
  * @constructor
  * Creates a button inside the container defined in the “target" config parameter.
@@ -32,10 +41,11 @@ if (!Echo.GUI || Echo.GUI.Button) return;
  *
  * @cfg {Mixed} target
  * The container where the button should be located.
- * This parameter can have several types
- * 	- CSS selector (ex: ".css-selector")
- * 	- HTMLElement (ex: document.getElementById("some-element-id"))
- * 	- jQuery object (ex: $(".css-selector"))
+ * This parameter can have several types:
+ *
+ * + CSS selector (ex: ".css-selector")
+ * + HTMLElement (ex: document.getElementById("some-element-id"))
+ * + jQuery object (ex: $(".css-selector"))
  *
  * @cfg {String} label
  * Button label.

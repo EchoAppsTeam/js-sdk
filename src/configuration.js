@@ -9,7 +9,25 @@ if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
  * @class Echo.Configuration
  * Class implements the interface for convenient work with different
  * configurations. The Echo.Configuration class is used in various
- *places of Echo JS SDK components.
+ * places of Echo JS SDK components.
+ *
+ * Example:
+ *
+ *     var config = new Echo.Configuration({
+ *         "key1": "value1",
+ *         "key2": {
+ *             "key3": "value3"
+ *         }
+ *     });
+ *
+ *     config.get("key1"); // returns "value1"
+ *     config.set("key1", "new_value1");
+ *
+ *     config.get("key1"); // returns "new_value1"
+ *
+ *     config.get("key2.key3"); // returns "value3"
+ *
+ * @package environment.pack.js
  *
  * @constructor
  * Class constructor, which accepts user defined and default configuration
@@ -31,11 +49,14 @@ if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
  * @return {Object}
  * Reference to the given Echo.Configuration class instance.
  */
-Echo.Configuration = function(master, slave, normalizer) {
+
+// IMPORTANT: "keepRefsFor" parameter remains private for now. Get rid of
+//            this parameter after more complex optimization within F:1336
+Echo.Configuration = function(master, slave, normalizer, keepRefsFor) {
 	this.data = {};
 	this.cache = {};
 	this.normalize = normalizer || function(key, value) { return value; };
-	$.each(this._merge(master, slave), $.proxy(this.set, this));
+	$.each(this._merge(master, slave, keepRefsFor), $.proxy(this._set, this));
 };
 
 /**
@@ -86,7 +107,7 @@ Echo.Configuration.prototype.set = function(key, value) {
 	if (typeof value === "object") {
 		this._clearCacheByPrefix(key);
 	}
-	Echo.Utils.set(this.data, key, this.normalize(key.split(".").pop(), value));
+	this._set(key, value);
 };
 
 /**
@@ -133,6 +154,10 @@ Echo.Configuration.prototype.getAsHash = function() {
 	return $.extend({}, this.data);
 };
 
+Echo.Configuration.prototype._set = function(key, value) {
+	Echo.Utils.set(this.data, key, this.normalize(key.split(".").pop(), value));
+};
+
 Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	var self = this;
 	prefix += ".";
@@ -144,16 +169,20 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	});
 };
 
-Echo.Configuration.prototype._merge = function(master, slave) {
+Echo.Configuration.prototype._merge = function(master, slave, keepRefsFor) {
 	var self = this, target, src, options;
-
-	for (var i = 0; i < arguments.length; i++) {
-		options = arguments[i];
+	var inputs = [master, slave];
+	for (var i = 0; i < inputs.length; i++) {
+		options = inputs[i];
 		if ($.isPlainObject(options)) {
 			target = target || {};
 			$.each(options, function(name, copy) {
 				src = target[name];
-				if ($.isPlainObject(src)) {
+				if (keepRefsFor && keepRefsFor[name]) {
+					if (!target.hasOwnProperty(name)) {
+						target[name] = copy;
+					}
+				} else if ($.isPlainObject(src)) {
 					target[name] = self._merge(src, copy);
 				} else if (!target.hasOwnProperty(name)) {
 					target[name] = self._merge(copy);

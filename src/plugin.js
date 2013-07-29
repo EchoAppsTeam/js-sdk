@@ -8,6 +8,10 @@ if (Echo.Utils.isComponentDefined("Echo.Plugin")) return;
 /**
  * @class Echo.Plugin
  * Foundation class implementing core logic to create plugins and manipulate with them.
+ *
+ * Please visit [this page](#!/guide/how_to_develop_plugin) to learn more about developing plugins
+ *
+ * @package environment.pack.js
  */
 Echo.Plugin = function() {};
 
@@ -221,7 +225,15 @@ Echo.Plugin.prototype.invoke = function(mixed, context) {
 };
 
 /**
- * Enables the plugin.
+ * Method to enable the plugin.
+ * The plugin becomes enabled for the current control instance and
+ * the update can also be reflected in the config (if the "global"
+ * flag is defined during the function invocation) to enable it
+ * for other controls which use the same config parameters.
+ *
+ * @param {Boolean} [global]
+ * Specifies if the plugin should be enabled in the config. By default
+ * the function enables the plugin for the current control instance only.
  */
 Echo.Plugin.prototype.enable = function(global) {
 	global && this.config.set("enabled", true);
@@ -229,7 +241,15 @@ Echo.Plugin.prototype.enable = function(global) {
 };
 
 /**
- * Disables the plugin.
+ * Method to disable the plugin.
+ * The plugin becomes disabled for the current control instance and
+ * the update can also be reflected in the config (if the "global"
+ * flag is defined during the function invocation) to disable it
+ * for other controls which use the same config parameters.
+ *
+ * @param {Boolean} [global]
+ * Specifies if the plugin should be disabled in the config. By default
+ * the function disables the plugin for the current control instance only.
  */
 Echo.Plugin.prototype.disable = function(global) {
 	global && this.config.set("enabled", false);
@@ -240,7 +260,7 @@ Echo.Plugin.prototype.disable = function(global) {
  * Method to extend the template of particular component.
  *
  * @param {String} action
- * One of the following actions:
+ * The following actions are available:
  *
  * + "insertBefore"
  * + "insertAfter"
@@ -439,8 +459,11 @@ Echo.Plugin._getClassName = function(name, component) {
 };
 
 /**
- * @class Echo.Plugin.config
+ * @class Echo.Plugin.Config
  * Echo Plugin interlayer for Echo.Configuration utilization.
+ *
+ * @private
+ * @package environment.pack.js
  */
 Echo.Plugin._defineNestedClass("Config");
 
@@ -512,7 +535,7 @@ Echo.Plugin.Config.prototype.assemble = function(data) {
 	data = data || {};
 	data.user = this.plugin.component.user;
 	data.parent = config.getAsHash();
-	data.plugins = this.plugin.config.get("nestedPlugins", []);
+	data.plugins = (data.plugins || []).concat(this.plugin.config.get("nestedPlugins", []));
 
 	// copy default field values from parent control
 	Echo.Utils.foldl(data, defaults, function(value, acc, key) {
@@ -521,7 +544,9 @@ Echo.Plugin.Config.prototype.assemble = function(data) {
 			acc[key] = config.get(key);
 		}
 	});
-	return (new Echo.Configuration(data, this.plugin.config.get())).getAsHash();
+	var keepRefsFor = {"data": true, "parent": true};
+	var instance = new Echo.Configuration(data, this.plugin.config.get(), undefined, keepRefsFor);
+	return instance.getAsHash();
 };
 
 Echo.Plugin.Config.prototype._normalize = function(key) {
@@ -529,8 +554,11 @@ Echo.Plugin.Config.prototype._normalize = function(key) {
 };
 
 /**
- * @class Echo.Plugin.events
+ * @class Echo.Plugin.Events
  * Echo Plugin interlayer for Echo.Events utilization
+ *
+ * @private
+ * @package environment.pack.js
  */
 Echo.Plugin._defineNestedClass("Events");
 

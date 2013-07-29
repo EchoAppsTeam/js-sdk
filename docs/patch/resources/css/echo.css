@@ -13,10 +13,9 @@ div#header-content {
 }
 
 #loading span.title {
-	background: url("../images/echo-logo.png") no-repeat scroll transparent;
+	background: url("../images/echo-logo.png") no-repeat scroll transparent center;
 	left: -60px;
-	width: 300px;
-	height: 100px;
+	height: 150px;
 }
 
 #footer .policy {
@@ -48,6 +47,10 @@ div#north-region {
 	background:-webkit-gradient(linear,left top,left bottom,from(#19B9F3),to(#5dcdf6));
 	background:-moz-linear-gradient(top,#19B9F3,#5dcdf6);
 	height: 100px;
+}
+
+.class-categories .section .left-column {
+	width: auto;
 }
 
 .class-categories .section .middle-column {
@@ -85,19 +88,33 @@ div#north-region {
 }
 
 .welcome-page .col p {
-	padding-right: 15px;
+	padding-right: 35px;
 }
 
 .welcome-page .img {
 	float: right;
-	width: 520px;
+	padding-top: 29px;
 }
 
 .welcome-page .copy {
 	float: left;
-	width: 350px;
-	padding-top: 80px;
-	padding-left: 30px;
+	width: 550px;
+	padding-top: 30px;
+	padding-bottom: 40px;
+}
+
+.welcome-page .copy {
+	line-height: 22px;
+}
+
+.welcome-page .footer {
+	margin: 10px auto;
+	width: 500px;
+}
+
+.welcome-page #sdk-welcome-logo {
+	width: 250px;
+	margin-right: -60px;
 }
 
 .welcome-page {

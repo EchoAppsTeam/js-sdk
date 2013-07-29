@@ -5,18 +5,24 @@ var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.FacePile
- * Echo FacePile control displays users (actors) returned in any activity stream. 
+ * Echo FacePile control displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
  * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
  *
  * 	new Echo.StreamServer.Controls.FacePile({
  * 		"target": document.getElementById("echo-facepile"),
- * 		"appkey": "test.aboutecho.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"query": "childrenof:http://example.com/* itemsPerPage:2 children:0",
  * 		"suffixText": " commented on aboutecho.com",
  * 		"item": {"avatar": true, "text": true}
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * FacePile constructor initializing Echo.StreamServer.Controls.FacePile class
@@ -27,6 +33,27 @@ var $ = jQuery;
 var pile = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile");
 
 if (Echo.Control.isDefined(pile)) return;
+
+/** @hide @cfg defaultAvatar */
+/** @hide @cfg submissionProxyURL */
+/** @hide @method placeImage */
+/** @hide @method getRelativeTime */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
 
 pile.init = function() {
 	if (!this.checkAppKey()) return;
@@ -45,10 +72,11 @@ pile.init = function() {
 pile.config = {
 	/**
 	 * @cfg {Object} data
-	 * Specifies static data for the list. It has the same format as returned
-	 * by the search API endpoint. If the `data` parameter is provided then the
-	 * `query` parameter should be omitted. If `data` and `query` parameters are both
-	 * provided `query` takes precedence over `data`.
+	 * Specifies static data for the face pile. It has the same format as returned
+	 * by the <a href="http://wiki.aboutecho.com/API-method-search#ResponseFormat" target="_blank">
+	 * "search" API endpoint</a>. If the "data" parameter is provided then the
+	 * "query" parameter should be omitted. If "data" and "query" parameters are both
+	 * provided "query" takes precedence over "data".
 	 */
 	"data": undefined,
 
@@ -69,6 +97,19 @@ pile.config = {
 	 */
 	"totalUsersCount": undefined,
 
+	/**
+	 * @cfg {String} query
+	 * Specifies the search query to generate the necessary data set.
+	 * It must be constructed according to the
+	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
+	 * method specification.
+	 *
+	 * 	new Echo.StreamServer.Controls.FacePile({
+	 * 		"target": document.getElementById("echo-facepile"),
+	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
+	 * 		"query" : "childrenof:http://example.com/test/*"
+	 * 	});
+	 */
 	"query": "",
 
 	/**
@@ -175,6 +216,9 @@ pile.labels = {
 	"more": "more"
 };
 
+/**
+ * @echo_template
+ */
 pile.templates.main =
 	'<span class="{class:container}">' +
 		'<span class="{class:actors}"></span>' +
@@ -293,6 +337,9 @@ pile.methods._request = function() {
 				"appkey": this.config.get("appkey")
 			},
 			"liveUpdates": this.config.get("liveUpdates"),
+			"recurring": this.config.get("liveUpdates.enabled"),
+			"secure": this.config.get("useSecureAPI"),
+			"apiBaseURL": this.config.get("apiBaseURL"),
 			"onError": function(data, extra) {
 				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
 				if (needShowError) {
@@ -316,6 +363,8 @@ pile.methods._requestMoreItems = function() {
 	}
 	var request = Echo.StreamServer.API.request({
 		"endpoint": "search",
+		"secure": this.config.get("useSecureAPI"),
+		"apiBaseURL": this.config.get("apiBaseURL"),
 		"data": {
 			"q": query,
 			"appkey": this.config.get("appkey")
@@ -423,6 +472,7 @@ pile.methods._initItem = function(entry, callback) {
 		"parent": this.config.getAsHash(),
 		"plugins": this.config.get("plugins"),
 		"context": this.config.get("context"),
+		"useSecureAPI": this.config.get("useSecureAPI"),
 		"data": entry.actor,
 		"user": this.user,
 		"ready": callback
@@ -504,6 +554,9 @@ var $ = jQuery;
  *
  * @extends Echo.Control
  *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
+ *
  * @constructor
  * FacePile.Item constructor initializing Echo.StreamServer.Controls.FacePile.Item class
  *
@@ -513,6 +566,44 @@ var $ = jQuery;
 var item = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile.Item");
 
 if (Echo.Control.isDefined(item)) return;
+
+/** @hide @cfg appkey */
+/** @hide @cfg plugins */
+/** @hide @cfg submissionProxyURL */
+/** @hide @method checkAppKey */
+/** @hide @method placeImage */
+/** @hide @method dependent */
+/** @hide @method getRelativeTime */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
+/** @hide @echo_label loading */
+/** @hide @echo_label retrying */
+/** @hide @echo_label error_busy */
+/** @hide @echo_label error_timeout */
+/** @hide @echo_label error_waiting */
+/** @hide @echo_label error_view_limit */
+/** @hide @echo_label error_view_update_capacity_exceeded */
+/** @hide @echo_label error_result_too_large */
+/** @hide @echo_label error_wrong_query */
+/** @hide @echo_label error_incorrect_appkey */
+/** @hide @echo_label error_internal_error */
+/** @hide @echo_label error_quota_exceeded */
+/** @hide @echo_label error_incorrect_user_id */
+/** @hide @echo_label error_unknown */
 
 item.config = {
 	/**
@@ -531,6 +622,9 @@ item.labels = {
 	"you": "You"
 };
 
+/**
+ * @echo_template
+ */
 item.templates.main =
 	'<span class="{class:container}">' +
 		'<span class="{class:avatar}"></span>' +
@@ -570,7 +664,9 @@ item.renderers.title = function(element) {
 };
 
 /**
- * @echo_renderer
+ * Function to check if the item was posted by the current user.
+ *
+ * @return {Boolean}
  */
 item.methods.isYou = function() {
 	var id = this.get("data.id");

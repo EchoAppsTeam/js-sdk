@@ -5,27 +5,41 @@ var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Like
- * Adds extra controls Like/Unlike to each item in the Echo Stream control.
- * Note that these controls will appear only for authenticated users.
+ * Adds extra Like/Unlike buttons to each item in the Echo Stream
+ * control for authenticated users.
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "Like"
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	this.extendTemplate("insertAsLastChild", "data", plugin.template);
+	this.extendTemplate("insertAsLastChild", "data", plugin.templates.main);
 	this.component.addButtonSpec("Like", this._assembleButton("Like"));
 	this.component.addButtonSpec("Like", this._assembleButton("Unlike"));
+};
+
+plugin.config = {
+	/**
+	 * @cfg {Boolean} asyncFacePileRendering
+	 * This parameter is used to enable FacePile control rendering in async mode.
+	 */
+	"asyncFacePileRendering": false
 };
 
 plugin.labels = {
@@ -67,7 +81,10 @@ plugin.events = {
 	}
 };
 
-plugin.template = '<div class="{plugin.class:likedBy}"></div>';
+/**
+ * @echo_template
+ */
+plugin.templates.main = '<div class="{plugin.class:likedBy}"></div>';
 
 /**
  * @echo_renderer
@@ -83,7 +100,7 @@ plugin.renderers.likedBy = function(element) {
 		? plugin.get("facePile").getVisibleUsersCount()
 		: likesPerPage;
 	var youLike = false;
-	var userId = item.user.get("id");
+	var userId = item.user.get("identityUrl");
 	var users = item.get("data.object.likes");
 	$.each(users, function(i, like) {
 		if (like.actor.id === userId) {
@@ -105,14 +122,22 @@ plugin.renderers.likedBy = function(element) {
 	if (item.user.is("admin")) {
 		element.addClass(plugin.cssPrefix + "highlight");
 	}
-	var facePile = new Echo.StreamServer.Controls.FacePile(config);
-	plugin.set("facePile", facePile);
+	if (this.config.get("asyncFacePileRendering")) {
+		setTimeout($.proxy(this._initFacePile, this, config), 0);
+	} else {
+		this._initFacePile(config);
+	}
 	return element.show();
+};
+
+plugin.methods._initFacePile = function(config) {
+	this.set("facePile", new Echo.StreamServer.Controls.FacePile(config));
 };
 
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
+		"secure": this.config.get("useSecureAPI", false, true),
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
 		"onData": callback,
 		"onError": errorCallback,
@@ -137,12 +162,10 @@ plugin.methods._sendActivity = function(name, item, actor) {
 		"target-query": item.config.get("parent.query")
 	}, function(response) {
 		/**
-		 * @event onLikeComplete
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeComplete
 		 * Triggered when the Like operation is finished.
 		 */
 		/**
-		 * @event onUnlikeComplete
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete
 		 * Triggered when the reverse Like operation is finished.
 		 */
@@ -154,12 +177,10 @@ plugin.methods._sendActivity = function(name, item, actor) {
 		plugin.requestDataRefresh();
 	}, function(response) {
 		/**
-		 * @event onLikeError
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeError
 		 * Triggered when the Like operation failed.
 		 */
 		/**
-		 * @event onUnlikeError
 		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeError
 		 * Triggered when the reverse Like operation failed.
 		 */
@@ -228,13 +249,14 @@ var $ = jQuery;
  * Adds extra controls to items in the Echo FacePile control.
  *
  * @extends Echo.Plugin
+ * @private
  */
 var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	this.extendTemplate("insertAsLastChild", "container", plugin.template);
+	this.extendTemplate("insertAsLastChild", "container", plugin.templates.main);
 };
 
 plugin.labels = {
@@ -244,7 +266,10 @@ plugin.labels = {
 	"unlikeOnBehalf": "Unlike on behalf of this user"
 };
 
-plugin.template = '<img class="{plugin.class:adminUnlike}" src="{config:cdnBaseURL.sdk-assets}/images/container/closeWindow.png"" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
+/**
+ * @echo_template
+ */
+plugin.templates.main = '<img class="{plugin.class:adminUnlike}" src="{config:cdnBaseURL.sdk-assets}/images/container/closeWindow.png"" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
 
 /**
  * @echo_renderer
@@ -268,7 +293,6 @@ plugin.renderers.adminUnlike = function(element) {
 	return element.one("click", function() {
 		item.view.get("container").css("opacity", 0.3);
 		/**
-		 * @event onUnlike
 		 * @echo_event Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike
 		 * Triggered when the item is "unliked" by admin on behalf of a user.
 		 */
@@ -286,7 +310,7 @@ plugin.renderers.adminUnlike = function(element) {
 
 plugin.css =
 	'.{plugin.class:adminUnlike} { cursor: pointer; margin-left: 3px; }' +
-	'.{plugin.class:highlight} { display: inline-block; line-height: 16px; background-color: #EEEEEE; padding: 1px 3px; border: 1px solid #D2D2D2; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; margin: 0px 2px; }' +
+	'.{plugin.class:highlight} { display: inline-block; line-height: 16px; background-color: #EEEEEE; padding: 1px 3px; border: 1px solid #D2D2D2; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; margin: 0px 2px; }';
 
 Echo.Plugin.create(plugin);
 

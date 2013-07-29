@@ -36,7 +36,7 @@ suite.prototype.tests.anonymousWorkflow = {
 		var self = this;
 		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"ready": function() {
 				suite.submit = this;
 				self.sequentialAsyncTests([
@@ -60,14 +60,15 @@ suite.prototype.tests.loggedUserWorkflow = {
 		var self = this;
 		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
 			"ready": function() {
 				suite.submit = this;
 				self.sequentialAsyncTests([
 					"user",
 					"content",
-					"post"
+					"post",
+					"markersAndTags"
 				], "cases");
 			}
 		});
@@ -84,7 +85,7 @@ suite.prototype.tests.eventSubscriptions = {
 		var self = this;
 		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
 			"ready": function() {
 				suite.submit = this;
@@ -107,7 +108,7 @@ suite.prototype.tests.testMethods = {
 	"check": function() {
 		new Echo.StreamServer.Controls.Submit({
 			"target": this.config.target,
-			"appkey": "test.aboutecho.com",
+			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
 			"ready": function() {
 				var content = this.view.get("text");
@@ -166,6 +167,29 @@ suite.prototype.cases.content = function(callback) {
 	button.on("click", suite.postHandler).click();
 };
 
+suite.prototype.cases.markersAndTags = function(callback) {
+	new Echo.StreamServer.Controls.Submit({
+		"target": this.config.target,
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"ready": function() {
+			QUnit.strictEqual(this.view.get("markers").val(), "", "Check that markers element value is empty string after initial rendering (not defined data.object & config cases)");
+			QUnit.strictEqual(this.view.get("tags").val(), "", "Check that tags element value is empty string after initial rendering (not defined data.object & config cases)");
+			this.config.set("markers", ["test-marker1", "test-marker2", "test-marker3"]);
+			this.config.set("tags", ["test-tag1", "test-tag2", "test-tag3"]);
+			this.view.render({"name": "tags"});
+			this.view.render({"name": "markers"});
+			QUnit.strictEqual(this.view.get("markers").val(), "test-marker1, test-marker2, test-marker3", "Check that markers were render in case of using values from the config");
+			QUnit.strictEqual(this.view.get("tags").val(), "test-tag1, test-tag2, test-tag3", "Check that tags were render in case of using values from the config");
+			this.set("data.object.markers", ["another-test-marker1", "another-test-marker2", "another-test-marker3"]);
+			this.set("data.object.tags", ["another-test-tag1", "another-test-tag2", "another-test-tag3"]);
+			this.view.render({"name": "tags"});
+			this.view.render({"name": "markers"});
+			QUnit.strictEqual(this.view.get("markers").val(), "another-test-marker1, another-test-marker2, another-test-marker3", "Check that markers were render in case of using values from the data.object");
+			QUnit.strictEqual(this.view.get("tags").val(), "another-test-tag1, another-test-tag2, another-test-tag3", "Check that tags were render in case of using values from the data.object");
+			callback();
+		}
+	});
+};
 
 suite.prototype.cases.validator = function(callback) {
 	var submit = suite.submit;
@@ -200,9 +224,20 @@ suite.prototype.cases.post = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Submit.onPostComplete",
 		"once": true,
 		"handler": function(topic, params) {
-			QUnit.equal(name.val(), "TestName", "Checking that name is saved after posting");
-			QUnit.equal(url.val(), "TestURL", "Checking that URL is saved after posting");
-			QUnit.ok(!text.val(), "Checking that content is cleared after posting");
+			QUnit.equal(name.val(),
+				"TestName", "Checking that name is saved after posting");
+			QUnit.equal(url.val(),
+				"TestURL", "Checking that URL is saved after posting");
+			QUnit.ok(!text.val(),
+				"Checking that content is cleared after posting");
+			QUnit.ok(params.request.response && !$.isEmptyObject(params.request.response),
+				"Checking if the server response is available via " +
+				"Echo.StreamServer.Controls.Submit.onPostComplete " +
+				"event handler arguments");
+			QUnit.ok(!!params.request.response.objectID,
+				"Checking if the object.id is accessible via " +
+				"Echo.StreamServer.Controls.Submit.onPostComplete " +
+				"event handler arguments");
 			callback();
 		}
 	});
@@ -300,8 +335,13 @@ suite.prototype.cases.onError = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Submit.onPostError",
 		"once": true,
 		"handler": function(topic, params) {
-			QUnit.equal(params.postData.result, "error",
-				"Checking that postData.result is 'error' in onPostError handler");
+			QUnit.ok(params.request.response && !$.isEmptyObject(params.request.response),
+				"Checking if the server response is available via " +
+				"Echo.StreamServer.Controls.Submit.onPostError " +
+				"event handler arguments");
+			QUnit.equal(params.request.response.result, "error",
+				"Checking if the server response corresponds to the event " +
+				"fired (which is Echo.StreamServer.Controls.Submit.onPostError)");
 			callback();
 		}
 	});

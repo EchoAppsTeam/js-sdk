@@ -5,7 +5,11 @@ var $ = jQuery;
 
 /**
  * @class Echo.Control
- * Foundation class implementing core logic to create controls and manipulate with them.
+ * Foundation class implementing core logic to create controls and manipulate them.
+ * This is a base class for Echo.App class. You can find instructions on how to create
+ * your App in the ["How to develop an App"](#!/guide/how_to_develop_app) guide.
+ *
+ * @package environment.pack.js
  */
 Echo.Control = function() {};
 
@@ -74,7 +78,6 @@ Echo.Control.create = function(manifest) {
 		}
 
 		this.data = config.data || {};
-		this.name = _manifest.name;
 		this.config = config;
 		this._init(this._initializers.get("init"));
 	});
@@ -85,7 +88,11 @@ Echo.Control.create = function(manifest) {
 	}
 	prototype.templates = _manifest.templates;
 	prototype.renderers = _manifest.renderers;
+	prototype.name = _manifest.name;
 	constructor._manifest = _manifest;
+	if (manifest.inherits) {
+		constructor.parent = manifest.inherits.prototype;
+	}
 
 	// define default language var values with the lowest priority available
 	Echo.Labels.set(_manifest.labels, _manifest.name, true);
@@ -406,7 +413,7 @@ Echo.Control.prototype.parentRenderer = function(name, args) {
  * Method to extend the template of the particular control.
  *
  * @param {String} action
- * One of the following actions:
+ * The following actions are available:
  *
  * + "insertBefore"
  * + "insertAfter"
@@ -638,12 +645,12 @@ Echo.Control.prototype._initializers.vars = function() {
 Echo.Control.prototype._initializers.config = function() {
 	var control = this;
 	var config = this._manifest("config");
-	return new Echo.Configuration(this.config, config,
-		function(key, value) {
-			return config.normalizer && config.normalizer[key]
-				? config.normalizer[key].call(this, value, control)
-				: value;
-		});
+	var normalizer = function(key, value) {
+		return config.normalizer && config.normalizer[key]
+			? config.normalizer[key].call(this, value, control)
+			: value;
+	};
+	return new Echo.Configuration(this.config, config, normalizer, {"data": true, "parent": true});
 };
 
 Echo.Control.prototype._initializers.events = function() {
@@ -657,15 +664,36 @@ Echo.Control.prototype._initializers.events = function() {
 	};
 	return {
 		"publish": function(params) {
-			params.topic = control.name + "." + params.topic;
+			var parent, names;
+
 			params.data = params.data || {};
 
 			// process data through the normalization function if defined
 			if (control._prepareEventParams) {
 				params.data = control._prepareEventParams(params.data);
 			}
-
-			Echo.Events.publish(prepare(params));
+			params = prepare(params);
+			// publish events with parents prefixes if appropriate flag provided
+			if (params.inherited) {
+				parent = control.constructor.parent;
+				names = function get(parent, acc) {
+					if (parent && parent.name) {
+						acc.unshift(parent.name);
+						get(parent.constructor.parent, acc);
+					}
+					return acc;
+				}(parent, []);
+				$.map(names, function(name) {
+					Echo.Events.publish(
+						$.extend({}, params, {
+							"topic": name + "." + params.topic,
+							"global": false
+						})
+					);
+				});
+			}
+			params.topic = control.name + "." + params.topic;
+			Echo.Events.publish(params);
 		},
 		"subscribe": function(params) {
 			var handlerId = Echo.Events.subscribe(prepare(params));
@@ -786,7 +814,22 @@ Echo.Control.prototype._initializers.css = function() {
 	this.config.get("target").addClass(this.cssClass);
 	$.map(this._manifest("css"), function(spec) {
 		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
-		Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
+		if (spec.id !== self.name) {
+			var css, component = Echo.Utils.getComponent(spec.id);
+			if (component) {
+				css = self.substitute({
+					"template": spec.code,
+					"instructions": {
+						"class": function(key) {
+							return component.prototype.cssPrefix + key;
+						}
+					}
+				});
+				Echo.Utils.addCSS(css, spec.id);
+			}
+		} else {
+			Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
+		}
 	});
 };
 
@@ -829,6 +872,7 @@ Echo.Control.prototype._initializers.user = function(callback) {
 	} else {
 		Echo.UserSession({
 			"appkey": this.config.get("appkey"),
+			"useSecureAPI": this.config.get("useSecureAPI"),
 			"ready": function() {
 				control.user = this;
 				callback.call(control);
@@ -873,7 +917,7 @@ Echo.Control.prototype._initializers.refresh = function() {
 
 Echo.Control._merge = function(manifest, parentManifest) {
 	var self = this;
-	parentManifest = parentManifest || this._manifest;
+	parentManifest = parentManifest || $.extend(true, Echo.Control.manifest(this._manifest.name), this._manifest);
 	// normalize CSS definition before merging to have the same format
 	var normalizeCSS = function(manifest) {
 		manifest.css = manifest.css || "";
@@ -932,6 +976,22 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 	return {
 		"class": function(key) {
 			return key ? control.cssPrefix + key : control.cssClass;
+		},
+		"inherited.class": function(key) {
+			var value, parent;
+			if (key) {
+				parent = control.constructor.parent;
+				value = function get(parent, acc) {
+					if (parent && parent.cssPrefix) {
+						acc.unshift(parent.cssPrefix + key);
+						get(parent.constructor.parent, acc);
+					}
+					return acc;
+				}(parent, []).join(" ");
+			} else {
+				value = control.cssClass;
+			}
+			return value;
 		},
 		"label": function(key, defaults) {
 			return control.labels.get(key, defaults);
@@ -1097,7 +1157,7 @@ manifest.config = {
 	 * @cfg {String} appkey
 	 * Specifies the customer application key. You should specify this parameter
 	 * if your control uses StreamServer or IdentityServer API requests.
-	 * You can use the "test.echoenabled.com" appkey for testing purposes.
+	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
 	 */
 	"appkey": "",
 
@@ -1118,6 +1178,14 @@ manifest.config = {
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
 	"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
+
+	/**
+	 * @cfg {Boolean} [useSecureAPI]
+	 * This parameter is used to specify the API request scheme.
+	 * If parameter is set to false or not specified, the API request object
+	 * will use the scheme used to retrieve the host page.
+	 */
+	"useSecureAPI": false,
 
 	/**
 	 * @cfg {Object} [infoMessages]
@@ -1208,123 +1276,123 @@ manifest.config.normalizer = {
 
 manifest.labels = {
 	/**
-	 * @echo_label
+	 * @echo_label loading
 	 */
 	"loading": "Loading...",
 	/**
-	 * @echo_label
+	 * @echo_label retrying
 	 */
 	"retrying": "Retrying...",
 	/**
-	 * @echo_label
+	 * @echo_label error_busy
 	 */
 	"error_busy": "Loading. Please wait...",
 	/**
-	 * @echo_label
+	 * @echo_label error_timeout
 	 */
 	"error_timeout": "Loading. Please wait...",
 	/**
-	 * @echo_label
+	 * @echo_label error_waiting
 	 */
 	"error_waiting": "Loading. Please wait...",
 	/**
-	 * @echo_label
+	 * @echo_label error_view_limit
 	 */
 	"error_view_limit": "View creation rate limit has been exceeded. Retrying in {seconds} seconds...",
 	/**
-	 * @echo_label
+	 * @echo_label error_view_update_capacity_exceeded
 	 */
 	"error_view_update_capacity_exceeded": "This stream is momentarily unavailable due to unusually high activity. Retrying in {seconds} seconds...",
 	/**
-	 * @echo_label
+	 * @echo_label error_result_too_large
 	 */
 	"error_result_too_large": "(result_too_large) The search result is too large.",
 	/**
-	 * @echo_label
+	 * @echo_label error_wrong_query
 	 */
 	"error_wrong_query": "(wrong_query) Incorrect or missing query parameter.",
 	/**
-	 * @echo_label
+	 * @echo_label error_incorrect_appkey
 	 */
 	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
 	/**
-	 * @echo_label
+	 * @echo_label error_internal_error
 	 */
 	"error_internal_error": "(internal_error) Unknown server error.",
 	/**
-	 * @echo_label
+	 * @echo_label error_quota_exceeded
 	 */
 	"error_quota_exceeded": "(quota_exceeded) Required more quota than is available.",
 	/**
-	 * @echo_label
+	 * @echo_label error_incorrect_user_id
 	 */
 	"error_incorrect_user_id": "(incorrect_user_id) Incorrect user specified in User ID predicate.",
 	/**
-	 * @echo_label
+	 * @echo_label error_unknown
 	 */
 	"error_unknown": "(unknown) Unknown error.",
 	/**
-	 * @echo_label
+	 * @echo_label today
 	 */
 	"today": "Today",
 	/**
-	 * @echo_label
+	 * @echo_label yesterday
 	 */
 	"yesterday": "Yesterday",
 	/**
-	 * @echo_label
+	 * @echo_label lastWeek
 	 */
 	"lastWeek": "Last Week",
 	/**
-	 * @echo_label
+	 * @echo_label lastMonth
 	 */
 	"lastMonth": "Last Month",
 	/**
-	 * @echo_label
+	 * @echo_label secondAgo
 	 */
 	"secondAgo": "{number} Second Ago",
 	/**
-	 * @echo_label
+	 * @echo_label secondsAgo
 	 */
 	"secondsAgo": "{number} Seconds Ago",
 	/**
-	 * @echo_label
+	 * @echo_label minuteAgo
 	 */
 	"minuteAgo": "{number} Minute Ago",
 	/**
-	 * @echo_label
+	 * @echo_label minutesAgo
 	 */
 	"minutesAgo": "{number} Minutes Ago",
 	/**
-	 * @echo_label
+	 * @echo_label hourAgo
 	 */
 	"hourAgo": "{number} Hour Ago",
 	/**
-	 * @echo_label
+	 * @echo_label hoursAgo
 	 */
 	"hoursAgo": "{number} Hours Ago",
 	/**
-	 * @echo_label
+	 * @echo_label dayAgo
 	 */
 	"dayAgo": "{number} Day Ago",
 	/**
-	 * @echo_label
+	 * @echo_label daysAgo
 	 */
 	"daysAgo": "{number} Days Ago",
 	/**
-	 * @echo_label
+	 * @echo_label weekAgo
 	 */
 	"weekAgo": "{number} Week Ago",
 	/**
-	 * @echo_label
+	 * @echo_label weeksAgo
 	 */
 	"weeksAgo": "{number} Weeks Ago",
 	/**
-	 * @echo_label
+	 * @echo_label monthAgo
 	 */
 	"monthAgo": "{number} Month Ago",
 	/**
-	 * @echo_label
+	 * @echo_label monthsAgo
 	 */
 	"monthsAgo": "{number} Months Ago"
 };
@@ -1334,7 +1402,7 @@ manifest.inherits = Echo.Control;
 manifest.templates = {"message": {}};
 
 manifest.templates.message.compact =
-	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>';
+	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}"></span>';
 
 manifest.templates.message.full =
 	'<div class="echo-control-message {class:messageText}">' +

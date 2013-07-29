@@ -29,6 +29,8 @@ suite.prototype.info = {
 
 suite.prototype.tests = {};
 
+suite.prototype.cases = {};
+
 suite.prototype.tests.LoggedInUserChecks = {
 	"config": {
 		"async": true,
@@ -36,7 +38,7 @@ suite.prototype.tests.LoggedInUserChecks = {
 		"testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
-		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+		var user = Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
 		var identity = "http://somedomain.com/users/fake_user";
 
 		QUnit.ok(user.is("logged"),
@@ -77,7 +79,7 @@ suite.prototype.tests.AnonymousUserChecks = {
 		"testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
-		var user = Echo.UserSession({"appkey": "test.aboutecho.com"});
+		var user = Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
 
 		QUnit.ok(!user.is("logged"),
 			"Check if the user is not logged in using user.is(\"logged\") function");
@@ -156,9 +158,75 @@ suite.prototype.checkBasicOperations = function(user) {
 	QUnit.equal(user.has("identity", identity), user._hasIdentity(identity),
 		"Checking delegation using user.has(\"identity\", \"...\") function");
 
-	Echo.UserSession({"appkey": "test.aboutecho.com", "ready": function() {
+	Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com", "ready": function() {
 		QUnit.ok(true, "Checking if the \"ready\" callback is executed after class init");
 	}});
+};
+
+suite.prototype.tests.ErrorHandlingChecks = {
+	"config": {
+		"async": true,
+		"user": {"status": "anonymous"},
+		"testTimeout": 20000 // 20 secs
+	},
+	"check": function() {
+		this.sequentialAsyncTests([
+			"missingAppkey",
+			"invalidAppkey",
+			"noBackplaneInitialized"
+		], "cases");
+	}
+};
+
+suite.prototype.cases.missingAppkey = function(callback) {
+	this._resetUserSession();
+	Echo.UserSession({
+		"ready": function() {
+			QUnit.ok(true,
+				"Checking if the \"ready\" callback " +
+				"is executed even when the appkey is missing");
+			QUnit.ok(!this.is("logged"),
+				"Checking if the UserSession object initialized " +
+				"with no appkey is considered as anonymous user");
+			callback();
+		}
+	});
+};
+
+suite.prototype.cases.invalidAppkey = function(callback) {
+	this._resetUserSession();
+	Echo.UserSession({
+		"appkey": "invalid.appkey.sdk.test",
+		"ready": function() {
+			QUnit.ok(!this.is("logged"),
+				"Checking if the UserSession object initialized " +
+				"using invalid appkey is considered as anonymous user");
+			callback();
+		}
+	});
+};
+
+suite.prototype.cases.noBackplaneInitialized = function(callback) {
+	Backplane.initialized = false;
+	this._resetUserSession();
+	Echo.UserSession({
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"ready": function() {
+			QUnit.ok(!this.is("logged"),
+				"Checking if the UserSession object initialized " +
+				"with Backplane inactive is considered as anonymous user");
+			Backplane.initialized = true;
+			callback();
+		}
+	});
+};
+
+// private functions
+
+suite.prototype._resetUserSession = function() {
+	// force Echo.UserSession to re-initialize itself completely
+	// during the next Echo.UserSession object initialization
+	Echo.UserSession.state = "init";
 };
 
 })(Echo.jQuery);

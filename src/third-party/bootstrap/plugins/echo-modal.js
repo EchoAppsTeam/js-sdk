@@ -45,10 +45,21 @@ if (Echo.GUI.Modal) return;
  * 		 "header": true,
  * 		 "fade": true
  * 	});
+ *
+ * 	myModal.hide(); // hides the Bootstrap Modal instance
+ * 	myModal.config.set("data.title", "New modal title"); // change title of the Bootstrap Modal instance
+ * 	myModal.config.set("closeButton", false); // do not show the close button
+ * 	myModal.refresh(); // refresh the Bootstrap Modal instance with changed config parameters and show one
+ *
  * @extends Echo.GUI
  *
+ * @package gui.pack.js
+ *
  * @constructor
- * Creates a new modal dialog. The dialog can be created in visible or hidden (default) modes. In order to initialize the modal dialog instance in visible state, the "show" parameter should be defined as 'true' (JS boolean) during the constructor call. For the modal dialogs hidden by default the "show" function can be applied to reveal it when appropriate.
+ * Creates a new modal dialog. The dialog can be created in visible or hidden (default) modes.
+ * In order to initialize the modal dialog instance in visible state, the "show" parameter should
+ * be defined as 'true' (JS boolean) during the constructor call.
+ * For the modal dialogs hidden by default the "show" function can be applied to reveal it when appropriate.
  *
  * @param {Object} config
  * Modal configuration.
@@ -72,6 +83,15 @@ if (Echo.GUI.Modal) return;
  * @cfg {String} [extraClass=""]
  * Custom class name which should be added to the modal dialog container.
  *
+ * @cfg {String} [href]
+ * URL of the standalone page to be displayed inside the modal (loaded via \<iframe>).
+ *
+ * @cfg {Function} [onShow]
+ * Callback function to be executed when the modal is opened.
+ *
+ * @cfg {Function} [onHide]
+ * Callback function to be executed when the modal is closed.
+ *
  * @cfg {Object} data
  *
  * @cfg {String|Function} data.title
@@ -85,9 +105,10 @@ if (Echo.GUI.Modal) return;
  * @cfg {Array} data.buttons
  * You can specify the custom buttons in this parameter which should be displayed in the modal footer.
  * Each array element is the object with the following parameters:
- * 	title      - button title.
- * 	extraClass - custom class name which will be added to the button.
- * 	handler    - function which will be called when button is clicked.
+ *
+ * + title - button title.
+ * + extraClass - custom class name which will be added to the button.
+ * + handler - function which will be called when button is clicked.
  *
  * @cfg {Number} [width=null]
  * Modal dialog width.
@@ -129,14 +150,17 @@ Echo.GUI.Modal = Echo.Utils.inherit(Echo.GUI, function(config) {
 	});
 });
 
+/**
+ * This method assemble a bootstrap dialog according to configuration
+ * parameters and data.
+ */
 Echo.GUI.Modal.prototype.refresh = function() {
 	var self = this;
 	if (this.rendered) this.destroy();
 
 	this.rendered = true;
 	var css = this.config.get("fade") ? "fade" : "hide";
-	this.element = this.element || $('<div class="modal ' + css + '" role="dialog" tabindex="-1">');
-	this.element.empty();
+	this.element = $('<div class="modal ' + css + '" role="dialog" tabindex="-1">');
 
 	this._assembleHeader();
 	this._assembleBody();
@@ -150,10 +174,6 @@ Echo.GUI.Modal.prototype.refresh = function() {
 		self.config.get("onShow").call(self, self.element);
 	});
 
-	this.config.get("fade") && $.support.transition && this.element.one($.support.transition.end, function() {
-		self.element.focus().trigger("shown");
-	});
-
 	this.element.appendTo("body")
 		.wrap('<div class="echo-sdk-ui">')
 		.modal(this.config.getAsHash());
@@ -164,15 +184,15 @@ Echo.GUI.Modal.prototype.refresh = function() {
 
 /**
  * Shows the modal dialog.
- * 	myModal.show();
  */
 Echo.GUI.Modal.prototype.show = function() {
-	this.element.modal("show");
+	this.rendered
+		? this.element.modal("show")
+		: this.refresh();
 };
 
 /**
  * Hides the modal dialog and removes the dialog instance.
- *  myModal.destroy();
  */
 Echo.GUI.Modal.prototype.destroy = function() {
 	if (this.rendered) {
@@ -187,7 +207,6 @@ Echo.GUI.Modal.prototype.destroy = function() {
 
 /**
  * Hides the modal dialog.
- * 	myModal.hide();
  */
 Echo.GUI.Modal.prototype.hide = function() {
 	if (this.rendered) {
@@ -203,7 +222,7 @@ Echo.GUI.Modal.prototype._assembleHeader = function() {
 				.append("&times;").prependTo(header);
 		}
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._assembleBody = function() {
 	var self = this;
@@ -230,7 +249,7 @@ Echo.GUI.Modal.prototype._assembleBody = function() {
 	if (this.config.get("extraClass")) {
 		this.element.addClass(this.config.get("extraClass"));
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._assembleFooter = function() {
 	var self = this;
@@ -249,7 +268,7 @@ Echo.GUI.Modal.prototype._assembleFooter = function() {
 			});
 		}
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 	var self = this;
@@ -266,8 +285,6 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 				modal.isShown = shown;
 				modal.options.backdrop = backdrop;
 
-				self.element.addClass("in");
-
 				self.backdrop = modal.$backdrop.wrap('<div class="echo-sdk-ui">').parent();
 			});
 		} else {
@@ -280,7 +297,7 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 			self.config.set("backdrop", false);
 		}
 	}
-}
+};
 
 Echo.GUI.Modal.prototype._addSection = function(css, content) {
 	var section = $('<div class="' + css + '">');

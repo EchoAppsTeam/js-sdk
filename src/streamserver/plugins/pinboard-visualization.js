@@ -9,22 +9,70 @@ var $ = jQuery;
  * flash objects, etc). 
  *
  * @extends Echo.Control
+ *
+ * @package streamserver/plugins/pinboard-visualization.js
  */
 
 var mediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item.MediaGallery");
 
 if (Echo.Control.isDefined(mediaGallery)) return;
 
+/** @hide @method getRelativeTime */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
+/** @hide @echo_label loading */
+/** @hide @echo_label retrying */
+/** @hide @echo_label error_busy */
+/** @hide @echo_label error_timeout */
+/** @hide @echo_label error_waiting */
+/** @hide @echo_label error_view_limit */
+/** @hide @echo_label error_view_update_capacity_exceeded */
+/** @hide @echo_label error_result_too_large */
+/** @hide @echo_label error_wrong_query */
+/** @hide @echo_label error_incorrect_appkey */
+/** @hide @echo_label error_internal_error */
+/** @hide @echo_label error_quota_exceeded */
+/** @hide @echo_label error_incorrect_user_id */
+/** @hide @echo_label error_unknown */
+
 mediaGallery.labels = {
 	"mediaIsNotAvailable": "<i>Media is not avaiable at this moment...</i>"
 };
 
+/**
+ * @cfg {Number} resizeDuration
+ * Duration of the resize animation media content
+ *
+ * @cfg {Array} elements
+ * List of the jQuery elements which will be displayed (media content)
+ *
+ * @cfg {Object} item
+ * An instance of the Echo.StreamServer.Controls.Stream.Item object
+ * which may use its state for some reasons (context, data, etc)
+ */
 mediaGallery.config = {
 	"resizeDuration": 250,
 	"elements": [],
 	"item": undefined
 };
 
+/**
+ * @echo_template
+ */
 mediaGallery.templates.main =
 	'<div class="{class:container}">' +
 		'<div class="{class:thumbnails}">' +
@@ -33,6 +81,9 @@ mediaGallery.templates.main =
 		'<div class="{class:controls}"></div>' +
 	'</div>';
 
+/**
+ * @echo_template
+ */
 mediaGallery.templates.mediaError =
 	'<span class="{class:itemErrorLoading}">{label:mediaIsNotAvailable}</span>';
 
@@ -63,7 +114,6 @@ mediaGallery.renderers.controls = function(element) {
 		var itemContainer = $('<div></div>').append(element).addClass(itemClass);
 		var showCurrentMedia = function() {
 			/**
-			 * @event onLoadMedia
 			 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia
 			 * Triggered when corresponding media is loaded.
 			 */
@@ -79,7 +129,6 @@ mediaGallery.renderers.controls = function(element) {
 				"height": itemContainer.height()
 			}, self.config.get("resizeDuration"), function() {
 				/**
-				 * @event onResize
 				 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize
 				 * Triggered when corresponding media is resized.
 				 */
@@ -89,7 +138,6 @@ mediaGallery.renderers.controls = function(element) {
 				itemContainer.fadeIn(function() {
 					self.currentIndex = i;
 					/**
-					 * @event onChangeMedia
 					 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia
 					 * Triggered when media is changed.
 					 */
@@ -218,11 +266,28 @@ Echo.Control.create(mediaGallery);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization
+ * @class Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Stream.Item control into a
  * pinboard-style block.
  *
+ * 	new Echo.StreamServer.Controls.Stream({
+ * 		"target": document.getElementById("echo-stream"),
+ * 		"query": "childrenof:http://example.com/js-sdk",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
+ * 		"plugins": [{
+ * 			"name": "PinboardVisualization",
+ * 			"columnWidth": 100,
+ * 			"gallery": {"resizeDuration": 550}
+ * 		}]
+ * 	});
+ *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @private
+ * @package streamserver/plugins/pinboard-visualization.js
  */
 
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream.Item");
@@ -231,7 +296,7 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this, item = this.component;
-	this.extendTemplate("replace", "container", plugin.template);
+	this.extendTemplate("replace", "container", plugin.templates.container);
 };
 
 plugin.dependencies = [{
@@ -319,8 +384,7 @@ plugin.component.renderers.content = function(element) {
 (function() {
 
 /**
- * @event onChangeView
- * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisulization.onChangeView
+ * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView
  * Triggered if the view was changed.
  */
 var publish = function(force) {
@@ -472,7 +536,10 @@ plugin.methods._getCSSByLength = function(length) {
 	return Echo.Utils.foldl("", plugin.config.get("itemCSSClassByContentLength"), handler);
 };
 
-plugin.template =
+/**
+ * @echo_template
+ */
+plugin.templates.container =
 	'<div class="{class:container}">' +
 		'<div class="{class:header}">' +
 			'<div class="{class:avatar-wrapper}">' +
@@ -515,7 +582,7 @@ plugin.css =
 	'.{plugin.class:childBody} { float: none; display: inline; margin-left: 5px; }' +
 	'.{plugin.class:childBody} a { text-decoration: none; font-weight: bold; color: #524D4D; }' +
 	'.{plugin.class} .{class:container} { padding: 0px; }' +
-	'.{plugin.class} .{class:content} { padding-bottom: 0px; background: white; box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4); margin: 0px 5px 15px 5px; border: none; }' +
+	'.{plugin.class} .{class:content} { padding-bottom: 0px; background: white; box-shadow: 1px 1px 2px rgba(34, 25, 25, 0.4); margin: 0px 5px 15px 5px; border: 1px solid #D9D4D4; border-bottom: none; border-right: none; }' +
 	'.{plugin.class} .{class:authorName} { float: none; display: inline; margin-left: 0px; }' +
 	'.{plugin.class} .{class:body} { margin: 0px; }' +
 	'.{plugin.class} .{class:avatar} { float: left; width: 30px; height: 30px; padding-right: 10px; }' +
@@ -556,6 +623,15 @@ plugin.css =
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-userInfoWrapper {  margin: 5px 0px; }' +
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
 	'.{plugin.class} .{class:plugin-Moderation-status}  { width: 30px; clear: both; }' +
+	'.{plugin.class} .{class:plugin-TweetDisplay-tweetUserName}, .{plugin.class} .{class:authorName} { float: none; word-wrap: normal; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }' +
+	'.{plugin.class} .{class:plugin-TweetDisplay-tweetUserName} { margin-left: 0px; }' +
+	'.{class:plugin-TweetDisplay} .{plugin.class:childBody} { margin-left: 0; }' +
+
+	// TODO: Remove this block after TwitterIntents removing
+	'.{plugin.class} .{class:plugin-TwitterIntents-tweetUserName}, .{plugin.class} .{class:authorName} { float: none; word-wrap: normal; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }' +
+	'.{plugin.class} .{class:plugin-TwitterIntents-tweetUserName} { margin-left: 0px; }' +
+	'.{class:plugin-TwitterIntents} .{plugin.class:childBody} { margin-left: 0; }' +
+
 	((typeof document.createElement("div").style.boxShadow === "undefined")
 		? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }'
 		: '');
@@ -570,7 +646,7 @@ Echo.Plugin.create(plugin);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization
+ * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Echo Stream Client visualization
  * into a pinboard-style representation. The plugin extracts all media (such as
  * images, videos, etc) from the item content and assembles the mini media
@@ -587,13 +663,18 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Stream({
  * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "test.echoenabled.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "PinboardVisualization"
  * 		}]
  * 	});
  *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins/pinboard-visualization.js
  */
 var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream");
 
@@ -615,7 +696,7 @@ plugin.config = {
 	 * @cfg {Object} isotope
 	 * Allows to configure the Isotope jQuery plugin, used by the plugin as the
 	 * rendering engine. The possible config values can be found at the Isotope
-	 * plugin homepage (http://isotope.metafizzy.co/). It's NOT recommended to
+	 * plugin homepage ([http://isotope.metafizzy.co/](http://isotope.metafizzy.co/)). It's NOT recommended to
 	 * change the settings of the Isotope unless it's really required.
 	 *
 	 *__Note__: the Isotope JS library doesn't work in IE <a href="http://en.wikipedia.org/wiki/Quirks_mode">quirks mode</a>.

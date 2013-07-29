@@ -94,7 +94,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"refresh",
 			"destroyCalled",
 			"destroyBroadcasting",
-			"manifestBaseInheritance"
+			"manifestBaseInheritance",
+			"inheritedEvent"
 		], "cases");
 
 	}
@@ -286,7 +287,7 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if 'false' is returned if no config is passed");
 
-	result = new definition({"appkey": "test.echoenabled.com"});
+	result = new definition({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if empty object is returned if no target is passed in config");
 
@@ -302,6 +303,7 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 };
 
 suite.prototype.cases.incomingConfigHandling = function(callback) {
+	var parentConfig = {"myParentParam": {"a": 1, "b": 2}};
 	var check = function() {
 		QUnit.equal(this.config.get("nullParam"), "nullParam replacement",
 			"Checking if null parameter was overridden during control init");
@@ -316,16 +318,34 @@ suite.prototype.cases.incomingConfigHandling = function(callback) {
 		QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("images/info70.png", false),
 			"Checking if object parameter was overridden and was normalized (checking defaultAvatar key)");
 
+		// IMPORTANT: Echo.Configuration architecture to be revisited within F:1336,
+		//            the approach employed below might also be changed as a result
+
+		// checking the way we work with the "data" and "parent" config fields
+		suite.data.config.data.extraKey = "extraKey value";
+		QUnit.equal(suite.data.config.data.extraKey, this.config.get("data.extraKey"),
+			"Checking if the \"data\" key inside the config points to original " +
+			"object which we received in the config (we do not copy the \"data\" object)");
+		delete suite.data.config.data.extraKey;
+
+		parentConfig.myParentParam.a = 10; // define new value for myParentParam.a
+		QUnit.deepEqual(parentConfig, this.config.get("parent"),
+			"Checking if the \"parent\" key inside the config points to original " +
+			"object which we received in the config (we do not copy the \"parent\" object)");
+		parentConfig.myParentParam.a = 1; // define original value for myParentParam.a
+
 		this.destroy();
 
 		callback && callback();
 	};
 	suite.initTestControl({
+		"data": suite.data.config.data,
 		"objectParam": {"param1": "param1.override", "param2": undefined},
 		"myTestParam": "test value",
 		"undefinedParam": "undefinedParam replacement",
 		"nullParam": "nullParam replacement",
 		"defaultAvatar": Echo.Loader.getURL("images/info70.png", false),
+		"parent": parentConfig,
 		"ready": check
 	});
 };
@@ -461,7 +481,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 		var errorRequest = new Echo.API.Request({
 			"endpoint": "search",
 			"data": {
-				"appkey": "test.aboutecho.com",
+				"appkey": "echo.jssdk.tests.aboutecho.com",
 				"q": "unsupported query"
 			},
 			"onData": function(response) {},
@@ -744,20 +764,100 @@ suite.prototype.cases.destroyBroadcasting = function(callback) {
 	initControls();
 };
 
+suite.prototype.cases.inheritedEvent = function(callback) {
+	var self = this, s = "";
+	var handler = function(topic) { s += this.name; };
+	var initControl = function(manifest, ctx, ready) {
+		var d = $.Deferred();
+		ready = ready || $.noop;
+		Echo.Control.create(
+			$.extend({
+				"templates": {
+					"main": "<div></div>"
+				}
+			}, manifest)
+		);
+		suite.initTestControl({
+			"context": ctx,
+			"ready": function() {
+				ready.apply(this, arguments);
+				d.resolve(this);
+			}
+		}, manifest.name);
+		return d.promise();
+	};
+	var connector = function() {
+		var args = Array.prototype.slice.call(arguments);
+		return function(prev) {
+			args.splice(1, 0, prev.config.get("context"));
+			return initControl.apply(null, args);
+		};
+	};
+	initControl({
+		"name": "Echo.Test.Parent",
+		"events": {
+			"Echo.Test.Child1.onEvent": handler
+		}
+	})
+	.pipe(
+		connector({
+			"name": "Echo.Test.Child1",
+			"inherits": Echo.Utils.getComponent("Echo.Test.Parent")
+		})
+	)
+	.pipe(
+		connector({
+			"name": "Echo.Test.Child1.Child1",
+			"inherits": Echo.Utils.getComponent("Echo.Test.Child1")
+		})
+	)
+	.pipe(function(prev) {
+		return initControl({
+			"name": "Echo.Test.SomeControl",
+			"events": {
+				"Echo.Test.Child1.onEvent": handler
+			}
+		}, prev.config.get("context"), function() {
+			prev.events.publish({
+				"topic": "onEvent",
+				"inherited": true
+			});
+			QUnit.strictEqual(s, "Echo.Test.Child1.Child1Echo.Test.Child1Echo.Test.ParentEcho.Test.SomeControl", "Check that inherited event published with the default params");
+			s = "";
+			prev.events.publish({
+				"topic": "onEvent",
+				"bubble": false,
+				"inherited": true
+			});
+			QUnit.strictEqual(s, "Echo.Test.Child1.Child1Echo.Test.SomeControl", "Check that inherited event published with the appropriate params (bubble: false)");
+			s = "";
+			prev.events.publish({
+				"topic": "onEvent",
+				"propagation": false,
+				"inherited": true
+			});
+			QUnit.strictEqual(s, "Echo.Test.Child1.Child1Echo.Test.Child1Echo.Test.Parent", "Check that inherited event published with the appropriate params (propagation: false)");
+			callback();
+		});
+	});
+};
+
 suite.prototype.cases.manifestBaseInheritance = function(callback) {
 	var initVar = "",
 		destroyVar = "";
 	var eventsChecker = {
 		"parentTestEvent": 0,
 		"child1TestEvent": 0,
-		"commonTestEvent": 0
+		"commonTestEvent": 0,
+		"newEvent": 0,
+		"anotherNewEvent": 0
 	};
 	var ctx = Echo.Events.newContextId();
-	var publish = function(topic) {
-		Echo.Events.publish({
+	var publish = function(topic, args) {
+		Echo.Events.publish($.extend({
 			"topic": topic,
 			"context": ctx
-		});
+		}, args));
 	};
 	var parentManifest = {
 		"name": "Echo.TestControl1",
@@ -832,6 +932,9 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 				return "child1 method"
 			}
 		},
+		"templates": {
+			"main": '<div class="{inherited.class:container} {class:container}"><div class="{class:someRenderer}"></div></div>'
+		},
 		"dependencies": [{
 			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep.child.js",
 			"loaded": function() { return !!Echo.Tests.Dependencies.Control.depChild; }
@@ -863,14 +966,39 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			destroyVar += " and a child3 destroy.";
 		}
 	});
+	var newEventCounter = function() { eventsChecker.newEvent++; };
 	var child1_child2 = Echo.Control.create({
 		"name": "Echo.TestControl1_Child1_Child2",
 		"methods": {
 			"method2": function() {
-				return this.parent() + " method2_child_2"
+				return this.parent() + " method2_child_2";
 			}
 		},
+		"events": {
+			"Echo.TestControl1_Child1_Child2.someNewTestEvent": newEventCounter,
+			"Echo.TestControl1_Child1.someNewTestEvent": newEventCounter,
+			"Echo.TestControl1.someNewTestEvent": newEventCounter
+		},
 		"inherits": Echo.Utils.getComponent("Echo.TestControl1_Child1")
+	});
+	var anotherEventCounter = function() { eventsChecker.anotherNewEvent++; };
+	var control2 = Echo.Control.create($.extend(true, {}, parentManifest, {
+		"name": "Echo.TestControl2",
+		"templates": {
+			"main": '<div class="{inherited.class:container} {class:container}"></div>'
+		},
+		"events": {
+			"Echo.TestControl2.anotherNewTestEvent": anotherEventCounter,
+			"Echo.TestControl1.anotherNewTestEvent": anotherEventCounter,
+			"Echo.TestControl1_Child1.anotherNewTestEvent": anotherEventCounter,
+			"Echo.TestControl1_Child1_Child2.anotherNewTestEvent": anotherEventCounter,
+			"Echo.TestControl1_Child2_Child3.anotherNewTestEvent": anotherEventCounter
+		}
+	}));
+	// identify that event will not be published globally
+	Echo.Events.subscribe({
+		"topic": "Echo.TestControl1.someNewTestEvent",
+		"handler": newEventCounter
 	});
 	suite.initTestControl({
 		"context": ctx,
@@ -890,7 +1018,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			QUnit.strictEqual(this.method1(), "method1 method1_child_1", "Check parent method executed");
 			QUnit.strictEqual(this.method3(), "method3", "Check method inherited without override");
 			QUnit.strictEqual(this.child1Method(), "child1 method", "Check own method exists");
-			QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css concatination");
+			QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css inherited base mechanics");
 			publish("child1TestEvent");
 			publish("commonTestEvent");
 			publish("parentTestEvent");
@@ -919,12 +1047,32 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 						"context": ctx,
 						"target": $("<div>"),
 						"ready": function() {
-							QUnit.strictEqual(this.method2(), "method2 method2_child_2", "Check parent method executed (second inheritance level; child2 -> parent() -> control)");
-							QUnit.strictEqual(this.child1Method(), "child1 method", "Check parent method executed (child2 -> child1)");
-							QUnit.strictEqual(this.method3(), "method3", "Check parent method executed (child2 -> control)");
-							callback && callback();
+							QUnit.strictEqual(this.view.get("container").attr("class"), " echo-testcontrol2-container", "Check not inherited control substitute \"inherited.class\" placeholder with empty string");
+							this.events.publish({
+								"topic": "anotherNewTestEvent",
+								"inherited": true
+							});
+							QUnit.strictEqual(eventsChecker.anotherNewEvent, 1, "Check not inherited control publishing event with \"inherited\" flag doesn't publish any extra events");
+							suite.initTestControl({
+								"context": ctx,
+								"target": $("<div>"),
+								"ready": function() {
+									QUnit.strictEqual(this.method2(), "method2 method2_child_2", "Check parent method executed (second inheritance level; child2 -> parent() -> control)");
+									QUnit.strictEqual(this.child1Method(), "child1 method", "Check parent method executed (child2 -> child1)");
+									QUnit.strictEqual(this.method3(), "method3", "Check parent method executed (child2 -> control)");
+									QUnit.strictEqual(this.view.get("container").attr("class"), "echo-testcontrol1-container echo-testcontrol1_child1-container echo-testcontrol1_child1_child2-container", "Check child inherited css substitution works");
+									// "someNewTestEvent" event published from "Echo.TestControl1Child1Child2" with the "inherited" flag
+									// so, events "Echo.TestControl1_Child1.someNewTestEvent" & "Echo.TestControl1.someNewTestEvent" should be published as well
+									this.events.publish({
+										"topic": "someNewTestEvent",
+										"inherited": true
+									});
+									QUnit.strictEqual(eventsChecker.newEvent, 3, "Check event publishing with the parents prefixes");
+									callback && callback();
+								}
+							}, "Echo.TestControl1_Child1_Child2");
 						}
-					}, "Echo.TestControl1_Child1_Child2");
+					}, "Echo.TestControl2");
 				}
 			}, "Echo.TestControl1_Child2_Child3");
 		}
@@ -1292,7 +1440,7 @@ suite.initTestControl = function(config, name) {
 	var definition = suite.getTestControlClass(name);
 	new definition($.extend({
 		"target": $("<div></div>"),
-		"appkey": "test.echoenabled.com"
+		"appkey": "echo.jssdk.tests.aboutecho.com"
 	}, config));
 };
 

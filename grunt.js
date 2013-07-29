@@ -24,7 +24,8 @@ module.exports = function(grunt) {
 				"<%= dirs.src %>/!(third-party)/**/*.js"
 			],
 			"css": [
-				"<%= dirs.src %>/!(third-party)**/*.css"
+				"<%= dirs.src %>/*.css",
+				"<%= dirs.src %>/!(third-party)/**/*.css"
 			],
 			"bootstrap": [
 				"<%= dirs.src %>/third-party/bootstrap/**/*.js",
@@ -37,6 +38,9 @@ module.exports = function(grunt) {
 				"<%= dirs.src %>/**/*.gif"
 			]
 		},
+		"third-party-html": [
+			"<%= dirs.src %>/third-party/**/*.html"
+		],
 		"demo": ["demo/**/*"],
 		"tests": ["tests/**/*"],
 		"apps": ["apps/**/*"]
@@ -79,7 +83,8 @@ module.exports = function(grunt) {
 				"view.js",
 				"control.js",
 				"app.js",
-				"plugin.js"
+				"plugin.js",
+				"canvas.js"
 			],
 			"dest": "environment.pack.js"
 		},
@@ -120,10 +125,18 @@ module.exports = function(grunt) {
 				"third-party/bootstrap/plugins/echo-tabs.js"
 			],
 			"dest": "gui.pack.js"
+		},
+		"tests/harness": {
+			"src": [
+				"tests/qunit/qunit.js",
+				"tests/harness/runner.js",
+				"tests/harness/stats.js"
+			],
+			"dest": "tests/harness.js"
 		}
 	};
 
-	_.each(["streamserver", "identityserver", "appserver"], function(name) {
+	_.each(["streamserver", "identityserver"], function(name) {
 		packs[name + "/controls"] = {
 			"src": [name + "/controls/*.js"],
 			"dest": name + "/controls.pack.js"
@@ -141,6 +154,54 @@ module.exports = function(grunt) {
 		};
 	});
 
+	var testPlatforms = {
+		"firefox": {
+			"browserName": "firefox",
+			"version": "21",
+			"platform": "Windows 7"
+		},
+		"chrome": {
+			"browserName": "chrome",
+			"version": "27",
+			"platform": "Windows 7"
+		},
+		"safari": {
+			"browserName": "safari",
+			"version": "6",
+			"platform": "OS X 10.8"
+		},
+		"ie8": {
+			"browserName": "internet explorer",
+			"version": "8",
+			"platform": "Windows 7"
+		},
+		"ie9": {
+			"browserName": "internet explorer",
+			"version": "9",
+			"platform": "Windows 7"
+		},
+		"ie10": {
+			"browserName": "internet explorer",
+			"version": "10",
+			"platform": "Windows 8"
+		},
+		"iphone": {
+			"browserName": "iphone",
+			"version": "6.0",
+			"platform": "OS X 10.8"
+		},
+		"ipad": {
+			"browserName": "ipad",
+			"version": "6.0",
+			"platform": "OS X 10.8"
+		},
+		"android": {
+			"browserName": "android",
+			"version": "4",
+			"platform": "Linux"
+		}
+	};
+
 	var _config = {
 		dirs: dirs,
 		sources: sources,
@@ -151,20 +212,25 @@ module.exports = function(grunt) {
 		meta: {
 			banner:
 				"/**\n" +
-				" * Copyright (c) 2006-<%= grunt.template.today(\"UTC:yyyy\") %> <%= pkg.author.name %> <<%= pkg.author.email %>>. All rights reserved.\n" +
-				" * You may copy and modify this script as long as the above copyright notice,\n" +
-				" * this condition and the following disclaimer is left intact.\n" +
-				" * This software is provided by the author \"AS IS\" and no warranties are\n" +
-				" * implied, including fitness for a particular purpose. In no event shall\n" +
-				" * the author be liable for any damages arising in any way out of the use\n" +
-				" * of this software, even if advised of the possibility of such damage.\n" +
+				" * Copyright 2012-<%= grunt.template.today(\"UTC:yyyy\") %> <%= pkg.author.name %>.\n" +
+				" * Licensed under the Apache License, Version 2.0 (the \"License\");\n" +
+				" * you may not use this file except in compliance with the License.\n" +
+				" * You may obtain a copy of the License at\n" +
+				" *\n" +
+				" * http://www.apache.org/licenses/LICENSE-2.0\n" +
+				" *\n" +
+				" * Unless required by applicable law or agreed to in writing, software\n" +
+				" * distributed under the License is distributed on an \"AS IS\" BASIS,\n" +
+				" * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n" +
+				" * See the License for the specific language governing permissions and\n" +
+				" * limitations under the License.\n" +
 				" *\n" +
 				" * Version: <%= pkg.version %> (<%= grunt.template.today(\"UTC:yyyy-mm-dd HH:MM:ss Z\") %>)\n" +
 				" */"
 		},
 		check: {
 			versions: {
-				jsduck: "4.6.1",
+				jsduck: "5.0.0.beta3",
 				grunt: "v0.3.17"
 			}
 		},
@@ -211,7 +277,7 @@ module.exports = function(grunt) {
 			},
 			"testlib": {
 				files: [
-					"<%= dirs.dist %>/tests/testlib.js"
+					"<%= dirs.dist %>/tests/config.js"
 				],
 				patcher: "testurl"
 			},
@@ -274,6 +340,44 @@ module.exports = function(grunt) {
 			codegen: {
 				ascii_only: true
 			}
+		},
+		server: {
+			port: 9001,
+			base: dirs.dist
+		},
+		saucelabs: {
+			local: {
+				options: {
+					meta: {
+						build: "local#" + Math.round(Math.random() * 5000),
+						name: "Local tests",
+						tags: ["local"]
+					},
+					timeouts: {
+						total: 1000 * 60 * 5, // 5min
+						checking: 5000
+					},
+					concurrency: 3, // SauceLabs provides 3 Parallel VMs for simultaneous tests
+					defaultPlatforms: ["firefox", "chrome", "ie9"],
+					platforms: testPlatforms
+				}
+			},
+			travis: {
+				options: {
+					meta: {
+						build: process.env["TRAVIS_BUILD_NUMBER"],
+						name: "Echo JS SDK",
+						tags: [process.env["TRAVIS_BRANCH"], "node.js v" + process.env["TRAVIS_NODE_VERSION"], "CI"]
+					},
+					timeouts: {
+						total: 1000 * 60 * 5, // 5min
+						checking: 5000
+					},
+					concurrency: 3, // SauceLabs provides 3 Parallel VMs for simultaneous tests
+					defaultPlatforms: ["firefox", "chrome", "safari", "ie8", "ie9", "ie10"],
+					platforms: testPlatforms
+				}
+			}
 		}
 	};
 
@@ -286,6 +390,9 @@ module.exports = function(grunt) {
 	grunt.loadTasks("tools/grunt/tasks");
 
 	grunt.registerTask("default", "check:versions clean:all build:sdk");
+	grunt.registerTask("test", "Execute tests", function() {
+		grunt.task.run(process.env["CI"] ? "server saucelabs:travis" : "saucelabs:local");
+	});
 
 	grunt.registerTask("build", "Go through all stages of building some target/system", function(target, stage) {
 		if (!stage) {
@@ -310,15 +417,15 @@ module.exports = function(grunt) {
 		switch (stage) {
 			case "dev":
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
+				tasks = "copy:css copy:own-js copy:third-party-js copy:third-party-html copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader concat clean:third-party copy:build";
 				break;
 			case "min":
 				_makeMinSpec();
 				_makeConcatSpec();
-				tasks = "copy:own-js copy:third-party-js copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
+				tasks = "copy:css copy:own-js copy:third-party-js copy:third-party-html copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
 				break;
 			case "final":
-				tasks = "copy:css copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
+				tasks = "copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
 				break;
 		}
 		grunt.task.run(tasks + " clean:build");
@@ -337,7 +444,7 @@ module.exports = function(grunt) {
 			src = patchers[self.data.patcher](
 				src,
 				config,
-				grunt.config("pkg." + (version === "stable" ? "version" : "majorVersion"))
+				grunt.config("pkg." + (version === "stable" ? "version" : "majorVersion")) + (version === "beta" ? ".beta" : "")
 			);
 			grunt.file.write(file, src);
 			grunt.log.ok();
@@ -361,7 +468,7 @@ module.exports = function(grunt) {
 			srcFiles = grunt.file.expandFiles(file.src);
 			async.concatSeries(srcFiles, function(srcFile, nextConcat) {
 				recess(srcFile, { compile: true }, function (err, res) {
-					nextConcat(null, res.output);
+					nextConcat(null, res[0].output[0]);
 				});
 			}, function(err, css) {
 				grunt.file.write(file.dest, css.join("\n") || "");
@@ -435,7 +542,9 @@ module.exports = function(grunt) {
 	grunt.registerHelper("make_docs", function(callback) {
 		var path = grunt.config("dirs.dist") + "/docs";
 		shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
-			shared.exec("jsduck --config=config/jsduck/config.json", function() {
+			// run jsduck without multi-processing because multi-processing
+			// can cause this issue: https://github.com/senchalabs/jsduck/issues/353
+			shared.exec("jsduck --config=config/jsduck/config.json --processes=0", function() {
 				// copy Echo specific images and CSS to documentation directory
 				shared.exec("cp -r docs/patch/* " + path, callback);
 			});
@@ -445,21 +554,27 @@ module.exports = function(grunt) {
 	var patchers = {
 		"url": function(src, config, version) {
 			var env = shared.config("env");
-			if ((env === "dev" || env === "test") && config && config.domain) {
+			var domain = process.env["CI"]
+				? "localhost:" + grunt.config("server.port")
+				: config && config.domain;
+			if ((env === "dev" || env === "test") && domain) {
 				src = src.replace(
 					/cdn\.echoenabled\.com(\/sdk\/v[\d\.]+\/)(?!dev)/g,
-					config.domain + "$1" + (env === "dev" ? "dev/" : "")
+					domain + "$1" + (env === "dev" ? "dev/" : "")
 				).replace(
 					/cdn\.echoenabled\.com(\/apps\/|\/")/g,
-					config.domain + "$1"
+					domain + "$1"
 				);
 			}
 			return src;
 		},
 		"testurl": function(src, config, version) {
 			var env = shared.config("env");
-			if ((env === "dev" || env === "test") && config && config.domain) {
-				src = src.replace(/echoappsteam\.github\.com\/js-sdk/, config.domainTests || config.domain);
+			var domain = process.env["CI"]
+				? "localhost:" + grunt.config("server.port")
+				: config && (config.domainTests || config.domain);
+			if ((env === "dev" || env === "test") && domain) {
+				src = src.replace(/echoappsteam\.github\.com\/js-sdk/, domain);
 			}
 			return src;
 		},
@@ -468,14 +583,13 @@ module.exports = function(grunt) {
 				.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 			if (shared.config("build")) {
 				// patch debug field only when we are building files
-				// and not patching already built ones during release
+				// and do not patch already built ones during release
 				src = src.replace(/("?debug"?: ?).*?(,)/, '$1' + (shared.config("build.stage") === "dev") + '$2');
 			}
 			return src;
 		},
 		"bootstrap-css": function(src, config) {
 			var env = shared.config("env");
-			var domain = (env === "dev" || env === "test") && config && config.domain || "http://cdn.echoenabled.com";
 			return src.replace(/(url\(")\.\.([/a-z-.]+"\))/ig, "$1" + ((shared.config("build.stage") === "dev") ? "../" : "") + "third-party/bootstrap$2");
 		},
 		"bootstrap-less": function(src) {
@@ -537,16 +651,14 @@ module.exports = function(grunt) {
 		var stage = shared.config("build.stage");
 		var spec = {};
 		if (stage === "final") {
-			_.each(["css", "images"], function(type) {
-				spec[type] = {
-					"files": {
-						"<%= dirs.build %>": grunt.config("sources." + target + "." + type)
-					},
-					"options": {
-						"basePath": "<config:dirs.src>"
-					}
-				};
-			});
+			spec["images"] = {
+				"files": {
+					"<%= dirs.build %>": grunt.config("sources." + target + ".images")
+				},
+				"options": {
+					"basePath": "<config:dirs.src>"
+				}
+			};
 			_.each(["demo", "tests", "apps"], function(type) {
 				spec[type] = {
 					"files": {
@@ -558,6 +670,14 @@ module.exports = function(grunt) {
 				};
 			});
 		} else {
+			spec["css"] = {
+				"files": {
+					"<%= dirs.build %>": grunt.config("sources." + target + ".css")
+				},
+				"options": {
+					"basePath": "<config:dirs.src>"
+				}
+			};
 			spec["own-js"] = {
 				"files": {
 					"<%= dirs.build %>": grunt.config("sources." + target + ".own-js")
@@ -571,6 +691,14 @@ module.exports = function(grunt) {
 					"<%= dirs.build %>": thirdPartySrc.map(function(name) {
 						return _chooseFile(name, "<%= dirs.src %>", target, stage);
 					})
+				},
+				"options": {
+					"basePath": "<config:dirs.src>"
+				}
+			};
+			spec["third-party-html"] = {
+				"files": {
+					"<%= dirs.build %>": grunt.config("sources.third-party-html")
 				},
 				"options": {
 					"basePath": "<config:dirs.src>"

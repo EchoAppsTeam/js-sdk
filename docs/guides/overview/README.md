@@ -1,113 +1,93 @@
 # High-level overview
 
-## Mission
-
-Echo JavaScript SDK aims to help developers to build real-time social apps on top of Echo Platform in an interoperable manner by providing the unified app structure and facilitating the most common aspects of apps development, such as Echo API interface, app configuration, dependencies, extensibility via plugins, general app deployment, etc.
-
-## Terminology
-
-This guide operates the terms described in the ["Terminology" guide](#!/guide/terminology), please refer to this guide to find more information about the JS SDK terms.
-
-## Unified declarative components structure
-
-In order to provide the interoperability between different components built by different developers, we introduced the notion of component manifest, which describes the main aspects of the component, such as templates, renderers, event, etc. This unified component definition helps with the plugins development as well, since any control or app built by any developer should follow the same rules. More information about the manifest format can be found in the hands-on guides:
-
-- [How to develop a control](#!/guide/how_to_develop_control)
-- [how to develop a plugin](#!/guide/how_to_develop_plugin)
-- [How to develop an app](#!/guide/how_to_develop_app)
-
-## Opensourced SDK code
-
-The code of the Echo JS SDK is opensourced, so you can monitor and participate in the SDK development.
-
-## UI framework
-
-Echo JS SDK v3 uses [Twitter Bootstrap](http://twitter.github.com/bootstrap/) as the new UI framework. Employing an industry-standard UI framework with well defined UI rules, should help the apps look stylish and unified, yet provide a lot of room for the customizations.
-
-## Tests infrastructure
-
-Quality of the code is what we keep in mind every day while working with the code. In order to achieve the best quality, 100% of the JS SDK public interfaces and a huge amount of internal interfaces were covered by the tests. The SDK tests can be executed [here](http://echoappsteam.github.com/js-sdk/tests/).
-
-## Documentation
-
-The JS SDK code contains the inline documentation for all the public interfaces. The HTML representation of the inline documentation is also available in our [Documentation Center](http://echoappsteam.github.com/js-sdk/docs/).
-
-## SDK building blocks
-
-The SDK libraries can be divided into 2 main groups:
-
-- core components
-- server-specific controls and plugins
+## About
+Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatWeOffer/EchoPlatform) that do the heavy lifting for real-time, social applications. This SDK is designed to make it easy for JavaScript app developers to consume these cloud services while producing more interoperable and consistent apps by addressing the following general app development challenges:
 
 
-#### The first group is the core SDK libs which serves as a base for all other components:
+- JS API - Easier access to server-side APIs via the client side
+- GUI Library - More consistent look and feel between apps (Bootstrap)
+- UI Apps - A Core set of UI Apps for common app/interaction patterns
+- Component Manifest - Consistent app architecture for plugin extensibility, consistent configuration handling and app interoperability
+- Echo Loader - Simplified dependency loading to reduce script conflicts and redundancies
+- Configuration storage and overrides (coming soon)
+- Centralized deployment management and administration (coming soon)
 
-### [Echo.API](#!/api/Echo.API.Request)
+## Main features
 
-A separate transport layer to communicate with Echo API endpoints.
+### JS API - Easier access to server-side APIs via the client side
+A well documented client-side API for interacting with the Echo Cloud Services quickly and easily right from the page using Javascript ({@link Echo.API.Request learn more}).
 
-### [Echo.Configuration](#!/api/Echo.Configuration)
+### GUI Library - More consistent look and feel between apps
+Echo JS SDK 3.0 uses [Twitter Bootstrap](http://twitter.github.com/bootstrap/) as the new UI framework. By employing an industry-standard UI framework with well defined UI rules, should help the apps look stylish and consistent, yet provide a lot of room for customizations by our publishers ({@link Echo.GUI learn more}).
 
-Class which implements the interface for convenient work with different configurations.
+### UI Apps - A Core set of Apps for common app/interaction patterns
+These apps quickly deliver core pieces of App UI based on common feature scenarios such as activity streams, submission, facepiles, counters and more.
 
-### [Echo.Events](#!/api/Echo.Events)
+#### Echo.StreamServer.Controls.Stream
+Echo Stream app which encapsulates interaction with the Echo Search API and displays live updating search results in a standard ‘news feed’ style format.
 
-Library for exchanging messages between components on the page. It also provides external interface for users to subscribe to a certain events (like "app was rendered", "user logged in", etc).
+#### Echo.StreamServer.Controls.Submit
+Echo Submit app which encapsulates interaction with the Echo Submit API and provides a simple ‘submit/comment form’ style interaction.
 
-### [Echo.Labels](#!/api/Echo.Labels)
+#### Echo.StreamServer.Controls.Counter
+Echo Counter class which encapsulates interaction with the Echo Count API and provides a simple live updating number.
 
-Class implements the language variables mechanics across the components.
+#### Echo.StreamServer.Controls.FacePile
+Echo FacePile app displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
 
-### [Echo.UserSession](#!/api/Echo.UserSession)
+#### Echo.IdentityServer.Controls.Auth
+Echo Auth app displays the user login status and allows them sign in using different social identities.
 
-Class which implements the interface to work with the user object. The Echo.UserSession class is used in pretty much all applications built in top of Echo JS SDK.
+#### [Guide: Building an App](#!/guide/how_to_develop_app)
 
-### [Echo.Utils](#!/api/Echo.Utils)
+### Component Manifest - Consistent app architecture for plugin extensibility, consistent configuration handling and app interoperability
 
-Static class implements common methods of data processing. The Echo.Utils class is used in various places of Echo JS SDK components.
+In order to ensure consistency between various components built by different developers, we have introduced a Component Manifest which describes the core attributes of the given component, such as templates, renderers, events, dependencies etc.
 
-### [Echo.View](#!/api/Echo.View)
+Components build using this approach inherit a number of distinct advantages including:
 
-Class implementing core rendering logic, which is widely used across the system. In addition to the rendering facilities, this class maintains the list of elements within the given view ("view elements collection") and provides the interface to access/update them.
+- Better app consistency and interoperability. Multiple apps can be deployed on the same page (or combined together) without script conflicts and errors.
+- Supports for plugins that can modify the given component’s behavior.
 
-### [Echo.Loader](#!/api/Echo.Loader)
 
-Class which contains the logic for downloading JS and CSS dependencies and works to retrieve app configuration from the AppServer and init an application(s).
+[Guide: Developing an App](#!/guide/how_to_develop_app)
 
-### [Echo.Control](#!/api/Echo.Control)
+[Guide: Developing a Plugin](#!/guide/how_to_develop_plugin)
 
-Foundation class implementing core logic to create controls and manipulate with them. See the "control" definition in the ["Terminology" guide](#!/guide/terminology).
+### Echo Loader - Simplified dependency loading to reduce script conflicts and redundancies
 
-### [Echo.Plugin](#!/api/Echo.Plugin)
+In order to minimize the footprint of JavaScript files on a given page (particularly important for SEO and mobile web) and avoid script conflicts the JS SDK provides a class which contains the logic for downloading appropriate JS and CSS dependencies (as described in the Component Manifest) on the fly ({@link Echo.Loader learn more}).
 
-Foundation class implementing core logic to create plugins and manipulate with them. See the "plugin" definition in the ["Terminology" guide](#!/guide/terminology).
+## Other Features
 
-### [Echo.App](#!/api/Echo.App)
+### Built in Minification
 
-Foundation class implementing core logic to create applications. See the "application" definition in the ["Terminology" guide](#!/guide/terminology).
+All SDK files are served from our CDN minified by default, which reduces the size of the scripts by 25-85% of the original versions (min+gzip compared to dev+gzip). Non-minified versions of the files are also provided to simplify the development and debug process.
 
-### Echo.jQuery
+### More fault tolerant jQuery support
 
-The separate jQuery instance used in all Echo JS SDK components.
+One of the common issues faced JS App Development is jQuery incompatibility. Different versions of jQuery software located on the same page would sometimes cause conflicts, bugs and other problems. In SDK 3.0 we’ve introduced a dedicated namespace for jQuery and isolated it from accidental overrides.
 
-#### The second group is the set of server-specific controls:
+### Open source code available on GitHub
 
-### [Echo.StreamServer.Controls.Stream](#!/api/Echo.StreamServer.Controls.Stream)
+The SDK code is open source (located on GitHub). We look forward to having the community monitor and participate in SDK development moving forward.
 
-Echo Stream control which encapsulates interaction with the Echo Search API.
+The GitHub repo can be found [here](https://github.com/EchoAppsTeam/js-sdk/)
 
-### [Echo.StreamServer.Controls.Submit](#!/api/Echo.StreamServer.Controls.Submit)
+### Extensive test suites
 
-Echo Submit control which encapsulates interaction with the Echo Submit API.
+100% of the public interfaces are covered with automated tests (over 1k and counting), which should increase quality and predictability moving forward.
 
-### [Echo.StreamServer.Controls.Counter](#!/api/Echo.StreamServer.Controls.Counter)
+Test Suites can be found [here](http://echoappsteam.github.com/js-sdk/tests/)
 
-Echo Counter class which encapsulates interaction with the Echo Count API
+### Extensive documentation
 
-### [Echo.StreamServer.Controls.FacePile](#!/api/Echo.StreamServer.Controls.FacePile)
+Inline documentation for all public functions using JSDuck is included. We have also added several guides and tutorials and are planning to extend the SDK knowledge base moving forward.
 
-Echo FacePile control displays users (actors) returned in any activity stream.
+Documentation can be found [here](http://echoappsteam.github.com/js-sdk/docs/)
 
-### [Echo.IdentityServer.Controls.Auth](#!/api/Echo.IdentityServer.Controls.Auth)
+## Get Started
 
-Echo Auth control displays user login status and allows to sign in using different social identities.
+Check out the documentation on [GitHub](http://echoappsteam.github.com/js-sdk/docs/).
+
+To get started with the SDK [contact us](http://aboutecho.com/AboutEcho/Contact)!

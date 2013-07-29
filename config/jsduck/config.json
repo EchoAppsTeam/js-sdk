@@ -3,13 +3,14 @@
 	"--footer": "<a class=\"policy\" target=\"_blank\" href=\"http://aboutecho.com/Privacy\">Privacy Policy</a> | © 2013 Echo. All rights reserved.",
 	"--": ["../../src"],
 	"--output": "../../web/docs",
-	"--meta-tags": "../../tools/jsduck/meta-tags.rb",
+	"--tags": "../../tools/jsduck/custom-tags.rb",
 	"--guides": "../../docs/guides.json",
 	"--examples": "../../docs/examples.json",
 	"--examples-base-url": "../demo/",
 	"--ignore-global": true,
 	"--pretty-json": true,
-	"--warnings": ["-no_doc", "-global"],
+	"--no-ext4-events": true,
+	"--warnings": ["-no_doc", "-global", "-image_unused"],
 	"--welcome": "../../docs/welcome.html",
 	"--head-html": "<link type=\"text/css\" href=\"resources/css/echo.css\" rel=\"stylesheet\"><script>Docs.initEventTracking = function() { Ext.getCmp('north-region').setHeight(80); Ext.getCmp('north-region').items.first().setHeight(53); };</script>"
 }

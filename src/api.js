@@ -462,13 +462,13 @@ Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
 };
 
 Echo.API.Transports.XDomainRequest.available = function(config) {
-	config = config || {"URL": "", "method": ""};
-	var schema = utils.parseURL(config.URL) && utils.parseURL(config.URL).schema || "http:";
+	config = config || {"method": "", "secure": false};
+	var scheme = config.secure ? "https:" : "http:";
 	// XDomainRequests must be: GET or POST methods, HTTP or HTTPS protocol,
 	// and same scheme as calling page
 	var transportSpecAvailability = /^get|post$/i.test(config.method)
-		&& /^https?/.test(schema)
-		&& document.location.protocol === schema;
+		&& /^https?/.test(scheme)
+		&& document.location.protocol === scheme;
 	return "XDomainRequest" in window
 		&& transportSpecAvailability;
 };
@@ -552,6 +552,9 @@ Echo.API.Transports.JSONP.available = function() {
 /**
  * @class Echo.API.Request
  * Class implementing API requests logic on the transport layer.
+ *
+ * @package api.pack.js
+ * @package environment.pack.js
  */
 /*
  * @constructor
@@ -612,14 +615,29 @@ Echo.API.Request = function(config) {
 		"settings": {},
 		/**
 		 * @cfg {String} [transport]
-		 * Specifies the transport name.
+		 * Specifies the transport name. The following transports are available:
+		 *
+		 *  + "ajax"
+		 *  + "jsonp"
+		 *  + "XDomainRequest" (only supported in IE8+)
+		 *
 		 */
 		"transport": "ajax",
 		/**
 		 * @cfg {String} [method]
-		 * Specifies the request method.
+		 * Specifies the request method. The following methods are available:
+		 *
+		 *  + "GET"
+		 *  + "POST"
+		 *
 		 */
 		"method": "GET",
+		/**
+		 * @cfg {Boolean} [secure]
+		 * There is a flag which indicates what protocol will be used in, secure or not.
+		 * If this parameter is not set, internally the lib will decide on the URL scheme.
+		 */
+		"secure": false,
 		/**
 		 * @cfg {Number} [timeout]
 		 * Specifies the number of seconds after which the onError callback
@@ -630,9 +648,11 @@ Echo.API.Request = function(config) {
 };
 
 Echo.API.Request.prototype._isSecureRequest = function() {
-	var parts = utils.parseURL(this.config.get("apiBaseURL"));
-	if (!parts.scheme) return false;
-	return /https|wss/.test(parts.scheme);
+	var parts, secure = this.config.get("secure");
+	var re = /https|wss/;
+	if (secure) return secure;
+	parts = utils.parseURL(this.config.get("apiBaseURL"));
+	return re.test(window.location.protocol) || re.test(parts.scheme);
 };
 
 /**
@@ -674,10 +694,6 @@ Echo.API.Request.prototype.request = function(params) {
 	}
 };
 
-Echo.API.Request.prototype._onData = Echo.API.Request.prototype._onError = function(response) {
-	clearTimeout(this._timeoutId);
-};
-
 Echo.API.Request.prototype.abort = function() {
 	this.transport && this.transport.abort();
 };
@@ -695,7 +711,7 @@ Echo.API.Request.prototype._getTransport = function() {
 			var transport;
 			$.each(["AJAX", "XDomainRequest", "JSONP"], function(i, name) {
 				var available = Echo.API.Transports[name].available({
-					"URL": self.config.get("apiBaseURL"),
+					"secure": self.config.get("secure"),
 					"method": self.config.get("method")
 				});
 				if (available) {
@@ -717,9 +733,14 @@ Echo.API.Request.prototype._getTransport = function() {
 };
 
 Echo.API.Request.prototype._getHandlersByConfig = function() {
+	var self = this;
 	return utils.foldl({}, this.config.getAsHash(), function(value, acc, key) {
-		if (/^on[A-Z]/.test(key)) {
-			acc[key] = value;
+		var handler;
+		if (/^on[A-Z]/.test(key) && $.isFunction(value)) {
+			handler = key !== "onOpen"
+				? function() { clearTimeout(self._timeoutId); value.apply(null, arguments); }
+				: value;
+			acc[key] = handler;
 		}
 	});
 };

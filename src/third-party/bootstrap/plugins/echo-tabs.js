@@ -30,27 +30,40 @@ if (Echo.GUI.Tabs) return;
  * 			"label": "Tab 2",
  * 			"panel": $(".panel-css-selector2"),
  * 		}],
- * 		"extraClass": "extra-class"
- * 		"show": function() {}
+ * 		"extraClass": "extra-class",
+ * 		"select": function() {},
+ * 		"show": function() {},
+ * 		"shown": function() {}
  * 	});
  *
+ * 	// add a new tab
+ * 	myTabs.add({"id": "tab3", "label": "Tab 3"});
+ *
+ * 	// remove the second tab
+ * 	myTabs.remove("tab2");
+ *
  * @extends Echo.GUI
+ *
+ * @package gui.pack.js
+ *
  * @constructor
  * Creates a new tabs in the container you have passed in the "config.target".
  *
  * @param {Object} config
  * Tabs configuration.
  *
- * @cfg {Mixed} target
+ * @cfg {Mixed} target (required)
  * The container where the tabs should be located.
  * This parameter can have several types:
- * 	- CSS selector (ex: "css-selector")
- * 	- HTMLElement (ex: document.getElementById("some-element-id"))
- * 	- jQuery object (ex: $(".css-selector"))
  *
- * @cfg {String} idPrefix
+ * + CSS selector (ex: "css-selector")
+ * + HTMLElement (ex: document.getElementById("some-element-id"))
+ * + jQuery object (ex: $(".css-selector"))
+ *
+ * @cfg {String} [idPrefix=""]
  * Prefix which helps to make the tab id unique across the page.
  * Every Echo.GUI.Tabs instance should have its own unique prefix.
+ *
  * Examples: "my-tabs-section", "my-product-tabs".
  *
  * @cfg {Boolean} [noRandomId=false]
@@ -58,9 +71,9 @@ if (Echo.GUI.Tabs) return;
  * instances of the *same* application on the page. Setting this parameter to `true` will
  * remove random part so it should be used with care.
  *
- * @cfg {Array} [entries]
+ * @cfg {Array} [entries=[]]
  * Array of entries (tabs).
-
+ *
  * @cfg {String} entries.id
  * Tab id.
  *
@@ -86,11 +99,34 @@ if (Echo.GUI.Tabs) return;
  * Element with tabs will get "**\<classPrefix\>**header" class name
  * and element with panels will get "**\<classPrefix\>**panels" class.
  *
+ * @cfg {Function} [select]
+ * Function which will be called when tab is selected.
+ *
+ * @cfg {HTMLElement} select.tab
+ * Container which is the tab itself.
+ *
+ * @cfg {String} select.id
+ * Id of selected tab.
+ *
  * @cfg {Function} [show]
- * Function which will be called when tab is shown.
+ * Function to be called before the active tab panel is displayed.
+ *
+ * @cfg {HTMLElement} show.tab
+ * Container which is the tab itself.
+ *
+ * @cfg {HTMLElement} show.panel
+ * Container which is a panel related to the tab.
  *
  * @cfg {String} show.id
- * Id of selected tab.
+ * Id of shown tab.
+ *
+ * @cfg {Number} show.index
+ * Numerical index of the tab.
+ *
+ * @cfg {Function} [shown]
+ * Function to be called as soon as the active tab is displayed.
+ *
+ * The parameters are passed to this function the same as in #show.
  */
 Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 	config.panels = config.panels ? $(config.panels) : $("<div>");
@@ -100,11 +136,14 @@ Echo.GUI.Tabs = Echo.Utils.inherit(Echo.GUI, function(config) {
 		"idPrefix": "",
 		"noRandomId": false,
 		"classPrefix": "echo-tabs-",
-		"show": function() {}
+		"select": function() {},
+		"show": function() {},
+		"shown": function() {}
 	});
 });
 
 Echo.GUI.Tabs.prototype.refresh = function() {
+	var self = this;
 	var entries = this.config.get("entries");
 	var panels = this.config.get("panels");
 	var target = this.config.get("target");
@@ -127,6 +166,13 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 		}
 		this.show(entries[this.config.get("selected", 0)].id);
 	}
+
+	this.tabsContainer.on("click.tab.data-api", ':not(.active) > [data-toggle="tab"]', function() {
+		self.config.get("select").call(self,
+			$(this),
+			$(this).data("item")
+		);
+	});
 };
 
 /**
@@ -216,14 +262,17 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	var tab = $('<li' + (classes ? ' class="' + classes + '"' : '') +'><a ' + attrs + '>' + tabConfig.label  + '</a></li>');
 
 	var a = $("a", tab);
-	a.on("show", function() {
-		self.config.get("show").call(self,
-			$(this),
-			self._getPanel(tabConfig.id),
-			tabConfig.id,
-			self._getTabIndex(tabConfig.id)
-		);
+	$.map(["show", "shown"], function(event) {
+		a.on(event, function() {
+			self.config.get(event).call(self,
+				$(this),
+				self._getPanel(tabConfig.id),
+				tabConfig.id,
+				self._getTabIndex(tabConfig.id)
+			);
+		});
 	});
+
 	$.each(tabConfig.data || {}, function(k, v) {
 		a.data(k, v);
 	});
@@ -303,8 +352,9 @@ Echo.GUI.Tabs.prototype.show = function(id) {
 };
 
 Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
-	for (var i = 0; i < this.config.get("entries").length; i++) {
-		if (this.config.get("entries")[i].id === id) {
+	var entries = this.config.get("entries");
+	for (var i = 0; i < entries.length; i++) {
+		if (entries[i].id === id) {
 			return i;
 		}
 	}

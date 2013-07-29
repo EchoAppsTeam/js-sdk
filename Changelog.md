@@ -1,5 +1,94 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.9 - June 20, 2013
+
+* [JanrainAuth plugin](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth) for [Echo Submit Control](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit) is added to employ [Janrain Social Login Widget](http://janrain.com/products/engage/social-login/).
+  Now there is no need to include the "FormAuth" plugin and configure Janrain app URL, you can just include the "JanrainAuth" plugin instead of the "FormAuth" one and pass the Janrain app ID. The plugin takes care about the rest. It is based on the most current Janrain Login Widget implementation so it is recommended to use "JanrainAuth" plugin in case of integration with Janrain authentication provider. Note: the "FormAuth" plugin is still available as a part of the Echo JS SDK package for more complex integration cases.
+
+* [JanrainSharing plugin](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing) for [Echo Submit Control](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit) is added to employ [Janrain Social Sharing Widget](http://janrain.com/products/engage/social-sharing/).
+  As a part of the update we also added an ability to display the "Share this" checkbox near the "Post" button of the Submit form to let the user decide if the sharing popup should be opened or not. The visibility of the checkbox can be changed using the plugin configuration parameter. If the checkbox is not displayed, the sharing popup will appear automatically after a successful item submission.
+
+* [JanrainSharing plugin](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.JanrainSharing) for [Echo Stream Control](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream) is added to employ [Janrain Social Sharing Widget](http://janrain.com/products/engage/social-sharing/).
+  Long awaited feature was added into the Stream control: using the "JanrainSharing" plugin for the Stream, the "Share" button can be added into the Stream Item UI to provide the ability for the users to share items with their friends.
+
+* [JanrainConnector plugin](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth.Plugins.JanrainConnector) for [Echo Auth Control](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth) is added to employ [Janrain Social Login Widget](http://janrain.com/products/engage/social-login/).
+  This plugin provides the ability to enable the Janrain Social Login Widget functionality for the Echo Auth control.
+
+* The error code was missing in the popup which appeared in case the server returned an error response after the item submission via Submit form. Now the error message received from the server side is properly displayed to provide additional information for the user about the reason for the failed submission attempt.
+
+* The [maxBodyLines limits parameter](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item-cfg-limits) was handled by the Stream Item class a bit incorrectly which produced JavaScript errors in case the parameter was specified in the config. The issue was fixed to handle this parameter and truncate the Item content properly.
+
+* The way Echo controls and plugins deal with certain fields was optimized to exclude parent widget configuration processing in every internal component. In addition to that the Stream Item config assembling was optimized to avoid unnecessary data structures copying before the Item instance initialization. This should improve the Stream performance especially for the cases when it's initialized from static data (via "data" config parameter).
+
+* The "shown" callback was added to the Echo.GUI.Tabs class. The callback is being executed after the tab has been shown. More information about the callback can be found in the [Echo.GUI.Tabs documentation](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI.Tabs).
+
+* Twitter Bootstrap was upgraded from 2.3.1 to 2.3.2 version. More information about the Bootstrap updates is available [here](http://blog.getbootstrap.com/2013/05/17/bootstrap-2-3-2-released/).
+
+* jQuery was upgraded from 1.9.1 to 1.10.1 version. The corresponding jQuery release notes are available [here](http://blog.jquery.com/2013/05/24/jquery-1-10-0-and-2-0-1-released/) for version 1.10.0 and [here](http://blog.jquery.com/2013/05/30/jquery-1-10-1-and-2-0-2-released/) for version 1.10.1.
+
+* The Item UI was improved in case the "PinboardVisualization" plugin is installed for the Stream control. We've fixed the problem with Items border rendering (the border was missing) and improved the Stream rendering on mobile devices.
+
+* The following guides were added into our Documentation Center:
+  - [How to use template placeholders](http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_use_template_placeholders)
+  - [How to extend templates](http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_extend_templates)
+  - [How to work with text labels](http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_work_with_labels)
+  - [Dependency management in JS SDK](http://echoappsteam.github.io/js-sdk/docs/#!/guide/dependency_management)
+  - [How to initialize Echo components](http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_initialize_components)
+
+  The complete list of guides can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/guide).
+
+## v3.0.8 - May 16, 2013
+
+* The "ready" callback was not executed in case an incorrect appkey was specified during the **Echo.UserSession initialization**. As a result, Control or App initialization was stopped on the user creation step. Now the Echo.UserSession initialized with an invalid appkey is considered as an anonymous user (the "ready" callback is being executed).
+
+* Internal logic of the **Echo.Control class** was updated to prevent the "data" configuration parameter from being pointlessly processed by the Echo.Configuration class during Control or App initialization. This improves the **performance of Controls/Apps** in case the "data" parameter is passed in the config. This update also improves the Stream control performance due to the fact that the "data" parameter is used to initialize the Item instances (Stream passes the data to the Item class via the "data" config parameter).
+
+* We added the **"asyncItemsRendering" config option for the Stream control** to trigger the asynchronous items rendering. The option is disabled by default, so the Stream control acts exactly the same. This option is highly recommended for the Streams with the amount of items (roots + children) over 50 on a single Stream page or in case the items contain the UGC content such as images, videos, etc. More information about this option is available in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-asyncItemsRendering).
+
+* The **"Echo.Canvas.onError" event** was added into the Echo.Canvas class to provide the ability to handle errors outside of the class if needed. More information about the error can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-event-onError).
+
+* The **"Post" button** HTML element was changed from \<button> to \<div> to avoid problems when the **Submit control** is installed into the target inside the \<form> element (for example, the button click triggers the \<form> submission in Firefox browser).
+
+* **Echo.API.Request** class logic was updated to use secure (HTTPS) protocol for Echo API endpoint requests in case the "secure" config parameter is set to false or undefined. More information about the "secure" option can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.API.Request-cfg-secure).
+
+* **Stream and Counter controls** logic which handles the pre-defined data case (passed via the "data" config parameter) was updated to execute live update requests as we normally do for the regular case when the initial data is being requested from the server side.
+
+* The **"getRelativeTime" function of the Echo.Control class** was updated to display the "Just now" text instead of "N seconds" in case the time passed into the function differs from the current time by less than 10 seconds. More info about this function can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-method-getRelativeTime).
+
+* The **"Echo.StreamServer.Controls.Submit.onPostComplete" and "Echo.StreamServer.Controls.Submit.onPostError" event contracts were extended** to include the server side API response as a part of the callback handler arguments. More information about the events can be found in our Documentation Center using the following links: [onPostComplete](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-event-onPostComplete) event, [onPostError](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-event-onPostError) event.
+
+## v3.0.7 - Apr 11, 2013
+
+* Sometimes when the item was updated, the **item timestamp field was missing** in the UI. The problem was fixed and as a part of the fix we removed the “age” field (which was no longer used) from the Echo.StreamServer.Controls.Stream.Item class instance. Since the field existed for internal usage only, it should not affect the code written on top of the SDK. Anyway if you used the “age” field references in your code, make sure that the corresponding code is rewritten accordingly.
+
+* The Echo.Canvas abstraction was added to work with the application deployments. The abstraction is used primarily in the **Echo.Loader.initApplication** function at this moment to init applications, but it will also be widely used later for other app deployment scenarios. The corresponding code of the Echo.Loader class was refactored to work with the Echo.Canvas abstraction. Note: we do not recommend the Echo.Canvas abstraction usage directly for now, please use the Echo.Loader.initApplication function instead. More information about the Echo.Loader.initApplication function can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication).
+
+* The **Twitter Bootstrap UI framework** was upgraded from 2.3.0 to 2.3.1 version. The framework changelog is available [here](https://github.com/twitter/bootstrap/blob/master/CHANGELOG.md).
+
+* The **"PinboardVisualization" plugin** was handling the YouTube video URLs in the item content incorrectly, which prevented videos from appearing in the item UI. Now the URLs processing was updated and the videos should appear in the item UI properly.
+
+* There was a mismatch between the “show user list” option names used in the **"CommunityFlag" plugin** code, the plugin default config object and docs. The [config and docs](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-cfg-showUserList) are now synced.
+
+* Incorrect detection of the current user id in the **"Like" plugin** caused invalid label in the Stream item UI for the likes submitted by the current user. The user id detection is now fixed.
+
+* The "itemURIPattern" configuration parameter was ignored by the **Submit control** during the item submission. Now the Submit control is passing the "itemURIPattern" parameter value into the API machinery which takes care of sending the data to the server side. More information about the "itemURIPattern" can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-cfg-itemURIPattern).
+
+* We introduced the new parameter called "useSecureAPI" to all classes based on the Echo.Control or Echo.App class. This parameter is designed to specify the API request scheme (HTTP or HTTPS). More information about the “useSecureAPI” parameter can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-cfg-useSecureAPI).
+
+* The **“tags” and “markers” parameter values defined in the Submit control config were ignored** while building the UI for administrators/moderators. The issue was fixed and now the Submit control takes the config values into account.
+
+* When the **Echo.API.Request** class was used directly (without any wrappers like Echo.StreamServer.API.Request, etc), the module was acting incorrectly in case of errors, since the part of the logic existed in the wrappers only. The necessary logic was moved into the base class now to handle the error responses better.
+
+* Under a certain condition the **“onShow” callback in the Echo.GUI.Modal class instance was called twice**. The Echo.GUI.Modal logic was updated to suppress the excessive callback function execution.
+
+* Sometimes the **Echo.Loader.download** function callback was executed before the resources downloading was complete (in case the next scripts chunk downloading had started before the previous chunk was loaded). The issue is originally coming from the [YepNope](http://yepnopejs.com/) loader we use for loading the resources (the corresponding ticket in their [bugtracker](https://github.com/SlexAxton/yepnope.js/issues/113)). We added the logic to avoid the described situation.
+
+* The **HTTP protocol was used by the Echo.Loader class** to download Echo environment scripts on HTTPS pages which caused security warnings in a browser. Now the Echo.Loader detects the page protocol and requests the dependencies using either HTTP or HTTPS.
+
+* The **“TwitterIntents” plugin was renamed to “TweetDisplay”**. The “TwitterIntents” plugin is still available, but it was marked as deprecated and will be removed during the next (v3.0.8) SDK release. If you use this plugin, **please update the plugin name** in your installations. The tweets appearance was also updated to comply with the latest Twitter display requirements.
+
+* The **“select” event has been added into the Echo.GUI.Tabs** class. The event is triggered when the user clicks on the non-disabled, but inactive (not selected) tab. More info about the “select” event can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI.Tabs-cfg-select).
+
 ## v3.0.6 - Feb 20, 2013
 
 * **the quirks browser mode is no longer supported**, more information is available [here](http://echoappsteam.github.com/js-sdk/docs/#!/guide/technical_specification-section-1).

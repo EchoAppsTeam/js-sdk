@@ -5,8 +5,7 @@ var $ = jQuery;
 
 /**
  * @class Echo.IdentityServer.Controls.Auth
- * Echo Auth control displays the user login status and allows to sign in using
- * different social identities.
+ * Echo Auth control displays the user login status and allows them to sign in using different social identities.
  *
  * 	var identityManager = {
  * 		"title": "Title of the auth area"
@@ -17,14 +16,20 @@ var $ = jQuery;
  *
  * 	new Echo.IdentityServer.Controls.Auth({
  * 		"target": document.getElementById("echo-auth"),
- * 		"appkey": "test.aboutecho.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"identityManager": {
  * 			"login": identityManager,
  * 			"signup": identityManager
  * 		}
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package identityserver/controls.pack.js
+ * @package identityserver.pack.js
  *
  * @constructor
  * Auth constructor initializing Echo.IdentityServer.Controls.Auth class.
@@ -35,6 +40,40 @@ var $ = jQuery;
 var auth = Echo.Control.manifest("Echo.IdentityServer.Controls.Auth");
 
 if (Echo.Control.isDefined(auth)) return;
+
+/** @hide @cfg submissionProxyURL */
+/** @hide @method placeImage */
+/** @hide @method getRelativeTime */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
+/** @hide @echo_label loading */
+/** @hide @echo_label retrying */
+/** @hide @echo_label error_busy */
+/** @hide @echo_label error_timeout */
+/** @hide @echo_label error_waiting */
+/** @hide @echo_label error_view_limit */
+/** @hide @echo_label error_view_update_capacity_exceeded */
+/** @hide @echo_label error_result_too_large */
+/** @hide @echo_label error_wrong_query */
+/** @hide @echo_label error_incorrect_appkey */
+/** @hide @echo_label error_internal_error */
+/** @hide @echo_label error_quota_exceeded */
+/** @hide @echo_label error_incorrect_user_id */
+/** @hide @echo_label error_unknown */
 
 auth.config = {
 	/**
@@ -55,7 +94,7 @@ auth.config = {
 	 *
 	 * 	new Echo.IdentityServer.Controls.Auth({
 	 * 		"target": document.getElementById("echo-auth"),
-	 * 		"appkey": "test.aboutecho.com",
+	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"identityManager": {
 	 * 			"login": identityManager,
 	 * 			"signup": identityManager
@@ -159,6 +198,9 @@ auth.events = {
 	}
 };
 
+/**
+ * @echo_template
+ */
 auth.templates.anonymous =
 	'<div class="{class:userAnonymous}">' +
 		'<span class="{class:login} echo-linkColor echo-clickable">' +
@@ -170,6 +212,9 @@ auth.templates.anonymous =
 		'</span>' +
 	'</div>';
 
+/**
+ * @echo_template
+ */
 auth.templates.logged =
 	'<div class="{class:userLogged}">' +
 		'<div class="{class:avatar}"></div>' +
@@ -269,7 +314,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 		return element.on("click", function() {
 			self.modal = new Echo.GUI.Modal({
 				"data": {
-					"title": self.config.get("identityManager." + type + ".title")
+					"title": data.title
 				},
 				"href": self._appendSessionID(data.url),
 				"width": parseInt(data.width),

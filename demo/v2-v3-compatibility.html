@@ -34,7 +34,7 @@
             <script type="text/javascript">
                 new Echo.Stream({
                     "target": document.getElementById("stream-v2"),
-                    "appkey": "test.echoenabled.com",
+                    "appkey": "echo.jssdk.demo.aboutecho.com",
                     "query": "childrenof:http://example.com/* itemsPerPage:1",
                     "viaLabel": { "icon": true, "text": true },
                     "plugins": [{
@@ -84,7 +84,7 @@
             <script type="text/javascript">
                 new Echo.Auth({
                     "target": document.getElementById("auth-form-v2"),
-                    "appkey": "test.echoenabled.com",
+                    "appkey": "echo.jssdk.demo.aboutecho.com",
                     "identityManager": {
                         "login": identityManager,
                         "signup": identityManager
@@ -101,7 +101,7 @@
             <script type="text/javascript">
                 new Echo.Submit({
                     "target": document.getElementById("submit-form-v2"),
-                    "appkey": "test.echoenabled.com",
+                    "appkey": "echo.jssdk.demo.aboutecho.com",
                     "targetURL": "http://example.com/js-sdk",
                     "plugins": [{
                         "name": "FormAuth",
@@ -126,7 +126,7 @@
             <script type="text/javascript">
                 new Echo.Counter({
                     "target": document.getElementById("counter-v2"),
-                    "appkey": "test.echoenabled.com",
+                    "appkey": "echo.jssdk.demo.aboutecho.com",
                     "query": "childrenof:http://example.com/*"
                 });
             </script>
@@ -140,7 +140,7 @@
             <script type="text/javascript">
                 new Echo.UserList({
                     "target": document.getElementById("user-list-v2"),
-                    "appkey": "test.echoenabled.com",
+                    "appkey": "echo.jssdk.demo.aboutecho.com",
                     "query": "childrenof:http://example.com/*",
                     "suffixText": " commented on aboutecho.com",
                     "item": {"avatar": true, "text": true}
@@ -160,12 +160,12 @@
                 new Echo.StreamServer.Controls.Stream({
                     "target": document.getElementById("stream-v3"),
                     "query": "childrenof:http://example.com/* itemsPerPage:1",
-                    "appkey": "test.aboutecho.com",
+                    "appkey": "echo.jssdk.demo.aboutecho.com",
                     "item": {
                         "viaLabel": { "icon": true, "text": true }
                     },
                     "plugins": [{
-                        "name": "TwitterIntents"
+                        "name": "TweetDisplay"
                     }, {
                         "name": "Reply",
                         "nestedPlugins": [{
@@ -210,7 +210,7 @@
             <script type="text/javascript">
                 new Echo.IdentityServer.Controls.Auth({
                     "target": document.getElementById("auth-form-v3"),
-                    "appkey": "test.echoenabled.com",
+                    "appkey": "echo.jssdk.demo.aboutecho.com",
                     "identityManager": {
                         "login": identityManager,
                         "signup": identityManager
@@ -227,7 +227,7 @@
             <script type="text/javascript">
                 new Echo.StreamServer.Controls.Submit({
                     "target": document.getElementById("submit-form-v3"),
-                    "appkey": "test.aboutecho.com",
+                    "appkey": "echo.jssdk.demo.aboutecho.com",
                     "targetURL": "http://example.com/test-js-sdk",
                     "plugins": [{
                         "name": "FormAuth",
@@ -253,7 +253,7 @@
             <script type="text/javascript">
                 new Echo.StreamServer.Controls.Counter({
                     "target": document.getElementById("counter-v3"),
-                    "appkey": "test.aboutecho.com",
+                    "appkey": "echo.jssdk.demo.aboutecho.com",
                     "query" : "childrenof:http://example.com/*"
                 });
             </script>
@@ -267,7 +267,7 @@
             <script type="text/javascript">
                 new Echo.StreamServer.Controls.FacePile({
                     "target": document.getElementById("face-pile-v3"),
-                    "appkey": "test.aboutecho.com",
+                    "appkey": "echo.jssdk.demo.aboutecho.com",
                     "query": "childrenof:http://example.com/*",
                     "suffixText": " commented on aboutecho.com",
                     "item": {"avatar": true, "text": true}

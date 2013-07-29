@@ -2,11 +2,10 @@
   "name": "js-sdk",
   "title": "Echo JS SDK",
   "description": "Javascript SDK for Echo applications",
-  "version": "3.0.6",
-  "homepage": "https://github.com/EchoAppsTeam/js-sdk",
+  "version": "3.0.9",
+  "homepage": "http://echoappsteam.github.com/js-sdk/",
   "author": {
     "name": "Echo",
-    "email": "solutions@aboutecho.com",
     "url": "http://aboutecho.com"
   },
   "repository": {
@@ -18,14 +17,21 @@
   },
   "licenses": [
     {
-      "type": "MIT",
-      "url": "https://github.com/EchoAppsTeam/js-sdk/blob/master/LICENSE-MIT"
+      "type": "Apache-2.0",
+      "url": "https://github.com/EchoAppsTeam/js-sdk/blob/master/LICENSE"
     }
   ],
   "dependencies": {
     "grunt-contrib": "~0.1.7",
+    "wd": "~0.0.3",
+    "q": "~0.9.3",
+    "request": "~2.21.0",
     "ftp": "~0.1.5",
-    "recess": "1.0.3"
+    "recess": "1.1.8",
+    "async": "~0.2.8"
   },
-  "keywords": []
+  "keywords": [],
+  "scripts": {
+     "test": "grunt ci --env=test"
+  }
 }

@@ -7,14 +7,21 @@ var $ = jQuery;
  * @class Echo.StreamServer.Controls.Submit
  * Echo Submit control which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank">Echo Submit API</a>
+ * and provides a simple ‘submit/comment form’ style interaction.
  *
  * 	new Echo.StreamServer.Controls.Submit({
  * 		"target": document.getElementById("submit"),
  * 		"targetURL": "http://example.com/submit",
- * 		"appkey": "test.aboutecho.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 	});
  *
+ * More information regarding the possible ways of the Control initialization
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ *
  * @extends Echo.Control
+ *
+ * @package streamserver/controls.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * Submit constructor initializing Echo.StreamServer.Controls.Submit class
@@ -25,6 +32,40 @@ var $ = jQuery;
 var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
 
 if (Echo.Control.isDefined(submit)) return;
+
+/** @hide @cfg apiBaseURL */
+/** @hide @method placeImage */
+/** @hide @method getRelativeTime */
+/** @hide @echo_label today */
+/** @hide @echo_label yesterday */
+/** @hide @echo_label lastWeek */
+/** @hide @echo_label lastMonth */
+/** @hide @echo_label secondAgo */
+/** @hide @echo_label secondsAgo */
+/** @hide @echo_label minuteAgo */
+/** @hide @echo_label minutesAgo */
+/** @hide @echo_label hourAgo */
+/** @hide @echo_label hoursAgo */
+/** @hide @echo_label dayAgo */
+/** @hide @echo_label daysAgo */
+/** @hide @echo_label weekAgo */
+/** @hide @echo_label weeksAgo */
+/** @hide @echo_label monthAgo */
+/** @hide @echo_label monthsAgo */
+/** @hide @echo_label loading */
+/** @hide @echo_label retrying */
+/** @hide @echo_label error_busy */
+/** @hide @echo_label error_timeout */
+/** @hide @echo_label error_waiting */
+/** @hide @echo_label error_view_limit */
+/** @hide @echo_label error_view_update_capacity_exceeded */
+/** @hide @echo_label error_result_too_large */
+/** @hide @echo_label error_wrong_query */
+/** @hide @echo_label error_incorrect_appkey */
+/** @hide @echo_label error_internal_error */
+/** @hide @echo_label error_quota_exceeded */
+/** @hide @echo_label error_incorrect_user_id */
+/** @hide @echo_label error_unknown */
 
 submit.init = function() {
 	if (!this.checkAppKey()) return;
@@ -262,6 +303,9 @@ submit.labels = {
 	"yourWebsiteOptional": "Your website (optional)"
 };
 
+/**
+ * @echo_template
+ */
 submit.templates.main =
 	'<div class="{class:container}">' +
 		'<div class="{class:header}">' +
@@ -305,7 +349,7 @@ submit.templates.main =
 		'</div>' +
 		'<div class="{class:controls}">' +
 			'<div class="{class:postContainer}">' +
-				'<button class="{class:postButton} btn echo-primaryFont"></button>' +
+				'<div class="btn echo-primaryFont {class:postButton}"></div>' +
 			'</div>' +
 			'<div class="echo-clear"></div>' +
 		'</div>' +
@@ -438,8 +482,9 @@ submit.renderers.postButton = function(element) {
 		self.view.render({"name": "markers"});
 	});
 	subscribe("Error", states.normal, function(params) {
-		if (params.extra && params.extra.critical) {
-			self._showError(params.postData);
+		var request = params.request || {};
+		if (request.state && request.state.critical) {
+			self._showError(params);
 		}
 	});
 	this.posting.action = this.posting.action || function() {
@@ -453,7 +498,7 @@ submit.renderers.postButton = function(element) {
 
 submit.renderers._metaFields = function(element, extra) {
 	var type = extra.type;
-	var data = this.get("data.object." + type) || [];
+	var data = this.get("data.object." + type, this.config.get(type));
 	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
 	return this.view.get(type).iHint({
 		"text": this.labels.get(type + "Hint"),
@@ -468,13 +513,18 @@ submit.renderers._metaFields = function(element, extra) {
  */
 submit.methods.post = function() {
 	var self = this;
-	var publish = function(phase, data, requestState) {
-		requestState = requestState || {};
-		var params = {
+	var publish = function(phase, data, responseBody, requestState) {
+		var args = {
 			"topic": "onPost" + phase,
-			"data": {"postData": data, "extra": requestState}
+			"data": {"postData": data}
 		};
-		self.events.publish(params);
+		if (requestState || responseBody) {
+			args.data.request = {
+				"state": requestState,
+				"response": responseBody
+			};
+		}
+		self.events.publish(args);
 	};
 	var postType = this.config.get("type", this._getASURL("comment"));
 	var content = [].concat(
@@ -491,15 +541,14 @@ submit.methods.post = function() {
 		entry["target-query"] = this.config.get("targetQuery");
 	}
 	var callbacks = {
-		"onData": function(data) {
+		"onData": function(response, state) {
 			/**
-			 * @event onPostComplete
 			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete
 			 * Triggered when the submit operation is finished.
 			 */
-			publish("Complete", entry);
+			publish("Complete", entry, response, state);
+
 			/**
-			 * @event onDataInvalidate
 			 * @echo_event Echo.Control.onDataInvalidate
 			 * Triggered if dataset is changed.
 			 */
@@ -510,17 +559,15 @@ submit.methods.post = function() {
 				"data": {}
 			});
 		},
-		"onError": function(data, requestState) {
+		"onError": function(response, state) {
 			/**
-			 * @event onPostError
 			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
 			 * Triggered if submit operation failed.
 			 */
-			publish("Error", data, requestState);
+			publish("Error", entry, response, state);
 		}
 	};
 	/**
-	 * @event onPostInit
 	 * @echo_event Echo.StreamServer.Controls.Submit.onPostInit
 	 * Triggered if submit operation was started.
 	 */
@@ -528,8 +575,10 @@ submit.methods.post = function() {
 	Echo.StreamServer.API.request({
 		"endpoint": "submit",
 		"method": this.config.get("requestMethod"),
+		"itemURIPattern": this.config.get("itemURIPattern"),
 		"submissionProxyURL": this.config.get("submissionProxyURL"),
 		"timeout": this.config.get("postingTimeout"),
+		"secure": this.config.get("useSecureAPI"),
 		"data": entry,
 		"onData": callbacks.onData,
 		"onError": callbacks.onError
@@ -600,10 +649,10 @@ submit.methods._getASURL = function(postfix) {
 submit.methods._showError = function(data) {
 	var self = this;
 	data = data || {};
-	var isNetworkTimeout = $.inArray(data.errorCode, ["network_timeout", "connection_failure"]) >= 0;
-	var message = isNetworkTimeout
+	var response = data.request && data.request.response || {};
+	var message = $.inArray(response.errorCode, ["network_timeout", "connection_failure"]) >= 0
 		? this.labels.get("postingTimeout")
-		: this.labels.get("postingFailed", {"error": data.errorMessage || data.errorCode});
+		: this.labels.get("postingFailed", {"error": response.errorMessage || response.errorCode});
 	var popup = this._assembleErrorPopup(message);
 
 	new Echo.GUI.Modal({

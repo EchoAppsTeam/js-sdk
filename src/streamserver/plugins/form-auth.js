@@ -15,7 +15,7 @@ var $ = jQuery;
  *
  * 	new Echo.StreamServer.Controls.Submit({
  * 		"target": document.getElementById("submit"),
- * 		"appkey": "test.aboutecho.com",
+ * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
  * 			"name": "FormAuth",
  * 			"submitPermissions": "forceLogin",
@@ -26,7 +26,19 @@ var $ = jQuery;
  * 		}]
  * 	});
  *
+ * Note: it is strongly recommended to use
+ * {@link Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth JanrainAuth} plugin
+ * in case of integration with Janrain authentication provider because it is
+ * based on the most current <a href="http://janrain.com/products/engage/social-login/" target="_blank">Janrain Social Login Widget</a>
+ * implementation.
+ *
+ * More information regarding the plugins installation can be found
+ * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
+ *
  * @extends Echo.Plugin
+ *
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
 var plugin = Echo.Plugin.manifest("FormAuth", "Echo.StreamServer.Controls.Submit");
 
@@ -100,7 +112,10 @@ plugin.config = {
 	/**
 	 * @cfg {String} submitPermissions
 	 * Specifies the permitted commenting modes.
-	 * The two options are: "allowGuest" and "forceLogin".
+	 * The two options are:
+	 *
+	 * + "allowGuest" - allows to guest users submit an activity item (comment etc)
+	 * + "forceLogin" - submit permissions allowed only for logged in users
 	 */
 	"submitPermissions": "allowGuest"
 };
@@ -123,8 +138,14 @@ plugin.dependencies = [{
 	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
 }];
 
+/**
+ * @echo_template
+ */
 plugin.templates.auth = '<div class="{plugin.class:auth}"></div>';
 
+/**
+ * @echo_template
+ */
 plugin.templates.forcedLogin =
 	'<div class="{class:header} echo-primaryFont">' +
 		'<span class="{plugin.class:forcedLoginMessage} echo-secondaryColor">' +

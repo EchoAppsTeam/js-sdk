@@ -14,7 +14,25 @@ Echo.StreamServer.API = {};
  * Class implements the interaction with the
  * <a href="http://wiki.aboutecho.com" target="_blank">Echo StreamServer API</a>
  *
+ *     var request = Echo.StreamServer.API.request({
+ *         "endpoint": "search",
+ *         "data": {
+ *             "q": "childrenof: http://example.com/js-sdk",
+ *             "appkey": "echo.jssdk.demo.aboutecho.com"
+ *         },
+ *         "onData": function(data, extra) {
+ *             // handle successful request here...
+ *         },
+ *         "onError": function(data, extra) {
+ *             // handle failed request here...
+ *         }
+ *     });
+ *
+ *     request.send();
+ *
  * @extends Echo.API.Request
+ *
+ * @package api.pack.js
  *
  * @constructor
  * Constructor initializing class using configuration data.
@@ -62,6 +80,13 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * @cfg {Number} [liveUpdates.websockets.serverPingInterval=30]
 		 * The timeout (in seconds) between the client-server ping-pong requests
 		 * to keep the connection alive.
+		 *
+		 * @cfg {String} [endpoint] Specifies the API endpoint. The following endpoints are available:
+		 *
+		 *  + "submit"
+		 *  + "search"
+		 *  + "count"
+		 *
 		 */
 		"liveUpdates": {
 			"transport": "polling", // or "websockets"
@@ -219,7 +244,6 @@ Echo.StreamServer.API.Request.prototype._onData = function(response, requestPara
 	if (this.liveUpdates && this.liveUpdates.responseHandler && this.requestType === "secondary") {
 		this.liveUpdates.responseHandler(response);
 	}
-	Echo.StreamServer.API.Request.parent._onData.apply(this, arguments);
 	if (response.result === "error") {
 		this._handleErrorResponse(response, {"callback": config.onError});
 		return;
@@ -354,7 +378,6 @@ Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
 	} else if (this.requestType === "initial") {
 		this.config.get("onData")({}, {"requestType": this.requestType});
 		this.requestType = "secondary";
-		return;
 	}
 	this.liveUpdates.timers.regular = setTimeout(function() {
 		self.request({"since": self.nextSince});
