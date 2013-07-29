@@ -34,7 +34,6 @@ QUnit.done(function() {
 	Backplane.initialized = false;
 });
 
-
 // collection of component initializers
 var _initializers = {};
 
