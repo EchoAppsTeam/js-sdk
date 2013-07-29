@@ -293,29 +293,58 @@ Echo.Loader.override = function(canvasID, appID, config) {
  */
 Echo.Loader.init = function(config) {
 	config = config || {};
-	Echo.Loader.initEnvironment(function() {
-		var $ = Echo.jQuery;
-		var canvases = config.canvases;
 
-		// convert a single canvas to the 1-element array
-		// to keep the same contract below in the code
-		if (canvases && !$.isArray(canvases) && !(canvases instanceof $)) {
-			canvases = [canvases];
-		}
+	var canvases = config.canvases;
 
-		// if no canvases defined during initialization,
-		// we look for all canvases in the target ('document' by default)
-		canvases = canvases || $(".echo-canvas", config.target);
+	var isArray = function(item) {
+		return Object.prototype.toString.call(item) === "[object Array]";
+	};
 
-		$.map(canvases || [], function(canvas) {
-			var target = $(canvas);
-			var instance = new Echo.Canvas({
-				"target": target,
-				"overrides": Echo.Loader.overrides[target.data("canvas-id")] || {}
+	var initCanvases = function(canvases) {
+		Echo.Loader.initEnvironment(function() {
+			Echo.Loader._map(canvases || [], function(canvas) {
+				var instance = new Echo.Canvas({
+					"target": canvas,
+					"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
+				});
+				Echo.Loader.canvases.push(instance);
 			});
-			Echo.Loader.canvases.push(instance);
 		});
-	});
+	};
+
+	// TODO: check if canvases are jQuery objects
+	// convert a single canvas to the 1-element array
+	// to keep the same contract below in the code
+	if (canvases && !isArray(canvases) && !(canvases.jquery)) {
+		canvases = [canvases];
+	}
+	// if no canvases defined during initialization,
+	// we look for all canvases in the target ('document' by default)
+	// TODO: check if target is jQuery object
+	canvases = canvases || (config.target
+		? config.target.getElementsByClassName("echo-canvas")
+		: document.getElementsByClassName("echo-canvas"));
+
+	var checkViewport = function(e) {
+		var nVScroll = document.documentElement.scrollTop || document.body.scrollTop;
+		var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
+		var toRender = [];
+		canvases = Echo.Loader._map(canvases, function(item) {
+			if (nVScroll + viewportHeight >= item.offsetTop) {
+				toRender.push(item);
+			} else {
+				return item;
+			}
+		});
+		initCanvases(toRender);
+	};
+	checkViewport();
+
+	if (window.addEventListener) {
+		window.addEventListener("scroll", checkViewport);
+	} else {
+		window.attachEvent("onscroll", checkViewport);
+	}
 };
 
 /**
