@@ -301,20 +301,22 @@ Echo.Loader.init = function(config) {
 	};
 
 	var initCanvases = function(canvases) {
+		if (!canvases.length) return;
 		Echo.Loader.initEnvironment(function() {
 			Echo.Loader._map(canvases || [], function(canvas) {
 				var instance = new Echo.Canvas({
 					"target": canvas,
-					"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
+					"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {},
+					"mode": "prod"
 				});
 				Echo.Loader.canvases.push(instance);
 			});
 		});
 	};
 
-	// TODO: check if canvases are jQuery objects
 	// convert a single canvas to the 1-element array
 	// to keep the same contract below in the code
+	// TODO: check if canvases are jQuery objects
 	if (canvases && !isArray(canvases) && !(canvases.jquery)) {
 		canvases = [canvases];
 	}
@@ -325,25 +327,42 @@ Echo.Loader.init = function(config) {
 		? config.target.getElementsByClassName("echo-canvas")
 		: document.getElementsByClassName("echo-canvas"));
 
-	var checkViewport = function(e) {
+	var inViewport = function(canvas) {
 		var nVScroll = document.documentElement.scrollTop || document.body.scrollTop;
 		var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
+		return nVScroll + viewportHeight >= canvas.offsetTop;
+	};
+
+	var renderCanvases = function() {
 		var toRender = [];
-		canvases = Echo.Loader._map(canvases, function(item) {
-			if (nVScroll + viewportHeight >= item.offsetTop) {
-				toRender.push(item);
+		canvases = Echo.Loader._map(canvases, function(canvas) {
+			if (canvas.getAttribute("data-canvas-init") !== "when-visible" || inViewport(canvas)) {
+				toRender.push(canvas);
 			} else {
-				return item;
+				return canvas;
 			}
 		});
-		initCanvases(toRender);
+		toRender.length && initCanvases(toRender);
+		if (!canvases.length) {
+			// TODO: move to better place
+			if (window.addEventListener) {
+				window.removeEventListener("scroll", renderCanvases);
+				window.removeEventListener("resize", renderCanvases);
+			} else {
+				window.detachEvent("onscroll", renderCanvases);
+				window.detachEvent("onresize", renderCanvases);
+			}
+		}
 	};
-	checkViewport();
+
+	renderCanvases();
 
 	if (window.addEventListener) {
-		window.addEventListener("scroll", checkViewport);
+		window.addEventListener("scroll", renderCanvases);
+		window.addEventListener("resize", renderCanvases);
 	} else {
-		window.attachEvent("onscroll", checkViewport);
+		window.attachEvent("onscroll", renderCanvases);
+		window.attachEvent("onresize", renderCanvases);
 	}
 };
 
