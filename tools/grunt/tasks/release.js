@@ -284,7 +284,7 @@ module.exports = function(grunt) {
 
 	function pushPages(done) {
 		grunt.helper("make_docs", function(success) {
-			if (!success) {
+			if (success === false) {
 				done(false);
 				return;
 			}
