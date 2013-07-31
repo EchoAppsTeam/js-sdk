@@ -95,6 +95,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"destroyCalled",
 			"destroyBroadcasting",
 			"manifestBaseInheritance",
+			"nestedReadyCallbacks",
 			"inheritedEvent"
 		], "cases");
 
@@ -762,6 +763,39 @@ suite.prototype.cases.destroyBroadcasting = function(callback) {
 		});
 	};
 	initControls();
+};
+
+suite.prototype.cases.nestedReadyCallbacks = function(callback) {
+	var byOuterControl;
+	var outerReady = function() {
+		QUnit.equal(this.config.get("data.depth"), 0, "Check if it's callback for the outer control");
+		QUnit.ok(byOuterControl, "Check if the callback is called due to the outer control initialization");
+		callback();
+	};
+	var innerReady = function() {
+		QUnit.equal(this.config.get("data.depth"), 1, "Check if it's callback for the inner control");
+		QUnit.ok(!byOuterControl, "Check if the callback is called due to the inner control initialization");
+	};
+	var createInstance = function(parent) {
+		new Echo.Tests.TestControl({
+			"target": $("<div>"),
+			"appkey": "echo.jssdk.tests.aboutecho.com",
+			"data": {"depth": parent ? 1 : 0},
+			"context": parent && parent.config.get("context") || undefined,
+			"ready": parent ? innerReady : outerReady
+		});
+	};
+	var manifest = Echo.Control.manifest("Echo.Tests.TestControl");
+	manifest.init = function() {
+		var depth = this.config.get("data.depth");
+		if (!depth) {
+			createInstance(this);
+		}
+		byOuterControl = !depth;
+		this.ready();
+	};
+	Echo.Control.create(manifest);
+	createInstance();
 };
 
 suite.prototype.cases.inheritedEvent = function(callback) {

@@ -738,18 +738,6 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 		});
 	});
 
-	// call "ready" callback after the control was rendered
-	// note: "ready" callback is executed only once!
-	if (control.config.get("ready")) {
-		control.events.subscribe({
-			"topic": control.name + ".onReady",
-			"once": true,
-			"handler": function() {
-				control.config.get("ready").call(control);
-			}
-		});
-	}
-
 	// register destroy handlers
 	control.events.subscribe({
 		"topic": "Echo.Control.onDestroy",
@@ -899,7 +887,6 @@ Echo.Control.prototype._initializers.plugins = function(callback) {
 };
 
 Echo.Control.prototype._initializers.init = function(callback) {
-
 	// this function should be called inside the "init" function
 	// to indicate that the control was initialized and is now ready
 	this.ready = callback;
@@ -908,6 +895,11 @@ Echo.Control.prototype._initializers.init = function(callback) {
 };
 
 Echo.Control.prototype._initializers.ready = function() {
+	if (this.config.get("ready")) {
+		this.config.get("ready").call(this);
+		// "ready" callback must be executed only once
+		this.config.remove("ready");
+	}
 	this.events.publish({"topic": "onReady"});
 };
 
