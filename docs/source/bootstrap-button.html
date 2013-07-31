@@ -49,32 +49,32 @@
   }
 
   Button.prototype.setState = function (state) {
-    var d = 'disabled'
+    var d = &#39;disabled&#39;
       , $el = this.$element
       , data = $el.data()
-      , val = $el.is('input') ? 'val' : 'html'
+      , val = $el.is(&#39;input&#39;) ? &#39;val&#39; : &#39;html&#39;
 
-    state = state + 'Text'
-    data.resetText || $el.data('resetText', $el[val]())
+    state = state + &#39;Text&#39;
+    data.resetText || $el.data(&#39;resetText&#39;, $el[val]())
 
     $el[val](data[state] || this.options[state])
 
     // push to event loop to allow forms to submit
     setTimeout(function () {
-      state == 'loadingText' ?
+      state == &#39;loadingText&#39; ?
         $el.addClass(d).attr(d, d) :
         $el.removeClass(d).removeAttr(d)
     }, 0)
   }
 
   Button.prototype.toggle = function () {
-    var $parent = this.$element.closest('[data-toggle=&quot;buttons-radio&quot;]')
+    var $parent = this.$element.closest(&#39;[data-toggle=&quot;buttons-radio&quot;]&#39;)
 
     $parent &amp;&amp; $parent
-      .find('.active')
-      .removeClass('active')
+      .find(&#39;.active&#39;)
+      .removeClass(&#39;active&#39;)
 
-    this.$element.toggleClass('active')
+    this.$element.toggleClass(&#39;active&#39;)
   }
 
 
@@ -86,16 +86,16 @@
   $.fn.button = function (option) {
     return this.each(function () {
       var $this = $(this)
-        , data = $this.data('button')
-        , options = typeof option == 'object' &amp;&amp; option
-      if (!data) $this.data('button', (data = new Button(this, options)))
-      if (option == 'toggle') data.toggle()
+        , data = $this.data(&#39;button&#39;)
+        , options = typeof option == &#39;object&#39; &amp;&amp; option
+      if (!data) $this.data(&#39;button&#39;, (data = new Button(this, options)))
+      if (option == &#39;toggle&#39;) data.toggle()
       else if (option) data.setState(option)
     })
   }
 
   $.fn.button.defaults = {
-    loadingText: 'loading...'
+    loadingText: &#39;loading...&#39;
   }
 
   $.fn.button.Constructor = Button
@@ -113,10 +113,10 @@
  /* BUTTON DATA-API
   * =============== */
 
-  $(document).on('click.button.data-api', '[data-toggle^=button]', function (e) {
+  $(document).on(&#39;click.button.data-api&#39;, &#39;[data-toggle^=button]&#39;, function (e) {
     var $btn = $(e.target)
-    if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
-    $btn.button('toggle')
+    if (!$btn.hasClass(&#39;btn&#39;)) $btn = $btn.closest(&#39;.btn&#39;)
+    $btn.button(&#39;toggle&#39;)
   })
 
 }(window.jQuery);</pre>

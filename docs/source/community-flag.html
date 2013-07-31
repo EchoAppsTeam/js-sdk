@@ -101,7 +101,7 @@ plugin.dependencies = [{
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_template-main'>/**
 </span> * @echo_template
  */
-plugin.templates.main = '&lt;div class=&quot;{plugin.class:flaggedBy}&quot;&gt;&lt;/div&gt;';
+plugin.templates.main = &#39;&lt;div class=&quot;{plugin.class:flaggedBy}&quot;&gt;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-CommunityFlag-echo_renderer-flaggedBy'>/**
 </span> * @echo_renderer
@@ -198,7 +198,7 @@ plugin.methods._assembleButton = function(name) {
 		var data = {
 			&quot;name&quot;: name,
 			&quot;label&quot;: !flagged
-				? '&lt;span class=&quot;echo-clickable&quot;&gt;' + label + '&lt;/span&gt;' +
+				? &#39;&lt;span class=&quot;echo-clickable&quot;&gt;&#39; + label + &#39;&lt;/span&gt;&#39; +
 				(item.user.is(&quot;admin&quot;) &amp;&amp; flags.length ? &quot; (&quot; + flags.length + &quot;)&quot; : &quot;&quot;)
 				: plugin.labels.get(&quot;flagged&quot;),
 			&quot;visible&quot;: item.user.is(&quot;logged&quot;) &amp;&amp; action === name,
@@ -207,7 +207,7 @@ plugin.methods._assembleButton = function(name) {
 			&quot;callback&quot;: callback
 		};
 		if (flagged) {
-			data.template = '&lt;span&gt;{data:label}&lt;/span&gt;';
+			data.template = &#39;&lt;span&gt;{data:label}&lt;/span&gt;&#39;;
 		}
 		return data;
 	};
@@ -234,7 +234,7 @@ plugin.methods._myFlags = function(flags) {
 	});
 };
 
-plugin.css = '.{plugin.class:flaggedBy} { background: url({config:cdnBaseURL.sdk-assets}/images/curation/status/communityflagged.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
+plugin.css = &#39;.{plugin.class:flaggedBy} { background: url({config:cdnBaseURL.sdk-assets}/images/curation/status/communityflagged.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }&#39;;
 
 Echo.Plugin.create(plugin);
 

@@ -53,22 +53,22 @@
 
   , show: function () {
       var $this = this.element
-        , $ul = $this.closest('ul:not(.dropdown-menu)')
-        , selector = $this.attr('data-target')
+        , $ul = $this.closest(&#39;ul:not(.dropdown-menu)&#39;)
+        , selector = $this.attr(&#39;data-target&#39;)
         , previous
         , $target
         , e
 
       if (!selector) {
-        selector = $this.attr('href')
-        selector = selector &amp;&amp; selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
+        selector = $this.attr(&#39;href&#39;)
+        selector = selector &amp;&amp; selector.replace(/.*(?=#[^\s]*$)/, &#39;&#39;) //strip for ie7
       }
 
-      if ( $this.parent('li').hasClass('active') ) return
+      if ( $this.parent(&#39;li&#39;).hasClass(&#39;active&#39;) ) return
 
-      previous = $ul.find('.active:last a')[0]
+      previous = $ul.find(&#39;.active:last a&#39;)[0]
 
-      e = $.Event('show', {
+      e = $.Event(&#39;show&#39;, {
         relatedTarget: previous
       })
 
@@ -78,38 +78,38 @@
 
       $target = $(selector)
 
-      this.activate($this.parent('li'), $ul)
+      this.activate($this.parent(&#39;li&#39;), $ul)
       this.activate($target, $target.parent(), function () {
         $this.trigger({
-          type: 'shown'
+          type: &#39;shown&#39;
         , relatedTarget: previous
         })
       })
     }
 
   , activate: function ( element, container, callback) {
-      var $active = container.find('&gt; .active')
+      var $active = container.find(&#39;&gt; .active&#39;)
         , transition = callback
             &amp;&amp; $.support.transition
-            &amp;&amp; $active.hasClass('fade')
+            &amp;&amp; $active.hasClass(&#39;fade&#39;)
 
       function next() {
         $active
-          .removeClass('active')
-          .find('&gt; .dropdown-menu &gt; .active')
-          .removeClass('active')
+          .removeClass(&#39;active&#39;)
+          .find(&#39;&gt; .dropdown-menu &gt; .active&#39;)
+          .removeClass(&#39;active&#39;)
 
-        element.addClass('active')
+        element.addClass(&#39;active&#39;)
 
         if (transition) {
           element[0].offsetWidth // reflow for transition
-          element.addClass('in')
+          element.addClass(&#39;in&#39;)
         } else {
-          element.removeClass('fade')
+          element.removeClass(&#39;fade&#39;)
         }
 
-        if ( element.parent('.dropdown-menu') ) {
-          element.closest('li.dropdown').addClass('active')
+        if ( element.parent(&#39;.dropdown-menu&#39;) ) {
+          element.closest(&#39;li.dropdown&#39;).addClass(&#39;active&#39;)
         }
 
         callback &amp;&amp; callback()
@@ -119,7 +119,7 @@
         $active.one($.support.transition.end, next) :
         next()
 
-      $active.removeClass('in')
+      $active.removeClass(&#39;in&#39;)
     }
   }
 
@@ -132,9 +132,9 @@
   $.fn.tab = function ( option ) {
     return this.each(function () {
       var $this = $(this)
-        , data = $this.data('tab')
-      if (!data) $this.data('tab', (data = new Tab(this)))
-      if (typeof option == 'string') data[option]()
+        , data = $this.data(&#39;tab&#39;)
+      if (!data) $this.data(&#39;tab&#39;, (data = new Tab(this)))
+      if (typeof option == &#39;string&#39;) data[option]()
     })
   }
 
@@ -153,9 +153,9 @@
  /* TAB DATA-API
   * ============ */
 
-  $(document).on('click.tab.data-api', '[data-toggle=&quot;tab&quot;], [data-toggle=&quot;pill&quot;]', function (e) {
+  $(document).on(&#39;click.tab.data-api&#39;, &#39;[data-toggle=&quot;tab&quot;], [data-toggle=&quot;pill&quot;]&#39;, function (e) {
     e.preventDefault()
-    $(this).tab('show')
+    $(this).tab(&#39;show&#39;)
   })
 
 }(window.jQuery);</pre>

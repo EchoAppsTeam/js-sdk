@@ -108,7 +108,7 @@ pile.config = {
 
 <span id='Echo-StreamServer-Controls-FacePile-cfg-totalUsersCount'>	/**
 </span>	 * @cfg {String} totalUsersCount
-	 * The total number of users for the FacePile. If it's not defined it defaults to
+	 * The total number of users for the FacePile. If it&#39;s not defined it defaults to
 	 * the length of the provided data.entries field. Note that the parameter is actual
 	 * only for the list created using `data`.
 	 */
@@ -131,7 +131,7 @@ pile.config = {
 
 <span id='Echo-StreamServer-Controls-FacePile-cfg-suffixText'>	/**
 </span>	 * @cfg {String} suffixText
-	 * Specifies the text being appended to the end of Face Pile user's list.
+	 * Specifies the text being appended to the end of Face Pile user&#39;s list.
 	 */
 	&quot;suffixText&quot;: &quot;&quot;,
 
@@ -185,11 +185,11 @@ pile.labels = {
 </span> * @echo_template
  */
 pile.templates.main =
-	'&lt;span class=&quot;{class:container}&quot;&gt;' +
-		'&lt;span class=&quot;{class:actors}&quot;&gt;&lt;/span&gt;' +
-		'&lt;span class=&quot;{class:more}&quot;&gt;&lt;/span&gt;' +
-		'&lt;span class=&quot;{class:suffixText}&quot;&gt;&lt;/span&gt;' +
-	'&lt;/span&gt;';
+	&#39;&lt;span class=&quot;{class:container}&quot;&gt;&#39; +
+		&#39;&lt;span class=&quot;{class:actors}&quot;&gt;&lt;/span&gt;&#39; +
+		&#39;&lt;span class=&quot;{class:more}&quot;&gt;&lt;/span&gt;&#39; +
+		&#39;&lt;span class=&quot;{class:suffixText}&quot;&gt;&lt;/span&gt;&#39; +
+	&#39;&lt;/span&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-FacePile-echo_renderer-more'>/**
 </span> * @echo_renderer
@@ -236,7 +236,7 @@ pile.renderers.actors = function(element) {
 		return self.substitute({
 			&quot;template&quot;: &quot;&lt;span {data:classAttr}&gt;{data:text}&lt;/span&gt;&quot;,
 			&quot;data&quot;: {
-				&quot;classAttr&quot;: name ? 'class=&quot;' + cssPrefix + name + '&quot;' : '',
+				&quot;classAttr&quot;: name ? &#39;class=&quot;&#39; + cssPrefix + name + &#39;&quot;&#39; : &#39;&#39;,
 				&quot;text&quot;: text
 			}
 		});
@@ -324,7 +324,7 @@ pile.methods._requestMoreItems = function() {
 	var self = this, query = this.config.get(&quot;query&quot;);
 	var nextPageAfter = this.get(&quot;nextPageAfter&quot;);
 	if (typeof nextPageAfter !== &quot;undefined&quot;) {
-		query = 'pageAfter:&quot;' + nextPageAfter + '&quot; ' + query;
+		query = &#39;pageAfter:&quot;&#39; + nextPageAfter + &#39;&quot; &#39; + query;
 	}
 	var request = Echo.StreamServer.API.request({
 		&quot;endpoint&quot;: &quot;search&quot;,
@@ -499,10 +499,10 @@ pile.methods._intersperse = function(object, separator) {
 };
 
 pile.css = 
-	'.{class:container} { line-height: 20px; vertical-align: middle; }' +
-	'.{class:more} { white-space: nowrap; }' +
-	'.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }' +
-	'.{class:more} .echo-control-message-icon { display: inline; margin: 0px 5px; }';
+	&#39;.{class:container} { line-height: 20px; vertical-align: middle; }&#39; +
+	&#39;.{class:more} { white-space: nowrap; }&#39; +
+	&#39;.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }&#39; +
+	&#39;.{class:more} .echo-control-message-icon { display: inline; margin: 0px 5px; }&#39;;
 
 Echo.Control.create(pile);
 
@@ -591,10 +591,10 @@ item.labels = {
 </span> * @echo_template
  */
 item.templates.main =
-	'&lt;span class=&quot;{class:container}&quot;&gt;' +
-		'&lt;span class=&quot;{class:avatar}&quot;&gt;&lt;/span&gt;' +
-		'&lt;span class=&quot;{class:title}&quot;&gt;{data:title}&lt;/span&gt;' +
-	'&lt;/span&gt;';
+	&#39;&lt;span class=&quot;{class:container}&quot;&gt;&#39; +
+		&#39;&lt;span class=&quot;{class:avatar}&quot;&gt;&lt;/span&gt;&#39; +
+		&#39;&lt;span class=&quot;{class:title}&quot;&gt;{data:title}&lt;/span&gt;&#39; +
+	&#39;&lt;/span&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-FacePile-Item-echo_renderer-avatar'>/**
 </span> * @echo_renderer
@@ -640,9 +640,9 @@ item.methods.isYou = function() {
 
 item.css =
 	&quot;.{class:avatar} { display: inline-block; width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }&quot; +
-	'.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }' +
-	'.{class:container}, .{class:container} span { white-space: nowrap; display: inline-block; }' +
-	'.{class:only-avatars} .{class:container} { white-space: normal; }';
+	&#39;.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }&#39; +
+	&#39;.{class:container}, .{class:container} span { white-space: nowrap; display: inline-block; }&#39; +
+	&#39;.{class:only-avatars} .{class:container} { white-space: normal; }&#39;;
 
 Echo.Control.create(item);
 

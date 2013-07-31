@@ -169,7 +169,7 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 
 	this._randomId = this.config.get(&quot;noRandomId&quot;) ? &quot;&quot; : &quot;-&quot; + Echo.Utils.getUniqueString();
 
-	this.tabsContainer = $('&lt;ul class=&quot;nav nav-tabs ' + this.config.get(&quot;classPrefix&quot;) + 'header&quot;&gt;');
+	this.tabsContainer = $(&#39;&lt;ul class=&quot;nav nav-tabs &#39; + this.config.get(&quot;classPrefix&quot;) + &#39;header&quot;&gt;&#39;);
 	target.append(this.tabsContainer);
 
 	panels.addClass(&quot;tab-content &quot; + this.config.get(&quot;classPrefix&quot;) + &quot;panels&quot;);
@@ -184,7 +184,7 @@ Echo.GUI.Tabs.prototype.refresh = function() {
 		this.show(entries[this.config.get(&quot;selected&quot;, 0)].id);
 	}
 
-	this.tabsContainer.on(&quot;click.tab.data-api&quot;, ':not(.active) &gt; [data-toggle=&quot;tab&quot;]', function() {
+	this.tabsContainer.on(&quot;click.tab.data-api&quot;, &#39;:not(.active) &gt; [data-toggle=&quot;tab&quot;]&#39;, function() {
 		self.config.get(&quot;select&quot;).call(self,
 			$(this),
 			$(this).data(&quot;item&quot;)
@@ -272,11 +272,11 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	if (tabConfig.extraClass) {
 		classes += &quot; &quot; + tabConfig.extraClass;
 	}
-	var attrs = 'data-item=&quot;' + tabConfig.id + '&quot;';
+	var attrs = &#39;data-item=&quot;&#39; + tabConfig.id + &#39;&quot;&#39;;
 	if (!tabConfig.disabled) {
-		attrs += ' href=&quot;#' + fullId + '&quot; data-toggle=&quot;tab&quot;';
+		attrs += &#39; href=&quot;#&#39; + fullId + &#39;&quot; data-toggle=&quot;tab&quot;&#39;;
 	}
-	var tab = $('&lt;li' + (classes ? ' class=&quot;' + classes + '&quot;' : '') +'&gt;&lt;a ' + attrs + '&gt;' + tabConfig.label  + '&lt;/a&gt;&lt;/li&gt;');
+	var tab = $(&#39;&lt;li&#39; + (classes ? &#39; class=&quot;&#39; + classes + &#39;&quot;&#39; : &#39;&#39;) +&#39;&gt;&lt;a &#39; + attrs + &#39;&gt;&#39; + tabConfig.label  + &#39;&lt;/a&gt;&lt;/li&gt;&#39;);
 
 	var a = $(&quot;a&quot;, tab);
 	$.map([&quot;show&quot;, &quot;shown&quot;], function(event) {
@@ -313,7 +313,7 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
  * DOM element which contains the tab.
  */
 Echo.GUI.Tabs.prototype.get = function(id) {
-	return this.config.get(&quot;target&quot;).find(&quot;a[data-item='&quot; + id + &quot;']&quot;);
+	return this.config.get(&quot;target&quot;).find(&quot;a[data-item=&#39;&quot; + id + &quot;&#39;]&quot;);
 };
 
 <span id='Echo-GUI-Tabs-method-has'>/**
@@ -327,7 +327,7 @@ Echo.GUI.Tabs.prototype.get = function(id) {
  * `false` otherwise.
  */
 Echo.GUI.Tabs.prototype.has = function(id) {
-	return !!this.config.get(&quot;target&quot;).has(&quot;a[data-item='&quot; + id + &quot;']&quot;).length;
+	return !!this.config.get(&quot;target&quot;).has(&quot;a[data-item=&#39;&quot; + id + &quot;&#39;]&quot;).length;
 };
 
 <span id='Echo-GUI-Tabs-method-update'>/**

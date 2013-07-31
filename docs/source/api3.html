@@ -264,9 +264,9 @@ Echo.API.Transports.JSONP.prototype._getPostTransportObject = function(settings)
 	var container =
 		$(&quot;#echo-post-request&quot;).length
 			? $(&quot;#echo-post-request&quot;).empty()
-			: $('&lt;div id=&quot;echo-post-request&quot;/&gt;').css({&quot;height&quot;: 0}).prependTo(&quot;body&quot;);
-	// it won't work if the attributes are specified as a hash in the second parameter
-	this.iframe = this.iframe || $('&lt;iframe id=&quot;' + id + '&quot; name=&quot;' + id + '&quot; width=&quot;0&quot; height=&quot;0&quot; frameborder=&quot;0&quot; border=&quot;0&quot;&gt;&lt;/iframe&gt;').appendTo(container);
+			: $(&#39;&lt;div id=&quot;echo-post-request&quot;/&gt;&#39;).css({&quot;height&quot;: 0}).prependTo(&quot;body&quot;);
+	// it won&#39;t work if the attributes are specified as a hash in the second parameter
+	this.iframe = this.iframe || $(&#39;&lt;iframe id=&quot;&#39; + id + &#39;&quot; name=&quot;&#39; + id + &#39;&quot; width=&quot;0&quot; height=&quot;0&quot; frameborder=&quot;0&quot; border=&quot;0&quot;&gt;&lt;/iframe&gt;&#39;).appendTo(container);
 	var form = $(&quot;&lt;form/&gt;&quot;, {
 		&quot;target&quot; : id,
 		&quot;method&quot; : &quot;POST&quot;,
@@ -355,7 +355,7 @@ Echo.API.Request = function(config) {
 </span>		 * @cfg {Object} [settings]
 		 * A set of the key/value pairs to configure the transport object.
 		 * This configuration is passed to the transport object through the
-		 * jQuery's ajaxSettings field.
+		 * jQuery&#39;s ajaxSettings field.
 		 * For more info see http://api.jquery.com/jQuery.ajax/.
 		 * Note: according to the link above, for some transports these settings
 		 * have no effect.

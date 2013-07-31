@@ -37,10 +37,10 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.View&quot;)) return;
  *					return element;
  *				}
  *			},
- *			&quot;template&quot;: '&lt;div class=&quot;some-prefix-container&quot;&gt;' +
- *				'&lt;div class=&quot;some-prefix-header&quot;&gt;{data:header}&lt;/div&gt;' +
- *				'&lt;div class=&quot;some-prefix-content&quot;&gt;{data:content}&lt;/div&gt;' +
- *			'&lt;/div&gt;',
+ *			&quot;template&quot;: &#39;&lt;div class=&quot;some-prefix-container&quot;&gt;&#39; +
+ *				&#39;&lt;div class=&quot;some-prefix-header&quot;&gt;{data:header}&lt;/div&gt;&#39; +
+ *				&#39;&lt;div class=&quot;some-prefix-content&quot;&gt;{data:content}&lt;/div&gt;&#39; +
+ *			&#39;&lt;/div&gt;&#39;,
  *			&quot;data&quot;: {
  *				&quot;header&quot;: &quot;Header text&quot;,
  *				&quot;content&quot;: &quot;Content text&quot;
@@ -50,7 +50,7 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.View&quot;)) return;
  *		view.render(); // will render the corresponding template
  *		view.get(&quot;content&quot;); // will return a jquery object with the className &quot;some-prefix-content&quot;
  *		view.get(&quot;header&quot;).text(); // will return &quot;Header text&quot;
- *		view.set(&quot;footer&quot;, $('&lt;div class=&quot;some-prefix-footer&quot;&gt;'));
+ *		view.set(&quot;footer&quot;, $(&#39;&lt;div class=&quot;some-prefix-footer&quot;&gt;&#39;));
  *
  *		// will place the &quot;footer&quot; element after &quot;content&quot; element in the view
  *		view.get(&quot;footer&quot;).insertAfter(view.get(&quot;content&quot;));
@@ -326,7 +326,7 @@ Echo.View.prototype._compileTemplate = function(args) {
 		&quot;template&quot;: args.template,
 		&quot;instructions&quot;: this.config.substitutions
 	});
-	return $('&lt;div class=&quot;echo-tmp-wrapper&quot;/&gt;').html(template);
+	return $(&#39;&lt;div class=&quot;echo-tmp-wrapper&quot;/&gt;&#39;).html(template);
 };
 
 Echo.View.prototype._applyRenderers = function(dom) {

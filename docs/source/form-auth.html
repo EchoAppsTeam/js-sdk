@@ -158,17 +158,17 @@ plugin.dependencies = [{
 <span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-echo_template-auth'>/**
 </span> * @echo_template
  */
-plugin.templates.auth = '&lt;div class=&quot;{plugin.class:auth}&quot;&gt;&lt;/div&gt;';
+plugin.templates.auth = &#39;&lt;div class=&quot;{plugin.class:auth}&quot;&gt;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-echo_template-forcedLogin'>/**
 </span> * @echo_template
  */
 plugin.templates.forcedLogin =
-	'&lt;div class=&quot;{class:header} echo-primaryFont&quot;&gt;' +
-		'&lt;span class=&quot;{plugin.class:forcedLoginMessage} echo-secondaryColor&quot;&gt;' +
-			'{plugin.label:youMustBeLoggedIn}' +
-		'&lt;/span&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;{class:header} echo-primaryFont&quot;&gt;&#39; +
+		&#39;&lt;span class=&quot;{plugin.class:forcedLoginMessage} echo-secondaryColor&quot;&gt;&#39; +
+			&#39;{plugin.label:youMustBeLoggedIn}&#39; +
+		&#39;&lt;/span&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-FormAuth-echo_renderer-header'>/**
 </span> * @echo_renderer
@@ -231,8 +231,8 @@ plugin.methods._userStatus = function() {
 };
 
 plugin.css =
-	'.{plugin.class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }' +
-	'.{plugin.class:error} { color: red; }';
+	&#39;.{plugin.class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }&#39; +
+	&#39;.{plugin.class:error} { color: red; }&#39;;
 
 Echo.Plugin.create(plugin);
 

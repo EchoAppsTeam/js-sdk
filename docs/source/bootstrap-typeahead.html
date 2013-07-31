@@ -61,7 +61,7 @@
     constructor: Typeahead
 
   , select: function () {
-      var val = this.$menu.find('.active').attr('data-value')
+      var val = this.$menu.find(&#39;.active&#39;).attr(&#39;data-value&#39;)
       this.$element
         .val(this.updater(val))
         .change()
@@ -145,9 +145,9 @@
     }
 
   , highlighter: function (item) {
-      var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&amp;')
-      return item.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
-        return '&lt;strong&gt;' + match + '&lt;/strong&gt;'
+      var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, &#39;\\$&amp;&#39;)
+      return item.replace(new RegExp(&#39;(&#39; + query + &#39;)&#39;, &#39;ig&#39;), function ($1, match) {
+        return &#39;&lt;strong&gt;&#39; + match + &#39;&lt;/strong&gt;&#39;
       })
     }
 
@@ -155,60 +155,60 @@
       var that = this
 
       items = $(items).map(function (i, item) {
-        i = $(that.options.item).attr('data-value', item)
-        i.find('a').html(that.highlighter(item))
+        i = $(that.options.item).attr(&#39;data-value&#39;, item)
+        i.find(&#39;a&#39;).html(that.highlighter(item))
         return i[0]
       })
 
-      items.first().addClass('active')
+      items.first().addClass(&#39;active&#39;)
       this.$menu.html(items)
       return this
     }
 
   , next: function (event) {
-      var active = this.$menu.find('.active').removeClass('active')
+      var active = this.$menu.find(&#39;.active&#39;).removeClass(&#39;active&#39;)
         , next = active.next()
 
       if (!next.length) {
-        next = $(this.$menu.find('li')[0])
+        next = $(this.$menu.find(&#39;li&#39;)[0])
       }
 
-      next.addClass('active')
+      next.addClass(&#39;active&#39;)
     }
 
   , prev: function (event) {
-      var active = this.$menu.find('.active').removeClass('active')
+      var active = this.$menu.find(&#39;.active&#39;).removeClass(&#39;active&#39;)
         , prev = active.prev()
 
       if (!prev.length) {
-        prev = this.$menu.find('li').last()
+        prev = this.$menu.find(&#39;li&#39;).last()
       }
 
-      prev.addClass('active')
+      prev.addClass(&#39;active&#39;)
     }
 
   , listen: function () {
       this.$element
-        .on('focus',    $.proxy(this.focus, this))
-        .on('blur',     $.proxy(this.blur, this))
-        .on('keypress', $.proxy(this.keypress, this))
-        .on('keyup',    $.proxy(this.keyup, this))
+        .on(&#39;focus&#39;,    $.proxy(this.focus, this))
+        .on(&#39;blur&#39;,     $.proxy(this.blur, this))
+        .on(&#39;keypress&#39;, $.proxy(this.keypress, this))
+        .on(&#39;keyup&#39;,    $.proxy(this.keyup, this))
 
-      if (this.eventSupported('keydown')) {
-        this.$element.on('keydown', $.proxy(this.keydown, this))
+      if (this.eventSupported(&#39;keydown&#39;)) {
+        this.$element.on(&#39;keydown&#39;, $.proxy(this.keydown, this))
       }
 
       this.$menu
-        .on('click', $.proxy(this.click, this))
-        .on('mouseenter', 'li', $.proxy(this.mouseenter, this))
-        .on('mouseleave', 'li', $.proxy(this.mouseleave, this))
+        .on(&#39;click&#39;, $.proxy(this.click, this))
+        .on(&#39;mouseenter&#39;, &#39;li&#39;, $.proxy(this.mouseenter, this))
+        .on(&#39;mouseleave&#39;, &#39;li&#39;, $.proxy(this.mouseleave, this))
     }
 
   , eventSupported: function(eventName) {
       var isSupported = eventName in this.$element
       if (!isSupported) {
-        this.$element.setAttribute(eventName, 'return;')
-        isSupported = typeof this.$element[eventName] === 'function'
+        this.$element.setAttribute(eventName, &#39;return;&#39;)
+        isSupported = typeof this.$element[eventName] === &#39;function&#39;
       }
       return isSupported
     }
@@ -293,8 +293,8 @@
 
   , mouseenter: function (e) {
       this.mousedover = true
-      this.$menu.find('.active').removeClass('active')
-      $(e.currentTarget).addClass('active')
+      this.$menu.find(&#39;.active&#39;).removeClass(&#39;active&#39;)
+      $(e.currentTarget).addClass(&#39;active&#39;)
     }
 
   , mouseleave: function (e) {
@@ -313,18 +313,18 @@
   $.fn.typeahead = function (option) {
     return this.each(function () {
       var $this = $(this)
-        , data = $this.data('typeahead')
-        , options = typeof option == 'object' &amp;&amp; option
-      if (!data) $this.data('typeahead', (data = new Typeahead(this, options)))
-      if (typeof option == 'string') data[option]()
+        , data = $this.data(&#39;typeahead&#39;)
+        , options = typeof option == &#39;object&#39; &amp;&amp; option
+      if (!data) $this.data(&#39;typeahead&#39;, (data = new Typeahead(this, options)))
+      if (typeof option == &#39;string&#39;) data[option]()
     })
   }
 
   $.fn.typeahead.defaults = {
     source: []
   , items: 8
-  , menu: '&lt;ul class=&quot;typeahead dropdown-menu&quot;&gt;&lt;/ul&gt;'
-  , item: '&lt;li&gt;&lt;a href=&quot;#&quot;&gt;&lt;/a&gt;&lt;/li&gt;'
+  , menu: &#39;&lt;ul class=&quot;typeahead dropdown-menu&quot;&gt;&lt;/ul&gt;&#39;
+  , item: &#39;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;&lt;/a&gt;&lt;/li&gt;&#39;
   , minLength: 1
   }
 
@@ -343,9 +343,9 @@
  /* TYPEAHEAD DATA-API
   * ================== */
 
-  $(document).on('focus.typeahead.data-api', '[data-provide=&quot;typeahead&quot;]', function (e) {
+  $(document).on(&#39;focus.typeahead.data-api&#39;, &#39;[data-provide=&quot;typeahead&quot;]&#39;, function (e) {
     var $this = $(this)
-    if ($this.data('typeahead')) return
+    if ($this.data(&#39;typeahead&#39;)) return
     $this.typeahead($this.data())
   })
 

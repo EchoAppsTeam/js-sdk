@@ -43,11 +43,11 @@
  /* DROPDOWN CLASS DEFINITION
   * ========================= */
 
-  var toggle = '[data-toggle=dropdown]'
+  var toggle = &#39;[data-toggle=dropdown]&#39;
     , Dropdown = function (element) {
-        var $el = $(element).on('click.dropdown.data-api', this.toggle)
-        $('html').on('click.dropdown.data-api', function () {
-          $el.parent().removeClass('open')
+        var $el = $(element).on(&#39;click.dropdown.data-api&#39;, this.toggle)
+        $(&#39;html&#39;).on(&#39;click.dropdown.data-api&#39;, function () {
+          $el.parent().removeClass(&#39;open&#39;)
         })
       }
 
@@ -60,20 +60,20 @@
         , $parent
         , isActive
 
-      if ($this.is('.disabled, :disabled')) return
+      if ($this.is(&#39;.disabled, :disabled&#39;)) return
 
       $parent = getParent($this)
 
-      isActive = $parent.hasClass('open')
+      isActive = $parent.hasClass(&#39;open&#39;)
 
       clearMenus()
 
       if (!isActive) {
-        if ('ontouchstart' in document.documentElement) {
-          // if mobile we we use a backdrop because click events don't delegate
-          $('&lt;div class=&quot;dropdown-backdrop&quot;/&gt;').insertBefore($(this)).on('click', clearMenus)
+        if (&#39;ontouchstart&#39; in document.documentElement) {
+          // if mobile we we use a backdrop because click events don&#39;t delegate
+          $(&#39;&lt;div class=&quot;dropdown-backdrop&quot;/&gt;&#39;).insertBefore($(this)).on(&#39;click&#39;, clearMenus)
         }
-        $parent.toggleClass('open')
+        $parent.toggleClass(&#39;open&#39;)
       }
 
       $this.focus()
@@ -96,22 +96,22 @@
       e.preventDefault()
       e.stopPropagation()
 
-      if ($this.is('.disabled, :disabled')) return
+      if ($this.is(&#39;.disabled, :disabled&#39;)) return
 
       $parent = getParent($this)
 
-      isActive = $parent.hasClass('open')
+      isActive = $parent.hasClass(&#39;open&#39;)
 
       if (!isActive || (isActive &amp;&amp; e.keyCode == 27)) {
         if (e.which == 27) $parent.find(toggle).focus()
         return $this.click()
       }
 
-      $items = $('[role=menu] li:not(.divider):visible a', $parent)
+      $items = $(&#39;[role=menu] li:not(.divider):visible a&#39;, $parent)
 
       if (!$items.length) return
 
-      index = $items.index($items.filter(':focus'))
+      index = $items.index($items.filter(&#39;:focus&#39;))
 
       if (e.keyCode == 38 &amp;&amp; index &gt; 0) index--                                        // up
       if (e.keyCode == 40 &amp;&amp; index &lt; $items.length - 1) index++                        // down
@@ -125,19 +125,19 @@
   }
 
   function clearMenus() {
-    $('.dropdown-backdrop').remove()
+    $(&#39;.dropdown-backdrop&#39;).remove()
     $(toggle).each(function () {
-      getParent($(this)).removeClass('open')
+      getParent($(this)).removeClass(&#39;open&#39;)
     })
   }
 
   function getParent($this) {
-    var selector = $this.attr('data-target')
+    var selector = $this.attr(&#39;data-target&#39;)
       , $parent
 
     if (!selector) {
-      selector = $this.attr('href')
-      selector = selector &amp;&amp; /#/.test(selector) &amp;&amp; selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
+      selector = $this.attr(&#39;href&#39;)
+      selector = selector &amp;&amp; /#/.test(selector) &amp;&amp; selector.replace(/.*(?=#[^\s]*$)/, &#39;&#39;) //strip for ie7
     }
 
     $parent = selector &amp;&amp; $(selector)
@@ -156,9 +156,9 @@
   $.fn.dropdown = function (option) {
     return this.each(function () {
       var $this = $(this)
-        , data = $this.data('dropdown')
-      if (!data) $this.data('dropdown', (data = new Dropdown(this)))
-      if (typeof option == 'string') data[option].call($this)
+        , data = $this.data(&#39;dropdown&#39;)
+      if (!data) $this.data(&#39;dropdown&#39;, (data = new Dropdown(this)))
+      if (typeof option == &#39;string&#39;) data[option].call($this)
     })
   }
 
@@ -178,10 +178,10 @@
    * =================================== */
 
   $(document)
-    .on('click.dropdown.data-api', clearMenus)
-    .on('click.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
-    .on('click.dropdown.data-api'  , toggle, Dropdown.prototype.toggle)
-    .on('keydown.dropdown.data-api', toggle + ', [role=menu]' , Dropdown.prototype.keydown)
+    .on(&#39;click.dropdown.data-api&#39;, clearMenus)
+    .on(&#39;click.dropdown.data-api&#39;, &#39;.dropdown form&#39;, function (e) { e.stopPropagation() })
+    .on(&#39;click.dropdown.data-api&#39;  , toggle, Dropdown.prototype.toggle)
+    .on(&#39;keydown.dropdown.data-api&#39;, toggle + &#39;, [role=menu]&#39; , Dropdown.prototype.keydown)
 
 }(window.jQuery);
 </pre>

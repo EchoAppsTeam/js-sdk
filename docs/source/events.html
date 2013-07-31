@@ -29,9 +29,9 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.Events&quot;)) return;
  * (like &quot;app was rendered&quot;, &quot;user logged in&quot;, etc).
  *
  * The contexts used in this library are complex identifiers constructed using the following rules:
- *     &lt;contextId&gt; :: &quot;&lt;id&gt;&quot; or &quot;&lt;parentContextID&gt;/&lt;id&gt;&quot;, where
- *     &lt;id&gt; :: some unique identifier assigned to component
- *     &lt;parentContextID&gt; :: &quot;&lt;contextID&gt;&quot;
+ *     &amp;lt;contextId&gt; :: &quot;&amp;lt;id&gt;&quot; or &quot;&amp;lt;parentContextID&gt;/&amp;lt;id&gt;&quot;, where
+ *     &amp;lt;id&gt; :: some unique identifier assigned to component
+ *     &amp;lt;parentContextID&gt; :: &quot;&amp;lt;contextID&gt;&quot;
  *
  * Example:
  *
@@ -271,7 +271,7 @@ var _shouldStopEvent = function(stopperType, topic) {
 };
 
 var _callHandlers = function(obj, params, restContexts) {
-	// use copy of handler list so that inner unsubscribe actions couldn't mess it up
+	// use copy of handler list so that inner unsubscribe actions couldn&#39;t mess it up
 	var _params, handlers = (obj.handlers || []).slice(0);
 	$.each(handlers, function(i, data) {
 		_lastHandlerResult[params.topic] = data.handler(params.topic, params.data);

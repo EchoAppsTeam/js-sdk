@@ -95,7 +95,7 @@ Echo.GUI.Button.prototype.setState = function(config) {
 Echo.GUI.Button.prototype.refresh = function() {
 	var target = this.config.get(&quot;target&quot;);
 
-	target.empty().append('&lt;div class=&quot;echo-label&quot;&gt;');
+	target.empty().append(&#39;&lt;div class=&quot;echo-label&quot;&gt;&#39;);
 
 	$(&quot;.echo-label&quot;, target).text(this.config.get(&quot;label&quot;));
 	var iconElement = $(&quot;.echo-icon&quot;, target);

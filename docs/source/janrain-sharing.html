@@ -37,7 +37,7 @@ var $ = jQuery;
  * The plugin implementation employs the
  * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/&quot; target=&quot;_blank&quot;&gt;Janrain recommendation&lt;/a&gt;
  * of hosting multiple widgets to make sure that the Janrain widget initialized
- * within the plugin doesn't interfere with other Janrain Sharing widgets on the
+ * within the plugin doesn&#39;t interfere with other Janrain Sharing widgets on the
  * same page. If you have other Janrain widgets installed on the page, please take
  * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/&quot; target=&quot;_blank&quot;&gt;the recommendation&lt;/a&gt;
  * into account as well.
@@ -205,10 +205,10 @@ plugin.labels = {
 </span> * @echo_template
  */
 plugin.templates.share =
-	'&lt;div class=&quot;echo-secondaryFont {plugin.class:shareContainer}&quot;&gt;' +
-		'&lt;input type=&quot;checkbox&quot; class=&quot;{plugin.class:shareCheckbox}&quot;&gt;' +
-		'&lt;span class=&quot;{plugin.class:shareLabel}&quot;&gt;{plugin.label:share}&lt;/span&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;echo-secondaryFont {plugin.class:shareContainer}&quot;&gt;&#39; +
+		&#39;&lt;input type=&quot;checkbox&quot; class=&quot;{plugin.class:shareCheckbox}&quot;&gt;&#39; +
+		&#39;&lt;span class=&quot;{plugin.class:shareLabel}&quot;&gt;{plugin.label:share}&lt;/span&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 plugin.methods._share = function(data) {
 	var url, plugin = this;
@@ -381,8 +381,8 @@ plugin.methods._getTweetAuthor = function(data) {
 };
 
 plugin.css =
-	'.{plugin.class:shareContainer} { display: inline-block; margin: 0px 15px 0px 0px; }' +
-	'.echo-sdk-ui .{plugin.class:shareContainer} input.{plugin.class:shareCheckbox} { margin: 0px; margin-right: 3px; padding: 0px; }';
+	&#39;.{plugin.class:shareContainer} { display: inline-block; margin: 0px 15px 0px 0px; }&#39; +
+	&#39;.echo-sdk-ui .{plugin.class:shareContainer} input.{plugin.class:shareCheckbox} { margin: 0px; margin-right: 3px; padding: 0px; }&#39;;
 
 Echo.Plugin.create(plugin);
 
@@ -410,7 +410,7 @@ var $ = jQuery;
  * The plugin implementation employs the
  * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/&quot; target=&quot;_blank&quot;&gt;Janrain recommendation&lt;/a&gt;
  * of hosting multiple widgets to make sure that the Janrain widget initialized
- * within the plugin doesn't interfere with other Janrain Sharing widgets on the
+ * within the plugin doesn&#39;t interfere with other Janrain Sharing widgets on the
  * same page. If you have other Janrain widgets installed on the page, please take
  * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/&quot; target=&quot;_blank&quot;&gt;the recommendation&lt;/a&gt;
  * into account as well.
@@ -474,7 +474,7 @@ plugin.labels = {
 	&quot;shareButton&quot;: &quot;Share&quot;
 };
 
-// let's copy these functions from the related plugin for Submit Control
+// let&#39;s copy these functions from the related plugin for Submit Control
 plugin.methods._share = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._share;
 plugin.methods._showPopup = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._showPopup;
 

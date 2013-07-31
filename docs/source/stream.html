@@ -222,12 +222,12 @@ stream.config = {
 	 *
 	 * @cfg {String} itemsComparator.sort
 	 * The existing list sort order.
-	 * Depending on the item it's either root sort order or children sort order.
+	 * Depending on the item it&#39;s either root sort order or children sort order.
 	 *
 	 * @cfg {Number} itemsComparator.return
 	 *
 	 * + 1 - newItem will be injected into the list before listedItem
-	 * + -1 - it's not the right place for the newItem
+	 * + -1 - it&#39;s not the right place for the newItem
 	 * + 0 - comparison result is undefined
 	 */
 	&quot;itemsComparator&quot;: undefined,
@@ -341,9 +341,6 @@ stream.config = {
 };
 
 stream.config.normalizer = {
-	&quot;safeHTML&quot;: function(value) {
-		return &quot;off&quot; !== value;
-	},
 	&quot;showFlags&quot;: function(value) {
 		return &quot;off&quot; !== value;
 	},
@@ -373,7 +370,7 @@ stream.vars = {
 	&quot;lastRequest&quot;: null,
 	&quot;request&quot;: null,
 	&quot;moreRequest&quot;: null,
-	&quot;itemsRenderingComplete&quot;: false
+	&quot;itemsRenderingComplete&quot;: true
 };
 
 stream.labels = {
@@ -456,16 +453,16 @@ stream.events = {
 </span> * @echo_template
  */
 stream.templates.main =
-	'&lt;div class=&quot;{class:container} echo-primaryFont echo-primaryBackgroundColor&quot;&gt;' +
-		'&lt;div class=&quot;{class:header}&quot;&gt;'+
-			'&lt;div class=&quot;{class:state}&quot;&gt;&lt;/div&gt;' +
-			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-		'&lt;/div&gt;' +
-		'&lt;div class=&quot;{class:content}&quot;&gt;' +
-			'&lt;div class=&quot;{class:body}&quot;&gt;&lt;/div&gt;' +
-			'&lt;div class=&quot;{class:more}&quot;&gt;&lt;/div&gt;' +
-		'&lt;/div&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;{class:container} echo-primaryFont echo-primaryBackgroundColor&quot;&gt;&#39; +
+		&#39;&lt;div class=&quot;{class:header}&quot;&gt;&#39;+
+			&#39;&lt;div class=&quot;{class:state}&quot;&gt;&lt;/div&gt;&#39; +
+			&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+		&#39;&lt;/div&gt;&#39; +
+		&#39;&lt;div class=&quot;{class:content}&quot;&gt;&#39; +
+			&#39;&lt;div class=&quot;{class:body}&quot;&gt;&lt;/div&gt;&#39; +
+			&#39;&lt;div class=&quot;{class:more}&quot;&gt;&lt;/div&gt;&#39; +
+		&#39;&lt;/div&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Stream-echo_renderer-body'>/**
 </span> * @echo_renderer
@@ -546,14 +543,14 @@ stream.renderers.state = function(element) {
 		});
 	}
 	var templates = {
-		&quot;picture&quot;: '&lt;span class=&quot;{class:state-picture} {class:state-picture}-' + state + '&quot;&gt;&lt;/span&gt;',
+		&quot;picture&quot;: &#39;&lt;span class=&quot;{class:state-picture} {class:state-picture}-&#39; + state + &#39;&quot;&gt;&lt;/span&gt;&#39;,
 		&quot;message&quot;: this.config.get(&quot;state.toggleBy&quot;) === &quot;button&quot;
-			? '&lt;a href=&quot;javascript:void(0)&quot; class=&quot;{class:state-message}&quot;&gt;' +
-				'{label:' + state + '}' +
-			  '&lt;/a&gt;'
-			: '&lt;span class=&quot;{class:state-message}&quot;&gt;{label:' + state + '}&lt;/span&gt;',
-		&quot;count&quot;: ' &lt;span class=&quot;{class:state-count}&quot;&gt;({data:count} {label:new})&lt;/span&gt;',
-		&quot;button&quot;: '&lt;span class=&quot;{class:state-message}&quot;&gt;{data:count} {data:label}&lt;/span&gt;'
+			? &#39;&lt;a href=&quot;javascript:void(0)&quot; class=&quot;{class:state-message}&quot;&gt;&#39; +
+				&#39;{label:&#39; + state + &#39;}&#39; +
+			  &#39;&lt;/a&gt;&#39;
+			: &#39;&lt;span class=&quot;{class:state-message}&quot;&gt;{label:&#39; + state + &#39;}&lt;/span&gt;&#39;,
+		&quot;count&quot;: &#39; &lt;span class=&quot;{class:state-count}&quot;&gt;({data:count} {label:new})&lt;/span&gt;&#39;,
+		&quot;button&quot;: &#39;&lt;span class=&quot;{class:state-message}&quot;&gt;{data:count} {data:label}&lt;/span&gt;&#39;
 	};
 	if (layout === &quot;full&quot;) {
 		if (activitiesCount) {
@@ -776,7 +773,7 @@ stream.methods._onDataReceive = function(data, type, callback) {
 	 * Array which contains receieved entries if any
 	 *
 	 * @param {String} data.type
-	 * Describe's specific subsystem which produced the event. Possible values:
+	 * Describe&#39;s specific subsystem which produced the event. Possible values:
 	 *
 	 * + &quot;initial&quot; - triggered by initial items request (stream loaded for the first time)
 	 * + &quot;more&quot; - triggered by server response after &quot;more&quot; button click
@@ -912,7 +909,7 @@ stream.methods._actualizeChildrenList = function(parent, entries) {
 
 stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 	var self = this;
-	var wrapper = $('&lt;div class=&quot;' + this.get(&quot;cssPrefix&quot;) + 'children-wrapper&quot;&gt;&lt;/div&gt;');
+	var wrapper = $(&#39;&lt;div class=&quot;&#39; + this.get(&quot;cssPrefix&quot;) + &#39;children-wrapper&quot;&gt;&lt;/div&gt;&#39;);
 	var getIdx = function(item) {
 		return self._getItemListIndex(item, parent.get(&quot;children&quot;));
 	};
@@ -939,14 +936,14 @@ stream.methods._extractTimeframeConfig = function(data) {
 	var getComparator = function(value) {
 		var match = value.match(/^(&lt;|&gt;)(.*)$/);
 		var operation = match[1];
-		var value = match[2].match(/^'([0-9]+) seconds ago'$/);
+		var value = match[2].match(/^&#39;([0-9]+) seconds ago&#39;$/);
 		var getTS = value
 			? function() { return Math.floor((new Date()).getTime() / 1000) - value[1]; }
 			: function() { return match[2]; };
-		if (operation === '&lt;') {
+		if (operation === &#39;&lt;&#39;) {
 			return function(ts) { return ts &lt; getTS(); }
 		}
-		if (operation === '&gt;') {
+		if (operation === &#39;&gt;&#39;) {
 			return function(ts) { return ts &gt; getTS(); }
 		}
 	};
@@ -1008,7 +1005,8 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 		&quot;itemsPerPage&quot;: additionalItems,
 		&quot;sortOrder&quot;: this.config.get(&quot;children.sortOrder&quot;),
 		&quot;childrenSortOrder&quot;: this.config.get(&quot;children.sortOrder&quot;),
-		&quot;pageAfter&quot;: pageAfter ? '&quot;' + (pageAfter || 0) + '&quot;' : undefined
+		&quot;pageAfter&quot;: pageAfter ? &#39;&quot;&#39; + (pageAfter || 0) + &#39;&quot;&#39; : undefined,
+		&quot;safeHTML&quot;: this.config.get(&quot;safeHTML&quot;)
 	}, function(value, acc, predicate) {
 		return acc += (typeof value !== &quot;undefined&quot;
 			? predicate + &quot;:&quot; + value + &quot; &quot;
@@ -1683,22 +1681,22 @@ stream.methods._normalizeEntry = function(entry) {
 };
 
 stream.css =
-	'.{class:message-wrapper} { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }' +
-	'.{class:message-empty}, .{class:message-loading}, .{class:message-error} { display: inline-block; height: 16px; padding-left: 21px; background: no-repeat left center; }' +
-	'.{class:message-empty} { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
-	'.{class:message-loading} { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
-	'.{class:message-error} { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }' +
-	'.{class:header} { margin: 10px 0px 10px 0px; }' +
-	'.{class:compactStateLayout} { float: right; }' +
-	'.{class:fullStateLayout} { text-align: center; }' +
-	'.{class:state-picture} { display: inline-block; height: 9px; width: 8px; }' +
-	'.{class:state-picture-paused} { background: url({config:cdnBaseURL.sdk-assets}/images/control_pause.png) no-repeat center center; }' +
-	'.{class:state-picture-live} { background: url({config:cdnBaseURL.sdk-assets}/images/control_play.png) no-repeat center center; }' +
-	'.{class:state-message} { margin-left: 5px; text-decoration: none; }' +
-	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
-	'.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }' +
-	'.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
-	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }';
+	&#39;.{class:message-wrapper} { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }&#39; +
+	&#39;.{class:message-empty}, .{class:message-loading}, .{class:message-error} { display: inline-block; height: 16px; padding-left: 21px; background: no-repeat left center; }&#39; +
+	&#39;.{class:message-empty} { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }&#39; +
+	&#39;.{class:message-loading} { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }&#39; +
+	&#39;.{class:message-error} { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }&#39; +
+	&#39;.{class:header} { margin: 10px 0px 10px 0px; }&#39; +
+	&#39;.{class:compactStateLayout} { float: right; }&#39; +
+	&#39;.{class:fullStateLayout} { text-align: center; }&#39; +
+	&#39;.{class:state-picture} { display: inline-block; height: 9px; width: 8px; }&#39; +
+	&#39;.{class:state-picture-paused} { background: url({config:cdnBaseURL.sdk-assets}/images/control_pause.png) no-repeat center center; }&#39; +
+	&#39;.{class:state-picture-live} { background: url({config:cdnBaseURL.sdk-assets}/images/control_play.png) no-repeat center center; }&#39; +
+	&#39;.{class:state-message} { margin-left: 5px; text-decoration: none; }&#39; +
+	&#39;.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }&#39; +
+	&#39;.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }&#39; +
+	&#39;.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }&#39; +
+	&#39;.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }&#39;;
 
 Echo.Control.create(stream);
 
@@ -1770,7 +1768,7 @@ item.config = {
 
 <span id='Echo-StreamServer-Controls-Stream-Item-cfg-contentTransformations'>	/**
 </span>	 * @cfg {Object} contentTransformations
-	 * Specifies the allowed item's content transformations for each content type.
+	 * Specifies the allowed item&#39;s content transformations for each content type.
 	 * Contains a hash where keys are content types and values are arrays with
 	 * formatting options enabled for the given content type. Available options are:
 	 *
@@ -1780,9 +1778,9 @@ item.config = {
 	 * + newlines - replaces newlines with \&lt;br&gt; tags
 	 */
 	&quot;contentTransformations&quot;: {
-		&quot;text&quot;: [&quot;smileys&quot;, &quot;hashtags&quot;, &quot;urls&quot;, &quot;newlines&quot;],
-		&quot;html&quot;: [&quot;smileys&quot;, &quot;hashtags&quot;, &quot;urls&quot;, &quot;newlines&quot;],
-		&quot;xhtml&quot;: [&quot;smileys&quot;, &quot;hashtags&quot;, &quot;urls&quot;]
+		&quot;text&quot;: [&quot;smileys&quot;, &quot;urls&quot;, &quot;newlines&quot;],
+		&quot;html&quot;: [&quot;smileys&quot;, &quot;urls&quot;, &quot;newlines&quot;],
+		&quot;xhtml&quot;: [&quot;smileys&quot;, &quot;urls&quot;]
 	},
 
 <span id='Echo-StreamServer-Controls-Stream-Item-cfg-infoMessages'>	/**
@@ -1963,95 +1961,95 @@ item.templates.metadata = {
 </span>	 * @echo_template
 	 */
 	&quot;userID&quot;:
-		'&lt;div class=&quot;{class:metadata-userID}&quot;&gt;' +
-			'&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;' +
-				'{label:userID}' +
-			'&lt;/span&gt;' +
-			'&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:actor.id}&lt;/span&gt;' +
-		'&lt;/div&gt;',
+		&#39;&lt;div class=&quot;{class:metadata-userID}&quot;&gt;&#39; +
+			&#39;&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;&#39; +
+				&#39;{label:userID}&#39; +
+			&#39;&lt;/span&gt;&#39; +
+			&#39;&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:actor.id}&lt;/span&gt;&#39; +
+		&#39;&lt;/div&gt;&#39;,
 <span id='Echo-StreamServer-Controls-Stream-Item-echo_template-userIP'>	/**
 </span>	 * @echo_template
 	 */
 	&quot;userIP&quot;:
-		'&lt;div class=&quot;{class:metadata-userIP}&quot;&gt;' +
-			'&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;' +
-				'{label:userIP}' +
-			'&lt;/span&gt;' +
-			'&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:ip}&lt;/span&gt;' +
-		'&lt;/div&gt;'
+		&#39;&lt;div class=&quot;{class:metadata-userIP}&quot;&gt;&#39; +
+			&#39;&lt;span class=&quot;{class:metadata-title} {class:metadata-icon}&quot;&gt;&#39; +
+				&#39;{label:userIP}&#39; +
+			&#39;&lt;/span&gt;&#39; +
+			&#39;&lt;span class=&quot;{class:metadata-value}&quot;&gt;{data:ip}&lt;/span&gt;&#39; +
+		&#39;&lt;/div&gt;&#39;
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-echo_template-mainHeader'>/**
 </span> * @echo_template
  */
 item.templates.mainHeader =
-	'&lt;div class=&quot;{class:content}&quot;&gt;' +
-		'&lt;div class=&quot;{class:container}&quot;&gt;' +
-			'&lt;div class=&quot;{class:avatar-wrapper}&quot;&gt;' +
-				'&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;' +
-			'&lt;/div&gt;' +
-			'&lt;div class=&quot;{class:wrapper}&quot;&gt;' +
-				'&lt;div class=&quot;{class:subwrapper}&quot;&gt;' +
-					'&lt;div class=&quot;{class:subcontainer}&quot;&gt;' +
-						'&lt;div class=&quot;{class:frame}&quot;&gt;' +
-							'&lt;div class=&quot;{class:modeSwitch} echo-clickable&quot;&gt;&lt;/div&gt;' +
-							'&lt;div class=&quot;{class:authorName} echo-linkColor&quot;&gt;&lt;/div&gt;' +
-							'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-							'&lt;div class=&quot;{class:data}&quot;&gt;' +
-								'&lt;div class=&quot;{class:re}&quot;&gt;&lt;/div&gt;' +
-								'&lt;div class=&quot;{class:body} echo-primaryColor&quot;&gt; ' +
-									'&lt;span class=&quot;{class:text}&quot;&gt;&lt;/span&gt;' +
-									'&lt;span class=&quot;{class:textEllipses}&quot;&gt;...&lt;/span&gt;' +
-									'&lt;span class=&quot;{class:textToggleTruncated} echo-linkColor echo-clickable&quot;&gt;&lt;/span&gt;' +
-								'&lt;/div&gt;' +
-								'&lt;div class=&quot;{class:markers} echo-secondaryFont echo-secondaryColor&quot;&gt;&lt;/div&gt;' +
-								'&lt;div class=&quot;{class:tags} echo-secondaryFont echo-secondaryColor&quot;&gt;&lt;/div&gt;' +
-							'&lt;/div&gt;' +
-							'&lt;div class=&quot;{class:metadata}&quot;&gt;&lt;/div&gt;' +
-							'&lt;div class=&quot;{class:footer} echo-secondaryColor echo-secondaryFont&quot;&gt;' +
-								'&lt;img class=&quot;{class:sourceIcon} echo-clickable&quot;&gt;' +
-								'&lt;div class=&quot;{class:date}&quot;&gt;&lt;/div&gt;' +
-								'&lt;div class=&quot;{class:from}&quot;&gt;&lt;/div&gt;' +
-								'&lt;div class=&quot;{class:via}&quot;&gt;&lt;/div&gt;' +
-								'&lt;div class=&quot;{class:buttons}&quot;&gt;&lt;/div&gt;' +
-								'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-							'&lt;/div&gt;' +
-						'&lt;/div&gt;' +
-					'&lt;/div&gt;' +
-					'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-				'&lt;/div&gt;' +
-			'&lt;/div&gt;' +
-			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-			'&lt;div class=&quot;{class:childrenMarker}&quot;&gt;&lt;/div&gt;' +
-		'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;{class:content}&quot;&gt;&#39; +
+		&#39;&lt;div class=&quot;{class:container}&quot;&gt;&#39; +
+			&#39;&lt;div class=&quot;{class:avatar-wrapper}&quot;&gt;&#39; +
+				&#39;&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;&#39; +
+			&#39;&lt;/div&gt;&#39; +
+			&#39;&lt;div class=&quot;{class:wrapper}&quot;&gt;&#39; +
+				&#39;&lt;div class=&quot;{class:subwrapper}&quot;&gt;&#39; +
+					&#39;&lt;div class=&quot;{class:subcontainer}&quot;&gt;&#39; +
+						&#39;&lt;div class=&quot;{class:frame}&quot;&gt;&#39; +
+							&#39;&lt;div class=&quot;{class:modeSwitch} echo-clickable&quot;&gt;&lt;/div&gt;&#39; +
+							&#39;&lt;div class=&quot;{class:authorName} echo-linkColor&quot;&gt;&lt;/div&gt;&#39; +
+							&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+							&#39;&lt;div class=&quot;{class:data}&quot;&gt;&#39; +
+								&#39;&lt;div class=&quot;{class:re}&quot;&gt;&lt;/div&gt;&#39; +
+								&#39;&lt;div class=&quot;{class:body} echo-primaryColor&quot;&gt; &#39; +
+									&#39;&lt;span class=&quot;{class:text}&quot;&gt;&lt;/span&gt;&#39; +
+									&#39;&lt;span class=&quot;{class:textEllipses}&quot;&gt;...&lt;/span&gt;&#39; +
+									&#39;&lt;span class=&quot;{class:textToggleTruncated} echo-linkColor echo-clickable&quot;&gt;&lt;/span&gt;&#39; +
+								&#39;&lt;/div&gt;&#39; +
+								&#39;&lt;div class=&quot;{class:markers} echo-secondaryFont echo-secondaryColor&quot;&gt;&lt;/div&gt;&#39; +
+								&#39;&lt;div class=&quot;{class:tags} echo-secondaryFont echo-secondaryColor&quot;&gt;&lt;/div&gt;&#39; +
+							&#39;&lt;/div&gt;&#39; +
+							&#39;&lt;div class=&quot;{class:metadata}&quot;&gt;&lt;/div&gt;&#39; +
+							&#39;&lt;div class=&quot;{class:footer} echo-secondaryColor echo-secondaryFont&quot;&gt;&#39; +
+								&#39;&lt;img class=&quot;{class:sourceIcon} echo-clickable&quot;&gt;&#39; +
+								&#39;&lt;div class=&quot;{class:date}&quot;&gt;&lt;/div&gt;&#39; +
+								&#39;&lt;div class=&quot;{class:from}&quot;&gt;&lt;/div&gt;&#39; +
+								&#39;&lt;div class=&quot;{class:via}&quot;&gt;&lt;/div&gt;&#39; +
+								&#39;&lt;div class=&quot;{class:buttons}&quot;&gt;&lt;/div&gt;&#39; +
+								&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+							&#39;&lt;/div&gt;&#39; +
+						&#39;&lt;/div&gt;&#39; +
+					&#39;&lt;/div&gt;&#39; +
+					&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+				&#39;&lt;/div&gt;&#39; +
+			&#39;&lt;/div&gt;&#39; +
+			&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+			&#39;&lt;div class=&quot;{class:childrenMarker}&quot;&gt;&lt;/div&gt;&#39; +
+		&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-echo_template-mainFooter'>/**
 </span> * @echo_template
  */
 item.templates.mainFooter =
-		'&lt;div class=&quot;{class:childrenByCurrentActorLive}&quot;&gt;&lt;/div&gt;' +
-	'&lt;/div&gt;';
+		&#39;&lt;div class=&quot;{class:childrenByCurrentActorLive}&quot;&gt;&lt;/div&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-echo_template-childrenTop'>/**
 </span> * @echo_template
  */
 item.templates.childrenTop =
-	'&lt;div class=&quot;{class:children}&quot;&gt;&lt;/div&gt;' +
-	'&lt;div class=&quot;{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable&quot;&gt;' +
-		'&lt;span class=&quot;{class:expandChildrenLabel} echo-message-icon&quot;&gt;&lt;/span&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;{class:children}&quot;&gt;&lt;/div&gt;&#39; +
+	&#39;&lt;div class=&quot;{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable&quot;&gt;&#39; +
+		&#39;&lt;span class=&quot;{class:expandChildrenLabel} echo-message-icon&quot;&gt;&lt;/span&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-echo_template-childrenBottom'>/**
 </span> * @echo_template
  */
 item.templates.childrenBottom =
-	'&lt;div class=&quot;{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable&quot;&gt;' +
-		'&lt;span class=&quot;{class:expandChildrenLabel} echo-message-icon&quot;&gt;&lt;/span&gt;' +
-	'&lt;/div&gt;' +
-	'&lt;div class=&quot;{class:children}&quot;&gt;&lt;/div&gt;';
+	&#39;&lt;div class=&quot;{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable&quot;&gt;&#39; +
+		&#39;&lt;span class=&quot;{class:expandChildrenLabel} echo-message-icon&quot;&gt;&lt;/span&gt;&#39; +
+	&#39;&lt;/div&gt;&#39; +
+	&#39;&lt;div class=&quot;{class:children}&quot;&gt;&lt;/div&gt;&#39;;
 
 item.methods.template = function() {
-	this.templates.mainHeader +
+	return this.templates.mainHeader +
 	(this.config.get(&quot;parent.children.sortOrder&quot;) === &quot;chronological&quot;
 		? this.templates.childrenTop
 		: this.templates.childrenBottom
@@ -2465,7 +2463,7 @@ item.renderers.expandChildren = function(element, extra) {
 };
 
 item.renderers._childrenContainer = function(element, config) {
-	// we cannot use element.empty() because it will remove children's event handlers
+	// we cannot use element.empty() because it will remove children&#39;s event handlers
 	$.each(element.children(), function(i, child) {
 		$(child).detach();
 	});
@@ -2505,8 +2503,8 @@ item.renderers._extraField = function(element, extra) {
 	var limit = this.config.get(&quot;limits.&quot; + name);
 	var items = Echo.Utils.foldl([], this.data.object[type], function(item, acc) {
 		var template = item.length &gt; limit
-			? '&lt;span title=&quot;{data:item}&quot;&gt;{data:truncatedItem}&lt;/span&gt;'
-			: '&lt;span&gt;{data:item}&lt;/span&gt;';
+			? &#39;&lt;span title=&quot;{data:item}&quot;&gt;{data:truncatedItem}&lt;/span&gt;&#39;
+			: &#39;&lt;span&gt;{data:item}&lt;/span&gt;&#39;;
 		var truncatedItem = Echo.Utils.htmlTextTruncate(item, limit, &quot;...&quot;);
 		acc.push(self.substitute({
 			&quot;template&quot;: template,
@@ -2518,7 +2516,7 @@ item.renderers._extraField = function(element, extra) {
 
 item.renderers._button = function(element, extra) {
 	var template = extra.template ||
-		'&lt;a class=&quot;{class:button} {class:button}-{data:name}&quot;&gt;{data:label}&lt;/a&gt;';
+		&#39;&lt;a class=&quot;{class:button} {class:button}-{data:name}&quot;&gt;{data:label}&lt;/a&gt;&#39;;
 	var data = {
 		&quot;label&quot;: extra.label || &quot;&quot;,
 		&quot;name&quot;: extra.name
@@ -2547,7 +2545,7 @@ item.renderers._button = function(element, extra) {
 };
 
 item.renderers._buttonsDelimiter = function(element) {
-	return element.append('&lt;span class=&quot;' + this.cssPrefix + 'button-delim&quot;&gt; \u00b7 &lt;/span&gt;');
+	return element.append(&#39;&lt;span class=&quot;&#39; + this.cssPrefix + &#39;button-delim&quot;&gt; \u00b7 &lt;/span&gt;&#39;);
 };
 
 item.renderers._viaText = function(element, extra) {
@@ -2634,15 +2632,15 @@ item.methods.block = function(label) {
 	// we should take into account that the container has a 10px 0px padding value
 	var height = content.outerHeight();
 	this.blockers = {
-		&quot;backdrop&quot;: $('&lt;div class=&quot;' + this.cssPrefix + 'blocker-backdrop&quot;&gt;&lt;/div&gt;').css({
+		&quot;backdrop&quot;: $(&#39;&lt;div class=&quot;&#39; + this.cssPrefix + &#39;blocker-backdrop&quot;&gt;&lt;/div&gt;&#39;).css({
 			&quot;width&quot;: width, &quot;height&quot;: height
 		}),
 		&quot;message&quot;: $(this.substitute({
-			&quot;template&quot;: '&lt;div class=&quot;{class:blocker-message}&quot;&gt;{data:label}&lt;/div&gt;',
+			&quot;template&quot;: &#39;&lt;div class=&quot;{class:blocker-message}&quot;&gt;{data:label}&lt;/div&gt;&#39;,
 			&quot;data&quot;: {&quot;label&quot;: label}
 		})).css({
-			&quot;left&quot;: ((parseInt(width) - 200)/2) + 'px',
-			&quot;top&quot;: ((parseInt(height) - 20)/2) + 'px'
+			&quot;left&quot;: ((parseInt(width) - 200)/2) + &#39;px&#39;,
+			&quot;top&quot;: ((parseInt(height) - 20)/2) + &#39;px&#39;
 		})
 	};
 	content.addClass(&quot;echo-relative&quot;)
@@ -2706,7 +2704,7 @@ item.methods._getDomain = function(url) {
 };
 
 item.methods._reOfContext = function(context, config) {
-	var title = context.title || context.uri.replace(/^https?:\/\/(.*)/ig, '$1');
+	var title = context.title || context.uri.replace(/^https?:\/\/(.*)/ig, &#39;$1&#39;);
 	var maxLength = config.limits[title ? &quot;maxReTitleLength&quot; : &quot;maxReLinkLength&quot;];
 	if (title.length &gt; maxLength) {
 		title = title.substring(0, maxLength) + &quot;...&quot;;
@@ -2719,7 +2717,7 @@ item.methods._reOfContext = function(context, config) {
 		&quot;openInNewWindow&quot;: config.openLinksInNewWindow
 	});
 	return $(this.substitute({
-		&quot;template&quot;: '&lt;div class=&quot;{class:re-container}&quot;&gt;{data:hyperlink}&lt;/div&gt;',
+		&quot;template&quot;: &#39;&lt;div class=&quot;{class:re-container}&quot;&gt;{data:hyperlink}&lt;/div&gt;&#39;,
 		&quot;data&quot;: {&quot;hyperlink&quot;: hyperlink}
 	}));
 };
@@ -2768,7 +2766,7 @@ item.methods._initSmileysConfig = function() {
 	});
 	_smileys.regexps.test = new RegExp(escapedCodes.join(&quot;|&quot;));
 	_smileys.tag = function(smiley) {
-		return self.substitute({&quot;template&quot;: '&lt;img class=&quot;{class:smiley-icon}&quot; src=&quot;{config:cdnBaseURL.sdk-assets}/images/smileys/emoticon_' + smiley.file + '&quot; title=&quot;' + smiley.title + '&quot; alt=&quot;' + smiley.title + '&quot;&gt;'});
+		return self.substitute({&quot;template&quot;: &#39;&lt;img class=&quot;{class:smiley-icon}&quot; src=&quot;{config:cdnBaseURL.sdk-assets}/images/smileys/emoticon_&#39; + smiley.file + &#39;&quot; title=&quot;&#39; + smiley.title + &#39;&quot; alt=&quot;&#39; + smiley.title + &#39;&quot;&gt;&#39;});
 	};
 	return _smileys;
 };
@@ -2876,12 +2874,12 @@ item.methods._sortButtons = function() {
 		];
 	};
 
-	var _urlMatcher = &quot;((?:http|ftp|https):\\/\\/(?:[a-z0-9#:\\/\\;\\?\\-\\.\\+,@&amp;=%!\\*\\'(){}\\[\\]$_|^~`](?!gt;|lt;))+)&quot;;
+	var _urlMatcher = &quot;((?:http|ftp|https):\\/\\/(?:[a-z0-9#:\\/\\;\\?\\-\\.\\+,@&amp;=%!\\*\\&#39;(){}\\[\\]$_|^~`](?!gt;|lt;))+)&quot;;
 
 	var _wrapTag = function(tag, limits) {
 		var template = tag.length &gt; limits.maxTagLength
-			? '&lt;span class=&quot;{class:tag}&quot; title=&quot;{data:tag}&quot;&gt;{data:truncatedTag}&lt;/span&gt;'
-			: '&lt;span class=&quot;{class:tag}&quot;&gt;{data:tag}&lt;/span&gt;';
+			? &#39;&lt;span class=&quot;{class:tag}&quot; title=&quot;{data:tag}&quot;&gt;{data:truncatedTag}&lt;/span&gt;&#39;
+			: &#39;&lt;span class=&quot;{class:tag}&quot;&gt;{data:tag}&lt;/span&gt;&#39;;
 		var truncatedTag = tag.substring(0, limits.maxTagLength) + &quot;...&quot;;
 		return this.substitute({
 			&quot;template&quot;: template,
@@ -2909,7 +2907,7 @@ item.methods._sortButtons = function() {
 	var _replacePlainHashtags = function(text, extra) {
 		var self = this;
 		if (extra.contentTransformations.hashtags) {
-			text = text.replace(/(^|[^\w&amp;\/])(?:#|\uff03)([^\s\.,;:'&quot;#@\$%&lt;&gt;!\?\(\)\[\]]+)/ig, function($0, $1, $2) {
+			text = text.replace(/(^|[^\w&amp;\/])(?:#|\uff03)([^\s\.,;:&#39;&quot;#@\$%&lt;&gt;!\?\(\)\[\]]+)/ig, function($0, $1, $2) {
 				return $1 + _wrapTag.call(self, $2, extra.limits);
 			});
 		}
@@ -2945,8 +2943,8 @@ item.methods._sortButtons = function() {
 			if (new RegExp(&quot;^&quot; + _urlMatcher + &quot;$&quot;, &quot;i&quot;).test($2)) {
 				$2 = $2.length &gt; extra.limits.maxBodyLinkLength ? $2.substring(0, extra.limits.maxBodyLinkLength) + &quot;...&quot; : $2;
 			}
-			if (extra.openLinksInNewWindow &amp;&amp; !/\s+target=(&quot;[^&lt;&gt;&quot;]*&quot;|'[^&lt;&gt;']*'|\w+)/.test($1)) {
-				$1 = $1.replace(/(^&lt;a\s+[^&gt;]*)(&gt;$)/, '$1 target=&quot;_blank&quot;$2');
+			if (extra.openLinksInNewWindow &amp;&amp; !/\s+target=(&quot;[^&lt;&gt;&quot;]*&quot;|&#39;[^&lt;&gt;&#39;]*&#39;|\w+)/.test($1)) {
+				$1 = $1.replace(/(^&lt;a\s+[^&gt;]*)(&gt;$)/, &#39;$1 target=&quot;_blank&quot;$2&#39;);
 			}
 			return $1 + $2 + $3;
 		});
@@ -3036,56 +3034,56 @@ item.methods._sortButtons = function() {
 var itemDepthRules = [];
 // 100 is a maximum level of children in query, but we can apply styles for ~20
 for (var i = 0; i &lt;= 20; i++) {
-	itemDepthRules.push('.{class:depth}-' + i + ' { margin-left: ' + (i ? 68 + (i - 1) * 44 : 0) + 'px; }');
+	itemDepthRules.push(&#39;.{class:depth}-&#39; + i + &#39; { margin-left: &#39; + (i ? 68 + (i - 1) * 44 : 0) + &#39;px; }&#39;);
 }
 
 item.css =
-	'.{class:content} { word-wrap: break-word; }' +
-	'.{class:container-root} { padding: 10px 0px 10px 10px; }' +
-	'.{class:container-root-thread} { padding: 10px 0px 0px 10px; }' +
-	'.{class:container-child} { padding: 10px; margin: 0px 20px 2px 0px; }' +
-	'.{class:container-child-thread} { padding: 10px; margin: 0px 20px 2px 0px; }' +
-	'.{class:avatar-wrapper} { margin-right: -58px; float: left; position: relative; }' +
-	'.{class:children} .{class:avatar-wrapper}, .{class:childrenByCurrentActorLive} .{class:avatar-wrapper} { margin-right: -34px; }' +
-	'.{class:children} .{class:subwrapper}, .{class:childrenByCurrentActorLive} .{class:subwrapper} { margin-left: 34px; }' +
-	'.{class:wrapper} { float: left; width: 100%; }' +
-	'.{class:subwrapper} { margin-left: 58px; }' +
-	'.{class:subcontainer} { float: left; width: 100%; }' +
-	'.{class:markers} { line-height: 16px; background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/curation/metadata/marker.png&quot;) no-repeat; padding: 0px 0px 4px 21px; margin-top: 7px; }' +
-	'.{class:tags} { line-height: 16px; background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/tag_blue.png&quot;) no-repeat; padding: 0px 0px 4px 21px; }' +
-	'.{class:metadata-title} { font-weight: bold; line-height: 25px; height: 25px; margin-right: 5px; }' +
-	'.{class:metadata-icon} { display: inline-block; padding-left: 26px; }' +
-	'.{class:metadata-userID} { border-bottom: 1px solid #e1e1e1; border-top: 1px solid #e1e1e1;}' +
-	'.{class:metadata-userID} .{class:metadata-icon} { background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/curation/metadata/user.png&quot;) no-repeat left center; }' +
-	'.{class:metadata-userIP} { border-bottom: 1px solid #e1e1e1; }' +
-	'.{class:metadata-userIP} .{class:metadata-icon} { background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/curation/metadata/computer.png&quot;) no-repeat left center; }' +
-	'.{class:modeSwitch} { float: right; width: 16px; height: 16px; background:url(&quot;{config:cdnBaseURL.sdk-assets}/images/curation/metadata/flip.png&quot;) no-repeat 0px 3px; }' +
-	'.{class:childrenMarker} { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }' + // This is magic &quot;arrow up&quot;. Only color and margins could be changed
-	'.{class:container-root-thread} .{class:childrenMarker} { display: block; }' +
-	'.{class:avatar} { width: 48px; height: 48px; }' +
-	'.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; height: 24px; }' +
-	'.{class:authorName} { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }' +
-	'.{class:re} { font-weight: bold; }' +
-	'.{class:re} a:link, .{class:re} a:visited, .{class:re} a:active { text-decoration: none; }' +
-	'.{class:re} a:hover { text-decoration: underline; }' +
-	'.{class:body} { padding-top: 4px; }' +
-	'.{class:buttons} { float: left; margin-left: 3px; }' +
-	'.{class:buttons} a.{class:button} { color: #C6C6C6; }' +
-	'.{class:buttons} a.{class:button}.echo-linkColor, .{class:buttons} a.{class:button}:hover { color: #476CB8; text-decoration: none; }' +
-	'.{class:sourceIcon} { float: left; height: 16px; width: 16px; margin-right: 5px; border: 0px; }' +
-	'.{class:date}, .{class:from}, .{class:via} { float: left; }' +
-	'.{class:from} a, .{class:via} a { text-decoration: none; color: #C6C6C6; }' +
-	'.{class:from} a:hover, .{class:via} a:hover { color: #476CB8; }' +
-	'.{class:tag} { display: inline-block; height: 16px; background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/tag_blue.png&quot;) no-repeat; padding-left: 18px; }' +
-	'.{class:smiley-icon} { border: 0px; }' +
-	'.{class:textToggleTruncated} { margin-left: 5px; }' +
-	'.{class:blocker-backdrop} { position: absolute; left: 0px; top: 0px; background: #FFFFFF; opacity: 0.7; z-index: 100; }' +
-	'.{class:blocker-message} { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }' +
-	'.{class:expandChildren} { display:none; text-align: center; padding:4px; }' +
-	'.{class:expandChildren} .{class:expandChildrenLabel} { display: inline-block; padding-left: 22px; }' +
-	'.{class:expandChildren} .echo-message-icon { background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/whirlpool.png&quot;) no-repeat 5px 4px; }' +
-	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url(&quot;{config:cdnBaseURL.sdk-assets}/images/loading.gif&quot;); }' +
-	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
+	&#39;.{class:content} { word-wrap: break-word; }&#39; +
+	&#39;.{class:container-root} { padding: 10px 0px 10px 10px; }&#39; +
+	&#39;.{class:container-root-thread} { padding: 10px 0px 0px 10px; }&#39; +
+	&#39;.{class:container-child} { padding: 10px; margin: 0px 20px 2px 0px; }&#39; +
+	&#39;.{class:container-child-thread} { padding: 10px; margin: 0px 20px 2px 0px; }&#39; +
+	&#39;.{class:avatar-wrapper} { margin-right: -58px; float: left; position: relative; }&#39; +
+	&#39;.{class:children} .{class:avatar-wrapper}, .{class:childrenByCurrentActorLive} .{class:avatar-wrapper} { margin-right: -34px; }&#39; +
+	&#39;.{class:children} .{class:subwrapper}, .{class:childrenByCurrentActorLive} .{class:subwrapper} { margin-left: 34px; }&#39; +
+	&#39;.{class:wrapper} { float: left; width: 100%; }&#39; +
+	&#39;.{class:subwrapper} { margin-left: 58px; }&#39; +
+	&#39;.{class:subcontainer} { float: left; width: 100%; }&#39; +
+	&#39;.{class:markers} { line-height: 16px; background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/curation/metadata/marker.png&quot;) no-repeat; padding: 0px 0px 4px 21px; margin-top: 7px; }&#39; +
+	&#39;.{class:tags} { line-height: 16px; background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/tag_blue.png&quot;) no-repeat; padding: 0px 0px 4px 21px; }&#39; +
+	&#39;.{class:metadata-title} { font-weight: bold; line-height: 25px; height: 25px; margin-right: 5px; }&#39; +
+	&#39;.{class:metadata-icon} { display: inline-block; padding-left: 26px; }&#39; +
+	&#39;.{class:metadata-userID} { border-bottom: 1px solid #e1e1e1; border-top: 1px solid #e1e1e1;}&#39; +
+	&#39;.{class:metadata-userID} .{class:metadata-icon} { background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/curation/metadata/user.png&quot;) no-repeat left center; }&#39; +
+	&#39;.{class:metadata-userIP} { border-bottom: 1px solid #e1e1e1; }&#39; +
+	&#39;.{class:metadata-userIP} .{class:metadata-icon} { background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/curation/metadata/computer.png&quot;) no-repeat left center; }&#39; +
+	&#39;.{class:modeSwitch} { float: right; width: 16px; height: 16px; background:url(&quot;{config:cdnBaseURL.sdk-assets}/images/curation/metadata/flip.png&quot;) no-repeat 0px 3px; }&#39; +
+	&#39;.{class:childrenMarker} { border-color: transparent transparent #ECEFF5; border-width: 0px 11px 11px; border-style: solid; margin: 3px 0px 0px 77px; height: 1px; width: 0px; display: none; }&#39; + // This is magic &quot;arrow up&quot;. Only color and margins could be changed
+	&#39;.{class:container-root-thread} .{class:childrenMarker} { display: block; }&#39; +
+	&#39;.{class:avatar} { width: 48px; height: 48px; }&#39; +
+	&#39;.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; height: 24px; }&#39; +
+	&#39;.{class:authorName} { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }&#39; +
+	&#39;.{class:re} { font-weight: bold; }&#39; +
+	&#39;.{class:re} a:link, .{class:re} a:visited, .{class:re} a:active { text-decoration: none; }&#39; +
+	&#39;.{class:re} a:hover { text-decoration: underline; }&#39; +
+	&#39;.{class:body} { padding-top: 4px; }&#39; +
+	&#39;.{class:buttons} { float: left; margin-left: 3px; }&#39; +
+	&#39;.{class:buttons} a.{class:button} { color: #C6C6C6; }&#39; +
+	&#39;.{class:buttons} a.{class:button}.echo-linkColor, .{class:buttons} a.{class:button}:hover { color: #476CB8; text-decoration: none; }&#39; +
+	&#39;.{class:sourceIcon} { float: left; height: 16px; width: 16px; margin-right: 5px; border: 0px; }&#39; +
+	&#39;.{class:date}, .{class:from}, .{class:via} { float: left; }&#39; +
+	&#39;.{class:from} a, .{class:via} a { text-decoration: none; color: #C6C6C6; }&#39; +
+	&#39;.{class:from} a:hover, .{class:via} a:hover { color: #476CB8; }&#39; +
+	&#39;.{class:tag} { display: inline-block; height: 16px; background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/tag_blue.png&quot;) no-repeat; padding-left: 18px; }&#39; +
+	&#39;.{class:smiley-icon} { border: 0px; }&#39; +
+	&#39;.{class:textToggleTruncated} { margin-left: 5px; }&#39; +
+	&#39;.{class:blocker-backdrop} { position: absolute; left: 0px; top: 0px; background: #FFFFFF; opacity: 0.7; z-index: 100; }&#39; +
+	&#39;.{class:blocker-message} { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }&#39; +
+	&#39;.{class:expandChildren} { display:none; text-align: center; padding:4px; }&#39; +
+	&#39;.{class:expandChildren} .{class:expandChildrenLabel} { display: inline-block; padding-left: 22px; }&#39; +
+	&#39;.{class:expandChildren} .echo-message-icon { background: url(&quot;{config:cdnBaseURL.sdk-assets}/images/whirlpool.png&quot;) no-repeat 5px 4px; }&#39; +
+	&#39;.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url(&quot;{config:cdnBaseURL.sdk-assets}/images/loading.gif&quot;); }&#39; +
+	&#39;.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }&#39; +
 	itemDepthRules.join(&quot;\n&quot;);
 
 Echo.Control.create(item);

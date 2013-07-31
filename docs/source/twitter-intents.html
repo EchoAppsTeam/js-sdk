@@ -171,8 +171,8 @@ plugin.events = {
 };
 
 plugin.templates = {
-	&quot;username&quot;: '&lt;div class=&quot;{plugin.class:tweetUserName}&quot;&gt;&lt;/div&gt;',
-	&quot;date&quot;: '&lt;div class=&quot;{plugin.class:tweetDate} echo-secondaryFont&quot;&gt;&lt;/div&gt;'
+	&quot;username&quot;: &#39;&lt;div class=&quot;{plugin.class:tweetUserName}&quot;&gt;&lt;/div&gt;&#39;,
+	&quot;date&quot;: &#39;&lt;div class=&quot;{plugin.class:tweetDate} echo-secondaryFont&quot;&gt;&lt;/div&gt;&#39;
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-echo_renderer-authorName'>/**
@@ -221,7 +221,7 @@ plugin.component.renderers._buttonsDelimiter = function(element) {
 	var posDelimiter = item.buttonSpecs[this.name].length;
 
 	return item.parentRenderer(&quot;_buttonsDelimiter&quot;, arguments)
-		.find(&quot;span[class*='button-delim']&quot;).eq(posDelimiter).text(&quot; | &quot;);
+		.find(&quot;span[class*=&#39;button-delim&#39;]&quot;).eq(posDelimiter).text(&quot; | &quot;);
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-TwitterIntents-echo_renderer-tweetUserName'>/**
@@ -264,8 +264,8 @@ plugin.methods._assembleButton = function(name) {
 				&quot;href&quot;: &quot;https://twitter.com/intent/&quot; + name + &quot;?in_reply_to=&quot; + id + &quot;&amp;tweet_id=&quot; + id,
 				&quot;class&quot;: &quot;echo-clickable &quot; + plugin.cssPrefix + &quot;intentControl echo-secondaryColor&quot;,
 				&quot;caption&quot;:
-					'&lt;span class=&quot;' + plugin.cssPrefix + 'icon ' + plugin.cssPrefix + 'icon-{data:name}&quot;&gt;&amp;nbsp;&lt;/span&gt;' +
-					'&lt;span&gt;{data:label}&lt;/span&gt;'
+					&#39;&lt;span class=&quot;&#39; + plugin.cssPrefix + &#39;icon &#39; + plugin.cssPrefix + &#39;icon-{data:name}&quot;&gt;&amp;nbsp;&lt;/span&gt;&#39; +
+					&#39;&lt;span&gt;{data:label}&lt;/span&gt;&#39;
 			}, {
 				&quot;openInNewWindow&quot;: item.config.get(&quot;openLinksInNewWindow&quot;),
 				&quot;skipEscaping&quot;: true

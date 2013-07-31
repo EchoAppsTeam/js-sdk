@@ -215,7 +215,7 @@ plugin.labels = {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-processingAction'>	/**
 </span>	 * @echo_label
 	 */
-	&quot;processingAction&quot;: &quot;Setting up '{state}' user state...&quot;,
+	&quot;processingAction&quot;: &quot;Setting up &#39;{state}&#39; user state...&quot;,
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-moderatorRole'>	/**
 </span>	 * @echo_label
 	 */
@@ -239,11 +239,11 @@ plugin.labels = {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-setRoleAction'>	/**
 </span>	 * @echo_label
 	 */
-	&quot;setRoleAction&quot;: &quot;Setting up '{role}' role...&quot;,
+	&quot;setRoleAction&quot;: &quot;Setting up &#39;{role}&#39; role...&quot;,
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-unsetRoleAction'>	/**
 </span>	 * @echo_label
 	 */
-	&quot;unsetRoleAction&quot;: &quot;Removing '{role}' role...&quot;,
+	&quot;unsetRoleAction&quot;: &quot;Removing &#39;{role}&#39; role...&quot;,
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_label-statusUntouched'>	/**
 </span>	 * @echo_label
 	 */
@@ -254,19 +254,19 @@ plugin.labels = {
 </span> * @echo_template
  */
 plugin.templates.buttonLabels = {
-	&quot;banned&quot;: '&lt;span class=&quot;{plugin.class:button-state} {plugin.class:button-state-banned}&quot;&gt;{plugin.label:userBanned}&lt;/span&gt;' +
-		'(&lt;span class=&quot;echo-clickable&quot;&gt;{plugin.label:unbanUser}&lt;/span&gt;)',
-	&quot;unbanned&quot;: '&lt;span class=&quot;echo-clickable&quot;&gt;{plugin.label:banUser}&lt;/span&gt;'
+	&quot;banned&quot;: &#39;&lt;span class=&quot;{plugin.class:button-state} {plugin.class:button-state-banned}&quot;&gt;{plugin.label:userBanned}&lt;/span&gt;&#39; +
+		&#39;(&lt;span class=&quot;echo-clickable&quot;&gt;{plugin.label:unbanUser}&lt;/span&gt;)&#39;,
+	&quot;unbanned&quot;: &#39;&lt;span class=&quot;echo-clickable&quot;&gt;{plugin.label:banUser}&lt;/span&gt;&#39;
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_template-status'>/**
 </span> * @echo_template
  */
 plugin.templates.status =
-	'&lt;div class=&quot;{plugin.class:status}&quot;&gt;' +
-		'&lt;div class=&quot;{plugin.class:statusIcon}&quot;&gt;&lt;/div&gt;' +
-		'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;{plugin.class:status}&quot;&gt;&#39; +
+		&#39;&lt;div class=&quot;{plugin.class:statusIcon}&quot;&gt;&lt;/div&gt;&#39; +
+		&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Moderation-echo_renderer-status'>/**
 </span> * @echo_renderer
@@ -278,7 +278,7 @@ plugin.renderers.status = function(element) {
 		return element;
 	}
 	if (item.get(&quot;depth&quot;)) {
-		element.addClass(this.cssPrefix + 'status-child');
+		element.addClass(this.cssPrefix + &#39;status-child&#39;);
 	}
 	var status = item.get(&quot;data.object.status&quot;) || &quot;Untouched&quot;;
 	return element.addClass(this.cssPrefix + &quot;status-&quot; + status);
@@ -585,9 +585,9 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		var item = this;
 		var role = self._getRole();
 		var template = role
-			? '&lt;span class=&quot;{plugin.class:button-role} {plugin.class:button-role}-{data:role}&quot;&gt;{data:label}&lt;/span&gt;' +
-				'(&lt;span class=&quot;echo-clickable&quot;&gt;{data:button}&lt;/span&gt;)'
-			: '&lt;span class=&quot;echo-clickable&quot;&gt;{data:button}&lt;/span&gt;';
+			? &#39;&lt;span class=&quot;{plugin.class:button-role} {plugin.class:button-role}-{data:role}&quot;&gt;{data:label}&lt;/span&gt;&#39; +
+				&#39;(&lt;span class=&quot;echo-clickable&quot;&gt;{data:button}&lt;/span&gt;)&#39;
+			: &#39;&lt;span class=&quot;echo-clickable&quot;&gt;{data:button}&lt;/span&gt;&#39;;
 
 		var label = self.substitute({
 			&quot;template&quot;: template,
@@ -644,24 +644,24 @@ plugin.methods._getNextRole = function(role) {
 };
 
 plugin.css = function() {
-	return '.{plugin.class:status} { width: 48px; height: 24px; }' +
-		'.{plugin.class:status-child} { width: 24px; height: 24px; }' +
-		'.{plugin.class:statusIcon} { float: right; margin: 4px; width: 16px; height: 16px; }' +
+	return &#39;.{plugin.class:status} { width: 48px; height: 24px; }&#39; +
+		&#39;.{plugin.class:status-child} { width: 24px; height: 24px; }&#39; +
+		&#39;.{plugin.class:statusIcon} { float: right; margin: 4px; width: 16px; height: 16px; }&#39; +
 		// statuses
-		'.{plugin.class:status-Untouched} { background: #00aaff; }' +
-		'.{plugin.class:status-ModeratorApproved} { background: #bdfb6d; }' +
-		'.{plugin.class:status-ModeratorDeleted} { background: #f20202; }' +
-		'.{plugin.class:status-UserDeleted} { background: #ff8e8e; }' +
-		'.{plugin.class:status-SystemFlagged}, .{plugin.class:status-CommunityFlagged}, .{plugin.class:status-ModeratorFlagged} { background: #ff9e00; }' +
+		&#39;.{plugin.class:status-Untouched} { background: #00aaff; }&#39; +
+		&#39;.{plugin.class:status-ModeratorApproved} { background: #bdfb6d; }&#39; +
+		&#39;.{plugin.class:status-ModeratorDeleted} { background: #f20202; }&#39; +
+		&#39;.{plugin.class:status-UserDeleted} { background: #ff8e8e; }&#39; +
+		&#39;.{plugin.class:status-SystemFlagged}, .{plugin.class:status-CommunityFlagged}, .{plugin.class:status-ModeratorFlagged} { background: #ff9e00; }&#39; +
 		// buttons
-		'.{plugin.class:button-state} { margin-right: 3px; }' +
-		'.{plugin.class:button-state-banned} { color: #FF0000; }' +
-		'.{plugin.class:button-role} { margin-right: 3px; }' +
-		'.{plugin.class:button-role-moderator} { color: #0000FF; }' +
-		'.{plugin.class:button-role-administrator} { color: #008000; }' +
+		&#39;.{plugin.class:button-state} { margin-right: 3px; }&#39; +
+		&#39;.{plugin.class:button-state-banned} { color: #FF0000; }&#39; +
+		&#39;.{plugin.class:button-role} { margin-right: 3px; }&#39; +
+		&#39;.{plugin.class:button-role-moderator} { color: #0000FF; }&#39; +
+		&#39;.{plugin.class:button-role-administrator} { color: #008000; }&#39; +
 		// status icons
 		$.map(plugin.statuses, function(name) {
-			return '.{plugin.class:status-icon-' + name + '} { background: url({config:cdnBaseURL.sdk-assets}/images/curation/status/' + name.toLowerCase() + '.png) no-repeat; }';
+			return &#39;.{plugin.class:status-icon-&#39; + name + &#39;} { background: url({config:cdnBaseURL.sdk-assets}/images/curation/status/&#39; + name.toLowerCase() + &#39;.png) no-repeat; }&#39;;
 		}).join(&quot;&quot;);
 }();
 

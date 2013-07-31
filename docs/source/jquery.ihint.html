@@ -51,7 +51,7 @@
 	//override default &quot;val&quot; function so it could be used on iHint elements
 	$.fn.val = function(value) {
 		if (this[0] &amp;&amp; this[0].iHint) {
-			if (typeof(value) == 'undefined') {
+			if (typeof(value) == &#39;undefined&#39;) {
 				if (_val.apply(this, arguments) == this[0].iHint.text) {
 					return &quot;&quot;;
 				}

@@ -195,20 +195,20 @@ $.map([&quot;Init&quot;, &quot;Complete&quot;, &quot;Error&quot;], function(acti
 </span> * @echo_template
  */
 plugin.templates.header =
-	'&lt;div class=&quot;{plugin.class:header} echo-primaryFont echo-primaryFont echo-primaryColor&quot;&gt;' +
-		'{plugin.label:createdBy} &lt;span class=&quot;{plugin.class:author}&quot;&gt;&lt;/span&gt; ' +
-		'{plugin.label:on} &lt;span class=&quot;{plugin.class:editedDate}&quot;&gt;&lt;/span&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;{plugin.class:header} echo-primaryFont echo-primaryFont echo-primaryColor&quot;&gt;&#39; +
+		&#39;{plugin.label:createdBy} &lt;span class=&quot;{plugin.class:author}&quot;&gt;&lt;/span&gt; &#39; +
+		&#39;{plugin.label:on} &lt;span class=&quot;{plugin.class:editedDate}&quot;&gt;&lt;/span&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_template-cancel'>/**
 </span> * @echo_template
  */
 plugin.templates.cancel =
-	'&lt;div class=&quot;{plugin.class:cancelButtonContainer}&quot;&gt;' +
-		'&lt;a href=&quot;javascript:void(0);&quot; class=&quot;{plugin.class:cancelButton} echo-primaryFont echo-clickable echo-linkColor&quot;&gt;' +
-			'{plugin.label:cancel}' +
-		'&lt;/a&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;{plugin.class:cancelButtonContainer}&quot;&gt;&#39; +
+		&#39;&lt;a href=&quot;javascript:void(0);&quot; class=&quot;{plugin.class:cancelButton} echo-primaryFont echo-clickable echo-linkColor&quot;&gt;&#39; +
+			&#39;{plugin.label:cancel}&#39; +
+		&#39;&lt;/a&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_renderer-author'>/**
 </span> * @echo_renderer
@@ -226,7 +226,7 @@ plugin.renderers.editedDate = function(element) {
 	if (!published) return element.empty();
 
 	var date = new Date(Echo.Utils.timestampFromW3CDTF(published) * 1000);
-	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
+	return element.text(date.toLocaleDateString() + &#39;, &#39; + date.toLocaleTimeString());
 };
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-Edit-echo_renderer-cancelButton'>/**
@@ -286,7 +286,7 @@ plugin.methods._getMetaDataUpdates = function(verb, type, data) {
 };
 
 plugin.css = 
-	'.{plugin.class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }';
+	&#39;.{plugin.class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }&#39;;
 
 Echo.Plugin.create(plugin);
 

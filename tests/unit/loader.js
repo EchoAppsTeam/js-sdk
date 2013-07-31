@@ -48,6 +48,20 @@ suite.prototype.tests.resourceDownloadingTests = {
 		], "cases");
 	}
 };
+
+suite.prototype.tests.raceConditionTests = {
+	"config": {
+		"async": true,
+		"testTimeout": 15000
+	},
+	"check": function() {
+		this.sequentialAsyncTests([
+			"loadingRaceCondition",
+			"removingFirstNode"
+		], "cases");
+	}
+};
+
 // This code reproduces the issue described here:
 // https://github.com/SlexAxton/yepnope.js/issues/113
 //
@@ -61,43 +75,41 @@ suite.prototype.tests.resourceDownloadingTests = {
 // executed yet. In this test case yepnope tries to execute synchronous script
 // before it's fully preloaded.
 
-suite.prototype.tests.raceConditionTests = {
-	"config": {
-		"async": true,
-		"testTimeout": 15000
-	},
-	"check": function() {
-		var base = Echo.Tests.baseURL + "tests/unit/loader/scripts";
+suite.prototype.cases.loadingRaceCondition = function(callback) {
+	var base = Echo.Tests.baseURL + "tests/unit/loader/scripts";
 
-		Echo.Loader.download([{"url": base + "/race-base.js"}], function() {
-			// we override injectJs function to be sure that
-			// preloading is finished before executing the script
-			var injectJs = Echo.yepnope.injectJs;
-			Echo.yepnope.injectJs = function () {
-				var self = this;
-				var arg = arguments;
-				setTimeout(function() {
-					injectJs.apply(self, arg);
-				}, 5000);
-			};
-
-			Echo.Loader.download([{"url": base + "/race-first.js"}], function() {
-				QUnit.ok(Echo.Variables.raceCondition.first,
-					"Check if first callback will be executed after complete loading of first script");
-			});
-
-			// asynchronous loading of this script affects internal state of yepnope
+	Echo.Loader.download([{"url": base + "/race-base.js"}], function() {
+		// we override injectJs function to be sure that
+		// preloading is finished before executing the script
+		var injectJs = Echo.yepnope.injectJs;
+		Echo.yepnope.injectJs = function () {
+			var self = this;
+			var arg = arguments;
 			setTimeout(function() {
-				Echo.Loader.download([{"url": base + "/race-second.js"}], function() {
-					QUnit.ok(Echo.Variables.raceCondition.second,
-						"Check if second callback will be executed after complete loading of second script");
-					delete Echo.Variables.raceCondition;
-					Echo.yepnope.injectJs = injectJs;
-					QUnit.start();
-				});
-			}, 10);
+				injectJs.apply(self, arg);
+			}, 5000);
+		};
+
+		Echo.Loader.download([{"url": base + "/race-first.js"}], function() {
+			QUnit.ok(Echo.Variables.raceCondition.first,
+				"Check if first callback will be executed after complete loading of first script");
 		});
-	}
+
+		// asynchronous loading of this script affects internal state of yepnope
+		setTimeout(function() {
+			Echo.Loader.download([{"url": base + "/race-second.js"}], function() {
+				QUnit.ok(Echo.Variables.raceCondition.second,
+					"Check if second callback will be executed after complete loading of second script");
+				delete Echo.Variables.raceCondition;
+				Echo.yepnope.injectJs = injectJs;
+				callback();
+			});
+		}, 10);
+	});
+};
+
+suite.prototype.cases.removingFirstNode = function(callback) {
+	this.loaderIframeTest("check-removing-first-script")(callback);
 };
 
 suite.prototype.tests.urlConvertingTests = {
@@ -391,6 +403,8 @@ suite.prototype.tests.canvasesInitializationTests = {
 			"different-initialization-schemas",
 			"multiple-apps-canvas",
 			"app-initialization",
+			"overrides-same-canvases",
+			"foreign-app-initialization",
 			"app-config-overrides"
 		], function(name) {
 			return self.loaderIframeTest(name);

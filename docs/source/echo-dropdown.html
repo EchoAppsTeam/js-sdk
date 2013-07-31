@@ -134,29 +134,29 @@ Echo.GUI.Dropdown.prototype.updateEntries = function(entries) {
 
 Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 	 var template =
-		'&lt;li class=&quot;dropdown&quot;&gt;' +
-			'&lt;a class=&quot;dropdown-toggle&quot; data-toggle=&quot;dropdown&quot; role=&quot;button&quot; href=&quot;#&quot;&gt;' +
+		&#39;&lt;li class=&quot;dropdown&quot;&gt;&#39; +
+			&#39;&lt;a class=&quot;dropdown-toggle&quot; data-toggle=&quot;dropdown&quot; role=&quot;button&quot; href=&quot;#&quot;&gt;&#39; +
 				this.config.get(&quot;title&quot;) +
-			'&lt;/a&gt;' +
-		'&lt;/li&gt;';
+			&#39;&lt;/a&gt;&#39; +
+		&#39;&lt;/li&gt;&#39;;
 	var dropdown = $(template);
 	if (this.config.get(&quot;icon&quot;)) {
 		$(&quot;.dropdown-toggle&quot;, dropdown)
 			.css(&quot;background&quot;, &quot;no-repeat url(&quot; + this.config.get(&quot;icon&quot;) + &quot;) 3px 0px&quot;)
 			.css(&quot;padding-left&quot;, &quot;23px&quot;);
 	}
-	this.config.get(&quot;target&quot;).append($('&lt;ul class=&quot;' + this.config.get(&quot;extraClass&quot;) + '&quot;&gt;').append(dropdown));
+	this.config.get(&quot;target&quot;).append($(&#39;&lt;ul class=&quot;&#39; + this.config.get(&quot;extraClass&quot;) + &#39;&quot;&gt;&#39;).append(dropdown));
 
 	return dropdown;
 };
 
 Echo.GUI.Dropdown.prototype._assembleEntries = function(container, entries) {
 	var self = this;
-	var menu = $('&lt;ul class=&quot;dropdown-menu&quot; role=&quot;menu&quot;&gt;');
+	var menu = $(&#39;&lt;ul class=&quot;dropdown-menu&quot; role=&quot;menu&quot;&gt;&#39;);
 	container.append(menu);
 
 	$.map(entries, function(entry) {
-		var item = $(&quot;&lt;a role='button' class='echo-clickable' /&gt;&quot;)
+		var item = $(&quot;&lt;a role=&#39;button&#39; class=&#39;echo-clickable&#39; /&gt;&quot;)
 			.click(function() {
 				entry.handler &amp;&amp; entry.handler.call(this, entry);
 			});

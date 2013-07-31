@@ -55,7 +55,8 @@ suite.prototype.tests.commonWorkflow = {
 					"queueActivityTesting",
 					"addChildItem",
 					"moreButton",
-					"predefinedData"
+					"predefinedData",
+					"liveUpdateEmptyStream"
 				], "cases");
 			}
 		});
@@ -298,6 +299,41 @@ suite.prototype.cases.asyncItemsAndLiveUpdate = function(callback) {
 		"data": entry
 	});
 	request.send();
+};
+
+suite.prototype.cases.liveUpdateEmptyStream = function(callback) {
+	var stream = suite.stream;
+	var newTarget = this.config.dataBaseLocation + Echo.Utils.getUniqueString();
+	var entry = this._preparePostEntry({
+		"username": "john.doe",
+		"content": "TestContent",
+		"targetId": newTarget
+	});
+
+	stream.config.set("query", "childrenof: " + newTarget);
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.onRefresh",
+		"once": true,
+		"handler": function() {
+			QUnit.ok(stream.threads.length === 0, "Check if Stream is empty");
+			var request = Echo.StreamServer.API.request({
+				"endpoint": "submit",
+				"data": entry
+			});
+			request.send();
+		}
+	});
+
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
+		"once": true,
+		"handler": function(topic, args) {
+			QUnit.ok(ok, "Check if item was rendered for empty Stream");
+			callback();
+		}
+	});
+
+	stream.refresh();
 };
 
 suite.prototype.cases.moreButton = function(callback) {

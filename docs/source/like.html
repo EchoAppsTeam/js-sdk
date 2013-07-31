@@ -101,7 +101,7 @@ plugin.events = {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-echo_template-main'>/**
 </span> * @echo_template
  */
-plugin.templates.main = '&lt;div class=&quot;{plugin.class:likedBy}&quot;&gt;&lt;/div&gt;';
+plugin.templates.main = &#39;&lt;div class=&quot;{plugin.class:likedBy}&quot;&gt;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Like-echo_renderer-likedBy'>/**
 </span> * @echo_renderer
@@ -249,8 +249,8 @@ plugin.methods._assembleButton = function(name) {
 };
 
 plugin.css =
-	'.{plugin.class:likedBy} { background: url({config:cdnBaseURL.sdk-assets}/images/likes.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
-	'.{plugin.class:highlight} { line-height: 23px; }';
+	&#39;.{plugin.class:likedBy} { background: url({config:cdnBaseURL.sdk-assets}/images/likes.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }&#39; +
+	&#39;.{plugin.class:highlight} { line-height: 23px; }&#39;;
 
 Echo.Plugin.create(plugin);
 
@@ -286,7 +286,7 @@ plugin.labels = {
 <span id='Echo-StreamServer-Controls-FacePile-Item-Plugins-Like-echo_template-main'>/**
 </span> * @echo_template
  */
-plugin.templates.main = '&lt;img class=&quot;{plugin.class:adminUnlike}&quot; src=&quot;{config:cdnBaseURL.sdk-assets}/images/container/closeWindow.png&quot;&quot; title=&quot;{plugin.label:unlikeOnBehalf}&quot; width=&quot;10&quot; height=&quot;9&quot;&gt;';
+plugin.templates.main = &#39;&lt;img class=&quot;{plugin.class:adminUnlike}&quot; src=&quot;{config:cdnBaseURL.sdk-assets}/images/container/closeWindow.png&quot;&quot; title=&quot;{plugin.label:unlikeOnBehalf}&quot; width=&quot;10&quot; height=&quot;9&quot;&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-FacePile-Item-Plugins-Like-echo_renderer-container'>/**
 </span> * @echo_renderer
@@ -326,8 +326,8 @@ plugin.renderers.adminUnlike = function(element) {
 };
 
 plugin.css =
-	'.{plugin.class:adminUnlike} { cursor: pointer; margin-left: 3px; }' +
-	'.{plugin.class:highlight} { display: inline-block; line-height: 16px; background-color: #EEEEEE; padding: 1px 3px; border: 1px solid #D2D2D2; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; margin: 0px 2px; }';
+	&#39;.{plugin.class:adminUnlike} { cursor: pointer; margin-left: 3px; }&#39; +
+	&#39;.{plugin.class:highlight} { display: inline-block; line-height: 16px; background-color: #EEEEEE; padding: 1px 3px; border: 1px solid #D2D2D2; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; margin: 0px 2px; }&#39;;
 
 Echo.Plugin.create(plugin);
 

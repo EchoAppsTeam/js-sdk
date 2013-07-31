@@ -44,7 +44,7 @@
   * =============================== */
 
   var Popover = function (element, options) {
-    this.init('popover', element, options)
+    this.init(&#39;popover&#39;, element, options)
   }
 
 
@@ -60,10 +60,10 @@
         , title = this.getTitle()
         , content = this.getContent()
 
-      $tip.find('.popover-title')[this.options.html ? 'html' : 'text'](title)
-      $tip.find('.popover-content')[this.options.html ? 'html' : 'text'](content)
+      $tip.find(&#39;.popover-title&#39;)[this.options.html ? &#39;html&#39; : &#39;text&#39;](title)
+      $tip.find(&#39;.popover-content&#39;)[this.options.html ? &#39;html&#39; : &#39;text&#39;](content)
 
-      $tip.removeClass('fade top bottom left right in')
+      $tip.removeClass(&#39;fade top bottom left right in&#39;)
     }
 
   , hasContent: function () {
@@ -75,8 +75,8 @@
         , $e = this.$element
         , o = this.options
 
-      content = (typeof o.content == 'function' ? o.content.call($e[0]) :  o.content)
-        || $e.attr('data-content')
+      content = (typeof o.content == &#39;function&#39; ? o.content.call($e[0]) :  o.content)
+        || $e.attr(&#39;data-content&#39;)
 
       return content
     }
@@ -89,7 +89,7 @@
     }
 
   , destroy: function () {
-      this.hide().$element.off('.' + this.type).removeData(this.type)
+      this.hide().$element.off(&#39;.&#39; + this.type).removeData(this.type)
     }
 
   })
@@ -103,20 +103,20 @@
   $.fn.popover = function (option) {
     return this.each(function () {
       var $this = $(this)
-        , data = $this.data('popover')
-        , options = typeof option == 'object' &amp;&amp; option
-      if (!data) $this.data('popover', (data = new Popover(this, options)))
-      if (typeof option == 'string') data[option]()
+        , data = $this.data(&#39;popover&#39;)
+        , options = typeof option == &#39;object&#39; &amp;&amp; option
+      if (!data) $this.data(&#39;popover&#39;, (data = new Popover(this, options)))
+      if (typeof option == &#39;string&#39;) data[option]()
     })
   }
 
   $.fn.popover.Constructor = Popover
 
   $.fn.popover.defaults = $.extend({} , $.fn.tooltip.defaults, {
-    placement: 'right'
-  , trigger: 'click'
-  , content: ''
-  , template: '&lt;div class=&quot;popover&quot;&gt;&lt;div class=&quot;arrow&quot;&gt;&lt;/div&gt;&lt;h3 class=&quot;popover-title&quot;&gt;&lt;/h3&gt;&lt;div class=&quot;popover-content&quot;&gt;&lt;/div&gt;&lt;/div&gt;'
+    placement: &#39;right&#39;
+  , trigger: &#39;click&#39;
+  , content: &#39;&#39;
+  , template: &#39;&lt;div class=&quot;popover&quot;&gt;&lt;div class=&quot;arrow&quot;&gt;&lt;/div&gt;&lt;h3 class=&quot;popover-title&quot;&gt;&lt;/h3&gt;&lt;div class=&quot;popover-content&quot;&gt;&lt;/div&gt;&lt;/div&gt;&#39;
   })
 
 

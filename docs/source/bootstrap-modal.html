@@ -46,8 +46,8 @@
   var Modal = function (element, options) {
     this.options = options
     this.$element = $(element)
-      .delegate('[data-dismiss=&quot;modal&quot;]', 'click.dismiss.modal', $.proxy(this.hide, this))
-    this.options.remote &amp;&amp; this.$element.find('.modal-body').load(this.options.remote)
+      .delegate(&#39;[data-dismiss=&quot;modal&quot;]&#39;, &#39;click.dismiss.modal&#39;, $.proxy(this.hide, this))
+    this.options.remote &amp;&amp; this.$element.find(&#39;.modal-body&#39;).load(this.options.remote)
   }
 
   Modal.prototype = {
@@ -55,12 +55,12 @@
       constructor: Modal
 
     , toggle: function () {
-        return this[!this.isShown ? 'show' : 'hide']()
+        return this[!this.isShown ? &#39;show&#39; : &#39;hide&#39;]()
       }
 
     , show: function () {
         var that = this
-          , e = $.Event('show')
+          , e = $.Event(&#39;show&#39;)
 
         this.$element.trigger(e)
 
@@ -71,10 +71,10 @@
         this.escape()
 
         this.backdrop(function () {
-          var transition = $.support.transition &amp;&amp; that.$element.hasClass('fade')
+          var transition = $.support.transition &amp;&amp; that.$element.hasClass(&#39;fade&#39;)
 
           if (!that.$element.parent().length) {
-            that.$element.appendTo(document.body) //don't move modals dom position
+            that.$element.appendTo(document.body) //don&#39;t move modals dom position
           }
 
           that.$element.show()
@@ -84,14 +84,14 @@
           }
 
           that.$element
-            .addClass('in')
-            .attr('aria-hidden', false)
+            .addClass(&#39;in&#39;)
+            .attr(&#39;aria-hidden&#39;, false)
 
           that.enforceFocus()
 
           transition ?
-            that.$element.one($.support.transition.end, function () { that.$element.focus().trigger('shown') }) :
-            that.$element.focus().trigger('shown')
+            that.$element.one($.support.transition.end, function () { that.$element.focus().trigger(&#39;shown&#39;) }) :
+            that.$element.focus().trigger(&#39;shown&#39;)
 
         })
       }
@@ -101,7 +101,7 @@
 
         var that = this
 
-        e = $.Event('hide')
+        e = $.Event(&#39;hide&#39;)
 
         this.$element.trigger(e)
 
@@ -111,20 +111,20 @@
 
         this.escape()
 
-        $(document).off('focusin.modal')
+        $(document).off(&#39;focusin.modal&#39;)
 
         this.$element
-          .removeClass('in')
-          .attr('aria-hidden', true)
+          .removeClass(&#39;in&#39;)
+          .attr(&#39;aria-hidden&#39;, true)
 
-        $.support.transition &amp;&amp; this.$element.hasClass('fade') ?
+        $.support.transition &amp;&amp; this.$element.hasClass(&#39;fade&#39;) ?
           this.hideWithTransition() :
           this.hideModal()
       }
 
     , enforceFocus: function () {
         var that = this
-        $(document).on('focusin.modal', function (e) {
+        $(document).on(&#39;focusin.modal&#39;, function (e) {
           if (that.$element[0] !== e.target &amp;&amp; !that.$element.has(e.target).length) {
             that.$element.focus()
           }
@@ -134,11 +134,11 @@
     , escape: function () {
         var that = this
         if (this.isShown &amp;&amp; this.options.keyboard) {
-          this.$element.on('keyup.dismiss.modal', function ( e ) {
+          this.$element.on(&#39;keyup.dismiss.modal&#39;, function ( e ) {
             e.which == 27 &amp;&amp; that.hide()
           })
         } else if (!this.isShown) {
-          this.$element.off('keyup.dismiss.modal')
+          this.$element.off(&#39;keyup.dismiss.modal&#39;)
         }
       }
 
@@ -160,7 +160,7 @@
         this.$element.hide()
         this.backdrop(function () {
           that.removeBackdrop()
-          that.$element.trigger('hidden')
+          that.$element.trigger(&#39;hidden&#39;)
         })
       }
 
@@ -171,23 +171,23 @@
 
     , backdrop: function (callback) {
         var that = this
-          , animate = this.$element.hasClass('fade') ? 'fade' : ''
+          , animate = this.$element.hasClass(&#39;fade&#39;) ? &#39;fade&#39; : &#39;&#39;
 
         if (this.isShown &amp;&amp; this.options.backdrop) {
           var doAnimate = $.support.transition &amp;&amp; animate
 
-          this.$backdrop = $('&lt;div class=&quot;modal-backdrop ' + animate + '&quot; /&gt;')
+          this.$backdrop = $(&#39;&lt;div class=&quot;modal-backdrop &#39; + animate + &#39;&quot; /&gt;&#39;)
             .appendTo(document.body)
 
           this.$backdrop.click(
-            this.options.backdrop == 'static' ?
+            this.options.backdrop == &#39;static&#39; ?
               $.proxy(this.$element[0].focus, this.$element[0])
             : $.proxy(this.hide, this)
           )
 
           if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
 
-          this.$backdrop.addClass('in')
+          this.$backdrop.addClass(&#39;in&#39;)
 
           if (!callback) return
 
@@ -196,9 +196,9 @@
             callback()
 
         } else if (!this.isShown &amp;&amp; this.$backdrop) {
-          this.$backdrop.removeClass('in')
+          this.$backdrop.removeClass(&#39;in&#39;)
 
-          $.support.transition &amp;&amp; this.$element.hasClass('fade')?
+          $.support.transition &amp;&amp; this.$element.hasClass(&#39;fade&#39;)?
             this.$backdrop.one($.support.transition.end, callback) :
             callback()
 
@@ -217,10 +217,10 @@
   $.fn.modal = function (option) {
     return this.each(function () {
       var $this = $(this)
-        , data = $this.data('modal')
-        , options = $.extend({}, $.fn.modal.defaults, $this.data(), typeof option == 'object' &amp;&amp; option)
-      if (!data) $this.data('modal', (data = new Modal(this, options)))
-      if (typeof option == 'string') data[option]()
+        , data = $this.data(&#39;modal&#39;)
+        , options = $.extend({}, $.fn.modal.defaults, $this.data(), typeof option == &#39;object&#39; &amp;&amp; option)
+      if (!data) $this.data(&#39;modal&#39;, (data = new Modal(this, options)))
+      if (typeof option == &#39;string&#39;) data[option]()
       else if (options.show) data.show()
     })
   }
@@ -246,17 +246,17 @@
  /* MODAL DATA-API
   * ============== */
 
-  $(document).on('click.modal.data-api', '[data-toggle=&quot;modal&quot;]', function (e) {
+  $(document).on(&#39;click.modal.data-api&#39;, &#39;[data-toggle=&quot;modal&quot;]&#39;, function (e) {
     var $this = $(this)
-      , href = $this.attr('href')
-      , $target = $($this.attr('data-target') || (href &amp;&amp; href.replace(/.*(?=#[^\s]+$)/, ''))) //strip for ie7
-      , option = $target.data('modal') ? 'toggle' : $.extend({ remote:!/#/.test(href) &amp;&amp; href }, $target.data(), $this.data())
+      , href = $this.attr(&#39;href&#39;)
+      , $target = $($this.attr(&#39;data-target&#39;) || (href &amp;&amp; href.replace(/.*(?=#[^\s]+$)/, &#39;&#39;))) //strip for ie7
+      , option = $target.data(&#39;modal&#39;) ? &#39;toggle&#39; : $.extend({ remote:!/#/.test(href) &amp;&amp; href }, $target.data(), $this.data())
 
     e.preventDefault()
 
     $target
       .modal(option)
-      .one('hide', function () {
+      .one(&#39;hide&#39;, function () {
         $this.focus()
       })
   })

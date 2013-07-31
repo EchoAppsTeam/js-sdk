@@ -59,8 +59,8 @@
     constructor: Collapse
 
   , dimension: function () {
-      var hasWidth = this.$element.hasClass('width')
-      return hasWidth ? 'width' : 'height'
+      var hasWidth = this.$element.hasClass(&#39;width&#39;)
+      return hasWidth ? &#39;width&#39; : &#39;height&#39;
     }
 
   , show: function () {
@@ -69,30 +69,30 @@
         , actives
         , hasData
 
-      if (this.transitioning || this.$element.hasClass('in')) return
+      if (this.transitioning || this.$element.hasClass(&#39;in&#39;)) return
 
       dimension = this.dimension()
-      scroll = $.camelCase(['scroll', dimension].join('-'))
-      actives = this.$parent &amp;&amp; this.$parent.find('&gt; .accordion-group &gt; .in')
+      scroll = $.camelCase([&#39;scroll&#39;, dimension].join(&#39;-&#39;))
+      actives = this.$parent &amp;&amp; this.$parent.find(&#39;&gt; .accordion-group &gt; .in&#39;)
 
       if (actives &amp;&amp; actives.length) {
-        hasData = actives.data('collapse')
+        hasData = actives.data(&#39;collapse&#39;)
         if (hasData &amp;&amp; hasData.transitioning) return
-        actives.collapse('hide')
-        hasData || actives.data('collapse', null)
+        actives.collapse(&#39;hide&#39;)
+        hasData || actives.data(&#39;collapse&#39;, null)
       }
 
       this.$element[dimension](0)
-      this.transition('addClass', $.Event('show'), 'shown')
+      this.transition(&#39;addClass&#39;, $.Event(&#39;show&#39;), &#39;shown&#39;)
       $.support.transition &amp;&amp; this.$element[dimension](this.$element[0][scroll])
     }
 
   , hide: function () {
       var dimension
-      if (this.transitioning || !this.$element.hasClass('in')) return
+      if (this.transitioning || !this.$element.hasClass(&#39;in&#39;)) return
       dimension = this.dimension()
       this.reset(this.$element[dimension]())
-      this.transition('removeClass', $.Event('hide'), 'hidden')
+      this.transition(&#39;removeClass&#39;, $.Event(&#39;hide&#39;), &#39;hidden&#39;)
       this.$element[dimension](0)
     }
 
@@ -100,11 +100,11 @@
       var dimension = this.dimension()
 
       this.$element
-        .removeClass('collapse')
-        [dimension](size || 'auto')
+        .removeClass(&#39;collapse&#39;)
+        [dimension](size || &#39;auto&#39;)
         [0].offsetWidth
 
-      this.$element[size !== null ? 'addClass' : 'removeClass']('collapse')
+      this.$element[size !== null ? &#39;addClass&#39; : &#39;removeClass&#39;](&#39;collapse&#39;)
 
       return this
     }
@@ -112,7 +112,7 @@
   , transition: function (method, startEvent, completeEvent) {
       var that = this
         , complete = function () {
-            if (startEvent.type == 'show') that.reset()
+            if (startEvent.type == &#39;show&#39;) that.reset()
             that.transitioning = 0
             that.$element.trigger(completeEvent)
           }
@@ -123,15 +123,15 @@
 
       this.transitioning = 1
 
-      this.$element[method]('in')
+      this.$element[method](&#39;in&#39;)
 
-      $.support.transition &amp;&amp; this.$element.hasClass('collapse') ?
+      $.support.transition &amp;&amp; this.$element.hasClass(&#39;collapse&#39;) ?
         this.$element.one($.support.transition.end, complete) :
         complete()
     }
 
   , toggle: function () {
-      this[this.$element.hasClass('in') ? 'hide' : 'show']()
+      this[this.$element.hasClass(&#39;in&#39;) ? &#39;hide&#39; : &#39;show&#39;]()
     }
 
   }
@@ -145,10 +145,10 @@
   $.fn.collapse = function (option) {
     return this.each(function () {
       var $this = $(this)
-        , data = $this.data('collapse')
-        , options = $.extend({}, $.fn.collapse.defaults, $this.data(), typeof option == 'object' &amp;&amp; option)
-      if (!data) $this.data('collapse', (data = new Collapse(this, options)))
-      if (typeof option == 'string') data[option]()
+        , data = $this.data(&#39;collapse&#39;)
+        , options = $.extend({}, $.fn.collapse.defaults, $this.data(), typeof option == &#39;object&#39; &amp;&amp; option)
+      if (!data) $this.data(&#39;collapse&#39;, (data = new Collapse(this, options)))
+      if (typeof option == &#39;string&#39;) data[option]()
     })
   }
 
@@ -171,13 +171,13 @@
  /* COLLAPSE DATA-API
   * ================= */
 
-  $(document).on('click.collapse.data-api', '[data-toggle=collapse]', function (e) {
+  $(document).on(&#39;click.collapse.data-api&#39;, &#39;[data-toggle=collapse]&#39;, function (e) {
     var $this = $(this), href
-      , target = $this.attr('data-target')
+      , target = $this.attr(&#39;data-target&#39;)
         || e.preventDefault()
-        || (href = $this.attr('href')) &amp;&amp; href.replace(/.*(?=#[^\s]+$)/, '') //strip for ie7
-      , option = $(target).data('collapse') ? 'toggle' : $this.data()
-    $this[$(target).hasClass('in') ? 'addClass' : 'removeClass']('collapsed')
+        || (href = $this.attr(&#39;href&#39;)) &amp;&amp; href.replace(/.*(?=#[^\s]+$)/, &#39;&#39;) //strip for ie7
+      , option = $(target).data(&#39;collapse&#39;) ? &#39;toggle&#39; : $this.data()
+    $this[$(target).hasClass(&#39;in&#39;) ? &#39;addClass&#39; : &#39;removeClass&#39;](&#39;collapsed&#39;)
     $(target).collapse(option)
   })
 

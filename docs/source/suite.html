@@ -183,7 +183,7 @@ Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
 			self._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
 		};
 		$.each(renderers, function(name, renderer) {
-			// don't test private renderer
+			// don&#39;t test private renderer
 			if (name.charAt(0) === &quot;_&quot;) return true;
 
 			self.info.functions.push((forComponent ? &quot;component.&quot; : &quot;&quot;) + &quot;renderers.&quot; + name);
@@ -194,7 +194,7 @@ Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
 		});
 		plugin.component.render();
 		$.each(renderers, function(name) {
-			// don't test private renderer
+			// don&#39;t test private renderer
 			if (name.charAt(0) === &quot;_&quot;) return true;
 			checker(name, oldElements[(forComponent ? plugin.component.cssPrefix : plugin.cssPrefix) + name], &quot; (recursive rerendering case)&quot;);
 		});
@@ -242,7 +242,7 @@ Echo.Tests.Suite.prototype.jqueryObjectsEqual = function(source, target, message
 	function extract(elem) {
 		if (!elem || !elem.length) {
 			QUnit.push(false, actual, expected,
-				&quot;jqueryObjectsEqual failed, can't extract the element, message was: &quot; + message);
+				&quot;jqueryObjectsEqual failed, can&#39;t extract the element, message was: &quot; + message);
 			return;
 		}
 
@@ -287,7 +287,7 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 		}
 		var checker = function(name, element, suffix) {
 			if (!element) {
-				QUnit.ok(true, &quot;Note: the test for the &quot; + &quot; \&quot;&quot; + name + &quot;\&quot;&quot; + &quot; renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template.&quot; + suffix);
+				QUnit.ok(true, &quot;Note: the test for the &quot; + &quot; \&quot;&quot; + name + &quot;\&quot;&quot; + &quot; renderer was not executed, because the template doesn&#39;t contain the respective element. This renderer works for another type of template.&quot; + suffix);
 				return;
 			}
 			var oldElement = element.clone(true, true);

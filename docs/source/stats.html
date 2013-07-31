@@ -273,47 +273,47 @@ function getEventsCount(type, expectedValue, isEquiv) {
 	if ($.isArray(expectedValue)) {
 		$.each(expectedValue, function(val) {
 			// if real value is not equal with ANY of a number of expected values
-			// then consider it failed and don't compare with other
+			// then consider it failed and don&#39;t compare with other
 			return check(val);
 		});
 	} else {
 		check(expectedValue);
 	}
 
-	return '&lt;b class=&quot;' + (isOk ? 'green' : 'red') + '&quot;&gt;' + processed[type].length + '&lt;/b&gt; [&lt;a class=&quot;echo-clickable&quot; data-type=&quot;' + type +'&quot;&gt;view list&lt;/a&gt;]';
+	return &#39;&lt;b class=&quot;&#39; + (isOk ? &#39;green&#39; : &#39;red&#39;) + &#39;&quot;&gt;&#39; + processed[type].length + &#39;&lt;/b&gt; [&lt;a class=&quot;echo-clickable&quot; data-type=&quot;&#39; + type +&#39;&quot;&gt;view list&lt;/a&gt;]&#39;;
 }
 
 function showCoverage() {
 	var funcs = _coverage.functions;
 	var events = _coverage.events;
 	$(&quot;#qunit-testresult&quot;).append(
-		'&lt;div class=&quot;echo-tests-stats&quot;&gt;' +
-			'&lt;div class=&quot;echo-tests-coverage-functions&quot;&gt;' +
-			'&lt;h3&gt;Code coverage analysis&lt;/h3&gt; ' +
-			'&lt;p&gt;Total functions count: &lt;b&gt;' + funcs.processed.count + '&lt;/b&gt;&lt;/p&gt; ' +
+		&#39;&lt;div class=&quot;echo-tests-stats&quot;&gt;&#39; +
+			&#39;&lt;div class=&quot;echo-tests-coverage-functions&quot;&gt;&#39; +
+			&#39;&lt;h3&gt;Code coverage analysis&lt;/h3&gt; &#39; +
+			&#39;&lt;p&gt;Total functions count: &lt;b&gt;&#39; + funcs.processed.count + &#39;&lt;/b&gt;&lt;/p&gt; &#39; +
 			Echo.Utils.foldl([], funcs.labels, function(label, acc, type) {
 				var css = &quot;red&quot;;
 				var isBadType = /^not/.test(type);
 				if (isBadType &amp;&amp; !funcs.processed[type].length || !isBadType &amp;&amp; funcs.processed[type].length === funcs.processed.count) {
 					css = &quot;green&quot;;
 				}
-				acc.push('&lt;p&gt;' + label + ': &lt;b class=&quot;' + css + '&quot;&gt;' + funcs.processed[type].length + ' (' + (Math.round(1000 * funcs.processed[type].length / funcs.processed.count) / 10) + '%)&lt;/b&gt; [&lt;a class=&quot;echo-clickable&quot; data-type=&quot;' + type + '&quot;&gt;view list&lt;/a&gt;]&lt;/p&gt; ');
+				acc.push(&#39;&lt;p&gt;&#39; + label + &#39;: &lt;b class=&quot;&#39; + css + &#39;&quot;&gt;&#39; + funcs.processed[type].length + &#39; (&#39; + (Math.round(1000 * funcs.processed[type].length / funcs.processed.count) / 10) + &#39;%)&lt;/b&gt; [&lt;a class=&quot;echo-clickable&quot; data-type=&quot;&#39; + type + &#39;&quot;&gt;view list&lt;/a&gt;]&lt;/p&gt; &#39;);
 			}).join(&quot;&quot;) +
-			'&lt;/div&gt;' +
+			&#39;&lt;/div&gt;&#39; +
 			(!Echo.Tests.Events
-				? '' 
-				: '&lt;div class=&quot;echo-tests-coverage-events&quot;&gt;' +
-					'&lt;h3&gt;Events analysis&lt;/h3&gt; ' +
-					'&lt;p&gt;Total contract defined: &lt;b&gt;' + events.processed.count + '&lt;/b&gt;&lt;/p&gt; ' +
-					'&lt;p&gt;Published / Subscribed: ' + getEventsCount(&quot;published&quot;, [events.processed.count, &quot;subscribed&quot;], true) + ' / ' + getEventsCount(&quot;subscribed&quot;, [events.processed.count, &quot;published&quot;], true) + ' | [&lt;a class=&quot;echo-clickable&quot; data-type=&quot;diff&quot;&gt;show diff&lt;/a&gt;]&lt;/p&gt;' +
-					'&lt;p&gt;Contract check succeeded / failed: ' + getEventsCount(&quot;succeeded&quot;, &quot;published&quot;) + ' / ' + getEventsCount(&quot;failed&quot;, 0) + '&lt;/p&gt;' +
-					'&lt;p&gt;Published but not defined: ' + getEventsCount(&quot;notTested&quot;) + '&lt;/p&gt;' +
-					'&lt;p&gt;Defined but not published: ' + getEventsCount(&quot;notPublished&quot;) + '&lt;/p&gt;' +
-				'&lt;/div&gt;'
+				? &#39;&#39; 
+				: &#39;&lt;div class=&quot;echo-tests-coverage-events&quot;&gt;&#39; +
+					&#39;&lt;h3&gt;Events analysis&lt;/h3&gt; &#39; +
+					&#39;&lt;p&gt;Total contract defined: &lt;b&gt;&#39; + events.processed.count + &#39;&lt;/b&gt;&lt;/p&gt; &#39; +
+					&#39;&lt;p&gt;Published / Subscribed: &#39; + getEventsCount(&quot;published&quot;, [events.processed.count, &quot;subscribed&quot;], true) + &#39; / &#39; + getEventsCount(&quot;subscribed&quot;, [events.processed.count, &quot;published&quot;], true) + &#39; | [&lt;a class=&quot;echo-clickable&quot; data-type=&quot;diff&quot;&gt;show diff&lt;/a&gt;]&lt;/p&gt;&#39; +
+					&#39;&lt;p&gt;Contract check succeeded / failed: &#39; + getEventsCount(&quot;succeeded&quot;, &quot;published&quot;) + &#39; / &#39; + getEventsCount(&quot;failed&quot;, 0) + &#39;&lt;/p&gt;&#39; +
+					&#39;&lt;p&gt;Published but not defined: &#39; + getEventsCount(&quot;notTested&quot;) + &#39;&lt;/p&gt;&#39; +
+					&#39;&lt;p&gt;Defined but not published: &#39; + getEventsCount(&quot;notPublished&quot;) + &#39;&lt;/p&gt;&#39; +
+				&#39;&lt;/div&gt;&#39;
 			) +
-			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-			'&lt;div class=&quot;echo-tests-stats-info&quot;&gt;&lt;/div&gt;' +
-		'&lt;/div&gt;'
+			&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+			&#39;&lt;div class=&quot;echo-tests-stats-info&quot;&gt;&lt;/div&gt;&#39; +
+		&#39;&lt;/div&gt;&#39;
 	);
 
 	$(&quot;.echo-tests-coverage-events a&quot;).click(function() {
@@ -364,21 +364,21 @@ function showCoverageList(type, prefix) {
 				};
 				$.each(list, function(i, topic) {
 					if (type === &quot;subscribed&quot;) {
-						html += '&lt;li&gt;' + topic + ' &lt;span&gt;( subscribed &lt;b&gt;' + getTextCount(events.raw[type][topic].count) + '&lt;/b&gt; )&lt;/span&gt;&lt;/li&gt;';
+						html += &#39;&lt;li&gt;&#39; + topic + &#39; &lt;span&gt;( subscribed &lt;b&gt;&#39; + getTextCount(events.raw[type][topic].count) + &#39;&lt;/b&gt; )&lt;/span&gt;&lt;/li&gt;&#39;;
 					} else if ($.type(events.raw.published[topic]) === &quot;undefined&quot;) {
-						html += '&lt;li&gt;' + topic + '&lt;/li&gt;';
+						html += &#39;&lt;li&gt;&#39; + topic + &#39;&lt;/li&gt;&#39;;
 					} else {
-						html += '&lt;li&gt;' + topic;
+						html += &#39;&lt;li&gt;&#39; + topic;
 						if (type === &quot;failed&quot;) {
-							html += ' &lt;span&gt;( failed &lt;b&gt;' + getTextCount(events.raw.published[topic].data.length) + '&lt;/b&gt; out of &lt;b&gt;' + getTextCount(events.raw.published[topic].count) + '&lt;/b&gt; )&lt;/span&gt;';
+							html += &#39; &lt;span&gt;( failed &lt;b&gt;&#39; + getTextCount(events.raw.published[topic].data.length) + &#39;&lt;/b&gt; out of &lt;b&gt;&#39; + getTextCount(events.raw.published[topic].count) + &#39;&lt;/b&gt; )&lt;/span&gt;&#39;;
 						} else {
-							html += ' &lt;span&gt;( published &lt;b&gt;' + getTextCount(events.raw.published[topic].count)  + '&lt;/b&gt; )&lt;/span&gt;';
+							html += &#39; &lt;span&gt;( published &lt;b&gt;&#39; + getTextCount(events.raw.published[topic].count)  + &#39;&lt;/b&gt; )&lt;/span&gt;&#39;;
 						}
 
 						if( type === &quot;notTested&quot; || type === &quot;failed&quot;) {
-							html +=	' [&lt;a class=&quot;echo-clickable&quot; data-topic=&quot;' + topic + '&quot;&gt;view data&lt;/a&gt;] &lt;div class=&quot;echo-tests-event-data&quot;&gt;' + '&lt;/div&gt;';
+							html +=	&#39; [&lt;a class=&quot;echo-clickable&quot; data-topic=&quot;&#39; + topic + &#39;&quot;&gt;view data&lt;/a&gt;] &lt;div class=&quot;echo-tests-event-data&quot;&gt;&#39; + &#39;&lt;/div&gt;&#39;;
 						}
-						html +=	'&lt;/li&gt;';
+						html +=	&#39;&lt;/li&gt;&#39;;
 					}
 				});
 
@@ -394,12 +394,12 @@ function showCoverageList(type, prefix) {
 					var dataTag = $(this).parent().find(&quot;.echo-tests-event-data&quot;);
 					if (dataTag.html() === &quot;&quot;) {
 						var data = $.map(events.raw.published[$(this).data(&quot;topic&quot;)].data, function(val) {
-							return '&lt;pre&gt;' + QUnit.jsDump.parse(prepareEventData(val)) + '&lt;/pre&gt;';
+							return &#39;&lt;pre&gt;&#39; + QUnit.jsDump.parse(prepareEventData(val)) + &#39;&lt;/pre&gt;&#39;;
 						});
 						dataTag.html(data.join(&quot;&quot;));
 					}
 
-					if (dataTag.is(':hidden')) {
+					if (dataTag.is(&#39;:hidden&#39;)) {
 						dataTag.show();
 					} else {
 						dataTag.hide();
@@ -415,7 +415,7 @@ function showCoverageList(type, prefix) {
 function checkContract(actual, expected) {
 	var result;
 
-	// event has several expected results so let's match against one of them
+	// event has several expected results so let&#39;s match against one of them
 	if ($.isArray(expected)) {
 		$.each(expected, function(i, sample) {
 			result = checkContract(actual, sample);
@@ -428,7 +428,7 @@ function checkContract(actual, expected) {
 	// event has exactly one expected result
 	result = true;
 	$.each(expected, function(i) {
-		// actual data must have expected property otherwise it's a fail
+		// actual data must have expected property otherwise it&#39;s a fail
 		if (actual.hasOwnProperty(i)) {
 
 			// sample is the type we should match with (easiest case)
@@ -439,14 +439,14 @@ function checkContract(actual, expected) {
 			} else if ($.type(expected[i]) === &quot;function&quot;) {
 				result = expected[i](actual[i]);
 
-			// we expect a complex object so let's compare recursively
+			// we expect a complex object so let&#39;s compare recursively
 			} else {
 				result = checkContract(actual[i], expected[i]);
 			}
 		} else {
 			result = false;
 		}
-		return result; // break if it doesn't meet our expectations
+		return result; // break if it doesn&#39;t meet our expectations
 	});
 	return result;
 }
@@ -468,18 +468,18 @@ function prepareEventData(obj, level) {
 }
 
 Echo.Utils.addCSS(
-	'.echo-tests-stats p { margin: 5px 0px 5px 20px; }' +
-	'.echo-tests-stats p .green { color: green; }' +
-	'.echo-tests-stats p .red { color: red; }' +
-	'.echo-tests-stats .echo-clickable { text-decoration: underline; cursor: pointer; }' +
-	'.echo-tests-stats-info { display: none; background: #b9d9dd; margin-top: 10px; padding: 5px 10px; }' +
-	'.echo-tests-stats-info span { color: #555555; }' +
-	'.echo-tests-stats-info del {background: #E0F2BE; color: #374E0C; text-decoration: none;}' +
-	'.echo-tests-stats-info ins {background: #FFCACA; color: #550000; text-decoration: none;}' +
-	'.echo-tests-event-data { color: black; display: none; }' +
-	'.echo-tests-event-data pre { border: 1px dashed #999999; padding: 10px; background: #B0D0D0; }' +
-	'.echo-tests-coverage-functions, .echo-tests-coverage-events { float: left; width: 400px; }' +
-	'.echo-clear { clear: both; }'
+	&#39;.echo-tests-stats p { margin: 5px 0px 5px 20px; }&#39; +
+	&#39;.echo-tests-stats p .green { color: green; }&#39; +
+	&#39;.echo-tests-stats p .red { color: red; }&#39; +
+	&#39;.echo-tests-stats .echo-clickable { text-decoration: underline; cursor: pointer; }&#39; +
+	&#39;.echo-tests-stats-info { display: none; background: #b9d9dd; margin-top: 10px; padding: 5px 10px; }&#39; +
+	&#39;.echo-tests-stats-info span { color: #555555; }&#39; +
+	&#39;.echo-tests-stats-info del {background: #E0F2BE; color: #374E0C; text-decoration: none;}&#39; +
+	&#39;.echo-tests-stats-info ins {background: #FFCACA; color: #550000; text-decoration: none;}&#39; +
+	&#39;.echo-tests-event-data { color: black; display: none; }&#39; +
+	&#39;.echo-tests-event-data pre { border: 1px dashed #999999; padding: 10px; background: #B0D0D0; }&#39; +
+	&#39;.echo-tests-coverage-functions, .echo-tests-coverage-events { float: left; width: 400px; }&#39; +
+	&#39;.echo-clear { clear: both; }&#39;
 , &quot;echo-tests&quot;);
 
 })(Echo.jQuery);

@@ -43,40 +43,40 @@
  /* ALERT CLASS DEFINITION
   * ====================== */
 
-  var dismiss = '[data-dismiss=&quot;alert&quot;]'
+  var dismiss = &#39;[data-dismiss=&quot;alert&quot;]&#39;
     , Alert = function (el) {
-        $(el).on('click', dismiss, this.close)
+        $(el).on(&#39;click&#39;, dismiss, this.close)
       }
 
   Alert.prototype.close = function (e) {
     var $this = $(this)
-      , selector = $this.attr('data-target')
+      , selector = $this.attr(&#39;data-target&#39;)
       , $parent
 
     if (!selector) {
-      selector = $this.attr('href')
-      selector = selector &amp;&amp; selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
+      selector = $this.attr(&#39;href&#39;)
+      selector = selector &amp;&amp; selector.replace(/.*(?=#[^\s]*$)/, &#39;&#39;) //strip for ie7
     }
 
     $parent = $(selector)
 
     e &amp;&amp; e.preventDefault()
 
-    $parent.length || ($parent = $this.hasClass('alert') ? $this : $this.parent())
+    $parent.length || ($parent = $this.hasClass(&#39;alert&#39;) ? $this : $this.parent())
 
-    $parent.trigger(e = $.Event('close'))
+    $parent.trigger(e = $.Event(&#39;close&#39;))
 
     if (e.isDefaultPrevented()) return
 
-    $parent.removeClass('in')
+    $parent.removeClass(&#39;in&#39;)
 
     function removeElement() {
       $parent
-        .trigger('closed')
+        .trigger(&#39;closed&#39;)
         .remove()
     }
 
-    $.support.transition &amp;&amp; $parent.hasClass('fade') ?
+    $.support.transition &amp;&amp; $parent.hasClass(&#39;fade&#39;) ?
       $parent.on($.support.transition.end, removeElement) :
       removeElement()
   }
@@ -90,9 +90,9 @@
   $.fn.alert = function (option) {
     return this.each(function () {
       var $this = $(this)
-        , data = $this.data('alert')
-      if (!data) $this.data('alert', (data = new Alert(this)))
-      if (typeof option == 'string') data[option].call($this)
+        , data = $this.data(&#39;alert&#39;)
+      if (!data) $this.data(&#39;alert&#39;, (data = new Alert(this)))
+      if (typeof option == &#39;string&#39;) data[option].call($this)
     })
   }
 
@@ -111,7 +111,7 @@
  /* ALERT DATA-API
   * ============== */
 
-  $(document).on('click.alert.data-api', dismiss, Alert.prototype.close)
+  $(document).on(&#39;click.alert.data-api&#39;, dismiss, Alert.prototype.close)
 
 }(window.jQuery);</pre>
 </body>

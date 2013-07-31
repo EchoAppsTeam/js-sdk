@@ -39,7 +39,10 @@ Echo.Loader = {
 <span id='Echo-Loader-property-config'>	/** @private */
 </span>	&quot;config&quot;: {
 		&quot;cdnBaseURL&quot;: protocol + &quot;//cdn.echoenabled.com/&quot;,
-		&quot;storageURL&quot;: protocol + &quot;//s3.amazonaws.com/echo-canvases/&quot;,
+		&quot;storageURL&quot;: {
+			&quot;prod&quot;: protocol + &quot;//dqspik3j3bxvu.cloudfront.net/&quot;,
+			&quot;dev&quot;: protocol + &quot;//s3.amazonaws.com/echo-canvases/&quot;
+		},
 		&quot;errorTimeout&quot;: 5000 // 5 sec
 	},
 <span id='global-property-canvases'>	/** @ignore */
@@ -64,7 +67,7 @@ Echo.Loader = {
  * @param {Boolean} [devVersion=true]
  * Specifies whether function should return dev version of the file or not,
  * &lt;em&gt;false&lt;/em&gt; value is useful when we want to get URL to image because
- * images don't have dev versions
+ * images don&#39;t have dev versions
  */
 Echo.Loader.getURL = function(url, devVersion) {
 	if (typeof devVersion === &quot;undefined&quot;) devVersion = true;
@@ -242,7 +245,40 @@ Echo.Loader.initEnvironment = function(callback) {
  * specific application within the canvas.
  *
  * @param {String} canvasID
- * Canvas ID.
+ * Canvas ID. Canvas ID may consist of two parts separated by &quot;#&quot;:
+ * the main mandatory Canvas identifier (located before the &quot;#&quot; char)
+ * and the optional unique identifier of the Canvas on a page
+ * (located after the &quot;#&quot; char). The unique page identifier (after the &quot;#&quot;)
+ * is used in case you have multiple Canavses with the same primary ID on a page.
+ * In this case in order to have an ability to perform local overrides
+ * using the Echo.Loader.override function, you specify the unique id
+ * after the &quot;#&quot; char and use the full ID to perform the override.
+ * Here is an example of the Canvas ID without the unique part:
+ *
+ *     &lt;div class=&quot;echo-canvas&quot;
+ *         data-canvas-id=&quot;jskit/comments-sample&quot;
+ *         data-canvas-appkey=&quot;echo.jssdk.demo.aboutecho.com&quot;&gt;&lt;/div&gt;
+ *
+ * If you&#39;d like to put multiple instances of the same Canvas on a page
+ * and you want to have an ability to perform local overrides using the
+ * Echo.Loader.override function, the Canvas ID should contain the unique part,
+ * for example:
+ *
+ *     &lt;div class=&quot;echo-canvas&quot;
+ *         data-canvas-id=&quot;jskit/comments-sample#left-side&quot;
+ *         data-canvas-appkey=&quot;echo.jssdk.demo.aboutecho.com&quot;&gt;&lt;/div&gt;
+ *     &lt;div class=&quot;echo-canvas&quot;
+ *         data-canvas-id=&quot;jskit/comments-sample#right-side&quot;
+ *         data-canvas-appkey=&quot;echo.jssdk.demo.aboutecho.com&quot;&gt;&lt;/div&gt;
+ *
+ * Where the &quot;#left-side&quot; and &quot;#right-side&quot; are the unique parts for
+ * the Canvases within this page. Now you can override the Canvas app
+ * settings using the following constructions:
+ *
+ *     Echo.Loader.override(&quot;jskit/comments-sample#left-side&quot;,
+ *         &quot;AppInstanceID&quot;, { ... });
+ *     Echo.Loader.override(&quot;jskit/comments-sample#right-side&quot;,
+ *         &quot;AppInstanceID&quot;, { ... });
  *
  * @param {String} appID
  * Application ID inside the canvas.
@@ -285,7 +321,7 @@ Echo.Loader.init = function(config) {
 		}
 
 		// if no canvases defined during initialization,
-		// we look for all canvases in the target ('document' by default)
+		// we look for all canvases in the target (&#39;document&#39; by default)
 		canvases = canvases || $(&quot;.echo-canvas&quot;, config.target);
 
 		$.map(canvases || [], function(canvas) {
@@ -322,6 +358,22 @@ Echo.Loader.init = function(config) {
  * Object which specifies the location (URL) of the production (minified) and development
  * (non-minified) versions of the app JavaScript class code. The &quot;prod&quot; and &quot;dev&quot; keys
  * should be used in order to specify the production and development URLs respectively.
+ *
+ * @param {String|Object} [app.scripts.prod]
+ * Location of the production (minified) version of the app
+ * JavaScript class code. The value might be just a String or an Object with the &quot;regular&quot;
+ * and &quot;secure&quot; key. If the value has the String type - the value is returned as is.
+ * If the value is represented using the Object type - the SDK engine
+ * uses either the &quot;regular&quot; key value in case the page was requested using the HTTP
+ * protocol or the &quot;secure&quot; key value if the page was served via HTTPS protocol.
+ *
+ * @param {String|Object} [app.scripts.dev]
+ * Location of the development (non-minified) version of the app JavaScript class code.
+ * The value might be just a String or an Object with the &quot;regular&quot;
+ * and &quot;secure&quot; key. If the value has the String type - the value is returned as is.
+ * If the value is represented using the Object type - the SDK engine
+ * uses either the &quot;regular&quot; key value in case the page was requested using the HTTP
+ * protocol or the &quot;secure&quot; key value if the page was served via HTTPS protocol.
  *
  * @param {Object} [app.backplane]
  * Object which contains the data to be passed into the Backplane.init call.
@@ -360,7 +412,7 @@ Echo.Loader._areResourcesReady = function(resources) {
 	var state = Echo.Loader.vars.state;
 	var resourceReadyFlags = Echo.Loader._map(resources, function(resource) {
 		var url = Echo.Loader.getURL(resource.url);
-		// the 'true' flag will be added into the
+		// the &#39;true&#39; flag will be added into the
 		// result array only when resource is ready
 		return (resource.loaded &amp;&amp; resource.loaded()) ||
 			(state.resources[url] &amp;&amp; state.resources[url] === &quot;ready&quot;);

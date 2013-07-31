@@ -171,14 +171,14 @@ Echo.Control.isDefined = function(manifest) {
 Echo.Control.prototype.templates = {&quot;message&quot;: {}};
 
 Echo.Control.prototype.templates.message.compact =
-	'&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&lt;/span&gt;';
+	&#39;&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&lt;/span&gt;&#39;;
 
 Echo.Control.prototype.templates.message.full =
-	'&lt;div class=&quot;echo-control-message {class:messageText}&quot;&gt;' +
-		'&lt;span class=&quot;echo-control-message-icon echo-control-message-{data:type} {class:messageIcon}&quot;&gt;' +
-			'{data:message}' +
-		'&lt;/span&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;echo-control-message {class:messageText}&quot;&gt;&#39; +
+		&#39;&lt;span class=&quot;echo-control-message-icon echo-control-message-{data:type} {class:messageIcon}&quot;&gt;&#39; +
+			&#39;{data:message}&#39; +
+		&#39;&lt;/span&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-Control-method-get'>/**
 </span> * Accessor method to get specific field.
@@ -191,7 +191,7 @@ Echo.Control.prototype.templates.message.full =
  *
  * @param {Object} [defaults]
  * Default value if no corresponding key was found in the config.
- * Note: only the 'undefined' JS statement triggers the default value usage.
+ * Note: only the &#39;undefined&#39; JS statement triggers the default value usage.
  * The false, null, 0, [] are considered as a proper value.
  *
  * @return {Mixed}
@@ -503,29 +503,29 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 	};
 
 	if (isNaN(dayDiff) || dayDiff &lt; 0 || dayDiff &gt;= 365) {
-		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+		when = d.toLocaleDateString() + &#39;, &#39; + d.toLocaleTimeString();
 	} else if (diff &lt; 60) {
-		when = getAgo(diff, 'second');
+		when = getAgo(diff, &#39;second&#39;);
 	} else if (diff &lt; 60 * 60) {
 		diff = Math.floor(diff / 60);
-		when = getAgo(diff, 'minute');
+		when = getAgo(diff, &#39;minute&#39;);
 	} else if (diff &lt; 60 * 60 * 24) {
 		diff = Math.floor(diff / (60 * 60));
-		when = getAgo(diff, 'hour');
+		when = getAgo(diff, &#39;hour&#39;);
 	} else if (diff &lt; 60 * 60 * 48) {
 		when = this.labels.get(&quot;yesterday&quot;);
 	} else if (dayDiff &lt; 7) {
-		when = getAgo(dayDiff, 'day');
+		when = getAgo(dayDiff, &#39;day&#39;);
 	} else if (dayDiff &lt; 14) {
 		when = this.labels.get(&quot;lastWeek&quot;);
 	} else if (dayDiff &lt; 30) {
 		diff =  Math.floor(dayDiff / 7);
-		when = getAgo(diff, 'week');
+		when = getAgo(diff, &#39;week&#39;);
 	} else if (dayDiff &lt; 60) {
 		when = this.labels.get(&quot;lastMonth&quot;);
 	} else if (dayDiff &lt; 365) {
 		diff =  Math.floor(dayDiff / 31);
-		when = getAgo(diff, 'month');
+		when = getAgo(diff, &#39;month&#39;);
 	}
 	return when;
 };
@@ -533,7 +533,7 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 <span id='Echo-Control-method-placeImage'>/**
 </span> * Method to place an image inside the container.
  * 
- * This method removes any container's content and creates a new image HTML element 
+ * This method removes any container&#39;s content and creates a new image HTML element 
  * inside the container. If the image is not available on the given URL then this function
  * loads the default image that is passed as a defaultImage argument.
  * 
@@ -1419,37 +1419,37 @@ manifest.inherits = Echo.Control;
 manifest.templates = {&quot;message&quot;: {}};
 
 manifest.templates.message.compact =
-	'&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&lt;/span&gt;';
+	&#39;&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&lt;/span&gt;&#39;;
 
 manifest.templates.message.full =
-	'&lt;div class=&quot;echo-control-message {class:messageText}&quot;&gt;' +
-		'&lt;span class=&quot;echo-control-message-icon echo-control-message-{data:type} {class:messageIcon}&quot;&gt;' +
-			'{data:message}' +
-		'&lt;/span&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;echo-control-message {class:messageText}&quot;&gt;&#39; +
+		&#39;&lt;span class=&quot;echo-control-message-icon echo-control-message-{data:type} {class:messageIcon}&quot;&gt;&#39; +
+			&#39;{data:message}&#39; +
+		&#39;&lt;/span&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
-manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
-		'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
-		'.echo-primaryColor { color: #3A3A3A; }' +
-		'.echo-secondaryColor { color: #C6C6C6; }' +
-		'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
-		'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
-		'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
-		'.echo-clickable { cursor: pointer; }' +
-		'.echo-relative { position: relative; }' +
-		'.echo-clear { clear: both; }' +
-		'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
-		'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
-		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
-		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
+manifest.css = &#39;.echo-secondaryBackgroundColor { background-color: #F4F4F4; }&#39; +
+		&#39;.echo-trinaryBackgroundColor { background-color: #ECEFF5; }&#39; +
+		&#39;.echo-primaryColor { color: #3A3A3A; }&#39; +
+		&#39;.echo-secondaryColor { color: #C6C6C6; }&#39; +
+		&#39;.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }&#39; +
+		&#39;.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }&#39; +
+		&#39;.echo-linkColor, .echo-linkColor a { color: #476CB8; }&#39; +
+		&#39;.echo-clickable { cursor: pointer; }&#39; +
+		&#39;.echo-relative { position: relative; }&#39; +
+		&#39;.echo-clear { clear: both; }&#39; +
+		&#39;.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }&#39; +
+		&#39;.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }&#39; + 
+		&#39;.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }&#39; +
+		&#39;.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }&#39; +
 
 		// message classes
-		'.echo-control-message { padding: 15px 0px; text-align: center; }' +
-		'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
-		'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-		'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
-		'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
-		'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
+		&#39;.echo-control-message { padding: 15px 0px; text-align: center; }&#39; +
+		&#39;.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }&#39; +
+		&#39;.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }&#39; +
+		&#39;.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }&#39; +
+		&#39;.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }&#39; +
+		&#39;.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }&#39;;
 
 Echo.Control._manifest = manifest;
 

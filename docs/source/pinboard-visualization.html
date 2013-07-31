@@ -91,18 +91,18 @@ mediaGallery.config = {
 </span> * @echo_template
  */
 mediaGallery.templates.main =
-	'&lt;div class=&quot;{class:container}&quot;&gt;' +
-		'&lt;div class=&quot;{class:thumbnails}&quot;&gt;' +
-			'&lt;div class=&quot;{class:items}&quot;&gt;&lt;/div&gt;' +
-		'&lt;/div&gt;' +
-		'&lt;div class=&quot;{class:controls}&quot;&gt;&lt;/div&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;{class:container}&quot;&gt;&#39; +
+		&#39;&lt;div class=&quot;{class:thumbnails}&quot;&gt;&#39; +
+			&#39;&lt;div class=&quot;{class:items}&quot;&gt;&lt;/div&gt;&#39; +
+		&#39;&lt;/div&gt;&#39; +
+		&#39;&lt;div class=&quot;{class:controls}&quot;&gt;&lt;/div&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_template-mediaError'>/**
 </span> * @echo_template
  */
 mediaGallery.templates.mediaError =
-	'&lt;span class=&quot;{class:itemErrorLoading}&quot;&gt;{label:mediaIsNotAvailable}&lt;/span&gt;';
+	&#39;&lt;span class=&quot;{class:itemErrorLoading}&quot;&gt;{label:mediaIsNotAvailable}&lt;/span&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_renderer-controls'>/**
 </span> * @echo_renderer
@@ -122,13 +122,13 @@ mediaGallery.renderers.controls = function(element) {
 	var itemsContainer = this.view.get(&quot;items&quot;);
 	var itemClass = this.cssPrefix + &quot;item&quot;;
 	var controlClass = this.cssPrefix + &quot;control&quot;;
-	var activeControlClass = this.cssPrefix + 'activeControl';
+	var activeControlClass = this.cssPrefix + &#39;activeControl&#39;;
 	$.each(this.elements, function(i, element) {
 		element = $(element);
 		self._normalizeFlashContent(element);
 		var ratio;
 		var isCurrentControl = (i === self.currentIndex);
-		var itemContainer = $('&lt;div&gt;&lt;/div&gt;').append(element).addClass(itemClass);
+		var itemContainer = $(&#39;&lt;div&gt;&lt;/div&gt;&#39;).append(element).addClass(itemClass);
 		var showCurrentMedia = function() {
 <span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_event-onLoadMedia'>			/**
 </span>			 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia
@@ -136,7 +136,7 @@ mediaGallery.renderers.controls = function(element) {
 			 */
 			i === self.currentIndex &amp;&amp; itemContainer.css(&quot;display&quot;, &quot;block&quot;) &amp;&amp; publish(&quot;onLoadMedia&quot;);
 		};
-		var controlContainer = $('&lt;a href=&quot;#&quot;&gt;&lt;/a&gt;').addClass(controlClass);
+		var controlContainer = $(&#39;&lt;a href=&quot;#&quot;&gt;&lt;/a&gt;&#39;).addClass(controlClass);
 		controlContainer.click(function() {
 			var control = $(this);
 			var currentItem = itemsContainer.children().eq(self.currentIndex);
@@ -266,12 +266,12 @@ mediaGallery.methods._loadMediaHandler = function(element, elementContainer) {
 };
 
 mediaGallery.css =
-	'.{class:thumbnails} { overflow: hidden; }' +
-	'.{class:item} { width: 100%; display: none; }' +
-	'.{class:controls} { text-align: center; margin-top: 10px; }' +
-	'.{class:control} { display: inline-block; width: 8px; height: 8px; font-size: 0px; line-height: 8px; outline: none; border-radius: 4px; vertical-align: middle; margin-left: 8px; cursor: pointer; background-color: #c6c6c6; text-decoration: none; transition: all .2s ease-in 0; -moz-transition-property: all; -moz-transition-duration: .2s; -moz-transition-timing-function: ease-in; -moz-transition-delay: 0; -webkit-transition-property: all; -webkit-transition-duration: .2s; -webkit-transition-timing-function: ease-in; -webkit-transition-delay: 0; }' +
-	'.{class:control}:hover { background-color: #ee7b11; }' +
-	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }';
+	&#39;.{class:thumbnails} { overflow: hidden; }&#39; +
+	&#39;.{class:item} { width: 100%; display: none; }&#39; +
+	&#39;.{class:controls} { text-align: center; margin-top: 10px; }&#39; +
+	&#39;.{class:control} { display: inline-block; width: 8px; height: 8px; font-size: 0px; line-height: 8px; outline: none; border-radius: 4px; vertical-align: middle; margin-left: 8px; cursor: pointer; background-color: #c6c6c6; text-decoration: none; transition: all .2s ease-in 0; -moz-transition-property: all; -moz-transition-duration: .2s; -moz-transition-timing-function: ease-in; -moz-transition-delay: 0; -webkit-transition-property: all; -webkit-transition-duration: .2s; -webkit-transition-timing-function: ease-in; -webkit-transition-delay: 0; }&#39; +
+	&#39;.{class:control}:hover { background-color: #ee7b11; }&#39; +
+	&#39;.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }&#39;;
 
 Echo.Control.create(mediaGallery);
 	
@@ -393,7 +393,7 @@ plugin.labels = {
  */
 plugin.component.renderers.content = function(element) {
 	var plugin = this, item = this.component;
-	return item.parentRenderer('content', arguments).css({
+	return item.parentRenderer(&#39;content&#39;, arguments).css({
 		&quot;width&quot;: parseInt(plugin.config.get(&quot;columnWidth&quot;))
 	});
 };
@@ -443,7 +443,7 @@ plugin.component.renderers.expandChildren = getRenderer(&quot;expandChildren&quo
  */
 plugin.component.renderers.textToggleTruncated = function(element) {
 	var plugin = this, item = this.component;
-	return item.parentRenderer(&quot;textToggleTruncated&quot;, arguments).one('click', function() {
+	return item.parentRenderer(&quot;textToggleTruncated&quot;, arguments).one(&#39;click&#39;, function() {
 		publish.call(plugin, true);
 	});
 };
@@ -557,101 +557,101 @@ plugin.methods._getCSSByLength = function(length) {
 </span> * @echo_template
  */
 plugin.templates.container =
-	'&lt;div class=&quot;{class:container}&quot;&gt;' +
-		'&lt;div class=&quot;{class:header}&quot;&gt;' +
-			'&lt;div class=&quot;{class:avatar-wrapper}&quot;&gt;' +
-				'&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;' +
-			'&lt;/div&gt;' +
-			'&lt;div class=&quot;{plugin.class:topContentWrapper}&quot;&gt;' +
-				'&lt;div class=&quot;{class:authorName} echo-linkColor&quot;&gt;&lt;/div&gt;' +
-				'&lt;div class=&quot;{plugin.class:childBody}&quot;&gt;&lt;/div&gt;' +
-				'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-			'&lt;/div&gt;' +
-			'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-		'&lt;/div&gt;' +
-		'&lt;input type=&quot;hidden&quot; class=&quot;{class:modeSwitch}&quot;&gt;' +
-		'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-		'&lt;div class=&quot;{class:wrapper}&quot;&gt;' +
-			'&lt;div class=&quot;{class:subcontainer}&quot;&gt;' +
-				'&lt;div class=&quot;{class:data}&quot;&gt;' +
-					'&lt;div class=&quot;{plugin.class:media}&quot;&gt;&lt;/div&gt;' + 
-					'&lt;div class=&quot;{class:body} echo-primaryColor&quot;&gt; ' + 
-						'&lt;span class=&quot;{class:text}&quot;&gt;&lt;/span&gt;' +
-						'&lt;span class=&quot;{class:textEllipses}&quot;&gt;...&lt;/span&gt;' +
-						'&lt;span class=&quot;{class:textToggleTruncated} echo-linkColor echo-clickable&quot;&gt;&lt;/span&gt;' +
-					'&lt;/div&gt;' +
-				'&lt;/div&gt;' +
-				'&lt;div class=&quot;{class:footer} echo-secondaryColor echo-secondaryFont&quot;&gt;' +
-					'&lt;img class=&quot;{class:sourceIcon} echo-clickable&quot;&gt;' +
-					'&lt;div class=&quot;{class:date}&quot;&gt;&lt;/div&gt;' +
-					'&lt;div class=&quot;{class:from}&quot;&gt;&lt;/div&gt;' +
-					'&lt;div class=&quot;{class:via}&quot;&gt;&lt;/div&gt;' +
-					'&lt;div class=&quot;{class:buttons}&quot;&gt;&lt;/div&gt;' +
-					'&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;' +
-				'&lt;/div&gt;' +
-			'&lt;/div&gt;' +
-		'&lt;/div&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;{class:container}&quot;&gt;&#39; +
+		&#39;&lt;div class=&quot;{class:header}&quot;&gt;&#39; +
+			&#39;&lt;div class=&quot;{class:avatar-wrapper}&quot;&gt;&#39; +
+				&#39;&lt;div class=&quot;{class:avatar}&quot;&gt;&lt;/div&gt;&#39; +
+			&#39;&lt;/div&gt;&#39; +
+			&#39;&lt;div class=&quot;{plugin.class:topContentWrapper}&quot;&gt;&#39; +
+				&#39;&lt;div class=&quot;{class:authorName} echo-linkColor&quot;&gt;&lt;/div&gt;&#39; +
+				&#39;&lt;div class=&quot;{plugin.class:childBody}&quot;&gt;&lt;/div&gt;&#39; +
+				&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+			&#39;&lt;/div&gt;&#39; +
+			&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+		&#39;&lt;/div&gt;&#39; +
+		&#39;&lt;input type=&quot;hidden&quot; class=&quot;{class:modeSwitch}&quot;&gt;&#39; +
+		&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+		&#39;&lt;div class=&quot;{class:wrapper}&quot;&gt;&#39; +
+			&#39;&lt;div class=&quot;{class:subcontainer}&quot;&gt;&#39; +
+				&#39;&lt;div class=&quot;{class:data}&quot;&gt;&#39; +
+					&#39;&lt;div class=&quot;{plugin.class:media}&quot;&gt;&lt;/div&gt;&#39; + 
+					&#39;&lt;div class=&quot;{class:body} echo-primaryColor&quot;&gt; &#39; + 
+						&#39;&lt;span class=&quot;{class:text}&quot;&gt;&lt;/span&gt;&#39; +
+						&#39;&lt;span class=&quot;{class:textEllipses}&quot;&gt;...&lt;/span&gt;&#39; +
+						&#39;&lt;span class=&quot;{class:textToggleTruncated} echo-linkColor echo-clickable&quot;&gt;&lt;/span&gt;&#39; +
+					&#39;&lt;/div&gt;&#39; +
+				&#39;&lt;/div&gt;&#39; +
+				&#39;&lt;div class=&quot;{class:footer} echo-secondaryColor echo-secondaryFont&quot;&gt;&#39; +
+					&#39;&lt;img class=&quot;{class:sourceIcon} echo-clickable&quot;&gt;&#39; +
+					&#39;&lt;div class=&quot;{class:date}&quot;&gt;&lt;/div&gt;&#39; +
+					&#39;&lt;div class=&quot;{class:from}&quot;&gt;&lt;/div&gt;&#39; +
+					&#39;&lt;div class=&quot;{class:via}&quot;&gt;&lt;/div&gt;&#39; +
+					&#39;&lt;div class=&quot;{class:buttons}&quot;&gt;&lt;/div&gt;&#39; +
+					&#39;&lt;div class=&quot;echo-clear&quot;&gt;&lt;/div&gt;&#39; +
+				&#39;&lt;/div&gt;&#39; +
+			&#39;&lt;/div&gt;&#39; +
+		&#39;&lt;/div&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 plugin.css =
-	'.{plugin.class:media} { margin-top: 7px; text-align: center; }' +
-	'.{plugin.class:topContentWrapper} { margin-left: 5px; padding-left: 35px; }' +
-	'.{plugin.class:childBody} { float: none; display: inline; margin-left: 5px; }' +
-	'.{plugin.class:childBody} a { text-decoration: none; font-weight: bold; color: #524D4D; }' +
-	'.{plugin.class} .{class:container} { padding: 0px; }' +
-	'.{plugin.class} .{class:content} { padding-bottom: 0px; background: white; box-shadow: 1px 1px 2px rgba(34, 25, 25, 0.4); margin: 0px 5px 15px 5px; border: 1px solid #D9D4D4; border-bottom: none; border-right: none; }' +
-	'.{plugin.class} .{class:authorName} { float: none; display: inline; margin-left: 0px; }' +
-	'.{plugin.class} .{class:body} { margin: 0px; }' +
-	'.{plugin.class} .{class:avatar} { float: left; width: 30px; height: 30px; padding-right: 10px; }' +
-	'.{plugin.class} .{class:depth-1} { margin-left: 0px; border-bottom: none; }' +
-	'.{plugin.class} .{class:depth-1} .{class:authorName} { display: inline; font-size: 12px; }' +
-	'.{plugin.class} .{class:depth-0} { padding: 15px 15px 10px 15px; }' +
-	'.{plugin.class} .{class:depth-0} .{class:authorName} { font-size: 15px; margin-top: 4px; }' +
-	'.{plugin.class} .{class:wrapper} { float: none; }' +
-	'.{plugin.class} .{class:subcontainer} { float: none; }' +
-	'.{plugin.class} .{class:date} { color: #C6C6C6; text-decoration: none; font-weight: normal; }' +
-	'.{plugin.class} .{class:footer} a { color: #C6C6C6; text-decoration: none; font-weight: normal; }' +
-	'.{plugin.class} .{class:footer} a:hover { text-decoration: underline; }' +
-	'.{plugin.class} .{class:container} .{class:footer} { margin-top: 5px; }' +
-	'.{plugin.class} .{class:children} .{class:header} { margin-left: 0px; }' +
-	'.{plugin.class} .{class:smallSizeContent} .{class:body} { font-size: 18px; line-height: 25px; }' +
-	'.{plugin.class} .{class:mediumSizeContent} .{class:body} { font-size: 16px; line-height: 22px; }' +
-	'.{plugin.class} .{class:children} .{class:container} { background-color: #F2F0F0; }' +
-	'.{plugin.class} .{class:childrenByCurrentActorLive} .{class:container} { background-color: #F2F0F0; }' +
-	'.{plugin.class} .{class:children} .{class:wrapper}  { display: none; }' +
-	'.{plugin.class} .{class:childrenByCurrentActorLive} .{class:wrapper} {display: none}' +
-	'.{plugin.class} .{class:children} .{class:content} { box-shadow: none; margin: 0px; padding: 0px; border: none; border-bottom: 1px solid #d9d4d4; background-color: #F2F0F0; }' +
-	'.{plugin.class} .{class:childrenByCurrentActorLive} .{class:content} { box-shadow: none; margin: 0px; padding: 0px; border: none; border-bottom: 1px solid #d9d4d4; background-color: #F2F0F0; }' +
-	'.{plugin.class} .{class:container-child} { margin: 0px; padding: 10px 15px; }' +
-	'.{plugin.class} .echo-linkColor { text-decoration: none; font-weight: bold; color: #524D4D; }' +
-	'.{plugin.class} .echo-linkColor a { text-decoration: none; font-weight: bold; color: #524D4D; }' +
-	'.{plugin.class} .{class:buttons} .echo-linkColor { font-weight: normal; color: #C6C6C6; }' +
-	'.{plugin.class} .{class:buttons} .echo-linkColor:hover { font-weight: normal; color: #C6C6C6; }' +
-	'.{plugin.class} .{class:expandChildren} .echo-message-icon { background-image: none; }' +
-	'.{plugin.class} .{class:expandChildren} { border-bottom: 1px solid #D9D4D4; background-color: #F2F0F0; }' +
-	'.{plugin.class} .{class:expandChildren} .{class:message-loading} { background-image: none; font-weight: bold; }' +
-	'.{plugin.class} .{class:expandChildren} .{class:expandChildrenLabel} { padding-left: 0px; background-image: none; }' +
+	&#39;.{plugin.class:media} { margin-top: 7px; text-align: center; }&#39; +
+	&#39;.{plugin.class:topContentWrapper} { margin-left: 5px; padding-left: 35px; }&#39; +
+	&#39;.{plugin.class:childBody} { float: none; display: inline; margin-left: 5px; }&#39; +
+	&#39;.{plugin.class:childBody} a { text-decoration: none; font-weight: bold; color: #524D4D; }&#39; +
+	&#39;.{plugin.class} .{class:container} { padding: 0px; }&#39; +
+	&#39;.{plugin.class} .{class:content} { padding-bottom: 0px; background: white; box-shadow: 1px 1px 2px rgba(34, 25, 25, 0.4); margin: 0px 5px 15px 5px; border: 1px solid #D9D4D4; border-bottom: none; border-right: none; }&#39; +
+	&#39;.{plugin.class} .{class:authorName} { float: none; display: inline; margin-left: 0px; }&#39; +
+	&#39;.{plugin.class} .{class:body} { margin: 0px; }&#39; +
+	&#39;.{plugin.class} .{class:avatar} { float: left; width: 30px; height: 30px; padding-right: 10px; }&#39; +
+	&#39;.{plugin.class} .{class:depth-1} { margin-left: 0px; border-bottom: none; }&#39; +
+	&#39;.{plugin.class} .{class:depth-1} .{class:authorName} { display: inline; font-size: 12px; }&#39; +
+	&#39;.{plugin.class} .{class:depth-0} { padding: 15px 15px 10px 15px; }&#39; +
+	&#39;.{plugin.class} .{class:depth-0} .{class:authorName} { font-size: 15px; margin-top: 4px; }&#39; +
+	&#39;.{plugin.class} .{class:wrapper} { float: none; }&#39; +
+	&#39;.{plugin.class} .{class:subcontainer} { float: none; }&#39; +
+	&#39;.{plugin.class} .{class:date} { color: #C6C6C6; text-decoration: none; font-weight: normal; }&#39; +
+	&#39;.{plugin.class} .{class:footer} a { color: #C6C6C6; text-decoration: none; font-weight: normal; }&#39; +
+	&#39;.{plugin.class} .{class:footer} a:hover { text-decoration: underline; }&#39; +
+	&#39;.{plugin.class} .{class:container} .{class:footer} { margin-top: 5px; }&#39; +
+	&#39;.{plugin.class} .{class:children} .{class:header} { margin-left: 0px; }&#39; +
+	&#39;.{plugin.class} .{class:smallSizeContent} .{class:body} { font-size: 18px; line-height: 25px; }&#39; +
+	&#39;.{plugin.class} .{class:mediumSizeContent} .{class:body} { font-size: 16px; line-height: 22px; }&#39; +
+	&#39;.{plugin.class} .{class:children} .{class:container} { background-color: #F2F0F0; }&#39; +
+	&#39;.{plugin.class} .{class:childrenByCurrentActorLive} .{class:container} { background-color: #F2F0F0; }&#39; +
+	&#39;.{plugin.class} .{class:children} .{class:wrapper}  { display: none; }&#39; +
+	&#39;.{plugin.class} .{class:childrenByCurrentActorLive} .{class:wrapper} {display: none}&#39; +
+	&#39;.{plugin.class} .{class:children} .{class:content} { box-shadow: none; margin: 0px; padding: 0px; border: none; border-bottom: 1px solid #d9d4d4; background-color: #F2F0F0; }&#39; +
+	&#39;.{plugin.class} .{class:childrenByCurrentActorLive} .{class:content} { box-shadow: none; margin: 0px; padding: 0px; border: none; border-bottom: 1px solid #d9d4d4; background-color: #F2F0F0; }&#39; +
+	&#39;.{plugin.class} .{class:container-child} { margin: 0px; padding: 10px 15px; }&#39; +
+	&#39;.{plugin.class} .echo-linkColor { text-decoration: none; font-weight: bold; color: #524D4D; }&#39; +
+	&#39;.{plugin.class} .echo-linkColor a { text-decoration: none; font-weight: bold; color: #524D4D; }&#39; +
+	&#39;.{plugin.class} .{class:buttons} .echo-linkColor { font-weight: normal; color: #C6C6C6; }&#39; +
+	&#39;.{plugin.class} .{class:buttons} .echo-linkColor:hover { font-weight: normal; color: #C6C6C6; }&#39; +
+	&#39;.{plugin.class} .{class:expandChildren} .echo-message-icon { background-image: none; }&#39; +
+	&#39;.{plugin.class} .{class:expandChildren} { border-bottom: 1px solid #D9D4D4; background-color: #F2F0F0; }&#39; +
+	&#39;.{plugin.class} .{class:expandChildren} .{class:message-loading} { background-image: none; font-weight: bold; }&#39; +
+	&#39;.{plugin.class} .{class:expandChildren} .{class:expandChildrenLabel} { padding-left: 0px; background-image: none; }&#39; +
 	// plugins styles
-	'.{plugin.class} .{class:plugin-Like-likedBy} { margin-top: 5px; }' +
-	'.{plugin.class} .{class:plugin-Reply-submitForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
-	'.{plugin.class} .{class:plugin-Reply-compactForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-name { font-size: 12px; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-logout { line-height: 24px; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-userInfoWrapper {  margin: 5px 0px; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
-	'.{plugin.class} .{class:plugin-Moderation-status}  { width: 30px; clear: both; }' +
-	'.{plugin.class} .{class:plugin-TweetDisplay-tweetUserName}, .{plugin.class} .{class:authorName} { float: none; word-wrap: normal; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }' +
-	'.{plugin.class} .{class:plugin-TweetDisplay-tweetUserName} { margin-left: 0px; }' +
-	'.{class:plugin-TweetDisplay} .{plugin.class:childBody} { margin-left: 0; }' +
+	&#39;.{plugin.class} .{class:plugin-Like-likedBy} { margin-top: 5px; }&#39; +
+	&#39;.{plugin.class} .{class:plugin-Reply-submitForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }&#39; +
+	&#39;.{plugin.class} .{class:plugin-Reply-compactForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }&#39; +
+	&#39;.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-name { font-size: 12px; }&#39; +
+	&#39;.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-logout { line-height: 24px; }&#39; +
+	&#39;.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-userInfoWrapper {  margin: 5px 0px; }&#39; +
+	&#39;.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }&#39; +
+	&#39;.{plugin.class} .{class:plugin-Moderation-status}  { width: 30px; clear: both; }&#39; +
+	&#39;.{plugin.class} .{class:plugin-TweetDisplay-tweetUserName}, .{plugin.class} .{class:authorName} { float: none; word-wrap: normal; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }&#39; +
+	&#39;.{plugin.class} .{class:plugin-TweetDisplay-tweetUserName} { margin-left: 0px; }&#39; +
+	&#39;.{class:plugin-TweetDisplay} .{plugin.class:childBody} { margin-left: 0; }&#39; +
 
 	// TODO: Remove this block after TwitterIntents removing
-	'.{plugin.class} .{class:plugin-TwitterIntents-tweetUserName}, .{plugin.class} .{class:authorName} { float: none; word-wrap: normal; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }' +
-	'.{plugin.class} .{class:plugin-TwitterIntents-tweetUserName} { margin-left: 0px; }' +
-	'.{class:plugin-TwitterIntents} .{plugin.class:childBody} { margin-left: 0; }' +
+	&#39;.{plugin.class} .{class:plugin-TwitterIntents-tweetUserName}, .{plugin.class} .{class:authorName} { float: none; word-wrap: normal; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }&#39; +
+	&#39;.{plugin.class} .{class:plugin-TwitterIntents-tweetUserName} { margin-left: 0px; }&#39; +
+	&#39;.{class:plugin-TwitterIntents} .{plugin.class:childBody} { margin-left: 0; }&#39; +
 
 	((typeof document.createElement(&quot;div&quot;).style.boxShadow === &quot;undefined&quot;)
-		? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }'
-		: '');
+		? &#39;.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }&#39;
+		: &#39;&#39;);
 	
 Echo.Plugin.create(plugin);
 
@@ -713,10 +713,10 @@ plugin.config = {
 </span>	 * @cfg {Object} isotope
 	 * Allows to configure the Isotope jQuery plugin, used by the plugin as the
 	 * rendering engine. The possible config values can be found at the Isotope
-	 * plugin homepage ([http://isotope.metafizzy.co/](http://isotope.metafizzy.co/)). It's NOT recommended to
-	 * change the settings of the Isotope unless it's really required.
+	 * plugin homepage ([http://isotope.metafizzy.co/](http://isotope.metafizzy.co/)). It&#39;s NOT recommended to
+	 * change the settings of the Isotope unless it&#39;s really required.
 	 *
-	 *__Note__: the Isotope JS library doesn't work in IE &lt;a href=&quot;http://en.wikipedia.org/wiki/Quirks_mode&quot;&gt;quirks mode&lt;/a&gt;.
+	 *__Note__: the Isotope JS library doesn&#39;t work in IE &lt;a href=&quot;http://en.wikipedia.org/wiki/Quirks_mode&quot;&gt;quirks mode&lt;/a&gt;.
 	 * Due to this fact you should declare the necessary &lt;a href=&quot;http://en.wikipedia.org/wiki/DOCTYPE&quot;&gt;\&lt;DOCTYPE\&gt;&lt;/a&gt;
 	 * on the page. We recommend to use a
 	 * &lt;a href=&quot;http://en.wikipedia.org/wiki/DOCTYPE#HTML5_DTD-less_DOCTYPE&quot;&gt;HTML5 DOCTYPE&lt;/a&gt; declaration.
@@ -732,6 +732,13 @@ plugin.config = {
 		// due to the issues with video display with CSS transitions
 		&quot;animationEngine&quot;: isMozillaBrowser ? &quot;jquery&quot; : &quot;best-available&quot;
 	}
+};
+
+plugin.init = function() {
+	// display an item immediately (cancel the slide down animation)
+	// to let the Isotope library work with the final state of the DOM element
+	// representing the item, to avoid its incorrect positioning in the grid
+	this.component.config.set(&quot;slideTimeout&quot;, 0);
 };
 
 plugin.enabled = function() {
@@ -782,8 +789,8 @@ plugin.methods._refreshView = function() {
 };
 
 plugin.css = 
-	'.{plugin.class} .isotope { -webkit-transition-property: height, width; -moz-transition-property: height, width; -o-transition-property: height, width; transition-property: height, width;  -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }' +
-	'.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }';
+	&#39;.{plugin.class} .isotope { -webkit-transition-property: height, width; -moz-transition-property: height, width; -o-transition-property: height, width; transition-property: height, width;  -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }&#39; +
+	&#39;.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }&#39;;
 
 Echo.Plugin.create(plugin);
 

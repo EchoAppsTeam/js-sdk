@@ -67,7 +67,7 @@ plugin.config = {
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-cfg-buttons'>	/**
 </span>	 * @cfg {String[]} [buttons=[&quot;login&quot;]]
 	 * A list of buttons that should be rendered in the Auth Control. May include
-	 * any of the following strings (order doesn't matter):
+	 * any of the following strings (order doesn&#39;t matter):
 	 *
 	 * + &quot;login&quot;
 	 * + &quot;edit&quot;
@@ -138,17 +138,17 @@ plugin.dependencies = [{
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-echo_template-auth'>/**
 </span> * @echo_template
  */
-plugin.templates.auth = '&lt;div class=&quot;{plugin.class:auth}&quot;&gt;&lt;/div&gt;';
+plugin.templates.auth = &#39;&lt;div class=&quot;{plugin.class:auth}&quot;&gt;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-echo_template-forcedLogin'>/**
 </span> * @echo_template
  */
 plugin.templates.forcedLogin =
-	'&lt;div class=&quot;echo-primaryFont {class:header}&quot;&gt;' +
-		'&lt;span class=&quot;echo-secondaryColor {plugin.class:forcedLoginMessage}&quot;&gt;' +
-			'{plugin.label:youMustBeLoggedIn}' +
-		'&lt;/span&gt;' +
-	'&lt;/div&gt;';
+	&#39;&lt;div class=&quot;echo-primaryFont {class:header}&quot;&gt;&#39; +
+		&#39;&lt;span class=&quot;echo-secondaryColor {plugin.class:forcedLoginMessage}&quot;&gt;&#39; +
+			&#39;{plugin.label:youMustBeLoggedIn}&#39; +
+		&#39;&lt;/span&gt;&#39; +
+	&#39;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Submit-Plugins-JanrainAuth-echo_renderer-header'>/**
 </span> * @echo_renderer
@@ -217,8 +217,8 @@ plugin.methods._userStatus = function() {
 };
 
 plugin.css =
-	'.{plugin.class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }' +
-	'.{plugin.class:error} { color: red; }';
+	&#39;.{plugin.class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }&#39; +
+	&#39;.{plugin.class:error} { color: red; }&#39;;
 
 Echo.Plugin.create(plugin);
 

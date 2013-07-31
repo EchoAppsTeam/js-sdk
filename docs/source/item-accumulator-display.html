@@ -78,7 +78,7 @@ plugin.config = {
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay-echo_template-main'>/**
 </span> * @echo_template
  */
-plugin.templates.main = '&lt;div class=&quot;{plugin.class:accumulatorContainer}&quot;&gt;&lt;/div&gt;';
+plugin.templates.main = &#39;&lt;div class=&quot;{plugin.class:accumulatorContainer}&quot;&gt;&lt;/div&gt;&#39;;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-ItemAccumulatorDisplay-echo_renderer-accumulatorContainer'>/**
 </span> * @echo_renderer
@@ -156,7 +156,7 @@ plugin.methods._animateCounter = function(bgColor) {
 	}, this.config.get(&quot;countTickTimeout&quot;) * 1000));
 };
 
-plugin.css = '.{plugin.class:accumulatorContainer} { float: right; margin-right: 7px; }';
+plugin.css = &#39;.{plugin.class:accumulatorContainer} { float: right; margin-right: 7px; }&#39;;
 
 Echo.Plugin.create(plugin);
 

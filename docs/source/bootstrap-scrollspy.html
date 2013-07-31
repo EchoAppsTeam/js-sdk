@@ -45,14 +45,14 @@
 
   function ScrollSpy(element, options) {
     var process = $.proxy(this.process, this)
-      , $element = $(element).is('body') ? $(window) : $(element)
+      , $element = $(element).is(&#39;body&#39;) ? $(window) : $(element)
       , href
     this.options = $.extend({}, $.fn.scrollspy.defaults, options)
-    this.$scrollElement = $element.on('scroll.scroll-spy.data-api', process)
+    this.$scrollElement = $element.on(&#39;scroll.scroll-spy.data-api&#39;, process)
     this.selector = (this.options.target
-      || ((href = $(element).attr('href')) &amp;&amp; href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
-      || '') + ' .nav li &gt; a'
-    this.$body = $('body')
+      || ((href = $(element).attr(&#39;href&#39;)) &amp;&amp; href.replace(/.*(?=#[^\s]+$)/, &#39;&#39;)) //strip for ie7
+      || &#39;&#39;) + &#39; .nav li &gt; a&#39;
+    this.$body = $(&#39;body&#39;)
     this.refresh()
     this.process()
   }
@@ -72,7 +72,7 @@
           .find(this.selector)
           .map(function () {
             var $el = $(this)
-              , href = $el.data('target') || $el.attr('href')
+              , href = $el.data(&#39;target&#39;) || $el.attr(&#39;href&#39;)
               , $href = /^#\w/.test(href) &amp;&amp; $(href)
             return ( $href
               &amp;&amp; $href.length
@@ -114,22 +114,22 @@
         this.activeTarget = target
 
         $(this.selector)
-          .parent('.active')
-          .removeClass('active')
+          .parent(&#39;.active&#39;)
+          .removeClass(&#39;active&#39;)
 
         selector = this.selector
-          + '[data-target=&quot;' + target + '&quot;],'
-          + this.selector + '[href=&quot;' + target + '&quot;]'
+          + &#39;[data-target=&quot;&#39; + target + &#39;&quot;],&#39;
+          + this.selector + &#39;[href=&quot;&#39; + target + &#39;&quot;]&#39;
 
         active = $(selector)
-          .parent('li')
-          .addClass('active')
+          .parent(&#39;li&#39;)
+          .addClass(&#39;active&#39;)
 
-        if (active.parent('.dropdown-menu').length)  {
-          active = active.closest('li.dropdown').addClass('active')
+        if (active.parent(&#39;.dropdown-menu&#39;).length)  {
+          active = active.closest(&#39;li.dropdown&#39;).addClass(&#39;active&#39;)
         }
 
-        active.trigger('activate')
+        active.trigger(&#39;activate&#39;)
       }
 
   }
@@ -143,10 +143,10 @@
   $.fn.scrollspy = function (option) {
     return this.each(function () {
       var $this = $(this)
-        , data = $this.data('scrollspy')
-        , options = typeof option == 'object' &amp;&amp; option
-      if (!data) $this.data('scrollspy', (data = new ScrollSpy(this, options)))
-      if (typeof option == 'string') data[option]()
+        , data = $this.data(&#39;scrollspy&#39;)
+        , options = typeof option == &#39;object&#39; &amp;&amp; option
+      if (!data) $this.data(&#39;scrollspy&#39;, (data = new ScrollSpy(this, options)))
+      if (typeof option == &#39;string&#39;) data[option]()
     })
   }
 
@@ -169,8 +169,8 @@
  /* SCROLLSPY DATA-API
   * ================== */
 
-  $(window).on('load', function () {
-    $('[data-spy=&quot;scroll&quot;]').each(function () {
+  $(window).on(&#39;load&#39;, function () {
+    $(&#39;[data-spy=&quot;scroll&quot;]&#39;).each(function () {
       var $spy = $(this)
       $spy.scrollspy($spy.data())
     })
