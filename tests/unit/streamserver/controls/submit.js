@@ -323,8 +323,8 @@ suite.prototype.cases.onError = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
 		"once": true,
 		"handler": function(topic, params) {
-			// override content with fake value
-			params.postData.content[0].object.content = {};
+			// override content with empty value
+			params.postData.content[0].object.content = "";
 		}
 	});
 	// unsubscribe all onPostError handlers to hide error message
@@ -342,6 +342,8 @@ suite.prototype.cases.onError = function(callback) {
 			QUnit.equal(params.request.response.result, "error",
 				"Checking if the server response corresponds to the event " +
 				"fired (which is Echo.StreamServer.Controls.Submit.onPostError)");
+			QUnit.equal(params.request.response.errorCode, "invalid_object",
+				"Checking if the server response has correct error code");
 			callback();
 		}
 	});
