@@ -157,7 +157,7 @@ suite.prototype.cases.content = function(callback) {
 	var submit = suite.submit;
 	var button = submit.view.get("postButton");
 	submit.view.get("name").val("TestName");
-	button.off("click", suite.postHandler);
+	suite.postHandler && button.off("click", suite.postHandler);
 	suite.postHandler = function() {
 		var content = submit.view.get("content");
 		QUnit.ok(content.hasClass("echo-streamserver-controls-submit-mandatory"),
