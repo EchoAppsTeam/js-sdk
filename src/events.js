@@ -12,9 +12,9 @@ if (Echo.Utils.isComponentDefined("Echo.Events")) return;
  * (like "app was rendered", "user logged in", etc).
  *
  * The contexts used in this library are complex identifiers constructed using the following rules:
- *     <contextId> :: "<id>" or "<parentContextID>/<id>", where
- *     <id> :: some unique identifier assigned to component
- *     <parentContextID> :: "<contextID>"
+ *     &lt;contextId> :: "&lt;id>" or "&lt;parentContextID>/&lt;id>", where
+ *     &lt;id> :: some unique identifier assigned to component
+ *     &lt;parentContextID> :: "&lt;contextID>"
  *
  * Example:
  *

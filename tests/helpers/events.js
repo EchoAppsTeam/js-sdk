@@ -124,6 +124,7 @@ Echo.Tests.Events.contracts = {
 	"Echo.UserSession.onInit": [_userSession.init, {}],
 	"Echo.UserSession.onInvalidate": [_userSession.init, {}],
 
+	"Echo.StreamServer.Controls.Stream.onRefresh": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onRender": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onRerender": _stream.render,
 	"Echo.StreamServer.Controls.Stream.onItemsRenderingComplete": _stream.render,

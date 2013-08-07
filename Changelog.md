@@ -1,5 +1,29 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.10 - July 31, 2013
+
+* We added **the ability to override an app config** using the [Echo.Loader.override](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-override) function in case of multiple installations of the same Canvas on a page. Now you can specify the unique id for each Canvas on the page and use this id for the Echo.Loader.override function call. More information can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-override).
+
+* The **"mode" config parameter was added for the Canvas control** to trigger the type of storage which should be used to retrieve the Canvas configuration. More information about this parameter and available storage types (and their differences) can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs#!/api/Echo.Canvas-cfg-mode).
+
+* We have **upgraded the Yepnope.js third-party library (which we use in the Echo.Loader to download the dependencies)** to the latest version. It should resolve the issue with missing loader anchor element in case some other dynamic loading libs exist on the page. More information about the YepNope library and its latest version can be found [here](https://github.com/SlexAxton/yepnope.js#current-released-version).
+
+* In order to provide more flexibility for the CSS customizations, the **Echo.Canvas class now adds special CSS classes to its target element** and for each App Instance target element inside the Canvas. The CSS class starts with the "echo-canvas-" prefix and contains the ID of the Canvas/Instance and now you can target your CSS rules to a specific Canvas/Instance. You can use the Web Inspector tool in your browser to inspect the Canvas target element and find the necessary CSS base class names.
+
+* We added the ability to define **multiple app script URLs** within the "[scripts](http://echoappsteam.github.io/js-sdk/docs#!/api/Echo.Loader-static-method-initApplication)" in case the script should be server from **different location on HTTP/HTTPS pages**. More information about the new format of the "scripts" parameter can be found in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs#!/api/Echo.Loader-static-method-initApplication).
+
+* Sometimes if the [Stream app](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream) is empty (no items posted yet), it fails to render the first submitted item received as a live update. We have fixed this issue and now all items (including the very first one) received within live updates are displayed in the Stream correctly.
+
+* The **PinboardVisualisation plugin** logic was updated to disable the slide down animation for the Stream Item in order to let the Isotope library (used for the Pinboard-style visualization) work with the final state of the DOM element representing the Item, to avoid its incorrect positioning in the grid. Previously the slide animation disabling was a manual action (via Stream app config), now the plugin takes care of it automatically.
+
+* We have **excluded the "hashtags" from the list of default Item content transformations on the client side within the Stream app**. Previously the "#" char was replaced with the tag icon in the item content by default. Now this transformation is removed from the default list and you can enable it using a special parameter ("item.contentTransformations") described in our Documentation Center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item-cfg-contentTransformations).
+
+* Previously the **"safeHTML" search query predicate** (defined in the initial query via the ["query" parameter](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-query) to get the data from the StreamServer to render the Stream) was ignored during the API request to get additional replies for the item after clicking the "View more items" button. Now the same value of the "safeHTML" predicate is used across all additional requests used in the Stream app.
+
+* We have **upgraded the jQuery library** to the latest v1.10.2 version. More information about the jQuery release is available in the [official Blog announcement here](http://blog.jquery.com/2013/07/03/jquery-1-10-2-and-2-0-3-released/).
+
+* We have **upgraded the QUnit library** which we use as a testing framework to the latest v1.12.0 version. QUnit library release changelog is available [here](https://github.com/jquery/qunit/blob/v1.12.0/History.md).
+
 ##v3.0.9 - June 20, 2013
 
 * [JanrainAuth plugin](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth) for [Echo Submit Control](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit) is added to employ [Janrain Social Login Widget](http://janrain.com/products/engage/social-login/).

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<base href="../../../../sdk">
+</head>
+<body>
+
+	<div id="component"></div>
+
+	<script>
+		// link Echo & QUnit objects from the parent window
+		window.Echo = window.parent.Echo;
+		window.QUnit = window.parent.QUnit;
+
+		// create "test" function which will be called within the parent window
+		window.test = function(callback) {
+			Echo.Loader.initApplication({
+				"script": Echo.Tests.baseURL + "tests/unit/loader/scripts/foreign-class.js",
+				"component": "SomeForeignClass",
+				"config": {
+					"target": document.getElementById("component")
+				}
+			});
+			var canvas = Echo.Loader.canvases.pop();
+			var handlerId = Echo.Events.subscribe({
+				"topic": "Echo.Canvas.onReady",
+				"contextId": canvas.config.get("contextId"),
+				"handler": function() {
+					QUnit.ok(true, "Check that foreign class loaded");
+					Echo.Events.unsubscribe({"handlerId": handlerId});
+					callback();
+				}
+			});
+		};
+	</script>
+</body>
+</html>

@@ -366,9 +366,6 @@ stream.config = {
 };
 
 stream.config.normalizer = {
-	"safeHTML": function(value) {
-		return "off" !== value;
-	},
 	"showFlags": function(value) {
 		return "off" !== value;
 	},
@@ -398,7 +395,7 @@ stream.vars = {
 	"lastRequest": null,
 	"request": null,
 	"moreRequest": null,
-	"itemsRenderingComplete": false
+	"itemsRenderingComplete": true
 };
 
 stream.labels = {
@@ -1068,7 +1065,8 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 		"itemsPerPage": additionalItems,
 		"sortOrder": this.config.get("children.sortOrder"),
 		"childrenSortOrder": this.config.get("children.sortOrder"),
-		"pageAfter": pageAfter ? '"' + (pageAfter || 0) + '"' : undefined
+		"pageAfter": pageAfter ? '"' + (pageAfter || 0) + '"' : undefined,
+		"safeHTML": this.config.get("safeHTML")
 	}, function(value, acc, predicate) {
 		return acc += (typeof value !== "undefined"
 			? predicate + ":" + value + " "
@@ -1852,9 +1850,9 @@ item.config = {
 	 * + newlines - replaces newlines with \<br> tags
 	 */
 	"contentTransformations": {
-		"text": ["smileys", "hashtags", "urls", "newlines"],
-		"html": ["smileys", "hashtags", "urls", "newlines"],
-		"xhtml": ["smileys", "hashtags", "urls"]
+		"text": ["smileys", "urls", "newlines"],
+		"html": ["smileys", "urls", "newlines"],
+		"xhtml": ["smileys", "urls"]
 	},
 
 	/**
@@ -2123,7 +2121,7 @@ item.templates.childrenBottom =
 	'<div class="{class:children}"></div>';
 
 item.methods.template = function() {
-	this.templates.mainHeader +
+	return this.templates.mainHeader +
 	(this.config.get("parent.children.sortOrder") === "chronological"
 		? this.templates.childrenTop
 		: this.templates.childrenBottom

@@ -22,7 +22,10 @@ Echo.Loader = {
 	/** @private */
 	"config": {
 		"cdnBaseURL": protocol + "//cdn.echoenabled.com/",
-		"storageURL": protocol + "//s3.amazonaws.com/echo-canvases/",
+		"storageURL": {
+			"prod": protocol + "//dqspik3j3bxvu.cloudfront.net/",
+			"dev": protocol + "//s3.amazonaws.com/echo-canvases/"
+		},
 		"errorTimeout": 5000 // 5 sec
 	},
 	/** @ignore */
@@ -225,7 +228,40 @@ Echo.Loader.initEnvironment = function(callback) {
  * specific application within the canvas.
  *
  * @param {String} canvasID
- * Canvas ID.
+ * Canvas ID. Canvas ID may consist of two parts separated by "#":
+ * the main mandatory Canvas identifier (located before the "#" char)
+ * and the optional unique identifier of the Canvas on a page
+ * (located after the "#" char). The unique page identifier (after the "#")
+ * is used in case you have multiple Canavses with the same primary ID on a page.
+ * In this case in order to have an ability to perform local overrides
+ * using the Echo.Loader.override function, you specify the unique id
+ * after the "#" char and use the full ID to perform the override.
+ * Here is an example of the Canvas ID without the unique part:
+ *
+ *     <div class="echo-canvas"
+ *         data-canvas-id="jskit/comments-sample"
+ *         data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ *
+ * If you'd like to put multiple instances of the same Canvas on a page
+ * and you want to have an ability to perform local overrides using the
+ * Echo.Loader.override function, the Canvas ID should contain the unique part,
+ * for example:
+ *
+ *     <div class="echo-canvas"
+ *         data-canvas-id="jskit/comments-sample#left-side"
+ *         data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ *     <div class="echo-canvas"
+ *         data-canvas-id="jskit/comments-sample#right-side"
+ *         data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ *
+ * Where the "#left-side" and "#right-side" are the unique parts for
+ * the Canvases within this page. Now you can override the Canvas app
+ * settings using the following constructions:
+ *
+ *     Echo.Loader.override("jskit/comments-sample#left-side",
+ *         "AppInstanceID", { ... });
+ *     Echo.Loader.override("jskit/comments-sample#right-side",
+ *         "AppInstanceID", { ... });
  *
  * @param {String} appID
  * Application ID inside the canvas.
@@ -305,6 +341,22 @@ Echo.Loader.init = function(config) {
  * Object which specifies the location (URL) of the production (minified) and development
  * (non-minified) versions of the app JavaScript class code. The "prod" and "dev" keys
  * should be used in order to specify the production and development URLs respectively.
+ *
+ * @param {String|Object} [app.scripts.prod]
+ * Location of the production (minified) version of the app
+ * JavaScript class code. The value might be just a String or an Object with the "regular"
+ * and "secure" key. If the value has the String type - the value is returned as is.
+ * If the value is represented using the Object type - the SDK engine
+ * uses either the "regular" key value in case the page was requested using the HTTP
+ * protocol or the "secure" key value if the page was served via HTTPS protocol.
+ *
+ * @param {String|Object} [app.scripts.dev]
+ * Location of the development (non-minified) version of the app JavaScript class code.
+ * The value might be just a String or an Object with the "regular"
+ * and "secure" key. If the value has the String type - the value is returned as is.
+ * If the value is represented using the Object type - the SDK engine
+ * uses either the "regular" key value in case the page was requested using the HTTP
+ * protocol or the "secure" key value if the page was served via HTTPS protocol.
  *
  * @param {Object} [app.backplane]
  * Object which contains the data to be passed into the Backplane.init call.

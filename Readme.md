@@ -20,7 +20,7 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 3. Run the following command in the project directory: npm install
 4. Now you can use 'grunt' command to build the project
 5. Install ruby, rubygems, yaml.
-6. gem install jsduck -v 5.0.0.beta2
+6. gem install jsduck -v 5.0.0
 
 # Bug tracker
 We’re using the standard [GitHub Bug Tracker](https://github.com/EchoAppsTeam/js-sdk/issues) for tracking of issues and feature requests.

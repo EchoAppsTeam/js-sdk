@@ -228,12 +228,6 @@ module.exports = function(grunt) {
 				" * Version: <%= pkg.version %> (<%= grunt.template.today(\"UTC:yyyy-mm-dd HH:MM:ss Z\") %>)\n" +
 				" */"
 		},
-		check: {
-			versions: {
-				jsduck: "5.0.0.beta3",
-				grunt: "v0.3.17"
-			}
-		},
 		clean: {
 			build: [
 				"<%= dirs.build %>"
@@ -389,7 +383,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib");
 	grunt.loadTasks("tools/grunt/tasks");
 
-	grunt.registerTask("default", "check:versions clean:all build:sdk");
+	grunt.registerTask("default", "clean:all build:sdk");
 	grunt.registerTask("test", "Execute tests", function() {
 		grunt.task.run(process.env["CI"] ? "server saucelabs:travis" : "saucelabs:local");
 	});
@@ -452,8 +446,7 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerTask("docs", function() {
-		var done = this.async();
-		grunt.helper("make_docs", done);
+		grunt.helper("make_docs", this.async());
 	});
 
 	grunt.registerMultiTask("recess", "Compile LESS files to CSS through Twitter Recess tool", function(task) {
@@ -478,13 +471,6 @@ module.exports = function(grunt) {
 		}, function() {
 			done();
 		});
-	});
-
-	grunt.registerMultiTask("check", "Different checks (versions, pre-release, post-release, ...)", function() {
-		var done = this.async();
-		if (this.target === "versions") {
-			shared.checkVersions(this.data, done);
-		}
 	});
 
 	// shared
@@ -540,13 +526,30 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerHelper("make_docs", function(callback) {
-		var path = grunt.config("dirs.dist") + "/docs";
-		shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
-			// run jsduck without multi-processing because multi-processing
-			// can cause this issue: https://github.com/senchalabs/jsduck/issues/353
-			shared.exec("jsduck --config=config/jsduck/config.json --processes=0", function() {
-				// copy Echo specific images and CSS to documentation directory
-				shared.exec("cp -r docs/patch/* " + path, callback);
+		shared.exec("jsduck --version | awk '{ print $2; }'", function(version) {
+			var desiredVersion = "5.0.0";
+			var failed = false;
+			version = _.trim(version);
+			if (!version) {
+				failed = true;
+				grunt.log.writeln("jsduck is not installed. Install it by running command `" + ("gem install jsduck -v " + desiredVersion).yellow + "`.").cyan;
+			} else if (version !== desiredVersion) {
+				failed = true;
+				grunt.log.writeln("jsduck version is " + version.red + " but must be " + desiredVersion.green + ". Update it by running command `" + ("gem install jsduck -v " + desiredVersion).yellow + "`.").cyan;
+			} else {
+				grunt.log.ok();
+			}
+			if (failed) {
+				callback(false);
+				return;
+			}
+
+			var path = grunt.config("dirs.dist") + "/docs";
+			shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
+				shared.exec("jsduck --config=config/jsduck/config.json", function() {
+					// copy Echo specific images and CSS to documentation directory
+					shared.exec("cp -r docs/patch/* " + path, callback);
+				});
 			});
 		});
 	});

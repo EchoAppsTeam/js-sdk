@@ -283,7 +283,11 @@ module.exports = function(grunt) {
 	};
 
 	function pushPages(done) {
-		grunt.helper("make_docs", function() {
+		grunt.helper("make_docs", function(success) {
+			if (success === false) {
+				done(false);
+				return;
+			}
 			var updateCmd = [
 				"git checkout gh-pages",
 				"git pull",
