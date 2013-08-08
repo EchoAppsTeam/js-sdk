@@ -3,47 +3,195 @@
 
 var $ = jQuery;
 
-Echo.Tests.addModule = function(config) {
-	config.meta = config.meta || {};
-	QUnit.module(config.name, {
-		"setup": function() {
-			Echo.Tests._setup();
-			config.setup && config.setup.call(this);
-		},
-		"teardown": function() {
-			config.teardown && config.teardown.call(this);
-			Echo.Tests._teardown();
-		},
-		"meta": {
-			"className": config.meta.className || "",
-			"functions": config.meta.functions || []
+if (Echo.Tests.Suite) return;
+
+Echo.Tests.Suite = function() {
+	this.config = {
+		"asyncTimeout": 500,
+		"testTimeout": 5000,
+		"target": $("#qunit-fixture"),
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"dataBaseLocation": "http://example.com/js-sdk/"
+	};
+};
+
+Echo.Tests.Suite.prototype.run = function() {
+	var self = this;
+	this.info = this.info || {};
+	this.info.functions = this.info.functions || [];
+	this.info.className = this.info.className || "";
+	$.each(this.tests, function(name, test) {
+		test.config = test.config || {};
+		if (test.instance && !$.isFunction(test.instance)) {
+			test.config.async = true;
 		}
+		test.config.user = test.config.user || {};
+		test.config.user.status = test.config.user.status || "anonymous";
+		var check = function(instance) {
+			if (!test.config.async) {
+				test.check.call(self, instance);
+			} else {
+				setTimeout(function() {
+					test.check.call(self, instance);
+				}, test.config.asyncTimeout || self.config.asyncTimeout);
+			}
+		};
+		name = test.config.name || self.normalizeName(name);
+		if (test.config.description) {
+			name = name + " (" + test.config.description + ")";
+		}
+		QUnit.test(name, function() {
+			// time in milliseconds after which test will time out
+			QUnit.config.testTimeout = test.config.testTimeout || self.config.testTimeout;
+			// we intentionally prevent next test execution
+			// allowing current test to complete or time out
+			QUnit.stop();
+			self._prepareEnvironment(test, function() {
+				if (!test.instance) {
+					check();
+					// we need to switch to the next test
+					// if it was NOT defined as async
+					if (!test.config.async) {
+						QUnit.start();
+					}
+				} else if ($.isFunction(test.instance)) {
+					check(test.instance());
+					QUnit.start();
+				} else {
+					var config = $.extend({
+						"appkey": "echo.jssdk.tests.aboutecho.com",
+						"target": $("#qunit-fixture"),
+						"ready": function() {
+							check(this);
+						}
+					}, test.instance.config || {});
+					var component = Echo.Utils.getComponent(test.instance.name);
+					var instance = new component(config);
+					if (test.instance.config && test.instance.config.ready) {
+						check(instance);
+					}
+				}
+			});
+		});
 	});
 };
 
-Echo.Tests.iframeTest = function(test) {
-	return function(cb) {
-		var iframe = $('<iframe name="' + name + '" style="width: 0px; height: 0px; border: 0px; visibility: hidden; display: none"></iframe>');
-		$(document.body).append(iframe);
-		iframe.on("load", function() {
-			var win = iframe.get(0).contentWindow;
-			var callback = function() {
-				// cleanup first
-				iframe.remove();
-				// and then execute callback to advance to the next test
-				cb();
-			};
-			test.call(win, callback);
-		});
-		iframe.attr("src", "about:blank");
-	};
+Echo.Tests.Suite.prototype.sequentialAsyncTests = function(funcs, namespace) {
+	if (namespace && $.isPlainObject(this[namespace]) && $.isFunction(this[namespace].destroy)) {
+		funcs.push("destroy");
+	}
+	funcs.push(function() {
+		QUnit.start();
+	});
+	this.sequentialCall(funcs, namespace);
 };
+
+Echo.Tests.Suite.prototype.sequentialCall = function(names, namespace) {
+	var self = this;
+	var recursive = function(list) {
+		if (!list.length) {
+			return;
+		}
+		var func = list.shift();
+		if (!$.isFunction(func)) {
+			func = (namespace ? self[namespace] : self)[func];
+		}
+		func.call(self, function() {
+			// NOTE: THIS IS A HACK. THIS TECHNIQUE COULD PROVIDE A BUGGY BEHAVIOUR WITH THE FUNCTION SEQUENCES.
+			// When we use recursion every "func" call stack save in the root call stack
+			// It means that every variables and other properties will accumulate in the root call stack
+			// Every engine has a inner call stack size dependent on OS and browser as well
+			// In some cases when we sequentially called lots of tests functions call root stack size
+			// growing up and overflowed.
+			// To avoid it we are wrapped every further recursive function into setTimeout which clear
+			// root call stack and executes the function in your own.
+			setTimeout(function() {
+				recursive(list);
+			}, 0);
+		});
+	};
+	recursive(names);
+};
+
+Echo.Tests.Suite.prototype.normalizeName = function(name, capitalize) {
+	return (!~name.search(/\W/g)
+		? name.replace(/[A-Z]|_/g, function(match, pos) {
+			var m = match.toLowerCase();
+			m = capitalize && m.replace(/\b[a-z]/g, function(letter) {
+				return letter.toUpperCase();
+			}) || m;
+			return (pos ? " " : "") + m;
+		})
+		: name);
+};
+
+Echo.Tests.Suite.prototype.constructPluginRenderersTest = function(config) {
+	var data = {
+		"config": {"async": true}
+	};
+	data.check = function(instance) {
+		var test = this;
+		var parts = this.info.className.split(".Plugins.");
+		var component = parts[0], plugin = parts[1];
+		var init = Echo.Tests.getComponentInitializer(component);
+		var defaults = {
+			"appkey": this.config.appkey,
+			"target": this.config.target,
+			"dataBaseLocation": this.config.dataBaseLocation,
+			"plugin": {"name": plugin},
+			"plugins": [],
+			"ready": function() {
+				test.executePluginRenderersTest(this.getPlugin(plugin));
+				this.destroy();
+				QUnit.start();
+			}
+		};
+		var _config = new Echo.Configuration(config, defaults).getAsHash();
+		_config.plugins.push(_config.plugin);
+		init(_config);
+	};
+	this.tests.TestPluginRenderers = data;
+};
+
+Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
+	var self = this;
+	if (!plugin.component.view.rendered()) {
+		plugin.component.render();
+	}
+	var check = function(forComponent) {
+		var renderers = forComponent ? plugin._manifest("component").renderers : plugin._manifest("renderers");
+		var checker = function(name, element, suffix) {
+			var oldElement = element.clone(true, true);
+			var renderedElement = renderers[name].call(plugin, element);
+			Echo.Tests._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
+		};
+		$.each(renderers, function(name, renderer) {
+			// don't test private renderer
+			if (name.charAt(0) === "_") return true;
+
+			self.info.functions.push((forComponent ? "component." : "") + "renderers." + name);
+			checker(name, forComponent ? plugin.component.view.get(name) : plugin.view.get(name));
+		});
+		var oldElements = Echo.Utils.foldl({}, plugin.component.view._elements, function(element, acc, name) {
+			acc[name] = element.clone(true, true);
+		});
+		plugin.component.render();
+		$.each(renderers, function(name) {
+			// don't test private renderer
+			if (name.charAt(0) === "_") return true;
+			checker(name, oldElements[(forComponent ? plugin.component.cssPrefix : plugin.cssPrefix) + name], " (recursive rerendering case)");
+		});
+	};
+	check(false);
+	check(true);
+};
+
 
 /*
 The Idea of the function were took from https://github.com/jquery/jquery-ui/blob/master/tests/unit/testsuite.js
 Some functionality copied as is.
 */
-Echo.Tests.jqueryObjectsEqual = function(source, target, message) {
+Echo.Tests.Suite.prototype.jqueryObjectsEqual = function(source, target, message) {
 	var expected, actual;
 	var properties = [
 		"disabled",
@@ -114,105 +262,67 @@ Echo.Tests.jqueryObjectsEqual = function(source, target, message) {
 	QUnit.deepEqual(actual, expected, message);
 };
 
-Echo.Tests.constructRenderersTest = function(test) {
-	test.config = $.extend({
-		"appkey": "echo.jssdk.tests.aboutecho.com",
-		"target": $("#qunit-fixture"),
-		"ready": function() {}
-	}, test.config || {});
-	QUnit.asyncTest("basic checks for renderers", function() {
-		var handler = function() {
-			var instance = this;
-			var checker = function(name, element, suffix) {
-				if (!element) {
-					QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template." + suffix);
-					return;
-				}
-				var oldElement = element.clone(true, true);
-				var renderedElement = instance.view.render({"name": name});
-				Echo.Tests._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
-			};
-			$.each(instance.renderers, function(name, renderer) {
-				QUnit.config.current.moduleTestEnvironment.meta.functions.push("renderers." + name);
-				checker(name, instance.view.get(name));
-			});
-			var oldElements = Echo.Utils.foldl({}, instance.view._elements, function(element, acc, name) {
-				acc[name] = element.clone(true, true);
-			});
+Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
+	var self = this;
+	data.check = function(instance) {
+		if (!instance.view.rendered()) {
 			instance.render();
-			$.each(instance.renderers, function(name, element) {
-				checker(name, oldElements[instance.cssPrefix + name], " (recursive rerendering case)");
-			});
-			QUnit.start();
-		};
-		var ready = test.config.ready;
-		test.config.ready = function() {
-			if (this.view.rendered()) {
-				handler.call(this);
-			} else {
-				this.events.subscribe({
-					"topic": test.component + ".onRender",
-					"once": true,
-					"handler": handler
-				});
+		}
+		var checker = function(name, element, suffix) {
+			if (!element) {
+				QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template." + suffix);
+				return;
 			}
-			ready.call(this);
+			var oldElement = element.clone(true, true);
+			var renderedElement = instance.view.render({"name": name});
+			Echo.Tests._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
 		};
-		var Component = Echo.Utils.getComponent(test.component);
-		new Component(test.config);
-	});
+		$.each(instance.renderers, function(name, renderer) {
+			self.info.functions.push("renderers." + name);
+			checker(name, instance.view.get(name));
+		});
+		var oldElements = Echo.Utils.foldl({}, instance.view._elements, function(element, acc, name) {
+			acc[name] = element.clone(true, true);
+		});
+		instance.render();
+		$.each(instance.renderers, function(name, element) {
+			checker(name, oldElements[instance.cssPrefix + name], " (recursive rerendering case)");
+		});
+		if (data.config.async) {
+			QUnit.start();
+		}
+	};
+	this.tests.TestRenderers = data;
 };
 
-Echo.Tests._testElementsConsistencyAfterRendering = function(name, oldElement, renderedElement, suffix) {
-	var prefix = "Renderer \"" + name + "\": ";
-	suffix = suffix || "";
-	QUnit.ok(
-		renderedElement instanceof jQuery && renderedElement.length === 1,
-		prefix + "check contract" + suffix
-	);
-	QUnit.ok(
-		renderedElement.jquery === oldElement.jquery,
-		prefix + "check that element is still the same after second rendering" + suffix
-	);
-	QUnit.equal(
-		renderedElement.children().length,
-		oldElement.children().length,
-		prefix + "check the number of children after second rendering of element" + suffix
-	);
-	// this variable contains regexp that will test rendered element
-	// use case is renderer function has side effects (ex. date computation, random values etc)
-	var oldText = oldElement.text().toLowerCase().replace(/([^\w\s])/g, "\\$1").replace(/\d+/g, "\\d+");
-	QUnit.ok(
-		(new RegExp("^" + oldText + "$")).test(renderedElement.text().toLowerCase()),
-		prefix + "check that text representation of the element is still the same after second rendering" + suffix
-	);
+// TODO: get rid of this function once IdentityServer.API is rewritten using new format
+Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
+	Echo.Tests.current.user = config;
+	callback && callback();
 };
 
-Echo.Tests._setup = function() {
+Echo.Tests.Suite.prototype._prepareEnvironment = function(test, callback) {
+	var self = this;
+	this._cleanupEnvironment();
+	Echo.Tests.current.user = test.config.user;
+	if (test.config.user.status === "anonymous") {
+		callback();
+		return;
+	}
+	callback();
+};
+
+Echo.Tests.Suite.prototype._cleanupEnvironment = function() {
 	//delete all event handlers in all contexts
 	Echo.Events._subscriptions = {};
 	Echo.Events._dataByHandlerId = {};
 
-	// delete all accumulated stuff from Loader
-	Echo.Loader.canvases = [];
-	Echo.Loader.overrides = {};
-	Echo.Loader.vars = {
-		"state": {"resources": {}, "queue": []},
-		"processing": false,
-		"syncQueue": []
-	};
-
 	// clear qunit-fixture
 	$("#qunit-fixture").empty();
-};
 
-Echo.Tests._teardown = function() {
-	var meta = QUnit.config.current.moduleTestEnvironment.meta;
-	if (!meta || meta.processed) return;
-	meta.processed = true;
-	$.each(meta.functions, function(i, name) {
-		Echo.Tests.Stats.markFunctionTested(meta.className + "." + name);
-	});
+	// force Echo.UserSession to re-initialize itself completely
+	// during the next Echo.UserSession object initialization
+	Echo.UserSession.state = "init";
 };
 
 })(Echo.jQuery);

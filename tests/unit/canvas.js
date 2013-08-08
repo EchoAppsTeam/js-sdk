@@ -1,44 +1,20 @@
 (function($) {
 
-var server, canvasId;
-
-Echo.Tests.addModule({
-	"name": "Echo.Canvas",
+Echo.Tests.module("Echo.Canvas", {
 	"meta": {
-		"className" : "Echo.Canvas"
-	},
-	"setup": function() {
-		canvasId = "js-sdk-tests/test-canvas-001";
-		var reUrl = new RegExp("^" + Echo.Loader.config.storageURL.dev + canvasId + "\\?");
-		server = sinon.fakeServer.create();
-		server.respondWith(
-			"GET",
-			{
-				"test": function(url) { return reUrl.test(url); }
-			},
-			[200,
-				{"Content-Type": "application/x-javascript; charset=\"utf-8\""},
-				JSON.stringify(Echo.Tests.Mocks.canvases[canvasId])
-			]
-		);
-	},
-	"teardown": function() {
-		server.restore();
+		"className": "Echo.Canvas"
 	}
 });
 
-Echo.Tests.constructRenderersTest({
-	"component": "Echo.Canvas",
-	"config": {
-		"data": {
-			"apps": []
-		}
+Echo.Tests.renderersTest("Echo.Canvas", {
+	"data": {
+		"apps": []
 	}
 });
 
-QUnit.asyncTest("common workflow", function() {
+Echo.Tests.asyncTest("common workflow", function() {
 	var target = $("#qunit-fixture");
-	target.append('<div id="echo-canvas" data-canvas-appkey="echo.jssdk.tests.aboutecho.com" data-canvas-id="' + canvasId + '#some-id_001"></div>');
+	target.append('<div id="echo-canvas" data-canvas-appkey="echo.jssdk.tests.aboutecho.com" data-canvas-id="js-sdk-tests/test-canvas-001#some-id_001"></div>');
 	new Echo.Canvas({
 		"target": $("#echo-canvas"),
 		"ready": function() {
@@ -54,7 +30,7 @@ QUnit.asyncTest("common workflow", function() {
 			);
 			QUnit.ok(
 				$.grep(this.apps, function(app) {
-					return app.config.get("canvasId") === canvasId + "#some-id_001";
+					return app.config.get("canvasId") === "js-sdk-tests/test-canvas-001#some-id_001";
 				}).length === 2,
 				"Check that all apps received the canvas ID"
 			);
@@ -82,12 +58,11 @@ QUnit.asyncTest("common workflow", function() {
 			QUnit.start();
 		}
 	});
-	server.respond();
 });
 
-QUnit.asyncTest("select app script url", function() {
+Echo.Tests.asyncTest("select app script url", function() {
 	var target = $("#qunit-fixture");
-	target.append($('<div id="echo-canvas" data-canvas-appkey="echo.jssdk.tests.aboutecho.com" data-canvas-id="' + canvasId + '"></div>'));
+	target.append($('<div id="echo-canvas" data-canvas-appkey="echo.jssdk.tests.aboutecho.com" data-canvas-id="js-sdk-tests/test-canvas-001"></div>'));
 	new Echo.Canvas({
 		"target": $("#echo-canvas"),
 		"ready": function() {
@@ -145,7 +120,6 @@ QUnit.asyncTest("select app script url", function() {
 			QUnit.start();
 		}
 	});
-	server.respond();
 });
 
 })(Echo.jQuery);

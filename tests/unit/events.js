@@ -36,8 +36,7 @@ var publish = function(params) {
 	Echo.Events.publish(params);
 };
 
-Echo.Tests.addModule({
-	"name": "Echo.Events",
+Echo.Tests.module("Echo.Events", {
 	"meta": {
 		"className": "Echo.Events",
 		"functions": [
@@ -49,7 +48,7 @@ Echo.Tests.addModule({
 	}
 });
 
-QUnit.test("public methods", function() {
+Echo.Tests.test("public methods", function() {
 	order = 0;
 	var s1 = subscribe("A.test", "a1/b1/c1");
 	var s2 = subscribe("A.test", "a1");
@@ -186,7 +185,7 @@ QUnit.test("public methods", function() {
 	QUnit.ok(!hasDuplicates, "Checking if the 'newContextId' function always produces random values");
 });
 
-QUnit.test("advanced publishing", function() {
+Echo.Tests.test("advanced publishing", function() {
 	order = 0;
 	var s1 = subscribe("A.test", "a1/b1/c1", ["propagation.siblings"]);
 	var s2 = subscribe("A.test", "a1", ["bubble"]);

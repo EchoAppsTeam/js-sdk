@@ -1,7 +1,6 @@
 (function($) {
 
-Echo.Tests.addModule({
-	"name": "Echo.UserSession",
+Echo.Tests.module("Echo.UserSession", {
 	"meta": {
 		"className": "Echo.UserSession",
 		"functions": [
@@ -30,11 +29,7 @@ Echo.Tests.addModule({
 	}
 });
 
-QUnit.test("logged in checks", function() {
-	var stub = sinon
-		.stub(Echo.UserSession, "_whoamiRequest")
-		.yieldsTo("onData", Echo.Tests.Mocks.whoami.logged);
-
+Echo.Tests.asyncTest("logged in checks", function() {
 	Echo.UserSession({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
@@ -68,16 +63,14 @@ QUnit.test("logged in checks", function() {
 				"Checking primary email extraction from user object");
 
 			checkBasicOperations(user);
-			stub.restore();
+			QUnit.start();
 		}
 	});
+}, {
+	"user": {"status": "logged"}
 });
 
-QUnit.test("anonymous checks", function() {
-	var stub = sinon
-		.stub(Echo.UserSession, "_whoamiRequest")
-		.yieldsTo("onData", Echo.Tests.Mocks.whoami.anonymous);
-
+Echo.Tests.asyncTest("anonymous checks", function() {
 	Echo.UserSession({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
@@ -98,16 +91,13 @@ QUnit.test("anonymous checks", function() {
 				"Checking primary email extraction for anonymous user");
 
 			checkBasicOperations(user);
-			stub.restore();
+			QUnit.start();
 		}
 	});
 });
 
-QUnit.test("error handling", function() {
-	var stub = sinon
-		.stub(Echo.UserSession, "_whoamiRequest")
-		.yieldsTo("onData", Echo.Tests.Mocks.whoami.missingOrInvalidAppkey);
-
+// FIXME: test is disabled because it doesn't really test anything at the moment
+Echo.Tests._asyncTest("error handling", function() {
 	Echo.UserSession({
 		"ready": function() {
 			var user = this;
@@ -127,13 +117,8 @@ QUnit.test("error handling", function() {
 				!this.is("logged"),
 				"UserSession object initialized using invalid appkey is considered as anonymous user"
 			);
-			stub.restore();
 		}
 	});
-
-	stub = sinon
-		.stub(Echo.UserSession, "_whoamiRequest")
-		.yieldsTo("onData", Echo.Tests.Mocks.whoami.anonymous);
 
 	Backplane.initialized = false;
 	resetUserSession();
@@ -145,6 +130,7 @@ QUnit.test("error handling", function() {
 				"UserSession object initialized with Backplane inactive is considered as anonymous user"
 			);
 			Backplane.initialized = true;
+			QUnit.start();
 		}
 	});
 });

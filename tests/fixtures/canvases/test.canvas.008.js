@@ -1,5 +1,5 @@
-{
-    "id": "test.canvas.002",
+Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-008"] = {
+    "id": "test.canvas.008",
     "title": "Test canvas with Auth control",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
@@ -17,4 +17,4 @@
             }
         }
     }]
-}
+};

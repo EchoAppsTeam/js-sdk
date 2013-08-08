@@ -3,8 +3,7 @@ var $ = jQuery;
 
 "use strict";
 
-Echo.Tests.addModule({
-	"name": "Echo.Loader",
+Echo.Tests.module("Echo.Loader", {
 	"meta": {
 		"className": "Echo.Loader",
 		"functions": [
@@ -22,7 +21,7 @@ Echo.Tests.addModule({
 	}
 });
 
-QUnit.test("URL conversion", function() {
+Echo.Tests.test("URL conversion", function() {
 	var cdnBaseURL = Echo.Loader.config.cdnBaseURL;
 	var version = Echo.Loader.version;
 	var debug = Echo.Loader.debug;
@@ -78,7 +77,7 @@ QUnit.test("URL conversion", function() {
 	Echo.Loader.debug = debug;
 });
 
-QUnit.asyncTest("resource downloading", function() {
+Echo.Tests.asyncTest("resource downloading", function() {
 	var base = Echo.Tests.baseURL + "tests/fixtures/resources/loader/";
 	var emptyResourceArray = function(callback) {
 		Echo.Loader.download([], function() {
@@ -258,9 +257,11 @@ QUnit.asyncTest("resource downloading", function() {
 	], function() {
 		QUnit.start();
 	});
+}, {
+	"timeout": 10000
 });
 
-QUnit.asyncTest("yepnope corner cases", function() {
+Echo.Tests.asyncTest("yepnope corner cases", function() {
 	// This code reproduces the issue described here:
 	// https://github.com/SlexAxton/yepnope.js/issues/113
 	//
@@ -302,7 +303,7 @@ QUnit.asyncTest("yepnope corner cases", function() {
 			}, 10);
 		});
 	};
-	var removingFirstNode = Echo.Tests.iframeTest(function(callback) {
+	var removingFirstNode = Echo.Tests.isolatedTest(function(callback) {
 		var script = $("<script>");
 		var head = $("head", this.document);
 		head.prepend(script);
@@ -322,15 +323,18 @@ QUnit.asyncTest("yepnope corner cases", function() {
 			"src": "http://cdn.echoenabled.com/sdk/v3/loader.js"
 		});
 	});
+	QUnit.expect(4);
 	Echo.Utils.sequentialCall([
 		raceConditions,
 		removingFirstNode
 	], function() {
 		QUnit.start();
 	});
+}, {
+	"timeout": 20000
 });
 
-QUnit.asyncTest("environment initialization", function() {
+Echo.Tests.asyncTest("environment initialization", function() {
 	var emptyCallback = function(callback) {
 		try {
 			Echo.Loader.initEnvironment();
@@ -361,7 +365,7 @@ QUnit.asyncTest("environment initialization", function() {
 	});
 });
 
-QUnit.asyncTest("application initialization", function() {
+Echo.Tests.asyncTest("application initialization", function() {
 	var initCounterApplication = function(callback) {
 		$("qunit-fixture").empty();
 		Echo.Loader.initApplication({
@@ -410,16 +414,26 @@ QUnit.asyncTest("application initialization", function() {
 	});
 });
 
-QUnit.asyncTest("canvases initialization", function() {
-	var simpleValidCanvas = Echo.Tests.iframeTest(function(callback) {
+Echo.Tests.asyncTest("canvases initialization", function() {
+	var _eventsCountCheck = function(events) {
+		var success = true;
+		$.each(events, function(id, event) {
+			if (event[0] != event[1]) {
+				success = false;
+				return false; // break
+			}
+		});
+		return success;
+	};
+	var simpleValidCanvas = Echo.Tests.isolatedTest(function(callback) {
 		$(this.document.body).append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
 		var expecting = 2;
 		var waitForCompletion = function(canvasID, appID) {
 			Echo.Loader.override(canvasID, appID, {"ready": function() {
+				QUnit.ok(true, "[simple valid canvas] Checking if " + appID + " control is initialized correctly after a page canvases lookup");
 				this.destroy();
 				expecting--;
 				if (!expecting) {
-					QUnit.ok(true, "[simple valid canvas] Checking if both controls (Stream and Submit) were initialized correctly after a page canvases lookup");
 					callback();
 				}
 			}});
@@ -428,7 +442,7 @@ QUnit.asyncTest("canvases initialization", function() {
 		waitForCompletion("js-sdk-tests/test-canvas-001", "stream");
 		Echo.Loader.init({"target": this.document.body});
 	});
-	var validAndInvalidCanvases = Echo.Tests.iframeTest(function(callback) {
+	var validAndInvalidCanvases = Echo.Tests.isolatedTest(function(callback) {
 		var body = $(this.document.body);
 		// all mandatory fields are missing -->
 		body.append('<div class="echo-canvas"></div>');
@@ -458,16 +472,6 @@ QUnit.asyncTest("canvases initialization", function() {
 			"invalid_canvas_config": [0, 8],
 			"unable_to_retrieve_app_config": [0, 2]
 		};
-		var eventsCountCheck = function(events) {
-			var success = true;
-			$.each(events, function(id, event) {
-				if (event[0] != event[1]) {
-					success = false;
-					return false; // break
-				}
-			});
-			return success;
-		};
 		// check invalid canvases
 		var handlerId = Echo.Events.subscribe({
 			"topic": "Echo.Canvas.onError",
@@ -476,7 +480,7 @@ QUnit.asyncTest("canvases initialization", function() {
 				errors[args.code][0]++;
 				if (!count.invalid) {
 					Echo.Events.unsubscribe({"handlerId": handlerId});
-					QUnit.ok(eventsCountCheck(errors), "[valid and invalid canvases] Checking if the canvases on the page were analyzed correctly by the Loader");
+					QUnit.ok(_eventsCountCheck(errors), "[valid and invalid canvases] Checking if the canvases on the page were analyzed correctly by the Loader");
 					if (!count.valid) callback();
 				}
 			}
@@ -496,7 +500,7 @@ QUnit.asyncTest("canvases initialization", function() {
 		waitForCompletion("js-sdk-tests/test-canvas-001", "stream");
 		Echo.Loader.init({"target": body});
 	});
-	var doubleInitializationPrevention = Echo.Tests.iframeTest(function(callback) {
+	var doubleInitializationPrevention = Echo.Tests.isolatedTest(function(callback) {
 		var body = $(this.document.body);
 		body.append('<div class="echo-canvas" id="canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
 		var count = {
@@ -506,16 +510,6 @@ QUnit.asyncTest("canvases initialization", function() {
 		var errors = {
 			"canvas_already_initialized": [0, 3]
 		};
-		var eventsCountCheck = function(events) {
-			var success = true;
-			$.each(events, function(id, event) {
-				if (event[0] != event[1]) {
-					success = false;
-					return false; // break
-				}
-			});
-			return success;
-		};
 		// check invalid canvases
 		var handlerId = Echo.Events.subscribe({
 			"topic": "Echo.Canvas.onError",
@@ -524,7 +518,7 @@ QUnit.asyncTest("canvases initialization", function() {
 				errors[args.code][0]++;
 				if (!count.invalid) {
 					Echo.Events.unsubscribe({"handlerId": handlerId});
-					QUnit.ok(eventsCountCheck(errors), "[double initialization prevention] Checking if the Loader indicated multiple initialization attempts");
+					QUnit.ok(_eventsCountCheck(errors), "[double initialization prevention] Checking if the Loader indicated multiple initialization attempts");
 					if (!count.valid) callback();
 				}
 			}
@@ -549,36 +543,159 @@ QUnit.asyncTest("canvases initialization", function() {
 		Echo.Loader.init({"canvases": $("#canvas", body)});
 		Echo.Loader.init({"canvases": $(".echo-canvas", body)});
 	});
+	var differentInitializationSchemas = Echo.Tests.isolatedTest(function(callback) {
+		var body = $(this.document.body);
+		body.append('<div class="echo-canvas" id="testcanvas" data-canvas-id="js-sdk-tests/test-canvas-002-1" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" id="js-sdk-tests/test-canvas-002-2" data-canvas-id="js-sdk-tests/test-canvas-002-2" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="some-class echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-3" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="canvases-container"><div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-4" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-5" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
 
+		var count = {
+			"valid": 5,
+			"invalid": 4
+		};
+		var errors = {
+			"canvas_already_initialized": [0, 4]
+		};
+
+		// check multiple initialization
+		var handlerId = Echo.Events.subscribe({
+			"topic": "Echo.Canvas.onError",
+			"handler": function(topic, args) {
+				count.invalid--;
+				errors[args.code][0]++;
+				if (!count.invalid) {
+					Echo.Events.unsubscribe({"handlerId": handlerId});
+					QUnit.ok(_eventsCountCheck(errors), "[different initialization schemas] Checking if the Loader indicated multiple initialization attmpts");
+					if (!count.valid) callback();
+				}
+			}
+		});
+
+		var waitForCompletion = function(canvasID, appID) {
+			Echo.Loader.override(canvasID, appID, {"ready": function() {
+				count.valid--;
+				if (!count.valid) {
+					QUnit.ok(true, "[different initialization schemas] Checking if Auth controls were initialized correctly using different initialization schemas");
+					if (!count.invalid) callback();
+				}
+			}});
+		};
+		for (var i = 0; i < 6; i++) {
+			waitForCompletion("js-sdk-tests/test-canvas-002-" + i, "auth");
+		}
+
+		// canvases lookup in a given target
+		Echo.Loader.init({
+			"target": $(".canvases-container", body)
+		});
+		// passing HTML element as a canvas
+		Echo.Loader.init({
+			"canvases": this.document.getElementById("js-sdk-tests/test-canvas-002-2")
+		});
+		// passing jQuery object (id lookup) as a canvas
+		Echo.Loader.init({
+			"canvases": $("#testcanvas", body)
+		});
+		// passing jQuery object (class lookup) as a canvas
+		Echo.Loader.init({
+			"canvases": $(".some-class", body)
+		});
+		// Echo Loader call with no arguments (global lookup)
+		Echo.Loader.init({"target": body});
+	});
+	var multipleAppsCanvas = Echo.Tests.isolatedTest(function(callback) {
+		var body = $(this.document.body);
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-003" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		var expecting = 15;
+		var waitForCompletion = function(canvasID, appID) {
+			Echo.Loader.override(canvasID, appID, {"ready": function() {
+				// destroy counter instance
+				this.destroy();
+				expecting--;
+				if (!expecting) {
+					QUnit.ok(true, "[multiple apps canvas] Checking if an expected amount of Counter applications were initialized");
+					callback();
+				}
+			}});
+		};
+		for (var i = 1; i <= expecting; i++) {
+			waitForCompletion("js-sdk-tests/test-canvas-003", "test.counter." + i);
+		}
+		Echo.Loader.init({"target": body});
+	});
+	var overridesSameCanvases = Echo.Tests.isolatedTest(function(callback) {
+		var body = $(this.document.body);
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008#foo" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008#bar" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		var getCanvasById = function(canvasId) {
+			for (var i = 0; i < Echo.Loader.canvases.length; i++) {
+				if (Echo.Loader.canvases[i].config.get("id") === canvasId) {
+					return Echo.Loader.canvases[i];
+				}
+			}
+		};
+		var ids = [
+			"js-sdk-tests/test-canvas-008#foo",
+			"js-sdk-tests/test-canvas-008#bar"
+		];
+		var count = ids.length;
+		Echo.jQuery.map(ids, function(canvasId) {
+			Echo.Loader.override(canvasId, "auth", {
+				"canvasId": canvasId,
+				"ready": function() {
+					QUnit.equal(this.config.get("canvasId"), canvasId,
+						"[overrides same canvases] Check if the config value was updated by the \"override\" function call");
+					this.destroy();
+					if (!--count) {
+						var first = getCanvasById(ids[0]);
+						var second = getCanvasById(ids[1]);
+						QUnit.notEqual(first.config.get("id"), second.config.get("id"),
+							"[overrides same canvases] Check if canvas instances have different canvas ids");
+						QUnit.equal(first.get("data.id"), second.get("data.id"),
+							"[overrides same canvases] Check if canvas instances have the same canvas config that was downloaded from storage");
+						callback();
+					}
+				}
+			});
+		});
+		Echo.Loader.init({"target": body});
+	});
+	var appConfigOverrides = Echo.Tests.isolatedTest(function(callback) {
+		var body = $(this.document.body);
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		Echo.Loader.override("js-sdk-tests/test-canvas-008", "auth", {
+			"appkey": "test.js-kit.com",
+			"identityManager": {"logout": "test"},
+			"ready": function() {
+				var auth = this;
+				QUnit.equal(auth.config.get("appkey"), "test.js-kit.com",
+					"[app config overrides] Checking if the config value (string) was updated by the \"override\" function call");
+				QUnit.deepEqual(auth.config.get("identityManager.logout"), "test",
+					"[app config overrides] Checking if the config value (object) was updated by the \"override\" function call");
+				this.destroy();
+				callback();
+			}
+		});
+		Echo.Loader.init({"target": body});
+	});
+
+	QUnit.expect(15);
 	Echo.Utils.sequentialCall([
 		simpleValidCanvas,
 		validAndInvalidCanvases,
-		doubleInitializationPrevention
+		doubleInitializationPrevention,
+		differentInitializationSchemas,
+		multipleAppsCanvas,
+		overridesSameCanvases,
+		appConfigOverrides
 	], function() {
 		QUnit.start();
 	});
+}, {
+	"timeout": 20000
 });
-
-return;
-// checking canvases initialization scenarios
-
-suite.prototype.tests.canvasesInitializationTests = {
-	"config": {
-		"async": true,
-		"testTimeout": 15000
-	},
-	"check": function() {
-		var self = this;
-		this.sequentialAsyncTests($.map([
-			"different-initialization-schemas",
-			"multiple-apps-canvas",
-			"overrides-same-canvases",
-			"app-config-overrides"
-		], function(name) {
-			return self.loaderIframeTest(name);
-		}));
-	}
-};
 
 /*
  * TODO fix relative URLs in tests/unit/loader/canvases/test.canvas.007.json
@@ -616,18 +733,5 @@ suite.prototype.tests.canvasesScriptsLoadingTest = {
 	}
 };
 */
-
-// static interface with utils functions (to be accessible within nested iframes)
-
-suite.eventsCountCheck = function(events) {
-	var success = true;
-	$.each(events, function(id, event) {
-		if (event[0] != event[1]) {
-			success = false;
-			return false; // break
-		}
-	});
-	return success;
-};
 
 })(Echo.jQuery);

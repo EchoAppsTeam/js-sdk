@@ -1,7 +1,6 @@
 (function($) {
 
-Echo.Tests.addModule({
-	"name": "Echo.View",
+Echo.Tests.module("Echo.View", {
 	"meta": {
 		"className": "Echo.View",
 		"functions": [
@@ -15,7 +14,7 @@ Echo.Tests.addModule({
 	}
 });
 
-QUnit.test("public interface", function() {
+Echo.Tests.test("public interface", function() {
 	// simple rendering
 	var view = new Echo.View({"cssPrefix": "echo-"});
 
@@ -62,7 +61,7 @@ QUnit.test("public interface", function() {
 		"Checking if new elements are available after the second \"render\" function call with another template");
 });
 
-QUnit.test("rendering with partial or incorrect config", function() {
+Echo.Tests.test("rendering with partial or incorrect config", function() {
 	var view = new Echo.View();
 	QUnit.ok(!!view, "Checking if the Echo.View class can be instantiated with no config");
 	var result = view.render();
@@ -103,7 +102,7 @@ QUnit.test("rendering with partial or incorrect config", function() {
 		"Checking if invalid placeholder with known tag remained untouched");
 });
 
-QUnit.test("different ways of specifying renderers", function() {
+Echo.Tests.test("different ways of specifying renderers", function() {
 	var checks = function(prefix) {
 		QUnit.equal(view.get("header").html(), "Header Renderer applied!",
 			prefix + " Checking if the 'header' renderer was applied");
@@ -150,7 +149,7 @@ QUnit.test("different ways of specifying renderers", function() {
 	checks("[via 'renderer' function in config]");
 });
 
-QUnit.test("custom substitutions", function() {
+Echo.Tests.test("custom substitutions", function() {
 	var view = new Echo.View({
 		"cssPrefix": "echo-",
 		"substitutions": {
@@ -176,7 +175,7 @@ QUnit.test("custom substitutions", function() {
 		"[substitutions] Checking if unknown placeholder remained untouched");
 });
 
-QUnit.test("working with forked view", function() {
+Echo.Tests.test("working with forked view", function() {
 	var view = new Echo.View({
 		"cssPrefix": "echo-",
 		"renderers": renderers

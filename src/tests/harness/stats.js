@@ -98,7 +98,7 @@ function exportStats(results) {
 	window.testResults = {
 		"qunit": results,
 		"detail": _detailErrors,
-		"logs": Echo.Variables.testLogs || []
+		"logs": Echo.Tests.logs || []
 	};
 }
 
