@@ -58,7 +58,7 @@ stream.init = function() {
 	this._recalcEffectsTimeouts();
 	this.request = this._getRequestObject({
 		"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
-		"recurring": this.config.get("liveUpdates.enabled"),
+		"liveUpdates": this.config.get("liveUpdates"),
 		"onOpen": function(data, options) {
 			if (options.requestType === "initial") {
 				self.showError({}, {

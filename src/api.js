@@ -42,7 +42,12 @@ Echo.API.Transport.prototype._prepareURL = function() {
 //
 // WebSocket transport definition
 //
-Echo.API.Transports.WebSocket = function(config) {
+Echo.API.Transports.WebSocket = utils.inherit(Echo.API.Transport, function(config) {
+	config = $.extend({
+		"uri": "",
+		"maxConnectRetries": 3,
+		"serverPingInterval": 30 // client-server ping-pong interval
+	}, config || {});
 	if (!config || !config.uri) {
 		Echo.Utils.log({
 			"type": "error",
@@ -52,41 +57,27 @@ Echo.API.Transports.WebSocket = function(config) {
 		});
 		return;
 	}
-	this.unique = Echo.Utils.getUniqueString();
+	this.timers = {};
 	this.subscriptionIds = [];
-	this.config = new Echo.Configuration(config, {
-		"data": {},
-		"uri": "",
-		"secure": false,
-		"onData": function() {},
-		"onOpen": function() {},
-		"onClose": function() {},
-		"onError": function() {},
-		"maxConnectRetries": 3,
-		"serverPingInterval": 30 // client-server ping-pong interval
-	});
-	this._init();
+	this.unique = Echo.Utils.getUniqueString();
+	return Echo.API.Transports.WebSocket.parent.constructor.call(this, config);
+});
+
+Echo.API.Transports.WebSocket.prototype._getScheme = function() {
+	return this.config.get("secure") ? "wss:" : "ws:";
 };
 
-Echo.API.Transports.WebSocket.available = function() {
-	return Echo.API.Transports.WebSocket.Socket.available();
-};
-
-Echo.API.Transports.WebSocket.prototype.getSocket = function() {
-	return Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
-};
-
-Echo.API.Transports.WebSocket.prototype._init = function() {
+Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 	var self = this, uri = this.config.get("uri");
 	var sockets = Echo.API.Transports.WebSocket.socketByURI;
 	if (!sockets[uri]) {
 		var config = {
-			"uri": this._prepareURI(),
+			"uri": this.config.get("uri"),
 			"maxConnectRetries": this.config.get("maxConnectRetries"),
 			"serverPingInterval": this.config.get("serverPingInterval")
 		};
 		sockets[uri] = {
-			"socket": new Echo.API.Transports.WebSocket.Socket(config),
+			"socket": this._prepareTransportObject(),
 			"subscribers": {}
 		};
 	}
@@ -94,38 +85,39 @@ Echo.API.Transports.WebSocket.prototype._init = function() {
 	// register socket subscriber
 	sockets[uri].subscribers[this.unique] = true;
 
-	this.socket = sockets[uri].socket;
+	this.transport = sockets[uri].socket;
 
 	// if connected - fire "onOpen" callback immediately
-	if (this.socket.connected()) {
+	if (this.connected()) {
 		this.config.get("onOpen")();
 	}
 	$.map(["onOpen", "onClose", "onError", "onData"], function(topic) {
 		var id = Echo.Events.subscribe({
-			"topic": "Echo.API.Transports.WebSocket.Socket." + topic,
+			"topic": "Echo.API.Transports.WebSocket." + topic,
 			"handler": function(_, data) {
 				self.config.get(topic)(data);
 			},
 			// when we receive data - send it to the appropriate
 			// subscribers only (do not send it to all subscribers)
-			"context": self.socket.context(topic === "onData" ? self.unique : undefined)
+			"context": self.context(topic === "onData" ? self.unique : undefined)
 		});
 		self.subscriptionIds.push(id);
 	});
-	this.socket.connect();
+	return this.transport;
 };
 
-Echo.API.Transports.WebSocket.prototype.send = function(event) {
-	event.subscription = event.subscription || this.unique;
-	return this.socket.send(event);
-};
-
-Echo.API.Transports.WebSocket.prototype.connect = function() {
-	return this.socket.connect();
-};
+Echo.API.Transports.WebSocket.socketByURI = {};
 
 Echo.API.Transports.WebSocket.prototype.connected = function() {
-	return this.socket.connected();
+	return this.transport && this.transport.readyState === 1;
+};
+
+Echo.API.Transports.WebSocket.prototype.connecting = function() {
+	return this.transport && this.transport.readyState === 0;
+};
+
+Echo.API.Transports.WebSocket.prototype.context = function(subscriptionId) {
+	return this.config.get("uri") + (subscriptionId ? "/" + subscriptionId : "");
 };
 
 Echo.API.Transports.WebSocket.prototype.abort = function() {
@@ -138,68 +130,22 @@ Echo.API.Transports.WebSocket.prototype.abort = function() {
 	// close socket connection if the last subscriber left
 	if ($.isEmptyObject(socket.subscribers)) {
 		delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
-		this.socket.abort();
+		this.transport.abort();
 	}
-};
-
-Echo.API.Transports.WebSocket.prototype._prepareURI = function() {
-	return (this.config.get("secure") ? "wss://" : "ws://") + this.config.get("uri");
-};
-
-Echo.API.Transports.WebSocket.socketByURI = {};
-
-Echo.API.Transports.WebSocket.Socket = function(config) {
-	this.state = "init";
-	this.timers = {};
-	this.config = new Echo.Configuration(config, {
-		"uri": "",
-		"maxConnectRetries": 3,
-		"serverPingInterval": 30 // in seconds
-	});
-	this._resetRetriesAttempts();
-};
-
-// static interface
-
-Echo.API.Transports.WebSocket.Socket.Implementation = window.WebSocket || window.MozWebSocket;
-
-Echo.API.Transports.WebSocket.Socket.available = function() {
-	return !!this.Implementation;
-};
-
-// dynamic interface
-
-Echo.API.Transports.WebSocket.Socket.prototype.connected = function() {
-	return this.state === "connected";
-};
-
-Echo.API.Transports.WebSocket.Socket.prototype.connecting = function() {
-	return this.state === "connecting";
-};
-
-Echo.API.Transports.WebSocket.Socket.prototype.context = function(subscriptionId) {
-	return this.config.get("uri") + (subscriptionId ? "/" + subscriptionId : "");
-};
-
-Echo.API.Transports.WebSocket.Socket.prototype.abort = function() {
 	this._clearTimers();
-	this.socket.close();
+	this.close();
 };
 
-Echo.API.Transports.WebSocket.Socket.prototype.connect = function() {
+Echo.API.Transports.WebSocket.prototype._prepareTransportObject = function() {
 	var self = this;
 
 	// return in case we are connected or connection is in progress
 	if (this.connecting() || this.connected()) return;
 
-	this.state = "connecting";
-
 	this._clearTimers();
 
-	var uri = this.config.get("uri");
-	var implementation = Echo.API.Transports.WebSocket.Socket.Implementation;
-	this.socket = new implementation(uri, ["liveupdate.ws.echoenabled.com"]);
-	this.socket.onopen = function() {
+	var socket = new (window.WebSocket || window.MozWebSocket)(this._prepareURL(), ["liveupdate.ws.echoenabled.com"]);
+	socket.onopen = function() {
 		// send ping immediately to make sure the server is responding
 		self._ping(function() {
 			self._resetRetriesAttempts();
@@ -210,57 +156,58 @@ Echo.API.Transports.WebSocket.Socket.prototype.connect = function() {
 		var interval = self.config.get("serverPingInterval") * 1000;
 		self.timers.ping = setInterval($.proxy(self._ping, self), interval);
 	};
-	this.socket.onmessage = function(event) {
+	socket.onmessage = function(event) {
 		if (!event || !event.data) return;
 		var data = $.parseJSON(event.data);
 		self._publish("onData", data, data && data.subscription);
 	};
-	this.socket.onclose = function() {
+	socket.onclose = function() {
 		self._publish("onClose");
 		self._tryReconnect();
 	};
-	this.socket.onerror = function(error) {
+	socket.onerror = function(error) {
 		self._publish("onError", {"error": error});
 	};
+	return socket;
 };
 
-Echo.API.Transports.WebSocket.Socket.prototype.send = function(event) {
-	return this.socket.send(Echo.Utils.objectToJSON(event));
+Echo.API.Transports.WebSocket.prototype.send = function(event) {
+	event.subscription = event.subscription || this.unique;
+	return this.transport.send(Echo.Utils.objectToJSON(event));
 };
 
 // private functions
 
-Echo.API.Transports.WebSocket.Socket.prototype._resetRetriesAttempts = function() {
+Echo.API.Transports.WebSocket.prototype._resetRetriesAttempts = function() {
 	this.attemptsRemaining = this.config.get("maxConnectRetries");
 };
 
-Echo.API.Transports.WebSocket.Socket.prototype._clearTimers = function() {
+Echo.API.Transports.WebSocket.prototype._clearTimers = function() {
 	this.timers.ping && clearInterval(this.timers.ping);
 	this.timers.pong && clearTimeout(this.timers.pong);
 	this.timers.reconnect && clearTimeout(this.timers.reconnect);
 	this.timers = {};
 };
 
-Echo.API.Transports.WebSocket.Socket.prototype._publish = function(topic, data, subscriptionId) {
+Echo.API.Transports.WebSocket.prototype._publish = function(topic, data, subscriptionId) {
 	Echo.Events.publish({
-		"topic": "Echo.API.Transports.WebSocket.Socket." + topic,
+		"topic": "Echo.API.Transports.WebSocket." + topic,
 		"data": data || {},
 		"context": this.context(subscriptionId)
 	});
 };
 
-Echo.API.Transports.WebSocket.Socket.prototype._ping = function(callback) {
+Echo.API.Transports.WebSocket.prototype._ping = function(callback) {
 	var self = this;
 	if (this.send({"event": "ping"})) {
 		var id = Echo.Events.subscribe({
-			"topic": "Echo.API.Transports.WebSocket.Socket.onData",
+			"topic": "Echo.API.Transports.WebSocket.onData",
 			"handler": function(topic, data) {
 				// we are expecting "pong" message only...
 				if (!data || data.event !== "pong") return;
 
 				clearTimeout(self.timers.pong);
 				Echo.Events.unsubscribe({"handlerId": id});
-				self.state = "connected";
 
 				callback && callback();
 			},
@@ -278,13 +225,12 @@ Echo.API.Transports.WebSocket.Socket.prototype._ping = function(callback) {
 	}
 };
 
-Echo.API.Transports.WebSocket.Socket.prototype._tryReconnect = function() {
+Echo.API.Transports.WebSocket.prototype._tryReconnect = function() {
 	var self = this;
-	this.state = this.attemptsRemaining ? this.state : "disconnected";
 
 	// exit when the connection attempt is scheduled (to prevent
 	// multiple connections) or if no connection attempts left
-	if (this.timers.reconnect || this.state === "disconnected") return;
+	if (this.timers.reconnect || this.transport.readyState === 3) return;
 
 	// if we were disconnected and try to connect again - decrease
 	// the retries counter to indicate several faile connection attempts in a row
@@ -292,11 +238,13 @@ Echo.API.Transports.WebSocket.Socket.prototype._tryReconnect = function() {
 		this.attemptsRemaining--;
 	}
 
-	this.state = "connecting";
 	this.timers.reconnect = setTimeout(function() {
-		self.state = "init";
-		self.connect();
+		self._prepareTransportObject();
 	}, this.config.get("serverPingInterval") * 1000);
+};
+
+Echo.API.Transports.WebSocket.available = function() {
+	return window.WebSocket || window.MozWebSocket;
 };
 
 //
@@ -645,6 +593,7 @@ Echo.API.Request = function(config) {
 		 */
 		"timeout": 30
 	});
+	this.transport = this._getTransport();
 };
 
 Echo.API.Request.prototype._isSecureRequest = function() {
@@ -709,7 +658,7 @@ Echo.API.Request.prototype._getTransport = function() {
 		? userDefinedTransport
 		: function() {
 			var transport;
-			$.each(["AJAX", "XDomainRequest", "JSONP"], function(i, name) {
+			$.each(["WebSocket", "AJAX", "XDomainRequest", "JSONP"], function(i, name) {
 				var available = Echo.API.Transports[name].available({
 					"secure": self.config.get("secure"),
 					"method": self.config.get("method")
