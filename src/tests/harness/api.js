@@ -180,11 +180,15 @@ function _testElementsConsistencyAfterRendering(name, oldElement, renderedElemen
 		oldElement.children().length,
 		prefix + "check the number of children after second rendering of element" + suffix
 	);
-	// this variable contains regexp that will test rendered element
-	// use case is renderer function has side effects (ex. date computation, random values etc)
-	var oldText = oldElement.text().toLowerCase().replace(/([^\w\s])/g, "\\$1").replace(/\d+/g, "\\d+");
-	QUnit.ok(
-		(new RegExp("^" + oldText + "$")).test(renderedElement.text().toLowerCase()),
+	// Some renderers may add computed numbers or dates to element HTML so it
+	// may become different in the 2 sequential executions. We still consider such
+	// renderers valid that's why we replace any number of digits in the element
+	// text with a single "0" symbol for new text and old text to match
+	var oldText = oldElement.text().toLowerCase().replace(/\d+/g, "0");
+	var newText = renderedElement.text().toLowerCase().replace(/\d+/g, "0");
+	QUnit.equal(
+		newText,
+		oldText,
 		prefix + "check that text representation of the element is still the same after second rendering" + suffix
 	);
 };
