@@ -94,7 +94,7 @@ Echo.Tests.renderersTest = function(component, params, config) {
 	}, config);
 };
 
-Echo.Tests.isolatedTest = function(test) {
+Echo.Tests.isolate = function(test) {
 	return function(cb) {
 		var iframe = $('<iframe name="' + name + '" style="width: 0px; height: 0px; border: 0px; visibility: hidden; display: none"></iframe>');
 		$(document.body).append(iframe);
