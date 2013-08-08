@@ -405,7 +405,7 @@ suite.prototype.tests.TestDataMethods = {
 			["{key:value}", "key", "value"], "Checking templateSubstitution regexp with one key-value pair");
 		var browser = Echo.Tests.browser;
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("{key}"),
-			["{key}", "key", (browser.msie && browser.version <= 8 || browser.msie && document.compatMode === "BackCompat" ? "" : undefined)], "Checking templateSubstitution regexp with key and empty value");
+			["{key}", "key", (browser.msie && +browser.version <= 8 || browser.msie && document.compatMode === "BackCompat" ? "" : undefined)], "Checking templateSubstitution regexp with key and empty value");
 		QUnit.deepEqual(new RegExp(Echo.Utils.regexps.templateSubstitution).exec("string without template"),
 			null, "Checking templateSubstitution regexp with fake string as parameter");
 		var regexp = new RegExp(Echo.Utils.regexps.templateSubstitution, "g");
