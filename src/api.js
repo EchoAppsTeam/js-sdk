@@ -87,10 +87,6 @@ Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 
 	this.transport = sockets[uri].socket;
 
-	// if connected - fire "onOpen" callback immediately
-	if (this.connected()) {
-		this.config.get("onOpen")();
-	}
 	$.map(["onOpen", "onClose", "onError", "onData"], function(topic) {
 		var id = Echo.Events.subscribe({
 			"topic": "Echo.API.Transports.WebSocket." + topic,
@@ -125,15 +121,14 @@ Echo.API.Transports.WebSocket.prototype.abort = function() {
 		Echo.Events.unsubscribe({"handlerId": id});
 	});
 	this.subscriptionIds = [];
-	var socket = this.getSocket();
+	var socket = Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
 	delete socket.subscribers[this.unique];
 	// close socket connection if the last subscriber left
 	if ($.isEmptyObject(socket.subscribers)) {
 		delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
-		this.transport.abort();
 	}
 	this._clearTimers();
-	this.close();
+	this.transport.close();
 };
 
 Echo.API.Transports.WebSocket.prototype._prepareTransportObject = function() {
@@ -291,13 +286,23 @@ Echo.API.Transports.AJAX.prototype._wrapErrorResponse = function(responseError) 
 };
 
 Echo.API.Transports.AJAX.prototype.send = function(data) {
+	var self = this;
 	var configData = this.config.get("data");
-	this.transportObject.data = data && typeof data === "string"
+	var _data = data && typeof data === "string"
 		? data
 		: typeof configData === "string"
 			? configData
 			: $.extend({}, configData, data || {});
-	this.transportObject = $.ajax(this.transportObject);
+	if (typeof this.transportObject.status === "undefined") {
+		this.transportObject.data = _data
+		this.transportObject = $.ajax(this.transportObject);
+	} else {
+		$.ajax(
+			$.extend(this._getTransportObject(), {
+				"data": _data
+			})
+		);
+	}
 };
 
 Echo.API.Transports.AJAX.prototype.abort = function() {
@@ -430,8 +435,7 @@ Echo.API.Transports.JSONP = utils.inherit(Echo.API.Transports.AJAX, function(con
 
 Echo.API.Transports.JSONP.prototype.send = function(data) {
 	if (this.config.get("method").toLowerCase() === "get") {
-		this.transportObject.data = $.extend({}, this.config.get("data"), data);
-		return (this.transportObject = $.ajax(this.transportObject));
+		Echo.API.Transports.JSONP.parent.send.apply(this, arguments);
 	}
 	this._pushPostParameters($.extend({}, this.config.get("data"), data));
 	this.transportObject.submit();
@@ -625,7 +629,6 @@ Echo.API.Request.prototype.send = function(args) {
 Echo.API.Request.prototype.request = function(params) {
 	var self = this;
 	var timeout = this.config.get("timeout");
-	this.transport = this._getTransport();
 	if (this.transport) {
 		this.transport.send(params);
 		if (timeout && this.config.get("onError")) {

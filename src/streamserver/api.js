@@ -98,7 +98,8 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 			},
 			"websockets": {
 				"maxConnectRetries": 3,
-				"serverPingInterval": 30
+				"serverPingInterval": 30,
+				"URL": "ws://live.echoenabled.com/v1/"
 			}
 		},
 
@@ -225,18 +226,44 @@ Echo.StreamServer.API.Request.prototype._prepareURI = function() {
 };
 
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {
-	var self = this;
-	this.liveUpdates = Echo.API.Transports.WebSocket.available()
-		? new Echo.StreamServer.API.WebSockets({
+	var ws, self = this;
+	var polling = this.liveUpdates = Echo.StreamServer.API.Polling.init({
+		"timeout": this.config.get("liveUpdates.polling.timeout"),
+		"request": this.config.getAsHash()
+	});
+	if (this.config.get("liveUpdates.transport") === "websockets" && Echo.API.Transports.WebSocket.available()) {
+		ws = Echo.StreamServer.API.WebSockets.init({
 			"request": {
-				"data": this.config.get("data")
-			}		
-		})
-		: new Echo.StreamServer.API.Polling({
-			"request": {
-				"data": this.config.get("data")
+				"transport": "websocket",
+				"endpoint": this.config.get("endpoint"),
+				"apiBaseURL": this.config.get("liveUpdates.websockets.URL"),
+				"data": this.config.get("data"),
+				"secure": this.config.get("secure"),
+				"onData": this.config.get("onData"),
+				"onOpen": this.config.get("onOpen"),
+				"onClose": this.config.get("onClose"),
+				"onError": this.config.get("onError")
 			}
 		});
+		this._liveUpdatesWatcher(polling, ws);
+	}
+};
+
+Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
+	var self = this;
+	var switchTo = function(inst) {
+		return function() {
+			inst !== polling && self.liveUpdates.stop();
+			self.liveUpdates = inst;
+			self.liveUpdates.start();
+		}
+	};
+	ws.on("close", switchTo(polling));
+	if (ws.connected()) {
+		switchTo(ws)();
+		return;
+	}
+	ws.on("open", switchTo(ws));
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
@@ -404,41 +431,79 @@ Echo.StreamServer.API.Polling = function(config) {
 	this.config = new Echo.Configuration(config, {
 		"timeout": 10,
 		"request": {
-			"endpoint": "search"
+			"endpoint": "search",
+			"onData": $.noop,
+			"onOpen": $.noop,
+			"onError": $.noop,
+			"onClose": $.noop
 		}
 	});
 	this.timers = {};
 	this.timeouts = [];
-	this.request = this.getRequestObject(this.config.get("request"));
+	this.originalTimeout = this.config.get("timeout");
+	this.requestObject = this.getRequestObject();
 };
 
-Echo.StreamServer.API.Polling.prototype.getRequestObject = function(config) {
+Echo.StreamServer.API.Polling.prototype.getRequestObject = function() {
 	var self = this;
+	var config = this.config.get("request");
 	var onData = config.onData || $.noop;
-	config = $.extend({
+	$.extend(config, {
 		"onData": function(response) {
 			if (response.type !== "error") {
 				self._changeTimeout(response);
 				self.nextSince = response.nextSince;
 				self.start();
 			}
-			onData.call(self, arguments);
+			onData.apply(self, arguments);
 		}
-	}, config);
+	});
 	return new Echo.API.Request(config);
+};
+
+Echo.StreamServer.API.Polling.prototype.stop = function() {
+	clearTimeout(this.timers.regular);
+};
+
+Echo.StreamServer.API.Polling.prototype.start = function(force) {
+	var self = this;
+	this.stop();
+	if (force) {
+		// if live updates requests were forced after some operation, we will
+		// perform 3 attempts to get live updates: immediately, in 1 second
+		// and in 3 seconds after first one
+		this.timeouts = [0, 1, 3];
+	}
+	var timeout = this.timeouts.length
+		? this.timeouts.shift()
+		: this.config.get("timeout");
+	this.timers.regular = setTimeout(function() {
+		self.requestObject.request({
+			"since": self.nextSince
+		});
+	}, timeout * 1000);
+};
+
+Echo.StreamServer.API.Polling.prototype.on = function(event, fn) {
+	var baseEvent = "request.on" + Echo.Utils.capitalize(event);
+	var handler = this.config.get(baseEvent, $.noop);
+	this.config.set(baseEvent, function() {
+		handler.apply(null, arguments);
+		fn.apply(null, arguments);
+	});
+	return this;
 };
 
 Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 	var self = this;
-	// backwards compatibility
 	if (typeof data === "string") {
-		data = {"timeout": data};
+		data = {"liveUpdatesTimeout": data};
 	}
-	data.timeout = parseInt(data.liveUpdatesTimeout);
+	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
 	var applyServerDefinedTimeout = function(timeout) {
 		if (!timeout && self.originalTimeout != self.config.get("timeout")) {
 			self.config.set(key, self.originalTimeout);
-		} else if (timeout && timeout > self.config.get(timeout)) {
+		} else if (timeout && timeout > self.config.get("timeout")) {
 			self.config.set(key, timeout);
 		}
 	};
@@ -447,7 +512,7 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 		return !!(data.entries && data.entries.length);
 	};
 	if (!this.nextSince) {
-		applyServerDefinedTimeout(data.timeout);
+		applyServerDefinedTimeout(data.liveUpdatesTimeout);
 		return;
 	}
 	var currentTimeout = this.config.get("timeout");
@@ -472,63 +537,83 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 	}
 };
 
-Echo.StreamServer.API.Polling.prototype.stop = function() {
-	clearTimeout(this.timers.regular);
-};
-
-Echo.StreamServer.API.Polling.prototype.start = function(force) {
-	var self = this;
-	this.stop();
-	if (force) {
-		// if live updates requests were forced after some operation, we will
-		// perform 3 attempts to get live updates: immediately, in 1 second
-		// and in 3 seconds after first one
-		this.timeouts = [0, 1, 3];
-	}
-	var timeout = this.timeouts.length
-		? this.timeouts.shift()
-		: this.config.get("timeout");
-	this.timers.regular = setTimeout(function() {
-		self.request.request({
-			"since": self.nextSince
-		});
-	}, timeout * 1000);
-};
-
 Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Polling, function(config) {
-	config = $.extend(true, {
+	this.config = new Echo.Configuration(config, {
 		"request": {
+			"apiBaseURL": "ws://live.echoenabled.com/v1/",
+			"transport": "websocket",
 			"endpoint": "ws"
 		}
-	}, config);
-	return this.constructor.parent.constructor.call(this, config);
+	}, function(key, value) {
+		if (key === "request") {
+			var wsMethod = value.endpoint;
+			return $.extend({}, value, {
+				"endpoint": "ws",
+				"wsMethod": wsMethod
+			});
+		}
+		return value;
+	});
+	this.subscriptionIds = [];
+	this.requestObject = this.getRequestObject();
 });
 
 Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
-	var self = this;
-	return new Echo.API.Request($.extend({
-		"apiBaseURL": "ws://live.echoenabled.com/v1/",
-		"transport": "websocket",
+	var config = this.config.get("request");
+	var onData = config.onData || $.noop;
+	$.extend(config, {
 		"onData": function(response) {
 			if (!response || !response.event) return;
-			self.config.get("onData")(response.data);
+			onData(response.data);
 		}
-	}, this.config.get("request")));
+	}, this.config.get("request"));
+	return new Echo.API.Request(config);
+};
+
+Echo.StreamServer.API.WebSockets.prototype.on = function(event, fn) {
+	this.subscriptionIds.push(
+		Echo.Events.subscribe({
+			"topic": "Echo.API.Transports.WebSocket.on" + Echo.Utils.capitalize(event),
+			"handler": fn,
+			"context": this.requestObject.transport.context()
+		})
+	);
 };
 
 Echo.StreamServer.API.WebSockets.prototype.start = function() {
-	// subscribe to the events for the current search query
-	var data = {"method": "search"};
-	if (this.request.transport.connected())
-		this.request.request({
+	var self = this;
+	var data = {"method": this.config.get("request.wsMethod")};
+	if (this.connected()) {
+			return this.requestObject.request({
+				"event": "subscribe/request",
+				"data": $.extend(data, self.config.get("request.data"))
+			});
+	}
+	this.on("open", function() {
+		self.requestObject.request({
 			"event": "subscribe/request",
-			"data": $.extend(data, this.config.get("request.data"))
+			"data": $.extend(data, self.config.get("request.data"))
 		});
+	});
+};
+
+Echo.StreamServer.API.WebSockets.prototype.connected = function() {
+	return this.requestObject.transport.connected();
 };
 
 Echo.StreamServer.API.WebSockets.prototype.stop = function() {
-	this.request.send({"event": "unsubscribe/request"});
-	this.request.abort();
+	this.requestObject.request({"event": "unsubscribe/request"});
+	$.map(this.subscriptionIds, function(id) {
+		Echo.Events.unsubscribe({"handlerId": id});
+	});
+	this.subscriptionIds = [];
+	this.requestObject.abort();
 };
+
+$.map(["WebSockets", "Polling"], function(name) {
+	Echo.StreamServer.API[name].init = function(config) {
+		return new Echo.StreamServer.API[name](config);
+	};
+});
 
 })(Echo.jQuery);
