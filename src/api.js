@@ -435,7 +435,7 @@ Echo.API.Transports.JSONP = utils.inherit(Echo.API.Transports.AJAX, function(con
 
 Echo.API.Transports.JSONP.prototype.send = function(data) {
 	if (this.config.get("method").toLowerCase() === "get") {
-		Echo.API.Transports.JSONP.parent.send.apply(this, arguments);
+		return Echo.API.Transports.JSONP.parent.send.apply(this, arguments);
 	}
 	this._pushPostParameters($.extend({}, this.config.get("data"), data));
 	this.transportObject.submit();
