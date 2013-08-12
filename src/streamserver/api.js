@@ -250,6 +250,7 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 			"request.onClose": "onClose",
 			"request.endpoint": "endpoint",
 			"request.data": "data",
+			"request.apiBaseURL": "apiBaseURL",
 			"request.secure": "secure"
 		},
 		"websockets": {
@@ -260,6 +261,7 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 			"request.endpoint": "endpoint",
 			"request.data": "data",
 			"request.secure": "secure",
+			"request.apiBaseURL": "liveUpdates.websockets.URL",
 			"request.settings.maxConnectRetries": "liveUpdates.websockets.maxConnectRetries",
 			"request.settings.serverPingInterval": "liveUpdates.websockets.serverPingInterval"
 		}
@@ -323,7 +325,7 @@ Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, co
 		var timeout = calcWaitingTimeout();
 		this.waitingTimer = setInterval(function() {
 			self._cleanupErrorHandlers();
-			if (!self.liveUpdates && self.requestType === "initial") {
+			if (!self.liveUpdates) {
 				self._initLiveUpdates();
 			}
 			self.liveUpdates.start();

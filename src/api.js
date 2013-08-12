@@ -88,9 +88,9 @@ Echo.API.Transports.WebSocket.prototype.abort = function() {
 	// close socket connection if the last subscriber left
 	if ($.isEmptyObject(socket.subscribers)) {
 		delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
+		this.transportObject.close();
 	}
 	this._clearTimers();
-	this.transportObject.close();
 };
 
 Echo.API.Transports.WebSocket.prototype.send = function(event) {
