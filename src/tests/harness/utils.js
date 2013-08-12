@@ -13,7 +13,23 @@ Echo.Tests.Utils.log = function() {
 	Echo.Tests.logs.push(arguments);
 };
 
+// XXX: remove when the "cors" line in Echo.Tests.Utils.initServer is uncommented
+if (Echo.Tests.browser.msie && +Echo.Tests.browser.version < 10) {
+	QUnit.urlParams.noMockRequests = "true";
+	// this is temporary hack, let it be
+	setTimeout(function() {
+		$("#qunit-urlconfig-noMockRequests").attr("disabled", true);
+	}, 3000);
+}
+
 Echo.Tests.Utils.initServer = function() {
+	if (QUnit.urlParams.noMockRequests) {
+		Echo.Tests.server = {
+			"restore": $.noop
+		};
+		return;
+	}
+
 	// We use XDomainRequest for MSIE in Standards mode but sinon.js can't fake it up.
 	// As we use sinon fake server that replaces real XMLHttpRequest object,
 	// let's consider that we always support CORS to trick jQuery
