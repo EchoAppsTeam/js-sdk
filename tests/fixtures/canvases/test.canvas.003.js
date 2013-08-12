@@ -11,7 +11,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/1"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/1"
         }
     }, {
         "id": "test.counter.2",
@@ -19,7 +19,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/2"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/2"
         }
     }, {
         "id": "test.counter.3",
@@ -27,7 +27,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/3"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/3"
         }
     }, {
         "id": "test.counter.4",
@@ -35,7 +35,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/4"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/4"
         }
     }, {
         "id": "test.counter.5",
@@ -43,7 +43,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/5"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/5"
         }
     }, {
         "id": "test.counter.6",
@@ -51,7 +51,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/6"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/6"
         }
     }, {
         "id": "test.counter.7",
@@ -59,7 +59,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/7"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/7"
         }
     }, {
         "id": "test.counter.8",
@@ -67,7 +67,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/8"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/8"
         }
     }, {
         "id": "test.counter.9",
@@ -75,7 +75,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/9"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/9"
         }
     }, {
         "id": "test.counter.10",
@@ -83,7 +83,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/10"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/10"
         }
     }, {
         "id": "test.counter.11",
@@ -91,7 +91,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/11"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/11"
         }
     }, {
         "id": "test.counter.12",
@@ -99,7 +99,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/12"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/12"
         }
     }, {
         "id": "test.counter.13",
@@ -107,7 +107,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/13"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/13"
         }
     }, {
         "id": "test.counter.14",
@@ -115,7 +115,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/14"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/14"
         }
     }, {
         "id": "test.counter.15",
@@ -123,7 +123,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
         "component": "Echo.StreamServer.Controls.Counter",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/counter/15"
+            "query": "childrenof:http://example.com/sdk/loader/canvases/counter/15"
         }
     }]
 };

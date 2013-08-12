@@ -453,8 +453,8 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		// missing canvas id
 		body.append('<div class="echo-canvas" data-appkey="canvas.003"></div>');
 		// all fields defined, but no config available for the canvas id specified
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.004" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.005" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/nonexistent-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/nonexistent-canvas-002" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
 		// canvas with empty app list
 		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-004" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
 		// canvas with no app list and no Backplane config

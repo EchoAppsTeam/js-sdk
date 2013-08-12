@@ -28,7 +28,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-001"] = {
         "component": "Echo.StreamServer.Controls.Stream",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
-            "query": "childrenof:http://example.com/js-sdk -state:ModeratorDeleted itemsPerPage:2 sortOrder:likesDescending children:2 childrenItemsPerPage:2 -state:ModeratorDeleted",
+            "query": "childrenof:http://example.com/sdk/loader/canvases/search/1",
             "plugins": [{
                 "name": "InfiniteScroll",
                 "url": "streamserver/plugins/infinite-scroll.js"

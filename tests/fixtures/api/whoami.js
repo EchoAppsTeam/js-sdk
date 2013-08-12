@@ -1,4 +1,4 @@
-Echo.Tests.Fixtures.whoami = {
+Echo.Tests.Fixtures.api.whoami = {
 	"missingOrInvalidAppkey": {
 		"result": "error",
 		"errorCode": "incorrect_appkey"
