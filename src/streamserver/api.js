@@ -227,33 +227,56 @@ Echo.StreamServer.API.Request.prototype._prepareURI = function() {
 
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {
 	var ws, self = this;
-	var polling = this.liveUpdates = Echo.StreamServer.API.Polling.init({
-		"timeout": this.config.get("liveUpdates.polling.timeout"),
-		"request": this.config.getAsHash()
-	});
+	var polling = this.liveUpdates = Echo.StreamServer.API.Polling.init(
+		this._getLiveUpdatesConfig("polling")
+	);
 	if (this.config.get("liveUpdates.transport") === "websockets" && Echo.API.Transports.WebSocket.available()) {
-		ws = Echo.StreamServer.API.WebSockets.init({
-			"request": {
-				"transport": "websocket",
-				"endpoint": this.config.get("endpoint"),
-				"apiBaseURL": this.config.get("liveUpdates.websockets.URL"),
-				"data": this.config.get("data"),
-				"secure": this.config.get("secure"),
-				"onData": this.config.get("onData"),
-				"onOpen": this.config.get("onOpen"),
-				"onClose": this.config.get("onClose"),
-				"onError": this.config.get("onError")
-			}
-		});
+		ws = Echo.StreamServer.API.WebSockets.init(
+			this._getLiveUpdatesConfig("websockets")
+		);
 		this._liveUpdatesWatcher(polling, ws);
 	}
+};
+
+// TODO: more general logic for forwarding config parameters
+Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
+	var self = this;
+	var map = {
+		"polling": {
+			"timeout": "liveUpdates.polling.timeout",
+			"request.onData": "onData",
+			"request.onOpen": "onOpen",
+			"request.onError": "onError",
+			"request.onClose": "onClose",
+			"request.endpoint": "endpoint",
+			"request.data": "data",
+			"request.secure": "secure"
+		},
+		"websockets": {
+			"request.onData": "onData",
+			"request.onOpen": "onOpen",
+			"request.onError": "onError",
+			"request.onClose": "onClose",
+			"request.endpoint": "endpoint",
+			"request.data": "data",
+			"request.secure": "secure",
+			"request.settings.maxConnectRetries": "liveUpdates.websockets.maxConnectRetries",
+			"request.settings.serverPingInterval": "liveUpdates.websockets.serverPingInterval"
+		}
+	};
+
+	var mapped = Echo.Utils.foldl({}, map[name], function(from, acc, to) {
+		Echo.Utils.set(acc, to, self.config.get(from));
+	});
+	$.extend(mapped.request, this._wrapTransportEventHandlers(mapped.request));
+	return mapped;
 };
 
 Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
 	var self = this;
 	var switchTo = function(inst) {
 		return function() {
-			inst !== polling && self.liveUpdates.stop();
+			self.liveUpdates.stop();
 			self.liveUpdates = inst;
 			self.liveUpdates.start();
 		}
@@ -455,7 +478,7 @@ Echo.StreamServer.API.Polling.prototype.getRequestObject = function() {
 				self.nextSince = response.nextSince;
 				self.start();
 			}
-			onData.apply(self, arguments);
+			onData.apply(null, arguments);
 		}
 	});
 	return new Echo.API.Request(config);
@@ -584,10 +607,10 @@ Echo.StreamServer.API.WebSockets.prototype.start = function() {
 	var self = this;
 	var data = {"method": this.config.get("request.wsMethod")};
 	if (this.connected()) {
-			return this.requestObject.request({
-				"event": "subscribe/request",
-				"data": $.extend(data, self.config.get("request.data"))
-			});
+		return this.requestObject.request({
+			"event": "subscribe/request",
+			"data": $.extend(data, self.config.get("request.data"))
+		});
 	}
 	this.on("open", function() {
 		self.requestObject.request({

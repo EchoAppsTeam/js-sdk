@@ -44,9 +44,10 @@ Echo.API.Transport.prototype._prepareURL = function() {
 //
 Echo.API.Transports.WebSocket = utils.inherit(Echo.API.Transport, function(config) {
 	config = $.extend({
-		"uri": "",
-		"maxConnectRetries": 3,
-		"serverPingInterval": 30 // client-server ping-pong interval
+		"settings": {
+			"maxConnectRetries": 3,
+			"serverPingInterval": 30 // client-server ping-pong interval
+		}
 	}, config || {});
 	if (!config || !config.uri) {
 		Echo.Utils.log({
@@ -63,53 +64,14 @@ Echo.API.Transports.WebSocket = utils.inherit(Echo.API.Transport, function(confi
 	return Echo.API.Transports.WebSocket.parent.constructor.call(this, config);
 });
 
-Echo.API.Transports.WebSocket.prototype._getScheme = function() {
-	return this.config.get("secure") ? "wss:" : "ws:";
-};
-
-Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
-	var self = this, uri = this.config.get("uri");
-	var sockets = Echo.API.Transports.WebSocket.socketByURI;
-	if (!sockets[uri]) {
-		var config = {
-			"uri": this.config.get("uri"),
-			"maxConnectRetries": this.config.get("maxConnectRetries"),
-			"serverPingInterval": this.config.get("serverPingInterval")
-		};
-		sockets[uri] = {
-			"socket": this._prepareTransportObject(),
-			"subscribers": {}
-		};
-	}
-
-	// register socket subscriber
-	sockets[uri].subscribers[this.unique] = true;
-
-	this.transport = sockets[uri].socket;
-
-	$.map(["onOpen", "onClose", "onError", "onData"], function(topic) {
-		var id = Echo.Events.subscribe({
-			"topic": "Echo.API.Transports.WebSocket." + topic,
-			"handler": function(_, data) {
-				self.config.get(topic)(data);
-			},
-			// when we receive data - send it to the appropriate
-			// subscribers only (do not send it to all subscribers)
-			"context": self.context(topic === "onData" ? self.unique : undefined)
-		});
-		self.subscriptionIds.push(id);
-	});
-	return this.transport;
-};
-
 Echo.API.Transports.WebSocket.socketByURI = {};
 
 Echo.API.Transports.WebSocket.prototype.connected = function() {
-	return this.transport && this.transport.readyState === 1;
+	return this.transportObject && this.transportObject.readyState === 1;
 };
 
 Echo.API.Transports.WebSocket.prototype.connecting = function() {
-	return this.transport && this.transport.readyState === 0;
+	return this.transportObject && this.transportObject.readyState === 0;
 };
 
 Echo.API.Transports.WebSocket.prototype.context = function(subscriptionId) {
@@ -128,7 +90,46 @@ Echo.API.Transports.WebSocket.prototype.abort = function() {
 		delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
 	}
 	this._clearTimers();
-	this.transport.close();
+	this.transportObject.close();
+};
+
+Echo.API.Transports.WebSocket.prototype.send = function(event) {
+	event.subscription = event.subscription || this.unique;
+	return this.transportObject.send(Echo.Utils.objectToJSON(event));
+};
+
+// private functions
+
+Echo.API.Transports.WebSocket.prototype._getScheme = function() {
+	return this.config.get("secure") ? "wss:" : "ws:";
+};
+
+Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
+	var self = this, uri = this.config.get("uri");
+	var sockets = Echo.API.Transports.WebSocket.socketByURI;
+	if (!sockets[uri]) {
+		sockets[uri] = {
+			"socket": this._prepareTransportObject(),
+			"subscribers": {}
+		};
+	}
+
+	// register socket subscriber
+	sockets[uri].subscribers[this.unique] = true;
+
+	$.map(["onOpen", "onClose", "onError", "onData"], function(topic) {
+		var id = Echo.Events.subscribe({
+			"topic": "Echo.API.Transports.WebSocket." + topic,
+			"handler": function(_, data) {
+				self.config.get(topic)(data);
+			},
+			// when we receive data - send it to the appropriate
+			// subscribers only (do not send it to all subscribers)
+			"context": self.context(topic === "onData" ? self.unique : undefined)
+		});
+		self.subscriptionIds.push(id);
+	});
+	return sockets[uri].socket;
 };
 
 Echo.API.Transports.WebSocket.prototype._prepareTransportObject = function() {
@@ -148,7 +149,7 @@ Echo.API.Transports.WebSocket.prototype._prepareTransportObject = function() {
 		});
 
 		// establish periodical clinet-server ping-pong to keep connection alive
-		var interval = self.config.get("serverPingInterval") * 1000;
+		var interval = self.config.get("settings.serverPingInterval") * 1000;
 		self.timers.ping = setInterval($.proxy(self._ping, self), interval);
 	};
 	socket.onmessage = function(event) {
@@ -166,15 +167,8 @@ Echo.API.Transports.WebSocket.prototype._prepareTransportObject = function() {
 	return socket;
 };
 
-Echo.API.Transports.WebSocket.prototype.send = function(event) {
-	event.subscription = event.subscription || this.unique;
-	return this.transport.send(Echo.Utils.objectToJSON(event));
-};
-
-// private functions
-
 Echo.API.Transports.WebSocket.prototype._resetRetriesAttempts = function() {
-	this.attemptsRemaining = this.config.get("maxConnectRetries");
+	this.attemptsRemaining = this.config.get("settings.maxConnectRetries");
 };
 
 Echo.API.Transports.WebSocket.prototype._clearTimers = function() {
@@ -212,7 +206,7 @@ Echo.API.Transports.WebSocket.prototype._ping = function(callback) {
 		this.timers.pong = setTimeout(function() {
 			Echo.Events.unsubscribe({"handlerId": id});
 			self._tryReconnect();
-		}, this.config.get("serverPingInterval") * 1000 / 2);
+		}, this.config.get("settings.serverPingInterval") * 1000 / 2);
 	} else {
 		// "send" operation failed, which means that
 		// we are disconnected, trying to reconnect...
@@ -225,7 +219,7 @@ Echo.API.Transports.WebSocket.prototype._tryReconnect = function() {
 
 	// exit when the connection attempt is scheduled (to prevent
 	// multiple connections) or if no connection attempts left
-	if (this.timers.reconnect || this.transport.readyState === 3) return;
+	if (this.timers.reconnect || this.attemptsRemaining === 0 || this.transportObject.readyState === 3) return;
 
 	// if we were disconnected and try to connect again - decrease
 	// the retries counter to indicate several faile connection attempts in a row
@@ -235,7 +229,7 @@ Echo.API.Transports.WebSocket.prototype._tryReconnect = function() {
 
 	this.timers.reconnect = setTimeout(function() {
 		self._prepareTransportObject();
-	}, this.config.get("serverPingInterval") * 1000);
+	}, this.config.get("settings.serverPingInterval") * 1000);
 };
 
 Echo.API.Transports.WebSocket.available = function() {
