@@ -57,29 +57,27 @@ stream.init = function() {
 
 	this._recalcEffectsTimeouts();
 	this.request = this._getRequestObject({
-		"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
-		"liveUpdates": this.config.get("liveUpdates"),
-		"onOpen": function(data, options) {
-			if (options.requestType === "initial") {
-				self.showError({}, {
-					"retryIn": 0,
-					"request": self.request
-				});
+		"recurring": this.config.get("recurring"),
+		"liveUpdates": $.extend(this.config.get("liveUpdates"), {
+			"onData": function(data) {
+				self._handleLiveUpdatesResponse(data);
 			}
+		}),
+		"onOpen": function(data, options) {
+			self.showError({}, {
+				"retryIn": 0,
+				"request": self.request
+			});
 		},
 		"onError": function(data, options) {
-			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+			if (typeof options.critical === "undefined" || options.critical) {
 				self.showError(data, $.extend(options, {
 					"request": self.request
 				}));
 			}
 		},
 		"onData": function(data, options) {
-			if (options.requestType === "initial") {
-				self._handleInitialResponse(data);
-			} else {
-				self._handleLiveUpdatesResponse(data);
-			}
+			self._handleInitialResponse(data);
 		}
 	});
 
@@ -748,32 +746,31 @@ stream.methods._requestInitialItems = function() {
 		this.request = Echo.StreamServer.API.request({
 			"endpoint": "search",
 			"apiBaseURL": this.config.get("apiBaseURL"),
-			"liveUpdates": this.config.get("liveUpdates"),
+			"recurring": this.config.get("recurring"),
+			"liveUpdates": $.extend(this.config.get("liveUpdates"), {
+				"onData": function(data) {
+					self._handleLiveUpdatesResponse(data);
+				}
+			}),
 			"data": {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")
 			},
 			"onOpen": function(data, options) {
-				if (options.requestType === "initial") {
-					self.showError({}, {
-						"retryIn": 0,
-						"request": self.request
-					});
-				}
+				self.showError({}, {
+					"retryIn": 0,
+					"request": self.request
+				});
 			},
 			"onError": function(data, options) {
-				if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+				if (typeof options.critical === "undefined" || options.critical) {
 					self.showError(data, $.extend(options, {
 						"request": self.request
 					}));
 				}
 			},
 			"onData": function(data, options) {
-				if (options.requestType === "initial") {
-					self._handleInitialResponse(data);
-				} else {
-					self._handleLiveUpdatesResponse(data);
-				}
+				self._handleInitialResponse(data);
 			}
 		});
 	}
@@ -1147,10 +1144,6 @@ stream.methods._checkTimeframeSatisfy = function() {
 stream.methods._handleLiveUpdatesResponse = function(data) {
 	var self = this;
 	data = data || {};
-	if (data.result === "error") {
-		this.startLiveUpdates();
-		return;
-	}
 	this._applyLiveUpdates(data.entries, function() {
 		self.view.render({"name": "state"});
 		self._executeNextActivity();

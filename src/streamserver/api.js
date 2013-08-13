@@ -142,7 +142,6 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
-	this.requestType = "initial"; // initial | secondary
 	Echo.StreamServer.API.Request.parent.constructor.call(this, config);
 });
 
@@ -174,12 +173,12 @@ Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(c
 	var _config = $.extend({}, config);
 	return $.extend({}, config, {
 		"onOpen": function(response, requestParams) {
-			_config.onOpen.call(self, response, {"requestType": self.requestType});
+			_config.onOpen.call(null, response);
 			clearInterval(self.retryTimer);
 			delete self.retryTimer;
 		},
 		"onData": function(response, requestParams) {
-			self._onData(response, {"requestType": self.requestType}, _config);
+			self._onData(response, {}, _config);
 		},
 		"onError": function(responseError, requestParams) {
 			self._onError(responseError, requestParams, _config);
@@ -194,21 +193,13 @@ Echo.StreamServer.API.Request.prototype._onData = function(response, requestPara
 		return;
 	}
 	config.onData(response, requestParams);
-	if (!this.error && this.requestType === "initial") {
-		this.requestType = "secondary";
-	}
 	this._cleanupErrorHandlers(true);
-	if (this.requestType === "initial") {
-		this.abort();
-		return;
-	}
-	if (this.liveUpdates) {
+	if (this.liveUpdates && response.nextSince) {
 		this.liveUpdates.nextSince = response.nextSince;
 	}
 };
 
 Echo.StreamServer.API.Request.prototype._onError = function(responseError, requestParams, config) {
-	//this.constructor.parent._onError.apply(this, arguments);
 	this._handleErrorResponse(responseError, {"callback": config.onError});
 };
 
@@ -270,7 +261,6 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 	var mapped = Echo.Utils.foldl({}, map[name], function(from, acc, to) {
 		Echo.Utils.set(acc, to, self.config.get(from));
 	});
-	$.extend(mapped.request, this._wrapTransportEventHandlers(mapped.request));
 	return mapped;
 };
 
@@ -331,7 +321,6 @@ Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, co
 			self.liveUpdates.start();
 		}, timeout);
 		errorCallback(data, {
-			"requestType": self.requestType,
 			"critical": false,
 			"retryIn": timeout
 		});
@@ -341,7 +330,6 @@ Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, co
 			this.liveUpdates.stop();
 		}
 		errorCallback(data, {
-			"requestType": self.requestType,
 			"critical": data.errorCode !== "connection_aborted"
 		});
 	}

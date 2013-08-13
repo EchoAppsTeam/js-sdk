@@ -336,18 +336,22 @@ pile.methods._request = function() {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")
 			},
-			"liveUpdates": this.config.get("liveUpdates"),
+			"liveUpdates": $.extend(this.config.get("liveUpdates"), {
+				"onData": function(data) {
+					self._secondaryResponseHandler(data);
+				}
+			}),
 			"recurring": this.config.get("liveUpdates.enabled"),
 			"secure": this.config.get("useSecureAPI"),
 			"apiBaseURL": this.config.get("apiBaseURL"),
 			"onError": function(data, extra) {
-				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
+				var needShowError = typeof extra.critical === "undefined" || extra.critical;
 				if (needShowError) {
 					self.showError(data, {"critical": extra.critical});
 				}
 			},
 			"onData": function(data, extra) {
-				self["_" + extra.requestType + "ResponseHandler"](data);
+				self._initialResponseHandler(data);
 			}
 		});
 		this.set("request", request);

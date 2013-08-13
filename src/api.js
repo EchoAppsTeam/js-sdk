@@ -631,7 +631,6 @@ Echo.API.Request.prototype.request = function(params) {
 					"result": "error",
 					"errorCode": "network_timeout"
 				}, {
-					"requestType": self.requestType,
 					"critical": true
 				});
 				self.transport.abort();
