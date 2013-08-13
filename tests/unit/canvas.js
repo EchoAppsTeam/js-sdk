@@ -125,4 +125,33 @@ suite.prototype.tests.getAppScript = {
 	}
 };
 
+suite.prototype.tests.canvasAdapter = {
+	"check": function() {
+		var target = $("#qunit-fixture");
+		window.CanvasAdapter = function(config) {
+			QUnit.equal(config.id, 256, "Check if canvas adapter was initialized with valid config");
+		};
+		var canvas = new Echo.Canvas({
+			"target": target,
+			"data": {
+				"apps": [{
+					"component": "CanvasAdapter",
+					"config": {
+						"id": 256
+					}
+				}],
+			}
+		});
+		// Canvas Adapter doesn't has a "destroy" method so we need to
+		// check common fuctionality of destroying Echo.Canvas
+		try {
+			canvas.destroy();
+			QUnit.ok(true, "Check if canvas adapter was destroyed successfully");
+		} catch(e) {
+			QUnit.ok(false, "Check if canvas adapter was destroyed successfully");
+		}
+		delete window.CanvasAdapter;
+	}
+};
+
 })(Echo.jQuery);

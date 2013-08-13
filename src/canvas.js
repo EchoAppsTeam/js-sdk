@@ -259,7 +259,7 @@ canvas.methods._initApp = function(app, element, id) {
 };
 
 canvas.methods._destroyApp = function(app) {
-	if (app) app.destroy();
+	if (app && app.destroy) app.destroy();
 };
 
 canvas.methods._isManuallyConfigured = function() {
