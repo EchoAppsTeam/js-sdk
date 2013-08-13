@@ -25,7 +25,7 @@ Echo.Tests.test = function(name, callback, config) {
 	config = _normalizeTestConfig(config);
 	QUnit.test(name, function() {
 		var self = this, args = arguments;
-		_actualizeTestUser(config.user, function() {
+		Echo.Tests.Utils.actualizeTestUser(config.user, function() {
 			callback.apply(self, args);
 		});
 	});
@@ -39,7 +39,7 @@ Echo.Tests.asyncTest = function(name, callback, config) {
 		// so we can't use QUnit.asyncTest, but we emulate it using QUnit.stop()
 		QUnit.config.testTimeout = config.timeout;
 		QUnit.stop();
-		_actualizeTestUser(config.user, function() {
+		Echo.Tests.Utils.actualizeTestUser(config.user, function() {
 			callback.apply(self, args);
 		});
 	});
@@ -158,11 +158,6 @@ function _normalizeTestConfig(config) {
 		}
 	}, config || {});
 }
-
-function _actualizeTestUser(config, callback) {
-	Echo.Tests.current.user = config;
-	callback();
-};
 
 function _testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix) {
 	var prefix = "Renderer \"" + name + "\": ";

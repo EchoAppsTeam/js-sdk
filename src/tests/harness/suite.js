@@ -297,19 +297,12 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 
 // TODO: get rid of this function once IdentityServer.API is rewritten using new format
 Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
-	Echo.Tests.current.user = config;
-	callback && callback();
+	Echo.Tests.Utils.actualizeTestUser(config, callback);
 };
 
 Echo.Tests.Suite.prototype._prepareEnvironment = function(test, callback) {
-	var self = this;
 	this._cleanupEnvironment();
-	Echo.Tests.current.user = test.config.user;
-	if (test.config.user.status === "anonymous") {
-		callback();
-		return;
-	}
-	callback();
+	Echo.Tests.Utils.actualizeTestUser(test.config.user, callback);
 };
 
 Echo.Tests.Suite.prototype._cleanupEnvironment = function() {

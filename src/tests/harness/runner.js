@@ -37,8 +37,10 @@ Echo.Tests.init = function(config) {
 
 		Echo.Loader.download([{"url": "tests/qunit/qunit.css"}], function() {
 			Echo.Tests.Utils.initServer();
-			_runLegacyTests();
-			QUnit.start();
+			Echo.Tests.Utils.actualizeTestUser({"status": "anonymous"}, function() {
+				_runLegacyTests();
+				QUnit.start();
+			});
 		});
 	});
 };

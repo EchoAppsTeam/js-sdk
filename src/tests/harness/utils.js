@@ -23,7 +23,7 @@ if (Echo.Tests.browser.msie && +Echo.Tests.browser.version < 10) {
 }
 
 Echo.Tests.Utils.initServer = function() {
-	if (QUnit.urlParams.noMockRequests) {
+	if (!Echo.Tests.Utils.isServerMocked()) {
 		Echo.Tests.server = {
 			"restore": $.noop
 		};
@@ -69,6 +69,39 @@ Echo.Tests.Utils.initServer = function() {
 		});
 		return !fake;
 	});
+};
+
+Echo.Tests.Utils.actualizeTestUser = function(config, callback) {
+	Echo.Tests.current.user = config;
+	if (Echo.Tests.Utils.isServerMocked()) {
+		callback();
+		return;
+	}
+	var user = Echo.UserSession({
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"ready": function() {
+			var user = this;
+			var isLogged = user.is("logged");
+			if (isLogged && config.status === "anonymous") {
+				user.logout(callback);
+			} else if (!isLogged && config.status === "logged") {
+				$.get("http://echosandbox.com/js-sdk/auth", {
+					"action": "login",
+					"channel": Backplane.getChannelID(),
+					"identityUrl": "http://somedomain.com/users/fake_user"
+				}, function() {
+					Echo.UserSession._onInit(callback);
+					Backplane.expectMessages("identity/ack");
+				}, "jsonp");
+			} else {
+				callback();
+			}
+		}
+	});
+};
+
+Echo.Tests.Utils.isServerMocked = function() {
+	return QUnit.urlParams.noMockRequests !== "true";
 };
 
 var _URLMocks = {
