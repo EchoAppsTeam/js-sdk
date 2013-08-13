@@ -66,12 +66,20 @@ Echo.API.Transports.WebSocket = utils.inherit(Echo.API.Transport, function(confi
 
 Echo.API.Transports.WebSocket.socketByURI = {};
 
+Echo.API.Transports.WebSocket.prototype.connecting = function() {
+	return this.transportObject && this.transportObject.readyState === 0;
+};
+
 Echo.API.Transports.WebSocket.prototype.connected = function() {
 	return this.transportObject && this.transportObject.readyState === 1;
 };
 
-Echo.API.Transports.WebSocket.prototype.connecting = function() {
-	return this.transportObject && this.transportObject.readyState === 0;
+Echo.API.Transports.WebSocket.prototype.closing = function() {
+	return this.transportObject && this.transportObject.readyState === 2;
+};
+
+Echo.API.Transports.WebSocket.prototype.closed = function() {
+	return this.transportObject && this.transportObject.readyState === 3;
 };
 
 Echo.API.Transports.WebSocket.prototype.context = function(subscriptionId) {
@@ -563,6 +571,7 @@ Echo.API.Request = function(config) {
 		 * @cfg {String} [transport]
 		 * Specifies the transport name. The following transports are available:
 		 *
+		 *  + "websocket"
 		 *  + "ajax"
 		 *  + "jsonp"
 		 *  + "XDomainRequest" (only supported in IE8+)
@@ -614,6 +623,7 @@ Echo.API.Request.prototype.send = function(args) {
 		force = args.force;
 		delete args.force;
 		this.config.extend(args);
+		this.transport.config.extend(args);
 	}
 	var method = this["_" + this.config.get("endpoint")];
 	method && method.call(this, force);

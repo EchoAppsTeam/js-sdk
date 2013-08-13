@@ -106,7 +106,7 @@ counter.config = {
 	 * Live updating machinery configuration (only the "polling" transport
 	 * is supported for the "count" API endpoint).
 	 *
-	 * @cfg {Boolean} [liveUpdates.enabled=false]
+	 * @cfg {Boolean} [liveUpdates.enabled=true]
 	 * Parameter to enable/disable live updates.
 	 *
 	 * @cfg {Object} [liveUpdates.polling]

@@ -222,7 +222,7 @@ stream.config = {
 	 * @cfg {Object} [liveUpdates]
 	 * Live updating machinery configuration.
 	 *
-	 * @cfg {Boolean} [liveUpdates.enabled=false]
+	 * @cfg {Boolean} [liveUpdates.enabled=true]
 	 * Parameter to enable/disable live updates.
 	 *
 	 * @cfg {String} [liveUpdates.transport="polling"]

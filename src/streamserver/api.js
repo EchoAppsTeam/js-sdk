@@ -40,7 +40,8 @@ Echo.StreamServer.API = {};
  * @param {Object} config Configuration data.
  */
 Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
-	var timeout = config && config.liveUpdates && config.liveUpdates.timeout;
+	var timeout = config && config.liveUpdates && config.liveUpdates.timeout || config.liveUpdatesTimeout;
+	var liveUpdatesEnabled = config && config.liveUpdates && config.liveUpdates.enabled || config.recurring;
 	config = $.extend(true, {
 		/**
 		 * @cfg {Object} [liveUpdates]
@@ -90,7 +91,9 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 */
 		"liveUpdates": {
 			"transport": "polling", // or "websockets"
-			"enabled": false,
+			// picking up enabled value
+			// for backwards compatibility
+			"enabled": liveUpdatesEnabled,
 			"polling": {
 				// picking up timeout value
 				// for backwards compatibility
@@ -100,7 +103,11 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 				"maxConnectRetries": 3,
 				"serverPingInterval": 30,
 				"URL": "ws://live.echoenabled.com/v1/"
-			}
+			},
+			"onData": $.noop,
+			"onOpen": $.noop,
+			"onError": $.noop,
+			"onClose": $.noop
 		},
 
 		/**
@@ -235,20 +242,20 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 	var map = {
 		"polling": {
 			"timeout": "liveUpdates.polling.timeout",
-			"request.onData": "onData",
-			"request.onOpen": "onOpen",
-			"request.onError": "onError",
-			"request.onClose": "onClose",
+			"request.onData": "liveUpdates.onData",
+			"request.onOpen": "liveUpdates.onOpen",
+			"request.onError": "liveUpdates.onError",
+			"request.onClose": "liveUpdates.onClose",
 			"request.endpoint": "endpoint",
 			"request.data": "data",
 			"request.apiBaseURL": "apiBaseURL",
 			"request.secure": "secure"
 		},
 		"websockets": {
-			"request.onData": "onData",
-			"request.onOpen": "onOpen",
-			"request.onError": "onError",
-			"request.onClose": "onClose",
+			"request.onData": "liveUpdates.onData",
+			"request.onOpen": "liveUpdates.onOpen",
+			"request.onError": "liveUpdates.onError",
+			"request.onClose": "liveUpdates.onClose",
 			"request.endpoint": "endpoint",
 			"request.data": "data",
 			"request.secure": "secure",
@@ -555,6 +562,10 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 		"request": {
 			"apiBaseURL": "ws://live.echoenabled.com/v1/",
 			"transport": "websocket",
+			"onOpen": $.noop,
+			"onData": $.noop,
+			"onError": $.noop,
+			"onClose": $.noop,
 			"endpoint": "ws"
 		}
 	}, function(key, value) {
@@ -572,15 +583,28 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 });
 
 Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
+	var self = this;
 	var config = this.config.get("request");
-	var onData = config.onData || $.noop;
-	$.extend(config, {
+	var _config = $.extend({}, config, {
 		"onData": function(response) {
 			if (!response || !response.event) return;
-			onData(response.data);
+			var isError = !!~$.inArray("failed", response.event.split("/"));
+			if (isError) {
+				config.onError(response);
+				return;
+			}
+			config.onData(response.data);
+		},
+		"onOpen": function() {
+			var data = {"method": self.config.get("request.wsMethod")};
+			self.requestObject.request({
+				"event": "subscribe/request",
+				"data": $.extend(data, self.config.get("request.data"))
+			});
+			config.onOpen.apply(null, arguments);
 		}
-	}, this.config.get("request"));
-	return new Echo.API.Request(config);
+	});
+	return new Echo.API.Request(_config);
 };
 
 Echo.StreamServer.API.WebSockets.prototype.on = function(event, fn) {
@@ -593,22 +617,7 @@ Echo.StreamServer.API.WebSockets.prototype.on = function(event, fn) {
 	);
 };
 
-Echo.StreamServer.API.WebSockets.prototype.start = function() {
-	var self = this;
-	var data = {"method": this.config.get("request.wsMethod")};
-	if (this.connected()) {
-		return this.requestObject.request({
-			"event": "subscribe/request",
-			"data": $.extend(data, self.config.get("request.data"))
-		});
-	}
-	this.on("open", function() {
-		self.requestObject.request({
-			"event": "subscribe/request",
-			"data": $.extend(data, self.config.get("request.data"))
-		});
-	});
-};
+Echo.StreamServer.API.WebSockets.prototype.start = $.noop;
 
 Echo.StreamServer.API.WebSockets.prototype.connected = function() {
 	return this.requestObject.transport.connected();
