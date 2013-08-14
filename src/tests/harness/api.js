@@ -113,6 +113,79 @@ Echo.Tests.isolate = function(test) {
 	};
 };
 
+Echo.Tests.jqueryObjectsEqual = function(actual, expected, message) {
+	var properties = [
+		"disabled",
+		"readOnly",
+		"tagName"
+	];
+	var attributes = [
+		"autocomplete",
+		"aria-activedescendant",
+		"aria-controls",
+		"aria-describedby",
+		"aria-disabled",
+		"aria-expanded",
+		"aria-haspopup",
+		"aria-hidden",
+		"aria-labelledby",
+		"aria-pressed",
+		"aria-selected",
+		"aria-valuemax",
+		"aria-valuemin",
+		"aria-valuenow",
+		"class",
+		"href",
+		"id",
+		"nodeName",
+		"role",
+		"tabIndex",
+		"src",
+		"alt",
+		"title"
+	];
+	function extract(elem) {
+		if (!elem || !elem.length) {
+			return {};
+		}
+		var children, result = {};
+		$.map(properties, function(attr) {
+			var value = elem.prop(attr);
+			if (typeof value !== "undefined") {
+				result[attr] = value;
+			}
+		});
+		$.map(attributes, function(attr) {
+			var value = elem.attr(attr);
+			if (typeof value !== "undefined") {
+				result[attr] = value;
+			}
+		});
+		result.events = $._data(elem[0], "events");
+		result.data = $.extend({}, elem.data());
+		delete result.data[$.expando];
+		children = elem.contents();
+		if (children.length) {
+			result.children = children.map(function( ind ) {
+				return extract($(this));
+			}).get();
+		} else {
+			result.text = elem.text();
+		}
+		$.each(["events"], function(i, p) {
+			if (typeof result[p] === "undefined") {
+				delete result[p];
+			}
+		});
+		return result;
+	}
+	if (!expected || !expected.length) {
+		QUnit.pushFailure(message + " (expected value must not be empty or undefined)");
+		return;
+	}
+	QUnit.deepEqual(extract(actual), extract(expected), message);
+};
+
 // methods useful if one wants to disable particular test easily
 Echo.Tests._test = Echo.Tests._asyncTest = Echo.Tests._renderersTest = function() {
 	Echo.Utils.log({

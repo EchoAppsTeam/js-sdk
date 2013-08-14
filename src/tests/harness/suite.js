@@ -186,80 +186,8 @@ Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
 	check(true);
 };
 
-
-/*
-The Idea of the function were took from https://github.com/jquery/jquery-ui/blob/master/tests/unit/testsuite.js
-Some functionality copied as is.
-*/
 Echo.Tests.Suite.prototype.jqueryObjectsEqual = function(source, target, message) {
-	var expected, actual;
-	var properties = [
-		"disabled",
-		"readOnly"
-	];
-	var attributes = [
-		"autocomplete",
-		"aria-activedescendant",
-		"aria-controls",
-		"aria-describedby",
-		"aria-disabled",
-		"aria-expanded",
-		"aria-haspopup",
-		"aria-hidden",
-		"aria-labelledby",
-		"aria-pressed",
-		"aria-selected",
-		"aria-valuemax",
-		"aria-valuemin",
-		"aria-valuenow",
-		"class",
-		"href",
-		"id",
-		"nodeName",
-		"role",
-		"tabIndex",
-		"src",
-		"alt",
-		"title"
-	];
-	function extract(elem) {
-		if (!elem || !elem.length) {
-			QUnit.push(false, actual, expected,
-				"jqueryObjectsEqual failed, can't extract the element, message was: " + message);
-			return;
-		}
-
-		var children, result = {};
-		$.map(properties, function(attr) {
-			var value = elem.prop(attr);
-			if (typeof value !== "undefined") {
-				result[attr] = value;
-			}
-		});
-		$.map(attributes, function(attr) {
-			var value = elem.attr(attr);
-			if (typeof value !== "undefined") {
-				result[attr] = value;
-			}
-		});
-		result.events = $._data(elem[0], "events");
-		result.data = $.extend({}, elem.data());
-		delete result.data[$.expando];
-		children = elem.contents();
-		if (children.length) {
-			result.children = children.map(function( ind ) {
-				return extract($(this));
-			}).get();
-		} else {
-			result.tagName = elem.prop("tagName");
-			result.text = elem.text();
-		}
-		return result;
-	}
-	expected = extract(source);
-
-	actual = extract(target);
-	QUnit.deepEqual(actual, expected, message);
+	Echo.Tests.jqueryObjectsEqual(source, target, message);
 };
 
 Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
