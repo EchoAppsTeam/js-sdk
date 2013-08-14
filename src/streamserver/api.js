@@ -285,7 +285,7 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 		switchTo(ws)();
 		return;
 	}
-	ws.on("open", switchTo(ws));
+	ws.on("open", switchTo(ws), {"once": true});
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
@@ -562,6 +562,7 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 		"request": {
 			"apiBaseURL": "ws://live.echoenabled.com/v1/",
 			"transport": "websocket",
+			"timeout": null,
 			"onOpen": $.noop,
 			"onData": $.noop,
 			"onError": $.noop,
@@ -579,7 +580,7 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 		return value;
 	});
 	this.subscriptionIds = [];
-	this.requestObject = this.getRequestObject();
+	this.getRequestObject();
 });
 
 Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
@@ -604,16 +605,20 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			config.onOpen.apply(null, arguments);
 		}
 	});
-	return new Echo.API.Request(_config);
+	this.requestObject = new Echo.API.Request(_config);
+	if (this.connected()) {
+		_config.onOpen();
+	}
+	return this.requestObject;
 };
 
-Echo.StreamServer.API.WebSockets.prototype.on = function(event, fn) {
+Echo.StreamServer.API.WebSockets.prototype.on = function(event, fn, params) {
 	this.subscriptionIds.push(
-		Echo.Events.subscribe({
+		Echo.Events.subscribe($.extend({
 			"topic": "Echo.API.Transports.WebSocket.on" + Echo.Utils.capitalize(event),
 			"handler": fn,
 			"context": this.requestObject.transport.context()
-		})
+		}, params))
 	);
 };
 

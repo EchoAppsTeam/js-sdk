@@ -61,7 +61,7 @@ Echo.API.Transports.WebSocket = utils.inherit(Echo.API.Transport, function(confi
 	this.timers = {};
 	this.subscriptionIds = [];
 	this.unique = Echo.Utils.getUniqueString();
-	return Echo.API.Transports.WebSocket.parent.constructor.call(this, config);
+	Echo.API.Transports.WebSocket.parent.constructor.call(this, config);
 });
 
 Echo.API.Transports.WebSocket.socketByURI = {};
@@ -83,7 +83,7 @@ Echo.API.Transports.WebSocket.prototype.closed = function() {
 };
 
 Echo.API.Transports.WebSocket.prototype.context = function(subscriptionId) {
-	return this.config.get("uri") + (subscriptionId ? "/" + subscriptionId : "");
+	return this.config.get("uri").replace(/\//g, "-") + (subscriptionId ? "/" + subscriptionId : "");
 };
 
 Echo.API.Transports.WebSocket.prototype.abort = function() {
@@ -115,16 +115,6 @@ Echo.API.Transports.WebSocket.prototype._getScheme = function() {
 Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 	var self = this, uri = this.config.get("uri");
 	var sockets = Echo.API.Transports.WebSocket.socketByURI;
-	if (!sockets[uri]) {
-		sockets[uri] = {
-			"socket": this._prepareTransportObject(),
-			"subscribers": {}
-		};
-	}
-
-	// register socket subscriber
-	sockets[uri].subscribers[this.unique] = true;
-
 	$.map(["onOpen", "onClose", "onError", "onData"], function(topic) {
 		var id = Echo.Events.subscribe({
 			"topic": "Echo.API.Transports.WebSocket." + topic,
@@ -137,6 +127,16 @@ Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 		});
 		self.subscriptionIds.push(id);
 	});
+
+	if (!sockets[uri]) {
+		sockets[uri] = {
+			"socket": this._prepareTransportObject(),
+			"subscribers": {}
+		};
+	}
+	// register socket subscriber
+	sockets[uri].subscribers[this.unique] = true;
+
 	return sockets[uri].socket;
 };
 
@@ -190,6 +190,7 @@ Echo.API.Transports.WebSocket.prototype._publish = function(topic, data, subscri
 	Echo.Events.publish({
 		"topic": "Echo.API.Transports.WebSocket." + topic,
 		"data": data || {},
+		"propagation": !subscriptionId,
 		"context": this.context(subscriptionId)
 	});
 };
