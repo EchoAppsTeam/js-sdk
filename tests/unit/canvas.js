@@ -125,32 +125,83 @@ suite.prototype.tests.getAppScript = {
 	}
 };
 
-suite.prototype.tests.canvasAdapter = {
+suite.prototype.tests.canvasContract = {
 	"check": function() {
-		var target = $("#qunit-fixture");
+		var target = $("<div>").data("canvas-id", "js-sdk-test").appendTo("#qunit-fixture");
+
 		window.CanvasAdapter = function(config) {
-			QUnit.equal(config.id, 256, "Check if canvas adapter was initialized with valid config");
+			QUnit.equal(config.id, 256, "Check if canvas adapter was initialized with valid custom param in config");
+			QUnit.ok(config.target instanceof Echo.jQuery, "Check if canvas adapter was initialized with valid target");
+			QUnit.equal(config.canvasId, "js-sdk-test", "Check if canvas adapter was initialized with valid canvasId")
 		};
+
 		var canvas = new Echo.Canvas({
 			"target": target,
 			"data": {
 				"apps": [{
 					"component": "CanvasAdapter",
-					"config": {
-						"id": 256
-					}
+					"config": {"id": 256}
 				}],
 			}
 		});
-		// Canvas Adapter doesn't has a "destroy" method so we need to
-		// check common fuctionality of destroying Echo.Canvas
-		try {
-			canvas.destroy();
-			QUnit.ok(true, "Check if canvas adapter was destroyed successfully");
-		} catch(e) {
-			QUnit.ok(false, "Check if canvas adapter was destroyed successfully");
-		}
+		canvas.destroy();
 		delete window.CanvasAdapter;
+	}
+};
+
+// Canvas Adapter doesn't has a "destroy" method so we need to
+// check common fuctionality of destroying Echo.Canvas
+suite.prototype.tests.canvasDestroy = {
+	"check": function() {
+		var initCanvas = function(component, config) {
+			return new Echo.Canvas({
+				"target": $("#qunit-fixture"),
+				"data": {
+					"apps": [{
+						"component": component,
+						"config": config
+					}],
+				}
+			});
+		};
+
+		window.TestCanvases = {
+			"WithDestroyFunction": function(config) {
+				return {
+					"destroy": $.nope
+				};
+			},
+			"WithoutDestroyFunction": function(config) {
+				return {};
+			},
+			"WithDestroyKeyIsNotFunction": function(config) {
+				return {
+					"destroy": "destroy"
+				};
+			}
+		};
+
+		var normalizeName = function(name) {
+			return name.replace(/[A-Z]/g, function(symb, offset) {
+				return (offset ? " " : "") + symb.toLowerCase();
+			});
+		}
+
+		var getAssertionMessage = function(component) {
+			return "Check if canvas adapter was destroyed successfully for a component " + normalizeName(component);
+		};
+
+		$.each(TestCanvases, function(component) {
+			var canvas = initCanvas(component);
+			try {
+				canvas.destroy();
+				QUnit.ok(true, getAssertionMessage(component));
+			} catch(e) {
+				QUnit.ok(false, getAssertionMessage(component));
+			}
+		});
+
+		delete window.TestCanvases;
 	}
 };
 
