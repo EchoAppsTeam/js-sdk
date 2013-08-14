@@ -201,11 +201,13 @@ function _testSetup() {
 	Echo.Events._subscriptions = {};
 	Echo.Events._dataByHandlerId = {};
 
-	// delete all accumulated stuff from Loader
+	// delete all accumulated stuff from Loader except resources state
+	// because yepnope has the same info and we don't want it unsynchronized
+	var resources = Echo.Loader.vars.state.resources;
 	Echo.Loader.canvases = [];
 	Echo.Loader.overrides = {};
 	Echo.Loader.vars = {
-		"state": {"resources": {}, "queue": []},
+		"state": {"resources": resources, "queue": []},
 		"processing": false,
 		"syncQueue": []
 	};
