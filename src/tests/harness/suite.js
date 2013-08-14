@@ -269,6 +269,7 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 			instance.render();
 		}
 		var checker = function(name, element, suffix) {
+			suffix = suffix || "";
 			if (!element) {
 				QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template." + suffix);
 				return;
