@@ -7,17 +7,6 @@ Echo.Tests.module("Echo.GUI.Tabs", {
 	}
 });
 
-var eventsCount = {
-	"data": {},
-	"get": function(name) {
-		return this.data[name] || 0;
-	},
-	"inc": function(name) {
-		this.data[name] = this.data[name] || 0;
-		this.data[name]++;
-	}
-};
-
 Echo.Tests.test("common workflow", function() {
 	var target = $("#qunit-fixture");
 	var element = $("<div>").appendTo(target);
@@ -41,16 +30,11 @@ Echo.Tests.test("common workflow", function() {
 		"entries": [entry1],
 		"idPrefix": "test-tabs-",
 		"classPrefix": "test-tabs-",
-		"show": function() {
-			eventsCount.inc("show");
-		},
-		"shown": function() {
-			eventsCount.inc("shown");
-			QUnit.strictEqual(eventsCount.get("show"), eventsCount.get("shown"), "Check that 'shown' event was fired after 'show'");
-		}
+		"show": sinon.spy(),
+		"shown": sinon.spy()
 	};
 
-	QUnit.expect(28);
+	QUnit.expect(26);
 
 	var tabs = new Echo.GUI.Tabs(config);
 
@@ -114,15 +98,17 @@ Echo.Tests.test("common workflow", function() {
 		"Check has() method"
 	);
 
-	var showEventsCount  = eventsCount.get("show"),
-		shownEventsCount = eventsCount.get("shown");
-
+	var counts = {
+		"show": config.show.callCount,
+		"shown": config.shown.callCount
+	};
 	tabs.show(entry2.id);
 	QUnit.ok(tab2.parent().hasClass("active"), "Check show() method (tab)");
 	QUnit.ok(panel2.hasClass("active"), "Check show() method (panel)");
+	QUnit.equal(config.shown.callCount, config.show.callCount, "Check that 'shown' event was fired after 'show'");
 
-	QUnit.ok(showEventsCount === eventsCount.get("show") - 1, "Check that 'show' handler was called");
-	QUnit.ok(shownEventsCount === eventsCount.get("shown") - 1, "Check that 'shown' handler was called");
+	QUnit.equal(config.show.callCount, counts.show + 1, "Check that 'show' handler was called");
+	QUnit.equal(config.shown.callCount, counts.shown + 1, "Check that 'shown' handler was called");
 
 	tabs.update(entry2.id, {"label": "New label", "extraClass": "echo-hide", "content": "New content"});
 	QUnit.ok(
