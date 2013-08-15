@@ -149,58 +149,43 @@ suite.prototype.tests.canvasContract = {
 	}
 };
 
-// Canvas Adapter doesn't has a "destroy" method so we need to
-// check common fuctionality of destroying Echo.Canvas
 suite.prototype.tests.canvasDestroy = {
 	"check": function() {
-		var initCanvas = function(component, config) {
-			return new Echo.Canvas({
-				"target": $("#qunit-fixture"),
-				"data": {
-					"apps": [{
-						"component": component,
-						"config": config
-					}],
-				}
-			});
-		};
-
 		window.TestCanvases = {
-			"WithDestroyFunction": function(config) {
+			"destroyIsAFunction": function(config) {
 				return {
-					"destroy": $.nope
+					"destroy": $.noop
 				};
 			},
-			"WithoutDestroyFunction": function(config) {
+			"destroyIsUndefined": function(config) {
 				return {};
 			},
-			"WithDestroyKeyIsNotFunction": function(config) {
+			"destroyIsNotAFunction": function(config) {
 				return {
 					"destroy": "destroy"
 				};
 			}
 		};
 
-		var normalizeName = function(name) {
-			return name.replace(/[A-Z]/g, function(symb, offset) {
-				return (offset ? " " : "") + symb.toLowerCase();
-			});
-		}
-
-		var getAssertionMessage = function(component) {
-			return "Check if canvas adapter was destroyed successfully for a component " + normalizeName(component);
-		};
-
 		$.each(TestCanvases, function(component) {
-			var canvas = initCanvas(component);
+			var result;
+			var canvas = new Echo.Canvas({
+				"target": $("#qunit-fixture"),
+				"data": {
+					"apps": [{
+						"component": "TestCanvases." + component
+					}],
+				}
+			});
 			try {
 				canvas.destroy();
-				QUnit.ok(true, getAssertionMessage(component));
+				result = true;
 			} catch(e) {
-				QUnit.ok(false, getAssertionMessage(component));
+				result = false;
 			}
+			QUnit.ok(result, "Check if canvas adapter was destroyed successfully (" +
+							 component.replace(/([A-Z])/g, " $1").toLowerCase() + ")");
 		});
-
 		delete window.TestCanvases;
 	}
 };
