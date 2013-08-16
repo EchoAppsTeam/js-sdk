@@ -20,7 +20,11 @@ QUnit.config.urlConfig.push({
 
 // common storage for the information about the current test
 // (at the moment only user configuration is stored here)
-Echo.Tests.current = {};
+Echo.Tests.current = {
+	"user": {
+		"status": "anonymous"
+	}
+};
 
 // logs are pushed here by Echo.Tests.Utils.log function
 // (they can be used by the saucelabs or developer/tester)
@@ -37,10 +41,8 @@ Echo.Tests.init = function(config) {
 
 		Echo.Loader.download([{"url": "tests/qunit/qunit.css"}], function() {
 			Echo.Tests.Utils.initServer();
-			Echo.Tests.Utils.actualizeTestUser({"status": "anonymous"}, function() {
-				_runLegacyTests();
-				QUnit.start();
-			});
+			_runLegacyTests();
+			QUnit.start();
 		});
 	});
 };

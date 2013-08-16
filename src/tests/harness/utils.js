@@ -72,27 +72,34 @@ Echo.Tests.Utils.initServer = function() {
 };
 
 Echo.Tests.Utils.actualizeTestUser = function(config, callback) {
-	Echo.Tests.current.user = config;
-	if (Echo.Tests.Utils.isServerMocked()) {
-		callback();
-		return;
-	}
-	var user = Echo.UserSession({
+	var isMocked = Echo.Tests.Utils.isServerMocked();
+	Echo.UserSession({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
 			var user = this;
 			var isLogged = user.is("logged");
+			if (isMocked) {
+				Echo.Tests.current.user = config;
+			}
 			if (isLogged && config.status === "anonymous") {
-				user.logout(callback);
+				if (isMocked) {
+					user._init(callback);
+				} else {
+					user.logout(callback);
+				}
 			} else if (!isLogged && config.status === "logged") {
-				$.get("http://echosandbox.com/js-sdk/auth", {
-					"action": "login",
-					"channel": Backplane.getChannelID(),
-					"identityUrl": "http://somedomain.com/users/fake_user"
-				}, function() {
-					Echo.UserSession._onInit(callback);
-					Backplane.expectMessages("identity/ack");
-				}, "jsonp");
+				if (isMocked) {
+					user._init(callback);
+				} else {
+					$.get("http://echosandbox.com/js-sdk/auth", {
+						"action": "login",
+						"channel": Backplane.getChannelID(),
+						"identityUrl": "http://somedomain.com/users/fake_user"
+					}, function() {
+						Echo.UserSession._onInit(callback);
+						Backplane.expectMessages("identity/ack");
+					}, "jsonp");
+				}
 			} else {
 				callback();
 			}

@@ -25,8 +25,13 @@ Echo.Tests.test = function(name, callback, config) {
 	config = _normalizeTestConfig(config);
 	QUnit.test(name, function() {
 		var self = this, args = arguments;
+		// unfortunately user actualization process is async, we have to handle it
+		// so we stop QUnit processing before test ...
+		QUnit.stop();
 		Echo.Tests.Utils.actualizeTestUser(config.user, function() {
 			callback.apply(self, args);
+			// ... and start it again after test
+			QUnit.start();
 		});
 	});
 };
@@ -217,7 +222,6 @@ function _testSetup() {
 };
 
 function _testTeardown() {
-	delete Echo.Tests.current.user;
 	var meta = QUnit.config.current.moduleTestEnvironment.meta;
 	if (!meta || meta.processed) return;
 	meta.processed = true;
