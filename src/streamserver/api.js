@@ -285,7 +285,7 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 		switchTo(ws)();
 		return;
 	}
-	ws.on("open", switchTo(ws), {"once": true});
+	ws.on("open", switchTo(ws));
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
@@ -591,7 +591,9 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			if (!response || !response.event) return;
 			var isError = !!~$.inArray("failed", response.event.split("/"));
 			if (isError) {
-				config.onError(response);
+				config.onError(response, {
+					"critical": response.errorCode === "connection_aborted"
+				});
 				return;
 			}
 			config.onData(response.data);
@@ -603,6 +605,11 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 				"data": $.extend(data, self.config.get("request.data"))
 			});
 			config.onOpen.apply(null, arguments);
+		},
+		"onError": function(response) {
+			config.onError(response, {
+				"critical": response.errorCode === "connection_aborted"
+			});
 		}
 	});
 	this.requestObject = new Echo.API.Request(_config);

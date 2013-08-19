@@ -61,6 +61,13 @@ stream.init = function() {
 		"liveUpdates": $.extend(this.config.get("liveUpdates"), {
 			"onData": function(data) {
 				self._handleLiveUpdatesResponse(data);
+			},
+			"onError": function(data, options) {
+				if (typeof options.critical === "undefined" || options.critical) {
+					self.showError(data, $.extend(options, {
+						"request": self.request
+					}));
+				}
 			}
 		}),
 		"onOpen": function(data, options) {
@@ -750,6 +757,13 @@ stream.methods._requestInitialItems = function() {
 			"liveUpdates": $.extend(this.config.get("liveUpdates"), {
 				"onData": function(data) {
 					self._handleLiveUpdatesResponse(data);
+				},
+				"onError": function(data, options) {
+					if (typeof options.critical === "undefined" || options.critical) {
+						self.showError(data, $.extend(options, {
+							"request": self.request
+						}));
+					}
 				}
 			}),
 			"data": {

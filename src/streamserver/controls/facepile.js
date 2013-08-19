@@ -339,6 +339,12 @@ pile.methods._request = function() {
 			"liveUpdates": $.extend(this.config.get("liveUpdates"), {
 				"onData": function(data) {
 					self._secondaryResponseHandler(data);
+				},
+				"onError": function(data, extra) {
+					var needShowError = typeof extra.critical === "undefined" || extra.critical;
+					if (needShowError) {
+						self.showError(data, {"critical": extra.critical});
+					}
 				}
 			}),
 			"recurring": this.config.get("liveUpdates.enabled"),

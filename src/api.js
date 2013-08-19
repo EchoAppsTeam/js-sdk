@@ -92,11 +92,13 @@ Echo.API.Transports.WebSocket.prototype.abort = function() {
 	});
 	this.subscriptionIds = [];
 	var socket = Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
-	delete socket.subscribers[this.unique];
-	// close socket connection if the last subscriber left
-	if ($.isEmptyObject(socket.subscribers)) {
-		delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
-		this.transportObject.close();
+	if (socket) {
+		delete socket.subscribers[this.unique];
+		// close socket connection if the last subscriber left
+		if ($.isEmptyObject(socket.subscribers)) {
+			delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
+			this.transportObject.close();
+		}
 	}
 	this._clearTimers();
 };
@@ -167,7 +169,6 @@ Echo.API.Transports.WebSocket.prototype._prepareTransportObject = function() {
 	};
 	socket.onclose = function() {
 		self._publish("onClose");
-		self._tryReconnect();
 	};
 	socket.onerror = function(error) {
 		self._publish("onError", {"error": error});
@@ -206,6 +207,7 @@ Echo.API.Transports.WebSocket.prototype._ping = function(callback) {
 
 				clearTimeout(self.timers.pong);
 				Echo.Events.unsubscribe({"handlerId": id});
+				self._resetRetriesAttempts();
 
 				callback && callback();
 			},
@@ -224,21 +226,23 @@ Echo.API.Transports.WebSocket.prototype._ping = function(callback) {
 };
 
 Echo.API.Transports.WebSocket.prototype._tryReconnect = function() {
-	var self = this;
+	// if we were disconnected and try to connect again - decrease
+	// the retries counter to indicate several fail connection attempts in a row
+	this.attemptsRemaining--;
 
 	// exit when the connection attempt is scheduled (to prevent
 	// multiple connections) or if no connection attempts left
-	if (this.timers.reconnect || this.attemptsRemaining === 0 || this.transportObject.readyState === 3) return;
-
-	// if we were disconnected and try to connect again - decrease
-	// the retries counter to indicate several faile connection attempts in a row
-	if (!this.connected()) {
-		this.attemptsRemaining--;
+	if (this.attemptsRemaining === 0) {
+		this._reconnect();
 	}
+};
 
-	this.timers.reconnect = setTimeout(function() {
-		self._prepareTransportObject();
-	}, this.config.get("settings.serverPingInterval") * 1000);
+Echo.API.Transports.WebSocket.prototype._reconnect = function() {
+	this.abort();
+	this.transportObject.close();
+	delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
+	this.transportObject = this._getTransportObject();
+	this._clearTimers();
 };
 
 Echo.API.Transports.WebSocket.available = function() {
