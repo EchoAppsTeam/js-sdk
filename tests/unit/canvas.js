@@ -122,69 +122,65 @@ Echo.Tests.asyncTest("select app script url", function() {
 	});
 });
 
-suite.prototype.tests.canvasContract = {
-	"check": function() {
-		var target = $("<div>").data("canvas-id", "js-sdk-test").appendTo("#qunit-fixture");
+Echo.Tests.test("canvas contract", function() {
+	var target = $("<div>").data("canvas-id", "js-sdk-test").appendTo("#qunit-fixture");
 
-		window.CanvasAdapter = function(config) {
-			QUnit.equal(config.id, 256, "Check if canvas adapter was initialized with valid custom param in config");
-			QUnit.ok(config.target instanceof Echo.jQuery, "Check if canvas adapter was initialized with valid target");
-			QUnit.equal(config.canvasId, "js-sdk-test", "Check if canvas adapter was initialized with valid canvasId")
-		};
+	window.CanvasAdapter = function(config) {
+		QUnit.equal(config.id, 256, "Check if canvas adapter was initialized with valid custom param in config");
+		QUnit.ok(config.target instanceof Echo.jQuery, "Check if canvas adapter was initialized with valid target");
+		QUnit.equal(config.canvasId, "js-sdk-test", "Check if canvas adapter was initialized with valid canvasId")
+	};
 
+	var canvas = new Echo.Canvas({
+		"target": target,
+		"data": {
+			"apps": [{
+				"component": "CanvasAdapter",
+				"config": {"id": 256}
+			}],
+		}
+	});
+	canvas.destroy();
+	delete window.CanvasAdapter;
+});
+
+Echo.Tests.test("canvas destroy", function() {
+	window.TestCanvases = {
+		"destroyIsAFunction": function(config) {
+			return {
+				"destroy": $.noop
+			};
+		},
+		"destroyIsUndefined": function(config) {
+			return {};
+		},
+		"destroyIsNotAFunction": function(config) {
+			return {
+				"destroy": "destroy"
+			};
+		}
+	};
+
+	$.each(TestCanvases, function(component) {
+		var result;
 		var canvas = new Echo.Canvas({
-			"target": target,
+			"target": $("#qunit-fixture"),
 			"data": {
 				"apps": [{
-					"component": "CanvasAdapter",
-					"config": {"id": 256}
+					"component": "TestCanvases." + component
 				}],
 			}
 		});
-		canvas.destroy();
-		delete window.CanvasAdapter;
-	}
-};
-
-suite.prototype.tests.canvasDestroy = {
-	"check": function() {
-		window.TestCanvases = {
-			"destroyIsAFunction": function(config) {
-				return {
-					"destroy": $.noop
-				};
-			},
-			"destroyIsUndefined": function(config) {
-				return {};
-			},
-			"destroyIsNotAFunction": function(config) {
-				return {
-					"destroy": "destroy"
-				};
-			}
-		};
-
-		$.each(TestCanvases, function(component) {
-			var result;
-			var canvas = new Echo.Canvas({
-				"target": $("#qunit-fixture"),
-				"data": {
-					"apps": [{
-						"component": "TestCanvases." + component
-					}],
-				}
-			});
-			try {
-				canvas.destroy();
-				result = true;
-			} catch(e) {
-				result = false;
-			}
-			QUnit.ok(result, "Check if canvas adapter was destroyed successfully (" +
-							 component.replace(/([A-Z])/g, " $1").toLowerCase() + ")");
-		});
-		delete window.TestCanvases;
-	}
-};
+		try {
+			canvas.destroy();
+			result = true;
+		} catch(e) {
+			result = false;
+		}
+		QUnit.ok(result, "Check if canvas adapter was destroyed successfully (" +
+			component.replace(/([A-Z])/g, " $1").toLowerCase() + ")");
+	});
+	delete window.TestCanvases;
+});
 
 })(Echo.jQuery);
