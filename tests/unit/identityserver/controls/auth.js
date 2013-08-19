@@ -1,114 +1,81 @@
 (function($) {
 
-var data = {
-	"instance": {
-		"name": "Echo.IdentityServer.Controls.Auth"
-	},
-	"config": {
-		"async": true,
-		"testTimeout": 10000
+Echo.Tests.module("Echo.IdentityServer.Controls.Auth", {
+	"meta": {
+		"className" : "Echo.IdentityServer.Controls.Auth",
+		"functions": ["template"]
 	}
-};
+});
 
-var suite = Echo.Tests.Unit.Auth = function() {
-	this.constructRenderersTest(data);
-};
+Echo.Tests.renderersTest("Echo.IdentityServer.Controls.Auth");
 
-suite.prototype.info = {
-	"className" : "Echo.IdentityServer.Controls.Auth",
-	"functions": ["template"]
-};
-
-suite.prototype.tests = {};
-
-
-suite.prototype.tests.loggedInUser = {
-	"config": {
-		"async": true,
-		"testTimeout": 20000, // 20 secs
-		"user": {"status": "logged"}
-	},
-	"check" : function() {
-		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
-		var target = document.getElementById("qunit-fixture");	
-		$(target).empty();
-
-		var handlerId = Echo.Events.subscribe({
-			"topic": "Echo.IdentityServer.Controls.Auth.onRender",
-			"context": "global",
-			"handler": function(topic, params) {
-				// unsubscribe to avoid multiple test cases execution
-				Echo.Events.unsubscribe({
-					"handlerId": handlerId
-				});
-				QUnit.ok($(target).html().match(/echo-identityserver-controls-auth-userLogged/),
-					"Checking the logged user mode rendering");
-			}
-		});
-
-		var checkAvatar = function() {
-			var self = this;
-			var getRenderedAvatar = function() {
-				return self.view.get("avatar").find("img").attr("src");
-			};
-			// case: user avatar is available
-			QUnit.equal(this.user.get("avatar"), getRenderedAvatar(), "Checking if user avatar is rendered");
-			// case: user avatar isn't available
-			this.user.set("avatar", "");
-			this.refresh();
-			QUnit.equal(this._manifest("config").defaultAvatar, getRenderedAvatar(), "Checking if default avatar is rendered");
-			var avatar = Echo.Loader.getURL("images/info70.png", false);
-			// case: user avatar isn't available and defaultAvatar was setted
-			this.config.set("defaultAvatar", avatar);
-			this.refresh();
-			QUnit.equal(avatar, getRenderedAvatar(), "Checking if specified default avatar is rendered");
-
-			QUnit.start();
+Echo.Tests.asyncTest("logged in workflow", function() {
+	var identityManager = {
+		"width": 400,
+		"height": 240,
+		"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+	};
+	var target = $("#qunit-fixture");
+	Echo.Events.subscribe({
+		"topic": "Echo.IdentityServer.Controls.Auth.onRender",
+		"once": true,
+		"handler": function(topic, params) {
+			QUnit.ok(target.html().match(/echo-identityserver-controls-auth-userLogged/),
+				"Checking the logged user mode rendering");
+		}
+	});
+	var checkAvatar = function() {
+		var self = this;
+		var getRenderedAvatar = function() {
+			return self.view.get("avatar").find("img").attr("src");
 		};
+		QUnit.equal(this.user.get("avatar"), getRenderedAvatar(), "Checking if user avatar is rendered when available");
+		this.user.set("avatar", "");
+		this.refresh();
+		QUnit.equal(this._manifest("config").defaultAvatar, getRenderedAvatar(), "Checking if default avatar is rendered when user avatar is not available");
+		var avatar = Echo.Loader.getURL("images/info70.png", false);
+		this.config.set("defaultAvatar", avatar);
+		this.refresh();
+		QUnit.equal(avatar, getRenderedAvatar(), "Checking if custom default avatar is rendered when user avatar is not available");
+		QUnit.start();
+	};
+	new Echo.IdentityServer.Controls.Auth({
+		"target": target,
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"identityManager": {
+			"login": identityManager,
+			"signup": identityManager
+		},
+		"ready": checkAvatar
+	});
+}, {
+	"user": {"status": "logged"}
+});
 
-		new Echo.IdentityServer.Controls.Auth({
-			"target": target,
-			"appkey": "echo.jssdk.tests.aboutecho.com",
-			"identityManager": {
-				"login": identityManager,
-				"signup": identityManager
-			},
-			"ready": checkAvatar
-		});
-	}
-};
-
-suite.prototype.tests.anonymousUser = {
-	"config" : {
-		"async": true,
-		"testTimeout": 20000, // 20 secs
-		"user": {"status": "anonymous"}
-	},
-	"check" : function() {
-		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
-		var target = document.getElementById("qunit-fixture");	
-		$(target).empty();
-		var handlerId = Echo.Events.subscribe({
-			"topic": "Echo.IdentityServer.Controls.Auth.onRender",
-			"handler": function(topic, params) {
-				// unsubscribe to avoid multiple test cases execution
-				Echo.Events.unsubscribe({
-					"handlerId": handlerId
-				});
-				QUnit.ok($(target).html().match(/echo-identityserver-controls-auth-userAnonymous/),
-					"Checking the anonymous mode rendering");
-				QUnit.start();
-			}
-		});
-		new Echo.IdentityServer.Controls.Auth({
-			"target": target,
-			"appkey": "echo.jssdk.tests.aboutecho.com",
-			"identityManager": {
-				"login": identityManager,
-				"signup": identityManager
-			}
-		});
-	}
-};
+Echo.Tests.asyncTest("anonymous user workflow", function() {
+	var identityManager = {
+		"width": 400,
+		"height": 240,
+		"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+	};
+	var target = $("#qunit-fixture");
+	Echo.Events.subscribe({
+		"topic": "Echo.IdentityServer.Controls.Auth.onRender",
+		"once": true,
+		"handler": function(topic, params) {
+			QUnit.ok(target.html().match(/echo-identityserver-controls-auth-userAnonymous/),
+				"Checking the anonymous mode rendering");
+			QUnit.start();
+		}
+	});
+	new Echo.IdentityServer.Controls.Auth({
+		"target": target,
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"identityManager": {
+			"login": identityManager,
+			"signup": identityManager
+		}
+	});
+});
 
 })(Echo.jQuery);

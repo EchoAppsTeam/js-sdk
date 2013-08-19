@@ -12,29 +12,50 @@ QUnit.config.reorder = false;
 // don't execute tests automatically, we will do it manually later
 QUnit.config.autostart = false;
 
+QUnit.config.urlConfig.push({
+	"id": "noMockRequests",
+	"label": "Use real server requests",
+	"tooltip": "Don't mock any server requests"
+});
+
+// common storage for the information about the current test
+// (at the moment only user configuration is stored here)
+Echo.Tests.current = {
+	"user": {
+		"status": "anonymous"
+	}
+};
+
+// logs are pushed here by Echo.Tests.Utils.log function
+// (they can be used by the saucelabs or developer/tester)
+Echo.Tests.logs = [];
+
+var _initialized = false;
 Echo.Tests.init = function(config) {
+	if (_initialized) return;
+	_initialized = true;
 	$(function() {
 		$("#qunit-header").html(config.title);
 
 		config.backplane && Backplane.init(config.backplane);
 
-		// hack for tests of Loader
-		window.onerror = function( message, file, line ) {
-			return /non-existing/.test(file);
-		};
-
 		Echo.Loader.download([{"url": "tests/qunit/qunit.css"}], function() {
-			Echo.Tests.runTests();
+			Echo.Tests.Utils.initServer();
+			_runLegacyTests();
+			QUnit.start();
 		});
 	});
 };
 
-Echo.Tests.runTests = function() {
-	$.each(this.Unit, function(name, suiteClass) {
+// TODO: get rid of this function when all tests use new format
+function _runLegacyTests() {
+	$.each(Echo.Tests.Unit, function(name, suiteClass) {
 		$.extend(suiteClass.prototype, new Echo.Tests.Suite());
 		suiteClass.prototype.tests = suiteClass.prototype.tests || {};
 		var suite = new suiteClass();
 		var normalizedName = suite.info.suiteName || suite.normalizeName(name, true);
+		// specially mark modules which use the old format of tests
+		normalizedName = "[*] " + normalizedName;
 		QUnit.module(normalizedName);
 		// TODO: register single callback for all test framework
 		// (now one callback for each suite so they are called all after each test is finished)
@@ -46,17 +67,9 @@ Echo.Tests.runTests = function() {
 		});
 		suite.run();
 	});
-	QUnit.start();
 };
 
-Echo.Tests.log = function() {
-	if (typeof Echo.Variables.testLogs === "undefined") {
-		Echo.Variables.testLogs = [];
-	}
-	Echo.Variables.testLogs.push(arguments);
-};
-
-(function(){
+(function() {
 	var ua = navigator.userAgent.toLowerCase();
 	var match = /(chrome)[ \/]([\w.]+)/.exec(ua)
 		|| /(webkit)[ \/]([\w.]+)/.exec( ua )

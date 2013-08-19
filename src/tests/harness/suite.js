@@ -163,7 +163,7 @@ Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
 		var checker = function(name, element, suffix) {
 			var oldElement = element.clone(true, true);
 			var renderedElement = renderers[name].call(plugin, element);
-			self._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
+			Echo.Tests._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
 		};
 		$.each(renderers, function(name, renderer) {
 			// don't test private renderer
@@ -186,80 +186,8 @@ Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
 	check(true);
 };
 
-
-/*
-The Idea of the function were took from https://github.com/jquery/jquery-ui/blob/master/tests/unit/testsuite.js
-Some functionality copied as is.
-*/
 Echo.Tests.Suite.prototype.jqueryObjectsEqual = function(source, target, message) {
-	var expected, actual;
-	var properties = [
-		"disabled",
-		"readOnly"
-	];
-	var attributes = [
-		"autocomplete",
-		"aria-activedescendant",
-		"aria-controls",
-		"aria-describedby",
-		"aria-disabled",
-		"aria-expanded",
-		"aria-haspopup",
-		"aria-hidden",
-		"aria-labelledby",
-		"aria-pressed",
-		"aria-selected",
-		"aria-valuemax",
-		"aria-valuemin",
-		"aria-valuenow",
-		"class",
-		"href",
-		"id",
-		"nodeName",
-		"role",
-		"tabIndex",
-		"src",
-		"alt",
-		"title"
-	];
-	function extract(elem) {
-		if (!elem || !elem.length) {
-			QUnit.push(false, actual, expected,
-				"jqueryObjectsEqual failed, can't extract the element, message was: " + message);
-			return;
-		}
-
-		var children, result = {};
-		$.map(properties, function(attr) {
-			var value = elem.prop(attr);
-			if (typeof value !== "undefined") {
-				result[attr] = value;
-			}
-		});
-		$.map(attributes, function(attr) {
-			var value = elem.attr(attr);
-			if (typeof value !== "undefined") {
-				result[attr] = value;
-			}
-		});
-		result.events = $._data(elem[0], "events");
-		result.data = $.extend({}, elem.data());
-		delete result.data[$.expando];
-		children = elem.contents();
-		if (children.length) {
-			result.children = children.map(function( ind ) {
-				return extract($(this));
-			}).get();
-		} else {
-			result.tagName = elem.prop("tagName");
-			result.text = elem.text();
-		}
-		return result;
-	}
-	expected = extract(source);
-
-	actual = extract(target);
-	QUnit.deepEqual(actual, expected, message);
+	Echo.Tests.jqueryObjectsEqual(source, target, message);
 };
 
 Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
@@ -269,13 +197,14 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 			instance.render();
 		}
 		var checker = function(name, element, suffix) {
+			suffix = suffix || "";
 			if (!element) {
 				QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template." + suffix);
 				return;
 			}
 			var oldElement = element.clone(true, true);
 			var renderedElement = instance.view.render({"name": name});
-			self._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
+			Echo.Tests._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
 		};
 		$.each(instance.renderers, function(name, renderer) {
 			self.info.functions.push("renderers." + name);
@@ -295,49 +224,17 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 	this.tests.TestRenderers = data;
 };
 
+// TODO: get rid of this function once IdentityServer.API is rewritten using new format
 Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
-	var user = Echo.UserSession($.extend({"appkey": "echo.jssdk.tests.aboutecho.com"}, config || {}));
-	if (user.is("logged")) {
-		callback && callback();
-		return;
-	}
-	$.get("http://echosandbox.com/js-sdk/auth", {
-		"action": "login",
-		"channel": Backplane.getChannelID(),
-		"identityUrl": "http://somedomain.com/users/fake_user"
-	}, function() {
-		Echo.UserSession._onInit(callback);
-		Backplane.expectMessages("identity/ack");
-	}, "jsonp");
-};
-
-Echo.Tests.Suite.prototype.logoutTestUser = function(callback) {
-	Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"}).logout(callback);
-};
-
-Echo.Tests.Suite.prototype._testElementsConsistencyAfterRendering = function(name, oldElement, renderedElement, assertionTextSuffix) {
-	assertionTextSuffix = assertionTextSuffix || "";
-	QUnit.ok(renderedElement instanceof jQuery && renderedElement.length === 1, "Renderer \"" + name + "\": check contract" + assertionTextSuffix);
-	QUnit.ok(renderedElement.jquery === oldElement.jquery, "Renderer \"" + name + "\": check that element is still the same after second rendering" + assertionTextSuffix);
-	QUnit.equal(renderedElement.children().length, oldElement.children().length, "Renderer \"" + name + "\": check the number of children after second rendering of element" + assertionTextSuffix);
-	// this variable contains regexp that will test rendered element
-	// use case is renderer function has side effects (ex. date computation, random values etc)
-	var template = oldElement.text().toLowerCase().replace(/([^\w\s])/g, "\\$1").replace(/\d+/g, "\\d+");
-	QUnit.ok((new RegExp(template)).test(renderedElement.text().toLowerCase()), "Element \"" + name + "\": check that text representation of the element is still the same after second rendering" + assertionTextSuffix);
+	Echo.Tests.Utils.actualizeTestUser(config, callback);
 };
 
 Echo.Tests.Suite.prototype._prepareEnvironment = function(test, callback) {
-	var self = this;
-	this._cleanupEnvironment(function() {
-		if (test.config.user.status === "anonymous") {
-			callback();
-			return;
-		}
-		self.loginTestUser(test.config.user, callback);
-	});
+	this._cleanupEnvironment();
+	Echo.Tests.Utils.actualizeTestUser(test.config.user, callback);
 };
 
-Echo.Tests.Suite.prototype._cleanupEnvironment = function(callback) {
+Echo.Tests.Suite.prototype._cleanupEnvironment = function() {
 	//delete all event handlers in all contexts
 	Echo.Events._subscriptions = {};
 	Echo.Events._dataByHandlerId = {};
@@ -345,8 +242,9 @@ Echo.Tests.Suite.prototype._cleanupEnvironment = function(callback) {
 	// clear qunit-fixture
 	$("#qunit-fixture").empty();
 
-	// logout user
-	this.logoutTestUser(callback);
+	// force Echo.UserSession to re-initialize itself completely
+	// during the next Echo.UserSession object initialization
+	Echo.UserSession.state = "init";
 };
 
 })(Echo.jQuery);

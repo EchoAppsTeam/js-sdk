@@ -66,9 +66,11 @@ counter.init = function() {
 	} else {
 		this.render();
 		this.ready();
-		this.request.send({
-			"skipInitialRequest": true
-		});
+		if (this.request) {
+			this.request.send({
+				"skipInitialRequest": true
+			});
+		}
 	}
 };
 

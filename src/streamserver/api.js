@@ -172,7 +172,9 @@ Echo.StreamServer.API.Request.prototype._search = function(force) {
 		}
 		this.liveUpdates.start(force);
 	}
-	this.request();
+	if (this.requestType === "initial" && !this.config.get("skipInitialRequest")) {
+		this.request();
+	}
 };
 
 Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {

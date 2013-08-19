@@ -250,6 +250,10 @@ Echo.GUI.Tabs.prototype.add = function(tabConfig) {
 	var self = this;
 	if (!tabConfig || !tabConfig.id) return this.config.get("target");
 
+	if (!~this._getTabIndex(tabConfig.id)) {
+		this.config.get("entries").push(tabConfig);
+	}
+
 	var fullId = this._getTabFullId(tabConfig.id);
 	var classes = tabConfig.disabled ? "disabled" : "";
 	if (tabConfig.extraClass) {
