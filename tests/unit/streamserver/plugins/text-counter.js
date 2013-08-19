@@ -1,15 +1,15 @@
 (function($) {
 
-var suite = Echo.Tests.Unit.PluginsTextCounter = function() {
-	this.constructPluginRenderersTest();
-};
+var plugin = "Echo.StreamServer.Controls.Submit.Plugins.TextCounter";
 
-suite.prototype.tests = {};
+Echo.Tests.module(plugin, {
+	"meta": {
+		"className": plugin
+	}
+});
 
-suite.prototype.info = {
-	"className": "Echo.StreamServer.Controls.Submit.Plugins.TextCounter",
-	"suiteName": "TextCounter plugin",
-	"functions": []
-};
+Echo.Tests.pluginRenderersTest(plugin, {
+	"targetURL": "http://example.com/js-sdk/"
+});
 
 })(Echo.jQuery);

@@ -1,15 +1,18 @@
 (function($) {
 
-var suite = Echo.Tests.Unit.PluginsPinboardVisualization = function() {
-	this.constructPluginRenderersTest();
-};
+var plugin = "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization";
 
-suite.prototype.tests = {};
+Echo.Tests.module(plugin, {
+	"meta": {
+		"className": plugin
+	}
+});
 
-suite.prototype.info = {
-	"className": "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization",
-	"suiteName": "PinboardVisualization plugin",
-	"functions": []
-};
+Echo.Tests.pluginRenderersTest(plugin, {
+	"query": "childrenof:http://example.com/js-sdk/",
+	"liveUpdates": {
+		"enabled": false
+	}
+});
 
 })(Echo.jQuery);

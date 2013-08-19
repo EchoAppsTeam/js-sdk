@@ -1,17 +1,18 @@
 (function($) {
 
-var suite = Echo.Tests.Unit.PluginsReply = function() {
-	this.constructPluginRenderersTest();
-};
+var plugin = "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply";
 
-suite.prototype.tests = {};
+Echo.Tests.module(plugin, {
+	"meta": {
+		"className": plugin
+	}
+});
 
-suite.prototype.info = {
-	"className": "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply",
-	"suiteName": "Reply plugin",
-	"functions": [
-		"destroy"
-	]
-};
+Echo.Tests.pluginRenderersTest(plugin, {
+	"query": "childrenof:http://example.com/js-sdk/",
+	"liveUpdates": {
+		"enabled": false
+	}
+});
 
 })(Echo.jQuery);
