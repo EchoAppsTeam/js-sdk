@@ -53,36 +53,22 @@ Echo.Tests.asyncTest = function(name, callback, config) {
 Echo.Tests.renderersTest = function(component, params, config) {
 	params = $.extend({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
-		"target": $("#qunit-fixture"),
 		"ready": function() {}
 	}, params || {});
+
 	Echo.Tests.asyncTest("basic checks for renderers", function() {
+		var ready = params.ready;
 		var handler = function() {
 			var instance = this;
-			var checker = function(name, element, suffix) {
-				suffix = suffix || "";
-				if (!element) {
-					QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template." + suffix);
-					return;
-				}
-				var oldElement = element.clone(true, true);
-				var renderedElement = instance.view.render({"name": name});
-				_testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
-			};
-			$.each(instance.renderers, function(name, renderer) {
-				QUnit.config.current.moduleTestEnvironment.meta.functions.push("renderers." + name);
-				checker(name, instance.view.get(name));
+			ready.call(instance);
+			_checkRenderers.call(instance, {
+				"instance": instance,
+				"renderers": instance.renderers,
+				"cssPrefix": instance.cssPrefix
 			});
-			var oldElements = Echo.Utils.foldl({}, instance.view._elements, function(element, acc, name) {
-				acc[name] = element.clone(true, true);
-			});
-			instance.render();
-			$.each(instance.renderers, function(name, element) {
-				checker(name, oldElements[instance.cssPrefix + name], " (recursive rerendering case)");
-			});
+			instance.destroy();
 			QUnit.start();
 		};
-		var ready = params.ready;
 		params.ready = function() {
 			if (this.view.rendered()) {
 				handler.call(this);
@@ -93,8 +79,64 @@ Echo.Tests.renderersTest = function(component, params, config) {
 					"handler": handler
 				});
 			}
-			ready.call(this);
 		};
+		params.target = params.target || $("#qunit-fixture");
+		var Component = Echo.Utils.getComponent(component);
+		new Component(params);
+	}, config);
+};
+
+Echo.Tests.pluginRenderersTest = function(plugin, params, config) {
+	params = $.extend({
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"plugins": [],
+		"ready": function() {}
+	}, params || {});
+
+	var parts = plugin.split(".Plugins.");
+	var component = parts[0];
+	plugin = parts[1];
+	params.plugins.push($.extend({"name": plugin}, params.pluginConfig || {}));
+	delete params.pluginConfig;
+
+	// XXX: hack this because Stream.Item can't be instantiated itself
+	var forStreamItem = component.indexOf("Stream.Item") >= 0;
+	component = component.replace("Stream.Item", "Stream");
+
+	Echo.Tests.asyncTest("basic checks for renderers", function() {
+		var ready = params.ready;
+		var handler = function() {
+			var instance = this;
+			var pluginInstance = forStreamItem
+				? instance.threads[0].getPlugin(plugin)
+				: instance.getPlugin(plugin);
+			ready.call(instance);
+			_checkRenderers.call(pluginInstance, {
+				"instance": pluginInstance.component,
+				"renderers": pluginInstance._manifest("renderers"),
+				"cssPrefix": pluginInstance.cssPrefix
+			});
+			_checkRenderers.call(pluginInstance, {
+				"instance": pluginInstance.component,
+				"renderers": pluginInstance._manifest("component").renderers,
+				"cssPrefix": pluginInstance.component.cssPrefix,
+				"statPrefix": "component."
+			});
+			instance.destroy();
+			QUnit.start();
+		};
+		params.ready = function() {
+			if (this.view.rendered()) {
+				handler.call(this);
+			} else {
+				this.events.subscribe({
+					"topic": component + ".onRender",
+					"once": true,
+					"handler": handler
+				});
+			}
+		};
+		params.target = params.target || $("#qunit-fixture");
 		var Component = Echo.Utils.getComponent(component);
 		new Component(params);
 	}, config);
@@ -237,6 +279,35 @@ function _normalizeTestConfig(config) {
 			"status": "anonymous"
 		}
 	}, config || {});
+}
+
+function _checkSingleRenderer(name, element, rendererFn, suffix) {
+	suffix = suffix || "";
+	if (!element) {
+		QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template." + suffix);
+		return;
+	}
+	var oldElement = element.clone(true, true);
+	var renderedElement = rendererFn.call(this, element);
+	_testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
+}
+
+function _checkRenderers(config) {
+	var self = this;
+	var instance = config.instance;
+	var renderers = config.renderers;
+	config.statPrefix = config.statPrefix || "";
+	$.each(renderers, function(name, renderer) {
+		QUnit.config.current.moduleTestEnvironment.meta.functions.push(config.statPrefix + "renderers." + name);
+		_checkSingleRenderer.call(self, name, (config.statPrefix ? instance : self).view.get(name), renderers[name]);
+	});
+	var oldElements = Echo.Utils.foldl({}, instance.view._elements, function(element, acc, name) {
+		acc[name] = element.clone(true, true);
+	});
+	instance.render();
+	$.each(renderers, function(name, element) {
+		_checkSingleRenderer.call(self, name, oldElements[config.cssPrefix + name], renderers[name], " (recursive rerendering case)");
+	});
 }
 
 function _testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix) {
