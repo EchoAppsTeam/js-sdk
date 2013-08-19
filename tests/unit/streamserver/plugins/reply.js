@@ -4,7 +4,10 @@ var plugin = "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply";
 
 Echo.Tests.module(plugin, {
 	"meta": {
-		"className": plugin
+		"className": plugin,
+		"functions": [
+			"destroy"
+		]
 	}
 });
 
