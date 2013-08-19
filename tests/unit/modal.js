@@ -84,7 +84,8 @@ Echo.Tests.asyncTest("common workflow", function() {
 	QUnit.ok(modalElement.hasClass("upd-echo-hide"), "Check set() method (CSS class)");
 	QUnit.equal($(".modal-header h3", modalElement).html(), "upd-title", "Check set() method (title HTML)");
 	QUnit.equal($(".modal-body", modalElement).html(), "upd_body", "Check set() method (body HTML)");
-	QUnit.equal(modalElement.width(), 500, "Check set() method (width)");
+	// for some unknown reason IE gives number 500.34 here...
+	QUnit.equal(Math.round(modalElement.width()), 500, "Check set() method (width)");
 
 	QUnit.ok($(".modal").length, "Check that element is available");
 	modal.config.set("onHide", function() {
