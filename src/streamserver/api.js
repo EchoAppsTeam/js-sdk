@@ -97,7 +97,7 @@ Echo.StreamServer.API.Request.prototype.abort = function() {
 	}
 };
 
-Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.prototype._count = function(force) {
+Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.prototype._count = Echo.StreamServer.API.Request.prototype._mux = function(force) {
 	if (this.config.get("recurring")) {
 		if (!this.liveUpdates) {
 			this._initLiveUpdates();
