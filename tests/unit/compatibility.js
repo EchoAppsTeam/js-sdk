@@ -2,14 +2,6 @@
 
 Echo.Tests.module("Compatibility tests");
 
-	var suite = Echo.Tests.Unit.compatibilityTest = function() {};
-
-	suite.prototype.info = {
-		"suiteName": "Compatibility tests"
-	};
-
-	suite.prototype.tests = {};
-
 Echo.Tests.asyncTest("jQuery no conflict", function() {
 	var testVersion = "1.4.1";
 	QUnit.ok(!(window.$ || window.jQuery), "jQuery is not defined globally");
