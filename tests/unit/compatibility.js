@@ -1,5 +1,7 @@
 (function($) {
 
+Echo.Tests.module("Compatibility tests");
+
 	var suite = Echo.Tests.Unit.compatibilityTest = function() {};
 
 	suite.prototype.info = {
@@ -8,100 +10,69 @@
 
 	suite.prototype.tests = {};
 
-	suite.prototype.tests.JqueryNoConflict = {
-		"config": {
-			"async": true,
-			"testTimeout": 20000 // 20 secs
-		},
-		"check": function() {
-			var testVersion = "1.4.1";
+Echo.Tests.asyncTest("jQuery no conflict", function() {
+	var testVersion = "1.4.1";
+	QUnit.ok(!(window.$ || window.jQuery), "jQuery is not defined globally");
 
-			QUnit.ok(!(window.$ || window.jQuery),
-				"Checking if jQuery is not defined in the window namespace");
+	Echo.Loader.download([{"url": "https://cdnjs.cloudflare.com/ajax/libs/jquery/" + testVersion + "/jquery.min.js"}], function () {
+		QUnit.strictEqual(window.$.fn.jquery, testVersion, "Downloaded jQuery has the expected version");
+		QUnit.notEqual(window.$.fn.jquery, $.fn.jquery, "Echo jQuery instance wasn't overridden after another jQuery version inclusion on the page");
 
-			Echo.Loader.download([{"url": "https://ajax.googleapis.com/ajax/libs/jquery/" + testVersion + "/jquery.min.js"}], function () {
-				QUnit.ok(window.$.fn.jquery === testVersion && $.fn.jquery !== window.$.fn.jquery, "Checking if Echo jQuery lib wasn't overridden after another jQuery version inclusion into the page");
-				Echo.Loader.download([{"url": "third-party/jquery.pack.js"}], function () {
-					QUnit.ok(window.$.fn.jquery === testVersion && $.fn.jquery !== window.$.fn.jquery, "Checking if the native jQuery lib on the page is not overridden after Echo jQuery inclusion");
-					window.jQuery.noConflict(true);
-					QUnit.start();
+		Echo.Loader.download([{"url": "third-party/jquery.pack.js"}], function () {
+			QUnit.strictEqual(window.$.fn.jquery, testVersion, "External jQuery instance has the expected version after Echo jQuery inclusion");
+			QUnit.notEqual(window.$.fn.jquery, $.fn.jquery, "Echo jQuery and external jQuery instances have different versions");
+			window.jQuery.noConflict(true);
+			QUnit.ok(!(window.$ || window.jQuery), "jQuery is not defined globally after noConflict() call");
+			QUnit.start();
+		});
+	});
+}, {
+	"timeout": 6000
+});
+
+Echo.Tests.asyncTest("v2 and v3 no conflict", function() {
+	var compareWithV2Scripts = Echo.Tests.isolate(function(callback) {
+		var win = this;
+		var script = win.document.createElement("script");
+		$(script)
+			.on("load", function() {
+				$(this).off("load");
+				var EchoV2 = win.Echo;
+				var EchoV3 = window.Echo;
+				var inV2 = $.map(EchoV3, function(v, k) {
+					return EchoV2[k];
 				});
-			});
-		}
-	};
+				QUnit.equal(inV2.length, 0, "Neither of Echo V3 keys match with Echo V2 keys");
+				callback();
+			})
+			.appendTo(win.document.body);
+		// $(script).attr("src", ..) doesn't work for some reason so let's do it directly
+		script.src = "http://cdn.echoenabled.com/clientapps/v2/packs/full-pack.js";
+	});
+	compareWithV2Scripts(function() {
+		QUnit.start();
+	});
+});
 
-	suite.prototype.tests.V2V3CompatibilityCheck = {
-		"config": {
-			"async": true,
-			"testTimeout": 20000 // 20 secs
-		},
-		"check": function() {
-			var self = this;
-			var ids = {
-				"v2": "echo-apps-v2",
-				"v3": "echo-apps-v3"
-			};
+Echo.Tests.asyncTest("yepnope no conflict", function() {
+	var origYepnope = window.yepnope;
+	QUnit.ok(!!Echo.yepnope, "Echo yepnope is loaded");
 
-			var Stack = function(callback) {
-				var counter = 0;
-				var state = {};
-				this.init = function(id) {
-					if( !state.hasOwnProperty(id) ) {
-						state[id] = false;
-						counter++;
-					}
-				};
-				this.done = function(id) {
-					if (state[id] === false) {
-						state[id] = true;
-						--counter == 0 && callback();
-					}
-				}
-			};
+	Echo.Loader.download([{"url": "https://cdnjs.cloudflare.com/ajax/libs/yepnope/1.5.4/yepnope.min.js"}], function () {
+		var externalYepnope = window.yepnope;
+		QUnit.ok(!!window.yepnope, "External yepnope is loaded");
+		QUnit.notDeepEqual(window.yepnope, Echo.yepnope,
+			"External yepnope and Echo yepnope are different objects");
 
-			Echo.Variables.V2V3Test = new Stack(function() {
-				var res = !$.map(window[ids.v3].Echo, function(val, key) {
-					return window[ids.v2].Echo[key];
-				}).length;
-
-				QUnit.ok(res, "Check if v3 Echo keys  don't match with v2 Echo keys");
-				QUnit.start();
-			});
-
-			$.each(ids, function(key, val) {
-				self.config.target.append('<iframe src="unit/compatibility/' + key + '.html" name="' + val + '"></iframe>');
-			});
-		}
-	};
-
-	suite.prototype.tests.YepnopeNoConflict = {
-		"config": {
-			"async": true,
-			"testTimeout": 20000 // 20 secs
-		},
-		"check": function() {
-			var origYepnope = window.yepnope;
-			
-			QUnit.ok(!!Echo.yepnope, "Check if Echo's yepnope is loaded");
-			
-			Echo.Loader.download([{"url": "https://cdnjs.cloudflare.com/ajax/libs/yepnope/1.5.4/yepnope.min.js"}], function () {
-				var globalYepnope = window.yepnope;
-				
-				QUnit.ok(!!window.yepnope, "Check if global yepnope has been loaded");
-				
-				QUnit.ok(Echo.yepnope !== window.yepnope,
-					"Check if global yepnope and Echo's yepnope are different objects");
-				
-				Echo.Loader.download([{"url": "loader.js"}], function () {
-					
-					QUnit.ok(globalYepnope === window.yepnope, 
-						"Check if global yepnope is not overwritten after Echo's yepnope has been loaded");
-					
-					window.yepnope = origYepnope;
-					QUnit.start();
-				});
-			});
-		}
-	};
+		Echo.Loader.download([{"url": "loader.js"}], function () {
+			QUnit.deepEqual(window.yepnope, externalYepnope,
+				"External yepnope is not overridden after Echo yepnope is loaded");
+			window.yepnope = origYepnope;
+			QUnit.start();
+		});
+	});
+}, {
+	"timeout": 6000
+});
 
 })(Echo.jQuery);

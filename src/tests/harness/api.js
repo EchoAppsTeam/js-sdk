@@ -4,6 +4,7 @@
 var $ = jQuery;
 
 Echo.Tests.module = function(name, config) {
+	config = config || {};
 	config.meta = config.meta || {};
 	QUnit.module(name, {
 		"setup": function() {
