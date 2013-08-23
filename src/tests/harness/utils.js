@@ -63,9 +63,9 @@ Echo.Tests.Utils.initServer = function() {
 			fake = true;
 			return false;
 		});
-		Echo.Utils.log({
+		!fake && Echo.Utils.log({
 			"component": "Tests",
-			"message": "[" + (fake && "FAKE" || "REAL") + " request] " + url
+			"message": "[REAL request] " + url
 		});
 		return !fake;
 	});
