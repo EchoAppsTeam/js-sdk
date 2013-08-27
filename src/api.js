@@ -59,7 +59,7 @@ Echo.API.Transports.WebSocket = utils.inherit(Echo.API.Transport, function(confi
 		return;
 	}
 	this.timers = {};
-	this.subscriptionIds = [];
+	this.subscriptionIds = {};
 	this.unique = Echo.Utils.getUniqueString();
 	Echo.API.Transports.WebSocket.parent.constructor.call(this, config);
 });
@@ -87,17 +87,16 @@ Echo.API.Transports.WebSocket.prototype.context = function(subscriptionId) {
 };
 
 Echo.API.Transports.WebSocket.prototype.abort = function() {
-	$.map(this.subscriptionIds, function(id) {
-		Echo.Events.unsubscribe({"handlerId": id});
-	});
-	this.subscriptionIds = [];
 	var socket = Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
+	this._clearEvents(["onClose"]);
 	if (socket) {
 		delete socket.subscribers[this.unique];
 		// close socket connection if the last subscriber left
 		if ($.isEmptyObject(socket.subscribers)) {
 			delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
-			this.transportObject.close();
+			if (!this.closed() || !this.closing()) {
+				this.transportObject.close();
+			}
 		}
 	}
 	this._clearTimers();
@@ -108,34 +107,61 @@ Echo.API.Transports.WebSocket.prototype.send = function(event) {
 	return this.transportObject.send(Echo.Utils.objectToJSON(event));
 };
 
+Echo.API.Transports.WebSocket.prototype.keepConnection = function() {
+	// establish periodical clinet-server ping-pong to keep connection alive
+	var interval = this.config.get("settings.serverPingInterval") * 1000;
+	this.timers.ping = setInterval($.proxy(this._ping, this), interval);
+};
+
 // private functions
 
 Echo.API.Transports.WebSocket.prototype._getScheme = function() {
 	return this.config.get("secure") ? "wss:" : "ws:";
 };
 
+Echo.API.Transports.WebSocket.prototype._clearEvents = function(exceptions) {
+	var self = this;
+	exceptions = exceptions || [];
+	$.map(this.subscriptionIds, function(ids, name) {
+		if (!~$.inArray(name, exceptions)) {
+			$.map(ids, function(id) {
+				Echo.Events.unsubscribe({"handlerId": id});
+			});
+			self.subscriptionIds[name] = [];
+		}
+	});
+	if (!exceptions.length) {
+		this.subscriptionIds = {};
+	}
+};
+
 Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 	var self = this, uri = this.config.get("uri");
 	var sockets = Echo.API.Transports.WebSocket.socketByURI;
-	$.map(["onOpen", "onClose", "onError", "onData"], function(topic) {
-		var id = Echo.Events.subscribe({
-			"topic": "Echo.API.Transports.WebSocket." + topic,
-			"handler": function(_, data) {
-				self.config.get(topic)(data);
-			},
-			// when we receive data - send it to the appropriate
-			// subscribers only (do not send it to all subscribers)
-			"context": self.context(topic === "onData" ? self.unique : undefined)
-		});
-		self.subscriptionIds.push(id);
-	});
-
 	if (!sockets[uri]) {
 		sockets[uri] = {
 			"socket": this._prepareTransportObject(),
 			"subscribers": {}
 		};
 	}
+	$.map(["onOpen", "onClose", "onError", "onData"], function(topic) {
+		var id = Echo.Events.subscribe({
+			"topic": "Echo.API.Transports.WebSocket." + topic,
+			"handler": function(_, data) {
+				self.config.get(topic)(data);
+				// clear all events in case of closing connection
+				if (topic === "onClose") {
+					self._clearEvents();
+				}
+			},
+			// when we receive data - send it to the appropriate
+			// subscribers only (do not send it to all subscribers)
+			"context": self.context(topic === "onData" ? self.unique : undefined)
+		});
+		self.subscriptionIds[topic] = self.subscriptionIds[topic] || [];
+		self.subscriptionIds[topic].push(id);
+	});
+
 	// register socket subscriber
 	sockets[uri].subscribers[this.unique] = true;
 
@@ -157,10 +183,7 @@ Echo.API.Transports.WebSocket.prototype._prepareTransportObject = function() {
 			self._resetRetriesAttempts();
 			self._publish("onOpen");
 		});
-
-		// establish periodical clinet-server ping-pong to keep connection alive
-		var interval = self.config.get("settings.serverPingInterval") * 1000;
-		self.timers.ping = setInterval($.proxy(self._ping, self), interval);
+		self.keepConnection();
 	};
 	socket.onmessage = function(event) {
 		if (!event || !event.data) return;
@@ -183,7 +206,6 @@ Echo.API.Transports.WebSocket.prototype._resetRetriesAttempts = function() {
 Echo.API.Transports.WebSocket.prototype._clearTimers = function() {
 	this.timers.ping && clearInterval(this.timers.ping);
 	this.timers.pong && clearTimeout(this.timers.pong);
-	this.timers.reconnect && clearTimeout(this.timers.reconnect);
 	this.timers = {};
 };
 
@@ -198,31 +220,26 @@ Echo.API.Transports.WebSocket.prototype._publish = function(topic, data, subscri
 
 Echo.API.Transports.WebSocket.prototype._ping = function(callback) {
 	var self = this;
-	if (this.send({"event": "ping"})) {
-		var id = Echo.Events.subscribe({
-			"topic": "Echo.API.Transports.WebSocket.onData",
-			"handler": function(topic, data) {
-				// we are expecting "pong" message only...
-				if (!data || data.event !== "pong") return;
+	this.send({"event": "ping"})
+	var id = Echo.Events.subscribe({
+		"topic": "Echo.API.Transports.WebSocket.onData",
+		"handler": function(topic, data) {
+			// we are expecting "pong" message only...
+			if (!data || data.event !== "pong") return;
 
-				clearTimeout(self.timers.pong);
-				Echo.Events.unsubscribe({"handlerId": id});
-				self._resetRetriesAttempts();
-
-				callback && callback();
-			},
-			"context": this.context()
-		});
-		// waiting for the "pong" response half of the ping-pong interval
-		this.timers.pong = setTimeout(function() {
+			clearTimeout(self.timers.pong);
 			Echo.Events.unsubscribe({"handlerId": id});
-			self._tryReconnect();
-		}, this.config.get("settings.serverPingInterval") * 1000 / 2);
-	} else {
-		// "send" operation failed, which means that
-		// we are disconnected, trying to reconnect...
-		this._tryReconnect();
-	}
+			self._resetRetriesAttempts();
+
+			callback && callback();
+		},
+		"context": this.context()
+	});
+	// waiting for the "pong" response half of the ping-pong interval
+	this.timers.pong = setTimeout(function() {
+		Echo.Events.unsubscribe({"handlerId": id});
+		self._tryReconnect();
+	}, this.config.get("settings.serverPingInterval") * 1000 / 2);
 };
 
 Echo.API.Transports.WebSocket.prototype._tryReconnect = function() {
@@ -241,8 +258,8 @@ Echo.API.Transports.WebSocket.prototype._reconnect = function() {
 	this.abort();
 	this.transportObject.close();
 	delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
-	this.transportObject = this._getTransportObject();
 	this._clearTimers();
+	this.transportObject = this._getTransportObject();
 };
 
 Echo.API.Transports.WebSocket.available = function() {
@@ -313,7 +330,9 @@ Echo.API.Transports.AJAX.prototype.send = function(data) {
 };
 
 Echo.API.Transports.AJAX.prototype.abort = function() {
-	if (this.transportObject) {
+	// check that transport object initialized by $.ajax function
+	// instead of initializing by constructor
+	if (this.transportObject && this.transportObject.abort) {
 		this.transportObject.abort();
 	}
 	this.config.get("onClose")();
@@ -571,7 +590,6 @@ Echo.API.Request = function(config) {
 		 * Note: according to the link above, for some transports these settings
 		 * have no effect.
 		 */
-		"settings": {},
 		/**
 		 * @cfg {String} [transport]
 		 * Specifies the transport name. The following transports are available:
