@@ -36,7 +36,7 @@ Echo.Tests.asyncTest("common workflow", function() {
 		"fade": true
 	};
 
-	QUnit.expect(21);
+	QUnit.expect(24);
 	Echo.Utils.addCSS(".echo-hide { display: none; }", "echo-hide");
 	var modal = new Echo.GUI.Modal(modalParams);
 
@@ -77,16 +77,17 @@ Echo.Tests.asyncTest("common workflow", function() {
 	modal.config.set("extraClass", "upd-echo-hide");
 	modal.config.set("data.title", "upd-title");
 	modal.config.set("data.body", "upd_body");
-	modal.config.set("width", "400");
+	modal.config.set("width", 500);
 	modal.refresh();
 
 	var modalElement = modal.element;
-	QUnit.ok(modalElement.hasClass("upd-echo-hide")
-			&& $(".modal-header h3", modalElement).html() === "upd-title"
-			&& $(".modal-body", modalElement).html() === "upd_body"
-			&& modalElement.width() === 400, "Check set() method");
+	QUnit.ok(modalElement.hasClass("upd-echo-hide"), "Check set() method (CSS class)");
+	QUnit.equal($(".modal-header h3", modalElement).html(), "upd-title", "Check set() method (title HTML)");
+	QUnit.equal($(".modal-body", modalElement).html(), "upd_body", "Check set() method (body HTML)");
+	// for some unknown reason IE gives number 500.34 here...
+	QUnit.equal(Math.round(modalElement.width()), 500, "Check set() method (width)");
 
-	QUnit.ok($(".modal").length, "Check that element is visible");
+	QUnit.ok($(".modal").length, "Check that element is available");
 	modal.config.set("onHide", function() {
 		modal.config.set("onHide", function() {});
 		QUnit.ok(!$(".modal").length, "Check hide() method");
@@ -95,7 +96,6 @@ Echo.Tests.asyncTest("common workflow", function() {
 			QUnit.ok($(".modal").length, "Check show() method");
 			modal.destroy();
 			QUnit.ok(!$(".modal").length, "Check destroy() method");
-
 			QUnit.start();
 		});
 		modal.show();

@@ -97,7 +97,7 @@ stream.init = function() {
 	var data = this.config.get("data");
 	if (data) {
 		this._handleInitialResponse(data);
-		this.request.send({
+		this.request && this.request.send({
 			"skipInitialRequest": true,
 			"data": {
 				"q": this.config.get("query"),
