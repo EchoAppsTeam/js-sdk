@@ -321,7 +321,6 @@ Echo.Loader.init = function(config) {
 	});
 };
 
-
 /**
  * @static
  * Function to initialize application on the page. The function performs the following actions:
