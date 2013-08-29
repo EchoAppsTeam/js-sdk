@@ -291,80 +291,36 @@ Echo.Loader.override = function(canvasID, appID, config) {
  * Target element where Echo Loader should look for the canvases if no
  * canvases were passed in the "config.canvases" field.
  */
+
 Echo.Loader.init = function(config) {
-	config = config || {};
-
-	var canvases = config.canvases;
-
-	var isArray = function(item) {
-		return Object.prototype.toString.call(item) === "[object Array]";
-	};
-
-	var initCanvases = function(canvases) {
-		if (!canvases.length) return;
-		Echo.Loader.initEnvironment(function() {
-			Echo.Loader._map(canvases || [], function(canvas) {
-				var instance = new Echo.Canvas({
-					"target": canvas,
-					"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {},
-					"mode": "prod"
-				});
-				Echo.Loader.canvases.push(instance);
-			});
-		});
-	};
-
-	// convert a single canvas to the 1-element array
-	// to keep the same contract below in the code
-	// TODO: check if canvases are jQuery objects
-	if (canvases && !isArray(canvases) && !(canvases.jquery)) {
-		canvases = [canvases];
-	}
-	// if no canvases defined during initialization,
-	// we look for all canvases in the target ('document' by default)
-	// TODO: check if target is jQuery object
-	canvases = canvases || (config.target
-		? config.target.getElementsByClassName("echo-canvas")
-		: document.getElementsByClassName("echo-canvas"));
-
 	var inViewport = function(canvas) {
-		var nVScroll = document.documentElement.scrollTop || document.body.scrollTop;
 		var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
+		var nVScroll = document.documentElement.scrollTop || document.body.scrollTop;
 		return nVScroll + viewportHeight >= canvas.offsetTop;
 	};
 
-	var renderCanvases = function() {
-		var toRender = [];
-		canvases = Echo.Loader._map(canvases, function(canvas) {
-			if (canvas.getAttribute("data-canvas-init") !== "when-visible" || inViewport(canvas)) {
-				toRender.push(canvas);
-			} else {
-				return canvas;
+	Echo.Loader._getCanvasElements(config, function(canvases) {
+		var renderCanvases = function() {
+			var toRender = [];
+			canvases = Echo.Loader._map(canvases, function(canvas) {
+				if (canvas.getAttribute("data-canvas-init") !== "when-visible" || inViewport(canvas)) {
+					toRender.push(canvas);
+				} else {
+					return canvas;
+				}
+			});
+			if (toRender.length) {
+				Echo.Loader._initCanvases(toRender);
 			}
-		});
-		toRender.length && initCanvases(toRender);
-		if (!canvases.length) {
-			// TODO: move to better place
-			if (window.addEventListener) {
-				window.removeEventListener("scroll", renderCanvases);
-				window.removeEventListener("resize", renderCanvases);
-			} else {
-				window.detachEvent("onscroll", renderCanvases);
-				window.detachEvent("onresize", renderCanvases);
+			if (!canvases.length) {
+				Echo.Loader._onViewportChange.unsubscribe(renderCanvases);
 			}
-		}
-	};
-
-	renderCanvases();
-
-	if (window.addEventListener) {
-		window.addEventListener("scroll", renderCanvases);
-		window.addEventListener("resize", renderCanvases);
-	} else {
-		window.attachEvent("onscroll", renderCanvases);
-		window.attachEvent("onresize", renderCanvases);
-	}
+		};
+		renderCanvases();
+		Echo.Loader._onViewportChange.subscribe(renderCanvases);
+	});
 };
+
 
 /**
  * @static
@@ -424,6 +380,65 @@ Echo.Loader.initApplication = function(app) {
 		});
 		Echo.Loader.canvases.push(instance);
 	});
+};
+
+Echo.Loader._getCanvasElements = function(config, callback) {
+	config = config || {};
+
+	var canvases = config.canvases;
+	var target = config.target
+		? (config.target.length ? config.target[0] : config.target)
+		: document;
+
+	// convert a single canvas to the 1-element array
+	// to keep the same contract below in the code
+	if (canvases && !canvases.length) {
+		canvases = [canvases];
+	}
+
+	// if no canvases defined during initialization,
+	// we look for all canvases in the target ('document' by default)
+	if (target.querySelectorAll) {
+		callback(canvases || target.querySelectorAll(".echo-canvas"));
+	} else {
+		// Fallback uses Echo.jQuery if IE < 8
+		Echo.Loader.initEnvironment(function() {
+			callback(canvases || Echo.jQuery(".echo-canvas", target));
+		});
+	}
+};
+
+Echo.Loader._initCanvases = function(canvases) {
+	Echo.Loader.initEnvironment(function() {
+		Echo.Loader._map(canvases, function(canvas) {
+			var instance = new Echo.Canvas({
+				"target": canvas,
+				"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
+			});
+			Echo.Loader.canvases.push(instance);
+		});
+	});
+};
+
+Echo.Loader._onViewportChange = {
+	"subscribe": function(handler) {
+		if (window.addEventListener) {
+			window.addEventListener("scroll", handler);
+			window.addEventListener("resize", handler);
+		} else {
+			window.attachEvent("onscroll", handler);
+			window.attachEvent("onresize", handler);
+		}
+	},
+	"unsubscribe": function(handler) {
+		if (window.addEventListener) {
+			window.removeEventListener("scroll", handler);
+			window.removeEventListener("resize", handler);
+		} else {
+			window.detachEvent("onscroll", handler);
+			window.detachEvent("onresize", handler);
+		}
+	}
 };
 
 // implementation of the "map" function for the cases when jQuery is not loaded yet

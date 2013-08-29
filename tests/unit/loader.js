@@ -13,7 +13,8 @@ Echo.Tests.module("Echo.Loader", {
 			"isDebug",
 			"download",
 			"override",
-			"getURL"
+			"getURL",
+			"_getCanvasElements"
 		]
 	},
 	"setup": function() {
@@ -412,6 +413,59 @@ Echo.Tests.asyncTest("application initialization", function() {
 	], function() {
 		QUnit.start();
 	});
+});
+
+Echo.Tests.asyncTest("getting canvas elements", function() {
+	var nativeElements = Echo.Tests.isolate(function(callback) {
+		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+
+		Echo.Loader._getCanvasElements({
+			"target": this.document.body,
+			"canvases": this.document.querySelectorAll(".echo-canvas-test")
+		}, function(canvases) {
+			QUnit.equal(canvases.length, 3, "Check if Echo.Loader.init successfully handle config with native DOM elements");
+			callback();
+		});
+	});
+
+	var nativeSingleElement = Echo.Tests.isolate(function(callback) {
+		$(this.document.body).append('<div id="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+
+		Echo.Loader._getCanvasElements({
+			"target": this.document.body,
+			"canvases": this.document.getElementById("echo-canvas-test")
+		}, function(canvases) {
+			QUnit.equal(canvases.length, 1, "Check if Echo.Loader.init successfully handle config with native DOM elements");
+			callback();
+		});
+	});
+
+	var jQueryElements = Echo.Tests.isolate(function(callback) {
+		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+
+		Echo.Loader._getCanvasElements({
+			"target": $("body", this.document),
+			"canvases": $(".echo-canvas-test", this.document)
+		}, function(canvases) {
+			QUnit.equal(canvases.length, 3, "Check if Echo.Loader.init successfully handle config with jQuery elements");
+			callback();
+		});
+	});
+
+	QUnit.expect(3);
+  Echo.Utils.sequentialCall([
+    nativeElements,
+		nativeSingleElement,
+    jQueryElements
+  ], function() {
+    QUnit.start();
+  });
+}, {
+	"timeout": 10000
 });
 
 Echo.Tests.asyncTest("canvases initialization", function() {
