@@ -45,7 +45,11 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 *  + "submit"
 		 *  + "search"
 		 *  + "count"
+		 *  + "mux"
 		 *
+		 * __Note__: The API endpoint "mux" allows to "multiplex" requests,
+		 * i.e. use a single API call to "wrap" several requests. More information
+		 * about "mux" can be found [here](http://wiki.aboutecho.com/w/page/32433803/API-method-mux).
 		 */
 		/**
 		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
@@ -97,7 +101,8 @@ Echo.StreamServer.API.Request.prototype.abort = function() {
 	}
 };
 
-Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.prototype._count = function(force) {
+Echo.StreamServer.API.Request.prototype._search =
+Echo.StreamServer.API.Request.prototype._count = function(force) {
 	if (this.config.get("recurring")) {
 		if (!this.liveUpdates) {
 			this._initLiveUpdates();
@@ -108,6 +113,22 @@ Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.
 	if (this.requestType === "initial" && !this.config.get("skipInitialRequest")) {
 		this.request();
 	}
+};
+
+Echo.StreamServer.API.Request.prototype._submit = function() {
+	this.request(
+		$.extend({}, this.config.get("data"), {
+			"content": Echo.Utils.objectToJSON(this._AS2KVL(this.config.get("data.content")))
+		})
+	);
+};
+
+Echo.StreamServer.API.Request.prototype._mux = function() {
+	this.request(
+		$.extend({}, this.config.get("data"), {
+			"requests": Echo.Utils.objectToJSON(this.config.get("data.requests"))
+		})
+	);
 };
 
 Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
@@ -160,18 +181,14 @@ Echo.StreamServer.API.Request.prototype._onError = function(responseError, reque
 	});
 };
 
-Echo.StreamServer.API.Request.prototype._submit = function() {
-	this.request(
-		$.extend({}, this.config.get("data"), {
-			"content": Echo.Utils.objectToJSON(this._AS2KVL(this.config.get("data.content")))
-		})
-	);
-};
-
 Echo.StreamServer.API.Request.prototype._prepareURI = function() {
 	if (this.config.get("endpoint") === "submit") {
-		// FIXME: move replace to API.Request lib
 		return this.config.get("submissionProxyURL").replace(/^(http|ws)s?:\/\//, "");
+	}
+	if (this.config.get("endpoint") === "mux") {
+		return this.config.get("apiBaseURL")
+			.replace(/^(http|ws)s?:\/\//, "")
+			.replace(/v\d+\//, "v2/") + this.config.get("endpoint");
 	}
 	return this.constructor.parent._prepareURI.call(this);
 };
