@@ -182,15 +182,15 @@ Echo.StreamServer.API.Request.prototype._onError = function(responseError, reque
 };
 
 Echo.StreamServer.API.Request.prototype._prepareURI = function() {
-	if (this.config.get("endpoint") === "submit") {
+	var endpoint = this.config.get("endpoint");
+	if (endpoint === "submit") {
 		return this.config.get("submissionProxyURL").replace(/^(http|ws)s?:\/\//, "");
 	}
-	if (this.config.get("endpoint") === "mux") {
-		return this.config.get("apiBaseURL")
-			.replace(/^(http|ws)s?:\/\//, "")
-			.replace(/v\d+\//, "v2/") + this.config.get("endpoint");
-	}
-	return this.constructor.parent._prepareURI.call(this);
+	return endpoint === "mux"
+		// in case of using "mux" request should be used v2 version
+		// of the API instead of depricated v1
+		? this.constructor.parent._prepareURI.call(this).replace(/v1/, "v2")
+		: this.constructor.parent._prepareURI.call(this);
 };
 
 Echo.StreamServer.API.Request.prototype._getTransport = function() {
