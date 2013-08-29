@@ -425,7 +425,7 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 			"target": this.document.body,
 			"canvases": this.document.querySelectorAll(".echo-canvas-test")
 		}, function(canvases) {
-			QUnit.equal(canvases.length, 3, "Check if Echo.Loader.init successfully handle config with native DOM elements");
+			QUnit.equal(canvases.length, 3, "Check if Echo.Loader.init successfully handles a config with native DOM elements");
 			callback();
 		});
 	});
@@ -437,7 +437,7 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 			"target": this.document.body,
 			"canvases": this.document.getElementById("echo-canvas-test")
 		}, function(canvases) {
-			QUnit.equal(canvases.length, 1, "Check if Echo.Loader.init successfully handle config with native DOM elements");
+			QUnit.equal(canvases.length, 1, "Check if Echo.Loader.init successfully handles a config with native DOM elements");
 			callback();
 		});
 	});
@@ -451,7 +451,7 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 			"target": $("body", this.document),
 			"canvases": $(".echo-canvas-test", this.document)
 		}, function(canvases) {
-			QUnit.equal(canvases.length, 3, "Check if Echo.Loader.init successfully handle config with jQuery elements");
+			QUnit.equal(canvases.length, 3, "Check if Echo.Loader.init successfully handles a config with jQuery elements");
 			callback();
 		});
 	});
