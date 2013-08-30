@@ -132,8 +132,7 @@ var _URLMocks = {
 	},
 	// mocks for /v1/count API
 	"api/count": {
-		// TODO: api.echoenabled.com should go from some variable
-		"url": /^http:\/\/api\.echoenabled\.com\/v1\/count\?q=(.*?)&/,
+		"url": new RegExp("^http:{%=baseURLs.api.streamserver%}v1/count\\?q=(.*?)&"),
 		"response": function(request, query) {
 			request.respond(
 				200,
@@ -144,8 +143,7 @@ var _URLMocks = {
 	},
 	// mocks for /v1/search API
 	"api/search": {
-		// TODO: api.echoenabled.com should go from some variable
-		"url": /^http:\/\/api\.echoenabled\.com\/v1\/search\?.*?q=(.*?)&/,
+		"url": new RegExp("^http:{%=baseURLs.api.streamserver%}v1/search\\?q=(.*?)&"),
 		"response": function(request, query) {
 			request.respond(
 				200,
@@ -157,7 +155,7 @@ var _URLMocks = {
 	// single URL http://api.echoenabled.com/v1/users/whoami?...
 	"api/whoami": {
 		// TODO: api.echoenabled.com should go from some variable
-		"url": /^http:\/\/api\.echoenabled\.com\/v1\/users\/whoami\?/,
+		"url": new RegExp("^http:{%=baseURLs.api.streamserver%}v1/users/whoami\\?"),
 		"response": function(request) {
 			request.respond(
 				200,

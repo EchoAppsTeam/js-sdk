@@ -3,17 +3,17 @@
 <head>
 	<title>"Like" Plugin Demo</title>
 	<link rel="stylesheet" type="text/css" href="demo.css" />
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="http:{%=baseURLs.sdk%}loader.js"></script>
+	<script type="text/javascript" src="http:{%=baseURLs.sdk%}third-party/jquery.pack.js"></script>
 </head>
 <body>
 	<style>
 		.echo-identityserver-controls-auth-userAnonymous { text-align: left; }
 	</style>
 	<div id="container">
-		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="http:{%=baseURLs.docs%}#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like" target="_blank">Documentation</a></div>
 		<h1>"Like" Plugin Demo</h1>
-		<div class="description">The plugin adds extra Like/Unlike buttons to each item in the <a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream" target="_blank">Echo Stream app</a> for authenticated users. The plugin also renders the list of users who liked the item (renders using <a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.FacePile" target="_blank">Echo FacePile app</a>). <br><br> Note: the Like/Unlike buttons are available for authenticated users only. If you are not logged in, you can do it using <a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth" target="_blank">Echo Auth app</a> below.</div>
+		<div class="description">The plugin adds extra Like/Unlike buttons to each item in the <a href="http:{%=baseURLs.docs%}#!/api/Echo.StreamServer.Controls.Stream" target="_blank">Echo Stream app</a> for authenticated users. The plugin also renders the list of users who liked the item (renders using <a href="http:{%=baseURLs.docs%}#!/api/Echo.StreamServer.Controls.FacePile" target="_blank">Echo FacePile app</a>). <br><br> Note: the Like/Unlike buttons are available for authenticated users only. If you are not logged in, you can do it using <a href="http:{%=baseURLs.docs%}#!/api/Echo.IdentityServer.Controls.Auth" target="_blank">Echo Auth app</a> below.</div>
 		<div class="wrapper">
 			<div id="auth"></div>
 		</div>
@@ -35,14 +35,14 @@
 	<!-- Client initialization -->
 	<script type="text/javascript">
 		var backplane = {
-			"serverBaseURL": "http://api.echoenabled.com/v1",
+			"serverBaseURL": "http:{%=baseURLs.api.backplane%}v1",
 			"busName": "jskit"
 		};
 		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
 
 		// init Auth app
 		Echo.Loader.initApplication({
-			"script": "http://cdn.echoenabled.com/sdk/v3/identityserver.pack.js",
+			"script": "http:{%=baseURLs.sdk%}identityserver.pack.js",
 			"component": "Echo.IdentityServer.Controls.Auth",
 			"backplane": backplane,
 			"config": {
@@ -57,7 +57,7 @@
 
 		// init Stream app
 		Echo.Loader.initApplication({
-			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+			"script": "http:{%=baseURLs.sdk%}streamserver.pack.js",
 			"component": "Echo.StreamServer.Controls.Stream",
 			"backplane": backplane,
 			"config": {

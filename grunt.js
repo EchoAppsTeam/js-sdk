@@ -272,19 +272,6 @@ module.exports = function(grunt) {
 				},
 				patcher: "loader"
 			},
-			"testlib": {
-				files: [
-					"<%= dirs.dist %>/tests/config.js"
-				],
-				patcher: "testurl"
-			},
-			"html": {
-				files: [
-					"<%= dirs.dist %>/demo/**/*.html",
-					"<%= dirs.dist %>/tests/**/*.html"
-				],
-				patcher: "url"
-			},
 			"bootstrap-less": {
 				files: [
 					"<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"
@@ -424,7 +411,7 @@ module.exports = function(grunt) {
 				tasks = "copy:css copy:own-js copy:third-party-js copy:third-party-html copy:bootstrap patch:bootstrap-less recess:bootstrap patch:bootstrap-css patch:loader min mincss:bootstrap concat clean:third-party copy:build";
 				break;
 			case "final":
-				tasks = "copy:images copy:build copy:demo copy:tests copy:apps patch:testlib patch:html";
+				tasks = "copy:images copy:build copy:demo copy:tests copy:apps";
 				break;
 		}
 		grunt.task.run(tasks + " clean:build");
@@ -560,35 +547,8 @@ module.exports = function(grunt) {
 	});
 
 	var patchers = {
-		"url": function(src, config, version) {
-			var env = shared.config("env");
-			var domain = process.env["CI"]
-				? "localhost:" + grunt.config("server.port")
-				: config && config.domain;
-			if ((env === "dev" || env === "test") && domain) {
-				src = src.replace(
-					/cdn\.echoenabled\.com(\/sdk\/v[\d\.]+\/)(?!dev)/g,
-					domain + "$1" + (env === "dev" ? "dev/" : "")
-				).replace(
-					/cdn\.echoenabled\.com(\/apps\/|\/")/g,
-					domain + "$1"
-				);
-			}
-			return src;
-		},
-		"testurl": function(src, config, version) {
-			var env = shared.config("env");
-			var domain = process.env["CI"]
-				? "localhost:" + grunt.config("server.port")
-				: config && (config.domainTests || config.domain);
-			if ((env === "dev" || env === "test") && domain) {
-				src = src.replace(/echoappsteam\.github\.com\/js-sdk/, domain);
-			}
-			return src;
-		},
 		"loader": function(src, config, version) {
-			src = patchers.url(src, config)
-				.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
+			src = src.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 			if (shared.config("build")) {
 				// patch debug field only when we are building files
 				// and do not patch already built ones during release
@@ -673,7 +633,9 @@ module.exports = function(grunt) {
 						"<%= dirs.dist %>": grunt.config("sources." + type)
 					},
 					"options": {
-						"basePath": "."
+						"basePath": ".",
+						"processContent": _replacePlaceholdersOnCopy,
+						"processContentExclude": "**/*.{png,jpg,gif}"
 					}
 				};
 			});
@@ -724,7 +686,9 @@ module.exports = function(grunt) {
 		spec["build"] = {
 			"files": {},
 			"options": {
-				"basePath": "<config:dirs.build>"
+				"basePath": "<config:dirs.build>",
+				"processContent": _replacePlaceholdersOnCopy,
+				"processContentExclude": "**/*.{png,jpg,gif}"
 			}
 		};
 		spec["build"].files[grunt.config("destinations." + target + "." + stage)] = ["<%= dirs.build %>/**"];
@@ -789,6 +753,16 @@ module.exports = function(grunt) {
 		if (env === "development") {
 			data.baseURLs.sdk += "dev/";
 		}
+		// TODO: properly calculate "version" placeholder value and use it in Echo.Loader.version
+		data.version = grunt.config("pkg.majorVersion");
 		grunt.config("envConfig", data);
+	};
+
+	function _replacePlaceholdersOnCopy(text) {
+		// return text as is if there are no placeholders
+		if (!/{%=/.test(text)) return text;
+		// we set the last parameter value to "init" because we want different
+		// placeholders not to mix up with default ones ( {%=x%} instead of <%=x%> )
+		return grunt.template.process(text, grunt.config("envConfig"), "init");
 	};
 };
