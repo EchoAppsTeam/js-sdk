@@ -105,7 +105,9 @@ Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.
 		this._startLiveUpdates(force);
 		return;
 	}
-	this.request();
+	if (this.requestType === "initial" && !this.config.get("skipInitialRequest")) {
+		this.request();
+	}
 };
 
 Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {

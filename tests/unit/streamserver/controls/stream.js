@@ -247,7 +247,7 @@ suite.prototype.cases.asyncItemsRendering = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Stream.onItemsRenderingComplete",
 		"once": true,
 		"handler": function() {
-			self._testElementsConsistencyAfterRendering("body", oldElement, stream.view.get("body"));
+			Echo.Tests._testElementsConsistencyAfterRendering("body", oldElement, stream.view.get("body"));
 			QUnit.ok(stream.view.get("more").is(":visible"),
 				"Checking if \"more\" button is showed after complete render of items");
 			stream.config.set("asyncItemsRendering", false);

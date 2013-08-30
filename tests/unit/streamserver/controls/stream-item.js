@@ -361,7 +361,7 @@ suite.prototype.tests.invalidHtmlRenderingTests = {
 	},
 	"check": function() {
 		var self = this;
-		this.loginTestUser({}, function() {
+		this.loginTestUser({"status": "logged"}, function() {
 			self._invalidUserDataContent([{
 				"description": "Not closed tags cases",
 				"data": {
@@ -415,7 +415,6 @@ suite.prototype.tests.invalidHtmlRenderingTests = {
 					}
 				}
 			}]);
-			self.logoutTestUser();
 		});
 	}
 };

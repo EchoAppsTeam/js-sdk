@@ -24,7 +24,7 @@ Echo.Utils.regexps = {
 	"templateSubstitution": "{([0-9a-z\\.]+)(?:\\:((?:[0-9a-z_-]+\\.)*[0-9a-z_-]+))?}",
 	"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
 	"w3cdtf": /^(\d{4})(?:-(\d\d)(?:-(\d\d))?(?:(?:T(\d\d):(\d\d):(\d\d))(?:\.(\d{1,3}))?(?:Z|(?:(\+|-)(\d\d):(\d\d))))?)?$/,
-	"parseURL": /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/
+	"parseURL": /^(?:(?:([^:\/\?#]+):)?\/\/)?([^:\/\?#]*)?(?::(\d+))?([^\?#]*)(?:\?([^#]*))?(?:#(.*))?/
 };
 
 /**
@@ -564,11 +564,12 @@ Echo.Utils.stripTags = function(text) {
  * which are presented. This function is not meant to validate the given URL,
  * it only breaks it up into the parts.
  *
- *     var url = "http://domain.com/some/path/?query_string#hash_value";
+ *     var url = "http://domain.com:8080/some/path/?query_string#hash_value";
  *     Echo.Utils.parseURL(url);
  *     // returns {
  *     //     "scheme": "http",
  *     //     "domain": "domain.com",
+ *     //     "port": "8080",
  *     //     "path": "/some/path/"
  *     //     "query": "query_string",
  *     //     "fragment": "hash_value"
@@ -590,11 +591,12 @@ Echo.Utils.parseURL = function(url) {
 	if (!parsed.hasOwnProperty(url)) {
 		var parts = url.match(Echo.Utils.regexps.parseURL);
 		parsed[url] = parts ? {
-			"scheme": parts[3] || "",
-			"domain": parts[4] || "",
-			"path": parts[5] || "/",
-			"query": parts[7] || "",
-			"fragment": parts[9] || ""
+			"scheme": parts[1] || "",
+			"domain": parts[2] || "",
+			"port": parts[3] || "",
+			"path": parts[4] || "/",
+			"query": parts[5] || "",
+			"fragment": parts[6] || ""
 		} : undefined;
 	}
 	return parsed[url];

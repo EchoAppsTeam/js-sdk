@@ -129,7 +129,10 @@ module.exports = function(grunt) {
 		"tests/harness": {
 			"src": [
 				"tests/qunit/qunit.js",
+				"tests/sinon/sinon-1.7.3.js",
 				"tests/harness/runner.js",
+				"tests/harness/api.js",
+				"tests/harness/utils.js",
 				"tests/harness/stats.js"
 			],
 			"dest": "tests/harness.js"
