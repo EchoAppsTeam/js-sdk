@@ -187,8 +187,7 @@ Echo.StreamServer.API.Request.prototype._prepareURI = function() {
 		return this.config.get("submissionProxyURL").replace(/^(http|ws)s?:\/\//, "");
 	}
 	return endpoint === "mux"
-		// in case of using "mux" request should be used v2 version
-		// of the API instead of depricated v1
+		// /v1/mux endpoint is deprecated so we must always use /v2/mux
 		? this.constructor.parent._prepareURI.call(this).replace(/v1/, "v2")
 		: this.constructor.parent._prepareURI.call(this);
 };
