@@ -1047,6 +1047,70 @@ Echo.Utils.invoke = function(mixed, context) {
 		: mixed;
 };
 
+/**
+ * @static
+ * Function which executes another function in the try/catch block.
+ * If the corresponding function executes without throwing an exception,
+ * then the "safelyExecute" returns result of the corresponding function
+ * execution. Otherwise catch an exception and print message to the console
+ * with Echo.Utils#log. It is useful in cases when you do not want to
+ * interrupt the code execution by potential throwing an exception code.
+ *
+ *		// executes function without arguments and context
+ *		Echo.Utils.safelyExecute(function() {});
+ *		// returns undefined
+ *
+ *		// executes function with one argument & without context
+ *		Echo.Utils.safelyExecute(function() {}, "string param");
+ *		// returns undefined
+ *
+ *		someObject = {
+ *			"param": "some string"
+ *		};
+ *
+ *		someObject.fn = function(a, b) {
+ *			return [this.param, a, b];
+ *		};
+ *
+ *		// executes function with arguments & context
+ *		Echo.Utils.safelyExecute(someObject.fn, [[], "string param"], someObject);
+ *		// returns ["some string", [], "string param"]
+ *
+ *		// executes the function which throws an exception
+ *		Echo.Utils.safelyExecute(function() { throw "Some error"; });
+ *		// returns undefined and prints "Some error" message to the console
+ *
+ * @param {Function} fn
+ * Function to be excuted in the try/catch wrapper
+ *
+ * @param {Mixed} [args]
+ * If the corresponding function accepts only one argument, then this parameter
+ * can be represented by value. Otherwise, if function accepts more than one
+ * arguments, then this parameter should be represented by array of its arguments.
+ *
+ * @param {Object} [ctx]
+ * Context of the object in which function will be called.
+ *
+ * @return {Mixed}
+ * The result of the function execution if it don't trowing
+ * an exception, otherwise undefined.
+ */
+Echo.Utils.safelyExecute = function(fn, args, ctx) {
+	ctx = ctx || null;
+	args = $.isArray(args)
+		? args
+		: typeof args === "undefined"
+			? [] : [args];
+	try {
+		return fn.apply(ctx, args);
+	} catch(e) {
+		Echo.Utils.log({
+			"type": "error",
+			"message": e.message || e,
+			"component": ctx instanceof Echo.Control ? ctx.name : ""
+		});
+	}
+};
 
 // JS SDK can't guarantee proper UI elements rendering in quirks mode
 // because the UI Framework (Twitter Bootstrap) doesn't support this mode.
