@@ -154,7 +154,6 @@ var _URLMocks = {
 	},
 	// single URL http://api.echoenabled.com/v1/users/whoami?...
 	"api/whoami": {
-		// TODO: api.echoenabled.com should go from some variable
 		"url": new RegExp("^http:{%=baseURLs.api.streamserver%}v1/users/whoami\\?"),
 		"response": function(request) {
 			request.respond(
