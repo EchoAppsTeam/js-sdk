@@ -6,6 +6,7 @@ module.exports = function(grunt) {
 
 	var _ = grunt.utils._;
 	var path = require("path");
+	var url = require("url");
 
 	var dirs = {
 		"build": "build",
@@ -211,7 +212,6 @@ module.exports = function(grunt) {
 		destinations: destinations,
 		packs: packs,
 		pkg: "<json:package.json>",
-		local: shared.readOptionalJSON("config/local.json"),
 		meta: {
 			banner:
 				"/**\n" +
@@ -386,7 +386,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib");
 	grunt.loadTasks("tools/grunt/tasks");
 
-	grunt.registerTask("default", "clean:all build:sdk");
+	_assembleEnvConfig();
+
+	grunt.registerTask("default", "check:config clean:all build:sdk");
 	grunt.registerTask("test", "Execute tests", function() {
 		grunt.task.run(process.env["CI"] ? "server saucelabs:travis" : "saucelabs:local");
 	});
@@ -394,7 +396,7 @@ module.exports = function(grunt) {
 	grunt.registerTask("build", "Go through all stages of building some target/system", function(target, stage) {
 		if (!stage) {
 			var tasks = ["build:" + target + ":dev"];
-			if (shared.config("env") !== "dev") {
+			if (shared.config("env") !== "development") {
 				tasks.push("build:" + target + ":min");
 			}
 			tasks.push("build:" + target + ":final");
@@ -434,13 +436,13 @@ module.exports = function(grunt) {
 		if (this.target === "loader") {
 			files = files[shared.config("release") && !shared.config("build") ? "release" : "build"];
 		}
-		var config = grunt.config("local");
+		var envConfig = grunt.config("envConfig");
 		grunt.file.expandFiles(files).map(function(file) {
 			grunt.log.write("Patching \"" + file + "\"...");
 			var src = grunt.file.read(file);
 			src = patchers[self.data.patcher](
 				src,
-				config,
+				envConfig,
 				grunt.config("pkg." + (version === "stable" ? "version" : "majorVersion")) + (version === "beta" ? ".beta" : "")
 			);
 			grunt.file.write(file, src);
@@ -762,5 +764,31 @@ module.exports = function(grunt) {
 			};
 		});
 		grunt.config("concat", spec);
+	};
+
+	function _assembleEnvConfig() {
+		var env = shared.config("env");
+		if (!grunt.config("envConfigRaw")) {
+			var envFilename = "config/environments/" + env + ".json";
+			grunt.config("envConfigRaw", grunt.file.exists(envFilename) ? grunt.file.readJSON(envFilename) : {});
+		}
+		// we might have different configuration if we made several builds
+		// in a single run so we have raw and processed versions of envConfig
+		var data = _.deepClone(grunt.config("envConfigRaw"));
+		if (process.env["CI"]) {
+			var host = "localhost:" + grunt.config("server.port");
+			_.map(["tests", "cdn", "sdk", "docs"], function(k) {
+				var parts = url.parse(data.baseURLs[k], false, true);
+				parts.host = host;
+				if (k === "docs" || k === "tests") {
+					parts.pathname = parts.path = k + "/";
+				}
+				data.baseURLs[k] = url.format(parts);
+			});
+		}
+		if (env === "development") {
+			data.baseURLs.sdk += "dev/";
+		}
+		grunt.config("envConfig", data);
 	};
 };

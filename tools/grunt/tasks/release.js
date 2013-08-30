@@ -49,9 +49,6 @@ module.exports = function(grunt) {
 			_.each(self.config.uploads, function(upload) {
 				var baseSrcPath = grunt.template.process(upload.baseSrcPath);
 				var dest = grunt.template.process(upload.dest);
-				if (shared.config("env") === "staging") {
-					dest = "/tests/release" + dest;
-				}
 				var src = grunt.file.expandFiles(baseSrcPath + upload.src);
 				src.sort();
 				_.each(src, function(srcName) {
@@ -133,16 +130,13 @@ module.exports = function(grunt) {
 	};
 
 	grunt.registerInitTask("release", "Release", function() {
-		var config = grunt.config("local");
-		if (!config || !config.release) {
-			grunt.fail.fatal("No configuration for this task.");
-		}
+		var envConfig = grunt.config("envConfig");
 		if (!_.contains(["production", "staging"], shared.config("env"))) {
 			grunt.fail.fatal("Release can be performed only in \"production\" and \"staging\" environment.");
 		}
-		// we are pushing code to production so we must delete development configuration
-		delete config.domain;
-		delete config.domainTests;
+		if (!envConfig || !envConfig.release) {
+			grunt.fail.fatal("No release configuration for this task.");
+		}
 		var target = this.args[0];
 		// TODO: check if we have modified files, we must not release this
 		if (!this.args.length) {
@@ -151,12 +145,10 @@ module.exports = function(grunt) {
 				"release:sdk:latest",
 				"patch:loader:stable",
 				"release:sdk:stable",
-				"release:apps"
+				"release:apps",
+				"release:purge:SDK.latest,SDK.stable",
+				"release:pages"
 			];
-			if (shared.config("env") === "production") {
-				tasks.push("release:purge:SDK.latest,SDK.stable");
-			}
-			tasks.push("release:pages");
 			shared.config("release", true);
 			grunt.task.run(tasks);
 			return;
@@ -166,11 +158,9 @@ module.exports = function(grunt) {
 				// XXX: this step does nothing, it's just needed to remove build info so that next step could patch correct loader files
 				"release:build-completed",
 				"patch:loader:beta",
-				"release:sdk:beta"
+				"release:sdk:beta",
+				"release:purge:SDK.beta"
 			];
-			if (shared.config("env") === "production") {
-				tasks.push("release:purge:SDK.beta");
-			}
 			shared.config("release", true);
 			grunt.task.run(tasks);
 			return;
@@ -194,13 +184,13 @@ module.exports = function(grunt) {
 		console.log(target);
 		switch (target) {
 			case "purge":
-				purgeCDN(["sdk", "apps"], this.args.slice(1).join(), config.release.purger, done);
+				purgeCDN(this.args.slice(1).join(), envConfig.release.purger, done);
 				break;
 			case "pages":
 				pushPages(done);
 				break;
 			default:
-				var uploads = config.release.targets;
+				var uploads = envConfig.release.targets;
 				_.each(this.args, function(arg) {
 					uploads = uploads[arg];
 				});
@@ -209,19 +199,26 @@ module.exports = function(grunt) {
 					done();
 					return;
 				}
-				var auth = config.release.auth[shared.config("env") === "production" ? "cdn" : "sandbox"];
+				// let's suppose that all elements in the upload array have the same location
+				var location = uploads[0].location;
+				grunt.log.writeln((shared.config("debug") ? "[simulation] ".cyan : "") + "Releasing to " + location.cyan);
 				new FtpUploader({
 					"complete": done,
-					"auth": auth,
+					"auth": envConfig.release.auth[location],
 					"uploads": uploads
 				});
 				break;
 		}
 	});
 
-	function purgeCDN(paths, labels, config, done) {
+	function purgeCDN(labels, config, done) {
+		if (!config || !config.target.paths.length) {
+			grunt.log.writeln("Nothing to purge");
+			done();
+			return;
+		}
 		if (shared.config("debug")) {
-			console.log(arguments[0], arguments[1]);
+			console.log(labels, config.target.paths);
 			done();
 			return;
 		}
@@ -243,7 +240,7 @@ module.exports = function(grunt) {
 						'<EmailCc>' + (config.emailCC || "") + '</EmailCc>' +
 						'<EmailBcc></EmailBcc>' +
 						'<Entries>' +
-							paths.map(function(path) {
+							config.target.paths.map(function(path) {
 								return '<PurgeRequestEntry>' +
 									'<Shortname>' + config.target.name + '</Shortname>' +
 									'<Url>' + config.target.url.replace("{path}", path) + '</Url>' +

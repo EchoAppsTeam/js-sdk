@@ -1,0 +1,65 @@
+{
+	"version": 1,
+	"baseURLs": {
+		"cdn": "",
+		"sdk": "",
+		"docs": "",
+		"tests": "",
+		"canvases": {
+			"prod": "//dqspik3j3bxvu.cloudfront.net/",
+			"dev": "//s3.amazonaws.com/echo-canvases/"
+		},
+		"api": {
+			"backplane": "",
+			"streamserver": "",
+			"submissionproxy": ""
+		}
+	},
+	"saucelabs": {
+		"name": "",
+		"key": ""
+	},
+	"release": {
+		"purger": "",
+		"auth": {
+			"cdn": {
+				"user": "",
+				"password": "",
+				"host": ""
+			},
+			"sandbox": {
+				"user": "",
+				"password": "",
+				"host": ""
+			}
+		},
+		"targets": {
+			"sdk": {
+				"latest": [{
+					"location": "",
+					"src": "**/*",
+					"dest": "",
+					"baseSrcPath": ""
+				}],
+				"stable": [{
+					"location": "",
+					"src": "**/*",
+					"dest": "",
+					"baseSrcPath": ""
+				}],
+				"beta": [{
+					"location": "",
+					"src": "**/*",
+					"dest": "",
+					"baseSrcPath": ""
+				}]
+			},
+			"apps": [{
+				"location": "",
+				"src": "**",
+				"dest": "/apps/",
+				"baseSrcPath": "apps/"
+			}]
+		}
+	}
+}
