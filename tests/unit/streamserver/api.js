@@ -49,7 +49,7 @@ suite.prototype.cases.simpleMuxRequest = function(callback) {
 	}, {
 		"id": "search",
 		"method": "search",
-		"q": params.q
+		"q": "wrong query"
 	}];
 	delete params.q;
 	Echo.StreamServer.API.request({
@@ -60,6 +60,7 @@ suite.prototype.cases.simpleMuxRequest = function(callback) {
 		},
 		"onData": function(data) {
 			QUnit.ok(data.count && data.search, "Checking if the \"onData\" callback was executed after the regular mux request.");
+			QUnit.strictEqual(data.search.result, "error", "Checking if the \"search\" respond with error.");
 			callback();
 		}
 	}).send();
