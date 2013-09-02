@@ -2484,7 +2484,7 @@ item.renderers._extraField = function(element, extra) {
 	if (!this.data.object[type] || !this.user.is("admin")) {
 		return element.hide();
 	}
-	var name = type === "markers" ? "maxMarkerLength" : "maxTagsLength";
+	var name = type === "markers" ? "maxMarkerLength" : "maxTagLength";
 	var limit = this.config.get("limits." + name);
 	var items = Echo.Utils.foldl([], this.data.object[type], function(item, acc) {
 		var template = item.length > limit
