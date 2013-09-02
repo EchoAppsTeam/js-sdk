@@ -753,6 +753,15 @@ module.exports = function(grunt) {
 		if (env === "development") {
 			data.baseURLs.sdk += "dev/";
 		}
+		(function removeLastSlash(obj) {
+			_.each(obj, function(v, k) {
+				if (!_.isObject(v)) {
+					obj[k] = v.replace(/\/$/, "");
+				} else {
+					removeLastSlash(v);
+				}
+			});
+		})(data.baseURLs);
 		// TODO: properly calculate "version" placeholder value and use it in Echo.Loader.version
 		data.version = grunt.config("pkg.majorVersion");
 		grunt.config("envConfig", data);

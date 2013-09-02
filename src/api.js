@@ -327,7 +327,7 @@ Echo.API.Request = function(config) {
 		 * @cfg {String} [apiBaseUrl]
 		 * Specifies the base URL for API requests
 		 */
-		"apiBaseURL": "api.echoenabled.com/v1/",
+		"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
 		/**
 		 * @cfg {Object|String} [data]
 		 * Data to be sent to the server. It is converted to a query string,

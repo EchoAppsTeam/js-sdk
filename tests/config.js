@@ -37,7 +37,7 @@ QUnit.done(function() {
 // collection of component initializers
 var _initializers = {};
 
-Echo.Tests.baseURL = "http:{%=baseURLs.tests%}";
+Echo.Tests.baseURL = "{%=baseURLs.tests%}/";
 
 Echo.Tests.getComponentInitializer = function(name) {
 	return _initializers[name];

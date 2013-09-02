@@ -279,8 +279,8 @@ Echo.UserSession._getDefaultConfig = function() {
 	return {
 		"appkey": "",
 		"endpoints": {
-			"logout": "http:{%=baseURLs.api.submissionproxy%}v2/",
-			"whoami": "http:{%=baseURLs.api.streamserver%}v1/users/"
+			"logout": "{%=baseURLs.api.submissionproxy%}/v2/",
+			"whoami": "{%=baseURLs.api.streamserver%}/v1/users/"
 		},
 		"useSecureAPI": false,
 		"fakeIdentityURL": "http://js-kit.com/ECHO/user/fake_user"

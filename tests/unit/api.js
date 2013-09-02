@@ -33,7 +33,7 @@ suite.prototype.tests.PrivateInterfaceTests = {
 			"onSomeEvent2": event2,
 			"onemotion": true
 		});
-		QUnit.equal("api.echoenabled.com/v1/some_endpoint", req._prepareURI(), "Checking URI assembler for trnsport url");
+		QUnit.equal("{%=baseURLs.api.streamserver%}/v1/some_endpoint", "//" + req._prepareURI(), "Checking URI assembler for trnsport url");
 		var handlers = req._getHandlersByConfig();
 		QUnit.ok("onSomeEvent" in handlers && "onSomeEvent2" in handlers, "Checking that component can retrieve event handlers from config");
 	}

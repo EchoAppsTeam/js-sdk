@@ -21,10 +21,10 @@ Echo.Loader = {
 	"debug": false,
 	/** @private */
 	"config": {
-		"cdnBaseURL": protocol + "{%=baseURLs.cdn%}",
+		"cdnBaseURL": protocol + "{%=baseURLs.cdn%}/",
 		"storageURL": {
-			"prod": protocol + "{%=baseURLs.canvases.prod%}",
-			"dev": protocol + "{%=baseURLs.canvases.dev%}"
+			"prod": protocol + "{%=baseURLs.canvases.prod%}/",
+			"dev": protocol + "{%=baseURLs.canvases.dev%}/"
 		},
 		"errorTimeout": 5000 // 5 sec
 	},
