@@ -430,8 +430,8 @@ Echo.Loader._initCanvases = function(canvases) {
 
 Echo.Loader._isInViewport = function(canvas) {
 	var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
-	var nVScroll = document.documentElement.scrollTop || document.body.scrollTop;
-	return nVScroll + viewportHeight >= canvas.offsetTop;
+	var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+	return scrollTop + viewportHeight >= canvas.offsetTop;
 };
 
 // implementation of the "map" function for the cases when jQuery is not loaded yet
