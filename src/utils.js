@@ -1052,11 +1052,12 @@ Echo.Utils.invoke = function(mixed, context) {
 /**
  * @static
  * Function which executes another function in the try/catch block.
- * If the corresponding function executes without throwing an exception,
- * then the "safelyExecute" returns result of the corresponding function
- * execution. Otherwise catch an exception and print message to the console
- * with Echo.Utils#log. It is useful in cases when you do not want to
- * interrupt the code execution by potential throwing an exception code.
+ * If the given function completed its execution without throwing an exception,
+ * then the "safelyExecute" returns result of that function execution.
+ * Otherwise, the "safelyExecute" catches an exception and prints the
+ * message to the console using the Echo.Utils#log function.
+ * It is useful in case you want to avoid execution flow interruption
+ * by the code which might potentially throw an exception.
  *
  *		// executes function without arguments and context
  *		Echo.Utils.safelyExecute(function() {});
@@ -1086,30 +1087,32 @@ Echo.Utils.invoke = function(mixed, context) {
  * Function to be excuted in the try/catch wrapper
  *
  * @param {Mixed} [args]
- * If the corresponding function accepts only one argument, then this parameter
- * can be represented by value. Otherwise, if function accepts more than one
- * arguments, then this parameter should be represented by array of its arguments.
+ * The argument type might vary depending on the use-case:
  *
- * @param {Object} [ctx]
- * Context of the object in which function will be called.
+ *  + undefined - in case the given function doesn't expect any arguments
+ *  + array - if the function to be called accepts more than one argument
+ *  + value as is - when the function expects only one argument.
+ *
+ * @param {Object} [context]
+ * Context in which the function should be executed.
  *
  * @return {Mixed}
- * The result of the function execution if it don't trowing
- * an exception, otherwise undefined.
+ * The result of a given function execution in case it was completed
+ * without throwing an exception. Otherwise - the undefined is returned.
  */
-Echo.Utils.safelyExecute = function(fn, args, ctx) {
-	ctx = ctx || null;
+Echo.Utils.safelyExecute = function(fn, args, context) {
+	context = context || null;
 	args = $.isArray(args)
 		? args
 		: typeof args === "undefined"
 			? [] : [args];
 	try {
-		return fn.apply(ctx, args);
+		return fn.apply(context, args);
 	} catch(e) {
 		Echo.Utils.log({
 			"type": "error",
 			"message": e.message || e,
-			"component": ctx instanceof Echo.Control ? ctx.name : ""
+			"component": context instanceof Echo.Control ? context.name : ""
 		});
 	}
 };
