@@ -78,7 +78,7 @@ Echo.Tests.test("URL conversion", function() {
 });
 
 Echo.Tests.asyncTest("resource downloading", function() {
-	var base = Echo.Tests.baseURL + "tests/fixtures/resources/loader/";
+	var base = Echo.Tests.baseURL + "fixtures/resources/loader/";
 	var emptyResourceArray = function(callback) {
 		Echo.Loader.download([], function() {
 			QUnit.ok(true, "Checking if the callback is fired even if the list of the scripts to load is empty (empty array)");
@@ -275,7 +275,7 @@ Echo.Tests.asyncTest("yepnope corner cases", function() {
 	// executed yet. In this test case yepnope tries to execute synchronous script
 	// before it's fully preloaded.
 	var raceConditions = function(callback) {
-		var base = Echo.Tests.baseURL + "tests/fixtures/resources/loader";
+		var base = Echo.Tests.baseURL + "fixtures/resources/loader";
 		Echo.Loader.download([{"url": base + "/yepnope-base.js"}], function() {
 			QUnit.ok(!!Echo.Tests.Fixtures.loader.yepnope, "Check if base script is loaded");
 			// we override injectJs function to be sure that
@@ -312,7 +312,7 @@ Echo.Tests.asyncTest("yepnope corner cases", function() {
 			script.remove();
 			Echo.Loader.download([{
 				"url": Echo.Tests.baseURL +
-					"tests/fixtures/resources/loader/check-removing-first-script.js"
+					"fixtures/resources/loader/check-removing-first-script.js"
 			}], function() {
 				QUnit.ok(Echo.Tests.Fixtures.loader.firstScriptRemoved,
 					"Check if removing of firstNode doesn't cause side effects");
@@ -387,7 +387,7 @@ Echo.Tests.asyncTest("application initialization", function() {
 	var initForeignApplication = function(callback) {
 		$("qunit-fixture").empty();
 		Echo.Loader.initApplication({
-			"script": Echo.Tests.baseURL + "tests/fixtures/resources/loader/foreign-class.js",
+			"script": Echo.Tests.baseURL + "fixtures/resources/loader/foreign-class.js",
 			"component": "SomeForeignClass",
 			"config": {
 				"target": $("qunit-fixture")
