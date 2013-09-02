@@ -750,9 +750,6 @@ module.exports = function(grunt) {
 				data.baseURLs[k] = url.format(parts);
 			});
 		}
-		if (env === "development") {
-			data.baseURLs.sdk += "dev/";
-		}
 		(function removeLastSlash(obj) {
 			_.each(obj, function(v, k) {
 				if (!_.isObject(v)) {
@@ -762,6 +759,9 @@ module.exports = function(grunt) {
 				}
 			});
 		})(data.baseURLs);
+		if (env === "development") {
+			data.baseURLs.sdk += "/dev";
+		}
 		// TODO: properly calculate "version" placeholder value and use it in Echo.Loader.version
 		data.version = grunt.config("pkg.majorVersion");
 		grunt.config("envConfig", data);
