@@ -137,7 +137,7 @@ Echo.Tests.test("canvas contract", function() {
 			"apps": [{
 				"component": "CanvasAdapter",
 				"config": {"id": 256}
-			}],
+			}]
 		}
 	});
 	canvas.destroy();
@@ -168,7 +168,7 @@ Echo.Tests.test("canvas destroy", function() {
 			"data": {
 				"apps": [{
 					"component": "TestCanvases." + component
-				}],
+				}]
 			}
 		});
 		try {
