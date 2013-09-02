@@ -7,7 +7,10 @@ web/*
 node_modules
 npm-debug.log
 
-config/local.json
+config/environments/development.json
+config/environments/test.json
+config/environments/staging.json
+config/environments/production.json
 
 sauce_connect.*
 tools/Sauce-Connect.jar

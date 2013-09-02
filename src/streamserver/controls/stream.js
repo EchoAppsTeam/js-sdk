@@ -304,7 +304,7 @@ stream.config = {
 	 * @cfg {String} submissionProxyURL URL prefix for requests to
 	 * Submission Proxy subsystem.
 	 */
-	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+	"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
 
 	/**
 	 * @cfg {Object} data

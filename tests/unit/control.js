@@ -970,7 +970,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"main": '<div class="{inherited.class:container} {class:container}"><div class="{class:someRenderer}"></div></div>'
 		},
 		"dependencies": [{
-			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep.child.js",
+			"url": Echo.Tests.baseURL + "unit/dependencies/control.dep.child.js",
 			"loaded": function() { return !!Echo.Tests.Dependencies.Control.depChild; }
 		}],
 		"init": function() {
@@ -1121,7 +1121,7 @@ suite.prototype.async.placeImageContainerClassTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -1141,7 +1141,7 @@ suite.prototype.async.placeImageContainerFillClassTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -1162,7 +1162,7 @@ suite.prototype.async.placeImageContainerFillDefaultTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -1184,7 +1184,7 @@ suite.prototype.async.placeImageContainerFillHorizontalTest = function(callback)
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -1212,7 +1212,7 @@ suite.prototype.async.placeImageContainerFillVerticalTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-vertical-100x300.png",
+				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-vertical-100x300.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
 					callback();
@@ -1238,7 +1238,7 @@ suite.prototype.async.horizontalImageQuirksModeTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -1260,7 +1260,7 @@ suite.prototype.async.verticalImageQuirksModeTest = function(callback) {
 		"ready": function() {
 			this.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "tests/unit/loadimage/avatar-vertical-100x300.png",
+				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-vertical-100x300.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
 					callback();
@@ -1513,7 +1513,7 @@ suite.getControlManifest = function(name, config) {
 
 	var addDependency = function(n, params) {
 		var dependency = {
-			"url": Echo.Tests.baseURL + "tests/unit/dependencies/control.dep." + n + ".js"
+			"url": Echo.Tests.baseURL + "unit/dependencies/control.dep." + n + ".js"
 		};
 		if (typeof params === "object") {
 			dependency = $.extend(dependency, params);

@@ -3,12 +3,12 @@
 	<head>
 		<title>Submit App Demo</title>
 		<link rel="stylesheet" type="text/css" href="demo.css" />
-		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
-		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+		<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
+		<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
 	</head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Submit" target="_blank">Documentation</a></div>
 		<h1>Submit App Demo</h1>
 		<div class="description">Echo Submit app encapsulates interaction with the Echo Submit API and provides a simple 'submit/comment form' style interaction.</div>
 		<div class="wrapper">
@@ -29,10 +29,10 @@
 	<!-- Client initialization -->
 	<script type="text/javascript">
 		Echo.Loader.initApplication({
-			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
 			"component": "Echo.StreamServer.Controls.Submit",
 			"backplane": {
-				"serverBaseURL": "http://api.echoenabled.com/v1",
+				"serverBaseURL": "{%=baseURLs.api.backplane%}/v1",
 				"busName": "jskit"
 			},
 			"config": {

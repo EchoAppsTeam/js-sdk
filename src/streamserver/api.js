@@ -82,7 +82,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		/**
 		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
 		 */
-		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity"
+		"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = "initial"; // initial | secondary
@@ -184,7 +184,7 @@ Echo.StreamServer.API.Request.prototype._onError = function(responseError, reque
 Echo.StreamServer.API.Request.prototype._prepareURI = function() {
 	var endpoint = this.config.get("endpoint");
 	if (endpoint === "submit") {
-		return this.config.get("submissionProxyURL").replace(/^(http|ws)s?:\/\//, "");
+		return this.config.get("submissionProxyURL").replace(/^(?:(?:http|ws)s?:)?\/\//, "");
 	}
 	return endpoint === "mux"
 		// /v1/mux endpoint is deprecated so we must always use /v2/mux

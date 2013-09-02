@@ -54,7 +54,7 @@ Echo.IdentityServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(
 		/**
 		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
 		 */
-		"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity"
+		"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	Echo.IdentityServer.API.Request.parent.constructor.call(this, config);
@@ -64,7 +64,7 @@ Echo.IdentityServer.API.Request.prototype._prepareURI = function() {
 	return this.config.get("endpoint") === "whoami"
 		? Echo.IdentityServer.API.Request.parent._prepareURI.call(this)
 		// FIXME: move replace to API.Request lib
-		: this.config.get("submissionProxyURL").replace(/^(http|ws)s?:\/\//, "");
+		: this.config.get("submissionProxyURL").replace(/^(?:(?:http|ws)s?:)?\/\//, "");
 };
 
 Echo.IdentityServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
