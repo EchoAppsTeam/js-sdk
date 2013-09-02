@@ -293,31 +293,40 @@ Echo.Loader.override = function(canvasID, appID, config) {
  */
 
 Echo.Loader.init = function(config) {
-	var inViewport = function(canvas) {
-		var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
-		var nVScroll = document.documentElement.scrollTop || document.body.scrollTop;
-		return nVScroll + viewportHeight >= canvas.offsetTop;
-	};
-
-	Echo.Loader._getCanvasElements(config, function(canvases) {
-		var renderCanvases = function() {
-			var toRender = [];
-			canvases = Echo.Loader._map(canvases, function(canvas) {
-				if (canvas.getAttribute("data-canvas-init") !== "when-visible" || inViewport(canvas)) {
-					toRender.push(canvas);
-				} else {
-					return canvas;
-				}
-			});
-			if (toRender.length) {
-				Echo.Loader._initCanvases(toRender);
-			}
-			if (!canvases.length) {
-				Echo.Loader._onViewportChange.unsubscribe(renderCanvases);
+	Echo.Loader._lookupCanvases(config, function(canvases) {
+		var _add = window.addEventListener || window.attachEvent;
+		var _remove = window.removeEventListener || window.detachEvent;
+		var _event = function(name) {
+			return window.addEventListener ? name : "on" + name;
+		};
+		var onViewportChange = function(action, handler) {
+			if (action === "subscribe") {
+				_add(_event("scroll"), handler);
+				_add(_event("resize"), handler)
+			} else if (action === "unsubscribe") {
+				_remove(_event("scroll"), handler);
+				_remove(_event("resize"), handler);
 			}
 		};
-		renderCanvases();
-		Echo.Loader._onViewportChange.subscribe(renderCanvases);
+
+		var init = function() {
+			var _canvases = {"immediate": [], "delayed": []};
+			Echo.Loader._map(canvases, function(canvas) {
+				var isActive = canvas.getAttribute("data-canvas-init") !== "when-visible"
+					|| Echo.Loader._isInViewport(canvas);
+				_canvases[isActive ? "immediate" : "delayed"].push(canvas);
+			});
+			canvases = _canvases.delayed;
+
+			if (_canvases.immediate.length) {
+				Echo.Loader._initCanvases(_canvases.immediate);
+			}
+			if (!_canvases.delayed.length) {
+				onViewportChange("unsubscribe", init);
+			}
+		};
+		init();
+		onViewportChange("subscribe", init);
 	});
 };
 
@@ -381,7 +390,7 @@ Echo.Loader.initApplication = function(app) {
 	});
 };
 
-Echo.Loader._getCanvasElements = function(config, callback) {
+Echo.Loader._lookupCanvases = function(config, callback) {
 	config = config || {};
 
 	var canvases = config.canvases;
@@ -419,25 +428,10 @@ Echo.Loader._initCanvases = function(canvases) {
 	});
 };
 
-Echo.Loader._onViewportChange = {
-	"subscribe": function(handler) {
-		if (window.addEventListener) {
-			window.addEventListener("scroll", handler);
-			window.addEventListener("resize", handler);
-		} else {
-			window.attachEvent("onscroll", handler);
-			window.attachEvent("onresize", handler);
-		}
-	},
-	"unsubscribe": function(handler) {
-		if (window.addEventListener) {
-			window.removeEventListener("scroll", handler);
-			window.removeEventListener("resize", handler);
-		} else {
-			window.detachEvent("onscroll", handler);
-			window.detachEvent("onresize", handler);
-		}
-	}
+Echo.Loader._isInViewport = function(canvas) {
+	var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
+	var nVScroll = document.documentElement.scrollTop || document.body.scrollTop;
+	return nVScroll + viewportHeight >= canvas.offsetTop;
 };
 
 // implementation of the "map" function for the cases when jQuery is not loaded yet

@@ -14,7 +14,7 @@ Echo.Tests.module("Echo.Loader", {
 			"download",
 			"override",
 			"getURL",
-			"_getCanvasElements"
+			"_lookupCanvases"
 		]
 	},
 	"setup": function() {
@@ -417,13 +417,16 @@ Echo.Tests.asyncTest("application initialization", function() {
 
 Echo.Tests.asyncTest("getting canvas elements", function() {
 	var nativeElements = Echo.Tests.isolate(function(callback) {
-		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
-		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
-		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		$(this.document.body)
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
 
-		Echo.Loader._getCanvasElements({
+		Echo.Loader._lookupCanvases({
 			"target": this.document.body,
-			"canvases": this.document.querySelectorAll(".echo-canvas-test")
+			"canvases": this.document.querySelectorAll
+				? this.document.querySelectorAll(".echo-canvas-test")
+				: this.document.getElementsByTagName("div") // for IE < 8
 		}, function(canvases) {
 			QUnit.equal(canvases.length, 3, "Check if Echo.Loader.init successfully handles a config with native DOM elements");
 			callback();
@@ -431,9 +434,10 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 	});
 
 	var nativeSingleElement = Echo.Tests.isolate(function(callback) {
-		$(this.document.body).append('<div id="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		$(this.document.body)
+			.append('<div id="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
 
-		Echo.Loader._getCanvasElements({
+		Echo.Loader._lookupCanvases({
 			"target": this.document.body,
 			"canvases": this.document.getElementById("echo-canvas-test")
 		}, function(canvases) {
@@ -443,11 +447,12 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 	});
 
 	var jQueryElements = Echo.Tests.isolate(function(callback) {
-		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
-		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
-		$(this.document.body).append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		$(this.document.body)
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
 
-		Echo.Loader._getCanvasElements({
+		Echo.Loader._lookupCanvases({
 			"target": $("body", this.document),
 			"canvases": $(".echo-canvas-test", this.document)
 		}, function(canvases) {
@@ -464,8 +469,6 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
   ], function() {
     QUnit.start();
   });
-}, {
-	"timeout": 10000
 });
 
 Echo.Tests.asyncTest("canvases initialization", function() {
