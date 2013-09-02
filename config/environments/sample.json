@@ -6,8 +6,8 @@
 		"docs": "",
 		"tests": "",
 		"canvases": {
-			"prod": "//dqspik3j3bxvu.cloudfront.net/",
-			"dev": "//s3.amazonaws.com/echo-canvases/"
+			"prod": "//dqspik3j3bxvu.cloudfront.net",
+			"dev": "//s3.amazonaws.com/echo-canvases"
 		},
 		"api": {
 			"backplane": "",
