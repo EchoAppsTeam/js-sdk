@@ -91,7 +91,7 @@ Echo.Tests.Utils.actualizeTestUser = function(config, callback) {
 				if (isMocked) {
 					user._init(callback);
 				} else {
-					$.get("http://echosandbox.com/js-sdk/auth", {
+					$.get("http://echosandbox.com/js-sdk/auth/", {
 						"action": "login",
 						"channel": Backplane.getChannelID(),
 						"identityUrl": "http://somedomain.com/users/fake_user"
