@@ -389,7 +389,7 @@ Echo.Loader._lookupCanvases = function(config, callback) {
 	// if no canvases defined during initialization,
 	// we look for all canvases in the target ('document' by default)
 	if (canvases) {
-		callback(canvases)
+		callback(canvases);
 	} else if (target.querySelectorAll) {
 		callback(target.querySelectorAll(".echo-canvas"));
 	} else {
