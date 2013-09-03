@@ -734,7 +734,8 @@ module.exports = function(grunt) {
 		var env = shared.config("env");
 		if (!grunt.config("envConfigRaw")) {
 			var envFilename = "config/environments/" + env + ".json";
-			grunt.config("envConfigRaw", grunt.file.exists(envFilename) ? grunt.file.readJSON(envFilename) : {});
+			if (!grunt.file.exists(envFilename)) return;
+			grunt.config("envConfigRaw", grunt.file.readJSON(envFilename));
 		}
 		// we might have different configuration if we made several builds
 		// in a single run so we have raw and processed versions of envConfig
