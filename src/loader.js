@@ -294,39 +294,21 @@ Echo.Loader.override = function(canvasID, appID, config) {
 
 Echo.Loader.init = function(config) {
 	Echo.Loader._lookupCanvases(config, function(canvases) {
-		var _add = window.addEventListener || window.attachEvent;
-		var _remove = window.removeEventListener || window.detachEvent;
-		var _event = function(name) {
-			return window.addEventListener ? name : "on" + name;
-		};
-		var onViewportChange = function(action, handler) {
-			if (action === "subscribe") {
-				_add(_event("scroll"), handler);
-				_add(_event("resize"), handler)
-			} else if (action === "unsubscribe") {
-				_remove(_event("scroll"), handler);
-				_remove(_event("resize"), handler);
-			}
-		};
+		Echo.Loader._map(canvases, function(canvas) {
+			var isActive = canvas.getAttribute("data-canvas-init") !== "when-visible"
+				|| Echo.Loader._isInViewport(canvas);
 
-		var init = function() {
-			var _canvases = {"immediate": [], "delayed": []};
-			Echo.Loader._map(canvases, function(canvas) {
-				var isActive = canvas.getAttribute("data-canvas-init") !== "when-visible"
-					|| Echo.Loader._isInViewport(canvas);
-				_canvases[isActive ? "immediate" : "delayed"].push(canvas);
-			});
-			canvases = _canvases.delayed;
-
-			if (_canvases.immediate.length) {
-				Echo.Loader._initCanvases(_canvases.immediate);
+			if (!isActive) {
+				onViewportChange("subscribe", function init() {
+					if (Echo.Loader._isInViewport(canvas)) {
+						Echo.Loader._initCanvas(canvas);
+						onViewportChange("unsubscribe", init);
+					}
+				});
+			} else {
+				Echo.Loader._initCanvas(canvas);
 			}
-			if (!_canvases.delayed.length) {
-				onViewportChange("unsubscribe", init);
-			}
-		};
-		init();
-		onViewportChange("subscribe", init);
+		});
 	});
 };
 
@@ -406,25 +388,25 @@ Echo.Loader._lookupCanvases = function(config, callback) {
 
 	// if no canvases defined during initialization,
 	// we look for all canvases in the target ('document' by default)
-	if (target.querySelectorAll) {
-		callback(canvases || target.querySelectorAll(".echo-canvas"));
+	if (canvases) {
+		callback(canvases)
+	} else if (target.querySelectorAll) {
+		callback(target.querySelectorAll(".echo-canvas"));
 	} else {
 		// Fallback uses Echo.jQuery if IE < 8
 		Echo.Loader.initEnvironment(function() {
-			callback(canvases || Echo.jQuery(".echo-canvas", target));
+			callback(Echo.jQuery(".echo-canvas", target));
 		});
 	}
 };
 
-Echo.Loader._initCanvases = function(canvases) {
+Echo.Loader._initCanvas = function(canvas) {
 	Echo.Loader.initEnvironment(function() {
-		Echo.Loader._map(canvases, function(canvas) {
-			var instance = new Echo.Canvas({
-				"target": canvas,
-				"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
-			});
-			Echo.Loader.canvases.push(instance);
+		var instance = new Echo.Canvas({
+			"target": canvas,
+			"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
 		});
+		Echo.Loader.canvases.push(instance);
 	});
 };
 
@@ -457,6 +439,22 @@ Echo.Loader._areResourcesReady = function(resources) {
 			(state.resources[url] && state.resources[url] === "ready");
 	});
 	return resources.length === resourceReadyFlags.length;
+};
+
+function getEventName(name) {
+	return window.addEventListener ? name : "on" + name;
+}
+
+function onViewportChange(action, handler) {
+	var addEvent = window.addEventListener || window.attachEvent;
+	var removeEvent = window.removeEventListener || window.detachEvent;
+	if (action === "subscribe") {
+		addEvent(getEventName("scroll"), handler);
+		addEvent(getEventName("resize"), handler)
+	} else if (action === "unsubscribe") {
+		removeEvent(getEventName("scroll"), handler);
+		removeEvent(getEventName("resize"), handler);
+	}
 };
 
 })();

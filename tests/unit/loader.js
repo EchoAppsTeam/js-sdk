@@ -416,6 +416,19 @@ Echo.Tests.asyncTest("application initialization", function() {
 });
 
 Echo.Tests.asyncTest("getting canvas elements", function() {
+	var defaultInit = Echo.Tests.isolate(function(callback) {
+		$(this.document.body)
+			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+
+		Echo.Loader._lookupCanvases({
+			"target": this.document.body
+		}, function(canvases) {
+			QUnit.equal(canvases.length, 2, "Check if Echo.Loader.init successfully handles a config without canvases");
+			callback();
+		});
+	});
+
 	var nativeElements = Echo.Tests.isolate(function(callback) {
 		$(this.document.body)
 			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
@@ -461,14 +474,15 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 		});
 	});
 
-	QUnit.expect(3);
-  Echo.Utils.sequentialCall([
-    nativeElements,
+	QUnit.expect(4);
+	Echo.Utils.sequentialCall([
+		defaultInit,
+		nativeElements,
 		nativeSingleElement,
-    jQueryElements
-  ], function() {
-    QUnit.start();
-  });
+		jQueryElements
+	], function() {
+		QUnit.start();
+	});
 });
 
 Echo.Tests.asyncTest("canvases initialization", function() {
