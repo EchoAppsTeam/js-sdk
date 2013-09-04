@@ -40,7 +40,7 @@
             "script": "{%=baseURLs.sdk%}/identityserver.pack.js",
             "component": "Echo.IdentityServer.Controls.Auth",
             "backplane": { 
-                "serverBaseURL": "{%=baseURLs.api.backplane%}/v1",
+                "serverBaseURL": window.location.protocol + "{%=baseURLs.api.backplane%}/v1",
                 "busName": "jskit"
             },
             "config": {
