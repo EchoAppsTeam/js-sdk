@@ -25,10 +25,9 @@ Echo.Tests.asyncTest("jQuery no conflict", function() {
 Echo.Tests.asyncTest("v2 and v3 no conflict", function() {
 	var compareWithV2Scripts = Echo.Tests.isolate(function(callback) {
 		var win = this;
-		var script = win.document.createElement("script");
-		$(script)
-			.on("load", function() {
-				$(this).off("load");
+		$("<script>")
+			.on("load readystatechange", function() {
+				$(this).off("load readystatechange");
 				var EchoV2 = win.Echo;
 				var EchoV3 = window.Echo;
 				var inV2 = $.map(EchoV3, function(v, k) {
@@ -37,9 +36,8 @@ Echo.Tests.asyncTest("v2 and v3 no conflict", function() {
 				QUnit.equal(inV2.length, 0, "Neither of Echo V3 keys match with Echo V2 keys");
 				callback();
 			})
-			.appendTo(win.document.body);
-		// $(script).attr("src", ..) doesn't work for some reason so let's do it directly
-		script.src = "http://cdn.echoenabled.com/clientapps/v2/packs/full-pack.js";
+			.appendTo(win.document.body)
+			.attr("src", "http://cdn.echoenabled.com/clientapps/v2/packs/full-pack.js");
 	});
 	compareWithV2Scripts(function() {
 		QUnit.start();
