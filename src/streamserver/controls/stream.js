@@ -733,6 +733,8 @@ stream.methods._requestMoreItems = function(element) {
 			}
 		});
 	}
+	// "more" requests are always initial ones
+	this.moreRequest.requestType = "initial";
 	this.moreRequest.send({
 		"data": {
 			"q": this.config.get("query") + " pageAfter:" +
