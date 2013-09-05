@@ -733,7 +733,7 @@ stream.methods._requestMoreItems = function(element) {
 			}
 		});
 	}
-	// "more" requests are always initial ones
+	// FIXME: "more" requests are always initial ones
 	this.moreRequest.requestType = "initial";
 	this.moreRequest.send({
 		"data": {
