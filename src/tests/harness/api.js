@@ -157,7 +157,7 @@ Echo.Tests.isolate = function(test) {
 			};
 			test.call(win, callback);
 		});
-		iframe.attr("src", "about:blank");
+		iframe.attr("src", "{%=baseURLs.tests%}/blank.html");
 	};
 };
 
