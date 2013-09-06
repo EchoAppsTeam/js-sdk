@@ -354,71 +354,6 @@ suite.prototype.cases.destroy = function(callback) {
 	callback();
 };
 
-suite.prototype.tests.invalidHtmlRenderingTests = {
-	"config": {
-		"async": true,
-		"testTimeout": 20000
-	},
-	"check": function() {
-		var self = this;
-		this.loginTestUser({"status": "logged"}, function() {
-			self._invalidUserDataContent([{
-				"description": "Not closed tags cases",
-				"data": {
-					"actor": {
-						"title": "<span>My name",
-						"roles": ["moderator", "administrator"],
-						"objectTypes": ["http://activitystrea.ms/schema/1.0/person"],
-						"id": "http://twitter.com/12345",
-						"status": "Untouched",
-						"avatar": Echo.Loader.getURL("images/info70.png", false)
-					},
-					"object": {
-						"content": "<div>Some text<span>Test<div>",
-						"markers": ["<i>Some marker"],
-						"tags": ["<b>Some tag"]
-					}
-				},
-				"expect": {
-					"text": "<div>Some text<span>Test<div></div></span></div>",
-					"authorName": "<span>My name</span>",
-					"markers": "<span><i>Some marker</i></span>",
-					"tags": "<span><b>Some tag</b></span>"
-				}
-			}, {
-				"description": "Invalid HTML data",
-				"data": {
-					"actor": {
-						"title": "<td>My name</td><tr>Some</tr><textarea>Some textarea text</textarea><tfoot>Some text</tfoot>",
-						"roles": ["moderator", "administrator"],
-						"objectTypes": ["http://activitystrea.ms/schema/1.0/person"],
-						"id": "http://twitter.com/12345",
-						"status": "Untouched",
-						"avatar": Echo.Loader.getURL("images/info70.png", false)
-					},
-					"object": {
-						"content": "<td>My name</td><tr>Some</tr><textarea>Some textarea text</textarea><tfoot>Some text</tfoot>",
-						"markers": ["<td>My name</td><tr>Some</tr><textarea>Some textarea text</textarea><tfoot>Some text</tfoot>"],
-						"tags": ["<td>My name</td><tr>Some</tr><textarea>Some textarea text</textarea><tfoot>Some text</tfoot>"]
-					}
-				},
-				"expect": {
-					"text": "",
-					"authorName": "",
-					"markers": "<span>My nameSome<textarea>Some textarea text</textarea>Some text</span>",
-					"tags": "<span>My nameSome<textarea>Some textarea text</textarea>Some text</span>"
-				},
-				"config": {
-					"limits": {
-						"maxMarkerLength": undefined,
-						"maxTagLength": undefined
-					}
-				}
-			}]);
-		});
-	}
-};
-
 suite.prototype.tests.bodyRendererTest = {
 	"config": {
 		"async": true,
@@ -714,20 +649,6 @@ suite.prototype._runBodyCases = function(cases) {
 		var result = $("<div>").append(target.clone(true, true).contents());
 		var expect = $("<div>").append(params.expect);
 		self.jqueryObjectsEqual(result,	expect, params.description);
-	};
-
-	this.sequentialAsyncTests($.map(cases, $.proxy(getGenerateItemFunction.call(this, checker), {})));
-};
-
-suite.prototype._invalidUserDataContent = function(cases) {
-	var self = this;
-	var checker = function(params, config) {
-		$.map(["authorName", "text", "markers", "tags"], function(name) {
-			var target = $(".echo-streamserver-controls-stream-item-" + name, config.target);
-			var result = $("<div>").append(target.clone(true, true).contents());
-			var expect = $("<div>").append(params.expect[name]);
-			self.jqueryObjectsEqual(result,	expect, params.description + " (" + name + ")");
-		});
 	};
 
 	this.sequentialAsyncTests($.map(cases, $.proxy(getGenerateItemFunction.call(this, checker), {})));
