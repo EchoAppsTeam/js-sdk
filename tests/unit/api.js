@@ -55,24 +55,9 @@ Echo.Tests.test("private interface", function() {
 Echo.Tests.asyncTest("WebSocket test cases", function() {
 	var closed = 0;
 	var requests = [];
-	var deferred = [$.Deferred()];
-	var closeDef = [$.Deferred()];
-	var req = new Echo.API.Request({
-		"endpoint": "ws",
-		"apiBaseURL": "live.echoenabled.com/v1/",
-		"transport": "websocket",
-		"onClose": function() {
-			closed++;
-			closeDef[0].resolve();
-		},
-		"onOpen": function() {
-			QUnit.ok(req.transport.connected(), "Check if WS was initialized and \"onOpen\" event fired");
-			deferred[0].resolve();
-		}
-	});
-	QUnit.ok(req.transport.connecting(), "Check that WS status is \"connecting\"");
-	requests.push(req);
-	for(var i = 0; i < 3; i++) {
+	var deferred = [];
+	var closeDef = [];
+	for(var i = 0; i < 4; i++) {
 		deferred.push($.Deferred());
 		closeDef.push($.Deferred());
 		(function(i) {
@@ -83,15 +68,20 @@ Echo.Tests.asyncTest("WebSocket test cases", function() {
 					"transport": "websocket",
 					"onClose": function() {
 						closed++;
-						closeDef[i + 1].resolve();
+						closeDef[i].resolve();
 					},
 					"onOpen": function() {
-						deferred[i + 1].resolve();
+						if (i === 0)
+							QUnit.ok(requests[0].transport.connected(), "Check if WS was initialized and \"onOpen\" event fired");
+						deferred[i].resolve();
 					}
 				})
 			);
+			if (i === 0)
+				QUnit.ok(requests[0].transport.connecting(), "Check that WS status is \"connecting\"");
 		})(i);
 	}
+	var req = requests[0];
 	$.when.apply($, deferred).done(function() {
 		QUnit.ok(true, "Check if all API requests initialized");
 		QUnit.strictEqual(

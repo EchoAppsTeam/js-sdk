@@ -120,7 +120,6 @@ counter.config = {
 	 */
 	"liveUpdates": {
 		"enabled": true,
-		"timeout": 10, // backwards compatibility
 		"polling": {
 			"timeout": 10
 		}

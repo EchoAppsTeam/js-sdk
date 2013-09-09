@@ -267,7 +267,6 @@ stream.config = {
 	"liveUpdates": {
 		"transport": "polling", // or "websockets"
 		"enabled": true,
-		"timeout": 10, // backwards compatibility
 		"polling": {
 			"timeout": 10
 		},
@@ -2482,7 +2481,7 @@ item.renderers.body = function(element) {
  */
 item.renderers.date = function(element) {
 	this.age = this.getRelativeTime(this.timestamp);
-	return element.html(this.getRelativeTime(this.timestamp));
+	return element.html(this.age);
 };
 
 /**

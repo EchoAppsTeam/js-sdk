@@ -208,7 +208,7 @@ suite.prototype.cases.backwardCompatibility = function(callback) {
 			QUnit.ok("requestType" in extra, "Check that \"requestType\" provided as extra");
 		}
 	});
-	req.send()
+	req.send();
 };
 
 suite.prototype.cases.websockets = function(callback) {
@@ -236,6 +236,8 @@ suite.prototype.cases.websockets = function(callback) {
 		}
 	});
 	req.send();
+	// make sure if Polling live updates was instantiated.
+	// cover the case when WS may not connect
 	QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.Polling, "Check that live updates instantiated with polling");
 };
 

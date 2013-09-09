@@ -12,7 +12,7 @@ Echo.StreamServer.API = {};
 /**
  * @class Echo.StreamServer.API.Request
  * Class implements the interaction with the
- * <a href="http://wiki.aboutecho.com" target="_blank">Echo StreamServer API</a>
+ * <a href="http://wiki.aboutecho.com/w/page/35105642/API-section-items" target="_blank">Echo StreamServer API</a>
  *
  *     var request = Echo.StreamServer.API.request({
  *         "endpoint": "search",
@@ -44,6 +44,9 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 	var liveUpdatesEnabled = config && config.liveUpdates && config.liveUpdates.enabled || config.recurring;
 	config = $.extend(true, {
 		/**
+		 * @depricated in favor of liveUpdates.polling.timeout
+		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
+		 *
 		 * @cfg {Object} [liveUpdates]
 		 * Live updating machinery configuration.
 		 *
@@ -110,6 +113,11 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 			}
 		},
 
+		/**
+		 * @depricated in favor of liveUpdates.enabled
+		 * @cfg {Boolean} [recurring] Specifies that the live updates are enabled.
+		 */
+		"recurring": false,
 		/**
 		 * @cfg {Boolean} [skipInitialRequest]
 		 * Flag allowing to skip the initial request but continue performing
@@ -199,7 +207,7 @@ Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(c
 	var _config = $.extend({}, config);
 	return $.extend({}, config, {
 		"onOpen": function(response, requestParams) {
-			_config.onOpen.call(null, response, {"requestType": self.requestType});
+			_config.onOpen(response, {"requestType": self.requestType});
 			clearInterval(self.retryTimer);
 			delete self.retryTimer;
 		},
@@ -467,10 +475,14 @@ Echo.StreamServer.API.request = function(config) {
 
 })(Echo.jQuery);
 
+//
+// Echo.StreamServer.API.Polling definition
+// Implements a machinery for the polling live updates
+//
+
 (function(jQuery) {
  
 var $ = jQuery;
-
 
 if (Echo.StreamServer.API && Echo.StreamServer.API.Polling) return;
 
@@ -502,7 +514,7 @@ Echo.StreamServer.API.Polling.prototype.getRequestObject = function() {
 				self.nextSince = response.nextSince;
 				self.start();
 			}
-			onData.apply(null, arguments);
+			onData(response);
 		}
 	});
 	return new Echo.API.Request(config);
@@ -538,7 +550,6 @@ Echo.StreamServer.API.Polling.prototype.on = function(event, fn) {
 		handler.apply(null, arguments);
 		fn.apply(null, arguments);
 	});
-	return this;
 };
 
 Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
@@ -584,6 +595,10 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 	}
 };
 
+//
+// Echo.StreamServer.API.WebSockets definition
+// Implements a machinery for the live updates via WebSockets
+//
 Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Polling, function(config) {
 	this.config = new Echo.Configuration(config, {
 		"request": {
@@ -609,7 +624,10 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 	this.queue = [];
 	this.subscribed = false;
 	this.subscriptionIds = [];
-	this.getRequestObject();
+	this.requestObject = this.getRequestObject();
+	if (this.connected()) {
+		this.requestObject.config.get("onOpen")();
+	}
 });
 
 Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
@@ -618,16 +636,14 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 	var _config = $.extend({}, config, {
 		"onData": function(response) {
 			if (!response || !response.event) return;
-			var eventParts = response.event.split("/");
-			var isError = !!~$.inArray("failed", eventParts);
-			if (isError) {
+			if (!!~response.event.indexOf("failed")) {
 				config.onError(response, {
 					"critical": response.errorCode === "connection_aborted"
 				});
 				return;
 			}
-			if (!!~$.inArray("reset", eventParts)) {
-				self._updateView(self._updateSubscription);
+			if (!!~response.event.indexOf("reset")) {
+				self._updateConnection(self._reconnect);
 				return;
 			}
 			if (response.event === "subscribe/confirmed") {
@@ -637,7 +653,9 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			if (response.event === "unsubscribe/confirmed") {
 				self.subscribed = false;
 			}
-			config.onData(response.data);
+			if (response.data) {
+				config.onData(response.data);
+			}
 		},
 		"onOpen": function() {
 			self.subscribe();
@@ -649,21 +667,17 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			});
 		}
 	});
-	this.requestObject = new Echo.API.Request(_config);
-	if (this.connected()) {
-		_config.onOpen();
-	}
-	return this.requestObject;
+	return new Echo.API.Request(_config);
 };
 
 Echo.StreamServer.API.WebSockets.prototype.on = function(event, fn, params) {
-	this.subscriptionIds.push(
-		Echo.Events.subscribe($.extend({
-			"topic": "Echo.API.Transports.WebSocket.on" + Echo.Utils.capitalize(event),
-			"handler": fn,
-			"context": this.requestObject.transport.context()
-		}, params))
-	);
+	var id = Echo.Events.subscribe($.extend({
+		"topic": "Echo.API.Transports.WebSocket.on" + Echo.Utils.capitalize(event),
+		"handler": fn,
+		"context": this.requestObject.transport.context()
+	}, params))
+	this.subscriptionIds.push(id);
+	return id;
 };
 
 Echo.StreamServer.API.WebSockets.prototype.start = $.noop;
@@ -696,7 +710,10 @@ Echo.StreamServer.API.WebSockets.prototype.subscribe = function() {
 
 // private interface
 
-Echo.StreamServer.API.WebSockets.prototype._updateView = function(callback) {
+//
+// We should update the subscription in case of reseting.
+//
+Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback) {
 	var self = this;
 	callback = callback || $.noop;
 	var req = new Echo.API.Request({
@@ -710,11 +727,25 @@ Echo.StreamServer.API.WebSockets.prototype._updateView = function(callback) {
 	req.request();
 };
 
-Echo.StreamServer.API.WebSockets.prototype._updateSubscription = function() {
-	this._clearSubscriptions();
+Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
+	var self = this;
+	var closeHandler = function() {
+		self.requestObject = self.getRequestObject();
+		if (self.connected()) {
+			self.requestObject.config.get("onOpen")();
+		}
+	};
 	this.requestObject.abort();
-	this.getRequestObject();
-	this.requestObject.transport.keepConnection();
+	if (this.requestObject.transport.closing()) {
+		self._clearSubscriptions();
+		var id = this.on("close", function() {
+			closeHandler();
+			Echo.Events.unsubscribe({"handlerId": id});
+		});
+	} else {
+		self._clearSubscriptions();
+		closeHandler();
+	}
 };
 
 Echo.StreamServer.API.WebSockets.prototype._clearSubscriptions = function() {
@@ -728,7 +759,7 @@ Echo.StreamServer.API.WebSockets.prototype._runQueue = function() {
 	while (this.queue.length) {
 		this.queue.shift().call(this);
 	}
-}
+};
 
 // static interface
 

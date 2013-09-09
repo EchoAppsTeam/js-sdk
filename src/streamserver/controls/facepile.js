@@ -175,7 +175,6 @@ pile.config = {
 	"liveUpdates": {
 		"transport": "polling", // or "websockets"
 		"enabled": true,
-		"timeout": 10, // backwards compatibility
 		"polling": {
 			"timeout": 10
 		},
