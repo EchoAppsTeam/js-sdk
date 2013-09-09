@@ -13,16 +13,14 @@
 		<div class="description">Echo FacePile app displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.</div>
 		<div class="wrapper">
 			<h3>Dynamic lists (by "query")</h3>
-			<small>query: "childrenof:http://aboutecho.com/* itemsPerPage:N children:0"</small>
+			<small>query: "childrenof:http://aboutecho.com/* children:0"</small>
 			<hr>
 			<b>name and avatar</b>
-			<small><br>itemsPerPage = 2, with suffixText</small>
+			<small><br>with suffixText</small>
 			<div class="block" id="ulist-d1"></div>
 			<b>only name</b>
-			<small><br>itemsPerPage = 3</small>
 			<div class="block" id="ulist-d2"></div>
 			<b>only avatar</b>
-			<small><br>itemsPerPage = 6</small>
 			<div class="block" id="ulist-d3"></div>
 		</div>
 
@@ -69,7 +67,7 @@
 		init({
 			"target": document.getElementById("ulist-d1"),
 			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:2 children:0",
+			"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
 			"suffixText": " commented on aboutecho.com",
 			"item": {"avatar": true, "text": true}
 		});
@@ -77,14 +75,14 @@
 		init({
 			"target": document.getElementById("ulist-d2"),
 			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:3 children:0",
+			"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
 			"item": {"avatar": false, "text": true}
 		});
 
 		init({
 			"target": document.getElementById("ulist-d3"),
 			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:6 children:0",
+			"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
 			"item": {"avatar": true, "text": false}
 		});
 
