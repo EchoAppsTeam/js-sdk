@@ -69,6 +69,18 @@ Echo.Tests.Utils.initServer = function() {
 		});
 		return !fake;
 	});
+
+	// FIXME: we should have used usual urlMocks filtering like "whoami" and other
+	// but we can't because "logout" endpoint supports only JSONP but sinon can't
+	//  mock it. So we have to replace the whole functions
+	sinon.stub(Echo.UserSession, "_logoutRequest", function(data, callback) {
+		Echo.Tests.Utils.actualizeTestUser({"status": "anonymous"}, function() {
+			callback("{\"result\": \"success\"}");
+		});
+	});
+	sinon.stub(Echo.UserSession, "_onInit", function(callback) {
+		callback();
+	});
 };
 
 Echo.Tests.Utils.actualizeTestUser = function(config, callback) {
