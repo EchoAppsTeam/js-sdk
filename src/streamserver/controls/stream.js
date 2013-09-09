@@ -351,7 +351,7 @@ stream.config = {
 	 * @cfg {String} submissionProxyURL
 	 * Location (URL) of the Submission Proxy subsystem.
 	 */
-	"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+	"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
 
 	/**
 	 * @cfg {Object} data
@@ -824,6 +824,8 @@ stream.methods._requestMoreItems = function(element) {
 			}
 		});
 	}
+	// FIXME: "more" requests are always initial ones
+	this.moreRequest.requestType = "initial";
 	this.moreRequest.send({
 		"data": {
 			"q": this.config.get("query") + " pageAfter:" +
@@ -2140,7 +2142,8 @@ item.methods.template = function() {
  * @echo_renderer
  */
 item.renderers.authorName = function(element) {
-	return element.html(this.get("data.actor.title") || this.labels.get("guest"));
+	var author = this.get("data.actor.title") || this.labels.get("guest");
+	return Echo.Utils.safelyExecute(element.html, author, element) || element;
 };
 
 /**
@@ -2467,7 +2470,8 @@ item.renderers.body = function(element) {
 	});
 	var text = data[0];
 	var truncated = data[1].truncated;
-	this.view.get("text").empty().append(text);
+	var textElement = this.view.get("text").empty();
+	Echo.Utils.safelyExecute(textElement.append, text, textElement);
 	this.view.get("textEllipses")[!truncated || this.textExpanded ? "hide" : "show"]();
 	this.view.get("textToggleTruncated")[truncated || this.textExpanded ? "show" : "hide"]();
 	return element;
@@ -2579,7 +2583,7 @@ item.renderers._extraField = function(element, extra) {
 	if (!this.data.object[type] || !this.user.is("admin")) {
 		return element.hide();
 	}
-	var name = type === "markers" ? "maxMarkerLength" : "maxTagsLength";
+	var name = type === "markers" ? "maxMarkerLength" : "maxTagLength";
 	var limit = this.config.get("limits." + name);
 	var items = Echo.Utils.foldl([], this.data.object[type], function(item, acc) {
 		var template = item.length > limit
@@ -2591,7 +2595,12 @@ item.renderers._extraField = function(element, extra) {
 			"data": {"item": item, "truncatedItem": truncatedItem}
 		}));
 	});
-	return element.prepend(items.sort().join(", ")).show();
+	return (
+		Echo.Utils.safelyExecute(
+			element.prepend,
+			items.sort().join(", "),
+			element
+		) || element).show();
 };
 
 item.renderers._button = function(element, extra) {

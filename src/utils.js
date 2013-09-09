@@ -1049,6 +1049,73 @@ Echo.Utils.invoke = function(mixed, context) {
 		: mixed;
 };
 
+/**
+ * @static
+ * Function which executes another function in the try/catch block.
+ * If the given function completed its execution without throwing an exception,
+ * then the "safelyExecute" returns result of that function execution.
+ * Otherwise, the "safelyExecute" catches an exception and prints the
+ * message to the console using the Echo.Utils#log function.
+ * It is useful in case you want to avoid execution flow interruption
+ * by the code which might potentially throw an exception.
+ *
+ *		// executes function without arguments and context
+ *		Echo.Utils.safelyExecute(function() {});
+ *		// returns undefined
+ *
+ *		// executes function with one argument & without context
+ *		Echo.Utils.safelyExecute(function() {}, "string param");
+ *		// returns undefined
+ *
+ *		someObject = {
+ *			"param": "some string"
+ *		};
+ *
+ *		someObject.fn = function(a, b) {
+ *			return [this.param, a, b];
+ *		};
+ *
+ *		// executes function with arguments & context
+ *		Echo.Utils.safelyExecute(someObject.fn, [[], "string param"], someObject);
+ *		// returns ["some string", [], "string param"]
+ *
+ *		// executes the function which throws an exception
+ *		Echo.Utils.safelyExecute(function() { throw "Some error"; });
+ *		// returns undefined and prints "Some error" message to the console
+ *
+ * @param {Function} fn
+ * Function to be excuted in the try/catch wrapper
+ *
+ * @param {Mixed} [args]
+ * The argument type might vary depending on the use-case:
+ *
+ *  + undefined - in case the given function doesn't expect any arguments
+ *  + array - if the function to be called accepts more than one argument
+ *  + value as is - when the function expects only one argument.
+ *
+ * @param {Object} [context]
+ * Context in which the function should be executed.
+ *
+ * @return {Mixed}
+ * The result of a given function execution in case it was completed
+ * without throwing an exception. Otherwise - the undefined is returned.
+ */
+Echo.Utils.safelyExecute = function(fn, args, context) {
+	context = context || null;
+	args = $.isArray(args)
+		? args
+		: typeof args === "undefined"
+			? [] : [args];
+	try {
+		return fn.apply(context, args);
+	} catch(e) {
+		Echo.Utils.log({
+			"type": "error",
+			"message": e.message || e,
+			"component": context instanceof Echo.Control ? context.name : ""
+		});
+	}
+};
 
 // JS SDK can't guarantee proper UI elements rendering in quirks mode
 // because the UI Framework (Twitter Bootstrap) doesn't support this mode.

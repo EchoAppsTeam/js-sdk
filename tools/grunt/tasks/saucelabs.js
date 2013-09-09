@@ -190,19 +190,17 @@ module.exports = function(grunt) {
 	};
 
 	grunt.registerTask("saucelabs", "Running tests via SauceLabs", function(target) {
+		// TODO: move common options from config as default options here after updating to grunt 0.4
 		var options = grunt.helper("options", this);
-		// TODO: we must add default options after update grunt to 0.4
-		options.url = url.format({
-			"protocol": "http",
-			"hostname": grunt.config.get("local.domainTests") || grunt.config.get("local.domain") || "localhost",
-			"port": !grunt.config.get("local.domain") && grunt.config("server.port"),
-			"pathname": "tests/index.html",
-			"query": grunt.option("number")
-				? {"testNumber": grunt.option("number")}
-				: grunt.option("module")
-					? {"module": grunt.option("module")}
-					: {}
-		});
+		var envConfig = grunt.config("envConfig");
+		var urlParts = url.parse(envConfig.baseURLs.tests, false, true);
+		urlParts.protocol = "http";
+		urlParts.query = grunt.option("number")
+			? {"testNumber": grunt.option("number")}
+			: grunt.option("module")
+				? {"module": grunt.option("module")}
+				: {};
+		options.url = url.format(urlParts);
 
 		var browserList = null;
 		if (typeof grunt.option("browser") === "string") {
@@ -212,8 +210,8 @@ module.exports = function(grunt) {
 		}
 
 		var initialData = {
-			"name": process.env["SAUCE_USERNAME"] || grunt.config("local.saucelabs.name"),
-			"key": process.env["SAUCE_ACCESS_KEY"] || grunt.config("local.saucelabs.key"),
+			"name": process.env["SAUCE_USERNAME"] || envConfig.saucelabs.name,
+			"key": process.env["SAUCE_ACCESS_KEY"] || envConfig.saucelabs.key,
 			"identifier": process.env["TRAVIS_JOB_NUMBER"] || (new Date()).getTime() + "." + Math.ceil(Math.random() * 100)
 		};
 

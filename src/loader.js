@@ -21,10 +21,10 @@ Echo.Loader = {
 	"debug": false,
 	/** @private */
 	"config": {
-		"cdnBaseURL": protocol + "//cdn.echoenabled.com/",
+		"cdnBaseURL": protocol + "{%=baseURLs.cdn%}/",
 		"storageURL": {
-			"prod": protocol + "//dqspik3j3bxvu.cloudfront.net/",
-			"dev": protocol + "//s3.amazonaws.com/echo-canvases/"
+			"prod": protocol + "{%=baseURLs.canvases.prod%}/",
+			"dev": protocol + "{%=baseURLs.canvases.dev%}/"
 		},
 		"errorTimeout": 5000 // 5 sec
 	},
@@ -291,29 +291,23 @@ Echo.Loader.override = function(canvasID, appID, config) {
  * Target element where Echo Loader should look for the canvases if no
  * canvases were passed in the "config.canvases" field.
  */
+
 Echo.Loader.init = function(config) {
-	config = config || {};
-	Echo.Loader.initEnvironment(function() {
-		var $ = Echo.jQuery;
-		var canvases = config.canvases;
+	Echo.Loader._lookupCanvases(config, function(canvases) {
+		Echo.Loader._map(canvases, function(canvas) {
+			var isActive = canvas.getAttribute("data-canvas-init") !== "when-visible"
+				|| Echo.Loader._isInViewport(canvas);
 
-		// convert a single canvas to the 1-element array
-		// to keep the same contract below in the code
-		if (canvases && !$.isArray(canvases) && !(canvases instanceof $)) {
-			canvases = [canvases];
-		}
-
-		// if no canvases defined during initialization,
-		// we look for all canvases in the target ('document' by default)
-		canvases = canvases || $(".echo-canvas", config.target);
-
-		$.map(canvases || [], function(canvas) {
-			var target = $(canvas);
-			var instance = new Echo.Canvas({
-				"target": target,
-				"overrides": Echo.Loader.overrides[target.data("canvas-id")] || {}
-			});
-			Echo.Loader.canvases.push(instance);
+			if (!isActive) {
+				onViewportChange("subscribe", function init() {
+					if (Echo.Loader._isInViewport(canvas)) {
+						Echo.Loader._initCanvas(canvas);
+						onViewportChange("unsubscribe", init);
+					}
+				});
+			} else {
+				Echo.Loader._initCanvas(canvas);
+			}
 		});
 	});
 };
@@ -378,6 +372,50 @@ Echo.Loader.initApplication = function(app) {
 	});
 };
 
+Echo.Loader._lookupCanvases = function(config, callback) {
+	config = config || {};
+
+	var canvases = config.canvases;
+	var target = config.target
+		? (config.target.length ? config.target[0] : config.target)
+		: document;
+
+	// convert a single canvas to the 1-element array
+	// to keep the same contract below in the code
+	if (canvases && !canvases.length) {
+		canvases = [canvases];
+	}
+
+	// if no canvases defined during initialization,
+	// we look for all canvases in the target ('document' by default)
+	if (canvases) {
+		callback(canvases);
+	} else if (target.querySelectorAll) {
+		callback(target.querySelectorAll(".echo-canvas"));
+	} else {
+		// Fallback uses Echo.jQuery if IE < 8
+		Echo.Loader.initEnvironment(function() {
+			callback(Echo.jQuery(".echo-canvas", target));
+		});
+	}
+};
+
+Echo.Loader._initCanvas = function(canvas) {
+	Echo.Loader.initEnvironment(function() {
+		var instance = new Echo.Canvas({
+			"target": canvas,
+			"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
+		});
+		Echo.Loader.canvases.push(instance);
+	});
+};
+
+Echo.Loader._isInViewport = function(canvas) {
+	var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
+	var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+	return scrollTop + viewportHeight >= canvas.offsetTop;
+};
+
 // implementation of the "map" function for the cases when jQuery is not loaded yet
 Echo.Loader._map = function(list, iterator) {
 	var result = [];
@@ -401,6 +439,22 @@ Echo.Loader._areResourcesReady = function(resources) {
 			(state.resources[url] && state.resources[url] === "ready");
 	});
 	return resources.length === resourceReadyFlags.length;
+};
+
+function getEventName(name) {
+	return window.addEventListener ? name : "on" + name;
+}
+
+function onViewportChange(action, handler) {
+	var addEvent = window.addEventListener || window.attachEvent;
+	var removeEvent = window.removeEventListener || window.detachEvent;
+	if (action === "subscribe") {
+		addEvent(getEventName("scroll"), handler);
+		addEvent(getEventName("resize"), handler)
+	} else if (action === "unsubscribe") {
+		removeEvent(getEventName("scroll"), handler);
+		removeEvent(getEventName("resize"), handler);
+	}
 };
 
 })();

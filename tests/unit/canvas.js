@@ -137,11 +137,16 @@ Echo.Tests.test("canvas contract", function() {
 			"apps": [{
 				"component": "CanvasAdapter",
 				"config": {"id": 256}
-			}],
+			}]
 		}
 	});
 	canvas.destroy();
-	delete window.CanvasAdapter;
+	try {
+		delete window.CanvasAdapter;
+	} catch(e) {
+		// fallback for IE8
+		window.CanvasAdapter = null;
+	}
 });
 
 Echo.Tests.test("canvas destroy", function() {
@@ -168,7 +173,7 @@ Echo.Tests.test("canvas destroy", function() {
 			"data": {
 				"apps": [{
 					"component": "TestCanvases." + component
-				}],
+				}]
 			}
 		});
 		try {
@@ -180,7 +185,12 @@ Echo.Tests.test("canvas destroy", function() {
 		QUnit.ok(result, "Check if canvas adapter was destroyed successfully (" +
 			component.replace(/([A-Z])/g, " $1").toLowerCase() + ")");
 	});
-	delete window.TestCanvases;
+	try {
+		delete window.TestCanvases;
+	} catch(e) {
+		// fallback for IE8
+		window.TestCanvases = null;
+	}
 });
 
 })(Echo.jQuery);

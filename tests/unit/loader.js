@@ -13,7 +13,8 @@ Echo.Tests.module("Echo.Loader", {
 			"isDebug",
 			"download",
 			"override",
-			"getURL"
+			"getURL",
+			"_lookupCanvases"
 		]
 	},
 	"setup": function() {
@@ -78,7 +79,7 @@ Echo.Tests.test("URL conversion", function() {
 });
 
 Echo.Tests.asyncTest("resource downloading", function() {
-	var base = Echo.Tests.baseURL + "tests/fixtures/resources/loader/";
+	var base = Echo.Tests.baseURL + "fixtures/resources/loader/";
 	var emptyResourceArray = function(callback) {
 		Echo.Loader.download([], function() {
 			QUnit.ok(true, "Checking if the callback is fired even if the list of the scripts to load is empty (empty array)");
@@ -275,7 +276,7 @@ Echo.Tests.asyncTest("yepnope corner cases", function() {
 	// executed yet. In this test case yepnope tries to execute synchronous script
 	// before it's fully preloaded.
 	var raceConditions = function(callback) {
-		var base = Echo.Tests.baseURL + "tests/fixtures/resources/loader";
+		var base = Echo.Tests.baseURL + "fixtures/resources/loader";
 		Echo.Loader.download([{"url": base + "/yepnope-base.js"}], function() {
 			QUnit.ok(!!Echo.Tests.Fixtures.loader.yepnope, "Check if base script is loaded");
 			// we override injectJs function to be sure that
@@ -312,7 +313,7 @@ Echo.Tests.asyncTest("yepnope corner cases", function() {
 			script.remove();
 			Echo.Loader.download([{
 				"url": Echo.Tests.baseURL +
-					"tests/fixtures/resources/loader/check-removing-first-script.js"
+					"fixtures/resources/loader/check-removing-first-script.js"
 			}], function() {
 				QUnit.ok(Echo.Tests.Fixtures.loader.firstScriptRemoved,
 					"Check if removing of firstNode doesn't cause side effects");
@@ -387,7 +388,7 @@ Echo.Tests.asyncTest("application initialization", function() {
 	var initForeignApplication = function(callback) {
 		$("qunit-fixture").empty();
 		Echo.Loader.initApplication({
-			"script": Echo.Tests.baseURL + "tests/fixtures/resources/loader/foreign-class.js",
+			"script": Echo.Tests.baseURL + "fixtures/resources/loader/foreign-class.js",
 			"component": "SomeForeignClass",
 			"config": {
 				"target": $("qunit-fixture")
@@ -409,6 +410,76 @@ Echo.Tests.asyncTest("application initialization", function() {
 	Echo.Utils.sequentialCall([
 		initCounterApplication,
 		initForeignApplication
+	], function() {
+		QUnit.start();
+	});
+});
+
+Echo.Tests.asyncTest("getting canvas elements", function() {
+	var defaultInit = Echo.Tests.isolate(function(callback) {
+		$(this.document.body)
+			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+
+		Echo.Loader._lookupCanvases({
+			"target": this.document.body
+		}, function(canvases) {
+			QUnit.equal(canvases.length, 2, "Check if Echo.Loader.init successfully handles a config without canvases");
+			callback();
+		});
+	});
+
+	var nativeElements = Echo.Tests.isolate(function(callback) {
+		$(this.document.body)
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+
+		Echo.Loader._lookupCanvases({
+			"target": this.document.body,
+			"canvases": this.document.querySelectorAll
+				? this.document.querySelectorAll(".echo-canvas-test")
+				: this.document.getElementsByTagName("div") // for IE < 8
+		}, function(canvases) {
+			QUnit.equal(canvases.length, 3, "Check if Echo.Loader.init successfully handles a config with native DOM elements");
+			callback();
+		});
+	});
+
+	var nativeSingleElement = Echo.Tests.isolate(function(callback) {
+		$(this.document.body)
+			.append('<div id="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+
+		Echo.Loader._lookupCanvases({
+			"target": this.document.body,
+			"canvases": this.document.getElementById("echo-canvas-test")
+		}, function(canvases) {
+			QUnit.equal(canvases.length, 1, "Check if Echo.Loader.init successfully handles a config with native DOM elements");
+			callback();
+		});
+	});
+
+	var jQueryElements = Echo.Tests.isolate(function(callback) {
+		$(this.document.body)
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+
+		Echo.Loader._lookupCanvases({
+			"target": $("body", this.document),
+			"canvases": $(".echo-canvas-test", this.document)
+		}, function(canvases) {
+			QUnit.equal(canvases.length, 3, "Check if Echo.Loader.init successfully handles a config with jQuery elements");
+			callback();
+		});
+	});
+
+	QUnit.expect(4);
+	Echo.Utils.sequentialCall([
+		defaultInit,
+		nativeElements,
+		nativeSingleElement,
+		jQueryElements
 	], function() {
 		QUnit.start();
 	});

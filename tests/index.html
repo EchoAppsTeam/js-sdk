@@ -8,17 +8,17 @@
 		#echo-tests { background: #FFFFFF; }
 		#qunit-header, #qunit-tests > li:last-child { border-radius:0; }
 	</style>
-	<link href="//cdn.echoenabled.com/sdk/v3/gui.pack.css" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/backplane.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/streamserver.pack.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/identityserver.pack.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/gui.pack.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/tests/harness.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/tests/harness/suite.js"></script>
+	<link href="{%=baseURLs.sdk%}/gui.pack.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/backplane.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/environment.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver/plugins/pinboard-visualization.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/identityserver.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/gui.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/tests/harness.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/tests/harness/suite.js"></script>
 	<script type="text/javascript" src="fixtures/vars.js"></script>
 	<script type="text/javascript" src="fixtures/api/count.js"></script>
 	<script type="text/javascript" src="fixtures/api/search.js"></script>
@@ -77,7 +77,7 @@
 		Echo.Tests.init({
 			"title": "Echo SDK v3 tests",
 			"backplane": {
-				"serverBaseURL": "http://api.echoenabled.com/v1",
+				"serverBaseURL": window.location.protocol + "{%=baseURLs.api.backplane%}/v1",
 				"busName": "jskit"
 			}
 		});

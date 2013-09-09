@@ -87,7 +87,11 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 *  + "submit"
 		 *  + "search"
 		 *  + "count"
+		 *  + "mux"
 		 *
+		 * __Note__: The API endpoint "mux" allows to "multiplex" requests,
+		 * i.e. use a single API call to "wrap" several requests. More information
+		 * about "mux" can be found [here](http://wiki.aboutecho.com/w/page/32433803/API-method-mux).
 		 */
 		"liveUpdates": {
 			"transport": "polling", // or "websockets"
@@ -141,8 +145,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * @cfg {String} [submissionProxyURL]
 		 * Specifes the URL to the submission proxy service.
 		 */
-		"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity"
-
+		"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = "initial"; // initial | secondary
@@ -173,6 +176,22 @@ Echo.StreamServer.API.Request.prototype._search = function(force) {
 		|| this.config.get("skipInitialRequest") && this.requestType !== "initial") {
 		this.request();
 	}
+};
+
+Echo.StreamServer.API.Request.prototype._submit = function() {
+	this.request(
+		$.extend({}, this.config.get("data"), {
+			"content": Echo.Utils.objectToJSON(this._AS2KVL(this.config.get("data.content")))
+		})
+	);
+};
+
+Echo.StreamServer.API.Request.prototype._mux = function() {
+	this.request(
+		$.extend({}, this.config.get("data"), {
+			"requests": Echo.Utils.objectToJSON(this.config.get("data.requests"))
+		})
+	);
 };
 
 Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
@@ -211,17 +230,15 @@ Echo.StreamServer.API.Request.prototype._onError = function(responseError, reque
 	this._handleErrorResponse(responseError, {"callback": config.onError});
 };
 
-Echo.StreamServer.API.Request.prototype._submit = function() {
-	var content = Echo.Utils.objectToJSON(this._AS2KVL(this.config.get("data.content")));
-	this.request($.extend({}, this.config.get("data"), {"content": content}));
-};
-
 Echo.StreamServer.API.Request.prototype._prepareURI = function() {
-	if (this.config.get("endpoint") === "submit") {
-		// FIXME: move replace to API.Request lib
-		return this.config.get("submissionProxyURL").replace(/^(http|ws)s?:\/\//, "");
+	var endpoint = this.config.get("endpoint");
+	if (endpoint === "submit") {
+		return this.config.get("submissionProxyURL").replace(/^(?:(?:http|ws)s?:)?\/\//, "");
 	}
-	return this.constructor.parent._prepareURI.call(this);
+	return endpoint === "mux"
+		// /v1/mux endpoint is deprecated so we must always use /v2/mux
+		? this.constructor.parent._prepareURI.call(this).replace(/v1/, "v2")
+		: this.constructor.parent._prepareURI.call(this);
 };
 
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {

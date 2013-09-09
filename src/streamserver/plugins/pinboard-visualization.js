@@ -281,12 +281,19 @@ var $ = jQuery;
  * 		}]
  * 	});
  *
+ * __Note__: PinboardVisualization plugin modifies not only the Stream layout,
+ * but also the UI of the Stream.Item control. It is notable that "reTag" section
+ * is removed from the Item template. That's why setting the "reTag" configuration
+ * parameter for the Stream.Item control will result in no actions while the
+ * PinboardVisualization plugin is active. This was done to simplfy UI and avoid
+ * visual noise as much as possible. More information about "reTag" configuration
+ * parameter can be found [here](#!/api/Echo.StreamServer.Controls.Stream.Item-cfg-reTag).
+ *
  * More information regarding the plugins installation can be found
  * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-2) guide.
  *
  * @extends Echo.Plugin
  *
- * @private
  * @package streamserver/plugins/pinboard-visualization.js
  */
 

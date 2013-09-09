@@ -5,17 +5,17 @@
 	<link rel="stylesheet" type="text/css" href="demo.css" />
 
 	<!-- Default scripts inclusion -->
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/identityserver.pack.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/backplane.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/environment.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/identityserver.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver/plugins/pinboard-visualization.js"></script>
 </head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization" target="_blank">Documentation</a></div>
 		<h1>Pinboard Demo</h1>
 		<div class="wrapper">
 			<div id="stream"></div>
@@ -34,7 +34,7 @@
 	<!-- Client initialization -->
 	<script type="text/javascript">
 		Backplane.init({
-			"serverBaseURL": "http://api.echoenabled.com/v1",
+			"serverBaseURL": window.location.protocol + "{%=baseURLs.api.backplane%}/v1",
 			"busName": "jskit"
 		});
 		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};

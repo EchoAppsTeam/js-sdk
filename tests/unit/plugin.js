@@ -732,7 +732,7 @@ suite.getPluginManifest = function(name, component) {
 
 	var addDependency = function(n, params) {
 		var dependency = {
-			"url": Echo.Tests.baseURL + "tests/unit/dependencies/plugin.dep." + n + ".js"
+			"url": Echo.Tests.baseURL + "unit/dependencies/plugin.dep." + n + ".js"
 		};
 		if (typeof params === "object") {
 			dependency = $.extend(dependency, params);

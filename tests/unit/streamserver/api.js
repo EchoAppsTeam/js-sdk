@@ -11,6 +11,7 @@ suite.prototype.info = {
 		"Request._search",
 		"Request._submit",
 		"Request._count",
+		"Request._mux",
 		"Request.abort",
 		"Request.send",
 		"request"
@@ -34,6 +35,32 @@ suite.prototype.cases.simpleSearchRequest = function(callback) {
 		"onData": function(data) {
 			QUnit.ok(data && data.entries,
 				"Checking if the \"onData\" callback was executed after the regular request.");
+			callback();
+		}
+	}).send();
+};
+
+suite.prototype.cases.simpleMuxRequest = function(callback) {
+	var params = $.extend(true, {}, this.params);
+	params.requests = [{
+		"id": "count",
+		"method": "count",
+		"q": params.q
+	}, {
+		"id": "search",
+		"method": "search",
+		"q": "wrong query"
+	}];
+	delete params.q;
+	Echo.StreamServer.API.request({
+		"endpoint": "mux",
+		"data": params,
+		"onOpen": function() {
+			QUnit.ok(true, "Checking if the \"onOpen\" callback was executed before data sending in case of using mux request");
+		},
+		"onData": function(data) {
+			QUnit.ok(data.count && data.search, "Checking if the \"onData\" callback was executed after the regular mux request.");
+			QUnit.strictEqual(data.search.result, "error", "Checking if the \"search\" respond with error.");
 			callback();
 		}
 	}).send();
@@ -222,6 +249,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 	"check": function() {
 		var sequentialTests = [
 			"simpleSearchRequest",
+			"simpleMuxRequest",
 			"skipInitialRequest",
 			"requestWithAbort",
 			"checkLiveUpdate",

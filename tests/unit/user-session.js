@@ -10,7 +10,7 @@ Echo.Tests.module("Echo.UserSession", {
 			"is",
 			"has",
 			"any",
-			//"logout",
+			"logout",
 
 			// private methods
 			"_maybeDelegate",
@@ -63,11 +63,16 @@ Echo.Tests.asyncTest("logged in checks", function() {
 				"Checking primary email extraction from user object");
 
 			checkBasicOperations(user);
-			QUnit.start();
+
+			user.logout(function() {
+				QUnit.ok(!user.is("logged"), "Check that user is not logged after logout");
+				QUnit.start();
+			});
 		}
 	});
 }, {
-	"user": {"status": "logged"}
+	"user": {"status": "logged"},
+	"timeout": 6000
 });
 
 Echo.Tests.asyncTest("anonymous checks", function() {

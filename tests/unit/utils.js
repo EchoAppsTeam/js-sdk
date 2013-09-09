@@ -25,6 +25,7 @@ Echo.Tests.module("Echo.Utils", {
 			"parallelCall",
 			"parseURL",
 			"remove",
+			"safelyExecute",
 			"sequentialCall",
 			"set",
 			"stripTags",
@@ -514,6 +515,23 @@ Echo.Tests.test("invoke()", function() {
 	};
 	invoke(nonCtxSpecificCases);
 	invoke(ctxSpecificTests, {"a": 1, "c": "test"});
+});
+
+Echo.Tests.test("safelyExecute()", function() {
+	var TestClass = function(a) {
+		this.a = a;
+	};
+	TestClass.prototype.fn = function() {
+		return this.a;
+	};
+	var testInstance = new TestClass("some var");
+	QUnit.strictEqual(Echo.Utils.safelyExecute(), undefined, "Checking if \"safelyExecute\" function called with no args (throw exception)");
+	QUnit.strictEqual(Echo.Utils.safelyExecute(function() { throw "Some exception"; }), undefined, "Checking if \"safelyExecute\" function called which throwing an exception");
+	QUnit.strictEqual(Echo.Utils.safelyExecute(function() {}), undefined, "Checking if \"safelyExecute\" function called which do not returns a value");
+	QUnit.strictEqual(Echo.Utils.safelyExecute(function() { return "aaa"; }), "aaa", "Checking if \"safelyExecute\" function called with function which return value without args & context");
+	QUnit.strictEqual(Echo.Utils.safelyExecute(function(a) { return a; }, 25), 25, "Checking if \"safelyExecute\" function called with function which return value with one argument & without context");
+	QUnit.deepEqual(Echo.Utils.safelyExecute(function(a, b) { return [a, b]; }, [25, "aa"]), [25, "aa"], "Checking if \"safelyExecute\" function called with function which return value with 2 args & without context");
+	QUnit.strictEqual(Echo.Utils.safelyExecute(testInstance.fn, 44, testInstance), "some var", "Checking if \"safelyExecute\" function called with function which return value with args & with context");
 });
 
 Echo.Tests.asyncTest("loadImage()", function() {

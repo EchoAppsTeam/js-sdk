@@ -4,7 +4,8 @@ var data = {
 	// to enable debug mode execute `grunt release -d=1`
 	"debug": false,
 	// execute `grunt release --env=production` for actual release
-	"env": "dev",
+	"env": "development",
+	"environments": ["development", "test", "staging", "production"],
 	// flag is set to true when we execute release task
 	"release": false
 };
@@ -22,16 +23,6 @@ exports.init = function(grunt) {
 		} else {
 			return grunt.utils.namespace.get(data, key);
 		}
-	};
-
-	// readOptionalJSON by Ben Alman (https://gist.github.com/2876125)
-	exports.readOptionalJSON = function(filepath) {
-		var data = {};
-		try {
-			data = grunt.file.readJSON(filepath);
-			grunt.log.write("Reading data from " + filepath + "...").ok();
-		} catch(e) {}
-		return data;
 	};
 
 	exports.exec = function(command, callback) {
@@ -58,8 +49,8 @@ exports.init = function(grunt) {
 
 		exports.config("debug", !!grunt.option("debug"));
 		var env = grunt.option("env");
-		if (!_.contains(["production", "staging", "test", "dev"], env)) {
-			env = "dev";
+		if (!_.contains(exports.config("environments"), env)) {
+			env = "development";
 		}
 		exports.config("env", env);
 		grunt.log.writeln("");

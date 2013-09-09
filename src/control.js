@@ -154,7 +154,7 @@ Echo.Control.isDefined = function(manifest) {
 Echo.Control.prototype.templates = {"message": {}};
 
 Echo.Control.prototype.templates.message.compact =
-	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}"></span>';
+	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>';
 
 Echo.Control.prototype.templates.message.full =
 	'<div class="echo-control-message {class:messageText}">' +
@@ -1164,13 +1164,13 @@ manifest.config = {
 	 * @cfg {String} [apiBaseURL="api.echoenabled.com/v1/"]
 	 * URL prefix for all API requests
 	 */
-	"apiBaseURL": "api.echoenabled.com/v1/",
+	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
 
 	/**
 	 * @cfg {String} [submissionProxyURL="apps.echoenabled.com/v2/esp/activity/"]
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
-	"submissionProxyURL": "apps.echoenabled.com/v2/esp/activity/",
+	"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity/",
 
 	/**
 	 * @cfg {Boolean} [useSecureAPI]
@@ -1395,7 +1395,7 @@ manifest.inherits = Echo.Control;
 manifest.templates = {"message": {}};
 
 manifest.templates.message.compact =
-	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}"></span>';
+	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>';
 
 manifest.templates.message.full =
 	'<div class="echo-control-message {class:messageText}">' +

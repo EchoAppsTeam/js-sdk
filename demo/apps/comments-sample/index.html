@@ -5,8 +5,8 @@
 	<link rel="stylesheet" type="text/css" href="../../demo.css" />
 
 	<!-- Default scripts inclusion -->
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
 </head>
 <body>
 <div id="container">
@@ -19,17 +19,17 @@
 			Echo.jQuery("#container").addClass("embedded");
 		}
 		Echo.Loader.initApplication({
-			"script": "http://cdn.echoenabled.com/apps/echo/comments-sample/comments-sample.js",
+			"script": "{%=baseURLs.cdn%}/apps/echo/comments-sample/comments-sample.js",
 			"component": "Echo.Apps.CommentsSample",
 			"backplane": {
-				"serverBaseURL": "http://api.echoenabled.com/v1",
+				"serverBaseURL": window.location.protocol + "{%=baseURLs.api.backplane%}/v1",
 				"busName": "jskit"
 			},
 			"config": {
 				"target": document.getElementById("comments-sample"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"apiBaseURL": "http://api.echoenabled.com/v1/",
-				"submissionProxyURL": "http://apps.echoenabled.com/v2/esp/activity",
+				"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
+				"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
 				"components": {
 					"Stream": {
 						"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
@@ -42,7 +42,7 @@
 							"name": "Moderation"
 						}, {
 							"name": "StreamSortingSelector",
-							"url": "http://cdn.echoenabled.com/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
+							"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
 						}]
 					},
 					"Submit": {

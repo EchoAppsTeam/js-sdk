@@ -69,6 +69,18 @@ Echo.Tests.Utils.initServer = function() {
 		});
 		return !fake;
 	});
+
+	// FIXME: we should have used usual urlMocks filtering like "whoami" and other
+	// but we can't because "logout" endpoint supports only JSONP but sinon can't
+	//  mock it. So we have to replace the whole functions
+	sinon.stub(Echo.UserSession, "_logoutRequest", function(data, callback) {
+		Echo.Tests.Utils.actualizeTestUser({"status": "anonymous"}, function() {
+			callback("{\"result\": \"success\"}");
+		});
+	});
+	sinon.stub(Echo.UserSession, "_onInit", function(callback) {
+		callback();
+	});
 };
 
 Echo.Tests.Utils.actualizeTestUser = function(config, callback) {
@@ -91,7 +103,7 @@ Echo.Tests.Utils.actualizeTestUser = function(config, callback) {
 				if (isMocked) {
 					user._init(callback);
 				} else {
-					$.get("http://echosandbox.com/js-sdk/auth", {
+					$.get("http://echosandbox.com/js-sdk/auth/", {
 						"action": "login",
 						"channel": Backplane.getChannelID(),
 						"identityUrl": "http://somedomain.com/users/fake_user"
@@ -115,7 +127,7 @@ var _URLMocks = {
 	// group of URLs http://s3.amazonaws.com/echo-canvases/<canvas-id>
 	"canvases": {
 		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
-		"url": new RegExp("^" + Echo.Loader.config.storageURL.dev + "(.*?)\\?"),
+		"url": new RegExp(Echo.Loader.config.storageURL.dev + "(.*?)\\?"),
 		"response": function(request, canvasId) {
 			var status = 200, text = "";
 			if (/nonexistent/.test(canvasId)) {
@@ -132,8 +144,7 @@ var _URLMocks = {
 	},
 	// mocks for /v1/count API
 	"api/count": {
-		// TODO: api.echoenabled.com should go from some variable
-		"url": /^http:\/\/api\.echoenabled\.com\/v1\/count\?q=(.*?)&/,
+		"url": new RegExp("{%=baseURLs.api.streamserver%}/v1/count\\?q=(.*?)&"),
 		"response": function(request, query) {
 			request.respond(
 				200,
@@ -144,8 +155,7 @@ var _URLMocks = {
 	},
 	// mocks for /v1/search API
 	"api/search": {
-		// TODO: api.echoenabled.com should go from some variable
-		"url": /^http:\/\/api\.echoenabled\.com\/v1\/search\?.*?q=(.*?)&/,
+		"url": new RegExp("{%=baseURLs.api.streamserver%}/v1/search\\?q=(.*?)&"),
 		"response": function(request, query) {
 			request.respond(
 				200,
@@ -156,8 +166,7 @@ var _URLMocks = {
 	},
 	// single URL http://api.echoenabled.com/v1/users/whoami?...
 	"api/whoami": {
-		// TODO: api.echoenabled.com should go from some variable
-		"url": /^http:\/\/api\.echoenabled\.com\/v1\/users\/whoami\?/,
+		"url": new RegExp("{%=baseURLs.api.streamserver%}/v1/users/whoami\\?"),
 		"response": function(request) {
 			request.respond(
 				200,
