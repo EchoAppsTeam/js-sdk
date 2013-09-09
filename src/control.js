@@ -154,7 +154,7 @@ Echo.Control.isDefined = function(manifest) {
 Echo.Control.prototype.templates = {"message": {}};
 
 Echo.Control.prototype.templates.message.compact =
-	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}"></span>';
+	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>';
 
 Echo.Control.prototype.templates.message.full =
 	'<div class="echo-control-message {class:messageText}">' +
@@ -1394,7 +1394,7 @@ manifest.inherits = Echo.Control;
 manifest.templates = {"message": {}};
 
 manifest.templates.message.compact =
-	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}"></span>';
+	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>';
 
 manifest.templates.message.full =
 	'<div class="echo-control-message {class:messageText}">' +
