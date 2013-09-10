@@ -288,8 +288,9 @@ module.exports = function(grunt) {
 			var updateCmd = [
 				"git checkout gh-pages",
 				"git pull",
-				"git checkout master -- tests demo",
 				"cp -r " + grunt.config("dirs.dist") + "/docs/* docs",
+				"cp -r " + grunt.config("dirs.dist") + "/tests/* tests",
+				"cp -r " + grunt.config("dirs.dist") + "/demo/* demo",
 				"git add docs/ tests/ demo/",
 				"git commit -m \"up to v" + grunt.config("pkg.version") + "\"",
 				"git push origin gh-pages",
