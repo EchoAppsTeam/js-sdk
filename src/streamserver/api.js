@@ -110,7 +110,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 			"websockets": {
 				"maxConnectRetries": 3,
 				"serverPingInterval": 30,
-				"URL": "{%=baseURLs.api.ws%}"
+				"URL": "{%=baseURLs.api.ws%}/v1/"
 			}
 		},
 
@@ -605,7 +605,7 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Polling, function(config) {
 	this.config = new Echo.Configuration(config, {
 		"request": {
-			"apiBaseURL": "{%=baseURLs.api.ws%}",
+			"apiBaseURL": "{%=baseURLs.api.ws%}/v1/",
 			"transport": "websocket",
 			"timeout": null,
 			"onOpen": $.noop,
