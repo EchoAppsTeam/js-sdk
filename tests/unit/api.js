@@ -28,7 +28,7 @@ Echo.Tests.test("private interface", function() {
 		"onSomeEvent2": function() {},
 		"onemotion": true
 	});
-	QUnit.equal("//" + req._prepareURI(), "{%=baseURLs.api.streamserver%}/v1/some_endpoint", "Checking URI assembler for transport url");
+	QUnit.equal("//" + req._prepareURI(), "//api.echoenabled.com/v1/some_endpoint", "Checking URI assembler for transport url");
 	var handlers = req._getHandlersByConfig();
 	QUnit.ok("onSomeEvent" in handlers && "onSomeEvent2" in handlers, "Checking that component can retrieve event handlers from config");
 

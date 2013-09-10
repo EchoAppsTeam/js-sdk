@@ -798,7 +798,7 @@ suite._streamConfigData = {
 		},
 		"toggleBy": "mouseover" // mouseover | button | none
 	},
-	"submissionProxyURL": window.location.protocol + "{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
+	"submissionProxyURL": window.location.protocol + "apps.echoenabled.com/v2/esp/activity",
 	"query": "query_string",
 	"target": $("<div>")
 };

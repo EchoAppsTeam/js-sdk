@@ -34,7 +34,7 @@ suite.prototype.cases.simpleWhoamiRequest = function(callback) {
 	var user = Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	Echo.IdentityServer.API.request({
 		"endpoint": "whoami",
-		"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/users/",
+		"apiBaseURL": "//api.echoenabled.com/v1/users/",
 		"data": {
 			"appkey": user.config.get("appkey"),
 			"sessionID": user.get("sessionID")
@@ -57,7 +57,7 @@ suite.prototype.cases.simpleUserUpdateRequest = function(callback) {
 	var state = states[Math.floor(Math.random() * states.length)];
 	var updateRequest = Echo.IdentityServer.API.request({
 		"endpoint": "update",
-		"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/users/",
+		"apiBaseURL": "//api.echoenabled.com/v1/users/",
 		"data": {
 			"content": {
 				"field": "state",

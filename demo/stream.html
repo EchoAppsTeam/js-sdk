@@ -3,12 +3,12 @@
 <head>
 	<title>Stream App Demo</title>
 	<link rel="stylesheet" type="text/css" href="demo.css" />
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/loader.js"></script>
+	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
 </head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Stream" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="//echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream" target="_blank">Documentation</a></div>
 		<h1>Stream App Demo</h1>
 		<div class="description">Echo Stream app encapsulates interaction with the Echo Search API and displays live updating search results in a standard 'news feed' style format.</div>
 		<div class="wrapper">
@@ -29,10 +29,10 @@
 	<!-- Client initialization -->
 	<script type="text/javascript">
 		Echo.Loader.initApplication({
-			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
+			"script": "//cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
 			"component": "Echo.StreamServer.Controls.Stream",
 			"backplane": {
-				"serverBaseURL": window.location.protocol + "{%=baseURLs.api.backplane%}/v1",
+				"serverBaseURL": window.location.protocol + "//api.echoenabled.com/v1",
 				"busName": "jskit"
 			},
 			"config": {
