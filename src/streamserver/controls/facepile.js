@@ -346,7 +346,6 @@ pile.methods._request = function() {
 					}
 				}
 			}),
-			"recurring": this.config.get("liveUpdates.enabled"),
 			"secure": this.config.get("useSecureAPI"),
 			"apiBaseURL": this.config.get("apiBaseURL"),
 			"onError": function(data, extra) {

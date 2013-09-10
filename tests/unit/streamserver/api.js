@@ -236,8 +236,9 @@ suite.prototype.cases.websockets = function(callback) {
 		}
 	});
 	req.send();
-	// make sure if Polling live updates was instantiated.
-	// cover the case when WS may not connect
+	// Opening a socket does require some time so we first initiate polling and switch
+	// to socket when it's initiated. But at this particular moment live updates must
+	// use polling mechanism.
 	QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.Polling, "Check that live updates instantiated with polling");
 };
 

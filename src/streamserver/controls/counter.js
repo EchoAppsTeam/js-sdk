@@ -143,7 +143,6 @@ counter.methods._getRequestObject = function(overrides) {
 				"appkey": this.config.get("appkey")
 			},
 			"liveUpdates": this.config.get("liveUpdates"),
-			"recurring": this.config.get("liveUpdates.enabled"),
 			"secure": this.config.get("useSecureAPI"),
 			"apiBaseURL": this.config.get("apiBaseURL"),
 			"onError": $.proxy(this._error, this),

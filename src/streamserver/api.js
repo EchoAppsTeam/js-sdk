@@ -44,9 +44,10 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 	var liveUpdatesEnabled = config && config.liveUpdates && config.liveUpdates.enabled || config.recurring;
 	config = $.extend(true, {
 		/**
-		 * @depricated in favor of liveUpdates.polling.timeout
 		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
-		 *
+		 * __Note__: this parameter is deprecated in favor of liveUpdates.polling.timeout.
+		 */
+		/**
 		 * @cfg {Object} [liveUpdates]
 		 * Live updating machinery configuration.
 		 *
@@ -109,13 +110,13 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 			"websockets": {
 				"maxConnectRetries": 3,
 				"serverPingInterval": 30,
-				"URL": "ws://live.echoenabled.com/v1/"
+				"URL": "{%=baseURLs.api.ws%}"
 			}
 		},
 
 		/**
-		 * @depricated in favor of liveUpdates.enabled
 		 * @cfg {Boolean} [recurring] Specifies that the live updates are enabled.
+		 * __Note__: this parameter is deprecated in favor of liveUpdates.enabled
 		 */
 		"recurring": false,
 		/**
@@ -314,6 +315,8 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 		}
 	};
 	ws.on("close", switchTo(polling));
+	// TODO: remove it after more general approach will be implemented
+	ws.on("quotaExceeded", switchTo(polling));
 	if (ws.connected()) {
 		switchTo(ws)();
 		return;
@@ -602,7 +605,7 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Polling, function(config) {
 	this.config = new Echo.Configuration(config, {
 		"request": {
-			"apiBaseURL": "ws://live.echoenabled.com/v1/",
+			"apiBaseURL": "{%=baseURLs.api.ws%}",
 			"transport": "websocket",
 			"timeout": null,
 			"onOpen": $.noop,
@@ -640,6 +643,10 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 				config.onError(response, {
 					"critical": response.errorCode === "connection_aborted"
 				});
+				// TODO: more general approach here
+				if (response.errorCode === "quota_exceeded") {
+					self.requestObject.transport.publish("onQuotaExceeded");
+				}
 				return;
 			}
 			if (!!~response.event.indexOf("reset")) {
@@ -671,11 +678,11 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 };
 
 Echo.StreamServer.API.WebSockets.prototype.on = function(event, fn, params) {
-	var id = Echo.Events.subscribe($.extend({
-		"topic": "Echo.API.Transports.WebSocket.on" + Echo.Utils.capitalize(event),
-		"handler": fn,
-		"context": this.requestObject.transport.context()
-	}, params))
+	var id = this.requestObject.transport.subscribe(
+		"on" + Echo.Utils.capitalize(event), {
+			"handler": fn
+		}
+	);
 	this.subscriptionIds.push(id);
 	return id;
 };
@@ -710,9 +717,6 @@ Echo.StreamServer.API.WebSockets.prototype.subscribe = function() {
 
 // private interface
 
-//
-// We should update the subscription in case of reseting.
-//
 Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback) {
 	var self = this;
 	callback = callback || $.noop;
@@ -736,22 +740,19 @@ Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
 		}
 	};
 	this.requestObject.abort();
+	this._clearSubscriptions();
 	if (this.requestObject.transport.closing()) {
-		self._clearSubscriptions();
 		var id = this.on("close", function() {
 			closeHandler();
 			Echo.Events.unsubscribe({"handlerId": id});
 		});
 	} else {
-		self._clearSubscriptions();
 		closeHandler();
 	}
 };
 
 Echo.StreamServer.API.WebSockets.prototype._clearSubscriptions = function() {
-	$.map(this.subscriptionIds, function(id) {
-		Echo.Events.unsubscribe({"handlerId": id});
-	});
+	$.map(this.subscriptionIds, $.proxy(this.requestObject.transport.unsubscribe, this));
 	this.subscriptionIds = [];
 };
 

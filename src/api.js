@@ -23,6 +23,10 @@ Echo.API.Transport = function(config) {
 		"onClose": function() {},
 		"onError": function() {}
 	});
+	this._connect();
+};
+
+Echo.API.Transport.prototype._connect = function() {
 	this.transportObject = this._getTransportObject();
 };
 
@@ -84,13 +88,47 @@ Echo.API.Transports.WebSocket.prototype.closed = function() {
 	return this.transportObject && this.transportObject.readyState === 3;
 };
 
-Echo.API.Transports.WebSocket.prototype.context = function(subscriptionId) {
-	return this.config.get("uri").replace(/\//g, "-") + (subscriptionId ? "/" + subscriptionId : "");
+Echo.API.Transports.WebSocket.prototype.subscribe = function(topic, params) {
+	var id = Echo.Events.subscribe(
+		$.extend(true, {
+			"topic": "Echo.API.Transports.WebSocket." + topic,
+			"context": this._context(this.unique)
+		}, params)
+	);
+	this.subscriptionIds[topic] = this.subscriptionIds[topic] || [];
+	this.subscriptionIds[topic].push(id);
+	return id;
+};
+
+Echo.API.Transports.WebSocket.prototype.unsubscribe = function unsubscribe(arg) {
+	var subscriptionIds, self = this;
+	if (typeof arg === "string") {
+		subscriptionIds = this.subscriptionIds[arg];
+		if (subscriptionIds) {
+			$.map(subscriptionIds, function(id) {
+				Echo.Events.unsubscribe({"handlerId": id});
+			});
+			this.subscriptionIds[arg] = [];
+		} else {
+			$.map(this.subscriptionIds, function(topic, ids) {
+				self.subscriptionIds[topic] = Echo.Utils.foldl([], ids, function(acc, id) {
+					if (id === arg) {
+						Echo.Events.unsubscribe({"handlerId": id});
+					} else {
+						acc.push(id);
+					}
+				});
+			});
+		}
+	} else {
+		$.each(this.subscriptionIds, $.proxy(unsubscribe, this));
+		this.subscriptionIds = {};
+	}
 };
 
 Echo.API.Transports.WebSocket.prototype.abort = function(force) {
 	var socket = Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
-	this._clearEvents(["onClose"]);
+	$.map(["onData", "onOpen", "onError"], $.proxy(this.unsubscribe, this));
 	if (socket) {
 		delete socket.subscribers[this.unique];
 		// close socket connection if the last subscriber left
@@ -98,7 +136,7 @@ Echo.API.Transports.WebSocket.prototype.abort = function(force) {
 			delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
 			if (!this.closed() || !this.closing()) {
 				// clear all events in case of closing connection
-				this._clearEvents();
+				this.unsubscribe();
 				this.transportObject.close();
 			}
 		}
@@ -117,43 +155,32 @@ Echo.API.Transports.WebSocket.prototype.keepConnection = function() {
 	this.timers.ping = setInterval($.proxy(this._ping, this), interval);
 };
 
+Echo.API.Transports.WebSocket.prototype.publish = function(topic, data) {
+	this._publish(topic, data, this.unique);
+};
+
 // private functions
 
 Echo.API.Transports.WebSocket.prototype._getScheme = function() {
 	return this.config.get("secure") ? "wss:" : "ws:";
 };
 
-Echo.API.Transports.WebSocket.prototype._clearEvents = function(exceptions) {
-	var self = this;
-	exceptions = exceptions || [];
-	$.map(this.subscriptionIds, function(ids, name) {
-		if (!~$.inArray(name, exceptions)) {
-			$.map(ids, function(id) {
-				Echo.Events.unsubscribe({"handlerId": id});
-			});
-			self.subscriptionIds[name] = [];
-		}
-	});
-	if (!exceptions.length) {
-		this.subscriptionIds = {};
-	}
+Echo.API.Transports.WebSocket.prototype._context = function(subscriptionId) {
+	return this.config.get("uri").replace(/\//g, "-") + (subscriptionId ? "/" + subscriptionId : "");
 };
 
 Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 	var self = this, uri = this.config.get("uri");
 	var sockets = Echo.API.Transports.WebSocket.socketByURI;
 	$.map(["onOpen", "onClose", "onError", "onData"], function(topic) {
-		var id = Echo.Events.subscribe({
-			"topic": "Echo.API.Transports.WebSocket." + topic,
+		self.subscribe(topic, {
 			"handler": function(_, data) {
 				self.config.get(topic)(data);
 			},
 			// when we receive data - send it to the appropriate
 			// subscribers only (do not send it to all subscribers)
-			"context": self.context(topic === "onData" ? self.unique : undefined)
+			"context": self._context(topic === "onData" ? self.unique : undefined)
 		});
-		self.subscriptionIds[topic] = self.subscriptionIds[topic] || [];
-		self.subscriptionIds[topic].push(id);
 	});
 
 	if (!sockets[uri]) {
@@ -213,7 +240,7 @@ Echo.API.Transports.WebSocket.prototype._publish = function(topic, data, subscri
 		"topic": "Echo.API.Transports.WebSocket." + topic,
 		"data": data || {},
 		"propagation": !subscriptionId,
-		"context": this.context(subscriptionId)
+		"context": this._context(subscriptionId)
 	});
 };
 
@@ -231,11 +258,10 @@ Echo.API.Transports.WebSocket.prototype._ping = function(callback) {
 
 			callback && callback();
 		},
-		"context": this.context()
+		"context": this._context()
 	});
 
 	this.send({"event": "ping"});
-	// waiting for the "pong" response half of the ping-pong interval
 	this.timers.pong = setTimeout(function() {
 		Echo.Events.unsubscribe({"handlerId": id});
 		self._tryReconnect();
@@ -256,7 +282,7 @@ Echo.API.Transports.WebSocket.prototype._tryReconnect = function() {
 
 Echo.API.Transports.WebSocket.prototype._reconnect = function() {
 	this.abort(true);
-	this.transportObject = this._getTransportObject();
+	this._connect();
 };
 
 Echo.API.Transports.WebSocket.available = function() {

@@ -71,14 +71,16 @@ Echo.Tests.asyncTest("WebSocket test cases", function() {
 						closeDef[i].resolve();
 					},
 					"onOpen": function() {
-						if (i === 0)
+						if (i === 0) {
 							QUnit.ok(requests[0].transport.connected(), "Check if WS was initialized and \"onOpen\" event fired");
+						}
 						deferred[i].resolve();
 					}
 				})
 			);
-			if (i === 0)
+			if (i === 0) {
 				QUnit.ok(requests[0].transport.connecting(), "Check that WS status is \"connecting\"");
+			}
 		})(i);
 	}
 	var req = requests[0];

@@ -57,7 +57,6 @@ stream.init = function() {
 
 	this._recalcEffectsTimeouts();
 	this.request = this._getRequestObject({
-		"recurring": this.config.get("recurring"),
 		"liveUpdates": $.extend(this.config.get("liveUpdates"), {
 			"onData": function(data) {
 				self._handleLiveUpdatesResponse(data);
@@ -752,7 +751,6 @@ stream.methods._requestInitialItems = function() {
 		this.request = Echo.StreamServer.API.request({
 			"endpoint": "search",
 			"apiBaseURL": this.config.get("apiBaseURL"),
-			"recurring": this.config.get("recurring"),
 			"liveUpdates": $.extend(this.config.get("liveUpdates"), {
 				"onData": function(data) {
 					self._handleLiveUpdatesResponse(data);
@@ -2480,6 +2478,7 @@ item.renderers.body = function(element) {
  * @echo_renderer
  */
 item.renderers.date = function(element) {
+	// is used to preserve backwards compatibility
 	this.age = this.getRelativeTime(this.timestamp);
 	return element.html(this.age);
 };
