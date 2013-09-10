@@ -357,19 +357,29 @@ Echo.Loader.init = function(config) {
  *
  * @param {Object} [app.config]
  * Parameters to be passed into the application constructor during its initialization.
+ *
+ * @param {String} [app.init]
+ * This parameter specifies the Application loading mode. There are two possible values:
+ *
+ * + "immediate" - in this case the Application is being initialized on the page right
+ * after the Echo.Loader.initApplication function call
+ * + "when-visible" - this mode allows to delay the Application loading until
+ * the Application target becomes visible in the user’s browser
  */
 Echo.Loader.initApplication = function(app) {
-	Echo.Loader.initEnvironment(function() {
-		var instance = new Echo.Canvas({
-			"target": app.config.target,
-			"useSecureAPI": !!app.config.useSecureAPI,
-			"data": { // as we receive if from the Canvas Storage
-				"apps": [app],
-				"backplane": app.backplane
+	var self = this;
+	var target = app.config.target.length ? app.config.target[0] : app.config.target;
+	var isActive = app.init !== "when-visible" || Echo.Loader._isInViewport(target);
+	if (!isActive) {
+		onViewportChange("subscribe", function init() {
+			if (Echo.Loader._isInViewport(target)) {
+				self._initCanvas(app);
+				onViewportChange("unsubscribe", init);
 			}
 		});
-		Echo.Loader.canvases.push(instance);
-	});
+	} else {
+		this._initCanvas(app);
+	}
 };
 
 Echo.Loader._lookupCanvases = function(config, callback) {
@@ -400,13 +410,25 @@ Echo.Loader._lookupCanvases = function(config, callback) {
 	}
 };
 
-Echo.Loader._initCanvas = function(canvas) {
+Echo.Loader._initCanvas = function(args) {
+	var config;
+	if (args.nodeType === 1) { // check if args is DOM Element (ELEMENT_NODE)
+		config = {
+			"target": args,
+			"overrides": Echo.Loader.overrides[args.getAttribute("data-canvas-id")] || {}
+		}
+	} else {
+		config = {
+			"target": args.config.target,
+			"useSecureAPI": !!args.config.useSecureAPI,
+			"data": { // as we receive if from the Canvas Storage
+				"apps": [args],
+				"backplane": args.backplane
+			}
+		}
+	}
 	Echo.Loader.initEnvironment(function() {
-		var instance = new Echo.Canvas({
-			"target": canvas,
-			"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
-		});
-		Echo.Loader.canvases.push(instance);
+		Echo.Loader.canvases.push(new Echo.Canvas(config));
 	});
 };
 
