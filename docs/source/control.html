@@ -171,7 +171,7 @@ Echo.Control.isDefined = function(manifest) {
 Echo.Control.prototype.templates = {&quot;message&quot;: {}};
 
 Echo.Control.prototype.templates.message.compact =
-	&#39;&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&lt;/span&gt;&#39;;
+	&#39;&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&amp;nbsp;&lt;/span&gt;&#39;;
 
 Echo.Control.prototype.templates.message.full =
 	&#39;&lt;div class=&quot;echo-control-message {class:messageText}&quot;&gt;&#39; +
@@ -755,18 +755,6 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 		});
 	});
 
-	// call &quot;ready&quot; callback after the control was rendered
-	// note: &quot;ready&quot; callback is executed only once!
-	if (control.config.get(&quot;ready&quot;)) {
-		control.events.subscribe({
-			&quot;topic&quot;: control.name + &quot;.onReady&quot;,
-			&quot;once&quot;: true,
-			&quot;handler&quot;: function() {
-				control.config.get(&quot;ready&quot;).call(control);
-			}
-		});
-	}
-
 	// register destroy handlers
 	control.events.subscribe({
 		&quot;topic&quot;: &quot;Echo.Control.onDestroy&quot;,
@@ -916,7 +904,6 @@ Echo.Control.prototype._initializers.plugins = function(callback) {
 };
 
 Echo.Control.prototype._initializers.init = function(callback) {
-
 	// this function should be called inside the &quot;init&quot; function
 	// to indicate that the control was initialized and is now ready
 	this.ready = callback;
@@ -925,6 +912,11 @@ Echo.Control.prototype._initializers.init = function(callback) {
 };
 
 Echo.Control.prototype._initializers.ready = function() {
+	if (this.config.get(&quot;ready&quot;)) {
+		this.config.get(&quot;ready&quot;).call(this);
+		// &quot;ready&quot; callback must be executed only once
+		this.config.remove(&quot;ready&quot;);
+	}
 	this.events.publish({&quot;topic&quot;: &quot;onReady&quot;});
 };
 
@@ -1188,13 +1180,13 @@ manifest.config = {
 </span>	 * @cfg {String} [apiBaseURL=&quot;api.echoenabled.com/v1/&quot;]
 	 * URL prefix for all API requests
 	 */
-	&quot;apiBaseURL&quot;: &quot;api.echoenabled.com/v1/&quot;,
+	&quot;apiBaseURL&quot;: &quot;{%=baseURLs.api.streamserver%}/v1/&quot;,
 
 <span id='Echo-Control-cfg-submissionProxyURL'>	/**
 </span>	 * @cfg {String} [submissionProxyURL=&quot;apps.echoenabled.com/v2/esp/activity/&quot;]
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
-	&quot;submissionProxyURL&quot;: &quot;apps.echoenabled.com/v2/esp/activity/&quot;,
+	&quot;submissionProxyURL&quot;: &quot;{%=baseURLs.api.submissionproxy%}/v2/esp/activity/&quot;,
 
 <span id='Echo-Control-cfg-useSecureAPI'>	/**
 </span>	 * @cfg {Boolean} [useSecureAPI]
@@ -1419,7 +1411,7 @@ manifest.inherits = Echo.Control;
 manifest.templates = {&quot;message&quot;: {}};
 
 manifest.templates.message.compact =
-	&#39;&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&lt;/span&gt;&#39;;
+	&#39;&lt;span class=&quot;echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}&quot; title=&quot;{data:message}&quot;&gt;&amp;nbsp;&lt;/span&gt;&#39;;
 
 manifest.templates.message.full =
 	&#39;&lt;div class=&quot;echo-control-message {class:messageText}&quot;&gt;&#39; +

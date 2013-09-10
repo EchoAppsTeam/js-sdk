@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
+
+var $ = jQuery;
+
+Echo.Tests.Utils = {};
+
+QUnit.done(function() {
+	Echo.Tests.server.restore();
+});
+
+Echo.Tests.Utils.log = function() {
+	Echo.Tests.logs.push(arguments);
+};
+
+// XXX: remove when the &quot;cors&quot; line in Echo.Tests.Utils.initServer is uncommented
+if (Echo.Tests.browser.msie &amp;&amp; +Echo.Tests.browser.version &lt; 10) {
+	QUnit.urlParams.noMockRequests = &quot;true&quot;;
+	// this is temporary hack, let it be
+	setTimeout(function() {
+		$(&quot;#qunit-urlconfig-noMockRequests&quot;).attr(&quot;disabled&quot;, true);
+	}, 3000);
+}
+
+Echo.Tests.Utils.initServer = function() {
+	if (!Echo.Tests.Utils.isServerMocked()) {
+		Echo.Tests.server = {
+			&quot;restore&quot;: $.noop
+		};
+		return;
+	}
+
+	// We use XDomainRequest for MSIE in Standards mode but sinon.js can&#39;t fake it up.
+	// As we use sinon fake server that replaces real XMLHttpRequest object,
+	// let&#39;s consider that we always support CORS to trick jQuery
+	if (Echo.Tests.browser.msie) {
+		// TODO: uncomment when every cross-domain request is mocked
+		// $.support.cors = true;
+	}
+
+	Echo.Tests.server = sinon.fakeServer.create();
+	Echo.Tests.server.autoRespond = true;
+
+	$.each(_URLMocks, function(k, mock) {
+		Echo.Tests.server.respondWith(mock.url, mock.response);
+	});
+
+	sinon.FakeXMLHttpRequest.useFilters = true;
+	sinon.FakeXMLHttpRequest.addFilter(function() {
+		var url = arguments[1];
+		var fake = false;
+		// check if the url is in the mocked list
+		$.each(_URLMocks, function(name, mock) {
+			var matches = url.match(mock.url);
+			if (!matches) return;
+			// XXX: these checks shouldn&#39;t be here because they all should be mocked
+			// not every canvas is mocked, some are real
+			if (name === &quot;canvases&quot; &amp;&amp; !Echo.Tests.Fixtures.canvases[matches[1]] &amp;&amp; !/nonexistent/.test(matches[1])) return;
+			// not every count request is mocked, some are real
+			if (name === &quot;api/count&quot; &amp;&amp; !Echo.Tests.Fixtures.api.count[decodeURIComponent(matches[1])]) return;
+			// not every search request is mocked, some are real
+			if (name === &quot;api/search&quot; &amp;&amp; !Echo.Tests.Fixtures.api.search[decodeURIComponent(matches[1])]) return;
+			fake = true;
+			return false;
+		});
+		!fake &amp;&amp; Echo.Utils.log({
+			&quot;component&quot;: &quot;Tests&quot;,
+			&quot;message&quot;: &quot;[REAL request] &quot; + url
+		});
+		return !fake;
+	});
+
+	// FIXME: we should have used usual urlMocks filtering like &quot;whoami&quot; and other
+	// but we can&#39;t because &quot;logout&quot; endpoint supports only JSONP but sinon can&#39;t
+	//  mock it. So we have to replace the whole functions
+	sinon.stub(Echo.UserSession, &quot;_logoutRequest&quot;, function(data, callback) {
+		Echo.Tests.Utils.actualizeTestUser({&quot;status&quot;: &quot;anonymous&quot;}, function() {
+			callback(&quot;{\&quot;result\&quot;: \&quot;success\&quot;}&quot;);
+		});
+	});
+	sinon.stub(Echo.UserSession, &quot;_onInit&quot;, function(callback) {
+		callback();
+	});
+};
+
+Echo.Tests.Utils.actualizeTestUser = function(config, callback) {
+	var isMocked = Echo.Tests.Utils.isServerMocked();
+	Echo.UserSession({
+		&quot;appkey&quot;: &quot;echo.jssdk.tests.aboutecho.com&quot;,
+		&quot;ready&quot;: function() {
+			var user = this;
+			var isLogged = user.is(&quot;logged&quot;);
+			if (isMocked) {
+				Echo.Tests.current.user = config;
+			}
+			if (isLogged &amp;&amp; config.status === &quot;anonymous&quot;) {
+				if (isMocked) {
+					user._init(callback);
+				} else {
+					user.logout(callback);
+				}
+			} else if (!isLogged &amp;&amp; config.status === &quot;logged&quot;) {
+				if (isMocked) {
+					user._init(callback);
+				} else {
+					$.get(&quot;http://echosandbox.com/js-sdk/auth/&quot;, {
+						&quot;action&quot;: &quot;login&quot;,
+						&quot;channel&quot;: Backplane.getChannelID(),
+						&quot;identityUrl&quot;: &quot;http://somedomain.com/users/fake_user&quot;
+					}, function() {
+						Echo.UserSession._onInit(callback);
+						Backplane.expectMessages(&quot;identity/ack&quot;);
+					}, &quot;jsonp&quot;);
+				}
+			} else {
+				callback();
+			}
+		}
+	});
+};
+
+Echo.Tests.Utils.isServerMocked = function() {
+	return QUnit.urlParams.noMockRequests !== &quot;true&quot;;
+};
+
+var _URLMocks = {
+	// group of URLs http://s3.amazonaws.com/echo-canvases/&lt;canvas-id&gt;
+	&quot;canvases&quot;: {
+		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
+		&quot;url&quot;: new RegExp(Echo.Loader.config.storageURL.dev + &quot;(.*?)\\?&quot;),
+		&quot;response&quot;: function(request, canvasId) {
+			var status = 200, text = &quot;&quot;;
+			if (/nonexistent/.test(canvasId)) {
+				status = 404;
+			} else {
+				text = JSON.stringify(Echo.Tests.Fixtures.canvases[canvasId]);
+			}
+			request.respond(
+				status,
+				{&quot;Content-Type&quot;: &quot;application/x-javascript; charset=\&quot;utf-8\&quot;&quot;},
+				text
+			);
+		}
+	},
+	// mocks for /v1/count API
+	&quot;api/count&quot;: {
+		&quot;url&quot;: new RegExp(&quot;{%=baseURLs.api.streamserver%}/v1/count\\?q=(.*?)&amp;&quot;),
+		&quot;response&quot;: function(request, query) {
+			request.respond(
+				200,
+				{&quot;Content-Type&quot;: &quot;application/x-javascript; charset=\&quot;utf-8\&quot;&quot;},
+				JSON.stringify(Echo.Tests.Fixtures.api.count[decodeURIComponent(query)])
+			);
+		}
+	},
+	// mocks for /v1/search API
+	&quot;api/search&quot;: {
+		&quot;url&quot;: new RegExp(&quot;{%=baseURLs.api.streamserver%}/v1/search\\?q=(.*?)&amp;&quot;),
+		&quot;response&quot;: function(request, query) {
+			request.respond(
+				200,
+				{&quot;Content-Type&quot;: &quot;application/x-javascript; charset=\&quot;utf-8\&quot;&quot;},
+				JSON.stringify(Echo.Tests.Fixtures.api.search[decodeURIComponent(query)])
+			);
+		}
+	},
+	// single URL http://api.echoenabled.com/v1/users/whoami?...
+	&quot;api/whoami&quot;: {
+		&quot;url&quot;: new RegExp(&quot;{%=baseURLs.api.streamserver%}/v1/users/whoami\\?&quot;),
+		&quot;response&quot;: function(request) {
+			request.respond(
+				200,
+				{&quot;Content-Type&quot;: &quot;application/x-javascript; charset=\&quot;utf-8\&quot;&quot;},
+				JSON.stringify(Echo.Tests.Fixtures.api.whoami[Echo.Tests.current.user.status])
+			);
+		}
+	}
+};
+
+})(Echo.jQuery);
+</pre>
+</body>
+</html>

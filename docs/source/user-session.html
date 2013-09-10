@@ -296,8 +296,8 @@ Echo.UserSession._getDefaultConfig = function() {
 	return {
 		&quot;appkey&quot;: &quot;&quot;,
 		&quot;endpoints&quot;: {
-			&quot;logout&quot;: &quot;http://apps.echoenabled.com/v2/&quot;,
-			&quot;whoami&quot;: &quot;http://api.echoenabled.com/v1/users/&quot;
+			&quot;logout&quot;: &quot;{%=baseURLs.api.submissionproxy%}/v2/&quot;,
+			&quot;whoami&quot;: &quot;{%=baseURLs.api.streamserver%}/v1/users/&quot;
 		},
 		&quot;useSecureAPI&quot;: false,
 		&quot;fakeIdentityURL&quot;: &quot;http://js-kit.com/ECHO/user/fake_user&quot;

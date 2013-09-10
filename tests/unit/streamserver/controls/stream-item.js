@@ -643,12 +643,6 @@ suite.prototype.tests.bodyRendererTest = {
 
 suite.prototype._runBodyCases = function(cases) {
 	var self = this;
-	var template =
-		'<div class="echo-streamserver-controls-stream-item-body">' +
-			'<span class="echo-streamserver-controls-stream-item-text"></span>' +
-			'<span class="echo-streamserver-controls-stream-item-textEllipses">...</span>' +
-			'<span class="echo-streamserver-controls-stream-item-textToggleTruncated"></span>' +
-		+ '</div>';
 	var checker = function(params, config) {
 		var element = $(".echo-streamserver-controls-stream-item-body", config.target);
 		var target = element.find(".echo-streamserver-controls-stream-item-text");
@@ -656,7 +650,13 @@ suite.prototype._runBodyCases = function(cases) {
 		var expect = $("<div>").append(params.expect);
 		self.jqueryObjectsEqual(result,	expect, params.description);
 	};
-	var generate = function(params) {
+
+	this.sequentialAsyncTests($.map(cases, $.proxy(getGenerateItemFunction.call(this, checker), {})));
+};
+
+function getGenerateItemFunction(checker) {
+	var self = this;
+	return function(params) {
 		return function(callback) {
 			new Echo.StreamServer.Controls.Stream.Item($.extend({
 				"target": self.config.target,
@@ -678,7 +678,6 @@ suite.prototype._runBodyCases = function(cases) {
 			}, params.config));
 		};
 	};
-	this.sequentialAsyncTests($.map(cases, $.proxy(generate, {})));
 };
 
 // almost copy of Echo.StreamServer.Controls.Stream.prototype._normalizeEntry()
@@ -799,7 +798,7 @@ suite._streamConfigData = {
 		},
 		"toggleBy": "mouseover" // mouseover | button | none
 	},
-	"submissionProxyURL": window.location.protocol + "//apps.echoenabled.com/v2/esp/activity",
+	"submissionProxyURL": window.location.protocol + "{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
 	"query": "query_string",
 	"target": $("<div>")
 };

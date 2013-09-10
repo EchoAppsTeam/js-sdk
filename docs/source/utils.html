@@ -41,7 +41,7 @@ Echo.Utils.regexps = {
 	&quot;templateSubstitution&quot;: &quot;{([0-9a-z\\.]+)(?:\\:((?:[0-9a-z_-]+\\.)*[0-9a-z_-]+))?}&quot;,
 	&quot;mobileUA&quot;: /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
 	&quot;w3cdtf&quot;: /^(\d{4})(?:-(\d\d)(?:-(\d\d))?(?:(?:T(\d\d):(\d\d):(\d\d))(?:\.(\d{1,3}))?(?:Z|(?:(\+|-)(\d\d):(\d\d))))?)?$/,
-	&quot;parseURL&quot;: /^((([^:\/\?#]+):)?\/\/)?([^\/\?#]*)?([^\?#]*)(\?([^#]*))?(#(.*))?/
+	&quot;parseURL&quot;: /^(?:(?:([^:\/\?#]+):)?\/\/)?([^:\/\?#]*)?(?::(\d+))?([^\?#]*)(?:\?([^#]*))?(?:#(.*))?/
 };
 
 <span id='Echo-Utils-static-method-addCSS'>/**
@@ -581,11 +581,12 @@ Echo.Utils.stripTags = function(text) {
  * which are presented. This function is not meant to validate the given URL,
  * it only breaks it up into the parts.
  *
- *     var url = &quot;http://domain.com/some/path/?query_string#hash_value&quot;;
+ *     var url = &quot;http://domain.com:8080/some/path/?query_string#hash_value&quot;;
  *     Echo.Utils.parseURL(url);
  *     // returns {
  *     //     &quot;scheme&quot;: &quot;http&quot;,
  *     //     &quot;domain&quot;: &quot;domain.com&quot;,
+ *     //     &quot;port&quot;: &quot;8080&quot;,
  *     //     &quot;path&quot;: &quot;/some/path/&quot;
  *     //     &quot;query&quot;: &quot;query_string&quot;,
  *     //     &quot;fragment&quot;: &quot;hash_value&quot;
@@ -607,11 +608,12 @@ Echo.Utils.parseURL = function(url) {
 	if (!parsed.hasOwnProperty(url)) {
 		var parts = url.match(Echo.Utils.regexps.parseURL);
 		parsed[url] = parts ? {
-			&quot;scheme&quot;: parts[3] || &quot;&quot;,
-			&quot;domain&quot;: parts[4] || &quot;&quot;,
-			&quot;path&quot;: parts[5] || &quot;/&quot;,
-			&quot;query&quot;: parts[7] || &quot;&quot;,
-			&quot;fragment&quot;: parts[9] || &quot;&quot;
+			&quot;scheme&quot;: parts[1] || &quot;&quot;,
+			&quot;domain&quot;: parts[2] || &quot;&quot;,
+			&quot;port&quot;: parts[3] || &quot;&quot;,
+			&quot;path&quot;: parts[4] || &quot;/&quot;,
+			&quot;query&quot;: parts[5] || &quot;&quot;,
+			&quot;fragment&quot;: parts[6] || &quot;&quot;
 		} : undefined;
 	}
 	return parsed[url];
@@ -1064,6 +1066,73 @@ Echo.Utils.invoke = function(mixed, context) {
 		: mixed;
 };
 
+<span id='Echo-Utils-static-method-safelyExecute'>/**
+</span> * @static
+ * Function which executes another function in the try/catch block.
+ * If the given function completed its execution without throwing an exception,
+ * then the &quot;safelyExecute&quot; returns result of that function execution.
+ * Otherwise, the &quot;safelyExecute&quot; catches an exception and prints the
+ * message to the console using the Echo.Utils#log function.
+ * It is useful in case you want to avoid execution flow interruption
+ * by the code which might potentially throw an exception.
+ *
+ *		// executes function without arguments and context
+ *		Echo.Utils.safelyExecute(function() {});
+ *		// returns undefined
+ *
+ *		// executes function with one argument &amp; without context
+ *		Echo.Utils.safelyExecute(function() {}, &quot;string param&quot;);
+ *		// returns undefined
+ *
+ *		someObject = {
+ *			&quot;param&quot;: &quot;some string&quot;
+ *		};
+ *
+ *		someObject.fn = function(a, b) {
+ *			return [this.param, a, b];
+ *		};
+ *
+ *		// executes function with arguments &amp; context
+ *		Echo.Utils.safelyExecute(someObject.fn, [[], &quot;string param&quot;], someObject);
+ *		// returns [&quot;some string&quot;, [], &quot;string param&quot;]
+ *
+ *		// executes the function which throws an exception
+ *		Echo.Utils.safelyExecute(function() { throw &quot;Some error&quot;; });
+ *		// returns undefined and prints &quot;Some error&quot; message to the console
+ *
+ * @param {Function} fn
+ * Function to be excuted in the try/catch wrapper
+ *
+ * @param {Mixed} [args]
+ * The argument type might vary depending on the use-case:
+ *
+ *  + undefined - in case the given function doesn&#39;t expect any arguments
+ *  + array - if the function to be called accepts more than one argument
+ *  + value as is - when the function expects only one argument.
+ *
+ * @param {Object} [context]
+ * Context in which the function should be executed.
+ *
+ * @return {Mixed}
+ * The result of a given function execution in case it was completed
+ * without throwing an exception. Otherwise - the undefined is returned.
+ */
+Echo.Utils.safelyExecute = function(fn, args, context) {
+	context = context || null;
+	args = $.isArray(args)
+		? args
+		: typeof args === &quot;undefined&quot;
+			? [] : [args];
+	try {
+		return fn.apply(context, args);
+	} catch(e) {
+		Echo.Utils.log({
+			&quot;type&quot;: &quot;error&quot;,
+			&quot;message&quot;: e.message || e,
+			&quot;component&quot;: context instanceof Echo.Control ? context.name : &quot;&quot;
+		});
+	}
+};
 
 // JS SDK can&#39;t guarantee proper UI elements rendering in quirks mode
 // because the UI Framework (Twitter Bootstrap) doesn&#39;t support this mode.

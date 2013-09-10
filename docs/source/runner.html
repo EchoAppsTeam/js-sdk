@@ -29,29 +29,50 @@ QUnit.config.reorder = false;
 // don&#39;t execute tests automatically, we will do it manually later
 QUnit.config.autostart = false;
 
+QUnit.config.urlConfig.push({
+	&quot;id&quot;: &quot;noMockRequests&quot;,
+	&quot;label&quot;: &quot;Use real server requests&quot;,
+	&quot;tooltip&quot;: &quot;Don&#39;t mock any server requests&quot;
+});
+
+// common storage for the information about the current test
+// (at the moment only user configuration is stored here)
+Echo.Tests.current = {
+	&quot;user&quot;: {
+		&quot;status&quot;: &quot;anonymous&quot;
+	}
+};
+
+// logs are pushed here by Echo.Tests.Utils.log function
+// (they can be used by the saucelabs or developer/tester)
+Echo.Tests.logs = [];
+
+var _initialized = false;
 Echo.Tests.init = function(config) {
+	if (_initialized) return;
+	_initialized = true;
 	$(function() {
 		$(&quot;#qunit-header&quot;).html(config.title);
 
 		config.backplane &amp;&amp; Backplane.init(config.backplane);
 
-		// hack for tests of Loader
-		window.onerror = function( message, file, line ) {
-			return /non-existing/.test(file);
-		};
-
 		Echo.Loader.download([{&quot;url&quot;: &quot;tests/qunit/qunit.css&quot;}], function() {
-			Echo.Tests.runTests();
+			Echo.Tests.Utils.initServer();
+			_runLegacyTests();
+			QUnit.start();
 		});
 	});
 };
 
-Echo.Tests.runTests = function() {
-	$.each(this.Unit, function(name, suiteClass) {
+// TODO: get rid of this function when all tests use new format
+function _runLegacyTests() {
+	$.each(Echo.Tests.Unit, function(name, suiteClass) {
 		$.extend(suiteClass.prototype, new Echo.Tests.Suite());
 		suiteClass.prototype.tests = suiteClass.prototype.tests || {};
 		var suite = new suiteClass();
 		var normalizedName = suite.info.suiteName || suite.normalizeName(name, true);
+		// specially mark modules which use the old format of tests
+		normalizedName = &quot;[*] &quot; + normalizedName;
 		QUnit.module(normalizedName);
 		// TODO: register single callback for all test framework
 		// (now one callback for each suite so they are called all after each test is finished)
@@ -63,17 +84,9 @@ Echo.Tests.runTests = function() {
 		});
 		suite.run();
 	});
-	QUnit.start();
 };
 
-Echo.Tests.log = function() {
-	if (typeof Echo.Variables.testLogs === &quot;undefined&quot;) {
-		Echo.Variables.testLogs = [];
-	}
-	Echo.Variables.testLogs.push(arguments);
-};
-
-(function(){
+(function() {
 	var ua = navigator.userAgent.toLowerCase();
 	var match = /(chrome)[ \/]([\w.]+)/.exec(ua)
 		|| /(webkit)[ \/]([\w.]+)/.exec( ua )

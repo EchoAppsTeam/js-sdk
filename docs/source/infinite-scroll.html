@@ -47,20 +47,26 @@ if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var plugin = this;
-	$(window).on(&quot;scroll&quot;, function(event) {
+	var handler = function(event) {
 		var element = plugin.component.view.get(&quot;more&quot;);
 		if (element &amp;&amp; !plugin.get(&quot;requestInProgress&quot;) &amp;&amp;
 			$.inviewport(element, {&quot;threshold&quot;: 0})) {
 				plugin.set(&quot;requestInProgress&quot;, true);
 				element.click();
 		}
-	});	
+	};
+	plugin.set(&quot;scrollHandler&quot;, handler);
+	$(window).on(&quot;scroll&quot;, handler);
 };
 
 plugin.events = {
 	&quot;Echo.StreamServer.Controls.Stream.onDataReceive&quot;: function(topic, args) {
 		this.set(&quot;requestInProgress&quot;, false);
 	}
+};
+
+plugin.methods.destroy = function() {
+	$(window).off(&quot;scroll&quot;, this.get(&quot;scrollHandler&quot;));
 };
 
 Echo.Plugin.create(plugin);

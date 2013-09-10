@@ -38,10 +38,10 @@ Echo.Loader = {
 </span>	&quot;debug&quot;: false,
 <span id='Echo-Loader-property-config'>	/** @private */
 </span>	&quot;config&quot;: {
-		&quot;cdnBaseURL&quot;: protocol + &quot;//cdn.echoenabled.com/&quot;,
+		&quot;cdnBaseURL&quot;: protocol + &quot;{%=baseURLs.cdn%}/&quot;,
 		&quot;storageURL&quot;: {
-			&quot;prod&quot;: protocol + &quot;//dqspik3j3bxvu.cloudfront.net/&quot;,
-			&quot;dev&quot;: protocol + &quot;//s3.amazonaws.com/echo-canvases/&quot;
+			&quot;prod&quot;: protocol + &quot;{%=baseURLs.canvases.prod%}/&quot;,
+			&quot;dev&quot;: protocol + &quot;{%=baseURLs.canvases.dev%}/&quot;
 		},
 		&quot;errorTimeout&quot;: 5000 // 5 sec
 	},
@@ -308,29 +308,23 @@ Echo.Loader.override = function(canvasID, appID, config) {
  * Target element where Echo Loader should look for the canvases if no
  * canvases were passed in the &quot;config.canvases&quot; field.
  */
+
 Echo.Loader.init = function(config) {
-	config = config || {};
-	Echo.Loader.initEnvironment(function() {
-		var $ = Echo.jQuery;
-		var canvases = config.canvases;
+	Echo.Loader._lookupCanvases(config, function(canvases) {
+		Echo.Loader._map(canvases, function(canvas) {
+			var isActive = canvas.getAttribute(&quot;data-canvas-init&quot;) !== &quot;when-visible&quot;
+				|| Echo.Loader._isInViewport(canvas);
 
-		// convert a single canvas to the 1-element array
-		// to keep the same contract below in the code
-		if (canvases &amp;&amp; !$.isArray(canvases) &amp;&amp; !(canvases instanceof $)) {
-			canvases = [canvases];
-		}
-
-		// if no canvases defined during initialization,
-		// we look for all canvases in the target (&#39;document&#39; by default)
-		canvases = canvases || $(&quot;.echo-canvas&quot;, config.target);
-
-		$.map(canvases || [], function(canvas) {
-			var target = $(canvas);
-			var instance = new Echo.Canvas({
-				&quot;target&quot;: target,
-				&quot;overrides&quot;: Echo.Loader.overrides[target.data(&quot;canvas-id&quot;)] || {}
-			});
-			Echo.Loader.canvases.push(instance);
+			if (!isActive) {
+				onViewportChange(&quot;subscribe&quot;, function init() {
+					if (Echo.Loader._isInViewport(canvas)) {
+						Echo.Loader._initCanvas(canvas);
+						onViewportChange(&quot;unsubscribe&quot;, init);
+					}
+				});
+			} else {
+				Echo.Loader._initCanvas(canvas);
+			}
 		});
 	});
 };
@@ -395,6 +389,50 @@ Echo.Loader.initApplication = function(app) {
 	});
 };
 
+Echo.Loader._lookupCanvases = function(config, callback) {
+	config = config || {};
+
+	var canvases = config.canvases;
+	var target = config.target
+		? (config.target.length ? config.target[0] : config.target)
+		: document;
+
+	// convert a single canvas to the 1-element array
+	// to keep the same contract below in the code
+	if (canvases &amp;&amp; !canvases.length) {
+		canvases = [canvases];
+	}
+
+	// if no canvases defined during initialization,
+	// we look for all canvases in the target (&#39;document&#39; by default)
+	if (canvases) {
+		callback(canvases);
+	} else if (target.querySelectorAll) {
+		callback(target.querySelectorAll(&quot;.echo-canvas&quot;));
+	} else {
+		// Fallback uses Echo.jQuery if IE &lt; 8
+		Echo.Loader.initEnvironment(function() {
+			callback(Echo.jQuery(&quot;.echo-canvas&quot;, target));
+		});
+	}
+};
+
+Echo.Loader._initCanvas = function(canvas) {
+	Echo.Loader.initEnvironment(function() {
+		var instance = new Echo.Canvas({
+			&quot;target&quot;: canvas,
+			&quot;overrides&quot;: Echo.Loader.overrides[canvas.getAttribute(&quot;data-canvas-id&quot;)] || {}
+		});
+		Echo.Loader.canvases.push(instance);
+	});
+};
+
+Echo.Loader._isInViewport = function(canvas) {
+	var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
+	var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+	return scrollTop + viewportHeight &gt;= canvas.offsetTop;
+};
+
 // implementation of the &quot;map&quot; function for the cases when jQuery is not loaded yet
 Echo.Loader._map = function(list, iterator) {
 	var result = [];
@@ -418,6 +456,22 @@ Echo.Loader._areResourcesReady = function(resources) {
 			(state.resources[url] &amp;&amp; state.resources[url] === &quot;ready&quot;);
 	});
 	return resources.length === resourceReadyFlags.length;
+};
+
+function getEventName(name) {
+	return window.addEventListener ? name : &quot;on&quot; + name;
+}
+
+function onViewportChange(action, handler) {
+	var addEvent = window.addEventListener || window.attachEvent;
+	var removeEvent = window.removeEventListener || window.detachEvent;
+	if (action === &quot;subscribe&quot;) {
+		addEvent(getEventName(&quot;scroll&quot;), handler);
+		addEvent(getEventName(&quot;resize&quot;), handler)
+	} else if (action === &quot;unsubscribe&quot;) {
+		removeEvent(getEventName(&quot;scroll&quot;), handler);
+		removeEvent(getEventName(&quot;resize&quot;), handler);
+	}
 };
 
 })();

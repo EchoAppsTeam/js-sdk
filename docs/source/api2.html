@@ -20,410 +20,344 @@
 
 var $ = jQuery;
 
-if (Echo.StreamServer &amp;&amp; Echo.StreamServer.API) return;
-
-if (!Echo.StreamServer) Echo.StreamServer = {};
-
-Echo.StreamServer.API = {};
-
-<span id='Echo-StreamServer-API-Request-method-constructor'><span id='Echo-StreamServer-API-Request'>/**
-</span></span> * @class Echo.StreamServer.API.Request
- * Class implements the interaction with the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/19987923/FrontPage&quot; target=&quot;_blank&quot;&gt;Echo StreamServer API&lt;/a&gt;
- *
- *     var request = Echo.StreamServer.API.request({
- *         &quot;endpoint&quot;: &quot;search&quot;,
- *         &quot;data&quot;: {
- *             &quot;q&quot;: &quot;childrenof: http://example.com/js-sdk&quot;,
- *             &quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;
- *         },
- *         &quot;onData&quot;: function(data, extra) {
- *             // handle successful request here...
- *         },
- *         &quot;onError&quot;: function(data, extra) {
- *             // handle failed request here...
- *         }
- *     });
- *
- *     request.send();
- *
- * @extends Echo.API.Request
- *
- * @package api.pack.js
- *
- * @constructor
- * Constructor initializing class using configuration data.
- * @param {Object} config Configuration data.
- */
-Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
-	config = $.extend({
-<span id='Echo-StreamServer-API-Request-cfg-endpoint'>		/**
-</span>		 * @cfg {String} [endpoint] Specifies the API endpoint. The following endpoints are available:
-		 *
-		 *  + &quot;submit&quot;
-		 *  + &quot;search&quot;
-		 *  + &quot;count&quot;
-		 *
-		 */
-<span id='Echo-StreamServer-API-Request-cfg-liveUpdatesTimeout'>		/**
-</span>		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
-		 */
-		&quot;liveUpdatesTimeout&quot;: 5,
-<span id='Echo-StreamServer-API-Request-cfg-skipInitialRequest'>		/**
-</span>		 * @cfg {Boolean} [skipInitialRequest] Flag allowing to skip the initial request but continue performing live updates requests.
-		 */
-		&quot;skipInitialRequest&quot;: false,
-<span id='Echo-StreamServer-API-Request-cfg-recurring'>		/**
-</span>		 * @cfg {Boolean} [recurring] Specifies that the live updates are enabled.
-		 */
-		&quot;recurring&quot;: false,
-<span id='Echo-StreamServer-API-Request-cfg-itemURIPattern'>		/**
-</span>		 * @cfg {String} [itemURIPattern] Specifies the item id pattern.
-		 */
-		&quot;itemURIPattern&quot;: undefined,
-<span id='Echo-StreamServer-API-Request-cfg-onData'>		/**
-</span>		 * @cfg {Function} [onData] Callback called after API request succeded.
-		 */
-		&quot;onData&quot;: function() {},
-<span id='Echo-StreamServer-API-Request-cfg-onError'>		/**
-</span>		 * @cfg {Function} [onError] Callback called after API request failed. 
-		 */
-		&quot;onError&quot;: function() {},
-<span id='Echo-StreamServer-API-Request-cfg-onOpen'>		/**
-</span>		 * @cfg {Function} [onOpen] Callback called before sending an API request.
-		 */
-		&quot;onOpen&quot;: function() {},
-<span id='Echo-StreamServer-API-Request-cfg-submissionProxyURL'>		/**
-</span>		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
-		 */
-		&quot;submissionProxyURL&quot;: &quot;apps.echoenabled.com/v2/esp/activity&quot;
-	}, config);
-	config = this._wrapTransportEventHandlers(config);
-	this.requestType = &quot;initial&quot;; // initial | secondary
-	Echo.StreamServer.API.Request.parent.constructor.call(this, config);
-});
-
-<span id='Echo-StreamServer-API-Request-method-abort'>/**
-</span> * @method
- * Method to stop live updates requests.
- */
-Echo.StreamServer.API.Request.prototype.abort = function() {
-	Echo.StreamServer.API.Request.parent.abort.call(this);
-	if (this.liveUpdates) {
-		this._stopLiveUpdates();
-		delete this.liveUpdates;
-	}
-};
-
-Echo.StreamServer.API.Request.prototype._search = Echo.StreamServer.API.Request.prototype._count = function(force) {
-	if (this.config.get(&quot;recurring&quot;)) {
-		if (!this.liveUpdates) {
-			this._initLiveUpdates();
-		}
-		this._startLiveUpdates(force);
-		return;
-	}
-	this.request();
-};
-
-Echo.StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
-	var self = this;
-	var _config = $.extend({}, config);
-	return $.extend({}, config, {
-		&quot;onOpen&quot;: function(response, requestParams) {
-			_config.onOpen.call(self, response, {&quot;requestType&quot;: self.requestType});
-			clearInterval(self.retryTimer);
-			delete self.retryTimer;
+Echo.Tests.module = function(name, config) {
+	config = config || {};
+	config.meta = config.meta || {};
+	QUnit.module(name, {
+		&quot;setup&quot;: function() {
+			_testSetup();
+			config.setup &amp;&amp; config.setup.call(this);
 		},
-		&quot;onData&quot;: function(response, requestParams) {
-			self._onData(response, {
-				&quot;requestType&quot;: self.requestType
-			}, _config);
+		&quot;teardown&quot;: function() {
+			config.teardown &amp;&amp; config.teardown.call(this);
+			_testTeardown();
 		},
-		&quot;onError&quot;: function(responseError, requestParams) {
-			self._onError(responseError, requestParams, _config);
+		&quot;meta&quot;: {
+			&quot;className&quot;: config.meta.className || &quot;&quot;,
+			&quot;functions&quot;: config.meta.functions || []
 		}
 	});
 };
 
-Echo.StreamServer.API.Request.prototype._onData = function(response, requestParams, config) {
-	response = response || {};
-	if (this.liveUpdates &amp;&amp; this.liveUpdates.responseHandler &amp;&amp; this.requestType === &quot;secondary&quot;) {
-		this.liveUpdates.responseHandler(response);
-	}
-	if (response.result === &quot;error&quot;) {
-		this._handleErrorResponse(response, {
-			&quot;callback&quot;: config.onError
+Echo.Tests.test = function(name, callback, config) {
+	config = _normalizeTestConfig(config);
+	QUnit.test(name, function() {
+		var self = this, args = arguments;
+		// unfortunately user actualization process is async, we have to handle it
+		// so we stop QUnit processing before test ...
+		QUnit.stop();
+		Echo.Tests.Utils.actualizeTestUser(config.user, function() {
+			callback.apply(self, args);
+			// ... and start it again after test
+			QUnit.start();
 		});
-		return;
-	}
-	config.onData(response, requestParams);
-	if (!this.error &amp;&amp; this.requestType === &quot;initial&quot;) {
-		this.requestType = &quot;secondary&quot;;
-	}
-	this._cleanupErrorHandlers(true);
-	if (this.requestType === &quot;initial&quot;) {
-		this.abort();
-		return;
-	}
-	this.nextSince = response.nextSince;
-	this._startLiveUpdates();
-};
-
-Echo.StreamServer.API.Request.prototype._onError = function(responseError, requestParams, config) {
-	this._handleErrorResponse(responseError, {
-		&quot;callback&quot;: config.onError
 	});
 };
 
-Echo.StreamServer.API.Request.prototype._submit = function() {
-	this.request(
-		$.extend({}, this.config.get(&quot;data&quot;), {
-			&quot;content&quot;: Echo.Utils.objectToJSON(this._AS2KVL(this.config.get(&quot;data.content&quot;)))
-		})
+Echo.Tests.asyncTest = function(name, callback, config) {
+	config = _normalizeTestConfig(config);
+	QUnit.test(name, function() {
+		var self = this, args = arguments;
+		// we might want individual timeout for each test
+		// so we can&#39;t use QUnit.asyncTest, but we emulate it using QUnit.stop()
+		QUnit.config.testTimeout = config.timeout;
+		QUnit.stop();
+		Echo.Tests.Utils.actualizeTestUser(config.user, function() {
+			callback.apply(self, args);
+		});
+	});
+};
+
+Echo.Tests.renderersTest = function(component, params, config) {
+	params = $.extend({
+		&quot;appkey&quot;: &quot;echo.jssdk.tests.aboutecho.com&quot;,
+		&quot;ready&quot;: function() {}
+	}, params || {});
+
+	Echo.Tests.asyncTest(&quot;basic checks for renderers&quot;, function() {
+		var ready = params.ready;
+		var handler = function() {
+			var instance = this;
+			ready.call(instance);
+			_checkRenderers.call(instance, {
+				&quot;instance&quot;: instance,
+				&quot;renderers&quot;: instance.renderers,
+				&quot;cssPrefix&quot;: instance.cssPrefix
+			});
+			instance.destroy();
+			QUnit.start();
+		};
+		params.ready = function() {
+			if (this.view.rendered()) {
+				handler.call(this);
+			} else {
+				this.events.subscribe({
+					&quot;topic&quot;: component + &quot;.onRender&quot;,
+					&quot;once&quot;: true,
+					&quot;handler&quot;: handler
+				});
+			}
+		};
+		params.target = params.target || $(&quot;#qunit-fixture&quot;);
+		var Component = Echo.Utils.getComponent(component);
+		new Component(params);
+	}, config);
+};
+
+Echo.Tests.pluginRenderersTest = function(plugin, params, config) {
+	params = $.extend({
+		&quot;appkey&quot;: &quot;echo.jssdk.tests.aboutecho.com&quot;,
+		&quot;plugins&quot;: [],
+		&quot;ready&quot;: function() {}
+	}, params || {});
+
+	var parts = plugin.split(&quot;.Plugins.&quot;);
+	var component = parts[0];
+	plugin = parts[1];
+	params.plugins.push($.extend({&quot;name&quot;: plugin}, params.pluginConfig || {}));
+	delete params.pluginConfig;
+
+	// XXX: hack this because Stream.Item can&#39;t be instantiated itself
+	var forStreamItem = component.indexOf(&quot;Stream.Item&quot;) &gt;= 0;
+	component = component.replace(&quot;Stream.Item&quot;, &quot;Stream&quot;);
+
+	Echo.Tests.asyncTest(&quot;basic checks for renderers&quot;, function() {
+		var ready = params.ready;
+		var handler = function() {
+			var instance = this;
+			var pluginInstance = forStreamItem
+				? instance.threads[0].getPlugin(plugin)
+				: instance.getPlugin(plugin);
+			ready.call(instance);
+			_checkRenderers.call(pluginInstance, {
+				&quot;instance&quot;: pluginInstance.component,
+				&quot;renderers&quot;: pluginInstance._manifest(&quot;renderers&quot;),
+				&quot;cssPrefix&quot;: pluginInstance.cssPrefix
+			});
+			_checkRenderers.call(pluginInstance, {
+				&quot;instance&quot;: pluginInstance.component,
+				&quot;renderers&quot;: pluginInstance._manifest(&quot;component&quot;).renderers,
+				&quot;cssPrefix&quot;: pluginInstance.component.cssPrefix,
+				&quot;statPrefix&quot;: &quot;component.&quot;
+			});
+			instance.destroy();
+			QUnit.start();
+		};
+		params.ready = function() {
+			if (this.view.rendered()) {
+				handler.call(this);
+			} else {
+				this.events.subscribe({
+					&quot;topic&quot;: component + &quot;.onRender&quot;,
+					&quot;once&quot;: true,
+					&quot;handler&quot;: handler
+				});
+			}
+		};
+		params.target = params.target || $(&quot;#qunit-fixture&quot;);
+		var Component = Echo.Utils.getComponent(component);
+		new Component(params);
+	}, config);
+};
+
+Echo.Tests.isolate = function(test) {
+	return function(cb) {
+		var iframe = $(&#39;&lt;iframe name=&quot;&#39; + name + &#39;&quot; style=&quot;width: 0px; height: 0px; border: 0px; visibility: hidden; display: none&quot;&gt;&lt;/iframe&gt;&#39;);
+		$(document.body).append(iframe);
+		iframe.on(&quot;load&quot;, function() {
+			var win = iframe.get(0).contentWindow;
+			var callback = function() {
+				// cleanup first
+				iframe.remove();
+				// and then execute callback to advance to the next test
+				cb();
+			};
+			test.call(win, callback);
+		});
+		iframe.attr(&quot;src&quot;, &quot;{%=baseURLs.tests%}/blank.html&quot;);
+	};
+};
+
+Echo.Tests.jqueryObjectsEqual = function(actual, expected, message) {
+	var properties = [
+		&quot;disabled&quot;,
+		&quot;readOnly&quot;,
+		&quot;tagName&quot;
+	];
+	var attributes = [
+		&quot;autocomplete&quot;,
+		&quot;aria-activedescendant&quot;,
+		&quot;aria-controls&quot;,
+		&quot;aria-describedby&quot;,
+		&quot;aria-disabled&quot;,
+		&quot;aria-expanded&quot;,
+		&quot;aria-haspopup&quot;,
+		&quot;aria-hidden&quot;,
+		&quot;aria-labelledby&quot;,
+		&quot;aria-pressed&quot;,
+		&quot;aria-selected&quot;,
+		&quot;aria-valuemax&quot;,
+		&quot;aria-valuemin&quot;,
+		&quot;aria-valuenow&quot;,
+		&quot;class&quot;,
+		&quot;href&quot;,
+		&quot;id&quot;,
+		&quot;nodeName&quot;,
+		&quot;role&quot;,
+		&quot;tabIndex&quot;,
+		&quot;src&quot;,
+		&quot;alt&quot;,
+		&quot;title&quot;
+	];
+	function extract(elem) {
+		if (!elem || !elem.length) {
+			return {};
+		}
+		var children, result = {};
+		$.map(properties, function(attr) {
+			var value = elem.prop(attr);
+			if (typeof value !== &quot;undefined&quot;) {
+				result[attr] = value;
+			}
+		});
+		$.map(attributes, function(attr) {
+			var value = elem.attr(attr);
+			if (typeof value !== &quot;undefined&quot;) {
+				result[attr] = value;
+			}
+		});
+		result.events = $._data(elem[0], &quot;events&quot;);
+		result.data = $.extend({}, elem.data());
+		delete result.data[$.expando];
+		children = elem.contents();
+		if (children.length) {
+			result.children = children.map(function( ind ) {
+				return extract($(this));
+			}).get();
+		} else {
+			result.text = elem.text();
+		}
+		$.each([&quot;events&quot;], function(i, p) {
+			if (typeof result[p] === &quot;undefined&quot;) {
+				delete result[p];
+			}
+		});
+		return result;
+	}
+	if (!expected || !expected.length) {
+		QUnit.pushFailure(message + &quot; (expected value must not be empty or undefined)&quot;);
+		return;
+	}
+	QUnit.deepEqual(extract(actual), extract(expected), message);
+};
+
+// methods useful if one wants to disable particular test easily
+Echo.Tests._test = Echo.Tests._asyncTest = Echo.Tests._renderersTest = function() {
+	Echo.Utils.log({
+		&quot;component&quot;: &quot;Tests&quot;,
+		&quot;message&quot;: &quot;[&quot; + QUnit.config.currentModule + &quot;] Disabled test: &quot; + arguments[0]
+	});
+};
+
+// private functions
+
+function _testSetup() {
+	//delete all event handlers in all contexts
+	Echo.Events._subscriptions = {};
+	Echo.Events._dataByHandlerId = {};
+
+	// delete all accumulated stuff from Loader except resources state
+	// because yepnope has the same info and we don&#39;t want it unsynchronized
+	var resources = Echo.Loader.vars.state.resources;
+	Echo.Loader.canvases = [];
+	Echo.Loader.overrides = {};
+	Echo.Loader.vars = {
+		&quot;state&quot;: {&quot;resources&quot;: resources, &quot;queue&quot;: []},
+		&quot;processing&quot;: false,
+		&quot;syncQueue&quot;: []
+	};
+
+	// clear qunit-fixture
+	$(&quot;#qunit-fixture&quot;).empty();
+};
+
+function _testTeardown() {
+	var meta = QUnit.config.current.moduleTestEnvironment.meta;
+	if (!meta || meta.processed) return;
+	meta.processed = true;
+	$.each(meta.functions, function(i, name) {
+		Echo.Tests.Stats.markFunctionTested(meta.className + &quot;.&quot; + name);
+	});
+};
+
+function _normalizeTestConfig(config) {
+	return $.extend(true, {
+		&quot;timeout&quot;: 5000,
+		&quot;user&quot;: {
+			&quot;status&quot;: &quot;anonymous&quot;
+		}
+	}, config || {});
+}
+
+function _checkSingleRenderer(name, element, rendererFn, suffix) {
+	suffix = suffix || &quot;&quot;;
+	if (!element) {
+		QUnit.ok(true, &quot;Note: the test for the &quot; + &quot; \&quot;&quot; + name + &quot;\&quot;&quot; + &quot; renderer was not executed, because the template doesn&#39;t contain the respective element. This renderer works for another type of template.&quot; + suffix);
+		return;
+	}
+	var oldElement = element.clone(true, true);
+	var renderedElement = rendererFn.call(this, element);
+	_testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
+}
+
+function _checkRenderers(config) {
+	var self = this;
+	var instance = config.instance;
+	var renderers = config.renderers;
+	config.statPrefix = config.statPrefix || &quot;&quot;;
+	$.each(renderers, function(name, renderer) {
+		QUnit.config.current.moduleTestEnvironment.meta.functions.push(config.statPrefix + &quot;renderers.&quot; + name);
+		_checkSingleRenderer.call(self, name, (config.statPrefix ? instance : self).view.get(name), renderers[name]);
+	});
+	var oldElements = Echo.Utils.foldl({}, instance.view._elements, function(element, acc, name) {
+		acc[name] = element.clone(true, true);
+	});
+	instance.render();
+	$.each(renderers, function(name, element) {
+		_checkSingleRenderer.call(self, name, oldElements[config.cssPrefix + name], renderers[name], &quot; (recursive rerendering case)&quot;);
+	});
+}
+
+function _testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix) {
+	var prefix = &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: &quot;;
+	suffix = suffix || &quot;&quot;;
+	QUnit.ok(
+		renderedElement instanceof jQuery &amp;&amp; renderedElement.length === 1,
+		prefix + &quot;check contract&quot; + suffix
+	);
+	QUnit.ok(
+		renderedElement.jquery === oldElement.jquery,
+		prefix + &quot;check that element is still the same after second rendering&quot; + suffix
+	);
+	QUnit.equal(
+		renderedElement.children().length,
+		oldElement.children().length,
+		prefix + &quot;check the number of children after second rendering of element&quot; + suffix
+	);
+	// Some renderers may add computed numbers or dates to element HTML so it
+	// may become different in the 2 sequential executions. We still consider such
+	// renderers valid that&#39;s why we replace any number of digits in the element
+	// text with a single &quot;0&quot; symbol for new text and old text to match
+	var oldText = oldElement.text().toLowerCase().replace(/\d+/g, &quot;0&quot;);
+	var newText = renderedElement.text().toLowerCase().replace(/\d+/g, &quot;0&quot;);
+	QUnit.equal(
+		newText,
+		oldText,
+		prefix + &quot;check that text representation of the element is still the same after second rendering&quot; + suffix
 	);
 };
-
-Echo.StreamServer.API.Request.prototype._prepareURI = function() {
-	if (this.config.get(&quot;endpoint&quot;) === &quot;submit&quot;) {
-		// FIXME: move replace to API.Request lib
-		return this.config.get(&quot;submissionProxyURL&quot;).replace(/^(http|ws)s?:\/\//, &quot;&quot;);
-	}
-	return this.constructor.parent._prepareURI.call(this);
-};
-
-Echo.StreamServer.API.Request.prototype._getTransport = function() {
-	return this.constructor.parent._getTransport.call(this);
-};
-
-Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {
-	var self = this;
-	this.liveUpdates = {
-		&quot;originalTimeout&quot;: this.config.get(&quot;liveUpdatesTimeout&quot;),
-		&quot;timers&quot;: {},
-		&quot;timeouts&quot;: [],
-		&quot;responseHandler&quot;: function(data) {
-			self._changeLiveUpdatesTimeout(data);
-		}
-	};
-};
-
-Echo.StreamServer.API.Request.prototype._changeLiveUpdatesTimeout = function(data) {
-	var self = this;
-	// backwards compatibility
-	if (typeof data === &quot;string&quot;) {
-		data = {&quot;liveUpdatesTimeout&quot;: data};
-	}
-	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
-	var applyServerDefinedTimeout = function(timeout) {
-		if (!timeout &amp;&amp; self.liveUpdates.originalTimeout != self.config.get(&quot;liveUpdatesTimeout&quot;)) {
-			self.config.set(&quot;liveUpdatesTimeout&quot;, self.liveUpdates.originalTimeout);
-		} else if (timeout &amp;&amp; timeout &gt; self.config.get(&quot;liveUpdatesTimeout&quot;)) {
-			self.config.set(&quot;liveUpdatesTimeout&quot;, timeout);
-		}
-	};
-	var hasNewData = function(data) {
-		// for &quot;v1/search&quot; endpoint at the moment
-		return !!(data.entries &amp;&amp; data.entries.length);
-	};
-	if (!this.nextSince) {
-		applyServerDefinedTimeout(data.liveUpdatesTimeout);
-		return;
-	}
-	var currentTimeout = this.config.get(&quot;liveUpdatesTimeout&quot;);
-	var since = parseInt(this.nextSince);
-	var currentTime = Math.floor((new Date()).getTime() / 1000);
-	// calculate the delay before starting next request:
-	//   - have new data but still behind and need to catch up - use minimum timeout
-	//   - have new data but on the track - increase timeout by 1 second
-	//   - have no new data - increase timeout by 2 seconds
-	var timeout = hasNewData(data)
-		? currentTime - since &gt; currentTimeout
-			? Math.min(3, this.liveUpdates.originalTimeout) // liveUpdatesTimeoutMin
-			: currentTimeout + 1
-		: currentTimeout + 2;
-	if (timeout &gt; this.liveUpdates.originalTimeout) {
-		timeout = this.liveUpdates.originalTimeout;
-	}
-	this.config.set(&quot;liveUpdatesTimeout&quot;, timeout);
-	// if timeout remains the same, take server side value into account
-	if (timeout === this.liveUpdates.originalTimeout) {
-		applyServerDefinedTimeout(data.liveUpdatesTimeout);
-	}
-};
-
-Echo.StreamServer.API.Request.prototype._stopLiveUpdates = function() {
-	if (this.liveUpdates.timers.regular) {
-		clearTimeout(this.liveUpdates.timers.regular);
-	}
-};
-
-Echo.StreamServer.API.Request.prototype._startLiveUpdates = function(force) {
-	var self = this;
-	if (!this.liveUpdates) return;
-	this._stopLiveUpdates();
-	if (force) {
-		// if live updates requests were forced after some operation, we will
-		// perform 3 attempts to get live updates: immediately, in 1 second
-		// and in 3 seconds after first one
-		this.liveUpdates.timeouts = [0, 1, 3];
-	}
-	var timeout = this.liveUpdates.timeouts.length
-		? this.liveUpdates.timeouts.shift()
-		: this.config.get(&quot;liveUpdatesTimeout&quot;);
-	if (this.requestType === &quot;initial&quot; &amp;&amp; !this.config.get(&quot;skipInitialRequest&quot;)) {
-		this.request();
-		return;
-	} else if (this.requestType === &quot;initial&quot;) {
-		this.requestType = &quot;secondary&quot;;
-	}
-	this.liveUpdates.timers.regular = setTimeout(function() {
-		self.request({
-			&quot;since&quot;: self.nextSince 
-		});
-	}, timeout * 1000);
-};
-
-Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
-	var errorCodes = [&quot;waiting&quot;, &quot;timeout&quot;, &quot;busy&quot;, &quot;view_limit&quot;, &quot;view_update_capacity_exceeded&quot;, &quot;connection_failure&quot;, &quot;network_timeout&quot;];
-	return data
-		&amp;&amp; this.config.get(&quot;endpoint&quot;) !== &quot;submit&quot;
-		&amp;&amp; ~$.inArray(data.errorCode, errorCodes);
-};
-
-Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, config) {
-	var self = this;
-	config = config || {};
-	var errorCallback = config.callback;
-	var calcWaitingTimeout = function() {
-		// interval is calculated as x^2, x=[1..7]
-		if (self.waitingTimeoutStep &gt; 0) {
-			if (self.waitingTimeoutStep &lt; 7) {
-				self.waitingTimeoutStep++;
-			}
-		} else {
-			self.waitingTimeoutStep = 1;
-		}
-		return Math.pow(self.waitingTimeoutStep, 2) * 1000;
-	};
-	if (this._isWaitingForData(data)) {
-		var timeout = calcWaitingTimeout();
-		this.waitingTimer = setInterval(function() {
-			self._cleanupErrorHandlers();
-			if (!self.liveUpdates &amp;&amp; self.requestType === &quot;initial&quot;) {
-				self._initLiveUpdates();
-			}
-			self._startLiveUpdates();
-		}, timeout);
-		errorCallback(data, {
-			&quot;requestType&quot;: self.requestType,
-			&quot;critical&quot;: false,
-			&quot;retryIn&quot;: timeout
-		});
-	} else {
-		this.waitingTimeoutStep = 0;
-		if (this.liveUpdates) {
-			this._stopLiveUpdates();
-		}
-		errorCallback(data, {
-			&quot;requestType&quot;: self.requestType,
-			&quot;critical&quot;: data.errorCode !== &quot;connection_aborted&quot;
-		});
-	}
-	this.error = data;
-};
-
-Echo.StreamServer.API.Request.prototype._cleanupErrorHandlers = function(successResponseReceived) {
-	if (successResponseReceived) {
-		this.waitingTimeoutStep = 0;
-		delete this.error;
-	}
-	if (this.waitingTimer) {
-		clearInterval(this.waitingTimer);
-	}
-};
-
-Echo.StreamServer.API.Request.prototype._AS2KVL = function(entries) {
-	var self = this;
-	entries = $.isArray(entries) ? entries : [entries];
-	var strip = function(value) {
-		return value
-			.replace(&quot;http://activitystrea.ms/schema/1.0/&quot;, &quot;&quot;)
-			.replace(&quot;http://js-kit.com/spec/e2/v1/&quot;, &quot;&quot;);
-	};
-	var prepareActivity = function(activity, meta) {
-		var data = {
-			&quot;avatar&quot;: activity.actor &amp;&amp; activity.actor.avatar,
-			&quot;content&quot;: activity.object &amp;&amp; activity.object.content,
-			&quot;markers&quot;: meta.markers ? $.trim(meta.markers) : undefined,
-			&quot;name&quot;: activity.actor &amp;&amp; (activity.actor.name || activity.actor.title),
-			&quot;source&quot;: activity.source,
-			&quot;tags&quot;: meta.tags ? $.trim(meta.tags) : undefined,
-			&quot;title&quot;: activity.object &amp;&amp; activity.object.title,
-			&quot;target&quot;: activity.targets[0].id,
-			&quot;verb&quot;: verb(activity),
-			&quot;type&quot;: type(activity),
-			&quot;itemURIPattern&quot;: self.config.get(&quot;itemURIPattern&quot;),
-			&quot;author&quot;: activity.author
-		};
-		if (verb(activity) === &quot;update&quot;) {
-			data = {
-				&quot;verb&quot;: verb(activity),
-				&quot;target&quot;: activity.targets[0].id
-			};
-			$.each(activity.object, function(key, value) {
-				if (key !== &quot;objectTypes&quot;) {
-					data[&quot;field&quot;] = key;
-					data[&quot;value&quot;] = value;
-					return false;
-				}
-			});
-		} else if (/tag/.test(verb(activity))) {
-			data = {
-				&quot;tags&quot;: activity.object &amp;&amp; activity.object.content,
-				&quot;verb&quot;: verb(activity),
-				&quot;target&quot;: activity.targets[0].id
-			};
-		} else if (/mark/.test(verb(activity))) {
-			data = {
-				&quot;markers&quot;: activity.object &amp;&amp; activity.object.content,
-				&quot;verb&quot;: verb(activity),
-				&quot;target&quot;: activity.targets[0].id
-			};
-		}
-		return data;
-	};
-	var verb = function(entry) {
-		return strip(entry.verbs[0]);
-	};
-	var type = function(entry) {
-		return entry.object &amp;&amp; entry.object.objectTypes ? entry.object.objectTypes[0] : undefined;
-	};
-	var post, meta = {&quot;markers&quot;: &quot;&quot;, &quot;tags&quot;: &quot;&quot;};
-	$.map(entries, function(entry) {
-		if (/tag|mark/.test(verb(entry)) &amp;&amp; /tag|marker/.test(type(entry))) {
-			meta[strip(type(entry)) + &quot;s&quot;] = entry.object.content;
-		}
-		if (verb(entry) === &quot;post&quot;) {
-			post = entry;
-		}
-	});
-	if (post) {
-		return prepareActivity(post, meta);
-	}
-	return $.map(entries, function(entry) {
-		return prepareActivity(entry, meta);
-	});
-};
-
-<span id='Echo-StreamServer-API-Request-static-method-request'>/**
-</span> * @static
- * Alias for the class constructor.
- * @param {Object} Configuration data.
- * @return {Object} New class instance.
- */
-Echo.StreamServer.API.request = function(config) {
-	return (new Echo.StreamServer.API.Request(config));
-};
+// TODO: remove this line when all tests use new format
+Echo.Tests._testElementsConsistencyAfterRendering = _testElementsConsistencyAfterRendering;
 
 })(Echo.jQuery);
 </pre>

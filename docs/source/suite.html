@@ -180,7 +180,7 @@ Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
 		var checker = function(name, element, suffix) {
 			var oldElement = element.clone(true, true);
 			var renderedElement = renderers[name].call(plugin, element);
-			self._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
+			Echo.Tests._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
 		};
 		$.each(renderers, function(name, renderer) {
 			// don&#39;t test private renderer
@@ -203,80 +203,8 @@ Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
 	check(true);
 };
 
-
-/*
-The Idea of the function were took from https://github.com/jquery/jquery-ui/blob/master/tests/unit/testsuite.js
-Some functionality copied as is.
-*/
 Echo.Tests.Suite.prototype.jqueryObjectsEqual = function(source, target, message) {
-	var expected, actual;
-	var properties = [
-		&quot;disabled&quot;,
-		&quot;readOnly&quot;
-	];
-	var attributes = [
-		&quot;autocomplete&quot;,
-		&quot;aria-activedescendant&quot;,
-		&quot;aria-controls&quot;,
-		&quot;aria-describedby&quot;,
-		&quot;aria-disabled&quot;,
-		&quot;aria-expanded&quot;,
-		&quot;aria-haspopup&quot;,
-		&quot;aria-hidden&quot;,
-		&quot;aria-labelledby&quot;,
-		&quot;aria-pressed&quot;,
-		&quot;aria-selected&quot;,
-		&quot;aria-valuemax&quot;,
-		&quot;aria-valuemin&quot;,
-		&quot;aria-valuenow&quot;,
-		&quot;class&quot;,
-		&quot;href&quot;,
-		&quot;id&quot;,
-		&quot;nodeName&quot;,
-		&quot;role&quot;,
-		&quot;tabIndex&quot;,
-		&quot;src&quot;,
-		&quot;alt&quot;,
-		&quot;title&quot;
-	];
-	function extract(elem) {
-		if (!elem || !elem.length) {
-			QUnit.push(false, actual, expected,
-				&quot;jqueryObjectsEqual failed, can&#39;t extract the element, message was: &quot; + message);
-			return;
-		}
-
-		var children, result = {};
-		$.map(properties, function(attr) {
-			var value = elem.prop(attr);
-			if (typeof value !== &quot;undefined&quot;) {
-				result[attr] = value;
-			}
-		});
-		$.map(attributes, function(attr) {
-			var value = elem.attr(attr);
-			if (typeof value !== &quot;undefined&quot;) {
-				result[attr] = value;
-			}
-		});
-		result.events = $._data(elem[0], &quot;events&quot;);
-		result.data = $.extend({}, elem.data());
-		delete result.data[$.expando];
-		children = elem.contents();
-		if (children.length) {
-			result.children = children.map(function( ind ) {
-				return extract($(this));
-			}).get();
-		} else {
-			result.tagName = elem.prop(&quot;tagName&quot;);
-			result.text = elem.text();
-		}
-		return result;
-	}
-	expected = extract(source);
-
-	actual = extract(target);
-	QUnit.deepEqual(actual, expected, message);
+	Echo.Tests.jqueryObjectsEqual(source, target, message);
 };
 
 Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
@@ -286,13 +214,14 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 			instance.render();
 		}
 		var checker = function(name, element, suffix) {
+			suffix = suffix || &quot;&quot;;
 			if (!element) {
 				QUnit.ok(true, &quot;Note: the test for the &quot; + &quot; \&quot;&quot; + name + &quot;\&quot;&quot; + &quot; renderer was not executed, because the template doesn&#39;t contain the respective element. This renderer works for another type of template.&quot; + suffix);
 				return;
 			}
 			var oldElement = element.clone(true, true);
 			var renderedElement = instance.view.render({&quot;name&quot;: name});
-			self._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
+			Echo.Tests._testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
 		};
 		$.each(instance.renderers, function(name, renderer) {
 			self.info.functions.push(&quot;renderers.&quot; + name);
@@ -312,49 +241,17 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 	this.tests.TestRenderers = data;
 };
 
+// TODO: get rid of this function once IdentityServer.API is rewritten using new format
 Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
-	var user = Echo.UserSession($.extend({&quot;appkey&quot;: &quot;echo.jssdk.tests.aboutecho.com&quot;}, config || {}));
-	if (user.is(&quot;logged&quot;)) {
-		callback &amp;&amp; callback();
-		return;
-	}
-	$.get(&quot;http://echosandbox.com/js-sdk/auth&quot;, {
-		&quot;action&quot;: &quot;login&quot;,
-		&quot;channel&quot;: Backplane.getChannelID(),
-		&quot;identityUrl&quot;: &quot;http://somedomain.com/users/fake_user&quot;
-	}, function() {
-		Echo.UserSession._onInit(callback);
-		Backplane.expectMessages(&quot;identity/ack&quot;);
-	}, &quot;jsonp&quot;);
-};
-
-Echo.Tests.Suite.prototype.logoutTestUser = function(callback) {
-	Echo.UserSession({&quot;appkey&quot;: &quot;echo.jssdk.tests.aboutecho.com&quot;}).logout(callback);
-};
-
-Echo.Tests.Suite.prototype._testElementsConsistencyAfterRendering = function(name, oldElement, renderedElement, assertionTextSuffix) {
-	assertionTextSuffix = assertionTextSuffix || &quot;&quot;;
-	QUnit.ok(renderedElement instanceof jQuery &amp;&amp; renderedElement.length === 1, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check contract&quot; + assertionTextSuffix);
-	QUnit.ok(renderedElement.jquery === oldElement.jquery, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check that element is still the same after second rendering&quot; + assertionTextSuffix);
-	QUnit.equal(renderedElement.children().length, oldElement.children().length, &quot;Renderer \&quot;&quot; + name + &quot;\&quot;: check the number of children after second rendering of element&quot; + assertionTextSuffix);
-	// this variable contains regexp that will test rendered element
-	// use case is renderer function has side effects (ex. date computation, random values etc)
-	var template = oldElement.text().toLowerCase().replace(/([^\w\s])/g, &quot;\\$1&quot;).replace(/\d+/g, &quot;\\d+&quot;);
-	QUnit.ok((new RegExp(template)).test(renderedElement.text().toLowerCase()), &quot;Element \&quot;&quot; + name + &quot;\&quot;: check that text representation of the element is still the same after second rendering&quot; + assertionTextSuffix);
+	Echo.Tests.Utils.actualizeTestUser(config, callback);
 };
 
 Echo.Tests.Suite.prototype._prepareEnvironment = function(test, callback) {
-	var self = this;
-	this._cleanupEnvironment(function() {
-		if (test.config.user.status === &quot;anonymous&quot;) {
-			callback();
-			return;
-		}
-		self.loginTestUser(test.config.user, callback);
-	});
+	this._cleanupEnvironment();
+	Echo.Tests.Utils.actualizeTestUser(test.config.user, callback);
 };
 
-Echo.Tests.Suite.prototype._cleanupEnvironment = function(callback) {
+Echo.Tests.Suite.prototype._cleanupEnvironment = function() {
 	//delete all event handlers in all contexts
 	Echo.Events._subscriptions = {};
 	Echo.Events._dataByHandlerId = {};
@@ -362,8 +259,9 @@ Echo.Tests.Suite.prototype._cleanupEnvironment = function(callback) {
 	// clear qunit-fixture
 	$(&quot;#qunit-fixture&quot;).empty();
 
-	// logout user
-	this.logoutTestUser(callback);
+	// force Echo.UserSession to re-initialize itself completely
+	// during the next Echo.UserSession object initialization
+	Echo.UserSession.state = &quot;init&quot;;
 };
 
 })(Echo.jQuery);

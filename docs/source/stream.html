@@ -109,7 +109,7 @@ stream.init = function() {
 	var data = this.config.get(&quot;data&quot;);
 	if (data) {
 		this._handleInitialResponse(data);
-		this.request.send({
+		this.request &amp;&amp; this.request.send({
 			&quot;skipInitialRequest&quot;: true,
 			&quot;data&quot;: {
 				&quot;q&quot;: this.config.get(&quot;query&quot;),
@@ -321,7 +321,7 @@ stream.config = {
 </span>	 * @cfg {String} submissionProxyURL URL prefix for requests to
 	 * Submission Proxy subsystem.
 	 */
-	&quot;submissionProxyURL&quot;: &quot;http://apps.echoenabled.com/v2/esp/activity&quot;,
+	&quot;submissionProxyURL&quot;: &quot;{%=baseURLs.api.submissionproxy%}/v2/esp/activity&quot;,
 
 <span id='Echo-StreamServer-Controls-Stream-cfg-data'>	/**
 </span>	 * @cfg {Object} data
@@ -750,6 +750,8 @@ stream.methods._requestMoreItems = function(element) {
 			}
 		});
 	}
+	// FIXME: &quot;more&quot; requests are always initial ones
+	this.moreRequest.requestType = &quot;initial&quot;;
 	this.moreRequest.send({
 		&quot;data&quot;: {
 			&quot;q&quot;: this.config.get(&quot;query&quot;) + &quot; pageAfter:&quot; +
@@ -2061,7 +2063,8 @@ item.methods.template = function() {
 </span> * @echo_renderer
  */
 item.renderers.authorName = function(element) {
-	return element.html(this.get(&quot;data.actor.title&quot;) || this.labels.get(&quot;guest&quot;));
+	var author = this.get(&quot;data.actor.title&quot;) || this.labels.get(&quot;guest&quot;);
+	return Echo.Utils.safelyExecute(element.html, author, element) || element;
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-markers'>/**
@@ -2388,7 +2391,8 @@ item.renderers.body = function(element) {
 	});
 	var text = data[0];
 	var truncated = data[1].truncated;
-	this.view.get(&quot;text&quot;).empty().append(text);
+	var textElement = this.view.get(&quot;text&quot;).empty();
+	Echo.Utils.safelyExecute(textElement.append, text, textElement);
 	this.view.get(&quot;textEllipses&quot;)[!truncated || this.textExpanded ? &quot;hide&quot; : &quot;show&quot;]();
 	this.view.get(&quot;textToggleTruncated&quot;)[truncated || this.textExpanded ? &quot;show&quot; : &quot;hide&quot;]();
 	return element;
@@ -2499,7 +2503,7 @@ item.renderers._extraField = function(element, extra) {
 	if (!this.data.object[type] || !this.user.is(&quot;admin&quot;)) {
 		return element.hide();
 	}
-	var name = type === &quot;markers&quot; ? &quot;maxMarkerLength&quot; : &quot;maxTagsLength&quot;;
+	var name = type === &quot;markers&quot; ? &quot;maxMarkerLength&quot; : &quot;maxTagLength&quot;;
 	var limit = this.config.get(&quot;limits.&quot; + name);
 	var items = Echo.Utils.foldl([], this.data.object[type], function(item, acc) {
 		var template = item.length &gt; limit
@@ -2511,7 +2515,12 @@ item.renderers._extraField = function(element, extra) {
 			&quot;data&quot;: {&quot;item&quot;: item, &quot;truncatedItem&quot;: truncatedItem}
 		}));
 	});
-	return element.prepend(items.sort().join(&quot;, &quot;)).show();
+	return (
+		Echo.Utils.safelyExecute(
+			element.prepend,
+			items.sort().join(&quot;, &quot;),
+			element
+		) || element).show();
 };
 
 item.renderers._button = function(element, extra) {
