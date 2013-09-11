@@ -57,29 +57,33 @@ stream.init = function() {
 
 	this._recalcEffectsTimeouts();
 	this.request = this._getRequestObject({
-		"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
-		"recurring": this.config.get("liveUpdates.enabled"),
-		"onOpen": function(data, options) {
-			if (options.requestType === "initial") {
-				self.showError({}, {
-					"retryIn": 0,
-					"request": self.request
-				});
+		"liveUpdates": $.extend(this.config.get("liveUpdates"), {
+			"onData": function(data) {
+				self._handleLiveUpdatesResponse(data);
+			},
+			"onError": function(data, options) {
+				if (typeof options.critical === "undefined" || options.critical) {
+					self.showError(data, $.extend(options, {
+						"request": self.request
+					}));
+				}
 			}
+		}),
+		"onOpen": function(data, options) {
+			self.showError({}, {
+				"retryIn": 0,
+				"request": self.request
+			});
 		},
 		"onError": function(data, options) {
-			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+			if (typeof options.critical === "undefined" || options.critical) {
 				self.showError(data, $.extend(options, {
 					"request": self.request
 				}));
 			}
 		},
 		"onData": function(data, options) {
-			if (options.requestType === "initial") {
-				self._handleInitialResponse(data);
-			} else {
-				self._handleLiveUpdatesResponse(data);
-			}
+			self._handleInitialResponse(data);
 		}
 	});
 
@@ -175,6 +179,11 @@ stream.config = {
 	"itemsPerPage": 15,
 
 	/**
+	 * @ignore
+	 */
+	"itemsRefreshInterval": 10,
+
+	/**
 	 * @cfg {Function} itemsComparator
 	 * Function allowing to specify custom items sorting rules. It is used to find
 	 * a correct place for a new item in the already existing list of items
@@ -216,18 +225,54 @@ stream.config = {
 	"itemsComparator": undefined,
 
 	/**
-	 * @cfg {Object} liveUpdates
-	 * Configuration options for liveUpdates.
+	 * @cfg {Object} [liveUpdates]
+	 * Live updating machinery configuration.
 	 *
-	 * @cfg {Boolean} liveUpdates.enabled
-	 * Parameter to enable/disable receiving live updates by control.
+	 * @cfg {Boolean} [liveUpdates.enabled=true]
+	 * Parameter to enable/disable live updates.
 	 *
-	 * @cfg {Number} liveUpdates.timeout
-	 * Timeout between live updates requests (in seconds).
+	 * @cfg {String} [liveUpdates.transport="polling"]
+	 * Preferred live updates receiveing machinery transport.
+	 * The following transports are supported:
+	 *
+	 * + "polling" - periodic requests to check for updates
+	 * + "websockets" - transport based on the WebSocket technology
+	 *
+	 * If the end user's browser doesn't support the WebSockets technology,
+	 * the "polling" transport will be used as a fallback.
+	 *
+	 * @cfg {Object} [liveUpdates.polling]
+	 * Object which contains the configuration specific to the "polling"
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.polling.timeout=10]
+	 * Timeout between the live updates requests (in seconds).
+	 *
+	 * @cfg {Object} [liveUpdates.websockets]
+	 * Object which contains the configuration specific to the "websockets"
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.websockets.maxConnectRetries=3]
+	 * Max connection retries for WebSocket transport. After the number of the
+	 * failed connection attempts specified in this parameter is reached, the
+	 * WebSocket transport is considered as non-supported: the client no longer
+	 * tries to use the WebSockets on the page and the polling transport is used
+	 * from now on.
+	 *
+	 * @cfg {Number} [liveUpdates.websockets.serverPingInterval=30]
+	 * The timeout (in seconds) between the client-server ping-pong requests
+	 * to keep the connection alive.
 	 */
 	"liveUpdates": {
+		"transport": "polling", // or "websockets"
 		"enabled": true,
-		"timeout": 10
+		"polling": {
+			"timeout": 10
+		},
+		"websockets": {
+			"maxConnectRetries": 3,
+			"serverPingInterval": 30
+		}
 	},
 
 	/**
@@ -301,8 +346,8 @@ stream.config = {
 	},
 
 	/**
-	 * @cfg {String} submissionProxyURL URL prefix for requests to
-	 * Submission Proxy subsystem.
+	 * @cfg {String} submissionProxyURL
+	 * Location (URL) of the Submission Proxy subsystem.
 	 */
 	"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
 
@@ -700,6 +745,49 @@ stream.methods._requestChildrenItems = function(unique) {
 	request.send();
 };
 
+stream.methods._requestInitialItems = function() {
+	var self = this;
+	if (!this.request) {
+		this.request = Echo.StreamServer.API.request({
+			"endpoint": "search",
+			"apiBaseURL": this.config.get("apiBaseURL"),
+			"liveUpdates": $.extend(this.config.get("liveUpdates"), {
+				"onData": function(data) {
+					self._handleLiveUpdatesResponse(data);
+				},
+				"onError": function(data, options) {
+					if (typeof options.critical === "undefined" || options.critical) {
+						self.showError(data, $.extend(options, {
+							"request": self.request
+						}));
+					}
+				}
+			}),
+			"data": {
+				"q": this.config.get("query"),
+				"appkey": this.config.get("appkey")
+			},
+			"onOpen": function(data, options) {
+				self.showError({}, {
+					"retryIn": 0,
+					"request": self.request
+				});
+			},
+			"onError": function(data, options) {
+				if (typeof options.critical === "undefined" || options.critical) {
+					self.showError(data, $.extend(options, {
+						"request": self.request
+					}));
+				}
+			},
+			"onData": function(data, options) {
+				self._handleInitialResponse(data);
+			}
+		});
+	}
+	this.request.send();
+};
+
 stream.methods._requestMoreItems = function(element) {
 	var self = this;
 	this.lastRequest = {"initial": false};
@@ -797,10 +885,7 @@ stream.methods._prepareEventParams = function(params) {
 };
 
 stream.methods._applyLiveUpdates = function(entries, callback) {
-	var self = this;
-	this._refreshItemsDate();
-	this._checkTimeframeSatisfy();
-	var data = {};
+	var self = this, data = {};
 	data.entries = $.map(entries || [], function(entry) {
 		return self._normalizeEntry(entry);
 	});
@@ -1040,12 +1125,24 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 			self.render();
 			self.ready();
 		})(roots);
+
+		// refresh items date and check if all items
+		// satisfy search query timeframe criteria (if any);
+		// cleanup interval if it was previously defined
+		if (self.itemsRefreshInterval) {
+			clearInterval(self.itemsRefreshInterval);
+		}
+		self.itemsRefreshInterval = setInterval(function() {
+			self._refreshItemsDate();
+			self._checkTimeframeSatisfy();
+		}, self.config.get("itemsRefreshInterval") * 1000);
 	});
 };
 
 stream.methods._checkTimeframeSatisfy = function() {
 	var self = this;
 	var timeframe = this.config.get("timeframe");
+	if (!timeframe || !timeframe.length) return; // no timeframes defined in the search query
 	var unsatisfying = Echo.Utils.foldl([], this.threads, function(thread, acc) {
 		var satisfy = Echo.Utils.foldl(true, timeframe, function(p, a) {
 			return a ? p(thread.get("timestamp")) : false;
@@ -1060,10 +1157,6 @@ stream.methods._checkTimeframeSatisfy = function() {
 stream.methods._handleLiveUpdatesResponse = function(data) {
 	var self = this;
 	data = data || {};
-	if (data.result === "error") {
-		this.startLiveUpdates();
-		return;
-	}
 	this._applyLiveUpdates(data.entries, function() {
 		self.view.render({"name": "state"});
 		self._executeNextActivity();
@@ -2385,7 +2478,9 @@ item.renderers.body = function(element) {
  * @echo_renderer
  */
 item.renderers.date = function(element) {
-	return element.html(this.getRelativeTime(this.timestamp));
+	// is used to preserve backwards compatibility
+	this.age = this.getRelativeTime(this.timestamp);
+	return element.html(this.age);
 };
 
 /**

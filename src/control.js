@@ -731,8 +731,9 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 			"topic": "Echo.Control.onDataInvalidate",
 			"context": context,
 			"handler": function() {
-				if (control.get("request")) {
-					control.get("request").send({"force": true});
+				var request = control.get("request");
+				if (request && request.liveUpdates) {
+					request.liveUpdates.start(true);
 				}
 			}
 		});

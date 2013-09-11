@@ -14,7 +14,19 @@ suite.prototype.info = {
 		"Request._mux",
 		"Request.abort",
 		"Request.send",
-		"request"
+		"request",
+		"Polling.init",
+		"Polling.getRequestObject",
+		"Polling.stop",
+		"Polling.start",
+		"Polling.on",
+		"WebSockets.init",
+		"WebSockets.getRequestObject",
+		"WebSockets.on",
+		"WebSockets.start",
+		"WebSockets.connected",
+		"WebSockets.stop",
+		"WebSockets.subscribe"
 	]
 };
 
@@ -67,15 +79,22 @@ suite.prototype.cases.simpleMuxRequest = function(callback) {
 };
 
 suite.prototype.cases.skipInitialRequest = function(callback) {
+	var skipped = true;
 	var request = Echo.StreamServer.API.request({
 		"endpoint": "search",
 		"data": $.extend({}, this.params),
-		"recurring": true,
 		"skipInitialRequest": true,
 		"onData": function(data, options) {
-			QUnit.strictEqual(options.requestType, "secondary", "Check if the \"onData\" handler wasn't executed in the \"skipInitialRequest\" case");
-			request.abort();
-			callback();
+			skipped = false;
+		},
+		"liveUpdatesTimeout": 2,
+		"liveUpdates": {
+			"enabled": true,
+			"onData": function() {
+				QUnit.ok(skipped, "Check if the \"onData\" handler wasn't executed in the \"skipInitialRequest\" case");
+				request.liveUpdates.stop();
+				callback();
+			}
 		}
 	});
 	request.send();
@@ -100,11 +119,11 @@ suite.prototype.cases.requestWithAbort = function(callback) {
 		"onError": function(data) {
 			QUnit.ok(data && data.result === "error" && data.errorCode === "connection_aborted",
 				"Checking if the \"onError\" callback was executed when the request aborted");
-			callback();
 		},
 		"onClose": function() {
 			QUnit.ok(true,
 				"Checking if the \"onClose\" callback was executed when the request aborted");
+			callback();
 		}
 	});
 	req.send();
@@ -121,13 +140,18 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 	item.object.id = target;
 	var countReq = Echo.StreamServer.API.request({
 		"endpoint": "count",
-		"recurring": "true",
+		"liveUpdates": {
+			"enabled": true,
+			"polling": {
+				"timeout": 1
+			}
+		},
 		"onData": function(response) {
 			if (response && response.count) {
 				QUnit.equal(1, response.count, "Checking if live updates mechanism by count works correctly after posting");
+				countReq.abort();
 				callback();
 			}
-			countReq.abort();
 		},
 		"data": $.extend({}, params)
 	});
@@ -140,11 +164,13 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 	});
 	var liveUpdateReq = Echo.StreamServer.API.request({
 		"endpoint": "search",
-		"recurring": true,
 		"onData": function(response) {
-			if (liveUpdateReq.requestType === "initial") {
-				submitReq.send();
-			} else {
+			submitReq.send();
+		},
+		"liveUpdatesTimeout": 2,
+		"liveUpdates": {
+			"enabled": true,
+			"onData": function(response) {
 				if (response && response.entries && response.entries.length) {
 					QUnit.equal(response.entries[0].object.content, self.items.post.object.content,
 						"Checking if the live update mechanism by search works correctly after posting");
@@ -163,18 +189,92 @@ suite.prototype.cases.simpleLiveUpdatesRequest = function(callback) {
 	var req = Echo.StreamServer.API.request({
 		"endpoint": "search",
 		"data": this.params,
-		"liveUpdatesTimeout": 1,
-		"recurring": true,
-		"onData": function(data) {
-			if (maxCounts === ++currentCount) {
-				QUnit.ok(data && data.entries,
-					"Checking if the \"onData\" callback was executed after the live update request.");
-				req.abort();
-				callback();
+		"liveUpdates": {
+			"enabled": true,
+			"polling": {
+				"timeout": 1
+			},
+			"onData": function(data) {
+				if (maxCounts === ++currentCount) {
+					QUnit.ok(data && data.entries,
+						"Checking if the \"onData\" callback was executed after the live update request.");
+					req.abort();
+					callback();
+				}
 			}
 		}
 	});
 	req.send();
+};
+
+suite.prototype.cases.backwardCompatibility = function(callback) {
+	var req = Echo.StreamServer.API.request({
+		"endpoint": "search",
+		"data": this.params,
+		"liveUpdatesTimeout": 2,
+		"recurring": true,
+		"onData": function(response, extra) {
+			if (extra.requestType === "secondary") {
+				QUnit.ok(true, "Check if liveUpdates handlers are not provided then original will be used");
+				req.abort();
+				callback();
+				return;
+			}
+			QUnit.ok(req.config.get("liveUpdates.enabled"), "Check that \"recurring\" config parameter mapped to the \"liveUpdates.enabled\"");
+			QUnit.strictEqual(req.config.get("liveUpdates.polling.timeout"), 2, "Check that \"liveUpdatesTimeout\" mapped to the \"liveUpdates.polling.timeout\"");
+			QUnit.ok("requestType" in extra, "Check that \"requestType\" provided as extra");
+		}
+	});
+	req.send();
+};
+
+suite.prototype.cases.websockets = function(callback) {
+	var item = $.extend(true, {}, this.items.post);
+	var params = $.extend({}, this.params);
+	var q = params.q.replace(/\s+children:\d+$/, "") + "/11111"
+	var target = q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
+	item.targets[0].id = target;
+	item.targets[0].conversationID = target;
+	item.object.id = target;
+	var req = Echo.StreamServer.API.request({
+		"endpoint": "search",
+		"data": $.extend(this.params, {"q": q}),
+		"liveUpdates": {
+			"enabled": true,
+			"transport": "websockets",
+			"websockets": {
+				"maxConnectRetries": 2,
+				"serverPingInterval": 10
+			},
+			"onData": function() {
+				QUnit.deepEqual([
+					req.liveUpdates.requestObject.config.get("settings.maxConnectRetries"),
+					req.liveUpdates.requestObject.config.get("settings.serverPingInterval")
+				], [2, 10], "Check that config parameters for WS mapped");
+				QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.WebSockets, "Check that liveUpdates switched to WS after its opened");
+				req.liveUpdates.stop();
+			},
+			"onClose": function() {
+				if (req.liveUpdates instanceof Echo.StreamServer.API.WebSockets) {
+					req.liveUpdates._clearSubscriptions();
+					callback();
+				}
+			}
+		}
+	});
+	var submitReq = Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"data": $.extend({}, params, {
+			content: item,
+			targetURL: target
+		})
+	});
+	req.send();
+	req.liveUpdates.on("close", $.proxy(submitReq.send, submitReq));
+	// Opening a socket does require some time so we first initiate polling and switch
+	// to socket when it's initiated. But at this particular moment live updates must
+	// use polling mechanism.
+	QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.Polling, "Check that live updates instantiated with polling");
 };
 
 suite.prototype.tests = {};
@@ -182,7 +282,7 @@ suite.prototype.tests = {};
 suite.prototype.tests.PublicInterfaceTests = {
 	 "config": {
 		 "async": true,
-		 "testTimeout": 20000 // 20 secs
+		 "testTimeout": 40000 // 40 secs
 	},
 	"check": function() {
 		var sequentialTests = [
@@ -191,7 +291,9 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"skipInitialRequest",
 			"requestWithAbort",
 			"checkLiveUpdate",
-			"simpleLiveUpdatesRequest"
+			"simpleLiveUpdatesRequest",
+			"backwardCompatibility",
+			"websockets"
 		];
 		// FIXME: when server will support XDomainRequest handling
 		if (!Echo.API.Transports.XDomainRequest.available()) {
@@ -254,14 +356,6 @@ suite.prototype.tests.PrivateFunctionsTests = {
 			"target": "http://nymag.com/daily/intel/2012/06/nora-ephron-1941-2012.html"
 		}
 		], "Check decompiler from AS to KVL with metadata only");
-		req._changeLiveUpdatesTimeout({
-			"liveUpdatesTimeout": 4
-		});
-		QUnit.equal(5, req.config.get("liveUpdatesTimeout"), "Checking liveUpdatesTimeout when server responsed less value than default");
-		req._changeLiveUpdatesTimeout({
-			"liveUpdatesTimeout": 6
-		});
-		QUnit.equal(6, req.config.get("liveUpdatesTimeout"), "Checking liveUpdatesTimeout when server responsed more value than default");
 	}
 };
 
@@ -308,8 +402,7 @@ suite.prototype.items.post = {
 };
 
 suite.prototype.items.postWithMetadata = [
-	suite.prototype.items.post,
-	{
+	suite.prototype.items.post, {
 		"id": "http://js-kit.com/activities/post/adshg5f6239dfd7ebf66ac794125acee",
 		"actor": {
 			"id": "http://my.nymag.com/thenext_mrsbass",

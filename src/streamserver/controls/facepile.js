@@ -134,6 +134,57 @@ pile.config = {
 	},
 
 	/**
+	 * @cfg {Object} [liveUpdates]
+	 * Live updating machinery configuration.
+	 *
+	 * @cfg {Boolean} [liveUpdates.enabled=true]
+	 * Parameter to enable/disable live updates.
+	 *
+	 * @cfg {String} [liveUpdates.transport="polling"]
+	 * Preferred live updates receiveing machinery transport.
+	 * The following transports are supported:
+	 *
+	 * + "polling" - periodic requests to check for updates
+	 * + "websockets" - transport based on the WebSocket technology
+	 *
+	 * If the end user's browser doesn't support the WebSockets technology,
+	 * the "polling" transport will be used as a fallback.
+	 *
+	 * @cfg {Object} [liveUpdates.polling]
+	 * Object which contains the configuration specific to the "polling"
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.polling.timeout=10]
+	 * Timeout between the live updates requests (in seconds).
+	 *
+	 * @cfg {Object} [liveUpdates.websockets]
+	 * Object which contains the configuration specific to the "websockets"
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.websockets.maxConnectRetries=3]
+	 * Max connection retries for WebSocket transport. After the number of the
+	 * failed connection attempts specified in this parameter is reached, the
+	 * WebSocket transport is considered as non-supported: the client no longer
+	 * tries to use the WebSockets on the page and the polling transport is used
+	 * from now on.
+	 *
+	 * @cfg {Number} [liveUpdates.websockets.serverPingInterval=30]
+	 * The timeout (in seconds) between the client-server ping-pong requests
+	 * to keep the connection alive.
+	 */
+	"liveUpdates": {
+		"transport": "polling", // or "websockets"
+		"enabled": true,
+		"polling": {
+			"timeout": 10
+		},
+		"websockets": {
+			"maxConnectRetries": 3,
+			"serverPingInterval": 30
+		}
+	},
+
+	/**
 	 * @cfg {String} infoMessages
 	 * Customizes the look and feel of info messages, for example "loading" and "error".
 	 */
@@ -284,18 +335,27 @@ pile.methods._request = function() {
 				"q": this.config.get("query"),
 				"appkey": this.config.get("appkey")
 			},
-			"liveUpdatesTimeout": this.config.get("liveUpdates.timeout"),
-			"recurring": this.config.get("liveUpdates.enabled"),
+			"liveUpdates": $.extend(this.config.get("liveUpdates"), {
+				"onData": function(data) {
+					self._secondaryResponseHandler(data);
+				},
+				"onError": function(data, extra) {
+					var needShowError = typeof extra.critical === "undefined" || extra.critical;
+					if (needShowError) {
+						self.showError(data, {"critical": extra.critical});
+					}
+				}
+			}),
 			"secure": this.config.get("useSecureAPI"),
 			"apiBaseURL": this.config.get("apiBaseURL"),
 			"onError": function(data, extra) {
-				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
+				var needShowError = typeof extra.critical === "undefined" || extra.critical;
 				if (needShowError) {
 					self.showError(data, {"critical": extra.critical});
 				}
 			},
 			"onData": function(data, extra) {
-				self["_" + extra.requestType + "ResponseHandler"](data);
+				self._initialResponseHandler(data);
 			}
 		});
 		this.set("request", request);

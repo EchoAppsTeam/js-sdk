@@ -40,7 +40,9 @@ suite.prototype.tests.commonWorkflow = {
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"liveUpdates": {
-				"timeout": 3
+				"polling": {
+					"timeout": 3
+				}
 			},
 			"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:1",
 			"ready": function() {
@@ -74,7 +76,9 @@ suite.prototype.tests.asyncRenderers = {
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"liveUpdates": {
-				"timeout": 3
+				"polling": {
+					"timeout": 3
+				}
 			},
 			"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:10",
 			"ready": function() {
@@ -446,7 +450,7 @@ suite.prototype.cases.predefinedData = function(callback) {
 		"ready": function() {
 			var self = this;
 			QUnit.ok(this.request instanceof Echo.API.Request, "Check that stream initializing with the pre-defined data inits a request object as well");
-			QUnit.strictEqual(this.request.config.get("recurring"), this.config.get("liveUpdates.enabled"), "Check that stream initializing with the pre-defined data inits a request object with the proper options");
+			QUnit.strictEqual(this.request.config.get("liveUpdates.enabled"), this.config.get("liveUpdates.enabled"), "Check that stream initializing with the pre-defined data inits a request object with the proper options");
 			callback();
 		}
 	});
