@@ -295,19 +295,10 @@ Echo.Loader.override = function(canvasID, appID, config) {
 Echo.Loader.init = function(config) {
 	Echo.Loader._lookupCanvases(config, function(canvases) {
 		Echo.Loader._map(canvases, function(canvas) {
-			var isActive = canvas.getAttribute("data-canvas-init") !== "when-visible"
-				|| Echo.Loader._isInViewport(canvas);
-
-			if (!isActive) {
-				onViewportChange("subscribe", function init() {
-					if (Echo.Loader._isInViewport(canvas)) {
-						Echo.Loader._initCanvas(canvas);
-						onViewportChange("unsubscribe", init);
-					}
-				});
-			} else {
-				Echo.Loader._initCanvas(canvas);
-			}
+			Echo.Loader._initCanvas(canvas, canvas.getAttribute("data-canvas-init"), {
+				"target": canvas,
+				"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
+			});
 		});
 	});
 };
@@ -367,19 +358,15 @@ Echo.Loader.init = function(config) {
  * the Application target becomes visible in the user’s browser
  */
 Echo.Loader.initApplication = function(app) {
-	var self = this;
 	var target = app.config.target.length ? app.config.target[0] : app.config.target;
-	var isActive = app.init !== "when-visible" || Echo.Loader._isInViewport(target);
-	if (!isActive) {
-		onViewportChange("subscribe", function init() {
-			if (Echo.Loader._isInViewport(target)) {
-				self._initCanvas(app);
-				onViewportChange("unsubscribe", init);
-			}
-		});
-	} else {
-		this._initCanvas(app);
-	}
+	Echo.Loader._initCanvas(target, app.init, {
+		"target": app.config.target,
+		"useSecureAPI": !!app.config.useSecureAPI,
+		"data": { // as we receive if from the Canvas Storage
+			"apps": [app],
+			"backplane": app.backplane
+		}
+	});
 };
 
 Echo.Loader._lookupCanvases = function(config, callback) {
@@ -410,26 +397,17 @@ Echo.Loader._lookupCanvases = function(config, callback) {
 	}
 };
 
-Echo.Loader._initCanvas = function(args) {
-	var config;
-	if (args.nodeType === 1) { // check if args is DOM Element (ELEMENT_NODE)
-		config = {
-			"target": args,
-			"overrides": Echo.Loader.overrides[args.getAttribute("data-canvas-id")] || {}
+Echo.Loader._initCanvas = function(target, initMode, config) {
+	(function init(event) {
+		if (initMode !== "when-visible" || Echo.Loader._isInViewport(target)) {
+			Echo.Loader.initEnvironment(function() {
+				Echo.Loader.canvases.push(new Echo.Canvas(config));
+			});
+			event && onViewportChange("unsubscribe", init);
+		} else if (!event) {
+			onViewportChange("subscribe", init);
 		}
-	} else {
-		config = {
-			"target": args.config.target,
-			"useSecureAPI": !!args.config.useSecureAPI,
-			"data": { // as we receive if from the Canvas Storage
-				"apps": [args],
-				"backplane": args.backplane
-			}
-		}
-	}
-	Echo.Loader.initEnvironment(function() {
-		Echo.Loader.canvases.push(new Echo.Canvas(config));
-	});
+	})();
 };
 
 Echo.Loader._isInViewport = function(canvas) {
