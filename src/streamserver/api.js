@@ -525,6 +525,7 @@ Echo.StreamServer.API.Polling.prototype.getRequestObject = function() {
 
 Echo.StreamServer.API.Polling.prototype.stop = function() {
 	clearTimeout(this.timers.regular);
+	this.requestObject.abort();
 };
 
 Echo.StreamServer.API.Polling.prototype.start = function(force) {
@@ -547,9 +548,9 @@ Echo.StreamServer.API.Polling.prototype.start = function(force) {
 };
 
 Echo.StreamServer.API.Polling.prototype.on = function(event, fn) {
-	var baseEvent = "request.on" + Echo.Utils.capitalize(event);
-	var handler = this.config.get(baseEvent, $.noop);
-	this.config.set(baseEvent, function() {
+	var event = "on" + Echo.Utils.capitalize(event);
+	var handler = this.requestObject.transport.config.get(event, $.noop);
+	this.requestObject.transport.config.set(event, function() {
 		handler.apply(null, arguments);
 		fn.apply(null, arguments);
 	});
@@ -698,13 +699,13 @@ Echo.StreamServer.API.WebSockets.prototype.stop = function() {
 	if (this.requestObject.transport.connected()) {
 		this.queue.push(function() {
 			self.requestObject.request({"event": "unsubscribe/request"});
+			self.requestObject.abort();
 		});
 		if (this.subscribed) {
 			this._runQueue();
 		}
 	}
 	this._clearSubscriptions();
-	this.requestObject.abort();
 };
 
 Echo.StreamServer.API.WebSockets.prototype.subscribe = function() {
@@ -752,7 +753,7 @@ Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
 };
 
 Echo.StreamServer.API.WebSockets.prototype._clearSubscriptions = function() {
-	$.map(this.subscriptionIds, $.proxy(this.requestObject.transport.unsubscribe, this));
+	$.map(this.subscriptionIds, $.proxy(this.requestObject.transport.unsubscribe, this.requestObject.transport));
 	this.subscriptionIds = [];
 };
 

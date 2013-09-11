@@ -110,9 +110,9 @@ Echo.API.Transports.WebSocket.prototype.unsubscribe = function unsubscribe(arg) 
 			});
 			this.subscriptionIds[arg] = [];
 		} else {
-			$.map(this.subscriptionIds, function(topic, ids) {
-				self.subscriptionIds[topic] = Echo.Utils.foldl([], ids, function(acc, id) {
-					if (id === arg) {
+			$.each(this.subscriptionIds, function(topic, ids) {
+				self.subscriptionIds[topic] = Echo.Utils.foldl([], ids, function(id, acc) {
+					if (id.toString() === arg.toString()) {
 						Echo.Events.unsubscribe({"handlerId": id});
 					} else {
 						acc.push(id);
@@ -136,7 +136,6 @@ Echo.API.Transports.WebSocket.prototype.abort = function(force) {
 			delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
 			if (!this.closed() || !this.closing()) {
 				// clear all events in case of closing connection
-				this.unsubscribe();
 				this.transportObject.close();
 			}
 		}
@@ -218,6 +217,7 @@ Echo.API.Transports.WebSocket.prototype._prepareTransportObject = function() {
 	};
 	socket.onclose = function() {
 		self._publish("onClose");
+		self.unsubscribe();
 	};
 	socket.onerror = function(error) {
 		self._publish("onError", {"error": error});

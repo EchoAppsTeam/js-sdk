@@ -75,6 +75,7 @@ suite.prototype.cases.skipInitialRequest = function(callback) {
 		"onData": function(data, options) {
 			skipped = false;
 		},
+		"liveUpdatesTimeout": 2,
 		"liveUpdates": {
 			"enabled": true,
 			"onData": function() {
@@ -128,14 +129,17 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 	var countReq = Echo.StreamServer.API.request({
 		"endpoint": "count",
 		"liveUpdates": {
-			"enabled": true
+			"enabled": true,
+			"polling": {
+				"timeout": 1
+			}
 		},
 		"onData": function(response) {
 			if (response && response.count) {
 				QUnit.equal(1, response.count, "Checking if live updates mechanism by count works correctly after posting");
+				countReq.abort();
 				callback();
 			}
-			countReq.abort();
 		},
 		"data": $.extend({}, params)
 	});
@@ -151,6 +155,7 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 		"onData": function(response) {
 			submitReq.send();
 		},
+		"liveUpdatesTimeout": 2,
 		"liveUpdates": {
 			"enabled": true,
 			"onData": function(response) {
@@ -212,9 +217,16 @@ suite.prototype.cases.backwardCompatibility = function(callback) {
 };
 
 suite.prototype.cases.websockets = function(callback) {
+	var item = $.extend(true, {}, this.items.post);
+	var params = $.extend({}, this.params);
+	var q = params.q.replace(/\s+children:\d+$/, "") + "/11111"
+	var target = q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
+	item.targets[0].id = target;
+	item.targets[0].conversationID = target;
+	item.object.id = target;
 	var req = Echo.StreamServer.API.request({
 		"endpoint": "search",
-		"data": this.params,
+		"data": $.extend(this.params, {"q": q}),
 		"liveUpdates": {
 			"enabled": true,
 			"transport": "websockets",
@@ -222,20 +234,31 @@ suite.prototype.cases.websockets = function(callback) {
 				"maxConnectRetries": 2,
 				"serverPingInterval": 10
 			},
-			"onData": function(response) {
+			"onData": function() {
 				QUnit.deepEqual([
 					req.liveUpdates.requestObject.config.get("settings.maxConnectRetries"),
 					req.liveUpdates.requestObject.config.get("settings.serverPingInterval")
 				], [2, 10], "Check that config parameters for WS mapped");
 				QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.WebSockets, "Check that liveUpdates switched to WS after its opened");
-				req.abort();
+				req.liveUpdates.stop();
 			},
 			"onClose": function() {
-				callback();
+				if (req.liveUpdates instanceof Echo.StreamServer.API.WebSockets) {
+					req.liveUpdates._clearSubscriptions();
+					callback();
+				}
 			}
 		}
 	});
+	var submitReq = Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"data": $.extend({}, params, {
+			content: item,
+			targetURL: target
+		})
+	});
 	req.send();
+	req.liveUpdates.on("close", $.proxy(submitReq.send, submitReq));
 	// Opening a socket does require some time so we first initiate polling and switch
 	// to socket when it's initiated. But at this particular moment live updates must
 	// use polling mechanism.
@@ -367,8 +390,7 @@ suite.prototype.items.post = {
 };
 
 suite.prototype.items.postWithMetadata = [
-	suite.prototype.items.post,
-	{
+	suite.prototype.items.post, {
 		"id": "http://js-kit.com/activities/post/adshg5f6239dfd7ebf66ac794125acee",
 		"actor": {
 			"id": "http://my.nymag.com/thenext_mrsbass",
