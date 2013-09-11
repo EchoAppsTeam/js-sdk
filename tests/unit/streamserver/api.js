@@ -14,7 +14,19 @@ suite.prototype.info = {
 		"Request._mux",
 		"Request.abort",
 		"Request.send",
-		"request"
+		"request",
+		"Polling.init",
+		"Polling.getRequestObject",
+		"Polling.stop",
+		"Polling.start",
+		"Polling.on",
+		"WebSockets.init",
+		"WebSockets.getRequestObject",
+		"WebSockets.on",
+		"WebSockets.start",
+		"WebSockets.connected",
+		"WebSockets.stop",
+		"WebSockets.subscribe"
 	]
 };
 

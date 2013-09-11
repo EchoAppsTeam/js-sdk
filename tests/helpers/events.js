@@ -121,6 +121,15 @@ _plugins.Edit.onEdit = {
 Echo.Tests.Events = Echo.Tests.Events || {};
 
 Echo.Tests.Events.contracts = {
+	"Echo.API.Transports.WebSocket.onOpen": {},
+	"Echo.API.Transports.WebSocket.onClose": {},
+	"Echo.API.Transports.WebSocket.onError": {
+		"errorCode": "string",
+		"errorMesssage": "string"
+	},
+	"Echo.API.Transports.WebSocket.onData": {
+		"event": "string"
+	},
 	"Echo.UserSession.onInit": [_userSession.init, {}],
 	"Echo.UserSession.onInvalidate": [_userSession.init, {}],
 
