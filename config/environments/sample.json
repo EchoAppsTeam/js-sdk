@@ -12,7 +12,8 @@
 		"api": {
 			"backplane": "",
 			"streamserver": "",
-			"submissionproxy": ""
+			"submissionproxy": "",
+			"ws": ""
 		}
 	},
 	"saucelabs": {
