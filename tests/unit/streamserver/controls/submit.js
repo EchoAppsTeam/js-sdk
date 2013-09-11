@@ -248,7 +248,8 @@ suite.prototype.cases.user = function(callback) {
 	var submit = suite.submit;
 	QUnit.equal(submit.view.get("name").val(), "john.doe", "Checking name of logged user");
 	var avatar = submit.view.get("avatar");
-	QUnit.ok(avatar && avatar.length === 1 && avatar.find("img") && avatar.find("img").attr("src") === "http://c0.echoenabled.com/images/avatar-default.png",
+	QUnit.ok(avatar && avatar.length === 1 && avatar.find("img"), "Checking that avatar exists");
+	QUnit.equal(avatar.find("img").attr("src"), "{%=baseURLs.cdn%}/images/avatar-default.png",
 		"Checking avatar of logged user");
 	callback();
 };
@@ -266,7 +267,7 @@ suite.prototype.cases.onInit = function(callback) {
 				"actor": {
 					"objectTypes": [ "http://activitystrea.ms/schema/1.0/person" ],
 					"name": "john.doe",
-					"avatar": "http://c0.echoenabled.com/images/avatar-default.png"
+					"avatar": "{%=baseURLs.cdn%}/images/avatar-default.png"
 				},
 				"object": {
 					"objectTypes": [ "http://activitystrea.ms/schema/1.0/comment"],
