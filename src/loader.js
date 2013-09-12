@@ -443,14 +443,14 @@ Echo.Loader._areResourcesReady = function(resources) {
 
 function getEventName(name) {
 	return window.addEventListener ? name : "on" + name;
-}
+};
 
 function onViewportChange(action, handler) {
 	var addEvent = window.addEventListener || window.attachEvent;
 	var removeEvent = window.removeEventListener || window.detachEvent;
 	if (action === "subscribe") {
 		addEvent(getEventName("scroll"), handler);
-		addEvent(getEventName("resize"), handler)
+		addEvent(getEventName("resize"), handler);
 	} else if (action === "unsubscribe") {
 		removeEvent(getEventName("scroll"), handler);
 		removeEvent(getEventName("resize"), handler);
