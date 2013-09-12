@@ -110,18 +110,12 @@ canvas.config = {
 	 * Specifies the DOM element where the control will be displayed.
 	 *
 	 * Note: if only the "target" config parameter is defined, the target DOM element
-	 * should contain the following HTML attributes:
+	 * should contain the following HTML attribute:
 	 *
-	 * + "data-appkey" with the necessary appkey value
 	 * + "data-canvas-id" with the unique Canvas ID which should be initialized
 	 *
-	 * The values of the HTML parameters override the "appkey" and "id" parameter values
+	 * The values of the HTML parameters override the "id" parameter value
 	 * (respectively) passed via the Canvas config.
-	 */
-
-	/**
-	 * @cfg {String} appkey
-	 * @inheritdoc
 	 */
 
 	/**
@@ -376,16 +370,16 @@ initializers.fetchConfig = function(callback) {
 	var self = this, target = this.config.get("target");
 	var isManual = this._isManuallyConfigured();
 
-	// extending Canvas config with the "id" and "appkey" defined in the target
-	var overrides = this._getOverrides(target, ["id", "appkey", "useSecureAPI", "mode"]);
+	// extending Canvas config with the parameters defined in the target
+	var overrides = this._getOverrides(target, ["id", "useSecureAPI", "mode"]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
 
-	// exit if no "id" or "appkey" is defined for the canvas,
+	// exit if no "id" is defined for the canvas,
 	// skip this validation in case the "data" is defined explicitly in the config
 	if (!isManual &&
-		!(this.config.get("id") && this.config.get("appkey"))) {
+		!(this.config.get("id"))) {
 			this._error({
 				"args": {"target": target},
 				"code": "invalid_canvas_config"

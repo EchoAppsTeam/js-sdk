@@ -859,9 +859,19 @@ Echo.Control.prototype._initializers.user = function(callback) {
 		this.user = this.config.get("user");
 		callback.call(control);
 	} else {
+		var generateURL = function(baseURL, path) {
+			if (!baseURL) return;
+			var urlInfo = Echo.Utils.parseURL(baseURL);
+			var scheme = (urlInfo["scheme"] ? urlInfo["scheme"] + "://" : "//");
+			return scheme + urlInfo["domain"] + path;
+		};
 		Echo.UserSession({
 			"appkey": this.config.get("appkey"),
 			"useSecureAPI": this.config.get("useSecureAPI"),
+			"endpoints": {
+				"logout": generateURL(this.config.get("submissionProxyURL"), "/v2/"),
+				"whoami": generateURL(this.config.get("apiBaseURL"), "/v1/users/")
+			},
 			"ready": function() {
 				control.user = this;
 				callback.call(control);

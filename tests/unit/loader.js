@@ -518,12 +518,11 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		// all mandatory fields are missing -->
 		body.append('<div class="echo-canvas"></div>');
 		body.append('<div class="echo-canvas" id="echo-canvas"></div>');
-		// missing appkey
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.001"></div>');
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.002"></div>');
 		// missing canvas id
 		body.append('<div class="echo-canvas" data-appkey="canvas.003"></div>');
 		// all fields defined, but no config available for the canvas id specified
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.001"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.002"></div>');
 		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/nonexistent-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
 		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/nonexistent-canvas-002" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
 		// canvas with empty app list
@@ -540,8 +539,8 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 			"invalid": 10
 		};
 		var errors = {
-			"invalid_canvas_config": [0, 8],
-			"unable_to_retrieve_app_config": [0, 2]
+			"invalid_canvas_config": [0, 6],
+			"unable_to_retrieve_app_config": [0, 4]
 		};
 		// check invalid canvases
 		var handlerId = Echo.Events.subscribe({
