@@ -725,7 +725,7 @@ Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback
 	callback = callback || $.noop;
 	var req = new Echo.API.Request({
 		"endpoint": "search",
-		"data": $.extend(this.config.get("request.data"), {"q": "aaa"}),
+		"data": this.config.get("request.data"),
 		"secure": this.config.get("request.secure"),
 		"onData": function() {
 			callback.apply(self, arguments);
