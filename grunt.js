@@ -763,8 +763,8 @@ module.exports = function(grunt) {
 		if (env === "development") {
 			data.baseURLs.sdk += "/dev";
 		}
-		// TODO: properly calculate "version" placeholder value and use it in Echo.Loader.version
-		data.version = grunt.config("pkg.majorVersion");
+		// TODO: properly calculate "packageVersion" placeholder value and use it in Echo.Loader.version
+		data.packageVersion = grunt.config("pkg.majorVersion");
 		grunt.config("envConfig", data);
 	};
 
