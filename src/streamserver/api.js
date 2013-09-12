@@ -270,7 +270,6 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 		"polling": {
 			"timeout": "liveUpdates.polling.timeout",
 			"request.onData": "liveUpdates.onData",
-			"request.onOpen": "liveUpdates.onOpen",
 			"request.onError": "liveUpdates.onError",
 			"request.onClose": "liveUpdates.onClose",
 			"request.endpoint": "endpoint",
@@ -280,7 +279,6 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 		},
 		"websockets": {
 			"request.onData": "liveUpdates.onData",
-			"request.onOpen": "liveUpdates.onOpen",
 			"request.onError": "liveUpdates.onError",
 			"request.onClose": "liveUpdates.onClose",
 			"request.endpoint": "endpoint",
@@ -651,6 +649,7 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 				return;
 			}
 			if (!!~response.event.indexOf("reset")) {
+				self.subscribed = false;
 				self._updateConnection(self._reconnect);
 				return;
 			}
@@ -696,17 +695,17 @@ Echo.StreamServer.API.WebSockets.prototype.connected = function() {
 
 Echo.StreamServer.API.WebSockets.prototype.stop = function() {
 	var self = this;
+	this._clearSubscriptions();
 	if (this.requestObject.transport.connected()) {
-		this.on("close", $.proxy(this._clearSubscriptions, this));
 		this.queue.push(function() {
-			self.requestObject.request({"event": "unsubscribe/request"});
+			if (self.subscribed) {
+				self.requestObject.request({"event": "unsubscribe/request"});
+			}
 			self.requestObject.abort();
 		});
 		if (this.subscribed) {
 			this._runQueue();
 		}
-	} else {
-		this._clearSubscriptions();
 	}
 };
 
@@ -731,9 +730,6 @@ Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback
 			callback.apply(self, arguments);
 		},
 		"onError": function() {
-			self.requestObject.transport.publish("onClose");
-		},
-		"onClose": function() {
 			self.requestObject.transport.publish("onClose");
 		}
 	});
