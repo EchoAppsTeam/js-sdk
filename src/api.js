@@ -175,6 +175,13 @@ Echo.API.Transports.WebSocket.prototype._getTransportObject = function() {
 		self.subscribe(topic, {
 			"handler": function(_, data) {
 				self.config.get(topic)(data);
+				if (topic === "onClose") {
+					self.subscribe("onClose", {
+						"handler": function() {
+							self.unsubscribe();
+						}
+					});
+				}
 			},
 			// when we receive data - send it to the appropriate
 			// subscribers only (do not send it to all subscribers)
@@ -217,7 +224,6 @@ Echo.API.Transports.WebSocket.prototype._prepareTransportObject = function() {
 	};
 	socket.onclose = function() {
 		self._publish("onClose");
-		self.unsubscribe();
 	};
 	socket.onerror = function(error) {
 		self._publish("onError", {"error": error});

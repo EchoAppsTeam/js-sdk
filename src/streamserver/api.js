@@ -697,6 +697,7 @@ Echo.StreamServer.API.WebSockets.prototype.connected = function() {
 Echo.StreamServer.API.WebSockets.prototype.stop = function() {
 	var self = this;
 	if (this.requestObject.transport.connected()) {
+		this.on("close", $.proxy(this._clearSubscriptions, this));
 		this.queue.push(function() {
 			self.requestObject.request({"event": "unsubscribe/request"});
 			self.requestObject.abort();
@@ -704,8 +705,9 @@ Echo.StreamServer.API.WebSockets.prototype.stop = function() {
 		if (this.subscribed) {
 			this._runQueue();
 		}
+	} else {
+		this._clearSubscriptions();
 	}
-	this._clearSubscriptions();
 };
 
 Echo.StreamServer.API.WebSockets.prototype.subscribe = function() {
@@ -723,10 +725,16 @@ Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback
 	callback = callback || $.noop;
 	var req = new Echo.API.Request({
 		"endpoint": "search",
-		"data": this.config.get("request.data"),
+		"data": $.extend(this.config.get("request.data"), {"q": "aaa"}),
 		"secure": this.config.get("request.secure"),
 		"onData": function() {
 			callback.apply(self, arguments);
+		},
+		"onError": function() {
+			self.requestObject.transport.publish("onClose");
+		},
+		"onClose": function() {
+			self.requestObject.transport.publish("onClose");
 		}
 	});
 	req.request();
