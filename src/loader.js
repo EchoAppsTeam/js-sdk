@@ -239,8 +239,7 @@ Echo.Loader.initEnvironment = function(callback) {
  * Here is an example of the Canvas ID without the unique part:
  *
  *     <div class="echo-canvas"
- *         data-canvas-id="jskit/comments-sample"
- *         data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ *         data-canvas-id="jskit/comments-sample"></div>
  *
  * If you'd like to put multiple instances of the same Canvas on a page
  * and you want to have an ability to perform local overrides using the
@@ -248,11 +247,9 @@ Echo.Loader.initEnvironment = function(callback) {
  * for example:
  *
  *     <div class="echo-canvas"
- *         data-canvas-id="jskit/comments-sample#left-side"
- *         data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ *         data-canvas-id="jskit/comments-sample#left-side"></div>
  *     <div class="echo-canvas"
- *         data-canvas-id="jskit/comments-sample#right-side"
- *         data-canvas-appkey="echo.jssdk.demo.aboutecho.com"></div>
+ *         data-canvas-id="jskit/comments-sample#right-side"></div>
  *
  * Where the "#left-side" and "#right-side" are the unique parts for
  * the Canvases within this page. Now you can override the Canvas app
