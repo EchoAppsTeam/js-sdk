@@ -378,8 +378,7 @@ initializers.fetchConfig = function(callback) {
 
 	// exit if no "id" is defined for the canvas,
 	// skip this validation in case the "data" is defined explicitly in the config
-	if (!isManual &&
-		!(this.config.get("id"))) {
+	if (!isManual && !this.config.get("id")) {
 			this._error({
 				"args": {"target": target},
 				"code": "invalid_canvas_config"
