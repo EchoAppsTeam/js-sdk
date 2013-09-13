@@ -45,4 +45,17 @@ Echo.Tests.test("private interface", function() {
 	QUnit.equal(request("example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] no protocol in URL");
 });
 
+Echo.Tests.test("Transports JSONP method POST", function() {
+	(new Echo.API.Request({
+		"apiBaseURL": "//example.com/v1/",
+		"endpoint": "test",
+		"method": "POST",
+		"transport": "jsonp",
+		"onData": function() {
+			QUnit.ok(true, "Check if Transport JSONP works with POST method");
+		},
+		"data": {"test": true}
+	})).request();
+});
+
 })(Echo.jQuery);
