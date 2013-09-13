@@ -104,7 +104,7 @@ canvas.init = function() {
 		target.addClass(cssClass);
 	}
 
-	// fetch canvas config from remove storage
+	// fetch canvas config from remote storage
 	this._fetchConfig(function() {
 		if (self.get("data.backplane")) Backplane.init(this.get("data.backplane"));
 		self._loadAppResources(parent);
