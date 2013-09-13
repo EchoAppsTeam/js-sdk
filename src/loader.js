@@ -398,12 +398,15 @@ Echo.Loader._lookupCanvases = function(config, callback) {
 };
 
 Echo.Loader._initCanvas = function(target, initMode, config) {
+	// this function might be called either immediately (with no arguments)
+	// or after "scroll"/"resize" events (with "event" argument);
+	// function workflow varies depending on the given argument
 	(function init(event) {
 		if (initMode !== "when-visible" || Echo.Loader._isInViewport(target)) {
+			event && onViewportChange("unsubscribe", init);
 			Echo.Loader.initEnvironment(function() {
 				Echo.Loader.canvases.push(new Echo.Canvas(config));
 			});
-			event && onViewportChange("unsubscribe", init);
 		} else if (!event) {
 			onViewportChange("subscribe", init);
 		}
