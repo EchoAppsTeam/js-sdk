@@ -106,7 +106,10 @@ canvas.init = function() {
 
 	// fetch canvas config from remote storage
 	this._fetchConfig(function() {
-		if (self.get("data.backplane")) Backplane.init(this.get("data.backplane"));
+		var backplane = self.get("data.backplane");
+		if (backplane) {
+			Backplane.init(backplane);
+		}
 		self._loadAppResources(parent);
 	});
 };
