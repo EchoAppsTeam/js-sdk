@@ -349,7 +349,7 @@ Echo.Loader.init = function(config) {
  * @param {Object} [app.config]
  * Parameters to be passed into the application constructor during its initialization.
  *
- * @param {String} [app.init]
+ * @param {String} [app.init="immediate"]
  * This parameter specifies the Application loading mode. There are two possible values:
  *
  * + "immediate" - in this case the Application is being initialized on the page right
