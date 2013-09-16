@@ -142,8 +142,10 @@ module.exports = function(grunt) {
 		if (!this.args.length) {
 			var tasks = [
 				"default",
-				"release:sdk:latest",
+				// XXX: this step does nothing, it's just needed to remove build info so that next step could patch correct loader files
+				"release:build-completed",
 				"patch:loader:stable",
+				"release:sdk:latest",
 				"release:sdk:stable",
 				"release:apps",
 				"release:purge:SDK.latest,SDK.stable",
