@@ -127,20 +127,18 @@ Echo.API.Transports.WebSocket.prototype.unsubscribe = function unsubscribe(arg) 
 };
 
 Echo.API.Transports.WebSocket.prototype.abort = function(force) {
+	var self = this;
 	var socket = Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
 	$.map(["onData", "onOpen", "onError"], $.proxy(this.unsubscribe, this));
 	if (socket) {
 		delete socket.subscribers[this.unique];
 		// close socket connection if the last subscriber left
 		if ($.isEmptyObject(socket.subscribers) || force) {
-			delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
-			if (!this.closed() || !this.closing()) {
-				// clear all events in case of closing connection
+			if (this.connected()) {
 				this.transportObject.close();
 			}
 		}
 	}
-	this._clearTimers();
 };
 
 Echo.API.Transports.WebSocket.prototype.send = function(event) {
@@ -217,10 +215,10 @@ Echo.API.Transports.WebSocket.prototype._prepareTransportObject = function() {
 	};
 	socket.onclose = function() {
 		self._publish("onClose");
-		self.unsubscribe();
+		self._clear();
 	};
 	socket.onerror = function(error) {
-		self._publish("onError", {"error": error});
+		self._publish("onError", self._wrapErrorResponse(error));
 	};
 	return socket;
 };
@@ -235,11 +233,27 @@ Echo.API.Transports.WebSocket.prototype._clearTimers = function() {
 	this.timers = {};
 };
 
+Echo.API.Transports.WebSocket.prototype._clear = function() {
+	var self = this;
+	var socket = Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
+	var context = this.config.get("uri").replace(/\//g, "-");
+	this._clearTimers();
+	this.unsubscribe();
+	$.map(["onData", "onOpen", "onClose", "onError"], function(name) {
+		Echo.Events.unsubscribe({
+			"topic": "Echo.API.Transports.WebSocket." + name,
+			"context": context
+		});
+	});
+	delete Echo.API.Transports.WebSocket.socketByURI[this.config.get("uri")];
+};
+
 Echo.API.Transports.WebSocket.prototype._publish = function(topic, data, subscriptionId) {
 	Echo.Events.publish({
 		"topic": "Echo.API.Transports.WebSocket." + topic,
 		"data": data || {},
 		"propagation": !subscriptionId,
+		"global": false,
 		"context": this._context(subscriptionId)
 	});
 };
@@ -317,6 +331,7 @@ Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 			self.config.get("onError")(errorResponse, requestParams);
 		},
 		"success": this.config.get("onData"),
+		"complete": this.config.get("onClose"),
 		"beforeSend": this.config.get("onOpen")
 	}, this.config.get("settings"));
 };
@@ -341,6 +356,7 @@ Echo.API.Transports.AJAX.prototype.send = function(data) {
 			? configData
 			: $.extend({}, configData, data || {});
 	if (typeof this.transportObject.status === "undefined") {
+		this.transportObject = this._getTransportObject();
 		this.transportObject.data = data;
 		this.transportObject = $.ajax(this.transportObject);
 	} else {
@@ -358,7 +374,6 @@ Echo.API.Transports.AJAX.prototype.abort = function() {
 	if (this.transportObject && this.transportObject.abort) {
 		this.transportObject.abort();
 	}
-	this.config.get("onClose")();
 };
 
 Echo.API.Transports.AJAX.available = function() {
@@ -615,6 +630,10 @@ Echo.API.Request = function(config) {
 		 * Note: according to the link above, for some transports these settings
 		 * have no effect.
 		 */
+		"onOpen": $.noop,
+		"onData": $.noop,
+		"onError": $.noop,
+		"onClose": $.noop,
 		/**
 		 * @cfg {String} [transport]
 		 * Specifies the transport name. The following transports are available:
@@ -648,6 +667,9 @@ Echo.API.Request = function(config) {
 		 */
 		"timeout": 30
 	});
+	this.deferred = {
+		"transport": $.Deferred()
+	};
 	this.transport = this._getTransport();
 };
 
@@ -675,6 +697,7 @@ Echo.API.Request.prototype.send = function(args) {
 	}
 	var method = this["_" + this.config.get("endpoint")];
 	method && method.call(this, force);
+	return this.deferred.transport.promise();
 };
 
 //TODO: probably we should replace request with _request or simply not documenting it
@@ -682,6 +705,15 @@ Echo.API.Request.prototype.request = function(params) {
 	var self = this;
 	var timeout = this.config.get("timeout");
 	if (this.transport) {
+		this.transport.config.extend(
+			$.extend(true, this.transport.config.getAsHash(), this._getHandlersByConfig(), {
+				"uri": this._prepareURI(),
+				"data": this.config.get("data"),
+				"method": this.config.get("method"),
+				"secure": this._isSecureRequest(),
+				"settings": this.config.get("settings")
+			})
+		);
 		this.transport.send(params);
 		if (timeout && this.config.get("onError")) {
 			this._timeoutId = setTimeout(function() {
@@ -695,6 +727,7 @@ Echo.API.Request.prototype.request = function(params) {
 			}, timeout * 1000);
 		}
 	}
+	return this.deferred.transport.promise();
 };
 
 Echo.API.Request.prototype.abort = function() {
@@ -741,7 +774,17 @@ Echo.API.Request.prototype._getHandlersByConfig = function() {
 		var handler;
 		if (/^on[A-Z]/.test(key) && $.isFunction(value)) {
 			handler = key !== "onOpen"
-				? function() { clearTimeout(self._timeoutId); value.apply(null, arguments); }
+				? function() {
+					var args = Array.prototype.slice.call(arguments);
+					clearTimeout(self._timeoutId);
+					value.apply(null, arguments);
+					(self.deferred.transport[{
+						"onData": "notifyWith",
+						"onError": "rejectWith",
+						"onClose": "resolveWith"
+					}[key]] || $.noop)
+					.call(self.deferred.transport, null, args);
+				}
 				: value;
 			acc[key] = handler;
 		}

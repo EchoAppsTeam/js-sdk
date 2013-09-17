@@ -338,18 +338,12 @@ pile.methods._request = function() {
 			"liveUpdates": $.extend(this.config.get("liveUpdates"), {
 				"onData": function(data) {
 					self._secondaryResponseHandler(data);
-				},
-				"onError": function(data, extra) {
-					var needShowError = typeof extra.critical === "undefined" || extra.critical;
-					if (needShowError) {
-						self.showError(data, {"critical": extra.critical});
-					}
 				}
 			}),
 			"secure": this.config.get("useSecureAPI"),
 			"apiBaseURL": this.config.get("apiBaseURL"),
 			"onError": function(data, extra) {
-				var needShowError = typeof extra.critical === "undefined" || extra.critical;
+				var needShowError = typeof extra.critical === "undefined" || extra.critical && extra.requestType === "initial";
 				if (needShowError) {
 					self.showError(data, {"critical": extra.critical});
 				}

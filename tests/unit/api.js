@@ -56,86 +56,93 @@ Echo.Tests.test("private interface", function() {
 	QUnit.equal(request("example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] no protocol in URL");
 });
 
-Echo.Tests.asyncTest("WebSocket test cases", function() {
-	var closed = 0;
-	var requests = [];
-	var deferred = [];
-	var closeDef = [];
-	for(var i = 0; i < 4; i++) {
-		deferred.push($.Deferred());
-		closeDef.push($.Deferred());
-		(function(i) {
-			requests.push(
-				new Echo.API.Request({
-					"endpoint": "ws",
-					"apiBaseURL": "live.echoenabled.com/v1/",
-					"transport": "websocket",
-					"onClose": function() {
-						closed++;
-						closeDef[i].resolve();
-					},
-					"onOpen": function() {
-						if (i === 0) {
-							QUnit.ok(requests[0].transport.connected(), "Check if WS was initialized and \"onOpen\" event fired");
+if (Echo.API.Transports.WebSocket.available()) {
+	Echo.Tests.asyncTest("WebSocket test cases", function() {
+		var closed = 0;
+		var requests = [];
+		var deferred = [];
+		var closeDef = [];
+		for(var i = 0; i < 4; i++) {
+			deferred.push($.Deferred());
+			closeDef.push($.Deferred());
+			(function(i) {
+				requests.push(
+					new Echo.API.Request({
+						"endpoint": "ws",
+						"apiBaseURL": "live.echoenabled.com/v1/",
+						"transport": "websocket",
+						"onClose": function() {
+							closed++;
+							closeDef[i].resolve();
+						},
+						"onOpen": function() {
+							if (i === 0) {
+								QUnit.ok(requests[0].transport.connected(), "Check if WS was initialized and \"onOpen\" event fired");
+							}
+							deferred[i].resolve();
 						}
-						deferred[i].resolve();
-					}
-				})
-			);
-			if (i === 0) {
-				QUnit.ok(requests[0].transport.connecting(), "Check that WS status is \"connecting\"");
-			}
-		})(i);
-	}
-	var req = requests[0];
-	$.when.apply($, deferred).done(function() {
-		QUnit.ok(true, "Check if all API requests initialized");
-		QUnit.strictEqual(
-			$.grep(requests, function(req) {
-				return req.transport.connected();
-			}).length,
-			4, "Check that each statuses of the requests are \"connected\""
-		);
-		QUnit.strictEqual(
-			Echo.Utils.foldl(0, Echo.API.Transports.WebSocket.socketByURI, function(_, acc) {
-				return ++acc;
-			}),
-			1, "Check that 4 API objects initialized and only one WS object instantiated"
-		);
-		QUnit.strictEqual(
-			Echo.Utils.foldl(0, Echo.API.Transports.WebSocket.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
-				return ++acc;
-			}),
-			4, "Check that 4 API objects initialized and 4 subscriptions initialized"
-		);
-		req.abort();
-		QUnit.strictEqual(
-			Echo.Utils.foldl(0, Echo.API.Transports.WebSocket.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
-				return ++acc;
-			}),
-			3, "Check that subscription removed in case of request abortion"
-		);
-		$.map(requests, function(r) {
-			r.abort();
-		});
-		QUnit.strictEqual(
-			$.grep(requests, function(req) {
-				return req.transport.closing();
-			}).length,
-			4, "Check that each statuses of the requests are \"closing\""
-		);
-		QUnit.ok(!Echo.API.Transports.WebSocket.socketByURI[req.transport.config.get("uri")], "Check that all subscription removed in case of all requests abortion");
-		$.when.apply($, closeDef).done(function() {
-			QUnit.strictEqual(closed, 4, "Check that all subscribed connections are closed (\"onClose\" event fired)");
+					})
+				);
+				if (i === 0) {
+					QUnit.ok(requests[0].transport.connecting(), "Check that WS status is \"connecting\"");
+				}
+			})(i);
+		}
+		var req = requests[0];
+		$.when.apply($, deferred).done(function() {
+			QUnit.ok(true, "Check if all API requests initialized");
 			QUnit.strictEqual(
 				$.grep(requests, function(req) {
-					return req.transport.closed();
+					return req.transport.connected();
 				}).length,
-				4, "Check that each statuses of the requests are \"closed\""
+				4, "Check that each statuses of the requests are \"connected\""
 			);
-			QUnit.start();
+			QUnit.strictEqual(
+				Echo.Utils.foldl(0, Echo.API.Transports.WebSocket.socketByURI, function(_, acc) {
+					return ++acc;
+				}),
+				1, "Check that 4 API objects initialized and only one WS object instantiated"
+			);
+			QUnit.strictEqual(
+				Echo.Utils.foldl(0, Echo.API.Transports.WebSocket.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
+					return ++acc;
+				}),
+				4, "Check that 4 API objects initialized and 4 subscriptions initialized"
+			);
+			req.abort();
+			QUnit.strictEqual(
+				Echo.Utils.foldl(0, Echo.API.Transports.WebSocket.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
+					return ++acc;
+				}),
+				3, "Check that subscription removed in case of request abortion"
+			);
+			$.map(requests, function(r) {
+				r.abort();
+			});
+			QUnit.strictEqual(
+				$.grep(requests, function(req) {
+					return req.transport.closing();
+				}).length,
+				4, "Check that each statuses of the requests are \"closing\""
+			);
+			QUnit.ok($.isEmptyObject(Echo.API.Transports.WebSocket.socketByURI[req.transport.config.get("uri")].subscribers), "Check that all subscription removed in case of all requests abortion");
+			$.when.apply($, closeDef).done(function() {
+				QUnit.strictEqual(closed, 4, "Check that all subscribed connections are closed (\"onClose\" event fired)");
+				QUnit.strictEqual(
+					$.grep(requests, function(req) {
+						return req.transport.closed();
+					}).length,
+					4, "Check that each statuses of the requests are \"closed\""
+				);
+				QUnit.strictEqual(
+					$.grep(requests, function(req) {
+						return $.isEmptyObject(req.timers);
+					}).length,
+					4, "Check that all timers are cleared after closing a connection"
+				);
+				QUnit.start();
+			});
 		});
-	});
-}, {"timeout": 10000});
-
+	}, {"timeout": 10000});
+}
 })(Echo.jQuery);

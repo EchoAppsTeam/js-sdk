@@ -140,12 +140,6 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 	item.object.id = target;
 	var countReq = Echo.StreamServer.API.request({
 		"endpoint": "count",
-		"liveUpdates": {
-			"enabled": true,
-			"polling": {
-				"timeout": 1
-			}
-		},
 		"onData": function(response) {
 			if (response && response.count) {
 				QUnit.equal(1, response.count, "Checking if live updates mechanism by count works correctly after posting");
@@ -238,7 +232,7 @@ suite.prototype.cases.websockets = function(callback) {
 	item.object.id = target;
 	var req = Echo.StreamServer.API.request({
 		"endpoint": "search",
-		"data": $.extend(this.params, {"q": q}),
+		"data": $.extend(params, {"q": q}),
 		"liveUpdates": {
 			"enabled": true,
 			"transport": "websockets",
@@ -252,13 +246,13 @@ suite.prototype.cases.websockets = function(callback) {
 					req.liveUpdates.requestObject.config.get("settings.serverPingInterval")
 				], [2, 10], "Check that config parameters for WS mapped");
 				QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.WebSockets, "Check that liveUpdates switched to WS after its opened");
-				req.liveUpdates.stop();
-			},
-			"onClose": function() {
-				if (req.liveUpdates instanceof Echo.StreamServer.API.WebSockets) {
-					req.liveUpdates._clearSubscriptions();
-					callback();
-				}
+				Echo.Events.subscribe({
+					"topic": "Echo.API.Transports.WebSocket.onClose",
+					"once": true,
+					"context": "live.echoenabled.com-v1-ws",
+					"handler": callback
+				});
+				req.abort();
 			}
 		}
 	});
@@ -269,12 +263,133 @@ suite.prototype.cases.websockets = function(callback) {
 			targetURL: target
 		})
 	});
-	req.send();
-	req.liveUpdates.on("close", $.proxy(submitReq.send, submitReq));
-	// Opening a socket does require some time so we first initiate polling and switch
-	// to socket when it's initiated. But at this particular moment live updates must
-	// use polling mechanism.
-	QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.Polling, "Check that live updates instantiated with polling");
+	req.send().done(function() {
+		Echo.Events.subscribe({
+			"topic": "Echo.API.Transports.WebSocket.onOpen",
+			"once": true,
+			"context": "live.echoenabled.com-v1-ws",
+			"handler": function() {
+				submitReq.send();
+			}
+		});
+		// Opening a socket does require some time so we first initiate polling and switch
+		// to socket when it's initiated. But at this particular moment live updates must
+		// use polling mechanism.
+		QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.Polling, "Check that live updates instantiated with polling");
+	});
+};
+
+suite.prototype.cases.webSocketSinceCase = function(callback) {
+	var item = $.extend(true, {}, this.items.post);
+	var params = $.extend({}, this.params);
+	var q = params.q.replace(/\s+children:\d+$/, "") + "/11111"
+	var target = q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
+	item.targets[0].id = target;
+	item.targets[0].conversationID = target;
+	item.object.id = target;
+	var request = Echo.StreamServer.API.request({
+		"endpoint": "search",
+		"data": $.extend(params, {"q": q}),
+		"liveUpdates": {
+			"enabled": true,
+			"transport": "websockets",
+			"onData": function(data) {
+				QUnit.ok(data, "Check that we recieve data through the WS protocol in case of since");
+				QUnit.strictEqual(data.entries.length, 1, "Check that we recieve exactly one item through the WS protocol in case of since");
+				Echo.Events.subscribe({
+					"topic": "Echo.API.Transports.WebSocket.onClose",
+					"once": true,
+					"context": "live.echoenabled.com-v1-ws",
+					"handler": function() {
+						callback();
+					}
+				});
+				request.abort();
+			}
+		}
+	});
+	var submit = Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"data": $.extend({}, params, {
+			content: item,
+			targetURL: target
+		})
+	});
+	request.send().done(function() {
+		submit.send();
+	});
+};
+
+suite.prototype.cases.multipleWebsocketRequests = function(callback) {
+	var item = $.extend(true, {}, this.items.post);
+	var params = $.extend({}, this.params);
+	var q = params.q.replace(/\s+children:\d+$/, "") + "/222"
+	var target = q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
+	item.targets[0].id = target;
+	item.targets[0].conversationID = target;
+	item.object.id = target;
+	var requests = [], def = [];
+	var getRequest = function(i) {
+		return Echo.StreamServer.API.request({
+			"endpoint": "search",
+			"data": $.extend(params, {"q": q}),
+			"liveUpdates": {
+				"enabled": true,
+				"transport": "websockets",
+				"onData": function() {
+					def[i].resolve();
+				},
+				"onError": function() {
+					def[i].resolve();
+				}
+			}
+		});
+	};
+	var submit = Echo.StreamServer.API.request({
+		"endpoint": "submit",
+		"data": $.extend({}, params, {
+			content: item,
+			targetURL: target
+		})
+	});
+	// 21 is a euristic non documented number
+	// The server allows to subscribe to no more than 20 subscriptions per connect.
+	for (var i = 0; i < 21; i++) {
+		(function(i) {
+			def.push($.Deferred());
+			requests.push(
+				getRequest(i)
+			);
+		})(i);
+	}
+	var chained = function chain(i, r) {
+		if (requests[i + 1]) {
+			return chain(i + 1, r.pipe(function() {
+				return requests[i + 1].send();
+			}));
+		}
+		return r;
+	}(0, requests[0].send());
+	Echo.Events.subscribe({
+		"topic": "Echo.API.Transports.WebSocket.onOpen",
+		"context": "live.echoenabled.com-v1-ws",
+		"once": true,
+		"handler": function() {
+			$.when(chained).done(function() {
+				submit.send();
+			});
+		}
+	});
+	$.when.apply($, def).then(function() {
+		var fallback = $.grep(requests, function(req) {
+			return !req.liveUpdates.subscribed;
+		});
+		QUnit.strictEqual(fallback.length, 1, "Check that quota exceeded requests are fallbacks to the polling (WS cases)");
+		$.map(requests, function(req) {
+			req.abort();
+		});
+		callback();
+	});
 };
 
 suite.prototype.tests = {};
@@ -282,7 +397,7 @@ suite.prototype.tests = {};
 suite.prototype.tests.PublicInterfaceTests = {
 	 "config": {
 		 "async": true,
-		 "testTimeout": 40000 // 40 secs
+		 "testTimeout": 50000 // 50 secs
 	},
 	"check": function() {
 		var sequentialTests = [
@@ -292,12 +407,15 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"requestWithAbort",
 			"checkLiveUpdate",
 			"simpleLiveUpdatesRequest",
-			"backwardCompatibility",
-			"websockets"
+			"backwardCompatibility"
 		];
 		// FIXME: when server will support XDomainRequest handling
 		if (!Echo.API.Transports.XDomainRequest.available()) {
 			sequentialTests.push("searchRequestWithError");
+		}
+		// WebSocket specific tests
+		if (Echo.API.Transports.WebSocket.available()) {
+			sequentialTests = sequentialTests.concat(["websockets", "webSocketSinceCase", "multipleWebsocketRequests"]);
 		}
 		this.sequentialAsyncTests(sequentialTests, "cases");
 	}

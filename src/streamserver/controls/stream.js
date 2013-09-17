@@ -60,23 +60,18 @@ stream.init = function() {
 		"liveUpdates": $.extend(this.config.get("liveUpdates"), {
 			"onData": function(data) {
 				self._handleLiveUpdatesResponse(data);
-			},
-			"onError": function(data, options) {
-				if (typeof options.critical === "undefined" || options.critical) {
-					self.showError(data, $.extend(options, {
-						"request": self.request
-					}));
-				}
 			}
 		}),
 		"onOpen": function(data, options) {
-			self.showError({}, {
-				"retryIn": 0,
-				"request": self.request
-			});
+			if (options.requestType === "initial") {
+				self.showError({}, {
+					"retryIn": 0,
+					"request": self.request
+				});
+			}
 		},
 		"onError": function(data, options) {
-			if (typeof options.critical === "undefined" || options.critical) {
+			if (typeof options.critical === "undefined" || options.critical && options.requestType === "initial") {
 				self.showError(data, $.extend(options, {
 					"request": self.request
 				}));
@@ -754,13 +749,6 @@ stream.methods._requestInitialItems = function() {
 			"liveUpdates": $.extend(this.config.get("liveUpdates"), {
 				"onData": function(data) {
 					self._handleLiveUpdatesResponse(data);
-				},
-				"onError": function(data, options) {
-					if (typeof options.critical === "undefined" || options.critical) {
-						self.showError(data, $.extend(options, {
-							"request": self.request
-						}));
-					}
 				}
 			}),
 			"data": {
@@ -768,13 +756,15 @@ stream.methods._requestInitialItems = function() {
 				"appkey": this.config.get("appkey")
 			},
 			"onOpen": function(data, options) {
-				self.showError({}, {
-					"retryIn": 0,
-					"request": self.request
-				});
+				if (options.requestType === "initial") {
+					self.showError({}, {
+						"retryIn": 0,
+						"request": self.request
+					});
+				}
 			},
 			"onError": function(data, options) {
-				if (typeof options.critical === "undefined" || options.critical) {
+				if (typeof options.critical === "undefined" || options.critical && options.requestType === "initial") {
 					self.showError(data, $.extend(options, {
 						"request": self.request
 					}));
