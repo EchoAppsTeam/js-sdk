@@ -146,7 +146,7 @@ canvas.config = {
 	 * target DOM element attribute.
 	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
-	"mode": "dev"
+	"mode": "prod"
 };
 
 canvas.vars = {
@@ -381,6 +381,8 @@ initializers.fetchConfig = function(callback) {
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
+
+	if (Echo.Loader.isDebug()) this.config.set("mode", "dev");
 
 	// exit if no "id" or "appkey" is defined for the canvas,
 	// skip this validation in case the "data" is defined explicitly in the config
