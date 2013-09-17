@@ -168,7 +168,9 @@ counter.methods._maybeUpdate = function(data) {
 
 counter.methods._handleResponse = function(data, options) {
 	this._maybeUpdate(data);
-	this.ready();
+	if (options.requestType === "initial") {
+		this.ready();
+	}
 };
 
 counter.methods._error = function(data, options) {
@@ -184,7 +186,7 @@ counter.methods._error = function(data, options) {
 		this.set("data.count", data.errorMessage + "+");
 		this.render();
 	} else {
-		if (typeof options.critical === "undefined" || options.critical) {
+		if (typeof options.critical === "undefined" || options.critical && options.requestType === "initial") {
 			this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
 		}
 	}

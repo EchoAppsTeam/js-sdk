@@ -175,15 +175,20 @@ Echo.StreamServer.API.Request.prototype.abort = function() {
 
 Echo.StreamServer.API.Request.prototype._count =
 Echo.StreamServer.API.Request.prototype._search = function(force) {
-	if (this.config.get("liveUpdates.enabled")) {
-		if (!this.liveUpdates) {
-			this._initLiveUpdates();
+	var self = this;
+	var start = function(data) {
+		if (self.config.get("liveUpdates.enabled")) {
+			if (!self.liveUpdates) {
+				self._initLiveUpdates(data || {});
+			}
+			self.liveUpdates.start(force);
 		}
-		this.liveUpdates.start(force);
 	}
 	if (!this.config.get("skipInitialRequest")
 		|| this.config.get("skipInitialRequest") && this.requestType !== "initial") {
-		this.request();
+		this.request().progress(start);
+	} else {
+		start();
 	}
 };
 
@@ -250,14 +255,20 @@ Echo.StreamServer.API.Request.prototype._prepareURI = function() {
 		: this.constructor.parent._prepareURI.call(this);
 };
 
-Echo.StreamServer.API.Request.prototype._initLiveUpdates = function() {
+Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 	var ws, self = this;
 	var polling = this.liveUpdates = Echo.StreamServer.API.Polling.init(
 		this._getLiveUpdatesConfig("polling")
 	);
 	if (this.config.get("liveUpdates.transport") === "websockets" && Echo.API.Transports.WebSocket.available()) {
 		ws = Echo.StreamServer.API.WebSockets.init(
-			this._getLiveUpdatesConfig("websockets")
+			$.extend(true, this._getLiveUpdatesConfig("websockets"), {
+				"request": {
+					"data": {
+						"since": (data || {}).nextSince
+					}
+				}
+			})
 		);
 		this._liveUpdatesWatcher(polling, ws);
 	}
@@ -269,6 +280,7 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 	var map = {
 		"polling": {
 			"timeout": "liveUpdates.polling.timeout",
+			"request.onOpen": "liveUpdates.onOpen",
 			"request.onData": "liveUpdates.onData",
 			"request.onError": "liveUpdates.onError",
 			"request.onClose": "liveUpdates.onClose",
@@ -278,6 +290,7 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 			"request.secure": "secure"
 		},
 		"websockets": {
+			"request.onOpen": "liveUpdates.onOpen",
 			"request.onData": "liveUpdates.onData",
 			"request.onError": "liveUpdates.onError",
 			"request.onClose": "liveUpdates.onClose",
@@ -562,9 +575,9 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
 	var applyServerDefinedTimeout = function(timeout) {
 		if (!timeout && self.originalTimeout != self.config.get("timeout")) {
-			self.config.set(key, self.originalTimeout);
+			self.config.set("timeout", self.originalTimeout);
 		} else if (timeout && timeout > self.config.get("timeout")) {
-			self.config.set(key, timeout);
+			self.config.set("timeout", timeout);
 		}
 	};
 	var hasNewData = function(data) {
@@ -639,9 +652,7 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 		"onData": function(response) {
 			if (!response || !response.event) return;
 			if (!!~response.event.indexOf("failed")) {
-				config.onError(response, {
-					"critical": response.errorCode === "connection_aborted"
-				});
+				config.onError(response);
 				// TODO: more general approach here
 				if (response.errorCode === "quota_exceeded") {
 					self.requestObject.transport.publish("onQuotaExceeded");
@@ -650,7 +661,7 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			}
 			if (!!~response.event.indexOf("reset")) {
 				self.subscribed = false;
-				self._updateConnection(self._reconnect);
+				self._updateConnection(self._resubscribe);
 				return;
 			}
 			if (response.event === "subscribe/confirmed") {
@@ -668,10 +679,9 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			self.subscribe();
 			config.onOpen.apply(null, arguments);
 		},
-		"onError": function(response) {
-			config.onError(response, {
-				"critical": response.errorCode === "connection_aborted"
-			});
+		"onError": function(event) {
+			self.requestObject.transport.publish("onClose");
+			config.onError(event);
 		}
 	});
 	return new Echo.API.Request(_config);
@@ -696,16 +706,14 @@ Echo.StreamServer.API.WebSockets.prototype.connected = function() {
 Echo.StreamServer.API.WebSockets.prototype.stop = function() {
 	var self = this;
 	this._clearSubscriptions();
-	if (this.requestObject.transport.connected()) {
+	if (this.connected()) {
 		this.queue.push(function() {
 			if (self.subscribed) {
 				self.requestObject.request({"event": "unsubscribe/request"});
 			}
 			self.requestObject.abort();
 		});
-		if (this.subscribed) {
-			this._runQueue();
-		}
+		this._runQueue();
 	}
 };
 
@@ -746,6 +754,23 @@ Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
 	};
 	this.requestObject.abort();
 	this._clearSubscriptions();
+	if (this.requestObject.transport.closing()) {
+		var id = this.on("close", function() {
+			closeHandler();
+			Echo.Events.unsubscribe({"handlerId": id});
+		});
+	} else {
+		closeHandler();
+	}
+};
+
+Echo.StreamServer.API.WebSockets.prototype._resubscribe = function() {
+	var self = this;
+	var closeHandler = function() {
+		if (self.connected()) {
+			self.requestObject.config.get("onOpen")();
+		}
+	};
 	if (this.requestObject.transport.closing()) {
 		var id = this.on("close", function() {
 			closeHandler();
