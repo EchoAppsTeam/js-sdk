@@ -22,7 +22,7 @@ Echo.Tests.Fixtures.api.whoami = {
 					}],
 					"photos": [{
 						"type": "avatar",
-						"value": "http://c0.echoenabled.com/images/avatar-default.png"
+						"value": "//cdn.echoenabled.com/images/avatar-default.png"
 					}],
 					"loggedIn": "true"
 				}, {
@@ -34,7 +34,7 @@ Echo.Tests.Fixtures.api.whoami = {
 					}],
 					"photos": [{
 						"type": "avatar",
-						"value": "http://c0.echoenabled.com/images/avatar-default.png"
+						"value": "//cdn.echoenabled.com/images/avatar-default.png"
 					}],
 					"loggedIn": "false"
 				}]

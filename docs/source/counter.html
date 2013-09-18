@@ -119,20 +119,29 @@ counter.config = {
 	 * 	});
 	 */
 	&quot;data&quot;: undefined,
+
 <span id='Echo-StreamServer-Controls-Counter-cfg-liveUpdates'>	/**
-</span>	 * @cfg {Object} liveUpdates
-	 * Defines configurations for liveUpdates.
+</span>	 * @cfg {Object} [liveUpdates]
+	 * Live updating machinery configuration (only the &quot;polling&quot; transport
+	 * is supported for the &quot;count&quot; API endpoint).
 	 *
-	 * @cfg {Boolean} liveUpdates.enabled
-	 * Parameter to enable/disable receiving live updates by control.
+	 * @cfg {Boolean} [liveUpdates.enabled=true]
+	 * Parameter to enable/disable live updates.
 	 *
-	 * @cfg {Number} liveUpdates.timeout
-	 * Specifies the timeout between live updates requests (in seconds).
+	 * @cfg {Object} [liveUpdates.polling]
+	 * Object which contains the configuration specific to the &quot;polling&quot;
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.polling.timeout=10]
+	 * Timeout between the live updates requests (in seconds).
 	 */
 	&quot;liveUpdates&quot;: {
 		&quot;enabled&quot;: true,
-		&quot;timeout&quot;: 10
+		&quot;polling&quot;: {
+			&quot;timeout&quot;: 10
+		}
 	},
+
 <span id='Echo-StreamServer-Controls-Counter-cfg-infoMessages'>	/**
 </span>	 * @cfg {String} infoMessages 
 	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
@@ -150,8 +159,7 @@ counter.methods._getRequestObject = function(overrides) {
 				&quot;q&quot;: this.config.get(&quot;query&quot;),
 				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
 			},
-			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdates.timeout&quot;),
-			&quot;recurring&quot;: this.config.get(&quot;liveUpdates.enabled&quot;),
+			&quot;liveUpdates&quot;: this.config.get(&quot;liveUpdates&quot;),
 			&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
 			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
 			&quot;onError&quot;: $.proxy(this._error, this),

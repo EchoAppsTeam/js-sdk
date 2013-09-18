@@ -150,6 +150,57 @@ pile.config = {
 		&quot;text&quot;: true
 	},
 
+<span id='Echo-StreamServer-Controls-FacePile-cfg-liveUpdates'>	/**
+</span>	 * @cfg {Object} [liveUpdates]
+	 * Live updating machinery configuration.
+	 *
+	 * @cfg {Boolean} [liveUpdates.enabled=true]
+	 * Parameter to enable/disable live updates.
+	 *
+	 * @cfg {String} [liveUpdates.transport=&quot;polling&quot;]
+	 * Preferred live updates receiveing machinery transport.
+	 * The following transports are supported:
+	 *
+	 * + &quot;polling&quot; - periodic requests to check for updates
+	 * + &quot;websockets&quot; - transport based on the WebSocket technology
+	 *
+	 * If the end user&#39;s browser doesn&#39;t support the WebSockets technology,
+	 * the &quot;polling&quot; transport will be used as a fallback.
+	 *
+	 * @cfg {Object} [liveUpdates.polling]
+	 * Object which contains the configuration specific to the &quot;polling&quot;
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.polling.timeout=10]
+	 * Timeout between the live updates requests (in seconds).
+	 *
+	 * @cfg {Object} [liveUpdates.websockets]
+	 * Object which contains the configuration specific to the &quot;websockets&quot;
+	 * live updates transport.
+	 *
+	 * @cfg {Number} [liveUpdates.websockets.maxConnectRetries=3]
+	 * Max connection retries for WebSocket transport. After the number of the
+	 * failed connection attempts specified in this parameter is reached, the
+	 * WebSocket transport is considered as non-supported: the client no longer
+	 * tries to use the WebSockets on the page and the polling transport is used
+	 * from now on.
+	 *
+	 * @cfg {Number} [liveUpdates.websockets.serverPingInterval=30]
+	 * The timeout (in seconds) between the client-server ping-pong requests
+	 * to keep the connection alive.
+	 */
+	&quot;liveUpdates&quot;: {
+		&quot;transport&quot;: &quot;polling&quot;, // or &quot;websockets&quot;
+		&quot;enabled&quot;: true,
+		&quot;polling&quot;: {
+			&quot;timeout&quot;: 10
+		},
+		&quot;websockets&quot;: {
+			&quot;maxConnectRetries&quot;: 3,
+			&quot;serverPingInterval&quot;: 30
+		}
+	},
+
 <span id='Echo-StreamServer-Controls-FacePile-cfg-infoMessages'>	/**
 </span>	 * @cfg {String} infoMessages
 	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
@@ -301,8 +352,11 @@ pile.methods._request = function() {
 				&quot;q&quot;: this.config.get(&quot;query&quot;),
 				&quot;appkey&quot;: this.config.get(&quot;appkey&quot;)
 			},
-			&quot;liveUpdatesTimeout&quot;: this.config.get(&quot;liveUpdates.timeout&quot;),
-			&quot;recurring&quot;: this.config.get(&quot;liveUpdates.enabled&quot;),
+			&quot;liveUpdates&quot;: $.extend(this.config.get(&quot;liveUpdates&quot;), {
+				&quot;onData&quot;: function(data) {
+					self._secondaryResponseHandler(data);
+				}
+			}),
 			&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
 			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
 			&quot;onError&quot;: function(data, extra) {
@@ -312,7 +366,7 @@ pile.methods._request = function() {
 				}
 			},
 			&quot;onData&quot;: function(data, extra) {
-				self[&quot;_&quot; + extra.requestType + &quot;ResponseHandler&quot;](data);
+				self._initialResponseHandler(data);
 			}
 		});
 		this.set(&quot;request&quot;, request);
