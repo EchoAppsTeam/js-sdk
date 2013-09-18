@@ -71,7 +71,7 @@ stream.init = function() {
 			}
 		},
 		"onError": function(data, options) {
-			if (typeof options.critical === "undefined" || options.critical && options.requestType === "initial") {
+			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
 				self.showError(data, $.extend(options, {
 					"request": self.request
 				}));
@@ -764,7 +764,7 @@ stream.methods._requestInitialItems = function() {
 				}
 			},
 			"onError": function(data, options) {
-				if (typeof options.critical === "undefined" || options.critical && options.requestType === "initial") {
+				if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
 					self.showError(data, $.extend(options, {
 						"request": self.request
 					}));
