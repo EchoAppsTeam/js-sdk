@@ -419,7 +419,11 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"backwardCompatibility"
 		];
 		// FIXME: when server will support XDomainRequest handling
-		if (!Echo.API.Transports.XDomainRequest.available()) {
+		if (!Echo.API.Transports.XDomainRequest.available({
+				"secure": window.location.prototcol === "https:",
+				"method": "GET"
+			})
+		) {
 			sequentialTests.push("searchRequestWithError");
 		}
 		// WebSocket specific tests
