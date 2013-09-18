@@ -6,7 +6,7 @@ This release is completely devoted to the **[WebSockets](http://en.wikipedia.org
 
 For now, WebSockets support is disabled by default so there should be no noticeable changes to your app unless the feature is explicitly turned on.
 
-Currently WebSockets support is implemented for "search" API updates only (via the new "ws" API endpoint](http://wiki.aboutecho.com/w/page/68773610/StreamServer%20-%20WebSockets%20API)).
+Currently WebSockets support is implemented for "search" API updates only [via the new "ws" API endpoint](http://wiki.aboutecho.com/w/page/68773610/StreamServer%20-%20WebSockets%20API).
 
 You can enable the new transport for the Stream and FacePile apps. In order to enable WebSockets support, please include the "[liveUpdates](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-liveUpdates)" object in the app config.
 
