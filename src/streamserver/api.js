@@ -705,6 +705,9 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 				self.subscribed = false;
 			}
 			if (response.data) {
+				if (response.data.nextSince) {
+					self.config.set("request.data.since", response.data.nextSince);
+				}
 				config.onData(response.data);
 			}
 		},
