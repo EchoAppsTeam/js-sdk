@@ -504,7 +504,7 @@ Echo.API.Transports.JSONP.prototype.send = function(data) {
 		return Echo.API.Transports.JSONP.parent.send.apply(this, arguments);
 	}
 	this._pushPostParameters($.extend({}, this.config.get("data"), data));
-	this.transportObject.submit();
+	this.transportObject.form.submit();
 	this.config.get("onData")();
 };
 
@@ -558,7 +558,7 @@ Echo.API.Transports.JSONP.prototype._pushPostParameters = function(data) {
 			"type" : "hidden",
 			"name" : key,
 			"value" : value
-		}).appendTo(self.transportObject);
+		}).appendTo(self.transportObject.form);
 	});
 	return self.transportObject;
 };

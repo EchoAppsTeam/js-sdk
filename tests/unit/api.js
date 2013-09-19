@@ -145,4 +145,18 @@ if (Echo.API.Transports.WebSocket.available()) {
 		});
 	}, {"timeout": 10000});
 }
+
+Echo.Tests.test("Transports JSONP method POST", function() {
+	(new Echo.API.Request({
+		"apiBaseURL": "//example.com/v1/",
+		"endpoint": "test",
+		"method": "POST",
+		"transport": "jsonp",
+		"onData": function() {
+			QUnit.ok(true, "Check if Transport JSONP works with POST method");
+		},
+		"data": {"test": true}
+	})).request();
+});
+
 })(Echo.jQuery);
