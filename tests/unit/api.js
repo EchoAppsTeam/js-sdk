@@ -159,4 +159,38 @@ Echo.Tests.test("Transports JSONP method POST", function() {
 	})).request();
 });
 
+Echo.Tests.test("Ckeck transport noramalizer", function() {
+	var createRequest = function(transport) {
+		return new Echo.API.Request({
+			"apiBaseURL": "//example.com/v1/",
+			"endpoint": "test",
+			"transport": transport,
+			"onData": function() {},
+			"data": {"test": true}
+		});
+	};
+
+	var tests = [{
+		"transport": "ajax",
+		"inspection": "ajax"
+	}, {
+		"transport": "jsonp",
+		"inspection": "jsonp"
+	}, {
+		"transport": undefined,
+		"inspection": "ajax"
+	}, {
+		"transport": "json",
+		"inspection": "ajax"
+	}, {
+		"transport": 123,
+		"inspection": "ajax"
+	}];
+
+	$.map(tests, function(item) {
+		var request = createRequest(item.transport);
+		QUnit.equal(request.config.get("transport"), item.inspection, "Check transport if specified transport is " + item.transport);
+	});
+});
+
 })(Echo.jQuery);

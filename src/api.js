@@ -593,6 +593,16 @@ Echo.API.Request = function(config) {
 		});
 		return {};
 	}
+
+	var normalizers = {
+		"transport": function(transport) {
+			return typeof transport !== "string" ||
+				!~$.inArray(transport.toLowerCase(), ["websocket", "ajax", "xdomainrequest", "jsonp"])
+					? "ajax"
+					: transport;
+		}
+	};
+
 	this.config = new Echo.Configuration(config, {
 		/**
 		 * @cfg {Function} [onData]
@@ -666,6 +676,8 @@ Echo.API.Request = function(config) {
 		 * is called if the API request failed.
 		 */
 		"timeout": 30
+	}, function(key, value) {
+		return normalizers[key] ? normalizers[key](value) : value;
 	});
 	this.deferred = {
 		"transport": $.Deferred()
