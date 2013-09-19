@@ -292,19 +292,10 @@ Echo.Loader.override = function(canvasID, appID, config) {
 Echo.Loader.init = function(config) {
 	Echo.Loader._lookupCanvases(config, function(canvases) {
 		Echo.Loader._map(canvases, function(canvas) {
-			var isActive = canvas.getAttribute("data-canvas-init") !== "when-visible"
-				|| Echo.Loader._isInViewport(canvas);
-
-			if (!isActive) {
-				onViewportChange("subscribe", function init() {
-					if (Echo.Loader._isInViewport(canvas)) {
-						Echo.Loader._initCanvas(canvas);
-						onViewportChange("unsubscribe", init);
-					}
-				});
-			} else {
-				Echo.Loader._initCanvas(canvas);
-			}
+			Echo.Loader._initCanvas(canvas, canvas.getAttribute("data-canvas-init"), {
+				"target": canvas,
+				"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
+			});
 		});
 	});
 };
@@ -354,18 +345,24 @@ Echo.Loader.init = function(config) {
  *
  * @param {Object} [app.config]
  * Parameters to be passed into the application constructor during its initialization.
+ *
+ * @param {String} [app.init="immediate"]
+ * This parameter specifies the Application loading mode. There are two possible values:
+ *
+ * + "immediate" - in this case the Application is being initialized on the page right
+ * after the Echo.Loader.initApplication function call
+ * + "when-visible" - this mode allows to delay the Application loading until
+ * the Application target becomes visible in the user’s browser
  */
 Echo.Loader.initApplication = function(app) {
-	Echo.Loader.initEnvironment(function() {
-		var instance = new Echo.Canvas({
-			"target": app.config.target,
-			"useSecureAPI": !!app.config.useSecureAPI,
-			"data": { // as we receive if from the Canvas Storage
-				"apps": [app],
-				"backplane": app.backplane
-			}
-		});
-		Echo.Loader.canvases.push(instance);
+	var target = app.config.target.length ? app.config.target[0] : app.config.target;
+	Echo.Loader._initCanvas(target, app.init, {
+		"target": app.config.target,
+		"useSecureAPI": !!app.config.useSecureAPI,
+		"data": { // as we receive if from the Canvas Storage
+			"apps": [app],
+			"backplane": app.backplane
+		}
 	});
 };
 
@@ -397,14 +394,20 @@ Echo.Loader._lookupCanvases = function(config, callback) {
 	}
 };
 
-Echo.Loader._initCanvas = function(canvas) {
-	Echo.Loader.initEnvironment(function() {
-		var instance = new Echo.Canvas({
-			"target": canvas,
-			"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
-		});
-		Echo.Loader.canvases.push(instance);
-	});
+Echo.Loader._initCanvas = function(target, initMode, config) {
+	// this function might be called either immediately (with no arguments)
+	// or after "scroll"/"resize" events (with "event" argument);
+	// function workflow varies depending on the given argument
+	(function init(event) {
+		if (initMode !== "when-visible" || Echo.Loader._isInViewport(target)) {
+			event && onViewportChange("unsubscribe", init);
+			Echo.Loader.initEnvironment(function() {
+				Echo.Loader.canvases.push(new Echo.Canvas(config));
+			});
+		} else if (!event) {
+			onViewportChange("subscribe", init);
+		}
+	})();
 };
 
 Echo.Loader._isInViewport = function(canvas) {
@@ -440,14 +443,14 @@ Echo.Loader._areResourcesReady = function(resources) {
 
 function getEventName(name) {
 	return window.addEventListener ? name : "on" + name;
-}
+};
 
 function onViewportChange(action, handler) {
 	var addEvent = window.addEventListener || window.attachEvent;
 	var removeEvent = window.removeEventListener || window.detachEvent;
 	if (action === "subscribe") {
 		addEvent(getEventName("scroll"), handler);
-		addEvent(getEventName("resize"), handler)
+		addEvent(getEventName("resize"), handler);
 	} else if (action === "unsubscribe") {
 		removeEvent(getEventName("scroll"), handler);
 		removeEvent(getEventName("resize"), handler);
