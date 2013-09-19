@@ -110,6 +110,8 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 			"websockets": {
 				"maxConnectRetries": 3,
 				"serverPingInterval": 30,
+				"resetPeriod": 60,
+				"maxResetsPerPeriod": 2,
 				"URL": "{%=baseURLs.api.ws%}/v1/"
 			}
 		},
@@ -183,6 +185,7 @@ Echo.StreamServer.API.Request.prototype._search = function(force) {
 			}
 			self.liveUpdates.start(force);
 		}
+		self.requestType = "secondary";
 	}
 	if (!this.config.get("skipInitialRequest")
 		|| this.config.get("skipInitialRequest") && this.requestType !== "initial") {
@@ -235,9 +238,6 @@ Echo.StreamServer.API.Request.prototype._onData = function(response, requestPara
 	config.onData(response, requestParams);
 	this.requestType = "secondary";
 	this._cleanupErrorHandlers(true);
-	if (this.liveUpdates && response.nextSince) {
-		this.liveUpdates.nextSince = response.nextSince;
-	}
 };
 
 Echo.StreamServer.API.Request.prototype._onError = function(responseError, requestParams, config) {
@@ -258,7 +258,13 @@ Echo.StreamServer.API.Request.prototype._prepareURI = function() {
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 	var ws, self = this;
 	var polling = this.liveUpdates = Echo.StreamServer.API.Polling.init(
-		this._getLiveUpdatesConfig("polling")
+		$.extend(true, this._getLiveUpdatesConfig("polling"), {
+			"request": {
+				"data": {
+					"since": (data || {}).nextSince
+				}
+			}
+		})
 	);
 	if (this.config.get("liveUpdates.transport") === "websockets" && Echo.API.Transports.WebSocket.available()) {
 		ws = Echo.StreamServer.API.WebSockets.init(
@@ -298,6 +304,8 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 			"request.data": "data",
 			"request.secure": "secure",
 			"request.apiBaseURL": "liveUpdates.websockets.URL",
+			"resubscribe.resetPeriod": "liveUpdates.websockets.resetPeriod",
+			"resubscribe.maxResetsPerPeriod": "liveUpdates.websockets.maxResetsPerPeriod",
 			"request.settings.maxConnectRetries": "liveUpdates.websockets.maxConnectRetries",
 			"request.settings.serverPingInterval": "liveUpdates.websockets.serverPingInterval"
 		}
@@ -369,10 +377,17 @@ Echo.StreamServer.API.Request.prototype._handleErrorResponse = function(data, co
 		var timeout = calcWaitingTimeout();
 		this.waitingTimer = setInterval(function() {
 			self._cleanupErrorHandlers();
-			if (!self.liveUpdates) {
-				self._initLiveUpdates();
+			var update = function(data) {
+				if (!self.liveUpdates) {
+					self._initLiveUpdates(data);
+				}
+				self.liveUpdates.start();
+			};
+			if (self.requestType === "initial") {
+				self.request().progress(update);
+			} else {
+				update();
 			}
-			self.liveUpdates.start();
 		}, timeout);
 		errorCallback(data, {
 			"requestType": self.requestType,
@@ -525,7 +540,7 @@ Echo.StreamServer.API.Polling.prototype.getRequestObject = function() {
 		"onData": function(response) {
 			if (response.type !== "error") {
 				self._changeTimeout(response);
-				self.nextSince = response.nextSince;
+				self.config.set("request.data.since", response.nextSince);
 				self.start();
 			}
 			onData(response);
@@ -553,7 +568,7 @@ Echo.StreamServer.API.Polling.prototype.start = function(force) {
 		: this.config.get("timeout");
 	this.timers.regular = setTimeout(function() {
 		self.requestObject.request({
-			"since": self.nextSince
+			"since": self.config.get("request.data.since")
 		});
 	}, timeout * 1000);
 };
@@ -584,12 +599,12 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 		// for "v1/search" endpoint at the moment
 		return !!(data.entries && data.entries.length);
 	};
-	if (!this.nextSince) {
+	if (!this.config.get("request.data.since")) {
 		applyServerDefinedTimeout(data.liveUpdatesTimeout);
 		return;
 	}
 	var currentTimeout = this.config.get("timeout");
-	var since = parseInt(this.nextSince);
+	var since = parseInt(this.config.get("request.data.since"));
 	var currentTime = Math.floor((new Date()).getTime() / 1000);
 	// calculate the delay before starting next request:
 	//   - have new data but still behind and need to catch up - use minimum timeout
@@ -616,6 +631,10 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 //
 Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Polling, function(config) {
 	this.config = new Echo.Configuration(config, {
+		"resubscribe": {
+			"maxResetsPerPeriod": 2,
+			"resetPeriod": 60 // sec
+		},
 		"request": {
 			"apiBaseURL": "{%=baseURLs.api.ws%}/v1/",
 			"transport": "websocket",
@@ -639,6 +658,10 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 	this.queue = [];
 	this.subscribed = false;
 	this.subscriptionIds = [];
+	this.subscriptionResets = {
+		"count": 0,
+		"time": (new Date()).getTime()
+	};
 	this.requestObject = this.getRequestObject();
 	if (this.connected()) {
 		this.requestObject.config.get("onOpen")();
@@ -652,16 +675,26 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 		"onData": function(response) {
 			if (!response || !response.event) return;
 			if (!!~response.event.indexOf("failed")) {
-				config.onError(response);
 				// TODO: more general approach here
 				if (response.errorCode === "quota_exceeded") {
 					self.requestObject.transport.publish("onQuotaExceeded");
+				} else {
+					config.onError(response, {
+						"critical": false
+					});
 				}
 				return;
 			}
 			if (!!~response.event.indexOf("reset")) {
 				self.subscribed = false;
-				self._updateConnection(self._resubscribe);
+				if (response.data && response.data.nextSince) {
+					self.config.set("request.data.since", response.data.nextSince);
+				}
+				if (self._resubscribeAllowed()) {
+					self._updateConnection(self._resubscribe);
+				} else {
+					self.requestObject.transport.publish("onClose");
+				}
 				return;
 			}
 			if (response.event === "subscribe/confirmed") {
@@ -681,7 +714,9 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 		},
 		"onError": function(event) {
 			self.requestObject.transport.publish("onClose");
-			config.onError(event);
+			config.onError(event, {
+				"critical": false
+			});
 		}
 	});
 	return new Echo.API.Request(_config);
@@ -778,6 +813,31 @@ Echo.StreamServer.API.WebSockets.prototype._resubscribe = function() {
 		});
 	} else {
 		closeHandler();
+	}
+};
+
+Echo.StreamServer.API.WebSockets.prototype._resubscribeAllowed = function() {
+	var last = this.subscriptionResets;
+	var now = (new Date()).getTime();
+	var config = this.config.get("resubscribe");
+	var diff = Math.floor((now - last.time) / 1000);
+	if (diff > config.resetPeriod) {
+		this.subscriptionResets = {
+			"count": 0,
+			"time": (new Date()).getTime()
+		};
+		return true;
+	}
+	if (diff <= config.resetPeriod) {
+		if (last.count + 1 <= config.maxResetsPerPeriod) {
+			this.subscriptionResets = {
+				"count": last.count + 1,
+				"time": (new Date()).getTime()
+			};
+			return true;
+		} else {
+			return false;
+		}
 	}
 };
 

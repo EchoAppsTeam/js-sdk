@@ -1,5 +1,29 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.12 - September 18, 2013
+
+This release is completely devoted to the **[WebSockets](http://en.wikipedia.org/wiki/WebSocket) support implementation in the JS SDK transport layer**. This will make live updates instant for client apps. This technology is relatively new, but it's already supported in [~73% browsers](http://caniuse.com/#feat=websockets) (and growing fast).
+
+For now, WebSockets support is disabled by default so there should be no noticeable changes to your app unless the feature is explicitly turned on.
+
+Currently WebSockets support is implemented for "search" API updates only [via the new "ws" API endpoint](http://wiki.aboutecho.com/w/page/68773610/StreamServer%20-%20WebSockets%20API).
+
+You can enable the new transport for the Stream and FacePile apps. In order to enable WebSockets support, please include the "[liveUpdates](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-liveUpdates)" object in the app config.
+
+Example:
+
+```javascript
+   new Echo.StreamServer.Controls.Stream({
+       ...
+       "liveUpdates": {"transport": "websockets"},
+       ...
+   });
+```
+
+In the case where Websockets is not supported by the client browser, the SDK will revert to the current Short Polling mechanism.
+
+**Important**: we are releasing the WebSockets support in **test mode**, so please contact us at solutions@aboutecho.com before enabling it for heavy-traffic production sites. We will perform capacity planning if needed and will monitor the server side behavior to make sure that you get the best experience and performance.
+
 ##v3.0.11 - September 10, 2013
 
 * We introduced a **new Canvas loading mode** within the Echo.Loader class. This new mode **allows to delay the Canvas apps loading until the Canvas target becomes visible** in the user's browser. We encourage you to use this feature to gain better performance in case you have widgets located below the main content area viewport when the user opens a page (for example, comments widget underneath the article).

@@ -92,6 +92,7 @@ suite.prototype.cases.skipInitialRequest = function(callback) {
 			"enabled": true,
 			"onData": function() {
 				QUnit.ok(skipped, "Check if the \"onData\" handler wasn't executed in the \"skipInitialRequest\" case");
+				QUnit.strictEqual(request.requestType, "secondary", "Check if the request type switched to the secondary in case of using \"skipInitialRequest\"");
 				request.liveUpdates.stop();
 				callback();
 			}
@@ -287,6 +288,13 @@ suite.prototype.cases.webSocketSinceCase = function(callback) {
 	item.targets[0].id = target;
 	item.targets[0].conversationID = target;
 	item.object.id = target;
+	var subscribe = Echo.StreamServer.API.WebSockets.prototype.subscribe;
+	Echo.StreamServer.API.WebSockets.prototype.subscribe = function() {
+		var self = this;
+		setTimeout(function() {
+			subscribe.call(self);
+		}, 6000);
+	};
 	var request = Echo.StreamServer.API.request({
 		"endpoint": "search",
 		"data": $.extend(params, {"q": q}),
@@ -296,14 +304,8 @@ suite.prototype.cases.webSocketSinceCase = function(callback) {
 			"onData": function(data) {
 				QUnit.ok(data, "Check that we recieve data through the WS protocol in case of since");
 				QUnit.strictEqual(data.entries.length, 1, "Check that we recieve exactly one item through the WS protocol in case of since");
-				Echo.Events.subscribe({
-					"topic": "Echo.API.Transports.WebSocket.onClose",
-					"once": true,
-					"context": "live.echoenabled.com-v1-ws",
-					"handler": function() {
-						callback();
-					}
-				});
+				Echo.StreamServer.API.WebSockets.prototype.subscribe = subscribe;
+				callback();
 				request.abort();
 			}
 		}
@@ -385,10 +387,17 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 			return !req.liveUpdates.subscribed;
 		});
 		QUnit.strictEqual(fallback.length, 1, "Check that quota exceeded requests are fallbacks to the polling (WS cases)");
+		Echo.Events.subscribe({
+			"topic": "Echo.API.Transports.WebSocket.onClose",
+			"once": true,
+			"context": "live.echoenabled.com-v1-ws",
+			"handler": function() {
+				callback();
+			}
+		});
 		$.map(requests, function(req) {
 			req.abort();
 		});
-		callback();
 	});
 };
 
@@ -410,12 +419,16 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"backwardCompatibility"
 		];
 		// FIXME: when server will support XDomainRequest handling
-		if (!Echo.API.Transports.XDomainRequest.available()) {
+		if (!Echo.API.Transports.XDomainRequest.available({
+				"secure": window.location.prototcol === "https:",
+				"method": "GET"
+			})
+		) {
 			sequentialTests.push("searchRequestWithError");
 		}
 		// WebSocket specific tests
 		if (Echo.API.Transports.WebSocket.available()) {
-			sequentialTests = sequentialTests.concat(["websockets", "webSocketSinceCase", "multipleWebsocketRequests"]);
+			sequentialTests = sequentialTests.concat(["websockets", "multipleWebsocketRequests", "webSocketSinceCase"]);
 		}
 		this.sequentialAsyncTests(sequentialTests, "cases");
 	}

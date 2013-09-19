@@ -732,6 +732,9 @@ Echo.API.Request.prototype.request = function(params) {
 
 Echo.API.Request.prototype.abort = function() {
 	this.transport && this.transport.abort();
+	if (this.deferred.transport && this.deferred.transport.state() === "pending") {
+		this.deferred.transport.resolve();
+	}
 };
 
 Echo.API.Request.prototype._getTransport = function() {
@@ -784,6 +787,9 @@ Echo.API.Request.prototype._getHandlersByConfig = function() {
 						"onClose": "resolveWith"
 					}[key]] || $.noop)
 					.call(self.deferred.transport, null, args);
+					if (key === "onClose" || key === "onError") {
+						self.deferred.transport = $.Deferred();
+					}
 				}
 				: value;
 			acc[key] = handler;

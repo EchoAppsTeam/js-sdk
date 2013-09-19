@@ -643,6 +643,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 
 		var waitForCompletion = function(canvasID, appID) {
 			Echo.Loader.override(canvasID, appID, {"ready": function() {
+				this.destroy();
 				count.valid--;
 				if (!count.valid) {
 					QUnit.ok(true, "[different initialization schemas] Checking if Auth controls were initialized correctly using different initialization schemas");

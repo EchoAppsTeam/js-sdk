@@ -117,6 +117,7 @@ Echo.Tests.asyncTest("select app script url", function() {
 				}), "some-regular-url", "For the regular zone it returns a regular URL");
 			}
 			Echo.Loader.debug = debug;
+			this.destroy();
 			QUnit.start();
 		}
 	});
