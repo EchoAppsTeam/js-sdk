@@ -459,6 +459,7 @@ plugin.methods._sendUserUpdate = function(config) {
 	var item = this.component;
 	Echo.IdentityServer.API.request({
 		"endpoint": "update",
+		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
 		"secure": this.config.get("useSecureAPI", false, true),
 		"data": {
 			"content": {
