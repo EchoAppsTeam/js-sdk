@@ -172,19 +172,19 @@ Echo.Tests.test("Ckeck transport noramalizer", function() {
 
 	var tests = [{
 		"transport": "ajax",
-		"inspection": "ajax"
+		"inspection": "AJAX"
 	}, {
 		"transport": "jsonp",
-		"inspection": "jsonp"
+		"inspection": "JSONP"
 	}, {
 		"transport": undefined,
-		"inspection": "ajax"
+		"inspection": "AJAX"
 	}, {
 		"transport": "json",
-		"inspection": "ajax"
+		"inspection": "AJAX"
 	}, {
 		"transport": 123,
-		"inspection": "ajax"
+		"inspection": "AJAX"
 	}];
 
 	$.map(tests, function(item) {

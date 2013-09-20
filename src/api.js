@@ -580,6 +580,7 @@ Echo.API.Transports.JSONP.available = function() {
  * Configuration data.
  */
 Echo.API.Request = function(config) {
+	var self = this;
 	/**
 	 * @cfg {String} endpoint
 	 * Specifes the API endpoint.
@@ -593,15 +594,6 @@ Echo.API.Request = function(config) {
 		});
 		return {};
 	}
-
-	var normalizers = {
-		"transport": function(transport) {
-			return typeof transport !== "string" ||
-				!~$.inArray(transport.toLowerCase(), ["websocket", "ajax", "xdomainrequest", "jsonp"])
-					? "ajax"
-					: transport;
-		}
-	};
 
 	this.config = new Echo.Configuration(config, {
 		/**
@@ -677,12 +669,24 @@ Echo.API.Request = function(config) {
 		 */
 		"timeout": 30
 	}, function(key, value) {
-		return normalizers[key] ? normalizers[key](value) : value;
+		return self._configNormalizers[key]
+			? self._configNormalizers[key].call(self, value)
+			: value;
 	});
 	this.deferred = {
 		"transport": $.Deferred()
 	};
 	this.transport = this._getTransport();
+};
+
+Echo.API.Request.prototype._configNormalizers = {
+	"transport": function(transport) {
+		if (typeof transport === "string") {
+			return this._normalizeTransportName(transport) || this._normalizeTransportName("ajax");
+		} else {
+			return this._normalizeTransportName("ajax");
+		}
+	}
 };
 
 Echo.API.Request.prototype._isSecureRequest = function() {
@@ -749,13 +753,17 @@ Echo.API.Request.prototype.abort = function() {
 	}
 };
 
-Echo.API.Request.prototype._getTransport = function() {
-	var self = this;
-	var userDefinedTransport = utils.foldl("", Echo.API.Transports, function(constructor, acc, name) {
-		if (self.config.get("transport").toLowerCase() === name.toLowerCase()) {
+Echo.API.Request.prototype._normalizeTransportName = function(transport) {
+	return utils.foldl("", Echo.API.Transports, function(constructor, acc, name) {
+		if (transport.toLowerCase() === name.toLowerCase()) {
 			return name;
 		}
 	});
+};
+
+Echo.API.Request.prototype._getTransport = function() {
+	var self = this;
+	var userDefinedTransport = this.config.get("transport");
 	var transport = Echo.API.Transports[userDefinedTransport] && Echo.API.Transports[userDefinedTransport].available()
 		? userDefinedTransport
 		: function() {
