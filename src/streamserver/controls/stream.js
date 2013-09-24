@@ -1613,6 +1613,8 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"plugins": this.config.get("plugins"),
 		"context": this.config.get("context"),
 		"useSecureAPI": this.config.get("useSecureAPI"),
+		"apiBaseURL": this.config.get("apiBaseURL"),
+		"submissionProxyURL": this.config.get("submissionProxyURL"),
 		"user": this.user,
 		"live": isLive,
 		"ready": callback
