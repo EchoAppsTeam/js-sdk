@@ -1,6 +1,6 @@
 [
 	{
-		"title": "App Examples",
+		"title": "Bundled Apps",
 		"items": [
 			{
 				"name": "auth",
@@ -40,7 +40,7 @@
 		]
 	},
 	{
-		"title": "Plugin Examples",
+		"title": "Bundled Plugins",
 		"items": [
 			{
 				"name": "reply-plugin",
@@ -101,11 +101,11 @@
 		]
 	},
 	{
-		"title": "Demo App Examples",
+		"title": "Reference Apps",
 		"items": [
 			{
 				"name": "comments-sample",
-				"title": "Comments sample",
+				"title": "Comments (Reference)",
 				"description": "Example of a simple app built using the \"How to develop an app\" guide.",
 				"url": "apps/comments-sample/index.html",
 				"icon": "../docs/resources/images/default-guide.png"
