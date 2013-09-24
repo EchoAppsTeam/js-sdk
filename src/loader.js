@@ -355,15 +355,18 @@ Echo.Loader.init = function(config) {
  * the Application target becomes visible in the user’s browser
  */
 Echo.Loader.initApplication = function(app) {
-	var target = app.config.target.length ? app.config.target[0] : app.config.target;
-	Echo.Loader._initCanvas(target, app.init, {
-		"target": app.config.target,
-		"useSecureAPI": !!app.config.useSecureAPI,
-		"data": { // as we receive if from the Canvas Storage
-			"apps": [app],
-			"backplane": app.backplane
-		}
-	});
+	// checking if app config is valid
+	if (app.config && app.config.target) {
+		var target = app.config.target.length ? app.config.target[0] : app.config.target;
+		Echo.Loader._initCanvas(target, app.init, {
+			"target": app.config.target,
+			"useSecureAPI": !!app.config.useSecureAPI,
+			"data": { // as we receive if from the Canvas Storage
+				"apps": [app],
+				"backplane": app.backplane
+			}
+		});
+	}
 };
 
 Echo.Loader._lookupCanvases = function(config, callback) {
