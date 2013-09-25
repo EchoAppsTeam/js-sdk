@@ -526,7 +526,7 @@ plugin.renderers.media = function(element) {
 			"elements": mediaItems,
 			"item": item
 		});
-		new Echo.StreamServer.Controls.Stream.Item.MediaGallery(config);
+		new Echo.StreamServer.Controls.Stream.Item.MediaGallery(plugin.config.assemble(config));
 	} else {
 		element.hide();
 	}
