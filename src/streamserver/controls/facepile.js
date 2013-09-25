@@ -469,6 +469,8 @@ pile.methods._isUniqueUser = function(entry) {
 
 pile.methods._initItem = function(entry, callback) {
 	var config = $.extend({
+		"apiBaseURL": this.config.get("apiBaseURL"),
+		"submissionProxyURL": this.config.get("submissionProxyURL"),
 		"target": $("<div>"),
 		"appkey": this.config.get("appkey"),
 		"parent": this.config.getAsHash(),
