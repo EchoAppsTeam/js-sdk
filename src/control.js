@@ -234,6 +234,16 @@ Echo.Control.prototype.render = function() {
 		"template": this._compileTemplate()
 	});
 	this.config.get("target").empty().append(content);
+	/**
+	 * @member Echo.Control
+	 * @echo_event Echo.Control.onRender
+	 * Triggered when control is rendered.
+	 */
+	/**
+	 * @member Echo.Control
+	 * @echo_event Echo.Control.onRerender
+	 * Triggered when control is rerendered.
+	 */
 	this.events.publish({"topic": topic});
 	return content;
 };
@@ -910,10 +920,20 @@ Echo.Control.prototype._initializers.ready = function() {
 		// "ready" callback must be executed only once
 		this.config.remove("ready");
 	}
+	/**
+	 * @member Echo.Control
+	 * @echo_event Echo.Control.onReady
+	 * Triggered when control is initialized.
+	 */
 	this.events.publish({"topic": "onReady"});
 };
 
 Echo.Control.prototype._initializers.refresh = function() {
+	/**
+	 * @member Echo.Control
+	 * @echo_event Echo.Control.onRefresh
+	 * Triggered when control is refreshed.
+	 */
 	this.events.publish({"topic": "onRefresh"});
 };
 
