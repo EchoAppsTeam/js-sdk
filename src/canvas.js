@@ -390,9 +390,12 @@ canvas.methods._fetchConfig = function(callback) {
 		// specified as "#XXX" in the Canvas ID. We don't need to send this
 		// unique page identifier, we send only the primary Canvas ID.
 		"endpoint": this._getIds().main,
+		// adding page origin to the Cloudfront request to cache the Canvas
+		// config (on Cloudfront side) with the respective CORS headers,
+		// associated with the current domain 
 		"data": this.config.get("mode") === "dev"
 			? {"_": Math.random()}
-			: {"origin": location.origin},
+			: {"origin": window.location.origin},
 		"onData": function(config) {
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
