@@ -390,7 +390,9 @@ canvas.methods._fetchConfig = function(callback) {
 		// specified as "#XXX" in the Canvas ID. We don't need to send this
 		// unique page identifier, we send only the primary Canvas ID.
 		"endpoint": this._getIds().main,
-		"data": this.config.get("mode") === "dev" ? {"_": Math.random()} : {},
+		"data": this.config.get("mode") === "dev"
+			? {"_": Math.random()}
+			: {"origin": location.origin},
 		"onData": function(config) {
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
