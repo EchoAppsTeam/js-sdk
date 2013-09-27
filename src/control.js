@@ -237,12 +237,12 @@ Echo.Control.prototype.render = function() {
 	/**
 	 * @member Echo.Control
 	 * @echo_event Echo.Control.onRender
-	 * Triggered when control is rendered.
+	 * Triggered when the app is rendered.
 	 */
 	/**
 	 * @member Echo.Control
 	 * @echo_event Echo.Control.onRerender
-	 * Triggered when control is rerendered.
+	 * Triggered when the app is rerendered.
 	 */
 	this.events.publish({"topic": topic});
 	return content;
@@ -923,7 +923,7 @@ Echo.Control.prototype._initializers.ready = function() {
 	/**
 	 * @member Echo.Control
 	 * @echo_event Echo.Control.onReady
-	 * Triggered when control is initialized.
+	 * Triggered when the app initialization is finished completely.
 	 */
 	this.events.publish({"topic": "onReady"});
 };
@@ -932,7 +932,8 @@ Echo.Control.prototype._initializers.refresh = function() {
 	/**
 	 * @member Echo.Control
 	 * @echo_event Echo.Control.onRefresh
-	 * Triggered when control is refreshed.
+	 * Triggered when the app is refreshed. For example after the user
+	 * login/logout action or as a result of the "refresh" function call.
 	 */
 	this.events.publish({"topic": "onRefresh"});
 };
