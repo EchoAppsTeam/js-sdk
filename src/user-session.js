@@ -243,6 +243,12 @@ Echo.UserSession._construct = function(config) {
 		config.ready && config.ready.call(user);
 	};
 	user.state = user.state || "init";
+
+	if (!user._sessionId && user.get("sessionID")) {
+		user._sessionId = user.get("sessionID");
+		user.state = user.state === "ready" ? "init" : user.state;
+	}
+
 	switch (user.state) {
 
 		// initialization call when previous request is in progress

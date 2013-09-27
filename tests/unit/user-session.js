@@ -101,6 +101,71 @@ Echo.Tests.asyncTest("anonymous checks", function() {
 	});
 });
 
+Echo.Tests.asyncTest("backplane corner cases", function() {
+	var initUser = function(callback) {
+		Echo.UserSession({
+			"appkey": "echo.jssdk.tests.aboutecho.com",
+			"ready": callback
+		});
+	};
+	var sequentialCalls = function(callback) {
+		resetUserSession();
+		Backplane.initialized = false;
+		initUser(function() {
+			Backplane.initialized = true;
+			initUser(function() {
+				QUnit.ok(this.is("logged"),
+					"Check if user is logged when first user initialization was started without Backplane");
+				callback();
+			});
+		});
+	};
+	var parallelCalls = function(callback) {
+		// we need to simulate a latency so we can start parallel initialisation
+		var init = $.proxy(Echo.UserSession._whoamiRequest, Echo.UserSession);
+		sinon.stub(Echo.UserSession, "_whoamiRequest", function(args) {
+			setTimeout(function() { init(args); }, 500);
+		});
+
+		resetUserSession();
+
+		Echo.Utils.parallelCall([function(callback) {
+			Backplane.initialized = false;
+			initUser(function() {
+				callback();
+			});
+		}, function(callback) {
+			Backplane.initialized = true;
+			QUnit.equal(Echo.UserSession.state, "ready", "Check if user state is \"ready\"");
+			initUser(function() {
+				QUnit.ok(this.is("logged"), "Check if user is logged when previous user state was \"ready\"");
+				callback();
+			});
+		}, function(callback) {
+			Backplane.initialized = true;
+			QUnit.equal(Echo.UserSession.state, "waiting", "Check if user state is \"waiting\"");
+			initUser(function() {
+				QUnit.ok(this.is("logged"), "Check if user is logged when previous user state was \"waiting\"");
+				callback();
+			});
+		}], function() {
+			Echo.UserSession._whoamiRequest.restore();
+			callback();
+		});
+	};
+
+	QUnit.expect(5);
+	Echo.Utils.sequentialCall([
+		sequentialCalls,
+		parallelCalls
+	], function() {
+		QUnit.start();
+	});
+}, {
+	"user": {"status": "logged"},
+	"timeout": 6000
+});
+
 // FIXME: test is disabled because it doesn't really test anything at the moment
 Echo.Tests._asyncTest("error handling", function() {
 	Echo.UserSession({
@@ -143,7 +208,8 @@ Echo.Tests._asyncTest("error handling", function() {
 function resetUserSession() {
 	// force Echo.UserSession to re-initialize itself completely
 	// during the next Echo.UserSession object initialization
-	Echo.UserSession.state = "init";
+	Echo.UserSession.state = undefined;
+	Echo.UserSession._sessionId = undefined;
 }
 
 function checkBasicOperations(user) {
