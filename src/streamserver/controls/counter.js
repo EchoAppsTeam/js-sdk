@@ -57,6 +57,24 @@ if (Echo.Control.isDefined(counter)) return;
 /** @hide @echo_label monthAgo */
 /** @hide @echo_label monthsAgo */
 
+/**
+ * @echo_event Echo.StreamServer.Controls.Counter.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Counter.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the "refresh" function call.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Counter.onRender
+ * Triggered when the app is rendered.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Counter.onRerender
+ * Triggered when the app is rerendered.
+ */
+
 counter.init = function() {
 	if (!this.checkAppKey()) return;
 

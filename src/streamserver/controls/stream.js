@@ -51,6 +51,24 @@ if (Echo.Control.isDefined(stream)) return;
 /** @hide @echo_label monthAgo */
 /** @hide @echo_label monthsAgo */
 
+/**
+ * @echo_event Echo.StreamServer.Controls.Stream.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Stream.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the "refresh" function call.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Stream.onRender
+ * Triggered when the app is rendered.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Stream.onRerender
+ * Triggered when the app is rerendered.
+ */
+
 stream.init = function() {
 	var self = this;
 	if (!this.checkAppKey()) return;
@@ -1820,6 +1838,24 @@ if (Echo.Control.isDefined(item)) return;
 /** @hide @echo_label error_quota_exceeded */
 /** @hide @echo_label error_incorrect_user_id */
 /** @hide @echo_label error_unknown */
+
+/**
+ * @echo_event Echo.StreamServer.Controls.Stream.Item.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Stream.Item.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the "refresh" function call.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Stream.Item.onRender
+ * Triggered when the app is rendered.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Stream.Item.onRerender
+ * Triggered when the app is rerendered.
+ */
 
 item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get("data.object.published"));

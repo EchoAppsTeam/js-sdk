@@ -234,16 +234,6 @@ Echo.Control.prototype.render = function() {
 		"template": this._compileTemplate()
 	});
 	this.config.get("target").empty().append(content);
-	/**
-	 * @member Echo.Control
-	 * @echo_event Echo.Control.onRender
-	 * Triggered when the app is rendered.
-	 */
-	/**
-	 * @member Echo.Control
-	 * @echo_event Echo.Control.onRerender
-	 * Triggered when the app is rerendered.
-	 */
 	this.events.publish({"topic": topic});
 	return content;
 };
@@ -920,21 +910,10 @@ Echo.Control.prototype._initializers.ready = function() {
 		// "ready" callback must be executed only once
 		this.config.remove("ready");
 	}
-	/**
-	 * @member Echo.Control
-	 * @echo_event Echo.Control.onReady
-	 * Triggered when the app initialization is finished completely.
-	 */
 	this.events.publish({"topic": "onReady"});
 };
 
 Echo.Control.prototype._initializers.refresh = function() {
-	/**
-	 * @member Echo.Control
-	 * @echo_event Echo.Control.onRefresh
-	 * Triggered when the app is refreshed. For example after the user
-	 * login/logout action or as a result of the "refresh" function call.
-	 */
 	this.events.publish({"topic": "onRefresh"});
 };
 

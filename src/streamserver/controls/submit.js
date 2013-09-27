@@ -67,6 +67,24 @@ if (Echo.Control.isDefined(submit)) return;
 /** @hide @echo_label error_incorrect_user_id */
 /** @hide @echo_label error_unknown */
 
+/**
+ * @echo_event Echo.StreamServer.Controls.Submit.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Submit.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the "refresh" function call.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Submit.onRender
+ * Triggered when the app is rendered.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.Submit.onRerender
+ * Triggered when the app is rerendered.
+ */
+
 submit.init = function() {
 	if (!this.checkAppKey()) return;
 

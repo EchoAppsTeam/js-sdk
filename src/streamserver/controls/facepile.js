@@ -55,6 +55,25 @@ if (Echo.Control.isDefined(pile)) return;
 /** @hide @echo_label monthAgo */
 /** @hide @echo_label monthsAgo */
 
+/**
+ * @echo_event Echo.StreamServer.Controls.FacePile.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.FacePile.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the "refresh" function call.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.FacePile.onRender
+ * Triggered when the app is rendered.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.FacePile.onRerender
+ * Triggered when the app is rerendered.
+ */
+
+
 pile.init = function() {
 	if (!this.checkAppKey()) return;
 
@@ -608,6 +627,24 @@ if (Echo.Control.isDefined(item)) return;
 /** @hide @echo_label error_quota_exceeded */
 /** @hide @echo_label error_incorrect_user_id */
 /** @hide @echo_label error_unknown */
+
+/**
+ * @echo_event Echo.StreamServer.Controls.FacePile.Item.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.FacePile.Item.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the "refresh" function call.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.FacePile.Item.onRender
+ * Triggered when the app is rendered.
+ */
+/**
+ * @echo_event Echo.StreamServer.Controls.FacePile.Item.onRerender
+ * Triggered when the app is rerendered.
+ */
 
 item.config = {
 	/**
