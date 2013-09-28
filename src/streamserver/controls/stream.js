@@ -1852,10 +1852,6 @@ if (Echo.Control.isDefined(item)) return;
  * @echo_event Echo.StreamServer.Controls.Stream.Item.onRender
  * Triggered when the app is rendered.
  */
-/**
- * @echo_event Echo.StreamServer.Controls.Stream.Item.onRerender
- * Triggered when the app is rerendered.
- */
 
 item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get("data.object.published"));
