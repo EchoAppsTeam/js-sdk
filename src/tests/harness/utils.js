@@ -74,12 +74,12 @@ Echo.Tests.Utils.initServer = function() {
 	// but we can't because "logout" endpoint supports only JSONP but sinon can't
 	// mock it. So we have to replace the whole functions
 	sinon.stub(Echo.UserSession, "_logoutRequest", function(data, callback) {
-		sinon.stub(Echo.UserSession, "_onInit", function(callback) {
-			callback();
-		});
 		Echo.Tests.Utils.actualizeTestUser({"status": "anonymous"}, function() {
+			sinon.stub(Echo.UserSession, "_onInit", function(callback) {
+				callback();
+			});
 			callback("{\"result\": \"success\"}");
-			Echo.UserSession._onInit.restore()
+			Echo.UserSession._onInit.restore();
 		});
 	});
 };

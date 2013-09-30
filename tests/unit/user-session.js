@@ -112,6 +112,8 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 		resetUserSession();
 		Backplane.initialized = false;
 		initUser(function() {
+			QUnit.ok(!this.is("logged"),
+				"Check if user isn't logged when initialization was started without Backplane");
 			Backplane.initialized = true;
 			initUser(function() {
 				QUnit.ok(this.is("logged"),
@@ -120,7 +122,7 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 			});
 		});
 	};
-	var parallelCalls = function(callback) {
+	var parallelCalls = function(done) {
 		// we need to simulate a latency so we can start parallel initialisation
 		var init = $.proxy(Echo.UserSession._whoamiRequest, Echo.UserSession);
 		sinon.stub(Echo.UserSession, "_whoamiRequest", function(args) {
@@ -132,6 +134,8 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 		Echo.Utils.parallelCall([function(callback) {
 			Backplane.initialized = false;
 			initUser(function() {
+				QUnit.ok(!this.is("logged"),
+					"Check if user isn't logged when initialization was started without Backplane");
 				callback();
 			});
 		}, function(callback) {
@@ -150,11 +154,11 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 			});
 		}], function() {
 			Echo.UserSession._whoamiRequest.restore();
-			callback();
+			done();
 		});
 	};
 
-	QUnit.expect(5);
+	QUnit.expect(7);
 	Echo.Utils.sequentialCall([
 		sequentialCalls,
 		parallelCalls
