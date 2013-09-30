@@ -213,7 +213,7 @@ function resetUserSession() {
 	// force Echo.UserSession to re-initialize itself completely
 	// during the next Echo.UserSession object initialization
 	Echo.UserSession.state = undefined;
-	Echo.UserSession._sessionId = undefined;
+	Echo.UserSession._sessionID = undefined;
 }
 
 function checkBasicOperations(user) {

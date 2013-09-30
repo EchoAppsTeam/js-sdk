@@ -244,8 +244,11 @@ Echo.UserSession._construct = function(config) {
 	};
 	user.state = user.state || "init";
 
-	if (!user._sessionId && user.get("sessionID")) {
-		user._sessionId = user.get("sessionID");
+	// checking if the Backplane configuration became defined on the page,
+	// in this case if the Echo.UserSession was initialized previously - make complete
+	// re-initialization from scratch to update the singleton properties
+	if (!user._sessionID && user.get("sessionID")) {
+		user._sessionID = user.get("sessionID");
 		user.state = user.state === "ready" ? "init" : user.state;
 	}
 
