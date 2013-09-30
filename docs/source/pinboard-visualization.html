@@ -66,6 +66,24 @@ if (Echo.Control.isDefined(mediaGallery)) return;
 </span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_incorrect_user_id'>/** @hide @echo_label error_incorrect_user_id */
 </span><span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_label-error_unknown'>/** @hide @echo_label error_unknown */
 </span>
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_event-onReady'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_event-onRefresh'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the &quot;refresh&quot; function call.
+ */
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_event-onRender'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRender
+ * Triggered when the app is rendered.
+ */
+<span id='Echo-StreamServer-Controls-Stream-Item-MediaGallery-echo_event-onRerender'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRerender
+ * Triggered when the app is rerendered.
+ */
+
 mediaGallery.labels = {
 	&quot;mediaIsNotAvailable&quot;: &quot;&lt;i&gt;Media is not avaiable at this moment...&lt;/i&gt;&quot;
 };
@@ -543,7 +561,7 @@ plugin.renderers.media = function(element) {
 			&quot;elements&quot;: mediaItems,
 			&quot;item&quot;: item
 		});
-		new Echo.StreamServer.Controls.Stream.Item.MediaGallery(config);
+		new Echo.StreamServer.Controls.Stream.Item.MediaGallery(plugin.config.assemble(config));
 	} else {
 		element.hide();
 	}

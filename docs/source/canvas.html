@@ -74,6 +74,24 @@ if (Echo.Control.isDefined(canvas)) return;
 </span><span id='Echo-Canvas-echo_label-error_incorrect_user_id'>/** @hide @echo_label error_incorrect_user_id */
 </span><span id='Echo-Canvas-echo_label-error_unknown'>/** @hide @echo_label error_unknown */
 </span>
+<span id='Echo-Canvas-echo_event-onReady'>/**
+</span> * @echo_event Echo.Canvas.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+<span id='Echo-Canvas-echo_event-onRefresh'>/**
+</span> * @echo_event Echo.Canvas.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the &quot;refresh&quot; function call.
+ */
+<span id='Echo-Canvas-echo_event-onRender'>/**
+</span> * @echo_event Echo.Canvas.onRender
+ * Triggered when the app is rendered.
+ */
+<span id='Echo-Canvas-echo_event-onRerender'>/**
+</span> * @echo_event Echo.Canvas.onRerender
+ * Triggered when the app is rerendered.
+ */
+
 canvas.init = function() {
 	var ids, cssClass;
 	var self = this, target = this.config.get(&quot;target&quot;);
@@ -94,6 +112,24 @@ canvas.init = function() {
 	// to prevent multiple initialization of the same canvas
 	target.data(&quot;echo-canvas-initialized&quot;, true);
 
+	// extending Canvas config with the parameters defined in the target
+	var overrides = this._getOverrides(target, [&quot;id&quot;, &quot;useSecureAPI&quot;, &quot;mode&quot;]);
+	if (!$.isEmptyObject(overrides)) {
+		this.config.extend(overrides);
+	}
+
+	if (Echo.Loader.isDebug()) this.config.set(&quot;mode&quot;, &quot;dev&quot;);
+
+	// exit if no &quot;id&quot; is defined for the canvas,
+	// skip this validation in case the &quot;data&quot; is defined explicitly in the config
+	if (!this._isManuallyConfigured() &amp;&amp; !this.config.get(&quot;id&quot;)) {
+		this._error({
+			&quot;args&quot;: {&quot;target&quot;: target},
+			&quot;code&quot;: &quot;invalid_canvas_config&quot;
+		});
+		return;
+	}
+
 	// apply our canvas id as a CSS class if we aren&#39;t manually configured
 	if (this.config.get(&quot;id&quot;)) {
 		ids = this._getIds().normalized;
@@ -104,7 +140,15 @@ canvas.init = function() {
 		});
 		target.addClass(cssClass);
 	}
-	this._loadAppResources(parent);
+
+	// fetch canvas config from remote storage
+	this._fetchConfig(function() {
+		var backplane = self.get(&quot;data.backplane&quot;);
+		if (backplane) {
+			Backplane.init(backplane);
+		}
+		self._loadAppResources(parent);
+	});
 };
 
 canvas.config = {
@@ -127,18 +171,12 @@ canvas.config = {
 	 * Specifies the DOM element where the control will be displayed.
 	 *
 	 * Note: if only the &quot;target&quot; config parameter is defined, the target DOM element
-	 * should contain the following HTML attributes:
+	 * should contain the following HTML attribute:
 	 *
-	 * + &quot;data-appkey&quot; with the necessary appkey value
 	 * + &quot;data-canvas-id&quot; with the unique Canvas ID which should be initialized
 	 *
-	 * The values of the HTML parameters override the &quot;appkey&quot; and &quot;id&quot; parameter values
+	 * The values of the HTML parameters override the &quot;id&quot; parameter value
 	 * (respectively) passed via the Canvas config.
-	 */
-
-<span id='Echo-Canvas-cfg-appkey'>	/**
-</span>	 * @cfg {String} appkey
-	 * @inheritdoc
 	 */
 
 <span id='Echo-Canvas-cfg-overrides'>	/**
@@ -163,7 +201,7 @@ canvas.config = {
 	 * target DOM element attribute.
 	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
-	&quot;mode&quot;: &quot;dev&quot;
+	&quot;mode&quot;: &quot;prod&quot;
 };
 
 canvas.vars = {
@@ -245,7 +283,6 @@ canvas.methods._initApp = function(app, element, id) {
 
 	app.id = app.id || id;  // define app position in array as id if not specified
 	app.config = app.config || {};
-	app.config.user = this.config.get(&quot;user&quot;);
 	app.config.canvasId = this.config.get(&#39;id&#39;);
 
 	var view = this.view.fork({
@@ -371,44 +408,9 @@ canvas.methods._getIds = function() {
 	};
 };
 
-Echo.Control.create(canvas);
-
-// Echo.Canvas class initialization logic requires additional initializers.
-// Before user initialization we should fetch canvas config from the server
-// and init a backplane mechanism. According to it we should extend default
-// control initializers list with own ones.
-var initializers = $.extend(true, {}, Echo.Canvas.prototype._initializers);
-
-var list = initializers.list;
-
-$.each(list, function(i, spec) {
-	if (spec[0] === &quot;user:async&quot;) {
-		list.splice(i, 0, [&quot;fetchConfig:async&quot;, [&quot;init&quot;, &quot;refresh&quot;]]);
-		list.splice(i + 1, 0, [&quot;initBackplane:async&quot;, [&quot;init&quot;, &quot;refresh&quot;]]);
-		return false;
-	}
-});
-
-initializers.fetchConfig = function(callback) {
+canvas.methods._fetchConfig = function(callback) {
 	var self = this, target = this.config.get(&quot;target&quot;);
 	var isManual = this._isManuallyConfigured();
-
-	// extending Canvas config with the &quot;id&quot; and &quot;appkey&quot; defined in the target
-	var overrides = this._getOverrides(target, [&quot;id&quot;, &quot;appkey&quot;, &quot;useSecureAPI&quot;, &quot;mode&quot;]);
-	if (!$.isEmptyObject(overrides)) {
-		this.config.extend(overrides);
-	}
-
-	// exit if no &quot;id&quot; or &quot;appkey&quot; is defined for the canvas,
-	// skip this validation in case the &quot;data&quot; is defined explicitly in the config
-	if (!isManual &amp;&amp;
-		!(this.config.get(&quot;id&quot;) &amp;&amp; this.config.get(&quot;appkey&quot;))) {
-			this._error({
-				&quot;args&quot;: {&quot;target&quot;: target},
-				&quot;code&quot;: &quot;invalid_canvas_config&quot;
-			});
-			return;
-	}
 
 	// no need to perform server side request in case
 	// we already have all the data on the client side
@@ -423,7 +425,12 @@ initializers.fetchConfig = function(callback) {
 		// specified as &quot;#XXX&quot; in the Canvas ID. We don&#39;t need to send this
 		// unique page identifier, we send only the primary Canvas ID.
 		&quot;endpoint&quot;: this._getIds().main,
-		&quot;data&quot;: this.config.get(&quot;mode&quot;) === &quot;dev&quot; ? {&quot;_&quot;: Math.random()} : {},
+		// adding page origin to the Cloudfront request to cache the Canvas
+		// config (on Cloudfront side) with the respective CORS headers,
+		// associated with the current domain 
+		&quot;data&quot;: this.config.get(&quot;mode&quot;) === &quot;dev&quot;
+			? {&quot;_&quot;: Math.random()}
+			: {&quot;origin&quot;: window.location.origin},
 		&quot;onData&quot;: function(config) {
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get(&quot;error_no_&quot; + (config ? &quot;apps&quot; : &quot;config&quot;));
@@ -448,14 +455,7 @@ initializers.fetchConfig = function(callback) {
 	})).request();
 };
 
-initializers.initBackplane = function(callback) {
-	// Note: Backplane.init in v2 will be async,
-	// so we need a callback to execute after Backplane init
-	Backplane.init(this.get(&quot;data.backplane&quot;));
-	callback.call(this);
-};
-
-Echo.Canvas.prototype._initializers = initializers;
+Echo.Control.create(canvas);
 
 })(Echo.jQuery);
 </pre>

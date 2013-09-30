@@ -14,7 +14,7 @@ Echo.Tests.renderersTest("Echo.Canvas", {
 
 Echo.Tests.asyncTest("common workflow", function() {
 	var target = $("#qunit-fixture");
-	target.append('<div id="echo-canvas" data-canvas-appkey="echo.jssdk.tests.aboutecho.com" data-canvas-id="js-sdk-tests/test-canvas-001#some-id_001"></div>');
+	target.append('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001#some-id_001"></div>');
 	new Echo.Canvas({
 		"target": $("#echo-canvas"),
 		"ready": function() {
@@ -62,7 +62,7 @@ Echo.Tests.asyncTest("common workflow", function() {
 
 Echo.Tests.asyncTest("select app script url", function() {
 	var target = $("#qunit-fixture");
-	target.append($('<div id="echo-canvas" data-canvas-appkey="echo.jssdk.tests.aboutecho.com" data-canvas-id="js-sdk-tests/test-canvas-001"></div>'));
+	target.append($('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>'));
 	new Echo.Canvas({
 		"target": $("#echo-canvas"),
 		"ready": function() {

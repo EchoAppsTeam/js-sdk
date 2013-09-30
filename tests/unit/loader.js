@@ -418,8 +418,8 @@ Echo.Tests.asyncTest("application initialization", function() {
 Echo.Tests.asyncTest("getting canvas elements", function() {
 	var defaultInit = Echo.Tests.isolate(function(callback) {
 		$(this.document.body)
-			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
-			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
+			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
 
 		Echo.Loader._lookupCanvases({
 			"target": this.document.body
@@ -431,9 +431,9 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 
 	var nativeElements = Echo.Tests.isolate(function(callback) {
 		$(this.document.body)
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 
 		Echo.Loader._lookupCanvases({
 			"target": this.document.body,
@@ -448,7 +448,7 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 
 	var nativeSingleElement = Echo.Tests.isolate(function(callback) {
 		$(this.document.body)
-			.append('<div id="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+			.append('<div id="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 
 		Echo.Loader._lookupCanvases({
 			"target": this.document.body,
@@ -461,9 +461,9 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 
 	var jQueryElements = Echo.Tests.isolate(function(callback) {
 		$(this.document.body)
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>')
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 
 		Echo.Loader._lookupCanvases({
 			"target": $("body", this.document),
@@ -497,7 +497,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		return success;
 	};
 	var simpleValidCanvas = Echo.Tests.isolate(function(callback) {
-		$(this.document.body).append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		$(this.document.body).append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 		var expecting = 2;
 		var waitForCompletion = function(canvasID, appID) {
 			Echo.Loader.override(canvasID, appID, {"ready": function() {
@@ -518,29 +518,26 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		// all mandatory fields are missing -->
 		body.append('<div class="echo-canvas"></div>');
 		body.append('<div class="echo-canvas" id="echo-canvas"></div>');
-		// missing appkey
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.001"></div>');
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/canvas.002"></div>');
 		// missing canvas id
 		body.append('<div class="echo-canvas" data-appkey="canvas.003"></div>');
 		// all fields defined, but no config available for the canvas id specified
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/nonexistent-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/nonexistent-canvas-002" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/nonexistent-canvas-001"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/nonexistent-canvas-002"></div>');
 		// canvas with empty app list
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-004" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-004"></div>');
 		// canvas with no app list and no Backplane config
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-005" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-005"></div>');
 		// canvas with no configuration at all (empty JSON object)
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-006" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-006"></div>');
 		// valid canvas with existing configuration
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 
 		var count = {
 			"valid": 2,
-			"invalid": 10
+			"invalid": 8
 		};
 		var errors = {
-			"invalid_canvas_config": [0, 8],
+			"invalid_canvas_config": [0, 6],
 			"unable_to_retrieve_app_config": [0, 2]
 		};
 		// check invalid canvases
@@ -573,7 +570,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var doubleInitializationPrevention = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
-		body.append('<div class="echo-canvas" id="canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" id="canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 		var count = {
 			"valid": 2,
 			"invalid": 3
@@ -616,11 +613,11 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var differentInitializationSchemas = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
-		body.append('<div class="echo-canvas" id="testcanvas" data-canvas-id="js-sdk-tests/test-canvas-002-1" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
-		body.append('<div class="echo-canvas" id="js-sdk-tests/test-canvas-002-2" data-canvas-id="js-sdk-tests/test-canvas-002-2" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
-		body.append('<div class="some-class echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-3" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
-		body.append('<div class="canvases-container"><div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-4" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div></div>');
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-5" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" id="testcanvas" data-canvas-id="js-sdk-tests/test-canvas-002-1"></div>');
+		body.append('<div class="echo-canvas" id="js-sdk-tests/test-canvas-002-2" data-canvas-id="js-sdk-tests/test-canvas-002-2"></div>');
+		body.append('<div class="some-class echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-3"></div>');
+		body.append('<div class="canvases-container"><div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-4"></div></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-5"></div>');
 
 		var count = {
 			"valid": 5,
@@ -679,7 +676,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var multipleAppsCanvas = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-003" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-003"></div>');
 		var expecting = 15;
 		var waitForCompletion = function(canvasID, appID) {
 			Echo.Loader.override(canvasID, appID, {"ready": function() {
@@ -699,8 +696,8 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var overridesSameCanvases = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008#foo" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008#bar" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008#foo"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008#bar"></div>');
 		var getCanvasById = function(canvasId) {
 			for (var i = 0; i < Echo.Loader.canvases.length; i++) {
 				if (Echo.Loader.canvases[i].config.get("id") === canvasId) {
@@ -736,7 +733,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var appConfigOverrides = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008" data-canvas-appkey="echo.jssdk.tests.aboutecho.com"></div>');
+		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008"></div>');
 		Echo.Loader.override("js-sdk-tests/test-canvas-008", "auth", {
 			"appkey": "test.js-kit.com",
 			"identityManager": {"logout": "test"},
@@ -781,7 +778,7 @@ suite.prototype.tests.canvasesScriptsLoadingTest = {
 		var self = this;
 		var debug = Echo.Loader.debug;
 
-		$("#qunit-fixture").append("<div class=\"echo-canvas\" data-canvas-appkey=\"echo.jssdk.tests.aboutecho.com\" data-canvas-id=\"js-sdk-tests/test.canvas.007\"></div>");
+		$("#qunit-fixture").append("<div class=\"echo-canvas\" data-canvas-id=\"js-sdk-tests/test.canvas.007\"></div>");
 
 		Echo.Loader.override("test.canvas.007", "test.apps.scripts", {"ready": function() {
 			this.destroy();
@@ -789,7 +786,7 @@ suite.prototype.tests.canvasesScriptsLoadingTest = {
 
 			Echo.Loader.debug = false;
 			delete window.Echo.Tests.Controls.TestControl;
-			$("#qunit-fixture").empty().append("<div class=\"echo-canvas\" data-canvas-appkey=\"echo.jssdk.tests.aboutecho.com\" data-canvas-id=\"js-sdk-tests/test.canvas.007\"></div>");
+			$("#qunit-fixture").empty().append("<div class=\"echo-canvas\" data-canvas-id=\"js-sdk-tests/test.canvas.007\"></div>");
 			Echo.Loader.override("test.canvas.007", "test.apps.scripts", {"ready": function() {
 				this.destroy();
 				QUnit.ok(Echo.Variables.TestControl === "production", "Check if production version of application script was loaded");

@@ -68,6 +68,24 @@ if (Echo.Control.isDefined(stream)) return;
 </span><span id='Echo-StreamServer-Controls-Stream-echo_label-monthAgo'>/** @hide @echo_label monthAgo */
 </span><span id='Echo-StreamServer-Controls-Stream-echo_label-monthsAgo'>/** @hide @echo_label monthsAgo */
 </span>
+<span id='Echo-StreamServer-Controls-Stream-echo_event-onReady'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+<span id='Echo-StreamServer-Controls-Stream-echo_event-onRefresh'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the &quot;refresh&quot; function call.
+ */
+<span id='Echo-StreamServer-Controls-Stream-echo_event-onRender'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.onRender
+ * Triggered when the app is rendered.
+ */
+<span id='Echo-StreamServer-Controls-Stream-echo_event-onRerender'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.onRerender
+ * Triggered when the app is rerendered.
+ */
+
 stream.init = function() {
 	var self = this;
 	if (!this.checkAppKey()) return;
@@ -1630,6 +1648,8 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		&quot;plugins&quot;: this.config.get(&quot;plugins&quot;),
 		&quot;context&quot;: this.config.get(&quot;context&quot;),
 		&quot;useSecureAPI&quot;: this.config.get(&quot;useSecureAPI&quot;),
+		&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
+		&quot;submissionProxyURL&quot;: this.config.get(&quot;submissionProxyURL&quot;),
 		&quot;user&quot;: this.user,
 		&quot;live&quot;: isLive,
 		&quot;ready&quot;: callback
@@ -1836,6 +1856,20 @@ if (Echo.Control.isDefined(item)) return;
 </span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_incorrect_user_id'>/** @hide @echo_label error_incorrect_user_id */
 </span><span id='Echo-StreamServer-Controls-Stream-Item-echo_label-error_unknown'>/** @hide @echo_label error_unknown */
 </span>
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_event-onReady'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.Item.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_event-onRefresh'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.Item.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the &quot;refresh&quot; function call.
+ */
+<span id='Echo-StreamServer-Controls-Stream-Item-echo_event-onRender'>/**
+</span> * @echo_event Echo.StreamServer.Controls.Stream.Item.onRender
+ * Triggered when the app is rendered.
+ */
+
 item.init = function() {
 	this.timestamp = Echo.Utils.timestampFromW3CDTF(this.get(&quot;data.object.published&quot;));
 	this.ready();

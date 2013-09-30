@@ -876,9 +876,18 @@ Echo.Control.prototype._initializers.user = function(callback) {
 		this.user = this.config.get(&quot;user&quot;);
 		callback.call(control);
 	} else {
+		var generateURL = function(baseURL, path) {
+			if (!baseURL) return;
+			var urlInfo = Echo.Utils.parseURL(baseURL);
+			return &quot;//&quot; + urlInfo[&quot;domain&quot;] + path;
+		};
 		Echo.UserSession({
 			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
 			&quot;useSecureAPI&quot;: this.config.get(&quot;useSecureAPI&quot;),
+			&quot;endpoints&quot;: {
+				&quot;logout&quot;: generateURL(this.config.get(&quot;submissionProxyURL&quot;), &quot;/v2/&quot;),
+				&quot;whoami&quot;: generateURL(this.config.get(&quot;apiBaseURL&quot;), &quot;/v1/users/&quot;)
+			},
 			&quot;ready&quot;: function() {
 				control.user = this;
 				callback.call(control);

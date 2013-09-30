@@ -722,6 +722,9 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 				self.subscribed = false;
 			}
 			if (response.data) {
+				if (response.data.nextSince) {
+					self.config.set(&quot;request.data.since&quot;, response.data.nextSince);
+				}
 				config.onData(response.data);
 			}
 		},

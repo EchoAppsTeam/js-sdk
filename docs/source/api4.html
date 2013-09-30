@@ -521,7 +521,7 @@ Echo.API.Transports.JSONP.prototype.send = function(data) {
 		return Echo.API.Transports.JSONP.parent.send.apply(this, arguments);
 	}
 	this._pushPostParameters($.extend({}, this.config.get(&quot;data&quot;), data));
-	this.transportObject.submit();
+	this.transportObject.form.submit();
 	this.config.get(&quot;onData&quot;)();
 };
 
@@ -575,7 +575,7 @@ Echo.API.Transports.JSONP.prototype._pushPostParameters = function(data) {
 			&quot;type&quot; : &quot;hidden&quot;,
 			&quot;name&quot; : key,
 			&quot;value&quot; : value
-		}).appendTo(self.transportObject);
+		}).appendTo(self.transportObject.form);
 	});
 	return self.transportObject;
 };
@@ -597,6 +597,7 @@ Echo.API.Transports.JSONP.available = function() {
  * Configuration data.
  */
 Echo.API.Request = function(config) {
+	var self = this;
 <span id='Echo-API-Request-cfg-endpoint'>	/**
 </span>	 * @cfg {String} endpoint
 	 * Specifes the API endpoint.
@@ -610,6 +611,7 @@ Echo.API.Request = function(config) {
 		});
 		return {};
 	}
+
 	this.config = new Echo.Configuration(config, {
 <span id='Echo-API-Request-cfg-onData'>		/**
 </span>		 * @cfg {Function} [onData]
@@ -683,11 +685,25 @@ Echo.API.Request = function(config) {
 		 * is called if the API request failed.
 		 */
 		&quot;timeout&quot;: 30
+	}, function(key, value) {
+		return self._configNormalizers[key]
+			? self._configNormalizers[key].call(self, value)
+			: value;
 	});
 	this.deferred = {
 		&quot;transport&quot;: $.Deferred()
 	};
 	this.transport = this._getTransport();
+};
+
+Echo.API.Request.prototype._configNormalizers = {
+	&quot;transport&quot;: function(transport) {
+		if (typeof transport === &quot;string&quot;) {
+			return this._normalizeTransportName(transport) || this._normalizeTransportName(&quot;ajax&quot;);
+		} else {
+			return this._normalizeTransportName(&quot;ajax&quot;);
+		}
+	}
 };
 
 Echo.API.Request.prototype._isSecureRequest = function() {
@@ -754,13 +770,17 @@ Echo.API.Request.prototype.abort = function() {
 	}
 };
 
-Echo.API.Request.prototype._getTransport = function() {
-	var self = this;
-	var userDefinedTransport = utils.foldl(&quot;&quot;, Echo.API.Transports, function(constructor, acc, name) {
-		if (self.config.get(&quot;transport&quot;).toLowerCase() === name.toLowerCase()) {
+Echo.API.Request.prototype._normalizeTransportName = function(transport) {
+	return utils.foldl(&quot;&quot;, Echo.API.Transports, function(constructor, acc, name) {
+		if (transport.toLowerCase() === name.toLowerCase()) {
 			return name;
 		}
 	});
+};
+
+Echo.API.Request.prototype._getTransport = function() {
+	var self = this;
+	var userDefinedTransport = this.config.get(&quot;transport&quot;);
 	var transport = Echo.API.Transports[userDefinedTransport] &amp;&amp; Echo.API.Transports[userDefinedTransport].available()
 		? userDefinedTransport
 		: function() {

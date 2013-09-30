@@ -241,11 +241,12 @@ suite.prototype.cases.websockets = function(callback) {
 				"maxConnectRetries": 2,
 				"serverPingInterval": 10
 			},
-			"onData": function() {
+			"onData": function(data) {
 				QUnit.deepEqual([
 					req.liveUpdates.requestObject.config.get("settings.maxConnectRetries"),
 					req.liveUpdates.requestObject.config.get("settings.serverPingInterval")
 				], [2, 10], "Check that config parameters for WS mapped");
+				QUnit.strictEqual(req.liveUpdates.config.get("request.data.since"), data.nextSince, "Check that since parameter was updated (WS usage)");
 				QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.WebSockets, "Check that liveUpdates switched to WS after its opened");
 				Echo.Events.subscribe({
 					"topic": "Echo.API.Transports.WebSocket.onClose",

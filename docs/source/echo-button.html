@@ -26,15 +26,19 @@ if (!Echo.GUI || Echo.GUI.Button) return;
 <span id='Echo-GUI-Button-method-constructor'><span id='Echo-GUI-Button-cfg-disabled'><span id='Echo-GUI-Button-cfg-icon'><span id='Echo-GUI-Button-cfg-label'><span id='Echo-GUI-Button-cfg-target'><span id='Echo-GUI-Button'>/**
 </span></span></span></span></span></span> * @class Echo.GUI.Button
  * Class wrapper for &lt;a href=&quot;http://twitter.github.com/bootstrap/javascript.html#buttons&quot;&gt;bootstrap-button.js&lt;/a&gt;.
- * The Echo.GUI.Dropdown class provides a simplified interface to work with the
+ * The Echo.GUI.Button class provides a simplified interface to work with the
  * Bootstrap Button JS class.
  * Echo wrapper assembles the HTML code required for Bootstrap Button JS class
  * based on the parameters specified in the config and initializes
  * the corresponding Bootstrap JS class.
  *
  * Example:
+ *
+ * 	element.on(&quot;click&quot;, function() {
+ * 		// your click action handler...
+ * 	});
  * 	var button = new Echo.GUI.Button({
- * 		&quot;target&quot;: &quot;.css-selector&quot;,
+ * 		&quot;target&quot;: element,
  * 		&quot;label&quot;: &quot;Button label&quot;,
  * 		&quot;icon&quot;: &quot;http://example.com/icon.png&quot;,
  * 		&quot;disabled&quot;: true
