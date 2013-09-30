@@ -1,5 +1,23 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.13 - September 30, 2013
+
+- We have updated the **Echo.Loader.initApplication function and added the delayed initialization support** for apps. This mode was originally implemented for the Canvases machinery only (in v3.0.11) and now we are extending the support to include the apps initialized via Echo.Loader.initApplication function. This new loading mode allows to delay the app loading until the app target becomes visible in the user's browser. This option is disabled by default. In order to enable this loading mode you should specify the "init" parameter in the config object passed to the Echo.Loader.initApplication function. More information about this mode can be found in our Documentation center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication).
+
+- In order to make the **client-side scripts caching more effective**, we've updated the Echo.Loader machinery to load JS SDK scripts from the latest stable version (for example, "v3.0.12") vs current ("v3") version. We've also updated the response headers for the resources served from our CDN to instruct browsers to cache stable location resources for a longer period of time, like 2-3 months vs 24 hours as defined right now. We believe that it should improve the client side performance by avoiding unnecessary requests to download resources (like scripts, images, CSS files, etc) from the CDN.
+
+- The logic of the **user initialization in Echo.App and Echo.Control was updated** to provide an ability to override the "whoami" and "logout" URLs. This ability was added to provide the configuration flexibility in case the code should work with different (non-default) StreamServer cluster. The "whoami" and "logout" URLs are generated using the "apiBaseURL" and "submissionProxyURL" config parameters and passed into the Echo.UserSession. So, to override these URLs you can pass only "apiBaseURL" and "submissionProxyURL" into an App constructor.
+
+- Another **update related to the user initialization was performed in the Echo.Canvas** class (responsible for the Canvas initialization). Due to the fact that apps inside the Canvas might not necessarily use Echo users machinery, we decided to avoid the user object from being initialized inside the Canvas. Thus, we removed the "data-canvas-appkey" attribute from the Canvas DOM element container. Also the "data-canvas-appkey" parameter was a bit confusing in a context of the Canvases, making the AppServer and StreamServer tightly coupled. Since the appkey parameter is now removed, the Canvases machinery becomes StreamServer-independent.
+
+- The **JS exception was thrown in case of sending a request** using the "POST" method and the "JSONP" transport. We have fixed the issue in the Echo.API.Request class and prevent the JS exception from being thrown.
+
+- We have **changed the default behavior of the Canvas loader machinery**. Now the loader is fetching the Canvas data from production storage by default. Previously the development location was a default one and you had to instruct the loader to use the production location when you go into production. Now it's the reverse: if you want to work with the Canvas in development mode, you can specify it using the ' data-canvas-mode="dev" ' HTML attribute in the Canvas \<div\> container or by switching the SDK engine to debug mode for your session by adding the "#!echo.debug:true" into the anchor part of the page URL as described [here](http://echoappsteam.github.io/js-sdk/docs/#!/guide/terminology-section-minified-scripts-and-debugging).
+
+- Another **important Canvas loader machinery update: we provided the ability to load the same Canvas data from multiple domains using CORS** (cross-domain AJAX calls). Previously there was a limitation that allowed Canvas config to be loaded from a single domain only. This limitation was removed and now you can place the same Canvas on different domains (for example: dev, qa, prod).
+
+- We have **updated the Echo.API.Request class and added extra validation for the "transport" key**. Now if the "transport" key is defined incorrectly, this value is ignored.
+
 ##v3.0.12 - September 18, 2013
 
 This release is completely devoted to the **[WebSockets](http://en.wikipedia.org/wiki/WebSocket) support implementation in the JS SDK transport layer**. This will make live updates instant for client apps. This technology is relatively new, but it's already supported in [~73% browsers](http://caniuse.com/#feat=websockets) (and growing fast).
