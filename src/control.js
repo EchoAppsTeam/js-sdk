@@ -1344,11 +1344,11 @@ manifest.labels = {
 	 */
 	"today": "Today",
 	/**
-	 * @echo_label yesterday
+	 * @echo_label justNow
 	 */
 	"justNow": "Just now",
 	/**
-	 * @echo_label
+	 * @echo_label yesterday
 	 */
 	"yesterday": "Yesterday",
 	/**
