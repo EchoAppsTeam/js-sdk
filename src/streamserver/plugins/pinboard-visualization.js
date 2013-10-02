@@ -18,6 +18,7 @@ var mediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item
 if (Echo.Control.isDefined(mediaGallery)) return;
 
 /** @hide @method getRelativeTime */
+/** @hide @echo_label justNow */
 /** @hide @echo_label today */
 /** @hide @echo_label yesterday */
 /** @hide @echo_label lastWeek */

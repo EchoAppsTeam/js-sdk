@@ -34,6 +34,7 @@ var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 if (Echo.Control.isDefined(stream)) return;
 
 /** @hide @method placeImage */
+/** @hide @echo_label justNow */
 /** @hide @echo_label today */
 /** @hide @echo_label yesterday */
 /** @hide @echo_label lastWeek */

@@ -40,6 +40,7 @@ if (Echo.Control.isDefined(counter)) return;
 /** @hide @method getRelativeTime */
 /** @hide @method parentRenderer */
 /** @hide @method placeImage */
+/** @hide @echo_label justNow */
 /** @hide @echo_label today */
 /** @hide @echo_label yesterday */
 /** @hide @echo_label lastWeek */

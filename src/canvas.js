@@ -26,6 +26,7 @@ if (Echo.Control.isDefined(canvas)) return;
  */
 
 /** @hide @method getRelativeTime */
+/** @hide @echo_label justNow */
 /** @hide @echo_label today */
 /** @hide @echo_label yesterday */
 /** @hide @echo_label lastWeek */

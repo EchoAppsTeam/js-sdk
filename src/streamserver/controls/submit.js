@@ -36,6 +36,7 @@ if (Echo.Control.isDefined(submit)) return;
 /** @hide @cfg apiBaseURL */
 /** @hide @method placeImage */
 /** @hide @method getRelativeTime */
+/** @hide @echo_label justNow */
 /** @hide @echo_label today */
 /** @hide @echo_label yesterday */
 /** @hide @echo_label lastWeek */

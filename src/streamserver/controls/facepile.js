@@ -38,6 +38,7 @@ if (Echo.Control.isDefined(pile)) return;
 /** @hide @cfg submissionProxyURL */
 /** @hide @method placeImage */
 /** @hide @method getRelativeTime */
+/** @hide @echo_label justNow */
 /** @hide @echo_label today */
 /** @hide @echo_label yesterday */
 /** @hide @echo_label lastWeek */
@@ -597,6 +598,7 @@ if (Echo.Control.isDefined(item)) return;
 /** @hide @method placeImage */
 /** @hide @method dependent */
 /** @hide @method getRelativeTime */
+/** @hide @echo_label justNow */
 /** @hide @echo_label today */
 /** @hide @echo_label yesterday */
 /** @hide @echo_label lastWeek */
