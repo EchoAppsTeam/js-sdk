@@ -414,7 +414,7 @@ canvas.methods._fetchConfig = function(callback) {
 		// associated with the current domain 
 		"data": this.config.get("mode") === "dev"
 			? {"_": Math.random()}
-			: {"origin": window.location.origin},
+			: {"origin": window.location.protocol + "//" + window.location.host},
 		"onData": function(config) {
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
