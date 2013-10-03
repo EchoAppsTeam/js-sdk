@@ -751,12 +751,13 @@ module.exports = function(grunt) {
 				data.baseURLs[k] = url.format(parts);
 			});
 		}
-		(function removeLastSlash(obj) {
+		(function normalizeURLs(obj) {
 			_.each(obj, function(v, k) {
 				if (!_.isObject(v)) {
-					obj[k] = v.replace(/\/$/, "");
+					// remove lasr slash and scheme
+					obj[k] = v.replace(/\/$/, "").replace(/^(?:http|ws)s?:/, "");
 				} else {
-					removeLastSlash(v);
+					normalizeURLs(v);
 				}
 			});
 		})(data.baseURLs);
