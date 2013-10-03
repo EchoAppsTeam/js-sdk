@@ -159,7 +159,7 @@ Echo.Tests.test("Transports JSONP method POST", function() {
 	})).request();
 });
 
-Echo.Tests.test("Ckeck transport noramalizer", function() {
+Echo.Tests.test("Check transport normalizer", function() {
 	var createRequest = function(transport) {
 		return new Echo.API.Request({
 			"apiBaseURL": "//example.com/v1/",
