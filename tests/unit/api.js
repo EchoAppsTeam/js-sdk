@@ -39,7 +39,7 @@ Echo.Tests.test("private interface", function() {
 		"onSomeEvent2": function() {},
 		"onemotion": true
 	});
-	QUnit.equal("//" + req._prepareURI(), "{%=baseURLs.api.streamserver%}/v1/some_endpoint", "Checking URI assembler for transport url");
+	QUnit.equal(req._prepareURL(), "{%=baseURLs.api.streamserver%}/v1/some_endpoint", "Checking URL assembler for transport url");
 	var handlers = req._getHandlersByConfig();
 	QUnit.ok("onSomeEvent" in handlers && "onSomeEvent2" in handlers, "Checking that component can retrieve event handlers from config");
 
@@ -49,11 +49,9 @@ Echo.Tests.test("private interface", function() {
 			"apiBaseURL": url
 		});
 	};
-	QUnit.equal(request("https://example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] https:// in URL");
-	QUnit.equal(request("http://example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] \"http://\" in URL");
-	QUnit.equal(request("wss://example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] \"wss://\" in URL");
-	QUnit.equal(request("//example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] \"//\" in URL");
-	QUnit.equal(request("example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] no protocol in URL");
+	QUnit.equal(request("https://example.com/v1/")._prepareURL(), "https://example.com/v1/endpoint", "[_prepareURL] \"https://\" in URL");
+	QUnit.equal(request("ws://example.com/v1/")._prepareURL(), "ws://example.com/v1/endpoint", "[_prepareURL] \"ws://\" in URL");
+	QUnit.equal(request("//example.com/v1/")._prepareURL(), "//example.com/v1/endpoint", "[_prepareURL] no schema in URL");
 });
 
 if (Echo.API.Transports.WebSocket.available()) {
