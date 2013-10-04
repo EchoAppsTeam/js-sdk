@@ -22,7 +22,7 @@ Echo.Tests.Fixtures.api.whoami = {
 					}],
 					"photos": [{
 						"type": "avatar",
-						"value": "{%=baseURLs.cdn%}/images/avatar-default.png"
+						"value": "http://example.com/avatar.png"
 					}],
 					"loggedIn": "true"
 				}, {
