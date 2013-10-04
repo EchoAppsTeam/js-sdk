@@ -1125,7 +1125,9 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 			}
 		});
 		self.hasInitialData = true;
-		self.isViewComplete = roots.length !== self.config.get("itemsPerPage");
+		self.isViewComplete = data.hasMoreChildren
+			? data.hasMoreChildren === "false"
+			: roots.length !== self.config.get("itemsPerPage");
 		(visualizer || function(data) {
 			self.lastRequest = {
 				"initial": true,
