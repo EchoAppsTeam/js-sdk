@@ -72,7 +72,7 @@ Echo.Tests.asyncTest("logged in checks", function() {
 	});
 }, {
 	"user": {"status": "logged"},
-	"timeout": 6000
+	"timeout": 8000
 });
 
 Echo.Tests.asyncTest("anonymous checks", function() {
