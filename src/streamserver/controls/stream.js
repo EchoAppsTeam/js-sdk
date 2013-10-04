@@ -363,7 +363,7 @@ stream.config = {
 	 * @cfg {String} submissionProxyURL
 	 * Location (URL) of the Submission Proxy subsystem.
 	 */
-	"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
+	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
 
 	/**
 	 * @cfg {Object} data

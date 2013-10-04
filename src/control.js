@@ -1176,16 +1176,16 @@ manifest.config = {
 	"labels": {},
 
 	/**
-	 * @cfg {String} [apiBaseURL="api.echoenabled.com/v1/"]
+	 * @cfg {String} [apiBaseURL="//api.echoenabled.com/v1/"]
 	 * URL prefix for all API requests
 	 */
 	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
 
 	/**
-	 * @cfg {String} [submissionProxyURL="apps.echoenabled.com/v2/esp/activity/"]
+	 * @cfg {String} [submissionProxyURL="https://apps.echoenabled.com/v2/esp/activity"]
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
-	"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity/",
+	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity/",
 
 	/**
 	 * @cfg {Boolean} [useSecureAPI]

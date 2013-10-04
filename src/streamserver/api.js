@@ -121,6 +121,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * __Note__: this parameter is deprecated in favor of liveUpdates.enabled
 		 */
 		"recurring": false,
+
 		/**
 		 * @cfg {Boolean} [skipInitialRequest]
 		 * Flag allowing to skip the initial request but continue performing
@@ -156,7 +157,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * @cfg {String} [submissionProxyURL]
 		 * Specifes the URL to the submission proxy service.
 		 */
-		"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
+		"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = "initial"; // initial | secondary
