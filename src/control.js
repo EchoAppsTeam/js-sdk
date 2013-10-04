@@ -1185,7 +1185,7 @@ manifest.config = {
 	 * @cfg {String} [submissionProxyURL="https://apps.echoenabled.com/v2/esp/activity"]
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
-	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity/",
+	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
 
 	/**
 	 * @cfg {Boolean} [useSecureAPI]
