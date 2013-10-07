@@ -1,5 +1,59 @@
 (function($) {
 
+
+Echo.Tests.module("Echo.StreamServer.Controls.Stream", {
+	"meta": {
+		"className" : "Echo.StreamServer.Controls.Stream",
+		"functions": []
+	}
+});
+
+Echo.Tests.asyncTest("more button", function() {
+	// This test doesn't work in the "real server requests" mode
+	// because if we want to use real requests we need to prepare
+	// a stream with three items. It will create a different logic
+	// for the test with the enabled requests mocking and without it.
+	// TODO: we need to accumulate more similar use cases and develop
+	// a general approach, should be doable after rewriting all tests
+	var cases = [{
+		"itemsPerPage": 1,
+		"check": function() {
+			QUnit.ok(this.view.get("more").is(":visible"), "Check if more button is visible when itemsPerPage less than count items in a stream");
+		}
+	}, {
+		"itemsPerPage": 2,
+		"check": function() {
+			QUnit.ok(this.view.get("more").not(":visible"), "Check if more button is hidden when itemsPerPage equal to count items in a stream");
+		}
+	}, {
+		"itemsPerPage": 3,
+		"check": function() {
+			QUnit.ok(this.view.get("more").not(":visible"), "Check if more button is hidden when itemsPerPage more than count items in a stream");
+		}
+	}, {
+		"itemsPerPage": 5,
+		"check": function() {
+			QUnit.ok(this.view.get("more").not(":visible"), "Check if more button is hidden when stream is empty");
+		}
+	}];
+
+	Echo.Utils.sequentialCall($.map(cases, function(test) {
+		return function(callback) {
+			new Echo.StreamServer.Controls.Stream({
+				"target": $("#qunit-fixture"),
+				"appkey": "echo.jssdk.tests.aboutecho.com",
+				"query": "childrenof:http://example.com/sdk/stream/more-button itemsPerPage:" + test.itemsPerPage,
+				"ready": function() {
+					test.check.call(this);
+					callback();
+				}
+			});
+		};
+	}), function() {
+		QUnit.start();
+	});
+});
+
 var suite = Echo.Tests.Unit.Stream = function() {
 	this.constructRenderersTest({
 		"instance": {
