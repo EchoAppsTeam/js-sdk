@@ -10,7 +10,7 @@ Let's imagine that we want to create the control for displaying a number of item
 
 ## Creating the control skeleton
 
-First of all, let's prepare the JavaScript closure to allocate a separate namespace for our control's code. This step is common for all controls. You can find the detailed information on how to create the JS closure in the ["Terminology and dev tips"](#!/guide/terminology-section-3) guide. So we have the following code as a starting point:
+First of all, let's prepare the JavaScript closure to allocate a separate namespace for our control's code. This step is common for all controls. You can find the detailed information on how to create the JS closure in the ["Terminology and dev tips"](#!/guide/terminology-section-creating-a-javascript-closure-for-the-components-and-jquery-plugins) guide. So we have the following code as a starting point:
 
 	(function(jQuery) {
 	"use strict";

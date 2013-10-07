@@ -78,16 +78,16 @@ The GitHub repo can be found [here](https://github.com/EchoAppsTeam/js-sdk/)
 
 100% of the public interfaces are covered with automated tests (over 1k and counting), which should increase quality and predictability moving forward.
 
-Test Suites can be found [here](http://echoappsteam.github.com/js-sdk/tests/)
+Test Suites can be found [here](http://echoappsteam.github.io/js-sdk/tests/)
 
 ### Extensive documentation
 
 Inline documentation for all public functions using JSDuck is included. We have also added several guides and tutorials and are planning to extend the SDK knowledge base moving forward.
 
-Documentation can be found [here](http://echoappsteam.github.com/js-sdk/docs/)
+Documentation can be found [here](http://echoappsteam.github.io/js-sdk/docs/)
 
 ## Get Started
 
-Check out the documentation on [GitHub](http://echoappsteam.github.com/js-sdk/docs/).
+Check out the documentation on [GitHub](http://echoappsteam.github.io/js-sdk/docs/).
 
 To get started with the SDK [contact us](http://aboutecho.com/AboutEcho/Contact)!

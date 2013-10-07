@@ -10,7 +10,7 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 + Configuration storage and overrides (coming soon)
 + Centralized deployment management and administration (coming soon)
 
-[Check out the full documentation](http://echoappsteam.github.com/js-sdk/docs/#)
+[Check out the full documentation](http://echoappsteam.github.io/js-sdk/docs/)
 
 # Installation instructions
 

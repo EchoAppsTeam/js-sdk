@@ -17,7 +17,7 @@ var $ = jQuery;
  * 	});
  *
  * More information regarding the possible ways of the Control initialization
- * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.Control
  *

@@ -14,12 +14,12 @@ Key components used in the SDK (such as Bootstrap UI Framework and Isotope libra
 
 Echo JS SDK uses its own instance of jQuery to isolate SDK code execution from the other code on the page and vice versa. It also helps to prevent jQuery version conflicts. This instance is namespaced as *Echo.jQuery*. Its version is regularly updated, usually within a few weeks since the jQuery official release date. The actual version used in production code can be found in the [SDK changelog](https://github.com/EchoAppsTeam/js-sdk/blob/master/Changelog.md).
 
-At the moment Echo SDK includes only 2 jQuery plugins: *isotope* and *viewport*. Their code is wrapped using the method described [here](#!/guide/terminology-section-3) to use Echo instance of jQuery. Nothing on the page will be able to interact with these exact plugins unless it uses Echo.jQuery.
+At the moment Echo SDK includes only 2 jQuery plugins: *isotope* and *viewport*. Their code is wrapped using the method described [here](#!/guide/terminology-section-creating-a-javascript-closure-for-the-components-and-jquery-plugins) to use Echo instance of jQuery. Nothing on the page will be able to interact with these exact plugins unless it uses Echo.jQuery.
 
 If third-party application built on top of this SDK utilizes some other jQuery plugins it should do one of the following:
 
   + use the plugin as is but make sure that some jQuery instance is used on the page;
-  + put a copy of the plugin into its codebase and wrap it with the [Echo wrapper](#!/guide/terminology-section-3).
+  + put a copy of the plugin into its codebase and wrap it with the [Echo wrapper](#!/guide/terminology-section-creating-a-javascript-closure-for-the-components-and-jquery-plugins).
 
 
 ## Browser support

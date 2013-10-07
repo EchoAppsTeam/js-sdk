@@ -68,7 +68,7 @@ The list of the placeholders supported inside the app functions can be found bel
 
   		<div class="echo-streamserver-controls-stream-item-avatar"></div>
 
-  Note: the value of the `class` placeholder also serves as the name of the renderer which should be applied for this particular element. More information about the rendering engine can be found [here](#!/guide/terminology-section-4).
+  Note: the value of the `class` placeholder also serves as the name of the renderer which should be applied for this particular element. More information about the rendering engine can be found [here](#!/guide/terminology-section-rendering-engine).
 
 
 - `{config:value}`

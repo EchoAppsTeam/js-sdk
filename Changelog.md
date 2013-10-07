@@ -149,19 +149,19 @@ The main reason why the function was added into the code is to **avoid JS except
 
 * Sometimes when the item was updated, the **item timestamp field was missing** in the UI. The problem was fixed and as a part of the fix we removed the “age” field (which was no longer used) from the Echo.StreamServer.Controls.Stream.Item class instance. Since the field existed for internal usage only, it should not affect the code written on top of the SDK. Anyway if you used the “age” field references in your code, make sure that the corresponding code is rewritten accordingly.
 
-* The Echo.Canvas abstraction was added to work with the application deployments. The abstraction is used primarily in the **Echo.Loader.initApplication** function at this moment to init applications, but it will also be widely used later for other app deployment scenarios. The corresponding code of the Echo.Loader class was refactored to work with the Echo.Canvas abstraction. Note: we do not recommend the Echo.Canvas abstraction usage directly for now, please use the Echo.Loader.initApplication function instead. More information about the Echo.Loader.initApplication function can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication).
+* The Echo.Canvas abstraction was added to work with the application deployments. The abstraction is used primarily in the **Echo.Loader.initApplication** function at this moment to init applications, but it will also be widely used later for other app deployment scenarios. The corresponding code of the Echo.Loader class was refactored to work with the Echo.Canvas abstraction. Note: we do not recommend the Echo.Canvas abstraction usage directly for now, please use the Echo.Loader.initApplication function instead. More information about the Echo.Loader.initApplication function can be found [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication).
 
 * The **Twitter Bootstrap UI framework** was upgraded from 2.3.0 to 2.3.1 version. The framework changelog is available [here](https://github.com/twitter/bootstrap/blob/master/CHANGELOG.md).
 
 * The **"PinboardVisualization" plugin** was handling the YouTube video URLs in the item content incorrectly, which prevented videos from appearing in the item UI. Now the URLs processing was updated and the videos should appear in the item UI properly.
 
-* There was a mismatch between the “show user list” option names used in the **"CommunityFlag" plugin** code, the plugin default config object and docs. The [config and docs](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-cfg-showUserList) are now synced.
+* There was a mismatch between the “show user list” option names used in the **"CommunityFlag" plugin** code, the plugin default config object and docs. The [config and docs](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-cfg-showUserList) are now synced.
 
 * Incorrect detection of the current user id in the **"Like" plugin** caused invalid label in the Stream item UI for the likes submitted by the current user. The user id detection is now fixed.
 
-* The "itemURIPattern" configuration parameter was ignored by the **Submit control** during the item submission. Now the Submit control is passing the "itemURIPattern" parameter value into the API machinery which takes care of sending the data to the server side. More information about the "itemURIPattern" can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-cfg-itemURIPattern).
+* The "itemURIPattern" configuration parameter was ignored by the **Submit control** during the item submission. Now the Submit control is passing the "itemURIPattern" parameter value into the API machinery which takes care of sending the data to the server side. More information about the "itemURIPattern" can be found [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-cfg-itemURIPattern).
 
-* We introduced the new parameter called "useSecureAPI" to all classes based on the Echo.Control or Echo.App class. This parameter is designed to specify the API request scheme (HTTP or HTTPS). More information about the “useSecureAPI” parameter can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-cfg-useSecureAPI).
+* We introduced the new parameter called "useSecureAPI" to all classes based on the Echo.Control or Echo.App class. This parameter is designed to specify the API request scheme (HTTP or HTTPS). More information about the “useSecureAPI” parameter can be found [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-cfg-useSecureAPI).
 
 * The **“tags” and “markers” parameter values defined in the Submit control config were ignored** while building the UI for administrators/moderators. The issue was fixed and now the Submit control takes the config values into account.
 
@@ -175,19 +175,19 @@ The main reason why the function was added into the code is to **avoid JS except
 
 * The **“TwitterIntents” plugin was renamed to “TweetDisplay”**. The “TwitterIntents” plugin is still available, but it was marked as deprecated and will be removed during the next (v3.0.8) SDK release. If you use this plugin, **please update the plugin name** in your installations. The tweets appearance was also updated to comply with the latest Twitter display requirements.
 
-* The **“select” event has been added into the Echo.GUI.Tabs** class. The event is triggered when the user clicks on the non-disabled, but inactive (not selected) tab. More info about the “select” event can be found [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI.Tabs-cfg-select).
+* The **“select” event has been added into the Echo.GUI.Tabs** class. The event is triggered when the user clicks on the non-disabled, but inactive (not selected) tab. More info about the “select” event can be found [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI.Tabs-cfg-select).
 
 ## v3.0.6 - Feb 20, 2013
 
-* **the quirks browser mode is no longer supported**, more information is available [here](http://echoappsteam.github.com/js-sdk/docs/#!/guide/technical_specification-section-1).
+* **the quirks browser mode is no longer supported**, more information is available [here](http://echoappsteam.github.io/js-sdk/docs/#!/guide/technical_specification-section-limitations).
 
-* several additional **configuration parameters were added to Echo.GUI.Tabs** component. More information about the Tabs library can be found [in our documentation center](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI.Tabs).
+* several additional **configuration parameters were added to Echo.GUI.Tabs** component. More information about the Tabs library can be found [in our documentation center](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI.Tabs).
 
-* new **setState method was added into Echo.GUI.Button** component, more information is available [here](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI.Button-method-setState).
+* new **setState method was added into Echo.GUI.Button** component, more information is available [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI.Button-method-setState).
 
 * a **few bugs were fixed in the Echo.GUI.Modal** component which caused malfunctioning in some cases.
 
-* we have added the **ability to set nested entries for Echo.GUI.Dropdown** component. **Separate icons can be specified** for the dropdown itself as well as for each entry. For more information please visit [our documentation center](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI.Dropdown).
+* we have added the **ability to set nested entries for Echo.GUI.Dropdown** component. **Separate icons can be specified** for the dropdown itself as well as for each entry. For more information please visit [our documentation center](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI.Dropdown).
 
 * the **Bootstrap transitions plugin was included** into the Echo.GUI package. More information about this plugin can be found [here](http://twitter.github.com/bootstrap/javascript.html#transitions).
 
@@ -211,7 +211,7 @@ The main reason why the function was added into the code is to **avoid JS except
 
 * We’ve **moved Echo Bootstrap plugin wrappers into the Echo.GUI scope**. The $.echoButton and $.echoModal functions have been removed and you should use Echo.GUI.Button and Echo.GUI.Modal classes instead. In addition to the Button and Modal wrappers we also released a few other wrappers which should help you to work with Bootstrap components. The Echo.GUI classes description can be found in the documentation center:
 
-  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.GUI)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI)
 
 * All the Twitter Bootstrap JS files with the Echo.GUI components are now packed into the “gui.pack.js” file. All the CSS rules (Bootstrap and Echo.GUI components) are packed into the “gui.pack.css”. Please make sure to include these files into dependencies if your plugins or apps use Bootstrap components.
 
@@ -224,21 +224,21 @@ The main reason why the function was added into the code is to **avoid JS except
 
   More information about the “PinboardVisualization” plugin can be found in our docs center:
 
-  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization)
 
 * The **events produced by the "Edit" plugin** contained incomplete event names, the "Plugins.Edit" part was missing. The event names generation was fixed and now the proper events are being fired by the "Edit" plugin. If you use subscriptions to the “Edit” plugin events, please update the corresponding code to subscribe using the new event names. More information about the "Edit" plugin itself and the events produced can be found in our docs center:
 
-  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit)
 
 * The **“appkey” validation was moved** from the base Echo.Control to the specific controls which require “appkey” as a mandatory parameter. Now if your app or control doesn’t require an “appkey” (doesn’t interact with StreamServer or IdentityServer directly), the “appkey” can be omitted in the configuration. For you convenience if you need to check the “appkey”, we added the “checkAppKey” function into the Echo.Control class, so your control or application will have access to this function using the “this” property of the class instance. More information about the “checkAppKey” function can be found in our docs center:
 
-  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-method-checkAppKey](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-method-checkAppKey)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-method-checkAppKey](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-method-checkAppKey)
 
 * The internal logic of the base **Echo.Control class was updated** to consume less memory while creating a JS class from the manifest declaration. In addition to that the logic of the JS class generation was updated to allow multi-level inheritance based on the manifests overrides.
 
 * The **Echo.Loader.initApplication function was added** to provide the unified way of apps initialization on the page. The function performs initial preparations and initializes the app instance. More information about the function can be found in our docs center:  
 
-  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication)
 
 * **Twitter Bootstrap was upgraded** from 2.2.1 to 2.2.2 version. Bootstrap release notes can be found [here](http://blog.getbootstrap.com/2012/12/08/bootstrap-2-2-2-released/).
 * **QUnit library was upgraded** from 1.10.0 to 1.11.0 version. The QUnit lib changelog can be found [here](https://github.com/jquery/qunit/blob/v1.11.0/History.md).
@@ -247,7 +247,7 @@ The main reason why the function was added into the code is to **avoid JS except
 
 * The **dependencies definition was simplified**. We’ve added an ability to specify the plugin/app/control name instead of the "loaded" function as a part of the dependency object. The “loaded” function was also preserved. You can see the examples here:
 
-  [http://echoappsteam.github.com/js-sdk/docs/#!/guide/howtodevelop_app-section-7](http://echoappsteam.github.com/js-sdk/docs/#!/guide/howtodevelop_app-section-7)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_develop_app-section-dependencies](http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_develop_app-section-dependencies)
 
 * The internal mechanics of the **Echo.Utils.timestampFromW3CDTF method was slightly updated**. Now this method can convert any string representation of a date supported by the browser. If the ISO representation is not supported (e.g. in IE8, in IE9 in quirks mode, in Safari on a date with reduced precision) then the Echo.Utils.timestampFromW3CDTF will parse that date string as it did before.
 
@@ -267,11 +267,11 @@ The main reason why the function was added into the code is to **avoid JS except
 
 * The **Echo.Loader.initEnvironment function became public**. The function helps to initialize Echo JS environment on the page by downloading the necessary scripts. More information about the function can be found in our docs center:
 
-  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initEnvironment](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-initEnvironment)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-initEnvironment](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-initEnvironment)
 
 * The internal logic of the **Echo.Loader.download function was updated** to handle the various cases of multiple resource loading, nested execution of the same function from the callback, same resource multiple loading, etc. More information about the Echo.Loader.download function can be found in our docs center:
 
-  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-download](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-download)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-download](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-download)
 
 * We’ve **changed the avatars display rules** in our components. Prior to this change we supported square avatars only and this could result in distortion of non-square images. This limitation is now removed and the avatar is shrinked proportionally, so the image is displayed without any deformation.
 
@@ -279,12 +279,12 @@ The main reason why the function was added into the code is to **avoid JS except
 
   A detailed description of these functions can be found in our documentation center:
 
-  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage)
-  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-method-placeImage](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-method-placeImage](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage)
 
 * The context generation machinery became a part of the Echo.Events library interface. You can call the **Echo.Events.newContextId function to generate a new unique context ID string**. The function also supports generation of the nested contexts (the parent context should be passed as a first argument). More information about the function can be found in our docs center:
 
-  [http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Events-static-method-newContextId](http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Events-static-method-newContextId)
+  [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Events-static-method-newContextId](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Events-static-method-newContextId)
 
 
 ## v3.0.4 - Nov 29, 2012
@@ -302,14 +302,14 @@ The main reason why the function was added into the code is to **avoid JS except
  The value of the flag is saved in a cookie and the loader will use it later to download the corresponding
  minified or development version of the particular script. If there is no cookie defined - the minified versions
  will be used by default. More information about the specifics of the minified -> development scripts switch mechanics can be found in our docs center here:
-http://echoappsteam.github.com/js-sdk/docs/#!/guide/terminology-section-5
+http://echoappsteam.github.io/js-sdk/docs/#!/guide/terminology-section-minified-scripts-and-debugging
 
 - URL placeholders such as {sdk} and {apps} were removed from the code. Now URLs should use the "cdnBaseURL"
 configuration parameter of the Echo.Control class. This parameter was introduced in the SDK v3.0.3 release.
 See more information about it  in our documentation center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-cfg-cdnBaseURL
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-cfg-cdnBaseURL
 Note that Echo.Loader.getURL function was modified to handle relative URLs to SDK resources. More details here:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-getURL .
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-getURL .
 So if you use these placeholders you should perform some changes using the following rules:
     - Inside the component templates or dependency URLs you should use the {config:cdnBaseURL.sdk} and {config:cdnBaseURL.apps} placeholders instead of {sdk} and {apps} respectively.
     - In other cases you can use Echo.Loader.getURL function providing it with a relative URL to resource. URL is relative to http://cdn.echoenabled.com/sdk/v3/ folder.<br><br>
@@ -319,7 +319,7 @@ and accessor operations which allow to work with cookies (get/set/remove). The c
 power the minified vs development script modes switch state, but you can start using it to work
 with cookies in your code. It's available by including the http://cdn.echoenabled.com/sdk/v3/loader.js file.
 Documentation for the Echo.Cookie class is available in our documentation center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Cookie
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Cookie
 
 - New items animation machinery was introduced in the Stream control. Powered by native CSS 3
 transitions new items come into the stream as live updates fading out more smoothly.
@@ -332,9 +332,9 @@ Now the "set" and "remove" functions return the boolean result of the operation 
 The "get" function now returns the default value in case the key or the source object is
 missing (used to return the source object before).
 More information about the above mentioned functions can be found in our documentation center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-set
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-get
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-remove
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-set
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-get
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-remove
 
 - A couple of issues were fixed in the $.echoModal class. Now the closing modal form action should not
 cause errors in IE browsers. Also the issue with the redundant iframe content loading after closing the
@@ -345,7 +345,7 @@ was already added into the page. The function was employed in the internal facto
 the JS class using the manifest declaration. It prevent the same CSS rules from being processed for each instance.
 This modification contributes to the SDK performance improvement.
 More information about the Echo.Utils.hasCSS function can be found in our doc center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-hasCSS
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-hasCSS
 
 - The Echo.Utils.timestampFromW3CDTF function internal machinery was updated to use the natively supported
 Date JS class functions first before switching to the home-grown implementations (for the browsers which doesn't
@@ -355,7 +355,7 @@ W3CDTF date and time format compliance.
 - The relative time calculation logic was extracted from the Echo.StreamServer.Controls.Stream.Item control and placed to
 the Echo.Control class to provide an ability for any control/plugin/app to use it.
 More information about the newly added "getRelativeTime" method can be found in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-static-method-getRelativeTime
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-static-method-getRelativeTime
 
 - The internal machinery which generates the JS class from the manifest was updated to define the set of
 default language vars once during the JS class generation rather than adding the same set of labels every
@@ -391,25 +391,25 @@ Control and Plugin manifests and remove the Bootstrap CSS files usage required f
 handlers are called with the new parameter "type" instead of "initial". This parameter specifies
 the origin of data request and provides the ability to identify event producers more precise. More information
 about the event and its new interface can be found in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-event-onDataReceive
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-event-onDataReceive
 
 - The contract of the Echo.Utils.loadImage was updated. Now the function accepts one argument with
 the object type. The "onload" and "onerror" callbacks were added as well to provide better flexibility
 for the function users. More information about the function and its new contract can be found in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-loadImage
 
 - The Echo.Utils.parseURL function contract was slightly updated. Now an empty string is returned as a value
 for the keys which represent the part which was not found in the URL, the "undefined" value was returned
 previously in such cases. If you use this function in your code, please make check it and update accordingly.
 More information about the Echo.Utils.parseURL function can be found in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Utils-static-method-parseURL
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-parseURL
 
 - The Twitter Bootstrap UI framework was upgraded from 2.1.1 to 2.2.1 version.
 
 - A new "title" configuration parameter was added for the Echo.IdentityServer.Controls.Auth control
 to provide an ability to set the auth modal dialog title. More information about the new parameter
 can be found in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth-cfg-identityManager
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.IdentityServer.Controls.Auth-cfg-identityManager
 
 - The "destroy" method called for the dependent control (i.e. when it was initialized within another control)
 didn't clean up the target element, the target was cleared only in case the "destroy" was called for the top
@@ -423,7 +423,7 @@ control. Now the PinboardVisualization plugin doesn't affect the info messages d
 
 - A new "removePersonalItemsAllowed" configuration parameter was added for the Moderation plugin to provide users
 with the ability to delete their own items. More information about the new parameter can be found in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-cfg-removePersonalItemsAllowed
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation-cfg-removePersonalItemsAllowed
 
 - The Echo.Utils.htmlize and Echo.Utils.stripTags functions logic was slightly updated. Now the functions process
 the argument value only if it's a string type argument and return incoming argument value as is otherwise.
@@ -438,11 +438,11 @@ into the JS closure to exit the function in case the given class was already def
 - The logic of the Echo.API lib was updated to provide an ability to make cross domain AJAX requests using
 the POST method. The HTTP method can be defined using the "method" parameter of the Echo.API object instance
 creation. More information about the Echo.API lib can be found in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.API.Request-cfg-method
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.API.Request-cfg-method
 
 - A new "settings" configuration parameter was added for the Echo.API library to provide an access to transport
 object configuration. More information about the new configuration parameter can be found in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.API.Request-cfg-settings
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.API.Request-cfg-settings
 
 - A new "cdnBaseURL" configuration parameter was added for all Apps and Controls. The intention is to collect
 different CDN base URLs used in the products built on top of the JS SDK in one single place for consistency purposes.
@@ -452,7 +452,7 @@ for the URLs defined in the "dependencies" object of the App, Control or Plugin 
 the newly added "cdnBaseURL" configuration parameter values in the URLs to give more flexibility for the publishers
 and developers to define the location of the resources and avoid the need to update the code itself in case
 the base URL is changed. More information about the "cdnBaseURL" parameter can be found in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Control-cfg-cdnBaseURL
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-cfg-cdnBaseURL
 
 - The internal machinery of the Echo.Utils.htmlTextTruncate function was updated to cache the generated
 list of tags used inside the function to prevent the same set of tags generation each time the function is being called.
@@ -474,18 +474,18 @@ Please rename the event if you use it somewhere in the code.
 moved into the "liveUpdates" hash and became the "enabled" and "timeout" keys
 respectively. The "liveUpdatesTimeoutMin" option was removed. More information
 about the "liveUpdates" configuration option is available in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-liveUpdates
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-liveUpdates
 
 - the "streamStateLabel" and "streamStateToggleBy" Stream control configuration
 options were moved into the "state" hash and became the "label" and "toggleBy"
 keys respectively. Documentation for the "state" option is available in our docs
-center: http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-state
+center: http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-state
 
 - the "Echo.Loader.download" function interface was updated. Now the function
 accepts 3 arguments: resources to download, callback and the config. Previously
 these arguments were specified as keys of the single object argument. Please update the "Echo.Loader.download"
 function calls in your code. Updated information about the function is available in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.Loader-static-method-download
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-download
 
 - the "More" button of the Stream control is now included into the Live/Pause
 trigger area, if the "state.toggleBy" config option is defined as "mouseover"
@@ -495,7 +495,7 @@ trigger area, if the "state.toggleBy" config option is defined as "mouseover"
 If the "layout" is defined as "full" - the "apply update" button appears above the
 Stream items list when the new item reaches the Stream as a live update. The user
 can click on the button to reveal updates. Documentation for the "state.layout"option
-is available in ours docs center: http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-state
+is available in ours docs center: http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-state
 
 - the animation of the new items (received as live updates in the Stream control) was
 changed. Now the whole item container and its contents slide in together from the top
@@ -519,7 +519,7 @@ to initial data loading and "more" data loading
 - new "itemsComparator" configuration parameter was added for the Stream control to provide
 an ability to sort the items in a custom order. More information about the configuration
 parameter can be found in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-itemsComparator
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-itemsComparator
 
 
 ## v3.0.1 - Sep 26, 2012
@@ -547,7 +547,7 @@ Echo.StreamServer.Controls.Submit control to provide an ability to
 define the necessary dimensions for the error message popup raised by
 the Submit form in case of error. Documentation for the "errorPopup"
 option is available in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-cfg-errorPopup.
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-cfg-errorPopup.
 
 - jQuery library was upgraded from 1.8.1 to 1.8.2 version.
 
@@ -580,7 +580,7 @@ field value.
 FacePile controls. Now you can define the avatar URL to be used as a
 default one in the control UI. Documentation for the "defaultAvatar"
 option is available in our docs center:
-http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-defaultAvatar
+http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-defaultAvatar
 
 - the "getComponent" function was added to the "Echo.App" class to
 provide the ability to access the component by its internal (for the
