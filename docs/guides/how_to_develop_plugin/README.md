@@ -170,7 +170,7 @@ Here is what's going on in the function:
 
 - the function returns the string with HTML representation of the dropdown.
 
-Important note: as you can see, the final template contains the placeholders such as: "{plugin.class:wrapper}" and "{plugin.label:sortOrderSelection}". These placeholders will be processed by the templating engine before the template is inserted into the Stream UI. You can find the general description of the rendering engine in the ["Terminology and dev tips"](#!/guide/terminology) guide. In addition to the basic placeholders supported by the rendering engine, the base plugins functionality also provides the ability to define the following placeholders:
+Important note: as you can see, the final template contains the placeholders such as: "{plugin.class:wrapper}" and "{plugin.label:sortOrderSelection}". These placeholders will be processed by the templating engine before the template is inserted into the Stream UI. You can find the general description of the rendering engine in the ["Terminology and dev tips"](#!/guide/terminology-section-rendering-engine) guide. In addition to the basic placeholders supported by the rendering engine, the base plugins functionality also provides the ability to define the following placeholders:
 
 - {plugin.class:KEY} - the placeholder will be replaced with the CSS class name + the KEY value
 - {plugin.label:KEY} - the placeholder to access the corresponding label text using the KEY as a key
@@ -190,6 +190,8 @@ In order to specify the rules for the plugin template addition, we should call t
 So we passed the "insertAsFirstChild" directive as the first argument, the anchor element as the second one and the template (which might be represented as a function) as the third argument.
 
 More information about the "extendTemplate" function can be found {@link Echo.Plugin#extendTemplate here}.
+
+This chapter describes only the case where a completely new element is added by the plugin. In case of extending behavior of already existing elements (i.e. wrapping, adding/removing CSS class, etc) renderers mechanism should be used.
 
 ## Adding renderers
 
