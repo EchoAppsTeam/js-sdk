@@ -15,6 +15,12 @@ Echo.Tests.asyncTest("more button", function() {
 	// for the test with the enabled requests mocking and without it.
 	// TODO: we need to accumulate more similar use cases and develop
 	// a general approach, should be doable after rewriting all tests
+	if (!Echo.Tests.Utils.isServerMocked()) {
+		QUnit.ok(true, "Not going to test with real requests");
+		QUnit.start();
+		return;
+	}
+
 	var cases = [{
 		"itemsPerPage": 1,
 		"check": function() {
@@ -31,7 +37,7 @@ Echo.Tests.asyncTest("more button", function() {
 			QUnit.ok(this.view.get("more").not(":visible"), "Check if more button is hidden when itemsPerPage more than count items in a stream");
 		}
 	}, {
-		"itemsPerPage": 5,
+		"query": "childrenof:http://example.com/sdk/stream/more-button-empty-stream",
 		"check": function() {
 			QUnit.ok(this.view.get("more").not(":visible"), "Check if more button is hidden when stream is empty");
 		}
@@ -42,7 +48,7 @@ Echo.Tests.asyncTest("more button", function() {
 			new Echo.StreamServer.Controls.Stream({
 				"target": $("#qunit-fixture"),
 				"appkey": "echo.jssdk.tests.aboutecho.com",
-				"query": "childrenof:http://example.com/sdk/stream/more-button itemsPerPage:" + test.itemsPerPage,
+				"query": test.query || "childrenof:http://example.com/sdk/stream/more-button itemsPerPage:" + test.itemsPerPage,
 				"ready": function() {
 					test.check.call(this);
 					callback();

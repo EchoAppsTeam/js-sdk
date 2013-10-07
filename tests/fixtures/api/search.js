@@ -41,7 +41,7 @@ Echo.Tests.Fixtures.api.search = {
 		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": "2"},
 		"entries": [entry, entry]
 	},
-	"childrenof:http://example.com/sdk/stream/more-button+itemsPerPage:5": {
+	"childrenof:http://example.com/sdk/stream/more-button-empty-stream": {
 		"hasMoreChildren": "false",
 		"itemsPerPage": "5",
 		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": "2"},
