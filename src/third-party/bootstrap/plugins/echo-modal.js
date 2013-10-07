@@ -18,32 +18,33 @@ if (Echo.GUI.Modal) return;
  * the corresponding Bootstrap JS class.
  *
  * Example:
+ *
  * 	var myModal = new Echo.GUI.Modal({
  * 		"show": true,
  * 		"backdrop": true,
- * 		 "keyboard": true,
- * 		 "closeButton": true,
- * 		 "remote": false,
- * 		 "extraClass": "",
- * 		 "data": {
- * 			 "title": "Modal title",
- * 			 "body": "<b>Modal body</b>",
- * 			 "buttons": [{
- * 				 "title": "Button1",
- * 				 "extraClass": "echo-button1-class",
- * 				 "handler": function() {}
- * 			 }, {
- * 				 "title": "Button2",
- * 				 "extraClass": "echo-button2-class",
- * 				 "handler": function() {}
- * 			 }]
- * 		 },
- * 		 "width": "400",
- * 		 "height": "500",
- * 		 "padding": "10",
- * 		 "footer": true,
- * 		 "header": true,
- * 		 "fade": true
+ * 		"keyboard": true,
+ * 		"closeButton": true,
+ * 		"remote": false,
+ * 		"extraClass": "",
+ * 		"data": {
+ * 			"title": "Modal title",
+ * 			"body": "<b>Modal body</b>",
+ * 			"buttons": [{
+ * 				"title": "Button1",
+ * 				"extraClass": "echo-button1-class",
+ * 				"handler": function() {}
+ * 			}, {
+ * 				"title": "Button2",
+ * 				"extraClass": "echo-button2-class",
+ * 				"handler": function() {}
+ * 			}]
+ * 		},
+ * 		"width": "400",
+ * 		"height": "500",
+ * 		"padding": "10",
+ * 		"footer": true,
+ * 		"header": true,
+ * 		"fade": true
  * 	});
  *
  * 	myModal.hide(); // hides the Bootstrap Modal instance

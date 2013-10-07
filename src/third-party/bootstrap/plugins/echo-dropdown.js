@@ -18,6 +18,7 @@ if (Echo.GUI.Dropdown) return;
  * the corresponding Bootstrap JS class.
  *
  * Example:
+ *
  * 	var dropdown = new Echo.GUI.Dropdown({
  * 		"target": ".css-selector",
  * 		"title": "Dropdown title",

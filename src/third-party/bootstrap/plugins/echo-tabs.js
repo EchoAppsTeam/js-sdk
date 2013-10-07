@@ -18,6 +18,7 @@ if (Echo.GUI.Tabs) return;
  * the corresponding Bootstrap JS class.
  *
  * Example:
+ *
  * 	var myTabs = new Echo.GUI.Tabs({
  * 		"target": ".css-selector",
  * 		"entries": [{
