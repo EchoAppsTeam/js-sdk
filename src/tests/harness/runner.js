@@ -34,6 +34,7 @@ var _initialized = false;
 Echo.Tests.init = function(config) {
 	if (_initialized) return;
 	_initialized = true;
+	_controlSecureEndpoints();
 	$(function() {
 		$("#qunit-header").html(config.title);
 
@@ -44,6 +45,32 @@ Echo.Tests.init = function(config) {
 			_runLegacyTests();
 			QUnit.start();
 		});
+	});
+};
+
+function _controlSecureEndpoints() {
+	QUnit.begin(function() {
+		var reAPI = /users\/whoami|users\/update|logout|esp\/activity/;
+		var reHTTPS = /^https:/;
+		var secureFunc = Echo.API.Request.prototype._isSecureRequest;
+		var bpRequest = Backplane.request;
+		sinon.stub(Echo.API.Request.prototype, "_isSecureRequest", function(url) {
+			var isSecure = secureFunc.apply(this, arguments);
+			if (reAPI.test(url) && !isSecure) {
+				QUnit.pushFailure("Non secure request to " + url);
+			}
+			return isSecure;
+		});
+		sinon.stub(Backplane, "request", function() {
+			bpRequest.apply(this);
+			if (!reHTTPS.test(Backplane.getChannelID())) {
+				QUnit.pushFailure("Non secure request to " + this.config.channelID);
+			}
+		});
+	});
+	QUnit.done(function() {
+		Echo.API.Request.prototype._isSecureRequest.restore();
+		Backplane.request.restore();
 	});
 };
 
