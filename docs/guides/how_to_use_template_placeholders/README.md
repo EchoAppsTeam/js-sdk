@@ -17,7 +17,7 @@ As you can see placeholders in Echo JS SDK consists of the placeholder type and 
 In order to process the template and convert all the placeholders into their final values, the Echo.Utils.substitute function is used. This method accepts an object with the following keys as the argument:
 
   - template - the template string
-  - data  - object which contains the data which should be inserted into the template.
+  - data - object which contains the data which should be inserted into the template.
 
 More information can be found in the Echo.Utils.substitute function docs.
 
@@ -33,7 +33,7 @@ The result of the Echo.Utils.substitute function application will look like:
 
 As you can see the Echo.Utils.substitute method replaced the placeholder with the respective value from the `data` object which we passed as a part of the function argument.
 
-The Echo.Utils.substitute function can recognize only the `{data:...}` placeholder by default.  It’s enough for most simple cases, but there is an option to define your own types of placeholders for the Echo.Utils.substitute function to work with. In order to do that you should pass the `instructions` key inside the object, for example:
+The Echo.Utils.substitute function can recognize only the `{data:...}` placeholder by default. It’s enough for most simple cases, but there is an option to define your own types of placeholders for the Echo.Utils.substitute function to work with. In order to do that you should pass the `instructions` key inside the object, for example:
 
 	var template = "<div>{sqrt:9}</div>";
 	var compiled = Echo.Utils.substitute({

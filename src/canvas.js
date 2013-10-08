@@ -409,9 +409,9 @@ canvas.methods._fetchConfig = function(callback) {
 		// specified as "#XXX" in the Canvas ID. We don't need to send this
 		// unique page identifier, we send only the primary Canvas ID.
 		"endpoint": this._getIds().main,
-		// adding page origin to the Cloudfront request to cache the Canvas
-		// config (on Cloudfront side) with the respective CORS headers,
-		// associated with the current domain 
+		// adding page origin to the Cloudfront request to cache the Canvas
+		// config (on Cloudfront side) with the respective CORS headers,
+		// associated with the current domain
 		"data": this.config.get("mode") === "dev"
 			? {"_": Math.random()}
 			: {"origin": window.location.origin},
