@@ -754,7 +754,7 @@ module.exports = function(grunt) {
 		(function normalizeURLs(obj) {
 			_.each(obj, function(v, k) {
 				if (!_.isObject(v)) {
-					// remove lasr slash and scheme
+					// remove last slash and scheme
 					obj[k] = v.replace(/\/$/, "").replace(/^(?:http|ws)s?:/, "");
 				} else {
 					normalizeURLs(v);
