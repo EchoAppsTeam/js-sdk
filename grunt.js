@@ -91,7 +91,7 @@ module.exports = function(grunt) {
 		},
 		"third-party/jquery": {
 			"src": [
-				"third-party/jquery/jquery.js",
+				"<remove_source_map:third-party/jquery/jquery.js>",
 				"third-party/jquery/echo.jquery.noconflict.js",
 				"<echo_wrapper:third-party/jquery/jquery.ihint.js>",
 				"<echo_wrapper:third-party/jquery/jquery.viewport.js>"
@@ -515,6 +515,11 @@ module.exports = function(grunt) {
 			""
 		];
 		return lines.join(shared.config("build.stage") === "min" ? "" : "\n");
+	});
+
+	grunt.registerHelper("remove_source_map", function(filepath) {
+		var src = grunt.task.directive(filepath, grunt.file.read);
+		return src.replace(/\/\/[#@]\s*sourceMappingURL=.*[\r\n]+/i, "");
 	});
 
 	grunt.registerHelper("make_docs", function(callback) {
