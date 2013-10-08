@@ -689,11 +689,11 @@ Echo.API.Request.prototype._configNormalizers = {
 	}
 };
 
-Echo.API.Request.prototype._isSecureRequest = function() {
+Echo.API.Request.prototype._isSecureRequest = function(url) {
 	var parts, secure = this.config.get("secure");
 	var re = /https|wss/;
 	if (secure) return secure;
-	parts = utils.parseURL(this.config.get("apiBaseURL"));
+	parts = utils.parseURL(url);
 	return re.test(window.location.protocol) || re.test(parts.scheme);
 };
 
@@ -722,13 +722,11 @@ Echo.API.Request.prototype.request = function(params) {
 	var timeout = this.config.get("timeout");
 	if (this.transport) {
 		this.transport.config.extend(
-			$.extend(true, this.transport.config.getAsHash(), this._getHandlersByConfig(), {
-				"uri": this._prepareURI(),
-				"data": this.config.get("data"),
-				"method": this.config.get("method"),
-				"secure": this._isSecureRequest(),
-				"settings": this.config.get("settings")
-			})
+			$.extend(
+				true,
+				this.transport.config.getAsHash(),
+				this._getTransportConfig()
+			)
 		);
 		this.transport.send(params);
 		if (timeout && this.config.get("onError")) {
@@ -780,15 +778,18 @@ Echo.API.Request.prototype._getTransport = function() {
 			});
 			return transport;
 		}();
-	return new Echo.API.Transports[transport](
-		$.extend(this._getHandlersByConfig(), {
-			"uri": this._prepareURI(),
-			"data": this.config.get("data"),
-			"method": this.config.get("method"),
-			"secure": this._isSecureRequest(),
-			"settings": this.config.get("settings")
-		})
-	);
+	return new Echo.API.Transports[transport](this._getTransportConfig());
+};
+
+Echo.API.Request.prototype._getTransportConfig = function() {
+	var url = this._prepareURL();
+	return $.extend(this._getHandlersByConfig(), {
+		"uri": url.replace(/^(?:(?:http|ws)s?:)?\/\//, ""),
+		"data": this.config.get("data"),
+		"method": this.config.get("method"),
+		"secure": this._isSecureRequest(url),
+		"settings": this.config.get("settings")
+	});
 };
 
 Echo.API.Request.prototype._getHandlersByConfig = function() {
@@ -817,8 +818,8 @@ Echo.API.Request.prototype._getHandlersByConfig = function() {
 	});
 };
 
-Echo.API.Request.prototype._prepareURI = function() {
-	return this.config.get("apiBaseURL").replace(/^(?:(?:http|ws)s?:)?\/\//, "") + this.config.get("endpoint");
+Echo.API.Request.prototype._prepareURL = function() {
+	return this.config.get("apiBaseURL") + this.config.get("endpoint");
 };
 
 })(Echo.jQuery);

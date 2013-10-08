@@ -45,7 +45,7 @@ Echo.Tests.asyncTest("logged in checks", function() {
 				"Checking user.get() method, requesting user name");
 
 			QUnit.equal(user.get("avatar"),
-				"{%=baseURLs.cdn%}/images/avatar-default.png",
+				"http://example.com/avatar.png",
 				"Checking functions delegation: user.get() method, requesting user avatar");
 			QUnit.equal(user.get("avatar"), user._getAvatar(),
 				"Checking functions delegation: user.get() method should return the same value as user._getAvatar() one");
@@ -72,7 +72,7 @@ Echo.Tests.asyncTest("logged in checks", function() {
 	});
 }, {
 	"user": {"status": "logged"},
-	"timeout": 6000
+	"timeout": 8000
 });
 
 Echo.Tests.asyncTest("anonymous checks", function() {

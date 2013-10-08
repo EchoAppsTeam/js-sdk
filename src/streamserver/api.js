@@ -121,6 +121,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * __Note__: this parameter is deprecated in favor of liveUpdates.enabled
 		 */
 		"recurring": false,
+
 		/**
 		 * @cfg {Boolean} [skipInitialRequest]
 		 * Flag allowing to skip the initial request but continue performing
@@ -156,7 +157,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * @cfg {String} [submissionProxyURL]
 		 * Specifes the URL to the submission proxy service.
 		 */
-		"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
+		"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = "initial"; // initial | secondary
@@ -244,15 +245,16 @@ Echo.StreamServer.API.Request.prototype._onError = function(responseError, reque
 	this._handleErrorResponse(responseError, {"callback": config.onError});
 };
 
-Echo.StreamServer.API.Request.prototype._prepareURI = function() {
+Echo.StreamServer.API.Request.prototype._prepareURL = function() {
 	var endpoint = this.config.get("endpoint");
 	if (endpoint === "submit") {
-		return this.config.get("submissionProxyURL").replace(/^(?:(?:http|ws)s?:)?\/\//, "");
+		return this.config.get("submissionProxyURL");
 	}
+	var url = this.constructor.parent._prepareURL.call(this);
 	return endpoint === "mux"
 		// /v1/mux endpoint is deprecated so we must always use /v2/mux
-		? this.constructor.parent._prepareURI.call(this).replace(/v1/, "v2")
-		: this.constructor.parent._prepareURI.call(this);
+		? url.replace("v1", "v2")
+		: url;
 };
 
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {

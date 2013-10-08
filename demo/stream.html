@@ -32,7 +32,7 @@
 			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
 			"component": "Echo.StreamServer.Controls.Stream",
 			"backplane": {
-				"serverBaseURL": window.location.protocol + "{%=baseURLs.api.backplane%}/v1",
+				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 				"busName": "jskit"
 			},
 			"config": {

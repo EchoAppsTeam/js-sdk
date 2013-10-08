@@ -30,10 +30,11 @@ Echo.Tests.current = {
 // (they can be used by the saucelabs or developer/tester)
 Echo.Tests.logs = [];
 
-var _initialized = false;
+var initialized = false;
 Echo.Tests.init = function(config) {
-	if (_initialized) return;
-	_initialized = true;
+	if (initialized) return;
+	initialized = true;
+	controlSecureEndpoints();
 	$(function() {
 		$("#qunit-header").html(config.title);
 
@@ -41,14 +42,40 @@ Echo.Tests.init = function(config) {
 
 		Echo.Loader.download([{"url": "tests/qunit/qunit.css"}], function() {
 			Echo.Tests.Utils.initServer();
-			_runLegacyTests();
+			runLegacyTests();
 			QUnit.start();
 		});
 	});
 };
 
+function controlSecureEndpoints() {
+	QUnit.begin(function() {
+		var reAPI = /users\/whoami|users\/update|logout|esp\/activity/;
+		var reHTTPS = /^https:/;
+		var secureFunc = Echo.API.Request.prototype._isSecureRequest;
+		var bpRequest = Backplane.request;
+		sinon.stub(Echo.API.Request.prototype, "_isSecureRequest", function(url) {
+			var isSecure = secureFunc.apply(this, arguments);
+			if (reAPI.test(url) && !isSecure) {
+				QUnit.pushFailure("Non secure request to " + url);
+			}
+			return isSecure;
+		});
+		sinon.stub(Backplane, "request", function() {
+			bpRequest.apply(this);
+			if (!reHTTPS.test(Backplane.getChannelID())) {
+				QUnit.pushFailure("Non secure request to " + this.config.channelID);
+			}
+		});
+	});
+	QUnit.done(function() {
+		Echo.API.Request.prototype._isSecureRequest.restore();
+		Backplane.request.restore();
+	});
+};
+
 // TODO: get rid of this function when all tests use new format
-function _runLegacyTests() {
+function runLegacyTests() {
 	$.each(Echo.Tests.Unit, function(name, suiteClass) {
 		$.extend(suiteClass.prototype, new Echo.Tests.Suite());
 		suiteClass.prototype.tests = suiteClass.prototype.tests || {};
