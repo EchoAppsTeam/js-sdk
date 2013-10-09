@@ -208,6 +208,12 @@ suite.prototype.cases.backwardCompatibility = function(callback) {
 		"data": this.params,
 		"liveUpdatesTimeout": 2,
 		"recurring": true,
+		"liveUpdates": {
+			"enabled": false,
+			"polling": {
+				"timeout": 10
+			}
+		},
 		"onData": function(response, extra) {
 			if (extra.requestType === "secondary") {
 				QUnit.ok(true, "Check if liveUpdates handlers are not provided then original will be used");

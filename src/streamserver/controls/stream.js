@@ -74,7 +74,6 @@ stream.init = function() {
 	var self = this;
 	if (!this.checkAppKey()) return;
 
-	this._recalcEffectsTimeouts();
 	this.request = this._getRequestObject({
 		"liveUpdates": $.extend(this.config.get("liveUpdates"), {
 			"onData": function(data) {
@@ -100,6 +99,7 @@ stream.init = function() {
 			self._handleInitialResponse(data);
 		}
 	});
+	this._recalcEffectsTimeouts();
 
 	// define default stream state based on the config parameters
 	var state = this.config.get("state.layout") === "full"
@@ -1210,7 +1210,7 @@ stream.methods._recalcEffectsTimeouts = function() {
 		return value;
 	};
 	// reserving 80% of time between live updates for activities
-	var frame = s.config.get("liveUpdates.timeout") * 1000 * 0.8;
+	var frame = s.get("request").config.get("liveUpdates.polling.timeout") * 1000 * 0.8;
 	var msPerItem = s.activities.queue.length ? frame / s.activities.queue.length : frame;
 	s.timeouts.fade = calc("fade", msPerItem);
 	s.timeouts.slide = calc("slide", msPerItem);
