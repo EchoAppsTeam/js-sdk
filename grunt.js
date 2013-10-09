@@ -437,10 +437,6 @@ module.exports = function(grunt) {
 		});
 	});
 
-	grunt.registerTask("docs", function() {
-		grunt.helper("make_docs", this.async());
-	});
-
 	grunt.registerMultiTask("recess", "Compile LESS files to CSS through Twitter Recess tool", function(task) {
 		var async = grunt.util.async;
 		var done = this.async();
@@ -520,35 +516,6 @@ module.exports = function(grunt) {
 	grunt.registerHelper("remove_source_map", function(filepath) {
 		var src = grunt.task.directive(filepath, grunt.file.read);
 		return src.replace(/\/\/[#@]\s*sourceMappingURL=.*[\r\n]+/i, "");
-	});
-
-	grunt.registerHelper("make_docs", function(callback) {
-		shared.exec("jsduck --version | awk '{ print $2; }'", function(version) {
-			var desiredVersion = "5.0.0";
-			var failed = false;
-			version = _.trim(version);
-			if (!version) {
-				failed = true;
-				grunt.log.writeln("jsduck is not installed. Install it by running command `" + ("gem install jsduck -v " + desiredVersion).yellow + "`.").cyan;
-			} else if (version !== desiredVersion) {
-				failed = true;
-				grunt.log.writeln("jsduck version is " + version.red + " but must be " + desiredVersion.green + ". Update it by running command `" + ("gem install jsduck -v " + desiredVersion).yellow + "`.").cyan;
-			} else {
-				grunt.log.ok();
-			}
-			if (failed) {
-				callback(false);
-				return;
-			}
-
-			var path = grunt.config("dirs.dist") + "/docs";
-			shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
-				shared.exec("jsduck --config=config/jsduck/config.json", function() {
-					// copy Echo specific images and CSS to documentation directory
-					shared.exec("cp -r docs/patch/* " + path, callback);
-				});
-			});
-		});
 	});
 
 	var patchers = {
@@ -639,7 +606,7 @@ module.exports = function(grunt) {
 					},
 					"options": {
 						"basePath": ".",
-						"processContent": _replacePlaceholdersOnCopy,
+						"processContent": shared.replacePlaceholdersOnCopy,
 						"processContentExclude": "**/*.{png,jpg,gif}"
 					}
 				};
@@ -692,7 +659,7 @@ module.exports = function(grunt) {
 			"files": {},
 			"options": {
 				"basePath": "<config:dirs.build>",
-				"processContent": _replacePlaceholdersOnCopy,
+				"processContent": shared.replacePlaceholdersOnCopy,
 				"processContentExclude": "**/*.{png,jpg,gif}"
 			}
 		};
@@ -772,13 +739,5 @@ module.exports = function(grunt) {
 		// TODO: properly calculate "packageVersion" placeholder value and use it in Echo.Loader.version
 		data.packageVersion = grunt.config("pkg.majorVersion");
 		grunt.config("envConfig", data);
-	};
-
-	function _replacePlaceholdersOnCopy(text) {
-		// return text as is if there are no placeholders
-		if (!/{%=/.test(text)) return text;
-		// we set the last parameter value to "init" because we want different
-		// placeholders not to mix up with default ones ( {%=x%} instead of <%=x%> )
-		return grunt.template.process(text, grunt.config("envConfig"), "init");
 	};
 };

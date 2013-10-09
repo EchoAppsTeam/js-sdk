@@ -38,6 +38,14 @@ exports.init = function(grunt) {
 		});
 	};
 
+	exports.replacePlaceholdersOnCopy = function(text) {
+		// return text as is if there are no placeholders
+		if (!/{%=/.test(text)) return text;
+		// we set the last parameter value to "init" because we want different
+		// placeholders not to mix up with default ones ( {%=x%} instead of <%=x%> )
+		return grunt.template.process(text, grunt.config("envConfig"), "init");
+	};
+
 	if (!initialized) {
 		initialized = true;
 
