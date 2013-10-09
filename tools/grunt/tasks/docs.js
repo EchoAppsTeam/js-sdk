@@ -2,6 +2,7 @@ module.exports = function(grunt) {
 
 	var shared = require("../lib.js").init(grunt);
 	var _ = grunt.utils._;
+	var desiredJSDuckVersion = "5.0.0";
 
 	grunt.registerInitTask("docs", "Generate and push docs to Github Pages", function(target) {
 		if (!target) {
@@ -53,15 +54,14 @@ module.exports = function(grunt) {
 
 	function checkJSDuckVersion(done) {
 		shared.exec("jsduck --version | awk '{ print $2; }'", function(version) {
-			var desiredVersion = "5.0.0";
 			var failed = false;
 			version = _.trim(version);
 			if (!version) {
 				failed = true;
-				grunt.log.writeln("jsduck is not installed. Install it by running command `" + ("gem install jsduck -v " + desiredVersion).yellow + "`.").cyan;
-			} else if (version !== desiredVersion) {
+				grunt.log.writeln("jsduck is not installed. Install it by running command `" + ("gem install jsduck -v " + desiredJSDuckVersion).yellow + "`.").cyan;
+			} else if (version !== desiredJSDuckVersion) {
 				failed = true;
-				grunt.log.writeln("jsduck version is " + version.red + " but must be " + desiredVersion.green + ". Update it by running command `" + ("gem install jsduck -v " + desiredVersion).yellow + "`.").cyan;
+				grunt.log.writeln("jsduck version is " + version.red + " but must be " + desiredJSDuckVersion.green + ". Update it by running command `" + ("gem install jsduck -v " + desiredJSDuckVersion).yellow + "`.").cyan;
 			} else {
 				grunt.log.ok();
 			}
