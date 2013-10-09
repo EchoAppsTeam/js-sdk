@@ -458,7 +458,6 @@ Echo.Tests.test("hyperlink()", function() {
 	);
 	linkParams.data.href = "http://aboutecho.com";
 	linkParams.data.caption = undefined;
-	link = Echo.Utils.hyperlink(linkParams.data, linkParams.options);
 	QUnit.equal(
 		Echo.Utils.hyperlink(linkParams.data, linkParams.options),
 		"<a href=\"http://aboutecho.com\" target=\"_blank\"></a>",
