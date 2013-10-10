@@ -174,6 +174,7 @@ module.exports = function(grunt) {
 
 		// release step can't be build step at the same time
 		shared.config("build", null);
+		shared.config("release", true);
 		console.time(target.yellow);
 
 		var _complete = this.async();
@@ -282,31 +283,7 @@ module.exports = function(grunt) {
 	};
 
 	function pushPages(done) {
-		grunt.helper("make_docs", function(success) {
-			if (success === false) {
-				done(false);
-				return;
-			}
-			var updateCmd = [
-				"git checkout gh-pages",
-				"git pull",
-				"cp -r " + grunt.config("dirs.dist") + "/docs/* docs",
-				"cp -r " + grunt.config("dirs.dist") + "/tests/* tests",
-				"cp -r " + grunt.config("dirs.dist") + "/demo/* demo",
-				"git add docs/ tests/ demo/",
-				"git commit -m \"up to v" + grunt.config("pkg.version") + "\"",
-				"git push origin gh-pages",
-				"git checkout master"
-			].join(" && ");
-			if (shared.config("debug") || shared.config("env") !== "production") {
-				console.log(updateCmd);
-				done();
-				return;
-			}
-			shared.exec(updateCmd, function() {
-				grunt.log.ok();
-				done();
-			});
-		});
+		grunt.task.run(["docs"]);
+		done();
 	};
 };

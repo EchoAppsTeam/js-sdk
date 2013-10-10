@@ -4,6 +4,7 @@
 var $ = jQuery;
 
 /**
+ * @class Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll
  * Echo Stream plugin automatically loads the next page full of items
  * when the end of the stream is displayed in the browser.
  * This produces the 'Infinite Scroll' Effect.

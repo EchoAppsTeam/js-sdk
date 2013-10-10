@@ -613,7 +613,7 @@ Echo.API.Request = function(config) {
 		 * Callback called after API request aborting.
 		 */
 		/**
-		 * @cfg {String} [apiBaseUrl]
+		 * @cfg {String} [apiBaseURL]
 		 * Specifies the base URL for API requests
 		 */
 		"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",

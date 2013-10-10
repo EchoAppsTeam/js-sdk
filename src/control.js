@@ -1156,7 +1156,7 @@ manifest.vars = {
 
 manifest.config = {
 	/**
-	 * @cfg {String} target(required)
+	 * @cfg {String} target (required)
 	 * Specifies the DOM element where the control will be displayed.
 	 */
 	"target": undefined,
@@ -1176,19 +1176,19 @@ manifest.config = {
 	"labels": {},
 
 	/**
-	 * @cfg {String} [apiBaseURL="//api.echoenabled.com/v1/"]
+	 * @cfg {String} apiBaseURL
 	 * URL prefix for all API requests
 	 */
 	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
 
 	/**
-	 * @cfg {String} [submissionProxyURL="https://apps.echoenabled.com/v2/esp/activity"]
+	 * @cfg {String} submissionProxyURL
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
 	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
 
 	/**
-	 * @cfg {Boolean} [useSecureAPI]
+	 * @cfg {Boolean} useSecureAPI
 	 * This parameter is used to specify the API request scheme.
 	 * If parameter is set to false or not specified, the API request object
 	 * will use the scheme used to retrieve the host page.
@@ -1196,13 +1196,13 @@ manifest.config = {
 	"useSecureAPI": false,
 
 	/**
-	 * @cfg {Object} [infoMessages]
+	 * @cfg {Object} infoMessages
 	 * Customizes the look and feel of info messages, for example "loading" and "error".
 	 *
-	 * @cfg {Boolean} [infoMessages.enabled=true]
+	 * @cfg {Boolean} infoMessages.enabled=true
 	 * Specifies if info messages should be rendered.
 	 *
-	 * @cfg {String} [infoMessages.layout="full"]
+	 * @cfg {String} infoMessages.layout="full"
 	 * Specifies the layout of the info message. By default can be set to "compact" or "full".
 	 *
 	 *     "infoMessages": {
@@ -1216,16 +1216,16 @@ manifest.config = {
 	},
 
 	/**
-	 * @cfg {Object} [cdnBaseURL]
+	 * @cfg {Object} cdnBaseURL
 	 * A set of the key/value pairs to define CDN base URLs for different components.
 	 * The values are used as the URL prefixes for all static files, such as scripts,
 	 * stylesheets, images etc. You can add your own CDN base URL and use it anywhere
 	 * when the configuration object is available.
 	 *
-	 * @cfg {String} [cdnBaseURL.sdk]
+	 * @cfg {String} cdnBaseURL.sdk
 	 * Base URL of the SDK CDN location used for the main SDK resources.
 	 *
-	 * @cfg {String} [cdnBaseURL.apps]
+	 * @cfg {String} cdnBaseURL.apps
 	 * Base URL of the Echo apps built on top of the JS SDK.
 	 */
 	"cdnBaseURL": {
@@ -1235,7 +1235,7 @@ manifest.config = {
 	},
 
 	/**
-	 * @cfg {Array} [plugins]
+	 * @cfg {Array} plugins
 	 * The list of the plugins to be added to the control instance.
 	 * Each plugin is represented as the JS object with the "name" field.
 	 * Other plugin parameters should be added to the same JS object.
@@ -1247,7 +1247,7 @@ manifest.config = {
 	"query": "",
 
 	/**
-	 * @cfg {String} [defaultAvatar]
+	 * @cfg {String} defaultAvatar
 	 * Default avatar URL which will be used for the user in
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
