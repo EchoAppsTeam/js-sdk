@@ -40,14 +40,14 @@ suite.prototype.tests.commonWorkflow = {
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"liveUpdates": {
-				"polling": {
-					"timeout": 3
-				}
+				"timeout": 3
 			},
 			"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:1",
 			"ready": function() {
 				var target = this.config.get("target");
 				suite.stream = this;
+				QUnit.equal(suite.stream.config.get("liveUpdates.polling.timeout"), 3,
+					"Check that \"liveUpdates.timeout\" mapped to the \"liveUpdates.polling.timeout\"");
 				QUnit.ok($(target).hasClass("echo-streamserver-controls-stream"),
 					"Checking the common container rendering");
 				QUnit.equal($(".echo-streamserver-controls-stream-item-depth-0", target).length, 1,

@@ -79,6 +79,12 @@ if (Echo.Control.isDefined(counter)) return;
 counter.init = function() {
 	if (!this.checkAppKey()) return;
 
+	// picking up timeout value for backwards compatibility
+	var timeout = this.config.get("liveUpdates.timeout");
+	if (typeof timeout !== "undefined") {
+		this.config.set("liveUpdates.polling.timeout", timeout);
+	}
+
 	this.request = this._getRequestObject();
 	if ($.isEmptyObject(this.get("data"))) {
 		this.request.send();

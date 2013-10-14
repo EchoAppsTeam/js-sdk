@@ -43,16 +43,6 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 	var timeout = config && config.liveUpdates && config.liveUpdates.timeout || config.liveUpdatesTimeout;
 	var liveUpdatesEnabled = config && config.liveUpdates && config.liveUpdates.enabled || config.recurring;
 
-	// picking up timeout and enabled values
-	// for backwards compatibility
-	config = $.extend(true, config, {
-		"liveUpdates": {
-			"enabled": liveUpdatesEnabled,
-			"polling": {
-				"timeout": timeout
-			}
-		}
-	});
 	config = $.extend(true, {
 		/**
 		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
@@ -110,9 +100,13 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 */
 		"liveUpdates": {
 			"transport": "polling", // or "websockets"
-			"enabled": false,
+			// picking up enabled value
+			// for backwards compatibility
+			"enabled": liveUpdatesEnabled,
 			"polling": {
-				"timeout": 10
+				// picking up timeout value
+				// for backwards compatibility
+				"timeout": timeout || 10
 			},
 			"websockets": {
 				"maxConnectRetries": 3,
