@@ -178,9 +178,9 @@ module.exports = function(grunt) {
 		console.time(target.yellow);
 
 		var _complete = this.async();
-		var done = function() {
+		var done = function(result) {
 			console.timeEnd(target.yellow);
-			_complete();
+			_complete(result);
 		};
 		var version = grunt.config("pkg.version");
 		var majorVersion = version.split(".")[0];
