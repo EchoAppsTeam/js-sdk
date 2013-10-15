@@ -2,6 +2,9 @@ module.exports = function(grunt) {
 
 	var shared = require("../lib.js").init(grunt);
 	var _ = grunt.utils._;
+	var http = require("http");
+	var async = require("async");
+	var url = require("url");
 
 	grunt.registerInitTask("check", "Different checks (versions, pre-release, post-release, ...)", function(target) {
 		var done = this.async();
@@ -10,6 +13,8 @@ module.exports = function(grunt) {
 			checkConfigVersion(this.args[1] === "all", done);
 		} else if (target === "uploaded") {
 			checkUploadedFiles(done);
+		} else if (target === "docs") {
+			checkDocs(done);
 		}
 	});
 
@@ -39,9 +44,6 @@ module.exports = function(grunt) {
 	}
 
 	function checkUploadedFiles(done) {
-		var http = require("http");
-		var async = require("async");
-		var url = require("url");
 		if (shared.config("env") !== "production") {
 			grunt.fail.fatal("This check can be performed only in \"production\" environment.");
 		}
@@ -136,6 +138,33 @@ module.exports = function(grunt) {
 		}, function(err) {
 			err && grunt.warn(err);
 			done();
+		});
+	}
+
+	function checkDocs(done) {
+		grunt.log.subhead("Searching for dead wiki links");
+		shared.exec("grep -roZE 'https?://wiki.aboutecho.com[^\"\)]+' src/ docs/", function(stdout) {
+			var lines = stdout.trim().split(/[\r\n]+/);
+			async.eachSeries(lines, function(line, next) {
+				var parts = line.split("\0");
+				var urlOptions = url.parse(parts[1]);
+				urlOptions.method = "HEAD";
+				grunt.log.write("Checking link " + parts[1].yellow + " from the file " + parts[0].yellow + " ... ");
+				http.get(urlOptions, function(response) {
+					if (response.statusCode === 200) {
+						grunt.log.writeln("OK".green);
+					} else {
+						grunt.log.writeln("bad status code: ".red + response.statusCode);
+					}
+					next();
+				}).on("error", function(e) {
+					grunt.log.writeln("error requesting headers: ".red + e.message);
+					next();
+				});
+			}, function(err) {
+				err && grunt.warn(err);
+				done();
+			});
 		});
 	}
 };
