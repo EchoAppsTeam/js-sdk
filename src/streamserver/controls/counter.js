@@ -172,6 +172,10 @@ counter.methods._getRequestObject = function(overrides) {
 
 counter.methods._maybeUpdate = function(data) {
 	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
+		/**
+		 * @echo_event Echo.StreamServer.Controls.Counter.onUpdate
+		 * Triggered when new value is received.
+		 */
 		this.events.publish({
 			"topic": "onUpdate",
 			"data": {
@@ -193,6 +197,10 @@ counter.methods._handleResponse = function(data, options) {
 };
 
 counter.methods._error = function(data, options) {
+	/**
+	 * @echo_event Echo.StreamServer.Controls.Counter.onError
+	 * Triggered when some error has occured while getting counter data.
+	 */
 	this.events.publish({
 		"topic": "onError",
 		"data": {
