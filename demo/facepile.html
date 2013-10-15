@@ -69,6 +69,7 @@
 			"appkey": "echo.jssdk.demo.aboutecho.com",
 			"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
 			"suffixText": " commented on aboutecho.com",
+			"liveUpdates": {"transport": "websockets"},
 			"item": {"avatar": true, "text": true}
 		});
 
@@ -76,6 +77,7 @@
 			"target": document.getElementById("ulist-d2"),
 			"appkey": "echo.jssdk.demo.aboutecho.com",
 			"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
+			"liveUpdates": {"transport": "websockets"},
 			"item": {"avatar": false, "text": true}
 		});
 
@@ -83,10 +85,11 @@
 			"target": document.getElementById("ulist-d3"),
 			"appkey": "echo.jssdk.demo.aboutecho.com",
 			"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
+			"liveUpdates": {"transport": "websockets"},
 			"item": {"avatar": true, "text": false}
 		});
 
-        Echo.jQuery.get("{%=baseURLs.api.streamserver%}/v1/search", {
+		Echo.jQuery.get("{%=baseURLs.api.streamserver%}/v1/search", {
 			"q": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:100 children:0",
 			"appkey": "echo.jssdk.demo.aboutecho.com"
 		}, function(data) {
