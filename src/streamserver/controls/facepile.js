@@ -78,6 +78,12 @@ if (Echo.Control.isDefined(pile)) return;
 pile.init = function() {
 	if (!this.checkAppKey()) return;
 
+	// picking up timeout value for backwards compatibility
+	var timeout = this.config.get("liveUpdates.timeout");
+	if (typeof timeout !== "undefined") {
+		this.config.set("liveUpdates.polling.timeout", timeout);
+	}
+
 	// data can be defined explicitly
 	// in this case we do not make API requests
 	if ($.isEmptyObject(this.get("data"))) {

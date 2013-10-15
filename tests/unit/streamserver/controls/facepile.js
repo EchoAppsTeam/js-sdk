@@ -125,7 +125,8 @@ suite.prototype.tests.dynamicWorkflow = {
 				 "itemsPerPage: 1 -user.id:http://js-kit.com/ECHO/user/fake_user",
 			"item"   : {"avatar": true, "text": true},
 			"liveUpdates": {
-				"enabled": false
+				"enabled": false,
+				"timeout": 60
 			},
 			"ready"  : function() {
 				suite.pile = this;
@@ -136,6 +137,8 @@ suite.prototype.tests.dynamicWorkflow = {
 					"Checking initial users count");
 				QUnit.strictEqual(this.getVisibleUsersCount(), 2, "Checking initial users count (by \"getVisibleUsersCount()\")");
 				QUnit.equal(suite.pile.view.get("suffixText").html(), suite.pile.config.get("suffixText"), "Checking suffix text");
+				QUnit.equal(suite.pile.config.get("liveUpdates.polling.timeout"), 60,
+					"Check that \"liveUpdates.timeout\" mapped to the \"liveUpdates.polling.timeout\"");
 				self.sequentialAsyncTests([
 					"dynamicMore"//,
 					// FIXME: test fails with fake data

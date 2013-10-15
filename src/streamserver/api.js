@@ -42,6 +42,7 @@ Echo.StreamServer.API = {};
 Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
 	var timeout = config && config.liveUpdates && config.liveUpdates.timeout || config.liveUpdatesTimeout;
 	var liveUpdatesEnabled = config && config.liveUpdates && config.liveUpdates.enabled || config.recurring;
+
 	config = $.extend(true, {
 		/**
 		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
@@ -591,7 +592,7 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 	}
 	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
 	var applyServerDefinedTimeout = function(timeout) {
-		if (!timeout && self.originalTimeout != self.config.get("timeout")) {
+		if (!timeout && self.originalTimeout !== self.config.get("timeout")) {
 			self.config.set("timeout", self.originalTimeout);
 		} else if (timeout && timeout > self.config.get("timeout")) {
 			self.config.set("timeout", timeout);
