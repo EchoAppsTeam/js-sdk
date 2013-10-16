@@ -762,7 +762,6 @@ Echo.API.Request.prototype._normalizeTransportName = function(transport) {
 Echo.API.Request.prototype._getTransport = function() {
 	var self = this;
 	var userDefinedTransport = this.config.get("transport");
-	console.log(userDefinedTransport);
 	var transport = Echo.API.Transports[userDefinedTransport] && Echo.API.Transports[userDefinedTransport].available()
 		? userDefinedTransport
 		: function() {
