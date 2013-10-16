@@ -60,7 +60,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * The following transports are supported:
 		 *
 		 * + "polling" - periodic requests to check for updates
-		 * + "websockets" - transport based on the WebSocket technology
+		 * + "websockets" - transport based on the WebSockets technology
 		 *
 		 * If the end user's browser doesn't support the WebSockets technology,
 		 * the "polling" transport will be used as a fallback.
@@ -77,9 +77,9 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * live updates transport.
 		 *
 		 * @cfg {Number} [liveUpdates.websockets.maxConnectRetries=3]
-		 * Max connection retries for WebSocket transport. After the number of the
+		 * Max connection retries for WebSockets transport. After the number of the
 		 * failed connection attempts specified in this parameter is reached, the
-		 * WebSocket transport is considered as non-supported: the client no longer
+		 * WebSockets transport is considered as non-supported: the client no longer
 		 * tries to use the WebSockets on the page and the polling transport is used
 		 * from now on.
 		 *
@@ -269,7 +269,7 @@ Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 			}
 		})
 	);
-	if (this.config.get("liveUpdates.transport") === "websockets" && Echo.API.Transports.WebSocket.available()) {
+	if (this.config.get("liveUpdates.transport") === "websockets" && Echo.API.Transports.WebSockets.available()) {
 		ws = Echo.StreamServer.API.WebSockets.init(
 			$.extend(true, this._getLiveUpdatesConfig("websockets"), {
 				"request": {
@@ -640,7 +640,7 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 		},
 		"request": {
 			"apiBaseURL": "{%=baseURLs.api.ws%}/v1/",
-			"transport": "websocket",
+			"transport": "websockets",
 			"timeout": null,
 			"onOpen": $.noop,
 			"onData": $.noop,

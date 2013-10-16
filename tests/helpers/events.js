@@ -121,14 +121,14 @@ _plugins.Edit.onEdit = {
 Echo.Tests.Events = Echo.Tests.Events || {};
 
 Echo.Tests.Events.contracts = {
-	"Echo.API.Transports.WebSocket.onOpen": {},
-	"Echo.API.Transports.WebSocket.onClose": {},
-	"Echo.API.Transports.WebSocket.onQuotaExceeded": {},
-	"Echo.API.Transports.WebSocket.onError": {
+	"Echo.API.Transports.WebSockets.onOpen": {},
+	"Echo.API.Transports.WebSockets.onClose": {},
+	"Echo.API.Transports.WebSockets.onQuotaExceeded": {},
+	"Echo.API.Transports.WebSockets.onError": {
 		"errorCode": "string",
 		"errorMesssage": "string"
 	},
-	"Echo.API.Transports.WebSocket.onData": {
+	"Echo.API.Transports.WebSockets.onData": {
 		"event": "string"
 	},
 	"Echo.UserSession.onInit": [_userSession.init, {}],

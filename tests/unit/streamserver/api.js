@@ -249,7 +249,7 @@ suite.prototype.cases.websockets = function(callback) {
 				QUnit.strictEqual(req.liveUpdates.config.get("request.data.since"), data.nextSince, "Check that since parameter was updated (WS usage)");
 				QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.WebSockets, "Check that liveUpdates switched to WS after its opened");
 				Echo.Events.subscribe({
-					"topic": "Echo.API.Transports.WebSocket.onClose",
+					"topic": "Echo.API.Transports.WebSockets.onClose",
 					"once": true,
 					"context": "live.echoenabled.com-v1-ws",
 					"handler": callback
@@ -267,7 +267,7 @@ suite.prototype.cases.websockets = function(callback) {
 	});
 	req.send().done(function() {
 		Echo.Events.subscribe({
-			"topic": "Echo.API.Transports.WebSocket.onOpen",
+			"topic": "Echo.API.Transports.WebSockets.onOpen",
 			"once": true,
 			"context": "live.echoenabled.com-v1-ws",
 			"handler": function() {
@@ -374,7 +374,7 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 		return r;
 	}(0, requests[0].send());
 	Echo.Events.subscribe({
-		"topic": "Echo.API.Transports.WebSocket.onOpen",
+		"topic": "Echo.API.Transports.WebSockets.onOpen",
 		"context": "live.echoenabled.com-v1-ws",
 		"once": true,
 		"handler": function() {
@@ -389,7 +389,7 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 		});
 		QUnit.strictEqual(fallback.length, 1, "Check that quota exceeded requests are fallbacks to the polling (WS cases)");
 		Echo.Events.subscribe({
-			"topic": "Echo.API.Transports.WebSocket.onClose",
+			"topic": "Echo.API.Transports.WebSockets.onClose",
 			"once": true,
 			"context": "live.echoenabled.com-v1-ws",
 			"handler": function() {
@@ -428,7 +428,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			sequentialTests.push("searchRequestWithError");
 		}
 		// WebSocket specific tests
-		if (Echo.API.Transports.WebSocket.available()) {
+		if (Echo.API.Transports.WebSockets.available()) {
 			sequentialTests = sequentialTests.concat(["websockets", "multipleWebsocketRequests", "webSocketSinceCase"]);
 		}
 		this.sequentialAsyncTests(sequentialTests, "cases");
