@@ -868,7 +868,7 @@ Echo.Control.prototype._initializers.user = function(callback) {
 		var generateURL = function(baseURL, path) {
 			if (!baseURL) return;
 			var urlInfo = Echo.Utils.parseURL(baseURL);
-			return urlInfo.scheme + "://" + urlInfo.domain + path;
+			return (urlInfo.scheme || "https") + "://" + urlInfo.domain + path;
 		};
 		Echo.UserSession({
 			"appkey": this.config.get("appkey"),
