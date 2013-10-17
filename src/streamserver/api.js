@@ -771,9 +771,12 @@ Echo.StreamServer.API.WebSockets.prototype.subscribe = function() {
 Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback) {
 	var self = this;
 	callback = callback || $.noop;
+	var data = this.config.get("request.data");
+	// we should update view on server-side without since parameter
+	delete data.since;
 	var req = new Echo.API.Request({
 		"endpoint": "search",
-		"data": this.config.get("request.data"),
+		"data": data,
 		"secure": this.config.get("request.secure"),
 		"onData": function() {
 			callback.apply(self, arguments);
