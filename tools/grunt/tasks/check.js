@@ -76,8 +76,11 @@ module.exports = function(grunt) {
 			if (!headers) {
 				grunt.fail.fatal("Expected headers are not specified for " + type + " files");
 			}
-			headers["cache-control"] = "max-age=86400";
+			headers["cache-control"] = "max-age=7776000";
 			// we might want to check the URL to set different headers for different files
+			if (/\/apps\/|\/sdk\/v\d(?:\.beta)?\//.test(URL)) {
+				headers["cache-control"] = "max-age=86400";
+			}
 			return headers;
 		};
 		var collectURLs = function(uploads) {
