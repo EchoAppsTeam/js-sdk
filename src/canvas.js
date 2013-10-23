@@ -395,6 +395,11 @@ canvas.methods._getIds = function() {
 canvas.methods._fetchConfig = function(callback) {
 	var self = this, target = this.config.get("target");
 	var isManual = this._isManuallyConfigured();
+	var mode = this.config.get("mode");
+	var endpoint = this._getIds().main;
+	var getConfig =  function() {
+		return Echo.Loader.canvasesConfigById[endpoint];
+	};
 
 	// no need to perform server side request in case
 	// we already have all the data on the client side
@@ -402,19 +407,30 @@ canvas.methods._fetchConfig = function(callback) {
 		callback.call(this);
 		return;
 	}
+
+	var URL = this.substitute({
+		"template": "{data:base}{data:endpoint}{data:query}",
+		"data": {
+			"base": Echo.Loader.config.storageURL[mode],
+			"endpoint": endpoint,
+			"query": mode === "dev" ? "?_=" + Math.random() : ""
+		}
+	});
+
+	// FIXME: Backwards compatibility
 	(new Echo.API.Request({
-		"apiBaseURL": Echo.Loader.config.storageURL[this.config.get("mode")],
-		"secure": this.config.get("useSecureAPI"),
+		"apiBaseURL": Echo.Loader.config.storageURL[self.config.get("mode")],
+		"secure": self.config.get("useSecureAPI"),
 		// taking care of the Canvas unique identifier on the page,
 		// specified as "#XXX" in the Canvas ID. We don't need to send this
 		// unique page identifier, we send only the primary Canvas ID.
-		"endpoint": this._getIds().main,
+		"endpoint": endpoint,
 		// adding page origin to the Cloudfront request to cache the Canvas
 		// config (on Cloudfront side) with the respective CORS headers,
 		// associated with the current domain
-		"data": this.config.get("mode") === "dev"
-			? {"_": Math.random()}
-			: {"origin": window.location.protocol + "//" + window.location.host},
+		"data": self.config.get("mode") === "dev"
+				? {"_": Math.random()}
+				: {"origin": window.location.protocol + "//" + window.location.host},
 		"onData": function(config) {
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
@@ -429,12 +445,36 @@ canvas.methods._fetchConfig = function(callback) {
 			self.set("data", config); // store Canvas data into the instance
 			callback.call(self);
 		},
-		"onError": function(response) {
+		"onError": function(response, type) {
+			var isTransportError = response
+				&& response.transportError
+				&& response.transportError.status !== 200;
 			self._error({
 				"args": response,
 				"code": "unable_to_retrieve_app_config",
-				"renderError": true
+				"renderError": isTransportError || !$.support.cors
 			});
+			if (!isTransportError) {
+				Echo.Loader.download([{
+					"url": URL,
+					"loaded": function() {
+						return !!getConfig();
+					}
+				}], function() {
+					var config = getConfig();
+					if (!config || !config.apps || !config.apps.length) {
+						var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
+						self._error({
+							"args": {"config": config, "target": target},
+							"code": "invalid_canvas_config",
+							"message": message
+						});
+						return;
+					}
+					self.set("data", config); // store Canvas data into the instance
+					callback.call(self);
+				});
+			}
 		}
 	})).request();
 };

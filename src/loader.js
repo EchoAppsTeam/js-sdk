@@ -31,6 +31,8 @@ Echo.Loader = {
 	/** @ignore */
 	"canvases": [],  // Canvases list initialized on the page
 	/** @ignore */
+	"canvasesConfigById": {}, // Canvases config that retrieved from the storage
+	/** @ignore */
 	"overrides": {},  // Canvas Apps overrides object
 	/** @ignore */
 	"vars": {
@@ -411,6 +413,10 @@ Echo.Loader._initCanvas = function(target, initMode, config) {
 			onViewportChange("subscribe", init);
 		}
 	})();
+};
+
+Echo.Loader._storeCanvasConfig = function(id, config) {
+	Echo.Loader.canvasesConfigById[id] = config;
 };
 
 Echo.Loader._isInViewport = function(canvas) {
