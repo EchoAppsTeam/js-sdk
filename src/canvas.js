@@ -395,19 +395,17 @@ canvas.methods._getIds = function() {
 canvas.methods._fetchConfig = function(callback) {
 	var self = this, target = this.config.get("target");
 	var isManual = this._isManuallyConfigured();
-	var mode = this.config.get("mode");
-	var endpoint = this._getIds().main;
-	var getConfig =  function() {
-		return Echo.Loader.canvasesConfigById[endpoint];
-	};
-
 	// no need to perform server side request in case
 	// we already have all the data on the client side
 	if (isManual) {
 		callback.call(this);
 		return;
 	}
-
+	var mode = this.config.get("mode");
+	var endpoint = this._getIds().main;
+	var getConfig = function() {
+		return Echo.Loader.canvasesConfigById[endpoint];
+	};
 	var URL = this.substitute({
 		"template": "{data:base}{data:endpoint}{data:query}",
 		"data": {
@@ -419,8 +417,8 @@ canvas.methods._fetchConfig = function(callback) {
 
 	// FIXME: Backwards compatibility
 	(new Echo.API.Request({
-		"apiBaseURL": Echo.Loader.config.storageURL[self.config.get("mode")],
-		"secure": self.config.get("useSecureAPI"),
+		"apiBaseURL": Echo.Loader.config.storageURL[mode],
+		"secure": this.config.get("useSecureAPI"),
 		// taking care of the Canvas unique identifier on the page,
 		// specified as "#XXX" in the Canvas ID. We don't need to send this
 		// unique page identifier, we send only the primary Canvas ID.
@@ -428,7 +426,7 @@ canvas.methods._fetchConfig = function(callback) {
 		// adding page origin to the Cloudfront request to cache the Canvas
 		// config (on Cloudfront side) with the respective CORS headers,
 		// associated with the current domain
-		"data": self.config.get("mode") === "dev"
+		"data": mode === "dev"
 				? {"_": Math.random()}
 				: {"origin": window.location.protocol + "//" + window.location.host},
 		"onData": function(config) {
