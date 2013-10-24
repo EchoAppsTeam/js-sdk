@@ -241,6 +241,8 @@ canvas.templates.app =
 canvas.destroy = function() {
 	$.map(this.get("apps"), $.proxy(this._destroyApp, this));
 	this.config.get("target").data("echo-canvas-initialized", false);
+	// remove cached canvas config
+	Echo.Utils.remove(Echo.Loader.canvasesConfigById, this._getIds().unique);
 };
 
 /**
@@ -404,18 +406,14 @@ canvas.methods._fetchConfig = function(callback) {
 	var mode = this.config.get("mode");
 	var endpoint = this._getIds().main;
 	var getConfig = function() {
-		return Echo.Loader.canvasesConfigById[endpoint];
+		return Echo.Loader.canvasesConfigById[self._getIds().unique];
 	};
-	var URL = this.substitute({
-		"template": "{data:base}{data:endpoint}{data:query}",
-		"data": {
-			"base": Echo.Loader.config.storageURL[mode],
-			"endpoint": endpoint,
-			"query": mode === "dev" ? "?_=" + Math.random() : ""
-		}
-	});
+	var URL = Echo.Loader.config.storageURL[mode] + endpoint +
+		(mode === "dev" ? "?_=" + Math.random() : "");
 
-	// FIXME: Backwards compatibility
+	// FIXME: Backwards compatibility (task F:1849)
+	// avoid retrieving canvases through the Echo.API.Request
+	// mechanism, switch to the Echo.Loader mechinery only
 	(new Echo.API.Request({
 		"apiBaseURL": Echo.Loader.config.storageURL[mode],
 		"secure": this.config.get("useSecureAPI"),
@@ -452,12 +450,14 @@ canvas.methods._fetchConfig = function(callback) {
 				"code": "unable_to_retrieve_app_config",
 				"renderError": isTransportError || !$.support.cors
 			});
+			// isTransportError indicates that we had any transport error
+			// which we get from the server or during the request.
+			// If we recieved no JSON string it is a parse error, not transport.
+			// So here we just check it and if it was parse error, we should
+			// try to request the same canvas through the Echo.Loader mechanism.
 			if (!isTransportError) {
 				Echo.Loader.download([{
-					"url": URL,
-					"loaded": function() {
-						return !!getConfig();
-					}
+					"url": URL
 				}], function() {
 					var config = getConfig();
 					if (!config || !config.apps || !config.apps.length) {

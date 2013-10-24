@@ -749,9 +749,50 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		});
 		Echo.Loader.init({"target": body});
 	});
-
-	QUnit.expect(15);
-	Echo.Utils.sequentialCall([
+	var clearCanvasConfigOnDestroy = Echo.Tests.isolate(function(callback) {
+		var body = $(this.document.body);
+		var id = "js-sdk-tests/test-canvas-001";
+		var deferred = Echo.Utils.foldl([], ["#foo", "#bar"], function(extra, acc) {
+			body.append('<div class="echo-canvas" data-canvas-id="' + id + extra + '"></div>');
+			$.map(["stream", "submit"], function(app) {
+				var def = Echo.jQuery.Deferred();
+				Echo.Loader.override(id + extra, app, {
+					"ready": function() {
+						def.resolve();
+					}
+				});
+				acc.push(def);
+			});
+		});
+		Echo.jQuery.when.apply(Echo.jQuery, deferred).done(function() {
+			var canvases = Echo.Loader.canvases;
+			QUnit.ok(
+				(id + "#foo") in Echo.Loader.canvasesConfigById
+				&& (id + "#bar") in Echo.Loader.canvasesConfigById
+			, "Checking that canvas config stored to the cache");
+			var handlerId = Echo.Events.subscribe({
+				"topic": "Echo.Canvas.onRefresh",
+				"handler": function() {
+					QUnit.ok(
+						(id + "#foo") in Echo.Loader.canvasesConfigById
+						&& (id + "#bar") in Echo.Loader.canvasesConfigById
+					, "Checking that canvas config cache include both");
+					canvases[0].destroy();
+					QUnit.ok(
+						!((id + "#foo") in Echo.Loader.canvasesConfigById)
+						&& (id + "#bar") in Echo.Loader.canvasesConfigById
+					, "Checking that canvas config was removed from the cache after destroy the canvas");
+					canvases[1].destroy();
+					QUnit.ok(Echo.jQuery.isEmptyObject(Echo.Loader.canvasesConfigById), "Checking that cache is empty after destroy all canvases");
+					callback();
+					Echo.Events.unsubscribe({"handlerId": handlerId});
+				}
+			});
+			canvases[0].refresh();
+		});
+		Echo.Loader.init({"target": body});
+	});
+	var tests = [
 		simpleValidCanvas,
 		validAndInvalidCanvases,
 		doubleInitializationPrevention,
@@ -759,7 +800,14 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		multipleAppsCanvas,
 		overridesSameCanvases,
 		appConfigOverrides
-	], function() {
+	];
+	var expected = 15;
+	if (QUnit.urlParams.noMockRequests === "true") {
+		tests.unshift(clearCanvasConfigOnDestroy);
+		expected = 19;
+	}
+	QUnit.expect(expected);
+	Echo.Utils.sequentialCall(tests, function() {
 		QUnit.start();
 	});
 }, {

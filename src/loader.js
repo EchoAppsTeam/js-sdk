@@ -416,7 +416,12 @@ Echo.Loader._initCanvas = function(target, initMode, config) {
 };
 
 Echo.Loader._storeCanvasConfig = function(id, config) {
-	Echo.Loader.canvasesConfigById[id] = config;
+	Echo.Loader._map(Echo.Loader.canvases, function(canvas) {
+		var ids = canvas._getIds();
+		if (~ids.unique.indexOf(id)) {
+			Echo.Loader.canvasesConfigById[ids.unique] = config;
+		}
+	});
 };
 
 Echo.Loader._isInViewport = function(canvas) {
