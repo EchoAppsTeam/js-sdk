@@ -752,6 +752,9 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	var clearCanvasConfigOnDestroy = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
 		var id = "js-sdk-tests/test-canvas-001";
+		var inCache = function(hash) {
+			return ((id + "#" + hash) in Echo.Loader.canvasesConfigById);
+		};
 		var deferred = Echo.Utils.foldl([], ["#foo", "#bar"], function(extra, acc) {
 			body.append('<div class="echo-canvas" data-canvas-id="' + id + extra + '"></div>');
 			$.map(["stream", "submit"], function(app) {
@@ -773,15 +776,9 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 			var handlerId = Echo.Events.subscribe({
 				"topic": "Echo.Canvas.onRefresh",
 				"handler": function() {
-					QUnit.ok(
-						(id + "#foo") in Echo.Loader.canvasesConfigById
-						&& (id + "#bar") in Echo.Loader.canvasesConfigById
-					, "Checking that canvas config cache include both");
+					QUnit.ok(inCache("foo") && inCache("bar"), "Checking that canvas config cache includes both instances");
 					canvases[0].destroy();
-					QUnit.ok(
-						!((id + "#foo") in Echo.Loader.canvasesConfigById)
-						&& (id + "#bar") in Echo.Loader.canvasesConfigById
-					, "Checking that canvas config was removed from the cache after destroy the canvas");
+					QUnit.ok(!inCache("foo") && inCache("bar"), "Checking that canvas config was removed from the cache after destroy the canvas");
 					canvases[1].destroy();
 					QUnit.ok(Echo.jQuery.isEmptyObject(Echo.Loader.canvasesConfigById), "Checking that cache is empty after destroy all canvases");
 					callback();
@@ -802,7 +799,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		appConfigOverrides
 	];
 	var expected = 15;
-	if (QUnit.urlParams.noMockRequests === "true") {
+	if (!Echo.Tests.Utils.isServerMocked()) {
 		tests.unshift(clearCanvasConfigOnDestroy);
 		expected = 19;
 	}

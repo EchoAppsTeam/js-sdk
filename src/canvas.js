@@ -413,7 +413,7 @@ canvas.methods._fetchConfig = function(callback) {
 
 	// FIXME: Backwards compatibility (task F:1849)
 	// avoid retrieving canvases through the Echo.API.Request
-	// mechanism, switch to the Echo.Loader mechinery only
+	// mechanism, switch to the Echo.Loader machinery only
 	(new Echo.API.Request({
 		"apiBaseURL": Echo.Loader.config.storageURL[mode],
 		"secure": this.config.get("useSecureAPI"),
@@ -425,8 +425,8 @@ canvas.methods._fetchConfig = function(callback) {
 		// config (on Cloudfront side) with the respective CORS headers,
 		// associated with the current domain
 		"data": mode === "dev"
-				? {"_": Math.random()}
-				: {"origin": window.location.protocol + "//" + window.location.host},
+			? {"_": Math.random()}
+			: {"origin": window.location.protocol + "//" + window.location.host},
 		"onData": function(config) {
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
@@ -457,7 +457,10 @@ canvas.methods._fetchConfig = function(callback) {
 			// try to request the same canvas through the Echo.Loader mechanism.
 			if (!isTransportError) {
 				Echo.Loader.download([{
-					"url": URL
+					"url": URL,
+					"loaded": function() {
+						return !!getConfig();
+					}
 				}], function() {
 					var config = getConfig();
 					if (!config || !config.apps || !config.apps.length) {
