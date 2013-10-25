@@ -769,10 +769,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		});
 		Echo.jQuery.when.apply(Echo.jQuery, deferred).done(function() {
 			var canvases = Echo.Loader.canvases;
-			QUnit.ok(
-				(id + "#foo") in Echo.Loader.canvasesConfigById
-				&& (id + "#bar") in Echo.Loader.canvasesConfigById
-			, "Checking that canvas config stored to the cache");
+			QUnit.ok(inCache("foo") && inCache("bar"), "Checking that canvas config stored to the cache");
 			var handlerId = Echo.Events.subscribe({
 				"topic": "Echo.Canvas.onRefresh",
 				"handler": function() {
