@@ -126,7 +126,7 @@ Echo.Tests.Events.contracts = {
 	"Echo.API.Transports.WebSockets.onQuotaExceeded": {},
 	"Echo.API.Transports.WebSockets.onError": {
 		"errorCode": "string",
-		"errorMesssage": "string"
+		"errorMessage": "string"
 	},
 	"Echo.API.Transports.WebSockets.onData": {
 		"event": "string"
