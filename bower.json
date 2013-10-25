@@ -1,0 +1,10 @@
+{
+  "name": "js-sdk",
+  "version": "3.0.13",
+  "main": "//cdn.echoenabled.com/sdk/v3/loader.js",
+  "ignore": [
+  ],
+  "dependencies": {
+    "jquery": "latest",
+  },
+}
