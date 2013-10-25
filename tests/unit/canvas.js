@@ -15,10 +15,11 @@ Echo.Tests.renderersTest("Echo.Canvas", {
 Echo.Tests.asyncTest("common workflow", function() {
 	var target = $("#qunit-fixture");
 	target.append('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001#some-id_001"></div>');
-	new Echo.Canvas({
+	Echo.Loader.canvases.push(new Echo.Canvas({
 		"target": $("#echo-canvas"),
 		"ready": function() {
 			QUnit.ok(true, "Check that component is initialized");
+			Echo.Loader.canvases.pop();
 			QUnit.ok(this.apps.length === 2, "Check that all apps are initialized");
 			QUnit.ok(
 				this.config.get("target").is(".echo-canvas-js-sdk-tests-test-canvas-001"),
@@ -57,15 +58,16 @@ Echo.Tests.asyncTest("common workflow", function() {
 			);
 			QUnit.start();
 		}
-	});
+	}));
 });
 
 Echo.Tests.asyncTest("select app script url", function() {
 	var target = $("#qunit-fixture");
 	target.append($('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>'));
-	new Echo.Canvas({
+	Echo.Loader.canvases.push(new Echo.Canvas({
 		"target": $("#echo-canvas"),
 		"ready": function() {
+			Echo.Loader.canvases.pop();
 			var debug = Echo.Loader.debug;
 			QUnit.strictEqual(this._getAppScriptURL({}), undefined, "If incoming object is empty, no url is returned");
 			QUnit.strictEqual(this._getAppScriptURL({"script": "some-url"}), "some-url", "If \"scripts\" field is omitted, then \"script\" field will be used");
@@ -120,7 +122,7 @@ Echo.Tests.asyncTest("select app script url", function() {
 			this.destroy();
 			QUnit.start();
 		}
-	});
+	}));
 });
 
 Echo.Tests.test("canvas contract", function() {
