@@ -8,6 +8,11 @@ var entry = {
 		"content": "TestContent by another.john.doe",
 		"published": "2013-04-18T17:32:10Z"
 	},
+	"provider": {
+		"icon": "http://example.com/icon.ico",
+		"name": "example.com",
+		"uri": "http://example.com"
+	},
 	"verbs": [
 		"http://activitystrea.ms/schema/1.0/post"
 	],
