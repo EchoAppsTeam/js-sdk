@@ -19,7 +19,7 @@ suite.prototype.info = {
 		"Polling.getRequestObject",
 		"Polling.stop",
 		"Polling.start",
-		"Polling.on",
+		//"Polling.on",
 		"WebSockets.init",
 		"WebSockets.getRequestObject",
 		"WebSockets.on",
