@@ -408,8 +408,15 @@ canvas.methods._fetchConfig = function(callback) {
 	var getConfig = function() {
 		return Echo.Loader.canvasesConfigById[self._getIds().unique];
 	};
-	var URL = Echo.Loader.config.storageURL[mode] + endpoint +
-		(mode === "dev" ? "?_=" + Math.random() : "");
+	var parts = Echo.Utils.parseURL(Echo.Loader.config.storageURL[mode]);
+	var URL = this.substitute({
+		"template": "{data:scheme}://{data:domain}{data:path}{data:endpoint}{data:query}",
+		"data": $.extend(parts, {
+			"endpoint": endpoint,
+			"scheme": this.config.get("useSecureAPI") ? "https" : parts.scheme,
+			"query": mode === "dev" ? "?_=" + Math.random() : ""
+		})
+	});
 
 	// FIXME: Backwards compatibility (task F:1849)
 	// avoid retrieving canvases through the Echo.API.Request
@@ -444,7 +451,8 @@ canvas.methods._fetchConfig = function(callback) {
 		"onError": function(response, type) {
 			var isTransportError = response
 				&& response.transportError
-				&& response.transportError.status !== 200;
+				&& response.transportError.status !== 200
+				&& response.transportError.statusText !== "parseerror";
 			self._error({
 				"args": response,
 				"code": "unable_to_retrieve_app_config",

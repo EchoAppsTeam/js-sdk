@@ -761,6 +761,7 @@ Echo.API.Request.prototype._normalizeTransportName = function(transport) {
 
 Echo.API.Request.prototype._getTransport = function() {
 	var self = this;
+	var isSecure = this._isSecureRequest(this._prepareURL());
 	var userDefinedTransport = this.config.get("transport");
 	var transport = Echo.API.Transports[userDefinedTransport] && Echo.API.Transports[userDefinedTransport].available()
 		? userDefinedTransport
@@ -768,7 +769,7 @@ Echo.API.Request.prototype._getTransport = function() {
 			var transport;
 			$.each(["WebSockets", "AJAX", "XDomainRequest", "JSONP"], function(i, name) {
 				var available = Echo.API.Transports[name].available({
-					"secure": self.config.get("secure"),
+					"secure": isSecure,
 					"method": self.config.get("method")
 				});
 				if (available) {
