@@ -1,5 +1,30 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.14 - October 28, 2013
+
+* In order to **improve security**, we performed some updates to enable **HTTPS protocol for the endpoints which manipulate the Backplane channel ID**, specifically:
+
+  * requests to “users/whoami” to get the user data;
+  * all submit operations via Echo Submission Proxy (including “Likes”, “Flags” operations as well as posting new items via Submit form);
+  * user logout request;
+  * Backplane channel requests.
+
+  It basically means that the mentioned endpoints will be requested using secure connection irrespective to the current page protocol.
+
+* We discovered the situation where an **App with no Backplane configuration affected the user state** (switched it to anonymous state) and as a result the state was not updated even though other Apps had the Backplane information available. We made the logic more tolerant to that situation and we re-initialize the user in case the Backplane information became available on the page.
+
+* We made the **"transport" configuration parameter value consistent across the whole API-related machinery**. Now it’s called "websockets" in all places. We renamed the corresponding Echo API transport class to WebSockets as well. Please make sure that the “websockets” (not “websocket”) value is used in your configs.
+
+* The **missing docs for the ["onUpdate"](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Counter-echo_event-onUpdate) and ["onError"](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Counter-echo_event-onError)** events of the Echo Counter App **were added**.
+
+* We **fixed the missing new item animation in the Stream App**. The problem was caused by the missing backwards compatibility for the *liveUpdates.timeout* configuration parameter for the Stream, FacePile and Counter applications. The backwards compatibility was restored, however please note that this parameter is deprecated and should be replaced with [liveUpdates.polling.timeout](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream-cfg-liveUpdates) parameter.
+
+* The **"More" button was sometimes visible** in the Stream App even if there were **no more items** to display. The issue is now resolved.
+
+* Because of the issue with cross-domain AJAX requests to get Canvas configs from the third-party vendor storage (in case the Canvas is requested from multiple domains), **we switched the way we extract the Canvas data to JSONP-like one** to ensure the consistent behavior across all [supported browsers](http://echoappsteam.github.io/js-sdk/docs/#!/guide/technical_specification-section-browser-support). This is an internal machinery update, so there are *no* performance or any other implications for the publishers and end users. We will switch back to the AJAX (CORS) method as soon as it's fully supported.
+
+* **WebSockets re-subscribing logic in case of subscription termination signal** sent from the server side was updated. Previously we sent the “since” parameter along with the search query to re-initialize the view in StreamServer, but the view was not registered, because of the “since” parameter (which indicates that this is a live updates request). As a result, no new live updates reached the client side. The problem is now resolved. We have updated the code to prevent the “since” parameter from being sent while re-initializing the view.
+
 ##v3.0.13 - September 30, 2013
 
 - We have updated the **Echo.Loader.initApplication function and added the delayed initialization support** for apps. This mode was originally implemented for the Canvases machinery only (in v3.0.11) and now we are extending the support to include the apps initialized via Echo.Loader.initApplication function. This new loading mode allows to delay the app loading until the app target becomes visible in the user's browser. This option is disabled by default. In order to enable this loading mode you should specify the "init" parameter in the config object passed to the Echo.Loader.initApplication function. More information about this mode can be found in our Documentation center [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication).
