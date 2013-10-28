@@ -949,6 +949,7 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 							"data": {"item": {"data": item.data}},
 							"propagation": false
 						});
+						self.items[item.get("data.unique")] = item;
 						self._applySpotUpdates("add", item);
 					}
 					_callback();
