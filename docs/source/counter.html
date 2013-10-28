@@ -33,7 +33,7 @@ var $ = jQuery;
  * 	});
  *
  * More information regarding the possible ways of the Control initialization
- * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.Control
  *
@@ -57,6 +57,7 @@ if (Echo.Control.isDefined(counter)) return;
 </span><span id='Echo-StreamServer-Controls-Counter-method-getRelativeTime'>/** @hide @method getRelativeTime */
 </span><span id='Echo-StreamServer-Controls-Counter-method-parentRenderer'>/** @hide @method parentRenderer */
 </span><span id='Echo-StreamServer-Controls-Counter-method-placeImage'>/** @hide @method placeImage */
+</span><span id='Echo-StreamServer-Controls-Counter-echo_label-justNow'>/** @hide @echo_label justNow */
 </span><span id='Echo-StreamServer-Controls-Counter-echo_label-today'>/** @hide @echo_label today */
 </span><span id='Echo-StreamServer-Controls-Counter-echo_label-yesterday'>/** @hide @echo_label yesterday */
 </span><span id='Echo-StreamServer-Controls-Counter-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
@@ -95,6 +96,12 @@ if (Echo.Control.isDefined(counter)) return;
 counter.init = function() {
 	if (!this.checkAppKey()) return;
 
+	// picking up timeout value for backwards compatibility
+	var timeout = this.config.get(&quot;liveUpdates.timeout&quot;);
+	if (typeof timeout !== &quot;undefined&quot;) {
+		this.config.set(&quot;liveUpdates.polling.timeout&quot;, timeout);
+	}
+
 	this.request = this._getRequestObject();
 	if ($.isEmptyObject(this.get(&quot;data&quot;))) {
 		this.request.send();
@@ -128,7 +135,7 @@ counter.config = {
 	 * Specifies predefined items count which should be displayed by the application.
 	 * Counter control works with the data format used by the &quot;count&quot; API endpoint.
 	 * More information about the data format can be found
-	 * &lt;a href=&quot;http://wiki.aboutecho.com/API-method-count#ResponseFormat&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
+	 * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/27888212/API-method-count#ResponseFormat&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
 	 *
 	 * 	new Echo.Counter({
 	 * 		...
@@ -188,6 +195,10 @@ counter.methods._getRequestObject = function(overrides) {
 
 counter.methods._maybeUpdate = function(data) {
 	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
+<span id='Echo-StreamServer-Controls-Counter-echo_event-onUpdate'>		/**
+</span>		 * @echo_event Echo.StreamServer.Controls.Counter.onUpdate
+		 * Triggered when new value is received.
+		 */
 		this.events.publish({
 			&quot;topic&quot;: &quot;onUpdate&quot;,
 			&quot;data&quot;: {
@@ -209,6 +220,10 @@ counter.methods._handleResponse = function(data, options) {
 };
 
 counter.methods._error = function(data, options) {
+<span id='Echo-StreamServer-Controls-Counter-echo_event-onError'>	/**
+</span>	 * @echo_event Echo.StreamServer.Controls.Counter.onError
+	 * Triggered when some error has occured while getting counter data.
+	 */
 	this.events.publish({
 		&quot;topic&quot;: &quot;onError&quot;,
 		&quot;data&quot;: {

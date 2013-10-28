@@ -59,6 +59,7 @@ Echo.StreamServer.API = {};
 Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(config) {
 	var timeout = config &amp;&amp; config.liveUpdates &amp;&amp; config.liveUpdates.timeout || config.liveUpdatesTimeout;
 	var liveUpdatesEnabled = config &amp;&amp; config.liveUpdates &amp;&amp; config.liveUpdates.enabled || config.recurring;
+
 	config = $.extend(true, {
 <span id='Echo-StreamServer-API-Request-cfg-liveUpdatesTimeout'>		/**
 </span>		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
@@ -76,7 +77,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * The following transports are supported:
 		 *
 		 * + &quot;polling&quot; - periodic requests to check for updates
-		 * + &quot;websockets&quot; - transport based on the WebSocket technology
+		 * + &quot;websockets&quot; - transport based on the WebSockets technology
 		 *
 		 * If the end user&#39;s browser doesn&#39;t support the WebSockets technology,
 		 * the &quot;polling&quot; transport will be used as a fallback.
@@ -93,9 +94,9 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * live updates transport.
 		 *
 		 * @cfg {Number} [liveUpdates.websockets.maxConnectRetries=3]
-		 * Max connection retries for WebSocket transport. After the number of the
+		 * Max connection retries for WebSockets transport. After the number of the
 		 * failed connection attempts specified in this parameter is reached, the
-		 * WebSocket transport is considered as non-supported: the client no longer
+		 * WebSockets transport is considered as non-supported: the client no longer
 		 * tries to use the WebSockets on the page and the polling transport is used
 		 * from now on.
 		 *
@@ -129,7 +130,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 				&quot;serverPingInterval&quot;: 30,
 				&quot;resetPeriod&quot;: 60,
 				&quot;maxResetsPerPeriod&quot;: 2,
-				&quot;URL&quot;: &quot;{%=baseURLs.api.ws%}/v1/&quot;
+				&quot;URL&quot;: &quot;//live.echoenabled.com/v1/&quot;
 			}
 		},
 
@@ -138,6 +139,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * __Note__: this parameter is deprecated in favor of liveUpdates.enabled
 		 */
 		&quot;recurring&quot;: false,
+
 <span id='Echo-StreamServer-API-Request-cfg-skipInitialRequest'>		/**
 </span>		 * @cfg {Boolean} [skipInitialRequest]
 		 * Flag allowing to skip the initial request but continue performing
@@ -173,7 +175,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 </span>		 * @cfg {String} [submissionProxyURL]
 		 * Specifes the URL to the submission proxy service.
 		 */
-		&quot;submissionProxyURL&quot;: &quot;{%=baseURLs.api.submissionproxy%}/v2/esp/activity&quot;
+		&quot;submissionProxyURL&quot;: &quot;https://apps.echoenabled.com/v2/esp/activity&quot;
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = &quot;initial&quot;; // initial | secondary
@@ -261,15 +263,16 @@ Echo.StreamServer.API.Request.prototype._onError = function(responseError, reque
 	this._handleErrorResponse(responseError, {&quot;callback&quot;: config.onError});
 };
 
-Echo.StreamServer.API.Request.prototype._prepareURI = function() {
+Echo.StreamServer.API.Request.prototype._prepareURL = function() {
 	var endpoint = this.config.get(&quot;endpoint&quot;);
 	if (endpoint === &quot;submit&quot;) {
-		return this.config.get(&quot;submissionProxyURL&quot;).replace(/^(?:(?:http|ws)s?:)?\/\//, &quot;&quot;);
+		return this.config.get(&quot;submissionProxyURL&quot;);
 	}
+	var url = this.constructor.parent._prepareURL.call(this);
 	return endpoint === &quot;mux&quot;
 		// /v1/mux endpoint is deprecated so we must always use /v2/mux
-		? this.constructor.parent._prepareURI.call(this).replace(/v1/, &quot;v2&quot;)
-		: this.constructor.parent._prepareURI.call(this);
+		? url.replace(&quot;v1&quot;, &quot;v2&quot;)
+		: url;
 };
 
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
@@ -283,7 +286,7 @@ Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 			}
 		})
 	);
-	if (this.config.get(&quot;liveUpdates.transport&quot;) === &quot;websockets&quot; &amp;&amp; Echo.API.Transports.WebSocket.available()) {
+	if (this.config.get(&quot;liveUpdates.transport&quot;) === &quot;websockets&quot; &amp;&amp; Echo.API.Transports.WebSockets.available()) {
 		ws = Echo.StreamServer.API.WebSockets.init(
 			$.extend(true, this._getLiveUpdatesConfig(&quot;websockets&quot;), {
 				&quot;request&quot;: {
@@ -606,7 +609,7 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 	}
 	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
 	var applyServerDefinedTimeout = function(timeout) {
-		if (!timeout &amp;&amp; self.originalTimeout != self.config.get(&quot;timeout&quot;)) {
+		if (!timeout &amp;&amp; self.originalTimeout !== self.config.get(&quot;timeout&quot;)) {
 			self.config.set(&quot;timeout&quot;, self.originalTimeout);
 		} else if (timeout &amp;&amp; timeout &gt; self.config.get(&quot;timeout&quot;)) {
 			self.config.set(&quot;timeout&quot;, timeout);
@@ -653,8 +656,8 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 			&quot;resetPeriod&quot;: 60 // sec
 		},
 		&quot;request&quot;: {
-			&quot;apiBaseURL&quot;: &quot;{%=baseURLs.api.ws%}/v1/&quot;,
-			&quot;transport&quot;: &quot;websocket&quot;,
+			&quot;apiBaseURL&quot;: &quot;//live.echoenabled.com/v1/&quot;,
+			&quot;transport&quot;: &quot;websockets&quot;,
 			&quot;timeout&quot;: null,
 			&quot;onOpen&quot;: $.noop,
 			&quot;onData&quot;: $.noop,
@@ -785,9 +788,12 @@ Echo.StreamServer.API.WebSockets.prototype.subscribe = function() {
 Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback) {
 	var self = this;
 	callback = callback || $.noop;
+	// we should update view on server-side without since parameter
+	var data = $.extend(true, {}, this.config.get(&quot;request.data&quot;));
+	delete data.since;
 	var req = new Echo.API.Request({
 		&quot;endpoint&quot;: &quot;search&quot;,
-		&quot;data&quot;: this.config.get(&quot;request.data&quot;),
+		&quot;data&quot;: data,
 		&quot;secure&quot;: this.config.get(&quot;request.secure&quot;),
 		&quot;onData&quot;: function() {
 			callback.apply(self, arguments);

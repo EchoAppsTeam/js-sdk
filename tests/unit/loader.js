@@ -749,9 +749,44 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		});
 		Echo.Loader.init({"target": body});
 	});
-
-	QUnit.expect(15);
-	Echo.Utils.sequentialCall([
+	var clearCanvasConfigOnDestroy = Echo.Tests.isolate(function(callback) {
+		var body = $(this.document.body);
+		var id = "js-sdk-tests/test-canvas-001";
+		var inCache = function(hash) {
+			return ((id + "#" + hash) in Echo.Loader.canvasesConfigById);
+		};
+		var deferred = Echo.Utils.foldl([], ["#foo", "#bar"], function(extra, acc) {
+			body.append('<div class="echo-canvas" data-canvas-id="' + id + extra + '"></div>');
+			$.map(["stream", "submit"], function(app) {
+				var def = Echo.jQuery.Deferred();
+				Echo.Loader.override(id + extra, app, {
+					"ready": function() {
+						def.resolve();
+					}
+				});
+				acc.push(def);
+			});
+		});
+		Echo.jQuery.when.apply(Echo.jQuery, deferred).done(function() {
+			var canvases = Echo.Loader.canvases;
+			QUnit.ok(inCache("foo") && inCache("bar"), "Checking that canvas config stored to the cache");
+			var handlerId = Echo.Events.subscribe({
+				"topic": "Echo.Canvas.onRefresh",
+				"handler": function() {
+					QUnit.ok(inCache("foo") && inCache("bar"), "Checking that canvas config cache includes both instances");
+					canvases[0].destroy();
+					QUnit.ok(!inCache("foo") && inCache("bar"), "Checking that canvas config was removed from the cache after destroy the canvas");
+					canvases[1].destroy();
+					QUnit.ok(Echo.jQuery.isEmptyObject(Echo.Loader.canvasesConfigById), "Checking that cache is empty after destroy all canvases");
+					callback();
+					Echo.Events.unsubscribe({"handlerId": handlerId});
+				}
+			});
+			canvases[0].refresh();
+		});
+		Echo.Loader.init({"target": body});
+	});
+	var tests = [
 		simpleValidCanvas,
 		validAndInvalidCanvases,
 		doubleInitializationPrevention,
@@ -759,7 +794,14 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		multipleAppsCanvas,
 		overridesSameCanvases,
 		appConfigOverrides
-	], function() {
+	];
+	var expected = 15;
+	if (!Echo.Tests.Utils.isServerMocked()) {
+		tests.unshift(clearCanvasConfigOnDestroy);
+		expected = 19;
+	}
+	QUnit.expect(expected);
+	Echo.Utils.sequentialCall(tests, function() {
 		QUnit.start();
 	});
 }, {

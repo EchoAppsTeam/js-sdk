@@ -249,7 +249,7 @@ suite.prototype.cases.user = function(callback) {
 	QUnit.equal(submit.view.get("name").val(), "john.doe", "Checking name of logged user");
 	var avatar = submit.view.get("avatar");
 	QUnit.ok(avatar && avatar.length === 1 && avatar.find("img"), "Checking that avatar exists");
-	QUnit.equal(avatar.find("img").attr("src"), "//cdn.echoenabled.com/images/avatar-default.png",
+	QUnit.equal(avatar.find("img").attr("src"), "http://example.com/avatar.png",
 		"Checking avatar of logged user");
 	callback();
 };
@@ -267,7 +267,7 @@ suite.prototype.cases.onInit = function(callback) {
 				"actor": {
 					"objectTypes": [ "http://activitystrea.ms/schema/1.0/person" ],
 					"name": "john.doe",
-					"avatar": "//cdn.echoenabled.com/images/avatar-default.png"
+					"avatar": "http://example.com/avatar.png"
 				},
 				"object": {
 					"objectTypes": [ "http://activitystrea.ms/schema/1.0/comment"],

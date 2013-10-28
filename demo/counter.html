@@ -28,19 +28,19 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-        Echo.Loader.initApplication({ 
-            "script": "//cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
-            "component": "Echo.StreamServer.Controls.Counter",
-            "backplane": { 
-                "serverBaseURL": window.location.protocol + "//api.echoenabled.com/v1",
-                "busName": "jskit"
-            },
-            "config": {
+		Echo.Loader.initApplication({
+			"script": "//cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+			"component": "Echo.StreamServer.Controls.Counter",
+			"backplane": {
+				"serverBaseURL": "https://api.echoenabled.com/v1",
+				"busName": "jskit"
+			},
+			"config": {
 				"target": document.getElementById("counter"),
-                "appkey": "echo.jssdk.demo.aboutecho.com",
+				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"query" : "childrenof:http://example.com/test/*"
-            }
-        }); 
+			}
+		});
 	</script>
 </body>
 </html>

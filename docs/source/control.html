@@ -502,8 +502,14 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 		return self.labels.get(period + (ago === 1 ? &quot;&quot; : &quot;s&quot;) + &quot;Ago&quot;, {&quot;number&quot;: ago});
 	};
 
-	if (isNaN(dayDiff) || dayDiff &lt; 0 || dayDiff &gt;= 365) {
+	// we display the &quot;Just now&quot; text in order to mitigate the clock inaccuracy
+	// when the time difference between the current and the given time is
+	// less than 10 seconds or if the given date is &quot;from the future&quot; but
+	// within the 60 seconds range
+	if (isNaN(dayDiff) || diff &lt; -60 || dayDiff &gt;= 365) {
 		when = d.toLocaleDateString() + &#39;, &#39; + d.toLocaleTimeString();
+	} else if (diff &lt; 10) {
+		when = this.labels.get(&quot;justNow&quot;);
 	} else if (diff &lt; 60) {
 		when = getAgo(diff, &#39;second&#39;);
 	} else if (diff &lt; 60 * 60) {
@@ -879,7 +885,7 @@ Echo.Control.prototype._initializers.user = function(callback) {
 		var generateURL = function(baseURL, path) {
 			if (!baseURL) return;
 			var urlInfo = Echo.Utils.parseURL(baseURL);
-			return &quot;//&quot; + urlInfo[&quot;domain&quot;] + path;
+			return (urlInfo.scheme || &quot;https&quot;) + &quot;://&quot; + urlInfo.domain + path;
 		};
 		Echo.UserSession({
 			&quot;appkey&quot;: this.config.get(&quot;appkey&quot;),
@@ -1167,7 +1173,7 @@ manifest.vars = {
 
 manifest.config = {
 <span id='Echo-Control-cfg-target'>	/**
-</span>	 * @cfg {String} target(required)
+</span>	 * @cfg {String} target (required)
 	 * Specifies the DOM element where the control will be displayed.
 	 */
 	&quot;target&quot;: undefined,
@@ -1187,19 +1193,19 @@ manifest.config = {
 	&quot;labels&quot;: {},
 
 <span id='Echo-Control-cfg-apiBaseURL'>	/**
-</span>	 * @cfg {String} [apiBaseURL=&quot;api.echoenabled.com/v1/&quot;]
+</span>	 * @cfg {String} apiBaseURL
 	 * URL prefix for all API requests
 	 */
-	&quot;apiBaseURL&quot;: &quot;{%=baseURLs.api.streamserver%}/v1/&quot;,
+	&quot;apiBaseURL&quot;: &quot;//api.echoenabled.com/v1/&quot;,
 
 <span id='Echo-Control-cfg-submissionProxyURL'>	/**
-</span>	 * @cfg {String} [submissionProxyURL=&quot;apps.echoenabled.com/v2/esp/activity/&quot;]
+</span>	 * @cfg {String} submissionProxyURL
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
-	&quot;submissionProxyURL&quot;: &quot;{%=baseURLs.api.submissionproxy%}/v2/esp/activity/&quot;,
+	&quot;submissionProxyURL&quot;: &quot;https://apps.echoenabled.com/v2/esp/activity&quot;,
 
 <span id='Echo-Control-cfg-useSecureAPI'>	/**
-</span>	 * @cfg {Boolean} [useSecureAPI]
+</span>	 * @cfg {Boolean} useSecureAPI
 	 * This parameter is used to specify the API request scheme.
 	 * If parameter is set to false or not specified, the API request object
 	 * will use the scheme used to retrieve the host page.
@@ -1207,13 +1213,13 @@ manifest.config = {
 	&quot;useSecureAPI&quot;: false,
 
 <span id='Echo-Control-cfg-infoMessages'>	/**
-</span>	 * @cfg {Object} [infoMessages]
+</span>	 * @cfg {Object} infoMessages
 	 * Customizes the look and feel of info messages, for example &quot;loading&quot; and &quot;error&quot;.
 	 *
-	 * @cfg {Boolean} [infoMessages.enabled=true]
+	 * @cfg {Boolean} infoMessages.enabled=true
 	 * Specifies if info messages should be rendered.
 	 *
-	 * @cfg {String} [infoMessages.layout=&quot;full&quot;]
+	 * @cfg {String} infoMessages.layout=&quot;full&quot;
 	 * Specifies the layout of the info message. By default can be set to &quot;compact&quot; or &quot;full&quot;.
 	 *
 	 *     &quot;infoMessages&quot;: {
@@ -1227,16 +1233,16 @@ manifest.config = {
 	},
 
 <span id='Echo-Control-cfg-cdnBaseURL'>	/**
-</span>	 * @cfg {Object} [cdnBaseURL]
+</span>	 * @cfg {Object} cdnBaseURL
 	 * A set of the key/value pairs to define CDN base URLs for different components.
 	 * The values are used as the URL prefixes for all static files, such as scripts,
 	 * stylesheets, images etc. You can add your own CDN base URL and use it anywhere
 	 * when the configuration object is available.
 	 *
-	 * @cfg {String} [cdnBaseURL.sdk]
+	 * @cfg {String} cdnBaseURL.sdk
 	 * Base URL of the SDK CDN location used for the main SDK resources.
 	 *
-	 * @cfg {String} [cdnBaseURL.apps]
+	 * @cfg {String} cdnBaseURL.apps
 	 * Base URL of the Echo apps built on top of the JS SDK.
 	 */
 	&quot;cdnBaseURL&quot;: {
@@ -1246,7 +1252,7 @@ manifest.config = {
 	},
 
 <span id='Echo-Control-cfg-plugins'>	/**
-</span>	 * @cfg {Array} [plugins]
+</span>	 * @cfg {Array} plugins
 	 * The list of the plugins to be added to the control instance.
 	 * Each plugin is represented as the JS object with the &quot;name&quot; field.
 	 * Other plugin parameters should be added to the same JS object.
@@ -1258,7 +1264,7 @@ manifest.config = {
 	&quot;query&quot;: &quot;&quot;,
 
 <span id='Echo-Control-cfg-defaultAvatar'>	/**
-</span>	 * @cfg {String} [defaultAvatar]
+</span>	 * @cfg {String} defaultAvatar
 	 * Default avatar URL which will be used for the user in
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
@@ -1354,6 +1360,10 @@ manifest.labels = {
 </span>	 * @echo_label today
 	 */
 	&quot;today&quot;: &quot;Today&quot;,
+<span id='Echo-Control-echo_label-justNow'>	/**
+</span>	 * @echo_label justNow
+	 */
+	&quot;justNow&quot;: &quot;Just now&quot;,
 <span id='Echo-Control-echo_label-yesterday'>	/**
 </span>	 * @echo_label yesterday
 	 */

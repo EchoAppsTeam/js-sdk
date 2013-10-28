@@ -12,7 +12,7 @@ Let's imagine that we want to create the application for posting and viewing com
 
 ## Creating the Application skeleton
 
-First of all, let's prepare the JavaScript closure to allocate a separate namespace for our applications's code. This step is common for all plugins and apps built on top of the JS SDK. You can find the detailed information on how to create the JS closure in the ["Terminology and dev tips"](#!/guide/terminology-section-3) guide. So we have the following code as a starting point:
+First of all, let's prepare the JavaScript closure to allocate a separate namespace for our applications's code. This step is common for all plugins and apps built on top of the JS SDK. You can find the detailed information on how to create the JS closure in the ["Terminology and dev tips"](#!/guide/terminology-section-creating-a-javascript-closure-for-the-components-and-jquery-plugins) guide. So we have the following code as a starting point:
 
 	(function(jQuery) {
 	"use strict";
@@ -95,7 +95,7 @@ The first steps is to prepare a template to represent the application UI. Due to
 		];
 	};
 
-Important note: as you can see, the templates contains the placeholders such as: "{class:container}", "{class:auth}" etc. These placeholders will be processed by the templating engine before the template is inserted into a page. You can find the general description of the rendering engine in the ["Terminology and dev tips"](#!/guide/terminology) guide.
+Important note: as you can see, the templates contains the placeholders such as: "{class:container}", "{class:auth}" etc. These placeholders will be processed by the templating engine before the template is inserted into a page. You can find the general description of the rendering engine in the ["Terminology and dev tips"](#!/guide/terminology-section-rendering-engine) guide.
 
 If your application requires only one template, you can define it as "main" in the "templates" object as shown below:
 
@@ -134,7 +134,7 @@ Now we have placeholders for our Submit and Stream app and we need the logic to 
 		return element;
 	};
 
-Important note: to proxy the configuration settings from the application to the child apps we can use placeholders, like the ones we used in the application templates. In our application we proxythe "identityManager" as a param of the Echo.IdentityServer.Controls.Auth app config by defining the "{config:identityManager}" placeholder.
+Important note: to proxy the configuration settings from the application to the child apps we can use placeholders, like the ones we used in the application templates. In our application we proxy the "identityManager" as a param of the Echo.IdentityServer.Controls.Auth app config by defining the "{config:identityManager}" placeholder.
 
 ## CSS rules
 

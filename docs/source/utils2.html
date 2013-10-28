@@ -89,14 +89,15 @@ Echo.Tests.Utils.initServer = function() {
 
 	// FIXME: we should have used usual urlMocks filtering like &quot;whoami&quot; and other
 	// but we can&#39;t because &quot;logout&quot; endpoint supports only JSONP but sinon can&#39;t
-	//  mock it. So we have to replace the whole functions
+	// mock it. So we have to replace the whole functions
 	sinon.stub(Echo.UserSession, &quot;_logoutRequest&quot;, function(data, callback) {
 		Echo.Tests.Utils.actualizeTestUser({&quot;status&quot;: &quot;anonymous&quot;}, function() {
+			sinon.stub(Echo.UserSession, &quot;_onInit&quot;, function(callback) {
+				callback();
+			});
 			callback(&quot;{\&quot;result\&quot;: \&quot;success\&quot;}&quot;);
+			Echo.UserSession._onInit.restore();
 		});
-	});
-	sinon.stub(Echo.UserSession, &quot;_onInit&quot;, function(callback) {
-		callback();
 	});
 };
 
@@ -161,7 +162,7 @@ var _URLMocks = {
 	},
 	// mocks for /v1/count API
 	&quot;api/count&quot;: {
-		&quot;url&quot;: new RegExp(&quot;{%=baseURLs.api.streamserver%}/v1/count\\?q=(.*?)&amp;&quot;),
+		&quot;url&quot;: new RegExp(&quot;//api.echoenabled.com/v1/count\\?q=(.*?)&amp;&quot;),
 		&quot;response&quot;: function(request, query) {
 			request.respond(
 				200,
@@ -172,7 +173,7 @@ var _URLMocks = {
 	},
 	// mocks for /v1/search API
 	&quot;api/search&quot;: {
-		&quot;url&quot;: new RegExp(&quot;{%=baseURLs.api.streamserver%}/v1/search\\?q=(.*?)&amp;&quot;),
+		&quot;url&quot;: new RegExp(&quot;//api.echoenabled.com/v1/search\\?q=(.*?)&amp;&quot;),
 		&quot;response&quot;: function(request, query) {
 			request.respond(
 				200,
@@ -183,7 +184,7 @@ var _URLMocks = {
 	},
 	// single URL http://api.echoenabled.com/v1/users/whoami?...
 	&quot;api/whoami&quot;: {
-		&quot;url&quot;: new RegExp(&quot;{%=baseURLs.api.streamserver%}/v1/users/whoami\\?&quot;),
+		&quot;url&quot;: new RegExp(&quot;//api.echoenabled.com/v1/users/whoami\\?&quot;),
 		&quot;response&quot;: function(request) {
 			request.respond(
 				200,

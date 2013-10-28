@@ -22,17 +22,18 @@
 			"script": "//cdn.echoenabled.com/apps/echo/comments-sample/comments-sample.js",
 			"component": "Echo.Apps.CommentsSample",
 			"backplane": {
-				"serverBaseURL": window.location.protocol + "//api.echoenabled.com/v1",
+				"serverBaseURL": "https://api.echoenabled.com/v1",
 				"busName": "jskit"
 			},
 			"config": {
 				"target": document.getElementById("comments-sample"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"apiBaseURL": "//api.echoenabled.com/v1/",
-				"submissionProxyURL": "//apps.echoenabled.com/v2/esp/activity",
+				"submissionProxyURL": "https://apps.echoenabled.com/v2/esp/activity",
 				"components": {
 					"Stream": {
 						"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
+						"liveUpdates": {"transport": "websockets"},
 						"item": {"reTag": false},
 						"plugins": [{
 							"name": "Edit"

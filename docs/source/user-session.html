@@ -260,6 +260,15 @@ Echo.UserSession._construct = function(config) {
 		config.ready &amp;&amp; config.ready.call(user);
 	};
 	user.state = user.state || &quot;init&quot;;
+
+	// checking if the Backplane configuration became defined on the page,
+	// in this case if the Echo.UserSession was initialized previously - make complete
+	// re-initialization from scratch to update the singleton properties
+	if (!user._sessionID &amp;&amp; user.get(&quot;sessionID&quot;)) {
+		user._sessionID = user.get(&quot;sessionID&quot;);
+		user.state = user.state === &quot;ready&quot; ? &quot;init&quot; : user.state;
+	}
+
 	switch (user.state) {
 
 		// initialization call when previous request is in progress
@@ -296,8 +305,8 @@ Echo.UserSession._getDefaultConfig = function() {
 	return {
 		&quot;appkey&quot;: &quot;&quot;,
 		&quot;endpoints&quot;: {
-			&quot;logout&quot;: &quot;{%=baseURLs.api.submissionproxy%}/v2/&quot;,
-			&quot;whoami&quot;: &quot;{%=baseURLs.api.streamserver%}/v1/users/&quot;
+			&quot;logout&quot;: &quot;https://apps.echoenabled.com/v2/&quot;,
+			&quot;whoami&quot;: &quot;https://api.echoenabled.com/v1/users/&quot;
 		},
 		&quot;useSecureAPI&quot;: false,
 		&quot;fakeIdentityURL&quot;: &quot;http://js-kit.com/ECHO/user/fake_user&quot;

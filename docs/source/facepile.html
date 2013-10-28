@@ -34,7 +34,7 @@ var $ = jQuery;
  * 	});
  *
  * More information regarding the possible ways of the Control initialization
- * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.Control
  *
@@ -55,6 +55,7 @@ if (Echo.Control.isDefined(pile)) return;
 </span><span id='Echo-StreamServer-Controls-FacePile-cfg-submissionProxyURL'>/** @hide @cfg submissionProxyURL */
 </span><span id='Echo-StreamServer-Controls-FacePile-method-placeImage'>/** @hide @method placeImage */
 </span><span id='Echo-StreamServer-Controls-FacePile-method-getRelativeTime'>/** @hide @method getRelativeTime */
+</span><span id='Echo-StreamServer-Controls-FacePile-echo_label-justNow'>/** @hide @echo_label justNow */
 </span><span id='Echo-StreamServer-Controls-FacePile-echo_label-today'>/** @hide @echo_label today */
 </span><span id='Echo-StreamServer-Controls-FacePile-echo_label-yesterday'>/** @hide @echo_label yesterday */
 </span><span id='Echo-StreamServer-Controls-FacePile-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
@@ -94,6 +95,12 @@ if (Echo.Control.isDefined(pile)) return;
 pile.init = function() {
 	if (!this.checkAppKey()) return;
 
+	// picking up timeout value for backwards compatibility
+	var timeout = this.config.get(&quot;liveUpdates.timeout&quot;);
+	if (typeof timeout !== &quot;undefined&quot;) {
+		this.config.set(&quot;liveUpdates.polling.timeout&quot;, timeout);
+	}
+
 	// data can be defined explicitly
 	// in this case we do not make API requests
 	if ($.isEmptyObject(this.get(&quot;data&quot;))) {
@@ -109,7 +116,7 @@ pile.config = {
 <span id='Echo-StreamServer-Controls-FacePile-cfg-data'>	/**
 </span>	 * @cfg {Object} data
 	 * Specifies static data for the face pile. It has the same format as returned
-	 * by the &lt;a href=&quot;http://wiki.aboutecho.com/API-method-search#ResponseFormat&quot; target=&quot;_blank&quot;&gt;
+	 * by the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search#ResponseFormat&quot; target=&quot;_blank&quot;&gt;
 	 * &quot;search&quot; API endpoint&lt;/a&gt;. If the &quot;data&quot; parameter is provided then the
 	 * &quot;query&quot; parameter should be omitted. If &quot;data&quot; and &quot;query&quot; parameters are both
 	 * provided &quot;query&quot; takes precedence over &quot;data&quot;.
@@ -614,6 +621,7 @@ if (Echo.Control.isDefined(item)) return;
 </span><span id='Echo-StreamServer-Controls-FacePile-Item-method-placeImage'>/** @hide @method placeImage */
 </span><span id='Echo-StreamServer-Controls-FacePile-Item-method-dependent'>/** @hide @method dependent */
 </span><span id='Echo-StreamServer-Controls-FacePile-Item-method-getRelativeTime'>/** @hide @method getRelativeTime */
+</span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-justNow'>/** @hide @echo_label justNow */
 </span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-today'>/** @hide @echo_label today */
 </span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-yesterday'>/** @hide @echo_label yesterday */
 </span><span id='Echo-StreamServer-Controls-FacePile-Item-echo_label-lastWeek'>/** @hide @echo_label lastWeek */

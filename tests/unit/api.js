@@ -8,17 +8,17 @@ Echo.Tests.module("Echo.API", {
 			"Request.send",
 			"Request.request",
 			"Request.abort",
-			"Transports.WebSocket.available",
-			"Transports.WebSocket.send",
-			"Transports.WebSocket.abort",
-			"Transports.WebSocket.connected",
-			"Transports.WebSocket.connecting",
-			"Transports.WebSocket.closed",
-			"Transports.WebSocket.closing",
-			"Transports.WebSocket.subscribe",
-			"Transports.WebSocket.unsubscribe",
-			"Transports.WebSocket.keepConnection",
-			"Transports.WebSocket.publish",
+			"Transports.WebSockets.available",
+			"Transports.WebSockets.send",
+			"Transports.WebSockets.abort",
+			"Transports.WebSockets.connected",
+			"Transports.WebSockets.connecting",
+			"Transports.WebSockets.closed",
+			"Transports.WebSockets.closing",
+			"Transports.WebSockets.subscribe",
+			"Transports.WebSockets.unsubscribe",
+			"Transports.WebSockets.keepConnection",
+			"Transports.WebSockets.publish",
 			"Transports.AJAX.available",
 			"Transports.AJAX.send",
 			"Transports.AJAX.abort",
@@ -39,7 +39,7 @@ Echo.Tests.test("private interface", function() {
 		"onSomeEvent2": function() {},
 		"onemotion": true
 	});
-	QUnit.equal("//" + req._prepareURI(), "//api.echoenabled.com/v1/some_endpoint", "Checking URI assembler for transport url");
+	QUnit.equal(req._prepareURL(), "//api.echoenabled.com/v1/some_endpoint", "Checking URL assembler for transport url");
 	var handlers = req._getHandlersByConfig();
 	QUnit.ok("onSomeEvent" in handlers && "onSomeEvent2" in handlers, "Checking that component can retrieve event handlers from config");
 
@@ -49,14 +49,12 @@ Echo.Tests.test("private interface", function() {
 			"apiBaseURL": url
 		});
 	};
-	QUnit.equal(request("https://example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] https:// in URL");
-	QUnit.equal(request("http://example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] \"http://\" in URL");
-	QUnit.equal(request("wss://example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] \"wss://\" in URL");
-	QUnit.equal(request("//example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] \"//\" in URL");
-	QUnit.equal(request("example.com/v1/")._prepareURI(), "example.com/v1/endpoint", "[_prepareURI] no protocol in URL");
+	QUnit.equal(request("https://example.com/v1/")._prepareURL(), "https://example.com/v1/endpoint", "[_prepareURL] \"https://\" in URL");
+	QUnit.equal(request("ws://example.com/v1/")._prepareURL(), "ws://example.com/v1/endpoint", "[_prepareURL] \"ws://\" in URL");
+	QUnit.equal(request("//example.com/v1/")._prepareURL(), "//example.com/v1/endpoint", "[_prepareURL] no schema in URL");
 });
 
-if (Echo.API.Transports.WebSocket.available()) {
+if (Echo.API.Transports.WebSockets.available()) {
 	Echo.Tests.asyncTest("WebSocket test cases", function() {
 		var closed = 0;
 		var requests = [];
@@ -70,7 +68,7 @@ if (Echo.API.Transports.WebSocket.available()) {
 					new Echo.API.Request({
 						"endpoint": "ws",
 						"apiBaseURL": "live.echoenabled.com/v1/",
-						"transport": "websocket",
+						"transport": "websockets",
 						"onClose": function() {
 							closed++;
 							closeDef[i].resolve();
@@ -98,20 +96,20 @@ if (Echo.API.Transports.WebSocket.available()) {
 				4, "Check that each statuses of the requests are \"connected\""
 			);
 			QUnit.strictEqual(
-				Echo.Utils.foldl(0, Echo.API.Transports.WebSocket.socketByURI, function(_, acc) {
+				Echo.Utils.foldl(0, Echo.API.Transports.WebSockets.socketByURI, function(_, acc) {
 					return ++acc;
 				}),
 				1, "Check that 4 API objects initialized and only one WS object instantiated"
 			);
 			QUnit.strictEqual(
-				Echo.Utils.foldl(0, Echo.API.Transports.WebSocket.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
+				Echo.Utils.foldl(0, Echo.API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
 					return ++acc;
 				}),
 				4, "Check that 4 API objects initialized and 4 subscriptions initialized"
 			);
 			req.abort();
 			QUnit.strictEqual(
-				Echo.Utils.foldl(0, Echo.API.Transports.WebSocket.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
+				Echo.Utils.foldl(0, Echo.API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
 					return ++acc;
 				}),
 				3, "Check that subscription removed in case of request abortion"
@@ -125,7 +123,7 @@ if (Echo.API.Transports.WebSocket.available()) {
 				}).length,
 				4, "Check that each statuses of the requests are \"closing\""
 			);
-			QUnit.ok($.isEmptyObject(Echo.API.Transports.WebSocket.socketByURI[req.transport.config.get("uri")].subscribers), "Check that all subscription removed in case of all requests abortion");
+			QUnit.ok($.isEmptyObject(Echo.API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers), "Check that all subscription removed in case of all requests abortion");
 			$.when.apply($, closeDef).done(function() {
 				QUnit.strictEqual(closed, 4, "Check that all subscribed connections are closed (\"onClose\" event fired)");
 				QUnit.strictEqual(
@@ -159,7 +157,7 @@ Echo.Tests.test("Transports JSONP method POST", function() {
 	})).request();
 });
 
-Echo.Tests.test("Ckeck transport noramalizer", function() {
+Echo.Tests.test("Check transport normalizer", function() {
 	var createRequest = function(transport) {
 		return new Echo.API.Request({
 			"apiBaseURL": "//example.com/v1/",

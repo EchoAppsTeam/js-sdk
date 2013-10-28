@@ -38,15 +38,17 @@ Echo.Loader = {
 </span>	&quot;debug&quot;: false,
 <span id='Echo-Loader-property-config'>	/** @private */
 </span>	&quot;config&quot;: {
-		&quot;cdnBaseURL&quot;: protocol + &quot;{%=baseURLs.cdn%}/&quot;,
+		&quot;cdnBaseURL&quot;: protocol + &quot;//cdn.echoenabled.com/&quot;,
 		&quot;storageURL&quot;: {
-			&quot;prod&quot;: protocol + &quot;{%=baseURLs.canvases.prod%}/&quot;,
-			&quot;dev&quot;: protocol + &quot;{%=baseURLs.canvases.dev%}/&quot;
+			&quot;prod&quot;: protocol + &quot;//dqspik3j3bxvu.cloudfront.net/&quot;,
+			&quot;dev&quot;: protocol + &quot;//s3.amazonaws.com/echo-canvases/&quot;
 		},
 		&quot;errorTimeout&quot;: 5000 // 5 sec
 	},
 <span id='global-property-canvases'>	/** @ignore */
 </span>	&quot;canvases&quot;: [],  // Canvases list initialized on the page
+<span id='global-property-canvasesConfigById'>	/** @ignore */
+</span>	&quot;canvasesConfigById&quot;: {}, // Canvases config that retrieved from the storage
 <span id='global-property-overrides'>	/** @ignore */
 </span>	&quot;overrides&quot;: {},  // Canvas Apps overrides object
 <span id='global-property-vars'>	/** @ignore */
@@ -428,6 +430,15 @@ Echo.Loader._initCanvas = function(target, initMode, config) {
 			onViewportChange(&quot;subscribe&quot;, init);
 		}
 	})();
+};
+
+Echo.Loader._storeCanvasConfig = function(id, config) {
+	Echo.Loader._map(Echo.Loader.canvases, function(canvas) {
+		var ids = canvas._getIds();
+		if (~ids.unique.indexOf(id)) {
+			Echo.Loader.canvasesConfigById[ids.unique] = config;
+		}
+	});
 };
 
 Echo.Loader._isInViewport = function(canvas) {

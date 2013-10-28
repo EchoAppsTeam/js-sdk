@@ -36,11 +36,11 @@ While developing an application (see the [“how to guide”](#!/guide/how_to_de
 		"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 	}];
 
-This code describes a single dependency which will be loaded only if there are no Stream and Submit Apps on the page already. More details on what happens in this example can be found [here](#!/guide/how_to_develop_app-section-8).
+This code describes a single dependency which will be loaded only if there are no Stream and Submit Apps on the page already. More details on what happens in this example can be found [here](#!/guide/how_to_develop_app-section-dependencies).
 
 ## Specifying dependencies for a Plugin
 
-Your plugin might also rely on some external resources required for its initialization. Echo JS SDK engine provides an ability to define these dependencies within the Plugin manifest. More information about the plugin dependencies definition can be found in the ["How to develop a Plugin" guide](#!/guide/how_to_develop_plugin-section-12).
+Your plugin might also rely on some external resources required for its initialization. Echo JS SDK engine provides an ability to define these dependencies within the Plugin manifest. More information about the plugin dependencies definition can be found in the ["How to develop a Plugin" guide](#!/guide/how_to_develop_plugin-section-dependencies).
 
 ## Specifying dependencies to load on demand
 

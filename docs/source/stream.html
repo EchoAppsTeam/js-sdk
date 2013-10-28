@@ -33,7 +33,7 @@ var $ = jQuery;
  * 	});
  *
  * More information regarding the possible ways of the Control initialization
- * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-1) guide.
+ * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.Control
  *
@@ -51,6 +51,7 @@ var stream = Echo.Control.manifest(&quot;Echo.StreamServer.Controls.Stream&quot;
 if (Echo.Control.isDefined(stream)) return;
 
 <span id='Echo-StreamServer-Controls-Stream-method-placeImage'>/** @hide @method placeImage */
+</span><span id='Echo-StreamServer-Controls-Stream-echo_label-justNow'>/** @hide @echo_label justNow */
 </span><span id='Echo-StreamServer-Controls-Stream-echo_label-today'>/** @hide @echo_label today */
 </span><span id='Echo-StreamServer-Controls-Stream-echo_label-yesterday'>/** @hide @echo_label yesterday */
 </span><span id='Echo-StreamServer-Controls-Stream-echo_label-lastWeek'>/** @hide @echo_label lastWeek */
@@ -89,6 +90,12 @@ if (Echo.Control.isDefined(stream)) return;
 stream.init = function() {
 	var self = this;
 	if (!this.checkAppKey()) return;
+
+	// picking up timeout value for backwards compatibility
+	var timeout = this.config.get(&quot;liveUpdates.timeout&quot;);
+	if (typeof timeout !== &quot;undefined&quot;) {
+		this.config.set(&quot;liveUpdates.polling.timeout&quot;, timeout);
+	}
 
 	this._recalcEffectsTimeouts();
 	this.request = this._getRequestObject({
@@ -379,14 +386,14 @@ stream.config = {
 </span>	 * @cfg {String} submissionProxyURL
 	 * Location (URL) of the Submission Proxy subsystem.
 	 */
-	&quot;submissionProxyURL&quot;: &quot;{%=baseURLs.api.submissionproxy%}/v2/esp/activity&quot;,
+	&quot;submissionProxyURL&quot;: &quot;https://apps.echoenabled.com/v2/esp/activity&quot;,
 
 <span id='Echo-StreamServer-Controls-Stream-cfg-data'>	/**
 </span>	 * @cfg {Object} data
 	 * Specifies predefined items data which should be rendered by the application.
 	 * Stream control works with the data format used by the &quot;search&quot; API endpoint.
 	 * More information about the data format can be found
-	 * &lt;a href=&quot;http://wiki.aboutecho.com/API-method-search#ResponseFormat&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
+	 * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search#ResponseFormat&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
 	 */
 
 <span id='Echo-StreamServer-Controls-Stream-cfg-asyncItemsRendering'>	/**
@@ -1141,7 +1148,9 @@ stream.methods._handleInitialResponse = function(data, visualizer) {
 			}
 		});
 		self.hasInitialData = true;
-		self.isViewComplete = roots.length !== self.config.get(&quot;itemsPerPage&quot;);
+		self.isViewComplete = data.hasMoreChildren
+			? data.hasMoreChildren === &quot;false&quot;
+			: roots.length !== self.config.get(&quot;itemsPerPage&quot;);
 		(visualizer || function(data) {
 			self.lastRequest = {
 				&quot;initial&quot;: true,
@@ -1226,7 +1235,7 @@ stream.methods._recalcEffectsTimeouts = function() {
 		return value;
 	};
 	// reserving 80% of time between live updates for activities
-	var frame = s.config.get(&quot;liveUpdates.timeout&quot;) * 1000 * 0.8;
+	var frame = s.config.get(&quot;liveUpdates.polling.timeout&quot;) * 1000 * 0.8;
 	var msPerItem = s.activities.queue.length ? frame / s.activities.queue.length : frame;
 	s.timeouts.fade = calc(&quot;fade&quot;, msPerItem);
 	s.timeouts.slide = calc(&quot;slide&quot;, msPerItem);
