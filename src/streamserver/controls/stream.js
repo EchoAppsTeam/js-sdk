@@ -1520,12 +1520,16 @@ stream.methods._withinVisibleChildrenFrame = function(item) {
 stream.methods._getParentItemFromActivityQueue = function(item) {
 	var parent;
 	if (item.isRoot()) return;
-	$.each(this.activities.queue, function(i, activity) {
-		if (activity.action === "add" && activity.item.get("data.unique") === item.get("data.parentUnique")) {
-			parent = activity.item;
-			return false;
-		}
-	});
+	try {
+		// let's try to find parent in the activity queue
+		// (catching exceptions because the queue is async)
+		$.each(this.activities.queue, function(i, activity) {
+			if (activity.action === "add" && activity.item.get("data.unique") === item.get("data.parentUnique")) {
+				parent = activity.item;
+				return false;
+			}
+		});
+	} catch(e) {}
 	return parent;
 };
 
