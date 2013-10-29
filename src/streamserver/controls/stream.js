@@ -949,7 +949,6 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 							"data": {"item": {"data": item.data}},
 							"propagation": false
 						});
-						self.items[item.get("data.unique")] = item;
 						self._applySpotUpdates("add", item);
 					}
 					_callback();
@@ -1506,7 +1505,7 @@ stream.methods._withinVisibleFrame = function(item, items, isViewComplete, sortO
 };
 
 stream.methods._withinVisibleChildrenFrame = function(item) {
-	var parent = this._getParentItem(item);
+	var parent = this._getParentItem(item) || this._getParentItemFromActivityQueue(item);
 	if (!parent) {
 		return false;
 	}
@@ -1516,6 +1515,18 @@ stream.methods._withinVisibleChildrenFrame = function(item) {
 		!parent.hasMoreChildren(),
 		this.config.get("children.sortOrder")
 	);
+};
+
+stream.methods._getParentItemFromActivityQueue = function(item) {
+	var parent;
+	if (item.isRoot()) return;
+	$.each(this.activities.queue, function(i, activity) {
+		if (activity.action === "add" && activity.item.get("data.unique") === item.get("data.parentUnique")) {
+			parent = activity.item;
+			return false;
+		}
+	});
+	return parent;
 };
 
 stream.methods._getParentItem = function(item) {
