@@ -1518,19 +1518,19 @@ stream.methods._withinVisibleChildrenFrame = function(item) {
 };
 
 stream.methods._getParentItemFromActivityQueue = function(item) {
-	var parent;
 	if (item.isRoot()) return;
-	try {
+	return Echo.Utils.safelyExecute(function(queue) {
+		var parent;
 		// let's try to find parent in the activity queue
 		// (catching exceptions because the queue is async)
-		$.each(this.activities.queue, function(i, activity) {
+		$.each(queue, function(i, activity) {
 			if (activity.action === "add" && activity.item.get("data.unique") === item.get("data.parentUnique")) {
 				parent = activity.item;
 				return false;
 			}
 		});
-	} catch(e) {}
-	return parent;
+		return parent;
+	}, [this.activities.queue]);
 };
 
 stream.methods._getParentItem = function(item) {
