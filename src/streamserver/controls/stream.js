@@ -1505,6 +1505,11 @@ stream.methods._withinVisibleFrame = function(item, items, isViewComplete, sortO
 };
 
 stream.methods._withinVisibleChildrenFrame = function(item) {
+	// Before checking if a child item satisfies visibility conditions,
+	// we need to find its parent first. The parent might be already there
+	// in the data structure or it might be in the activity queue at this moment,
+	// for example if a root and child item arrive in a single live update request
+	// or in different live update requests, but queued while the stream is paused
 	var parent = this._getParentItem(item) || this._getParentItemFromActivityQueue(item);
 	if (!parent) {
 		return false;
@@ -1519,10 +1524,9 @@ stream.methods._withinVisibleChildrenFrame = function(item) {
 
 stream.methods._getParentItemFromActivityQueue = function(item) {
 	if (item.isRoot()) return;
+	// let's handle exceptions just in case something goes wrong (though it shouldn't)
 	return Echo.Utils.safelyExecute(function(queue) {
 		var parent;
-		// let's try to find parent in the activity queue
-		// (catching exceptions because the queue is async)
 		$.each(queue, function(i, activity) {
 			if (activity.action === "add" && activity.item.get("data.unique") === item.get("data.parentUnique")) {
 				parent = activity.item;
