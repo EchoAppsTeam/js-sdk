@@ -25,6 +25,7 @@ Echo.Tests.module("Echo.Utils", {
 			"parallelCall",
 			"parseURL",
 			"remove",
+			"random",
 			"safelyExecute",
 			"sequentialCall",
 			"set",
@@ -531,6 +532,17 @@ Echo.Tests.test("safelyExecute()", function() {
 	QUnit.strictEqual(Echo.Utils.safelyExecute(function(a) { return a; }, 25), 25, "Checking if \"safelyExecute\" function called with function which return value with one argument & without context");
 	QUnit.deepEqual(Echo.Utils.safelyExecute(function(a, b) { return [a, b]; }, [25, "aa"]), [25, "aa"], "Checking if \"safelyExecute\" function called with function which return value with 2 args & without context");
 	QUnit.strictEqual(Echo.Utils.safelyExecute(testInstance.fn, 44, testInstance), "some var", "Checking if \"safelyExecute\" function called with function which return value with args & with context");
+});
+
+Echo.Tests.test("random()", function() {
+	var num = Echo.Utils.random(1, 5);
+	var num2 = Echo.Utils.random(1);
+	var num3 = Echo.Utils.random();
+	var num4 = Echo.Utils.random(5, 1);
+	QUnit.ok(num <= 5 && num >= 1, "Check that generated number is in range (normal usage)");
+	QUnit.ok(isNaN(num2), "Check that if function called with illegal number of parameters, then it returns NaN (one parameter)");
+	QUnit.ok(isNaN(num3), "Check that if function called with illegal number of parameters, then it returns NaN (no parameters)");
+	QUnit.ok(num4 <= 5 && num4 >= 1, "Check that if min greater than max, then function steel returns expected value");
 });
 
 Echo.Tests.asyncTest("loadImage()", function() {

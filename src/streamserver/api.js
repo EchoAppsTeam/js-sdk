@@ -108,6 +108,10 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 				// for backwards compatibility
 				"timeout": timeout || 10
 			},
+			/** @ignore */
+			"fallbackTimeout": 30, // in seconds
+			/** @ignore */
+			"fallbackDivergence": 5,
 			"websockets": {
 				"maxConnectRetries": 3,
 				"serverPingInterval": 30,
@@ -336,7 +340,16 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 			self.liveUpdates.start();
 		}
 	};
-	ws.on("close", switchTo(polling));
+	ws.on("close", function() {
+		var timeout, config = self.config.get("liveUpdates");
+		if (self.liveUpdates.closeReason !== "abort") {
+			timeout = Echo.Utils.random(
+				config.fallbackTimeout - config.fallbackDivergence,
+				config.fallbackTimeout + config.fallbackDivergence
+			) * 1000;
+			setTimeout(switchTo(polling), timeout);
+		}
+	});
 	// TODO: remove it after more general approach will be implemented
 	ws.on("quotaExceeded", switchTo(polling));
 	if (ws.connected()) {
@@ -531,6 +544,10 @@ Echo.StreamServer.API.Polling = function(config) {
 	});
 	this.timers = {};
 	this.timeouts = [];
+	// parameter which indicates the reason why connection
+	// was closed. If it's an empty string, then it means that
+	// it wasn't happened by client
+	this.closeReason = ""; // empty string | "reconnect" | "abort"
 	this.originalTimeout = this.config.get("timeout");
 	this.requestObject = this.getRequestObject();
 };
@@ -554,6 +571,7 @@ Echo.StreamServer.API.Polling.prototype.getRequestObject = function() {
 
 Echo.StreamServer.API.Polling.prototype.stop = function() {
 	clearTimeout(this.timers.regular);
+	this.closeReason = "abort";
 	this.requestObject.abort();
 };
 
@@ -752,6 +770,7 @@ Echo.StreamServer.API.WebSockets.prototype.stop = function() {
 			if (self.subscribed) {
 				self.requestObject.request({"event": "unsubscribe/request"});
 			}
+			self.closeReason = "abort";
 			self.requestObject.abort();
 		});
 		this._runQueue();
@@ -796,6 +815,7 @@ Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
 			self.requestObject.config.get("onOpen")();
 		}
 	};
+	this.closeReason = "reconnect";
 	this.requestObject.abort();
 	this._clearSubscriptions();
 	if (this.requestObject.transport.closing()) {
