@@ -552,8 +552,8 @@ Echo.StreamServer.API.Polling = function(config) {
 	// "unknown" - server or client close the connection by unknown reason
 	// "reconnect" - client close the connection in case of reconnect action
 	// "abort" - client close the connection in case of the connection abortion
-	// "quota_exceeded" - client exceeds the subscribers quota
-	this.closeReason = "unknown"; // "unknown" | "reconnect" | "abort" | "quota_exceeded"
+	// "server_overload" - close the connection to not load the server
+	this.closeReason = "unknown"; // "unknown" | "reconnect" | "abort" | "server_overload"
 	this.originalTimeout = this.config.get("timeout");
 	this.requestObject = this.getRequestObject();
 };
@@ -710,7 +710,7 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			if (!!~response.event.indexOf("failed")) {
 				// TODO: more general approach here
 				if (response.errorCode === "quota_exceeded") {
-					self.closeReason = "quota_exceeded";
+					self.closeReason = "server_overload";
 					self.requestObject.transport.publish("onQuotaExceeded");
 				} else {
 					config.onError(response, {
@@ -727,6 +727,7 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 				if (self._resubscribeAllowed()) {
 					self._updateConnection(self._resubscribe);
 				} else {
+					self.closeReason = "server_overload";
 					self.requestObject.transport.publish("onClose");
 				}
 				return;
@@ -750,6 +751,7 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			config.onOpen.apply(null, arguments);
 		},
 		"onError": function(event) {
+			self.closeReason = "unknown";
 			self.requestObject.transport.publish("onClose");
 			config.onError(event, {
 				"critical": false
@@ -814,6 +816,7 @@ Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback
 			callback.apply(self, arguments);
 		},
 		"onError": function() {
+			self.closeReason = "unknown";
 			self.requestObject.transport.publish("onClose");
 		}
 	});
