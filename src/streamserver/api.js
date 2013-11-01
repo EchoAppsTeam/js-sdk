@@ -108,15 +108,16 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 				// for backwards compatibility
 				"timeout": timeout || 10
 			},
-			/** @ignore */
-			"fallbackTimeout": 30, // in seconds
-			/** @ignore */
-			"fallbackDivergence": 5,
 			"websockets": {
 				"maxConnectRetries": 3,
 				"serverPingInterval": 30,
 				"resetPeriod": 60,
 				"maxResetsPerPeriod": 2,
+				/** @ignore */
+				"fallback": {
+					"timeout": 10,
+					"divergence": 5
+				},
 				"URL": "{%=baseURLs.api.ws%}/v1/"
 			}
 		},
@@ -335,17 +336,19 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 	var self = this;
 	var switchTo = function(inst) {
 		return function() {
-			self.liveUpdates.stop();
+			if (self.liveUpdates.connected()) {
+				self.liveUpdates.stop();
+			}
 			self.liveUpdates = inst;
 			self.liveUpdates.start();
 		}
 	};
 	ws.on("close", function() {
-		var timeout, config = self.config.get("liveUpdates");
+		var timeout, config = self.config.get("liveUpdates.websockets.fallback");
 		if (self.liveUpdates.closeReason !== "abort") {
 			timeout = Echo.Utils.random(
-				config.fallbackTimeout - config.fallbackDivergence,
-				config.fallbackTimeout + config.fallbackDivergence
+				config.timeout - config.divergence,
+				config.timeout + config.divergence
 			) * 1000;
 			setTimeout(switchTo(polling), timeout);
 		}
@@ -544,10 +547,13 @@ Echo.StreamServer.API.Polling = function(config) {
 	});
 	this.timers = {};
 	this.timeouts = [];
-	// parameter which indicates the reason why connection
-	// was closed. If it's an empty string, then it means that
-	// it wasn't happened by client
-	this.closeReason = ""; // empty string | "reconnect" | "abort"
+	// TODO: more sophisticated logic to classify reasons for closing the connection
+	// parameter which indicates the reason why connection was closed.
+	// "unknown" - server or client close the connection by unknown reason
+	// "reconnect" - client close the connection in case of reconnect action
+	// "abort" - client close the connection in case of the connection abortion
+	// "quota_exceeded" - client exceeds the subscribers quota
+	this.closeReason = "unknown"; // "unknown" | "reconnect" | "abort" | "quota_exceeded"
 	this.originalTimeout = this.config.get("timeout");
 	this.requestObject = this.getRequestObject();
 };
@@ -601,6 +607,12 @@ Echo.StreamServer.API.Polling.prototype.on = function(event, fn) {
 		handler.apply(null, arguments);
 		fn.apply(null, arguments);
 	});
+};
+
+// in case of using polling we decide that
+// client is connected wherever this function called
+Echo.StreamServer.API.Polling.prototype.connected = function() {
+	return true;
 };
 
 Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
@@ -698,6 +710,7 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			if (!!~response.event.indexOf("failed")) {
 				// TODO: more general approach here
 				if (response.errorCode === "quota_exceeded") {
+					self.closeReason = "quota_exceeded";
 					self.requestObject.transport.publish("onQuotaExceeded");
 				} else {
 					config.onError(response, {

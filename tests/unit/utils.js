@@ -539,7 +539,11 @@ Echo.Tests.test("random()", function() {
 	var num2 = Echo.Utils.random(1);
 	var num3 = Echo.Utils.random();
 	var num4 = Echo.Utils.random(5, 1);
+	var num5 = Echo.Utils.random(-5, 1);
+	var num6 = Echo.Utils.random(-5, -1);
 	QUnit.ok(num <= 5 && num >= 1, "Check that generated number is in range (normal usage)");
+	QUnit.ok(num5 <= 1 && num5 >= -5, "Check that generated number is in range (first argument is negative, second is positive)");
+	QUnit.ok(num6 <= -1 && num6 >= -5, "Check that generated number is in range (both arguments is negative)");
 	QUnit.ok(isNaN(num2), "Check that if function called with illegal number of parameters, then it returns NaN (one parameter)");
 	QUnit.ok(isNaN(num3), "Check that if function called with illegal number of parameters, then it returns NaN (no parameters)");
 	QUnit.ok(num4 <= 5 && num4 >= 1, "Check that if min greater than max, then function steel returns expected value");
