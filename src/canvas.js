@@ -404,7 +404,6 @@ canvas.methods._fetchConfig = function(callback) {
 		return;
 	}
 	var mode = this.config.get("mode");
-	var endpoint = this._getIds().main;
 	var getConfig = function() {
 		return Echo.Loader.canvasesConfigById[self._getIds().unique];
 	};
@@ -415,7 +414,7 @@ canvas.methods._fetchConfig = function(callback) {
 			// taking care of the Canvas unique identifier on the page,
 			// specified as "#XXX" in the Canvas ID. We don't need to send this
 			// unique page identifier, we send only the primary Canvas ID.
-			"endpoint": endpoint,
+			"endpoint": this._getIds().main,
 			"scheme": this.config.get("useSecureAPI") ? "https" : parts.scheme
 		})
 	});
