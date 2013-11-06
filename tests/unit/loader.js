@@ -514,6 +514,8 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		Echo.Loader.init({"target": this.document.body});
 	});
 	var validAndInvalidCanvases = Echo.Tests.isolate(function(callback) {
+		Echo.Loader.canvases = [];
+		Echo.Loader.canvasesConfigById = {};
 		var body = $(this.document.body);
 		// all mandatory fields are missing -->
 		body.append('<div class="echo-canvas"></div>');
@@ -745,6 +747,8 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		Echo.Loader.init({"target": body});
 	});
 	var clearCanvasConfigOnDestroy = Echo.Tests.isolate(function(callback) {
+		Echo.Loader.canvases = [];
+		Echo.Loader.canvasesConfigById = {};
 		var body = $(this.document.body);
 		var id = "js-sdk-tests/test-canvas-001";
 		var inCache = function(hash) {
@@ -788,14 +792,10 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		differentInitializationSchemas,
 		multipleAppsCanvas,
 		overridesSameCanvases,
-		appConfigOverrides
+		appConfigOverrides,
+		clearCanvasConfigOnDestroy
 	];
-	var expected = 15;
-	if (!Echo.Tests.Utils.isServerMocked()) {
-		tests.unshift(clearCanvasConfigOnDestroy);
-		expected = 19;
-	}
-	QUnit.expect(expected);
+	QUnit.expect(19);
 	Echo.Utils.sequentialCall(tests, function() {
 		QUnit.start();
 	});
