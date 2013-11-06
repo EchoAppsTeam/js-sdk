@@ -33,13 +33,7 @@ Echo.Loader = {
 	/** @ignore */
 	"canvasesConfigById": {}, // Canvases config that retrieved from the storage
 	/** @ignore */
-	"overrides": {},  // Canvas Apps overrides object
-	/** @ignore */
-	"vars": {
-		"state": {"resources": {}, "queue": []},
-		"processing": false,
-		"syncQueue": []
-	}
+	"overrides": {}  // Canvas Apps overrides object
 };
 
 /**
@@ -104,79 +98,20 @@ Echo.Loader.download = function(resources, callback, config) {
 		return;
 	}
 
-	var state = Echo.Loader.vars.state;
-	var syncQueue = Echo.Loader.vars.syncQueue;
-	var invokeCallbacks = function() {
-		var callbacks = [];
-		// Important note: we should *not* execute callbacks
-		// while iterating through the queue. We need to update
-		// the queue first and only after that execute the callbacks,
-		// because there might be calls to "Echo.Loader.download" function
-		// which can interfere with the current queue state.
-		state.queue = Echo.Loader._map(state.queue, function(item) {
-			if (Echo.Loader._areResourcesReady(item.resources)) {
-				callbacks.push(item.callback);
-				return; // do *not* put this resource back into the queue
-			}
-			return item;
-		});
-		Echo.Loader._map(callbacks, function(_callback) { _callback(); });
-	};
-
-	// Important note: we should *not* execute another
-	// Echo.yepnope until last one is completed.
-	// See more information about the issue on Github:
-	// https://github.com/SlexAxton/yepnope.js/issues/113
-	var checkSyncQueue = function() {
-		if (!Echo.Loader.vars.processing && syncQueue.length) {
-			Echo.Loader.vars.processing = true;
-			var res = syncQueue.shift();
-			console.log(res.load);
-			// second callback will be called if loading are failed
-			require.config({
-				"waitSeconds": config.errorTimeout || Echo.Loader.config.errorTimeout
-			})(res.load, function() {
-				res.complete();
-			}, res.complete);
-		}
-	};
-
-	state.queue.push({"resources": resources, "callback": callback});
-
 	var urls = Echo.Loader._map(resources, function(resource) {
 		var url = resource.url;
-		if (!Echo.Loader._areResourcesReady([resource]) &&
-			state.resources[url] !== "loading") {
-				state.resources[url] = "loading";
-				return url;
-		}
-	});
-
-	// invoke queued handler in case all requested resources
-	// are ready by the time the "download" function is called
-	if (!urls.length) {
-		invokeCallbacks();
-		return;
-	}
-
-	var prefix = "timeout=" + (config.errorTimeout || Echo.Loader.config.errorTimeout) + "!";
-	syncQueue.push({
-		"load": Echo.Loader._map(urls, function(url) {
+		if (!Echo.Loader._areResourcesReady([resource])) {
 			var extension = url.match(/[^.]+$/)[0];
 			var prefix = extension === "css" ? "css!" : "";
-			return prefix + url; 
-		}),
-		"complete": function() {
-			// mark all loaded scripts as "ready"
-			Echo.Loader._map(urls, function(url) {
-				state.resources[url] = "ready";
-			});
-			invokeCallbacks();
-			Echo.Loader.vars.processing = false;
-			checkSyncQueue();
+			return prefix + url;
 		}
 	});
-	checkSyncQueue();
+
+	//console.log(urls.join("\n"));
+
+	require.config({
+		"waitSeconds": config.errorTimeout || Echo.Loader.config.errorTimeout
+	})(urls, callback, callback);
 };
 
 /**
@@ -457,13 +392,8 @@ Echo.Loader._map = function(list, iterator) {
 };
 
 Echo.Loader._areResourcesReady = function(resources) {
-	var state = Echo.Loader.vars.state;
 	var resourceReadyFlags = Echo.Loader._map(resources, function(resource) {
-		var url = Echo.Loader.getURL(resource.url);
-		// the 'true' flag will be added into the
-		// result array only when resource is ready
-		return (resource.loaded && resource.loaded()) ||
-			(state.resources[url] && state.resources[url] === "ready");
+		return resource.loaded && resource.loaded()
 	});
 	return resources.length === resourceReadyFlags.length;
 };
