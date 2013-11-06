@@ -63,6 +63,11 @@ Echo.Loader.getURL = function(url, devVersion) {
 			(!url || url.charAt(0) === "/" ? "" : "/") + url;
 };
 
+Echo.Loader.getBaseURL = function() {
+	return Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version +
+		(Echo.Loader.isDebug() ? "/dev" : "");
+};
+
 /**
  * @static
  * Function to load the JavaScript or CSS stylesheet files in async mode.
@@ -125,14 +130,21 @@ Echo.Loader.download = function(resources, callback, config) {
 	var checkSyncQueue = function() {
 		if (!Echo.Loader.vars.processing && syncQueue.length) {
 			Echo.Loader.vars.processing = true;
-			Echo.yepnope(syncQueue.shift());
+			var res = syncQueue.shift();
+			console.log(res.load);
+			// second callback will be called if loading are failed
+			require.config({
+				"waitSeconds": config.errorTimeout || Echo.Loader.config.errorTimeout
+			})(res.load, function() {
+				res.complete();
+			}, res.complete);
 		}
 	};
 
 	state.queue.push({"resources": resources, "callback": callback});
 
 	var urls = Echo.Loader._map(resources, function(resource) {
-		var url = Echo.Loader.getURL(resource.url);
+		var url = resource.url;
 		if (!Echo.Loader._areResourcesReady([resource]) &&
 			state.resources[url] !== "loading") {
 				state.resources[url] = "loading";
@@ -149,7 +161,11 @@ Echo.Loader.download = function(resources, callback, config) {
 
 	var prefix = "timeout=" + (config.errorTimeout || Echo.Loader.config.errorTimeout) + "!";
 	syncQueue.push({
-		"load": Echo.Loader._map(urls, function(url) { return prefix + url; }),
+		"load": Echo.Loader._map(urls, function(url) {
+			var extension = url.match(/[^.]+$/)[0];
+			var prefix = extension === "css" ? "css!" : "";
+			return prefix + url; 
+		}),
 		"complete": function() {
 			// mark all loaded scripts as "ready"
 			Echo.Loader._map(urls, function(url) {
@@ -207,21 +223,18 @@ Echo.Loader.isDebug = function() {
  * Callback function which should be called as soon as Echo environment is ready.
  */
 Echo.Loader.initEnvironment = function(callback) {
-	var resources = [{
-		"url": "backplane.js",
-		"loaded": function() { return !!window.Backplane; }
-	}, {
-		"url": "third-party/jquery.pack.js",
-		"loaded": function() { return !!Echo.jQuery; }
-	}, {
-		"url": "environment.pack.js",
-		"loaded": function() { return !!Echo.Utils; }
-	}];
-	if (Echo.Loader._areResourcesReady(resources)) {
-		callback && callback();
-		return;
-	}
-	Echo.Loader.download(resources, callback);
+	//var resources = [{
+		//"url": "backplane",
+		//"loaded": function() { return !!window.Backplane; }
+	//}, {
+		//"url": "environment.pack",
+		//"loaded": function() { return !!Echo.Utils; }
+	//}];
+	//if (Echo.Loader._areResourcesReady(resources)) {
+		//callback && callback();
+		//return;
+	//}
+	Echo.Loader.download([{"url": "echo-sdk"}], callback);
 };
 
 /**
@@ -470,5 +483,40 @@ function onViewportChange(action, handler) {
 		removeEvent(getEventName("resize"), handler);
 	}
 };
+
+// TODO: it's the general requirejs config, move to better place
+require.config({
+	"baseUrl": Echo.Loader.getBaseURL(),
+	"waitSeconds": Echo.Loader.config.errorTimeout,
+	"paths": {
+		"backplane": "backplane",
+		"echo-sdk": "environment.pack",
+		"echo-api": "api.pack",
+		"echo-streamserver": "streamserver.pack",
+		"echo-identityserver": "identityserver.pack",
+		"echo-jquery": "third-party/jquery.pack",
+		"echo-gui": "gui.pack",
+		"echo-gui-css": "css!gui.pack.css"
+	},
+	map: {
+		"*": {
+			"css": "third-party/requirejs/css"
+		}
+	},
+	shim: {
+		"echo-jquery": {
+			exports: "Echo.jQuery"
+		},
+		"echo-sdk": {
+			"deps": ["echo-jquery", "backplane"]
+		},
+		"echo-streamserver": {
+			"deps": ["echo-sdk", "echo-api", "echo-gui", "echo-gui-css"]
+		},
+		"echo-identityserver": {
+			"deps": ["echo-sdk", "echo-api", "echo-gui", "echo-gui-css"]
+		}
+	}
+});
 
 })();
