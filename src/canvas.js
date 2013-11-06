@@ -424,28 +424,28 @@ canvas.methods._fetchConfig = function(callback) {
 		"crossDomain": true,
 		"dataType": "script",
 		"cache": mode !== "dev",
-		"timeout": Echo.Loader.config.errorTimeout
-	})
-	.done(function() {
-		var config = getConfig();
-		if (!config || !config.apps || !config.apps.length) {
-			var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
+		"timeout": Echo.Loader.config.errorTimeout,
+		"success": function() {
+			var config = getConfig();
+			if (!config || !config.apps || !config.apps.length) {
+				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
+				self._error({
+					"args": {"config": config, "target": target},
+					"code": "invalid_canvas_config",
+					"message": message
+				});
+				return;
+			}
+			self.set("data", config); // store Canvas data into the instance
+			callback.call(self);
+		},
+		"error": function() {
 			self._error({
-				"args": {"config": config, "target": target},
-				"code": "invalid_canvas_config",
-				"message": message
+				"args": arguments,
+				"code": "unable_to_retrieve_app_config",
+				"renderError": true
 			});
-			return;
 		}
-		self.set("data", config); // store Canvas data into the instance
-		callback.call(self);
-	})
-	.fail(function() {
-		self._error({
-			"args": arguments,
-			"code": "unable_to_retrieve_app_config",
-			"renderError": true
-		});
 	});
 };
 
