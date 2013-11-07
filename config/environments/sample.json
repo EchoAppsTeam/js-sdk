@@ -59,7 +59,7 @@
 				"location": "",
 				"src": "**",
 				"dest": "/apps/",
-				"baseSrcPath": "apps/"
+				"baseSrcPath": "<%= dirs.dist %>/apps/"
 			}]
 		}
 	}
