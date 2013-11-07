@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 	var fs = require("fs");
 	var http = require("http");
 	var path = require("path");
-	var _ = grunt.utils._;
+	var _ = require("lodash");
 
 	var FtpUploader = function(config) {
 		var self = this;
@@ -49,7 +49,7 @@ module.exports = function(grunt) {
 			_.each(self.config.uploads, function(upload) {
 				var baseSrcPath = grunt.template.process(upload.baseSrcPath);
 				var dest = grunt.template.process(upload.dest);
-				var src = grunt.file.expandFiles(baseSrcPath + upload.src);
+				var src = grunt.file.expand({"filter": "isFile"}, baseSrcPath + upload.src);
 				src.sort();
 				_.each(src, function(srcName) {
 					var name = srcName.replace(baseSrcPath, "")
@@ -144,7 +144,7 @@ module.exports = function(grunt) {
 				"default",
 				// XXX: this step does nothing, it's just needed to remove build info so that next step could patch correct loader files
 				"release:build-completed",
-				"patch:loader:stable",
+				"patch:loader-release:stable",
 				"release:sdk:latest",
 				"release:sdk:stable",
 				"release:apps",
@@ -159,7 +159,7 @@ module.exports = function(grunt) {
 				"default",
 				// XXX: this step does nothing, it's just needed to remove build info so that next step could patch correct loader files
 				"release:build-completed",
-				"patch:loader:beta",
+				"patch:loader-release:beta",
 				"release:sdk:beta",
 				"release:purge:SDK.beta"
 			];

@@ -1,0 +1,19 @@
+{
+	"version": 2,
+	"baseURLs": {
+		"cdn": "//cdn.echoenabled.com",
+		"sdk": "//cdn.echoenabled.com/sdk/v{%=packageVersion%}",
+		"docs": "//echoappsteam.github.io/js-sdk/docs",
+		"tests": "//echoappsteam.github.io/js-sdk/tests",
+		"canvases": {
+			"prod": "//dqspik3j3bxvu.cloudfront.net",
+			"dev": "//s3.amazonaws.com/echo-canvases"
+		},
+		"api": {
+			"backplane": "//api.echoenabled.com",
+			"streamserver": "//api.echoenabled.com",
+			"submissionproxy": "//apps.echoenabled.com",
+			"ws": "//live.echoenabled.com"
+		}
+        }
+}

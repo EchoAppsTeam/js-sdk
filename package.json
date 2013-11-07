@@ -21,17 +21,26 @@
       "url": "https://github.com/EchoAppsTeam/js-sdk/blob/master/LICENSE"
     }
   ],
-  "dependencies": {
-    "grunt-contrib": "~0.1.7",
-    "wd": "~0.0.3",
-    "q": "~0.9.3",
-    "request": "~2.21.0",
-    "ftp": "~0.1.5",
-    "recess": "1.1.8",
-    "async": "~0.2.8"
+  "engines": {
+    "node": ">=0.8"
   },
-  "keywords": [],
-  "scripts": {
-     "test": "grunt ci --env=test"
-  }
+  "dependencies": {
+    "grunt": "~0.4.1",
+    "lodash": "~2.2.1",
+    "async": "~0.2.9",
+    "grunt-contrib-cssmin": "~0.6.2",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.5",
+    "grunt-recess": "~0.4.0",
+    "underscore.string": "~2.3.3",
+    "grunt-saucelabs": "~4.1.2",
+    "grunt-express": "~1.2.1",
+    "grunt-contrib-connect": "~0.5.0"
+  },
+  "devDependencies": {
+    "ftp": "~0.1.7"
+  },
+  "private": true
 }
