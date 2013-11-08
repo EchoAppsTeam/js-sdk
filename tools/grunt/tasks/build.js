@@ -1,4 +1,5 @@
 module.exports = function(grunt) {
+	"use strict";
 
 	var shared = require("../lib.js").init(grunt);
 	var _ = require("lodash");
@@ -74,7 +75,6 @@ module.exports = function(grunt) {
 	});
 
 	var reMinified = /[-.]mini?(?=\.)/;
-	var reThirdParty = /^third-party\//;
 	var thirdPartyFileVersions = {};
 	var thirdPartySrc = [];
 
@@ -96,7 +96,7 @@ module.exports = function(grunt) {
 			versions[name][isMinified ? "min" : "dev"] = filename;
 		});
 		thirdPartySrc = _.keys(versions);
-	};
+	}
 
 	function chooseFile(name, target, stage) {
 		var versions = thirdPartyFileVersions[target];
@@ -108,7 +108,7 @@ module.exports = function(grunt) {
 			}
 		}
 		return file;
-	};
+	}
 
 	function makeCopySpec() {
 		var spec = cleanupSpec("copy");
@@ -190,7 +190,6 @@ module.exports = function(grunt) {
 			}],
 			"options": {
 				"processContent": function(text, filename) {
-					var env = shared.config("env");
 					text = shared.replacePlaceholdersOnCopy(text, filename);
 					return text.replace(/\(window\.jQuery\)/g, "(Echo.jQuery)");
 				},
@@ -198,7 +197,7 @@ module.exports = function(grunt) {
 			}
 		};
 		grunt.config("copy", spec);
-	};
+	}
 
 	function makeMinSpec() {
 		var spec = cleanupSpec("uglify");
@@ -218,7 +217,7 @@ module.exports = function(grunt) {
 			};
 		});
 		grunt.config("uglify", spec);
-	};
+	}
 
 	function makeConcatSpec() {
 		var spec = cleanupSpec("concat");
@@ -234,7 +233,7 @@ module.exports = function(grunt) {
 			};
 		});
 		grunt.config("concat", spec);
-	};
+	}
 
 	function cleanupSpec(task) {
 		// save only global options for this task and remove all other stuff

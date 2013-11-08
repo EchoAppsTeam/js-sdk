@@ -1,4 +1,5 @@
 module.exports = function(grunt) {
+	"use strict";
 
 	var shared = require("../lib.js").init(grunt);
 
@@ -52,7 +53,7 @@ module.exports = function(grunt) {
 				var src = grunt.file.expand({"filter": "isFile"}, baseSrcPath + upload.src);
 				src.sort();
 				_.each(src, function(srcName) {
-					var name = srcName.replace(baseSrcPath, "")
+					var name = srcName.replace(baseSrcPath, "");
 					var destName = dest + name;
 					files.push({
 						"src": srcName,
@@ -130,6 +131,7 @@ module.exports = function(grunt) {
 	};
 
 	grunt.registerInitTask("release", "Release", function() {
+		var tasks = [];
 		var envConfig = grunt.config("envConfig");
 		if (!_.contains(["production", "staging"], shared.config("env"))) {
 			grunt.fail.fatal("Release can be performed only in \"production\" and \"staging\" environment.");
@@ -140,7 +142,7 @@ module.exports = function(grunt) {
 		var target = this.args[0];
 		// TODO: check if we have modified files, we must not release this
 		if (!this.args.length) {
-			var tasks = [
+			tasks = [
 				"default",
 				// XXX: this step does nothing, it's just needed to remove build info so that next step could patch correct loader files
 				"release:build-completed",
@@ -155,7 +157,7 @@ module.exports = function(grunt) {
 			grunt.task.run(tasks);
 			return;
 		} else if (target === "beta") {
-			var tasks = [
+			tasks = [
 				"default",
 				// XXX: this step does nothing, it's just needed to remove build info so that next step could patch correct loader files
 				"release:build-completed",
@@ -182,8 +184,6 @@ module.exports = function(grunt) {
 			console.timeEnd(target.yellow);
 			_complete(result);
 		};
-		var version = grunt.config("pkg.version");
-		var majorVersion = version.split(".")[0];
 		console.log(target);
 		switch (target) {
 			case "purge":
@@ -205,11 +205,13 @@ module.exports = function(grunt) {
 				// let's suppose that all elements in the upload array have the same location
 				var location = uploads[0].location;
 				grunt.log.writeln((shared.config("debug") ? "[simulation] ".cyan : "") + "Releasing to " + location.cyan);
+				/* jshint nonew:false */
 				new FtpUploader({
 					"complete": done,
 					"auth": envConfig.release.auth[location],
 					"uploads": uploads
 				});
+				/* jshint nonew:true */
 				break;
 		}
 	});
@@ -280,10 +282,10 @@ module.exports = function(grunt) {
 		});
 		req.write(xml);
 		req.end();
-	};
+	}
 
 	function pushPages(done) {
 		grunt.task.run(["docs"]);
 		done();
-	};
+	}
 };
