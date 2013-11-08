@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask("test", "Execute tests", function() {
 		grunt.option("test-build", true);
-		_assembleEnvConfig();
+		assembleEnvConfig();
 		var parts = url.parse(grunt.config("envConfig.baseURLs.tests") + "/", false, true);
 		parts.protocol = "http";
 		parts.query = grunt.option("number")
@@ -458,7 +458,7 @@ module.exports = function(grunt) {
 				"options": {
 					"detailedError": true,
 					"tags": ["local"],
-					"build": "local#" + Math.round(Math.random() * 5000),
+					"build": "local-" + (new Date()).getTime(),
 					"browsers": typeof grunt.option("browser") === "string"
 						? grunt.option("browser").split("|").map(function(b) { return testPlatforms[b]; })
 						: [testPlatforms.firefox, testPlatforms.chrome, testPlatforms.ie9]
@@ -466,8 +466,8 @@ module.exports = function(grunt) {
 			},
 			"travis": {
 				"options": {
-					"tags": [process.env["TRAVIS_BRANCH"], "node.js v" + process.env["TRAVIS_NODE_VERSION"], "CI"],
-					"build": process.env["TRAVIS_BUILD_NUMBER"],
+					"tags": ["branch=" + process.env["TRAVIS_BRANCH"], "node=" + process.env["TRAVIS_NODE_VERSION"]],
+					"build": "travis-" + process.env["TRAVIS_BUILD_NUMBER"],
 					"identifier": process.env["TRAVIS_JOB_NUMBER"],
 					"browsers": [testPlatforms.firefox, testPlatforms.chrome, testPlatforms.safari, testPlatforms.ie8, testPlatforms.ie9, testPlatforms.ie10]
 				}
@@ -478,9 +478,9 @@ module.exports = function(grunt) {
 	grunt.initConfig(config);
 	grunt.config("pkg.majorVersion", grunt.config("pkg.version").split(".")[0]);
 
-	_assembleEnvConfig();
+	assembleEnvConfig();
 
-	function _assembleEnvConfig() {
+	function assembleEnvConfig() {
 		var env = shared.config("env");
 		if (!grunt.config("envConfigRaw")) {
 			var envFilename = "config/environments/" + env + ".json";
