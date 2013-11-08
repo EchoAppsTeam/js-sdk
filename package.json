@@ -36,8 +36,7 @@
     "grunt-recess": "~0.4.0",
     "underscore.string": "~2.3.3",
     "grunt-saucelabs": "~4.1.2",
-    "grunt-express": "~1.2.1",
-    "grunt-contrib-connect": "~0.5.0"
+    "grunt-express": "~1.2.1"
   },
   "devDependencies": {
     "ftp": "~0.1.7"
