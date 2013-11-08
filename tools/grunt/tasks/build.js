@@ -4,8 +4,9 @@ module.exports = function(grunt) {
 	var _ = require("lodash");
 
 	grunt.registerTask("build", "Go through all stages of building some target/system", function(target, stage) {
+		var tasks = [];
 		if (!stage) {
-			var tasks = ["build:" + target + ":dev"];
+			tasks = ["build:" + target + ":dev"];
 			if (shared.config("env") !== "development") {
 				tasks.push("build:" + target + ":min");
 			}
@@ -17,12 +18,11 @@ module.exports = function(grunt) {
 			"target": target,
 			"stage": stage
 		});
-		_assignThirdPartyFilesVersion();
-		_makeCopySpec();
-		var tasks = "";
+		assignThirdPartyFilesVersion();
+		makeCopySpec();
 		switch (stage) {
 			case "dev":
-				_makeConcatSpec();
+				makeConcatSpec();
 				tasks = [
 					"copy:css",
 					"copy:own-js",
@@ -39,8 +39,8 @@ module.exports = function(grunt) {
 				];
 				break;
 			case "min":
-				_makeMinSpec();
-				_makeConcatSpec();
+				makeMinSpec();
+				makeConcatSpec();
 				tasks = [
 					"copy:css",
 					"copy:own-js",
@@ -78,9 +78,7 @@ module.exports = function(grunt) {
 	var thirdPartyFileVersions = {};
 	var thirdPartySrc = [];
 
-	// private stuff
-
-	function _assignThirdPartyFilesVersion() {
+	function assignThirdPartyFilesVersion() {
 		var target = shared.config("build.target");
 		if (thirdPartyFileVersions[target]) return;
 		var versions = thirdPartyFileVersions[target] = {};
@@ -100,7 +98,7 @@ module.exports = function(grunt) {
 		thirdPartySrc = _.keys(versions);
 	};
 
-	function _chooseFile(name, target, stage) {
+	function chooseFile(name, target, stage) {
 		var versions = thirdPartyFileVersions[target];
 		var file = name;
 		if (versions[name]) {
@@ -112,8 +110,8 @@ module.exports = function(grunt) {
 		return file;
 	};
 
-	function _makeCopySpec() {
-		var spec = _cleanupSpec("copy");
+	function makeCopySpec() {
+		var spec = cleanupSpec("copy");
 		var target = shared.config("build.target");
 		var stage = shared.config("build.stage");
 		if (stage === "final") {
@@ -161,7 +159,7 @@ module.exports = function(grunt) {
 					"expand": true,
 					"cwd": "<%= dirs.src %>",
 					"src": thirdPartySrc.map(function(name) {
-						return _chooseFile(name, target, stage);
+						return chooseFile(name, target, stage);
 					}),
 					"dest": "<%= dirs.build %>"
 				}]
@@ -202,8 +200,8 @@ module.exports = function(grunt) {
 		grunt.config("copy", spec);
 	};
 
-	function _makeMinSpec() {
-		var spec = _cleanupSpec("uglify");
+	function makeMinSpec() {
+		var spec = cleanupSpec("uglify");
 		var target = shared.config("build.target");
 		_.each(["own-js", "third-party-js"], function(type) {
 			spec[type] = {
@@ -222,12 +220,12 @@ module.exports = function(grunt) {
 		grunt.config("uglify", spec);
 	};
 
-	function _makeConcatSpec() {
-		var spec = _cleanupSpec("concat");
+	function makeConcatSpec() {
+		var spec = cleanupSpec("concat");
 		var target = shared.config("build.target");
 		var stage = shared.config("build.stage");
 		var choose = function(name) {
-			return "<%= dirs.build %>/" + _chooseFile(name, target, stage);
+			return "<%= dirs.build %>/" + chooseFile(name, target, stage);
 		};
 		_.each(grunt.config("packs"), function(pack, key) {
 			spec[key] = {
@@ -238,7 +236,7 @@ module.exports = function(grunt) {
 		grunt.config("concat", spec);
 	};
 
-	function _cleanupSpec(task) {
+	function cleanupSpec(task) {
 		// save only global options for this task and remove all other stuff
 		var spec = {
 			"options": grunt.config(task).options
