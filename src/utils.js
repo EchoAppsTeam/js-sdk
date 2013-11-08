@@ -1117,6 +1117,26 @@ Echo.Utils.safelyExecute = function(fn, args, context) {
 	}
 };
 
+/**
+ * @static
+ * Function which accepts two arguments (numbers) as a range and
+ * generates a random number in the given range.
+ *
+ *		Echo.Utils.random(1, 5); // returns a random number in range of [1, 5]
+ *
+ * @param {Number} min
+ * Number which is the lower limit of the range
+ *
+ * @param {Number} max
+ * Number which is the upper limit of the range
+ *
+ * @return {Number}
+ * Random number in the [min, max] range
+ */
+Echo.Utils.random = function(min, max) {
+	return min + Math.floor(Math.random() * (max - min + 1));
+};
+
 // JS SDK can't guarantee proper UI elements rendering in quirks mode
 // because the UI Framework (Twitter Bootstrap) doesn't support this mode.
 // Adding the message about that to the browser console to let the user know.
