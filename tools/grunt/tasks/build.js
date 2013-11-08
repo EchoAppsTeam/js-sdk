@@ -205,7 +205,6 @@ module.exports = function(grunt) {
 	function _makeMinSpec() {
 		var spec = _cleanupSpec("uglify");
 		var target = shared.config("build.target");
-		var copy = grunt.config("copy");
 		_.each(["own-js", "third-party-js"], function(type) {
 			spec[type] = {
 				"files": [{
