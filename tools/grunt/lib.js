@@ -52,13 +52,6 @@ exports.init = function(grunt) {
 
 	if (!initialized) {
 		initialized = true;
-
-		grunt.cli.optlist.env = {
-			"info": "Specify working environment. Some actions might be skipped or added during build process. Possible values are: \"production\", \"staging\", \"test\", \"dev\".",
-			"type": String
-		};
-
-
 		exports.config("debug", !!grunt.option("debug"));
 		var env = grunt.option("env");
 		if (!_.contains(exports.config("environments"), env)) {
