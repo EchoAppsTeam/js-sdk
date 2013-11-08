@@ -333,7 +333,7 @@ module.exports = function(grunt) {
 					"header": [
 						"(function(jQuery) {",
 						"var $ = jQuery;",
-						"",
+						""
 					],
 					"footer": [
 						"})(Echo.jQuery);"
@@ -354,7 +354,7 @@ module.exports = function(grunt) {
 					"header": [
 						"if (!window.Echo) window.Echo = {};",
 						"Echo._yepnope = window.yepnope;",
-						"if (!Echo.yepnope) {",
+						"if (!Echo.yepnope) {"
 					],
 					"footer": [
 						"Echo.yepnope = window.yepnope;",
