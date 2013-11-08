@@ -1,4 +1,6 @@
 module.exports = function(grunt) {
+	"use strict";
+
 	grunt.registerMultiTask("patch", "Patch project files", function() {
 		var flags = this.flags;
 		var patcher = this.options().patcher;

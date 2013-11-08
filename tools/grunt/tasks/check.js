@@ -1,4 +1,5 @@
 module.exports = function(grunt) {
+	"use strict";
 
 	var shared = require("../lib.js").init(grunt);
 	var _ = require("lodash");
@@ -113,7 +114,8 @@ module.exports = function(grunt) {
 			urlOptions.headers = {
 				"Accept-Encoding": "gzip,deflate"
 			};
-			grunt.log.write("[" + ++i + "/" + URLs.length + "] " + URL.yellow + " ... ");
+			i++;
+			grunt.log.write("[" + i + "/" + URLs.length + "] " + URL.yellow + " ... ");
 			http.get(urlOptions, function(response) {
 				var headers = {};
 				if (response.statusCode === 404) {
@@ -150,7 +152,7 @@ module.exports = function(grunt) {
 
 	function checkDocs(done) {
 		grunt.log.subhead("Searching for dead wiki links");
-		shared.exec("grep -roZE 'https?://wiki.aboutecho.com[^\"\)]+' src/ docs/", function(stdout) {
+		shared.exec("grep -roZE 'https?://wiki.aboutecho.com[^\")]+' src/ docs/", function(stdout) {
 			var lines = stdout.trim().split(/[\r\n]+/);
 			async.eachSeries(lines, function(line, next) {
 				var parts = line.split("\0");

@@ -10,12 +10,13 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-copy");
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
+	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
 	grunt.loadNpmTasks("grunt-saucelabs");
 
-	grunt.registerTask("default", ["check:config", "clean:all", "build:sdk"]);
+	grunt.registerTask("default", ["check:config", "jshint", "clean:all", "build:sdk"]);
 
 	grunt.registerTask("test", "Execute tests", function() {
 		grunt.option("test-build", true);
@@ -320,6 +321,12 @@ module.exports = function(grunt) {
 				"report": grunt.option("verbose") ? "gzip" : "min"
 			}
 		},
+		"jshint": {
+			"options": {
+				"jshintrc": ".jshintrc"
+			},
+			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"]
+		},
 		"wrap": {
 			"echo-jquery": {
 				"options": {
@@ -412,7 +419,7 @@ module.exports = function(grunt) {
 			"loader-build": {
 				"options": {
 					"patcher": function(text, filepath, flags) {
-						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "")
+						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "");
 						text = text.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 						if (shared.config("build")) {
 							// patch debug field only when we are building files
@@ -431,7 +438,7 @@ module.exports = function(grunt) {
 			"loader-release": {
 				"options": {
 					"patcher": function(text, filepath, flags) {
-						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "")
+						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "");
 						return text.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 					}
 				},
@@ -478,8 +485,6 @@ module.exports = function(grunt) {
 	grunt.initConfig(config);
 	grunt.config("pkg.majorVersion", grunt.config("pkg.version").split(".")[0]);
 
-	assembleEnvConfig();
-
 	function assembleEnvConfig() {
 		var env = shared.config("env");
 		if (!grunt.config("envConfigRaw")) {
@@ -521,5 +526,7 @@ module.exports = function(grunt) {
 		// TODO: (?) properly calculate "packageVersion" placeholder value and use it in Echo.Loader.version
 		data.packageVersion = grunt.config("pkg.majorVersion");
 		grunt.config("envConfig", data);
-	};
+	}
+
+	assembleEnvConfig();
 };
