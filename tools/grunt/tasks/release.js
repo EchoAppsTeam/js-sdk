@@ -80,7 +80,7 @@ module.exports = function(grunt) {
 				}
 				uploads = uploads.map(function(upload) {
 					upload.baseSrcPath = grunt.template.process(upload.baseSrcPath);
-					upload.dest = "/tests/release" + grunt.template.process(upload.dest);
+					upload.dest = grunt.template.process(upload.dest);
 					upload.src = grunt.file.expand({"filter": "isFile"}, upload.baseSrcPath + upload.src);
 					return upload;
 				});
