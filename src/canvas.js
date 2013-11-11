@@ -409,14 +409,13 @@ canvas.methods._fetchConfig = function(callback) {
 	};
 	var parts = Echo.Utils.parseURL(Echo.Loader.config.storageURL[mode]);
 	var URL = this.substitute({
-		"template": "{data:scheme}//{data:domain}{data:path}{data:endpoint}",
+		"template": "{data:scheme}://{data:domain}{data:path}{data:endpoint}",
 		"data": $.extend(parts, {
 			// taking care of the Canvas unique identifier on the page,
 			// specified as "#XXX" in the Canvas ID. We don't need to send this
 			// unique page identifier, we send only the primary Canvas ID.
 			"endpoint": this._getIds().main,
-			"scheme": this.config.get("useSecureAPI")
-				? "https:" : parts.scheme ? (parts.scheme + ":") : "http:"
+			"scheme": this.config.get("useSecureAPI") ? "https" : parts.scheme || "http"
 		})
 	});
 
