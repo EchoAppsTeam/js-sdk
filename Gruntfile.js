@@ -14,6 +14,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
 	grunt.loadNpmTasks("grunt-saucelabs");
+	grunt.loadNpmTasks("grunt-requirejs");
 
 	grunt.registerTask("default", ["check:config", "clean:all", "build:sdk"]);
 
@@ -470,6 +471,34 @@ module.exports = function(grunt) {
 					"build": process.env["TRAVIS_BUILD_NUMBER"],
 					"identifier": process.env["TRAVIS_JOB_NUMBER"],
 					"browsers": [testPlatforms.firefox, testPlatforms.chrome, testPlatforms.safari, testPlatforms.ie8, testPlatforms.ie9, testPlatforms.ie10]
+				}
+			}
+		},
+		requirejs: {
+			std: {
+				options: {
+					appDir: "src",
+					mainConfigFile: "src/config.js",
+					dir: "web",
+					optimize: "none",
+					//namespace: "Echo",
+					//removeCombined: true,
+					paths: {
+						"requireLib": 'libs/require',
+						"echo": "./"
+					},
+					modules: [{
+						"name": "loader",
+						"include": ["cookie"]
+					}, {
+						"name": "echo/environment",
+						"include": ["control", "user-session", "canvas", "api", "view", "utils", "plugin"],
+						"create": true
+					}, {
+						"name": "echo/jquery.pack",
+						"include": ["third-party/jquery/jquery"],
+						create: true,
+					}]
 				}
 			}
 		}
