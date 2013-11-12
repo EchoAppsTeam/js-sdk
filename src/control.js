@@ -1,4 +1,4 @@
-(function(jQuery) {
+define("control", ["jquery", "utils", "configuration", "events", "view", "labels", "loader"], function(jQuery) {
 "use strict";
 
 var $ = jQuery;
@@ -1045,7 +1045,9 @@ Echo.Control.prototype._loadScripts = function(resources, callback) {
 			"url": control.substitute({"template": resource.url})
 		});
 	});
+	console.log(resources);
 	Echo.Loader.download(resources, function() {
+		console.log(arguments);
 		callback.call(control);
 	}, {
 		"errorTimeout": control.config.get("scriptLoadErrorTimeout")
@@ -1135,11 +1137,10 @@ Echo.Control.prototype._domTransformer = function(args) {
 	return args.dom;
 };
 
-})(Echo.jQuery);
+});
 
 // default manifest declaration
-
-(function(jQuery) {
+define(["jquery", "control"], function(jQuery) {
 "use strict";
 
 var $ = jQuery, manifest = {};
@@ -1448,4 +1449,4 @@ manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 
 Echo.Control._manifest = manifest;
 
-})(Echo.jQuery);
+});

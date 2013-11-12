@@ -1,4 +1,4 @@
-(function(jQuery) {
+define(["jquery", "utils", "backplane"], function(jQuery) {
 "use strict";
 
 var $ = jQuery;
@@ -576,4 +576,4 @@ Echo.UserSession._anyRole = function(value) {
 	return this.any("roles", value);
 };
 
-})(Echo.jQuery);
+});

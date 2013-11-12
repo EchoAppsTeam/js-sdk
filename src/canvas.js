@@ -1,4 +1,4 @@
-(function(jQuery) {
+define(["jquery", "control", "utils", "loader", "events", "api"], function(jQuery) {
 "use strict";
 
 var $ = jQuery;
@@ -451,4 +451,4 @@ canvas.methods._fetchConfig = function(callback) {
 
 Echo.Control.create(canvas);
 
-})(Echo.jQuery);
+});

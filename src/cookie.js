@@ -1,4 +1,4 @@
-(function() {
+define(function() {
 "use strict";
 
 if (!window.Echo) window.Echo = {};
@@ -113,4 +113,4 @@ Echo.Cookie.remove = function(name, options) {
 	}
 };
 
-})();
+});

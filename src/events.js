@@ -1,4 +1,4 @@
-(function(jQuery) {
+define(["jquery", "utils"], function(jQuery) {
 "use strict";
 
 var $ = jQuery;
@@ -284,4 +284,4 @@ var _callHandlers = function(obj, params, restContexts) {
 	}
 };
 
-})(Echo.jQuery);
+});

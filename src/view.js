@@ -1,4 +1,4 @@
-(function(jQuery) {
+define(["jquery", "utils"], function(jQuery) {
 "use strict";
 
 var $ = jQuery;
@@ -357,4 +357,4 @@ Echo.View.prototype._getRenderableElements = function(container) {
 	return elements;
 };
 
-})(Echo.jQuery);
+});

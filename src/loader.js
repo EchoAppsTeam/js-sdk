@@ -1,3 +1,7 @@
+
+
+
+
 (function() {
 "use strict";
 
@@ -109,7 +113,7 @@ Echo.Loader.download = function(resources, callback, config) {
 
 	//console.log(urls.join("\n"));
 
-	require.config({
+	Echo.require.config({
 		"waitSeconds": config.errorTimeout || Echo.Loader.config.errorTimeout
 	})(urls, callback, callback);
 };
@@ -415,28 +419,44 @@ function onViewportChange(action, handler) {
 };
 
 // TODO: it's the general requirejs config, move to better place
-require.config({
-	"baseUrl": Echo.Loader.getBaseURL(),
+/*Echo.require.config({
 	"waitSeconds": Echo.Loader.config.errorTimeout,
 	"paths": {
-		"backplane": "backplane",
-		"echo-sdk": "environment.pack",
-		"echo-api": "api.pack",
-		"echo-streamserver": "streamserver.pack",
-		"echo-identityserver": "identityserver.pack",
-		"echo-jquery": "third-party/jquery.pack",
-		"echo-gui": "gui.pack",
-		"echo-gui-css": "css!gui.pack.css"
+		"echo": Echo.Loader.getBaseURL(),
+		"backplane": "echo/backplane",
+		"echo-sdk": "echo/environment.pack",
+		"echo-api": "echo/api.pack",
+		//"echo-streamserver": "echo/streamserver.pack",
+		//"echo-identityserver": "echo/identityserver.pack",
+		"echo-jquery": "echo/third-party/jquery.pack",
+		//"jquery-private": "echo/third-party/jquery.pack",
+		//"echo-gui": "echo/gui.pack",
+		"echo-gui-css": "css!echo/gui.pack.css"
 	},
 	map: {
 		"*": {
 			"css": "third-party/requirejs/css"
+			//"echo-jquery": "jquery-private",
+			//"jquery-private": { "echo-jquery": "echo-jquery" }
 		}
 	},
 	shim: {
-		"echo-jquery": {
-			exports: "Echo.jQuery"
-		},
+		"echo/backplane": { "exports": "Backplane" },
+		"echo/view": { "exports": "Echo.View" },
+		"echo/utils": { "exports": "Echo.Utils" },
+		"echo/plugin": { "exports": "Echo.Plugin" },
+		"echo/labels": { "exports": "Echo.Labels" },
+		"echo/gui": { "exports": "Echo.GUI" },
+		"echo/events": { "exports": "Echo.Events" },
+		"echo/control": { "exports": "Echo.Control" },
+		"echo/configuration": { "exports": "Echo.Configuration" },
+		"echo/app": { "exports": "Echo.App" },
+		"echo/api": { "exports": "Echo.API" },
+		"echo/user-session": { "exports": "Echo.UserSession" },
+		"echo/cookie": { "exports": "Echo.Cookie"},
+
+		//"echo/third-party/jquery": {}
+
 		"echo-sdk": {
 			"deps": ["echo-jquery", "backplane"]
 		},
@@ -446,7 +466,127 @@ require.config({
 		"echo-identityserver": {
 			"deps": ["echo-sdk", "echo-api", "echo-gui", "echo-gui-css"]
 		}
+
 	}
 });
-
+*/
 })();
+
+define("loader", [],function(){});
+
+define('cookie',[],function() {
+"use strict";
+
+if (!window.Echo) window.Echo = {};
+
+if (Echo.Cookie) return;
+
+var _pluses = /\+/g;
+var _decode = function(s) {
+	return decodeURIComponent(s.replace(_pluses, " "));
+};
+
+/**
+ * @class Echo.Cookie
+ * Library to work with cookies
+ *
+ * Example:
+ *
+ *     Echo.Cookie.set("key", "value");
+ *     Echo.Cookie.get("key"); // returns "value"
+ *
+ *     Echo.Cookie.remove("key");
+ *     Echo.Cookie.get("key"); // returns "undefined"
+ *
+ *     Echo.Cookie.set("key2", "value2", {"expires": 7}); // this cookie expires in 7 days
+ *
+ * @package loader.js
+ */
+Echo.Cookie = {};
+
+/**
+ * @static
+ * Method to get cookie value.
+ *
+ * @param {String} name
+ * Cookie name.
+ *
+ * @return {String|undefined}
+ */
+Echo.Cookie.get = function(name) {
+	var cookies = document.cookie.split("; ");
+	for (var i = 0, l = cookies.length; i < l; i++) {
+		var parts = cookies[i].split("=");
+		if (_decode(parts.shift()) === name) {
+			return _decode(parts.join("="));
+		}
+	}
+};
+
+/**
+ * @static
+ * Method to set a particular cookie in the browser.
+ *
+ * @param {String} name
+ * Cookie name.
+ *
+ * @param {Mixed} value
+ * Any non-object value for cookie.
+ *
+ * @param {Object} options
+ *
+ * @param {Number} [options.expires]
+ * Number of days in which the cookie expires.
+ *
+ * @param {String} [options.path]
+ * Path to the page which the cookie is applied to.
+ *
+ * @param {String} [options.domain]
+ * Domain for which the cookie is applied to.
+ *
+ * @param {Boolean} [options.secure=false]
+ * Specifies if this cookie should be secure or not.
+ */
+Echo.Cookie.set = function(name, value, options) {
+	options = options || {};
+	if (typeof options.expires === "number") {
+		var days = options.expires;
+		var d = options.expires = new Date();
+		d.setTime(d.getTime() + days * 86400 * 1000);
+	}
+	document.cookie = [
+		encodeURIComponent(name), "=", encodeURIComponent(value),
+		options.expires ? "; expires=" + options.expires.toUTCString() : "",
+		options.path ? "; path=" + options.path : "",
+		options.domain ? "; domain=" + options.domain : "",
+		options.secure ? "; secure" : ""
+	].join("");
+};
+
+/**
+ * @static
+ * Method to remove particular cookie value.
+ *
+ * @param {String} name
+ * Cookie name.
+
+ * @param {Object} options
+ *
+ * @param {String} [options.path]
+ * Path to the page which cookie is applied to.
+ *
+ * @param {String} [options.domain]
+ * Domain for which cookie is applied to.
+ *
+ * @param {Boolean} [options.secure=false]
+ * Specifies if the cookie secure or not.
+ */
+Echo.Cookie.remove = function(name, options) {
+	options = options || {};
+	if (typeof Echo.Cookie.get(name) !== "undefined") {
+		options.expires = -1;
+		Echo.Cookie.set(name, "", options);
+	}
+};
+
+});

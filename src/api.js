@@ -1,4 +1,4 @@
-(function(jQuery) {
+define(["jquery", "configuration", "events", "utils"], function(jQuery) {
 "use strict";
 
 var $ = jQuery;
@@ -823,4 +823,4 @@ Echo.API.Request.prototype._prepareURL = function() {
 	return this.config.get("apiBaseURL") + this.config.get("endpoint");
 };
 
-})(Echo.jQuery);
+});

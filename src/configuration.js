@@ -1,4 +1,4 @@
-(function(jQuery) {
+define(["jquery", "utils"], function(jQuery) {
 "use strict";
 
 var $ = jQuery;
@@ -199,4 +199,4 @@ Echo.Configuration.prototype._merge = function(master, slave, keepRefsFor) {
 	return target;
 };
 
-})(Echo.jQuery);
+});

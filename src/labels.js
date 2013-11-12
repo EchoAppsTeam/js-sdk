@@ -1,4 +1,4 @@
-(function(jQuery) {
+define(["jquery"], function(jQuery) {
 "use strict";
 
 var $ = jQuery;
@@ -228,4 +228,4 @@ Echo.Labels._substitute = function(label, data) {
 	return label;
 };
 
-})(Echo.jQuery);
+});

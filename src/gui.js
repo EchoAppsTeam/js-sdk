@@ -1,4 +1,4 @@
-(function(jQuery) {
+define(["jquery", "configuration"], function(jQuery) {
 "use strict";
 
 var $ = jQuery;

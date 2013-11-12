@@ -1,4 +1,4 @@
-(function(jQuery) {
+define(["jquery"], function(jQuery) {
 "use strict";
 
 var $ = jQuery;
@@ -1147,4 +1147,4 @@ if (document.compatMode === "BackCompat") {
 	});
 }
 
-})(Echo.jQuery);
+});
