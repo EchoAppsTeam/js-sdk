@@ -484,7 +484,6 @@ module.exports = function(grunt) {
 					//namespace: "Echo",
 					//removeCombined: true,
 					paths: {
-						"requireLib": 'libs/require',
 						"echo": "./"
 					},
 					modules: [{
