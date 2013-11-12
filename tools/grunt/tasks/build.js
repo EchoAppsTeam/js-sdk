@@ -24,8 +24,9 @@ module.exports = function(grunt) {
 			case "dev":
 				_makeConcatSpec();
 				tasks = [
+					"requirejs",
 					"copy:css",
-					"copy:own-js",
+					//"copy:own-js",
 					"copy:third-party-js",
 					"copy:third-party-html",
 					"copy:bootstrap",

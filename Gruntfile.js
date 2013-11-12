@@ -343,42 +343,6 @@ module.exports = function(grunt) {
 					]
 				}]
 			},
-			"echo-yepnope": {
-				"options": {
-					"header": [
-						"if (!window.Echo) window.Echo = {};",
-						"Echo._yepnope = window.yepnope;",
-						"if (!Echo.yepnope) {",
-					],
-					"footer": [
-						"Echo.yepnope = window.yepnope;",
-						"Echo.yepnope.injectCss = undefined;",
-						"window.yepnope = Echo._yepnope;",
-						"delete Echo._yepnope;",
-						"}",
-						""
-					]
-				},
-				"files": [{
-					"src": ["<%= dirs.build %>/third-party/yepnope/yepnope.1.5.4*js"]
-				}]
-			},
-			"echo-yepnope-css": {
-				"options": {
-					"header": [
-						"(function(yepnope) {",
-						"if (!yepnope.injectCss) {"
-					],
-					"footer": [
-						"}",
-						"})(Echo.yepnope);",
-						""
-					]
-				},
-				"files": [{
-					"src": ["<%= dirs.build %>/third-party/yepnope/yepnope.css.patched.js"]
-				}]
-			},
 			"bootstrap-less": {
 				"options": {
 					"header": [".echo-sdk-ui {"],
@@ -474,29 +438,26 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-		requirejs: {
-			std: {
-				options: {
-					appDir: "src",
-					mainConfigFile: "src/config.js",
-					dir: "web",
-					optimize: "none",
-					//namespace: "Echo",
+		"requirejs": {
+			"std": {
+				"options": {
+					"appDir": "src",
+					"baseUrl": "./",
+					//"mainConfigFile": "src/config.js",
+					"dir": "<%= destinations.sdk.dev %>",
+					"optimize": "none",
+					namespace: "Echo",
 					//removeCombined: true,
 					paths: {
 						"echo": "./"
 					},
 					modules: [{
-						"name": "loader",
-						"include": ["cookie"]
-					}, {
-						"name": "echo/environment",
-						"include": ["control", "user-session", "canvas", "api", "view", "utils", "plugin"],
-						"create": true
-					}, {
-						"name": "echo/jquery.pack",
-						"include": ["third-party/jquery/jquery"],
-						create: true,
+						"name": "require",
+						"include": [
+							"third-party/requirejs/require",
+							"third-party/requirejs/css",
+							"config"
+						], "create": true
 					}]
 				}
 			}
