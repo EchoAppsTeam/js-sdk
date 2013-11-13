@@ -462,7 +462,10 @@ module.exports = function(grunt) {
 					"name": "jquery.pack",
 					"create": true,
 					"include": [
-						"third-party/jquery/jquery"
+						"third-party/jquery/jquery",
+						"third-party/jquery/jquery-noconflict",
+						"third-party/jquery/jquery.ihint",
+						"third-party/jquery/jquery.viewport.mini"
 					]
 				}]
 			},
