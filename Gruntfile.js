@@ -389,7 +389,8 @@ module.exports = function(grunt) {
 				},
 				"files": [{
 					"src": [
-						"<%= dirs.build %>/loader.js"
+						//"<%= dirs.build %>/loader.js",
+						"<%= dirs.build %>/echo-require.js"
 					]
 				}]
 			},
@@ -439,28 +440,26 @@ module.exports = function(grunt) {
 			}
 		},
 		"requirejs": {
-			"std": {
-				"options": {
-					"appDir": "src",
-					"baseUrl": "./",
-					//"mainConfigFile": "src/config.js",
-					"dir": "<%= destinations.sdk.dev %>",
-					"optimize": "none",
-					namespace: "Echo",
-					//removeCombined: true,
-					paths: {
-						"echo": "./"
-					},
-					modules: [{
-						"name": "require",
-						"include": [
-							"third-party/requirejs/require",
-							"third-party/requirejs/css",
-							"config"
-						], "create": true
-					}]
-				}
-			}
+			"options": {
+				"appDir": "<%= dirs.src %>",
+				"baseUrl": "./",
+				//"mainConfigFile": "src/config.js",
+				"dir": "<%= dirs.build %>",
+				"optimize": "none",
+				namespace: "Echo",
+				//removeCombined: true,
+				paths: {
+					"echo": "./"
+				},
+				modules: [{
+					"name": "echo-require",
+					"include": [
+						"third-party/requirejs/require",
+						"third-party/requirejs/css"
+					]
+				}]
+			},
+			"std": {}
 		}
 	};
 

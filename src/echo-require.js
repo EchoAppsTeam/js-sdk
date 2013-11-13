@@ -1,9 +1,6 @@
 (function() {
 	var protocol = /^https?/.test(window.location.protocol) ? window.location.protocol : "http:";
-
-	// TODO: make auto-substitution
-	//var cdnBaseURL = protocol + "{%=baseURLs.cdn%}/";
-	var cdnBaseURL = "/sdk/v3/dev";
+	var cdnBaseURL = protocol + "{%=baseURLs.cdn%}/";
 
 	require.config({
 		"waitSeconds": 5, // 5 sec

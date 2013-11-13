@@ -24,17 +24,17 @@ module.exports = function(grunt) {
 			case "dev":
 				_makeConcatSpec();
 				tasks = [
-					"requirejs",
-					"copy:css",
+					//"copy:css",
 					//"copy:own-js",
-					"copy:third-party-js",
-					"copy:third-party-html",
-					"copy:bootstrap",
-					"wrap",
+					//"copy:third-party-js",
+					//"copy:third-party-html",
+					//"copy:bootstrap",
+					//"wrap",
+					"requirejs",
 					"recess:bootstrap",
 					"patch:gui-css",
 					"patch:loader-build",
-					"concat",
+					//"concat",
 					"clean:third-party",
 					"copy:build"
 				];
