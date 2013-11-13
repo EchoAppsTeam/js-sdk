@@ -446,16 +446,23 @@ module.exports = function(grunt) {
 				//"mainConfigFile": "src/config.js",
 				"dir": "<%= dirs.build %>",
 				"optimize": "none",
-				namespace: "Echo",
+				"wrap": false,
+				"namespace": "Echo",
 				//removeCombined: true,
-				paths: {
+				"paths": {
 					"echo": "./"
 				},
-				modules: [{
+				"modules": [{
 					"name": "echo-require",
 					"include": [
 						"third-party/requirejs/require",
 						"third-party/requirejs/css"
+					]
+				}, {
+					"name": "jquery.pack",
+					"create": true,
+					"include": [
+						"third-party/jquery/jquery"
 					]
 				}]
 			},

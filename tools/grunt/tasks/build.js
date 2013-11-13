@@ -35,7 +35,7 @@ module.exports = function(grunt) {
 					"patch:gui-css",
 					"patch:loader-build",
 					//"concat",
-					"clean:third-party",
+					//"clean:third-party",
 					"copy:build"
 				];
 				break;
