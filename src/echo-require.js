@@ -13,7 +13,7 @@
 			"jquery": getBaseURL() + "third-party/jquery/jquery"
 		},
 		// TODO: add "noСonflict" for jQuery
-		map: {
+		"map": {
 			"*": {
 				"css": "third-party/requirejs/css"
 				//"echo-jquery": "jquery-private",
@@ -21,7 +21,10 @@
 			}
 		},
 		// TODO: add shims for bootstrap plugins
-		shim: {
+		"shim": {
+			"echo/backplane": {
+				"exports": "Backplane"
+			}
 			//"echo/third-party/jquery": {}
 		}
 	});
