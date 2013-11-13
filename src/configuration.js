@@ -1,4 +1,4 @@
-define("echo/configuration", ["jquery", "utils"], function(jQuery, Utils) {
+define("echo/configuration", ["jquery", "echo/utils"], function(jQuery, Utils) {
 "use strict";
 
 var $ = jQuery,
