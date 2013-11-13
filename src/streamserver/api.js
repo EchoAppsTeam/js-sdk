@@ -4,8 +4,9 @@ function(jQuery, API, Configuration, Events, Utils) {
 	"use strict";
 
 	var $ = jQuery,
-		StreamServer = {},
-		StreamServer.API = {};
+		StreamServer = {};
+
+	StreamServer.API = {};
 
 	//if (Echo.StreamServer && Echo.StreamServer.API) return;
 
@@ -524,8 +525,6 @@ function(jQuery, API, Configuration, Events, Utils) {
 	StreamServer.API.request = function(config) {
 		return (new StreamServer.API.Request(config));
 	};
-
-	});
 
 	//
 	// StreamServer.API.Polling definition
