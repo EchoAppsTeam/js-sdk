@@ -10,22 +10,19 @@
 		"paths": {
 			"echo": getBaseURL(),
 			"echo-gui-css": "css!echo/gui.pack.css",
-			"jquery": getBaseURL() + "third-party/jquery/jquery"
+			"jquery": getBaseURL() + "third-party/jquery/jquery",
+			"jquery-noconflict": getBaseURL() + "third-party/jquery/jquery-noconflict"
 		},
-		// TODO: add "noСonflict" for jQuery
-		"map": {
+		map: {
 			"*": {
-				"css": "third-party/requirejs/css"
-				//"echo-jquery": "jquery-private",
-				//"jquery-private": { "echo-jquery": "echo-jquery" }
-			}
+				"css": "third-party/requirejs/css",
+				"jquery": "jquery-noconflict"
+			},
+			"jquery-noconflict": { "jquery": "jquery" }
 		},
 		// TODO: add shims for bootstrap plugins
-		"shim": {
-			"echo/backplane": {
-				"exports": "Backplane"
-			}
-			//"echo/third-party/jquery": {}
+		shim: {
+			
 		}
 	});
 })();
