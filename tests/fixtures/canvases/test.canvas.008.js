@@ -1,6 +1,6 @@
 Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-008"] = {
     "id": "test.canvas.008",
-    "title": "Test canvas with Auth control",
+    "title": "Test canvas with Auth application",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
         "busName": "jskit"
@@ -8,7 +8,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-008"] = {
     "apps": [{
         "id": "auth",
         "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Controls.Auth",
+        "component": "Echo.IdentityServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {

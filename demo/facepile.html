@@ -8,7 +8,7 @@
 	</head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.FacePile" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.FacePile" target="_blank">Documentation</a></div>
 		<h1>FacePile App Demo</h1>
 		<div class="description">Echo FacePile app displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.</div>
 		<div class="wrapper">
@@ -55,7 +55,7 @@
 		var init = function(config) {
 			Echo.Loader.initApplication({ 
 				"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
-				"component": "Echo.StreamServer.Controls.FacePile",
+				"component": "Echo.StreamServer.Apps.FacePile",
 				"backplane": { 
 					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 					"busName": "jskit"

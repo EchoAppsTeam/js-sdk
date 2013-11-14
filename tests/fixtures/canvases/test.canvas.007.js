@@ -11,7 +11,7 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-007"] = {
             "dev": "../../../tests/fixtures/resources/loader/scripts.dev.js",
             "prod": "../../tests/fixtures/resources/loader/scripts.prod.js"
         },
-        "component": "Echo.Tests.Controls.TestControl",
+        "component": "Echo.Tests.Apps.TestApp",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com"
         }

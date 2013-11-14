@@ -4,11 +4,11 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Like
+ * @class Echo.StreamServer.Apps.Stream.Item.Plugins.Like
  * Adds extra Like/Unlike buttons to each item in the Echo Stream
- * control for authenticated users.
+ * application for authenticated users.
  *
- * 	new Echo.StreamServer.Controls.Stream({
+ * 	new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -24,7 +24,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -37,7 +37,7 @@ plugin.init = function() {
 plugin.config = {
 	/**
 	 * @cfg {Boolean} asyncFacePileRendering
-	 * This parameter is used to enable FacePile control rendering in async mode.
+	 * This parameter is used to enable FacePile application rendering in async mode.
 	 */
 	"asyncFacePileRendering": false
 };
@@ -70,12 +70,12 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	"control": "Echo.StreamServer.Controls.FacePile",
+	"app": "Echo.StreamServer.Apps.FacePile",
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
 
 plugin.events = {
-	"Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike": function(topic, args) {
+	"Echo.StreamServer.Apps.FacePile.Item.Plugins.Like.onUnlike": function(topic, args) {
 		this._sendActivity("Unlike", this.component, args.actor);
 		return {"stop": ["bubble"]};
 	}
@@ -131,7 +131,7 @@ plugin.renderers.likedBy = function(element) {
 };
 
 plugin.methods._initFacePile = function(config) {
-	this.set("facePile", new Echo.StreamServer.Controls.FacePile(config));
+	this.set("facePile", new Echo.StreamServer.Apps.FacePile(config));
 };
 
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
@@ -162,11 +162,11 @@ plugin.methods._sendActivity = function(name, item, actor) {
 		"target-query": item.config.get("parent.query")
 	}, function(response) {
 		/**
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeComplete
+		 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Like.onLikeComplete
 		 * Triggered when the Like operation is finished.
 		 */
 		/**
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeComplete
+		 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Like.onUnlikeComplete
 		 * Triggered when the reverse Like operation is finished.
 		 */
 		plugin._publishEventComplete({
@@ -177,11 +177,11 @@ plugin.methods._sendActivity = function(name, item, actor) {
 		plugin.requestDataRefresh();
 	}, function(response) {
 		/**
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onLikeError
+		 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Like.onLikeError
 		 * Triggered when the Like operation failed.
 		 */
 		/**
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Like.onUnlikeError
+		 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Like.onUnlikeError
 		 * Triggered when the reverse Like operation failed.
 		 */
 		plugin._publishEventComplete({
@@ -223,7 +223,7 @@ plugin.methods._assembleButton = function(name) {
 			})).length > 0 ? "Unlike" : "Like";
 		return {
 			"name": name,
-			"label": plugin.labels.get(name.toLowerCase() + "Control"),
+			"label": plugin.labels.get(name.toLowerCase() + "App"),
 			"visible": item.user.is("logged") && action === name,
 			"once": true,
 			"callback": callback
@@ -245,13 +245,13 @@ Echo.Plugin.create(plugin);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.FacePile.Item.Plugins.Like
- * Adds extra controls to items in the Echo FacePile control.
+ * @class Echo.StreamServer.Apps.FacePile.Item.Plugins.Like
+ * Adds extra controls to items in the Echo FacePile application.
  *
  * @extends Echo.Plugin
  * @private
  */
-var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
+var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Apps.FacePile.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -293,7 +293,7 @@ plugin.renderers.adminUnlike = function(element) {
 	return element.one("click", function() {
 		item.view.get("container").css("opacity", 0.3);
 		/**
-		 * @echo_event Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike
+		 * @echo_event Echo.StreamServer.Apps.FacePile.Item.Plugins.Like.onUnlike
 		 * Triggered when the item is "unliked" by admin on behalf of a user.
 		 */
 		plugin.events.publish({

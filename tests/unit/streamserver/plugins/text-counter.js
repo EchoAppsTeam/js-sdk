@@ -1,6 +1,6 @@
 (function($) {
 
-var plugin = "Echo.StreamServer.Controls.Submit.Plugins.TextCounter";
+var plugin = "Echo.StreamServer.Apps.Submit.Plugins.TextCounter";
 
 Echo.Tests.module(plugin, {
 	"meta": {

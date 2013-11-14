@@ -217,17 +217,17 @@ Echo.Tests.asyncTest("resource downloading", function() {
 		}];
 		var count = 0;
 		var check = function() {
-			return Echo.Control.isDefined("Echo.Tests.Controls.TestMultipleDownloads");
+			return Echo.App.isDefined("Echo.Tests.Apps.TestMultipleDownloads");
 		};
 		var maybeExecuteCallback = function() {
 			if (++count === 3) callback();
 		};
 		Echo.Loader.download(resources, function() {
-			QUnit.ok(check(), "Checking if the control is defined after the first download");
+			QUnit.ok(check(), "Checking if the application is defined after the first download");
 			maybeExecuteCallback();
 		});
 		Echo.Loader.download(resources, function() {
-			QUnit.ok(check(), "Checking if the control is defined after the second (parallel) download");
+			QUnit.ok(check(), "Checking if the application is defined after the second (parallel) download");
 			maybeExecuteCallback();
 		});
 		Echo.Loader.download(resources, function() {
@@ -348,7 +348,7 @@ Echo.Tests.asyncTest("environment initialization", function() {
 	var environmentCheck = function(callback) {
 		Echo.Loader.initEnvironment(function() {
 			QUnit.ok(true, "Checking if the callback is being fired as soon as the environment is ready.");
-			QUnit.ok(!!window.Backplane && !!Echo.Control && Echo.jQuery,
+			QUnit.ok(!!window.Backplane && !!Echo.App && Echo.jQuery,
 				"Checking if the callback is being fired as soon as the environment is ready.");
 			var state = $.extend(true, {}, Echo.Loader.vars.state);
 			Echo.Loader.initEnvironment();
@@ -371,7 +371,7 @@ Echo.Tests.asyncTest("application initialization", function() {
 		$("qunit-fixture").empty();
 		Echo.Loader.initApplication({
 			"script": "streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Counter",
+			"component": "Echo.StreamServer.Apps.Counter",
 			"config": {
 				"target": $("qunit-fixture"),
 				"data": {"count": 5},
@@ -501,7 +501,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		var expecting = 2;
 		var waitForCompletion = function(canvasID, appID) {
 			Echo.Loader.override(canvasID, appID, {"ready": function() {
-				QUnit.ok(true, "[simple valid canvas] Checking if " + appID + " control is initialized correctly after a page canvases lookup");
+				QUnit.ok(true, "[simple valid canvas] Checking if " + appID + " application is initialized correctly after a page canvases lookup");
 				this.destroy();
 				expecting--;
 				if (!expecting) {
@@ -559,7 +559,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 				this.destroy();
 				count.valid--;
 				if (!count.valid) {
-					QUnit.ok(true, "[valid and invalid canvases] Checking if both controls (Stream and Submit) were initialized correctly after a page canvases lookup");
+					QUnit.ok(true, "[valid and invalid canvases] Checking if both applications (Stream and Submit) were initialized correctly after a page canvases lookup");
 					if (!count.invalid) callback();
 				}
 			}});
@@ -597,7 +597,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 				this.destroy();
 				count.valid--;
 				if (!count.valid) {
-					QUnit.ok(true, "[double initialization prevention] Checking if both controls (Stream and Submit) were initialized correctly after a page canvases lookup");
+					QUnit.ok(true, "[double initialization prevention] Checking if both applications (Stream and Submit) were initialized correctly after a page canvases lookup");
 					if (!count.invalid) callback();
 				}
 			}});
@@ -646,7 +646,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 				this.destroy();
 				count.valid--;
 				if (!count.valid) {
-					QUnit.ok(true, "[different initialization schemas] Checking if Auth controls were initialized correctly using different initialization schemas");
+					QUnit.ok(true, "[different initialization schemas] Checking if Auth applications were initialized correctly using different initialization schemas");
 					if (!count.invalid) callback();
 				}
 			}});
@@ -824,17 +824,17 @@ suite.prototype.tests.canvasesScriptsLoadingTest = {
 
 		Echo.Loader.override("test.canvas.007", "test.apps.scripts", {"ready": function() {
 			this.destroy();
-			QUnit.ok(Echo.Variables.TestControl === "development", "Check if development version of application script was loaded");
+			QUnit.ok(Echo.Variables.TestApp === "development", "Check if development version of application script was loaded");
 
 			Echo.Loader.debug = false;
-			delete window.Echo.Tests.Controls.TestControl;
+			delete window.Echo.Tests.Apps.TestApp;
 			$("#qunit-fixture").empty().append("<div class=\"echo-canvas\" data-canvas-id=\"js-sdk-tests/test.canvas.007\"></div>");
 			Echo.Loader.override("test.canvas.007", "test.apps.scripts", {"ready": function() {
 				this.destroy();
-				QUnit.ok(Echo.Variables.TestControl === "production", "Check if production version of application script was loaded");
+				QUnit.ok(Echo.Variables.TestApp === "production", "Check if production version of application script was loaded");
 
 				Echo.Loader.debug = debug;
-				delete window.Echo.Tests.Controls.TestControl;
+				delete window.Echo.Tests.Apps.TestApp;
 
 				QUnit.start();
 			}});

@@ -5,26 +5,26 @@ var $ = jQuery;
 
 /**
  * @class Echo.ServerRelatedApp
- * Foundation class implementing application logic control
+ * Foundation class implementing application logic application
  * which related to the server interaction. This class provide
  * some useful methods and properties such as config properties etc.
  *
- * @extends Echo.Control
+ * @extends Echo.App
  *
  * @package environment.pack.js
  *
  * @constructor
  * Server related App constructor initializing Echo.ServerRelatedApp class
  */
-var app = Echo.Control.manifest("Echo.ServerRelatedApp");
+var app = Echo.App.manifest("Echo.ServerRelatedApp");
 
-if (Echo.Control.isDefined(app)) return;
+if (Echo.App.isDefined(app)) return;
 
 app.config = {
 	/**
 	 * @cfg {String} appkey
 	 * Specifies the customer application key. You should specify this parameter
-	 * if your control uses StreamServer or IdentityServer API requests.
+	 * if your application uses StreamServer or IdentityServer API requests.
 	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
 	 */
 	"appkey": "",
@@ -110,11 +110,11 @@ app.labels = {
 app.templates = {"message": {}};
 
 app.templates.message.compact =
-	'<span class="{class:message} {class:message-icon} {class:message}-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>';
+	'<span class="echo-app-message echo-app-message-icon echo-app-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>';
 
 app.templates.message.full =
-	'<div class="{class:message} {class:messageText}">' +
-		'<span class="{class:message-icon} {class:message}-{data:type} {class:messageIcon}">' +
+	'<div class="echo-app-message {class:messageText}">' +
+		'<span class="echo-app-message-icon echo-app-message-{data:type} {class:messageIcon}">' +
 			'{data:message}' +
 		'</span>' +
 	'</div>';
@@ -189,7 +189,7 @@ app.methods.showError = function(data, options) {
 
 /**
  * Method to check the presense of the "appkey" configuration parameter and render
- * the error message (inside the element specified as the "target" in the control
+ * the error message (inside the element specified as the "target" in the application
  * configuration) in case the "appkey" is missing in the config.
  *
  * @return {Boolean}
@@ -205,14 +205,14 @@ app.methods.checkAppKey = function() {
 
 app.css =
 	// message classes
-	'.{class:message} { padding: 15px 0px; text-align: center; }' +
-	'.{class:message-icon} { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
-	'.{class:message} .{class:message-icon} { padding-left: 21px; height: auto; }' +
-	'.{class:message-info} { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
-	'.{class:message-loading} { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
-	'.{class:message-error} { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }'
+	'.echo-app-message { padding: 15px 0px; text-align: center; }' +
+	'.echo-app-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
+	'.echo-app-message .echo-app-message-icon { padding-left: 21px; height: auto; }' +
+	'.echo-app-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
+	'.echo-app-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
+	'.echo-app-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }'
 
-Echo.Control.create(app);
+Echo.App.create(app);
 
 (function(App) {
 

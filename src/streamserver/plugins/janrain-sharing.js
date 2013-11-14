@@ -4,11 +4,11 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing
+ * @class Echo.StreamServer.Apps.Submit.Plugins.JanrainSharing
  * Plugin provides the ability to load Janrain sharing dialog after
- * the item has been posted using the Echo Submit control.
+ * the item has been posted using the Echo Submit application.
  *
- * 	new Echo.StreamServer.Controls.Submit({
+ * 	new Echo.StreamServer.Apps.Submit({
  * 		"target": document.getElementById("echo-submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -33,7 +33,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Submit");
+var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Apps.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -157,11 +157,11 @@ plugin.dependencies = [{
 }];
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Submit.onPostInit": function(topic, args) {
+	"Echo.StreamServer.Apps.Submit.onPostInit": function(topic, args) {
 		if (this._isLegacy()) return;
 		this.set("needShare", this.config.get("alwaysShare") || this.view.get("shareCheckbox").prop("checked"));
 	},
-	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
+	"Echo.StreamServer.Apps.Submit.onPostComplete": function(topic, args) {
 		var plugin = this;
 		if (plugin._isLegacy()) {
 			this._shareLegacy(args);
@@ -377,11 +377,11 @@ Echo.Plugin.create(plugin);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item.Plugins.JanrainSharing
+ * @class Echo.StreamServer.Apps.Stream.Item.Plugins.JanrainSharing
  * Plugin provides the ability to load JanRain sharing dialog clicking
  * the "Share" button in the item.
  *
- * 	new Echo.StreamServer.Controls.Stream({
+ * 	new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -406,7 +406,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -457,9 +457,9 @@ plugin.labels = {
 	"shareButton": "Share"
 };
 
-// let's copy these functions from the related plugin for Submit Control
-plugin.methods._share = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._share;
-plugin.methods._showPopup = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._showPopup;
+// let's copy these functions from the related plugin for Submit Application
+plugin.methods._share = Echo.StreamServer.Apps.Submit.Plugins.JanrainSharing.prototype._share;
+plugin.methods._showPopup = Echo.StreamServer.Apps.Submit.Plugins.JanrainSharing.prototype._showPopup;
 
 plugin.methods._prepareData = function(item) {
 	return {

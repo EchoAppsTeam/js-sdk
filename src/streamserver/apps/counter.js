@@ -4,34 +4,34 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Counter
+ * @class Echo.StreamServer.Apps.Counter
  * Echo Counter class which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
  * and provides a simple live updating number.
  *
- * 	new Echo.StreamServer.Controls.Counter({
+ * 	new Echo.StreamServer.Apps.Counter({
  * 		"target": document.getElementById("echo-counter"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"query" : "childrenof:http://example.com/test/*"
  * 	});
  *
- * More information regarding the possible ways of the Control initialization
+ * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.ServerRelatedApp
  *
- * @package streamserver/controls.pack.js
+ * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
  *
  * @constructor
- * Counter constructor initializing Echo.StreamServer.Controls.Counter class
+ * Counter constructor initializing Echo.StreamServer.Apps.Counter class
  *
  * @param {Object} config
  * Configuration options
  */
-var counter = Echo.Control.manifest("Echo.StreamServer.Controls.Counter");
+var counter = Echo.App.manifest("Echo.StreamServer.Apps.Counter");
 
-if (Echo.Control.isDefined(counter)) return;
+if (Echo.App.isDefined(counter)) return;
 
 counter.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
@@ -40,20 +40,20 @@ counter.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 /** @hide @method parentRenderer */
 
 /**
- * @echo_event Echo.StreamServer.Controls.Counter.onReady
+ * @echo_event Echo.StreamServer.Apps.Counter.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Counter.onRefresh
+ * @echo_event Echo.StreamServer.Apps.Counter.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Counter.onRender
+ * @echo_event Echo.StreamServer.Apps.Counter.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Counter.onRerender
+ * @echo_event Echo.StreamServer.Apps.Counter.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -88,7 +88,7 @@ counter.config = {
 	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
 	 * method specification.
 	 *
-	 * 	new Echo.StreamServer.Controls.Counter({
+	 * 	new Echo.StreamServer.Apps.Counter({
 	 * 		"target": document.getElementById("echo-counter"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"query" : "childrenof:http://example.com/test/*"
@@ -98,7 +98,7 @@ counter.config = {
 	/**
 	 * @cfg {Object} data
 	 * Specifies predefined items count which should be displayed by the application.
-	 * Counter control works with the data format used by the "count" API endpoint.
+	 * Counter application works with the data format used by the "count" API endpoint.
 	 * More information about the data format can be found
 	 * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count#ResponseFormat" target="_blank">here</a>.
 	 *
@@ -161,7 +161,7 @@ counter.methods._getRequestObject = function(overrides) {
 counter.methods._maybeUpdate = function(data) {
 	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
 		/**
-		 * @echo_event Echo.StreamServer.Controls.Counter.onUpdate
+		 * @echo_event Echo.StreamServer.Apps.Counter.onUpdate
 		 * Triggered when new value is received.
 		 */
 		this.events.publish({
@@ -186,7 +186,7 @@ counter.methods._handleResponse = function(data, options) {
 
 counter.methods._error = function(data, options) {
 	/**
-	 * @echo_event Echo.StreamServer.Controls.Counter.onError
+	 * @echo_event Echo.StreamServer.Apps.Counter.onError
 	 * Triggered when some error has occured while getting counter data.
 	 */
 	this.events.publish({
@@ -208,6 +208,6 @@ counter.methods._error = function(data, options) {
 	this.ready();
 };
 
-Echo.Control.create(counter);
+Echo.App.create(counter);
 
 })(Echo.jQuery);

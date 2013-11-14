@@ -1,13 +1,13 @@
 (function($) {
 
-Echo.Tests.module("Echo.IdentityServer.Controls.Auth", {
+Echo.Tests.module("Echo.IdentityServer.Apps.Auth", {
 	"meta": {
-		"className" : "Echo.IdentityServer.Controls.Auth",
+		"className" : "Echo.IdentityServer.Apps.Auth",
 		"functions": ["template"]
 	}
 });
 
-Echo.Tests.renderersTest("Echo.IdentityServer.Controls.Auth");
+Echo.Tests.renderersTest("Echo.IdentityServer.Apps.Auth");
 
 Echo.Tests.asyncTest("logged in workflow", function() {
 	var identityManager = {
@@ -17,10 +17,10 @@ Echo.Tests.asyncTest("logged in workflow", function() {
 	};
 	var target = $("#qunit-fixture");
 	Echo.Events.subscribe({
-		"topic": "Echo.IdentityServer.Controls.Auth.onRender",
+		"topic": "Echo.IdentityServer.Apps.Auth.onRender",
 		"once": true,
 		"handler": function(topic, params) {
-			QUnit.ok(target.html().match(/echo-identityserver-controls-auth-userLogged/),
+			QUnit.ok(target.html().match(/echo-identityserver-apps-auth-userLogged/),
 				"Checking the logged user mode rendering");
 		}
 	});
@@ -39,7 +39,7 @@ Echo.Tests.asyncTest("logged in workflow", function() {
 		QUnit.equal(avatar, getRenderedAvatar(), "Checking if custom default avatar is rendered when user avatar is not available");
 		QUnit.start();
 	};
-	new Echo.IdentityServer.Controls.Auth({
+	new Echo.IdentityServer.Apps.Auth({
 		"target": target,
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"identityManager": {
@@ -60,15 +60,15 @@ Echo.Tests.asyncTest("anonymous user workflow", function() {
 	};
 	var target = $("#qunit-fixture");
 	Echo.Events.subscribe({
-		"topic": "Echo.IdentityServer.Controls.Auth.onRender",
+		"topic": "Echo.IdentityServer.Apps.Auth.onRender",
 		"once": true,
 		"handler": function(topic, params) {
-			QUnit.ok(target.html().match(/echo-identityserver-controls-auth-userAnonymous/),
+			QUnit.ok(target.html().match(/echo-identityserver-apps-auth-userAnonymous/),
 				"Checking the anonymous mode rendering");
 			QUnit.start();
 		}
 	});
-	new Echo.IdentityServer.Controls.Auth({
+	new Echo.IdentityServer.Apps.Auth({
 		"target": target,
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"identityManager": {

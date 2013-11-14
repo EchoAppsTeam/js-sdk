@@ -4,8 +4,8 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Submit.Plugins.FormAuth
- * Adds the authentication section to the Echo Submit control
+ * @class Echo.StreamServer.Apps.Submit.Plugins.FormAuth
+ * Adds the authentication section to the Echo Submit application
  *
  * 	var identityManager = {
  * 		"width": 400,
@@ -13,7 +13,7 @@ var $ = jQuery;
  * 		"url": "http://example.com/auth"
  * 	};
  *
- * 	new Echo.StreamServer.Controls.Submit({
+ * 	new Echo.StreamServer.Apps.Submit({
  * 		"target": document.getElementById("submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -27,7 +27,7 @@ var $ = jQuery;
  * 	});
  *
  * Note: it is strongly recommended to use
- * {@link Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth JanrainAuth} plugin
+ * {@link Echo.StreamServer.Apps.Submit.Plugins.JanrainAuth JanrainAuth} plugin
  * in case of integration with Janrain authentication provider because it is
  * based on the most current <a href="http://janrain.com/products/engage/social-login/" target="_blank">Janrain Social Login Widget</a>
  * implementation.
@@ -40,7 +40,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("FormAuth", "Echo.StreamServer.Controls.Submit");
+var plugin = Echo.Plugin.manifest("FormAuth", "Echo.StreamServer.Apps.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -56,7 +56,7 @@ plugin.config = {
 	/**
 	 * @cfg {Object} identityManager The list of handlers for login, edit
 	 * and signup actions. If some action is omitted then it will not be
-	 * available for users in the Auth control. Each handler accepts sessionID
+	 * available for users in the Auth application. Each handler accepts sessionID
 	 * as GET parameter. This parameter is necessary for communication with
 	 * the Backplane server. When the handler finishes working it constructs the
 	 * corresponding Backplane message (for login, signup or user data update)
@@ -134,7 +134,7 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	"control": "Echo.IdentityServer.Controls.Auth",
+	"app": "Echo.IdentityServer.Apps.Auth",
 	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
 }];
 
@@ -183,7 +183,7 @@ plugin.component.renderers.container = function(element) {
  */
 plugin.renderers.auth = function(element) {
 	var plugin = this;
-	new Echo.IdentityServer.Controls.Auth(plugin.config.assemble({
+	new Echo.IdentityServer.Apps.Auth(plugin.config.assemble({
 		"target": element,
 		"identityManager": plugin.config.get("identityManager")
 	}));

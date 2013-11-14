@@ -4,10 +4,10 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth
- * Janrain Social Sign-in Widget integration with Echo Submit Control.
+ * @class Echo.StreamServer.Apps.Submit.Plugins.JanrainAuth
+ * Janrain Social Sign-in Widget integration with Echo Submit Application.
  *
- * 	new Echo.StreamServer.Controls.Submit({
+ * 	new Echo.StreamServer.Apps.Submit({
  * 		"target": document.getElementById("submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -25,7 +25,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("JanrainAuth", "Echo.StreamServer.Controls.Submit");
+var plugin = Echo.Plugin.manifest("JanrainAuth", "Echo.StreamServer.Apps.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -49,7 +49,7 @@ plugin.config = {
 
 	/**
 	 * @cfg {String[]} [buttons=["login"]]
-	 * A list of buttons that should be rendered in the Auth Control. May include
+	 * A list of buttons that should be rendered in the Auth Application. May include
 	 * any of the following strings (order doesn't matter):
 	 *
 	 * + "login"
@@ -114,7 +114,7 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	"control": "Echo.IdentityServer.Controls.Auth",
+	"app": "Echo.IdentityServer.Apps.Auth",
 	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
 }];
 
@@ -169,7 +169,7 @@ plugin.renderers.auth = function(element) {
 		}
 		return acc;
 	});
-	new Echo.IdentityServer.Controls.Auth(plugin.config.assemble({
+	new Echo.IdentityServer.Apps.Auth(plugin.config.assemble({
 		"target": element,
 		"plugins": [janrainConnectorPlugin]
 	}));

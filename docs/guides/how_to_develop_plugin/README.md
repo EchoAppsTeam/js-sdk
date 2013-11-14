@@ -30,7 +30,7 @@ Now let's add the plugin definition. Echo JS SDK contains a special Echo.Plugin 
 
 	var $ = jQuery;
 
-	var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Controls.Stream");
+	var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
 
 	if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -51,7 +51,7 @@ Let's assume that we need a configuration parameter for our plugin to define the
 
 	var $ = jQuery;
 
-	var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Controls.Stream");
+	var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
 
 	if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -216,7 +216,7 @@ Note: the "renderers" hash contains the renderers for the elements added within 
 
 In this example we've accessed the "state" renderer of the Stream app.
 
-One more important note to keep in mind while overriding the existing renderers: you can control the order in which the renderer logic is executed, i.e. you can call the parent renderer and apply specific logic after that or you can add some manipulations and call the parent renderer. Calling the {@link Echo.Plugin#parentRenderer "parentRenderer"} function is extremely important when you extend some existing renderer to allow other plugins to execute their renderer extensions as well (in case multiple plugins extend the same renderer).
+One more important note to keep in mind while overriding the existing renderers: you can application the order in which the renderer logic is executed, i.e. you can call the parent renderer and apply specific logic after that or you can add some manipulations and call the parent renderer. Calling the {@link Echo.Plugin#parentRenderer "parentRenderer"} function is extremely important when you extend some existing renderer to allow other plugins to execute their renderer extensions as well (in case multiple plugins extend the same renderer).
 
 ## CSS rules
 
@@ -235,7 +235,7 @@ However there are few more handy things which can be used during the plugin deve
 
 ## Plugin state management
 
-There are cases where the plugin should not be active/inactive according to some condition, for example if any mandatory plugin params are missing in the config or the plugin was written for a given type of items in the stream (for Tweets or FaceBook items). In this case you can control the state of the plugin using the "enabled" function in the plugin definition. The function should be synchronous and return 'true' to enable or 'false' to disable the plugin. Example:
+There are cases where the plugin should not be active/inactive according to some condition, for example if any mandatory plugin params are missing in the config or the plugin was written for a given type of items in the stream (for Tweets or FaceBook items). In this case you can application the state of the plugin using the "enabled" function in the plugin definition. The function should be synchronous and return 'true' to enable or 'false' to disable the plugin. Example:
 
 	plugin.enabled = function() {
 		return !!this.config.get("myMandatoryParameter");
@@ -252,7 +252,7 @@ Each Echo component is an independent part of the system and can communicate wit
 There are lots of events going on during the app and plugin life. The list of the events for each component can be found on the respective page in the documentation. The plugin definition structure provides the interface to subscribe to the necessary events. The events subscriptions should be defined inside the "events" hash using the event name as a key and the event handler as a value, for example:
 
 	plugin.events = {
-		"Echo.StreamServer.Controls.Stream.onDataReceive": function(topic, args) {
+		"Echo.StreamServer.Apps.Stream.onDataReceive": function(topic, args) {
 			// ... some actions ...
 		}
 	};
@@ -278,7 +278,7 @@ In order to install the plugin into the necessary app, the following steps shoul
 
 &nbsp;
 
-	new Echo.StreamServer.Controls.Stream({
+	new Echo.StreamServer.Apps.Stream({
 		...
 		"plugins": [{
 			"name": "StreamSortingSelector",
@@ -296,7 +296,7 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 
 	var $ = jQuery;
 
-	var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Controls.Stream");
+	var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
 
 	if (Echo.Plugin.isDefined(plugin)) return;
 

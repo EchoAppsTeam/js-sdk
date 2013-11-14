@@ -2,7 +2,7 @@
 
 var data = {
 	"instance": {
-		"name": "Echo.StreamServer.Controls.Submit"
+		"name": "Echo.StreamServer.Apps.Submit"
 	},
 	"config": {
 		"async": true,
@@ -15,7 +15,7 @@ var suite = Echo.Tests.Unit.Submit = function() {
 };
 
 suite.prototype.info = {
-	"className": "Echo.StreamServer.Controls.Submit",
+	"className": "Echo.StreamServer.Apps.Submit",
 	"functions": [
 		"post",
 		"refresh",
@@ -34,7 +34,7 @@ suite.prototype.tests.anonymousWorkflow = {
 	},
 	"check": function() {
 		var self = this;
-		new Echo.StreamServer.Controls.Submit({
+		new Echo.StreamServer.Apps.Submit({
 			"target": this.config.target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"ready": function() {
@@ -58,7 +58,7 @@ suite.prototype.tests.loggedUserWorkflow = {
 	},
 	"check": function() {
 		var self = this;
-		new Echo.StreamServer.Controls.Submit({
+		new Echo.StreamServer.Apps.Submit({
 			"target": this.config.target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
@@ -83,13 +83,13 @@ suite.prototype.tests.eventSubscriptions = {
 	},
 	"check": function() {
 		var self = this;
-		new Echo.StreamServer.Controls.Submit({
+		new Echo.StreamServer.Apps.Submit({
 			"target": this.config.target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
 			"ready": function() {
 				suite.submit = this;
-				QUnit.ok(self.config.target.html().match(/echo-streamserver-controls-submit/),
+				QUnit.ok(self.config.target.html().match(/echo-streamserver-apps-submit/),
 					'Checking rendering');
 				self.sequentialAsyncTests([
 					"onInit",
@@ -106,13 +106,13 @@ suite.prototype.tests.testMethods = {
 		"async": true
 	},
 	"check": function() {
-		new Echo.StreamServer.Controls.Submit({
+		new Echo.StreamServer.Apps.Submit({
 			"target": this.config.target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
 			"ready": function() {
 				var content = this.view.get("text");
-				var mandatoryCSS = 'echo-streamserver-controls-submit-mandatory';
+				var mandatoryCSS = 'echo-streamserver-apps-submit-mandatory';
 				QUnit.ok(this.highlightMandatory(content),
 					"Checking that highlightMandatory() returns true if element is empty");
 				QUnit.ok(content.parent().hasClass(mandatoryCSS),
@@ -124,7 +124,7 @@ suite.prototype.tests.testMethods = {
 				QUnit.ok(!this.highlightMandatory(content),
 					"Checking that highlightMandatory() returns false if element is not empty");
 				this.events.subscribe({
-					"topic": "Echo.StreamServer.Controls.Submit.onRefresh",
+					"topic": "Echo.StreamServer.Apps.Submit.onRefresh",
 					"once": true,
 					"handler": function(topic, params) {
 						QUnit.equal(this.view.get("text").val(), "TestContent",
@@ -145,8 +145,8 @@ suite.prototype.cases.name = function(callback) {
 	var target = this.config.target, submit = suite.submit;
 	var button = submit.view.get("postButton");
 	suite.postHandler = function() {
-		var element = $(".echo-streamserver-controls-submit-nameContainer", target);
-		QUnit.ok(element.hasClass("echo-streamserver-controls-submit-mandatory"),
+		var element = $(".echo-streamserver-apps-submit-nameContainer", target);
+		QUnit.ok(element.hasClass("echo-streamserver-apps-submit-mandatory"),
 			"Checking that name is mandatory field for anonymous");
 		callback();
 	};
@@ -160,7 +160,7 @@ suite.prototype.cases.content = function(callback) {
 	suite.postHandler && button.off("click", suite.postHandler);
 	suite.postHandler = function() {
 		var content = submit.view.get("content");
-		QUnit.ok(content.hasClass("echo-streamserver-controls-submit-mandatory"),
+		QUnit.ok(content.hasClass("echo-streamserver-apps-submit-mandatory"),
 			"Checking that content is mandatory field for anonymous");
 		callback();
 	};
@@ -168,7 +168,7 @@ suite.prototype.cases.content = function(callback) {
 };
 
 suite.prototype.cases.markersAndTags = function(callback) {
-	new Echo.StreamServer.Controls.Submit({
+	new Echo.StreamServer.Apps.Submit({
 		"target": this.config.target,
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
@@ -207,7 +207,7 @@ suite.prototype.cases.validator = function(callback) {
 	var content = submit.view.get("content");
 	var text = submit.view.get("text").val("Content");
 	suite.postHandler = function() {
-		QUnit.ok(content.hasClass('echo-streamserver-controls-submit-mandatory'),
+		QUnit.ok(content.hasClass('echo-streamserver-apps-submit-mandatory'),
 			"Checking custom validator");
 		callback();
 	};
@@ -221,7 +221,7 @@ suite.prototype.cases.post = function(callback) {
 	var url = submit.view.get("url").val("TestURL");
 	var text = submit.view.get("text").val("TestContent");
 	submit.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Submit.onPostComplete",
+		"topic": "Echo.StreamServer.Apps.Submit.onPostComplete",
 		"once": true,
 		"handler": function(topic, params) {
 			QUnit.equal(name.val(),
@@ -232,11 +232,11 @@ suite.prototype.cases.post = function(callback) {
 				"Checking that content is cleared after posting");
 			QUnit.ok(params.request.response && !$.isEmptyObject(params.request.response),
 				"Checking if the server response is available via " +
-				"Echo.StreamServer.Controls.Submit.onPostComplete " +
+				"Echo.StreamServer.Apps.Submit.onPostComplete " +
 				"event handler arguments");
 			QUnit.ok(!!params.request.response.objectID,
 				"Checking if the object.id is accessible via " +
-				"Echo.StreamServer.Controls.Submit.onPostComplete " +
+				"Echo.StreamServer.Apps.Submit.onPostComplete " +
 				"event handler arguments");
 			callback();
 		}
@@ -259,7 +259,7 @@ suite.prototype.cases.onInit = function(callback) {
 	var button = submit.view.get("postButton");
 	var text = submit.view.get("text").val("UserContent");
 	submit.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
+		"topic": "Echo.StreamServer.Apps.Submit.onPostInit",
 		"once": true,
 		"handler": function(topic, params) {
 			var activity = params.postData.content[0];
@@ -283,7 +283,7 @@ suite.prototype.cases.onInit = function(callback) {
 		}
 	});
 	submit.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Submit.onPostComplete",
+		"topic": "Echo.StreamServer.Apps.Submit.onPostComplete",
 		"once": true,
 		"handler": callback
 	});
@@ -295,7 +295,7 @@ suite.prototype.cases.onComplete = function(callback) {
 	var button = submit.view.get("postButton");
 	var text = submit.view.get("text").val("UserContent");
 	submit.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
+		"topic": "Echo.StreamServer.Apps.Submit.onPostInit",
 		"once": true,
 		"handler": function(topic, params) {
 			params.postData.content[0].object.title = "Title";
@@ -303,7 +303,7 @@ suite.prototype.cases.onComplete = function(callback) {
 		}
 	});
 	submit.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Submit.onPostComplete",
+		"topic": "Echo.StreamServer.Apps.Submit.onPostComplete",
 		"once": true,
 		"handler": function(topic, params) {
 			var activity = params.postData.content[0];
@@ -321,7 +321,7 @@ suite.prototype.cases.onError = function(callback) {
 	var submit = suite.submit;
 	var text = submit.view.get("text").val("UserContent");
 	submit.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
+		"topic": "Echo.StreamServer.Apps.Submit.onPostInit",
 		"once": true,
 		"handler": function(topic, params) {
 			// override content with empty value
@@ -330,19 +330,19 @@ suite.prototype.cases.onError = function(callback) {
 	});
 	// unsubscribe all onPostError handlers to hide error message
 	submit.events.unsubscribe({
-		"topic": "Echo.StreamServer.Controls.Submit.onPostError"
+		"topic": "Echo.StreamServer.Apps.Submit.onPostError"
 	});
 	submit.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Submit.onPostError",
+		"topic": "Echo.StreamServer.Apps.Submit.onPostError",
 		"once": true,
 		"handler": function(topic, params) {
 			QUnit.ok(params.request.response && !$.isEmptyObject(params.request.response),
 				"Checking if the server response is available via " +
-				"Echo.StreamServer.Controls.Submit.onPostError " +
+				"Echo.StreamServer.Apps.Submit.onPostError " +
 				"event handler arguments");
 			QUnit.equal(params.request.response.result, "error",
 				"Checking if the server response corresponds to the event " +
-				"fired (which is Echo.StreamServer.Controls.Submit.onPostError)");
+				"fired (which is Echo.StreamServer.Apps.Submit.onPostError)");
 			QUnit.equal(params.request.response.errorCode, "invalid_object",
 				"Checking if the server response has correct error code");
 			callback();
@@ -356,8 +356,8 @@ suite.prototype.cases.destroy = function(callback) {
 	callback && callback();
 };
 
-Echo.Tests.defineComponentInitializer("Echo.StreamServer.Controls.Submit", function(config) {
-	return new Echo.StreamServer.Controls.Submit($.extend({
+Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Submit", function(config) {
+	return new Echo.StreamServer.Apps.Submit($.extend({
 		"target": config.target,
 		"appkey": config.appkey,
 		"targetURL": config.dataBaseLocation

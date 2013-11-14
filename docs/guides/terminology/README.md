@@ -8,15 +8,15 @@ This guide contains the definition of the terms used throughout the JS SDK docs,
 
 ### Manifest
 
-The unified structure which describes a certain application, control or a plugin is called a *manifest*. Each component type has a special "manifest" function (Echo.App.manifest and Echo.Plugin.manifest) to generate an empty *manifest* skeleton which can be filled in with the business logic. In addition to the "manifest" function, there is a set of "create" functions to turn static definition into the JS classes (Echo.App.create and Echo.Plugin.create). More information about the use of the *manifest* can be found in the [Contol](#!/guide/how_to_develop_control), [Plugin](#!/guide/how_to_develop_plugin) or [App](#!/guide/how_to_develop_app) development guides.
+The unified structure which describes a certain application, application or a plugin is called a *manifest*. Each component type has a special "manifest" function (Echo.App.manifest and Echo.Plugin.manifest) to generate an empty *manifest* skeleton which can be filled in with the business logic. In addition to the "manifest" function, there is a set of "create" functions to turn static definition into the JS classes (Echo.App.create and Echo.Plugin.create). More information about the use of the *manifest* can be found in the [Contol](#!/guide/how_to_develop_application), [Plugin](#!/guide/how_to_develop_plugin) or [App](#!/guide/how_to_develop_app) development guides.
 
 ### Application (aka App)
 
-*Application* (or *App*) is a JavaScript class with the pre-defined structure (generated out of the app manifest) which can represent a certain set of discrete functionality or combine multiple apps and plugins into a package to achieve a certain functionality. Application examples: {@link Echo.StreamServer.Controls.Stream Stream control}, {@link Echo.StreamServer.Controls.Submit Submit control}, {@link Echo.IdentityServer.Controls.Auth Auth control}, etc. More information about the App development can be found in [the hands-on guide](#!/guide/how_to_develop_app).
+*Application* (or *App*) is a JavaScript class with the pre-defined structure (generated out of the app manifest) which can represent a certain set of discrete functionality or combine multiple apps and plugins into a package to achieve a certain functionality. Application examples: {@link Echo.StreamServer.Apps.Stream Stream application}, {@link Echo.StreamServer.Apps.Submit Submit application}, {@link Echo.IdentityServer.Apps.Auth Auth application}, etc. More information about the App development can be found in [the hands-on guide](#!/guide/how_to_develop_app).
 
 ### Plugin
 
-*Plugin* is a JavaScript class with the pre-defined structure (generated out of the plugin manifest) which extends a certain part of an App. Plugin examples: {@link Echo.StreamServer.Controls.Stream.Item.Plugins.Reply Reply}, {@link Echo.StreamServer.Controls.Stream.Item.Plugins.Edit Edit}, {@link Echo.StreamServer.Controls.Stream.Item.Plugins.Like Like}. More information about the Plugins development can be found in [the hands-on guide](#!/guide/how_to_develop_plugin).
+*Plugin* is a JavaScript class with the pre-defined structure (generated out of the plugin manifest) which extends a certain part of an App. Plugin examples: {@link Echo.StreamServer.Apps.Stream.Item.Plugins.Reply Reply}, {@link Echo.StreamServer.Apps.Stream.Item.Plugins.Edit Edit}, {@link Echo.StreamServer.Apps.Stream.Item.Plugins.Like Like}. More information about the Plugins development can be found in [the hands-on guide](#!/guide/how_to_develop_plugin).
 
 ### Renderer
 

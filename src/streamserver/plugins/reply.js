@@ -4,12 +4,12 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
- * Adds extra “Reply” button to each item in the Echo Stream control.
- * Integrates Echo Submit control and provides the ability to submit
+ * @class Echo.StreamServer.Apps.Stream.Item.Plugins.Reply
+ * Adds extra “Reply” button to each item in the Echo Stream application.
+ * Integrates Echo Submit application and provides the ability to submit
  * replies to the posted items.
  *
- * 	new Echo.StreamServer.Controls.Stream({
+ * 	new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -25,7 +25,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -46,7 +46,7 @@ plugin.config = {
 	 * @cfg {String} actionString
 	 * Specifies the hint placed in the empty text area.
 	 *
-	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 	new Echo.StreamServer.Apps.Stream({
 	 * 		"target": document.getElementById("echo-stream"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"plugins": [{
@@ -67,22 +67,22 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	"control": "Echo.StreamServer.Controls.Submit",
+	"app": "Echo.StreamServer.Apps.Submit",
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand": function(topic, args) {
+	"Echo.StreamServer.Apps.Stream.Plugins.Reply.onFormExpand": function(topic, args) {
 		var item = this.component;
 		var context = item.config.get("context");
 		if (this.get("expanded") && context && context !== args.context) {
 			this._hideSubmit();
 		}
 	},
-	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
+	"Echo.StreamServer.Apps.Submit.onPostComplete": function(topic, args) {
 		this._hideSubmit();
 	},
-	"Echo.StreamServer.Controls.Stream.Item.onRender": function(topic, args) {
+	"Echo.StreamServer.Apps.Stream.Item.onRender": function(topic, args) {
 		if (this.get("expanded")) {
 			this._showSubmit();
 		}
@@ -213,7 +213,7 @@ plugin.methods._showSubmit = function() {
 		"name": "Reply",
 		"inReplyTo": item.get("data")
 	});
-	new Echo.StreamServer.Controls.Submit(config);
+	new Echo.StreamServer.Apps.Submit(config);
 	return target;
 };
 
@@ -229,7 +229,7 @@ plugin.methods._hideSubmit = function() {
 	this.view.render({"name": "compactForm"});
 	item.view.render({"name": "container"});
 	/**
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse
+	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Reply.onCollapse
 	 * Triggered when the reply form is closed.
 	 */
 	this.events.publish({
@@ -243,7 +243,7 @@ plugin.methods._expand = function() {
 	this.view.render({"name": "submitForm"});
 	this.view.render({"name": "compactForm"});
 	/**
-	 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand
+	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Reply.onExpand
 	 * Triggered when the reply form is expanded.
 	 */
 	this.events.publish({
@@ -323,11 +323,11 @@ Echo.Plugin.create(plugin);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
- * Proxies the "Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand"
- * event on the Stream control level.
+ * @class Echo.StreamServer.Apps.Stream.Plugins.Reply
+ * Proxies the "Echo.StreamServer.Apps.Stream.Item.Plugins.Reply.onExpand"
+ * event on the Stream application level.
  *
- * 	new Echo.StreamServer.Controls.Stream({
+ * 	new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -344,14 +344,14 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream");
+var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Apps.Stream");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
+	"Echo.StreamServer.Apps.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
 		/**
-		 * @echo_event Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand
+		 * @echo_event Echo.StreamServer.Apps.Stream.Plugins.Reply.onFormExpand
 		 * Triggered if reply form is expanded.
 		 */
 		this.events.publish({
@@ -373,10 +373,10 @@ Echo.Plugin.create(plugin);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Submit.Plugins.Reply
+ * @class Echo.StreamServer.Apps.Submit.Plugins.Reply
  * Adds internal data field "inReplyTo" for correct reply workflow.
  *
- * 	new Echo.StreamServer.Controls.Submit({
+ * 	new Echo.StreamServer.Apps.Submit({
  * 		"target": document.getElementById("echo-submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -394,7 +394,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Submit");
+var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Apps.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -414,7 +414,7 @@ plugin.init = function() {
  */
 
 $.map(["onRender", "onRerender"], function(topic) {
-	plugin.events["Echo.StreamServer.Controls.Submit." + topic] = function() {
+	plugin.events["Echo.StreamServer.Apps.Submit." + topic] = function() {
 		var submit = this.component;
 		submit.config.get("target").show();
 		submit.view.get("text").focus();

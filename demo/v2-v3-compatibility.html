@@ -151,13 +151,13 @@
     </div>
 
     <div id="container-v3">
-        <h2>JS SDK v3 Controls</h2>
+        <h2>JS SDK v3 Applications</h2>
         <div class="wrapper">
-            <!-- Echo.StreamServer.Controls.Stream v3 -->
+            <!-- Echo.StreamServer.Apps.Stream v3 -->
             <b>Stream</b>
             <div id="stream-v3"></div>
             <script>
-                new Echo.StreamServer.Controls.Stream({
+                new Echo.StreamServer.Apps.Stream({
                     "target": document.getElementById("stream-v3"),
                     "query": "childrenof:http://example.com/* itemsPerPage:1",
                     "appkey": "echo.jssdk.demo.aboutecho.com",
@@ -208,7 +208,7 @@
             <b>FormAuth</b>
             <div id="auth-form-v3"></div>
             <script type="text/javascript">
-                new Echo.IdentityServer.Controls.Auth({
+                new Echo.IdentityServer.Apps.Auth({
                     "target": document.getElementById("auth-form-v3"),
                     "appkey": "echo.jssdk.demo.aboutecho.com",
                     "identityManager": {
@@ -221,11 +221,11 @@
         </div>
 
         <div class="wrapper">
-            <!-- Echo.StreamServer.Controls.Submit v3 -->
+            <!-- Echo.StreamServer.Apps.Submit v3 -->
             <b>Submit</b>
             <div id="submit-form-v3"></div>
             <script type="text/javascript">
-                new Echo.StreamServer.Controls.Submit({
+                new Echo.StreamServer.Apps.Submit({
                     "target": document.getElementById("submit-form-v3"),
                     "appkey": "echo.jssdk.demo.aboutecho.com",
                     "targetURL": "http://example.com/test-js-sdk",
@@ -247,11 +247,11 @@
         </div>
 
         <div class="wrapper">
-            <!-- Echo.StreamServer.Controls.Counter v3 -->
+            <!-- Echo.StreamServer.Apps.Counter v3 -->
             <b>Counter</b>
             <div id="counter-v3"></div>
             <script type="text/javascript">
-                new Echo.StreamServer.Controls.Counter({
+                new Echo.StreamServer.Apps.Counter({
                     "target": document.getElementById("counter-v3"),
                     "appkey": "echo.jssdk.demo.aboutecho.com",
                     "query" : "childrenof:http://example.com/*"
@@ -261,11 +261,11 @@
         </div>
 
         <div class="wrapper">
-            <!-- Echo.StreamServer.Controls.FacePile v3 -->
+            <!-- Echo.StreamServer.Apps.FacePile v3 -->
             <b>Face Pile</b>
             <div id="face-pile-v3"></div>
             <script type="text/javascript">
-                new Echo.StreamServer.Controls.FacePile({
+                new Echo.StreamServer.Apps.FacePile({
                     "target": document.getElementById("face-pile-v3"),
                     "appkey": "echo.jssdk.demo.aboutecho.com",
                     "query": "childrenof:http://example.com/*",

@@ -30,7 +30,7 @@ Echo.Tests.module("Echo.Utils", {
 			"sequentialCall",
 			"set",
 			"stripTags",
-			"substitute", // covered within the Control and Plugin tests
+			"substitute", // covered within the Application and Plugin tests
 			"timestampFromW3CDTF"
 		]
 	}
@@ -423,7 +423,7 @@ Echo.Tests.test("log()", function() {
 		Echo.Utils.log({
 			"component": "Echo.TestComponent",
 			"type": "warning",
-			"message": "Test message from JS SDK Control class",
+			"message": "Test message from JS SDK Application class",
 			"args": {"a": 1, "b": 2}
 		});
 

@@ -3,9 +3,9 @@
 
 var $ = jQuery;
 
-var canvas = Echo.Control.manifest("Echo.Canvas");
+var canvas = Echo.App.manifest("Echo.Canvas");
 
-if (Echo.Control.isDefined(canvas)) return;
+if (Echo.App.isDefined(canvas)) return;
 
 canvas.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
@@ -136,7 +136,7 @@ canvas.config = {
 
 	/**
 	 * @cfg {String} target(required)
-	 * Specifies the DOM element where the control will be displayed.
+	 * Specifies the DOM element where the application will be displayed.
 	 *
 	 * Note: if only the "target" config parameter is defined, the target DOM element
 	 * should contain the following HTML attribute:
@@ -315,7 +315,7 @@ canvas.methods._loadAppResources = function(callback) {
 		resources.push({
 			"url": script,
 			"loaded": function() {
-				return Echo.Control.isDefined(app.component);
+				return Echo.App.isDefined(app.component);
 			}
 		});
 	});
@@ -472,6 +472,6 @@ canvas.methods._fetchConfig = function(callback) {
 	})).request();
 };
 
-Echo.Control.create(canvas);
+Echo.App.create(canvas);
 
 })(Echo.jQuery);

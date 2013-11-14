@@ -2,7 +2,7 @@
 
 var data = {
 	"instance" : {
-		"name" : "Echo.StreamServer.Controls.FacePile",
+		"name" : "Echo.StreamServer.Apps.FacePile",
 		"config": {
 			"data": {"entries": []},
 			"liveUpdates": {
@@ -48,7 +48,7 @@ suite.prototype.tests.staticWorkflow = {
 				}
 			});
 		}
-		new Echo.StreamServer.Controls.FacePile({
+		new Echo.StreamServer.Apps.FacePile({
 			"initialUsersCount" : 5,
 			"suffixText" : " commented on aboutecho.com",
 			"target" : this.config.target,
@@ -75,17 +75,17 @@ suite.prototype.cases.destroy = function(callback) {
 suite.prototype.cases.staticCommon = function(callback) {
 	var self = this, pile = suite.pile;
 	pile.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.FacePile.onRefresh",
+		"topic"   : "Echo.StreamServer.Apps.FacePile.onRefresh",
 		"once"    : true,
 		"handler" : function(topic, params) {
 			var html = self.config.target.html();
-			QUnit.ok(html.match(/echo-streamserver-controls-facepile-container/),
+			QUnit.ok(html.match(/echo-streamserver-apps-facepile-container/),
 				"Checking the common container rendering");
-			QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-container/g).length, 5,
+			QUnit.equal(html.match(/echo-streamserver-apps-facepile-item-container/g).length, 5,
 				"Checking initial users count");
-			QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-avatar/g).length, 5,
+			QUnit.equal(html.match(/echo-streamserver-apps-facepile-item-avatar/g).length, 5,
 				"Checking that user avatars are displayed by default");
-			QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-title/g).length, 5,
+			QUnit.equal(html.match(/echo-streamserver-apps-facepile-item-title/g).length, 5,
 				"Checking that user names are displayed by default");
 			QUnit.equal(pile.view.get("suffixText").html(), " commented on aboutecho.com", "Checking suffix text");
 			callback();
@@ -97,10 +97,10 @@ suite.prototype.cases.staticCommon = function(callback) {
 suite.prototype.cases.staticMore = function(callback) {
 	var self = this, pile = suite.pile;
 	pile.events.subscribe({
-		"topic"  : "Echo.StreamServer.Controls.FacePile.onRerender",
+		"topic"  : "Echo.StreamServer.Apps.FacePile.onRerender",
 		"once"   : true,
 		"handler": function(topic, params) {
-			QUnit.equal(self.config.target.html().match(/echo-streamserver-controls-facepile-item-container/g).length, 7,
+			QUnit.equal(self.config.target.html().match(/echo-streamserver-apps-facepile-item-container/g).length, 7,
 				"Checking users count after more button click");
 			callback();
 		}
@@ -117,7 +117,7 @@ suite.prototype.tests.dynamicWorkflow = {
 	},
 	"check" : function() {
 		var self = this;
-		new Echo.StreamServer.Controls.FacePile({
+		new Echo.StreamServer.Apps.FacePile({
 			"suffixText" : " commented on facepile test page",
 			"target" : this.config.target,
 			"appkey" : this.config.appkey,
@@ -131,9 +131,9 @@ suite.prototype.tests.dynamicWorkflow = {
 			"ready"  : function() {
 				suite.pile = this;
 				var html = self.config.target.html();
-				QUnit.ok(html.match(/echo-streamserver-controls-facepile-container/),
+				QUnit.ok(html.match(/echo-streamserver-apps-facepile-container/),
 					"Checking the common container rendering");
-				QUnit.equal(html.match(/echo-streamserver-controls-facepile-item-container/g).length, 2,
+				QUnit.equal(html.match(/echo-streamserver-apps-facepile-item-container/g).length, 2,
 					"Checking initial users count");
 				QUnit.strictEqual(this.getVisibleUsersCount(), 2, "Checking initial users count (by \"getVisibleUsersCount()\")");
 				QUnit.equal(suite.pile.view.get("suffixText").html(), suite.pile.config.get("suffixText"), "Checking suffix text");
@@ -152,10 +152,10 @@ suite.prototype.tests.dynamicWorkflow = {
 suite.prototype.cases.dynamicMore = function(callback) {
 	var self = this, pile = suite.pile;
 	pile.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.FacePile.onRerender",
+		"topic"   : "Echo.StreamServer.Apps.FacePile.onRerender",
 		"once"    : true,
 		"handler" : function(topic, params) {
-			QUnit.equal(self.config.target.html().match(/echo-streamserver-controls-facepile-item-container/g).length, 3,
+			QUnit.equal(self.config.target.html().match(/echo-streamserver-apps-facepile-item-container/g).length, 3,
 				"Checking users count after more button click");
 			QUnit.strictEqual(pile.getVisibleUsersCount(), 3, "Checking users count after more button click (by \"getVisibleUsersCount()\")");
 			callback();
@@ -186,7 +186,7 @@ suite.prototype.cases.dynamicIsYou = function(callback) {
 		}]
 	};
 	pile.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.FacePile.onRefresh",
+		"topic"   : "Echo.StreamServer.Apps.FacePile.onRefresh",
 		"once"    : true,
 		"handler" : function(topic, params) {
 			QUnit.ok(self.config.target.html().match(/You/), "Checking that 'You' item is displayed after posting");
@@ -226,7 +226,7 @@ suite.prototype.cases.onlyNames = function(callback) {
 
 suite.prototype._checkActorsView = function(item, callback) {
 	var cfg = this.config;
-	new Echo.StreamServer.Controls.FacePile({
+	new Echo.StreamServer.Apps.FacePile({
 		"target" : cfg.target,
 		"appkey" : cfg.appkey,
 		"query"  : "scope:" + cfg.dataBaseLocation + "tests/facepile",
@@ -237,7 +237,7 @@ suite.prototype._checkActorsView = function(item, callback) {
 			suite.pile = this;
 			$.each(item, function(key, value) {
 				var postfix = (key === "text") ? "title" : key;
-				var element = $(".echo-streamserver-controls-facepile-item-" + postfix, cfg.target).get(0);
+				var element = $(".echo-streamserver-apps-facepile-item-" + postfix, cfg.target).get(0);
 				QUnit.ok(value ? $(element).is(":visible") : $(element).is(":hidden"),
 					"Checking the visibility of " + postfix + "s depending on the config");
 			});

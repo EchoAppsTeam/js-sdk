@@ -8,9 +8,9 @@
 	</head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Submit.Plugins.JanrainSharing" target="_blank">Documentation</a></div>
 		<h1>Janrain Sharing Plugin for Submit Demo</h1>
-		<div class="description">Plugin provides the ability to load Janrain sharing dialog after the item has been posted using the Echo Submit control.</div>
+		<div class="description">Plugin provides the ability to load Janrain sharing dialog after the item has been posted using the Echo Submit application.</div>
 		<div class="wrapper">
 			<div id="submit"></div>
 		</div>
@@ -30,7 +30,7 @@
 	<script type="text/javascript">
 		Echo.Loader.initApplication({
 			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Submit",
+			"component": "Echo.StreamServer.Apps.Submit",
 			"backplane": {
 				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 				"busName": "jskit"

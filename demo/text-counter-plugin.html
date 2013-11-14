@@ -8,9 +8,9 @@
 	</head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Submit.Plugins.TextCounter" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Submit.Plugins.TextCounter" target="_blank">Documentation</a></div>
 		<h1>Text Counter Plugin Demo</h1>
-		<div class="description">Adds the character counter under the text field in the <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Submit">Echo Submit app</a>. Allows to set the maximum length of the text to enter.
+		<div class="description">Adds the character counter under the text field in the <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Submit">Echo Submit app</a>. Allows to set the maximum length of the text to enter.
 
 </div>
 		<div class="wrapper">
@@ -32,7 +32,7 @@
 	<script type="text/javascript">
 		Echo.Loader.initApplication({
 			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Submit",
+			"component": "Echo.StreamServer.Apps.Submit",
 			"backplane": {
 				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 				"busName": "jskit"

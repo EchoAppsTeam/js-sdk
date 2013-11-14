@@ -23,19 +23,19 @@ Echo JS SDK 3.0 uses [Twitter Bootstrap](http://twitter.github.com/bootstrap/) a
 ### UI Apps - A Core set of Apps for common app/interaction patterns
 These apps quickly deliver core pieces of App UI based on common feature scenarios such as activity streams, submission, facepiles, counters and more.
 
-#### Echo.StreamServer.Controls.Stream
+#### Echo.StreamServer.Apps.Stream
 Echo Stream app which encapsulates interaction with the Echo Search API and displays live updating search results in a standard ‘news feed’ style format.
 
-#### Echo.StreamServer.Controls.Submit
+#### Echo.StreamServer.Apps.Submit
 Echo Submit app which encapsulates interaction with the Echo Submit API and provides a simple ‘submit/comment form’ style interaction.
 
-#### Echo.StreamServer.Controls.Counter
+#### Echo.StreamServer.Apps.Counter
 Echo Counter class which encapsulates interaction with the Echo Count API and provides a simple live updating number.
 
-#### Echo.StreamServer.Controls.FacePile
+#### Echo.StreamServer.Apps.FacePile
 Echo FacePile app displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
 
-#### Echo.IdentityServer.Controls.Auth
+#### Echo.IdentityServer.Apps.Auth
 Echo Auth app displays the user login status and allows them sign in using different social identities.
 
 #### [Guide: Building an App](#!/guide/how_to_develop_app)

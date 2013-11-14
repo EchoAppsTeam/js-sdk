@@ -1112,7 +1112,7 @@ Echo.Utils.safelyExecute = function(fn, args, context) {
 		Echo.Utils.log({
 			"type": "error",
 			"message": e.message || e,
-			"component": context instanceof Echo.Control ? context.name : ""
+			"component": context instanceof Echo.App ? context.name : ""
 		});
 	}
 };

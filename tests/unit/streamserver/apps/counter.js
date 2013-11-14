@@ -3,7 +3,7 @@
 var suite = Echo.Tests.Unit.Counter = function() {};
 
 suite.prototype.info = {
-	"className" : "Echo.StreamServer.Controls.Counter",
+	"className" : "Echo.StreamServer.Apps.Counter",
 	"functions": []
 };
 
@@ -19,7 +19,7 @@ suite.prototype.tests.staticWorkflow = {
 		var self = this;
 		var target = this.config.target;
 		var count = 99;
-		new Echo.StreamServer.Controls.Counter({
+		new Echo.StreamServer.Apps.Counter({
 			"target" : target,
 			"appkey" : "echo.jssdk.tests.aboutecho.com",
 			"data"   : {"count": count},
@@ -46,7 +46,7 @@ suite.prototype.tests.dynamicWorkflow = {
 	},
 	"check" : function() {
 		var self = this;
-		new Echo.StreamServer.Controls.Counter({
+		new Echo.StreamServer.Apps.Counter({
 			"target" : this.config.target,
 			"appkey" : "echo.jssdk.tests.aboutecho.com",
 			"query"  : "childrenof:http://example.com/*",
@@ -81,7 +81,7 @@ suite.prototype.cases = {};
 suite.prototype.cases.staticInit = function(callback) {
 	var self = this;
 	suite.counter.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"topic"   : "Echo.StreamServer.Apps.Counter.onRefresh",
 		"once"    : true,
 		"handler" : function(topic, params) {
 			QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
@@ -97,7 +97,7 @@ suite.prototype.cases.staticRefresh = function(callback) {
 	var count = 101;
 	suite.counter.set("data", {"count": count});
 	suite.counter.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"topic"   : "Echo.StreamServer.Apps.Counter.onRefresh",
 		"once"    : true,
 		"handler" : function(topic, params) {
 			QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
@@ -111,7 +111,7 @@ suite.prototype.cases.staticRefresh = function(callback) {
 suite.prototype.cases.onError_more_than = function(callback) {
 	var self = this;
 	suite.counter.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
+		"topic"   : "Echo.StreamServer.Apps.Counter.onError",
 		"handler" : function(topic, params) {
 			params = params || {};
 			if (params.data && params.data.errorCode === "waiting") {
@@ -133,12 +133,12 @@ suite.prototype.cases.onError_more_than = function(callback) {
 				},
 				'Checking the restrictions of the count API. Error: "more_than"');
 			this.events.unsubscribe({
-				"topic": "Echo.StreamServer.Controls.Counter.onError"
+				"topic": "Echo.StreamServer.Apps.Counter.onError"
 			});
 		}
 	});
 	suite.counter.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"topic"   : "Echo.StreamServer.Apps.Counter.onRefresh",
 		"once"    : true,
 		"handler" : function(topic, params) {
 			self.jqueryObjectsEqual($(self.config.target.html()), $("<span>5000+</span>"),
@@ -153,7 +153,7 @@ suite.prototype.cases.onError_wrong_query = function(callback) {
 	var self = this;
 	suite.counter.config.set("query", "children1of:http://example.com/*");
 	suite.counter.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
+		"topic"   : "Echo.StreamServer.Apps.Counter.onError",
 		"once"    : true,
 		"handler" : function(topic, params) {
 			QUnit.deepEqual(
@@ -167,7 +167,7 @@ suite.prototype.cases.onError_wrong_query = function(callback) {
 		}
 	});
 	suite.counter.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"topic"   : "Echo.StreamServer.Apps.Counter.onRefresh",
 		"once"    : true,
 		"handler" : function(topic, params) {
 			QUnit.ok(self.config.target.html().match(/Unrecognized query/),
@@ -183,7 +183,7 @@ suite.prototype.cases.onError_incorrect_appkey = function(callback) {
 	suite.counter.config.set("query", "childrenof:http://example.com/test/*");
 	suite.counter.config.set("appkey", "faketest.aboutecho.com");
 	suite.counter.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.Counter.onError",
+		"topic"   : "Echo.StreamServer.Apps.Counter.onError",
 		"once"    : true,
 		"handler" : function(topic, params) {
 			//TODO fix test when the API is fixed
@@ -199,7 +199,7 @@ suite.prototype.cases.onError_incorrect_appkey = function(callback) {
 		}
 	});
 	suite.counter.events.subscribe({
-		"topic"   : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"topic"   : "Echo.StreamServer.Apps.Counter.onRefresh",
 		"once"    : true,
 		"handler" : function(topic, params) {
 			//TODO fix test when the API is fixed
@@ -218,7 +218,7 @@ suite.prototype.cases.onUpdate = function(callback) {
 	var self = this;
 	suite.counter.config.set("appkey", "echo.jssdk.tests.aboutecho.com");
 	suite.counter.events.subscribe({
-		"topic" : "Echo.StreamServer.Controls.Counter.onUpdate",
+		"topic" : "Echo.StreamServer.Apps.Counter.onUpdate",
 		"once"  : true,
 		"handler" : function(topic, params) {
 			QUnit.ok(typeof(params.data.count) === "number",
@@ -226,7 +226,7 @@ suite.prototype.cases.onUpdate = function(callback) {
 		}
 	});
 	suite.counter.events.subscribe({
-		"topic" : "Echo.StreamServer.Controls.Counter.onRefresh",
+		"topic" : "Echo.StreamServer.Apps.Counter.onRefresh",
 		"once"  : true,
 		"handler" : function(topic, params) {
 			QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),

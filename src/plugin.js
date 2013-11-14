@@ -73,7 +73,7 @@ Echo.Plugin.create = function(manifest) {
 		this.cssClass = this.component.get("cssPrefix") + "plugin-" + manifest.name;
 		this.cssPrefix = this.cssClass + "-";
 
-		// define extra css class for the control target
+		// define extra css class for the application target
 		this.component.config.get("target").addClass(this.cssClass);
 
 		this._init(["config"]);
@@ -197,21 +197,21 @@ Echo.Plugin.prototype.enabled = function() {
 };
 
 /**
- * @inheritdoc Echo.Control#set
+ * @inheritdoc Echo.App#set
  */
 Echo.Plugin.prototype.set = function(key, value) {
 	return Echo.Utils.set(this, key, value);
 };
 
 /**
- * @inheritdoc Echo.Control#get
+ * @inheritdoc Echo.App#get
  */
 Echo.Plugin.prototype.get = function(key, defaults) {
 	return Echo.Utils.get(this, key, defaults);
 };
 
 /**
- * @inheritdoc Echo.Control#remove
+ * @inheritdoc Echo.App#remove
  */
 Echo.Plugin.prototype.remove = function(key) {
 	return Echo.Utils.remove(this, key);
@@ -226,14 +226,14 @@ Echo.Plugin.prototype.invoke = function(mixed, context) {
 
 /**
  * Method to enable the plugin.
- * The plugin becomes enabled for the current control instance and
+ * The plugin becomes enabled for the current application instance and
  * the update can also be reflected in the config (if the "global"
  * flag is defined during the function invocation) to enable it
- * for other controls which use the same config parameters.
+ * for other applications which use the same config parameters.
  *
  * @param {Boolean} [global]
  * Specifies if the plugin should be enabled in the config. By default
- * the function enables the plugin for the current control instance only.
+ * the function enables the plugin for the current application instance only.
  */
 Echo.Plugin.prototype.enable = function(global) {
 	global && this.config.set("enabled", true);
@@ -242,14 +242,14 @@ Echo.Plugin.prototype.enable = function(global) {
 
 /**
  * Method to disable the plugin.
- * The plugin becomes disabled for the current control instance and
+ * The plugin becomes disabled for the current application instance and
  * the update can also be reflected in the config (if the "global"
  * flag is defined during the function invocation) to disable it
- * for other controls which use the same config parameters.
+ * for other applications which use the same config parameters.
  *
  * @param {Boolean} [global]
  * Specifies if the plugin should be disabled in the config. By default
- * the function disables the plugin for the current control instance only.
+ * the function disables the plugin for the current application instance only.
  */
 Echo.Plugin.prototype.disable = function(global) {
 	global && this.config.set("enabled", false);
@@ -285,7 +285,7 @@ Echo.Plugin.prototype.extendTemplate = function(action, anchor, html) {
 };
 
 /**
- * @inheritdoc Echo.Control#parentRenderer
+ * @inheritdoc Echo.App#parentRenderer
  */
 Echo.Plugin.prototype.parentRenderer = function() {
 	return this.component.parentRenderer.apply(this.component, arguments);
@@ -297,7 +297,7 @@ Echo.Plugin.prototype.parentRenderer = function() {
  * action requiring string interspersion.
  *
  * @param {Object} args
- * Specifies substitution process, contains control parameters.
+ * Specifies substitution process, contains application parameters.
  *
  * @param {String} args.template
  * Template containing placeholders used for data interspersion.
@@ -331,7 +331,7 @@ Echo.Plugin.prototype.substitute = function(args) {
  */
 Echo.Plugin.prototype.requestDataRefresh = function() {
 	Echo.Events.publish({
-		"topic": "Echo.Control.onDataInvalidate",
+		"topic": "Echo.App.onDataInvalidate",
 		"context": this.component.config.get("context"),
 		"global": false,
 		"propagation": false,
@@ -353,7 +353,7 @@ Echo.Plugin._defineNestedClass = function(name) {
 };
 
 Echo.Plugin.prototype._init = function() {
-	Echo.Control.prototype._init.apply(this, arguments);
+	Echo.App.prototype._init.apply(this, arguments);
 };
 
 Echo.Plugin.prototype._manifest = function(key) {
@@ -521,7 +521,7 @@ Echo.Plugin.Config.prototype.remove = function(key) {
 };
 
 /**
- * Method to assemble config for nested control based on the parent control config.
+ * Method to assemble config for nested application based on the parent application config.
  *
  * @param {Object} data
  * Configuration data to be merged with the parent config.
@@ -537,7 +537,7 @@ Echo.Plugin.Config.prototype.assemble = function(data) {
 	data.parent = config.getAsHash();
 	data.plugins = (data.plugins || []).concat(this.plugin.config.get("nestedPlugins", []));
 
-	// copy default field values from parent control
+	// copy default field values from parent application
 	Echo.Utils.foldl(data, defaults, function(value, acc, key) {
 		// do not override existing values in data
 		if (typeof data[key] === "undefined") {

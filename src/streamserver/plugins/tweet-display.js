@@ -4,7 +4,7 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TweetDisplay
+ * @class Echo.StreamServer.Apps.Stream.Item.Plugins.TweetDisplay
  * Adds the Twitter intents controls into the item UI and updates the
  * item UI to look and behave like a Twitter item. The item UI update includes:
  *
@@ -20,7 +20,7 @@ var $ = jQuery;
  * To enable this plugin should be taken add the corresponding section into the
  * Echo Stream configuration parameter plugins:
  *
- * 	new Echo.StreamServer.Controls.Stream({
+ * 	new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -29,7 +29,7 @@ var $ = jQuery;
  * 	});
  *
  * <b>Note</b>: plugin must be at the very beginning of the plugin list to
- * work correctly. If {@link Echo.StreamServer.Controls.Stream.Plugins.PinboardVisualization PinboardVisualization}
+ * work correctly. If {@link Echo.StreamServer.Apps.Stream.Plugins.PinboardVisualization PinboardVisualization}
  * plugin is also enabled in the Stream then this plugin must be placed right after it.
  *
  * <b>Note</b>: if TweetDisplay plugin is added to the stream then Reply and
@@ -44,7 +44,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("TweetDisplay", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Echo.Plugin.manifest("TweetDisplay", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -171,7 +171,7 @@ plugin.enabled = function() {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.Item.onRender": function(topic, args) {
+	"Echo.StreamServer.Apps.Stream.Item.onRender": function(topic, args) {
 		var activeClass = this.cssPrefix + "activeButton";
 		var item = this.component;
 		$.map(item.buttons[this.name], function(name) {

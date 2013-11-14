@@ -1,6 +1,6 @@
 (function($) {
 
-var plugin = "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay";
+var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.ItemAccumulatorDisplay";
 
 Echo.Tests.module(plugin, {
 	"meta": {

@@ -1,6 +1,6 @@
 (function($) {
 
-var plugin = "Echo.StreamServer.Controls.Stream.Item.Plugins.Moderation";
+var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation";
 
 Echo.Tests.module(plugin, {
 	"meta": {

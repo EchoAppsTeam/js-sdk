@@ -2,7 +2,7 @@
 
 var data = {
 	"instance": {
-		"name": "Echo.StreamServer.Controls.Stream.Item.MediaGallery"
+		"name": "Echo.StreamServer.Apps.Stream.Item.MediaGallery"
 	},
 	"config": {
 		"async": true,
@@ -15,7 +15,7 @@ var suite = Echo.Tests.Unit.MediaGallery = function() {
 };
 
 suite.prototype.info = {
-	"className": "Echo.StreamServer.Controls.Stream.Item.MediaGallery",
+	"className": "Echo.StreamServer.Apps.Stream.Item.MediaGallery",
 	"functions": []
 };
 
@@ -49,7 +49,7 @@ suite.prototype.tests.commonWorkflow = {
 			});
 			return isActive;
 		};
-		new Echo.StreamServer.Controls.Stream.Item.MediaGallery({
+		new Echo.StreamServer.Apps.Stream.Item.MediaGallery({
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"elements": elements,
@@ -70,7 +70,7 @@ suite.prototype.cases = {};
 suite.prototype.cases.initialView = function(callback) {
 	var gallery = suite.mediaGallery;
 	gallery.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia",
+		"topic": "Echo.StreamServer.Apps.Stream.Item.MediaGallery.onLoadMedia",
 		"once": true,
 		"handler": function(topic, params) {
 			QUnit.ok(suite.checkGalleryActiveItem(gallery, 0),
@@ -83,7 +83,7 @@ suite.prototype.cases.initialView = function(callback) {
 suite.prototype.cases.changeActiveItem = function(callback) {
 	var gallery = suite.mediaGallery;
 	gallery.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia",
+		"topic": "Echo.StreamServer.Apps.Stream.Item.MediaGallery.onChangeMedia",
 		"once": true,
 		"handler": function(topic, params) {
 			QUnit.ok(suite.checkGalleryActiveItem(gallery, 1),
@@ -97,7 +97,7 @@ suite.prototype.cases.changeActiveItem = function(callback) {
 suite.prototype.cases.oneMediaItem = function(callback) {
 	var gallery = suite.mediaGallery;
 	gallery.events.subscribe({
-		"topic": "Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRefresh",
+		"topic": "Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRefresh",
 		"once": true,
 		"handler": function(topic, params) {
 			QUnit.ok(!(gallery.view.get("controls").is(":visible") && gallery.view.get("controls").children().length),

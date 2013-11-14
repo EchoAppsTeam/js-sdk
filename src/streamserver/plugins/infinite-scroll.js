@@ -4,12 +4,12 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll
+ * @class Echo.StreamServer.Apps.Stream.Plugins.InfiniteScroll
  * Echo Stream plugin automatically loads the next page full of items
  * when the end of the stream is displayed in the browser.
  * This produces the 'Infinite Scroll' Effect.
  *
- * 	new Echo.StreamServer.Controls.Stream({
+ * 	new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -25,7 +25,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("InfiniteScroll", "Echo.StreamServer.Controls.Stream");
+var plugin = Echo.Plugin.manifest("InfiniteScroll", "Echo.StreamServer.Apps.Stream");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -44,7 +44,7 @@ plugin.init = function() {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.onDataReceive": function(topic, args) {
+	"Echo.StreamServer.Apps.Stream.onDataReceive": function(topic, args) {
 		this.set("requestInProgress", false);
 	}
 };

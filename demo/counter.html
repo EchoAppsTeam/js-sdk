@@ -8,7 +8,7 @@
 	</head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Counter" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Counter" target="_blank">Documentation</a></div>
 		<h1>Counter App Demo</h1>
 		<div class="description">Echo Counter encapsulates interaction with the Echo Count API and provides a simple live updating number.</div>
 		<div class="wrapper">
@@ -30,7 +30,7 @@
 	<script type="text/javascript">
 		Echo.Loader.initApplication({
 			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Counter",
+			"component": "Echo.StreamServer.Apps.Counter",
 			"backplane": {
 				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 				"busName": "jskit"

@@ -59,7 +59,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 		var manifest = {
 			"name": "MyTestPlugin",
 			"component": {
-				"name": suite.control().getTestControlClassName(),
+				"name": suite.app().getTestAppClassName(),
 				"renderers": {}
 			},
 			"config": {},
@@ -80,8 +80,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.deepEqual(manifest, _manifest,
 			"Checking the \"manifest\" function output");
 
-		// create test control
-		suite.control().createTestControl();
+		// create test application
+		suite.app().createTestApp();
 
 		QUnit.ok(!Echo.Plugin.isDefined(manifest),
 			"Checking that the plugin class isn't defined (via isDefined static method), before actual plugin definition");
@@ -104,7 +104,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 		// checking plugin class name definition
 		QUnit.equal(
 			Echo.Plugin._getClassName(manifest.name, manifest.component.name),
-			"Echo.StreamServer.Controls.MyTestControl.Plugins.MyTestPlugin",
+			"Echo.StreamServer.Apps.MyTestApp.Plugins.MyTestPlugin",
 			"Checking if the \"_getClassName\" returns full plugin class name");
 		QUnit.equal(
 			Echo.Plugin._getClassName(undefined, manifest.component.name),
@@ -136,8 +136,8 @@ suite.prototype.cases = {};
 suite.prototype.cases.basicOperations = function(callback) {
 	var test = this;
 	var check = function() {
-		var control = this;
-		var plugin = control.getPlugin(suite.getTestPluginName());
+		var app = this;
+		var plugin = app.getPlugin(suite.getTestPluginName());
 
 		// checking basic interface availability
 		QUnit.ok(!!plugin.events,
@@ -148,7 +148,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking if we have \"labels\" interface available");
 
 		// checking if we have component reference
-		QUnit.ok(plugin.component && plugin.component.name == control.name,
+		QUnit.ok(plugin.component && plugin.component.name == app.name,
 			"Checking if we have valid \"component\" reference");
 
 		// checking if all functions defined in "methods" namespace are available
@@ -205,11 +205,11 @@ suite.prototype.cases.basicOperations = function(callback) {
 		}
 		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
 
-		QUnit.ok(Echo.Tests.Dependencies.Plugin.dep6, "Checking if dependency loaded using 'control' condition");
+		QUnit.ok(Echo.Tests.Dependencies.Plugin.dep6, "Checking if dependency loaded using 'app' condition");
 		QUnit.ok(Echo.Tests.Dependencies.Plugin.dep7, "Checking if dependency loaded using 'plugin' condition");
 		QUnit.ok(Echo.Tests.Dependencies.Plugin.dep8, "Checking if dependency loaded using 'app' condition");
 
-		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep9, "Checking if dependency is not loading if 'control' already loaded");
+		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep9, "Checking if dependency is not loading if 'app' already loaded");
 		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep10, "Checking if dependency is not loading if 'plugin' already loaded");
 		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep11, "Checking if dependency is not loading if 'app' already loaded");
 
@@ -235,7 +235,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 		var cases = [
 			[plugin.enabled, true],
 			[function() { return this.cssClass; },
-				"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin"],
+				"echo-streamserver-apps-mytestapp-plugin-MyTestPlugin"],
 			[function() { return this.fakeKey; }, undefined],
 			[function() { return this.get("data.key1")}, "key1 value"],
 			[function() { return this.get("name")}, "MyTestPlugin"]
@@ -252,7 +252,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 
 		callback && callback();
 	};
-	suite.control().initTestControl({
+	suite.app().initTestApp({
 		"plugins": [{
 			"name": "MyTestPlugin",
 			"requiredParam1": true,
@@ -264,7 +264,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 
 suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	var initWithMissingParams = function(_callback) {
-		suite.control().initTestControl({
+		suite.app().initTestApp({
 			"plugins": [{
 				"name": "MyTestPlugin"
 			}],
@@ -280,7 +280,7 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 		});
 	};
 	var initWithMandatoryParamsDefined = function(_callback) {
-		suite.control().initTestControl({
+		suite.app().initTestApp({
 			"plugins": [{
 				"name": "MyTestPlugin",
 				"requiredParam1": true,
@@ -319,28 +319,28 @@ suite.prototype.cases.enabledConfigParamCheck = function(callback) {
 	};
 	var initWithEnabledAsFunction = function(_callback) {
 		plugin.enabled = function() { return true; };
-		suite.control().initTestControl({
+		suite.app().initTestApp({
 			"plugins": [plugin],
 			"ready": checker("Checking if the plugin is active if the \"enabled\" field is defined as a function", true, _callback)
 		});
 	};
 	var initWithEnabledAsBooleanTrue = function(_callback) {
 		plugin.enabled = true;
-		suite.control().initTestControl({
+		suite.app().initTestApp({
 			"plugins": [plugin],
 			"ready": checker("Checking if the plugin is active if the \"enabled\" field is defined as a boolean (true)", true, _callback)
 		});
 	};
 	var initWithEnabledAsBooleanFalse = function(_callback) {
 		plugin.enabled = false;
-		suite.control().initTestControl({
+		suite.app().initTestApp({
 			"plugins": [plugin],
 			"ready": checker("Checking if the plugin is inactive if the \"enabled\" field is defined as a boolean (false)", false, _callback)
 		});
 	};
 	var initWithoutEnabledParam = function(_callback) {
 		delete plugin.enabled;
-		suite.control().initTestControl({
+		suite.app().initTestApp({
 			"plugins": [plugin],
 			"ready": checker("Checking if the plugin is active if the \"enabled\" field is omitted", true, _callback)
 		});
@@ -359,9 +359,9 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 		var plugin = this.getPlugin("MyTestPlugin");
 
 		QUnit.equal(plugin.config.get("nullParam"), "nullParam replacement",
-			"Checking if null parameter was overridden during control init");
+			"Checking if null parameter was overridden during application init");
 		QUnit.equal(plugin.config.get("undefinedParam"), "undefinedParam replacement",
-			"Checking if null parameter was overridden during control init");
+			"Checking if null parameter was overridden during application init");
 
 		// checking if the config is available inside the plugin
 		plugin.proxy(function() {
@@ -391,7 +391,7 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 
 		callback && callback();
 	};
-	suite.control().initTestControl({
+	suite.app().initTestApp({
 		"plugins": [{
 			"name": "MyTestPlugin",
 			"requiredParam1": true,
@@ -470,7 +470,7 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 
 		callback && callback();
 	};
-	suite.control().initTestControl({
+	suite.app().initTestApp({
 		"data": suite.data.config.data,
 		"plugins": [{
 			"name": "MyTestPlugin",
@@ -503,8 +503,8 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 			"handler": increment
 		});
 	};
-	subscribe("Echo.Control.onDataInvalidate");
-	subscribe("Echo.StreamServer.Controls.MyTestControl.Plugins.MyTestPlugin.outgoing.event.test");
+	subscribe("Echo.App.onDataInvalidate");
+	subscribe("Echo.StreamServer.Apps.MyTestApp.Plugins.MyTestPlugin.outgoing.event.test");
 	var check = function() {
 		var plugin = this.getPlugin("MyTestPlugin");
 
@@ -535,7 +535,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 		publish("incoming.event.test");
 
 		// check "requestDataRefresh" method,
-		// we expect that the "internal.Echo.Control.onDataInvalidate" is fired
+		// we expect that the "internal.Echo.App.onDataInvalidate" is fired
 		plugin.requestDataRefresh();
 
 		QUnit.ok(count == 9,
@@ -543,13 +543,13 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 
 		var e = plugin.events;
 		QUnit.ok(!!e.subscribe && !!e.publish && !!e.unsubscribe,
-			"Checking control \"events\" interface contract");
+			"Checking application \"events\" interface contract");
 
 		this.destroy();
 
 		callback && callback();
 	};
-	suite.control().initTestControl({
+	suite.app().initTestApp({
 		"context": context,
 		"plugins": [{
 			"name": "MyTestPlugin",
@@ -564,7 +564,7 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 	Echo.Labels.set({
 		"label1": "label1 global override",
 		"label2": "label2 global override"
-	}, "Echo.StreamServer.Controls.MyTestControl.Plugins.MyTestPlugin");
+	}, "Echo.StreamServer.Apps.MyTestApp.Plugins.MyTestPlugin");
 	var check = function() {
 		var plugin = this.getPlugin("MyTestPlugin");
 
@@ -579,7 +579,7 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 
 		callback && callback();
 	};
-	suite.control().initTestControl({
+	suite.app().initTestApp({
 		"plugins": [{
 			"name": "MyTestPlugin",
 			"requiredParam1": true,
@@ -593,7 +593,7 @@ suite.prototype.cases.labelsOverriding = function(callback) {
 };
 
 suite.prototype.cases.destroy = function(callback) {
-	suite.control().initTestControl({
+	suite.app().initTestApp({
 		"plugins": [{
 			"name": "MyTestPlugin",
 			"requiredParam1": true,
@@ -603,7 +603,7 @@ suite.prototype.cases.destroy = function(callback) {
 			var plugin = this.getPlugin("MyTestPlugin");
 			plugin.set("_destroyHandler", function() {
 				QUnit.ok(true,
-					"Checking if the plugin \"destroy\" method was called after the \"destroy\" control function was called");
+					"Checking if the plugin \"destroy\" method was called after the \"destroy\" application function was called");
 			});
 
 			this.destroy();
@@ -640,16 +640,16 @@ suite.data.substitutions = [[
 	"non existing label extraction nonexisting, shoud return key"
 ], [
 	"<div class=\"{plugin.class:test}\">div with css class name defined</div>",
-	"<div class=\"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test\">div with css class name defined</div>"
+	"<div class=\"echo-streamserver-apps-mytestapp-plugin-MyTestPlugin-test\">div with css class name defined</div>"
 ], [
 	"<div class=\"{plugin.class:test} {plugin.class:test1} {plugin.class:test2}\">div with multiple css class names defined</div>",
-	"<div class=\"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test1 echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test2\">div with multiple css class names defined</div>"
+	"<div class=\"echo-streamserver-apps-mytestapp-plugin-MyTestPlugin-test echo-streamserver-apps-mytestapp-plugin-MyTestPlugin-test1 echo-streamserver-apps-mytestapp-plugin-MyTestPlugin-test2\">div with multiple css class names defined</div>"
 ], [
 	"<div class=\"{plugin.class:test}\">Checking transformation of the {plugin.data:} -> {self:} {plugin.data:key3.key3nested}</div>",
-	"<div class=\"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test\">Checking transformation of the {plugin.data:} -> {self:} {self:plugins.MyTestPlugin.data.key3.key3nested}</div>"
+	"<div class=\"echo-streamserver-apps-mytestapp-plugin-MyTestPlugin-test\">Checking transformation of the {plugin.data:} -> {self:} {self:plugins.MyTestPlugin.data.key3.key3nested}</div>"
 ], [
 	"<div class=\"{plugin.class:test}\">{plugin.label:label1}{plugin.label:label2}{plugin.self:data.key3.key3nested}{plugin.class:example} - mix of multiple patterns</div>",
-	"<div class=\"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-test\">plugin label1 valueplugin label2 value{self:plugins.MyTestPlugin.data.key3.key3nested}echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin-example - mix of multiple patterns</div>"
+	"<div class=\"echo-streamserver-apps-mytestapp-plugin-MyTestPlugin-test\">plugin label1 valueplugin label2 value{self:plugins.MyTestPlugin.data.key3.key3nested}echo-streamserver-apps-mytestapp-plugin-MyTestPlugin-example - mix of multiple patterns</div>"
 ]];
 
 suite.data.template =
@@ -704,8 +704,8 @@ suite.data.config = {
 
 // test helper functions 
 
-suite.control = function() {
-        return Echo.Tests.Unit.Control;
+suite.app = function() {
+        return Echo.Tests.Unit.App;
 };
 
 suite.getTestPluginName = function() {
@@ -741,13 +741,13 @@ suite.getPluginManifest = function(name, component) {
 	};
 	for (var i = 1; i < 6; i++) addDependency(i);
 
-	Echo.Tests.Unit.App.createApp("Echo.Apps.MyTestApp");
-	addDependency(6, {"control": "Echo.StreamServer.Controls.MyNotExistsTestControl"});
-	addDependency(7, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyNotExistsTestPlugin"});
+	Echo.Tests.Unit.App.createTestApp("Echo.Apps.MyTestApp");
+	addDependency(6, {"app": "Echo.StreamServer.Apps.MyNotExistsTestApp"});
+	addDependency(7, {"plugin": "Echo.StreamServer.Apps.MyTestApp.Plugins.MyNotExistsTestPlugin"});
 	addDependency(8, {"app": "Echo.Apps.MyNotExistsTestApp"});
 
-	addDependency(9, {"control": "Echo.StreamServer.Controls.MyTestControl"});
-	addDependency(10, {"plugin": "Echo.StreamServer.Controls.Stream.Item.Plugins.Like"});
+	addDependency(9, {"app": "Echo.StreamServer.Apps.MyTestApp"});
+	addDependency(10, {"plugin": "Echo.StreamServer.Apps.Stream.Item.Plugins.Like"});
 	addDependency(11, {"app": "Echo.Apps.MyTestApp"});
 
 	manifest.init = function() {

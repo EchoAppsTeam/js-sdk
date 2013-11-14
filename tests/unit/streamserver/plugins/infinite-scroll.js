@@ -1,6 +1,6 @@
 (function($) {
 
-var plugin = "Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll";
+var plugin = "Echo.StreamServer.Apps.Stream.Plugins.InfiniteScroll";
 
 Echo.Tests.module(plugin, {
 	"meta": {
@@ -13,7 +13,7 @@ Echo.Tests.module(plugin, {
 
 Echo.Tests.asyncTest("common workflow", function() {
 	var target = $("#qunit-fixture");
-	new Echo.StreamServer.Controls.Stream({
+	new Echo.StreamServer.Apps.Stream({
 		"target": target,
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"query": "childrenof:http://example.com/js-sdk/ itemsPerPage:1",
@@ -36,7 +36,7 @@ Echo.Tests.asyncTest("common workflow", function() {
 			var plugin = this.getPlugin("InfiniteScroll");
 			var spy = sinon.spy(element, "click");
 			this.events.subscribe({
-				"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
+				"topic": "Echo.StreamServer.Apps.Stream.onDataReceive",
 				"once": true,
 				"handler": function(topic, args) {
 					this.destroy();

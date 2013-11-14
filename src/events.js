@@ -22,7 +22,7 @@ if (Echo.Utils.isComponentDefined("Echo.Events")) return;
  * 	Echo.Events.subscribe({
  * 		"topic": "Echo.UserSession.onInvalidate",
  * 		"context": "global",
- * 		"handler": control.refresh
+ * 		"handler": app.refresh
  * 	});
  *
  * 	// And then publish event:

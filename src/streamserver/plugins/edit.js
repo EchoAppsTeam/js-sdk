@@ -4,13 +4,13 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Edit
- * Adds extra “Edit” button to each item in the Echo Stream control
+ * @class Echo.StreamServer.Apps.Stream.Item.Plugins.Edit
+ * Adds extra “Edit” button to each item in the Echo Stream application
  * which allows to edit the content and some metadata of the item.
  * This button will appear either for the users with
  * administrative privileges or for editing of personal comments.
  *
- * 	new Echo.StreamServer.Controls.Stream({
+ * 	new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -26,7 +26,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -35,7 +35,7 @@ plugin.init = function() {
 };
 
 $.map(["Complete", "Error"], function(action) {
-	plugin.events["Echo.StreamServer.Controls.Submit.Plugins.Edit.onEdit" + action] =
+	plugin.events["Echo.StreamServer.Apps.Submit.Plugins.Edit.onEdit" + action] =
 		function(topic, args) {
 			this.component.render();
 		}
@@ -50,7 +50,7 @@ plugin.labels = {
 };
 
 plugin.dependencies = [{
-	"control": "Echo.StreamServer.Controls.Submit",
+	"app": "Echo.StreamServer.Apps.Submit",
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
 
@@ -75,7 +75,7 @@ plugin.methods._assembleButton = function() {
 				config["parent"] = plugin.component.config.getAsHash();
 				config["targetQuery"] = plugin.config.get("query", "");
 				config.plugins.push({"name": "Edit"});
-				new Echo.StreamServer.Controls.Submit(config);
+				new Echo.StreamServer.Apps.Submit(config);
 				item.config.get("target").get(0).scrollIntoView(true);
 			}
 		};
@@ -92,11 +92,11 @@ Echo.Plugin.create(plugin);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Submit.Plugins.Edit
- * Adds new mode to the Echo Submit control which allows
+ * @class Echo.StreamServer.Apps.Submit.Plugins.Edit
+ * Adds new mode to the Echo Submit application which allows
  * to edit the content and some metadata of the item.
  *
- * 	new Echo.StreamServer.Controls.Submit({
+ * 	new Echo.StreamServer.Apps.Submit({
  * 		"target": document.getElementById("echo-submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -110,7 +110,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Controls.Submit");
+var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Apps.Submit");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -151,19 +151,19 @@ plugin.labels = {
 };
 
 /**
- * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit
+ * @echo_event Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditInit
  * Triggered when edit operation was started
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete
+ * @echo_event Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditComplete
  * Triggered when edit operation is finished
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError
+ * @echo_event Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditError
  * Triggered if edit operation failed
  */
 $.map(["Init", "Complete", "Error"], function(action) {
-	plugin.events["Echo.StreamServer.Controls.Submit.onPost" + action] = function(topic, args) {
+	plugin.events["Echo.StreamServer.Apps.Submit.onPost" + action] = function(topic, args) {
 		if (action === "Init") {
 			args.postData.content = this._prepareContent();
 		}

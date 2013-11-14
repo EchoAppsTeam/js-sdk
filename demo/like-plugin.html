@@ -8,12 +8,12 @@
 </head>
 <body>
 	<style>
-		.echo-identityserver-controls-auth-userAnonymous { text-align: left; }
+		.echo-identityserver-apps-auth-userAnonymous { text-align: left; }
 	</style>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Like" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Stream.Item.Plugins.Like" target="_blank">Documentation</a></div>
 		<h1>"Like" Plugin Demo</h1>
-		<div class="description">The plugin adds extra Like/Unlike buttons to each item in the <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Stream" target="_blank">Echo Stream app</a> for authenticated users. The plugin also renders the list of users who liked the item (renders using <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.FacePile" target="_blank">Echo FacePile app</a>). <br><br> Note: the Like/Unlike buttons are available for authenticated users only. If you are not logged in, you can do it using <a href="{%=baseURLs.docs%}/#!/api/Echo.IdentityServer.Controls.Auth" target="_blank">Echo Auth app</a> below.</div>
+		<div class="description">The plugin adds extra Like/Unlike buttons to each item in the <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Stream" target="_blank">Echo Stream app</a> for authenticated users. The plugin also renders the list of users who liked the item (renders using <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.FacePile" target="_blank">Echo FacePile app</a>). <br><br> Note: the Like/Unlike buttons are available for authenticated users only. If you are not logged in, you can do it using <a href="{%=baseURLs.docs%}/#!/api/Echo.IdentityServer.Apps.Auth" target="_blank">Echo Auth app</a> below.</div>
 		<div class="wrapper">
 			<div id="auth"></div>
 		</div>
@@ -43,7 +43,7 @@
 		// init Auth app
 		Echo.Loader.initApplication({
 			"script": "{%=baseURLs.sdk%}/identityserver.pack.js",
-			"component": "Echo.IdentityServer.Controls.Auth",
+			"component": "Echo.IdentityServer.Apps.Auth",
 			"backplane": backplane,
 			"config": {
 				"target": document.getElementById("auth"),
@@ -58,7 +58,7 @@
 		// init Stream app
 		Echo.Loader.initApplication({
 			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Stream",
+			"component": "Echo.StreamServer.Apps.Stream",
 			"backplane": backplane,
 			"config": {
 				"target": document.getElementById("stream"),

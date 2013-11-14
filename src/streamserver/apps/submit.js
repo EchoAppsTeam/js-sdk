@@ -4,34 +4,34 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Submit
- * Echo Submit control which encapsulates interaction with the
+ * @class Echo.StreamServer.Apps.Submit
+ * Echo Submit application which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank">Echo Submit API</a>
  * and provides a simple ‘submit/comment form’ style interaction.
  *
- * 	new Echo.StreamServer.Controls.Submit({
+ * 	new Echo.StreamServer.Apps.Submit({
  * 		"target": document.getElementById("submit"),
  * 		"targetURL": "http://example.com/submit",
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 	});
  *
- * More information regarding the possible ways of the Control initialization
+ * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.ServerRelatedApp
  *
- * @package streamserver/controls.pack.js
+ * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
  *
  * @constructor
- * Submit constructor initializing Echo.StreamServer.Controls.Submit class
+ * Submit constructor initializing Echo.StreamServer.Apps.Submit class
  *
  * @param {Object} config
  * Configuration options
  */
-var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
+var submit = Echo.App.manifest("Echo.StreamServer.Apps.Submit");
 
-if (Echo.Control.isDefined(submit)) return;
+if (Echo.App.isDefined(submit)) return;
 
 submit.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
@@ -52,20 +52,20 @@ submit.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 /** @hide @echo_label error_unknown */
 
 /**
- * @echo_event Echo.StreamServer.Controls.Submit.onReady
+ * @echo_event Echo.StreamServer.Apps.Submit.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Submit.onRefresh
+ * @echo_event Echo.StreamServer.Apps.Submit.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Submit.onRender
+ * @echo_event Echo.StreamServer.Apps.Submit.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Submit.onRerender
+ * @echo_event Echo.StreamServer.Apps.Submit.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -98,7 +98,7 @@ submit.config = {
 	 * Specifies the URI to which the submitted Echo item is related. 
 	 * This parameter will be used as a activity target value for the item.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 	new Echo.StreamServer.Apps.Submit({
 	 * 		...
 	 * 		"targetURL": "http://somedomain.com/some_article.html",
 	 * 		...
@@ -114,7 +114,7 @@ submit.config = {
 	 * For non-admin users the markers value will be submitted along with
 	 * other item content when the "Post" button is pressed.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 	new Echo.StreamServer.Apps.Submit({
 	 * 		...
 	 * 		"markers": ["marker1", "marker2", "marker3"],
 	 * 		...
@@ -135,7 +135,7 @@ submit.config = {
 	 * @cfg {String} source.icon
 	 * Source icon.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 	new Echo.StreamServer.Apps.Submit({
 	 * 		...
 	 * 		"source": {
 	 * 			"name": "ExampleSource",
@@ -155,7 +155,7 @@ submit.config = {
 	 * users the tags value will be submitted along with the other item
 	 * content when the "Post" button is pressed.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 	new Echo.StreamServer.Apps.Submit({
 	 * 		...
 	 * 		"tags": ["tag1", "tag2", "tag3"],
 	 * 		...
@@ -169,7 +169,7 @@ submit.config = {
 	 * We can't handle server response, UI won't show any waiting for the
 	 * server responses actions.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 	new Echo.StreamServer.Apps.Submit({
 	 * 		...
 	 * 		"requestMethod": "POST",
 	 * 		...
@@ -183,7 +183,7 @@ submit.config = {
 	 * unique id should be inserted. If this parameter is ommited in
 	 * configuration or the URI is invalid it'll be ignored.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 	new Echo.StreamServer.Apps.Submit({
 	 * 		...
 	 * 		"itemURIPattern": "http://your-domain.com/path/{id}",
 	 * 		...
@@ -194,7 +194,7 @@ submit.config = {
 	 * @cfg {String} actionString
 	 * Is used to define the default call to action phrase.
 	 *
-	 *     new Echo.StreamServer.Controls.Submit({
+	 *     new Echo.StreamServer.Apps.Submit({
 	 *         ...
 	 *         "actionString": "Type your comment here...",
 	 *         ...
@@ -207,7 +207,7 @@ submit.config = {
 	 * the timeout error dialog if the server does not return anything. If the parameter
 	 * value is 0 then the mentioned dialog will never be shown.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 	new Echo.StreamServer.Apps.Submit({
 	 * 		...
 	 * 		"postingTimeout": 15,
 	 * 		...
@@ -218,7 +218,7 @@ submit.config = {
 	 * @cfg {String} type
 	 * Allows to define item type. The value of this parameter should be a valid URI.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 	new Echo.StreamServer.Apps.Submit({
 	 * 		...
 	 * 		"type": "http://echoenabled.com/activitystreams/schema/1.0/category",
 	 * 		...
@@ -239,7 +239,7 @@ submit.config = {
 	 * @cfg {Number} errorPopup.width
 	 * The width of error message popup.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
+	 * 	new Echo.StreamServer.Apps.Submit({
 	 * 		...
 	 * 		"errorPopup": {
 	 * 			"minHeight": 70,
@@ -561,32 +561,32 @@ submit.methods.post = function() {
 	var callbacks = {
 		"onData": function(response, state) {
 			/**
-			 * @echo_event Echo.StreamServer.Controls.Submit.onPostComplete
+			 * @echo_event Echo.StreamServer.Apps.Submit.onPostComplete
 			 * Triggered when the submit operation is finished.
 			 */
 			publish("Complete", entry, response, state);
 
 			/**
-			 * @echo_event Echo.Control.onDataInvalidate
+			 * @echo_event Echo.App.onDataInvalidate
 			 * Triggered if dataset is changed.
 			 */
 			// notify all widgets on the page about a new item posted
 			Echo.Events.publish({
-				"topic": "Echo.Control.onDataInvalidate",
+				"topic": "Echo.App.onDataInvalidate",
 				"context": "global",
 				"data": {}
 			});
 		},
 		"onError": function(response, state) {
 			/**
-			 * @echo_event Echo.StreamServer.Controls.Submit.onPostError
+			 * @echo_event Echo.StreamServer.Apps.Submit.onPostError
 			 * Triggered if submit operation failed.
 			 */
 			publish("Error", entry, response, state);
 		}
 	};
 	/**
-	 * @echo_event Echo.StreamServer.Controls.Submit.onPostInit
+	 * @echo_event Echo.StreamServer.Apps.Submit.onPostInit
 	 * Triggered if submit operation was started.
 	 */
 	publish("Init", entry);
@@ -626,7 +626,7 @@ submit.methods.addPostValidator = function(validator, priority) {
 };
 
 /**
- * Method implements the refresh logic for the Submit control.
+ * Method implements the refresh logic for the Submit application.
  */
 submit.methods.refresh = function() {
 	var self = this;
@@ -635,7 +635,7 @@ submit.methods.refresh = function() {
 		var elements = self.view.get(field).val().split(", ");
 		self.config.set("data.object." + field, elements || []);
 	});
-	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Submit");
+	var component = Echo.Utils.getComponent("Echo.StreamServer.Apps.Submit");
 	component.parent.refresh.call(this);
 };
 
@@ -757,6 +757,6 @@ submit.css =
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
 	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk-assets}/images/info70.png); }';
 
-Echo.Control.create(submit);
+Echo.App.create(submit);
 
 })(Echo.jQuery);

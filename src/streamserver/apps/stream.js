@@ -4,52 +4,52 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream
- * Echo Stream control which encapsulates interaction with the
+ * @class Echo.StreamServer.Apps.Stream
+ * Echo Stream application which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">Echo Search API</a>
  * and displays live updating search results in a standard ‘news feed’ style format.
  *
- * 	var stream = new Echo.StreamServer.Controls.Stream({
+ * 	var stream = new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("stream"),
  * 		"query": "childrenof:http://example.com/js-sdk",
  * 		"appkey": "echo.jssdk.demo.aboutecho.com"
  * 	});
  *
- * More information regarding the possible ways of the Control initialization
+ * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.ServerRelatedApp
  *
- * @package streamserver/controls.pack.js
+ * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
  *
  * @constructor
- * Stream constructor initializing Echo.StreamServer.Controls.Stream class
+ * Stream constructor initializing Echo.StreamServer.Apps.Stream class
  *
  * @param {Object} config
  * Configuration options
  */
-var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
+var stream = Echo.App.manifest("Echo.StreamServer.Apps.Stream");
 
-if (Echo.Control.isDefined(stream)) return;
+if (Echo.App.isDefined(stream)) return;
 
 stream.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.onReady
+ * @echo_event Echo.StreamServer.Apps.Stream.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.onRefresh
+ * @echo_event Echo.StreamServer.Apps.Stream.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.onRender
+ * @echo_event Echo.StreamServer.Apps.Stream.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.onRerender
+ * @echo_event Echo.StreamServer.Apps.Stream.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -120,7 +120,7 @@ stream.config = {
 	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
 	 * method specification.
 	 *
-	 * 	new Echo.StreamServer.Controls.Stream({
+	 * 	new Echo.StreamServer.Apps.Stream({
 	 * 		"target": document.getElementById("echo-stream"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"query" : "childrenof:http://example.com/test/*"
@@ -172,7 +172,7 @@ stream.config = {
 	/**
 	 * @cfg {Object} item
 	 * Specifies the configuration options to be passed to internal
-	 * Echo.StreamServer.Controls.Stream.Item component.
+	 * Echo.StreamServer.Apps.Stream.Item component.
 	 */
 	"item": {},
 
@@ -199,7 +199,7 @@ stream.config = {
 	 * of items.
 	 *
 	 * 	// sorting items in the content lexicographical order
-	 * 	var stream = new Echo.StreamServer.Controls.Stream({
+	 * 	var stream = new Echo.StreamServer.Apps.Stream({
 	 * 		...
 	 * 		"itemsComparator": function(listedItem, newItem, sort) {
 	 * 			return listedItem.get("data.object.content") > newItem.get("data.object.content")
@@ -209,10 +209,10 @@ stream.config = {
 	 * 		...
 	 * 	});
 	 *
-	 * @cfg {Echo.StreamServer.Controls.Stream.Item} itemsComparator.listedItem
+	 * @cfg {Echo.StreamServer.Apps.Stream.Item} itemsComparator.listedItem
 	 * Item from the list which is compared with new item.
 	 *
-	 * @cfg {Echo.StreamServer.Controls.Stream.Item} itemsComparator.newItem
+	 * @cfg {Echo.StreamServer.Apps.Stream.Item} itemsComparator.newItem
 	 * Item we are trying to find place for.
 	 *
 	 * @cfg {String} itemsComparator.sort
@@ -281,7 +281,7 @@ stream.config = {
 	/**
 	 * @cfg {Boolean} openLinksInNewWindow
 	 * If this parameter value is set to true, each link will be opened
-	 * in a new window. This is especially useful when using the control
+	 * in a new window. This is especially useful when using the application
 	 * in a popup window.
 	 */
 	"openLinksInNewWindow": false,
@@ -335,7 +335,7 @@ stream.config = {
 	 * The possible values are:
 	 *
 	 * + compact - the Live/Pause button (link) will be located at the top right corner
-	 * of the Stream control, above the stream items list.
+	 * of the Stream application, above the stream items list.
 	 * + full - the button will appear above the stream when the new live updates are available.
 	 * User will be able to click the button to apply live updates to the stream.
 	 */
@@ -357,7 +357,7 @@ stream.config = {
 	/**
 	 * @cfg {Object} data
 	 * Specifies predefined items data which should be rendered by the application.
-	 * Stream control works with the data format used by the "search" API endpoint.
+	 * Stream application works with the data format used by the "search" API endpoint.
 	 * More information about the data format can be found
 	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search#ResponseFormat" target="_blank">here</a>.
 	 */
@@ -365,7 +365,7 @@ stream.config = {
 	/**
 	 * @cfg {Boolean} asyncItemsRendering
 	 * This parameter is used to enable Stream root items rendering in async mode during
-	 * the first Stream control initialization and when extra items are received after
+	 * the first Stream application initialization and when extra items are received after
 	 * the "More" button click.
 	 */
 	"asyncItemsRendering": false
@@ -440,11 +440,11 @@ stream.labels = {
 };
 
 stream.events = {
-	"Echo.StreamServer.Controls.Stream.onItemsRenderingComplete": function() {
+	"Echo.StreamServer.Apps.Stream.onItemsRenderingComplete": function() {
 		this.view.render({"name": "more"});
 		this._executeNextActivity();
 	},
-	"Echo.StreamServer.Controls.Stream.Item.onAdd": function(topic, data) {
+	"Echo.StreamServer.Apps.Stream.Item.onAdd": function(topic, data) {
 		var self = this;
 		var item = this.items[data.item.data.unique];
 		item.config.get("target").hide();
@@ -460,7 +460,7 @@ stream.events = {
 		});
 		return {"stop": ["bubble"]};
 	},
-	"Echo.StreamServer.Controls.Stream.Item.onDelete": function(topic, data) {
+	"Echo.StreamServer.Apps.Stream.Item.onDelete": function(topic, data) {
 		var self = this;
 		var item = this.items[data.item.data.unique];
 		this.queueActivity({
@@ -474,7 +474,7 @@ stream.events = {
 		});
 		return {"stop": ["bubble"]};
 	},
-	"Echo.StreamServer.Controls.Stream.Item.onChildrenExpand": function(topic, args) {
+	"Echo.StreamServer.Apps.Stream.Item.onChildrenExpand": function(topic, args) {
 		this._requestChildrenItems(args.data.unique);
 		return {"stop": ["bubble"]};
 	}
@@ -631,7 +631,7 @@ stream.renderers.more = function(element) {
 		.off("click")
 		.one("click", function() {
 			/**
-			 * @echo_event Echo.StreamServer.Controls.Stream.onMoreButtonPress
+			 * @echo_event Echo.StreamServer.Apps.Stream.onMoreButtonPress
 			 * Triggered when the "more" button is pressed.
 			 */
 			self.events.publish({"topic": "onMoreButtonPress"});
@@ -834,7 +834,7 @@ stream.methods._onDataReceive = function(data, type, callback) {
 	var self = this;
 	var items = {};
 	/**
-	 * @echo_event Echo.StreamServer.Controls.Stream.onDataReceive
+	 * @echo_event Echo.StreamServer.Apps.Stream.onDataReceive
 	 * Triggered when new data is received.
 	 *
 	 * @param {Object} data
@@ -924,7 +924,7 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 
 					if (satisfies || item.get("byCurrentUser")) {
 						/**
-						 * @echo_event Echo.StreamServer.Controls.Stream.onItemReceive
+						 * @echo_event Echo.StreamServer.Apps.Stream.onItemReceive
 						 * Triggered when new item is received.
 						 */
 						self.events.publish({
@@ -1291,8 +1291,8 @@ stream.methods._spotUpdates.replace = function(item, options) {
 	if (item && item.view.rendered()) {
 		item.view.render({"name": "container", "recursive": true});
 		/**
-		 * @member Echo.StreamServer.Controls.Stream.Item
-		 * @echo_event Echo.StreamServer.Controls.Stream.Item.onRerender
+		 * @member Echo.StreamServer.Apps.Stream.Item
+		 * @echo_event Echo.StreamServer.Apps.Stream.Item.onRerender
 		 * Triggered when the item is rerendered.
 		 */
 		item.events.publish({"topic": "onRerender"});
@@ -1635,7 +1635,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 	config.parent = this.itemParentConfig;
 	config.data = this._normalizeEntry(entry);
 
-	var init = function() { new Echo.StreamServer.Controls.Stream.Item(config); };
+	var init = function() { new Echo.StreamServer.Apps.Stream.Item(config); };
 	this.config.get("asyncItemsRendering") ? setTimeout(init, 0) : init();
 };
 
@@ -1778,7 +1778,7 @@ stream.css =
 	'.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
 	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }';
 
-Echo.Control.create(stream);
+Echo.App.create(stream);
 
 })(Echo.jQuery);
 
@@ -1788,23 +1788,23 @@ Echo.Control.create(stream);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item
- * Echo Stream.Item control which encapsulates Item mechanics.
+ * @class Echo.StreamServer.Apps.Stream.Item
+ * Echo Stream.Item application which encapsulates Item mechanics.
  *
- * @extends Echo.Control
+ * @extends Echo.App
  *
- * @package streamserver/controls.pack.js
+ * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
  *
  * @constructor
- * Item constructor initializing Echo.StreamServer.Controls.Stream.Item class
+ * Item constructor initializing Echo.StreamServer.Apps.Stream.Item class
  *
  * @param {Object} config
  * Configuration options
  */
-var item = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item");
+var item = Echo.App.manifest("Echo.StreamServer.Apps.Stream.Item");
 
-if (Echo.Control.isDefined(item)) return;
+if (Echo.App.isDefined(item)) return;
 
 /** @hide @cfg plugins */
 /** @hide @cfg target */
@@ -1812,16 +1812,16 @@ if (Echo.Control.isDefined(item)) return;
 /** @hide @method dependent */
 
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.Item.onReady
+ * @echo_event Echo.StreamServer.Apps.Stream.Item.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.Item.onRefresh
+ * @echo_event Echo.StreamServer.Apps.Stream.Item.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.Item.onRender
+ * @echo_event Echo.StreamServer.Apps.Stream.Item.onRender
  * Triggered when the app is rendered.
  */
 
@@ -2182,7 +2182,7 @@ item.templates.mainFooter =
 item.templates.childrenTop =
 	'<div class="{class:children}"></div>' +
 	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-		'<span class="{class:expandChildrenLabel} echo-serverrelatedapp-message-icon"></span>' +
+		'<span class="{class:expandChildrenLabel} echo-app-message-icon"></span>' +
 	'</div>';
 
 /**
@@ -2190,7 +2190,7 @@ item.templates.childrenTop =
  */
 item.templates.childrenBottom =
 	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-		'<span class="{class:expandChildrenLabel} echo-serverrelatedapp-message-icon"></span>' +
+		'<span class="{class:expandChildrenLabel} echo-app-message-icon"></span>' +
 	'</div>' +
 	'<div class="{class:children}"></div>';
 
@@ -2566,7 +2566,7 @@ item.renderers.expandChildrenLabel = function(element, extra) {
 			"label": "loading"
 		},
 		"regular": {
-			"css": "echo-linkColor echo-serverrelatedapp-message-icon",
+			"css": "echo-linkColor echo-app-message-icon",
 			"label": "childrenMoreItems"
 		}
 	};
@@ -2600,7 +2600,7 @@ item.renderers.expandChildren = function(element, extra) {
 				"extra": {"state": "loading"}
 			});
 			/**
-			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onChildrenExpand
+			 * @echo_event Echo.StreamServer.Apps.Stream.Item.onChildrenExpand
 			 * Triggered when the children block is expanded.
 			 */
 			self.events.publish({
@@ -2625,11 +2625,11 @@ item.renderers._childrenContainer = function(element, config) {
 		}
 		if (child.deleted || child.added) {
 			/**
-			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onDelete
+			 * @echo_event Echo.StreamServer.Apps.Stream.Item.onDelete
 			 * Triggered when the child item is deleted.
 			 */
 			/**
-			 * @echo_event Echo.StreamServer.Controls.Stream.Item.onAdd
+			 * @echo_event Echo.StreamServer.Apps.Stream.Item.onAdd
 			 * Triggered when the child item is added.
 			 */
 			child.events.publish({
@@ -2898,13 +2898,13 @@ item.methods.isRoot = function() {
 };
 
 /**
- * Method to add the item control button specification.
+ * Method to add the item application button specification.
  *
  * @param {String} plugin
  * Plugin name.
  *
  * @param {Function} spec
- * Function describing the control specification.
+ * Function describing the application specification.
  */
 item.methods.addButtonSpec = function(plugin, spec) {
 	if (!this.buttonSpecs[plugin]) {
@@ -2999,8 +2999,8 @@ item.methods._assembleButtons = function() {
 			data.callback = function() {
 				callback.call(self);
 				/**
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.onButtonClick
-				 * Triggered when the item control button is clicked.
+				 * @echo_event Echo.StreamServer.Apps.Stream.Item.onButtonClick
+				 * Triggered when the item application button is clicked.
 				 */
 				self.events.publish({
 					"topic": "onButtonClick",
@@ -3296,11 +3296,11 @@ item.css =
 	'.{class:blocker-message} { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }' +
 	'.{class:expandChildren} { display:none; text-align: center; padding:4px; }' +
 	'.{class:expandChildren} .{class:expandChildrenLabel} { display: inline-block; padding-left: 22px; }' +
-	'.{class:expandChildren} .echo-serverrelatedapp-message-icon { background: url("{config:cdnBaseURL.sdk-assets}/images/whirlpool.png") no-repeat 5px 4px; }' +
+	'.{class:expandChildren} .echo-app-message-icon { background: url("{config:cdnBaseURL.sdk-assets}/images/whirlpool.png") no-repeat 5px 4px; }' +
 	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url("{config:cdnBaseURL.sdk-assets}/images/loading.gif"); }' +
 	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
 	itemDepthRules.join("\n");
 
-Echo.Control.create(item);
+Echo.App.create(item);
 
 })(Echo.jQuery);

@@ -82,9 +82,8 @@ module.exports = function(grunt) {
 				"<file_strip_banner:api.pack.js>",
 				"user-session.js",
 				"view.js",
-				"control.js",
-				"server-related-app.js",
 				"app.js",
+				"server-related-app.js",
 				"plugin.js",
 				"canvas.js"
 			],
@@ -142,9 +141,9 @@ module.exports = function(grunt) {
 	};
 
 	_.each(["streamserver", "identityserver"], function(name) {
-		packs[name + "/controls"] = {
-			"src": [name + "/controls/*.js"],
-			"dest": name + "/controls.pack.js"
+		packs[name + "/apps"] = {
+			"src": [name + "/apps/*.js"],
+			"dest": name + "/apps.pack.js"
 		};
 		packs[name + "/plugins"] = {
 			"src": [name + "/plugins/!(pinboard-visualization).js"],
@@ -152,7 +151,7 @@ module.exports = function(grunt) {
 		};
 		packs[name] = {
 			"src": [
-				"<file_strip_banner:" + name + "/controls.pack.js>",
+				"<file_strip_banner:" + name + "/apps.pack.js>",
 				"<file_strip_banner:" + name + "/plugins.pack.js>"
 			],
 			"dest": name + ".pack.js"

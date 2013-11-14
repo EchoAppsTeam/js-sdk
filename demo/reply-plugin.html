@@ -8,9 +8,9 @@
 </head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.Reply" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Stream.Item.Plugins.Reply" target="_blank">Documentation</a></div>
 		<h1>"Reply" Plugin Demo</h1>
-		<div class="description">The plugin adds extra "Reply" button to each item in the <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Stream" target="_blank">Echo Stream app</a>. Integrates <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Submit">Echo Submit app</a> and provides the ability to submit replies to the posted items.</div>
+		<div class="description">The plugin adds extra "Reply" button to each item in the <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Stream" target="_blank">Echo Stream app</a>. Integrates <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Submit">Echo Submit app</a> and provides the ability to submit replies to the posted items.</div>
 		<div class="wrapper">
 			<div id="stream"></div>
 		</div>
@@ -30,7 +30,7 @@
 	<script type="text/javascript">
 		Echo.Loader.initApplication({
 			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Stream",
+			"component": "Echo.StreamServer.Apps.Stream",
 			"backplane": {
 				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 				"busName": "jskit"

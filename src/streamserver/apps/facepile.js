@@ -4,11 +4,11 @@
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.FacePile
- * Echo FacePile control displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
+ * @class Echo.StreamServer.Apps.FacePile
+ * Echo FacePile application displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
  * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
  *
- * 	new Echo.StreamServer.Controls.FacePile({
+ * 	new Echo.StreamServer.Apps.FacePile({
  * 		"target": document.getElementById("echo-facepile"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"query": "childrenof:http://example.com/* itemsPerPage:2 children:0",
@@ -16,41 +16,41 @@ var $ = jQuery;
  * 		"item": {"avatar": true, "text": true}
  * 	});
  *
- * More information regarding the possible ways of the Control initialization
+ * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.ServerRelatedApp
  *
- * @package streamserver/controls.pack.js
+ * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
  *
  * @constructor
- * FacePile constructor initializing Echo.StreamServer.Controls.FacePile class
+ * FacePile constructor initializing Echo.StreamServer.Apps.FacePile class
  *
  * @param {Object} config
  * Configuration options
  */
-var pile = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile");
+var pile = Echo.App.manifest("Echo.StreamServer.Apps.FacePile");
 
-if (Echo.Control.isDefined(pile)) return;
+if (Echo.App.isDefined(pile)) return;
 
 pile.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 /**
- * @echo_event Echo.StreamServer.Controls.FacePile.onReady
+ * @echo_event Echo.StreamServer.Apps.FacePile.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.FacePile.onRefresh
+ * @echo_event Echo.StreamServer.Apps.FacePile.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.FacePile.onRender
+ * @echo_event Echo.StreamServer.Apps.FacePile.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.FacePile.onRerender
+ * @echo_event Echo.StreamServer.Apps.FacePile.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -110,7 +110,7 @@ pile.config = {
 	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
 	 * method specification.
 	 *
-	 * 	new Echo.StreamServer.Controls.FacePile({
+	 * 	new Echo.StreamServer.Apps.FacePile({
 	 * 		"target": document.getElementById("echo-facepile"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"query" : "childrenof:http://example.com/test/*"
@@ -485,7 +485,7 @@ pile.methods._initItem = function(entry, callback) {
 		"user": this.user,
 		"ready": callback
 	}, this.config.get("item"));
-	return new Echo.StreamServer.Controls.FacePile.Item(config);
+	return new Echo.StreamServer.Apps.FacePile.Item(config);
 };
 
 pile.methods._updateStructure = function(item) {
@@ -545,9 +545,9 @@ pile.css =
 	'.{class:container} { line-height: 20px; vertical-align: middle; }' +
 	'.{class:more} { white-space: nowrap; }' +
 	'.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }' +
-	'.{class:more} .echo-serverrelatedapp-message-icon { display: inline; margin: 0px 5px; }';
+	'.{class:more} .echo-app-message-icon { display: inline; margin: 0px 5px; }';
 
-Echo.Control.create(pile);
+Echo.App.create(pile);
 
 })(Echo.jQuery);
 
@@ -557,42 +557,42 @@ Echo.Control.create(pile);
 var $ = jQuery;
 
 /**
- * @class Echo.StreamServer.Controls.FacePile.Item
- * Echo FacePile.Item control displays single user (actor). 
+ * @class Echo.StreamServer.Apps.FacePile.Item
+ * Echo FacePile.Item application displays single user (actor). 
  *
- * @extends Echo.Control
+ * @extends Echo.App
  *
- * @package streamserver/controls.pack.js
+ * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
  *
  * @constructor
- * FacePile.Item constructor initializing Echo.StreamServer.Controls.FacePile.Item class
+ * FacePile.Item constructor initializing Echo.StreamServer.Apps.FacePile.Item class
  *
  * @param {Object} config
  * Configuration options
  */
-var item = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile.Item");
+var item = Echo.App.manifest("Echo.StreamServer.Apps.FacePile.Item");
 
-if (Echo.Control.isDefined(item)) return;
+if (Echo.App.isDefined(item)) return;
 
 /** @hide @cfg plugins */
 /** @hide @method dependent */
 
 /**
- * @echo_event Echo.StreamServer.Controls.FacePile.Item.onReady
+ * @echo_event Echo.StreamServer.Apps.FacePile.Item.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.FacePile.Item.onRefresh
+ * @echo_event Echo.StreamServer.Apps.FacePile.Item.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.FacePile.Item.onRender
+ * @echo_event Echo.StreamServer.Apps.FacePile.Item.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.FacePile.Item.onRerender
+ * @echo_event Echo.StreamServer.Apps.FacePile.Item.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -674,6 +674,6 @@ item.css =
 	'.{class:container}, .{class:container} span { white-space: nowrap; display: inline-block; }' +
 	'.{class:only-avatars} .{class:container} { white-space: normal; }';
 
-Echo.Control.create(item);
+Echo.App.create(item);
 
 })(Echo.jQuery);

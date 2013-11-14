@@ -2,7 +2,7 @@
 
 var data = {
 	"instance": {
-		"name": "Echo.StreamServer.Controls.FacePile.Item",
+		"name": "Echo.StreamServer.Apps.FacePile.Item",
 		"config": {
 			"data": {
 				"id": "http://example.com/id",

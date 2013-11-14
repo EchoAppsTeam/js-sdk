@@ -134,17 +134,17 @@ Echo.Tests.Events.contracts = {
 	"Echo.UserSession.onInit": [_userSession.init, {}],
 	"Echo.UserSession.onInvalidate": [_userSession.init, {}],
 
-	"Echo.StreamServer.Controls.Stream.onRefresh": _stream.render,
-	"Echo.StreamServer.Controls.Stream.onRender": _stream.render,
-	"Echo.StreamServer.Controls.Stream.onRerender": _stream.render,
-	"Echo.StreamServer.Controls.Stream.onItemsRenderingComplete": _stream.render,
-	"Echo.StreamServer.Controls.Stream.onMoreButtonPress": _stream.render,
-	"Echo.StreamServer.Controls.Stream.Item.onRender": _stream.onItemReceive,
-	"Echo.StreamServer.Controls.Stream.Item.onReady": _stream.render,
-	"Echo.StreamServer.Controls.Stream.onReady": _stream.render,
-	"Echo.StreamServer.Controls.Stream.Item.onAdd": _stream.item,
-	"Echo.StreamServer.Controls.Stream.Item.onDelete": _stream.item,
-	"Echo.StreamServer.Controls.Stream.Item.onChildrenExpand": {
+	"Echo.StreamServer.Apps.Stream.onRefresh": _stream.render,
+	"Echo.StreamServer.Apps.Stream.onRender": _stream.render,
+	"Echo.StreamServer.Apps.Stream.onRerender": _stream.render,
+	"Echo.StreamServer.Apps.Stream.onItemsRenderingComplete": _stream.render,
+	"Echo.StreamServer.Apps.Stream.onMoreButtonPress": _stream.render,
+	"Echo.StreamServer.Apps.Stream.Item.onRender": _stream.onItemReceive,
+	"Echo.StreamServer.Apps.Stream.Item.onReady": _stream.render,
+	"Echo.StreamServer.Apps.Stream.onReady": _stream.render,
+	"Echo.StreamServer.Apps.Stream.Item.onAdd": _stream.item,
+	"Echo.StreamServer.Apps.Stream.Item.onDelete": _stream.item,
+	"Echo.StreamServer.Apps.Stream.Item.onChildrenExpand": {
 		"data": {
 			"id": "string"
 		},
@@ -166,7 +166,7 @@ Echo.Tests.Events.contracts = {
 			"target": "object"
 		}
 	},
-	"Echo.StreamServer.Controls.Stream.Item.onButtonClick": {
+	"Echo.StreamServer.Apps.Stream.Item.onButtonClick": {
 		"name": "string",
 		"plugin": "string",
 		"item": {
@@ -188,9 +188,9 @@ Echo.Tests.Events.contracts = {
 		"query": "string"
 	},
 
-	"Echo.StreamServer.Controls.Stream.onItemReceive": _stream.onItemReceive,
-	"Echo.StreamServer.Controls.Stream.Item.onRerender": _stream.item,
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView": {
+	"Echo.StreamServer.Apps.Stream.onItemReceive": _stream.onItemReceive,
+	"Echo.StreamServer.Apps.Stream.Item.onRerender": _stream.item,
+	"Echo.StreamServer.Apps.Stream.Item.Plugins.PinboardVisualization.onChangeView": {
 		"target": "object",
 		"query": "string",
 		"item": {
@@ -210,31 +210,31 @@ Echo.Tests.Events.contracts = {
 		}
 	},
 
-	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRender": {},
-	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRerender": {},
-	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRefresh": {},
-	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onReady": {},
-	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize": {},
-	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia": {},
-	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia": {},
+	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRender": {},
+	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRerender": {},
+	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRefresh": {},
+	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onReady": {},
+	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onResize": {},
+	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onLoadMedia": {},
+	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onChangeMedia": {},
 
-	"Echo.StreamServer.Controls.Stream.Plugins.Like.onLikeComplete": _stream.items,
-	"Echo.StreamServer.Controls.Stream.Plugins.Like.onUnlikeComplete": _stream.items,
-	"Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onFlagComplete": _stream.items,
-	"Echo.StreamServer.Controls.Stream.Plugins.CommunityFlag.onUnflagComplete": _stream.items,
+	"Echo.StreamServer.Apps.Stream.Plugins.Like.onLikeComplete": _stream.items,
+	"Echo.StreamServer.Apps.Stream.Plugins.Like.onUnlikeComplete": _stream.items,
+	"Echo.StreamServer.Apps.Stream.Plugins.CommunityFlag.onFlagComplete": _stream.items,
+	"Echo.StreamServer.Apps.Stream.Plugins.CommunityFlag.onUnflagComplete": _stream.items,
 
-	"Echo.StreamServer.Controls.Submit.onRerender": _submit.onRerender,
-	"Echo.StreamServer.Controls.Submit.onRefresh": _submit.onRerender,
+	"Echo.StreamServer.Apps.Submit.onRerender": _submit.onRerender,
+	"Echo.StreamServer.Apps.Submit.onRefresh": _submit.onRerender,
 
-	"Echo.StreamServer.Controls.Submit.onExpand": _submit.expand,
-	"Echo.StreamServer.Controls.Submit.onCollapse": _submit.expand,
+	"Echo.StreamServer.Apps.Submit.onExpand": _submit.expand,
+	"Echo.StreamServer.Apps.Submit.onCollapse": _submit.expand,
 
-	"Echo.StreamServer.Controls.Submit.onRender": {
+	"Echo.StreamServer.Apps.Submit.onRender": {
 		"target": "object",
 		"targetURL": "string",
 		"data": {}
 	},
-	"Echo.StreamServer.Controls.Stream.onDataReceive": {
+	"Echo.StreamServer.Apps.Stream.onDataReceive": {
 		"entries": function(value) {
 			return $.isArray(value) && value[0] && $.type(value[0].normalized) === "boolean";
 		},
@@ -242,7 +242,7 @@ Echo.Tests.Events.contracts = {
 		"query": "string",
 		"target": "object"
 	},
-	"Echo.StreamServer.Controls.Submit.onPostInit": {
+	"Echo.StreamServer.Apps.Submit.onPostInit": {
 		"target": "object",
 		"targetURL": "string",
 		"data": {},
@@ -253,7 +253,7 @@ Echo.Tests.Events.contracts = {
 		}
 	},
 	// TODO: revisit contract later
-	"Echo.StreamServer.Controls.Submit.onPostComplete": {
+	"Echo.StreamServer.Apps.Submit.onPostComplete": {
 		"target": "object",
 		"targetURL": "string",
 		"data": {},
@@ -267,28 +267,28 @@ Echo.Tests.Events.contracts = {
 			"response": "object"
 		}
 	},
-	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditInit": _plugins.Edit.onEdit,
-	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete": _plugins.Edit.onEdit,
-	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError": _plugins.Edit.onEdit,
-	"Echo.StreamServer.Controls.Counter.onUpdate": {
+	"Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditInit": _plugins.Edit.onEdit,
+	"Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditComplete": _plugins.Edit.onEdit,
+	"Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditError": _plugins.Edit.onEdit,
+	"Echo.StreamServer.Apps.Counter.onUpdate": {
 		"target": "object",
 		"query": "string",
 		"data": {
 			"count": "number"
 		}
 	},
-	"Echo.Control.onDestroy": {
+	"Echo.App.onDestroy": {
 		"self": "boolean",
 		"producer": function(value) {
-			return value instanceof Echo.Control;
+			return value instanceof Echo.App;
 		}
 	},
-	"Echo.StreamServer.Controls.Submit.onReady": {
+	"Echo.StreamServer.Apps.Submit.onReady": {
 		"data": {},
 		"target": "object",
 		"targetURL": "string"
 	},
-	"Echo.StreamServer.Controls.Counter.onError": {
+	"Echo.StreamServer.Apps.Counter.onError": {
 		"data": {
 			"result": "string",
 			"errorCode": "string",
@@ -299,7 +299,7 @@ Echo.Tests.Events.contracts = {
 		"query": "string",
 		"target": "object"
 	},
-	"Echo.StreamServer.Controls.Submit.onPostError": {
+	"Echo.StreamServer.Apps.Submit.onPostError": {
 		"postData": {
 			"content": "array",
 			"appkey": "string",
@@ -321,23 +321,23 @@ Echo.Tests.Events.contracts = {
 		"code": "string",
 		"message": "string"
 	},
-	"Echo.StreamServer.Controls.FacePile.Item.onRender": {},
-	"Echo.StreamServer.Controls.FacePile.Item.onReady": {},
-	"Echo.StreamServer.Controls.FacePile.Item.onRerender": {},
-	"Echo.StreamServer.Controls.FacePile.Item.onRefresh": {},
-	"Echo.StreamServer.Controls.FacePile.onRender": {},
-	"Echo.StreamServer.Controls.FacePile.onReady": {},
-	"Echo.StreamServer.Controls.FacePile.onRerender": {},
-	"Echo.StreamServer.Controls.FacePile.onRefresh": {},
-	"Echo.Control.onDataInvalidate": {},
-	"Echo.StreamServer.Controls.Counter.onRender": {},
-	"Echo.StreamServer.Controls.Counter.onReady": {},
-	"Echo.StreamServer.Controls.Counter.onRerender": {},
-	"Echo.StreamServer.Controls.Counter.onRefresh": {},
-	"Echo.IdentityServer.Controls.Auth.onRender": {},
-	"Echo.IdentityServer.Controls.Auth.onReady": {},
-	"Echo.IdentityServer.Controls.Auth.onRerender": {},
-	"Echo.IdentityServer.Controls.Auth.onRefresh": {},
+	"Echo.StreamServer.Apps.FacePile.Item.onRender": {},
+	"Echo.StreamServer.Apps.FacePile.Item.onReady": {},
+	"Echo.StreamServer.Apps.FacePile.Item.onRerender": {},
+	"Echo.StreamServer.Apps.FacePile.Item.onRefresh": {},
+	"Echo.StreamServer.Apps.FacePile.onRender": {},
+	"Echo.StreamServer.Apps.FacePile.onReady": {},
+	"Echo.StreamServer.Apps.FacePile.onRerender": {},
+	"Echo.StreamServer.Apps.FacePile.onRefresh": {},
+	"Echo.App.onDataInvalidate": {},
+	"Echo.StreamServer.Apps.Counter.onRender": {},
+	"Echo.StreamServer.Apps.Counter.onReady": {},
+	"Echo.StreamServer.Apps.Counter.onRerender": {},
+	"Echo.StreamServer.Apps.Counter.onRefresh": {},
+	"Echo.IdentityServer.Apps.Auth.onRender": {},
+	"Echo.IdentityServer.Apps.Auth.onReady": {},
+	"Echo.IdentityServer.Apps.Auth.onRerender": {},
+	"Echo.IdentityServer.Apps.Auth.onRefresh": {},
 	"Echo.Canvas.onRender": {},
 	"Echo.Canvas.onReady": {},
 	"Echo.Canvas.onRerender": {},

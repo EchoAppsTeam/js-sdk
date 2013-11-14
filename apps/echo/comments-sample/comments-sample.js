@@ -9,8 +9,8 @@ if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
 
 Comments.dependencies = [
 	{"loaded": function() {
-		return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
-			Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
+		return Echo.App.isDefined("Echo.StreamServer.Apps.Submit") &&
+			Echo.App.isDefined("Echo.StreamServer.Apps.Stream");
 	}, "url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"}
 ];
 
@@ -40,7 +40,7 @@ Comments.methods.template = function() {
 Comments.renderers.stream = function(element) {
 	this.initComponent({
 		"id": "Stream",
-		"component": "Echo.StreamServer.Controls.Stream",
+		"component": "Echo.StreamServer.Apps.Stream",
 		"config": {
 			"target": element
 		}
@@ -51,7 +51,7 @@ Comments.renderers.stream = function(element) {
 Comments.renderers.submit = function(element) {
 	this.initComponent({
 		"id": "Submit",
-		"component": "Echo.StreamServer.Controls.Submit",
+		"component": "Echo.StreamServer.Apps.Submit",
 		"config": {
 			"target": element,
 			"infoMessages": {"enabled": false},

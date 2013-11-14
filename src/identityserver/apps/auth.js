@@ -4,8 +4,8 @@
 var $ = jQuery;
 
 /**
- * @class Echo.IdentityServer.Controls.Auth
- * Echo Auth control displays the user login status and allows them to sign in using different social identities.
+ * @class Echo.IdentityServer.Apps.Auth
+ * Echo Auth application displays the user login status and allows them to sign in using different social identities.
  *
  * 	var identityManager = {
  * 		"title": "Title of the auth area"
@@ -14,7 +14,7 @@ var $ = jQuery;
  * 		"url": "http://example.com/auth"
  * 	};
  *
- * 	new Echo.IdentityServer.Controls.Auth({
+ * 	new Echo.IdentityServer.Apps.Auth({
  * 		"target": document.getElementById("echo-auth"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"identityManager": {
@@ -23,23 +23,23 @@ var $ = jQuery;
  * 		}
  * 	});
  *
- * More information regarding the possible ways of the Control initialization
+ * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.ServerRelatedApp
  *
- * @package identityserver/controls.pack.js
+ * @package identityserver/apps.pack.js
  * @package identityserver.pack.js
  *
  * @constructor
- * Auth constructor initializing Echo.IdentityServer.Controls.Auth class.
+ * Auth constructor initializing Echo.IdentityServer.Apps.Auth class.
  *
  * @param {Object} config
  * Configuration options.
  */
-var auth = Echo.Control.manifest("Echo.IdentityServer.Controls.Auth");
+var auth = Echo.App.manifest("Echo.IdentityServer.Apps.Auth");
 
-if (Echo.Control.isDefined(auth)) return;
+if (Echo.App.isDefined(auth)) return;
 
 auth.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
@@ -59,20 +59,20 @@ auth.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 /** @hide @echo_label error_unknown */
 
 /**
- * @echo_event Echo.IdentityServer.Controls.Auth.onReady
+ * @echo_event Echo.IdentityServer.Apps.Auth.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.IdentityServer.Controls.Auth.onRefresh
+ * @echo_event Echo.IdentityServer.Apps.Auth.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.IdentityServer.Controls.Auth.onRender
+ * @echo_event Echo.IdentityServer.Apps.Auth.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.IdentityServer.Controls.Auth.onRerender
+ * @echo_event Echo.IdentityServer.Apps.Auth.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -88,7 +88,7 @@ auth.config = {
 	/**
 	 * @cfg {Object} identityManager
 	 * The list of handlers for login, edit and signup action. If some action
-	 * is ommited then it will not be available for users in the Auth control.
+	 * is ommited then it will not be available for users in the Auth application.
 	 * Each handler accepts sessionID as GET parameter. This parameter is necessary
 	 * for communication with Backplane server. When handler finishes working it
 	 * constructs the corresponding Backplane message (for login, signup or user
@@ -101,7 +101,7 @@ auth.config = {
 	 * 		"url": "http://example.com/auth"
 	 * 	};
 	 *
-	 * 	new Echo.IdentityServer.Controls.Auth({
+	 * 	new Echo.IdentityServer.Apps.Auth({
 	 * 		"target": document.getElementById("echo-auth"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"identityManager": {
@@ -313,7 +313,7 @@ auth.renderers.name = function(element) {
  * Method to define which template should be used for general rendering procedure.
  *
  * @return {String}
- * Control template.
+ * Application template.
  */
 auth.methods.template = function() {
 	return this.templates[this.user.is("logged") ? "logged" : "anonymous"];
@@ -378,6 +378,6 @@ auth.css =
 	".{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
 	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }";
 
-Echo.Control.create(auth);
+Echo.App.create(auth);
 
 })(Echo.jQuery);

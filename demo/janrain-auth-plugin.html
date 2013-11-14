@@ -8,9 +8,9 @@
 	</head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Submit.Plugins.JanrainAuth" target="_blank">Documentation</a></div>
 		<h1>Janrain Auth Plugin Demo</h1>
-		<div class="description">Janrain Social Sign-in Widget integration with Echo Submit Control.</div>
+		<div class="description">Janrain Social Sign-in Widget integration with Echo Submit Application.</div>
 		<div class="wrapper">
 			<div id="submit"></div>
 		</div>
@@ -30,7 +30,7 @@
 	<script type="text/javascript">
 		Echo.Loader.initApplication({
 			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Submit",
+			"component": "Echo.StreamServer.Apps.Submit",
 			"backplane": {
 				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 				"busName": "jskit"
