@@ -240,7 +240,7 @@ Echo.View.prototype.render = function(args) {
 };
 
 /**
- * Function which instantiates an Echo.View object with the confing of the current instance.
+ * Function which instantiates an Echo.View object with the config of the current instance.
  * This function is helpful when you need to process the template using the rules and
  * renderers specified for the parent Echo.View class instance.
  *
