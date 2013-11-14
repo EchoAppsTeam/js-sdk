@@ -407,7 +407,7 @@ suite.prototype.tests = {};
 suite.prototype.tests.PublicInterfaceTests = {
 	 "config": {
 		 "async": true,
-		 "testTimeout": 50000 // 50 secs
+		 "testTimeout": 60000 // 60 secs
 	},
 	"check": function() {
 		var sequentialTests = [
