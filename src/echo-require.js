@@ -11,22 +11,21 @@
 		"paths": {
 			"echo": getBaseURL(),
 			"echo-gui-css": "css!echo/gui.pack.css",
-			//"jquery": getBaseURL() + "third-party/jquery/jquery",
-			"jquery-noconflict":  getBaseURL() + "jquery.pack"//"third-party/jquery/jquery-noconflict"
+			"jquery-noconflict":  getBaseURL() + "jquery.pack"
 		},
 		map: {
 			"*": {
 				"css": "third-party/requirejs/css",
 				"jquery": "jquery-noconflict"
 			},
-			"jquery-noconflict": { "jquery": "jquery" }
+			"jquery-noconflict": {"jquery": "jquery"}
 		},
 		// TODO: add shims for bootstrap plugins
 		shim: {
-			/*'backplane': {
-            	deps: ['jquery'],
-            	exports: 'Backplane'
-        	},
+			"echo/backplane": {
+            	exports: "Backplane"
+        	}
+        	/*,
         	"echo/third-party/jquery/jquery.isotope.min.js": ["jquery"]
         	*/
 		}
