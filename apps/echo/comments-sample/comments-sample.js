@@ -15,6 +15,7 @@ Comments.dependencies = [
 ];
 
 Comments.config = {
+	"appkey": "",
 	"submitFormPosition": "top" // top | bottom
 };
 

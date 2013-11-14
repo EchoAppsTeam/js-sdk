@@ -17,39 +17,6 @@ var mediaGallery = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item
 
 if (Echo.Control.isDefined(mediaGallery)) return;
 
-/** @hide @method getRelativeTime */
-/** @hide @echo_label justNow */
-/** @hide @echo_label today */
-/** @hide @echo_label yesterday */
-/** @hide @echo_label lastWeek */
-/** @hide @echo_label lastMonth */
-/** @hide @echo_label secondAgo */
-/** @hide @echo_label secondsAgo */
-/** @hide @echo_label minuteAgo */
-/** @hide @echo_label minutesAgo */
-/** @hide @echo_label hourAgo */
-/** @hide @echo_label hoursAgo */
-/** @hide @echo_label dayAgo */
-/** @hide @echo_label daysAgo */
-/** @hide @echo_label weekAgo */
-/** @hide @echo_label weeksAgo */
-/** @hide @echo_label monthAgo */
-/** @hide @echo_label monthsAgo */
-/** @hide @echo_label loading */
-/** @hide @echo_label retrying */
-/** @hide @echo_label error_busy */
-/** @hide @echo_label error_timeout */
-/** @hide @echo_label error_waiting */
-/** @hide @echo_label error_view_limit */
-/** @hide @echo_label error_view_update_capacity_exceeded */
-/** @hide @echo_label error_result_too_large */
-/** @hide @echo_label error_wrong_query */
-/** @hide @echo_label error_incorrect_appkey */
-/** @hide @echo_label error_internal_error */
-/** @hide @echo_label error_quota_exceeded */
-/** @hide @echo_label error_incorrect_user_id */
-/** @hide @echo_label error_unknown */
-
 /**
  * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onReady
  * Triggered when the app initialization is finished completely.
@@ -636,7 +603,7 @@ plugin.css =
 	'.{plugin.class} .echo-linkColor a { text-decoration: none; font-weight: bold; color: #524D4D; }' +
 	'.{plugin.class} .{class:buttons} .echo-linkColor { font-weight: normal; color: #C6C6C6; }' +
 	'.{plugin.class} .{class:buttons} .echo-linkColor:hover { font-weight: normal; color: #C6C6C6; }' +
-	'.{plugin.class} .{class:expandChildren} .echo-message-icon { background-image: none; }' +
+	'.{plugin.class} .{class:expandChildren} .echo-serverrelatedapp-message-icon { background-image: none; }' +
 	'.{plugin.class} .{class:expandChildren} { border-bottom: 1px solid #D9D4D4; background-color: #F2F0F0; }' +
 	'.{plugin.class} .{class:expandChildren} .{class:message-loading} { background-image: none; font-weight: bold; }' +
 	'.{plugin.class} .{class:expandChildren} .{class:expandChildrenLabel} { padding-left: 0px; background-image: none; }' +

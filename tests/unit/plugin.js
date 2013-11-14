@@ -385,8 +385,6 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 				"Checking if the \"nestedPlugins\" were copied over to \"plugins\" section in the \"assemble\" function call result");
 			QUnit.ok(!!nested.parent,
 				"Checking if we have parent config in the \"assemble\" function call result");
-			QUnit.ok(!!nested.appkey && !!nested.apiBaseURL && !!nested.submissionProxyURL,
-				"Checking if basic params defined in the \"assemble\" function call result");
 		});
 
 		this.destroy();

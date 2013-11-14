@@ -18,7 +18,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Control initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.Control
+ * @extends Echo.ServerRelatedApp
  *
  * @package streamserver/controls.pack.js
  * @package streamserver.pack.js
@@ -33,30 +33,11 @@ var counter = Echo.Control.manifest("Echo.StreamServer.Controls.Counter");
 
 if (Echo.Control.isDefined(counter)) return;
 
-/** @hide @cfg defaultAvatar */
+counter.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
+
 /** @hide @cfg labels */
-/** @hide @cfg submissionProxyURL */
 /** @hide @method getPlugin */
-/** @hide @method getRelativeTime */
 /** @hide @method parentRenderer */
-/** @hide @method placeImage */
-/** @hide @echo_label justNow */
-/** @hide @echo_label today */
-/** @hide @echo_label yesterday */
-/** @hide @echo_label lastWeek */
-/** @hide @echo_label lastMonth */
-/** @hide @echo_label secondAgo */
-/** @hide @echo_label secondsAgo */
-/** @hide @echo_label minuteAgo */
-/** @hide @echo_label minutesAgo */
-/** @hide @echo_label hourAgo */
-/** @hide @echo_label hoursAgo */
-/** @hide @echo_label dayAgo */
-/** @hide @echo_label daysAgo */
-/** @hide @echo_label weekAgo */
-/** @hide @echo_label weeksAgo */
-/** @hide @echo_label monthAgo */
-/** @hide @echo_label monthsAgo */
 
 /**
  * @echo_event Echo.StreamServer.Controls.Counter.onReady
@@ -113,6 +94,7 @@ counter.config = {
 	 * 		"query" : "childrenof:http://example.com/test/*"
 	 * 	});
 	 */
+	"query": "",
 	/**
 	 * @cfg {Object} data
 	 * Specifies predefined items count which should be displayed by the application.

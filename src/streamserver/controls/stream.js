@@ -18,7 +18,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Control initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.Control
+ * @extends Echo.ServerRelatedApp
  *
  * @package streamserver/controls.pack.js
  * @package streamserver.pack.js
@@ -33,24 +33,7 @@ var stream = Echo.Control.manifest("Echo.StreamServer.Controls.Stream");
 
 if (Echo.Control.isDefined(stream)) return;
 
-/** @hide @method placeImage */
-/** @hide @echo_label justNow */
-/** @hide @echo_label today */
-/** @hide @echo_label yesterday */
-/** @hide @echo_label lastWeek */
-/** @hide @echo_label lastMonth */
-/** @hide @echo_label secondAgo */
-/** @hide @echo_label secondsAgo */
-/** @hide @echo_label minuteAgo */
-/** @hide @echo_label minutesAgo */
-/** @hide @echo_label hourAgo */
-/** @hide @echo_label hoursAgo */
-/** @hide @echo_label dayAgo */
-/** @hide @echo_label daysAgo */
-/** @hide @echo_label weekAgo */
-/** @hide @echo_label weeksAgo */
-/** @hide @echo_label monthAgo */
-/** @hide @echo_label monthsAgo */
+stream.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 /**
  * @echo_event Echo.StreamServer.Controls.Stream.onReady
@@ -1823,30 +1806,10 @@ var item = Echo.Control.manifest("Echo.StreamServer.Controls.Stream.Item");
 
 if (Echo.Control.isDefined(item)) return;
 
-/** @hide @cfg appkey */
-/** @hide @cfg defaultAvatar */
 /** @hide @cfg plugins */
 /** @hide @cfg target */
 /** @hide @cfg cdnBaseURL */
-/** @hide @cfg apiBaseURL */
-/** @hide @cfg useSecureAPI */
-/** @hide @cfg submissionProxyURL */
-/** @hide @method placeImage */
 /** @hide @method dependent */
-/** @hide @echo_label loading */
-/** @hide @echo_label retrying */
-/** @hide @echo_label error_busy */
-/** @hide @echo_label error_timeout */
-/** @hide @echo_label error_waiting */
-/** @hide @echo_label error_view_limit */
-/** @hide @echo_label error_view_update_capacity_exceeded */
-/** @hide @echo_label error_result_too_large */
-/** @hide @echo_label error_wrong_query */
-/** @hide @echo_label error_incorrect_appkey */
-/** @hide @echo_label error_internal_error */
-/** @hide @echo_label error_quota_exceeded */
-/** @hide @echo_label error_incorrect_user_id */
-/** @hide @echo_label error_unknown */
 
 /**
  * @echo_event Echo.StreamServer.Controls.Stream.Item.onReady
@@ -1893,6 +1856,14 @@ item.config = {
 		"html": ["smileys", "urls", "newlines"],
 		"xhtml": ["smileys", "urls"]
 	},
+
+	/**
+	 * @cfg {String} defaultAvatar
+	 * Default avatar URL which will be used for the user in
+	 * case there is no avatar information defined in the user
+	 * profile. Also used for anonymous users.
+	 */
+	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false),
 
 	/**
 	 * @cfg {String} infoMessages
@@ -2000,7 +1971,8 @@ item.config.normalizer = {
 			);
 		});
 		return object;
-	}
+	},
+	"defaultAvatar": Echo.Loader.getURL
 };
 
 item.vars = {
@@ -2063,9 +2035,72 @@ item.labels = {
 	/**
 	 * @echo_label
 	 */
-	"re": "Re"
+	"re": "Re",
+	/**
+	 * @echo_label justNow
+	 */
+	"justNow": "Just now",
+	/**
+	 * @echo_label yesterday
+	 */
+	"yesterday": "Yesterday",
+	/**
+	 * @echo_label lastWeek
+	 */
+	"lastWeek": "Last Week",
+	/**
+	 * @echo_label lastMonth
+	 */
+	"lastMonth": "Last Month",
+	/**
+	 * @echo_label secondAgo
+	 */
+	"secondAgo": "{number} Second Ago",
+	/**
+	 * @echo_label secondsAgo
+	 */
+	"secondsAgo": "{number} Seconds Ago",
+	/**
+	 * @echo_label minuteAgo
+	 */
+	"minuteAgo": "{number} Minute Ago",
+	/**
+	 * @echo_label minutesAgo
+	 */
+	"minutesAgo": "{number} Minutes Ago",
+	/**
+	 * @echo_label hourAgo
+	 */
+	"hourAgo": "{number} Hour Ago",
+	/**
+	 * @echo_label hoursAgo
+	 */
+	"hoursAgo": "{number} Hours Ago",
+	/**
+	 * @echo_label dayAgo
+	 */
+	"dayAgo": "{number} Day Ago",
+	/**
+	 * @echo_label daysAgo
+	 */
+	"daysAgo": "{number} Days Ago",
+	/**
+	 * @echo_label weekAgo
+	 */
+	"weekAgo": "{number} Week Ago",
+	/**
+	 * @echo_label weeksAgo
+	 */
+	"weeksAgo": "{number} Weeks Ago",
+	/**
+	 * @echo_label monthAgo
+	 */
+	"monthAgo": "{number} Month Ago",
+	/**
+	 * @echo_label monthsAgo
+	 */
+	"monthsAgo": "{number} Months Ago"
 };
-
 
 item.templates.metadata = {
 	/**
@@ -2147,7 +2182,7 @@ item.templates.mainFooter =
 item.templates.childrenTop =
 	'<div class="{class:children}"></div>' +
 	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-		'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
+		'<span class="{class:expandChildrenLabel} echo-serverrelatedapp-message-icon"></span>' +
 	'</div>';
 
 /**
@@ -2155,7 +2190,7 @@ item.templates.childrenTop =
  */
 item.templates.childrenBottom =
 	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-		'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
+		'<span class="{class:expandChildrenLabel} echo-serverrelatedapp-message-icon"></span>' +
 	'</div>' +
 	'<div class="{class:children}"></div>';
 
@@ -2296,7 +2331,7 @@ item.renderers.wrapper = function(element) {
  * @echo_renderer
  */
 item.renderers.avatar = function(element) {
-	this.placeImage({ 
+	Echo.Utils.placeImage({
 		"container": element,
 		"image": this.get("data.actor.avatar"),
 		"defaultImage": this.config.get("defaultAvatar")
@@ -2531,7 +2566,7 @@ item.renderers.expandChildrenLabel = function(element, extra) {
 			"label": "loading"
 		},
 		"regular": {
-			"css": "echo-linkColor echo-message-icon",
+			"css": "echo-linkColor echo-serverrelatedapp-message-icon",
 			"label": "childrenMoreItems"
 		}
 	};
@@ -2712,6 +2747,66 @@ item.methods.getNextPageAfter = function() {
 	return children.length
 		? children[index].data.pageAfter
 		: undefined;
+};
+
+/**
+ * Method to calculate the relative time passed since the given date and time.
+ *
+ * @param {Mixed} datetime
+ * The date to calculate how much time passed since that moment. The function recognizes
+ * the date in W3CDFT or UNIX timestamp formats.
+ *
+ * @return {String}
+ * String which represents the date and time in the relative format.
+ */
+item.methods.getRelativeTime = function(datetime) {
+	if (!datetime) return;
+	var self = this;
+	var ts = typeof datetime === "string"
+		? Echo.Utils.timestampFromW3CDTF(datetime)
+		: datetime;
+	if (!ts) return;
+	var d = new Date(ts * 1000);
+	var now = (new Date()).getTime();
+	var when;
+	var diff = Math.floor((now - d.getTime()) / 1000);
+	var dayDiff = Math.floor(diff / 86400);
+	var getAgo = function(ago, period) {
+		return self.labels.get(period + (ago === 1 ? "" : "s") + "Ago", {"number": ago});
+	};
+
+	// we display the "Just now" text in order to mitigate the clock inaccuracy
+	// when the time difference between the current and the given time is
+	// less than 10 seconds or if the given date is "from the future" but
+	// within the 60 seconds range
+	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
+		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+	} else if (diff < 10) {
+		when = this.labels.get("justNow");
+	} else if (diff < 60) {
+		when = getAgo(diff, 'second');
+	} else if (diff < 60 * 60) {
+		diff = Math.floor(diff / 60);
+		when = getAgo(diff, 'minute');
+	} else if (diff < 60 * 60 * 24) {
+		diff = Math.floor(diff / (60 * 60));
+		when = getAgo(diff, 'hour');
+	} else if (diff < 60 * 60 * 48) {
+		when = this.labels.get("yesterday");
+	} else if (dayDiff < 7) {
+		when = getAgo(dayDiff, 'day');
+	} else if (dayDiff < 14) {
+		when = this.labels.get("lastWeek");
+	} else if (dayDiff < 30) {
+		diff =  Math.floor(dayDiff / 7);
+		when = getAgo(diff, 'week');
+	} else if (dayDiff < 60) {
+		when = this.labels.get("lastMonth");
+	} else if (dayDiff < 365) {
+		diff =  Math.floor(dayDiff / 31);
+		when = getAgo(diff, 'month');
+	}
+	return when;
 };
 
 /**
@@ -3201,7 +3296,7 @@ item.css =
 	'.{class:blocker-message} { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }' +
 	'.{class:expandChildren} { display:none; text-align: center; padding:4px; }' +
 	'.{class:expandChildren} .{class:expandChildrenLabel} { display: inline-block; padding-left: 22px; }' +
-	'.{class:expandChildren} .echo-message-icon { background: url("{config:cdnBaseURL.sdk-assets}/images/whirlpool.png") no-repeat 5px 4px; }' +
+	'.{class:expandChildren} .echo-serverrelatedapp-message-icon { background: url("{config:cdnBaseURL.sdk-assets}/images/whirlpool.png") no-repeat 5px 4px; }' +
 	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url("{config:cdnBaseURL.sdk-assets}/images/loading.gif"); }' +
 	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
 	itemDepthRules.join("\n");

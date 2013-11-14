@@ -26,6 +26,7 @@ suite.prototype.info = {
 		"getAccumulator",
 		"hasMoreChildren",
 		"getNextPageAfter",
+		"getRelativeTime",
 		"addButtonSpec",
 		"template"
 	]
@@ -42,6 +43,29 @@ suite.prototype.tests.commonWorkflow = {
 	},
 	"check": function() {
 		var self = this;
+
+		// checking "getRelativeTime" method
+		var now = Math.floor((new Date()).getTime() / 1000);
+		var probes = [
+			["", undefined, "empty string"],
+			[0, undefined, "zero as a value"],
+			["some-random-string", undefined, "random string"],
+			[false, undefined, "boolean 'false'"],
+			[now + 60, "Just now", "date/time \"from the future\""],
+			[now - 0, "Just now", "Just now"],
+			[now - 4, "Just now", "less than 5 seconds ago"],
+			[now - 9, "Just now", "less than 10 seconds ago"],
+			[now - 10, "10 Seconds Ago", "10 seconds ago"],
+			[now - 1 * 60, "1 Minute Ago", "minute ago"],
+			[now - 3 * 60, "3 Minutes Ago", "minutes ago"],
+			[now - 1 * 60 * 60, "1 Hour Ago", "hour ago"],
+			[now - 4 * 60 * 60, "4 Hours Ago", "hours ago"],
+			[now - 1 * 24 * 60 * 60, "Yesterday", "yesterday"],
+			[now - 3 * 24 * 60 * 60, "3 Days Ago", "days ago"],
+			[now - 7 * 24 * 60 * 60, "Last Week", "last week"],
+			[now - 32 * 24 * 60 * 60, "Last Month", "last month"],
+			[now - 64 * 24 * 60 * 60, "2 Months Ago", "months ago"]
+		];
 
 		var runStaticTests = function(item) {
 			QUnit.ok(item.isRoot(), "Checking isRoot() method");
@@ -74,6 +98,11 @@ suite.prototype.tests.commonWorkflow = {
 				"Checking that block message was removed (unblock() method)");
 			QUnit.ok(!$("." + item.cssPrefix + "blocker-backdrop", item.view.get("container")).length,
 				"Checking that block backdrop was removed (unblock() method)");
+
+			$.map(probes, function(probe) {
+				QUnit.equal(item.getRelativeTime(probe[0]), probe[1],
+					"Checking \"getRelativeTime\" function (" + probe[2] + ")");
+			});
 		};
 
 		var addChildren  = function(item) {

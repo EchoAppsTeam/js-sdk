@@ -24,6 +24,7 @@ Echo.Tests.module("Echo.Utils", {
 			"objectToJSON",
 			"parallelCall",
 			"parseURL",
+			"placeImage",
 			"remove",
 			"safelyExecute",
 			"sequentialCall",
@@ -612,6 +613,155 @@ Echo.Tests.asyncTest("loadImage()", function() {
 		nullURL,
 		onerrorCallback
 	], function() {
+		QUnit.start();
+	});
+});
+
+Echo.Tests.asyncTest("placeImage()", function() {
+	var placeImageContainerClassTest = function(callback) {
+		var container = $("<div id=\"place-image-container-class\"/>").appendTo($("#qunit-fixture"));
+		Echo.Utils.placeImage({
+			"container": container,
+			"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
+			"onerror": function() {
+				QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
+				callback();
+			},
+			"onload": function() {
+				QUnit.ok(container.hasClass("echo-image-container"), "Checking placeImage() method for image class adding");
+				callback();
+			}
+		});
+	};
+	var placeImageContainerFillClassTest = function(callback) {
+		var container = $("<div id=\"place-image-container-fill-class\"/>").appendTo($("#qunit-fixture"));
+		Echo.Utils.placeImage({
+			"container": container,
+			"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
+			"onerror": function() {
+				QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
+				callback();
+			},
+			"onload": function() {
+				QUnit.ok(container.hasClass("echo-image-position-fill"), "Checking placeImage() method for image area filling class adding");
+				callback();
+			},
+			"position": "fill"
+		});
+	};
+
+	var placeImageContainerFillDefaultTest = function(callback) {
+		var container = $("<div id=\"place-image-container-fill-default-class\"/>").appendTo($("#qunit-fixture"));
+		Echo.Utils.placeImage({
+			"container": container,
+			"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
+			"onerror": function() {
+				QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
+				callback();
+			},
+			"onload": function() {
+				QUnit.ok(container.hasClass("echo-image-position-fill"), "Checking placeImage() method for whether image container filling class is default");
+				callback();
+			}
+		});
+	};
+
+	var placeImageContainerFillHorizontalTest = function(callback) {
+		var container = $("<div id=\"place-image-container-fill-horizontal\"/>")
+			.appendTo($("#qunit-fixture"))
+			.css({ "width": "90px", "height": "90px" });
+		Echo.Utils.placeImage({
+			"container": container,
+			"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
+			"onerror": function() {
+				QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
+				callback();
+			},
+			"onload": function() {
+				var self = this;
+				// wait for image size affected in IE
+				setTimeout(function () {
+					QUnit.deepEqual([self.width, self.height], [90, 30],
+						"Checking placeImage() method for image area filling by a horizontal image");
+					callback();
+				}, 0);
+			},
+			"position": "fill"
+		});
+	};
+
+	var placeImageContainerFillVerticalTest = function(callback) {
+		var container = $("<div id=\"place-image-container-fill-vertical\"/>")
+			.appendTo($("#qunit-fixture"))
+			.css({ "width": "90px", "height": "90px" });
+		Echo.Utils.placeImage({
+			"container": container,
+			"image": Echo.Tests.baseURL + "unit/loadimage/avatar-vertical-100x300.png",
+			"onerror": function() {
+				QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
+				callback();
+			},
+			"onload": function() {
+				var self = this;
+				// wait for image size affected in IE
+				setTimeout(function () {
+					QUnit.deepEqual([self.width, self.height], [30, 90],
+						"Checking placeImage() method for image area filling by a vertical image");
+					callback();
+				}, 0);
+			},
+			"position": "fill"
+		});
+	};
+
+	var horizontalImageQuirksModeTest = function(callback) {
+		var container = $("<div id=\"place-image-horizontal-quirks\"/>").appendTo($("#qunit-fixture"));
+		Echo.Utils.placeImage({
+			"container": container,
+			"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
+			"onerror": function() {
+				QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
+				callback();
+			},
+			"onload": function() {
+				QUnit.ok($(this).hasClass("echo-image-stretched-horizontally"),
+					"Checking placeImage() method for horizontal stretching class in compatible mode");
+				callback();
+			},
+			"position": "fill"
+		});
+	};
+
+	var verticalImageQuirksModeTest = function(callback) {
+		var container = $("<div id=\"place-image-vertical-quirks\"/>").appendTo($("#qunit-fixture"));
+		Echo.Utils.placeImage({
+			"container": container,
+			"image": Echo.Tests.baseURL + "unit/loadimage/avatar-vertical-100x300.png",
+			"onerror": function() {
+				QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
+				callback();
+			},
+			"onload": function() {
+				QUnit.ok($(this).hasClass("echo-image-stretched-vertically"),
+					"Checking placeImage() method for vertical stretching class in compatible mode");
+				callback();
+			},
+			"position": "fill"
+		});
+	};
+	var tests = [
+		placeImageContainerClassTest,
+		placeImageContainerFillClassTest,
+		placeImageContainerFillDefaultTest,
+		placeImageContainerFillHorizontalTest,
+		placeImageContainerFillVerticalTest
+	];
+	QUnit.expect(5);
+	if (document.compatMode !== "CSS1Compat") {
+		tests = tests.concat([horizontalImageQuirksModeTest, verticalImageQuirksModeTest]);
+		QUnit.expect(7);
+	}
+	Echo.Utils.sequentialCall(tests, function() {
 		QUnit.start();
 	});
 });

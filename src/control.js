@@ -151,18 +151,6 @@ Echo.Control.isDefined = function(manifest) {
 	return !!(component && component._manifest);
 };
 
-Echo.Control.prototype.templates = {"message": {}};
-
-Echo.Control.prototype.templates.message.compact =
-	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>';
-
-Echo.Control.prototype.templates.message.full =
-	'<div class="echo-control-message {class:messageText}">' +
-		'<span class="echo-control-message-icon echo-control-message-{data:type} {class:messageIcon}">' +
-			'{data:message}' +
-		'</span>' +
-	'</div>';
-
 /**
  * Accessor method to get specific field.
  *
@@ -302,74 +290,6 @@ Echo.Control.prototype.dependent = function() {
 };
 
 /**
- * Renders info message in the target container.
- *
- * @param {Object} data
- * Object containing info message information.
- *
- * @param {String} [data.layout]
- * Specifies the type of message layout. Can be set to "compact" or "full".
- *
- * @param {HTMLElement} [data.target]
- * Specifies the target container.
- */
-Echo.Control.prototype.showMessage = function(data) {
-	if (!this.config.get("infoMessages.enabled")) return;
-	var target = data.target || this.config.get("target");
-	var layout = data.layout || this.config.get("infoMessages.layout");
-	var view = this.view.fork();
-	target.empty().append(view.render({
-		"data": data,
-		"template": this.templates.message[layout]
-	}));
-};
-
-/**
- * Renders error message in the target container.
- *
- * @param {Object} data
- * Object containing error message information.
- *
- * @param {Object} options
- * Object containing display options.
- */
-Echo.Control.prototype.showError = function(data, options) {
-	var self = this;
-	if (typeof options.retryIn === "undefined") {
-		var label = this.labels.get("error_" + data.errorCode);
-		var message = label === "error_" + data.errorCode
-			? "(" + data.errorCode + ") " + (data.errorMessage || "")
-			: label;
-		this.showMessage({
-			"type": options.critical ? "error" : "loading",
-			"message": message,
-			"target": options.target
-		});
-	} else if (!options.retryIn && options.request.retryTimer) {
-		this.showMessage({
-			"type": "loading",
-			"message": this.labels.get("retrying"),
-			"target": options.target
-		});
-	} else {
-		var secondsLeft = options.retryIn / 1000;
-		var ticker = function() {
-			if (!secondsLeft) {
-				return;
-			}
-			var label = self.labels.get("error_" + data.errorCode, {"seconds": secondsLeft--});
-			self.showMessage({
-				"type": "loading",
-				"message": label,
-				"target": options.target
-			});
-		};
-		options.request.retryTimer = setInterval(ticker, 1000);
-		ticker();
-	}
-};
-
-/**
  * Accessor function allowing to obtain the plugin by its name.
  *
  * @param {String} name
@@ -459,137 +379,6 @@ Echo.Control.prototype.log = function(data) {
 	Echo.Utils.log($.extend(data, {"component": this.name}));
 };
 
-/**
- * Method to calculate the relative time passed since the given date and time.
- *
- * @param {Mixed} datetime
- * The date to calculate how much time passed since that moment. The function recognizes
- * the date in W3CDFT or UNIX timestamp formats.
- *
- * @return {String}
- * String which represents the date and time in the relative format.
- */
-Echo.Control.prototype.getRelativeTime = function(datetime) {
-	if (!datetime) return;
-	var self = this;
-	var ts = typeof datetime === "string"
-		? Echo.Utils.timestampFromW3CDTF(datetime)
-		: datetime;
-	if (!ts) return;
-	var d = new Date(ts * 1000);
-	var now = (new Date()).getTime();
-	var when;
-	var diff = Math.floor((now - d.getTime()) / 1000);
-	var dayDiff = Math.floor(diff / 86400);
-	var getAgo = function(ago, period) {
-		return self.labels.get(period + (ago === 1 ? "" : "s") + "Ago", {"number": ago});
-	};
-
-	// we display the "Just now" text in order to mitigate the clock inaccuracy
-	// when the time difference between the current and the given time is
-	// less than 10 seconds or if the given date is "from the future" but
-	// within the 60 seconds range
-	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
-		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
-	} else if (diff < 10) {
-		when = this.labels.get("justNow");
-	} else if (diff < 60) {
-		when = getAgo(diff, 'second');
-	} else if (diff < 60 * 60) {
-		diff = Math.floor(diff / 60);
-		when = getAgo(diff, 'minute');
-	} else if (diff < 60 * 60 * 24) {
-		diff = Math.floor(diff / (60 * 60));
-		when = getAgo(diff, 'hour');
-	} else if (diff < 60 * 60 * 48) {
-		when = this.labels.get("yesterday");
-	} else if (dayDiff < 7) {
-		when = getAgo(dayDiff, 'day');
-	} else if (dayDiff < 14) {
-		when = this.labels.get("lastWeek");
-	} else if (dayDiff < 30) {
-		diff =  Math.floor(dayDiff / 7);
-		when = getAgo(diff, 'week');
-	} else if (dayDiff < 60) {
-		when = this.labels.get("lastMonth");
-	} else if (dayDiff < 365) {
-		diff =  Math.floor(dayDiff / 31);
-		when = getAgo(diff, 'month');
-	}
-	return when;
-};
-
-/**
- * Method to place an image inside the container.
- * 
- * This method removes any container's content and creates a new image HTML element 
- * inside the container. If the image is not available on the given URL then this function
- * loads the default image that is passed as a defaultImage argument.
- * 
- * The method adds special classes to the container, and implements some
- * workaround for IE in quirks mode.
- * 
- * @param {Object} args
- * The object which contains attributes for the image.
- * 
- * @param {HTMLElement} args.container
- * Specifies the target container.
- *
- * @param {String} args.image
- * The URL of the image to be loaded.
- *
- * @param {String} [args.defaultImage]
- * The URL of the default image.
- *
- * @param {Function} [args.onload]
- * The callback which fires when image is loaded.
- *
- * @param {Function} [args.onerror]
- * The callback which fires when loading image fails.
- * 
- * @param {String} [args.position="fill"]
- * The position of an image inside the container. The only "fill" is implemented now. 
-*/
-Echo.Control.prototype.placeImage = function(args) {
-	var position = args.position || "fill";
-	
-	args.container.addClass("echo-image-container");
-	if (position === "fill") {
-		args.container.addClass("echo-image-position-fill");
-	}
-	
-	var image = Echo.Utils.loadImage({
-		"image": args.image,
-		"defaultImage": args.defaultImage,
-		"onerror": args.onerror,
-		"onload": function () {
-			if (document.compatMode !== "CSS1Compat") {
-				$(this).addClass(this.width < this.height 
-						? "echo-image-stretched-vertically" 
-						: "echo-image-stretched-horizontally");
-			}
-			$.isFunction(args.onload) && args.onload.apply(this, arguments);
-		}
-	});
-	args.container.empty().append(image);
-};
-
-/**
- * Method to check the presense of the "appkey" configuration parameter and render
- * the error message (inside the element specified as the "target" in the control
- * configuration) in case the "appkey" is missing in the config.
- *
- * @return {Boolean}
- * The boolean result of the "appkey" config parameter check.
- */
-Echo.Control.prototype.checkAppKey = function() {
-	if (!this.config.get("appkey")) {
-		this.showError({"errorCode": "incorrect_appkey"}, {"critical": true});
-		return false;
-	}
-	return true;
-};
-
 Echo.Control.prototype._init = function(subsystems) {
 	var control = this;
 	if (!subsystems || !subsystems.length) return;
@@ -623,7 +412,6 @@ Echo.Control.prototype._initializers.list = [
 	["subscriptions",      ["init"]],
 	["labels",             ["init"]],
 	["view",               ["init"]],
-	["loading",            ["init", "refresh"]],
 	["dependencies:async", ["init"]],
 	["user:async",         ["init", "refresh"]],
 	["plugins:async",      ["init", "refresh"]],
@@ -841,13 +629,6 @@ Echo.Control.prototype._initializers.view = function() {
 				: args.target;
 		},
 		"substitutions": this._getSubstitutionInstructions()
-	});
-};
-
-Echo.Control.prototype._initializers.loading = function() {
-	this.showMessage({
-		"type": "loading",
-		"message": this.labels.get("loading")
 	});
 };
 
@@ -1162,38 +943,10 @@ manifest.config = {
 	"target": undefined,
 
 	/**
-	 * @cfg {String} appkey
-	 * Specifies the customer application key. You should specify this parameter
-	 * if your control uses StreamServer or IdentityServer API requests.
-	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
-	 */
-	"appkey": "",
-
-	/**
 	 * @cfg {Object} labels
 	 * Specifies the set of language variables defined for this particular control.
 	 */
 	"labels": {},
-
-	/**
-	 * @cfg {String} apiBaseURL
-	 * URL prefix for all API requests
-	 */
-	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
-
-	/**
-	 * @cfg {String} submissionProxyURL
-	 * URL prefix for requests to Echo Submission Proxy
-	 */
-	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
-
-	/**
-	 * @cfg {Boolean} useSecureAPI
-	 * This parameter is used to specify the API request scheme.
-	 * If parameter is set to false or not specified, the API request object
-	 * will use the scheme used to retrieve the host page.
-	 */
-	"useSecureAPI": false,
 
 	/**
 	 * @cfg {Object} infoMessages
@@ -1243,16 +996,7 @@ manifest.config = {
 	"plugins": {},
 
 	"context": "",
-	"scriptLoadErrorTimeout": 5000, // 5 sec
-	"query": "",
-
-	/**
-	 * @cfg {String} defaultAvatar
-	 * Default avatar URL which will be used for the user in
-	 * case there is no avatar information defined in the user
-	 * profile. Also used for anonymous users.
-	 */
-	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false)
+	"scriptLoadErrorTimeout": 5000 // 5 sec
 };
 
 manifest.config.normalizer = {
@@ -1277,174 +1021,21 @@ manifest.config.normalizer = {
 	// the nested context out of it. Note: the parent "context" for the control
 	// is defined within the Echo.Plugin.Config.prototype.assemble and
 	// Echo.App.prototype._normalizeComponentConfig functions.
-	"context": Echo.Events.newContextId,
-
-	"defaultAvatar": Echo.Loader.getURL
-};
-
-manifest.labels = {
-	/**
-	 * @echo_label loading
-	 */
-	"loading": "Loading...",
-	/**
-	 * @echo_label retrying
-	 */
-	"retrying": "Retrying...",
-	/**
-	 * @echo_label error_busy
-	 */
-	"error_busy": "Loading. Please wait...",
-	/**
-	 * @echo_label error_timeout
-	 */
-	"error_timeout": "Loading. Please wait...",
-	/**
-	 * @echo_label error_waiting
-	 */
-	"error_waiting": "Loading. Please wait...",
-	/**
-	 * @echo_label error_view_limit
-	 */
-	"error_view_limit": "View creation rate limit has been exceeded. Retrying in {seconds} seconds...",
-	/**
-	 * @echo_label error_view_update_capacity_exceeded
-	 */
-	"error_view_update_capacity_exceeded": "This stream is momentarily unavailable due to unusually high activity. Retrying in {seconds} seconds...",
-	/**
-	 * @echo_label error_result_too_large
-	 */
-	"error_result_too_large": "(result_too_large) The search result is too large.",
-	/**
-	 * @echo_label error_wrong_query
-	 */
-	"error_wrong_query": "(wrong_query) Incorrect or missing query parameter.",
-	/**
-	 * @echo_label error_incorrect_appkey
-	 */
-	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
-	/**
-	 * @echo_label error_internal_error
-	 */
-	"error_internal_error": "(internal_error) Unknown server error.",
-	/**
-	 * @echo_label error_quota_exceeded
-	 */
-	"error_quota_exceeded": "(quota_exceeded) Required more quota than is available.",
-	/**
-	 * @echo_label error_incorrect_user_id
-	 */
-	"error_incorrect_user_id": "(incorrect_user_id) Incorrect user specified in User ID predicate.",
-	/**
-	 * @echo_label error_unknown
-	 */
-	"error_unknown": "(unknown) Unknown error.",
-	/**
-	 * @echo_label today
-	 */
-	"today": "Today",
-	/**
-	 * @echo_label justNow
-	 */
-	"justNow": "Just now",
-	/**
-	 * @echo_label yesterday
-	 */
-	"yesterday": "Yesterday",
-	/**
-	 * @echo_label lastWeek
-	 */
-	"lastWeek": "Last Week",
-	/**
-	 * @echo_label lastMonth
-	 */
-	"lastMonth": "Last Month",
-	/**
-	 * @echo_label secondAgo
-	 */
-	"secondAgo": "{number} Second Ago",
-	/**
-	 * @echo_label secondsAgo
-	 */
-	"secondsAgo": "{number} Seconds Ago",
-	/**
-	 * @echo_label minuteAgo
-	 */
-	"minuteAgo": "{number} Minute Ago",
-	/**
-	 * @echo_label minutesAgo
-	 */
-	"minutesAgo": "{number} Minutes Ago",
-	/**
-	 * @echo_label hourAgo
-	 */
-	"hourAgo": "{number} Hour Ago",
-	/**
-	 * @echo_label hoursAgo
-	 */
-	"hoursAgo": "{number} Hours Ago",
-	/**
-	 * @echo_label dayAgo
-	 */
-	"dayAgo": "{number} Day Ago",
-	/**
-	 * @echo_label daysAgo
-	 */
-	"daysAgo": "{number} Days Ago",
-	/**
-	 * @echo_label weekAgo
-	 */
-	"weekAgo": "{number} Week Ago",
-	/**
-	 * @echo_label weeksAgo
-	 */
-	"weeksAgo": "{number} Weeks Ago",
-	/**
-	 * @echo_label monthAgo
-	 */
-	"monthAgo": "{number} Month Ago",
-	/**
-	 * @echo_label monthsAgo
-	 */
-	"monthsAgo": "{number} Months Ago"
+	"context": Echo.Events.newContextId
 };
 
 manifest.inherits = Echo.Control;
 
-manifest.templates = {"message": {}};
-
-manifest.templates.message.compact =
-	'<span class="echo-control-message echo-control-message-icon echo-control-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>';
-
-manifest.templates.message.full =
-	'<div class="echo-control-message {class:messageText}">' +
-		'<span class="echo-control-message-icon echo-control-message-{data:type} {class:messageIcon}">' +
-			'{data:message}' +
-		'</span>' +
-	'</div>';
-
 manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
-		'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
-		'.echo-primaryColor { color: #3A3A3A; }' +
-		'.echo-secondaryColor { color: #C6C6C6; }' +
-		'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
-		'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
-		'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
-		'.echo-clickable { cursor: pointer; }' +
-		'.echo-relative { position: relative; }' +
-		'.echo-clear { clear: both; }' +
-		'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
-		'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
-		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
-		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
-
-		// message classes
-		'.echo-control-message { padding: 15px 0px; text-align: center; }' +
-		'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
-		'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-		'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
-		'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
-		'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
+	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
+	'.echo-primaryColor { color: #3A3A3A; }' +
+	'.echo-secondaryColor { color: #C6C6C6; }' +
+	'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
+	'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
+	'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
+	'.echo-clickable { cursor: pointer; }' +
+	'.echo-relative { position: relative; }' +
+	'.echo-clear { clear: both; }';
 
 Echo.Control._manifest = manifest;
 

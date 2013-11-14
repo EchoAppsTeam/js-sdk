@@ -19,7 +19,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Control initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.Control
+ * @extends Echo.ServerRelatedApp
  *
  * @package streamserver/controls.pack.js
  * @package streamserver.pack.js
@@ -34,27 +34,7 @@ var pile = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile");
 
 if (Echo.Control.isDefined(pile)) return;
 
-/** @hide @cfg defaultAvatar */
-/** @hide @cfg submissionProxyURL */
-/** @hide @method placeImage */
-/** @hide @method getRelativeTime */
-/** @hide @echo_label justNow */
-/** @hide @echo_label today */
-/** @hide @echo_label yesterday */
-/** @hide @echo_label lastWeek */
-/** @hide @echo_label lastMonth */
-/** @hide @echo_label secondAgo */
-/** @hide @echo_label secondsAgo */
-/** @hide @echo_label minuteAgo */
-/** @hide @echo_label minutesAgo */
-/** @hide @echo_label hourAgo */
-/** @hide @echo_label hoursAgo */
-/** @hide @echo_label dayAgo */
-/** @hide @echo_label daysAgo */
-/** @hide @echo_label weekAgo */
-/** @hide @echo_label weeksAgo */
-/** @hide @echo_label monthAgo */
-/** @hide @echo_label monthsAgo */
+pile.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 /**
  * @echo_event Echo.StreamServer.Controls.FacePile.onReady
@@ -211,12 +191,10 @@ pile.config = {
 	},
 
 	/**
-	 * @cfg {String} infoMessages
-	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 * @cfg {String} submissionProxyURL
+	 * URL prefix for requests to Echo Submission Proxy
 	 */
-	"infoMessages": {
-		"layout": "compact"
-	}
+	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
 };
 
 pile.vars = {
@@ -567,7 +545,7 @@ pile.css =
 	'.{class:container} { line-height: 20px; vertical-align: middle; }' +
 	'.{class:more} { white-space: nowrap; }' +
 	'.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }' +
-	'.{class:more} .echo-control-message-icon { display: inline; margin: 0px 5px; }';
+	'.{class:more} .echo-serverrelatedapp-message-icon { display: inline; margin: 0px 5px; }';
 
 Echo.Control.create(pile);
 
@@ -597,44 +575,8 @@ var item = Echo.Control.manifest("Echo.StreamServer.Controls.FacePile.Item");
 
 if (Echo.Control.isDefined(item)) return;
 
-/** @hide @cfg appkey */
 /** @hide @cfg plugins */
-/** @hide @cfg submissionProxyURL */
-/** @hide @method checkAppKey */
-/** @hide @method placeImage */
 /** @hide @method dependent */
-/** @hide @method getRelativeTime */
-/** @hide @echo_label justNow */
-/** @hide @echo_label today */
-/** @hide @echo_label yesterday */
-/** @hide @echo_label lastWeek */
-/** @hide @echo_label lastMonth */
-/** @hide @echo_label secondAgo */
-/** @hide @echo_label secondsAgo */
-/** @hide @echo_label minuteAgo */
-/** @hide @echo_label minutesAgo */
-/** @hide @echo_label hourAgo */
-/** @hide @echo_label hoursAgo */
-/** @hide @echo_label dayAgo */
-/** @hide @echo_label daysAgo */
-/** @hide @echo_label weekAgo */
-/** @hide @echo_label weeksAgo */
-/** @hide @echo_label monthAgo */
-/** @hide @echo_label monthsAgo */
-/** @hide @echo_label loading */
-/** @hide @echo_label retrying */
-/** @hide @echo_label error_busy */
-/** @hide @echo_label error_timeout */
-/** @hide @echo_label error_waiting */
-/** @hide @echo_label error_view_limit */
-/** @hide @echo_label error_view_update_capacity_exceeded */
-/** @hide @echo_label error_result_too_large */
-/** @hide @echo_label error_wrong_query */
-/** @hide @echo_label error_incorrect_appkey */
-/** @hide @echo_label error_internal_error */
-/** @hide @echo_label error_quota_exceeded */
-/** @hide @echo_label error_incorrect_user_id */
-/** @hide @echo_label error_unknown */
 
 /**
  * @echo_event Echo.StreamServer.Controls.FacePile.Item.onReady
@@ -656,12 +598,16 @@ if (Echo.Control.isDefined(item)) return;
 
 item.config = {
 	/**
-	 * @cfg {String} infoMessages
-	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 * @cfg {String} defaultAvatar
+	 * Default avatar URL which will be used for the user in
+	 * case there is no avatar information defined in the user
+	 * profile. Also used for anonymous users.
 	 */
-	"infoMessages": {
-		"enabled": false
-	}
+	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false)
+};
+
+item.config.normalizer = {
+	"defaultAvatar": Echo.Loader.getURL
 };
 
 item.labels = {
@@ -686,7 +632,7 @@ item.templates.main =
 item.renderers.avatar = function(element) {
 	var self = this;
 	if (this.config.get("avatar")) {
-		this.placeImage({ 
+		Echo.Utils.placeImage({
 			"container": element,
 			"image": this.get("data.avatar"),
 			"defaultImage": this.config.get("defaultAvatar")

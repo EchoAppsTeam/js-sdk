@@ -18,7 +18,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Control initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.Control
+ * @extends Echo.ServerRelatedApp
  *
  * @package streamserver/controls.pack.js
  * @package streamserver.pack.js
@@ -33,26 +33,9 @@ var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
 
 if (Echo.Control.isDefined(submit)) return;
 
+submit.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
+
 /** @hide @cfg apiBaseURL */
-/** @hide @method placeImage */
-/** @hide @method getRelativeTime */
-/** @hide @echo_label justNow */
-/** @hide @echo_label today */
-/** @hide @echo_label yesterday */
-/** @hide @echo_label lastWeek */
-/** @hide @echo_label lastMonth */
-/** @hide @echo_label secondAgo */
-/** @hide @echo_label secondsAgo */
-/** @hide @echo_label minuteAgo */
-/** @hide @echo_label minutesAgo */
-/** @hide @echo_label hourAgo */
-/** @hide @echo_label hoursAgo */
-/** @hide @echo_label dayAgo */
-/** @hide @echo_label daysAgo */
-/** @hide @echo_label weekAgo */
-/** @hide @echo_label weeksAgo */
-/** @hide @echo_label monthAgo */
-/** @hide @echo_label monthsAgo */
 /** @hide @echo_label loading */
 /** @hide @echo_label retrying */
 /** @hide @echo_label error_busy */
@@ -103,6 +86,13 @@ submit.init = function() {
 };
 
 submit.config = {
+	/**
+	 * @cfg {String} defaultAvatar
+	 * Default avatar URL which will be used for the user in
+	 * case there is no avatar information defined in the user
+	 * profile. Also used for anonymous users.
+	 */
+	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false),
 	/**
 	 * @cfg {String} [targetURL=document.location.href]
 	 * Specifies the URI to which the submitted Echo item is related. 
@@ -264,7 +254,16 @@ submit.config = {
 		"maxHeight": 150,
 		"width": 390
 	},
-	"targetQuery": undefined
+	"targetQuery": undefined,
+	/**
+	 * @cfg {String} submissionProxyURL
+	 * URL prefix for requests to Echo Submission Proxy
+	 */
+	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
+};
+
+submit.config.normalizer = {
+	"defaultAvatar": Echo.Loader.getURL
 };
 
 submit.vars = {
@@ -426,7 +425,7 @@ submit.renderers.text = function(element) {
  * @echo_renderer
  */
 submit.renderers.avatar = function(element) {
-	this.placeImage({ 
+	Echo.Utils.placeImage({
 		"container": element,
 		"image": this.user.get("avatar"),
 		"defaultImage": this.config.get("defaultAvatar")

@@ -7,6 +7,8 @@ var canvas = Echo.Control.manifest("Echo.Canvas");
 
 if (Echo.Control.isDefined(canvas)) return;
 
+canvas.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
+
 /**
  * @class Echo.Canvas
  * Class which implements Canvas mechanics on the client side.
@@ -16,7 +18,7 @@ if (Echo.Control.isDefined(canvas)) return;
  *
  * @package environment.pack.js
  *
- * @extends Echo.Control
+ * @extends Echo.ServerRelatedApp
  *
  * @constructor
  * Canvas object constructor to initialize the Echo.Canvas instance
@@ -25,24 +27,6 @@ if (Echo.Control.isDefined(canvas)) return;
  * Configuration options
  */
 
-/** @hide @method getRelativeTime */
-/** @hide @echo_label justNow */
-/** @hide @echo_label today */
-/** @hide @echo_label yesterday */
-/** @hide @echo_label lastWeek */
-/** @hide @echo_label lastMonth */
-/** @hide @echo_label secondAgo */
-/** @hide @echo_label secondsAgo */
-/** @hide @echo_label minuteAgo */
-/** @hide @echo_label minutesAgo */
-/** @hide @echo_label hourAgo */
-/** @hide @echo_label hoursAgo */
-/** @hide @echo_label dayAgo */
-/** @hide @echo_label daysAgo */
-/** @hide @echo_label weekAgo */
-/** @hide @echo_label weeksAgo */
-/** @hide @echo_label monthAgo */
-/** @hide @echo_label monthsAgo */
 /** @hide @echo_label loading */
 /** @hide @echo_label retrying */
 /** @hide @echo_label error_busy */

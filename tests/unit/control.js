@@ -1,7 +1,7 @@
 (function(jQuery) {
-var $ = jQuery;
-
 "use strict";
+
+var $ = jQuery;
 
 Echo.Tests.Dependencies = Echo.Tests.Dependencies || {};
 Echo.Tests.Dependencies.Control = {};
@@ -22,16 +22,10 @@ suite.prototype.info = {
 		"dependent",
 		"template",
 		"getPlugin",
-		"showMessage",
-		"showError",
 		"destroy",
 		"refresh",
 		"render",
 		"isDefined",
-		"getRelativeTime",
-		"placeImage",
-		"checkAppKey",
-
 		// functions below are covered
 		// within the Plugin component test
 		"template",
@@ -224,33 +218,6 @@ suite.prototype.cases.basicOperations = function(callback) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
 		}
 
-		// checking "getRelativeTime" method
-		var now = Math.floor((new Date()).getTime() / 1000);
-		var probes = [
-			["", undefined, "empty string"],
-			[0, undefined, "zero as a value"],
-			["some-random-string", undefined, "random string"],
-			[false, undefined, "boolean 'false'"],
-			[now + 60, "Just now", "date/time \"from the future\""],
-			[now - 0, "Just now", "Just now"],
-			[now - 4, "Just now", "less than 5 seconds ago"],
-			[now - 9, "Just now", "less than 10 seconds ago"],
-			[now - 10, "10 Seconds Ago", "10 seconds ago"],
-			[now - 1 * 60, "1 Minute Ago", "minute ago"],
-			[now - 3 * 60, "3 Minutes Ago", "minutes ago"],
-			[now - 1 * 60 * 60, "1 Hour Ago", "hour ago"],
-			[now - 4 * 60 * 60, "4 Hours Ago", "hours ago"],
-			[now - 1 * 24 * 60 * 60, "Yesterday", "yesterday"],
-			[now - 3 * 24 * 60 * 60, "3 Days Ago", "days ago"],
-			[now - 7 * 24 * 60 * 60, "Last Week", "last week"],
-			[now - 32 * 24 * 60 * 60, "Last Month", "last month"],
-			[now - 64 * 24 * 60 * 60, "2 Months Ago", "months ago"]
-		];
-		$.map(probes, function(probe) {
-			QUnit.equal(self.getRelativeTime(probe[0]), probe[1],
-				"Checking \"getRelativeTime\" function (" + probe[2] + ")");
-		});
-
 		// checking "invoke" method
 		var cases = [
 			[function() { return this.getPlugin("MyFakeTestPlugin"); }, undefined],
@@ -294,14 +261,6 @@ suite.prototype.cases.initializationWithInvalidParams = function(callback) {
 	result = new definition({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if empty object is returned if no target is passed in config");
-
-	result = new definition({"target": $("<div>")});
-	var html = result.config.get("target").html();
-	QUnit.ok(/incorrect_appkey/.test(html),
-		"Checking if the error message is produced once the control is initialized without the appkey defined (validating the \"checkAppKey\" function)");
-	QUnit.ok(/echo-control-message-error/.test(html),
-		"Checking if the error message contains the necessary CSS class once the control is initialized without the appkey defined (validating the \"checkAppKey\" function)");
-	result.destroy();
 
 	callback && callback();
 };
@@ -451,85 +410,6 @@ suite.prototype.cases.controlRendering = function(callback) {
 		this.render();
 		_suite.jqueryObjectsEqual($(this.view.get("testRenderer").html()), $("<div>Some value</div>"),
 			"Checking if component was re-rendered and appended elements were wiped out");
-
-		// checking "showMessage" method
-		var target = $('<div></div>');
-		var data = {
-			"type": "error",
-			"message": "An error occured during the request...",
-			"layout": "compact",
-			"target": target
-		};
-		this.showMessage(data);
-		QUnit.ok(!!this.view.get("container"),
-			"Checking if the \"showMessage\" function doesn't wipe out other elements in the \"view\" structure");
-		QUnit.equal(
-			target.find(".echo-control-message-icon").attr("title"),
-			data.message,
-			"Checking \"showMessage\" in compact mode");
-
-		data.layout = "full";
-		this.showMessage(data);
-		QUnit.equal(
-			target.find(".echo-control-message-icon").html(),
-			data.message,
-			"Checking \"showMessage\" in full mode");
-
-		// checking "showError" method
-		var errorCount = 0;
-		var errorTarget = $("<div></div>");
-		var errorData = {
-			"errorCode": "someUndefinedErrorCode",
-			"errorMessage": "Some Error Message"
-		};
-		var errorRequest = new Echo.API.Request({
-			"endpoint": "search",
-			"data": {
-				"appkey": "echo.jssdk.tests.aboutecho.com",
-				"q": "unsupported query"
-			},
-			"onData": function(response) {},
-			"onError": function(response) {},
-			"onOpen": function() {}
-		});
-		var errorOptions = {
-			"target": errorTarget,
-			"critical": false,
-			"request": errorRequest
-		};
-		this.showError(errorData, errorOptions);
-		QUnit.equal(
-			errorTarget.find(".echo-control-message-icon").html(),
-			"(someUndefinedErrorCode) Some Error Message",
-			"Checking if the unsupported errorCode received"
-		);
-		errorData.errorCode = "busy";
-		this.showError(errorData, errorOptions);
-		QUnit.equal(
-			errorTarget.find(".echo-control-message-icon").html(),
-			"Loading. Please wait...",
-			"Checking if the supported errorCode received and errorMessage ignored"
-		);
-		errorOptions.retryIn = 3000;
-		errorData.errorCode = "view_limit";
-		this.showError(errorData, errorOptions);
-		QUnit.equal(
-			errorTarget.find(".echo-control-message-icon").html(),
-			"View creation rate limit has been exceeded. Retrying in 3 seconds...",
-			"Checking if the retrying mechanism works"
-		);
-		QUnit.stop();
-		setTimeout(function() {
-			errorOptions.retryIn = 0;
-			self.showError(errorData, errorOptions);
-			QUnit.equal(
-				errorTarget.find(".echo-control-message-icon").html(),
-				"Retrying...",
-				"Checking if the retrying mechanism works after 3 seconds counted"
-			);
-			clearInterval(errorRequest.retryTimer);
-			QUnit.start();
-		}, 3000);
 
 		var template = '<div class="echo-utils-tests-footer">footer content</div>';
 		this.render();
@@ -1116,193 +996,6 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 	}, "Echo.TestControl1_Child1");
 };
 
-suite.prototype.async = {};
-
-suite.prototype.async.placeImageContainerClassTest = function(callback) {
-	var container = $("<div id=\"place-image-container-class\"/>").appendTo($("#qunit-fixture"));
-	suite.initTestControl({
-		"ready": function() {
-			this.placeImage({
-				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
-				"onerror": function() {
-					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
-					callback();
-				},
-				"onload": function() {
-					QUnit.ok(container.hasClass("echo-image-container"), "Checking placeImage() method for image class adding");
-					callback();
-				}
-			});
-		}
-	});
-};
-
-suite.prototype.async.placeImageContainerFillClassTest = function(callback) {
-	var container = $("<div id=\"place-image-container-fill-class\"/>").appendTo($("#qunit-fixture"));
-	suite.initTestControl({
-		"ready": function() {
-			this.placeImage({
-				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
-				"onerror": function() {
-					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
-					callback();
-				},
-				"onload": function() {
-					QUnit.ok(container.hasClass("echo-image-position-fill"), "Checking placeImage() method for image area filling class adding");
-					callback();
-				},
-				"position": "fill"
-			});
-		}
-	});
-};
-
-suite.prototype.async.placeImageContainerFillDefaultTest = function(callback) {
-	var container = $("<div id=\"place-image-container-fill-default-class\"/>").appendTo($("#qunit-fixture"));
-	suite.initTestControl({
-		"ready": function() {
-			this.placeImage({
-				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
-				"onerror": function() {
-					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
-					callback();
-				},
-				"onload": function() {
-					QUnit.ok(container.hasClass("echo-image-position-fill"), "Checking placeImage() method for whether image container filling class is default");
-					callback();
-				}
-			});
-		}
-	});
-};
-
-suite.prototype.async.placeImageContainerFillHorizontalTest = function(callback) {
-	var container = $("<div id=\"place-image-container-fill-horizontal\"/>")
-		.appendTo($("#qunit-fixture"))
-		.css({ "width": "90px", "height": "90px" });
-	suite.initTestControl({
-		"ready": function() {
-			this.placeImage({
-				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
-				"onerror": function() {
-					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
-					callback();
-				},
-				"onload": function() {
-					var self = this;
-					// wait for image size affected in IE
-					setTimeout(function () {
-						QUnit.deepEqual([self.width, self.height], [90, 30], 
-							"Checking placeImage() method for image area filling by a horizontal image");
-						callback();
-					}, 0);
-				},
-				"position": "fill"
-			});
-		}
-	});
-};
-
-suite.prototype.async.placeImageContainerFillVerticalTest = function(callback) {
-	var container = $("<div id=\"place-image-container-fill-vertical\"/>")
-		.appendTo($("#qunit-fixture"))
-		.css({ "width": "90px", "height": "90px" });
-	suite.initTestControl({
-		"ready": function() {
-			this.placeImage({
-				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-vertical-100x300.png",
-				"onerror": function() {
-					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
-					callback();
-				},
-				"onload": function() {
-					var self = this;
-					// wait for image size affected in IE
-					setTimeout(function () {
-						QUnit.deepEqual([self.width, self.height], [30, 90], 
-							"Checking placeImage() method for image area filling by a vertical image");
-						callback();
-					}, 0);
-				},
-				"position": "fill"
-			});
-		}
-	});
-};
-
-suite.prototype.async.horizontalImageQuirksModeTest = function(callback) {
-	var container = $("<div id=\"place-image-horizontal-quirks\"/>").appendTo($("#qunit-fixture"));
-	suite.initTestControl({
-		"ready": function() {
-			this.placeImage({
-				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
-				"onerror": function() {
-					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
-					callback();
-				},
-				"onload": function() {
-					QUnit.ok($(this).hasClass("echo-image-stretched-horizontally"),
-						"Checking placeImage() method for horizontal stretching class in compatible mode");
-					callback();
-				},
-				"position": "fill"
-			});
-		}
-	});
-};
-
-suite.prototype.async.verticalImageQuirksModeTest = function(callback) {
-	var container = $("<div id=\"place-image-vertical-quirks\"/>").appendTo($("#qunit-fixture"));
-	suite.initTestControl({
-		"ready": function() {
-			this.placeImage({
-				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-vertical-100x300.png",
-				"onerror": function() {
-					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
-					callback();
-				},
-				"onload": function() {
-					QUnit.ok($(this).hasClass("echo-image-stretched-vertically"),
-						"Checking placeImage() method for vertical stretching class in compatible mode");
-					callback();
-				},
-				"position": "fill"
-			});
-		}
-	});
-};
-
-suite.prototype.tests.TestAsyncMethods = {
-		"config": {
-			"async": true,
-			"user": {"status": "anonymous"},
-			"testTimeout": 10000
-		},
-		"check": function() {
-			suite.createTestControl();
-			
-			var tests = [
-				"placeImageContainerClassTest",
-				"placeImageContainerFillClassTest",
-				"placeImageContainerFillDefaultTest",
-				"placeImageContainerFillHorizontalTest",
-				"placeImageContainerFillVerticalTest"
-			];
-			if (document.compatMode !== "CSS1Compat") {
-				tests = tests.concat(["horizontalImageQuirksModeTest", "verticalImageQuirksModeTest"])
-			}
-			this.sequentialAsyncTests(tests, "async");
-		}
-	};
-
-
 // data required to perform tests
 
 suite.data = {};
@@ -1537,7 +1230,6 @@ suite.getControlManifest = function(name, config) {
 	addDependency(11, {"app": "Echo.Apps.MyTestApp"});
 
 	manifest.init = function() {
-		if (!this.checkAppKey()) return;
 		this.render();
 		this.ready();
 	};

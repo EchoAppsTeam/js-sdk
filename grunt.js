@@ -83,6 +83,7 @@ module.exports = function(grunt) {
 				"user-session.js",
 				"view.js",
 				"control.js",
+				"server-related-app.js",
 				"app.js",
 				"plugin.js",
 				"canvas.js"

@@ -26,7 +26,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Control initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.Control
+ * @extends Echo.ServerRelatedApp
  *
  * @package identityserver/controls.pack.js
  * @package identityserver.pack.js
@@ -41,26 +41,8 @@ var auth = Echo.Control.manifest("Echo.IdentityServer.Controls.Auth");
 
 if (Echo.Control.isDefined(auth)) return;
 
-/** @hide @cfg submissionProxyURL */
-/** @hide @method placeImage */
-/** @hide @method getRelativeTime */
-/** @hide @echo_label justNow */
-/** @hide @echo_label today */
-/** @hide @echo_label yesterday */
-/** @hide @echo_label lastWeek */
-/** @hide @echo_label lastMonth */
-/** @hide @echo_label secondAgo */
-/** @hide @echo_label secondsAgo */
-/** @hide @echo_label minuteAgo */
-/** @hide @echo_label minutesAgo */
-/** @hide @echo_label hourAgo */
-/** @hide @echo_label hoursAgo */
-/** @hide @echo_label dayAgo */
-/** @hide @echo_label daysAgo */
-/** @hide @echo_label weekAgo */
-/** @hide @echo_label weeksAgo */
-/** @hide @echo_label monthAgo */
-/** @hide @echo_label monthsAgo */
+auth.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
+
 /** @hide @echo_label loading */
 /** @hide @echo_label retrying */
 /** @hide @echo_label error_busy */
@@ -95,6 +77,14 @@ if (Echo.Control.isDefined(auth)) return;
  */
 
 auth.config = {
+	/**
+	 * @cfg {String} defaultAvatar
+	 * Default avatar URL which will be used for the user in
+	 * case there is no avatar information defined in the user
+	 * profile. Also used for anonymous users.
+	 */
+	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false),
+
 	/**
 	 * @cfg {Object} identityManager
 	 * The list of handlers for login, edit and signup action. If some action
@@ -167,7 +157,16 @@ auth.config = {
 	 * @cfg {String} infoMessages
 	 * Customizes the look and feel of info messages, for example "loading" and "error".
 	 */
-	"infoMessages": {"enabled": false}
+	"infoMessages": {"enabled": false},
+	/**
+	 * @cfg {String} submissionProxyURL
+	 * URL prefix for requests to Echo Submission Proxy
+	 */
+	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
+};
+
+auth.config.normalizer = {
+	"defaultAvatar": Echo.Loader.getURL
 };
 
 auth.dependencies = [{
@@ -295,7 +294,7 @@ auth.renderers.or = function(element) {
  * @echo_renderer
  */
 auth.renderers.avatar = function(element) {
-	this.placeImage({ 
+	Echo.Utils.placeImage({
 		"container": element,
 		"image": this.user.get("avatar"),
 		"defaultImage": this.config.get("defaultAvatar")
