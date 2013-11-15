@@ -15,6 +15,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
 	grunt.loadNpmTasks("grunt-saucelabs");
+	grunt.loadNpmTasks("grunt-contrib-watch");
 
 	grunt.registerTask("default", ["check:config", "jshint", "clean:all", "build:sdk"]);
 
