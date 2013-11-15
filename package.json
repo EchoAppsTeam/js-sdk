@@ -40,7 +40,8 @@
     "grunt-express": "~1.2.1"
   },
   "devDependencies": {
-    "ftp": "~0.1.7"
+    "ftp": "~0.1.7",
+    "grunt-contrib-watch": "~0.5.3"
   },
   "private": true
 }

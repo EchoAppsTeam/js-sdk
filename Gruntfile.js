@@ -479,7 +479,16 @@ module.exports = function(grunt) {
 					"browsers": [testPlatforms.firefox, testPlatforms.chrome, testPlatforms.safari, testPlatforms.ie8, testPlatforms.ie9, testPlatforms.ie10]
 				}
 			}
-		}
+		},
+                "watch": {
+                        "src": {
+                                "files": ["apps/**/*", "demo/**/*", "config/**/*", "src/**/*", "tools/**/*", "tests/**/*"],
+                                "tasks": ["default"],
+                                "options": {
+                                        "interrupt": true
+                                }
+                        }
+                }
 	};
 
 	grunt.initConfig(config);
