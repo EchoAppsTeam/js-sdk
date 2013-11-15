@@ -12,6 +12,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
 	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
+	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
 	grunt.loadNpmTasks("grunt-saucelabs");
@@ -264,18 +265,15 @@ module.exports = function(grunt) {
 			" */\n",
 		"clean": {
 			"build": [
-				"<%= dirs.build %>"
+				"<%= dirs.build %>/*"
 			],
 			"third-party": {
 				"files": [{
 					"expand": true,
 					"cwd": "<%= dirs.build %>",
 					"src": [
-						"third-party/**",
-						// remove everything except packs and folders they are in
-						"!third-party",
+						"third-party/*",
 						"!third-party/janrain",
-						"!third-party/janrain/*",
 						"!third-party/jquery",
 						"!third-party/jquery.pack.js",
 						"!third-party/jquery/jquery.isotope.min.js"
@@ -283,7 +281,7 @@ module.exports = function(grunt) {
 				}]
 			},
 			"all": [
-				"<%= dirs.dist %>",
+				"<%= dirs.dist %>/*",
 				"<%= clean.build %>"
 			]
 		},
@@ -479,6 +477,23 @@ module.exports = function(grunt) {
 					"build": "travis-" + process.env["TRAVIS_BUILD_NUMBER"],
 					"identifier": process.env["TRAVIS_JOB_NUMBER"],
 					"browsers": [testPlatforms.firefox, testPlatforms.chrome, testPlatforms.safari, testPlatforms.ie8, testPlatforms.ie9, testPlatforms.ie10]
+				}
+			}
+		},
+		"watch": {
+			"all": {
+				"files": [
+					"Gruntfile.js",
+					"src/**",
+					"demo/**",
+					"tests/**",
+					"apps/**",
+					"config/**",
+					"tools/**"
+				],
+				"tasks": ["default"],
+				"options": {
+					"interrupt": true
 				}
 			}
 		}
