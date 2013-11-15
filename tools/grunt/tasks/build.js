@@ -31,6 +31,8 @@ module.exports = function(grunt) {
 					//"copy:bootstrap",
 					//"wrap",
 					"requirejs",
+					"wrap",
+					"concat:third-party/bootstrap",
 					"recess:bootstrap",
 					"patch:gui-css",
 					"patch:loader-build",
@@ -70,7 +72,7 @@ module.exports = function(grunt) {
 				];
 				break;
 		}
-		tasks.push("clean:build");
+		//tasks.push("clean:build");
 		grunt.task.run(tasks);
 	});
 
@@ -195,7 +197,7 @@ module.exports = function(grunt) {
 				"processContent": function(text, filename) {
 					var env = shared.config("env");
 					text = shared.replacePlaceholdersOnCopy(text, filename);
-					return text.replace(/\(window\.jQuery\)/g, "(Echo.jQuery)");
+					return text.replace(/\(window\.jQuery\)/g, "(jQuery)");
 				},
 				"processContentExclude": "**/*.{png,jpg,jpeg,gif}"
 			}
