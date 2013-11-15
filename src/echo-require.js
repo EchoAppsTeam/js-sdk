@@ -11,9 +11,8 @@
 		"paths": {
 			"echo": getBaseURL(),
 			"echo-gui-css": "css!echo/gui.pack.css",
-			//"jquery": getBaseURL() + "third-party/jquery/jquery",
 			"jquery-noconflict":  getBaseURL() + "jquery.pack",
-			"isotope": getBaseURL() + "third-party/jquery/jquery.isotope.min", //getBaseURL() + "third-party/jquery/jquery.isotope.min",
+			"isotope": getBaseURL() + "third-party/jquery/jquery.isotope.min", 
 			"gui-pack": getBaseURL() + "gui.pack"
 		},
 		"map": {
@@ -23,16 +22,11 @@
 				"bootstrap-button":"gui-pack"
 			},
 			"jquery-noconflict": {"jquery": "jquery"},
-			//"isotope": {"jquery": "jquery-noconflict"}
 		},
 		"shim": {
-			//"isotope": ["jquery"],
 			"echo/backplane": {
             	"exports": "Backplane"
-        	},
-        	
-        	"bootstrap-button": ["jquery"]
-
+        	}
 		}
 	});
 })();
