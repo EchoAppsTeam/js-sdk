@@ -32,7 +32,7 @@ module.exports = function(grunt) {
 					//"wrap",
 					"requirejs",
 					"wrap",
-					"concat:third-party/bootstrap",
+					"concat:gui-pack",
 					"recess:bootstrap",
 					"patch:gui-css",
 					"patch:loader-build",

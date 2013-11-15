@@ -106,7 +106,7 @@ module.exports = function(grunt) {
 			],
 			"dest": "api.pack.js"
 		},
-		"environment": {
+		/*"environment": {
 			"src": [
 				"utils.js",
 				"events.js",
@@ -121,7 +121,7 @@ module.exports = function(grunt) {
 				"canvas.js"
 			],
 			"dest": "environment.pack.js"
-		},
+		},*/
 		"third-party/jquery": {
 			"src": [
 				"third-party/jquery/jquery.js",
@@ -137,8 +137,8 @@ module.exports = function(grunt) {
 			],
 			"dest": "third-party/jquery/jquery.isotope.min.js"
 		},
-		"third-party/bootstrap": {
-			"src": [
+		"gui-pack": {
+			"src": [ //TODO: rewrite ../build
 				"../build/third-party/bootstrap/js/bootstrap-transition.js",
 				"../build/third-party/bootstrap/js/bootstrap-affix.js",
 				"../build/third-party/bootstrap/js/bootstrap-alert.js",
@@ -449,7 +449,7 @@ module.exports = function(grunt) {
 					"optimize": "none",
 					"wrap": false,
 					"namespace": "Echo",
-					//removeCombined: true,
+					"removeCombined": true,
 					"paths": {
 						"echo": "./"
 					},
@@ -468,8 +468,26 @@ module.exports = function(grunt) {
 							"third-party/jquery/jquery.ihint",
 							"third-party/jquery/jquery.viewport.mini"					
 						]
+					}, {
+						"name": "enviroment.pack",
+						"create": true,
+						"include": [
+							"utils",
+							"events",
+							"labels",
+							"configuration",
+							"api",					// it was
+							"streamserver/api",		// api
+							"identityserver/api",	// pack
+							"user-session",
+							"view",
+							//"control",
+							"app",
+							"plugin",
+							"canvas"
+						]
 					}],
-					//fileExclusionRegExp: /\S*(?:isotope){1}\S*/g,
+					//fileExclusionRegExp: /\S*(?:isotope|bootstrap-){1}\S*/g,
 				}
 			}//,
 			//"plugins": {
