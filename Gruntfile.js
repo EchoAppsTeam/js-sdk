@@ -275,6 +275,8 @@ module.exports = function(grunt) {
 						"third-party/**",
 						// remove everything except packs and folders they are in
 						"!third-party",
+						"!third-party/janrain",
+						"!third-party/janrain/*",
 						"!third-party/jquery",
 						"!third-party/jquery.pack.js",
 						"!third-party/jquery/jquery.isotope.min.js"
