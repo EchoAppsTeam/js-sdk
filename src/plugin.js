@@ -1,11 +1,12 @@
-define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, Utils, Labels) {
+define("echo/plugin", [
+	"jquery",
+	"echo/control",
+	"echo/utils",
+	"echo/labels",
+	"require"
+], function($, Control, utils, Labels, require) {
 	
 	"use strict";
-
-	var $ = jQuery,
-		Plugin;
-
-	//if (Utils.isComponentDefined("Plugin")) return;
 
 	/**
 	 * @class Plugin
@@ -15,7 +16,7 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 	 *
 	 * @package environment.pack.js
 	 */
-	Plugin = function() {};
+	var Plugin = function() {};
 
 	/**
 	 * @static
@@ -60,9 +61,9 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 		// prevent multiple re-definitions
 		if (plugin) return plugin;
 
-		var constructor = Utils.inherit(Plugin, function(config) {
+		var constructor = utils.inherit(Plugin, function(config) {
 			if (!config || !config.component) {
-				Utils.log({
+				utils.log({
 					"type": "error",
 					"component": manifest.name,
 					"message": "Unable to initialize plugin, config is invalid",
@@ -83,7 +84,6 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 		var namespace = Plugin._getClassName(manifest.name, manifest.component.name);
 
 		constructor.manifest = manifest;
-		constructor.dependencies = manifest.dependencies;
 		constructor.prototype.namespace = namespace;
 
 		// define default language var values with the lowest priority available
@@ -93,7 +93,7 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 			$.extend(constructor.prototype, manifest.methods);
 		}
 
-		Utils.set(window, namespace, constructor);
+		utils.set(window, namespace, constructor);
 		return constructor;
 	};
 
@@ -123,7 +123,6 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 			"methods": {},
 			"renderers": {},
 			"templates": {},
-			"dependencies": [],
 			"enabled": function() { return true; },
 			"init": function() {},
 			"destroy": function() {}
@@ -141,7 +140,7 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 	 */
 	Plugin.isDefined = function(manifest) {
 		if (typeof manifest === "string") {
-			var component = Utils.get(window, manifest);
+			var component = utils.get(window, manifest);
 			return !!(component && component.manifest);
 		}
 		return !!Plugin.getClass(manifest.name, manifest.component.name);
@@ -161,7 +160,7 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 	 * Plugin class.
 	 */
 	Plugin.getClass = function(name, component) {
-		return Utils.get(window, Plugin._getClassName(name, component));
+		return utils.get(window, Plugin._getClassName(name, component));
 	};
 
 	/**
@@ -202,28 +201,28 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 	 * @inheritdoc Control#set
 	 */
 	Plugin.prototype.set = function(key, value) {
-		return Utils.set(this, key, value);
+		return utils.set(this, key, value);
 	};
 
 	/**
 	 * @inheritdoc Control#get
 	 */
 	Plugin.prototype.get = function(key, defaults) {
-		return Utils.get(this, key, defaults);
+		return utils.get(this, key, defaults);
 	};
 
 	/**
 	 * @inheritdoc Control#remove
 	 */
 	Plugin.prototype.remove = function(key) {
-		return Utils.remove(this, key);
+		return utils.remove(this, key);
 	};
 
 	/**
-	 * @inheritdoc Utils#invoke
+	 * @inheritdoc utils#invoke
 	 */
 	Plugin.prototype.invoke = function(mixed, context) {
-		return Utils.invoke(mixed, context || this);
+		return utils.invoke(mixed, context || this);
 	};
 
 	/**
@@ -342,10 +341,10 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 	};
 
 	/**
-	 * @inheritdoc Utils#log
+	 * @inheritdoc utils#log
 	 */
 	Plugin.prototype.log = function(data) {
-		Utils.log($.extend(data, {"component": this.namespace}));
+		utils.log($.extend(data, {"component": this.namespace}));
 	};
 
 	Plugin._defineNestedClass = function(name) {
@@ -355,6 +354,7 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 	};
 
 	Plugin.prototype._init = function() {
+		var Control = require("echo/control");
 		Control.prototype._init.apply(this, arguments);
 	};
 
@@ -368,8 +368,8 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 	Plugin.prototype._initializers = {};
 
 	Plugin.prototype._initializers.css = function() {
-		if (!this._manifest("css") || Utils.hasCSS(this.namespace)) return;
-		Utils.addCSS(this.substitute({"template": this._manifest("css")}), this.namespace);
+		if (!this._manifest("css") || utils.hasCSS(this.namespace)) return;
+		utils.addCSS(this.substitute({"template": this._manifest("css")}), this.namespace);
 	};
 
 	Plugin.prototype._initializers.labels = function() {
@@ -540,7 +540,7 @@ define("echo/plugin", ["jquery", "echo/utils", "echo/labels"], function(jQuery, 
 		data.plugins = (data.plugins || []).concat(this.plugin.config.get("nestedPlugins", []));
 
 		// copy default field values from parent control
-		Utils.foldl(data, defaults, function(value, acc, key) {
+		utils.foldl(data, defaults, function(value, acc, key) {
 			// do not override existing values in data
 			if (typeof data[key] === "undefined") {
 				acc[key] = config.get(key);

@@ -1,12 +1,14 @@
-define("echo/user-session", 
-["jquery", "echo/utils", "echo/backplane", "echo/configuration", "echo/api", "echo/identityserver/api", "echo/events"], 
-function(jQuery, Utils, Backplane, Configuration, API, IdentityServerApi, Events) {
+define("echo/user-session", [
+	"jquery",
+	"echo/utils",
+	"echo/backplane",
+	"echo/configuration",
+	"echo/api",
+	"echo/identityserver/api",
+	"echo/events"
+], function($, utils, Backplane, Configuration, API, IdentityServerAPI, events) {
+
 	"use strict";
-
-	var $ = jQuery,
-		UserSession;
-
-	//if (Utils.isComponentDefined("UserSession")) return;
 
 	/**
 	 * @singleton
@@ -40,7 +42,7 @@ function(jQuery, Utils, Backplane, Configuration, API, IdentityServerApi, Events
 	 * @return {Object}
 	 * The reference to the UserSession class.
 	 */
-	UserSession = function(config) {
+	var UserSession = function(config) {
 		return UserSession._construct(config);
 	};
 
@@ -233,7 +235,7 @@ function(jQuery, Utils, Backplane, Configuration, API, IdentityServerApi, Events
 
 	UserSession._construct = function(config) {
 		if (!config) {
-			Utils.log({
+			utils.log({
 				"type": "error",
 				"component": "UserSession",
 				"message": "Unable to initialize user session, config is invalid",
@@ -280,7 +282,7 @@ function(jQuery, Utils, Backplane, Configuration, API, IdentityServerApi, Events
 
 	UserSession._maybeDelegate = function(config) {
 		var user = this;
-		var name = Utils.capitalize(config.key);
+		var name = utils.capitalize(config.key);
 		var handler = user["_" + config.action + name];
 		return handler
 			? handler.apply(this, config.arg || [])
@@ -372,7 +374,7 @@ function(jQuery, Utils, Backplane, Configuration, API, IdentityServerApi, Events
 				 * @param {Number} data.poco.entry.totalResults
 				 * The total number of contacts found.
 				 */
-				Events.publish({
+				events.publish({
 					"topic": "UserSession.onInvalidate",
 					"data": user.is("logged") ? user.data : {}
 				});
@@ -443,7 +445,7 @@ function(jQuery, Utils, Backplane, Configuration, API, IdentityServerApi, Events
 			 * @param {Number} data.poco.entry.totalResults
 			 * The total number of contacts found.
 			 */
-			Events.publish({
+			events.publish({
 				"topic": "UserSession.onInit",
 				"data": data
 			});
@@ -457,7 +459,7 @@ function(jQuery, Utils, Backplane, Configuration, API, IdentityServerApi, Events
 				},
 				"onData": handler,
 				"onError": function(response) {
-					Utils.log({
+					utils.log({
 						"type": "error",
 						"component": "UserSession",
 						"args": {"response": response},
@@ -485,7 +487,7 @@ function(jQuery, Utils, Backplane, Configuration, API, IdentityServerApi, Events
 
 	UserSession._onInit = function(callback) {
 		if (!callback) return;
-		Events.subscribe({
+		events.subscribe({
 			"topic": "UserSession.onInit",
 			"once": true,
 			"handler": callback
@@ -502,7 +504,7 @@ function(jQuery, Utils, Backplane, Configuration, API, IdentityServerApi, Events
 		var user = this;
 		user.identity[field] = typeof user.identity[field] !== "undefined"
 			? user.identity[field]
-			: Utils.foldl(undefined, user.identity[container] || [], filter);
+			: utils.foldl(undefined, user.identity[container] || [], filter);
 		return user.identity[field];
 	};
 

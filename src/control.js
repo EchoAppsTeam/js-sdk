@@ -1,11 +1,16 @@
-define("echo/control", 
-["jquery", "echo/utils", "echo/configuration", "echo/events", "echo/view", "echo/labels", "echo/loader", "echo/user-session", "echo/plugin"], 
-function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession, Plugin) {
-	
-	"use strict";
+define("echo/control", [
+	"jquery",
+	"echo/utils",
+	"echo/configuration",
+	"echo/events",
+	"echo/view",
+	"echo/labels",
+	"echo/user-session",
+	"echo/plugin",
+	"require"
+], function($, utils, Configuration, events, View, Labels, UserSession, Plugin, require) {
 
-	var $ = jQuery,
-		Control;
+	"use strict";
 
 	/**
 	 * @class Control
@@ -15,7 +20,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	 *
 	 * @package environment.pack.js
 	 */
-	Control = function() {};
+	var Control = function() {};
 
 	// static interface
 
@@ -61,18 +66,17 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	 * Reference to the generated control class.
 	 */
 	Control.create = function(manifest) {
-		var control = Utils.getComponent(manifest.name);
+		var control = utils.getComponent(manifest.name);
 
 		// prevent multiple re-definitions
 		if (Control.isDefined(manifest)) return control;
 
 		var _manifest = this._merge(manifest, manifest.inherits && manifest.inherits._manifest);
-
-		var constructor = Utils.inherit(this, function(config) {
+		var constructor = utils.inherit(this, function(config) {
 
 			// perform basic validation of incoming params
 			if (!config || !config.target) {
-				Utils.log({
+				utils.log({
 					"type": "error",
 					"component": _manifest.name,
 					"message": "Unable to initialize control, config is invalid",
@@ -105,7 +109,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		prototype.cssClass = _manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 		prototype.cssPrefix = prototype.cssClass + "-";
 
-		Utils.set(window, _manifest.name, $.extend(constructor, control));
+		utils.set(window, _manifest.name, $.extend(constructor, control));
 		return constructor;
 	};
 
@@ -129,7 +133,6 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 			"methods": {},
 			"renderers": {},
 			"templates": {},
-			"dependencies": [],
 			"init": function() {
 				this.render();
 				this.ready();
@@ -151,7 +154,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		var name = typeof manifest === "string"
 			? manifest
 			: manifest.name;
-		var component = Utils.get(window, name);
+		var component = utils.get(window, name);
 		return !!(component && component._manifest);
 	};
 
@@ -185,7 +188,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	 * The corresponding value found in the object.
 	 */
 	Control.prototype.get = function(key, defaults) {
-		return Utils.get(this, key, defaults);
+		return utils.get(this, key, defaults);
 	};
 
 	/**
@@ -200,7 +203,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	 * The corresponding value which should be defined for the key.
 	 */
 	Control.prototype.set = function(key, value) {
-		return Utils.set(this, key, value);
+		return utils.set(this, key, value);
 	};
 
 	/**
@@ -217,7 +220,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	 * Indicates that the value associated with the given key was removed.
 	 */
 	Control.prototype.remove = function(key) {
-		return Utils.remove(this, key);
+		return utils.remove(this, key);
 	};
 
 	/**
@@ -243,7 +246,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	};
 
 	/**
-	 * @inheritdoc Utils#substitute
+	 * @inheritdoc utils#substitute
 	 */
 	Control.prototype.substitute = function(args) {
 		var instructions = this._getSubstitutionInstructions();
@@ -251,14 +254,14 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		args.instructions = args.instructions
 			? $.extend(instructions, args.instructions)
 			: instructions;
-		return Utils.substitute(args);
+		return utils.substitute(args);
 	};
 
 	/**
-	 * @inheritdoc Utils#invoke
+	 * @inheritdoc utils#invoke
 	 */
 	Control.prototype.invoke = function(mixed, context) {
-		return Utils.invoke(mixed, context || this);
+		return utils.invoke(mixed, context || this);
 	};
 
 	/**
@@ -288,7 +291,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	 * Unified method to destroy control.
 	 */
 	Control.prototype.destroy = function(config) {
-		Events.publish({
+		events.publish({
 			"topic": "Control.onDestroy",
 			"bubble": false,
 			"context": this.config.get("context"),
@@ -457,10 +460,10 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	};
 
 	/**
-	 * @inheritdoc Utils#log
+	 * @inheritdoc utils#log
 	 */
 	Control.prototype.log = function(data) {
-		Utils.log($.extend(data, {"component": this.name}));
+		utils.log($.extend(data, {"component": this.name}));
 	};
 
 	/**
@@ -477,7 +480,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		if (!datetime) return;
 		var self = this;
 		var ts = typeof datetime === "string"
-			? Utils.timestampFromW3CDTF(datetime)
+			? utils.timestampFromW3CDTF(datetime)
 			: datetime;
 		if (!ts) return;
 		var d = new Date(ts * 1000);
@@ -562,7 +565,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 			args.container.addClass("echo-image-position-fill");
 		}
 		
-		var image = Utils.loadImage({
+		var image = utils.loadImage({
 			"image": args.image,
 			"defaultImage": args.defaultImage,
 			"onerror": args.onerror,
@@ -628,7 +631,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		["labels",             ["init"]],
 		["view",               ["init"]],
 		["loading",            ["init", "refresh"]],
-		//["dependencies:async", ["init"]],
+		["backplane:async",    ["init"]],
 		["user:async",         ["init", "refresh"]],
 		["plugins:async",      ["init", "refresh"]],
 		["init:async",         ["init", "refresh"]],
@@ -637,7 +640,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	];
 
 	Control.prototype._initializers.get = function(action) {
-		return Utils.foldl([], this.list, function(initializer, acc) {
+		return utils.foldl([], this.list, function(initializer, acc) {
 			if (~$.inArray(action, initializer[1])) {
 				acc.push(initializer[0]);
 			}
@@ -694,7 +697,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 						return acc;
 					}(parent, []);
 					$.map(names, function(name) {
-						Events.publish(
+						events.publish(
 							$.extend({}, params, {
 								"topic": name + "." + params.topic,
 								"global": false
@@ -703,10 +706,10 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 					});
 				}
 				params.topic = control.name + "." + params.topic;
-				Events.publish(params);
+				events.publish(params);
 			},
 			"subscribe": function(params) {
-				var handlerId = Events.subscribe(prepare(params));
+				var handlerId = events.subscribe(prepare(params));
 				control.subscriptionIDs[handlerId] = true;
 				return handlerId;
 			},
@@ -714,7 +717,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 				if (params && params.handlerId) {
 					delete control.subscriptionIDs[params.handlerId];
 				}
-				Events.unsubscribe(prepare(params));
+				events.unsubscribe(prepare(params));
 			}
 		};
 	};
@@ -812,9 +815,9 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		var self = this;
 		this.config.get("target").addClass(this.cssClass);
 		$.map(this._manifest("css"), function(spec) {
-			if (!spec.id || !spec.code || Utils.hasCSS(spec.id)) return;
+			if (!spec.id || !spec.code || utils.hasCSS(spec.id)) return;
 			if (spec.id !== self.name) {
-				var css, component = Utils.getComponent(spec.id);
+				var css, component = self.constructor;
 				if (component) {
 					css = self.substitute({
 						"template": spec.code,
@@ -824,10 +827,10 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 							}
 						}
 					});
-					Utils.addCSS(css, spec.id);
+					utils.addCSS(css, spec.id);
 				}
 			} else {
-				Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
+				utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 			}
 		});
 	};
@@ -855,9 +858,19 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		});
 	};
 
-	/*Control.prototype._initializers.dependencies = function(callback) {
-		this._loadScripts(this._manifest("dependencies"), callback);
-	};*/
+	Control.prototype._initializers.backplane = function(callback) {
+		var control = this;
+		var config = this.config.get("backplane");
+
+		if (config.serverBaseURL && config.busName) {
+			require(["echo/backplane"], function(backplane) {
+				backplane.init(config);
+				callback.call(control);
+			});
+		} else {
+			callback.call(control);
+		}
+	};
 
 	Control.prototype._initializers.user = function(callback) {
 		var control = this;
@@ -871,7 +884,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		} else {
 			var generateURL = function(baseURL, path) {
 				if (!baseURL) return;
-				var urlInfo = Utils.parseURL(baseURL);
+				var urlInfo = utils.parseURL(baseURL);
 				return (urlInfo.scheme || "https") + "://" + urlInfo.domain + path;
 			};
 			UserSession({
@@ -893,9 +906,9 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		var control = this;
 		this._loadPluginScripts(function() {
 			$.map(control.config.get("pluginsOrder"), function(name) {
-				var Plugin = Plugin.getClass(name, control.name);
-				if (Plugin) {
-					var instance = new Plugin({"component": control});
+				var constructor = Plugin.getClass(name, control.name);
+				if (constructor) {
+					var instance = new constructor({"component": control});
 					if (instance.enabled()) {
 						instance.init();
 						control.plugins[name] = instance;
@@ -937,7 +950,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		};
 		manifest.css = normalizeCSS(manifest);
 		parentManifest.css = normalizeCSS(parentManifest);
-		var merged = Utils.foldl({}, manifest, function(val, acc, name) {
+		var merged = utils.foldl({}, manifest, function(val, acc, name) {
 			acc[name] = name in parentManifest && self._merge[name]
 				? self._merge[name](parentManifest[name], val)
 				: val;
@@ -956,15 +969,11 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	};
 
 	Control._merge.methods = function(parent, own) {
-		return Utils.foldl({}, own, function(method, acc, name) {
+		return utils.foldl({}, own, function(method, acc, name) {
 			acc[name] = name in parent
 				? _wrapper(parent[name], method)
 				: method;
 		});
-	};
-
-	Control._merge.dependencies = function(parent, own) {
-		return parent.concat(own);
 	};
 
 	Control._merge.css = function(parent, own) {
@@ -972,7 +981,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	};
 
 	Control._merge.events = function(parent, own) {
-		return Utils.foldl({}, own, function(data, acc, topic) {
+		return utils.foldl({}, own, function(data, acc, topic) {
 			acc[topic] = topic in parent
 				? [data, parent[topic]]
 				: data;
@@ -1009,9 +1018,9 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 				return control.labels.get(key, defaults);
 			},
 			"self": function(key, defaults) {
-				var value = control.invoke(Utils.get(control, key));
+				var value = control.invoke(utils.get(control, key));
 				return typeof value === "undefined"
-					? Utils.get(control.data, key, defaults)
+					? utils.get(control.data, key, defaults)
 					: value;
 			},
 			"config": function(key, defaults) {
@@ -1021,7 +1030,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 	};
 
 	Control.prototype._manifest = function(key) {
-		var component = Utils.getComponent(this.name);
+		var component = utils.getComponent(this.name);
 		return component
 			? key ? component._manifest[key] : component._manifest
 			: undefined;
@@ -1034,27 +1043,12 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 			return;
 		}
 		resources = $.map(resources, function(resource) {
-			if (!resource.loaded) {
-				var key = resource.app && "App" ||
-					resource.control && "Control" ||
-					resource.plugin && "Plugin";
-
-				if (key) {
-					resource.loaded = function() {
-						return Echo[key].isDefined(resource[key.toLowerCase()]);
-					};
-				}
-			}
-			return $.extend(resource, {
-				"url": control.substitute({"template": resource.url})
-			});
+			return control.substitute({"template": resource})
 		});
-		console.log(resources);
-		Loader.download(resources, function() {
-			console.log(arguments);
+
+		//TODO: handle the scriptLoadErrorTimeout config param
+		require(resources, function() {
 			callback.call(control);
-		}, {
-			"errorTimeout": control.config.get("scriptLoadErrorTimeout")
 		});
 	};
 
@@ -1062,35 +1056,17 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		var control = this;
 		var plugins = this.config.get("pluginsOrder");
 
-		var iterators = {
-			"plugins": function(name, plugin) {
-				// check if a script URL is defined for the plugin
-				var url = "plugins." + name + ".url";
-				if (!plugin && control.config.get(url)) {
-					return [{
-						"url": control.config.get(url),
-						"loaded": function() {
-							return !!Plugin.getClass(name, control.name);
-						}
-					}];
-				}
-			},
-			"dependencies": function(name, plugin) {
-				return plugin && plugin.dependencies;
+		var scripts = utils.foldl([], plugins, function(name, acc) {
+			var plugin = Plugin.getClass(name, control.name);
+			// check if a script URL is defined for the plugin
+			var url = "plugins." + name + ".url";
+			if (!plugin && control.config.get(url)) {
+				acc.push(control.config.get(url));
 			}
-		};
-		var get = function(type) {
-			return Utils.foldl([], plugins, function(name, acc) {
-				var plugin = Plugin.getClass(name, control.name);
-				var scripts = iterators[type](name, plugin);
-				if ($.isArray(scripts) && scripts.length) {
-					return acc.concat(scripts);
-				}
-			});
-		};
-		//TODO: Error in load scripts ... Echo[key]
-		control._loadScripts(get("plugins"), function() {
-			control._loadScripts(get("dependencies"), callback);
+		});
+
+		control._loadScripts(scripts, function() {
+			callback.call(control);
 		});
 	};
 
@@ -1141,13 +1117,7 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		return args.dom;
 	};
 
-	});
-
-	// default manifest declaration
-	define(["jquery", "control"], function(jQuery) {
-	"use strict";
-
-	var $ = jQuery, manifest = {};
+	var manifest = {};
 
 	manifest.name = "Control";
 
@@ -1234,9 +1204,9 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		 * Base URL of the Echo apps built on top of the JS SDK.
 		 */
 		"cdnBaseURL": {
-			"sdk": Loader.getURL(""),
-			"sdk-assets": Loader.getURL("", false),
-			"apps": Loader.config.cdnBaseURL + "apps"
+			"sdk": require.toUrl("echo"),
+			"sdk-assets": require.toUrl("echo-assets"),
+			"apps": require.toUrl("echo/apps")
 		},
 
 		/**
@@ -1257,13 +1227,18 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		 * case there is no avatar information defined in the user
 		 * profile. Also used for anonymous users.
 		 */
-		"defaultAvatar": Loader.getURL("images/avatar-default.png", false)
+		"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png"),
+
+		/**
+		 * @cfg {Object} backplane
+		 */
+		"backplane": {}
 	};
 
 	manifest.config.normalizer = {
 		"target": $,
 		"plugins": function(list) {
-			var data = Utils.foldl({"hash": {}, "order": []}, list || [],
+			var data = utils.foldl({"hash": {}, "order": []}, list || [],
 				function(plugin, acc) {
 					var pos = $.inArray(plugin.name, acc.order);
 					if (pos >= 0) {
@@ -1278,13 +1253,13 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 
 		// the context normalizer takes the context which is passed
 		// from the outside and treats it as the parent context by passing
-		// it into the Events.newContextId function, which generates
+		// it into the events.newContextId function, which generates
 		// the nested context out of it. Note: the parent "context" for the control
 		// is defined within the Plugin.Config.prototype.assemble and
 		// App.prototype._normalizeComponentConfig functions.
-		"context": Events.newContextId,
+		"context": events.newContextId,
 
-		"defaultAvatar": Loader.getURL
+		"defaultAvatar": require.toUrl
 	};
 
 	manifest.labels = {
@@ -1429,27 +1404,27 @@ function(jQuery, Utils, Configuration, Events, View, Labels, Loader, UserSession
 		'</div>';
 
 	manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
-			'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
-			'.echo-primaryColor { color: #3A3A3A; }' +
-			'.echo-secondaryColor { color: #C6C6C6; }' +
-			'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
-			'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
-			'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
-			'.echo-clickable { cursor: pointer; }' +
-			'.echo-relative { position: relative; }' +
-			'.echo-clear { clear: both; }' +
-			'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
-			'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
-			'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
-			'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
+		'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
+		'.echo-primaryColor { color: #3A3A3A; }' +
+		'.echo-secondaryColor { color: #C6C6C6; }' +
+		'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
+		'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
+		'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
+		'.echo-clickable { cursor: pointer; }' +
+		'.echo-relative { position: relative; }' +
+		'.echo-clear { clear: both; }' +
+		'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
+		'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
+		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
+		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
 
-			// message classes
-			'.echo-control-message { padding: 15px 0px; text-align: center; }' +
-			'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
-			'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
-			'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
-			'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
-			'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
+		// message classes
+		'.echo-control-message { padding: 15px 0px; text-align: center; }' +
+		'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
+		'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
+		'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
+		'.echo-control-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
+		'.echo-control-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }';
 
 	Control._manifest = manifest;
 
