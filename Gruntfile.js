@@ -389,8 +389,7 @@ module.exports = function(grunt) {
 				},
 				"files": [{
 					"src": [
-						//"<%= dirs.build %>/loader.js",
-						"<%= dirs.build %>/echo-require.js"
+						"<%= dirs.build %>/loader.js"
 					]
 				}]
 			},
@@ -449,12 +448,9 @@ module.exports = function(grunt) {
 					"optimize": "none",
 					"wrap": false,
 					"namespace": "Echo",
-					"removeCombined": true,
-					"paths": {
-						"echo": "./"
-					},
+					//"removeCombined": true,
 					"modules": [{
-						"name": "echo-require",
+						"name": "loader",
 						"include": [
 							"third-party/requirejs/require",
 							"third-party/requirejs/css"
@@ -469,7 +465,7 @@ module.exports = function(grunt) {
 							"third-party/jquery/jquery.viewport.mini"					
 						]
 					}, {
-						"name": "enviroment.pack",
+						"name": "environment.pack",
 						"create": true,
 						"include": [
 							"utils",
@@ -481,7 +477,7 @@ module.exports = function(grunt) {
 							"identityserver/api",	// pack
 							"user-session",
 							"view",
-							//"control",
+							"control",
 							"app",
 							"plugin",
 							"canvas"
