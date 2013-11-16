@@ -1,7 +1,9 @@
-(function(jQuery) {
+define("echo/streamserver/controls/counter", [
+	"jquery",
+	"echo/control",
+	"echo/streamserver/api"
+], function($, Control, API) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Counter
@@ -29,9 +31,7 @@ var $ = jQuery;
  * @param {Object} config
  * Configuration options
  */
-var counter = Echo.Control.manifest("Echo.StreamServer.Controls.Counter");
-
-if (Echo.Control.isDefined(counter)) return;
+var counter = Control.manifest("Echo.StreamServer.Controls.Counter");
 
 /** @hide @cfg defaultAvatar */
 /** @hide @cfg labels */
@@ -160,7 +160,7 @@ counter.config = {
 counter.templates.main = "<span>{data:count}</span>";
 
 counter.methods._getRequestObject = function(overrides) {
-	return Echo.StreamServer.API.request(
+	return API.request(
 		$.extend(true, {
 			"endpoint": "count",
 			"data": {
@@ -226,6 +226,6 @@ counter.methods._error = function(data, options) {
 	this.ready();
 };
 
-Echo.Control.create(counter);
+return Control.create(counter);
 
-})(Echo.jQuery);
+});

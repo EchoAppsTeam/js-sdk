@@ -1,7 +1,10 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/tweet-display", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils",
+	"require"
+], function($, Plugin, utils, require) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.TweetDisplay
@@ -44,9 +47,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("TweetDisplay", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("TweetDisplay", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.init = function() {
 	var item = this.component;
@@ -161,11 +162,6 @@ plugin.labels = {
 	"month12": "Dec"
 };
 
-plugin.dependencies = [{
-	"loaded": function() { return !!window.twttr; },
-	"url": "http://platform.twitter.com/widgets.js"
-}];
-
 plugin.enabled = function() {
 	return this._isTweet();
 };
@@ -181,7 +177,9 @@ plugin.events = {
 					function() { name.element.removeClass(activeClass); }
 				);
 		});
-		window.twttr && window.twttr.widgets && window.twttr.widgets.load();
+		require(["http://platform.twitter.com/widgets.js"], function(){
+			window.twttr && window.twttr.widgets && window.twttr.widgets.load();
+		});
 	}
 };
 
@@ -204,7 +202,7 @@ plugin.component.renderers.authorName = function(element) {
 	return item.parentRenderer("authorName", arguments)
 		.removeClass("echo-linkColor")
 		.addClass(this.cssPrefix + "tweetScreenName").wrapInner(
-			Echo.Utils.hyperlink({
+			utils.hyperlink({
 				"href": item.get("data.actor.id")
 			}, {
 				"openInNewWindow": item.config.get("openLinksInNewWindow"),
@@ -219,7 +217,7 @@ plugin.component.renderers.authorName = function(element) {
 plugin.component.renderers.avatar = function(element) {
 	var item = this.component;
 	return item.parentRenderer("avatar", arguments).wrap(
-		Echo.Utils.hyperlink({
+		utils.hyperlink({
 			"href": item.get("data.actor.id")
 		}, {
 			"openInNewWindow": item.config.get("openLinksInNewWindow"),
@@ -250,7 +248,7 @@ plugin.component.renderers._buttonsDelimiter = function(element) {
  */
 plugin.renderers.tweetUserName = function(element) {
 	var item = this.component;
-	return element.html(Echo.Utils.hyperlink({
+	return element.html(utils.hyperlink({
 		"href": item.get("data.actor.id"),
 		"caption": "@" + this._extractTwitterID(),
 		"class": "echo-secondaryFont echo-secondaryColor"
@@ -262,7 +260,7 @@ plugin.renderers.tweetUserName = function(element) {
 
 plugin.renderers.tweetDate = function(element) {
 	var item = this.component;
-	return element.html(Echo.Utils.hyperlink({
+	return element.html(utils.hyperlink({
 		"caption": this._getTweetTime(),
 		"href": item.get("data.object.id"),
 		"class": "echo-secondaryFont echo-secondaryColor",
@@ -281,7 +279,7 @@ plugin.methods._assembleButton = function(name) {
 		return {
 			"name": name,
 			"label": plugin.labels.get(name),
-			"template": Echo.Utils.hyperlink({
+			"template": utils.hyperlink({
 				"href": "https://twitter.com/intent/" + name + "?in_reply_to=" + id + "&tweet_id=" + id,
 				"class": "echo-clickable " + plugin.cssPrefix + "intentControl echo-secondaryColor",
 				"caption":
@@ -357,6 +355,6 @@ plugin.css =
 	".{plugin.class:tweetDate} a:hover { text-decoration: underline;  }" +
 	".{plugin.class:tweetDate} { float: right; }";
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});
