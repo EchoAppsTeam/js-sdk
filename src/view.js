@@ -11,7 +11,6 @@ if (Echo.Utils.isComponentDefined("Echo.View")) return;
  * In addition to the rendering facilities, this class maintains the list of elements within
  * the given view ("view elements collection") and provides the interface to access/update them.
  *
- * Example:
  *		var view = new Echo.View({
  *			"cssPrefix": "some-prefix-",
  *			"renderers": {
@@ -241,7 +240,7 @@ Echo.View.prototype.render = function(args) {
 };
 
 /**
- * Function which instantiates an Echo.View object with the confing of the current instance.
+ * Function which instantiates an Echo.View object with the config of the current instance.
  * This function is helpful when you need to process the template using the rules and
  * renderers specified for the parent Echo.View class instance.
  *

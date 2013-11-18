@@ -1,5 +1,13 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.15 - November 18, 2013
+
+* After switching the Canvas data extraction from CORS-based to JSONP-like method via YepNope library (which we use to load dependencies) in v3.0.14 release, we faced the problem that in some cases the Canvas data cached in the browser (along with the JSONP-wrapper code) became unavailable due to the specific way the YepNope handles it. So we decided to **utilize $.ajax jQuery function with the "script" transport behavior to retrieve the data from the Canvas config storage** to make sure that the cached resources are still available in JS code. This is an internal machinery update, so there are **no** performance or any other implications for the publishers and end users. We will switch back to the CORS approach as soon as it's fully supported by the Canvas config storage.
+
+* We've slightly **updated the Stream app logic which handles live updates**. Under certain conditions (for example when a root item arrives with a child node while the stream is paused), the child nodes might not be displayed in the stream. The problem is now resolved so no items are dropped.
+
+* The **machinery which takes care of switching to Polling method** in case a WebSockets connection is closed (either proactively by the server side or in case of connection problems) was updated to avoid massive simultaneous connections. Now when the SDK machinery detects that the WebSocket connection is closed - switching to Polling is taking place with a slight delay, random for all users (in a 5-15 seconds range). When switching to Polling, the SDK retrieves items starting from the WebSockets disconnect time, so no live updates are dropped while changing transport.
+
 ##v3.0.14 - October 28, 2013
 
 * In order to **improve security**, we performed some updates to enable **HTTPS protocol for the endpoints which manipulate the Backplane channel ID**, specifically:

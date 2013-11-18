@@ -1,4 +1,4 @@
-Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-008"] = {
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-008", {
     "id": "test.canvas.008",
     "title": "Test canvas with Auth application",
     "backplane": {
@@ -17,4 +17,4 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-008"] = {
             }
         }
     }]
-};
+});

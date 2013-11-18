@@ -1,4 +1,4 @@
-Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-004"] = {
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-004", {
     "id": "test.canvas.004",
     "title": "Test canvas with empty app list",
     "backplane": {
@@ -6,4 +6,4 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-004"] = {
         "busName": "jskit"
     },
     "apps": []
-};
+});

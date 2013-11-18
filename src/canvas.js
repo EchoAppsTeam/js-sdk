@@ -388,43 +388,34 @@ canvas.methods._fetchConfig = function(callback) {
 		return;
 	}
 	var mode = this.config.get("mode");
-	var endpoint = this._getIds().main;
 	var getConfig = function() {
 		return Echo.Loader.canvasesConfigById[self._getIds().unique];
 	};
 	var parts = Echo.Utils.parseURL(Echo.Loader.config.storageURL[mode]);
 	var URL = this.substitute({
-		"template": "{data:scheme}://{data:domain}{data:path}{data:endpoint}{data:query}",
+		"template": "{data:scheme}://{data:domain}{data:path}{data:endpoint}",
 		"data": $.extend(parts, {
-			"endpoint": endpoint,
-			"scheme": this.config.get("useSecureAPI") ? "https" : parts.scheme,
-			"query": mode === "dev" ? "?_=" + Math.random() : ""
+			// taking care of the Canvas unique identifier on the page,
+			// specified as "#XXX" in the Canvas ID. We don't need to send this
+			// unique page identifier, we send only the primary Canvas ID.
+			"endpoint": this._getIds().main,
+			"scheme": this.config.get("useSecureAPI") ? "https" : parts.scheme || "http"
 		})
 	});
 
-	// FIXME: Backwards compatibility (task F:1849)
-	// avoid retrieving canvases through the Echo.API.Request
-	// mechanism, switch to the Echo.Loader machinery only
-	(new Echo.API.Request({
-		"apiBaseURL": Echo.Loader.config.storageURL[mode],
-		"secure": this.config.get("useSecureAPI"),
-		// taking care of the Canvas unique identifier on the page,
-		// specified as "#XXX" in the Canvas ID. We don't need to send this
-		// unique page identifier, we send only the primary Canvas ID.
-		"endpoint": endpoint,
-		// adding page origin to the Cloudfront request to cache the Canvas
-		// config (on Cloudfront side) with the respective CORS headers,
-		// associated with the current domain
-		"data": mode === "dev"
-			? {"_": Math.random()}
-			: {"origin": window.location.protocol + "//" + window.location.host},
-		"onData": function(config) {
+	$.ajax({
+		"url": URL,
+		"crossDomain": true,
+		"dataType": "script",
+		"cache": mode !== "dev",
+		"timeout": Echo.Loader.config.errorTimeout,
+		"success": function() {
+			var config = getConfig();
 			if (!config || !config.apps || !config.apps.length) {
 				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
 				self._error({
 					"args": {"config": config, "target": target},
 					"code": "invalid_canvas_config",
-					"renderError": true,
 					"message": message
 				});
 				return;
@@ -432,44 +423,14 @@ canvas.methods._fetchConfig = function(callback) {
 			self.set("data", config); // store Canvas data into the instance
 			callback.call(self);
 		},
-		"onError": function(response, type) {
-			var isTransportError = response
-				&& response.transportError
-				&& response.transportError.status !== 200
-				&& response.transportError.statusText !== "parseerror";
+		"error": function() {
 			self._error({
-				"args": response,
+				"args": arguments,
 				"code": "unable_to_retrieve_app_config",
-				"renderError": isTransportError || !$.support.cors
+				"renderError": true
 			});
-			// isTransportError indicates that we had any transport error
-			// which we get from the server or during the request.
-			// If we recieved no JSON string it is a parse error, not transport.
-			// So here we just check it and if it was parse error, we should
-			// try to request the same canvas through the Echo.Loader mechanism.
-			if (!isTransportError) {
-				Echo.Loader.download([{
-					"url": URL,
-					"loaded": function() {
-						return !!getConfig();
-					}
-				}], function() {
-					var config = getConfig();
-					if (!config || !config.apps || !config.apps.length) {
-						var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
-						self._error({
-							"args": {"config": config, "target": target},
-							"code": "invalid_canvas_config",
-							"message": message
-						});
-						return;
-					}
-					self.set("data", config); // store Canvas data into the instance
-					callback.call(self);
-				});
-			}
 		}
-	})).request();
+	});
 };
 
 Echo.App.create(canvas);
