@@ -1,4 +1,4 @@
-Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-003", {
     "id": "test.canvas.003",
     "title": "Test canvas with multiple Counter controls",
     "backplane": {
@@ -126,4 +126,4 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-003"] = {
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/15"
         }
     }]
-};
+});

@@ -1,4 +1,4 @@
-Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-001"] = {
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-001", {
     "id": "test.canvas.001",
     "title": "Test canvas with Submit and Stream controls",
     "backplane": {
@@ -35,4 +35,4 @@ Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-001"] = {
             }]
         }
     }]
-};
+});

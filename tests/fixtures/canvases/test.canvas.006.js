@@ -1,1 +1,1 @@
-Echo.Tests.Fixtures.canvases["js-sdk-tests/test-canvas-006"] = {};
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-006", {});

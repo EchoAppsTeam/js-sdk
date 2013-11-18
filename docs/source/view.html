@@ -28,7 +28,6 @@ if (Echo.Utils.isComponentDefined(&quot;Echo.View&quot;)) return;
  * In addition to the rendering facilities, this class maintains the list of elements within
  * the given view (&quot;view elements collection&quot;) and provides the interface to access/update them.
  *
- * Example:
  *		var view = new Echo.View({
  *			&quot;cssPrefix&quot;: &quot;some-prefix-&quot;,
  *			&quot;renderers&quot;: {
@@ -258,7 +257,7 @@ Echo.View.prototype.render = function(args) {
 };
 
 <span id='Echo-View-method-fork'>/**
-</span> * Function which instantiates an Echo.View object with the confing of the current instance.
+</span> * Function which instantiates an Echo.View object with the config of the current instance.
  * This function is helpful when you need to process the template using the rules and
  * renderers specified for the parent Echo.View class instance.
  *

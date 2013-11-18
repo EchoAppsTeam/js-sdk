@@ -130,6 +130,11 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 				&quot;serverPingInterval&quot;: 30,
 				&quot;resetPeriod&quot;: 60,
 				&quot;maxResetsPerPeriod&quot;: 2,
+<span id='global-property-fallback'>				/** @ignore */
+</span>				&quot;fallback&quot;: {
+					&quot;timeout&quot;: 10,
+					&quot;divergence&quot;: 5
+				},
 				&quot;URL&quot;: &quot;//live.echoenabled.com/v1/&quot;
 			}
 		},
@@ -348,12 +353,23 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 	var self = this;
 	var switchTo = function(inst) {
 		return function() {
-			self.liveUpdates.stop();
+			if (self.liveUpdates.connected()) {
+				self.liveUpdates.stop();
+			}
 			self.liveUpdates = inst;
 			self.liveUpdates.start();
 		}
 	};
-	ws.on(&quot;close&quot;, switchTo(polling));
+	ws.on(&quot;close&quot;, function() {
+		var timeout, config = self.config.get(&quot;liveUpdates.websockets.fallback&quot;);
+		if (self.liveUpdates.closeReason !== &quot;abort&quot;) {
+			timeout = Echo.Utils.random(
+				config.timeout - config.divergence,
+				config.timeout + config.divergence
+			) * 1000;
+			setTimeout(switchTo(polling), timeout);
+		}
+	});
 	// TODO: remove it after more general approach will be implemented
 	ws.on(&quot;quotaExceeded&quot;, switchTo(polling));
 	if (ws.connected()) {
@@ -548,6 +564,13 @@ Echo.StreamServer.API.Polling = function(config) {
 	});
 	this.timers = {};
 	this.timeouts = [];
+	// TODO: more sophisticated logic to classify reasons for closing the connection
+	// parameter which indicates the reason why connection was closed.
+	// &quot;unknown&quot; - server or client close the connection by unknown reason
+	// &quot;reconnect&quot; - client close the connection in case of reconnect action
+	// &quot;abort&quot; - client close the connection in case of the connection abortion
+	// &quot;server_overload&quot; - close the connection to not load the server
+	this.closeReason = &quot;unknown&quot;; // &quot;unknown&quot; | &quot;reconnect&quot; | &quot;abort&quot; | &quot;server_overload&quot;
 	this.originalTimeout = this.config.get(&quot;timeout&quot;);
 	this.requestObject = this.getRequestObject();
 };
@@ -571,6 +594,7 @@ Echo.StreamServer.API.Polling.prototype.getRequestObject = function() {
 
 Echo.StreamServer.API.Polling.prototype.stop = function() {
 	clearTimeout(this.timers.regular);
+	this.closeReason = &quot;abort&quot;;
 	this.requestObject.abort();
 };
 
@@ -600,6 +624,12 @@ Echo.StreamServer.API.Polling.prototype.on = function(event, fn) {
 		handler.apply(null, arguments);
 		fn.apply(null, arguments);
 	});
+};
+
+// in case of using polling we decide that
+// client is connected wherever this function called
+Echo.StreamServer.API.Polling.prototype.connected = function() {
+	return true;
 };
 
 Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
@@ -697,6 +727,7 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			if (!!~response.event.indexOf(&quot;failed&quot;)) {
 				// TODO: more general approach here
 				if (response.errorCode === &quot;quota_exceeded&quot;) {
+					self.closeReason = &quot;server_overload&quot;;
 					self.requestObject.transport.publish(&quot;onQuotaExceeded&quot;);
 				} else {
 					config.onError(response, {
@@ -713,6 +744,7 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 				if (self._resubscribeAllowed()) {
 					self._updateConnection(self._resubscribe);
 				} else {
+					self.closeReason = &quot;server_overload&quot;;
 					self.requestObject.transport.publish(&quot;onClose&quot;);
 				}
 				return;
@@ -736,6 +768,7 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 			config.onOpen.apply(null, arguments);
 		},
 		&quot;onError&quot;: function(event) {
+			self.closeReason = &quot;unknown&quot;;
 			self.requestObject.transport.publish(&quot;onClose&quot;);
 			config.onError(event, {
 				&quot;critical&quot;: false
@@ -769,6 +802,7 @@ Echo.StreamServer.API.WebSockets.prototype.stop = function() {
 			if (self.subscribed) {
 				self.requestObject.request({&quot;event&quot;: &quot;unsubscribe/request&quot;});
 			}
+			self.closeReason = &quot;abort&quot;;
 			self.requestObject.abort();
 		});
 		this._runQueue();
@@ -799,6 +833,7 @@ Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback
 			callback.apply(self, arguments);
 		},
 		&quot;onError&quot;: function() {
+			self.closeReason = &quot;unknown&quot;;
 			self.requestObject.transport.publish(&quot;onClose&quot;);
 		}
 	});
@@ -813,6 +848,7 @@ Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
 			self.requestObject.config.get(&quot;onOpen&quot;)();
 		}
 	};
+	this.closeReason = &quot;reconnect&quot;;
 	this.requestObject.abort();
 	this._clearSubscriptions();
 	if (this.requestObject.transport.closing()) {

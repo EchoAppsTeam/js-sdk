@@ -39,6 +39,23 @@ if (Echo.Tests.browser.msie &amp;&amp; +Echo.Tests.browser.version &lt; 10) {
 	}, 3000);
 }
 
+// let&#39;s save original function to be able to use it while it&#39;s mocked
+var storeCanvasConfig = Echo.Loader._storeCanvasConfig;
+// mocks for canvases are absolutely the same as in production
+// so we have to mock _storeCanvasConfig method to save canvases
+// to fixtures but not to real data object
+sinon.stub(Echo.Loader, &quot;_storeCanvasConfig&quot;, function(id, data) {
+	if (Echo.Tests.Utils.isServerMocked()) {
+		Echo.Tests.Fixtures.canvases[id] = data;
+	} else {
+		storeCanvasConfig(id, data);
+	}
+});
+// once we loaded all the fixtures we restore _storeCanvasConfig
+QUnit.begin(function() {
+	Echo.Loader._storeCanvasConfig.restore();
+});
+
 Echo.Tests.Utils.initServer = function() {
 	if (!Echo.Tests.Utils.isServerMocked()) {
 		Echo.Tests.server = {
@@ -85,6 +102,26 @@ Echo.Tests.Utils.initServer = function() {
 			&quot;message&quot;: &quot;[REAL request] &quot; + url
 		});
 		return !fake;
+	});
+
+	var ajax = $.ajax;
+	sinon.stub($, &quot;ajax&quot;, function(options) {
+		var self = this;
+		var matches = options.url &amp;&amp; options.url.match(_URLMocks.canvases.url);
+		if (matches &amp;&amp; (Echo.Tests.Fixtures.canvases[matches[1]] || /nonexistent/.test(matches[1]))) {
+			var req = ajax.call(this, {&quot;beforeSend&quot;: function() { return false; }});
+			// asynchronously respond to request
+			setTimeout(function() {
+				storeCanvasConfig(matches[1], Echo.Tests.Fixtures.canvases[matches[1]]);
+				if (Echo.Tests.Fixtures.canvases[matches[1]]) {
+					options.success.call(self);
+				} else {
+					options.error.call(self);
+				}
+			}, 10);
+			return req;
+		}
+		return ajax.apply(this, arguments);
 	});
 
 	// FIXME: we should have used usual urlMocks filtering like &quot;whoami&quot; and other
@@ -145,7 +182,7 @@ var _URLMocks = {
 	// group of URLs http://s3.amazonaws.com/echo-canvases/&lt;canvas-id&gt;
 	&quot;canvases&quot;: {
 		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
-		&quot;url&quot;: new RegExp(Echo.Loader.config.storageURL.dev + &quot;(.*?)\\?&quot;),
+		&quot;url&quot;: new RegExp(Echo.Loader.config.storageURL.dev + &quot;(.*?)(?:\\?|$)&quot;),
 		&quot;response&quot;: function(request, canvasId) {
 			var status = 200, text = &quot;&quot;;
 			if (/nonexistent/.test(canvasId)) {
