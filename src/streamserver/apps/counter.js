@@ -102,7 +102,7 @@ counter.config = {
 	 * More information about the data format can be found
 	 * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count#ResponseFormat" target="_blank">here</a>.
 	 *
-	 * 	new Echo.Counter({
+	 * 	new Echo.StreamServer.Apps.Counter({
 	 * 		...
 	 * 		"data": {"count": 100},
 	 * 		...
