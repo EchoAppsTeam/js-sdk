@@ -25,7 +25,6 @@
 					res[item] = paths[item];
 				}
 			}
-			console.log(res);
 			return res;
 		}
 	};
@@ -36,19 +35,30 @@
 	paths["echo-assets"] = loader.getURL("");
 	paths["echo-gui-css"] = "css!echo/gui.pack.css";
 	paths["jquery-noconflict"] = loader.getURL("/third-party/jquery.pack");
-	paths["isotope"] = loader.getURL("/third-party/jquery/jquery.isotope.pack"); 
-	paths[loader.getURL("") + "/environment.pack"] = [
-		"events", "utils", "labels", "configuration", "api",
-		"streamserver/api", "identityserver/api", "user-session",
-		"view", "control", "app", "plugin", "canvas"
+	paths["isotope"] = loader.getURL("/third-party/jquery/jquery.isotope.min"); 
+	paths[loader.getURL("") + "/enviroment.pack"] = [
+		"echo/events", "echo/utils", "echo/labels", "echo/configuration", "echo/api",
+		"echo/streamserver/api", "echo/identityserver/api", "echo/user-session",
+		"echo/view", "echo/control", "echo/app", "echo/plugin", "echo/canvas"
 	];
 	paths[loader.getURL("") + "/gui.pack"] = [
-		"bootstrap-transition", "bootstrap-affix", "bootstrap-alert",
-		"bootstrap-button", "bootstrap-modal", "bootstrap-carousel",
-		"bootstrap-collapse", "bootstrap-dropdown", "bootstrap-tooltip",
-		"bootstrap-popover", "bootstrap-scrollspy", "bootstrap-tab",
-		"bootstrap-typeahead", "gui", "echo-modal", "echo-button",
-		"echo-dropdown", "echo-tabs"
+		"echo/bootstrap-transition", "echo/bootstrap-affix", "echo/bootstrap-alert",
+		"echo/bootstrap-button", "echo/bootstrap-modal", "echo/bootstrap-carousel",
+		"echo/bootstrap-collapse", "echo/bootstrap-dropdown", "echo/bootstrap-tooltip",
+		"echo/bootstrap-popover", "echo/bootstrap-scrollspy", "echo/bootstrap-tab",
+		"echo/bootstrap-typeahead", "echo/gui", "echo/gui/modal", "echo/gui/button",
+		"echo/gui/dropdown", "echo/gui/tabs"
+	];
+	paths[loader.getURL("") + "/streamserver.pack"] = [
+		"echo/streamserver/controls/counter","echo/streamserver/controls/stream",
+		"echo/streamserver/controls/facepile","echo/streamserver/controls/submit",
+		"echo/streamserver/plugins/community-flag", "echo/streamserver/plugins/form-auth.js",
+		"echo/streamserver/plugins/item-accumulator-display", "echo/streamserver/plugins/janrain-sharing",
+		"echo/streamserver/plugins/metadata-manager", "echo/streamserver/plugins/pinboard-visualization",
+		"echo/streamserver/plugins/text-counter", "echo/streamserver/plugins/edit", 
+		"echo/streamserver/plugins/infinite-scroll", "echo/streamserver/plugins/janrain-auth",
+		"echo/streamserver/plugins/like", "echo/streamserver/plugins/moderation",
+		"echo/streamserver/plugins/reply", "echo/streamserver/plugins/tweet-display"
 	];
 	require.config({
 		"waitSeconds": 5, // 5 sec

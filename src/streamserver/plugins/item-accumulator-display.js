@@ -1,7 +1,9 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/itemAccumulatorDisplay", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils"
+], function($, Plugin, Utils) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay
@@ -24,9 +26,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("ItemAccumulatorDisplay", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("ItemAccumulatorDisplay", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.init = function() {
 	this.extendTemplate("insertBefore", "modeSwitch", plugin.templates.main);
@@ -92,7 +92,7 @@ plugin.renderers.accumulatorContainer = function(element) {
 	if (count.current !== count.actual) {
 		var bgColor = this.get("originalBGColor");
 		if (typeof bgColor === "undefined") {
-			bgColor = Echo.Utils.getVisibleColor(container);
+			bgColor = Utils.getVisibleColor(container);
 			this.set("originalBGColor", bgColor);
 		}
 		container.css({"backgroundColor": item.config.get("parent.flashColor")});
@@ -141,6 +141,6 @@ plugin.methods._animateCounter = function(bgColor) {
 
 plugin.css = '.{plugin.class:accumulatorContainer} { float: right; margin-right: 7px; }';
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});

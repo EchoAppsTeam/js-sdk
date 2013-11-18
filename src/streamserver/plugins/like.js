@@ -1,7 +1,10 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/streamLike", [
+	"jquery",
+	"echo/plugin",
+	"echo/streamserver/controls/facePile",
+	"echo/streamserver/api"
+], function($, Plugin, FacePile, API) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Like
@@ -24,9 +27,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("Like", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "data", plugin.templates.main);
@@ -131,11 +132,11 @@ plugin.renderers.likedBy = function(element) {
 };
 
 plugin.methods._initFacePile = function(config) {
-	this.set("facePile", new Echo.StreamServer.Controls.FacePile(config));
+	this.set("facePile", new FacePile(config));
 };
 
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
-	Echo.StreamServer.API.request({
+	API.request({
 		"endpoint": "submit",
 		"secure": this.config.get("useSecureAPI", false, true),
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
@@ -235,14 +236,15 @@ plugin.css =
 	'.{plugin.class:likedBy} { background: url({config:cdnBaseURL.sdk-assets}/images/likes.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
 	'.{plugin.class:highlight} { line-height: 23px; }';
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});
 
-(function(jQuery) {
+define("echo/streamserver/plugins/facePileLike", [
+	"jquery",
+	"echo/plugin"
+], function($, Plugin) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.FacePile.Item.Plugins.Like
@@ -251,9 +253,7 @@ var $ = jQuery;
  * @extends Echo.Plugin
  * @private
  */
-var plugin = Echo.Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("Like", "Echo.StreamServer.Controls.FacePile.Item");
 
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "container", plugin.templates.main);
@@ -312,6 +312,5 @@ plugin.css =
 	'.{plugin.class:adminUnlike} { cursor: pointer; margin-left: 3px; }' +
 	'.{plugin.class:highlight} { display: inline-block; line-height: 16px; background-color: #EEEEEE; padding: 1px 3px; border: 1px solid #D2D2D2; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; margin: 0px 2px; }';
 
-Echo.Plugin.create(plugin);
-
-})(Echo.jQuery);
+return Plugin.create(plugin);
+});

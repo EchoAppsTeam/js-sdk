@@ -139,8 +139,8 @@ module.exports = function(grunt) {
 		},
 		"gui-pack": {
 			"src": [ //TODO: rewrite ../build
-				"../build/third-party/bootstrap/js/bootstrap-transition.js",
-				"../build/third-party/bootstrap/js/bootstrap-affix.js",
+				"../build/third-party/bootstrap/js/bootstrap-*.js",
+				/*"../build/third-party/bootstrap/js/bootstrap-affix.js",
 				"../build/third-party/bootstrap/js/bootstrap-alert.js",
 				"../build/third-party/bootstrap/js/bootstrap-button.js",
 				"../build/third-party/bootstrap/js/bootstrap-modal.js",
@@ -152,11 +152,11 @@ module.exports = function(grunt) {
 				"../build/third-party/bootstrap/js/bootstrap-scrollspy.js",
 				"../build/third-party/bootstrap/js/bootstrap-tab.js",
 				"../build/third-party/bootstrap/js/bootstrap-typeahead.js",
-				"gui.js",
-				"gui-plugins/echo-modal.js",
+				*/"gui.js",
+				/*"gui-plugins/echo-modal.js",
 				"gui-plugins/echo-button.js",
 				"gui-plugins/echo-dropdown.js",
-				"gui-plugins/echo-tabs.js"
+				*/"gui-plugins/echo-*.js"
 			],
 			"dest": "gui.pack.js"
 		},
@@ -448,7 +448,7 @@ module.exports = function(grunt) {
 					"optimize": "none",
 					"wrap": false,
 					"namespace": "Echo",
-					//"removeCombined": true,
+					"removeCombined": true,
 					"modules": [{
 						"name": "loader",
 						"include": [
@@ -465,22 +465,45 @@ module.exports = function(grunt) {
 							"third-party/jquery/jquery.viewport.mini"					
 						]
 					}, {
-						"name": "environment.pack",
+						"name": "enviroment.pack",
 						"create": true,
 						"include": [
 							"utils",
 							"events",
 							"labels",
 							"configuration",
-							"api",			// it was
-							"streamserver/api",	// api
-							"identityserver/api",	// pack
+							"api",	// it was api pack
+							"streamserver/api",	// it was api pack
+							"identityserver/api",	// it was api pack
 							"user-session",
 							"view",
 							"control",
 							"app",
 							"plugin",
 							"canvas"
+						]
+					}, {
+						"name": "streamserver.pack",
+						"create": true,
+						"include": [ //TODO: use *.js instead of enumeration
+							"streamserver/controls/counter",
+							"streamserver/controls/stream",
+							"streamserver/controls/facepile",
+							"streamserver/controls/submit",
+							"streamserver/plugins/community-flag",
+							"streamserver/plugins/form-auth",
+							"streamserver/plugins/item-accumulator-display",
+							"streamserver/plugins/janrain-sharing",
+							"streamserver/plugins/metadata-manager",
+							"streamserver/plugins/pinboard-visualization",
+							"streamserver/plugins/text-counter",
+							"streamserver/plugins/edit",
+							"streamserver/plugins/infinite-scroll",
+							"streamserver/plugins/janrain-auth",
+							"streamserver/plugins/like",
+							"streamserver/plugins/moderation",
+							"streamserver/plugins/reply",
+							"streamserver/plugins/tweet-display"
 						]
 					}],
 					//fileExclusionRegExp: /\S*(?:isotope|bootstrap-){1}\S*/g,
@@ -495,7 +518,7 @@ module.exports = function(grunt) {
 			//		"optimize": "none",
 			//		"wrap": {
 			//			"start": "require([\"jquery\"] function(jQuery) {\n var $ = jQuery;\n",
-        	//			"end": "});"
+        		//			"end": "});"
 			//		},
 			//		//"namespace": "Echo",
 			//		//removeCombined: true,

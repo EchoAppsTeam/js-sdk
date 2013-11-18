@@ -1,7 +1,14 @@
-(function(jQuery) {
+define("echo/streamserver/controls/submit", [
+	"jquery",
+	"echo/control",
+	"echo/utils",
+	"echo/streamserver/api",
+	"echo/gui",
+	"echo/gui/button",
+	"echo/events", 
+	"echo/gui/modal"
+], function($, Control, Utils, API, GUI, GUIButton, Events, GUIModal) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Submit
@@ -29,9 +36,7 @@ var $ = jQuery;
  * @param {Object} config
  * Configuration options
  */
-var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
-
-if (Echo.Control.isDefined(submit)) return;
+var submit = Control.manifest("Echo.StreamServer.Controls.Submit");
 
 /** @hide @cfg apiBaseURL */
 /** @hide @method placeImage */
@@ -272,7 +277,7 @@ submit.vars = {
 };
 
 submit.dependencies = [{
-	"loaded": function() { return !!Echo.GUI; },
+	"loaded": function() { return !!GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
@@ -473,7 +478,7 @@ submit.renderers.postButton = function(element) {
 			"label": this.labels.get("posting")
 		}
 	};
-	var postButton = new Echo.GUI.Button(states.normal);
+	var postButton = new GUIButton(states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
@@ -518,7 +523,7 @@ submit.renderers.postButton = function(element) {
 submit.renderers._metaFields = function(element, extra) {
 	var type = extra.type;
 	var data = this.get("data.object." + type, this.config.get(type));
-	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
+	var value = $.trim(Utils.stripTags(data.join(", ")));
 	return this.view.get(type).iHint({
 		"text": this.labels.get(type + "Hint"),
 		"className": "echo-secondaryColor"
@@ -572,7 +577,7 @@ submit.methods.post = function() {
 			 * Triggered if dataset is changed.
 			 */
 			// notify all widgets on the page about a new item posted
-			Echo.Events.publish({
+			Events.publish({
 				"topic": "Echo.Control.onDataInvalidate",
 				"context": "global",
 				"data": {}
@@ -591,7 +596,7 @@ submit.methods.post = function() {
 	 * Triggered if submit operation was started.
 	 */
 	publish("Init", entry);
-	Echo.StreamServer.API.request({
+	API.request({
 		"endpoint": "submit",
 		"method": this.config.get("requestMethod"),
 		"itemURIPattern": this.config.get("itemURIPattern"),
@@ -636,7 +641,7 @@ submit.methods.refresh = function() {
 		var elements = self.view.get(field).val().split(", ");
 		self.config.set("data.object." + field, elements || []);
 	});
-	var component = Echo.Utils.getComponent("Echo.StreamServer.Controls.Submit");
+	var component = Utils.getComponent("Echo.StreamServer.Controls.Submit");
 	component.parent.refresh.call(this);
 };
 
@@ -674,7 +679,7 @@ submit.methods._showError = function(data) {
 		: this.labels.get("postingFailed", {"error": response.errorMessage || response.errorCode});
 	var popup = this._assembleErrorPopup(message);
 
-	new Echo.GUI.Modal({
+	new GUIModal({
 		"data": {
 			"body": popup.content
 		},
@@ -758,6 +763,6 @@ submit.css =
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
 	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk-assets}/images/info70.png); }';
 
-Echo.Control.create(submit);
+return Control.create(submit);
 
-})(Echo.jQuery);
+});

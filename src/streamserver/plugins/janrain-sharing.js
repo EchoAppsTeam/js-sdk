@@ -1,7 +1,12 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/submitJanrainSharing", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils",
+	"echo/gui",
+	"echo/identityserver/controls/auth",
+	"require"
+], function($, Plugin, Utils, GUI, require) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing
@@ -33,9 +38,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Submit");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Submit");
 
 plugin.init = function() {
 	if (!this._isLegacy() && !this.config.get("alwaysShare")) {
@@ -150,7 +153,7 @@ plugin.enabled = function() {
 };
 
 plugin.dependencies = [{
-	"loaded": function() { return !!Echo.GUI; },
+	"loaded": function() { return !!GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
@@ -226,7 +229,8 @@ plugin.methods._share = function(data) {
 	url = "https:" === document.location.protocol
 		? "https://rpxnow.com/js/lib/" + plugin.config.get("appId") + "/widget.js"
 		: "http://widget-cdn.rpxnow.com/js/lib/" + plugin.config.get("appId") + "/widget.js";
-	Echo.Loader.download([{"url": url}]);
+	//Echo.Loader.download([{"url": url}]);
+	require([url]); //TODO: check if we need something else (callback or smth. else)
 };
 
 plugin.methods._showPopup = function(data) {
@@ -243,7 +247,7 @@ plugin.methods._showPopup = function(data) {
 	share.setState(config);
 	share.setTitle(config.title || $("meta[property=\"og:title\"]").attr("content") || document.title);
 	share.setDescription(config.description || $("meta[property=\"og:description\"]").attr("content") || "");
-	share.setMessage(config.message || Echo.Utils.stripTags(data.object.content));
+	share.setMessage(config.message || Utils.stripTags(data.object.content));
 	share.setUrl(config.url || $("meta[property=\"og:url\"]").attr("content") || location.href.replace(/([#\?][^#\?]*)+$/, ""));
 	image = config.image || $("meta[property=\"og:image\"]").attr("content") || "";
 	image && share.setImage(image);
@@ -273,8 +277,28 @@ plugin.methods._isLegacy = function() {
 };
 
 plugin.methods._shareLegacy = function(args) {
-	var plugin = this;
-	Echo.Loader.download([{
+	var plugin = this,
+		url = ("https:" === document.location.protocol ? "https://" : "http://static.") +
+			"rpxnow.com/js/lib/rpx.js";
+	//TODO: double check if it works
+	if(!!window.RPXNOW) {
+		require([url], function() {
+			RPXNOW.init({
+				"appId": plugin.config.get("appId"),
+				"xdReceiver": plugin.config.get("xdReceiver")
+			});
+			RPXNOW.loadAndRun(["Social"], function () {
+				var activity = new RPXNOW.Social.Activity(
+					plugin.config.get("activity.sharePrompt", plugin.labels.get("sharePrompt")),
+					plugin._prepareContentLegacy(args),
+					plugin.config.get("activity.itemURL", args.targetURL)
+				);
+				RPXNOW.Social.publishActivity(plugin._prepareActivityLegacy(activity));
+			});
+		});
+	}
+	
+	/*Echo.Loader.download([{
 		"loaded": function() {
 			return !!window.RPXNOW;
 		},
@@ -293,7 +317,7 @@ plugin.methods._shareLegacy = function(args) {
 			);
 			RPXNOW.Social.publishActivity(plugin._prepareActivityLegacy(activity));
 		});
-	});
+	});*/
 };
 
 plugin.methods._prepareActivityLegacy = function(act) {
@@ -330,7 +354,7 @@ plugin.methods._prepareActivityLegacy = function(act) {
 
 plugin.methods._prepareContentLegacy = function(args) {
 	var plugin = this;
-	var text = Echo.Utils.stripTags(args.postData.content[0].object.content);
+	var text = Utils.stripTags(args.postData.content[0].object.content);
 	var messagePattern = plugin.config.get("activity.shareContent");
 	if (messagePattern) {
 		return plugin.labels.get(messagePattern, {
@@ -367,14 +391,17 @@ plugin.css =
 	'.{plugin.class:shareContainer} { display: inline-block; margin: 0px 15px 0px 0px; }' +
 	'.echo-sdk-ui .{plugin.class:shareContainer} input.{plugin.class:shareCheckbox} { margin: 0px; margin-right: 3px; padding: 0px; }';
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});
 
-(function(jQuery) {
+define("echo/streamserver/plugins/streamJanrainSharing", [
+	"jquery",
+	"echo/plugin",
+	"echo/gui",
+	"echo/streamserver/controls/submit"
+], function($, Plugin, GUI, Submit) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.JanrainSharing
@@ -406,9 +433,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("JanrainSharing", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.init = function() {
 	this.component.addButtonSpec("Share", this._assembleButton());
@@ -447,7 +472,7 @@ plugin.enabled = function() {
 };
 
 plugin.dependencies = [{
-	"loaded": function() { return !!Echo.GUI; },
+	"loaded": function() { return !!GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
@@ -458,8 +483,8 @@ plugin.labels = {
 };
 
 // let's copy these functions from the related plugin for Submit Control
-plugin.methods._share = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._share;
-plugin.methods._showPopup = Echo.StreamServer.Controls.Submit.Plugins.JanrainSharing.prototype._showPopup;
+plugin.methods._share = Submit.Plugins.JanrainSharing.prototype._share;
+plugin.methods._showPopup = Submit.Plugins.JanrainSharing.prototype._showPopup;
 
 plugin.methods._prepareData = function(item) {
 	return {
@@ -493,6 +518,5 @@ plugin.methods._assembleButton = function() {
 	};
 };
 
-Echo.Plugin.create(plugin);
-
-})(Echo.jQuery);
+return Plugin.create(plugin);
+});

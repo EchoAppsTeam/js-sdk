@@ -1,10 +1,10 @@
-define("echo/labels", ["jquery", "echo/utils"], function(jQuery, Utils) {
+define("echo/labels", [
+	"jquery", 
+	"echo/utils"
+], function($, Utils) {
 "use strict";
 
-var $ = jQuery,
-	Labels;
-
-//if (Echo.Utils.isComponentDefined("Echo.Labels")) return;
+var Labels;
 
 /**
  * @class Labels

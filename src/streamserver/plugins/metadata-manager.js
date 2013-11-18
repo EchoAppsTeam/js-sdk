@@ -1,7 +1,10 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/metadataManager", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils",
+	"echo/streamserver/api"
+], function($, Plugin, Utils, API) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.MetadataManager
@@ -26,9 +29,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("MetadataManager", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -145,7 +146,7 @@ plugin.methods._assembleButton = function(action, control) {
 	var self = this;
 	var type = control.marker ? "marker" : "tag";
 	var marker = (control.marker || control.tag);
-	var name = action + "As" + Echo.Utils.capitalize(marker.replace(/[^a-z0-9_-]/ig, ''));
+	var name = action + "As" + Utils.capitalize(marker.replace(/[^a-z0-9_-]/ig, ''));
 	var callback = function() {
 		var item = this;
 		var operation = action.toLowerCase();
@@ -168,7 +169,7 @@ plugin.methods._assembleButton = function(action, control) {
 			"type": type,
 			"action": action
 		});
-		Echo.StreamServer.API.request({
+		API.request({
 			"endpoint": "submit",
 			"secure": this.config.get("useSecureAPI", false, true),
 			"submissionProxyURL": item.config.get("submissionProxyURL"),
@@ -263,6 +264,6 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 	return !!isVisible;
 };
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});

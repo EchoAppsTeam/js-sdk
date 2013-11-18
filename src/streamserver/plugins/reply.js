@@ -1,7 +1,12 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/streamItemReply", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils",
+	"echo/variables",
+	"echo/streamserver/controls/submit"
+], function($, Plugin, Utils, Variables, Submit) {
 "use strict";
 
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
@@ -25,14 +30,12 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream.Item");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream.Item");
 
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate("insertAsLastChild", "content", plugin.templates.form);
-	var form = Echo.Utils.get(Echo.Variables, this._getSubmitKey());
+	var form = Utils.get(Variables, this._getSubmitKey());
 	$.each(form || {}, function(key, value) {
 	    self.set(key, value);
 	});
@@ -172,7 +175,7 @@ plugin.renderers.compactField = function(element) {
  */
 plugin.methods.destroy = function() {
 	if (this.get("submit")) {
-		Echo.Utils.set(Echo.Variables, this._getSubmitKey(), {
+		Utils.set(Variables, this._getSubmitKey(), {
 			"expanded": this.get("expanded"),
 			"data": {
 				"object": this._getSubmitData()
@@ -213,7 +216,7 @@ plugin.methods._showSubmit = function() {
 		"name": "Reply",
 		"inReplyTo": item.get("data")
 	});
-	new Echo.StreamServer.Controls.Submit(config);
+	new Submit(config);
 	return target;
 };
 
@@ -313,14 +316,18 @@ plugin.css =
 	".{plugin.class:compactContent} input.{plugin.class:compactField}[type='text'] { width: 100%; height: 16px; border: none; margin: 0px; padding: 0px; box-shadow: none; vertical-align: middle; }" +
 	".{plugin.class:compactContent} input.{plugin.class:compactField}[type='text']:focus { outline: 0; box-shadow: none; }";
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});
 
-(function(jQuery) {
+define("echo/streamserver/plugins/streamReply", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils",
+	"echo/variables",
+	"echo/streamserver/controls/submit"
+], function($, Plugin, Utils, Variables, Submit) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
@@ -344,9 +351,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream");
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
@@ -363,14 +368,14 @@ plugin.events = {
 	}
 };
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
+});
 
-})(Echo.jQuery);
-
-(function(jQuery) {
+define("echo/streamserver/plugins/submitReply", [
+	"jquery",
+	"echo/plugin"
+], function($, Plugin) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.Reply
@@ -394,9 +399,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Submit");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("Reply", "Echo.StreamServer.Controls.Submit");
 
 plugin.init = function() {
 	var plugin = this, submit = plugin.component;
@@ -421,6 +424,5 @@ $.map(["onRender", "onRerender"], function(topic) {
 	};
 });
 
-Echo.Plugin.create(plugin);
-
-})(Echo.jQuery);
+return Plugin.create(plugin);
+});

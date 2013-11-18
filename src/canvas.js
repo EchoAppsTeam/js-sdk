@@ -1,12 +1,17 @@
-define("echo/canvas", ["jquery", "echo/control", "echo/utils", "echo/loader", "echo/events"], 
-function(jQuery, Control, Utils, Loader, Events) {
+define("echo/canvas", [
+	"jquery",
+	"echo/control",
+	"echo/utils",
+	"echo/loader",
+	"echo/events"
+], function($, Control, Utils, Loader, Events) {
 	
-	"use strict";
+"use strict";
 
-	var $ = jQuery,
-		canvas = Control.manifest("Canvas");
+var canvas = Control.manifest("Canvas");
 
-	if (Control.isDefined(canvas)) return;
+//do we need it?
+if (Control.isDefined(canvas)) return;
 
 /**
  * @class Canvas

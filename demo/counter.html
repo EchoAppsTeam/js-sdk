@@ -3,7 +3,6 @@
 	<head>
 		<title>Counter App Demo</title>
 		<link rel="stylesheet" type="text/css" href="demo.css" />
-		<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
 		<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
 	</head>
 <body>
@@ -17,18 +16,20 @@
 	</div>
 	<script>
 		if (window.parent.Docs) {
-			var link = Echo.jQuery("#documentation > a");
-			link.on("click", function(e) {
-				e.preventDefault();
-				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
-				return false;
+			Echo.require(["jquery"], function($) {
+				var link = $("#documentation > a");
+				link.on("click", function(e) {
+					e.preventDefault();
+					window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
+					return false;
+				});
+				$("#container").addClass("embedded");
 			});
-			Echo.jQuery("#container").addClass("embedded");
 		}
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.Loader.initApplication({
+		/*Echo.Loader.initApplication({
 			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
 			"component": "Echo.StreamServer.Controls.Counter",
 			"backplane": {
@@ -40,6 +41,13 @@
 				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"query" : "childrenof:http://example.com/test/*"
 			}
+		});*/
+		Echo.require(["echo/streamserver/controls/counter"], function(Counter) {
+			new Counter({
+				"target": document.getElementById("counter"),
+				"appkey": "echo.jssdk.demo.aboutecho.com",
+				"query" : "childrenof:http://example.com/test/*"
+			});
 		});
 	</script>
 </body>

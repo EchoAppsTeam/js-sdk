@@ -1,8 +1,10 @@
-define("echo/configuration", ["jquery", "echo/utils"], function(jQuery, Utils) {
+define("echo/configuration", [
+	"jquery",
+	"echo/utils"
+], function($, Utils) {
 "use strict";
 
-var $ = jQuery,
-	Configuration;
+var Configuration;
 
 //if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
 

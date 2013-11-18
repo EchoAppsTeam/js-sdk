@@ -1,7 +1,8 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/infiniteScroll", [
+	"jquery",
+	"echo/plugin"
+], function($, Plugin) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll
@@ -25,9 +26,7 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("InfiniteScroll", "Echo.StreamServer.Controls.Stream");
-
-if (Echo.Plugin.isDefined(plugin)) return;
+var plugin = Plugin.manifest("InfiniteScroll", "Echo.StreamServer.Controls.Stream");
 
 plugin.init = function() {
 	var plugin = this;
@@ -53,6 +52,5 @@ plugin.methods.destroy = function() {
 	$(window).off("scroll", this.get("scrollHandler"));
 };
 
-Echo.Plugin.create(plugin);
-
-})(Echo.jQuery);
+return Plugin.create(plugin);
+});
