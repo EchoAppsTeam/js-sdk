@@ -456,7 +456,7 @@ module.exports = function(grunt) {
 							"third-party/requirejs/css"
 						]
 					}, {
-						"name": "jquery.pack",
+						"name": "third-party/jquery.pack",
 						"create": true,
 						"include": [
 							"third-party/jquery/jquery",
@@ -472,8 +472,8 @@ module.exports = function(grunt) {
 							"events",
 							"labels",
 							"configuration",
-							"api",					// it was
-							"streamserver/api",		// api
+							"api",			// it was
+							"streamserver/api",	// api
 							"identityserver/api",	// pack
 							"user-session",
 							"view",
