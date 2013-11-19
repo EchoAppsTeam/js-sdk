@@ -1,0 +1,23 @@
+{
+	"es3": true,
+	"eqeqeq": true,
+	"expr": true,
+	"forin": true,
+	"immed": true,
+	"latedef": true,
+	"newcap": true,
+	"noarg": true,
+	"nonew": true,
+	"smarttabs": true,
+	"strict": true,
+	"sub": true,
+	"trailing": true,
+	"undef": true,
+	"unused": true,
+	"browser": true,
+	"scripturl": true,
+	"jquery": true,
+	"devel": true,
+	"laxbreak": true,
+	"node": true
+}
