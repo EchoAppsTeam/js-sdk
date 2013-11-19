@@ -433,7 +433,7 @@ Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
 	this.extension.template.push({"action": action, "anchor": anchor, "html": html});
 };
 
-/*
+/**
  * Method extending the paticular renderer with defined function.
  *
  * @param {String} name
