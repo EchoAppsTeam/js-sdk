@@ -1,4 +1,4 @@
-define("echo/identityserver/controls/auth", [
+define("echo/identityserver/plugins/janrainConnector", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils"

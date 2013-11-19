@@ -1,9 +1,13 @@
+define("echo/streamserver/plugins/janrainSharing", [
+	"echo/streamserver/plugins/submitJanrainSharing",
+	"echo/streamserver/plugins/streamJanrainSharing"
+], function() {});
+
 define("echo/streamserver/plugins/submitJanrainSharing", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"echo/gui",
-	"echo/identityserver/controls/auth",
 	"require"
 ], function($, Plugin, Utils, GUI, require) {
 "use strict";
@@ -400,7 +404,8 @@ define("echo/streamserver/plugins/streamJanrainSharing", [
 	"jquery",
 	"echo/plugin",
 	"echo/gui",
-	"echo/streamserver/controls/submit"
+	"echo/streamserver/controls/submit",
+	"echo/streamserver/plugins/submitJanrainSharing"
 ], function($, Plugin, GUI, Submit) {
 "use strict";
 
@@ -472,13 +477,13 @@ plugin.enabled = function() {
 	return this.config.get("appId");
 };
 
-plugin.dependencies = [{
+/*plugin.dependencies = [{
 	"loaded": function() { return !!GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
 }];
-
+*/
 plugin.labels = {
 	"shareButton": "Share"
 };

@@ -51,7 +51,8 @@
 		"echo/streamserver/plugins/streamItemEdit", "echo/streamserver/plugins/submitEdit",
 		"echo/streamserver/plugins/community-flag", "echo/streamserver/plugins/form-auth.js",
 		"echo/streamserver/plugins/infinite-scroll", "echo/streamserver/plugins/item-accumulator-display",
-		"echo/streamserver/plugins/janrain-sharing", "echo/streamserver/plugins/like", 
+		"echo/streamserver/plugins/janrainSharing", "echo/streamserver/plugins/submitJanrainSharing",
+		"echo/streamserver/plugins/streamJanrainSharing", "echo/streamserver/plugins/like", 
 		"echo/streamserver/plugins/streamLike", "echo/streamserver/plugins/facePileLike",
 		"echo/streamserver/plugins/metadata-manager", "echo/streamserver/plugins/moderation",
 		"echo/streamserver/plugins/streamModeration", "echo/streamserver/plugins/streamItemModeration",
@@ -67,7 +68,7 @@
 	];
 	paths[loader.getURL("") + "/identityserver.pack"] = [
 		"echo/identityserver/controls/auth",
-		"echo/identityserver/plugins/janrain-connector"
+		"echo/identityserver/plugins/janrainConnector"
 	];
 	require.config({
 		"waitSeconds": 5, // 5 sec before timeout exception
