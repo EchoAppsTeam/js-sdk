@@ -1,3 +1,7 @@
+define("echo/streamserver/plugins/moderation", [
+	"echo/streamserver/plugins/streamModeration",
+	"echo/streamserver/plugins/streamItemModeration"
+], function(){});
 define("echo/streamserver/plugins/streamModeration", [
 	"jquery",
 	"echo/plugin",

@@ -3,7 +3,6 @@
 	<head>
 		<title>Submit App Demo</title>
 		<link rel="stylesheet" type="text/css" href="demo.css" />
-		<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
 		<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
 	</head>
 <body>
@@ -17,29 +16,29 @@
 	</div>
 	<script>
 		if (window.parent.Docs) {
-			var link = Echo.jQuery("#documentation > a");
-			link.on("click", function(e) {
-				e.preventDefault();
-				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
-				return false;
+			Echo.require(["jquery"], function($) {
+				var link = $("#documentation > a");
+				link.on("click", function(e) {
+					e.preventDefault();
+					window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
+					return false;
+				});
+				$("#container").addClass("embedded");
 			});
-			Echo.jQuery("#container").addClass("embedded");
 		}
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.Loader.initApplication({
-			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Submit",
-			"backplane": {
-				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-				"busName": "jskit"
-			},
-			"config": {
+		Echo.require(["echo/streamserver/controls/submit"], function(Submit) {
+			new Submit({
+				"backplane": {
+					"serverBaseURL": "https://api.echoenabled.com/v1",
+					"busName": "jskit"
+				},
 				"target": document.getElementById("submit"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"targetURL": "http://echosandbox.com/use-cases/commenting"
-			}
+			});
 		});
 	</script>
 </body>

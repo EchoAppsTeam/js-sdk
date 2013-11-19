@@ -3,8 +3,10 @@ define("echo/plugin", [
 	"echo/control",
 	"echo/utils",
 	"echo/labels",
+	"echo/configuration",
+	"echo/events",
 	"require"
-], function($, Control, utils, Labels, require) {
+], function($, Control, utils, Labels, Configuration, Events, require) {
 	
 	"use strict";
 

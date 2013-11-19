@@ -17,12 +17,8 @@
 		"generatePaths": function(paths) {
 			var res = {};
 			for(var item in paths) {
-				if(paths[item] instanceof Array) {
-					for(var i = 0; i < paths[item].length; i++) {
-						res[paths[item][i]] = item; 
-					}
-				} else {
-					res[item] = paths[item];
+				for(var i = 0; i < paths[item].length; i++) {
+					res[paths[item][i]] = item; 
 				}
 			}
 			return res;
@@ -31,11 +27,10 @@
 
 	//TODO: generate path from object below istead of the big list
 	var paths = {};
-	paths["echo"] = loader.getURL("");
-	paths["echo-assets"] = loader.getURL("");
-	paths["echo-gui-css"] = "css!echo/gui.pack.css";
-	paths["jquery-noconflict"] = loader.getURL("/third-party/jquery.pack");
-	paths["isotope"] = loader.getURL("/third-party/jquery/jquery.isotope.min"); 
+	paths[loader.getURL("")] = ["echo", "echo-assets"]; //assets is for pictures
+	paths["css!echo/gui.pack.css"] = ["echo-gui-css"];
+	paths[loader.getURL("/third-party/jquery/jquery.pack")] = ["jquery-noconflict"];
+	paths[loader.getURL("/third-party/jquery/jquery.isotope.min")] = ["isotope"]; 
 	paths[loader.getURL("") + "/enviroment.pack"] = [
 		"echo/events", "echo/utils", "echo/labels", "echo/configuration", "echo/api",
 		"echo/streamserver/api", "echo/identityserver/api", "echo/user-session",
@@ -51,17 +46,31 @@
 	];
 	paths[loader.getURL("") + "/streamserver.pack"] = [
 		"echo/streamserver/controls/counter","echo/streamserver/controls/stream",
-		"echo/streamserver/controls/facepile","echo/streamserver/controls/submit",
+		"echo/streamserver/controls/facePile", "echo/streamserver/controls/facePileItem", 
+		"echo/streamserver/controls/submit", "echo/streamserver/plugins/edit", 
+		"echo/streamserver/plugins/streamItemEdit", "echo/streamserver/plugins/submitEdit",
 		"echo/streamserver/plugins/community-flag", "echo/streamserver/plugins/form-auth.js",
-		"echo/streamserver/plugins/item-accumulator-display", "echo/streamserver/plugins/janrain-sharing",
-		"echo/streamserver/plugins/metadata-manager", "echo/streamserver/plugins/pinboard-visualization",
-		"echo/streamserver/plugins/text-counter", "echo/streamserver/plugins/edit", 
-		"echo/streamserver/plugins/infinite-scroll", "echo/streamserver/plugins/janrain-auth",
-		"echo/streamserver/plugins/like", "echo/streamserver/plugins/moderation",
-		"echo/streamserver/plugins/reply", "echo/streamserver/plugins/tweet-display"
+		"echo/streamserver/plugins/infinite-scroll", "echo/streamserver/plugins/item-accumulator-display",
+		"echo/streamserver/plugins/janrain-sharing", "echo/streamserver/plugins/like", 
+		"echo/streamserver/plugins/streamLike", "echo/streamserver/plugins/facePileLike",
+		"echo/streamserver/plugins/metadata-manager", "echo/streamserver/plugins/moderation",
+		"echo/streamserver/plugins/streamModeration", "echo/streamserver/plugins/streamItemModeration",
+		"echo/streamserver/plugins/reply", "echo/streamserver/plugins/streamItemReply",
+		"echo/streamserver/plugins/streamReply", "echo/streamserver/plugins/submitReply",
+		"echo/streamserver/plugins/textCounter", "echo/streamserver/plugins/tweet-display"
+	];
+	paths[loader.getURL("") + "/pinboard-visualization"] = [
+		"echo/streamserver/plugins/pinboardVisualization",
+		"echo/streamserver/plugins/mediaGallery",
+		"echo/streamserver/plugins/streamItemPinboardVisualization",
+		"echo/streamserver/plugins/streamPinboardVisualization"
+	];
+	paths[loader.getURL("") + "/identityserver.pack"] = [
+		"echo/identityserver/controls/auth",
+		"echo/identityserver/plugins/janrain-connector"
 	];
 	require.config({
-		"waitSeconds": 5, // 5 sec
+		"waitSeconds": 5, // 5 sec before timeout exception
 		"paths": loader.generatePaths(paths),
 		"map": {
 			"*": {

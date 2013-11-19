@@ -1,7 +1,11 @@
-(function(jQuery) {
+define("echo/identityserver/controls/auth", [
+	"jquery",
+	"echo/control",
+	"echo/utils",
+	"echo/gui",
+	"echo/gui/modal"
+], function($, Control, Utils, GUI, GUIModal) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.IdentityServer.Controls.Auth
@@ -37,9 +41,7 @@ var $ = jQuery;
  * @param {Object} config
  * Configuration options.
  */
-var auth = Echo.Control.manifest("Echo.IdentityServer.Controls.Auth");
-
-if (Echo.Control.isDefined(auth)) return;
+var auth = Control.manifest("Echo.IdentityServer.Controls.Auth");
 
 /** @hide @cfg submissionProxyURL */
 /** @hide @method placeImage */
@@ -170,12 +172,14 @@ auth.config = {
 	"infoMessages": {"enabled": false}
 };
 
-auth.dependencies = [{
-	"loaded": function() { return !!Echo.GUI; },
+//TODO: CSS DEPENDENCIES!!!
+/*auth.dependencies = [{
+	"loaded": function() { return !!GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
 }];
+*/
 
 auth.vars = {
 	"modal": null
@@ -331,7 +335,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 		});
 	} else {
 		return element.on("click", function() {
-			self.modal = new Echo.GUI.Modal({
+			self.modal = new GUIModal({
 				"data": {
 					"title": data.title
 				},
@@ -355,7 +359,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 
 auth.methods._appendSessionID = function(url) {
 	var id = encodeURIComponent(this.user.get("sessionID"));
-	var parts = Echo.Utils.parseURL(url);
+	var parts = Utils.parseURL(url);
 	var session = parts["query"]
 		? parts["query"].match(/=$/) ? id : "&sessionID=" + id
 		: "sessionID=" + id;
@@ -379,6 +383,6 @@ auth.css =
 	".{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
 	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }";
 
-Echo.Control.create(auth);
+return Control.create(auth);
 
-})(Echo.jQuery);
+});

@@ -1,3 +1,8 @@
+define("echo/streamserver/plugins/edit", [
+	"echo/streamserver/plugins/streamItemEdit",
+	"echo/streamserver/plugins/submitEdit"
+], function(){});
+
 define("echo/streamserver/plugins/streamItemEdit", [
 	"jquery",
 	"echo/plugin",
@@ -49,10 +54,11 @@ plugin.labels = {
 	"editButton": "Edit"
 };
 
-plugin.dependencies = [{
+/*plugin.dependencies = [{
 	"control": "Echo.StreamServer.Controls.Submit",
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
+*/
 
 plugin.methods._submitConfig = function(item, target) {
 	return this.config.assemble({

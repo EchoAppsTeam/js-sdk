@@ -1,7 +1,7 @@
 define("echo/streamserver/plugins/formAuth", [
 	"jquery",
 	"echo/plugin",
-	"echo/identityserver/controls/Auth"
+	"echo/identityserver/controls/auth"
 ], function($, Plugin, Auth) {
 "use strict";
 
@@ -132,11 +132,6 @@ plugin.labels = {
 	 */
 	"youMustBeLoggedIn": "You must be logged in to comment"
 };
-
-plugin.dependencies = [{
-	"control": "Echo.IdentityServer.Controls.Auth",
-	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
-}];
 
 /**
  * @echo_template

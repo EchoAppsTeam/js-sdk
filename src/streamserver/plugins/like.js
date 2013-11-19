@@ -1,3 +1,8 @@
+define("echo/streamserver/plugins/like", [
+	"echo/streamserver/plugins/streamLike",
+	"echo/streamserver/plugins/facePileLike"
+], function(){});
+
 define("echo/streamserver/plugins/streamLike", [
 	"jquery",
 	"echo/plugin",
@@ -70,11 +75,11 @@ plugin.labels = {
 	"unlikeProcessing": "Unliking..."
 };
 
-plugin.dependencies = [{
+/*plugin.dependencies = [{
 	"control": "Echo.StreamServer.Controls.FacePile",
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
-
+*/
 plugin.events = {
 	"Echo.StreamServer.Controls.FacePile.Item.Plugins.Like.onUnlike": function(topic, args) {
 		this._sendActivity("Unlike", this.component, args.actor);

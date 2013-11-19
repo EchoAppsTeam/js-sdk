@@ -152,12 +152,13 @@ plugin.enabled = function() {
 	return this.config.get("appId");
 };
 
-plugin.dependencies = [{
+//TODO: CSS DEPENDCIES!!!
+/*plugin.dependencies = [{
 	"loaded": function() { return !!GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
-}];
+}];*/
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Submit.onPostInit": function(topic, args) {

@@ -276,12 +276,14 @@ submit.vars = {
 	"validators": []
 };
 
-submit.dependencies = [{
+
+//TODO: CSS DEPENDENCIES!!!
+/*submit.dependencies = [{
 	"loaded": function() { return !!GUI; },
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
 }, {
 	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
-}];
+}];*/
 
 submit.labels = {
 	/**

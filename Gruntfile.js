@@ -89,58 +89,11 @@ module.exports = function(grunt) {
 	};
 
 	var packs = {
-		"loader": {
-			"src": [
-				"third-party/yepnope/yepnope.1.5.4.js",
-				"third-party/yepnope/yepnope.css.patched.js",
-				"cookie.js",
-				"loader.js"
-			],
-			"dest": "loader.js"
-		},
-		"api": {
-			"src": [
-				"api.js",
-				"streamserver/api.js",
-				"identityserver/api.js"
-			],
-			"dest": "api.pack.js"
-		},
-		/*"environment": {
-			"src": [
-				"utils.js",
-				"events.js",
-				"labels.js",
-				"configuration.js",
-				"api.pack.js",
-				"user-session.js",
-				"view.js",
-				"control.js",
-				"app.js",
-				"plugin.js",
-				"canvas.js"
-			],
-			"dest": "environment.pack.js"
-		},*/
-		"third-party/jquery": {
-			"src": [
-				"third-party/jquery/jquery.js",
-				"third-party/jquery/echo.jquery.noconflict.js",
-				"third-party/jquery/jquery.ihint.js",
-				"third-party/jquery/jquery.viewport.js"
-			],
-			"dest": "third-party/jquery.pack.js"
-		},
-		"third-party/jquery/jquery.isotope.min.js": {
-			"src": [
-				"third-party/jquery/jquery.isotope.min.js"
-			],
-			"dest": "third-party/jquery/jquery.isotope.min.js"
-		},
 		"gui-pack": {
-			"src": [ //TODO: rewrite ../build
-				"../build/third-party/bootstrap/js/bootstrap-*.js",
-				/*"../build/third-party/bootstrap/js/bootstrap-affix.js",
+			"src": [ //TODO: rewrite ../build 
+				// error while bootstrap popover usage (it depends on tooltip)
+				"../build/third-party/bootstrap/js/bootstrap-transition.js",
+				"../build/third-party/bootstrap/js/bootstrap-affix.js",
 				"../build/third-party/bootstrap/js/bootstrap-alert.js",
 				"../build/third-party/bootstrap/js/bootstrap-button.js",
 				"../build/third-party/bootstrap/js/bootstrap-modal.js",
@@ -152,11 +105,8 @@ module.exports = function(grunt) {
 				"../build/third-party/bootstrap/js/bootstrap-scrollspy.js",
 				"../build/third-party/bootstrap/js/bootstrap-tab.js",
 				"../build/third-party/bootstrap/js/bootstrap-typeahead.js",
-				*/"gui.js",
-				/*"gui-plugins/echo-modal.js",
-				"gui-plugins/echo-button.js",
-				"gui-plugins/echo-dropdown.js",
-				*/"gui-plugins/echo-*.js"
+				"gui.js",
+				"gui-plugins/echo-*.js"
 			],
 			"dest": "gui.pack.js"
 		},
@@ -172,24 +122,6 @@ module.exports = function(grunt) {
 			"dest": "tests/harness.js"
 		}
 	};
-
-	_.each(["streamserver", "identityserver"], function(name) {
-		packs[name + "/controls"] = {
-			"src": [name + "/controls/*.js"],
-			"dest": name + "/controls.pack.js"
-		};
-		packs[name + "/plugins"] = {
-			"src": [name + "/plugins/!(pinboard-visualization).js"],
-			"dest": name + "/plugins.pack.js"
-		};
-		packs[name] = {
-			"src": [
-				name + "/controls.pack.js",
-				name + "/plugins.pack.js"
-			],
-			"dest": name + ".pack.js"
-		};
-	});
 
 	var testPlatforms = {
 		"firefox": {
@@ -321,38 +253,6 @@ module.exports = function(grunt) {
 				"report": grunt.option("verbose") ? "gzip" : "min"
 			}
 		},
-		/*"wrap": {
-			"echo-jquery": {
-				"options": {
-					"header": [
-						"(function(jQuery) {",
-						"var $ = jQuery;",
-						"",
-					],
-					"footer": [
-						"})(Echo.jQuery);"
-					]
-				},
-				"files": [{
-					"expand": true,
-					"cwd": "<%= dirs.build %>",
-					"src": [
-						"third-party/jquery/jquery.ihint.js",
-						"third-party/jquery/jquery.isotope.min.js",
-						"third-party/jquery/jquery.viewport.mini.js"
-					]
-				}]
-			},
-			"bootstrap-less": {
-				"options": {
-					"header": [".echo-sdk-ui {"],
-					"footer": ["}"]
-				},
-				"files": [{
-					"src": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"]
-				}]
-			}
-		},*/
 		"patch": {
 			"jquery-source-map": {
 				"options": {
@@ -456,7 +356,7 @@ module.exports = function(grunt) {
 							"third-party/requirejs/css"
 						]
 					}, {
-						"name": "third-party/jquery.pack",
+						"name": "third-party/jquery/jquery.pack",
 						"create": true,
 						"include": [
 							"third-party/jquery/jquery",
@@ -472,9 +372,9 @@ module.exports = function(grunt) {
 							"events",
 							"labels",
 							"configuration",
-							"api",	// it was api pack
-							"streamserver/api",	// it was api pack
-							"identityserver/api",	// it was api pack
+							"api",
+							"streamserver/api",
+							"identityserver/api",
 							"user-session",
 							"view",
 							"control",
@@ -485,7 +385,7 @@ module.exports = function(grunt) {
 					}, {
 						"name": "streamserver.pack",
 						"create": true,
-						"include": [ //TODO: use *.js instead of enumeration
+						"include": [ //TODO:  *.js (instead of enumeration) crushed. I have to understand why.
 							"streamserver/controls/counter",
 							"streamserver/controls/stream",
 							"streamserver/controls/facepile",
@@ -495,7 +395,6 @@ module.exports = function(grunt) {
 							"streamserver/plugins/item-accumulator-display",
 							"streamserver/plugins/janrain-sharing",
 							"streamserver/plugins/metadata-manager",
-							"streamserver/plugins/pinboard-visualization",
 							"streamserver/plugins/text-counter",
 							"streamserver/plugins/edit",
 							"streamserver/plugins/infinite-scroll",
@@ -505,10 +404,23 @@ module.exports = function(grunt) {
 							"streamserver/plugins/reply",
 							"streamserver/plugins/tweet-display"
 						]
+					}, {
+						"name": "identityserver.pack",
+						"create": true,
+						"include": [ //TODO: use *.js instead of enumeration
+							"identityserver/controls/auth",
+							"identityserver/plugins/janrain-connector",
+						]
+					}, {
+						"name": "pinboard-visualization",
+						"create": true,
+						"include": [ //TODO: use *.js instead of enumeration
+							"streamserver/plugins/pinboard-visualization",
+						]
 					}],
-					//fileExclusionRegExp: /\S*(?:isotope|bootstrap-){1}\S*/g,
+					//fileExclusionRegExp: /\S*(?:gui-plugins){1}\S*/g, // \"min version"
 				}
-			}//,
+			}//, TODO: it will be used for minificated version building
 			//"plugins": {
 			//	"options": {
 			//		"appDir": "<%= dirs.src %>",
@@ -518,7 +430,7 @@ module.exports = function(grunt) {
 			//		"optimize": "none",
 			//		"wrap": {
 			//			"start": "require([\"jquery\"] function(jQuery) {\n var $ = jQuery;\n",
-        		//			"end": "});"
+        	//			"end": "});"
 			//		},
 			//		//"namespace": "Echo",
 			//		//removeCombined: true,
@@ -561,7 +473,7 @@ module.exports = function(grunt) {
 				"files": [{
 					"expand": true,
 					"cwd": "<%= dirs.build %>",
-					"src": [
+					"src": [ //TODO: rewrite using bootstrap-*.js
 						"third-party/bootstrap/js/bootstrap-transition.js",
 						"third-party/bootstrap/js/bootstrap-affix.js",
 						"third-party/bootstrap/js/bootstrap-alert.js",

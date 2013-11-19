@@ -1,3 +1,9 @@
+define("echo/streamserver/plugins/pinboardVisualization", [
+	"echo/streamserver/plugins/mediaGallery",
+	"echo/streamserver/plugins/streamItemPinboardVisualization",
+	"echo/streamserver/plugins/streamPinboardVisualization"
+], function(){})
+
 define("echo/streamserver/plugins/mediaGallery", [
 	"jquery",
 	"echo/control",
@@ -327,10 +333,11 @@ plugin.init = function() {
 	this.extendTemplate("replace", "container", plugin.templates.container);
 };
 
-plugin.dependencies = [{
+/*plugin.dependencies = [{
 	"loaded": function() { return !!$.fn.isotope; },
 	"url": "{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js"
 }];
+*/
 
 plugin.config = {
 	/**
@@ -756,10 +763,12 @@ plugin.enabled = function() {
 	return document.compatMode !== "BackCompat"
 };
 
+/*
 plugin.dependencies = [{
 	"loaded": function() { return !!$.fn.isotope; }, //TODO: check if it works
 	"url": "{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js"
 }];
+*/
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.onRender": function(topic, args) {

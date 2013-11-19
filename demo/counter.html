@@ -29,19 +29,6 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		/*Echo.Loader.initApplication({
-			"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Counter",
-			"backplane": {
-				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-				"busName": "jskit"
-			},
-			"config": {
-				"target": document.getElementById("counter"),
-				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"query" : "childrenof:http://example.com/test/*"
-			}
-		});*/
 		Echo.require(["echo/streamserver/controls/counter"], function(Counter) {
 			new Counter({
 				"target": document.getElementById("counter"),

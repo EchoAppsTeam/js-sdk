@@ -114,10 +114,10 @@ plugin.labels = {
 	"youMustBeLoggedIn": "You must be logged in to comment"
 };
 
-plugin.dependencies = [{
+/*plugin.dependencies = [{
 	"control": "Echo.IdentityServer.Controls.Auth",
 	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
-}];
+}];*/
 
 /**
  * @echo_template

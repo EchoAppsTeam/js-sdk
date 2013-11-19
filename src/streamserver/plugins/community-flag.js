@@ -77,10 +77,10 @@ plugin.labels = {
 	"unflagProcessing": "Unflagging..."
 };
 
-plugin.dependencies = [{
+/*plugin.dependencies = [{
 	"control": "Echo.StreamServer.Controls.FacePile",
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
-}];
+}];*/
 
 /**
  * @echo_template

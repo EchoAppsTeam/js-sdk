@@ -1,4 +1,4 @@
-define("echo/streamserver/plugins/submitReply", [
+define("echo/streamserver/plugins/textCounter", [
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {

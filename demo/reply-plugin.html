@@ -17,13 +17,15 @@
 	</div>
 	<script>
 		if (window.parent.Docs) {
-			var link = Echo.jQuery("#documentation > a");
-			link.on("click", function(e) {
-				e.preventDefault();
-				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
-				return false;
+			Echo.require(["jquery"], function($) {
+				var link = $("#documentation > a");
+				link.on("click", function(e) {
+					e.preventDefault();
+					window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
+					return false;
+				});
+				$("#container").addClass("embedded");
 			});
-			Echo.jQuery("#container").addClass("embedded");
 		}
 	</script>
 	<!-- Client initialization -->

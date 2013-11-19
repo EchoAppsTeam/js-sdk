@@ -3,7 +3,7 @@
 	<head>
 		<title>Auth App Demo</title>
 		<link rel="stylesheet" type="text/css" href="demo.css" />
-		<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
+		<link rel="stylesheet" type="text/css" href="{%=baseURLs.sdk%}/gui.pack.css" />
 		<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
 	</head>
 <body>
@@ -20,30 +20,30 @@
 	</div>
 	<script>
 		if (window.parent.Docs) {
-			var link = Echo.jQuery("#documentation > a");
-			link.on("click", function(e) {
-				e.preventDefault();
-				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
-				return false;
+			Echo.require(["jquery"], function($) {
+				var link = $("#documentation > a");
+				link.on("click", function(e) {
+					e.preventDefault();
+					window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
+					return false;
+				});
+				$("#container").addClass("embedded");
 			});
-			Echo.jQuery("#container").addClass("embedded");
 		}
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		var identityManager = {
-			"width": 400,
-			"height": 240,
-			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-		};
-        Echo.Loader.initApplication({ 
-            "script": "{%=baseURLs.sdk%}/identityserver.pack.js",
-            "component": "Echo.IdentityServer.Controls.Auth",
-            "backplane": { 
-                "serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-                "busName": "jskit"
-            },
-            "config": {
+		Echo.require(["echo/identityserver/controls/auth"], function(Auth) {
+			var identityManager = {
+				"width": 400,
+				"height": 240,
+				"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+			};
+			new Auth({
+	            "backplane": { 
+	                "serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+	                "busName": "jskit"
+	            },
                 "target": document.getElementById("auth"),
                 "appkey": "echo.jssdk.demo.aboutecho.com",
                 "targetURL": "http://echosandbox.com/use-cases/commenting",
@@ -51,8 +51,8 @@
 					"login": identityManager,
 					"signup": identityManager
 				}
-            }
-        }); 
+			});
+		});
 	</script>
 </body>
 </html>

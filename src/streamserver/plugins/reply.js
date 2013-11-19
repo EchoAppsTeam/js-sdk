@@ -1,3 +1,9 @@
+define("echo/streamserver/plugins/reply", [
+	"echo/streamserver/plugins/streamItemReply",
+	"echo/streamserver/plugins/streamReply",
+	"echo/streamserver/plugins/submitReply"
+], function(){});
+
 define("echo/streamserver/plugins/streamItemReply", [
 	"jquery",
 	"echo/plugin",
@@ -69,10 +75,11 @@ plugin.labels = {
 	"replyControl": "Reply"
 };
 
-plugin.dependencies = [{
+/*plugin.dependencies = [{
 	"control": "Echo.StreamServer.Controls.Submit",
 	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 }];
+*/
 
 plugin.events = {
 	"Echo.StreamServer.Controls.Stream.Plugins.Reply.onFormExpand": function(topic, args) {
