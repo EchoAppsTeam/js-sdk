@@ -1,7 +1,8 @@
 module.exports = function(grunt) {
+	"use strict";
 
 	var shared = require("../lib.js").init(grunt);
-	var _ = grunt.utils._;
+	var _ = require("lodash");
 	var http = require("http");
 	var async = require("async");
 	var url = require("url");
@@ -29,10 +30,14 @@ module.exports = function(grunt) {
 		}
 		var check = function(env) {
 			var filename = "config/environments/" + env + ".json";
+			if (!grunt.file.exists(filename)) {
+				grunt.fail.fatal("Some environment config files are absent. Execute `" + "grunt generate:config".cyan + "`");
+			}
 			var content = grunt.file.read(filename);
 			if (content.indexOf("[PLACEHOLDER]") !== -1) {
 				grunt.fail.fatal("There are unfilled fields in the file " + filename.cyan + " . Find [PLACEHOLDER] string and replace it with the corresponding value.".yellow);
 			}
+			//TODO: uploads.baseSrcPath MUST start with web directory
 		};
 		if (!checkAll) {
 			check(shared.config("env"));
@@ -87,7 +92,7 @@ module.exports = function(grunt) {
 			_.each(uploads, function(upload) {
 				var baseSrcPath = grunt.template.process(upload.baseSrcPath);
 				var dest = grunt.template.process(upload.dest);
-				var src = grunt.file.expandFiles(baseSrcPath + upload.src);
+				var src = grunt.file.expand({"filter": "isFile"}, baseSrcPath + upload.src);
 				_.each(src, function(srcName) {
 					URLs.push("http:" + grunt.config("envConfig.baseURLs.cdn") + dest + srcName.replace(baseSrcPath, ""));
 				});
@@ -109,7 +114,8 @@ module.exports = function(grunt) {
 			urlOptions.headers = {
 				"Accept-Encoding": "gzip,deflate"
 			};
-			grunt.log.write("[" + ++i + "/" + URLs.length + "] " + URL.yellow + " ... ");
+			i++;
+			grunt.log.write("[" + i + "/" + URLs.length + "] " + URL.yellow + " ... ");
 			http.get(urlOptions, function(response) {
 				var headers = {};
 				if (response.statusCode === 404) {
@@ -146,7 +152,7 @@ module.exports = function(grunt) {
 
 	function checkDocs(done) {
 		grunt.log.subhead("Searching for dead wiki links");
-		shared.exec("grep -roZE 'https?://wiki.aboutecho.com[^\"\)]+' src/ docs/", function(stdout) {
+		shared.exec("grep -roZE 'https?://wiki.aboutecho.com[^\")]+' src/ docs/", function(stdout) {
 			var lines = stdout.trim().split(/[\r\n]+/);
 			async.eachSeries(lines, function(line, next) {
 				var parts = line.split("\0");

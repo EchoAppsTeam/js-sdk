@@ -13,4 +13,4 @@ config/environments/staging.json
 config/environments/production.json
 
 sauce_connect.*
-tools/Sauce-Connect.jar
+hs_err_pid*

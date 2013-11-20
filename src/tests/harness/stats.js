@@ -84,6 +84,7 @@ var _eventsPublish, _eventsSubscribe, _detailErrors = [];
 
 function testLogSpy(result) {
 	if (!result.result) {
+		// TODO: either remove or make saucelabs accept it
 		_detailErrors.push({
 			"module": result.module,
 			"name": result.name,
@@ -95,11 +96,7 @@ function testLogSpy(result) {
 }
 
 function exportStats(results) {
-	window.testResults = {
-		"qunit": results,
-		"detail": _detailErrors,
-		"logs": Echo.Tests.logs || []
-	};
+	window.global_test_results = results;
 }
 
 function startEventsSpy() {

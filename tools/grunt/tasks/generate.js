@@ -1,9 +1,8 @@
 module.exports = function(grunt) {
+	"use strict";
 
 	var shared = require("../lib.js").init(grunt);
-	var _ = grunt.utils._;
-	// TODO: use deep clone from Lo-Dash when we upgrade to grunt 0.4 and remove this line
-	_.mixin({ deepClone: function (p_object) { return JSON.parse(JSON.stringify(p_object)); } });
+	var _ = require("lodash");
 
 	grunt.registerInitTask("generate", "Collection of generators", function(target) {
 		var done = this.async();
@@ -43,11 +42,14 @@ module.exports = function(grunt) {
 		_.each(shared.config("environments"), function(env) {
 			var filename = "config/environments/" + env + ".json";
 			var oldCfg = grunt.file.exists(filename) ? grunt.file.readJSON(filename) : {};
-			var newCfg = _.deepClone(sample);
+			var newCfg = _.cloneDeep(sample);
 
 			// remove some fields which shouldn't be in the resulting config
-			if (env === "development" || env === "test") {
+			if (env === "development" || env === "test" || env === "ci") {
 				delete newCfg.release;
+			}
+			if (env === "ci") {
+				delete newCfg.saucelabs;
 			}
 			if (env === "staging") {
 				delete newCfg.release.purger;

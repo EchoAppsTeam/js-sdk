@@ -1,7 +1,8 @@
 module.exports = function(grunt) {
+	"use strict";
 
 	var shared = require("../lib.js").init(grunt);
-	var _ = grunt.utils._;
+	var trim = require("underscore.string").trim;
 	var desiredJSDuckVersion = "5.0.0";
 
 	grunt.registerInitTask("docs", "Generate and push docs to Github Pages", function(target) {
@@ -27,16 +28,18 @@ module.exports = function(grunt) {
 						return;
 					}
 					grunt.config("copy.docs", {
-						"files": {
-							"<%= dirs.build %>": [
+						"files": [{
+							"expand": true,
+							"src": [
 								"<%= dirs.src %>/!(backplane).js",
 								"<%= dirs.src %>/!(tests|third-party)/**/*.js",
 								"<%= dirs.src %>/tests/!(qunit|sinon)/**/*.js",
 								"<%= dirs.src %>/third-party/bootstrap/plugins/echo-*.js"
-							]
-						},
+							],
+							"dest": "<%= dirs.build %>"
+						}],
 						"options": {
-							"basePath": "<config:dirs.src>",
+							"basePath": "<%= dirs.src %>",
 							"processContent": shared.replacePlaceholdersOnCopy
 						}
 					});
@@ -55,7 +58,7 @@ module.exports = function(grunt) {
 	function checkJSDuckVersion(done) {
 		shared.exec("jsduck --version | awk '{ print $2; }'", function(version) {
 			var failed = false;
-			version = _.trim(version);
+			version = trim(version);
 			if (!version) {
 				failed = true;
 				grunt.log.writeln("jsduck is not installed. Install it by running command `" + ("gem install jsduck -v " + desiredJSDuckVersion).yellow + "`.").cyan;
