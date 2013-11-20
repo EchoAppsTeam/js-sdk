@@ -19,6 +19,7 @@ module.exports = function(grunt) {
 			"target": target,
 			"stage": stage
 		});
+		grunt.config("wrap.options.linefeeds", stage !== "min");
 		assignThirdPartyFilesVersion();
 		makeCopySpec();
 		switch (stage) {

@@ -11,6 +11,7 @@ config/environments/development.json
 config/environments/test.json
 config/environments/staging.json
 config/environments/production.json
+config/release.json
 
 sauce_connect.*
 hs_err_pid*

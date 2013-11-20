@@ -1,5 +1,5 @@
 {
-	"version": 2,
+	"version": 3,
 	"baseURLs": {
 		"cdn": "//cdn.echoenabled.com",
 		"sdk": "//cdn.echoenabled.com/sdk/v{%=packageVersion%}",
