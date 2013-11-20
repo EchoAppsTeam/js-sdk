@@ -6,7 +6,8 @@ define("echo/streamserver/controls/submit", [
 	"echo/gui",
 	"echo/gui/button",
 	"echo/events", 
-	"echo/gui/modal"
+	"echo/gui/modal",
+	"css!echo/gui.pack"
 ], function($, Control, Utils, API, GUI, GUIButton, Events, GUIModal) {
 "use strict";
 
@@ -275,15 +276,6 @@ submit.config = {
 submit.vars = {
 	"validators": []
 };
-
-
-//TODO: CSS DEPENDENCIES!!!
-/*submit.dependencies = [{
-	"loaded": function() { return !!GUI; },
-	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
-}, {
-	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
-}];*/
 
 submit.labels = {
 	/**

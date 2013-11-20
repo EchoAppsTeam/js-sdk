@@ -22,13 +22,20 @@
 				}
 			}
 			return res;
+		},
+		"appendCssLink": function(url) {
+		    var link = document.createElement("link");
+		    link.type = "text/css";
+		    link.rel = "stylesheet";
+		    link.href = url;
+		    document.getElementsByTagName("head")[0].appendChild(link);
 		}
 	};
 
 	//TODO: generate path from object below istead of the big list
 	var paths = {};
 	paths[loader.getURL("")] = ["echo", "echo-assets"]; //assets is for pictures
-	paths["css!echo/gui.pack.css"] = ["echo-gui-css"];
+	//paths[loader.getURL("/gui.pack")] = ["echo-gui-css"];
 	paths[loader.getURL("/third-party/jquery/jquery.pack")] = ["jquery-noconflict"];
 	paths[loader.getURL("/third-party/jquery/jquery.isotope.min")] = ["isotope"]; 
 	paths[loader.getURL("") + "/enviroment.pack"] = [

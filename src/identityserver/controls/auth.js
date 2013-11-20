@@ -3,7 +3,8 @@ define("echo/identityserver/controls/auth", [
 	"echo/control",
 	"echo/utils",
 	"echo/gui",
-	"echo/gui/modal"
+	"echo/gui/modal",
+	"css!echo/gui.pack"
 ], function($, Control, Utils, GUI, GUIModal) {
 "use strict";
 
@@ -171,15 +172,6 @@ auth.config = {
 	 */
 	"infoMessages": {"enabled": false}
 };
-
-//TODO: CSS DEPENDENCIES!!!
-/*auth.dependencies = [{
-	"loaded": function() { return !!GUI; },
-	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
-}, {
-	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
-}];
-*/
 
 auth.vars = {
 	"modal": null
