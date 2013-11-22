@@ -380,9 +380,9 @@ Echo.App.prototype.log = function(data) {
 };
 
 /**
- * Method to add and initialize nested component.
+ * Method to add and initialize nested application.
  *
- * This function allows to initialize nested component. Component configuration object
+ * This function allows to initialize nested application. Application configuration object
  * is constructed by merging the following 2 objects:
  *
  * + this instance config
@@ -391,77 +391,77 @@ Echo.App.prototype.log = function(data) {
  * @param {Object} spec
  *
  * @param {String} spec.id
- * Nested component id.
+ * Nested application id.
  *
- * @param {String} spec.component
- * Constructor name for the nested component like "Echo.StreamServer.App.Stream".
+ * @param {String} spec.app
+ * Constructor name for the nested app like "Echo.StreamServer.App.Stream".
  *
  * @param {Object} [spec.config]
- * Configuration object for the nested component.
+ * Configuration object for the nested application.
  */
-Echo.App.prototype.initComponent = function(spec) {
-	this.destroyComponent(spec.id);
+Echo.App.prototype.initApp = function(spec) {
+	this.destroyApp(spec.id);
 	spec.config = spec.config || {};
 	if (this.user) {
 		spec.config.user = this.user;
 	}
 	spec.config.parent = spec.config.parent || this.config.getAsHash();
-	if (spec.config.parent.components) {
-		delete spec.config.parent.components;
+	if (spec.config.parent.dependencies) {
+		delete spec.config.parent.dependencies;
 	}
 	spec.config.plugins = this._mergeSpecsByName(
-		$.extend(true, [], this.config.get("components." + spec.id + ".plugins", [])),
+		$.extend(true, [], this.config.get("apps." + spec.id + ".plugins", [])),
 		spec.config.plugins || []
 	);
-	spec.config = this._normalizeComponentConfig(
-		$.extend(true, {}, this.config.get("components." + spec.id, {}), spec.config)
+	spec.config = this._normalizeAppConfig(
+		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
-	var Component = Echo.Utils.getComponent(spec.component);
-	this.set("components." + spec.id, new Component(spec.config));
-	return this.getComponent(spec.id);
+	var App = Echo.Utils.getApp(spec.app);
+	this.set("apps." + spec.id, new App(spec.config));
+	return this.getApp(spec.id);
 };
 
 /**
- * Method to retrieve the initialized component by id.
+ * Method to retrieve the initialized application by id.
  *
  * @param {String} id
- * Id of the component to be retrieved.
+ * Id of the application to be retrieved.
  *
  * @return {Object}
- * The link to the corresponding component or 'undefined'
+ * The link to the corresponding application or 'undefined'
  * in case no application with the given id was found.
  */
-Echo.App.prototype.getComponent = function(id) {
-	return this.get("components." + id);
+Echo.App.prototype.getApp = function(id) {
+	return this.get("apps." + id);
 };
 
 /**
- * Method to destroy a nested component by id. If the component is defined,
- * then the "destroy" method of the nested component is called
- * and the reference is removed from the inner "components" container.
+ * Method to destroy a nested app by id. If the app is defined,
+ * then the "destroy" method of the nested app is called
+ * and the reference is removed from the inner "apps" container.
  *
  * @param {String} id
- * Id of the component to be removed.
+ * Id of the app to be removed.
  */
-Echo.App.prototype.destroyComponent = function(id) {
-	var component = this.getComponent(id);
-	if (component) {
-		component.destroy();
-		this.remove("components." + id);
+Echo.App.prototype.destroyApp = function(id) {
+	var app = this.getApp(id);
+	if (app) {
+		app.destroy();
+		this.remove("apps." + id);
 	}
 };
 
 /**
- * Method to destroy all defined nested components by their ids in the exception list.
+ * Method to destroy all defined nested applications by their ids in the exception list.
  *
  * Method can accept one parameter which specifies the nested exception
- * component ids list. If the list is omitted or empty, then the method destroys
- * all defined nested components.
+ * application ids list. If the list is omitted or empty, then the method destroys
+ * all defined nested applications.
  *
  * @param {Array} [exceptions]
- * List of nested component to be kept.
+ * List of nested applications to be kept.
  */
-Echo.App.prototype.destroyComponents = function(exceptions) {
+Echo.App.prototype.destroyApps = function(exceptions) {
 	var self = this;
 	exceptions = exceptions || [];
 	var inExceptionList = function(id) {
@@ -474,9 +474,9 @@ Echo.App.prototype.destroyComponents = function(exceptions) {
 		});
 		return inList;
 	};
-	$.each(this.components, function(id) {
+	$.each(this.apps, function(id) {
 		if (!inExceptionList(id)) {
-			self.destroyComponent(id);
+			self.destroyApp(id);
 		}
 	});
 };
@@ -617,24 +617,6 @@ Echo.App.prototype._initializers.subscriptions = function() {
 		}
 	});
 
-	// we need two subscriptions here, because the "Echo.App.onDataInvalidate" event
-	// may be published by the nested applications (in this case the event is not broadcasted
-	// to the "global" context) and by the standalone application to notify other applications
-	// (not related directly) about the need to invalidate the data (in this case
-	// the "global" context is used)
-	$.map(["global", app.config.get("context")], function(context) {
-		app.events.subscribe({
-			"topic": "Echo.App.onDataInvalidate",
-			"context": context,
-			"handler": function() {
-				var request = app.get("request");
-				if (request && request.liveUpdates) {
-					request.liveUpdates.start(true);
-				}
-			}
-		});
-	});
-
 	// register destroy handlers
 	app.events.subscribe({
 		"topic": "Echo.App.onDestroy",
@@ -652,13 +634,6 @@ Echo.App.prototype._initializers.subscriptions = function() {
 			// apply application-specific logic
 			if (app._manifest("destroy")) {
 				app._manifest("destroy").call(app, data.producer);
-			}
-
-			// abort and cleanup data request machinery
-			var request = app.get("request");
-			if (request) {
-				request.abort();
-				app.remove("request");
 			}
 
 			// a. keep subscriptions in case of refresh (if "self" is false)
@@ -1051,34 +1026,15 @@ Echo.App.prototype._mergeSpecsByName = function(specs) {
 	});
 };
 
-Echo.App.prototype._normalizeComponentConfig = function(config) {
+Echo.App.prototype._normalizeAppConfig = function(config) {
 	var self = this;
 	// extend the config with the default fields from manifest
-	Echo.Utils.foldl(config, this._manifest("config"), function(value, acc, key) {
+	return Echo.Utils.foldl(config, this._manifest("config"), function(value, acc, key) {
 		// do not override existing values in data
 		if (typeof acc[key] === "undefined") {
 			acc[key] = self.config.get(key);
 		}
 	});
-	var normalize = function(value) {
-		if (typeof value === "string") {
-			return self.substitute({
-				"template": value,
-				"strict": true
-			});
-		} else if ($.isPlainObject(value)) {
-			return Echo.Utils.foldl({}, value, function(value, acc, key) {
-				acc[key] = normalize(value);
-			});
-		} else if ($.isArray(value)) {
-			return $.map(value, function(element) {
-				return normalize(element);
-			});
-		} else {
-			return value;
-		}
-	};
-	return normalize(config);
 };
 
 })(Echo.jQuery);
@@ -1185,7 +1141,7 @@ manifest.config.normalizer = {
 	// it into the Echo.Events.newContextId function, which generates
 	// the nested context out of it. Note: the parent "context" for the application
 	// is defined within the Echo.Plugin.Config.prototype.assemble and
-	// Echo.App.prototype._normalizeComponentConfig functions.
+	// Echo.App.prototype._normalizeAppConfig functions.
 	"context": Echo.Events.newContextId
 };
 

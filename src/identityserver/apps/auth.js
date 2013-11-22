@@ -41,8 +41,6 @@ var auth = Echo.App.manifest("Echo.IdentityServer.Apps.Auth");
 
 if (Echo.App.isDefined(auth)) return;
 
-auth.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
-
 /** @hide @echo_label loading */
 /** @hide @echo_label retrying */
 /** @hide @echo_label error_busy */
@@ -77,6 +75,20 @@ auth.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
  */
 
 auth.config = {
+	/**
+	 * @cfg {String} appkey
+	 * Specifies the customer application key. You should specify this parameter
+	 * if your application uses StreamServer or IdentityServer API requests.
+	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
+	 */
+	"appkey": "",
+
+	/**
+	 * @cfg {String} apiBaseURL
+	 * URL prefix for all API requests
+	 */
+	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
+
 	/**
 	 * @cfg {String} defaultAvatar
 	 * Default avatar URL which will be used for the user in
@@ -154,10 +166,12 @@ auth.config = {
 	 */
 	"identityManager": {},
 	/**
-	 * @cfg {String} infoMessages
-	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 * @cfg {Boolean} useSecureAPI
+	 * This parameter is used to specify the API request scheme.
+	 * If parameter is set to false or not specified, the API request object
+	 * will use the scheme used to retrieve the host page.
 	 */
-	"infoMessages": {"enabled": false},
+	"useSecureAPI": false,
 	/**
 	 * @cfg {String} submissionProxyURL
 	 * URL prefix for requests to Echo Submission Proxy

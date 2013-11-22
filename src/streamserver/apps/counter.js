@@ -18,7 +18,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.ServerRelatedApp
+ * @extends Echo.App
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
@@ -32,8 +32,6 @@ var $ = jQuery;
 var counter = Echo.App.manifest("Echo.StreamServer.Apps.Counter");
 
 if (Echo.App.isDefined(counter)) return;
-
-counter.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 /** @hide @cfg labels */
 /** @hide @method getPlugin */
@@ -58,7 +56,13 @@ counter.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
  */
 
 counter.init = function() {
-	if (!this.checkAppKey()) return;
+	if (!this.config.get("appkey")) {
+		return Echo.Utils.showError({
+			"errorCode": "incorrect_appkey",
+			"target": this.config.get("target"),
+			"label": this.labels.get("error_incorrect_appkey")
+		}, {"critical": true});
+	}
 
 	// picking up timeout value for backwards compatibility
 	var timeout = this.config.get("liveUpdates.timeout");
@@ -81,6 +85,19 @@ counter.init = function() {
 };
 
 counter.config = {
+	/**
+	 * @cfg {String} appkey
+	 * Specifies the customer application key. You should specify this parameter
+	 * if your application uses StreamServer or IdentityServer API requests.
+	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
+	 */
+	"appkey": "",
+
+	/**
+	 * @cfg {String} apiBaseURL
+	 * URL prefix for all API requests
+	 */
+	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
 	/**
 	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
@@ -131,12 +148,13 @@ counter.config = {
 			"timeout": 10
 		}
 	},
-
 	/**
-	 * @cfg {String} infoMessages 
-	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 * @cfg {Boolean} useSecureAPI
+	 * This parameter is used to specify the API request scheme.
+	 * If parameter is set to false or not specified, the API request object
+	 * will use the scheme used to retrieve the host page.
 	 */
-	"infoMessages": {"layout": "compact"}
+	"useSecureAPI": false
 };
 
 counter.templates.main = "<span>{data:count}</span>";
@@ -202,7 +220,12 @@ counter.methods._error = function(data, options) {
 		this.render();
 	} else {
 		if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-			this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
+			Echo.Utils.showMessage({
+				"type": "error",
+				"data": data,
+				"message": data.errorMessage,
+				"target": this.config.get("target")
+			});
 		}
 	}
 	this.ready();

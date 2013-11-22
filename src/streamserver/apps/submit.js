@@ -18,7 +18,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.ServerRelatedApp
+ * @extends Echo.App
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
@@ -32,8 +32,6 @@ var $ = jQuery;
 var submit = Echo.App.manifest("Echo.StreamServer.Apps.Submit");
 
 if (Echo.App.isDefined(submit)) return;
-
-submit.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 /** @hide @cfg apiBaseURL */
 /** @hide @echo_label loading */
@@ -70,7 +68,13 @@ submit.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
  */
 
 submit.init = function() {
-	if (!this.checkAppKey()) return;
+	if (!this.config.get("appkey")) {
+		return Echo.Utils.showError({
+			"errorCode": "incorrect_appkey",
+			"target": this.config.get("target"),
+			"label": this.labels.get("error_incorrect_appkey")
+		}, {"critical": true});
+	}
 
 	var self = this;
 	this.addPostValidator(function() {
@@ -86,6 +90,19 @@ submit.init = function() {
 };
 
 submit.config = {
+	/**
+	 * @cfg {String} appkey
+	 * Specifies the customer application key. You should specify this parameter
+	 * if your application uses StreamServer or IdentityServer API requests.
+	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
+	 */
+	"appkey": "",
+
+	/**
+	 * @cfg {String} apiBaseURL
+	 * URL prefix for all API requests
+	 */
+	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
 	/**
 	 * @cfg {String} defaultAvatar
 	 * Default avatar URL which will be used for the user in
@@ -259,7 +276,14 @@ submit.config = {
 	 * @cfg {String} submissionProxyURL
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
-	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
+	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
+	/**
+	 * @cfg {Boolean} useSecureAPI
+	 * This parameter is used to specify the API request scheme.
+	 * If parameter is set to false or not specified, the API request object
+	 * will use the scheme used to retrieve the host page.
+	 */
+	"useSecureAPI": false
 };
 
 submit.config.normalizer = {

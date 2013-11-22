@@ -19,7 +19,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.ServerRelatedApp
+ * @extends Echo.App
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
@@ -33,8 +33,6 @@ var $ = jQuery;
 var pile = Echo.App.manifest("Echo.StreamServer.Apps.FacePile");
 
 if (Echo.App.isDefined(pile)) return;
-
-pile.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 /**
  * @echo_event Echo.StreamServer.Apps.FacePile.onReady
@@ -56,7 +54,13 @@ pile.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 
 pile.init = function() {
-	if (!this.checkAppKey()) return;
+	if (!this.config.get("appkey")) {
+		return Echo.Utils.showError({
+			"errorCode": "incorrect_appkey",
+			"target": this.config.get("target"),
+			"label": this.labels.get("error_incorrect_appkey")
+		}, {"critical": true});
+	}
 
 	// picking up timeout value for backwards compatibility
 	var timeout = this.config.get("liveUpdates.timeout");
@@ -76,6 +80,19 @@ pile.init = function() {
 };
 
 pile.config = {
+	/**
+	 * @cfg {String} appkey
+	 * Specifies the customer application key. You should specify this parameter
+	 * if your application uses StreamServer or IdentityServer API requests.
+	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
+	 */
+	"appkey": "",
+
+	/**
+	 * @cfg {String} apiBaseURL
+	 * URL prefix for all API requests
+	 */
+	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
 	/**
 	 * @cfg {Object} data
 	 * Specifies static data for the face pile. It has the same format as returned
@@ -194,7 +211,15 @@ pile.config = {
 	 * @cfg {String} submissionProxyURL
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
-	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
+	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
+
+	/**
+	 * @cfg {Boolean} useSecureAPI
+	 * This parameter is used to specify the API request scheme.
+	 * If parameter is set to false or not specified, the API request object
+	 * will use the scheme used to retrieve the host page.
+	 */
+	"useSecureAPI": false
 };
 
 pile.vars = {
@@ -349,7 +374,10 @@ pile.methods._request = function() {
 			"onError": function(data, extra) {
 				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
 				if (needShowError) {
-					self.showError(data, {"critical": extra.critical});
+					Echo.Utils.showError(data, {
+						"critical": extra.critical,
+						"label": this.labels.get("error_" + data.errorCode)
+					});
 				}
 			},
 			"onData": function(data, extra) {
@@ -376,7 +404,11 @@ pile.methods._requestMoreItems = function() {
 			"appkey": this.config.get("appkey")
 		},
 		"onError": function(data) {
-			self.showMessage({"type": "error", "data": data});
+			Echo.Utils.showMessage({
+				"type": "error",
+				"data": data,
+				"target": self.config.get("target")
+			});
 		},
 		"onData": function(data) {
 			self._initialResponseHandler(data);
@@ -524,7 +556,7 @@ pile.methods._getMoreUsers = function() {
 		this.render();
 	} else {
 		if (!this.get("moreRequestInProgress")) {
-			this.showMessage({
+			Echo.Utils.showMessage({
 				"type": "loading",
 				"target": this.view.get("more")
 			});

@@ -18,7 +18,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.ServerRelatedApp
+ * @extends Echo.App
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
@@ -32,8 +32,6 @@ var $ = jQuery;
 var stream = Echo.App.manifest("Echo.StreamServer.Apps.Stream");
 
 if (Echo.App.isDefined(stream)) return;
-
-stream.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 /**
  * @echo_event Echo.StreamServer.Apps.Stream.onReady
@@ -55,7 +53,13 @@ stream.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 stream.init = function() {
 	var self = this;
-	if (!this.checkAppKey()) return;
+	if (!this.config.get("appkey")) {
+		return Echo.Utils.showError({
+			"errorCode": "incorrect_appkey",
+			"target": this.config.get("target"),
+			"label": this.labels.get("error_incorrect_appkeys")
+		}, {"critical": true});
+	}
 
 	// picking up timeout value for backwards compatibility
 	var timeout = this.config.get("liveUpdates.timeout");
@@ -72,16 +76,18 @@ stream.init = function() {
 		}),
 		"onOpen": function(data, options) {
 			if (options.requestType === "initial") {
-				self.showError({}, {
+				Echo.Utils.showError({}, {
 					"retryIn": 0,
-					"request": self.request
+					"label": self.labels.get("retrying"),
+					"promise": self.request.deferred.transport.promise()
 				});
 			}
 		},
 		"onError": function(data, options) {
 			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-				self.showError(data, $.extend(options, {
-					"request": self.request
+				Echo.Utils.showError(data, $.extend(options, {
+					"label": self.labels.get("error_" + data.errorCode),
+					"promise": self.request.deferred.transport.promise()
 				}));
 			}
 		},
@@ -113,6 +119,19 @@ stream.init = function() {
 };
 
 stream.config = {
+	/**
+	 * @cfg {String} appkey
+	 * Specifies the customer application key. You should specify this parameter
+	 * if your application uses StreamServer or IdentityServer API requests.
+	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
+	 */
+	"appkey": "",
+
+	/**
+	 * @cfg {String} apiBaseURL
+	 * URL prefix for all API requests
+	 */
+	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
 	/**
 	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
@@ -368,7 +387,15 @@ stream.config = {
 	 * the first Stream application initialization and when extra items are received after
 	 * the "More" button click.
 	 */
-	"asyncItemsRendering": false
+	"asyncItemsRendering": false,
+
+	/**
+	 * @cfg {Boolean} useSecureAPI
+	 * This parameter is used to specify the API request scheme.
+	 * If parameter is set to false or not specified, the API request object
+	 * will use the scheme used to retrieve the host page.
+	 */
+	"useSecureAPI": false
 };
 
 stream.config.normalizer = {
@@ -509,7 +536,7 @@ stream.renderers.body = function(element) {
 		}
 		this._appendRootItems(request.data, element);
 	} else {
-		this.showMessage({
+		Echo.Utils.showMessage({
 			"type": "info",
 			"message": this.labels.get("emptyStream"),
 			"target": element
@@ -715,16 +742,18 @@ stream.methods._requestChildrenItems = function(unique) {
 			"q": this._constructChildrenSearchQuery(item)
 		},
 		"onOpen": function() {
-			self.showError({}, {
+			Echo.Utils.showError({}, {
 				"retryIn": 0,
 				"target": target,
-				"request": request
+				"label": self.labels.get("retrying"),
+				"promise": request.deferred.transport.promise()
 			});
 		},
 		"onError": function(data, options) {
-			self.showError(data, $.extend(options, {
+			Echo.Utils.showError(data, $.extend(options, {
 				"target": target,
-				"request": request
+				"promise": request.deferred.transport.promise(),
+				"label": self.labels.get("error_" + data.errorCode)
 			}));
 		},
 		"onData": function(data) {
@@ -765,16 +794,18 @@ stream.methods._requestInitialItems = function() {
 			},
 			"onOpen": function(data, options) {
 				if (options.requestType === "initial") {
-					self.showError({}, {
+					Echo.Utils.showError({}, {
 						"retryIn": 0,
-						"request": self.request
+						"label": self.labels.get("retrying"),
+						"promise": self.request.deferred.transport.promise()
 					});
 				}
 			},
 			"onError": function(data, options) {
 				if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-					self.showError(data, $.extend(options, {
-						"request": self.request
+					Echo.Utils.showError(data, $.extend(options, {
+						"label": self.labels.get("error_" + data.errorCode),
+						"promise": self.request.deferred.transport.promise()
 					}));
 				}
 			},
@@ -792,16 +823,16 @@ stream.methods._requestMoreItems = function(element) {
 	if (!this.moreRequest) {
 		this.moreRequest = this._getRequestObject({
 			"onOpen": function() {
-				self.showError({}, {
+				Echo.Utils.showError({}, {
 					"retryIn": 0,
 					"target": element,
-					"request": self.moreRequest
+					"promise": self.moreRequest.deferred.transport.promise()
 				});
 			},
 			"onError": function(data, options) {
-				self.showError(data, $.extend(options, {
+				Echo.Utils.showError(data, $.extend(options, {
 					"target": element,
-					"request": self.moreRequest
+					"promise": self.moreRequest.deferred.transport.promise()
 				}));
 			},
 			"onData": function(data) {
@@ -1397,7 +1428,7 @@ stream.methods._spotUpdates.animate.remove = function(item, config) {
 			return acc + 1;
 		});
 		if (!itemsCount) {
-			self.showMessage({
+			Echo.Utils.showMessage({
 				"type": "info",
 				"message": self.labels.get("emptyStream"),
 				"target": self.view.get("body")
@@ -1886,15 +1917,6 @@ item.config = {
 	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false),
 
 	/**
-	 * @cfg {String} infoMessages
-	 * Customizes the look and feel of info messages,
-	 * for example "loading" and "error".
-	 */
-	"infoMessages": {
-		"enabled": false
-	},
-
-	/**
 	 * @cfg {Object} limits
 	 * Defines the limits for different metrics.
 	 *
@@ -2055,71 +2077,7 @@ item.labels = {
 	/**
 	 * @echo_label
 	 */
-	"re": "Re",
-	/**
-	 * @echo_label justNow
-	 */
-	"justNow": "Just now",
-	/**
-	 * @echo_label yesterday
-	 */
-	"yesterday": "Yesterday",
-	/**
-	 * @echo_label lastWeek
-	 */
-	"lastWeek": "Last Week",
-	/**
-	 * @echo_label lastMonth
-	 */
-	"lastMonth": "Last Month",
-	/**
-	 * @echo_label secondAgo
-	 */
-	"secondAgo": "{number} Second Ago",
-	/**
-	 * @echo_label secondsAgo
-	 */
-	"secondsAgo": "{number} Seconds Ago",
-	/**
-	 * @echo_label minuteAgo
-	 */
-	"minuteAgo": "{number} Minute Ago",
-	/**
-	 * @echo_label minutesAgo
-	 */
-	"minutesAgo": "{number} Minutes Ago",
-	/**
-	 * @echo_label hourAgo
-	 */
-	"hourAgo": "{number} Hour Ago",
-	/**
-	 * @echo_label hoursAgo
-	 */
-	"hoursAgo": "{number} Hours Ago",
-	/**
-	 * @echo_label dayAgo
-	 */
-	"dayAgo": "{number} Day Ago",
-	/**
-	 * @echo_label daysAgo
-	 */
-	"daysAgo": "{number} Days Ago",
-	/**
-	 * @echo_label weekAgo
-	 */
-	"weekAgo": "{number} Week Ago",
-	/**
-	 * @echo_label weeksAgo
-	 */
-	"weeksAgo": "{number} Weeks Ago",
-	/**
-	 * @echo_label monthAgo
-	 */
-	"monthAgo": "{number} Month Ago",
-	/**
-	 * @echo_label monthsAgo
-	 */
-	"monthsAgo": "{number} Months Ago"
+	"re": "Re"
 };
 
 item.templates.metadata = {
@@ -2567,7 +2525,7 @@ item.renderers.body = function(element) {
  */
 item.renderers.date = function(element) {
 	// is used to preserve backwards compatibility
-	this.age = this.getRelativeTime(this.timestamp);
+	this.age = Echo.Utils.getRelativeTime(this.timestamp);
 	return element.html(this.age);
 };
 
@@ -2767,66 +2725,6 @@ item.methods.getNextPageAfter = function() {
 	return children.length
 		? children[index].data.pageAfter
 		: undefined;
-};
-
-/**
- * Method to calculate the relative time passed since the given date and time.
- *
- * @param {Mixed} datetime
- * The date to calculate how much time passed since that moment. The function recognizes
- * the date in W3CDFT or UNIX timestamp formats.
- *
- * @return {String}
- * String which represents the date and time in the relative format.
- */
-item.methods.getRelativeTime = function(datetime) {
-	if (!datetime) return;
-	var self = this;
-	var ts = typeof datetime === "string"
-		? Echo.Utils.timestampFromW3CDTF(datetime)
-		: datetime;
-	if (!ts) return;
-	var d = new Date(ts * 1000);
-	var now = (new Date()).getTime();
-	var when;
-	var diff = Math.floor((now - d.getTime()) / 1000);
-	var dayDiff = Math.floor(diff / 86400);
-	var getAgo = function(ago, period) {
-		return self.labels.get(period + (ago === 1 ? "" : "s") + "Ago", {"number": ago});
-	};
-
-	// we display the "Just now" text in order to mitigate the clock inaccuracy
-	// when the time difference between the current and the given time is
-	// less than 10 seconds or if the given date is "from the future" but
-	// within the 60 seconds range
-	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
-		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
-	} else if (diff < 10) {
-		when = this.labels.get("justNow");
-	} else if (diff < 60) {
-		when = getAgo(diff, 'second');
-	} else if (diff < 60 * 60) {
-		diff = Math.floor(diff / 60);
-		when = getAgo(diff, 'minute');
-	} else if (diff < 60 * 60 * 24) {
-		diff = Math.floor(diff / (60 * 60));
-		when = getAgo(diff, 'hour');
-	} else if (diff < 60 * 60 * 48) {
-		when = this.labels.get("yesterday");
-	} else if (dayDiff < 7) {
-		when = getAgo(dayDiff, 'day');
-	} else if (dayDiff < 14) {
-		when = this.labels.get("lastWeek");
-	} else if (dayDiff < 30) {
-		diff =  Math.floor(dayDiff / 7);
-		when = getAgo(diff, 'week');
-	} else if (dayDiff < 60) {
-		when = this.labels.get("lastMonth");
-	} else if (dayDiff < 365) {
-		diff =  Math.floor(dayDiff / 31);
-		when = getAgo(diff, 'month');
-	}
-	return when;
 };
 
 /**
