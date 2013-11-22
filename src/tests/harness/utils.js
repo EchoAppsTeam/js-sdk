@@ -23,20 +23,21 @@ if (Echo.Tests.browser.msie && +Echo.Tests.browser.version < 10) {
 }
 
 // let's save original function to be able to use it while it's mocked
-var storeCanvasConfig = Echo.Loader._storeCanvasConfig;
+//var storeCanvasConfig = Echo.Loader._storeCanvasConfig;
 // mocks for canvases are absolutely the same as in production
 // so we have to mock _storeCanvasConfig method to save canvases
 // to fixtures but not to real data object
-sinon.stub(Echo.Loader, "_storeCanvasConfig", function(id, data) {
+/*sinon.stub(Echo.Loader, "_storeCanvasConfig", function(id, data) {
 	if (Echo.Tests.Utils.isServerMocked()) {
 		Echo.Tests.Fixtures.canvases[id] = data;
 	} else {
 		storeCanvasConfig(id, data);
 	}
 });
+*/
 // once we loaded all the fixtures we restore _storeCanvasConfig
 QUnit.begin(function() {
-	Echo.Loader._storeCanvasConfig.restore();
+	//Echo.Loader._storeCanvasConfig.restore();
 });
 
 Echo.Tests.Utils.initServer = function() {
@@ -165,7 +166,7 @@ var _URLMocks = {
 	// group of URLs http://s3.amazonaws.com/echo-canvases/<canvas-id>
 	"canvases": {
 		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
-		"url": new RegExp(Echo.Loader.config.storageURL.dev + "(.*?)(?:\\?|$)"),
+		"url": new RegExp(Echo.Loader.getURL("")+ "(.*?)(?:\\?|$)"),
 		"response": function(request, canvasId) {
 			var status = 200, text = "";
 			if (/nonexistent/.test(canvasId)) {

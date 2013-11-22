@@ -1120,7 +1120,7 @@ Utils.safelyExecute = function(fn, args, context) {
 		Utils.log({
 			"type": "error",
 			"message": e.message || e,
-			"component": context instanceof Control ? context.name : ""
+			"component": (!!context && context.hasOwnProperty("name")) ? context.name : ""
 		});
 	}
 };

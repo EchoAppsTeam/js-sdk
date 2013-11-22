@@ -112,12 +112,13 @@ module.exports = function(grunt) {
 		},
 		"tests/harness": {
 			"src": [
-				"tests/qunit/qunit.js",
+				//"tests/qunit/qunit.js",
 				"tests/sinon/sinon-1.7.3.js",
 				"tests/harness/runner.js",
 				"tests/harness/api.js",
 				"tests/harness/utils.js",
-				"tests/harness/stats.js"
+				"tests/harness/stats.js",
+				"tests/harness/suite.js"
 			],
 			"dest": "tests/harness.js"
 		}
@@ -489,7 +490,29 @@ module.exports = function(grunt) {
 						"third-party/bootstrap/js/bootstrap-typeahead.js"
 					]
 				}]
-			}
+			},
+			"bootstrap-less": {
+				"options": {
+					"header": [".echo-sdk-ui {"],
+					"footer": ["}"]
+				},
+				"files": [{
+					"src": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"]
+				}]
+			}/*,
+			"tests": {
+				"expand": true,
+				"cwd": "<%= dirs.build %>",
+				"src": [
+					"tests/qunit/qunit.js",
+					"tests/sinon/sinon-1.7.3.js",
+					"tests/harness/runner.js",
+					"tests/harness/api.js",
+					"tests/harness/utils.js",
+					"tests/harness/stats.js",
+					"tests/harness/suite.js"
+				]
+			}*/
 		}
 
 	};

@@ -22,13 +22,6 @@
 				}
 			}
 			return res;
-		},
-		"appendCssLink": function(url) {
-		    var link = document.createElement("link");
-		    link.type = "text/css";
-		    link.rel = "stylesheet";
-		    link.href = url;
-		    document.getElementsByTagName("head")[0].appendChild(link);
 		}
 	};
 
@@ -38,6 +31,9 @@
 	//paths[loader.getURL("/gui.pack")] = ["echo-gui-css"];
 	paths[loader.getURL("/third-party/jquery/jquery.pack")] = ["jquery-noconflict"];
 	paths[loader.getURL("/third-party/jquery/jquery.isotope.min")] = ["isotope"]; 
+
+	paths[loader.getURL("/tests/qunit/qunit")] = ["QUnit"]; 
+	
 	paths[loader.getURL("") + "/enviroment.pack"] = [
 		"echo/events", "echo/utils", "echo/labels", "echo/configuration", "echo/api",
 		"echo/streamserver/api", "echo/identityserver/api", "echo/user-session",
@@ -56,12 +52,12 @@
 		"echo/streamserver/controls/facePile", "echo/streamserver/controls/facePileItem", 
 		"echo/streamserver/controls/submit", "echo/streamserver/plugins/edit", 
 		"echo/streamserver/plugins/streamItemEdit", "echo/streamserver/plugins/submitEdit",
-		"echo/streamserver/plugins/community-flag", "echo/streamserver/plugins/form-auth.js",
-		"echo/streamserver/plugins/infinite-scroll", "echo/streamserver/plugins/item-accumulator-display",
+		"echo/streamserver/plugins/communityFlag", "echo/streamserver/plugins/formAuth",
+		"echo/streamserver/plugins/infiniteScroll", "echo/streamserver/plugins/itemAccumulatorDisplay",
 		"echo/streamserver/plugins/janrainSharing", "echo/streamserver/plugins/submitJanrainSharing",
 		"echo/streamserver/plugins/streamJanrainSharing", "echo/streamserver/plugins/like", 
 		"echo/streamserver/plugins/streamLike", "echo/streamserver/plugins/facePileLike",
-		"echo/streamserver/plugins/metadata-manager", "echo/streamserver/plugins/moderation",
+		"echo/streamserver/plugins/metadataManager", "echo/streamserver/plugins/moderation",
 		"echo/streamserver/plugins/streamModeration", "echo/streamserver/plugins/streamItemModeration",
 		"echo/streamserver/plugins/reply", "echo/streamserver/plugins/streamItemReply",
 		"echo/streamserver/plugins/streamReply", "echo/streamserver/plugins/submitReply",
@@ -90,9 +86,24 @@
 		"shim": {
 			"echo/backplane": {
 					"exports": "Backplane"
-			}
+			},
+			'QUnit': {
+				exports: 'QUnit',
+				init: function() {
+					QUnit.config.autoload = false;
+					QUnit.config.autostart = false;
+					QUnit.config.reorder = false;
+					QUnit.config.autorun = false;//requireJS loads it then document.readyState = complete. In this case QUnit sets it = true and tests starts asynchronously
+				}
+			} 
 		}
 	});
+	Echo.Loader = {
+		"cdnBaseURL": loader.cdnBaseURL,
+		"getURL" : loader.getURL,
+		"version": loader.version,
+		"isDebug": loader.isDebug
+	}
 })();
 
 

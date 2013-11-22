@@ -6,11 +6,11 @@ Echo.Tests.asyncTest("jQuery no conflict", function() {
 	var testVersion = "1.4.1";
 	QUnit.ok(!(window.$ || window.jQuery), "jQuery is not defined globally");
 
-	Echo.Loader.download([{"url": "https://cdnjs.cloudflare.com/ajax/libs/jquery/" + testVersion + "/jquery.min.js"}], function () {
+	Echo.require(["https://cdnjs.cloudflare.com/ajax/libs/jquery/" + testVersion + "/jquery.min.js"], function () {
 		QUnit.strictEqual(window.$.fn.jquery, testVersion, "Downloaded jQuery has the expected version");
 		QUnit.notEqual(window.$.fn.jquery, $.fn.jquery, "Echo jQuery instance wasn't overridden after another jQuery version inclusion on the page");
 
-		Echo.Loader.download([{"url": "third-party/jquery.pack.js"}], function () {
+		Echo.require(["jquery"], function () {
 			QUnit.strictEqual(window.$.fn.jquery, testVersion, "External jQuery instance has the expected version after Echo jQuery inclusion");
 			QUnit.notEqual(window.$.fn.jquery, $.fn.jquery, "Echo jQuery and external jQuery instances have different versions");
 			window.jQuery.noConflict(true);
@@ -44,20 +44,20 @@ Echo.Tests.asyncTest("v2 and v3 no conflict", function() {
 	});
 });
 
-Echo.Tests.asyncTest("yepnope no conflict", function() {
-	var origYepnope = window.yepnope;
-	QUnit.ok(!!Echo.yepnope, "Echo yepnope is loaded");
+Echo.Tests.asyncTest("require no conflict", function() {
+	var origRequire = window.require;
+	QUnit.ok(!!Echo.requirejs, "Echo require is loaded");
 
-	Echo.Loader.download([{"url": "https://cdnjs.cloudflare.com/ajax/libs/yepnope/1.5.4/yepnope.min.js"}], function () {
-		var externalYepnope = window.yepnope;
-		QUnit.ok(!!window.yepnope, "External yepnope is loaded");
-		QUnit.notDeepEqual(window.yepnope, Echo.yepnope,
-			"External yepnope and Echo yepnope are different objects");
+	Echo.require(["https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.9/require.js"], function () {
+		var externalRequire = window.require;
+		QUnit.ok(!!window.require, "External require is loaded");
+		QUnit.notDeepEqual(window.require, Echo.requirejs,
+			"External require end Echo require are different objects");
 
-		Echo.Loader.download([{"url": "loader.js"}], function () {
-			QUnit.deepEqual(window.yepnope, externalYepnope,
-				"External yepnope is not overridden after Echo yepnope is loaded");
-			window.yepnope = origYepnope;
+		Echo.require(["echo/loader"], function () {
+			QUnit.deepEqual(window.require, externalRequire,
+				"External require is not overridden after Echo require is loaded");
+			window.require = origRequire;
 			QUnit.start();
 		});
 	});

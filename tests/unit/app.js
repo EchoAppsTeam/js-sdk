@@ -30,9 +30,9 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"events": {},
 			"methods": {},
 			"renderers": {},
-			"templates": {},
-			"dependencies": []
+			"templates": {}
 		};
+	
 		var _manifest = Echo.App.manifest(manifest.name);
 		QUnit.ok(!!_manifest.init,
 			"Checking if we have a default initialization function in the \"manifest\" function return");

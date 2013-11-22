@@ -1,7 +1,14 @@
-(function(jQuery) {
-var $ = jQuery;
-
+Echo.require([
+	"jquery",
+	"echo/control",
+	"echo/utils",
+	"echo/api",
+	"echo/events",
+	"echo/labels"
+], function(jQuery, Control, Utils, API, Events, Labels) {
 "use strict";
+
+var $ = jQuery;
 
 Echo.Tests.Dependencies = Echo.Tests.Dependencies || {};
 Echo.Tests.Dependencies.Control = {};
@@ -60,10 +67,10 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"methods": {},
 			"renderers": {},
 			"templates": {},
-			"dependencies": []
+			//"dependencies": []
 		};
 
-		var _manifest = Echo.Control.manifest(manifest.name);
+		var _manifest = Control.manifest(manifest.name);
 		QUnit.ok(!!_manifest.init,
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
@@ -71,14 +78,14 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.deepEqual(manifest, _manifest, "Checking the \"manifest\" function output");
 
 		// checking if we have class before it was defined
-		QUnit.ok(!Echo.Control.isDefined(manifest),
+		QUnit.ok(!Control.isDefined(manifest),
 			"Checking if the control class was defined (via isDefined static method), before actual control definition");
 
 		// create class out of manifest
 		suite.createTestControl(manifest.name);
 
 		// checking if we have class after class definition
-		QUnit.ok(Echo.Control.isDefined(manifest),
+		QUnit.ok(Control.isDefined(manifest),
 			"Checking if the control class was defined (via isDefined static method), after control definition");
 
 		// create test plugin
@@ -192,19 +199,19 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking if dummy plugin ref is NOT available");
 
 		// checking if all dependencies are available
-		var result = true;
-		for (var i = 1; i < 6; i++) {
-			if (!Echo.Tests.Dependencies.Control["dep" + i]) result = false;
-		}
-		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
+		//var result = true;
+		//for (var i = 1; i < 6; i++) {
+		//	if (!Echo.Tests.Dependencies.Control["dep" + i]) result = false;
+		//}
+		//QUnit.ok(result, "Checking if all dependencies are downloaded and available");
 
-		QUnit.ok(Echo.Tests.Dependencies.Control.dep6, "Checking if dependency loaded using 'control' condition");
-		QUnit.ok(Echo.Tests.Dependencies.Control.dep7, "Checking if dependency loaded using 'plugin' condition");
-		QUnit.ok(Echo.Tests.Dependencies.Control.dep8, "Checking if dependency loaded using 'app' condition");
+		//QUnit.ok(Echo.Tests.Dependencies.Control.dep6, "Checking if dependency loaded using 'control' condition");
+		//QUnit.ok(Echo.Tests.Dependencies.Control.dep7, "Checking if dependency loaded using 'plugin' condition");
+		//QUnit.ok(Echo.Tests.Dependencies.Control.dep8, "Checking if dependency loaded using 'app' condition");
 
-		QUnit.ok(!Echo.Tests.Dependencies.Control.dep9, "Checking if dependency is not loading if 'control' already loaded");
-		QUnit.ok(!Echo.Tests.Dependencies.Control.dep10, "Checking if dependency is not loading if 'plugin' already loaded");
-		QUnit.ok(!Echo.Tests.Dependencies.Control.dep11, "Checking if dependency is not loading if 'app' already loaded");
+		//QUnit.ok(!Echo.Tests.Dependencies.Control.dep9, "Checking if dependency is not loading if 'control' already loaded");
+		//QUnit.ok(!Echo.Tests.Dependencies.Control.dep10, "Checking if dependency is not loading if 'plugin' already loaded");
+		//QUnit.ok(!Echo.Tests.Dependencies.Control.dep11, "Checking if dependency is not loading if 'app' already loaded");
 
 		try {
 			// checking log() calls with invalid params
@@ -263,7 +270,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 		];
 		$.each(cases, function(id, _case) {
 			QUnit.strictEqual(
-				Echo.Utils.invoke(_case[0], self),
+				Utils.invoke(_case[0], self),
 				_case[1],
 				"Checking \"invoke()\" method, case #" + (id + 1)
 			);
@@ -358,9 +365,9 @@ suite.prototype.cases.controlRendering = function(callback) {
 	var _suite = this;
 	var check = function(_callback) {
 		var self = this;
-		QUnit.ok(this.config.get("target") instanceof jQuery,
+		QUnit.ok(self.config.get("target") instanceof jQuery,
 			"Checking if the target if a jQuery element");
-		QUnit.ok(!!this.config.get("target").children().length,
+		QUnit.ok(!!self.config.get("target").children().length,
 			"Checking if target is not empty after rendering");
 
 		// checking if we have expected results in several elements
@@ -482,7 +489,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"errorCode": "someUndefinedErrorCode",
 			"errorMessage": "Some Error Message"
 		};
-		var errorRequest = new Echo.API.Request({
+		var errorRequest = new API.Request({
 			"endpoint": "search",
 			"data": {
 				"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -546,7 +553,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 
 		_callback && _callback();
 	};
-	Echo.Utils.sequentialCall([
+	Utils.sequentialCall([
 		function(_callback) {
 			suite.initTestControl({
 				"data": suite.data.config.data,
@@ -569,15 +576,15 @@ suite.prototype.cases.controlRendering = function(callback) {
 suite.prototype.cases.eventsMechanism = function(callback) {
 	var count = 0, increment = function() { count++; };
 	var _topic = "myTestTopic";
-	var context = Echo.Utils.getUniqueString();
+	var context = Utils.getUniqueString();
 	var publish = function(topic) {
-		Echo.Events.publish({
+		Events.publish({
 			"topic": topic || _topic,
 			"context": context
 		});
 	};
 	var subscribe = function(topic) {
-		Echo.Events.subscribe({
+		Events.subscribe({
 			"topic": topic || _topic,
 			"context": context,
 			"handler": increment
@@ -625,7 +632,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 };
 
 suite.prototype.cases.labelsOverriding = function(callback) {
-	Echo.Labels.set({
+	Labels.set({
 		"label1": "label1 global override",
 		"label2": "label2 global override"
 	}, "Echo.StreamServer.Controls.MyTestControl");
@@ -686,7 +693,7 @@ suite.prototype.cases.refresh = function(callback) {
 
 suite.prototype.cases.destroyCalled = function(callback) {
 	var publish = function(topic, control) {
-		Echo.Events.publish({
+		Events.publish({
 			"topic": topic,
 			"context": control.config.get("context")
 		});
@@ -788,7 +795,7 @@ suite.prototype.cases.nestedReadyCallbacks = function(callback) {
 			"ready": parent ? innerReady : outerReady
 		});
 	};
-	var manifest = Echo.Control.manifest("Echo.Tests.TestControl");
+	var manifest = Control.manifest("Echo.Tests.TestControl");
 	manifest.init = function() {
 		var depth = this.config.get("data.depth");
 		if (!depth) {
@@ -797,7 +804,7 @@ suite.prototype.cases.nestedReadyCallbacks = function(callback) {
 		byOuterControl = !depth;
 		this.ready();
 	};
-	Echo.Control.create(manifest);
+	Control.create(manifest);
 	createInstance();
 };
 
@@ -807,7 +814,7 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 	var initControl = function(manifest, ctx, ready) {
 		var d = $.Deferred();
 		ready = ready || $.noop;
-		Echo.Control.create(
+		Control.create(
 			$.extend({
 				"templates": {
 					"main": "<div></div>"
@@ -839,13 +846,13 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 	.pipe(
 		connector({
 			"name": "Echo.Test.Child1",
-			"inherits": Echo.Utils.getComponent("Echo.Test.Parent")
+			"inherits": Utils.getComponent("Echo.Test.Parent")
 		})
 	)
 	.pipe(
 		connector({
 			"name": "Echo.Test.Child1.Child1",
-			"inherits": Echo.Utils.getComponent("Echo.Test.Child1")
+			"inherits": Utils.getComponent("Echo.Test.Child1")
 		})
 	)
 	.pipe(function(prev) {
@@ -889,9 +896,9 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"newEvent": 0,
 		"anotherNewEvent": 0
 	};
-	var ctx = Echo.Events.newContextId();
+	var ctx = Events.newContextId();
 	var publish = function(topic, args) {
-		Echo.Events.publish($.extend({
+		Events.publish($.extend({
 			"topic": topic,
 			"context": ctx
 		}, args));
@@ -930,7 +937,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"templates": {
 			"main": '<div class="{class:container}"><div class="{class:someRenderer}"></div></div>'
 		},
-		"dependencies": [],
+		//"dependencies": [],
 		"init": function() {
 			initVar += "a parent init";
 			this.render();
@@ -941,7 +948,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"css": ".{class:container} { width: 50px; }.{class:someRenderer} { width: 10px; }"
 	};
-	var control = Echo.Control.create(parentManifest);
+	var control = Control.create(parentManifest);
 	var child1Manifest = {
 		"name": "Echo.TestControl1_Child1",
 		"inherits": Echo.TestControl1,
@@ -972,10 +979,10 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"templates": {
 			"main": '<div class="{inherited.class:container} {class:container}"><div class="{class:someRenderer}"></div></div>'
 		},
-		"dependencies": [{
+		/*"dependencies": [{
 			"url": Echo.Tests.baseURL + "unit/dependencies/control.dep.child.js",
 			"loaded": function() { return !!Echo.Tests.Dependencies.Control.depChild; }
-		}],
+		}],*/
 		"init": function() {
 			initVar += "I'm a child init and ";
 			this.parent();
@@ -986,14 +993,14 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"css": ".{class:someRenderer} { width: 5px; }"
 	};
-	var child = Echo.Control.create(child1Manifest);
-	var child2 = Echo.Control.create({
+	var child = Control.create(child1Manifest);
+	var child2 = Control.create({
 		"name": "Echo.TestControl1_Child2",
-		"inherits": Echo.Utils.getComponent("Echo.TestControl1")
+		"inherits": Utils.getComponent("Echo.TestControl1")
 	});
-	var child2_child3 = Echo.Control.create({
+	var child2_child3 = Control.create({
 		"name": "Echo.TestControl1_Child2_Child3",
-		"inherits": Echo.Utils.getComponent("Echo.TestControl1_Child2"),
+		"inherits": Utils.getComponent("Echo.TestControl1_Child2"),
 		"init": function() {
 			initVar += " and I'm child3 init and ";
 			this.parent();
@@ -1004,7 +1011,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		}
 	});
 	var newEventCounter = function() { eventsChecker.newEvent++; };
-	var child1_child2 = Echo.Control.create({
+	var child1_child2 = Control.create({
 		"name": "Echo.TestControl1_Child1_Child2",
 		"methods": {
 			"method2": function() {
@@ -1016,10 +1023,10 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"Echo.TestControl1_Child1.someNewTestEvent": newEventCounter,
 			"Echo.TestControl1.someNewTestEvent": newEventCounter
 		},
-		"inherits": Echo.Utils.getComponent("Echo.TestControl1_Child1")
+		"inherits": Utils.getComponent("Echo.TestControl1_Child1")
 	});
 	var anotherEventCounter = function() { eventsChecker.anotherNewEvent++; };
-	var control2 = Echo.Control.create($.extend(true, {}, parentManifest, {
+	var control2 = Control.create($.extend(true, {}, parentManifest, {
 		"name": "Echo.TestControl2",
 		"templates": {
 			"main": '<div class="{inherited.class:container} {class:container}"></div>'
@@ -1033,7 +1040,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		}
 	}));
 	// identify that event will not be published globally
-	Echo.Events.subscribe({
+	Events.subscribe({
 		"topic": "Echo.TestControl1.someNewTestEvent",
 		"handler": newEventCounter
 	});
@@ -1069,7 +1076,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			var expectedIDs = [{"Echo.Control": true}, {"Echo.TestControl1": true}, {"Echo.TestControl1_Child1": true}];
 			$.map(["Echo.Control", "Echo.TestControl1", "Echo.TestControl1_Child1"], function(id) {
 				var spec = {};
-				spec[id] = Echo.Utils.hasCSS(id);
+				spec[id] = Utils.hasCSS(id);
 				actualIDs.push(spec);
 			});
 			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expected CSS rule groups present in the final manifest");
@@ -1470,7 +1477,7 @@ suite.getTestControlClassName = function() {
 };
 
 suite.getTestControlClass = function(name) {
-	return Echo.Utils.getComponent(name || suite.getTestControlClassName());
+	return Utils.getComponent(name || suite.getTestControlClassName());
 };
 
 suite.initTestControl = function(config, name) {
@@ -1482,13 +1489,13 @@ suite.initTestControl = function(config, name) {
 };
 
 suite.createTestControl = function(name, config) {
-	Echo.Control.create(suite.getControlManifest(name, config));
+	Control.create(suite.getControlManifest(name, config));
 };
 
 suite.getControlManifest = function(name, config) {
 	config = config || {};
 
-	var manifest = Echo.Control.manifest(name || suite.getTestControlClassName());
+	var manifest = Control.manifest(name || suite.getTestControlClassName());
 
 	manifest.config = $.extend(true, {}, suite.data.config);
 
@@ -1496,8 +1503,8 @@ suite.getControlManifest = function(name, config) {
 		"context": function(val, ctrl) {
 			var parent = ctrl.config.parent;
 			return parent
-				? Echo.Events.newContextId(parent.context)
-				: val ? val : Echo.Events.newContextId();
+				? Events.newContextId(parent.context)
+				: val ? val : Events.newContextId();
 		}
 	};
 
@@ -1525,16 +1532,16 @@ suite.getControlManifest = function(name, config) {
 		}
 		manifest.dependencies.push(dependency);
 	};
-	for (var i = 1; i < 6; i++) addDependency(i);
+	//for (var i = 1; i < 6; i++) addDependency(i);
 
 	Echo.Tests.Unit.App.createApp("Echo.Apps.MyTestApp");
-	addDependency(6, {"control": "Echo.StreamServer.Controls.MyNotExistsTestControl"});
-	addDependency(7, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyNotExistsTestPlugin"});
-	addDependency(8, {"app": "Echo.Apps.MyNotExistsTestApp"});
+	//addDependency(6, {"control": "Echo.StreamServer.Controls.MyNotExistsTestControl"});
+	//addDependency(7, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyNotExistsTestPlugin"});
+	//addDependency(8, {"app": "Echo.Apps.MyNotExistsTestApp"});
 
-	addDependency(9, {"control": "Echo.StreamServer.Controls.MyTestControl"});
-	addDependency(10, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyPlugin"});
-	addDependency(11, {"app": "Echo.Apps.MyTestApp"});
+	//addDependency(9, {"control": "Echo.StreamServer.Controls.MyTestControl"});
+	//addDependency(10, {"plugin": "Echo.StreamServer.Controls.MyTestControl.Plugins.MyPlugin"});
+	//addDependency(11, {"app": "Echo.Apps.MyTestApp"});
 
 	manifest.init = function() {
 		if (!this.checkAppKey()) return;
@@ -1599,4 +1606,4 @@ suite.getControlManifest = function(name, config) {
 
 };
 
-})(Echo.jQuery);
+});

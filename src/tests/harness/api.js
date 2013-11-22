@@ -251,14 +251,14 @@ function _testSetup() {
 
 	// delete all accumulated stuff from Loader except resources state
 	// because yepnope has the same info and we don't want it unsynchronized
-	var resources = Echo.Loader.vars.state.resources;
+	/*var resources = Echo.Loader.vars.state.resources;
 	Echo.Loader.canvases = [];
 	Echo.Loader.overrides = {};
 	Echo.Loader.vars = {
 		"state": {"resources": resources, "queue": []},
 		"processing": false,
 		"syncQueue": []
-	};
+	};*/
 
 	// clear qunit-fixture
 	$("#qunit-fixture").empty();
