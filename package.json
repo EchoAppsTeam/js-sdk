@@ -25,7 +25,7 @@
     "node": ">=0.8"
   },
   "dependencies": {
-    "grunt": "~0.4.1",
+    "grunt": "~0.4.2",
     "lodash": "~2.2.1",
     "async": "~0.2.9",
     "sphere": "git://github.com/EchoAppsTeam/sphere.git",
