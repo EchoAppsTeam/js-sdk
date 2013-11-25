@@ -6,12 +6,6 @@
 
 	<!-- Default scripts inclusion -->
 	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/backplane.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/environment.pack.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver.pack.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/identityserver.pack.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver/plugins/pinboard-visualization.js"></script>
 </head>
 <body>
 	<div id="container">
@@ -23,53 +17,61 @@
 	</div>
 	<script>
 		if (window.parent.Docs) {
-			var link = Echo.jQuery("#documentation > a");
-			link.on("click", function(e) {
-				e.preventDefault();
-				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
-				return false;
+			Echo.require(["jquery"], function($) {
+				var link = $("#documentation > a");
+				link.on("click", function(e) {
+					e.preventDefault();
+					window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
+					return false;
+				});
+				$("#container").addClass("embedded");
 			});
 		}
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Backplane.init({
-			"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-			"busName": "jskit"
-		});
-		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
-
-		var stream = new Echo.StreamServer.Apps.Stream({
-			"target": document.getElementById("stream"),
-			"query": "childrenof:http://example.com/js-sdk -state:ModeratorDeleted itemsPerPage:2 sortOrder:likesDescending children:1  childrenSortOrder:chronological  childrenItemsPerPage:2 -state:ModeratorDeleted",
-			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"liveUpdates": {"transport": "websockets"},
-			"item": {
-				"limits": {
-					"maxBodyCharacters": 35
-				}
-			},
-			"reTag": false,
-			"fadeTimeout": 0,
-			"plugins": [{
-				"name": "PinboardVisualization"
-			}, {
-				"name": "Reply",
-				"nestedPlugins": [{
-					"name": "FormAuth",
-					"submitPermissions": "forceLogin",
-					"identityManager": {
-						"login": identityManager,
-						"signup": identityManager
+		Echo.require(["echo/streamserver/apps/stream"], function(Stream) {
+			var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
+			new Stream({
+				"backplane": {
+					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+					"busName": "jskit"
+				},
+				"target": document.getElementById("stream"),
+				"query": "childrenof:http://example.com/js-sdk -state:ModeratorDeleted itemsPerPage:2 sortOrder:likesDescending children:1  childrenSortOrder:chronological  childrenItemsPerPage:2 -state:ModeratorDeleted",
+				"appkey": "echo.jssdk.demo.aboutecho.com",
+				"liveUpdates": {"transport": "websockets"},
+				"item": {
+					"limits": {
+						"maxBodyCharacters": 35
 					}
-				}]
-			}, {
-				"name": "Edit"
-			}, {
-				"name": "Like"
-			}]
+				},
+				"reTag": false,
+				"fadeTimeout": 0,
+				"plugins": [{
+						"name": "PinboardVisualization",
+						"url": "echo/streamserver/plugins/pinboardVisualization"
+					}, {
+						"name": "Reply",
+						"url": "echo/streamserver/plugins/reply",
+						"nestedPlugins": [{
+							"name": "FormAuth",
+							"url": "echo/streamserver/plugins/formAuth",
+							"submitPermissions": "forceLogin",
+							"identityManager": {
+								"login": identityManager,
+								"signup": identityManager
+							}
+						}]
+					}, {
+						"name": "Edit",
+						"url": "echo/streamserver/plugins/edit"
+					}, {
+						"name": "Like",
+						"url": "echo/streamserver/plugins/like"
+					}]
+			});
 		});
 	</script>
 </body>
 </html>
-

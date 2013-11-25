@@ -1,7 +1,15 @@
-(function(jQuery) {
+define("echo/streamserver/apps/submit", [
+	"jquery",
+	"require",
+	"echo/app",
+	"echo/utils",
+	"echo/streamserver/api",
+	"echo/gui",
+	"echo/gui/button",
+	"echo/events", 
+	"echo/gui/modal"
+], function($, require, App, Utils, API, GUI, GUIButton, Events, GUIModal) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Submit
@@ -29,9 +37,9 @@ var $ = jQuery;
  * @param {Object} config
  * Configuration options
  */
-var submit = Echo.App.manifest("Echo.StreamServer.Apps.Submit");
+var submit = App.manifest("Echo.StreamServer.Apps.Submit");
 
-if (Echo.App.isDefined(submit)) return;
+if (App.isDefined(submit)) return;
 
 /** @hide @cfg apiBaseURL */
 /** @hide @echo_label loading */
@@ -69,11 +77,13 @@ if (Echo.App.isDefined(submit)) return;
 
 submit.init = function() {
 	if (!this.config.get("appkey")) {
-		return Echo.Utils.showError({
+		return Utils.showError({
 			"errorCode": "incorrect_appkey",
-			"target": this.config.get("target"),
 			"label": this.labels.get("error_incorrect_appkey")
-		}, {"critical": true});
+		}, {
+			"critical": true,
+			"target": this.config.get("target")
+		});
 	}
 
 	var self = this;
@@ -109,7 +119,7 @@ submit.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false),
+	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png", false),
 	/**
 	 * @cfg {String} [targetURL=document.location.href]
 	 * Specifies the URI to which the submitted Echo item is related. 
@@ -287,19 +297,12 @@ submit.config = {
 };
 
 submit.config.normalizer = {
-	"defaultAvatar": Echo.Loader.getURL
+	"defaultAvatar": require.toUrl
 };
 
 submit.vars = {
 	"validators": []
 };
-
-submit.dependencies = [{
-	"loaded": function() { return !!Echo.GUI; },
-	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
-}, {
-	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
-}];
 
 submit.labels = {
 	/**
@@ -449,7 +452,7 @@ submit.renderers.text = function(element) {
  * @echo_renderer
  */
 submit.renderers.avatar = function(element) {
-	Echo.Utils.placeImage({
+	Utils.placeImage({
 		"container": element,
 		"image": this.user.get("avatar"),
 		"defaultImage": this.config.get("defaultAvatar")
@@ -496,7 +499,7 @@ submit.renderers.postButton = function(element) {
 			"label": this.labels.get("posting")
 		}
 	};
-	var postButton = new Echo.GUI.Button(states.normal);
+	var postButton = new GUIButton(states.normal);
 	this.posting = this.posting || {};
 	this.posting.subscriptions = this.posting.subscriptions || [];
 	var subscribe = function(phase, state, callback) {
@@ -541,7 +544,7 @@ submit.renderers.postButton = function(element) {
 submit.renderers._metaFields = function(element, extra) {
 	var type = extra.type;
 	var data = this.get("data.object." + type, this.config.get(type));
-	var value = $.trim(Echo.Utils.stripTags(data.join(", ")));
+	var value = $.trim(Utils.stripTags(data.join(", ")));
 	return this.view.get(type).iHint({
 		"text": this.labels.get(type + "Hint"),
 		"className": "echo-secondaryColor"
@@ -595,7 +598,7 @@ submit.methods.post = function() {
 			 * Triggered if dataset is changed.
 			 */
 			// notify all widgets on the page about a new item posted
-			Echo.Events.publish({
+			Events.publish({
 				"topic": "Echo.App.onDataInvalidate",
 				"context": "global",
 				"data": {}
@@ -614,7 +617,7 @@ submit.methods.post = function() {
 	 * Triggered if submit operation was started.
 	 */
 	publish("Init", entry);
-	Echo.StreamServer.API.request({
+	API.request({
 		"endpoint": "submit",
 		"method": this.config.get("requestMethod"),
 		"itemURIPattern": this.config.get("itemURIPattern"),
@@ -659,7 +662,7 @@ submit.methods.refresh = function() {
 		var elements = self.view.get(field).val().split(", ");
 		self.config.set("data.object." + field, elements || []);
 	});
-	var component = Echo.Utils.getComponent("Echo.StreamServer.Apps.Submit");
+	var component = Utils.getComponent("Echo.StreamServer.Apps.Submit");
 	component.parent.refresh.call(this);
 };
 
@@ -697,7 +700,7 @@ submit.methods._showError = function(data) {
 		: this.labels.get("postingFailed", {"error": response.errorMessage || response.errorCode});
 	var popup = this._assembleErrorPopup(message);
 
-	new Echo.GUI.Modal({
+	new GUIModal({
 		"data": {
 			"body": popup.content
 		},
@@ -781,6 +784,6 @@ submit.css =
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
 	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk-assets}/images/info70.png); }';
 
-Echo.App.create(submit);
+return App.create(submit);
 
-})(Echo.jQuery);
+});

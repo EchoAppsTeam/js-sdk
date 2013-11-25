@@ -1,17 +1,13 @@
-(function(jQuery) {
-
-var $ = jQuery;
-
-if (!window.Echo) window.Echo = {};
-
-if (!Echo.GUI) Echo.GUI = {};
-
-if (Echo.GUI.Dropdown) return;
+define("echo/gui/dropdown", [
+	"jquery",
+	"echo/gui",
+	"echo/utils"
+], function($, GUI, Utils) {
 
 /**
- * @class Echo.GUI.Dropdown
+ * @class GUI.Dropdown
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#dropdowns" target="_blank">bootstrap-dropdown.js</a>.
- * The Echo.GUI.Dropdown class provides a simplified interface to work with the
+ * The GUI.Dropdown class provides a simplified interface to work with the
  * Bootstrap Dropdown JS class.
  * Echo wrapper assembles the HTML code required for Bootstrap Dropdown JS class
  * based on the parameters specified in the config and initializes
@@ -19,7 +15,7 @@ if (Echo.GUI.Dropdown) return;
  *
  * Example:
  *
- * 	var dropdown = new Echo.GUI.Dropdown({
+ * 	var dropdown = new GUI.Dropdown({
  * 		"target": ".css-selector",
  * 		"title": "Dropdown title",
  * 		"extraClass": "nav",
@@ -43,7 +39,7 @@ if (Echo.GUI.Dropdown) return;
  * 		"title": "New entry 2"
  * 	}]);
  *
- * @extends Echo.GUI
+ * @extends GUI
  *
  * @package gui.pack.js
  *
@@ -79,15 +75,15 @@ if (Echo.GUI.Dropdown) return;
  * + icon - URL for the icon. Icon size should be 16x16 pixels.
  * + entries - Array of nested entries.
  */
-Echo.GUI.Dropdown = Echo.Utils.inherit(Echo.GUI, function(config) {
-	Echo.GUI.call(this, config, {
+GUI.Dropdown = Utils.inherit(GUI, function(config) {
+	GUI.call(this, config, {
 		"title": "",
 		"extraClass": "",
 		"entries": []
 	});
 });
 
-Echo.GUI.Dropdown.prototype.refresh = function() {
+GUI.Dropdown.prototype.refresh = function() {
 	this.config.get("target").empty();
 	this._container = this._assembleContainer();
 	this._assembleEntries(this._container, this.config.get("entries"));
@@ -99,7 +95,7 @@ Echo.GUI.Dropdown.prototype.refresh = function() {
  * @param {String} title
  * Dropdown title.
  */
-Echo.GUI.Dropdown.prototype.setTitle = function(title) {
+GUI.Dropdown.prototype.setTitle = function(title) {
 	$(".dropdown-toggle", this.config.get("target")).empty().append(title);
 };
 
@@ -110,13 +106,13 @@ Echo.GUI.Dropdown.prototype.setTitle = function(title) {
  * Array of the dropdown entries. The structure of this array is the same as in
  * {@link #cfg-entries entries} config parameter.
  */
-Echo.GUI.Dropdown.prototype.updateEntries = function(entries) {
+GUI.Dropdown.prototype.updateEntries = function(entries) {
 	this.config.set("entries", entries);
 	$(".dropdown-menu", this.config.get("target")).remove();
 	this._assembleEntries(this._container, entries);
 };
 
-Echo.GUI.Dropdown.prototype._assembleContainer = function() {
+GUI.Dropdown.prototype._assembleContainer = function() {
 	 var template =
 		'<li class="dropdown">' +
 			'<a class="dropdown-toggle" data-toggle="dropdown" role="button" href="#">' +
@@ -134,7 +130,7 @@ Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 	return dropdown;
 };
 
-Echo.GUI.Dropdown.prototype._assembleEntries = function(container, entries) {
+GUI.Dropdown.prototype._assembleEntries = function(container, entries) {
 	var self = this;
 	var menu = $('<ul class="dropdown-menu" role="menu">');
 	container.append(menu);
@@ -160,4 +156,5 @@ Echo.GUI.Dropdown.prototype._assembleEntries = function(container, entries) {
 	return menu;
 };
 
-})(Echo.jQuery);
+return GUI.Dropdown;
+});

@@ -1,7 +1,10 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/janrainAuth", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils",
+	"echo/identityserver/apps/auth"
+], function($, Plugin, Utils, Auth) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Submit.Plugins.JanrainAuth
@@ -25,9 +28,9 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("JanrainAuth", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.manifest("JanrainAuth", "Echo.StreamServer.Apps.Submit");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	if (this._userStatus() === "forcedLogin") {
@@ -113,11 +116,6 @@ plugin.labels = {
 	"youMustBeLoggedIn": "You must be logged in to comment"
 };
 
-plugin.dependencies = [{
-	"app": "Echo.IdentityServer.Apps.Auth",
-	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
-}];
-
 /**
  * @echo_template
  */
@@ -163,13 +161,13 @@ plugin.component.renderers.container = function(element) {
  */
 plugin.renderers.auth = function(element) {
 	var plugin = this, fields = ["appId", "title", "width", "height", "buttons", "signinWidgetConfig"];
-	var janrainConnectorPlugin = Echo.Utils.foldl({"name": "JanrainConnector"}, fields, function(param, acc) {
+	var janrainConnectorPlugin = Utils.foldl({"name": "JanrainConnector"}, fields, function(param, acc) {
 		if (plugin.config.get(param)) {
 			acc[param] = plugin.config.get(param);
 		}
 		return acc;
 	});
-	new Echo.IdentityServer.Apps.Auth(plugin.config.assemble({
+	new Auth(plugin.config.assemble({
 		"target": element,
 		"plugins": [janrainConnectorPlugin]
 	}));
@@ -203,6 +201,6 @@ plugin.css =
 	'.{plugin.class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }' +
 	'.{plugin.class:error} { color: red; }';
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});

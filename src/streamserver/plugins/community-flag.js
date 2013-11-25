@@ -1,7 +1,10 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/communityFlag", [
+	"jquery",
+	"echo/plugin",
+	"echo/streamserver/apps/facePile",
+	"echo/streamserver/api"
+], function($, Plugin, FacePile, API) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Stream.Item.Plugins.CommunityFlag
@@ -29,9 +32,9 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("CommunityFlag", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.manifest("CommunityFlag", "Echo.StreamServer.Apps.Stream.Item");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "data", plugin.templates.main);
@@ -76,11 +79,6 @@ plugin.labels = {
 	"unflagProcessing": "Unflagging..."
 };
 
-plugin.dependencies = [{
-	"app": "Echo.StreamServer.Apps.FacePile",
-	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
-}];
-
 /**
  * @echo_template
  */
@@ -108,7 +106,7 @@ plugin.renderers.flaggedBy = function(element) {
 		"initialUsersCount": visibleUsersCount,
 		"suffixText": plugin.labels.get("flaggedThis")
 	});
-	plugin.set("facepile", new Echo.StreamServer.Apps.FacePile(config));
+	plugin.set("facepile", new FacePile(config));
 	return element.show();
 };
 
@@ -123,7 +121,7 @@ plugin.methods._assembleButton = function(name) {
 			"verbs": ["http://activitystrea.ms/schema/1.0/" + name.toLowerCase()],
 			"targets": [{"id": item.get("data.object.id")}]
 		};
-		var request = Echo.StreamServer.API.request({
+		var request = API.request({
 			"endpoint": "submit",
 			"secure": plugin.config.get("useSecureAPI", false, true),
 			"submissionProxyURL": plugin.config.get("submissionProxyURL", "", true),
@@ -219,6 +217,5 @@ plugin.methods._myFlags = function(flags) {
 
 plugin.css = '.{plugin.class:flaggedBy} { background: url({config:cdnBaseURL.sdk-assets}/images/curation/status/communityflagged.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
 
-Echo.Plugin.create(plugin);
-
-})(Echo.jQuery);
+return Plugin.create(plugin);
+});

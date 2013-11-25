@@ -1,7 +1,12 @@
-(function(jQuery) {
+define("echo/streamserver/apps/facePile", [
+	"jquery",
+	"require",
+	"echo/app",
+	"echo/utils",
+	"echo/streamserver/api",
+	"echo/streamserver/apps/facePileItem"
+], function($, App, Utils, API, Item, require) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.FacePile
@@ -19,7 +24,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.App
+ * @extends App
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
@@ -30,9 +35,9 @@ var $ = jQuery;
  * @param {Object} config
  * Configuration options
  */
-var pile = Echo.App.manifest("Echo.StreamServer.Apps.FacePile");
+var pile = App.manifest("Echo.StreamServer.Apps.FacePile");
 
-if (Echo.App.isDefined(pile)) return;
+if (App.isDefined(pile)) return;
 
 /**
  * @echo_event Echo.StreamServer.Apps.FacePile.onReady
@@ -51,15 +56,15 @@ if (Echo.App.isDefined(pile)) return;
  * @echo_event Echo.StreamServer.Apps.FacePile.onRerender
  * Triggered when the app is rerendered.
  */
-
-
 pile.init = function() {
 	if (!this.config.get("appkey")) {
-		return Echo.Utils.showError({
+		return Utils.showError({
 			"errorCode": "incorrect_appkey",
-			"target": this.config.get("target"),
 			"label": this.labels.get("error_incorrect_appkey")
-		}, {"critical": true});
+		}, {
+			"critical": true,
+			"target": this.config.get("target")
+		});
 	}
 
 	// picking up timeout value for backwards compatibility
@@ -267,7 +272,7 @@ pile.renderers.more = function(element) {
 	var caption = (count > 0 ? count + " " : "") + this.labels.get("more");
 	var linkable = !this._fromExternalData() || this.get("count.visible") < this.get("users").length;
 	if (linkable) {
-		var link = Echo.Utils.hyperlink({"caption": caption});
+		var link = Utils.hyperlink({"caption": caption});
 		element.addClass("echo-linkColor").append(link);
 	} else {
 		element.removeClass("echo-linkColor").append(caption);
@@ -358,7 +363,7 @@ pile.methods._request = function() {
 	var self = this;
  	var request = this.get("request");
 	if (!request) {
-		request = Echo.StreamServer.API.request({
+		request = API.request({
 			"endpoint": "search",
 			"data": {
 				"q": this.config.get("query"),
@@ -374,8 +379,9 @@ pile.methods._request = function() {
 			"onError": function(data, extra) {
 				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
 				if (needShowError) {
-					Echo.Utils.showError(data, {
+					Utils.showError(data, {
 						"critical": extra.critical,
+						"target": this.config.get("target"),
 						"label": this.labels.get("error_" + data.errorCode)
 					});
 				}
@@ -395,7 +401,7 @@ pile.methods._requestMoreItems = function() {
 	if (typeof nextPageAfter !== "undefined") {
 		query = 'pageAfter:"' + nextPageAfter + '" ' + query;
 	}
-	var request = Echo.StreamServer.API.request({
+	var request = API.request({
 		"endpoint": "search",
 		"secure": this.config.get("useSecureAPI"),
 		"apiBaseURL": this.config.get("apiBaseURL"),
@@ -404,7 +410,7 @@ pile.methods._requestMoreItems = function() {
 			"appkey": this.config.get("appkey")
 		},
 		"onError": function(data) {
-			Echo.Utils.showMessage({
+			Utils.showMessage({
 				"type": "error",
 				"data": data,
 				"target": self.config.get("target")
@@ -471,7 +477,7 @@ pile.methods._processResponse = function(data, isLive) {
 			}
 		};
 	});
-	Echo.Utils.parallelCall(actions, function() {
+	Utils.parallelCall(actions, function() {
 		self._output(isLive, fetchMoreUsers);
 	});
 };
@@ -517,7 +523,7 @@ pile.methods._initItem = function(entry, callback) {
 		"user": this.user,
 		"ready": callback
 	}, this.config.get("item"));
-	return new Echo.StreamServer.Apps.FacePile.Item(config);
+	return new Item(config);
 };
 
 pile.methods._updateStructure = function(item) {
@@ -556,7 +562,7 @@ pile.methods._getMoreUsers = function() {
 		this.render();
 	} else {
 		if (!this.get("moreRequestInProgress")) {
-			Echo.Utils.showMessage({
+			Utils.showMessage({
 				"type": "loading",
 				"target": this.view.get("more")
 			});
@@ -567,7 +573,7 @@ pile.methods._getMoreUsers = function() {
 };
 
 pile.methods._intersperse = function(object, separator) {
-	return Echo.Utils.foldl([], object, function(item, acc, key) {
+	return Utils.foldl([], object, function(item, acc, key) {
 		if (acc.length) acc.push(separator);
 		acc.push(item);
 	});
@@ -579,20 +585,19 @@ pile.css =
 	'.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }' +
 	'.{class:more} .echo-app-message-icon { display: inline; margin: 0px 5px; }';
 
-Echo.App.create(pile);
+});
 
-})(Echo.jQuery);
-
-(function(jQuery) {
+Echo.define("echo/streamserver/apps/facePileItem", [
+	"jquery",
+	"echo/app"
+], function($, App) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.FacePile.Item
  * Echo FacePile.Item application displays single user (actor). 
  *
- * @extends Echo.App
+ * @extends App
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
@@ -603,9 +608,9 @@ var $ = jQuery;
  * @param {Object} config
  * Configuration options
  */
-var item = Echo.App.manifest("Echo.StreamServer.Apps.FacePile.Item");
+var item = App.manifest("Echo.StreamServer.Apps.FacePile.Item");
 
-if (Echo.App.isDefined(item)) return;
+//if (App.isDefined(item)) return;
 
 /** @hide @cfg plugins */
 /** @hide @method dependent */
@@ -635,11 +640,7 @@ item.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false)
-};
-
-item.config.normalizer = {
-	"defaultAvatar": Echo.Loader.getURL
+	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png", false)
 };
 
 item.labels = {
@@ -664,7 +665,7 @@ item.templates.main =
 item.renderers.avatar = function(element) {
 	var self = this;
 	if (this.config.get("avatar")) {
-		Echo.Utils.placeImage({
+		Utils.placeImage({
 			"container": element,
 			"image": this.get("data.avatar"),
 			"defaultImage": this.config.get("defaultAvatar")
@@ -706,6 +707,6 @@ item.css =
 	'.{class:container}, .{class:container} span { white-space: nowrap; display: inline-block; }' +
 	'.{class:only-avatars} .{class:container} { white-space: normal; }';
 
-Echo.App.create(item);
+return App.create(item);
 
-})(Echo.jQuery);
+});

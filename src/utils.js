@@ -1,26 +1,34 @@
-(function(jQuery) {
+//TODO: check if it will be cached
+define('echo/variables', [], function() {
+	return {};
+});
+
+define("echo/utils", ["jquery", "echo/variables"], function(jQuery, Variables) {
 "use strict";
 
-var $ = jQuery;
+var $ = jQuery, 
+	Utils;
 
-if (!window.Echo) window.Echo = {};
+//if (!window.Echo) window.Echo = {};
 
-if (Echo.Utils) return;
+//if (Echo.Utils) return;
 
-if (!Echo.Variables) Echo.Variables = {};
+//if (!Echo.Variables) Echo.Variables = {};
+
+
 
 /**
  * Static class implements common methods of data processing.
- * The Echo.Utils class is used in various places of Echo JS SDK components.
+ * The Utils class is used in various places of Echo JS SDK components.
  *
  * @package environment.pack.js
  */
 
-Echo.Utils = {};
+Utils = {};
 
-Echo.Utils.cache = {};
+Utils.cache = {};
 
-Echo.Utils.regexps = {
+Utils.regexps = {
 	"templateSubstitution": "{([0-9a-z\\.]+)(?:\\:((?:[0-9a-z_-]+\\.)*[0-9a-z_-]+))?}",
 	"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
 	"w3cdtf": /^(\d{4})(?:-(\d\d)(?:-(\d\d))?(?:(?:T(\d\d):(\d\d):(\d\d))(?:\.(\d{1,3}))?(?:Z|(?:(\+|-)(\d\d):(\d\d))))?)?$/,
@@ -42,7 +50,7 @@ Echo.Utils.regexps = {
  *     //     .example-class { font-size: 12px; }
  *     // </style>
  *
- *     Echo.Utils.addCSS(
+ *     Utils.addCSS(
  *         '.echo-class { font-size: 14px; }'
  *         , 'echo-class-id');
  *     // returns true because styles with id = 'echo-class-id' weren't added before
@@ -51,7 +59,7 @@ Echo.Utils.regexps = {
  *     //     .echo-class { font-size: 14px; }
  *     // </style>
  *
- *     Echo.Utils.addCSS(
+ *     Utils.addCSS(
  *         '.echo-new-class { font-size: 16px; }'
  *         , 'echo-class-id');
  *     // returns false because styles with id = 'echo-class-id' were added before
@@ -66,7 +74,7 @@ Echo.Utils.regexps = {
  * true if CSS styles was successfully added, false - if CSS styles are already
  * in the document.
  */
-Echo.Utils.addCSS = function(cssCode, id) {
+Utils.addCSS = function(cssCode, id) {
 	if (typeof this.cache.cssStyles === "undefined") {
 		this.cache.cssStyles = {
 			"anchor": undefined,
@@ -76,7 +84,7 @@ Echo.Utils.addCSS = function(cssCode, id) {
 	}
 	var cssStyles = this.cache.cssStyles;
 	if (id) {
-		if (Echo.Utils.hasCSS(id)) return false;
+		if (Utils.hasCSS(id)) return false;
 		cssStyles.processed[id] = true;
 	}
 	var currentCssCode = "";
@@ -112,7 +120,7 @@ Echo.Utils.addCSS = function(cssCode, id) {
  * @static
  * Method to check whether the given set of CSS rules was already added into the page.
  *
- * This function might be used in conjunction with the Echo.Utils.addCSS function
+ * This function might be used in conjunction with the Utils.addCSS function
  * to check certain conditions before adding new styles.
  *
  * @param {String} id
@@ -122,7 +130,7 @@ Echo.Utils.addCSS = function(cssCode, id) {
  * ‘true’ if the given CSS styles set was previously added into the page,
  * otherwise ‘false’.
  */
-Echo.Utils.hasCSS = function(id) {
+Utils.hasCSS = function(id) {
 	return this.cache.cssStyles
 		? !!this.cache.cssStyles.processed[id]
 		: false;
@@ -136,11 +144,11 @@ Echo.Utils.hasCSS = function(id) {
  * callback function. The first argument is the object that is available
  * in callback function to accumulate items.
  *
- *     var array = Echo.Utils.foldl([], [1, 2, 3], function(item, acc) {
+ *     var array = Utils.foldl([], [1, 2, 3], function(item, acc) {
  *         acc.push(item);
  *     }); // array will be [1, 2, 3];
  *
- *     var hash = Echo.Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
+ *     var hash = Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
  *         if (key === "key2") return;
  *         acc[key] = item;
  *     }); // hash will be {"key1": "value1"};
@@ -166,7 +174,7 @@ Echo.Utils.hasCSS = function(id) {
  * @return {Object|Array}
  * The resulting object
  */
-Echo.Utils.foldl = function(acc, object, callback) {
+Utils.foldl = function(acc, object, callback) {
 	var result;
 	$.each(object, function(key, item) {
 		result = callback(item, acc, key);
@@ -192,9 +200,9 @@ Echo.Utils.foldl = function(acc, object, callback) {
  *         }
  *     };
  *
- *     Echo.Utils.get(data, "key1"); // returns "value1"
- *     Echo.Utils.get(data, "key2"); // returns object {"key2-1": "value2-1"}
- *     Echo.Utils.get(data, "key2.key2-1"); // returns "value2-1"
+ *     Utils.get(data, "key1"); // returns "value1"
+ *     Utils.get(data, "key2"); // returns object {"key2-1": "value2-1"}
+ *     Utils.get(data, "key2.key2-1"); // returns "value2-1"
  *
  * @param {Object} obj
  * The source object where the value defined for the given key should be looked for.
@@ -225,8 +233,8 @@ Echo.Utils.foldl = function(acc, object, callback) {
  * (if defined during the function call) in case the specified field is not found
  * or its value is undefined.
  */
-Echo.Utils.get = function(obj, key, defaults, callback) {
-	var keys = Echo.Utils._prepareFieldAccessKey(key);
+Utils.get = function(obj, key, defaults, callback) {
+	var keys = Utils._prepareFieldAccessKey(key);
 	if (!keys || !obj) return defaults;
 	var found = true;
 	var iteration = function(_key, _data) {
@@ -242,7 +250,7 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
 	// avoid foldl usage for plain keys
 	var value = keys.length === 1
 		? iteration(keys.pop(), obj)
-		: Echo.Utils.foldl(obj, keys, iteration);
+		: Utils.foldl(obj, keys, iteration);
 	return found ? value : defaults;
 };
 
@@ -263,10 +271,10 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
  *         }
  *     };
  *
- *     Echo.Utils.remove(data, "key1"); // returns true and key1 delete
- *     Echo.Utils.remove(data, "key2"); // returns true and key2 delete
- *     Echo.Utils.remove(data, "key2.key2-2.key2-2-1"); // returns true and obj.key2.key2-2 returns empty object
- *     Echo.Utils.remove(data, "not_defined_key"); // returns false
+ *     Utils.remove(data, "key1"); // returns true and key1 delete
+ *     Utils.remove(data, "key2"); // returns true and key2 delete
+ *     Utils.remove(data, "key2.key2-2.key2-2-1"); // returns true and obj.key2.key2-2 returns empty object
+ *     Utils.remove(data, "not_defined_key"); // returns false
  *
  * @param {Object} obj
  * Specifies the target object which should be updated.
@@ -278,13 +286,13 @@ Echo.Utils.get = function(obj, key, defaults, callback) {
  * @return {Boolean}
  * The boolean value which indicates whether the key was removed from the given object.
  */
-Echo.Utils.remove = function(obj, key) {
-	var keys = Echo.Utils._prepareFieldAccessKey(key);
+Utils.remove = function(obj, key) {
+	var keys = Utils._prepareFieldAccessKey(key);
 	if (!keys || !obj) return false;
 	var field = keys.pop();
 	// passing obj as a default value as well
 	// to operate with it in case of the plain key
-	var target = Echo.Utils.get(obj, keys, obj);
+	var target = Utils.get(obj, keys, obj);
 	return target === null || typeof target[field] === "undefined"
 		? false
 		: delete target[field];
@@ -304,8 +312,8 @@ Echo.Utils.remove = function(obj, key) {
  *         }
  *     };
  *
- *     Echo.Utils.set(data, "key1", "new value"); // data["key1"] will be "new value"
- *     Echo.Utils.set(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
+ *     Utils.set(data, "key1", "new value"); // data["key1"] will be "new value"
+ *     Utils.set(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
  *
  * @param {Object} obj
  * Specifies the target object which should be updated.
@@ -321,13 +329,13 @@ Echo.Utils.remove = function(obj, key) {
  * for the target object using the key specified. Returns the 'false' boolean value
  * in case the object or the key is not specified.
  */
-Echo.Utils.set = function(obj, key, value) {
-	var keys = Echo.Utils._prepareFieldAccessKey(key);
+Utils.set = function(obj, key, value) {
+	var keys = Utils._prepareFieldAccessKey(key);
 	if (!keys || !obj) return false;
 	var field = keys.pop();
 	var target = obj;
 	if (keys.length > 0) {
-		target = Echo.Utils.get(obj, keys, undefined, function(acc, v) {
+		target = Utils.get(obj, keys, undefined, function(acc, v) {
 			if (typeof acc[v] === "undefined") {
 				acc[v] = {};
 			}
@@ -337,7 +345,7 @@ Echo.Utils.set = function(obj, key, value) {
 	return true;
 };
 
-Echo.Utils._prepareFieldAccessKey = function(key) {
+Utils._prepareFieldAccessKey = function(key) {
 	if (!key) return false;
 	return typeof key === "string"
 		? key.split(".")
@@ -354,7 +362,7 @@ Echo.Utils._prepareFieldAccessKey = function(key) {
  * HTML entities if they are to preserve their meanings. This function returns a
  * string with these conversions made.
  *
- *     Echo.Utils.htmlize("special characters: &<>"); // returns "special characters: &amp;&lt;&gt;"
+ *     Utils.htmlize("special characters: &<>"); // returns "special characters: &amp;&lt;&gt;"
  *
  * Note: the function works with the "string" type argument only.
  * If the type of the value passed to the function differs from the "string" type,
@@ -366,7 +374,7 @@ Echo.Utils._prepareFieldAccessKey = function(key) {
  * @return {String}
  * Converted string.
  */
-Echo.Utils.htmlize = function(text) {
+Utils.htmlize = function(text) {
 	return typeof text === "string" ? $("<div>").text(text).html() : text;
 };
 
@@ -377,13 +385,13 @@ Echo.Utils.htmlize = function(text) {
  * These methods convert JavaScript object to JSON string. 
  * This function uses JSON.stringify() method if it is available in the browser.
  *
- *     Echo.Utils.objectToJSON(null); // returns 'null'
- *     Echo.Utils.objectToJSON(123); // returns '123'
- *     Echo.Utils.objectToJSON(Number.POSITIVE_INFINITY); // returns 'null'
- *     Echo.Utils.objectToJSON("string\n"); // returns '"string\n"'
- *     Echo.Utils.objectToJSON(true); // returns true
- *     Echo.Utils.objectToJSON(["value1", "value2"]); // returns '["value1","value2"]'
- *     Echo.Utils.objectToJSON({"k1": "v1", "k2": "v2"}); // returns '{"k1":"v1","k2":"v2"}'
+ *     Utils.objectToJSON(null); // returns 'null'
+ *     Utils.objectToJSON(123); // returns '123'
+ *     Utils.objectToJSON(Number.POSITIVE_INFINITY); // returns 'null'
+ *     Utils.objectToJSON("string\n"); // returns '"string\n"'
+ *     Utils.objectToJSON(true); // returns true
+ *     Utils.objectToJSON(["value1", "value2"]); // returns '["value1","value2"]'
+ *     Utils.objectToJSON({"k1": "v1", "k2": "v2"}); // returns '{"k1":"v1","k2":"v2"}'
  *
  * @param {Mixed} obj
  * The value to be converted.
@@ -391,7 +399,7 @@ Echo.Utils.htmlize = function(text) {
  * @return {String}
  * String containing JSON.
  */
-Echo.Utils.objectToJSON = function(obj) {
+Utils.objectToJSON = function(obj) {
 	if (window.JSON && JSON.stringify) {
 		return JSON.stringify(obj);
 	}
@@ -422,16 +430,16 @@ Echo.Utils.objectToJSON = function(obj) {
 		case "boolean": out = obj.toString(); break;
 		default:
 			if (obj instanceof Array) {
-				container = $.map(obj, function(element) { return Echo.Utils.objectToJSON(element); });
+				container = $.map(obj, function(element) { return Utils.objectToJSON(element); });
 				out = '[' + container.join(",") + ']';
 			} else if (obj instanceof Object) {
 				var source = obj.exportProperties || obj;
-				container = Echo.Utils.foldl([], source, function(value, acc, property) {
+				container = Utils.foldl([], source, function(value, acc, property) {
 					if (source instanceof Array) {
 						property = value;
 						value = obj[property];
 					}
-					acc.push('"' + property + '":' + Echo.Utils.objectToJSON(value));
+					acc.push('"' + property + '":' + Utils.objectToJSON(value));
 				});
 				out = '{' + container.join(",") + '}';
 			} else {
@@ -449,10 +457,10 @@ Echo.Utils.objectToJSON = function(obj) {
  * and without truncating tags. If truncation hits the middle of the word, the word
  * itself is preserved and truncation starts right after this word.
  *
- *     Echo.Utils.htmlTextTruncate("Welcome to Echo SDK", 5, "..."); // returns "Welcome..."
- *     Echo.Utils.htmlTextTruncate("<div>Welcome to Echo SDK", 5, "", true); // returns "<div>Welcome</div>"
- *     Echo.Utils.htmlTextTruncate("<div>Welcome to Echo SDK</div>", 3, "...", true); // returns "<div>Welcome...</div>"
- *     Echo.Utils.htmlTextTruncate("<div>Welcome to Echo SDK</div>", 17, "...", true); // returns "<div>Welcome to Echo SDK</div>"
+ *     Utils.htmlTextTruncate("Welcome to Echo SDK", 5, "..."); // returns "Welcome..."
+ *     Utils.htmlTextTruncate("<div>Welcome to Echo SDK", 5, "", true); // returns "<div>Welcome</div>"
+ *     Utils.htmlTextTruncate("<div>Welcome to Echo SDK</div>", 3, "...", true); // returns "<div>Welcome...</div>"
+ *     Utils.htmlTextTruncate("<div>Welcome to Echo SDK</div>", 17, "...", true); // returns "<div>Welcome to Echo SDK</div>"
  *
  * @param {String} text
  * The string to be truncated.
@@ -471,7 +479,7 @@ Echo.Utils.objectToJSON = function(obj) {
  * @return {String}
  * Truncated string.
  */
-Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
+Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	if (!limit || text.length < limit) return text;
 
 	var tags = [], count = 0, finalPos = 0;
@@ -479,7 +487,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	var htmlSpecialCharRegex = /^(\S)+;/;
 	if (!this.cache.standaloneTags) {
 		this.cache.standaloneTags =
-			Echo.Utils.foldl(
+			Utils.foldl(
 				{},
 				"br hr input img area param base link meta option".split(" "),
 				function(value, acc, key) { acc[value] = true; }
@@ -540,7 +548,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  *
  * This function returns a string with all HTML tags stripped from the given string.
  *
- *     Echo.Utils.stripTags("<div>Content</div>"); // returns "Content"
+ *     Utils.stripTags("<div>Content</div>"); // returns "Content"
  *
  * Note: the function works with the "string" type argument only. If the value with
  * type different from "string" is passed to the function, the same value would be
@@ -552,7 +560,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  * @return {String}
  * Stripped string.
  */
-Echo.Utils.stripTags = function(text) {
+Utils.stripTags = function(text) {
 	return typeof text === "string" ? $("<div>").html(text).text() : text;
 };
 
@@ -565,7 +573,7 @@ Echo.Utils.stripTags = function(text) {
  * it only breaks it up into the parts.
  *
  *     var url = "http://domain.com:8080/some/path/?query_string#hash_value";
- *     Echo.Utils.parseURL(url);
+ *     Utils.parseURL(url);
  *     // returns {
  *     //     "scheme": "http",
  *     //     "domain": "domain.com",
@@ -583,13 +591,13 @@ Echo.Utils.stripTags = function(text) {
  * scheme, domain, path, query, fragment.
  * Field will contain empty string if the corresponding part of the URL didn't match.
  */
-Echo.Utils.parseURL = function(url) {
+Utils.parseURL = function(url) {
 	if (typeof this.cache.parsedURLs === "undefined") {
 		this.cache.parsedURLs = {};
 	}
 	var parsed = this.cache.parsedURLs;
 	if (!parsed.hasOwnProperty(url)) {
-		var parts = url.match(Echo.Utils.regexps.parseURL);
+		var parts = url.match(Utils.regexps.parseURL);
 		parsed[url] = parts ? {
 			"scheme": parts[1] || "",
 			"domain": parts[2] || "",
@@ -621,9 +629,9 @@ Echo.Utils.parseURL = function(url) {
  *             '<div class="footer">footer</div>' +
  *         '</div>';
  *
- *     Echo.Utils.getVisibleColor( $(".header", template) ); // returns "rgb(0, 128, 0)"
- *     Echo.Utils.getVisibleColor( $(".section1", template) ); // returns "rgb(255, 0, 0)"
- *     Echo.Utils.getVisibleColor( $(".footer", template) ); // returns "transparent"
+ *     Utils.getVisibleColor( $(".header", template) ); // returns "rgb(0, 128, 0)"
+ *     Utils.getVisibleColor( $(".section1", template) ); // returns "rgb(255, 0, 0)"
+ *     Utils.getVisibleColor( $(".footer", template) ); // returns "transparent"
  *
  * @param {HTMLElement} element
  * HTML element which visible color is being determined.
@@ -631,7 +639,7 @@ Echo.Utils.parseURL = function(url) {
  * @return {String}
  * Visible color.
  */
-Echo.Utils.getVisibleColor = function(element) {
+Utils.getVisibleColor = function(element) {
 	// calculate visible color of element (transparent is not visible)
 	var color;
 	do {
@@ -647,8 +655,8 @@ Echo.Utils.getVisibleColor = function(element) {
  * @static
  * Method to convert datetime value from string representation to numeric timestamp.
  *
- *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // returns 886930050
- *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30.733Z"); // returns 886930050.733
+ *     Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // returns 886930050
+ *     Utils.timestampFromW3CDTF("1998-02-08T09:27:30.733Z"); // returns 886930050.733
  *
  * The method can correctly parse any date format supported by user's browser.
  * However ISO 8601 format is understood independing of native support.
@@ -662,15 +670,15 @@ Echo.Utils.getVisibleColor = function(element) {
  * @return {Number}
  * UNIX timestamp.
  */
-Echo.Utils.timestampFromW3CDTF = function(datetime) {
+Utils.timestampFromW3CDTF = function(datetime) {
 	var time = Date.parse(datetime);
 	if (isNaN(time)) {
 		var parts = ["year", "month", "day", "hours", "minutes", "seconds", "milliseconds"];
-		var matches = datetime.match(Echo.Utils.regexps.w3cdtf);
+		var matches = datetime.match(Utils.regexps.w3cdtf);
 		if (!matches) {
 			return undefined;
 		}
-		var dt = Echo.Utils.foldl({}, parts, function(key, acc, id) {
+		var dt = Utils.foldl({}, parts, function(key, acc, id) {
 			acc[key] = +matches[id + 1] || 0;
 		});
 		var timeZone = matches.slice(parts.length + 1);
@@ -703,7 +711,7 @@ Echo.Utils.timestampFromW3CDTF = function(datetime) {
  * @return {Boolean}
  * True if mobile device is used, false if not.
  */
-Echo.Utils.isMobileDevice = function() {
+Utils.isMobileDevice = function() {
 	// we can calculate it once and use the cached value
 	// in other calls since user agent will not be changed
 	if (typeof this.cache.isMobileDevice === "undefined") {
@@ -719,12 +727,12 @@ Echo.Utils.isMobileDevice = function() {
  * This function returns a unique string specifying the number of milliseconds between
  * midnight January 1, 1970 (GMT) and the current time plus a random number.
  *
- *     Echo.Utils.getUniqueString(); // returns something like "134086853327622290480640764643"
+ *     Utils.getUniqueString(); // returns something like "134086853327622290480640764643"
  *
  * @return {String}
  * Unique random string.
  */
-Echo.Utils.getUniqueString = function() {
+Utils.getUniqueString = function() {
 	return (new Date()).valueOf() + Math.random().toString().substr(2);
 };
 
@@ -743,7 +751,7 @@ Echo.Utils.getUniqueString = function() {
  * @return {Object}
  * Resulting class.
  */
-Echo.Utils.inherit = function(parent, child) {
+Utils.inherit = function(parent, child) {
 	var F = function() {};
 	child = child || function() {};
 	F.prototype = parent.prototype;
@@ -766,8 +774,8 @@ Echo.Utils.inherit = function(parent, child) {
  * @return {Object}
  * Reference to the necessary JS class.
  */
-Echo.Utils.getComponent = function(name) {
-	return Echo.Utils.get(window, name);
+Utils.getComponent = function(name) {
+	return Utils.get(window, name);
 };
 
 /**
@@ -784,8 +792,8 @@ Echo.Utils.getComponent = function(name) {
  * @return {Boolean}
  * True/false if the component was or wasn't found respectively.
  */
-Echo.Utils.isComponentDefined = function(name) {
-	return !!Echo.Utils.getComponent(name);
+Utils.isComponentDefined = function(name) {
+	return !!Utils.getComponent(name);
 };
 
 /**
@@ -814,7 +822,7 @@ Echo.Utils.isComponentDefined = function(name) {
  * @return {HTMLElement}
  * Image HTML element.
  */
-Echo.Utils.loadImage = function(args) {
+Utils.loadImage = function(args) {
 	var url = args.image || args.defaultImage;
 	var img = $("<img>");
 	img.one({
@@ -856,7 +864,7 @@ Echo.Utils.loadImage = function(args) {
  * @return {String}
  * HTML string for &lt;a> tag.
  */
-Echo.Utils.hyperlink = function(data, options) {
+Utils.hyperlink = function(data, options) {
 	data = $.extend({}, data);
 	options = $.extend({}, options);
 	var caption = data.caption || "";
@@ -865,10 +873,10 @@ Echo.Utils.hyperlink = function(data, options) {
 		data.target = "_blank";
 	}
 	if (!options.skipEscaping) {
-		data.href = Echo.Utils.htmlize(data.href);
+		data.href = Utils.htmlize(data.href);
 	}
 	data.href = data.href || "javascript:void(0)";
-	var attributes = Echo.Utils.foldl([], data, function(value, acc, key) {
+	var attributes = Utils.foldl([], data, function(value, acc, key) {
 		acc.push(key + '="' + value + '"');
 	});
 	return "<a " + attributes.join(" ") + ">" + caption + "</a>";
@@ -893,7 +901,7 @@ Echo.Utils.hyperlink = function(data, options) {
  * @param {String} [data.args]
  * Extra arguments to log.
  */
-Echo.Utils.log = function(data) {
+Utils.log = function(data) {
 	if (!(window.console && console.log && data && data.message)) {
 		return;
 	}
@@ -906,7 +914,7 @@ Echo.Utils.log = function(data) {
 /**
  * @static
  * Function to call the functions from the list and call callback function
- * after it. Functions are called async. For sync calls use Echo.Utils.sequentialCall
+ * after it. Functions are called async. For sync calls use Utils.sequentialCall
  *
  * @param {Array} actions
  * List of functions to be called.
@@ -914,7 +922,7 @@ Echo.Utils.log = function(data) {
  * @param {Function} [callback]
  * Callback function to be called after functions processing.
  */
-Echo.Utils.parallelCall = function(actions, callback) {
+Utils.parallelCall = function(actions, callback) {
 	if (!actions || !actions.length) {
 		callback && callback();
 		return;
@@ -940,13 +948,13 @@ Echo.Utils.parallelCall = function(actions, callback) {
  * @param {Function} [callback]
  * Callback function to be called after functions processing.
  */
-Echo.Utils.sequentialCall = function(actions, callback) {
+Utils.sequentialCall = function(actions, callback) {
 	if (!actions || !actions.length) {
 		callback && callback();
 		return;
 	}
 	actions.shift()(function() {
-		Echo.Utils.sequentialCall(actions, callback);
+		Utils.sequentialCall(actions, callback);
 	});
 };
 
@@ -957,7 +965,7 @@ Echo.Utils.sequentialCall = function(actions, callback) {
  * @param {String} string
  * String of some words
  */
-Echo.Utils.capitalize = function(string) {
+Utils.capitalize = function(string) {
 	return string.replace(/\b[a-z]/g, function(match) {
 		return match.toUpperCase();
 	});
@@ -989,7 +997,7 @@ Echo.Utils.capitalize = function(string) {
  * @return {String}
  * Compiled string value.
  */
-Echo.Utils.substitute = function(args) {
+Utils.substitute = function(args) {
 	var utils = this;
 	var template = args.template;
 	var substitutions = {
@@ -1043,7 +1051,7 @@ Echo.Utils.substitute = function(args) {
  * The result of the function call in case the first argument is a function
  * or the first argument as is otherwise.
  */
-Echo.Utils.invoke = function(mixed, context) {
+Utils.invoke = function(mixed, context) {
 	return $.isFunction(mixed)
 		? context ? mixed.call(context) : mixed()
 		: mixed;
@@ -1055,16 +1063,16 @@ Echo.Utils.invoke = function(mixed, context) {
  * If the given function completed its execution without throwing an exception,
  * then the "safelyExecute" returns result of that function execution.
  * Otherwise, the "safelyExecute" catches an exception and prints the
- * message to the console using the Echo.Utils#log function.
+ * message to the console using the Utils#log function.
  * It is useful in case you want to avoid execution flow interruption
  * by the code which might potentially throw an exception.
  *
  *		// executes function without arguments and context
- *		Echo.Utils.safelyExecute(function() {});
+ *		Utils.safelyExecute(function() {});
  *		// returns undefined
  *
  *		// executes function with one argument & without context
- *		Echo.Utils.safelyExecute(function() {}, "string param");
+ *		Utils.safelyExecute(function() {}, "string param");
  *		// returns undefined
  *
  *		someObject = {
@@ -1076,11 +1084,11 @@ Echo.Utils.invoke = function(mixed, context) {
  *		};
  *
  *		// executes function with arguments & context
- *		Echo.Utils.safelyExecute(someObject.fn, [[], "string param"], someObject);
+ *		Utils.safelyExecute(someObject.fn, [[], "string param"], someObject);
  *		// returns ["some string", [], "string param"]
  *
  *		// executes the function which throws an exception
- *		Echo.Utils.safelyExecute(function() { throw "Some error"; });
+ *		Utils.safelyExecute(function() { throw "Some error"; });
  *		// returns undefined and prints "Some error" message to the console
  *
  * @param {Function} fn
@@ -1100,7 +1108,7 @@ Echo.Utils.invoke = function(mixed, context) {
  * The result of a given function execution in case it was completed
  * without throwing an exception. Otherwise - the undefined is returned.
  */
-Echo.Utils.safelyExecute = function(fn, args, context) {
+Utils.safelyExecute = function(fn, args, context) {
 	context = context || null;
 	args = $.isArray(args)
 		? args
@@ -1109,7 +1117,7 @@ Echo.Utils.safelyExecute = function(fn, args, context) {
 	try {
 		return fn.apply(context, args);
 	} catch(e) {
-		Echo.Utils.log({
+		Utils.log({
 			"type": "error",
 			"message": e.message || e,
 			"component": context instanceof Echo.App ? context.name : ""
@@ -1148,7 +1156,7 @@ Echo.Utils.safelyExecute = function(fn, args, context) {
  * @param {String} [args.position="fill"]
  * The position of an image inside the container. The only "fill" is implemented now.
 */
-Echo.Utils.placeImage = function(args) {
+Utils.placeImage = function(args) {
 	var position = args.position || "fill";
 
 	args.container.addClass("echo-image-container");
@@ -1156,7 +1164,7 @@ Echo.Utils.placeImage = function(args) {
 		args.container.addClass("echo-image-position-fill");
 	}
 
-	var image = Echo.Utils.loadImage({
+	var image = Utils.loadImage({
 		"image": args.image,
 		"defaultImage": args.defaultImage,
 		"onerror": args.onerror,
@@ -1177,7 +1185,7 @@ Echo.Utils.placeImage = function(args) {
  * Function which accepts two arguments (numbers) as a range and
  * generates a random number in the given range.
  *
- *		Echo.Utils.random(1, 5); // returns a random number in range of [1, 5]
+ *		Utils.random(1, 5); // returns a random number in range of [1, 5]
  *
  * @param {Number} min
  * Number which is the lower limit of the range
@@ -1188,7 +1196,7 @@ Echo.Utils.placeImage = function(args) {
  * @return {Number}
  * Random number in the [min, max] range
  */
-Echo.Utils.random = function(min, max) {
+Utils.random = function(min, max) {
 	return min + Math.floor(Math.random() * (max - min + 1));
 };
 
@@ -1205,11 +1213,11 @@ Echo.Utils.random = function(min, max) {
  * @param {HTMLElement} [data.target]
  * Specifies the target container.
  */
-Echo.Utils.showMessage = function(data) {
+Utils.showMessage = function(data) {
 	data.target.empty().append(
 		this.substitute({
 			"data": data,
-			"template": Echo.Variables.templates.message[data.layout || "full"]
+			"template": data.template || Variables.templates.message[data.layout || "full"]
 		})
 	);
 };
@@ -1224,11 +1232,11 @@ Echo.Utils.showMessage = function(data) {
  * @param {Object} options
  * Object containing display options.
  */
-Echo.Utils.showError = function(data, options) {
+Utils.showError = function(data, options) {
 	var self = this;
 	options = options || {};
 	var getLabel = function(key) {
-		return options.label || Echo.Variables.labels[key]
+		return options.label || Variables.labels[key]
 	};
 	if (typeof options.retryIn === "undefined") {
 		var label = getLabel("error_" + data.errorCode);
@@ -1281,22 +1289,23 @@ Echo.Utils.showError = function(data, options) {
  * @return {String}
  * String which represents the date and time in the relative format.
  */
-Echo.Utils.getRelativeTime = function(datetime, options) {
+Utils.getRelativeTime = function(datetime, options) {
 	if (!datetime) return "";
 	var ts = typeof datetime === "string"
-		? Echo.Utils.timestampFromW3CDTF(datetime)
+		? Utils.timestampFromW3CDTF(datetime)
 		: datetime;
 	if (!ts) return "";
 	var parts;
+	options = options || {"labels": {}};
 	var d = new Date(ts * 1000);
 	var diff = Math.floor(((new Date()).getTime() - d.getTime()) / 1000);
 	var getLabel = function(parts) {
 		var numeric = parts[3];
 		var plural = numeric && parts[4] > 1;
 		var key = parts[0] + (plural ? "s" : "") + (numeric ? "Ago" : "");
-		return Echo.Utils.substitute({
+		return Utils.substitute({
 			"data": {"number": parts[4]},
-			"template": options.labels[key] || Echo.Variables.labels[key]
+			"template": options.labels[key] || Variables.labels[key]
 		});
 	};
 	var conversions = [
@@ -1333,18 +1342,18 @@ Echo.Utils.getRelativeTime = function(datetime, options) {
 };
 
 
-Echo.Variables.templates = {
+Variables.templates = {
 	"message": {
 		"compact": '<span class="echo-app-message echo-app-message-icon echo-app-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>',
 		"full": '<div class="echo-app-message {class:messageText}">' +
-		'<span class="echo-app-message-icon echo-app-message-{data:type} {class:messageIcon}">' +
-			'{data:message}' +
-		'</span>' +
-	'</div>';
+			'<span class="echo-app-message-icon echo-app-message-{data:type} {class:messageIcon}">' +
+				'{data:message}' +
+			'</span>' +
+		'</div>'
 	}
 };
 
-Echo.Variables.labels = {
+Variables.labels = {
 	/**
 	 * @echo_label loading
 	 */
@@ -1471,7 +1480,7 @@ Echo.Variables.labels = {
 	"monthsAgo": "{number} Months Ago"
 };
 
-Echo.Utils.addCSS(
+Utils.addCSS(
 	'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
 	'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
 	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
@@ -1488,10 +1497,10 @@ Echo.Utils.addCSS(
 // because the UI Framework (Twitter Bootstrap) doesn't support this mode.
 // Adding the message about that to the browser console to let the user know.
 if (document.compatMode === "BackCompat") {
-	Echo.Utils.log({
+	Utils.log({
 		"type": "error",
 		"message": "Quirks mode is not supported by JS SDK. Please make sure that the page has a valid doctype."
 	});
 }
-
-})(Echo.jQuery);
+	return Utils;
+});

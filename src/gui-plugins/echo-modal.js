@@ -1,17 +1,13 @@
-(function(jQuery) {
-
-var $ = jQuery;
-
-if (!window.Echo) window.Echo = {};
-
-if (!Echo.GUI) Echo.GUI = {};
-
-if (Echo.GUI.Modal) return;
+define("echo/gui/modal", [
+	"jquery",
+	"echo/gui",
+	"echo/utils"
+], function($, GUI, Utils) {
 
 /**
- * @class Echo.GUI.Modal
+ * @class GUI.Modal
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#modals" target="_blank">bootstrap-modal.js</a>.
- * The Echo.GUI.Modal class provides a simplified interface to work with the
+ * The GUI.Modal class provides a simplified interface to work with the
  * Bootstrap Modal JS class.
  * Echo wrapper assembles the HTML code required for Bootstrap Modal JS class
  * based on the parameters specified in the config and initializes
@@ -19,7 +15,7 @@ if (Echo.GUI.Modal) return;
  *
  * Example:
  *
- * 	var myModal = new Echo.GUI.Modal({
+ * 	var myModal = new GUI.Modal({
  * 		"show": true,
  * 		"backdrop": true,
  * 		"keyboard": true,
@@ -52,7 +48,7 @@ if (Echo.GUI.Modal) return;
  * 	myModal.config.set("closeButton", false); // do not show the close button
  * 	myModal.refresh(); // refresh the Bootstrap Modal instance with changed config parameters and show one
  *
- * @extends Echo.GUI
+ * @extends GUI
  *
  * @package gui.pack.js
  *
@@ -130,8 +126,8 @@ if (Echo.GUI.Modal) return;
  * @cfg {Boolean} [fade=false]
  * Apply a CSS fade transition.
  */
-Echo.GUI.Modal = Echo.Utils.inherit(Echo.GUI, function(config) {
-	Echo.GUI.call(this, config, {
+GUI.Modal = Utils.inherit(GUI, function(config) {
+	GUI.call(this, config, {
 		"targetless": true,
 		"show": false,
 		"backdrop": true,
@@ -155,7 +151,7 @@ Echo.GUI.Modal = Echo.Utils.inherit(Echo.GUI, function(config) {
  * This method assemble a bootstrap dialog according to configuration
  * parameters and data.
  */
-Echo.GUI.Modal.prototype.refresh = function() {
+GUI.Modal.prototype.refresh = function() {
 	var self = this;
 	if (this.rendered) this.destroy();
 
@@ -186,7 +182,7 @@ Echo.GUI.Modal.prototype.refresh = function() {
 /**
  * Shows the modal dialog.
  */
-Echo.GUI.Modal.prototype.show = function() {
+GUI.Modal.prototype.show = function() {
 	this.rendered
 		? this.element.modal("show")
 		: this.refresh();
@@ -195,7 +191,7 @@ Echo.GUI.Modal.prototype.show = function() {
 /**
  * Hides the modal dialog and removes the dialog instance.
  */
-Echo.GUI.Modal.prototype.destroy = function() {
+GUI.Modal.prototype.destroy = function() {
 	if (this.rendered) {
 		this.element.modal("hide");
 		this.rendered = false;
@@ -209,13 +205,13 @@ Echo.GUI.Modal.prototype.destroy = function() {
 /**
  * Hides the modal dialog.
  */
-Echo.GUI.Modal.prototype.hide = function() {
+GUI.Modal.prototype.hide = function() {
 	if (this.rendered) {
 		this.element.modal("hide");
 	}
 };
 
-Echo.GUI.Modal.prototype._assembleHeader = function() {
+GUI.Modal.prototype._assembleHeader = function() {
 	if (this.config.get("header")) {
 		var header = this._addSection("modal-header", $("<h3>").append(this.config.get("data").title));
 		if (this.config.get("closeButton")) {
@@ -225,7 +221,7 @@ Echo.GUI.Modal.prototype._assembleHeader = function() {
 	}
 };
 
-Echo.GUI.Modal.prototype._assembleBody = function() {
+GUI.Modal.prototype._assembleBody = function() {
 	var self = this;
 	var body = this._addSection("modal-body", this.config.get("data").body);
 	if (this.config.get("href")) {
@@ -252,7 +248,7 @@ Echo.GUI.Modal.prototype._assembleBody = function() {
 	}
 };
 
-Echo.GUI.Modal.prototype._assembleFooter = function() {
+GUI.Modal.prototype._assembleFooter = function() {
 	var self = this;
 	if (this.config.get("footer")) {
 		var footer = this._addSection("modal-footer");
@@ -271,7 +267,7 @@ Echo.GUI.Modal.prototype._assembleFooter = function() {
 	}
 };
 
-Echo.GUI.Modal.prototype._assembleBackdrop = function() {
+GUI.Modal.prototype._assembleBackdrop = function() {
 	var self = this;
 	if (self.config.get("backdrop")) {
 		if (self.config.get("fade")) {
@@ -300,7 +296,7 @@ Echo.GUI.Modal.prototype._assembleBackdrop = function() {
 	}
 };
 
-Echo.GUI.Modal.prototype._addSection = function(css, content) {
+GUI.Modal.prototype._addSection = function(css, content) {
 	var section = $('<div class="' + css + '">');
 	this.element.append(section);
 	if (content) {
@@ -309,4 +305,5 @@ Echo.GUI.Modal.prototype._addSection = function(css, content) {
 	return section;
 };
 
-})(Echo.jQuery);
+return GUI.Modal;
+});

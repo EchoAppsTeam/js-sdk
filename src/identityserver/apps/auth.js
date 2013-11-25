@@ -1,7 +1,12 @@
-(function(jQuery) {
+define("echo/identityserver/apps/auth", [
+	"jquery",
+	"echo/app",
+	"echo/utils",
+	"echo/gui",
+	"echo/gui/modal",
+	"css!echo/gui.pack"
+], function($, App, Utils, GUI, GUIModal) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.IdentityServer.Apps.Auth
@@ -26,7 +31,7 @@ var $ = jQuery;
  * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.ServerRelatedApp
+ * @extends Echo.App
  *
  * @package identityserver/apps.pack.js
  * @package identityserver.pack.js
@@ -37,9 +42,9 @@ var $ = jQuery;
  * @param {Object} config
  * Configuration options.
  */
-var auth = Echo.App.manifest("Echo.IdentityServer.Apps.Auth");
+var auth = App.manifest("Echo.IdentityServer.Apps.Auth");
 
-if (Echo.App.isDefined(auth)) return;
+if (App.isDefined(auth)) return;
 
 /** @hide @echo_label loading */
 /** @hide @echo_label retrying */
@@ -95,7 +100,7 @@ auth.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": Echo.Loader.getURL("images/avatar-default.png", false),
+	"defaultAvatar": Echo.require.toUrl("sdk-assets/images/avatar-default.png", false),
 
 	/**
 	 * @cfg {Object} identityManager
@@ -178,17 +183,6 @@ auth.config = {
 	 */
 	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
 };
-
-auth.config.normalizer = {
-	"defaultAvatar": Echo.Loader.getURL
-};
-
-auth.dependencies = [{
-	"loaded": function() { return !!Echo.GUI; },
-	"url": "{config:cdnBaseURL.sdk}/gui.pack.js"
-}, {
-	"url": "{config:cdnBaseURL.sdk}/gui.pack.css"
-}];
 
 auth.vars = {
 	"modal": null
@@ -308,7 +302,7 @@ auth.renderers.or = function(element) {
  * @echo_renderer
  */
 auth.renderers.avatar = function(element) {
-	Echo.Utils.placeImage({
+	Utils.placeImage({
 		"container": element,
 		"image": this.user.get("avatar"),
 		"defaultImage": this.config.get("defaultAvatar")
@@ -344,7 +338,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 		});
 	} else {
 		return element.on("click", function() {
-			self.modal = new Echo.GUI.Modal({
+			self.modal = new GUIModal({
 				"data": {
 					"title": data.title
 				},
@@ -368,7 +362,7 @@ auth.methods._assembleIdentityControl = function(type, element) {
 
 auth.methods._appendSessionID = function(url) {
 	var id = encodeURIComponent(this.user.get("sessionID"));
-	var parts = Echo.Utils.parseURL(url);
+	var parts = Utils.parseURL(url);
 	var session = parts["query"]
 		? parts["query"].match(/=$/) ? id : "&sessionID=" + id
 		: "sessionID=" + id;
@@ -392,6 +386,6 @@ auth.css =
 	".{class:name} { float: left; font-size: 18px; line-height: 24px; margin-left: 5px; font-weight: bold; }" +
 	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }";
 
-Echo.App.create(auth);
+return App.create(auth);
 
-})(Echo.jQuery);
+});

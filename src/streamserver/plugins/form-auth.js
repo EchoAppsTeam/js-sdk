@@ -1,7 +1,9 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/formAuth", [
+	"jquery",
+	"echo/plugin",
+	"echo/identityserver/apps/Auth"
+], function($, Plugin, Auth) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Submit.Plugins.FormAuth
@@ -40,9 +42,9 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("FormAuth", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.manifest("FormAuth", "Echo.StreamServer.Apps.Submit");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	if (this._userStatus() === "forcedLogin") {
@@ -133,11 +135,6 @@ plugin.labels = {
 	"youMustBeLoggedIn": "You must be logged in to comment"
 };
 
-plugin.dependencies = [{
-	"app": "Echo.IdentityServer.Apps.Auth",
-	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
-}];
-
 /**
  * @echo_template
  */
@@ -183,7 +180,7 @@ plugin.component.renderers.container = function(element) {
  */
 plugin.renderers.auth = function(element) {
 	var plugin = this;
-	new Echo.IdentityServer.Apps.Auth(plugin.config.assemble({
+	new Auth(plugin.config.assemble({
 		"target": element,
 		"identityManager": plugin.config.get("identityManager")
 	}));
@@ -217,6 +214,5 @@ plugin.css =
 	'.{plugin.class:forcedLoginMessage} { font-size: 14px; font-weight: bold; }' +
 	'.{plugin.class:error} { color: red; }';
 
-Echo.Plugin.create(plugin);
-
-})(Echo.jQuery);
+return Plugin.create(plugin);
+});

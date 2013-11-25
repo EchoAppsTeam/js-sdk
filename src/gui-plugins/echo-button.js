@@ -1,15 +1,13 @@
-(function(jQuery) {
-
-var $ = jQuery;
-
-if (!window.Echo) window.Echo = {};
-
-if (!Echo.GUI || Echo.GUI.Button) return;
+define("echo/gui/button", [
+	"jquery",
+	"echo/gui",
+	"echo/utils"
+], function($, GUI, Utils) {
 
 /**
- * @class Echo.GUI.Button
+ * @class GUI.Button
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#buttons">bootstrap-button.js</a>.
- * The Echo.GUI.Button class provides a simplified interface to work with the
+ * The GUI.Button class provides a simplified interface to work with the
  * Bootstrap Button JS class.
  * Echo wrapper assembles the HTML code required for Bootstrap Button JS class
  * based on the parameters specified in the config and initializes
@@ -20,7 +18,7 @@ if (!Echo.GUI || Echo.GUI.Button) return;
  * 	element.on("click", function() {
  * 		// your click action handler...
  * 	});
- * 	var button = new Echo.GUI.Button({
+ * 	var button = new GUI.Button({
  * 		"target": element,
  * 		"label": "Button label",
  * 		"icon": "http://example.com/icon.png",
@@ -33,7 +31,7 @@ if (!Echo.GUI || Echo.GUI.Button) return;
  * 	// Destroy the button
  * 	button.destroy();
  *
- * @extends Echo.GUI
+ * @extends GUI
  *
  * @package gui.pack.js
  *
@@ -60,8 +58,8 @@ if (!Echo.GUI || Echo.GUI.Button) return;
  * @cfg {Boolean} [disabled=false]
  * Specifies whether the button should be disabled.
  */
-Echo.GUI.Button = Echo.Utils.inherit(Echo.GUI, function(config) {
-	Echo.GUI.call(this, config, {
+GUI.Button = Utils.inherit(GUI, function(config) {
+	GUI.call(this, config, {
 		"label": config.target.html(),
 		"disabled": !!config.target.attr("disabled")
 	});
@@ -71,7 +69,7 @@ Echo.GUI.Button = Echo.Utils.inherit(Echo.GUI, function(config) {
  * Allows to repaint the button using arbitrary values for configuration
  * parameters from #constructor
  */
-Echo.GUI.Button.prototype.setState = function(config) {
+GUI.Button.prototype.setState = function(config) {
 	var self = this;
 	$.each(config, function(k, v) {
 		self.config.set(k, v);
@@ -79,7 +77,7 @@ Echo.GUI.Button.prototype.setState = function(config) {
 	this.refresh();
 };
 
-Echo.GUI.Button.prototype.refresh = function() {
+GUI.Button.prototype.refresh = function() {
 	var target = this.config.get("target");
 
 	target.empty().append('<div class="echo-label">');
@@ -97,4 +95,5 @@ Echo.GUI.Button.prototype.refresh = function() {
 	target.attr("disabled", this.config.get("disabled"));
 };
 
-})(Echo.jQuery);
+return GUI.Button;
+});

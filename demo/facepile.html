@@ -3,7 +3,6 @@
 	<head>
 		<title>FacePile App Demo</title>
 		<link rel="stylesheet" type="text/css" href="demo.css" />
-		<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
 		<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
 	</head>
 <body>
@@ -41,84 +40,81 @@
 	</div>
 	<script>
 		if (window.parent.Docs) {
-			var link = Echo.jQuery("#documentation > a");
-			link.on("click", function(e) {
-				e.preventDefault();
-				window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
-				return false;
+			Echo.require(["jquery"], function($) {
+				var link = $("#documentation > a");
+				link.on("click", function(e) {
+					e.preventDefault();
+					window.parent.location.hash = link.attr("href").replace(/^.*#/, "");
+					return false;
+				});
+				$("#container").addClass("embedded");
 			});
-			Echo.jQuery("#container").addClass("embedded");
 		}
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		var init = function(config) {
-			Echo.Loader.initApplication({ 
-				"script": "{%=baseURLs.sdk%}/streamserver.pack.js",
-				"component": "Echo.StreamServer.Apps.FacePile",
-				"backplane": { 
-					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+		Echo.require(["echo/streamserver/apps/facePile", "jquery"], function(FacePile, jQuery) {
+			var init = function(config) {
+				config["backplane"] = {
+					"serverBaseURL": "https://api.echoenabled.com/v1",
 					"busName": "jskit"
-				},
-				"config": config
-			}); 
-		};
-
-		init({
-			"target": document.getElementById("ulist-d1"),
-			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
-			"suffixText": " commented on aboutecho.com",
-			"liveUpdates": {"transport": "websockets"},
-			"item": {"avatar": true, "text": true}
-		});
-
-		init({
-			"target": document.getElementById("ulist-d2"),
-			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
-			"liveUpdates": {"transport": "websockets"},
-			"item": {"avatar": false, "text": true}
-		});
-
-		init({
-			"target": document.getElementById("ulist-d3"),
-			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
-			"liveUpdates": {"transport": "websockets"},
-			"item": {"avatar": true, "text": false}
-		});
-
-		Echo.jQuery.get("{%=baseURLs.api.streamserver%}/v1/search", {
-			"q": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:100 children:0",
-			"appkey": "echo.jssdk.demo.aboutecho.com"
-		}, function(data) {
+				};
+				new FacePile(config); 
+			};
 			init({
-				"target": document.getElementById("ulist-s1"),
+				"target": document.getElementById("ulist-d1"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"data": {"entries": data.entries},
-				"initialUsersCount": 5,
+				"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
 				"suffixText": " commented on aboutecho.com",
+				"liveUpdates": {"transport": "websockets"},
 				"item": {"avatar": true, "text": true}
 			});
 
 			init({
-				"target": document.getElementById("ulist-s2"),
+				"target": document.getElementById("ulist-d2"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"data": {"itemsPerPage": 3, "entries": data.entries},
-				"totalUsersCount": 100,
+				"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
+				"liveUpdates": {"transport": "websockets"},
 				"item": {"avatar": false, "text": true}
 			});
 
 			init({
-				"target": document.getElementById("ulist-s3"),
+				"target": document.getElementById("ulist-d3"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"data": {"itemsPerPage": 6, "entries": data.entries},
+				"query": "childrenof:http://aboutecho.com/tweets/exec children:0",
+				"liveUpdates": {"transport": "websockets"},
 				"item": {"avatar": true, "text": false}
 			});
-		}, "jsonp");
 
+			jQuery.get("{%=baseURLs.api.streamserver%}/v1/search", {
+				"q": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:100 children:0",
+				"appkey": "echo.jssdk.demo.aboutecho.com"
+			}, function(data) {
+				init({
+					"target": document.getElementById("ulist-s1"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"data": {"entries": data.entries},
+					"initialUsersCount": 5,
+					"suffixText": " commented on aboutecho.com",
+					"item": {"avatar": true, "text": true}
+				});
+
+				init({
+					"target": document.getElementById("ulist-s2"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"data": {"itemsPerPage": 3, "entries": data.entries},
+					"totalUsersCount": 100,
+					"item": {"avatar": false, "text": true}
+				});
+
+				init({
+					"target": document.getElementById("ulist-s3"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"data": {"itemsPerPage": 6, "entries": data.entries},
+					"item": {"avatar": true, "text": false}
+				});
+			}, "jsonp");
+		});
 	</script>
 </body>
 </html>
-

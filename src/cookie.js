@@ -1,9 +1,11 @@
-(function() {
+define("echo/cookie", [], function() {
 "use strict";
 
-if (!window.Echo) window.Echo = {};
+var Cookie;
 
-if (Echo.Cookie) return;
+//if (!window.Echo) window.Echo = {};
+
+//if (Echo.Cookie) return;
 
 var _pluses = /\+/g;
 var _decode = function(s) {
@@ -11,22 +13,22 @@ var _decode = function(s) {
 };
 
 /**
- * @class Echo.Cookie
+ * @class Cookie
  * Library to work with cookies
  *
  * Example:
  *
- *     Echo.Cookie.set("key", "value");
- *     Echo.Cookie.get("key"); // returns "value"
+ *     Cookie.set("key", "value");
+ *     Cookie.get("key"); // returns "value"
  *
- *     Echo.Cookie.remove("key");
- *     Echo.Cookie.get("key"); // returns "undefined"
+ *     Cookie.remove("key");
+ *     Cookie.get("key"); // returns "undefined"
  *
- *     Echo.Cookie.set("key2", "value2", {"expires": 7}); // this cookie expires in 7 days
+ *     Cookie.set("key2", "value2", {"expires": 7}); // this cookie expires in 7 days
  *
  * @package loader.js
  */
-Echo.Cookie = {};
+Cookie = {};
 
 /**
  * @static
@@ -37,7 +39,7 @@ Echo.Cookie = {};
  *
  * @return {String|undefined}
  */
-Echo.Cookie.get = function(name) {
+Cookie.get = function(name) {
 	var cookies = document.cookie.split("; ");
 	for (var i = 0, l = cookies.length; i < l; i++) {
 		var parts = cookies[i].split("=");
@@ -71,7 +73,7 @@ Echo.Cookie.get = function(name) {
  * @param {Boolean} [options.secure=false]
  * Specifies if this cookie should be secure or not.
  */
-Echo.Cookie.set = function(name, value, options) {
+Cookie.set = function(name, value, options) {
 	options = options || {};
 	if (typeof options.expires === "number") {
 		var days = options.expires;
@@ -105,12 +107,11 @@ Echo.Cookie.set = function(name, value, options) {
  * @param {Boolean} [options.secure=false]
  * Specifies if the cookie secure or not.
  */
-Echo.Cookie.remove = function(name, options) {
+Cookie.remove = function(name, options) {
 	options = options || {};
-	if (typeof Echo.Cookie.get(name) !== "undefined") {
+	if (typeof Cookie.get(name) !== "undefined") {
 		options.expires = -1;
-		Echo.Cookie.set(name, "", options);
+		Cookie.set(name, "", options);
 	}
 };
-
-})();
+});

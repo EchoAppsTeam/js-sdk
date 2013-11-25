@@ -1,17 +1,20 @@
-(function(jQuery) {
+define("echo/view", [
+	"jquery", 
+	"echo/utils"
+], function($, Utils) {
 "use strict";
 
-var $ = jQuery;
-
-if (Echo.Utils.isComponentDefined("Echo.View")) return;
+//TODO: do we need it?
+//if (Utils.isComponentDefined("View")) return;
 
 /**
- * @class Echo.View
+ * @class View
  * Class implementing core rendering logic, which is widely used across the system.
  * In addition to the rendering facilities, this class maintains the list of elements within
  * the given view ("view elements collection") and provides the interface to access/update them.
  *
- *		var view = new Echo.View({
+ * Example:
+ *		var view = new View({
  *			"cssPrefix": "some-prefix-",
  *			"renderers": {
  *				"header": function(element) {
@@ -59,7 +62,7 @@ if (Echo.Utils.isComponentDefined("Echo.View")) return;
  * Specifies class configuration parameters.
  *
  * @param {String} [config.cssPrefix]
- * CSS class name prefix used by the Echo.View to detect whether a certain element
+ * CSS class name prefix used by the View to detect whether a certain element
  * should be added into the view elements collection (if the element CSS class name
  * matches the prefix) and which renderer should be applied in case the element
  * satisfies the CSS prefix match condition.
@@ -97,17 +100,17 @@ if (Echo.Utils.isComponentDefined("Echo.View")) return;
  *
  * @param {Object} [config.data]
  * Object with the data to be inserted into the template into the {data:%KEY%} placeholder.
- * The {data:%KEY%} is a default placeholder supported by the Echo.View even if no
+ * The {data:%KEY%} is a default placeholder supported by the View even if no
  * substitution rules were defined in the config via "substitutions" field.
  *
  * @param {String} [config.template]
  * Template which should be processed using a given substitution rules and
  * the set of renderers.
  * Note: in order to prevent elements overriding in the view elements collection,
- * make sure that the template defined in the Echo.View constructor call contains
+ * make sure that the template defined in the View constructor call contains
  * elements with the unique CSS class names (matching the CSS prefix).
  */
-Echo.View = function(config) {
+var View = function(config) {
 	config = config || {};
 	this.config = config;
 	this.config.cssPrefix = this.config.cssPrefix || "";
@@ -123,7 +126,7 @@ Echo.View = function(config) {
  * @param {String} name
  * The name of the element in the view to be obtained.
  * The name equals to a CSS class name defined for the element minus the CSS prefix
- * defined in the Echo.View object config. For example, if an element has the
+ * defined in the View object config. For example, if an element has the
  * "echo-item-container" CSS class and the "echo-item-" CSS prefix was defined
  * during the object constructor call, the element will be available using
  * the "container" name. If element has more than one CSS class name matching
@@ -132,7 +135,7 @@ Echo.View = function(config) {
  * @return {Object}
  * The corresponding value found in the object.
  */
-Echo.View.prototype.get = function(name) {
+View.prototype.get = function(name) {
 	return this._elements[this._key(name)];
 };
 
@@ -148,7 +151,7 @@ Echo.View.prototype.get = function(name) {
  * The element might also be a HTML markup string which will be transformed into the
  * jQuery element before assignment.
  */
-Echo.View.prototype.set = function(name, element) {
+View.prototype.set = function(name, element) {
 	this._elements[this._key(name)] = $(element);
 };
 
@@ -159,7 +162,7 @@ Echo.View.prototype.set = function(name, element) {
  * The name of the element or the element itself to be removed from the collection.
  * See (link #get) to get more information about this field format in case of string name.
  */
-Echo.View.prototype.remove = function(element) {
+View.prototype.remove = function(element) {
 	var name = typeof element === "string"
 		? this._key(element)
 		: element.echo.name;
@@ -172,7 +175,7 @@ Echo.View.prototype.remove = function(element) {
  *
  * @return {Boolean}
  */
-Echo.View.prototype.rendered = function() {
+View.prototype.rendered = function() {
 	return !!this._rendered;
 };
 
@@ -191,7 +194,7 @@ Echo.View.prototype.rendered = function() {
  *
  * @param {Object} [args.data]
  * Object with the data to be inserted into the template into the {data:%KEY%} placeholder.
- * The {data:%KEY%} is a default placeholder supported by the Echo.View even if no
+ * The {data:%KEY%} is a default placeholder supported by the View even if no
  * substitution rules were defined in the config via "substitutions" field.
  *
  * @param {String} [args.template]
@@ -201,7 +204,7 @@ Echo.View.prototype.rendered = function() {
  * @return {Object}
  * DOM (jQuery element) representation of the given template using the rules specified.
  */
-Echo.View.prototype.render = function(args) {
+View.prototype.render = function(args) {
 	args = args || {};
 	args.data = args.data || this.config.data || {};
 	args.template = args.template || this.config.template;
@@ -240,26 +243,26 @@ Echo.View.prototype.render = function(args) {
 };
 
 /**
- * Function which instantiates an Echo.View object with the config of the current instance.
+ * Function which instantiates an View object with the confing of the current instance.
  * This function is helpful when you need to process the template using the rules and
- * renderers specified for the parent Echo.View class instance.
+ * renderers specified for the parent View class instance.
  *
  * @param [config]
- * Configuration overrides object. See Echo.View class constructor
+ * Configuration overrides object. See View class constructor
  * to get more information about the config object fields and types.
  *
  * @return {Object}
- * New Echo.View class instance with the configuration params taken from the current instance.
+ * New View class instance with the configuration params taken from the current instance.
  */
-Echo.View.prototype.fork = function(config) {
-	return new Echo.View($.extend(true, {}, this.config, config));
+View.prototype.fork = function(config) {
+	return new View($.extend(true, {}, this.config, config));
 };
 
 // private functions
 
-Echo.View.prototype._render = {};
+View.prototype._render = {};
 
-Echo.View.prototype._render.element = function(args) {
+View.prototype._render.element = function(args) {
 	return this.config.renderer
 		? this.config.renderer(args)
 		: this._hasRenderer(args.name)
@@ -269,7 +272,7 @@ Echo.View.prototype._render.element = function(args) {
 			: args.target;
 };
 
-Echo.View.prototype._render.recursive = function(args) {
+View.prototype._render.recursive = function(args) {
 	var oldNode = this.get(args.name);
 
 	// define original template
@@ -282,7 +285,7 @@ Echo.View.prototype._render.recursive = function(args) {
 	return newNode;
 };
 
-Echo.View.prototype._render.template = function(args) {
+View.prototype._render.template = function(args) {
 	var dom = this._compileTemplate(args);
 	if (dom.hasClass("echo-tmp-wrapper")) {
 		dom = $(dom.html());
@@ -290,20 +293,20 @@ Echo.View.prototype._render.template = function(args) {
 	return this._applyRenderers(dom);
 };
 
-Echo.View.prototype._key = function(name) {
+View.prototype._key = function(name) {
 	return this.config.cssPrefix + name;
 };
 
-Echo.View.prototype._clear = function() {
+View.prototype._clear = function() {
 	this._elements = {};
 };
 
-Echo.View.prototype._compileTemplate = function(args) {
+View.prototype._compileTemplate = function(args) {
 	// do not process if template is not a string
 	if (typeof args.template !== "string") {
 		return args.template;
 	}
-	var template = Echo.Utils.substitute({
+	var template = Utils.substitute({
 		"data": args.data,
 		"template": args.template,
 		"instructions": this.config.substitutions
@@ -311,7 +314,7 @@ Echo.View.prototype._compileTemplate = function(args) {
 	return $('<div class="echo-tmp-wrapper"/>').html(template);
 };
 
-Echo.View.prototype._applyRenderers = function(dom) {
+View.prototype._applyRenderers = function(dom) {
 	var view = this;
 	var elements = this._getRenderableElements(dom);
 	$.each(elements, function(name, element) {
@@ -325,15 +328,15 @@ Echo.View.prototype._applyRenderers = function(dom) {
 	return dom;
 };
 
-Echo.View.prototype._getRenderer = function(name) {
+View.prototype._getRenderer = function(name) {
 	return this.renderers[name];
 };
 
-Echo.View.prototype._hasRenderer = function(name) {
+View.prototype._hasRenderer = function(name) {
 	return this.config.renderer ? true : !!this._getRenderer(name);
 };
 
-Echo.View.prototype._getRenderableElements = function(container) {
+View.prototype._getRenderableElements = function(container) {
 	var view = this, elements = {};
 	var isRenderer = new RegExp(this.config.cssPrefix + "(.*)$");
 	container.find("*").addBack().each(function(i, element) {
@@ -356,4 +359,5 @@ Echo.View.prototype._getRenderableElements = function(container) {
 	return elements;
 };
 
-})(Echo.jQuery);
+return View;
+});

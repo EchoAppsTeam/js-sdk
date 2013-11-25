@@ -1,7 +1,8 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/submitReply", [
+	"jquery",
+	"echo/plugin"
+], function($, Plugin) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Submit.Plugins.TextCounter
@@ -24,9 +25,9 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("TextCounter", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.manifest("TextCounter", "Echo.StreamServer.Apps.Submit");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 /**
  * @cfg {Number} limit
@@ -118,6 +119,6 @@ plugin.renderers.counterLabel = function(element) {
 	return element.text(label);
 };
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});

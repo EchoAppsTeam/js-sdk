@@ -25,17 +25,20 @@ module.exports = function(grunt) {
 			case "dev":
 				makeConcatSpec();
 				tasks = [
-					"copy:css",
-					"copy:own-js",
-					"copy:third-party-js",
-					"copy:third-party-html",
-					"copy:bootstrap",
+					//"copy:css",
+					//"copy:own-js",
+					//"copy:third-party-js",
+					//"copy:third-party-html",
+					//"copy:bootstrap",
+					//"wrap",
+					"requirejs",
 					"wrap",
+					"concat:gui-pack",
 					"recess:bootstrap",
 					"patch:gui-css",
 					"patch:loader-build",
-					"concat",
-					"clean:third-party",
+					//"concat",
+					//"clean:third-party",
 					"copy:build"
 				];
 				break;
@@ -70,7 +73,7 @@ module.exports = function(grunt) {
 				];
 				break;
 		}
-		tasks.push("clean:build");
+		//tasks.push("clean:build");
 		grunt.task.run(tasks);
 	});
 
@@ -191,7 +194,7 @@ module.exports = function(grunt) {
 			"options": {
 				"processContent": function(text, filename) {
 					text = shared.replacePlaceholdersOnCopy(text, filename);
-					return text.replace(/\(window\.jQuery\)/g, "(Echo.jQuery)");
+					return text.replace(/\(window\.jQuery\)/g, "(jQuery)");
 				},
 				"processContentExclude": "**/*.{png,jpg,jpeg,gif}"
 			}

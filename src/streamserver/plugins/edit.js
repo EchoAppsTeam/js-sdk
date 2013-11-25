@@ -1,7 +1,9 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/streamItemEdit", [
+	"jquery",
+	"echo/plugin",
+	"echo/streamserver/apps/submit"
+], function($, Plugin, Submit) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Stream.Item.Plugins.Edit
@@ -26,9 +28,9 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.manifest("Edit", "Echo.StreamServer.Apps.Stream.Item");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	this.component.addButtonSpec("Edit", this._assembleButton());
@@ -75,21 +77,23 @@ plugin.methods._assembleButton = function() {
 				config["parent"] = plugin.component.config.getAsHash();
 				config["targetQuery"] = plugin.config.get("query", "");
 				config.plugins.push({"name": "Edit"});
-				new Echo.StreamServer.Apps.Submit(config);
+				new Submit(config);
 				item.config.get("target").get(0).scrollIntoView(true);
 			}
 		};
 	};
 };
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});
 
-(function(jQuery) {
+define("echo/streamserver/plugins/submitEdit", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils"
+], function($, Plugin, Utils) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Submit.Plugins.Edit
@@ -110,9 +114,9 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Edit", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.manifest("Edit", "Echo.StreamServer.Apps.Submit");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	this.extendTemplate("insertAfter", "postContainer", plugin.templates.cancel);
@@ -208,7 +212,7 @@ plugin.renderers.editedDate = function(element) {
 	var published = this.component.get("data.object.published");
 	if (!published) return element.empty();
 
-	var date = new Date(Echo.Utils.timestampFromW3CDTF(published) * 1000);
+	var date = new Date(Utils.timestampFromW3CDTF(published) * 1000);
 	return element.text(date.toLocaleDateString() + ', ' + date.toLocaleTimeString());
 };
 
@@ -271,6 +275,6 @@ plugin.methods._getMetaDataUpdates = function(verb, type, data) {
 plugin.css = 
 	'.{plugin.class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }';
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});

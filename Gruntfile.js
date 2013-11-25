@@ -16,6 +16,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
 	grunt.loadNpmTasks("grunt-saucelabs");
+	grunt.loadNpmTasks("grunt-requirejs");
 
 	grunt.registerTask("default", ["check:config", "jshint", "clean:all", "build:sdk"]);
 
@@ -107,7 +108,7 @@ module.exports = function(grunt) {
 			],
 			"dest": "api.pack.js"
 		},
-		"environment": {
+		/*"environment": {
 			"src": [
 				"utils.js",
 				"events.js",
@@ -121,7 +122,7 @@ module.exports = function(grunt) {
 				"canvas.js"
 			],
 			"dest": "environment.pack.js"
-		},
+		},*/
 		"third-party/jquery": {
 			"src": [
 				"third-party/jquery/jquery.js",
@@ -137,26 +138,27 @@ module.exports = function(grunt) {
 			],
 			"dest": "third-party/jquery/jquery.isotope.min.js"
 		},
-		"third-party/bootstrap": {
-			"src": [
-				"third-party/bootstrap/js/bootstrap-transition.js",
-				"third-party/bootstrap/js/bootstrap-affix.js",
-				"third-party/bootstrap/js/bootstrap-alert.js",
-				"third-party/bootstrap/js/bootstrap-button.js",
-				"third-party/bootstrap/js/bootstrap-modal.js",
-				"third-party/bootstrap/js/bootstrap-carousel.js",
-				"third-party/bootstrap/js/bootstrap-collapse.js",
-				"third-party/bootstrap/js/bootstrap-dropdown.js",
-				"third-party/bootstrap/js/bootstrap-tooltip.js",
-				"third-party/bootstrap/js/bootstrap-popover.js",
-				"third-party/bootstrap/js/bootstrap-scrollspy.js",
-				"third-party/bootstrap/js/bootstrap-tab.js",
-				"third-party/bootstrap/js/bootstrap-typeahead.js",
-				"gui.js",
-				"third-party/bootstrap/plugins/echo-modal.js",
-				"third-party/bootstrap/plugins/echo-button.js",
-				"third-party/bootstrap/plugins/echo-dropdown.js",
-				"third-party/bootstrap/plugins/echo-tabs.js"
+		"gui-pack": {
+			"src": [ //TODO: rewrite ../build
+				"../build/third-party/bootstrap/js/bootstrap-tooltip.js",
+				"../build/third-party/bootstrap/js/bootstrap-*.js",
+				/*"../build/third-party/bootstrap/js/bootstrap-affix.js",
+				"../build/third-party/bootstrap/js/bootstrap-alert.js",
+				"../build/third-party/bootstrap/js/bootstrap-button.js",
+				"../build/third-party/bootstrap/js/bootstrap-modal.js",
+				"../build/third-party/bootstrap/js/bootstrap-carousel.js",
+				"../build/third-party/bootstrap/js/bootstrap-collapse.js",
+				"../build/third-party/bootstrap/js/bootstrap-dropdown.js",
+				"../build/third-party/bootstrap/js/bootstrap-tooltip.js",
+				"../build/third-party/bootstrap/js/bootstrap-popover.js",
+				"../build/third-party/bootstrap/js/bootstrap-scrollspy.js",
+				"../build/third-party/bootstrap/js/bootstrap-tab.js",
+				"../build/third-party/bootstrap/js/bootstrap-typeahead.js",
+				*/"gui.js",
+				/*"gui-plugins/echo-modal.js",
+				"gui-plugins/echo-button.js",
+				"gui-plugins/echo-dropdown.js",
+				*/"gui-plugins/echo-*.js"
 			],
 			"dest": "gui.pack.js"
 		},
@@ -329,7 +331,7 @@ module.exports = function(grunt) {
 			},
 			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"]
 		},
-		"wrap": {
+		/*"wrap": {
 			"echo-jquery": {
 				"options": {
 					"header": [
@@ -396,7 +398,7 @@ module.exports = function(grunt) {
 					"src": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"]
 				}]
 			}
-		},
+		},*/
 		"patch": {
 			"jquery-source-map": {
 				"options": {
@@ -482,15 +484,155 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-                "watch": {
-                        "src": {
-                                "files": ["apps/**/*", "demo/**/*", "config/**/*", "src/**/*", "tools/**/*", "tests/**/*"],
-                                "tasks": ["default"],
-                                "options": {
-                                        "interrupt": true
-                                }
-                        }
-                }
+		"watch": {
+				"src": {
+						"files": ["apps/**/*", "demo/**/*", "config/**/*", "src/**/*", "tools/**/*", "tests/**/*"],
+						"tasks": ["default"],
+						"options": {
+								"interrupt": true
+						}
+				}
+		},
+		"requirejs": {
+			"common": {
+				"options": {
+					"appDir": "<%= dirs.src %>",
+					"baseUrl": "./",
+					//"mainConfigFile": "src/config.js",
+					"dir": "<%= dirs.build %>",
+					"optimize": "none",
+					"wrap": false,
+					"namespace": "Echo",
+					"removeCombined": true,
+					"modules": [{
+						"name": "loader",
+						"include": [
+							"third-party/requirejs/require",
+							"third-party/requirejs/css"
+						]
+					}, {
+						"name": "third-party/jquery.pack",
+						"create": true,
+						"include": [
+							"third-party/jquery/jquery",
+							"third-party/jquery/jquery-noconflict",
+							"third-party/jquery/jquery.ihint",
+							"third-party/jquery/jquery.viewport.mini"
+						]
+					}, {
+						"name": "enviroment.pack",
+						"create": true,
+						"include": [
+							"utils",
+							"events",
+							"labels",
+							"configuration",
+							"api",	// it was api pack
+							"streamserver/api",	// it was api pack
+							"identityserver/api",	// it was api pack
+							"user-session",
+							"view",
+							"app",
+							"plugin",
+							"canvas"
+						]
+					}, {
+						"name": "streamserver.pack",
+						"create": true,
+						"include": [ //TODO: use *.js instead of enumeration
+							"streamserver/apps/counter",
+							"streamserver/apps/stream",
+							"streamserver/apps/facepile",
+							"streamserver/apps/submit",
+							"streamserver/plugins/community-flag",
+							"streamserver/plugins/form-auth",
+							"streamserver/plugins/item-accumulator-display",
+							"streamserver/plugins/janrain-sharing",
+							"streamserver/plugins/metadata-manager",
+							"streamserver/plugins/pinboard-visualization",
+							"streamserver/plugins/text-counter",
+							"streamserver/plugins/edit",
+							"streamserver/plugins/infinite-scroll",
+							"streamserver/plugins/janrain-auth",
+							"streamserver/plugins/like",
+							"streamserver/plugins/moderation",
+							"streamserver/plugins/reply",
+							"streamserver/plugins/tweet-display"
+						]
+					}]
+					//fileExclusionRegExp: /\S*(?:isotope|bootstrap-){1}\S*/g,
+				}
+			}//,
+			//"plugins": {
+			//	"options": {
+			//		"appDir": "<%= dirs.src %>",
+			//		"baseUrl": "./",
+			//		"dir": "<%= dirs.build %>/plugins",
+			//		//"keepBuildDir": true,
+			//		"optimize": "none",
+			//		"wrap": {
+			//			"start": "require([\"jquery\"] function(jQuery) {\n var $ = jQuery;\n",
+			//			"end": "});"
+			//		},
+			//		//"namespace": "Echo",
+			//		//removeCombined: true,
+			//		"paths": {
+			//			"echo": "./"
+			//		},
+			//		"modules": [{
+			//			"name": "isotope",
+			//			"create": true,
+			//			"include": [
+			//				"third-party/jquery/jquery.isotope.min"					
+			//			]
+			//		}],
+			//		"dirExclusionRegExp": /\S*(?:require){1,}\S*/g
+			//	}
+			//}
+		},
+		"wrap": {
+			"options": {
+				"header": [
+					"Echo.require([\"jquery\"], function(jQuery) {",
+					"var $ = jQuery;",
+					""
+				],
+				"footer": [
+					"});"
+				]
+			},
+			"jquery-isotope": {
+				"files": [{
+					"expand": true,
+					"cwd": "<%= dirs.build %>",
+					"src": [
+						"third-party/jquery/jquery.isotope.min.js"
+					]
+				}]
+			},
+			//TODO rewrite it to concat plugins -> wrap -> concat with gui and so on.
+			"bootstrap-plugins": {
+				"files": [{
+					"expand": true,
+					"cwd": "<%= dirs.build %>",
+					"src": [
+						"third-party/bootstrap/js/bootstrap-transition.js",
+						"third-party/bootstrap/js/bootstrap-affix.js",
+						"third-party/bootstrap/js/bootstrap-alert.js",
+						"third-party/bootstrap/js/bootstrap-button.js",
+						"third-party/bootstrap/js/bootstrap-modal.js",
+						"third-party/bootstrap/js/bootstrap-carousel.js",
+						"third-party/bootstrap/js/bootstrap-collapse.js",
+						"third-party/bootstrap/js/bootstrap-dropdown.js",
+						"third-party/bootstrap/js/bootstrap-tooltip.js",
+						"third-party/bootstrap/js/bootstrap-popover.js",
+						"third-party/bootstrap/js/bootstrap-scrollspy.js",
+						"third-party/bootstrap/js/bootstrap-tab.js",
+						"third-party/bootstrap/js/bootstrap-typeahead.js"
+					]
+				}]
+			}
+		}
 	};
 
 	grunt.initConfig(config);

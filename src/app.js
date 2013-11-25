@@ -1,7 +1,15 @@
-(function(jQuery) {
+define("echo/app", [
+	"jquery",
+	"echo/utils",
+	"echo/configuration",
+	"echo/events",
+	"echo/view",
+	"echo/labels",
+	"echo/user-session",
+	"echo/plugin",
+	"require"
+], function($, utils, Configuration, events, View, Labels, UserSession, Plugin, require) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.App
@@ -11,7 +19,7 @@ var $ = jQuery;
  *
  * @package environment.pack.js
  */
-Echo.App = function() {};
+var App = function() {};
 
 // static interface
 
@@ -56,19 +64,19 @@ Echo.App = function() {};
  * @return {Object}
  * Reference to the generated application class.
  */
-Echo.App.create = function(manifest) {
-	var app = Echo.Utils.getComponent(manifest.name);
+App.create = function(manifest) {
+	var app = utils.getComponent(manifest.name);
 
 	// prevent multiple re-definitions
-	if (Echo.App.isDefined(manifest)) return app;
+	if (App.isDefined(manifest)) return app;
 
 	var _manifest = this._merge(manifest, manifest.inherits && manifest.inherits._manifest);
 
-	var constructor = Echo.Utils.inherit(this, function(config) {
+	var constructor = utils.inherit(this, function(config) {
 
 		// perform basic validation of incoming params
 		if (!config || !config.target) {
-			Echo.Utils.log({
+			utils.log({
 				"type": "error",
 				"component": _manifest.name,
 				"message": "Unable to initialize application, config is invalid",
@@ -95,13 +103,13 @@ Echo.App.create = function(manifest) {
 	}
 
 	// define default language var values with the lowest priority available
-	Echo.Labels.set(_manifest.labels, _manifest.name, true);
+	Labels.set(_manifest.labels, _manifest.name, true);
 
 	// define CSS class and prefix for the class
 	prototype.cssClass = _manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 	prototype.cssPrefix = prototype.cssClass + "-";
 
-	Echo.Utils.set(window, _manifest.name, $.extend(constructor, app));
+	utils.set(window, _manifest.name, $.extend(constructor, app));
 	return constructor;
 };
 
@@ -115,7 +123,7 @@ Echo.App.create = function(manifest) {
  * @return {Object}
  * Basic application manifest declaration.
  */
-Echo.App.manifest = function(name) {
+App.manifest = function(name) {
 	return {
 		"name": name,
 		"vars": {},
@@ -143,11 +151,11 @@ Echo.App.manifest = function(name) {
  *
  * @return {Boolean}
  */
-Echo.App.isDefined = function(manifest) {
+App.isDefined = function(manifest) {
 	var name = typeof manifest === "string"
 		? manifest
 		: manifest.name;
-	var component = Echo.Utils.get(window, name);
+	var component = utils.get(window, name);
 	return !!(component && component._manifest);
 };
 
@@ -168,8 +176,8 @@ Echo.App.isDefined = function(manifest) {
  * @return {Mixed}
  * The corresponding value found in the object.
  */
-Echo.App.prototype.get = function(key, defaults) {
-	return Echo.Utils.get(this, key, defaults);
+App.prototype.get = function(key, defaults) {
+	return utils.get(this, key, defaults);
 };
 
 /**
@@ -183,8 +191,8 @@ Echo.App.prototype.get = function(key, defaults) {
  * @param {Mixed} value
  * The corresponding value which should be defined for the key.
  */
-Echo.App.prototype.set = function(key, value) {
-	return Echo.Utils.set(this, key, value);
+App.prototype.set = function(key, value) {
+	return utils.set(this, key, value);
 };
 
 /**
@@ -200,8 +208,8 @@ Echo.App.prototype.set = function(key, value) {
  * @return {Boolean}
  * Indicates that the value associated with the given key was removed.
  */
-Echo.App.prototype.remove = function(key) {
-	return Echo.Utils.remove(this, key);
+App.prototype.remove = function(key) {
+	return utils.remove(this, key);
 };
 
 /**
@@ -212,7 +220,7 @@ Echo.App.prototype.remove = function(key) {
  * @return {Object}
  * Application DOM representation
  */
-Echo.App.prototype.render = function() {
+App.prototype.render = function() {
 	var view = this.view;
 	var topic = view.rendered() ? "onRerender" : "onRender";
 	if (!this.dependent() && !view.rendered()) {
@@ -229,20 +237,20 @@ Echo.App.prototype.render = function() {
 /**
  * @inheritdoc Echo.Utils#substitute
  */
-Echo.App.prototype.substitute = function(args) {
+App.prototype.substitute = function(args) {
 	var instructions = this._getSubstitutionInstructions();
 	args.data = args.data || this.get("data");
 	args.instructions = args.instructions
 		? $.extend(instructions, args.instructions)
 		: instructions;
-	return Echo.Utils.substitute(args);
+	return utils.substitute(args);
 };
 
 /**
  * @inheritdoc Echo.Utils#invoke
  */
-Echo.App.prototype.invoke = function(mixed, context) {
-	return Echo.Utils.invoke(mixed, context || this);
+App.prototype.invoke = function(mixed, context) {
+	return utils.invoke(mixed, context || this);
 };
 
 /**
@@ -250,7 +258,7 @@ Echo.App.prototype.invoke = function(mixed, context) {
  *
  * Function can be overriden by class descendants implying specific logic.
  */
-Echo.App.prototype.refresh = function() {
+App.prototype.refresh = function() {
 
 	// destroy all nested applications, but preserve self
 	this.destroy({"self": false});
@@ -271,8 +279,8 @@ Echo.App.prototype.refresh = function() {
 /**
  * Unified method to destroy application.
  */
-Echo.App.prototype.destroy = function(config) {
-	Echo.Events.publish({
+App.prototype.destroy = function(config) {
+	events.publish({
 		"topic": "Echo.App.onDestroy",
 		"bubble": false,
 		"context": this.config.get("context"),
@@ -285,7 +293,7 @@ Echo.App.prototype.destroy = function(config) {
  *
  * @return {Boolean}
  */
-Echo.App.prototype.dependent = function() {
+App.prototype.dependent = function() {
 	return !!this.config.get("parent");
 };
 
@@ -298,14 +306,14 @@ Echo.App.prototype.dependent = function() {
  * @return {Object}
  * Instance of the corresponding plugin.
  */
-Echo.App.prototype.getPlugin = function(name) {
+App.prototype.getPlugin = function(name) {
 	return this.plugins[name];
 };
 
 /**
  * Method to get the application template during rendering procedure. Can be overriden.
  */
-Echo.App.prototype.template = function() {
+App.prototype.template = function() {
 	return this.invoke(this.templates.main);
 };
 
@@ -322,7 +330,7 @@ Echo.App.prototype.template = function() {
  * @return {HTMLElement}
  * Result of parent renderer function call.
  */
-Echo.App.prototype.parentRenderer = function(name, args) {
+App.prototype.parentRenderer = function(name, args) {
 	var renderer = this.parentRenderers[name];
 	return renderer
 		? renderer.apply(this, args)
@@ -349,7 +357,7 @@ Echo.App.prototype.parentRenderer = function(name, args) {
  * The content of a transformation to be applied.
  * This param is required for all actions except "remove".
  */
-Echo.App.prototype.extendTemplate = function(action, anchor, html) {
+App.prototype.extendTemplate = function(action, anchor, html) {
 	this.extension.template.push({"action": action, "anchor": anchor, "html": html});
 };
 
@@ -362,7 +370,7 @@ Echo.App.prototype.extendTemplate = function(action, anchor, html) {
  * @param {Function} renderer
  * Renderer function to be applied.
  */
-Echo.App.prototype.extendRenderer = function(name, renderer) {
+App.prototype.extendRenderer = function(name, renderer) {
 	var app = this;
 	var extension = this.extension.renderers;
 	var _renderer = extension[name] || this.renderers[name];
@@ -375,8 +383,8 @@ Echo.App.prototype.extendRenderer = function(name, renderer) {
 /**
  * @inheritdoc Echo.Utils#log
  */
-Echo.App.prototype.log = function(data) {
-	Echo.Utils.log($.extend(data, {"component": this.name}));
+App.prototype.log = function(data) {
+	utils.log($.extend(data, {"component": this.name}));
 };
 
 /**
@@ -399,7 +407,7 @@ Echo.App.prototype.log = function(data) {
  * @param {Object} [spec.config]
  * Configuration object for the nested application.
  */
-Echo.App.prototype.initApp = function(spec) {
+App.prototype.initApp = function(spec) {
 	this.destroyApp(spec.id);
 	spec.config = spec.config || {};
 	if (this.user) {
@@ -416,7 +424,7 @@ Echo.App.prototype.initApp = function(spec) {
 	spec.config = this._normalizeAppConfig(
 		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
-	var App = Echo.Utils.getApp(spec.app);
+	var App = utils.getApp(spec.app);
 	this.set("apps." + spec.id, new App(spec.config));
 	return this.getApp(spec.id);
 };
@@ -431,7 +439,7 @@ Echo.App.prototype.initApp = function(spec) {
  * The link to the corresponding application or 'undefined'
  * in case no application with the given id was found.
  */
-Echo.App.prototype.getApp = function(id) {
+App.prototype.getApp = function(id) {
 	return this.get("apps." + id);
 };
 
@@ -443,7 +451,7 @@ Echo.App.prototype.getApp = function(id) {
  * @param {String} id
  * Id of the app to be removed.
  */
-Echo.App.prototype.destroyApp = function(id) {
+App.prototype.destroyApp = function(id) {
 	var app = this.getApp(id);
 	if (app) {
 		app.destroy();
@@ -461,7 +469,7 @@ Echo.App.prototype.destroyApp = function(id) {
  * @param {Array} [exceptions]
  * List of nested applications to be kept.
  */
-Echo.App.prototype.destroyApps = function(exceptions) {
+App.prototype.destroyApps = function(exceptions) {
 	var self = this;
 	exceptions = exceptions || [];
 	var inExceptionList = function(id) {
@@ -481,7 +489,7 @@ Echo.App.prototype.destroyApps = function(exceptions) {
 	});
 };
 
-Echo.App.prototype._init = function(subsystems) {
+App.prototype._init = function(subsystems) {
 	var app = this;
 	if (!subsystems || !subsystems.length) return;
 	var func = subsystems.shift();
@@ -504,9 +512,9 @@ Echo.App.prototype._init = function(subsystems) {
 	}
 };
 
-Echo.App.prototype._initializers = {};
+App.prototype._initializers = {};
 
-Echo.App.prototype._initializers.list = [
+App.prototype._initializers.list = [
 	["vars",               ["init", "refresh"]],
 	["config",             ["init"]],
 	["css",                ["init"]],
@@ -514,7 +522,7 @@ Echo.App.prototype._initializers.list = [
 	["subscriptions",      ["init"]],
 	["labels",             ["init"]],
 	["view",               ["init"]],
-	["dependencies:async", ["init"]],
+	["backplane:async",    ["init"]],
 	["user:async",         ["init", "refresh"]],
 	["plugins:async",      ["init", "refresh"]],
 	["init:async",         ["init", "refresh"]],
@@ -522,15 +530,15 @@ Echo.App.prototype._initializers.list = [
 	["refresh",            ["refresh"]]
 ];
 
-Echo.App.prototype._initializers.get = function(action) {
-	return Echo.Utils.foldl([], this.list, function(initializer, acc) {
+App.prototype._initializers.get = function(action) {
+	return utils.foldl([], this.list, function(initializer, acc) {
 		if (~$.inArray(action, initializer[1])) {
 			acc.push(initializer[0]);
 		}
 	});
 };
 
-Echo.App.prototype._initializers.vars = function() {
+App.prototype._initializers.vars = function() {
 	// we need to apply default field values to the application,
 	// but we need to avoid any references to the default var objects,
 	// thus we copy and recursively merge default values separately
@@ -538,7 +546,7 @@ Echo.App.prototype._initializers.vars = function() {
 	$.extend(this, $.extend(true, {}, this._manifest("vars")));
 };
 
-Echo.App.prototype._initializers.config = function() {
+App.prototype._initializers.config = function() {
 	var app = this;
 	var config = this._manifest("config");
 	var normalizer = function(key, value) {
@@ -546,10 +554,10 @@ Echo.App.prototype._initializers.config = function() {
 			? config.normalizer[key].call(this, value, app)
 			: value;
 	};
-	return new Echo.Configuration(this.config, config, normalizer, {"data": true, "parent": true});
+	return new Configuration(this.config, config, normalizer, {"data": true, "parent": true});
 };
 
-Echo.App.prototype._initializers.events = function() {
+App.prototype._initializers.events = function() {
 	var app = this;
 	var prepare = function(params) {
 		params.context = params.context || app.config.get("context");
@@ -580,7 +588,7 @@ Echo.App.prototype._initializers.events = function() {
 					return acc;
 				}(parent, []);
 				$.map(names, function(name) {
-					Echo.Events.publish(
+					events.publish(
 						$.extend({}, params, {
 							"topic": name + "." + params.topic,
 							"global": false
@@ -589,10 +597,10 @@ Echo.App.prototype._initializers.events = function() {
 				});
 			}
 			params.topic = app.name + "." + params.topic;
-			Echo.Events.publish(params);
+			events.publish(params);
 		},
 		"subscribe": function(params) {
-			var handlerId = Echo.Events.subscribe(prepare(params));
+			var handlerId = events.subscribe(prepare(params));
 			app.subscriptionIDs[handlerId] = true;
 			return handlerId;
 		},
@@ -600,12 +608,12 @@ Echo.App.prototype._initializers.events = function() {
 			if (params && params.handlerId) {
 				delete app.subscriptionIDs[params.handlerId];
 			}
-			Echo.Events.unsubscribe(prepare(params));
+			events.unsubscribe(prepare(params));
 		}
 	};
 };
 
-Echo.App.prototype._initializers.subscriptions = function() {
+App.prototype._initializers.subscriptions = function() {
 	var app = this;
 	$.each(app._manifest("events"), function subscribe(topic, data) {
 		if ($.isArray(data) && data.length) {
@@ -665,17 +673,17 @@ Echo.App.prototype._initializers.subscriptions = function() {
 	}
 };
 
-Echo.App.prototype._initializers.labels = function() {
-	return new Echo.Labels(this.config.get("labels"), this.name);
+App.prototype._initializers.labels = function() {
+	return new Labels(this.config.get("labels"), this.name);
 };
 
-Echo.App.prototype._initializers.css = function() {
+App.prototype._initializers.css = function() {
 	var self = this;
 	this.config.get("target").addClass(this.cssClass);
 	$.map(this._manifest("css"), function(spec) {
-		if (!spec.id || !spec.code || Echo.Utils.hasCSS(spec.id)) return;
+		if (!spec.id || !spec.code || utils.hasCSS(spec.id)) return;
 		if (spec.id !== self.name) {
-			var css, component = Echo.Utils.getComponent(spec.id);
+			var css, component = self.constructor;
 			if (component) {
 				css = self.substitute({
 					"template": spec.code,
@@ -685,17 +693,17 @@ Echo.App.prototype._initializers.css = function() {
 						}
 					}
 				});
-				Echo.Utils.addCSS(css, spec.id);
+				utils.addCSS(css, spec.id);
 			}
 		} else {
-			Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
+			utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 		}
 	});
 };
 
-Echo.App.prototype._initializers.view = function() {
+App.prototype._initializers.view = function() {
 	var app = this;
-	return new Echo.View({
+	return new View({
 		"data": this.get("data"),
 		"cssPrefix": this.get("cssPrefix"),
 		"renderer": function(args) {
@@ -709,11 +717,22 @@ Echo.App.prototype._initializers.view = function() {
 	});
 };
 
-Echo.App.prototype._initializers.dependencies = function(callback) {
-	this._loadScripts(this._manifest("dependencies"), callback);
+App.prototype._initializers.backplane = function(callback) {
+	var app = this;
+	var config = this.config.get("backplane");
+
+	if (config.serverBaseURL && config.busName) {
+		require(["echo/backplane"], function(backplane) {
+			backplane.init(config);
+			callback.call(app);
+		});
+	} else {
+		callback.call(app);
+	}
 };
 
-Echo.App.prototype._initializers.user = function(callback) {
+
+App.prototype._initializers.user = function(callback) {
 	var app = this;
 	if (!this.config.get("appkey")) {
 		callback.call(app);
@@ -725,10 +744,10 @@ Echo.App.prototype._initializers.user = function(callback) {
 	} else {
 		var generateURL = function(baseURL, path) {
 			if (!baseURL) return;
-			var urlInfo = Echo.Utils.parseURL(baseURL);
+			var urlInfo = utils.parseURL(baseURL);
 			return (urlInfo.scheme || "https") + "://" + urlInfo.domain + path;
 		};
-		Echo.UserSession({
+		UserSession({
 			"appkey": this.config.get("appkey"),
 			"useSecureAPI": this.config.get("useSecureAPI"),
 			"endpoints": {
@@ -743,13 +762,13 @@ Echo.App.prototype._initializers.user = function(callback) {
 	}
 };
 
-Echo.App.prototype._initializers.plugins = function(callback) {
+App.prototype._initializers.plugins = function(callback) {
 	var app = this;
 	this._loadPluginScripts(function() {
 		$.map(app.config.get("pluginsOrder"), function(name) {
-			var Plugin = Echo.Plugin.getClass(name, app.name);
-			if (Plugin) {
-				var instance = new Plugin({"component": app});
+			var Constructor = Plugin.getClass(name, app.name);
+			if (Constructor) {
+				var instance = new Constructor({"component": app});
 				if (instance.enabled()) {
 					instance.init();
 					app.plugins[name] = instance;
@@ -760,7 +779,7 @@ Echo.App.prototype._initializers.plugins = function(callback) {
 	});
 };
 
-Echo.App.prototype._initializers.init = function(callback) {
+App.prototype._initializers.init = function(callback) {
 	// this function should be called inside the "init" function
 	// to indicate that the application was initialized and is now ready
 	this.ready = callback;
@@ -768,7 +787,7 @@ Echo.App.prototype._initializers.init = function(callback) {
 	this._manifest("init").call(this);
 };
 
-Echo.App.prototype._initializers.ready = function() {
+App.prototype._initializers.ready = function() {
 	if (this.config.get("ready")) {
 		this.config.get("ready").call(this);
 		// "ready" callback must be executed only once
@@ -777,13 +796,13 @@ Echo.App.prototype._initializers.ready = function() {
 	this.events.publish({"topic": "onReady"});
 };
 
-Echo.App.prototype._initializers.refresh = function() {
+App.prototype._initializers.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
 };
 
-Echo.App._merge = function(manifest, parentManifest) {
+App._merge = function(manifest, parentManifest) {
 	var self = this;
-	parentManifest = parentManifest || $.extend(true, Echo.App.manifest(this._manifest.name), this._manifest);
+	parentManifest = parentManifest || $.extend(true, App.manifest(this._manifest.name), this._manifest);
 	// normalize CSS definition before merging to have the same format
 	var normalizeCSS = function(manifest) {
 		manifest.css = manifest.css || "";
@@ -791,7 +810,7 @@ Echo.App._merge = function(manifest, parentManifest) {
 	};
 	manifest.css = normalizeCSS(manifest);
 	parentManifest.css = normalizeCSS(parentManifest);
-	var merged = Echo.Utils.foldl({}, manifest, function(val, acc, name) {
+	var merged = utils.foldl({}, manifest, function(val, acc, name) {
 		acc[name] = name in parentManifest && self._merge[name]
 			? self._merge[name](parentManifest[name], val)
 			: val;
@@ -809,24 +828,24 @@ var _wrapper = function(parent, own) {
 	};
 };
 
-Echo.App._merge.methods = function(parent, own) {
-	return Echo.Utils.foldl({}, own, function(method, acc, name) {
+App._merge.methods = function(parent, own) {
+	return utils.foldl({}, own, function(method, acc, name) {
 		acc[name] = name in parent
 			? _wrapper(parent[name], method)
 			: method;
 	});
 };
 
-Echo.App._merge.dependencies = function(parent, own) {
+App._merge.dependencies = function(parent, own) {
 	return parent.concat(own);
 };
 
-Echo.App._merge.css = function(parent, own) {
+App._merge.css = function(parent, own) {
 	return parent.concat(own);
 };
 
-Echo.App._merge.events = function(parent, own) {
-	return Echo.Utils.foldl({}, own, function(data, acc, topic) {
+App._merge.events = function(parent, own) {
+	return utils.foldl({}, own, function(data, acc, topic) {
 		acc[topic] = topic in parent
 			? [data, parent[topic]]
 			: data;
@@ -834,10 +853,10 @@ Echo.App._merge.events = function(parent, own) {
 };
 
 $.map(["init", "destroy"], function(name) {
-	Echo.App._merge[name] = _wrapper;
+	App._merge[name] = _wrapper;
 });
 
-Echo.App.prototype._getSubstitutionInstructions = function() {
+App.prototype._getSubstitutionInstructions = function() {
 	var app = this;
 	return {
 		"class": function(key) {
@@ -863,9 +882,9 @@ Echo.App.prototype._getSubstitutionInstructions = function() {
 			return app.labels.get(key, defaults);
 		},
 		"self": function(key, defaults) {
-			var value = app.invoke(Echo.Utils.get(app, key));
+			var value = app.invoke(utils.get(app, key));
 			return typeof value === "undefined"
-				? Echo.Utils.get(app.data, key, defaults)
+				? utils.get(app.data, key, defaults)
 				: value;
 		},
 		"config": function(key, defaults) {
@@ -874,78 +893,48 @@ Echo.App.prototype._getSubstitutionInstructions = function() {
 	};
 };
 
-Echo.App.prototype._manifest = function(key) {
-	var component = Echo.Utils.getComponent(this.name);
+App.prototype._manifest = function(key) {
+	var component = utils.getComponent(this.name);
 	return component
 		? key ? component._manifest[key] : component._manifest
 		: undefined;
 };
 
-Echo.App.prototype._loadScripts = function(resources, callback) {
+App.prototype._loadScripts = function(resources, callback) {
 	var app = this;
 	if (!resources || !resources.length) {
 		callback.call(app);
 		return;
 	}
 	resources = $.map(resources, function(resource) {
-		if (!resource.loaded) {
-			var key = resource.app && "App" ||
-				resource.plugin && "Plugin";
-
-			if (key) {
-				resource.loaded = function() {
-					return Echo[key].isDefined(resource[key.toLowerCase()]);
-				};
-			}
-		}
-		return $.extend(resource, {
-			"url": app.substitute({"template": resource.url})
-		});
+		return app.substitute({"template": resource})
 	});
-	Echo.Loader.download(resources, function() {
+
+	//TODO: handle the scriptLoadErrorTimeout config param
+	require(resources, function() {
 		callback.call(app);
-	}, {
-		"errorTimeout": app.config.get("scriptLoadErrorTimeout")
 	});
 };
 
-Echo.App.prototype._loadPluginScripts = function(callback) {
+App.prototype._loadPluginScripts = function(callback) {
 	var app = this;
 	var plugins = this.config.get("pluginsOrder");
 
-	var iterators = {
-		"plugins": function(name, plugin) {
-			// check if a script URL is defined for the plugin
-			var url = "plugins." + name + ".url";
-			if (!plugin && app.config.get(url)) {
-				return [{
-					"url": app.config.get(url),
-					"loaded": function() {
-						return !!Echo.Plugin.getClass(name, app.name);
-					}
-				}];
-			}
-		},
-		"dependencies": function(name, plugin) {
-			return plugin && plugin.dependencies;
+	var scripts = utils.foldl([], plugins, function(name, acc) {
+		var plugin = Plugin.getClass(name, app.name);
+		// check if a script URL is defined for the plugin
+		var url = "plugins." + name + ".url";
+		if (!plugin && app.config.get(url)) {
+			acc.push(app.config.get(url));
 		}
-	};
-	var get = function(type) {
-		return Echo.Utils.foldl([], plugins, function(name, acc) {
-			var plugin = Echo.Plugin.getClass(name, app.name);
-			var scripts = iterators[type](name, plugin);
-			if ($.isArray(scripts) && scripts.length) {
-				return acc.concat(scripts);
-			}
-		});
-	};
+	});
 
-	app._loadScripts(get("plugins"), function() {
-		app._loadScripts(get("dependencies"), callback);
+	app._loadScripts(scripts, function() {
+		callback.call(app);
 	});
 };
 
-Echo.App.prototype._compileTemplate = function() {
+App.prototype._compileTemplate = function() {
 	var app = this;
 	var data = this.get("data", {});
 	var transformations = this.extension.template;
@@ -966,7 +955,7 @@ Echo.App.prototype._compileTemplate = function() {
 	return $(dom.html());
 };
 
-Echo.App.prototype._domTransformer = function(args) {
+App.prototype._domTransformer = function(args) {
 	var classify = {
 		"insertBefore": "before",
 		"insertAfter": "after",
@@ -992,7 +981,7 @@ Echo.App.prototype._domTransformer = function(args) {
 	return args.dom;
 };
 
-Echo.App.prototype._mergeSpecsByName = function(specs) {
+App.prototype._mergeSpecsByName = function(specs) {
 	var self = this;
 	var getSpecIndex = function(spec, specs) {
 		var idx = -1;
@@ -1008,7 +997,7 @@ Echo.App.prototype._mergeSpecsByName = function(specs) {
 	var updateSpecs = $.map(Array.prototype.slice.call(arguments, 1) || [], function(spec) {
 		return spec;
 	});
-	return Echo.Utils.foldl(specs, updateSpecs, function(extender) {
+	return utils.foldl(specs, updateSpecs, function(extender) {
 		var id = getSpecIndex(extender, specs);
 		if (!~id) {
 			specs.push(extender);
@@ -1026,10 +1015,10 @@ Echo.App.prototype._mergeSpecsByName = function(specs) {
 	});
 };
 
-Echo.App.prototype._normalizeAppConfig = function(config) {
+App.prototype._normalizeAppConfig = function(config) {
 	var self = this;
 	// extend the config with the default fields from manifest
-	return Echo.Utils.foldl(config, this._manifest("config"), function(value, acc, key) {
+	return utils.foldl(config, this._manifest("config"), function(value, acc, key) {
 		// do not override existing values in data
 		if (typeof acc[key] === "undefined") {
 			acc[key] = self.config.get(key);
@@ -1037,14 +1026,9 @@ Echo.App.prototype._normalizeAppConfig = function(config) {
 	});
 };
 
-})(Echo.jQuery);
-
 // default manifest declaration
 
-(function(jQuery) {
-"use strict";
-
-var $ = jQuery, manifest = {};
+var manifest = {};
 
 manifest.name = "Echo.App";
 
@@ -1103,9 +1087,9 @@ manifest.config = {
 	 * Base URL of the Echo apps built on top of the JS SDK.
 	 */
 	"cdnBaseURL": {
-		"sdk": Echo.Loader.getURL(""),
-		"sdk-assets": Echo.Loader.getURL("", false),
-		"apps": Echo.Loader.config.cdnBaseURL + "apps"
+		"sdk": require.toUrl("echo"),
+		"sdk-assets": require.toUrl("echo-assets"),
+		"apps": require.toUrl("echo/apps")
 	},
 
 	/**
@@ -1117,13 +1101,18 @@ manifest.config = {
 	"plugins": {},
 
 	"context": "",
-	"scriptLoadErrorTimeout": 5000 // 5 sec
+	"scriptLoadErrorTimeout": 5000, // 5 sec
+
+	/**
+	 * @cfg {Object} backplane
+	 */
+	"backplane": {}
 };
 
 manifest.config.normalizer = {
 	"target": $,
 	"plugins": function(list) {
-		var data = Echo.Utils.foldl({"hash": {}, "order": []}, list || [],
+		var data = utils.foldl({"hash": {}, "order": []}, list || [],
 			function(plugin, acc) {
 				var pos = $.inArray(plugin.name, acc.order);
 				if (pos >= 0) {
@@ -1142,10 +1131,10 @@ manifest.config.normalizer = {
 	// the nested context out of it. Note: the parent "context" for the application
 	// is defined within the Echo.Plugin.Config.prototype.assemble and
 	// Echo.App.prototype._normalizeAppConfig functions.
-	"context": Echo.Events.newContextId
+	"context": events.newContextId
 };
 
-manifest.inherits = Echo.App;
+manifest.inherits = App;
 
 manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
@@ -1158,6 +1147,8 @@ manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 	'.echo-relative { position: relative; }' +
 	'.echo-clear { clear: both; }';
 
-Echo.App._manifest = manifest;
+App._manifest = manifest;
 
-})(Echo.jQuery);
+return App;
+
+});

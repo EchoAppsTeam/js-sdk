@@ -1,12 +1,15 @@
-(function(jQuery) {
+define("echo/events", [
+	"jquery",
+	"echo/utils"
+], function($, Utils) {
 "use strict";
 
-var $ = jQuery;
+var Events;
 
-if (Echo.Utils.isComponentDefined("Echo.Events")) return;
+//if (Utils.isComponentDefined("Events")) return;
 
 /**
- * @class Echo.Events
+ * @class Events
  * Library for exchanging messages between the components on the page. It also
  * provides the external interface for users to subscribe to certain events
  * (like "app was rendered", "user logged in", etc).
@@ -19,21 +22,21 @@ if (Echo.Utils.isComponentDefined("Echo.Events")) return;
  * Example:
  *
  * 	// Subscribe to the event.
- * 	Echo.Events.subscribe({
- * 		"topic": "Echo.UserSession.onInvalidate",
+ * 	Events.subscribe({
+ * 		"topic": "UserSession.onInvalidate",
  * 		"context": "global",
  * 		"handler": app.refresh
  * 	});
  *
  * 	// And then publish event:
- * 	Echo.Events.publish({
- * 		"topic": "Echo.UserSession.onInvalidate",
+ * 	Events.publish({
+ * 		"topic": "UserSession.onInvalidate",
  * 		"data": user.is("logged") ? user.data : {}
  * 	});
  *
  * @package environment.pack.js
  */
-Echo.Events = {};
+Events = {};
 
 /**
  * @static
@@ -65,13 +68,13 @@ Echo.Events = {};
  * @return {String}
  * Unique identifier for the current subscription which can be used for unsubscribing.
  */
-Echo.Events.subscribe = function(params) {
-	var handlerId = Echo.Utils.getUniqueString();
+Events.subscribe = function(params) {
+	var handlerId = Utils.getUniqueString();
 	var context = _initContext(params.topic, params.context);
 	if (params.once) {
 		var handler = params.handler;
 		params.handler = function() {
-			Echo.Events.unsubscribe({"handlerId": handlerId});
+			Events.unsubscribe({"handlerId": handlerId});
 			handler.apply(this, arguments);
 		};
 	}
@@ -107,7 +110,7 @@ Echo.Events.subscribe = function(params) {
  * @return {Boolean}
  * Unsubscription status.
  */
-Echo.Events.unsubscribe = function(params) {
+Events.unsubscribe = function(params) {
 	var unsubscribed = false;
 	if (params.handlerId) {
 		if (_dataByHandlerId[params.handlerId]) {
@@ -140,7 +143,7 @@ Echo.Events.unsubscribe = function(params) {
 			}
 		});
 	} else {
-		$.each(Echo.Events._subscriptions, function(topic, data) {
+		$.each(Events._subscriptions, function(topic, data) {
 			_executeForDeepestContext(topic, params.context, function(obj, lastContext) {
 				$.each(obj[lastContext].handlers, function(i, data) {
 					delete _dataByHandlerId[data.id];
@@ -179,7 +182,7 @@ Echo.Events.unsubscribe = function(params) {
  * @param {Boolean} [params.global=true]
  * Specifies whether the event should also be published to the "global" context or not.
  */
-Echo.Events.publish = function(params) {
+Events.publish = function(params) {
 	params = $.extend({
 		"bubble": true,
 		"propagation": true,
@@ -192,7 +195,7 @@ Echo.Events.publish = function(params) {
 	});
 	if (params.global && params.context !== "global") {
 		params.context = "global";
-		Echo.Events.publish(params);
+		Events.publish(params);
 	}
 };
 
@@ -207,17 +210,17 @@ Echo.Events.publish = function(params) {
  * @return {String}
  * Unique context identifier.
  */
-Echo.Events.newContextId = function(parentContextId) {
-	return (parentContextId ? parentContextId + "/" : "") + Echo.Utils.getUniqueString();
+Events.newContextId = function(parentContextId) {
+	return (parentContextId ? parentContextId + "/" : "") + Utils.getUniqueString();
 };
 
 var _lastHandlerResult = {}, _dataByHandlerId = {};
-Echo.Events._subscriptions = {};
+Events._subscriptions = {};
 
 var _initContext = function(topic, context) {
 	context = context || "global";
 	if (topic) {
-		var obj = Echo.Events._subscriptions[topic] = Echo.Events._subscriptions[topic] || {};
+		var obj = Events._subscriptions[topic] = Events._subscriptions[topic] || {};
 		$.each(context.split("/"), function(i, part) {
 			if (!obj[part]) {
 				obj[part] = {
@@ -234,7 +237,7 @@ var _initContext = function(topic, context) {
 var _executeForDeepestContext = function(topic, context, callback) {
 	var parts = context.split("/");
 	var lastContext = parts.pop();
-	var obj = Echo.Events._subscriptions[topic];
+	var obj = Events._subscriptions[topic];
 	$.each(parts, function(i, part) {
 		obj = obj[part].contexts;
 	});
@@ -268,7 +271,7 @@ var _callHandlers = function(obj, params, restContexts) {
 		_params.context = restContexts.join("/");
 		_params.global = false;
 		_params.propagation = false;
-		Echo.Events.publish(_params);
+		Events.publish(_params);
 	}
 	if (params.propagation && !_shouldStopEvent("propagation.children", params.topic)) {
 		// copy incoming parameters object so that we can manipulate it freely
@@ -284,4 +287,5 @@ var _callHandlers = function(obj, params, restContexts) {
 	}
 };
 
-})(Echo.jQuery);
+return Events;
+});

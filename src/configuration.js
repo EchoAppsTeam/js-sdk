@@ -1,19 +1,22 @@
-(function(jQuery) {
+define("echo/configuration", [
+	"jquery",
+	"echo/utils"
+], function($, Utils) {
 "use strict";
 
-var $ = jQuery;
+var Configuration;
 
-if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
+//if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
 
 /**
- * @class Echo.Configuration
+ * @class Configuration
  * Class implements the interface for convenient work with different
- * configurations. The Echo.Configuration class is used in various
+ * configurations. The Configuration class is used in various
  * places of Echo JS SDK components.
  *
  * Example:
  *
- *     var config = new Echo.Configuration({
+ *     var config = new Configuration({
  *         "key1": "value1",
  *         "key2": {
  *             "key3": "value3"
@@ -47,12 +50,12 @@ if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
  * if any additional processing of the config field value is required.
  *
  * @return {Object}
- * Reference to the given Echo.Configuration class instance.
+ * Reference to the given Configuration class instance.
  */
 
 // IMPORTANT: "keepRefsFor" parameter remains private for now. Get rid of
 //            this parameter after more complex optimization within F:1336
-Echo.Configuration = function(master, slave, normalizer, keepRefsFor) {
+Configuration = function(master, slave, normalizer, keepRefsFor) {
 	this.data = {};
 	this.cache = {};
 	this.normalize = normalizer || function(key, value) { return value; };
@@ -78,12 +81,12 @@ Echo.Configuration = function(master, slave, normalizer, keepRefsFor) {
  * @return {Mixed}
  * Corresponding value found in the config.
  */
-Echo.Configuration.prototype.get = function(key, defaults) {
+Configuration.prototype.get = function(key, defaults) {
 	if (typeof key !== "string") {
 		key = key.join(".");
 	}
 	if (!this.cache.hasOwnProperty(key)) {
-		this.cache[key] = Echo.Utils.get(this.data, key);
+		this.cache[key] = Utils.get(this.data, key);
 	}
 	return typeof this.cache[key] === "undefined" ? defaults : this.cache[key];
 };
@@ -102,7 +105,7 @@ Echo.Configuration.prototype.get = function(key, defaults) {
  * @param {Mixed} value
  * The corresponding value which should be defined for the key.
  */
-Echo.Configuration.prototype.set = function(key, value) {
+Configuration.prototype.set = function(key, value) {
 	delete this.cache[key];
 	if (typeof value === "object") {
 		this._clearCacheByPrefix(key);
@@ -120,11 +123,11 @@ Echo.Configuration.prototype.set = function(key, value) {
  * @param {String} key
  * Specifies the key which should be removed from the configuration.
  */
-Echo.Configuration.prototype.remove = function(key) {
+Configuration.prototype.remove = function(key) {
 	var keys = key.split(".");
 	var field = keys.pop();
-	var data = Echo.Utils.get(this.data, keys, this.data);
-	Echo.Utils.set(this.cache, key, undefined);
+	var data = Utils.get(this.data, keys, this.data);
+	Utils.set(this.cache, key, undefined);
 	delete this.cache[key];
 	delete data[field];
 };
@@ -139,7 +142,7 @@ Echo.Configuration.prototype.remove = function(key) {
  * @param {Object} extra
  * The corresponding value which should be defined for the key.
  */
-Echo.Configuration.prototype.extend = function(extra) {
+Configuration.prototype.extend = function(extra) {
 	$.each(extra, $.proxy(this.set, this));
 };
 
@@ -150,15 +153,15 @@ Echo.Configuration.prototype.extend = function(extra) {
  * configuration object values.This method might be very helpful for debugging
  * or transferring configuration between the components.
  */
-Echo.Configuration.prototype.getAsHash = function() {
+Configuration.prototype.getAsHash = function() {
 	return $.extend({}, this.data);
 };
 
-Echo.Configuration.prototype._set = function(key, value) {
-	Echo.Utils.set(this.data, key, this.normalize(key.split(".").pop(), value));
+Configuration.prototype._set = function(key, value) {
+	Utils.set(this.data, key, this.normalize(key.split(".").pop(), value));
 };
 
-Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
+Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	var self = this;
 	prefix += ".";
 	$.each(this.cache, function(key, data) {
@@ -169,7 +172,7 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 	});
 };
 
-Echo.Configuration.prototype._merge = function(master, slave, keepRefsFor) {
+Configuration.prototype._merge = function(master, slave, keepRefsFor) {
 	var self = this, target, src, options;
 	var inputs = [master, slave];
 	for (var i = 0; i < inputs.length; i++) {
@@ -199,4 +202,5 @@ Echo.Configuration.prototype._merge = function(master, slave, keepRefsFor) {
 	return target;
 };
 
-})(Echo.jQuery);
+return Configuration;
+});

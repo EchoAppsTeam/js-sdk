@@ -1,27 +1,32 @@
-(function(jQuery) {
+define("echo/canvas", [
+	"jquery",
+	"echo/app",
+	"echo/utils",
+	"echo/loader",
+	"echo/events"
+], function($, App, Utils, Loader, Events) {
+	
 "use strict";
 
-var $ = jQuery;
+var canvas = App.manifest("Canvas");
 
-var canvas = Echo.App.manifest("Echo.Canvas");
+//do we need it?
+if (App.isDefined(canvas)) return;
 
-if (Echo.App.isDefined(canvas)) return;
-
-canvas.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 
 /**
- * @class Echo.Canvas
+ * @class Canvas
  * Class which implements Canvas mechanics on the client side.
  * The instance of this class is created for each Canvas found on the page by
- * the Echo.Loader. The instance of the class can also be created manually in
+ * the Loader. The instance of the class can also be created manually in
  * case the Canvas data already exists on the page.
  *
  * @package environment.pack.js
  *
- * @extends Echo.ServerRelatedApp
+ * @extends App
  *
  * @constructor
- * Canvas object constructor to initialize the Echo.Canvas instance
+ * Canvas object constructor to initialize the Canvas instance
  *
  * @param {Object} config
  * Configuration options
@@ -43,20 +48,20 @@ canvas.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
 /** @hide @echo_label error_unknown */
 
 /**
- * @echo_event Echo.Canvas.onReady
+ * @echo_event Canvas.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.Canvas.onRefresh
+ * @echo_event Canvas.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.Canvas.onRender
+ * @echo_event Canvas.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.Canvas.onRerender
+ * @echo_event Canvas.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -86,7 +91,7 @@ canvas.init = function() {
 		this.config.extend(overrides);
 	}
 
-	if (Echo.Loader.isDebug()) this.config.set("mode", "dev");
+	if (Loader.isDebug()) this.config.set("mode", "dev");
 
 	// exit if no "id" is defined for the canvas,
 	// skip this validation in case the "data" is defined explicitly in the config
@@ -103,7 +108,7 @@ canvas.init = function() {
 		ids = this._getIds().normalized;
 		// adding a primary canvas ID and unique page identifier
 		// as a CSS class if provided
-		cssClass = Echo.Utils.foldl("", ["main", "unique"], function(type, acc) {
+		cssClass = Utils.foldl("", ["main", "unique"], function(type, acc) {
 			return (acc += ids[type] ? self.get("cssPrefix") + ids[type] + " " : "");
 		});
 		target.addClass(cssClass);
@@ -122,7 +127,7 @@ canvas.init = function() {
 canvas.config = {
 	/**
 	 * @cfg {String} [id]
-	 * Unique ID of the Canvas, used by the Echo.Canvas instance
+	 * Unique ID of the Canvas, used by the Canvas instance
 	 * to retrieve the data from the Canvases data storage.
 	 */
 	"id": "",
@@ -150,7 +155,7 @@ canvas.config = {
 	/**
 	 * @cfg {Object} [overrides]
 	 * Object which contains the overrides applied for this Canvas on the page
-	 * via Echo.Loader.override function call.
+	 * via Loader.override function call.
 	 */
 	"overrides": {},
 
@@ -226,7 +231,7 @@ canvas.destroy = function() {
 	$.map(this.get("apps"), $.proxy(this._destroyApp, this));
 	this.config.get("target").data("echo-canvas-initialized", false);
 	// remove cached canvas config
-	Echo.Utils.remove(Echo.Loader.canvasesConfigById, this._getIds().unique);
+	Utils.remove(Loader.canvasesConfigById, this._getIds().unique);
 };
 
 /**
@@ -242,7 +247,7 @@ canvas.renderers.container = function(element) {
 
 canvas.methods._initApp = function(app, element, id) {
 	var self = this;
-	var Application = Echo.Utils.getComponent(app.component);
+	var Application = Utils.getComponent(app.component);
 	if (!Application) {
 		this._error({
 			"args": {"app": app},
@@ -295,7 +300,7 @@ canvas.methods._getAppScriptURL = function(config) {
 	var isSecure, script = {
 		"dev": config.scripts.dev || config.scripts.prod,
 		"prod": config.scripts.prod || config.scripts.dev
-	}[Echo.Loader.isDebug() ? "dev" : "prod"];
+	}[Loader.isDebug() ? "dev" : "prod"];
 	if (typeof script === "string") return script;
 	isSecure = /^https/.test(window.location.protocol);
 	return script[isSecure ? "secure" : "regular"];
@@ -315,15 +320,15 @@ canvas.methods._loadAppResources = function(callback) {
 		resources.push({
 			"url": script,
 			"loaded": function() {
-				return Echo.App.isDefined(app.component);
+				return App.isDefined(app.component);
 			}
 		});
 	});
-	Echo.Loader.download(resources, callback);
+	Loader.download(resources, callback);
 };
 
 canvas.methods._getOverrides = function(target, spec) {
-	return Echo.Utils.foldl({}, spec || [], function(item, acc) {
+	return Utils.foldl({}, spec || [], function(item, acc) {
 		// We should convert spec item to lower case because of jQuery
 		// HTML5 data attributes implementation http://api.jquery.com/data/#data-html5
 		// Since we have config keys in camel case representation like "useSecureAPI",
@@ -340,7 +345,7 @@ canvas.methods._error = function(args) {
 	args.message = args.message || this.labels.get("error_" + args.code);
 
 	/**
-	 * @echo_event Echo.Canvas.onError
+	 * @echo_event Canvas.onError
 	 * Event which is triggered in case of errors such as invalid configuration,
 	 * problems fetching the data from the server side, etc.
 	 *
@@ -350,12 +355,12 @@ canvas.methods._error = function(args) {
 	 * @param {Object} data
 	 * Object which contains debug information regarding the error.
 	 */
-	Echo.Events.publish({
-		"topic": "Echo.Canvas.onError",
+	Events.publish({
+		"topic": "Canvas.onError",
 		"data": args
 	});
 
-	Echo.Utils.log($.extend(args, {"type": "error", "component": "Echo.Canvas"}));
+	Utils.log($.extend(args, {"type": "error", "component": "Canvas"}));
 	if (args.renderError) {
 		this.showMessage({
 			"type": "error",
@@ -389,9 +394,9 @@ canvas.methods._fetchConfig = function(callback) {
 	}
 	var mode = this.config.get("mode");
 	var getConfig = function() {
-		return Echo.Loader.canvasesConfigById[self._getIds().unique];
+		return Loader.canvasesConfigById[self._getIds().unique];
 	};
-	var parts = Echo.Utils.parseURL(Echo.Loader.config.storageURL[mode]);
+	var parts = Utils.parseURL(Loader.config.storageURL[mode]);
 	var URL = this.substitute({
 		"template": "{data:scheme}://{data:domain}{data:path}{data:endpoint}",
 		"data": $.extend(parts, {
@@ -408,7 +413,7 @@ canvas.methods._fetchConfig = function(callback) {
 		"crossDomain": true,
 		"dataType": "script",
 		"cache": mode !== "dev",
-		"timeout": Echo.Loader.config.errorTimeout,
+		"timeout": Loader.config.errorTimeout,
 		"success": function() {
 			var config = getConfig();
 			if (!config || !config.apps || !config.apps.length) {
@@ -433,6 +438,8 @@ canvas.methods._fetchConfig = function(callback) {
 	});
 };
 
-Echo.App.create(canvas);
+App.create(canvas);
 
-})(Echo.jQuery);
+return canvas;
+
+});

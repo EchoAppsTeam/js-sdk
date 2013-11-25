@@ -1,7 +1,11 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/streamModeration", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils",
+	"echo/streamserver/api",
+	"echo/identityserver/api"
+], function($, Plugin, Utils, StreamServerAPI, IdentityServerApi) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation
@@ -24,9 +28,9 @@ var $ = jQuery;
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("Moderation", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.manifest("Moderation", "Echo.StreamServer.Apps.Stream.Item");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this;
@@ -37,10 +41,10 @@ plugin.init = function() {
 		var buttons = plugin.actionButtons[action];
 		if (buttons && $.isArray(buttons)) {
 			$.each(buttons, function(j, button) {
-				item.addButtonSpec("Moderation", self["_assemble" + Echo.Utils.capitalize(action) + "Button"](button));
+				item.addButtonSpec("Moderation", self["_assemble" + Utils.capitalize(action) + "Button"](button));
 			});
 		} else {
-			item.addButtonSpec("Moderation", self._assembleButton(Echo.Utils.capitalize(action)));
+			item.addButtonSpec("Moderation", self._assembleButton(Utils.capitalize(action)));
 		}
 	});
 };
@@ -316,7 +320,7 @@ plugin.methods._changeItemStatus = function(status) {
 };
 
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
-	Echo.StreamServer.API.request({
+	StreamServerAPI.request({
 		"endpoint": "submit",
 		"secure": this.config.get("useSecureAPI", false, true),
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
@@ -457,7 +461,7 @@ plugin.methods._assembleButton = function(name) {
 
 plugin.methods._sendUserUpdate = function(config) {
 	var item = this.component;
-	Echo.IdentityServer.API.request({
+	IdentityServerAPI.request({
 		"endpoint": "update",
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
 		"secure": this.config.get("useSecureAPI", false, true),
@@ -534,7 +538,7 @@ plugin.methods._assemblePermissionsButton = function(action) {
 		var next = self._getNextRole(role);
 		var roles = next !== ""
 			? (item.get("data.actor.roles") || []).concat(next)
-			: Echo.Utils.foldl([], item.get("data.actor.roles") || [], function(_role, acc) {
+			: Utils.foldl([], item.get("data.actor.roles") || [], function(_role, acc) {
 				if ($.inArray(_role, plugin.roles) < 0) acc.push(_role);
 			});
 		var label = next === "" ? "unset" : "set";
@@ -649,16 +653,17 @@ plugin.css = function() {
 		}).join("");
 }();
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});
 
-(function(jQuery) {
+define("echo/streamserver/plugins/streamItemModeration", [
+	"jquery",
+	"echo/plugin"
+], function($, Plugin) {
 "use strict";
 
-var $ = jQuery;
-
-var plugin = Echo.Plugin.manifest("Moderation", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.manifest("Moderation", "Echo.StreamServer.Apps.Stream");
 
 plugin.events = {
 	"Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onUserUpdate": function(topic, args) {
@@ -671,5 +676,5 @@ plugin.events = {
 	}
 };
 
-Echo.Plugin.create(plugin);
-})(Echo.jQuery);
+return Plugin.create(plugin);
+});

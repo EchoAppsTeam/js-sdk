@@ -1,7 +1,10 @@
-(function(jQuery) {
+define("echo/streamserver/apps/counter", [
+	"jquery",
+	"echo/app",
+	"echo/utils",
+	"echo/streamserver/api"
+], function($, App, Utils, API) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Counter
@@ -29,9 +32,9 @@ var $ = jQuery;
  * @param {Object} config
  * Configuration options
  */
-var counter = Echo.App.manifest("Echo.StreamServer.Apps.Counter");
+var counter = App.manifest("Echo.StreamServer.Apps.Counter");
 
-if (Echo.App.isDefined(counter)) return;
+if (App.isDefined(counter)) return;
 
 /** @hide @cfg labels */
 /** @hide @method getPlugin */
@@ -57,11 +60,13 @@ if (Echo.App.isDefined(counter)) return;
 
 counter.init = function() {
 	if (!this.config.get("appkey")) {
-		return Echo.Utils.showError({
+		return Utils.showError({
 			"errorCode": "incorrect_appkey",
-			"target": this.config.get("target"),
 			"label": this.labels.get("error_incorrect_appkey")
-		}, {"critical": true});
+		}, {
+			"critical": true,
+			"target": this.config.get("target")
+		});
 	}
 
 	// picking up timeout value for backwards compatibility
@@ -160,7 +165,7 @@ counter.config = {
 counter.templates.main = "<span>{data:count}</span>";
 
 counter.methods._getRequestObject = function(overrides) {
-	return Echo.StreamServer.API.request(
+	return API.request(
 		$.extend(true, {
 			"endpoint": "count",
 			"data": {
@@ -220,7 +225,7 @@ counter.methods._error = function(data, options) {
 		this.render();
 	} else {
 		if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-			Echo.Utils.showMessage({
+			Utils.showMessage({
 				"type": "error",
 				"data": data,
 				"message": data.errorMessage,
@@ -231,6 +236,6 @@ counter.methods._error = function(data, options) {
 	this.ready();
 };
 
-Echo.App.create(counter);
+return App.create(counter);
 
-})(Echo.jQuery);
+});

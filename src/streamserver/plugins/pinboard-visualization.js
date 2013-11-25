@@ -1,7 +1,10 @@
-(function(jQuery) {
+define("echo/streamserver/plugins/mediaGallery", [
+	"jquery",
+	"echo/app",
+	"echo/utils"
+], function($, App, Utils) {
 "use strict";
 
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Stream.Item.MediaGallery 
@@ -13,9 +16,9 @@ var $ = jQuery;
  * @package streamserver/plugins/pinboard-visualization.js
  */
 
-var mediaGallery = Echo.App.manifest("Echo.StreamServer.Apps.Stream.Item.MediaGallery");
+var mediaGallery = App.manifest("Echo.StreamServer.Apps.Stream.Item.MediaGallery");
 
-if (Echo.App.isDefined(mediaGallery)) return;
+if (App.isDefined(mediaGallery)) return;
 
 /**
  * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onReady
@@ -156,7 +159,7 @@ mediaGallery.renderers.controls = function(element) {
 mediaGallery.methods._normalizeFlashContent = function(element) {
 	var tagName = element.get(0).tagName.toLowerCase();
 	if (tagName === "iframe") {
-		var parts = Echo.Utils.parseURL(element.attr("src") || "");
+		var parts = Utils.parseURL(element.attr("src") || "");
 		if (!/(www\.)?youtube\.com/.test(parts.domain)) return;
 		var query = parts.query;
 		query = query && ~query.indexOf("wmode")
@@ -242,14 +245,17 @@ mediaGallery.css =
 	'.{class:control}:hover { background-color: #ee7b11; }' +
 	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }';
 
-Echo.App.create(mediaGallery);
-	
-})(Echo.jQuery);
+return App.create(mediaGallery);	
+});
 
-(function(jQuery) {
+define("echo/streamserver/plugins/streamItemPinboardVisualization", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils",
+	"isotope",
+	"echo/streamserver/plugins/mediaGallery"
+], function($, Plugin, Utils, isotope, MediaGallery) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Stream.Item.Plugins.PinboardVisualization
@@ -283,9 +289,9 @@ var $ = jQuery;
  * @package streamserver/plugins/pinboard-visualization.js
  */
 
-var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Apps.Stream.Item");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -293,7 +299,7 @@ plugin.init = function() {
 };
 
 plugin.dependencies = [{
-	"loaded": function() { return !!Echo.jQuery().isotope; },
+	"loaded": function() { return !!$.fn.isotope; },
 	"url": "{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js"
 }];
 
@@ -478,7 +484,7 @@ plugin.component.renderers.body = function(element) {
 	element = item.parentRenderer("body", arguments);
 	var filteredElements = plugin.config.get("mediaSelector")(item.get("data.object.content"));
 	$(filteredElements.selector, item.view.get("text")).remove();
-	var text = Echo.Utils.stripTags(item.get("data.object.content"));
+	var text = Utils.stripTags(item.get("data.object.content"));
 	item.view.get("container").addClass(plugin._getCSSByLength(text.length));
 	return element;
 };
@@ -491,8 +497,8 @@ plugin.renderers.childBody = function(element) {
 	if (item.isRoot()) {
 		return element.empty();
 	}
-	var text = Echo.Utils.htmlTextTruncate(
-		Echo.Utils.stripTags(item.get("data.object.content")),
+	var text = Utils.htmlTextTruncate(
+		Utils.stripTags(item.get("data.object.content")),
 		plugin.config.get("maxChildrenBodyCharacters"),
 		"..."
 	);
@@ -512,7 +518,7 @@ plugin.renderers.media = function(element) {
 			"elements": mediaItems,
 			"item": item
 		});
-		new Echo.StreamServer.Apps.Stream.Item.MediaGallery(plugin.config.assemble(config));
+		new MediaGallery(plugin.config.assemble(config));
 	} else {
 		element.hide();
 	}
@@ -526,7 +532,7 @@ plugin.methods._getCSSByLength = function(length) {
 			return (acc = className);
 		}
 	};
-	return Echo.Utils.foldl("", plugin.config.get("itemCSSClassByContentLength"), handler);
+	return Utils.foldl("", plugin.config.get("itemCSSClassByContentLength"), handler);
 };
 
 /**
@@ -629,14 +635,16 @@ plugin.css =
 		? '.{plugin.class} .{class:content} { border: 1px solid #d9d4d4; box-shadow: none; }'
 		: '');
 	
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});
 
-(function(jQuery) {
+define("echo/streamserver/plugins/streamPinboardVisualization", [
+	"jquery",
+	"echo/plugin",
+	"isotope"
+], function($, Plugin, isotope) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Apps.Stream.Plugins.PinboardVisualization
@@ -669,9 +677,9 @@ var $ = jQuery;
  *
  * @package streamserver/plugins/pinboard-visualization.js
  */
-var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Apps.Stream");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 var ua = navigator.userAgent.toLowerCase();
 var isMozillaBrowser = !!(
@@ -721,11 +729,6 @@ plugin.enabled = function() {
 	return document.compatMode !== "BackCompat"
 };
 
-plugin.dependencies = [{
-	"loaded": function() { return !!Echo.jQuery().isotope; },
-	"url": "{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js"
-}];
-
 plugin.events = {
 	"Echo.StreamServer.Apps.Stream.onRender": function(topic, args) {
 		this._refreshView();
@@ -768,6 +771,6 @@ plugin.css =
 	'.{plugin.class} .isotope { -webkit-transition-property: height, width; -moz-transition-property: height, width; -o-transition-property: height, width; transition-property: height, width;  -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }' +
 	'.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }';
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});

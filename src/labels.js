@@ -1,12 +1,13 @@
-(function(jQuery) {
+define("echo/labels", [
+	"jquery", 
+	"echo/utils"
+], function($, Utils) {
 "use strict";
 
-var $ = jQuery;
-
-if (Echo.Utils.isComponentDefined("Echo.Labels")) return;
+var Labels;
 
 /**
- * @class Echo.Labels
+ * @class Labels
  * Class implements the language variables mechanics across the components.
  *
  * It should be instantiated to override language variables within
@@ -18,7 +19,7 @@ if (Echo.Utils.isComponentDefined("Echo.Labels")) return;
  *
  * Example:
  *
- *     var labels = new Echo.Labels({
+ *     var labels = new Labels({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream");
@@ -46,15 +47,15 @@ if (Echo.Utils.isComponentDefined("Echo.Labels")) return;
  * Component namespace.
  *
  * @return {Object}
- * The reference to the given Echo.Labels class instance.
+ * The reference to the given Labels class instance.
  */
 
-Echo.Labels = function(labels, namespace) {
+Labels = function(labels, namespace) {
 	var self = this;
 	this.storage = {};
 	this.namespace = namespace;
 	$.each(labels, function(name, value) {
-		self.storage[Echo.Labels._key(name, self.namespace)] = value;
+		self.storage[Labels._key(name, self.namespace)] = value;
 	});
 };
 
@@ -65,7 +66,7 @@ Echo.Labels = function(labels, namespace) {
  * If current instance doesn't contain this particular language variable
  * it will fall back to the global language variable list.
  *
- *     var labels = new Echo.Labels({
+ *     var labels = new Labels({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream");
@@ -83,11 +84,11 @@ Echo.Labels = function(labels, namespace) {
  * Value of the language variable.
  */
 
-Echo.Labels.prototype.get = function(name, data) {
-	var key = Echo.Labels._key(name, this.namespace);
+Labels.prototype.get = function(name, data) {
+	var key = Labels._key(name, this.namespace);
 	return this.storage[key]
-		? Echo.Labels._substitute(this.storage[key], data)
-		: Echo.Labels.get(name, this.namespace, data);
+		? Labels._substitute(this.storage[key], data)
+		: Labels.get(name, this.namespace, data);
 };
 
 /**
@@ -99,7 +100,7 @@ Echo.Labels.prototype.get = function(name, data) {
  * the particular component instance.For global text definitions and
  * localization purposes the static method should be used.
  *
- *     var labels = new Echo.Labels({
+ *     var labels = new Labels({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream");
@@ -119,10 +120,10 @@ Echo.Labels.prototype.get = function(name, data) {
  * Flat object containing the list of language variables to be added/overriden.
  */
 
-Echo.Labels.prototype.set = function(labels) {
+Labels.prototype.set = function(labels) {
 	var self = this;
 	$.each(labels, function(name, value) {
-		var key = Echo.Labels._key(name, self.namespace);
+		var key = Labels._key(name, self.namespace);
 		self.storage[key] = value;
 	});
 };
@@ -137,29 +138,29 @@ Echo.Labels.prototype.set = function(labels) {
  * In this case the `isDefault` param can be omitted or set to `false`.
  * The values overriden with the function will be available globally.
  *
- *     Echo.Labels.set({
+ *     Labels.set({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream"); // setting custom labels
  *
- *     Echo.Labels.get("live", "Stream"); // returns "Live"
- *     Echo.Labels.get("paused", "Stream"); // returns "Paused"
+ *     Labels.get("live", "Stream"); // returns "Live"
+ *     Labels.get("paused", "Stream"); // returns "Paused"
  *
- *     Echo.Labels.set({
+ *     Labels.set({
  *         "live": "Live...",
  *         "paused": "Paused..."
  *     }, "Stream", true); // setting default labels
  *
- *     Echo.Labels.get("live", "Stream"); // returns "Live" (custom label is not overridden by default)
- *     Echo.Labels.get("paused", "Stream"); // returns "Paused" (custom label is not overridden by default)
+ *     Labels.get("live", "Stream"); // returns "Live" (custom label is not overridden by default)
+ *     Labels.get("paused", "Stream"); // returns "Paused" (custom label is not overridden by default)
  *
- *     Echo.Labels.set({
+ *     Labels.set({
  *         "live": "Live label",
  *         "paused": "Paused label"
  *     }, "Stream"); // overriding custom labels
  *
- *     Echo.Labels.get("live", "Stream"); // returns "Live label"
- *     Echo.Labels.get("paused", "Stream"); // returns "Paused label"
+ *     Labels.get("live", "Stream"); // returns "Live label"
+ *     Labels.get("paused", "Stream"); // returns "Paused label"
  *
  * @param {Object} labels
  * Object containing the list of language variables.
@@ -171,10 +172,10 @@ Echo.Labels.prototype.set = function(labels) {
  * Flag switching the localization mode to setting defaults one.
  */
 
-Echo.Labels.set = function(labels, namespace, isDefault) {
+Labels.set = function(labels, namespace, isDefault) {
 	$.each(labels, function(name, value) {
-		var key = Echo.Labels._key(name, namespace);
-		Echo.Labels._storage[isDefault ? "general" : "custom"][key] = value;
+		var key = Labels._key(name, namespace);
+		Labels._storage[isDefault ? "general" : "custom"][key] = value;
 	});
 };
 
@@ -188,13 +189,13 @@ Echo.Labels.set = function(labels, namespace, isDefault) {
  * If value of the particular language variable is not found in the localization
  * list it will fall back to the default language variable value.
  *
- *     Echo.Labels.set({
+ *     Labels.set({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream");
  *
- *     Echo.Labels.get("live", "Stream"); // returns "Live"
- *     Echo.Labels.get("Stream.paused"); // returns "Paused"
+ *     Labels.get("live", "Stream"); // returns "Live"
+ *     Labels.get("Stream.paused"); // returns "Paused"
  *
  * @param {String} name
  * Language variable name.
@@ -209,23 +210,23 @@ Echo.Labels.set = function(labels, namespace, isDefault) {
  * Value of the language variable.
  */
 
-Echo.Labels.get = function(name, namespace, data) {
-	var key = Echo.Labels._key(name, namespace);
-	var label = Echo.Labels._storage["custom"][key] || Echo.Labels._storage["general"][key] || name;
-	return Echo.Labels._substitute(label, data);
+Labels.get = function(name, namespace, data) {
+	var key = Labels._key(name, namespace);
+	var label = Labels._storage["custom"][key] || Labels._storage["general"][key] || name;
+	return Labels._substitute(label, data);
 };
 
-Echo.Labels._storage = { "general": {}, "custom": {} };
+Labels._storage = { "general": {}, "custom": {} };
 
-Echo.Labels._key = function(name, namespace) {
+Labels._key = function(name, namespace) {
 	return (namespace ? namespace + "." : "") + name;
 };
 
-Echo.Labels._substitute = function(label, data) {
+Labels._substitute = function(label, data) {
 	$.each(data || {}, function(key, value) {
 		label = label.replace(new RegExp("{" + key + "}", "g"), value);
 	});
 	return label;
 };
-
-})(Echo.jQuery);
+return Labels;
+});
