@@ -1,6 +1,6 @@
 window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-008", {
     "id": "test.canvas.008",
-    "title": "Test canvas with Auth control",
+    "title": "Test canvas with Auth application",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
         "busName": "jskit"
@@ -8,7 +8,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Controls.Auth",
+        "component": "Echo.IdentityServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {

@@ -65,7 +65,7 @@ require(['cookie'], function(Cookie) {
 	paths[Echo.Loader.getURL("") + "/enviroment.pack"] = [
 		"echo/events", "echo/utils", "echo/labels", "echo/configuration", "echo/api",
 		"echo/streamserver/api", "echo/identityserver/api", "echo/user-session",
-		"echo/view", "echo/control", "echo/app", "echo/plugin", "echo/canvas"
+		"echo/view", "echo/app", "echo/plugin", "echo/canvas"
 	];
 	paths[Echo.Loader.getURL("") + "/gui.pack"] = [
 		"echo/bootstrap-transition", "echo/bootstrap-affix", "echo/bootstrap-alert",
@@ -76,9 +76,9 @@ require(['cookie'], function(Cookie) {
 		"echo/gui/dropdown", "echo/gui/tabs"
 	];
 	paths[Echo.Loader.getURL("") + "/streamserver.pack"] = [
-		"echo/streamserver/controls/counter","echo/streamserver/controls/stream",
-		"echo/streamserver/controls/facePile", "echo/streamserver/controls/facePileItem", 
-		"echo/streamserver/controls/submit", "echo/streamserver/plugins/edit", 
+		"echo/streamserver/apps/counter","echo/streamserver/apps/stream",
+		"echo/streamserver/apps/facePile", "echo/streamserver/apps/facePileItem", 
+		"echo/streamserver/apps/submit", "echo/streamserver/plugins/edit", 
 		"echo/streamserver/plugins/streamItemEdit", "echo/streamserver/plugins/submitEdit",
 		"echo/streamserver/plugins/communityFlag", "echo/streamserver/plugins/formAuth",
 		"echo/streamserver/plugins/infiniteScroll", "echo/streamserver/plugins/itemAccumulatorDisplay",
@@ -98,7 +98,7 @@ require(['cookie'], function(Cookie) {
 		"echo/streamserver/plugins/streamPinboardVisualization"
 	];
 	paths[Echo.Loader.getURL("") + "/identityserver.pack"] = [
-		"echo/identityserver/controls/auth",
+		"echo/identityserver/apps/auth",
 		"echo/identityserver/plugins/janrainConnector"
 	];
 	require.config({

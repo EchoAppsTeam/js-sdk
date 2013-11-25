@@ -155,7 +155,7 @@ of an application:
 	<script type="text/javascript">
 		Echo.Loader.initApplication({
 			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Stream",
+			"component": "Echo.StreamServer.Apps.Stream",
 			"config": {
 				// …
 				"labels": {
@@ -172,7 +172,7 @@ Text labels in the app can be redefined this way:
 	Comments.renderers.submit = function(element) {
 		this.initComponent({
 			"id": "Submit",
-			"component": "Echo.StreamServer.Controls.Submit",
+			"component": "Echo.StreamServer.Apps.Submit",
 			"config": {
 				"target": element,
 				"infoMessages": {"enabled": false},
@@ -216,13 +216,13 @@ Text labels defined either through the component manifest or via the configurati
 explicitly can be used in the templates using the special `{label:...}` placeholders.
 For example:
 
-	var submit = Echo.Control.manifest("Echo.StreamServer.Controls.Submit");
+	var submit = Echo.App.manifest("Echo.StreamServer.Apps.Submit");
 	// ...
 	submit.templates.formTitle = '<div>{label:title}</div>';
 
 Plugin's language variables are available through the `{plugin.label:...}` placeholder:
 
-	var reply = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Controls.Stream.Item");
+	var reply = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Apps.Stream.Item");
 	// ...
 	reply.templates.formTitle = "<div>{plugin.label:title}</div>";
 

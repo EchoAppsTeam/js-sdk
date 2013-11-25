@@ -1,135 +1,13 @@
 module.exports = function(grunt) {
+	"use strict";
 
 	var shared = require("../lib.js").init(grunt);
-
-	var Ftp = require("ftp");
-	var fs = require("fs");
+	var FtpUploader = require("../lib/ftp-uploader");
 	var http = require("http");
-	var path = require("path");
 	var _ = require("lodash");
 
-	var FtpUploader = function(config) {
-		var self = this;
-		this.config = config;
-		this.client = new Ftp({
-			host: config.auth.host,
-			port: config.auth.port,
-			connTimeout: 600000 // 10 minutes
-		});
-		this.client.on("connect", function() { self.start(); });
-		this.client.connect();
-	};
-
-	FtpUploader.prototype.start = function() {
-		var self = this;
-		this.client.auth(this.config.auth.user, this.config.auth.password, function(err) {
-			if (err) {
-				self._error(err);
-				return;
-			}
-
-			self.queue = [];
-			var processedDirs = {};
-			var dirs = [];
-			var files = [];
-			var recursiveAdd = function(dir) {
-				var name = "/";
-				var parts = dir.split("/");
-				// remove first and last elements because they are empty
-				parts.pop();
-				parts.shift();
-				_.each(parts, function(n) {
-					name += n + "/";
-					if (!processedDirs[name]) {
-						processedDirs[name] = true;
-						dirs.push(name);
-					}
-				});
-			};
-			_.each(self.config.uploads, function(upload) {
-				var baseSrcPath = grunt.template.process(upload.baseSrcPath);
-				var dest = grunt.template.process(upload.dest);
-				var src = grunt.file.expand({"filter": "isFile"}, baseSrcPath + upload.src);
-				src.sort();
-				_.each(src, function(srcName) {
-					var name = srcName.replace(baseSrcPath, "")
-					var destName = dest + name;
-					files.push({
-						"src": srcName,
-						"dest": destName
-					});
-					recursiveAdd(path.dirname(destName) + "/");
-				});
-			});
-			dirs.sort();
-			_.each(dirs, function(dir) {
-				self.enqueue("makeDir", dir);
-			});
-			_.each(files, function(file) {
-				self.enqueue("uploadFile", file);
-			});
-			!shared.config("debug") && grunt.verbose.writeln("Starting upload");
-			self.currentStep = 1;
-			self.totalSteps = self.queue.length;
-			self._next();
-		});
-	};
-
-	FtpUploader.prototype.enqueue = function() {
-		var args = _.toArray(arguments);
-		var name = args.shift();
-		this.queue.push(function() {
-			this["_" + name].apply(this, args);
-		});
-	};
-
-	FtpUploader.prototype._uploadFile = function(file) {
-		var self = this;
-		this._log(file.dest);
-		if (shared.config("debug")) {
-			this._next();
-			return;
-		}
-		this.client.put(fs.createReadStream(file.src), file.dest, function(err) {
-			if (err) {
-				self._error(err);
-			} else {
-				self._next();
-			}
-		});
-	};
-
-	FtpUploader.prototype._makeDir = function(name) {
-		var self = this;
-		this._log(name);
-		if (shared.config("debug")) {
-			this._next();
-			return;
-		}
-		this.client.mkdir(name, function() {
-			self._next();
-		});
-	};
-
-	FtpUploader.prototype._next = function() {
-		if (!this.queue.length) {
-			this.config.complete();
-			return;
-		}
-		this.queue.shift().call(this);
-	};
-
-	FtpUploader.prototype._log = function(name) {
-		grunt.log.writeln(this.currentStep++ + "/" + this.totalSteps + ": " + name);
-	};
-
-	FtpUploader.prototype._error = function(text) {
-		grunt.log.error(text);
-		this.client.end();
-		this.config.complete(false);
-	};
-
 	grunt.registerInitTask("release", "Release", function() {
+		var tasks = [];
 		var envConfig = grunt.config("envConfig");
 		if (!_.contains(["production", "staging"], shared.config("env"))) {
 			grunt.fail.fatal("Release can be performed only in \"production\" and \"staging\" environment.");
@@ -140,7 +18,7 @@ module.exports = function(grunt) {
 		var target = this.args[0];
 		// TODO: check if we have modified files, we must not release this
 		if (!this.args.length) {
-			var tasks = [
+			tasks = [
 				"default",
 				// XXX: this step does nothing, it's just needed to remove build info so that next step could patch correct loader files
 				"release:build-completed",
@@ -155,7 +33,7 @@ module.exports = function(grunt) {
 			grunt.task.run(tasks);
 			return;
 		} else if (target === "beta") {
-			var tasks = [
+			tasks = [
 				"default",
 				// XXX: this step does nothing, it's just needed to remove build info so that next step could patch correct loader files
 				"release:build-completed",
@@ -182,8 +60,6 @@ module.exports = function(grunt) {
 			console.timeEnd(target.yellow);
 			_complete(result);
 		};
-		var version = grunt.config("pkg.version");
-		var majorVersion = version.split(".")[0];
 		console.log(target);
 		switch (target) {
 			case "purge":
@@ -202,14 +78,26 @@ module.exports = function(grunt) {
 					done();
 					return;
 				}
+				uploads = uploads.map(function(upload) {
+					upload.baseSrcPath = grunt.template.process(upload.baseSrcPath);
+					upload.dest = grunt.template.process(upload.dest);
+					upload.src = grunt.file.expand({"filter": "isFile"}, upload.baseSrcPath + upload.src);
+					return upload;
+				});
 				// let's suppose that all elements in the upload array have the same location
 				var location = uploads[0].location;
 				grunt.log.writeln((shared.config("debug") ? "[simulation] ".cyan : "") + "Releasing to " + location.cyan);
-				new FtpUploader({
+				var ftp = new FtpUploader({
 					"complete": done,
 					"auth": envConfig.release.auth[location],
-					"uploads": uploads
+					"uploads": uploads,
+					"debug": shared.config("debug"),
+					"logger": {
+						"log": _.bind(grunt.log.writeln, grunt.log),
+						"error": _.bind(grunt.log.error, grunt.log)
+					}
 				});
+				ftp.start();
 				break;
 		}
 	});
@@ -280,10 +168,10 @@ module.exports = function(grunt) {
 		});
 		req.write(xml);
 		req.end();
-	};
+	}
 
 	function pushPages(done) {
 		grunt.task.run(["docs"]);
 		done();
-	};
+	}
 };

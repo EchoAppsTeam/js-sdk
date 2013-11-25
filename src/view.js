@@ -4,8 +4,6 @@ define("echo/view", [
 ], function($, Utils) {
 "use strict";
 
-var View;
-
 //TODO: do we need it?
 //if (Utils.isComponentDefined("View")) return;
 
@@ -112,7 +110,7 @@ var View;
  * make sure that the template defined in the View constructor call contains
  * elements with the unique CSS class names (matching the CSS prefix).
  */
-View = function(config) {
+var View = function(config) {
 	config = config || {};
 	this.config = config;
 	this.config.cssPrefix = this.config.cssPrefix || "";

@@ -4,12 +4,12 @@ node_js:
   - '0.10'
 branches:
   only:
-    - lizard/grunt-0.4
+    - master
 before_install:
   - npm install -g grunt-cli
 script:
-  - grunt test --env=ci --module=Echo.Events
+  - grunt test --env=ci
 env:
   global:
-    - secure: QWSFY3o2/744b85vb2xd9dHlj/DFeEk/eUhUjjDPmzN1DP0mYhUsXEqp5/5lg30Ufr2R8R6xfOOzvPWR9aOlBXNrlUI6rGFjt80tT5XrPMynMpo0GZFJmlzSWWdTbfmFRzhf7m5s/2kewo5xBpGn0JmKC42M0k+vCD++sqiDK4k=
-    - secure: GCli6LlxlkHVLH2wHtPDUA7SQWT+jtPAEQ2bBxKLKU3qiZTjb6f0QJcGaUvaTkId3m4p54gUus3G4UbHCKjpSdnRH5GpO9Keh2Hvmr59VGoEQ/D7Ihs6N5zxZcN8X+hRanpEHqRauzcBaOrHiw7Kb2MWXYLzeTsMhSt++dKxAqE=
+    - secure: NuiakrPV0H1z6iDAYPZimDqBGT4JRcevpv4a4ZHUyknv1BDdkbm58S84FucOkCibMARmZ4SPwhanCpMcA7lzhdeOZE2d9NqRCA92vK4IwIczK7Kl60J/mQNlL3giV91iQW06yHdU8wipgwnYwvfmfDgfIy6xH8waw0lRdlD2r8U=
+    - secure: hP8i4BBa7IT/qvVqGcAk+3B868+YjPWV4Ksqb72FE60FjM02yTm8xkHZb/gr6cWyNo3EzR3unKi2fg1xciSeEdkc4qsUA8EMdJEaJDRgKJmrc01aAats/JXGrooHHjzdTYmY+LUSMipi0GeoMIZ+eJgg8qprsFat1LQeUhy+t90=

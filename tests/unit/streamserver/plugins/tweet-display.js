@@ -1,6 +1,6 @@
 (function($) {
 
-var plugin = "Echo.StreamServer.Controls.Stream.Item.Plugins.TweetDisplay";
+var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.TweetDisplay";
 
 Echo.Tests.module(plugin, {
 	"meta": {
@@ -108,7 +108,7 @@ Echo.Tests.pluginRenderersTest(plugin, {
 });
 
 Echo.Tests.asyncTest("disabled Like and Reply plugins", function() {
-	new Echo.StreamServer.Controls.Stream({
+	new Echo.StreamServer.Apps.Stream({
 		"target": $("<div>"),
 		"appkey": "test.js-kit.com",
 		"data": _streamData,

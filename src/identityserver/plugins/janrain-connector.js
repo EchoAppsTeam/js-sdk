@@ -2,14 +2,14 @@ define("echo/identityserver/plugins/janrainConnector", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils"
-], function($, Plugin, Utils, GUI, GUIModal) {
+], function($, Plugin, Utils) {
 "use strict";
 
 /**
- * @class Echo.IdentityServer.Controls.Auth.Plugins.JanrainConnector
- * Janrain Social Sign-in Widget integration with Echo Auth Control.
+ * @class Echo.IdentityServer.Apps.Auth.Plugins.JanrainConnector
+ * Janrain Social Sign-in Widget integration with Echo Auth Application.
  *
- * 	new Echo.IdentityServer.Controls.Auth({
+ * 	new Echo.IdentityServer.Apps.Auth({
  * 		"target": document.getElementById("auth"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -26,7 +26,9 @@ define("echo/identityserver/plugins/janrainConnector", [
  * @package identityserver/plugins.pack.js
  * @package identityserver.pack.js
  */
-var plugin = Plugin.manifest("JanrainConnector", "Echo.IdentityServer.Controls.Auth");
+var plugin = Plugin.manifest("JanrainConnector", "Echo.IdentityServer.Apps.Auth");
+
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var plugin = this, component = this.component;
@@ -56,7 +58,7 @@ plugin.config = {
 
 	/**
 	 * @cfg {String[]} [buttons=["login"]]
-	 * A list of buttons that should be rendered in the Auth Control. May include
+	 * A list of buttons that should be rendered in the Auth Application. May include
 	 * any of the following strings (order doesn't matter):
 	 *
 	 * + "login"

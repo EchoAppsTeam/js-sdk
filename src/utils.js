@@ -3,7 +3,7 @@ define('echo/variables', [], function() {
 	return {};
 });
 
-define("echo/utils", ["jquery"], function($) {
+define("echo/utils", ["jquery", "echo/variables"], function($, Variables) {
 "use strict";
 
 var Utils;
@@ -1125,6 +1125,61 @@ Utils.safelyExecute = function(fn, args, context) {
 };
 
 /**
+ * Method to place an image inside the container.
+ *
+ * This method removes any container's content and creates a new image HTML element
+ * inside the container. If the image is not available on the given URL then this function
+ * loads the default image that is passed as a defaultImage argument.
+ *
+ * The method adds special classes to the container, and implements some
+ * workaround for IE in quirks mode.
+ *
+ * @param {Object} args
+ * The object which contains attributes for the image.
+ *
+ * @param {HTMLElement} args.container
+ * Specifies the target container.
+ *
+ * @param {String} args.image
+ * The URL of the image to be loaded.
+ *
+ * @param {String} [args.defaultImage]
+ * The URL of the default image.
+ *
+ * @param {Function} [args.onload]
+ * The callback which fires when image is loaded.
+ *
+ * @param {Function} [args.onerror]
+ * The callback which fires when loading image fails.
+ *
+ * @param {String} [args.position="fill"]
+ * The position of an image inside the container. The only "fill" is implemented now.
+*/
+Utils.placeImage = function(args) {
+	var position = args.position || "fill";
+
+	args.container.addClass("echo-image-container");
+	if (position === "fill") {
+		args.container.addClass("echo-image-position-fill");
+	}
+
+	var image = Utils.loadImage({
+		"image": args.image,
+		"defaultImage": args.defaultImage,
+		"onerror": args.onerror,
+		"onload": function () {
+			if (document.compatMode !== "CSS1Compat") {
+				$(this).addClass(this.width < this.height
+						? "echo-image-stretched-vertically"
+						: "echo-image-stretched-horizontally");
+			}
+			$.isFunction(args.onload) && args.onload.apply(this, arguments);
+		}
+	});
+	args.container.empty().append(image);
+};
+
+/**
  * @static
  * Function which accepts two arguments (numbers) as a range and
  * generates a random number in the given range.
@@ -1143,6 +1198,299 @@ Utils.safelyExecute = function(fn, args, context) {
 Utils.random = function(min, max) {
 	return min + Math.floor(Math.random() * (max - min + 1));
 };
+
+/**
+ * @static
+ * Renders info message in the target container.
+ *
+ * @param {Object} data
+ * Object containing info message information.
+ *
+ * @param {String} [data.layout]
+ * Specifies the type of message layout. Can be set to "compact" or "full".
+ *
+ * @param {HTMLElement} [data.target]
+ * Specifies the target container.
+ */
+Utils.showMessage = function(data) {
+	data.target.empty().append(
+		this.substitute({
+			"data": data,
+			"template": data.template || Variables.templates.message[data.layout || "full"]
+		})
+	);
+};
+
+/**
+ * @static
+ * Renders error message in the target container.
+ *
+ * @param {Object} data
+ * Object containing error message information.
+ *
+ * @param {Object} options
+ * Object containing display options.
+ */
+Utils.showError = function(data, options) {
+	var self = this;
+	options = options || {};
+	var getLabel = function(key) {
+		return options.label || Variables.labels[key]
+	};
+	if (typeof options.retryIn === "undefined") {
+		var label = getLabel("error_" + data.errorCode);
+		var message = label === "error_" + data.errorCode
+			? "(" + data.errorCode + ") " + (data.errorMessage || "")
+			: label;
+		this.showMessage({
+			"type": options.critical ? "error" : "loading",
+			"message": message,
+			"target": options.target
+		});
+	} else if (!options.retryIn && options.promise) {
+		this.showMessage({
+			"type": "loading",
+			"message": getLabel("retrying"),
+			"target": options.target
+		});
+	} else if (options.promise) {
+		var secondsLeft = options.retryIn / 1000;
+		var ticker = function() {
+			if (!secondsLeft) {
+				return;
+			}
+			var label = self.substitute({
+				"data": {"seconds": secondsLeft--},
+				"template": getLabel("error_" + data.errorCode)
+			});
+			self.showMessage({
+				"type": "loading",
+				"message": label,
+				"target": options.target
+			});
+		};
+		var retryTimer = setInterval(ticker, 1000);
+		options.promise.done(function() {
+			clearInterval(retryTimer);
+		});
+		ticker();
+	}
+};
+
+/**
+ * @static
+ * Method to calculate the relative time passed since the given date and time.
+ *
+ * @param {Mixed} datetime
+ * The date to calculate how much time passed since that moment. The function recognizes
+ * the date in W3CDFT or UNIX timestamp formats.
+ *
+ * @return {String}
+ * String which represents the date and time in the relative format.
+ */
+Utils.getRelativeTime = function(datetime, options) {
+	if (!datetime) return "";
+	var ts = typeof datetime === "string"
+		? Utils.timestampFromW3CDTF(datetime)
+		: datetime;
+	if (!ts) return "";
+	var parts;
+	options = options || {"labels": {}};
+	var d = new Date(ts * 1000);
+	var diff = Math.floor(((new Date()).getTime() - d.getTime()) / 1000);
+	var getLabel = function(parts) {
+		var numeric = parts[3];
+		var plural = numeric && parts[4] > 1;
+		var key = parts[0] + (plural ? "s" : "") + (numeric ? "Ago" : "");
+		return Utils.substitute({
+			"data": {"number": parts[4]},
+			"template": options.labels[key] || Variables.labels[key]
+		});
+	};
+	var conversions = [
+		// we display the "Just now" text in order to mitigate the clock inaccuracy
+		// when the time difference between the current and the given time is
+		// less than 10 seconds or if the given date is "from the future" but
+		// within the 60 seconds range
+		["justNow", 10, false],
+		["second", 60, true],
+		["minute", 60, true],
+		["hour", 24, true],
+		["yerstaday", 48, false],
+		["day", 7, true],
+		["lastWeek", 14, false],
+		["week", 30, true],
+		["lastMonth", 60, false],
+		["month", 365, true],
+		null
+	];
+
+	for (var i = 0; i < conversions.length; i++) {
+		parts = conversions[i];
+		if (diff < parts[1]) {
+			break;
+		}
+		diff = diff / parts[1];
+	}
+
+	if (!parts || isNaN(diff) || diff < -60) {
+		return d.toLocaleDateString() + ", " + d.toLocaleTimeString();
+	}
+
+	return getLabel(parts.concat(Math.floor(diff)));
+};
+
+
+Variables.templates = {
+	"message": {
+		"compact": '<span class="echo-app-message echo-app-message-icon echo-app-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>',
+		"full": '<div class="echo-app-message {class:messageText}">' +
+			'<span class="echo-app-message-icon echo-app-message-{data:type} {class:messageIcon}">' +
+				'{data:message}' +
+			'</span>' +
+		'</div>'
+	}
+};
+
+Variables.labels = {
+	/**
+	 * @echo_label loading
+	 */
+	"loading": "Loading...",
+	/**
+	 * @echo_label retrying
+	 */
+	"retrying": "Retrying...",
+	/**
+	 * @echo_label error_busy
+	 */
+	"error_busy": "Loading. Please wait...",
+	/**
+	 * @echo_label error_timeout
+	 */
+	"error_timeout": "Loading. Please wait...",
+	/**
+	 * @echo_label error_waiting
+	 */
+	"error_waiting": "Loading. Please wait...",
+	/**
+	 * @echo_label error_view_limit
+	 */
+	"error_view_limit": "View creation rate limit has been exceeded. Retrying in {seconds} seconds...",
+	/**
+	 * @echo_label error_view_update_capacity_exceeded
+	 */
+	"error_view_update_capacity_exceeded": "This stream is momentarily unavailable due to unusually high activity. Retrying in {seconds} seconds...",
+	/**
+	 * @echo_label error_result_too_large
+	 */
+	"error_result_too_large": "(result_too_large) The search result is too large.",
+	/**
+	 * @echo_label error_wrong_query
+	 */
+	"error_wrong_query": "(wrong_query) Incorrect or missing query parameter.",
+	/**
+	 * @echo_label error_incorrect_appkey
+	 */
+	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
+	/**
+	 * @echo_label error_internal_error
+	 */
+	"error_internal_error": "(internal_error) Unknown server error.",
+	/**
+	 * @echo_label error_quota_exceeded
+	 */
+	"error_quota_exceeded": "(quota_exceeded) Required more quota than is available.",
+	/**
+	 * @echo_label error_incorrect_user_id
+	 */
+	"error_incorrect_user_id": "(incorrect_user_id) Incorrect user specified in User ID predicate.",
+	/**
+	 * @echo_label error_unknown
+	 */
+	"error_unknown": "(unknown) Unknown error.",
+	/**
+	 * @echo_label today
+	 */
+	"today": "Today",
+	/**
+	 * @echo_label justNow
+	 */
+	"justNow": "Just now",
+	/**
+	 * @echo_label yesterday
+	 */
+	"yesterday": "Yesterday",
+	/**
+	 * @echo_label lastWeek
+	 */
+	"lastWeek": "Last Week",
+	/**
+	 * @echo_label lastMonth
+	 */
+	"lastMonth": "Last Month",
+	/**
+	 * @echo_label secondAgo
+	 */
+	"secondAgo": "{number} Second Ago",
+	/**
+	 * @echo_label secondsAgo
+	 */
+	"secondsAgo": "{number} Seconds Ago",
+	/**
+	 * @echo_label minuteAgo
+	 */
+	"minuteAgo": "{number} Minute Ago",
+	/**
+	 * @echo_label minutesAgo
+	 */
+	"minutesAgo": "{number} Minutes Ago",
+	/**
+	 * @echo_label hourAgo
+	 */
+	"hourAgo": "{number} Hour Ago",
+	/**
+	 * @echo_label hoursAgo
+	 */
+	"hoursAgo": "{number} Hours Ago",
+	/**
+	 * @echo_label dayAgo
+	 */
+	"dayAgo": "{number} Day Ago",
+	/**
+	 * @echo_label daysAgo
+	 */
+	"daysAgo": "{number} Days Ago",
+	/**
+	 * @echo_label weekAgo
+	 */
+	"weekAgo": "{number} Week Ago",
+	/**
+	 * @echo_label weeksAgo
+	 */
+	"weeksAgo": "{number} Weeks Ago",
+	/**
+	 * @echo_label monthAgo
+	 */
+	"monthAgo": "{number} Month Ago",
+	/**
+	 * @echo_label monthsAgo
+	 */
+	"monthsAgo": "{number} Months Ago"
+};
+
+Utils.addCSS(
+	'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
+	'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
+	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
+	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
+	'.echo-message { padding: 15px 0px; text-align: center; }' +
+	'.echo-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
+	'.echo-message .echo-message-icon { padding-left: 21px; height: auto; }' +
+	'.echo-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
+	'.echo-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
+	'.echo-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }'
+, "echo-common");
 
 // JS SDK can't guarantee proper UI elements rendering in quirks mode
 // because the UI Framework (Twitter Bootstrap) doesn't support this mode.

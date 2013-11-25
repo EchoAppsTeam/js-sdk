@@ -30,8 +30,8 @@ While developing an application (see the [“how to guide”](#!/guide/how_to_de
 
 	Comments.dependencies = [{
 		"loaded": function() {
-			return Echo.App.isDefined("Echo.StreamServer.Controls.Submit") &&
-				Echo.App.isDefined("Echo.StreamServer.Controls.Stream");
+			return Echo.App.isDefined("Echo.StreamServer.Apps.Submit") &&
+				Echo.App.isDefined("Echo.StreamServer.Apps.Stream");
 		},
 		"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 	}];

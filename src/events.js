@@ -25,7 +25,7 @@ var Events;
  * 	Events.subscribe({
  * 		"topic": "UserSession.onInvalidate",
  * 		"context": "global",
- * 		"handler": control.refresh
+ * 		"handler": app.refresh
  * 	});
  *
  * 	// And then publish event:

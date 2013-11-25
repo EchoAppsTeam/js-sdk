@@ -8,7 +8,7 @@ The Echo JS SDK allows you to create complex applications based on the Echo.App 
 
 *Application* (or *App*) is a JavaScript class with the pre-defined structure (generated out of the app manifest) which can represent a certain set of discrete functionality or combine multiple apps and plugins into a package to achieve a certain functionality.
 
-Let's imagine that we want to create the application for posting and viewing comments on a website. For this purpose we'll use the {@link Echo.StreamServer.Controls.Stream Stream} and the {@link Echo.StreamServer.Controls.Submit Submit} apps and assemble them in one logical unit using the Echo Application approach.
+Let's imagine that we want to create the application for posting and viewing comments on a website. For this purpose we'll use the {@link Echo.StreamServer.Apps.Stream Stream} and the {@link Echo.StreamServer.Apps.Submit Submit} apps and assemble them in one logical unit using the Echo Application approach.
 
 ## Creating the Application skeleton
 
@@ -110,7 +110,7 @@ Now we have placeholders for our Submit and Stream app and we need the logic to 
 	Comments.renderers.stream = function(element) {
 		this.initComponent({
 			"id": "Stream",
-			"component": "Echo.StreamServer.Controls.Stream",
+			"component": "Echo.StreamServer.Apps.Stream",
 			"config": {
 				"target": element
 			}
@@ -121,7 +121,7 @@ Now we have placeholders for our Submit and Stream app and we need the logic to 
 	Comments.renderers.submit = function(element) {
 		this.initComponent({
 			"id": "Submit",
-			"component": "Echo.StreamServer.Controls.Submit",
+			"component": "Echo.StreamServer.Apps.Submit",
 			"config": {
 				"target": element,
 				"infoMessages": {"enabled": false},
@@ -134,7 +134,7 @@ Now we have placeholders for our Submit and Stream app and we need the logic to 
 		return element;
 	};
 
-Important note: to proxy the configuration settings from the application to the child apps we can use placeholders, like the ones we used in the application templates. In our application we proxy the "identityManager" as a param of the Echo.IdentityServer.Controls.Auth app config by defining the "{config:identityManager}" placeholder.
+Important note: to proxy the configuration settings from the application to the child apps we can use placeholders, like the ones we used in the application templates. In our application we proxy the "identityManager" as a param of the Echo.IdentityServer.Apps.Auth app config by defining the "{config:identityManager}" placeholder.
 
 ## CSS rules
 
@@ -148,8 +148,8 @@ If the application depends on some other external component/library (including o
 
 	Comments.dependencies = [{
 		"loaded": function() {
-			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
-				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
+			return Echo.App.isDefined("Echo.StreamServer.Apps.Submit") &&
+				Echo.App.isDefined("Echo.StreamServer.Apps.Stream");
 		},
 		"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
 	}];
@@ -163,7 +163,7 @@ Each Echo component is an independent part of the system and can communicate wit
 There are lots of events going on during the application life. The list of the events for each component can be found on the respective page in the documentation. The application definition structure provides the interface to subscribe to the necessary events. The events subscriptions should be defined inside the "events" hash using the event name as a key and the event handler as a value, for example:
 
 	Comments.events = {
-		"Echo.StreamServer.Controls.Stream.onDataReceive": function(topic, args) {
+		"Echo.StreamServer.Apps.Stream.onDataReceive": function(topic, args) {
 			// ... some actions ...
 		}
 	};
@@ -228,8 +228,8 @@ Note: in order to configure internal Echo Apps and Plugins used in the applicati
 
 	Comments.dependencies = [
 		{"loaded": function() {
-			return Echo.Control.isDefined("Echo.StreamServer.Controls.Submit") &&
-				Echo.Control.isDefined("Echo.StreamServer.Controls.Stream");
+			return Echo.App.isDefined("Echo.StreamServer.Apps.Submit") &&
+				Echo.App.isDefined("Echo.StreamServer.Apps.Stream");
 		}, "url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"}
 	];
 
@@ -258,7 +258,7 @@ Note: in order to configure internal Echo Apps and Plugins used in the applicati
 	Comments.renderers.stream = function(element) {
 		this.initComponent({
 			"id": "Stream",
-			"component": "Echo.StreamServer.Controls.Stream",
+			"component": "Echo.StreamServer.Apps.Stream",
 			"config": {
 				"target": element
 			}
@@ -269,7 +269,7 @@ Note: in order to configure internal Echo Apps and Plugins used in the applicati
 	Comments.renderers.submit = function(element) {
 		this.initComponent({
 			"id": "Submit",
-			"component": "Echo.StreamServer.Controls.Submit",
+			"component": "Echo.StreamServer.Apps.Submit",
 			"config": {
 				"target": element,
 				"infoMessages": {"enabled": false},

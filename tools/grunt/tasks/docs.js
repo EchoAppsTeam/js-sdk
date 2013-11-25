@@ -1,4 +1,5 @@
 module.exports = function(grunt) {
+	"use strict";
 
 	var shared = require("../lib.js").init(grunt);
 	var trim = require("underscore.string").trim;

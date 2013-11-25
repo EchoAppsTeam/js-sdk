@@ -11,7 +11,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
             "dev": "../../../tests/fixtures/resources/loader/scripts.dev.js",
             "prod": "../../tests/fixtures/resources/loader/scripts.prod.js"
         },
-        "component": "Echo.Tests.Controls.TestControl",
+        "component": "Echo.Tests.Apps.TestApp",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com"
         }

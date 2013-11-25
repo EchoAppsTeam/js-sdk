@@ -1,6 +1,6 @@
 window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-001", {
     "id": "test.canvas.001",
-    "title": "Test canvas with Submit and Stream controls",
+    "title": "Test canvas with Submit and Stream applications",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
         "busName": "jskit"
@@ -8,7 +8,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "submit",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Controls.Submit",
+        "component": "Echo.StreamServer.Apps.Submit",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "targetURL": "http://example.com/js-sdk",
@@ -25,7 +25,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "stream",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Controls.Stream",
+        "component": "Echo.StreamServer.Apps.Stream",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/search/1",

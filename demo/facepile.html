@@ -7,7 +7,7 @@
 	</head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.FacePile" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.FacePile" target="_blank">Documentation</a></div>
 		<h1>FacePile App Demo</h1>
 		<div class="description">Echo FacePile app displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.</div>
 		<div class="wrapper">
@@ -53,7 +53,7 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/controls/facePile", "jquery"], function(FacePile, jQuery) {
+		Echo.require(["echo/streamserver/apps/facePile", "jquery"], function(FacePile, jQuery) {
 			var init = function(config) {
 				config["backplane"] = {
 					"serverBaseURL": "https://api.echoenabled.com/v1",
@@ -118,4 +118,3 @@
 	</script>
 </body>
 </html>
-

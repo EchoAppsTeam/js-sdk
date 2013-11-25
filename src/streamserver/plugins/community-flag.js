@@ -1,22 +1,22 @@
 define("echo/streamserver/plugins/communityFlag", [
 	"jquery",
 	"echo/plugin",
-	"echo/streamserver/controls/facePile",
+	"echo/streamserver/apps/facePile",
 	"echo/streamserver/api"
 ], function($, Plugin, FacePile, API) {
 "use strict";
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag
+ * @class Echo.StreamServer.Apps.Stream.Item.Plugins.CommunityFlag
  * Adds extra Flag/Unflag buttons to each item in the Echo Stream
- * control for the authenticated users. The item will receive the
+ * application for the authenticated users. The item will receive the
  * CommunityFlagged state as soon as it is flagged by a certain number
  * of users. By default this number is 3, but it may be updated by
  * contacting Echo Solutions team at solutions@aboutecho.com. The plugin
  * also shows the number of flags already set for the item next to the
  * Flag/Unflag control.
  *
- * 	new Echo.StreamServer.Controls.Stream({
+ * 	new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -32,7 +32,9 @@ define("echo/streamserver/plugins/communityFlag", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("CommunityFlag", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Plugin.manifest("CommunityFlag", "Echo.StreamServer.Apps.Stream.Item");
+
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "data", plugin.templates.main);
@@ -76,11 +78,6 @@ plugin.labels = {
 	 */
 	"unflagProcessing": "Unflagging..."
 };
-
-/*plugin.dependencies = [{
-	"control": "Echo.StreamServer.Controls.FacePile",
-	"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
-}];*/
 
 /**
  * @echo_template
@@ -136,11 +133,11 @@ plugin.methods._assembleButton = function(name) {
 			},
 			"onData": function(response) {
 				/**
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagComplete
+				 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.CommunityFlag.onFlagComplete
 				 * Triggered if flag operation was completed.
 				 */
 				/**
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnflagComplete
+				 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.CommunityFlag.onUnflagComplete
 				 * Triggered if reverse flag operation was completed.
 				 */
 				plugin._publishEventComplete({
@@ -156,11 +153,11 @@ plugin.methods._assembleButton = function(name) {
 			},
 			"onError": function(response) {
 				/**
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onFlagError
+				 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.CommunityFlag.onFlagError
 				 * Triggered if flag operation failed.
 				 */
 				/**
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag.onUnflagError
+				 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.CommunityFlag.onUnflagError
 				 * Triggered if reverse flag operation failed.
 				 */
 				plugin._publishEventComplete({

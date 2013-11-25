@@ -12,7 +12,7 @@ If you need to initialize a component as a standalone app on a page, you should 
 	<script>
 		Echo.Loader.initApplication({
 			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
-			"component": "Echo.StreamServer.Controls.Stream",
+			"component": "Echo.StreamServer.Apps.Stream",
 			"backplane": {
 				"serverBaseURL": "http://api.echoenabled.com/v1",
 				"busName": "your_bus_name"
@@ -56,7 +56,7 @@ If you are building an app based on the Echo.App abstraction and you need to ini
 	YourApplication.renderers.stream = function(element) {
 		this.initComponent({
 			"id": "Stream", // id in the "component" configuration object
-			"component": "Echo.StreamServer.Controls.Stream",
+			"component": "Echo.StreamServer.Apps.Stream",
 				"config": {
 					"target": element,
 					"appkey": "your_appkey",
@@ -74,7 +74,7 @@ More information regarding the Echo.App.initComponent function can be found {@li
 
 If you want to init an app in some other cases, it’s possible to call component constructor directly, just make sure that Echo JS SDK environment was loaded on a page.
 
-	new Echo.StreamServer.Controls.Stream({
+	new Echo.StreamServer.Apps.Stream({
 		"target": document.getElementById("stream"),
 		"query": "your_search_query",
 		"appkey": "your_appkey",
@@ -92,7 +92,7 @@ If you want to init an app in some other cases, it’s possible to call componen
 
 Almost every app built using Echo JS SDK can be extended via [Plugins](#!/guide/how_to_develop_plugin). In order to init a plugin for a given app, you should place the object with the “name” field into the “plugins” array, for example as shown below:
 
-	new Echo.StreamServer.Controls.Stream({
+	new Echo.StreamServer.Apps.Stream({
 		"target": document.getElementById("stream"),
 		"appkey": "echo.jssdk.demo.aboutecho.com",
 		"plugins": [{
@@ -102,7 +102,7 @@ Almost every app built using Echo JS SDK can be extended via [Plugins](#!/guide/
 
 If your plugin has configurable options, you should put them into the same object, so that the plugin code can access them. For example:
 
-	new Echo.StreamServer.Controls.Stream({
+	new Echo.StreamServer.Apps.Stream({
 		"target": document.getElementById("stream"),
 		"appkey": "echo.jssdk.demo.aboutecho.com",
 		"plugins": [{
@@ -113,7 +113,7 @@ If your plugin has configurable options, you should put them into the same objec
 
 If your plugin’s code is not loaded on a page yet, Echo JS SDK engine can take care of it for you, just add the “url” parameter with the plugin script URL. In this case the script will be downloaded and executed before the plugin initialization. For example:
 
-	new Echo.StreamServer.Controls.Stream({
+	new Echo.StreamServer.Apps.Stream({
 		"target": document.getElementById("stream"),
 		"appkey": "echo.jssdk.demo.aboutecho.com",
 		"plugins": [{

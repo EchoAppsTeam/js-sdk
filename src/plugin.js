@@ -1,13 +1,12 @@
 define("echo/plugin", [
 	"jquery",
-	"echo/control",
+	"echo/app",
 	"echo/utils",
 	"echo/labels",
 	"echo/configuration",
 	"echo/events",
 	"require"
-], function($, Control, utils, Labels, Configuration, Events, require) {
-	
+], function($, App, utils, Labels, Configuration, events, require) {
 	"use strict";
 
 	/**
@@ -78,7 +77,7 @@ define("echo/plugin", [
 			this.cssClass = this.component.get("cssPrefix") + "plugin-" + manifest.name;
 			this.cssPrefix = this.cssClass + "-";
 
-			// define extra css class for the control target
+			// define extra css class for the application target
 			this.component.config.get("target").addClass(this.cssClass);
 
 			this._init(["config"]);
@@ -200,21 +199,21 @@ define("echo/plugin", [
 	};
 
 	/**
-	 * @inheritdoc Control#set
+	 * @inheritdoc App#set
 	 */
 	Plugin.prototype.set = function(key, value) {
 		return utils.set(this, key, value);
 	};
 
 	/**
-	 * @inheritdoc Control#get
+	 * @inheritdoc App#get
 	 */
 	Plugin.prototype.get = function(key, defaults) {
 		return utils.get(this, key, defaults);
 	};
 
 	/**
-	 * @inheritdoc Control#remove
+	 * @inheritdoc App#remove
 	 */
 	Plugin.prototype.remove = function(key) {
 		return utils.remove(this, key);
@@ -229,14 +228,14 @@ define("echo/plugin", [
 
 	/**
 	 * Method to enable the plugin.
-	 * The plugin becomes enabled for the current control instance and
+	 * The plugin becomes enabled for the current application instance and
 	 * the update can also be reflected in the config (if the "global"
 	 * flag is defined during the function invocation) to enable it
-	 * for other controls which use the same config parameters.
+	 * for other applications which use the same config parameters.
 	 *
 	 * @param {Boolean} [global]
 	 * Specifies if the plugin should be enabled in the config. By default
-	 * the function enables the plugin for the current control instance only.
+	 * the function enables the plugin for the current application instance only.
 	 */
 	Plugin.prototype.enable = function(global) {
 		global && this.config.set("enabled", true);
@@ -245,14 +244,14 @@ define("echo/plugin", [
 
 	/**
 	 * Method to disable the plugin.
-	 * The plugin becomes disabled for the current control instance and
+	 * The plugin becomes disabled for the current application instance and
 	 * the update can also be reflected in the config (if the "global"
 	 * flag is defined during the function invocation) to disable it
-	 * for other controls which use the same config parameters.
+	 * for other applications which use the same config parameters.
 	 *
 	 * @param {Boolean} [global]
 	 * Specifies if the plugin should be disabled in the config. By default
-	 * the function disables the plugin for the current control instance only.
+	 * the function disables the plugin for the current application instance only.
 	 */
 	Plugin.prototype.disable = function(global) {
 		global && this.config.set("enabled", false);
@@ -288,7 +287,7 @@ define("echo/plugin", [
 	};
 
 	/**
-	 * @inheritdoc Control#parentRenderer
+	 * @inheritdoc App#parentRenderer
 	 */
 	Plugin.prototype.parentRenderer = function() {
 		return this.component.parentRenderer.apply(this.component, arguments);
@@ -300,7 +299,7 @@ define("echo/plugin", [
 	 * action requiring string interspersion.
 	 *
 	 * @param {Object} args
-	 * Specifies substitution process, contains control parameters.
+	 * Specifies substitution process, contains application parameters.
 	 *
 	 * @param {String} args.template
 	 * Template containing placeholders used for data interspersion.
@@ -334,7 +333,7 @@ define("echo/plugin", [
 	 */
 	Plugin.prototype.requestDataRefresh = function() {
 		Events.publish({
-			"topic": "Control.onDataInvalidate",
+			"topic": "App.onDataInvalidate",
 			"context": this.component.config.get("context"),
 			"global": false,
 			"propagation": false,
@@ -356,8 +355,9 @@ define("echo/plugin", [
 	};
 
 	Plugin.prototype._init = function() {
-		var Control = require("echo/control");
-		Control.prototype._init.apply(this, arguments);
+		// FIXME: unnecessary require
+		var App = Echo.require("echo/app");
+		App.prototype._init.apply(this, arguments);
 	};
 
 	Plugin.prototype._manifest = function(key) {
@@ -525,7 +525,7 @@ define("echo/plugin", [
 	};
 
 	/**
-	 * Method to assemble config for nested control based on the parent control config.
+	 * Method to assemble config for nested application based on the parent application config.
 	 *
 	 * @param {Object} data
 	 * Configuration data to be merged with the parent config.
@@ -541,7 +541,7 @@ define("echo/plugin", [
 		data.parent = config.getAsHash();
 		data.plugins = (data.plugins || []).concat(this.plugin.config.get("nestedPlugins", []));
 
-		// copy default field values from parent control
+		// copy default field values from parent application
 		utils.foldl(data, defaults, function(value, acc, key) {
 			// do not override existing values in data
 			if (typeof data[key] === "undefined") {

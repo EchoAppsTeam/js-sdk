@@ -2,7 +2,7 @@
   "name": "js-sdk",
   "title": "Echo JS SDK",
   "description": "Javascript SDK for Echo applications",
-  "version": "3.0.14",
+  "version": "3.0.15",
   "homepage": "http://echoappsteam.github.io/js-sdk/",
   "author": {
     "name": "Echo",
@@ -33,6 +33,7 @@
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-uglify": "~0.2.5",
+    "grunt-contrib-jshint": "~0.7.1",
     "grunt-recess": "~0.4.0",
     "underscore.string": "~2.3.3",
     "grunt-saucelabs": "~4.1.2",
@@ -40,7 +41,8 @@
     "grunt-contrib-requirejs": "~0.4.1"
   },
   "devDependencies": {
-    "ftp": "~0.1.7"
+    "ftp": "~0.1.7",
+    "grunt-contrib-watch": "~0.5.3"
   },
   "private": true
 }

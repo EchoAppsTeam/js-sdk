@@ -1,17 +1,18 @@
 define("echo/canvas", [
 	"jquery",
-	"echo/control",
+	"echo/app",
 	"echo/utils",
 	"echo/loader",
 	"echo/events"
-], function($, Control, Utils, Loader, Events) {
+], function($, App, Utils, Loader, Events) {
 	
 "use strict";
 
-var canvas = Control.manifest("Canvas");
+var canvas = App.manifest("Canvas");
 
 //do we need it?
-if (Control.isDefined(canvas)) return;
+if (App.isDefined(canvas)) return;
+
 
 /**
  * @class Canvas
@@ -22,7 +23,7 @@ if (Control.isDefined(canvas)) return;
  *
  * @package environment.pack.js
  *
- * @extends Control
+ * @extends App
  *
  * @constructor
  * Canvas object constructor to initialize the Canvas instance
@@ -31,24 +32,6 @@ if (Control.isDefined(canvas)) return;
  * Configuration options
  */
 
-/** @hide @method getRelativeTime */
-/** @hide @echo_label justNow */
-/** @hide @echo_label today */
-/** @hide @echo_label yesterday */
-/** @hide @echo_label lastWeek */
-/** @hide @echo_label lastMonth */
-/** @hide @echo_label secondAgo */
-/** @hide @echo_label secondsAgo */
-/** @hide @echo_label minuteAgo */
-/** @hide @echo_label minutesAgo */
-/** @hide @echo_label hourAgo */
-/** @hide @echo_label hoursAgo */
-/** @hide @echo_label dayAgo */
-/** @hide @echo_label daysAgo */
-/** @hide @echo_label weekAgo */
-/** @hide @echo_label weeksAgo */
-/** @hide @echo_label monthAgo */
-/** @hide @echo_label monthsAgo */
 /** @hide @echo_label loading */
 /** @hide @echo_label retrying */
 /** @hide @echo_label error_busy */
@@ -158,7 +141,7 @@ canvas.config = {
 
 	/**
 	 * @cfg {String} target(required)
-	 * Specifies the DOM element where the control will be displayed.
+	 * Specifies the DOM element where the application will be displayed.
 	 *
 	 * Note: if only the "target" config parameter is defined, the target DOM element
 	 * should contain the following HTML attribute:
@@ -337,7 +320,7 @@ canvas.methods._loadAppResources = function(callback) {
 		resources.push({
 			"url": script,
 			"loaded": function() {
-				return Control.isDefined(app.component);
+				return App.isDefined(app.component);
 			}
 		});
 	});
@@ -421,7 +404,7 @@ canvas.methods._fetchConfig = function(callback) {
 			// specified as "#XXX" in the Canvas ID. We don't need to send this
 			// unique page identifier, we send only the primary Canvas ID.
 			"endpoint": this._getIds().main,
-			"scheme": this.config.get("useSecureAPI") ? "https" : parts.scheme
+			"scheme": this.config.get("useSecureAPI") ? "https" : parts.scheme || "http"
 		})
 	});
 
@@ -455,7 +438,7 @@ canvas.methods._fetchConfig = function(callback) {
 	});
 };
 
-Control.create(canvas);
+App.create(canvas);
 
 return canvas;
 

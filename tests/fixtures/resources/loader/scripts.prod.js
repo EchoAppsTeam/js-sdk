@@ -3,22 +3,22 @@
 
 var $ = jQuery;
 
-var control = Echo.Control.manifest("Echo.Tests.Controls.TestControl");
+var app = Echo.App.manifest("Echo.Tests.Apps.TestApp");
 
-if (Echo.Control.isDefined(control)) return;
+if (Echo.App.isDefined(app)) return;
 
-control.init = function() {
+app.init = function() {
 	if (!Echo.Variables) {
 		Echo.Variables = {};
 	}
-	Echo.Variables.TestControl = "production";
+	Echo.Variables.TestApp = "production";
 	this.ready();
 };
 
-control.config = {};
+app.config = {};
 
-control.templates.main = "";
+app.templates.main = "";
 
-Echo.Control.create(control);
+Echo.App.create(app);
 
 })(Echo.jQuery);

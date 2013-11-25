@@ -374,7 +374,6 @@ module.exports = function(grunt) {
 							"identityserver/api",
 							"user-session",
 							"view",
-							"control",
 							"app",
 							"plugin",
 						//	"canvas"
@@ -383,10 +382,10 @@ module.exports = function(grunt) {
 						"name": "streamserver.pack",
 						"create": true,
 						"include": [
-							"streamserver/controls/counter",
-							"streamserver/controls/stream",
-							"streamserver/controls/facepile",
-							"streamserver/controls/submit",
+							"streamserver/apps/counter",
+							"streamserver/apps/stream",
+							"streamserver/apps/facepile",
+							"streamserver/apps/submit",
 							"streamserver/plugins/community-flag",
 							"streamserver/plugins/form-auth",
 							"streamserver/plugins/item-accumulator-display",
@@ -405,7 +404,7 @@ module.exports = function(grunt) {
 						"name": "identityserver.pack",
 						"create": true,
 						"include": [
-							"identityserver/controls/auth",
+							"identityserver/apps/auth",
 							"identityserver/plugins/janrain-connector",
 						]
 					}, {

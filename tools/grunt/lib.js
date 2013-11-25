@@ -39,7 +39,7 @@ exports.init = function(grunt) {
 	};
 
 	grunt.template.addDelimiters("configPlaceholder", "{%", "%}");
-	exports.replacePlaceholdersOnCopy = function(text, filename) {
+	exports.replacePlaceholdersOnCopy = function(text) {
 		// return text as is if there are no placeholders
 		if (!/{%=/.test(text)) return text;
 		// we set the last parameter value to "init" because we want different

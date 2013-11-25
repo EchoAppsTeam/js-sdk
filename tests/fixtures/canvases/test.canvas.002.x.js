@@ -1,6 +1,6 @@
 window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-002-1", {
     "id": "test.canvas.002.1",
-    "title": "Test canvas with Auth control",
+    "title": "Test canvas with Auth application",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
         "busName": "jskit"
@@ -8,7 +8,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Controls.Auth",
+        "component": "Echo.IdentityServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -20,7 +20,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
 });
 window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-002-2", {
     "id": "test.canvas.002.2",
-    "title": "Test canvas with Auth control",
+    "title": "Test canvas with Auth application",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
         "busName": "jskit"
@@ -28,7 +28,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Controls.Auth",
+        "component": "Echo.IdentityServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -40,7 +40,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
 });
 window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-002-3", {
     "id": "test.canvas.002.3",
-    "title": "Test canvas with Auth control",
+    "title": "Test canvas with Auth application",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
         "busName": "jskit"
@@ -48,7 +48,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Controls.Auth",
+        "component": "Echo.IdentityServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -60,7 +60,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
 });
 window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-002-4", {
     "id": "test.canvas.002.4",
-    "title": "Test canvas with Auth control",
+    "title": "Test canvas with Auth application",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
         "busName": "jskit"
@@ -68,7 +68,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Controls.Auth",
+        "component": "Echo.IdentityServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -80,7 +80,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
 });
 window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-002-5", {
     "id": "test.canvas.002.5",
-    "title": "Test canvas with Auth control",
+    "title": "Test canvas with Auth application",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
         "busName": "jskit"
@@ -88,7 +88,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Controls.Auth",
+        "component": "Echo.IdentityServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {

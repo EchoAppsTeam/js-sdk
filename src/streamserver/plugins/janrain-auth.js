@@ -2,15 +2,15 @@ define("echo/streamserver/plugins/janrainAuth", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
-	"echo/identityserver/controls/auth"
+	"echo/identityserver/apps/auth"
 ], function($, Plugin, Utils, Auth) {
 "use strict";
 
 /**
- * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth
- * Janrain Social Sign-in Widget integration with Echo Submit Control.
+ * @class Echo.StreamServer.Apps.Submit.Plugins.JanrainAuth
+ * Janrain Social Sign-in Widget integration with Echo Submit Application.
  *
- * 	new Echo.StreamServer.Controls.Submit({
+ * 	new Echo.StreamServer.Apps.Submit({
  * 		"target": document.getElementById("submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -28,7 +28,9 @@ define("echo/streamserver/plugins/janrainAuth", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("JanrainAuth", "Echo.StreamServer.Controls.Submit");
+var plugin = Plugin.manifest("JanrainAuth", "Echo.StreamServer.Apps.Submit");
+
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	if (this._userStatus() === "forcedLogin") {
@@ -50,7 +52,7 @@ plugin.config = {
 
 	/**
 	 * @cfg {String[]} [buttons=["login"]]
-	 * A list of buttons that should be rendered in the Auth Control. May include
+	 * A list of buttons that should be rendered in the Auth Application. May include
 	 * any of the following strings (order doesn't matter):
 	 *
 	 * + "login"
@@ -113,11 +115,6 @@ plugin.labels = {
 	 */
 	"youMustBeLoggedIn": "You must be logged in to comment"
 };
-
-/*plugin.dependencies = [{
-	"control": "Echo.IdentityServer.Controls.Auth",
-	"url": "{config:cdnBaseURL.sdk}/identityserver.pack.js"
-}];*/
 
 /**
  * @echo_template

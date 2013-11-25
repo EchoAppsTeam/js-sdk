@@ -1,13 +1,13 @@
 define("echo/streamserver/plugins/formAuth", [
 	"jquery",
 	"echo/plugin",
-	"echo/identityserver/controls/auth"
+	"echo/identityserver/apps/auth"
 ], function($, Plugin, Auth) {
 "use strict";
 
 /**
- * @class Echo.StreamServer.Controls.Submit.Plugins.FormAuth
- * Adds the authentication section to the Echo Submit control
+ * @class Echo.StreamServer.Apps.Submit.Plugins.FormAuth
+ * Adds the authentication section to the Echo Submit application
  *
  * 	var identityManager = {
  * 		"width": 400,
@@ -15,7 +15,7 @@ define("echo/streamserver/plugins/formAuth", [
  * 		"url": "http://example.com/auth"
  * 	};
  *
- * 	new Echo.StreamServer.Controls.Submit({
+ * 	new Echo.StreamServer.Apps.Submit({
  * 		"target": document.getElementById("submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -29,7 +29,7 @@ define("echo/streamserver/plugins/formAuth", [
  * 	});
  *
  * Note: it is strongly recommended to use
- * {@link Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth JanrainAuth} plugin
+ * {@link Echo.StreamServer.Apps.Submit.Plugins.JanrainAuth JanrainAuth} plugin
  * in case of integration with Janrain authentication provider because it is
  * based on the most current <a href="http://janrain.com/products/engage/social-login/" target="_blank">Janrain Social Login Widget</a>
  * implementation.
@@ -42,7 +42,9 @@ define("echo/streamserver/plugins/formAuth", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("FormAuth", "Echo.StreamServer.Controls.Submit");
+var plugin = Plugin.manifest("FormAuth", "Echo.StreamServer.Apps.Submit");
+
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	if (this._userStatus() === "forcedLogin") {
@@ -56,7 +58,7 @@ plugin.config = {
 	/**
 	 * @cfg {Object} identityManager The list of handlers for login, edit
 	 * and signup actions. If some action is omitted then it will not be
-	 * available for users in the Auth control. Each handler accepts sessionID
+	 * available for users in the Auth application. Each handler accepts sessionID
 	 * as GET parameter. This parameter is necessary for communication with
 	 * the Backplane server. When the handler finishes working it constructs the
 	 * corresponding Backplane message (for login, signup or user data update)

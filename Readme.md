@@ -16,7 +16,7 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 
 0. Clone this repository.
 1. Download and install NodeJS and npm from [http://nodejs.org](http://nodejs.org) (either from package or the source).
-2. sudo npm install -g grunt@0.3.17
+2. sudo npm install grunt-cli -g
 3. Run the following command in the project directory: npm install
 4. Now you can use 'grunt' command to build the project
 5. Install ruby, rubygems, yaml.

@@ -3,7 +3,7 @@
 
 var $ = jQuery;
 
-var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Controls.Stream");
+var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
 
 if (Echo.Plugin.isDefined(plugin)) return;
 

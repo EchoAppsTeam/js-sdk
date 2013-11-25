@@ -1,6 +1,6 @@
 (function($) {
 
-var plugin = "Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization";
+var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.PinboardVisualization";
 
 Echo.Tests.module(plugin, {
 	"meta": {

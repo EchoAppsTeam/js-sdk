@@ -5,11 +5,11 @@ define("echo/streamserver/plugins/textCounter", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Controls.Submit.Plugins.TextCounter
- * Adds the character counter under the text field in the Echo Submit control.
+ * @class Echo.StreamServer.Apps.Submit.Plugins.TextCounter
+ * Adds the character counter under the text field in the Echo Submit application.
  * Allows to set the maximum length of the text to enter.
  *
- * 	new Echo.StreamServer.Controls.Submit({
+ * 	new Echo.StreamServer.Apps.Submit({
  * 		"target": document.getElementById("echo-submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -25,7 +25,9 @@ define("echo/streamserver/plugins/textCounter", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("TextCounter", "Echo.StreamServer.Controls.Submit");
+var plugin = Plugin.manifest("TextCounter", "Echo.StreamServer.Apps.Submit");
+
+if (Plugin.isDefined(plugin)) return;
 
 /**
  * @cfg {Number} limit
@@ -53,7 +55,7 @@ plugin.init = function() {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Controls.Submit.onPostComplete": function(topic, args) {
+	"Echo.StreamServer.Apps.Submit.onPostComplete": function(topic, args) {
 		this.view.render({"name": "counterLabel"});
 	}
 };

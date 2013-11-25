@@ -1,6 +1,6 @@
 (function($) {
 
-var plugin = "Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag";
+var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.CommunityFlag";
 
 Echo.Tests.module(plugin, {
 	"meta": {

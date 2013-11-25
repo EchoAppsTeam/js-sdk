@@ -6,72 +6,41 @@ define("echo/streamserver/plugins/pinboardVisualization", [
 
 define("echo/streamserver/plugins/mediaGallery", [
 	"jquery",
-	"echo/control",
+	"echo/app",
 	"echo/utils"
-], function($, Control, Utils) {
+], function($, App, Utils) {
 "use strict";
 
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item.MediaGallery 
- * The MediaGallery control is used to display different media (pictures, video,
+ * @class Echo.StreamServer.Apps.Stream.Item.MediaGallery 
+ * The MediaGallery application is used to display different media (pictures, video,
  * flash objects, etc). 
  *
- * @extends Echo.Control
+ * @extends Echo.App
  *
  * @package streamserver/plugins/pinboard-visualization.js
  */
 
-var mediaGallery = Control.manifest("Echo.StreamServer.Controls.Stream.Item.MediaGallery");
+var mediaGallery = App.manifest("Echo.StreamServer.Apps.Stream.Item.MediaGallery");
 
-/** @hide @method getRelativeTime */
-/** @hide @echo_label justNow */
-/** @hide @echo_label today */
-/** @hide @echo_label yesterday */
-/** @hide @echo_label lastWeek */
-/** @hide @echo_label lastMonth */
-/** @hide @echo_label secondAgo */
-/** @hide @echo_label secondsAgo */
-/** @hide @echo_label minuteAgo */
-/** @hide @echo_label minutesAgo */
-/** @hide @echo_label hourAgo */
-/** @hide @echo_label hoursAgo */
-/** @hide @echo_label dayAgo */
-/** @hide @echo_label daysAgo */
-/** @hide @echo_label weekAgo */
-/** @hide @echo_label weeksAgo */
-/** @hide @echo_label monthAgo */
-/** @hide @echo_label monthsAgo */
-/** @hide @echo_label loading */
-/** @hide @echo_label retrying */
-/** @hide @echo_label error_busy */
-/** @hide @echo_label error_timeout */
-/** @hide @echo_label error_waiting */
-/** @hide @echo_label error_view_limit */
-/** @hide @echo_label error_view_update_capacity_exceeded */
-/** @hide @echo_label error_result_too_large */
-/** @hide @echo_label error_wrong_query */
-/** @hide @echo_label error_incorrect_appkey */
-/** @hide @echo_label error_internal_error */
-/** @hide @echo_label error_quota_exceeded */
-/** @hide @echo_label error_incorrect_user_id */
-/** @hide @echo_label error_unknown */
+if (App.isDefined(mediaGallery)) return;
 
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onReady
+ * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRefresh
+ * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRender
+ * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onRerender
+ * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -87,7 +56,7 @@ mediaGallery.labels = {
  * List of the jQuery elements which will be displayed (media content)
  *
  * @cfg {Object} item
- * An instance of the Echo.StreamServer.Controls.Stream.Item object
+ * An instance of the Echo.StreamServer.Apps.Stream.Item object
  * which may use its state for some reasons (context, data, etc)
  */
 mediaGallery.config = {
@@ -140,7 +109,7 @@ mediaGallery.renderers.controls = function(element) {
 		var itemContainer = $('<div></div>').append(element).addClass(itemClass);
 		var showCurrentMedia = function() {
 			/**
-			 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia
+			 * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onLoadMedia
 			 * Triggered when corresponding media is loaded.
 			 */
 			i === self.currentIndex && itemContainer.css("display", "block") && publish("onLoadMedia");
@@ -155,7 +124,7 @@ mediaGallery.renderers.controls = function(element) {
 				"height": itemContainer.height()
 			}, self.config.get("resizeDuration"), function() {
 				/**
-				 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize
+				 * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onResize
 				 * Triggered when corresponding media is resized.
 				 */
 				publish("onResize");
@@ -164,7 +133,7 @@ mediaGallery.renderers.controls = function(element) {
 				itemContainer.fadeIn(function() {
 					self.currentIndex = i;
 					/**
-					 * @echo_event Echo.StreamServer.Controls.Stream.Item.MediaGallery.onChangeMedia
+					 * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onChangeMedia
 					 * Triggered when media is changed.
 					 */
 					publish("onChangeMedia");
@@ -282,7 +251,7 @@ mediaGallery.css =
 	'.{class:control}:hover { background-color: #ee7b11; }' +
 	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }';
 
-return Control.create(mediaGallery);	
+return App.create(mediaGallery);	
 });
 
 define("echo/streamserver/plugins/streamItemPinboardVisualization", [
@@ -295,11 +264,11 @@ define("echo/streamserver/plugins/streamItemPinboardVisualization", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization
- * The PinboardVisualization plugin transforms Stream.Item control into a
+ * @class Echo.StreamServer.Apps.Stream.Item.Plugins.PinboardVisualization
+ * The PinboardVisualization plugin transforms Stream.Item application into a
  * pinboard-style block.
  *
- * 	new Echo.StreamServer.Controls.Stream({
+ * 	new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"query": "childrenof:http://example.com/js-sdk",
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
@@ -311,12 +280,12 @@ define("echo/streamserver/plugins/streamItemPinboardVisualization", [
  * 	});
  *
  * __Note__: PinboardVisualization plugin modifies not only the Stream layout,
- * but also the UI of the Stream.Item control. It is notable that "reTag" section
+ * but also the UI of the Stream.Item application. It is notable that "reTag" section
  * is removed from the Item template. That's why setting the "reTag" configuration
- * parameter for the Stream.Item control will result in no actions while the
+ * parameter for the Stream.Item application will result in no actions while the
  * PinboardVisualization plugin is active. This was done to simplfy UI and avoid
  * visual noise as much as possible. More information about "reTag" configuration
- * parameter can be found [here](#!/api/Echo.StreamServer.Controls.Stream.Item-cfg-reTag).
+ * parameter can be found [here](#!/api/Echo.StreamServer.Apps.Stream.Item-cfg-reTag).
  *
  * More information regarding the plugins installation can be found
  * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
@@ -326,7 +295,9 @@ define("echo/streamserver/plugins/streamItemPinboardVisualization", [
  * @package streamserver/plugins/pinboard-visualization.js
  */
 
-var plugin = Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream.Item");
+var plugin = Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Apps.Stream.Item");
+
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var self = this, item = this.component;
@@ -382,8 +353,8 @@ plugin.config = {
 	 * criteria simultaneously.
 	 */
 	"itemCSSClassByContentLength": {
-		"echo-streamserver-controls-stream-item-smallSizeContent": [0, 69],
-		"echo-streamserver-controls-stream-item-mediumSizeContent": [70, 120]
+		"echo-streamserver-apps-stream-item-smallSizeContent": [0, 69],
+		"echo-streamserver-apps-stream-item-mediumSizeContent": [70, 120]
 	},
 	/**
 	 * @cfg {Object} gallery
@@ -419,7 +390,7 @@ plugin.component.renderers.content = function(element) {
 (function() {
 
 /**
- * @echo_event Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView
+ * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.PinboardVisualization.onChangeView
  * Triggered if the view was changed.
  */
 var publish = function(force) {
@@ -466,20 +437,20 @@ plugin.component.renderers.textToggleTruncated = function(element) {
 	});
 };
 
-$.map(["Echo.StreamServer.Controls.Stream.Item.onRerender",
-	"Echo.StreamServer.Controls.Stream.Item.onDelete",
-	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onResize",
-	"Echo.StreamServer.Controls.Stream.Item.MediaGallery.onLoadMedia"], function(topic) {
+$.map(["Echo.StreamServer.Apps.Stream.Item.onRerender",
+	"Echo.StreamServer.Apps.Stream.Item.onDelete",
+	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onResize",
+	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onLoadMedia"], function(topic) {
 		plugin.events[topic] = function() {
-			var force = topic !== "Echo.StreamServer.Controls.Stream.Item.onDelete";
+			var force = topic !== "Echo.StreamServer.Apps.Stream.Item.onDelete";
 			publish.call(this, force);
 		};
 });
 
-$.map(["Echo.StreamServer.Controls.Submit.onRender",
-	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditError",
-	"Echo.StreamServer.Controls.Submit.Plugins.Edit.onEditComplete",
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onCollapse"], function(event) {
+$.map(["Echo.StreamServer.Apps.Submit.onRender",
+	"Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditError",
+	"Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditComplete",
+	"Echo.StreamServer.Apps.Stream.Item.Plugins.Reply.onCollapse"], function(event) {
 	plugin.events[event] = function(topic, args) {
 		var plugin = this;
 		// in some cases we need to refresh isotope layout immediately
@@ -491,9 +462,9 @@ $.map(["Echo.StreamServer.Controls.Submit.onRender",
 });
 
 // TODO: avoid coherence between plugin components
-plugin.events["Echo.StreamServer.Controls.Stream.Item.onRender"] = function(topic, args) {
+plugin.events["Echo.StreamServer.Apps.Stream.Item.onRender"] = function(topic, args) {
 	var plugin = this, item = this.component;
-	var body = $(".echo-streamserver-controls-stream-body", item.config.get("parent.target"));
+	var body = $(".echo-streamserver-apps-stream-body", item.config.get("parent.target"));
 	if (!body.data("isotope")) {
 		plugin.set("rendered", true);
 		return;
@@ -645,7 +616,7 @@ plugin.css =
 	'.{plugin.class} .echo-linkColor a { text-decoration: none; font-weight: bold; color: #524D4D; }' +
 	'.{plugin.class} .{class:buttons} .echo-linkColor { font-weight: normal; color: #C6C6C6; }' +
 	'.{plugin.class} .{class:buttons} .echo-linkColor:hover { font-weight: normal; color: #C6C6C6; }' +
-	'.{plugin.class} .{class:expandChildren} .echo-message-icon { background-image: none; }' +
+	'.{plugin.class} .{class:expandChildren} .echo-app-message-icon { background-image: none; }' +
 	'.{plugin.class} .{class:expandChildren} { border-bottom: 1px solid #D9D4D4; background-color: #F2F0F0; }' +
 	'.{plugin.class} .{class:expandChildren} .{class:message-loading} { background-image: none; font-weight: bold; }' +
 	'.{plugin.class} .{class:expandChildren} .{class:expandChildrenLabel} { padding-left: 0px; background-image: none; }' +
@@ -653,10 +624,10 @@ plugin.css =
 	'.{plugin.class} .{class:plugin-Like-likedBy} { margin-top: 5px; }' +
 	'.{plugin.class} .{class:plugin-Reply-submitForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
 	'.{plugin.class} .{class:plugin-Reply-compactForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-name { font-size: 12px; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-controls-auth-logout { line-height: 24px; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-userInfoWrapper {  margin: 5px 0px; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-controls-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-apps-auth-name { font-size: 12px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-apps-auth-logout { line-height: 24px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-apps-submit-userInfoWrapper {  margin: 5px 0px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-apps-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
 	'.{plugin.class} .{class:plugin-Moderation-status}  { width: 30px; clear: both; }' +
 	'.{plugin.class} .{class:plugin-TweetDisplay-tweetUserName}, .{plugin.class} .{class:authorName} { float: none; word-wrap: normal; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }' +
 	'.{plugin.class} .{class:plugin-TweetDisplay-tweetUserName} { margin-left: 0px; }' +
@@ -683,7 +654,7 @@ define("echo/streamserver/plugins/streamPinboardVisualization", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisualization
+ * @class Echo.StreamServer.Apps.Stream.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Echo Stream Client visualization
  * into a pinboard-style representation. The plugin extracts all media (such as
  * images, videos, etc) from the item content and assembles the mini media
@@ -698,7 +669,7 @@ define("echo/streamserver/plugins/streamPinboardVisualization", [
  * http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js  
  * http://cdn.echoenabled.com/sdk/v3/dev/streamserver/plugins/pinboard-visualization.js
  *
- * 	new Echo.StreamServer.Controls.Stream({
+ * 	new Echo.StreamServer.Apps.Stream({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -713,7 +684,9 @@ define("echo/streamserver/plugins/streamPinboardVisualization", [
  *
  * @package streamserver/plugins/pinboard-visualization.js
  */
-var plugin = Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Controls.Stream");
+var plugin = Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Apps.Stream");
+
+if (Plugin.isDefined(plugin)) return;
 
 var ua = navigator.userAgent.toLowerCase();
 var isMozillaBrowser = !!(
@@ -763,21 +736,14 @@ plugin.enabled = function() {
 	return document.compatMode !== "BackCompat"
 };
 
-/*
-plugin.dependencies = [{
-	"loaded": function() { return !!$.fn.isotope; }, //TODO: check if it works
-	"url": "{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js"
-}];
-*/
-
 plugin.events = {
-	"Echo.StreamServer.Controls.Stream.onRender": function(topic, args) {
+	"Echo.StreamServer.Apps.Stream.onRender": function(topic, args) {
 		this._refreshView();
 	},
-	"Echo.StreamServer.Controls.Stream.onRefresh": function(topic, args) {
+	"Echo.StreamServer.Apps.Stream.onRefresh": function(topic, args) {
 		this._refreshView();
 	},
-	"Echo.StreamServer.Controls.Stream.Item.Plugins.PinboardVisualization.onChangeView": function(topic, args) {
+	"Echo.StreamServer.Apps.Stream.Item.Plugins.PinboardVisualization.onChangeView": function(topic, args) {
 		var plugin = this;
 		if (args.force) {
 			plugin._refreshView();

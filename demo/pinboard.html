@@ -9,7 +9,7 @@
 </head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Stream.Plugins.PinboardVisulization" target="_blank">Documentation</a></div>
 		<h1>Pinboard Demo</h1>
 		<div class="wrapper">
 			<div id="stream"></div>
@@ -30,7 +30,7 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/controls/stream"], function(Stream) {
+		Echo.require(["echo/streamserver/apps/stream"], function(Stream) {
 			var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
 			new Stream({
 				"backplane": {
@@ -111,4 +111,3 @@
 	</script>
 </body>
 </html>
-

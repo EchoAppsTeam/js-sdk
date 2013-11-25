@@ -225,8 +225,6 @@ StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config
 	return $.extend({}, config, {
 		"onOpen": function(response, requestParams) {
 			_config.onOpen(response, {"requestType": self.requestType});
-			clearInterval(self.retryTimer);
-			delete self.retryTimer;
 		},
 		"onData": function(response, requestParams) {
 			self._onData(response, {"requestType": self.requestType}, _config);

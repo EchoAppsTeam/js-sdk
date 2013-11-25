@@ -7,7 +7,7 @@
 </head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Controls.Stream" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Stream" target="_blank">Documentation</a></div>
 		<h1>Stream App Demo</h1>
 		<div class="description">Echo Stream app encapsulates interaction with the Echo Search API and displays live updating search results in a standard 'news feed' style format.</div>
 		<div class="wrapper">
@@ -29,7 +29,7 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/controls/stream"], function(Stream) {
+		Echo.require(["echo/streamserver/apps/stream"], function(Stream) {
 			new Stream({
 				"backplane": {
 					"serverBaseURL": "https://api.echoenabled.com/v1",
