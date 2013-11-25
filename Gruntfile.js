@@ -10,17 +10,21 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-copy");
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
+	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
+	grunt.loadNpmTasks("grunt-contrib-watch");
+	grunt.loadNpmTasks("grunt-contrib-requirejs");
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
 	grunt.loadNpmTasks("grunt-saucelabs");
-	grunt.loadNpmTasks("grunt-contrib-requirejs");
 
-	grunt.registerTask("default", ["check:config", "clean:all", "build:sdk"]);
+	grunt.loadNpmTasks("sphere");
+
+	grunt.registerTask("default", ["check-environment:" + shared.config("env"), "jshint", "clean:all", "build:sdk"]);
 
 	grunt.registerTask("test", "Execute tests", function() {
 		grunt.option("test-build", true);
-		_assembleEnvConfig();
+		assembleEnvConfig();
 		var parts = url.parse(grunt.config("envConfig.baseURLs.tests") + "/", false, true);
 		parts.protocol = "http";
 		parts.query = grunt.option("number")
@@ -194,6 +198,8 @@ module.exports = function(grunt) {
 						"third-party/**",
 						// remove everything except packs and folders they are in
 						"!third-party",
+						"!third-party/janrain",
+						"!third-party/janrain/*",
 						"!third-party/jquery",
 						"!third-party/jquery.pack.js",
 						"!third-party/jquery/jquery.isotope.min.js"
@@ -265,7 +271,7 @@ module.exports = function(grunt) {
 			"loader-build": {
 				"options": {
 					"patcher": function(text, filepath, flags) {
-						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "")
+						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "");
 						text = text.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 						if (shared.config("build")) {
 							// patch debug field only when we are building files
@@ -284,7 +290,7 @@ module.exports = function(grunt) {
 			"loader-release": {
 				"options": {
 					"patcher": function(text, filepath, flags) {
-						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "")
+						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "");
 						return text.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 					}
 				},
@@ -302,6 +308,73 @@ module.exports = function(grunt) {
 				"bases": ["<%= dirs.dist %>"]
 			},
 			"test": {}
+		},
+		"release": {
+			"options": {
+				"environment": shared.config("env"),
+				"debug": shared.config("debug"),
+				"configFile": "config/release.json",
+				"location": shared.config("env") === "staging" ? "sandbox" : "cdn",
+				"remoteRoot": shared.config("env") === "staging" ? "/staging" : ""
+			},
+			"regular": {
+				"options": {
+					"deployTargets": {
+						"code:latest": {
+							"src": "**",
+							"cwd": "<%= dirs.dest %>/v<%= pkg.majorVersion %>/",
+							"dest": "<%= release.options.remoteRoot %>/sdk/v<%= pkg.majorVersion %>/"
+						},
+						"code:stable": {
+							"src": "**",
+							"cwd": "<%= dirs.dest %>/v<%= pkg.majorVersion %>/",
+							"dest": "<%= release.options.remoteRoot %>/sdk/v<%= pkg.version %>/"
+						},
+						"apps": {
+							"src": "**",
+							"cwd": "<%= dirs.dist %>/apps/",
+							"dest": "<%= release.options.remoteRoot %>/apps/"
+						}
+					},
+					"purgeTitle": "SDK",
+					"purgePaths": [
+						"/sdk/v<%= pkg.majorVersion %>/",
+						"/sdk/v<%= pkg.version %>/",
+						"/apps/"
+					],
+					"beforeDeploy": ["patch:loader-release:stable"],
+					"afterDeploy": shared.config("env") === "staging" ? [] : ["docs", "docs-release"]
+				}
+			},
+			"beta": {
+				"options": {
+					"deployTargets": {
+						"code:beta": {
+							"src": "**",
+							"cwd": "<%= dirs.dest %>/v<%= pkg.majorVersion %>/",
+							"dest": "<%= release.options.remoteRoot %>/sdk/v<%= pkg.majorVersion %>.beta/"
+						}
+					},
+					"purgeTitle": "SDK BETA",
+					"purgePaths": [
+						"/sdk/v<%= pkg.majorVersion %>.beta/"
+					],
+					"beforeDeploy": ["patch:loader-release:beta"]
+				}
+			},
+			"purge": {
+				"options": {
+					"skipBuild": true,
+					"purgePaths": ["/sdk/", "/apps/"]
+				}
+			},
+			"pages": {
+				"options": {
+					"skipBuild": true,
+					"skipPurge": true,
+					"afterDeploy": ["docs", "docs-release"]
+				}
+			}
 		},
 		"saucelabs-qunit": {
 			"options": {
@@ -341,7 +414,7 @@ module.exports = function(grunt) {
 						"include": [
 							"cookie",
 							"third-party/requirejs/require",
-							"third-party/requirejs/css",
+							"third-party/requirejs/css"
 						]
 					}, {
 						"name": "third-party/jquery.pack",
@@ -350,7 +423,7 @@ module.exports = function(grunt) {
 							"third-party/jquery/jquery"/* + shared.config("build.stage") === "min" ? ""min : ""*/,
 							"third-party/jquery/jquery-noconflict",
 							"third-party/jquery/jquery.ihint",
-							"third-party/jquery/jquery.viewport.mini"					
+							"third-party/jquery/jquery.viewport.mini"
 						]
 					}, {
 						"name": "enviroment.pack",
@@ -366,7 +439,7 @@ module.exports = function(grunt) {
 							"user-session",
 							"view",
 							"app",
-							"plugin",
+							"plugin"
 						//	"canvas"
 						]
 					}, {
@@ -396,13 +469,13 @@ module.exports = function(grunt) {
 						"create": true,
 						"include": [
 							"identityserver/apps/auth",
-							"identityserver/plugins/janrain-connector",
+							"identityserver/plugins/janrain-connector"
 						]
 					}, {
 						"name": "pinboard-visualization",
 						"create": true,
 						"include": [
-							"streamserver/plugins/pinboard-visualization",
+							"streamserver/plugins/pinboard-visualization"
 						]
 					}, {
 						"name": "gui.pack",
@@ -415,7 +488,7 @@ module.exports = function(grunt) {
 							"gui-plugins/echo-tabs"
 						]
 					}],
-					fileExclusionRegExp: /\S*(?:images){1}\S*/g, // \"min version"
+					fileExclusionRegExp: /\S*(?:images){1}\S*/g // \"min version"
 				}
 			}//, TODO: it will be used for minificated version building
 			//"plugins": {
@@ -427,7 +500,7 @@ module.exports = function(grunt) {
 			//		"optimize": "none",
 			//		"wrap": {
 			//			"start": "require([\"jquery\"] function(jQuery) {\n var $ = jQuery;\n",
-        	//			"end": "});"
+			//		"end": "});"
 			//		},
 			//		//"namespace": "Echo",
 			//		//removeCombined: true,
@@ -445,12 +518,18 @@ module.exports = function(grunt) {
 			//	}
 			//}
 		},
+		"jshint": {
+			"options": {
+				"jshintrc": ".jshintrc"
+			},
+			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"]
+		},
 		"wrap": {
 			"options": {
 				"header": [//TODO $ as a parameter (jquery)
 					"Echo.require([\"jquery\"], function(jQuery) {",
 					"var $ = jQuery;",
-					"",
+					""
 				],
 				"footer": [
 					"});"
@@ -470,7 +549,7 @@ module.exports = function(grunt) {
 				"files": [{
 					"expand": true,
 					"cwd": "<%= dirs.build %>",
-					"src": [ 
+					"src": [
 						"third-party/bootstrap/js/bootstrap-tooltip.js",
 						"third-party/bootstrap/js/bootstrap-*.js"
 					]
@@ -498,16 +577,38 @@ module.exports = function(grunt) {
 					"tests/harness/suite.js"
 				]
 			}*/
+		},
+		"watch": {
+				"src": {
+						"files": ["apps/**/*", "demo/**/*", "config/**/*", "src/**/*", "tools/**/*", "tests/**/*"],
+						"tasks": ["default"],
+						"options": {
+								"interrupt": true
+						}
+				}
+		},
+		"check-environment": {
+			"options": {
+				"list": shared.config("environments")
+			}
+                },
+		"init-environment": {
+			"options": {
+				"list": shared.config("environments"),
+				"cleanup": function(cfg, env) {
+					if (env === "ci") {
+						delete cfg.saucelabs;
+					}
+					return cfg;
+				}
+			}
 		}
-
 	};
 
 	grunt.initConfig(config);
 	grunt.config("pkg.majorVersion", grunt.config("pkg.version").split(".")[0]);
 
-	_assembleEnvConfig();
-
-	function _assembleEnvConfig() {
+	function assembleEnvConfig() {
 		var env = shared.config("env");
 		if (!grunt.config("envConfigRaw")) {
 			var envFilename = "config/environments/" + env + ".json";
@@ -519,7 +620,7 @@ module.exports = function(grunt) {
 		var data = _.cloneDeep(grunt.config("envConfigRaw"));
 		if (grunt.option("test-build")) {
 			var host = "localhost:" + grunt.config("express.options.port");
-			_.map(["tests", "cdn", "sdk", "docs"], function(k) {
+			_.each(["tests", "cdn", "sdk", "docs"], function(k) {
 				var parts = url.parse(data.baseURLs[k], false, true);
 				parts.host = host;
 				if (k === "docs" || k === "tests") {
@@ -548,5 +649,6 @@ module.exports = function(grunt) {
 		// TODO: (?) properly calculate "packageVersion" placeholder value and use it in Echo.Loader.version
 		data.packageVersion = grunt.config("pkg.majorVersion");
 		grunt.config("envConfig", data);
-	};
+	}
+	assembleEnvConfig();
 };
