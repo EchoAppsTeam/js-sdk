@@ -3,11 +3,10 @@ define('echo/variables', [], function() {
 	return {};
 });
 
-define("echo/utils", ["jquery"], function(jQuery) {
+define("echo/utils", ["jquery"], function($) {
 "use strict";
 
-var $ = jQuery, 
-	Utils;
+var Utils;
 
 //if (!window.Echo) window.Echo = {};
 

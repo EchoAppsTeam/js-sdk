@@ -2,7 +2,7 @@ define("echo/streamserver/plugins/pinboardVisualization", [
 	"echo/streamserver/plugins/mediaGallery",
 	"echo/streamserver/plugins/streamItemPinboardVisualization",
 	"echo/streamserver/plugins/streamPinboardVisualization"
-], function(){})
+], function(){});
 
 define("echo/streamserver/plugins/mediaGallery", [
 	"jquery",

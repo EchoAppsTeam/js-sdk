@@ -1046,7 +1046,6 @@ Control.prototype._loadScripts = function(resources, callback) {
 		return control.substitute({"template": resource})
 	});
 
-	//TODO: handle the scriptLoadErrorTimeout config param
 	require(resources, function() {
 		callback.call(control);
 	});

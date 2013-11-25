@@ -6,8 +6,7 @@ define("echo/api", [
 ], function($, Configuration, Events, Utils) {
 "use strict";
 
-var API = {"Transports": {}, "Request": {}},
-	utils = Utils;
+var API = {"Transports": {}, "Request": {}};
 
 API.Transport = function(config) {
 	this.config = new Configuration(config, {
@@ -47,7 +46,7 @@ API.Transport.prototype._prepareURL = function() {
  * @ignore
  * @class API.Transports.WebSockets
  */
-API.Transports.WebSockets = utils.inherit(API.Transport, function(config) {
+API.Transports.WebSockets = Utils.inherit(API.Transport, function(config) {
 	if (!config || !config.uri) {
 		Utils.log({
 			"type": "error",
@@ -307,7 +306,7 @@ API.Transports.WebSockets.available = function() {
  * @ignore
  * @class API.Transports.AJAX
  */
-API.Transports.AJAX = utils.inherit(API.Transport, function(config) {
+API.Transports.AJAX = Utils.inherit(API.Transport, function(config) {
 	config = $.extend({
 		"method": "get"
 	}, config || {});
@@ -384,14 +383,14 @@ API.Transports.AJAX.available = function() {
  * @ignore
  * @class API.Transports.XDomainRequest
  */
-API.Transports.XDomainRequest = utils.inherit(API.Transports.AJAX, function() {
+API.Transports.XDomainRequest = Utils.inherit(API.Transports.AJAX, function() {
 	return API.Transports.XDomainRequest.parent.constructor.apply(this, arguments);
 });
 
 API.Transports.XDomainRequest.prototype._getTransportObject = function() {
 	var obj = API.Transports.XDomainRequest.parent._getTransportObject.call(this);
-	var domain = utils.parseURL(document.location.href).domain;
-	var targetDomain = utils.parseURL(this.config.get("uri")).domain;
+	var domain = Utils.parseURL(document.location.href).domain;
+	var targetDomain = Utils.parseURL(this.config.get("uri")).domain;
 	if (domain === targetDomain) {
 		return obj;
 	}
@@ -495,7 +494,7 @@ API.Transports.XDomainRequest.available = function(config) {
  * @ignore
  * @class API.Transports.JSONP
  */
-API.Transports.JSONP = utils.inherit(API.Transports.AJAX, function(config) {
+API.Transports.JSONP = Utils.inherit(API.Transports.AJAX, function(config) {
 	return API.Transports.JSONP.parent.constructor.apply(this, arguments);
 });
 
@@ -693,7 +692,7 @@ API.Request.prototype._isSecureRequest = function(url) {
 	var parts, secure = this.config.get("secure");
 	var re = /https|wss/;
 	if (secure) return secure;
-	parts = utils.parseURL(url);
+	parts = Utils.parseURL(url);
 	return re.test(window.location.protocol) || re.test(parts.scheme);
 };
 
@@ -752,7 +751,7 @@ API.Request.prototype.abort = function() {
 };
 
 API.Request.prototype._normalizeTransportName = function(transport) {
-	return utils.foldl("", API.Transports, function(constructor, acc, name) {
+	return Utils.foldl("", API.Transports, function(constructor, acc, name) {
 		if (transport.toLowerCase() === name.toLowerCase()) {
 			return name;
 		}
@@ -795,7 +794,7 @@ API.Request.prototype._getTransportConfig = function() {
 
 API.Request.prototype._getHandlersByConfig = function() {
 	var self = this;
-	return utils.foldl({}, this.config.getAsHash(), function(value, acc, key) {
+	return Utils.foldl({}, this.config.getAsHash(), function(value, acc, key) {
 		var handler;
 		if (/^on[A-Z]/.test(key) && $.isFunction(value)) {
 			handler = key !== "onOpen"

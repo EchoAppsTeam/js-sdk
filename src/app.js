@@ -17,7 +17,7 @@ define("echo/app", [
  *
  * @extends Control
  */
-App = Utils.inherit(Control);
+var App = Utils.inherit(Control);
 
 /**
  * @static
