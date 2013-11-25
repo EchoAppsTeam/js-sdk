@@ -1,5 +1,10 @@
-(function(jQuery) {
-var $ = jQuery;
+Echo.require([
+	"jquery",
+	"echo/plugin",
+	"echo/utils",
+	"echo/events",
+	"echo/labels"
+], function($, Plugin, Utils, Events, Labels) { 
 
 "use strict";
 
@@ -68,10 +73,10 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"methods": {},
 			"renderers": {},
 			"templates": {},
-			"dependencies": []
+			//"dependencies": []
 		};
 
-		var _manifest = Echo.Plugin.manifest(manifest.name, manifest.component.name);
+		var _manifest = Plugin.manifest(manifest.name, manifest.component.name);
 		QUnit.ok(!!_manifest.init,
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
@@ -83,22 +88,22 @@ suite.prototype.tests.PublicInterfaceTests = {
 		// create test application
 		suite.app().createTestApp();
 
-		QUnit.ok(!Echo.Plugin.isDefined(manifest),
+		QUnit.ok(!Plugin.isDefined(manifest),
 			"Checking that the plugin class isn't defined (via isDefined static method), before actual plugin definition");
-		QUnit.ok(!Echo.Plugin.isDefined(Echo.Plugin._getClassName(manifest.name, manifest.component.name)),
+		QUnit.ok(!Plugin.isDefined(Plugin._getClassName(manifest.name, manifest.component.name)),
 			"Checking that the plugin class isn't defined(via isDefined static method with plugin name as a parameter), before actual plugin definition");
-		QUnit.ok(!Echo.Plugin.getClass(manifest.name, manifest.component.name),
+		QUnit.ok(!Plugin.getClass(manifest.name, manifest.component.name),
 			"Checking that we haven't a reference to the plugin class (via getClass static method), before actual plugin definition");
 
 		// create plugin class out of manifest
 		suite.createTestPlugin(manifest.name, manifest.component.name);
 
 		// checking if we have class after class definition
-		QUnit.ok(Echo.Plugin.isDefined(manifest),
+		QUnit.ok(Plugin.isDefined(manifest),
 			"Checking if the plugin class was defined (via isDefined static method), after class definition");
-		QUnit.ok(Echo.Plugin.isDefined(Echo.Plugin._getClassName(manifest.name, manifest.component.name)),
+		QUnit.ok(Plugin.isDefined(Plugin._getClassName(manifest.name, manifest.component.name)),
 			"Checking if the plugin class was defined (via isDefined static method with plugin name as a parameter), after class definition");
-		QUnit.ok(!!Echo.Plugin.getClass(manifest.name, manifest.component.name),
+		QUnit.ok(!!Plugin.getClass(manifest.name, manifest.component.name),
 			"Checking if we have a reference to the plugin class (via getClass static method), before actual plugin definition");
 
 		// checking plugin class name definition
@@ -107,11 +112,11 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"Echo.StreamServer.Apps.MyTestApp.Plugins.MyTestPlugin",
 			"Checking if the \"_getClassName\" returns full plugin class name");
 		QUnit.equal(
-			Echo.Plugin._getClassName(undefined, manifest.component.name),
+			Plugin._getClassName(undefined, manifest.component.name),
 			undefined,
 			"Checking if the \"_getClassName\" returns undefined if the plugin name is undefined");
 		QUnit.equal(
-			Echo.Plugin._getClassName(manifest.name, undefined),
+			Plugin._getClassName(manifest.name, undefined),
 			undefined,
 			"Checking if the \"_getClassName\" returns undefined if the component name is undefined");
 
@@ -199,7 +204,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking if a plugin was enabled back after \"enable\" function call");
 
 		// checking if all dependencies are available
-		var result = true;
+		/*var result = true;
 		for (var i = 1; i < 6; i++) {
 			if (!Echo.Tests.Dependencies.Plugin["dep" + i]) result = false;
 		}
@@ -212,7 +217,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep9, "Checking if dependency is not loading if 'app' already loaded");
 		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep10, "Checking if dependency is not loading if 'plugin' already loaded");
 		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep11, "Checking if dependency is not loading if 'app' already loaded");
-
+		*/
 		try {
 			// checking log() calls with invalid params
 			plugin.log();
@@ -242,7 +247,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 		];
 		$.each(cases, function(id, _case) {
 			QUnit.strictEqual(
-				Echo.Utils.invoke(_case[0], plugin),
+				Utils.invoke(_case[0], plugin),
 				_case[1],
 				"Checking \"invoke()\" method, case #" + (id + 1)
 			);
@@ -489,15 +494,15 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 suite.prototype.cases.eventsMechanism = function(callback) {
 	var count = 0, increment = function() { count++; };
 	var _topic = "myTestTopic";
-	var context = Echo.Utils.getUniqueString();
+	var context = Utils.getUniqueString();
 	var publish = function(topic) {
-		Echo.Events.publish({
+		Events.publish({
 			"topic": topic || _topic,
 			"context": context
 		});
 	};
 	var subscribe = function(topic) {
-		return Echo.Events.subscribe({
+		return Events.subscribe({
 			"topic": topic || _topic,
 			"context": context,
 			"handler": increment
@@ -561,7 +566,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 };
 
 suite.prototype.cases.labelsOverriding = function(callback) {
-	Echo.Labels.set({
+	Labels.set({
 		"label1": "label1 global override",
 		"label2": "label2 global override"
 	}, "Echo.StreamServer.Apps.MyTestApp.Plugins.MyTestPlugin");
@@ -713,12 +718,12 @@ suite.getTestPluginName = function() {
 };
 
 suite.createTestPlugin = function(name, component) {
-	Echo.Plugin.create(suite.getPluginManifest(name, component));
+	Plugin.create(suite.getPluginManifest(name, component));
 };
 
 suite.getPluginManifest = function(name, component) {
 
-	var manifest = Echo.Plugin.manifest(name, component);
+	var manifest = Plugin.manifest(name, component);
 
 	manifest.config = $.extend(true, {}, suite.data.config);
 
@@ -739,7 +744,7 @@ suite.getPluginManifest = function(name, component) {
 		}
 		manifest.dependencies.push(dependency);
 	};
-	for (var i = 1; i < 6; i++) addDependency(i);
+	//for (var i = 1; i < 6; i++) addDependency(i);
 
 	Echo.Tests.Unit.App.createTestApp("Echo.Apps.MyTestApp");
 	addDependency(6, {"app": "Echo.StreamServer.Apps.MyNotExistsTestApp"});
@@ -843,4 +848,4 @@ suite.getPluginManifest = function(name, component) {
 
 };
 
-})(Echo.jQuery);
+});

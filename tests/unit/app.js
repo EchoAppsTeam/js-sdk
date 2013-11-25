@@ -57,8 +57,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"events": {},
 			"methods": {},
 			"renderers": {},
-			"templates": {},
-			"dependencies": []
+			"templates": {}
 		};
 
 		var _manifest = Echo.App.manifest(manifest.name);

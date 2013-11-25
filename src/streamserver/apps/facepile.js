@@ -5,7 +5,7 @@ define("echo/streamserver/apps/facePile", [
 	"echo/utils",
 	"echo/streamserver/api",
 	"echo/streamserver/apps/facePileItem"
-], function($, App, Utils, API, Item, require) {
+], function($, require, App, Utils, API, Item) {
 "use strict";
 
 /**
@@ -589,8 +589,9 @@ pile.css =
 
 Echo.define("echo/streamserver/apps/facePileItem", [
 	"jquery",
+	"require",
 	"echo/app"
-], function($, App) {
+], function($, require, App) {
 "use strict";
 
 /**

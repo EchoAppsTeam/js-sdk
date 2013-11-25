@@ -1,7 +1,7 @@
 define("echo/streamserver/plugins/formAuth", [
 	"jquery",
 	"echo/plugin",
-	"echo/identityserver/apps/Auth"
+	"echo/identityserver/apps/auth"
 ], function($, Plugin, Auth) {
 "use strict";
 

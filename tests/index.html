@@ -9,18 +9,18 @@
 		#qunit-header, #qunit-tests > li:last-child { border-radius:0; }
 	</style>
 	<link href="{%=baseURLs.sdk%}/gui.pack.css" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/backplane.js"></script>
+	<!--script type="text/javascript" src="{%=baseURLs.sdk%}/backplane.js"></script-->
 	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
+	<!--script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
 	<script type="text/javascript" src="{%=baseURLs.sdk%}/environment.pack.js"></script>
 	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver.pack.js"></script>
 	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver/plugins/pinboard-visualization.js"></script>
 	<script type="text/javascript" src="{%=baseURLs.sdk%}/identityserver.pack.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/gui.pack.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/tests/harness.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/tests/harness/suite.js"></script>
-	<script type="text/javascript" src="fixtures/vars.js"></script>
-	<script type="text/javascript" src="fixtures/api/count.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/gui.pack.js"></script-->
+	<!--script type="text/javascript" src="{%=baseURLs.sdk%}/tests/harness.js"></script-->
+	<!--script type="text/javascript" src="{%=baseURLs.sdk%}/tests/harness/suite.js"></script-->
+	<!--script type="text/javascript" src="fixtures/vars.js"></script-->
+	<!--script type="text/javascript" src="fixtures/api/count.js"></script>
 	<script type="text/javascript" src="fixtures/api/search.js"></script>
 	<script type="text/javascript" src="fixtures/api/whoami.js"></script>
 	<script type="text/javascript" src="fixtures/canvases/test.canvas.001.js"></script>
@@ -71,15 +71,162 @@
 	<script type="text/javascript" src="unit/streamserver/plugins/moderation.js"></script>
 	<script type="text/javascript" src="unit/streamserver/plugins/tweet-display.js"></script>
 	<script type="text/javascript" src="unit/streamserver/plugins/infinite-scroll.js"></script>
-	<script type="text/javascript" src="unit/identityserver/apps/auth.js"></script>
+	<script type="text/javascript" src="unit/identityserver/apps/auth.js"></script>-->
 
 	<script type="text/javascript">
-		Echo.Tests.init({
-			"title": "Echo SDK v3 tests",
-			"backplane": {
-				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-				"busName": "jskit"
+		//TODO: this is a temporal decision just to run tests. It must be rewrote asap
+		Echo.require([
+			"jquery",
+			"echo/api",
+			"echo/app",
+			"echo/configuration",
+			"echo/control",
+			"cookie",
+			"echo/events",
+			"echo/gui",
+			"echo/labels",
+			"echo/plugin",
+			"echo/user-session",
+			"echo/utils",
+			"echo/view",
+			"echo/streamserver/api",
+			"echo/streamserver/controls/counter",
+			"echo/streamserver/controls/facePile",
+			"echo/streamserver/controls/stream",
+			"echo/streamserver/controls/submit",
+			"echo/identityserver/controls/auth",
+			"echo/identityserver/plugins/janrainConnector",
+			"echo/identityserver/api",
+			"echo/gui/modal",
+			"echo/gui/dropdown",
+			"echo/gui/tabs",
+			"echo/gui/button",
+			"echo/streamserver/plugins/edit",
+			"echo/streamserver/plugins/reply",
+			"echo/streamserver/plugins/itemAccumulatorDisplay",
+			"echo/streamserver/plugins/pinboardVisualization",
+			"echo/streamserver/plugins/formAuth",
+			"echo/streamserver/plugins/textCounter",
+			"echo/streamserver/plugins/communityFlag",
+			"echo/streamserver/plugins/moderation",
+			"echo/streamserver/plugins/tweet-display",
+			"echo/streamserver/plugins/infiniteScroll",
+			"QUnit",
+			"echo/backplane",
+			"require"
+		], function($, API, App, Configuration, Control, Cookie, Events, GUI, Labels, Plugin, UserSession,
+				Utils, View, Counter, Facepile, Stream, Submit, Auth, Modal, Dropdown, Tabs, Button, 
+				Edit, Reply, IAD, PinVis, FormAuth, TextCounter, CommFlag, Moder, TwDispl, Scroll, QUnit, require) {
+			var OldEcho = {
+				"jQuery": $,
+				"API" : API,
+				"App": App,
+				"Configuration": Configuration,
+				"Control": Control,
+				"Cookie": Cookie,
+				"Events": Events,
+				"GUI": GUI,
+				"Labels": Labels,
+				"Plugin": Plugin,
+				"UserSession": UserSession,
+				"Utils": Utils,
+				"View": View,
+				"StreamServer": {
+					"Controls":{
+						"Counter": Counter,
+						"Stream": Stream,
+						"Facepile": Facepile,
+						"Submit": Submit
+					},
+					"Plugins":{
+						"Edit": Edit,
+						"Reply": Reply,
+						"ItemAccumulatorDisplay": IAD,
+						"PinboardVisualization": PinVis,
+						"FormAuth": FormAuth,
+						"TextCounter": TextCounter,
+						"CommunityFlag": CommFlag,
+						"Moderation": Moder,
+						"TweetDisplay": TwDispl,
+						"InfinityScroll": Scroll
+					}
+				},
+				"IdentityServer":{
+					"Controls": {
+						"Auth": Auth
+					},
+					"Plugins": {}
+				}
 			}
+			for(var prop in OldEcho) {
+				Echo[prop] = OldEcho[prop];
+			}
+			Echo.require(["echo/tests/harness"], function() {
+				//console.log(QUnit);
+				Echo.Tests.Fixtures = {
+					"api": {},
+					"loader": {},
+					"canvases": {}
+				};
+				Echo.require([
+					"config",
+					"fixtures/api/count.js",
+					"fixtures/api/search.js",
+					"fixtures/api/whoami.js"
+				], function() {
+					Echo.require([
+						"unit/api",
+						"unit/app",
+						"unit/button",
+						"unit/compatibility",
+						"unit/configuration",
+						"unit/control",
+						"unit/utils",
+						"unit/modal",
+						"unit/dropdown",
+						"unit/tabs",
+						"unit/button",
+						"unit/gui",
+						"unit/cookie",
+						"unit/events",
+						"unit/labels",
+						"unit/button",
+						"unit/user-session",
+						"unit/streamserver/api",
+						"unit/identityserver/api",
+						"unit/plugin",
+						"unit/view",
+						//"unit/loader",
+						//"unit/canvas",
+						"unit/streamserver/controls/counter",
+						"unit/streamserver/controls/submit",
+						"unit/streamserver/controls/facepile",
+						"unit/streamserver/controls/facepile-item",
+						"unit/streamserver/controls/stream",
+						"unit/streamserver/controls/stream-item",
+						"unit/streamserver/controls/media-gallery",
+						"unit/streamserver/plugins/edit",
+						"unit/streamserver/plugins/reply",
+						"unit/streamserver/plugins/item-accumulator-display",
+						"unit/streamserver/plugins/pinboard-visualization",
+						"unit/streamserver/plugins/form-auth",
+						"unit/streamserver/plugins/text-counter",
+						"unit/streamserver/plugins/community-flag",
+						"unit/streamserver/plugins/moderation",
+						"unit/streamserver/plugins/tweet-display",
+						"unit/streamserver/plugins/infinite-scroll",
+						"unit/identityserver/controls/auth"	
+					], function() {
+						Echo.Tests.init({
+							"title": "Echo SDK v3 tests",
+							"backplane": {
+								"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+								"busName": "jskit"
+							}
+						});
+					});
+				});
+			});
 		});
 	</script>
 </head>

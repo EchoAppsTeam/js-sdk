@@ -1,10 +1,16 @@
+define("echo/streamserver/plugins/janrainSharing", [
+	"echo/streamserver/plugins/submitJanrainSharing",
+	"echo/streamserver/plugins/streamJanrainSharing"
+], function() {});
+
 define("echo/streamserver/plugins/submitJanrainSharing", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"echo/gui",
 	"echo/identityserver/apps/auth",
-	"require"
+	"require",
+	"css!echo/gui.pack"
 ], function($, Plugin, Utils, GUI, require) {
 "use strict";
 
@@ -394,7 +400,9 @@ define("echo/streamserver/plugins/streamJanrainSharing", [
 	"jquery",
 	"echo/plugin",
 	"echo/gui",
-	"echo/streamserver/apps/submit"
+	"echo/streamserver/apps/submit",
+	"echo/streamserver/plugins/submitJanrainSharing",
+	"css!echo/gui.pack"
 ], function($, Plugin, GUI, Submit) {
 "use strict";
 

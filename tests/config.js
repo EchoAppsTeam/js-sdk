@@ -1,7 +1,5 @@
-(function(jQuery) {
+(function($) {
 "use strict";
-
-var $ = jQuery;
 
 Echo.Tests.Stats.root = {
 	"object": Echo,
@@ -9,7 +7,7 @@ Echo.Tests.Stats.root = {
 };
 
 // browser-specific ignore
-var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope"];
+var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope", "Echo.require", "Echo.requirejs", "Echo.define", "Echo.Loader"];
 var isNotLteIE7 = !(Echo.Tests.browser && Echo.Tests.browser.version <= 7);
 $.map(["AJAX", "XDomainRequest", "JSONP"], function(transport) {
 	if (!Echo.API.Transports[transport].available() || isNotLteIE7 && transport === "JSONP") {
@@ -47,4 +45,4 @@ Echo.Tests.defineComponentInitializer = function(name, initializer) {
 	_initializers[name] = initializer;
 };
 
-})(Echo.jQuery);
+}(Echo.jQuery));

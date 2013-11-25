@@ -3,6 +3,7 @@
 	<head>
 		<title>Auth App Demo</title>
 		<link rel="stylesheet" type="text/css" href="demo.css" />
+		<!--link rel="stylesheet" type="text/css" href="{%=baseURLs.sdk%}/gui.pack.css" /-->
 		<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
 	</head>
 <body>
@@ -32,7 +33,7 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		 Echo.require(["echo/identityserver/apps/auth"], function(Auth) {
+		Echo.require(["echo/identityserver/apps/auth"], function(Auth) {
 			var identityManager = {
 				"width": 400,
 				"height": 240,

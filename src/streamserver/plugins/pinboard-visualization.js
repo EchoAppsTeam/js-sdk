@@ -1,3 +1,9 @@
+define("echo/streamserver/plugins/pinboardVisualization", [
+	"echo/streamserver/plugins/mediaGallery",
+	"echo/streamserver/plugins/streamItemPinboardVisualization",
+	"echo/streamserver/plugins/streamPinboardVisualization"
+], function(){});
+
 define("echo/streamserver/plugins/mediaGallery", [
 	"jquery",
 	"echo/app",
@@ -298,10 +304,11 @@ plugin.init = function() {
 	this.extendTemplate("replace", "container", plugin.templates.container);
 };
 
-plugin.dependencies = [{
+/*plugin.dependencies = [{
 	"loaded": function() { return !!$.fn.isotope; },
 	"url": "{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js"
 }];
+*/
 
 plugin.config = {
 	/**

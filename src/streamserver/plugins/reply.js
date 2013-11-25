@@ -1,3 +1,9 @@
+define("echo/streamserver/plugins/reply", [
+	"echo/streamserver/plugins/streamItemReply",
+	"echo/streamserver/plugins/streamReply",
+	"echo/streamserver/plugins/submitReply"
+], function(){});
+
 define("echo/streamserver/plugins/streamItemReply", [
 	"jquery",
 	"echo/plugin",

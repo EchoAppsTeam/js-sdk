@@ -3,9 +3,10 @@ define("echo/plugin", [
 	"echo/app",
 	"echo/utils",
 	"echo/labels",
+	"echo/configuration",
+	"echo/events",
 	"require"
-], function($, App, utils, Labels, require) {
-	
+], function($, App, utils, Labels, Configuration, events, require) {
 	"use strict";
 
 	/**
@@ -354,7 +355,8 @@ define("echo/plugin", [
 	};
 
 	Plugin.prototype._init = function() {
-		var App = require("echo/app");
+		// FIXME: unnecessary require
+		var App = Echo.require("echo/app");
 		App.prototype._init.apply(this, arguments);
 	};
 

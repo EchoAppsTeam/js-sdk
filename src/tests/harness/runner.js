@@ -40,9 +40,10 @@ Echo.Tests.init = function(config) {
 
 		config.backplane && Backplane.init(config.backplane);
 
-		Echo.Loader.download([{"url": "tests/qunit/qunit.css"}], function() {
+		Echo.require(["css!echo/tests/qunit/qunit.css"], function() {
 			Echo.Tests.Utils.initServer();
 			runLegacyTests();
+			QUnit.load();
 			QUnit.start();
 		});
 	});

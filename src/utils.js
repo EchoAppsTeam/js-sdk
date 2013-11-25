@@ -3,11 +3,10 @@ define('echo/variables', [], function() {
 	return {};
 });
 
-define("echo/utils", ["jquery", "echo/variables"], function(jQuery, Variables) {
+define("echo/utils", ["jquery", "echo/variables"], function($, Variables) {
 "use strict";
 
-var $ = jQuery, 
-	Utils;
+var Utils;
 
 //if (!window.Echo) window.Echo = {};
 
@@ -1120,7 +1119,7 @@ Utils.safelyExecute = function(fn, args, context) {
 		Utils.log({
 			"type": "error",
 			"message": e.message || e,
-			"component": context instanceof Echo.App ? context.name : ""
+			"component": (!!context && context.hasOwnProperty("name")) ? context.name : ""
 		});
 	}
 };

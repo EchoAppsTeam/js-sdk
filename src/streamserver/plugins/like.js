@@ -1,3 +1,8 @@
+define("echo/streamserver/plugins/like", [
+	"echo/streamserver/plugins/streamLike",
+	"echo/streamserver/plugins/facePileLike"
+], function(){});
+
 define("echo/streamserver/plugins/streamLike", [
 	"jquery",
 	"echo/plugin",

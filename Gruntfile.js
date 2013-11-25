@@ -10,19 +10,17 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-copy");
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
-	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
-	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
 	grunt.loadNpmTasks("grunt-saucelabs");
-	grunt.loadNpmTasks("grunt-requirejs");
+	grunt.loadNpmTasks("grunt-contrib-requirejs");
 
-	grunt.registerTask("default", ["check:config", "jshint", "clean:all", "build:sdk"]);
+	grunt.registerTask("default", ["check:config", "clean:all", "build:sdk"]);
 
 	grunt.registerTask("test", "Execute tests", function() {
 		grunt.option("test-build", true);
-		assembleEnvConfig();
+		_assembleEnvConfig();
 		var parts = url.parse(grunt.config("envConfig.baseURLs.tests") + "/", false, true);
 		parts.protocol = "http";
 		parts.query = grunt.option("number")
@@ -91,74 +89,11 @@ module.exports = function(grunt) {
 	};
 
 	var packs = {
-		"loader": {
-			"src": [
-				"third-party/yepnope/yepnope.1.5.4.js",
-				"third-party/yepnope/yepnope.css.patched.js",
-				"cookie.js",
-				"loader.js"
-			],
-			"dest": "loader.js"
-		},
-		"api": {
-			"src": [
-				"api.js",
-				"streamserver/api.js",
-				"identityserver/api.js"
-			],
-			"dest": "api.pack.js"
-		},
-		/*"environment": {
-			"src": [
-				"utils.js",
-				"events.js",
-				"labels.js",
-				"configuration.js",
-				"api.pack.js",
-				"user-session.js",
-				"view.js",
-				"app.js",
-				"plugin.js",
-				"canvas.js"
-			],
-			"dest": "environment.pack.js"
-		},*/
-		"third-party/jquery": {
-			"src": [
-				"third-party/jquery/jquery.js",
-				"third-party/jquery/echo.jquery.noconflict.js",
-				"third-party/jquery/jquery.ihint.js",
-				"third-party/jquery/jquery.viewport.js"
-			],
-			"dest": "third-party/jquery.pack.js"
-		},
-		"third-party/jquery/jquery.isotope.min.js": {
-			"src": [
-				"third-party/jquery/jquery.isotope.min.js"
-			],
-			"dest": "third-party/jquery/jquery.isotope.min.js"
-		},
 		"gui-pack": {
-			"src": [ //TODO: rewrite ../build
-				"../build/third-party/bootstrap/js/bootstrap-tooltip.js",
-				"../build/third-party/bootstrap/js/bootstrap-*.js",
-				/*"../build/third-party/bootstrap/js/bootstrap-affix.js",
-				"../build/third-party/bootstrap/js/bootstrap-alert.js",
-				"../build/third-party/bootstrap/js/bootstrap-button.js",
-				"../build/third-party/bootstrap/js/bootstrap-modal.js",
-				"../build/third-party/bootstrap/js/bootstrap-carousel.js",
-				"../build/third-party/bootstrap/js/bootstrap-collapse.js",
-				"../build/third-party/bootstrap/js/bootstrap-dropdown.js",
-				"../build/third-party/bootstrap/js/bootstrap-tooltip.js",
-				"../build/third-party/bootstrap/js/bootstrap-popover.js",
-				"../build/third-party/bootstrap/js/bootstrap-scrollspy.js",
-				"../build/third-party/bootstrap/js/bootstrap-tab.js",
-				"../build/third-party/bootstrap/js/bootstrap-typeahead.js",
-				*/"gui.js",
-				/*"gui-plugins/echo-modal.js",
-				"gui-plugins/echo-button.js",
-				"gui-plugins/echo-dropdown.js",
-				*/"gui-plugins/echo-*.js"
+			"src": [
+				"third-party/bootstrap/js/bootstrap-tooltip.js",
+				"third-party/bootstrap/js/bootstrap-*.js",
+				"gui.pack.js"
 			],
 			"dest": "gui.pack.js"
 		},
@@ -169,29 +104,12 @@ module.exports = function(grunt) {
 				"tests/harness/runner.js",
 				"tests/harness/api.js",
 				"tests/harness/utils.js",
-				"tests/harness/stats.js"
+				"tests/harness/stats.js",
+				"tests/harness/suite.js"
 			],
 			"dest": "tests/harness.js"
 		}
 	};
-
-	_.each(["streamserver", "identityserver"], function(name) {
-		packs[name + "/appss"] = {
-			"src": [name + "/apps/*.js"],
-			"dest": name + "/apps.pack.js"
-		};
-		packs[name + "/plugins"] = {
-			"src": [name + "/plugins/!(pinboard-visualization).js"],
-			"dest": name + "/plugins.pack.js"
-		};
-		packs[name] = {
-			"src": [
-				name + "/apps.pack.js",
-				name + "/plugins.pack.js"
-			],
-			"dest": name + ".pack.js"
-		};
-	});
 
 	var testPlatforms = {
 		"firefox": {
@@ -276,8 +194,6 @@ module.exports = function(grunt) {
 						"third-party/**",
 						// remove everything except packs and folders they are in
 						"!third-party",
-						"!third-party/janrain",
-						"!third-party/janrain/*",
 						"!third-party/jquery",
 						"!third-party/jquery.pack.js",
 						"!third-party/jquery/jquery.isotope.min.js"
@@ -325,80 +241,6 @@ module.exports = function(grunt) {
 				"report": grunt.option("verbose") ? "gzip" : "min"
 			}
 		},
-		"jshint": {
-			"options": {
-				"jshintrc": ".jshintrc"
-			},
-			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"]
-		},
-		/*"wrap": {
-			"echo-jquery": {
-				"options": {
-					"header": [
-						"(function(jQuery) {",
-						"var $ = jQuery;",
-						""
-					],
-					"footer": [
-						"})(Echo.jQuery);"
-					]
-				},
-				"files": [{
-					"expand": true,
-					"cwd": "<%= dirs.build %>",
-					"src": [
-						"third-party/jquery/jquery.ihint.js",
-						"third-party/jquery/jquery.isotope.min.js",
-						"third-party/jquery/jquery.viewport.mini.js"
-					]
-				}]
-			},
-			"echo-yepnope": {
-				"options": {
-					"header": [
-						"if (!window.Echo) window.Echo = {};",
-						"Echo._yepnope = window.yepnope;",
-						"if (!Echo.yepnope) {"
-					],
-					"footer": [
-						"Echo.yepnope = window.yepnope;",
-						"Echo.yepnope.injectCss = undefined;",
-						"window.yepnope = Echo._yepnope;",
-						"delete Echo._yepnope;",
-						"}",
-						""
-					]
-				},
-				"files": [{
-					"src": ["<%= dirs.build %>/third-party/yepnope/yepnope.1.5.4*js"]
-				}]
-			},
-			"echo-yepnope-css": {
-				"options": {
-					"header": [
-						"(function(yepnope) {",
-						"if (!yepnope.injectCss) {"
-					],
-					"footer": [
-						"}",
-						"})(Echo.yepnope);",
-						""
-					]
-				},
-				"files": [{
-					"src": ["<%= dirs.build %>/third-party/yepnope/yepnope.css.patched.js"]
-				}]
-			},
-			"bootstrap-less": {
-				"options": {
-					"header": [".echo-sdk-ui {"],
-					"footer": ["}"]
-				},
-				"files": [{
-					"src": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"]
-				}]
-			}
-		},*/
 		"patch": {
 			"jquery-source-map": {
 				"options": {
@@ -423,7 +265,7 @@ module.exports = function(grunt) {
 			"loader-build": {
 				"options": {
 					"patcher": function(text, filepath, flags) {
-						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "");
+						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "")
 						text = text.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 						if (shared.config("build")) {
 							// patch debug field only when we are building files
@@ -442,7 +284,7 @@ module.exports = function(grunt) {
 			"loader-release": {
 				"options": {
 					"patcher": function(text, filepath, flags) {
-						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "");
+						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "")
 						return text.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 					}
 				},
@@ -469,7 +311,7 @@ module.exports = function(grunt) {
 				"options": {
 					"detailedError": true,
 					"tags": ["local"],
-					"build": "local-" + (new Date()).getTime(),
+					"build": "local#" + Math.round(Math.random() * 5000),
 					"browsers": typeof grunt.option("browser") === "string"
 						? grunt.option("browser").split("|").map(function(b) { return testPlatforms[b]; })
 						: [testPlatforms.firefox, testPlatforms.chrome, testPlatforms.ie9]
@@ -477,28 +319,18 @@ module.exports = function(grunt) {
 			},
 			"travis": {
 				"options": {
-					"tags": ["branch=" + process.env["TRAVIS_BRANCH"], "node=" + process.env["TRAVIS_NODE_VERSION"]],
-					"build": "travis-" + process.env["TRAVIS_BUILD_NUMBER"],
+					"tags": [process.env["TRAVIS_BRANCH"], "node.js v" + process.env["TRAVIS_NODE_VERSION"], "CI"],
+					"build": process.env["TRAVIS_BUILD_NUMBER"],
 					"identifier": process.env["TRAVIS_JOB_NUMBER"],
 					"browsers": [testPlatforms.firefox, testPlatforms.chrome, testPlatforms.safari, testPlatforms.ie8, testPlatforms.ie9, testPlatforms.ie10]
 				}
 			}
-		},
-		"watch": {
-				"src": {
-						"files": ["apps/**/*", "demo/**/*", "config/**/*", "src/**/*", "tools/**/*", "tests/**/*"],
-						"tasks": ["default"],
-						"options": {
-								"interrupt": true
-						}
-				}
 		},
 		"requirejs": {
 			"common": {
 				"options": {
 					"appDir": "<%= dirs.src %>",
 					"baseUrl": "./",
-					//"mainConfigFile": "src/config.js",
 					"dir": "<%= dirs.build %>",
 					"optimize": "none",
 					"wrap": false,
@@ -507,17 +339,18 @@ module.exports = function(grunt) {
 					"modules": [{
 						"name": "loader",
 						"include": [
+							"cookie",
 							"third-party/requirejs/require",
-							"third-party/requirejs/css"
+							"third-party/requirejs/css",
 						]
 					}, {
 						"name": "third-party/jquery.pack",
 						"create": true,
 						"include": [
-							"third-party/jquery/jquery",
+							"third-party/jquery/jquery"/* + shared.config("build.stage") === "min" ? ""min : ""*/,
 							"third-party/jquery/jquery-noconflict",
 							"third-party/jquery/jquery.ihint",
-							"third-party/jquery/jquery.viewport.mini"
+							"third-party/jquery/jquery.viewport.mini"					
 						]
 					}, {
 						"name": "enviroment.pack",
@@ -527,19 +360,19 @@ module.exports = function(grunt) {
 							"events",
 							"labels",
 							"configuration",
-							"api",	// it was api pack
-							"streamserver/api",	// it was api pack
-							"identityserver/api",	// it was api pack
+							"api",
+							"streamserver/api",
+							"identityserver/api",
 							"user-session",
 							"view",
 							"app",
 							"plugin",
-							"canvas"
+						//	"canvas"
 						]
 					}, {
 						"name": "streamserver.pack",
 						"create": true,
-						"include": [ //TODO: use *.js instead of enumeration
+						"include": [
 							"streamserver/apps/counter",
 							"streamserver/apps/stream",
 							"streamserver/apps/facepile",
@@ -549,7 +382,6 @@ module.exports = function(grunt) {
 							"streamserver/plugins/item-accumulator-display",
 							"streamserver/plugins/janrain-sharing",
 							"streamserver/plugins/metadata-manager",
-							"streamserver/plugins/pinboard-visualization",
 							"streamserver/plugins/text-counter",
 							"streamserver/plugins/edit",
 							"streamserver/plugins/infinite-scroll",
@@ -559,10 +391,33 @@ module.exports = function(grunt) {
 							"streamserver/plugins/reply",
 							"streamserver/plugins/tweet-display"
 						]
-					}]
-					//fileExclusionRegExp: /\S*(?:isotope|bootstrap-){1}\S*/g,
+					}, {
+						"name": "identityserver.pack",
+						"create": true,
+						"include": [
+							"identityserver/apps/auth",
+							"identityserver/plugins/janrain-connector",
+						]
+					}, {
+						"name": "pinboard-visualization",
+						"create": true,
+						"include": [
+							"streamserver/plugins/pinboard-visualization",
+						]
+					}, {
+						"name": "gui.pack",
+						"create": true,
+						"include": [
+							"gui",
+							"gui-plugins/echo-button",
+							"gui-plugins/echo-modal",
+							"gui-plugins/echo-dropdown",
+							"gui-plugins/echo-tabs"
+						]
+					}],
+					fileExclusionRegExp: /\S*(?:images){1}\S*/g, // \"min version"
 				}
-			}//,
+			}//, TODO: it will be used for minificated version building
 			//"plugins": {
 			//	"options": {
 			//		"appDir": "<%= dirs.src %>",
@@ -572,7 +427,7 @@ module.exports = function(grunt) {
 			//		"optimize": "none",
 			//		"wrap": {
 			//			"start": "require([\"jquery\"] function(jQuery) {\n var $ = jQuery;\n",
-			//			"end": "});"
+        	//			"end": "});"
 			//		},
 			//		//"namespace": "Echo",
 			//		//removeCombined: true,
@@ -592,10 +447,10 @@ module.exports = function(grunt) {
 		},
 		"wrap": {
 			"options": {
-				"header": [
+				"header": [//TODO $ as a parameter (jquery)
 					"Echo.require([\"jquery\"], function(jQuery) {",
 					"var $ = jQuery;",
-					""
+					"",
 				],
 				"footer": [
 					"});"
@@ -615,30 +470,44 @@ module.exports = function(grunt) {
 				"files": [{
 					"expand": true,
 					"cwd": "<%= dirs.build %>",
-					"src": [
-						"third-party/bootstrap/js/bootstrap-transition.js",
-						"third-party/bootstrap/js/bootstrap-affix.js",
-						"third-party/bootstrap/js/bootstrap-alert.js",
-						"third-party/bootstrap/js/bootstrap-button.js",
-						"third-party/bootstrap/js/bootstrap-modal.js",
-						"third-party/bootstrap/js/bootstrap-carousel.js",
-						"third-party/bootstrap/js/bootstrap-collapse.js",
-						"third-party/bootstrap/js/bootstrap-dropdown.js",
+					"src": [ 
 						"third-party/bootstrap/js/bootstrap-tooltip.js",
-						"third-party/bootstrap/js/bootstrap-popover.js",
-						"third-party/bootstrap/js/bootstrap-scrollspy.js",
-						"third-party/bootstrap/js/bootstrap-tab.js",
-						"third-party/bootstrap/js/bootstrap-typeahead.js"
+						"third-party/bootstrap/js/bootstrap-*.js"
 					]
 				}]
-			}
+			},
+			"bootstrap-less": {
+				"options": {
+					"header": [".echo-sdk-ui {"],
+					"footer": ["}"]
+				},
+				"files": [{
+					"src": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"]
+				}]
+			}/*,
+			"tests": {
+				"expand": true,
+				"cwd": "<%= dirs.build %>",
+				"src": [
+					"tests/qunit/qunit.js",
+					"tests/sinon/sinon-1.7.3.js",
+					"tests/harness/runner.js",
+					"tests/harness/api.js",
+					"tests/harness/utils.js",
+					"tests/harness/stats.js",
+					"tests/harness/suite.js"
+				]
+			}*/
 		}
+
 	};
 
 	grunt.initConfig(config);
 	grunt.config("pkg.majorVersion", grunt.config("pkg.version").split(".")[0]);
 
-	function assembleEnvConfig() {
+	_assembleEnvConfig();
+
+	function _assembleEnvConfig() {
 		var env = shared.config("env");
 		if (!grunt.config("envConfigRaw")) {
 			var envFilename = "config/environments/" + env + ".json";
@@ -679,7 +548,5 @@ module.exports = function(grunt) {
 		// TODO: (?) properly calculate "packageVersion" placeholder value and use it in Echo.Loader.version
 		data.packageVersion = grunt.config("pkg.majorVersion");
 		grunt.config("envConfig", data);
-	}
-
-	assembleEnvConfig();
+	};
 };

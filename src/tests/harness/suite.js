@@ -1,7 +1,5 @@
-(function(jQuery) {
+(function($) {
 "use strict";
-
-var $ = jQuery;
 
 if (Echo.Tests.Suite) return;
 
@@ -246,5 +244,4 @@ Echo.Tests.Suite.prototype._cleanupEnvironment = function() {
 	// during the next Echo.UserSession object initialization
 	Echo.UserSession.state = "init";
 };
-
 })(Echo.jQuery);

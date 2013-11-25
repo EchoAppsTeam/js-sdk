@@ -7,7 +7,8 @@ define("echo/streamserver/apps/submit", [
 	"echo/gui",
 	"echo/gui/button",
 	"echo/events", 
-	"echo/gui/modal"
+	"echo/gui/modal",
+	"css!echo/gui.pack"
 ], function($, require, App, Utils, API, GUI, GUIButton, Events, GUIModal) {
 "use strict";
 

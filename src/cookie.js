@@ -1,4 +1,4 @@
-define("echo/cookie", [], function() {
+define("cookie", [], function() {
 "use strict";
 
 var Cookie;
@@ -114,4 +114,5 @@ Cookie.remove = function(name, options) {
 		Cookie.set(name, "", options);
 	}
 };
+return Cookie;
 });

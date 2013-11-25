@@ -1,7 +1,9 @@
-(function(jQuery) {
+define("echo/identityserver/plugins/janrainConnector", [
+	"jquery",
+	"echo/plugin",
+	"echo/utils"
+], function($, Plugin, Utils) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.IdentityServer.Apps.Auth.Plugins.JanrainConnector
@@ -24,15 +26,15 @@ var $ = jQuery;
  * @package identityserver/plugins.pack.js
  * @package identityserver.pack.js
  */
-var plugin = Echo.Plugin.manifest("JanrainConnector", "Echo.IdentityServer.Apps.Auth");
+var plugin = Plugin.manifest("JanrainConnector", "Echo.IdentityServer.Apps.Auth");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
 	var plugin = this, component = this.component;
 	$.each(plugin.config.get("buttons", []), function(i, type) {
 		var identityManager = component.config.get("identityManager." + type, {});
-		var configStr = encodeURIComponent(Echo.Utils.objectToJSON(plugin.config.get("signinWidgetConfig")));
+		var configStr = encodeURIComponent(Utils.objectToJSON(plugin.config.get("signinWidgetConfig")));
 		identityManager.url = component.config.get("cdnBaseURL.sdk") +
 			"/third-party/janrain/auth.html?appId=" + plugin.config.get("appId") +
 			"&signinConfig=" + configStr + "&bpChannel=";
@@ -103,6 +105,6 @@ plugin.enabled = function() {
 	return this.config.get("appId") && this.config.get("buttons").length;
 };
 
-Echo.Plugin.create(plugin);
+return Plugin.create(plugin);
 
-})(Echo.jQuery);
+});
