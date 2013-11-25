@@ -1,7 +1,7 @@
 define("echo/streamserver/plugins/janrainSharing", [
 	"echo/streamserver/plugins/submitJanrainSharing",
 	"echo/streamserver/plugins/streamJanrainSharing"
-], function() {});
+], function(){});
 
 define("echo/streamserver/plugins/submitJanrainSharing", [
 	"jquery",

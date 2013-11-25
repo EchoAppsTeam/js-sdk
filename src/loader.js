@@ -55,17 +55,17 @@ require(['cookie'], function(Cookie) {
 
 	var paths = {};
 	paths[Echo.Loader.getURL("")] = ["echo"]; 
-	paths[Echo.Loader.getURL("", false)] = ["echo-assets"];//assets is for pictures
+	paths[Echo.Loader.getURL("", false)] = ["echo-assets"];
 	paths[Echo.Loader.getURL("/backplane")] = ["echo/backplane"];
 	paths[Echo.Loader.getURL("/third-party/jquery.pack")] = ["jquery-noconflict"];
 	paths[Echo.Loader.getURL("/third-party/jquery/jquery.isotope.min")] = ["isotope"]; 
 
-	paths[Echo.Loader.getURL("/tests/qunit/qunit")] = ["QUnit"]; 
+	paths[Echo.Loader.getURL("/tests/qunit/qunit")] = ["QUnit"];//TODO: replace to harness 
 	
 	paths[Echo.Loader.getURL("") + "/enviroment.pack"] = [
 		"echo/events", "echo/utils", "echo/labels", "echo/configuration", "echo/api",
 		"echo/streamserver/api", "echo/identityserver/api", "echo/user-session",
-		"echo/view", "echo/app", "echo/plugin", "echo/canvas"
+		"echo/view", "echo/app", "echo/plugin"
 	];
 	paths[Echo.Loader.getURL("") + "/gui.pack"] = [
 		"echo/bootstrap-transition", "echo/bootstrap-affix", "echo/bootstrap-alert",

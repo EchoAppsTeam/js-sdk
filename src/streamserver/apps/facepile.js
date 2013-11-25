@@ -585,13 +585,15 @@ pile.css =
 	'.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }' +
 	'.{class:more} .echo-app-message-icon { display: inline; margin: 0px 5px; }';
 
+return App.create(pile);
 });
 
 Echo.define("echo/streamserver/apps/facePileItem", [
 	"jquery",
+	"echo/utils",
 	"require",
 	"echo/app"
-], function($, require, App) {
+], function($, Utils, require, App) {
 "use strict";
 
 /**

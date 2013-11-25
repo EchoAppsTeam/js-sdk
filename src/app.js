@@ -68,7 +68,7 @@ App.create = function(manifest) {
 	var app = utils.getComponent(manifest.name);
 
 	// prevent multiple re-definitions
-	if (App.isDefined(manifest)) return app;
+	//if (App.isDefined(manifest)) return app;
 
 	var _manifest = this._merge(manifest, manifest.inherits && manifest.inherits._manifest);
 
@@ -909,11 +909,11 @@ App.prototype._loadScripts = function(resources, callback) {
 	resources = $.map(resources, function(resource) {
 		return app.substitute({"template": resource})
 	});
-
-	//TODO: handle the scriptLoadErrorTimeout config param
-	require(resources, function() {
+	
+	require(resources, $.proxy(callback, app));
+	/*require(resources, function() {
 		callback.call(app);
-	});
+	});*/
 };
 
 App.prototype._loadPluginScripts = function(callback) {
