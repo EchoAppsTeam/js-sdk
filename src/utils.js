@@ -1299,11 +1299,11 @@ Utils.getRelativeTime = function(datetime, options) {
 	var d = new Date(ts * 1000);
 	var diff = Math.floor(((new Date()).getTime() - d.getTime()) / 1000);
 	var getLabel = function(parts) {
-		var numeric = parts[3];
-		var plural = numeric && parts[4] > 1;
+		var numeric = parts[2];
+		var plural = numeric && parts[3] > 1;
 		var key = parts[0] + (plural ? "s" : "") + (numeric ? "Ago" : "");
 		return Utils.substitute({
-			"data": {"number": parts[4]},
+			"data": {"number": parts[3]},
 			"template": options.labels[key] || Variables.labels[key]
 		});
 	};
@@ -1316,7 +1316,7 @@ Utils.getRelativeTime = function(datetime, options) {
 		["second", 60, true],
 		["minute", 60, true],
 		["hour", 24, true],
-		["yerstaday", 48, false],
+		["yesterday", 48, false],
 		["day", 7, true],
 		["lastWeek", 14, false],
 		["week", 30, true],
