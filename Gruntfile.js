@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
 	grunt.loadNpmTasks("grunt-saucelabs");
-	grunt.loadNpmTasks("grunt-requirejs");
+	grunt.loadNpmTasks("grunt-contrib-requirejs");
 
 	grunt.registerTask("default", ["check:config", "clean:all", "build:sdk"]);
 
@@ -90,29 +90,16 @@ module.exports = function(grunt) {
 
 	var packs = {
 		"gui-pack": {
-			"src": [ //TODO: rewrite ../build 
-				// error while bootstrap popover usage (it depends on tooltip)
-				"../build/third-party/bootstrap/js/bootstrap-transition.js",
-				"../build/third-party/bootstrap/js/bootstrap-affix.js",
-				"../build/third-party/bootstrap/js/bootstrap-alert.js",
-				"../build/third-party/bootstrap/js/bootstrap-button.js",
-				"../build/third-party/bootstrap/js/bootstrap-modal.js",
-				"../build/third-party/bootstrap/js/bootstrap-carousel.js",
-				"../build/third-party/bootstrap/js/bootstrap-collapse.js",
-				"../build/third-party/bootstrap/js/bootstrap-dropdown.js",
-				"../build/third-party/bootstrap/js/bootstrap-tooltip.js",
-				"../build/third-party/bootstrap/js/bootstrap-popover.js",
-				"../build/third-party/bootstrap/js/bootstrap-scrollspy.js",
-				"../build/third-party/bootstrap/js/bootstrap-tab.js",
-				"../build/third-party/bootstrap/js/bootstrap-typeahead.js",
-				"gui.js",
-				"gui-plugins/echo-*.js"
+			"src": [
+				"third-party/bootstrap/js/bootstrap-tooltip.js",
+				"third-party/bootstrap/js/bootstrap-*.js",
+				"gui.pack.js"
 			],
 			"dest": "gui.pack.js"
 		},
 		"tests/harness": {
 			"src": [
-				//"tests/qunit/qunit.js",
+				"tests/qunit/qunit.js",
 				"tests/sinon/sinon-1.7.3.js",
 				"tests/harness/runner.js",
 				"tests/harness/api.js",
@@ -344,7 +331,6 @@ module.exports = function(grunt) {
 				"options": {
 					"appDir": "<%= dirs.src %>",
 					"baseUrl": "./",
-					//"mainConfigFile": "src/config.js",
 					"dir": "<%= dirs.build %>",
 					"optimize": "none",
 					"wrap": false,
@@ -353,14 +339,15 @@ module.exports = function(grunt) {
 					"modules": [{
 						"name": "loader",
 						"include": [
+							"cookie",
 							"third-party/requirejs/require",
-							"third-party/requirejs/css"
+							"third-party/requirejs/css",
 						]
 					}, {
-						"name": "third-party/jquery/jquery.pack",
+						"name": "third-party/jquery.pack",
 						"create": true,
 						"include": [
-							"third-party/jquery/jquery",
+							"third-party/jquery/jquery"/* + shared.config("build.stage") === "min" ? ""min : ""*/,
 							"third-party/jquery/jquery-noconflict",
 							"third-party/jquery/jquery.ihint",
 							"third-party/jquery/jquery.viewport.mini"					
@@ -381,12 +368,12 @@ module.exports = function(grunt) {
 							"control",
 							"app",
 							"plugin",
-							"canvas"
+						//	"canvas"
 						]
 					}, {
 						"name": "streamserver.pack",
 						"create": true,
-						"include": [ //TODO:  *.js (instead of enumeration) crushed. I have to understand why.
+						"include": [
 							"streamserver/controls/counter",
 							"streamserver/controls/stream",
 							"streamserver/controls/facepile",
@@ -408,18 +395,28 @@ module.exports = function(grunt) {
 					}, {
 						"name": "identityserver.pack",
 						"create": true,
-						"include": [ //TODO: use *.js instead of enumeration
+						"include": [
 							"identityserver/controls/auth",
 							"identityserver/plugins/janrain-connector",
 						]
 					}, {
 						"name": "pinboard-visualization",
 						"create": true,
-						"include": [ //TODO: use *.js instead of enumeration
+						"include": [
 							"streamserver/plugins/pinboard-visualization",
 						]
+					}, {
+						"name": "gui.pack",
+						"create": true,
+						"include": [
+							"gui",
+							"gui-plugins/echo-button",
+							"gui-plugins/echo-modal",
+							"gui-plugins/echo-dropdown",
+							"gui-plugins/echo-tabs"
+						]
 					}],
-					//fileExclusionRegExp: /\S*(?:gui-plugins){1}\S*/g, // \"min version"
+					fileExclusionRegExp: /\S*(?:images){1}\S*/g, // \"min version"
 				}
 			}//, TODO: it will be used for minificated version building
 			//"plugins": {
@@ -451,7 +448,7 @@ module.exports = function(grunt) {
 		},
 		"wrap": {
 			"options": {
-				"header": [
+				"header": [//TODO $ as a parameter (jquery)
 					"Echo.require([\"jquery\"], function(jQuery) {",
 					"var $ = jQuery;",
 					"",
@@ -474,20 +471,9 @@ module.exports = function(grunt) {
 				"files": [{
 					"expand": true,
 					"cwd": "<%= dirs.build %>",
-					"src": [ //TODO: rewrite using bootstrap-*.js
-						"third-party/bootstrap/js/bootstrap-transition.js",
-						"third-party/bootstrap/js/bootstrap-affix.js",
-						"third-party/bootstrap/js/bootstrap-alert.js",
-						"third-party/bootstrap/js/bootstrap-button.js",
-						"third-party/bootstrap/js/bootstrap-modal.js",
-						"third-party/bootstrap/js/bootstrap-carousel.js",
-						"third-party/bootstrap/js/bootstrap-collapse.js",
-						"third-party/bootstrap/js/bootstrap-dropdown.js",
+					"src": [ 
 						"third-party/bootstrap/js/bootstrap-tooltip.js",
-						"third-party/bootstrap/js/bootstrap-popover.js",
-						"third-party/bootstrap/js/bootstrap-scrollspy.js",
-						"third-party/bootstrap/js/bootstrap-tab.js",
-						"third-party/bootstrap/js/bootstrap-typeahead.js"
+						"third-party/bootstrap/js/bootstrap-*.js"
 					]
 				}]
 			},

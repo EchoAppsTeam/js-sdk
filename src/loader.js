@@ -1,45 +1,73 @@
-(function() {
+require(['cookie'], function(Cookie) {
 	"use strict";
-	var loader = {
+	Echo.Loader = {
 		"version": "{%=packageVersion%}",
 		"cdnBaseURL": (/^https?/.test(window.location.protocol) ? window.location.protocol : "http:") +	"{%=baseURLs.cdn%}/",
-		"getURL": function(url, devVersion) {
-			if (typeof devVersion === "undefined") devVersion = true;
-			return /^https?:\/\/|^\/\//.test(url)
-				? url
-				: this.cdnBaseURL + "sdk/v" + this.version +
-					(devVersion && this.isDebug() ? "/dev" : "") +
-					(!url || url.charAt(0) === "/" ? "" : "/") + url;
-		},
-		"isDebug": function() {
-			return true;
-		},
-		"generatePaths": function(paths) {
-			var res = {};
-			for(var item in paths) {
-				for(var i = 0; i < paths[item].length; i++) {
-					res[paths[item][i]] = item; 
-				}
-			}
-			return res;
-		}
+		"debug": false
+	}
+
+	Echo.Loader.getURL = function(url, devVersion) {
+		if (typeof devVersion === "undefined") devVersion = true;
+		return /^https?:\/\/|^\/\//.test(url)
+			? url
+			: this.cdnBaseURL + "sdk/v" + this.version +
+				(devVersion && this.isDebug() ? "/dev" : "") +
+				(!url || url.charAt(0) === "/" ? "" : "/") + url;
 	};
 
-	//TODO: generate path from object below istead of the big list
-	var paths = {};
-	paths[loader.getURL("")] = ["echo", "echo-assets"]; //assets is for pictures
-	//paths[loader.getURL("/gui.pack")] = ["echo-gui-css"];
-	paths[loader.getURL("/third-party/jquery/jquery.pack")] = ["jquery-noconflict"];
-	paths[loader.getURL("/third-party/jquery/jquery.isotope.min")] = ["isotope"]; 
+	Echo.Loader.generatePaths = function(paths) {
+		var res = {};
+		for(var item in paths) {
+			for(var i = 0; i < paths[item].length; i++) {
+				res[paths[item][i]] = item; 
+			}
+		}
+		return res;
+	}
 
-	paths[loader.getURL("/tests/qunit/qunit")] = ["QUnit"]; 
+	Echo.Loader.isDebug = function() {
+			return Echo.Loader.debug;
+	};
+
+	(function() {
+		if (Echo.Loader.debug) return;
+		var debug;
+		var _debugCookieName = "echo-debug";
+		var options = {"path": "/"};
+		var hashParts = window.location.hash.match(/echo.debug:(true|false)/);
+			if (hashParts && hashParts.length) {
+				debug = hashParts[1];
+        	}
+			if (typeof debug !== "undefined") {
+				if (debug === "true") {
+					Echo.Loader.debug = true;
+					Cookie.set(_debugCookieName, true, options);
+				} else {
+					Echo.Loader.debug = false;
+					Cookie.remove(_debugCookieName, options);
+				}
+				return;
+			}
+			Echo.Loader.debug = !!Cookie.get(_debugCookieName);
+	})();
+
+	Echo.Loader = Echo.Loader;
+
+	var paths = {};
+	paths[Echo.Loader.getURL("")] = ["echo"]; 
+	paths[Echo.Loader.getURL("", false)] = ["echo-assets"];//assets is for pictures
+	//paths[Echo.Loader.getURL("/gui.pack")] = ["echo-gui-css"];
+	paths[Echo.Loader.getURL("/third-party/jquery.pack")] = ["jquery-noconflict"];
+	paths[Echo.Loader.getURL("/third-party/jquery/jquery.isotope.min")] = ["isotope"]; 
+
+	paths[Echo.Loader.getURL("/tests/qunit/qunit")] = ["QUnit"]; 
 	
-	paths[loader.getURL("") + "/enviroment.pack"] = [
+	paths[Echo.Loader.getURL("") + "/enviroment.pack"] = [
 		"echo/events", "echo/utils", "echo/labels", "echo/configuration", "echo/api",
 		"echo/streamserver/api", "echo/identityserver/api", "echo/user-session",
 		"echo/view", "echo/control", "echo/app", "echo/plugin", "echo/canvas"
 	];
-	paths[loader.getURL("") + "/gui.pack"] = [
+	paths[Echo.Loader.getURL("") + "/gui.pack"] = [
 		"echo/bootstrap-transition", "echo/bootstrap-affix", "echo/bootstrap-alert",
 		"echo/bootstrap-button", "echo/bootstrap-modal", "echo/bootstrap-carousel",
 		"echo/bootstrap-collapse", "echo/bootstrap-dropdown", "echo/bootstrap-tooltip",
@@ -47,7 +75,7 @@
 		"echo/bootstrap-typeahead", "echo/gui", "echo/gui/modal", "echo/gui/button",
 		"echo/gui/dropdown", "echo/gui/tabs"
 	];
-	paths[loader.getURL("") + "/streamserver.pack"] = [
+	paths[Echo.Loader.getURL("") + "/streamserver.pack"] = [
 		"echo/streamserver/controls/counter","echo/streamserver/controls/stream",
 		"echo/streamserver/controls/facePile", "echo/streamserver/controls/facePileItem", 
 		"echo/streamserver/controls/submit", "echo/streamserver/plugins/edit", 
@@ -63,19 +91,19 @@
 		"echo/streamserver/plugins/streamReply", "echo/streamserver/plugins/submitReply",
 		"echo/streamserver/plugins/textCounter", "echo/streamserver/plugins/tweet-display"
 	];
-	paths[loader.getURL("") + "/pinboard-visualization"] = [
+	paths[Echo.Loader.getURL("") + "/pinboard-visualization"] = [
 		"echo/streamserver/plugins/pinboardVisualization",
 		"echo/streamserver/plugins/mediaGallery",
 		"echo/streamserver/plugins/streamItemPinboardVisualization",
 		"echo/streamserver/plugins/streamPinboardVisualization"
 	];
-	paths[loader.getURL("") + "/identityserver.pack"] = [
+	paths[Echo.Loader.getURL("") + "/identityserver.pack"] = [
 		"echo/identityserver/controls/auth",
 		"echo/identityserver/plugins/janrainConnector"
 	];
 	require.config({
 		"waitSeconds": 5, // 5 sec before timeout exception
-		"paths": loader.generatePaths(paths),
+		"paths": Echo.Loader.generatePaths(paths),
 		"map": {
 			"*": {
 				"css": "third-party/requirejs/css",
@@ -98,12 +126,4 @@
 			} 
 		}
 	});
-	Echo.Loader = {
-		"cdnBaseURL": loader.cdnBaseURL,
-		"getURL" : loader.getURL,
-		"version": loader.version,
-		"isDebug": loader.isDebug
-	}
-})();
-
-
+});
