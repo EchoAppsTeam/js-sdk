@@ -56,7 +56,7 @@ require(['cookie'], function(Cookie) {
 	var paths = {};
 	paths[Echo.Loader.getURL("")] = ["echo"]; 
 	paths[Echo.Loader.getURL("", false)] = ["echo-assets"];//assets is for pictures
-	//paths[Echo.Loader.getURL("/gui.pack")] = ["echo-gui-css"];
+	paths[Echo.Loader.getURL("/backplane")] = ["echo/backplane"];
 	paths[Echo.Loader.getURL("/third-party/jquery.pack")] = ["jquery-noconflict"];
 	paths[Echo.Loader.getURL("/third-party/jquery/jquery.isotope.min")] = ["isotope"]; 
 
