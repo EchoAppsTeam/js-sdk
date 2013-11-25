@@ -332,10 +332,19 @@ module.exports = function(grunt) {
 					"appDir": "<%= dirs.src %>",
 					"baseUrl": "./",
 					"dir": "<%= dirs.build %>",
-					"optimize": "none",
+					"optimize": "none",//+ shared.config("build.stage") === "min" ? "uglify2" : "none",
 					"wrap": false,
 					"namespace": "Echo",
 					"removeCombined": true,
+					"uglify2": {
+						"output": {
+							"beautify": false,
+							//"inline-script": false
+							"ascii-only": true
+						},
+						"mangle": false,
+						"report": grunt.option("verbose") ? "gzip" : "min"
+					},
 					"modules": [{
 						"name": "loader",
 						"include": [

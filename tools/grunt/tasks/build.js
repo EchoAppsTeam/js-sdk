@@ -66,7 +66,7 @@ module.exports = function(grunt) {
 					"concat:gui-pack",
 					"concat:tests/harness",
 					"recess:bootstrap",
-					//"uglify",
+					"uglify",
 					"patch:gui-css",
 					"patch:loader-build",
 					"cssmin:gui",
