@@ -115,6 +115,9 @@ require(['cookie'], function(Cookie) {
 			"echo/backplane": {
 					"exports": "Backplane"
 			},
+			"echo/tests/harness/suite": {
+				"deps": ["echo/tests/harness"]	
+			},
 			'QUnit': {
 				exports: 'QUnit',
 				init: function() {

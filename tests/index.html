@@ -80,7 +80,6 @@
 			"echo/api",
 			"echo/app",
 			"echo/configuration",
-			"echo/control",
 			"cookie",
 			"echo/events",
 			"echo/gui",
@@ -90,11 +89,11 @@
 			"echo/utils",
 			"echo/view",
 			"echo/streamserver/api",
-			"echo/streamserver/controls/counter",
-			"echo/streamserver/controls/facePile",
-			"echo/streamserver/controls/stream",
-			"echo/streamserver/controls/submit",
-			"echo/identityserver/controls/auth",
+			"echo/streamserver/apps/counter",
+			"echo/streamserver/apps/facePile",
+			"echo/streamserver/apps/stream",
+			"echo/streamserver/apps/submit",
+			"echo/identityserver/apps/auth",
 			"echo/identityserver/plugins/janrainConnector",
 			"echo/identityserver/api",
 			"echo/gui/modal",
@@ -114,15 +113,14 @@
 			"QUnit",
 			"echo/backplane",
 			"require"
-		], function($, API, App, Configuration, Control, Cookie, Events, GUI, Labels, Plugin, UserSession,
-				Utils, View, Counter, Facepile, Stream, Submit, Auth, Modal, Dropdown, Tabs, Button, 
+		], function($, API, App, Configuration, Cookie, Events, GUI, Labels, Plugin, UserSession,
+				Utils, View, StreamAPI, Counter, Facepile, Stream, Submit, Auth, jrConnector, IdentityAPI, Modal, Dropdown, Tabs, Button, 
 				Edit, Reply, IAD, PinVis, FormAuth, TextCounter, CommFlag, Moder, TwDispl, Scroll, QUnit, require) {
 			var OldEcho = {
 				"jQuery": $,
 				"API" : API,
 				"App": App,
 				"Configuration": Configuration,
-				"Control": Control,
 				"Cookie": Cookie,
 				"Events": Events,
 				"GUI": GUI,
@@ -132,7 +130,7 @@
 				"Utils": Utils,
 				"View": View,
 				"StreamServer": {
-					"Controls":{
+					"Apps":{
 						"Counter": Counter,
 						"Stream": Stream,
 						"Facepile": Facepile,
@@ -149,7 +147,8 @@
 						"Moderation": Moder,
 						"TweetDisplay": TwDispl,
 						"InfinityScroll": Scroll
-					}
+					},
+					"API": StreamAPI
 				},
 				"IdentityServer":{
 					"Controls": {
@@ -161,8 +160,8 @@
 			for(var prop in OldEcho) {
 				Echo[prop] = OldEcho[prop];
 			}
-			Echo.require(["echo/tests/harness"], function() {
-				//console.log(QUnit);
+				Echo.require(["echo/tests/harness", "echo/tests/harness/suite"], function() {
+				console.log(QUnit);
 				Echo.Tests.Fixtures = {
 					"api": {},
 					"loader": {},
@@ -180,7 +179,6 @@
 						"unit/button",
 						"unit/compatibility",
 						"unit/configuration",
-						"unit/control",
 						"unit/utils",
 						"unit/modal",
 						"unit/dropdown",
@@ -196,15 +194,13 @@
 						"unit/identityserver/api",
 						"unit/plugin",
 						"unit/view",
-						//"unit/loader",
-						//"unit/canvas",
-						"unit/streamserver/controls/counter",
-						"unit/streamserver/controls/submit",
-						"unit/streamserver/controls/facepile",
-						"unit/streamserver/controls/facepile-item",
-						"unit/streamserver/controls/stream",
-						"unit/streamserver/controls/stream-item",
-						"unit/streamserver/controls/media-gallery",
+						"unit/streamserver/apps/counter",
+						"unit/streamserver/apps/submit",
+						"unit/streamserver/apps/facepile",
+						"unit/streamserver/apps/facepile-item",
+						"unit/streamserver/apps/stream",
+						"unit/streamserver/apps/stream-item",
+						"unit/streamserver/apps/media-gallery",
 						"unit/streamserver/plugins/edit",
 						"unit/streamserver/plugins/reply",
 						"unit/streamserver/plugins/item-accumulator-display",
@@ -215,8 +211,9 @@
 						"unit/streamserver/plugins/moderation",
 						"unit/streamserver/plugins/tweet-display",
 						"unit/streamserver/plugins/infinite-scroll",
-						"unit/identityserver/controls/auth"	
+						"unit/identityserver/apps/auth"	
 					], function() {
+						QUnit.config.autorun = false;//requireJS loads it then document.readyState = complete. In this case QUnit sets it = true and tests starts asynchronously
 						Echo.Tests.init({
 							"title": "Echo SDK v3 tests",
 							"backplane": {
