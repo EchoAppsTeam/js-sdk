@@ -17,7 +17,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
 	grunt.loadNpmTasks("grunt-saucelabs");
-
 	grunt.loadNpmTasks("sphere");
 
 	grunt.registerTask("default", ["check-environment:" + shared.config("env"), "jshint", "clean:all", "build:sdk"]);
@@ -246,6 +245,66 @@ module.exports = function(grunt) {
 				"report": grunt.option("verbose") ? "gzip" : "min"
 			}
 		},
+		"jshint": {
+			"options": {
+				"jshintrc": ".jshintrc"
+			},
+			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"]
+		},
+		"wrap": {
+			"options": {
+				"header": [//TODO $ as a parameter (jquery)
+					"Echo.require([\"jquery\"], function(jQuery) {",
+					"var $ = jQuery;",
+					""
+				],
+				"footer": [
+					"});"
+				]
+			},
+			"jquery-isotope": {
+				"files": [{
+					"expand": true,
+					"cwd": "<%= dirs.build %>",
+					"src": [
+						"third-party/jquery/jquery.isotope.min.js"
+					]
+				}]
+			},
+			//TODO rewrite it to concat plugins -> wrap -> concat with gui and so on.
+			"bootstrap-plugins": {
+				"files": [{
+					"expand": true,
+					"cwd": "<%= dirs.build %>",
+					"src": [
+						"third-party/bootstrap/js/bootstrap-tooltip.js",
+						"third-party/bootstrap/js/bootstrap-*.js"
+					]
+				}]
+			},
+			"bootstrap-less": {
+				"options": {
+					"header": [".echo-sdk-ui {"],
+					"footer": ["}"]
+				},
+				"files": [{
+					"src": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"]
+				}]
+			}/*,
+			"tests": {
+				"expand": true,
+				"cwd": "<%= dirs.build %>",
+				"src": [
+					"tests/qunit/qunit.js",
+					"tests/sinon/sinon-1.7.3.js",
+					"tests/harness/runner.js",
+					"tests/harness/api.js",
+					"tests/harness/utils.js",
+					"tests/harness/stats.js",
+					"tests/harness/suite.js"
+				]
+			}*/
+		},
 		"patch": {
 			"jquery-source-map": {
 				"options": {
@@ -383,7 +442,7 @@ module.exports = function(grunt) {
 				"options": {
 					"detailedError": true,
 					"tags": ["local"],
-					"build": "local#" + Math.round(Math.random() * 5000),
+					"build": "local-" + (new Date()).getTime(),
 					"browsers": typeof grunt.option("browser") === "string"
 						? grunt.option("browser").split("|").map(function(b) { return testPlatforms[b]; })
 						: [testPlatforms.firefox, testPlatforms.chrome, testPlatforms.ie9]
@@ -391,10 +450,19 @@ module.exports = function(grunt) {
 			},
 			"travis": {
 				"options": {
-					"tags": [process.env["TRAVIS_BRANCH"], "node.js v" + process.env["TRAVIS_NODE_VERSION"], "CI"],
-					"build": process.env["TRAVIS_BUILD_NUMBER"],
+					"tags": ["branch=" + process.env["TRAVIS_BRANCH"], "node=" + process.env["TRAVIS_NODE_VERSION"]],
+					"build": "travis-" + process.env["TRAVIS_BUILD_NUMBER"],
 					"identifier": process.env["TRAVIS_JOB_NUMBER"],
 					"browsers": [testPlatforms.firefox, testPlatforms.chrome, testPlatforms.safari, testPlatforms.ie8, testPlatforms.ie9, testPlatforms.ie10]
+				}
+			}
+		},
+		"watch": {
+			"src": {
+				"files": ["apps/**/*", "demo/**/*", "config/**/*", "src/**/*", "tools/**/*", "tests/**/*"],
+				"tasks": ["default"],
+				"options": {
+					"interrupt": true
 				}
 			}
 		},
@@ -525,75 +593,6 @@ module.exports = function(grunt) {
 			//		"dirExclusionRegExp": /\S*(?:require){1,}\S*/g
 			//	}
 			//}
-		},
-		"jshint": {
-			"options": {
-				"jshintrc": ".jshintrc"
-			},
-			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"]
-		},
-		"wrap": {
-			"options": {
-				"header": [//TODO $ as a parameter (jquery)
-					"Echo.require([\"jquery\"], function(jQuery) {",
-					"var $ = jQuery;",
-					""
-				],
-				"footer": [
-					"});"
-				]
-			},
-			"jquery-isotope": {
-				"files": [{
-					"expand": true,
-					"cwd": "<%= dirs.build %>",
-					"src": [
-						"third-party/jquery/jquery.isotope.min.js"
-					]
-				}]
-			},
-			//TODO rewrite it to concat plugins -> wrap -> concat with gui and so on.
-			"bootstrap-plugins": {
-				"files": [{
-					"expand": true,
-					"cwd": "<%= dirs.build %>",
-					"src": [
-						"third-party/bootstrap/js/bootstrap-tooltip.js",
-						"third-party/bootstrap/js/bootstrap-*.js"
-					]
-				}]
-			},
-			"bootstrap-less": {
-				"options": {
-					"header": [".echo-sdk-ui {"],
-					"footer": ["}"]
-				},
-				"files": [{
-					"src": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"]
-				}]
-			}/*,
-			"tests": {
-				"expand": true,
-				"cwd": "<%= dirs.build %>",
-				"src": [
-					"tests/qunit/qunit.js",
-					"tests/sinon/sinon-1.7.3.js",
-					"tests/harness/runner.js",
-					"tests/harness/api.js",
-					"tests/harness/utils.js",
-					"tests/harness/stats.js",
-					"tests/harness/suite.js"
-				]
-			}*/
-		},
-		"watch": {
-				"src": {
-						"files": ["apps/**/*", "demo/**/*", "config/**/*", "src/**/*", "tools/**/*", "tests/**/*"],
-						"tasks": ["default"],
-						"options": {
-								"interrupt": true
-						}
-				}
 		},
 		"check-environment": {
 			"options": {
