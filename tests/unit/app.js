@@ -26,7 +26,7 @@ suite.prototype.info = {
 		"refresh",
 		"render",
 		"isDefined",
-		"initComponent",
+		"initApp",
 		"getComponent",
 		"destroyComponent",
 		"destroyComponents",
@@ -45,7 +45,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 	"config": {
 		"async": true,
 		"user": {"status": "anonymous"},
-		"testTimeout": 20000 // 20 secs
+		"testTimeout": 80000 // 20 secs
 	},
 	"check": function() {
 		var self = this;
@@ -65,6 +65,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
 		delete _manifest.destroy;
+		console.log(manifest, _manifest);
 		QUnit.deepEqual(manifest, _manifest, "Checking the \"manifest\" function output");
 
 		suite.createComponents(["TestComponent1", "TestComponent2", "TestComponent3"]);
@@ -96,9 +97,9 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"manifestBaseInheritance",
 			"nestedReadyCallbacks",
 			"inheritedEvent",
-			"initComponent",
-			"destroyComponent",
-			"destroyComponents"
+			"initApp",
+			"destroyApp",
+			"destroyApps"
 		], "cases");
 
 	}
@@ -106,17 +107,18 @@ suite.prototype.tests.PublicInterfaceTests = {
 
 suite.prototype.cases = {};
 
-suite.prototype.cases.initComponent = function(callback) {
+suite.prototype.cases.initApp = function(callback) {
 	var self = this;
 	var check = function() {
-		this.initComponent({
+		this.initApp({
 			"id": "TestComponent1",
 			"component": "TestComponent1",
 			"config": {
 				"target": self.config.target,
+				//FIXME: this event isn`t generated
 				"ready": function() {
 					QUnit.ok(true,
-						"Checking that app.onReady() handler was called after initComponent()");
+						"Checking that app.onReady() handler was called after initApp()");
 					QUnit.equal(this.config.get("parent.key1"), "value1",
 						"Checking that parent section of component config is the config of appropriate application");
 					QUnit.equal(
@@ -131,8 +133,8 @@ suite.prototype.cases.initComponent = function(callback) {
 				}
 			}
 		});
-		QUnit.ok(this.getComponent("TestComponent1") && this.getComponent("TestComponent1") instanceof Echo.App, "Check getComponent() returns a ref to the initialized component");
-		QUnit.strictEqual(undefined, this.getComponent("TestComponent1000"), "Check getComponent() returns \"undefined\" value for the uninitialized component");
+		QUnit.ok(this.apps.TestComponent1 && this.apps.TestComponent1 instanceof Echo.App, "Check getComponent() returns a ref to the initialized component");
+		QUnit.strictEqual(undefined, this.apps.TestComponent1000, "Check getComponent() returns \"undefined\" value for the uninitialized component");
 		this.destroy();
 	};
 	suite.initTestApp({
@@ -145,10 +147,10 @@ suite.prototype.cases.initComponent = function(callback) {
 	});
 };
 
-suite.prototype.cases.destroyComponent = function(callback) {
+suite.prototype.cases.destroyApp = function(callback) {
 	var self = this;
 	var check = function() {
-		var component = this.initComponent({
+		var component = this.initApp({
 			"id": "TestComponent1",
 			"component": "TestComponent1",
 			"config": {
@@ -157,11 +159,11 @@ suite.prototype.cases.destroyComponent = function(callback) {
 		});
 		component.set("_destroyHandler", function() {
 			QUnit.ok(true,
-				"Checking if the app.destroy() mehtod was called after destroyComponent()");
+				"Checking if the app.destroy() mehtod was called after destroyApp()");
 		});
-		this.destroyComponent("TestComponent1");
+		this.destroyApp("TestComponent1");
 		QUnit.equal(this.components["TestComponent1"], undefined,
-			"Checking that the component was deleted from application after destroyComponent()");
+			"Checking that the component was deleted from application after destroyApp()");
 		this.destroy();
 		callback();
 	};
@@ -172,13 +174,13 @@ suite.prototype.cases.destroyComponent = function(callback) {
 	});
 };
 
-suite.prototype.cases.destroyComponents = function(callback) {
+suite.prototype.cases.destroyApps = function(callback) {
 	var test = this;
 	var check = function() {
 		var self = this;
 		var components = ["TestComponent1", "TestComponent2", "TestComponent3"];
 		$.map(components, function(component) {
-			self.initComponent({
+			self.initApp({
 				"id": component,
 				"component": component,
 				"config": {
@@ -187,11 +189,11 @@ suite.prototype.cases.destroyComponents = function(callback) {
 			});
 		});
 		var exceptions = ["TestComponent2"];
-		this.destroyComponents(exceptions);
+		this.destroyApps(exceptions);
 		QUnit.ok(!this.components["TestComponent1"] && !this.components["TestComponent3"],
-			"Checking that components were deleted after destroyComponents()");
+			"Checking that components were deleted after destroyApps()");
 		QUnit.ok(this.components["TestComponent2"],
-			"Checking that component which is in exceptions list was not deleted after destroyComponents()");
+			"Checking that component which is in exceptions list was not deleted after destroyApps()");
 		this.destroy();
 		callback();
 	};
@@ -288,22 +290,6 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking if existing plugin ref is available");
 		QUnit.ok(!this.getPlugin("FakePlugin"),
 			"Checking if dummy plugin ref is NOT available");
-
-		// checking if all dependencies are available
-		var result = true;
-		for (var i = 1; i < 6; i++) {
-			if (!Echo.Tests.Dependencies.App["dep" + i]) result = false;
-		}
-		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
-
-		QUnit.ok(Echo.Tests.Dependencies.App.dep6, "Checking if dependency loaded using 'application' condition");
-		QUnit.ok(Echo.Tests.Dependencies.App.dep7, "Checking if dependency loaded using 'plugin' condition");
-		QUnit.ok(Echo.Tests.Dependencies.App.dep8, "Checking if dependency loaded using 'app' condition");
-
-		QUnit.ok(!Echo.Tests.Dependencies.App.dep9, "Checking if dependency is not loading if 'application' already loaded");
-		QUnit.ok(!Echo.Tests.Dependencies.App.dep10, "Checking if dependency is not loading if 'plugin' already loaded");
-		QUnit.ok(!Echo.Tests.Dependencies.App.dep11, "Checking if dependency is not loading if 'app' already loaded");
-
 		try {
 			// checking log() calls with invalid params
 			this.log();
@@ -1329,27 +1315,6 @@ suite.getAppManifest = function(name, config) {
 		"label2": "label2 value",
 		"label3": "label3 value"
 	};
-
-	var addDependency = function(n, params) {
-		var dependency = {
-			"url": Echo.Tests.baseURL + "unit/dependencies/app.dep." + n + ".js"
-		};
-		if (typeof params === "object") {
-			dependency = $.extend(dependency, params);
-		} else {
-			dependency.loaded = function() { return !!Echo.Tests.Dependencies.App["dep" + n]; };
-		}
-		manifest.dependencies.push(dependency);
-	};
-	for (var i = 1; i < 6; i++) addDependency(i);
-
-	addDependency(6, {"app": "Echo.StreamServer.Apps.MyNotExistsTestApp"});
-	addDependency(7, {"plugin": "Echo.StreamServer.Apps.MyTestApp.Plugins.MyNotExistsTestPlugin"});
-	addDependency(8, {"app": "Echo.Apps.MyNotExistsTestApp"});
-
-	addDependency(9, {"app": "Echo.StreamServer.Apps.MyTestApp"});
-	addDependency(10, {"plugin": "Echo.StreamServer.Apps.MyTestApp.Plugins.MyPlugin"});
-	addDependency(11, {"app": "Echo.Apps.MyTestApp"});
 
 	manifest.init = function() {
 		this.render();

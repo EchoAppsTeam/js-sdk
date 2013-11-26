@@ -133,7 +133,6 @@ App.manifest = function(name) {
 		"methods": {},
 		"renderers": {},
 		"templates": {},
-		"dependencies": [],
 		"init": function() {
 			this.render();
 			this.ready();
@@ -424,7 +423,6 @@ App.prototype.initApp = function(spec) {
 	spec.config = this._normalizeAppConfig(
 		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
-	//FIXME there is no getApp in src/utils.js (just getComponent)
 	var App = require("echo/app");
 	this.set("apps." + spec.id, new App(spec.config));
 	return this.getApp(spec.id);
