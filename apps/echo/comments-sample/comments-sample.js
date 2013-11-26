@@ -1,21 +1,16 @@
-(function(jQuery) {
+Echo.define("commentsSample", [
+	"jquery",
+	"echo/app",
+	"echo/streamserver/apps/stream",
+	"echo/streamserver/apps/submit"
+], function($, App, Stream, Submit) {
 "use strict";
 
-var $ = jQuery;
+var Comments = App.manifest("Echo.Apps.CommentsSample");
 
-var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
-
-if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
-
-Comments.dependencies = [
-	{"loaded": function() {
-		return Echo.App.isDefined("Echo.StreamServer.Apps.Submit") &&
-			Echo.App.isDefined("Echo.StreamServer.Apps.Stream");
-	}, "url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"}
-];
+if (App.isDefined("Echo.Apps.CommentsSample")) return;
 
 Comments.config = {
-	"appkey": "",
 	"submitFormPosition": "top" // top | bottom
 };
 
@@ -38,25 +33,27 @@ Comments.methods.template = function() {
 };
 
 Comments.renderers.stream = function(element) {
-	this.initComponent({
+	console.log("config", this.config);
+	this.initApp({
 		"id": "Stream",
-		"component": "Echo.StreamServer.Apps.Stream",
+		"component": "Echo.StreamServer.Controls.Stream",
 		"config": {
-			"target": element
+			"target": element,
 		}
 	});
 	return element;
 };
 
 Comments.renderers.submit = function(element) {
-	this.initComponent({
+	this.initApp({
 		"id": "Submit",
-		"component": "Echo.StreamServer.Apps.Submit",
+		"component": "Echo.StreamServer.Controls.Submit",
 		"config": {
 			"target": element,
 			"infoMessages": {"enabled": false},
 			"plugins": [{
 				"name": "FormAuth",
+				"url": "echo/streamserver/plugins/formAuth",
 				"identityManager": "{config:identityManager}"
 			}]
 		}
@@ -66,6 +63,6 @@ Comments.renderers.submit = function(element) {
 
 Comments.css = ".{class:container} > div { margin-bottom: 7px; }";
 
-Echo.App.create(Comments);
+return App.create(Comments);
 
-})(Echo.jQuery);
+});

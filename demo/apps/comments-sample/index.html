@@ -6,7 +6,7 @@
 
 	<!-- Default scripts inclusion -->
 	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.cdn%}/apps/echo/comments-sample/comments-sample.js"></script>
 </head>
 <body>
 <div id="container">
@@ -16,9 +16,61 @@
 	</div>
 	<script type="text/javascript">
 		if (window.parent.Docs) {
-			Echo.jQuery("#container").addClass("embedded");
+			Echo.require(["jquery"], function($) {
+				$("#container").addClass("embedded");
+			});
 		}
-		Echo.Loader.initApplication({
+		Echo.require(["commentsSample"], function(Comments){
+			console.log(Comments);
+			var config = {
+				"backplane": {
+					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+					"busName": "jskit"
+				},
+				"target": document.getElementById("comments-sample"),
+				"appkey": "echo.jssdk.demo.aboutecho.com",
+				"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
+				"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
+				"components": {
+					"Stream": {
+						"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
+						"liveUpdates": {"transport": "websockets"},
+						"item": {"reTag": false},
+						"plugins": [{
+							"name": "Edit",
+							"url": "echo/streamserver/plugins/edit"
+						}, {
+							"name": "Like",
+							"url": "echo/streamserver/plugins/like"
+						}, {
+							"name": "Moderation",
+							"url": "echo/streamserver/plugin/moderation"
+						}, {
+							"name": "StreamSortingSelector",
+							"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
+						}]
+					},
+					"Submit": {
+						"targetURL": "http://echosandbox.com/test/comments-sampler-test",
+					}
+				},
+				"identityManager": {
+					"login": {
+						"width": 400,
+						"height": 250,
+						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+					},
+					"signup": {
+						"width": 400,
+						"height": 250,
+						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+					}
+				}
+			};
+			console.log(config);
+			new Comments(config);
+		});
+		/*Echo.Loader.initApplication({
 			"script": "{%=baseURLs.cdn%}/apps/echo/comments-sample/comments-sample.js",
 			"component": "Echo.Apps.CommentsSample",
 			"backplane": {
@@ -63,7 +115,7 @@
 					}
 				}
 			}
-		});
+		});*/
         </script>
 </div>
 </body>

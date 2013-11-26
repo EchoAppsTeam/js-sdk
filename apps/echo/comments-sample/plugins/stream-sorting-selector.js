@@ -1,11 +1,13 @@
-(function(jQuery) {
+Echo.define("streamSortingSelector", [
+	"jquery",
+	"echo/plugin",
+], function($, Plugin) {
 "use strict";
 
-var $ = jQuery;
 
-var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
 
-if (Echo.Plugin.isDefined(plugin)) return;
+if (Plugin.isDefined(plugin)) return;
 
 plugin.config = {
 	"orders": [
@@ -78,6 +80,6 @@ plugin.css =
 	'.{plugin.class:label} { margin-right: 5px; }' +
 	'.{plugin.class:wrapper} { float: left; }';
 
-Echo.Plugin.create(plugin);
+Plugin.create(plugin);
 
-})(Echo.jQuery);
+});

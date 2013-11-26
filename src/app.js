@@ -19,7 +19,7 @@ define("echo/app", [
  *
  * @package environment.pack.js
  */
-var App = function() {};
+App = function() {};
 
 // static interface
 
@@ -73,7 +73,7 @@ App.create = function(manifest) {
 	var _manifest = this._merge(manifest, manifest.inherits && manifest.inherits._manifest);
 
 	var constructor = utils.inherit(this, function(config) {
-
+		console.log(config);
 		// perform basic validation of incoming params
 		if (!config || !config.target) {
 			utils.log({
@@ -424,7 +424,9 @@ App.prototype.initApp = function(spec) {
 	spec.config = this._normalizeAppConfig(
 		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
-	var App = utils.getApp(spec.app);
+	//FIXME there is no getApp in src/utils.js (just getComponent)
+	console.log("spec", spec);
+	var App = require("echo/app");//utils.getApp(spec.app);
 	this.set("apps." + spec.id, new App(spec.config));
 	return this.getApp(spec.id);
 };
