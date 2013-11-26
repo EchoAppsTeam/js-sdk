@@ -2,6 +2,7 @@ Echo.define("streamSortingSelector", [
 	"jquery",
 	"echo/plugin",
 ], function($, Plugin) {
+
 "use strict";
 
 
@@ -80,6 +81,5 @@ plugin.css =
 	'.{plugin.class:label} { margin-right: 5px; }' +
 	'.{plugin.class:wrapper} { float: left; }';
 
-Plugin.create(plugin);
-
+return Plugin.create(plugin);
 });

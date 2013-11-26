@@ -1,4 +1,4 @@
-define("echo/app", [
+Echo.define("echo/app", [
 	"jquery",
 	"echo/utils",
 	"echo/configuration",
@@ -8,7 +8,8 @@ define("echo/app", [
 	"echo/user-session",
 	"echo/plugin",
 	"require"
-], function($, utils, Configuration, events, View, Labels, UserSession, Plugin, require) {
+], function($, Utils, Configuration, Events, View, Labels, UserSession, Plugin, require) {
+
 "use strict";
 
 /**
@@ -19,7 +20,7 @@ define("echo/app", [
  *
  * @package environment.pack.js
  */
-App = function() {};
+var App = function() {};
 
 // static interface
 
@@ -65,18 +66,17 @@ App = function() {};
  * Reference to the generated application class.
  */
 App.create = function(manifest) {
-	var app = utils.getComponent(manifest.name);
+	var app = Utils.getComponent(manifest.name);
 
 	// prevent multiple re-definitions
 	//if (App.isDefined(manifest)) return app;
 
 	var _manifest = this._merge(manifest, manifest.inherits && manifest.inherits._manifest);
 
-	var constructor = utils.inherit(this, function(config) {
-		console.log(config);
+	var constructor = Utils.inherit(this, function(config) {
 		// perform basic validation of incoming params
 		if (!config || !config.target) {
-			utils.log({
+			Utils.log({
 				"type": "error",
 				"component": _manifest.name,
 				"message": "Unable to initialize application, config is invalid",
@@ -109,7 +109,7 @@ App.create = function(manifest) {
 	prototype.cssClass = _manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 	prototype.cssPrefix = prototype.cssClass + "-";
 
-	utils.set(window, _manifest.name, $.extend(constructor, app));
+	Utils.set(window, _manifest.name, $.extend(constructor, app));
 	return constructor;
 };
 
@@ -155,7 +155,7 @@ App.isDefined = function(manifest) {
 	var name = typeof manifest === "string"
 		? manifest
 		: manifest.name;
-	var component = utils.get(window, name);
+	var component = Utils.get(window, name);
 	return !!(component && component._manifest);
 };
 
@@ -177,7 +177,7 @@ App.isDefined = function(manifest) {
  * The corresponding value found in the object.
  */
 App.prototype.get = function(key, defaults) {
-	return utils.get(this, key, defaults);
+	return Utils.get(this, key, defaults);
 };
 
 /**
@@ -192,7 +192,7 @@ App.prototype.get = function(key, defaults) {
  * The corresponding value which should be defined for the key.
  */
 App.prototype.set = function(key, value) {
-	return utils.set(this, key, value);
+	return Utils.set(this, key, value);
 };
 
 /**
@@ -209,7 +209,7 @@ App.prototype.set = function(key, value) {
  * Indicates that the value associated with the given key was removed.
  */
 App.prototype.remove = function(key) {
-	return utils.remove(this, key);
+	return Utils.remove(this, key);
 };
 
 /**
@@ -243,14 +243,14 @@ App.prototype.substitute = function(args) {
 	args.instructions = args.instructions
 		? $.extend(instructions, args.instructions)
 		: instructions;
-	return utils.substitute(args);
+	return Utils.substitute(args);
 };
 
 /**
  * @inheritdoc Echo.Utils#invoke
  */
 App.prototype.invoke = function(mixed, context) {
-	return utils.invoke(mixed, context || this);
+	return Utils.invoke(mixed, context || this);
 };
 
 /**
@@ -280,7 +280,7 @@ App.prototype.refresh = function() {
  * Unified method to destroy application.
  */
 App.prototype.destroy = function(config) {
-	events.publish({
+	Events.publish({
 		"topic": "Echo.App.onDestroy",
 		"bubble": false,
 		"context": this.config.get("context"),
@@ -384,7 +384,7 @@ App.prototype.extendRenderer = function(name, renderer) {
  * @inheritdoc Echo.Utils#log
  */
 App.prototype.log = function(data) {
-	utils.log($.extend(data, {"component": this.name}));
+	Utils.log($.extend(data, {"component": this.name}));
 };
 
 /**
@@ -425,8 +425,7 @@ App.prototype.initApp = function(spec) {
 		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
 	//FIXME there is no getApp in src/utils.js (just getComponent)
-	console.log("spec", spec);
-	var App = require("echo/app");//utils.getApp(spec.app);
+	var App = require("echo/app");
 	this.set("apps." + spec.id, new App(spec.config));
 	return this.getApp(spec.id);
 };
@@ -533,7 +532,7 @@ App.prototype._initializers.list = [
 ];
 
 App.prototype._initializers.get = function(action) {
-	return utils.foldl([], this.list, function(initializer, acc) {
+	return Utils.foldl([], this.list, function(initializer, acc) {
 		if (~$.inArray(action, initializer[1])) {
 			acc.push(initializer[0]);
 		}
@@ -590,7 +589,7 @@ App.prototype._initializers.events = function() {
 					return acc;
 				}(parent, []);
 				$.map(names, function(name) {
-					events.publish(
+					Events.publish(
 						$.extend({}, params, {
 							"topic": name + "." + params.topic,
 							"global": false
@@ -599,10 +598,10 @@ App.prototype._initializers.events = function() {
 				});
 			}
 			params.topic = app.name + "." + params.topic;
-			events.publish(params);
+			Events.publish(params);
 		},
 		"subscribe": function(params) {
-			var handlerId = events.subscribe(prepare(params));
+			var handlerId = Events.subscribe(prepare(params));
 			app.subscriptionIDs[handlerId] = true;
 			return handlerId;
 		},
@@ -610,7 +609,7 @@ App.prototype._initializers.events = function() {
 			if (params && params.handlerId) {
 				delete app.subscriptionIDs[params.handlerId];
 			}
-			events.unsubscribe(prepare(params));
+			Events.unsubscribe(prepare(params));
 		}
 	};
 };
@@ -683,7 +682,7 @@ App.prototype._initializers.css = function() {
 	var self = this;
 	this.config.get("target").addClass(this.cssClass);
 	$.map(this._manifest("css"), function(spec) {
-		if (!spec.id || !spec.code || utils.hasCSS(spec.id)) return;
+		if (!spec.id || !spec.code || Utils.hasCSS(spec.id)) return;
 		if (spec.id !== self.name) {
 			var css, component = self.constructor;
 			if (component) {
@@ -695,10 +694,10 @@ App.prototype._initializers.css = function() {
 						}
 					}
 				});
-				utils.addCSS(css, spec.id);
+				Utils.addCSS(css, spec.id);
 			}
 		} else {
-			utils.addCSS(self.substitute({"template": spec.code}), spec.id);
+			Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 		}
 	});
 };
@@ -724,7 +723,7 @@ App.prototype._initializers.backplane = function(callback) {
 	var config = this.config.get("backplane");
 
 	if (config.serverBaseURL && config.busName) {
-		require(["echo/backplane"], function(backplane) {
+		Echo.require(["echo/backplane"], function(backplane) {
 			backplane.init(config);
 			callback.call(app);
 		});
@@ -746,7 +745,7 @@ App.prototype._initializers.user = function(callback) {
 	} else {
 		var generateURL = function(baseURL, path) {
 			if (!baseURL) return;
-			var urlInfo = utils.parseURL(baseURL);
+			var urlInfo = Utils.parseURL(baseURL);
 			return (urlInfo.scheme || "https") + "://" + urlInfo.domain + path;
 		};
 		UserSession({
@@ -812,7 +811,7 @@ App._merge = function(manifest, parentManifest) {
 	};
 	manifest.css = normalizeCSS(manifest);
 	parentManifest.css = normalizeCSS(parentManifest);
-	var merged = utils.foldl({}, manifest, function(val, acc, name) {
+	var merged = Utils.foldl({}, manifest, function(val, acc, name) {
 		acc[name] = name in parentManifest && self._merge[name]
 			? self._merge[name](parentManifest[name], val)
 			: val;
@@ -831,7 +830,7 @@ var _wrapper = function(parent, own) {
 };
 
 App._merge.methods = function(parent, own) {
-	return utils.foldl({}, own, function(method, acc, name) {
+	return Utils.foldl({}, own, function(method, acc, name) {
 		acc[name] = name in parent
 			? _wrapper(parent[name], method)
 			: method;
@@ -847,7 +846,7 @@ App._merge.css = function(parent, own) {
 };
 
 App._merge.events = function(parent, own) {
-	return utils.foldl({}, own, function(data, acc, topic) {
+	return Utils.foldl({}, own, function(data, acc, topic) {
 		acc[topic] = topic in parent
 			? [data, parent[topic]]
 			: data;
@@ -884,9 +883,9 @@ App.prototype._getSubstitutionInstructions = function() {
 			return app.labels.get(key, defaults);
 		},
 		"self": function(key, defaults) {
-			var value = app.invoke(utils.get(app, key));
+			var value = app.invoke(Utils.get(app, key));
 			return typeof value === "undefined"
-				? utils.get(app.data, key, defaults)
+				? Utils.get(app.data, key, defaults)
 				: value;
 		},
 		"config": function(key, defaults) {
@@ -896,7 +895,7 @@ App.prototype._getSubstitutionInstructions = function() {
 };
 
 App.prototype._manifest = function(key) {
-	var component = utils.getComponent(this.name);
+	var component = Utils.getComponent(this.name);
 	return component
 		? key ? component._manifest[key] : component._manifest
 		: undefined;
@@ -922,7 +921,7 @@ App.prototype._loadPluginScripts = function(callback) {
 	var app = this;
 	var plugins = this.config.get("pluginsOrder");
 
-	var scripts = utils.foldl([], plugins, function(name, acc) {
+	var scripts = Utils.foldl([], plugins, function(name, acc) {
 		var plugin = Plugin.getClass(name, app.name);
 		// check if a script URL is defined for the plugin
 		var url = "plugins." + name + ".url";
@@ -999,7 +998,7 @@ App.prototype._mergeSpecsByName = function(specs) {
 	var updateSpecs = $.map(Array.prototype.slice.call(arguments, 1) || [], function(spec) {
 		return spec;
 	});
-	return utils.foldl(specs, updateSpecs, function(extender) {
+	return Utils.foldl(specs, updateSpecs, function(extender) {
 		var id = getSpecIndex(extender, specs);
 		if (!~id) {
 			specs.push(extender);
@@ -1020,7 +1019,7 @@ App.prototype._mergeSpecsByName = function(specs) {
 App.prototype._normalizeAppConfig = function(config) {
 	var self = this;
 	// extend the config with the default fields from manifest
-	return utils.foldl(config, this._manifest("config"), function(value, acc, key) {
+	return Utils.foldl(config, this._manifest("config"), function(value, acc, key) {
 		// do not override existing values in data
 		if (typeof acc[key] === "undefined") {
 			acc[key] = self.config.get(key);
@@ -1114,7 +1113,7 @@ manifest.config = {
 manifest.config.normalizer = {
 	"target": $,
 	"plugins": function(list) {
-		var data = utils.foldl({"hash": {}, "order": []}, list || [],
+		var data = Utils.foldl({"hash": {}, "order": []}, list || [],
 			function(plugin, acc) {
 				var pos = $.inArray(plugin.name, acc.order);
 				if (pos >= 0) {
@@ -1133,7 +1132,7 @@ manifest.config.normalizer = {
 	// the nested context out of it. Note: the parent "context" for the application
 	// is defined within the Echo.Plugin.Config.prototype.assemble and
 	// Echo.App.prototype._normalizeAppConfig functions.
-	"context": events.newContextId
+	"context": Events.newContextId
 };
 
 manifest.inherits = App;
@@ -1152,5 +1151,4 @@ manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 App._manifest = manifest;
 
 return App;
-
 });

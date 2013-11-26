@@ -1,7 +1,8 @@
-define("echo/labels", [
+Echo.define("echo/labels", [
 	"jquery", 
 	"echo/utils"
 ], function($, Utils) {
+
 "use strict";
 
 var Labels;
@@ -228,5 +229,6 @@ Labels._substitute = function(label, data) {
 	});
 	return label;
 };
+
 return Labels;
 });

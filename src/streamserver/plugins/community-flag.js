@@ -1,9 +1,10 @@
-define("echo/streamserver/plugins/communityFlag", [
+Echo.define("echo/streamserver/plugins/communityFlag", [
 	"jquery",
 	"echo/plugin",
 	"echo/streamserver/apps/facePile",
 	"echo/streamserver/api"
 ], function($, Plugin, FacePile, API) {
+
 "use strict";
 
 /**

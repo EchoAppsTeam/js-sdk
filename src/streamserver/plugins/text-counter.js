@@ -1,7 +1,8 @@
-define("echo/streamserver/plugins/textCounter", [
+Echo.define("echo/streamserver/plugins/textCounter", [
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {
+
 "use strict";
 
 /**
@@ -120,5 +121,4 @@ plugin.renderers.counterLabel = function(element) {
 };
 
 return Plugin.create(plugin);
-
 });

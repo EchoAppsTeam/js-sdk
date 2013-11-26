@@ -1,16 +1,17 @@
-define("echo/streamserver/plugins/reply", [
+Echo.define("echo/streamserver/plugins/reply", [
 	"echo/streamserver/plugins/streamItemReply",
 	"echo/streamserver/plugins/streamReply",
 	"echo/streamserver/plugins/submitReply"
-], function(){});
+], function() {});
 
-define("echo/streamserver/plugins/streamItemReply", [
+Echo.define("echo/streamserver/plugins/streamItemReply", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"echo/variables",
 	"echo/streamserver/apps/submit"
 ], function($, Plugin, Utils, Variables, Submit) {
+
 "use strict";
 
 
@@ -320,16 +321,16 @@ plugin.css =
 	".{plugin.class:compactContent} input.{plugin.class:compactField}[type='text']:focus { outline: 0; box-shadow: none; }";
 
 return Plugin.create(plugin);
-
 });
 
-define("echo/streamserver/plugins/streamReply", [
+Echo.define("echo/streamserver/plugins/streamReply", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"echo/variables",
 	"echo/streamserver/apps/submit"
 ], function($, Plugin, Utils, Variables, Submit) {
+
 "use strict";
 
 /**
@@ -376,10 +377,11 @@ plugin.events = {
 return Plugin.create(plugin);
 });
 
-define("echo/streamserver/plugins/submitReply", [
+Echo.define("echo/streamserver/plugins/submitReply", [
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {
+
 "use strict";
 
 /**

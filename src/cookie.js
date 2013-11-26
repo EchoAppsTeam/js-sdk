@@ -1,11 +1,8 @@
-define("cookie", [], function() {
+Echo.define("cookie", [], function() {
+
 "use strict";
 
 var Cookie;
-
-//if (!window.Echo) window.Echo = {};
-
-//if (Echo.Cookie) return;
 
 var _pluses = /\+/g;
 var _decode = function(s) {
@@ -114,5 +111,6 @@ Cookie.remove = function(name, options) {
 		Cookie.set(name, "", options);
 	}
 };
+
 return Cookie;
 });

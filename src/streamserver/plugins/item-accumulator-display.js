@@ -1,8 +1,9 @@
-define("echo/streamserver/plugins/itemAccumulatorDisplay", [
+Echo.define("echo/streamserver/plugins/itemAccumulatorDisplay", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils"
 ], function($, Plugin, Utils) {
+
 "use strict";
 
 /**
@@ -144,5 +145,4 @@ plugin.methods._animateCounter = function(bgColor) {
 plugin.css = '.{plugin.class:accumulatorContainer} { float: right; margin-right: 7px; }';
 
 return Plugin.create(plugin);
-
 });

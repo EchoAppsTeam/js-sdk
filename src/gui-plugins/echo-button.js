@@ -1,4 +1,4 @@
-define("echo/gui/button", [
+Echo.define("echo/gui/button", [
 	"jquery",
 	"echo/gui",
 	"echo/utils"

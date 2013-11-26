@@ -1,18 +1,16 @@
-define("echo/canvas", [
+Echo.define("echo/canvas", [
 	"jquery",
 	"echo/app",
 	"echo/utils",
 	"echo/loader",
 	"echo/events"
 ], function($, App, Utils, Loader, Events) {
-	
+
 "use strict";
 
 var canvas = App.manifest("Canvas");
 
-//do we need it?
 if (App.isDefined(canvas)) return;
-
 
 /**
  * @class Canvas
@@ -438,8 +436,5 @@ canvas.methods._fetchConfig = function(callback) {
 	});
 };
 
-App.create(canvas);
-
-return canvas;
-
+return App.create(canvas);
 });

@@ -1,8 +1,9 @@
-define("echo/identityserver/api", [
+Echo.define("echo/identityserver/api", [
 	"jquery",
 	"echo/api",
 	"echo/utils"
-], function($, API, utils) {
+], function($, API, Utils) {
+
 "use strict";
 
 var IdentityServerAPI = {};
@@ -36,7 +37,7 @@ var IdentityServerAPI = {};
  * Constructor initializing class using configuration data.
  * @param {Object} config Configuration data.
  */
-IdentityServerAPI.Request = utils.inherit(API.Request, function(config) {
+IdentityServerAPI.Request = Utils.inherit(API.Request, function(config) {
 	config = $.extend({
 		/**
 		 * @cfg {String} [endpoint] Specifies the API endpoint. The only "whoami" endpoint is implemented now.
@@ -88,7 +89,7 @@ IdentityServerAPI.Request.prototype._update = function(args) {
 	});
 	this.request(
 		$.extend({}, this.config.get("data"), {
-			"content": utils.objectToJSON(content)
+			"content": Utils.objectToJSON(content)
 		})
 	);
 };

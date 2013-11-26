@@ -1,11 +1,12 @@
-define("echo/streamserver/apps/facePile", [
+Echo.define("echo/streamserver/apps/facePile", [
 	"jquery",
-	"require",
 	"echo/app",
 	"echo/utils",
 	"echo/streamserver/api",
-	"echo/streamserver/apps/facePileItem"
-], function($, require, App, Utils, API, Item) {
+	"echo/streamserver/apps/facePileItem",
+	"require"
+], function($, App, Utils, API, Item, require) {
+
 "use strict";
 
 /**
@@ -594,6 +595,7 @@ Echo.define("echo/streamserver/apps/facePileItem", [
 	"require",
 	"echo/app"
 ], function($, Utils, require, App) {
+
 "use strict";
 
 /**
@@ -711,5 +713,4 @@ item.css =
 	'.{class:only-avatars} .{class:container} { white-space: normal; }';
 
 return App.create(item);
-
 });

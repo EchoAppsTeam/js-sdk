@@ -1,12 +1,11 @@
-define("echo/gui", [
+Echo.define("echo/gui", [
 	"jquery",
 	"echo/configuration"
 ], function($, Configuration) {
+
 "use strict";
 
 var GUI;
-
-//if (Echo.GUI) return;
 
 /**
  * @class GUI

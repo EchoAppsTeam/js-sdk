@@ -1,9 +1,10 @@
-define("echo/api", [
+Echo.define("echo/api", [
 	"jquery",
 	"echo/configuration",
 	"echo/events",
 	"echo/utils"
 ], function($, Configuration, Events, Utils) {
+
 "use strict";
 
 var API = {"Transports": {}, "Request": {}};

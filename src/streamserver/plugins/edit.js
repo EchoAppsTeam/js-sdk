@@ -1,13 +1,14 @@
-define("echo/streamserver/plugins/edit", [
+Echo.define("echo/streamserver/plugins/edit", [
 	"echo/streamserver/plugins/streamItemEdit",
 	"echo/streamserver/plugins/submitEdit"
-], function(){});
+], function() {});
 
-define("echo/streamserver/plugins/streamItemEdit", [
+Echo.define("echo/streamserver/plugins/streamItemEdit", [
 	"jquery",
 	"echo/plugin",
 	"echo/streamserver/apps/submit"
 ], function($, Plugin, Submit) {
+
 "use strict";
 
 /**
@@ -85,14 +86,14 @@ plugin.methods._assembleButton = function() {
 };
 
 return Plugin.create(plugin);
-
 });
 
-define("echo/streamserver/plugins/submitEdit", [
+Echo.define("echo/streamserver/plugins/submitEdit", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils"
 ], function($, Plugin, Utils) {
+
 "use strict";
 
 /**
@@ -276,5 +277,4 @@ plugin.css =
 	'.{plugin.class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }';
 
 return Plugin.create(plugin);
-
 });

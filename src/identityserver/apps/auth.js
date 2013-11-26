@@ -1,4 +1,4 @@
-define("echo/identityserver/apps/auth", [
+Echo.define("echo/identityserver/apps/auth", [
 	"jquery",
 	"echo/app",
 	"echo/utils",
@@ -6,6 +6,7 @@ define("echo/identityserver/apps/auth", [
 	"echo/gui/modal",
 	"css!echo/gui.pack"
 ], function($, App, Utils, GUI, GUIModal) {
+
 "use strict";
 
 /**
@@ -387,5 +388,4 @@ auth.css =
 	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }";
 
 return App.create(auth);
-
 });

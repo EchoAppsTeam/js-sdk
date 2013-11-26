@@ -1,20 +1,15 @@
-//TODO: check if it will be cached
-define('echo/variables', [], function() {
+Echo.define('echo/variables', [], function() {
 	return {};
 });
 
-define("echo/utils", ["jquery", "echo/variables"], function($, Variables) {
+Echo.define("echo/utils", [
+	"jquery",
+	"echo/variables"
+], function($, Variables) {
+
 "use strict";
 
 var Utils;
-
-//if (!window.Echo) window.Echo = {};
-
-//if (Echo.Utils) return;
-
-//if (!Echo.Variables) Echo.Variables = {};
-
-
 
 /**
  * Static class implements common methods of data processing.
@@ -1501,5 +1496,6 @@ if (document.compatMode === "BackCompat") {
 		"message": "Quirks mode is not supported by JS SDK. Please make sure that the page has a valid doctype."
 	});
 }
-	return Utils;
+
+return Utils;
 });

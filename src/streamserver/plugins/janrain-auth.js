@@ -1,9 +1,10 @@
-define("echo/streamserver/plugins/janrainAuth", [
+Echo.define("echo/streamserver/plugins/janrainAuth", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"echo/identityserver/apps/auth"
 ], function($, Plugin, Utils, Auth) {
+
 "use strict";
 
 /**
@@ -202,5 +203,4 @@ plugin.css =
 	'.{plugin.class:error} { color: red; }';
 
 return Plugin.create(plugin);
-
 });

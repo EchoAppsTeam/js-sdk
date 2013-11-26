@@ -1,9 +1,10 @@
-define("echo/streamserver/plugins/tweet-display", [
+Echo.define("echo/streamserver/plugins/tweet-display", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"require"
-], function($, Plugin, utils, require) {
+], function($, Plugin, Utils, require) {
+
 "use strict";
 
 /**
@@ -204,7 +205,7 @@ plugin.component.renderers.authorName = function(element) {
 	return item.parentRenderer("authorName", arguments)
 		.removeClass("echo-linkColor")
 		.addClass(this.cssPrefix + "tweetScreenName").wrapInner(
-			utils.hyperlink({
+			Utils.hyperlink({
 				"href": item.get("data.actor.id")
 			}, {
 				"openInNewWindow": item.config.get("openLinksInNewWindow"),
@@ -219,7 +220,7 @@ plugin.component.renderers.authorName = function(element) {
 plugin.component.renderers.avatar = function(element) {
 	var item = this.component;
 	return item.parentRenderer("avatar", arguments).wrap(
-		utils.hyperlink({
+		Utils.hyperlink({
 			"href": item.get("data.actor.id")
 		}, {
 			"openInNewWindow": item.config.get("openLinksInNewWindow"),
@@ -250,7 +251,7 @@ plugin.component.renderers._buttonsDelimiter = function(element) {
  */
 plugin.renderers.tweetUserName = function(element) {
 	var item = this.component;
-	return element.html(utils.hyperlink({
+	return element.html(Utils.hyperlink({
 		"href": item.get("data.actor.id"),
 		"caption": "@" + this._extractTwitterID(),
 		"class": "echo-secondaryFont echo-secondaryColor"
@@ -262,7 +263,7 @@ plugin.renderers.tweetUserName = function(element) {
 
 plugin.renderers.tweetDate = function(element) {
 	var item = this.component;
-	return element.html(utils.hyperlink({
+	return element.html(Utils.hyperlink({
 		"caption": this._getTweetTime(),
 		"href": item.get("data.object.id"),
 		"class": "echo-secondaryFont echo-secondaryColor",
@@ -281,7 +282,7 @@ plugin.methods._assembleButton = function(name) {
 		return {
 			"name": name,
 			"label": plugin.labels.get(name),
-			"template": utils.hyperlink({
+			"template": Utils.hyperlink({
 				"href": "https://twitter.com/intent/" + name + "?in_reply_to=" + id + "&tweet_id=" + id,
 				"class": "echo-clickable " + plugin.cssPrefix + "intentControl echo-secondaryColor",
 				"caption":
@@ -358,5 +359,4 @@ plugin.css =
 	".{plugin.class:tweetDate} { float: right; }";
 
 return Plugin.create(plugin);
-
 });

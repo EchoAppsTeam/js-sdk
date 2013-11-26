@@ -1,9 +1,10 @@
-define("echo/streamserver/plugins/metadataManager", [
+Echo.define("echo/streamserver/plugins/metadataManager", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"echo/streamserver/api"
 ], function($, Plugin, Utils, API) {
+
 "use strict";
 
 /**
@@ -267,5 +268,4 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 };
 
 return Plugin.create(plugin);
-
 });

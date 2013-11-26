@@ -1,4 +1,4 @@
-define("echo/gui/tabs", [
+Echo.define("echo/gui/tabs", [
 	"jquery",
 	"echo/gui",
 	"echo/utils"

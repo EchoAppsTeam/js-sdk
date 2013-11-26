@@ -1,14 +1,16 @@
-define("echo/streamserver/plugins/moderation", [
+Echo.define("echo/streamserver/plugins/moderation", [
 	"echo/streamserver/plugins/streamModeration",
 	"echo/streamserver/plugins/streamItemModeration"
-], function(){});
-define("echo/streamserver/plugins/streamModeration", [
+], function() {});
+
+Echo.define("echo/streamserver/plugins/streamModeration", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"echo/streamserver/api",
 	"echo/identityserver/api"
 ], function($, Plugin, Utils, StreamServerAPI, IdentityServerApi) {
+
 "use strict";
 
 /**
@@ -658,13 +660,13 @@ plugin.css = function() {
 }();
 
 return Plugin.create(plugin);
-
 });
 
-define("echo/streamserver/plugins/streamItemModeration", [
+Echo.define("echo/streamserver/plugins/streamItemModeration", [
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {
+
 "use strict";
 
 var plugin = Plugin.manifest("Moderation", "Echo.StreamServer.Apps.Stream");

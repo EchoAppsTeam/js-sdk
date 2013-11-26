@@ -1,7 +1,8 @@
-define("echo/streamserver/plugins/infiniteScroll", [
+Echo.define("echo/streamserver/plugins/infiniteScroll", [
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {
+
 "use strict";
 
 /**

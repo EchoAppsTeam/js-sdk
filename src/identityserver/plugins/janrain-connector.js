@@ -1,8 +1,9 @@
-define("echo/identityserver/plugins/janrainConnector", [
+Echo.define("echo/identityserver/plugins/janrainConnector", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils"
 ], function($, Plugin, Utils) {
+
 "use strict";
 
 /**
@@ -106,5 +107,4 @@ plugin.enabled = function() {
 };
 
 return Plugin.create(plugin);
-
 });

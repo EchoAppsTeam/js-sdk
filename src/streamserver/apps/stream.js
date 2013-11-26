@@ -1,8 +1,9 @@
-define("echo/streamserver/apps/item", [
+Echo.define("echo/streamserver/apps/item", [
 	"jquery",
 	"echo/app",
 	"echo/utils"
-], function($, App, utils) {
+], function($, App, Utils) {
+
 "use strict";
 
 /**
@@ -44,7 +45,7 @@ if (App.isDefined(item)) return;
  */
 
 item.init = function() {
-	this.timestamp = utils.timestampFromW3CDTF(this.get("data.object.published"));
+	this.timestamp = Utils.timestampFromW3CDTF(this.get("data.object.published"));
 	this.ready();
 };
 
@@ -173,7 +174,7 @@ item.config = {
 item.config.normalizer = {
 	"contentTransformations": function(object) {
 		$.each(object, function(contentType, options) {
-			object[contentType] = utils.foldl({}, options || [],
+			object[contentType] = Utils.foldl({}, options || [],
 				function(option, acc) {
 					acc[option] = true;
 				}
@@ -352,7 +353,7 @@ item.methods.template = function() {
  */
 item.renderers.authorName = function(element) {
 	var author = this.get("data.actor.title") || this.labels.get("guest");
-	return utils.safelyExecute(element.html, author, element) || element;
+	return Utils.safelyExecute(element.html, author, element) || element;
 };
 
 /**
@@ -402,7 +403,7 @@ item.renderers.container = function(element) {
 			clickables[action + "Class"]("echo-linkColor");
 		});
 	};
-	if (!utils.isMobileDevice()) {
+	if (!Utils.isMobileDevice()) {
 		element.off(["mouseleave", "mouseenter"]).hover(function() {
 			if (self.user.is("admin")) {
 				self.view.get("modeSwitch").show();
@@ -458,7 +459,7 @@ item.renderers.modeSwitch = function(element) {
 		self.view.get("data").toggle();
 		self.view.get("metadata").toggle();
 	});
-	if (utils.isMobileDevice()) {
+	if (Utils.isMobileDevice()) {
 		element.show();
 	}
 	return element;
@@ -475,7 +476,7 @@ item.renderers.wrapper = function(element) {
  * @echo_renderer
  */
 item.renderers.avatar = function(element) {
-	utils.placeImage({
+	Utils.placeImage({
 		"container": element,
 		"image": this.get("data.actor.avatar"),
 		"defaultImage": this.config.get("defaultAvatar")
@@ -601,10 +602,10 @@ item.renderers.sourceIcon = function(element) {
 	var data = {"href": this.get("data.source.uri", this.get("data.object.permalink"))};
 	var config = {"openInNewWindow": this.config.get("parent.openLinksInNewWindow")};
 	element.hide()
-		.attr("src", utils.htmlize(url))
+		.attr("src", Utils.htmlize(url))
 		.one("error", function() { element.hide(); })
 		.one("load", function() {
-			element.show().wrap(utils.hyperlink(data, config));
+			element.show().wrap(Utils.hyperlink(data, config));
 		});
 	return element;
 };
@@ -680,7 +681,7 @@ item.renderers.body = function(element) {
 	var text = data[0];
 	var truncated = data[1].truncated;
 	var textElement = this.view.get("text").empty();
-	utils.safelyExecute(textElement.append, text, textElement);
+	Utils.safelyExecute(textElement.append, text, textElement);
 	this.view.get("textEllipses")[!truncated || this.textExpanded ? "hide" : "show"]();
 	this.view.get("textToggleTruncated")[truncated || this.textExpanded ? "show" : "hide"]();
 	return element;
@@ -691,7 +692,7 @@ item.renderers.body = function(element) {
  */
 item.renderers.date = function(element) {
 	// is used to preserve backwards compatibility
-	this.age = utils.getRelativeTime(this.timestamp);
+	this.age = Utils.getRelativeTime(this.timestamp);
 	return element.html(this.age);
 };
 
@@ -795,18 +796,18 @@ item.renderers._extraField = function(element, extra) {
 	}
 	var name = type === "markers" ? "maxMarkerLength" : "maxTagLength";
 	var limit = this.config.get("limits." + name);
-	var items = utils.foldl([], this.data.object[type], function(item, acc) {
+	var items = Utils.foldl([], this.data.object[type], function(item, acc) {
 		var template = item.length > limit
 			? '<span title="{data:item}">{data:truncatedItem}</span>'
 			: '<span>{data:item}</span>';
-		var truncatedItem = utils.htmlTextTruncate(item, limit, "...");
+		var truncatedItem = Utils.htmlTextTruncate(item, limit, "...");
 		acc.push(self.substitute({
 			"template": template,
 			"data": {"item": item, "truncatedItem": truncatedItem}
 		}));
 	});
 	return (
-		utils.safelyExecute(
+		Utils.safelyExecute(
 			element.prepend,
 			items.sort().join(", "),
 			element
@@ -837,7 +838,7 @@ item.renderers._button = function(element, extra) {
 	var data = this.get("buttons." + extra.plugin + "." + extra.name);
 	data.element = button;
 	data.clickableElements = clickables;
-	if (utils.isMobileDevice()) {
+	if (Utils.isMobileDevice()) {
 		clickables.addClass("echo-linkColor");
 	}
 	return element.append(button);
@@ -856,7 +857,7 @@ item.renderers._viaText = function(element, extra) {
 			data.name === "echo") {
 		return element;
 	}
-	var a = utils.hyperlink({
+	var a = Utils.hyperlink({
 		"class": "echo-secondaryColor",
 		"href": data.uri || this.get("data.object.permalink"),
 		"caption": data.name
@@ -998,7 +999,7 @@ item.methods.addButtonSpec = function(plugin, spec) {
 };
 
 item.methods._getDomain = function(url) {
-	var parts = utils.parseURL(url);
+	var parts = Utils.parseURL(url);
 	return parts && parts.domain ? parts.domain : url;
 };
 
@@ -1008,10 +1009,10 @@ item.methods._reOfContext = function(context, config) {
 	if (title.length > maxLength) {
 		title = title.substring(0, maxLength) + "...";
 	}
-	var hyperlink = utils.hyperlink({
+	var hyperlink = Utils.hyperlink({
 		"class": "echo-primaryColor",
 		"href": context.uri,
-		"caption": this.labels.get("re") + ": " + utils.stripTags(title)
+		"caption": this.labels.get("re") + ": " + Utils.stripTags(title)
 	}, {
 		"openInNewWindow": config.openLinksInNewWindow
 	});
@@ -1137,7 +1138,7 @@ item.methods._sortButtons = function() {
 				delete defaultOrder[pos];
 			}
 		};
-		var order = utils.foldl([], requiredOrder, function(name, acc) {
+		var order = Utils.foldl([], requiredOrder, function(name, acc) {
 			if (/^(.*)\./.test(name)) {
 				push(name, acc);
 			} else {
@@ -1264,7 +1265,7 @@ item.methods._sortButtons = function() {
 			// cut out URL to current item
 			if (url === $1) return "";
 			if (!extra.contentTransformations.urls) return $0;
-			return utils.hyperlink({
+			return Utils.hyperlink({
 				"href": $1,
 				"caption": $1
 			}, {
@@ -1319,7 +1320,7 @@ item.methods._sortButtons = function() {
 					: undefined;
 			// we should call utils.htmlTextTruncate to close all tags
 			// which might remain unclosed after lines truncation
-			var truncatedText = utils.htmlTextTruncate(text, limit, "", true);
+			var truncatedText = Utils.htmlTextTruncate(text, limit, "", true);
 			if (truncatedText.length !== text.length) {
 				truncated = true;
 			}
@@ -1386,16 +1387,15 @@ item.css =
 	itemDepthRules.join("\n");
 
 return App.create(item);
-
 });
 
-define("echo/streamserver/apps/stream", [
+Echo.define("echo/streamserver/apps/stream", [
 	"jquery",
 	"echo/app",
 	"echo/streamserver/api",
 	"echo/streamserver/apps/item",
 	"echo/utils"
-], function($, App, API, Item, utils) {
+], function($, App, API, Item, Utils) {
 
 "use strict";
 
@@ -1450,7 +1450,7 @@ if (App.isDefined(stream)) return;
 stream.init = function() {
 	var self = this;
 	if (!this.config.get("appkey")) {
-		return utils.showError({
+		return Utils.showError({
 			"errorCode": "incorrect_appkey",
 			"label": this.labels.get("error_incorrect_appkeys")
 		}, {
@@ -1474,7 +1474,7 @@ stream.init = function() {
 		}),
 		"onOpen": function(data, options) {
 			if (options.requestType === "initial") {
-				utils.showError({}, {
+				Utils.showError({}, {
 					"retryIn": 0,
 					"label": self.labels.get("retrying"),
 					"target": self.config.get("target"),
@@ -1484,7 +1484,7 @@ stream.init = function() {
 		},
 		"onError": function(data, options) {
 			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-				utils.showError(data, $.extend(options, {
+				Utils.showError(data, $.extend(options, {
 					"label": self.labels.get("error_" + data.errorCode),
 					"target": self.config.get("target"),
 					"promise": self.request.deferred.transport.promise()
@@ -1803,7 +1803,7 @@ stream.config.normalizer = {
 		return "off" !== value;
 	},
 	"state": function(object) {
-		object["toggleBy"] =  object["toggleBy"] === "mouseover" && utils.isMobileDevice()
+		object["toggleBy"] =  object["toggleBy"] === "mouseover" && Utils.isMobileDevice()
 			? "button"
 			: object["toggleBy"];
 
@@ -1936,7 +1936,7 @@ stream.renderers.body = function(element) {
 		}
 		this._appendRootItems(request.data, element);
 	} else {
-		utils.showMessage({
+		Utils.showMessage({
 			"type": "info",
 			"message": this.labels.get("emptyStream"),
 			"target": element
@@ -1975,7 +1975,7 @@ stream.renderers.state = function(element) {
 	var state = this.getState();
 	var activitiesCount = 0;
 	if (state === "paused") {
-		activitiesCount = utils.foldl(0, this.activities.queue,
+		activitiesCount = Utils.foldl(0, this.activities.queue,
 			function(entry, acc) {
 				if (entry.affectCounter) return ++acc;
 			}
@@ -2142,7 +2142,7 @@ stream.methods._requestChildrenItems = function(unique) {
 			"q": this._constructChildrenSearchQuery(item)
 		},
 		"onOpen": function() {
-			utils.showError({}, {
+			Utils.showError({}, {
 				"retryIn": 0,
 				"target": target,
 				"label": self.labels.get("retrying"),
@@ -2150,7 +2150,7 @@ stream.methods._requestChildrenItems = function(unique) {
 			});
 		},
 		"onError": function(data, options) {
-			utils.showError(data, $.extend(options, {
+			Utils.showError(data, $.extend(options, {
 				"target": target,
 				"promise": request.deferred.transport.promise(),
 				"label": self.labels.get("error_" + data.errorCode)
@@ -2194,7 +2194,7 @@ stream.methods._requestInitialItems = function() {
 			},
 			"onOpen": function(data, options) {
 				if (options.requestType === "initial") {
-					utils.showError({}, {
+					Utils.showError({}, {
 						"retryIn": 0,
 						"target": self.config.get("target"),
 						"label": self.labels.get("retrying"),
@@ -2204,7 +2204,7 @@ stream.methods._requestInitialItems = function() {
 			},
 			"onError": function(data, options) {
 				if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-					utils.showError(data, $.extend(options, {
+					Utils.showError(data, $.extend(options, {
 						"label": self.labels.get("error_" + data.errorCode),
 						"target": self.config.get("target"),
 						"promise": self.request.deferred.transport.promise()
@@ -2225,14 +2225,14 @@ stream.methods._requestMoreItems = function(element) {
 	if (!this.moreRequest) {
 		this.moreRequest = this._getRequestObject({
 			"onOpen": function() {
-				utils.showError({}, {
+				Utils.showError({}, {
 					"retryIn": 0,
 					"target": element,
 					"promise": self.moreRequest.deferred.transport.promise()
 				});
 			},
 			"onError": function(data, options) {
-				utils.showError(data, $.extend(options, {
+				Utils.showError(data, $.extend(options, {
 					"target": element,
 					"promise": self.moreRequest.deferred.transport.promise()
 				}));
@@ -2303,7 +2303,7 @@ stream.methods._onDataReceive = function(data, type, callback) {
 	});
 	// items initialization is an async process, so we init
 	// item instances first and append them into the structure later
-	utils.parallelCall(actions, function() {
+	Utils.parallelCall(actions, function() {
 		callback(items);
 	});
 };
@@ -2377,7 +2377,7 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 			}
 		};
 	});
-	utils.sequentialCall(actions, function() {
+	Utils.sequentialCall(actions, function() {
 		self._recalcEffectsTimeouts();
 		callback && callback.call(self);
 	});
@@ -2426,7 +2426,7 @@ stream.methods._createChildrenItemsDomWrapper = function(children, parent) {
 
 stream.methods._extractPresentationConfig = function(data) {
 	var keys = ["sortOrder", "itemsPerPage", "safeHTML", "showFlags"];
-	return utils.foldl({}, keys, function(key, acc) {
+	return Utils.foldl({}, keys, function(key, acc) {
 		if (typeof data[key] !== "undefined") {
 			acc[key] = data[key];
 		}
@@ -2448,7 +2448,7 @@ stream.methods._extractTimeframeConfig = function(data) {
 			return function(ts) { return ts > getTS(); }
 		}
 	};
-	var timeframe = utils.foldl([], ["before", "after"], function(key, acc) {
+	var timeframe = Utils.foldl([], ["before", "after"], function(key, acc) {
 		if (!data[key]) return;
 		var cmp = getComparator(data[key]);
 		if (cmp) acc.push(cmp);
@@ -2497,7 +2497,7 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 	var pageAfter = item.getNextPageAfter();
 	var filter = this.config.get("children.filter");
 	var filterQuery = !filter || filter === "()" ? "" : filter + " ";
-	return filterQuery + utils.foldl("", {
+	return filterQuery + Utils.foldl("", {
 		"childrenof": item.get("data.object.id"),
 		"children": depth,
 		"childrenItemsPerPage": depth
@@ -2576,8 +2576,8 @@ stream.methods._checkTimeframeSatisfy = function() {
 	var self = this;
 	var timeframe = this.config.get("timeframe");
 	if (!timeframe || !timeframe.length) return; // no timeframes defined in the search query
-	var unsatisfying = utils.foldl([], this.threads, function(thread, acc) {
-		var satisfy = utils.foldl(true, timeframe, function(p, a) {
+	var unsatisfying = Utils.foldl([], this.threads, function(thread, acc) {
+		var satisfy = Utils.foldl(true, timeframe, function(p, a) {
 			return a ? p(thread.get("timestamp")) : false;
 		});
 		if (!satisfy) acc.push(thread);
@@ -2766,7 +2766,7 @@ stream.methods._spotUpdates.animate.fade = function(item) {
 	if (this.timeouts.fade) {
 		var interval = Math.round(this.timeouts.fade / 2);
 		var container = item.view.get("container");
-		var originalBGColor = utils.getVisibleColor(container);
+		var originalBGColor = Utils.getVisibleColor(container);
 		var transition = "background-color " + interval + "ms linear";
 		container.css("background-color", this.config.get("flashColor"));
 		setTimeout(function() {
@@ -2826,11 +2826,11 @@ stream.methods._spotUpdates.animate.remove = function(item, config) {
 		// for the nested elements (children), thus we use "detach" instead of "remove"
 		item.config.get("target")[config.keepChildren ? "detach" : "remove"]();
 		item.set("vars", {});
-		var itemsCount = utils.foldl(0, self.items, function(_item, acc) {
+		var itemsCount = Utils.foldl(0, self.items, function(_item, acc) {
 			return acc + 1;
 		});
 		if (!itemsCount) {
-			utils.showMessage({
+			Utils.showMessage({
 				"type": "info",
 				"message": self.labels.get("emptyStream"),
 				"target": self.view.get("body")
@@ -2941,7 +2941,7 @@ stream.methods._withinVisibleChildrenFrame = function(item) {
 stream.methods._getParentItemFromActivityQueue = function(item) {
 	if (item.isRoot()) return;
 	// let's handle exceptions just in case something goes wrong (though it shouldn't)
-	return utils.safelyExecute(function(queue) {
+	return Utils.safelyExecute(function(queue) {
 		var parent;
 		$.each(queue, function(i, activity) {
 			if (activity.action === "add" && activity.item.get("data.unique") === item.get("data.parentUnique")) {
@@ -3088,7 +3088,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 	config.parent = this.itemParentConfig;
 	config.data = this._normalizeEntry(entry);
 
-	var init = function() { new Echo.StreamServer.Apps.Stream.Item(config); };
+	var init = function() { new Item(config); };
 	this.config.get("asyncItemsRendering") ? setTimeout(init, 0) : init();
 };
 
@@ -3099,7 +3099,7 @@ stream.methods._updateItem = function(entry) {
 	var accRelatedSortOrder = sortOrder.match(/replies|likes|flags/);
 	var acc = accRelatedSortOrder && this._getRespectiveAccumulator(item, sortOrder);
 	if (item.data.object.published !== entry.object.published) {
-		item.set("timestamp", utils.timestampFromW3CDTF(entry.object.published));
+		item.set("timestamp", Utils.timestampFromW3CDTF(entry.object.published));
 		item.set("forceInject", true);
 	}
 	$.extend(item.data, entry);
@@ -3232,5 +3232,4 @@ stream.css =
 	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }';
 
 return App.create(stream);
-
 });

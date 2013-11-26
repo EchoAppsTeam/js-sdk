@@ -1,14 +1,15 @@
-define("echo/streamserver/plugins/like", [
+Echo.define("echo/streamserver/plugins/like", [
 	"echo/streamserver/plugins/streamLike",
 	"echo/streamserver/plugins/facePileLike"
-], function(){});
+], function() {});
 
-define("echo/streamserver/plugins/streamLike", [
+Echo.define("echo/streamserver/plugins/streamLike", [
 	"jquery",
 	"echo/plugin",
 	"echo/streamserver/apps/facePile",
 	"echo/streamserver/api"
 ], function($, Plugin, FacePile, API) {
+
 "use strict";
 
 /**
@@ -239,13 +240,13 @@ plugin.css =
 	'.{plugin.class:highlight} { line-height: 23px; }';
 
 return Plugin.create(plugin);
-
 });
 
-define("echo/streamserver/plugins/facePileLike", [
+Echo.define("echo/streamserver/plugins/facePileLike", [
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {
+
 "use strict";
 
 /**

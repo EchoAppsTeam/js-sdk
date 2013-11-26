@@ -1,4 +1,4 @@
-define("echo/streamserver/apps/submit", [
+Echo.define("echo/streamserver/apps/submit", [
 	"jquery",
 	"require",
 	"echo/app",
@@ -10,6 +10,7 @@ define("echo/streamserver/apps/submit", [
 	"echo/gui/modal",
 	"css!echo/gui.pack"
 ], function($, require, App, Utils, API, GUI, GUIButton, Events, GUIModal) {
+
 "use strict";
 
 /**
@@ -786,5 +787,4 @@ submit.css =
 	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk-assets}/images/info70.png); }';
 
 return App.create(submit);
-
 });

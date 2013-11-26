@@ -9,7 +9,7 @@
 	<script src="http://cdn.echoenabled.com/clientapps/v2/packs/full-pack.js"></script>
 
 	<script>
-	Echo.require(["echo/backplane"], function(){});
+	Echo.require(["echo/backplane"], function() {});
 	window.Backplane.init({
 				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 				"busName": "jskit"
@@ -284,11 +284,6 @@
                         "query" : "childrenof:http://example.com/*"
                     });
                 });
-				/*new Echo.StreamServer.Controls.Counter({
-					"target": document.getElementById("counter-v3"),
-					"appkey": "echo.jssdk.demo.aboutecho.com",
-					"query" : "childrenof:http://example.com/*"
-				});*/
 			</script>
 			<!-- // -->
 		</div>

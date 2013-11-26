@@ -4,6 +4,7 @@ Echo.define("commentsSample", [
 	"echo/streamserver/apps/stream",
 	"echo/streamserver/apps/submit"
 ], function($, App, Stream, Submit) {
+
 "use strict";
 
 var Comments = App.manifest("Echo.Apps.CommentsSample");
@@ -33,7 +34,6 @@ Comments.methods.template = function() {
 };
 
 Comments.renderers.stream = function(element) {
-	console.log("config", this.config);
 	this.initApp({
 		"id": "Stream",
 		"component": "Echo.StreamServer.Controls.Stream",
@@ -64,5 +64,4 @@ Comments.renderers.submit = function(element) {
 Comments.css = ".{class:container} > div { margin-bottom: 7px; }";
 
 return App.create(Comments);
-
 });

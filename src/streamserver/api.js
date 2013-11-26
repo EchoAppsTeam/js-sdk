@@ -1,10 +1,11 @@
-define("echo/streamserver/api", [
+Echo.define("echo/streamserver/api", [
 	"jquery",
 	"echo/api",
 	"echo/configuration",
 	"echo/events",
 	"echo/utils"
 ], function($, API, Configuration, Events, Utils) {
+
 "use strict";
 
 var StreamServer = {};
@@ -891,7 +892,6 @@ StreamServer.API.WebSockets.prototype._runQueue = function() {
 };
 
 // static interface
-//TODO: It can surprise us a little bit!
 $.map(["WebSockets", "Polling"], function(name) {
 	StreamServer.API[name].init = function(config) {
 		return new StreamServer.API[name](config);

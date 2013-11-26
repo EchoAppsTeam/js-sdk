@@ -1,12 +1,11 @@
-define("echo/events", [
+Echo.define("echo/events", [
 	"jquery",
 	"echo/utils"
 ], function($, Utils) {
+
 "use strict";
 
 var Events;
-
-//if (Utils.isComponentDefined("Events")) return;
 
 /**
  * @class Events

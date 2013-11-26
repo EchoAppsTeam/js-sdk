@@ -1,4 +1,4 @@
-define("echo/gui/dropdown", [
+Echo.define("echo/gui/dropdown", [
 	"jquery",
 	"echo/gui",
 	"echo/utils"

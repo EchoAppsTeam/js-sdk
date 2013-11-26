@@ -1,14 +1,15 @@
-define("echo/streamserver/plugins/pinboardVisualization", [
+Echo.define("echo/streamserver/plugins/pinboardVisualization", [
 	"echo/streamserver/plugins/mediaGallery",
 	"echo/streamserver/plugins/streamItemPinboardVisualization",
 	"echo/streamserver/plugins/streamPinboardVisualization"
-], function(){});
+], function() {});
 
-define("echo/streamserver/plugins/mediaGallery", [
+Echo.define("echo/streamserver/plugins/mediaGallery", [
 	"jquery",
 	"echo/app",
 	"echo/utils"
 ], function($, App, Utils) {
+
 "use strict";
 
 
@@ -254,13 +255,14 @@ mediaGallery.css =
 return App.create(mediaGallery);	
 });
 
-define("echo/streamserver/plugins/streamItemPinboardVisualization", [
+Echo.define("echo/streamserver/plugins/streamItemPinboardVisualization", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"isotope",
 	"echo/streamserver/plugins/mediaGallery"
-], function($, Plugin, Utils, isotope, MediaGallery) {
+], function($, Plugin, Utils, Isotope, MediaGallery) {
+
 "use strict";
 
 /**
@@ -303,12 +305,6 @@ plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate("replace", "container", plugin.templates.container);
 };
-
-/*plugin.dependencies = [{
-	"loaded": function() { return !!$.fn.isotope; },
-	"url": "{config:cdnBaseURL.sdk}/third-party/jquery/jquery.isotope.min.js"
-}];
-*/
 
 plugin.config = {
 	/**
@@ -643,14 +639,14 @@ plugin.css =
 		: '');
 	
 return Plugin.create(plugin);
-
 });
 
-define("echo/streamserver/plugins/streamPinboardVisualization", [
+Echo.define("echo/streamserver/plugins/streamPinboardVisualization", [
 	"jquery",
 	"echo/plugin",
 	"isotope"
-], function($, Plugin, isotope) {
+], function($, Plugin, Isotope) {
+
 "use strict";
 
 /**
@@ -779,5 +775,4 @@ plugin.css =
 	'.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }';
 
 return Plugin.create(plugin);
-
 });

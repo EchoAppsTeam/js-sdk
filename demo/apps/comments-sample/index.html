@@ -21,8 +21,7 @@
 			});
 		}
 		Echo.require(["commentsSample"], function(Comments){
-			console.log(Comments);
-			var config = {
+			new Comments({
 				"backplane": {
 					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 					"busName": "jskit"
@@ -66,57 +65,9 @@
 						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
 					}
 				}
-			};
-			console.log(config);
-			new Comments(config);
+			});
 		});
-		/*Echo.Loader.initApplication({
-			"script": "{%=baseURLs.cdn%}/apps/echo/comments-sample/comments-sample.js",
-			"component": "Echo.Apps.CommentsSample",
-			"backplane": {
-				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-				"busName": "jskit"
-			},
-			"config": {
-				"target": document.getElementById("comments-sample"),
-				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
-				"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
-				"components": {
-					"Stream": {
-						"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
-						"liveUpdates": {"transport": "websockets"},
-						"item": {"reTag": false},
-						"plugins": [{
-							"name": "Edit"
-						}, {
-							"name": "Like"
-						}, {
-							"name": "Moderation"
-						}, {
-							"name": "StreamSortingSelector",
-							"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
-						}]
-					},
-					"Submit": {
-						"targetURL": "http://echosandbox.com/test/comments-sampler-test"
-					}
-				},
-				"identityManager": {
-					"login": {
-						"width": 400,
-						"height": 250,
-						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-					},
-					"signup": {
-						"width": 400,
-						"height": 250,
-						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-					}
-				}
-			}
-		});*/
-        </script>
+	</script>
 </div>
 </body>
 </html>

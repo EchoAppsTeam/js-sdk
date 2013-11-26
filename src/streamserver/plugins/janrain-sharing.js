@@ -1,9 +1,9 @@
-define("echo/streamserver/plugins/janrainSharing", [
+Echo.define("echo/streamserver/plugins/janrainSharing", [
 	"echo/streamserver/plugins/submitJanrainSharing",
 	"echo/streamserver/plugins/streamJanrainSharing"
-], function(){});
+], function() {});
 
-define("echo/streamserver/plugins/submitJanrainSharing", [
+Echo.define("echo/streamserver/plugins/submitJanrainSharing", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
@@ -11,7 +11,8 @@ define("echo/streamserver/plugins/submitJanrainSharing", [
 	"echo/identityserver/apps/auth",
 	"require",
 	"css!echo/gui.pack"
-], function($, Plugin, Utils, GUI, require) {
+], function($, Plugin, Utils, GUI, Auth, require) {
+
 "use strict";
 
 /**
@@ -230,8 +231,7 @@ plugin.methods._share = function(data) {
 	url = "https:" === document.location.protocol
 		? "https://rpxnow.com/js/lib/" + plugin.config.get("appId") + "/widget.js"
 		: "http://widget-cdn.rpxnow.com/js/lib/" + plugin.config.get("appId") + "/widget.js";
-	//Echo.Loader.download([{"url": url}]);
-	require([url]); //TODO: check if we need something else (callback or smth. else)
+	require([url]); 
 };
 
 plugin.methods._showPopup = function(data) {
@@ -281,7 +281,6 @@ plugin.methods._shareLegacy = function(args) {
 	var plugin = this,
 		url = ("https:" === document.location.protocol ? "https://" : "http://static.") +
 			"rpxnow.com/js/lib/rpx.js";
-	//TODO: double check if it works
 	if(!!window.RPXNOW) {
 		require([url], function() {
 			RPXNOW.init({
@@ -393,10 +392,9 @@ plugin.css =
 	'.echo-sdk-ui .{plugin.class:shareContainer} input.{plugin.class:shareCheckbox} { margin: 0px; margin-right: 3px; padding: 0px; }';
 
 return Plugin.create(plugin);
-
 });
 
-define("echo/streamserver/plugins/streamJanrainSharing", [
+Echo.define("echo/streamserver/plugins/streamJanrainSharing", [
 	"jquery",
 	"echo/plugin",
 	"echo/gui",
@@ -404,6 +402,7 @@ define("echo/streamserver/plugins/streamJanrainSharing", [
 	"echo/streamserver/plugins/submitJanrainSharing",
 	"css!echo/gui.pack"
 ], function($, Plugin, GUI, Submit) {
+
 "use strict";
 
 /**

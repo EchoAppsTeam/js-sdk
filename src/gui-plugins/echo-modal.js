@@ -1,4 +1,4 @@
-define("echo/gui/modal", [
+Echo.define("echo/gui/modal", [
 	"jquery",
 	"echo/gui",
 	"echo/utils"
@@ -278,7 +278,7 @@ GUI.Modal.prototype._assembleBackdrop = function() {
 
 				modal.options.backdrop = true;
 				modal.isShown = true;
-				modal.backdrop(function(){});
+				modal.backdrop(function() {});
 				modal.isShown = shown;
 				modal.options.backdrop = backdrop;
 

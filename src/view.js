@@ -1,11 +1,9 @@
-define("echo/view", [
+Echo.define("echo/view", [
 	"jquery", 
 	"echo/utils"
 ], function($, Utils) {
-"use strict";
 
-//TODO: do we need it?
-//if (Utils.isComponentDefined("View")) return;
+"use strict";
 
 /**
  * @class View

@@ -1,12 +1,11 @@
-define("echo/configuration", [
+Echo.define("echo/configuration", [
 	"jquery",
 	"echo/utils"
 ], function($, Utils) {
+
 "use strict";
 
 var Configuration;
-
-//if (Echo.Utils.isComponentDefined("Echo.Configuration")) return;
 
 /**
  * @class Configuration
