@@ -12,6 +12,7 @@ var Comments = App.manifest("Echo.Apps.CommentsSample");
 if (App.isDefined("Echo.Apps.CommentsSample")) return;
 
 Comments.config = {
+	"appkey": "",
 	"submitFormPosition": "top" // top | bottom
 };
 
@@ -36,9 +37,9 @@ Comments.methods.template = function() {
 Comments.renderers.stream = function(element) {
 	this.initApp({
 		"id": "Stream",
-		"component": "Echo.StreamServer.Controls.Stream",
+		"component": "echo/streamserver/apps/stream",
 		"config": {
-			"target": element,
+			"target": element
 		}
 	});
 	return element;
@@ -47,15 +48,9 @@ Comments.renderers.stream = function(element) {
 Comments.renderers.submit = function(element) {
 	this.initApp({
 		"id": "Submit",
-		"component": "Echo.StreamServer.Controls.Submit",
+		"component": "echo/streamserver/apps/submit",
 		"config": {
-			"target": element,
-			"infoMessages": {"enabled": false},
-			"plugins": [{
-				"name": "FormAuth",
-				"url": "echo/streamserver/plugins/formAuth",
-				"identityManager": "{config:identityManager}"
-			}]
+			"target": element
 		}
 	});
 	return element;

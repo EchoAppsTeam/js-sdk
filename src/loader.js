@@ -3,9 +3,9 @@ Echo.require(['cookie'], function(Cookie) {
 "use strict";
 
 Echo.Loader = {
-	"version": "{%=packageVersion%}",
+    "version": "",
+    "debug": false,
 	"cdnBaseURL": (/^https?/.test(window.location.protocol) ? window.location.protocol : "http:") +	"{%=baseURLs.cdn%}/",
-	"debug": false
 }
 
 Echo.Loader.getURL = function(url, devVersion) {
@@ -52,8 +52,6 @@ Echo.Loader.isDebug = function() {
 		}
 		Echo.Loader.debug = !!Cookie.get(_debugCookieName);
 })();
-
-Echo.Loader = Echo.Loader;
 
 var paths = {};
 paths[Echo.Loader.getURL("")] = ["echo"]; 

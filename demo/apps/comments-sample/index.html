@@ -30,7 +30,7 @@
 				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
 				"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
-				"components": {
+				"apps": {
 					"Stream": {
 						"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
 						"liveUpdates": {"transport": "websockets"},
@@ -43,7 +43,7 @@
 							"url": "echo/streamserver/plugins/like"
 						}, {
 							"name": "Moderation",
-							"url": "echo/streamserver/plugin/moderation"
+							"url": "echo/streamserver/plugins/moderation"
 						}, {
 							"name": "StreamSortingSelector",
 							"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
@@ -51,6 +51,12 @@
 					},
 					"Submit": {
 						"targetURL": "http://echosandbox.com/test/comments-sampler-test",
+						"infoMessages": {"enabled": false},
+						"plugins": [{
+							"name": "FormAuth",
+							"url": "echo/streamserver/plugins/formAuth",
+							"identityManager": "{config:identityManager}"
+						}]
 					}
 				},
 				"identityManager": {

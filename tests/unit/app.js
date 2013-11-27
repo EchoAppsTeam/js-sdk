@@ -45,7 +45,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 	"config": {
 		"async": true,
 		"user": {"status": "anonymous"},
-		"testTimeout": 80000 // 20 secs
+		"testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
 		var self = this;
@@ -65,7 +65,6 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
 		delete _manifest.destroy;
-		console.log(manifest, _manifest);
 		QUnit.deepEqual(manifest, _manifest, "Checking the \"manifest\" function output");
 
 		suite.createComponents(["TestComponent1", "TestComponent2", "TestComponent3"]);

@@ -423,9 +423,20 @@ App.prototype.initApp = function(spec) {
 	spec.config = this._normalizeAppConfig(
 		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
-	var App = require("echo/app");
-	this.set("apps." + spec.id, new App(spec.config));
-	return this.getApp(spec.id);
+	if(spec.component && Echo.requirejs.specified(spec.component)) {
+		var self = this;
+		require([spec.component], function(Component) {
+			self.set("apps." + spec.id, new Component(spec.config));
+			return self.getApp(spec.id);
+		});
+	} else {
+		this.log({
+			"type": "error",
+			"component": this._manifest("name"),
+			"message": "Unable to initialize application, application not found",
+			"args": {"application": spec["component"]}
+		});
+	}
 };
 
 /**
@@ -782,7 +793,6 @@ App.prototype._initializers.init = function(callback) {
 	// this function should be called inside the "init" function
 	// to indicate that the application was initialized and is now ready
 	this.ready = callback;
-
 	this._manifest("init").call(this);
 };
 
