@@ -424,11 +424,9 @@ App.prototype.initApp = function(spec) {
 		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
 	if(spec.component && Echo.requirejs.specified(spec.component)) {
-		var self = this;
-		require([spec.component], function(Component) {
-			self.set("apps." + spec.id, new Component(spec.config));
-			return self.getApp(spec.id);
-		});
+		var App = require(spec.component);
+		this.set("apps." + spec.id, new App(spec.config));
+		return this.getApp(spec.id);
 	} else {
 		this.log({
 			"type": "error",
