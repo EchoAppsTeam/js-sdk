@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/configuration"
+], function($, Configuration) {
+
+"use strict";
 
 Echo.Tests.module("Echo.Configuration", {
 	"meta": {
@@ -38,7 +43,7 @@ function _clone(obj) {
 function _checkBasicOperations(args, note) {
 	var original = _clone(args[0]);
 	var overrides = args[1] && _clone(args[1]);
-	var config = new Echo.Configuration(overrides, original);
+	var config = new Configuration(overrides, original);
 
 	QUnit.deepEqual(_data.original, original,
 		note + " Checking if original object \"original\" wasn't changed");
@@ -116,7 +121,7 @@ function _checkBasicOperations(args, note) {
 function _checkOverrides(args, note) {
 	var original = _clone(args[0]);
 	var overrides = _clone(args[1]);
-	var config = new Echo.Configuration(overrides, original);
+	var config = new Configuration(overrides, original);
 
 	QUnit.deepEqual(_data.overrides, overrides,
 		note + " Checking if original object \"overrides\" wasn't changed");
@@ -178,7 +183,7 @@ function _checkIncomingData() {
 		"defaults": $.extend(true, {}, incoming.defaults),
 		"override": $.extend(true, {}, incoming.override)
 	};
-	var config = new Echo.Configuration(incoming.override, incoming.defaults);
+	var config = new Configuration(incoming.override, incoming.defaults);
 	config.set("int", 75);
 	config.set("str", "new string");
 	config.get("arr")[0].arr_key1 = 100;
@@ -190,7 +195,7 @@ function _checkIncomingData() {
 };
 
 function _checkCacheClear() {
-	var config = new Echo.Configuration(_data.overrides, _data.original);
+	var config = new Configuration(_data.overrides, _data.original);
 	config._clearCacheByPrefix("key2");
 	QUnit.strictEqual(config.cache["key2"], undefined,
 		"Checking if internal cache was cleared");
@@ -238,4 +243,4 @@ var _data = {
 	}
 };
 
-})(Echo.jQuery);
+});

@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/gui"
+], function($, GUI) {
+
+"use strict";
 
 Echo.Tests.module("Echo.GUI", {
 	"meta": {
@@ -14,7 +19,7 @@ Echo.Tests.test("public workflow", function() {
 	var target = $("#qunit-fixture");
 	var element = $("<div>some_content</div>").appendTo(target);
 
-	var component = new Echo.GUI({
+	var component = new GUI({
 		"target": element,
 		"param1": "value1",
 		"param2": "value2"
@@ -39,4 +44,4 @@ Echo.Tests.test("public workflow", function() {
 	);
 });
 
-})(Echo.jQuery);
+});

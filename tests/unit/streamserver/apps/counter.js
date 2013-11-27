@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/apps/counter",
+	"echo/api"
+], function($, Counter, API) {
+
+"use strict";
 
 var suite = Echo.Tests.Unit.Counter = function() {};
 
@@ -19,7 +25,7 @@ suite.prototype.tests.staticWorkflow = {
 		var self = this;
 		var target = this.config.target;
 		var count = 99;
-		new Echo.StreamServer.Apps.Counter({
+		new Counter({
 			"target" : target,
 			"appkey" : "echo.jssdk.tests.aboutecho.com",
 			"data"   : {"count": count},
@@ -27,7 +33,7 @@ suite.prototype.tests.staticWorkflow = {
 				suite.counter = this;
 				QUnit.ok(target.html().match(count),
 					'Checking the static usecase rendering');
-				QUnit.ok(this.request instanceof Echo.API.Request, "Check that counter initializing with the pre-defined data inits a request object as well");
+				QUnit.ok(this.request instanceof API.Request, "Check that counter initializing with the pre-defined data inits a request object as well");
 				QUnit.strictEqual(this.request.config.get("liveUpdates.enabled"), this.config.get("liveUpdates.enabled"), "Check that counter initializing with the pre-defined data inits a request object with the proper options");
 				self.sequentialAsyncTests([
 					"staticInit",
@@ -46,7 +52,7 @@ suite.prototype.tests.dynamicWorkflow = {
 	},
 	"check" : function() {
 		var self = this;
-		new Echo.StreamServer.Apps.Counter({
+		new Counter({
 			"target" : this.config.target,
 			"appkey" : "echo.jssdk.tests.aboutecho.com",
 			"query"  : "childrenof:http://example.com/*",
@@ -64,7 +70,7 @@ suite.prototype.tests.dynamicWorkflow = {
 					"onUpdate"
 				];
 				// FIXME: when server will support XDomainRequest handling
-				if (!Echo.API.Transports.XDomainRequest.available({
+				if (!API.Transports.XDomainRequest.available({
 					"method": "get",
 					"URL": "api.echoenabled.com"
 				})) {
@@ -242,4 +248,4 @@ suite.prototype.cases.destroy = function(callback) {
 	callback();
 };
 
-})(Echo.jQuery);
+});

@@ -1,4 +1,8 @@
-(function($) {
+Echo.require([
+	"jquery"
+], function($) {
+
+"use strict";
 
 Echo.Tests.module("Compatibility tests");
 
@@ -65,4 +69,4 @@ Echo.Tests.asyncTest("require no conflict", function() {
 	"timeout": 6000
 });
 
-})(Echo.jQuery);
+});

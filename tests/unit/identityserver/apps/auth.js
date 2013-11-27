@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/identityserver/apps/auth",
+	"echo/events"
+], function($, Auth, Events) {
+
+"use strict";
 
 Echo.Tests.module("Echo.IdentityServer.Apps.Auth", {
 	"meta": {
@@ -16,7 +22,7 @@ Echo.Tests.asyncTest("logged in workflow", function() {
 		"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
 	};
 	var target = $("#qunit-fixture");
-	Echo.Events.subscribe({
+	Events.subscribe({
 		"topic": "Echo.IdentityServer.Apps.Auth.onRender",
 		"once": true,
 		"handler": function(topic, params) {
@@ -39,7 +45,7 @@ Echo.Tests.asyncTest("logged in workflow", function() {
 		QUnit.equal(avatar, getRenderedAvatar(), "Checking if custom default avatar is rendered when user avatar is not available");
 		QUnit.start();
 	};
-	new Echo.IdentityServer.Apps.Auth({
+	new Auth({
 		"target": target,
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"identityManager": {
@@ -59,7 +65,7 @@ Echo.Tests.asyncTest("anonymous user workflow", function() {
 		"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
 	};
 	var target = $("#qunit-fixture");
-	Echo.Events.subscribe({
+	Events.subscribe({
 		"topic": "Echo.IdentityServer.Apps.Auth.onRender",
 		"once": true,
 		"handler": function(topic, params) {
@@ -68,7 +74,7 @@ Echo.Tests.asyncTest("anonymous user workflow", function() {
 			QUnit.start();
 		}
 	});
-	new Echo.IdentityServer.Apps.Auth({
+	new Auth({
 		"target": target,
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"identityManager": {
@@ -78,4 +84,4 @@ Echo.Tests.asyncTest("anonymous user workflow", function() {
 	});
 });
 
-})(Echo.jQuery);
+});

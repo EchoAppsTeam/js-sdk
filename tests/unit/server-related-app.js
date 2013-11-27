@@ -1,4 +1,11 @@
-(function(jQuery) {
+Echo.require([
+	"jquery",
+	"echo/utils",
+	"echo/app",
+	"echo/api"
+], function($, Utils, API, App) {
+
+"use strict";
 
 Echo.Tests.module("Echo.ServerRelatedApp", {
 	"meta": {
@@ -70,7 +77,7 @@ Echo.Tests.asyncTest("showError()", function() {
 					"errorCode": "someUndefinedErrorCode",
 					"errorMessage": "Some Error Message"
 				};
-				var errorRequest = new Echo.API.Request({
+				var errorRequest = new API.Request({
 					"endpoint": "search",
 					"data": {
 						"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -139,7 +146,7 @@ Echo.Tests.test("checkAppkey()", function() {
 
 function run(source) {
 	source = jQuery.isArray(source) ? source : [source];
-	Echo.Utils.sequentialCall(source, function() {
+	Utils.sequentialCall(source, function() {
 		QUnit.start();
 	});
 }
@@ -149,7 +156,7 @@ function getTestAppClassName() {
 };
 
 function getTestAppClass(name) {
-	return Echo.Utils.getComponent(name || getTestAppClassName());
+	return Utils.getComponent(name || getTestAppClassName());
 };
 
 function initTestApp(config, name) {
@@ -162,15 +169,15 @@ function initTestApp(config, name) {
 };
 
 function createTestApp(name, config) {
-	Echo.App.create(getAppManifest(name, config));
+	App.create(getAppManifest(name, config));
 };
 
 function getAppManifest(name, config) {
 	config = config || {};
 
-	var manifest = Echo.App.manifest(name || getTestAppClassName());
+	var manifest = App.manifest(name || getTestAppClassName());
 
-	manifest.inherits = Echo.Utils.getComponent("Echo.ServerRelatedApp");
+	manifest.inherits = Utils.getComponent("Echo.ServerRelatedApp");
 
 	manifest.init = function() {
 		if (!this.checkAppKey()) return;
@@ -191,4 +198,4 @@ function getAppManifest(name, config) {
 
 };
 
-})(Echo.jQuery);
+});

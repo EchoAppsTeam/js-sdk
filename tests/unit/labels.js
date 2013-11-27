@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/labels"
+], function($, Labels) {
+
+"use strict";
 
 Echo.Tests.module("Echo.Labels", {
 	"meta": {
@@ -8,30 +13,30 @@ Echo.Tests.module("Echo.Labels", {
 });
 
 Echo.Tests.test("public interface", function() {
-	Echo.Labels.set({
+	Labels.set({
 		"field": "value",
 		"key": "{content}"
 	}, "Namespace");
 
-	QUnit.equal(Echo.Labels._key("field", "Namespace"), "Namespace.field",
+	QUnit.equal(Labels._key("field", "Namespace"), "Namespace.field",
 		"Checking static _key() method");
-	QUnit.equal(Echo.Labels.get("field", "Namespace"), "value",
+	QUnit.equal(Labels.get("field", "Namespace"), "value",
 		"Checking static get() method");
-	QUnit.equal(Echo.Labels.get("wrong_field", "Namespace"), "wrong_field",
+	QUnit.equal(Labels.get("wrong_field", "Namespace"), "wrong_field",
 		"Checking static get() method with wrong name param");
-	QUnit.equal(Echo.Labels.get("key", "Namespace", {"content": "test"}), "test",
+	QUnit.equal(Labels.get("key", "Namespace", {"content": "test"}), "test",
 		"Checking static get() method with data param");
 
-	Echo.Labels.set({
+	Labels.set({
 		"field": "default_value",
 		"key": "default_content"
 	}, "Namespace", 1);
 
-	QUnit.equal(Echo.Labels.get("field", "Namespace"), "value",
+	QUnit.equal(Labels.get("field", "Namespace"), "value",
 		"Checking that custom label is not overridden by default");
 
 	var TestObject = function(data, namespace) {
-		this.labels = new Echo.Labels(data, namespace);
+		this.labels = new Labels(data, namespace);
 	};
 
 	TestObject.prototype.getField = function(field) {
@@ -62,8 +67,8 @@ Echo.Tests.test("public interface", function() {
 	object.setField({"new_key": "new_value"});
 	QUnit.equal(object.getField("new_key"), "new_value",
 		"Checking set() + get() methods");
-	QUnit.equal(Echo.Labels.get("field", "Namespace"), "value",
+	QUnit.equal(Labels.get("field", "Namespace"), "value",
 		"Checking that custom global label is not overridden by Echo.Labels instance");
 });
 
-})(Echo.jQuery);
+});

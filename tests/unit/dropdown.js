@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/gui"
+], function($, GUI) {
+
+"use strict";
 
 Echo.Tests.module("Echo.GUI.Dropdown", {
 	"meta": {
@@ -33,7 +38,7 @@ Echo.Tests.test("common workflow", function() {
 		}]
 	};
 
-	var dropdown = new Echo.GUI.Dropdown(dropdownParams);
+	var dropdown = new GUI.Dropdown(dropdownParams);
 
 	var dropdownTitle = element.find(".dropdown-toggle").html();
 	var dropdownEntries = element.find("li.dropdown > ul.dropdown-menu > li > a");
@@ -112,4 +117,4 @@ Echo.Tests.test("common workflow", function() {
 	QUnit.ok(element.is(":empty"), "Check destroy() method");
 });
 
-})(Echo.jQuery);
+});

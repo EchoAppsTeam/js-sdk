@@ -85,7 +85,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 		QUnit.deepEqual(manifest, _manifest,
 			"Checking the \"manifest\" function output");
 
-		// create test application
+		// create test app
 		suite.app().createTestApp();
 
 		QUnit.ok(!Plugin.isDefined(manifest),
@@ -108,7 +108,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 
 		// checking plugin class name definition
 		QUnit.equal(
-			Echo.Plugin._getClassName(manifest.name, manifest.component.name),
+			Plugin._getClassName(manifest.name, manifest.component.name),
 			"Echo.StreamServer.Apps.MyTestApp.Plugins.MyTestPlugin",
 			"Checking if the \"_getClassName\" returns full plugin class name");
 		QUnit.equal(
@@ -202,22 +202,6 @@ suite.prototype.cases.basicOperations = function(callback) {
 		plugin.enable();
 		QUnit.ok(plugin.enabled(),
 			"Checking if a plugin was enabled back after \"enable\" function call");
-
-		// checking if all dependencies are available
-		/*var result = true;
-		for (var i = 1; i < 6; i++) {
-			if (!Echo.Tests.Dependencies.Plugin["dep" + i]) result = false;
-		}
-		QUnit.ok(result, "Checking if all dependencies are downloaded and available");
-
-		QUnit.ok(Echo.Tests.Dependencies.Plugin.dep6, "Checking if dependency loaded using 'app' condition");
-		QUnit.ok(Echo.Tests.Dependencies.Plugin.dep7, "Checking if dependency loaded using 'plugin' condition");
-		QUnit.ok(Echo.Tests.Dependencies.Plugin.dep8, "Checking if dependency loaded using 'app' condition");
-
-		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep9, "Checking if dependency is not loading if 'app' already loaded");
-		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep10, "Checking if dependency is not loading if 'plugin' already loaded");
-		QUnit.ok(!Echo.Tests.Dependencies.Plugin.dep11, "Checking if dependency is not loading if 'app' already loaded");
-		*/
 		try {
 			// checking log() calls with invalid params
 			plugin.log();
@@ -364,9 +348,9 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 		var plugin = this.getPlugin("MyTestPlugin");
 
 		QUnit.equal(plugin.config.get("nullParam"), "nullParam replacement",
-			"Checking if null parameter was overridden during application init");
+			"Checking if null parameter was overridden during app init");
 		QUnit.equal(plugin.config.get("undefinedParam"), "undefinedParam replacement",
-			"Checking if null parameter was overridden during application init");
+			"Checking if null parameter was overridden during app init");
 
 		// checking if the config is available inside the plugin
 		plugin.proxy(function() {
@@ -390,6 +374,8 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 				"Checking if the \"nestedPlugins\" were copied over to \"plugins\" section in the \"assemble\" function call result");
 			QUnit.ok(!!nested.parent,
 				"Checking if we have parent config in the \"assemble\" function call result");
+			QUnit.ok(!!nested.appkey,
+				"Checking if basic params defined in the \"assemble\" function call result");
 		});
 
 		this.destroy();
@@ -418,7 +404,7 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 	var check = function() {
 		var self = this;
 		var plugin = this.getPlugin("MyTestPlugin");
-		QUnit.ok(this.config.get("target") instanceof jQuery,
+		QUnit.ok(this.config.get("target") instanceof $, //$ is a jQuery, for sure
 			"Checking if the target if a jQuery element");
 		QUnit.ok(!!this.config.get("target").children().length,
 			"Checking if target is not empty after rendering");
@@ -548,7 +534,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 
 		var e = plugin.events;
 		QUnit.ok(!!e.subscribe && !!e.publish && !!e.unsubscribe,
-			"Checking application \"events\" interface contract");
+			"Checking app \"events\" interface contract");
 
 		this.destroy();
 
@@ -608,7 +594,7 @@ suite.prototype.cases.destroy = function(callback) {
 			var plugin = this.getPlugin("MyTestPlugin");
 			plugin.set("_destroyHandler", function() {
 				QUnit.ok(true,
-					"Checking if the plugin \"destroy\" method was called after the \"destroy\" application function was called");
+					"Checking if the plugin \"destroy\" method was called after the \"destroy\" app function was called");
 			});
 
 			this.destroy();
@@ -710,7 +696,9 @@ suite.data.config = {
 // test helper functions 
 
 suite.app = function() {
-        return Echo.Tests.Unit.App;
+	var App = function() {};
+	$.extend(true, App, Echo.Tests.Unit.App);  
+    return App; 
 };
 
 suite.getTestPluginName = function() {
@@ -732,29 +720,6 @@ suite.getPluginManifest = function(name, component) {
 		"label2": "plugin label2 value",
 		"label3": "plugin label3 value"
 	};
-
-	var addDependency = function(n, params) {
-		var dependency = {
-			"url": Echo.Tests.baseURL + "unit/dependencies/plugin.dep." + n + ".js"
-		};
-		if (typeof params === "object") {
-			dependency = $.extend(dependency, params);
-		} else {
-			dependency.loaded = function() { return !!Echo.Tests.Dependencies.Plugin["dep" + n]; };
-		}
-		manifest.dependencies.push(dependency);
-	};
-	//for (var i = 1; i < 6; i++) addDependency(i);
-
-	Echo.Tests.Unit.App.createTestApp("Echo.Apps.MyTestApp");
-	addDependency(6, {"app": "Echo.StreamServer.Apps.MyNotExistsTestApp"});
-	addDependency(7, {"plugin": "Echo.StreamServer.Apps.MyTestApp.Plugins.MyNotExistsTestPlugin"});
-	addDependency(8, {"app": "Echo.Apps.MyNotExistsTestApp"});
-
-	addDependency(9, {"app": "Echo.StreamServer.Apps.MyTestApp"});
-	addDependency(10, {"plugin": "Echo.StreamServer.Apps.Stream.Item.Plugins.Like"});
-	addDependency(11, {"app": "Echo.Apps.MyTestApp"});
-
 	manifest.init = function() {
 		var plugin = this;
 

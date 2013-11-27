@@ -1,7 +1,13 @@
-(function(jQuery) {
-"use strict";
+Echo.require([
+	"jquery",
+	"echo/app",
+	"echo/utils",
+	"echo/events",
+	"echo/labels"
+	
+], function($, App, Utils, Events, Labels) {
 
-var $ = jQuery;
+"use strict";
 
 Echo.Tests.Dependencies = Echo.Tests.Dependencies || {};
 Echo.Tests.Dependencies.App = {};
@@ -27,9 +33,9 @@ suite.prototype.info = {
 		"render",
 		"isDefined",
 		"initApp",
-		"getComponent",
-		"destroyComponent",
-		"destroyComponents",
+		"getApp",
+		"destroyApp",
+		"destroyApps",
 		// functions below are covered
 		// within the Plugin component test
 		"template",
@@ -60,7 +66,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"templates": {}
 		};
 
-		var _manifest = Echo.App.manifest(manifest.name);
+		var _manifest = App.manifest(manifest.name);
 		QUnit.ok(!!_manifest.init,
 			"Checking if we have a default initialization function in the \"manifest\" function return");
 		delete _manifest.init;
@@ -70,14 +76,14 @@ suite.prototype.tests.PublicInterfaceTests = {
 		suite.createComponents(["TestComponent1", "TestComponent2", "TestComponent3"]);
 
 		// checking if we have class before it was defined
-		QUnit.ok(!Echo.App.isDefined(manifest),
+		QUnit.ok(!App.isDefined(manifest),
 			"Checking if the application class was defined (via isDefined static method), before actual application definition");
 
 		// create class out of manifest
 		suite.createTestApp(manifest.name);
 
 		// checking if we have class after class definition
-		QUnit.ok(Echo.App.isDefined(manifest),
+		QUnit.ok(App.isDefined(manifest),
 			"Checking if the application class was defined (via isDefined static method), after application definition");
 
 		// create test plugin
@@ -109,12 +115,15 @@ suite.prototype.cases = {};
 suite.prototype.cases.initApp = function(callback) {
 	var self = this;
 	var check = function() {
+		QUnit.ok(true,
+ 			"Checking that app.onReady() handler was called after initApp()");
+		QUnit.equal(this.config.get("key1"), "value1",
+			"Checking that parent section of component config is the config of appropriate application");
 		this.initApp({
-			"id": "TestComponent1",
-			"component": "TestComponent1",
+			"id": "TestApp",
+			"component": "unit/apps/testApp",
 			"config": {
 				"target": self.config.target,
-				//FIXME: this event isn`t generated
 				"ready": function() {
 					QUnit.ok(true,
 						"Checking that app.onReady() handler was called after initApp()");
@@ -132,17 +141,21 @@ suite.prototype.cases.initApp = function(callback) {
 				}
 			}
 		});
-		QUnit.ok(this.apps.TestComponent1 && this.apps.TestComponent1 instanceof Echo.App, "Check getComponent() returns a ref to the initialized component");
-		QUnit.strictEqual(undefined, this.apps.TestComponent1000, "Check getComponent() returns \"undefined\" value for the uninitialized component");
+		QUnit.ok(this.getApp("TestApp") && this.getApp("TestApp") instanceof App, 
+			"Check getApp() returns a ref to the initialized component");
+		QUnit.strictEqual(undefined, this.getApp("TestComponent1000"), 
+			"Check getApp() returns \"undefined\" value for the uninitialized component");
 		this.destroy();
 	};
-	suite.initTestApp({
-		"target": this.config.target,
-		"appkey": this.config.appkey,
-		"labels": {"myLabel": "My label value"},
-		"cdnBaseURL": {"provider": "http://cdn.example.com/base"},
-		"ready": check,
-		"key1": "value1"
+	Echo.require(["unit/apps/testApp"], function(app) {
+		suite.initTestApp({
+			"target": self.config.target,
+			"appkey": self.config.appkey,
+			"labels": {"myLabel": "My label value"},
+			"ready": check,
+			"key1": "value1",
+			"cdnBaseURL": {"provider": "http://cdn.example.com/base"}
+		});
 	});
 };
 
@@ -150,8 +163,8 @@ suite.prototype.cases.destroyApp = function(callback) {
 	var self = this;
 	var check = function() {
 		var component = this.initApp({
-			"id": "TestComponent1",
-			"component": "TestComponent1",
+			"id": "TestApp",
+			"component": "unit/apps/testApp",
 			"config": {
 				"target": self.config.target
 			}
@@ -160,8 +173,8 @@ suite.prototype.cases.destroyApp = function(callback) {
 			QUnit.ok(true,
 				"Checking if the app.destroy() mehtod was called after destroyApp()");
 		});
-		this.destroyApp("TestComponent1");
-		QUnit.equal(this.components["TestComponent1"], undefined,
+		this.destroyApp("TestApp");
+		QUnit.equal(this.apps["TestApp"], undefined,
 			"Checking that the component was deleted from application after destroyApp()");
 		this.destroy();
 		callback();
@@ -177,11 +190,20 @@ suite.prototype.cases.destroyApps = function(callback) {
 	var test = this;
 	var check = function() {
 		var self = this;
-		var components = ["TestComponent1", "TestComponent2", "TestComponent3"];
+		var components = [{
+			"id": "TestComponent1",
+			"url":"unit/apps/testApp"
+		}, {
+			"id": "TestComponent2",
+			"url":"unit/apps/testApp"
+		}, {
+			"id": "TestComponent3",
+			"url":"unit/apps/testApp"
+		}];
 		$.map(components, function(component) {
 			self.initApp({
-				"id": component,
-				"component": component,
+				"id": component.id,
+				"component": component.url,
 				"config": {
 					"target": test.config.target
 				}
@@ -189,9 +211,9 @@ suite.prototype.cases.destroyApps = function(callback) {
 		});
 		var exceptions = ["TestComponent2"];
 		this.destroyApps(exceptions);
-		QUnit.ok(!this.components["TestComponent1"] && !this.components["TestComponent3"],
+		QUnit.ok(!this.apps["TestComponent1"] && !this.apps["TestComponent3"],
 			"Checking that components were deleted after destroyApps()");
-		QUnit.ok(this.components["TestComponent2"],
+		QUnit.ok(this.apps["TestComponent2"],
 			"Checking that component which is in exceptions list was not deleted after destroyApps()");
 		this.destroy();
 		callback();
@@ -319,7 +341,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 		];
 		$.each(cases, function(id, _case) {
 			QUnit.strictEqual(
-				Echo.Utils.invoke(_case[0], self),
+				Utils.invoke(_case[0], self),
 				_case[1],
 				"Checking \"invoke()\" method, case #" + (id + 1)
 			);
@@ -406,7 +428,7 @@ suite.prototype.cases.appRendering = function(callback) {
 	var _suite = this;
 	var check = function(_callback) {
 		var self = this;
-		QUnit.ok(this.config.get("target") instanceof jQuery,
+		QUnit.ok(this.config.get("target") instanceof $, //$ is a jQuery, for sure
 			"Checking if the target if a jQuery element");
 		QUnit.ok(!!this.config.get("target").children().length,
 			"Checking if target is not empty after rendering");
@@ -515,7 +537,7 @@ suite.prototype.cases.appRendering = function(callback) {
 
 		_callback && _callback();
 	};
-	Echo.Utils.sequentialCall([
+	Utils.sequentialCall([
 		function(_callback) {
 			suite.initTestApp({
 				"data": suite.data.config.data,
@@ -538,15 +560,15 @@ suite.prototype.cases.appRendering = function(callback) {
 suite.prototype.cases.eventsMechanism = function(callback) {
 	var count = 0, increment = function() { count++; };
 	var _topic = "myTestTopic";
-	var context = Echo.Utils.getUniqueString();
+	var context = Utils.getUniqueString();
 	var publish = function(topic) {
-		Echo.Events.publish({
+		Events.publish({
 			"topic": topic || _topic,
 			"context": context
 		});
 	};
 	var subscribe = function(topic) {
-		Echo.Events.subscribe({
+		Events.subscribe({
 			"topic": topic || _topic,
 			"context": context,
 			"handler": increment
@@ -594,7 +616,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 };
 
 suite.prototype.cases.labelsOverriding = function(callback) {
-	Echo.Labels.set({
+	Labels.set({
 		"label1": "label1 global override",
 		"label2": "label2 global override"
 	}, "Echo.StreamServer.Apps.MyTestApp");
@@ -655,7 +677,7 @@ suite.prototype.cases.refresh = function(callback) {
 
 suite.prototype.cases.destroyCalled = function(callback) {
 	var publish = function(topic, app) {
-		Echo.Events.publish({
+		Events.publish({
 			"topic": topic,
 			"context": app.config.get("context")
 		});
@@ -757,7 +779,7 @@ suite.prototype.cases.nestedReadyCallbacks = function(callback) {
 			"ready": parent ? innerReady : outerReady
 		});
 	};
-	var manifest = Echo.App.manifest("Echo.Tests.TestApp");
+	var manifest = App.manifest("Echo.Tests.TestApp");
 	manifest.init = function() {
 		var depth = this.config.get("data.depth");
 		if (!depth) {
@@ -766,7 +788,7 @@ suite.prototype.cases.nestedReadyCallbacks = function(callback) {
 		byOuterApp = !depth;
 		this.ready();
 	};
-	Echo.App.create(manifest);
+	App.create(manifest);
 	createInstance();
 };
 
@@ -776,7 +798,7 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 	var initApp = function(manifest, ctx, ready) {
 		var d = $.Deferred();
 		ready = ready || $.noop;
-		Echo.App.create(
+		App.create(
 			$.extend({
 				"templates": {
 					"main": "<div></div>"
@@ -808,13 +830,13 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 	.pipe(
 		connector({
 			"name": "Echo.Test.Child1",
-			"inherits": Echo.Utils.getComponent("Echo.Test.Parent")
+			"inherits": Utils.getComponent("Echo.Test.Parent")
 		})
 	)
 	.pipe(
 		connector({
 			"name": "Echo.Test.Child1.Child1",
-			"inherits": Echo.Utils.getComponent("Echo.Test.Child1")
+			"inherits": Utils.getComponent("Echo.Test.Child1")
 		})
 	)
 	.pipe(function(prev) {
@@ -858,9 +880,9 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"newEvent": 0,
 		"anotherNewEvent": 0
 	};
-	var ctx = Echo.Events.newContextId();
+	var ctx = Events.newContextId();
 	var publish = function(topic, args) {
-		Echo.Events.publish($.extend({
+		Events.publish($.extend({
 			"topic": topic,
 			"context": ctx
 		}, args));
@@ -910,7 +932,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"css": ".{class:container} { width: 50px; }.{class:someRenderer} { width: 10px; }"
 	};
-	var app = Echo.App.create(parentManifest);
+	var app = App.create(parentManifest);
 	var child1Manifest = {
 		"name": "Echo.TestApp1_Child1",
 		"inherits": Echo.TestApp1,
@@ -955,14 +977,14 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"css": ".{class:someRenderer} { width: 5px; }"
 	};
-	var child = Echo.App.create(child1Manifest);
-	var child2 = Echo.App.create({
+	var child = App.create(child1Manifest);
+	var child2 = App.create({
 		"name": "Echo.TestApp1_Child2",
-		"inherits": Echo.Utils.getComponent("Echo.TestApp1")
+		"inherits": Utils.getComponent("Echo.TestApp1")
 	});
-	var child2_child3 = Echo.App.create({
+	var child2_child3 = App.create({
 		"name": "Echo.TestApp1_Child2_Child3",
-		"inherits": Echo.Utils.getComponent("Echo.TestApp1_Child2"),
+		"inherits": Utils.getComponent("Echo.TestApp1_Child2"),
 		"init": function() {
 			initVar += " and I'm child3 init and ";
 			this.parent();
@@ -973,7 +995,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		}
 	});
 	var newEventCounter = function() { eventsChecker.newEvent++; };
-	var child1_child2 = Echo.App.create({
+	var child1_child2 = App.create({
 		"name": "Echo.TestApp1_Child1_Child2",
 		"methods": {
 			"method2": function() {
@@ -985,10 +1007,10 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"Echo.TestApp1_Child1.someNewTestEvent": newEventCounter,
 			"Echo.TestApp1.someNewTestEvent": newEventCounter
 		},
-		"inherits": Echo.Utils.getComponent("Echo.TestApp1_Child1")
+		"inherits": Utils.getComponent("Echo.TestApp1_Child1")
 	});
 	var anotherEventCounter = function() { eventsChecker.anotherNewEvent++; };
-	var app2 = Echo.App.create($.extend(true, {}, parentManifest, {
+	var app2 = App.create($.extend(true, {}, parentManifest, {
 		"name": "Echo.TestApp2",
 		"templates": {
 			"main": '<div class="{inherited.class:container} {class:container}"></div>'
@@ -1002,7 +1024,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		}
 	}));
 	// identify that event will not be published globally
-	Echo.Events.subscribe({
+	Events.subscribe({
 		"topic": "Echo.TestApp1.someNewTestEvent",
 		"handler": newEventCounter
 	});
@@ -1038,7 +1060,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			var expectedIDs = [{"Echo.App": true}, {"Echo.TestApp1": true}, {"Echo.TestApp1_Child1": true}];
 			$.map(["Echo.App", "Echo.TestApp1", "Echo.TestApp1_Child1"], function(id) {
 				var spec = {};
-				spec[id] = Echo.Utils.hasCSS(id);
+				spec[id] = Utils.hasCSS(id);
 				actualIDs.push(spec);
 			});
 			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expected CSS rule groups present in the final manifest");
@@ -1252,7 +1274,7 @@ suite.getTestAppClassName = function() {
 };
 
 suite.getTestAppClass = function(name) {
-	return Echo.Utils.getComponent(name || suite.getTestAppClassName());
+	return Utils.getComponent(name || suite.getTestAppClassName());
 };
 
 suite.initTestApp = function(config, name) {
@@ -1265,12 +1287,12 @@ suite.initTestApp = function(config, name) {
 
 suite.createComponents = function(names) {
 	$.map(names, function(name) {
-		Echo.App.create(suite.getComponentManifest(name));
+		App.create(suite.getComponentManifest(name));
 	});
 };
 
 suite.getComponentManifest = function(name) {
-	var manifest = Echo.App.manifest(name);
+	var manifest = App.manifest(name);
 	manifest.templates.main = "<div>Sample Component Template</div>";
 	manifest.init = function() {
 		this.render();
@@ -1283,13 +1305,13 @@ suite.getComponentManifest = function(name) {
 };
 
 suite.createTestApp = function(name, config) {
-	Echo.App.create(suite.getAppManifest(name, config));
+	App.create(suite.getAppManifest(name, config));
 };
 
 suite.getAppManifest = function(name, config) {
 	config = config || {};
 
-	var manifest = Echo.App.manifest(name || suite.getTestAppClassName());
+	var manifest = App.manifest(name || suite.getTestAppClassName());
 
 	manifest.config = $.extend(true, {}, suite.data.config);
 
@@ -1297,8 +1319,8 @@ suite.getAppManifest = function(name, config) {
 		"context": function(val, ctrl) {
 			var parent = ctrl.config.parent;
 			return parent
-				? Echo.Events.newContextId(parent.context)
-				: val ? val : Echo.Events.newContextId();
+				? Events.newContextId(parent.context)
+				: val ? val : Events.newContextId();
 		}
 	};
 
@@ -1377,4 +1399,4 @@ suite.getAppManifest = function(name, config) {
 
 };
 
-})(Echo.jQuery);
+});

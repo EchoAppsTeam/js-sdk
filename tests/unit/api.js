@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/api",
+	"echo/utils"
+], function($, API, Utils) {
+
+"use strict";
 
 Echo.Tests.module("Echo.API", {
 	"meta": {
@@ -33,7 +39,7 @@ Echo.Tests.module("Echo.API", {
 });
 
 Echo.Tests.test("private interface", function() {
-	var req = new Echo.API.Request({
+	var req = new API.Request({
 		"endpoint": "some_endpoint",
 		"onSomeEvent": function() {},
 		"onSomeEvent2": function() {},
@@ -44,7 +50,7 @@ Echo.Tests.test("private interface", function() {
 	QUnit.ok("onSomeEvent" in handlers && "onSomeEvent2" in handlers, "Checking that component can retrieve event handlers from config");
 
 	var request = function(url) {
-		return new Echo.API.Request({
+		return new API.Request({
 			"endpoint": "endpoint",
 			"apiBaseURL": url
 		});
@@ -54,7 +60,7 @@ Echo.Tests.test("private interface", function() {
 	QUnit.equal(request("//example.com/v1/")._prepareURL(), "//example.com/v1/endpoint", "[_prepareURL] no schema in URL");
 });
 
-if (Echo.API.Transports.WebSockets.available()) {
+if (API.Transports.WebSockets.available()) {
 	Echo.Tests.asyncTest("WebSocket test cases", function() {
 		var closed = 0;
 		var requests = [];
@@ -65,7 +71,7 @@ if (Echo.API.Transports.WebSockets.available()) {
 			closeDef.push($.Deferred());
 			(function(i) {
 				requests.push(
-					new Echo.API.Request({
+					new API.Request({
 						"endpoint": "ws",
 						"apiBaseURL": "live.echoenabled.com/v1/",
 						"transport": "websockets",
@@ -96,20 +102,20 @@ if (Echo.API.Transports.WebSockets.available()) {
 				4, "Check that each statuses of the requests are \"connected\""
 			);
 			QUnit.strictEqual(
-				Echo.Utils.foldl(0, Echo.API.Transports.WebSockets.socketByURI, function(_, acc) {
+				Utils.foldl(0, API.Transports.WebSockets.socketByURI, function(_, acc) {
 					return ++acc;
 				}),
 				1, "Check that 4 API objects initialized and only one WS object instantiated"
 			);
 			QUnit.strictEqual(
-				Echo.Utils.foldl(0, Echo.API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
+				Utils.foldl(0, API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
 					return ++acc;
 				}),
 				4, "Check that 4 API objects initialized and 4 subscriptions initialized"
 			);
 			req.abort();
 			QUnit.strictEqual(
-				Echo.Utils.foldl(0, Echo.API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
+				Utils.foldl(0, API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers, function(_, acc) {
 					return ++acc;
 				}),
 				3, "Check that subscription removed in case of request abortion"
@@ -123,7 +129,7 @@ if (Echo.API.Transports.WebSockets.available()) {
 				}).length,
 				4, "Check that each statuses of the requests are \"closing\""
 			);
-			QUnit.ok($.isEmptyObject(Echo.API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers), "Check that all subscription removed in case of all requests abortion");
+			QUnit.ok($.isEmptyObject(API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers), "Check that all subscription removed in case of all requests abortion");
 			$.when.apply($, closeDef).done(function() {
 				QUnit.strictEqual(closed, 4, "Check that all subscribed connections are closed (\"onClose\" event fired)");
 				QUnit.strictEqual(
@@ -145,7 +151,7 @@ if (Echo.API.Transports.WebSockets.available()) {
 }
 
 Echo.Tests.test("Transports JSONP method POST", function() {
-	(new Echo.API.Request({
+	(new API.Request({
 		"apiBaseURL": "//example.com/v1/",
 		"endpoint": "test",
 		"method": "POST",
@@ -159,7 +165,7 @@ Echo.Tests.test("Transports JSONP method POST", function() {
 
 Echo.Tests.test("Check transport normalizer", function() {
 	var createRequest = function(transport) {
-		return new Echo.API.Request({
+		return new API.Request({
 			"apiBaseURL": "//example.com/v1/",
 			"endpoint": "test",
 			"transport": transport,
@@ -191,4 +197,4 @@ Echo.Tests.test("Check transport normalizer", function() {
 	});
 });
 
-})(Echo.jQuery);
+});

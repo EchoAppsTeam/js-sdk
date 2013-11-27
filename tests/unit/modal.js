@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/gui",
+	"echo/utils"
+], function($, GUI, Utils) {
+
+"use strict";
 
 Echo.Tests.module("Echo.GUI.Modal", {
 	"meta": {
@@ -37,8 +43,8 @@ Echo.Tests.asyncTest("common workflow", function() {
 	};
 
 	QUnit.expect(24);
-	Echo.Utils.addCSS(".echo-hide { display: none; }", "echo-hide");
-	var modal = new Echo.GUI.Modal(modalParams);
+	Utils.addCSS(".echo-hide { display: none; }", "echo-hide");
+	var modal = new GUI.Modal(modalParams);
 
 	QUnit.ok($(".echo-sdk-ui .modal").length, "Check that modal is available");
 
@@ -104,4 +110,4 @@ Echo.Tests.asyncTest("common workflow", function() {
 	modal.hide();
 });
 
-})(Echo.jQuery);
+});

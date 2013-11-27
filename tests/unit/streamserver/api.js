@@ -1,4 +1,12 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/api",
+	"echo/utils",
+	"echo/events",
+	"echo/streamserver/api"
+], function($, API, Utils, Events, StreamServerAPI) {
+
+"use strict";
 
 var suite = Echo.Tests.Unit.StreamServerAPI = function() {};
 
@@ -32,13 +40,13 @@ suite.prototype.info = {
 
 suite.prototype.params = {
 	"appkey": "echo.jssdk.tests.aboutecho.com",
-	"q": "childrenof:http://example.com/sdk/test-target/" + Echo.Utils.getUniqueString() + " children:1"
+	"q": "childrenof:http://example.com/sdk/test-target/" + Utils.getUniqueString() + " children:1"
 };
 
 suite.prototype.cases = {};
 
 suite.prototype.cases.simpleSearchRequest = function(callback) {
-	Echo.StreamServer.API.request({
+	StreamServerAPI.request({
 		"endpoint": "search",
 		"data": $.extend({}, this.params),
 		"onOpen": function() {
@@ -64,7 +72,7 @@ suite.prototype.cases.simpleMuxRequest = function(callback) {
 		"q": "wrong query"
 	}];
 	delete params.q;
-	Echo.StreamServer.API.request({
+	StreamServerAPI.request({
 		"endpoint": "mux",
 		"data": params,
 		"onOpen": function() {
@@ -80,7 +88,7 @@ suite.prototype.cases.simpleMuxRequest = function(callback) {
 
 suite.prototype.cases.skipInitialRequest = function(callback) {
 	var skipped = true;
-	var request = Echo.StreamServer.API.request({
+	var request = StreamServerAPI.request({
 		"endpoint": "search",
 		"data": $.extend({}, this.params),
 		"skipInitialRequest": true,
@@ -102,7 +110,7 @@ suite.prototype.cases.skipInitialRequest = function(callback) {
 };
 
 suite.prototype.cases.searchRequestWithError = function(callback) {
-	Echo.StreamServer.API.request({
+	StreamServerAPI.request({
 		"endpoint": "search",
 		"data": $.extend({}, this.params, {"q": "unknown:predicate"}),
 		"onError": function(data) {
@@ -114,7 +122,7 @@ suite.prototype.cases.searchRequestWithError = function(callback) {
 };
 
 suite.prototype.cases.requestWithAbort = function(callback) {
-	var req = Echo.StreamServer.API.request({
+	var req = StreamServerAPI.request({
 		"endpoint": "search",
 		"data": $.extend({}, this.params),
 		"onError": function(data) {
@@ -139,7 +147,7 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 	item.targets[0].id = target;
 	item.targets[0].conversationID = target;
 	item.object.id = target;
-	var countReq = Echo.StreamServer.API.request({
+	var countReq = StreamServerAPI.request({
 		"endpoint": "count",
 		"onData": function(response) {
 			if (response && response.count) {
@@ -150,14 +158,14 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 		},
 		"data": $.extend({}, params)
 	});
-	var submitReq = Echo.StreamServer.API.request({
+	var submitReq = StreamServerAPI.request({
 		"endpoint": "submit",
 		"data": $.extend({}, params, {
 			content: item,
 			targetURL: target
 		})
 	});
-	var liveUpdateReq = Echo.StreamServer.API.request({
+	var liveUpdateReq = StreamServerAPI.request({
 		"endpoint": "search",
 		"onData": function(response) {
 			submitReq.send();
@@ -181,7 +189,7 @@ suite.prototype.cases.checkLiveUpdate = function(callback) {
 
 suite.prototype.cases.simpleLiveUpdatesRequest = function(callback) {
 	var maxCounts = 4, currentCount = 0;
-	var req = Echo.StreamServer.API.request({
+	var req = StreamServerAPI.request({
 		"endpoint": "search",
 		"data": this.params,
 		"liveUpdates": {
@@ -203,7 +211,7 @@ suite.prototype.cases.simpleLiveUpdatesRequest = function(callback) {
 };
 
 suite.prototype.cases.backwardCompatibility = function(callback) {
-	var req = Echo.StreamServer.API.request({
+	var req = StreamServerAPI.request({
 		"endpoint": "search",
 		"data": this.params,
 		"liveUpdatesTimeout": 2,
@@ -231,7 +239,7 @@ suite.prototype.cases.websockets = function(callback) {
 	item.targets[0].id = target;
 	item.targets[0].conversationID = target;
 	item.object.id = target;
-	var req = Echo.StreamServer.API.request({
+	var req = StreamServerAPI.request({
 		"endpoint": "search",
 		"data": $.extend(params, {"q": q}),
 		"liveUpdates": {
@@ -247,8 +255,8 @@ suite.prototype.cases.websockets = function(callback) {
 					req.liveUpdates.requestObject.config.get("settings.serverPingInterval")
 				], [2, 10], "Check that config parameters for WS mapped");
 				QUnit.strictEqual(req.liveUpdates.config.get("request.data.since"), data.nextSince, "Check that since parameter was updated (WS usage)");
-				QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.WebSockets, "Check that liveUpdates switched to WS after its opened");
-				Echo.Events.subscribe({
+				QUnit.ok(req.liveUpdates instanceof StreamServerAPI.WebSockets, "Check that liveUpdates switched to WS after its opened");
+				Events.subscribe({
 					"topic": "Echo.API.Transports.WebSockets.onClose",
 					"once": true,
 					"context": "live.echoenabled.com-v1-ws",
@@ -258,7 +266,7 @@ suite.prototype.cases.websockets = function(callback) {
 			}
 		}
 	});
-	var submitReq = Echo.StreamServer.API.request({
+	var submitReq = StreamServerAPI.request({
 		"endpoint": "submit",
 		"data": $.extend({}, params, {
 			content: item,
@@ -266,7 +274,7 @@ suite.prototype.cases.websockets = function(callback) {
 		})
 	});
 	req.send().done(function() {
-		Echo.Events.subscribe({
+		Events.subscribe({
 			"topic": "Echo.API.Transports.WebSockets.onOpen",
 			"once": true,
 			"context": "live.echoenabled.com-v1-ws",
@@ -277,7 +285,7 @@ suite.prototype.cases.websockets = function(callback) {
 		// Opening a socket does require some time so we first initiate polling and switch
 		// to socket when it's initiated. But at this particular moment live updates must
 		// use polling mechanism.
-		QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.Polling, "Check that live updates instantiated with polling");
+		QUnit.ok(req.liveUpdates instanceof StreamServerAPI.Polling, "Check that live updates instantiated with polling");
 	});
 };
 
@@ -289,14 +297,14 @@ suite.prototype.cases.webSocketSinceCase = function(callback) {
 	item.targets[0].id = target;
 	item.targets[0].conversationID = target;
 	item.object.id = target;
-	var subscribe = Echo.StreamServer.API.WebSockets.prototype.subscribe;
-	Echo.StreamServer.API.WebSockets.prototype.subscribe = function() {
+	var subscribe = StreamServerAPI.WebSockets.prototype.subscribe;
+	StreamServerAPI.WebSockets.prototype.subscribe = function() {
 		var self = this;
 		setTimeout(function() {
 			subscribe.call(self);
 		}, 6000);
 	};
-	var request = Echo.StreamServer.API.request({
+	var request = StreamServerAPI.request({
 		"endpoint": "search",
 		"data": $.extend(params, {"q": q}),
 		"liveUpdates": {
@@ -305,13 +313,13 @@ suite.prototype.cases.webSocketSinceCase = function(callback) {
 			"onData": function(data) {
 				QUnit.ok(data, "Check that we recieve data through the WS protocol in case of since");
 				QUnit.strictEqual(data.entries.length, 1, "Check that we recieve exactly one item through the WS protocol in case of since");
-				Echo.StreamServer.API.WebSockets.prototype.subscribe = subscribe;
+				StreamServerAPI.WebSockets.prototype.subscribe = subscribe;
 				callback();
 				request.abort();
 			}
 		}
 	});
-	var submit = Echo.StreamServer.API.request({
+	var submit = StreamServerAPI.request({
 		"endpoint": "submit",
 		"data": $.extend({}, params, {
 			content: item,
@@ -333,7 +341,7 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 	item.object.id = target;
 	var requests = [], def = [];
 	var getRequest = function(i) {
-		return Echo.StreamServer.API.request({
+		return StreamServerAPI.request({
 			"endpoint": "search",
 			"data": $.extend(params, {"q": q}),
 			"liveUpdates": {
@@ -348,7 +356,7 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 			}
 		});
 	};
-	var submit = Echo.StreamServer.API.request({
+	var submit = StreamServerAPI.request({
 		"endpoint": "submit",
 		"data": $.extend({}, params, {
 			content: item,
@@ -373,7 +381,7 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 		}
 		return r;
 	}(0, requests[0].send());
-	Echo.Events.subscribe({
+	Events.subscribe({
 		"topic": "Echo.API.Transports.WebSockets.onOpen",
 		"context": "live.echoenabled.com-v1-ws",
 		"once": true,
@@ -388,7 +396,7 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 			return !req.liveUpdates.subscribed;
 		});
 		QUnit.strictEqual(fallback.length, 1, "Check that quota exceeded requests are fallbacks to the polling (WS cases)");
-		Echo.Events.subscribe({
+		Events.subscribe({
 			"topic": "Echo.API.Transports.WebSockets.onClose",
 			"once": true,
 			"context": "live.echoenabled.com-v1-ws",
@@ -420,7 +428,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"backwardCompatibility"
 		];
 		// FIXME: when server will support XDomainRequest handling
-		if (!Echo.API.Transports.XDomainRequest.available({
+		if (!API.Transports.XDomainRequest.available({
 				"secure": window.location.prototcol === "https:",
 				"method": "GET"
 			})
@@ -428,7 +436,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			sequentialTests.push("searchRequestWithError");
 		}
 		// WebSocket specific tests
-		if (Echo.API.Transports.WebSockets.available()) {
+		if (API.Transports.WebSockets.available()) {
 			sequentialTests = sequentialTests.concat(["websockets", "multipleWebsocketRequests", "webSocketSinceCase"]);
 		}
 		this.sequentialAsyncTests(sequentialTests, "cases");
@@ -437,7 +445,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 
 suite.prototype.tests.PrivateFunctionsTests = {
 	"check": function() {
-		var req = Echo.StreamServer.API.request({
+		var req = StreamServerAPI.request({
 			"endpoint": "search",
 			"data": $.extend({}, this.params)
 		});
@@ -579,4 +587,4 @@ suite.prototype.items.postWithMetadata = [
 	}
 ];
 
-})(Echo.jQuery);
+});

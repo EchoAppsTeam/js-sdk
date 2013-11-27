@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/identityserver/api",
+	"echo/user-session"
+], function($, API, UserSession) {
+
+"use strict";
 
 var suite = Echo.Tests.Unit.IdentityServerAPI = function() {};
 
@@ -31,8 +37,8 @@ suite.prototype.tests.PublicWorkflowTests = {
 suite.prototype.cases = {};
 
 suite.prototype.cases.simpleWhoamiRequest = function(callback) {
-	var user = Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
-	Echo.IdentityServer.API.request({
+	var user = UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
+	API.request({
 		"endpoint": "whoami",
 		"apiBaseURL": "https:{%=baseURLs.api.streamserver%}/v1/users/",
 		"data": {
@@ -51,11 +57,11 @@ suite.prototype.cases.simpleWhoamiRequest = function(callback) {
 };
 
 suite.prototype.cases.simpleUserUpdateRequest = function(callback) {
-	var user = Echo.UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
+	var user = UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	var states = ["Untouched", "ModeratorApproved", "ModeratorBanned", "ModeratorDeleted"];
 	var identityURL = "http://example.com/some_path/test-user/";
 	var state = states[Math.floor(Math.random() * states.length)];
-	var updateRequest = Echo.IdentityServer.API.request({
+	var updateRequest = API.request({
 		"endpoint": "update",
 		"apiBaseURL": "https:{%=baseURLs.api.streamserver%}/v1/users/",
 		"data": {
@@ -85,4 +91,4 @@ suite.prototype.cases.simpleUserUpdateRequest = function(callback) {
 	});
 };
 
-})(jQuery);
+});

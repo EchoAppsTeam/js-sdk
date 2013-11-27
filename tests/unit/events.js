@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/events",
+], function($, Events) {
+
+"use strict";
 
 var published = [];
 var order;
@@ -18,14 +23,14 @@ var subscribe = function(topic, context, stoppers, once) {
 		"context": context,
 		"once": once
 	};
-	var id = Echo.Events.subscribe(params);
+	var id = Events.subscribe(params);
 	return {
 		"id": id,
 		"handler": params.handler
 	};
 };
 var unsubscribe = function(topic, handlerId, context) {
-	return Echo.Events.unsubscribe({
+	return Events.unsubscribe({
 		"topic": topic,
 		"handlerId": handlerId,
 		"context": context
@@ -33,7 +38,7 @@ var unsubscribe = function(topic, handlerId, context) {
 };
 var publish = function(params) {
 	published = [];
-	Echo.Events.publish(params);
+	Events.publish(params);
 };
 
 Echo.Tests.module("Echo.Events", {
@@ -94,7 +99,7 @@ Echo.Tests.test("public methods", function() {
 		}
 	};
 	$.each(["B.test", "A.test", "X.test", "Z.test"], function(i, topic) {
-		QUnit.deepEqual(Echo.Events._subscriptions[topic], subscriptions[topic], "Checking full structure of subscribers for topic \"" + topic + "\"");
+		QUnit.deepEqual(Events._subscriptions[topic], subscriptions[topic], "Checking full structure of subscribers for topic \"" + topic + "\"");
 	});
 
 	publish({"topic": "A.test", "context": "a1"});
@@ -148,7 +153,7 @@ Echo.Tests.test("public methods", function() {
 		}
 	};
 	$.each(["A.test", "B.test", "X.test", "Z.test"], function(i, topic) {
-		QUnit.deepEqual(Echo.Events._subscriptions[topic], subscriptions2[topic], "Checking full structure of subscribers for topic \"" + topic + "\" after several unsubscriptions");
+		QUnit.deepEqual(Events._subscriptions[topic], subscriptions2[topic], "Checking full structure of subscribers for topic \"" + topic + "\" after several unsubscriptions");
 	});
 
 	publish({"topic": "A.test", "context": "a1"});
@@ -161,11 +166,11 @@ Echo.Tests.test("public methods", function() {
 	QUnit.deepEqual(published, [], "Publish: handlers order (topic \"X\", context \"a2\", not global event)");
 
 	// checking Echo.Events.newContextId...
-	var contextId = Echo.Events.newContextId();
+	var contextId = Events.newContextId();
 	QUnit.equal(typeof contextId, "string",
 		"Making sure that the context ID has string typed value");
 
-	var nestedContextId = Echo.Events.newContextId(contextId);
+	var nestedContextId = Events.newContextId(contextId);
 	QUnit.equal(typeof nestedContextId, "string",
 		"Checking whether the nested context ID has a string typed value as well");
 
@@ -174,7 +179,7 @@ Echo.Tests.test("public methods", function() {
 
 	var ctxs = [], ctxById = {}, hasDuplicates = false;
 	for (var i = 0; i < 10000; i++) {
-		var ctx = Echo.Events.newContextId();
+		var ctx = Events.newContextId();
 		if (ctx in ctxById) {
 			hasDuplicates = true;
 			break;
@@ -237,4 +242,4 @@ Echo.Tests.test("advanced publishing", function() {
 	QUnit.deepEqual(published, [], "Publish: handlers order (topic \"A\", nonexistent deep context without bubble)");
 });
 
-})(Echo.jQuery);
+});
