@@ -82,7 +82,7 @@ item.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": Echo.require.toUrl("images/favicons/avatar-default.png", false),
+	"defaultAvatar": Echo.require.toUrl("echo-assets/images/avatar-default.png", false),
 
 	/**
 	 * @cfg {Object} limits
@@ -148,7 +148,7 @@ item.config = {
 	 * @cfg {String} providerIcon
 	 * Specifies the URL to the icon representing data provider.
 	 */
-	"providerIcon": Echo.require.toUrl("images/favicons/comments.png", false),
+	"providerIcon": Echo.require.toUrl("echo-assets/images/favicons/comments.png", false),
 
 	/**
 	 * @cfg {Boolean} [reTag=true]
@@ -327,7 +327,7 @@ item.templates.mainFooter =
 item.templates.childrenTop =
 	'<div class="{class:children}"></div>' +
 	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-		'<span class="{class:expandChildrenLabel} echo-app-message-icon"></span>' +
+		'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
 	'</div>';
 
 /**
@@ -335,7 +335,7 @@ item.templates.childrenTop =
  */
 item.templates.childrenBottom =
 	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-		'<span class="{class:expandChildrenLabel} echo-app-message-icon"></span>' +
+		'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
 	'</div>' +
 	'<div class="{class:children}"></div>';
 
@@ -692,7 +692,10 @@ item.renderers.body = function(element) {
  */
 item.renderers.date = function(element) {
 	// is used to preserve backwards compatibility
-	this.age = Utils.getRelativeTime(this.timestamp);
+	var self = this;
+	this.age = Utils.getRelativeTime(this.timestamp, function(key, value) {
+		return self.labels.get(key, {"number": value})
+	});
 	return element.html(this.age);
 };
 
@@ -711,7 +714,7 @@ item.renderers.expandChildrenLabel = function(element, extra) {
 			"label": "loading"
 		},
 		"regular": {
-			"css": "echo-linkColor echo-app-message-icon",
+			"css": "echo-linkColor echo-message-icon",
 			"label": "childrenMoreItems"
 		}
 	};
@@ -1318,7 +1321,7 @@ item.methods._sortButtons = function() {
 				: truncated
 					? text.length
 					: undefined;
-			// we should call utils.htmlTextTruncate to close all tags
+			// we should call Utils.htmlTextTruncate to close all tags
 			// which might remain unclosed after lines truncation
 			var truncatedText = Utils.htmlTextTruncate(text, limit, "", true);
 			if (truncatedText.length !== text.length) {
@@ -1381,9 +1384,9 @@ item.css =
 	'.{class:blocker-message} { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }' +
 	'.{class:expandChildren} { display:none; text-align: center; padding:4px; }' +
 	'.{class:expandChildren} .{class:expandChildrenLabel} { display: inline-block; padding-left: 22px; }' +
-	'.{class:expandChildren} .echo-app-message-icon { background: url("{config:cdnBaseURL.sdk-assets}/images/whirlpool.png") no-repeat 5px 4px; }' +
+	'.{class:expandChildren} .echo-message-icon { background: url("{config:cdnBaseURL.sdk-assets}/images/whirlpool.png") no-repeat 5px 4px; }' +
 	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url("{config:cdnBaseURL.sdk-assets}/images/loading.gif"); }' +
-	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
+	'.{class:expandChildren} .echo-message { padding: 0; border:none; border-radius: 0; }' +
 	itemDepthRules.join("\n");
 
 return App.create(item);
@@ -1455,7 +1458,8 @@ stream.init = function() {
 			"label": this.labels.get("error_incorrect_appkeys")
 		}, {
 			"critical": true,
-			"target": this.config.get("target")
+			"target": this.config.get("target"),
+			"template": this.config.get("infoMessages.template")
 		});
 	}
 
@@ -1478,6 +1482,7 @@ stream.init = function() {
 					"retryIn": 0,
 					"label": self.labels.get("retrying"),
 					"target": self.config.get("target"),
+					"template": self.config.get("infoMessages.template"),
 					"promise": self.request.deferred.transport.promise()
 				});
 			}
@@ -1487,6 +1492,7 @@ stream.init = function() {
 				Utils.showError(data, $.extend(options, {
 					"label": self.labels.get("error_" + data.errorCode),
 					"target": self.config.get("target"),
+					"template": self.config.get("infoMessages.template"),
 					"promise": self.request.deferred.transport.promise()
 				}));
 			}
@@ -1645,6 +1651,28 @@ stream.config = {
 	 * + 0 - comparison result is undefined
 	 */
 	"itemsComparator": undefined,
+
+	/**
+	 * @cfg {Object} infoMessages
+	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 *
+	 * @cfg {Boolean} infoMessages.enabled=true
+	 * Specifies if info messages should be rendered.
+	 *
+	 * @cfg {String} infoMessages.template=""
+	 * Specifies a layout template of the info message. By default if template is not
+	 * specified it uses pre-defined full template from the Echo.Utils. For more information
+	 * follow the {@link Echo.Utils.showMessage link}.
+	 *
+	 *     "infoMessages": {
+	 *         "enabled": true,
+	 *         "template": '<div class="some-class">{data:message}</div>'
+	 *     }
+	 */
+	"infoMessages": {
+		"enabled": true,
+		"template": ""
+	},
 
 	/**
 	 * @cfg {Object} [liveUpdates]
@@ -1938,8 +1966,9 @@ stream.renderers.body = function(element) {
 	} else {
 		Utils.showMessage({
 			"type": "info",
+			"target": element,
 			"message": this.labels.get("emptyStream"),
-			"target": element
+			"template": this.config.get("infoMessages.template")
 		});
 	}
 	return element;
@@ -2146,6 +2175,7 @@ stream.methods._requestChildrenItems = function(unique) {
 				"retryIn": 0,
 				"target": target,
 				"label": self.labels.get("retrying"),
+				"template": self.config.get("infoMessages.template"),
 				"promise": request.deferred.transport.promise()
 			});
 		},
@@ -2153,6 +2183,7 @@ stream.methods._requestChildrenItems = function(unique) {
 			Utils.showError(data, $.extend(options, {
 				"target": target,
 				"promise": request.deferred.transport.promise(),
+				"template": self.config.get("infoMessages.template"),
 				"label": self.labels.get("error_" + data.errorCode)
 			}));
 		},
@@ -2198,6 +2229,7 @@ stream.methods._requestInitialItems = function() {
 						"retryIn": 0,
 						"target": self.config.get("target"),
 						"label": self.labels.get("retrying"),
+						"template": self.config.get("infoMessages.template"),
 						"promise": self.request.deferred.transport.promise()
 					});
 				}
@@ -2207,6 +2239,7 @@ stream.methods._requestInitialItems = function() {
 					Utils.showError(data, $.extend(options, {
 						"label": self.labels.get("error_" + data.errorCode),
 						"target": self.config.get("target"),
+						"template": self.config.get("infoMessages.template"),
 						"promise": self.request.deferred.transport.promise()
 					}));
 				}
@@ -2228,12 +2261,14 @@ stream.methods._requestMoreItems = function(element) {
 				Utils.showError({}, {
 					"retryIn": 0,
 					"target": element,
+					"template": self.config.get("infoMessages.template"),
 					"promise": self.moreRequest.deferred.transport.promise()
 				});
 			},
 			"onError": function(data, options) {
 				Utils.showError(data, $.extend(options, {
 					"target": element,
+					"template": self.config.get("infoMessages.template"),
 					"promise": self.moreRequest.deferred.transport.promise()
 				}));
 			},
@@ -2832,8 +2867,9 @@ stream.methods._spotUpdates.animate.remove = function(item, config) {
 		if (!itemsCount) {
 			Utils.showMessage({
 				"type": "info",
+				"target": self.view.get("body"),
 				"message": self.labels.get("emptyStream"),
-				"target": self.view.get("body")
+				"template": self.config.get("infoMessages.template")
 			});
 		}
 		self.activities.animations--;
@@ -3229,7 +3265,7 @@ stream.css =
 	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
 	'.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }' +
 	'.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
-	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }';
+	'.{class:more} .echo-message { padding: 0; border: none; border-radius: 0; }';
 
 return App.create(stream);
 });

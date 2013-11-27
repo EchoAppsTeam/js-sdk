@@ -64,7 +64,9 @@ pile.init = function() {
 			"label": this.labels.get("error_incorrect_appkey")
 		}, {
 			"critical": true,
-			"target": this.config.get("target")
+			"target": this.config.get("target"),
+			"layout": "compact",
+			"template": this.config.get("infoMessages.template")
 		});
 	}
 
@@ -117,6 +119,28 @@ pile.config = {
 	 * using `data`.
 	 */
 	"initialUsersCount": undefined,
+
+	/**
+	 * @cfg {Object} infoMessages
+	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 *
+	 * @cfg {Boolean} infoMessages.enabled=true
+	 * Specifies if info messages should be rendered.
+	 *
+	 * @cfg {String} infoMessages.template=""
+	 * Specifies a layout template of the info message. By default if template is not
+	 * specified it uses pre-defined compact template from the Echo.Utils. For more information
+	 * follow the {@link Echo.Utils.showMessage link}.
+	 *
+	 *     "infoMessages": {
+	 *         "enabled": true,
+	 *         "template": '<div class="some-class">{data:message}</div>'
+	 *     }
+	 */
+	"infoMessages": {
+		"enabled": true,
+		"template": ""
+	},
 
 	/**
 	 * @cfg {String} totalUsersCount
@@ -381,8 +405,10 @@ pile.methods._request = function() {
 				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
 				if (needShowError) {
 					Utils.showError(data, {
+						"layout": "compact",
 						"critical": extra.critical,
 						"target": this.config.get("target"),
+						"template": this.config.get("infoMessages.template"),
 						"label": this.labels.get("error_" + data.errorCode)
 					});
 				}
@@ -414,7 +440,9 @@ pile.methods._requestMoreItems = function() {
 			Utils.showMessage({
 				"type": "error",
 				"data": data,
-				"target": self.config.get("target")
+				"layout": "compact",
+				"target": self.config.get("target"),
+				"template": self.config.get("infoMessages.template")
 			});
 		},
 		"onData": function(data) {
@@ -565,7 +593,9 @@ pile.methods._getMoreUsers = function() {
 		if (!this.get("moreRequestInProgress")) {
 			Utils.showMessage({
 				"type": "loading",
-				"target": this.view.get("more")
+				"layout": "compact",
+				"target": this.view.get("more"),
+				"template": this.config.get("infoMessages.template")
 			});
 			this.set("moreRequestInProgress", true);
 		}
@@ -584,7 +614,7 @@ pile.css =
 	'.{class:container} { line-height: 20px; vertical-align: middle; }' +
 	'.{class:more} { white-space: nowrap; }' +
 	'.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }' +
-	'.{class:more} .echo-app-message-icon { display: inline; margin: 0px 5px; }';
+	'.{class:more} .echo-message-icon { display: inline; margin: 0px 5px; }';
 
 return App.create(pile);
 });

@@ -375,7 +375,7 @@ UserSession._listenEvents = function() {
 			 * The total number of contacts found.
 			 */
 			Events.publish({
-				"topic": "UserSession.onInvalidate",
+				"topic": "Echo.UserSession.onInvalidate",
 				"data": user.is("logged") ? user.data : {}
 			});
 		});
@@ -402,11 +402,11 @@ UserSession._init = function(callback) {
 		user.state = "ready";
 		user._reset(data);
 		/**
-		 * @echo_event UserSession.onInit
+		 * @echo_event Echo.UserSession.onInit
 		 * Triggered when the user is initialized on the page.
 		 *
 		 * @param {String} topic
-		 * Name of the event to subscribe (ex: "UserSession.onInit").
+		 * Name of the event to subscribe (ex: "Echo.UserSession.onInit").
 		 *
 		 * @param {Object} data
 		 * Object which is returned by the users/whoami API endpoint or
@@ -446,7 +446,7 @@ UserSession._init = function(callback) {
 		 * The total number of contacts found.
 		 */
 		Events.publish({
-			"topic": "UserSession.onInit",
+			"topic": "Echo.UserSession.onInit",
 			"data": data
 		});
 		callback && callback();
@@ -488,7 +488,7 @@ UserSession._normalize = function(data) {
 UserSession._onInit = function(callback) {
 	if (!callback) return;
 	Events.subscribe({
-		"topic": "UserSession.onInit",
+		"topic": "Echo.UserSession.onInit",
 		"once": true,
 		"handler": callback
 	});

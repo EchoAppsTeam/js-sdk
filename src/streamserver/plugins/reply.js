@@ -193,10 +193,11 @@ plugin.methods._submitConfig = function(target) {
 	var plugin = this, item = this.component;
 	return plugin.config.assemble({
 		"target": target,
+		"appkey": item.config.get("parent.appkey"),
 		"targetURL": item.get("data.object.id"),
 		"parent": item.config.getAsHash(),
 		"data": plugin.get("data") || {},
-		"targetQuery": item.config.get("query", ""),
+		"targetQuery": item.config.get("parent.query", ""),
 		"ready": function() {
 			plugin.set("submit", this);
 			plugin._expand();

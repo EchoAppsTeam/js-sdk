@@ -118,6 +118,7 @@ plugin.renderers.likedBy = function(element) {
 			"itemsPerPage": likesPerPage,
 			"entries": users
 		},
+		"appkey": item.config.get("parent.appkey"),
 		"initialUsersCount": visibleUsersCount,
 		"totalUsersCount": item.get("data.object.accumulators.likesCount"),
 		"suffixText": plugin.labels.get(users.length > 1 || youLike ? "likeThis" : "likesThis")
@@ -227,7 +228,7 @@ plugin.methods._assembleButton = function(name) {
 			})).length > 0 ? "Unlike" : "Like";
 		return {
 			"name": name,
-			"label": plugin.labels.get(name.toLowerCase() + "App"),
+			"label": plugin.labels.get(name.toLowerCase() + "Control"),
 			"visible": item.user.is("logged") && action === name,
 			"once": true,
 			"callback": callback

@@ -101,7 +101,7 @@ auth.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": Echo.require.toUrl("sdk-assets/images/avatar-default.png", false),
+	"defaultAvatar": Echo.require.toUrl("echo-assets/images/avatar-default.png", false),
 
 	/**
 	 * @cfg {Object} identityManager

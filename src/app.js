@@ -730,8 +730,8 @@ App.prototype._initializers.backplane = function(callback) {
 	var config = this.config.get("backplane");
 
 	if (config.serverBaseURL && config.busName) {
-		Echo.require(["echo/backplane"], function(backplane) {
-			backplane.init(config);
+		Echo.require(["echo/backplane"], function(Backplane) {
+			Backplane.init(config);
 			callback.call(app);
 		});
 	} else {
@@ -1059,26 +1059,6 @@ manifest.config = {
 	 * Specifies the set of language variables defined for this particular application.
 	 */
 	"labels": {},
-
-	/**
-	 * @cfg {Object} infoMessages
-	 * Customizes the look and feel of info messages, for example "loading" and "error".
-	 *
-	 * @cfg {Boolean} infoMessages.enabled=true
-	 * Specifies if info messages should be rendered.
-	 *
-	 * @cfg {String} infoMessages.layout="full"
-	 * Specifies the layout of the info message. By default can be set to "compact" or "full".
-	 *
-	 *     "infoMessages": {
-	 *         "enabled": true,
-	 *         "layout": "full"
-	 *     }
-	 */
-	"infoMessages": {
-		"enabled": true,
-		"layout": "full"
-	},
 
 	/**
 	 * @cfg {Object} cdnBaseURL

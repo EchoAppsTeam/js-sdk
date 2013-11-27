@@ -354,7 +354,7 @@ canvas.methods._error = function(args) {
 	 * Object which contains debug information regarding the error.
 	 */
 	Events.publish({
-		"topic": "Canvas.onError",
+		"topic": "Echo.Canvas.onError",
 		"data": args
 	});
 

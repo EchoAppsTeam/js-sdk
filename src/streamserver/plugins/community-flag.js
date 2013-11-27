@@ -105,6 +105,7 @@ plugin.renderers.flaggedBy = function(element) {
 			"itemsPerPage": flagsPerPage
 		},
 		"initialUsersCount": visibleUsersCount,
+		"appkey": item.config.get("parent.appkey"),
 		"suffixText": plugin.labels.get("flaggedThis")
 	});
 	plugin.set("facepile", new FacePile(config));

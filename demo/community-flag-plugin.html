@@ -35,7 +35,6 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		// init Auth app
 		Echo.require(["echo/identityserver/apps/auth", "echo/streamserver/apps/stream"], function(Auth, Stream) {
 			var identityManager = {
 				"width": 400,
@@ -47,6 +46,7 @@
 				"busName": "jskit"
 			};
 
+			// init Auth app
 			new Auth({
 	            "backplane": backplane,
                 "target": document.getElementById("auth"),

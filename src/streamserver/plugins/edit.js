@@ -60,6 +60,7 @@ plugin.labels = {
 plugin.methods._submitConfig = function(item, target) {
 	return this.config.assemble({
 		"target": target,
+		"appkey": this.component.config.get("parent.appkey"),
 		"data": item.get("data"),
 		"targetURL": item.get("data.object.id")
 	});
@@ -76,7 +77,7 @@ plugin.methods._assembleButton = function() {
 			"callback": function() {
 				var config = plugin._submitConfig(item, item.view.get("subcontainer"));
 				config["parent"] = plugin.component.config.getAsHash();
-				config["targetQuery"] = plugin.config.get("query", "");
+				config["targetQuery"] = item.config.get("parent.query", "");
 				config.plugins.push({"name": "Edit"});
 				new Submit(config);
 				item.config.get("target").get(0).scrollIntoView(true);

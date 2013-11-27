@@ -66,7 +66,8 @@ counter.init = function() {
 			"label": this.labels.get("error_incorrect_appkey")
 		}, {
 			"critical": true,
-			"target": this.config.get("target")
+			"target": this.config.get("target"),
+			"template": this.config.get("infoMessages.template")
 		});
 	}
 
@@ -132,6 +133,28 @@ counter.config = {
 	 * 	});
 	 */
 	"data": undefined,
+
+	/**
+	 * @cfg {Object} infoMessages
+	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 *
+	 * @cfg {Boolean} infoMessages.enabled=true
+	 * Specifies if info messages should be rendered.
+	 *
+	 * @cfg {String} infoMessages.template=""
+	 * Specifies a layout template of the info message. By default if template is not
+	 * specified it uses pre-defined compact template from the Echo.Utils. For more information
+	 * follow the {@link Echo.Utils.showMessage link}.
+	 *
+	 *     "infoMessages": {
+	 *         "enabled": true,
+	 *         "template": '<div class="some-class">{data:count}</div>'
+	 *     }
+	 */
+	"infoMessages": {
+		"enabled": true,
+		"template": ""
+	},
 
 	/**
 	 * @cfg {Object} [liveUpdates]
@@ -229,8 +252,10 @@ counter.methods._error = function(data, options) {
 			Utils.showMessage({
 				"type": "error",
 				"data": data,
+				"layout": "compact",
 				"message": data.errorMessage,
-				"target": this.config.get("target")
+				"target": this.config.get("target"),
+				"template": this.config.get("infoMessages.template")
 			});
 		}
 	}

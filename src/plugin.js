@@ -333,7 +333,7 @@ Plugin.prototype.substitute = function(args) {
  */
 Plugin.prototype.requestDataRefresh = function() {
 	Events.publish({
-		"topic": "App.onDataInvalidate",
+		"topic": "Echo.App.onDataInvalidate",
 		"context": this.component.config.get("context"),
 		"global": false,
 		"propagation": false,

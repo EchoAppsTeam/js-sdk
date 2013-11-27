@@ -4,9 +4,9 @@ Echo.define('echo/variables', [], function() {
 
 Echo.define("echo/utils", [
 	"jquery",
-	"echo/variables"
-], function($, Variables) {
-
+	"echo/variables",
+	"require"
+], function($, Variables, require) {
 "use strict";
 
 var Utils;
@@ -1229,23 +1229,24 @@ Utils.showMessage = function(data) {
 Utils.showError = function(data, options) {
 	var self = this;
 	options = options || {};
-	var getLabel = function(key) {
-		return options.label || Variables.labels[key]
-	};
 	if (typeof options.retryIn === "undefined") {
-		var label = getLabel("error_" + data.errorCode);
+		var label = options.label;
 		var message = label === "error_" + data.errorCode
 			? "(" + data.errorCode + ") " + (data.errorMessage || "")
 			: label;
 		this.showMessage({
 			"type": options.critical ? "error" : "loading",
 			"message": message,
-			"target": options.target
+			"target": options.target,
+			"template": options.template,
+			"layout": options.layout
 		});
-	} else if (!options.retryIn && options.promise) {
+	} else if (!options.retryIn && options.promise && options.promise.state() === "rejected") {
 		this.showMessage({
 			"type": "loading",
-			"message": getLabel("retrying"),
+			"message": option.label,
+			"template": options.template,
+			"layout": options.layout,
 			"target": options.target
 		});
 	} else if (options.promise) {
@@ -1256,12 +1257,14 @@ Utils.showError = function(data, options) {
 			}
 			var label = self.substitute({
 				"data": {"seconds": secondsLeft--},
-				"template": getLabel("error_" + data.errorCode)
+				"template": options.label
 			});
 			self.showMessage({
 				"type": "loading",
 				"message": label,
-				"target": options.target
+				"target": options.target,
+				"template": options.template,
+				"layout": options.layout
 			});
 		};
 		var retryTimer = setInterval(ticker, 1000);
@@ -1283,24 +1286,20 @@ Utils.showError = function(data, options) {
  * @return {String}
  * String which represents the date and time in the relative format.
  */
-Utils.getRelativeTime = function(datetime, options) {
+Utils.getRelativeTime = function(datetime, processor) {
 	if (!datetime) return "";
 	var ts = typeof datetime === "string"
 		? Utils.timestampFromW3CDTF(datetime)
 		: datetime;
 	if (!ts) return "";
-	var parts;
-	options = options || {"labels": {}};
+	var parts, prev = 1;
 	var d = new Date(ts * 1000);
 	var diff = Math.floor(((new Date()).getTime() - d.getTime()) / 1000);
 	var getLabel = function(parts) {
 		var numeric = parts[2];
 		var plural = numeric && parts[3] > 1;
 		var key = parts[0] + (plural ? "s" : "") + (numeric ? "Ago" : "");
-		return Utils.substitute({
-			"data": {"number": parts[3]},
-			"template": options.labels[key] || Variables.labels[key]
-		});
+		return processor(key, parts[3]);
 	};
 	var conversions = [
 		// we display the "Just now" text in order to mitigate the clock inaccuracy
@@ -1322,10 +1321,16 @@ Utils.getRelativeTime = function(datetime, options) {
 
 	for (var i = 0; i < conversions.length; i++) {
 		parts = conversions[i];
-		if (diff < parts[1]) {
+		if (!parts || diff < parts[1]) {
 			break;
 		}
-		diff = diff / parts[1];
+		if (parts[2]) {
+			diff = diff * prev / parts[1];
+			prev = 1;
+		} else {
+			diff = diff * prev / parts[1];
+			prev = parts[1];
+		}
 	}
 
 	if (!parts || isNaN(diff) || diff < -60) {
@@ -1338,140 +1343,13 @@ Utils.getRelativeTime = function(datetime, options) {
 
 Variables.templates = {
 	"message": {
-		"compact": '<span class="echo-app-message echo-app-message-icon echo-app-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>',
-		"full": '<div class="echo-app-message {class:messageText}">' +
-			'<span class="echo-app-message-icon echo-app-message-{data:type} {class:messageIcon}">' +
+		"compact": '<span class="echo-message echo-message-icon echo-message-{data:type}" title="{data:message}">&nbsp;</span>',
+		"full": '<div class="echo-message">' +
+			'<span class="echo-message-icon echo-message-{data:type}">' +
 				'{data:message}' +
 			'</span>' +
 		'</div>'
 	}
-};
-
-Variables.labels = {
-	/**
-	 * @echo_label loading
-	 */
-	"loading": "Loading...",
-	/**
-	 * @echo_label retrying
-	 */
-	"retrying": "Retrying...",
-	/**
-	 * @echo_label error_busy
-	 */
-	"error_busy": "Loading. Please wait...",
-	/**
-	 * @echo_label error_timeout
-	 */
-	"error_timeout": "Loading. Please wait...",
-	/**
-	 * @echo_label error_waiting
-	 */
-	"error_waiting": "Loading. Please wait...",
-	/**
-	 * @echo_label error_view_limit
-	 */
-	"error_view_limit": "View creation rate limit has been exceeded. Retrying in {seconds} seconds...",
-	/**
-	 * @echo_label error_view_update_capacity_exceeded
-	 */
-	"error_view_update_capacity_exceeded": "This stream is momentarily unavailable due to unusually high activity. Retrying in {seconds} seconds...",
-	/**
-	 * @echo_label error_result_too_large
-	 */
-	"error_result_too_large": "(result_too_large) The search result is too large.",
-	/**
-	 * @echo_label error_wrong_query
-	 */
-	"error_wrong_query": "(wrong_query) Incorrect or missing query parameter.",
-	/**
-	 * @echo_label error_incorrect_appkey
-	 */
-	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
-	/**
-	 * @echo_label error_internal_error
-	 */
-	"error_internal_error": "(internal_error) Unknown server error.",
-	/**
-	 * @echo_label error_quota_exceeded
-	 */
-	"error_quota_exceeded": "(quota_exceeded) Required more quota than is available.",
-	/**
-	 * @echo_label error_incorrect_user_id
-	 */
-	"error_incorrect_user_id": "(incorrect_user_id) Incorrect user specified in User ID predicate.",
-	/**
-	 * @echo_label error_unknown
-	 */
-	"error_unknown": "(unknown) Unknown error.",
-	/**
-	 * @echo_label today
-	 */
-	"today": "Today",
-	/**
-	 * @echo_label justNow
-	 */
-	"justNow": "Just now",
-	/**
-	 * @echo_label yesterday
-	 */
-	"yesterday": "Yesterday",
-	/**
-	 * @echo_label lastWeek
-	 */
-	"lastWeek": "Last Week",
-	/**
-	 * @echo_label lastMonth
-	 */
-	"lastMonth": "Last Month",
-	/**
-	 * @echo_label secondAgo
-	 */
-	"secondAgo": "{number} Second Ago",
-	/**
-	 * @echo_label secondsAgo
-	 */
-	"secondsAgo": "{number} Seconds Ago",
-	/**
-	 * @echo_label minuteAgo
-	 */
-	"minuteAgo": "{number} Minute Ago",
-	/**
-	 * @echo_label minutesAgo
-	 */
-	"minutesAgo": "{number} Minutes Ago",
-	/**
-	 * @echo_label hourAgo
-	 */
-	"hourAgo": "{number} Hour Ago",
-	/**
-	 * @echo_label hoursAgo
-	 */
-	"hoursAgo": "{number} Hours Ago",
-	/**
-	 * @echo_label dayAgo
-	 */
-	"dayAgo": "{number} Day Ago",
-	/**
-	 * @echo_label daysAgo
-	 */
-	"daysAgo": "{number} Days Ago",
-	/**
-	 * @echo_label weekAgo
-	 */
-	"weekAgo": "{number} Week Ago",
-	/**
-	 * @echo_label weeksAgo
-	 */
-	"weeksAgo": "{number} Weeks Ago",
-	/**
-	 * @echo_label monthAgo
-	 */
-	"monthAgo": "{number} Month Ago",
-	/**
-	 * @echo_label monthsAgo
-	 */
-	"monthsAgo": "{number} Months Ago"
 };
 
 Utils.addCSS(
@@ -1482,9 +1360,13 @@ Utils.addCSS(
 	'.echo-message { padding: 15px 0px; text-align: center; }' +
 	'.echo-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-message .echo-message-icon { padding-left: 21px; height: auto; }' +
-	'.echo-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +
-	'.echo-message-loading { background-image: url({config:cdnBaseURL.sdk-assets}/images/loading.gif); }' +
-	'.echo-message-error { background-image: url({config:cdnBaseURL.sdk-assets}/images/warning.gif); }'
+	($.map([
+		["info", require.toUrl("echo-assets/images/information.png")],
+		["loading", require.toUrl("echo-assets/images/loading.gif")],
+		["error", require.toUrl("echo-assets/images/warning.gif")]
+	], function(conversions) {
+		return ".echo-message-" + conversions[0] + " { background-image: url(" + conversions[1] + "); }";
+	}).join(""))
 , "echo-common");
 
 // JS SDK can't guarantee proper UI elements rendering in quirks mode
