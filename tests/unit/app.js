@@ -9,9 +9,6 @@ Echo.require([
 
 "use strict";
 
-Echo.Tests.Dependencies = Echo.Tests.Dependencies || {};
-Echo.Tests.Dependencies.App = {};
-
 var suite = Echo.Tests.Unit.App = function() {};
 
 suite.prototype.info = {
@@ -921,7 +918,6 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"templates": {
 			"main": '<div class="{class:container}"><div class="{class:someRenderer}"></div></div>'
 		},
-		"dependencies": [],
 		"init": function() {
 			initVar += "a parent init";
 			this.render();
@@ -963,10 +959,6 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"templates": {
 			"main": '<div class="{inherited.class:container} {class:container}"><div class="{class:someRenderer}"></div></div>'
 		},
-		"dependencies": [{
-			"url": Echo.Tests.baseURL + "unit/dependencies/app.dep.child.js",
-			"loaded": function() { return !!Echo.Tests.Dependencies.App.depChild; }
-		}],
 		"init": function() {
 			initVar += "I'm a child init and ";
 			this.parent();

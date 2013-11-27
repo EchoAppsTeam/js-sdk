@@ -1244,7 +1244,7 @@ Utils.showError = function(data, options) {
 	} else if (!options.retryIn && options.promise && options.promise.state() === "rejected") {
 		this.showMessage({
 			"type": "loading",
-			"message": option.label,
+			"message": options.label,
 			"template": options.template,
 			"layout": options.layout,
 			"target": options.target
@@ -1256,8 +1256,15 @@ Utils.showError = function(data, options) {
 				return;
 			}
 			var label = self.substitute({
+				"template": options.label,
+				"instructions": {
+					"seconds": function(sec) {
+						return function() {
+							return sec;
+						}
+					}(secondsLeft)
+				},
 				"data": {"seconds": secondsLeft--},
-				"template": options.label
 			});
 			self.showMessage({
 				"type": "loading",
@@ -1288,56 +1295,52 @@ Utils.showError = function(data, options) {
  */
 Utils.getRelativeTime = function(datetime, processor) {
 	if (!datetime) return "";
+	var self = this;
 	var ts = typeof datetime === "string"
-		? Utils.timestampFromW3CDTF(datetime)
+		? Echo.Utils.timestampFromW3CDTF(datetime)
 		: datetime;
 	if (!ts) return "";
-	var parts, prev = 1;
 	var d = new Date(ts * 1000);
-	var diff = Math.floor(((new Date()).getTime() - d.getTime()) / 1000);
-	var getLabel = function(parts) {
-		var numeric = parts[2];
-		var plural = numeric && parts[3] > 1;
-		var key = parts[0] + (plural ? "s" : "") + (numeric ? "Ago" : "");
-		return processor(key, parts[3]);
+	var now = (new Date()).getTime();
+	var when;
+	var diff = Math.floor((now - d.getTime()) / 1000);
+	var dayDiff = Math.floor(diff / 86400);
+	var getAgo = function(ago, period) {
+		return processor(period + (ago === 1 ? "" : "s") + "Ago", ago);
 	};
-	var conversions = [
-		// we display the "Just now" text in order to mitigate the clock inaccuracy
-		// when the time difference between the current and the given time is
-		// less than 10 seconds or if the given date is "from the future" but
-		// within the 60 seconds range
-		["justNow", 10, false],
-		["second", 60, true],
-		["minute", 60, true],
-		["hour", 24, true],
-		["yesterday", 48, false],
-		["day", 7, true],
-		["lastWeek", 14, false],
-		["week", 30, true],
-		["lastMonth", 60, false],
-		["month", 365, true],
-		null
-	];
 
-	for (var i = 0; i < conversions.length; i++) {
-		parts = conversions[i];
-		if (!parts || diff < parts[1]) {
-			break;
-		}
-		if (parts[2]) {
-			diff = diff * prev / parts[1];
-			prev = 1;
-		} else {
-			diff = diff * prev / parts[1];
-			prev = parts[1];
-		}
+	// we display the "Just now" text in order to mitigate the clock inaccuracy
+	// when the time difference between the current and the given time is
+	// less than 10 seconds or if the given date is "from the future" but
+	// within the 60 seconds range
+	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
+		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+	} else if (diff < 10) {
+		when = processor("justNow");
+	} else if (diff < 60) {
+		when = getAgo(diff, "second");
+	} else if (diff < 60 * 60) {
+		diff = Math.floor(diff / 60);
+		when = getAgo(diff, "minute");
+	} else if (diff < 60 * 60 * 24) {
+		diff = Math.floor(diff / (60 * 60));
+		when = getAgo(diff, "hour");
+	} else if (diff < 60 * 60 * 48) {
+		when = processor("yesterday");
+	} else if (dayDiff < 7) {
+		when = getAgo(dayDiff, "day");
+	} else if (dayDiff < 14) {
+		when = processor("lastWeek");
+	} else if (dayDiff < 30) {
+		diff =  Math.floor(dayDiff / 7);
+		when = getAgo(diff, "week");
+	} else if (dayDiff < 60) {
+		when = processor("lastMonth");
+	} else if (dayDiff < 365) {
+		diff =  Math.floor(dayDiff / 31);
+		when = getAgo(diff, "month");
 	}
-
-	if (!parts || isNaN(diff) || diff < -60) {
-		return d.toLocaleDateString() + ", " + d.toLocaleTimeString();
-	}
-
-	return getLabel(parts.concat(Math.floor(diff)));
+	return when;
 };
 
 

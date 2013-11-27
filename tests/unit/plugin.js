@@ -8,9 +8,6 @@ Echo.require([
 
 "use strict";
 
-Echo.Tests.Dependencies = Echo.Tests.Dependencies || {};
-Echo.Tests.Dependencies.Plugin = {};
-
 var suite = Echo.Tests.Unit.Plugin = function() {};
 
 suite.prototype.info = {
@@ -72,8 +69,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"events": {},
 			"methods": {},
 			"renderers": {},
-			"templates": {},
-			//"dependencies": []
+			"templates": {}
 		};
 
 		var _manifest = Plugin.manifest(manifest.name, manifest.component.name);
@@ -202,6 +198,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 		plugin.enable();
 		QUnit.ok(plugin.enabled(),
 			"Checking if a plugin was enabled back after \"enable\" function call");
+
 		try {
 			// checking log() calls with invalid params
 			plugin.log();
@@ -720,6 +717,7 @@ suite.getPluginManifest = function(name, component) {
 		"label2": "plugin label2 value",
 		"label3": "plugin label3 value"
 	};
+
 	manifest.init = function() {
 		var plugin = this;
 

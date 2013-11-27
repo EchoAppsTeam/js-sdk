@@ -11,6 +11,7 @@ Echo.Tests.module("Echo.Utils", {
 			"get",
 			"getUniqueString",
 			"getVisibleColor",
+			"getRelativeTime",
 			"hasCSS",
 			"htmlize",
 			"htmlTextTruncate",
@@ -30,6 +31,8 @@ Echo.Tests.module("Echo.Utils", {
 			"safelyExecute",
 			"sequentialCall",
 			"set",
+			"showMessage",
+			"showError",
 			"stripTags",
 			"substitute", // covered within the Application and Plugin tests
 			"timestampFromW3CDTF"
@@ -116,6 +119,87 @@ Echo.Tests.test("set()", function() {
 	Echo.Utils.set(data, "key2.key2-1", "value222");
 	QUnit.equal(data["key2"]["key2-1"], "value222",
 		"simple value for complex key");
+});
+
+Echo.Tests.test("showMessage()", function() {
+	var target = $('<div></div>');
+	var data = {
+		"type": "error",
+		"message": "An error occured during the request...",
+		"layout": "compact",
+		"target": target
+	};
+	Echo.Utils.showMessage(data);
+	QUnit.equal(
+		target.find(".echo-message-icon").attr("title"),
+		data.message,
+		"Checking \"showMessage\" in compact mode");
+
+	data.layout = "full";
+	Echo.Utils.showMessage(data);
+	QUnit.equal(
+		target.find(".echo-message-icon").html(),
+		data.message,
+		"Checking \"showMessage\" in full mode");
+});
+
+Echo.Tests.asyncTest("showError()", function() {
+	QUnit.expect(4);
+	Echo.Utils.sequentialCall([
+		function(callback) {
+			var def = $.Deferred();
+			var errorTarget = $("<div></div>");
+			var errorData = {
+				"errorCode": "someUndefinedErrorCode",
+				"errorMessage": "Some Error Message"
+			};
+			var errorOptions = {
+				"target": errorTarget,
+				"critical": false,
+				"label": "error_someUndefinedErrorCode",
+				"promise": def.promise()
+			};
+			Echo.Utils.showError(errorData, errorOptions);
+			QUnit.equal(
+				errorTarget.find(".echo-message-icon").html(),
+				"(someUndefinedErrorCode) Some Error Message",
+				"Checking if the unsupported errorCode received"
+			);
+			errorData.errorCode = "busy";
+			errorOptions.label = Echo.Labels.get("error_busy", "");
+			Echo.Utils.showError(errorData, errorOptions);
+			QUnit.equal(
+				errorTarget.find(".echo-message-icon").html(),
+				"Loading. Please wait...",
+				"Checking if the supported errorCode received and errorMessage ignored"
+			);
+			errorOptions.retryIn = 3000;
+			errorData.errorCode = "view_limit";
+			errorOptions.label = Echo.Labels.get("error_view_limit", "");
+			def.reject();
+			Echo.Utils.showError(errorData, errorOptions);
+			def = $.Deferred();
+			QUnit.equal(
+				errorTarget.find(".echo-message-icon").html(),
+				"View creation rate limit has been exceeded. Retrying in 3 seconds...",
+				"Checking if the retrying mechanism works"
+			);
+			setTimeout(function() {
+				errorOptions.retryIn = 0;
+				def.resolve();
+				errorOptions.label = Echo.Labels.get("retrying", "");
+				Echo.Utils.showError(errorData, errorOptions);
+				QUnit.equal(
+					errorTarget.find(".echo-message-icon").html(),
+					"Retrying...",
+					"Checking if the retrying mechanism works after 3 seconds counted"
+				);
+				callback();
+			}, 3000);
+		}
+	], function() {
+		QUnit.start();
+	});
 });
 
 Echo.Tests.test("remove()", function() {
@@ -913,6 +997,39 @@ Echo.Tests.test("DOM related methods", function() {
 	get("footer").css("background-color", "rgba(0, 0, 0, 0)");
 	QUnit.equal(Echo.Utils.getVisibleColor(get("footer")), "transparent",
 		"Checking getVisibleColor() method with transparent element color");
+});
+
+Echo.Tests.test("getRelativeTime()", function() {
+	var now = Math.floor((new Date()).getTime() / 1000);
+	var probes = [
+		["", "", "empty string"],
+		[0, "", "zero as a value"],
+		["some-random-string", "", "random string"],
+		[false, "", "boolean 'false'"],
+		[now + 60, "Just now", "date/time \"from the future\""],
+		[now - 0, "Just now", "Just now"],
+		[now - 4, "Just now", "less than 5 seconds ago"],
+		[now - 9, "Just now", "less than 10 seconds ago"],
+		[now - 10, "10 Seconds Ago", "10 seconds ago"],
+		[now - 1 * 60, "1 Minute Ago", "minute ago"],
+		[now - 3 * 60, "3 Minutes Ago", "minutes ago"],
+		[now - 1 * 60 * 60, "1 Hour Ago", "hour ago"],
+		[now - 4 * 60 * 60, "4 Hours Ago", "hours ago"],
+		[now - 1 * 24 * 60 * 60, "Yesterday", "yesterday"],
+		[now - 3 * 24 * 60 * 60, "3 Days Ago", "days ago"],
+		[now - 7 * 24 * 60 * 60, "Last Week", "last week"],
+		[now - 32 * 24 * 60 * 60, "Last Month", "last month"],
+		[now - 64 * 24 * 60 * 60, "2 Months Ago", "months ago"]
+	];
+
+	$.map(probes, function(probe) {
+		QUnit.equal(
+			Echo.Utils.getRelativeTime(probe[0], function(key, value) {
+				return Echo.Labels.get(key, "", {"number": value});
+			}),
+			probe[1],
+			"Checking \"getRelativeTime\" function (" + probe[2] + ")");
+	});
 });
 
 Echo.Tests.test("user agents", function() {

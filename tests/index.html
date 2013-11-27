@@ -44,7 +44,6 @@
 	<script type="text/javascript" src="unit/cookie.js"></script>
 	<script type="text/javascript" src="unit/configuration.js"></script>
 	<script type="text/javascript" src="unit/utils.js"></script>
-	<script type="text/javascript" src="unit/server-related-app.js"></script>
 	<script type="text/javascript" src="unit/user-session.js"></script>
 	<script type="text/javascript" src="unit/api.js"></script>
 	<script type="text/javascript" src="unit/streamserver/api.js"></script>
@@ -162,7 +161,6 @@
 				Echo[prop] = OldEcho[prop];
 			}
 				Echo.require(["echo/tests/harness", "echo/tests/harness/suite"], function() {
-				console.log(QUnit);
 				Echo.Tests.Fixtures = {
 					"api": {},
 					"loader": {},
@@ -196,7 +194,6 @@
 						"unit/identityserver/api",
 						"unit/plugin",
 						"unit/view",
-						"unit/server-related-app",
 						"unit/streamserver/apps/counter",
 						"unit/streamserver/apps/submit",
 						"unit/streamserver/apps/facepile",
