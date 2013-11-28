@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/user-session",
@@ -279,5 +280,6 @@ function checkBasicOperations(user) {
 	QUnit.equal(user.has("identity", identity), user._hasIdentity(identity),
 		"Checking delegation using user.has(\"identity\", \"...\") function");
 }
-
+callback();
+});
 });

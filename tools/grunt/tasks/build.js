@@ -26,16 +26,11 @@ module.exports = function(grunt) {
 			case "dev":
 				makeConcatSpec();
 				tasks = [
-					//"copy:css",
-					//"copy:own-js",
-					//"copy:third-party-js",
-					//"copy:third-party-html",
-					//"copy:bootstrap",
-					//"wrap",
 					"requirejs",
 					"wrap",
 					"concat:gui-pack",
 					"concat:tests/harness",
+					"concat:tests/units",
 					"recess:bootstrap",
 					"patch:gui-css",
 					"patch:loader-build",
@@ -65,14 +60,13 @@ module.exports = function(grunt) {
 					//"copy:build"
 					"requirejs",
 					"wrap",
-					"concat:gui-pack",
-					"concat:tests/harness",
 					"recess:bootstrap",
 					"uglify",
 					"patch:gui-css",
 					"patch:loader-build",
 					"cssmin:gui",
-					"concat",
+					"concat:gui-pack",
+					"concat:tests/harness",
 					"clean:third-party",
 					"copy:build"
 				];
@@ -83,6 +77,7 @@ module.exports = function(grunt) {
 					"copy:build",
 					"copy:demo",
 					"copy:tests",
+					"concat:tests/units",
 					"copy:apps"
 				];
 				break;
@@ -243,11 +238,21 @@ module.exports = function(grunt) {
 		var choose = function(name) {
 			return "<%= dirs.build %>/" + chooseFile(name, target, stage);
 		};
+		var chooseForTestUnits = function(name) {
+			return "<%= dirs.dist %>/tests/" + chooseFile(name, target, stage);
+		};
 		_.each(grunt.config("packs"), function(pack, key) {
-			spec[key] = {
-				"src": pack.src.map(choose),
-				"dest": "<%= dirs.build %>/" + pack.dest
-			};
+			if(key === "tests/units") {
+				spec[key] = {
+					"src": pack.src.map(chooseForTestUnits),
+					"dest": "<%= dirs.dist %>/tests/" + pack.dest
+				};
+			} else {
+				spec[key] = {
+					"src": pack.src.map(choose),
+					"dest": "<%= dirs.build %>/" + pack.dest
+				};
+			}
 		});
 		grunt.config("concat", spec);
 	}

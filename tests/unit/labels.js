@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/labels"
@@ -70,5 +71,6 @@ Echo.Tests.test("public interface", function() {
 	QUnit.equal(Labels.get("field", "Namespace"), "value",
 		"Checking that custom global label is not overridden by Echo.Labels instance");
 });
-
+callback();
+});
 });

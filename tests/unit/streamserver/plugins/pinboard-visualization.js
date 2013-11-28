@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/plugins/pinboardVisualization"
@@ -19,5 +20,6 @@ Echo.Tests.pluginRenderersTest(plugin, {
 		"enabled": false
 	}
 });
-
+callback();
+});
 });

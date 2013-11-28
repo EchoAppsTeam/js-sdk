@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/apps/stream",
@@ -59,5 +60,6 @@ Echo.Tests.asyncTest("common workflow", function() {
 		}
 	});
 });
-
+callback();
+});
 });

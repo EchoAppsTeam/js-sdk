@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/utils",
@@ -1098,5 +1099,6 @@ Echo.Tests.asyncTest("parallelCall()", function() {
 		QUnit.start();
 	});
 });
-
+callback();
+});
 });

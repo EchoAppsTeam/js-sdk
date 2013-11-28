@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/api",
@@ -196,5 +197,6 @@ Echo.Tests.test("Check transport normalizer", function() {
 		QUnit.equal(request.config.get("transport"), item.inspection, "Check transport if specified transport is " + item.transport);
 	});
 });
-
+callback();
+});
 });

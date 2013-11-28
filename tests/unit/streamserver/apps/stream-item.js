@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/apps/item",
@@ -823,5 +824,6 @@ Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Stream.Item", func
 	}}, config));
 	return stream;
 });
-
+callback();
+});
 });

@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/apps/auth",
@@ -83,5 +84,6 @@ Echo.Tests.asyncTest("anonymous user workflow", function() {
 		}
 	});
 });
-
+callback();
+});
 });

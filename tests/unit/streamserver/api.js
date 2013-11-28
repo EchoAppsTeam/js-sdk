@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/api",
@@ -645,5 +646,6 @@ suite.prototype.items.postWithMetadata = [
 		}]
 	}
 ];
-
+callback();
+});
 });

@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/view"
@@ -268,5 +269,6 @@ var renderers = {
 		return element.empty().append("Footer Renderer applied!");
 	}
 };
-
+callback();
+});
 });

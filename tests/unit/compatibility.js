@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery"
 ], function($) {
@@ -68,5 +69,6 @@ Echo.Tests.asyncTest("require no conflict", function() {
 }, {
 	"timeout": 6000
 });
-
+callback();
+});
 });

@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/apps/item",
@@ -121,5 +122,6 @@ suite.prototype.cases.destroy = function(callback) {
 	if (suite.mediaGallery) suite.mediaGallery.destroy();
 	callback && callback();
 };
-
+callback();
+});
 });

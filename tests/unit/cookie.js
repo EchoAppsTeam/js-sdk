@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"cookie"
@@ -24,5 +25,6 @@ Echo.Tests.test("public interface", function() {
 	Cookie.remove("test_a", {"path": "/"});
 	QUnit.ok(!Cookie.get("test_a"), "Cookie 'test_a' doesn't exist anymore");
 });
-
+callback();
+});
 });

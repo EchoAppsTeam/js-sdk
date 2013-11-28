@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/apps/stream",
@@ -560,5 +561,6 @@ Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Stream", function(
 		"query": "childrenof:" + config.dataBaseLocation + " sortOrder:repliesDescending"
 	}, config));
 });
-
+callback();
+});
 });

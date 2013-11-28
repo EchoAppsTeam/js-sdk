@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/utils",
@@ -144,5 +145,6 @@ Echo.Tests.asyncTest("disabled Like and Reply plugins", function() {
 		}
 	});
 });
-
+callback();
+});
 });

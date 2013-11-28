@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/gui",
@@ -109,5 +110,6 @@ Echo.Tests.asyncTest("common workflow", function() {
 	});
 	modal.hide();
 });
-
+callback();
+});
 });

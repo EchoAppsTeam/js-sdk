@@ -110,6 +110,18 @@ module.exports = function(grunt) {
 				"tests/harness/stats.js"
 			],
 			"dest": "tests/harness.js"
+		},
+		"tests/units": {
+			"src": [
+				"unit/*.js",
+				"unit/identityserver/*js",
+				"unit/streamserver/*.js",
+				"unit/identityserver/apps/*.js",
+				"unit/streamserver/apps/*.js",
+				"unit/streamserver/plugins/*.js"
+				
+			],
+			"dest": "unit/unit.pack.js"
 		}
 	};
 

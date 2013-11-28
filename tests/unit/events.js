@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/events",
@@ -241,5 +242,6 @@ Echo.Tests.test("advanced publishing", function() {
 	publish({"topic": "A.test", "context": "a1/b3", "bubble": false});
 	QUnit.deepEqual(published, [], "Publish: handlers order (topic \"A\", nonexistent deep context without bubble)");
 });
-
+callback();
+});
 });

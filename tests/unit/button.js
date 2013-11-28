@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/gui"
@@ -84,5 +85,6 @@ Echo.Tests.test("taking data from HTML", function() {
 	QUnit.ok(element.is(":disabled"),
 		"Checking that disabled value is taken from the element");
 });
-
+callback();
+});
 });

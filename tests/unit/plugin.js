@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/plugin",
@@ -810,5 +811,6 @@ suite.getPluginManifest = function(name, component) {
 	return manifest;
 
 };
-
+callback();
+});
 });

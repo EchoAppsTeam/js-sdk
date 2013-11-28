@@ -11,18 +11,31 @@
 	<link href="{%=baseURLs.sdk%}/gui.pack.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
 	<script type="text/javascript">
-		//TODO: this is a temporal decision just to run tests. It must be rewrote asap
-		Echo.require([
-			"jquery",
-			"echo/api",
-			"echo/app",
-			"echo/events",
-			"echo/user-session",
-			"echo/utils",
-			"QUnit",
-			"echo/backplane",
-			"require"
-		], function($, API, App, Events, UserSession, Utils, QUnit) {
+		
+		var harnessDependencies = [
+			"jquery", "echo/api",
+			"echo/app", "echo/events",
+			"echo/user-session", "echo/utils",
+			"QUnit", "echo/backplane"
+		];
+
+		var harnessServiceFiles =[
+			"config", "helpers/events.js",
+			"fixtures/api/count.js", "fixtures/api/search.js",
+			"fixtures/api/whoami.js"
+		];
+
+		var startTests = function() {
+			Echo.Tests.init({
+				"title": "echo sdk v3 tests",
+				"backplane": {
+					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+					"busName": "jskit"
+				}
+			});
+		}
+
+		Echo.require(harnessDependencies, function($, API, App, Events, UserSession, Utils, QUnit) {
 			Echo.Utils = Utils;
 			Echo.App = App;
 			Echo.Plugin = Plugin;
@@ -30,67 +43,24 @@
 			Echo.jQuery = $;
 			Echo.API = API;
 			Echo.UserSession = UserSession;
-			Echo.require(["echo/tests/harness", "echo/tests/harness/suite"], function() {
+			//harness loading
+			Echo.require([
+				"echo/tests/harness", 
+				"echo/tests/harness/suite"
+			], function() {
 				Echo.Tests.Fixtures = {
 					"api": {},
 					"loader": {},
 					"canvases": {}
 				};
-				Echo.require([
-					"config",
-					"helpers/events.js",
-					"fixtures/api/count.js",
-					"fixtures/api/search.js",
-					"fixtures/api/whoami.js"
-				], function() {
-					Echo.require([
-						"unit/api",
-						"unit/app",
-						"unit/button",
-						"unit/compatibility",
-						"unit/configuration",
-						"unit/utils",
-						"unit/modal",
-						"unit/dropdown",
-						"unit/tabs",
-						"unit/button",
-						"unit/gui",
-						"unit/cookie",
-						"unit/events",
-						"unit/labels",
-						"unit/button",
-						"unit/user-session",
-						"unit/streamserver/api",
-						"unit/plugin",
-						"unit/view",
-						"unit/loader",
-						"unit/streamserver/apps/counter",
-						"unit/streamserver/apps/media-gallery",
-						"unit/streamserver/apps/submit",
-						"unit/streamserver/apps/facepile",
-						"unit/streamserver/apps/facepile-item",
-						"unit/streamserver/apps/stream",
-						"unit/streamserver/apps/stream-item",
-						"unit/streamserver/apps/media-gallery",
-						"unit/streamserver/plugins/edit",
-						"unit/streamserver/plugins/reply",
-						"unit/streamserver/plugins/item-accumulator-display",
-						"unit/streamserver/plugins/pinboard-visualization",
-						"unit/streamserver/plugins/form-auth",
-						"unit/streamserver/plugins/text-counter",
-						"unit/streamserver/plugins/community-flag",
-						"unit/streamserver/plugins/moderation",
-						"unit/streamserver/plugins/tweet-display",
-						"unit/streamserver/plugins/infinite-scroll"
-					], function() {
-						Echo.Tests.init({
-							"title": "Echo SDK v3 tests",
-							"backplane": {
-								"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-								"busName": "jskit"
-							}
-						});
-					});
+				Echo.Tests.Units = []; //wrapped units array
+				//packs loading	
+				Echo.require(["unit/unit.pack"], function() {
+					var initializeTests = function() {
+						Utils.sequentialCall(Echo.Tests.Units, startTests);
+					};
+					//tests initializing
+					Echo.require(harnessServiceFiles, initializeTests);
 				});
 			});
 		});

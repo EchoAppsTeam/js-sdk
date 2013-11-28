@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/gui",
@@ -117,5 +118,6 @@ Echo.Tests.test("common workflow", function() {
 	dropdown.destroy();
 	QUnit.ok(element.is(":empty"), "Check destroy() method");
 });
-
+callback();
+});
 });

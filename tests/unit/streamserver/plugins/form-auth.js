@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/plugins/formAuth"
@@ -28,5 +29,6 @@ Echo.Tests.pluginRenderersTest(plugin, {
 		}
 	}
 });
-
+callback();
+});
 });

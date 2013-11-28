@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/plugins/reply"
@@ -22,5 +23,6 @@ Echo.Tests.pluginRenderersTest(plugin, {
 		"enabled": false
 	}
 });
-
+callback();
+});
 });

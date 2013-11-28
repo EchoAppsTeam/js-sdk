@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/app",
@@ -1391,5 +1392,6 @@ suite.getAppManifest = function(name, config) {
 	return manifest;
 
 };
-
+callback();
+});
 });

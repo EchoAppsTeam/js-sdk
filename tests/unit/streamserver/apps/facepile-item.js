@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery"
 ], function($) {
@@ -28,5 +29,6 @@ suite.prototype.info = {
 	"className" : data.instance.name,
 	"functions": ["isYou"]
 };
-
+callback();
+});
 });

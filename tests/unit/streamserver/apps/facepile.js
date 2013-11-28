@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/apps/facePile",
@@ -252,5 +253,6 @@ suite.prototype._checkActorsView = function(item, callback) {
 		}
 	});
 };
-
+callback();
+});
 });

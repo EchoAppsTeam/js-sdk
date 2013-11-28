@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/apps/submit"
@@ -373,5 +374,6 @@ Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Submit", function(
 //suite.prototype.tests.adminWorkflow = {
 //
 //};
-
+callback();
+});
 });

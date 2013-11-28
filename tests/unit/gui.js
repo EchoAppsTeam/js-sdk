@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/gui"
@@ -43,5 +44,6 @@ Echo.Tests.test("public workflow", function() {
 		"Checking destroy() method"
 	);
 });
-
+callback();
+});
 });

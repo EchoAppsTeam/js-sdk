@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/configuration"
@@ -242,5 +243,6 @@ var _data = {
 		"key16": "key16.value"
 	}
 };
-
+callback();
+});
 });

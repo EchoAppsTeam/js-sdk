@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/plugins/edit"
@@ -16,5 +17,6 @@ Echo.Tests.module(plugin, {
 Echo.Tests.pluginRenderersTest(plugin, {
 	"targetURL": "http://example.com/js-sdk/"
 });
-
+callback();
+});
 });

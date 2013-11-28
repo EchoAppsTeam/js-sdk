@@ -1,3 +1,4 @@
+Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/streamserver/apps/counter",
@@ -247,5 +248,6 @@ suite.prototype.cases.destroy = function(callback) {
 	suite.counter.destroy();
 	callback();
 };
-
+callback();
+});
 });
