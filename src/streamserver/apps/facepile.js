@@ -1,11 +1,11 @@
 Echo.define("echo/streamserver/apps/facePile", [
 	"jquery",
-	"echo/app",
 	"echo/utils",
+	"echo/streamserver/bundled-app",
 	"echo/streamserver/api",
 	"echo/streamserver/apps/facePileItem",
 	"require"
-], function($, App, Utils, API, Item, require) {
+], function($, Utils, App, API, Item, require) {
 
 "use strict";
 
@@ -623,7 +623,7 @@ Echo.define("echo/streamserver/apps/facePileItem", [
 	"jquery",
 	"echo/utils",
 	"require",
-	"echo/app"
+	"echo/streamserver/bundled-app"
 ], function($, Utils, require, App) {
 
 "use strict";

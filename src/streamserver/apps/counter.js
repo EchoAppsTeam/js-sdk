@@ -1,9 +1,9 @@
 Echo.define("echo/streamserver/apps/counter", [
 	"jquery",
-	"echo/app",
 	"echo/utils",
-	"echo/streamserver/api"
-], function($, App, Utils, API) {
+	"echo/streamserver/api",
+	"echo/app"
+], function($, Utils, API, App) {
 
 "use strict";
 

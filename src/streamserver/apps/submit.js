@@ -1,15 +1,15 @@
 Echo.define("echo/streamserver/apps/submit", [
 	"jquery",
 	"require",
-	"echo/app",
 	"echo/utils",
 	"echo/streamserver/api",
+	"echo/streamserver/bundled-app",
 	"echo/gui",
 	"echo/gui/button",
 	"echo/events", 
 	"echo/gui/modal",
 	"css!echo/gui.pack"
-], function($, require, App, Utils, API, GUI, GUIButton, Events, GUIModal) {
+], function($, require, Utils, API, App, GUI, GUIButton, Events, GUIModal) {
 
 "use strict";
 
@@ -97,8 +97,7 @@ submit.init = function() {
 		});
 		return valid;
 	}, "low");
-	this.render();
-	this.ready();
+	this.parent();
 };
 
 submit.config = {

@@ -79,21 +79,22 @@ paths[Echo.Loader.getURL("") + "/gui.pack"] = [
 	"echo/gui/dropdown", "echo/gui/tabs"
 ];
 paths[Echo.Loader.getURL("") + "/streamserver.pack"] = [
-	"echo/streamserver/apps/counter","echo/streamserver/apps/stream",
-	"echo/streamserver/apps/facePile", "echo/streamserver/apps/facePileItem",
-	"echo/streamserver/apps/submit", "echo/streamserver/plugins/edit",
+	"echo/streamserver/bundled-app", "echo/streamserver/apps/counter",
+	"echo/streamserver/apps/stream", "echo/streamserver/apps/facePile",
+	"echo/streamserver/apps/facePileItem", "echo/streamserver/apps/submit",
+	"echo/streamserver/apps/auth", "echo/streamserver/plugins/edit",
 	"echo/streamserver/plugins/streamItemEdit", "echo/streamserver/plugins/submitEdit",
 	"echo/streamserver/plugins/communityFlag", "echo/streamserver/plugins/formAuth",
 	"echo/streamserver/plugins/infiniteScroll", "echo/streamserver/plugins/itemAccumulatorDisplay",
-	"echo/streamserver/plugins/janrainSharing", "echo/streamserver/plugins/submitJanrainSharing",
-	"echo/streamserver/plugins/streamJanrainSharing", "echo/streamserver/plugins/like",
-	"echo/streamserver/plugins/streamLike", "echo/streamserver/plugins/facePileLike",
-	"echo/streamserver/plugins/metadataManager", "echo/streamserver/plugins/moderation",
-	"echo/streamserver/plugins/streamModeration", "echo/streamserver/plugins/streamItemModeration",
-	"echo/streamserver/plugins/reply", "echo/streamserver/plugins/streamItemReply",
-	"echo/streamserver/plugins/streamReply", "echo/streamserver/plugins/submitReply",
-	"echo/streamserver/plugins/textCounter", "echo/streamserver/plugins/tweet-display",
-	"echo/streamserver/apps/item"
+	"echo/streamserver/plugins/janrain-connector", "echo/streamserver/plugins/janrainSharing",
+	"echo/streamserver/plugins/submitJanrainSharing", "echo/streamserver/plugins/streamJanrainSharing",
+	"echo/streamserver/plugins/like", "echo/streamserver/plugins/streamLike",
+	"echo/streamserver/plugins/facePileLike", "echo/streamserver/plugins/metadataManager",
+	"echo/streamserver/plugins/moderation", "echo/streamserver/plugins/streamModeration",
+	"echo/streamserver/plugins/streamItemModeration", "echo/streamserver/plugins/reply",
+	"echo/streamserver/plugins/streamItemReply", "echo/streamserver/plugins/streamReply",
+	"echo/streamserver/plugins/submitReply", "echo/streamserver/plugins/textCounter",
+	"echo/streamserver/plugins/tweet-display", "echo/streamserver/apps/item"
 ];
 paths[Echo.Loader.getURL("") + "/pinboard-visualization"] = [
 	"echo/streamserver/plugins/pinboardVisualization", "echo/streamserver/plugins/mediaGallery",

@@ -1,8 +1,8 @@
 Echo.define("echo/streamserver/apps/item", [
 	"jquery",
-	"echo/app",
-	"echo/utils"
-], function($, App, Utils) {
+	"echo/utils",
+	"echo/streamserver/bundled-app"
+], function($, Utils, App) {
 
 "use strict";
 
@@ -45,8 +45,11 @@ if (App.isDefined(item)) return;
  */
 
 item.init = function() {
+	var self = this;
 	this.timestamp = Utils.timestampFromW3CDTF(this.get("data.object.published"));
-	this.ready();
+	this.initUser(function() {
+		self.ready();
+	});
 };
 
 item.config = {
@@ -1394,11 +1397,11 @@ return App.create(item);
 
 Echo.define("echo/streamserver/apps/stream", [
 	"jquery",
-	"echo/app",
 	"echo/streamserver/api",
+	"echo/streamserver/bundled-app",
 	"echo/streamserver/apps/item",
 	"echo/utils"
-], function($, App, API, Item, Utils) {
+], function($, API, App, Item, Utils) {
 
 "use strict";
 
@@ -1498,7 +1501,9 @@ stream.init = function() {
 			}
 		},
 		"onData": function(data, options) {
-			self._handleInitialResponse(data);
+			self.initUser(function() {
+				self._handleInitialResponse(data);
+			});
 		}
 	});
 
@@ -1510,7 +1515,9 @@ stream.init = function() {
 
 	var data = this.config.get("data");
 	if (data) {
-		this._handleInitialResponse(data);
+		this.initUser(function() {
+			self._handleInitialResponse(data);
+		});
 		this.request && this.request.send({
 			"skipInitialRequest": true,
 			"data": {
@@ -2206,50 +2213,6 @@ stream.methods._requestChildrenItems = function(unique) {
 		}
 	});
 	request.send();
-};
-
-stream.methods._requestInitialItems = function() {
-	var self = this;
-	if (!this.request) {
-		this.request = API.request({
-			"endpoint": "search",
-			"apiBaseURL": this.config.get("apiBaseURL"),
-			"liveUpdates": $.extend(this.config.get("liveUpdates"), {
-				"onData": function(data) {
-					self._handleLiveUpdatesResponse(data);
-				}
-			}),
-			"data": {
-				"q": this.config.get("query"),
-				"appkey": this.config.get("appkey")
-			},
-			"onOpen": function(data, options) {
-				if (options.requestType === "initial") {
-					Utils.showError({}, {
-						"retryIn": 0,
-						"target": self.config.get("target"),
-						"label": self.labels.get("retrying"),
-						"template": self.config.get("infoMessages.template"),
-						"promise": self.request.deferred.transport.promise()
-					});
-				}
-			},
-			"onError": function(data, options) {
-				if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-					Utils.showError(data, $.extend(options, {
-						"label": self.labels.get("error_" + data.errorCode),
-						"target": self.config.get("target"),
-						"template": self.config.get("infoMessages.template"),
-						"promise": self.request.deferred.transport.promise()
-					}));
-				}
-			},
-			"onData": function(data, options) {
-				self._handleInitialResponse(data);
-			}
-		});
-	}
-	this.request.send();
 };
 
 stream.methods._requestMoreItems = function(element) {
@@ -3113,8 +3076,8 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"context": this.config.get("context"),
 		"useSecureAPI": this.config.get("useSecureAPI"),
 		"apiBaseURL": this.config.get("apiBaseURL"),
-		"submissionProxyURL": this.config.get("submissionProxyURL"),
 		"user": this.user,
+		"submissionProxyURL": this.config.get("submissionProxyURL"),
 		"live": isLive,
 		"ready": callback
 	}, this.itemParentConfig.item);

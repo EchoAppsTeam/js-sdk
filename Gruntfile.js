@@ -114,9 +114,7 @@ module.exports = function(grunt) {
 		"tests/units": {
 			"src": [
 				"unit/*.js",
-				"unit/identityserver/*js",
 				"unit/streamserver/*.js",
-				"unit/identityserver/apps/*.js",
 				"unit/streamserver/apps/*.js",
 				"unit/streamserver/plugins/*.js"
 				
@@ -532,19 +530,21 @@ module.exports = function(grunt) {
 							"view",
 							"app",
 							"plugin"
-						//	"canvas"
 						]
 					}, {
 						"name": "streamserver.pack",
 						"create": true,
 						"include": [
+							"streamserver/bundled-app",
 							"streamserver/apps/counter",
 							"streamserver/apps/stream",
 							"streamserver/apps/facepile",
 							"streamserver/apps/submit",
+							"streamserver/apps/auth",
 							"streamserver/plugins/community-flag",
 							"streamserver/plugins/form-auth",
 							"streamserver/plugins/item-accumulator-display",
+							"streamserver/plugins/janrain-connector",
 							"streamserver/plugins/janrain-sharing",
 							"streamserver/plugins/metadata-manager",
 							"streamserver/plugins/text-counter",

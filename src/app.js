@@ -94,6 +94,9 @@ App.create = function(manifest) {
 	if (_manifest.methods) {
 		$.extend(prototype, _manifest.methods);
 	}
+	if (_manifest.static) {
+		$.extend(constructor, _manifest.static);
+	}
 	prototype.templates = _manifest.templates;
 	prototype.renderers = _manifest.renderers;
 	prototype.name = _manifest.name;
@@ -130,6 +133,7 @@ App.manifest = function(name) {
 		"config": {},
 		"labels": {},
 		"events": {},
+		"static": {},
 		"methods": {},
 		"renderers": {},
 		"templates": {},
@@ -530,8 +534,6 @@ App.prototype._initializers.list = [
 	["subscriptions",      ["init"]],
 	["labels",             ["init"]],
 	["view",               ["init"]],
-	["backplane:async",    ["init"]],
-	["user:async",         ["init", "refresh"]],
 	["plugins:async",      ["init", "refresh"]],
 	["init:async",         ["init", "refresh"]],
 	["ready",              ["init"]],
@@ -725,51 +727,6 @@ App.prototype._initializers.view = function() {
 	});
 };
 
-App.prototype._initializers.backplane = function(callback) {
-	var app = this;
-	var config = this.config.get("backplane");
-
-	if (config.serverBaseURL && config.busName) {
-		Echo.require(["echo/backplane"], function(Backplane) {
-			Backplane.init(config);
-			callback.call(app);
-		});
-	} else {
-		callback.call(app);
-	}
-};
-
-
-App.prototype._initializers.user = function(callback) {
-	var app = this;
-	if (!this.config.get("appkey")) {
-		callback.call(app);
-		return;
-	}
-	if (this.config.get("user")) {
-		this.user = this.config.get("user");
-		callback.call(app);
-	} else {
-		var generateURL = function(baseURL, path) {
-			if (!baseURL) return;
-			var urlInfo = Utils.parseURL(baseURL);
-			return (urlInfo.scheme || "https") + "://" + urlInfo.domain + path;
-		};
-		UserSession({
-			"appkey": this.config.get("appkey"),
-			"useSecureAPI": this.config.get("useSecureAPI"),
-			"endpoints": {
-				"logout": generateURL(this.config.get("submissionProxyURL"), "/v2/"),
-				"whoami": generateURL(this.config.get("apiBaseURL"), "/v1/users/")
-			},
-			"ready": function() {
-				app.user = this;
-				callback.call(app);
-			}
-		});
-	}
-};
-
 App.prototype._initializers.plugins = function(callback) {
 	var app = this;
 	this._loadPluginScripts(function() {
@@ -835,22 +792,6 @@ var _wrapper = function(parent, own) {
 	};
 };
 
-App._merge.methods = function(parent, own) {
-	return Utils.foldl({}, own, function(method, acc, name) {
-		acc[name] = name in parent
-			? _wrapper(parent[name], method)
-			: method;
-	});
-};
-
-App._merge.dependencies = function(parent, own) {
-	return parent.concat(own);
-};
-
-App._merge.css = function(parent, own) {
-	return parent.concat(own);
-};
-
 App._merge.events = function(parent, own) {
 	return Utils.foldl({}, own, function(data, acc, topic) {
 		acc[topic] = topic in parent
@@ -858,6 +799,22 @@ App._merge.events = function(parent, own) {
 			: data;
 	});
 };
+
+$.map(["methods", "static"], function(name) {
+	App._merge[name] = function(parent, own) {
+		return Utils.foldl({}, own, function(method, acc, name) {
+			acc[name] = name in parent
+				? _wrapper(parent[name], method)
+				: method;
+		});
+	};
+});
+
+$.map(["dependencies", "css"], function(name) {
+	App._merge[name] = function(parent, own) {
+		return parent.concat(own);
+	};
+});
 
 $.map(["init", "destroy"], function(name) {
 	App._merge[name] = _wrapper;
@@ -918,9 +875,6 @@ App.prototype._loadScripts = function(resources, callback) {
 	});
 	
 	require(resources, $.proxy(callback, app));
-	/*require(resources, function() {
-		callback.call(app);
-	});*/
 };
 
 App.prototype._loadPluginScripts = function(callback) {
@@ -1119,6 +1073,44 @@ manifest.config.normalizer = {
 	// is defined within the Echo.Plugin.Config.prototype.assemble and
 	// Echo.App.prototype._normalizeAppConfig functions.
 	"context": Events.newContextId
+};
+
+manifest.static = {};
+
+$.map(["create", "manifest", "isDefined", "_merge"], function(name) {
+	manifest.static[name] = App[name];
+});
+
+manifest.static.extends = function(App) {
+	return Utils.inherit(App, this);
+};
+
+manifest.static.include = function() {
+	var type = typeof arguments[0] === "string" ? arguments[0] : "methods";
+	var App = $.isPlainObject(arguments[1]) ? arguments[1] : arguments[0];
+	var keys = typeof arguments[2] === "undefined"
+		? $.isArray(arguments[1]) ? arguments[1] : []
+		: arguments[2];
+	var merge = function(To, From) {
+		if (keys.length) {
+			Utils.foldl(To, keys, function(key, acc) {
+				if ($.isFunction(From[key])) {
+					acc[key] = From[key];
+				}
+			});
+		} else {
+			for (var key in From) {
+				if (From.hasOwnProperty(key) && $.isFunction(From[key])) {
+					To[key] = From[key];
+				}
+			}
+		}
+	};
+	return merge.apply(
+		null, type === "methods"
+			? [this.prototype, App.prototype]
+			: [this, App]
+	);
 };
 
 manifest.inherits = App;

@@ -1,11 +1,11 @@
 Echo.define("echo/streamserver/apps/auth", [
 	"jquery",
-	"echo/app",
 	"echo/utils",
 	"echo/gui",
 	"echo/gui/modal",
-	"css!echo/gui.pack"
-], function($, App, Utils, GUI, GUIModal) {
+	"echo/streamserver/bundled-app",
+	"css!echo/gui.pack",
+], function($, Utils, GUI, GUIModal, App) {
 
 "use strict";
 
