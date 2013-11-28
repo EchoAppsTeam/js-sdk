@@ -93,7 +93,8 @@ paths[Echo.Loader.getURL("") + "/streamserver.pack"] = [
 	"echo/streamserver/plugins/streamModeration", "echo/streamserver/plugins/streamItemModeration",
 	"echo/streamserver/plugins/reply", "echo/streamserver/plugins/streamItemReply",
 	"echo/streamserver/plugins/streamReply", "echo/streamserver/plugins/submitReply",
-	"echo/streamserver/plugins/textCounter", "echo/streamserver/plugins/tweet-display"
+	"echo/streamserver/plugins/textCounter", "echo/streamserver/plugins/tweet-display",
+	"echo/streamserver/apps/item"
 ];
 paths[Echo.Loader.getURL("") + "/pinboard-visualization"] = [
 	"echo/streamserver/plugins/pinboardVisualization", "echo/streamserver/plugins/mediaGallery",
