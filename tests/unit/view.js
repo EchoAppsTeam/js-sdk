@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/view"
+], function($, View) {
+
+"use strict";
 
 Echo.Tests.module("Echo.View", {
 	"meta": {
@@ -16,7 +21,7 @@ Echo.Tests.module("Echo.View", {
 
 Echo.Tests.test("public interface", function() {
 	// simple rendering
-	var view = new Echo.View({"cssPrefix": "echo-"});
+	var view = new View({"cssPrefix": "echo-"});
 
 	QUnit.ok(!view.rendered(), "Checking if the \"rendered\" function detects that the view was not rendered yet");
 
@@ -62,7 +67,7 @@ Echo.Tests.test("public interface", function() {
 });
 
 Echo.Tests.test("rendering with partial or incorrect config", function() {
-	var view = new Echo.View();
+	var view = new View();
 	QUnit.ok(!!view, "Checking if the Echo.View class can be instantiated with no config");
 	var result = view.render();
 	QUnit.ok(!result, "Checking if the \"render\" call with no arguments doesn't throw an exception and returns 'false'");
@@ -75,7 +80,7 @@ Echo.Tests.test("rendering with partial or incorrect config", function() {
 		"Checking if the \"render\" call returns \"undefined\" of whitespaces only");
 
 	// simple template rendering with no cssPrefix defined
-	var view = new Echo.View();
+	var view = new View();
 	view.render({
 		"template": templates.simple
 	});
@@ -88,7 +93,7 @@ Echo.Tests.test("rendering with partial or incorrect config", function() {
 		"[no cssPrefix] Checking if the {data:KEY} pattern is replaced with the empty string in case no data is available");
 
 	// rendering of the template with incorrect placeholders
-	var view = new Echo.View({"cssPrefix": "echo-"});
+	var view = new View({"cssPrefix": "echo-"});
 	var dom = view.render({
 		"template": templates.incorrect
 	});
@@ -117,7 +122,7 @@ Echo.Tests.test("different ways of specifying renderers", function() {
 			prefix + " Checking if the 'header' renderer was applied once again after 'header' element cleanup");
 	};
 
-	var view = new Echo.View({
+	var view = new View({
 		"cssPrefix": "echo-",
 		"renderers": renderers
 	});
@@ -126,7 +131,7 @@ Echo.Tests.test("different ways of specifying renderers", function() {
 	});
 	checks("[via object in config]");
 
-	var view = new Echo.View({"cssPrefix": "echo-"});
+	var view = new View({"cssPrefix": "echo-"});
 	view.render({
 		"template": templates.simple,
 		"renderers": renderers
@@ -134,7 +139,7 @@ Echo.Tests.test("different ways of specifying renderers", function() {
 	checks("[in 'render' call]");
 
 	// same set of renderers applied via "renderer" function in config
-	var view = new Echo.View({
+	var view = new View({
 		"cssPrefix": "echo-",
 		"renderer": function(args) {
 			if (renderers[args.name]) {
@@ -150,7 +155,7 @@ Echo.Tests.test("different ways of specifying renderers", function() {
 });
 
 Echo.Tests.test("custom substitutions", function() {
-	var view = new Echo.View({
+	var view = new View({
 		"cssPrefix": "echo-",
 		"substitutions": {
 			"tag": function(key) {
@@ -176,7 +181,7 @@ Echo.Tests.test("custom substitutions", function() {
 });
 
 Echo.Tests.test("working with forked view", function() {
-	var view = new Echo.View({
+	var view = new View({
 		"cssPrefix": "echo-",
 		"renderers": renderers
 	});
@@ -264,4 +269,4 @@ var renderers = {
 	}
 };
 
-})(Echo.jQuery);
+});

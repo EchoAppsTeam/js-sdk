@@ -1,5 +1,9 @@
-(function(jQuery) {
-var $ = jQuery;
+Echo.require([
+	"jquery",
+	"echo/app",
+	"echo/utils",
+	"echo/events"
+], function($, App, Utils, Events) {
 
 "use strict";
 
@@ -23,7 +27,7 @@ Echo.Tests.module("Echo.Loader", {
 });
 
 Echo.Tests.test("URL conversion", function() {
-	var cdnBaseURL = Echo.Loader.config.cdnBaseURL;
+	var cdnBaseURL = Echo.Loader.cdnBaseURL;
 	var version = Echo.Loader.version;
 	var debug = Echo.Loader.debug;
 	function checkURLs(urls) {
@@ -77,24 +81,24 @@ Echo.Tests.test("URL conversion", function() {
 	);
 	Echo.Loader.debug = debug;
 });
-
+/*
 Echo.Tests.asyncTest("resource downloading", function() {
 	var base = Echo.Tests.baseURL + "fixtures/resources/loader/";
 	var emptyResourceArray = function(callback) {
-		Echo.Loader.download([], function() {
+		Echo.require([], function() {
 			QUnit.ok(true, "Checking if the callback is fired even if the list of the scripts to load is empty (empty array)");
 			callback();
 		});
 	};
 	var missingResourceArray = function(callback) {
-		Echo.Loader.download(undefined, function() {
+		Echo.require(undefined, function() {
 			QUnit.ok(true, "Checking if the callback is fired even if the scripts list is undefined");
 			callback();
 		});
 	};
 	var callbackCheck = function(callback) {
 		try {
-			Echo.Loader.download([]);
+			Echo.require([]);
 			QUnit.ok(true, "Checking if the callback is an optional parameter (no JS error expected)");
 		} catch(e) {
 			QUnit.ok(false, "Received JS error when trying to launch \"download\" function without a \"callback\" function");
@@ -102,11 +106,10 @@ Echo.Tests.asyncTest("resource downloading", function() {
 		callback();
 	};
 	var nonExistingScripts = function(callback) {
-		Echo.Loader.download([{
-			"url": base + "non-existing-folder/1.js"
-		}, {
-			"url": base + "nonexisting-file.js"
-		}], function() {
+		Echo.require([
+			base + "non-existing-folder/1.js",
+			base + "nonexisting-file.js"
+		], function() {
 			QUnit.ok(true, "Checking if the callback is executed when non-existing scripts were passed as a function arguments");
 			callback();
 		}, {
@@ -114,24 +117,21 @@ Echo.Tests.asyncTest("resource downloading", function() {
 		});
 	};
 	var alreadyDownloadedScripts = function(callback) {
-		Echo.Loader.download([{
-			"url": "events.js"
-		}, {
-			"url": "labels.js",
-			"loaded": function() { return !!Echo.Labels; }
-		}, {
-			"url": "plugin.js"
-		}], function() {
-			QUnit.ok(true, "Checking if the callback is executed when the scripts loaded previously are loaded again");
+		Echo.require([
+			"echo/events",
+			"echo/labels"
+		], function(Events, Labels) { 
+			QUnit.ok(!!Events, "Checking if the callback is executed when the scripts loaded previously are loaded again");
+			QUnit.ok(!!Labels, "Checking if the callback is executed when the scripts loaded previously are loaded again");
 			callback();
 		});
 	};
 	var equalUrlsPerSingleCall = function(callback) {
-		Echo.Loader.download([
-			{"url": base + "dup1.js"},
-			{"url": base + "dup1.js"},
-			{"url": base + "dup1.css"},
-			{"url": base + "dup1.css"}
+		Echo.require([
+		base + "dup1",
+		base + "dup1",
+		"css!" + base + "dup1.css",
+		"css!" + base + "dup1.css"
 		], function() {
 			QUnit.ok(!!Echo.Tests.Fixtures.loader.duplicate1, "Checking if the callback is executed when equal URLs of js/css was loaded per single call");
 			callback();
@@ -217,7 +217,7 @@ Echo.Tests.asyncTest("resource downloading", function() {
 		}];
 		var count = 0;
 		var check = function() {
-			return Echo.App.isDefined("Echo.Tests.Apps.TestMultipleDownloads");
+			return App.isDefined("Echo.Tests.Apps.TestMultipleDownloads");
 		};
 		var maybeExecuteCallback = function() {
 			if (++count === 3) callback();
@@ -242,7 +242,7 @@ Echo.Tests.asyncTest("resource downloading", function() {
 	};
 
 	QUnit.expect(14);
-	Echo.Utils.sequentialCall([
+	Utils.sequentialCall([
 		emptyResourceArray,
 		missingResourceArray,
 		callbackCheck,
@@ -325,7 +325,7 @@ Echo.Tests.asyncTest("yepnope corner cases", function() {
 		});
 	});
 	QUnit.expect(4);
-	Echo.Utils.sequentialCall([
+	Utils.sequentialCall([
 		raceConditions,
 		removingFirstNode
 	], function() {
@@ -334,21 +334,38 @@ Echo.Tests.asyncTest("yepnope corner cases", function() {
 }, {
 	"timeout": 20000
 });
-
+*/
 Echo.Tests.asyncTest("environment initialization", function() {
 	var emptyCallback = function(callback) {
-		try {
-			Echo.Loader.initEnvironment();
+		Echo.require([
+			"jquery",
+			"echo/events",
+			"echo/utils",
+			"echo/labels",
+			"echo/configuration",
+			"echo/api",
+			"echo/streamserver/api",
+			"echo/identityserver/api",
+			"echo/user-session",
+			"echo/view",
+			"echo/app",
+			"echo/plugin",
+			"echo/backplane"
+		], function() {
+			for(var arg in arguments) {
+				if(!arguments[arg]) {			
+					QUnit.ok(false, "Calling 'initEnvironment' with no callback produced JS error...");
+					return;
+				}
+			}
 			QUnit.ok(true, "Checking if the 'callback' param is optional (no errors produced)");
-		} catch(e) {
-			QUnit.ok(false, "Calling 'initEnvironment' with no callback produced JS error...");
-		}
-		callback();
+			callback();
+		});
 	};
 	var environmentCheck = function(callback) {
 		Echo.Loader.initEnvironment(function() {
 			QUnit.ok(true, "Checking if the callback is being fired as soon as the environment is ready.");
-			QUnit.ok(!!window.Backplane && !!Echo.App && Echo.jQuery,
+			QUnit.ok(!!window.Backplane && !!App && $,
 				"Checking if the callback is being fired as soon as the environment is ready.");
 			var state = $.extend(true, {}, Echo.Loader.vars.state);
 			Echo.Loader.initEnvironment();
@@ -358,14 +375,14 @@ Echo.Tests.asyncTest("environment initialization", function() {
 		});
 	};
 	QUnit.expect(4);
-	Echo.Utils.sequentialCall([
+	Utils.sequentialCall([
 		emptyCallback,
 		environmentCheck
 	], function() {
 		QUnit.start();
 	});
 });
-
+/*
 Echo.Tests.asyncTest("application initialization", function() {
 	var initCounterApplication = function(callback) {
 		$("qunit-fixture").empty();
@@ -396,7 +413,7 @@ Echo.Tests.asyncTest("application initialization", function() {
 		});
 		// initApplication pushes data to canvases object so let's use it
 		var canvas = Echo.Loader.canvases.pop();
-		Echo.Events.subscribe({
+		Events.subscribe({
 			"topic": "Echo.Canvas.onReady",
 			"context": canvas.config.get("context"),
 			"once": true,
@@ -407,7 +424,7 @@ Echo.Tests.asyncTest("application initialization", function() {
 		});
 	};
 	QUnit.expect(2);
-	Echo.Utils.sequentialCall([
+	Utils.sequentialCall([
 		initCounterApplication,
 		initForeignApplication
 	], function() {
@@ -475,7 +492,7 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 	});
 
 	QUnit.expect(4);
-	Echo.Utils.sequentialCall([
+	Utils.sequentialCall([
 		defaultInit,
 		nativeElements,
 		nativeSingleElement,
@@ -539,12 +556,12 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 			"invalid": 8
 		};
 		// check invalid canvases
-		var handlerId = Echo.Events.subscribe({
+		var handlerId = Events.subscribe({
 			"topic": "Echo.Canvas.onError",
 			"handler": function(topic, args) {
 				count.invalid--;
 				if (!count.invalid) {
-					Echo.Events.unsubscribe({"handlerId": handlerId});
+					Events.unsubscribe({"handlerId": handlerId});
 					QUnit.ok(true, "[valid and invalid canvases] Checking the number of invalid canvases");
 					if (!count.valid) callback();
 				}
@@ -576,13 +593,13 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 			"canvas_already_initialized": [0, 3]
 		};
 		// check invalid canvases
-		var handlerId = Echo.Events.subscribe({
+		var handlerId = Events.subscribe({
 			"topic": "Echo.Canvas.onError",
 			"handler": function(topic, args) {
 				count.invalid--;
 				errors[args.code][0]++;
 				if (!count.invalid) {
-					Echo.Events.unsubscribe({"handlerId": handlerId});
+					Events.unsubscribe({"handlerId": handlerId});
 					QUnit.ok(_eventsCountCheck(errors), "[double initialization prevention] Checking if the Loader indicated multiple initialization attempts");
 					if (!count.valid) callback();
 				}
@@ -625,13 +642,13 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		};
 
 		// check multiple initialization
-		var handlerId = Echo.Events.subscribe({
+		var handlerId = Events.subscribe({
 			"topic": "Echo.Canvas.onError",
 			"handler": function(topic, args) {
 				count.invalid--;
 				errors[args.code][0]++;
 				if (!count.invalid) {
-					Echo.Events.unsubscribe({"handlerId": handlerId});
+					Events.unsubscribe({"handlerId": handlerId});
 					QUnit.ok(_eventsCountCheck(errors), "[different initialization schemas] Checking if the Loader indicated multiple initialization attmpts");
 					if (!count.valid) callback();
 				}
@@ -707,7 +724,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 			"js-sdk-tests/test-canvas-008#bar"
 		];
 		var count = ids.length;
-		Echo.jQuery.map(ids, function(canvasId) {
+		$.map(ids, function(canvasId) {
 			Echo.Loader.override(canvasId, "auth", {
 				"canvasId": canvasId,
 				"ready": function() {
@@ -754,10 +771,10 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		var inCache = function(hash) {
 			return ((id + "#" + hash) in Echo.Loader.canvasesConfigById);
 		};
-		var deferred = Echo.Utils.foldl([], ["#foo", "#bar"], function(extra, acc) {
+		var deferred = Utils.foldl([], ["#foo", "#bar"], function(extra, acc) {
 			body.append('<div class="echo-canvas" data-canvas-id="' + id + extra + '"></div>');
 			$.map(["stream", "submit"], function(app) {
-				var def = Echo.jQuery.Deferred();
+				var def = $.Deferred();
 				Echo.Loader.override(id + extra, app, {
 					"ready": function() {
 						def.resolve();
@@ -766,19 +783,19 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 				acc.push(def);
 			});
 		});
-		Echo.jQuery.when.apply(Echo.jQuery, deferred).done(function() {
+		$.when.apply($, deferred).done(function() {
 			var canvases = Echo.Loader.canvases;
 			QUnit.ok(inCache("foo") && inCache("bar"), "Checking that canvas config stored to the cache");
-			var handlerId = Echo.Events.subscribe({
+			var handlerId = Events.subscribe({
 				"topic": "Echo.Canvas.onRefresh",
 				"handler": function() {
 					QUnit.ok(inCache("foo") && inCache("bar"), "Checking that canvas config cache includes both instances");
 					canvases[0].destroy();
 					QUnit.ok(!inCache("foo") && inCache("bar"), "Checking that canvas config was removed from the cache after destroy the canvas");
 					canvases[1].destroy();
-					QUnit.ok(Echo.jQuery.isEmptyObject(Echo.Loader.canvasesConfigById), "Checking that cache is empty after destroy all canvases");
+					QUnit.ok($.isEmptyObject(Echo.Loader.canvasesConfigById), "Checking that cache is empty after destroy all canvases");
 					callback();
-					Echo.Events.unsubscribe({"handlerId": handlerId});
+					Events.unsubscribe({"handlerId": handlerId});
 				}
 			});
 			canvases[0].refresh();
@@ -796,13 +813,13 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		clearCanvasConfigOnDestroy
 	];
 	QUnit.expect(19);
-	Echo.Utils.sequentialCall(tests, function() {
+	Utils.sequentialCall(tests, function() {
 		QUnit.start();
 	});
 }, {
 	"timeout": 20000
 });
-
+*/
 /*
  * TODO fix relative URLs in tests/unit/loader/canvases/test.canvas.007.json
  * TODO: update it to new test infrastructure
@@ -840,4 +857,4 @@ suite.prototype.tests.canvasesScriptsLoadingTest = {
 };
 */
 
-})(Echo.jQuery);
+});

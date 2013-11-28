@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/gui",
+	"echo/gui/tabs"
+], function($, GUI) {
+
+"use strict";
 
 Echo.Tests.module("Echo.GUI.Tabs", {
 	"meta": {
@@ -36,7 +42,7 @@ Echo.Tests.test("common workflow", function() {
 
 	QUnit.expect(26);
 
-	var tabs = new Echo.GUI.Tabs(config);
+	var tabs = new GUI.Tabs(config);
 
 	QUnit.ok($(".tab-content", element).length, "Check that panels container created");
 	QUnit.ok($(".tab-content", element).hasClass(config.classPrefix + "panels"), "Check that panels container has appropriate class");
@@ -128,4 +134,4 @@ Echo.Tests.test("common workflow", function() {
 	QUnit.ok(element.is(":empty"), "Check destroy() method");
 });
 
-})(Echo.jQuery);
+});

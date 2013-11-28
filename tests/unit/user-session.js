@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/user-session",
+	"echo/utils"
+], function($, UserSession, Utils) {
+
+"use strict";
 
 Echo.Tests.module("Echo.UserSession", {
 	"meta": {
@@ -30,7 +36,7 @@ Echo.Tests.module("Echo.UserSession", {
 });
 
 Echo.Tests.asyncTest("logged in checks", function() {
-	Echo.UserSession({
+	UserSession({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
 			var user = this;
@@ -76,7 +82,7 @@ Echo.Tests.asyncTest("logged in checks", function() {
 });
 
 Echo.Tests.asyncTest("anonymous checks", function() {
-	Echo.UserSession({
+	UserSession({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
 			var user = this;
@@ -103,7 +109,7 @@ Echo.Tests.asyncTest("anonymous checks", function() {
 
 Echo.Tests.asyncTest("backplane corner cases", function() {
 	var initUser = function(callback) {
-		Echo.UserSession({
+		UserSession({
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"ready": callback
 		});
@@ -124,14 +130,14 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 	};
 	var parallelCalls = function(done) {
 		// we need to simulate a latency so we can start parallel initialisation
-		var init = $.proxy(Echo.UserSession._whoamiRequest, Echo.UserSession);
-		sinon.stub(Echo.UserSession, "_whoamiRequest", function(args) {
+		var init = $.proxy(UserSession._whoamiRequest, UserSession);
+		sinon.stub(UserSession, "_whoamiRequest", function(args) {
 			setTimeout(function() { init(args); }, 500);
 		});
 
 		resetUserSession();
 
-		Echo.Utils.parallelCall([function(callback) {
+		Utils.parallelCall([function(callback) {
 			Backplane.initialized = false;
 			initUser(function() {
 				QUnit.ok(!this.is("logged"),
@@ -140,26 +146,26 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 			});
 		}, function(callback) {
 			Backplane.initialized = true;
-			QUnit.equal(Echo.UserSession.state, "ready", "Check if user state is \"ready\"");
+			QUnit.equal(UserSession.state, "ready", "Check if user state is \"ready\"");
 			initUser(function() {
 				QUnit.ok(this.is("logged"), "Check if user is logged when previous user state was \"ready\"");
 				callback();
 			});
 		}, function(callback) {
 			Backplane.initialized = true;
-			QUnit.equal(Echo.UserSession.state, "waiting", "Check if user state is \"waiting\"");
+			QUnit.equal(UserSession.state, "waiting", "Check if user state is \"waiting\"");
 			initUser(function() {
 				QUnit.ok(this.is("logged"), "Check if user is logged when previous user state was \"waiting\"");
 				callback();
 			});
 		}], function() {
-			Echo.UserSession._whoamiRequest.restore();
+			UserSession._whoamiRequest.restore();
 			done();
 		});
 	};
 
 	QUnit.expect(7);
-	Echo.Utils.sequentialCall([
+	Utils.sequentialCall([
 		sequentialCalls,
 		parallelCalls
 	], function() {
@@ -172,7 +178,7 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 
 // FIXME: test is disabled because it doesn't really test anything at the moment
 Echo.Tests._asyncTest("error handling", function() {
-	Echo.UserSession({
+	UserSession({
 		"ready": function() {
 			var user = this;
 			QUnit.ok(true, "The \"ready\" callback is executed even when the appkey is missing");
@@ -184,7 +190,7 @@ Echo.Tests._asyncTest("error handling", function() {
 	});
 
 	resetUserSession();
-	Echo.UserSession({
+	UserSession({
 		"appkey": "invalid.appkey.sdk.test",
 		"ready": function() {
 			QUnit.ok(
@@ -196,7 +202,7 @@ Echo.Tests._asyncTest("error handling", function() {
 
 	Backplane.initialized = false;
 	resetUserSession();
-	Echo.UserSession({
+	UserSession({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
 			QUnit.ok(
@@ -212,8 +218,8 @@ Echo.Tests._asyncTest("error handling", function() {
 function resetUserSession() {
 	// force Echo.UserSession to re-initialize itself completely
 	// during the next Echo.UserSession object initialization
-	Echo.UserSession.state = undefined;
-	Echo.UserSession._sessionID = undefined;
+	UserSession.state = undefined;
+	UserSession._sessionID = undefined;
 }
 
 function checkBasicOperations(user) {
@@ -274,4 +280,4 @@ function checkBasicOperations(user) {
 		"Checking delegation using user.has(\"identity\", \"...\") function");
 }
 
-})(Echo.jQuery);
+});

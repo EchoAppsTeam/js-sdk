@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/apps/stream",
+	"echo/streamserver/plugins/infiniteScroll"
+], function($, Stream) {
+
+"use strict";
 
 var plugin = "Echo.StreamServer.Apps.Stream.Plugins.InfiniteScroll";
 
@@ -13,7 +19,7 @@ Echo.Tests.module(plugin, {
 
 Echo.Tests.asyncTest("common workflow", function() {
 	var target = $("#qunit-fixture");
-	new Echo.StreamServer.Apps.Stream({
+	new Stream({
 		"target": target,
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"query": "childrenof:http://example.com/js-sdk/ itemsPerPage:1",
@@ -54,4 +60,4 @@ Echo.Tests.asyncTest("common workflow", function() {
 	});
 });
 
-})(Echo.jQuery);
+});

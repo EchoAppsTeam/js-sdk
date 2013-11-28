@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/apps/facePile",
+	"echo/streamserver/api"
+], function($, FacePile, API) {
+
+"use strict";
 
 var data = {
 	"instance" : {
@@ -48,7 +54,7 @@ suite.prototype.tests.staticWorkflow = {
 				}
 			});
 		}
-		new Echo.StreamServer.Apps.FacePile({
+		new FacePile({
 			"initialUsersCount" : 5,
 			"suffixText" : " commented on aboutecho.com",
 			"target" : this.config.target,
@@ -117,7 +123,7 @@ suite.prototype.tests.dynamicWorkflow = {
 	},
 	"check" : function() {
 		var self = this;
-		new Echo.StreamServer.Apps.FacePile({
+		new FacePile({
 			"suffixText" : " commented on facepile test page",
 			"target" : this.config.target,
 			"appkey" : this.config.appkey,
@@ -193,7 +199,7 @@ suite.prototype.cases.dynamicIsYou = function(callback) {
 			callback();
 		}
 	});
-	Echo.StreamServer.API.request({
+	API.request({
 		"endpoint": "submit",
 		"data": entry,
 		"onData": function() {
@@ -226,7 +232,7 @@ suite.prototype.cases.onlyNames = function(callback) {
 
 suite.prototype._checkActorsView = function(item, callback) {
 	var cfg = this.config;
-	new Echo.StreamServer.Apps.FacePile({
+	new FacePile({
 		"target" : cfg.target,
 		"appkey" : cfg.appkey,
 		"query"  : "scope:" + cfg.dataBaseLocation + "tests/facepile",
@@ -247,4 +253,4 @@ suite.prototype._checkActorsView = function(item, callback) {
 	});
 };
 
-})(Echo.jQuery);
+});

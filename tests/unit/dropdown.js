@@ -1,6 +1,7 @@
 Echo.require([
 	"jquery",
-	"echo/gui"
+	"echo/gui",
+	"echo/gui/dropdown"
 ], function($, GUI) {
 
 "use strict";

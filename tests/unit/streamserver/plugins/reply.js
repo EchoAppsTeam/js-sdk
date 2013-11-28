@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/plugins/reply"
+], function($) {
+
+"use strict";
 
 var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.Reply";
 
@@ -18,4 +23,4 @@ Echo.Tests.pluginRenderersTest(plugin, {
 	}
 });
 
-})(Echo.jQuery);
+});

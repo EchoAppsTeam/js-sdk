@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/plugins/communityFlag"
+], function($) {
+
+"use strict";
 
 var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.CommunityFlag";
 
@@ -15,4 +20,4 @@ Echo.Tests.pluginRenderersTest(plugin, {
 	}
 });
 
-})(Echo.jQuery);
+});

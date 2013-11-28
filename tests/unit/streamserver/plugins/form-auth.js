@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/plugins/formAuth"
+], function($) {
+
+"use strict";
 
 var plugin = "Echo.StreamServer.Apps.Submit.Plugins.FormAuth";
 
@@ -24,4 +29,4 @@ Echo.Tests.pluginRenderersTest(plugin, {
 	}
 });
 
-})(Echo.jQuery);
+});

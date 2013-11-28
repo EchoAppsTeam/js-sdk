@@ -1,5 +1,12 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/apps/stream",
+	"echo/utils",
+	"echo/streamserver/api",
+	"echo/api"
+], function($, Stream, Utils, StreamServerAPI, API) {
 
+"use strict";
 
 Echo.Tests.module("Echo.StreamServer.Apps.Stream", {
 	"meta": {
@@ -43,9 +50,9 @@ Echo.Tests.asyncTest("more button", function() {
 		}
 	}];
 
-	Echo.Utils.sequentialCall($.map(cases, function(test) {
+	Utils.sequentialCall($.map(cases, function(test) {
 		return function(callback) {
-			new Echo.StreamServer.Apps.Stream({
+			new Stream({
 				"target": $("#qunit-fixture"),
 				"appkey": "echo.jssdk.tests.aboutecho.com",
 				"query": test.query || "childrenof:http://example.com/sdk/stream/more-button itemsPerPage:" + test.itemsPerPage,
@@ -96,7 +103,7 @@ suite.prototype.tests.commonWorkflow = {
 	},
 	"check": function() {
 		var self = this;
-		new Echo.StreamServer.Apps.Stream({
+		new Stream({
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"liveUpdates": {
@@ -132,7 +139,7 @@ suite.prototype.tests.asyncRenderers = {
 	},
 	"check": function() {
 		var self = this;
-		new Echo.StreamServer.Apps.Stream({
+		new Stream({
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"liveUpdates": {
@@ -186,7 +193,7 @@ suite.prototype.cases.addRootItem = function(callback) {
 		}
 	});
 	stream.setState("paused");
-	var request = Echo.StreamServer.API.request({
+	var request = StreamServerAPI.request({
 		"endpoint": "submit",
 		"data": entry
 	});
@@ -260,7 +267,7 @@ suite.prototype.cases.queueActivityTesting = function(callback) {
 			callback();
 		}
 	});
-	Echo.StreamServer.API.request({
+	StreamServerAPI.request({
 		"endpoint": "submit",
 		"data": this._preparePostEntry({
 			"username": "another.john.doe",
@@ -295,7 +302,7 @@ suite.prototype.cases.addChildItem = function(callback) {
 			callback();
 		}
 	});
-	var request = new Echo.StreamServer.API.request({
+	var request = new StreamServerAPI.request({
 		"endpoint": "submit",
 		"data": entry
 	});
@@ -358,7 +365,7 @@ suite.prototype.cases.asyncItemsAndLiveUpdate = function(callback) {
 			stream.view.render({"name": "body"});
 		}
 	});
-	var request = Echo.StreamServer.API.request({
+	var request = StreamServerAPI.request({
 		"endpoint": "submit",
 		"data": entry
 	});
@@ -367,7 +374,7 @@ suite.prototype.cases.asyncItemsAndLiveUpdate = function(callback) {
 
 suite.prototype.cases.liveUpdateEmptyStream = function(callback) {
 	var stream = suite.stream;
-	var newTarget = this.config.dataBaseLocation + Echo.Utils.getUniqueString();
+	var newTarget = this.config.dataBaseLocation + Utils.getUniqueString();
 	var entry = this._preparePostEntry({
 		"username": "john.doe",
 		"content": "TestContent",
@@ -380,7 +387,7 @@ suite.prototype.cases.liveUpdateEmptyStream = function(callback) {
 		"once": true,
 		"handler": function() {
 			QUnit.ok(stream.threads.length === 0, "Check if Stream is empty");
-			var request = Echo.StreamServer.API.request({
+			var request = StreamServerAPI.request({
 				"endpoint": "submit",
 				"data": entry
 			});
@@ -422,7 +429,7 @@ suite.prototype.cases.moreButton = function(callback) {
 };
 
 suite.prototype.cases.predefinedData = function(callback) {
-	new Echo.StreamServer.Apps.Stream({
+	new Stream({
 		"target": $(document.getElementById("qunit-fixture")).empty(),
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"liveUpdates": {
@@ -509,7 +516,7 @@ suite.prototype.cases.predefinedData = function(callback) {
 			},
 		"ready": function() {
 			var self = this;
-			QUnit.ok(this.request instanceof Echo.API.Request, "Check that stream initializing with the pre-defined data inits a request object as well");
+			QUnit.ok(this.request instanceof API.Request, "Check that stream initializing with the pre-defined data inits a request object as well");
 			QUnit.strictEqual(this.request.config.get("liveUpdates.enabled"), this.config.get("liveUpdates.enabled"), "Check that stream initializing with the pre-defined data inits a request object with the proper options");
 			callback();
 		}
@@ -544,7 +551,7 @@ suite.prototype._preparePostEntry = function(params) {
 };
 
 Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Stream", function(config) {
-	return new Echo.StreamServer.Apps.Stream($.extend({
+	return new Stream($.extend({
 		"target": $(document.getElementById("qunit-fixture")).empty(),
 		"liveUpdates": {
 			"enabled": false
@@ -554,4 +561,4 @@ Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Stream", function(
 	}, config));
 });
 
-})(Echo.jQuery);
+});

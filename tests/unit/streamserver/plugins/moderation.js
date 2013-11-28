@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/plugins/moderation"
+], function($) {
+
+"use strict";
 
 var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation";
 
@@ -15,4 +20,4 @@ Echo.Tests.pluginRenderersTest(plugin, {
 	}
 });
 
-})(Echo.jQuery);
+});

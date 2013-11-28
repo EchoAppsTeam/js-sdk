@@ -1,4 +1,9 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/apps/submit"
+], function($, Submit) {
+
+"use strict";
 
 var data = {
 	"instance": {
@@ -34,7 +39,7 @@ suite.prototype.tests.anonymousWorkflow = {
 	},
 	"check": function() {
 		var self = this;
-		new Echo.StreamServer.Apps.Submit({
+		new Submit({
 			"target": this.config.target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"ready": function() {
@@ -58,7 +63,7 @@ suite.prototype.tests.loggedUserWorkflow = {
 	},
 	"check": function() {
 		var self = this;
-		new Echo.StreamServer.Apps.Submit({
+		new Submit({
 			"target": this.config.target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
@@ -83,7 +88,7 @@ suite.prototype.tests.eventSubscriptions = {
 	},
 	"check": function() {
 		var self = this;
-		new Echo.StreamServer.Apps.Submit({
+		new Submit({
 			"target": this.config.target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
@@ -106,7 +111,7 @@ suite.prototype.tests.testMethods = {
 		"async": true
 	},
 	"check": function() {
-		new Echo.StreamServer.Apps.Submit({
+		new Submit({
 			"target": this.config.target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"targetURL": "http://example.com/",
@@ -168,7 +173,7 @@ suite.prototype.cases.content = function(callback) {
 };
 
 suite.prototype.cases.markersAndTags = function(callback) {
-	new Echo.StreamServer.Apps.Submit({
+	new Submit({
 		"target": this.config.target,
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
@@ -357,7 +362,7 @@ suite.prototype.cases.destroy = function(callback) {
 };
 
 Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Submit", function(config) {
-	return new Echo.StreamServer.Apps.Submit($.extend({
+	return new Submit($.extend({
 		"target": config.target,
 		"appkey": config.appkey,
 		"targetURL": config.dataBaseLocation
@@ -369,4 +374,4 @@ Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Submit", function(
 //
 //};
 
-})(Echo.jQuery);
+});

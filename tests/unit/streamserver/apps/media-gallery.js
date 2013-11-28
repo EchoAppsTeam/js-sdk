@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/apps/item",
+		"echo/streamserver/plugins/mediaGallery"
+], function($, Item) {
+
+"use strict";
 
 var data = {
 	"instance": {
@@ -49,7 +55,7 @@ suite.prototype.tests.commonWorkflow = {
 			});
 			return isActive;
 		};
-		new Echo.StreamServer.Apps.Stream.Item.MediaGallery({
+		new Item.MediaGallery({
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"elements": elements,
@@ -116,4 +122,4 @@ suite.prototype.cases.destroy = function(callback) {
 	callback && callback();
 };
 
-})(Echo.jQuery);
+});

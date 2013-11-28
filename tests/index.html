@@ -9,158 +9,28 @@
 		#qunit-header, #qunit-tests > li:last-child { border-radius:0; }
 	</style>
 	<link href="{%=baseURLs.sdk%}/gui.pack.css" rel="stylesheet" type="text/css" />
-	<!--script type="text/javascript" src="{%=baseURLs.sdk%}/backplane.js"></script-->
 	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
-	<!--script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/environment.pack.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver.pack.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver/plugins/pinboard-visualization.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/identityserver.pack.js"></script>
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/gui.pack.js"></script-->
-	<!--script type="text/javascript" src="{%=baseURLs.sdk%}/tests/harness.js"></script-->
-	<!--script type="text/javascript" src="{%=baseURLs.sdk%}/tests/harness/suite.js"></script-->
-	<!--script type="text/javascript" src="fixtures/vars.js"></script-->
-	<!--script type="text/javascript" src="fixtures/api/count.js"></script>
-	<script type="text/javascript" src="fixtures/api/search.js"></script>
-	<script type="text/javascript" src="fixtures/api/whoami.js"></script>
-	<script type="text/javascript" src="fixtures/canvases/test.canvas.001.js"></script>
-	<script type="text/javascript" src="fixtures/canvases/test.canvas.002.x.js"></script>
-	<script type="text/javascript" src="fixtures/canvases/test.canvas.003.js"></script>
-	<script type="text/javascript" src="fixtures/canvases/test.canvas.004.js"></script>
-	<script type="text/javascript" src="fixtures/canvases/test.canvas.005.js"></script>
-	<script type="text/javascript" src="fixtures/canvases/test.canvas.006.js"></script>
-	<script type="text/javascript" src="fixtures/canvases/test.canvas.007.js"></script>
-	<script type="text/javascript" src="fixtures/canvases/test.canvas.008.js"></script>
-	<script type="text/javascript" src="config.js"></script>
-	<script type="text/javascript" src="helpers/events.js"></script>
-	<script type="text/javascript" src="unit/compatibility.js"></script>
-	<script type="text/javascript" src="unit/events.js"></script>
-	<script type="text/javascript" src="unit/labels.js"></script>
-	<script type="text/javascript" src="unit/gui.js"></script>
-	<script type="text/javascript" src="unit/button.js"></script>
-	<script type="text/javascript" src="unit/dropdown.js"></script>
-	<script type="text/javascript" src="unit/modal.js"></script>
-	<script type="text/javascript" src="unit/tabs.js"></script>
-	<script type="text/javascript" src="unit/cookie.js"></script>
-	<script type="text/javascript" src="unit/configuration.js"></script>
-	<script type="text/javascript" src="unit/utils.js"></script>
-	<script type="text/javascript" src="unit/user-session.js"></script>
-	<script type="text/javascript" src="unit/api.js"></script>
-	<script type="text/javascript" src="unit/streamserver/api.js"></script>
-	<script type="text/javascript" src="unit/identityserver/api.js"></script>
-	<script type="text/javascript" src="unit/app.js"></script>
-	<script type="text/javascript" src="unit/plugin.js"></script>
-	<script type="text/javascript" src="unit/view.js"></script>
-	<script type="text/javascript" src="unit/loader.js"></script>
-	<script type="text/javascript" src="unit/canvas.js"></script>
-	<script type="text/javascript" src="unit/streamserver/apps/counter.js"></script>
-	<script type="text/javascript" src="unit/streamserver/apps/submit.js"></script>
-	<script type="text/javascript" src="unit/streamserver/apps/facepile.js"></script>
-	<script type="text/javascript" src="unit/streamserver/apps/facepile-item.js"></script>
-	<script type="text/javascript" src="unit/streamserver/apps/stream.js"></script>
-	<script type="text/javascript" src="unit/streamserver/apps/stream-item.js"></script>
-	<script type="text/javascript" src="unit/streamserver/apps/media-gallery.js"></script>
-	<script type="text/javascript" src="unit/streamserver/plugins/edit.js"></script>
-	<script type="text/javascript" src="unit/streamserver/plugins/reply.js"></script>
-	<script type="text/javascript" src="unit/streamserver/plugins/item-accumulator-display.js"></script>
-	<script type="text/javascript" src="unit/streamserver/plugins/pinboard-visualization.js"></script>
-	<script type="text/javascript" src="unit/streamserver/plugins/form-auth.js"></script>
-	<script type="text/javascript" src="unit/streamserver/plugins/text-counter.js"></script>
-	<script type="text/javascript" src="unit/streamserver/plugins/community-flag.js"></script>
-	<script type="text/javascript" src="unit/streamserver/plugins/moderation.js"></script>
-	<script type="text/javascript" src="unit/streamserver/plugins/tweet-display.js"></script>
-	<script type="text/javascript" src="unit/streamserver/plugins/infinite-scroll.js"></script>
-	<script type="text/javascript" src="unit/identityserver/apps/auth.js"></script>-->
-
 	<script type="text/javascript">
 		//TODO: this is a temporal decision just to run tests. It must be rewrote asap
 		Echo.require([
 			"jquery",
 			"echo/api",
 			"echo/app",
-			"echo/configuration",
-			"cookie",
 			"echo/events",
-			"echo/gui",
-			"echo/labels",
-			"echo/plugin",
 			"echo/user-session",
 			"echo/utils",
-			"echo/view",
-			"echo/streamserver/api",
-			"echo/streamserver/apps/counter",
-			"echo/streamserver/apps/facePile",
-			"echo/streamserver/apps/stream",
-			"echo/streamserver/apps/submit",
-			"echo/identityserver/apps/auth",
-			"echo/identityserver/plugins/janrainConnector",
-			"echo/identityserver/api",
-			"echo/gui/modal",
-			"echo/gui/dropdown",
-			"echo/gui/tabs",
-			"echo/gui/button",
-			"echo/streamserver/plugins/edit",
-			"echo/streamserver/plugins/reply",
-			"echo/streamserver/plugins/itemAccumulatorDisplay",
-			"echo/streamserver/plugins/pinboardVisualization",
-			"echo/streamserver/plugins/formAuth",
-			"echo/streamserver/plugins/textCounter",
-			"echo/streamserver/plugins/communityFlag",
-			"echo/streamserver/plugins/moderation",
-			"echo/streamserver/plugins/tweet-display",
-			"echo/streamserver/plugins/infiniteScroll",
 			"QUnit",
 			"echo/backplane",
 			"require"
-		], function($, API, App, Configuration, Cookie, Events, GUI, Labels, Plugin, UserSession,
-				Utils, View, StreamAPI, Counter, Facepile, Stream, Submit, Auth, jrConnector, IdentityAPI, Modal, Dropdown, Tabs, Button, 
-				Edit, Reply, IAD, PinVis, FormAuth, TextCounter, CommFlag, Moder, TwDispl, Scroll, QUnit, require) {
-			var OldEcho = {
-				"jQuery": $,
-				"API" : API,
-				"App": App,
-				"Configuration": Configuration,
-				"Cookie": Cookie,
-				"Events": Events,
-				"GUI": GUI,
-				"Labels": Labels,
-				"Plugin": Plugin,
-				"UserSession": UserSession,
-				"Utils": Utils,
-				"View": View,
-				"StreamServer": {
-					"Apps":{
-						"Counter": Counter,
-						"Stream": Stream,
-						"FacePile": Facepile,
-						"Submit": Submit
-					},
-					"Plugins":{
-						"Edit": Edit,
-						"Reply": Reply,
-						"ItemAccumulatorDisplay": IAD,
-						"PinboardVisualization": PinVis,
-						"FormAuth": FormAuth,
-						"TextCounter": TextCounter,
-						"CommunityFlag": CommFlag,
-						"Moderation": Moder,
-						"TweetDisplay": TwDispl,
-						"InfinityScroll": Scroll
-					},
-					"API": StreamAPI
-				},
-				"IdentityServer":{
-					"Apps": {
-						"Auth": Auth
-					},
-					"Plugins": {},
-					"API": IdentityAPI
-				}
-			}
-			for(var prop in OldEcho) {
-				Echo[prop] = OldEcho[prop];
-			}
-				Echo.require(["echo/tests/harness", "echo/tests/harness/suite"], function() {
+		], function($, API, App, Events, UserSession, Utils, QUnit) {
+			Echo.Utils = Utils;
+			Echo.App = App;
+			Echo.Plugin = Plugin;
+			Echo.Events = Events;
+			Echo.jQuery = $;
+			Echo.API = API;
+			Echo.UserSession = UserSession;
+			Echo.require(["echo/tests/harness", "echo/tests/harness/suite"], function() {
 				Echo.Tests.Fixtures = {
 					"api": {},
 					"loader": {},
@@ -194,7 +64,9 @@
 						"unit/identityserver/api",
 						"unit/plugin",
 						"unit/view",
+						"unit/loader",
 						"unit/streamserver/apps/counter",
+						"unit/streamserver/apps/media-gallery",
 						"unit/streamserver/apps/submit",
 						"unit/streamserver/apps/facepile",
 						"unit/streamserver/apps/facepile-item",
@@ -213,7 +85,6 @@
 						"unit/streamserver/plugins/infinite-scroll",
 						"unit/identityserver/apps/auth"	
 					], function() {
-						QUnit.config.autorun = false;//requireJS loads it then document.readyState = complete. In this case QUnit sets it = true and tests starts asynchronously
 						Echo.Tests.init({
 							"title": "Echo SDK v3 tests",
 							"backplane": {

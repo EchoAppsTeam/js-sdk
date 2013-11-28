@@ -1,4 +1,11 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/utils",
+	"echo/streamserver/apps/stream",
+	"echo/streamserver/plugins/tweet-display"
+], function($, Utils, Stream) {
+
+"use strict";
 
 var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.TweetDisplay";
 
@@ -23,7 +30,7 @@ var _streamData = {
 		"filter": ""
 	},
 	"entries": [{
-		"id": "http://js-kit.com/activities/post/" + Echo.Utils.getUniqueString(),
+		"id": "http://js-kit.com/activities/post/" + Utils.getUniqueString(),
 		"actor": {
 			"links": [],
 			"objectTypes": ["http://activitystrea.ms/schema/1.0/person"],
@@ -35,7 +42,7 @@ var _streamData = {
 			"avatar": Echo.Loader.getURL("images/avatar-default.png", false)
 		},
 		"object": {
-			"id": "http://twitter.com/user-name/statuses/" + Echo.Utils.getUniqueString(),
+			"id": "http://twitter.com/user-name/statuses/" + Utils.getUniqueString(),
 			"objectTypes": ["http://activitystrea.ms/schema/1.0/article"],
 			"title": "some title",
 			"permalink": "",
@@ -60,7 +67,7 @@ var _streamData = {
 		"postedTime": "2012-08-14T04:57:53Z",
 		"targets": []
 	}, {
-		"id": "http://js-kit.com/activities/post/" + Echo.Utils.getUniqueString(),
+		"id": "http://js-kit.com/activities/post/" + Utils.getUniqueString(),
 		"actor": {
 			"links": [],
 			"objectTypes": ["http://activitystrea.ms/schema/1.0/person"],
@@ -72,7 +79,7 @@ var _streamData = {
 			"avatar": Echo.Loader.getURL("images/avatar-default.png", false)
 		},
 		"object": {
-			"id": "http://twitter.com/user-name/statuses/" + Echo.Utils.getUniqueString(),
+			"id": "http://twitter.com/user-name/statuses/" + Utils.getUniqueString(),
 			"objectTypes": ["http://activitystrea.ms/schema/1.0/article"],
 			"title": "some title",
 			"permalink": "",
@@ -108,16 +115,19 @@ Echo.Tests.pluginRenderersTest(plugin, {
 });
 
 Echo.Tests.asyncTest("disabled Like and Reply plugins", function() {
-	new Echo.StreamServer.Apps.Stream({
+	new Stream({
 		"target": $("<div>"),
 		"appkey": "test.js-kit.com",
 		"data": _streamData,
 		"plugins": [{
-			"name": "TweetDisplay"
+			"name": "TweetDisplay",
+			"url": "echo/streamserver/plugins/tweet-display"
 		}, {
-			"name": "Reply"
+			"name": "Reply",
+			"url": "echo/streamserver/plugins/reply"
 		}, {
-			"name": "Like"
+			"name": "Like",
+			"url": "echo/streamserver/plugins/like"
 		}],
 		"ready": function() {
 			$.map(this.items, function(item) {
@@ -135,4 +145,4 @@ Echo.Tests.asyncTest("disabled Like and Reply plugins", function() {
 	});
 });
 
-})(Echo.jQuery);
+});

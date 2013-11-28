@@ -1,4 +1,8 @@
-(function($) {
+Echo.require([
+	"jquery"
+], function($) {
+
+"use strict";
 
 var data = {
 	"instance": {
@@ -25,4 +29,4 @@ suite.prototype.info = {
 	"functions": ["isYou"]
 };
 
-})(Echo.jQuery);
+});

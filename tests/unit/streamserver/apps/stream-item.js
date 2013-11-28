@@ -1,4 +1,10 @@
-(function($) {
+Echo.require([
+	"jquery",
+	"echo/streamserver/apps/item",
+	"echo/events"
+], function($, Item, Events) {
+
+"use strict";
 
 var suite = Echo.Tests.Unit.Item = function() {
 	this.constructRenderersTest({
@@ -80,7 +86,7 @@ suite.prototype.tests.commonWorkflow = {
 
 		var addChildren  = function(item) {
 			var children = [
-				new Echo.StreamServer.Apps.Stream.Item({
+				new Item({
 					"target": $("<div>"),
 					"appkey": self.config.appkey,
 					"parent": suite._streamConfigData,
@@ -92,7 +98,7 @@ suite.prototype.tests.commonWorkflow = {
 					})),
 					"live": false
 				}),
-				new Echo.StreamServer.Apps.Stream.Item({
+				new Item({
 					"target": $("<div>"),
 					"appkey": self.config.appkey,
 					"parent": suite._streamConfigData,
@@ -104,7 +110,7 @@ suite.prototype.tests.commonWorkflow = {
 					})),
 					"live": false
 				}),
-				new Echo.StreamServer.Apps.Stream.Item({
+				new Item({
 					"target": $("<div>"),
 					"appkey": self.config.appkey,
 					"parent": suite._streamConfigData,
@@ -120,7 +126,7 @@ suite.prototype.tests.commonWorkflow = {
 			item.set("children", children);
 		};
 
-		new Echo.StreamServer.Apps.Stream.Item({
+		new Item({
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"parent": suite._streamConfigData,
@@ -200,7 +206,7 @@ suite.prototype.tests.testItemButtons = {
 	},
 	"check": function() {
 		var self = this;
-		new Echo.StreamServer.Apps.Stream.Item({
+		new Item({
 			"target": this.config.target,
 			"appkey": this.config.appkey,
 			"parent": suite._streamConfigData,
@@ -660,7 +666,7 @@ function getGenerateItemFunction(checker) {
 	var self = this;
 	return function(params) {
 		return function(callback) {
-			new Echo.StreamServer.Apps.Stream.Item($.extend({
+			new Item($.extend({
 				"target": self.config.target,
 				"appkey": self.config.appkey,
 				"parent": suite._streamConfigData,
@@ -782,7 +788,7 @@ suite._streamConfigData = {
 		"itemsSlideTimeout": 600,
 		"maxDepth": 1
 	},
-	"context": Echo.Events.newContextId(),
+	"context": Events.newContextId(),
 	"fadeTimeout": 2800,
 	"flashColor": "#ffff99",
 	"itemsPerPage": 15,
@@ -818,4 +824,4 @@ Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Stream.Item", func
 	return stream;
 });
 
-})(Echo.jQuery);
+});
