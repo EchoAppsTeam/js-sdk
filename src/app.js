@@ -27,58 +27,55 @@ var App = function() {};
 /**
  * @static
  * @method
- * Function which creates a application object using it manifest declaration.
+ * Function which creates a application object using it definition declaration.
  *
- * @param {Object} manifest
+ * @param {Object} definition
  * Specifies the application interface in the predefined way.
  *
- * @param {String} manifest.name
+ * @param {String} definition.name
  * Specifies the application name including namespace (ex. "Echo.StreamServer.Apps.Submit")
  *
- * @param {Object} [manifest.vars]
+ * @param {Object} [definition.vars]
  * Specifies internal application variables.
  *
- * @param {Object} [manifest.config]
+ * @param {Object} [definition.config]
  * Specifies the configuration data with the ability to define default values.
  *
- * @param {Object} [manifest.labels]
+ * @param {Object} [definition.labels]
  * Specifies the list of language labels used in the particular application UI.
  *
- * @param {Object} [manifest.events]
+ * @param {Object} [definition.events]
  * Specifies the list of external events used by application.
  *
- * @param {Object} [manifest.methods]
+ * @param {Object} [definition.methods]
  * Specifies the list of application methods.
  *
- * @param {Object} [manifest.renderers]
+ * @param {Object} [definition.renderers]
  * Specifies the list of application renderers.
  *
- * @param {Object} [manifest.templates]
+ * @param {Object} [definition.templates]
  * Specifies the list of application templates.
  *
- * @param {Function} [manifest.init]
+ * @param {Function} [definition.init]
  * Function called during application initialization.
  *
- * @param {String} [manifest.css]
+ * @param {String} [definition.css]
  * Specifies the CSS rules for the application.
  *
  * @return {Object}
  * Reference to the generated application class.
  */
-App.create = function(manifest) {
-	var app = Utils.getComponent(manifest.name);
+App.create = function(definition) {
+	var app = Utils.getComponent(definition.name);
 
-	// prevent multiple re-definitions
-	//if (App.isDefined(manifest)) return app;
-
-	var _manifest = this._merge(manifest, manifest.inherits && manifest.inherits._manifest);
+	var _definition = this._merge(definition, definition.inherits && definition.inherits._definition);
 
 	var constructor = Utils.inherit(this, function(config) {
 		// perform basic validation of incoming params
 		if (!config || !config.target) {
 			Utils.log({
 				"type": "error",
-				"component": _manifest.name,
+				"component": _definition.name,
 				"message": "Unable to initialize application, config is invalid",
 				"args": {"config": config}
 			});
@@ -91,42 +88,42 @@ App.create = function(manifest) {
 	});
 
 	var prototype = constructor.prototype;
-	if (_manifest.methods) {
-		$.extend(prototype, _manifest.methods);
+	if (_definition.methods) {
+		$.extend(prototype, _definition.methods);
 	}
-	if (_manifest.static) {
-		$.extend(constructor, _manifest.static);
+	if (_definition.static) {
+		$.extend(constructor, _definition.static);
 	}
-	prototype.templates = _manifest.templates;
-	prototype.renderers = _manifest.renderers;
-	prototype.name = _manifest.name;
-	constructor._manifest = _manifest;
-	if (manifest.inherits) {
-		constructor.parent = manifest.inherits.prototype;
+	prototype.templates = _definition.templates;
+	prototype.renderers = _definition.renderers;
+	prototype.name = _definition.name;
+	constructor._definition = _definition;
+	if (definition.inherits) {
+		constructor.parent = definition.inherits.prototype;
 	}
 
 	// define default language var values with the lowest priority available
-	Labels.set(_manifest.labels, _manifest.name, true);
+	Labels.set(_definition.labels, _definition.name, true);
 
 	// define CSS class and prefix for the class
-	prototype.cssClass = _manifest.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
+	prototype.cssClass = _definition.name.toLowerCase().replace(/-/g, "").replace(/\./g, "-");
 	prototype.cssPrefix = prototype.cssClass + "-";
 
-	Utils.set(window, _manifest.name, $.extend(constructor, app));
+	Utils.set(window, _definition.name, $.extend(constructor, app));
 	return constructor;
 };
 
 /**
  * @static
- * Method returning common manifest structure.
+ * Method returning common definition structure.
  *
  * @param {String} name
  * Specifies application name.
  *
  * @return {Object}
- * Basic application manifest declaration.
+ * Basic application definition declaration.
  */
-App.manifest = function(name) {
+App.definition = function(name) {
 	return {
 		"name": name,
 		"vars": {},
@@ -149,17 +146,17 @@ App.manifest = function(name) {
  * @static
  * Checks if application is already defined.
  *
- * @param {Mixed} manifest
- * Application manifest or application name.
+ * @param {Mixed} definition
+ * Application definition or application name.
  *
  * @return {Boolean}
  */
-App.isDefined = function(manifest) {
-	var name = typeof manifest === "string"
-		? manifest
-		: manifest.name;
+App.isDefined = function(definition) {
+	var name = typeof definition === "string"
+		? definition
+		: definition.name;
 	var component = Utils.get(window, name);
-	return !!(component && component._manifest);
+	return !!(component && component._definition);
 };
 
 /**
@@ -274,7 +271,7 @@ App.prototype.refresh = function() {
 
 /**
  * @method ready
- * Should be called in the "init" function of the application manifest to
+ * Should be called in the "init" function of the application definition to
  * show that the application was initialized. Basically it is the indicator
  * of the application to be ready and operable.
  */
@@ -434,7 +431,7 @@ App.prototype.initApp = function(spec) {
 	} else {
 		this.log({
 			"type": "error",
-			"component": this._manifest("name"),
+			"component": this._definition("name"),
 			"message": "Unable to initialize application, application not found",
 			"args": {"application": spec["component"]}
 		});
@@ -553,12 +550,12 @@ App.prototype._initializers.vars = function() {
 	// but we need to avoid any references to the default var objects,
 	// thus we copy and recursively merge default values separately
 	// and apply default values to the given instance non-recursively
-	$.extend(this, $.extend(true, {}, this._manifest("vars")));
+	$.extend(this, $.extend(true, {}, this._definition("vars")));
 };
 
 App.prototype._initializers.config = function() {
 	var app = this;
-	var config = this._manifest("config");
+	var config = this._definition("config");
 	var normalizer = function(key, value) {
 		return config.normalizer && config.normalizer[key]
 			? config.normalizer[key].call(this, value, app)
@@ -625,7 +622,7 @@ App.prototype._initializers.events = function() {
 
 App.prototype._initializers.subscriptions = function() {
 	var app = this;
-	$.each(app._manifest("events"), function subscribe(topic, data) {
+	$.each(app._definition("events"), function subscribe(topic, data) {
 		if ($.isArray(data) && data.length) {
 			subscribe(topic, data.shift());
 			data.length && subscribe(topic, data);
@@ -650,8 +647,8 @@ App.prototype._initializers.subscriptions = function() {
 			});
 
 			// apply application-specific logic
-			if (app._manifest("destroy")) {
-				app._manifest("destroy").call(app, data.producer);
+			if (app._definition("destroy")) {
+				app._definition("destroy").call(app, data.producer);
 			}
 
 			// a. keep subscriptions in case of refresh (if "self" is false)
@@ -690,7 +687,7 @@ App.prototype._initializers.labels = function() {
 App.prototype._initializers.css = function() {
 	var self = this;
 	this.config.get("target").addClass(this.cssClass);
-	$.map(this._manifest("css"), function(spec) {
+	$.map(this._definition("css"), function(spec) {
 		if (!spec.id || !spec.code || Utils.hasCSS(spec.id)) return;
 		if (spec.id !== self.name) {
 			var css, component = self.constructor;
@@ -748,7 +745,7 @@ App.prototype._initializers.init = function(callback) {
 	// this function should be called inside the "init" function
 	// to indicate that the application was initialized and is now ready
 	this.ready = callback;
-	this._manifest("init").call(this);
+	this._definition("init").call(this);
 };
 
 App.prototype._initializers.ready = function() {
@@ -764,22 +761,22 @@ App.prototype._initializers.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
 };
 
-App._merge = function(manifest, parentManifest) {
+App._merge = function(definition, parentDefinition) {
 	var self = this;
-	parentManifest = parentManifest || $.extend(true, App.manifest(this._manifest.name), this._manifest);
+	parentDefinition = parentDefinition || $.extend(true, App.definition(this._definition.name), this._definition);
 	// normalize CSS definition before merging to have the same format
-	var normalizeCSS = function(manifest) {
-		manifest.css = manifest.css || "";
-		return $.isArray(manifest.css) ? manifest.css : [{"id": manifest.name, "code": manifest.css}];
+	var normalizeCSS = function(definition) {
+		definition.css = definition.css || "";
+		return $.isArray(definition.css) ? definition.css : [{"id": definition.name, "code": definition.css}];
 	};
-	manifest.css = normalizeCSS(manifest);
-	parentManifest.css = normalizeCSS(parentManifest);
-	var merged = Utils.foldl({}, manifest, function(val, acc, name) {
-		acc[name] = name in parentManifest && self._merge[name]
-			? self._merge[name](parentManifest[name], val)
+	definition.css = normalizeCSS(definition);
+	parentDefinition.css = normalizeCSS(parentDefinition);
+	var merged = Utils.foldl({}, definition, function(val, acc, name) {
+		acc[name] = name in parentDefinition && self._merge[name]
+			? self._merge[name](parentDefinition[name], val)
 			: val;
 	});
-	return $.extend(true, {}, parentManifest, merged);
+	return $.extend(true, {}, parentDefinition, merged);
 };
 
 var _wrapper = function(parent, own) {
@@ -857,10 +854,10 @@ App.prototype._getSubstitutionInstructions = function() {
 	};
 };
 
-App.prototype._manifest = function(key) {
+App.prototype._definition = function(key) {
 	var component = Utils.getComponent(this.name);
 	return component
-		? key ? component._manifest[key] : component._manifest
+		? key ? component._definition[key] : component._definition
 		: undefined;
 };
 
@@ -978,8 +975,8 @@ App.prototype._mergeSpecsByName = function(specs) {
 
 App.prototype._normalizeAppConfig = function(config) {
 	var self = this;
-	// extend the config with the default fields from manifest
-	return Utils.foldl(config, this._manifest("config"), function(value, acc, key) {
+	// extend the config with the default fields from definition
+	return Utils.foldl(config, this._definition("config"), function(value, acc, key) {
 		// do not override existing values in data
 		if (typeof acc[key] === "undefined") {
 			acc[key] = self.config.get(key);
@@ -987,13 +984,13 @@ App.prototype._normalizeAppConfig = function(config) {
 	});
 };
 
-// default manifest declaration
+// default definition declaration
 
-var manifest = {};
+var definition = {};
 
-manifest.name = "Echo.App";
+definition.name = "Echo.App";
 
-manifest.vars = {
+definition.vars = {
 	"plugins": {},
 	"extension": {"template": [], "renderers": {}},
 	"parentRenderers": {},
@@ -1001,7 +998,7 @@ manifest.vars = {
 	"parent": function() {}
 };
 
-manifest.config = {
+definition.config = {
 	/**
 	 * @cfg {String} target (required)
 	 * Specifies the DOM element where the application will be displayed.
@@ -1050,7 +1047,7 @@ manifest.config = {
 	"backplane": {}
 };
 
-manifest.config.normalizer = {
+definition.config.normalizer = {
 	"target": $,
 	"plugins": function(list) {
 		var data = Utils.foldl({"hash": {}, "order": []}, list || [],
@@ -1075,17 +1072,17 @@ manifest.config.normalizer = {
 	"context": Events.newContextId
 };
 
-manifest.static = {};
+definition.static = {};
 
-$.map(["create", "manifest", "isDefined", "_merge"], function(name) {
-	manifest.static[name] = App[name];
+$.map(["create", "definition", "isDefined", "_merge"], function(name) {
+	definition.static[name] = App[name];
 });
 
-manifest.static.extends = function(App) {
+definition.static.extends = function(App) {
 	return Utils.inherit(App, this);
 };
 
-manifest.static.include = function() {
+definition.static.include = function() {
 	var type = typeof arguments[0] === "string" ? arguments[0] : "methods";
 	var App = $.isPlainObject(arguments[1]) ? arguments[1] : arguments[0];
 	var keys = typeof arguments[2] === "undefined"
@@ -1113,9 +1110,9 @@ manifest.static.include = function() {
 	);
 };
 
-manifest.inherits = App;
+definition.inherits = App;
 
-manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
+definition.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
 	'.echo-primaryColor { color: #3A3A3A; }' +
 	'.echo-secondaryColor { color: #C6C6C6; }' +
@@ -1126,7 +1123,7 @@ manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 	'.echo-relative { position: relative; }' +
 	'.echo-clear { clear: both; }';
 
-App._manifest = manifest;
+App._definition = definition;
 
 return App;
 });

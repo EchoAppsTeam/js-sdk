@@ -15,7 +15,7 @@ var suite = Echo.Tests.Unit.App = function() {};
 suite.prototype.info = {
 	"className": "Echo.App",
 	"functions": [
-		"manifest",
+		"definition",
 		"create",
 		"log",
 		"get",
@@ -53,7 +53,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 	},
 	"check": function() {
 		var self = this;
-		var manifest = {
+		var definition = {
 			"name": suite.getTestAppClassName(),
 			"vars": {},
 			"config": {},
@@ -64,28 +64,28 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"templates": {}
 		};
 
-		var _manifest = App.manifest(manifest.name);
-		QUnit.ok(!!_manifest.init,
-			"Checking if we have a default initialization function in the \"manifest\" function return");
-		delete _manifest.init;
-		delete _manifest.destroy;
-		QUnit.deepEqual(manifest, _manifest, "Checking the \"manifest\" function output");
+		var _definition = App.definition(definition.name);
+		QUnit.ok(!!_definition.init,
+			"Checking if we have a default initialization function in the \"definition\" function return");
+		delete _definition.init;
+		delete _definition.destroy;
+		QUnit.deepEqual(definition, _definition, "Checking the \"definition\" function output");
 
 		suite.createComponents(["TestComponent1", "TestComponent2", "TestComponent3"]);
 
 		// checking if we have class before it was defined
-		QUnit.ok(!App.isDefined(manifest),
+		QUnit.ok(!App.isDefined(definition),
 			"Checking if the application class was defined (via isDefined static method), before actual application definition");
 
-		// create class out of manifest
-		suite.createTestApp(manifest.name);
+		// create class out of definition
+		suite.createTestApp(definition.name);
 
 		// checking if we have class after class definition
-		QUnit.ok(App.isDefined(manifest),
+		QUnit.ok(App.isDefined(definition),
 			"Checking if the application class was defined (via isDefined static method), after application definition");
 
 		// create test plugin
-		suite.plugin().createTestPlugin("MyPlugin", manifest.name);
+		suite.plugin().createTestPlugin("MyPlugin", definition.name);
 
 		this.sequentialAsyncTests([
 			"basicOperations",
@@ -97,7 +97,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"refresh",
 			"destroyCalled",
 			"destroyBroadcasting",
-			"manifestBaseInheritance",
+			"definitionBaseInheritance",
 			"nestedReadyCallbacks",
 			"inheritedEvent",
 			"initApp",
@@ -259,7 +259,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 		QUnit.equal(this.get("non-existing-key", false), false,
 			"Trying to fetch the value using non-existing key via \"get\" function and passing 'false' as a default value");
 		QUnit.equal(this.get("integerParam"), 15,
-			"Extracting the value of the class variables defined in manifest");
+			"Extracting the value of the class variables defined in definition");
 		QUnit.equal(this.get("zeroParam", "somevalue"), 0,
 			"Extracting the 0 value of the class variables and passing default value");
 
@@ -590,7 +590,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 		this.events.publish({"topic": "outgoing.event.test"});
 		this.events.publish({"topic": "outgoing.event.test"});
 
-		// checking events defined in manifest
+		// checking events defined in definition
 		this.set("_eventHandler", increment);
 
 		publish("incoming.event.global.test");
@@ -685,7 +685,7 @@ suite.prototype.cases.destroyCalled = function(callback) {
 		this.set("_eventHandler", function() { count++; });
 		this.set("_destroyHandler", function() {
 			QUnit.ok(true,
-				"Checking if the \"destroy\" method was called from the manifest");
+				"Checking if the \"destroy\" method was called from the definition");
 		});
 
 		// checking if we receive events before destroy
@@ -777,8 +777,8 @@ suite.prototype.cases.nestedReadyCallbacks = function(callback) {
 			"ready": parent ? innerReady : outerReady
 		});
 	};
-	var manifest = App.manifest("Echo.Tests.TestApp");
-	manifest.init = function() {
+	var definition = App.definition("Echo.Tests.TestApp");
+	definition.init = function() {
 		var depth = this.config.get("data.depth");
 		if (!depth) {
 			createInstance(this);
@@ -786,14 +786,14 @@ suite.prototype.cases.nestedReadyCallbacks = function(callback) {
 		byOuterApp = !depth;
 		this.ready();
 	};
-	App.create(manifest);
+	App.create(definition);
 	createInstance();
 };
 
 suite.prototype.cases.inheritedEvent = function(callback) {
 	var self = this, s = "";
 	var handler = function(topic) { s += this.name; };
-	var initApp = function(manifest, ctx, ready) {
+	var initApp = function(definition, ctx, ready) {
 		var d = $.Deferred();
 		ready = ready || $.noop;
 		App.create(
@@ -801,7 +801,7 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 				"templates": {
 					"main": "<div></div>"
 				}
-			}, manifest)
+			}, definition)
 		);
 		suite.initTestApp({
 			"context": ctx,
@@ -809,7 +809,7 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 				ready.apply(this, arguments);
 				d.resolve(this);
 			}
-		}, manifest.name);
+		}, definition.name);
 		return d.promise();
 	};
 	var connector = function() {
@@ -868,7 +868,7 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 	});
 };
 
-suite.prototype.cases.manifestBaseInheritance = function(callback) {
+suite.prototype.cases.definitionBaseInheritance = function(callback) {
 	var initVar = "",
 		destroyVar = "";
 	var eventsChecker = {
@@ -885,7 +885,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			"context": ctx
 		}, args));
 	};
-	var parentManifest = {
+	var parentDefinition = {
 		"name": "Echo.TestApp1",
 		"vars": {
 			"someVar": 1,
@@ -929,8 +929,8 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"css": ".{class:container} { width: 50px; }.{class:someRenderer} { width: 10px; }"
 	};
-	var app = App.create(parentManifest);
-	var child1Manifest = {
+	var app = App.create(parentDefinition);
+	var child1Definition = {
 		"name": "Echo.TestApp1_Child1",
 		"inherits": Echo.TestApp1,
 		"vars": {
@@ -970,7 +970,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"css": ".{class:someRenderer} { width: 5px; }"
 	};
-	var child = App.create(child1Manifest);
+	var child = App.create(child1Definition);
 	var child2 = App.create({
 		"name": "Echo.TestApp1_Child2",
 		"inherits": Utils.getComponent("Echo.TestApp1")
@@ -1003,7 +1003,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"inherits": Utils.getComponent("Echo.TestApp1_Child1")
 	});
 	var anotherEventCounter = function() { eventsChecker.anotherNewEvent++; };
-	var app2 = App.create($.extend(true, {}, parentManifest, {
+	var app2 = App.create($.extend(true, {}, parentDefinition, {
 		"name": "Echo.TestApp2",
 		"templates": {
 			"main": '<div class="{inherited.class:container} {class:container}"></div>'
@@ -1048,7 +1048,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 			QUnit.strictEqual(eventsChecker.commonTestEvent, "2 parent handler", "Check common event normal publish/subscribe and queue");
 			this.destroy();
 			QUnit.strictEqual(destroyVar, "I'm a parent destroy and a child destroy. ", "Check destroy parent function executed");
-			QUnit.equal(this._manifest("css").length, 3, "Making sure that the 'css' field has the expected length after the inheritance");
+			QUnit.equal(this._definition("css").length, 3, "Making sure that the 'css' field has the expected length after the inheritance");
 			var actualIDs = [];
 			var expectedIDs = [{"Echo.App": true}, {"Echo.TestApp1": true}, {"Echo.TestApp1_Child1": true}];
 			$.map(["Echo.App", "Echo.TestApp1", "Echo.TestApp1_Child1"], function(id) {
@@ -1056,7 +1056,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 				spec[id] = Utils.hasCSS(id);
 				actualIDs.push(spec);
 			});
-			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expected CSS rule groups present in the final manifest");
+			QUnit.deepEqual(expectedIDs, actualIDs, "Checking if all the expected CSS rule groups present in the final definition");
 			suite.initTestApp({
 				"context": ctx,
 				"target": $("<div>"),
@@ -1281,35 +1281,35 @@ suite.initTestApp = function(config, name) {
 
 suite.createComponents = function(names) {
 	$.map(names, function(name) {
-		App.create(suite.getComponentManifest(name));
+		App.create(suite.getComponentDefinition(name));
 	});
 };
 
-suite.getComponentManifest = function(name) {
-	var manifest = App.manifest(name);
-	manifest.templates.main = "<div>Sample Component Template</div>";
-	manifest.init = function() {
+suite.getComponentDefinition = function(name) {
+	var definition = App.definition(name);
+	definition.templates.main = "<div>Sample Component Template</div>";
+	definition.init = function() {
 		this.render();
 		this.ready();
 	};
-	manifest.destroy = function() {
+	definition.destroy = function() {
 		this.get("_destroyHandler") && this.get("_destroyHandler")();
 	};
-	return manifest;
+	return definition;
 };
 
 suite.createTestApp = function(name, config) {
-	App.create(suite.getAppManifest(name, config));
+	App.create(suite.getAppDefinition(name, config));
 };
 
-suite.getAppManifest = function(name, config) {
+suite.getAppDefinition = function(name, config) {
 	config = config || {};
 
-	var manifest = App.manifest(name || suite.getTestAppClassName());
+	var definition = App.definition(name || suite.getTestAppClassName());
 
-	manifest.config = $.extend(true, {}, suite.data.config);
+	definition.config = $.extend(true, {}, suite.data.config);
 
-	manifest.config.normalizer = {
+	definition.config.normalizer = {
 		"context": function(val, ctrl) {
 			var parent = ctrl.config.parent;
 			return parent
@@ -1319,38 +1319,38 @@ suite.getAppManifest = function(name, config) {
 	};
 
 	// copy vars from config
-	manifest.vars = $.extend(true, {}, manifest.config);
+	definition.vars = $.extend(true, {}, definition.config);
 
 	// removing data from vars to avoid intersection
 	// because the "data" will be copied over from config
-	delete manifest.vars.data;
+	delete definition.vars.data;
 
-	manifest.labels = {
+	definition.labels = {
 		"label1": "label1 value",
 		"label2": "label2 value",
 		"label3": "label3 value"
 	};
 
-	manifest.init = function() {
+	definition.init = function() {
 		this.render();
 		this.ready();
 	};
 
-	manifest.destroy = function() {
+	definition.destroy = function() {
 		this.get("_destroyHandler") && this.get("_destroyHandler")();
 	};
 
-	manifest.templates.main = config.dynamicTemplate
+	definition.templates.main = config.dynamicTemplate
 		? function() { return suite.data.template; }
 		: suite.data.template;
 
-	manifest.templates.custom =
+	definition.templates.custom =
 		'<div class="{class:container}">' +
 			'<div class="{class:testRenderer}"></div>' +
 			'<div class="{class:testRenderer1}"></div>' +
 		'</div>';
 
-	manifest.events = {
+	definition.events = {
 		"incoming.event.global.test": {
 			"context": "global",
 			"handler": function() {
@@ -1362,34 +1362,34 @@ suite.getAppManifest = function(name, config) {
 		}
 	};
 
-	manifest.renderers.testRenderer = function(element) {
+	definition.renderers.testRenderer = function(element) {
 		return element.empty().append('<div>Some value</div>');
 	};
 
-	manifest.renderers.testComponentRenderer = function(element) {
+	definition.renderers.testComponentRenderer = function(element) {
 		return element.append('<div>Some value from testComponentRenderer</div>');
 	};
 
-	manifest.renderers.testRendererWithExtra = function(element, extra) {
+	definition.renderers.testRendererWithExtra = function(element, extra) {
 		return element.empty().append('<span>' + extra.value + '</span>');
 	};
 
-	manifest.methods.myMethod = function(arg) {
+	definition.methods.myMethod = function(arg) {
 		return arg;
 	};
 
-	manifest.methods._myPrivateMethod = function(arg) {
+	definition.methods._myPrivateMethod = function(arg) {
 		return arg;
 	};
 
-	manifest.css =
+	definition.css =
 		'.{class:header} { margin-bottom: 3px; }' +
 		'.{class:avatar} .{class:image} { float: left; margin-right: -48px; }' +
 		'.{class:avatar} img { width: 48px; height: 48px; }' +
 		'.{class:fields} { width: 100%; float: left; }' +
 		'.{class:fields} input { width: 100%; }';
 
-	return manifest;
+	return definition;
 
 };
 callback();

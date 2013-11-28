@@ -37,7 +37,7 @@ Echo.define("echo/streamserver/plugins/streamItemReply", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("Reply", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("Reply", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -356,7 +356,7 @@ Echo.define("echo/streamserver/plugins/streamReply", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("Reply", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.definition("Reply", "Echo.StreamServer.Apps.Stream");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -407,7 +407,7 @@ Echo.define("echo/streamserver/plugins/submitReply", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("Reply", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.definition("Reply", "Echo.StreamServer.Apps.Submit");
 
 if (Plugin.isDefined(plugin)) return;
 

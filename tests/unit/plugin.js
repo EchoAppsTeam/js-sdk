@@ -16,7 +16,7 @@ suite.prototype.info = {
 	"functions": [
 
 		// static interface
-		"manifest",
+		"definition",
 		"create",
 		"isDefined",
 		"getClass",
@@ -59,7 +59,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 	},
 	"check": function() {
 		var self = this;
-		var manifest = {
+		var definition = {
 			"name": "MyTestPlugin",
 			"component": {
 				"name": suite.app().getTestAppClassName(),
@@ -73,52 +73,52 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"templates": {}
 		};
 
-		var _manifest = Plugin.manifest(manifest.name, manifest.component.name);
-		QUnit.ok(!!_manifest.init,
-			"Checking if we have a default initialization function in the \"manifest\" function return");
-		delete _manifest.init;
-		delete _manifest.destroy;
-		delete _manifest.enabled;
-		QUnit.deepEqual(manifest, _manifest,
-			"Checking the \"manifest\" function output");
+		var _definition = Plugin.definition(definition.name, definition.component.name);
+		QUnit.ok(!!_definition.init,
+			"Checking if we have a default initialization function in the \"definition\" function return");
+		delete _definition.init;
+		delete _definition.destroy;
+		delete _definition.enabled;
+		QUnit.deepEqual(definition, _definition,
+			"Checking the \"definition\" function output");
 
 		// create test app
 		suite.app().createTestApp();
 
-		QUnit.ok(!Plugin.isDefined(manifest),
+		QUnit.ok(!Plugin.isDefined(definition),
 			"Checking that the plugin class isn't defined (via isDefined static method), before actual plugin definition");
-		QUnit.ok(!Plugin.isDefined(Plugin._getClassName(manifest.name, manifest.component.name)),
+		QUnit.ok(!Plugin.isDefined(Plugin._getClassName(definition.name, definition.component.name)),
 			"Checking that the plugin class isn't defined(via isDefined static method with plugin name as a parameter), before actual plugin definition");
-		QUnit.ok(!Plugin.getClass(manifest.name, manifest.component.name),
+		QUnit.ok(!Plugin.getClass(definition.name, definition.component.name),
 			"Checking that we haven't a reference to the plugin class (via getClass static method), before actual plugin definition");
 
-		// create plugin class out of manifest
-		suite.createTestPlugin(manifest.name, manifest.component.name);
+		// create plugin class out of definition
+		suite.createTestPlugin(definition.name, definition.component.name);
 
 		// checking if we have class after class definition
-		QUnit.ok(Plugin.isDefined(manifest),
+		QUnit.ok(Plugin.isDefined(definition),
 			"Checking if the plugin class was defined (via isDefined static method), after class definition");
-		QUnit.ok(Plugin.isDefined(Plugin._getClassName(manifest.name, manifest.component.name)),
+		QUnit.ok(Plugin.isDefined(Plugin._getClassName(definition.name, definition.component.name)),
 			"Checking if the plugin class was defined (via isDefined static method with plugin name as a parameter), after class definition");
-		QUnit.ok(!!Plugin.getClass(manifest.name, manifest.component.name),
+		QUnit.ok(!!Plugin.getClass(definition.name, definition.component.name),
 			"Checking if we have a reference to the plugin class (via getClass static method), before actual plugin definition");
 
 		// checking plugin class name definition
 		QUnit.equal(
-			Plugin._getClassName(manifest.name, manifest.component.name),
+			Plugin._getClassName(definition.name, definition.component.name),
 			"Echo.StreamServer.Apps.MyTestApp.Plugins.MyTestPlugin",
 			"Checking if the \"_getClassName\" returns full plugin class name");
 		QUnit.equal(
-			Plugin._getClassName(undefined, manifest.component.name),
+			Plugin._getClassName(undefined, definition.component.name),
 			undefined,
 			"Checking if the \"_getClassName\" returns undefined if the plugin name is undefined");
 		QUnit.equal(
-			Plugin._getClassName(manifest.name, undefined),
+			Plugin._getClassName(definition.name, undefined),
 			undefined,
 			"Checking if the \"_getClassName\" returns undefined if the component name is undefined");
 
 		// create separate plugin to use later in tests
-		suite.createTestPlugin(suite.getTestPluginName(), manifest.component.name);
+		suite.createTestPlugin(suite.getTestPluginName(), definition.component.name);
 
 		this.sequentialAsyncTests([
 			"basicOperations",
@@ -511,7 +511,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 		plugin.events.publish({"topic": "outgoing.event.test"});
 		plugin.events.publish({"topic": "outgoing.event.test"});
 
-		// checking events defined in manifest
+		// checking events defined in definition
 		plugin.set("_eventHandler", increment);
 
 		publish("incoming.event.global.test");
@@ -704,22 +704,22 @@ suite.getTestPluginName = function() {
 };
 
 suite.createTestPlugin = function(name, component) {
-	Plugin.create(suite.getPluginManifest(name, component));
+	Plugin.create(suite.getPluginDefinition(name, component));
 };
 
-suite.getPluginManifest = function(name, component) {
+suite.getPluginDefinition = function(name, component) {
 
-	var manifest = Plugin.manifest(name, component);
+	var definition = Plugin.definition(name, component);
 
-	manifest.config = $.extend(true, {}, suite.data.config);
+	definition.config = $.extend(true, {}, suite.data.config);
 
-	manifest.labels = {
+	definition.labels = {
 		"label1": "plugin label1 value",
 		"label2": "plugin label2 value",
 		"label3": "plugin label3 value"
 	};
 
-	manifest.init = function() {
+	definition.init = function() {
 		var plugin = this;
 
 		this.data = {
@@ -731,7 +731,7 @@ suite.getPluginManifest = function(name, component) {
 		};
 
 		// appending main template
-		this.extendTemplate("insertAsLastChild", "container", manifest.templates.main);
+		this.extendTemplate("insertAsLastChild", "container", definition.templates.main);
 
 		// extending template using different constructions
 		var actions = ["insertAsLastChild", "insertBefore", "insertAfter", "insertAsFirstChild"];
@@ -753,17 +753,17 @@ suite.getPluginManifest = function(name, component) {
 		);
 	};
 
-	manifest.enabled = function() {
+	definition.enabled = function() {
 		return (this.config.get("requiredParam1") && this.config.get("requiredParam2"));
 	};
 
-	manifest.destroy = function() {
+	definition.destroy = function() {
 		this.get("_destroyHandler") && this.get("_destroyHandler")();
 	};
 
-	manifest.templates.main = suite.data.template;
+	definition.templates.main = suite.data.template;
 
-	manifest.events = {
+	definition.events = {
 		"incoming.event.global.test": {
 			"context": "global",
 			"handler": function() {
@@ -775,40 +775,40 @@ suite.getPluginManifest = function(name, component) {
 		}
 	};
 
-	manifest.renderers.testPluginRenderer = function(element) {
+	definition.renderers.testPluginRenderer = function(element) {
 		this.parentRenderer("testPluginRenderer", arguments);
 		return element.append('<div>Plugin extension (testPluginRenderer)</div>');
 	};
 
-	manifest.component.renderers.testComponentRenderer = function(element) {
+	definition.component.renderers.testComponentRenderer = function(element) {
 		this.parentRenderer("testComponentRenderer", arguments);
 		return element.append('<div>Plugin extension (testComponentRenderer)</div>');
 	};
 
-	manifest.component.renderers.testRendererWithExtra = function(element, extra) {
+	definition.component.renderers.testRendererWithExtra = function(element, extra) {
 		return element.empty().append('<span>' + extra.value + '</span>');
 	};
 
-	manifest.methods.myMethod = function(arg) {
+	definition.methods.myMethod = function(arg) {
 		return arg;
 	};
 
-	manifest.methods.proxy = function(func) {
+	definition.methods.proxy = function(func) {
 		return func.call(this);
 	};
 
-	manifest.methods._myPrivateMethod = function(arg) {
+	definition.methods._myPrivateMethod = function(arg) {
 		return arg;
 	};
 
-	manifest.css =
+	definition.css =
 		'.{plugin.class:header} { margin-bottom: 3px; }' +
 		'.{plugin.class:avatar} .{class:image} { float: left; margin-right: -48px; }' +
 		'.{plugin.class:avatar} img { width: 48px; height: 48px; }' +
 		'.{plugin.class:fields} { width: 100%; float: left; }' +
 		'.{plugin.class:fields} input { width: 100%; }';
 
-	return manifest;
+	return definition;
 
 };
 callback();

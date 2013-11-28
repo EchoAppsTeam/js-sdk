@@ -39,7 +39,7 @@ Echo.define("echo/streamserver/apps/submit", [
  * @param {Object} config
  * Configuration options
  */
-var submit = App.manifest("Echo.StreamServer.Apps.Submit");
+var submit = App.definition("Echo.StreamServer.Apps.Submit");
 
 if (App.isDefined(submit)) return;
 

@@ -21,43 +21,43 @@ var Plugin = function() {};
 
 /**
  * @static
- * Function which creates a plugin JS class using its manifest declaration.
+ * Function which creates a plugin JS class using its definition declaration.
  *
- * @param {Object} manifest
+ * @param {Object} definition
  * Specifies the plugin interface in the predefined way.
  *
- * @param {String} manifest.name
+ * @param {String} definition.name
  * Specifies the Plugin name.
  *
- * @param {Object} [manifest.config]
+ * @param {Object} [definition.config]
  * Specifies the configuration data with the ability to define default values.
  *
- * @param {Object} [manifest.labels]
+ * @param {Object} [definition.labels]
  * Specifies the list of language labels used in the particular plugin UI.
  *
- * @param {Object} [manifest.events]
+ * @param {Object} [definition.events]
  * Specifies the list of external events used by plugin.
  *
- * @param {Object} [manifest.methods]
+ * @param {Object} [definition.methods]
  * Specifies the list of plugin methods.
  *
- * @param {Object} [manifest.renderers]
+ * @param {Object} [definition.renderers]
  * Specifies the list of plugin renderers.
  *
- * @param {Object} [manifest.templates]
+ * @param {Object} [definition.templates]
  * Specifies the list of plugin templates.
  *
- * @param {Function} [manifest.init]
+ * @param {Function} [definition.init]
  * Function called during plugin initialization.
  *
- * @param {String} [manifest.css]
+ * @param {String} [definition.css]
  * Specifies the CSS rules for the plugin.
  *
  * @return {Object}
  * Generated plugin class.
  */
-Plugin.create = function(manifest) {
-	var plugin = Plugin.getClass(manifest.name, manifest.component.name);
+Plugin.create = function(definition) {
+	var plugin = Plugin.getClass(definition.name, definition.component.name);
 
 	// prevent multiple re-definitions
 	if (plugin) return plugin;
@@ -66,15 +66,15 @@ Plugin.create = function(manifest) {
 		if (!config || !config.component) {
 			Utils.log({
 				"type": "error",
-				"component": manifest.name,
+				"component": definition.name,
 				"message": "Unable to initialize plugin, config is invalid",
 				"args": {"config": config}
 			});
 			return;
 		}
-		this.name = manifest.name;
+		this.name = definition.name;
 		this.component = config.component;
-		this.cssClass = this.component.get("cssPrefix") + "plugin-" + manifest.name;
+		this.cssClass = this.component.get("cssPrefix") + "plugin-" + definition.name;
 		this.cssPrefix = this.cssClass + "-";
 
 		// define extra css class for the application target
@@ -82,16 +82,16 @@ Plugin.create = function(manifest) {
 
 		this._init(["config"]);
 	});
-	var namespace = Plugin._getClassName(manifest.name, manifest.component.name);
+	var namespace = Plugin._getClassName(definition.name, definition.component.name);
 
-	constructor.manifest = manifest;
+	constructor.definition = definition;
 	constructor.prototype.namespace = namespace;
 
 	// define default language var values with the lowest priority available
-	Labels.set($.extend({}, manifest.labels), namespace, true);
+	Labels.set($.extend({}, definition.labels), namespace, true);
 
-	if (manifest.methods) {
-		$.extend(constructor.prototype, manifest.methods);
+	if (definition.methods) {
+		$.extend(constructor.prototype, definition.methods);
 	}
 
 	Utils.set(window, namespace, constructor);
@@ -100,7 +100,7 @@ Plugin.create = function(manifest) {
 
 /**
  * @static
- * This method returns common manifest structure.
+ * This method returns common definition structure.
  *
  * @param {String} name
  * Specifies plugin name.
@@ -109,9 +109,9 @@ Plugin.create = function(manifest) {
  * Specifies the component name to be extended.
  *
  * @return {Object}
- * Basic plugin manifest declaration.
+ * Basic plugin definition declaration.
  */
-Plugin.manifest = function(name, component) {
+Plugin.definition = function(name, component) {
 	return {
 		"name": name,
 		"component": {
@@ -134,17 +134,17 @@ Plugin.manifest = function(name, component) {
  * @static
  * Checks if the plugin is already defined.
  *
- * @param {Object|String} manifest
- * Plugin manifest or plugin name.
+ * @param {Object|String} definition
+ * Plugin definition or plugin name.
  *
  * @return {Boolean}
  */
-Plugin.isDefined = function(manifest) {
-	if (typeof manifest === "string") {
-		var component = Utils.get(window, manifest);
-		return !!(component && component.manifest);
+Plugin.isDefined = function(definition) {
+	if (typeof definition === "string") {
+		var component = Utils.get(window, definition);
+		return !!(component && component.definition);
 	}
-	return !!Plugin.getClass(manifest.name, manifest.component.name);
+	return !!Plugin.getClass(definition.name, definition.component.name);
 };
 
 /**
@@ -193,7 +193,7 @@ Plugin.prototype.enabled = function() {
 				enabled = enabled.call(this);
 				break;
 		}
-		this._enabled = enabled && !!this._manifest("enabled").call(this);
+		this._enabled = enabled && !!this._definition("enabled").call(this);
 	}
 	return this._enabled;
 };
@@ -359,18 +359,18 @@ Plugin.prototype._init = function() {
 	App.prototype._init.apply(this, arguments);
 };
 
-Plugin.prototype._manifest = function(key) {
+Plugin.prototype._definition = function(key) {
 	var plugin = Plugin.getClass(this.name, this.component.name);
 	return plugin
-		? key ? plugin.manifest[key] : plugin.manifest
+		? key ? plugin.definition[key] : plugin.definition
 		: undefined;
 };
 
 Plugin.prototype._initializers = {};
 
 Plugin.prototype._initializers.css = function() {
-	if (!this._manifest("css") || Utils.hasCSS(this.namespace)) return;
-	Utils.addCSS(this.substitute({"template": this._manifest("css")}), this.namespace);
+	if (!this._definition("css") || Utils.hasCSS(this.namespace)) return;
+	Utils.addCSS(this.substitute({"template": this._definition("css")}), this.namespace);
 };
 
 Plugin.prototype._initializers.labels = function() {
@@ -387,7 +387,7 @@ Plugin.prototype._initializers.events = function() {
 
 Plugin.prototype._initializers.subscriptions = function() {
 	var self = this;
-	$.each(this._manifest("events"), function(topic, data) {
+	$.each(this._definition("events"), function(topic, data) {
 		data = $.isFunction(data) ? {"handler": data} : data;
 		self.events.subscribe($.extend({"topic": topic}, data));
 	});
@@ -395,10 +395,10 @@ Plugin.prototype._initializers.subscriptions = function() {
 
 Plugin.prototype._initializers.renderers = function() {
 	var self = this;
-	$.each(this._manifest("renderers"), function(name, renderer) {
+	$.each(this._definition("renderers"), function(name, renderer) {
 		self.component.extendRenderer.call(self.component, "plugin-" + self.name + "-" + name, $.proxy(renderer, self));
 	});
-	$.each(this._manifest("component").renderers, function(name, renderer) {
+	$.each(this._definition("component").renderers, function(name, renderer) {
 		self.component.extendRenderer.call(self.component, name, $.proxy(renderer, self));
 	});
 };
@@ -433,7 +433,7 @@ Plugin.prototype._initializers.view = function() {
 };
 
 Plugin.prototype._initializers.launcher = function() {
-	this._manifest("init").call(this);
+	this._definition("init").call(this);
 };
 
 Plugin.prototype._getSubstitutionInstructions = function() {
@@ -505,7 +505,7 @@ Plugin.Config.prototype.get = function(key, defaults, askParent) {
 	var component = this.plugin.component;
 	var value = component.config.get(
 		this._normalize(key),
-		this.plugin._manifest("config")[key]);
+		this.plugin._definition("config")[key]);
 	return typeof value === "undefined"
 		? askParent
 			? component.config.get(key, defaults)
@@ -534,7 +534,7 @@ Plugin.Config.prototype.remove = function(key) {
  */
 Plugin.Config.prototype.assemble = function(data) {
 	var config = this.plugin.component.config;
-	var defaults = this.plugin.component._manifest("config");
+	var defaults = this.plugin.component._definition("config");
 	data = data || {};
 	data.user = this.plugin.component.user;
 	data.parent = config.getAsHash();

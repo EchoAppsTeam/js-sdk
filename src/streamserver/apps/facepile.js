@@ -36,7 +36,7 @@ Echo.define("echo/streamserver/apps/facePile", [
  * @param {Object} config
  * Configuration options
  */
-var pile = App.manifest("Echo.StreamServer.Apps.FacePile");
+var pile = App.definition("Echo.StreamServer.Apps.FacePile");
 
 if (App.isDefined(pile)) return;
 
@@ -643,7 +643,7 @@ Echo.define("echo/streamserver/apps/facePileItem", [
  * @param {Object} config
  * Configuration options
  */
-var item = App.manifest("Echo.StreamServer.Apps.FacePile.Item");
+var item = App.definition("Echo.StreamServer.Apps.FacePile.Item");
 
 //if (App.isDefined(item)) return;
 

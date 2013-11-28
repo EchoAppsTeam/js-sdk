@@ -33,7 +33,7 @@ Echo.define("echo/streamserver/apps/counter", [
  * @param {Object} config
  * Configuration options
  */
-var counter = App.manifest("Echo.StreamServer.Apps.Counter");
+var counter = App.definition("Echo.StreamServer.Apps.Counter");
 
 if (App.isDefined(counter)) return;
 

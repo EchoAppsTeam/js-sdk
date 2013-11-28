@@ -6,7 +6,7 @@ Echo.define("echo/streamserver/bundled-app", [
 ], function($, Utils, User, App) {
 "use strict";
 
-var BundledApp = App.manifest("Echo.StreamServer.BundledApp");
+var BundledApp = App.definition("Echo.StreamServer.BundledApp");
 
 BundledApp.init = function() {
 	var app = this;
@@ -66,7 +66,7 @@ BundledApp.methods._storeUser = function(callback) {
 	}
 };
 
-BundledApp.static.manifest = function() {
+BundledApp.static.definition = function() {
 	var object = this.parent.apply(this, arguments);
 	object.init = BundledApp.init;
 	return object;

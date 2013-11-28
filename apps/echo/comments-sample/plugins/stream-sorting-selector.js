@@ -6,7 +6,7 @@ Echo.define("streamSortingSelector", [
 "use strict";
 
 
-var plugin = Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.definition("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
 
 if (Plugin.isDefined(plugin)) return;
 

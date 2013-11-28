@@ -45,7 +45,7 @@ Echo.define("echo/streamserver/plugins/submitJanrainSharing", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("JanrainSharing", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.definition("JanrainSharing", "Echo.StreamServer.Apps.Submit");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -435,7 +435,7 @@ Echo.define("echo/streamserver/plugins/streamJanrainSharing", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("JanrainSharing", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("JanrainSharing", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Plugin.isDefined(plugin)) return;
 

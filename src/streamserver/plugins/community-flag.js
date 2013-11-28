@@ -33,7 +33,7 @@ Echo.define("echo/streamserver/plugins/communityFlag", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("CommunityFlag", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("CommunityFlag", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Plugin.isDefined(plugin)) return;
 

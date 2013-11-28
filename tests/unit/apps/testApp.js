@@ -6,7 +6,7 @@ Echo.define("unit/apps/testApp", [
 
 "use strict";
 
-var testApp = App.manifest("Echo.Tests.Apps.TestApp");
+var testApp = App.definition("Echo.Tests.Apps.TestApp");
 
 testApp.init = function() {
 	this.render();

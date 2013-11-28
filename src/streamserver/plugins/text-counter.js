@@ -26,7 +26,7 @@ Echo.define("echo/streamserver/plugins/textCounter", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("TextCounter", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.definition("TextCounter", "Echo.StreamServer.Apps.Submit");
 
 if (Plugin.isDefined(plugin)) return;
 

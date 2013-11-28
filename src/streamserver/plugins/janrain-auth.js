@@ -29,7 +29,7 @@ Echo.define("echo/streamserver/plugins/janrainAuth", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("JanrainAuth", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.definition("JanrainAuth", "Echo.StreamServer.Apps.Submit");
 
 if (Plugin.isDefined(plugin)) return;
 

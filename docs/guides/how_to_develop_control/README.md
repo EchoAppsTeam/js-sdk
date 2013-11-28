@@ -28,7 +28,7 @@ Now let's add the application definition. Echo JS SDK contains a special Echo.Ap
 
 	var $ = jQuery;
 
-	var counter = Echo.App.manifest("Echo.StreamServer.Apps.Counter");
+	var counter = Echo.App.definition("Echo.StreamServer.Apps.Counter");
 
 	if (Echo.App.isDefined(counter)) return;
 
@@ -36,7 +36,7 @@ Now let's add the application definition. Echo JS SDK contains a special Echo.Ap
 
 	})(Echo.jQuery);
 
-We called the Echo.App.manifest function and passed the name of the application as an argument. We checked whether the application was already initialized or not, to avoid multiple application re-definitions in case the application script was included into the page source several times. After that we passed the manifest generated into the Echo.App.create function to generate the application JS class out of the static manifest declaration.
+We called the Echo.App.definition function and passed the name of the application as an argument. We checked whether the application was already initialized or not, to avoid multiple application re-definitions in case the application script was included into the page source several times. After that we passed the definition generated into the Echo.App.create function to generate the application JS class out of the static definition declaration.
 
 At that point we can consider the application skeleton ready and start adding the business logic into it.
 
@@ -55,7 +55,7 @@ In order to fulfill both use-cases we need to add the corresponding check into t
 
 	var $ = jQuery;
 
-	var counter = Echo.App.manifest("Echo.StreamServer.Apps.Counter");
+	var counter = Echo.App.definition("Echo.StreamServer.Apps.Counter");
 
 	if (Echo.App.isDefined(counter)) return;
 
@@ -74,18 +74,18 @@ In order to fulfill both use-cases we need to add the corresponding check into t
 
 	})(Echo.jQuery);
 
-So, if the data parameter is empty we should fetch it from the server through the Echo.StreamServer.API.Request class. Definition of the _request method will be described below. Else, if the data parameter is defined, we should {@link Echo.App#render "render"} application and call {@link Echo.App#ready "ready"} method to detect that application is ready. All functions that defined in the manifest namespace have application context (this variable pointed to application instance) if it this is not described explicit.
+So, if the data parameter is empty we should fetch it from the server through the Echo.StreamServer.API.Request class. Definition of the _request method will be described below. Else, if the data parameter is defined, we should {@link Echo.App#render "render"} application and call {@link Echo.App#ready "ready"} method to detect that application is ready. All functions that defined in the definition namespace have application context (this variable pointed to application instance) if it this is not described explicit.
 
 ## Application configuration
 
-Most of applications should contain several configuration parameters that defines a application behavior, state etc. Also we want to define a default value of the parameters in case it is omitted in the application configuration while installing it. In order to do it we add the "config" object to the application manifest with the name of the config field as a key and a default as its value, so the code of the application will look like:
+Most of applications should contain several configuration parameters that defines a application behavior, state etc. Also we want to define a default value of the parameters in case it is omitted in the application configuration while installing it. In order to do it we add the "config" object to the application definition with the name of the config field as a key and a default as its value, so the code of the application will look like:
 
 	(function(jQuery) {
 	"use strict";
 
 	var $ = jQuery;
 
-	var counter = Echo.App.manifest("Echo.StreamServer.Apps.Counter");
+	var counter = Echo.App.definition("Echo.StreamServer.Apps.Counter");
 
 	if (Echo.App.isDefined(counter)) return;
 
@@ -131,8 +131,8 @@ to get the value of the "liveUpdates" config parameter or any other defined duri
 Now we can define html template for the application UI. It should be a string value which may contains html elements (DOM structure) and placeholder. According to application initialization this value will be compiled by the Echo.App.substitute method. This method compiles placeholders to the string values.
 There's two ways for the template defining:
 
-- we can pass to the manifest object value "template" which is function. This function can prepare a template string and should return it. Returned value will be compiled;
-- we can pass a "templates" object that can contains a several templates by the "templates" object key. By default, if template value is ommited in the manifest, will be used templates.main value;
+- we can pass to the definition object value "template" which is function. This function can prepare a template string and should return it. Returned value will be compiled;
+- we can pass a "templates" object that can contains a several templates by the "templates" object key. By default, if template value is ommited in the definition, will be used templates.main value;
 
 In our case we need a simple template which contains a count items number. Let's put the template into application's code:
 
@@ -141,7 +141,7 @@ In our case we need a simple template which contains a count items number. Let's
 
 	var $ = jQuery;
 
-	var counter = Echo.App.manifest("Echo.StreamServer.Apps.Counter");
+	var counter = Echo.App.definition("Echo.StreamServer.Apps.Counter");
 
 	if (Echo.App.isDefined(counter)) return;
 
@@ -280,7 +280,7 @@ In order to install the application, the following steps should be taken:
 
 	var $ = jQuery;
 
-	var counter = Echo.App.manifest("Echo.StreamServer.Apps.Counter");
+	var counter = Echo.App.definition("Echo.StreamServer.Apps.Counter");
 
 	if (Echo.App.isDefined(counter)) return;
 
@@ -367,7 +367,7 @@ In order to install the application, the following steps should be taken:
 
 ## Features that aren't described in this guide
 
-If you look at the Echo.App.manifest documentation you can see that we omitted some manifest fields. It's enough to have only mentioned fields to be able to instantiate Counter application.
+If you look at the Echo.App.definition documentation you can see that we omitted some definition fields. It's enough to have only mentioned fields to be able to instantiate Counter application.
 
 ### Events
 
@@ -383,7 +383,7 @@ There are lots of events going on during the application and application life. T
 
 ### Labels
 
-The application manifest provides a special location for the labels: it's the "labels" hash with the label key as the field name and the label text as a value. So the "labels" hash might look like:
+The application definition provides a special location for the labels: it's the "labels" hash with the label key as the field name and the label text as a value. So the "labels" hash might look like:
 
 	app.labels = {
 		"someLabel": "Some label value"
@@ -405,7 +405,7 @@ Note that you can use the same placeholders inside the CSS definition string.
 
 ### Renderers
 
-If you want to execute some action while element renderered, you can use renderers mechanism. Application manifest specifies the location for the renderers, it's the "renderers" hash. The renderer for the some element may look like:
+If you want to execute some action while element renderered, you can use renderers mechanism. Application definition specifies the location for the renderers, it's the "renderers" hash. The renderer for the some element may look like:
 
 	app.renderers.someElement = function(element) {
 		// some code goes here

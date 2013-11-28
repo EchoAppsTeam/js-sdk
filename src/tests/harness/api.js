@@ -114,12 +114,12 @@ Echo.Tests.pluginRenderersTest = function(plugin, params, config) {
 			ready.call(instance);
 			_checkRenderers.call(pluginInstance, {
 				"instance": pluginInstance.component,
-				"renderers": pluginInstance._manifest("renderers"),
+				"renderers": pluginInstance._definition("renderers"),
 				"cssPrefix": pluginInstance.cssPrefix
 			});
 			_checkRenderers.call(pluginInstance, {
 				"instance": pluginInstance.component,
-				"renderers": pluginInstance._manifest("component").renderers,
+				"renderers": pluginInstance._definition("component").renderers,
 				"cssPrefix": pluginInstance.component.cssPrefix,
 				"statPrefix": "component."
 			});

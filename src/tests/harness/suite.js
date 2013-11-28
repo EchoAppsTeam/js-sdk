@@ -157,7 +157,7 @@ Echo.Tests.Suite.prototype.executePluginRenderersTest = function(plugin) {
 		plugin.component.render();
 	}
 	var check = function(forComponent) {
-		var renderers = forComponent ? plugin._manifest("component").renderers : plugin._manifest("renderers");
+		var renderers = forComponent ? plugin._definition("component").renderers : plugin._definition("renderers");
 		var checker = function(name, element, suffix) {
 			var oldElement = element.clone(true, true);
 			var renderedElement = renderers[name].call(plugin, element);

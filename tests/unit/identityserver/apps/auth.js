@@ -39,7 +39,7 @@ Echo.Tests.asyncTest("logged in workflow", function() {
 		QUnit.equal(this.user.get("avatar"), getRenderedAvatar(), "Checking if user avatar is rendered when available");
 		this.user.set("avatar", "");
 		this.refresh();
-		QUnit.equal(this._manifest("config").defaultAvatar, getRenderedAvatar(), "Checking if default avatar is rendered when user avatar is not available");
+		QUnit.equal(this._definition("config").defaultAvatar, getRenderedAvatar(), "Checking if default avatar is rendered when user avatar is not available");
 		var avatar = Echo.Loader.getURL("images/info70.png", false);
 		this.config.set("defaultAvatar", avatar);
 		this.refresh();

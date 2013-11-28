@@ -43,7 +43,7 @@ Echo.define("echo/streamserver/apps/auth", [
  * @param {Object} config
  * Configuration options.
  */
-var auth = App.manifest("Echo.StreamServer.Apps.Auth");
+var auth = App.definition("Echo.StreamServer.Apps.Auth");
 
 if (App.isDefined(auth)) return;
 

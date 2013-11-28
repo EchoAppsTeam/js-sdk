@@ -22,7 +22,7 @@ Echo.Tests.Stats.isValidForTesting = function(parentObject, prefix, name, value)
 		typeof value !== "undefined" &&
 		!$.isArray(value) &&
 		name !== "cache" &&
-		name !== "manifest" &&
+		name !== "definition" &&
 		name !== "constructor" &&
 		name !== "parent";
 };

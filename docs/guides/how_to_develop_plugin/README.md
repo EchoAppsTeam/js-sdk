@@ -30,7 +30,7 @@ Now let's add the plugin definition. Echo JS SDK contains a special Echo.Plugin 
 
 	var $ = jQuery;
 
-	var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
+	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
 
 	if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -38,20 +38,20 @@ Now let's add the plugin definition. Echo JS SDK contains a special Echo.Plugin 
 
 	})(Echo.jQuery);
 
-So we've called the Echo.Plugin.manifest function, passed the name of the plugin and the type of the app as arguments. We checked whether the plugin was already initialized or not, to avoid multiple plugin re-definitions in case the plugin script was included into the page source several times. After that we passed the manifest into the Echo.Plugin.create function to generate the plugin JS class out of the static declaration.
+So we've called the Echo.Plugin.definition function, passed the name of the plugin and the type of the app as arguments. We checked whether the plugin was already initialized or not, to avoid multiple plugin re-definitions in case the plugin script was included into the page source several times. After that we passed the definition into the Echo.Plugin.create function to generate the plugin JS class out of the static declaration.
 
 At that point we can consider the plugin skeleton ready and start adding the business logic into it.
 
 ## Plugin configuration
 
-Let's assume that we need a configuration parameter for our plugin to define the list of the sorting options we want to expose in the dropdown. Also we want to define a default value of the parameter in case it is omitted in the plugin configuration while installing it into the necessary Stream app. In order to do it we add the "config" object to the plugin manifest with the name of the config field as a key and a default as its value, so the code of the plugin will look like:
+Let's assume that we need a configuration parameter for our plugin to define the list of the sorting options we want to expose in the dropdown. Also we want to define a default value of the parameter in case it is omitted in the plugin configuration while installing it into the necessary Stream app. In order to do it we add the "config" object to the plugin definition with the name of the config field as a key and a default as its value, so the code of the plugin will look like:
 
 	(function(jQuery) {
 	"use strict";
 
 	var $ = jQuery;
 
-	var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
+	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
 
 	if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -121,7 +121,7 @@ One more step before starting to work with the templates in order to add the dro
 
 - followup from the previous point: ability to translate the UI to any foreign language without dealing with the code
 
-The plugin manifest provides a special location for the labels: it's the "labels" hash with the label key as the field name and the label text as a value. We need the labels for the sort orders and one more label to add the text before the dropdown, so the "labels" hash might look like:
+The plugin definition provides a special location for the labels: it's the "labels" hash with the label key as the field name and the label text as a value. We need the labels for the sort orders and one more label to add the text before the dropdown, so the "labels" hash might look like:
 
 	plugin.labels = {
 		"sortOrderSelection": "Sorting order:",
@@ -195,7 +195,7 @@ This chapter describes only the case where a completely new element is added by 
 
 ## Adding renderers
 
-Now we have our dropdown in place, but we still don't have the logic to trigger the Stream refresh when the new sorting order is selected in the dropdown. It's a perfect task for the Renderers, so let's add one. Plugin manifest specifies the location for the renderers, it's the "renderers" hash. The renderer for the dropdowm may look like:
+Now we have our dropdown in place, but we still don't have the logic to trigger the Stream refresh when the new sorting order is selected in the dropdown. It's a perfect task for the Renderers, so let's add one. Plugin definition specifies the location for the renderers, it's the "renderers" hash. The renderer for the dropdowm may look like:
 
 	plugin.renderers.selector = function(element) {
 		var plugin = this, stream = plugin.component;
@@ -296,7 +296,7 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 
 	var $ = jQuery;
 
-	var plugin = Echo.Plugin.manifest("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
+	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
 
 	if (Echo.Plugin.isDefined(plugin)) return;
 

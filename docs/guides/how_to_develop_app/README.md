@@ -6,7 +6,7 @@ The Echo JS SDK allows you to create complex applications based on the Echo.App 
 
 ## Introduction
 
-*Application* (or *App*) is a JavaScript class with the pre-defined structure (generated out of the app manifest) which can represent a certain set of discrete functionality or combine multiple apps and plugins into a package to achieve a certain functionality.
+*Application* (or *App*) is a JavaScript class with the pre-defined structure (generated out of the app definition) which can represent a certain set of discrete functionality or combine multiple apps and plugins into a package to achieve a certain functionality.
 
 Let's imagine that we want to create the application for posting and viewing comments on a website. For this purpose we'll use the {@link Echo.StreamServer.Apps.Stream Stream} and the {@link Echo.StreamServer.Apps.Submit Submit} apps and assemble them in one logical unit using the Echo Application approach.
 
@@ -30,7 +30,7 @@ Now let's add the application definition. Echo JS SDK contains a special Echo.Ap
 
 	var $ = jQuery;
 
-	var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
+	var Comments = Echo.App.definition("Echo.Apps.CommentsSample");
 
 	if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
 
@@ -38,20 +38,20 @@ Now let's add the application definition. Echo JS SDK contains a special Echo.Ap
 
 	})(Echo.jQuery);
 
-We've called the Echo.App.manifest function and passed the name of the application as an argument. We checked whether the application was already initialized or not, to avoid multiple application re-definitions in case the application script was included into the application source several times. After that we passed the manifest into the Echo.App.create function to generate the application JS class out of the static declaration.
+We've called the Echo.App.definition function and passed the name of the application as an argument. We checked whether the application was already initialized or not, to avoid multiple application re-definitions in case the application script was included into the application source several times. After that we passed the definition into the Echo.App.create function to generate the application JS class out of the static declaration.
 
 At that point we can consider the application skeleton ready and start adding the business logic into it.
 
 ## Application configuration
 
-Let's assume that we need a configuration parameter for our application to define the position of the submit form (before or after the Stream app). Also we want to define a default value of the parameter in case it is omitted in the application configuration while installing it into a website. In order to do it we add the "config" object to the application manifest with the name of the config field as a key and a default as its value, so the code of the application will look like:
+Let's assume that we need a configuration parameter for our application to define the position of the submit form (before or after the Stream app). Also we want to define a default value of the parameter in case it is omitted in the application configuration while installing it into a website. In order to do it we add the "config" object to the application definition with the name of the config field as a key and a default as its value, so the code of the application will look like:
 
 	(function(jQuery) {
 	"use strict";
 
 	var $ = jQuery;
 
-	var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
+	var Comments = Echo.App.definition("Echo.Apps.CommentsSample");
 
 	if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
 
@@ -105,7 +105,7 @@ Note: the template might be also represented by the function. In this case the f
 
 ## Adding renderers
 
-Now we have placeholders for our Submit and Stream app and we need the logic to init the necessary applications in the right places and we'll employ renderers here. Application manifest specifies the location for the renderers, it's the "renderers" hash. This hash should contain the renderers for the elements added within the app templates. The set of renderers to initialize the apps may look like:
+Now we have placeholders for our Submit and Stream app and we need the logic to init the necessary applications in the right places and we'll employ renderers here. Application definition specifies the location for the renderers, it's the "renderers" hash. This hash should contain the renderers for the elements added within the app templates. The set of renderers to initialize the apps may look like:
 
 	Comments.renderers.stream = function(element) {
 		this.initComponent({
@@ -222,7 +222,7 @@ Note: in order to configure internal Echo Apps and Plugins used in the applicati
 
 	var $ = jQuery;
 
-	var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
+	var Comments = Echo.App.definition("Echo.Apps.CommentsSample");
 
 	if (Echo.App.isDefined("Echo.Apps.CommentsSample")) return;
 

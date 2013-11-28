@@ -27,7 +27,7 @@ Echo.define("echo/streamserver/plugins/itemAccumulatorDisplay", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("ItemAccumulatorDisplay", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("ItemAccumulatorDisplay", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Plugin.isDefined(plugin)) return;
 

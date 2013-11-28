@@ -21,7 +21,7 @@ Echo.define("echo/streamserver/apps/item", [
  * @param {Object} config
  * Configuration options
  */
-var item = App.manifest("Echo.StreamServer.Apps.Stream.Item");
+var item = App.definition("Echo.StreamServer.Apps.Stream.Item");
 
 if (App.isDefined(item)) return;
 
@@ -1431,7 +1431,7 @@ Echo.define("echo/streamserver/apps/stream", [
  * @param {Object} config
  * Configuration options
  */
-var stream = App.manifest("Echo.StreamServer.Apps.Stream");
+var stream = App.definition("Echo.StreamServer.Apps.Stream");
 
 if (App.isDefined(stream)) return;
 

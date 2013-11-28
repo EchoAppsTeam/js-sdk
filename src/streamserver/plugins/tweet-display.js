@@ -48,7 +48,7 @@ Echo.define("echo/streamserver/plugins/tweet-display", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("TweetDisplay", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("TweetDisplay", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Plugin.isDefined(plugin)) return;
 

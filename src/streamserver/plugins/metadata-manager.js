@@ -30,7 +30,7 @@ Echo.define("echo/streamserver/plugins/metadataManager", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("MetadataManager", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("MetadataManager", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Plugin.isDefined(plugin)) return;
 

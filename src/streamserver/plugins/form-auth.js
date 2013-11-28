@@ -43,7 +43,7 @@ Echo.define("echo/streamserver/plugins/formAuth", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("FormAuth", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.definition("FormAuth", "Echo.StreamServer.Apps.Submit");
 
 if (Plugin.isDefined(plugin)) return;
 

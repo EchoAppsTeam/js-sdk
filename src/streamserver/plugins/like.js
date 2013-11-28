@@ -33,7 +33,7 @@ Echo.define("echo/streamserver/plugins/streamLike", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("Like", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("Like", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -257,7 +257,7 @@ Echo.define("echo/streamserver/plugins/facePileLike", [
  * @extends Echo.Plugin
  * @private
  */
-var plugin = Plugin.manifest("Like", "Echo.StreamServer.Apps.FacePile.Item");
+var plugin = Plugin.definition("Like", "Echo.StreamServer.Apps.FacePile.Item");
 
 if (Plugin.isDefined(plugin)) return;
 

@@ -7,7 +7,7 @@ Echo.define("commentsSample", [
 
 "use strict";
 
-var Comments = App.manifest("Echo.Apps.CommentsSample");
+var Comments = App.definition("Echo.Apps.CommentsSample");
 
 if (App.isDefined("Echo.Apps.CommentsSample")) return;
 

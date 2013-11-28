@@ -8,7 +8,7 @@ Echo.define("echo/canvas", [
 
 "use strict";
 
-var canvas = App.manifest("Canvas");
+var canvas = App.definition("Canvas");
 
 if (App.isDefined(canvas)) return;
 

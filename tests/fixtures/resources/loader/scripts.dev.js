@@ -3,7 +3,7 @@
 
 var $ = jQuery;
 
-var app = Echo.App.manifest("Echo.Tests.Apps.TestApp");
+var app = Echo.App.definition("Echo.Tests.Apps.TestApp");
 
 if (Echo.App.isDefined(app)) return;
 

@@ -7,7 +7,7 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 - JS API - Easier access to server-side APIs via the client side
 - GUI Library - More consistent look and feel between apps (Bootstrap)
 - UI Apps - A Core set of UI Apps for common app/interaction patterns
-- Component Manifest - Consistent app architecture for plugin extensibility, consistent configuration handling and app interoperability
+- Component Definition - Consistent app architecture for plugin extensibility, consistent configuration handling and app interoperability
 - Echo Loader - Simplified dependency loading to reduce script conflicts and redundancies
 - Configuration storage and overrides (coming soon)
 - Centralized deployment management and administration (coming soon)
@@ -40,9 +40,9 @@ Echo Auth app displays the user login status and allows them sign in using diffe
 
 #### [Guide: Building an App](#!/guide/how_to_develop_app)
 
-### Component Manifest - Consistent app architecture for plugin extensibility, consistent configuration handling and app interoperability
+### Component Definition - Consistent app architecture for plugin extensibility, consistent configuration handling and app interoperability
 
-In order to ensure consistency between various components built by different developers, we have introduced a Component Manifest which describes the core attributes of the given component, such as templates, renderers, events, dependencies etc.
+In order to ensure consistency between various components built by different developers, we have introduced a Component Definition which describes the core attributes of the given component, such as templates, renderers, events, dependencies etc.
 
 Components build using this approach inherit a number of distinct advantages including:
 
@@ -56,7 +56,7 @@ Components build using this approach inherit a number of distinct advantages inc
 
 ### Echo Loader - Simplified dependency loading to reduce script conflicts and redundancies
 
-In order to minimize the footprint of JavaScript files on a given page (particularly important for SEO and mobile web) and avoid script conflicts the JS SDK provides a class which contains the logic for downloading appropriate JS and CSS dependencies (as described in the Component Manifest) on the fly ({@link Echo.Loader learn more}).
+In order to minimize the footprint of JavaScript files on a given page (particularly important for SEO and mobile web) and avoid script conflicts the JS SDK provides a class which contains the logic for downloading appropriate JS and CSS dependencies (as described in the Component Definition) on the fly ({@link Echo.Loader learn more}).
 
 ## Other Features
 

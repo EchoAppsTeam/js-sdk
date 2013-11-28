@@ -23,7 +23,7 @@ Echo.define("echo/streamserver/plugins/mediaGallery", [
  * @package streamserver/plugins/pinboard-visualization.js
  */
 
-var mediaGallery = App.manifest("Echo.StreamServer.Apps.Stream.Item.MediaGallery");
+var mediaGallery = App.definition("Echo.StreamServer.Apps.Stream.Item.MediaGallery");
 
 if (App.isDefined(mediaGallery)) return;
 
@@ -297,7 +297,7 @@ Echo.define("echo/streamserver/plugins/streamItemPinboardVisualization", [
  * @package streamserver/plugins/pinboard-visualization.js
  */
 
-var plugin = Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("PinboardVisualization", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -680,7 +680,7 @@ Echo.define("echo/streamserver/plugins/streamPinboardVisualization", [
  *
  * @package streamserver/plugins/pinboard-visualization.js
  */
-var plugin = Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.definition("PinboardVisualization", "Echo.StreamServer.Apps.Stream");
 
 if (Plugin.isDefined(plugin)) return;
 

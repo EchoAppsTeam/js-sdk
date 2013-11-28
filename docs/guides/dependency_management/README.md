@@ -40,7 +40,7 @@ This code describes a single dependency which will be loaded only if there are n
 
 ## Specifying dependencies for a Plugin
 
-Your plugin might also rely on some external resources required for its initialization. Echo JS SDK engine provides an ability to define these dependencies within the Plugin manifest. More information about the plugin dependencies definition can be found in the ["How to develop a Plugin" guide](#!/guide/how_to_develop_plugin-section-dependencies).
+Your plugin might also rely on some external resources required for its initialization. Echo JS SDK engine provides an ability to define these dependencies within the Plugin definition. More information about the plugin dependencies definition can be found in the ["How to develop a Plugin" guide](#!/guide/how_to_develop_plugin-section-dependencies).
 
 ## Specifying dependencies to load on demand
 

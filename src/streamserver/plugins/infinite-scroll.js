@@ -27,7 +27,7 @@ Echo.define("echo/streamserver/plugins/infiniteScroll", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("InfiniteScroll", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.definition("InfiniteScroll", "Echo.StreamServer.Apps.Stream");
 
 if (Plugin.isDefined(plugin)) return;
 

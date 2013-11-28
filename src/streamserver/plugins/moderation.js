@@ -34,7 +34,7 @@ Echo.define("echo/streamserver/plugins/streamModeration", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("Moderation", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("Moderation", "Echo.StreamServer.Apps.Stream.Item");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -669,7 +669,7 @@ Echo.define("echo/streamserver/plugins/streamItemModeration", [
 
 "use strict";
 
-var plugin = Plugin.manifest("Moderation", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.definition("Moderation", "Echo.StreamServer.Apps.Stream");
 
 plugin.events = {
 	"Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onUserUpdate": function(topic, args) {

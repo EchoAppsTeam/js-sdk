@@ -131,9 +131,9 @@ extended with the parent component name: `<ComponentName>.Plugins.<PluginName>`.
 ### Default Labels
 
 When you are developing a new application or a plugin you can set
-the language variables list in the manifest section.
+the language variables list in the definition section.
 
-	var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
+	var Comments = Echo.App.definition("Echo.Apps.CommentsSample");
 	// ...
 	Comments.labels = {
 		"topComments": "Top Comments",
@@ -167,7 +167,7 @@ of an application:
 
 Text labels in the app can be redefined this way:
 
-	var Comments = Echo.App.manifest("Echo.Apps.CommentsSample");
+	var Comments = Echo.App.definition("Echo.Apps.CommentsSample");
 	// ...
 	Comments.renderers.submit = function(element) {
 		this.initComponent({
@@ -212,17 +212,17 @@ Next example shows how to override the 'editButton' label in the 'Edit' plugin:
 
 ### Language variables in templates
 
-Text labels defined either through the component manifest or via the configuration
+Text labels defined either through the component definition or via the configuration
 explicitly can be used in the templates using the special `{label:...}` placeholders.
 For example:
 
-	var submit = Echo.App.manifest("Echo.StreamServer.Apps.Submit");
+	var submit = Echo.App.definition("Echo.StreamServer.Apps.Submit");
 	// ...
 	submit.templates.formTitle = '<div>{label:title}</div>';
 
 Plugin's language variables are available through the `{plugin.label:...}` placeholder:
 
-	var reply = Echo.Plugin.manifest("Reply", "Echo.StreamServer.Apps.Stream.Item");
+	var reply = Echo.Plugin.definition("Reply", "Echo.StreamServer.Apps.Stream.Item");
 	// ...
 	reply.templates.formTitle = "<div>{plugin.label:title}</div>";
 

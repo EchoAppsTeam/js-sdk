@@ -116,7 +116,7 @@ The list of the placeholders supported inside the app functions can be found bel
 
   		<div>0</div>
 
-You can use the placeholders described above in an app and plugin templates, CSS code (defined in the `css` field in the manifest) and inside the dependency URLs (defined within the `dependencies` array in the manifest). More examples can be found in the [How to develop an App](#!/guide/how_to_develop_app) guide.
+You can use the placeholders described above in an app and plugin templates, CSS code (defined in the `css` field in the definition) and inside the dependency URLs (defined within the `dependencies` array in the definition). More examples can be found in the [How to develop an App](#!/guide/how_to_develop_app) guide.
 
 ## Placeholders usage in Echo.Plugin
 
