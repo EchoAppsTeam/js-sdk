@@ -487,19 +487,10 @@ module.exports = function(grunt) {
 					"appDir": "<%= dirs.src %>",
 					"baseUrl": "./",
 					"dir": "<%= dirs.build %>",
-					"optimize": "none",//+ shared.config("build.stage") === "min" ? "uglify2" : "none",
+					"optimize": "none",
 					"wrap": false,
 					"namespace": "Echo",
 					"removeCombined": true,
-					"uglify2": {
-						"output": {
-							"beautify": false,
-							//"inline-script": false
-							"ascii-only": true
-						},
-						"mangle": false,
-						"report": grunt.option("verbose") ? "gzip" : "min"
-					},
 					"modules": [{
 						"name": "loader",
 						"include": [
@@ -511,7 +502,7 @@ module.exports = function(grunt) {
 						"name": "third-party/jquery.pack",
 						"create": true,
 						"include": [
-							"third-party/jquery/jquery"/* + shared.config("build.stage") === "min" ? ""min : ""*/,
+							"third-party/jquery/jquery",
 							"third-party/jquery/jquery-noconflict",
 							"third-party/jquery/jquery.ihint",
 							"third-party/jquery/jquery.viewport.mini"
@@ -575,33 +566,7 @@ module.exports = function(grunt) {
 					}],
 					fileExclusionRegExp: /\S*(?:images){1}\S*/g // \"min version"
 				}
-			}//, TODO: it will be used for minificated version building
-			//"plugins": {
-			//	"options": {
-			//		"appDir": "<%= dirs.src %>",
-			//		"baseUrl": "./",
-			//		"dir": "<%= dirs.build %>/plugins",
-			//		//"keepBuildDir": true,
-			//		"optimize": "none",
-			//		"wrap": {
-			//			"start": "require([\"jquery\"] function(jQuery) {\n var $ = jQuery;\n",
-			//		"end": "});"
-			//		},
-			//		//"namespace": "Echo",
-			//		//removeCombined: true,
-			//		"paths": {
-			//			"echo": "./"
-			//		},
-			//		"modules": [{
-			//			"name": "isotope",
-			//			"create": true,
-			//			"include": [
-			//				"third-party/jquery/jquery.isotope.min"					
-			//			]
-			//		}],
-			//		"dirExclusionRegExp": /\S*(?:require){1,}\S*/g
-			//	}
-			//}
+			}
 		},
 		"check-environment": {
 			"options": {
