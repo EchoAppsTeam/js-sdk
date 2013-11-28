@@ -8,7 +8,7 @@ Echo.define("echo/streamserver/plugins/submitJanrainSharing", [
 	"echo/plugin",
 	"echo/utils",
 	"echo/gui",
-	"echo/identityserver/apps/auth",
+	"echo/streamserver/apps/auth",
 	"require",
 	"css!echo/gui.pack"
 ], function($, Plugin, Utils, GUI, Auth, require) {

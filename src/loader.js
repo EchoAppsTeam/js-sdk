@@ -64,9 +64,8 @@ paths[Echo.Loader.getURL("") + "/enviroment.pack"] = [
 	"echo/events", "echo/utils",
 	"echo/labels", "echo/configuration",
 	"echo/api", "echo/streamserver/api",
-	"echo/identityserver/api", "echo/user-session",
-	"echo/view", "echo/app",
-	"echo/plugin"
+	"echo/user-session", "echo/view",
+	"echo/app", "echo/plugin"
 ];
 paths[Echo.Loader.getURL("") + "/gui.pack"] = [
 	"echo/bootstrap-transition", "echo/bootstrap-affix",
@@ -99,9 +98,6 @@ paths[Echo.Loader.getURL("") + "/streamserver.pack"] = [
 paths[Echo.Loader.getURL("") + "/pinboard-visualization"] = [
 	"echo/streamserver/plugins/pinboardVisualization", "echo/streamserver/plugins/mediaGallery",
 	"echo/streamserver/plugins/streamItemPinboardVisualization", "echo/streamserver/plugins/streamPinboardVisualization"
-];
-paths[Echo.Loader.getURL("") + "/identityserver.pack"] = [
-	"echo/identityserver/apps/auth", "echo/identityserver/plugins/janrainConnector"
 ];
 require.config({
 	"waitSeconds": 5, // 5 sec before timeout exception

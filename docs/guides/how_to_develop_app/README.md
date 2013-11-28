@@ -134,7 +134,7 @@ Now we have placeholders for our Submit and Stream app and we need the logic to 
 		return element;
 	};
 
-Important note: to proxy the configuration settings from the application to the child apps we can use placeholders, like the ones we used in the application templates. In our application we proxy the "identityManager" as a param of the Echo.IdentityServer.Apps.Auth app config by defining the "{config:identityManager}" placeholder.
+Important note: to proxy the configuration settings from the application to the child apps we can use placeholders, like the ones we used in the application templates. In our application we proxy the "identityManager" as a param of the Echo.StreamServer.Apps.Auth app config by defining the "{config:identityManager}" placeholder.
 
 ## CSS rules
 

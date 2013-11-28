@@ -7,8 +7,8 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "auth",
-        "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Apps.Auth",
+        "script": "streamserver.pack.js",
+        "component": "Echo.StreamServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -27,8 +27,8 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "auth",
-        "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Apps.Auth",
+        "script": "streamserver.pack.js",
+        "component": "Echo.StreamServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -47,8 +47,8 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "auth",
-        "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Apps.Auth",
+        "script": "streamserver.pack.js",
+        "component": "Echo.StreamServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -67,8 +67,8 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "auth",
-        "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Apps.Auth",
+        "script": "streamserver.pack.js",
+        "component": "Echo.StreamServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -87,8 +87,8 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "auth",
-        "script": "identityserver.pack.js",
-        "component": "Echo.IdentityServer.Apps.Auth",
+        "script": "streamserver.pack.js",
+        "component": "Echo.StreamServer.Apps.Auth",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {

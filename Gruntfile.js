@@ -511,7 +511,6 @@ module.exports = function(grunt) {
 							"configuration",
 							"api",
 							"streamserver/api",
-							"identityserver/api",
 							"user-session",
 							"view",
 							"app",
@@ -539,13 +538,6 @@ module.exports = function(grunt) {
 							"streamserver/plugins/moderation",
 							"streamserver/plugins/reply",
 							"streamserver/plugins/tweet-display"
-						]
-					}, {
-						"name": "identityserver.pack",
-						"create": true,
-						"include": [
-							"identityserver/apps/auth",
-							"identityserver/plugins/janrain-connector"
 						]
 					}, {
 						"name": "pinboard-visualization",

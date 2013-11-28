@@ -1,4 +1,4 @@
-Echo.define("echo/identityserver/apps/auth", [
+Echo.define("echo/streamserver/apps/auth", [
 	"jquery",
 	"echo/app",
 	"echo/utils",
@@ -10,7 +10,7 @@ Echo.define("echo/identityserver/apps/auth", [
 "use strict";
 
 /**
- * @class Echo.IdentityServer.Apps.Auth
+ * @class Echo.StreamServer.Apps.Auth
  * Echo Auth application displays the user login status and allows them to sign in using different social identities.
  *
  * 	var identityManager = {
@@ -20,7 +20,7 @@ Echo.define("echo/identityserver/apps/auth", [
  * 		"url": "http://example.com/auth"
  * 	};
  *
- * 	new Echo.IdentityServer.Apps.Auth({
+ * 	new Echo.StreamServer.Apps.Auth({
  * 		"target": document.getElementById("echo-auth"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"identityManager": {
@@ -34,16 +34,16 @@ Echo.define("echo/identityserver/apps/auth", [
  *
  * @extends Echo.App
  *
- * @package identityserver/apps.pack.js
- * @package identityserver.pack.js
+ * @package streamserver/apps.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
- * Auth constructor initializing Echo.IdentityServer.Apps.Auth class.
+ * Auth constructor initializing Echo.StreamServer.Apps.Auth class.
  *
  * @param {Object} config
  * Configuration options.
  */
-var auth = App.manifest("Echo.IdentityServer.Apps.Auth");
+var auth = App.manifest("Echo.StreamServer.Apps.Auth");
 
 if (App.isDefined(auth)) return;
 
@@ -63,20 +63,20 @@ if (App.isDefined(auth)) return;
 /** @hide @echo_label error_unknown */
 
 /**
- * @echo_event Echo.IdentityServer.Apps.Auth.onReady
+ * @echo_event Echo.StreamServer.Apps.Auth.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.IdentityServer.Apps.Auth.onRefresh
+ * @echo_event Echo.StreamServer.Apps.Auth.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.IdentityServer.Apps.Auth.onRender
+ * @echo_event Echo.StreamServer.Apps.Auth.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.IdentityServer.Apps.Auth.onRerender
+ * @echo_event Echo.StreamServer.Apps.Auth.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -84,7 +84,7 @@ auth.config = {
 	/**
 	 * @cfg {String} appkey
 	 * Specifies the customer application key. You should specify this parameter
-	 * if your application uses StreamServer or IdentityServer API requests.
+	 * if your application uses StreamServer or StreamServer API requests.
 	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
 	 */
 	"appkey": "",
@@ -119,7 +119,7 @@ auth.config = {
 	 * 		"url": "http://example.com/auth"
 	 * 	};
 	 *
-	 * 	new Echo.IdentityServer.Apps.Auth({
+	 * 	new Echo.StreamServer.Apps.Auth({
 	 * 		"target": document.getElementById("echo-auth"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"identityManager": {

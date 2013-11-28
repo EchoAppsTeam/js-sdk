@@ -620,8 +620,8 @@ plugin.css =
 	'.{plugin.class} .{class:plugin-Like-likedBy} { margin-top: 5px; }' +
 	'.{plugin.class} .{class:plugin-Reply-submitForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
 	'.{plugin.class} .{class:plugin-Reply-compactForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-apps-auth-name { font-size: 12px; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-identityserver-apps-auth-logout { line-height: 24px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-apps-auth-name { font-size: 12px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-apps-auth-logout { line-height: 24px; }' +
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-apps-submit-userInfoWrapper {  margin: 5px 0px; }' +
 	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-apps-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
 	'.{plugin.class} .{class:plugin-Moderation-status}  { width: 30px; clear: both; }' +

@@ -4,9 +4,9 @@ Echo.define("echo/user-session", [
 	"echo/backplane",
 	"echo/configuration",
 	"echo/api",
-	"echo/identityserver/api",
+	"echo/streamserver/api",
 	"echo/events"
-], function($, Utils, Backplane, Configuration, API, IdentityServerAPI, Events) {
+], function($, Utils, Backplane, Configuration, API, StreamServerAPI, Events) {
 
 "use strict";
 
@@ -314,7 +314,7 @@ UserSession._logoutRequest = function(data, callback) {
 };
 
 UserSession._whoamiRequest = function(args) {
-	IdentityServerAPI.request({
+	StreamServerAPI.request({
 		"apiBaseURL": this.config.get("endpoints.whoami"),
 		"secure": this.config.get("useSecureAPI"),
 		"endpoint": "whoami",
@@ -464,7 +464,7 @@ UserSession._init = function(callback) {
 					"component": "UserSession",
 					"args": {"response": response},
 					"message": "Unable to initialize user session, " +
-						"error response from IdentityServer API received"
+						"error response from StreamServer API received"
 				});
 				handler();
 			}

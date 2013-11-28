@@ -1,4 +1,4 @@
-Echo.define("echo/identityserver/plugins/janrainConnector", [
+Echo.define("echo/streamserver/plugins/janrainConnector", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils"
@@ -7,10 +7,10 @@ Echo.define("echo/identityserver/plugins/janrainConnector", [
 "use strict";
 
 /**
- * @class Echo.IdentityServer.Apps.Auth.Plugins.JanrainConnector
+ * @class Echo.StreamServer.Apps.Auth.Plugins.JanrainConnector
  * Janrain Social Sign-in Widget integration with Echo Auth Application.
  *
- * 	new Echo.IdentityServer.Apps.Auth({
+ * 	new Echo.StreamServer.Apps.Auth({
  * 		"target": document.getElementById("auth"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -24,10 +24,10 @@ Echo.define("echo/identityserver/plugins/janrainConnector", [
  *
  * @extends Echo.Plugin
  *
- * @package identityserver/plugins.pack.js
- * @package identityserver.pack.js
+ * @package streamserver/plugins.pack.js
+ * @package streamserver.pack.js
  */
-var plugin = Plugin.manifest("JanrainConnector", "Echo.IdentityServer.Apps.Auth");
+var plugin = Plugin.manifest("JanrainConnector", "Echo.StreamServer.Apps.Auth");
 
 if (Plugin.isDefined(plugin)) return;
 

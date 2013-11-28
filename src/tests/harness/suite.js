@@ -222,7 +222,7 @@ Echo.Tests.Suite.prototype.constructRenderersTest = function(data) {
 	this.tests.TestRenderers = data;
 };
 
-// TODO: get rid of this function once IdentityServer.API is rewritten using new format
+// TODO: get rid of this function once StreamServer.API is rewritten using new format
 Echo.Tests.Suite.prototype.loginTestUser = function(config, callback) {
 	Echo.Tests.Utils.actualizeTestUser(config, callback);
 };

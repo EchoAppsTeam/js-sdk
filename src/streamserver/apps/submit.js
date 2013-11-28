@@ -105,7 +105,7 @@ submit.config = {
 	/**
 	 * @cfg {String} appkey
 	 * Specifies the customer application key. You should specify this parameter
-	 * if your application uses StreamServer or IdentityServer API requests.
+	 * if your application uses StreamServer API requests.
 	 * You can use the "echo.jssdk.demo.aboutecho.com" appkey for testing purposes.
 	 */
 	"appkey": "",

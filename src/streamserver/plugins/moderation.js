@@ -8,8 +8,8 @@ Echo.define("echo/streamserver/plugins/streamModeration", [
 	"echo/plugin",
 	"echo/utils",
 	"echo/streamserver/api",
-	"echo/identityserver/api"
-], function($, Plugin, Utils, StreamServerAPI, IdentityServerApi) {
+	"echo/streamserver/api"
+], function($, Plugin, Utils, StreamServerAPI) {
 
 "use strict";
 
@@ -467,8 +467,8 @@ plugin.methods._assembleButton = function(name) {
 
 plugin.methods._sendUserUpdate = function(config) {
 	var item = this.component;
-	IdentityServerAPI.request({
-		"endpoint": "update",
+	StreamServerAPI.request({
+		"endpoint": "users/update",
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
 		"secure": this.config.get("useSecureAPI", false, true),
 		"data": {

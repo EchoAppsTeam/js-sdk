@@ -1,19 +1,19 @@
 Echo.require([
 	"jquery",
-	"echo/identityserver/apps/auth",
+	"echo/streamserver/apps/auth",
 	"echo/events"
 ], function($, Auth, Events) {
 
 "use strict";
 
-Echo.Tests.module("Echo.IdentityServer.Apps.Auth", {
+Echo.Tests.module("Echo.StreamServer.Apps.Auth", {
 	"meta": {
-		"className" : "Echo.IdentityServer.Apps.Auth",
+		"className" : "Echo.StreamServer.Apps.Auth",
 		"functions": ["template"]
 	}
 });
 
-Echo.Tests.renderersTest("Echo.IdentityServer.Apps.Auth");
+Echo.Tests.renderersTest("Echo.StreamServer.Apps.Auth");
 
 Echo.Tests.asyncTest("logged in workflow", function() {
 	var identityManager = {
@@ -23,10 +23,10 @@ Echo.Tests.asyncTest("logged in workflow", function() {
 	};
 	var target = $("#qunit-fixture");
 	Events.subscribe({
-		"topic": "Echo.IdentityServer.Apps.Auth.onRender",
+		"topic": "Echo.StreamServer.Apps.Auth.onRender",
 		"once": true,
 		"handler": function(topic, params) {
-			QUnit.ok(target.html().match(/echo-identityserver-apps-auth-userLogged/),
+			QUnit.ok(target.html().match(/echo-streamserver-apps-auth-userLogged/),
 				"Checking the logged user mode rendering");
 		}
 	});
@@ -66,10 +66,10 @@ Echo.Tests.asyncTest("anonymous user workflow", function() {
 	};
 	var target = $("#qunit-fixture");
 	Events.subscribe({
-		"topic": "Echo.IdentityServer.Apps.Auth.onRender",
+		"topic": "Echo.StreamServer.Apps.Auth.onRender",
 		"once": true,
 		"handler": function(topic, params) {
-			QUnit.ok(target.html().match(/echo-identityserver-apps-auth-userAnonymous/),
+			QUnit.ok(target.html().match(/echo-streamserver-apps-auth-userAnonymous/),
 				"Checking the anonymous mode rendering");
 			QUnit.start();
 		}

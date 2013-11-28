@@ -12,7 +12,7 @@ The unified structure which describes a certain application, application or a pl
 
 ### Application (aka App)
 
-*Application* (or *App*) is a JavaScript class with the pre-defined structure (generated out of the app manifest) which can represent a certain set of discrete functionality or combine multiple apps and plugins into a package to achieve a certain functionality. Application examples: {@link Echo.StreamServer.Apps.Stream Stream application}, {@link Echo.StreamServer.Apps.Submit Submit application}, {@link Echo.IdentityServer.Apps.Auth Auth application}, etc. More information about the App development can be found in [the hands-on guide](#!/guide/how_to_develop_app).
+*Application* (or *App*) is a JavaScript class with the pre-defined structure (generated out of the app manifest) which can represent a certain set of discrete functionality or combine multiple apps and plugins into a package to achieve a certain functionality. Application examples: {@link Echo.StreamServer.Apps.Stream Stream application}, {@link Echo.StreamServer.Apps.Submit Submit application}, {@link Echo.StreamServer.Apps.Auth Auth application}, etc. More information about the App development can be found in [the hands-on guide](#!/guide/how_to_develop_app).
 
 ### Plugin
 

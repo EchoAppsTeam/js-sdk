@@ -35,7 +35,7 @@ Echo Counter class which encapsulates interaction with the Echo Count API and pr
 #### Echo.StreamServer.Apps.FacePile
 Echo FacePile app displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
 
-#### Echo.IdentityServer.Apps.Auth
+#### Echo.StreamServer.Apps.Auth
 Echo Auth app displays the user login status and allows them sign in using different social identities.
 
 #### [Guide: Building an App](#!/guide/how_to_develop_app)

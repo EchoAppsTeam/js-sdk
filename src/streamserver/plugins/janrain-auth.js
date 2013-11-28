@@ -2,7 +2,7 @@ Echo.define("echo/streamserver/plugins/janrainAuth", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
-	"echo/identityserver/apps/auth"
+	"echo/streamserver/apps/auth"
 ], function($, Plugin, Utils, Auth) {
 
 "use strict";

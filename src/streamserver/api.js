@@ -95,6 +95,8 @@ StreamServer.API.Request = Utils.inherit(API.Request, function(config) {
 		 *  + "search"
 		 *  + "count"
 		 *  + "mux"
+		 *  + "whoami"
+		 *  + "users/update"
 		 *
 		 * __Note__: The API endpoint "mux" allows to "multiplex" requests,
 		 * i.e. use a single API call to "wrap" several requests. More information
@@ -220,6 +222,21 @@ StreamServer.API.Request.prototype._mux = function() {
 	);
 };
 
+StreamServer.API.Request.prototype["_users/update"] = function(args) {
+	var content = $.extend({}, this.config.get("data.content"), {
+		"endpoint": "users/update"
+	});
+	this.request(
+		$.extend({}, this.config.get("data"), {
+			"content": Utils.objectToJSON(content)
+		})
+	);
+};
+
+StreamServer.API.Request.prototype._whoami = function(args) {
+	this.request(args);
+};
+
 StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
 	var self = this;
 	var _config = $.extend({}, config);
@@ -253,7 +270,7 @@ StreamServer.API.Request.prototype._onError = function(responseError, requestPar
 
 StreamServer.API.Request.prototype._prepareURL = function() {
 	var endpoint = this.config.get("endpoint");
-	if (endpoint === "submit") {
+	if (endpoint === "submit" || endpoint === "users/update") {
 		return this.config.get("submissionProxyURL");
 	}
 	var url = this.constructor.parent._prepareURL.call(this);
