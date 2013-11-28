@@ -1207,6 +1207,7 @@ suite.data.template =
 
 // TODO: apply such pattern for the Echo.Configuration lib tests...
 suite.data.config = {
+	"appkey": "",
 	"data": {
 		"key1": "key1 value",
 		"key2": "key2 value",
