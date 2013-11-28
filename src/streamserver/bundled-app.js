@@ -1,7 +1,7 @@
 Echo.define("echo/streamserver/bundled-app", [
 	"jquery",
 	"echo/utils",
-	"echo/user-session",
+	"echo/streamserver/user",
 	"echo/app"
 ], function($, Utils, User, App) {
 "use strict";

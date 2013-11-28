@@ -5,8 +5,8 @@ Echo.require([
 	"echo/utils",
 	"echo/events",
 	"echo/streamserver/api",
-	"echo/user-session"
-], function($, API, Utils, Events, StreamServerAPI, UserSession) {
+	"echo/streamserver/user"
+], function($, API, Utils, Events, StreamServerAPI, User) {
 
 "use strict";
 
@@ -89,7 +89,7 @@ suite.prototype.cases.simpleMuxRequest = function(callback) {
 };
 
 suite.prototype.cases.simpleWhoamiRequest = function(callback) {
-	var user = UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
+	var user = User({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	StreamServerAPI.request({
 		"endpoint": "whoami",
 		"apiBaseURL": "https:{%=baseURLs.api.streamserver%}/v1/users/",
@@ -109,7 +109,7 @@ suite.prototype.cases.simpleWhoamiRequest = function(callback) {
 };
 
 suite.prototype.cases.simpleUserUpdateRequest = function(callback) {
-	var user = UserSession({"appkey": "echo.jssdk.tests.aboutecho.com"});
+	var user = User({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	var states = ["Untouched", "ModeratorApproved", "ModeratorBanned", "ModeratorDeleted"];
 	var identityURL = "http://example.com/some_path/test-user/";
 	var state = states[Math.floor(Math.random() * states.length)];

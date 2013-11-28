@@ -1,15 +1,15 @@
 Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
-	"echo/user-session",
+	"echo/streamserver/user",
 	"echo/utils"
-], function($, UserSession, Utils) {
+], function($, User, Utils) {
 
 "use strict";
 
-Echo.Tests.module("Echo.UserSession", {
+Echo.Tests.module("Echo.StreamServer.User", {
 	"meta": {
-		"className": "Echo.UserSession",
+		"className": "Echo.StreamServer.User",
 		"functions": [
 			// public interface
 			"set",
@@ -32,12 +32,12 @@ Echo.Tests.module("Echo.UserSession", {
 		]
 	},
 	"setup": function() {
-		resetUserSession();
+		resetUser();
 	}
 });
 
 Echo.Tests.asyncTest("logged in checks", function() {
-	UserSession({
+	User({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
 			var user = this;
@@ -83,7 +83,7 @@ Echo.Tests.asyncTest("logged in checks", function() {
 });
 
 Echo.Tests.asyncTest("anonymous checks", function() {
-	UserSession({
+	User({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
 			var user = this;
@@ -110,13 +110,13 @@ Echo.Tests.asyncTest("anonymous checks", function() {
 
 Echo.Tests.asyncTest("backplane corner cases", function() {
 	var initUser = function(callback) {
-		UserSession({
+		User({
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"ready": callback
 		});
 	};
 	var sequentialCalls = function(callback) {
-		resetUserSession();
+		resetUser();
 		Backplane.initialized = false;
 		initUser(function() {
 			QUnit.ok(!this.is("logged"),
@@ -131,12 +131,12 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 	};
 	var parallelCalls = function(done) {
 		// we need to simulate a latency so we can start parallel initialisation
-		var init = $.proxy(UserSession._whoamiRequest, UserSession);
-		sinon.stub(UserSession, "_whoamiRequest", function(args) {
+		var init = $.proxy(User._whoamiRequest, User);
+		sinon.stub(User, "_whoamiRequest", function(args) {
 			setTimeout(function() { init(args); }, 500);
 		});
 
-		resetUserSession();
+		resetUser();
 
 		Utils.parallelCall([function(callback) {
 			Backplane.initialized = false;
@@ -147,20 +147,20 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 			});
 		}, function(callback) {
 			Backplane.initialized = true;
-			QUnit.equal(UserSession.state, "ready", "Check if user state is \"ready\"");
+			QUnit.equal(User.state, "ready", "Check if user state is \"ready\"");
 			initUser(function() {
 				QUnit.ok(this.is("logged"), "Check if user is logged when previous user state was \"ready\"");
 				callback();
 			});
 		}, function(callback) {
 			Backplane.initialized = true;
-			QUnit.equal(UserSession.state, "waiting", "Check if user state is \"waiting\"");
+			QUnit.equal(User.state, "waiting", "Check if user state is \"waiting\"");
 			initUser(function() {
 				QUnit.ok(this.is("logged"), "Check if user is logged when previous user state was \"waiting\"");
 				callback();
 			});
 		}], function() {
-			UserSession._whoamiRequest.restore();
+			User._whoamiRequest.restore();
 			done();
 		});
 	};
@@ -179,36 +179,36 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 
 // FIXME: test is disabled because it doesn't really test anything at the moment
 Echo.Tests._asyncTest("error handling", function() {
-	UserSession({
+	User({
 		"ready": function() {
 			var user = this;
 			QUnit.ok(true, "The \"ready\" callback is executed even when the appkey is missing");
 			QUnit.ok(
 				!this.is("logged"),
-				"UserSession object initialized with no appkey is considered as anonymous user"
+				"User object initialized with no appkey is considered as anonymous user"
 			);
 		}
 	});
 
-	resetUserSession();
-	UserSession({
+	resetUser();
+	User({
 		"appkey": "invalid.appkey.sdk.test",
 		"ready": function() {
 			QUnit.ok(
 				!this.is("logged"),
-				"UserSession object initialized using invalid appkey is considered as anonymous user"
+				"User object initialized using invalid appkey is considered as anonymous user"
 			);
 		}
 	});
 
 	Backplane.initialized = false;
-	resetUserSession();
-	UserSession({
+	resetUser();
+	User({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
 			QUnit.ok(
 				!this.is("logged"),
-				"UserSession object initialized with Backplane inactive is considered as anonymous user"
+				"User object initialized with Backplane inactive is considered as anonymous user"
 			);
 			Backplane.initialized = true;
 			QUnit.start();
@@ -216,11 +216,11 @@ Echo.Tests._asyncTest("error handling", function() {
 	});
 });
 
-function resetUserSession() {
-	// force Echo.UserSession to re-initialize itself completely
-	// during the next Echo.UserSession object initialization
-	UserSession.state = undefined;
-	UserSession._sessionID = undefined;
+function resetUser() {
+	// force Echo.User to re-initialize itself completely
+	// during the next Echo.User object initialization
+	User.state = undefined;
+	User._sessionID = undefined;
 }
 
 function checkBasicOperations(user) {

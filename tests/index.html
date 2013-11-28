@@ -15,7 +15,7 @@
 		var harnessDependencies = [
 			"jquery", "echo/api",
 			"echo/app", "echo/events",
-			"echo/user-session", "echo/utils",
+			"echo/streamserver/user", "echo/utils",
 			"QUnit", "echo/backplane"
 		];
 
@@ -35,14 +35,14 @@
 			});
 		}
 
-		Echo.require(harnessDependencies, function($, API, App, Events, UserSession, Utils, QUnit) {
+		Echo.require(harnessDependencies, function($, API, App, Events, User, Utils, QUnit) {
 			Echo.Utils = Utils;
 			Echo.App = App;
 			Echo.Plugin = Plugin;
 			Echo.Events = Events;
 			Echo.jQuery = $;
 			Echo.API = API;
-			Echo.UserSession = UserSession;
+			Echo.StreamServer.User = User;
 			//harness loading
 			Echo.require([
 				"echo/tests/harness", 

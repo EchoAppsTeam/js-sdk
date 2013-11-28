@@ -64,7 +64,7 @@ paths[Echo.Loader.getURL("") + "/enviroment.pack"] = [
 	"echo/events", "echo/utils",
 	"echo/labels", "echo/configuration",
 	"echo/api", "echo/streamserver/api",
-	"echo/user-session", "echo/view",
+	"echo/streamserver/user", "echo/view",
 	"echo/app", "echo/plugin"
 ];
 paths[Echo.Loader.getURL("") + "/gui.pack"] = [

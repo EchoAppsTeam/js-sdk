@@ -79,8 +79,8 @@ _submit.expand = {
 	}
 };
 
-var _userSession = {};
-_userSession.init = {
+var _user = {};
+_user.init = {
 	"echo": {
 		"roles": "array",
 		"state": "string",
@@ -131,8 +131,8 @@ Echo.Tests.Events.contracts = {
 	"Echo.API.Transports.WebSockets.onData": {
 		"event": "string"
 	},
-	"Echo.UserSession.onInit": [_userSession.init, {}],
-	"Echo.UserSession.onInvalidate": [_userSession.init, {}],
+	"Echo.StreamServer.User.onInit": [_user.init, {}],
+	"Echo.StreamServer.User.onInvalidate": [_user.init, {}],
 
 	"Echo.StreamServer.Apps.Stream.onRefresh": _stream.render,
 	"Echo.StreamServer.Apps.Stream.onRender": _stream.render,

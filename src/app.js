@@ -5,10 +5,10 @@ Echo.define("echo/app", [
 	"echo/events",
 	"echo/view",
 	"echo/labels",
-	"echo/user-session",
+	"echo/streamserver/user",
 	"echo/plugin",
 	"require"
-], function($, Utils, Configuration, Events, View, Labels, UserSession, Plugin, require) {
+], function($, Utils, Configuration, Events, View, Labels, User, Plugin, require) {
 
 "use strict";
 
@@ -676,7 +676,7 @@ App.prototype._initializers.subscriptions = function() {
 	// and call the "refresh" application method
 	if (!app.dependent()) {
 		app.events.subscribe({
-			"topic": "Echo.UserSession.onInvalidate",
+			"topic": "Echo.StreamServer.User.onInvalidate",
 			"context": "global",
 			"handler": app.refresh
 		});

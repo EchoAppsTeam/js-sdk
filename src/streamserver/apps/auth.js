@@ -217,7 +217,7 @@ auth.labels = {
 };
 
 auth.events = {
-	"Echo.UserSession.onInvalidate": {
+	"Echo.StreamServer.User.onInvalidate": {
 		"context": "global",
 		"handler": function() {
 			this.modal && this.modal.hide();

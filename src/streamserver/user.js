@@ -1,4 +1,4 @@
-Echo.define("echo/user-session", [
+Echo.define("echo/streamserver/user", [
 	"jquery",
 	"echo/utils",
 	"echo/backplane",
@@ -12,13 +12,13 @@ Echo.define("echo/user-session", [
 
 /**
  * @singleton
- * @class UserSession
+ * @class Echo.StreamServer.User
  * Class implements the interface to work with the user object.
- * The UserSession class is used in pretty much all applications
+ * The Echo.StreamServer.User class is used in pretty much all applications
  * built on top of the Echo JS SDK.
  *
  * Example:
- * 	var user = UserSession({"appkey": "echo.jssdk.demo.aboutecho.com"});
+ * 	var user = Echo.StreamSerer.User({"appkey": "echo.jssdk.demo.aboutecho.com"});
  * 	user.is("logged"); // returns true or false
  *
  * @package environment.pack.js
@@ -40,10 +40,10 @@ Echo.define("echo/user-session", [
  * anonymous users.
  *
  * @return {Object}
- * The reference to the UserSession class.
+ * The reference to the Echo.StreamServer.User class.
  */
-var UserSession = function(config) {
-	return UserSession._construct(config);
+var User = function(config) {
+	return User._construct(config);
 };
 
 /**
@@ -63,7 +63,7 @@ var UserSession = function(config) {
  * @param {Mixed} value
  * The corresponding value which should be defined for the key.
  */
-UserSession.set = function(key, value) {
+User.set = function(key, value) {
 	var user = this;
 	user._maybeDelegate({
 		"action": "set",
@@ -102,7 +102,7 @@ UserSession.set = function(key, value) {
  * @return {Mixed}
  * The corresponding value found in the user object.
  */
-UserSession.get = function(key, defaults) {
+User.get = function(key, defaults) {
 	var user = this;
 	var value = user._maybeDelegate({
 		"action": "get",
@@ -131,7 +131,7 @@ UserSession.get = function(key, defaults) {
  * @return (Boolean)
  * True or false if condition was met or not respectively.
  */
-UserSession.is = function(key) {
+User.is = function(key) {
 	return this._maybeDelegate({
 		"action": "is",
 		"key": key
@@ -155,7 +155,7 @@ UserSession.is = function(key) {
  * @return (Boolean)
  * True or false if condition was met or not respectively.
  */
-UserSession.has = function(key, value) {
+User.has = function(key, value) {
 	var user = this;
 	return user._maybeDelegate({
 		"action": "has",
@@ -171,7 +171,7 @@ UserSession.has = function(key, value) {
  * Method to check if the value of a certain user object field belongs to the
  * array of values.
  *
- * This function is very similar to the UserSession.has with the difference
+ * This function is very similar to the User.has with the difference
  * that the value of the second argument should be `Array`.
  *
  * @param {String} key
@@ -186,7 +186,7 @@ UserSession.has = function(key, value) {
  * @return (Boolean)
  * True or false if condition was met or not respectively.
  */
-UserSession.any = function(key, values) {
+User.any = function(key, values) {
 	var user = this;
 	return user._maybeDelegate({
 		"action": "any",
@@ -218,7 +218,7 @@ UserSession.any = function(key, values) {
  * The callback executed as soon as the logout action was completed.
  * The callback is executed without arguments.
  */
-UserSession.logout = function(callback) {
+User.logout = function(callback) {
 	var user = this;
 	if (!user.is("logged")) {
 		user._reset({});
@@ -233,11 +233,11 @@ UserSession.logout = function(callback) {
 	});
 };
 
-UserSession._construct = function(config) {
+User._construct = function(config) {
 	if (!config) {
 		Utils.log({
 			"type": "error",
-			"component": "UserSession",
+			"component": "Echo.StreamServer.User",
 			"message": "Unable to initialize user session, config is invalid",
 			"args": {"config": config}
 		});
@@ -250,7 +250,7 @@ UserSession._construct = function(config) {
 	user.state = user.state || "init";
 
 	// checking if the Backplane configuration became defined on the page,
-	// in this case if the UserSession was initialized previously - make complete
+	// in this case if the User was initialized previously - make complete
 	// re-initialization from scratch to update the singleton properties
 	if (!user._sessionID && user.get("sessionID")) {
 		user._sessionID = user.get("sessionID");
@@ -280,7 +280,7 @@ UserSession._construct = function(config) {
 	return user;
 };
 
-UserSession._maybeDelegate = function(config) {
+User._maybeDelegate = function(config) {
 	var user = this;
 	var name = Utils.capitalize(config.key);
 	var handler = user["_" + config.action + name];
@@ -289,7 +289,7 @@ UserSession._maybeDelegate = function(config) {
 		: (config.fallback ? config.fallback() : undefined);
 };
 
-UserSession._getDefaultConfig = function() {
+User._getDefaultConfig = function() {
 	return {
 		"appkey": "",
 		"endpoints": {
@@ -301,7 +301,7 @@ UserSession._getDefaultConfig = function() {
 	};
 };
 
-UserSession._logoutRequest = function(data, callback) {
+User._logoutRequest = function(data, callback) {
 	(new API.Request({
 		"apiBaseURL": this.config.get("endpoints.logout"),
 		"secure": this.config.get("useSecureAPI"),
@@ -313,7 +313,7 @@ UserSession._logoutRequest = function(data, callback) {
 	})).request();
 };
 
-UserSession._whoamiRequest = function(args) {
+User._whoamiRequest = function(args) {
 	StreamServerAPI.request({
 		"apiBaseURL": this.config.get("endpoints.whoami"),
 		"secure": this.config.get("useSecureAPI"),
@@ -324,7 +324,7 @@ UserSession._whoamiRequest = function(args) {
 	}).send();
 };
 
-UserSession._listenEvents = function() {
+User._listenEvents = function() {
 	var user = this;
 	if (user.backplaneSubscriptionID) return;
 	user.backplaneSubscriptionID = Backplane.subscribe(function(message) {
@@ -375,14 +375,14 @@ UserSession._listenEvents = function() {
 			 * The total number of contacts found.
 			 */
 			Events.publish({
-				"topic": "Echo.UserSession.onInvalidate",
+				"topic": "Echo.StreamServer.User.onInvalidate",
 				"data": user.is("logged") ? user.data : {}
 			});
 		});
 	});
 };
 
-UserSession._reset = function(data) {
+User._reset = function(data) {
 	var user = this;
 	user.data = user._normalize($.extend({}, data));
 	user.identity = {};
@@ -391,7 +391,7 @@ UserSession._reset = function(data) {
 	user.identity = identities && identities.length ? identities[0] : {};
 };
 
-UserSession._init = function(callback) {
+User._init = function(callback) {
 	var user = this;
 	user.state = "waiting";
 	var handler = function(data) {
@@ -402,11 +402,11 @@ UserSession._init = function(callback) {
 		user.state = "ready";
 		user._reset(data);
 		/**
-		 * @echo_event Echo.UserSession.onInit
+		 * @echo_event Echo.StreamServer.User.onInit
 		 * Triggered when the user is initialized on the page.
 		 *
 		 * @param {String} topic
-		 * Name of the event to subscribe (ex: "Echo.UserSession.onInit").
+		 * Name of the event to subscribe (ex: "Echo.StreamServer.User.onInit").
 		 *
 		 * @param {Object} data
 		 * Object which is returned by the users/whoami API endpoint or
@@ -446,7 +446,7 @@ UserSession._init = function(callback) {
 		 * The total number of contacts found.
 		 */
 		Events.publish({
-			"topic": "Echo.UserSession.onInit",
+			"topic": "Echo.StreamServer.User.onInit",
 			"data": data
 		});
 		callback && callback();
@@ -461,7 +461,7 @@ UserSession._init = function(callback) {
 			"onError": function(response) {
 				Utils.log({
 					"type": "error",
-					"component": "UserSession",
+					"component": "Echo.StreamServer.User",
 					"args": {"response": response},
 					"message": "Unable to initialize user session, " +
 						"error response from StreamServer API received"
@@ -474,7 +474,7 @@ UserSession._init = function(callback) {
 	}
 };
 
-UserSession._normalize = function(data) {
+User._normalize = function(data) {
 	data = data || {};
 	data.echo = data.echo || {};
 	data.echo.state = data.echo.state || "Untouched";
@@ -485,22 +485,22 @@ UserSession._normalize = function(data) {
 	return data;
 };
 
-UserSession._onInit = function(callback) {
+User._onInit = function(callback) {
 	if (!callback) return;
 	Events.subscribe({
-		"topic": "Echo.UserSession.onInit",
+		"topic": "Echo.StreamServer.User.onInit",
 		"once": true,
 		"handler": callback
 	});
 };
 
-UserSession._attrLocation = function(key) {
+User._attrLocation = function(key) {
 	return ~$.inArray(key, ["roles", "state", "markers"])
 		? this.data.echo
 		: this.identity;
 };
 
-UserSession._extract = function(field, container, filter) {
+User._extract = function(field, container, filter) {
 	var user = this;
 	user.identity[field] = typeof user.identity[field] !== "undefined"
 		? user.identity[field]
@@ -508,20 +508,20 @@ UserSession._extract = function(field, container, filter) {
 	return user.identity[field];
 };
 
-UserSession._isLogged = function() {
+User._isLogged = function() {
 	var activeIdentities = this.get("activeIdentities");
 	return !!(activeIdentities && activeIdentities.length);
 };
 
-UserSession._isAdmin = function() {
+User._isAdmin = function() {
 	return this.any("roles", ["administrator", "moderator"]);
 };
 
-UserSession._setName = function(value) {
+User._setName = function(value) {
 	this.identity.displayName = value;
 };
 
-UserSession._getActiveIdentities = function() {
+User._getActiveIdentities = function() {
 	var user = this;
 
 	if (!user.data.poco || !user.data.poco.entry) return;
@@ -541,28 +541,28 @@ UserSession._getActiveIdentities = function() {
 	return identities;
 };
 
-UserSession._getAvatar = function() {
+User._getAvatar = function() {
 	return this._extract("avatar", "photos", function(img) {
 		if (img.type === "avatar") return img.value;
 	});
 };
 
-UserSession._getName = function() {
+User._getName = function() {
 	var identity = this.identity;
 	return identity ? (identity.displayName || identity.username) : undefined;
 };
 
-UserSession._getEmail = function() {
+User._getEmail = function() {
 	return this._extract("email", "emails", function(email) {
 		if (email.primary === "true") return email.value;
 	});
 };
 
-UserSession._getSessionID = function() {
+User._getSessionID = function() {
 	return Backplane.getChannelID();
 };
 
-UserSession._hasIdentity = function(identityUrl) {
+User._hasIdentity = function(identityUrl) {
 	var user = this, hasIdentity = false;
 	$.each(user.data.identities, function(i, identity) {
 		if (identity.identityUrl && identity.identityUrl === identityUrl) {
@@ -573,13 +573,13 @@ UserSession._hasIdentity = function(identityUrl) {
 	return hasIdentity;
 };
 
-UserSession._anyMarker = function(value) {
+User._anyMarker = function(value) {
 	return this.any("markers", value);
 };
 
-UserSession._anyRole = function(value) {
+User._anyRole = function(value) {
 	return this.any("roles", value);
 };
 
-return UserSession;
+return User;
 });

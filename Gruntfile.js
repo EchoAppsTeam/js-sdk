@@ -517,7 +517,7 @@ module.exports = function(grunt) {
 							"configuration",
 							"api",
 							"streamserver/api",
-							"user-session",
+							"streamserver/user",
 							"view",
 							"app",
 							"plugin"

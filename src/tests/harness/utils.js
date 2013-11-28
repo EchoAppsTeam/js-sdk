@@ -111,20 +111,20 @@ Echo.Tests.Utils.initServer = function() {
 	// FIXME: we should have used usual urlMocks filtering like "whoami" and other
 	// but we can't because "logout" endpoint supports only JSONP but sinon can't
 	// mock it. So we have to replace the whole functions
-	sinon.stub(Echo.UserSession, "_logoutRequest", function(data, callback) {
+	sinon.stub(Echo.StreamServer.User, "_logoutRequest", function(data, callback) {
 		Echo.Tests.Utils.actualizeTestUser({"status": "anonymous"}, function() {
-			sinon.stub(Echo.UserSession, "_onInit", function(callback) {
+			sinon.stub(Echo.StreamServer.User, "_onInit", function(callback) {
 				callback();
 			});
 			callback("{\"result\": \"success\"}");
-			Echo.UserSession._onInit.restore();
+			Echo.StreamServer.User._onInit.restore();
 		});
 	});
 };
 
 Echo.Tests.Utils.actualizeTestUser = function(config, callback) {
 	var isMocked = Echo.Tests.Utils.isServerMocked();
-	Echo.UserSession({
+	Echo.StreamServer.User({
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"ready": function() {
 			var user = this;
@@ -147,7 +147,7 @@ Echo.Tests.Utils.actualizeTestUser = function(config, callback) {
 						"channel": Backplane.getChannelID(),
 						"identityUrl": "http://somedomain.com/users/fake_user"
 					}, function() {
-						Echo.UserSession._onInit(callback);
+						Echo.StreamServer.User._onInit(callback);
 						Backplane.expectMessages("identity/ack");
 					}, "jsonp");
 				}

@@ -240,8 +240,8 @@ Echo.Tests.Suite.prototype._cleanupEnvironment = function() {
 	// clear qunit-fixture
 	$("#qunit-fixture").empty();
 
-	// force Echo.UserSession to re-initialize itself completely
-	// during the next Echo.UserSession object initialization
-	Echo.UserSession.state = "init";
+	// force Echoi.StreamServer.User to re-initialize itself completely
+	// during the next Echo.StreamServer.User object initialization
+	Echo.StreamServer.User.state = "init";
 };
 })(Echo.jQuery);

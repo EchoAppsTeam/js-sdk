@@ -222,7 +222,7 @@ Echo.Tests.asyncTest("environment initialization", function() {
 			"echo/configuration",
 			"echo/api",
 			"echo/streamserver/api",
-			"echo/user-session",
+			"echo/streamserver/user",
 			"echo/view",
 			"echo/app",
 			"echo/plugin",

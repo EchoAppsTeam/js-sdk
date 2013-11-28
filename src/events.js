@@ -22,14 +22,14 @@ var Events;
  *
  * 	// Subscribe to the event.
  * 	Events.subscribe({
- * 		"topic": "Echo.UserSession.onInvalidate",
+ * 		"topic": "Echo.StreamServer.User.onInvalidate",
  * 		"context": "global",
  * 		"handler": app.refresh
  * 	});
  *
  * 	// And then publish event:
  * 	Events.publish({
- * 		"topic": "Echo.UserSession.onInvalidate",
+ * 		"topic": "Echo.StreamServer.User.onInvalidate",
  * 		"data": user.is("logged") ? user.data : {}
  * 	});
  *
