@@ -3,7 +3,6 @@ Echo.require([
 	"echo/utils",
 	"echo/labels"
 ], function($, Utils, Labels) {
-
 "use strict";
 
 Echo.Tests.module("Echo.Utils", {
@@ -588,7 +587,11 @@ Echo.Tests.test("invoke()", function() {
 		["some string", "some string"],
 		[function() { return "test"; }, "test"],
 		[function() {}, undefined],
-		[function() { return this.a; }, undefined]
+		// in a strict mode calling function without
+		// context causes setting "this" to the undefined
+		// in this case we should wrap function body into
+		// the try/catch block
+		[function() { try { return this.a; } catch(e) {} }, undefined]
 	];
 	var ctxSpecificTests = [
 		[function() { return this.a; }, 1],
