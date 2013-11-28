@@ -186,18 +186,15 @@ module.exports = function(grunt) {
 			" */\n",
 		"clean": {
 			"build": [
-				"<%= dirs.build %>"
+				"<%= dirs.build %>/*"
 			],
 			"third-party": {
 				"files": [{
 					"expand": true,
 					"cwd": "<%= dirs.build %>",
 					"src": [
-						"third-party/**",
-						// remove everything except packs and folders they are in
-						"!third-party",
+						"third-party/*",
 						"!third-party/janrain",
-						"!third-party/janrain/*",
 						"!third-party/jquery",
 						"!third-party/jquery.pack.js",
 						"!third-party/jquery/jquery.isotope.min.js"
@@ -205,7 +202,7 @@ module.exports = function(grunt) {
 				}]
 			},
 			"all": [
-				"<%= dirs.dist %>",
+				"<%= dirs.dist %>/*",
 				"<%= clean.build %>"
 			]
 		},
@@ -458,8 +455,16 @@ module.exports = function(grunt) {
 			}
 		},
 		"watch": {
-			"src": {
-				"files": ["apps/**/*", "demo/**/*", "config/**/*", "src/**/*", "tools/**/*", "tests/**/*"],
+			"all": {
+				"files": [
+					"Gruntfile.js",
+					"src/**",
+					"demo/**",
+					"tests/**",
+					"apps/**",
+					"config/**",
+					"tools/**"
+				],
 				"tasks": ["default"],
 				"options": {
 					"interrupt": true
