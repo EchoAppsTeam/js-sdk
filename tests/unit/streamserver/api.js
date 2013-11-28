@@ -3,8 +3,9 @@ Echo.require([
 	"echo/api",
 	"echo/utils",
 	"echo/events",
-	"echo/streamserver/api"
-], function($, API, Utils, Events, StreamServerAPI) {
+	"echo/streamserver/api",
+	"echo/user-session"
+], function($, API, Utils, Events, StreamServerAPI, UserSession) {
 
 "use strict";
 

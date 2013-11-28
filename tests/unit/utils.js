@@ -134,14 +134,14 @@ Echo.Tests.test("showMessage()", function() {
 		"layout": "compact",
 		"target": target
 	};
-	Echo.Utils.showMessage(data);
+	Utils.showMessage(data);
 	QUnit.equal(
 		target.find(".echo-message-icon").attr("title"),
 		data.message,
 		"Checking \"showMessage\" in compact mode");
 
 	data.layout = "full";
-	Echo.Utils.showMessage(data);
+	Utils.showMessage(data);
 	QUnit.equal(
 		target.find(".echo-message-icon").html(),
 		data.message,
@@ -150,7 +150,7 @@ Echo.Tests.test("showMessage()", function() {
 
 Echo.Tests.asyncTest("showError()", function() {
 	QUnit.expect(4);
-	Echo.Utils.sequentialCall([
+	Utils.sequentialCall([
 		function(callback) {
 			var def = $.Deferred();
 			var errorTarget = $("<div></div>");
@@ -164,15 +164,15 @@ Echo.Tests.asyncTest("showError()", function() {
 				"label": "error_someUndefinedErrorCode",
 				"promise": def.promise()
 			};
-			Echo.Utils.showError(errorData, errorOptions);
+			Utils.showError(errorData, errorOptions);
 			QUnit.equal(
 				errorTarget.find(".echo-message-icon").html(),
 				"(someUndefinedErrorCode) Some Error Message",
 				"Checking if the unsupported errorCode received"
 			);
 			errorData.errorCode = "busy";
-			errorOptions.label = Echo.Labels.get("error_busy", "");
-			Echo.Utils.showError(errorData, errorOptions);
+			errorOptions.label = Labels.get("error_busy", "");
+			Utils.showError(errorData, errorOptions);
 			QUnit.equal(
 				errorTarget.find(".echo-message-icon").html(),
 				"Loading. Please wait...",
@@ -180,9 +180,9 @@ Echo.Tests.asyncTest("showError()", function() {
 			);
 			errorOptions.retryIn = 3000;
 			errorData.errorCode = "view_limit";
-			errorOptions.label = Echo.Labels.get("error_view_limit", "");
+			errorOptions.label = Labels.get("error_view_limit", "");
 			def.reject();
-			Echo.Utils.showError(errorData, errorOptions);
+			Utils.showError(errorData, errorOptions);
 			def = $.Deferred();
 			QUnit.equal(
 				errorTarget.find(".echo-message-icon").html(),
@@ -192,8 +192,8 @@ Echo.Tests.asyncTest("showError()", function() {
 			setTimeout(function() {
 				errorOptions.retryIn = 0;
 				def.resolve();
-				errorOptions.label = Echo.Labels.get("retrying", "");
-				Echo.Utils.showError(errorData, errorOptions);
+				errorOptions.label = Labels.get("retrying", "");
+				Utils.showError(errorData, errorOptions);
 				QUnit.equal(
 					errorTarget.find(".echo-message-icon").html(),
 					"Retrying...",
