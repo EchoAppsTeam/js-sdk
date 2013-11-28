@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
-	"echo/streamserver/apps/stream",
+	"echo/streamserver/bundled-apps/stream/client-widget",
 	"echo/utils",
 	"echo/streamserver/api",
 	"echo/api"
@@ -9,9 +9,9 @@ Echo.require([
 
 "use strict";
 
-Echo.Tests.module("Echo.StreamServer.Apps.Stream", {
+Echo.Tests.module("Echo.StreamServer.BundledApps.Stream.ClientWidget", {
 	"meta": {
-		"className" : "Echo.StreamServer.Apps.Stream",
+		"className" : "Echo.StreamServer.BundledApps.Stream.ClientWidget",
 		"functions": []
 	}
 });
@@ -71,7 +71,7 @@ Echo.Tests.asyncTest("more button", function() {
 var suite = Echo.Tests.Unit.Stream = function() {
 	this.constructRenderersTest({
 		"instance": {
-			"name": "Echo.StreamServer.Apps.Stream",
+			"name": "Echo.StreamServer.BundledApps.Stream.ClientWidget",
 			"config": {
 				"liveUpdates": {
 					"enabled" :false
@@ -87,7 +87,7 @@ var suite = Echo.Tests.Unit.Stream = function() {
 };
 
 suite.prototype.info = {
-	"className": "Echo.StreamServer.Apps.Stream",
+	"className": "Echo.StreamServer.BundledApps.Stream.ClientWidget",
 	"functions": [
 		"getState",
 		"setState",
@@ -116,9 +116,9 @@ suite.prototype.tests.commonWorkflow = {
 				suite.stream = this;
 				QUnit.equal(suite.stream.config.get("liveUpdates.polling.timeout"), 3,
 					"Check that \"liveUpdates.timeout\" mapped to the \"liveUpdates.polling.timeout\"");
-				QUnit.ok($(target).hasClass("echo-streamserver-apps-stream"),
+				QUnit.ok($(target).hasClass("echo-streamserver-bundledapps-stream-clientwidget"),
 					"Checking the common container rendering");
-				QUnit.equal($(".echo-streamserver-apps-stream-item-depth-0", target).length, 1,
+				QUnit.equal($(".echo-streamserver-bundledapps-stream-item-clientwidget-depth-0", target).length, 1,
 					"Checking initial items count");
 				self.sequentialAsyncTests([
 					"addRootItem",
@@ -171,7 +171,7 @@ suite.prototype.cases.addRootItem = function(callback) {
 		"targetId": this.config.dataBaseLocation
 	});
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.onItemReceive",
+		"topic": "Echo.StreamServer.BundledApps.Stream.ClientWidget.onItemReceive",
 		"once": true,
 		"handler": function() {
 			QUnit.equal(stream.getState(), "paused",
@@ -180,15 +180,15 @@ suite.prototype.cases.addRootItem = function(callback) {
 		}
 	});
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onRender",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender",
 		"once": true,
 		"handler": function(topic, args) {
-			QUnit.equal($(".echo-streamserver-apps-stream-item-depth-0", target).length, 2,
+			QUnit.equal($(".echo-streamserver-bundledapps-stream-item-clientwidget-depth-0", target).length, 2,
 				"Checking items count after posting");
-			var newItem = $(".echo-streamserver-apps-stream-item-depth-0", target).get(0);
-			QUnit.equal($(".echo-streamserver-apps-stream-item-authorName", newItem).html(), "john.doe",
+			var newItem = $(".echo-streamserver-bundledapps-stream-item-clientwidget-depth-0", target).get(0);
+			QUnit.equal($(".echo-streamserver-bundledapps-stream-item-clientwidget-authorName", newItem).html(), "john.doe",
 				"Checking author name of newly posted item");
-			QUnit.equal($(".echo-streamserver-apps-stream-item-text", newItem).html(), "TestContent",
+			QUnit.equal($(".echo-streamserver-bundledapps-stream-item-clientwidget-text", newItem).html(), "TestContent",
 				"Checking text of newly posted item");
 			callback();
 		}
@@ -206,7 +206,7 @@ suite.prototype.cases.queueActivityTesting = function(callback) {
 	var stream = suite.stream;
 	var target = this.config.target;
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onRender",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender",
 		"once": true,
 		"handler": function(topic, args) {
 			var item = stream.threads[stream.threads.length - 1];
@@ -294,7 +294,7 @@ suite.prototype.cases.addChildItem = function(callback) {
 		"targetId": parentItem.get("data.object.id")
 	});
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.onItemReceive",
+		"topic": "Echo.StreamServer.BundledApps.Stream.ClientWidget.onItemReceive",
 		"once": true,
 		"handler": function(topic, args) {
 			var data = args.item.data;
@@ -316,7 +316,7 @@ suite.prototype.cases.asyncItemsRendering = function(callback) {
 	var oldElement = stream.view.get("body").clone(true, true);
 	stream.config.set("asyncItemsRendering", true);
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.onItemsRenderingComplete",
+		"topic": "Echo.StreamServer.BundledApps.Stream.ClientWidget.onItemsRenderingComplete",
 		"once": true,
 		"handler": function() {
 			Echo.Tests._testElementsConsistencyAfterRendering("body", oldElement, stream.view.get("body"));
@@ -341,7 +341,7 @@ suite.prototype.cases.asyncItemsAndLiveUpdate = function(callback) {
 	stream.config.set("asyncItemsRendering", true);
 
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onRender",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender",
 		"once": true,
 		"handler": function(topic, args) {
 			QUnit.ok(!itemsCount, "Check if item that was received via LiveUpdate is rendered after complete rendering of body");
@@ -350,7 +350,7 @@ suite.prototype.cases.asyncItemsAndLiveUpdate = function(callback) {
 		}
 	});
 	var handlerId = stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onRerender",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRerender",
 		"handler": function(topic, args) {
 			if (--itemsCount === 0) {
 				stream.events.unsubscribe({
@@ -360,7 +360,7 @@ suite.prototype.cases.asyncItemsAndLiveUpdate = function(callback) {
 		}
 	});
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.onDataReceive",
+		"topic": "Echo.StreamServer.BundledApps.Stream.ClientWidget.onDataReceive",
 		"once": true,
 		"handler": function(topic, args) {
 			stream.view.render({"name": "body"});
@@ -384,7 +384,7 @@ suite.prototype.cases.liveUpdateEmptyStream = function(callback) {
 
 	stream.config.set("query", "childrenof: " + newTarget);
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.onRefresh",
+		"topic": "Echo.StreamServer.BundledApps.Stream.ClientWidget.onRefresh",
 		"once": true,
 		"handler": function() {
 			QUnit.ok(stream.threads.length === 0, "Check if Stream is empty");
@@ -397,7 +397,7 @@ suite.prototype.cases.liveUpdateEmptyStream = function(callback) {
 	});
 
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onRender",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender",
 		"once": true,
 		"handler": function(topic, args) {
 			QUnit.ok(ok, "Check if item was rendered for empty Stream");
@@ -412,7 +412,7 @@ suite.prototype.cases.moreButton = function(callback) {
 	var stream = suite.stream;
 	var target = this.config.target;
 	stream.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.onDataReceive",
+		"topic": "Echo.StreamServer.BundledApps.Stream.ClientWidget.onDataReceive",
 		"once": true,
 		"handler": function(topic, args) {
 			var count = 0;
@@ -426,7 +426,7 @@ suite.prototype.cases.moreButton = function(callback) {
 			callback();
 		}
 	});
-	$(".echo-streamserver-apps-stream-more", target).click();
+	$(".echo-streamserver-bundledapps-stream-clientwidget-more", target).click();
 };
 
 suite.prototype.cases.predefinedData = function(callback) {
@@ -551,7 +551,7 @@ suite.prototype._preparePostEntry = function(params) {
 	};
 };
 
-Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Stream", function(config) {
+Echo.Tests.defineComponentInitializer("Echo.StreamServer.BundledApps.Stream.ClientWidget", function(config) {
 	return new Stream($.extend({
 		"target": $(document.getElementById("qunit-fixture")).empty(),
 		"liveUpdates": {

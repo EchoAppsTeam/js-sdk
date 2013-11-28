@@ -6,7 +6,7 @@ Echo.require([
 
 "use strict";
 
-var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.ItemAccumulatorDisplay";
+var plugin = "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.ItemAccumulatorDisplay";
 
 Echo.Tests.module(plugin, {
 	"meta": {

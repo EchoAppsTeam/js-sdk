@@ -8,7 +8,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "submit",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Submit",
+        "component": "Echo.StreamServer.BundledApps.Submit.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "targetURL": "http://example.com/js-sdk",
@@ -25,7 +25,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "stream",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Stream",
+        "component": "Echo.StreamServer.BundledApps.Stream.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/search/1",

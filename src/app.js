@@ -33,7 +33,7 @@ var App = function() {};
  * Specifies the application interface in the predefined way.
  *
  * @param {String} definition.name
- * Specifies the application name including namespace (ex. "Echo.StreamServer.Apps.Submit")
+ * Specifies the application name including namespace (ex. "Echo.StreamServer.BundledApps.Submit.ClientWidget")
  *
  * @param {Object} [definition.vars]
  * Specifies internal application variables.

@@ -6,19 +6,19 @@ Echo.define("echo/streamserver/plugins/edit", [
 Echo.define("echo/streamserver/plugins/streamItemEdit", [
 	"jquery",
 	"echo/plugin",
-	"echo/streamserver/apps/submit"
+	"echo/streamserver/bundled-apps/submit/client-widget"
 ], function($, Plugin, Submit) {
 
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Item.Plugins.Edit
+ * @class Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Edit
  * Adds extra “Edit” button to each item in the Echo Stream application
  * which allows to edit the content and some metadata of the item.
  * This button will appear either for the users with
  * administrative privileges or for editing of personal comments.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -34,7 +34,7 @@ Echo.define("echo/streamserver/plugins/streamItemEdit", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("Edit", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("Edit", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -43,7 +43,7 @@ plugin.init = function() {
 };
 
 $.map(["Complete", "Error"], function(action) {
-	plugin.events["Echo.StreamServer.Apps.Submit.Plugins.Edit.onEdit" + action] =
+	plugin.events["Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Edit.onEdit" + action] =
 		function(topic, args) {
 			this.component.render();
 		}
@@ -98,11 +98,11 @@ Echo.define("echo/streamserver/plugins/submitEdit", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Submit.Plugins.Edit
+ * @class Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Edit
  * Adds new mode to the Echo Submit application which allows
  * to edit the content and some metadata of the item.
  *
- * 	new Echo.StreamServer.Apps.Submit({
+ * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
  * 		"target": document.getElementById("echo-submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -116,7 +116,7 @@ Echo.define("echo/streamserver/plugins/submitEdit", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("Edit", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.definition("Edit", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -157,19 +157,19 @@ plugin.labels = {
 };
 
 /**
- * @echo_event Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditInit
+ * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Edit.onEditInit
  * Triggered when edit operation was started
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditComplete
+ * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Edit.onEditComplete
  * Triggered when edit operation is finished
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditError
+ * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Edit.onEditError
  * Triggered if edit operation failed
  */
 $.map(["Init", "Complete", "Error"], function(action) {
-	plugin.events["Echo.StreamServer.Apps.Submit.onPost" + action] = function(topic, args) {
+	plugin.events["Echo.StreamServer.BundledApps.Submit.ClientWidget.onPost" + action] = function(topic, args) {
 		if (action === "Init") {
 			args.postData.content = this._prepareContent();
 		}

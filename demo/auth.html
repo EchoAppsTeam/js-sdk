@@ -7,10 +7,10 @@
 	</head>
 <body>
 	<style>
-		.echo-streamserver-apps-auth-userAnonymous { text-align: left; }
+		.echo-streamserver-bundledapps-auth-clientwidget-userAnonymous { text-align: left; }
 	</style>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Auth" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.BundledApps.Auth.ClientWidget" target="_blank">Documentation</a></div>
 		<h1>Auth App Demo</h1>
 		<div class="description">Auth app displays the user login status and allows them sign in using different social identities.</div>
 		<div class="wrapper">
@@ -32,7 +32,7 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/apps/auth"], function(Auth) {
+		Echo.require(["echo/streamserver/bundled-apps/auth/client-widget"], function(Auth) {
 			var identityManager = {
 				"width": 400,
 				"height": 240,

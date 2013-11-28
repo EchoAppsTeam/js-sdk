@@ -8,13 +8,13 @@ Echo.define("echo/streamserver/plugins/metadataManager", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Item.Plugins.MetadataManager
+ * @class Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.MetadataManager
  * Provides the ability to add buttons to the Echo Stream application items
  * adding/removing markers/tags. By default those buttons will be available
  * for moderators and administrators, though the visibility of tag controls
  * can be configured via special param.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -30,7 +30,7 @@ Echo.define("echo/streamserver/plugins/metadataManager", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("MetadataManager", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("MetadataManager", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -65,7 +65,7 @@ plugin.init = function() {
  *
  * Example: simple marker control.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -80,7 +80,7 @@ plugin.init = function() {
  *
  * Example: simple tag control.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -95,7 +95,7 @@ plugin.init = function() {
  *
  * Example: tag control with visibility condition defined as an object.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -115,7 +115,7 @@ plugin.init = function() {
  *
  * Example: tag control with visibility condition defined as a function 
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -178,11 +178,11 @@ plugin.methods._assembleButton = function(action, control) {
 			"submissionProxyURL": item.config.get("submissionProxyURL"),
 			"onData": function(response) {
 				/**
-				* @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.MetadataManager.onMarkComplete
+				* @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.MetadataManager.onMarkComplete
 				* Triggered when the Mark action is finished.
 				*/
 				/**
-				* @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.MetadataManager.onUnmarComplete
+				* @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.MetadataManager.onUnmarComplete
 				* Triggered when the Unmark action is finished.
 				*/
 				publishCompleteEvent("Complete", response);
@@ -190,11 +190,11 @@ plugin.methods._assembleButton = function(action, control) {
 			},
 			"onError": function(response) {
 				/**
-				* @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.MetadataManager.onMarkError
+				* @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.MetadataManager.onMarkError
 				* Triggered when the Mark action completed with error.
 				*/
 				/**
-				* @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.MetadataManager.onUnmarError
+				* @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.MetadataManager.onUnmarError
 				* Triggered when the Unmark action completed with error.
 				*/
 				publishCompleteEvent("Error", response);

@@ -2,16 +2,16 @@ Echo.define("echo/streamserver/plugins/janrainAuth", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
-	"echo/streamserver/apps/auth"
+	"echo/streamserver/bundled-apps/auth/client-widget"
 ], function($, Plugin, Utils, Auth) {
 
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Submit.Plugins.JanrainAuth
+ * @class Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.JanrainAuth
  * Janrain Social Sign-in Widget integration with Echo Submit Application.
  *
- * 	new Echo.StreamServer.Apps.Submit({
+ * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
  * 		"target": document.getElementById("submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -29,7 +29,7 @@ Echo.define("echo/streamserver/plugins/janrainAuth", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("JanrainAuth", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.definition("JanrainAuth", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 

@@ -8,7 +8,7 @@ Echo.define("echo/streamserver/plugins/submitJanrainSharing", [
 	"echo/plugin",
 	"echo/utils",
 	"echo/gui",
-	"echo/streamserver/apps/auth",
+	"echo/streamserver/bundled-apps/auth/client-widget",
 	"require",
 	"css!echo/gui.pack"
 ], function($, Plugin, Utils, GUI, Auth, require) {
@@ -16,11 +16,11 @@ Echo.define("echo/streamserver/plugins/submitJanrainSharing", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Submit.Plugins.JanrainSharing
+ * @class Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.JanrainSharing
  * Plugin provides the ability to load Janrain sharing dialog after
  * the item has been posted using the Echo Submit application.
  *
- * 	new Echo.StreamServer.Apps.Submit({
+ * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
  * 		"target": document.getElementById("echo-submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -45,7 +45,7 @@ Echo.define("echo/streamserver/plugins/submitJanrainSharing", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("JanrainSharing", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.definition("JanrainSharing", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -162,11 +162,11 @@ plugin.enabled = function() {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Apps.Submit.onPostInit": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostInit": function(topic, args) {
 		if (this._isLegacy()) return;
 		this.set("needShare", this.config.get("alwaysShare") || this.view.get("shareCheckbox").prop("checked"));
 	},
-	"Echo.StreamServer.Apps.Submit.onPostComplete": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostComplete": function(topic, args) {
 		var plugin = this;
 		if (plugin._isLegacy()) {
 			this._shareLegacy(args);
@@ -398,7 +398,7 @@ Echo.define("echo/streamserver/plugins/streamJanrainSharing", [
 	"jquery",
 	"echo/plugin",
 	"echo/gui",
-	"echo/streamserver/apps/submit",
+	"echo/streamserver/bundled-apps/submit/client-widget",
 	"echo/streamserver/plugins/submitJanrainSharing",
 	"css!echo/gui.pack"
 ], function($, Plugin, GUI, Submit) {
@@ -406,11 +406,11 @@ Echo.define("echo/streamserver/plugins/streamJanrainSharing", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Item.Plugins.JanrainSharing
+ * @class Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.JanrainSharing
  * Plugin provides the ability to load JanRain sharing dialog clicking
  * the "Share" button in the item.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -435,7 +435,7 @@ Echo.define("echo/streamserver/plugins/streamJanrainSharing", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("JanrainSharing", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("JanrainSharing", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -480,8 +480,8 @@ plugin.labels = {
 };
 
 // let's copy these functions from the related plugin for Submit Application
-plugin.methods._share = Echo.StreamServer.Apps.Submit.Plugins.JanrainSharing.prototype._share;
-plugin.methods._showPopup = Echo.StreamServer.Apps.Submit.Plugins.JanrainSharing.prototype._showPopup;
+plugin.methods._share = Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.JanrainSharing.prototype._share;
+plugin.methods._showPopup = Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.JanrainSharing.prototype._showPopup;
 
 plugin.methods._prepareData = function(item) {
 	return {

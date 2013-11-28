@@ -8,7 +8,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "test.counter.1",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/1"
@@ -16,7 +16,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.2",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/2"
@@ -24,7 +24,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.3",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/3"
@@ -32,7 +32,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.4",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/4"
@@ -40,7 +40,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.5",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/5"
@@ -48,7 +48,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.6",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/6"
@@ -56,7 +56,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.7",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/7"
@@ -64,7 +64,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.8",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/8"
@@ -72,7 +72,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.9",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/9"
@@ -80,7 +80,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.10",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/10"
@@ -88,7 +88,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.11",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/11"
@@ -96,7 +96,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.12",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/12"
@@ -104,7 +104,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.13",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/13"
@@ -112,7 +112,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.14",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/14"
@@ -120,7 +120,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     }, {
         "id": "test.counter.15",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Counter",
+        "component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/counter/15"

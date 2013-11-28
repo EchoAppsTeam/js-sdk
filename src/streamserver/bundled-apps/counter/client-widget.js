@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/apps/counter", [
+Echo.define("echo/streamserver/bundled-apps/counter/client-widget", [
 	"jquery",
 	"echo/utils",
 	"echo/streamserver/api",
@@ -8,12 +8,12 @@ Echo.define("echo/streamserver/apps/counter", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Counter
+ * @class Echo.StreamServer.BundledApps.Counter.ClientWidget
  * Echo Counter class which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
  * and provides a simple live updating number.
  *
- * 	new Echo.StreamServer.Apps.Counter({
+ * 	new Echo.StreamServer.BundledApps.Counter.ClientWidget({
  * 		"target": document.getElementById("echo-counter"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"query" : "childrenof:http://example.com/test/*"
@@ -28,12 +28,12 @@ Echo.define("echo/streamserver/apps/counter", [
  * @package streamserver.pack.js
  *
  * @constructor
- * Counter constructor initializing Echo.StreamServer.Apps.Counter class
+ * Counter constructor initializing Echo.StreamServer.BundledApps.Counter.ClientWidget class
  *
  * @param {Object} config
  * Configuration options
  */
-var counter = App.definition("Echo.StreamServer.Apps.Counter");
+var counter = App.definition("Echo.StreamServer.BundledApps.Counter.ClientWidget");
 
 if (App.isDefined(counter)) return;
 
@@ -42,20 +42,20 @@ if (App.isDefined(counter)) return;
 /** @hide @method parentRenderer */
 
 /**
- * @echo_event Echo.StreamServer.Apps.Counter.onReady
+ * @echo_event Echo.StreamServer.BundledApps.Counter.ClientWidget.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Counter.onRefresh
+ * @echo_event Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Counter.onRender
+ * @echo_event Echo.StreamServer.BundledApps.Counter.ClientWidget.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Counter.onRerender
+ * @echo_event Echo.StreamServer.BundledApps.Counter.ClientWidget.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -112,7 +112,7 @@ counter.config = {
 	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
 	 * method specification.
 	 *
-	 * 	new Echo.StreamServer.Apps.Counter({
+	 * 	new Echo.StreamServer.BundledApps.Counter.ClientWidget({
 	 * 		"target": document.getElementById("echo-counter"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"query" : "childrenof:http://example.com/test/*"
@@ -126,7 +126,7 @@ counter.config = {
 	 * More information about the data format can be found
 	 * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count#ResponseFormat" target="_blank">here</a>.
 	 *
-	 * 	new Echo.StreamServer.Apps.Counter({
+	 * 	new Echo.StreamServer.BundledApps.Counter.ClientWidget({
 	 * 		...
 	 * 		"data": {"count": 100},
 	 * 		...
@@ -208,7 +208,7 @@ counter.methods._getRequestObject = function(overrides) {
 counter.methods._maybeUpdate = function(data) {
 	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
 		/**
-		 * @echo_event Echo.StreamServer.Apps.Counter.onUpdate
+		 * @echo_event Echo.StreamServer.BundledApps.Counter.ClientWidget.onUpdate
 		 * Triggered when new value is received.
 		 */
 		this.events.publish({
@@ -233,7 +233,7 @@ counter.methods._handleResponse = function(data, options) {
 
 counter.methods._error = function(data, options) {
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Counter.onError
+	 * @echo_event Echo.StreamServer.BundledApps.Counter.ClientWidget.onError
 	 * Triggered when some error has occured while getting counter data.
 	 */
 	this.events.publish({

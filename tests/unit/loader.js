@@ -252,10 +252,10 @@ Echo.Tests.asyncTest("application initialization", function() {
 	var initCounterApplication = function(callback) {
 		$("qunit-fixture").empty();
 		Echo.require([
-			"echo/streamserver/apps/counter"
+			"echo/streamserver/bundled-apps/counter/client-widget"
 		], function(Counter) {
 			new Counter({
-			//"component": "Echo.StreamServer.Apps.Counter",
+			//"component": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
 				"target": $("qunit-fixture"),
 				"data": {"count": 5},
 				"appkey": "echo.jssdk.tests.aboutecho.com",

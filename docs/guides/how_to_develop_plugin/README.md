@@ -30,7 +30,7 @@ Now let's add the plugin definition. Echo JS SDK contains a special Echo.Plugin 
 
 	var $ = jQuery;
 
-	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
+	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
 	if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -51,7 +51,7 @@ Let's assume that we need a configuration parameter for our plugin to define the
 
 	var $ = jQuery;
 
-	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
+	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
 	if (Echo.Plugin.isDefined(plugin)) return;
 
@@ -252,7 +252,7 @@ Each Echo component is an independent part of the system and can communicate wit
 There are lots of events going on during the app and plugin life. The list of the events for each component can be found on the respective page in the documentation. The plugin definition structure provides the interface to subscribe to the necessary events. The events subscriptions should be defined inside the "events" hash using the event name as a key and the event handler as a value, for example:
 
 	plugin.events = {
-		"Echo.StreamServer.Apps.Stream.onDataReceive": function(topic, args) {
+		"Echo.StreamServer.BundledApps.Stream.ClientWidget.onDataReceive": function(topic, args) {
 			// ... some actions ...
 		}
 	};
@@ -278,7 +278,7 @@ In order to install the plugin into the necessary app, the following steps shoul
 
 &nbsp;
 
-	new Echo.StreamServer.Apps.Stream({
+	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
 		...
 		"plugins": [{
 			"name": "StreamSortingSelector",
@@ -296,7 +296,7 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 
 	var $ = jQuery;
 
-	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.Apps.Stream");
+	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
 	if (Echo.Plugin.isDefined(plugin)) return;
 

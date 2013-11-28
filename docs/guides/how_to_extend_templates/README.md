@@ -127,7 +127,7 @@ It is required to add a caption above the list of users who liked this comment. 
 
     // css customization
     plugin.css =
-        '.echo-streamserver-apps-facepile-suffixText { display: none; }' +
+        '.echo-streamserver-bundledapps-facepile-clientwidget-suffixText { display: none; }' +
         '.{plugin.class:likesHeader} { margin-top: 10px; }';
 
 As we can see in the code in order to access the "likedBy" element which was added by the "Like" plugin we use "plugin-Like-likedBy" construction which has the following format "_plugin_-_the_plugin_name_-_the_name_of_the_element_".
@@ -135,7 +135,7 @@ Please note that in order to access the elements of other plugins, your plugin s
 
     Echo.Loader.initApplication({
         "script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Stream",
+        "component": "Echo.StreamServer.BundledApps.Stream.ClientWidget",
         "config": {
              // some config parameters...
              "plugins": [{

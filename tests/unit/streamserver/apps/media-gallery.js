@@ -1,15 +1,15 @@
 Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
-	"echo/streamserver/apps/item",
-		"echo/streamserver/plugins/mediaGallery"
+	"echo/streamserver/bundled-apps/stream/item/client-widget",
+	"echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget"
 ], function($, Item) {
 
 "use strict";
 
 var data = {
 	"instance": {
-		"name": "Echo.StreamServer.Apps.Stream.Item.MediaGallery"
+		"name": "Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget"
 	},
 	"config": {
 		"async": true,
@@ -22,7 +22,7 @@ var suite = Echo.Tests.Unit.MediaGallery = function() {
 };
 
 suite.prototype.info = {
-	"className": "Echo.StreamServer.Apps.Stream.Item.MediaGallery",
+	"className": "Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget",
 	"functions": []
 };
 
@@ -77,7 +77,7 @@ suite.prototype.cases = {};
 suite.prototype.cases.initialView = function(callback) {
 	var gallery = suite.mediaGallery;
 	gallery.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.MediaGallery.onLoadMedia",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onLoadMedia",
 		"once": true,
 		"handler": function(topic, params) {
 			QUnit.ok(suite.checkGalleryActiveItem(gallery, 0),
@@ -90,7 +90,7 @@ suite.prototype.cases.initialView = function(callback) {
 suite.prototype.cases.changeActiveItem = function(callback) {
 	var gallery = suite.mediaGallery;
 	gallery.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.MediaGallery.onChangeMedia",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onChangeMedia",
 		"once": true,
 		"handler": function(topic, params) {
 			QUnit.ok(suite.checkGalleryActiveItem(gallery, 1),
@@ -104,7 +104,7 @@ suite.prototype.cases.changeActiveItem = function(callback) {
 suite.prototype.cases.oneMediaItem = function(callback) {
 	var gallery = suite.mediaGallery;
 	gallery.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRefresh",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onRefresh",
 		"once": true,
 		"handler": function(topic, params) {
 			QUnit.ok(!(gallery.view.get("controls").is(":visible") && gallery.view.get("controls").children().length),

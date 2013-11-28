@@ -7,10 +7,10 @@
 	</head>
 <body>
 	<style>
-		.echo-streamserver-apps-auth-userAnonymous { text-align: left; }
+		.echo-streamserver-bundledapps-auth-clientwidget-userAnonymous { text-align: left; }
 	</style>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Auth.Plugins.JanrainConnector" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.BundledApps.Auth.ClientWidget.Plugins.JanrainConnector" target="_blank">Documentation</a></div>
 		<h1>Janrain Connector Plugin Demo</h1>
 		<div class="description">Adds the possibility to login via Janrain providing only Janrain application name.</div>
 		<div class="wrapper">
@@ -32,7 +32,7 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/apps/auth"], function(Auth) {
+		Echo.require(["echo/streamserver/bundled-apps/auth/client-widget"], function(Auth) {
 			new Auth({
 	            "backplane": { 
 	                "serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",

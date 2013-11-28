@@ -149,11 +149,11 @@
 	<div id="container-v3">
 		<h2>JS SDK v3 Applications</h2>
 		<div class="wrapper">
-			<!-- Echo.StreamServer.Apps.Stream v3 -->
+			<!-- Echo.StreamServer.BundledApps.Stream.ClientWidget v3 -->
 			<b>Stream</b>
 			<div id="stream-v3"></div>
 			<script>
-				Echo.require(["echo/streamserver/apps/stream"], function(Stream) {
+				Echo.require(["echo/streamserver/bundled-apps/stream/client-widget"], function(Stream) {
 					new Stream({
 						"backplane": {
 							"serverBaseURL": "https://api.echoenabled.com/v1",
@@ -219,7 +219,7 @@
 			<b>FormAuth</b>
 			<div id="auth-form-v3"></div>
 			<script type="text/javascript">
-				Echo.require(["echo/identityserver/apps/auth"], function(Auth) {
+				Echo.require(["echo/identityserver/bundled-apps/auth/client-widget"], function(Auth) {
                     new Auth({
 						"backplane": { 
 							"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
@@ -239,11 +239,11 @@
 		</div>
 
 		<div class="wrapper">
-			<!-- Echo.StreamServer.Apps.Submit v3 -->
+			<!-- Echo.StreamServer.BundledApps.Submit.ClientWidget v3 -->
 			<b>Submit</b>
 			<div id="submit-form-v3"></div>
 			<script type="text/javascript">
-                Echo.require(["echo/streamserver/apps/submit"], function(Submit) {
+                Echo.require(["echo/streamserver/bundled-apps/submit/client-widget"], function(Submit) {
                     new Submit({
                         "backplane": {
                             "serverBaseURL": "https://api.echoenabled.com/v1",
@@ -273,11 +273,11 @@
 		</div>
 
 		<div class="wrapper">
-			<!-- Echo.StreamServer.Apps.Counter v3 -->
+			<!-- Echo.StreamServer.BundledApps.Counter.ClientWidget v3 -->
 			<b>Counter</b>
 			<div id="counter-v3"></div>
 			<script type="text/javascript">
-                Echo.require(["echo/streamserver/apps/counter"], function(Counter) {
+                Echo.require(["echo/streamserver/bundled-apps/counter/client-widget"], function(Counter) {
                     new Counter({
                         "target": document.getElementById("counter-v3"),
                         "appkey": "echo.jssdk.demo.aboutecho.com",
@@ -289,11 +289,11 @@
 		</div>
 
 		<div class="wrapper">
-			<!-- Echo.StreamServer.Apps.FacePile v3 -->
+			<!-- Echo.StreamServer.BundledApps.FacePile.ClientWidget v3 -->
 			<b>Face Pile</b>
 			<div id="face-pile-v3"></div>
 			<script type="text/javascript">
-                Echo.require(["echo/streamserver/apps/facePile"], function(FacePile) {
+                Echo.require(["echo/streamserver/bundled-apps/facepile/client-widget"], function(FacePile) {
                     new FacePile({
                         "backplane": {
                             "serverBaseURL": "https://api.echoenabled.com/v1",

@@ -8,7 +8,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Auth",
+        "component": "Echo.StreamServer.BundledApps.Auth.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -28,7 +28,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Auth",
+        "component": "Echo.StreamServer.BundledApps.Auth.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -48,7 +48,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Auth",
+        "component": "Echo.StreamServer.BundledApps.Auth.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -68,7 +68,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Auth",
+        "component": "Echo.StreamServer.BundledApps.Auth.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {
@@ -88,7 +88,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     "apps": [{
         "id": "auth",
         "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.Apps.Auth",
+        "component": "Echo.StreamServer.BundledApps.Auth.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "identityManager": {

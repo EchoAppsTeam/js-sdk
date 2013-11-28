@@ -1,16 +1,16 @@
-Echo.define("echo/streamserver/apps/auth", [
+Echo.define("echo/streamserver/bundled-apps/auth/client-widget", [
 	"jquery",
 	"echo/utils",
 	"echo/gui",
 	"echo/gui/modal",
-	"echo/streamserver/bundled-app",
+	"echo/app-client-widget",
 	"css!echo/gui.pack",
 ], function($, Utils, GUI, GUIModal, App) {
 
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Auth
+ * @class Echo.StreamServer.BundledApps.Auth.ClientWidget
  * Echo Auth application displays the user login status and allows them to sign in using different social identities.
  *
  * 	var identityManager = {
@@ -20,7 +20,7 @@ Echo.define("echo/streamserver/apps/auth", [
  * 		"url": "http://example.com/auth"
  * 	};
  *
- * 	new Echo.StreamServer.Apps.Auth({
+ * 	new Echo.StreamServer.BundledApps.Auth.ClientWidget({
  * 		"target": document.getElementById("echo-auth"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"identityManager": {
@@ -38,12 +38,12 @@ Echo.define("echo/streamserver/apps/auth", [
  * @package streamserver.pack.js
  *
  * @constructor
- * Auth constructor initializing Echo.StreamServer.Apps.Auth class.
+ * Auth constructor initializing Echo.StreamServer.BundledApps.Auth.ClientWidget class.
  *
  * @param {Object} config
  * Configuration options.
  */
-var auth = App.definition("Echo.StreamServer.Apps.Auth");
+var auth = App.definition("Echo.StreamServer.BundledApps.Auth.ClientWidget");
 
 if (App.isDefined(auth)) return;
 
@@ -63,20 +63,20 @@ if (App.isDefined(auth)) return;
 /** @hide @echo_label error_unknown */
 
 /**
- * @echo_event Echo.StreamServer.Apps.Auth.onReady
+ * @echo_event Echo.StreamServer.BundledApps.Auth.ClientWidget.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Auth.onRefresh
+ * @echo_event Echo.StreamServer.BundledApps.Auth.ClientWidget.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Auth.onRender
+ * @echo_event Echo.StreamServer.BundledApps.Auth.ClientWidget.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Auth.onRerender
+ * @echo_event Echo.StreamServer.BundledApps.Auth.ClientWidget.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -119,7 +119,7 @@ auth.config = {
 	 * 		"url": "http://example.com/auth"
 	 * 	};
 	 *
-	 * 	new Echo.StreamServer.Apps.Auth({
+	 * 	new Echo.StreamServer.BundledApps.Auth.ClientWidget({
 	 * 		"target": document.getElementById("echo-auth"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"identityManager": {

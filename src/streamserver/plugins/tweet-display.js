@@ -8,7 +8,7 @@ Echo.define("echo/streamserver/plugins/tweet-display", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Item.Plugins.TweetDisplay
+ * @class Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.TweetDisplay
  * Adds the Twitter intents controls into the item UI and updates the
  * item UI to look and behave like a Twitter item. The item UI update includes:
  *
@@ -24,7 +24,7 @@ Echo.define("echo/streamserver/plugins/tweet-display", [
  * To enable this plugin should be taken add the corresponding section into the
  * Echo Stream configuration parameter plugins:
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -33,7 +33,7 @@ Echo.define("echo/streamserver/plugins/tweet-display", [
  * 	});
  *
  * <b>Note</b>: plugin must be at the very beginning of the plugin list to
- * work correctly. If {@link Echo.StreamServer.Apps.Stream.Plugins.PinboardVisualization PinboardVisualization}
+ * work correctly. If {@link Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.PinboardVisualization PinboardVisualization}
  * plugin is also enabled in the Stream then this plugin must be placed right after it.
  *
  * <b>Note</b>: if TweetDisplay plugin is added to the stream then Reply and
@@ -48,7 +48,7 @@ Echo.define("echo/streamserver/plugins/tweet-display", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("TweetDisplay", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("TweetDisplay", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -170,7 +170,7 @@ plugin.enabled = function() {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Apps.Stream.Item.onRender": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender": function(topic, args) {
 		var activeClass = this.cssPrefix + "activeButton";
 		var item = this.component;
 		$.map(item.buttons[this.name], function(name) {

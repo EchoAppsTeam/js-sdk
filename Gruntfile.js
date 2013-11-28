@@ -526,12 +526,14 @@ module.exports = function(grunt) {
 						"name": "streamserver.pack",
 						"create": true,
 						"include": [
-							"streamserver/bundled-app",
-							"streamserver/apps/counter",
-							"streamserver/apps/stream",
-							"streamserver/apps/facepile",
-							"streamserver/apps/submit",
-							"streamserver/apps/auth",
+							"app-client-widget",
+							"streamserver/bundled-apps/counter/client-widget",
+							"streamserver/bundled-apps/stream/item/client-widget",
+							"streamserver/bundled-apps/stream/client-widget",
+							"streamserver/bundled-apps/facepile/item/client-widget",
+							"streamserver/bundled-apps/facepile/client-widget",
+							"streamserver/bundled-apps/submit/client-widget",
+							"streamserver/bundled-apps/auth/client-widget",
 							"streamserver/plugins/community-flag",
 							"streamserver/plugins/form-auth",
 							"streamserver/plugins/item-accumulator-display",
@@ -551,6 +553,7 @@ module.exports = function(grunt) {
 						"name": "pinboard-visualization",
 						"create": true,
 						"include": [
+							"streamserver/bundled-apps/stream/item/media-gallery/client-widget",
 							"streamserver/plugins/pinboard-visualization"
 						]
 					}, {

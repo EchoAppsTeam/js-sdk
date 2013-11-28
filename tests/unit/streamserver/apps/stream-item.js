@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
-	"echo/streamserver/apps/item",
+	"echo/streamserver/bundled-apps/stream/item/client-widget",
 	"echo/events"
 ], function($, Item, Events) {
 
@@ -10,7 +10,7 @@ Echo.require([
 var suite = Echo.Tests.Unit.Item = function() {
 	this.constructRenderersTest({
 		"instance": {
-			"name": "Echo.StreamServer.Apps.Stream.Item",
+			"name": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget",
 			"config": {
 				"data": suite._itemData,
 				"parent": suite._streamConfigData
@@ -24,7 +24,7 @@ var suite = Echo.Tests.Unit.Item = function() {
 };
 
 suite.prototype.info = {
-	"className": "Echo.StreamServer.Apps.Stream.Item",
+	"className": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget",
 	"functions": [
 		"isRoot",
 		"block",
@@ -136,7 +136,7 @@ suite.prototype.tests.commonWorkflow = {
 			"ready": function() {
 				var item = suite.item = this;
 				item.events.subscribe({
-					"topic": "Echo.StreamServer.Apps.Stream.Item.onRender",
+					"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender",
 					"handler": function() {
 						runStaticTests(item);
 						addChildren(item);
@@ -155,7 +155,7 @@ suite.prototype.tests.commonWorkflow = {
 suite.prototype.cases.traverse = function(callback) {
 	var item = suite.item;
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onRerender",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRerender",
 		"once": true,
 		"handler": function() {
 			var content = "";
@@ -182,7 +182,7 @@ suite.prototype.cases.traverse = function(callback) {
 suite.prototype.cases.expand = function(callback) {
 	var item = suite.item;
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onChildrenExpand",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onChildrenExpand",
 		"once": true,
 		"handler": function() {
 			QUnit.ok(true, "Checking onChildrenExpand() event");
@@ -190,7 +190,7 @@ suite.prototype.cases.expand = function(callback) {
 		}
 	});
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onRerender",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRerender",
 		"once": true,
 		"handler": function() {
 			item.view.get("expandChildren").click();
@@ -216,7 +216,7 @@ suite.prototype.tests.testItemButtons = {
 			"ready": function() {
 				var item = suite.item = this;
 				item.events.subscribe({
-					"topic": "Echo.StreamServer.Apps.Stream.Item.onRender",
+					"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender",
 					"handler": function() {
 						self.sequentialAsyncTests([
 							"visibility",
@@ -250,7 +250,7 @@ suite.prototype.cases.visibility = function(callback) {
 		"plugin": "Plugin3"
 	}];
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onRerender",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRerender",
 		"once": true,
 		"handler": function() {
 			var element = item.view.get("buttons");
@@ -291,7 +291,7 @@ suite.prototype.cases.order = function(callback) {
 		"plugin": "Plugin3"
 	}];
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onRerender",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRerender",
 		"once": true,
 		"handler": function() {
 			var element = item.view.get("buttons");
@@ -334,7 +334,7 @@ suite.prototype.cases.click = function(callback) {
 		}
 	};
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onButtonClick",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onButtonClick",
 		"once": true,
 		"handler": function(topic, args) {
 			QUnit.equal(item.get("key"), "value",
@@ -345,7 +345,7 @@ suite.prototype.cases.click = function(callback) {
 		}
 	});
 	item.events.subscribe({
-		"topic": "Echo.StreamServer.Apps.Stream.Item.onRerender",
+		"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRerender",
 		"once": true,
 		"handler": function() {
 			$(item.view.get("buttons").children().get(1)).click();
@@ -453,7 +453,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-				"expect": '1 <img class="echo-streamserver-apps-stream-item-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\n<a href="http://google.com/#qwerty">http://google.com/#qwerty</a>'
+				"expect": '1 <img class="echo-streamserver-bundledapps-stream-item-clientwidget-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i>#88</i></b> 5#\n<a href="http://">#asd</a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\n<a href="http://google.com/#qwerty">http://google.com/#qwerty</a>'
 		}, {
 			"description": "contentTransformations: [hashtags]",
 			"config": {
@@ -468,7 +468,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": '1 :) <b>$$<u>DD</u>$$<i><span class="echo-streamserver-apps-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-apps-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty'
+			"expect": '1 :) <b>$$<u>DD</u>$$<i><span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty'
 		}, {
 			"description": "contentTransformations: [smileys, hashtags]",
 			"config": {
@@ -483,7 +483,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": '1 <img class="echo-streamserver-apps-stream-item-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-apps-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-apps-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty'
+			"expect": '1 <img class="echo-streamserver-bundledapps-stream-item-clientwidget-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\nhttp://google.com/#qwerty'
 		}, {
 			"description": "contentTransformations: [hashtags, urls]",
 			"config": {
@@ -498,7 +498,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": '1 :) <b>$$<u>DD</u>$$<i><span class="echo-streamserver-apps-stream-item-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-apps-stream-item-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\n<a href="http://google.com/#qwerty">http://google.com/#qwerty</a>'
+			"expect": '1 :) <b>$$<u>DD</u>$$<i><span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag">88</span></i></b> 5#\n<a href="http://"><span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag">asd</span></a>\n<a href="http://ya.ru">http://ya.ru</a>\n\n\n<a href="http://google.com/#qwerty">http://google.com/#qwerty</a>'
 		}, {
 			"description": "contentTransformations: [smileys, hashtags, urls, newlines]",
 			"config": {
@@ -513,7 +513,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentTransform
 				}
 			},
-			"expect": '1 <img class="echo-streamserver-apps-stream-item-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-apps-stream-item-tag">88</span></i></b> 5#&nbsp;<br><a href="http://"><span class="echo-streamserver-apps-stream-item-tag">asd</span></a>&nbsp;<br><a href="http://ya.ru">http://ya.ru</a>&nbsp;<br>&nbsp;<br><a href="http://google.com/#qwerty">http://google.com/#qwerty</a>'
+			"expect": '1 <img class="echo-streamserver-bundledapps-stream-item-clientwidget-smiley-icon" src="' + Echo.Loader.getURL("images/smileys/emoticon_smile.png", false) + '" title="Smile" alt="Smile"> <b>$$<u>DD</u>$$<i><span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag">88</span></i></b> 5#&nbsp;<br><a href="http://"><span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag">asd</span></a>&nbsp;<br><a href="http://ya.ru">http://ya.ru</a>&nbsp;<br>&nbsp;<br><a href="http://google.com/#qwerty">http://google.com/#qwerty</a>'
 		}, {
 			"description": "very high limits",
 			"config": {
@@ -536,7 +536,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"name": "Twitter"
 				}
 			},
-			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788</a> <span class="echo-streamserver-apps-stream-item-tag">12345678901234567890</span>'
+			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788</a> <span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag">12345678901234567890</span>'
 		}, {
 			"description": "bodyLink: 20, tag: 10, body: no limit",
 			"config": {
@@ -556,7 +556,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentLimits
 				}
 			},
-			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.go...</a> <span class="echo-streamserver-apps-stream-item-tag" title="12345678901234567890">1234567890...</span>'
+			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.go...</a> <span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag" title="12345678901234567890">1234567890...</span>'
 		}, {
 			"description": "bodyLink: 20, tag: 10, body: 50",
 			"config": {
@@ -576,7 +576,7 @@ suite.prototype.tests.bodyRendererTest = {
 					"content": contentLimits
 				}
 			},
-			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.go...</a> <span class="echo-streamserver-apps-stream-item-tag" title="12345678901234567890">1234567890</span>'
+			"expect": '1234567890 <span>qwertyuiop</span> <a href="https://encrypted.google.com/#sclient=psy&amp;hl=en&amp;source=hp&amp;q=something&amp;pbx=1&amp;oq=something&amp;aq=f&amp;aqi=g5&amp;aql=1&amp;gs_sm=e&amp;gs_upl=1515l3259l0l4927l9l7l0l4l4l0l277l913l0.1.3l4l0&amp;bav=on.2,or.r_gc.r_pw.&amp;fp=d31248080af7dd23&amp;biw=1440&amp;bih=788">https://encrypted.go...</a> <span class="echo-streamserver-bundledapps-stream-item-clientwidget-tag" title="12345678901234567890">1234567890</span>'
 		}, {
 			"description": "bodyLink: 10, tag: 10, body: 20",
 			"config": {
@@ -653,8 +653,8 @@ suite.prototype.tests.bodyRendererTest = {
 suite.prototype._runBodyCases = function(cases) {
 	var self = this;
 	var checker = function(params, config) {
-		var element = $(".echo-streamserver-apps-stream-item-body", config.target);
-		var target = element.find(".echo-streamserver-apps-stream-item-text");
+		var element = $(".echo-streamserver-bundledapps-stream-item-clientwidget-body", config.target);
+		var target = element.find(".echo-streamserver-bundledapps-stream-item-clientwidget-text");
 		var result = $("<div>").append(target.clone(true, true).contents());
 		var expect = $("<div>").append(params.expect);
 		self.jqueryObjectsEqual(result,	expect, params.description);
@@ -675,7 +675,7 @@ function getGenerateItemFunction(checker) {
 				"ready": function() {
 					var item = this;
 					item.events.subscribe({
-						"topic": "Echo.StreamServer.Apps.Stream.Item.onRender",
+						"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender",
 						"handler": function() {
 							checker(params, self.config);
 							callback();
@@ -689,7 +689,7 @@ function getGenerateItemFunction(checker) {
 	};
 };
 
-// almost copy of Echo.StreamServer.Apps.Stream.prototype._normalizeEntry()
+// almost copy of Echo.StreamServer.BundledApps.Stream.ClientWidget.prototype._normalizeEntry()
 var _normalizeEntry = function(entry) {
 	entry.normalized = true;
 	// detecting actual target
@@ -812,8 +812,8 @@ suite._streamConfigData = {
 	"target": $("<div>")
 };
 
-Echo.Tests.defineComponentInitializer("Echo.StreamServer.Apps.Stream.Item", function(config) {
-	var stream = Echo.Tests.getComponentInitializer("Echo.StreamServer.Apps.Stream");
+Echo.Tests.defineComponentInitializer("Echo.StreamServer.BundledApps.Stream.Item.ClientWidget", function(config) {
+	var stream = Echo.Tests.getComponentInitializer("Echo.StreamServer.BundledApps.Stream.ClientWidget");
 	var ready = config.ready || function() {};
 	// remove ready from the config, because we override it below
 	delete config.ready;

@@ -1,13 +1,13 @@
 Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
-	"echo/streamserver/apps/stream",
+	"echo/streamserver/bundled-apps/stream/client-widget",
 	"echo/streamserver/plugins/infiniteScroll"
 ], function($, Stream) {
 
 "use strict";
 
-var plugin = "Echo.StreamServer.Apps.Stream.Plugins.InfiniteScroll";
+var plugin = "Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.InfiniteScroll";
 
 Echo.Tests.module(plugin, {
 	"meta": {
@@ -43,7 +43,7 @@ Echo.Tests.asyncTest("common workflow", function() {
 			var plugin = this.getPlugin("InfiniteScroll");
 			var spy = sinon.spy(element, "click");
 			this.events.subscribe({
-				"topic": "Echo.StreamServer.Apps.Stream.onDataReceive",
+				"topic": "Echo.StreamServer.BundledApps.Stream.ClientWidget.onDataReceive",
 				"once": true,
 				"handler": function(topic, args) {
 					this.destroy();

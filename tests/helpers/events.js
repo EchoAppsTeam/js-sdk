@@ -134,17 +134,17 @@ Echo.Tests.Events.contracts = {
 	"Echo.StreamServer.User.onInit": [_user.init, {}],
 	"Echo.StreamServer.User.onInvalidate": [_user.init, {}],
 
-	"Echo.StreamServer.Apps.Stream.onRefresh": _stream.render,
-	"Echo.StreamServer.Apps.Stream.onRender": _stream.render,
-	"Echo.StreamServer.Apps.Stream.onRerender": _stream.render,
-	"Echo.StreamServer.Apps.Stream.onItemsRenderingComplete": _stream.render,
-	"Echo.StreamServer.Apps.Stream.onMoreButtonPress": _stream.render,
-	"Echo.StreamServer.Apps.Stream.Item.onRender": _stream.onItemReceive,
-	"Echo.StreamServer.Apps.Stream.Item.onReady": _stream.render,
-	"Echo.StreamServer.Apps.Stream.onReady": _stream.render,
-	"Echo.StreamServer.Apps.Stream.Item.onAdd": _stream.item,
-	"Echo.StreamServer.Apps.Stream.Item.onDelete": _stream.item,
-	"Echo.StreamServer.Apps.Stream.Item.onChildrenExpand": {
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onRefresh": _stream.render,
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onRender": _stream.render,
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onRerender": _stream.render,
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onItemsRenderingComplete": _stream.render,
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onMoreButtonPress": _stream.render,
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender": _stream.onItemReceive,
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onReady": _stream.render,
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onReady": _stream.render,
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onAdd": _stream.item,
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onDelete": _stream.item,
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onChildrenExpand": {
 		"data": {
 			"id": "string"
 		},
@@ -166,7 +166,7 @@ Echo.Tests.Events.contracts = {
 			"target": "object"
 		}
 	},
-	"Echo.StreamServer.Apps.Stream.Item.onButtonClick": {
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onButtonClick": {
 		"name": "string",
 		"plugin": "string",
 		"item": {
@@ -188,9 +188,9 @@ Echo.Tests.Events.contracts = {
 		"query": "string"
 	},
 
-	"Echo.StreamServer.Apps.Stream.onItemReceive": _stream.onItemReceive,
-	"Echo.StreamServer.Apps.Stream.Item.onRerender": _stream.item,
-	"Echo.StreamServer.Apps.Stream.Item.Plugins.PinboardVisualization.onChangeView": {
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onItemReceive": _stream.onItemReceive,
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRerender": _stream.item,
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.PinboardVisualization.onChangeView": {
 		"target": "object",
 		"query": "string",
 		"item": {
@@ -210,31 +210,31 @@ Echo.Tests.Events.contracts = {
 		}
 	},
 
-	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRender": {},
-	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRerender": {},
-	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRefresh": {},
-	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onReady": {},
-	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onResize": {},
-	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onLoadMedia": {},
-	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onChangeMedia": {},
+	"Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onRender": {},
+	"Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onRerender": {},
+	"Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onRefresh": {},
+	"Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onReady": {},
+	"Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onResize": {},
+	"Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onLoadMedia": {},
+	"Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onChangeMedia": {},
 
-	"Echo.StreamServer.Apps.Stream.Plugins.Like.onLikeComplete": _stream.items,
-	"Echo.StreamServer.Apps.Stream.Plugins.Like.onUnlikeComplete": _stream.items,
-	"Echo.StreamServer.Apps.Stream.Plugins.CommunityFlag.onFlagComplete": _stream.items,
-	"Echo.StreamServer.Apps.Stream.Plugins.CommunityFlag.onUnflagComplete": _stream.items,
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.Like.onLikeComplete": _stream.items,
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.Like.onUnlikeComplete": _stream.items,
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.CommunityFlag.onFlagComplete": _stream.items,
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.CommunityFlag.onUnflagComplete": _stream.items,
 
-	"Echo.StreamServer.Apps.Submit.onRerender": _submit.onRerender,
-	"Echo.StreamServer.Apps.Submit.onRefresh": _submit.onRerender,
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onRerender": _submit.onRerender,
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onRefresh": _submit.onRerender,
 
-	"Echo.StreamServer.Apps.Submit.onExpand": _submit.expand,
-	"Echo.StreamServer.Apps.Submit.onCollapse": _submit.expand,
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onExpand": _submit.expand,
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onCollapse": _submit.expand,
 
-	"Echo.StreamServer.Apps.Submit.onRender": {
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onRender": {
 		"target": "object",
 		"targetURL": "string",
 		"data": {}
 	},
-	"Echo.StreamServer.Apps.Stream.onDataReceive": {
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onDataReceive": {
 		"entries": function(value) {
 			return $.isArray(value) && value[0] && $.type(value[0].normalized) === "boolean";
 		},
@@ -242,7 +242,7 @@ Echo.Tests.Events.contracts = {
 		"query": "string",
 		"target": "object"
 	},
-	"Echo.StreamServer.Apps.Submit.onPostInit": {
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostInit": {
 		"target": "object",
 		"targetURL": "string",
 		"data": {},
@@ -253,7 +253,7 @@ Echo.Tests.Events.contracts = {
 		}
 	},
 	// TODO: revisit contract later
-	"Echo.StreamServer.Apps.Submit.onPostComplete": {
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostComplete": {
 		"target": "object",
 		"targetURL": "string",
 		"data": {},
@@ -267,10 +267,10 @@ Echo.Tests.Events.contracts = {
 			"response": "object"
 		}
 	},
-	"Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditInit": _plugins.Edit.onEdit,
-	"Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditComplete": _plugins.Edit.onEdit,
-	"Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditError": _plugins.Edit.onEdit,
-	"Echo.StreamServer.Apps.Counter.onUpdate": {
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Edit.onEditInit": _plugins.Edit.onEdit,
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Edit.onEditComplete": _plugins.Edit.onEdit,
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Edit.onEditError": _plugins.Edit.onEdit,
+	"Echo.StreamServer.BundledApps.Counter.ClientWidget.onUpdate": {
 		"target": "object",
 		"query": "string",
 		"data": {
@@ -283,12 +283,12 @@ Echo.Tests.Events.contracts = {
 			return value instanceof Echo.App;
 		}
 	},
-	"Echo.StreamServer.Apps.Submit.onReady": {
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onReady": {
 		"data": {},
 		"target": "object",
 		"targetURL": "string"
 	},
-	"Echo.StreamServer.Apps.Counter.onError": {
+	"Echo.StreamServer.BundledApps.Counter.ClientWidget.onError": {
 		"data": {
 			"result": "string",
 			"errorCode": "string",
@@ -299,7 +299,7 @@ Echo.Tests.Events.contracts = {
 		"query": "string",
 		"target": "object"
 	},
-	"Echo.StreamServer.Apps.Submit.onPostError": {
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostError": {
 		"postData": {
 			"content": "array",
 			"appkey": "string",
@@ -321,23 +321,23 @@ Echo.Tests.Events.contracts = {
 		"code": "string",
 		"message": "string"
 	},
-	"Echo.StreamServer.Apps.FacePile.Item.onRender": {},
-	"Echo.StreamServer.Apps.FacePile.Item.onReady": {},
-	"Echo.StreamServer.Apps.FacePile.Item.onRerender": {},
-	"Echo.StreamServer.Apps.FacePile.Item.onRefresh": {},
-	"Echo.StreamServer.Apps.FacePile.onRender": {},
-	"Echo.StreamServer.Apps.FacePile.onReady": {},
-	"Echo.StreamServer.Apps.FacePile.onRerender": {},
-	"Echo.StreamServer.Apps.FacePile.onRefresh": {},
+	"Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onRender": {},
+	"Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onReady": {},
+	"Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onRerender": {},
+	"Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onRefresh": {},
+	"Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRender": {},
+	"Echo.StreamServer.BundledApps.FacePile.ClientWidget.onReady": {},
+	"Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRerender": {},
+	"Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRefresh": {},
 	"Echo.App.onDataInvalidate": {},
-	"Echo.StreamServer.Apps.Counter.onRender": {},
-	"Echo.StreamServer.Apps.Counter.onReady": {},
-	"Echo.StreamServer.Apps.Counter.onRerender": {},
-	"Echo.StreamServer.Apps.Counter.onRefresh": {},
-	"Echo.StreamServer.Apps.Auth.onRender": {},
-	"Echo.StreamServer.Apps.Auth.onReady": {},
-	"Echo.StreamServer.Apps.Auth.onRerender": {},
-	"Echo.StreamServer.Apps.Auth.onRefresh": {},
+	"Echo.StreamServer.BundledApps.Counter.ClientWidget.onRender": {},
+	"Echo.StreamServer.BundledApps.Counter.ClientWidget.onReady": {},
+	"Echo.StreamServer.BundledApps.Counter.ClientWidget.onRerender": {},
+	"Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh": {},
+	"Echo.StreamServer.BundledApps.Auth.ClientWidget.onRender": {},
+	"Echo.StreamServer.BundledApps.Auth.ClientWidget.onReady": {},
+	"Echo.StreamServer.BundledApps.Auth.ClientWidget.onRerender": {},
+	"Echo.StreamServer.BundledApps.Auth.ClientWidget.onRefresh": {},
 	"Echo.Canvas.onRender": {},
 	"Echo.Canvas.onReady": {},
 	"Echo.Canvas.onRerender": {},

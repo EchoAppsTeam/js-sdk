@@ -9,19 +9,19 @@ Echo.define("echo/streamserver/plugins/streamItemReply", [
 	"echo/plugin",
 	"echo/utils",
 	"echo/variables",
-	"echo/streamserver/apps/submit"
+	"echo/streamserver/bundled-apps/submit/client-widget"
 ], function($, Plugin, Utils, Variables, Submit) {
 
 "use strict";
 
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Item.Plugins.Reply
+ * @class Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply
  * Adds extra “Reply” button to each item in the Echo Stream application.
  * Integrates Echo Submit application and provides the ability to submit
  * replies to the posted items.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -37,7 +37,7 @@ Echo.define("echo/streamserver/plugins/streamItemReply", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("Reply", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -58,7 +58,7 @@ plugin.config = {
 	 * @cfg {String} actionString
 	 * Specifies the hint placed in the empty text area.
 	 *
-	 * 	new Echo.StreamServer.Apps.Stream({
+	 * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
 	 * 		"target": document.getElementById("echo-stream"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"plugins": [{
@@ -79,17 +79,17 @@ plugin.labels = {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Apps.Stream.Plugins.Reply.onFormExpand": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.Reply.onFormExpand": function(topic, args) {
 		var item = this.component;
 		var context = item.config.get("context");
 		if (this.get("expanded") && context && context !== args.context) {
 			this._hideSubmit();
 		}
 	},
-	"Echo.StreamServer.Apps.Submit.onPostComplete": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostComplete": function(topic, args) {
 		this._hideSubmit();
 	},
-	"Echo.StreamServer.Apps.Stream.Item.onRender": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender": function(topic, args) {
 		if (this.get("expanded")) {
 			this._showSubmit();
 		}
@@ -237,7 +237,7 @@ plugin.methods._hideSubmit = function() {
 	this.view.render({"name": "compactForm"});
 	item.view.render({"name": "container"});
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Reply.onCollapse
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply.onCollapse
 	 * Triggered when the reply form is closed.
 	 */
 	this.events.publish({
@@ -251,7 +251,7 @@ plugin.methods._expand = function() {
 	this.view.render({"name": "submitForm"});
 	this.view.render({"name": "compactForm"});
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Reply.onExpand
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply.onExpand
 	 * Triggered when the reply form is expanded.
 	 */
 	this.events.publish({
@@ -329,17 +329,17 @@ Echo.define("echo/streamserver/plugins/streamReply", [
 	"echo/plugin",
 	"echo/utils",
 	"echo/variables",
-	"echo/streamserver/apps/submit"
+	"echo/streamserver/bundled-apps/submit/client-widget"
 ], function($, Plugin, Utils, Variables, Submit) {
 
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Plugins.Reply
- * Proxies the "Echo.StreamServer.Apps.Stream.Item.Plugins.Reply.onExpand"
+ * @class Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.Reply
+ * Proxies the "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply.onExpand"
  * event on the Stream application level.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -356,14 +356,14 @@ Echo.define("echo/streamserver/plugins/streamReply", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("Reply", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
 plugin.events = {
-	"Echo.StreamServer.Apps.Stream.Item.Plugins.Reply.onExpand": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply.onExpand": function(topic, args) {
 		/**
-		 * @echo_event Echo.StreamServer.Apps.Stream.Plugins.Reply.onFormExpand
+		 * @echo_event Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.Reply.onFormExpand
 		 * Triggered if reply form is expanded.
 		 */
 		this.events.publish({
@@ -386,10 +386,10 @@ Echo.define("echo/streamserver/plugins/submitReply", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Submit.Plugins.Reply
+ * @class Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Reply
  * Adds internal data field "inReplyTo" for correct reply workflow.
  *
- * 	new Echo.StreamServer.Apps.Submit({
+ * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
  * 		"target": document.getElementById("echo-submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -407,7 +407,7 @@ Echo.define("echo/streamserver/plugins/submitReply", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("Reply", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -427,7 +427,7 @@ plugin.init = function() {
  */
 
 $.map(["onRender", "onRerender"], function(topic) {
-	plugin.events["Echo.StreamServer.Apps.Submit." + topic] = function() {
+	plugin.events["Echo.StreamServer.BundledApps.Submit.ClientWidget." + topic] = function() {
 		var submit = this.component;
 		submit.config.get("target").show();
 		submit.view.get("text").focus();

@@ -7,10 +7,10 @@ Echo.define("echo/streamserver/plugins/janrainConnector", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Auth.Plugins.JanrainConnector
+ * @class Echo.StreamServer.BundledApps.Auth.ClientWidget.Plugins.JanrainConnector
  * Janrain Social Sign-in Widget integration with Echo Auth Application.
  *
- * 	new Echo.StreamServer.Apps.Auth({
+ * 	new Echo.StreamServer.BundledApps.Auth.ClientWidget({
  * 		"target": document.getElementById("auth"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -27,7 +27,7 @@ Echo.define("echo/streamserver/plugins/janrainConnector", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("JanrainConnector", "Echo.StreamServer.Apps.Auth");
+var plugin = Plugin.definition("JanrainConnector", "Echo.StreamServer.BundledApps.Auth.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 

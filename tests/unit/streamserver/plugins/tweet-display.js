@@ -2,13 +2,13 @@ Echo.Tests.Units.push(function(callback) {
 Echo.require([
 	"jquery",
 	"echo/utils",
-	"echo/streamserver/apps/stream",
+	"echo/streamserver/bundled-apps/stream/client-widget",
 	"echo/streamserver/plugins/tweet-display"
 ], function($, Utils, Stream) {
 
 "use strict";
 
-var plugin = "Echo.StreamServer.Apps.Stream.Item.Plugins.TweetDisplay";
+var plugin = "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.TweetDisplay";
 
 Echo.Tests.module(plugin, {
 	"meta": {

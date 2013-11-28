@@ -28,7 +28,7 @@ Now let's add the application definition. Echo JS SDK contains a special Echo.Ap
 
 	var $ = jQuery;
 
-	var counter = Echo.App.definition("Echo.StreamServer.Apps.Counter");
+	var counter = Echo.App.definition("Echo.StreamServer.BundledApps.Counter.ClientWidget");
 
 	if (Echo.App.isDefined(counter)) return;
 
@@ -55,7 +55,7 @@ In order to fulfill both use-cases we need to add the corresponding check into t
 
 	var $ = jQuery;
 
-	var counter = Echo.App.definition("Echo.StreamServer.Apps.Counter");
+	var counter = Echo.App.definition("Echo.StreamServer.BundledApps.Counter.ClientWidget");
 
 	if (Echo.App.isDefined(counter)) return;
 
@@ -85,7 +85,7 @@ Most of applications should contain several configuration parameters that define
 
 	var $ = jQuery;
 
-	var counter = Echo.App.definition("Echo.StreamServer.Apps.Counter");
+	var counter = Echo.App.definition("Echo.StreamServer.BundledApps.Counter.ClientWidget");
 
 	if (Echo.App.isDefined(counter)) return;
 
@@ -117,7 +117,7 @@ If we need more options in future, they can be appended as additional fields int
 Let's describe config parameters:
 
 - "data" defines a default value that used to display items count;
-- "liveUpdates" defines a timeout that used by the Echo.StreamServer.API.Request class for the recurring server request for data. This parameter is described {@link Echo.StreamServer.Apps.Counter#cfg-liveUpdates here};
+- "liveUpdates" defines a timeout that used by the Echo.StreamServer.API.Request class for the recurring server request for data. This parameter is described {@link Echo.StreamServer.BundledApps.Counter.ClientWidget#cfg-liveUpdates here};
 - "infoMessages" defines messages layout for application. This parameter is described {@link Echo.App#cfg-infoMessages here}
 
 Now everywhere in the application's code we'll be able to use the following call:
@@ -141,7 +141,7 @@ In our case we need a simple template which contains a count items number. Let's
 
 	var $ = jQuery;
 
-	var counter = Echo.App.definition("Echo.StreamServer.Apps.Counter");
+	var counter = Echo.App.definition("Echo.StreamServer.BundledApps.Counter.ClientWidget");
 
 	if (Echo.App.isDefined(counter)) return;
 
@@ -265,7 +265,7 @@ In order to install the application, the following steps should be taken:
 
 &nbsp;
 
-	new Echo.StreamServer.Apps.Counter({
+	new Echo.StreamServer.BundledApps.Counter.ClientWidget({
 		...
 		"liveUpdates": {
 			"timeout": 5
@@ -280,7 +280,7 @@ In order to install the application, the following steps should be taken:
 
 	var $ = jQuery;
 
-	var counter = Echo.App.definition("Echo.StreamServer.Apps.Counter");
+	var counter = Echo.App.definition("Echo.StreamServer.BundledApps.Counter.ClientWidget");
 
 	if (Echo.App.isDefined(counter)) return;
 
@@ -376,7 +376,7 @@ Each Echo component is an independent part of the system and can communicate wit
 There are lots of events going on during the application and application life. The list of the events for each component can be found on the respective page in the documentation. The application definition structure provides the interface to subscribe to the necessary events. The events subscriptions should be defined inside the "events" hash using the event name as a key and the event handler as a value, for example:
 
 	app.events = {
-		"Echo.StreamServer.Apps.Stream.onDataReceive": function(topic, args) {
+		"Echo.StreamServer.BundledApps.Stream.ClientWidget.onDataReceive": function(topic, args) {
 			// ... some actions ...
 		}
 	};
@@ -431,7 +431,7 @@ you can add renderers for these elements like:
 
 Each bundled Echo application uses the same mechanisms described in this guide. Bundled Echo applications are good examples which you can use as a pattern for your own applications:
 
-- [Stream](http://cdn.echoenabled.com/sdk/v3/streamserver/apps/stream.js)
-- [FacePile](http://cdn.echoenabled.com/sdk/v3/streamserver/apps/facepile.js)
-- [Submit](http://cdn.echoenabled.com/sdk/v3/streamserver/apps/submit.js)
+- [Stream](http://cdn.echoenabled.com/sdk/v3/streamserver/bundled-apps/stream/client-widget.js)
+- [FacePile](http://cdn.echoenabled.com/sdk/v3/streamserver/bundled-apps/facepile/client-widget.js)
+- [Submit](http://cdn.echoenabled.com/sdk/v3/streamserver/bundled-apps/submit/client-widget.js)
 - and [more](#!/example)

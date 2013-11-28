@@ -1,20 +1,20 @@
-Echo.define("echo/streamserver/apps/facePile", [
+Echo.define("echo/streamserver/bundled-apps/facepile/client-widget", [
 	"jquery",
 	"echo/utils",
-	"echo/streamserver/bundled-app",
+	"echo/app-client-widget",
 	"echo/streamserver/api",
-	"echo/streamserver/apps/facePileItem",
+	"echo/streamserver/bundled-apps/facepile/item/client-widget",
 	"require"
 ], function($, Utils, App, API, Item, require) {
 
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.FacePile
+ * @class Echo.StreamServer.BundledApps.FacePile.ClientWidget
  * Echo FacePile application displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
  * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
  *
- * 	new Echo.StreamServer.Apps.FacePile({
+ * 	new Echo.StreamServer.BundledApps.FacePile.ClientWidget({
  * 		"target": document.getElementById("echo-facepile"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"query": "childrenof:http://example.com/* itemsPerPage:2 children:0",
@@ -31,30 +31,30 @@ Echo.define("echo/streamserver/apps/facePile", [
  * @package streamserver.pack.js
  *
  * @constructor
- * FacePile constructor initializing Echo.StreamServer.Apps.FacePile class
+ * FacePile constructor initializing Echo.StreamServer.BundledApps.FacePile.ClientWidget class
  *
  * @param {Object} config
  * Configuration options
  */
-var pile = App.definition("Echo.StreamServer.Apps.FacePile");
+var pile = App.definition("Echo.StreamServer.BundledApps.FacePile.ClientWidget");
 
 if (App.isDefined(pile)) return;
 
 /**
- * @echo_event Echo.StreamServer.Apps.FacePile.onReady
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.FacePile.onRefresh
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.FacePile.onRender
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.FacePile.onRerender
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRerender
  * Triggered when the app is rerendered.
  */
 pile.init = function() {
@@ -157,7 +157,7 @@ pile.config = {
 	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
 	 * method specification.
 	 *
-	 * 	new Echo.StreamServer.Apps.FacePile({
+	 * 	new Echo.StreamServer.BundledApps.FacePile.ClientWidget({
 	 * 		"target": document.getElementById("echo-facepile"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"query" : "childrenof:http://example.com/test/*"
@@ -617,130 +617,4 @@ pile.css =
 	'.{class:more} .echo-message-icon { display: inline; margin: 0px 5px; }';
 
 return App.create(pile);
-});
-
-Echo.define("echo/streamserver/apps/facePileItem", [
-	"jquery",
-	"echo/utils",
-	"require",
-	"echo/streamserver/bundled-app"
-], function($, Utils, require, App) {
-
-"use strict";
-
-/**
- * @class Echo.StreamServer.Apps.FacePile.Item
- * Echo FacePile.Item application displays single user (actor). 
- *
- * @extends App
- *
- * @package streamserver/apps.pack.js
- * @package streamserver.pack.js
- *
- * @constructor
- * FacePile.Item constructor initializing Echo.StreamServer.Apps.FacePile.Item class
- *
- * @param {Object} config
- * Configuration options
- */
-var item = App.definition("Echo.StreamServer.Apps.FacePile.Item");
-
-//if (App.isDefined(item)) return;
-
-/** @hide @cfg plugins */
-/** @hide @method dependent */
-
-/**
- * @echo_event Echo.StreamServer.Apps.FacePile.Item.onReady
- * Triggered when the app initialization is finished completely.
- */
-/**
- * @echo_event Echo.StreamServer.Apps.FacePile.Item.onRefresh
- * Triggered when the app is refreshed. For example after the user
- * login/logout action or as a result of the "refresh" function call.
- */
-/**
- * @echo_event Echo.StreamServer.Apps.FacePile.Item.onRender
- * Triggered when the app is rendered.
- */
-/**
- * @echo_event Echo.StreamServer.Apps.FacePile.Item.onRerender
- * Triggered when the app is rerendered.
- */
-
-item.config = {
-	/**
-	 * @cfg {String} defaultAvatar
-	 * Default avatar URL which will be used for the user in
-	 * case there is no avatar information defined in the user
-	 * profile. Also used for anonymous users.
-	 */
-	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png", false)
-};
-
-item.labels = {
-	/**
-	 * @echo_label
-	 */
-	"you": "You"
-};
-
-/**
- * @echo_template
- */
-item.templates.main =
-	'<span class="{class:container}">' +
-		'<span class="{class:avatar}"></span>' +
-		'<span class="{class:title}">{data:title}</span>' +
-	'</span>';
-
-/**
- * @echo_renderer
- */
-item.renderers.avatar = function(element) {
-	var self = this;
-	if (this.config.get("avatar")) {
-		Utils.placeImage({
-			"container": element,
-			"image": this.get("data.avatar"),
-			"defaultImage": this.config.get("defaultAvatar")
-		});
-		if (!this.config.get("text")) {
-			element.attr("title", this.get("data.title"));
-		}
-	} else {
-		element.hide();
-	}
-	return element;
-};
-
-/**
- * @echo_renderer
- */
-item.renderers.title = function(element) {
-	if (this.config.get("text")) {
-		element.empty().append(this.isYou() ? this.labels.get("you") : this.get("data.title"));
-	} else {
-		element.hide();
-	}
-	return element;
-};
-
-/**
- * Function to check if the item was posted by the current user.
- *
- * @return {Boolean}
- */
-item.methods.isYou = function() {
-	var id = this.get("data.id");
-	return id && id === this.user.get("identityUrl");
-};
-
-item.css =
-	".{class:avatar} { display: inline-block; width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }" +
-	'.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }' +
-	'.{class:container}, .{class:container} span { white-space: nowrap; display: inline-block; }' +
-	'.{class:only-avatars} .{class:container} { white-space: normal; }';
-
-return App.create(item);
 });

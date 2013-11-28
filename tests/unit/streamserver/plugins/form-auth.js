@@ -6,7 +6,7 @@ Echo.require([
 
 "use strict";
 
-var plugin = "Echo.StreamServer.Apps.Submit.Plugins.FormAuth";
+var plugin = "Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.FormAuth";
 
 Echo.Tests.module(plugin, {
 	"meta": {

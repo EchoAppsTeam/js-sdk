@@ -1,9 +1,9 @@
-Echo.define("echo/streamserver/apps/submit", [
+Echo.define("echo/streamserver/bundled-apps/submit/client-widget", [
 	"jquery",
 	"require",
 	"echo/utils",
 	"echo/streamserver/api",
-	"echo/streamserver/bundled-app",
+	"echo/app-client-widget",
 	"echo/gui",
 	"echo/gui/button",
 	"echo/events", 
@@ -14,12 +14,12 @@ Echo.define("echo/streamserver/apps/submit", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Submit
+ * @class Echo.StreamServer.BundledApps.Submit.ClientWidget
  * Echo Submit application which encapsulates interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank">Echo Submit API</a>
  * and provides a simple ‘submit/comment form’ style interaction.
  *
- * 	new Echo.StreamServer.Apps.Submit({
+ * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
  * 		"target": document.getElementById("submit"),
  * 		"targetURL": "http://example.com/submit",
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
@@ -34,12 +34,12 @@ Echo.define("echo/streamserver/apps/submit", [
  * @package streamserver.pack.js
  *
  * @constructor
- * Submit constructor initializing Echo.StreamServer.Apps.Submit class
+ * Submit constructor initializing Echo.StreamServer.BundledApps.Submit.ClientWidget class
  *
  * @param {Object} config
  * Configuration options
  */
-var submit = App.definition("Echo.StreamServer.Apps.Submit");
+var submit = App.definition("Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
 if (App.isDefined(submit)) return;
 
@@ -60,20 +60,20 @@ if (App.isDefined(submit)) return;
 /** @hide @echo_label error_unknown */
 
 /**
- * @echo_event Echo.StreamServer.Apps.Submit.onReady
+ * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Submit.onRefresh
+ * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Submit.onRender
+ * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.Apps.Submit.onRerender
+ * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.onRerender
  * Triggered when the app is rerendered.
  */
 
@@ -126,7 +126,7 @@ submit.config = {
 	 * Specifies the URI to which the submitted Echo item is related. 
 	 * This parameter will be used as a activity target value for the item.
 	 *
-	 * 	new Echo.StreamServer.Apps.Submit({
+	 * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
 	 * 		...
 	 * 		"targetURL": "http://somedomain.com/some_article.html",
 	 * 		...
@@ -142,7 +142,7 @@ submit.config = {
 	 * For non-admin users the markers value will be submitted along with
 	 * other item content when the "Post" button is pressed.
 	 *
-	 * 	new Echo.StreamServer.Apps.Submit({
+	 * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
 	 * 		...
 	 * 		"markers": ["marker1", "marker2", "marker3"],
 	 * 		...
@@ -163,7 +163,7 @@ submit.config = {
 	 * @cfg {String} source.icon
 	 * Source icon.
 	 *
-	 * 	new Echo.StreamServer.Apps.Submit({
+	 * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
 	 * 		...
 	 * 		"source": {
 	 * 			"name": "ExampleSource",
@@ -183,7 +183,7 @@ submit.config = {
 	 * users the tags value will be submitted along with the other item
 	 * content when the "Post" button is pressed.
 	 *
-	 * 	new Echo.StreamServer.Apps.Submit({
+	 * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
 	 * 		...
 	 * 		"tags": ["tag1", "tag2", "tag3"],
 	 * 		...
@@ -197,7 +197,7 @@ submit.config = {
 	 * We can't handle server response, UI won't show any waiting for the
 	 * server responses actions.
 	 *
-	 * 	new Echo.StreamServer.Apps.Submit({
+	 * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
 	 * 		...
 	 * 		"requestMethod": "POST",
 	 * 		...
@@ -211,7 +211,7 @@ submit.config = {
 	 * unique id should be inserted. If this parameter is ommited in
 	 * configuration or the URI is invalid it'll be ignored.
 	 *
-	 * 	new Echo.StreamServer.Apps.Submit({
+	 * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
 	 * 		...
 	 * 		"itemURIPattern": "http://your-domain.com/path/{id}",
 	 * 		...
@@ -222,7 +222,7 @@ submit.config = {
 	 * @cfg {String} actionString
 	 * Is used to define the default call to action phrase.
 	 *
-	 *     new Echo.StreamServer.Apps.Submit({
+	 *     new Echo.StreamServer.BundledApps.Submit.ClientWidget({
 	 *         ...
 	 *         "actionString": "Type your comment here...",
 	 *         ...
@@ -235,7 +235,7 @@ submit.config = {
 	 * the timeout error dialog if the server does not return anything. If the parameter
 	 * value is 0 then the mentioned dialog will never be shown.
 	 *
-	 * 	new Echo.StreamServer.Apps.Submit({
+	 * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
 	 * 		...
 	 * 		"postingTimeout": 15,
 	 * 		...
@@ -246,7 +246,7 @@ submit.config = {
 	 * @cfg {String} type
 	 * Allows to define item type. The value of this parameter should be a valid URI.
 	 *
-	 * 	new Echo.StreamServer.Apps.Submit({
+	 * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
 	 * 		...
 	 * 		"type": "http://echoenabled.com/activitystreams/schema/1.0/category",
 	 * 		...
@@ -267,7 +267,7 @@ submit.config = {
 	 * @cfg {Number} errorPopup.width
 	 * The width of error message popup.
 	 *
-	 * 	new Echo.StreamServer.Apps.Submit({
+	 * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
 	 * 		...
 	 * 		"errorPopup": {
 	 * 			"minHeight": 70,
@@ -589,7 +589,7 @@ submit.methods.post = function() {
 	var callbacks = {
 		"onData": function(response, state) {
 			/**
-			 * @echo_event Echo.StreamServer.Apps.Submit.onPostComplete
+			 * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostComplete
 			 * Triggered when the submit operation is finished.
 			 */
 			publish("Complete", entry, response, state);
@@ -607,14 +607,14 @@ submit.methods.post = function() {
 		},
 		"onError": function(response, state) {
 			/**
-			 * @echo_event Echo.StreamServer.Apps.Submit.onPostError
+			 * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostError
 			 * Triggered if submit operation failed.
 			 */
 			publish("Error", entry, response, state);
 		}
 	};
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Submit.onPostInit
+	 * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostInit
 	 * Triggered if submit operation was started.
 	 */
 	publish("Init", entry);
@@ -663,7 +663,7 @@ submit.methods.refresh = function() {
 		var elements = self.view.get(field).val().split(", ");
 		self.config.set("data.object." + field, elements || []);
 	});
-	var component = Utils.getComponent("Echo.StreamServer.Apps.Submit");
+	var component = Utils.getComponent("Echo.StreamServer.BundledApps.Submit.ClientWidget");
 	component.parent.refresh.call(this);
 };
 

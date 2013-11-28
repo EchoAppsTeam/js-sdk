@@ -7,9 +7,9 @@
 </head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Stream.Item.Plugins.Reply" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply" target="_blank">Documentation</a></div>
 		<h1>"Reply" Plugin Demo</h1>
-		<div class="description">The plugin adds extra "Reply" button to each item in the <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Stream" target="_blank">Echo Stream app</a>. Integrates <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Submit">Echo Submit app</a> and provides the ability to submit replies to the posted items.</div>
+		<div class="description">The plugin adds extra "Reply" button to each item in the <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.BundledApps.Stream.ClientWidget" target="_blank">Echo Stream app</a>. Integrates <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.BundledApps.Submit.ClientWidget">Echo Submit app</a> and provides the ability to submit replies to the posted items.</div>
 		<div class="wrapper">
 			<div id="stream"></div>
 		</div>
@@ -29,7 +29,7 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/apps/stream"], function(Stream) {
+		Echo.require(["echo/streamserver/bundled-apps/stream/client-widget"], function(Stream) {
 			new Stream({
 				"backplane": {
 					"serverBaseURL": "https://api.echoenabled.com/v1",

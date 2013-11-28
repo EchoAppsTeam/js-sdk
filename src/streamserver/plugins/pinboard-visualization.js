@@ -1,276 +1,24 @@
 Echo.define("echo/streamserver/plugins/pinboardVisualization", [
-	"echo/streamserver/plugins/mediaGallery",
 	"echo/streamserver/plugins/streamItemPinboardVisualization",
 	"echo/streamserver/plugins/streamPinboardVisualization"
 ], function() {});
-
-Echo.define("echo/streamserver/plugins/mediaGallery", [
-	"jquery",
-	"echo/app",
-	"echo/utils"
-], function($, App, Utils) {
-
-"use strict";
-
-
-/**
- * @class Echo.StreamServer.Apps.Stream.Item.MediaGallery 
- * The MediaGallery application is used to display different media (pictures, video,
- * flash objects, etc). 
- *
- * @extends Echo.App
- *
- * @package streamserver/plugins/pinboard-visualization.js
- */
-
-var mediaGallery = App.definition("Echo.StreamServer.Apps.Stream.Item.MediaGallery");
-
-if (App.isDefined(mediaGallery)) return;
-
-/**
- * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onReady
- * Triggered when the app initialization is finished completely.
- */
-/**
- * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRefresh
- * Triggered when the app is refreshed. For example after the user
- * login/logout action or as a result of the "refresh" function call.
- */
-/**
- * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRender
- * Triggered when the app is rendered.
- */
-/**
- * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onRerender
- * Triggered when the app is rerendered.
- */
-
-mediaGallery.labels = {
-	"mediaIsNotAvailable": "<i>Media is not avaiable at this moment...</i>"
-};
-
-/**
- * @cfg {Number} resizeDuration
- * Duration of the resize animation media content
- *
- * @cfg {Array} elements
- * List of the jQuery elements which will be displayed (media content)
- *
- * @cfg {Object} item
- * An instance of the Echo.StreamServer.Apps.Stream.Item object
- * which may use its state for some reasons (context, data, etc)
- */
-mediaGallery.config = {
-	"resizeDuration": 250,
-	"elements": [],
-	"item": undefined
-};
-
-/**
- * @echo_template
- */
-mediaGallery.templates.main =
-	'<div class="{class:container}">' +
-		'<div class="{class:thumbnails}">' +
-			'<div class="{class:items}"></div>' +
-		'</div>' +
-		'<div class="{class:controls}"></div>' +
-	'</div>';
-
-/**
- * @echo_template
- */
-mediaGallery.templates.mediaError =
-	'<span class="{class:itemErrorLoading}">{label:mediaIsNotAvailable}</span>';
-
-/**
- * @echo_renderer
- */
-mediaGallery.renderers.controls = function(element) {
-	var self = this;
-	var item = this.config.get("item");
-	this.elements = this.config.get("elements");
-	this.currentIndex = 0;
-	var publish = function(topic) {
-		self.events.publish({
-			"topic": topic,
-			"context": item ? item.config.get("context") : self.config.get("context")
-		});
-	};
-	var controlsContainer = element;
-	var itemsContainer = this.view.get("items");
-	var itemClass = this.cssPrefix + "item";
-	var controlClass = this.cssPrefix + "control";
-	var activeControlClass = this.cssPrefix + 'activeControl';
-	$.each(this.elements, function(i, element) {
-		element = $(element);
-		self._normalizeFlashContent(element);
-		var ratio;
-		var isCurrentControl = (i === self.currentIndex);
-		var itemContainer = $('<div></div>').append(element).addClass(itemClass);
-		var showCurrentMedia = function() {
-			/**
-			 * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onLoadMedia
-			 * Triggered when corresponding media is loaded.
-			 */
-			i === self.currentIndex && itemContainer.css("display", "block") && publish("onLoadMedia");
-		};
-		var controlContainer = $('<a href="#"></a>').addClass(controlClass);
-		controlContainer.click(function() {
-			var control = $(this);
-			var currentItem = itemsContainer.children().eq(self.currentIndex);
-			$("." + controlClass, controlsContainer).removeClass(activeControlClass);
-			control.addClass(activeControlClass);
-			itemsContainer.animate({
-				"height": itemContainer.height()
-			}, self.config.get("resizeDuration"), function() {
-				/**
-				 * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onResize
-				 * Triggered when corresponding media is resized.
-				 */
-				publish("onResize");
-			});
-			currentItem.fadeOut(function() {
-				itemContainer.fadeIn(function() {
-					self.currentIndex = i;
-					/**
-					 * @echo_event Echo.StreamServer.Apps.Stream.Item.MediaGallery.onChangeMedia
-					 * Triggered when media is changed.
-					 */
-					publish("onChangeMedia");
-				});
-			});
-			return false;
-		});
-		if (isCurrentControl) {
-			controlContainer.addClass(activeControlClass);
-		}
-		element.one("error", function() {
-			itemContainer.empty().append(self.substitute({"template": self.templates.mediaError}));
-			showCurrentMedia();
-		}).one("load", function() {
-			self._loadMediaHandler(element, itemContainer);
-			showCurrentMedia();
-		});
-		itemsContainer.append(itemContainer);
-		controlsContainer.append(controlContainer);
-	});
-	if (this.elements.length === 1) {
-		controlsContainer.hide();
-	}
-	return element;
-};
-
-// To avoid bugs with flash content when we show/hide it
-// we should try fix it with wmode parameter if needed
-mediaGallery.methods._normalizeFlashContent = function(element) {
-	var tagName = element.get(0).tagName.toLowerCase();
-	if (tagName === "iframe") {
-		var parts = Utils.parseURL(element.attr("src") || "");
-		if (!/(www\.)?youtube\.com/.test(parts.domain)) return;
-		var query = parts.query;
-		query = query && ~query.indexOf("wmode")
-			? query.replace(/(wmode=)([^&?]+)/g, function($0, $1, $2) {
-				if ($2 != "opaque" || $2 != "transparent") {
-					return $1 + "opaque";
-				}
-			})
-			: (query ? (query += "&wmode=opaque") : "wmode=opaque");
-		parts.path = parts.path || "";
-		parts.fragment = parts.fragment ? "#" + parts.fragment : "";
-		parts.query = query ? "?" + query : "";
-		element.attr("src", this.substitute({
-			"template": "{data:scheme}://{data:domain}{data:path}{data:query}{data:fragment}",
-			"data": parts
-		}));
-	} else if (tagName === "embed") {
-		var wmode = element.attr("wmode");
-		if (wmode != "opaque" || wmode != "transparent") {
-			element.attr("wmode", "opaque");
-		}
-	}
-};
-
-mediaGallery.methods._getHiddenElementDimensions = function(parent, element) {
-	var dimensions;
-	parent.css({
-		"postion": "absolute",
-		"visibility": "hidden",
-		"display": "block"
-	});
-	dimensions = {
-		"width": element.width(),
-		"height": element.height()
-	};
-	parent.css({
-		"postion": "",
-		"visibility": "",
-		"display": ""
-	});
-	return dimensions;
-};
-
-mediaGallery.methods._loadMediaHandler = function(element, elementContainer) {
-	var self = this;
-	var target = this.config.get("target");
-	var viewportDimensions = {
-		"width": target.width(),
-		"height": target.width()
-	};
-	var getElementDimensions = function() {
-		return !elementContainer.is(":visible")
-			? self._getHiddenElementDimensions(elementContainer, element)
-			: {
-				"width": element.width(),
-				"height": element.height()
-			};
-	};
-	var ratio;
-	var elementDimensions = getElementDimensions();
-	if (elementDimensions.width > viewportDimensions.width) {
-		ratio = viewportDimensions.width / elementDimensions.width;
-		element.css({
-			"width": viewportDimensions.width,
-			"height": elementDimensions.height * ratio
-		});
-		elementDimensions = getElementDimensions();
-	}
-	if (elementDimensions.height > viewportDimensions.height) {
-		ratio = viewportDimensions.height / elementDimensions.height;
-		element.css({
-			"width": elementDimensions.width * ratio,
-			"height": viewportDimensions.height
-		});
-	}
-};
-
-mediaGallery.css =
-	'.{class:thumbnails} { overflow: hidden; }' +
-	'.{class:item} { width: 100%; display: none; }' +
-	'.{class:controls} { text-align: center; margin-top: 10px; }' +
-	'.{class:control} { display: inline-block; width: 8px; height: 8px; font-size: 0px; line-height: 8px; outline: none; border-radius: 4px; vertical-align: middle; margin-left: 8px; cursor: pointer; background-color: #c6c6c6; text-decoration: none; transition: all .2s ease-in 0; -moz-transition-property: all; -moz-transition-duration: .2s; -moz-transition-timing-function: ease-in; -moz-transition-delay: 0; -webkit-transition-property: all; -webkit-transition-duration: .2s; -webkit-transition-timing-function: ease-in; -webkit-transition-delay: 0; }' +
-	'.{class:control}:hover { background-color: #ee7b11; }' +
-	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }';
-
-return App.create(mediaGallery);	
-});
 
 Echo.define("echo/streamserver/plugins/streamItemPinboardVisualization", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"isotope",
-	"echo/streamserver/plugins/mediaGallery"
+	"echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget"
 ], function($, Plugin, Utils, Isotope, MediaGallery) {
 
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Item.Plugins.PinboardVisualization
+ * @class Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Stream.Item application into a
  * pinboard-style block.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"query": "childrenof:http://example.com/js-sdk",
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
@@ -287,7 +35,7 @@ Echo.define("echo/streamserver/plugins/streamItemPinboardVisualization", [
  * parameter for the Stream.Item application will result in no actions while the
  * PinboardVisualization plugin is active. This was done to simplfy UI and avoid
  * visual noise as much as possible. More information about "reTag" configuration
- * parameter can be found [here](#!/api/Echo.StreamServer.Apps.Stream.Item-cfg-reTag).
+ * parameter can be found [here](#!/api/Echo.StreamServer.BundledApps.Stream.Item.ClientWidget-cfg-reTag).
  *
  * More information regarding the plugins installation can be found
  * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
@@ -297,7 +45,7 @@ Echo.define("echo/streamserver/plugins/streamItemPinboardVisualization", [
  * @package streamserver/plugins/pinboard-visualization.js
  */
 
-var plugin = Plugin.definition("PinboardVisualization", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("PinboardVisualization", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -349,8 +97,8 @@ plugin.config = {
 	 * criteria simultaneously.
 	 */
 	"itemCSSClassByContentLength": {
-		"echo-streamserver-apps-stream-item-smallSizeContent": [0, 69],
-		"echo-streamserver-apps-stream-item-mediumSizeContent": [70, 120]
+		"echo-streamserver-bundledapps-stream-item-clientwidget-smallSizeContent": [0, 69],
+		"echo-streamserver-bundledapps-stream-item-clientwidget-mediumSizeContent": [70, 120]
 	},
 	/**
 	 * @cfg {Object} gallery
@@ -386,7 +134,7 @@ plugin.component.renderers.content = function(element) {
 (function() {
 
 /**
- * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.PinboardVisualization.onChangeView
+ * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.PinboardVisualization.onChangeView
  * Triggered if the view was changed.
  */
 var publish = function(force) {
@@ -433,20 +181,20 @@ plugin.component.renderers.textToggleTruncated = function(element) {
 	});
 };
 
-$.map(["Echo.StreamServer.Apps.Stream.Item.onRerender",
-	"Echo.StreamServer.Apps.Stream.Item.onDelete",
-	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onResize",
-	"Echo.StreamServer.Apps.Stream.Item.MediaGallery.onLoadMedia"], function(topic) {
+$.map(["Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRerender",
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onDelete",
+	"Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onResize",
+	"Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onLoadMedia"], function(topic) {
 		plugin.events[topic] = function() {
-			var force = topic !== "Echo.StreamServer.Apps.Stream.Item.onDelete";
+			var force = topic !== "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onDelete";
 			publish.call(this, force);
 		};
 });
 
-$.map(["Echo.StreamServer.Apps.Submit.onRender",
-	"Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditError",
-	"Echo.StreamServer.Apps.Submit.Plugins.Edit.onEditComplete",
-	"Echo.StreamServer.Apps.Stream.Item.Plugins.Reply.onCollapse"], function(event) {
+$.map(["Echo.StreamServer.BundledApps.Submit.ClientWidget.onRender",
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Edit.onEditError",
+	"Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Edit.onEditComplete",
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply.onCollapse"], function(event) {
 	plugin.events[event] = function(topic, args) {
 		var plugin = this;
 		// in some cases we need to refresh isotope layout immediately
@@ -458,9 +206,9 @@ $.map(["Echo.StreamServer.Apps.Submit.onRender",
 });
 
 // TODO: avoid coherence between plugin components
-plugin.events["Echo.StreamServer.Apps.Stream.Item.onRender"] = function(topic, args) {
+plugin.events["Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender"] = function(topic, args) {
 	var plugin = this, item = this.component;
-	var body = $(".echo-streamserver-apps-stream-body", item.config.get("parent.target"));
+	var body = $(".echo-streamserver-bundledapps-stream-clientwidget-body", item.config.get("parent.target"));
 	if (!body.data("isotope")) {
 		plugin.set("rendered", true);
 		return;
@@ -620,10 +368,10 @@ plugin.css =
 	'.{plugin.class} .{class:plugin-Like-likedBy} { margin-top: 5px; }' +
 	'.{plugin.class} .{class:plugin-Reply-submitForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
 	'.{plugin.class} .{class:plugin-Reply-compactForm} { box-shadow: none; margin: 0px; border: none; background-color: #F2F0F0; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-apps-auth-name { font-size: 12px; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-apps-auth-logout { line-height: 24px; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-apps-submit-userInfoWrapper {  margin: 5px 0px; }' +
-	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-apps-submit-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-bundledapps-auth-clientwidget-name { font-size: 12px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-bundledapps-auth-clientwidget-logout { line-height: 24px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-bundledapps-submit-clientwidget-userInfoWrapper {  margin: 5px 0px; }' +
+	'.{plugin.class} .{class:plugin-Reply-replyForm} .echo-streamserver-bundledapps-submit-clientwidget-plugin-FormAuth-forcedLoginMessage { font-size: 13px; }' +
 	'.{plugin.class} .{class:plugin-Moderation-status}  { width: 30px; clear: both; }' +
 	'.{plugin.class} .{class:plugin-TweetDisplay-tweetUserName}, .{plugin.class} .{class:authorName} { float: none; word-wrap: normal; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }' +
 	'.{plugin.class} .{class:plugin-TweetDisplay-tweetUserName} { margin-left: 0px; }' +
@@ -650,7 +398,7 @@ Echo.define("echo/streamserver/plugins/streamPinboardVisualization", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Plugins.PinboardVisualization
+ * @class Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Echo Stream Client visualization
  * into a pinboard-style representation. The plugin extracts all media (such as
  * images, videos, etc) from the item content and assembles the mini media
@@ -665,7 +413,7 @@ Echo.define("echo/streamserver/plugins/streamPinboardVisualization", [
  * http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js  
  * http://cdn.echoenabled.com/sdk/v3/dev/streamserver/plugins/pinboard-visualization.js
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -680,7 +428,7 @@ Echo.define("echo/streamserver/plugins/streamPinboardVisualization", [
  *
  * @package streamserver/plugins/pinboard-visualization.js
  */
-var plugin = Plugin.definition("PinboardVisualization", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.definition("PinboardVisualization", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -733,13 +481,13 @@ plugin.enabled = function() {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Apps.Stream.onRender": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onRender": function(topic, args) {
 		this._refreshView();
 	},
-	"Echo.StreamServer.Apps.Stream.onRefresh": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onRefresh": function(topic, args) {
 		this._refreshView();
 	},
-	"Echo.StreamServer.Apps.Stream.Item.Plugins.PinboardVisualization.onChangeView": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.PinboardVisualization.onChangeView": function(topic, args) {
 		var plugin = this;
 		if (args.force) {
 			plugin._refreshView();

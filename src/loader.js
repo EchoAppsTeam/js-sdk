@@ -79,10 +79,10 @@ paths[Echo.Loader.getURL("") + "/gui.pack"] = [
 	"echo/gui/dropdown", "echo/gui/tabs"
 ];
 paths[Echo.Loader.getURL("") + "/streamserver.pack"] = [
-	"echo/streamserver/bundled-app", "echo/streamserver/apps/counter",
-	"echo/streamserver/apps/stream", "echo/streamserver/apps/facePile",
-	"echo/streamserver/apps/facePileItem", "echo/streamserver/apps/submit",
-	"echo/streamserver/apps/auth", "echo/streamserver/plugins/edit",
+	"echo/app-client-widget", "echo/streamserver/bundled-apps/counter/client-widget",
+	"echo/streamserver/bundled-apps/stream/client-widget", "echo/streamserver/bundled-apps/facepile/client-widget",
+	"echo/streamserver/bundled-apps/facepile/item/client-widget", "echo/streamserver/bundled-apps/submit/client-widget",
+	"echo/streamserver/bundled-apps/auth/client-widget", "echo/streamserver/plugins/edit",
 	"echo/streamserver/plugins/streamItemEdit", "echo/streamserver/plugins/submitEdit",
 	"echo/streamserver/plugins/communityFlag", "echo/streamserver/plugins/formAuth",
 	"echo/streamserver/plugins/infiniteScroll", "echo/streamserver/plugins/itemAccumulatorDisplay",
@@ -94,10 +94,10 @@ paths[Echo.Loader.getURL("") + "/streamserver.pack"] = [
 	"echo/streamserver/plugins/streamItemModeration", "echo/streamserver/plugins/reply",
 	"echo/streamserver/plugins/streamItemReply", "echo/streamserver/plugins/streamReply",
 	"echo/streamserver/plugins/submitReply", "echo/streamserver/plugins/textCounter",
-	"echo/streamserver/plugins/tweet-display", "echo/streamserver/apps/item"
+	"echo/streamserver/plugins/tweet-display", "echo/streamserver/bundled-apps/stream/item/client-widget"
 ];
 paths[Echo.Loader.getURL("") + "/pinboard-visualization"] = [
-	"echo/streamserver/plugins/pinboardVisualization", "echo/streamserver/plugins/mediaGallery",
+	"echo/streamserver/plugins/pinboardVisualization", "echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget",
 	"echo/streamserver/plugins/streamItemPinboardVisualization", "echo/streamserver/plugins/streamPinboardVisualization"
 ];
 require.config({

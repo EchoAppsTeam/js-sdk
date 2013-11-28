@@ -1,8 +1,8 @@
 Echo.define("commentsSample", [
 	"jquery",
 	"echo/app",
-	"echo/streamserver/apps/stream",
-	"echo/streamserver/apps/submit"
+	"echo/streamserver/bundled-apps/stream/client-widget",
+	"echo/streamserver/bundled-apps/submit/client-widget"
 ], function($, App, Stream, Submit) {
 
 "use strict";
@@ -37,7 +37,7 @@ Comments.methods.template = function() {
 Comments.renderers.stream = function(element) {
 	this.initApp({
 		"id": "Stream",
-		"component": "echo/streamserver/apps/stream",
+		"component": "echo/streamserver/bundled-apps/stream/client-widget",
 		"config": {
 			"target": element
 		}
@@ -48,7 +48,7 @@ Comments.renderers.stream = function(element) {
 Comments.renderers.submit = function(element) {
 	this.initApp({
 		"id": "Submit",
-		"component": "echo/streamserver/apps/submit",
+		"component": "echo/streamserver/bundled-apps/submit/client-widget",
 		"config": {
 			"target": element
 		}

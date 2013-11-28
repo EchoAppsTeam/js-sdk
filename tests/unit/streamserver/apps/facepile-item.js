@@ -7,7 +7,7 @@ Echo.require([
 
 var data = {
 	"instance": {
-		"name": "Echo.StreamServer.Apps.FacePile.Item",
+		"name": "Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget",
 		"config": {
 			"data": {
 				"id": "http://example.com/id",

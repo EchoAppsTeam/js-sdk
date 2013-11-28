@@ -7,7 +7,7 @@
 	</head>
 <body>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Counter" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.BundledApps.Counter.ClientWidget" target="_blank">Documentation</a></div>
 		<h1>Counter App Demo</h1>
 		<div class="description">Echo Counter encapsulates interaction with the Echo Count API and provides a simple live updating number.</div>
 		<div class="wrapper">
@@ -29,7 +29,7 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/apps/counter"], function(Counter) {
+		Echo.require(["echo/streamserver/bundled-apps/counter/client-widget"], function(Counter) {
 			new Counter({
 				"target": document.getElementById("counter"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",

@@ -1,13 +1,13 @@
 Echo.define("echo/streamserver/plugins/formAuth", [
 	"jquery",
 	"echo/plugin",
-	"echo/streamserver/apps/auth"
+	"echo/streamserver/bundled-apps/auth/client-widget"
 ], function($, Plugin, Auth) {
 
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Submit.Plugins.FormAuth
+ * @class Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.FormAuth
  * Adds the authentication section to the Echo Submit application
  *
  * 	var identityManager = {
@@ -16,7 +16,7 @@ Echo.define("echo/streamserver/plugins/formAuth", [
  * 		"url": "http://example.com/auth"
  * 	};
  *
- * 	new Echo.StreamServer.Apps.Submit({
+ * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
  * 		"target": document.getElementById("submit"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -30,7 +30,7 @@ Echo.define("echo/streamserver/plugins/formAuth", [
  * 	});
  *
  * Note: it is strongly recommended to use
- * {@link Echo.StreamServer.Apps.Submit.Plugins.JanrainAuth JanrainAuth} plugin
+ * {@link Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.JanrainAuth JanrainAuth} plugin
  * in case of integration with Janrain authentication provider because it is
  * based on the most current <a href="http://janrain.com/products/engage/social-login/" target="_blank">Janrain Social Login Widget</a>
  * implementation.
@@ -43,7 +43,7 @@ Echo.define("echo/streamserver/plugins/formAuth", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("FormAuth", "Echo.StreamServer.Apps.Submit");
+var plugin = Plugin.definition("FormAuth", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 

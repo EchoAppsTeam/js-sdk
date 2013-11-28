@@ -12,11 +12,11 @@ The unified structure which describes a certain application, application or a pl
 
 ### Application (aka App)
 
-*Application* (or *App*) is a JavaScript class with the pre-defined structure (generated out of the app definition) which can represent a certain set of discrete functionality or combine multiple apps and plugins into a package to achieve a certain functionality. Application examples: {@link Echo.StreamServer.Apps.Stream Stream application}, {@link Echo.StreamServer.Apps.Submit Submit application}, {@link Echo.StreamServer.Apps.Auth Auth application}, etc. More information about the App development can be found in [the hands-on guide](#!/guide/how_to_develop_app).
+*Application* (or *App*) is a JavaScript class with the pre-defined structure (generated out of the app definition) which can represent a certain set of discrete functionality or combine multiple apps and plugins into a package to achieve a certain functionality. Application examples: {@link Echo.StreamServer.BundledApps.Stream.ClientWidget Stream application}, {@link Echo.StreamServer.BundledApps.Submit.ClientWidget Submit application}, {@link Echo.StreamServer.BundledApps.Auth.ClientWidget Auth application}, etc. More information about the App development can be found in [the hands-on guide](#!/guide/how_to_develop_app).
 
 ### Plugin
 
-*Plugin* is a JavaScript class with the pre-defined structure (generated out of the plugin definition) which extends a certain part of an App. Plugin examples: {@link Echo.StreamServer.Apps.Stream.Item.Plugins.Reply Reply}, {@link Echo.StreamServer.Apps.Stream.Item.Plugins.Edit Edit}, {@link Echo.StreamServer.Apps.Stream.Item.Plugins.Like Like}. More information about the Plugins development can be found in [the hands-on guide](#!/guide/how_to_develop_plugin).
+*Plugin* is a JavaScript class with the pre-defined structure (generated out of the plugin definition) which extends a certain part of an App. Plugin examples: {@link Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply Reply}, {@link Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Edit Edit}, {@link Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Like Like}. More information about the Plugins development can be found in [the hands-on guide](#!/guide/how_to_develop_plugin).
 
 ### Renderer
 

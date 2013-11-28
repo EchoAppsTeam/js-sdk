@@ -6,12 +6,12 @@ Echo.define("echo/streamserver/plugins/infiniteScroll", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Plugins.InfiniteScroll
+ * @class Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.InfiniteScroll
  * Echo Stream plugin automatically loads the next page full of items
  * when the end of the stream is displayed in the browser.
  * This produces the 'Infinite Scroll' Effect.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -27,7 +27,7 @@ Echo.define("echo/streamserver/plugins/infiniteScroll", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("InfiniteScroll", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.definition("InfiniteScroll", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -46,7 +46,7 @@ plugin.init = function() {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Apps.Stream.onDataReceive": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.onDataReceive": function(topic, args) {
 		this.set("requestInProgress", false);
 	}
 };

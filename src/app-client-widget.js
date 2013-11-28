@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/bundled-app", [
+Echo.define("echo/app-client-widget", [
 	"jquery",
 	"echo/utils",
 	"echo/streamserver/user",
@@ -6,9 +6,9 @@ Echo.define("echo/streamserver/bundled-app", [
 ], function($, Utils, User, App) {
 "use strict";
 
-var BundledApp = App.definition("Echo.StreamServer.BundledApp");
+var ClientWidget = App.definition("Echo.App.ClientWidget");
 
-BundledApp.init = function() {
+ClientWidget.init = function() {
 	var app = this;
 	this.initUser(function() {
 		app.render();
@@ -16,14 +16,14 @@ BundledApp.init = function() {
 	});
 };
 
-BundledApp.methods.initUser = function(callback) {
+ClientWidget.methods.initUser = function(callback) {
 	Utils.sequentialCall([
 		$.proxy(this._initBackplane, this),
 		$.proxy(this._storeUser, this)
 	], callback);
 };
 
-BundledApp.methods._initBackplane = function(callback) {
+ClientWidget.methods._initBackplane = function(callback) {
 	var app = this;
 	var config = this.config.get("backplane");
 	if (config.serverBaseURL && config.busName) {
@@ -36,7 +36,7 @@ BundledApp.methods._initBackplane = function(callback) {
 	}
 };
 
-BundledApp.methods._storeUser = function(callback) {
+ClientWidget.methods._storeUser = function(callback) {
 	var app = this;
 	if (!this.config.get("appkey")) {
 		callback();
@@ -66,12 +66,12 @@ BundledApp.methods._storeUser = function(callback) {
 	}
 };
 
-BundledApp.static.definition = function() {
+ClientWidget.static.definition = function() {
 	var object = this.parent.apply(this, arguments);
-	object.init = BundledApp.init;
+	object.init = ClientWidget.init;
 	return object;
 };
 
-return App.create(BundledApp);
+return App.create(ClientWidget);
 
 });

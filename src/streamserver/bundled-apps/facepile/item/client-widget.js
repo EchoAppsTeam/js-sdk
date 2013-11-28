@@ -1,0 +1,125 @@
+Echo.define("echo/streamserver/bundled-apps/facepile/item/client-widget", [
+	"jquery",
+	"echo/utils",
+	"require",
+	"echo/app-client-widget"
+], function($, Utils, require, App) {
+
+"use strict";
+
+/**
+ * @class Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item
+ * Echo FacePile.Item application displays single user (actor). 
+ *
+ * @extends App
+ *
+ * @package streamserver/apps.pack.js
+ * @package streamserver.pack.js
+ *
+ * @constructor
+ * FacePile.Item constructor initializing Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item class
+ *
+ * @param {Object} config
+ * Configuration options
+ */
+var item = App.definition("Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item");
+
+//if (App.isDefined(item)) return;
+
+/** @hide @cfg plugins */
+/** @hide @method dependent */
+
+/**
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item.onReady
+ * Triggered when the app initialization is finished completely.
+ */
+/**
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item.onRefresh
+ * Triggered when the app is refreshed. For example after the user
+ * login/logout action or as a result of the "refresh" function call.
+ */
+/**
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item.onRender
+ * Triggered when the app is rendered.
+ */
+/**
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item.onRerender
+ * Triggered when the app is rerendered.
+ */
+
+item.config = {
+	/**
+	 * @cfg {String} defaultAvatar
+	 * Default avatar URL which will be used for the user in
+	 * case there is no avatar information defined in the user
+	 * profile. Also used for anonymous users.
+	 */
+	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png", false)
+};
+
+item.labels = {
+	/**
+	 * @echo_label
+	 */
+	"you": "You"
+};
+
+/**
+ * @echo_template
+ */
+item.templates.main =
+	'<span class="{class:container}">' +
+		'<span class="{class:avatar}"></span>' +
+		'<span class="{class:title}">{data:title}</span>' +
+	'</span>';
+
+/**
+ * @echo_renderer
+ */
+item.renderers.avatar = function(element) {
+	var self = this;
+	if (this.config.get("avatar")) {
+		Utils.placeImage({
+			"container": element,
+			"image": this.get("data.avatar"),
+			"defaultImage": this.config.get("defaultAvatar")
+		});
+		if (!this.config.get("text")) {
+			element.attr("title", this.get("data.title"));
+		}
+	} else {
+		element.hide();
+	}
+	return element;
+};
+
+/**
+ * @echo_renderer
+ */
+item.renderers.title = function(element) {
+	if (this.config.get("text")) {
+		element.empty().append(this.isYou() ? this.labels.get("you") : this.get("data.title"));
+	} else {
+		element.hide();
+	}
+	return element;
+};
+
+/**
+ * Function to check if the item was posted by the current user.
+ *
+ * @return {Boolean}
+ */
+item.methods.isYou = function() {
+	var id = this.get("data.id");
+	return id && id === this.user.get("identityUrl");
+};
+
+item.css =
+	".{class:avatar} { display: inline-block; width: 16px; height: 16px; margin: 0px 3px 0px 0px; vertical-align: text-top; }" +
+	'.{class:only-avatars} .{class:avatar} { margin: 0px 2px; }' +
+	'.{class:container}, .{class:container} span { white-space: nowrap; display: inline-block; }' +
+	'.{class:only-avatars} .{class:container} { white-space: normal; }';
+
+return App.create(item);
+});

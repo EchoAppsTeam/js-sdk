@@ -7,11 +7,11 @@ Echo.define("echo/streamserver/plugins/itemAccumulatorDisplay", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Item.Plugins.ItemAccumulatorDisplay
+ * @class Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.ItemAccumulatorDisplay
  * Shows one of the item accumulators in the top right corner of each item in
  * the Echo Stream application.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -27,7 +27,7 @@ Echo.define("echo/streamserver/plugins/itemAccumulatorDisplay", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("ItemAccumulatorDisplay", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("ItemAccumulatorDisplay", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -41,7 +41,7 @@ plugin.config = {
 	 * Specifies the timeout in seconds for sequential changes of the item
 	 * accumulator during the update.
  	 *
-	 * 	new Echo.StreamServer.Apps.Stream({
+	 * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
 	 * 		"target": document.getElementById("echo-stream"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"plugins": [{

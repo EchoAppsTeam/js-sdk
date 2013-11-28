@@ -55,7 +55,7 @@ As a result, the `compiled` variable will have the following value:
 
 While building your own app you can use the Echo.App.substitute function available inside the app methods. This method utilizes the Echo.Utils.substitute function with a few Echo.App-specific placeholders (or instructions).
 
-The list of the placeholders supported inside the app functions can be found below. In examples below we assume that we operate inside the Echo.StreamServer.Apps.Stream.Item class. Here is the list:
+The list of the placeholders supported inside the app functions can be found below. In examples below we assume that we operate inside the Echo.StreamServer.BundledApps.Stream.Item.ClientWidget class. Here is the list:
 
 - `{class:value}`
   The placeholder will be replaced with the CSS class with the CSS prefix specific for the current app (based on the app name).
@@ -66,7 +66,7 @@ The list of the placeholders supported inside the app functions can be found bel
 
   will be replaced with:
 
-  		<div class="echo-streamserver-apps-stream-item-avatar"></div>
+  		<div class="echo-streamserver-bundledapps-stream-item-clientwidget-avatar"></div>
 
   Note: the value of the `class` placeholder also serves as the name of the renderer which should be applied for this particular element. More information about the rendering engine can be found [here](#!/guide/terminology-section-rendering-engine).
 
@@ -94,7 +94,7 @@ The list of the placeholders supported inside the app functions can be found bel
 
   will be converted to:
 
-  		<span class="echo-streamserver-apps-stream-item-metadata-value">http://twitter.com/user</span>
+  		<span class="echo-streamserver-bundledapps-stream-item-clientwidget-metadata-value">http://twitter.com/user</span>
 
 - `{label:value}`
   The placeholder is used to access the labels defined for the given app. Example template string:

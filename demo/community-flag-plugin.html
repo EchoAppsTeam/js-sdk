@@ -7,12 +7,12 @@
 </head>
 <body>
 	<style>
-		.echo-streamserver-apps-auth-userAnonymous { text-align: left; }
+		.echo-streamserver-bundledapps-auth-clientwidget-userAnonymous { text-align: left; }
 	</style>
 	<div id="container">
-		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Stream.Item.Plugins.CommunityFlag" target="_blank">Documentation</a></div>
+		<div id="documentation"><a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.CommunityFlag" target="_blank">Documentation</a></div>
 		<h1>"CommunityFlag" Plugin Demo</h1>
-		<div class="description">Adds extra Flag/Unflag buttons to each item in the <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Stream">Echo Stream app</a> for authenticated users. <br><br> Note: the Flag/Unflag buttons are available for authenticated users only. If you are not logged in, you can do it using <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.Apps.Auth" target="_blank">Echo Auth app</a> below.</a></div>
+		<div class="description">Adds extra Flag/Unflag buttons to each item in the <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.BundledApps.Stream.ClientWidget">Echo Stream app</a> for authenticated users. <br><br> Note: the Flag/Unflag buttons are available for authenticated users only. If you are not logged in, you can do it using <a href="{%=baseURLs.docs%}/#!/api/Echo.StreamServer.BundledApps.Auth.ClientWidget" target="_blank">Echo Auth app</a> below.</a></div>
 		<div class="wrapper">
 			<div id="auth"></div>
 		</div>
@@ -35,7 +35,7 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/apps/auth", "echo/streamserver/apps/stream"], function(Auth, Stream) {
+		Echo.require(["echo/streamserver/bundled-apps/auth/client-widget", "echo/streamserver/bundled-apps/stream/client-widget"], function(Auth, Stream) {
 			var identityManager = {
 				"width": 400,
 				"height": 240,

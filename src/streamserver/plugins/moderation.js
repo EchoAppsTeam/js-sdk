@@ -14,11 +14,11 @@ Echo.define("echo/streamserver/plugins/streamModeration", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation
+ * @class Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation
  * Adds several moderation controls to change item status. Besides
  * it provides the opportunity to ban specific user or change his privileges.
  *
- * 	new Echo.StreamServer.Apps.Stream({
+ * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
  * 		"plugins": [{
@@ -34,7 +34,7 @@ Echo.define("echo/streamserver/plugins/streamModeration", [
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
-var plugin = Plugin.definition("Moderation", "Echo.StreamServer.Apps.Stream.Item");
+var plugin = Plugin.definition("Moderation", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
 if (Plugin.isDefined(plugin)) return;
 
@@ -60,7 +60,7 @@ plugin.config = {
 	 * @cfg {Boolean} [removePersonalItemsAllowed=false]
 	 * Specifies whether users are allowed to remove their own items from stream or not.
 	 *
-	 *     new Echo.StreamServer.Apps.Stream({
+	 *     new Echo.StreamServer.BundledApps.Stream.ClientWidget({
 	 *         "target": document.getElementById("echo-stream"),
 	 *         "appkey": "echo.jssdk.demo.aboutecho.com",
 	 *         "plugins": [{
@@ -88,7 +88,7 @@ plugin.config = {
 	 *
 	 * The following actions are available: `ban`, `permissions`
 	 *
-	 * 	new Echo.StreamServer.Apps.Stream({
+	 * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
 	 * 		"target": document.getElementById("echo-stream"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"plugins": [{
@@ -105,7 +105,7 @@ plugin.config = {
 	 *
 	 * The following actions are available: `approve`, `spam`, `delete`, `untouch`
 	 *
-	 * 	new Echo.StreamServer.Apps.Stream({
+	 * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
 	 * 		"target": document.getElementById("echo-stream"),
 	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
 	 * 		"plugins": [{
@@ -118,7 +118,7 @@ plugin.config = {
 };
 
 plugin.events = {
-	"Echo.StreamServer.Apps.Stream.Plugins.Moderation.onUserUpdate": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.Moderation.onUserUpdate": function(topic, args) {
 		var target = this.component;
 		var source = args.item;
 		if (target.get("data.actor.id") !== source.data.actor.id) return;
@@ -338,59 +338,59 @@ plugin.methods._sendRequest = function(data, callback, errorCallback) {
 
 plugin.methods._publishCompleteActionEvent = function(args) {
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onApproveComplete
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onApproveComplete
 	 * Triggered if "Approve" operation was completed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onSpamComplete
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onSpamComplete
 	 * Triggered if "Spam" operation was completed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onDeleteComplete
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onDeleteComplete
 	 * Triggered if "Delete" operation was completed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onUntouchComplete
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onUntouchComplete
 	 * Triggered if "Untouch" operation was completed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onBanComplete
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onBanComplete
 	 * Triggered if "Ban" operation was completed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onUnBanComplete
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onUnBanComplete
 	 * Triggered if "UnBan" operation was completed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onUserPermissionsComplete
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onUserPermissionsComplete
 	 * Triggered if "UserPermissions" operation was completed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onApproveError
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onApproveError
 	 * Triggered if "Approve" operation failed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onSpamError
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onSpamError
 	 * Triggered if "Spam" operation failed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onDeleteError
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onDeleteError
 	 * Triggered if "Delete" operation failed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onUntouchError
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onUntouchError
 	 * Triggered if "Untouch" operation failed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onBanError
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onBanError
 	 * Triggered if "Ban" operation failed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onUnBanError
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onUnBanError
 	 * Triggered if "UnBan" operation failed.
 	 */
 	/**
-	 * @echo_event Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onUserPermissionsError
+	 * @echo_event Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onUserPermissionsError
 	 * Triggered if "UserPermissions" operation failed.
 	 */
 	this.events.publish({
@@ -669,10 +669,10 @@ Echo.define("echo/streamserver/plugins/streamItemModeration", [
 
 "use strict";
 
-var plugin = Plugin.definition("Moderation", "Echo.StreamServer.Apps.Stream");
+var plugin = Plugin.definition("Moderation", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
 plugin.events = {
-	"Echo.StreamServer.Apps.Stream.Item.Plugins.Moderation.onUserUpdate": function(topic, args) {
+	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onUserUpdate": function(topic, args) {
 		this.events.publish({
 			"topic": "onUserUpdate",
 			"data": args,
