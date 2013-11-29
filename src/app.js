@@ -498,25 +498,19 @@ App.prototype.destroyApps = function(exceptions) {
 	});
 };
 
-App.prototype._init = function(subsystems) {
+App.prototype._init = function init(subsystems) {
 	var app = this;
 	if (!subsystems || !subsystems.length) return;
-	var func = subsystems.shift();
-	var parts = func.split(":");
-	var subsystem = {
-		"name": parts[0],
-		"init": app._initializers[parts[0]],
-		"type": parts[1] || "sync"
-	};
+	var subsystem = subsystems.shift();
 	if (subsystem.type === "sync") {
 		var result = subsystem.init.call(app);
 		if (typeof result !== "undefined") {
 			app[subsystem.name] = result;
 		}
-		app._init(subsystems);
+		init.call(this, subsystems);
 	} else {
 		subsystem.init.call(app, function() {
-			app._init(subsystems);
+			init.call(app, subsystems);
 		});
 	}
 };
@@ -538,9 +532,15 @@ App.prototype._initializers.list = [
 ];
 
 App.prototype._initializers.get = function(action) {
+	var self = this;
 	return Utils.foldl([], this.list, function(initializer, acc) {
 		if (~$.inArray(action, initializer[1])) {
-			acc.push(initializer[0]);
+			var parts = initializer[0].split(":");
+			acc.push({
+				"name": parts[0],
+				"init": self[parts[0]],
+				"type": parts[1] || "sync"
+			});
 		}
 	});
 };

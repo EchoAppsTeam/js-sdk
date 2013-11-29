@@ -141,6 +141,7 @@ pile.config = {
 		"enabled": true,
 		"template": ""
 	},
+	"loadingMessageLayout": "compact",
 
 	/**
 	 * @cfg {String} totalUsersCount

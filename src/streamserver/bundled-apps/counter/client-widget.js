@@ -2,7 +2,7 @@ Echo.define("echo/streamserver/bundled-apps/counter/client-widget", [
 	"jquery",
 	"echo/utils",
 	"echo/streamserver/api",
-	"echo/app"
+	"echo/app-client-widget"
 ], function($, Utils, API, App) {
 
 "use strict";
@@ -177,6 +177,7 @@ counter.config = {
 			"timeout": 10
 		}
 	},
+	"loadingMessageLayout": "compact",
 	/**
 	 * @cfg {Boolean} useSecureAPI
 	 * This parameter is used to specify the API request scheme.

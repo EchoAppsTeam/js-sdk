@@ -8,7 +8,7 @@ Echo.define("echo/streamserver/bundled-apps/facepile/item/client-widget", [
 "use strict";
 
 /**
- * @class Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item
+ * @class Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget
  * Echo FacePile.Item application displays single user (actor). 
  *
  * @extends App
@@ -17,12 +17,12 @@ Echo.define("echo/streamserver/bundled-apps/facepile/item/client-widget", [
  * @package streamserver.pack.js
  *
  * @constructor
- * FacePile.Item constructor initializing Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item class
+ * FacePile.Item constructor initializing Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget class
  *
  * @param {Object} config
  * Configuration options
  */
-var item = App.definition("Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item");
+var item = App.definition("Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget");
 
 //if (App.isDefined(item)) return;
 
@@ -30,20 +30,20 @@ var item = App.definition("Echo.StreamServer.BundledApps.FacePile.ClientWidget.I
 /** @hide @method dependent */
 
 /**
- * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item.onReady
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onReady
  * Triggered when the app initialization is finished completely.
  */
 /**
- * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item.onRefresh
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onRefresh
  * Triggered when the app is refreshed. For example after the user
  * login/logout action or as a result of the "refresh" function call.
  */
 /**
- * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item.onRender
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onRender
  * Triggered when the app is rendered.
  */
 /**
- * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.Item.onRerender
+ * @echo_event Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onRerender
  * Triggered when the app is rerendered.
  */
 

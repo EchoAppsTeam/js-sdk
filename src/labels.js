@@ -238,10 +238,6 @@ Labels._substitute = function(label, data) {
 
 Labels.set({
 	/**
-	 * @echo_label loading
-	 */
-	"loading": "Loading...",
-	/**
 	 * @echo_label retrying
 	 */
 	"retrying": "Retrying...",
