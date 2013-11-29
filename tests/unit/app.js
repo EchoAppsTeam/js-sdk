@@ -61,6 +61,7 @@ Echo.Tests.Units.push(function(callback) {
 				"events": {},
 				"methods": {},
 				"renderers": {},
+				"static": {},
 				"templates": {}
 			};
 
