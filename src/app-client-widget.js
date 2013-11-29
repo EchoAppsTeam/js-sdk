@@ -19,6 +19,15 @@ ClientWidget.labels = {
 	"loading": "Loading..."
 };
 
+ClientWidget.events = {
+	"Echo.App.onDataInvalidate": function() {
+		var request = this.get("request");
+		if (request && request.liveUpdates) {
+			request.liveUpdates.start(true);
+		}
+	}
+};
+
 ClientWidget.methods._initUser = function(callback) {
 	Utils.sequentialCall([
 		$.proxy(this._initBackplane, this),

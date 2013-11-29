@@ -91,6 +91,14 @@ counter.init = function() {
 	}
 };
 
+counter.destroy = function() {
+	var request = this.request;
+	if (request) {
+		request.abort();
+		this.remove("request");
+	}
+};
+
 counter.config = {
 	/**
 	 * @cfg {String} appkey

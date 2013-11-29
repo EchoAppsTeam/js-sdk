@@ -236,8 +236,6 @@ Echo.Tests.Units.push(function(callback) {
 				"Checking if we have \"config\" interface available");
 			QUnit.ok(!!this.labels,
 				"Checking if we have \"labels\" interface available");
-			QUnit.ok(!!this.user,
-				"Checking if we have \"user\" interface available");
 			QUnit.ok(!!this.view,
 				"Checking if we have \"view\" interface available");
 

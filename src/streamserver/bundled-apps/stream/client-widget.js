@@ -130,6 +130,17 @@ stream.init = function() {
 	}
 };
 
+stream.destroy = function() {
+	var self = this;
+	$.map(["request", "moreRequest"], function(name) {
+		var request = self.get(name);
+		if (request) {
+			request.abort();
+			self.remove("name");
+		}
+	});
+};
+
 stream.config = {
 	/**
 	 * @cfg {String} appkey
