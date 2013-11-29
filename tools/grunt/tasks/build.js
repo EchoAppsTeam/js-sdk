@@ -34,7 +34,8 @@ module.exports = function(grunt) {
 					"recess:bootstrap",
 					"patch:gui-css",
 					"patch:loader-build",
-					"concat",
+					"concat:gui-pack",
+					"concat:tests/harness",
 					"clean:third-party",
 					"copy:build"
 				];
@@ -43,27 +44,13 @@ module.exports = function(grunt) {
 				makeMinSpec();
 				makeConcatSpec();
 				tasks = [
-					//"copy:css",
-					//"copy:own-js",
-					//"copy:third-party-js",
-					//"copy:third-party-html",
-					//"copy:bootstrap",
-					//"wrap",
-					//"recess:bootstrap",
-					//"patch:jquery-source-map",
-					//"patch:gui-css",
-					//"patch:loader-build",
-					//"uglify",
-					//"cssmin:gui",
-					//"concat",
-					//"clean:third-party",
-					//"copy:build"
 					"requirejs",
 					"wrap",
 					"recess:bootstrap",
-					"uglify",
+					"patch:jquery-source-map",
 					"patch:gui-css",
 					"patch:loader-build",
+					"uglify",
 					"cssmin:gui",
 					"concat:gui-pack",
 					"concat:tests/harness",
@@ -197,7 +184,7 @@ module.exports = function(grunt) {
 			"files": [{
 				"expand": true,
 				"cwd": "<%= dirs.build %>",
-				"src": ["**"],
+				"src": ["**", "!**/build.txt"],
 				"dest": grunt.config("destinations." + target + "." + stage)
 			}],
 			"options": {
