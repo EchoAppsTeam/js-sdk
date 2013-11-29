@@ -7,7 +7,21 @@ Echo.Tests.Stats.root = {
 };
 
 // browser-specific ignore
-var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope", "Echo.require", "Echo.requirejs", "Echo.define", "Echo.Loader"];
+var ignoreList = [
+	"Echo.Utils",
+	"Echo.App",
+	"Echo.Plugin",
+	"Echo.Events",
+	"Echo.Tests",
+	"Echo.Variables",
+	"Echo.jQuery",
+	"Echo.require",
+	"Echo.requirejs",
+	"Echo.define",
+	"Echo.Loader",
+	"Echo.API",
+	"Echo.Streamserver"
+];
 var isNotLteIE7 = !(Echo.Tests.browser && Echo.Tests.browser.version <= 7);
 $.map(["AJAX", "XDomainRequest", "JSONP"], function(transport) {
 	if (!Echo.API.Transports[transport].available() || isNotLteIE7 && transport === "JSONP") {
@@ -22,7 +36,7 @@ Echo.Tests.Stats.isValidForTesting = function(parentObject, prefix, name, value)
 		typeof value !== "undefined" &&
 		!$.isArray(value) &&
 		name !== "cache" &&
-		name !== "definition" &&
+		name !== "manifest" &&
 		name !== "constructor" &&
 		name !== "parent";
 };

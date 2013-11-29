@@ -190,7 +190,7 @@ module.exports = function(grunt) {
 			"options": {
 				"processContent": function(text, filename) {
 					text = shared.replacePlaceholdersOnCopy(text, filename);
-					return text.replace(/\(window\.jQuery\)/g, "(jQuery)");
+					return text.replace(/\(window\.jQuery\)/g, "(arguments[0])");
 				},
 				"processContentExclude": "**/*.{png,jpg,jpeg,gif}"
 			}

@@ -9,63 +9,6 @@
 		#qunit-header, #qunit-tests > li:last-child { border-radius:0; }
 	</style>
 	<link href="{%=baseURLs.sdk%}/gui.pack.css" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
-	<script type="text/javascript">
-		
-		var harnessDependencies = [
-			"jquery", "echo/api",
-			"echo/app", "echo/events",
-			"echo/streamserver/user", "echo/utils",
-			"QUnit", "echo/backplane"
-		];
-
-		var harnessServiceFiles =[
-			"config", "helpers/events.js",
-			"fixtures/api/count.js", "fixtures/api/search.js",
-			"fixtures/api/whoami.js"
-		];
-
-		var startTests = function() {
-			Echo.Tests.init({
-				"title": "echo sdk v3 tests",
-				"backplane": {
-					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-					"busName": "jskit"
-				}
-			});
-		}
-
-		Echo.require(harnessDependencies, function($, API, App, Events, User, Utils, QUnit) {
-			Echo.Utils = Utils;
-			Echo.App = App;
-			Echo.Plugin = Plugin;
-			Echo.Events = Events;
-			Echo.jQuery = $;
-			Echo.API = API;
-			Echo.StreamServer = {};
-			Echo.StreamServer.User = User;
-			//harness loading
-			Echo.require([
-				"echo/tests/harness", 
-				"echo/tests/harness/suite"
-			], function() {
-				Echo.Tests.Fixtures = {
-					"api": {},
-					"loader": {},
-					"canvases": {}
-				};
-				Echo.Tests.Units = []; //wrapped units array
-				//packs loading	
-				Echo.require(["unit/unit.pack"], function() {
-					var initializeTests = function() {
-						Utils.sequentialCall(Echo.Tests.Units, startTests);
-					};
-					//tests initializing
-					Echo.require(harnessServiceFiles, initializeTests);
-				});
-			});
-		});
-	</script>
 </head>
 <body>
 	<div id="container">
@@ -78,5 +21,62 @@
 			<div id="qunit-fixture"></div>
 		</div>
 	</div>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
+	<script type="text/javascript">
+		Echo.require(["jquery"], function($) {
+			Echo.jQuery = $;
+			var harnessDependencies = [
+				"echo/variables", "echo/api",
+				"echo/app", "echo/events",
+				"echo/streamserver/user", "echo/utils",
+				"QUnit", "echo/backplane"
+			];
+			var harnessServiceFiles =[
+				"config", "helpers/events.js",
+				"fixtures/api/count.js", "fixtures/api/search.js",
+				"fixtures/api/whoami.js"
+			];
+			var startTests = function() {
+				Echo.Tests.init({
+					"title": "echo sdk v3 tests",
+					"backplane": {
+						"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+						"busName": "jskit"
+					}
+				});
+			};
+
+			Echo.require(harnessDependencies, function(Variables, API, App, Events, User, Utils, QUnit) {
+				Echo.Variables = Variables;
+				Echo.Utils = Utils;
+				Echo.App = App;
+				Echo.Plugin = Plugin;
+				Echo.Events = Events;
+				Echo.API = API;
+				Echo.StreamServer = {};
+				Echo.StreamServer.User = User;
+				//harness loading
+				Echo.require([
+					"echo/tests/harness", 
+					"echo/tests/harness/suite"
+				], function() {
+					Echo.Tests.Fixtures = {
+						"api": {},
+						"loader": {},
+						"canvases": {}
+					};
+					Echo.Tests.Units = []; //wrapped units array
+					//packs loading	
+					Echo.require(["unit/unit.pack"], function() {
+						var initializeTests = function() {
+							Utils.sequentialCall(Echo.Tests.Units, startTests);
+						};
+						//tests initializing
+						Echo.require(harnessServiceFiles, initializeTests);
+					});
+				});
+			});
+		});
+	</script>
 </body>
 </html>

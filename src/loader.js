@@ -65,7 +65,8 @@ paths[Echo.Loader.getURL("") + "/enviroment.pack"] = [
 	"echo/labels", "echo/configuration",
 	"echo/api", "echo/streamserver/api",
 	"echo/streamserver/user", "echo/view",
-	"echo/app", "echo/plugin"
+	"echo/app", "echo/plugin",
+	"echo/variables"
 ];
 paths[Echo.Loader.getURL("") + "/gui.pack"] = [
 	"echo/bootstrap-transition", "echo/bootstrap-affix",
