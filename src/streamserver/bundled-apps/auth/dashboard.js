@@ -45,7 +45,7 @@ dashboard.config.ecl = [{
 	"component": "Group",
 	"config": {
 		"title": "Identity manager settings",
-		"desc": "The list of handlers for login, edit and signup action. If some action is ommited then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server."
+		"desc": "The list of handlers for login, edit and signup action. If some action is omitted then it will not be available for users in the Auth control. Each handler accepts sessionID as GET parameter. This parameter is necessary for communication with Backplane server. When handler finishes working it constructs the corresponding Backplane message (for login, signup or user data update) and sends this message to Backplane server."
 	},
 	"items": [{
 		"name": "login",

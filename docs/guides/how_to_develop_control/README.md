@@ -1,8 +1,8 @@
-# How to develop a application
+# How to develop an application
 
 ## Overview
 
-Echo JS SDK provides the ability to package a certain set of discrete functionality into a JavaScript class which is called a Application. Applications are typically core interaction patterns like a submit form, stream client etc. Applications are then used by Applications to deliver a complete user experience. This page will guide you through the steps of custom application creation. For more examples of applications please visit the [Examples Page](#!/example).
+Echo JS SDK provides the ability to package a certain set of discrete functionality into a JavaScript class which is called an Application. Applications are typically core interaction patterns like a submit form, stream client etc. Applications are then used by Applications to deliver a complete user experience. This page will guide you through the steps of custom application creation. For more examples of applications please visit the [Examples Page](#!/example).
 
 ## Introduction
 
@@ -78,7 +78,7 @@ So, if the data parameter is empty we should fetch it from the server through th
 
 ## Application configuration
 
-Most of applications should contain several configuration parameters that defines a application behavior, state etc. Also we want to define a default value of the parameters in case it is omitted in the application configuration while installing it. In order to do it we add the "config" object to the application definition with the name of the config field as a key and a default as its value, so the code of the application will look like:
+Most of applications should contain several configuration parameters that defines an application behavior, state etc. Also we want to define a default value of the parameters in case it is omitted in the application configuration while installing it. In order to do it we add the "config" object to the application definition with the name of the config field as a key and a default as its value, so the code of the application will look like:
 
 	(function(jQuery) {
 	"use strict";
@@ -132,7 +132,7 @@ Now we can define html template for the application UI. It should be a string va
 There's two ways for the template defining:
 
 - we can pass to the definition object value "template" which is function. This function can prepare a template string and should return it. Returned value will be compiled;
-- we can pass a "templates" object that can contains a several templates by the "templates" object key. By default, if template value is ommited in the definition, will be used templates.main value;
+- we can pass a "templates" object that can contains a several templates by the "templates" object key. By default, if template value is omitted in the definition, will be used templates.main value;
 
 In our case we need a simple template which contains a count items number. Let's put the template into application's code:
 

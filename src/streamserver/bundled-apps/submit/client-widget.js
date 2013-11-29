@@ -208,7 +208,7 @@ submit.config = {
 	 * @cfg {String} itemURIPattern
 	 * Allows to define item id pattern. The value of this parameter should be
 	 * a valid URI with "{id}" placeholder which will indicate the place where
-	 * unique id should be inserted. If this parameter is ommited in
+	 * unique id should be inserted. If this parameter is omitted in
 	 * configuration or the URI is invalid it'll be ignored.
 	 *
 	 * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({

@@ -106,7 +106,7 @@ auth.config = {
 	/**
 	 * @cfg {Object} identityManager
 	 * The list of handlers for login, edit and signup action. If some action
-	 * is ommited then it will not be available for users in the Auth application.
+	 * is omitted then it will not be available for users in the Auth application.
 	 * Each handler accepts sessionID as GET parameter. This parameter is necessary
 	 * for communication with Backplane server. When handler finishes working it
 	 * constructs the corresponding Backplane message (for login, signup or user

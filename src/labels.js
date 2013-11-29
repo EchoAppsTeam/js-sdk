@@ -13,7 +13,7 @@ var Labels;
  *
  * It should be instantiated to override language variables within
  * the scope of a particular component instance.
- * Language variables overriden with the instance of this class
+ * Language variables overridden with the instance of this class
  * will have the highest priority.
  * Static methods should be used for general language variable
  * definition and localization purposes.
@@ -118,7 +118,7 @@ Labels.prototype.get = function(name, data) {
  *     labels.get("paused"); // returns "Paused..."
  *
  * @param {Object} labels
- * Flat object containing the list of language variables to be added/overriden.
+ * Flat object containing the list of language variables to be added/overridden.
  */
 
 Labels.prototype.set = function(labels) {
@@ -137,7 +137,7 @@ Labels.prototype.set = function(labels) {
  * In this use case the `isDefault` param should be set to `true`.
  * Function should also be used for localization purposes.
  * In this case the `isDefault` param can be omitted or set to `false`.
- * The values overriden with the function will be available globally.
+ * The values overridden with the function will be available globally.
  *
  *     Labels.set({
  *         "live": "Live",

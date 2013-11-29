@@ -8,7 +8,7 @@ This guide contains the definition of the terms used throughout the JS SDK docs,
 
 ### Definition
 
-The unified structure which describes a certain application, application or a plugin is called a *definition*. Each component type has a special "definition" function (Echo.App.definition and Echo.Plugin.definition) to generate an empty *definition* skeleton which can be filled in with the business logic. In addition to the "definition" function, there is a set of "create" functions to turn static definition into the JS classes (Echo.App.create and Echo.Plugin.create). More information about the use of the *definition* can be found in the [Contol](#!/guide/how_to_develop_application), [Plugin](#!/guide/how_to_develop_plugin) or [App](#!/guide/how_to_develop_app) development guides.
+The unified structure which describes a certain application or plugin is called a *definition*. Each component type has a special "definition" function (Echo.App.definition and Echo.Plugin.definition) to generate an empty *definition* skeleton which can be filled in with the business logic. In addition to the "definition" function, there is a set of "create" functions to turn static definition into the JS classes (Echo.App.create and Echo.Plugin.create). More information about the use of the *definition* can be found in the [Contol](#!/guide/how_to_develop_application), [Plugin](#!/guide/how_to_develop_plugin) or [App](#!/guide/how_to_develop_app) development guides.
 
 ### Application (aka App)
 
