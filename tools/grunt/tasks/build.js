@@ -35,6 +35,7 @@ module.exports = function(grunt) {
 					"patch:gui-css",
 					"patch:loader-build",
 					"concat:gui-pack",
+					"patch:bootstrap-plugins",
 					"concat:tests/harness",
 					"clean:third-party",
 					"copy:build"
@@ -50,9 +51,10 @@ module.exports = function(grunt) {
 					"patch:jquery-source-map",
 					"patch:gui-css",
 					"patch:loader-build",
+					"concat:gui-pack",
+					"patch:bootstrap-plugins",
 					"uglify",
 					"cssmin:gui",
-					"concat:gui-pack",
 					"concat:tests/harness",
 					"clean:third-party",
 					"copy:build"
@@ -189,8 +191,7 @@ module.exports = function(grunt) {
 			}],
 			"options": {
 				"processContent": function(text, filename) {
-					text = shared.replacePlaceholdersOnCopy(text, filename);
-					return text.replace(/\(window\.jQuery\)/g, "(arguments[0])");
+					return shared.replacePlaceholdersOnCopy(text, filename);
 				},
 				"processContentExclude": "**/*.{png,jpg,jpeg,gif}"
 			}

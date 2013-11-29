@@ -91,7 +91,7 @@ API.Transports.WebSockets.prototype.closed = function() {
 API.Transports.WebSockets.prototype.subscribe = function(topic, params) {
 	var id = Events.subscribe(
 		$.extend(true, {
-			"topic": "API.Transports.WebSockets." + topic,
+			"topic": "Echo.API.Transports.WebSockets." + topic,
 			"context": this._context(this.unique)
 		}, params)
 	);
@@ -241,7 +241,7 @@ API.Transports.WebSockets.prototype._clear = function() {
 	this.unsubscribe();
 	$.map(["onData", "onOpen", "onClose", "onError"], function(name) {
 		Events.unsubscribe({
-			"topic": "API.Transports.WebSockets." + name,
+			"topic": "Echo.API.Transports.WebSockets." + name,
 			"context": context
 		});
 	});
@@ -250,7 +250,7 @@ API.Transports.WebSockets.prototype._clear = function() {
 
 API.Transports.WebSockets.prototype._publish = function(topic, data, subscriptionId) {
 	Events.publish({
-		"topic": "API.Transports.WebSockets." + topic,
+		"topic": "Echo.API.Transports.WebSockets." + topic,
 		"data": data || {},
 		"propagation": !subscriptionId,
 		"global": false,
@@ -261,7 +261,7 @@ API.Transports.WebSockets.prototype._publish = function(topic, data, subscriptio
 API.Transports.WebSockets.prototype._ping = function(callback) {
 	var self = this;
 	var id = Events.subscribe({
-		"topic": "API.Transports.WebSockets.onData",
+		"topic": "Echo.API.Transports.WebSockets.onData",
 		"handler": function(topic, data) {
 			// we are expecting "pong" message only...
 			if (!data || data.event !== "pong") return;

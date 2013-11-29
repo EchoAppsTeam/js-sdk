@@ -297,20 +297,7 @@ module.exports = function(grunt) {
 				"files": [{
 					"src": ["<%= dirs.build %>/third-party/bootstrap/less/bootstrap.less"]
 				}]
-			}/*,
-			"tests": {
-				"expand": true,
-				"cwd": "<%= dirs.build %>",
-				"src": [
-					"tests/qunit/qunit.js",
-					"tests/sinon/sinon-1.7.3.js",
-					"tests/harness/runner.js",
-					"tests/harness/api.js",
-					"tests/harness/utils.js",
-					"tests/harness/stats.js",
-					"tests/harness/suite.js"
-				]
-			}*/
+			}
 		},
 		"patch": {
 			"jquery-source-map": {
@@ -333,6 +320,17 @@ module.exports = function(grunt) {
 					"src": ["<%= dirs.build %>/gui.pack.css"]
 				}]
 			},
+			"bootstrap-plugins": {
+				"options": {
+					"patcher": function(text) {
+						return text.replace(/\(window\.jQuery\)/g, "(jQuery)");
+					}
+				},
+				"files": [{
+					"src": ["<%= dirs.build %>/gui.pack.js"]
+				}]
+			},
+
 			"loader-build": {
 				"options": {
 					"patcher": function(text, filepath, flags) {

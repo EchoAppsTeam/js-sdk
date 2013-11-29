@@ -54,8 +54,11 @@ Echo.Loader.isDebug = function() {
 })();
 
 var paths = {};
-paths[Echo.Loader.getURL("")] = ["echo"]; 
-paths[Echo.Loader.getURL("", false)] = ["echo-assets"];
+paths[Echo.Loader.getURL("", false)] = [];
+paths[Echo.Loader.getURL("")] = [];
+paths[Echo.Loader.getURL("", false)].push("echo-assets");
+paths[Echo.Loader.getURL("")].push("echo");
+paths[Echo.Loader.getURL("", false)]
 paths[Echo.Loader.getURL("/backplane")] = ["echo/backplane"];
 paths[Echo.Loader.getURL("/third-party/jquery.pack")] = ["jquery-noconflict"];
 paths[Echo.Loader.getURL("/third-party/jquery/jquery.isotope.min")] = ["isotope"]; 
