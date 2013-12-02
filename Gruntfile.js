@@ -506,7 +506,7 @@ module.exports = function(grunt) {
 							"third-party/jquery/jquery.viewport.mini"
 						]
 					}, {
-						"name": "enviroment.pack",
+						"name": "environment.pack",
 						"create": true,
 						"include": [
 							"utils",

@@ -63,7 +63,7 @@ paths[Echo.Loader.getURL("/backplane")] = ["echo/backplane"];
 paths[Echo.Loader.getURL("/third-party/jquery.pack")] = ["jquery-noconflict"];
 paths[Echo.Loader.getURL("/third-party/jquery/jquery.isotope.min")] = ["isotope"]; 
 paths[Echo.Loader.getURL("/tests/qunit/qunit")] = ["QUnit"];//TODO: replace to harness 
-paths[Echo.Loader.getURL("") + "/enviroment.pack"] = [
+paths[Echo.Loader.getURL("") + "/environment.pack"] = [
 	"echo/events", "echo/utils",
 	"echo/labels", "echo/configuration",
 	"echo/api", "echo/streamserver/api",
