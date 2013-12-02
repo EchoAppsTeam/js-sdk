@@ -655,7 +655,7 @@ plugin.css = function() {
 		'.{plugin.class:button-role-administrator} { color: #008000; }' +
 		// status icons
 		$.map(plugin.statuses, function(name) {
-			return '.{plugin.class:status-icon-' + name + '} { background: url({config:cdnBaseURL.sdk-assets}/images/curation/status/' + name.toLowerCase() + '.png) no-repeat; }';
+			return '.{plugin.class:status-icon-' + name + '} { background: url(' + Echo.require.toUrl('echo-assets/images/curation/status/' + name.toLowerCase()) + '.png) no-repeat; }';
 		}).join("");
 }();
 

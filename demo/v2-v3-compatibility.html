@@ -204,9 +204,6 @@
 						}, {
 							"name": "Moderation",
 							"url": "echo/streamserver/plugins/moderation"
-						}, {
-							"name": "ItemAccumulatorDisplay",
-							"url": "echo/streamserver/plugins/itemAccumulatorDisplay"
 						}]
 					});
 				});
@@ -219,7 +216,7 @@
 			<b>FormAuth</b>
 			<div id="auth-form-v3"></div>
 			<script type="text/javascript">
-				Echo.require(["echo/identityserver/bundled-apps/auth/client-widget"], function(Auth) {
+				Echo.require(["echo/streamserver/bundled-apps/auth/client-widget"], function(Auth) {
                     new Auth({
 						"backplane": { 
 							"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",

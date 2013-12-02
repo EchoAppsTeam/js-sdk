@@ -1,12 +1,14 @@
-(function(jQuery) {
+Echo.define("echo/streamserver/bundled-apps/submit/dashboard", [
+	"jquery",
+	"echo/utils",
+	"echo/app-dashboard"
+], function($, Utils, Dashboard) {
 
-var $ = jQuery;
+"use strict";
 
-if (Echo.AppServer.Dashboard.isDefined("Echo.Apps.SDKControls.Submit.Dashboard")) return;
+var dashboard = Dashboard.definition("Echo.Apps.SDKControls.Submit.Dashboard");
 
-var dashboard = Echo.AppServer.Dashboard.manifest("Echo.Apps.SDKControls.Submit.Dashboard");
-
-dashboard.inherits = Echo.Utils.getComponent("Echo.Apps.SDKControls.Control.Dashboard");
+dashboard.inherits = Utils.getComponent("Echo.Apps.SDKControls.Control.Dashboard");
 
 dashboard.init = function() {
 	this.parent();
@@ -175,6 +177,6 @@ dashboard.config.ecl = [{
 	}]
 }];
 
-Echo.AppServer.Dashboard.create(dashboard);
+return Dashboard.create(dashboard);
 
-})(Echo.jQuery);
+});

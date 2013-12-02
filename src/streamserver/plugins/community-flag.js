@@ -217,7 +217,7 @@ plugin.methods._myFlags = function(flags) {
 	});
 };
 
-plugin.css = '.{plugin.class:flaggedBy} { background: url({config:cdnBaseURL.sdk-assets}/images/curation/status/communityflagged.png) no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
+plugin.css = '.{plugin.class:flaggedBy} { background: url(' + Echo.require.toUrl('echo-assets/images/curation/status/communityflagged.png') + ') no-repeat 0px 4px; padding: 0px 0px 4px 21px; }';
 
 return Plugin.create(plugin);
 });

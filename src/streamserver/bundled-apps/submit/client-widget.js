@@ -495,7 +495,7 @@ submit.renderers.postButton = function(element) {
 		},
 		"posting": {
 			"target": element,
-			"icon": this.config.get("cdnBaseURL.sdk-assets") + "/images/loading.gif",
+			"icon": Echo.require.toUrl("echo-assets/images/loading.gif"),
 			"disabled": true,
 			"label": this.labels.get("posting")
 		}
@@ -783,7 +783,7 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url({config:cdnBaseURL.sdk-assets}/images/info70.png); }';
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(' + Echo.require.toUrl('echo-assets/images/info70.png') + '); }';
 
 return App.create(submit);
 });

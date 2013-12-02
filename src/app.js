@@ -1011,25 +1011,6 @@ definition.config = {
 	"labels": {},
 
 	/**
-	 * @cfg {Object} cdnBaseURL
-	 * A set of the key/value pairs to define CDN base URLs for different components.
-	 * The values are used as the URL prefixes for all static files, such as scripts,
-	 * stylesheets, images etc. You can add your own CDN base URL and use it anywhere
-	 * when the configuration object is available.
-	 *
-	 * @cfg {String} cdnBaseURL.sdk
-	 * Base URL of the SDK CDN location used for the main SDK resources.
-	 *
-	 * @cfg {String} cdnBaseURL.apps
-	 * Base URL of the Echo apps built on top of the JS SDK.
-	 */
-	"cdnBaseURL": {
-		"sdk": require.toUrl("echo"),
-		"sdk-assets": require.toUrl("echo-assets"),
-		"apps": require.toUrl("echo/apps")
-	},
-
-	/**
 	 * @cfg {Array} plugins
 	 * The list of the plugins to be added to the application instance.
 	 * Each plugin is represented as the JS object with the "name" field.

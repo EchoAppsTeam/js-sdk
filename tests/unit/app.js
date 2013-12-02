@@ -129,10 +129,6 @@ Echo.Tests.Units.push(function(callback) {
 						QUnit.equal(this.config.get("parent.key1"), "value1",
 							"Checking that parent section of component config is the config of appropriate application");
 						QUnit.equal(
-							this.config.get("cdnBaseURL.provider"),
-							"http://cdn.example.com/base",
-							"Checking if the config values defined for the main app were proxied into the internal app (checking cdnBaseURL.provider)");
-						QUnit.equal(
 							this.config.get("labels.myLabel"),
 							"My label value",
 							"Checking if the config values defined for the main app were proxied into the internal app (checking labels.myLabel)");
@@ -152,8 +148,7 @@ Echo.Tests.Units.push(function(callback) {
 				"appkey": self.config.appkey,
 				"labels": {"myLabel": "My label value"},
 				"ready": check,
-				"key1": "value1",
-				"cdnBaseURL": {"provider": "http://cdn.example.com/base"}
+				"key1": "value1"
 			});
 		});
 	};

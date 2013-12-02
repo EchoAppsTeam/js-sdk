@@ -36,8 +36,7 @@ plugin.init = function() {
 	$.each(plugin.config.get("buttons", []), function(i, type) {
 		var identityManager = component.config.get("identityManager." + type, {});
 		var configStr = encodeURIComponent(Utils.objectToJSON(plugin.config.get("signinWidgetConfig")));
-		identityManager.url = component.config.get("cdnBaseURL.sdk") +
-			"/third-party/janrain/auth.html?appId=" + plugin.config.get("appId") +
+		identityManager.url = Echo.require.toUrl("echo/third-party/janrain/auth.html") + "?appId=" + plugin.config.get("appId") +
 			"&signinConfig=" + configStr + "&bpChannel=";
 		$.each(["title", "width", "height"], function(i, param) {
 			if (identityManager[param]) return;
