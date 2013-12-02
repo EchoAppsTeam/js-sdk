@@ -87,6 +87,14 @@ pile.init = function() {
 	}
 };
 
+pile.destroy = function() {
+	var request = this.get("request");
+	if (request) {
+		request.abort();
+		this.remove("request");
+	}
+};
+
 pile.config = {
 	/**
 	 * @cfg {String} appkey
@@ -141,6 +149,7 @@ pile.config = {
 		"enabled": true,
 		"template": ""
 	},
+	"loadingMessageLayout": "compact",
 
 	/**
 	 * @cfg {String} totalUsersCount

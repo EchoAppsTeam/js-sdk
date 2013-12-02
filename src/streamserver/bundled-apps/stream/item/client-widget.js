@@ -45,11 +45,8 @@ if (App.isDefined(item)) return;
  */
 
 item.init = function() {
-	var self = this;
 	this.timestamp = Utils.timestampFromW3CDTF(this.get("data.object.published"));
-	this.initUser(function() {
-		self.ready();
-	});
+	this.ready();
 };
 
 item.config = {

@@ -104,9 +104,7 @@ stream.init = function() {
 			}
 		},
 		"onData": function(data, options) {
-			self.initUser(function() {
-				self._handleInitialResponse(data);
-			});
+			self._handleInitialResponse(data);
 		}
 	});
 
@@ -118,9 +116,7 @@ stream.init = function() {
 
 	var data = this.config.get("data");
 	if (data) {
-		this.initUser(function() {
-			self._handleInitialResponse(data);
-		});
+		this._handleInitialResponse(data);
 		this.request && this.request.send({
 			"skipInitialRequest": true,
 			"data": {
@@ -132,6 +128,17 @@ stream.init = function() {
 	} else {
 		this.request.send();
 	}
+};
+
+stream.destroy = function() {
+	var self = this;
+	$.map(["request", "moreRequest"], function(name) {
+		var request = self.get(name);
+		if (request) {
+			request.abort();
+			self.remove("name");
+		}
+	});
 };
 
 stream.config = {

@@ -80,7 +80,11 @@ Plugin.create = function(definition) {
 		// define extra css class for the application target
 		this.component.config.get("target").addClass(this.cssClass);
 
-		this._init(["config"]);
+		this._init([{
+			"name": "config",
+			"type": "sync",
+			"init": this._initializers.config
+		}]);
 	});
 	var namespace = Plugin._getClassName(definition.name, definition.component.name);
 
@@ -168,15 +172,24 @@ Plugin.getClass = function(name, component) {
  * Initializes the plugin.
  */
 Plugin.prototype.init = function() {
-	this._init([
-		"css",
-		"events",
-		"subscriptions",
-		"labels",
-		"renderers",
-		"view",
-		"launcher"
-	]);
+	var self = this;
+	this._init(
+		$.map([
+			"css",
+			"events",
+			"subscriptions",
+			"labels",
+			"renderers",
+			"view",
+			"launcher"
+		], function(name) {
+			return {
+				"name": name,
+				"type": "sync",
+				"init": self._initializers[name]
+			};
+		})
+	);
 };
 
 /**

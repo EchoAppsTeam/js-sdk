@@ -2,7 +2,7 @@ Echo.define("echo/streamserver/bundled-apps/counter/client-widget", [
 	"jquery",
 	"echo/utils",
 	"echo/streamserver/api",
-	"echo/app"
+	"echo/app-client-widget"
 ], function($, Utils, API, App) {
 
 "use strict";
@@ -88,6 +88,14 @@ counter.init = function() {
 				"skipInitialRequest": true
 			});
 		}
+	}
+};
+
+counter.destroy = function() {
+	var request = this.request;
+	if (request) {
+		request.abort();
+		this.remove("request");
 	}
 };
 
@@ -177,6 +185,7 @@ counter.config = {
 			"timeout": 10
 		}
 	},
+	"loadingMessageLayout": "compact",
 	/**
 	 * @cfg {Boolean} useSecureAPI
 	 * This parameter is used to specify the API request scheme.

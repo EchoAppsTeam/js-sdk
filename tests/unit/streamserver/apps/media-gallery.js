@@ -3,7 +3,7 @@ Echo.Tests.Units.push(function(callback) {
 		"jquery",
 		"echo/streamserver/bundled-apps/stream/item/client-widget",
 		"echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget"
-	], function($, Item) {
+	], function($, Item, MediaGallery) {
 
 	"use strict";
 
@@ -56,7 +56,7 @@ Echo.Tests.Units.push(function(callback) {
 				});
 				return isActive;
 			};
-			new Item.MediaGallery({
+			new MediaGallery({
 				"target": this.config.target,
 				"appkey": this.config.appkey,
 				"elements": elements,

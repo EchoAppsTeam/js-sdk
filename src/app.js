@@ -15,7 +15,7 @@ Echo.define("echo/app", [
 /**
  * @class Echo.App
  * Foundation class implementing core logic to create applications and manipulate them.
- * This is a base class for Echo.App class. You can find instructions on how to create
+ * This is a base class for Echo.App.ClientWidget class. You can find instructions on how to create
  * your App in the ["How to develop an App"](#!/guide/how_to_develop_app) guide.
  *
  * @package environment.pack.js
@@ -27,7 +27,7 @@ var App = function() {};
 /**
  * @static
  * @method
- * Function which creates a application object using it definition declaration.
+ * Function which creates an application object using its definition declaration.
  *
  * @param {Object} definition
  * Specifies the application interface in the predefined way.
@@ -118,7 +118,7 @@ App.create = function(definition) {
  * Method returning common definition structure.
  *
  * @param {String} name
- * Specifies application name.
+ * App name.
  *
  * @return {Object}
  * Basic application definition declaration.
@@ -256,10 +256,9 @@ App.prototype.invoke = function(mixed, context) {
 /**
  * Basic method to reinitialize application.
  *
- * Function can be overriden by class descendants implying specific logic.
+ * Function can be overridden by class descendants implying specific logic.
  */
 App.prototype.refresh = function() {
-
 	// destroy all nested applications, but preserve self
 	this.destroy({"self": false});
 
@@ -311,7 +310,7 @@ App.prototype.getPlugin = function(name) {
 };
 
 /**
- * Method to get the application template during rendering procedure. Can be overriden.
+ * Method to get the application template during rendering procedure. Can be overridden.
  */
 App.prototype.template = function() {
 	return this.invoke(this.templates.main);
@@ -325,7 +324,7 @@ App.prototype.template = function() {
  * Renderer name.
  *
  * @param {Object} args
- * Arguments to be proxied to the parent renderer from the overriden one.
+ * Arguments to be proxied to the parent renderer from the overridden one.
  *
  * @return {HTMLElement}
  * Result of parent renderer function call.
@@ -361,7 +360,7 @@ App.prototype.extendTemplate = function(action, anchor, html) {
 	this.extension.template.push({"action": action, "anchor": anchor, "html": html});
 };
 
-/*
+/**
  * Method extending the paticular renderer with defined function.
  *
  * @param {String} name
@@ -498,25 +497,19 @@ App.prototype.destroyApps = function(exceptions) {
 	});
 };
 
-App.prototype._init = function(subsystems) {
+App.prototype._init = function init(subsystems) {
 	var app = this;
 	if (!subsystems || !subsystems.length) return;
-	var func = subsystems.shift();
-	var parts = func.split(":");
-	var subsystem = {
-		"name": parts[0],
-		"init": app._initializers[parts[0]],
-		"type": parts[1] || "sync"
-	};
+	var subsystem = subsystems.shift();
 	if (subsystem.type === "sync") {
 		var result = subsystem.init.call(app);
 		if (typeof result !== "undefined") {
 			app[subsystem.name] = result;
 		}
-		app._init(subsystems);
+		init.call(this, subsystems);
 	} else {
 		subsystem.init.call(app, function() {
-			app._init(subsystems);
+			init.call(app, subsystems);
 		});
 	}
 };
@@ -538,9 +531,15 @@ App.prototype._initializers.list = [
 ];
 
 App.prototype._initializers.get = function(action) {
+	var self = this;
 	return Utils.foldl([], this.list, function(initializer, acc) {
 		if (~$.inArray(action, initializer[1])) {
-			acc.push(initializer[0]);
+			var parts = initializer[0].split(":");
+			acc.push({
+				"name": parts[0],
+				"init": self[parts[0]],
+				"type": parts[1] || "sync"
+			});
 		}
 	});
 };

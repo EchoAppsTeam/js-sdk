@@ -8,15 +8,27 @@ Echo.define("echo/app-client-widget", [
 
 var ClientWidget = App.definition("Echo.App.ClientWidget");
 
-ClientWidget.init = function() {
-	var app = this;
-	this.initUser(function() {
-		app.render();
-		app.ready();
-	});
+ClientWidget.config = {
+	"loadingMessageLayout": "full"
 };
 
-ClientWidget.methods.initUser = function(callback) {
+ClientWidget.labels = {
+	/**
+	 * @echo_label loading
+	 */
+	"loading": "Loading..."
+};
+
+ClientWidget.events = {
+	"Echo.App.onDataInvalidate": function() {
+		var request = this.get("request");
+		if (request && request.liveUpdates) {
+			request.liveUpdates.start(true);
+		}
+	}
+};
+
+ClientWidget.methods._initUser = function(callback) {
 	Utils.sequentialCall([
 		$.proxy(this._initBackplane, this),
 		$.proxy(this._storeUser, this)
@@ -64,6 +76,37 @@ ClientWidget.methods._storeUser = function(callback) {
 			}
 		});
 	}
+};
+
+ClientWidget.methods._loading = function() {
+	Utils.showMessage({
+		"type": "loading",
+		"target": this.config.get("target"),
+		"message": this.labels.get("loading"),
+		"layout": this.config.get("loadingMessageLayout")
+	});
+};
+
+ClientWidget.methods._init = function(subsystems) {
+	var index;
+	$.each(subsystems, function(i, subsystem) {
+		if (subsystem.name === "plugins") {
+			index = i;
+			return false;
+		}
+	});
+	index = index || 0;
+	subsystems.splice(index, 0, {
+		"name": "loading",
+		"init": this._loading,
+		"type": "sync"
+	});
+	subsystems.splice(index + 1, 0, {
+		"name": "user",
+		"init": this._initUser,
+		"type": "async"
+	});
+	return Utils.getComponent("Echo.App.ClientWidget").parent._init.call(this, subsystems);
 };
 
 ClientWidget.static.definition = function() {

@@ -64,7 +64,7 @@ dashboard.config.ecl = [{
 	"type": "string",
 	"config": {
 		"title": "Item ID pattern",
-		"desc": "Allows to define item id pattern. The value of this parameter should be a valid URI with \"{id}\" placeholder which will indicate the place where unique id should be inserted. If this parameter is ommited in configuration or the URI is invalid it'll be ignored.",
+		"desc": "Allows to define item id pattern. The value of this parameter should be a valid URI with \"{id}\" placeholder which will indicate the place where unique id should be inserted. If this parameter is omitted in configuration or the URI is invalid it'll be ignored.",
 		"data": {"sample": "http://your-domain.com/path/{id}"}
 	}
 }, {
