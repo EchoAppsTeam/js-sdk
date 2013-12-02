@@ -8,7 +8,7 @@ Echo.define("echo/gui", [
 var GUI;
 
 /**
- * @class GUI
+ * @class Echo.GUI
  * Foundation class implementing core logic for GUI components.
  *
  * @package gui.pack.js
@@ -27,7 +27,7 @@ GUI = function(config, defaultConfig) {
 	this.refresh();
 };
 /**
- * @property {Configuration} config
+ * @property {Echo.Configuration} config
  * As soon as the component is created, you can change its config using
  * this property.
  * For example:

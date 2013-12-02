@@ -25,7 +25,7 @@ Echo.define("echo/streamserver/bundled-apps/facepile/client-widget", [
  * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends App
+ * @extends Echo.App
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
@@ -138,7 +138,7 @@ pile.config = {
 	 * @cfg {String} infoMessages.template=""
 	 * Specifies a layout template of the info message. By default if template is not
 	 * specified it uses pre-defined compact template from the Echo.Utils. For more information
-	 * follow the {@link Echo.Utils.showMessage link}.
+	 * follow the {@link Echo.Utils#showMessage link}.
 	 *
 	 *     "infoMessages": {
 	 *         "enabled": true,

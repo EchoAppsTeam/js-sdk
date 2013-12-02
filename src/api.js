@@ -568,7 +568,7 @@ API.Transports.JSONP.available = function() {
 };
 
 /**
- * @class API.Request
+ * @class Echo.API.Request
  * Class implementing API requests logic on the transport layer.
  *
  * @package api.pack.js

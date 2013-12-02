@@ -279,7 +279,7 @@ stream.config = {
 	 * @cfg {String} infoMessages.template=""
 	 * Specifies a layout template of the info message. By default if template is not
 	 * specified it uses pre-defined full template from the Echo.Utils. For more information
-	 * follow the {@link Echo.Utils.showMessage link}.
+	 * follow the {@link Echo.Utils#showMessage link}.
 	 *
 	 *     "infoMessages": {
 	 *         "enabled": true,

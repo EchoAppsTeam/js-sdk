@@ -8,7 +8,7 @@ Echo.define("echo/configuration", [
 var Configuration;
 
 /**
- * @class Configuration
+ * @class Echo.Configuration
  * Class implements the interface for convenient work with different
  * configurations. The Configuration class is used in various
  * places of Echo JS SDK components.

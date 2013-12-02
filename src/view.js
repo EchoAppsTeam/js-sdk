@@ -6,7 +6,7 @@ Echo.define("echo/view", [
 "use strict";
 
 /**
- * @class View
+ * @class Echo.View
  * Class implementing core rendering logic, which is widely used across the system.
  * In addition to the rendering facilities, this class maintains the list of elements within
  * the given view ("view elements collection") and provides the interface to access/update them.

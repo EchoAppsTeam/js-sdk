@@ -12,7 +12,7 @@ var StreamServer = {};
 StreamServer.API = {};
 
 /**
- * @class StreamServer.API.Request
+ * @class Echo.StreamServer.API.Request
  * Class implements the interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/35105642/API-section-items" target="_blank">Echo StreamServer API</a>
  *
@@ -32,7 +32,7 @@ StreamServer.API = {};
  *
  *     request.send();
  *
- * @extends API.Request
+ * @extends Echo.API.Request
  *
  * @package api.pack.js
  *

@@ -5,7 +5,7 @@ Echo.define("echo/gui/modal", [
 ], function($, GUI, Utils) {
 
 /**
- * @class GUI.Modal
+ * @class Echo.GUI.Modal
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#modals" target="_blank">bootstrap-modal.js</a>.
  * The GUI.Modal class provides a simplified interface to work with the
  * Bootstrap Modal JS class.
@@ -48,7 +48,7 @@ Echo.define("echo/gui/modal", [
  * 	myModal.config.set("closeButton", false); // do not show the close button
  * 	myModal.refresh(); // refresh the Bootstrap Modal instance with changed config parameters and show one
  *
- * @extends GUI
+ * @extends Echo.GUI
  *
  * @package gui.pack.js
  *
