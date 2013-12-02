@@ -109,12 +109,6 @@ ClientWidget.methods._init = function(subsystems) {
 	return Utils.getComponent("Echo.App.ClientWidget").parent._init.call(this, subsystems);
 };
 
-ClientWidget.static.definition = function() {
-	var object = this.parent.apply(this, arguments);
-	object.init = ClientWidget.init;
-	return object;
-};
-
 return App.create(ClientWidget);
 
 });

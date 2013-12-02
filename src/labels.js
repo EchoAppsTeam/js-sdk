@@ -8,7 +8,7 @@ Echo.define("echo/labels", [
 var Labels;
 
 /**
- * @class Labels
+ * @class Echo.Labels
  * Class implements the language variables mechanics across the components.
  *
  * It should be instantiated to override language variables within

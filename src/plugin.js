@@ -10,7 +10,7 @@ Echo.define("echo/plugin", [
 "use strict";
 
 /**
- * @class Plugin
+ * @class Echo.Plugin
  * Foundation class implementing core logic to create plugins and manipulate with them.
  *
  * Please visit [this page](#!/guide/how_to_develop_plugin) to learn more about developing plugins
@@ -212,28 +212,28 @@ Plugin.prototype.enabled = function() {
 };
 
 /**
- * @inheritdoc App#set
+ * @inheritdoc Echo.App#set
  */
 Plugin.prototype.set = function(key, value) {
 	return Utils.set(this, key, value);
 };
 
 /**
- * @inheritdoc App#get
+ * @inheritdoc Echo.App#get
  */
 Plugin.prototype.get = function(key, defaults) {
 	return Utils.get(this, key, defaults);
 };
 
 /**
- * @inheritdoc App#remove
+ * @inheritdoc Echo.App#remove
  */
 Plugin.prototype.remove = function(key) {
 	return Utils.remove(this, key);
 };
 
 /**
- * @inheritdoc utils#invoke
+ * @inheritdoc Echo.Utils#invoke
  */
 Plugin.prototype.invoke = function(mixed, context) {
 	return Utils.invoke(mixed, context || this);
@@ -300,7 +300,7 @@ Plugin.prototype.extendTemplate = function(action, anchor, html) {
 };
 
 /**
- * @inheritdoc App#parentRenderer
+ * @inheritdoc Echo.App#parentRenderer
  */
 Plugin.prototype.parentRenderer = function() {
 	return this.component.parentRenderer.apply(this.component, arguments);
@@ -355,7 +355,7 @@ Plugin.prototype.requestDataRefresh = function() {
 };
 
 /**
- * @inheritdoc utils#log
+ * @inheritdoc Echo.Utils#log
  */
 Plugin.prototype.log = function(data) {
 	Utils.log($.extend(data, {"component": this.namespace}));
@@ -579,7 +579,7 @@ Plugin.Config.prototype._normalize = function(key) {
 Plugin._defineNestedClass("Events");
 
 /**
- * @inheritdoc Events#publish
+ * @inheritdoc Echo.Events#publish
 */
 Plugin.Events.prototype.publish = function(params) {
 	params.topic = ["Plugins", this.plugin.name, params.topic].join(".");
@@ -587,7 +587,7 @@ Plugin.Events.prototype.publish = function(params) {
 };
 
 /**
- * @inheritdoc Events#subscribe
+ * @inheritdoc Echo.Events#subscribe
 */
 Plugin.Events.prototype.subscribe = function(params) {
 	params.handler = $.proxy(params.handler, this.plugin);
@@ -595,7 +595,7 @@ Plugin.Events.prototype.subscribe = function(params) {
 };
 
 /**
- * @inheritdoc Events#unsubscribe
+ * @inheritdoc Echo.Events#unsubscribe
 */
 Plugin.Events.prototype.unsubscribe = function(params) {
 	this.plugin.component.events.unsubscribe(params);

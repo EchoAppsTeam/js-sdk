@@ -5,7 +5,7 @@ Echo.define("echo/gui/tabs", [
 ], function($, GUI, Utils) {
 
 /**
- * @class GUI.Tabs
+ * @class Echo.GUI.Tabs
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#tabs" target="_blank">bootstrap-tab.js</a>.
  * The GUI.Tabs class provides a simplified interface to work with
  * the Bootstrap Tabs JS class.
@@ -39,7 +39,7 @@ Echo.define("echo/gui/tabs", [
  * 	// remove the second tab
  * 	myTabs.remove("tab2");
  *
- * @extends GUI
+ * @extends Echo.GUI
  *
  * @package gui.pack.js
  *

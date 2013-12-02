@@ -43,22 +43,6 @@ var submit = App.definition("Echo.StreamServer.BundledApps.Submit.ClientWidget")
 
 if (App.isDefined(submit)) return;
 
-/** @hide @cfg apiBaseURL */
-/** @hide @echo_label loading */
-/** @hide @echo_label retrying */
-/** @hide @echo_label error_busy */
-/** @hide @echo_label error_timeout */
-/** @hide @echo_label error_waiting */
-/** @hide @echo_label error_view_limit */
-/** @hide @echo_label error_view_update_capacity_exceeded */
-/** @hide @echo_label error_result_too_large */
-/** @hide @echo_label error_wrong_query */
-/** @hide @echo_label error_incorrect_appkey */
-/** @hide @echo_label error_internal_error */
-/** @hide @echo_label error_quota_exceeded */
-/** @hide @echo_label error_incorrect_user_id */
-/** @hide @echo_label error_unknown */
-
 /**
  * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.onReady
  * Triggered when the app initialization is finished completely.

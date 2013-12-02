@@ -8,7 +8,7 @@ Echo.define("echo/events", [
 var Events;
 
 /**
- * @class Events
+ * @class Echo.Events
  * Library for exchanging messages between the components on the page. It also
  * provides the external interface for users to subscribe to certain events
  * (like "app was rendered", "user logged in", etc).

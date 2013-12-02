@@ -13,7 +13,7 @@ var canvas = App.definition("Canvas");
 if (App.isDefined(canvas)) return;
 
 /**
- * @class Canvas
+ * @class Echo.Canvas
  * Class which implements Canvas mechanics on the client side.
  * The instance of this class is created for each Canvas found on the page by
  * the Loader. The instance of the class can also be created manually in
@@ -21,7 +21,7 @@ if (App.isDefined(canvas)) return;
  *
  * @package environment.pack.js
  *
- * @extends App
+ * @extends Echo.App
  *
  * @constructor
  * Canvas object constructor to initialize the Canvas instance
@@ -29,21 +29,6 @@ if (App.isDefined(canvas)) return;
  * @param {Object} config
  * Configuration options
  */
-
-/** @hide @echo_label loading */
-/** @hide @echo_label retrying */
-/** @hide @echo_label error_busy */
-/** @hide @echo_label error_timeout */
-/** @hide @echo_label error_waiting */
-/** @hide @echo_label error_view_limit */
-/** @hide @echo_label error_view_update_capacity_exceeded */
-/** @hide @echo_label error_result_too_large */
-/** @hide @echo_label error_wrong_query */
-/** @hide @echo_label error_incorrect_appkey */
-/** @hide @echo_label error_internal_error */
-/** @hide @echo_label error_quota_exceeded */
-/** @hide @echo_label error_incorrect_user_id */
-/** @hide @echo_label error_unknown */
 
 /**
  * @echo_event Canvas.onReady

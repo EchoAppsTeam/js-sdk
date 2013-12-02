@@ -5,7 +5,7 @@ Echo.define("echo/gui/button", [
 ], function($, GUI, Utils) {
 
 /**
- * @class GUI.Button
+ * @class Echo.GUI.Button
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#buttons">bootstrap-button.js</a>.
  * The GUI.Button class provides a simplified interface to work with the
  * Bootstrap Button JS class.
@@ -31,7 +31,7 @@ Echo.define("echo/gui/button", [
  * 	// Destroy the button
  * 	button.destroy();
  *
- * @extends GUI
+ * @extends Echo.GUI
  *
  * @package gui.pack.js
  *

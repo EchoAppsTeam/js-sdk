@@ -907,6 +907,9 @@ Echo.Tests.Units.push(function(callback) {
 				"method2": function() { return "method2"; },
 				"method3": function() { return "method3"; }
 			},
+			"static": {
+				"method": function() {return {"a": 1};}
+			},
 			"renderers": {
 				"someRenderer": function(el) { return el; }
 			},
@@ -950,6 +953,13 @@ Echo.Tests.Units.push(function(callback) {
 				"child1Method": function() {
 					return "child1 method"
 				}
+			},
+			"static": {
+				"method": function() {
+					var o = this.parent();
+					o.b = 2;
+					return o;
+				},
 			},
 			"templates": {
 				"main": '<div class="{inherited.class:container} {class:container}"><div class="{class:someRenderer}"></div></div>'
@@ -1031,6 +1041,7 @@ Echo.Tests.Units.push(function(callback) {
 				QUnit.strictEqual(this.someVar, "overrides by child1", "Check var overrides by child");
 				QUnit.strictEqual(this.config.get("someProp"), "overrides by child1", "Check config property overrides by child");
 				QUnit.strictEqual(this.method1(), "method1 method1_child_1", "Check parent method executed");
+				QUnit.deepEqual(Echo.Utils.getComponent("Echo.TestApp1_Child1").method(), {"a": 1, "b": 2}, "Check that static methods inherits as well and it overrides correctly");
 				QUnit.strictEqual(this.method3(), "method3", "Check method inherited without override");
 				QUnit.strictEqual(this.child1Method(), "child1 method", "Check own method exists");
 				QUnit.ok(this.view.get("container").css("width") === "50px" && this.view.get("someRenderer").css("width") === "5px", "Check css inherited base mechanics");

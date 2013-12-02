@@ -10,7 +10,7 @@ var _decode = function(s) {
 };
 
 /**
- * @class Cookie
+ * @class Echo.Cookie
  * Library to work with cookies
  *
  * Example:
