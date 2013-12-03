@@ -59,6 +59,7 @@ Echo.Tests.Units.push(function(callback) {
 					"query": test.query || "childrenof:http://example.com/sdk/stream/more-button itemsPerPage:" + test.itemsPerPage,
 					"ready": function() {
 						test.check.call(this);
+						this.destroy();
 						callback();
 					}
 				});
