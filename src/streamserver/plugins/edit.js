@@ -1,9 +1,9 @@
 Echo.define("echo/streamserver/plugins/edit", [
-	"echo/streamserver/plugins/streamItemEdit",
-	"echo/streamserver/plugins/submitEdit"
+	"echo/streamserver/plugins/stream-item-edit",
+	"echo/streamserver/plugins/submit-edit"
 ], function() {});
 
-Echo.define("echo/streamserver/plugins/streamItemEdit", [
+Echo.define("echo/streamserver/plugins/stream-item-edit", [
 	"jquery",
 	"echo/plugin",
 	"echo/streamserver/bundled-apps/submit/client-widget"
@@ -89,7 +89,7 @@ plugin.methods._assembleButton = function() {
 return Plugin.create(plugin);
 });
 
-Echo.define("echo/streamserver/plugins/submitEdit", [
+Echo.define("echo/streamserver/plugins/submit-edit", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils"

@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/plugins/janrainAuth", [
+Echo.define("echo/streamserver/plugins/janrain-auth", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",

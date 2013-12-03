@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/plugins/itemAccumulatorDisplay"
+		"echo/streamserver/plugins/item-accumulator-display"
 	], function($) {
 
 	"use strict";

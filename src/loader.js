@@ -1,4 +1,4 @@
-Echo.require(['cookie'], function(Cookie) {
+Echo.require(['echo/cookie'], function(Cookie) {
 	
 "use strict";
 
@@ -87,22 +87,23 @@ paths[Echo.Loader.getURL("") + "/streamserver.pack"] = [
 	"echo/streamserver/bundled-apps/stream/client-widget", "echo/streamserver/bundled-apps/facepile/client-widget",
 	"echo/streamserver/bundled-apps/facepile/item/client-widget", "echo/streamserver/bundled-apps/submit/client-widget",
 	"echo/streamserver/bundled-apps/auth/client-widget", "echo/streamserver/plugins/edit",
-	"echo/streamserver/plugins/streamItemEdit", "echo/streamserver/plugins/submitEdit",
-	"echo/streamserver/plugins/communityFlag", "echo/streamserver/plugins/formAuth",
-	"echo/streamserver/plugins/infiniteScroll", "echo/streamserver/plugins/itemAccumulatorDisplay",
-	"echo/streamserver/plugins/janrain-connector", "echo/streamserver/plugins/janrainSharing",
-	"echo/streamserver/plugins/submitJanrainSharing", "echo/streamserver/plugins/streamJanrainSharing",
-	"echo/streamserver/plugins/like", "echo/streamserver/plugins/streamLike",
-	"echo/streamserver/plugins/facePileLike", "echo/streamserver/plugins/metadataManager",
-	"echo/streamserver/plugins/moderation", "echo/streamserver/plugins/streamModeration",
-	"echo/streamserver/plugins/streamItemModeration", "echo/streamserver/plugins/reply",
-	"echo/streamserver/plugins/streamItemReply", "echo/streamserver/plugins/streamReply",
-	"echo/streamserver/plugins/submitReply", "echo/streamserver/plugins/textCounter",
+	"echo/streamserver/plugins/stream-item-edit", "echo/streamserver/plugins/submit-edit",
+	"echo/streamserver/plugins/community-flag", "echo/streamserver/plugins/form-auth",
+	"echo/streamserver/plugins/infinite-scroll", "echo/streamserver/plugins/item-accumulator-display",
+	"echo/streamserver/plugins/janrain-connector", "echo/streamserver/plugins/janrain-sharing",
+	"echo/streamserver/plugins/submit-janrain-sharing", "echo/streamserver/plugins/stream-janrain-sharing",
+	"echo/streamserver/plugins/like", "echo/streamserver/plugins/stream-like",
+	"echo/streamserver/plugins/facepile-like", "echo/streamserver/plugins/metadata-manager",
+	"echo/streamserver/plugins/moderation", "echo/streamserver/plugins/stream-moderation",
+	"echo/streamserver/plugins/stream-item-moderation", "echo/streamserver/plugins/reply",
+	"echo/streamserver/plugins/stream-item-reply", "echo/streamserver/plugins/stream-reply",
+	"echo/streamserver/plugins/submit-reply", "echo/streamserver/plugins/text-counter",
 	"echo/streamserver/plugins/tweet-display", "echo/streamserver/bundled-apps/stream/item/client-widget"
 ];
+
 paths[Echo.Loader.getURL("") + "/pinboard-visualization"] = [
-	"echo/streamserver/plugins/pinboardVisualization", "echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget",
-	"echo/streamserver/plugins/streamItemPinboardVisualization", "echo/streamserver/plugins/streamPinboardVisualization"
+	"echo/streamserver/plugins/pinboard-visualization", "echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget",
+	"echo/streamserver/plugins/stream-item-pinboard-visualization", "echo/streamserver/plugins/stream-pinboard-visualization"
 ];
 require.config({
 	"waitSeconds": 5, // 5 sec before timeout exception

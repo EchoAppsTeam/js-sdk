@@ -1,13 +1,12 @@
 Echo.define("echo/streamserver/plugins/moderation", [
-	"echo/streamserver/plugins/streamModeration",
-	"echo/streamserver/plugins/streamItemModeration"
+	"echo/streamserver/plugins/stream-moderation",
+	"echo/streamserver/plugins/stream-item-moderation"
 ], function() {});
 
-Echo.define("echo/streamserver/plugins/streamModeration", [
+Echo.define("echo/streamserver/plugins/stream-moderation", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
-	"echo/streamserver/api",
 	"echo/streamserver/api"
 ], function($, Plugin, Utils, StreamServerAPI) {
 
@@ -662,7 +661,7 @@ plugin.css = function() {
 return Plugin.create(plugin);
 });
 
-Echo.define("echo/streamserver/plugins/streamItemModeration", [
+Echo.define("echo/streamserver/plugins/stream-item-moderation", [
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {

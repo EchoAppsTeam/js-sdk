@@ -1,9 +1,9 @@
-Echo.define("echo/streamserver/plugins/pinboardVisualization", [
-	"echo/streamserver/plugins/streamItemPinboardVisualization",
-	"echo/streamserver/plugins/streamPinboardVisualization"
+Echo.define("echo/streamserver/plugins/pinboard-visualization", [
+	"echo/streamserver/plugins/stream-item-pinboard-visualization",
+	"echo/streamserver/plugins/stream-pinboard-visualization"
 ], function() {});
 
-Echo.define("echo/streamserver/plugins/streamItemPinboardVisualization", [
+Echo.define("echo/streamserver/plugins/stream-item-pinboard-visualization", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
@@ -389,7 +389,7 @@ plugin.css =
 return Plugin.create(plugin);
 });
 
-Echo.define("echo/streamserver/plugins/streamPinboardVisualization", [
+Echo.define("echo/streamserver/plugins/stream-pinboard-visualization", [
 	"jquery",
 	"echo/plugin",
 	"isotope"

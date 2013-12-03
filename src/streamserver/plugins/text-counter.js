@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/plugins/textCounter", [
+Echo.define("echo/streamserver/plugins/text-counter", [
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {

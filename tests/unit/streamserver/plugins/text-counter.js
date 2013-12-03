@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/plugins/textCounter"
+		"echo/streamserver/plugins/text-counter"
 	], function($) {
 
 	"use strict";

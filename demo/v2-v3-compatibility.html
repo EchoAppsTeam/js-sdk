@@ -173,7 +173,7 @@
 							"url": "echo/streamserver/plugins/reply",
 							"nestedPlugins": [{
 								"name": "FormAuth",
-								"url": "echo/streamserver/plugins/formAuth",
+								"url": "echo/streamserver/plugins/form-auth",
 								"identityManager": {
 									"login": identityManager,
 									"signup": identityManager
@@ -181,7 +181,7 @@
 							}]
 						}, {
 						 	"name": "MetadataManager",
-							"url": "echo/streamserver/plugins/metadataManager",
+							"url": "echo/streamserver/plugins/metadata-manager",
 							"controls": [{
 									"marker": "sticky",
 									"labelMark": "Pin",
@@ -199,7 +199,7 @@
 							"url": "echo/streamserver/plugins/edit"
 						}, {
 							"name": "CommunityFlag",
-							"url": "echo/streamserver/plugins/communityFlag",
+							"url": "echo/streamserver/plugins/community-flag",
 							"showUserList": true
 						}, {
 							"name": "Moderation",
@@ -251,7 +251,7 @@
                         "targetURL": "http://example.com/test-js-sdk",
                         "plugins": [{
                             "name": "FormAuth",
-                            "url": "echo/streamserver/plugins/formAuth",
+                            "url": "echo/streamserver/plugins/form-auth",
                             "submitPermissions": "forceLogin",
                             "identityManager": {
                                 "login": identityManager,
@@ -259,7 +259,7 @@
                             }
                         }, {
                             "name": "TextCounter",
-                            "url": "echo/streamserver/plugins/textCounter",
+                            "url": "echo/streamserver/plugins/text-counter",
                             "limit": 40,
                             "label": "You have typed {typed} chars, {left} chars left"
                         }]

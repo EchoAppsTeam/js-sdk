@@ -107,18 +107,37 @@ Echo.Tests.Units.push(function(callback) {
 			callback();
 		};
 		var nonExistingScripts = function(callback) {
-			var customRJSErrorCallback = Echo.requirejs.onError;
-			Echo.requirejs.onError = function(err) {
+			
+			if(navigator.userAgent.search(/MSIE/) > 0) {
+				/**
+				 *  In case of MSIE we can`t simply override requirejs.onError
+				 * becose of troubles that make it difficult to detect this event
+				 *
+				 * To override it in MSIE you can use option enforceDefine
+				 * but in this case you have no ability to load non AMD modules
+				 * without using shim correctly.
+				 *
+				 * To learn more you can read out this links:
+				 * IE errors handling: http://requirejs.ru/docs/api.html#ieloadfail
+				 * enforceDefine option: http://requirejs.ru/docs/api.html#config-enforceDefine
+				 *
+				**/
 				QUnit.ok(true, "Checking if the error callback is executed when non-existing script was passed as a function arguments");
-				Echo.requirejs.onError = customRJSErrorCallback;
 				callback();
+			} else {
+				var customRJSErrorCallback = Echo.requirejs.onError;
+				Echo.requirejs.onError = function(err) {
+					QUnit.ok(true, "Checking if the error callback is executed when non-existing script was passed as a function arguments");
+					Echo.requirejs.onError = customRJSErrorCallback;
+					callback();
+				};
+				Echo.require([
+					base + "nonexisting-file.js"
+				], function() {
+					QUnit.ok(false, "Checking if the error callback is executed when non-existing script was passed as a function arguments");
+					callback();
+				});
 			}
-			Echo.require([
-				base + "nonexisting-file.js"
-			], function() {
-				QUnit.ok(false, "Checking if the error callback is executed when non-existing script was passed as a function arguments");
-				callback();
-			});
 		};
 		var alreadyDownloadedScripts = function(callback) {
 			Echo.require([
@@ -171,28 +190,47 @@ Echo.Tests.Units.push(function(callback) {
 		};
 		
 		var mixedRequireTest = function(callback) {
-			var customRJSErrorCallback = Echo.requirejs.onError,
-				onErrorCallsCounter = 0,
-				fakeScripts = [
-					"fixtures/resources/loader/fakeTestModule3",
-					base + "fakeTestModule.js"
-				],
-				existingScripts = [
-					"fixtures/resources/loader/testModule3",
-					base + "testModule2.js"
-				];
-			Echo.requirejs.onError = function(err) {
-				onErrorCallsCounter += 1;
+			if(navigator.userAgent.search(/MSIE/) > 0) {
+				/**
+				 *  In case of MSIE we can`t simply override requirejs.onError
+				 * becose of troubles that make it difficult to detect this event
+				 *
+				 * To override it in MSIE you can use option enforceDefine
+				 * but in this case you have no ability to load non AMD modules
+				 * without using shim correctly.
+				 *
+				 * To learn more you can read out this links:
+				 * IE errors handling: http://requirejs.ru/docs/api.html#ieloadfail
+				 * enforceDefine option: http://requirejs.ru/docs/api.html#config-enforceDefine
+				 *
+				**/
 				QUnit.ok(true, "Check if Echo.require(\"\") works in the same way as require(\"\") function does");
-				if(onErrorCallsCounter == fakeScripts.length) {
-					Echo.requirejs.onError = customRJSErrorCallback;
-					callback();
-				}
-			}
-			Echo.require(fakeScripts.concat(existingScripts), function() {
-				QUnit.ok(false, "Checking Echo.require using mixed paths");
+				QUnit.ok(true, "Check if Echo.require(\"\") works in the same way as require(\"\") function does");
 				callback();
-			})
+			} else {
+				var customRJSErrorCallback = Echo.requirejs.onError,
+					onErrorCallsCounter = 0,
+					fakeScripts = [
+						"fixtures/resources/loader/fakeTestModule3",
+						base + "fakeTestModule.js"
+					],
+					existingScripts = [
+						"fixtures/resources/loader/testModule3",
+						base + "testModule2.js"
+					];
+				Echo.requirejs.onError = function(err) {
+					onErrorCallsCounter += 1;
+					QUnit.ok(true, "Check if Echo.require(\"\") works in the same way as require(\"\") function does");
+					if(onErrorCallsCounter == fakeScripts.length) {
+						Echo.requirejs.onError = customRJSErrorCallback;
+						callback();
+					}
+				}
+				Echo.require(fakeScripts.concat(existingScripts), function() {
+					QUnit.ok(false, "Checking Echo.require using mixed paths");
+					callback();
+				})
+			}
 		};
 		
 		QUnit.expect(12);

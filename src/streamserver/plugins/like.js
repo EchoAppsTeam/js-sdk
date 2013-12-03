@@ -1,9 +1,9 @@
 Echo.define("echo/streamserver/plugins/like", [
-	"echo/streamserver/plugins/streamLike",
-	"echo/streamserver/plugins/facePileLike"
+	"echo/streamserver/plugins/stream-like",
+	"echo/streamserver/plugins/facepile-like"
 ], function() {});
 
-Echo.define("echo/streamserver/plugins/streamLike", [
+Echo.define("echo/streamserver/plugins/stream-like", [
 	"jquery",
 	"echo/plugin",
 	"echo/streamserver/bundled-apps/facepile/client-widget",
@@ -243,7 +243,7 @@ plugin.css =
 return Plugin.create(plugin);
 });
 
-Echo.define("echo/streamserver/plugins/facePileLike", [
+Echo.define("echo/streamserver/plugins/facepile-like", [
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {

@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/plugins/communityFlag", [
+Echo.define("echo/streamserver/plugins/community-flag", [
 	"jquery",
 	"echo/plugin",
 	"echo/streamserver/bundled-apps/facepile/client-widget",

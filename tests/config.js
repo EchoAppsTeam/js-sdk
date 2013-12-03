@@ -8,18 +8,12 @@ Echo.Tests.Stats.root = {
 
 // browser-specific ignore
 var ignoreList = [
-	"Echo.Utils",
-	"Echo.App",
-	"Echo.Plugin",
-	"Echo.Events",
 	"Echo.Tests",
 	"Echo.Variables",
 	"Echo.jQuery",
 	"Echo.require",
 	"Echo.requirejs",
 	"Echo.define",
-	"Echo.Loader",
-	"Echo.API",
 	"Echo.Streamserver"
 ];
 var isNotLteIE7 = !(Echo.Tests.browser && Echo.Tests.browser.version <= 7);

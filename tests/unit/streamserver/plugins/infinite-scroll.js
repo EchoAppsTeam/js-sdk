@@ -2,7 +2,7 @@ Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
 		"echo/streamserver/bundled-apps/stream/client-widget",
-		"echo/streamserver/plugins/infiniteScroll"
+		"echo/streamserver/plugins/infinite-scroll"
 	], function($, Stream) {
 
 	"use strict";

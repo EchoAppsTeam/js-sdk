@@ -1,10 +1,10 @@
 Echo.define("echo/streamserver/plugins/reply", [
-	"echo/streamserver/plugins/streamItemReply",
-	"echo/streamserver/plugins/streamReply",
-	"echo/streamserver/plugins/submitReply"
+	"echo/streamserver/plugins/stream-item-reply",
+	"echo/streamserver/plugins/stream-reply",
+	"echo/streamserver/plugins/submit-reply"
 ], function() {});
 
-Echo.define("echo/streamserver/plugins/streamItemReply", [
+Echo.define("echo/streamserver/plugins/stream-item-reply", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
@@ -324,7 +324,7 @@ plugin.css =
 return Plugin.create(plugin);
 });
 
-Echo.define("echo/streamserver/plugins/streamReply", [
+Echo.define("echo/streamserver/plugins/stream-reply", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
@@ -378,7 +378,7 @@ plugin.events = {
 return Plugin.create(plugin);
 });
 
-Echo.define("echo/streamserver/plugins/submitReply", [
+Echo.define("echo/streamserver/plugins/submit-reply", [
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {

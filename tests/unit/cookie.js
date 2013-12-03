@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"cookie"
+		"echo/cookie"
 	], function($, Cookie) {
 
 	"use strict";

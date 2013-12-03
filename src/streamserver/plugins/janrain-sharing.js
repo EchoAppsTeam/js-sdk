@@ -1,9 +1,9 @@
-Echo.define("echo/streamserver/plugins/janrainSharing", [
-	"echo/streamserver/plugins/submitJanrainSharing",
-	"echo/streamserver/plugins/streamJanrainSharing"
+Echo.define("echo/streamserver/plugins/janrain-sharing", [
+	"echo/streamserver/plugins/submit-janrain-sharing",
+	"echo/streamserver/plugins/stream-janrain-sharing"
 ], function() {});
 
-Echo.define("echo/streamserver/plugins/submitJanrainSharing", [
+Echo.define("echo/streamserver/plugins/submit-janrain-sharing", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
@@ -394,12 +394,12 @@ plugin.css =
 return Plugin.create(plugin);
 });
 
-Echo.define("echo/streamserver/plugins/streamJanrainSharing", [
+Echo.define("echo/streamserver/plugins/stream-janrain-sharing", [
 	"jquery",
 	"echo/plugin",
 	"echo/gui",
 	"echo/streamserver/bundled-apps/submit/client-widget",
-	"echo/streamserver/plugins/submitJanrainSharing",
+	"echo/streamserver/plugins/submit-janrain-sharing",
 	"css!echo/gui.pack"
 ], function($, Plugin, GUI, Submit) {
 
