@@ -53,13 +53,13 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/bundled-apps/facepile/client-widget", "jquery"], function(FacePile, jQuery) {
+		Echo.require(["jquery"], function($) {
 			var init = function(config) {
 				config["backplane"] = {
 					"serverBaseURL": "https://api.echoenabled.com/v1",
 					"busName": "jskit"
 				};
-				new FacePile(config); 
+				Echo.Loader.initApplication("echo/streamserver/bundled-apps/facepile/client-widget", config); 
 			};
 			init({
 				"target": document.getElementById("ulist-d1"),
@@ -86,7 +86,7 @@
 				"item": {"avatar": true, "text": false}
 			});
 
-			jQuery.get("{%=baseURLs.api.streamserver%}/v1/search", {
+			$.get("{%=baseURLs.api.streamserver%}/v1/search", {
 				"q": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:100 children:0",
 				"appkey": "echo.jssdk.demo.aboutecho.com"
 			}, function(data) {

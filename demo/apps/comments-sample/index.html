@@ -20,58 +20,56 @@
 				$("#container").addClass("embedded");
 			});
 		}
-		Echo.require(["commentsSample"], function(Comments){
-			new Comments({
-				"backplane": {
-					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-					"busName": "jskit"
+		Echo.Loader.initApplication("comments-sample", {
+			"backplane": {
+				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+				"busName": "jskit"
+			},
+			"target": document.getElementById("comments-sample"),
+			"appkey": "echo.jssdk.demo.aboutecho.com",
+			"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
+			"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
+			"apps": {
+				"Stream": {
+					"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
+					"liveUpdates": {"transport": "websockets"},
+					"item": {"reTag": false},
+					"plugins": [{
+						"name": "Edit",
+						"url": "echo/streamserver/plugins/edit"
+					}, {
+						"name": "Like",
+						"url": "echo/streamserver/plugins/like"
+					}, {
+						"name": "Moderation",
+						"url": "echo/streamserver/plugins/moderation"
+					}, {
+						"name": "StreamSortingSelector",
+						"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
+					}]
 				},
-				"target": document.getElementById("comments-sample"),
-				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
-				"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
-				"apps": {
-					"Stream": {
-						"query": "childrenof:http://echosandbox.com/test/comments-sampler-test children:0 itemsPerPage:10",
-						"liveUpdates": {"transport": "websockets"},
-						"item": {"reTag": false},
-						"plugins": [{
-							"name": "Edit",
-							"url": "echo/streamserver/plugins/edit"
-						}, {
-							"name": "Like",
-							"url": "echo/streamserver/plugins/like"
-						}, {
-							"name": "Moderation",
-							"url": "echo/streamserver/plugins/moderation"
-						}, {
-							"name": "StreamSortingSelector",
-							"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
-						}]
-					},
-					"Submit": {
-						"targetURL": "http://echosandbox.com/test/comments-sampler-test",
-						"infoMessages": {"enabled": false},
-						"plugins": [{
-							"name": "FormAuth",
-							"url": "echo/streamserver/plugins/form-auth",
-							"identityManager": "{config:identityManager}"
-						}]
-					}
-				},
-				"identityManager": {
-					"login": {
-						"width": 400,
-						"height": 250,
-						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-					},
-					"signup": {
-						"width": 400,
-						"height": 250,
-						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-					}
+				"Submit": {
+					"targetURL": "http://echosandbox.com/test/comments-sampler-test",
+					"infoMessages": {"enabled": false},
+					"plugins": [{
+						"name": "FormAuth",
+						"url": "echo/streamserver/plugins/form-auth",
+						"identityManager": "{config:identityManager}"
+					}]
 				}
-			});
+			},
+			"identityManager": {
+				"login": {
+					"width": 400,
+					"height": 250,
+					"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+				},
+				"signup": {
+					"width": 400,
+					"height": 250,
+					"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+				}
+			}
 		});
 	</script>
 </div>

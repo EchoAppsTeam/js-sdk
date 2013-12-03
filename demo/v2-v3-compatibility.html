@@ -153,59 +153,57 @@
 			<b>Stream</b>
 			<div id="stream-v3"></div>
 			<script>
-				Echo.require(["echo/streamserver/bundled-apps/stream/client-widget"], function(Stream) {
-					new Stream({
-						"backplane": {
-							"serverBaseURL": "https://api.echoenabled.com/v1",
-							"busName": "jskit"
-						},
-						"target": document.getElementById("stream-v3"),
-						"query": "childrenof:http://example.com/* itemsPerPage:1",
-						"appkey": "echo.jssdk.demo.aboutecho.com",
-						"item": {
-							"viaLabel": { "icon": true, "text": true }
-						},
-						"plugins": [{
- 						   	"name": "TweetDisplay",
-							"url": "echo/streamserver/plugins/tweet-display"
-						}, {
-							"name": "Reply",
-							"url": "echo/streamserver/plugins/reply",
-							"nestedPlugins": [{
-								"name": "FormAuth",
-								"url": "echo/streamserver/plugins/form-auth",
-								"identityManager": {
-									"login": identityManager,
-									"signup": identityManager
-								}
-							}]
-						}, {
-						 	"name": "MetadataManager",
-							"url": "echo/streamserver/plugins/metadata-manager",
-							"controls": [{
-									"marker": "sticky",
-									"labelMark": "Pin",
-								"labelUnmark": "Unpin"
-							}, {
-									"tag": "football",
-									"labelMark": "Set Football tag",
-									"labelUnmark": "Unset Football tag"
-							}]
-						}, {
-							"name": "Like",
-							"url": "echo/streamserver/plugins/like"
-						}, {
-							"name": "Edit",
-							"url": "echo/streamserver/plugins/edit"
-						}, {
-							"name": "CommunityFlag",
-							"url": "echo/streamserver/plugins/community-flag",
-							"showUserList": true
-						}, {
-							"name": "Moderation",
-							"url": "echo/streamserver/plugins/moderation"
+				Echo.Loader.initApplication("echo/streamserver/bundled-apps/stream/client-widget", {
+					"backplane": {
+						"serverBaseURL": "https://api.echoenabled.com/v1",
+						"busName": "jskit"
+					},
+					"target": document.getElementById("stream-v3"),
+					"query": "childrenof:http://example.com/* itemsPerPage:1",
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"item": {
+						"viaLabel": { "icon": true, "text": true }
+					},
+					"plugins": [{
+ 					   	"name": "TweetDisplay",
+						"url": "echo/streamserver/plugins/tweet-display"
+					}, {
+						"name": "Reply",
+						"url": "echo/streamserver/plugins/reply",
+						"nestedPlugins": [{
+							"name": "FormAuth",
+							"url": "echo/streamserver/plugins/form-auth",
+							"identityManager": {
+								"login": identityManager,
+								"signup": identityManager
+							}
 						}]
-					});
+					}, {
+					 	"name": "MetadataManager",
+						"url": "echo/streamserver/plugins/metadata-manager",
+						"controls": [{
+								"marker": "sticky",
+								"labelMark": "Pin",
+							"labelUnmark": "Unpin"
+						}, {
+								"tag": "football",
+								"labelMark": "Set Football tag",
+								"labelUnmark": "Unset Football tag"
+						}]
+					}, {
+						"name": "Like",
+						"url": "echo/streamserver/plugins/like"
+					}, {
+						"name": "Edit",
+						"url": "echo/streamserver/plugins/edit"
+					}, {
+						"name": "CommunityFlag",
+						"url": "echo/streamserver/plugins/community-flag",
+						"showUserList": true
+					}, {
+						"name": "Moderation",
+						"url": "echo/streamserver/plugins/moderation"
+					}]
 				});
 			</script>
 			<!-- // -->
@@ -216,21 +214,19 @@
 			<b>FormAuth</b>
 			<div id="auth-form-v3"></div>
 			<script type="text/javascript">
-				Echo.require(["echo/streamserver/bundled-apps/auth/client-widget"], function(Auth) {
-                    new Auth({
-						"backplane": { 
-							"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-							"busName": "jskit"
-						},
-						"target": document.getElementById("auth-form-v3"),
-						"appkey": "echo.jssdk.demo.aboutecho.com",
-						"targetURL": "http://echosandbox.com/use-cases/commenting",
-                        "identityManager": {
-                            "login": identityManager,
-                            "signup": identityManager
-                        }
-                    });
-                });
+				Echo.Loader.initApplication("echo/streamserver/bundled-apps/auth/client-widget", {
+					"backplane": { 
+						"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+						"busName": "jskit"
+					},
+					"target": document.getElementById("auth-form-v3"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"targetURL": "http://echosandbox.com/use-cases/commenting",
+					"identityManager": {
+						"login": identityManager,
+						"signup": identityManager
+					}
+				});
 			</script>
 			<!-- // -->
 		</div>
@@ -240,31 +236,29 @@
 			<b>Submit</b>
 			<div id="submit-form-v3"></div>
 			<script type="text/javascript">
-                Echo.require(["echo/streamserver/bundled-apps/submit/client-widget"], function(Submit) {
-                    new Submit({
-                        "backplane": {
-                            "serverBaseURL": "https://api.echoenabled.com/v1",
-                            "busName": "jskit"
-                        },
-                        "target": document.getElementById("submit-form-v3"),
-                        "appkey": "echo.jssdk.demo.aboutecho.com",
-                        "targetURL": "http://example.com/test-js-sdk",
-                        "plugins": [{
-                            "name": "FormAuth",
-                            "url": "echo/streamserver/plugins/form-auth",
-                            "submitPermissions": "forceLogin",
-                            "identityManager": {
-                                "login": identityManager,
-                                "signup": identityManager
-                            }
-                        }, {
-                            "name": "TextCounter",
-                            "url": "echo/streamserver/plugins/text-counter",
-                            "limit": 40,
-                            "label": "You have typed {typed} chars, {left} chars left"
-                        }]
-                    });
-                });
+				Echo.Loader.initApplication("echo/streamserver/bundled-apps/submit/client-widget", {
+					"backplane": {
+						"serverBaseURL": "https://api.echoenabled.com/v1",
+						"busName": "jskit"
+					},
+					"target": document.getElementById("submit-form-v3"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"targetURL": "http://example.com/test-js-sdk",
+					"plugins": [{
+						"name": "FormAuth",
+						"url": "echo/streamserver/plugins/form-auth",
+						"submitPermissions": "forceLogin",
+						"identityManager": {
+							"login": identityManager,
+							"signup": identityManager
+						}
+					}, {
+						"name": "TextCounter",
+						"url": "echo/streamserver/plugins/text-counter",
+						"limit": 40,
+						"label": "You have typed {typed} chars, {left} chars left"
+					}]
+				});
 			</script>
 			<!-- // -->
 		</div>
@@ -274,13 +268,11 @@
 			<b>Counter</b>
 			<div id="counter-v3"></div>
 			<script type="text/javascript">
-                Echo.require(["echo/streamserver/bundled-apps/counter/client-widget"], function(Counter) {
-                    new Counter({
-                        "target": document.getElementById("counter-v3"),
-                        "appkey": "echo.jssdk.demo.aboutecho.com",
-                        "query" : "childrenof:http://example.com/*"
-                    });
-                });
+				Echo.Loader.initApplication("echo/streamserver/bundled-apps/counter/client-widget", {
+					"target": document.getElementById("counter-v3"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"query" : "childrenof:http://example.com/*"
+				});
 			</script>
 			<!-- // -->
 		</div>
@@ -290,19 +282,17 @@
 			<b>Face Pile</b>
 			<div id="face-pile-v3"></div>
 			<script type="text/javascript">
-                Echo.require(["echo/streamserver/bundled-apps/facepile/client-widget"], function(FacePile) {
-                    new FacePile({
-                        "backplane": {
-                            "serverBaseURL": "https://api.echoenabled.com/v1",
-                            "busName": "jskit"
-                        },
-                        "target": document.getElementById("face-pile-v3"),
-                        "appkey": "echo.jssdk.demo.aboutecho.com",
-                        "query": "childrenof:http://example.com/*",
-                        "suffixText": " commented on aboutecho.com",
-                        "item": {"avatar": true, "text": true}
-                    });
-                });
+				Echo.Loader.initApplication("echo/streamserver/bundled-apps/facepile/client-widget", {
+					"backplane": {
+						"serverBaseURL": "https://api.echoenabled.com/v1",
+							"busName": "jskit"
+					},
+					"target": document.getElementById("face-pile-v3"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"query": "childrenof:http://example.com/*",
+					"suffixText": " commented on aboutecho.com",
+					"item": {"avatar": true, "text": true}
+				});
 			</script>
 			<!-- // -->
 		</div>

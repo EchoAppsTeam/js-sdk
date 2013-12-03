@@ -30,47 +30,49 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/bundled-apps/stream/client-widget"], function(Stream) {
-			var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
-			new Stream({
-				"backplane": {
-					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-					"busName": "jskit"
-				},
-				"target": document.getElementById("stream"),
-				"query": "childrenof:http://example.com/js-sdk -state:ModeratorDeleted itemsPerPage:2 sortOrder:likesDescending children:1  childrenSortOrder:chronological  childrenItemsPerPage:2 -state:ModeratorDeleted",
-				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"liveUpdates": {"transport": "websockets"},
-				"item": {
-					"limits": {
-						"maxBodyCharacters": 35
-					}
-				},
-				"reTag": false,
-				"fadeTimeout": 0,
-				"plugins": [{
-						"name": "PinboardVisualization",
-						"url": "echo/streamserver/plugins/pinboard-visualization"
-					}, {
-						"name": "Reply",
-						"url": "echo/streamserver/plugins/reply",
-						"nestedPlugins": [{
-							"name": "FormAuth",
-							"url": "echo/streamserver/plugins/form-auth",
-							"submitPermissions": "forceLogin",
-							"identityManager": {
-								"login": identityManager,
-								"signup": identityManager
-							}
-						}]
-					}, {
-						"name": "Edit",
-						"url": "echo/streamserver/plugins/edit"
-					}, {
-						"name": "Like",
-						"url": "echo/streamserver/plugins/like"
+		var identityManager = {
+			"width": 400,
+			"height": 240,
+			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+		};
+		Echo.Loader.initApplication("echo/streamserver/bundled-apps/stream/client-widget", {
+			"backplane": {
+				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+				"busName": "jskit"
+			},
+			"target": document.getElementById("stream"),
+			"query": "childrenof:http://example.com/js-sdk -state:ModeratorDeleted itemsPerPage:2 sortOrder:likesDescending children:1  childrenSortOrder:chronological  childrenItemsPerPage:2 -state:ModeratorDeleted",
+			"appkey": "echo.jssdk.demo.aboutecho.com",
+			"liveUpdates": {"transport": "websockets"},
+			"item": {
+				"limits": {
+					"maxBodyCharacters": 35
+				}
+			},
+			"reTag": false,
+			"fadeTimeout": 0,
+			"plugins": [{
+					"name": "PinboardVisualization",
+					"url": "echo/streamserver/plugins/pinboard-visualization"
+				}, {
+					"name": "Reply",
+					"url": "echo/streamserver/plugins/reply",
+					"nestedPlugins": [{
+						"name": "FormAuth",
+						"url": "echo/streamserver/plugins/form-auth",
+						"submitPermissions": "forceLogin",
+						"identityManager": {
+							"login": identityManager,
+							"signup": identityManager
+						}
 					}]
-			});
+				}, {
+					"name": "Edit",
+					"url": "echo/streamserver/plugins/edit"
+				}, {
+					"name": "Like",
+					"url": "echo/streamserver/plugins/like"
+				}]
 		});
 	</script>
 </body>

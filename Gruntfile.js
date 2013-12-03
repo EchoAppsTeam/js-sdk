@@ -518,7 +518,8 @@ module.exports = function(grunt) {
 							"streamserver/user",
 							"view",
 							"app",
-							"plugin"
+							"plugin",
+							"cookie"
 						]
 					}, {
 						"name": "streamserver.pack",
