@@ -91,8 +91,8 @@ App.create = function(definition) {
 	if (_definition.methods) {
 		$.extend(prototype, _definition.methods);
 	}
-	if (_definition.static) {
-		$.extend(constructor, _definition.static);
+	if (_definition.statics) {
+		$.extend(constructor, _definition.statics);
 	}
 	prototype.templates = _definition.templates;
 	prototype.renderers = _definition.renderers;
@@ -130,7 +130,7 @@ App.definition = function(name) {
 		"config": {},
 		"labels": {},
 		"events": {},
-		"static": {},
+		"statics": {},
 		"methods": {},
 		"renderers": {},
 		"templates": {},
@@ -796,7 +796,7 @@ App._merge.events = function(parent, own) {
 	});
 };
 
-$.map(["methods", "static"], function(name) {
+$.map(["methods", "statics"], function(name) {
 	App._merge[name] = function(parent, own) {
 		return Utils.foldl({}, own, function(method, acc, name) {
 			acc[name] = name in parent
@@ -1052,43 +1052,11 @@ definition.config.normalizer = {
 	"context": Events.newContextId
 };
 
-definition.static = {};
+definition.statics = {};
 
 $.map(["create", "definition", "isDefined", "_merge"], function(name) {
-	definition.static[name] = App[name];
+	definition.statics[name] = App[name];
 });
-
-definition.static.extends = function(App) {
-	return Utils.inherit(App, this);
-};
-
-definition.static.include = function() {
-	var type = typeof arguments[0] === "string" ? arguments[0] : "methods";
-	var App = $.isPlainObject(arguments[1]) ? arguments[1] : arguments[0];
-	var keys = typeof arguments[2] === "undefined"
-		? $.isArray(arguments[1]) ? arguments[1] : []
-		: arguments[2];
-	var merge = function(To, From) {
-		if (keys.length) {
-			Utils.foldl(To, keys, function(key, acc) {
-				if ($.isFunction(From[key])) {
-					acc[key] = From[key];
-				}
-			});
-		} else {
-			for (var key in From) {
-				if (From.hasOwnProperty(key) && $.isFunction(From[key])) {
-					To[key] = From[key];
-				}
-			}
-		}
-	};
-	return merge.apply(
-		null, type === "methods"
-			? [this.prototype, App.prototype]
-			: [this, App]
-	);
-};
 
 definition.inherits = App;
 

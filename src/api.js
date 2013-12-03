@@ -399,12 +399,12 @@ API.Transports.XDomainRequest.prototype._getTransportObject = function() {
 	// Author: Jason Moon - @JSONMOON
 	// IE8+
 	// link: https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest
-	if (!jQuery.support.cors && window.XDomainRequest) {
+	if (!$.support.cors && window.XDomainRequest) {
 		var jsonRegEx = /\/json/i;
 		var xmlRegEx = /\/xml/i;
 
 		// ajaxTransport exists in jQuery 1.5+
-		jQuery.ajaxTransport("text html xml json", function(options, userOptions, jqXHR) {
+		$.ajaxTransport("text html xml json", function(options, userOptions, jqXHR) {
 			var xdr = null;
 			var userType = (userOptions.dataType || "").toLowerCase();
 			return {
