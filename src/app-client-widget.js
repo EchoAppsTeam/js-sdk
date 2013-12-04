@@ -28,35 +28,35 @@ ClientWidget.events = {
 	}
 };
 
-ClientWidget.methods._initUser = function(callback) {
+ClientWidget.methods._initUser = function(next) {
 	Utils.sequentialCall([
 		$.proxy(this._initBackplane, this),
 		$.proxy(this._storeUser, this)
-	], callback);
+	], next);
 };
 
-ClientWidget.methods._initBackplane = function(callback) {
+ClientWidget.methods._initBackplane = function(next) {
 	var app = this;
 	var config = this.config.get("backplane");
 	if (config.serverBaseURL && config.busName) {
 		Echo.require(["echo/backplane"], function(Backplane) {
 			Backplane.init(config);
-			callback();
+			next();
 		});
 	} else {
-		callback();
+		next();
 	}
 };
 
-ClientWidget.methods._storeUser = function(callback) {
+ClientWidget.methods._storeUser = function(next) {
 	var app = this;
 	if (!this.config.get("appkey")) {
-		callback();
+		next();
 		return;
 	}
 	if (this.config.get("user")) {
 		this.user = this.config.get("user");
-		callback();
+		next();
 	} else {
 		var generateURL = function(baseURL, path) {
 			if (!baseURL) return;
@@ -72,7 +72,7 @@ ClientWidget.methods._storeUser = function(callback) {
 			},
 			"ready": function() {
 				app.user = this;
-				callback();
+				next();
 			}
 		});
 	}
@@ -88,25 +88,23 @@ ClientWidget.methods._loading = function() {
 };
 
 ClientWidget.methods._init = function(subsystems) {
-	var index;
+	var index = 0;
 	$.each(subsystems, function(i, subsystem) {
 		if (subsystem.name === "plugins") {
 			index = i;
 			return false;
 		}
 	});
-	index = index || 0;
 	subsystems.splice(index, 0, {
 		"name": "loading",
 		"init": this._loading,
 		"type": "sync"
-	});
-	subsystems.splice(index + 1, 0, {
+	}, {
 		"name": "user",
 		"init": this._initUser,
 		"type": "async"
 	});
-	return Utils.getComponent("Echo.App.ClientWidget").parent._init.call(this, subsystems);
+	return App.prototype._init.call(this, subsystems);
 };
 
 return App.create(ClientWidget);
