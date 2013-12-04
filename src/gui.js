@@ -1,11 +1,10 @@
 Echo.define("echo/gui", [
 	"jquery",
-	"echo/configuration"
+	"echo/configuration",
+	"css!echo/gui.pack"
 ], function($, Configuration) {
 
 "use strict";
-
-var GUI;
 
 /**
  * @class Echo.GUI
@@ -17,7 +16,7 @@ var GUI;
  * @param {Object} config
  * GUI component configuration.
  */
-GUI = function(config, defaultConfig) {
+var GUI = function(config, defaultConfig) {
 	// exit if config is missing or the target is undefined
 	if (!config || !(config.target || defaultConfig.targetless)) return;
 

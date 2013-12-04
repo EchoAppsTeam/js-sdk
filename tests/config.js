@@ -53,4 +53,4 @@ Echo.Tests.defineComponentInitializer = function(name, initializer) {
 	_initializers[name] = initializer;
 };
 
-}(Echo.jQuery));
+})(Echo.jQuery);

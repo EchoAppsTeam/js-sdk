@@ -2,8 +2,6 @@ Echo.define("echo/cookie", [], function() {
 
 "use strict";
 
-var Cookie;
-
 var _pluses = /\+/g;
 var _decode = function(s) {
 	return decodeURIComponent(s.replace(_pluses, " "));
@@ -25,7 +23,7 @@ var _decode = function(s) {
  *
  * @package loader.js
  */
-Cookie = {};
+var Cookie = {};
 
 /**
  * @static

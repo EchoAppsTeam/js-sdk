@@ -1,11 +1,9 @@
 Echo.define("echo/streamserver/bundled-apps/auth/client-widget", [
 	"jquery",
 	"echo/utils",
-	"echo/gui",
 	"echo/gui/modal",
-	"echo/app-client-widget",
-	"css!echo/gui.pack",
-], function($, Utils, GUI, GUIModal, App) {
+	"echo/app-client-widget"
+], function($, Utils, GUIModal, App) {
 
 "use strict";
 
@@ -44,8 +42,6 @@ Echo.define("echo/streamserver/bundled-apps/auth/client-widget", [
  * Configuration options.
  */
 var auth = App.definition("Echo.StreamServer.BundledApps.Auth.ClientWidget");
-
-if (App.isDefined(auth)) return;
 
 /**
  * @echo_event Echo.StreamServer.BundledApps.Auth.ClientWidget.onReady
@@ -86,7 +82,7 @@ auth.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": Echo.require.toUrl("echo-assets/images/avatar-default.png", false),
+	"defaultAvatar": Echo.require.toUrl("echo-assets/images/avatar-default.png"),
 
 	/**
 	 * @cfg {Object} identityManager

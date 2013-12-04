@@ -1,6 +1,4 @@
-Echo.define('echo/variables', [], function() {
-	return {};
-});
+Echo.define("echo/variables", [], {});
 
 Echo.define("echo/utils", [
 	"jquery",
@@ -8,8 +6,6 @@ Echo.define("echo/utils", [
 	"require"
 ], function($, Variables, require) {
 "use strict";
-
-var Utils;
 
 /**
  * @class Echo.Utils
@@ -19,7 +15,7 @@ var Utils;
  * @package environment.pack.js
  */
 
-Utils = {};
+var Utils = {};
 
 Utils.cache = {};
 

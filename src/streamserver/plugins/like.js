@@ -233,7 +233,7 @@ plugin.methods._assembleButton = function(name) {
 };
 
 plugin.css =
-	'.{plugin.class:likedBy} { background: url(' + Echo.require.toUrl('echo-assets/images/likes.png') + ') no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
+	'.{plugin.class:likedBy} { background: url(' + Echo.require.toUrl("echo-assets/images/likes.png") + ') no-repeat 0px 4px; padding: 0px 0px 4px 21px; }' +
 	'.{plugin.class:highlight} { line-height: 23px; }';
 
 return Plugin.create(plugin);
@@ -271,7 +271,7 @@ plugin.labels = {
 /**
  * @echo_template
  */
-plugin.templates.main = '<img class="{plugin.class:adminUnlike}" src="' + Echo.require.toUrl('echo-assets/images/container/closeWindow.png') + '"" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
+plugin.templates.main = '<img class="{plugin.class:adminUnlike}" src="' + Echo.require.toUrl("echo-assets/images/container/closeWindow.png") + '"" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
 
 /**
  * @echo_renderer

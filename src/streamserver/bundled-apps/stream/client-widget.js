@@ -1825,15 +1825,15 @@ stream.methods._normalizeEntry = function(entry) {
 stream.css =
 	'.{class:message-wrapper} { padding: 15px 0px; text-align: center; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; border: 1px solid #E4E4E4; }' +
 	'.{class:message-empty}, .{class:message-loading}, .{class:message-error} { display: inline-block; height: 16px; padding-left: 21px; background: no-repeat left center; }' +
-	'.{class:message-empty} { background-image: url(' + Echo.require.toUrl('echo-assets/images/information.png') + '); }' +
-	'.{class:message-loading} { background-image: url(' + Echo.require.toUrl('echo-assets/images/loading.gif') + '); }' +
-	'.{class:message-error} { background-image: url(' + Echo.require.toUrl('echo-assets/images/warning.gif') + '); }' +
+	'.{class:message-empty} { background-image: url(' + Echo.require.toUrl("echo-assets/images/information.png") + '); }' +
+	'.{class:message-loading} { background-image: url(' + Echo.require.toUrl("echo-assets/images/loading.gif") + '); }' +
+	'.{class:message-error} { background-image: url(' + Echo.require.toUrl("echo-assets/images/warning.gif") + '); }' +
 	'.{class:header} { margin: 10px 0px 10px 0px; }' +
 	'.{class:compactStateLayout} { float: right; }' +
 	'.{class:fullStateLayout} { text-align: center; }' +
 	'.{class:state-picture} { display: inline-block; height: 9px; width: 8px; }' +
-	'.{class:state-picture-paused} { background: url(' + Echo.require.toUrl('echo-assets/images/control_pause.png') + ') no-repeat center center; }' +
-	'.{class:state-picture-live} { background: url(' + Echo.require.toUrl('echo-assets/images/control_play.png') + ') no-repeat center center; }' +
+	'.{class:state-picture-paused} { background: url(' + Echo.require.toUrl("echo-assets/images/control_pause.png") + ') no-repeat center center; }' +
+	'.{class:state-picture-live} { background: url(' + Echo.require.toUrl("echo-assets/images/control_play.png") + ') no-repeat center center; }' +
 	'.{class:state-message} { margin-left: 5px; text-decoration: none; }' +
 	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
 	'.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }' +

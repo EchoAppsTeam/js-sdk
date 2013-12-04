@@ -3,7 +3,7 @@ Echo.define("echo/streamserver/plugins/pinboard-visualization", [
 	"echo/plugin",
 	"echo/streamserver/plugins/stream-item-pinboard-visualization",
 	"isotope"
-], function($, Plugin, StreamItemPinboardVisualization, Isotope) {
+], function($, Plugin, StreamItemPinboardVisualization) {
 
 "use strict";
 
@@ -139,9 +139,9 @@ Echo.define("echo/streamserver/plugins/stream-item-pinboard-visualization", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
-	"isotope",
-	"echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget"
-], function($, Plugin, Utils, Isotope, MediaGallery) {
+	"echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget",
+	"isotope"
+], function($, Plugin, Utils, MediaGallery) {
 
 "use strict";
 

@@ -5,8 +5,6 @@ Echo.define("echo/labels", [
 
 "use strict";
 
-var Labels;
-
 /**
  * @class Echo.Labels
  * Class implements the language variables mechanics across the components.
@@ -51,7 +49,7 @@ var Labels;
  * The reference to the given Labels class instance.
  */
 
-Labels = function(labels, namespace) {
+var Labels = function(labels, namespace) {
 	var self = this;
 	this.storage = {};
 	this.namespace = namespace;

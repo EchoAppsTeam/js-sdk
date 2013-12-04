@@ -5,8 +5,6 @@ Echo.define("echo/events", [
 
 "use strict";
 
-var Events;
-
 /**
  * @class Echo.Events
  * Library for exchanging messages between the components on the page. It also
@@ -35,7 +33,7 @@ var Events;
  *
  * @package environment.pack.js
  */
-Events = {};
+var Events = {};
 
 /**
  * @static
