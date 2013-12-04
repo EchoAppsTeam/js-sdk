@@ -61,7 +61,7 @@ Echo.Tests.Units.push(function(callback) {
 				"events": {},
 				"methods": {},
 				"renderers": {},
-				"statics": {},
+				"classMethods": {},
 				"templates": {}
 			};
 
@@ -907,7 +907,7 @@ Echo.Tests.Units.push(function(callback) {
 				"method2": function() { return "method2"; },
 				"method3": function() { return "method3"; }
 			},
-			"statics": {
+			"classMethods": {
 				"method": function() {return {"a": 1};}
 			},
 			"renderers": {
@@ -954,7 +954,7 @@ Echo.Tests.Units.push(function(callback) {
 					return "child1 method"
 				}
 			},
-			"statics": {
+			"classMethods": {
 				"method": function() {
 					var o = this.parent();
 					o.b = 2;

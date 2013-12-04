@@ -50,6 +50,9 @@ var App = function() {};
  * @param {Object} [definition.methods]
  * Specifies the list of application methods.
  *
+ * @param {Object} [definition.classMethods]
+ * Specifies the list of application class methods.
+ *
  * @param {Object} [definition.renderers]
  * Specifies the list of application renderers.
  *
@@ -91,8 +94,8 @@ App.create = function(definition) {
 	if (_definition.methods) {
 		$.extend(prototype, _definition.methods);
 	}
-	if (_definition.statics) {
-		$.extend(constructor, _definition.statics);
+	if (_definition.classMethods) {
+		$.extend(constructor, _definition.classMethods);
 	}
 	prototype.templates = _definition.templates;
 	prototype.renderers = _definition.renderers;
@@ -130,7 +133,7 @@ App.definition = function(name) {
 		"config": {},
 		"labels": {},
 		"events": {},
-		"statics": {},
+		"classMethods": {},
 		"methods": {},
 		"renderers": {},
 		"templates": {},
@@ -400,8 +403,8 @@ App.prototype.log = function(data) {
  * @param {String} spec.id
  * Nested application id.
  *
- * @param {String} spec.component
- * Constructor name for the nested app like "Echo.StreamServer.App.Stream".
+ * @param {Object} spec.component
+ * Constructor object for the nested app.
  *
  * @param {Object} [spec.config]
  * Configuration object for the nested application.
@@ -413,9 +416,6 @@ App.prototype.initApp = function(spec) {
 		spec.config.user = this.user;
 	}
 	spec.config.parent = spec.config.parent || this.config.getAsHash();
-	if (spec.config.parent.dependencies) {
-		delete spec.config.parent.dependencies;
-	}
 	spec.config.plugins = this._mergeSpecsByName(
 		$.extend(true, [], this.config.get("apps." + spec.id + ".plugins", [])),
 		spec.config.plugins || []
@@ -430,7 +430,7 @@ App.prototype.initApp = function(spec) {
 	} else {
 		this.log({
 			"type": "error",
-			"component": this._definition("name"),
+			"component": this.name,
 			"message": "Unable to initialize application, application not found",
 			"args": {"application": spec["component"]}
 		});
@@ -685,22 +685,21 @@ App.prototype._initializers.labels = function() {
 
 App.prototype._initializers.css = function() {
 	var self = this;
+	var cssPrefix = this.cssPrefix;
 	this.config.get("target").addClass(this.cssClass);
 	$.map(this._definition("css"), function(spec) {
 		if (!spec.id || !spec.code || Utils.hasCSS(spec.id)) return;
-		if (spec.id !== self.name) {
-			var css, component = self.constructor;
-			if (component) {
-				css = self.substitute({
+		if (spec.id !== self.name && cssPrefix) {
+			Utils.addCSS(
+				self.substitute({
 					"template": spec.code,
 					"instructions": {
 						"class": function(key) {
-							return component.prototype.cssPrefix + key;
+							return cssPrefix + key;
 						}
 					}
-				});
-				Utils.addCSS(css, spec.id);
-			}
+				})
+			, spec.id);
 		} else {
 			Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 		}
@@ -796,19 +795,17 @@ App._merge.events = function(parent, own) {
 	});
 };
 
-$.map(["methods", "statics"], function(name) {
+App._merge.css = function(parent, own) {
+	return parent.concat(own);
+};
+
+$.map(["methods", "classMethods"], function(name) {
 	App._merge[name] = function(parent, own) {
 		return Utils.foldl({}, own, function(method, acc, name) {
 			acc[name] = name in parent
 				? _wrapper(parent[name], method)
 				: method;
 		});
-	};
-});
-
-$.map(["dependencies", "css"], function(name) {
-	App._merge[name] = function(parent, own) {
-		return parent.concat(own);
 	};
 });
 
@@ -1021,7 +1018,6 @@ definition.config = {
 	"plugins": {},
 
 	"context": "",
-	"scriptLoadErrorTimeout": 5000, // 5 sec
 
 	/**
 	 * @cfg {Object} backplane
@@ -1062,10 +1058,10 @@ definition.config.normalizer = {
 	"context": Events.newContextId
 };
 
-definition.statics = {};
+definition.classMethods = {};
 
 $.map(["create", "definition", "isDefined", "_merge"], function(name) {
-	definition.statics[name] = App[name];
+	definition.classMethods[name] = App[name];
 });
 
 definition.inherits = App;
