@@ -100,7 +100,7 @@ paths[Echo.Loader.getURL("") + "/streamserver.pack"] = [
 	"echo/streamserver/plugins/janrain-auth"
 ];
 
-paths[Echo.Loader.getURL("") + "/pinboard-visualization"] = [
+paths[Echo.Loader.getURL("streamserver/plugins/pinboard-visualization")] = [
 	"echo/streamserver/plugins/pinboard-visualization", "echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget",
 	"echo/streamserver/plugins/stream-item-pinboard-visualization", "echo/streamserver/plugins/stream-pinboard-visualization"
 ];

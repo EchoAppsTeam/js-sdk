@@ -157,4 +157,5 @@ GUI.Dropdown.prototype._assembleEntries = function(container, entries) {
 };
 
 return GUI.Dropdown;
+
 });

@@ -51,4 +51,5 @@ GUI.prototype.destroy = function() {
 };
 
 return GUI;
+
 });

@@ -371,4 +371,5 @@ GUI.Tabs.prototype._getTabFullId = function(id) {
 };
 
 return GUI.Tabs;
+
 });

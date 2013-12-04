@@ -82,4 +82,5 @@ plugin.css =
 	'.{plugin.class:wrapper} { float: left; }';
 
 return Plugin.create(plugin);
+
 });

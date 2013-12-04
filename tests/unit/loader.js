@@ -125,10 +125,10 @@ Echo.Tests.Units.push(function(callback) {
 				QUnit.ok(true, "Checking if the error callback is executed when non-existing script was passed as a function arguments");
 				callback();
 			} else {
-				var customRJSErrorCallback = Echo.requirejs.onError;
-				Echo.requirejs.onError = function(err) {
+				var customRJSErrorCallback = Echo.require.onError;
+				Echo.require.onError = function(err) {
 					QUnit.ok(true, "Checking if the error callback is executed when non-existing script was passed as a function arguments");
-					Echo.requirejs.onError = customRJSErrorCallback;
+					Echo.require.onError = customRJSErrorCallback;
 					callback();
 				};
 				Echo.require([
@@ -150,10 +150,10 @@ Echo.Tests.Units.push(function(callback) {
 			});
 		};
 		var checkSyncRequire = function(callback) {
-			var customRJSErrorCallback = Echo.requirejs.onError;
-			Echo.requirejs.onError = function(err) {
+			var customRJSErrorCallback = Echo.require.onError;
+			Echo.require.onError = function(err) {
 				QUnit.ok(true, "Check if Echo.require(\"\") works in the same way as require(\"\") function does");
-				Echo.requirejs.onError = customRJSErrorCallback;
+				Echo.require.onError = customRJSErrorCallback;
 				callback();
 			}
 			var unrequiredModule = Echo.require("fixtures/resources/loader/testModule");
@@ -208,7 +208,7 @@ Echo.Tests.Units.push(function(callback) {
 				QUnit.ok(true, "Check if Echo.require(\"\") works in the same way as require(\"\") function does");
 				callback();
 			} else {
-				var customRJSErrorCallback = Echo.requirejs.onError,
+				var customRJSErrorCallback = Echo.require.onError,
 					onErrorCallsCounter = 0,
 					fakeScripts = [
 						"fixtures/resources/loader/fakeTestModule3",
@@ -218,11 +218,11 @@ Echo.Tests.Units.push(function(callback) {
 						"fixtures/resources/loader/testModule3",
 						base + "testModule2.js"
 					];
-				Echo.requirejs.onError = function(err) {
+				Echo.require.onError = function(err) {
 					onErrorCallsCounter += 1;
 					QUnit.ok(true, "Check if Echo.require(\"\") works in the same way as require(\"\") function does");
 					if(onErrorCallsCounter == fakeScripts.length) {
-						Echo.requirejs.onError = customRJSErrorCallback;
+						Echo.require.onError = customRJSErrorCallback;
 						callback();
 					}
 				}

@@ -96,4 +96,5 @@ GUI.Button.prototype.refresh = function() {
 };
 
 return GUI.Button;
+
 });

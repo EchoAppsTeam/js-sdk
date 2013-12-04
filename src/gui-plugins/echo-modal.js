@@ -306,4 +306,5 @@ GUI.Modal.prototype._addSection = function(css, content) {
 };
 
 return GUI.Modal;
+
 });

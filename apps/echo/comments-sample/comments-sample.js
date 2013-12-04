@@ -37,7 +37,7 @@ Comments.methods.template = function() {
 Comments.renderers.stream = function(element) {
 	this.initApp({
 		"id": "Stream",
-		"component": "echo/streamserver/bundled-apps/stream/client-widget",
+		"component": Stream,
 		"config": {
 			"target": element
 		}
@@ -48,7 +48,7 @@ Comments.renderers.stream = function(element) {
 Comments.renderers.submit = function(element) {
 	this.initApp({
 		"id": "Submit",
-		"component": "echo/streamserver/bundled-apps/submit/client-widget",
+		"component": Submit,
 		"config": {
 			"target": element
 		}
@@ -59,4 +59,5 @@ Comments.renderers.submit = function(element) {
 Comments.css = ".{class:container} > div { margin-bottom: 7px; }";
 
 return App.create(Comments);
+
 });

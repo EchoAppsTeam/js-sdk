@@ -400,7 +400,7 @@ App.prototype.log = function(data) {
  * @param {String} spec.id
  * Nested application id.
  *
- * @param {String} spec.app
+ * @param {String} spec.component
  * Constructor name for the nested app like "Echo.StreamServer.App.Stream".
  *
  * @param {Object} [spec.config]
@@ -423,8 +423,8 @@ App.prototype.initApp = function(spec) {
 	spec.config = this._normalizeAppConfig(
 		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
-	if(spec.component && Echo.require.specified(spec.component)) {
-		var App = require(spec.component);
+	if(spec.component) {
+		var App = spec.component;
 		this.set("apps." + spec.id, new App(spec.config));
 		return this.getApp(spec.id);
 	} else {
