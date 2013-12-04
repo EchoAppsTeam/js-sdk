@@ -260,7 +260,7 @@ module.exports = function(grunt) {
 		},
 		"wrap": {
 			"options": {
-				"header": [//TODO $ as a parameter (jquery)
+				"header": [
 					"Echo.require([\"jquery\"], function(jQuery) {",
 					"var $ = jQuery;",
 					""
@@ -278,7 +278,6 @@ module.exports = function(grunt) {
 					]
 				}]
 			},
-			//TODO rewrite it to concat plugins -> wrap -> concat with gui and so on.
 			"bootstrap-plugins": {
 				"files": [{
 					"expand": true,
@@ -518,7 +517,8 @@ module.exports = function(grunt) {
 							"streamserver/user",
 							"view",
 							"app",
-							"plugin"
+							"plugin",
+							"cookie"
 						]
 					}, {
 						"name": "streamserver.pack",
@@ -548,7 +548,7 @@ module.exports = function(grunt) {
 							"streamserver/plugins/tweet-display"
 						]
 					}, {
-						"name": "pinboard-visualization",
+						"name": "streamserver/plugins/pinboard-visualization",
 						"create": true,
 						"include": [
 							"streamserver/bundled-apps/stream/item/media-gallery/client-widget",
@@ -565,7 +565,7 @@ module.exports = function(grunt) {
 							"gui-plugins/echo-tabs"
 						]
 					}],
-					fileExclusionRegExp: /\S*(?:images){1}\S*/g // \"min version"
+					fileExclusionRegExp: /\/images\//
 				}
 			}
 		},

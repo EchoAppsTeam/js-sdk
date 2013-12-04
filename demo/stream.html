@@ -29,22 +29,19 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/bundled-apps/stream/client-widget"], function(Stream) {
-			new Stream({
-				"backplane": {
-					"serverBaseURL": "https://api.echoenabled.com/v1",
-					"busName": "jskit"
-				},
-				"target": document.getElementById("stream"),
-				"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:10 state:Untouched,ModeratorApproved children:2 state:Untouched,ModeratorApproved",
-				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"liveUpdates": {"transport": "websockets"},
-				"item": {"reTag": false},
-				"plugins": [{
-					"name": "TweetDisplay",
-					"url": "echo/streamserver/plugins/tweet-display"
-				}]
-			});
+		Echo.Loader.initApplication("echo/streamserver/bundled-apps/stream/client-widget", {
+			"backplane": {
+				"serverBaseURL": "https://api.echoenabled.com/v1",
+				"busName": "jskit"
+			},
+			"target": document.getElementById("stream"),
+			"query": "childrenof:http://aboutecho.com/tweets/exec itemsPerPage:10 state:Untouched,ModeratorApproved children:2 state:Untouched,ModeratorApproved",
+			"appkey": "echo.jssdk.demo.aboutecho.com",
+			"liveUpdates": {"transport": "websockets"},
+			"item": {"reTag": false},
+			"plugins": [{
+				"url": "echo/streamserver/plugins/tweet-display",
+			}]
 		});
 	</script>
 </body>

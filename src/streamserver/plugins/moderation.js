@@ -1,14 +1,10 @@
 Echo.define("echo/streamserver/plugins/moderation", [
-	"echo/streamserver/plugins/stream-moderation",
-	"echo/streamserver/plugins/stream-item-moderation"
-], function() {});
-
-Echo.define("echo/streamserver/plugins/stream-moderation", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
-	"echo/streamserver/api"
-], function($, Plugin, Utils, StreamServerAPI) {
+	"echo/streamserver/api",
+	"echo/streamserver/plugins/stream-item-moderation"
+], function($, Plugin, Utils, StreamServerAPI, StreamItemModeration) {
 
 "use strict";
 

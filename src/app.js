@@ -400,7 +400,7 @@ App.prototype.log = function(data) {
  * @param {String} spec.id
  * Nested application id.
  *
- * @param {String} spec.app
+ * @param {String} spec.component
  * Constructor name for the nested app like "Echo.StreamServer.App.Stream".
  *
  * @param {Object} [spec.config]
@@ -423,8 +423,8 @@ App.prototype.initApp = function(spec) {
 	spec.config = this._normalizeAppConfig(
 		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
-	if(spec.component && Echo.requirejs.specified(spec.component)) {
-		var App = require(spec.component);
+	if(spec.component) {
+		var App = spec.component;
 		this.set("apps." + spec.id, new App(spec.config));
 		return this.getApp(spec.id);
 	} else {
@@ -874,9 +874,12 @@ App.prototype._loadScripts = function(resources, callback) {
 };
 
 App.prototype._loadPluginScripts = function(callback) {
+	/*
+ 	* TODO: It should be done using requireJS
+ 	* without Utils.getComponent usage, maybe
+ 	**/
 	var app = this;
 	var plugins = this.config.get("pluginsOrder");
-
 	var scripts = Utils.foldl([], plugins, function(name, acc) {
 		var plugin = Plugin.getClass(name, app.name);
 		// check if a script URL is defined for the plugin
@@ -885,7 +888,6 @@ App.prototype._loadPluginScripts = function(callback) {
 			acc.push(app.config.get(url));
 		}
 	});
-
 	app._loadScripts(scripts, function() {
 		callback.call(app);
 	});
@@ -1032,9 +1034,17 @@ definition.config.normalizer = {
 	"plugins": function(list) {
 		var data = Utils.foldl({"hash": {}, "order": []}, list || [],
 			function(plugin, acc) {
-				var pos = $.inArray(plugin.name, acc.order);
+				var pos = $.inArray(plugin.url, acc.order);
 				if (pos >= 0) {
 					acc.order.splice(pos, 1);
+				}
+				if(plugin && plugin.url) {
+					var name = plugin.url.split("/").pop();
+					plugin["name"] = "";
+					name = name.split("-");
+					for(var piece in name) {
+						plugin["name"] += Utils.capitalize(name[piece]);
+					}
 				}
 				acc.order.push(plugin.name);
 				acc.hash[plugin.name] = plugin;

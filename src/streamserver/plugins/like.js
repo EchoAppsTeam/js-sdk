@@ -1,14 +1,10 @@
 Echo.define("echo/streamserver/plugins/like", [
-	"echo/streamserver/plugins/stream-like",
-	"echo/streamserver/plugins/facepile-like"
-], function() {});
-
-Echo.define("echo/streamserver/plugins/stream-like", [
 	"jquery",
 	"echo/plugin",
 	"echo/streamserver/bundled-apps/facepile/client-widget",
-	"echo/streamserver/api"
-], function($, Plugin, FacePile, API) {
+	"echo/streamserver/api",
+	"echo/streamserver/plugins/facepile-like"
+], function($, Plugin, FacePile, API, FacepileLike) {
 
 "use strict";
 

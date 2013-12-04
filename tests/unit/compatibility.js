@@ -51,12 +51,12 @@ Echo.Tests.Units.push(function(callback) {
 
 	Echo.Tests.asyncTest("require no conflict", function() {
 		var origRequire = window.require;
-		QUnit.ok(!!Echo.requirejs, "Echo require is loaded");
+		QUnit.ok(!!Echo.require, "Echo require is loaded");
 
 		Echo.require(["https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.9/require.js"], function () {
 			var externalRequire = window.require;
 			QUnit.ok(!!window.require, "External require is loaded");
-			QUnit.notDeepEqual(window.require, Echo.requirejs,
+			QUnit.notDeepEqual(window.require, Echo.require,
 				"External require end Echo require are different objects");
 
 			Echo.require(["echo/loader"], function () {

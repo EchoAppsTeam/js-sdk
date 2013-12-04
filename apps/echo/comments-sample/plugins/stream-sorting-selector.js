@@ -1,4 +1,4 @@
-Echo.define("streamSortingSelector", [
+Echo.define("stream-sorting-selector", [
 	"jquery",
 	"echo/plugin",
 ], function($, Plugin) {
@@ -82,4 +82,5 @@ plugin.css =
 	'.{plugin.class:wrapper} { float: left; }';
 
 return Plugin.create(plugin);
+
 });

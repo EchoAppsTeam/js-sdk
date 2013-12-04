@@ -32,25 +32,23 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/bundled-apps/auth/client-widget"], function(Auth) {
-			var identityManager = {
-				"width": 400,
-				"height": 240,
-				"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-			};
-			new Auth({
-	            "backplane": { 
-	                "serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-	                "busName": "jskit"
-	            },
-                "target": document.getElementById("auth"),
-                "appkey": "echo.jssdk.demo.aboutecho.com",
-                "targetURL": "http://echosandbox.com/use-cases/commenting",
-				"identityManager": {
-					"login": identityManager,
-					"signup": identityManager
-				}
-			});
+		var identityManager = {
+			"width": 400,
+			"height": 240,
+			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+		};
+		Echo.Loader.initApplication("echo/streamserver/bundled-apps/auth/client-widget", {
+			"backplane": {
+				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+				"busName": "jskit"
+			},
+			"target": document.getElementById("auth"),
+			"appkey": "echo.jssdk.demo.aboutecho.com",
+			"targetURL": "http://echosandbox.com/use-cases/commenting",
+			"identityManager": {
+				"login": identityManager,
+				"signup": identityManager
+			}
 		});
 	</script>
 </body>

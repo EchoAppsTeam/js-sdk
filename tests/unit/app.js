@@ -120,7 +120,7 @@ Echo.Tests.Units.push(function(callback) {
 				"Checking that parent section of component config is the config of appropriate application");
 			this.initApp({
 				"id": "TestApp",
-				"component": "unit/apps/testApp",
+				"component": this.constructor,
 				"config": {
 					"target": self.config.target,
 					"ready": function() {
@@ -158,7 +158,7 @@ Echo.Tests.Units.push(function(callback) {
 		var check = function() {
 			var component = this.initApp({
 				"id": "TestApp",
-				"component": "unit/apps/testApp",
+				"component": this.constructor,
 				"config": {
 					"target": self.config.target
 				}
@@ -197,7 +197,7 @@ Echo.Tests.Units.push(function(callback) {
 			$.map(components, function(component) {
 				self.initApp({
 					"id": component.id,
-					"component": component.url,
+					"component": self.constructor,
 					"config": {
 						"target": test.config.target
 					}

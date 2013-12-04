@@ -1,5 +1,4 @@
-Echo.require(['echo/cookie'], function(Cookie) {
-	
+(function() {	
 "use strict";
 
 Echo.Loader = {
@@ -31,11 +30,16 @@ Echo.Loader.isDebug = function() {
 		return Echo.Loader.debug;
 };
 
+Echo.Loader.initApplication = function(path, config) {
+	Echo.require([path], function(App) {
+		new App(config);
+	});
+};
+
 (function() {
 	if (Echo.Loader.debug) return;
 	var debug;
-	var _debugCookieName = "echo-debug";
-	var options = {"path": "/"};
+	var _debugKey = "echo-debug";
 	var hashParts = window.location.hash.match(/echo.debug:(true|false)/);
 		if (hashParts && hashParts.length) {
 			debug = hashParts[1];
@@ -43,14 +47,14 @@ Echo.Loader.isDebug = function() {
 		if (typeof debug !== "undefined") {
 			if (debug === "true") {
 				Echo.Loader.debug = true;
-				Cookie.set(_debugCookieName, true, options);
+				localStorage[_debugKey] = true;
 			} else {
 				Echo.Loader.debug = false;
-				Cookie.remove(_debugCookieName, options);
+				localStorage[_debugKey] = "false";
 			}
 			return;
 		}
-		Echo.Loader.debug = !!Cookie.get(_debugCookieName);
+		Echo.Loader.debug = !!localStorage[_debugKey];
 })();
 
 var paths = {};
@@ -69,7 +73,7 @@ paths[Echo.Loader.getURL("") + "/environment.pack"] = [
 	"echo/api", "echo/streamserver/api",
 	"echo/streamserver/user", "echo/view",
 	"echo/app", "echo/plugin",
-	"echo/variables"
+	"echo/variables", "echo/cookie"
 ];
 paths[Echo.Loader.getURL("") + "/gui.pack"] = [
 	"echo/bootstrap-transition", "echo/bootstrap-affix",
@@ -87,21 +91,16 @@ paths[Echo.Loader.getURL("") + "/streamserver.pack"] = [
 	"echo/streamserver/bundled-apps/stream/client-widget", "echo/streamserver/bundled-apps/facepile/client-widget",
 	"echo/streamserver/bundled-apps/facepile/item/client-widget", "echo/streamserver/bundled-apps/submit/client-widget",
 	"echo/streamserver/bundled-apps/auth/client-widget", "echo/streamserver/plugins/edit",
-	"echo/streamserver/plugins/stream-item-edit", "echo/streamserver/plugins/submit-edit",
 	"echo/streamserver/plugins/community-flag", "echo/streamserver/plugins/form-auth",
 	"echo/streamserver/plugins/infinite-scroll", "echo/streamserver/plugins/item-accumulator-display",
 	"echo/streamserver/plugins/janrain-connector", "echo/streamserver/plugins/janrain-sharing",
-	"echo/streamserver/plugins/submit-janrain-sharing", "echo/streamserver/plugins/stream-janrain-sharing",
-	"echo/streamserver/plugins/like", "echo/streamserver/plugins/stream-like",
-	"echo/streamserver/plugins/facepile-like", "echo/streamserver/plugins/metadata-manager",
-	"echo/streamserver/plugins/moderation", "echo/streamserver/plugins/stream-moderation",
-	"echo/streamserver/plugins/stream-item-moderation", "echo/streamserver/plugins/reply",
-	"echo/streamserver/plugins/stream-item-reply", "echo/streamserver/plugins/stream-reply",
-	"echo/streamserver/plugins/submit-reply", "echo/streamserver/plugins/text-counter",
-	"echo/streamserver/plugins/tweet-display", "echo/streamserver/bundled-apps/stream/item/client-widget"
+	"echo/streamserver/plugins/like", "echo/streamserver/plugins/metadata-manager",
+	"echo/streamserver/plugins/moderation", "echo/streamserver/plugins/reply","echo/streamserver/plugins/text-counter",
+	"echo/streamserver/plugins/tweet-display", "echo/streamserver/bundled-apps/stream/item/client-widget",
+	"echo/streamserver/plugins/janrain-auth"
 ];
 
-paths[Echo.Loader.getURL("") + "/pinboard-visualization"] = [
+paths[Echo.Loader.getURL("streamserver/plugins/pinboard-visualization")] = [
 	"echo/streamserver/plugins/pinboard-visualization", "echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget",
 	"echo/streamserver/plugins/stream-item-pinboard-visualization", "echo/streamserver/plugins/stream-pinboard-visualization"
 ];
@@ -133,4 +132,4 @@ require.config({
 		} 
 	}
 });
-});
+})();

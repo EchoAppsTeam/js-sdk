@@ -35,39 +35,36 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.require(["echo/streamserver/bundled-apps/auth/client-widget", "echo/streamserver/bundled-apps/stream/client-widget"], function(Auth, Stream) {
-			var identityManager = {
-				"width": 400,
-				"height": 240,
-				"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-			}, 
-			backplane = {
-				"serverBaseURL": "https://api.echoenabled.com/v1",
-				"busName": "jskit"
-			};
+		var identityManager = {
+			"width": 400,
+			"height": 240,
+			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
+		}, 
+		backplane = {
+			"serverBaseURL": "https://api.echoenabled.com/v1",
+			"busName": "jskit"
+		};
 
-			// init Auth app
-			new Auth({
-	            "backplane": backplane,
-                "target": document.getElementById("auth"),
-                "appkey": "echo.jssdk.demo.aboutecho.com",
-				"identityManager": {
-					"login": identityManager,
-					"signup": identityManager
-				}
-			});
-			new Stream({
-				"backplane": backplane,
-				"target": document.getElementById("stream"),
-				"query": "childrenof:http://echosandbox.com/use-cases/commenting -state:ModeratorDeleted -user.state:ModeratorBanned itemsPerPage:5 children:2 -state:ModeratorDeleted childrenSortOrder:reverseChronological",
+		// init Auth app
+		Echo.Loader.initApplication("echo/streamserver/bundled-apps/auth/client-widget", {
+			"backplane": backplane,
+				"target": document.getElementById("auth"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"liveUpdates": {"transport": "websockets"},
-				"item": {"reTag": false},
-				"plugins": [{
-					"name": "CommunityFlag",
-					"url": "echo/streamserver/plugins/community-flag"
-				}]
-			});
+			"identityManager": {
+				"login": identityManager,
+				"signup": identityManager
+			}
+		});
+		Echo.Loader.initApplication("echo/streamserver/bundled-apps/stream/client-widget", {
+			"backplane": backplane,
+			"target": document.getElementById("stream"),
+			"query": "childrenof:http://echosandbox.com/use-cases/commenting -state:ModeratorDeleted -user.state:ModeratorBanned itemsPerPage:5 children:2 -state:ModeratorDeleted childrenSortOrder:reverseChronological",
+			"appkey": "echo.jssdk.demo.aboutecho.com",
+			"liveUpdates": {"transport": "websockets"},
+			"item": {"reTag": false},
+			"plugins": [{
+				"url": "echo/streamserver/plugins/community-flag"
+			}]
 		});
 	</script>
 </body>
