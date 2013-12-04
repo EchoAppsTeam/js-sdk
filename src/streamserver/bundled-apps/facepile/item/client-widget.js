@@ -54,7 +54,7 @@ item.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png", false)
+	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png")
 };
 
 item.labels = {

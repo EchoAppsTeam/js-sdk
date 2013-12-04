@@ -180,7 +180,7 @@ plugin.events = {
 					function() { name.element.removeClass(activeClass); }
 				);
 		});
-		require(["http://platform.twitter.com/widgets.js"], function(){
+		require(["http://platform.twitter.com/widgets.js"], function() {
 			window.twttr && window.twttr.widgets && window.twttr.widgets.load();
 		});
 	}

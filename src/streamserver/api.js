@@ -8,8 +8,7 @@ Echo.define("echo/streamserver/api", [
 
 "use strict";
 
-var StreamServer = {};
-StreamServer.API = {};
+var StreamServerAPI = {};
 
 /**
  * @class Echo.StreamServer.API.Request
@@ -41,7 +40,7 @@ StreamServer.API = {};
  *
  * @param {Object} config Configuration data.
  */
-StreamServer.API.Request = Utils.inherit(API.Request, function(config) {
+StreamServerAPI.Request = Utils.inherit(API.Request, function(config) {
 	var timeout = config && config.liveUpdates && config.liveUpdates.timeout || config.liveUpdatesTimeout;
 	var liveUpdatesEnabled = config && config.liveUpdates && config.liveUpdates.enabled || config.recurring;
 
@@ -171,23 +170,23 @@ StreamServer.API.Request = Utils.inherit(API.Request, function(config) {
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	this.requestType = "initial"; // initial | secondary
-	StreamServer.API.Request.parent.constructor.call(this, config);
+	StreamServerAPI.Request.parent.constructor.call(this, config);
 });
 
 /**
  * @method
  * Method to stop live updates requests.
  */
-StreamServer.API.Request.prototype.abort = function() {
-	StreamServer.API.Request.parent.abort.call(this);
+StreamServerAPI.Request.prototype.abort = function() {
+	StreamServerAPI.Request.parent.abort.call(this);
 	if (this.liveUpdates) {
 		this.liveUpdates.stop();
 		delete this.liveUpdates;
 	}
 };
 
-StreamServer.API.Request.prototype._count =
-StreamServer.API.Request.prototype._search = function(force) {
+StreamServerAPI.Request.prototype._count =
+StreamServerAPI.Request.prototype._search = function(force) {
 	var self = this;
 	var start = function(data) {
 		if (self.config.get("liveUpdates.enabled")) {
@@ -206,7 +205,7 @@ StreamServer.API.Request.prototype._search = function(force) {
 	}
 };
 
-StreamServer.API.Request.prototype._submit = function() {
+StreamServerAPI.Request.prototype._submit = function() {
 	this.request(
 		$.extend({}, this.config.get("data"), {
 			"content": Utils.objectToJSON(this._AS2KVL(this.config.get("data.content")))
@@ -214,7 +213,7 @@ StreamServer.API.Request.prototype._submit = function() {
 	);
 };
 
-StreamServer.API.Request.prototype._mux = function() {
+StreamServerAPI.Request.prototype._mux = function() {
 	this.request(
 		$.extend({}, this.config.get("data"), {
 			"requests": Utils.objectToJSON(this.config.get("data.requests"))
@@ -222,7 +221,7 @@ StreamServer.API.Request.prototype._mux = function() {
 	);
 };
 
-StreamServer.API.Request.prototype["_users/update"] = function(args) {
+StreamServerAPI.Request.prototype["_users/update"] = function(args) {
 	var content = $.extend({}, this.config.get("data.content"), {
 		"endpoint": "users/update"
 	});
@@ -233,11 +232,11 @@ StreamServer.API.Request.prototype["_users/update"] = function(args) {
 	);
 };
 
-StreamServer.API.Request.prototype._whoami = function(args) {
+StreamServerAPI.Request.prototype._whoami = function(args) {
 	this.request(args);
 };
 
-StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config) {
+StreamServerAPI.Request.prototype._wrapTransportEventHandlers = function(config) {
 	var self = this;
 	var _config = $.extend({}, config);
 	return $.extend({}, config, {
@@ -253,7 +252,7 @@ StreamServer.API.Request.prototype._wrapTransportEventHandlers = function(config
 	});
 };
 
-StreamServer.API.Request.prototype._onData = function(response, requestParams, config) {
+StreamServerAPI.Request.prototype._onData = function(response, requestParams, config) {
 	response = response || {};
 	if (response.result === "error") {
 		this._handleErrorResponse(response, {"callback": config.onError});
@@ -264,11 +263,11 @@ StreamServer.API.Request.prototype._onData = function(response, requestParams, c
 	this._cleanupErrorHandlers(true);
 };
 
-StreamServer.API.Request.prototype._onError = function(responseError, requestParams, config) {
+StreamServerAPI.Request.prototype._onError = function(responseError, requestParams, config) {
 	this._handleErrorResponse(responseError, {"callback": config.onError});
 };
 
-StreamServer.API.Request.prototype._prepareURL = function() {
+StreamServerAPI.Request.prototype._prepareURL = function() {
 	var endpoint = this.config.get("endpoint");
 	if (endpoint === "submit" || endpoint === "users/update") {
 		return this.config.get("submissionProxyURL");
@@ -280,9 +279,9 @@ StreamServer.API.Request.prototype._prepareURL = function() {
 		: url;
 };
 
-StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
+StreamServerAPI.Request.prototype._initLiveUpdates = function(data) {
 	var ws, self = this;
-	var polling = this.liveUpdates = StreamServer.API.Polling.init(
+	var polling = this.liveUpdates = StreamServerAPI.Polling.init(
 		$.extend(true, this._getLiveUpdatesConfig("polling"), {
 			"request": {
 				"data": {
@@ -292,7 +291,7 @@ StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 		})
 	);
 	if (this.config.get("liveUpdates.transport") === "websockets" && API.Transports.WebSockets.available()) {
-		ws = StreamServer.API.WebSockets.init(
+		ws = StreamServerAPI.WebSockets.init(
 			$.extend(true, this._getLiveUpdatesConfig("websockets"), {
 				"request": {
 					"data": {
@@ -306,7 +305,7 @@ StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 };
 
 // TODO: more general logic for forwarding config parameters
-StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
+StreamServerAPI.Request.prototype._getLiveUpdatesConfig = function(name) {
 	var self = this;
 	var map = {
 		"polling": {
@@ -349,7 +348,7 @@ StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 	return mapped;
 };
 
-StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
+StreamServerAPI.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
 	var self = this;
 	var switchTo = function(inst) {
 		return function() {
@@ -379,7 +378,7 @@ StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
 	ws.on("open", switchTo(ws));
 };
 
-StreamServer.API.Request.prototype._isWaitingForData = function(data) {
+StreamServerAPI.Request.prototype._isWaitingForData = function(data) {
 	var errorCodes = [
 		"busy",
 		"waiting",
@@ -394,7 +393,7 @@ StreamServer.API.Request.prototype._isWaitingForData = function(data) {
 		&& ~$.inArray(data.errorCode, errorCodes);
 };
 
-StreamServer.API.Request.prototype._handleErrorResponse = function(data, config) {
+StreamServerAPI.Request.prototype._handleErrorResponse = function(data, config) {
 	var self = this;
 	config = config || {};
 	var errorCallback = config.callback;
@@ -443,7 +442,7 @@ StreamServer.API.Request.prototype._handleErrorResponse = function(data, config)
 	this.error = data;
 };
 
-StreamServer.API.Request.prototype._cleanupErrorHandlers = function(successResponseReceived) {
+StreamServerAPI.Request.prototype._cleanupErrorHandlers = function(successResponseReceived) {
 	if (successResponseReceived) {
 		this.waitingTimeoutStep = 0;
 		delete this.error;
@@ -453,7 +452,7 @@ StreamServer.API.Request.prototype._cleanupErrorHandlers = function(successRespo
 	}
 };
 
-StreamServer.API.Request.prototype._AS2KVL = function(entries) {
+StreamServerAPI.Request.prototype._AS2KVL = function(entries) {
 	var self = this;
 	entries = $.isArray(entries) ? entries : [entries];
 	var strip = function(value) {
@@ -534,8 +533,8 @@ StreamServer.API.Request.prototype._AS2KVL = function(entries) {
  * @param {Object} Configuration data.
  * @return {Object} New class instance.
  */
-StreamServer.API.request = function(config) {
-	return (new StreamServer.API.Request(config));
+StreamServerAPI.request = function(config) {
+	return (new StreamServerAPI.Request(config));
 };
 
 //
@@ -543,9 +542,7 @@ StreamServer.API.request = function(config) {
 // Implements a machinery for the polling live updates
 //
 
-//if (StreamServer.API && StreamServer.API.Polling) return;
-
-StreamServer.API.Polling = function(config) {
+StreamServerAPI.Polling = function(config) {
 	this.config = new Configuration(config, {
 		"timeout": 10,
 		"request": {
@@ -569,7 +566,7 @@ StreamServer.API.Polling = function(config) {
 	this.requestObject = this.getRequestObject();
 };
 
-StreamServer.API.Polling.prototype.getRequestObject = function() {
+StreamServerAPI.Polling.prototype.getRequestObject = function() {
 	var self = this;
 	var config = this.config.get("request");
 	var onData = config.onData || $.noop;
@@ -586,13 +583,13 @@ StreamServer.API.Polling.prototype.getRequestObject = function() {
 	return new API.Request(config);
 };
 
-StreamServer.API.Polling.prototype.stop = function() {
+StreamServerAPI.Polling.prototype.stop = function() {
 	clearTimeout(this.timers.regular);
 	this.closeReason = "abort";
 	this.requestObject.abort();
 };
 
-StreamServer.API.Polling.prototype.start = function(force) {
+StreamServerAPI.Polling.prototype.start = function(force) {
 	var self = this;
 	this.stop();
 	if (force) {
@@ -611,7 +608,7 @@ StreamServer.API.Polling.prototype.start = function(force) {
 	}, timeout * 1000);
 };
 
-StreamServer.API.Polling.prototype.on = function(event, fn) {
+StreamServerAPI.Polling.prototype.on = function(event, fn) {
 	var event = "on" + Utils.capitalize(event);
 	var handler = this.requestObject.transport.config.get(event, $.noop);
 	this.requestObject.transport.config.set(event, function() {
@@ -622,11 +619,11 @@ StreamServer.API.Polling.prototype.on = function(event, fn) {
 
 // in case of using polling we decide that
 // client is connected wherever this function called
-StreamServer.API.Polling.prototype.connected = function() {
+StreamServerAPI.Polling.prototype.connected = function() {
 	return true;
 };
 
-StreamServer.API.Polling.prototype._changeTimeout = function(data) {
+StreamServerAPI.Polling.prototype._changeTimeout = function(data) {
 	var self = this;
 	if (typeof data === "string") {
 		data = {"liveUpdatesTimeout": data};
@@ -673,7 +670,7 @@ StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 // StreamServer.API.WebSockets definition
 // Implements a machinery for the live updates via WebSockets
 //
-StreamServer.API.WebSockets = Utils.inherit(StreamServer.API.Polling, function(config) {
+StreamServerAPI.WebSockets = Utils.inherit(StreamServerAPI.Polling, function(config) {
 	this.config = new Configuration(config, {
 		"resubscribe": {
 			"maxResetsPerPeriod": 2,
@@ -712,7 +709,7 @@ StreamServer.API.WebSockets = Utils.inherit(StreamServer.API.Polling, function(c
 	}
 });
 
-StreamServer.API.WebSockets.prototype.getRequestObject = function() {
+StreamServerAPI.WebSockets.prototype.getRequestObject = function() {
 	var self = this;
 	var config = this.config.get("request");
 	var _config = $.extend({}, config, {
@@ -772,7 +769,7 @@ StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 	return new API.Request(_config);
 };
 
-StreamServer.API.WebSockets.prototype.on = function(event, fn, params) {
+StreamServerAPI.WebSockets.prototype.on = function(event, fn, params) {
 	var id = this.requestObject.transport.subscribe(
 		"on" + Utils.capitalize(event), {
 			"handler": fn
@@ -782,13 +779,13 @@ StreamServer.API.WebSockets.prototype.on = function(event, fn, params) {
 	return id;
 };
 
-StreamServer.API.WebSockets.prototype.start = $.noop;
+StreamServerAPI.WebSockets.prototype.start = $.noop;
 
-StreamServer.API.WebSockets.prototype.connected = function() {
+StreamServerAPI.WebSockets.prototype.connected = function() {
 	return this.requestObject.transport.connected();
 };
 
-StreamServer.API.WebSockets.prototype.stop = function() {
+StreamServerAPI.WebSockets.prototype.stop = function() {
 	var self = this;
 	this._clearSubscriptions();
 	if (this.connected()) {
@@ -803,7 +800,7 @@ StreamServer.API.WebSockets.prototype.stop = function() {
 	}
 };
 
-StreamServer.API.WebSockets.prototype.subscribe = function() {
+StreamServerAPI.WebSockets.prototype.subscribe = function() {
 	var data = {"method": this.config.get("request.wsMethod")};
 	this.requestObject.request({
 		"event": "subscribe/request",
@@ -813,7 +810,7 @@ StreamServer.API.WebSockets.prototype.subscribe = function() {
 
 // private interface
 
-StreamServer.API.WebSockets.prototype._updateConnection = function(callback) {
+StreamServerAPI.WebSockets.prototype._updateConnection = function(callback) {
 	var self = this;
 	callback = callback || $.noop;
 	// we should update view on server-side without since parameter
@@ -834,7 +831,7 @@ StreamServer.API.WebSockets.prototype._updateConnection = function(callback) {
 	req.request();
 };
 
-StreamServer.API.WebSockets.prototype._reconnect = function() {
+StreamServerAPI.WebSockets.prototype._reconnect = function() {
 	var self = this;
 	var closeHandler = function() {
 		self.requestObject = self.getRequestObject();
@@ -855,7 +852,7 @@ StreamServer.API.WebSockets.prototype._reconnect = function() {
 	}
 };
 
-StreamServer.API.WebSockets.prototype._resubscribe = function() {
+StreamServerAPI.WebSockets.prototype._resubscribe = function() {
 	var self = this;
 	var closeHandler = function() {
 		if (self.connected()) {
@@ -872,7 +869,7 @@ StreamServer.API.WebSockets.prototype._resubscribe = function() {
 	}
 };
 
-StreamServer.API.WebSockets.prototype._resubscribeAllowed = function() {
+StreamServerAPI.WebSockets.prototype._resubscribeAllowed = function() {
 	var last = this.subscriptionResets;
 	var now = (new Date()).getTime();
 	var config = this.config.get("resubscribe");
@@ -897,12 +894,12 @@ StreamServer.API.WebSockets.prototype._resubscribeAllowed = function() {
 	}
 };
 
-StreamServer.API.WebSockets.prototype._clearSubscriptions = function() {
+StreamServerAPI.WebSockets.prototype._clearSubscriptions = function() {
 	$.map(this.subscriptionIds, $.proxy(this.requestObject.transport.unsubscribe, this.requestObject.transport));
 	this.subscriptionIds = [];
 };
 
-StreamServer.API.WebSockets.prototype._runQueue = function() {
+StreamServerAPI.WebSockets.prototype._runQueue = function() {
 	while (this.queue.length) {
 		this.queue.shift().call(this);
 	}
@@ -910,10 +907,10 @@ StreamServer.API.WebSockets.prototype._runQueue = function() {
 
 // static interface
 $.map(["WebSockets", "Polling"], function(name) {
-	StreamServer.API[name].init = function(config) {
-		return new StreamServer.API[name](config);
+	StreamServerAPI[name].init = function(config) {
+		return new StreamServerAPI[name](config);
 	};
 });
 
-return StreamServer.API;
+return StreamServerAPI;
 });

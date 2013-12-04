@@ -4,12 +4,10 @@ Echo.define("echo/streamserver/bundled-apps/submit/client-widget", [
 	"echo/utils",
 	"echo/streamserver/api",
 	"echo/app-client-widget",
-	"echo/gui",
 	"echo/gui/button",
 	"echo/events", 
-	"echo/gui/modal",
-	"css!echo/gui.pack"
-], function($, require, Utils, API, App, GUI, GUIButton, Events, GUIModal) {
+	"echo/gui/modal"
+], function($, require, Utils, API, App, GUIButton, Events, GUIModal) {
 
 "use strict";
 
@@ -104,7 +102,7 @@ submit.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png", false),
+	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png"),
 	/**
 	 * @cfg {String} [targetURL=document.location.href]
 	 * Specifies the URI to which the submitted Echo item is related. 
@@ -767,7 +765,7 @@ submit.css =
 	'.{class:border} { border: 1px solid #d2d2d2; }' +
 	'.{class:mandatory} { border: 1px solid red; }' +
 	'.{class:queriesViewOption} { padding-right: 5px; }' +
-	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(' + Echo.require.toUrl('echo-assets/images/info70.png') + '); }';
+	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(' + Echo.require.toUrl("echo-assets/images/info70.png") + '); }';
 
 return App.create(submit);
 });

@@ -5,8 +5,6 @@ Echo.define("echo/configuration", [
 
 "use strict";
 
-var Configuration;
-
 /**
  * @class Echo.Configuration
  * Class implements the interface for convenient work with different
@@ -54,7 +52,7 @@ var Configuration;
 
 // IMPORTANT: "keepRefsFor" parameter remains private for now. Get rid of
 //            this parameter after more complex optimization within F:1336
-Configuration = function(master, slave, normalizer, keepRefsFor) {
+var Configuration = function(master, slave, normalizer, keepRefsFor) {
 	this.data = {};
 	this.cache = {};
 	this.normalize = normalizer || function(key, value) { return value; };

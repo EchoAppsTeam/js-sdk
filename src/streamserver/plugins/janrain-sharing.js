@@ -3,8 +3,7 @@ Echo.define("echo/streamserver/plugins/janrain-sharing", [
 	"echo/plugin",
 	"echo/gui",
 	"echo/streamserver/bundled-apps/submit/client-widget",
-	"echo/streamserver/plugins/submit-janrain-sharing",
-	"css!echo/gui.pack"
+	"echo/streamserver/plugins/submit-janrain-sharing"
 ], function($, Plugin, GUI, Submit, SubmitJanrainSharing) {
 
 "use strict";
@@ -128,8 +127,7 @@ Echo.define("echo/streamserver/plugins/submit-janrain-sharing", [
 	"echo/utils",
 	"echo/gui",
 	"echo/streamserver/bundled-apps/auth/client-widget",
-	"require",
-	"css!echo/gui.pack"
+	"require"
 ], function($, Plugin, Utils, GUI, Auth, require) {
 
 "use strict";
@@ -400,7 +398,7 @@ plugin.methods._shareLegacy = function(args) {
 	var plugin = this,
 		url = ("https:" === document.location.protocol ? "https://" : "http://static.") +
 			"rpxnow.com/js/lib/rpx.js";
-	if(!!window.RPXNOW) {
+	if (!!window.RPXNOW) {
 		require([url], function() {
 			RPXNOW.init({
 				"appId": plugin.config.get("appId"),
@@ -416,27 +414,6 @@ plugin.methods._shareLegacy = function(args) {
 			});
 		});
 	}
-	
-	/*Echo.Loader.download([{
-		"loaded": function() {
-			return !!window.RPXNOW;
-		},
-		"url": ("https:" === document.location.protocol ? "https://" : "http://static.") +
-			"rpxnow.com/js/lib/rpx.js"
-	}], function() {
-		RPXNOW.init({
-			"appId": plugin.config.get("appId"),
-			"xdReceiver": plugin.config.get("xdReceiver")
-		});
-		RPXNOW.loadAndRun(["Social"], function () {
-			var activity = new RPXNOW.Social.Activity(
-				plugin.config.get("activity.sharePrompt", plugin.labels.get("sharePrompt")),
-				plugin._prepareContentLegacy(args),
-				plugin.config.get("activity.itemURL", args.targetURL)
-			);
-			RPXNOW.Social.publishActivity(plugin._prepareActivityLegacy(activity));
-		});
-	});*/
 };
 
 plugin.methods._prepareActivityLegacy = function(act) {

@@ -1,5 +1,5 @@
 Echo.define("echo/view", [
-	"jquery", 
+	"jquery",
 	"echo/utils"
 ], function($, Utils) {
 
