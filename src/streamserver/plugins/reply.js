@@ -1,16 +1,12 @@
 Echo.define("echo/streamserver/plugins/reply", [
-	"echo/streamserver/plugins/stream-item-reply",
-	"echo/streamserver/plugins/stream-reply",
-	"echo/streamserver/plugins/submit-reply"
-], function() {});
-
-Echo.define("echo/streamserver/plugins/stream-item-reply", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"echo/variables",
-	"echo/streamserver/bundled-apps/submit/client-widget"
-], function($, Plugin, Utils, Variables, Submit) {
+	"echo/streamserver/bundled-apps/submit/client-widget",
+	"echo/streamserver/plugins/stream-reply",
+	"echo/streamserver/plugins/submit-reply"
+], function($, Plugin, Utils, Variables, Submit, StreamReply, SubmitReply) {
 
 "use strict";
 

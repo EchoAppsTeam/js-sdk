@@ -1,13 +1,9 @@
 Echo.define("echo/streamserver/plugins/edit", [
-	"echo/streamserver/plugins/stream-item-edit",
-	"echo/streamserver/plugins/submit-edit"
-], function() {});
-
-Echo.define("echo/streamserver/plugins/stream-item-edit", [
 	"jquery",
 	"echo/plugin",
-	"echo/streamserver/bundled-apps/submit/client-widget"
-], function($, Plugin, Submit) {
+	"echo/streamserver/bundled-apps/submit/client-widget",
+	"echo/streamserver/plugins/submit-edit"
+], function($, Plugin, Submit, SubmitEdit) {
 
 "use strict";
 

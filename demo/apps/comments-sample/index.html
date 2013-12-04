@@ -7,6 +7,7 @@
 	<!-- Default scripts inclusion -->
 	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
 	<script type="text/javascript" src="{%=baseURLs.cdn%}/apps/echo/comments-sample/comments-sample.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.cdn%}/apps/echo/comments-sample/plugins/stream-sorting-selector.js"></script>
 </head>
 <body>
 <div id="container">
@@ -35,24 +36,19 @@
 					"liveUpdates": {"transport": "websockets"},
 					"item": {"reTag": false},
 					"plugins": [{
-						"name": "Edit",
 						"url": "echo/streamserver/plugins/edit"
 					}, {
-						"name": "Like",
 						"url": "echo/streamserver/plugins/like"
 					}, {
-						"name": "Moderation",
 						"url": "echo/streamserver/plugins/moderation"
 					}, {
-						"name": "StreamSortingSelector",
-						"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
+						"url": "stream-sorting-selector"
 					}]
 				},
 				"Submit": {
 					"targetURL": "http://echosandbox.com/test/comments-sampler-test",
 					"infoMessages": {"enabled": false},
 					"plugins": [{
-						"name": "FormAuth",
 						"url": "echo/streamserver/plugins/form-auth",
 						"identityManager": "{config:identityManager}"
 					}]

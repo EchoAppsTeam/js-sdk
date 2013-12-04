@@ -165,13 +165,10 @@
 						"viaLabel": { "icon": true, "text": true }
 					},
 					"plugins": [{
- 					   	"name": "TweetDisplay",
 						"url": "echo/streamserver/plugins/tweet-display"
 					}, {
-						"name": "Reply",
 						"url": "echo/streamserver/plugins/reply",
 						"nestedPlugins": [{
-							"name": "FormAuth",
 							"url": "echo/streamserver/plugins/form-auth",
 							"identityManager": {
 								"login": identityManager,
@@ -179,7 +176,6 @@
 							}
 						}]
 					}, {
-					 	"name": "MetadataManager",
 						"url": "echo/streamserver/plugins/metadata-manager",
 						"controls": [{
 								"marker": "sticky",
@@ -191,17 +187,13 @@
 								"labelUnmark": "Unset Football tag"
 						}]
 					}, {
-						"name": "Like",
 						"url": "echo/streamserver/plugins/like"
 					}, {
-						"name": "Edit",
 						"url": "echo/streamserver/plugins/edit"
 					}, {
-						"name": "CommunityFlag",
 						"url": "echo/streamserver/plugins/community-flag",
 						"showUserList": true
 					}, {
-						"name": "Moderation",
 						"url": "echo/streamserver/plugins/moderation"
 					}]
 				});
@@ -245,7 +237,6 @@
 					"appkey": "echo.jssdk.demo.aboutecho.com",
 					"targetURL": "http://example.com/test-js-sdk",
 					"plugins": [{
-						"name": "FormAuth",
 						"url": "echo/streamserver/plugins/form-auth",
 						"submitPermissions": "forceLogin",
 						"identityManager": {
@@ -253,7 +244,6 @@
 							"signup": identityManager
 						}
 					}, {
-						"name": "TextCounter",
 						"url": "echo/streamserver/plugins/text-counter",
 						"limit": 40,
 						"label": "You have typed {typed} chars, {left} chars left"
