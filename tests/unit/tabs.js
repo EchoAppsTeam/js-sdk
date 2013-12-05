@@ -1,9 +1,8 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/gui",
 		"echo/gui/tabs"
-	], function($, GUI) {
+	], function($, GUITabs) {
 
 	"use strict";
 
@@ -43,7 +42,7 @@ Echo.Tests.Units.push(function(callback) {
 
 		QUnit.expect(26);
 
-		var tabs = new GUI.Tabs(config);
+		var tabs = new GUITabs(config);
 
 		QUnit.ok($(".tab-content", element).length, "Check that panels container created");
 		QUnit.ok($(".tab-content", element).hasClass(config.classPrefix + "panels"), "Check that panels container has appropriate class");

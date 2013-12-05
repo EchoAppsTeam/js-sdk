@@ -1,9 +1,9 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/gui",
+		"echo/gui/modal",
 		"echo/utils"
-	], function($, GUI, Utils) {
+	], function($, GUIModal, Utils) {
 
 	"use strict";
 
@@ -45,7 +45,7 @@ Echo.Tests.Units.push(function(callback) {
 
 		QUnit.expect(24);
 		Utils.addCSS(".echo-hide { display: none; }", "echo-hide");
-		var modal = new GUI.Modal(modalParams);
+		var modal = new GUIModal(modalParams);
 
 		QUnit.ok($(".echo-sdk-ui .modal").length, "Check that modal is available");
 

@@ -32,13 +32,13 @@
 				"QUnit", "echo/backplane"
 			];
 			var harnessServiceFiles =[
-				"config", "helpers/events.js",
-				"fixtures/api/count.js", "fixtures/api/search.js",
-				"fixtures/api/whoami.js"
+				"config", "helpers/events",
+				"fixtures/api/count", "fixtures/api/search",
+				"fixtures/api/whoami"
 			];
 			var startTests = function() {
 				Echo.Tests.init({
-					"title": "echo sdk v3 tests",
+					"title": "Echo SDK v3 Tests",
 					"backplane": {
 						"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 						"busName": "jskit"

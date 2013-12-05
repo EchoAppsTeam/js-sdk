@@ -55,7 +55,11 @@ Echo.Loader.initApplication = function(path, config) {
 			}
 			return;
 		}
-		Echo.Loader.debug = !!localStorage[_debugKey];
+		if(localStorage[_debugKey] === "true") {
+			Echo.Loader.debug = true;
+		} else {
+			Echo.Loader.debug = false;
+		}
 })();
 
 var paths = [];

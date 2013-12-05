@@ -156,7 +156,7 @@ Echo.Tests.Units.push(function(callback) {
 				Echo.require.onError = customRJSErrorCallback;
 				callback();
 			}
-			var unrequiredModule = Echo.require("fixtures/resources/loader/testModule");
+			var unrequiredModule = Echo.require("fixtures/resources/loader/test-module");
 			var requiredModule = Echo.require("jquery");
 			QUnit.ok(!!requiredModule, "Check if Echo.require(\"\") works in the same way as require(\"\") function does");
 		};
@@ -215,8 +215,8 @@ Echo.Tests.Units.push(function(callback) {
 						base + "fakeTestModule.js"
 					],
 					existingScripts = [
-						"fixtures/resources/loader/testModule3",
-						base + "testModule2.js"
+						"fixtures/resources/loader/test-module3",
+						base + "test-module2.js"
 					];
 				Echo.require.onError = function(err) {
 					onErrorCallsCounter += 1;
@@ -322,7 +322,7 @@ Echo.Tests.Units.push(function(callback) {
 		var initForeignAmdModule = function(callback) {
 			$("qunit-fixture").empty();
 			Echo.require([
-				"unit/apps/testApp"	
+				"fixtures/resources/apps/test-app"
 			], function(TestApp) {
 				new TestApp({
 					"target": $("qunit-fixture"),

@@ -142,7 +142,7 @@ Echo.Tests.Units.push(function(callback) {
 				"Check getApp() returns \"undefined\" value for the uninitialized component");
 			this.destroy();
 		};
-		Echo.require(["unit/apps/testApp"], function(app) {
+		Echo.require(["fixtures/resources/apps/test-app"], function(app) {
 			suite.initTestApp({
 				"target": self.config.target,
 				"appkey": self.config.appkey,
@@ -186,13 +186,13 @@ Echo.Tests.Units.push(function(callback) {
 			var self = this;
 			var components = [{
 				"id": "TestComponent1",
-				"url":"unit/apps/testApp"
+				"url":"fixtures/resources/apps/test-app"
 			}, {
 				"id": "TestComponent2",
-				"url":"unit/apps/testApp"
+				"url":"fixtures/resources/apps/test-app"
 			}, {
 				"id": "TestComponent3",
-				"url":"unit/apps/testApp"
+				"url":"fixtures/resources/apps/test-app"
 			}];
 			$.map(components, function(component) {
 				self.initApp({

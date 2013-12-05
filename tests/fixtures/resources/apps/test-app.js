@@ -1,4 +1,4 @@
-Echo.define("unit/apps/testApp", [
+Echo.define("fixtures/resources/apps/test-app", [
 	"jquery",
 	"echo/app",
 	"echo/utils",

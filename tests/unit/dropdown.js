@@ -1,9 +1,8 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/gui",
 		"echo/gui/dropdown"
-	], function($, GUI) {
+	], function($, GUIDropdown) {
 
 	"use strict";
 
@@ -40,7 +39,7 @@ Echo.Tests.Units.push(function(callback) {
 			}]
 		};
 
-		var dropdown = new GUI.Dropdown(dropdownParams);
+		var dropdown = new GUIDropdown(dropdownParams);
 
 		var dropdownTitle = element.find(".dropdown-toggle").html();
 		var dropdownEntries = element.find("li.dropdown > ul.dropdown-menu > li > a");

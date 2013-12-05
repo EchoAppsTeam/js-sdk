@@ -150,7 +150,7 @@ Echo.Tests.Units.push(function(callback) {
 				"Checking if we have \"labels\" interface available");
 
 			// checking if we have component reference
-			QUnit.ok(plugin.component && plugin.component.name == app.name,
+			QUnit.ok(plugin.component && plugin.component.name === app.name,
 				"Checking if we have valid \"component\" reference");
 
 			// checking if all functions defined in "methods" namespace are available
@@ -402,7 +402,7 @@ Echo.Tests.Units.push(function(callback) {
 		var check = function() {
 			var self = this;
 			var plugin = this.getPlugin("MyTestPlugin");
-			QUnit.ok(this.config.get("target") instanceof $, //$ is a jQuery, for sure
+			QUnit.ok(this.config.get("target") instanceof $, 
 				"Checking if the target if a jQuery element");
 			QUnit.ok(!!this.config.get("target").children().length,
 				"Checking if target is not empty after rendering");
@@ -695,8 +695,8 @@ Echo.Tests.Units.push(function(callback) {
 
 	suite.app = function() {
 		var App = function() {};
-		$.extend(true, App, Echo.Tests.Unit.App);  
-	    return App; 
+		$.extend(true, App, Echo.Tests.Unit.App);
+		return App;
 	};
 
 	suite.getTestPluginName = function() {

@@ -1,8 +1,8 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/gui"
-	], function($, GUI) {
+		"echo/gui/button"
+	], function($, GUIButton) {
 
 	"use strict";
 
@@ -20,7 +20,7 @@ Echo.Tests.Units.push(function(callback) {
 	Echo.Tests.test("common workflow", function() {
 		var target = $("#qunit-fixture");
 		var element = $("<button>").appendTo(target);
-		var button = new GUI.Button({
+		var button = new GUIButton({
 			"target": element,
 			"label": "FirstLabel"
 		});
@@ -79,7 +79,7 @@ Echo.Tests.Units.push(function(callback) {
 	Echo.Tests.test("taking data from HTML", function() {
 		var target = $("#qunit-fixture");
 		var element = $('<button disabled="disabled">ClickMe</button>').appendTo(target);
-		var button = new GUI.Button({"target": element});
+		var button = new GUIButton({"target": element});
 		QUnit.ok(target.html().match(/>ClickMe</),
 			"Checking that label value is taken from the element");
 		QUnit.ok(element.is(":disabled"),

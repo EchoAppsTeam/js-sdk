@@ -30,13 +30,10 @@ module.exports = function(grunt) {
 					"wrap",
 					"concat:gui-pack",
 					"concat:tests/harness",
-					"concat:tests/units",
 					"recess:bootstrap",
 					"patch:gui-css",
 					"patch:loader-build",
-					"concat:gui-pack",
 					"patch:bootstrap-plugins",
-					"concat:tests/harness",
 					"clean:third-party",
 					"copy:build"
 				];
@@ -47,15 +44,15 @@ module.exports = function(grunt) {
 				tasks = [
 					"requirejs",
 					"wrap",
+					"concat:gui-pack",
+					"concat:tests/harness",
 					"recess:bootstrap",
-					"patch:jquery-source-map",
 					"patch:gui-css",
 					"patch:loader-build",
-					"concat:gui-pack",
 					"patch:bootstrap-plugins",
+					"patch:jquery-source-map",
 					"uglify",
 					"cssmin:gui",
-					"concat:tests/harness",
 					"clean:third-party",
 					"copy:build"
 				];
@@ -67,6 +64,7 @@ module.exports = function(grunt) {
 					"copy:demo",
 					"copy:tests",
 					"concat:tests/units",
+					"clean:tests/units",
 					"copy:apps"
 				];
 				break;
@@ -186,13 +184,11 @@ module.exports = function(grunt) {
 			"files": [{
 				"expand": true,
 				"cwd": "<%= dirs.build %>",
-				"src": ["**", "!**/build.txt"],
+				"src": ["**", "!build.txt"],
 				"dest": grunt.config("destinations." + target + "." + stage)
 			}],
 			"options": {
-				"processContent": function(text, filename) {
-					return shared.replacePlaceholdersOnCopy(text, filename);
-				},
+				"processContent": shared.replacePlaceholdersOnCopy,
 				"processContentExclude": "**/*.{png,jpg,jpeg,gif}"
 			}
 		};
@@ -230,7 +226,7 @@ module.exports = function(grunt) {
 			return "<%= dirs.dist %>/tests/" + chooseFile(name, target, stage);
 		};
 		_.each(grunt.config("packs"), function(pack, key) {
-			if(key === "tests/units") {
+			if (key === "tests/units") {
 				spec[key] = {
 					"src": pack.src.map(chooseForTestUnits),
 					"dest": "<%= dirs.dist %>/tests/" + pack.dest

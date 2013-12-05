@@ -1361,11 +1361,11 @@ Utils.addCSS(
 	'.echo-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 	'.echo-message .echo-message-icon { padding-left: 21px; height: auto; }' +
 	($.map([
-		["info", require.toUrl("echo-assets/images/information.png")],
-		["loading", require.toUrl("echo-assets/images/loading.gif")],
-		["error", require.toUrl("echo-assets/images/warning.gif")]
+		["info", "information.png"],
+		["loading", "loading.gif"],
+		["error", "warning.gif"]
 	], function(conversions) {
-		return ".echo-message-" + conversions[0] + " { background-image: url(" + conversions[1] + "); }";
+		return ".echo-message-" + conversions[0] + " { background-image: url(" + require.toUrl("echo-assets/images/" + conversions[1]) + "); }";
 	}).join(""))
 , "echo-common");
 
