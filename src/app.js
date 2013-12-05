@@ -857,19 +857,6 @@ App.prototype._definition = function(key) {
 		: undefined;
 };
 
-App.prototype._loadScripts = function(resources, callback) {
-	var app = this;
-	if (!resources || !resources.length) {
-		callback.call(app);
-		return;
-	}
-	resources = $.map(resources, function(resource) {
-		return app.substitute({"template": resource})
-	});
-	
-	require(resources, $.proxy(callback, app));
-};
-
 App.prototype._loadPluginScripts = function(callback) {
 	/*
  	* TODO: It should be done using requireJS
@@ -885,9 +872,7 @@ App.prototype._loadPluginScripts = function(callback) {
 			acc.push(app.config.get(url));
 		}
 	});
-	app._loadScripts(scripts, function() {
-		callback.call(app);
-	});
+	require(scripts, $.proxy(callback, app));
 };
 
 App.prototype._compileTemplate = function() {
