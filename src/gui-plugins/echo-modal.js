@@ -305,6 +305,10 @@ GUI.Modal.prototype._addSection = function(css, content) {
 	return section;
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.GUI.Modal", GUI.Modal);
+
 return GUI.Modal;
 
 });

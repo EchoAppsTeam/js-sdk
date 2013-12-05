@@ -356,5 +356,10 @@ View.prototype._getRenderableElements = function(container) {
 	return elements;
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.View", View);
+
 return View;
+
 });

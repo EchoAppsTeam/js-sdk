@@ -53,13 +53,6 @@
 			};
 
 			Echo.require(harnessDependencies, function(Variables, API, App, Events, User, Utils, QUnit) {
-				Echo.Variables = Variables;
-				Echo.Utils = Utils;
-				Echo.App = App;
-				Echo.Events = Events;
-				Echo.API = API;
-				Echo.StreamServer = {};
-				Echo.StreamServer.User = User;
 				//harness loading
 				Echo.require([
 					"echo/tests/harness", 

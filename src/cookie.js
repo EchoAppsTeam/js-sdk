@@ -110,5 +110,10 @@ Cookie.remove = function(name, options) {
 	}
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+window.Cookie = Cookie;
+
 return Cookie;
+
 });

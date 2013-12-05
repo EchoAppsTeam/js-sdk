@@ -971,6 +971,10 @@ Labels.set({
 	"error_unknown": "(unknown) Unknown error."
 }, "Echo.StreamServer.API", true);
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.StreamServer.API", StreamServerAPI);
+
 return StreamServerAPI;
 
 });

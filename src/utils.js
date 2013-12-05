@@ -4,9 +4,8 @@ Echo.define("echo/variables", [], {});
 Echo.define("echo/utils", [
 	"jquery",
 	"echo/variables",
-	"echo/labels",
 	"require"
-], function($, Variables, Labels, require) {
+], function($, Variables, require) {
 "use strict";
 
 /**
@@ -1307,7 +1306,11 @@ Utils.getRelativeTime = function(datetime, processor) {
 	processor = processor || $.noop;
 	var getLabel = function(ago, period) {
 		var key = period ? period + (ago === 1 ? "" : "s") + "Ago" : ago;
-		return processor(key, ago) || Labels.get(key, "Echo.Utils", {"number": ago});
+		return processor(key, ago)
+			|| Utils.substitute({
+				"template": Variables.labels[key],
+				"data": {"number": ago}
+			});
 	};
 
 	// we display the "Just now" text in order to mitigate the clock inaccuracy
@@ -1344,17 +1347,6 @@ Utils.getRelativeTime = function(datetime, processor) {
 	return when;
 };
 
-Variables.templates = {
-	"message": {
-		"compact": '<span class="echo-message echo-message-icon echo-message-{data:type}" title="{data:message}">&nbsp;</span>',
-		"full": '<div class="echo-message">' +
-			'<span class="echo-message-icon echo-message-{data:type}">' +
-				'{data:message}' +
-			'</span>' +
-		'</div>'
-	}
-};
-
 Utils.addCSS(
 	'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
 	'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
@@ -1382,9 +1374,19 @@ if (document.compatMode === "BackCompat") {
 	});
 }
 
-// default labels for the getRelativeTime functionality
+Variables.templates = {
+	"message": {
+		"compact": '<span class="echo-message echo-message-icon echo-message-{data:type}" title="{data:message}">&nbsp;</span>',
+		"full": '<div class="echo-message">' +
+			'<span class="echo-message-icon echo-message-{data:type}">' +
+				'{data:message}' +
+			'</span>' +
+		'</div>'
+	}
+};
 
-Labels.set({
+// default labels for the getRelativeTime functionality
+Variables.labels = {
 	/**
 	 * @echo_label today
 	 */
@@ -1408,52 +1410,56 @@ Labels.set({
 	/**
 	 * @echo_label secondAgo
 	 */
-	"secondAgo": "{number} Second Ago",
+	"secondAgo": "{data:number} Second Ago",
 	/**
 	 * @echo_label secondsAgo
 	 */
-	"secondsAgo": "{number} Seconds Ago",
+	"secondsAgo": "{data:number} Seconds Ago",
 	/**
 	 * @echo_label minuteAgo
 	 */
-	"minuteAgo": "{number} Minute Ago",
+	"minuteAgo": "{data:number} Minute Ago",
 	/**
 	 * @echo_label minutesAgo
 	 */
-	"minutesAgo": "{number} Minutes Ago",
+	"minutesAgo": "{data:number} Minutes Ago",
 	/**
 	 * @echo_label hourAgo
 	 */
-	"hourAgo": "{number} Hour Ago",
+	"hourAgo": "{data:number} Hour Ago",
 	/**
 	 * @echo_label hoursAgo
 	 */
-	"hoursAgo": "{number} Hours Ago",
+	"hoursAgo": "{data:number} Hours Ago",
 	/**
 	 * @echo_label dayAgo
 	 */
-	"dayAgo": "{number} Day Ago",
+	"dayAgo": "{data:number} Day Ago",
 	/**
 	 * @echo_label daysAgo
 	 */
-	"daysAgo": "{number} Days Ago",
+	"daysAgo": "{data:number} Days Ago",
 	/**
 	 * @echo_label weekAgo
 	 */
-	"weekAgo": "{number} Week Ago",
+	"weekAgo": "{data:number} Week Ago",
 	/**
 	 * @echo_label weeksAgo
 	 */
-	"weeksAgo": "{number} Weeks Ago",
+	"weeksAgo": "{data:number} Weeks Ago",
 	/**
 	 * @echo_label monthAgo
 	 */
-	"monthAgo": "{number} Month Ago",
+	"monthAgo": "{data:number} Month Ago",
 	/**
 	 * @echo_label monthsAgo
 	 */
-	"monthsAgo": "{number} Months Ago"
-}, "Echo.Utils", true);
+	"monthsAgo": "{data:number} Months Ago"
+};
+
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.Utils", Utils);
 
 return Utils;
 

@@ -156,6 +156,10 @@ GUI.Dropdown.prototype._assembleEntries = function(container, entries) {
 	return menu;
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.GUI.Dropdown", GUI.Dropdown);
+
 return GUI.Dropdown;
 
 });

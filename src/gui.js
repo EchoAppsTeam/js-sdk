@@ -1,8 +1,11 @@
 Echo.define("echo/gui", [
 	"jquery",
 	"echo/configuration",
+	// FIXME: __DEPRECATED__
+	// remove this after full require js compatible implementation
+	"echo/utils",
 	"css!echo/gui.pack"
-], function($, Configuration) {
+], function($, Configuration, Utils) {
 
 "use strict";
 
@@ -48,6 +51,10 @@ GUI.prototype.destroy = function() {
 	this.config.get("target") && this.config.get("target").empty();
 	this.config.remove("target");
 };
+
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.GUI", GUI);
 
 return GUI;
 

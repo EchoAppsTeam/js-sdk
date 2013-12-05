@@ -232,6 +232,10 @@ Labels._substitute = function(label, data) {
 	return label;
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.Labels", Labels);
+
 return Labels;
 
 });

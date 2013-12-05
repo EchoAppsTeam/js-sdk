@@ -567,6 +567,10 @@ API.Transports.JSONP.available = function() {
 	return true;
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.API.Transports", API.Transports);
+
 /**
  * @class Echo.API.Request
  * Class implementing API requests logic on the transport layer.
@@ -823,5 +827,10 @@ API.Request.prototype._prepareURL = function() {
 	return this.config.get("apiBaseURL") + this.config.get("endpoint");
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.API.Request", API.Request);
+
 return API;
+
 });

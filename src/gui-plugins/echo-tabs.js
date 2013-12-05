@@ -370,6 +370,10 @@ GUI.Tabs.prototype._getTabFullId = function(id) {
 	return this.config.get("idPrefix") + id + this._randomId;
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.GUI.Tabs", GUI.Tabs);
+
 return GUI.Tabs;
 
 });

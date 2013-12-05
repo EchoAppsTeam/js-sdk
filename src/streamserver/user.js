@@ -581,5 +581,10 @@ User._anyRole = function(value) {
 	return this.any("roles", value);
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.StreamServer.User", User);
+
 return User;
+
 });

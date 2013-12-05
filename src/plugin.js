@@ -601,6 +601,10 @@ Plugin.Events.prototype.unsubscribe = function(params) {
 	this.plugin.component.events.unsubscribe(params);
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.Plugin", Plugin);
+
 return Plugin;
 
 });

@@ -95,6 +95,10 @@ GUI.Button.prototype.refresh = function() {
 	target.attr("disabled", this.config.get("disabled"));
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.GUI.Button", GUI.Button);
+
 return GUI.Button;
 
 });

@@ -284,5 +284,10 @@ var _callHandlers = function(obj, params, restContexts) {
 	}
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.Events", Events);
+
 return Events;
+
 });

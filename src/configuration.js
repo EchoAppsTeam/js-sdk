@@ -199,5 +199,10 @@ Configuration.prototype._merge = function(master, slave, keepRefsFor) {
 	return target;
 };
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.Configuration", Configuration);
+
 return Configuration;
+
 });

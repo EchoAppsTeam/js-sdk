@@ -1065,5 +1065,9 @@ definition.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }'
 
 App._definition = definition;
 
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.App", App);
+
 return App;
 });
