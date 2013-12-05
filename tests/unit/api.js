@@ -67,7 +67,7 @@ Echo.Tests.Units.push(function(callback) {
 			var requests = [];
 			var deferred = [];
 			var closeDef = [];
-			for(var i = 0; i < 4; i++) {
+			for (var i = 0; i < 4; i++) {
 				deferred.push($.Deferred());
 				closeDef.push($.Deferred());
 				(function(i) {

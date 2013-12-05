@@ -1,4 +1,4 @@
-Echo.define("comments-sample", [
+Echo.define([
 	"jquery",
 	"echo/app",
 	"echo/streamserver/bundled-apps/stream/client-widget",

@@ -58,13 +58,7 @@ Echo.Tests.Units.push(function(callback) {
 			QUnit.ok(!!window.require, "External require is loaded");
 			QUnit.notDeepEqual(window.require, Echo.require,
 				"External require end Echo require are different objects");
-
-			Echo.require(["echo/loader"], function () {
-				QUnit.deepEqual(window.require, externalRequire,
-					"External require is not overridden after Echo require is loaded");
-				window.require = origRequire;
-				QUnit.start();
-			});
+			QUnit.start();
 		});
 	}, {
 		"timeout": 6000

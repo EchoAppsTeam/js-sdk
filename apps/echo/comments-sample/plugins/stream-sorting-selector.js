@@ -1,4 +1,4 @@
-Echo.define("stream-sorting-selector", [
+Echo.define([
 	"jquery",
 	"echo/plugin",
 ], function($, Plugin) {

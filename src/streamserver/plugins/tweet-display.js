@@ -313,9 +313,9 @@ plugin.methods._getTweetTime = function(getFull) {
 	} else {
 		if (diff < 60) {
 			result = this.labels.get("secondsAgo", {"seconds": diff});
-		} else if(diff < 60 * 60) {
+		} else if (diff < 60 * 60) {
 			result = this.labels.get("minutesAgo", {"minutes": Math.floor(diff / 60)});
-		} else if(diff < 60 * 60 * 24) {
+		} else if (diff < 60 * 60 * 24) {
 			result = this.labels.get("hoursAgo", {"hours": Math.floor(diff / (60 * 60))});
 		} else if (diff < 60 * 60 * 24 * 365) {
 			result = this.labels.get("monthsAgo", {"day": d.getDate(), "month": this.labels.get("month" + (d.getMonth() + 1))});

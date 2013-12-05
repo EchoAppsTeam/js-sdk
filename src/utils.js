@@ -1295,7 +1295,7 @@ Utils.getRelativeTime = function(datetime, processor) {
 	if (!datetime) return "";
 	var self = this;
 	var ts = typeof datetime === "string"
-		? Echo.Utils.timestampFromW3CDTF(datetime)
+		? Utils.timestampFromW3CDTF(datetime)
 		: datetime;
 	if (!ts) return "";
 	var d = new Date(ts * 1000);

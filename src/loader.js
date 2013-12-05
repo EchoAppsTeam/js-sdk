@@ -5,7 +5,7 @@
 Echo.Loader = {
 	"version": "",
 	"debug": false,
-	"cdnBaseURL": (/^https?/.test(window.location.protocol) ? window.location.protocol : "http:") +	"{%=baseURLs.cdn%}/"
+	"cdnBaseURL": (/^https?/.test(window.location.protocol) ? window.location.protocol : "http:") + "{%=baseURLs.cdn%}/"
 };
 
 Echo.Loader.getURL = function(url, devVersion) {
@@ -42,24 +42,20 @@ Echo.Loader.initApplication = function(path, config) {
 	var debug;
 	var _debugKey = "echo-debug";
 	var hashParts = window.location.hash.match(/echo.debug:(true|false)/);
-		if (hashParts && hashParts.length) {
-			debug = hashParts[1];
-		}
-		if (typeof debug !== "undefined") {
-			if (debug === "true") {
-				Echo.Loader.debug = true;
-				localStorage[_debugKey] = true;
-			} else {
-				Echo.Loader.debug = false;
-				localStorage[_debugKey] = "false";
-			}
-			return;
-		}
-		if(localStorage[_debugKey] === "true") {
+	if (hashParts && hashParts.length) {
+		debug = hashParts[1];
+	}
+	if (typeof debug !== "undefined") {
+		if (debug === "true") {
 			Echo.Loader.debug = true;
+			localStorage[_debugKey] = "true";
 		} else {
 			Echo.Loader.debug = false;
+			localStorage[_debugKey] = "false";
 		}
+		return;
+	}
+	Echo.Loader.debug = (localStorage[_debugKey] === "true");
 })();
 
 var paths = [];

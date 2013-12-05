@@ -26,14 +26,20 @@
 		Echo.require(["jquery"], function($) {
 			Echo.jQuery = $;
 			var harnessDependencies = [
-				"echo/variables", "echo/api",
-				"echo/app", "echo/events",
-				"echo/streamserver/user", "echo/utils",
-				"QUnit", "echo/backplane"
+				"echo/variables",
+				"echo/api",
+				"echo/app",
+				"echo/events",
+				"echo/streamserver/user",
+				"echo/utils",
+				"QUnit",
+				"echo/backplane"
 			];
 			var harnessServiceFiles =[
-				"config", "helpers/events",
-				"fixtures/api/count", "fixtures/api/search",
+				"config",
+				"helpers/events",
+				"fixtures/api/count",
+				"fixtures/api/search",
 				"fixtures/api/whoami"
 			];
 			var startTests = function() {

@@ -355,7 +355,7 @@ function showCoverageList(type, prefix) {
 							html += ' <span>( published <b>' + getTextCount(events.raw.published[topic].count)  + '</b> )</span>';
 						}
 
-						if( type === "notTested" || type === "failed") {
+						if ( type === "notTested" || type === "failed") {
 							html +=	' [<a class="echo-clickable" data-topic="' + topic + '">view data</a>] <div class="echo-tests-event-data">' + '</div>';
 						}
 						html +=	'</li>';

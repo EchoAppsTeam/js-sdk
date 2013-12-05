@@ -423,7 +423,7 @@ App.prototype.initApp = function(spec) {
 	spec.config = this._normalizeAppConfig(
 		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
-	if(spec.component) {
+	if (spec.component) {
 		var App = spec.component;
 		this.set("apps." + spec.id, new App(spec.config));
 		return this.getApp(spec.id);
@@ -1034,13 +1034,9 @@ definition.config.normalizer = {
 				if (pos >= 0) {
 					acc.order.splice(pos, 1);
 				}
-				if(plugin && plugin.url) {
-					var name = plugin.url.split("/").pop();
-					plugin["name"] = "";
-					name = name.split("-");
-					for(var piece in name) {
-						plugin["name"] += Utils.capitalize(name[piece]);
-					}
+				if (plugin && plugin.url) {
+					var name = plugin.url.split("/").pop().replace(/\.[^.]+$/,"");
+					plugin["name"] = $.map(name.split("-"), Utils.capitalize).join("");
 				}
 				acc.order.push(plugin.name);
 				acc.hash[plugin.name] = plugin;

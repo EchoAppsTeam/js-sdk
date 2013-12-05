@@ -108,7 +108,7 @@ Echo.Tests.Units.push(function(callback) {
 		};
 		var nonExistingScripts = function(callback) {
 			
-			if(navigator.userAgent.search(/MSIE/) > 0) {
+			if (navigator.userAgent.search(/MSIE/) > 0) {
 				/**
 				 *  In case of MSIE we can`t simply override requirejs.onError
 				 * becose of troubles that make it difficult to detect this event
@@ -190,7 +190,7 @@ Echo.Tests.Units.push(function(callback) {
 		};
 		
 		var mixedRequireTest = function(callback) {
-			if(navigator.userAgent.search(/MSIE/) > 0) {
+			if (navigator.userAgent.search(/MSIE/) > 0) {
 				/**
 				 *  In case of MSIE we can`t simply override requirejs.onError
 				 * becose of troubles that make it difficult to detect this event
@@ -221,7 +221,7 @@ Echo.Tests.Units.push(function(callback) {
 				Echo.require.onError = function(err) {
 					onErrorCallsCounter += 1;
 					QUnit.ok(true, "Check if Echo.require(\"\") works in the same way as require(\"\") function does");
-					if(onErrorCallsCounter == fakeScripts.length) {
+					if (onErrorCallsCounter == fakeScripts.length) {
 						Echo.require.onError = customRJSErrorCallback;
 						callback();
 					}
@@ -267,8 +267,8 @@ Echo.Tests.Units.push(function(callback) {
 				"echo/plugin",
 				"echo/backplane"
 			], function($, App) {
-				for(var arg in arguments) {
-					if(!arguments[arg]) {			
+				for (var arg in arguments) {
+					if (!arguments[arg]) {			
 						QUnit.ok(false, "Calling 'initEnvironment' with no callback produced JS error...");
 						return;
 					}
