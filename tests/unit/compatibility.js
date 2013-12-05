@@ -58,6 +58,7 @@ Echo.Tests.Units.push(function(callback) {
 			QUnit.ok(!!window.require, "External require is loaded");
 			QUnit.notDeepEqual(window.require, Echo.require,
 				"External require end Echo require are different objects");
+			window.require = origRequire;
 			QUnit.start();
 		});
 	}, {
