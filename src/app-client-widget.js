@@ -6,6 +6,16 @@ Echo.define("echo/app-client-widget", [
 ], function($, Utils, User, App) {
 "use strict";
 
+/**
+ * @class Echo.App.ClientWidget
+ * Implementing additional logic for the client facing widget.
+ * You can find instructions on how to create your App in the
+ * ["How to develop an App"](#!/guide/how_to_develop_app) guide.
+ *
+ * @package environment.pack.js
+ *
+ * @extends Echo.App
+ */
 var ClientWidget = App.definition("Echo.App.ClientWidget");
 
 ClientWidget.config = {

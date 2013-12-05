@@ -22,7 +22,7 @@ Echo.define("echo/streamserver/bundled-apps/counter/client-widget", [
  * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.App
+ * @extends Echo.App.ClientWidget
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
