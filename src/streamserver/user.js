@@ -18,7 +18,7 @@ Echo.define("echo/streamserver/user", [
  * built on top of the Echo JS SDK.
  *
  * Example:
- * 	var user = Echo.StreamSerer.User({"appkey": "echo.jssdk.demo.aboutecho.com"});
+ * 	var user = Echo.StreamServer.User({"appkey": "echo.jssdk.demo.aboutecho.com"});
  * 	user.is("logged"); // returns true or false
  *
  * @package environment.pack.js
@@ -342,7 +342,7 @@ User._listenEvents = function() {
 			 * object for logout events.
 			 *
 			 * @param {Object} data.echo
-			 * section contains three elements.
+			 * "echo" section contains three elements.
 			 *
 			 * @param {Array} data.echo.roles
 			 * Array of roles.

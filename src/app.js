@@ -48,7 +48,7 @@ var App = function() {};
  * Specifies the list of external events used by application.
  *
  * @param {Object} [definition.methods]
- * Specifies the list of application methods.
+ * Specifies the list of application instance methods.
  *
  * @param {Object} [definition.classMethods]
  * Specifies the list of application class methods.
@@ -698,8 +698,8 @@ App.prototype._initializers.css = function() {
 							return cssPrefix + key;
 						}
 					}
-				})
-			, spec.id);
+				}),
+			spec.id);
 		} else {
 			Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 		}
@@ -857,19 +857,6 @@ App.prototype._definition = function(key) {
 		: undefined;
 };
 
-App.prototype._loadScripts = function(resources, callback) {
-	var app = this;
-	if (!resources || !resources.length) {
-		callback.call(app);
-		return;
-	}
-	resources = $.map(resources, function(resource) {
-		return app.substitute({"template": resource})
-	});
-	
-	require(resources, $.proxy(callback, app));
-};
-
 App.prototype._loadPluginScripts = function(callback) {
 	/*
  	* TODO: It should be done using requireJS
@@ -885,9 +872,7 @@ App.prototype._loadPluginScripts = function(callback) {
 			acc.push(app.config.get(url));
 		}
 	});
-	app._loadScripts(scripts, function() {
-		callback.call(app);
-	});
+	require(scripts, $.proxy(callback, app));
 };
 
 App.prototype._compileTemplate = function() {
@@ -1021,6 +1006,7 @@ definition.config = {
 
 	/**
 	 * @cfg {Object} backplane
+	 * Object which contains the data to be passed into the Backplane.init call.
 	 */
 	"backplane": {}
 };
