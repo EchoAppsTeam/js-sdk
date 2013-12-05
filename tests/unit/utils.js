@@ -151,61 +151,56 @@ Echo.Tests.Units.push(function(callback) {
 
 	Echo.Tests.asyncTest("showError()", function() {
 		QUnit.expect(4);
-		Utils.sequentialCall([
-			function(callback) {
-				var def = $.Deferred();
-				var errorTarget = $("<div></div>");
-				var errorData = {
-					"errorCode": "someUndefinedErrorCode",
-					"errorMessage": "Some Error Message"
-				};
-				var errorOptions = {
-					"target": errorTarget,
-					"critical": false,
-					"label": "error_someUndefinedErrorCode",
-					"promise": def.promise()
-				};
-				Utils.showError(errorData, errorOptions);
-				QUnit.equal(
-					errorTarget.find(".echo-message-icon").html(),
-					"(someUndefinedErrorCode) Some Error Message",
-					"Checking if the unsupported errorCode received"
-				);
-				errorData.errorCode = "busy";
-				errorOptions.label = Labels.get("error_busy", "Echo.StreamServer.API");
-				Utils.showError(errorData, errorOptions);
-				QUnit.equal(
-					errorTarget.find(".echo-message-icon").html(),
-					"Loading. Please wait...",
-					"Checking if the supported errorCode received and errorMessage ignored (StremServer API labels case)"
-				);
-				errorOptions.retryIn = 3000;
-				errorData.errorCode = "view_limit";
-				errorOptions.label = Labels.get("error_view_limit", "Echo.StreamServer.API");
-				def.reject();
-				Utils.showError(errorData, errorOptions);
-				def = $.Deferred();
-				QUnit.equal(
-					errorTarget.find(".echo-message-icon").html(),
-					"View creation rate limit has been exceeded. Retrying in 3 seconds...",
-					"Checking if the retrying mechanism works (StreamServer API labels case)"
-				);
-				setTimeout(function() {
-					errorOptions.retryIn = 0;
-					def.resolve();
-					errorOptions.label = "Some label";
-					Utils.showError(errorData, errorOptions);
-					QUnit.equal(
-						errorTarget.find(".echo-message-icon").html(),
-						"Some label",
-						"Checking if the retrying mechanism works after 3 seconds counted"
-					);
-					callback();
-				}, 3000);
-			}
-		], function() {
+		var def = $.Deferred();
+		var errorTarget = $("<div></div>");
+		var errorData = {
+			"errorCode": "someUndefinedErrorCode",
+			"errorMessage": "Some Error Message"
+		};
+		var errorOptions = {
+			"target": errorTarget,
+			"critical": false,
+			"label": "error_someUndefinedErrorCode",
+			"promise": def.promise()
+		};
+		Utils.showError(errorData, errorOptions);
+		QUnit.equal(
+			errorTarget.find(".echo-message-icon").html(),
+			"(someUndefinedErrorCode) Some Error Message",
+			"Checking if the unsupported errorCode received"
+		);
+		errorData.errorCode = "busy";
+		errorOptions.label = Labels.get("error_busy", "Echo.StreamServer.API");
+		Utils.showError(errorData, errorOptions);
+		QUnit.equal(
+			errorTarget.find(".echo-message-icon").html(),
+			"Loading. Please wait...",
+			"Checking if the supported errorCode received and errorMessage ignored (StremServer API labels case)"
+		);
+		errorOptions.retryIn = 3000;
+		errorData.errorCode = "view_limit";
+		errorOptions.label = Labels.get("error_view_limit", "Echo.StreamServer.API");
+		def.reject();
+		Utils.showError(errorData, errorOptions);
+		def = $.Deferred();
+		QUnit.equal(
+			errorTarget.find(".echo-message-icon").html(),
+			"View creation rate limit has been exceeded. Retrying in 3 seconds...",
+			"Checking if the retrying mechanism works (StreamServer API labels case)"
+		);
+		setTimeout(function() {
+			errorOptions.retryIn = 0;
+			def.resolve();
+			errorOptions.label = "Some label";
+			Utils.showError(errorData, errorOptions);
+			QUnit.equal(
+				errorTarget.find(".echo-message-icon").html(),
+				"Some label",
+				"Checking if the retrying mechanism works after 3 seconds counted"
+			);
+			callback();
 			QUnit.start();
-		});
+		}, 3000);
 	});
 
 	Echo.Tests.test("remove()", function() {
