@@ -11,7 +11,7 @@ Echo.define("echo/streamserver/bundled-apps/facepile/item/client-widget", [
  * @class Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget
  * Echo FacePile.Item application displays single user (actor). 
  *
- * @extends Echo.App
+ * @extends Echo.App.ClientWidget
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js

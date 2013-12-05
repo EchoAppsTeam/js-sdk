@@ -10,7 +10,7 @@ Echo.define("echo/streamserver/bundled-apps/stream/item/client-widget", [
  * @class Echo.StreamServer.BundledApps.Stream.Item.ClientWidget
  * Echo Stream.Item application which encapsulates Item mechanics.
  *
- * @extends Echo.App
+ * @extends Echo.App.ClientWidget
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js

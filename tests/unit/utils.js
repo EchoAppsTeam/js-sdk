@@ -172,32 +172,32 @@ Echo.Tests.Units.push(function(callback) {
 					"Checking if the unsupported errorCode received"
 				);
 				errorData.errorCode = "busy";
-				errorOptions.label = Labels.get("error_busy", "");
+				errorOptions.label = Labels.get("error_busy", "Echo.StreamServer.API");
 				Utils.showError(errorData, errorOptions);
 				QUnit.equal(
 					errorTarget.find(".echo-message-icon").html(),
 					"Loading. Please wait...",
-					"Checking if the supported errorCode received and errorMessage ignored"
+					"Checking if the supported errorCode received and errorMessage ignored (StremServer API labels case)"
 				);
 				errorOptions.retryIn = 3000;
 				errorData.errorCode = "view_limit";
-				errorOptions.label = Labels.get("error_view_limit", "");
+				errorOptions.label = Labels.get("error_view_limit", "Echo.StreamServer.API");
 				def.reject();
 				Utils.showError(errorData, errorOptions);
 				def = $.Deferred();
 				QUnit.equal(
 					errorTarget.find(".echo-message-icon").html(),
 					"View creation rate limit has been exceeded. Retrying in 3 seconds...",
-					"Checking if the retrying mechanism works"
+					"Checking if the retrying mechanism works (StreamServer API labels case)"
 				);
 				setTimeout(function() {
 					errorOptions.retryIn = 0;
 					def.resolve();
-					errorOptions.label = Labels.get("retrying", "");
+					errorOptions.label = "Some label";
 					Utils.showError(errorData, errorOptions);
 					QUnit.equal(
 						errorTarget.find(".echo-message-icon").html(),
-						"Retrying...",
+						"Some label",
 						"Checking if the retrying mechanism works after 3 seconds counted"
 					);
 					callback();
@@ -1034,9 +1034,7 @@ Echo.Tests.Units.push(function(callback) {
 
 		$.map(probes, function(probe) {
 			QUnit.equal(
-				Utils.getRelativeTime(probe[0], function(key, value) {
-					return Labels.get(key, "", {"number": value});
-				}),
+				Utils.getRelativeTime(probe[0]),
 				probe[1],
 				"Checking \"getRelativeTime\" function (" + probe[2] + ")");
 		});

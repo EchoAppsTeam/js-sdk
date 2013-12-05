@@ -3,8 +3,9 @@ Echo.define("echo/variables", [], {});
 Echo.define("echo/utils", [
 	"jquery",
 	"echo/variables",
+	"echo/labels",
 	"require"
-], function($, Variables, require) {
+], function($, Variables, Labels, require) {
 "use strict";
 
 /**
@@ -1302,8 +1303,10 @@ Utils.getRelativeTime = function(datetime, processor) {
 	var when;
 	var diff = Math.floor((now - d.getTime()) / 1000);
 	var dayDiff = Math.floor(diff / 86400);
-	var getAgo = function(ago, period) {
-		return processor(period + (ago === 1 ? "" : "s") + "Ago", ago);
+	processor = processor || $.noop;
+	var getLabel = function(ago, period) {
+		var key = period ? period + (ago === 1 ? "" : "s") + "Ago" : ago;
+		return processor(key, ago) || Labels.get(key, "Echo.Utils", {"number": ago});
 	};
 
 	// we display the "Just now" text in order to mitigate the clock inaccuracy
@@ -1313,33 +1316,32 @@ Utils.getRelativeTime = function(datetime, processor) {
 	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
 		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
 	} else if (diff < 10) {
-		when = processor("justNow");
+		when = getLabel("justNow");
 	} else if (diff < 60) {
-		when = getAgo(diff, "second");
+		when = getLabel(diff, "second");
 	} else if (diff < 60 * 60) {
 		diff = Math.floor(diff / 60);
-		when = getAgo(diff, "minute");
+		when = getLabel(diff, "minute");
 	} else if (diff < 60 * 60 * 24) {
 		diff = Math.floor(diff / (60 * 60));
-		when = getAgo(diff, "hour");
+		when = getLabel(diff, "hour");
 	} else if (diff < 60 * 60 * 48) {
-		when = processor("yesterday");
+		when = getLabel("yesterday");
 	} else if (dayDiff < 7) {
-		when = getAgo(dayDiff, "day");
+		when = getLabel(dayDiff, "day");
 	} else if (dayDiff < 14) {
-		when = processor("lastWeek");
+		when = getLabel("lastWeek");
 	} else if (dayDiff < 30) {
 		diff =  Math.floor(dayDiff / 7);
-		when = getAgo(diff, "week");
+		when = getLabel(diff, "week");
 	} else if (dayDiff < 60) {
-		when = processor("lastMonth");
+		when = getLabel("lastMonth");
 	} else if (dayDiff < 365) {
 		diff =  Math.floor(dayDiff / 31);
-		when = getAgo(diff, "month");
+		when = getLabel(diff, "month");
 	}
 	return when;
 };
-
 
 Variables.templates = {
 	"message": {
@@ -1379,5 +1381,79 @@ if (document.compatMode === "BackCompat") {
 	});
 }
 
+// default labels for the getRelativeTime functionality
+
+Labels.set({
+	/**
+	 * @echo_label today
+	 */
+	"today": "Today",
+	/**
+	 * @echo_label justNow
+	 */
+	"justNow": "Just now",
+	/**
+	 * @echo_label yesterday
+	 */
+	"yesterday": "Yesterday",
+	/**
+	 * @echo_label lastWeek
+	 */
+	"lastWeek": "Last Week",
+	/**
+	 * @echo_label lastMonth
+	 */
+	"lastMonth": "Last Month",
+	/**
+	 * @echo_label secondAgo
+	 */
+	"secondAgo": "{number} Second Ago",
+	/**
+	 * @echo_label secondsAgo
+	 */
+	"secondsAgo": "{number} Seconds Ago",
+	/**
+	 * @echo_label minuteAgo
+	 */
+	"minuteAgo": "{number} Minute Ago",
+	/**
+	 * @echo_label minutesAgo
+	 */
+	"minutesAgo": "{number} Minutes Ago",
+	/**
+	 * @echo_label hourAgo
+	 */
+	"hourAgo": "{number} Hour Ago",
+	/**
+	 * @echo_label hoursAgo
+	 */
+	"hoursAgo": "{number} Hours Ago",
+	/**
+	 * @echo_label dayAgo
+	 */
+	"dayAgo": "{number} Day Ago",
+	/**
+	 * @echo_label daysAgo
+	 */
+	"daysAgo": "{number} Days Ago",
+	/**
+	 * @echo_label weekAgo
+	 */
+	"weekAgo": "{number} Week Ago",
+	/**
+	 * @echo_label weeksAgo
+	 */
+	"weeksAgo": "{number} Weeks Ago",
+	/**
+	 * @echo_label monthAgo
+	 */
+	"monthAgo": "{number} Month Ago",
+	/**
+	 * @echo_label monthsAgo
+	 */
+	"monthsAgo": "{number} Months Ago"
+}, "Echo.Utils", true);
+
 return Utils;
+
 });

@@ -23,7 +23,7 @@ Echo.define("echo/streamserver/bundled-apps/stream/client-widget", [
  * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.App
+ * @extends Echo.App.ClientWidget
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
@@ -60,11 +60,11 @@ stream.init = function() {
 	var self = this;
 	if (!this.config.get("appkey")) {
 		return Utils.showError({
-			"errorCode": "incorrect_appkey",
-			"label": this.labels.get("error_incorrect_appkeys")
+			"errorCode": "incorrect_appkey"
 		}, {
 			"critical": true,
 			"target": this.config.get("target"),
+			"label": this.labels.get("error_incorrect_appkeys"),
 			"template": this.config.get("infoMessages.template")
 		});
 	}
@@ -508,7 +508,11 @@ stream.labels = {
 	/**
 	 * @echo_label
 	 */
-	"newItems": "new items"
+	"newItems": "new items",
+	/**
+	 * @echo_label retrying
+	 */
+	"retrying": "Retrying..."
 };
 
 stream.events = {
@@ -842,7 +846,8 @@ stream.methods._requestMoreItems = function(element) {
 				Utils.showError(data, $.extend(options, {
 					"target": element,
 					"template": self.config.get("infoMessages.template"),
-					"promise": self.moreRequest.deferred.transport.promise()
+					"promise": self.moreRequest.deferred.transport.promise(),
+					"label": self.labels.get("error_" + data.errorCode)
 				}));
 			},
 			"onData": function(data) {
