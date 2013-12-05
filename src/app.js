@@ -1021,8 +1021,8 @@ definition.config.normalizer = {
 					acc.order.splice(pos, 1);
 				}
 				if (plugin && plugin.url) {
-					var name = plugin.url.split("/").pop().replace(/\.[^.]+$/,"");
-					plugin["name"] = $.map(name.split("-"), Utils.capitalize).join("");
+					var name = plugin.url.split("/").pop().replace(/\.[^.]+$/, "");
+					plugin.name = $.map(name.split("-"), Utils.capitalize).join("");
 				}
 				acc.order.push(plugin.name);
 				acc.hash[plugin.name] = plugin;
