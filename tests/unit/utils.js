@@ -727,7 +727,7 @@ Echo.Tests.Units.push(function(callback) {
 			var container = $("<div id=\"place-image-container-class\"/>").appendTo($("#qunit-fixture"));
 			Utils.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "fixtures/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -742,7 +742,7 @@ Echo.Tests.Units.push(function(callback) {
 			var container = $("<div id=\"place-image-container-fill-class\"/>").appendTo($("#qunit-fixture"));
 			Utils.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "fixtures/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -759,7 +759,7 @@ Echo.Tests.Units.push(function(callback) {
 			var container = $("<div id=\"place-image-container-fill-default-class\"/>").appendTo($("#qunit-fixture"));
 			Utils.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "fixtures/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -777,7 +777,7 @@ Echo.Tests.Units.push(function(callback) {
 				.css({ "width": "90px", "height": "90px" });
 			Utils.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "fixtures/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -801,7 +801,7 @@ Echo.Tests.Units.push(function(callback) {
 				.css({ "width": "90px", "height": "90px" });
 			Utils.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-vertical-100x300.png",
+				"image": Echo.Tests.baseURL + "fixtures/loadimage/avatar-vertical-100x300.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
 					callback();
@@ -823,7 +823,7 @@ Echo.Tests.Units.push(function(callback) {
 			var container = $("<div id=\"place-image-horizontal-quirks\"/>").appendTo($("#qunit-fixture"));
 			Utils.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-horizontal-300x100.png",
+				"image": Echo.Tests.baseURL + "fixtures/loadimage/avatar-horizontal-300x100.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-horizontal-300x100.png");
 					callback();
@@ -841,7 +841,7 @@ Echo.Tests.Units.push(function(callback) {
 			var container = $("<div id=\"place-image-vertical-quirks\"/>").appendTo($("#qunit-fixture"));
 			Utils.placeImage({
 				"container": container,
-				"image": Echo.Tests.baseURL + "unit/loadimage/avatar-vertical-100x300.png",
+				"image": Echo.Tests.baseURL + "fixtures/loadimage/avatar-vertical-100x300.png",
 				"onerror": function() {
 					QUnit.ok(false, "Cannot test loadImage(): missing image avatar-vertical-100x300.png");
 					callback();
