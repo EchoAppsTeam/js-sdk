@@ -768,4 +768,5 @@ submit.css =
 	'.{class:error} { color: #444444; font: 14px Arial; line-height: 150%; padding-left: 85px; background: no-repeat url(' + Echo.require.toUrl("echo-assets/images/info70.png") + '); }';
 
 return App.create(submit);
+
 });

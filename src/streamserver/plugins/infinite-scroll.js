@@ -56,4 +56,5 @@ plugin.methods.destroy = function() {
 };
 
 return Plugin.create(plugin);
+
 });

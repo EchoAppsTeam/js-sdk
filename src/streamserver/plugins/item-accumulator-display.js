@@ -145,4 +145,5 @@ plugin.methods._animateCounter = function(bgColor) {
 plugin.css = '.{plugin.class:accumulatorContainer} { float: right; margin-right: 7px; }';
 
 return Plugin.create(plugin);
+
 });

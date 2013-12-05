@@ -133,6 +133,7 @@ plugin.css =
 	'.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }';
 
 return Plugin.create(plugin);
+
 });
 
 Echo.define("echo/streamserver/plugins/stream-item-pinboard-visualization", [
@@ -519,4 +520,5 @@ plugin.css =
 		: '');
 	
 return Plugin.create(plugin);
+
 });

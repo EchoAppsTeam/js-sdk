@@ -268,4 +268,5 @@ plugin.methods._isButtonVisible = function(control, marker, action, type) {
 };
 
 return Plugin.create(plugin);
+
 });

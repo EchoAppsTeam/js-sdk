@@ -216,4 +216,5 @@ plugin.css =
 	'.{plugin.class:error} { color: red; }';
 
 return Plugin.create(plugin);
+
 });

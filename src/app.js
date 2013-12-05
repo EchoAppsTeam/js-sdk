@@ -1070,4 +1070,5 @@ App._definition = definition;
 Utils.set(window, "Echo.App", App);
 
 return App;
+
 });

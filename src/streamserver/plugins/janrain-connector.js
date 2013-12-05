@@ -106,4 +106,5 @@ plugin.enabled = function() {
 };
 
 return Plugin.create(plugin);
+
 });

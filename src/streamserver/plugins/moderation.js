@@ -655,6 +655,7 @@ plugin.css = function() {
 }();
 
 return Plugin.create(plugin);
+
 });
 
 Echo.define("echo/streamserver/plugins/stream-item-moderation", [
@@ -678,4 +679,5 @@ plugin.events = {
 };
 
 return Plugin.create(plugin);
+
 });

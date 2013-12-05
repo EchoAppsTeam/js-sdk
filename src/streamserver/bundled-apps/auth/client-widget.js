@@ -369,4 +369,5 @@ auth.css =
 	".{class:edit} { float: left; margin: 6px 0px 0px 12px; }";
 
 return App.create(auth);
+
 });

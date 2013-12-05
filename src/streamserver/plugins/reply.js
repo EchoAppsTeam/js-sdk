@@ -318,6 +318,7 @@ plugin.css =
 	".{plugin.class:compactContent} input.{plugin.class:compactField}[type='text']:focus { outline: 0; box-shadow: none; }";
 
 return Plugin.create(plugin);
+
 });
 
 Echo.define("echo/streamserver/plugins/stream-reply", [
@@ -372,6 +373,7 @@ plugin.events = {
 };
 
 return Plugin.create(plugin);
+
 });
 
 Echo.define("echo/streamserver/plugins/submit-reply", [
@@ -431,4 +433,5 @@ $.map(["onRender", "onRerender"], function(topic) {
 });
 
 return Plugin.create(plugin);
+
 });

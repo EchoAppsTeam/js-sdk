@@ -1846,4 +1846,5 @@ stream.css =
 	'.{class:more} .echo-message { padding: 0; border: none; border-radius: 0; }';
 
 return App.create(stream);
+
 });

@@ -119,6 +119,7 @@ plugin.methods._assembleButton = function() {
 };
 
 return Plugin.create(plugin);
+
 });
 
 Echo.define("echo/streamserver/plugins/submit-janrain-sharing", [
@@ -488,6 +489,7 @@ plugin.css =
 	'.echo-sdk-ui .{plugin.class:shareContainer} input.{plugin.class:shareCheckbox} { margin: 0px; margin-right: 3px; padding: 0px; }';
 
 return Plugin.create(plugin);
+
 });
 
 

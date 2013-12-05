@@ -122,4 +122,5 @@ item.css =
 	'.{class:only-avatars} .{class:container} { white-space: normal; }';
 
 return App.create(item);
+
 });

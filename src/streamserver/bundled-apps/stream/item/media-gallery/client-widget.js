@@ -245,5 +245,6 @@ mediaGallery.css =
 	'.{class:control}:hover { background-color: #ee7b11; }' +
 	'.{class:activeControl}, .{class:activeControl}:hover { background-color: #524d4d; }';
 
-return App.create(mediaGallery);	
+return App.create(mediaGallery);
+
 });

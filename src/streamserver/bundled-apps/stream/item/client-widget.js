@@ -1390,4 +1390,5 @@ item.css =
 	itemDepthRules.join("\n");
 
 return App.create(item);
+
 });

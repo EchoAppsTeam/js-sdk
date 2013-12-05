@@ -83,6 +83,7 @@ plugin.methods._assembleButton = function() {
 };
 
 return Plugin.create(plugin);
+
 });
 
 Echo.define("echo/streamserver/plugins/submit-edit", [
@@ -274,4 +275,5 @@ plugin.css =
 	'.{plugin.class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }';
 
 return Plugin.create(plugin);
+
 });

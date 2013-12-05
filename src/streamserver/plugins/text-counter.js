@@ -121,4 +121,5 @@ plugin.renderers.counterLabel = function(element) {
 };
 
 return Plugin.create(plugin);
+
 });

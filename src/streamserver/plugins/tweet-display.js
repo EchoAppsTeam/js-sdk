@@ -359,4 +359,5 @@ plugin.css =
 	".{plugin.class:tweetDate} { float: right; }";
 
 return Plugin.create(plugin);
+
 });

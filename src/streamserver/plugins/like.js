@@ -237,6 +237,7 @@ plugin.css =
 	'.{plugin.class:highlight} { line-height: 23px; }';
 
 return Plugin.create(plugin);
+
 });
 
 Echo.define("echo/streamserver/plugins/facepile-like", [
@@ -315,4 +316,5 @@ plugin.css =
 	'.{plugin.class:highlight} { display: inline-block; line-height: 16px; background-color: #EEEEEE; padding: 1px 3px; border: 1px solid #D2D2D2; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; margin: 0px 2px; }';
 
 return Plugin.create(plugin);
+
 });

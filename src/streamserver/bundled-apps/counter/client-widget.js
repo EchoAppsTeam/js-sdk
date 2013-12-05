@@ -272,4 +272,5 @@ counter.methods._error = function(data, options) {
 };
 
 return App.create(counter);
+
 });

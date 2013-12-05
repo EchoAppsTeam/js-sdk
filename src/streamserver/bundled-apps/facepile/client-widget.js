@@ -626,4 +626,5 @@ pile.css =
 	'.{class:more} .echo-message-icon { display: inline; margin: 0px 5px; }';
 
 return App.create(pile);
+
 });
