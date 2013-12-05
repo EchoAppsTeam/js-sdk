@@ -11,7 +11,7 @@ Echo.define("echo/view", [
  * In addition to the rendering facilities, this class maintains the list of elements within
  * the given view ("view elements collection") and provides the interface to access/update them.
  *
- *		var view = new View({
+ *		var view = new Echo.View({
  *			"cssPrefix": "some-prefix-",
  *			"renderers": {
  *				"header": function(element) {
@@ -59,7 +59,7 @@ Echo.define("echo/view", [
  * Specifies class configuration parameters.
  *
  * @param {String} [config.cssPrefix]
- * CSS class name prefix used by the View to detect whether a certain element
+ * CSS class name prefix used by the Echo.View to detect whether a certain element
  * should be added into the view elements collection (if the element CSS class name
  * matches the prefix) and which renderer should be applied in case the element
  * satisfies the CSS prefix match condition.
@@ -97,14 +97,14 @@ Echo.define("echo/view", [
  *
  * @param {Object} [config.data]
  * Object with the data to be inserted into the template into the {data:%KEY%} placeholder.
- * The {data:%KEY%} is a default placeholder supported by the View even if no
+ * The {data:%KEY%} is a default placeholder supported by the Echo.View even if no
  * substitution rules were defined in the config via "substitutions" field.
  *
  * @param {String} [config.template]
  * Template which should be processed using a given substitution rules and
  * the set of renderers.
  * Note: in order to prevent elements overriding in the view elements collection,
- * make sure that the template defined in the View constructor call contains
+ * make sure that the template defined in the Echo.View constructor call contains
  * elements with the unique CSS class names (matching the CSS prefix).
  */
 var View = function(config) {
@@ -123,7 +123,7 @@ var View = function(config) {
  * @param {String} name
  * The name of the element in the view to be obtained.
  * The name equals to a CSS class name defined for the element minus the CSS prefix
- * defined in the View object config. For example, if an element has the
+ * defined in the Echo.View object config. For example, if an element has the
  * "echo-item-container" CSS class and the "echo-item-" CSS prefix was defined
  * during the object constructor call, the element will be available using
  * the "container" name. If element has more than one CSS class name matching
@@ -191,7 +191,7 @@ View.prototype.rendered = function() {
  *
  * @param {Object} [args.data]
  * Object with the data to be inserted into the template into the {data:%KEY%} placeholder.
- * The {data:%KEY%} is a default placeholder supported by the View even if no
+ * The {data:%KEY%} is a default placeholder supported by the Echo.View even if no
  * substitution rules were defined in the config via "substitutions" field.
  *
  * @param {String} [args.template]
@@ -240,16 +240,16 @@ View.prototype.render = function(args) {
 };
 
 /**
- * Function which instantiates an View object with the confing of the current instance.
+ * Function which instantiates an Echo.View object with the confing of the current instance.
  * This function is helpful when you need to process the template using the rules and
- * renderers specified for the parent View class instance.
+ * renderers specified for the parent Echo.View class instance.
  *
  * @param [config]
- * Configuration overrides object. See View class constructor
+ * Configuration overrides object. See Echo.View class constructor
  * to get more information about the config object fields and types.
  *
  * @return {Object}
- * New View class instance with the configuration params taken from the current instance.
+ * New Echo.View class instance with the configuration params taken from the current instance.
  */
 View.prototype.fork = function(config) {
 	return new View($.extend(true, {}, this.config, config));

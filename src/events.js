@@ -19,14 +19,14 @@ Echo.define("echo/events", [
  * Example:
  *
  * 	// Subscribe to the event.
- * 	Events.subscribe({
+ * 	Echo.Events.subscribe({
  * 		"topic": "Echo.StreamServer.User.onInvalidate",
  * 		"context": "global",
  * 		"handler": app.refresh
  * 	});
  *
  * 	// And then publish event:
- * 	Events.publish({
+ * 	Echo.Events.publish({
  * 		"topic": "Echo.StreamServer.User.onInvalidate",
  * 		"data": user.is("logged") ? user.data : {}
  * 	});

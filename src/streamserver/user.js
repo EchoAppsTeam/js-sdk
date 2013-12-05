@@ -171,7 +171,7 @@ User.has = function(key, value) {
  * Method to check if the value of a certain user object field belongs to the
  * array of values.
  *
- * This function is very similar to the User.has with the difference
+ * This function is very similar to the Echo.StreamServer.User.has with the difference
  * that the value of the second argument should be `Array`.
  *
  * @param {String} key
@@ -331,18 +331,18 @@ User._listenEvents = function() {
 		if (message.type !== "identity/ack") return;
 		user._init(function() {
 			/**
-			 * @echo_event UserSession.onInvalidate
+			 * @echo_event Echo.StreamServer.User.onInvalidate
 			 * Triggered after user has logged in or logged out.
 			 *
 			 * @param {String} topic
-			 * Name of the event to subscribe (ex: "UserSession.onInvalidate").
+			 * Name of the event to subscribe (ex: "Echo.StreamServer.User.onInvalidate").
 			 *
 			 * @param {Object} data
 			 * Object which is returned by the users/whoami API endpoint or empty
 			 * object for logout events.
 			 *
 			 * @param {Object} data.echo
-			 * "echo" section contains three elements.
+			 * Echo section contains three elements.
 			 *
 			 * @param {Array} data.echo.roles
 			 * Array of roles.
@@ -413,7 +413,7 @@ User._init = function(callback) {
 		 * empty object for logout events.
 		 *
 		 * @param {Object} data.echo
-		 * section contains three elements.
+		 * Echo section contains three elements.
 		 *
 		 * @param {Array} data.echo.roles
 		 * Array of roles.

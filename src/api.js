@@ -45,13 +45,13 @@ API.Transport.prototype._prepareURL = function() {
 
 /**
  * @ignore
- * @class API.Transports.WebSockets
+ * @class Echo.API.Transports.WebSockets
  */
 API.Transports.WebSockets = Utils.inherit(API.Transport, function(config) {
 	if (!config || !config.uri) {
 		Utils.log({
 			"type": "error",
-			"component": "API.Transports.WebSockets",
+			"component": "Echo.API.Transports.WebSockets",
 			"message": "Unable to initialize WebSockets transport, config is invalid",
 			"args": {"config": config}
 		});
@@ -305,7 +305,7 @@ API.Transports.WebSockets.available = function() {
 
 /**
  * @ignore
- * @class API.Transports.AJAX
+ * @class Echo.API.Transports.AJAX
  */
 API.Transports.AJAX = Utils.inherit(API.Transport, function(config) {
 	config = $.extend({
@@ -382,7 +382,7 @@ API.Transports.AJAX.available = function() {
 
 /**
  * @ignore
- * @class API.Transports.XDomainRequest
+ * @class Echo.API.Transports.XDomainRequest
  */
 API.Transports.XDomainRequest = Utils.inherit(API.Transports.AJAX, function() {
 	return API.Transports.XDomainRequest.parent.constructor.apply(this, arguments);
@@ -493,7 +493,7 @@ API.Transports.XDomainRequest.available = function(config) {
 
 /**
  * @ignore
- * @class API.Transports.JSONP
+ * @class Echo.API.Transports.JSONP
  */
 API.Transports.JSONP = Utils.inherit(API.Transports.AJAX, function(config) {
 	return API.Transports.JSONP.parent.constructor.apply(this, arguments);
@@ -588,7 +588,7 @@ API.Request = function(config) {
 	if (!config || !config.endpoint) {
 		Utils.log({
 			"type": "error",
-			"component": "API",
+			"component": "Echo.API",
 			"message": "Unable to initialize API request, config is invalid",
 			"args": {"config": config}
 		});

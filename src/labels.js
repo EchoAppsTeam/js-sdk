@@ -18,7 +18,7 @@ Echo.define("echo/labels", [
  *
  * Example:
  *
- *     var labels = new Labels({
+ *     var labels = new Echo.Labels({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream");
@@ -46,7 +46,7 @@ Echo.define("echo/labels", [
  * Component namespace.
  *
  * @return {Object}
- * The reference to the given Labels class instance.
+ * The reference to the given Echo.Labels class instance.
  */
 
 var Labels = function(labels, namespace) {
@@ -65,7 +65,7 @@ var Labels = function(labels, namespace) {
  * If current instance doesn't contain this particular language variable
  * it will fall back to the global language variable list.
  *
- *     var labels = new Labels({
+ *     var labels = new Echo.Labels({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream");
@@ -99,7 +99,7 @@ Labels.prototype.get = function(name, data) {
  * the particular component instance.For global text definitions and
  * localization purposes the static method should be used.
  *
- *     var labels = new Labels({
+ *     var labels = new Echo.Labels({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream");
@@ -137,29 +137,29 @@ Labels.prototype.set = function(labels) {
  * In this case the `isDefault` param can be omitted or set to `false`.
  * The values overridden with the function will be available globally.
  *
- *     Labels.set({
+ *     Echo.Labels.set({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream"); // setting custom labels
  *
- *     Labels.get("live", "Stream"); // returns "Live"
- *     Labels.get("paused", "Stream"); // returns "Paused"
+ *     Echo.Labels.get("live", "Stream"); // returns "Live"
+ *     Echo.Labels.get("paused", "Stream"); // returns "Paused"
  *
- *     Labels.set({
+ *     Echo.Labels.set({
  *         "live": "Live...",
  *         "paused": "Paused..."
  *     }, "Stream", true); // setting default labels
  *
- *     Labels.get("live", "Stream"); // returns "Live" (custom label is not overridden by default)
- *     Labels.get("paused", "Stream"); // returns "Paused" (custom label is not overridden by default)
+ *     Echo.Labels.get("live", "Stream"); // returns "Live" (custom label is not overridden by default)
+ *     Echo.Labels.get("paused", "Stream"); // returns "Paused" (custom label is not overridden by default)
  *
- *     Labels.set({
+ *     Echo.Labels.set({
  *         "live": "Live label",
  *         "paused": "Paused label"
  *     }, "Stream"); // overriding custom labels
  *
- *     Labels.get("live", "Stream"); // returns "Live label"
- *     Labels.get("paused", "Stream"); // returns "Paused label"
+ *     Echo.Labels.get("live", "Stream"); // returns "Live label"
+ *     Echo.Labels.get("paused", "Stream"); // returns "Paused label"
  *
  * @param {Object} labels
  * Object containing the list of language variables.
@@ -188,13 +188,13 @@ Labels.set = function(labels, namespace, isDefault) {
  * If value of the particular language variable is not found in the localization
  * list it will fall back to the default language variable value.
  *
- *     Labels.set({
+ *     Echo.Labels.set({
  *         "live": "Live",
  *         "paused": "Paused"
  *     }, "Stream");
  *
- *     Labels.get("live", "Stream"); // returns "Live"
- *     Labels.get("Stream.paused"); // returns "Paused"
+ *     Echo.Labels.get("live", "Stream"); // returns "Live"
+ *     Echo.Labels.get("Stream.paused"); // returns "Paused"
  *
  * @param {String} name
  * Language variable name.
