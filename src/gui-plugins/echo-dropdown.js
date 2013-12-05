@@ -7,7 +7,7 @@ Echo.define("echo/gui/dropdown", [
 /**
  * @class Echo.GUI.Dropdown
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#dropdowns" target="_blank">bootstrap-dropdown.js</a>.
- * The GUI.Dropdown class provides a simplified interface to work with the
+ * The Echo.GUI.Dropdown class provides a simplified interface to work with the
  * Bootstrap Dropdown JS class.
  * Echo wrapper assembles the HTML code required for Bootstrap Dropdown JS class
  * based on the parameters specified in the config and initializes
@@ -15,7 +15,7 @@ Echo.define("echo/gui/dropdown", [
  *
  * Example:
  *
- * 	var dropdown = new GUI.Dropdown({
+ * 	var dropdown = new Echo.GUI.Dropdown({
  * 		"target": ".css-selector",
  * 		"title": "Dropdown title",
  * 		"extraClass": "nav",

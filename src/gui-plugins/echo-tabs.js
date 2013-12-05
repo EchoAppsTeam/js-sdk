@@ -7,7 +7,7 @@ Echo.define("echo/gui/tabs", [
 /**
  * @class Echo.GUI.Tabs
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#tabs" target="_blank">bootstrap-tab.js</a>.
- * The GUI.Tabs class provides a simplified interface to work with
+ * The Echo.GUI.Tabs class provides a simplified interface to work with
  * the Bootstrap Tabs JS class.
  * Echo wrapper assembles the HTML code required for Bootstrap Tabs JS class
  * based on the parameters specified in the config and initializes
@@ -15,7 +15,7 @@ Echo.define("echo/gui/tabs", [
  *
  * Example:
  *
- * 	var myTabs = new GUI.Tabs({
+ * 	var myTabs = new Echo.GUI.Tabs({
  * 		"target": ".css-selector",
  * 		"entries": [{
  * 			"id": "tab1",
@@ -59,7 +59,7 @@ Echo.define("echo/gui/tabs", [
  *
  * @cfg {String} [idPrefix=""]
  * Prefix which helps to make the tab id unique across the page.
- * Every GUI.Tabs instance should have its own unique prefix.
+ * Every Echo.GUI.Tabs instance should have its own unique prefix.
  *
  * Examples: "my-tabs-section", "my-product-tabs".
  *

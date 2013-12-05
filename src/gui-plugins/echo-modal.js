@@ -7,7 +7,7 @@ Echo.define("echo/gui/modal", [
 /**
  * @class Echo.GUI.Modal
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#modals" target="_blank">bootstrap-modal.js</a>.
- * The GUI.Modal class provides a simplified interface to work with the
+ * The Echo.GUI.Modal class provides a simplified interface to work with the
  * Bootstrap Modal JS class.
  * Echo wrapper assembles the HTML code required for Bootstrap Modal JS class
  * based on the parameters specified in the config and initializes
@@ -15,7 +15,7 @@ Echo.define("echo/gui/modal", [
  *
  * Example:
  *
- * 	var myModal = new GUI.Modal({
+ * 	var myModal = new Echo.GUI.Modal({
  * 		"show": true,
  * 		"backdrop": true,
  * 		"keyboard": true,

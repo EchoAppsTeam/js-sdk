@@ -8,12 +8,12 @@ Echo.define("echo/configuration", [
 /**
  * @class Echo.Configuration
  * Class implements the interface for convenient work with different
- * configurations. The Configuration class is used in various
+ * configurations. The Echo.Configuration class is used in various
  * places of Echo JS SDK components.
  *
  * Example:
  *
- *     var config = new Configuration({
+ *     var config = new Echo.Configuration({
  *         "key1": "value1",
  *         "key2": {
  *             "key3": "value3"
@@ -47,7 +47,7 @@ Echo.define("echo/configuration", [
  * if any additional processing of the config field value is required.
  *
  * @return {Object}
- * Reference to the given Configuration class instance.
+ * Reference to the given Echo.Configuration class instance.
  */
 
 // IMPORTANT: "keepRefsFor" parameter remains private for now. Get rid of

@@ -16,7 +16,7 @@ var StreamServerAPI = {};
  * Class implements the interaction with the
  * <a href="http://wiki.aboutecho.com/w/page/35105642/API-section-items" target="_blank">Echo StreamServer API</a>
  *
- *     var request = StreamServer.API.request({
+ *     var request = Echo.StreamServer.API.request({
  *         "endpoint": "search",
  *         "data": {
  *             "q": "childrenof: http://example.com/js-sdk",
@@ -544,7 +544,7 @@ StreamServerAPI.request = function(config) {
 };
 
 //
-// StreamServer.API.Polling definition
+// Echo.StreamServer.API.Polling definition
 // Implements a machinery for the polling live updates
 //
 
@@ -673,7 +673,7 @@ StreamServerAPI.Polling.prototype._changeTimeout = function(data) {
 };
 
 //
-// StreamServer.API.WebSockets definition
+// Echo.StreamServer.API.WebSockets definition
 // Implements a machinery for the live updates via WebSockets
 //
 StreamServerAPI.WebSockets = Utils.inherit(StreamServerAPI.Polling, function(config) {

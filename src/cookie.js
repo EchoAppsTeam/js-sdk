@@ -13,13 +13,13 @@ var _decode = function(s) {
  *
  * Example:
  *
- *     Cookie.set("key", "value");
- *     Cookie.get("key"); // returns "value"
+ *     Echo.Cookie.set("key", "value");
+ *     Echo.Cookie.get("key"); // returns "value"
  *
- *     Cookie.remove("key");
- *     Cookie.get("key"); // returns "undefined"
+ *     Echo.Cookie.remove("key");
+ *     Echo.Cookie.get("key"); // returns "undefined"
  *
- *     Cookie.set("key2", "value2", {"expires": 7}); // this cookie expires in 7 days
+ *     Echo.Cookie.set("key2", "value2", {"expires": 7}); // this cookie expires in 7 days
  *
  * @package loader.js
  */

@@ -475,7 +475,7 @@ Plugin._getClassName = function(name, component) {
 };
 
 /**
- * @class Plugin.Config
+ * @class Echo.Plugin.Config
  * Echo Plugin interlayer for Configuration utilization.
  *
  * @private
@@ -602,4 +602,5 @@ Plugin.Events.prototype.unsubscribe = function(params) {
 };
 
 return Plugin;
+
 });

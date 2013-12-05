@@ -7,7 +7,7 @@ Echo.define("echo/gui/button", [
 /**
  * @class Echo.GUI.Button
  * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#buttons">bootstrap-button.js</a>.
- * The GUI.Button class provides a simplified interface to work with the
+ * The Echo.GUI.Button class provides a simplified interface to work with the
  * Bootstrap Button JS class.
  * Echo wrapper assembles the HTML code required for Bootstrap Button JS class
  * based on the parameters specified in the config and initializes
@@ -18,7 +18,7 @@ Echo.define("echo/gui/button", [
  * 	element.on("click", function() {
  * 		// your click action handler...
  * 	});
- * 	var button = new GUI.Button({
+ * 	var button = new Echo.GUI.Button({
  * 		"target": element,
  * 		"label": "Button label",
  * 		"icon": "http://example.com/icon.png",

@@ -12,7 +12,7 @@ Echo.define("echo/utils", [
 /**
  * @class Echo.Utils
  * Static class implements common methods of data processing.
- * The Utils class is used in various places of Echo JS SDK components.
+ * The Echo.Utils class is used in various places of Echo JS SDK components.
  *
  * @package environment.pack.js
  */
@@ -43,7 +43,7 @@ Utils.regexps = {
  *     //     .example-class { font-size: 12px; }
  *     // </style>
  *
- *     Utils.addCSS(
+ *     Echo.Utils.addCSS(
  *         '.echo-class { font-size: 14px; }'
  *         , 'echo-class-id');
  *     // returns true because styles with id = 'echo-class-id' weren't added before
@@ -52,7 +52,7 @@ Utils.regexps = {
  *     //     .echo-class { font-size: 14px; }
  *     // </style>
  *
- *     Utils.addCSS(
+ *     Echo.Utils.addCSS(
  *         '.echo-new-class { font-size: 16px; }'
  *         , 'echo-class-id');
  *     // returns false because styles with id = 'echo-class-id' were added before
@@ -113,7 +113,7 @@ Utils.addCSS = function(cssCode, id) {
  * @static
  * Method to check whether the given set of CSS rules was already added into the page.
  *
- * This function might be used in conjunction with the Utils.addCSS function
+ * This function might be used in conjunction with the Echo.Utils.addCSS function
  * to check certain conditions before adding new styles.
  *
  * @param {String} id
@@ -137,11 +137,11 @@ Utils.hasCSS = function(id) {
  * callback function. The first argument is the object that is available
  * in callback function to accumulate items.
  *
- *     var array = Utils.foldl([], [1, 2, 3], function(item, acc) {
+ *     var array = Echo.Utils.foldl([], [1, 2, 3], function(item, acc) {
  *         acc.push(item);
  *     }); // array will be [1, 2, 3];
  *
- *     var hash = Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
+ *     var hash = Echo.Utils.foldl({}, {"key1": "value1", "key2": "value2"}, function(item, acc, key) {
  *         if (key === "key2") return;
  *         acc[key] = item;
  *     }); // hash will be {"key1": "value1"};
@@ -193,9 +193,9 @@ Utils.foldl = function(acc, object, callback) {
  *         }
  *     };
  *
- *     Utils.get(data, "key1"); // returns "value1"
- *     Utils.get(data, "key2"); // returns object {"key2-1": "value2-1"}
- *     Utils.get(data, "key2.key2-1"); // returns "value2-1"
+ *     Echo.Utils.get(data, "key1"); // returns "value1"
+ *     Echo.Utils.get(data, "key2"); // returns object {"key2-1": "value2-1"}
+ *     Echo.Utils.get(data, "key2.key2-1"); // returns "value2-1"
  *
  * @param {Object} obj
  * The source object where the value defined for the given key should be looked for.
@@ -264,10 +264,10 @@ Utils.get = function(obj, key, defaults, callback) {
  *         }
  *     };
  *
- *     Utils.remove(data, "key1"); // returns true and key1 delete
- *     Utils.remove(data, "key2"); // returns true and key2 delete
- *     Utils.remove(data, "key2.key2-2.key2-2-1"); // returns true and obj.key2.key2-2 returns empty object
- *     Utils.remove(data, "not_defined_key"); // returns false
+ *     Echo.Utils.remove(data, "key1"); // returns true and key1 delete
+ *     Echo.Utils.remove(data, "key2"); // returns true and key2 delete
+ *     Echo.Utils.remove(data, "key2.key2-2.key2-2-1"); // returns true and obj.key2.key2-2 returns empty object
+ *     Echo.Utils.remove(data, "not_defined_key"); // returns false
  *
  * @param {Object} obj
  * Specifies the target object which should be updated.
@@ -305,8 +305,8 @@ Utils.remove = function(obj, key) {
  *         }
  *     };
  *
- *     Utils.set(data, "key1", "new value"); // data["key1"] will be "new value"
- *     Utils.set(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
+ *     Echo.Utils.set(data, "key1", "new value"); // data["key1"] will be "new value"
+ *     Echo.Utils.set(data, "key1", {"key1-1": "value1-1"}); // data["key1"] will be {"key1-1":"value1-1"}
  *
  * @param {Object} obj
  * Specifies the target object which should be updated.
@@ -355,7 +355,7 @@ Utils._prepareFieldAccessKey = function(key) {
  * HTML entities if they are to preserve their meanings. This function returns a
  * string with these conversions made.
  *
- *     Utils.htmlize("special characters: &<>"); // returns "special characters: &amp;&lt;&gt;"
+ *     Echo.Utils.htmlize("special characters: &<>"); // returns "special characters: &amp;&lt;&gt;"
  *
  * Note: the function works with the "string" type argument only.
  * If the type of the value passed to the function differs from the "string" type,
@@ -378,13 +378,13 @@ Utils.htmlize = function(text) {
  * These methods convert JavaScript object to JSON string. 
  * This function uses JSON.stringify() method if it is available in the browser.
  *
- *     Utils.objectToJSON(null); // returns 'null'
- *     Utils.objectToJSON(123); // returns '123'
- *     Utils.objectToJSON(Number.POSITIVE_INFINITY); // returns 'null'
- *     Utils.objectToJSON("string\n"); // returns '"string\n"'
- *     Utils.objectToJSON(true); // returns true
- *     Utils.objectToJSON(["value1", "value2"]); // returns '["value1","value2"]'
- *     Utils.objectToJSON({"k1": "v1", "k2": "v2"}); // returns '{"k1":"v1","k2":"v2"}'
+ *     Echo.Utils.objectToJSON(null); // returns 'null'
+ *     Echo.Utils.objectToJSON(123); // returns '123'
+ *     Echo.Utils.objectToJSON(Number.POSITIVE_INFINITY); // returns 'null'
+ *     Echo.Utils.objectToJSON("string\n"); // returns '"string\n"'
+ *     Echo.Utils.objectToJSON(true); // returns true
+ *     Echo.Utils.objectToJSON(["value1", "value2"]); // returns '["value1","value2"]'
+ *     Echo.Utils.objectToJSON({"k1": "v1", "k2": "v2"}); // returns '{"k1":"v1","k2":"v2"}'
  *
  * @param {Mixed} obj
  * The value to be converted.
@@ -450,10 +450,10 @@ Utils.objectToJSON = function(obj) {
  * and without truncating tags. If truncation hits the middle of the word, the word
  * itself is preserved and truncation starts right after this word.
  *
- *     Utils.htmlTextTruncate("Welcome to Echo SDK", 5, "..."); // returns "Welcome..."
- *     Utils.htmlTextTruncate("<div>Welcome to Echo SDK", 5, "", true); // returns "<div>Welcome</div>"
- *     Utils.htmlTextTruncate("<div>Welcome to Echo SDK</div>", 3, "...", true); // returns "<div>Welcome...</div>"
- *     Utils.htmlTextTruncate("<div>Welcome to Echo SDK</div>", 17, "...", true); // returns "<div>Welcome to Echo SDK</div>"
+ *     Echo.Utils.htmlTextTruncate("Welcome to Echo SDK", 5, "..."); // returns "Welcome..."
+ *     Echo.Utils.htmlTextTruncate("<div>Welcome to Echo SDK", 5, "", true); // returns "<div>Welcome</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>Welcome to Echo SDK</div>", 3, "...", true); // returns "<div>Welcome...</div>"
+ *     Echo.Utils.htmlTextTruncate("<div>Welcome to Echo SDK</div>", 17, "...", true); // returns "<div>Welcome to Echo SDK</div>"
  *
  * @param {String} text
  * The string to be truncated.
@@ -541,7 +541,7 @@ Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  *
  * This function returns a string with all HTML tags stripped from the given string.
  *
- *     Utils.stripTags("<div>Content</div>"); // returns "Content"
+ *     Echo.Utils.stripTags("<div>Content</div>"); // returns "Content"
  *
  * Note: the function works with the "string" type argument only. If the value with
  * type different from "string" is passed to the function, the same value would be
@@ -566,7 +566,7 @@ Utils.stripTags = function(text) {
  * it only breaks it up into the parts.
  *
  *     var url = "http://domain.com:8080/some/path/?query_string#hash_value";
- *     Utils.parseURL(url);
+ *     Echo.Utils.parseURL(url);
  *     // returns {
  *     //     "scheme": "http",
  *     //     "domain": "domain.com",
@@ -622,9 +622,9 @@ Utils.parseURL = function(url) {
  *             '<div class="footer">footer</div>' +
  *         '</div>';
  *
- *     Utils.getVisibleColor( $(".header", template) ); // returns "rgb(0, 128, 0)"
- *     Utils.getVisibleColor( $(".section1", template) ); // returns "rgb(255, 0, 0)"
- *     Utils.getVisibleColor( $(".footer", template) ); // returns "transparent"
+ *     Echo.Utils.getVisibleColor( $(".header", template) ); // returns "rgb(0, 128, 0)"
+ *     Echo.Utils.getVisibleColor( $(".section1", template) ); // returns "rgb(255, 0, 0)"
+ *     Echo.Utils.getVisibleColor( $(".footer", template) ); // returns "transparent"
  *
  * @param {HTMLElement} element
  * HTML element which visible color is being determined.
@@ -648,8 +648,8 @@ Utils.getVisibleColor = function(element) {
  * @static
  * Method to convert datetime value from string representation to numeric timestamp.
  *
- *     Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // returns 886930050
- *     Utils.timestampFromW3CDTF("1998-02-08T09:27:30.733Z"); // returns 886930050.733
+ *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30Z"); // returns 886930050
+ *     Echo.Utils.timestampFromW3CDTF("1998-02-08T09:27:30.733Z"); // returns 886930050.733
  *
  * The method can correctly parse any date format supported by user's browser.
  * However ISO 8601 format is understood independing of native support.
@@ -720,7 +720,7 @@ Utils.isMobileDevice = function() {
  * This function returns a unique string specifying the number of milliseconds between
  * midnight January 1, 1970 (GMT) and the current time plus a random number.
  *
- *     Utils.getUniqueString(); // returns something like "134086853327622290480640764643"
+ *     Echo.Utils.getUniqueString(); // returns something like "134086853327622290480640764643"
  *
  * @return {String}
  * Unique random string.
@@ -907,7 +907,7 @@ Utils.log = function(data) {
 /**
  * @static
  * Function to call the functions from the list and call callback function
- * after it. Functions are called async. For sync calls use Utils.sequentialCall
+ * after it. Functions are called async. For sync calls use Echo.Utils.sequentialCall
  *
  * @param {Array} actions
  * List of functions to be called.
@@ -1056,16 +1056,16 @@ Utils.invoke = function(mixed, context) {
  * If the given function completed its execution without throwing an exception,
  * then the "safelyExecute" returns result of that function execution.
  * Otherwise, the "safelyExecute" catches an exception and prints the
- * message to the console using the Utils#log function.
+ * message to the console using the Echo.Utils#log function.
  * It is useful in case you want to avoid execution flow interruption
  * by the code which might potentially throw an exception.
  *
  *		// executes function without arguments and context
- *		Utils.safelyExecute(function() {});
+ *		Echo.Utils.safelyExecute(function() {});
  *		// returns undefined
  *
  *		// executes function with one argument & without context
- *		Utils.safelyExecute(function() {}, "string param");
+ *		Echo.Utils.safelyExecute(function() {}, "string param");
  *		// returns undefined
  *
  *		someObject = {
@@ -1077,11 +1077,11 @@ Utils.invoke = function(mixed, context) {
  *		};
  *
  *		// executes function with arguments & context
- *		Utils.safelyExecute(someObject.fn, [[], "string param"], someObject);
+ *		Echo.Utils.safelyExecute(someObject.fn, [[], "string param"], someObject);
  *		// returns ["some string", [], "string param"]
  *
  *		// executes the function which throws an exception
- *		Utils.safelyExecute(function() { throw "Some error"; });
+ *		Echo.Utils.safelyExecute(function() { throw "Some error"; });
  *		// returns undefined and prints "Some error" message to the console
  *
  * @param {Function} fn
@@ -1178,7 +1178,7 @@ Utils.placeImage = function(args) {
  * Function which accepts two arguments (numbers) as a range and
  * generates a random number in the given range.
  *
- *		Utils.random(1, 5); // returns a random number in range of [1, 5]
+ *		Echo.Utils.random(1, 5); // returns a random number in range of [1, 5]
  *
  * @param {Number} min
  * Number which is the lower limit of the range
