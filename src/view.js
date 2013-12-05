@@ -11,7 +11,6 @@ Echo.define("echo/view", [
  * In addition to the rendering facilities, this class maintains the list of elements within
  * the given view ("view elements collection") and provides the interface to access/update them.
  *
- * Example:
  *		var view = new View({
  *			"cssPrefix": "some-prefix-",
  *			"renderers": {

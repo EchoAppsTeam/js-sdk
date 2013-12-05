@@ -1,3 +1,4 @@
+// TODO: try to get rid of this module
 Echo.define("echo/variables", [], {});
 
 Echo.define("echo/utils", [
@@ -1112,7 +1113,7 @@ Utils.safelyExecute = function(fn, args, context) {
 		Utils.log({
 			"type": "error",
 			"message": e.message || e,
-			"component": (!!context && context.hasOwnProperty("name")) ? context.name : ""
+			"component": (context && context.hasOwnProperty("name")) ? context.name : ""
 		});
 	}
 };
@@ -1314,7 +1315,7 @@ Utils.getRelativeTime = function(datetime, processor) {
 	// less than 10 seconds or if the given date is "from the future" but
 	// within the 60 seconds range
 	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
-		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
+		when = d.toLocaleDateString() + ", " + d.toLocaleTimeString();
 	} else if (diff < 10) {
 		when = getLabel("justNow");
 	} else if (diff < 60) {

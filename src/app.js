@@ -423,7 +423,7 @@ App.prototype.initApp = function(spec) {
 	spec.config = this._normalizeAppConfig(
 		$.extend(true, {}, this.config.get("apps." + spec.id, {}), spec.config)
 	);
-	if(spec.component) {
+	if (spec.component) {
 		var App = spec.component;
 		this.set("apps." + spec.id, new App(spec.config));
 		return this.getApp(spec.id);
@@ -698,8 +698,8 @@ App.prototype._initializers.css = function() {
 							return cssPrefix + key;
 						}
 					}
-				})
-			, spec.id);
+				}),
+			spec.id);
 		} else {
 			Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 		}
@@ -1034,7 +1034,7 @@ definition.config.normalizer = {
 				if (pos >= 0) {
 					acc.order.splice(pos, 1);
 				}
-				if(plugin && plugin.url) {
+				if (plugin && plugin.url) {
 					var name = plugin.url.split("/").pop();
 					plugin["name"] = "";
 					name = name.split("-");
