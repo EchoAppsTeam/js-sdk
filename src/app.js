@@ -872,7 +872,11 @@ App.prototype._loadPluginScripts = function(callback) {
 			acc.push(app.config.get(url));
 		}
 	});
-	require(scripts, $.proxy(callback, app));
+	if (scripts.length) {
+		require(scripts, $.proxy(callback, app));
+	} else {
+		callback.call(app);
+	}
 };
 
 App.prototype._compileTemplate = function() {
