@@ -1006,6 +1006,7 @@ definition.config = {
 
 	/**
 	 * @cfg {Object} backplane
+	 * Object which contains the data to be passed into the Backplane.init call.
 	 */
 	"backplane": {}
 };
