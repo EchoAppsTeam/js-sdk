@@ -215,16 +215,9 @@ module.exports = function(grunt) {
 				"<%= dirs.dist %>/*",
 				"<%= clean.build %>"
 			],
-			"tests/units":{
-				"files": [{
-					"expand": true,
-					"cwd": "<%= dirs.dist %>/tests/unit/*",
-					"src": [
-						"!unit.pack.js",
-						"*"
-					]
-				}]
-			}
+			"tests/units": [
+				"<%= dirs.dist %>/tests/unit/!(unit.pack.js)"
+			]
 		},
 		"cssmin": {
 			"gui": {
