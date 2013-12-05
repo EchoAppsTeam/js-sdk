@@ -6,12 +6,6 @@ var $ = jQuery;
 if (!window.Echo) window.Echo = {};
 if (!Echo.Tests) Echo.Tests = {"Unit": {}};
 
-// tests will run in the order they were added
-QUnit.config.reorder = false;
-
-// don't execute tests automatically, we will do it manually later
-QUnit.config.autostart = false;
-
 QUnit.config.urlConfig.push({
 	"id": "noMockRequests",
 	"label": "Use real server requests",

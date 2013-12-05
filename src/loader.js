@@ -179,10 +179,13 @@ require.config({
 		"QUnit": {
 			exports: "QUnit",
 			init: function() {
+				// We shouldn`t load tests automatically, we`ll do it manually
 				QUnit.config.autoload = false;
+				// don't execute tests automatically, we will do it manually later
 				QUnit.config.autostart = false;
+				// tests will run in the order they were added
 				QUnit.config.reorder = false;
-				// We have to set autorun = false, becouse of requirejs. 
+				// We have to set autorun = false, because of requirejs. 
 				// We need it to make tests start synchronously.
 				QUnit.config.autorun = false;
 			}
