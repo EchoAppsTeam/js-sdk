@@ -345,7 +345,7 @@ item.methods.template = function() {
 		? this.templates.childrenTop
 		: this.templates.childrenBottom
 	) +
-	this.templates.mainFooter
+	this.templates.mainFooter;
 };
 
 /**

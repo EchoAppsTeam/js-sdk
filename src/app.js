@@ -48,7 +48,7 @@ var App = function() {};
  * Specifies the list of external events used by application.
  *
  * @param {Object} [definition.methods]
- * Specifies the list of application methods.
+ * Specifies the list of application instance methods.
  *
  * @param {Object} [definition.classMethods]
  * Specifies the list of application class methods.
