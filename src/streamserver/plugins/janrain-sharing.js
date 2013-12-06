@@ -83,8 +83,8 @@ plugin.labels = {
 };
 
 // let's copy these functions from the related plugin for Submit Application
-plugin.methods._share = Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.JanrainSharing.prototype._share;
-plugin.methods._showPopup = Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.JanrainSharing.prototype._showPopup;
+plugin.methods._share = SubmitJanrainSharing.prototype._share;
+plugin.methods._showPopup = SubmitJanrainSharing.prototype._showPopup;
 
 plugin.methods._prepareData = function(item) {
 	return {
@@ -491,5 +491,3 @@ plugin.css =
 return Plugin.create(plugin);
 
 });
-
-
