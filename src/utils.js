@@ -1306,8 +1306,10 @@ Utils.getRelativeTime = function(datetime, processor) {
 	processor = processor || $.noop;
 	var getLabel = function(ago, period) {
 		var key = period ? period + (ago === 1 ? "" : "s") + "Ago" : ago;
-		return processor(key, ago)
-			|| Utils.substitute({
+		var label = processor(key, ago);
+		return label && label !== key
+			? label
+			: Utils.substitute({
 				"template": Variables.labels[key],
 				"data": {"number": ago}
 			});
