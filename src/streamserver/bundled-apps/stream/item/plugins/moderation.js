@@ -1,10 +1,9 @@
-Echo.define("echo/streamserver/plugins/moderation", [
+Echo.define([
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
-	"echo/streamserver/api",
-	"echo/streamserver/plugins/stream-item-moderation"
-], function($, Plugin, Utils, StreamServerAPI, StreamItemModeration) {
+	"echo/streamserver/api"
+], function($, Plugin, Utils, StreamServerAPI) {
 
 "use strict";
 
@@ -653,30 +652,6 @@ plugin.css = function() {
 			return '.{plugin.class:status-icon-' + name + '} { background: url(' + Echo.require.toUrl("echo-assets/images/curation/status/" + name.toLowerCase()) + '.png) no-repeat; }';
 		}).join("");
 }();
-
-return Plugin.create(plugin);
-
-});
-
-Echo.define("echo/streamserver/plugins/stream-item-moderation", [
-	"jquery",
-	"echo/plugin"
-], function($, Plugin) {
-
-"use strict";
-
-var plugin = Plugin.definition("Moderation", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
-
-plugin.events = {
-	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Moderation.onUserUpdate": function(topic, args) {
-		this.events.publish({
-			"topic": "onUserUpdate",
-			"data": args,
-			"global": false
-		});
-		return {"stop": ["bubble"]};
-	}
-};
 
 return Plugin.create(plugin);
 

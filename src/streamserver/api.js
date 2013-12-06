@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/api", [
+Echo.define([
 	"jquery",
 	"echo/api",
 	"echo/configuration",

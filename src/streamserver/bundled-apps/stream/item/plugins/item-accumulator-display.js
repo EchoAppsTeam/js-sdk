@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/plugins/item-accumulator-display", [
+Echo.define([
 	"jquery",
 	"echo/plugin",
 	"echo/utils"

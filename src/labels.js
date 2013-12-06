@@ -1,4 +1,4 @@
-Echo.define("echo/labels", [
+Echo.define([
 	"jquery", 
 	"echo/utils"
 ], function($, Utils) {

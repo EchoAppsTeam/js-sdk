@@ -1,4 +1,4 @@
-Echo.define("echo/api", [
+Echo.define([
 	"jquery",
 	"echo/configuration",
 	"echo/events",

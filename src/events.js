@@ -1,4 +1,4 @@
-Echo.define("echo/events", [
+Echo.define([
 	"jquery",
 	"echo/utils"
 ], function($, Utils) {

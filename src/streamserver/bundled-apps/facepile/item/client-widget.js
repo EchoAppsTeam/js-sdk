@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/bundled-apps/facepile/item/client-widget", [
+Echo.define([
 	"jquery",
 	"echo/utils",
 	"require",

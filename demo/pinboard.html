@@ -57,9 +57,9 @@
 				"plugins": [{
 						"url": "echo/streamserver/plugins/pinboard-visualization"
 				}, {
-					"url": "echo/streamserver/plugins/reply",
+					"url": "echo/streamserver/bundled-apps/stream/plugins/reply",
 					"nestedPlugins": [{
-						"url": "echo/streamserver/plugins/form-auth",
+						"url": "echo/streamserver/bundled-apps/submit/plugins/form-auth",
 						"submitPermissions": "forceLogin",
 						"identityManager": {
 							"login": identityManager,
@@ -67,9 +67,9 @@
 						}
 					}]
 				}, {
-					"url": "echo/streamserver/plugins/edit"
+					"url": "echo/streamserver/bundled-apps/stream/item/plugins/edit"
 				}, {
-					"url": "echo/streamserver/plugins/like"
+					"url": "echo/streamserver/bundled-apps/stream/item/plugins/like"
 				}]
 			}
 		});

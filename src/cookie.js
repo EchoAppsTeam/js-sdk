@@ -1,4 +1,4 @@
-Echo.define("echo/cookie", [], function() {
+Echo.define([], function() {
 
 "use strict";
 

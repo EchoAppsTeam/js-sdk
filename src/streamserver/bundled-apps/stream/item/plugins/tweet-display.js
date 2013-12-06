@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/plugins/tweet-display", [
+Echo.define([
 	"jquery",
 	"echo/plugin",
 	"echo/utils",

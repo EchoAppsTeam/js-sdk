@@ -78,53 +78,6 @@ var paths = [{
 	"path": getURL("/third-party/jquery.pack"),
 	"modules": ["jquery-noconflict"]
 }, {
-	"path": getURL("/environment.pack"),
-	"modules": [
-		"echo/events",
-		"echo/utils",
-		"echo/labels",
-		"echo/configuration",
-		"echo/api",
-		"echo/streamserver/api",
-		"echo/streamserver/user",
-		"echo/view",
-		"echo/app",
-		"echo/plugin",
-		"echo/variables",
-		"echo/cookie"
-	]
-}, {
-	"path": getURL("/gui.pack"),
-	"modules": [
-		"echo/bootstrap-transition",
-		"echo/bootstrap-affix",
-		"echo/bootstrap-alert",
-		"echo/bootstrap-button",
-		"echo/bootstrap-modal",
-		"echo/bootstrap-carousel",
-		"echo/bootstrap-collapse",
-		"echo/bootstrap-dropdown",
-		"echo/bootstrap-tooltip",
-		"echo/bootstrap-popover",
-		"echo/bootstrap-scrollspy",
-		"echo/bootstrap-tab",
-		"echo/bootstrap-typeahead",
-		"echo/gui",
-		"echo/gui/modal",
-		"echo/gui/button",
-		"echo/gui/dropdown",
-		"echo/gui/tabs"
-	]
-}, {
-	//TODO: Test Pinboard without this defenition
-	"path": getURL("streamserver/plugins/pinboard-visualization"),
-	"modules": [
-		"echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget",
-		"echo/streamserver/plugins/pinboard-visualization",
-		"echo/streamserver/plugins/stream-item-pinboard-visualization",
-		"echo/streamserver/plugins/stream-pinboard-visualization"
-	]
-}, {
 	"path": getURL("/third-party/jquery/jquery.isotope.min"),
 	"modules": ["isotope"]
 }, {
@@ -137,7 +90,7 @@ require.config({
 	"paths": generatePaths(paths),
 	"map": {
 		"*": {
-			"css": "third-party/requirejs/css",
+			"css": "echo/third-party/requirejs/css",
 			"jquery": "jquery-noconflict"
 		},
 		"jquery-noconflict": {"jquery": "jquery"},

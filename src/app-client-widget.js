@@ -1,4 +1,4 @@
-Echo.define("echo/app-client-widget", [
+Echo.define([
 	"jquery",
 	"echo/utils",
 	"echo/streamserver/user",

@@ -164,18 +164,18 @@
 						"viaLabel": { "icon": true, "text": true }
 					},
 					"plugins": [{
-						"url": "echo/streamserver/plugins/tweet-display"
+						"url": "echo/streamserver/bundled-apps/stream/item/plugins/tweet-display"
 					}, {
-						"url": "echo/streamserver/plugins/reply",
+						"url": "echo/streamserver/bundled-apps/stream/item/plugins/reply",
 						"nestedPlugins": [{
-							"url": "echo/streamserver/plugins/form-auth",
+							"url": "echo/streamserver/bundled-apps/submit/plugins/form-auth",
 							"identityManager": {
 								"login": identityManager,
 								"signup": identityManager
 							}
 						}]
 					}, {
-						"url": "echo/streamserver/plugins/metadata-manager",
+						"url": "echo/streamserver/bundled-apps/stream/item/plugins/metadata-manager",
 						"controls": [{
 								"marker": "sticky",
 								"labelMark": "Pin",
@@ -186,14 +186,14 @@
 								"labelUnmark": "Unset Football tag"
 						}]
 					}, {
-						"url": "echo/streamserver/plugins/like"
+						"url": "echo/streamserver/bundled-apps/stream/item/plugins/like"
 					}, {
-						"url": "echo/streamserver/plugins/edit"
+						"url": "echo/streamserver/bundled-apps/stream/item/plugins/edit"
 					}, {
-						"url": "echo/streamserver/plugins/community-flag",
+						"url": "echo/streamserver/bundled-apps/stream/item/plugins/community-flag",
 						"showUserList": true
 					}, {
-						"url": "echo/streamserver/plugins/moderation"
+						"url": "echo/streamserver/bundled-apps/stream/item/plugins/moderation"
 					}]
 				});
 			</script>
@@ -236,14 +236,14 @@
 					"appkey": "echo.jssdk.demo.aboutecho.com",
 					"targetURL": "http://example.com/test-js-sdk",
 					"plugins": [{
-						"url": "echo/streamserver/plugins/form-auth",
+						"url": "echo/streamserver/bundled-apps/submit/plugins/form-auth",
 						"submitPermissions": "forceLogin",
 						"identityManager": {
 							"login": identityManager,
 							"signup": identityManager
 						}
 					}, {
-						"url": "echo/streamserver/plugins/text-counter",
+						"url": "echo/streamserver/bundled-apps/submit/plugins/text-counter",
 						"limit": 40,
 						"label": "You have typed {typed} chars, {left} chars left"
 					}]

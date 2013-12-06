@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/plugins/metadata-manager", [
+Echo.define([
 	"jquery",
 	"echo/plugin",
 	"echo/utils",

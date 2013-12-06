@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/plugins/janrain-auth", [
+Echo.define([
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
@@ -163,7 +163,7 @@ plugin.component.renderers.container = function(element) {
 plugin.renderers.auth = function(element) {
 	var plugin = this, fields = ["appId", "title", "width", "height", "buttons", "signinWidgetConfig"];
 	var janrainConnectorPlugin = Utils.foldl({
-		"url": "echo/streamserver/plugins/janrain-connector"
+		"url": "echo/streamserver/bundled-apps/auth/plugins/janrain-connector"
 	}, fields, function(param, acc) {
 		if (plugin.config.get(param)) {
 			acc[param] = plugin.config.get(param);

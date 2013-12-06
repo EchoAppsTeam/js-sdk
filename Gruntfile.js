@@ -171,6 +171,90 @@ module.exports = function(grunt) {
 		}
 	};
 
+	var requireModuleBandles = [{
+		"name": "loader",
+		"create": false,
+		"include": [
+			"third-party/requirejs/require",
+			"third-party/requirejs/css"
+		]
+	}, {
+		"name": "third-party/jquery.pack",
+		"create": true,
+		"include": [
+			"third-party/jquery/jquery",
+			"third-party/jquery/jquery-noconflict",
+			"third-party/jquery/jquery.ihint",
+			"third-party/jquery/jquery.viewport.mini"
+		]
+	}, {
+		"name": "environment.pack",
+		"create": true,
+		"include": [
+			"utils",
+			"events",
+			"labels",
+			"configuration",
+			"api",
+			"streamserver/api",
+			"streamserver/user",
+			"view",
+			"app",
+			"plugin",
+			"cookie"
+		]
+	}, {
+		"name": "streamserver.pack",
+		"create": true,
+		"include": [
+			"app-client-widget",
+			"streamserver/bundled-apps/counter/client-widget",
+			"streamserver/bundled-apps/stream/item/client-widget",
+			"streamserver/bundled-apps/stream/client-widget",
+			"streamserver/bundled-apps/facepile/item/client-widget",
+			"streamserver/bundled-apps/facepile/client-widget",
+			"streamserver/bundled-apps/submit/client-widget",
+			"streamserver/bundled-apps/auth/client-widget",
+			"streamserver/bundled-apps/stream/item/plugins/community-flag",
+			"streamserver/bundled-apps/submit/plugins/form-auth",
+			"streamserver/bundled-apps/stream/item/plugins/item-accumulator-display",
+			"streamserver/bundled-apps/auth/plugins/janrain-connector",
+			"streamserver/bundled-apps/stream/item/plugins/janrain-sharing",
+			"streamserver/bundled-apps/submit/plugins/janrain-sharing",
+			"streamserver/bundled-apps/stream/item/plugins/metadata-manager",
+			"streamserver/bundled-apps/submit/plugins/text-counter",
+			"streamserver/bundled-apps/stream/item/plugins/edit",
+			"streamserver/bundled-apps/submit/plugins/edit",
+			"streamserver/bundled-apps/stream/plugins/infinite-scroll",
+			"streamserver/bundled-apps/submit/plugins/janrain-auth",
+			"streamserver/bundled-apps/stream/item/plugins/like",
+			"streamserver/bundled-apps/facepile/item/plugins/like",
+			"streamserver/bundled-apps/stream/plugins/moderation",
+			"streamserver/bundled-apps/stream/item/plugins/moderation",
+			"streamserver/bundled-apps/stream/plugins/reply",
+			"streamserver/bundled-apps/stream/item/plugins/reply",
+			"streamserver/bundled-apps/submit/plugins/reply",
+			"streamserver/bundled-apps/stream/item/plugins/tweet-display"
+		]
+	}, {
+		"name": "streamserver/plugins/pinboard-visualization",
+		"create": true,
+		"include": [
+			"streamserver/bundled-apps/stream/item/media-gallery/client-widget",
+			"streamserver/bundled-apps/stream/plugins/pinboard-visualization"
+		]
+	}, {
+		"name": "gui.pack",
+		"create": true,
+		"include": [
+			"gui",
+			"gui/button",
+			"gui/modal",
+			"gui/dropdown",
+			"gui/tabs"
+		]
+	}];
+
 	var config = {
 		"dirs": dirs,
 		"sources": sources,
@@ -482,15 +566,36 @@ module.exports = function(grunt) {
 			}
 		},
 		"requirejs": {
+			"options": {
+				"appDir": "<%= dirs.src %>",
+				"baseUrl": "./",
+				"dir": "<%= dirs.build %>",
+				"optimize": "none",
+				"wrap": false,
+				"namespace": "Echo",
+				"removeCombined": false
+			},
 			"common": {
 				"options": {
-					"appDir": "<%= dirs.src %>",
-					"baseUrl": "./",
-					"dir": "<%= dirs.build %>",
-					"optimize": "none",
-					"wrap": false,
-					"namespace": "Echo",
+					"modules": requireModuleBandles,
+					"onModuleBundleComplete": function (data) {
+						if (!config.requirejs.modulesPaths) {
+							config.requirejs.modulesPaths = "";
+						}
+						if (data.name === "loader") {
+							return;
+						}
+						for (var i = 0; i < data.included.length; i++) {
+							config.requirejs.modulesPaths += "\"echo/" + data.included[i].replace(/\.[^.]+$/, "") + "\":echoURL+\"/" + data.name + "\",";
+						}
+					},
+					"fileExclusionRegExp": /\/images\//
+				}
+			},//FIXME: we shouldn`t run it once again! we don`t need loader task at all
+			"loader": {
+				"options": {
 					"removeCombined": true,
+<<<<<<< Updated upstream
 					"modules": [{
 						"name": "loader",
 						"include": [
@@ -568,6 +673,26 @@ module.exports = function(grunt) {
 						]
 					}],
 					fileExclusionRegExp: /\/images\//
+=======
+					"modules": requireModuleBandles,
+					"onBuildWrite": function (moduleName, path, contents) {
+						if (moduleName === "loader" && !!config.requirejs.modulesPaths) {
+							contents += "(function() {"
+								+ "var echoURL = Echo.Loader.getURL(\"\");"
+								+ "Echo.require.config({"
+								+ "\"paths\":{"
+								+ config.requirejs.modulesPaths + "}"
+								+ "});"
+								+ "})();";
+						} else {
+							contents =  contents.replace("Echo.define(\'", "Echo.define(\'echo/");
+						}
+						return contents;
+					},
+					"fileExclusionRegExp": /\/images\//
+					/*/^((?!\/loader.js).)*$/*/
+
+>>>>>>> Stashed changes
 				}
 			}
 		},

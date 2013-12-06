@@ -1,4 +1,4 @@
-Echo.define("echo/gui", [
+Echo.define([
 	"jquery",
 	"echo/configuration",
 	// FIXME: __DEPRECATED__

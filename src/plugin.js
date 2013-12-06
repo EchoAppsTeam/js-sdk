@@ -1,4 +1,4 @@
-Echo.define("echo/plugin", [
+Echo.define([
 	"jquery",
 	"echo/utils",
 	"echo/labels",

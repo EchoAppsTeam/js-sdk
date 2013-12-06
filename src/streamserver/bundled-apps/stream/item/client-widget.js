@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/bundled-apps/stream/item/client-widget", [
+Echo.define([
 	"jquery",
 	"echo/utils",
 	"echo/app-client-widget"

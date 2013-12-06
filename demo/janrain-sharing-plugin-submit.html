@@ -29,6 +29,7 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
+<<<<<<< Updated upstream
 		Echo.initApplication({
 			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
 			"module": "echo/streamserver/bundled-apps/submit/client-widget",
@@ -45,6 +46,20 @@
 					"appId": "echo"
 				}]
 			}
+=======
+		Echo.Loader.initApplication("echo/streamserver/bundled-apps/submit/client-widget", {
+			"backplane": {
+				"serverBaseURL": "https://api.echoenabled.com/v1",
+				"busName": "jskit"
+			},
+			"target": document.getElementById("submit"),
+			"appkey": "echo.jssdk.demo.aboutecho.com",
+			"targetURL": "http://echosandbox.com/use-cases/commenting",
+			"plugins": [{
+				"url": "echo/streamserver/bundled-apps/submit/plugins/janrain-sharing",
+				"appId": "echo"
+			}]
+>>>>>>> Stashed changes
 		});
 	</script>
 </body>

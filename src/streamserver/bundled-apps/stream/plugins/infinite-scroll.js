@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/plugins/infinite-scroll", [
+Echo.define([
 	"jquery",
 	"echo/plugin"
 ], function($, Plugin) {

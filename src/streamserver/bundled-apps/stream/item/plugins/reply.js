@@ -1,12 +1,10 @@
-Echo.define("echo/streamserver/plugins/reply", [
+Echo.define([
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
 	"echo/variables",
 	"echo/streamserver/bundled-apps/submit/client-widget",
-	"echo/streamserver/plugins/stream-reply",
-	"echo/streamserver/plugins/submit-reply"
-], function($, Plugin, Utils, Variables, Submit, StreamReply, SubmitReply) {
+], function($, Plugin, Utils, Variables, Submit) {
 
 "use strict";
 
@@ -316,121 +314,6 @@ plugin.css =
 	".{plugin.class:compactContent} input.{plugin.class:compactField}[type='text'].echo-primaryFont { font-size: 12px; line-height: 16px; }" +
 	".{plugin.class:compactContent} input.{plugin.class:compactField}[type='text'] { width: 100%; height: 16px; border: none; margin: 0px; padding: 0px; box-shadow: none; vertical-align: middle; }" +
 	".{plugin.class:compactContent} input.{plugin.class:compactField}[type='text']:focus { outline: 0; box-shadow: none; }";
-
-return Plugin.create(plugin);
-
-});
-
-Echo.define("echo/streamserver/plugins/stream-reply", [
-	"jquery",
-	"echo/plugin",
-	"echo/utils",
-	"echo/variables",
-	"echo/streamserver/bundled-apps/submit/client-widget"
-], function($, Plugin, Utils, Variables, Submit) {
-
-"use strict";
-
-/**
- * @class Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.Reply
- * Proxies the "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply.onExpand"
- * event on the Stream application level.
- *
- * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
- * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"plugins": [{
- * 			"name": "Reply"
- * 		}]
- * 	});
- *
- * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
- *
- * @extends Echo.Plugin
- *
- * @private
- * @package streamserver/plugins.pack.js
- * @package streamserver.pack.js
- */
-var plugin = Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
-
-if (Plugin.isDefined(plugin)) return;
-
-plugin.events = {
-	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply.onExpand": function(topic, args) {
-		/**
-		 * @echo_event Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.Reply.onFormExpand
-		 * Triggered if reply form is expanded.
-		 */
-		this.events.publish({
-			"topic": "onFormExpand",
-			"data": {
-			    "context": args.context
-			}
-		});
-	}
-};
-
-return Plugin.create(plugin);
-
-});
-
-Echo.define("echo/streamserver/plugins/submit-reply", [
-	"jquery",
-	"echo/plugin"
-], function($, Plugin) {
-
-"use strict";
-
-/**
- * @class Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.Reply
- * Adds internal data field "inReplyTo" for correct reply workflow.
- *
- * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({
- * 		"target": document.getElementById("echo-submit"),
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"plugins": [{
- * 			"name": "Reply",
- * 			"inReplyTo": data 
- * 		}]
- * 	});
- *
- * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
- *
- * @extends Echo.Plugin
- *
- * @private
- * @package streamserver/plugins.pack.js
- * @package streamserver.pack.js
- */
-var plugin = Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
-
-if (Plugin.isDefined(plugin)) return;
-
-plugin.init = function() {
-	var plugin = this, submit = plugin.component;
-	var _prepareEventParams = submit._prepareEventParams;
-	submit._prepareEventParams = function(params) {
-		var _params = _prepareEventParams.call(submit, params);
-		_params.inReplyTo = plugin.config.get("inReplyTo");
-		return _params;
-	};
-};
-
-/**
- * @cfg {Object} inReplyTo
- * Entry which is the parent for the current reply.
- */
-
-$.map(["onRender", "onRerender"], function(topic) {
-	plugin.events["Echo.StreamServer.BundledApps.Submit.ClientWidget." + topic] = function() {
-		var submit = this.component;
-		submit.config.get("target").show();
-		submit.view.get("text").focus();
-	};
-});
 
 return Plugin.create(plugin);
 

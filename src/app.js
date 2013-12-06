@@ -1,4 +1,4 @@
-Echo.define("echo/app", [
+Echo.define([
 	"jquery",
 	"echo/utils",
 	"echo/configuration",

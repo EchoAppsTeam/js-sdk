@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/plugins/form-auth", [
+Echo.define([
 	"jquery",
 	"echo/plugin",
 	"echo/streamserver/bundled-apps/auth/client-widget"

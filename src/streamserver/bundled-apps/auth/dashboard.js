@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/bundled-apps/auth/dashboard", [
+Echo.define([
 	"jquery",
 	"echo/utils",
 	"echo/app-dashboard"

@@ -59,6 +59,7 @@
 				}
 			}
 		});
+<<<<<<< Updated upstream
 		Echo.initApplication({
 			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
 			"module": "echo/streamserver/bundled-apps/stream/client-widget",
@@ -73,6 +74,18 @@
 					"url": "echo/streamserver/plugins/community-flag"
 				}]
 			}
+=======
+		Echo.Loader.initApplication("echo/streamserver/bundled-apps/stream/client-widget", {
+			"backplane": backplane,
+			"target": document.getElementById("stream"),
+			"query": "childrenof:http://echosandbox.com/use-cases/commenting -state:ModeratorDeleted -user.state:ModeratorBanned itemsPerPage:5 children:2 -state:ModeratorDeleted childrenSortOrder:reverseChronological",
+			"appkey": "echo.jssdk.demo.aboutecho.com",
+			"liveUpdates": {"transport": "websockets"},
+			"item": {"reTag": false},
+			"plugins": [{
+				"url": "echo/streamserver/bundled-apps/stream/item/plugins/community-flag"
+			}]
+>>>>>>> Stashed changes
 		});
 	</script>
 </body>

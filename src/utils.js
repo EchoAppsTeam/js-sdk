@@ -1,7 +1,8 @@
 // TODO: try to get rid of this module
 Echo.define("echo/variables", [], {});
 
-Echo.define("echo/utils", [
+
+Echo.define([
 	"jquery",
 	"echo/variables",
 	"require"
@@ -1465,3 +1466,5 @@ Utils.set(window, "Echo.Utils", Utils);
 return Utils;
 
 });
+
+
