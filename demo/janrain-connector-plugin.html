@@ -32,18 +32,22 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.Loader.initApplication("echo/streamserver/bundled-apps/auth/client-widget", {
-			"backplane": {
-				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-				"busName": "jskit"
-			},
-			"target": document.getElementById("auth"),
-			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"targetURL": "http://echosandbox.com/use-cases/commenting",
-			"plugins": [{
-				"url": "echo/streamserver/plugins/janrain-connector",
-				"appId": "echo"
-			}]
+		Echo.initApplication({
+			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
+			"module": "echo/streamserver/bundled-apps/auth/client-widget",
+			"config": {
+				"backplane": {
+					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+					"busName": "jskit"
+				},
+				"target": document.getElementById("auth"),
+				"appkey": "echo.jssdk.demo.aboutecho.com",
+				"targetURL": "http://echosandbox.com/use-cases/commenting",
+				"plugins": [{
+					"url": "echo/streamserver/plugins/janrain-connector",
+					"appId": "echo"
+				}]
+			}
 		});
 	</script>
 </body>

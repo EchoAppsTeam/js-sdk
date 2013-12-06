@@ -341,7 +341,7 @@ module.exports = function(grunt) {
 						if (shared.config("build")) {
 							// patch debug field only when we are building files
 							// and do not patch already built ones during release
-							text = text.replace(/("?debug"?: ?).*?(,)/, '$1' + (shared.config("build.stage") === "dev") + '$2');
+							text = text.replace(/("?debug"?: ?).*/, '$1' + (shared.config("build.stage") === "dev"));
 						}
 						return text;
 					}

@@ -29,19 +29,23 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.Loader.initApplication("echo/streamserver/bundled-apps/stream/client-widget", {
-			"backplane": {
-				"serverBaseURL": "https://api.echoenabled.com/v1",
-				"busName": "jskit"
-			},
-			"target": document.getElementById("stream"),
-			"query": "childrenof:http://echosandbox.com/use-cases/commenting -state:ModeratorDeleted -user.state:ModeratorBanned itemsPerPage:5 children:2 -state:ModeratorDeleted childrenSortOrder:reverseChronological",
-			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"liveUpdates": {"transport": "websockets"},
-			"item": {"reTag": false},
-			"plugins": [{
-				"url": "echo/streamserver/plugins/reply"
-			}]
+		Echo.initApplication({
+			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
+			"module": "echo/streamserver/bundled-apps/stream/client-widget",
+			"config": {
+				"backplane": {
+					"serverBaseURL": "https://api.echoenabled.com/v1",
+					"busName": "jskit"
+				},
+				"target": document.getElementById("stream"),
+				"query": "childrenof:http://echosandbox.com/use-cases/commenting -state:ModeratorDeleted -user.state:ModeratorBanned itemsPerPage:5 children:2 -state:ModeratorDeleted childrenSortOrder:reverseChronological",
+				"appkey": "echo.jssdk.demo.aboutecho.com",
+				"liveUpdates": {"transport": "websockets"},
+				"item": {"reTag": false},
+				"plugins": [{
+					"url": "echo/streamserver/plugins/reply"
+				}]
+			}
 		});
 	</script>
 </body>

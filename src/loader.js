@@ -1,44 +1,28 @@
-(function() {	
+(function() {
 
 "use strict";
 
-Echo.Loader = {
+var metaInfo = {
 	"version": "",
-	"debug": false,
-	"cdnBaseURL": (/^https?/.test(window.location.protocol) ? window.location.protocol : "http:") + "{%=baseURLs.cdn%}/"
+	"debug": false
 };
 
-Echo.Loader.getURL = function(url, devVersion) {
-	if (typeof devVersion === "undefined") devVersion = true;
-	return /^https?:\/\/|^\/\//.test(url)
-		? url
-		: this.cdnBaseURL + "sdk/v" + this.version +
-			(devVersion && this.isDebug() ? "/dev" : "") +
-			(!url || url.charAt(0) === "/" ? "" : "/") + url;
-};
-
-Echo.Loader.generatePaths = function(paths) {
-	var res = {};
-	for (var i = 0; i < paths.length; i++) {
-		for (var j = 0; j < paths[i].modules.length; j++) {
-			res[paths[i].modules[j]] = paths[i].path; 
-		}
-	}
-	return res;
-};
-
-Echo.Loader.isDebug = function() {
-	return Echo.Loader.debug;
-};
-
-Echo.Loader.initApplication = function(path, config) {
-	Echo.require([path], function(App) {
-		new App(config);
+Echo.initApplication = function(args) {
+	if (!args.url || !args.module)
+		return;
+	Echo.require([args.url], function(module) {
+		Echo.require([args.module], function(App) {
+			new App(args.config);
+		});
 	});
 };
 
+Echo.isDebug = function() {
+	return metaInfo.debug;
+};
+
 (function() {
-	if (Echo.Loader.debug) return;
+	if (metaInfo.debug) return;
 	var debug;
 	var _debugKey = "echo-debug";
 	var hashParts = window.location.hash.match(/echo.debug:(true|false)/);
@@ -47,44 +31,54 @@ Echo.Loader.initApplication = function(path, config) {
 	}
 	if (typeof debug !== "undefined") {
 		if (debug === "true") {
-			Echo.Loader.debug = true;
-			localStorage[_debugKey] = "true";
+			metaInfo.debug = true;
+			window.localStorage[_debugKey] = "true";
 		} else {
-			Echo.Loader.debug = false;
-			localStorage[_debugKey] = "false";
+			metaInfo.debug = false;
+			window.localStorage[_debugKey] = "false";
 		}
 		return;
 	}
-	Echo.Loader.debug = (localStorage[_debugKey] === "true");
+	metaInfo.debug = (window.localStorage[_debugKey] === "true");
 })();
 
-var paths = [];
-paths.push({
-	"path": Echo.Loader.getURL("", false),
+function getURL(url, devVersion) {
+	var protocol = /^https?/.test(window.location.protocol)
+		? window.location.protocol
+		: "http:";
+	var cdnBaseURL = protocol  +"{%=baseURLs.cdn%}/";
+	if (typeof devVersion === "undefined") devVersion = true;
+	return /^https?:\/\/|^\/\//.test(url)
+		? url
+		: cdnBaseURL + "sdk/v" + metaInfo.version +
+			(devVersion && Echo.isDebug() ? "/dev" : "") +
+			(!url || url.charAt(0) === "/" ? "" : "/") + url;
+};
+
+function generatePaths(paths) {
+	var res = {};
+	for (var i = 0; i < paths.length; i++) {
+		for (var j = 0; j < paths[i].modules.length; j++) {
+			res[paths[i].modules[j]] = paths[i].path;
+		}
+	}
+	return res;
+};
+
+var paths = [{
+	"path": getURL("", false),
 	"modules": ["echo-assets"]
-});
-paths.push({
-	"path": Echo.Loader.getURL(""),
+}, {
+	"path": getURL(""),
 	"modules": ["echo"]
-});
-paths.push({
-	"path": Echo.Loader.getURL("/backplane"),
+}, {
+	"path": getURL("/backplane"),
 	"modules": ["echo/backplane"]
-});
-paths.push({
-	"path": Echo.Loader.getURL("/third-party/jquery.pack"),
+}, {
+	"path": getURL("/third-party/jquery.pack"),
 	"modules": ["jquery-noconflict"]
-});
-paths.push({
-	"path": Echo.Loader.getURL("/third-party/jquery/jquery.isotope.min"),
-	"modules": ["isotope"]
-}); 
-paths.push({
-	"path": Echo.Loader.getURL("/tests/qunit/qunit"),
-	"modules": ["QUnit"]
-}); 
-paths.push({
-	"path": Echo.Loader.getURL("") + "/environment.pack",
+}, {
+	"path": getURL("/environment.pack"),
 	"modules": [
 		"echo/events",
 		"echo/utils",
@@ -99,9 +93,8 @@ paths.push({
 		"echo/variables",
 		"echo/cookie"
 	]
-});
-paths.push({
-	"path": Echo.Loader.getURL("") + "/gui.pack",
+}, {
+	"path": getURL("/gui.pack"),
 	"modules": [
 		"echo/bootstrap-transition",
 		"echo/bootstrap-affix",
@@ -122,46 +115,26 @@ paths.push({
 		"echo/gui/dropdown",
 		"echo/gui/tabs"
 	]
-});
-paths.push({
-	"path": Echo.Loader.getURL("") + "/streamserver.pack",
+}, {
+	//TODO: Test Pinboard without this defenition
+	"path": getURL("streamserver/plugins/pinboard-visualization"),
 	"modules": [
-		"echo/app-client-widget",
-		"echo/streamserver/bundled-apps/counter/client-widget",
-		"echo/streamserver/bundled-apps/stream/client-widget",
-		"echo/streamserver/bundled-apps/facepile/client-widget",
-		"echo/streamserver/bundled-apps/facepile/item/client-widget",
-		"echo/streamserver/bundled-apps/submit/client-widget",
-		"echo/streamserver/bundled-apps/auth/client-widget",
-		"echo/streamserver/plugins/edit",
-		"echo/streamserver/plugins/community-flag",
-		"echo/streamserver/plugins/form-auth",
-		"echo/streamserver/plugins/infinite-scroll",
-		"echo/streamserver/plugins/item-accumulator-display",
-		"echo/streamserver/plugins/janrain-connector",
-		"echo/streamserver/plugins/janrain-sharing",
-		"echo/streamserver/plugins/like",
-		"echo/streamserver/plugins/metadata-manager",
-		"echo/streamserver/plugins/moderation",
-		"echo/streamserver/plugins/reply",
-		"echo/streamserver/plugins/text-counter",
-		"echo/streamserver/plugins/tweet-display",
-		"echo/streamserver/bundled-apps/stream/item/client-widget",
-		"echo/streamserver/plugins/janrain-auth"
-	]
-});
-paths.push({
-	"path": Echo.Loader.getURL("streamserver/plugins/pinboard-visualization"),
-	"modules": [
-		"echo/streamserver/plugins/pinboard-visualization",
 		"echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget",
+		"echo/streamserver/plugins/pinboard-visualization",
 		"echo/streamserver/plugins/stream-item-pinboard-visualization",
 		"echo/streamserver/plugins/stream-pinboard-visualization"
 	]
-});
+}, {
+	"path": getURL("/third-party/jquery/jquery.isotope.min"),
+	"modules": ["isotope"]
+}, {
+	"path": getURL("/tests/qunit/qunit"),
+	"modules": ["QUnit"]
+}];
+
 require.config({
 	"waitSeconds": 5, // 5 sec before timeout exception
-	"paths": Echo.Loader.generatePaths(paths),
+	"paths": generatePaths(paths),
 	"map": {
 		"*": {
 			"css": "third-party/requirejs/css",
@@ -174,11 +147,11 @@ require.config({
 				"exports": "Backplane"
 		},
 		"echo/tests/harness/suite": {
-			"deps": ["echo/tests/harness"]	
+			"deps": ["echo/tests/harness"]
 		},
 		"QUnit": {
-			exports: "QUnit",
-			init: function() {
+			"exports": "QUnit",
+			"init": function() {
 				// We shouldn`t load tests automatically, we`ll do it manually
 				QUnit.config.autoload = false;
 				// don't execute tests automatically, we will do it manually later
@@ -189,7 +162,7 @@ require.config({
 				// We need it to make tests start synchronously.
 				QUnit.config.autorun = false;
 			}
-		} 
+		}
 	}
 });
 

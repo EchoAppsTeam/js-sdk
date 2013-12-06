@@ -29,25 +29,29 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.Loader.initApplication("echo/streamserver/bundled-apps/submit/client-widget", {
-			"backplane": {
-				"serverBaseURL": "https://api.echoenabled.com/v1",
-				"busName": "jskit"
-			},
-			"target": document.getElementById("submit"),
-			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"targetURL": "http://echosandbox.com/use-cases/commenting",
-			"plugins": [{
-				"url": "echo/streamserver/plugins/janrain-auth",
-				"appId": "echo",
-				"width": 250,
-				"height": 100,
-				"signinWidgetConfig": {
-					"providersPerPage": 4,
-					"format": "two column"
+		Echo.initApplication({
+			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
+			"module": "echo/streamserver/bundled-apps/submit/client-widget",
+			"config": {
+				"backplane": {
+					"serverBaseURL": "https://api.echoenabled.com/v1",
+					"busName": "jskit"
 				},
-				"submitPermissions": "forceLogin"
-			}]
+				"target": document.getElementById("submit"),
+				"appkey": "echo.jssdk.demo.aboutecho.com",
+				"targetURL": "http://echosandbox.com/use-cases/commenting",
+				"plugins": [{
+					"url": "echo/streamserver/plugins/janrain-auth",
+					"appId": "echo",
+					"width": 250,
+					"height": 100,
+					"signinWidgetConfig": {
+						"providersPerPage": 4,
+						"format": "two column"
+					},
+					"submitPermissions": "forceLogin"
+				}]
+			}
 		});
 	</script>
 </body>

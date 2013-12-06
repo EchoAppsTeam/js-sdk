@@ -59,7 +59,11 @@
 					"serverBaseURL": "https://api.echoenabled.com/v1",
 					"busName": "jskit"
 				};
-				Echo.Loader.initApplication("echo/streamserver/bundled-apps/facepile/client-widget", config); 
+				Echo.initApplication({
+					"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
+					"module": "echo/streamserver/bundled-apps/facepile/client-widget",
+					"config": config
+				});
 			};
 			init({
 				"target": document.getElementById("ulist-d1"),

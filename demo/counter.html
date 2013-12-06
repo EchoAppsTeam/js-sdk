@@ -29,10 +29,14 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.Loader.initApplication("echo/streamserver/bundled-apps/counter/client-widget", {
-			"target": document.getElementById("counter"),
-			"appkey": "echo.jssdk.demo.aboutecho.com",
-			"query" : "childrenof:http://example.com/test/*"
+		Echo.initApplication({
+			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
+			"module": "echo/streamserver/bundled-apps/counter/client-widget",
+			"config": {
+				"target": document.getElementById("counter"),
+				"appkey": "echo.jssdk.demo.aboutecho.com",
+				"query" : "childrenof:http://example.com/test/*"
+			}
 		});
 	</script>
 </body>
