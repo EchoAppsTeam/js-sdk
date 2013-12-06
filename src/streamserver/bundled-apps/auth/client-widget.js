@@ -152,6 +152,7 @@ auth.config = {
 	 * Specifies the URL to be opened as an auth handler.
 	 */
 	"identityManager": {},
+
 	/**
 	 * @cfg {Boolean} useSecureAPI
 	 * This parameter is used to specify the API request scheme.
@@ -159,6 +160,7 @@ auth.config = {
 	 * will use the scheme used to retrieve the host page.
 	 */
 	"useSecureAPI": false,
+
 	/**
 	 * @cfg {String} submissionProxyURL
 	 * URL prefix for requests to Echo Submission Proxy

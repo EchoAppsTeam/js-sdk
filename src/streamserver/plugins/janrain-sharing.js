@@ -217,6 +217,7 @@ plugin.config = {
 	 * @deprecated
 	 * See <a href="http://developers.janrain.com/documentation/widgets/legacy-sign-in-widget/" target="_blank">Janrain notice</a>
 	 */
+
 	/**
 	 * @cfg {Object} activity
 	 * Configures the sharing dialog.

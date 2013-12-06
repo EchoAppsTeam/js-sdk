@@ -604,29 +604,35 @@ API.Request = function(config) {
 		 * @cfg {Function} [onData]
 		 * Callback called after API request succeded.
 		 */
+
 		/**
 		 * @cfg {Function} [onError]
 		 * Callback called after API request failed.
 		 */
+
 		/**
 		 * @cfg {Function} [onOpen]
 		 * Callback called before sending an API request.
 		 */
+
 		/**
 		 * @cfg {Function} [onClose]
 		 * Callback called after API request aborting.
 		 */
+
 		/**
 		 * @cfg {String} [apiBaseURL]
 		 * Specifies the base URL for API requests
 		 */
 		"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
+
 		/**
 		 * @cfg {Object|String} [data]
 		 * Data to be sent to the server. It is converted to a query string,
 		 * if not already a string. Object must be key/value pairs.
 		 */
 		"data": {},
+
 		/**
 		 * @cfg {Object} [settings]
 		 * A set of the key/value pairs to configure the transport object.
@@ -640,6 +646,7 @@ API.Request = function(config) {
 		"onData": $.noop,
 		"onError": $.noop,
 		"onClose": $.noop,
+
 		/**
 		 * @cfg {String} [transport]
 		 * Specifies the transport name. The following transports are available:
@@ -651,6 +658,7 @@ API.Request = function(config) {
 		 *
 		 */
 		"transport": "ajax",
+
 		/**
 		 * @cfg {String} [method]
 		 * Specifies the request method. The following methods are available:
@@ -660,12 +668,14 @@ API.Request = function(config) {
 		 *
 		 */
 		"method": "GET",
+
 		/**
 		 * @cfg {Boolean} [secure]
 		 * There is a flag which indicates what protocol will be used in, secure or not.
 		 * If this parameter is not set, internally the lib will decide on the URL scheme.
 		 */
 		"secure": false,
+
 		/**
 		 * @cfg {Number} [timeout]
 		 * Specifies the number of seconds after which the onError callback

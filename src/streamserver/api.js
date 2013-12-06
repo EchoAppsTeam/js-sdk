@@ -50,6 +50,7 @@ StreamServerAPI.Request = Utils.inherit(API.Request, function(config) {
 		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
 		 * __Note__: this parameter is deprecated in favor of liveUpdates.polling.timeout.
 		 */
+
 		/**
 		 * @cfg {Object} [liveUpdates]
 		 * Live updating machinery configuration.

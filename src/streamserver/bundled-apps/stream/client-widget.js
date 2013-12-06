@@ -155,6 +155,7 @@ stream.config = {
 	 * URL prefix for all API requests
 	 */
 	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
+
 	/**
 	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.

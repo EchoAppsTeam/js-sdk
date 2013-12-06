@@ -113,6 +113,7 @@ counter.config = {
 	 * URL prefix for all API requests
 	 */
 	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
+
 	/**
 	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
@@ -127,6 +128,7 @@ counter.config = {
 	 * 	});
 	 */
 	"query": "",
+
 	/**
 	 * @cfg {Object} data
 	 * Specifies predefined items count which should be displayed by the application.
@@ -185,7 +187,9 @@ counter.config = {
 			"timeout": 10
 		}
 	},
+
 	"loadingMessageLayout": "compact",
+
 	/**
 	 * @cfg {Boolean} useSecureAPI
 	 * This parameter is used to specify the API request scheme.

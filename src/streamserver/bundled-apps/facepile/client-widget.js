@@ -109,6 +109,7 @@ pile.config = {
 	 * URL prefix for all API requests
 	 */
 	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
+
 	/**
 	 * @cfg {Object} data
 	 * Specifies static data for the face pile. It has the same format as returned
@@ -149,6 +150,7 @@ pile.config = {
 		"enabled": true,
 		"template": ""
 	},
+
 	"loadingMessageLayout": "compact",
 
 	/**

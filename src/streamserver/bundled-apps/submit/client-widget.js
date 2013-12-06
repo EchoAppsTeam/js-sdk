@@ -98,6 +98,7 @@ submit.config = {
 	 * profile. Also used for anonymous users.
 	 */
 	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png"),
+
 	/**
 	 * @cfg {String} [targetURL=document.location.href]
 	 * Specifies the URI to which the submitted Echo item is related. 
@@ -110,6 +111,7 @@ submit.config = {
 	 * 	});
 	 */
 	"targetURL": document.location.href,
+
 	/**
 	 * @cfg {Array} markers
 	 * This parameter is used to attach the markers metadata to the item
@@ -126,6 +128,7 @@ submit.config = {
 	 * 	});
 	 */
 	"markers": [],
+
 	/**
 	 * @cfg {Object} source
 	 * Designates the initial item source (E.g. Twitter). You can override
@@ -151,6 +154,7 @@ submit.config = {
 	 * 	});
 	 */
 	"source": {},
+
 	/**
 	 * @cfg {Array} tags
 	 * This parameter is used to attach the tags metadata to the item during
@@ -167,6 +171,7 @@ submit.config = {
 	 * 	});
 	 */
 	"tags": [],
+
 	/**
 	 * @cfg {String} requestMethod
 	 * This parameter is used to specify the request method. Possible values
@@ -181,6 +186,7 @@ submit.config = {
 	 * 	});
 	 */
 	"requestMethod": "GET",
+
 	/**
 	 * @cfg {String} itemURIPattern
 	 * Allows to define item id pattern. The value of this parameter should be
@@ -195,6 +201,7 @@ submit.config = {
 	 * 	});
 	 */
 	"itemURIPattern": undefined,
+
 	/**
 	 * @cfg {String} actionString
 	 * Is used to define the default call to action phrase.
@@ -206,6 +213,7 @@ submit.config = {
 	 *     });
 	 */
 	"actionString": "Type your comment here...",
+
 	/**
 	 * @cfg {Number} postingTimeout
 	 * Is used to specify the number of seconds after which the Submit Form will show
@@ -219,6 +227,7 @@ submit.config = {
 	 * 	});
 	 */
 	"postingTimeout": 30,
+
 	/**
 	 * @cfg {String} type
 	 * Allows to define item type. The value of this parameter should be a valid URI.
@@ -230,6 +239,7 @@ submit.config = {
 	 * 	});
 	 */
 	"type": undefined,
+
 	/**
 	 * @cfg {Object} errorPopup
 	 * Is used to define dimensions of error message popup. The value of this parameter
@@ -259,12 +269,15 @@ submit.config = {
 		"maxHeight": 150,
 		"width": 390
 	},
+
 	"targetQuery": undefined,
+
 	/**
 	 * @cfg {String} submissionProxyURL
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
 	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
+
 	/**
 	 * @cfg {Boolean} useSecureAPI
 	 * This parameter is used to specify the API request scheme.

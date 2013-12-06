@@ -57,6 +57,7 @@ item.config = {
 	 * stream in case the item came from Twitter.
 	 */
 	"aggressiveSanitization": false,
+
 	"buttonsOrder": undefined,
 
 	/**

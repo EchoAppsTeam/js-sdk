@@ -195,6 +195,7 @@ plugin.config = {
 	 * Client container.
 	 */
 	"columnWidth": 250,
+
 	/**
 	 * @cfg {Number} maxChildrenBodyCharacters
 	 * Allows to truncate the reply text displayed under the root item. Default
@@ -202,6 +203,7 @@ plugin.config = {
 	 * represent the number of visible characters that need to be displayed.
 	 */
 	"maxChildrenBodyCharacters": 50,
+
 	/**
 	 * @cfg {Function} mediaSelector
 	 * Allows to define the function with custom rules for the media content
@@ -221,6 +223,7 @@ plugin.config = {
 		var dom = $("<div>" + content + "</div>");
 		return $("img, video, embed, iframe", dom);
 	},
+
 	/**
 	 * @cfg {Object} itemCSSClassByContentLength
 	 * Allows to define extra CSS class to the item based on the item length.
@@ -233,6 +236,7 @@ plugin.config = {
 		"echo-streamserver-bundledapps-stream-item-clientwidget-smallSizeContent": [0, 69],
 		"echo-streamserver-bundledapps-stream-item-clientwidget-mediumSizeContent": [70, 120]
 	},
+
 	/**
 	 * @cfg {Object} gallery
 	 * Allows to proxy the parameters for the mini Media Gallery class,
