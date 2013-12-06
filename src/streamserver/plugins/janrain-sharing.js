@@ -1,10 +1,9 @@
 Echo.define("echo/streamserver/plugins/janrain-sharing", [
 	"jquery",
 	"echo/plugin",
-	"echo/gui",
 	"echo/streamserver/bundled-apps/submit/client-widget",
 	"echo/streamserver/plugins/submit-janrain-sharing"
-], function($, Plugin, GUI, Submit, SubmitJanrainSharing) {
+], function($, Plugin, Submit, SubmitJanrainSharing) {
 
 "use strict";
 
@@ -126,10 +125,9 @@ Echo.define("echo/streamserver/plugins/submit-janrain-sharing", [
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
-	"echo/gui",
 	"echo/streamserver/bundled-apps/auth/client-widget",
 	"require"
-], function($, Plugin, Utils, GUI, Auth, require) {
+], function($, Plugin, Utils, Auth, require) {
 
 "use strict";
 
