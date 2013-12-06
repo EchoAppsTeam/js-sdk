@@ -92,11 +92,6 @@ submit.config = {
 	"appkey": "",
 
 	/**
-	 * @cfg {String} apiBaseURL
-	 * URL prefix for all API requests
-	 */
-	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
-	/**
 	 * @cfg {String} defaultAvatar
 	 * Default avatar URL which will be used for the user in
 	 * case there is no avatar information defined in the user
