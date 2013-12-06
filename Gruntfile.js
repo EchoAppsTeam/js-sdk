@@ -494,7 +494,6 @@ module.exports = function(grunt) {
 					"modules": [{
 						"name": "loader",
 						"include": [
-							"cookie",
 							"third-party/requirejs/require",
 							"third-party/requirejs/css"
 						]
