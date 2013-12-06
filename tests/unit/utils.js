@@ -1031,7 +1031,15 @@ Echo.Tests.Units.push(function(callback) {
 			QUnit.equal(
 				Utils.getRelativeTime(probe[0]),
 				probe[1],
-				"Checking \"getRelativeTime\" function (" + probe[2] + ")");
+				"Checking \"getRelativeTime\" function (" + probe[2] + ")"
+			);
+			QUnit.equal(
+				Utils.getRelativeTime(probe[0], function(key, ago, defaultLabel) {
+					return defaultLabel + " (overridden)"
+				}),
+				probe[1] ? probe[1] + " (overridden)" : "",
+				"Checking \"getRelativeTime\" function (" + probe[2] + ", overridden)"
+			);
 		});
 	});
 

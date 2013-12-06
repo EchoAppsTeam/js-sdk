@@ -1306,13 +1306,12 @@ Utils.getRelativeTime = function(datetime, processor) {
 	processor = processor || $.noop;
 	var getLabel = function(ago, period) {
 		var key = period ? period + (ago === 1 ? "" : "s") + "Ago" : ago;
-		var label = processor(key, ago);
-		return label && label !== key
-			? label
-			: Utils.substitute({
-				"template": Variables.labels[key],
-				"data": {"number": ago}
-			});
+		var defaultLabel = Utils.substitute({
+			"template": Variables.labels[key],
+			"data": {"number": ago}
+		});
+		var label = processor(key, ago, defaultLabel);
+		return label && label !== key ? label : defaultLabel;
 	};
 
 	// we display the "Just now" text in order to mitigate the clock inaccuracy
