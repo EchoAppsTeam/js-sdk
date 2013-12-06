@@ -177,7 +177,7 @@ Echo.Tests.Units.push(function(callback) {
 			"Loading. Please wait...",
 			"Checking if the supported errorCode received and errorMessage ignored (StremServer API labels case)"
 		);
-		errorOptions.retryIn = 3000;
+		errorOptions.retryIn = 500;
 		errorData.errorCode = "view_limit";
 		errorOptions.label = Labels.get("error_view_limit", "Echo.StreamServer.API");
 		def.reject();
@@ -185,7 +185,7 @@ Echo.Tests.Units.push(function(callback) {
 		def = $.Deferred();
 		QUnit.equal(
 			errorTarget.find(".echo-message-icon").html(),
-			"View creation rate limit has been exceeded. Retrying in 3 seconds...",
+			"View creation rate limit has been exceeded. Retrying in 0.5 seconds...",
 			"Checking if the retrying mechanism works (StreamServer API labels case)"
 		);
 		setTimeout(function() {
@@ -196,11 +196,11 @@ Echo.Tests.Units.push(function(callback) {
 			QUnit.equal(
 				errorTarget.find(".echo-message-icon").html(),
 				"Some label",
-				"Checking if the retrying mechanism works after 3 seconds counted"
+				"Checking if the retrying mechanism works after 0.5 seconds counted"
 			);
 			callback();
 			QUnit.start();
-		}, 3000);
+		}, 500);
 	});
 
 	Echo.Tests.test("remove()", function() {
