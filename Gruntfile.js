@@ -595,90 +595,11 @@ module.exports = function(grunt) {
 			"loader": {
 				"options": {
 					"removeCombined": true,
-<<<<<<< Updated upstream
-					"modules": [{
-						"name": "loader",
-						"include": [
-							"third-party/requirejs/require",
-							"third-party/requirejs/css"
-						]
-					}, {
-						"name": "third-party/jquery.pack",
-						"create": true,
-						"include": [
-							"third-party/jquery/jquery",
-							"third-party/jquery/jquery-noconflict",
-							"third-party/jquery/jquery.ihint",
-							"third-party/jquery/jquery.viewport.mini"
-						]
-					}, {
-						"name": "environment.pack",
-						"create": true,
-						"include": [
-							"utils",
-							"events",
-							"labels",
-							"configuration",
-							"api",
-							"streamserver/api",
-							"streamserver/user",
-							"view",
-							"app",
-							"plugin",
-							"cookie"
-						]
-					}, {
-						"name": "streamserver.pack",
-						"create": true,
-						"include": [
-							"app-client-widget",
-							"streamserver/bundled-apps/counter/client-widget",
-							"streamserver/bundled-apps/stream/item/client-widget",
-							"streamserver/bundled-apps/stream/client-widget",
-							"streamserver/bundled-apps/facepile/item/client-widget",
-							"streamserver/bundled-apps/facepile/client-widget",
-							"streamserver/bundled-apps/submit/client-widget",
-							"streamserver/bundled-apps/auth/client-widget",
-							"streamserver/plugins/community-flag",
-							"streamserver/plugins/form-auth",
-							"streamserver/plugins/item-accumulator-display",
-							"streamserver/plugins/janrain-connector",
-							"streamserver/plugins/janrain-sharing",
-							"streamserver/plugins/metadata-manager",
-							"streamserver/plugins/text-counter",
-							"streamserver/plugins/edit",
-							"streamserver/plugins/infinite-scroll",
-							"streamserver/plugins/janrain-auth",
-							"streamserver/plugins/like",
-							"streamserver/plugins/moderation",
-							"streamserver/plugins/reply",
-							"streamserver/plugins/tweet-display"
-						]
-					}, {
-						"name": "streamserver/plugins/pinboard-visualization",
-						"create": true,
-						"include": [
-							"streamserver/bundled-apps/stream/item/media-gallery/client-widget",
-							"streamserver/plugins/pinboard-visualization"
-						]
-					}, {
-						"name": "gui.pack",
-						"create": true,
-						"include": [
-							"gui",
-							"gui-plugins/echo-button",
-							"gui-plugins/echo-modal",
-							"gui-plugins/echo-dropdown",
-							"gui-plugins/echo-tabs"
-						]
-					}],
-					fileExclusionRegExp: /\/images\//
-=======
 					"modules": requireModuleBandles,
 					"onBuildWrite": function (moduleName, path, contents) {
 						if (moduleName === "loader" && !!config.requirejs.modulesPaths) {
 							contents += "(function() {"
-								+ "var echoURL = Echo.Loader.getURL(\"\");"
+								+ "var echoURL = Echo.require.toUrl(\"echo\");"
 								+ "Echo.require.config({"
 								+ "\"paths\":{"
 								+ config.requirejs.modulesPaths + "}"
@@ -690,9 +611,6 @@ module.exports = function(grunt) {
 						return contents;
 					},
 					"fileExclusionRegExp": /\/images\//
-					/*/^((?!\/loader.js).)*$/*/
-
->>>>>>> Stashed changes
 				}
 			}
 		},
@@ -700,7 +618,7 @@ module.exports = function(grunt) {
 			"options": {
 				"list": shared.config("environments")
 			}
-                },
+		},
 		"init-environment": {
 			"options": {
 				"list": shared.config("environments"),
