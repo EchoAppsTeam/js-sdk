@@ -166,7 +166,7 @@ var _URLMocks = {
 	// group of URLs http://s3.amazonaws.com/echo-canvases/<canvas-id>
 	"canvases": {
 		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
-		"url": new RegExp(Echo.Loader.getURL("")+ "(.*?)(?:\\?|$)"),
+		"url": new RegExp(Echo.require.toUrl("echo")+ "(.*?)(?:\\?|$)"),
 		"response": function(request, canvasId) {
 			var status = 200, text = "";
 			if (/nonexistent/.test(canvasId)) {

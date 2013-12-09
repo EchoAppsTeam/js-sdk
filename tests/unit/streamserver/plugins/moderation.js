@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/plugins/moderation"
+		"echo/streamserver/bundled-apps/stream/item/plugins/moderation"
 	], function($) {
 
 	"use strict";

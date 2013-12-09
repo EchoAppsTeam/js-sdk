@@ -641,7 +641,7 @@ Echo.Tests.Units.push(function(callback) {
 
 	Echo.Tests.asyncTest("loadImage()", function() {
 		var simpleImage = function(callback) {
-			var url = Echo.Loader.getURL("third-party/bootstrap/img/glyphicons-halflings.png", false);
+			var url = Echo.require.toUrl("echo-assets/third-party/bootstrap/img/glyphicons-halflings.png", false);
 			var img = Utils.loadImage({
 				"image": url,
 				"onload": function() {
@@ -652,7 +652,7 @@ Echo.Tests.Units.push(function(callback) {
 			$("#qunit-fixture").append(img);
 		};
 		var nonexistentImage = function(callback) {
-			var url = Echo.Loader.getURL("images/avatar-default.png", false);
+			var url = Echo.require.toUrl("echo-assets/images/avatar-default.png", false);
 			var img = Utils.loadImage({
 				"image": "http://example.com/fake.jpg",
 				"defaultImage": url,
@@ -664,7 +664,7 @@ Echo.Tests.Units.push(function(callback) {
 			$("#qunit-fixture").append(img);
 		};
 		var emptyURL = function(callback) {
-			var url = Echo.Loader.getURL("images/avatar-default.png", false);
+			var url = Echo.require.toUrl("echo-assets/images/avatar-default.png", false);
 			var img = Utils.loadImage({
 				"image": "",
 				"defaultImage": url,
@@ -680,7 +680,7 @@ Echo.Tests.Units.push(function(callback) {
 			$("#qunit-fixture").append(img);
 		};
 		var nullURL = function(callback) {
-			var url = Echo.Loader.getURL("images/avatar-default.png", false);
+			var url = Echo.require.toUrl("echo-assets/images/avatar-default.png", false);
 			var img = Utils.loadImage({
 				"image": null,
 				"defaultImage": url,

@@ -37,8 +37,8 @@ Echo.Tests.Units.push(function(callback) {
 		"check": function() {
 			var self = this;
 			var elements = [
-				"<img src='" + Echo.Loader.getURL("images/avatar-default.png", false) + "'/>",
-				"<img src='" + Echo.Loader.getURL("third-party/bootstrap/img/glyphicons-halflings.png", false) + "'/>"
+				"<img src='" + Echo.require.toUrl("echo-assets/images/avatar-default.png", false) + "'/>",
+				"<img src='" + Echo.require.toUrl("third-party/bootstrap/img/glyphicons-halflings.png", false) + "'/>"
 			];
 			suite.checkGalleryActiveItem = function(gallery, index) {
 				var isActive = true;
@@ -113,7 +113,7 @@ Echo.Tests.Units.push(function(callback) {
 			}
 		});
 		gallery.config.set("elements", [
-			"<img src='" + Echo.Loader.getURL("images/avatar-default.png", false) + "'/>"
+			"<img src='" + Echo.require.toUrl("echo-assets/images/avatar-default.png", false) + "'/>"
 		]);
 		gallery.refresh();
 	};

@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/plugins/community-flag"
+		"echo/streamserver/bundled-apps/stream/item/plugins/community-flag"
 	], function($) {
 
 	"use strict";

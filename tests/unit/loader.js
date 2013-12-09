@@ -28,12 +28,12 @@ Echo.Tests.Units.push(function(callback) {
 	});
 
 	Echo.Tests.test("URL conversion", function() {
-		var cdnBaseURL = Echo.Loader.cdnBaseURL;
+		var cdnBaseURL = Echo.require.toUrl("echo");
 		var version = Echo.Loader.version;
 		var debug = Echo.Loader.debug;
 		function checkURLs(urls) {
 			$.each(urls, function(i, spec) {
-				QUnit.ok(spec.expect === Echo.Loader.getURL(spec.data), "Checking URL conversion: '" + spec.data + "'");
+				QUnit.ok(spec.expect === Echo.require.toUrl(spec.data), "Checking URL conversion: '" + spec.data + "'");
 			});
 		}
 		var urls = {
@@ -76,7 +76,7 @@ Echo.Tests.Units.push(function(callback) {
 		QUnit.ok(Echo.Loader.isDebug(), "Checking if debug mode is on");
 		checkURLs(urls.relativeDev);
 		QUnit.equal(
-			Echo.Loader.getURL("web/image.png", false),
+			Echo.require.toUrl("web/image.png", false),
 			cdnBaseURL + "sdk/v" + version + "/web/image.png",
 			"Checking URL conversion: /web/image.png, no dev version"
 		);

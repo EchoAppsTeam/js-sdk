@@ -381,7 +381,7 @@ Echo.Tests.Units.push(function(callback) {
 				"Checking if object parameter was overridden (checking new key)");
 			QUnit.equal(this.config.get("objectParam.param2"), undefined,
 				"Checking if object parameter was overridden (checking existing key)");
-			QUnit.equal(this.config.get("defaultAvatar"), Echo.Loader.getURL("images/info70.png", false),
+			QUnit.equal(this.config.get("defaultAvatar"), Echo.require.toUrl("echo-assets/images/info70.png", false),
 				"Checking if object parameter was overridden and was normalized (checking defaultAvatar key)");
 
 			// IMPORTANT: Echo.Configuration architecture to be revisited within F:1336,
@@ -410,7 +410,7 @@ Echo.Tests.Units.push(function(callback) {
 			"myTestParam": "test value",
 			"undefinedParam": "undefinedParam replacement",
 			"nullParam": "nullParam replacement",
-			"defaultAvatar": Echo.Loader.getURL("images/info70.png", false),
+			"defaultAvatar": Echo.require.toUrl("echo-assets/images/info70.png", false),
 			"parent": parentConfig,
 			"ready": check
 		});

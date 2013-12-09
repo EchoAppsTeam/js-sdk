@@ -31,7 +31,7 @@ Echo.Tests.Units.push(function(callback) {
 		QUnit.ok(!target.html().match(/icon/),
 			"Checking that icon CSS class is not added by default");
 
-		var loadingIcon = Echo.Loader.getURL("images/loading.gif", false);
+		var loadingIcon = Echo.require.toUrl("echo-assets/images/loading.gif", false);
 		button.setState({
 			"target": element,
 			"icon": loadingIcon,

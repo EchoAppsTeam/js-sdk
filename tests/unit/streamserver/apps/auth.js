@@ -40,7 +40,7 @@ Echo.Tests.Units.push(function(callback) {
 			this.user.set("avatar", "");
 			this.refresh();
 			QUnit.equal(this._definition("config").defaultAvatar, getRenderedAvatar(), "Checking if default avatar is rendered when user avatar is not available");
-			var avatar = Echo.Loader.getURL("images/info70.png", false);
+			var avatar = Echo.require.toUrl("echo-assets/images/info70.png", false);
 			this.config.set("defaultAvatar", avatar);
 			this.refresh();
 			QUnit.equal(avatar, getRenderedAvatar(), "Checking if custom default avatar is rendered when user avatar is not available");

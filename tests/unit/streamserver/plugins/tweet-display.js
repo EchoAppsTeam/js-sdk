@@ -3,7 +3,7 @@ Echo.Tests.Units.push(function(callback) {
 		"jquery",
 		"echo/utils",
 		"echo/streamserver/bundled-apps/stream/client-widget",
-		"echo/streamserver/plugins/tweet-display"
+		"echo/streamserver/bundled-apps/stream/item/plugins/tweet-display"
 	], function($, Utils, Stream) {
 
 	"use strict";
@@ -40,7 +40,7 @@ Echo.Tests.Units.push(function(callback) {
 				"status": "Untouched",
 				"markers": [],
 				"roles": [],
-				"avatar": Echo.Loader.getURL("images/avatar-default.png", false)
+				"avatar": Echo.require.toUrl("echo-assets/images/avatar-default.png", false)
 			},
 			"object": {
 				"id": "http://twitter.com/user-name/statuses/" + Utils.getUniqueString(),
@@ -77,7 +77,7 @@ Echo.Tests.Units.push(function(callback) {
 				"status": "Untouched",
 				"markers": [],
 				"roles": [],
-				"avatar": Echo.Loader.getURL("images/avatar-default.png", false)
+				"avatar": Echo.require.toUrl("echo-assets/images/avatar-default.png", false)
 			},
 			"object": {
 				"id": "http://twitter.com/user-name/statuses/" + Utils.getUniqueString(),

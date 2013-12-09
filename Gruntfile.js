@@ -201,7 +201,8 @@ module.exports = function(grunt) {
 			"view",
 			"app",
 			"plugin",
-			"cookie"
+			"cookie",
+			"variables"
 		]
 	}, {
 		"name": "streamserver.pack",

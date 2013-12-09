@@ -1,7 +1,3 @@
-// TODO: try to get rid of this module
-Echo.define("echo/variables", [], {});
-
-
 Echo.define([
 	"jquery",
 	"echo/variables",

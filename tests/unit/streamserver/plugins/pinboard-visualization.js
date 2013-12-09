@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/plugins/pinboard-visualization"
+		"echo/streamserver/bundled-apps/stream/item/plugins/pinboard-visualization"
 	], function($) {
 
 	"use strict";

@@ -20,11 +20,11 @@ Echo.Tests.Units.push(function(callback) {
 		var dropdownParams = {
 			"title": "TestTitle",
 			"target": element,
-			"icon": Echo.Loader.getURL(testIconUrl, false),
+			"icon": Echo.require.toUrl("echo-assets/" + testIconUrl, false),
 			"entries": [{
 				"title": "entry1",
 				"handler": sinon.spy(),
-				"icon": Echo.Loader.getURL(testIconUrl, false),
+				"icon": Echo.require.toUrl("echo-assets/" + testIconUrl, false),
 				"entries": [{
 					"title": "entry1.1",
 					"handler": sinon.spy()
