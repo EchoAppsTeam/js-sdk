@@ -2,7 +2,7 @@ Echo.define([
 	"jquery",
 	"echo/utils",
 	"require",
-	"echo/app-client-widget"
+	"echo/streamserver/base"
 ], function($, Utils, require, App) {
 
 "use strict";
@@ -11,7 +11,7 @@ Echo.define([
  * @class Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget
  * Echo FacePile.Item application displays single user (actor). 
  *
- * @extends Echo.App.ClientWidget
+ * @extends Echo.StreamServer.Base
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js

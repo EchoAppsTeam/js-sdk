@@ -1,7 +1,7 @@
 Echo.define([
 	"jquery",
 	"echo/utils",
-	"echo/app-client-widget"
+	"echo/streamserver/base"
 ], function($, Utils, App) {
 
 "use strict";
@@ -10,7 +10,7 @@ Echo.define([
  * @class Echo.StreamServer.BundledApps.Stream.Item.ClientWidget
  * Echo Stream.Item application which encapsulates Item mechanics.
  *
- * @extends Echo.App.ClientWidget
+ * @extends Echo.StreamServer.Base
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js

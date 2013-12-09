@@ -2,7 +2,7 @@ Echo.define([
 	"jquery",
 	"echo/utils",
 	"echo/gui/modal",
-	"echo/app-client-widget"
+	"echo/streamserver/base"
 ], function($, Utils, GUIModal, App) {
 
 "use strict";
@@ -30,7 +30,7 @@ Echo.define([
  * More information regarding the possible ways of the Application initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
- * @extends Echo.App.ClientWidget
+ * @extends Echo.StreamServer.Base
  *
  * @package streamserver/apps.pack.js
  * @package streamserver.pack.js

@@ -200,6 +200,7 @@ module.exports = function(grunt) {
 			"streamserver/user",
 			"view",
 			"app",
+			"app-client-widget",
 			"plugin",
 			"cookie",
 			"variables"
@@ -208,7 +209,7 @@ module.exports = function(grunt) {
 		"name": "streamserver.pack",
 		"create": true,
 		"include": [
-			"app-client-widget",
+			"streamserver/base",
 			"streamserver/bundled-apps/counter/client-widget",
 			"streamserver/bundled-apps/stream/item/client-widget",
 			"streamserver/bundled-apps/stream/client-widget",
