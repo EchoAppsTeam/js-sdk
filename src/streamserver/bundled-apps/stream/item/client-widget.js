@@ -27,7 +27,6 @@ if (App.isDefined(item)) return;
 
 /** @hide @cfg plugins */
 /** @hide @cfg target */
-/** @hide @cfg cdnBaseURL */
 /** @hide @method dependent */
 
 /**

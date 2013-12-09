@@ -27,10 +27,7 @@ plugin.labels = {
 	"unlikeOnBehalf": "Unlike on behalf of this user"
 };
 
-/**
- * @echo_template
- */
-plugin.templates.main = '<img class="{plugin.class:adminUnlike}" src="' + Echo.require.toUrl("echo-assets/images/container/closeWindow.png") + '"" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
+plugin.templates.main = '<img class="{plugin.class:adminUnlike}" src="' + Echo.require.toUrl("echo-assets/images/container/closeWindow.png") + '" title="{plugin.label:unlikeOnBehalf}" width="10" height="9">';
 
 /**
  * @echo_renderer
