@@ -17,7 +17,7 @@ Echo.Tests.Units.push(function(callback) {
 				"get",
 				"getUniqueString",
 				"getVisibleColor",
-				"getRelativeTime",
+				"constructDatetimeRelatives",
 				"hasCSS",
 				"htmlize",
 				"htmlTextTruncate",
@@ -1004,41 +1004,34 @@ Echo.Tests.Units.push(function(callback) {
 			"Checking getVisibleColor() method with transparent element color");
 	});
 
-	Echo.Tests.test("getRelativeTime()", function() {
+	Echo.Tests.test("constructDatetimeRelatives()", function() {
 		var now = Math.floor((new Date()).getTime() / 1000);
 		var probes = [
-			["", "", "empty string"],
-			[0, "", "zero as a value"],
-			["some-random-string", "", "random string"],
-			[false, "", "boolean 'false'"],
-			[now + 60, "Just now", "date/time \"from the future\""],
-			[now - 0, "Just now", "Just now"],
-			[now - 4, "Just now", "less than 5 seconds ago"],
-			[now - 9, "Just now", "less than 10 seconds ago"],
-			[now - 10, "10 Seconds Ago", "10 seconds ago"],
-			[now - 1 * 60, "1 Minute Ago", "minute ago"],
-			[now - 3 * 60, "3 Minutes Ago", "minutes ago"],
-			[now - 1 * 60 * 60, "1 Hour Ago", "hour ago"],
-			[now - 4 * 60 * 60, "4 Hours Ago", "hours ago"],
-			[now - 1 * 24 * 60 * 60, "Yesterday", "yesterday"],
-			[now - 3 * 24 * 60 * 60, "3 Days Ago", "days ago"],
-			[now - 7 * 24 * 60 * 60, "Last Week", "last week"],
-			[now - 32 * 24 * 60 * 60, "Last Month", "last month"],
-			[now - 64 * 24 * 60 * 60, "2 Months Ago", "months ago"]
+			["", {}, "empty string"],
+			[0, {}, "zero as a value"],
+			["some-random-string", {}, "random string"],
+			[false, {}, "boolean 'false'"],
+			[now + 60, {"measure": undefined, "value": "justNow"}, "date/time \"from the future\""],
+			[now - 0, {"measure": undefined, "value": "justNow"}, "Just now"],
+			[now - 4, {"measure": undefined, "value": "justNow"}, "less than 5 seconds ago"],
+			[now - 9, {"measure": undefined, "value": "justNow"}, "less than 10 seconds ago"],
+			[now - 10, {"measure": "second", "value": 10}, "10 seconds ago"],
+			[now - 1 * 60, {"measure": "minute", "value": 1}, "minute ago"],
+			[now - 3 * 60, {"measure": "minute", "value": 3}, "minutes ago"],
+			[now - 1 * 60 * 60, {"measure": "hour", "value": 1}, "hour ago"],
+			[now - 4 * 60 * 60, {"measure": "hour", "value": 4}, "hours ago"],
+			[now - 1 * 24 * 60 * 60, {"measure": undefined, "value": "yesterday"}, "yesterday"],
+			[now - 3 * 24 * 60 * 60, {"measure": "day", "value": 3}, "days ago"],
+			[now - 7 * 24 * 60 * 60, {"measure": undefined, "value": "lastWeek"}, "last week"],
+			[now - 32 * 24 * 60 * 60, {"measure": undefined, "value": "lastMonth"}, "last month"],
+			[now - 64 * 24 * 60 * 60, {"measure": "month", "value": 2}, "months ago"]
 		];
 
 		$.map(probes, function(probe) {
-			QUnit.equal(
-				Utils.getRelativeTime(probe[0]),
+			QUnit.deepEqual(
+				Utils.constructDatetimeRelatives(probe[0]),
 				probe[1],
-				"Checking \"getRelativeTime\" function (" + probe[2] + ")"
-			);
-			QUnit.equal(
-				Utils.getRelativeTime(probe[0], function(key, ago, defaultLabel) {
-					return defaultLabel + " (overridden)"
-				}),
-				probe[1] ? probe[1] + " (overridden)" : "",
-				"Checking \"getRelativeTime\" function (" + probe[2] + ", overridden)"
+				"Checking \"constructDatetimeRelatives\" function (" + probe[2] + ")"
 			);
 		});
 	});

@@ -245,7 +245,75 @@ item.labels = {
 	/**
 	 * @echo_label
 	 */
-	"re": "Re"
+	"re": "Re",
+	/**
+	 * @echo_label today
+	 */
+	"today": "Today",
+	/**
+	 * @echo_label justNow
+	 */
+	"justNow": "Just now",
+	/**
+	 * @echo_label yesterday
+	 */
+	"yesterday": "Yesterday",
+	/**
+	 * @echo_label lastWeek
+	 */
+	"lastWeek": "Last Week",
+	/**
+	 * @echo_label lastMonth
+	 */
+	"lastMonth": "Last Month",
+	/**
+	 * @echo_label secondAgo
+	 */
+	"secondAgo": "{number} Second Ago",
+	/**
+	 * @echo_label secondsAgo
+	 */
+	"secondsAgo": "{number} Seconds Ago",
+	/**
+	 * @echo_label minuteAgo
+	 */
+	"minuteAgo": "{number} Minute Ago",
+	/**
+	 * @echo_label minutesAgo
+	 */
+	"minutesAgo": "{number} Minutes Ago",
+	/**
+	 * @echo_label hourAgo
+	 */
+	"hourAgo": "{number} Hour Ago",
+	/**
+	 * @echo_label hoursAgo
+	 */
+	"hoursAgo": "{number} Hours Ago",
+	/**
+	 * @echo_label dayAgo
+	 */
+	"dayAgo": "{number} Day Ago",
+	/**
+	 * @echo_label daysAgo
+	 */
+	"daysAgo": "{number} Days Ago",
+	/**
+	 * @echo_label weekAgo
+	 */
+	"weekAgo": "{number} Week Ago",
+	/**
+	 * @echo_label weeksAgo
+	 */
+	"weeksAgo": "{number} Weeks Ago",
+	/**
+	 * @echo_label monthAgo
+	 */
+	"monthAgo": "{number} Month Ago",
+	/**
+	 * @echo_label monthsAgo
+	 */
+	"monthsAgo": "{number} Months Ago"
 };
 
 item.templates.metadata = {
@@ -694,9 +762,7 @@ item.renderers.body = function(element) {
 item.renderers.date = function(element) {
 	// is used to preserve backwards compatibility
 	var self = this;
-	this.age = Utils.getRelativeTime(this.timestamp, function(key, value) {
-		return self.labels.get(key, {"number": value})
-	});
+	this.age = this.getRelativeTime();
 	return element.html(this.age);
 };
 
@@ -896,6 +962,15 @@ item.methods.getNextPageAfter = function() {
 	return children.length
 		? children[index].data.pageAfter
 		: undefined;
+};
+
+item.methods.getRelativeTime = function(datetime) {
+	var datetime = datetime || this.timestamp;
+	var relatives = Utils.constructDatetimeRelatives(datetime);
+	var key = relatives.measure
+		? relatives.measure + (relatives.value === 1 ? "" : "s") + "Ago"
+		: relatives.value;
+	return this.labels.get(key, {"number": relatives.value});
 };
 
 /**

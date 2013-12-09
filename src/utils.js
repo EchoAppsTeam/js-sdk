@@ -1288,27 +1288,22 @@ Utils.showError = function(data, options) {
  * @return {String}
  * String which represents the date and time in the relative format.
  */
-Utils.getRelativeTime = function(datetime, processor) {
-	if (!datetime) return "";
-	var self = this;
+Utils.constructDatetimeRelatives = function(datetime) {
+	if (!datetime) return {};
 	var ts = typeof datetime === "string"
 		? Utils.timestampFromW3CDTF(datetime)
 		: datetime;
-	if (!ts) return "";
+	if (!ts) return {};
 	var d = new Date(ts * 1000);
 	var now = (new Date()).getTime();
 	var when;
 	var diff = Math.floor((now - d.getTime()) / 1000);
 	var dayDiff = Math.floor(diff / 86400);
-	processor = processor || $.noop;
-	var getLabel = function(ago, period) {
-		var key = period ? period + (ago === 1 ? "" : "s") + "Ago" : ago;
-		var defaultLabel = Utils.substitute({
-			"template": Variables.labels[key],
-			"data": {"number": ago}
-		});
-		var label = processor(key, ago, defaultLabel);
-		return label && label !== key ? label : defaultLabel;
+	var getRelativeParts = function(ago, period) {
+		return {
+			"measure": period,
+			"value": ago
+		};
 	};
 
 	// we display the "Just now" text in order to mitigate the clock inaccuracy
@@ -1316,31 +1311,31 @@ Utils.getRelativeTime = function(datetime, processor) {
 	// less than 10 seconds or if the given date is "from the future" but
 	// within the 60 seconds range
 	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
-		when = d.toLocaleDateString() + ", " + d.toLocaleTimeString();
+		when = getRelativeParts(d.toLocaleDateString() + ", " + d.toLocaleTimeString());
 	} else if (diff < 10) {
-		when = getLabel("justNow");
+		when = getRelativeParts("justNow");
 	} else if (diff < 60) {
-		when = getLabel(diff, "second");
+		when = getRelativeParts(diff, "second");
 	} else if (diff < 60 * 60) {
 		diff = Math.floor(diff / 60);
-		when = getLabel(diff, "minute");
+		when = getRelativeParts(diff, "minute");
 	} else if (diff < 60 * 60 * 24) {
 		diff = Math.floor(diff / (60 * 60));
-		when = getLabel(diff, "hour");
+		when = getRelativeParts(diff, "hour");
 	} else if (diff < 60 * 60 * 48) {
-		when = getLabel("yesterday");
+		when = getRelativeParts("yesterday");
 	} else if (dayDiff < 7) {
-		when = getLabel(dayDiff, "day");
+		when = getRelativeParts(dayDiff, "day");
 	} else if (dayDiff < 14) {
-		when = getLabel("lastWeek");
+		when = getRelativeParts("lastWeek");
 	} else if (dayDiff < 30) {
 		diff =  Math.floor(dayDiff / 7);
-		when = getLabel(diff, "week");
+		when = getRelativeParts(diff, "week");
 	} else if (dayDiff < 60) {
-		when = getLabel("lastMonth");
+		when = getRelativeParts("lastMonth");
 	} else if (dayDiff < 365) {
 		diff =  Math.floor(dayDiff / 31);
-		when = getLabel(diff, "month");
+		when = getRelativeParts(diff, "month");
 	}
 	return when;
 };
@@ -1381,78 +1376,6 @@ Variables.templates = {
 			'</span>' +
 		'</div>'
 	}
-};
-
-// default labels for the getRelativeTime functionality
-Variables.labels = {
-	/**
-	 * @echo_label today
-	 */
-	"today": "Today",
-	/**
-	 * @echo_label justNow
-	 */
-	"justNow": "Just now",
-	/**
-	 * @echo_label yesterday
-	 */
-	"yesterday": "Yesterday",
-	/**
-	 * @echo_label lastWeek
-	 */
-	"lastWeek": "Last Week",
-	/**
-	 * @echo_label lastMonth
-	 */
-	"lastMonth": "Last Month",
-	/**
-	 * @echo_label secondAgo
-	 */
-	"secondAgo": "{data:number} Second Ago",
-	/**
-	 * @echo_label secondsAgo
-	 */
-	"secondsAgo": "{data:number} Seconds Ago",
-	/**
-	 * @echo_label minuteAgo
-	 */
-	"minuteAgo": "{data:number} Minute Ago",
-	/**
-	 * @echo_label minutesAgo
-	 */
-	"minutesAgo": "{data:number} Minutes Ago",
-	/**
-	 * @echo_label hourAgo
-	 */
-	"hourAgo": "{data:number} Hour Ago",
-	/**
-	 * @echo_label hoursAgo
-	 */
-	"hoursAgo": "{data:number} Hours Ago",
-	/**
-	 * @echo_label dayAgo
-	 */
-	"dayAgo": "{data:number} Day Ago",
-	/**
-	 * @echo_label daysAgo
-	 */
-	"daysAgo": "{data:number} Days Ago",
-	/**
-	 * @echo_label weekAgo
-	 */
-	"weekAgo": "{data:number} Week Ago",
-	/**
-	 * @echo_label weeksAgo
-	 */
-	"weeksAgo": "{data:number} Weeks Ago",
-	/**
-	 * @echo_label monthAgo
-	 */
-	"monthAgo": "{data:number} Month Ago",
-	/**
-	 * @echo_label monthsAgo
-	 */
-	"monthsAgo": "{data:number} Months Ago"
 };
 
 // FIXME: __DEPRECATED__
