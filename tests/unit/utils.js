@@ -198,7 +198,6 @@ Echo.Tests.Units.push(function(callback) {
 				"Some label",
 				"Checking if the retrying mechanism works after 0.5 seconds counted"
 			);
-			callback();
 			QUnit.start();
 		}, 500);
 	});
