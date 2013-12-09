@@ -122,13 +122,13 @@ Echo.Tests.Units.push(function(callback) {
 			"data": _streamData,
 			"plugins": [{
 				"name": "TweetDisplay",
-				"url": "echo/streamserver/plugins/tweet-display"
+				"url": "echo/streamserver/bundled-apps/stream/item/plugins/tweet-display"
 			}, {
 				"name": "Reply",
-				"url": "echo/streamserver/plugins/reply"
+				"url": "echo/streamserver/bundled-apps/stream/item/plugins/reply"
 			}, {
 				"name": "Like",
-				"url": "echo/streamserver/plugins/like"
+				"url": "echo/streamserver/bundled-apps/stream/item/plugins/like"
 			}],
 			"ready": function() {
 				$.map(this.items, function(item) {
