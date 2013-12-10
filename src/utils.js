@@ -1199,8 +1199,21 @@ Utils.random = function(min, max) {
  * @param {String} [data.layout]
  * Specifies the type of message layout. Can be set to "compact" or "full".
  *
- * @param {HTMLElement} [data.target]
- * Specifies the target container.
+ * @param {String} [data.template]
+ * Template which can be substituted by Echo.Utils#substitute method
+ * using data as template display data. If this parameter is passed, then
+ * it will be use instead of default templates.
+ *
+ * @param {String} [data.type]
+ * Represents a type of message. According to this parameter method displays
+ * appropriate presets css classes if default template is used. There are supported types:
+ *
+ *   + "loading" produces "echo-message-loading" CSS class for the default template
+ *   + "error" produces "echo-message-error" CSS class for the default template
+ *   + "info" produces "echo-message-info" CSS class for the default template
+ *
+ * @param {Object} [data.target]
+ * Specifies the target container as a jQuery object.
  */
 Utils.showMessage = function(data) {
 	data.target.empty().append(
@@ -1213,13 +1226,78 @@ Utils.showMessage = function(data) {
 
 /**
  * @static
- * Renders error message in the target container.
+ * Renders error message in the target container using
+ * Echo.Utils#displayMessage method.
+ *
+ *		// just displays error message
+ *		Echo.Utils.showError({
+ *			"erroCode": "code",
+ *			"errorMessage": "Some message"
+ *		}, {
+ *			"type": "error",
+ *			"target": $(".some-element"),
+ *			"label": "Some error was occured"
+ *		});
+ *
+ *		var deferred = $.Deferred();
+ *
+ *		// displays ticker messages
+ *		Echo.Utils.showError({
+ *			"errorCode": "error_code",
+ *			"errorMessage": "Some error occured"
+ *		}, {
+ *			"retryIn": 3000,
+ *			"label": "Error ({data:errorCode}: {data:errorMessage}), retry in {data:seconds} seconds...",
+ *			"target": $(".some-element"),
+ *			"promise": deferred.promise()
+ *		});
+ *
+ *		setTimeout(function() {
+ *			// clear ticker timer
+ *			deferred.resolve();
+ *			$(".some-element").html("Retried");
+ *		}, 3000);
  *
  * @param {Object} data
  * Object containing error message information.
  *
  * @param {Object} options
  * Object containing display options.
+ *
+ * @param {String} options.label
+ * Text label which displays by this method.
+ *
+ * @param {Object} options.target
+ * Target container as a jQuery object where error will be displayed.
+ * This option passes to the Echo.Utils#showMessage as is.
+ *
+ * @param {Boolean} [options.critical]
+ * If this parameter is sets to true, then "error" type will be passed
+ * to the Echo.Utils#showMessage method. Otherwise "loading" type will be passed.
+ *
+ * @param {String} [options.template]
+ * Template which can be substituted by Echo.Utils#substitute method
+ * using data as template display data.
+ * This option passes to the Echo.Utils#showMessage as is.
+ *
+ * @param {String} [options.layout]
+ * Specifies the type of message layout. Can be set to "compact" or "full".
+ * This option passes to the Echo.Utils#showMessage as is.
+ *
+ * @param {Number} [options.retryIn]
+ * Number which indicates the retrying delay in milliseconds.
+ * If this parameter was passed, then this method will be work as a ticker
+ * timer decrements the retryIn value every one second by 1000 milliseconds
+ * and display this process in the target element. The timer which implements
+ * delay mechanics will be cleared when the caller side indicates that the
+ * retry mechaism is done. Interop between caller and callee sides implements
+ * by "promise" option.
+ *
+ * @param {Object} [options.promise]
+ * jQuery [promise](http://api.jquery.com/promise/) object. This option uses
+ * when you need show retry messages by ticker mechanism. This option require
+ * "retryIn" option. The ticker timer will be cleared only in case of promise
+ * object is resolved.
  */
 Utils.showError = function(data, options) {
 	var self = this;
@@ -1259,7 +1337,7 @@ Utils.showError = function(data, options) {
 						}
 					}(secondsLeft)
 				},
-				"data": {"seconds": secondsLeft--},
+				"data": $.extend({"seconds": secondsLeft--}, data),
 			});
 			self.showMessage({
 				"type": "loading",
