@@ -441,7 +441,14 @@ stream.config = {
 	 * If parameter is set to false or not specified, the API request object
 	 * will use the scheme used to retrieve the host page.
 	 */
-	"useSecureAPI": false
+	"useSecureAPI": false,
+
+	"user": {
+		"endpoints": {
+			"logout": "https:{%=baseURLs.api.submissionproxy%}/v2/",
+			"whoami": "https:{%=baseURLs.api.streamserver%}/v1/users/"
+		}
+	}
 };
 
 stream.config.normalizer = {

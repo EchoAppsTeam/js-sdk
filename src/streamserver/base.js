@@ -9,7 +9,7 @@ Echo.define([
 /**
  * @class Echo.StreamServer.Base
  * Implementing additional logic for the client facing widget
- * based on stream server specific usage.
+ * based on streamserver specific usage.
  * You can find instructions on how to create your App in the
  * ["How to develop an App"](#!/guide/how_to_develop_app) guide.
  *
@@ -61,32 +61,21 @@ Base.methods._initBackplane = function(next) {
 
 Base.methods._storeUser = function(next) {
 	var app = this;
-	if (!this.config.get("appkey")) {
+	var userConfig = this.config.get("user");
+	if (!this.config.get("appkey") || !userConfig) {
 		next();
 		return;
 	}
-	if (this.config.get("user")) {
-		this.user = this.config.get("user");
-		next();
-	} else {
-		var generateURL = function(baseURL, path) {
-			if (!baseURL) return;
-			var urlInfo = Utils.parseURL(baseURL);
-			return (urlInfo.scheme || "https") + "://" + urlInfo.domain + path;
-		};
-		User({
+	User(
+		$.extend({
 			"appkey": this.config.get("appkey"),
 			"useSecureAPI": this.config.get("useSecureAPI"),
-			"endpoints": {
-				"logout": generateURL(this.config.get("submissionProxyURL"), "/v2/"),
-				"whoami": generateURL(this.config.get("apiBaseURL"), "/v1/users/")
-			},
 			"ready": function() {
 				app.user = this;
 				next();
 			}
-		});
-	}
+		}, userConfig)
+	);
 };
 
 Base.methods._loading = function() {

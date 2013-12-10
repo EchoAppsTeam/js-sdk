@@ -54,7 +54,14 @@ item.config = {
 	 * case there is no avatar information defined in the user
 	 * profile. Also used for anonymous users.
 	 */
-	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png")
+	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png"),
+
+	"user": {
+		"endpoints": {
+			"logout": "https:{%=baseURLs.api.submissionproxy%}/v2/",
+			"whoami": "https:{%=baseURLs.api.streamserver%}/v1/users/"
+		}
+	}
 };
 
 item.labels = {

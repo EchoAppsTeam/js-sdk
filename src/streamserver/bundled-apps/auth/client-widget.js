@@ -161,6 +161,13 @@ auth.config = {
 	 */
 	"useSecureAPI": false,
 
+	"user": {
+		"endpoints": {
+			"logout": "https:{%=baseURLs.api.submissionproxy%}/v2/",
+			"whoami": "https:{%=baseURLs.api.streamserver%}/v1/users/"
+		}
+	},
+
 	/**
 	 * @cfg {String} submissionProxyURL
 	 * URL prefix for requests to Echo Submission Proxy
