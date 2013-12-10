@@ -80,9 +80,6 @@ var paths = [{
 }, {
 	"path": getURL("/third-party/jquery/jquery.isotope.min"),
 	"modules": ["isotope"]
-}, {
-	"path": getURL("/tests/qunit/qunit"),
-	"modules": ["QUnit"]
 }];
 
 require.config({
@@ -97,22 +94,18 @@ require.config({
 	},
 	"shim": {
 		"echo/backplane": {
-				"exports": "Backplane"
+			"exports": "Backplane"
 		},
 		"echo/tests/harness/suite": {
 			"deps": ["echo/tests/harness"]
 		},
-		"QUnit": {
-			"exports": "QUnit",
+		"echo/tests/harness": {
 			"init": function() {
-				// We shouldn`t load tests automatically, we`ll do it manually
-				QUnit.config.autoload = false;
 				// don't execute tests automatically, we will do it manually later
 				QUnit.config.autostart = false;
 				// tests will run in the order they were added
 				QUnit.config.reorder = false;
-				// We have to set autorun = false, because of requirejs. 
-				// We need it to make tests start synchronously.
+				// we need it to make tests start synchronously
 				QUnit.config.autorun = false;
 			}
 		}
