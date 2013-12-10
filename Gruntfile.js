@@ -575,20 +575,22 @@ module.exports = function(grunt) {
 				"optimize": "none",
 				"wrap": false,
 				"namespace": "Echo",
-				"removeCombined": false
+				"removeCombined": false,
+				"useStrict": true,
+				"skipDirOptimize": true
 			},
 			"common": {
 				"options": {
 					"modules": requireModuleBandles,
 					"onModuleBundleComplete": function (data) {
-						if (!config.requirejs.modulesPaths) {
-							config.requirejs.modulesPaths = "";
+						if (!config.requirejs.options.modulesPaths) {
+							config.requirejs.options.modulesPaths = "";
 						}
 						if (data.name === "loader") {
 							return;
 						}
 						for (var i = 0; i < data.included.length; i++) {
-							config.requirejs.modulesPaths += "\"echo/" + data.included[i].replace(/\.[^.]+$/, "") + "\":echoURL+\"/" + data.name + "\",";
+							config.requirejs.options.modulesPaths += "\"echo/" + data.included[i].replace(/\.[^.]+$/, "") + "\":echoURL+\"/" + data.name + "\",";
 						}
 					},
 					"fileExclusionRegExp": /\/images\//
@@ -599,12 +601,12 @@ module.exports = function(grunt) {
 					"removeCombined": true,
 					"modules": requireModuleBandles,
 					"onBuildWrite": function (moduleName, path, contents) {
-						if (moduleName === "loader" && !!config.requirejs.modulesPaths) {
+						if (moduleName === "loader" && !!config.requirejs.options.modulesPaths) {
 							contents += "(function() {"
 								+ "var echoURL = Echo.require.toUrl(\"echo\");"
 								+ "Echo.require.config({"
 								+ "\"paths\":{"
-								+ config.requirejs.modulesPaths + "}"
+								+ config.requirejs.options.modulesPaths + "}"
 								+ "});"
 								+ "})();";
 						} else {
