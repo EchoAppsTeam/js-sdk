@@ -566,8 +566,8 @@ pile.methods._initItem = function(entry, callback) {
 		"plugins": this.config.get("plugins"),
 		"context": this.config.get("context"),
 		"useSecureAPI": this.config.get("useSecureAPI"),
+		"user": this.config.get("user"),
 		"data": entry.actor,
-		"user": this.user,
 		"ready": callback
 	}, this.config.get("item"));
 	return new Item(config);

@@ -1699,8 +1699,8 @@ stream.methods._initItem = function(entry, isLive, callback) {
 		"context": this.config.get("context"),
 		"useSecureAPI": this.config.get("useSecureAPI"),
 		"apiBaseURL": this.config.get("apiBaseURL"),
-		"user": this.user,
 		"submissionProxyURL": this.config.get("submissionProxyURL"),
+		"user": this.config.get("user"),
 		"live": isLive,
 		"ready": callback
 	}, this.itemParentConfig.item);
