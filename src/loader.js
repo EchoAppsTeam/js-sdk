@@ -114,8 +114,10 @@ require.config({
 	"map": {
 		"*": {
 			"css": "echo/third-party/requirejs/css",
+			// for * modules we use jquery-noconflict instead of jquery
 			"jquery": "jquery-noconflict"
 		},
+		// for jquery-noconflict module we use real jquery
 		"jquery-noconflict": {"jquery": "jquery"},
 	},
 	"shim": {
