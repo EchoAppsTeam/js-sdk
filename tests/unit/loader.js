@@ -27,7 +27,7 @@ Echo.Tests.Units.push(function(callback) {
 		}
 	});
 
-	Echo.Tests.test("URL conversion", function() {
+	Echo.Tests._test("URL conversion", function() {
 		var cdnBaseURL = Echo.require.toUrl("echo");
 		var version = Echo.Loader.version;
 		var debug = Echo.Loader.debug;
