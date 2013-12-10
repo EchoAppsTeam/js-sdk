@@ -970,13 +970,19 @@ item.methods.getNextPageAfter = function() {
 		: undefined;
 };
 
-item.methods.getRelativeTime = function(datetime) {
-	var datetime = datetime || this.timestamp;
-	var relatives = Utils.getRelativeTimeDiff(datetime);
-	var key = relatives.unit
-		? relatives.unit + (relatives.value === 1 ? "" : "s") + "Ago"
-		: relatives.value;
-	return this.labels.get(key, {"number": relatives.value});
+/**
+ * Method to calculate the relative time of the item's timestamp
+ *
+ * @return {String}
+ * String which represents item's timestamp in the relative format
+ * using default labels as a pattern.
+ */
+item.methods.getRelativeTime = function() {
+	var diff = Utils.getRelativeTimeDiff(this.timestamp);
+	var key = diff.unit
+		? diff.unit + (diff.value === 1 ? "" : "s") + "Ago"
+		: diff.value;
+	return this.labels.get(key, {"number": diff.value});
 };
 
 /**
