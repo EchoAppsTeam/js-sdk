@@ -36,6 +36,16 @@ Base.events = {
 		if (request && request.liveUpdates) {
 			request.liveUpdates.start(true);
 		}
+	},
+	// subscribe all root level applications to the user login/logout event
+	// and call the "refresh" application method
+	"Echo.StreamServer.User.onInvalidate": {
+		"context": "global",
+		"handler": function() {
+			if (!this.dependent()) {
+				this.refresh();
+			}
+		}
 	}
 };
 

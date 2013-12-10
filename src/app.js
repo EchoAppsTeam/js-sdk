@@ -5,10 +5,9 @@ Echo.define([
 	"echo/events",
 	"echo/view",
 	"echo/labels",
-	"echo/streamserver/user",
 	"echo/plugin",
 	"require"
-], function($, Utils, Configuration, Events, View, Labels, User, Plugin, require) {
+], function($, Utils, Configuration, Events, View, Labels, Plugin, require) {
 
 "use strict";
 
@@ -667,16 +666,6 @@ App.prototype._initializers.subscriptions = function() {
 			}
 		}
 	});
-
-	// subscribe all root level applications to the user login/logout event
-	// and call the "refresh" application method
-	if (!app.dependent()) {
-		app.events.subscribe({
-			"topic": "Echo.StreamServer.User.onInvalidate",
-			"context": "global",
-			"handler": app.refresh
-		});
-	}
 };
 
 App.prototype._initializers.labels = function() {
