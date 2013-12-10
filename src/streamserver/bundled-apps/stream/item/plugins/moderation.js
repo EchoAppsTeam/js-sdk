@@ -3,7 +3,7 @@ Echo.define([
 	"echo/plugin",
 	"echo/utils",
 	"echo/streamserver/api"
-], function($, Plugin, Utils, StreamServerAPI) {
+], function($, Plugin, Utils, API) {
 
 "use strict";
 
@@ -320,7 +320,7 @@ plugin.methods._changeItemStatus = function(status) {
 };
 
 plugin.methods._sendRequest = function(data, callback, errorCallback) {
-	StreamServerAPI.request({
+	API.request({
 		"endpoint": "submit",
 		"secure": this.config.get("useSecureAPI", false, true),
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
@@ -461,7 +461,7 @@ plugin.methods._assembleButton = function(name) {
 
 plugin.methods._sendUserUpdate = function(config) {
 	var item = this.component;
-	StreamServerAPI.request({
+	API.request({
 		"endpoint": "users/update",
 		"submissionProxyURL": this.component.config.get("submissionProxyURL"),
 		"secure": this.config.get("useSecureAPI", false, true),
