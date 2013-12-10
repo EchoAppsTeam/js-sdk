@@ -2,10 +2,7 @@ Echo.define([
 	"jquery",
 	"echo/plugin",
 	"echo/utils",
-	"echo/variables",
-	"echo/streamserver/bundled-apps/submit/client-widget",
-	"echo/streamserver/bundled-apps/stream/item/plugins/reply",
-	"echo/streamserver/bundled-apps/submit/plugins/reply"
+	"echo/variables"
 ], function($, Plugin, Utils, Variables, Submit) {
 
 "use strict";

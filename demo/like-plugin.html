@@ -45,8 +45,7 @@
 			"busName": "jskit"
 		};
 		Echo.initApplication({
-			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"module": "echo/streamserver/bundled-apps/auth/client-widget",
+			"component": "echo/streamserver/bundled-apps/auth/client-widget",
 			"config": {
 				"backplane": backplane,
 					"target": document.getElementById("auth"),
@@ -58,8 +57,7 @@
 			}
 		});
 		Echo.initApplication({
-			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"module": "echo/streamserver/bundled-apps/stream/client-widget",
+			"component": "echo/streamserver/bundled-apps/stream/client-widget",
 			"config": {
 				"backplane": backplane,
 				"target": document.getElementById("stream"),
@@ -68,7 +66,7 @@
 				"liveUpdates": {"transport": "websockets"},
 				"item": {"reTag": false},
 				"plugins": [{
-					"url": "echo/streamserver/bundled-apps/stream/item/plugins/like",
+					"component": "echo/streamserver/bundled-apps/stream/item/plugins/like",
 				}]
 			}
 		});

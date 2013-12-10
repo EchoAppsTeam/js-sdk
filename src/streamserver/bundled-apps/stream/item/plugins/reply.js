@@ -4,6 +4,8 @@ Echo.define([
 	"echo/utils",
 	"echo/variables",
 	"echo/streamserver/bundled-apps/submit/client-widget",
+	"echo/streamserver/bundled-apps/stream/plugins/reply",
+	"echo/streamserver/bundled-apps/submit/plugins/reply"
 ], function($, Plugin, Utils, Variables, Submit) {
 
 "use strict";

@@ -8,13 +8,39 @@ var metaInfo = {
 };
 
 Echo.initApplication = function(args) {
-	if (!args.url || !args.module)
+	if (!args.url && !args.component) {
 		return;
-	Echo.require([args.url], function(module) {
-		Echo.require([args.module], function(App) {
+	}
+	if (args.url && args.component) {
+		Echo.require([args.url], function(component) {
+			if (!Echo.require.specified(args.component)) {
+				var componentParts = typeof args.component === "string"
+					? args.component.split(".")
+					: args.component;
+				var searchModule = function(obj, keys) {
+					if (!obj || !keys) {
+						return;
+					}
+					var currentKey = keys.shift();
+					if (keys.length === 0) {
+						return obj[currentKey];
+					} else {
+						return searchModule(obj[currentKey], keys);
+					}
+				};
+				var App = searchModule(window, componentParts);
+				new App(args.config);
+			} else {
+				Echo.require([args.component], function(App) {
+					new App(args.config);
+				});
+			}
+		});
+	} else {
+		Echo.require([args.url ? args.url : args.component], function(App) {
 			new App(args.config);
 		});
-	});
+	}
 };
 
 Echo.isDebug = function() {

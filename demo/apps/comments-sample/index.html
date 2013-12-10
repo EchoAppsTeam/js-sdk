@@ -20,8 +20,7 @@
 			});
 		}
 		Echo.initApplication({
-			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"module": "{%=baseURLs.cdn%}/apps/echo/comments-sample/comments-sample.js",
+			"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/comments-sample.js",
 			"config": {
 				"backplane": {
 					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
@@ -37,11 +36,11 @@
 						"liveUpdates": {"transport": "websockets"},
 						"item": {"reTag": false},
 						"plugins": [{
-							"url": "echo/streamserver/bundled-apps/stream/item/plugins/edit"
+							"component": "echo/streamserver/bundled-apps/stream/item/plugins/edit"
 						}, {
-							"url": "echo/streamserver/bundled-apps/stream/item/plugins/like"
+							"component": "echo/streamserver/bundled-apps/stream/item/plugins/like"
 						}, {
-							"url": "echo/streamserver/bundled-apps/stream/item/plugins/moderation"
+							"component": "echo/streamserver/bundled-apps/stream/item/plugins/moderation"
 						}, {
 							"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
 						}]

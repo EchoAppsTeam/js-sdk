@@ -30,8 +30,7 @@
 	<!-- Client initialization -->
 	<script type="text/javascript">
 		Echo.initApplication({
-			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"module": "echo/streamserver/bundled-apps/submit/client-widget",
+			"component": "echo/streamserver/bundled-apps/submit/client-widget",
 			"config": {
 				"backplane": {
 					"serverBaseURL": "https://api.echoenabled.com/v1",
@@ -41,7 +40,7 @@
 				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"targetURL": "http://echosandbox.com/use-cases/commenting",
 				"plugins": [{
-					"url": "echo/streamserver/bundled-apps/submit/plugins/janrain-auth",
+					"component": "echo/streamserver/bundled-apps/submit/plugins/janrain-auth",
 					"appId": "echo",
 					"width": 250,
 					"height": 100,

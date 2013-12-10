@@ -163,7 +163,7 @@ plugin.component.renderers.container = function(element) {
 plugin.renderers.auth = function(element) {
 	var plugin = this, fields = ["appId", "title", "width", "height", "buttons", "signinWidgetConfig"];
 	var janrainConnectorPlugin = Utils.foldl({
-		"url": "echo/streamserver/bundled-apps/auth/plugins/janrain-connector"
+		"component": "echo/streamserver/bundled-apps/auth/plugins/janrain-connector"
 	}, fields, function(param, acc) {
 		if (plugin.config.get(param)) {
 			acc[param] = plugin.config.get(param);

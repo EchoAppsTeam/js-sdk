@@ -861,21 +861,47 @@ App.prototype._loadPluginScripts = function(callback) {
 	/*
  	* TODO: It should be done using requireJS
  	* without Utils.getComponent usage, maybe
- 	**/
+ 	*/
 	var app = this;
 	var plugins = this.config.get("pluginsOrder");
 	var scripts = Utils.foldl([], plugins, function(name, acc) {
 		var plugin = Plugin.getClass(name, app.name);
 		// check if a script URL is defined for the plugin
-		var url = "plugins." + name + ".url";
-		if (!plugin && app.config.get(url)) {
-			acc.push(app.config.get(url));
+		if (!plugin) {
+			var pluginDefinition = app.config.get("plugins." + name);
+			if (pluginDefinition && (pluginDefinition.url || pluginDefinition.component)) {
+				acc.push(pluginDefinition);
+			}
 		}
 	});
 	if (scripts.length) {
-		require(scripts, $.proxy(callback, app));
+		app._requirePlugins(scripts, $.proxy(callback, app));
 	} else {
 		callback.call(app);
+	}
+};
+
+App.prototype._requirePlugins = function(plugins, callback) {
+	var sortedPlugins = Utils.foldl({"single": [], "packed": {"urls": [], "components": []}}, plugins,
+		function(plugin, acc) {
+			if (plugin.url && plugin.component) {
+				if ($.inArray(plugin.url, acc.packed.urls) < 0) {
+					acc.packed.urls.push(plugin.url);
+				}
+				if ($.inArray(plugin.component, acc.packed.components) < 0) {
+					acc.packed.components.push(plugin.component);
+				}
+			} else {
+				acc.single.push(plugin.url ? plugin.url : plugin.component);
+			}
+		});
+	if (sortedPlugins.single.length > 0) {
+		Echo.require(sortedPlugins.single, callback);
+	}
+	if (sortedPlugins.packed.urls.length > 0) {
+		Echo.require(sortedPlugins.packed.urls, function() {
+			Echo.require(sortedPlugins.packed.components, callback);
+		});
 	}
 };
 
@@ -1020,12 +1046,16 @@ definition.config.normalizer = {
 	"plugins": function(list) {
 		var data = Utils.foldl({"hash": {}, "order": []}, list || [],
 			function(plugin, acc) {
-				var pos = $.inArray(plugin.url, acc.order);
-				if (pos >= 0) {
-					acc.order.splice(pos, 1);
+				if (!plugin || !(plugin.name || plugin.url || plugin.component)) {
+					return;
 				}
-				if (plugin && plugin.url) {
-					var name = plugin.url.split("/").pop().replace(/\.[^.]+$/, "");
+				var accItem = plugin.url
+					? plugin.url
+					: plugin.component
+						? plugin.component
+						: plugin.name;
+				if (!plugin.name) {
+					var name = accItem.split("/").pop().replace(/\.[^.]+$/, "");
 					plugin.name = $.map(name.split("-"), Utils.capitalize).join("");
 				}
 				acc.order.push(plugin.name);

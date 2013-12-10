@@ -36,8 +36,7 @@
 			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
 		};
 		Echo.initApplication({
-			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"module": "echo/streamserver/bundled-apps/stream/client-widget",
+			"component": "echo/streamserver/bundled-apps/stream/client-widget",
 			"config": {
 				"backplane": {
 					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
@@ -55,11 +54,11 @@
 				"reTag": false,
 				"fadeTimeout": 0,
 				"plugins": [{
-						"url": "echo/streamserver/plugins/pinboard-visualization"
+					"component": "echo/streamserver/bundled-apps/stream/plugins/pinboard-visualization"
 				}, {
-					"url": "echo/streamserver/bundled-apps/stream/plugins/reply",
+					"component": "echo/streamserver/bundled-apps/stream/item/plugins/reply",
 					"nestedPlugins": [{
-						"url": "echo/streamserver/bundled-apps/submit/plugins/form-auth",
+						"component": "echo/streamserver/bundled-apps/submit/plugins/form-auth",
 						"submitPermissions": "forceLogin",
 						"identityManager": {
 							"login": identityManager,
@@ -67,9 +66,9 @@
 						}
 					}]
 				}, {
-					"url": "echo/streamserver/bundled-apps/stream/item/plugins/edit"
+					"component": "echo/streamserver/bundled-apps/stream/item/plugins/edit"
 				}, {
-					"url": "echo/streamserver/bundled-apps/stream/item/plugins/like"
+					"component": "echo/streamserver/bundled-apps/stream/item/plugins/like"
 				}]
 			}
 		});

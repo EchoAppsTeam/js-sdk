@@ -243,7 +243,8 @@ module.exports = function(grunt) {
 		"create": true,
 		"include": [
 			"streamserver/bundled-apps/stream/item/media-gallery/client-widget",
-			"streamserver/bundled-apps/stream/plugins/pinboard-visualization"
+			"streamserver/bundled-apps/stream/plugins/pinboard-visualization",
+			"streamserver/bundled-apps/stream/item/plugins/pinboard-visualization"
 		]
 	}, {
 		"name": "gui.pack",
