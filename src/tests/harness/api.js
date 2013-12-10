@@ -235,7 +235,10 @@ Echo.Tests.jqueryObjectsEqual = function(actual, expected, message) {
 };
 
 // methods useful if one wants to disable particular test easily
-Echo.Tests._test = Echo.Tests._asyncTest = Echo.Tests._renderersTest = function() {
+Echo.Tests._test =
+Echo.Tests._asyncTest =
+Echo.Tests._renderersTest =
+Echo.Tests._pluginRenderersTest = function() {
 	Echo.Utils.log({
 		"component": "Tests",
 		"message": "[" + QUnit.config.currentModule + "] Disabled test: " + arguments[0]
