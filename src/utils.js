@@ -1206,7 +1206,7 @@ Utils.random = function(min, max) {
  *
  * @param {String} [data.type]
  * Represents a type of message. According to this parameter method displays
- * appropriate presets css classes if default template is used. There are supported types:
+ * appropriate presets CSS classes if default template is used. There are supported types:
  *
  *   + "loading" produces "echo-message-loading" CSS class for the default template
  *   + "error" produces "echo-message-error" CSS class for the default template
@@ -1227,7 +1227,7 @@ Utils.showMessage = function(data) {
 /**
  * @static
  * Renders error message in the target container using
- * Echo.Utils#displayMessage method.
+ * Echo.Utils#showMessage method.
  *
  *		// just displays error message
  *		Echo.Utils.showError({
@@ -1337,7 +1337,7 @@ Utils.showError = function(data, options) {
 						}
 					}(secondsLeft)
 				},
-				"data": $.extend({"seconds": secondsLeft--}, data),
+				"data": $.extend({"seconds": secondsLeft--}, data)
 			});
 			self.showMessage({
 				"type": "loading",
