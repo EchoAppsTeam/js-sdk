@@ -10,7 +10,7 @@ Echo.define([
  * Static class implements common methods of data processing.
  * The Echo.Utils class is used in various places of Echo JS SDK components.
  *
- * @package environment.pack.js
+ * @package apps.sdk.js
  */
 
 var Utils = {};

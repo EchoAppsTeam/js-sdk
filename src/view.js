@@ -50,7 +50,7 @@ Echo.define("echo/view", [
  *		view2.get("content").attr("class"); // will return "some-prefix-content some-external-className"
  *		view.get("content").attr("class"); // will return "some-prefix-content"
  *
- * @package environment.pack.js
+ * @package apps.sdk.js
  *
  * @constructor
  * Class constructor encapsulating templates rendering and renderers application mechanics.

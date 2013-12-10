@@ -15,7 +15,7 @@ Echo.define([
  *
  * Please visit [this page](#!/guide/how_to_develop_plugin) to learn more about developing plugins
  *
- * @package environment.pack.js
+ * @package apps.sdk.js
  */
 var Plugin = function() {};
 
@@ -479,7 +479,7 @@ Plugin._getClassName = function(name, component) {
  * Echo Plugin interlayer for Configuration utilization.
  *
  * @private
- * @package environment.pack.js
+ * @package apps.sdk.js
  */
 Plugin._defineNestedClass("Config");
 
@@ -574,7 +574,7 @@ Plugin.Config.prototype._normalize = function(key) {
  * Echo Plugin interlayer for Events utilization
  *
  * @private
- * @package environment.pack.js
+ * @package apps.sdk.js
  */
 Plugin._defineNestedClass("Events");
 

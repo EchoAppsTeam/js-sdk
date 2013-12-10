@@ -34,7 +34,7 @@ Echo.define([
  *     labels.get("live"); // returns "Live..."
  *     labels.get("paused"); // returns "Paused..."
  *
- * @package environment.pack.js
+ * @package apps.sdk.js
  *
  * @constructor
  * Constructor of class encapsulating language variable mechanics.

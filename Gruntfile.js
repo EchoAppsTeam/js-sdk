@@ -188,7 +188,7 @@ module.exports = function(grunt) {
 			"third-party/jquery/jquery.viewport.mini"
 		]
 	}, {
-		"name": "environment.pack",
+		"name": "apps.sdk",
 		"create": true,
 		"include": [
 			"utils",
@@ -196,11 +196,10 @@ module.exports = function(grunt) {
 			"labels",
 			"configuration",
 			"api",
-			"streamserver/api",
-			"streamserver/user",
 			"view",
 			"app",
 			"app-client-widget",
+			"app-dashboard",
 			"plugin",
 			"cookie",
 			"variables"
@@ -209,6 +208,8 @@ module.exports = function(grunt) {
 		"name": "streamserver.pack",
 		"create": true,
 		"include": [
+			"streamserver/api",
+			"streamserver/user",
 			"streamserver/base",
 			"streamserver/bundled-apps/counter/client-widget",
 			"streamserver/bundled-apps/stream/item/client-widget",

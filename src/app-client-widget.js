@@ -9,7 +9,7 @@ Echo.define([
  * You can find instructions on how to create your App in the
  * ["How to develop an App"](#!/guide/how_to_develop_app) guide.
  *
- * @package environment.pack.js
+ * @package apps.sdk.js
  *
  * @extends Echo.App
  */

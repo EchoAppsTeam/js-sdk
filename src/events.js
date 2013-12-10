@@ -31,7 +31,7 @@ Echo.define([
  * 		"data": user.is("logged") ? user.data : {}
  * 	});
  *
- * @package environment.pack.js
+ * @package apps.sdk.js
  */
 var Events = {};
 

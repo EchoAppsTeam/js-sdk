@@ -18,7 +18,7 @@ Echo.define([
  * This is a base class for Echo.App.ClientWidget class. You can find instructions on how to create
  * your App in the ["How to develop an App"](#!/guide/how_to_develop_app) guide.
  *
- * @package environment.pack.js
+ * @package apps.sdk.js
  */
 var App = function() {};
 
