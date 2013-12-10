@@ -46,7 +46,7 @@ function getURL(url, devVersion) {
 	var protocol = /^https?/.test(window.location.protocol)
 		? window.location.protocol
 		: "http:";
-	var cdnBaseURL = protocol  +"{%=baseURLs.cdn%}/";
+	var cdnBaseURL = protocol + "{%=baseURLs.cdn%}/";
 	if (typeof devVersion === "undefined") devVersion = true;
 	return /^https?:\/\/|^\/\//.test(url)
 		? url
