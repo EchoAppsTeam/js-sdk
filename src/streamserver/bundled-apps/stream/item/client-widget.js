@@ -972,9 +972,9 @@ item.methods.getNextPageAfter = function() {
 
 item.methods.getRelativeTime = function(datetime) {
 	var datetime = datetime || this.timestamp;
-	var relatives = Utils.constructDatetimeRelatives(datetime);
-	var key = relatives.measure
-		? relatives.measure + (relatives.value === 1 ? "" : "s") + "Ago"
+	var relatives = Utils.getRelativeTimeDiff(datetime);
+	var key = relatives.unit
+		? relatives.unit + (relatives.value === 1 ? "" : "s") + "Ago"
 		: relatives.value;
 	return this.labels.get(key, {"number": relatives.value});
 };

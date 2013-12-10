@@ -1285,10 +1285,32 @@ Utils.showError = function(data, options) {
  * The date to calculate how much time passed since that moment. The function recognizes
  * the date in W3CDFT or UNIX timestamp formats.
  *
- * @return {String}
- * String which represents the date and time in the relative format.
+ * @return {Object}
+ * Object which represents the date and time in the relative format.
+ * If method couldn't parse the given datetime parameter, it returns empty object.
+ * Otherwise, it should contains two keys
+ *
+ *  + value - contains a number which represents a numeric representation according to
+ *  unit. If unit is not in numeric representation this value equals to "undefined".
+ *
+ *  + unit - contains a measure unit in numeric or non-numeric representation; possible
+ *  values is:
+ *
+ *    non-numeric representations:
+ *    + justNow
+ *    + yesterday
+ *    + lastWeek
+ *    + lastMonth
+ *
+ *    numeric representations
+ *    + second
+ *    + minute
+ *    + hour
+ *    + day
+ *    + week
+ *    + month
  */
-Utils.constructDatetimeRelatives = function(datetime) {
+Utils.getRelativeTimeDiff = function(datetime) {
 	if (!datetime) return {};
 	var ts = typeof datetime === "string"
 		? Utils.timestampFromW3CDTF(datetime)
@@ -1299,9 +1321,9 @@ Utils.constructDatetimeRelatives = function(datetime) {
 	var when;
 	var diff = Math.floor((now - d.getTime()) / 1000);
 	var dayDiff = Math.floor(diff / 86400);
-	var getRelativeParts = function(ago, period) {
+	var getParts = function(ago, period) {
 		return {
-			"measure": period,
+			"unit": period,
 			"value": ago
 		};
 	};
@@ -1311,31 +1333,31 @@ Utils.constructDatetimeRelatives = function(datetime) {
 	// less than 10 seconds or if the given date is "from the future" but
 	// within the 60 seconds range
 	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
-		when = getRelativeParts(d.toLocaleDateString() + ", " + d.toLocaleTimeString());
+		when = getParts(d.toLocaleDateString() + ", " + d.toLocaleTimeString());
 	} else if (diff < 10) {
-		when = getRelativeParts("justNow");
+		when = getParts("justNow");
 	} else if (diff < 60) {
-		when = getRelativeParts(diff, "second");
+		when = getParts(diff, "second");
 	} else if (diff < 60 * 60) {
 		diff = Math.floor(diff / 60);
-		when = getRelativeParts(diff, "minute");
+		when = getParts(diff, "minute");
 	} else if (diff < 60 * 60 * 24) {
 		diff = Math.floor(diff / (60 * 60));
-		when = getRelativeParts(diff, "hour");
+		when = getParts(diff, "hour");
 	} else if (diff < 60 * 60 * 48) {
-		when = getRelativeParts("yesterday");
+		when = getParts("yesterday");
 	} else if (dayDiff < 7) {
-		when = getRelativeParts(dayDiff, "day");
+		when = getParts(dayDiff, "day");
 	} else if (dayDiff < 14) {
-		when = getRelativeParts("lastWeek");
+		when = getParts("lastWeek");
 	} else if (dayDiff < 30) {
 		diff =  Math.floor(dayDiff / 7);
-		when = getRelativeParts(diff, "week");
+		when = getParts(diff, "week");
 	} else if (dayDiff < 60) {
-		when = getRelativeParts("lastMonth");
+		when = getParts("lastMonth");
 	} else if (dayDiff < 365) {
 		diff =  Math.floor(dayDiff / 31);
-		when = getRelativeParts(diff, "month");
+		when = getParts(diff, "month");
 	}
 	return when;
 };
