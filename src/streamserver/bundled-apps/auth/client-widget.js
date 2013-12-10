@@ -32,7 +32,6 @@ Echo.define([
  *
  * @extends Echo.StreamServer.Base
  *
- * @package streamserver/apps.pack.js
  * @package streamserver.pack.js
  *
  * @constructor
