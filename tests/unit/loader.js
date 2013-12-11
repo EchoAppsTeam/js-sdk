@@ -28,9 +28,9 @@ Echo.Tests.Units.push(function(callback) {
 	});
 
 	//FIXME: this test shoud be rewriten
-	Echo.Tests.test("URL conversion", function() {
+	Echo.Tests._test("URL conversion", function() {
 		QUnit.ok(true, "This test should be rewriten");
-		/*var cdnBaseURL = Echo.require.toUrl("echo");
+		var cdnBaseURL = Echo.require.toUrl("echo");
 		var version = Echo.version;
 		var debug = Echo.debug;
 		function checkURLs(urls) {
@@ -82,7 +82,7 @@ Echo.Tests.Units.push(function(callback) {
 			cdnBaseURL + "sdk/v" + version + "/web/image.png",
 			"Checking URL conversion: /web/image.png, no dev version"
 		);
-		Echo.Loader.debug = debug;*/
+		Echo.Loader.debug = debug;
 	});
 
 	Echo.Tests.asyncTest("resource downloading", function() {
