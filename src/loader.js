@@ -1,11 +1,5 @@
 (function() {
-/**
- * @class Echo.Loader
- * Static class which implements common mechanics for resources loading,
- * Echo environment establishing and Canvases initialization mechanics.
- *
- * @package loader.js
- */
+
 "use strict";
 
 var metaInfo = {
