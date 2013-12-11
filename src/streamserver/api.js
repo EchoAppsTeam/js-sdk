@@ -34,7 +34,7 @@ var StreamServerAPI = {};
  *
  * @extends Echo.API.Request
  *
- * @package api.pack.js
+ * @package streamserver.pack.js
  *
  * @constructor
  * Constructor initializing class using configuration data.
