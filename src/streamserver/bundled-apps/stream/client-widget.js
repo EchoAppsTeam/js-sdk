@@ -58,13 +58,12 @@ if (App.isDefined(stream)) return;
 stream.init = function() {
 	var self = this;
 	if (!this.config.get("appkey")) {
-		return Utils.showError({
-			"errorCode": "incorrect_appkey"
-		}, {
-			"critical": true,
-			"target": this.config.get("target"),
-			"label": this.labels.get("error_incorrect_appkeys"),
-			"template": this.config.get("infoMessages.template")
+		return this.showError({
+			"data": {
+				"errorCode": "incorrect_appkey",
+				"message": this.labels.get("error_incorrect_appkeys")
+			},
+			"critical": true
 		});
 	}
 
@@ -83,21 +82,21 @@ stream.init = function() {
 		}),
 		"onOpen": function(data, options) {
 			if (options.requestType === "initial") {
-				Utils.showError({}, {
+				self.showError({
+					"data": {
+						"message": self.labels.get("retrying")
+					},
 					"retryIn": 0,
-					"label": self.labels.get("retrying"),
-					"target": self.config.get("target"),
-					"template": self.config.get("infoMessages.template"),
 					"promise": self.request.deferred.transport.promise()
 				});
 			}
 		},
 		"onError": function(data, options) {
 			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-				Utils.showError(data, $.extend(options, {
-					"label": self.labels.get("error_" + data.errorCode),
-					"target": self.config.get("target"),
-					"template": self.config.get("infoMessages.template"),
+				data = data || {};
+				data.message = self.labels.get("error_" + data.errorCode) || options.label;
+				self.showError($.extend(options, {
+					"data": data,
 					"promise": self.request.deferred.transport.promise()
 				}));
 			}
@@ -270,25 +269,12 @@ stream.config = {
 	"itemsComparator": undefined,
 
 	/**
-	 * @cfg {Object} infoMessages
-	 * Customizes the look and feel of info messages, for example "loading" and "error".
-	 *
-	 * @cfg {Boolean} infoMessages.enabled=true
-	 * Specifies if info messages should be rendered.
-	 *
-	 * @cfg {String} infoMessages.template=""
-	 * Specifies a layout template of the info message. By default if template is not
-	 * specified it uses pre-defined full template from the Echo.Utils. For more information
-	 * follow the {@link Echo.Utils#showMessage link}.
-	 *
-	 *     "infoMessages": {
-	 *         "enabled": true,
-	 *         "template": '<div class="some-class">{data:message}</div>'
-	 *     }
+	 * @cfg
+	 * @inheritdoc
 	 */
 	"infoMessages": {
 		"enabled": true,
-		"template": ""
+		"layout": "full"
 	},
 
 	/**
@@ -519,7 +505,11 @@ stream.labels = {
 	/**
 	 * @echo_label retrying
 	 */
-	"retrying": "Retrying..."
+	"retrying": "Retrying...",
+	/**
+	 * @echo_label error_incorrect_appkey
+	 */
+	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
 };
 
 stream.events = {
@@ -592,11 +582,12 @@ stream.renderers.body = function(element) {
 		}
 		this._appendRootItems(request.data, element);
 	} else {
-		Utils.showMessage({
-			"type": "info",
+		this.showMessage({
+			"data": {
+				"type": "info"
+			},
 			"target": element,
-			"message": this.labels.get("emptyStream"),
-			"template": this.config.get("infoMessages.template")
+			"message": this.labels.get("emptyStream")
 		});
 	}
 	return element;
@@ -799,20 +790,22 @@ stream.methods._requestChildrenItems = function(unique) {
 			"q": this._constructChildrenSearchQuery(item)
 		},
 		"onOpen": function() {
-			Utils.showError({}, {
+			self.showError({
+				"data": {
+					"message": self.labels.get("retrying")
+				},
 				"retryIn": 0,
 				"target": target,
-				"label": self.labels.get("retrying"),
-				"template": self.config.get("infoMessages.template"),
 				"promise": request.deferred.transport.promise()
 			});
 		},
 		"onError": function(data, options) {
-			Utils.showError(data, $.extend(options, {
+			data = data || {};
+			data.message = self.labels.get("error_" + data.errorCode) || options.label;
+			self.showError($.extend(options, {
+				"data": data,
 				"target": target,
-				"promise": request.deferred.transport.promise(),
-				"template": self.config.get("infoMessages.template"),
-				"label": self.labels.get("error_" + data.errorCode)
+				"promise": request.deferred.transport.promise()
 			}));
 		},
 		"onData": function(data) {
@@ -842,19 +835,18 @@ stream.methods._requestMoreItems = function(element) {
 	if (!this.moreRequest) {
 		this.moreRequest = this._getRequestObject({
 			"onOpen": function() {
-				Utils.showError({}, {
+				self.showError({
 					"retryIn": 0,
 					"target": element,
-					"template": self.config.get("infoMessages.template"),
 					"promise": self.moreRequest.deferred.transport.promise()
 				});
 			},
 			"onError": function(data, options) {
-				Utils.showError(data, $.extend(options, {
+				data = data || {};
+				data.message = self.labels.get("error_" + data.errorCode) || options.label;
+				self.showError($.extend(options, {
 					"target": element,
-					"template": self.config.get("infoMessages.template"),
-					"promise": self.moreRequest.deferred.transport.promise(),
-					"label": self.labels.get("error_" + data.errorCode)
+					"promise": self.moreRequest.deferred.transport.promise()
 				}));
 			},
 			"onData": function(data) {
@@ -1450,11 +1442,12 @@ stream.methods._spotUpdates.animate.remove = function(item, config) {
 			return acc + 1;
 		});
 		if (!itemsCount) {
-			Utils.showMessage({
-				"type": "info",
+			self.showMessage({
+				"data": {
+					"type": "info"
+				},
 				"target": self.view.get("body"),
-				"message": self.labels.get("emptyStream"),
-				"template": self.config.get("infoMessages.template")
+				"message": self.labels.get("emptyStream")
 			});
 		}
 		self.activities.animations--;
@@ -1850,7 +1843,7 @@ stream.css =
 	'.echo-clickable a.{class:state-message}:hover { text-decoration: underline; }' +
 	'.{class:more}:hover, .{class:fullStateLayout}:hover { background-color: #E4E4E4; }' +
 	'.{class:more}, .{class:fullStateLayout} { text-align: center; border: solid 1px #E4E4E4; margin-top: 10px; padding: 10px; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; cursor: pointer; font-weight: bold; }' +
-	'.{class:more} .echo-message { padding: 0; border: none; border-radius: 0; }';
+	'.{class:more} .echo-app-message { padding: 0; border: none; border-radius: 0; }';
 
 return App.create(stream);
 

@@ -60,12 +60,12 @@ if (App.isDefined(submit)) return;
 
 submit.init = function() {
 	if (!this.config.get("appkey")) {
-		return Utils.showError({
-			"errorCode": "incorrect_appkey",
-			"label": this.labels.get("error_incorrect_appkey")
-		}, {
-			"critical": true,
-			"target": this.config.get("target")
+		return this.showError({
+			"data": {
+				"errorCode": "incorrect_appkey",
+				"message": this.labels.get("error_incorrect_appkey")
+			},
+			"critical": true
 		});
 	}
 
@@ -342,7 +342,11 @@ submit.labels = {
 	/**
 	 * @echo_label
 	 */
-	"yourWebsiteOptional": "Your website (optional)"
+	"yourWebsiteOptional": "Your website (optional)",
+	/**
+	 * @echo_label error_incorrect_appkey
+	 */
+	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
 };
 
 /**

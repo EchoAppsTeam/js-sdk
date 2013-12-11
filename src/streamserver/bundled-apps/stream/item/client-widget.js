@@ -169,6 +169,14 @@ item.config = {
 		"text": false
 	},
 
+	/**
+	 * @cfg
+	 * @inheritdoc
+	 */
+	"infoMessages": {
+		"enabled": false,
+		"layout": ""
+	},
 	"user": {
 		"endpoints": {
 			"logout": "https:{%=baseURLs.api.submissionproxy%}/v2/",
@@ -401,7 +409,7 @@ item.templates.mainFooter =
 item.templates.childrenTop =
 	'<div class="{class:children}"></div>' +
 	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-		'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
+		'<span class="{class:expandChildrenLabel} echo-app-message-icon"></span>' +
 	'</div>';
 
 /**
@@ -409,7 +417,7 @@ item.templates.childrenTop =
  */
 item.templates.childrenBottom =
 	'<div class="{class:expandChildren} {class:container-child} echo-trinaryBackgroundColor echo-clickable">' +
-		'<span class="{class:expandChildrenLabel} echo-message-icon"></span>' +
+		'<span class="{class:expandChildrenLabel} echo-app-message-icon"></span>' +
 	'</div>' +
 	'<div class="{class:children}"></div>';
 
@@ -786,7 +794,7 @@ item.renderers.expandChildrenLabel = function(element, extra) {
 			"label": "loading"
 		},
 		"regular": {
-			"css": "echo-linkColor echo-message-icon",
+			"css": "echo-linkColor echo-app-message-icon",
 			"label": "childrenMoreItems"
 		}
 	};
@@ -1471,9 +1479,9 @@ item.css =
 	'.{class:blocker-message} { position: absolute; z-index: 200; width: 200px; height: 20px; line-height: 20px; text-align: center; background-color: #FFFF99; border: 1px solid #C6C677; opacity: 0.7; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em; }' +
 	'.{class:expandChildren} { display:none; text-align: center; padding:4px; }' +
 	'.{class:expandChildren} .{class:expandChildrenLabel} { display: inline-block; padding-left: 22px; }' +
-	'.{class:expandChildren} .echo-message-icon { background: url("' + Echo.require.toUrl("echo-assets/images/whirlpool.png") + '") no-repeat 5px 4px; }' +
+	'.{class:expandChildren} .echo-app-message-icon { background: url("' + Echo.require.toUrl("echo-assets/images/whirlpool.png") + '") no-repeat 5px 4px; }' +
 	'.{class:expandChildren} .{class:message-loading} { background: no-repeat left top url("' + Echo.require.toUrl("echo-assets/images/loading.gif") + '"); }' +
-	'.{class:expandChildren} .echo-message { padding: 0; border:none; border-radius: 0; }' +
+	'.{class:expandChildren} .echo-app-message { padding: 0; border:none; border-radius: 0; }' +
 	itemDepthRules.join("\n");
 
 return App.create(item);

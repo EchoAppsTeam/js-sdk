@@ -52,11 +52,20 @@ mediaGallery.labels = {
  * @cfg {Object} item
  * An instance of the Echo.StreamServer.BundledApps.Stream.Item.ClientWidget object
  * which may use its state for some reasons (context, data, etc)
+ *
  */
 mediaGallery.config = {
 	"resizeDuration": 250,
 	"elements": [],
-	"item": undefined
+	"item": undefined,
+	/**
+	 * @cfg
+	 * @inheritdoc
+	 */
+	"infoMessages": {
+		"enabled": false,
+		"layout": ""
+	}
 };
 
 /**

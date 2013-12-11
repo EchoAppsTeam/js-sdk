@@ -60,13 +60,12 @@ if (App.isDefined(counter)) return;
 
 counter.init = function() {
 	if (!this.config.get("appkey")) {
-		return Utils.showError({
-			"errorCode": "incorrect_appkey",
-			"label": this.labels.get("error_incorrect_appkey")
-		}, {
-			"critical": true,
-			"target": this.config.get("target"),
-			"template": this.config.get("infoMessages.template")
+		return this.showError({
+			"data": {
+				"errorCode": "incorrect_appkey",
+				"message": this.labels.get("error_incorrect_appkey")
+			},
+			"critical": true
 		});
 	}
 
@@ -96,6 +95,13 @@ counter.destroy = function() {
 		request.abort();
 		this.remove("request");
 	}
+};
+
+counter.labels = {
+	/**
+	 * @echo_label error_incorrect_appkey
+	 */
+	"error_incorrect_appkey": "(incorrect_appkey) Incorrect or missing appkey.",
 };
 
 counter.config = {
@@ -144,25 +150,12 @@ counter.config = {
 	"data": undefined,
 
 	/**
-	 * @cfg {Object} infoMessages
-	 * Customizes the look and feel of info messages, for example "loading" and "error".
-	 *
-	 * @cfg {Boolean} infoMessages.enabled=true
-	 * Specifies if info messages should be rendered.
-	 *
-	 * @cfg {String} infoMessages.template=""
-	 * Specifies a layout template of the info message. By default if template is not
-	 * specified it uses pre-defined compact template from the Echo.Utils. For more information
-	 * follow the {@link Echo.Utils#showMessage link}.
-	 *
-	 *     "infoMessages": {
-	 *         "enabled": true,
-	 *         "template": '<div class="some-class">{data:count}</div>'
-	 *     }
+	 * @cfg
+	 * @inheritdoc
 	 */
 	"infoMessages": {
 		"enabled": true,
-		"template": ""
+		"layout": "compact"
 	},
 
 	/**
@@ -261,13 +254,11 @@ counter.methods._error = function(data, options) {
 		this.render();
 	} else {
 		if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
-			Utils.showMessage({
-				"type": "error",
+			data.type = "error";
+			data.message = data.message || options.label;
+			this.showMessage({
 				"data": data,
-				"layout": "compact",
-				"message": data.errorMessage,
-				"target": this.config.get("target"),
-				"template": this.config.get("infoMessages.template")
+				"layout": "compact"
 			});
 		}
 	}

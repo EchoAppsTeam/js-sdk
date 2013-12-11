@@ -1191,172 +1191,6 @@ Utils.random = function(min, max) {
 
 /**
  * @static
- * Renders info message in the target container.
- *
- * @param {Object} data
- * Object containing info message information.
- *
- * @param {String} [data.layout]
- * Specifies the type of message layout. Can be set to "compact" or "full".
- *
- * @param {String} [data.template]
- * Template which can be substituted by Echo.Utils#substitute method
- * using data as template display data. If this parameter is passed, then
- * it will be use instead of default templates.
- *
- * @param {String} [data.type]
- * Represents a type of message. According to this parameter method displays
- * appropriate presets CSS classes if default template is used. There are supported types:
- *
- *   + "loading" produces "echo-message-loading" CSS class for the default template
- *   + "error" produces "echo-message-error" CSS class for the default template
- *   + "info" produces "echo-message-info" CSS class for the default template
- *
- * @param {Object} [data.target]
- * Specifies the target container as a jQuery object.
- */
-Utils.showMessage = function(data) {
-	data.target.empty().append(
-		this.substitute({
-			"data": data,
-			"template": data.template || Variables.templates.message[data.layout || "full"]
-		})
-	);
-};
-
-/**
- * @static
- * Renders error message in the target container using
- * Echo.Utils#showMessage method.
- *
- *		// just displays error message
- *		Echo.Utils.showError({
- *			"erroCode": "code",
- *			"errorMessage": "Some message"
- *		}, {
- *			"type": "error",
- *			"target": $(".some-element"),
- *			"label": "Some error was occured"
- *		});
- *
- *		var deferred = $.Deferred();
- *
- *		// displays ticker messages
- *		Echo.Utils.showError({
- *			"errorCode": "error_code",
- *			"errorMessage": "Some error occured"
- *		}, {
- *			"retryIn": 3000,
- *			"label": "Error ({data:errorCode}: {data:errorMessage}), retry in {data:seconds} seconds...",
- *			"target": $(".some-element"),
- *			"promise": deferred.promise()
- *		});
- *
- *		setTimeout(function() {
- *			// clear ticker timer
- *			deferred.resolve();
- *			$(".some-element").html("Retried");
- *		}, 3000);
- *
- * @param {Object} data
- * Object containing error message information.
- *
- * @param {Object} options
- * Object containing display options.
- *
- * @param {String} options.label
- * Text label which displays by this method.
- *
- * @param {Object} options.target
- * Target container as a jQuery object where error will be displayed.
- * This option passes to the Echo.Utils#showMessage as is.
- *
- * @param {Boolean} [options.critical]
- * If this parameter is sets to true, then "error" type will be passed
- * to the Echo.Utils#showMessage method. Otherwise "loading" type will be passed.
- *
- * @param {String} [options.template]
- * Template which can be substituted by Echo.Utils#substitute method
- * using data as template display data.
- * This option passes to the Echo.Utils#showMessage as is.
- *
- * @param {String} [options.layout]
- * Specifies the type of message layout. Can be set to "compact" or "full".
- * This option passes to the Echo.Utils#showMessage as is.
- *
- * @param {Number} [options.retryIn]
- * Number which indicates the retrying delay in milliseconds.
- * If this parameter was passed, then this method will be work as a ticker
- * timer decrements the retryIn value every one second by 1000 milliseconds
- * and display this process in the target element. The timer which implements
- * delay mechanics will be cleared when the caller side indicates that the
- * retry mechaism is done. Interop between caller and callee sides implements
- * by "promise" option.
- *
- * @param {Object} [options.promise]
- * jQuery [promise](http://api.jquery.com/promise/) object. This option uses
- * when you need show retry messages by ticker mechanism. This option require
- * "retryIn" option. The ticker timer will be cleared only in case of promise
- * object is resolved.
- */
-Utils.showError = function(data, options) {
-	var self = this;
-	options = options || {};
-	if (typeof options.retryIn === "undefined") {
-		var label = options.label;
-		var message = label === "error_" + data.errorCode
-			? "(" + data.errorCode + ") " + (data.errorMessage || "")
-			: label;
-		this.showMessage({
-			"type": options.critical ? "error" : "loading",
-			"message": message,
-			"target": options.target,
-			"template": options.template,
-			"layout": options.layout
-		});
-	} else if (!options.retryIn && options.promise && options.promise.state() === "rejected") {
-		this.showMessage({
-			"type": "loading",
-			"message": options.label,
-			"template": options.template,
-			"layout": options.layout,
-			"target": options.target
-		});
-	} else if (options.promise) {
-		var secondsLeft = options.retryIn / 1000;
-		var ticker = function() {
-			if (!secondsLeft) {
-				return;
-			}
-			var label = self.substitute({
-				"template": options.label,
-				"instructions": {
-					"seconds": function(sec) {
-						return function() {
-							return sec;
-						}
-					}(secondsLeft)
-				},
-				"data": $.extend({"seconds": secondsLeft--}, data)
-			});
-			self.showMessage({
-				"type": "loading",
-				"message": label,
-				"target": options.target,
-				"template": options.template,
-				"layout": options.layout
-			});
-		};
-		var retryTimer = setInterval(ticker, 1000);
-		options.promise.done(function() {
-			clearInterval(retryTimer);
-		});
-		ticker();
-	}
-};
-
-/**
- * @static
  * Method to calculate the relative time passed since the given date and time.
  *
  * @param {Mixed} datetime
@@ -1444,17 +1278,7 @@ Utils.addCSS(
 	'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
 	'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
 	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
-	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
-	'.echo-message { padding: 15px 0px; text-align: center; }' +
-	'.echo-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
-	'.echo-message .echo-message-icon { padding-left: 21px; height: auto; }' +
-	($.map([
-		["info", "information.png"],
-		["loading", "loading.gif"],
-		["error", "warning.gif"]
-	], function(conversions) {
-		return ".echo-message-" + conversions[0] + " { background-image: url(" + require.toUrl("echo-assets/images/" + conversions[1]) + "); }";
-	}).join(""))
+	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }'
 , "echo-common");
 
 // JS SDK can't guarantee proper UI elements rendering in quirks mode
@@ -1467,17 +1291,6 @@ if (document.compatMode === "BackCompat") {
 	});
 }
 
-Variables.templates = {
-	"message": {
-		"compact": '<span class="echo-message echo-message-icon echo-message-{data:type}" title="{data:message}">&nbsp;</span>',
-		"full": '<div class="echo-message">' +
-			'<span class="echo-message-icon echo-message-{data:type}">' +
-				'{data:message}' +
-			'</span>' +
-		'</div>'
-	}
-};
-
 // FIXME: __DEPRECATED__
 // remove this after full require js compatible implementation
 Utils.set(window, "Echo.Utils", Utils);
@@ -1485,5 +1298,3 @@ Utils.set(window, "Echo.Utils", Utils);
 return Utils;
 
 });
-
-

@@ -177,7 +177,7 @@ Echo.Tests.Units.push(function(callback) {
 			"topic"   : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
 			"once"    : true,
 			"handler" : function(topic, params) {
-				QUnit.ok(self.config.target.html().match(/Unrecognized query/),
+				QUnit.ok(self.config.target.html().match(/wrong_query/),
 					'Checking the Error: "wrong_query" usecase rendering');
 				callback();
 			}
@@ -211,7 +211,7 @@ Echo.Tests.Units.push(function(callback) {
 			"handler" : function(topic, params) {
 				//TODO fix test when the API is fixed
 				// it should return incorrect_appkey instead of wrong_query 
-				QUnit.ok(self.config.target.html().match(/Unrecognized query/),
+				QUnit.ok(self.config.target.html().match(/wrong_query/),
 					'Checking the Error: "incorrect_appkey" usecase rendering');
 				//QUnit.ok($(params.target).html().match(/Incorrect application key was specified in the query/),
 				//	'Checking the Error: "incorrect_appkey" usecase rendering');

@@ -19,17 +19,6 @@ Echo.define([
  */
 var Base = App.definition("Echo.StreamServer.Base");
 
-Base.config = {
-	"loadingMessageLayout": "full"
-};
-
-Base.labels = {
-	/**
-	 * @echo_label loading
-	 */
-	"loading": "Loading..."
-};
-
 Base.events = {
 	"Echo.App.onDataInvalidate": function() {
 		var request = this.get("request");
@@ -88,15 +77,6 @@ Base.methods._storeUser = function(next) {
 	);
 };
 
-Base.methods._loading = function() {
-	Utils.showMessage({
-		"type": "loading",
-		"target": this.config.get("target"),
-		"message": this.labels.get("loading"),
-		"layout": this.config.get("loadingMessageLayout")
-	});
-};
-
 Base.methods._init = function(subsystems) {
 	var index = 0;
 	$.each(subsystems, function(i, subsystem) {
@@ -106,10 +86,6 @@ Base.methods._init = function(subsystems) {
 		}
 	});
 	subsystems.splice(index, 0, {
-		"name": "loading",
-		"init": this._loading,
-		"type": "sync"
-	}, {
 		"name": "user",
 		"init": this._initUser,
 		"type": "async"

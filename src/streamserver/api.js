@@ -399,8 +399,10 @@ StreamServerAPI.Request.prototype._handleErrorResponse = function(data, config) 
 	var self = this;
 	config = config || {};
 	var errorCallback = config.callback;
-	var label = function(code) {
-		return Labels.get("error_" + code, "Echo.StreamServer.API");
+	var getLabel = function(data) {
+		data = data || {};
+		return Labels.get("error_" + data.errorCode, "Echo.StreamServer.API")
+			|| "(" + data.errorCode + ") " + (data.errorMessage || "");
 	};
 	var calcWaitingTimeout = function() {
 		// interval is calculated as x^2, x=[1..7]
@@ -432,7 +434,7 @@ StreamServerAPI.Request.prototype._handleErrorResponse = function(data, config) 
 		errorCallback(data, {
 			"requestType": self.requestType,
 			"critical": false,
-			"label": label(data.errorCode),
+			"label": getLabel(data),
 			"retryIn": timeout
 		});
 	} else {
@@ -442,7 +444,7 @@ StreamServerAPI.Request.prototype._handleErrorResponse = function(data, config) 
 		}
 		errorCallback(data, {
 			"requestType": self.requestType,
-			"label": label(data.errorCode),
+			"label": getLabel(data),
 			"critical": data.errorCode !== "connection_aborted"
 		});
 	}

@@ -467,6 +467,150 @@ App.prototype.destroyApp = function(id) {
 };
 
 /**
+ * Renders info message in the target container.
+ *
+ * @param {Object} params
+ * Object containing info message parameters.
+ *
+ * @param {String} [params.layout]
+ * Specifies the type of message layout. Can be set to "compact" or "full".
+ *
+ * @param {HTMLElement} [params.target]
+ * Specifies the target container.
+ *
+ * @param {Object} [params.data]
+ * Object containing the data which values passes to the message template
+ * via Echo.App#substitute method.
+ *
+ * @param {String} [params.data.type]
+ * Represents a type of message. According to this parameter method displays
+ * appropriate presets CSS classes if default template is used. There are supported types:
+ *
+ *   + "loading" produces "echo-app-message-loading" CSS class for the default template
+ *   + "error" produces "echo-app-message-error" CSS class for the default template
+ *   + "info" produces "echo-app-message-info" CSS class for the default template
+ *
+ * You can specify your own type but don't forget to add appropriate CSS rules for the
+ * generated CSS class.
+ */
+App.prototype.showMessage = function(params) {
+	if (!this.config.get("infoMessages.enabled")) return;
+	var target = params.target || this.config.get("target");
+	var layout = params.layout || this.config.get("infoMessages.layout");
+	var view = this.view.fork();
+	target.empty().append(view.render({
+		"data": params.data,
+		"template": this.templates.message[layout]
+	}));
+};
+
+/**
+ * @static
+ * Renders error message in the target container using
+ * Echo.App#showMessage method.
+ *
+ *		// just displays error message
+ *		this.showError({
+ *			"type": "error",
+ *			"target": $(".some-element"),
+ *			"data": {
+ *				"message": "Some error was occured"
+ *			}
+ *		});
+ *
+ *		var deferred = $.Deferred();
+ *
+ *		// displays ticker messages
+ *		this.showError({
+ *			"retryIn": 3000,
+ *			"message": "Retry in {data:seconds} seconds...",
+ *			"target": $(".some-element"),
+ *			"promise": deferred.promise()
+ *		});
+ *
+ *		setTimeout(function() {
+ *			// clear ticker timer
+ *			deferred.resolve();
+ *			$(".some-element").html("Retried");
+ *		}, 3000);
+ *
+ * @param {Object} params
+ * Object containing display options.
+ * Object containing error message information.
+ *
+ * @param {Object} [params.target]
+ * Target container as a jQuery object where error will be displayed.
+ *
+ * @param {Boolean} [params.critical]
+ * If this parameter is sets to true, then "error" type will be passed
+ * to the Echo.Utils#showMessage method. Otherwise "loading" type will be passed.
+ *
+ * @param {String} [params.data]
+ * Object containing the data which passes to the Echo.App#showMessage as is.
+ *
+ * @param {Number} [params.retryIn]
+ * Number which indicates the retrying delay in milliseconds.
+ * If this parameter was passed, then this method will be work as a ticker
+ * timer decrements the retryIn value every one second by 1000 milliseconds
+ * and display this process in the target element. The timer which implements
+ * delay mechanics will be cleared when the caller side indicates that the
+ * retry mechaism is done. Interop between caller and callee sides implements
+ * by "promise" param.
+ *
+ * @param {Object} [params.promise]
+ * jQuery [promise](http://api.jquery.com/promise/) object. This param uses
+ * when you need show retry messages by ticker mechanism. This param require
+ * "retryIn" param. The ticker timer will be cleared only in case of promise
+ * object is resolved.
+ */
+App.prototype.showError = function(params) {
+	var self = this;
+	params = params || {};
+	params.data = params.data || {};
+	if (typeof params.retryIn === "undefined") {
+		params.data.type = params.critical ? "error" : "loading";
+		this.showMessage({
+			"data": params.data,
+			"target": params.target,
+			"layout": params.layout
+		});
+	} else if (!params.retryIn && params.promise && params.promise.state() === "rejected") {
+		params.data.type = "loading";
+		this.showMessage({
+			"data": params.data,
+			"layout": params.layout,
+			"target": params.target
+		});
+	} else if (params.promise) {
+		var secondsLeft = params.retryIn / 1000;
+		var ticker = function() {
+			if (!secondsLeft) {
+				return;
+			}
+			var label = self.substitute({
+				"template": params.data.message || "",
+				"instructions": {
+					"seconds": function(sec) {
+						return function() {
+							return sec;
+						}
+					}(secondsLeft)
+				},
+				"data": $.extend({"seconds": secondsLeft--}, params.data)
+			});
+			params.data.type = "loading";
+			params.data.message = label;
+			self.showMessage(params);
+		};
+		var retryTimer = setInterval(ticker, 1000);
+		params.promise.done(function() {
+			clearInterval(retryTimer);
+		});
+		ticker();
+	}
+};
+
+/**
  * Method to destroy all defined nested applications by their ids in the exception list.
  *
  * Method can accept one parameter which specifies the nested exception
@@ -523,6 +667,7 @@ App.prototype._initializers.list = [
 	["subscriptions",      ["init"]],
 	["labels",             ["init"]],
 	["view",               ["init"]],
+	["loading",            ["init", "refresh"]],
 	["plugins:async",      ["init", "refresh"]],
 	["init:async",         ["init", "refresh"]],
 	["ready",              ["init"]],
@@ -708,6 +853,15 @@ App.prototype._initializers.view = function() {
 				: args.target;
 		},
 		"substitutions": this._getSubstitutionInstructions()
+	});
+};
+
+App.prototype._initializers.loading = function() {
+	this.showMessage({
+		"data": {
+			"type": "loading",
+			"message": this.labels.get("loading")
+		}
 	});
 };
 
@@ -1030,7 +1184,27 @@ definition.config = {
 	 * @cfg {Object} backplane
 	 * Object which contains the data to be passed into the Backplane.init call.
 	 */
-	"backplane": {}
+	"backplane": {},
+
+	/**
+	 * @cfg {Object} infoMessages
+	 * Customizes the look and feel of info messages, for example "loading" and "error".
+	 *
+	 * @cfg {Boolean} infoMessages.enabled=true
+	 * Specifies if info messages should be rendered.
+	 *
+	 * @cfg {String} infoMessages.layout="full"
+	 * Specifies the layout of the info message. By default can be set to "compact" or "full".
+	 *
+	 *     "infoMessages": {
+	 *         "enabled": true,
+	 *         "layout": "full"
+	 *     }
+	 */
+	"infoMessages": {
+		"enabled": true,
+		"layout": "full"
+	}
 };
 
 definition.config.normalizer = {
@@ -1070,6 +1244,31 @@ $.map(["create", "definition", "isDefined", "_merge"], function(name) {
 
 definition.inherits = App;
 
+definition.templates = {"message": {}};
+
+/**
+ * @echo_template
+ */
+definition.templates.message.compact =
+	'<span class="echo-app-message echo-app-message-icon echo-app-message-{data:type} {class:messageIcon} {class:messageText}" title="{data:message}">&nbsp;</span>';
+
+/**
+ * @echo_template
+ */
+definition.templates.message.full =
+	'<div class="echo-app-message {class:messageText}">' +
+		'<span class="echo-app-message-icon echo-app-message-{data:type} {class:messageIcon}">' +
+			'{data:message}' +
+		'</span>' +
+	'</div>';
+
+definition.labels = {
+	/**
+	 * @echo_label loading
+	 */
+	"loading": "Loading..."
+};
+
 definition.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 	'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
 	'.echo-primaryColor { color: #3A3A3A; }' +
@@ -1079,7 +1278,17 @@ definition.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }'
 	'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
 	'.echo-clickable { cursor: pointer; }' +
 	'.echo-relative { position: relative; }' +
-	'.echo-clear { clear: both; }';
+	'.echo-clear { clear: both; }' +
+	'.echo-app-message { padding: 15px 0px; text-align: center; }' +
+	'.echo-app-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
+	'.echo-app-message .echo-app-message-icon { padding-left: 21px; height: auto; }' +
+	($.map([
+		["info", "information.png"],
+		["loading", "loading.gif"],
+		["error", "warning.gif"]
+	], function(conversions) {
+		return ".echo-app-message-" + conversions[0] + " { background-image: url(" + require.toUrl("echo-assets/images/" + conversions[1]) + "); }";
+	}).join(""));
 
 App._definition = definition;
 

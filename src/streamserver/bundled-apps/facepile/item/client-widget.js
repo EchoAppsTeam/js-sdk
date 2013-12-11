@@ -55,6 +55,15 @@ item.config = {
 	 */
 	"defaultAvatar": require.toUrl("echo-assets/images/avatar-default.png"),
 
+	/**
+	 * @cfg
+	 * @inheritdoc
+	 */
+	"infoMessages": {
+		"enabled": false,
+		"layout": ""
+	},
+
 	"user": {
 		"endpoints": {
 			"logout": "https:{%=baseURLs.api.submissionproxy%}/v2/",

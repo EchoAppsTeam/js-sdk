@@ -39,7 +39,9 @@ Echo.Tests.Units.push(function(callback) {
 			"template",
 			"parentRenderer",
 			"extendTemplate",
-			"extendRenderer"
+			"extendRenderer",
+			"showMessage",
+			"showError"
 		]
 	};
 
@@ -513,6 +515,74 @@ Echo.Tests.Units.push(function(callback) {
 			this.render();
 			_suite.jqueryObjectsEqual($(this.view.get("testRenderer").html()), $("<div>Some value</div>"),
 				"Checking if component was re-rendered and appended elements were wiped out");
+
+			// checking "showMessage" method
+			var target = $('<div></div>');
+			var params = {
+				"data": {
+					"type": "error",
+					"message": "An error occured during the request..."
+				},
+				"layout": "compact",
+				"target": target
+			};
+			this.showMessage(params);
+			QUnit.ok(!!this.view.get("container"),
+				"Checking if the \"showMessage\" function doesn't wipe out other elements in the \"view\" structure");
+			QUnit.equal(
+				target.find(".echo-app-message-icon").attr("title"),
+				params.data.message,
+				"Checking \"showMessage\" in compact mode");
+
+			params.layout = "full";
+			this.showMessage(params);
+			QUnit.equal(
+				target.find(".echo-app-message-icon").html(),
+				params.data.message,
+				"Checking \"showMessage\" in full mode");
+
+			// checking "showError" method
+			var errorCount = 0;
+			var errorTarget = $("<div></div>");
+			var def = $.Deferred();
+			var errorOptions = {
+				"target": errorTarget,
+				"data": {},
+				"critical": false,
+				"promise": def.promise()
+			};
+			errorOptions.data.errorCode = "busy";
+			errorOptions.data.message = Labels.get("error_busy", "Echo.StreamServer.API");
+			this.showError(errorOptions);
+			QUnit.equal(
+				errorTarget.find(".echo-app-message-icon").html(),
+				"Loading. Please wait...",
+				"Checking if the supported errorCode received and errorMessage ignored"
+			);
+			errorOptions.retryIn = 500;
+			errorOptions.data.errorCode = "view_limit";
+			errorOptions.data.message = Labels.get("error_view_limit", "Echo.StreamServer.API");
+			def.reject();
+			this.showError(errorOptions);
+			def = $.Deferred();
+			QUnit.equal(
+				errorTarget.find(".echo-app-message-icon").html(),
+				"View creation rate limit has been exceeded. Retrying in 0.5 seconds...",
+				"Checking if the retrying mechanism works"
+			);
+			QUnit.stop();
+			setTimeout(function() {
+				errorOptions.retryIn = 0;
+				def.resolve();
+				errorOptions.data.message = "Some label";
+				self.showError(errorOptions);
+				QUnit.equal(
+					errorTarget.find(".echo-app-message-icon").html(),
+					"Some label",
+					"Checking if the retrying mechanism works after 0.5 seconds counted"
+				);
+				QUnit.start();
+			}, 500);
 
 			var template = '<div class="echo-utils-tests-footer">footer content</div>';
 			this.render();
