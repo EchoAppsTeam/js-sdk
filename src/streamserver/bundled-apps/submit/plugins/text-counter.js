@@ -23,7 +23,6 @@ Echo.define([
  *
  * @extends Echo.Plugin
  *
- * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
 var plugin = Plugin.definition("TextCounter", "Echo.StreamServer.BundledApps.Submit.ClientWidget");

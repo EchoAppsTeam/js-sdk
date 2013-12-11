@@ -45,7 +45,6 @@ Echo.define([
  *
  * @extends Echo.Plugin
  *
- * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
 var plugin = Plugin.definition("TweetDisplay", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");

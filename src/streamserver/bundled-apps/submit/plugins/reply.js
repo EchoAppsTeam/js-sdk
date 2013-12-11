@@ -24,7 +24,6 @@ Echo.define([
  * @extends Echo.Plugin
  *
  * @private
- * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
  */
 var plugin = Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
