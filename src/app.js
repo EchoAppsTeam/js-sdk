@@ -871,25 +871,28 @@ App.prototype._loadPluginScripts = function(callback) {
 };
 
 App.prototype._requirePlugins = function(plugins, callback) {
-	var sortedPlugins = Utils.foldl({"single": [], "packed": {"urls": [], "components": []}}, plugins,
+	var pluginGroups = Utils.foldl([[], []], plugins,
 		function(plugin, acc) {
 			if (plugin.url && plugin.component) {
-				if ($.inArray(plugin.url, acc.packed.urls) < 0) {
-					acc.packed.urls.push(plugin.url);
+				if ($.inArray(plugin.url, acc.firstReq) < 0) {
+					acc[0].push(plugin.url);
 				}
-				if ($.inArray(plugin.component, acc.packed.components) < 0) {
-					acc.packed.components.push(plugin.component);
+				if ($.inArray(plugin.component, acc.secondReq) < 0) {
+					acc[1].push(plugin.component);
 				}
 			} else {
-				acc.single.push(plugin.url ? plugin.url : plugin.component);
+				acc[0].push(plugin.url || plugin.component);
 			}
 		});
-	if (sortedPlugins.single.length > 0) {
-		Echo.require(sortedPlugins.single, callback);
-	}
-	if (sortedPlugins.packed.urls.length > 0) {
-		Echo.require(sortedPlugins.packed.urls, function() {
-			Echo.require(sortedPlugins.packed.components, callback);
+	// TODO: plugins connect to app using global variable
+	// we need to do it using returned from plugins modules values.
+	if (pluginGroups[0].length) {
+		Echo.require(pluginGroups[0], function() {
+			if (pluginGroups[1].length) {
+				Echo.require(pluginGroups[1], callback);
+			} else {
+				callback();
+			}
 		});
 	}
 };
@@ -1038,11 +1041,7 @@ definition.config.normalizer = {
 				if (!plugin || !(plugin.name || plugin.url || plugin.component)) {
 					return;
 				}
-				var accItem = plugin.url
-					? plugin.url
-					: plugin.component
-						? plugin.component
-						: plugin.name;
+				var accItem = plugin.component || plugin.name || plugin.url;
 				if (!plugin.name) {
 					var name = accItem.split("/").pop().replace(/\.[^.]+$/, "");
 					plugin.name = $.map(name.split("-"), Utils.capitalize).join("");
