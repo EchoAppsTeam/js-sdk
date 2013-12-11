@@ -874,10 +874,10 @@ App.prototype._requirePlugins = function(plugins, callback) {
 	var pluginGroups = Utils.foldl([[], []], plugins,
 		function(plugin, acc) {
 			if (plugin.url && plugin.component) {
-				if ($.inArray(plugin.url, acc.firstReq) < 0) {
+				if ($.inArray(plugin.url, acc[0]) < 0) {
 					acc[0].push(plugin.url);
 				}
-				if ($.inArray(plugin.component, acc.secondReq) < 0) {
+				if ($.inArray(plugin.component, acc[1]) < 0) {
 					acc[1].push(plugin.component);
 				}
 			} else {
