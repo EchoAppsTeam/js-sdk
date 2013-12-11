@@ -1,5 +1,11 @@
 (function() {
-
+/**
+ * @class Echo.Loader
+ * Static class which implements common mechanics for resources loading,
+ * Echo environment establishing and Canvases initialization mechanics.
+ *
+ * @package loader.js
+ */
 "use strict";
 
 var metaInfo = {
@@ -37,7 +43,7 @@ Echo.initApplication = function(args) {
 			}
 		});
 	} else {
-		Echo.require([args.url ? args.url : args.component], function(App) {
+		Echo.require([args.url || args.component], function(App) {
 			new App(args.config);
 		});
 	}
