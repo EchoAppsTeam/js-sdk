@@ -42,15 +42,7 @@ var StreamServerAPI = {};
  * @param {Object} config Configuration data.
  */
 StreamServerAPI.Request = Utils.inherit(API.Request, function(config) {
-	var timeout = config && config.liveUpdates && config.liveUpdates.timeout || config.liveUpdatesTimeout;
-	var liveUpdatesEnabled = config && config.liveUpdates && config.liveUpdates.enabled || config.recurring;
-
 	config = $.extend(true, {
-		/**
-		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
-		 * __Note__: this parameter is deprecated in favor of liveUpdates.polling.timeout.
-		 */
-
 		/**
 		 * @cfg {Object} [liveUpdates]
 		 * Live updating machinery configuration.
@@ -107,11 +99,11 @@ StreamServerAPI.Request = Utils.inherit(API.Request, function(config) {
 			"transport": "polling", // or "websockets"
 			// picking up enabled value
 			// for backwards compatibility
-			"enabled": liveUpdatesEnabled,
+			"enabled": false,
 			"polling": {
 				// picking up timeout value
 				// for backwards compatibility
-				"timeout": timeout || 10
+				"timeout": 10
 			},
 			"websockets": {
 				"maxConnectRetries": 3,
@@ -126,12 +118,6 @@ StreamServerAPI.Request = Utils.inherit(API.Request, function(config) {
 				"URL": "{%=baseURLs.api.ws%}/v1/"
 			}
 		},
-
-		/**
-		 * @cfg {Boolean} [recurring] Specifies that the live updates are enabled.
-		 * __Note__: this parameter is deprecated in favor of liveUpdates.enabled
-		 */
-		"recurring": false,
 
 		/**
 		 * @cfg {Boolean} [skipInitialRequest]
