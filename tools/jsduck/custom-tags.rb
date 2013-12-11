@@ -8,13 +8,12 @@ module Echo
 		end
 
 		def to_html(context)
-			module_name = context[:files][0][:filename].gsub(/^.*src\/(.+)\.js/, 'echo/\1')
-			example = "Echo.define([\n    \"#{module_name}\"\n], function() { ... });"
+			module_name = context[:files][0][:filename].gsub(/^.*\/src\/(.+)\.js/, "echo/\\1")
 			<<-EOHTML
 				<p>
 					Сan be used as an AMD module: <b>#{module_name}</b>
 				</p>
-				<pre><code>#{example}</code></pre>
+				<pre><code>Echo.define([\n    \"#{module_name}\"\n], function() { ... });</code></pre>
 			EOHTML
 		end
 	end
