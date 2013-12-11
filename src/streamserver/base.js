@@ -14,6 +14,7 @@ Echo.define([
  * ["How to develop an App"](#!/guide/how_to_develop_app) guide.
  *
  * @package streamserver.pack.js
+ * @module
  *
  * @extends Echo.App.ClientWidget
  */

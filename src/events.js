@@ -32,6 +32,7 @@ Echo.define([
  * 	});
  *
  * @package apps.sdk.js
+ * @module
  */
 var Events = {};
 

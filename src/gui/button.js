@@ -34,6 +34,7 @@ Echo.define([
  * @extends Echo.GUI
  *
  * @package gui.pack.js
+ * @module
  *
  * @constructor
  * Creates a button inside the container defined in the “target" config parameter.

@@ -19,6 +19,7 @@ if (App.isDefined(canvas)) return;
  * the Loader. The instance of the class can also be created manually in
  * case the Canvas data already exists on the page.
  *
+ * @module
  * @package environment.pack.js
  *
  * @extends Echo.App

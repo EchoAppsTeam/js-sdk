@@ -26,6 +26,7 @@ Echo.define([
  *
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
+ * @module
  */
 var plugin = Plugin.definition("ItemAccumulatorDisplay", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 

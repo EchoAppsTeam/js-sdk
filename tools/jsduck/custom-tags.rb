@@ -1,4 +1,24 @@
 module Echo
+	class Module < JsDuck::Tag::BooleanTag
+		def initialize
+			@tagname = :module
+			@pattern = "module"
+			@html_position = POS_ASIDE - 0.1
+			super
+		end
+
+		def to_html(context)
+			module_name = context[:files][0][:filename].gsub(/^.*src\/(.+)\.js/, 'echo/\1')
+			example = "Echo.define([\n    \"#{module_name}\"\n], function() { ... });"
+			<<-EOHTML
+				<p>
+					Сan be used as an AMD module: <b>#{module_name}</b>
+				</p>
+				<pre><code>#{example}</code></pre>
+			EOHTML
+		end
+	end
+
 	class Package < JsDuck::Tag::Tag
 		def initialize
 			@tagname = :package

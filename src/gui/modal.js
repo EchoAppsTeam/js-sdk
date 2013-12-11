@@ -51,6 +51,7 @@ Echo.define([
  * @extends Echo.GUI
  *
  * @package gui.pack.js
+ * @module
  *
  * @constructor
  * Creates a new modal dialog. The dialog can be created in visible or hidden (default) modes.

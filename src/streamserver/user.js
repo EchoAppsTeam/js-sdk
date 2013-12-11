@@ -22,6 +22,7 @@ Echo.define("echo/streamserver/user", [
  * 	user.is("logged"); // returns true or false
  *
  * @package apps.sdk.js
+ * @module
  *
  * @constructor
  * Class constructor which accepts the object which represents the

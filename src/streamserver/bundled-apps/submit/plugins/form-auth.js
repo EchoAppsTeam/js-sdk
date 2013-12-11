@@ -42,6 +42,7 @@ Echo.define([
  *
  * @package streamserver/plugins.pack.js
  * @package streamserver.pack.js
+ * @module
  */
 var plugin = Plugin.definition("FormAuth", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 

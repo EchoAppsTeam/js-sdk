@@ -35,6 +35,7 @@ Echo.define([
  *     labels.get("paused"); // returns "Paused..."
  *
  * @package apps.sdk.js
+ * @module
  *
  * @constructor
  * Constructor of class encapsulating language variable mechanics.

@@ -37,6 +37,7 @@ Echo.define([
  * @extends Echo.Plugin
  *
  * @package streamserver/plugins/pinboard-visualization.js
+ * @module
  */
 var plugin = Plugin.definition("PinboardVisualization", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 

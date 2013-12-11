@@ -26,6 +26,7 @@ Echo.define([
  * @extends Echo.StreamServer.Base
  *
  * @package streamserver.pack.js
+ * @module
  *
  * @constructor
  * Stream constructor initializing Echo.StreamServer.BundledApps.Stream.ClientWidget class

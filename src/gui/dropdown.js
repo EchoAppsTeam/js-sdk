@@ -42,6 +42,7 @@ Echo.define([
  * @extends Echo.GUI
  *
  * @package gui.pack.js
+ * @module
  *
  * @constructor
  * Creates a new dropdown in the container you have passed in the "config.target".
