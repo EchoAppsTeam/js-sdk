@@ -85,7 +85,7 @@ Echo.Tests.Units.push(function(callback) {
 		Echo.Loader.debug = debug;
 	});
 
-	Echo.Tests.asyncTest("resource downloading", function() {
+	Echo.Tests._asyncTest("resource downloading", function() {
 		var base = Echo.Tests.baseURL + "fixtures/resources/loader/";
 		var emptyResourceArray = function(callback) {
 			Echo.require([], function() {
