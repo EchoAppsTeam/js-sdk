@@ -34,37 +34,39 @@ in the application should be pushed to the storage using the static Echo.Labels.
 To access a particular language variable from the global storage the static accessor
 Echo.Labels.get method should be used.
 
-	// First let's add labels for MyApp into the global storage
-	Echo.Labels.set({
-		"label1": "Label 1",
-		"label2": "Label 2"
-	}, "MyLib.MyApp", true);
-	
-	Echo.Labels.get("label1", "MyLib.MyApp"); // => "Label 1"
-	
-	// Then add labels for another app
-	Echo.Labels.set({
-		"label1": "Another Label 1",
-		"label2": "Another Label 2"
-	}, "MyLib.MyApp2", true);
-	
-	Echo.Labels.get("label1", "MyLib.MyApp"); // => "Label 1"
-	Echo.Labels.get("label1", "MyLib.MyApp2"); // => "Another Label 1"
-	
-	// So add a label into the custom area
-	Echo.Labels.set({
-		"label2": "Label 2 custom"
-	}, "MyLib.MyApp");
-	
-	Echo.Labels.get("label1", "MyLib.MyApp"); // => "Label 1"
-	Echo.Labels.get("label2", "MyLib.MyApp"); // => "Label 2 custom"
-	
-	// And also try to change the same label in the default area
-	Echo.Labels.set({
-		"label2": "Label 2 default"
-	}, "MyLib.MyApp", true);
-	
-	Echo.Labels.get("label2", "MyLib.MyApp"); // => "Label 2 custom"
+	Echo.require(["echo/labels"], function(Labels) {
+		// First let's add labels for MyApp into the global storage
+		Labels.set({
+			"label1": "Label 1",
+			"label2": "Label 2"
+		}, "MyLib.MyApp", true);
+
+		Labels.get("label1", "MyLib.MyApp"); // => "Label 1"
+
+		// Then add labels for another app
+		Labels.set({
+			"label1": "Another Label 1",
+			"label2": "Another Label 2"
+		}, "MyLib.MyApp2", true);
+
+		Labels.get("label1", "MyLib.MyApp"); // => "Label 1"
+		Labels.get("label1", "MyLib.MyApp2"); // => "Another Label 1"
+
+		// So add a label into the custom area
+		Labels.set({
+			"label2": "Label 2 custom"
+		}, "MyLib.MyApp");
+
+		Labels.get("label1", "MyLib.MyApp"); // => "Label 1"
+		Labels.get("label2", "MyLib.MyApp"); // => "Label 2 custom"
+
+		// And also try to change the same label in the default area
+		Labels.set({
+			"label2": "Label 2 default"
+		}, "MyLib.MyApp", true);
+
+		Labels.get("label2", "MyLib.MyApp"); // => "Label 2 custom"
+	});
 
 ## Local storage
 
@@ -74,7 +76,9 @@ Accessor method is implemented via cascade addressing, it will try to get the ne
 value from the local storage, then in the custom section of the global storage
 and after all in the default area. Object can be instantiated in a general JavaScript way:
 
-	var labels = new Echo.Labels({}, "MyNamespace");
+	Echo.require(["echo/labels"], function(Labels) {
+		var labels = new Labels({}, "MyNamespace");
+	});
 
 Each object has its own namespace which can't be overridden. The
 {@link Echo.Labels#set labels.set} and {@link Echo.Labels#get labels.get}
@@ -82,21 +86,23 @@ methods are used to set and access data. Strictly speaking
 two different instances of Echo.Labels object will not share language variables
 even if they will be created with the same namespace.
 
-	// In addition to the previous example let's instantiate a new local storage
-	var localLabels = new Echo.Labels({
-		"label1": "Local Label 1"
-	}, "MyLib.MyApp");
+	Echo.require(["echo/labels"], function(Labels) {
+		// In addition to the previous example let's instantiate a new local storage
+		var localLabels = new Labels({
+			"label1": "Local Label 1"
+		}, "MyLib.MyApp");
 
-	localLabels.get("label1"); // => "Local Label 1"
-	localLabels.get("label2"); // => "Label 2 custom"
+		localLabels.get("label1"); // => "Local Label 1"
+		localLabels.get("label2"); // => "Label 2 custom"
 
-	// Then try to create another instance of the local storage
-	var localLabels2 = new Echo.Labels({
-		"label1": "Another Local Label 1"
-	}, "MyLib.MyApp");
+		// Then try to create another instance of the local storage
+		var localLabels2 = new Echo.Labels({
+			"label1": "Another Local Label 1"
+		}, "MyLib.MyApp");
 
-	localLabels2.get("label1"); // => "Another Local Label 1"
-	localLabels2.get("label2"); // => "Label 2 custom"
+		localLabels2.get("label1"); // => "Another Local Label 1"
+		localLabels2.get("label2"); // => "Label 2 custom"
+	});
 
 ## Placeholders
 
@@ -108,9 +114,11 @@ If keys will not match then the placeholder will not be substituted and stay unc
 For example for the 'pageNumber' language variable containing the following text:
 'Page {page} of {total}' we can call the accessor method this way:
 
-	Echo.Labels.get("pageNumber", "common", {
-		"page": 1,
-		"total": 10
+	Echo.require(["echo/labels"], function(Labels) {
+		Labels.get("pageNumber", "common", {
+			"page": 1,
+			"total": 10
+		});
 	});
 
 It will return us the 'Page 1 of 10' string value.
@@ -133,12 +141,14 @@ extended with the parent component name: `<ComponentName>.Plugins.<PluginName>`.
 When you are developing a new application or a plugin you can set
 the language variables list in the definition section.
 
-	var Comments = Echo.App.definition("Echo.Apps.CommentsSample");
-	// ...
-	Comments.labels = {
-		"topComments": "Top Comments",
-		"allComments": "All Comments"
-	};
+	Echo.define(["echo/app"], function(App) {
+		var Comments = App.definition("Echo.Apps.CommentsSample");
+		// ...
+		Comments.labels = {
+			"topComments": "Top Comments",
+			"allComments": "All Comments"
+		};
+	});
 
 Echo.App which is the basic class for all applications and Echo.Plugin
 for the plugins will do the backstage work to push the defined language variables into
@@ -153,44 +163,49 @@ This example shows how to override language variables for this particular instan
 of an application:
 
 	<script type="text/javascript">
-		Echo.Loader.initApplication({
-			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
-			"component": "Echo.StreamServer.BundledApps.Stream.ClientWidget",
-			"config": {
+		Echo.require([
+			"echo/streamserver/bundled-apps/stream/client-widget"
+		], function(Stream) {
+			new Stream({
 				// …
 				"labels": {
 					"live": "Live mode"
 				}
-			}
+			});
 		});
 	</script>
 
 Text labels in the app can be redefined this way:
 
-	var Comments = Echo.App.definition("Echo.Apps.CommentsSample");
-	// ...
-	Comments.renderers.submit = function(element) {
-		this.initComponent({
-			"id": "Submit",
-			"component": "Echo.StreamServer.BundledApps.Submit.ClientWidget",
-			"config": {
-				"target": element,
-				"infoMessages": {"enabled": false},
-				"labels": {
-					"post": "Post your comment"
+	Echo.define([
+		"echo/app",
+		"echo/streamserver/bundled-apps/submit/client-widget"
+	], function(App, Submit) {
+		var Comments = App.definition("Echo.Apps.CommentsSample");
+		// ...
+		Comments.renderers.submit = function(element) {
+			this.initComponent({
+				"id": "Submit",
+				"component": Submit,
+				"config": {
+					"target": element,
+					"infoMessages": {"enabled": false},
+					"labels": {
+						"post": "Post your comment"
+					}
 				}
-			}
-		});
-		return element;
-	};
+			});
+			return element;
+		};
+	});
 
 Next example shows how to override the 'editButton' label in the 'Edit' plugin:
 
 	<script type="text/javascript">
-		Echo.Loader.initApplication({
-			"script": "http://cdn.echoenabled.com/apps/echo/comments-sample/comments-sample.js",
-			"component": "Echo.Apps.CommentsSample",
-			"config": {
+		Echo.require([
+			"http://cdn.echoenabled.com/apps/echo/comments-sample/comments-sample.js"
+		], function(CommentsSample) {
+			new CommentsSample({
 				// ...
 				"components": {
 					"Stream": {
@@ -206,7 +221,7 @@ Next example shows how to override the 'editButton' label in the 'Edit' plugin:
 					// ...
 				},
 				// ...
-			}
+			});
 		});
 	</script>
 
@@ -216,15 +231,23 @@ Text labels defined either through the component definition or via the configura
 explicitly can be used in the templates using the special `{label:...}` placeholders.
 For example:
 
-	var submit = Echo.App.definition("Echo.StreamServer.BundledApps.Submit.ClientWidget");
-	// ...
-	submit.templates.formTitle = '<div>{label:title}</div>';
+	Echo.define([
+		"echo/app"
+	], function(App) {
+		var submit = App.definition("Echo.StreamServer.BundledApps.Submit.ClientWidget");
+		// ...
+		submit.templates.formTitle = '<div>{label:title}</div>';
+	});
 
 Plugin's language variables are available through the `{plugin.label:...}` placeholder:
 
-	var reply = Echo.Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
-	// ...
-	reply.templates.formTitle = "<div>{plugin.label:title}</div>";
+	Echo.define([
+		"echo/plugin"
+	], function(Plugin) {
+		var reply = Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
+		// ...
+		reply.templates.formTitle = "<div>{plugin.label:title}</div>";
+	});
 
 If the `{label:...}` placeholder is used inside the plugin, the necessary value will be
 addressed from the parent component or application.
