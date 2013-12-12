@@ -257,16 +257,17 @@ In order to install the plugin into the necessary app, the following steps shoul
 
 &nbsp;
 
-	Echo.initApplication(
-		"component": "echo/streamserver/bundled-apps/stream/client-widget,
-		"config": {
+	Echo.require([
+		"echo/streamserver/bundled-apps/stream/client-widget"
+	], function (Stream) {
+		new Stream({
 			...
 			"plugins": [{
 				"url": "path_to/stream-sortings-elector",
 				"orders": ["repliesDescending", "likesDescending", "chronological"]
 			}],
 			...
-		}
+		});
 	});
 
 Note: the plugin name should be specified as the "name" parameter value. Other plugin parameters should go in the same hash.
