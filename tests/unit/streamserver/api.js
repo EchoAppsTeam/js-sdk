@@ -267,27 +267,6 @@ Echo.Tests.Units.push(function(callback) {
 		req.send();
 	};
 
-	suite.prototype.cases.backwardCompatibility = function(callback) {
-		var req = StreamServerAPI.request({
-			"endpoint": "search",
-			"data": this.params,
-			"liveUpdatesTimeout": 2,
-			"recurring": true,
-			"onData": function(response, extra) {
-				if (extra.requestType === "secondary") {
-					QUnit.ok(true, "Check if liveUpdates handlers are not provided then original will be used");
-					req.abort();
-					callback();
-					return;
-				}
-				QUnit.ok(req.config.get("liveUpdates.enabled"), "Check that \"recurring\" config parameter mapped to the \"liveUpdates.enabled\"");
-				QUnit.strictEqual(req.config.get("liveUpdates.polling.timeout"), 2, "Check that \"liveUpdatesTimeout\" mapped to the \"liveUpdates.polling.timeout\"");
-				QUnit.ok("requestType" in extra, "Check that \"requestType\" provided as extra");
-			}
-		});
-		req.send();
-	};
-
 	suite.prototype.cases.websockets = function(callback) {
 		var item = $.extend(true, {}, this.items.post);
 		var params = $.extend({}, this.params);
@@ -484,8 +463,7 @@ Echo.Tests.Units.push(function(callback) {
 				"skipInitialRequest",
 				"requestWithAbort",
 				"checkLiveUpdate",
-				"simpleLiveUpdatesRequest",
-				"backwardCompatibility"
+				"simpleLiveUpdatesRequest"
 			];
 			// FIXME: when server will support XDomainRequest handling
 			if (!API.Transports.XDomainRequest.available({
