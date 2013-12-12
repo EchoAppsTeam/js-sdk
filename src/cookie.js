@@ -22,6 +22,7 @@ var _decode = function(s) {
  *     Echo.Cookie.set("key2", "value2", {"expires": 7}); // this cookie expires in 7 days
  *
  * @package loader.js
+ * @module
  */
 var Cookie = {};
 

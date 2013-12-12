@@ -33,6 +33,7 @@ Echo.define([
  * @extends Echo.StreamServer.Base
  *
  * @package streamserver.pack.js
+ * @module
  *
  * @constructor
  * Auth constructor initializing Echo.StreamServer.BundledApps.Auth.ClientWidget class.

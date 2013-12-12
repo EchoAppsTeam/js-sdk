@@ -12,33 +12,27 @@ Let's imagine that we want to add the dropdown with the possible sorting options
 
 ## Creating the plugin skeleton
 
-First of all, let's prepare the JavaScript closure to allocate a separate namespace for our plugin's code. This step is common for all plugins and apps built on top of the JS SDK. You can find the detailed information on how to create the JS closure in the ["Terminology and dev tips"](#!/guide/terminology-section-creating-a-javascript-closure-for-the-components-and-jquery-plugins) guide. So we have the following code as a starting point:
+First of all, let's prepare the AMD module with dependencies for our plugin's code. This step is common for all plugins and apps built on top of the JS SDK. You can find the detailed information on how to create the JS closure in the ["Terminology and dev tips"](#!/guide/terminology-section-creating-a-javascript-closure-for-the-components-and-jquery-plugins) guide. All plugins should specify the "echo/plugin" module in dependencies section, it's main component of plugins. So we have the following code as a starting point:
 
-	(function(jQuery) {
+	Echo.define(["jquery", "echo/plugin"] function($, Plugin) {
 	"use strict";
-
-	var $ = jQuery;
 
 	// component code goes here
 
-	})(Echo.jQuery);
+	});
 
 Now let's add the plugin definition. Echo JS SDK contains a special Echo.Plugin class to facilitate the plugin creation, we'll use some functions to add the plugin definition:
 
-	(function(jQuery) {
+	Echo.define(["jquery", "echo/plugin"] function($, Plugin) {
 	"use strict";
 
-	var $ = jQuery;
+	var plugin = Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
-	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
+	Plugin.create(plugin);
 
-	if (Echo.Plugin.isDefined(plugin)) return;
+	});
 
-	Echo.Plugin.create(plugin);
-
-	})(Echo.jQuery);
-
-So we've called the Echo.Plugin.definition function, passed the name of the plugin and the type of the app as arguments. We checked whether the plugin was already initialized or not, to avoid multiple plugin re-definitions in case the plugin script was included into the page source several times. After that we passed the definition into the Echo.Plugin.create function to generate the plugin JS class out of the static declaration.
+So we've called the Plugin.definition function, passed the name of the plugin and the type of the app as arguments. Also we passed the definition into the Plugin.create function to generate the plugin JS class out of the static declaration.
 
 At that point we can consider the plugin skeleton ready and start adding the business logic into it.
 
@@ -46,14 +40,10 @@ At that point we can consider the plugin skeleton ready and start adding the bus
 
 Let's assume that we need a configuration parameter for our plugin to define the list of the sorting options we want to expose in the dropdown. Also we want to define a default value of the parameter in case it is omitted in the plugin configuration while installing it into the necessary Stream app. In order to do it we add the "config" object to the plugin definition with the name of the config field as a key and a default as its value, so the code of the plugin will look like:
 
-	(function(jQuery) {
+	Echo.define(["jquery", "echo/plugin"] function($, Plugin) {
 	"use strict";
 
-	var $ = jQuery;
-
-	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
-
-	if (Echo.Plugin.isDefined(plugin)) return;
+	var plugin = Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
 	plugin.config = {
 		"orders": [
@@ -65,9 +55,9 @@ Let's assume that we need a configuration parameter for our plugin to define the
 		]
 	};
 
-	Echo.Plugin.create(plugin);
+	Plugin.create(plugin);
 
-	})(Echo.jQuery);
+	});
 
 If we need more options in future, they can be appended as additional fields into the "config" hash.
 
@@ -257,17 +247,6 @@ There are lots of events going on during the app and plugin life. The list of th
 		}
 	};
 
-## Dependencies
-
-If the plugin depends on some other external component/library, it's possible to define the dependencies list for the plugin. In this case the engine will download the dependencies first and launch the plugin after that. The dependency is an object with the "url" and one of the "plugin", "app" or "loaded" fields. In the "plugin" and "app" fields you should specify the component name. If the component you have specified is not loaded yet, resource you have specified in the "url" will be downloaded. If you need to specify more complex conditions to load resource, you can use the "loaded" field instead. The "loaded" field should be defined as a function which returns 'true' or 'false' and indicate whether the resource should be downloaded or not. Example:
-
-	plugin.dependencies = [{
-		"loaded": function() { return !!window.twttr; },
-		"url": "http://platform.twitter.com/widgets.js"
-	}];
-
-You can define the CSS stylesheets as a dependency as well, in this case the "loaded" ("plugin" or "app") parameter might be omitted.
-
 ## Plugin installation
 
 In order to install the plugin into the necessary app, the following steps should be taken:
@@ -291,14 +270,10 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 
 ## Complete plugin source code
 
-	(function(jQuery) {
+	define(["jquery", "echo/plugin"], function($, Plugin) {
 	"use strict";
 
-	var $ = jQuery;
-
-	var plugin = Echo.Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
-
-	if (Echo.Plugin.isDefined(plugin)) return;
+	var plugin = Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
 	plugin.config = {
 		"orders": [
@@ -371,9 +346,9 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 		'.{plugin.class:label} { margin-right: 5px; }' +
 		'.{plugin.class:wrapper} { float: left; }';
 
-	Echo.Plugin.create(plugin);
+	Plugin.create(plugin);
 
-	})(Echo.jQuery);
+	});
 
 ## More examples
 

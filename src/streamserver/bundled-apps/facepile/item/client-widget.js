@@ -14,6 +14,7 @@ Echo.define([
  * @extends Echo.StreamServer.Base
  *
  * @package streamserver.pack.js
+ * @module
  *
  * @constructor
  * FacePile.Item constructor initializing Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget class

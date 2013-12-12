@@ -8,7 +8,7 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 - GUI Library - More consistent look and feel between apps (Bootstrap)
 - UI Apps - A Core set of UI Apps for common app/interaction patterns
 - Component Definition - Consistent app architecture for plugin extensibility, consistent configuration handling and app interoperability
-- Echo Loader - Simplified dependency loading to reduce script conflicts and redundancies
+- RequireJS - Simplified dependency loading to reduce script conflicts and redundancies
 - Configuration storage and overrides (coming soon)
 - Centralized deployment management and administration (coming soon)
 
@@ -54,9 +54,9 @@ Components build using this approach inherit a number of distinct advantages inc
 
 [Guide: Developing a Plugin](#!/guide/how_to_develop_plugin)
 
-### Echo Loader - Simplified dependency loading to reduce script conflicts and redundancies
+### RequireJs - Simplified dependency loading to reduce script conflicts and redundancies
 
-In order to minimize the footprint of JavaScript files on a given page (particularly important for SEO and mobile web) and avoid script conflicts the JS SDK provides a class which contains the logic for downloading appropriate JS and CSS dependencies (as described in the Component Definition) on the fly ({@link Echo.Loader learn more}).
+In order to minimize the footprint of JavaScript files on a given page (particularly important for SEO and mobile web) and avoid script conflicts the JS SDK uses the Asynchronous Module Definition (AMD) mechanism for defining modules such that the module and its dependencies can be asynchronously loaded. More information abount module definition you can fing in [Developing an App Guide](#!/guide/how_to_develop_app)
 
 ## Other Features
 

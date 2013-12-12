@@ -51,6 +51,7 @@ Echo.define("echo/view", [
  *		view.get("content").attr("class"); // will return "some-prefix-content"
  *
  * @package apps.sdk.js
+ * @module
  *
  * @constructor
  * Class constructor encapsulating templates rendering and renderers application mechanics.

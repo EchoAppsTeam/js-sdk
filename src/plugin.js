@@ -16,6 +16,7 @@ Echo.define([
  * Please visit [this page](#!/guide/how_to_develop_plugin) to learn more about developing plugins
  *
  * @package apps.sdk.js
+ * @module
  */
 var Plugin = function() {};
 

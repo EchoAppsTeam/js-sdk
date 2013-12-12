@@ -28,6 +28,7 @@ Echo.define([
  *     config.get("key2.key3"); // returns "value3"
  *
  * @package apps.sdk.js
+ * @module
  *
  * @constructor
  * Class constructor, which accepts user defined and default configuration

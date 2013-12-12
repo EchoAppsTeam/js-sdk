@@ -14,6 +14,7 @@ Echo.define([
  * Foundation class implementing core logic for GUI components.
  *
  * @package gui.pack.js
+ * @module
  *
  * @constructor
  * @param {Object} config

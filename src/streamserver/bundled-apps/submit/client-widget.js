@@ -29,6 +29,7 @@ Echo.define([
  * @extends Echo.StreamServer.Base
  *
  * @package streamserver.pack.js
+ * @module
  *
  * @constructor
  * Submit constructor initializing Echo.StreamServer.BundledApps.Submit.ClientWidget class

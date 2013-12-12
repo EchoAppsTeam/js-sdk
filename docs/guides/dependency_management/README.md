@@ -14,11 +14,15 @@ Usually Javascript files downloaded via &lt;script> tag block page rendering and
 
 *Figure 2. Asynchronous scripts loading using Echo.Loader.download method*
 
-<img src="guides/dependency_management/figure2.png" alt="Figure 2. Asynchronous scripts loading using Echo.Loader.download method" width="100%"><br><br>
+<img src="guides/dependency_management/figure2.png" alt="Figure 2. Asynchronous scripts loading using Echo.require method" width="100%"><br><br>
 
 Both figures show that scripts are downloaded in parallel. Synchronous mode makes the DOM available in 771ms (figure 1) while asynchronous is about 3 times faster - DOM is available in 232ms (figure 2).
 
-Echo.Loader.download method accepts a list of resources to load as a first argument. Resources here are not only Javascript files but CSS files also. This method loads files in parallel in the arbitrary order but executes them in the order they were specified. This logic allows to download resources as fast as possible preserving the dependencies execution order at the same time.
+Echo JS SDK uses the [Asynchronous module definition](https://github.com/amdjs/amdjs-api/wiki/AMD) (AMD) API for defining modules such that the module and its dependencies can be asynchronously loaded. As a module loader Echo JS SDK uses a separate [RequireJS](http://requirejs.org/) instance (available as Echo.require and Echo.define).
+
+Echo.require method accepts a list of resources to load as a first argument. Resources here are not only Javascript files but CSS files also (supported via [RequireJS CSS Plugin](https://github.com/guybedford/require-css)).<br><br>
+Note: this method loads and executes files in parallel in the arbitrary order.
+This logic allows to download resources as fast as possible preserving the dependencies execution order at the same time.
 
 Properly designed application should be divided into modules. In the Echo JS SDK each module (or a number of dependent modules) is represented as a separate .js file. There is no need to put everything in one file because these separate modules can be loaded on a separate basis when they are needed.
 
@@ -28,15 +32,14 @@ Application might need some module functionality during its initialization or wh
 
 While developing an application (see the [“how to guide”](#!/guide/how_to_develop_app)) you may specify some modules the application is dependent on during its initialization. Here is the example how to do it:
 
-	Comments.dependencies = [{
-		"loaded": function() {
-			return Echo.App.isDefined("Echo.StreamServer.BundledApps.Submit.ClientWidget") &&
-				Echo.App.isDefined("Echo.StreamServer.BundledApps.Stream.ClientWidget");
-		},
-		"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
-	}];
+	define([
+		"echo/streamserver/bundled-apps/stream/client-widget",
+		"echo/streamserver/bundled-apps/submit/client-widget"
+	], function(Stream, Submit) {
+		// App code here
+	});
 
-This code describes a single dependency which will be loaded only if there are no Stream and Submit Apps on the page already. More details on what happens in this example can be found [here](#!/guide/how_to_develop_app-section-dependencies).
+This code describes dependencies which will be loaded only if there are no Stream or Submit Apps on the page already. More details on what happens in this example can be found [here](#!/guide/how_to_develop_app-section-dependencies).
 
 ## Specifying dependencies for a Plugin
 
@@ -44,22 +47,17 @@ Your plugin might also rely on some external resources required for its initiali
 
 ## Specifying dependencies to load on demand
 
-Some dependencies are needed only when some activity happens on the page like user clicking some button or reacting to server response. In this case there is no need of loading such resources during application initialization. More correct way to do it is to use Echo.Loader.download method mentioned above. Let’s look how to work with on-demand dependencies.
+Some dependencies are needed only when some activity happens on the page like user clicking some button or reacting to server response. In this case there is no need of loading such resources during application initialization. More correct way to do it is to use Echo.require method mentioned above. Let’s look how to work with on-demand dependencies.
 
 
 Imagine we develop the application dealing with user social activity. User should be able not only to post some comments but also to share his activity in some social networks. One of the services providing this type of functionality is [Janrain](http://janrain.com/). We don’t really want to load Janrain scripts every time we initialize our application because user might not share anything at all. Let’s look on some code downloading Janrain script on demand:
 
 	SomeApp.renderers.shareButton = function(element) {
 		element.click(function() {
-			Echo.Loader.download([{
-				“url”: “url_to_share_janrain_script”,
-				“loaded”: function() {
-					return !!SomeJanrainModule;
-				}
-			}], function() {
+			Echo.require(["url_to_share_janrain_script", function() {
 				// some sharing logic here
 			});
 		});
 	};
 
-In this example firstly we download Janrain module and then do our own business logic. This trick allows us to shorten application initialization time. Note that Echo.Loader.download method always remembers scripts it loaded before. So it won’t load the same script many times on repetitious calls but instead will execute specified callback immediately.
+In this example firstly we download Janrain module and then do our own business logic. This trick allows us to shorten application initialization time. Note that Echo.require method always remembers scripts it loaded before. So it won’t load the same script many times on repetitious calls but instead will execute specified callback immediately.

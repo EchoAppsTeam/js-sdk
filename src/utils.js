@@ -11,6 +11,7 @@ Echo.define([
  * The Echo.Utils class is used in various places of Echo JS SDK components.
  *
  * @package apps.sdk.js
+ * @module
  */
 
 var Utils = {};

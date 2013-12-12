@@ -18,6 +18,7 @@ Echo.define([
  * your App in the ["How to develop an App"](#!/guide/how_to_develop_app) guide.
  *
  * @package apps.sdk.js
+ * @module
  */
 var App = function() {};
 

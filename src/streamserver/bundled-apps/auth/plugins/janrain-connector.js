@@ -25,6 +25,7 @@ Echo.define([
  * @extends Echo.Plugin
  *
  * @package streamserver.pack.js
+ * @module
  */
 var plugin = Plugin.definition("JanrainConnector", "Echo.StreamServer.BundledApps.Auth.ClientWidget");
 

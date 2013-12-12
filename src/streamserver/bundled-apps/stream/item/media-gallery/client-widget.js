@@ -14,6 +14,7 @@ Echo.define([
  * @extends Echo.App
  *
  * @package streamserver/plugins/pinboard-visualization.js
+ * @module
  */
 
 var mediaGallery = App.definition("Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget");

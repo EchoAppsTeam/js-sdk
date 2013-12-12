@@ -576,6 +576,7 @@ Utils.set(window, "Echo.API.Transports", API.Transports);
  * Class implementing API requests logic on the transport layer.
  *
  * @package apps.sdk.js
+ * @module
  */
 /*
  * @constructor

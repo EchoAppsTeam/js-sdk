@@ -10,6 +10,7 @@ Echo.define([
  * ["How to develop an App"](#!/guide/how_to_develop_app) guide.
  *
  * @package apps.sdk.js
+ * @module
  *
  * @extends Echo.App
  */
