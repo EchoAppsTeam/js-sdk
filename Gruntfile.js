@@ -119,7 +119,8 @@ module.exports = function(grunt) {
 				"unit/streamserver/plugins/*.js"
 				
 			],
-			"dest": "unit/unit.pack.js"
+			"dest": (shared.config("env") === "development" ? "" : "v<%=pkg.majorVersion%>.<%=pkg.minorVersion%>/")
+				+ "unit/unit.pack.js"
 		}
 	};
 
@@ -640,6 +641,7 @@ module.exports = function(grunt) {
 
 	grunt.initConfig(config);
 	grunt.config("pkg.majorVersion", grunt.config("pkg.version").split(".")[0]);
+	grunt.config("pkg.minorVersion", grunt.config("pkg.version").split(".")[1]);
 
 	function assembleEnvConfig() {
 		var env = shared.config("env");
