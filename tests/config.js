@@ -13,7 +13,7 @@ var ignoreList = [
 	"Echo.jQuery",
 	"Echo.require",
 	"Echo.requirejs",
-	"Echo.define",
+	"Echo.define"
 ];
 var isNotLteIE7 = !(Echo.Tests.browser && Echo.Tests.browser.version <= 7);
 $.map(["AJAX", "XDomainRequest", "JSONP"], function(transport) {
