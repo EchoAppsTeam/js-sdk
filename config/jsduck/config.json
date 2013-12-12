@@ -1,16 +1,24 @@
 {
 	"--title": "Echo JS SDK Documentation Center",
 	"--footer": "<a class=\"policy\" target=\"_blank\" href=\"http://aboutecho.com/Privacy\">Privacy Policy</a> | © 2013 Echo. All rights reserved.",
-	"--": ["../../build"],
-	"--output": "../../web/docs",
-	"--tags": "../../tools/jsduck/custom-tags.rb",
-	"--guides": "../../docs/guides.json",
-	"--examples": "../../docs/examples.json",
-	"--examples-base-url": "../demo/",
+	"--": ["./"],
+	"--output": "../web/docs/[VERSION]/",
+	"--tags": "../tools/jsduck/custom-tags.rb",
+	"--guides": "../docs/guides.json",
+	"--examples": "../docs/examples.json",
+	"--examples-base-url": "demo/[VERSION]/",
 	"--ignore-global": true,
 	"--pretty-json": true,
 	"--no-ext4-events": true,
 	"--warnings": ["-no_doc_member", "-image_unused"],
-	"--welcome": "../../docs/welcome.html",
-	"--head-html": "<link type=\"text/css\" href=\"resources/css/echo.css\" rel=\"stylesheet\"><script>Docs.initEventTracking = function() { Ext.getCmp('north-region').setHeight(80); Ext.getCmp('north-region').items.first().setHeight(53); };</script>"
+	"--welcome": "../docs/welcome.html",
+	"--head-html": "<link type=\"text/css\" href=\"resources/css/echo.css\" rel=\"stylesheet\"><script>Docs.initEventTracking = function() { Ext.getCmp('north-region').setHeight(80); Ext.getCmp('north-region').items.first().setHeight(53); };</script>",
+	"--body-html": [
+		"<script type='text/javascript'>",
+		"Docs.otherProducts = [",
+		"{text: 'Echo JS SDK 3.0', href: 'http://echoappsteam.github.io/js-sdk/docs/'},",
+		"{text: 'Echo JS SDK 3.1', href: '../../docs/[VERSION]'},",
+		"];",
+		"</script>"
+	]
 }

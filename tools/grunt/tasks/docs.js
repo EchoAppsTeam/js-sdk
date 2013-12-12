@@ -31,7 +31,7 @@ module.exports = function(grunt) {
 								"<%= dirs.src %>/!(backplane).js",
 								"<%= dirs.src %>/!(tests|third-party)/**/*.js",
 								"<%= dirs.src %>/tests/!(qunit|sinon)/**/*.js",
-								"<%= dirs.src %>/third-party/bootstrap/plugins/echo-*.js"
+								"<%= dirs.src %>/gui/*.js"
 							],
 							"dest": "<%= dirs.build %>"
 						}],
@@ -55,15 +55,16 @@ module.exports = function(grunt) {
 		var cmd = [
 			"git checkout gh-pages",
 			"git pull",
-			"cp -r " + grunt.config("dirs.dist") + "/docs/* docs",
-			"cp -r " + grunt.config("dirs.dist") + "/tests/* tests",
-			"cp -r " + grunt.config("dirs.dist") + "/demo/* demo",
+			"cp -r " + grunt.config("dirs.dist") + "/docs/v<%=pkg.majorVersion%>.<%=pkg.minorVersion%> docs/",
+			"cp -r " + grunt.config("dirs.dist") + "/tests/v<%=pkg.majorVersion%>.<%=pkg.minorVersion%> tests/",
+			"cp -r " + grunt.config("dirs.dist") + "/demo/v<%=pkg.majorVersion%>.<%=pkg.minorVersion%> demo/",
 			"git add docs/ tests/ demo/",
 			"git commit -m \"up to v" + grunt.config("pkg.version") + "\"",
 			"git push origin gh-pages",
 			"git checkout master"
 		].join(" && ");
 		if (shared.config("debug") || shared.config("env") !== "production") {
+			cmd = grunt.template.process(cmd);
 			console.log(cmd);
 			done();
 			return;
@@ -91,14 +92,29 @@ module.exports = function(grunt) {
 		});
 	}
 
+	function prepareOptions() {
+		var outputFileName = "build/tmp_config.json";
+		var config = grunt.file.read("config/jsduck/config.json")
+			.replace(/\[VERSION\]/g,
+				shared.config("env") === "development" ? "" : "v" + grunt.config("pkg.majorVersion") + "." + grunt.config("pkg.minorVersion")
+			);
+		grunt.file.write(outputFileName, config, {"flag": "w+"});
+		return outputFileName;
+	}
+
 	function generate(done) {
-		var cmd = "jsduck --config=config/jsduck/config.json";
+		var configFile = prepareOptions();
+		var cmd = "jsduck --config=" + configFile;
 		if (shared.config("debug")) {
 			console.log(cmd);
 			done();
 			return;
 		}
-		var path = grunt.config("dirs.dist") + "/docs";
+		var versionDir = shared.config("env") === "development"
+			? ""
+			: "v" + grunt.config("pkg.majorVersion") + "." + grunt.config("pkg.minorVersion") + "";
+
+		var path = grunt.config("dirs.dist") + "/docs/" + versionDir;
 		shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
 			shared.exec(cmd, function() {
 				// copy Echo specific images and CSS to documentation directory
