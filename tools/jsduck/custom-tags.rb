@@ -11,7 +11,7 @@ module Echo
 			module_name = context[:files][0][:filename].gsub(/^.*\/src\/(.+)\.js/, "echo/\\1")
 			<<-EOHTML
 				<p>
-					Сan be used as an AMD module: <b>#{module_name}</b>
+					Can be used as an AMD module: <b>#{module_name}</b>
 				</p>
 				<pre><code>Echo.define([\n    \"#{module_name}\"\n], function() { ... });</code></pre>
 			EOHTML
