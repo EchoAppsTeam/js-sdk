@@ -43,7 +43,7 @@ var plugin = Plugin.definition("JanrainSharing", "Echo.StreamServer.BundledApps.
 if (Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	if (!this._isLegacy() && !this.config.get("alwaysShare")) {
+	if (!this.config.get("alwaysShare")) {
 		this.extendTemplate("insertBefore", "postButton", plugin.templates.share);
 	}
 };
@@ -83,70 +83,6 @@ plugin.config = {
 	 * 	}
 	 */
 	"sharingWidgetConfig": {},
-
-	/**
-	 * @cfg {String} [xdReceiver]
-	 * Full URL of the "rpx_xdcomm.html" file. This file should be downloaded
-	 * from the JanRain application dashboard (the "Deployment" ->
-	 * "Social Sharing" section) and placed in the root directory of your website.
-	 * @deprecated
-	 * See <a href="http://developers.janrain.com/documentation/widgets/legacy-sign-in-widget/" target="_blank">Janrain notice</a>
-	 */
-
-	/**
-	 * @cfg {Object} activity
-	 * Configures the sharing dialog.
-	 * @deprecated
-	 * See <a href="http://developers.janrain.com/documentation/widgets/legacy-sign-in-widget/" target="_blank">Janrain notice</a>
-	 *
-	 * @cfg {String} activity.sharePrompt
-	 * Caption of the textarea in the sharing dialog.
-	 * Default value is the value of {@link #echo_label-sharePrompt} label
-	 *
-	 * @cfg {String} activity.shareContent
-	 * Content of the message which will be shared.
-	 * The following pseudo-tags can be used:
-	 *
-	 * + {content} - tag is replaced with the content of the item;
-	 * + {domain} - tag is replaced with the current page domain.
-	 *
-	 * If value of shareContent parameter is not provided then
-	 * the following message will be used:
-	 *
-	 * + "{content}" for ordinary item;
-	 * + "@{author} {content}" if this is reply to tweet.
-	 *
-	 * @cfg {String} activity.itemURL
-	 * The url where the item was posted initially.
-	 *
-	 * @cfg {String} activity.pageTitle
-	 * The page title where this activity is taking place.
-	 * This information will be displayed in the Sharing dialog
-	 * if at least one of the following providers is active: 
-	 * Yahoo!, Facebook or LinkedIn. If this value is not provided
-	 * then the original page title will be used.
-	 *
-	 * @cfg {String} activity.pageDescription
-	 * The page description where this activity is taking place.
-	 * This information will be displayed in the Sharing dialog
-	 * if at least one of the following providers is active:
-	 * Facebook or LinkedIn.
-	 *
-	 * @cfg {Array} activity.pageImages
-	 * The list of up to five images. These images are displayed
-	 * as thumbnails by Facebook and LinkedIn. Facebook uses all 
-	 * five images. LinkedIn uses only the first image.
-	 *
-	 * @cfg {String} activity.pageImages.src
-	 * The absolute URL of the image.
-	 *
-	 * @cfg {String} activity.pageImages.href
-	 * The absolute URL to which the image links.
-	 */
-	// actual limit is 140, reserving some space
-	// for ellipses and shortened link to the page
-	// these parameters are used _only_ in legacy mode (when xdReceiver is provided)
-	"maxLength": 120,
 	"reducedLength": 30,
 	"maxImagesCount": 5
 };
@@ -157,15 +93,9 @@ plugin.enabled = function() {
 
 plugin.events = {
 	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostInit": function(topic, args) {
-		if (this._isLegacy()) return;
 		this.set("needShare", this.config.get("alwaysShare") || this.view.get("shareCheckbox").prop("checked"));
 	},
 	"Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostComplete": function(topic, args) {
-		var plugin = this;
-		if (plugin._isLegacy()) {
-			this._shareLegacy(args);
-			return;
-		}
 		if (!this.get("needShare")) return;
 		this._share(this._prepareData(args));
 	}
@@ -175,12 +105,7 @@ plugin.labels = {
 	/**
 	 * @echo_label
 	 */
-	"share": "Share this comment",
-	/**
-	 * @echo_label
-	 * @deprecated
-	 */
-	"sharePrompt": "Share your comment:"
+	"share": "Share this comment"
 };
 
 /**
@@ -265,87 +190,6 @@ plugin.methods._prepareData = function(data) {
 		"source": item.source,
 		"target": data.targetURL
 	};
-};
-
-plugin.methods._isLegacy = function() {
-	return this.config.get("xdReceiver");
-};
-
-plugin.methods._shareLegacy = function(args) {
-	var plugin = this,
-		url = ("https:" === document.location.protocol ? "https://" : "http://static.") +
-			"rpxnow.com/js/lib/rpx.js";
-	if (!!window.RPXNOW) {
-		require([url], function() {
-			RPXNOW.init({
-				"appId": plugin.config.get("appId"),
-				"xdReceiver": plugin.config.get("xdReceiver")
-			});
-			RPXNOW.loadAndRun(["Social"], function () {
-				var activity = new RPXNOW.Social.Activity(
-					plugin.config.get("activity.sharePrompt", plugin.labels.get("sharePrompt")),
-					plugin._prepareContentLegacy(args),
-					plugin.config.get("activity.itemURL", args.targetURL)
-				);
-				RPXNOW.Social.publishActivity(plugin._prepareActivityLegacy(activity));
-			});
-		});
-	}
-};
-
-plugin.methods._prepareActivityLegacy = function(act) {
-	var plugin = this;
-	var activity = act;
-	var handlers = {
-		"activity.pageDescription": function(content) {
-			activity.setDescription(content);
-		},
-		"activity.pageTitle": function(content) {
-			activity.setTitle(content);
-		},
-		"activity.pageImages": function(content) {
-			var count = 0;
-			var maxCount = plugin.config.get("maxImagesCount");
-			var collection = new RPXNOW.Social.ImageMediaCollection();
-			$.each(content, function(key, image) {
-				if (count === maxCount) return false;
-				if (image.src && image.href) {
-					collection.addImage(image.src, image.href);
-					count++;
-				}
-			});
-			activity.setMediaItem(collection);
-		}
-	};
-	$.each(handlers, function(key, handler){
-		if (plugin.config.get(key)) {
-			handler(plugin.config.get(key));
-		}
-	});
-	return activity;
-};
-
-plugin.methods._prepareContentLegacy = function(args) {
-	var plugin = this;
-	var text = Utils.stripTags(args.postData.content[0].object.content);
-	var messagePattern = plugin.config.get("activity.shareContent");
-	if (messagePattern) {
-		return plugin.labels.get(messagePattern, {
-			"domain": window.location.host,
-			"content": plugin._truncate(text, plugin.config.get("reducedLength"))
-		});
-	}
-	// if a reply to a tweet was posted
-	var data = args.inReplyTo;
-	var maxLength = plugin.config.get("maxLength");
-	if (plugin._isReplyToTweet(data)) {
-		var author = plugin._getTweetAuthor(data);
-		return plugin.labels.get("@{author} {content}", {
-			"author": author,
-			"content": plugin._truncate(text, maxLength - author.length - 2)
-		});
-	}
-	return plugin._truncate(text, maxLength);
 };
 
 plugin.methods._truncate = function(text, limit) {
