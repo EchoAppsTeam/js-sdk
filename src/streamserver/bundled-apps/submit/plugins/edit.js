@@ -186,4 +186,5 @@ plugin.css =
 	'.{plugin.class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }';
 
 return Plugin.create(plugin);
+
 });

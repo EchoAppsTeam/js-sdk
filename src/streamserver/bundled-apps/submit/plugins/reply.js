@@ -54,4 +54,5 @@ $.map(["onRender", "onRerender"], function(topic) {
 });
 
 return Plugin.create(plugin);
+
 });
