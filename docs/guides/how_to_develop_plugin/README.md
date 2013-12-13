@@ -34,6 +34,20 @@ Now let's add the plugin definition. Echo JS SDK contains a special Echo.Plugin 
 
 So we've called the Plugin.definition function, passed the name of the plugin and the type of the app as arguments. Also we passed the definition into the Plugin.create function to generate the plugin JS class out of the static declaration.
 
+Note: The Plugin Name which we passed to the Plugin.definition function must be the same as AMD module name. AMD module name can be specified as first parameter of the Echo.defined function or it would be specified automatically, module name will the same as filename. An example, specify the Plugin name in the Echo.define function:
+
+	Echo.define("stream-sorting-selector", ["jquery", "echo/plugin"] function($, Plugin) {
+	"use strict";
+
+	var plugin = Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
+
+	Plugin.create(plugin);
+
+	});
+
+We are going to improve this mechanism in future.
+
+
 At that point we can consider the plugin skeleton ready and start adding the business logic into it.
 
 ## Plugin configuration
