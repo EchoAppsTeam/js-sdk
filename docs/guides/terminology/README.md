@@ -24,16 +24,13 @@ The appearance of an application can be considered as a composition of its visua
 
 ## Creating a JavaScript closure for the components and jQuery plugins
 
-Any Echo JS SDK component should be placed to a separate JS closure to provide a unique namespace for the component and avoid code intersection.
+Any Echo JS SDK applications or plugins should be defined as AMD module to provide a unique namespace and possibility of async loading for the component and avoid code intersection.
 
-	(function(jQuery) {
+	Echo.define(["jquery"], function($) {
 	"use strict";
-
-	var $ = jQuery;
-
 	// component or jQuery plugin code goes here
 
-	})(Echo.jQuery);
+	});
 
 Due to the fact that Echo JS SDK uses a separate jQuery instance (available as Echo.jQuery), we pass the Echo.jQuery reference as the anonymous function argument and accept is as jQuery variable. In addition to that we add the $ variable and link it to the same jQuery reference. So inside the JS closure both "jQuery" and "$" vars are available, like on a regular page with the jQuery lib included.
 
