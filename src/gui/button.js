@@ -6,7 +6,7 @@ Echo.define([
 
 /**
  * @class Echo.GUI.Button
- * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#buttons">bootstrap-button.js</a>.
+ * Class wrapper for <a href="http://getbootstrap.com/2.3.2/javascript.html#buttons">bootstrap-button.js</a>.
  * The Echo.GUI.Button class provides a simplified interface to work with the
  * Bootstrap Button JS class.
  * Echo wrapper assembles the HTML code required for Bootstrap Button JS class

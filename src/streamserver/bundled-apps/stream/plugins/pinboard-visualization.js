@@ -13,7 +13,7 @@ Echo.define([
  * into a pinboard-style representation. The plugin extracts all media (such as
  * images, videos, etc) from the item content and assembles the mini media
  * gallery inside the item UI. You can find UI example of the plugin
- * <a href="http://echosandbox.com/use-cases/pinboard-visualization/">here</a>.
+ * <a href="http://echoappsteam.github.io/js-sdk/demo/pinboard.html">here</a>.
  *
  * __Note__: the "PinboardVisualization" plugin is not included into the
  * StreamServer JS package (streamserver.pack.js). Please include the

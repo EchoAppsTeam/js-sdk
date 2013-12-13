@@ -2,41 +2,11 @@
 
 "use strict";
 
-/**
- * @class Echo
- * Static class which implements common initialization mechanics
- */
-
 var metaInfo = {
 	"version": "",
 	"debug": false
 };
 
-/**
- * @static
- * Function to initialize application on the page. The function performs the following actions:
- *
- * + initializes Echo JavaScript environment (if it was not initialized yet)
- * + establishes the Backplane connection (if app.backplane is defined)
- * + establishes Echo User session on the page (if app.config.appkey is defined)
- * + downloads the application script
- * + calls the app JavaScript class constructor which handles further application initialization
- *
- * @param {Object} args
- * Object which defines the base app configuration.
- *
- * @param {String} [args.url]
- * URL to file, which contains the Javascript app module.
- * Single URL is used to initialize application, which is defined in separated file by user.
- * URL can be used with args.component in case of application initialization, then application is
- * defined in file with some other modules (aka modules package).
- *
- * @param {String} [args.component]
- * The name of the JavaScript app module which should be initialized.
- *
- * @param {Object} [args.config]
- * Parameters to be passed into the application constructor during its initialization.
- **/
 Echo.initApplication = function(args) {
 	if (!args.url && !args.component) {
 		return;

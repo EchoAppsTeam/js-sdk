@@ -14,7 +14,7 @@ var StreamServerAPI = {};
 /**
  * @class Echo.StreamServer.API.Request
  * Class implements the interaction with the
- * <a href="http://wiki.aboutecho.com/w/page/35105642/API-section-items" target="_blank">Echo StreamServer API</a>
+ * <a href="http://echoplatform.com/streamserver/docs/rest-api" target="_blank">Echo StreamServer API</a>
  *
  *     var request = Echo.StreamServer.API.request({
  *         "endpoint": "search",

@@ -6,7 +6,7 @@ Echo.define([
 
 /**
  * @class Echo.GUI.Tabs
- * Class wrapper for <a href="http://twitter.github.com/bootstrap/javascript.html#tabs" target="_blank">bootstrap-tab.js</a>.
+ * Class wrapper for <a href="http://getbootstrap.com/2.3.2/javascript.html#tabs" target="_blank">bootstrap-tab.js</a>.
  * The Echo.GUI.Tabs class provides a simplified interface to work with
  * the Bootstrap Tabs JS class.
  * Echo wrapper assembles the HTML code required for Bootstrap Tabs JS class

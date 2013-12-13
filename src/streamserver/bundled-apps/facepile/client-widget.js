@@ -150,7 +150,7 @@ pile.config = {
 	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
 	 * It must be constructed according to the
-	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
+	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search" target="_blank">"search" API</a>
 	 * method specification.
 	 *
 	 * 	new Echo.StreamServer.BundledApps.FacePile.ClientWidget({
