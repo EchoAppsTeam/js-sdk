@@ -13,7 +13,7 @@ module Echo
 				<p>
 					Can be used as an AMD module: <b>#{module_name}</b>
 				</p>
-				<pre><code>Echo.define([\n    \"#{module_name}\"\n], function() { ... });</code></pre>
+				<pre><code>Echo.define([\n    "#{module_name}"\n], function() { ... });</code></pre>
 			EOHTML
 		end
 	end
@@ -39,8 +39,9 @@ module Echo
 		end
 
 		def to_html(context)
-			base = "//cdn.echoenabled.com/sdk/v3/"
-			packages = context[@tagname].map {|package| "<a target='_blank' href='#{base}#{package}'>#{package}</a>" }.join(", ")
+			config = JSON.parse(File.read(File.dirname(__FILE__) + "/../../package.json"))
+			base = "//cdn.echoenabled.com/sdk/#{config["version"]}/"
+			packages = context[@tagname].map {|package| "<a target=\"_blank\" href=\"#{base}#{package}\">#{package}</a>" }.join(", ")
 			<<-EOHTML
 				<p>
 					Available from Echo CDN as a part of the #{packages} package(s).
