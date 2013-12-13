@@ -63,8 +63,8 @@ module.exports = function(grunt) {
 			"git push origin gh-pages",
 			"git checkout master"
 		].join(" && ");
+		cmd = grunt.template.process(cmd);
 		if (shared.config("debug") || shared.config("env") !== "production") {
-			cmd = grunt.template.process(cmd);
 			console.log(cmd);
 			done();
 			return;
