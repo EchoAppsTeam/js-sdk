@@ -590,6 +590,13 @@ Plugin.Events.prototype.publish = function(params) {
 /**
  * @inheritdoc Echo.Events#subscribe
 */
+
+// TODO: inherited docs have a @link tag with marked class
+// so here we have incorrect link - it points to Echo.Events.
+// In the other hand we have link to Plugin function in Echo.Events
+// (i`m not sure if it is bug or missunderstanding of tags usage).
+// It can be resolved using separate tag for link - @localdoc
+// But in this case it will move out of parameters.
 Plugin.Events.prototype.subscribe = function(params) {
 	params.handler = $.proxy(params.handler, this.plugin);
 	return this.plugin.component.events.subscribe(params);

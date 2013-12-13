@@ -112,6 +112,9 @@ module Echo
 			}
 
 			# generate HTML for all the renderer tags
+			# TODO: there is a problem in links generation for @extend marked
+			# classes. In case of that link in overriden class template points
+			# to extended class property.
 			member_link(member) + " : String" +
 			"<p>The following renderers are available for this template:" +
 				"<ul>" +

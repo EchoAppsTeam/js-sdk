@@ -14,7 +14,7 @@ Echo.define([
 /**
  * @class Echo.StreamServer.BundledApps.Submit.ClientWidget
  * Echo Submit application which encapsulates interaction with the
- * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank">Echo Submit API</a>
+ * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/submit" target="_blank">Echo Submit API</a>
  * and provides a simple ‘submit/comment form’ style interaction.
  *
  * 	new Echo.StreamServer.BundledApps.Submit.ClientWidget({

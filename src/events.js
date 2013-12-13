@@ -61,7 +61,7 @@ var Events = {};
  * Event name (same as params.topic).
  *
  * @param {Object} params.handler.data
- * Arbitrary data object passed to the {@link #publish} function.
+ * Arbitrary data object passed to the {@link Echo.Events#publish} function.
  *
  * @return {String}
  * Unique identifier for the current subscription which can be used for unsubscribing.
@@ -103,7 +103,7 @@ Events.subscribe = function(params) {
  * Unique identifier for inter-component communication.
  *
  * @param {String} params.handlerId
- * Unique identifier from the {@link #subscribe} function.
+ * Unique identifier from the {@link Echo.Events#subscribe} function.
  *
  * @return {Boolean}
  * Unsubscription status.

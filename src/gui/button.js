@@ -68,7 +68,7 @@ GUI.Button = Utils.inherit(GUI, function(config) {
 
 /**
  * Allows to repaint the button using arbitrary values for configuration
- * parameters from #constructor
+ * parameters from Echo.GUI.Button#constructor
  */
 GUI.Button.prototype.setState = function(config) {
 	var self = this;

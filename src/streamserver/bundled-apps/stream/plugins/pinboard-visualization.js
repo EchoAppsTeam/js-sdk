@@ -63,7 +63,7 @@ plugin.config = {
 	 * change the settings of the Isotope unless it's really required.
 	 *
 	 *__Note__: the Isotope JS library doesn't work in IE <a href="http://en.wikipedia.org/wiki/Quirks_mode">quirks mode</a>.
-	 * Due to this fact you should declare the necessary <a href="http://en.wikipedia.org/wiki/DOCTYPE">\<DOCTYPE\></a>
+	 * Due to this fact you should declare the necessary <a href="http://en.wikipedia.org/wiki/DOCTYPE"><DOCTYPE\></a>
 	 * on the page. We recommend to use a
 	 * <a href="http://en.wikipedia.org/wiki/DOCTYPE#HTML5_DTD-less_DOCTYPE">HTML5 DOCTYPE</a> declaration.
 	 */
