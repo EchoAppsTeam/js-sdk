@@ -6,7 +6,7 @@
 	"--tags": "../tools/jsduck/custom-tags.rb",
 	"--guides": "../docs/guides.json",
 	"--examples": "../docs/examples.json",
-	"--examples-base-url": "demo/[VERSION]/",
+	"--examples-base-url": "../demo/[VERSION]",
 	"--ignore-global": true,
 	"--pretty-json": true,
 	"--no-ext4-events": true,
