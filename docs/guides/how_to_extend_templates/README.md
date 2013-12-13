@@ -133,17 +133,17 @@ It is required to add a caption above the list of users who liked this comment. 
 As we can see in the code in order to access the "likedBy" element which was added by the "Like" plugin we use "plugin-Like-likedBy" construction which has the following format "_plugin_-_the_plugin_name_-_the_name_of_the_element_".
 Please note that in order to access the elements of other plugins, your plugin should be placed in the "plugins" array after the plugins which contain the elements you want to access. Here is the example of the Stream app initialization for the provided use-case:
 
-    Echo.Loader.initApplication({
-        "script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
-        "component": "Echo.StreamServer.BundledApps.Stream.ClientWidget",
-        "config": {
+    Echo.require([
+        "echo/streamserver/bundled-apps/stream/client-widget"
+    ], function(Stream) {
+        new Stream({
              // some config parameters...
              "plugins": [{
                   "name": "Like"
              }, {
                   "name": "LikesCaption"  // goes after "Like"
              }]
-        }
+        });
     });
 
 Here is the final view of the Stream Item including the "Like" and "LikesCaption" plugins:
