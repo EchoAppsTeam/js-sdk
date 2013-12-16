@@ -203,14 +203,14 @@ module.exports = function(grunt) {
 			"app-client-widget",
 			"app-dashboard",
 			"plugin",
-			"cookie",
 			"variables"
 		]
 	}, {
 		"name": "appserver.pack",
 		"create": true,
 		"include": [
-			"appserver/canvases"
+			"appserver/canvases",
+			"appserver/cookie"
 		]
 	}, {
 		"name": "streamserver.pack",
