@@ -108,15 +108,10 @@ Echo.Tests.Units.push(function(callback) {
 			new Stream({
 				"target": this.config.target,
 				"appkey": this.config.appkey,
-				"liveUpdates": {
-					"timeout": 3
-				},
 				"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:1",
 				"ready": function() {
 					var target = this.config.get("target");
 					suite.stream = this;
-					QUnit.equal(suite.stream.config.get("liveUpdates.polling.timeout"), 3,
-						"Check that \"liveUpdates.timeout\" mapped to the \"liveUpdates.polling.timeout\"");
 					QUnit.ok($(target).hasClass("echo-streamserver-bundledapps-stream-clientwidget"),
 						"Checking the common container rendering");
 					QUnit.equal($(".echo-streamserver-bundledapps-stream-item-clientwidget-depth-0", target).length, 1,

@@ -57,13 +57,8 @@ Echo.Tests.Units.push(function(callback) {
 				"target" : this.config.target,
 				"appkey" : "echo.jssdk.tests.aboutecho.com",
 				"query"  : "childrenof:http://example.com/*",
-				"liveUpdates": {
-					"timeout": 60
-				},
 				"ready"  : function() {
 					suite.counter = this;
-					QUnit.equal(suite.counter.config.get("liveUpdates.polling.timeout"), 60,
-						"Check that \"liveUpdates.timeout\" mapped to the \"liveUpdates.polling.timeout\"");
 					QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
 					'Checking the dynamic usecase rendering');
 					var sequentialTests = [
