@@ -317,10 +317,6 @@ Echo.Tests.Events.contracts = {
 		"target": "object",
 		"targetURL": "string"
 	},
-	"Echo.Canvas.onError": {
-		"code": "string",
-		"message": "string"
-	},
 	"Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onRender": {},
 	"Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onReady": {},
 	"Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget.onRerender": {},
@@ -337,10 +333,7 @@ Echo.Tests.Events.contracts = {
 	"Echo.StreamServer.BundledApps.Auth.ClientWidget.onRender": {},
 	"Echo.StreamServer.BundledApps.Auth.ClientWidget.onReady": {},
 	"Echo.StreamServer.BundledApps.Auth.ClientWidget.onRerender": {},
-	"Echo.StreamServer.BundledApps.Auth.ClientWidget.onRefresh": {},
-	"Echo.Canvas.onRender": {},
-	"Echo.Canvas.onReady": {},
-	"Echo.Canvas.onRerender": {},
-	"Echo.Canvas.onRefresh": {}
+	"Echo.StreamServer.BundledApps.Auth.ClientWidget.onRefresh": {}
 };
+
 })(Echo.jQuery);

@@ -114,6 +114,7 @@ module.exports = function(grunt) {
 		"tests/units": {
 			"src": [
 				"unit/*.js",
+				"unit/appserver/*.js",
 				"unit/streamserver/*.js",
 				"unit/streamserver/apps/*.js",
 				"unit/streamserver/plugins/*.js"
@@ -204,6 +205,12 @@ module.exports = function(grunt) {
 			"plugin",
 			"cookie",
 			"variables"
+		]
+	}, {
+		"name": "appserver.pack",
+		"create": true,
+		"include": [
+			"appserver/canvases"
 		]
 	}, {
 		"name": "streamserver.pack",
