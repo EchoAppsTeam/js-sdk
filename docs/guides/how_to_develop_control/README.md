@@ -431,7 +431,7 @@ you can add renderers for these elements like:
 
 Each bundled Echo application uses the same mechanisms described in this guide. Bundled Echo applications are good examples which you can use as a pattern for your own applications:
 
-- [Stream](http://cdn.echoenabled.com/sdk/v3/streamserver/bundled-apps/stream/client-widget.js)
-- [FacePile](http://cdn.echoenabled.com/sdk/v3/streamserver/bundled-apps/facepile/client-widget.js)
-- [Submit](http://cdn.echoenabled.com/sdk/v3/streamserver/bundled-apps/submit/client-widget.js)
+- [Stream](http://cdn.echoenabled.com/sdk/v3.1/streamserver/bundled-apps/stream/client-widget.js)
+- [FacePile](http://cdn.echoenabled.com/sdk/v3.1/streamserver/bundled-apps/facepile/client-widget.js)
+- [Submit](http://cdn.echoenabled.com/sdk/v3.1/streamserver/bundled-apps/submit/client-widget.js)
 - and [more](#!/example)

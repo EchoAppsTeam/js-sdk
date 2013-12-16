@@ -8,11 +8,11 @@ Every application is represented by a single AMD module. In order to make it wor
 
 If you need to initialize a client widget as a standalone app on a page, you should use Echo.require function (it's a separate instance of RequireJS) to load an application and call component constructor in callback function. So the final code might look like:
 
-	<script src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
+	<script src="http://cdn.echoenabled.com/sdk/v3.1/loader.js"></script>
 	<script>
 		Echo.require([
 			"echo/streamserver/bundled-apps/stream/client-widget"
-		] , function(Stream) {
+		], function(Stream) {
 			new Stream({
 				"backplane": {
 					"serverBaseURL": "http://api.echoenabled.com/v1",

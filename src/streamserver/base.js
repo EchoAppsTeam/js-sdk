@@ -9,7 +9,7 @@ Echo.define([
 /**
  * @class Echo.StreamServer.Base
  * Implementing additional logic for the client facing widget
- * based on streamserver specific usage.
+ * based on StreamServer specific usage.
  * You can find instructions on how to create your App in the
  * ["How to develop an App"](#!/guide/how_to_develop_app) guide.
  *

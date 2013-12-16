@@ -15,14 +15,6 @@ Echo.define([
  * gallery inside the item UI. You can find UI example of the plugin
  * <a href="http://echoappsteam.github.io/js-sdk/demo/pinboard.html">here</a>.
  *
- * __Note__: the "PinboardVisualization" plugin is not included into the
- * StreamServer JS package (streamserver.pack.js). Please include the
- * scripts below (production and development versions respectively) to
- * load the "PinboardVisualization" plugin:
- *
- * http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js  
- * http://cdn.echoenabled.com/sdk/v3/dev/streamserver/plugins/pinboard-visualization.js
- *
  * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
  * 		"target": document.getElementById("echo-stream"),
  * 		"appkey": "echo.jssdk.demo.aboutecho.com",
@@ -30,6 +22,14 @@ Echo.define([
  * 			"name": "PinboardVisualization"
  * 		}]
  * 	});
+ *
+ * __Note__: the "PinboardVisualization" plugin is not included into the
+ * StreamServer JS package (streamserver.pack.js). Please include the
+ * scripts below (production and development versions respectively) to
+ * load the "PinboardVisualization" plugin:
+ *
+ * + http://cdn.echoenabled.com/sdk/v3.1/streamserver/plugins/pinboard-visualization.js
+ * + http://cdn.echoenabled.com/sdk/v3.1/dev/streamserver/plugins/pinboard-visualization.js
  *
  * More information regarding the plugins installation can be found
  * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.

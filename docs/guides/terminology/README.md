@@ -85,12 +85,12 @@ Echo renderer function is a javascript function with fixed interface which produ
 
 ## Minified scripts and debugging
 
-All the files in the _http://cdn/echoenabled.com/sdk/v3/_ directory are minified using UglifyJS. Dev versions (non-minified) of these files are located in _/sdk/v3/dev/_ directory.
+All the files in the _http://cdn/echoenabled.com/sdk/v3.1/_ directory are minified using UglifyJS. Dev versions (non-minified) of these files are located in _/sdk/v3.1/dev/_ directory.
 By default all dependencies specified in the source code will be downloaded minified but there is a way to specify which version to download. Here it is:
 
-1. if page includes **/sdk/v3/dev/loader.js** then dev versions will be used else go to 2.
-2. if URL contains **echo.debug:true** or **echo.debug:false** after # (known as fragment/anchor) then we save its value in the special **echo-debug** cookie and:  
+1. if page includes **/sdk/v3.1/dev/loader.js** then dev versions will be used else go to 2.
+2. if URL contains **echo.debug:true** or **echo.debug:false** after # (known as fragment/anchor) then we save its value in the browser localStorage under the name **echo-debug** and:  
     &bull; use dev versions if **echo.debug:true**;  
     &bull; use min versions if **echo.debug:false**;  
     &bull; go to 3 otherwise.  
-3. If cookie with the name **echo-debug** exists and its value is _true_ then we use dev versions.
+3. If browser localStorage has the object named **echo-debug** and its value is _true_ then we use dev versions.
