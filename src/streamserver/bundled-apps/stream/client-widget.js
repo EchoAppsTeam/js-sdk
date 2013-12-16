@@ -68,12 +68,6 @@ stream.init = function() {
 		});
 	}
 
-	// picking up timeout value for backwards compatibility
-	var timeout = this.config.get("liveUpdates.timeout");
-	if (typeof timeout !== "undefined") {
-		this.config.set("liveUpdates.polling.timeout", timeout);
-	}
-
 	this._recalcEffectsTimeouts();
 	this.request = this._getRequestObject({
 		"liveUpdates": $.extend(this.config.get("liveUpdates"), {
