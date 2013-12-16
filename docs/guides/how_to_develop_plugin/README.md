@@ -28,7 +28,7 @@ Now let's add the plugin definition. Echo JS SDK contains a special Echo.Plugin 
 
 	var plugin = Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
-	Plugin.create(plugin);
+	return Plugin.create(plugin);
 
 	});
 
@@ -69,7 +69,7 @@ Let's assume that we need a configuration parameter for our plugin to define the
 		]
 	};
 
-	Plugin.create(plugin);
+	return Plugin.create(plugin);
 
 	});
 
@@ -364,7 +364,7 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 		'.{plugin.class:label} { margin-right: 5px; }' +
 		'.{plugin.class:wrapper} { float: left; }';
 
-	Plugin.create(plugin);
+	return Plugin.create(plugin);
 
 	});
 

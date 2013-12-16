@@ -43,9 +43,9 @@
 				"description": "Working with text labels in Echo JS SDK"
 			},
 			{
-				"name": "how_to_initialize_components",
-				"title": "How to initialize Echo components",
-				"description": "This document describes the initialization mechanics of the Echo JS SDK components"
+				"name": "how_to_initialize_client_widget",
+				"title": "How to initialize Echo Client Widget",
+				"description": "This document describes the initialization mechanics of the Echo JS SDK Client Widgets"
 			},
 			{
 				"name": "dependency_management",
@@ -56,6 +56,11 @@
 				"name": "how_to_deploy_an_app_using_a_canvas",
 				"title": "How to deploy an App using a Canvas",
 				"description": "App deployment hands-on guide"
+			},
+			{
+				"name": "transition_from_v3_0_to_v3_1",
+				"title": "Transition from v3.0.x to v3.1.0",
+				"description": "Transition guide"
 			}
 		]
 	}
