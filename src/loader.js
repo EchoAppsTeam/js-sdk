@@ -2,6 +2,10 @@
 
 "use strict";
 
+/**
+ * @class Echo
+ * @static
+ */
 var metaInfo = {
 	"version": "",
 	"debug": false
@@ -45,9 +49,10 @@ Echo.initApplication = function(args) {
 
 /**
  * @static
- * Allows to identify if the debug mode is enabled for Echo environment
- * on the page (i.e whether the logs should be printed in console,
- * non-minified versions of scripts should be used)
+ * Allows to identify if debug mode is enabled for Echo environment on the page
+ * (i.e whether the logs should be printed in console, non-minified versions
+ * of scripts should be used). More information can be found
+ * [here](#!/guide/terminology-section-minified-scripts-and-debugging).
  *
  * @return {Boolean}
  */

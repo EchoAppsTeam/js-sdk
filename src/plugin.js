@@ -477,7 +477,7 @@ Plugin._getClassName = function(name, component) {
 
 /**
  * @class Echo.Plugin.Config
- * Echo Plugin interlayer for Configuration utilization.
+ * Echo Plugin interlayer for Echo.Configuration utilization.
  *
  * @private
  * @package apps.sdk.js
@@ -571,8 +571,8 @@ Plugin.Config.prototype._normalize = function(key) {
 };
 
 /**
- * @class Plugin.Events
- * Echo Plugin interlayer for Events utilization
+ * @class Echo.Plugin.Events
+ * Echo Plugin interlayer for Echo.Events utilization
  *
  * @private
  * @package apps.sdk.js
@@ -581,22 +581,16 @@ Plugin._defineNestedClass("Events");
 
 /**
  * @inheritdoc Echo.Events#publish
-*/
+ */
 Plugin.Events.prototype.publish = function(params) {
 	params.topic = ["Plugins", this.plugin.name, params.topic].join(".");
 	return this.plugin.component.events.publish(params);
 };
 
+// TODO: use @localdoc to fix link to Echo.Events.publish when JSDuck is upgraded
 /**
  * @inheritdoc Echo.Events#subscribe
-*/
-
-// TODO: inherited docs have a @link tag with marked class
-// so here we have incorrect link - it points to Echo.Events.
-// In the other hand we have link to Plugin function in Echo.Events
-// (i`m not sure if it is bug or missunderstanding of tags usage).
-// It can be resolved using separate tag for link - @localdoc
-// But in this case it will move out of parameters.
+ */
 Plugin.Events.prototype.subscribe = function(params) {
 	params.handler = $.proxy(params.handler, this.plugin);
 	return this.plugin.component.events.subscribe(params);
@@ -604,7 +598,7 @@ Plugin.Events.prototype.subscribe = function(params) {
 
 /**
  * @inheritdoc Echo.Events#unsubscribe
-*/
+ */
 Plugin.Events.prototype.unsubscribe = function(params) {
 	this.plugin.component.events.unsubscribe(params);
 };
