@@ -409,7 +409,7 @@ pile.methods._request = function() {
 					var labelName = "error_" + data.errorCode;
 					var label = self.labels.get(labelName);
 					data.message = label === labelName ? extra.label : label;
-					this.showError({
+					self.showError({
 						"data": data,
 						"critical": extra.critical
 					});
