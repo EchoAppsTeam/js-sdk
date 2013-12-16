@@ -35,8 +35,73 @@ var requireContexts = {};
 	}
 })();
 
+/**
+ * @class Echo.AppServer.Canvases
+ * Class implementing Canvases mechanics on the client side.
+ *
+ * @package appserver.pack.js
+ * @module
+ */
 var Canvases = {};
 
+/**
+ * @static
+ * Function to initialize canvases on the page.
+ *
+ * @param {Object} [config]
+ *
+ * @param {Mixed} [config.canvases]
+ * Single DOM element or array of DOM elements which represent canvas targets.
+ * If value is not provided, this method will look for the canvases
+ * in the DOM structure.
+ *
+ * @param {Object} [config.target=document]
+ * Target element where to look for the canvases if no canvases were
+ * passed in the "config.canvases" field.
+ *
+ * @param {Function} [config.onCanvasReady]
+ * Callback which is executed for each canvas once its target element
+ * is initialized and all applications started their initization as well.
+ *
+ * __Note__ that this callback doesn't guarantee that every application
+ * is initialized at the moment of its execution. Applications need to
+ * provide some way to register a "onReady" callback themselves.
+ *
+ * @param {Object} config.onCanvasReady.params
+ * Object which is returned from the callback.
+ *
+ * @param {String} config.onCanvasReady.params.ids
+ *
+ * @param {String} config.onCanvasReady.params.ids.unique
+ * Full unique canvas id. It's used to distinguish the same canvas
+ * instances on the page.
+ *
+ * @param {Object} config.onCanvasReady.params.ids.main
+ * Canvas id without unique part. It's used to get canvas data from
+ * the Canvas Storage.
+ *
+ * @param {HTMLElement} config.onCanvasReady.params.target
+ * DOM element where canvas will be displayed.
+ * 
+ * @param {Array} config.onCanvasReady.params.apps
+ * Array with references to application instances inside this Canvas.
+ *
+ * @param {String} config.onCanvasReady.params.dataURL
+ * URL to the canvas data in the storage. It's exposed mostly for
+ * testing purposes.
+ *
+ * @param {Function} [config.onCanvasComplete]
+ * Callback which is executed once all the canvases are ready.
+ *
+ * @param {Object} config.onCanvasComplete.stats
+ * Object which is returned from the callback.
+ *
+ * @param {Number} config.onCanvasComplete.stats.total
+ * Total number of canvases found on the page.
+ *
+ * @param {Number} config.onCanvasComplete.stats.failed
+ * Number of canvases failed to initialize.
+ */
 Canvases.init = function(config) {
 	config = config || {};
 	var count = 0, failed = 0;
@@ -67,11 +132,60 @@ Canvases.init = function(config) {
 	}
 };
 
+/**
+ * @static
+ * Function which provides an ability to override config parameters of the
+ * specific application within the canvas.
+ *
+ * @param {String} canvasId
+ * Canvas id that may consist of two parts separated by "#":
+ * the main mandatory canvas identifier (located before the "#" char)
+ * and the optional unique identifier of the canvas on a page
+ * (located after the "#" char). The unique page identifier (after the "#")
+ * is used in case you have multiple canvases with the same primary id on a page.
+ * In this case in order to have an ability to perform local overrides
+ * using the this function, you specify the unique id after the "#" char
+ * and use the full identifier to perform the override.
+ * Here is an example of the canvas id without the unique part:
+ *
+ *     <div class="echo-canvas" data-canvas-id="echo/some-canvas"></div>
+ *
+ * If you'd like to put multiple instances of the same canvas on a page
+ * and you want to have an ability to perform local overrides using this
+ * method, the canvas id should include the unique part, for example:
+ *
+ *     <div class="echo-canvas" data-canvas-id="echo/some-canvas#left-side"></div>
+ *     <div class="echo-canvas" data-canvas-id="echo/some-canvas#right-side"></div>
+ *
+ * Where the "#left-side" and "#right-side" are the unique parts for
+ * the canvases within this page. Now you can override the app settings using
+ * inside the canvas with the following instructions:
+ *
+ *     Echo.AppServer.Canvases.override("echo/some-canvas#left-side", "AppInstanceId", { ... });
+ *     Echo.AppServer.Canvases.override("echo/some-canvas#right-side", "AppInstanceId", { ... });
+ *
+ * @param {String} appId
+ * Application id inside the canvas.
+ *
+ * @param {Object} config
+ * Object with the application specific config overrides.
+ */
 Canvases.override = function(canvasId, appId, config) {
 	appOverrides[canvasId] = appOverrides[canvasId] || {};
 	appOverrides[canvasId][appId] = config;
 };
 
+/**
+ * @static
+ * Destroys canvas and all applications inside it.
+ *
+ * @param {String} [id]
+ * Canvas unique id. If not provided then all the canvases on the page
+ * will be destroyed.
+ *
+ * Basically, to destroy an application this function tries to execute
+ * *destroy* method for application instance if it exists.
+ */
 Canvases.destroy = function(id) {
 	if (typeof id !== "undefined") {
 		destroyCanvas(id);
@@ -129,7 +243,6 @@ var Canvas = function(config) {
 					"ids": self.ids,
 					"target": self.target,
 					"apps": self.apps,
-					"data": self.data,
 					"dataURL": self.url
 				});
 			}
