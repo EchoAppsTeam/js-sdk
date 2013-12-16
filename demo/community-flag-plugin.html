@@ -45,11 +45,8 @@
 			"busName": "jskit"
 		};
 
-		// init Auth app
-		Echo.initApplication({
-			"url": "{%=baseURLs.sdk%}/streamserver.pack.js",
-			"component": "echo/streamserver/bundled-apps/auth/client-widget",
-			"config": {
+		Echo.require(["echo/streamserver/bundled-apps/auth/client-widget"], function(App) {
+			new App({
 				"backplane": backplane,
 				"target": document.getElementById("auth"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
@@ -57,11 +54,10 @@
 					"login": identityManager,
 					"signup": identityManager
 				}
-			}
+			});
 		});
-		Echo.initApplication({
-			"component": "echo/streamserver/bundled-apps/stream/client-widget",
-			"config": {
+		Echo.require(["echo/streamserver/bundled-apps/stream/client-widget"], function(App) {
+			new App({
 				"backplane": backplane,
 				"target": document.getElementById("stream"),
 				"query": "childrenof:http://echosandbox.com/use-cases/commenting -state:ModeratorDeleted -user.state:ModeratorBanned itemsPerPage:5 children:2 -state:ModeratorDeleted childrenSortOrder:reverseChronological",
@@ -71,7 +67,7 @@
 				"plugins": [{
 					"component": "echo/streamserver/bundled-apps/stream/item/plugins/community-flag"
 				}]
-			}
+			});
 		});
 	</script>
 </body>

@@ -29,9 +29,8 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.initApplication({
-			"component": "echo/streamserver/bundled-apps/stream/client-widget",
-			"config":	{
+		Echo.require(["echo/streamserver/bundled-apps/stream/client-widget"], function(App) {
+			new App({
 				"backplane": {
 					"serverBaseURL": "https://api.echoenabled.com/v1",
 					"busName": "jskit"
@@ -45,7 +44,7 @@
 					"component": "echo/streamserver/bundled-apps/stream/item/plugins/janrain-sharing",
 					"appId": "echo"
 				}]
-			}
+			});
 		});
 	</script>
 </body>

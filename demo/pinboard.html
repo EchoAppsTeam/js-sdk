@@ -35,9 +35,8 @@
 			"height": 240,
 			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
 		};
-		Echo.initApplication({
-			"component": "echo/streamserver/bundled-apps/stream/client-widget",
-			"config": {
+		Echo.require(["echo/streamserver/bundled-apps/stream/client-widget"], function(App) {
+			new App({
 				"backplane": {
 					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 					"busName": "jskit"
@@ -70,7 +69,7 @@
 				}, {
 					"component": "echo/streamserver/bundled-apps/stream/item/plugins/like"
 				}]
-			}
+			});
 		});
 	</script>
 </body>

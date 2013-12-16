@@ -59,9 +59,8 @@
 					"serverBaseURL": "https://api.echoenabled.com/v1",
 					"busName": "jskit"
 				};
-				Echo.initApplication({
-					"component": "echo/streamserver/bundled-apps/facepile/client-widget",
-					"config": config
+				Echo.require(["echo/streamserver/bundled-apps/facepile/client-widget"], function(App) {
+					new App(config);
 				});
 			};
 			init({
