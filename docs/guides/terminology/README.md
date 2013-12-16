@@ -89,10 +89,8 @@ All the files in the _http://cdn/echoenabled.com/sdk/v3/_ directory are minified
 By default all dependencies specified in the source code will be downloaded minified but there is a way to specify which version to download. Here it is:
 
 1. if page includes **/sdk/v3/dev/loader.js** then dev versions will be used else go to 2.
-2. if URL contains **echo.debug:true** or **echo.debug:false** after # (known as fragment/anchor) then we save its value in the special **echo-debug** cookie and:
-
-    &bull; use dev versions if **echo.debug:true**;
-    &bull; use min versions if **echo.debug:false**;
-    &bull; go to 3 otherwise.<br><br>
-
+2. if URL contains **echo.debug:true** or **echo.debug:false** after # (known as fragment/anchor) then we save its value in the special **echo-debug** cookie and:  
+    &bull; use dev versions if **echo.debug:true**;  
+    &bull; use min versions if **echo.debug:false**;  
+    &bull; go to 3 otherwise.  
 3. If cookie with the name **echo-debug** exists and its value is _true_ then we use dev versions.
