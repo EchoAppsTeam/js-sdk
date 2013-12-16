@@ -137,19 +137,6 @@ require.config({
 	"shim": {
 		"echo/backplane": {
 			"exports": "Backplane"
-		},
-		"echo/tests/harness/suite": {
-			"deps": ["echo/tests/harness"]
-		},
-		"echo/tests/harness": {
-			"init": function() {
-				// don't execute tests automatically, we will do it manually later
-				QUnit.config.autostart = false;
-				// tests will run in the order they were added
-				QUnit.config.reorder = false;
-				// we need it to make tests start synchronously
-				QUnit.config.autorun = false;
-			}
 		}
 	}
 });
