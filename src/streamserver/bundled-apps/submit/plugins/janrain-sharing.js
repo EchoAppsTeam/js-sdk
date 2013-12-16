@@ -82,9 +82,7 @@ plugin.config = {
 	 * 		// ...
 	 * 	}
 	 */
-	"sharingWidgetConfig": {},
-	"reducedLength": 30,
-	"maxImagesCount": 5
+	"sharingWidgetConfig": {}
 };
 
 plugin.enabled = function() {
@@ -190,18 +188,6 @@ plugin.methods._prepareData = function(data) {
 		"source": item.source,
 		"target": data.targetURL
 	};
-};
-
-plugin.methods._truncate = function(text, limit) {
-	return (limit > 0 && text.length > limit) ? text.substring(0, limit) + "..." : text;
-};
-
-plugin.methods._isReplyToTweet = function(data) {
-	return !!(data && data.source && data.source.name === "Twitter");
-};
-
-plugin.methods._getTweetAuthor = function(data) {
-	return data.actor.id.replace(/https?\:\/\/twitter\.com\//, "");
 };
 
 plugin.css =
