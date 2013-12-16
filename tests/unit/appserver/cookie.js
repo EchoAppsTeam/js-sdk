@@ -1,14 +1,14 @@
 Echo.Tests.Units.push(function(callback) {
-	Echo.require([
-		"jquery",
-		"echo/cookie"
-	], function($, Cookie) {
-
 	"use strict";
 
-	Echo.Tests.module("Echo.Cookie", {
+	Echo.require([
+		"jquery",
+		"echo/appserver/cookie"
+	], function($, Cookie) {
+
+	Echo.Tests.module("Echo.AppServer.Cookie", {
 		"meta": {
-			"className": "Echo.Cookie",
+			"className": "Echo.AppServer.Cookie",
 			"functions": ["set", "get", "remove"]
 		}
 	});
@@ -25,6 +25,8 @@ Echo.Tests.Units.push(function(callback) {
 		Cookie.remove("test_a", {"path": "/"});
 		QUnit.ok(!Cookie.get("test_a"), "Cookie 'test_a' doesn't exist anymore");
 	});
+
 	callback();
+
 	});
 });

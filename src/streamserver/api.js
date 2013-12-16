@@ -98,12 +98,8 @@ StreamServerAPI.Request = Utils.inherit(API.Request, function(config) {
 		 */
 		"liveUpdates": {
 			"transport": "polling", // or "websockets"
-			// picking up enabled value
-			// for backwards compatibility
 			"enabled": false,
 			"polling": {
-				// picking up timeout value
-				// for backwards compatibility
 				"timeout": 10
 			},
 			"websockets": {

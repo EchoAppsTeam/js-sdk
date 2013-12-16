@@ -18,18 +18,18 @@
 		], function($) {
 			Echo.jQuery = $;
 			Echo.require([
-				"echo/tests/harness",
-				"echo/tests/harness/suite"
+				"echo/tests/harness"
 			], function() {
 				Echo.Tests.Units = [];
 				Echo.require([
-					"fixtures/vars.js",
-					"fixtures/api/count",
-					"fixtures/api/search",
-					"fixtures/api/whoami",
-					"config",
-					"helpers/events",
-					"unit/unit.pack",
+					"echo/tests/harness/suite",
+					"fixtures/vars",
+					"./fixtures/api/count",
+					"./fixtures/api/search",
+					"./fixtures/api/whoami",
+					"./config",
+					"./helpers/events",
+					"./unit/unit.pack"
 				], function() {
 					Echo.Utils.sequentialCall(Echo.Tests.Units, function() {
 						Echo.Tests.init({

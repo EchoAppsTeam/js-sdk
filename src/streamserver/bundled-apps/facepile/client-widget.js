@@ -68,12 +68,6 @@ pile.init = function() {
 		});
 	}
 
-	// picking up timeout value for backwards compatibility
-	var timeout = this.config.get("liveUpdates.timeout");
-	if (typeof timeout !== "undefined") {
-		this.config.set("liveUpdates.polling.timeout", timeout);
-	}
-
 	// data can be defined explicitly
 	// in this case we do not make API requests
 	if ($.isEmptyObject(this.get("data"))) {
@@ -412,7 +406,9 @@ pile.methods._request = function() {
 				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
 				if (needShowError) {
 					data = data || {};
-					data.message = this.labels.get("error_" + data.errorCode) || extra.label;
+					var labelName = "error_" + data.errorCode;
+					var label = self.labels.get(labelName);
+					data.message = label === labelName ? extra.label : label;
 					this.showError({
 						"data": data,
 						"critical": extra.critical

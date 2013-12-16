@@ -58,63 +58,64 @@ While building your own app you can use the Echo.App.substitute function availab
 The list of the placeholders supported inside the app functions can be found below. In examples below we assume that we operate inside the Echo.StreamServer.BundledApps.Stream.Item.ClientWidget class. Here is the list:
 
 - `{class:value}`
-  The placeholder will be replaced with the CSS class with the CSS prefix specific for the current app (based on the app name).
 
-  For example, the following part of the template:
+  The placeholder will be replaced with the CSS class with the CSS prefix specific for the current app (based on the app name). For example, the following part of the template:
 
-  		<div class="{class:avatar}"></div>
+      <div class="{class:avatar}"></div>
 
   will be replaced with:
 
-  		<div class="echo-streamserver-bundledapps-stream-item-clientwidget-avatar"></div>
+      <div class="echo-streamserver-bundledapps-stream-item-clientwidget-avatar"></div>
 
-  Note: the value of the `class` placeholder also serves as the name of the renderer which should be applied for this particular element. More information about the rendering engine can be found [here](#!/guide/terminology-section-rendering-engine).
-
+  Note: the value of the `class` placeholder also serves as the name of the renderer which should be applied for this particular element. More information about the rendering engine can be found [here](#!/guide/terminology-section-rendering-engine).<br><br>
 
 - `{config:value}`
+
   This placeholder is used to access the config of the given app. You can access the config field at any nested level using the "." to move to the next level. In the example below:
 
-  		{
-  			// ...
-  			"cdnBaseURL": {"sdk": "http://cdn.echoenabled.com/sdk/v3/"}
-  			// ...
-  		}
+      {
+          // ...
+          "cdnBaseURL": {"sdk": "http://cdn.echoenabled.com/sdk/v3.1/"}
+          // ...
+      }
 
   We can access the value of the `sdk` key by using the `{config:cdnBaseURL.sdk}` placeholder in template. So if we have a template which contains something like:
 
-  		{config:cdnBaseURL.sdk}/gui.pack.js
+      {config:cdnBaseURL.sdk}/gui.pack.js
 
   after the substitution the string will look like:
 
-  		http://cdn.echoenabled.com/sdk/v3/gui.pack.js
+      http://cdn.echoenabled.com/sdk/v3.1/gui.pack.js
 
 - `{data:value}`
+
   The placeholder can be used to access the "data" attribute of a given app. The {data:...} placeholder also allows accessing the nested properties using the "." char to split the levels. For example, the following template:
-  		<span class="{class:metadata-value}">{data:actor.id}</span>
+
+      <span class="{class:metadata-value}">{data:actor.id}</span>
 
   will be converted to:
 
-  		<span class="echo-streamserver-bundledapps-stream-item-clientwidget-metadata-value">http://twitter.com/user</span>
+      <span class="echo-streamserver-bundledapps-stream-item-clientwidget-metadata-value">http://twitter.com/user</span>
 
 - `{label:value}`
+
   The placeholder is used to access the labels defined for the given app. Example template string:
 
-  		{label:userID} http://example.com/some-id
+      {label:userID} http://example.com/some-id
 
   after processing will look like the following string:
 
-  		User ID: http://example.com/some-id
+      User ID: http://example.com/some-id
 
 - `{self:value}`
-  The placeholder is used to access the properties of a given app instance. Accessing the properties for the nesting level values is also supported (using "." char).
 
-  For example the following string:
+  The placeholder is used to access the properties of a given app instance. Accessing the properties for the nesting level values is also supported (using "." char). For example the following string:
 
-  		<div>{self:depth}</div>
+      <div>{self:depth}</div>
 
   will be converted to the one below:
 
-  		<div>0</div>
+      <div>0</div>
 
 You can use the placeholders described above in an app and plugin templates, CSS code (defined in the `css` field in the definition) and inside the dependency URLs (defined within the `dependencies` array in the definition). More examples can be found in the [How to develop an App](#!/guide/how_to_develop_app) guide.
 

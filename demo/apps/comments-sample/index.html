@@ -19,9 +19,8 @@
 				$("#container").addClass("embedded");
 			});
 		}
-		Echo.initApplication({
-			"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/comments-sample.js",
-			"config": {
+		Echo.require(["{%=baseURLs.cdn%}/apps/echo/comments-sample/comments-sample.js"], function(App) {
+			new App({
 				"backplane": {
 					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 					"busName": "jskit"
@@ -66,7 +65,7 @@
 						"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
 					}
 				}
-			}
+			});
 		});
 	</script>
 </div>

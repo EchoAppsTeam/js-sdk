@@ -372,9 +372,9 @@ Note: the plugin name should be specified as the "name" parameter value. Other p
 
 Each bundled Echo plugin uses the same mechanisms described in this guide. Bundled Echo plugins are good examples which you can use as a pattern for your own plugins:
 
-- [CommunityFlag](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/community-flag.js)
-- [Edit](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/edit.js)
-- [Like](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/like.js)
-- [Reply](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/reply.js)
-- [JanrainSharing](http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/janrain-sharing.js)
+- [CommunityFlag](http://cdn.echoenabled.com/sdk/v3.1/streamserver/plugins/community-flag.js)
+- [Edit](http://cdn.echoenabled.com/sdk/v3.1/streamserver/plugins/edit.js)
+- [Like](http://cdn.echoenabled.com/sdk/v3.1/streamserver/plugins/like.js)
+- [Reply](http://cdn.echoenabled.com/sdk/v3.1/streamserver/plugins/reply.js)
+- [JanrainSharing](http://cdn.echoenabled.com/sdk/v3.1/streamserver/plugins/janrain-sharing.js)
 - and more (please look at Echo apps documentation pages)

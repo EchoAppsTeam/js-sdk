@@ -12,6 +12,15 @@ QUnit.config.urlConfig.push({
 	"tooltip": "Don't mock any server requests"
 });
 
+// don't execute tests automatically, we will do it manually later
+QUnit.config.autostart = false;
+
+// tests will run in the order they were added
+QUnit.config.reorder = false;
+
+// we need it to make tests start synchronously
+QUnit.config.autorun = false;
+
 // common storage for the information about the current test
 // (at the moment only user configuration is stored here)
 Echo.Tests.current = {

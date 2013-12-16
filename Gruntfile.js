@@ -114,6 +114,7 @@ module.exports = function(grunt) {
 		"tests/units": {
 			"src": [
 				"unit/*.js",
+				"unit/appserver/*.js",
 				"unit/streamserver/*.js",
 				"unit/streamserver/apps/*.js",
 				"unit/streamserver/plugins/*.js"
@@ -202,8 +203,14 @@ module.exports = function(grunt) {
 			"app-client-widget",
 			"app-dashboard",
 			"plugin",
-			"cookie",
 			"variables"
+		]
+	}, {
+		"name": "appserver.pack",
+		"create": true,
+		"include": [
+			"appserver/canvases",
+			"appserver/cookie"
 		]
 	}, {
 		"name": "streamserver.pack",
@@ -681,7 +688,7 @@ module.exports = function(grunt) {
 		if (env === "development") {
 			data.baseURLs.sdk += "/dev";
 		}
-		// TODO: (?) properly calculate "packageVersion" placeholder value and use it in Echo.Loader.version
+		// TODO: (?) properly calculate "packageVersion" placeholder value and use it in the source code
 		data.packageVersion = grunt.config("pkg.majorVersion");
 		grunt.config("envConfig", data);
 	}

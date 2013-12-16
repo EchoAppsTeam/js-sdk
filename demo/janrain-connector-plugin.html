@@ -32,9 +32,8 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.initApplication({
-			"component": "echo/streamserver/bundled-apps/auth/client-widget",
-			"config": {
+		Echo.require(["echo/streamserver/bundled-apps/auth/client-widget"], function(App) {
+			new App({
 				"backplane": {
 					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
 					"busName": "jskit"
@@ -46,7 +45,7 @@
 					"component": "echo/streamserver/bundled-apps/auth/plugins/janrain-connector",
 					"appId": "echo"
 				}]
-			}
+			});
 		});
 	</script>
 </body>

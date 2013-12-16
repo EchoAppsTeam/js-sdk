@@ -2,52 +2,21 @@
 
 "use strict";
 
+/**
+ * @class Echo
+ * Global namespace for all Echo functionality
+ */
 var metaInfo = {
 	"version": "",
 	"debug": false
 };
 
-Echo.initApplication = function(args) {
-	if (!args.url && !args.component) {
-		return;
-	}
-	if (args.url && args.component) {
-		Echo.require([args.url], function(component) {
-			if (!Echo.require.specified(args.component)) {
-				var componentParts = typeof args.component === "string"
-					? args.component.split(".")
-					: args.component;
-				var searchModule = function(obj, keys) {
-					if (!obj || !keys) {
-						return;
-					}
-					var currentKey = keys.shift();
-					if (keys.length === 0) {
-						return obj[currentKey];
-					} else {
-						return searchModule(obj[currentKey], keys);
-					}
-				};
-				var App = searchModule(window, componentParts);
-				new App(args.config);
-			} else {
-				Echo.require([args.component], function(App) {
-					new App(args.config);
-				});
-			}
-		});
-	} else {
-		Echo.require([args.url || args.component], function(App) {
-			new App(args.config);
-		});
-	}
-};
-
 /**
  * @static
- * Allows to identify if the debug mode is enabled for Echo environment
- * on the page (i.e whether the logs should be printed in console,
- * non-minified versions of scripts should be used)
+ * Allows to identify if debug mode is enabled for Echo environment on the page
+ * (i.e whether the logs should be printed in console, non-minified versions
+ * of scripts should be used). More information can be found
+ * [here](#!/guide/terminology-section-minified-scripts-and-debugging).
  *
  * @return {Boolean}
  */
@@ -132,19 +101,6 @@ require.config({
 	"shim": {
 		"echo/backplane": {
 			"exports": "Backplane"
-		},
-		"echo/tests/harness/suite": {
-			"deps": ["echo/tests/harness"]
-		},
-		"echo/tests/harness": {
-			"init": function() {
-				// don't execute tests automatically, we will do it manually later
-				QUnit.config.autostart = false;
-				// tests will run in the order they were added
-				QUnit.config.reorder = false;
-				// we need it to make tests start synchronously
-				QUnit.config.autorun = false;
-			}
 		}
 	}
 });

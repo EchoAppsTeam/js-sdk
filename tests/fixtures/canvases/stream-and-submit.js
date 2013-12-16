@@ -1,5 +1,5 @@
-window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-001", {
-    "id": "test.canvas.001",
+Echo.define({
+    "id": "stream-and-submit",
     "title": "Test canvas with Submit and Stream applications",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
@@ -7,14 +7,13 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "submit",
-        "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.BundledApps.Submit.ClientWidget",
+        "script": "{%=baseURLs.sdk%}/streamserver.pack.js",
+        "component": "echo/streamserver/bundled-apps/submit/client-widget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "targetURL": "http://example.com/js-sdk",
             "plugins": [{
-                "name": "FormAuth",
-                "url": "streamserver/plugins/form-auth.js",
+                "component": "echo/streamserver/plugins/form-auth",
                 "submitPermissions": "forceLogin",
                 "identityManager": {
                     "login": {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="},
@@ -24,14 +23,13 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
         }
     }, {
         "id": "stream",
-        "script": "streamserver.pack.js",
-        "component": "Echo.StreamServer.BundledApps.Stream.ClientWidget",
+        "script": "{%=baseURLs.sdk%}/streamserver.pack.js",
+        "component": "echo/streamserver/bundled-apps/stream/client-widget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
             "query": "childrenof:http://example.com/sdk/loader/canvases/search/1",
             "plugins": [{
-                "name": "InfiniteScroll",
-                "url": "streamserver/plugins/infinite-scroll.js"
+                "component": "echo/streamserver/plugins/infinite-scroll"
             }]
         }
     }]

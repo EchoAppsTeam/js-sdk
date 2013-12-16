@@ -1,4 +1,8 @@
-Echo.define([], function() {
+Echo.define([
+	// FIXME: __DEPRECATED__
+	// remove this after full require js compatible implementation
+	"echo/utils"
+], function(Utils) {
 
 "use strict";
 
@@ -8,18 +12,18 @@ var _decode = function(s) {
 };
 
 /**
- * @class Echo.Cookie
+ * @class Echo.AppServer.Cookie
  * Library to work with cookies
  *
  * Example:
  *
- *     Echo.Cookie.set("key", "value");
- *     Echo.Cookie.get("key"); // returns "value"
+ *     Echo.AppServer.Cookie.set("key", "value");
+ *     Echo.AppServer.Cookie.get("key"); // returns "value"
  *
- *     Echo.Cookie.remove("key");
- *     Echo.Cookie.get("key"); // returns "undefined"
+ *     Echo.AppServer.Cookie.remove("key");
+ *     Echo.AppServer.Cookie.get("key"); // returns "undefined"
  *
- *     Echo.Cookie.set("key2", "value2", {"expires": 7}); // this cookie expires in 7 days
+ *     Echo.AppServer.Cookie.set("key2", "value2", {"expires": 7}); // this cookie expires in 7 days
  *
  * @package appserver.pack.js
  * @module
@@ -113,7 +117,7 @@ Cookie.remove = function(name, options) {
 
 // FIXME: __DEPRECATED__
 // remove this after full require js compatible implementation
-window.Cookie = Cookie;
+Utils.set(window, "Echo.AppServer.Cookie", Cookie);
 
 return Cookie;
 

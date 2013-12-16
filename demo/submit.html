@@ -29,9 +29,8 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		Echo.initApplication({
-			"component": "echo/streamserver/bundled-apps/submit/client-widget",
-			"config": {
+		Echo.require(["echo/streamserver/bundled-apps/submit/client-widget"], function(App) {
+			new App({
 				"backplane": {
 					"serverBaseURL": "https://api.echoenabled.com/v1",
 					"busName": "jskit"
@@ -39,7 +38,7 @@
 				"target": document.getElementById("submit"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"targetURL": "http://echosandbox.com/use-cases/commenting"
-			}
+			});
 		});
 	</script>
 </body>

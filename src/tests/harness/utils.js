@@ -22,24 +22,6 @@ if (Echo.Tests.browser.msie && +Echo.Tests.browser.version < 10) {
 	}, 3000);
 }
 
-// let's save original function to be able to use it while it's mocked
-//var storeCanvasConfig = Echo.Loader._storeCanvasConfig;
-// mocks for canvases are absolutely the same as in production
-// so we have to mock _storeCanvasConfig method to save canvases
-// to fixtures but not to real data object
-/*sinon.stub(Echo.Loader, "_storeCanvasConfig", function(id, data) {
-	if (Echo.Tests.Utils.isServerMocked()) {
-		Echo.Tests.Fixtures.canvases[id] = data;
-	} else {
-		storeCanvasConfig(id, data);
-	}
-});
-*/
-// once we loaded all the fixtures we restore _storeCanvasConfig
-QUnit.begin(function() {
-	//Echo.Loader._storeCanvasConfig.restore();
-});
-
 Echo.Tests.Utils.initServer = function() {
 	if (!Echo.Tests.Utils.isServerMocked()) {
 		Echo.Tests.server = {
@@ -72,8 +54,6 @@ Echo.Tests.Utils.initServer = function() {
 			var matches = url.match(mock.url);
 			if (!matches) return;
 			// XXX: these checks shouldn't be here because they all should be mocked
-			// not every canvas is mocked, some are real
-			if (name === "canvases" && !Echo.Tests.Fixtures.canvases[matches[1]] && !/nonexistent/.test(matches[1])) return;
 			// not every count request is mocked, some are real
 			if (name === "api/count" && !Echo.Tests.Fixtures.api.count[decodeURIComponent(matches[1])]) return;
 			// not every search request is mocked, some are real
@@ -86,26 +66,6 @@ Echo.Tests.Utils.initServer = function() {
 			"message": "[REAL request] " + url
 		});
 		return !fake;
-	});
-
-	var ajax = $.ajax;
-	sinon.stub($, "ajax", function(options) {
-		var self = this;
-		var matches = options.url && options.url.match(_URLMocks.canvases.url);
-		if (matches && (Echo.Tests.Fixtures.canvases[matches[1]] || /nonexistent/.test(matches[1]))) {
-			var req = ajax.call(this, {"beforeSend": function() { return false; }});
-			// asynchronously respond to request
-			setTimeout(function() {
-				storeCanvasConfig(matches[1], Echo.Tests.Fixtures.canvases[matches[1]]);
-				if (Echo.Tests.Fixtures.canvases[matches[1]]) {
-					options.success.call(self);
-				} else {
-					options.error.call(self);
-				}
-			}, 10);
-			return req;
-		}
-		return ajax.apply(this, arguments);
 	});
 
 	// FIXME: we should have used usual urlMocks filtering like "whoami" and other
@@ -163,24 +123,6 @@ Echo.Tests.Utils.isServerMocked = function() {
 };
 
 var _URLMocks = {
-	// group of URLs http://s3.amazonaws.com/echo-canvases/<canvas-id>
-	"canvases": {
-		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
-		"url": new RegExp(Echo.require.toUrl("echo")+ "(.*?)(?:\\?|$)"),
-		"response": function(request, canvasId) {
-			var status = 200, text = "";
-			if (/nonexistent/.test(canvasId)) {
-				status = 404;
-			} else {
-				text = JSON.stringify(Echo.Tests.Fixtures.canvases[canvasId]);
-			}
-			request.respond(
-				status,
-				{"Content-Type": "application/x-javascript; charset=\"utf-8\""},
-				text
-			);
-		}
-	},
 	// mocks for /v1/count API
 	"api/count": {
 		"url": new RegExp("{%=baseURLs.api.streamserver%}/v1/count\\?q=(.*?)&"),

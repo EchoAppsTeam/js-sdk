@@ -24,7 +24,7 @@ The appearance of an application can be considered as a composition of its visua
 
 ## Creating a JavaScript closure for the components and jQuery plugins
 
-Any Echo JS SDK applications or plugins should be defined as AMD module to provide a unique namespace and possibility of async loading for the component and avoid code intersection.
+Any Echo JS SDK applications or plugins should be defined as AMD module to provide a unique namespace and possibility of async loading for the component and avoid code intersection. For example, we define a new module with jQuery dependency:
 
 	Echo.define(["jquery"], function($) {
 	"use strict";
@@ -32,7 +32,7 @@ Any Echo JS SDK applications or plugins should be defined as AMD module to provi
 
 	});
 
-Due to the fact that Echo JS SDK uses a separate jQuery instance (available as Echo.jQuery), we pass the Echo.jQuery reference as the anonymous function argument and accept is as jQuery variable. In addition to that we add the $ variable and link it to the same jQuery reference. So inside the JS closure both "jQuery" and "$" vars are available, like on a regular page with the jQuery lib included.
+Due to the fact that Echo JS SDK uses a separate jQuery instance available as AMD module with "jquery" name, this module uses jQuery.noConflict and doesn't affect to a global jQuery is included on the page.
 
 Also we add the directive to switch the JS code execution to the strict mode (*"use strict"*). It helps to avoid the mistakes (such as using the global vars in inappropriate places, etc) while developing the code + the code which works in the strict mode will be minified without any issues.
 
@@ -85,14 +85,12 @@ Echo renderer function is a javascript function with fixed interface which produ
 
 ## Minified scripts and debugging
 
-All the files in the _http://cdn/echoenabled.com/sdk/v3/_ directory are minified using UglifyJS. Dev versions (non-minified) of these files are located in _/sdk/v3/dev/_ directory.
+All the files in the _http://cdn/echoenabled.com/sdk/v3.1/_ directory are minified using UglifyJS. Dev versions (non-minified) of these files are located in _/sdk/v3.1/dev/_ directory.
 By default all dependencies specified in the source code will be downloaded minified but there is a way to specify which version to download. Here it is:
 
-1. if page includes **/sdk/v3/dev/loader.js** then dev versions will be used else go to 2.
-2. if URL contains **echo.debug:true** or **echo.debug:false** after # (known as fragment/anchor) then we save its value in the special **echo-debug** cookie and:
-
-    &bull; use dev versions if **echo.debug:true**;
-    &bull; use min versions if **echo.debug:false**;
-    &bull; go to 3 otherwise.<br><br>
-
-3. If cookie with the name **echo-debug** exists and its value is _true_ then we use dev versions.
+1. if page includes **/sdk/v3.1/dev/loader.js** then dev versions will be used else go to 2.
+2. if URL contains **echo.debug:true** or **echo.debug:false** after # (known as fragment/anchor) then we save its value in the browser localStorage under the name **echo-debug** and:  
+    &bull; use dev versions if **echo.debug:true**;  
+    &bull; use min versions if **echo.debug:false**;  
+    &bull; go to 3 otherwise.  
+3. If browser localStorage has the object named **echo-debug** and its value is _true_ then we use dev versions.
