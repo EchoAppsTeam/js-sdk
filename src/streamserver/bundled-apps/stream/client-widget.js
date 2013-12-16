@@ -89,7 +89,9 @@ stream.init = function() {
 		"onError": function(data, options) {
 			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
 				data = data || {};
-				data.message = self.labels.get("error_" + data.errorCode) || options.label;
+				var labelName = "error_" + data.errorCode;
+				var label = self.labels.get(labelName);
+				data.message = label === labelName ? options.label : label;
 				self.showError($.extend(options, {
 					"data": data,
 					"promise": self.request.deferred.transport.promise()
@@ -796,7 +798,9 @@ stream.methods._requestChildrenItems = function(unique) {
 		},
 		"onError": function(data, options) {
 			data = data || {};
-			data.message = self.labels.get("error_" + data.errorCode) || options.label;
+			var labelName = "error_" + data.errorCode;
+			var label = self.labels.get(labelName);
+			data.message = label === labelName ? options.label : label;
 			self.showError($.extend(options, {
 				"data": data,
 				"target": target,
@@ -838,7 +842,9 @@ stream.methods._requestMoreItems = function(element) {
 			},
 			"onError": function(data, options) {
 				data = data || {};
-				data.message = self.labels.get("error_" + data.errorCode) || options.label;
+				var labelName = "error_" + data.errorCode;
+				var label = self.labels.get(labelName);
+				data.message = label === labelName ? options.label : label;
 				self.showError($.extend(options, {
 					"target": element,
 					"promise": self.moreRequest.deferred.transport.promise()
