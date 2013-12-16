@@ -24,7 +24,7 @@ The appearance of an application can be considered as a composition of its visua
 
 ## Creating a JavaScript closure for the components and jQuery plugins
 
-Any Echo JS SDK applications or plugins should be defined as AMD module to provide a unique namespace and possibility of async loading for the component and avoid code intersection.
+Any Echo JS SDK applications or plugins should be defined as AMD module to provide a unique namespace and possibility of async loading for the component and avoid code intersection. For example, we define a new module with jQuery dependency:
 
 	Echo.define(["jquery"], function($) {
 	"use strict";
@@ -32,7 +32,7 @@ Any Echo JS SDK applications or plugins should be defined as AMD module to provi
 
 	});
 
-Due to the fact that Echo JS SDK uses a separate jQuery instance (available as Echo.jQuery), we pass the Echo.jQuery reference as the anonymous function argument and accept is as jQuery variable. In addition to that we add the $ variable and link it to the same jQuery reference. So inside the JS closure both "jQuery" and "$" vars are available, like on a regular page with the jQuery lib included.
+Due to the fact that Echo JS SDK uses a separate jQuery instance available as AMD module with "jquery" name, this module uses jQuery.noConflict and doesn't affect to a global jQuery is included on the page.
 
 Also we add the directive to switch the JS code execution to the strict mode (*"use strict"*). It helps to avoid the mistakes (such as using the global vars in inappropriate places, etc) while developing the code + the code which works in the strict mode will be minified without any issues.
 
