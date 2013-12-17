@@ -45,8 +45,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("FormAuth", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	if (this._userStatus() === "forcedLogin") {
 		this.extendTemplate("replace", "header", plugin.templates.forcedLogin);

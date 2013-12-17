@@ -40,8 +40,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("JanrainSharing", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	if (!this.config.get("alwaysShare")) {
 		this.extendTemplate("insertBefore", "postButton", plugin.templates.share);

@@ -26,8 +26,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("Edit", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	this.extendTemplate("insertAfter", "postContainer", plugin.templates.cancel);
 	this.extendTemplate("replace", "header", plugin.templates.header);

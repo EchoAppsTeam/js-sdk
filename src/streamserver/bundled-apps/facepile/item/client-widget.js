@@ -24,8 +24,6 @@ Echo.define([
  */
 var item = App.definition("Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget");
 
-//if (App.isDefined(item)) return;
-
 /** @hide @cfg plugins */
 /** @hide @method dependent */
 

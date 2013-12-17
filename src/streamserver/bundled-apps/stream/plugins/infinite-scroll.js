@@ -29,8 +29,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("InfiniteScroll", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	var plugin = this;
 	var handler = function(event) {

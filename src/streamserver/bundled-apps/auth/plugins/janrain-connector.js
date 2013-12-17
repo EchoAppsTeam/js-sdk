@@ -29,8 +29,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("JanrainConnector", "Echo.StreamServer.BundledApps.Auth.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	var plugin = this, component = this.component;
 	$.each(plugin.config.get("buttons", []), function(i, type) {

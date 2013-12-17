@@ -40,8 +40,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("JanrainSharing", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	this.component.addButtonSpec("Share", this._assembleButton());
 };

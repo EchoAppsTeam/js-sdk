@@ -43,8 +43,6 @@ Echo.define([
 
 var plugin = Plugin.definition("PinboardVisualization", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate("replace", "container", plugin.templates.container);

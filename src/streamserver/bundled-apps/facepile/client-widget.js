@@ -38,8 +38,6 @@ Echo.define([
  */
 var pile = App.definition("Echo.StreamServer.BundledApps.FacePile.ClientWidget");
 
-if (App.isDefined(pile)) return;
-
 /**
  * @echo_event Echo.StreamServer.BundledApps.FacePile.ClientWidget.onReady
  * Triggered when the app initialization is finished completely.

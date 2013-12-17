@@ -39,8 +39,6 @@ Echo.define([
  */
 var submit = App.definition("Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
-if (App.isDefined(submit)) return;
-
 /**
  * @echo_event Echo.StreamServer.BundledApps.Submit.ClientWidget.onReady
  * Triggered when the app initialization is finished completely.

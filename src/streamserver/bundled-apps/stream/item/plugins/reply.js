@@ -35,8 +35,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	var self = this, item = this.component;
 	this.extendTemplate("insertAsLastChild", "content", plugin.templates.form);

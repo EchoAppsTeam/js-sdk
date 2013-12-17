@@ -19,8 +19,6 @@ Echo.define([
 
 var mediaGallery = App.definition("Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget");
 
-if (App.isDefined(mediaGallery)) return;
-
 /**
  * @echo_event Echo.StreamServer.BundledApps.Stream.Item.MediaGallery.ClientWidget.onReady
  * Triggered when the app initialization is finished completely.

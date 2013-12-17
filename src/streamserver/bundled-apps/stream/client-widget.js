@@ -36,8 +36,6 @@ Echo.define([
  */
 var stream = App.definition("Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
-if (App.isDefined(stream)) return;
-
 /**
  * @echo_event Echo.StreamServer.BundledApps.Stream.ClientWidget.onReady
  * Triggered when the app initialization is finished completely.

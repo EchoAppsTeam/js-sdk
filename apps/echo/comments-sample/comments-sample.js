@@ -9,8 +9,6 @@ Echo.define([
 
 var Comments = App.definition("Echo.Apps.CommentsSample");
 
-if (App.isDefined("Echo.Apps.CommentsSample")) return;
-
 Comments.config = {
 	"appkey": "",
 	"submitFormPosition": "top" // top | bottom

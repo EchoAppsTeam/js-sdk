@@ -35,8 +35,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("CommunityFlag", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "data", plugin.templates.main);
 	this.component.addButtonSpec("CommunityFlag", this._assembleButton("Flag"));

@@ -35,8 +35,6 @@ Echo.define([
  */
 var counter = App.definition("Echo.StreamServer.BundledApps.Counter.ClientWidget");
 
-if (App.isDefined(counter)) return;
-
 /** @hide @cfg labels */
 /** @hide @method getPlugin */
 /** @hide @method parentRenderer */

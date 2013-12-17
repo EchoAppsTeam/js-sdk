@@ -30,8 +30,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("Moderation", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	var self = this;
 	var item = this.component;

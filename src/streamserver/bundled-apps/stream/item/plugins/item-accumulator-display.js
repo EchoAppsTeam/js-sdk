@@ -29,8 +29,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("ItemAccumulatorDisplay", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	this.extendTemplate("insertBefore", "modeSwitch", plugin.templates.main);
 };

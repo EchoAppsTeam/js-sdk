@@ -28,8 +28,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("TextCounter", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 /**
  * @cfg {Number} limit
  * Specifies the maximum length of the text.

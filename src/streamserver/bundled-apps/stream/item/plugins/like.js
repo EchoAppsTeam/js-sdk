@@ -31,8 +31,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("Like", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "data", plugin.templates.main);
 	this.component.addButtonSpec("Like", this._assembleButton("Like"));

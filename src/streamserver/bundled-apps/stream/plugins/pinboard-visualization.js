@@ -41,8 +41,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("PinboardVisualization", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 var ua = navigator.userAgent.toLowerCase();
 var isMozillaBrowser = !!(
 		!~ua.indexOf("chrome")

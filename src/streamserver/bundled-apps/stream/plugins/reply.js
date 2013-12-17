@@ -30,8 +30,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.events = {
 	"Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Reply.onExpand": function(topic, args) {
 		/**

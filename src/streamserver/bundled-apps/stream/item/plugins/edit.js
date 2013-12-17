@@ -32,8 +32,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("Edit", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	this.component.addButtonSpec("Edit", this._assembleButton());
 };

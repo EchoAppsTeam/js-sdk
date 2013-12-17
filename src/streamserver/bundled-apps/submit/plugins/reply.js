@@ -28,8 +28,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("Reply", "Echo.StreamServer.BundledApps.Submit.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	var plugin = this, submit = plugin.component;
 	var _prepareEventParams = submit._prepareEventParams;

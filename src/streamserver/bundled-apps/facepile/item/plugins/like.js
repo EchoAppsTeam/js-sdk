@@ -14,8 +14,6 @@ Echo.define([
  */
 var plugin = Plugin.definition("Like", "Echo.StreamServer.BundledApps.FacePile.Item.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.init = function() {
 	this.extendTemplate("insertAsLastChild", "container", plugin.templates.main);
 };

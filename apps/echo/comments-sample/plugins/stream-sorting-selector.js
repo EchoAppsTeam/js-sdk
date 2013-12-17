@@ -8,8 +8,6 @@ Echo.define([
 
 var plugin = Plugin.definition("StreamSortingSelector", "Echo.StreamServer.BundledApps.Stream.ClientWidget");
 
-if (Plugin.isDefined(plugin)) return;
-
 plugin.config = {
 	"orders": [
 		"reverseChronological",
