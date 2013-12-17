@@ -108,6 +108,11 @@ Echo.Tests.Units.push(function(callback) {
 			new Stream({
 				"target": this.config.target,
 				"appkey": this.config.appkey,
+				"liveUpdates": {
+					"polling": {
+						"timeout": 3
+					}
+				},
 				"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:1",
 				"ready": function() {
 					var target = this.config.get("target");

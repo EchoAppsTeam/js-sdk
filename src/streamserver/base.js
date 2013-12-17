@@ -20,13 +20,23 @@ Echo.define([
  */
 var Base = App.definition("Echo.StreamServer.Base");
 
+var onDataInvalidate = function() {
+	var request = this.get("request");
+	if (request && request.liveUpdates) {
+		request.liveUpdates.start(true);
+	}
+};
+
 Base.events = {
-	"Echo.App.onDataInvalidate": function() {
-		var request = this.get("request");
-		if (request && request.liveUpdates) {
-			request.liveUpdates.start(true);
-		}
-	},
+	// we need two subscriptions here, because the "Echo.Control.onDataInvalidate" event
+	// may be published by the nested controls (in this case the event is not broadcasted
+	// to the "global" context) and by the standalone control to notify other controls
+	// (not related directly) about the need to invalidate the data (in this case
+	// the "global" context is used)
+	"Echo.App.onDataInvalidate": [{
+		"context": "global",
+		"handler": onDataInvalidate
+	}, onDataInvalidate],
 	// subscribe all root level applications to the user login/logout event
 	// and call the "refresh" application method
 	"Echo.StreamServer.User.onInvalidate": {

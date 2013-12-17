@@ -768,6 +768,8 @@ App.prototype._initializers.subscriptions = function() {
 	var app = this;
 	$.each(app._definition("events"), function subscribe(topic, data) {
 		if ($.isArray(data) && data.length) {
+			// copy array references to avoid mutable
+			data = data.slice(0);
 			subscribe(topic, data.shift());
 			data.length && subscribe(topic, data);
 		} else {
