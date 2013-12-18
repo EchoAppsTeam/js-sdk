@@ -4,6 +4,8 @@ Echo.define([
 	"loadFrom![echo/apps.sdk]echo/utils"
 ], function($, GUI, Utils) {
 
+"use strict";
+
 /**
  * @class Echo.GUI.Dropdown
  * Class wrapper for <a href="http://getbootstrap.com/2.3.2/components.html#dropdowns" target="_blank">bootstrap-dropdown.js</a>.

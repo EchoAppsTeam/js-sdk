@@ -4,6 +4,8 @@ Echo.define([
 	"loadFrom![echo/apps.sdk]echo/utils"
 ], function($, GUI, Utils) {
 
+"use strict";
+
 /**
  * @class Echo.GUI.Modal
  * Class wrapper for <a href="http://getbootstrap.com/2.3.2/javascript.html#modals" target="_blank">bootstrap-modal.js</a>.

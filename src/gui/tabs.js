@@ -4,6 +4,8 @@ Echo.define([
 	"loadFrom![echo/apps.sdk]echo/utils"
 ], function($, GUI, Utils) {
 
+"use strict";
+
 /**
  * @class Echo.GUI.Tabs
  * Class wrapper for <a href="http://getbootstrap.com/2.3.2/javascript.html#tabs" target="_blank">bootstrap-tab.js</a>.
@@ -361,7 +363,7 @@ GUI.Tabs.prototype._getTabIndex = function(id) {
 		}
 	}
 	return -1;
-}
+};
 
 GUI.Tabs.prototype._getPanel = function(id) {
 	return this.getPanels().find("#" + this._getTabFullId(id));
