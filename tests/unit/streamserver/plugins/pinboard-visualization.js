@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"loadFrom![echo/streamserver/plugins/pinboard-visualization]echo/streamserver/bundled-apps/stream/item/plugins/pinboard-visualization"
+		"loadFrom![echo/streamserver/bundled-apps/stream/plugins/pinboard-visualization]echo/streamserver/bundled-apps/stream/item/plugins/pinboard-visualization"
 	], function($) {
 
 	"use strict";
@@ -20,6 +20,8 @@ Echo.Tests.Units.push(function(callback) {
 			"enabled": false
 		}
 	});
+
 	callback();
+
 	});
 });

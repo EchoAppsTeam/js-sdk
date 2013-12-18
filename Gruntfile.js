@@ -249,12 +249,12 @@ module.exports = function(grunt) {
 			"streamserver/bundled-apps/stream/item/plugins/tweet-display"
 		]
 	}, {
-		"name": "streamserver/plugins/pinboard-visualization",
+		"name": "streamserver/bundled-apps/stream/plugins/pinboard-visualization",
 		"create": true,
 		"include": [
 			"streamserver/bundled-apps/stream/item/media-gallery/client-widget",
-			"streamserver/bundled-apps/stream/plugins/pinboard-visualization",
-			"streamserver/bundled-apps/stream/item/plugins/pinboard-visualization"
+			"streamserver/bundled-apps/stream/item/plugins/pinboard-visualization",
+			"streamserver/bundled-apps/stream/plugins/pinboard-visualization"
 		]
 	}, {
 		"name": "gui.pack",

@@ -37,7 +37,7 @@ Echo.define([
  *
  * @extends Echo.Plugin
  *
- * @package streamserver/plugins/pinboard-visualization.js
+ * @package streamserver/bundled-apps/stream/plugins/pinboard-visualization.js
  * @module
  */
 

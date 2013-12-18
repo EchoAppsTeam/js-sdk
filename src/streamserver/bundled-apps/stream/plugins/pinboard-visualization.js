@@ -28,15 +28,15 @@ Echo.define([
  * scripts below (production and development versions respectively) to
  * load the "PinboardVisualization" plugin:
  *
- * + http://cdn.echoenabled.com/sdk/v3.1/streamserver/plugins/pinboard-visualization.js
- * + http://cdn.echoenabled.com/sdk/v3.1/dev/streamserver/plugins/pinboard-visualization.js
+ * + http://cdn.echoenabled.com/sdk/v3.1/streamserver/bundled-apps/stream/plugins/pinboard-visualization.js
+ * + http://cdn.echoenabled.com/sdk/v3.1/dev/streamserver/bundled-apps/stream/plugins/pinboard-visualization.js
  *
  * More information regarding the plugins installation can be found
  * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *
- * @package streamserver/plugins/pinboard-visualization.js
+ * @package streamserver/bundled-apps/stream/plugins/pinboard-visualization.js
  * @module
  */
 var plugin = Plugin.definition("PinboardVisualization", "Echo.StreamServer.BundledApps.Stream.ClientWidget");

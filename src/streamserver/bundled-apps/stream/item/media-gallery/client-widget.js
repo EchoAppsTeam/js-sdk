@@ -13,7 +13,7 @@ Echo.define([
  *
  * @extends Echo.App
  *
- * @package streamserver/plugins/pinboard-visualization.js
+ * @package streamserver/bundled-apps/stream/plugins/pinboard-visualization.js
  * @module
  */
 
@@ -51,7 +51,6 @@ mediaGallery.labels = {
  * @cfg {Object} item
  * An instance of the Echo.StreamServer.BundledApps.Stream.Item.ClientWidget object
  * which may use its state for some reasons (context, data, etc)
- *
  */
 mediaGallery.config = {
 	"resizeDuration": 250,
